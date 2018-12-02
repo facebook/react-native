@@ -1,17 +1,16 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ToastAndroid
+ * @format
+ * @flow
  */
 
 'use strict';
 
-var RCTToastAndroid = require('NativeModules').ToastAndroid;
+const RCTToastAndroid = require('NativeModules').ToastAndroid;
 
 /**
  * This exposes the native ToastAndroid module as a JS module. This has a function 'show'
@@ -19,20 +18,58 @@ var RCTToastAndroid = require('NativeModules').ToastAndroid;
  *
  * 1. String message: A string with the text to toast
  * 2. int duration: The duration of the toast. May be ToastAndroid.SHORT or ToastAndroid.LONG
+ *
+ * There is also a function `showWithGravity` to specify the layout gravity. May be
+ * ToastAndroid.TOP, ToastAndroid.BOTTOM, ToastAndroid.CENTER.
+ *
+ * The 'showWithGravityAndOffset' function adds on the ability to specify offset
+ * These offset values will translate to pixels.
+ *
+ * Basic usage:
+ * ```javascript
+ * ToastAndroid.show('A pikachu appeared nearby !', ToastAndroid.SHORT);
+ * ToastAndroid.showWithGravity('All Your Base Are Belong To Us', ToastAndroid.SHORT, ToastAndroid.CENTER);
+ * ToastAndroid.showWithGravityAndOffset('A wild toast appeared!', ToastAndroid.LONG, ToastAndroid.BOTTOM, 25, 50);
+ * ```
  */
 
-var ToastAndroid = {
-
+const ToastAndroid = {
+  // Toast duration constants
   SHORT: RCTToastAndroid.SHORT,
   LONG: RCTToastAndroid.LONG,
 
-  show: function (
-    message: string,
-    duration: number
-  ): void {
+  // Toast gravity constants
+  TOP: RCTToastAndroid.TOP,
+  BOTTOM: RCTToastAndroid.BOTTOM,
+  CENTER: RCTToastAndroid.CENTER,
+
+  show: function(message: string, duration: number): void {
     RCTToastAndroid.show(message, duration);
   },
 
+  showWithGravity: function(
+    message: string,
+    duration: number,
+    gravity: number,
+  ): void {
+    RCTToastAndroid.showWithGravity(message, duration, gravity);
+  },
+
+  showWithGravityAndOffset: function(
+    message: string,
+    duration: number,
+    gravity: number,
+    xOffset: number,
+    yOffset: number,
+  ): void {
+    RCTToastAndroid.showWithGravityAndOffset(
+      message,
+      duration,
+      gravity,
+      xOffset,
+      yOffset,
+    );
+  },
 };
 
 module.exports = ToastAndroid;

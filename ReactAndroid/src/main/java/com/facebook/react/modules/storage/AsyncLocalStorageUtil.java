@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.modules.storage;
@@ -31,7 +29,7 @@ import static com.facebook.react.modules.storage.ReactDatabaseSupplier.VALUE_COL
 /**
  * Helper for database operations.
  */
-/* package */ class AsyncLocalStorageUtil {
+public class AsyncLocalStorageUtil {
 
   /**
    * Build the String required for an SQL select statement:
@@ -60,7 +58,7 @@ import static com.facebook.react.modules.storage.ReactDatabaseSupplier.VALUE_COL
   /**
    * Returns the value of the given key, or null if not found.
    */
-  /* package */ static @Nullable String getItemImpl(SQLiteDatabase db, String key) {
+  public static @Nullable String getItemImpl(SQLiteDatabase db, String key) {
     String[] columns = {VALUE_COLUMN};
     String[] selectionArgs = {key};
 

@@ -1,64 +1,69 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule InspectorOverlay
+ * @format
  * @flow
  */
+
 'use strict';
 
-var Dimensions = require('Dimensions');
-var InspectorUtils = require('InspectorUtils');
-var React = require('React');
-var StyleSheet = require('StyleSheet');
-var UIManager = require('NativeModules').UIManager;
-var View = require('View');
-var ElementBox = require('ElementBox');
+const Dimensions = require('Dimensions');
+const ElementBox = require('ElementBox');
+const React = require('React');
+const StyleSheet = require('StyleSheet');
+const UIManager = require('UIManager');
+const View = require('View');
 
-var PropTypes = React.PropTypes;
+import type {ViewStyleProp} from 'StyleSheet';
 
 type EventLike = {
-  nativeEvent: Object;
+  nativeEvent: Object,
 };
 
-var InspectorOverlay = React.createClass({
-  propTypes: {
-    inspected: PropTypes.shape({
-      frame: PropTypes.object,
-      style: PropTypes.any,
-    }),
-    inspectedViewTag: PropTypes.number,
-    onTouchInstance: PropTypes.func.isRequired,
-  },
+type Inspected = $ReadOnly<{|
+  frame?: Object,
+  style?: ViewStyleProp,
+|}>;
 
-  findViewForTouchEvent: function(e: EventLike) {
-    var {locationX, locationY} = e.nativeEvent.touches[0];
+type Props = $ReadOnly<{|
+  inspected?: Inspected,
+  inspectedViewTag?: ?number,
+  onTouchViewTag: (tag: number, frame: Object, pointerY: number) => mixed,
+|}>;
+
+class InspectorOverlay extends React.Component<Props> {
+  findViewForTouchEvent = (e: EventLike) => {
+    const {locationX, locationY} = e.nativeEvent.touches[0];
     UIManager.findSubviewIn(
       this.props.inspectedViewTag,
       [locationX, locationY],
       (nativeViewTag, left, top, width, height) => {
-        var instance = InspectorUtils.findInstanceByNativeTag(this.props.rootTag, nativeViewTag);
-        if (!instance) {
-          return;
-        }
-        this.props.onTouchInstance(instance, {left, top, width, height}, locationY);
-      }
+        this.props.onTouchViewTag(
+          nativeViewTag,
+          {left, top, width, height},
+          locationY,
+        );
+      },
     );
-  },
+  };
 
-  shouldSetResponser: function(e: EventLike): bool {
+  shouldSetResponser = (e: EventLike): boolean => {
     this.findViewForTouchEvent(e);
     return true;
-  },
+  };
 
-  render: function() {
-    var content = null;
+  render() {
+    let content = null;
     if (this.props.inspected) {
-      content = <ElementBox frame={this.props.inspected.frame} style={this.props.inspected.style} />;
+      content = (
+        <ElementBox
+          frame={this.props.inspected.frame}
+          style={this.props.inspected.style}
+        />
+      );
     }
 
     return (
@@ -70,9 +75,9 @@ var InspectorOverlay = React.createClass({
       </View>
     );
   }
-});
+}
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   inspector: {
     backgroundColor: 'transparent',
     position: 'absolute',

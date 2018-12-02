@@ -1,12 +1,10 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule deepFreezeAndThrowOnMutationInDev
+ * @format
  * @flow
  */
 
@@ -29,32 +27,53 @@
  * Freezing the object and adding the throw mechanism is expensive and will
  * only be used in DEV.
  */
-function deepFreezeAndThrowOnMutationInDev(object: Object) {
+function deepFreezeAndThrowOnMutationInDev<T: Object>(object: T): T {
   if (__DEV__) {
-    if (typeof object !== 'object' ||
-        object === null ||
-        Object.isFrozen(object) ||
-        Object.isSealed(object)) {
-      return;
+    if (
+      typeof object !== 'object' ||
+      object === null ||
+      Object.isFrozen(object) ||
+      Object.isSealed(object)
+    ) {
+      return object;
     }
 
-    for (var key in object) {
-      if (object.hasOwnProperty(key)) {
-        object.__defineGetter__(key, identity.bind(null, object[key]));
-        object.__defineSetter__(key, throwOnImmutableMutation.bind(null, key));
+    const keys = Object.keys(object);
+    const hasOwnProperty = Object.prototype.hasOwnProperty;
+
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      if (hasOwnProperty.call(object, key)) {
+        Object.defineProperty(object, key, {
+          get: identity.bind(null, object[key]),
+        });
+        Object.defineProperty(object, key, {
+          set: throwOnImmutableMutation.bind(null, key),
+        });
+      }
+    }
+
+    Object.freeze(object);
+    Object.seal(object);
+
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      if (hasOwnProperty.call(object, key)) {
         deepFreezeAndThrowOnMutationInDev(object[key]);
       }
     }
-    Object.freeze(object);
-    Object.seal(object);
   }
+  return object;
 }
 
 function throwOnImmutableMutation(key, value) {
   throw Error(
-    'You attempted to set the key `' + key + '` with the value `' +
-    JSON.stringify(value) + '` on an object that is meant to be immutable ' +
-    'and has been frozen.'
+    'You attempted to set the key `' +
+      key +
+      '` with the value `' +
+      JSON.stringify(value) +
+      '` on an object that is meant to be immutable ' +
+      'and has been frozen.',
   );
 }
 

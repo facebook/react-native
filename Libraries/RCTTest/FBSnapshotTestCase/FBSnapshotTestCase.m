@@ -1,10 +1,8 @@
 /*
- *  Copyright (c) 2013, Facebook, Inc.
- *  All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant
- *  of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  */
 
@@ -42,41 +40,16 @@
   self.snapshotController.recordMode = recordMode;
 }
 
-- (BOOL)compareSnapshotOfLayer:(CALayer *)layer
-      referenceImagesDirectory:(NSString *)referenceImagesDirectory
-                    identifier:(NSString *)identifier
-                         error:(NSError **)errorPtr
-{
-  return [self _compareSnapshotOfViewOrLayer:layer
-                    referenceImagesDirectory:referenceImagesDirectory
-                                  identifier:identifier
-                                       error:errorPtr];
-}
-
 - (BOOL)compareSnapshotOfView:(UIView *)view
      referenceImagesDirectory:(NSString *)referenceImagesDirectory
                    identifier:(NSString *)identifier
                         error:(NSError **)errorPtr
 {
-  return [self _compareSnapshotOfViewOrLayer:view
-                    referenceImagesDirectory:referenceImagesDirectory
-                                  identifier:identifier
-                                       error:errorPtr];
-}
-
-#pragma mark -
-#pragma mark Private API
-
-- (BOOL)_compareSnapshotOfViewOrLayer:(id)viewOrLayer
-             referenceImagesDirectory:(NSString *)referenceImagesDirectory
-                           identifier:(NSString *)identifier
-                                error:(NSError **)errorPtr
-{
   _snapshotController.referenceImagesDirectory = referenceImagesDirectory;
-  return [_snapshotController compareSnapshotOfViewOrLayer:viewOrLayer
-                                                  selector:self.invocation.selector
-                                                identifier:identifier
-                                                     error:errorPtr];
+  return [_snapshotController compareSnapshotOfView:view
+                                           selector:self.invocation.selector
+                                         identifier:identifier
+                                              error:errorPtr];
 }
 
 @end

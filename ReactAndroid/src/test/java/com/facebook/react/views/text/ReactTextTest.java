@@ -1,47 +1,48 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.text;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 
 import android.annotation.TargetApi;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
 import android.text.style.AbsoluteSizeSpan;
-import android.view.Choreographer;
+import android.text.style.StrikethroughSpan;
+import android.text.style.UnderlineSpan;
 import android.widget.TextView;
-
 import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ReactTestHelper;
+import com.facebook.react.bridge.JavaOnlyArray;
+import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.SimpleArray;
-import com.facebook.react.bridge.SimpleMap;
-import com.facebook.react.uimanager.DisplayMetricsHolder;
-import com.facebook.react.uimanager.ReactChoreographer;
-import com.facebook.react.uimanager.UIImplementation;
+import com.facebook.react.bridge.ReactTestHelper;
+import com.facebook.react.modules.core.ChoreographerCompat;
+import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewProps;
-
+import com.facebook.react.views.text.ReactRawTextShadowNode;
+import com.facebook.react.views.view.ReactViewBackgroundDrawable;
+import com.facebook.react.views.text.CustomTextTransformSpan;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -49,14 +50,8 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
-
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link UIManagerModule} specifically for React Text/RawText.
@@ -69,32 +64,32 @@ public class ReactTextTest {
   @Rule
   public PowerMockRule rule = new PowerMockRule();
 
-  private ArrayList<Choreographer.FrameCallback> mPendingChoreographerCallbacks;
+  private ArrayList<ChoreographerCompat.FrameCallback> mPendingFrameCallbacks;
 
   @Before
   public void setUp() {
     PowerMockito.mockStatic(Arguments.class, ReactChoreographer.class);
 
-    ReactChoreographer choreographerMock = mock(ReactChoreographer.class);
+    ReactChoreographer uiDriverMock = mock(ReactChoreographer.class);
     PowerMockito.when(Arguments.createMap()).thenAnswer(new Answer<Object>() {
       @Override
       public Object answer(InvocationOnMock invocation) throws Throwable {
-        return new SimpleMap();
+        return new JavaOnlyMap();
       }
     });
-    PowerMockito.when(ReactChoreographer.getInstance()).thenReturn(choreographerMock);
+    PowerMockito.when(ReactChoreographer.getInstance()).thenReturn(uiDriverMock);
 
-    mPendingChoreographerCallbacks = new ArrayList<>();
+    mPendingFrameCallbacks = new ArrayList<>();
     doAnswer(new Answer() {
       @Override
       public Object answer(InvocationOnMock invocation) throws Throwable {
-        mPendingChoreographerCallbacks
-            .add((Choreographer.FrameCallback) invocation.getArguments()[1]);
+        mPendingFrameCallbacks
+            .add((ChoreographerCompat.FrameCallback) invocation.getArguments()[1]);
         return null;
       }
-    }).when(choreographerMock).postFrameCallback(
+    }).when(uiDriverMock).postFrameCallback(
         any(ReactChoreographer.CallbackType.class),
-        any(Choreographer.FrameCallback.class));
+        any(ChoreographerCompat.FrameCallback.class));
   }
 
   @Test
@@ -103,8 +98,8 @@ public class ReactTextTest {
 
     ReactRootView rootView = createText(
         uiManager,
-        SimpleMap.of(ViewProps.FONT_SIZE, 21.0),
-        SimpleMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ViewProps.FONT_SIZE, 21.0),
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
 
     AbsoluteSizeSpan sizeSpan = getSingleSpan(
         (TextView) rootView.getChildAt(0), AbsoluteSizeSpan.class);
@@ -117,11 +112,11 @@ public class ReactTextTest {
 
     ReactRootView rootView = createText(
         uiManager,
-        SimpleMap.of(ViewProps.FONT_WEIGHT, "bold"),
-        SimpleMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ViewProps.FONT_WEIGHT, "bold"),
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
-        getSingleSpan((TextView)rootView.getChildAt(0), CustomStyleSpan.class);
+        getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
     assertThat(customStyleSpan.getWeight() & Typeface.BOLD).isNotZero();
     assertThat(customStyleSpan.getStyle() & Typeface.ITALIC).isZero();
   }
@@ -132,8 +127,8 @@ public class ReactTextTest {
 
     ReactRootView rootView = createText(
         uiManager,
-        SimpleMap.of(ViewProps.FONT_WEIGHT, "500"),
-        SimpleMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ViewProps.FONT_WEIGHT, "500"),
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
@@ -147,8 +142,8 @@ public class ReactTextTest {
 
     ReactRootView rootView = createText(
         uiManager,
-        SimpleMap.of(ViewProps.FONT_STYLE, "italic"),
-        SimpleMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ViewProps.FONT_STYLE, "italic"),
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
@@ -162,8 +157,8 @@ public class ReactTextTest {
 
     ReactRootView rootView = createText(
         uiManager,
-        SimpleMap.of(ViewProps.FONT_WEIGHT, "bold", ViewProps.FONT_STYLE, "italic"),
-        SimpleMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ViewProps.FONT_WEIGHT, "bold", ViewProps.FONT_STYLE, "italic"),
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
@@ -177,8 +172,8 @@ public class ReactTextTest {
 
     ReactRootView rootView = createText(
         uiManager,
-        SimpleMap.of(ViewProps.FONT_WEIGHT, "normal"),
-        SimpleMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ViewProps.FONT_WEIGHT, "normal"),
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
@@ -191,8 +186,8 @@ public class ReactTextTest {
 
     ReactRootView rootView = createText(
         uiManager,
-        SimpleMap.of(ViewProps.FONT_WEIGHT, "200"),
-        SimpleMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ViewProps.FONT_WEIGHT, "200"),
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
@@ -205,8 +200,8 @@ public class ReactTextTest {
 
     ReactRootView rootView = createText(
         uiManager,
-        SimpleMap.of(ViewProps.FONT_STYLE, "normal"),
-        SimpleMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ViewProps.FONT_STYLE, "normal"),
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
@@ -219,8 +214,8 @@ public class ReactTextTest {
 
     ReactRootView rootView = createText(
         uiManager,
-        SimpleMap.of(ViewProps.FONT_FAMILY, "sans-serif"),
-        SimpleMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ViewProps.FONT_FAMILY, "sans-serif"),
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
@@ -235,8 +230,8 @@ public class ReactTextTest {
 
     ReactRootView rootView = createText(
         uiManager,
-        SimpleMap.of(ViewProps.FONT_FAMILY, "sans-serif", ViewProps.FONT_WEIGHT, "bold"),
-        SimpleMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ViewProps.FONT_FAMILY, "sans-serif", ViewProps.FONT_WEIGHT, "bold"),
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
@@ -251,8 +246,8 @@ public class ReactTextTest {
 
     ReactRootView rootView = createText(
         uiManager,
-        SimpleMap.of(ViewProps.FONT_FAMILY, "sans-serif", ViewProps.FONT_STYLE, "italic"),
-        SimpleMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ViewProps.FONT_FAMILY, "sans-serif", ViewProps.FONT_STYLE, "italic"),
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
@@ -267,11 +262,11 @@ public class ReactTextTest {
 
     ReactRootView rootView = createText(
         uiManager,
-        SimpleMap.of(
+        JavaOnlyMap.of(
             ViewProps.FONT_FAMILY, "sans-serif",
             ViewProps.FONT_WEIGHT, "500",
             ViewProps.FONT_STYLE, "italic"),
-        SimpleMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
 
     CustomStyleSpan customStyleSpan =
         getSingleSpan((TextView) rootView.getChildAt(0), CustomStyleSpan.class);
@@ -281,16 +276,134 @@ public class ReactTextTest {
   }
 
   @Test
+  public void testTextDecorationLineUnderlineApplied() {
+    UIManagerModule uiManager = getUIManagerModule();
+
+    ReactRootView rootView = createText(
+        uiManager,
+        JavaOnlyMap.of(ViewProps.TEXT_DECORATION_LINE, "underline"),
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
+
+    TextView textView = (TextView) rootView.getChildAt(0);
+    Spanned text = (Spanned) textView.getText();
+    UnderlineSpan underlineSpan = getSingleSpan(textView, UnderlineSpan.class);
+    StrikethroughSpan[] strikeThroughSpans =
+        text.getSpans(0, text.length(), StrikethroughSpan.class);
+    assertThat(underlineSpan instanceof UnderlineSpan).isTrue();
+    assertThat(strikeThroughSpans).hasSize(0);
+  }
+
+  @Test
+  public void testTextDecorationLineLineThroughApplied() {
+    UIManagerModule uiManager = getUIManagerModule();
+
+    ReactRootView rootView = createText(
+        uiManager,
+        JavaOnlyMap.of(ViewProps.TEXT_DECORATION_LINE, "line-through"),
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
+
+    TextView textView = (TextView) rootView.getChildAt(0);
+    Spanned text = (Spanned) textView.getText();
+    UnderlineSpan[] underlineSpans =
+        text.getSpans(0, text.length(), UnderlineSpan.class);
+    StrikethroughSpan strikeThroughSpan =
+        getSingleSpan(textView, StrikethroughSpan.class);
+    assertThat(underlineSpans).hasSize(0);
+    assertThat(strikeThroughSpan instanceof StrikethroughSpan).isTrue();
+  }
+
+  @Test
+  public void testTextDecorationLineUnderlineLineThroughApplied() {
+    UIManagerModule uiManager = getUIManagerModule();
+
+    ReactRootView rootView = createText(
+        uiManager,
+        JavaOnlyMap.of(ViewProps.TEXT_DECORATION_LINE, "underline line-through"),
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
+
+    UnderlineSpan underlineSpan =
+        getSingleSpan((TextView) rootView.getChildAt(0), UnderlineSpan.class);
+    StrikethroughSpan strikeThroughSpan =
+        getSingleSpan((TextView) rootView.getChildAt(0), StrikethroughSpan.class);
+    assertThat(underlineSpan instanceof UnderlineSpan).isTrue();
+    assertThat(strikeThroughSpan instanceof StrikethroughSpan).isTrue();
+  }
+
+  @Test
   public void testBackgroundColorStyleApplied() {
     UIManagerModule uiManager = getUIManagerModule();
 
     ReactRootView rootView = createText(
         uiManager,
-        SimpleMap.of(ViewProps.BACKGROUND_COLOR, Color.BLUE),
-        SimpleMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ViewProps.BACKGROUND_COLOR, Color.BLUE),
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
 
     Drawable backgroundDrawable = ((TextView) rootView.getChildAt(0)).getBackground();
-    assertThat(((ColorDrawable) backgroundDrawable).getColor()).isEqualTo(Color.BLUE);
+    assertThat(((ReactViewBackgroundDrawable) backgroundDrawable).getColor()).isEqualTo(Color.BLUE);
+  }
+
+  @Test
+  public void testTextTransformNoneApplied() {
+    UIManagerModule uiManager = getUIManagerModule();
+
+    String testTextEntered = ".aa\tbb\t\tcc  dd EE \r\nZZ I like to eat apples. \n中文éé 我喜欢吃苹果。awdawd   ";
+    String testTextTransformed = testTextEntered;
+
+    ReactRootView rootView = createText(
+        uiManager,
+        JavaOnlyMap.of("textTransform", "none"),
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, testTextEntered));
+
+    TextView textView = (TextView) rootView.getChildAt(0);
+    assertThat(textView.getText().toString()).isEqualTo(testTextTransformed);
+  }
+
+  @Test
+  public void testTextTransformUppercaseApplied() {
+    UIManagerModule uiManager = getUIManagerModule();
+
+    String testTextEntered = ".aa\tbb\t\tcc  dd EE \r\nZZ I like to eat apples. \n中文éé 我喜欢吃苹果。awdawd   ";
+    String testTextTransformed = ".AA\tBB\t\tCC  DD EE \r\nZZ I LIKE TO EAT APPLES. \n中文ÉÉ 我喜欢吃苹果。AWDAWD   ";
+
+    ReactRootView rootView = createText(
+        uiManager,
+        JavaOnlyMap.of("textTransform", "uppercase"),
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, testTextEntered));
+
+    TextView textView = (TextView) rootView.getChildAt(0);
+    assertThat(textView.getText().toString()).isEqualTo(testTextTransformed);
+  }
+
+  @Test
+  public void testTextTransformLowercaseApplied() {
+    UIManagerModule uiManager = getUIManagerModule();
+
+    String testTextEntered = ".aa\tbb\t\tcc  dd EE \r\nZZ I like to eat apples. \n中文éé 我喜欢吃苹果。awdawd   ";
+    String testTextTransformed = ".aa\tbb\t\tcc  dd ee \r\nzz i like to eat apples. \n中文éé 我喜欢吃苹果。awdawd   ";
+
+    ReactRootView rootView = createText(
+        uiManager,
+        JavaOnlyMap.of("textTransform", "lowercase"),
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, testTextEntered));
+
+    TextView textView = (TextView) rootView.getChildAt(0);
+    assertThat(textView.getText().toString()).isEqualTo(testTextTransformed);
+  }
+
+  @Test
+  public void testTextTransformCapitalizeApplied() {
+    UIManagerModule uiManager = getUIManagerModule();
+
+    String testTextEntered = ".aa\tbb\t\tcc  dd EE \r\nZZ I like to eat apples. \n中文éé 我喜欢吃苹果。awdawd   ";
+    String testTextTransformed = ".Aa\tBb\t\tCc  Dd Ee \r\nZz I Like To Eat Apples. \n中文Éé 我喜欢吃苹果。Awdawd   ";
+
+    ReactRootView rootView = createText(
+        uiManager,
+        JavaOnlyMap.of("textTransform", "capitalize"),
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, testTextEntered));
+
+    TextView textView = (TextView) rootView.getChildAt(0);
+    assertThat(textView.getText().toString()).isEqualTo(testTextTransformed);
   }
 
   // JELLY_BEAN is needed for TextView#getMaxLines(), which is OK, because in the actual code we
@@ -302,8 +415,8 @@ public class ReactTextTest {
 
     ReactRootView rootView = createText(
         uiManager,
-        SimpleMap.of(ViewProps.NUMBER_OF_LINES, 2),
-        SimpleMap.of(ReactTextShadowNode.PROP_TEXT, "test text"));
+        JavaOnlyMap.of(ViewProps.NUMBER_OF_LINES, 2),
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
 
     TextView textView = (TextView) rootView.getChildAt(0);
     assertThat(textView.getText().toString()).isEqualTo("test text");
@@ -323,10 +436,10 @@ public class ReactTextTest {
 
   private ReactRootView createText(
       UIManagerModule uiManager,
-      SimpleMap textProps,
-      SimpleMap rawTextProps) {
+      JavaOnlyMap textProps,
+      JavaOnlyMap rawTextProps) {
     ReactRootView rootView = new ReactRootView(RuntimeEnvironment.application);
-    int rootTag = uiManager.addMeasuredRootView(rootView);
+    int rootTag = uiManager.addRootView(rootView);
     int textTag = rootTag + 1;
     int rawTextTag = textTag + 1;
 
@@ -345,45 +458,41 @@ public class ReactTextTest {
         textTag,
         null,
         null,
-        SimpleArray.of(rawTextTag),
-        SimpleArray.of(0),
+        JavaOnlyArray.of(rawTextTag),
+        JavaOnlyArray.of(0),
         null);
 
     uiManager.manageChildren(
         rootTag,
         null,
         null,
-        SimpleArray.of(textTag),
-        SimpleArray.of(0),
+        JavaOnlyArray.of(textTag),
+        JavaOnlyArray.of(0),
         null);
 
     uiManager.onBatchComplete();
-    executePendingChoreographerCallbacks();
+    executePendingFrameCallbacks();
     return rootView;
   }
 
-  private void executePendingChoreographerCallbacks() {
-    ArrayList<Choreographer.FrameCallback> callbacks =
-        new ArrayList<>(mPendingChoreographerCallbacks);
-    mPendingChoreographerCallbacks.clear();
-    for (Choreographer.FrameCallback frameCallback : callbacks) {
+  private void executePendingFrameCallbacks() {
+    ArrayList<ChoreographerCompat.FrameCallback> callbacks =
+        new ArrayList<>(mPendingFrameCallbacks);
+    mPendingFrameCallbacks.clear();
+    for (ChoreographerCompat.FrameCallback frameCallback : callbacks) {
       frameCallback.doFrame(0);
     }
   }
 
   public UIManagerModule getUIManagerModule() {
     ReactApplicationContext reactContext = ReactTestHelper.createCatalystContextForTest();
-    DisplayMetrics displayMetrics = reactContext.getResources().getDisplayMetrics();
-    DisplayMetricsHolder.setDisplayMetrics(displayMetrics);
     List<ViewManager> viewManagers = Arrays.asList(
         new ViewManager[] {
             new ReactTextViewManager(),
             new ReactRawTextManager(),
         });
-    UIManagerModule uiManagerModule = new UIManagerModule(
-        reactContext,
-        viewManagers,
-        new UIImplementation(reactContext, viewManagers));
+    UIManagerModule uiManagerModule =
+        new UIManagerModule(reactContext, viewManagers, 0);
     uiManagerModule.onHostResume();
     return uiManagerModule;
   }

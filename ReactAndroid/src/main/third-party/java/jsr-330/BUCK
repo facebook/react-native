@@ -1,0 +1,13 @@
+load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+
+fb_native.prebuilt_jar(
+    name = "jsr-330",
+    binary_jar = ":jsr330-binary.jar",
+    visibility = ["PUBLIC"],
+)
+
+fb_native.remote_file(
+    name = "jsr330-binary.jar",
+    sha1 = "6975da39a7040257bd51d21a231b76c915872d38",
+    url = "mvn:javax.inject:javax.inject:jar:1",
+)

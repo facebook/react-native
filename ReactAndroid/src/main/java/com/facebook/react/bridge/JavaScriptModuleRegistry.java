@@ -1,75 +1,97 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.bridge;
 
 import javax.annotation.Nullable;
 
-import java.lang.Class;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
-import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.common.build.ReactBuildConfig;
 
 /**
- * Class responsible for holding all the {@link JavaScriptModule}s registered to this
- * {@link CatalystInstance}. Uses Java proxy objects to dispatch method calls on JavaScriptModules
- * to the bridge using the corresponding module and method ids so the proper function is executed in
- * JavaScript.
+ * Class responsible for holding all the {@link JavaScriptModule}s.  Uses Java proxy objects
+ * to dispatch method calls on JavaScriptModules to the bridge using the corresponding
+ * module and method ids so the proper function is executed in JavaScript.
  */
-/*package*/ class JavaScriptModuleRegistry {
-
+public final class JavaScriptModuleRegistry {
   private final HashMap<Class<? extends JavaScriptModule>, JavaScriptModule> mModuleInstances;
 
-  public JavaScriptModuleRegistry(
-      CatalystInstanceImpl instance,
-      JavaScriptModulesConfig config) {
+  public JavaScriptModuleRegistry() {
     mModuleInstances = new HashMap<>();
-    for (JavaScriptModuleRegistration registration : config.getModuleDefinitions()) {
-      Class<? extends JavaScriptModule> moduleInterface = registration.getModuleInterface();
-      JavaScriptModule interfaceProxy = (JavaScriptModule) Proxy.newProxyInstance(
-          moduleInterface.getClassLoader(),
-          new Class[]{moduleInterface},
-          new JavaScriptModuleInvocationHandler(instance, registration));
-
-      mModuleInstances.put(moduleInterface, interfaceProxy);
-    }
   }
 
-  public <T extends JavaScriptModule> T getJavaScriptModule(Class<T> moduleInterface) {
-    return (T) Assertions.assertNotNull(
-        mModuleInstances.get(moduleInterface),
-        "JS module " + moduleInterface.getSimpleName() + " hasn't been registered!");
+  public synchronized <T extends JavaScriptModule> T getJavaScriptModule(
+      CatalystInstance instance,
+      Class<T> moduleInterface) {
+    JavaScriptModule module = mModuleInstances.get(moduleInterface);
+    if (module != null) {
+      return (T) module;
+    }
+
+    JavaScriptModule interfaceProxy = (JavaScriptModule) Proxy.newProxyInstance(
+        moduleInterface.getClassLoader(),
+        new Class[]{moduleInterface},
+        new JavaScriptModuleInvocationHandler(instance, moduleInterface));
+    mModuleInstances.put(moduleInterface, interfaceProxy);
+    return (T) interfaceProxy;
   }
 
   private static class JavaScriptModuleInvocationHandler implements InvocationHandler {
-
-    private final CatalystInstanceImpl mCatalystInstance;
-    private final JavaScriptModuleRegistration mModuleRegistration;
+    private final CatalystInstance mCatalystInstance;
+    private final Class<? extends JavaScriptModule> mModuleInterface;
+    private @Nullable String mName;
 
     public JavaScriptModuleInvocationHandler(
-        CatalystInstanceImpl catalystInstance,
-        JavaScriptModuleRegistration moduleRegistration) {
+        CatalystInstance catalystInstance,
+        Class<? extends JavaScriptModule> moduleInterface) {
       mCatalystInstance = catalystInstance;
-      mModuleRegistration = moduleRegistration;
+      mModuleInterface = moduleInterface;
+
+      if (ReactBuildConfig.DEBUG) {
+        Set<String> methodNames = new HashSet<>();
+        for (Method method : mModuleInterface.getDeclaredMethods()) {
+          if (!methodNames.add(method.getName())) {
+            throw new AssertionError(
+              "Method overloading is unsupported: " + mModuleInterface.getName() +
+                "#" + method.getName());
+          }
+        }
+      }
+    }
+
+    private String getJSModuleName() {
+      if (mName == null) {
+        // With proguard obfuscation turned on, proguard apparently (poorly) emulates inner
+        // classes or something because Class#getSimpleName() no longer strips the outer
+        // class name. We manually strip it here if necessary.
+        String name = mModuleInterface.getSimpleName();
+        int dollarSignIndex = name.lastIndexOf('$');
+        if (dollarSignIndex != -1) {
+          name = name.substring(dollarSignIndex + 1);
+        }
+
+        // getting the class name every call is expensive, so cache it
+        mName = name;
+      }
+      return mName;
     }
 
     @Override
-    public @Nullable Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-      String tracingName = mModuleRegistration.getTracingName(method);
-      mCatalystInstance.callFunction(
-          mModuleRegistration.getModuleId(),
-          mModuleRegistration.getMethodId(method),
-          Arguments.fromJavaArgs(args),
-          tracingName);
+    public @Nullable Object invoke(Object proxy, Method method, @Nullable Object[] args) throws Throwable {
+      NativeArray jsArgs = args != null
+        ? Arguments.fromJavaArgs(args)
+        : new WritableNativeArray();
+      mCatalystInstance.callFunction(getJSModuleName(), method.getName(), jsArgs);
       return null;
     }
   }

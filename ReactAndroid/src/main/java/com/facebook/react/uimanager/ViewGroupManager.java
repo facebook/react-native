@@ -1,22 +1,25 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.uimanager;
 
 import android.view.View;
 import android.view.ViewGroup;
+import java.util.List;
+import java.util.WeakHashMap;
+import javax.annotation.Nullable;
 
 /**
  * Class providing children management API for view managers of classes extending ViewGroup.
  */
 public abstract class ViewGroupManager <T extends ViewGroup>
     extends BaseViewManager<T, LayoutShadowNode> {
+
+  private static WeakHashMap<View, Integer> mZIndexHash = new WeakHashMap<>();
 
   @Override
   public LayoutShadowNode createShadowNodeInstance() {
@@ -36,6 +39,27 @@ public abstract class ViewGroupManager <T extends ViewGroup>
     parent.addView(child, index);
   }
 
+  /**
+   * Convenience method for batching a set of addView calls
+   * Note that this adds the views to the beginning of the ViewGroup
+   *
+   * @param parent the parent ViewGroup
+   * @param views the set of views to add
+   */
+  public void addViews(T parent, List<View> views) {
+    for (int i = 0, size = views.size(); i < size; i++) {
+      addView(parent, views.get(i), i);
+    }
+  }
+
+  public static void setViewZIndex(View view, int zIndex) {
+    mZIndexHash.put(view, zIndex);
+  }
+
+  public static @Nullable Integer getViewZIndex(View view) {
+    return mZIndexHash.get(view);
+  }
+
   public int getChildCount(T parent) {
     return parent.getChildCount();
   }
@@ -46,6 +70,15 @@ public abstract class ViewGroupManager <T extends ViewGroup>
 
   public void removeViewAt(T parent, int index) {
     parent.removeViewAt(index);
+  }
+
+  public void removeView(T parent, View view) {
+    for (int i = 0; i < getChildCount(parent); i++) {
+      if (getChildAt(parent, i) == view) {
+        removeViewAt(parent, i);
+        break;
+      }
+    }
   }
 
   public void removeAllViews(T parent) {
@@ -68,4 +101,13 @@ public abstract class ViewGroupManager <T extends ViewGroup>
     return false;
   }
 
+  /**
+   * Returns whether or not this View type should promote its grandchildren as Views. This is an
+   * optimization for Scrollable containers when using Nodes, where instead of having one ViewGroup
+   * containing a large number of draw commands (and thus being more expensive in the case of
+   * an invalidate or re-draw), we split them up into several draw commands.
+   */
+  public boolean shouldPromoteGrandchildren() {
+    return false;
+  }
 }

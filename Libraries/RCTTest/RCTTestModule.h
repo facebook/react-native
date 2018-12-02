@@ -1,16 +1,14 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <UIKit/UIKit.h>
 
-#import "RCTBridgeModule.h"
-#import "RCTDefines.h"
+#import <React/RCTBridgeModule.h>
+#import <React/RCTDefines.h>
 
 typedef NS_ENUM(NSInteger, RCTTestStatus) {
   RCTTestStatusPending = 0,
@@ -41,5 +39,7 @@ typedef NS_ENUM(NSInteger, RCTTestStatus) {
  * This is polled while running the runloop until true.
  */
 @property (nonatomic, readonly) RCTTestStatus status;
+
+@property (nonatomic, copy) NSString *testSuffix;
 
 @end

@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.common.futures;
@@ -30,7 +28,7 @@ public class SimpleSettableFuture<T> implements Future<T> {
    * Sets the result. If another thread has called {@link #get}, they will immediately receive the
    * value. set or setException must only be called once.
    */
-  public void set(T result) {
+  public void set(@Nullable T result) {
     checkNotSet();
     mResult = result;
     mReadyLatch.countDown();

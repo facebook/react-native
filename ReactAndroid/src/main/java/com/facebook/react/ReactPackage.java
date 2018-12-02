@@ -1,21 +1,17 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react;
 
-import java.util.List;
-
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
+import java.util.List;
 
 /**
  * Main interface for providing additional capabilities to the catalyst framework by couple of
@@ -37,15 +33,6 @@ public interface ReactPackage {
    * @return list of native modules to register with the newly created catalyst instance
    */
   List<NativeModule> createNativeModules(ReactApplicationContext reactContext);
-
-  /**
-   * @return list of JS modules to register with the newly created catalyst instance.
-   *
-   * IMPORTANT: Note that only modules that needs to be accessible from the native code should be
-   * listed here. Also listing a native module here doesn't imply that the JS implementation of it
-   * will be automatically included in the JS bundle.
-   */
-  List<Class<? extends JavaScriptModule>> createJSModules();
 
   /**
    * @return a list of view managers that should be registered with {@link UIManagerModule}

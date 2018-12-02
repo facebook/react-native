@@ -1,13 +1,13 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.bridge.queue;
+
+import android.os.Build;
 
 import javax.annotation.Nullable;
 
@@ -21,12 +21,14 @@ import com.facebook.infer.annotation.Assertions;
  */
 public class ReactQueueConfigurationSpec {
 
+  private static final long LEGACY_STACK_SIZE_BYTES = 2000000;
+
   private final MessageQueueThreadSpec mNativeModulesQueueThreadSpec;
   private final MessageQueueThreadSpec mJSQueueThreadSpec;
 
   private ReactQueueConfigurationSpec(
-      MessageQueueThreadSpec nativeModulesQueueThreadSpec,
-      MessageQueueThreadSpec jsQueueThreadSpec) {
+    MessageQueueThreadSpec nativeModulesQueueThreadSpec,
+    MessageQueueThreadSpec jsQueueThreadSpec) {
     mNativeModulesQueueThreadSpec = nativeModulesQueueThreadSpec;
     mJSQueueThreadSpec = jsQueueThreadSpec;
   }
@@ -44,10 +46,12 @@ public class ReactQueueConfigurationSpec {
   }
 
   public static ReactQueueConfigurationSpec createDefault() {
+    MessageQueueThreadSpec spec = Build.VERSION.SDK_INT < 21 ?
+        MessageQueueThreadSpec.newBackgroundThreadSpec("native_modules", LEGACY_STACK_SIZE_BYTES) :
+        MessageQueueThreadSpec.newBackgroundThreadSpec("native_modules");
     return builder()
         .setJSQueueThreadSpec(MessageQueueThreadSpec.newBackgroundThreadSpec("js"))
-        .setNativeModulesQueueThreadSpec(
-            MessageQueueThreadSpec.newBackgroundThreadSpec("native_modules"))
+        .setNativeModulesQueueThreadSpec(spec)
         .build();
   }
 
@@ -58,8 +62,8 @@ public class ReactQueueConfigurationSpec {
 
     public Builder setNativeModulesQueueThreadSpec(MessageQueueThreadSpec spec) {
       Assertions.assertCondition(
-          mNativeModulesQueueSpec == null,
-          "Setting native modules queue spec multiple times!");
+        mNativeModulesQueueSpec == null,
+        "Setting native modules queue spec multiple times!");
       mNativeModulesQueueSpec = spec;
       return this;
     }
@@ -72,8 +76,8 @@ public class ReactQueueConfigurationSpec {
 
     public ReactQueueConfigurationSpec build() {
       return new ReactQueueConfigurationSpec(
-          Assertions.assertNotNull(mNativeModulesQueueSpec),
-          Assertions.assertNotNull(mJSQueueSpec));
+        Assertions.assertNotNull(mNativeModulesQueueSpec),
+        Assertions.assertNotNull(mJSQueueSpec));
     }
   }
 }

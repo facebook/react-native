@@ -1,18 +1,20 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.uimanager;
 
-import java.util.List;
-import java.util.Map;
+import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 import com.facebook.react.common.MapBuilder;
+import com.facebook.react.config.ReactFeatureFlags;
+import com.facebook.systrace.SystraceMessage;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * Helps generate constants map for {@link UIManagerModule} by collecting and merging constants from
@@ -20,14 +22,36 @@ import com.facebook.react.common.MapBuilder;
  */
 /* package */ class UIManagerModuleConstantsHelper {
 
-  private static final String CUSTOM_BUBBLING_EVENT_TYPES_KEY = "customBubblingEventTypes";
-  private static final String CUSTOM_DIRECT_EVENT_TYPES_KEY = "customDirectEventTypes";
+  private static final String BUBBLING_EVENTS_KEY = "bubblingEventTypes";
+  private static final String DIRECT_EVENTS_KEY = "directEventTypes";
 
   /**
-   * Generates map of constants that is then exposed by {@link UIManagerModule}. The constants map
-   * contains the following predefined fields for 'customBubblingEventTypes' and
-   * 'customDirectEventTypes'. Provided list of {@param viewManagers} is then used to populate
-   * content of those predefined fields using
+   * Generates a lazy discovery enabled version of {@link UIManagerModule} constants. It only
+   * contains a list of view manager names, so that JS side is aware of the managers there are.
+   * Actual ViewManager instantiation happens when
+   * {@code UIManager.getViewManagerConfig('SpecificViewManager')} call happens. The View Manager is then
+   * registered on the JS side with the help of {@code UIManagerModule.getConstantsForViewManager}.
+   */
+  /* package */ static Map<String, Object> createConstants(
+      UIManagerModule.ViewManagerResolver resolver) {
+    Map<String, Object> constants = UIManagerModuleConstants.getConstants();
+    if (!ReactFeatureFlags.lazilyLoadViewManagers) {
+      constants.put("ViewManagerNames", resolver.getViewManagerNames());
+    }
+    constants.put("LazyViewManagersEnabled", true);
+    return constants;
+  }
+
+  /* package */ static Map<String, Object> getDefaultExportableEventTypes() {
+    return MapBuilder.<String, Object>of(
+        BUBBLING_EVENTS_KEY, UIManagerModuleConstants.getBubblingEventTypeConstants(),
+        DIRECT_EVENTS_KEY, UIManagerModuleConstants.getDirectEventTypeConstants());
+  }
+
+  /**
+   * Generates map of constants that is then exposed by {@link UIManagerModule}.
+   * Provided list of {@param viewManagers} is then used to populate content of
+   * those predefined fields using
    * {@link ViewManager#getExportedCustomBubblingEventTypeConstants} and
    * {@link ViewManager#getExportedCustomDirectEventTypeConstants} respectively. Each view manager
    * is in addition allowed to expose viewmanager-specific constants that are placed under the key
@@ -36,48 +60,107 @@ import com.facebook.react.common.MapBuilder;
    * {@link UIManagerModuleConstants}.
    * TODO(6845124): Create a test for this
    */
-  /* package */ static Map<String, Object> createConstants(List<ViewManager> viewManagers) {
+  /* package */ static Map<String, Object> createConstants(
+        List<ViewManager> viewManagers,
+        @Nullable Map<String, Object> allBubblingEventTypes,
+        @Nullable Map<String, Object> allDirectEventTypes) {
     Map<String, Object> constants = UIManagerModuleConstants.getConstants();
-    Map bubblingEventTypesConstants = UIManagerModuleConstants.getBubblingEventTypeConstants();
-    Map directEventTypesConstants = UIManagerModuleConstants.getDirectEventTypeConstants();
+
+    // Generic/default event types:
+    // All view managers are capable of dispatching these events.
+    // They will be automatically registered with React Fiber.
+    Map genericBubblingEventTypes = UIManagerModuleConstants.getBubblingEventTypeConstants();
+    Map genericDirectEventTypes = UIManagerModuleConstants.getDirectEventTypeConstants();
+
+    // Cumulative event types:
+    // View manager specific event types are collected as views are loaded.
+    // This information is used later when events are dispatched.
+    if (allBubblingEventTypes != null) {
+      allBubblingEventTypes.putAll(genericBubblingEventTypes);
+    }
+    if (allDirectEventTypes != null) {
+      allDirectEventTypes.putAll(genericDirectEventTypes);
+    }
 
     for (ViewManager viewManager : viewManagers) {
-      Map viewManagerBubblingEvents = viewManager.getExportedCustomBubblingEventTypeConstants();
-      if (viewManagerBubblingEvents != null) {
-        recursiveMerge(bubblingEventTypesConstants, viewManagerBubblingEvents);
-      }
-      Map viewManagerDirectEvents = viewManager.getExportedCustomDirectEventTypeConstants();
-      if (viewManagerDirectEvents != null) {
-        recursiveMerge(directEventTypesConstants, viewManagerDirectEvents);
-      }
-      Map viewManagerConstants = MapBuilder.newHashMap();
-      Map customViewConstants = viewManager.getExportedViewConstants();
-      if (customViewConstants != null) {
-        viewManagerConstants.put("Constants", customViewConstants);
-      }
-      Map viewManagerCommands = viewManager.getCommandsMap();
-      if (viewManagerCommands != null) {
-        viewManagerConstants.put("Commands", viewManagerCommands);
-      }
-      Map<String, String> viewManagerNativeProps = viewManager.getNativeProps();
-      if (!viewManagerNativeProps.isEmpty()) {
-        viewManagerConstants.put("NativeProps", viewManagerNativeProps);
-      }
-      if (!viewManagerConstants.isEmpty()) {
-        constants.put(viewManager.getName(), viewManagerConstants);
+      final String viewManagerName = viewManager.getName();
+
+      SystraceMessage.beginSection(
+              TRACE_TAG_REACT_JAVA_BRIDGE, "UIManagerModuleConstantsHelper.createConstants")
+          .arg("ViewManager", viewManagerName)
+          .arg("Lazy", false)
+          .flush();
+
+      try {
+        Map viewManagerConstants = createConstantsForViewManager(
+            viewManager,
+            null,
+            null,
+            allBubblingEventTypes,
+            allDirectEventTypes);
+        if (!viewManagerConstants.isEmpty()) {
+          constants.put(viewManagerName, viewManagerConstants);
+        }
+      } finally {
+        SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
       }
     }
 
-    constants.put(CUSTOM_BUBBLING_EVENT_TYPES_KEY, bubblingEventTypesConstants);
-    constants.put(CUSTOM_DIRECT_EVENT_TYPES_KEY, directEventTypesConstants);
-
+    constants.put("genericBubblingEventTypes", genericBubblingEventTypes);
+    constants.put("genericDirectEventTypes", genericDirectEventTypes);
     return constants;
+  }
+
+  /* package */ static Map<String, Object> createConstantsForViewManager(
+      ViewManager viewManager,
+      @Nullable Map defaultBubblingEvents,
+      @Nullable Map defaultDirectEvents,
+      @Nullable Map cumulativeBubblingEventTypes,
+      @Nullable Map cumulativeDirectEventTypes) {
+    Map<String, Object> viewManagerConstants = MapBuilder.newHashMap();
+
+    Map viewManagerBubblingEvents = viewManager.getExportedCustomBubblingEventTypeConstants();
+    if (viewManagerBubblingEvents != null) {
+      recursiveMerge(cumulativeBubblingEventTypes, viewManagerBubblingEvents);
+      recursiveMerge(viewManagerBubblingEvents, defaultBubblingEvents);
+      viewManagerConstants.put(BUBBLING_EVENTS_KEY, viewManagerBubblingEvents);
+    } else if (defaultBubblingEvents != null) {
+      viewManagerConstants.put(BUBBLING_EVENTS_KEY, defaultBubblingEvents);
+    }
+
+    Map viewManagerDirectEvents = viewManager.getExportedCustomDirectEventTypeConstants();
+    if (viewManagerDirectEvents != null) {
+      recursiveMerge(cumulativeDirectEventTypes, viewManagerDirectEvents);
+      recursiveMerge(viewManagerDirectEvents, defaultDirectEvents);
+      viewManagerConstants.put(DIRECT_EVENTS_KEY, viewManagerDirectEvents);
+    } else if (defaultDirectEvents != null) {
+      viewManagerConstants.put(DIRECT_EVENTS_KEY, defaultDirectEvents);
+    }
+
+    Map customViewConstants = viewManager.getExportedViewConstants();
+    if (customViewConstants != null) {
+      viewManagerConstants.put("Constants", customViewConstants);
+    }
+    Map viewManagerCommands = viewManager.getCommandsMap();
+    if (viewManagerCommands != null) {
+      viewManagerConstants.put("Commands", viewManagerCommands);
+    }
+    Map<String, String> viewManagerNativeProps = viewManager.getNativeProps();
+    if (!viewManagerNativeProps.isEmpty()) {
+      viewManagerConstants.put("NativeProps", viewManagerNativeProps);
+    }
+
+    return viewManagerConstants;
   }
 
   /**
    * Merges {@param source} map into {@param dest} map recursively
    */
-  private static void recursiveMerge(Map dest, Map source) {
+  private static void recursiveMerge(@Nullable Map dest, @Nullable Map source) {
+    if (dest == null || source == null || source.isEmpty()) {
+      return;
+    }
+
     for (Object key : source.keySet()) {
       Object sourceValue = source.get(key);
       Object destValue = dest.get(key);

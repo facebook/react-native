@@ -9,7 +9,7 @@ Make sure you have the following installed:
 - Android Support Repository 17 (for Android Support Library)
 
 Follow steps on https://github.com/facebook/react-native/blob/master/react-native-cli/CONTRIBUTING.md, but be sure to bump the version of react-native in package.json to some version > 0.9 (latest published npm version) or set up proxying properly for react-native
-  
+
 - From the react-native-android repo:
   - `./gradlew :ReactAndroid:installArchives`
   - *Assuming you already have android-jsc installed to local maven repo, no steps included here*

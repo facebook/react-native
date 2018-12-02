@@ -1,36 +1,33 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.uimanager;
 
-import javax.annotation.Nullable;
-
-import com.facebook.react.uimanager.annotations.ReactProp;
-import com.facebook.react.uimanager.annotations.ReactPropGroup;
-
-import org.junit.Before;
-import org.junit.runner.RunWith;
-import org.junit.Rule;
-import org.junit.Test;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.modules.junit4.rule.PowerMockRule;
-import org.robolectric.RobolectricTestRunner;
-
-import static com.facebook.react.uimanager.ReactPropAnnotationSetterTest.ViewManagerUpdatesReceiver;
-import static com.facebook.react.uimanager.ReactPropAnnotationSetterTest.buildStyles;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import com.facebook.react.bridge.JavaOnlyMap;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactPropGroup;
+import javax.annotation.Nullable;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.modules.junit4.rule.PowerMockRule;
+import org.robolectric.RobolectricTestRunner;
+
 /**
- * Test {@link ReactProp} annotation for {@link ReactShadowNode}. More comprahensive test of this
+ * Test {@link ReactProp} annotation for {@link ReactShadowNode}. More comprehensive test of this
  * annotation can be found in {@link ReactPropAnnotationSetterTest} where we test all possible types
  * of properties to be updated.
  */
@@ -41,7 +38,26 @@ public class ReactPropForShadowNodeSetterTest {
   @Rule
   public PowerMockRule rule = new PowerMockRule();
 
-  private class ShadowViewUnderTest extends ReactShadowNode {
+  public interface ViewManagerUpdatesReceiver {
+    void onBooleanSetterCalled(boolean value);
+    void onIntSetterCalled(int value);
+    void onDoubleSetterCalled(double value);
+    void onFloatSetterCalled(float value);
+    void onStringSetterCalled(String value);
+    void onBoxedBooleanSetterCalled(Boolean value);
+    void onBoxedIntSetterCalled(Integer value);
+    void onArraySetterCalled(ReadableArray value);
+    void onMapSetterCalled(ReadableMap value);
+    void onFloatGroupPropSetterCalled(int index, float value);
+    void onIntGroupPropSetterCalled(int index, int value);
+    void onBoxedIntGroupPropSetterCalled(int index, Integer value);
+  }
+
+  public static ReactStylesDiffMap buildStyles(Object... keysAndValues) {
+    return new ReactStylesDiffMap(JavaOnlyMap.of(keysAndValues));
+  }
+
+  private class ShadowViewUnderTest extends ReactShadowNodeImpl {
 
     private ViewManagerUpdatesReceiver mViewManagerUpdatesReceiver;
 
@@ -65,8 +81,8 @@ public class ReactPropForShadowNodeSetterTest {
     }
 
     @ReactPropGroup(names = {
-        "floatGroupPropFirst",
-        "floatGroupPropSecond",
+      "floatGroupPropFirst",
+      "floatGroupPropSecond",
     })
     public void setFloatGroupProp(int index, float value) {
       mViewManagerUpdatesReceiver.onFloatGroupPropSetterCalled(index, value);

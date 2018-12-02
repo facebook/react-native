@@ -1,16 +1,16 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Clipboard
+ * @format
+ * @flow strict-local
  */
+
 'use strict';
 
-var Clipboard = require('NativeModules').Clipboard;
+const Clipboard = require('NativeModules').Clipboard;
 
 /**
  * `Clipboard` gives you an interface for setting and getting content from Clipboard on both iOS and Android
@@ -24,13 +24,7 @@ module.exports = {
    * }
    * ```
    */
-  getString() {
-    if (arguments.length > 0) {
-      let callback = arguments[0];
-      console.warn('Clipboard.getString(callback) is deprecated. Use the returned Promise instead');
-      Clipboard.getString().then(callback);
-      return;
-    }
+  getString(): Promise<string> {
     return Clipboard.getString();
   },
   /**
@@ -42,7 +36,7 @@ module.exports = {
    * ```
    * @param the content to be stored in the clipboard.
    */
-  setString(content) {
+  setString(content: string) {
     Clipboard.setString(content);
-  }
+  },
 };

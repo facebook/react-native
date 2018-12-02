@@ -1,71 +1,66 @@
-include_defs('//ReactAndroid/DEFS')
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "IS_OSS_BUILD", "react_native_xplat_dep", "react_native_xplat_target", "rn_xplat_cxx_library")
 
-# We depend on JSC, support the same platforms
-SUPPORTED_PLATFORMS = '^android-(armv7|x86)$'
-
-DEPS = [
-  '//native/jni:jni',
-  '//native/third-party/android-ndk:android',
-  '//xplat/folly:molly',
+EXPORTED_HEADERS = [
+    "CxxModuleWrapper.h",
+    "CxxModuleWrapperBase.h",
+    "CxxSharedModuleWrapper.h",
+    "JavaModuleWrapper.h",
+    "JavaScriptExecutorHolder.h",
+    "JMessageQueueThread.h",
+    "JReactMarker.h",
+    "JSLoader.h",
+    "JSLogging.h",
+    "MethodInvoker.h",
+    "ModuleRegistryBuilder.h",
+    "NativeArray.h",
+    "NativeCommon.h",
+    "NativeMap.h",
+    "ReadableNativeArray.h",
+    "ReadableNativeMap.h",
+    "WritableNativeArray.h",
+    "WritableNativeMap.h",
 ]
 
-def jni_library(**kwargs):
-  cxx_library(
-    name='jni',
+rn_xplat_cxx_library(
+    name = "jni",
+    srcs = glob(["*.cpp"]),
+    headers = glob(
+        ["*.h"],
+        exclude = EXPORTED_HEADERS,
+    ),
+    header_namespace = "react/jni",
+    exported_headers = EXPORTED_HEADERS,
+    compiler_flags = [
+        "-Wall",
+        "-Werror",
+        "-fexceptions",
+        "-std=c++1y",
+        "-frtti",
+        "-Wno-pessimizing-move",
+        "-Wno-inconsistent-missing-override",
+    ],
+    fbandroid_allow_jni_merging = True,
+    platforms = ANDROID,
+    preprocessor_flags = [
+        "-DLOG_TAG=\"ReactNativeJNI\"",
+        "-DWITH_FBSYSTRACE=1",
+        "-DWITH_INSPECTOR=1",
+    ],
+    soname = "libreactnativejni.$(ext)",
     visibility = [
-      'PUBLIC',
+        "PUBLIC",
     ],
-    deps = DEPS + [
-      react_native_target('jni/react:react'),
-      '//native/third-party/jsc:jsc',
-      '//native/third-party/jsc:jsc_legacy_profiler',
-    ],
-    **kwargs
-  )
-
-jni_library(
-  soname = 'libreactnativejni.so',
-  header_namespace = 'react/jni',
-  supported_platforms_regex = SUPPORTED_PLATFORMS,
-  srcs = [
-    'JMessageQueueThread.cpp',
-    'JSCPerfLogging.cpp',
-    'JSLoader.cpp',
-    'JniJSModulesUnbundle.cpp',
-    'NativeArray.cpp',
-    'OnLoad.cpp',
-    'ProxyExecutor.cpp',
-    'JSLogging.cpp',
-  ],
-  headers = [
-    'JSLoader.h',
-    'ProxyExecutor.h',
-    'JMessageQueueThread.h',
-    'JNativeRunnable.h',
-    'JniJSModulesUnbundle.h',
-    'JSCPerfLogging.h',
-    'JSLogging.h',
-  ],
-  exported_headers = [
-    'NativeArray.h',
-    'ReadableNativeArray.h',
-    'WebWorkers.h',
-  ],
-  preprocessor_flags = [
-    '-DLOG_TAG="ReactNativeJNI"',
-    '-DWITH_FBSYSTRACE=1',
-    '-DWITH_FBJSCEXTENSIONS=1',
-  ],
-  compiler_flags = [
-    '-Wall',
-    '-Werror',
-    '-fexceptions',
-    '-std=c++11',
-    '-fvisibility=hidden',
-    '-frtti',
-  ],
-)
-
-project_config(
-  src_target = ':jni',
+    deps = ([
+        "xplat//third-party/linker_lib:android",
+        "xplat//third-party/linker_lib:atomic",
+        "xplat//folly:molly",
+        "fbandroid//xplat/fbgloginit:fbgloginit",
+        "xplat//fbsystrace:fbsystrace",
+        react_native_xplat_target("cxxreact:bridge"),
+        react_native_xplat_target("cxxreact:jsbigstring"),
+        react_native_xplat_target("cxxreact:module"),
+        react_native_xplat_target("jsinspector:jsinspector"),
+        react_native_xplat_dep("jsi:jsi"),
+        FBJNI_TARGET,
+    ]) if not IS_OSS_BUILD else [],
 )

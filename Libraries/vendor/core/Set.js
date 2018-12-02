@@ -1,28 +1,24 @@
 /**
- * @generated SignedSource<<1fe20877e83ba5d4d0ea68ab240df21c>>
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * !! This file is a check-in of a static_upstream project!      !!
- * !!                                                            !!
- * !! You should not modify this file directly. Instead:         !!
- * !! 1) Use `fjs use-upstream` to temporarily replace this with !!
- * !!    the latest version from upstream.                       !!
- * !! 2) Make your changes, test them, etc.                      !!
- * !! 3) Use `fjs push-upstream` to copy your changes back to    !!
- * !!    static_upstream.                                        !!
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * Copyright 2013-2014 Facebook, Inc.
- * @providesModule Set
+ * @format
  * @preventMunge
  * @typechecks
  */
 
-var Map = require('Map');
-var toIterator = require('toIterator');
-var _shouldPolyfillES6Collection = require('_shouldPolyfillES6Collection');
+/* eslint-disable no-extend-native */
 
-module.exports = (function(global, undefined) {
+'use strict';
+
+const Map = require('Map');
+
+const _shouldPolyfillES6Collection = require('_shouldPolyfillES6Collection');
+const toIterator = require('toIterator');
+
+module.exports = (function(global) {
   // Since our implementation is spec-compliant for the most part we can safely
   // delegate to a built-in version if exists and is implemented correctly.
   // Firefox had gotten a few implementation details wrong across different
@@ -74,7 +70,6 @@ module.exports = (function(global, undefined) {
    */
 
   class Set {
-
     /**
      * 23.2.1.1
      *
@@ -85,16 +80,18 @@ module.exports = (function(global, undefined) {
      * @param {*} iterable
      */
     constructor(iterable) {
-      if (this == null ||
-          (typeof this !== 'object' && typeof this !== 'function')) {
+      if (
+        this == null ||
+        (typeof this !== 'object' && typeof this !== 'function')
+      ) {
         throw new TypeError('Wrong set object type.');
       }
 
       initSet(this);
 
       if (iterable != null) {
-        var it = toIterator(iterable);
-        var next;
+        const it = toIterator(iterable);
+        let next;
         while (!(next = it.next()).done) {
           this.add(next.value);
         }
@@ -134,7 +131,7 @@ module.exports = (function(global, undefined) {
      * @return {boolean}
      */
     delete(value) {
-      var ret = this._map.delete(value);
+      const ret = this._map.delete(value);
       this.size = this._map.size;
       return ret;
     }
@@ -156,9 +153,9 @@ module.exports = (function(global, undefined) {
      * @param {function} callback
      */
     forEach(callback) {
-      var thisArg = arguments[1];
-      var it = this._map.keys();
-      var next;
+      const thisArg = arguments[1];
+      const it = this._map.keys();
+      let next;
       while (!(next = it.next()).done) {
         callback.call(thisArg, next.value, next.value, this);
       }
@@ -198,4 +195,4 @@ module.exports = (function(global, undefined) {
   }
 
   return Set;
-})(/* jslint evil: true */ Function('return this')());
+})(Function('return this')()); // eslint-disable-line no-new-func

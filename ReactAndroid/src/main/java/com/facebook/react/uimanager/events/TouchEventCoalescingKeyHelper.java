@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.uimanager.events;
@@ -46,31 +44,31 @@ import android.util.SparseIntArray;
  */
 public class TouchEventCoalescingKeyHelper {
 
-  private static final SparseIntArray sDownTimeToCoalescingKey = new SparseIntArray();
+  private final SparseIntArray mDownTimeToCoalescingKey = new SparseIntArray();
 
   /**
    * Starts tracking a new coalescing key corresponding to the gesture with this down time.
    */
-  public static void addCoalescingKey(long downTime) {
-    sDownTimeToCoalescingKey.put((int) downTime, 0);
+  public void addCoalescingKey(long downTime) {
+    mDownTimeToCoalescingKey.put((int) downTime, 0);
   }
 
   /**
    * Increments the coalescing key corresponding to the gesture with this down time.
    */
-  public static void incrementCoalescingKey(long downTime) {
-    int currentValue = sDownTimeToCoalescingKey.get((int) downTime, -1);
+  public void incrementCoalescingKey(long downTime) {
+    int currentValue = mDownTimeToCoalescingKey.get((int) downTime, -1);
     if (currentValue == -1) {
       throw new RuntimeException("Tried to increment non-existent cookie");
     }
-    sDownTimeToCoalescingKey.put((int) downTime, currentValue + 1);
+    mDownTimeToCoalescingKey.put((int) downTime, currentValue + 1);
   }
 
   /**
    * Gets the coalescing key corresponding to the gesture with this down time.
    */
-  public static short getCoalescingKey(long downTime) {
-    int currentValue = sDownTimeToCoalescingKey.get((int) downTime, -1);
+  public short getCoalescingKey(long downTime) {
+    int currentValue = mDownTimeToCoalescingKey.get((int) downTime, -1);
     if (currentValue == -1) {
       throw new RuntimeException("Tried to get non-existent cookie");
     }
@@ -80,7 +78,15 @@ public class TouchEventCoalescingKeyHelper {
   /**
    * Stops tracking a new coalescing key corresponding to the gesture with this down time.
    */
-  public static void removeCoalescingKey(long downTime) {
-    sDownTimeToCoalescingKey.delete((int) downTime);
+  public void removeCoalescingKey(long downTime) {
+    mDownTimeToCoalescingKey.delete((int) downTime);
+  }
+
+  public boolean hasCoalescingKey(long downTime) {
+    int currentValue = mDownTimeToCoalescingKey.get((int) downTime, -1);
+    if (currentValue == -1) {
+      return false;
+    }
+    return true;
   }
 }

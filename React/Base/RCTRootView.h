@@ -1,15 +1,13 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <UIKit/UIKit.h>
 
-#import "RCTBridge.h"
+#import <React/RCTBridge.h>
 
 @protocol RCTRootViewDelegate;
 
@@ -21,10 +19,10 @@
  * rootViewDidChangeIntrinsicSize method of the RCTRootViewDelegate will be called.
  */
 typedef NS_ENUM(NSInteger, RCTRootViewSizeFlexibility) {
-  RCTRootViewSizeFlexibilityNone = 0,
-  RCTRootViewSizeFlexibilityWidth,
-  RCTRootViewSizeFlexibilityHeight,
-  RCTRootViewSizeFlexibilityWidthAndHeight,
+  RCTRootViewSizeFlexibilityNone           = 0,
+  RCTRootViewSizeFlexibilityWidth          = 1 << 0,
+  RCTRootViewSizeFlexibilityHeight         = 1 << 1,
+  RCTRootViewSizeFlexibilityWidthAndHeight = RCTRootViewSizeFlexibilityWidth | RCTRootViewSizeFlexibilityHeight,
 };
 
 /**
@@ -32,7 +30,12 @@ typedef NS_ENUM(NSInteger, RCTRootViewSizeFlexibility) {
  * after the application has loaded. This is used to hide the `loadingView`, and
  * is a good indicator that the application is ready to use.
  */
-extern NSString *const RCTContentDidAppearNotification;
+#if defined(__cplusplus)
+extern "C"
+#else
+extern
+#endif
+NSString *const RCTContentDidAppearNotification;
 
 /**
  * Native view used to host React-managed views within the app. Can be used just
@@ -60,6 +63,7 @@ extern NSString *const RCTContentDidAppearNotification;
                 initialProperties:(NSDictionary *)initialProperties
                     launchOptions:(NSDictionary *)launchOptions;
 
+
 /**
  * The name of the JavaScript module to execute within the
  * specified scriptURL (required). Setting this will not have
@@ -84,22 +88,9 @@ extern NSString *const RCTContentDidAppearNotification;
 @property (nonatomic, copy, readwrite) NSDictionary *appProperties;
 
 /**
- * The class of the RCTJavaScriptExecutor to use with this view.
- * If not specified, it will default to using RCTJSCExecutor.
- * Changes will take effect next time the bundle is reloaded.
- */
-@property (nonatomic, strong) Class executorClass;
-
-/**
  * The size flexibility mode of the root view.
  */
 @property (nonatomic, assign) RCTRootViewSizeFlexibility sizeFlexibility;
-
-/**
- * The size of the root view's content. This is set right before the
- * rootViewDidChangeIntrinsicSize method of RCTRootViewDelegate is called.
- */
-@property (readonly, nonatomic, assign) CGSize intrinsicSize;
 
 /**
  * The delegate that handles intrinsic size updates.
@@ -125,8 +116,8 @@ extern NSString *const RCTContentDidAppearNotification;
 
 /**
  * Calling this will result in emitting a "touches cancelled" event to js,
- * which effectively cancels all js "gesture recognizers" such as as touchable
- * (unless they explicitely ignore cancellation events, but noone should do that).
+ * which effectively cancels all js "gesture recognizers" such as touchable components
+ * (unless they explicitely ignore cancellation events, but no one should do that).
  *
  * This API is exposed for integration purposes where you embed RN rootView
  * in a native view with a native gesture recognizer,
@@ -143,10 +134,35 @@ extern NSString *const RCTContentDidAppearNotification;
 - (void)cancelTouches;
 
 /**
+ * When set, any touches on the RCTRootView that are not matched up to any of the child
+ * views will be passed to siblings of the RCTRootView. See -[UIView hitTest:withEvent:]
+ * for details on iOS hit testing.
+ *
+ * Enable this to support a semi-transparent RN view that occupies the whole screen but
+ * has visible content below it that the user can interact with.
+ *
+ * The default value is NO.
+ */
+@property (nonatomic, assign) BOOL passThroughTouches;
+
+/**
  * Timings for hiding the loading view after the content has loaded. Both of
  * these values default to 0.25 seconds.
  */
 @property (nonatomic, assign) NSTimeInterval loadingViewFadeDelay;
 @property (nonatomic, assign) NSTimeInterval loadingViewFadeDuration;
+
+@end
+
+@interface RCTRootView (Deprecated)
+
+/**
+ * The intrinsic size of the root view's content. This is set right before the
+ * `rootViewDidChangeIntrinsicSize` method of `RCTRootViewDelegate` is called.
+ * This property is deprecated and will be removed in next releases.
+ * Use UIKit `intrinsicContentSize` propery instead.
+ */
+@property (readonly, nonatomic, assign) CGSize intrinsicSize
+__deprecated_msg("Use `intrinsicContentSize` instead.");
 
 @end

@@ -1,14 +1,12 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTBridgeModule.h"
-#import "RCTURLRequestDelegate.h"
+#import <React/RCTBridgeModule.h>
+#import <React/RCTURLRequestDelegate.h>
 
 /**
  * Provides the interface needed to register a request handler. Request handlers
@@ -29,6 +27,7 @@
  * itself. This will be used later to refer to the request in callbacks. The
  * `sendRequest:withDelegate:` method *must* return before calling any of the
  * delegate methods, or the delegate won't recognize the token.
+ * Following common Objective-C pattern, `delegate` will not be retained.
  */
 - (id)sendRequest:(NSURLRequest *)request
      withDelegate:(id<RCTURLRequestDelegate>)delegate;

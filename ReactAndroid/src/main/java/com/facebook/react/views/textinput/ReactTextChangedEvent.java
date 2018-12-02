@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.textinput;
@@ -23,21 +21,14 @@ public class ReactTextChangedEvent extends Event<ReactTextChangedEvent> {
   public static final String EVENT_NAME = "topChange";
 
   private String mText;
-  private int mContentWidth;
-  private int mContentHeight;
   private int mEventCount;
 
   public ReactTextChangedEvent(
       int viewId,
-      long timestampMs,
       String text,
-      int contentSizeWidth,
-      int contentSizeHeight,
       int eventCount) {
-    super(viewId, timestampMs);
+    super(viewId);
     mText = text;
-    mContentWidth = contentSizeWidth;
-    mContentHeight = contentSizeHeight;
     mEventCount = eventCount;
   }
 
@@ -54,13 +45,7 @@ public class ReactTextChangedEvent extends Event<ReactTextChangedEvent> {
   private WritableMap serializeEventData() {
     WritableMap eventData = Arguments.createMap();
     eventData.putString("text", mText);
-
-    WritableMap contentSize = Arguments.createMap();
-    contentSize.putDouble("width", mContentWidth);
-    contentSize.putDouble("height", mContentHeight);
-    eventData.putMap("contentSize", contentSize);
     eventData.putInt("eventCount", mEventCount);
-
     eventData.putInt("target", getViewTag());
     return eventData;
   }

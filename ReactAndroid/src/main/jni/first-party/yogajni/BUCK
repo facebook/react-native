@@ -1,0 +1,22 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "FBJNI_TARGET", "oss_cxx_library")
+
+# This target is only used in open source
+oss_cxx_library(
+    name = "jni",
+    srcs = glob(["jni/*.cpp"]),
+    header_namespace = "",
+    compiler_flags = [
+        "-fno-omit-frame-pointer",
+        "-fexceptions",
+        "-Wall",
+        "-Werror",
+        "-O3",
+        "-std=c++11",
+    ],
+    soname = "libyoga.$(ext)",
+    visibility = ["PUBLIC"],
+    deps = [
+        "//ReactCommon/yoga:yoga",
+        FBJNI_TARGET,
+    ],
+)

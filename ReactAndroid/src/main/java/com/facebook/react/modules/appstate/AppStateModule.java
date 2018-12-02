@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.modules.appstate;
@@ -16,10 +14,14 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
+@ReactModule(name = AppStateModule.NAME)
 public class AppStateModule extends ReactContextBaseJavaModule
         implements LifecycleEventListener {
+
+  protected static final String NAME = "AppState";
 
   public static final String APP_STATE_ACTIVE = "active";
   public static final String APP_STATE_BACKGROUND = "background";
@@ -32,7 +34,7 @@ public class AppStateModule extends ReactContextBaseJavaModule
 
   @Override
   public String getName() {
-    return "AppState";
+    return NAME;
   }
 
   @Override

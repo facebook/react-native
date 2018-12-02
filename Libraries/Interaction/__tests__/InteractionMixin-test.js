@@ -1,17 +1,24 @@
 /**
- * Copyright 2004-present Facebook. All Rights Reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @emails oncall+react_native
  */
+
 'use strict';
 
-jest.dontMock('InteractionMixin');
+jest.mock('InteractionManager');
 
 describe('InteractionMixin', () => {
-  var InteractionManager;
-  var InteractionMixin;
-  var component;
+  let InteractionManager;
+  let InteractionMixin;
+  let component;
 
   beforeEach(() => {
-    jest.resetModuleRegistry();
+    jest.resetModules();
     InteractionManager = require('InteractionManager');
     InteractionMixin = require('InteractionMixin');
 
@@ -19,25 +26,24 @@ describe('InteractionMixin', () => {
   });
 
   it('should start interactions', () => {
-    var timeout = 123;
-    component.createInteractionHandle(timeout);
-    expect(InteractionManager.createInteractionHandle).toBeCalled(timeout);
+    component.createInteractionHandle();
+    expect(InteractionManager.createInteractionHandle).toBeCalled();
   });
 
   it('should end interactions', () => {
-    var handle = {};
+    const handle = {};
     component.clearInteractionHandle(handle);
     expect(InteractionManager.clearInteractionHandle).toBeCalledWith(handle);
   });
 
   it('should schedule tasks', () => {
-    var task = jest.genMockFunction();
+    const task = jest.fn();
     component.runAfterInteractions(task);
     expect(InteractionManager.runAfterInteractions).toBeCalledWith(task);
   });
 
   it('should end unfinished interactions in componentWillUnmount', () => {
-    var handle = component.createInteractionHandle();
+    const handle = component.createInteractionHandle();
     component.componentWillUnmount();
     expect(InteractionManager.clearInteractionHandle).toBeCalledWith(handle);
   });

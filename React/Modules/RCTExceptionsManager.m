@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTExceptionsManager.h"
@@ -16,10 +14,6 @@
 #import "RCTRootView.h"
 
 @implementation RCTExceptionsManager
-{
-  __weak id<RCTExceptionsManagerDelegate> _delegate;
-  NSUInteger _reloadRetries;
-}
 
 @synthesize bridge = _bridge;
 
@@ -57,7 +51,7 @@ RCT_EXPORT_METHOD(reportFatalException:(NSString *)message
   static NSUInteger reloadRetries = 0;
   if (!RCT_DEBUG && reloadRetries < _maxReloadAttempts) {
     reloadRetries++;
-    [[NSNotificationCenter defaultCenter] postNotificationName:RCTReloadNotification object:nil];
+    [_bridge reload];
   } else {
     NSString *description = [@"Unhandled JS Exception: " stringByAppendingString:message];
     NSDictionary *errorInfo = @{ NSLocalizedDescriptionKey: description, RCTJSStackTraceKey: stack };

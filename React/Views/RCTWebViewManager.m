@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTWebViewManager.h"
@@ -36,31 +34,20 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_VIEW_PROPERTY(source, NSDictionary)
 RCT_REMAP_VIEW_PROPERTY(bounces, _webView.scrollView.bounces, BOOL)
 RCT_REMAP_VIEW_PROPERTY(scrollEnabled, _webView.scrollView.scrollEnabled, BOOL)
-RCT_REMAP_VIEW_PROPERTY(scalesPageToFit, _webView.scalesPageToFit, BOOL)
 RCT_REMAP_VIEW_PROPERTY(decelerationRate, _webView.scrollView.decelerationRate, CGFloat)
+RCT_EXPORT_VIEW_PROPERTY(scalesPageToFit, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(messagingEnabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(injectedJavaScript, NSString)
 RCT_EXPORT_VIEW_PROPERTY(contentInset, UIEdgeInsets)
 RCT_EXPORT_VIEW_PROPERTY(automaticallyAdjustContentInsets, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(onLoadingStart, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onLoadingFinish, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onLoadingError, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onMessage, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onShouldStartLoadWithRequest, RCTDirectEventBlock)
 RCT_REMAP_VIEW_PROPERTY(allowsInlineMediaPlayback, _webView.allowsInlineMediaPlayback, BOOL)
-
-- (NSDictionary<NSString *, id> *)constantsToExport
-{
-  return @{
-    @"JSNavigationScheme": RCTJSNavigationScheme,
-    @"NavigationType": @{
-      @"LinkClicked": @(UIWebViewNavigationTypeLinkClicked),
-      @"FormSubmitted": @(UIWebViewNavigationTypeFormSubmitted),
-      @"BackForward": @(UIWebViewNavigationTypeBackForward),
-      @"Reload": @(UIWebViewNavigationTypeReload),
-      @"FormResubmitted": @(UIWebViewNavigationTypeFormResubmitted),
-      @"Other": @(UIWebViewNavigationTypeOther)
-    },
-  };
-}
+RCT_REMAP_VIEW_PROPERTY(mediaPlaybackRequiresUserAction, _webView.mediaPlaybackRequiresUserAction, BOOL)
+RCT_REMAP_VIEW_PROPERTY(dataDetectorTypes, _webView.dataDetectorTypes, UIDataDetectorTypes)
 
 RCT_EXPORT_METHOD(goBack:(nonnull NSNumber *)reactTag)
 {
@@ -76,8 +63,8 @@ RCT_EXPORT_METHOD(goBack:(nonnull NSNumber *)reactTag)
 
 RCT_EXPORT_METHOD(goForward:(nonnull NSNumber *)reactTag)
 {
-  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-    id view = viewRegistry[reactTag];
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWebView *> *viewRegistry) {
+    RCTWebView *view = viewRegistry[reactTag];
     if (![view isKindOfClass:[RCTWebView class]]) {
       RCTLogError(@"Invalid view returned from registry, expecting RCTWebView, got: %@", view);
     } else {
@@ -94,6 +81,42 @@ RCT_EXPORT_METHOD(reload:(nonnull NSNumber *)reactTag)
       RCTLogError(@"Invalid view returned from registry, expecting RCTWebView, got: %@", view);
     } else {
       [view reload];
+    }
+  }];
+}
+
+RCT_EXPORT_METHOD(stopLoading:(nonnull NSNumber *)reactTag)
+{
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWebView *> *viewRegistry) {
+    RCTWebView *view = viewRegistry[reactTag];
+    if (![view isKindOfClass:[RCTWebView class]]) {
+      RCTLogError(@"Invalid view returned from registry, expecting RCTWebView, got: %@", view);
+    } else {
+      [view stopLoading];
+    }
+  }];
+}
+
+RCT_EXPORT_METHOD(postMessage:(nonnull NSNumber *)reactTag message:(NSString *)message)
+{
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWebView *> *viewRegistry) {
+    RCTWebView *view = viewRegistry[reactTag];
+    if (![view isKindOfClass:[RCTWebView class]]) {
+      RCTLogError(@"Invalid view returned from registry, expecting RCTWebView, got: %@", view);
+    } else {
+      [view postMessage:message];
+    }
+  }];
+}
+
+RCT_EXPORT_METHOD(injectJavaScript:(nonnull NSNumber *)reactTag script:(NSString *)script)
+{
+  [self.bridge.uiManager addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTWebView *> *viewRegistry) {
+    RCTWebView *view = viewRegistry[reactTag];
+    if (![view isKindOfClass:[RCTWebView class]]) {
+      RCTLogError(@"Invalid view returned from registry, expecting RCTWebView, got: %@", view);
+    } else {
+      [view injectJavaScript:script];
     }
   }];
 }
@@ -128,7 +151,7 @@ RCT_EXPORT_METHOD(startLoadWithResult:(BOOL)result lockIdentifier:(NSInteger)loc
     [_shouldStartLoadLock unlockWithCondition:0];
   } else {
     RCTLogWarn(@"startLoadWithResult invoked with invalid lockIdentifier: "
-               "got %zd, expected %zd", lockIdentifier, _shouldStartLoadLock.condition);
+               "got %lld, expected %lld", (long long)lockIdentifier, (long long)_shouldStartLoadLock.condition);
   }
 }
 

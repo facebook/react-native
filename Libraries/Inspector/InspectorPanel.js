@@ -1,73 +1,111 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule InspectorPanel
- * @flow
+ * @format
+ * @flow strict-local
  */
+
 'use strict';
 
-var React = require('React');
-var StyleSheet = require('StyleSheet');
-var Text = require('Text');
-var View = require('View');
-var ElementProperties = require('ElementProperties');
-var PerformanceOverlay = require('PerformanceOverlay');
-var TouchableHighlight = require('TouchableHighlight');
+const ElementProperties = require('ElementProperties');
+const NetworkOverlay = require('NetworkOverlay');
+const PerformanceOverlay = require('PerformanceOverlay');
+const React = require('React');
+const ScrollView = require('ScrollView');
+const StyleSheet = require('StyleSheet');
+const Text = require('Text');
+const TouchableHighlight = require('TouchableHighlight');
+const View = require('View');
 
-var PropTypes = React.PropTypes;
+import type {ViewStyleProp} from 'StyleSheet';
 
-class InspectorPanel extends React.Component {
+type Props = $ReadOnly<{|
+  devtoolsIsOpen: boolean,
+  inspecting: boolean,
+  setInspecting: (val: boolean) => void,
+  perfing: boolean,
+  setPerfing: (val: boolean) => void,
+  touchTargeting: boolean,
+  setTouchTargeting: (val: boolean) => void,
+  networking: boolean,
+  setNetworking: (val: boolean) => void,
+  hierarchy?: ?Array<{|name: string|}>,
+  selection?: ?number,
+  setSelection: number => mixed,
+  inspected?: ?$ReadOnly<{|
+    style?: ?ViewStyleProp,
+    frame?: ?$ReadOnly<{|
+      top?: ?number,
+      left?: ?number,
+      width?: ?number,
+      height: ?number,
+    |}>,
+    source?: ?{|
+      fileName?: string,
+      lineNumber?: number,
+    |},
+  |}>,
+|}>;
+
+class InspectorPanel extends React.Component<Props> {
   renderWaiting() {
     if (this.props.inspecting) {
       return (
-        <Text style={styles.waitingText}>
-          Tap something to inspect it
-        </Text>
+        <Text style={styles.waitingText}>Tap something to inspect it</Text>
       );
     }
     return <Text style={styles.waitingText}>Nothing is inspected</Text>;
   }
 
   render() {
-    var contents;
+    let contents;
     if (this.props.inspected) {
       contents = (
-        <ElementProperties
-          style={this.props.inspected.style}
-          frame={this.props.inspected.frame}
-          hierarchy={this.props.hierarchy}
-          selection={this.props.selection}
-          setSelection={this.props.setSelection}
-        />
+        <ScrollView style={styles.properties}>
+          <ElementProperties
+            style={this.props.inspected.style}
+            frame={this.props.inspected.frame}
+            source={this.props.inspected.source}
+            // $FlowFixMe: Hierarchy should be non-nullable
+            hierarchy={this.props.hierarchy}
+            selection={this.props.selection}
+            setSelection={this.props.setSelection}
+          />
+        </ScrollView>
       );
     } else if (this.props.perfing) {
-      contents = (
-        <PerformanceOverlay />
-      );
+      contents = <PerformanceOverlay />;
+    } else if (this.props.networking) {
+      contents = <NetworkOverlay />;
     } else {
-      contents = (
-        <View style={styles.waiting}>
-          {this.renderWaiting()}
-        </View>
-      );
+      contents = <View style={styles.waiting}>{this.renderWaiting()}</View>;
     }
     return (
       <View style={styles.container}>
         {!this.props.devtoolsIsOpen && contents}
         <View style={styles.buttonRow}>
-          <Button
+          <InspectorPanelButton
             title={'Inspect'}
             pressed={this.props.inspecting}
             onClick={this.props.setInspecting}
           />
-          <Button title={'Perf'}
+          <InspectorPanelButton
+            title={'Perf'}
             pressed={this.props.perfing}
             onClick={this.props.setPerfing}
+          />
+          <InspectorPanelButton
+            title={'Network'}
+            pressed={this.props.networking}
+            onClick={this.props.setNetworking}
+          />
+          <InspectorPanelButton
+            title={'Touchables'}
+            pressed={this.props.touchTargeting}
+            onClick={this.props.setTouchTargeting}
           />
         </View>
       </View>
@@ -75,29 +113,25 @@ class InspectorPanel extends React.Component {
   }
 }
 
-InspectorPanel.propTypes = {
-  devtoolsIsOpen: PropTypes.bool,
-  inspecting: PropTypes.bool,
-  setInspecting: PropTypes.func,
-  inspected: PropTypes.object,
-  perfing: PropTypes.bool,
-  setPerfing: PropTypes.func,
-};
+type InspectorPanelButtonProps = $ReadOnly<{|
+  onClick: (val: boolean) => void,
+  pressed: boolean,
+  title: string,
+|}>;
 
-class Button extends React.Component {
+class InspectorPanelButton extends React.Component<InspectorPanelButtonProps> {
   render() {
     return (
-      <TouchableHighlight onPress={() => this.props.onClick(!this.props.pressed)} style={[
-        styles.button,
-        this.props.pressed && styles.buttonPressed
-      ]}>
+      <TouchableHighlight
+        onPress={() => this.props.onClick(!this.props.pressed)}
+        style={[styles.button, this.props.pressed && styles.buttonPressed]}>
         <Text style={styles.buttonText}>{this.props.title}</Text>
       </TouchableHighlight>
     );
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   buttonRow: {
     flexDirection: 'row',
   },
@@ -119,6 +153,9 @@ var styles = StyleSheet.create({
   container: {
     backgroundColor: 'rgba(0, 0, 0, 0.7)',
   },
+  properties: {
+    height: 200,
+  },
   waiting: {
     height: 100,
   },
@@ -126,6 +163,7 @@ var styles = StyleSheet.create({
     fontSize: 20,
     textAlign: 'center',
     marginVertical: 20,
+    color: 'white',
   },
 });
 

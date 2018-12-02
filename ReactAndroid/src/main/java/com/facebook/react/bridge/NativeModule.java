@@ -1,18 +1,14 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.bridge;
 
-import java.io.IOException;
-import java.util.Map;
+import com.facebook.proguard.annotations.DoNotStrip;
 
-import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
  * A native module whose API can be provided to JS catalyst instances.  {@link NativeModule}s whose
@@ -21,9 +17,10 @@ import com.fasterxml.jackson.core.JsonGenerator;
  * must not provide any Java code (so they can be reused on other platforms), and instead should
  * register themselves using {@link CxxModuleWrapper}.
  */
+@DoNotStrip
 public interface NativeModule {
   interface NativeMethod {
-    void invoke(CatalystInstance catalystInstance, ReadableNativeArray parameters);
+    void invoke(JSInstance jsInstance, ReadableArray parameters);
     String getType();
   }
 
@@ -32,17 +29,6 @@ public interface NativeModule {
    * from javascript.
    */
   String getName();
-
-  /**
-   * @return methods callable from JS on this module
-   */
-  Map<String, NativeMethod> getMethods();
-
-  /**
-   * Append a field which represents the constants this module exports
-   * to JS.  If no constants are exported this should do nothing.
-   */
-  void writeConstantsField(JsonGenerator jg, String fieldName) throws IOException;
 
   /**
    * This is called at the end of {@link CatalystApplicationFragment#createCatalystInstance()}

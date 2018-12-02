@@ -1,13 +1,13 @@
 /**
- * Copyright (c) 2014-present, Facebook, Inc.
- * All rights reserved.
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.testing;
 
+import com.facebook.react.modules.core.ReactChoreographer;
 import javax.annotation.Nullable;
 
 import java.util.concurrent.CountDownLatch;
@@ -22,15 +22,20 @@ import android.view.ViewGroup;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.BaseJavaModule;
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.LifecycleEventListener;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.common.ApplicationHolder;
 import com.facebook.react.common.futures.SimpleSettableFuture;
+import com.facebook.react.devsupport.interfaces.DevSupportManager;
 import com.facebook.react.modules.core.Timing;
+import com.facebook.react.testing.idledetection.ReactBridgeIdleSignaler;
+import com.facebook.react.testing.idledetection.ReactIdleDetectionUtil;
+import com.facebook.soloader.SoLoader;
+
+import static org.mockito.Mockito.mock;
 
 /**
  * Use this class for writing integration tests of catalyst. This class will run all JNI call
@@ -48,7 +53,8 @@ import com.facebook.react.modules.core.Timing;
  */
 public abstract class ReactIntegrationTestCase extends AndroidTestCase {
 
-  private static final long IDLE_TIMEOUT_MS = 15000;
+  // we need a bigger timeout for CI builds because they run on a slow emulator
+  private static final long IDLE_TIMEOUT_MS = 60000;
 
   private @Nullable CatalystInstance mInstance;
   private @Nullable ReactBridgeIdleSignaler mBridgeIdleSignaler;
@@ -70,14 +76,17 @@ public abstract class ReactIntegrationTestCase extends AndroidTestCase {
       mReactContext = null;
       mInstance = null;
 
+      final SimpleSettableFuture<Void> semaphore = new SimpleSettableFuture<>();
       UiThreadUtil.runOnUiThread(new Runnable() {
         @Override
         public void run() {
           if (contextToDestroy != null) {
-            contextToDestroy.onDestroy();
+            contextToDestroy.destroy();
           }
+          semaphore.set(null);
         }
       });
+      semaphore.getOrThrow();
     }
   }
 
@@ -131,7 +140,8 @@ public abstract class ReactIntegrationTestCase extends AndroidTestCase {
         new Runnable() {
           @Override
           public void run() {
-            Timing timing = new Timing(getContext());
+            ReactChoreographer.initialize();
+            Timing timing = new Timing(getContext(), mock(DevSupportManager.class));
             simpleSettableFuture.set(timing);
           }
         });
@@ -167,7 +177,7 @@ public abstract class ReactIntegrationTestCase extends AndroidTestCase {
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    ApplicationHolder.setApplication((Application) getContext().getApplicationContext());
+    SoLoader.init(getContext(), /* native exopackage */ false);
   }
 
   @Override

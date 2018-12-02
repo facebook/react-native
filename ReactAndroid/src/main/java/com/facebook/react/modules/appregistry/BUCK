@@ -1,0 +1,12 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_target", "rn_android_library")
+
+rn_android_library(
+    name = "appregistry",
+    srcs = glob(["**/*.java"]),
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        react_native_target("java/com/facebook/react/bridge:bridge"),
+    ],
+)

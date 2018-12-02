@@ -1,31 +1,37 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule StaticRenderer
+ * @format
  * @flow
  */
+
 'use strict';
 
-var React = require('React');
+const React = require('React');
 
-var StaticRenderer = React.createClass({
-  propTypes: {
-    shouldUpdate: React.PropTypes.bool.isRequired,
-    render: React.PropTypes.func.isRequired,
-  },
+type Props = $ReadOnly<{|
+  /**
+   * Indicates whether the render function needs to be called again
+   */
+  shouldUpdate: boolean,
+  /**
+   * () => renderable
+   * A function that returns a renderable component
+   */
+  render: () => React.Node,
+|}>;
 
-  shouldComponentUpdate: function(nextProps: { shouldUpdate: boolean }): boolean {
+class StaticRenderer extends React.Component<Props> {
+  shouldComponentUpdate(nextProps: Props): boolean {
     return nextProps.shouldUpdate;
-  },
+  }
 
-  render: function(): ReactElement {
+  render(): React.Node {
     return this.props.render();
-  },
-});
+  }
+}
 
 module.exports = StaticRenderer;

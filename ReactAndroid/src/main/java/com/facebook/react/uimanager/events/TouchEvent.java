@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.uimanager.events;
@@ -15,6 +13,7 @@ import android.support.v4.util.Pools;
 import android.view.MotionEvent;
 
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.bridge.SoftAssertions;
 
 /**
  * An event representing the start, end or movement of a touch. Corresponds to a single
@@ -31,18 +30,28 @@ public class TouchEvent extends Event<TouchEvent> {
   private static final Pools.SynchronizedPool<TouchEvent> EVENTS_POOL =
       new Pools.SynchronizedPool<>(TOUCH_EVENTS_POOL_SIZE);
 
+  public static final long UNSET = Long.MIN_VALUE;
+
   public static TouchEvent obtain(
       int viewTag,
-      long timestampMs,
       TouchEventType touchEventType,
       MotionEvent motionEventToCopy,
+      long gestureStartTime,
       float viewX,
-      float viewY) {
+      float viewY,
+      TouchEventCoalescingKeyHelper touchEventCoalescingKeyHelper) {
     TouchEvent event = EVENTS_POOL.acquire();
     if (event == null) {
       event = new TouchEvent();
     }
-    event.init(viewTag, timestampMs, touchEventType, motionEventToCopy, viewX, viewY);
+    event.init(
+      viewTag,
+      touchEventType,
+      motionEventToCopy,
+      gestureStartTime,
+      viewX,
+      viewY,
+      touchEventCoalescingKeyHelper);
     return event;
   }
 
@@ -59,32 +68,35 @@ public class TouchEvent extends Event<TouchEvent> {
 
   private void init(
       int viewTag,
-      long timestampMs,
       TouchEventType touchEventType,
       MotionEvent motionEventToCopy,
+      long gestureStartTime,
       float viewX,
-      float viewY) {
-    super.init(viewTag, timestampMs);
+      float viewY,
+      TouchEventCoalescingKeyHelper touchEventCoalescingKeyHelper) {
+    super.init(viewTag);
 
+    SoftAssertions.assertCondition(gestureStartTime != UNSET,
+        "Gesture start time must be initialized");
     short coalescingKey = 0;
     int action = (motionEventToCopy.getAction() & MotionEvent.ACTION_MASK);
     switch (action) {
       case MotionEvent.ACTION_DOWN:
-        TouchEventCoalescingKeyHelper.addCoalescingKey(motionEventToCopy.getDownTime());
+        touchEventCoalescingKeyHelper.addCoalescingKey(gestureStartTime);
         break;
       case MotionEvent.ACTION_UP:
-        TouchEventCoalescingKeyHelper.removeCoalescingKey(motionEventToCopy.getDownTime());
+        touchEventCoalescingKeyHelper.removeCoalescingKey(gestureStartTime);
         break;
       case MotionEvent.ACTION_POINTER_DOWN:
       case MotionEvent.ACTION_POINTER_UP:
-        TouchEventCoalescingKeyHelper.incrementCoalescingKey(motionEventToCopy.getDownTime());
+        touchEventCoalescingKeyHelper.incrementCoalescingKey(gestureStartTime);
         break;
       case MotionEvent.ACTION_MOVE:
         coalescingKey =
-            TouchEventCoalescingKeyHelper.getCoalescingKey(motionEventToCopy.getDownTime());
+          touchEventCoalescingKeyHelper.getCoalescingKey(gestureStartTime);
         break;
       case MotionEvent.ACTION_CANCEL:
-        TouchEventCoalescingKeyHelper.removeCoalescingKey(motionEventToCopy.getDownTime());
+        touchEventCoalescingKeyHelper.removeCoalescingKey(gestureStartTime);
         break;
       default:
         throw new RuntimeException("Unhandled MotionEvent action: " + action);
@@ -105,7 +117,7 @@ public class TouchEvent extends Event<TouchEvent> {
 
   @Override
   public String getEventName() {
-    return Assertions.assertNotNull(mTouchEventType).getJSEventName();
+    return TouchEventType.getJSEventName(Assertions.assertNotNull(mTouchEventType));
   }
 
   @Override

@@ -1,28 +1,23 @@
 /**
- * @generated SignedSource<<97ffcebc9ae390e734026a4f3964bff6>>
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * !! This file is a check-in of a static_upstream project!      !!
- * !!                                                            !!
- * !! You should not modify this file directly. Instead:         !!
- * !! 1) Use `fjs use-upstream` to temporarily replace this with !!
- * !!    the latest version from upstream.                       !!
- * !! 2) Make your changes, test them, etc.                      !!
- * !! 3) Use `fjs push-upstream` to copy your changes back to    !!
- * !!    static_upstream.                                        !!
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule isEmpty
+ * @flow strict
+ * @format
  */
+
+'use strict';
 
 /**
  * Mimics empty from PHP.
  */
-function isEmpty(obj) {
+function isEmpty(obj: mixed): boolean {
   if (Array.isArray(obj)) {
     return obj.length === 0;
   } else if (typeof obj === 'object') {
-    for (var i in obj) {
+    for (const i in obj) {
       return false;
     }
     return true;

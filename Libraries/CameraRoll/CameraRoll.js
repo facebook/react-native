@@ -1,184 +1,249 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule CameraRoll
  * @flow
+ * @format
  */
 'use strict';
 
-var ReactPropTypes = require('ReactPropTypes');
-var RCTCameraRollManager = require('NativeModules').CameraRollManager;
+const PropTypes = require('prop-types');
+const {checkPropTypes} = PropTypes;
+const RCTCameraRollManager = require('NativeModules').CameraRollManager;
 
-var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
-var deepFreezeAndThrowOnMutationInDev =
-  require('deepFreezeAndThrowOnMutationInDev');
-var invariant = require('invariant');
+const deprecatedCreateStrictShapeTypeChecker = require('deprecatedCreateStrictShapeTypeChecker');
+const invariant = require('fbjs/lib/invariant');
 
-var GROUP_TYPES_OPTIONS = [
-  'Album',
-  'All',
-  'Event',
-  'Faces',
-  'Library',
-  'PhotoStream',
-  'SavedPhotos', // default
-];
+const GROUP_TYPES_OPTIONS = {
+  Album: 'Album',
+  All: 'All',
+  Event: 'Event',
+  Faces: 'Faces',
+  Library: 'Library',
+  PhotoStream: 'PhotoStream',
+  SavedPhotos: 'SavedPhotos', // default
+};
 
-var ASSET_TYPE_OPTIONS = [
-  'All',
-  'Videos',
-  'Photos', // default
-];
+const ASSET_TYPE_OPTIONS = {
+  All: 'All',
+  Videos: 'Videos',
+  Photos: 'Photos',
+};
 
-// Flow treats Object and Array as disjoint types, currently.
-deepFreezeAndThrowOnMutationInDev((GROUP_TYPES_OPTIONS: any));
-deepFreezeAndThrowOnMutationInDev((ASSET_TYPE_OPTIONS: any));
+export type GroupTypes = $Keys<typeof GROUP_TYPES_OPTIONS>;
+
+export type GetPhotosParams = {
+  first: number,
+  after?: string,
+  groupTypes?: GroupTypes,
+  groupName?: string,
+  assetType?: $Keys<typeof ASSET_TYPE_OPTIONS>,
+  mimeTypes?: Array<string>,
+};
 
 /**
  * Shape of the param arg for the `getPhotos` function.
  */
-var getPhotosParamChecker = createStrictShapeTypeChecker({
+const getPhotosParamChecker = deprecatedCreateStrictShapeTypeChecker({
   /**
    * The number of photos wanted in reverse order of the photo application
    * (i.e. most recent first for SavedPhotos).
    */
-  first: ReactPropTypes.number.isRequired,
+  first: PropTypes.number.isRequired,
 
   /**
    * A cursor that matches `page_info { end_cursor }` returned from a previous
    * call to `getPhotos`
    */
-  after: ReactPropTypes.string,
+  after: PropTypes.string,
 
   /**
    * Specifies which group types to filter the results to.
    */
-  groupTypes: ReactPropTypes.oneOf(GROUP_TYPES_OPTIONS),
+  groupTypes: PropTypes.oneOf(Object.keys(GROUP_TYPES_OPTIONS)),
 
   /**
    * Specifies filter on group names, like 'Recent Photos' or custom album
    * titles.
    */
-  groupName: ReactPropTypes.string,
+  groupName: PropTypes.string,
 
   /**
-  * Specifies filter on asset type
-  */
-  assetType: ReactPropTypes.oneOf(ASSET_TYPE_OPTIONS),
+   * Specifies filter on asset type
+   */
+  assetType: PropTypes.oneOf(Object.keys(ASSET_TYPE_OPTIONS)),
 
   /**
    * Filter by mimetype (e.g. image/jpeg).
    */
-  mimeTypes: ReactPropTypes.arrayOf(ReactPropTypes.string),
+  mimeTypes: PropTypes.arrayOf(PropTypes.string),
 });
+
+export type PhotoIdentifier = {
+  node: {
+    type: string,
+    group_name: string,
+    image: {
+      filename: string,
+      uri: string,
+      height: number,
+      width: number,
+      isStored?: boolean,
+      playableDuration: number,
+    },
+    timestamp: number,
+    location?: {
+      latitude?: number,
+      longitude?: number,
+      altitude?: number,
+      heading?: number,
+      speed?: number,
+    },
+  },
+};
+
+export type PhotoIdentifiersPage = {
+  edges: Array<PhotoIdentifier>,
+  page_info: {
+    has_next_page: boolean,
+    start_cursor?: string,
+    end_cursor?: string,
+  },
+};
 
 /**
  * Shape of the return value of the `getPhotos` function.
  */
-var getPhotosReturnChecker = createStrictShapeTypeChecker({
-  edges: ReactPropTypes.arrayOf(createStrictShapeTypeChecker({
-    node: createStrictShapeTypeChecker({
-      type: ReactPropTypes.string.isRequired,
-      group_name: ReactPropTypes.string.isRequired,
-      image: createStrictShapeTypeChecker({
-        uri: ReactPropTypes.string.isRequired,
-        height: ReactPropTypes.number.isRequired,
-        width: ReactPropTypes.number.isRequired,
-        isStored: ReactPropTypes.bool,
+const getPhotosReturnChecker = deprecatedCreateStrictShapeTypeChecker({
+  edges: PropTypes.arrayOf(
+    /* $FlowFixMe(>=0.66.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.66 was deployed. To see the error delete this
+     * comment and run Flow. */
+    deprecatedCreateStrictShapeTypeChecker({
+      node: deprecatedCreateStrictShapeTypeChecker({
+        type: PropTypes.string.isRequired,
+        group_name: PropTypes.string.isRequired,
+        image: deprecatedCreateStrictShapeTypeChecker({
+          uri: PropTypes.string.isRequired,
+          height: PropTypes.number.isRequired,
+          width: PropTypes.number.isRequired,
+          isStored: PropTypes.bool,
+          playableDuration: PropTypes.number.isRequired,
+        }).isRequired,
+        timestamp: PropTypes.number.isRequired,
+        location: deprecatedCreateStrictShapeTypeChecker({
+          latitude: PropTypes.number,
+          longitude: PropTypes.number,
+          altitude: PropTypes.number,
+          heading: PropTypes.number,
+          speed: PropTypes.number,
+        }),
       }).isRequired,
-      timestamp: ReactPropTypes.number.isRequired,
-      location: createStrictShapeTypeChecker({
-        latitude: ReactPropTypes.number,
-        longitude: ReactPropTypes.number,
-        altitude: ReactPropTypes.number,
-        heading: ReactPropTypes.number,
-        speed: ReactPropTypes.number,
-      }),
-    }).isRequired,
-  })).isRequired,
-  page_info: createStrictShapeTypeChecker({
-    has_next_page: ReactPropTypes.bool.isRequired,
-    start_cursor: ReactPropTypes.string,
-    end_cursor: ReactPropTypes.string,
+    }),
+  ).isRequired,
+  page_info: deprecatedCreateStrictShapeTypeChecker({
+    has_next_page: PropTypes.bool.isRequired,
+    start_cursor: PropTypes.string,
+    end_cursor: PropTypes.string,
   }).isRequired,
 });
 
 /**
- * `CameraRoll` provides access to the local camera roll / gallery.
+ * `CameraRoll` provides access to the local camera roll or photo library.
+ *
+ * See https://facebook.github.io/react-native/docs/cameraroll.html
  */
 class CameraRoll {
+  static GroupTypesOptions = GROUP_TYPES_OPTIONS;
+  static AssetTypeOptions = ASSET_TYPE_OPTIONS;
 
-  static GroupTypesOptions: Array<string>;
-  static AssetTypeOptions: Array<string>;
   /**
-   * Saves the image to the camera roll / gallery.
-   *
-   * On Android, the tag is a local URI, such as `"file:///sdcard/img.png"`.
-   *
-   * On iOS, the tag can be one of the following:
-   *
-   *   - local URI
-   *   - assets-library tag
-   *   - a tag not matching any of the above, which means the image data will
-   * be stored in memory (and consume memory as long as the process is alive)
-   *
-   * Returns a Promise which when resolved will be passed the new URI.
+   * `CameraRoll.saveImageWithTag()` is deprecated. Use `CameraRoll.saveToCameraRoll()` instead.
    */
-  static saveImageWithTag(tag) {
+  static saveImageWithTag(tag: string): Promise<string> {
+    console.warn(
+      '`CameraRoll.saveImageWithTag()` is deprecated. Use `CameraRoll.saveToCameraRoll()` instead.',
+    );
+    return this.saveToCameraRoll(tag, 'photo');
+  }
+
+  static deletePhotos(photos: Array<string>) {
+    return RCTCameraRollManager.deletePhotos(photos);
+  }
+
+  /**
+   * Saves the photo or video to the camera roll or photo library.
+   *
+   * See https://facebook.github.io/react-native/docs/cameraroll.html#savetocameraroll
+   */
+  static saveToCameraRoll(
+    tag: string,
+    type?: 'photo' | 'video',
+  ): Promise<string> {
     invariant(
       typeof tag === 'string',
-      'CameraRoll.saveImageWithTag tag must be a valid string.'
+      'CameraRoll.saveToCameraRoll must be a valid string.',
     );
-    if (arguments.length > 1) {
-      console.warn("CameraRoll.saveImageWithTag(tag, success, error) is deprecated.  Use the returned Promise instead");
-      let successCallback = arguments[1];
-      let errorCallback = arguments[2] || ( () => {} );
-      RCTCameraRollManager.saveImageWithTag(tag).then(successCallback, errorCallback);
-      return;
+
+    invariant(
+      type === 'photo' || type === 'video' || type === undefined,
+      `The second argument to saveToCameraRoll must be 'photo' or 'video'. You passed ${type ||
+        'unknown'}`,
+    );
+
+    let mediaType = 'photo';
+    if (type) {
+      mediaType = type;
+    } else if (['mov', 'mp4'].indexOf(tag.split('.').slice(-1)[0]) >= 0) {
+      mediaType = 'video';
     }
-    return RCTCameraRollManager.saveImageWithTag(tag);
+
+    return RCTCameraRollManager.saveToCameraRoll(tag, mediaType);
   }
 
   /**
    * Returns a Promise with photo identifier objects from the local camera
    * roll of the device matching shape defined by `getPhotosReturnChecker`.
    *
-   * @param {object} params See `getPhotosParamChecker`.
-   *
-   * Returns a Promise which when resolved will be of shape `getPhotosReturnChecker`.
+   * See https://facebook.github.io/react-native/docs/cameraroll.html#getphotos
    */
-  static getPhotos(params) {
+  static getPhotos(params: GetPhotosParams): Promise<PhotoIdentifiersPage> {
     if (__DEV__) {
-      getPhotosParamChecker({params}, 'params', 'CameraRoll.getPhotos');
+      checkPropTypes(
+        {params: getPhotosParamChecker},
+        {params},
+        'params',
+        'CameraRoll.getPhotos',
+      );
     }
     if (arguments.length > 1) {
-      console.warn("CameraRoll.getPhotos(tag, success, error) is deprecated.  Use the returned Promise instead");
+      console.warn(
+        'CameraRoll.getPhotos(tag, success, error) is deprecated.  Use the returned Promise instead',
+      );
       let successCallback = arguments[1];
       if (__DEV__) {
-        let callback = arguments[1];
-        successCallback = (response) => {
-          getPhotosReturnChecker(
+        const callback = arguments[1];
+        successCallback = response => {
+          checkPropTypes(
+            {response: getPhotosReturnChecker},
             {response},
             'response',
-            'CameraRoll.getPhotos callback'
+            'CameraRoll.getPhotos callback',
           );
           callback(response);
         };
       }
-      let errorCallback = arguments[2] || ( () => {} );
-      RCTCameraRollManager.getPhotos(params).then(successCallback, errorCallback);
+      const errorCallback = arguments[2] || (() => {});
+      RCTCameraRollManager.getPhotos(params).then(
+        successCallback,
+        errorCallback,
+      );
     }
     // TODO: Add the __DEV__ check back in to verify the Promise result
     return RCTCameraRollManager.getPhotos(params);
   }
 }
-
-CameraRoll.GroupTypesOptions = GROUP_TYPES_OPTIONS;
-CameraRoll.AssetTypeOptions = ASSET_TYPE_OPTIONS;
 
 module.exports = CameraRoll;

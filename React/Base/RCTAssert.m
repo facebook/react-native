@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTAssert.h"
@@ -12,6 +10,7 @@
 
 NSString *const RCTErrorDomain = @"RCTErrorDomain";
 NSString *const RCTJSStackTraceKey = @"RCTJSStackTraceKey";
+NSString *const RCTJSRawStackTraceKey = @"RCTJSRawStackTraceKey";
 NSString *const RCTFatalExceptionName = @"RCTFatalException";
 
 static NSString *const RCTAssertFunctionStack = @"RCTAssertFunctionStack";
@@ -87,7 +86,7 @@ void RCTPerformBlockWithAssertFunction(void (^block)(void), RCTAssertFunction as
 NSString *RCTCurrentThreadName(void)
 {
   NSThread *thread = [NSThread currentThread];
-  NSString *threadName = thread.isMainThread ? @"main" : thread.name;
+  NSString *threadName = RCTIsMainQueue() || thread.isMainThread ? @"main" : thread.name;
   if (threadName.length == 0) {
     const char *label = dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL);
     if (label && strlen(label) > 0) {
@@ -130,7 +129,7 @@ void RCTFatal(NSError *error)
 #endif
       NSString *name = [NSString stringWithFormat:@"%@: %@", RCTFatalExceptionName, error.localizedDescription];
       NSString *message = RCTFormatError(error.localizedDescription, error.userInfo[RCTJSStackTraceKey], 75);
-      [NSException raise:name format:@"%@", message];
+      @throw [[NSException alloc]  initWithName:name reason:message userInfo:nil];
 #if DEBUG
     } @catch (NSException *e) {}
 #endif
@@ -156,8 +155,19 @@ NSString *RCTFormatError(NSString *message, NSArray<NSDictionary<NSString *, id>
   NSMutableString *prettyStack = [NSMutableString string];
   if (stackTrace) {
     [prettyStack appendString:@", stack:\n"];
+
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^(\\d+\\.js)$"
+                                                                           options:NSRegularExpressionCaseInsensitive
+                                                                             error:NULL];
     for (NSDictionary<NSString *, id> *frame in stackTrace) {
-      [prettyStack appendFormat:@"%@@%@:%@\n", frame[@"methodName"], frame[@"lineNumber"], frame[@"column"]];
+      NSString *fileName = [frame[@"file"] lastPathComponent];
+      if (fileName && [regex numberOfMatchesInString:fileName options:0 range:NSMakeRange(0, [fileName length])]) {
+        fileName = [fileName stringByAppendingString:@":"];
+      } else {
+        fileName = @"";
+      }
+
+      [prettyStack appendFormat:@"%@@%@%@:%@\n", frame[@"methodName"], fileName, frame[@"lineNumber"], frame[@"column"]];
     }
   }
 

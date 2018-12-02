@@ -1,34 +1,34 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
+
 'use strict';
 
 const buildBundle = require('./buildBundle');
 const bundleCommandLineArgs = require('./bundleCommandLineArgs');
-const parseCommandLine = require('../util/parseCommandLine');
-const outputBundle = require('./output/bundle');
-const outputPrepack = require('./output/prepack');
+const outputBundle = require('metro/src/shared/output/bundle');
 
 /**
  * Builds the bundle starting to look for dependencies at the given entry path.
  */
-function bundleWithOutput(argv, config, output) {
-  const args = parseCommandLine(bundleCommandLineArgs, argv);
+function bundleWithOutput(argv, configPromise, args, output) {
   if (!output) {
-    output = args.prepack ? outputPrepack : outputBundle;
+    output = outputBundle;
   }
-  return buildBundle(args, config, output);
-
+  return buildBundle(args, configPromise, output);
 }
 
-function bundle(argv, config) {
-  return bundleWithOutput(argv, config);
-}
+module.exports = {
+  name: 'bundle',
+  description: 'builds the javascript bundle for offline use',
+  func: bundleWithOutput,
+  options: bundleCommandLineArgs,
 
-module.exports = bundle;
-module.exports.withOutput = bundleWithOutput;
+  // not used by the CLI itself
+  withOutput: bundleWithOutput,
+};

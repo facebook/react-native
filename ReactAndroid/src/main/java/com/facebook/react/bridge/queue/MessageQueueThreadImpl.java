@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.bridge.queue;
@@ -13,6 +11,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
 import android.os.Looper;
+import android.os.Process;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.proguard.annotations.DoNotStrip;
@@ -60,7 +59,6 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
     mHandler.post(runnable);
   }
 
-
   @DoNotStrip
   @Override
   public <T> Future<T> callOnQueue(final Callable<T> callable) {
@@ -82,6 +80,7 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
   /**
    * @return whether the current Thread is also the Thread associated with this MessageQueueThread.
    */
+  @DoNotStrip
   @Override
   public boolean isOnThread() {
     return mLooper.getThread() == Thread.currentThread();
@@ -91,15 +90,29 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
    * Asserts {@link #isOnThread()}, throwing a {@link AssertionException} (NOT an
    * {@link AssertionError}) if the assertion fails.
    */
+  @DoNotStrip
   @Override
   public void assertIsOnThread() {
     SoftAssertions.assertCondition(isOnThread(), mAssertionErrorMessage);
   }
 
   /**
+   * Asserts {@link #isOnThread()}, throwing a {@link AssertionException} (NOT an
+   * {@link AssertionError}) if the assertion fails.
+   */
+  @DoNotStrip
+  @Override
+  public void assertIsOnThread(String message) {
+    SoftAssertions.assertCondition(
+      isOnThread(),
+      new StringBuilder().append(mAssertionErrorMessage).append(" ").append(message).toString());
+  }
+
+  /**
    * Quits this queue's Looper. If that Looper was running on a different Thread than the current
    * Thread, also waits for the last message being processed to finish and the Thread to die.
    */
+  @DoNotStrip
   @Override
   public void quitSynchronous() {
     mIsFinished = true;
@@ -128,7 +141,7 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
       case MAIN_UI:
         return createForMainThread(spec.getName(), exceptionHandler);
       case NEW_BACKGROUND:
-        return startNewBackgroundThread(spec.getName(), exceptionHandler);
+        return startNewBackgroundThread(spec.getName(), spec.getStackSize(), exceptionHandler);
       default:
         throw new RuntimeException("Unknown thread type: " + spec.getThreadType());
     }
@@ -144,52 +157,44 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
     final MessageQueueThreadImpl mqt =
         new MessageQueueThreadImpl(name, mainLooper, exceptionHandler);
 
-    // Ensure that the MQT is registered by the time this method returns
     if (UiThreadUtil.isOnUiThread()) {
-      MessageQueueThreadRegistry.register(mqt);
+      Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
     } else {
-      final SimpleSettableFuture<Void> registrationFuture = new SimpleSettableFuture<>();
       UiThreadUtil.runOnUiThread(
           new Runnable() {
             @Override
             public void run() {
-              MessageQueueThreadRegistry.register(mqt);
-              registrationFuture.set(null);
+              Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
             }
           });
-      registrationFuture.getOrThrow();
     }
     return mqt;
   }
 
   /**
-   * Creates  and starts a new MessageQueueThreadImpl encapsulating a new Thread with a new Looper
-   * running on it. Give it a name for easier debugging. When this method exits, the new
-   * MessageQueueThreadImpl is ready to receive events.
+   * Creates and starts a new MessageQueueThreadImpl encapsulating a new Thread with a new Looper
+   * running on it. Give it a name for easier debugging and optionally a suggested stack size.
+   * When this method exits, the new MessageQueueThreadImpl is ready to receive events.
    */
-  public static MessageQueueThreadImpl startNewBackgroundThread(
+  private static MessageQueueThreadImpl startNewBackgroundThread(
       final String name,
+      long stackSize,
       QueueThreadExceptionHandler exceptionHandler) {
     final SimpleSettableFuture<Looper> looperFuture = new SimpleSettableFuture<>();
-    final SimpleSettableFuture<MessageQueueThread> mqtFuture = new SimpleSettableFuture<>();
-    Thread bgThread = new Thread(
+    Thread bgThread = new Thread(null,
         new Runnable() {
           @Override
           public void run() {
+            Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
             Looper.prepare();
 
             looperFuture.set(Looper.myLooper());
-            MessageQueueThreadRegistry.register(mqtFuture.getOrThrow());
-
             Looper.loop();
           }
-        }, "mqt_" + name);
+        }, "mqt_" + name, stackSize);
     bgThread.start();
 
     Looper myLooper = looperFuture.getOrThrow();
-    MessageQueueThreadImpl mqt = new MessageQueueThreadImpl(name, myLooper, exceptionHandler);
-    mqtFuture.set(mqt);
-
-    return mqt;
+    return new MessageQueueThreadImpl(name, myLooper, exceptionHandler);
   }
 }

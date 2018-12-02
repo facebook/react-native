@@ -1,18 +1,19 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.modules.storage;
 
+import java.util.ArrayDeque;
 import java.util.HashSet;
+import java.util.concurrent.Executor;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteStatement;
+import android.os.AsyncTask;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
@@ -25,15 +26,19 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.common.SetBuilder;
+import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.common.ModuleDataCleaner;
 
 import static com.facebook.react.modules.storage.ReactDatabaseSupplier.KEY_COLUMN;
 import static com.facebook.react.modules.storage.ReactDatabaseSupplier.TABLE_CATALYST;
 import static com.facebook.react.modules.storage.ReactDatabaseSupplier.VALUE_COLUMN;
 
+@ReactModule(name = AsyncStorageModule.NAME)
 public final class AsyncStorageModule
     extends ReactContextBaseJavaModule implements ModuleDataCleaner.Cleanable {
+
+  public static final String NAME = "AsyncSQLiteDBStorage";
 
   // SQL variable number limit, defined by SQLITE_LIMIT_VARIABLE_NUMBER:
   // https://raw.githubusercontent.com/android/platform_external_sqlite/master/dist/sqlite3.c
@@ -42,14 +47,53 @@ public final class AsyncStorageModule
   private ReactDatabaseSupplier mReactDatabaseSupplier;
   private boolean mShuttingDown = false;
 
+  // Adapted from https://android.googlesource.com/platform/frameworks/base.git/+/1488a3a19d4681a41fb45570c15e14d99db1cb66/core/java/android/os/AsyncTask.java#237
+  private class SerialExecutor implements Executor {
+    private final ArrayDeque<Runnable> mTasks = new ArrayDeque<Runnable>();
+    private Runnable mActive;
+    private final Executor executor;
+
+    SerialExecutor(Executor executor) {
+      this.executor = executor;
+    }
+
+    public synchronized void execute(final Runnable r) {
+      mTasks.offer(new Runnable() {
+        public void run() {
+          try {
+            r.run();
+          } finally {
+            scheduleNext();
+          }
+        }
+      });
+      if (mActive == null) {
+        scheduleNext();
+      }
+    }
+    synchronized void scheduleNext() {
+      if ((mActive = mTasks.poll()) != null) {
+        executor.execute(mActive);
+      }
+    }
+  }
+
+  private final SerialExecutor executor;
+  
   public AsyncStorageModule(ReactApplicationContext reactContext) {
+    this(reactContext, AsyncTask.THREAD_POOL_EXECUTOR);
+  }
+
+  @VisibleForTesting
+  AsyncStorageModule(ReactApplicationContext reactContext, Executor executor) {
     super(reactContext);
+    this.executor = new SerialExecutor(executor);
     mReactDatabaseSupplier = ReactDatabaseSupplier.getInstance(reactContext);
   }
 
   @Override
   public String getName() {
-    return "AsyncSQLiteDBStorage";
+    return NAME;
   }
 
   @Override
@@ -91,7 +135,7 @@ public final class AsyncStorageModule
         }
 
         String[] columns = {KEY_COLUMN, VALUE_COLUMN};
-        HashSet<String> keysRemaining = SetBuilder.newHashSet();
+        HashSet<String> keysRemaining = new HashSet<>();
         WritableArray data = Arguments.createArray();
         for (int keyStart = 0; keyStart < keys.size(); keyStart += MAX_SQL_KEYS) {
           int keyCount = Math.min(keys.size() - keyStart, MAX_SQL_KEYS);
@@ -140,7 +184,7 @@ public final class AsyncStorageModule
 
         callback.invoke(null, data);
       }
-    }.execute();
+    }.executeOnExecutor(executor);
   }
 
   /**
@@ -207,7 +251,7 @@ public final class AsyncStorageModule
           callback.invoke();
         }
       }
-    }.execute();
+    }.executeOnExecutor(executor);
   }
 
   /**
@@ -258,7 +302,7 @@ public final class AsyncStorageModule
           callback.invoke();
         }
       }
-    }.execute();
+    }.executeOnExecutor(executor);
   }
 
   /**
@@ -321,7 +365,7 @@ public final class AsyncStorageModule
           callback.invoke();
         }
       }
-    }.execute();
+    }.executeOnExecutor(executor);
   }
 
   /**
@@ -344,7 +388,7 @@ public final class AsyncStorageModule
           callback.invoke(AsyncStorageErrorUtil.getError(null, e.getMessage()));
         }
       }
-    }.execute();
+    }.executeOnExecutor(executor);
   }
 
   /**
@@ -378,7 +422,7 @@ public final class AsyncStorageModule
         }
         callback.invoke(null, data);
       }
-    }.execute();
+    }.executeOnExecutor(executor);
   }
 
   /**

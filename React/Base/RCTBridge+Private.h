@@ -1,21 +1,38 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
-#import "RCTBridge.h"
+#import <React/RCTBridge.h>
 
 @class RCTModuleData;
+@protocol RCTJavaScriptExecutor;
+
+RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
+
+#if RCT_DEBUG
+RCT_EXTERN void RCTVerifyAllModulesExported(NSArray *extraModules);
+#endif
+
+RCT_EXTERN void RCTRegisterModule(Class);
 
 @interface RCTBridge ()
+
+// Private designated initializer
+- (instancetype)initWithDelegate:(id<RCTBridgeDelegate>)delegate
+                       bundleURL:(NSURL *)bundleURL
+                  moduleProvider:(RCTBridgeModuleListProvider)block
+                   launchOptions:(NSDictionary *)launchOptions NS_DESIGNATED_INITIALIZER;
 
 // Used for the profiler flow events between JS and native
 @property (nonatomic, assign) int64_t flowID;
 @property (nonatomic, assign) CFMutableDictionaryRef flowIDMap;
+@property (nonatomic, strong) NSLock *flowIDMapLock;
+
+// Used by RCTDevMenu
+@property (nonatomic, copy) NSString *bridgeDescription;
 
 + (instancetype)currentBridge;
 + (void)setCurrentBridge:(RCTBridge *)bridge;
@@ -41,9 +58,9 @@
 
 /**
  * The block that creates the modules' instances to be added to the bridge.
- * Exposed for the RCTBatchedBridge
+ * Exposed for RCTCxxBridge
  */
-@property (nonatomic, copy, readonly) RCTBridgeModuleProviderBlock moduleProvider;
+@property (nonatomic, copy, readonly) RCTBridgeModuleListProvider moduleProvider;
 
 /**
  * Used by RCTDevMenu to override the `hot` param of the current bundleURL.
@@ -52,7 +69,23 @@
 
 @end
 
-@interface RCTBridge (RCTBatchedBridge)
+@interface RCTBridge (RCTCxxBridge)
+
+/**
+ * Used by RCTModuleData
+ */
+
+@property (nonatomic, weak, readonly) RCTBridge *parentBridge;
+
+/**
+ * Used by RCTModuleData
+ */
+@property (nonatomic, assign, readonly) BOOL moduleSetupComplete;
+
+/**
+ * Called on the child bridge to run the executor and start loading.
+ */
+- (void)start;
 
 /**
  * Used by RCTModuleData to register the module for frame updates after it is
@@ -74,26 +107,27 @@
 - (RCTModuleData *)moduleDataForName:(NSString *)moduleName;
 
 /**
+ * Registers additional classes with the ModuleRegistry.
+ */
+- (void)registerAdditionalModuleClasses:(NSArray<Class> *)newModules;
+
+/**
+ * Updates the ModuleRegistry with a pre-initialized instance.
+ */
+- (void)updateModuleWithInstance:(id<RCTBridgeModule>)instance;
+
+/**
  * Systrace profiler toggling methods exposed for the RCTDevMenu
  */
 - (void)startProfiling;
 - (void)stopProfiling:(void (^)(NSData *))callback;
 
 /**
- * Executes native calls sent by JavaScript. Exposed for testing purposes only
+ * Synchronously call a specific native module's method and return the result
  */
-- (void)handleBuffer:(NSArray<NSArray *> *)buffer;
-
-/**
- * Exposed for the RCTJSCExecutor for sending native methods called from
- * JavaScript in the middle of a batch.
- */
-- (void)handleBuffer:(NSArray<NSArray *> *)buffer batchEnded:(BOOL)hasEnded;
-
-/**
- * Exposed for the RCTJSCExecutor for lazily loading native modules
- */
-- (NSArray *)configForModuleName:(NSString *)moduleName;
+- (id)callNativeModule:(NSUInteger)moduleID
+                method:(NSUInteger)methodID
+                params:(NSArray *)params;
 
 /**
  * Hook exposed for RCTLog to send logs to JavaScript when not running in JSC
@@ -104,5 +138,19 @@
  * Allow super fast, one time, timers to skip the queue and be directly executed
  */
 - (void)_immediatelyCallTimer:(NSNumber *)timer;
+
+@end
+
+@interface RCTBridge (Inspector)
+
+@property (nonatomic, readonly, getter=isInspectable) BOOL inspectable;
+
+@end
+
+@interface RCTCxxBridge : RCTBridge
+
+@property (nonatomic) void *runtime;
+
+- (instancetype)initWithParentBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
 @end

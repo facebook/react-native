@@ -1,26 +1,28 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.art;
 
-import javax.annotation.Nullable;
-
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.DashPathEffect;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
-
+import android.graphics.Shader;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import javax.annotation.Nullable;
+
+import static com.facebook.react.common.ArrayUtils.copyArray;
 
 /**
  * Shadow node for virtual ARTShape view
@@ -41,13 +43,22 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
   private static final int PATH_TYPE_LINETO = 2;
   private static final int PATH_TYPE_MOVETO = 0;
 
+  // For color type JS and ObjectiveC definitions counterparts
+  // refer to ReactNativeART.js and RCTConvert+ART.m
+  private static final int COLOR_TYPE_SOLID_COLOR = 0;
+  private static final int COLOR_TYPE_LINEAR_GRADIENT = 1;
+  private static final int COLOR_TYPE_RADIAL_GRADIENT = 2;
+  private static final int COLOR_TYPE_PATTERN = 3;
+
   protected @Nullable Path mPath;
   private @Nullable float[] mStrokeColor;
-  private @Nullable float[] mFillColor;
+  private @Nullable float[] mBrushData;
   private @Nullable float[] mStrokeDash;
   private float mStrokeWidth = 1;
   private int mStrokeCap = CAP_ROUND;
   private int mStrokeJoin = JOIN_ROUND;
+
+  public ARTShapeShadowNode() { }
 
   @ReactProp(name = "d")
   public void setShapePath(@Nullable ReadableArray shapePath) {
@@ -70,7 +81,7 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
 
   @ReactProp(name = "fill")
   public void setFill(@Nullable ReadableArray fillColors) {
-    mFillColor = PropHelper.toFloatArray(fillColors);
+    mBrushData = PropHelper.toFloatArray(fillColors);
     markUpdated();
   }
 
@@ -101,10 +112,10 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
         throw new JSApplicationIllegalArgumentException(
             "Shapes should have a valid path (d) prop");
       }
-      if (setupStrokePaint(paint, opacity)) {
+      if (setupFillPaint(paint, opacity)) {
         canvas.drawPath(mPath, paint);
       }
-      if (setupFillPaint(paint, opacity)) {
+      if (setupStrokePaint(paint, opacity)) {
         canvas.drawPath(mPath, paint);
       }
       restoreCanvas(canvas);
@@ -158,8 +169,7 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
         (int) (mStrokeColor[1] * 255),
         (int) (mStrokeColor[2] * 255));
     if (mStrokeDash != null && mStrokeDash.length > 0) {
-      // TODO(6352067): Support dashes
-      FLog.w(ReactConstants.TAG, "ART: Dashes are not supported yet!");
+      paint.setPathEffect(new DashPathEffect(mStrokeDash, 0));
     }
     return true;
   }
@@ -169,26 +179,79 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
    * if the fill should be drawn, {@code false} if not.
    */
   protected boolean setupFillPaint(Paint paint, float opacity) {
-    if (mFillColor != null && mFillColor.length > 0) {
+    if (mBrushData != null && mBrushData.length > 0) {
       paint.reset();
       paint.setFlags(Paint.ANTI_ALIAS_FLAG);
       paint.setStyle(Paint.Style.FILL);
-      int colorType = (int) mFillColor[0];
+      int colorType = (int) mBrushData[0];
       switch (colorType) {
-        case 0:
+        case COLOR_TYPE_SOLID_COLOR:
           paint.setARGB(
-              (int) (mFillColor.length > 4 ? mFillColor[4] * opacity * 255 : opacity * 255),
-              (int) (mFillColor[1] * 255),
-              (int) (mFillColor[2] * 255),
-              (int) (mFillColor[3] * 255));
+              (int) (mBrushData.length > 4 ? mBrushData[4] * opacity * 255 : opacity * 255),
+              (int) (mBrushData[1] * 255),
+              (int) (mBrushData[2] * 255),
+              (int) (mBrushData[3] * 255));
           break;
+        case COLOR_TYPE_LINEAR_GRADIENT:
+          // For mBrushData format refer to LinearGradient and insertColorStopsIntoArray functions in ReactNativeART.js
+          if (mBrushData.length < 5) {
+            FLog.w(ReactConstants.TAG,
+              "[ARTShapeShadowNode setupFillPaint] expects 5 elements, received "
+              + mBrushData.length);
+            return false;
+          }
+          float gradientStartX = mBrushData[1] * mScale;
+          float gradientStartY = mBrushData[2] * mScale;
+          float gradientEndX = mBrushData[3] * mScale;
+          float gradientEndY = mBrushData[4] * mScale;
+          int stops = (mBrushData.length - 5) / 5;
+          int[] colors = null;
+          float[] positions = null;
+          if (stops > 0) {
+            colors = new int[stops];
+            positions = new float[stops];
+            for (int i=0; i<stops; i++) {
+              positions[i] = mBrushData[5 + 4*stops + i];
+              int r = (int) (255 * mBrushData[5 + 4*i + 0]);
+              int g = (int) (255 * mBrushData[5 + 4*i + 1]);
+              int b = (int) (255 * mBrushData[5 + 4*i + 2]);
+              int a = (int) (255 * mBrushData[5 + 4*i + 3]);
+              colors[i] = Color.argb(a, r, g, b);
+            }
+          }
+          paint.setShader(
+            new LinearGradient(
+              gradientStartX, gradientStartY,
+              gradientEndX, gradientEndY,
+              colors, positions,
+              Shader.TileMode.CLAMP
+            )
+          );
+          break;
+        case COLOR_TYPE_RADIAL_GRADIENT:
+          // TODO(6352048): Support radial gradient etc.
+        case COLOR_TYPE_PATTERN:
+          // TODO(6352048): Support patterns etc.
         default:
-          // TODO(6352048): Support gradients etc.
           FLog.w(ReactConstants.TAG, "ART: Color type " + colorType + " not supported!");
       }
       return true;
     }
     return false;
+  }
+
+  /**
+   * Returns the floor modulus of the float arguments. Java modulus will return a negative remainder
+   * when the divisor is negative. Modulus should always be positive. This mimics the behavior of
+   * Math.floorMod, introduced in Java 8.
+   */
+  private float modulus(float x, float y) {
+    float remainder = x % y;
+    float modulus = remainder;
+    if (remainder < 0) {
+      modulus += y;
+    }
+    return modulus;
   }
 
   /**
@@ -232,13 +295,21 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
           float r = data[i++] * mScale;
           float start = (float) Math.toDegrees(data[i++]);
           float end = (float) Math.toDegrees(data[i++]);
-          boolean clockwise = data[i++] == 0f;
-          if (!clockwise) {
-            end = 360 - end;
+
+          boolean counterClockwise = !(data[i++] == 1f);
+          float sweep = end - start;
+          if (Math.abs(sweep) >= 360) {
+            path.addCircle(x, y, r, counterClockwise ? Path.Direction.CCW : Path.Direction.CW);
+          } else {
+            sweep = modulus(sweep, 360);
+            if (counterClockwise && sweep < 360) {
+              // Counter-clockwise sweeps are negative
+              sweep = -1 * (360 - sweep);
+            }
+
+            RectF oval = new RectF(x - r, y - r, x + r, y + r);
+            path.arcTo(oval, start, sweep);
           }
-          float sweep = start - end;
-          RectF oval = new RectF(x - r, y - r, x + r, y + r);
-          path.addArc(oval, start, sweep);
           break;
         }
         default:

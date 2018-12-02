@@ -1,27 +1,25 @@
 /**
- * @generated SignedSource<<92108a17b1f3eee4b7e3dd7d484aa17a>>
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * !! This file is a check-in of a static_upstream project!      !!
- * !!                                                            !!
- * !! You should not modify this file directly. Instead:         !!
- * !! 1) Use `fjs use-upstream` to temporarily replace this with !!
- * !!    the latest version from upstream.                       !!
- * !! 2) Make your changes, test them, etc.                      !!
- * !! 3) Use `fjs push-upstream` to copy your changes back to    !!
- * !!    static_upstream.                                        !!
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule EventSubscription
- * @typechecks
+ * @format
+ * @flow strict-local
  */
+
 'use strict';
+
+import type EventSubscriptionVendor from 'EventSubscriptionVendor';
 
 /**
  * EventSubscription represents a subscription to a particular event. It can
  * remove its own subscription.
  */
 class EventSubscription {
+  eventType: string;
+  key: number;
+  subscriber: EventSubscriptionVendor;
 
   /**
    * @param {EventSubscriptionVendor} subscriber the subscriber that controls

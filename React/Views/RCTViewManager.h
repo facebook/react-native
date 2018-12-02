@@ -1,20 +1,18 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <UIKit/UIKit.h>
 
-#import "RCTBridgeModule.h"
-#import "RCTConvert.h"
-#import "RCTComponent.h"
-#import "RCTDefines.h"
-#import "RCTEventDispatcher.h"
-#import "RCTLog.h"
+#import <React/RCTBridgeModule.h>
+#import <React/RCTConvert.h>
+#import <React/RCTDefines.h>
+#import <React/RCTEventDispatcher.h>
+#import <React/RCTLog.h>
+#import <React/UIView+React.h>
 
 @class RCTBridge;
 @class RCTShadowView;
@@ -30,7 +28,7 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNu
  * allowing the manager (or the views that it manages) to manipulate the view
  * hierarchy and send events back to the JS context.
  */
-@property (nonatomic, weak, readonly) RCTBridge *bridge;
+@property (nonatomic, weak) RCTBridge *bridge;
 
 /**
  * This method instantiates a native view to be managed by the module. Override
@@ -61,46 +59,19 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNu
  * Note that this method is not inherited when you subclass a view module, and
  * you should not call [super customBubblingEventTypes] when overriding it.
  */
-- (NSArray<NSString *> *)customBubblingEventTypes;
-
-/**
- * DEPRECATED: declare properties of type RCTDirectEventBlock instead
- *
- * Returns an array of names of events that can be sent by native views. This
- * should return non-bubbling, directly-dispatched event types. The event name
- * should not include a prefix such as 'on' or 'top', as this will be applied
- * as needed.
- *
- * Note that this method is not inherited when you subclass a view module, and
- * you should not call [super customDirectEventTypes] when overriding it.
- */
-- (NSArray<NSString *> *)customDirectEventTypes;
-
-/**
- * Called to notify manager that layout has finished, in case any calculated
- * properties need to be copied over from shadow view to view.
- */
-- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowView:(RCTShadowView *)shadowView;
-
-/**
- * Called after view hierarchy manipulation has finished, and all shadow props
- * have been set, but before layout has been performed. Useful for performing
- * custo  layout logic or tasks that involve walking the view hierarchy.
- * To be deprecated, hopefully.
- */
-- (RCTViewManagerUIBlock)uiBlockToAmendWithShadowViewRegistry:(NSDictionary<NSNumber *, RCTShadowView *> *)shadowViewRegistry;
+- (NSArray<NSString *> *)customBubblingEventTypes __deprecated_msg("Use RCTBubblingEventBlock props instead.");
 
 /**
  * This handles the simple case, where JS and native property names match.
  */
 #define RCT_EXPORT_VIEW_PROPERTY(name, type) \
-+ (NSArray<NSString *> *)propConfig_##name { return @[@#type]; }
++ (NSArray<NSString *> *)propConfig_##name RCT_DYNAMIC { return @[@#type]; }
 
 /**
  * This macro maps a named property to an arbitrary key path in the view.
  */
 #define RCT_REMAP_VIEW_PROPERTY(name, keyPath, type) \
-+ (NSArray<NSString *> *)propConfig_##name { return @[@#type, @#keyPath]; }
++ (NSArray<NSString *> *)propConfig_##name RCT_DYNAMIC { return @[@#type, @#keyPath]; }
 
 /**
  * This macro can be used when you need to provide custom logic for setting
@@ -109,12 +80,27 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNu
  */
 #define RCT_CUSTOM_VIEW_PROPERTY(name, type, viewClass) \
 RCT_REMAP_VIEW_PROPERTY(name, __custom__, type)         \
-- (void)set_##name:(id)json forView:(viewClass *)view withDefaultView:(viewClass *)defaultView
+- (void)set_##name:(id)json forView:(viewClass *)view withDefaultView:(viewClass *)defaultView RCT_DYNAMIC
 
 /**
  * This macro is used to map properties to the shadow view, instead of the view.
  */
 #define RCT_EXPORT_SHADOW_PROPERTY(name, type) \
-+ (NSArray<NSString *> *)propConfigShadow_##name { return @[@#type]; }
++ (NSArray<NSString *> *)propConfigShadow_##name RCT_DYNAMIC { return @[@#type]; }
+
+/**
+ * This macro maps a named property to an arbitrary key path in the shadow view.
+ */
+#define RCT_REMAP_SHADOW_PROPERTY(name, keyPath, type) \
++ (NSArray<NSString *> *)propConfigShadow_##name RCT_DYNAMIC { return @[@#type, @#keyPath]; }
+
+/**
+ * This macro can be used when you need to provide custom logic for setting
+ * shadow view properties. The macro should be followed by a method body, which can
+ * refer to "json" and "view".
+ */
+#define RCT_CUSTOM_SHADOW_PROPERTY(name, type, viewClass) \
+RCT_REMAP_SHADOW_PROPERTY(name, __custom__, type)         \
+- (void)set_##name:(id)json forShadowView:(viewClass *)view RCT_DYNAMIC
 
 @end

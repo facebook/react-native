@@ -1,13 +1,11 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * Wrapper on-top of `optimist` in order to properly support boolean flags
- * and have a slightly less akward API.
+ * and have a slightly less awkward API.
  *
  * Usage example:
  *   var argv = parseCommandLine([{
@@ -15,12 +13,19 @@
  *     description: 'Run in a web browser instead of iOS',
  *     default: true
  *   }])
+ *
+ * NOTE: This file is used internally at Facebook and not in `local-cli` itself.
+ * No changes should be made to this file without prior discussion with FB team.
+ *
+ * @format
  */
+
 'use strict';
 
-var optimist = require('optimist');
+var optimistModule = require('optimist');
 
 function parseCommandLine(config, args) {
+  var optimist = new optimistModule();
   args = args || process.argv;
   // optimist default API requires you to write the command name three time
   // This is a small wrapper to accept an object instead

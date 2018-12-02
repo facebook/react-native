@@ -1,21 +1,18 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule RCTLog
+ * @format
  * @flow
  */
+
 'use strict';
 
-var BatchedBridge = require('BatchedBridge');
+const invariant = require('fbjs/lib/invariant');
 
-var invariant = require('invariant');
-
-var levelsMap = {
+const levelsMap = {
   log: 'log',
   info: 'info',
   warn: 'warn',
@@ -23,27 +20,36 @@ var levelsMap = {
   fatal: 'error',
 };
 
-class RCTLog {
+let warningHandler: ?(Array<any>) => void = null;
+
+const RCTLog = {
   // level one of log, info, warn, error, mustfix
-  static logIfNoNativeHook() {
-    var args = Array.prototype.slice.call(arguments);
-    var level = args.shift();
-    var logFn = levelsMap[level];
+  logIfNoNativeHook(level: string, ...args: Array<any>): void {
+    // We already printed in the native console, so only log here if using a js debugger
+    if (typeof global.nativeLoggingHook === 'undefined') {
+      RCTLog.logToConsole(level, ...args);
+    } else {
+      // Report native warnings to YellowBox
+      if (warningHandler && level === 'warn') {
+        warningHandler(...args);
+      }
+    }
+  },
+
+  // Log to console regardless of nativeLoggingHook
+  logToConsole(level: string, ...args: Array<any>): void {
+    const logFn = levelsMap[level];
     invariant(
       logFn,
-      'Level "' + level + '" not one of ' + Object.keys(levelsMap)
+      'Level "' + level + '" not one of ' + Object.keys(levelsMap).toString(),
     );
-    if (typeof global.nativeLoggingHook === 'undefined') {
-      // We already printed in xcode, so only log here if using a js debugger
-      console[logFn].apply(console, args);
-    }
-    return true;
-  }
-}
 
-BatchedBridge.registerCallableModule(
-  'RCTLog',
-  RCTLog
-);
+    console[logFn](...args);
+  },
+
+  setWarningHandler(handler: typeof warningHandler): void {
+    warningHandler = handler;
+  },
+};
 
 module.exports = RCTLog;

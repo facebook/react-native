@@ -1,15 +1,14 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.modules.intent;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.net.Uri;
 
@@ -18,11 +17,15 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.module.annotations.ReactModule;
 
 /**
  * Intent module. Launch other activities or open URLs.
  */
+@ReactModule(name = IntentModule.NAME)
 public class IntentModule extends ReactContextBaseJavaModule {
+
+  public static final String NAME = "IntentAndroid";
 
   public IntentModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -30,7 +33,7 @@ public class IntentModule extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "IntentAndroid";
+    return NAME;
   }
 
   /**
@@ -78,12 +81,22 @@ public class IntentModule extends ReactContextBaseJavaModule {
 
     try {
       Activity currentActivity = getCurrentActivity();
-      Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+      Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url).normalizeScheme());
+
+      String selfPackageName = getReactApplicationContext().getPackageName();
+      ComponentName componentName = intent.resolveActivity(
+        getReactApplicationContext().getPackageManager());
+      String otherPackageName = (componentName != null ? componentName.getPackageName() : "");
+
+      // If there is no currentActivity or we are launching to a different package we need to set
+      // the FLAG_ACTIVITY_NEW_TASK flag
+      if (currentActivity == null || !selfPackageName.equals(otherPackageName)) {
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      }
 
       if (currentActivity != null) {
         currentActivity.startActivity(intent);
       } else {
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         getReactApplicationContext().startActivity(intent);
       }
 

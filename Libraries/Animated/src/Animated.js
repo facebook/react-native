@@ -1,24 +1,35 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Animated
  * @flow
+ * @format
  */
+
 'use strict';
 
-var AnimatedImplementation = require('AnimatedImplementation');
-var Image = require('Image');
-var Text = require('Text');
-var View = require('View');
+const AnimatedImplementation = require('AnimatedImplementation');
 
 module.exports = {
+  get FlatList() {
+    return require('AnimatedFlatList');
+  },
+  get Image() {
+    return require('AnimatedImage');
+  },
+  get ScrollView() {
+    return require('AnimatedScrollView');
+  },
+  get SectionList() {
+    return require('AnimatedSectionList');
+  },
+  get Text() {
+    return require('AnimatedText');
+  },
+  get View() {
+    return require('AnimatedView');
+  },
   ...AnimatedImplementation,
-  View: AnimatedImplementation.createAnimatedComponent(View),
-  Text: AnimatedImplementation.createAnimatedComponent(Text),
-  Image: AnimatedImplementation.createAnimatedComponent(Image),
 };

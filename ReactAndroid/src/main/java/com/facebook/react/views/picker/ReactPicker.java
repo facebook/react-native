@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.picker;
@@ -79,6 +77,10 @@ public class ReactPicker extends Spinner {
 
   public void setOnSelectListener(@Nullable OnSelectListener onSelectListener) {
     if (getOnItemSelectedListener() == null) {
+      // onItemSelected gets fired immediately after layout because checkSelectionChanged() in
+      // AdapterView updates the selection position from the default INVALID_POSITION. To match iOS
+      // behavior, we don't want the event emitter for onItemSelected to fire right after layout.
+      mSuppressNextEvent = true;
       setOnItemSelectedListener(
           new OnItemSelectedListener() {
             @Override

@@ -1,29 +1,32 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.modules.core;
 
 import javax.annotation.Nullable;
 
+import android.net.Uri;
+
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.module.annotations.ReactModule;
 
 /**
  * Native module that handles device hardware events like hardware back presses.
  */
+@ReactModule(name = DeviceEventManagerModule.NAME)
 public class DeviceEventManagerModule extends ReactContextBaseJavaModule {
-
-  public static interface RCTDeviceEventEmitter extends JavaScriptModule {
+  public static final String NAME = "DeviceEventManager";
+  public interface RCTDeviceEventEmitter extends JavaScriptModule {
     void emit(String eventName, @Nullable Object data);
   }
 
@@ -49,6 +52,17 @@ public class DeviceEventManagerModule extends ReactContextBaseJavaModule {
     getReactApplicationContext()
         .getJSModule(RCTDeviceEventEmitter.class)
         .emit("hardwareBackPress", null);
+  }
+
+  /**
+   * Sends an event to the JS instance that a new intent was received.
+   */
+  public void emitNewIntentReceived(Uri uri) {
+    WritableMap map = Arguments.createMap();
+    map.putString("url", uri.toString());
+    getReactApplicationContext()
+        .getJSModule(RCTDeviceEventEmitter.class)
+        .emit("url", map);
   }
 
   /**

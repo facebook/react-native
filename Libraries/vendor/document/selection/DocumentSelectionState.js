@@ -1,22 +1,16 @@
 /**
- * @generated SignedSource<<1f058815818e10d01d2ee1f2f70d0fb1>>
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * !! This file is a check-in of a static_upstream project!      !!
- * !!                                                            !!
- * !! You should not modify this file directly. Instead:         !!
- * !! 1) Use `fjs use-upstream` to temporarily replace this with !!
- * !!    the latest version from upstream.                       !!
- * !! 2) Make your changes, test them, etc.                      !!
- * !! 3) Use `fjs push-upstream` to copy your changes back to    !!
- * !!    static_upstream.                                        !!
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule DocumentSelectionState
+ * @format
  * @typechecks
  */
 
-var mixInEventEmitter = require('mixInEventEmitter');
+'use strict';
+
+const mixInEventEmitter = require('mixInEventEmitter');
 
 /**
  * DocumentSelectionState is responsible for maintaining selection information
@@ -24,7 +18,7 @@ var mixInEventEmitter = require('mixInEventEmitter');
  *
  * It is intended for use by AbstractTextEditor-based components for
  * identifying the appropriate start/end positions to modify the
- * DocumentContent, and for programatically setting browser selection when
+ * DocumentContent, and for programmatically setting browser selection when
  * components re-render.
  */
 class DocumentSelectionState {
@@ -62,7 +56,7 @@ class DocumentSelectionState {
   constrainLength(maxLength) {
     this.update(
       Math.min(this._anchorOffset, maxLength),
-      Math.min(this._focusOffset, maxLength)
+      Math.min(this._focusOffset, maxLength),
     );
   }
 
@@ -119,18 +113,18 @@ class DocumentSelectionState {
    * @return {?number}
    */
   getStartOffset() {
-    return (
-      this._hasFocus ? Math.min(this._anchorOffset, this._focusOffset) : null
-    );
+    return this._hasFocus
+      ? Math.min(this._anchorOffset, this._focusOffset)
+      : null;
   }
 
   /**
    * @return {?number}
    */
   getEndOffset() {
-    return (
-      this._hasFocus ? Math.max(this._anchorOffset, this._focusOffset) : null
-    );
+    return this._hasFocus
+      ? Math.max(this._anchorOffset, this._focusOffset)
+      : null;
   }
 
   /**
@@ -141,16 +135,16 @@ class DocumentSelectionState {
   overlaps(start, end) {
     return (
       this.hasFocus() &&
-      this.getStartOffset() <= end && start <= this.getEndOffset()
+      this.getStartOffset() <= end &&
+      start <= this.getEndOffset()
     );
   }
 }
 
 mixInEventEmitter(DocumentSelectionState, {
-  'blur': true,
-  'focus': true,
-  'update': true
+  blur: true,
+  focus: true,
+  update: true,
 });
 
 module.exports = DocumentSelectionState;
-

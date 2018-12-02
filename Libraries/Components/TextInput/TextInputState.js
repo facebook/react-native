@@ -1,76 +1,93 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule TextInputState
- * @flow
  *
  * This class is responsible for coordinating the "focused"
  * state for TextInputs. All calls relating to the keyboard
  * should be funneled through here
+ *
+ * @format
+ * @flow strict-local
  */
+
 'use strict';
 
-var Platform = require('Platform');
-var UIManager = require('UIManager');
+const Platform = require('Platform');
+const UIManager = require('UIManager');
 
-var TextInputState = {
-   /**
-   * Internal state
-   */
-  _currentlyFocusedID: (null: ?number),
+let currentlyFocusedID: ?number = null;
+const inputs = new Set();
 
-  /**
-   * Returns the ID of the currently focused text field, if one exists
-   * If no text field is focused it returns null
-   */
-  currentlyFocusedField: function(): ?number {
-    return this._currentlyFocusedID;
-  },
+/**
+ * Returns the ID of the currently focused text field, if one exists
+ * If no text field is focused it returns null
+ */
+function currentlyFocusedField(): ?number {
+  return currentlyFocusedID;
+}
 
-  /**
-   * @param {number} TextInputID id of the text field to focus
-   * Focuses the specified text field
-   * noop if the text field was already focused
-   */
-  focusTextInput: function(textFieldID: ?number) {
-    if (this._currentlyFocusedID !== textFieldID && textFieldID !== null) {
-      this._currentlyFocusedID = textFieldID;
-      if (Platform.OS === 'ios') {
-        UIManager.focus(textFieldID);
-      } else if (Platform.OS === 'android') {
-        UIManager.dispatchViewManagerCommand(
-          textFieldID,
-          UIManager.AndroidTextInput.Commands.focusTextInput,
-          null
-        );
-      }
-    }
-  },
-
-  /**
-   * @param {number} textFieldID id of the text field to focus
-   * Unfocuses the specified text field
-   * noop if it wasn't focused
-   */
-  blurTextInput: function(textFieldID: ?number) {
-    if (this._currentlyFocusedID === textFieldID && textFieldID !== null) {
-      this._currentlyFocusedID = null;
-      if (Platform.OS === 'ios') {
-        UIManager.blur(textFieldID);
-      } else if (Platform.OS === 'android') {
-        UIManager.dispatchViewManagerCommand(
-          textFieldID,
-          UIManager.AndroidTextInput.Commands.blurTextInput,
-          null
-        );
-      }
+/**
+ * @param {number} TextInputID id of the text field to focus
+ * Focuses the specified text field
+ * noop if the text field was already focused
+ */
+function focusTextInput(textFieldID: ?number) {
+  if (currentlyFocusedID !== textFieldID && textFieldID !== null) {
+    currentlyFocusedID = textFieldID;
+    if (Platform.OS === 'ios') {
+      UIManager.focus(textFieldID);
+    } else if (Platform.OS === 'android') {
+      UIManager.dispatchViewManagerCommand(
+        textFieldID,
+        UIManager.getViewManagerConfig('AndroidTextInput').Commands
+          .focusTextInput,
+        null,
+      );
     }
   }
-};
+}
 
-module.exports = TextInputState;
+/**
+ * @param {number} textFieldID id of the text field to unfocus
+ * Unfocuses the specified text field
+ * noop if it wasn't focused
+ */
+function blurTextInput(textFieldID: ?number) {
+  if (currentlyFocusedID === textFieldID && textFieldID !== null) {
+    currentlyFocusedID = null;
+    if (Platform.OS === 'ios') {
+      UIManager.blur(textFieldID);
+    } else if (Platform.OS === 'android') {
+      UIManager.dispatchViewManagerCommand(
+        textFieldID,
+        UIManager.getViewManagerConfig('AndroidTextInput').Commands
+          .blurTextInput,
+        null,
+      );
+    }
+  }
+}
+
+function registerInput(textFieldID: number) {
+  inputs.add(textFieldID);
+}
+
+function unregisterInput(textFieldID: number) {
+  inputs.delete(textFieldID);
+}
+
+function isTextInput(textFieldID: number) {
+  return inputs.has(textFieldID);
+}
+
+module.exports = {
+  currentlyFocusedField,
+  focusTextInput,
+  blurTextInput,
+  registerInput,
+  unregisterInput,
+  isTextInput,
+};

@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.bridge.queue;
@@ -65,7 +63,7 @@ public class ReactQueueConfigurationImpl implements ReactQueueConfiguration {
 
     MessageQueueThreadSpec uiThreadSpec = MessageQueueThreadSpec.mainThreadSpec();
     MessageQueueThreadImpl uiThread =
-      MessageQueueThreadImpl.create( uiThreadSpec, exceptionHandler);
+      MessageQueueThreadImpl.create(uiThreadSpec, exceptionHandler);
     specsToThreads.put(uiThreadSpec, uiThread);
 
     MessageQueueThreadImpl jsThread = specsToThreads.get(spec.getJSQueueThreadSpec());
@@ -80,6 +78,9 @@ public class ReactQueueConfigurationImpl implements ReactQueueConfiguration {
           MessageQueueThreadImpl.create(spec.getNativeModulesQueueThreadSpec(), exceptionHandler);
     }
 
-    return new ReactQueueConfigurationImpl(uiThread, nativeModulesThread, jsThread);
+    return new ReactQueueConfigurationImpl(
+      uiThread,
+      nativeModulesThread,
+      jsThread);
   }
 }

@@ -1,14 +1,13 @@
 /**
- * Copyright (c) 2014-present, Facebook, Inc.
- * All rights reserved.
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.testing;
 
-import com.facebook.react.modules.debug.DeveloperSettings;
+import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 
 public class ReactSettingsForTests implements DeveloperSettings {
 
@@ -28,7 +27,27 @@ public class ReactSettingsForTests implements DeveloperSettings {
   }
 
   @Override
+  public boolean isJSMinifyEnabled() {
+    return false;
+  }
+
+  @Override
   public boolean isElementInspectorEnabled() {
     return false;
+  }
+
+  @Override
+  public boolean isNuclideJSDebugEnabled() {
+    return false;
+  }
+
+  @Override
+  public boolean isRemoteJSDebugEnabled() {
+    return false;
+  }
+
+  @Override
+  public void setRemoteJSDebugEnabled(boolean remoteJSDebugEnabled) {
+
   }
 }

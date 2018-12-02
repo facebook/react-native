@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTFPSGraph.h"
@@ -96,7 +94,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     _minFPS = MIN(_minFPS, _FPS);
     _maxFPS = MAX(_maxFPS, _FPS);
 
-    _label.text = [NSString stringWithFormat:@"%lu", (unsigned long)_FPS];
+    dispatch_async(dispatch_get_main_queue(), ^{
+      self->_label.text = [NSString stringWithFormat:@"%lu", (unsigned long)self->_FPS];
+    });
 
     CGFloat scale = 60.0 / _height;
     for (NSUInteger i = 0; i < _length - 1; i++) {

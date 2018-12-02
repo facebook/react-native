@@ -1,42 +1,62 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ElementProperties
+ * @format
  * @flow
  */
+
 'use strict';
 
-var BoxInspector = require('BoxInspector');
-var PropTypes = require('ReactPropTypes');
-var React = require('React');
-var StyleInspector = require('StyleInspector');
-var StyleSheet = require('StyleSheet');
-var Text = require('Text');
-var TouchableHighlight = require('TouchableHighlight');
-var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-var View = require('View');
+const BoxInspector = require('BoxInspector');
+const React = require('React');
+const StyleInspector = require('StyleInspector');
+const StyleSheet = require('StyleSheet');
+const Text = require('Text');
+const TouchableHighlight = require('TouchableHighlight');
+const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+const View = require('View');
 
-var flattenStyle = require('flattenStyle');
-var mapWithSeparator = require('mapWithSeparator');
+const flattenStyle = require('flattenStyle');
+const mapWithSeparator = require('mapWithSeparator');
+const openFileInEditor = require('openFileInEditor');
 
-var ElementProperties = React.createClass({
-  propTypes: {
-    hierarchy: PropTypes.array.isRequired,
-    style: PropTypes.oneOfType([
-      PropTypes.object,
-      PropTypes.array,
-      PropTypes.number,
-    ]),
+import type {ViewStyleProp} from 'StyleSheet';
+
+type Props = $ReadOnly<{|
+  hierarchy: Array<{|name: string|}>,
+  style?: ?ViewStyleProp,
+  source?: ?{
+    fileName?: string,
+    lineNumber?: number,
   },
+  frame?: ?Object,
+  selection?: ?number,
+  setSelection?: number => mixed,
+|}>;
 
-  render: function() {
-    var style = flattenStyle(this.props.style);
-    var selection = this.props.selection;
+class ElementProperties extends React.Component<Props> {
+  render() {
+    const style = flattenStyle(this.props.style);
+    const selection = this.props.selection;
+    let openFileButton;
+    const source = this.props.source;
+    const {fileName, lineNumber} = source || {};
+    if (fileName && lineNumber) {
+      const parts = fileName.split('/');
+      const fileNameShort = parts[parts.length - 1];
+      openFileButton = (
+        <TouchableHighlight
+          style={styles.openButton}
+          onPress={openFileInEditor.bind(null, fileName, lineNumber)}>
+          <Text style={styles.openButtonTitle} numberOfLines={1}>
+            {fileNameShort}:{lineNumber}
+          </Text>
+        </TouchableHighlight>
+      );
+    }
     // Without the `TouchableWithoutFeedback`, taps on this inspector pane
     // would change the inspected element to whatever is under the inspector
     return (
@@ -45,34 +65,36 @@ var ElementProperties = React.createClass({
           <View style={styles.breadcrumb}>
             {mapWithSeparator(
               this.props.hierarchy,
-              (item, i) => (
+              (hierarchyItem, i) => (
                 <TouchableHighlight
                   key={'item-' + i}
                   style={[styles.breadItem, i === selection && styles.selected]}
+                  // $FlowFixMe found when converting React.createClass to ES6
                   onPress={() => this.props.setSelection(i)}>
-                  <Text style={styles.breadItemText}>
-                    {item.getName ? item.getName() : 'Unknown'}
-                  </Text>
+                  <Text style={styles.breadItemText}>{hierarchyItem.name}</Text>
                 </TouchableHighlight>
               ),
-              (i) => (
+              i => (
                 <Text key={'sep-' + i} style={styles.breadSep}>
                   &#9656;
                 </Text>
-              )
+              ),
             )}
           </View>
           <View style={styles.row}>
-            <StyleInspector style={style} />
-            <BoxInspector style={style} frame={this.props.frame} />
+            <View style={styles.col}>
+              <StyleInspector style={style} />
+              {openFileButton}
+            </View>
+            {<BoxInspector style={style} frame={this.props.frame} />}
           </View>
         </View>
       </TouchableWithoutFeedback>
     );
   }
-});
+}
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   breadSep: {
     fontSize: 8,
     color: 'white',
@@ -80,6 +102,7 @@ var styles = StyleSheet.create({
   breadcrumb: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    alignItems: 'flex-start',
     marginBottom: 5,
   },
   selected: {
@@ -101,12 +124,22 @@ var styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
+  col: {
+    flex: 1,
+  },
   info: {
     padding: 10,
   },
-  path: {
+  openButton: {
+    padding: 10,
+    backgroundColor: '#000',
+    marginVertical: 5,
+    marginRight: 5,
+    borderRadius: 2,
+  },
+  openButtonTitle: {
     color: 'white',
-    fontSize: 9,
+    fontSize: 8,
   },
 });
 

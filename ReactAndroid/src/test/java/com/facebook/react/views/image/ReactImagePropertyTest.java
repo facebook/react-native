@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.image;
@@ -14,13 +12,15 @@ import android.util.DisplayMetrics;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.react.bridge.CatalystInstance;
+import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.SimpleMap;
+import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.soloader.SoLoader;
 
 import org.junit.After;
 import org.junit.Before;
@@ -54,21 +54,22 @@ public class ReactImagePropertyTest {
 
   @Before
   public void setup() {
+    SoLoader.setInTestMode();
     mContext = new ReactApplicationContext(RuntimeEnvironment.application);
     mCatalystInstanceMock = ReactTestHelper.createMockCatalystInstance();
     mContext.initializeWithInstance(mCatalystInstanceMock);
     mThemeContext = new ThemedReactContext(mContext, mContext);
     Fresco.initialize(mContext);
-    DisplayMetricsHolder.setDisplayMetrics(new DisplayMetrics());
+    DisplayMetricsHolder.setWindowDisplayMetrics(new DisplayMetrics());
   }
 
   @After
   public void teardown() {
-    DisplayMetricsHolder.setDisplayMetrics(null);
+    DisplayMetricsHolder.setWindowDisplayMetrics(null);
   }
 
   public ReactStylesDiffMap buildStyles(Object... keysAndValues) {
-    return new ReactStylesDiffMap(SimpleMap.of(keysAndValues));
+    return new ReactStylesDiffMap(JavaOnlyMap.of(keysAndValues));
   }
 
   @Test(expected=JSApplicationIllegalArgumentException.class)
@@ -82,7 +83,9 @@ public class ReactImagePropertyTest {
   public void testBorderColor() {
     ReactImageManager viewManager = new ReactImageManager();
     ReactImageView view = viewManager.createViewInstance(mThemeContext);
-    viewManager.updateProperties(view, buildStyles("src", "http://mysite.com/mypic.jpg"));
+    viewManager.updateProperties(
+      view,
+      buildStyles("src", JavaOnlyArray.of(JavaOnlyMap.of("uri", "http://mysite.com/mypic.jpg"))));
 
     viewManager.updateProperties(view, buildStyles("borderColor", Color.argb(0, 0, 255, 255)));
     int borderColor = view.getHierarchy().getRoundingParams().getBorderColor();
@@ -110,7 +113,9 @@ public class ReactImagePropertyTest {
   public void testRoundedCorners() {
     ReactImageManager viewManager = new ReactImageManager();
     ReactImageView view = viewManager.createViewInstance(mThemeContext);
-    viewManager.updateProperties(view, buildStyles("src", "http://mysite.com/mypic.jpg"));
+    viewManager.updateProperties(
+      view,
+      buildStyles("src", JavaOnlyArray.of(JavaOnlyMap.of("uri", "http://mysite.com/mypic.jpg"))));
 
     // We can't easily verify if rounded corner was honored or not, this tests simply verifies
     // we're not crashing..

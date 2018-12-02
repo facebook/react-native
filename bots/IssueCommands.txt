@@ -1,0 +1,70 @@
+React Native GitHub Issue Task Force: AndrewJack, astreet, bestander, brentvatne, browniefed, cancan101, charpeni, chirag04, christopherdro, corbt, cosmith, damusnet, DanielMSchmidt, davidaurelio, dmmiller, dsibiski, foghina, frantic, gantman, geirman, grabbou, gre, ide, janicduplessis, javache, jaygarcia, jsierles, kmagiera, knowbody, kmagiera, Kureev, lelandrichardson, lwinkyawmyat, martinbigio, melihmucuk, mkonicek, ncuillery, radko93, react-native-bot, rigdern, rmevans9, rt2zz, ryankask, satya164, skevy, tabrindle, timwangdev, vjeux
+
+@facebook-github-bot answered
+comment Closing this issue as {author} says the question asked has been answered.
+close
+
+@facebook-github-bot duplicate (#[0-9]+)
+comment Duplicate of {match0}
+close
+
+@facebook-github-bot expected
+comment The comment above tells me this is expected behavior. If you'd like to change how this feature works, please submit a feature request on [Canny](https://react-native.canny.io/feature-requests) so that other people can vote on it.<br/><br/><sub>[How to Contribute](https://facebook.github.io/react-native/docs/contributing.html#bugs) • [What to Expect from Maintainers](https://facebook.github.io/react-native/docs/maintainers.html#handling-issues)</sub>
+close
+
+@facebook-github-bot stack-overflow
+comment Hey {issue_author}, thanks for posting this! {author} tells me this issue looks like a question that would be best asked on [Stack Overflow](https://stackoverflow.com/questions/tagged/react-native). Stack Overflow is amazing for Q&A: it has a reputation system, voting, the ability to mark a question as answered. Because of the reputation system it is likely the community will see and answer your question there. This also helps us use the GitHub bug tracker for bugs only.<br/><br/><sub>[How to Contribute](https://facebook.github.io/react-native/docs/contributing.html#bugs) • [What to Expect from Maintainers](https://facebook.github.io/react-native/docs/maintainers.html#handling-issues)</sub>
+add-label ":no_entry_sign:For Stack Overflow"
+close
+
+@facebook-github-bot label (.*)
+add-label {match0}
+
+@facebook-github-bot no-reply
+comment Closing this issue as more information is needed to debug this and we haven't heard back from the author.
+add-label ":grey_question:Needs More Information"
+close
+
+@facebook-github-bot no-template
+comment Hey {issue_author}, thanks for posting this! It looks like your issue is missing some required information. Can you please add all the details specified in the [Issue Template](https://raw.githubusercontent.com/facebook/react-native/master/.github/ISSUE_TEMPLATE.md)? This is necessary for people to be able to understand and reproduce your issue. I am going to close this, but please feel free to open a new issue with the additional information provided. Thanks!<br/><br/><sub>[How to Contribute](https://facebook.github.io/react-native/docs/contributing.html#bugs) • [What to Expect from Maintainers](https://facebook.github.io/react-native/docs/maintainers.html#handling-issues)</sub>
+add-label ":grey_question:Needs More Information"
+close
+
+@facebook-github-bot close
+comment {author} has closed this issue.
+close
+
+@facebook-github-bot large-pr
+comment Thank you for your contribution. Unfortunately, this pull request seems relatively large.<br/><br/>In order to reduce the load on maintainers, it would be valuable if you could [split this into small, targeted PRs that changed one thing at a time](https://graysonkoonce.com/stacked-pull-requests-keeping-github-diffs-small/).<br/><br/>If doing this requires more than a few pull requests, please open (or update) an issue specifying your goal and the different steps you will take in your PRs. This will ensure maintainers have context on the relationship between the PRs.<br/><br/>If this is a codemod or other formatting change that is simple but inherently touches many files, please comment on this and let us know and we will reopen the PR.
+add-label ":clipboard:Large PR :bangbang:"
+close
+
+@facebook-github-bot bugfix
+comment Hey {issue_author}, if you're sure this is a bug, can you send a pull request with a fix?<br/><br/><sub>[How to Contribute](https://facebook.github.io/react-native/docs/contributing.html#bugs) • [What to Expect from Maintainers](https://facebook.github.io/react-native/docs/maintainers.html#handling-issues)</sub>
+add-label "Help Wanted :octocat:"
+
+@facebook-github-bot needs-repro
+comment Can you reproduce the issue using [Snack](https://snack.expo.io)? This step is necessary for people to be able to see and debug the issue being reported.<br/><br/><sub>[How to Contribute](https://facebook.github.io/react-native/docs/contributing.html#bugs) • [What to Expect from Maintainers](https://facebook.github.io/react-native/docs/maintainers.html#handling-issues)</sub>
+add-label ":grey_question:Needs More Information"
+
+@facebook-github-bot cannot-repro
+comment Thanks for opening the issue! It does not appear like a community member will be able to reliably reproduce this issue. This may be for several reasons; perhaps it affects a particular app but a minimal repro has not been provided, or the issue may be sporadic. As it happens, we need a concrete set of steps that can demonstrably reproduce the issue as this will allow your fellow community members to validate a fix. We'll close the issue for now, but feel free to submit a new issue once you're able to reliably reproduce the issue locally. Thanks for your understanding!<br/><br/><sub>[How to Contribute](https://facebook.github.io/react-native/docs/contributing.html#bugs) • [What to Expect from Maintainers](https://facebook.github.io/react-native/docs/maintainers.html#handling-issues)</sub>
+close
+
+@facebook-github-bot reopen
+comment Okay, reopening this issue.
+reopen
+
+@facebook-github-bot feature
+comment Hey {issue_author}! Thanks for opening the issue, however it looks like a feature request. As noted in the [Issue template](https://raw.githubusercontent.com/facebook/react-native/master/.github/ISSUE_TEMPLATE.md) we'd like to use the GitHub issues to track bugs only. Can you implement the feature as a standalone npm module? If not, consider sending a pull request or a creating an entry on [Canny](https://react-native.canny.io/feature-requests/). It has a voting system and if the feature gets upvoted enough it might get implemented. Closing this now, thanks for understanding!<br/><br/><sub>[How to Contribute](https://facebook.github.io/react-native/docs/contributing.html#bugs) • [What to Expect from Maintainers](https://facebook.github.io/react-native/docs/maintainers.html#handling-issues)</sub>
+add-label ":star2:Feature Request"
+close
+
+@facebook-github-bot cla
+comment Hey {issue_author}! Thanks for sending this pull request! We would love to review your changes however it looks like you haven't signed the CLA yet. You can do so at https://code.facebook.com/cla. See ["How to Contribute"](https://facebook.github.io/react-native/docs/contributing.html#pull-requests) to learn more.
+add-label ":grey_question:Needs More Information"
+
+@facebook-github-bot icebox
+comment {author} tells me to close this issue because it has been inactive for a while. Maybe the issue has been fixed in a recent release, or perhaps it is not affecting a lot of people. Either way, we're automatically closing issues after a period of inactivity. Please do not take it personally!<br/><br/>If you think this issue should definitely remain open, please let us know. The following information is helpful when it comes to determining if the issue should be re-opened: <ul><li>Does the issue still reproduce on the latest release candidate? Post a comment with the version you tested.</li><li>If so, is there any information missing from the bug report? Post a comment with all the information required by the [issue template](https://github.com/facebook/react-native/blob/master/.github/ISSUE_TEMPLATE.md).</li><li>Is there a pull request that addresses this issue? Post a comment with the PR number so we can follow up.</li></ul>If you would like to work on a patch to fix the issue, *contributions are very welcome*! Read through the [contribution guide](https://facebook.github.io/react-native/docs/contributing.html), and feel free to hop into [#react-native](https://discordapp.com/invite/0ZcbPKXt5bZjGY5n) if you need help planning your contribution.<br/><br/><sub>[How to Contribute](https://facebook.github.io/react-native/docs/contributing.html#bugs) • [What to Expect from Maintainers](https://facebook.github.io/react-native/docs/maintainers.html#handling-issues)</sub>
+add-label Stale
+close

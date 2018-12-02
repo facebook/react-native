@@ -1,8 +1,14 @@
- // Copyright 2004-present Facebook. All Rights Reserved.
+//  Copyright (c) Facebook, Inc. and its affiliates.
+//
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #pragma once
 
 #include "NativeArray.h"
+
+#include "NativeCommon.h"
+#include "NativeMap.h"
 
 namespace facebook {
 namespace react {
@@ -16,6 +22,8 @@ class ReadableNativeArray : public jni::HybridClass<ReadableNativeArray, NativeA
   static constexpr const char* kJavaDescriptor = "Lcom/facebook/react/bridge/ReadableNativeArray;";
 
   static void mapException(const std::exception& ex);
+  jni::local_ref<jni::JArrayClass<jobject>> importArray();
+  jni::local_ref<jni::JArrayClass<jobject>> importTypeArray();
   jint getSize();
   jboolean isNull(jint index);
   jboolean getBoolean(jint index);
@@ -26,8 +34,10 @@ class ReadableNativeArray : public jni::HybridClass<ReadableNativeArray, NativeA
   // careful.
   const char* getString(jint index);
   jni::local_ref<jhybridobject> getArray(jint index);
-  jobject getMap(jint index);
-  jobject getType(jint index);
+  // This actually returns a ReadableNativeMap::JavaPart, but due to
+  // limitations of fbjni, we can't specify that here.
+  jni::local_ref<NativeMap::jhybridobject> getMap(jint index);
+  jni::local_ref<ReadableType> getType(jint index);
 
   static void registerNatives();
 };

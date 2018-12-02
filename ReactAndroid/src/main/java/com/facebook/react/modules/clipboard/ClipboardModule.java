@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.modules.clipboard;
@@ -12,56 +10,49 @@ package com.facebook.react.modules.clipboard;
 import android.annotation.SuppressLint;
 import android.content.ClipboardManager;
 import android.content.ClipData;
+import android.content.Context;
 import android.os.Build;
 
-import com.facebook.common.logging.FLog;
-import com.facebook.react.bridge.Callback;
-import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Promise;
-import com.facebook.react.common.ReactConstants;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.facebook.react.module.annotations.ReactModule;
 
 /**
  * A module that allows JS to get/set clipboard contents.
  */
-public class ClipboardModule extends ReactContextBaseJavaModule {
+@ReactModule(name = ClipboardModule.NAME)
+public class ClipboardModule extends ContextBaseJavaModule {
 
-  public ClipboardModule(ReactApplicationContext reactContext) {
-    super(reactContext);
+  public ClipboardModule(Context context) {
+    super(context);
   }
+
+  public static final String NAME = "Clipboard";
 
   @Override
   public String getName() {
-    return "Clipboard";
+    return ClipboardModule.NAME;
   }
 
   private ClipboardManager getClipboardService() {
-    return (ClipboardManager) getReactApplicationContext().getSystemService(getReactApplicationContext().CLIPBOARD_SERVICE);
+    return (ClipboardManager) getContext().getSystemService(getContext().CLIPBOARD_SERVICE);
   }
 
   @ReactMethod
-  public void getString(Promise promise){
+  public void getString(Promise promise) {
     try {
       ClipboardManager clipboard = getClipboardService();
       ClipData clipData = clipboard.getPrimaryClip();
       if (clipData == null) {
         promise.resolve("");
-      }
-      if (clipData.getItemCount() >= 1) {
+      } else if (clipData.getItemCount() >= 1) {
         ClipData.Item firstItem = clipboard.getPrimaryClip().getItemAt(0);
         promise.resolve("" + firstItem.getText());
       } else {
         promise.resolve("");
       }
-    } catch(Exception e) {
+    } catch (Exception e) {
       promise.reject(e);
     }
   }
@@ -69,7 +60,6 @@ public class ClipboardModule extends ReactContextBaseJavaModule {
   @SuppressLint("DeprecatedMethod")
   @ReactMethod
   public void setString(String text) {
-    ReactApplicationContext reactContext = getReactApplicationContext();
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
       ClipData clipdata = ClipData.newPlainText(null, text);
       ClipboardManager clipboard = getClipboardService();

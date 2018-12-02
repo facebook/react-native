@@ -1,22 +1,19 @@
-include_defs('//ReactAndroid/DEFS')
+load("//tools/build_defs/oss:rn_defs.bzl", "YOGA_TARGET", "react_native_dep", "react_native_target", "rn_android_library")
 
-android_library(
-  name = 'progressbar',
-  srcs = glob(['*.java']),
-  deps = [
-    react_native_target('java/com/facebook/react/bridge:bridge'),
-    react_native_target('java/com/facebook/react/common:common'),
-    react_native_target('java/com/facebook/csslayout:csslayout'),
-    react_native_target('java/com/facebook/react/uimanager:uimanager'),
-    react_native_target('java/com/facebook/react/uimanager/annotations:annotations'),
-    react_native_dep('third-party/java/infer-annotations:infer-annotations'),
-    react_native_dep('third-party/java/jsr-305:jsr-305'),
-  ],
-  visibility = [
-    'PUBLIC',
-  ],
-)
-
-project_config(
-  src_target = ':progressbar',
+rn_android_library(
+    name = "progressbar",
+    srcs = glob(["*.java"]),
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        YOGA_TARGET,
+        react_native_dep("third-party/java/infer-annotations:infer-annotations"),
+        react_native_dep("third-party/java/jsr-305:jsr-305"),
+        react_native_target("java/com/facebook/react/bridge:bridge"),
+        react_native_target("java/com/facebook/react/common:common"),
+        react_native_target("java/com/facebook/react/module/annotations:annotations"),
+        react_native_target("java/com/facebook/react/uimanager:uimanager"),
+        react_native_target("java/com/facebook/react/uimanager/annotations:annotations"),
+    ],
 )

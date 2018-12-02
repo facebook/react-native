@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 package com.facebook.react.views.progressbar;
 
@@ -7,6 +10,7 @@ import javax.annotation.Nullable;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
@@ -22,6 +26,7 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 
   private @Nullable Integer mColor;
   private boolean mIndeterminate = true;
+  private boolean mAnimating = true;
   private double mProgress;
   private @Nullable ProgressBar mProgressBar;
 
@@ -31,7 +36,7 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 
   public void setStyle(@Nullable String styleName) {
     int style = ReactProgressBarViewManager.getStyleFromString(styleName);
-    mProgressBar = new ProgressBar(getContext(), null, style);
+    mProgressBar = ReactProgressBarViewManager.createProgressBar(getContext(), style);
     mProgressBar.setMax(MAX_PROGRESS);
     removeAllViews();
     addView(
@@ -53,6 +58,10 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
     mProgress = progress;
   }
 
+  public void setAnimating(boolean animating) {
+    mAnimating = animating;
+  }
+
   public void apply() {
     if (mProgressBar == null) {
       throw new JSApplicationIllegalArgumentException("setStyle() not called");
@@ -61,6 +70,11 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
     mProgressBar.setIndeterminate(mIndeterminate);
     setColor(mProgressBar);
     mProgressBar.setProgress((int) (mProgress * MAX_PROGRESS));
+    if (mAnimating) {
+      mProgressBar.setVisibility(View.VISIBLE);
+    } else {
+      mProgressBar.setVisibility(View.GONE);
+    }
   }
 
   private void setColor(ProgressBar progressBar) {

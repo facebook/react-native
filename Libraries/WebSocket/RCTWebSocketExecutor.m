@@ -1,22 +1,22 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
-
-#import "RCTDefines.h"
-
-#if RCT_DEV // Debug executors are only supported in dev mode
 
 #import "RCTWebSocketExecutor.h"
 
-#import "RCTConvert.h"
-#import "RCTLog.h"
-#import "RCTUtils.h"
+#import <React/RCTAssert.h>
+#import <React/RCTBridge.h>
+#import <React/RCTConvert.h>
+#import <React/RCTDefines.h>
+#import <React/RCTLog.h>
+#import <React/RCTUtils.h>
+
 #import "RCTSRWebSocket.h"
+
+#if RCT_DEV // Debug executors are only supported in dev mode
 
 typedef void (^RCTWSMessageCallback)(NSError *error, NSDictionary<NSString *, id> *reply);
 
@@ -32,9 +32,12 @@ typedef void (^RCTWSMessageCallback)(NSError *error, NSDictionary<NSString *, id
   dispatch_semaphore_t _socketOpenSemaphore;
   NSMutableDictionary<NSString *, NSString *> *_injectedObjects;
   NSURL *_url;
+  NSError *_setupError;
 }
 
 RCT_EXPORT_MODULE()
+
+@synthesize bridge = _bridge;
 
 - (instancetype)initWithURL:(NSURL *)URL
 {
@@ -49,27 +52,32 @@ RCT_EXPORT_MODULE()
 - (void)setUp
 {
   if (!_url) {
-    NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
-    NSInteger port = [standardDefaults integerForKey:@"websocket-executor-port"] ?: 8081;
-    NSString *URLString = [NSString stringWithFormat:@"http://localhost:%zd/debugger-proxy?role=client", port];
+    NSInteger port = [[[_bridge bundleURL] port] integerValue] ?: RCT_METRO_PORT;
+    NSString *host = [[_bridge bundleURL] host] ?: @"localhost";
+    NSString *URLString = [NSString stringWithFormat:@"http://%@:%lld/debugger-proxy?role=client", host, (long long)port];
     _url = [RCTConvert NSURL:URLString];
   }
 
-  _jsQueue = dispatch_queue_create("com.facebook.React.WebSocketExecutor", DISPATCH_QUEUE_SERIAL);
+  _jsQueue = dispatch_queue_create("com.facebook.react.WebSocketExecutor", DISPATCH_QUEUE_SERIAL);
   _socket = [[RCTSRWebSocket alloc] initWithURL:_url];
   _socket.delegate = self;
   _callbacks = [NSMutableDictionary new];
   _injectedObjects = [NSMutableDictionary new];
   [_socket setDelegateDispatchQueue:_jsQueue];
 
-  NSURL *startDevToolsURL = [NSURL URLWithString:@"/launch-chrome-devtools" relativeToURL:_url];
-  [NSURLConnection connectionWithRequest:[NSURLRequest requestWithURL:startDevToolsURL] delegate:nil];
+  NSURL *startDevToolsURL = [NSURL URLWithString:@"/launch-js-devtools" relativeToURL:_url];
 
+  NSURLSession *session = [NSURLSession sharedSession];
+  NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:[NSURLRequest requestWithURL:startDevToolsURL]
+                                              completionHandler:^(NSData *data, NSURLResponse *response, NSError *error){}];
+  [dataTask resume];
   if (![self connectToProxy]) {
-    RCTLogError(@"Connection to %@ timed out. Are you running node proxy? If "
-                 "you are running on the device, check if you have the right IP "
-                 "address in `RCTWebSocketExecutor.m`.", _url);
     [self invalidate];
+    NSString *error = [NSString stringWithFormat:@"Connection to %@ timed out. Are you "
+                       "running node proxy? If you are running on the device, check if "
+                       "you have the right IP address in `RCTWebSocketExecutor.m`.", _url];
+    _setupError = RCTErrorWithMessage(error);
+    RCTFatal(_setupError);
     return;
   }
 
@@ -80,10 +88,13 @@ RCT_EXPORT_MODULE()
     retries--;
   }
   if (!runtimeIsReady) {
-    RCTLogError(@"Runtime is not ready for debugging.\n "
-                 "- Make sure Packager server is running.\n"
-                 "- Make sure Chrome is running and not paused on a breakpoint or exception and try reloading again.");
     [self invalidate];
+    NSString *error = @"Runtime is not ready for debugging.\n "
+                      "- Make sure Packager server is running.\n"
+                      "- Make sure the JavaScript Debugger is running and not paused on a "
+                      "breakpoint or exception and try reloading again.";
+    _setupError = RCTErrorWithMessage(error);
+    RCTFatal(_setupError);
     return;
   }
 }
@@ -92,19 +103,22 @@ RCT_EXPORT_MODULE()
 {
   _socketOpenSemaphore = dispatch_semaphore_create(0);
   [_socket open];
-  long connected = dispatch_semaphore_wait(_socketOpenSemaphore, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 2));
-  return connected == 0;
+  long connected = dispatch_semaphore_wait(_socketOpenSemaphore, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 15));
+  return connected == 0 && _socket.readyState == RCTSR_OPEN;
 }
 
 - (BOOL)prepareJSRuntime
 {
   __block NSError *initError;
   dispatch_semaphore_t s = dispatch_semaphore_create(0);
-  [self sendMessage:@{@"method": @"prepareJSRuntime"} waitForReply:^(NSError *error, NSDictionary<NSString *, id> *reply) {
+  [self sendMessage:@{@"method": @"prepareJSRuntime"} onReply:^(NSError *error, NSDictionary<NSString *, id> *reply) {
     initError = error;
     dispatch_semaphore_signal(s);
   }];
-  long runtimeIsReady = dispatch_semaphore_wait(s, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC));
+  long runtimeIsReady = dispatch_semaphore_wait(s, dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 10));
+  if (initError) {
+    RCTLogInfo(@"Websocket runtime setup failed: %@", initError);
+  }
   return runtimeIsReady == 0 && initError == nil;
 }
 
@@ -116,6 +130,7 @@ RCT_EXPORT_MODULE()
   RCTWSMessageCallback callback = _callbacks[messageID];
   if (callback) {
     callback(error, reply);
+    [_callbacks removeObjectForKey:messageID];
   }
 }
 
@@ -127,43 +142,55 @@ RCT_EXPORT_MODULE()
 - (void)webSocket:(RCTSRWebSocket *)webSocket didFailWithError:(NSError *)error
 {
   dispatch_semaphore_signal(_socketOpenSemaphore);
-  dispatch_async(dispatch_get_main_queue(), ^{
-    // Give the setUp method an opportunity to report an error first
-    RCTLogError(@"WebSocket connection failed with error %@", error);
-  });
+  RCTLogInfo(@"WebSocket connection failed with error %@", error);
 }
 
-- (void)sendMessage:(NSDictionary<NSString *, id> *)message waitForReply:(RCTWSMessageCallback)callback
+- (void)sendMessage:(NSDictionary<NSString *, id> *)message onReply:(RCTWSMessageCallback)callback
 {
   static NSUInteger lastID = 10000;
 
+  if (_setupError) {
+    callback(_setupError, nil);
+    return;
+  }
+
   dispatch_async(_jsQueue, ^{
     if (!self.valid) {
-      NSError *error = [NSError errorWithDomain:@"WS" code:1 userInfo:@{
-        NSLocalizedDescriptionKey: @"Runtime is not ready for debugging. Make sure Packager server is running."
-      }];
-      callback(error, nil);
+      callback(RCTErrorWithMessage(@"Runtime is not ready for debugging. Make sure Packager server is running."), nil);
       return;
     }
 
     NSNumber *expectedID = @(lastID++);
-    _callbacks[expectedID] = [callback copy];
+    self->_callbacks[expectedID] = [callback copy];
     NSMutableDictionary<NSString *, id> *messageWithID = [message mutableCopy];
     messageWithID[@"id"] = expectedID;
-    [_socket send:RCTJSONStringify(messageWithID, NULL)];
+    [self->_socket send:RCTJSONStringify(messageWithID, NULL)];
   });
 }
 
 - (void)executeApplicationScript:(NSData *)script sourceURL:(NSURL *)URL onComplete:(RCTJavaScriptCompleteBlock)onComplete
 {
+  // Hack: the bridge transitions out of loading state as soon as this method returns, which prevents us
+  // from completely invalidating the bridge and preventing an endless barage of RCTLog.logIfNoNativeHook
+  // calls if the JS execution environment is broken. We therefore block this thread until this message has returned.
+  dispatch_semaphore_t scriptSem = dispatch_semaphore_create(0);
+
   NSDictionary<NSString *, id> *message = @{
     @"method": @"executeApplicationScript",
     @"url": RCTNullIfNil(URL.absoluteString),
     @"inject": _injectedObjects,
   };
-  [self sendMessage:message waitForReply:^(NSError *error, NSDictionary<NSString *, id> *reply) {
-    onComplete(error);
+  [self sendMessage:message onReply:^(NSError *socketError, NSDictionary<NSString *, id> *reply) {
+    if (socketError) {
+      onComplete(socketError);
+    } else {
+      NSString *error = reply[@"error"];
+      onComplete(error ? RCTErrorWithMessage(error) : nil);
+    }
+    dispatch_semaphore_signal(scriptSem);
   }];
+
+  dispatch_semaphore_wait(scriptSem, DISPATCH_TIME_FOREVER);
 }
 
 - (void)flushedQueue:(RCTJavaScriptCallback)onComplete
@@ -193,29 +220,30 @@ RCT_EXPORT_MODULE()
     @"method": method,
     @"arguments": arguments
   };
-  [self sendMessage:message waitForReply:^(NSError *socketError, NSDictionary<NSString *, id> *reply) {
+  [self sendMessage:message onReply:^(NSError *socketError, NSDictionary<NSString *, id> *reply) {
     if (socketError) {
       onComplete(nil, socketError);
       return;
     }
 
-    NSString *result = reply[@"result"];
-    id objcValue = RCTJSONParse(result, NULL);
-    onComplete(objcValue, nil);
+    NSError *jsonError;
+    id result = RCTJSONParse(reply[@"result"], &jsonError);
+    NSString *error = reply[@"error"];
+    onComplete(result, error ? RCTErrorWithMessage(error) : jsonError);
   }];
 }
 
 - (void)injectJSONText:(NSString *)script asGlobalObjectNamed:(NSString *)objectName callback:(RCTJavaScriptCompleteBlock)onComplete
 {
   dispatch_async(_jsQueue, ^{
-    _injectedObjects[objectName] = script;
+    self->_injectedObjects[objectName] = script;
     onComplete(nil);
   });
 }
 
 - (void)executeBlockOnJavaScriptQueue:(dispatch_block_t)block
 {
-  RCTExecuteOnMainThread(block, NO);
+  RCTExecuteOnMainQueue(block);
 }
 
 - (void)executeAsyncBlockOnJavaScriptQueue:(dispatch_block_t)block

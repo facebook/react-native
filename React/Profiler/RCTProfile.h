@@ -1,15 +1,14 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <Foundation/Foundation.h>
 
-#import "RCTDefines.h"
+#import <React/RCTAssert.h>
+#import <React/RCTDefines.h>
 
 /**
  * RCTProfile
@@ -23,14 +22,16 @@
 RCT_EXTERN NSString *const RCTProfileDidStartProfiling;
 RCT_EXTERN NSString *const RCTProfileDidEndProfiling;
 
-#if RCT_DEV
+RCT_EXTERN const uint64_t RCTProfileTagAlways;
+
+#if RCT_PROFILE
 
 @class RCTBridge;
 
 #define RCTProfileBeginFlowEvent() \
 _Pragma("clang diagnostic push") \
 _Pragma("clang diagnostic ignored \"-Wshadow\"") \
-NSNumber *__rct_profile_flow_id = _RCTProfileBeginFlowEvent(); \
+NSUInteger __rct_profile_flow_id = _RCTProfileBeginFlowEvent(); \
 _Pragma("clang diagnostic pop")
 
 #define RCTProfileEndFlowEvent() \
@@ -38,8 +39,8 @@ _RCTProfileEndFlowEvent(__rct_profile_flow_id)
 
 RCT_EXTERN dispatch_queue_t RCTProfileGetQueue(void);
 
-RCT_EXTERN NSNumber *_RCTProfileBeginFlowEvent(void);
-RCT_EXTERN void _RCTProfileEndFlowEvent(NSNumber *);
+RCT_EXTERN NSUInteger _RCTProfileBeginFlowEvent(void);
+RCT_EXTERN void _RCTProfileEndFlowEvent(NSUInteger);
 
 /**
  * Returns YES if the profiling information is currently being collected
@@ -65,15 +66,13 @@ RCT_EXTERN void _RCTProfileBeginEvent(NSThread *calleeThread,
                                       NSTimeInterval time,
                                       uint64_t tag,
                                       NSString *name,
-                                      NSDictionary *args);
-#define RCT_PROFILE_BEGIN_EVENT(...) \
+                                      NSDictionary<NSString *, NSString *> *args);
+#define RCT_PROFILE_BEGIN_EVENT(tag, name, args) \
   do { \
     if (RCTProfileIsProfiling()) { \
       NSThread *__calleeThread = [NSThread currentThread]; \
       NSTimeInterval __time = CACurrentMediaTime(); \
-      dispatch_async(RCTProfileGetQueue(), ^{ \
-        _RCTProfileBeginEvent(__calleeThread, __time, __VA_ARGS__); \
-      }); \
+      _RCTProfileBeginEvent(__calleeThread, __time, tag, name, args); \
     } \
   } while(0)
 
@@ -86,18 +85,15 @@ RCT_EXTERN void _RCTProfileEndEvent(NSThread *calleeThread,
                                     NSString *threadName,
                                     NSTimeInterval time,
                                     uint64_t tag,
-                                    NSString *category,
-                                    NSDictionary *args);
+                                    NSString *category);
 
-#define RCT_PROFILE_END_EVENT(...) \
+#define RCT_PROFILE_END_EVENT(tag, category) \
   do { \
     if (RCTProfileIsProfiling()) { \
       NSThread *__calleeThread = [NSThread currentThread]; \
       NSString *__threadName = RCTCurrentThreadName(); \
       NSTimeInterval __time = CACurrentMediaTime(); \
-      dispatch_async(RCTProfileGetQueue(), ^{ \
-        _RCTProfileEndEvent(__calleeThread, __threadName, __time, __VA_ARGS__); \
-      }); \
+      _RCTProfileEndEvent(__calleeThread, __threadName, __time, tag, category); \
     } \
   } while(0)
 
@@ -106,7 +102,7 @@ RCT_EXTERN void _RCTProfileEndEvent(NSThread *calleeThread,
  */
 RCT_EXTERN NSUInteger RCTProfileBeginAsyncEvent(uint64_t tag,
                                                 NSString *name,
-                                                NSDictionary *args);
+                                                NSDictionary<NSString *, NSString *> *args);
 
 /**
  * The ID returned by BeginEvent should then be passed into EndEvent, with the
@@ -117,8 +113,7 @@ RCT_EXTERN void RCTProfileEndAsyncEvent(uint64_t tag,
                                         NSString *category,
                                         NSUInteger cookie,
                                         NSString *name,
-                                        NSString *threadName,
-                                        NSDictionary *args);
+                                        NSString *threadName);
 
 /**
  * An event that doesn't have a duration (i.e. Notification, VSync, etc)
@@ -133,6 +128,8 @@ RCT_EXTERN void RCTProfileImmediateEvent(uint64_t tag,
  * self and _cmd to name this event for simplicity sake.
  *
  * NOTE: The block can't expect any argument
+ *
+ * DEPRECATED: this approach breaks debugging and stepping through instrumented block functions
  */
 #define RCTProfileBlock(block, tag, category, arguments) \
 ^{ \
@@ -150,6 +147,11 @@ RCT_EXTERN void RCTProfileHookModules(RCTBridge *);
  * Unhook from a given bridge instance's modules
  */
 RCT_EXTERN void RCTProfileUnhookModules(RCTBridge *);
+
+/**
+ * Hook into all of a module's methods
+ */
+RCT_EXTERN void RCTProfileHookInstance(id instance);
 
 /**
  * Send systrace or cpu profiling information to the packager
@@ -171,7 +173,7 @@ typedef struct {
 } systrace_arg_t;
 
 typedef struct {
-  void (*start)(uint64_t enabledTags, char *buffer, size_t bufferSize);
+  char *(*start)(void);
   void (*stop)(void);
 
   void (*begin_section)(uint64_t tag, const char *name, size_t numArgs, systrace_arg_t *args);
@@ -181,9 +183,18 @@ typedef struct {
   void (*end_async_section)(uint64_t tag, const char *name, int cookie, size_t numArgs, systrace_arg_t *args);
 
   void (*instant_section)(uint64_t tag, const char *name, char scope);
+
+  void (*begin_async_flow)(uint64_t tag, const char *name, int cookie);
+  void (*end_async_flow)(uint64_t tag, const char *name, int cookie);
 } RCTProfileCallbacks;
 
 RCT_EXTERN void RCTProfileRegisterCallbacks(RCTProfileCallbacks *);
+
+/**
+ * Systrace control window
+ */
+RCT_EXTERN void RCTProfileShowControls(void);
+RCT_EXTERN void RCTProfileHideControls(void);
 
 #else
 
@@ -211,8 +222,12 @@ RCT_EXTERN void RCTProfileRegisterCallbacks(RCTProfileCallbacks *);
 #define RCTProfileBlock(block, ...) block
 
 #define RCTProfileHookModules(...)
+#define RCTProfileHookInstance(...)
 #define RCTProfileUnhookModules(...)
 
 #define RCTProfileSendResult(...)
+
+#define RCTProfileShowControls(...)
+#define RCTProfileHideControls(...)
 
 #endif

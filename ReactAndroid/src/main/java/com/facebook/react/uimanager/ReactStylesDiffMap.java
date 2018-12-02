@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.uimanager;
@@ -15,6 +13,7 @@ import android.view.View;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.Dynamic;
 
 /**
  * Wrapper for {@link ReadableMap} which should be used for styles property map. It extends
@@ -80,6 +79,11 @@ public class ReactStylesDiffMap {
   @Nullable
   public ReadableMap getMap(String key) {
     return mBackingMap.getMap(key);
+  }
+
+  @Nullable
+  public Dynamic getDynamic(String key) {
+    return mBackingMap.getDynamic(key);
   }
 
   @Override

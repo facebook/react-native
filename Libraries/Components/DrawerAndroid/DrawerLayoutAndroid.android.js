@@ -1,40 +1,152 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule DrawerLayoutAndroid
+ * @flow
+ * @format
  */
+
 'use strict';
 
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var React = require('React');
-var ReactPropTypes = require('ReactPropTypes');
-var StyleSheet = require('StyleSheet');
-var UIManager = require('UIManager');
-var View = require('View');
+const Platform = require('Platform');
+const React = require('React');
+const ReactNative = require('ReactNative');
+const StatusBar = require('StatusBar');
+const StyleSheet = require('StyleSheet');
+const UIManager = require('UIManager');
+const View = require('View');
+const nullthrows = require('nullthrows');
 
-var DrawerConsts = UIManager.AndroidDrawerLayout.Constants;
+const DrawerConsts = UIManager.getViewManagerConfig('AndroidDrawerLayout')
+  .Constants;
 
-var dismissKeyboard = require('dismissKeyboard');
-var requireNativeComponent = require('requireNativeComponent');
+const dismissKeyboard = require('dismissKeyboard');
+const requireNativeComponent = require('requireNativeComponent');
 
-var RK_DRAWER_REF = 'drawerlayout';
-var INNERVIEW_REF = 'innerView';
+const DRAWER_STATES = ['Idle', 'Dragging', 'Settling'];
 
-var DrawerLayoutValidAttributes = {
-  drawerWidth: true,
-  drawerPosition: true,
-};
+import type {ViewStyleProp} from 'StyleSheet';
+import type {ColorValue} from 'StyleSheetTypes';
+import type {SyntheticEvent} from 'CoreEventTypes';
+import type {
+  MeasureOnSuccessCallback,
+  MeasureInWindowOnSuccessCallback,
+  MeasureLayoutOnSuccessCallback,
+} from 'ReactNativeTypes';
 
-var DRAWER_STATES = [
-  'Idle',
-  'Dragging',
-  'Settling',
-];
+type DrawerStates = 'Idle' | 'Dragging' | 'Settling';
+
+type DrawerStateEvent = SyntheticEvent<
+  $ReadOnly<{|
+    drawerState: number,
+  |}>,
+>;
+
+type DrawerSlideEvent = SyntheticEvent<
+  $ReadOnly<{|
+    offset: number,
+  |}>,
+>;
+
+type Props = $ReadOnly<{|
+  /**
+   * Determines whether the keyboard gets dismissed in response to a drag.
+   *   - 'none' (the default), drags do not dismiss the keyboard.
+   *   - 'on-drag', the keyboard is dismissed when a drag begins.
+   */
+  keyboardDismissMode?: ?('none' | 'on-drag'),
+
+  /**
+   * Specifies the background color of the drawer. The default value is white.
+   * If you want to set the opacity of the drawer, use rgba. Example:
+   *
+   * ```
+   * return (
+   *   <DrawerLayoutAndroid drawerBackgroundColor="rgba(0,0,0,0.5)">
+   *   </DrawerLayoutAndroid>
+   * );
+   * ```
+   */
+  drawerBackgroundColor: ColorValue,
+
+  /**
+   * Specifies the side of the screen from which the drawer will slide in.
+   */
+  drawerPosition: ?number,
+
+  /**
+   * Specifies the width of the drawer, more precisely the width of the view that be pulled in
+   * from the edge of the window.
+   */
+  drawerWidth?: ?number,
+
+  /**
+   * Specifies the lock mode of the drawer. The drawer can be locked in 3 states:
+   * - unlocked (default), meaning that the drawer will respond (open/close) to touch gestures.
+   * - locked-closed, meaning that the drawer will stay closed and not respond to gestures.
+   * - locked-open, meaning that the drawer will stay opened and not respond to gestures.
+   * The drawer may still be opened and closed programmatically (`openDrawer`/`closeDrawer`).
+   */
+  drawerLockMode?: ?('unlocked' | 'locked-closed' | 'locked-open'),
+
+  /**
+   * Function called whenever there is an interaction with the navigation view.
+   */
+  onDrawerSlide?: ?(event: DrawerSlideEvent) => mixed,
+
+  /**
+   * Function called when the drawer state has changed. The drawer can be in 3 states:
+   * - Idle, meaning there is no interaction with the navigation view happening at the time
+   * - Dragging, meaning there is currently an interaction with the navigation view
+   * - Settling, meaning that there was an interaction with the navigation view, and the
+   * navigation view is now finishing its closing or opening animation
+   */
+  onDrawerStateChanged?: ?(state: DrawerStates) => mixed,
+
+  /**
+   * Function called whenever the navigation view has been opened.
+   */
+  onDrawerOpen?: ?() => mixed,
+
+  /**
+   * Function called whenever the navigation view has been closed.
+   */
+  onDrawerClose?: ?() => mixed,
+
+  /**
+   * The navigation view that will be rendered to the side of the screen and can be pulled in.
+   */
+  renderNavigationView: () => React.Element<any>,
+
+  /**
+   * Make the drawer take the entire screen and draw the background of the
+   * status bar to allow it to open over the status bar. It will only have an
+   * effect on API 21+.
+   */
+  statusBarBackgroundColor?: ?ColorValue,
+
+  children?: React.Node,
+  style?: ?ViewStyleProp,
+|}>;
+
+type NativeProps = $ReadOnly<{|
+  ...$Diff<
+    Props,
+    $ReadOnly<{onDrawerStateChanged?: ?(state: DrawerStates) => mixed}>,
+  >,
+  onDrawerStateChanged?: ?(state: DrawerStateEvent) => mixed,
+|}>;
+
+type State = {|
+  statusBarBackgroundColor: ColorValue,
+|};
+
+// The View that contains both the actual drawer and the main view
+const AndroidDrawerLayout = ((requireNativeComponent(
+  'AndroidDrawerLayout',
+): any): Class<ReactNative.NativeComponent<NativeProps>>);
 
 /**
  * React component that wraps the platform `DrawerLayout` (Android only). The
@@ -67,82 +179,66 @@ var DRAWER_STATES = [
  * },
  * ```
  */
-var DrawerLayoutAndroid = React.createClass({
-  statics: {
-    positions: DrawerConsts.DrawerPosition,
-  },
+class DrawerLayoutAndroid extends React.Component<Props, State> {
+  static positions = DrawerConsts.DrawerPosition;
+  static defaultProps = {
+    drawerBackgroundColor: 'white',
+  };
 
-  propTypes: {
-    ...View.propTypes,
-    /**
-     * Determines whether the keyboard gets dismissed in response to a drag.
-     *   - 'none' (the default), drags do not dismiss the keyboard.
-     *   - 'on-drag', the keyboard is dismissed when a drag begins.
-     */
-    keyboardDismissMode: ReactPropTypes.oneOf([
-      'none', // default
-      'on-drag',
-    ]),
-    /**
-     * Specifies the side of the screen from which the drawer will slide in.
-     */
-    drawerPosition: ReactPropTypes.oneOf([
-      DrawerConsts.DrawerPosition.Left,
-      DrawerConsts.DrawerPosition.Right
-    ]),
-    /**
-     * Specifies the width of the drawer, more precisely the width of the view that be pulled in
-     * from the edge of the window.
-     */
-    drawerWidth: ReactPropTypes.number,
-    /**
-     * Function called whenever there is an interaction with the navigation view.
-     */
-    onDrawerSlide: ReactPropTypes.func,
-    /**
-     * Function called when the drawer state has changed. The drawer can be in 3 states:
-     * - idle, meaning there is no interaction with the navigation view happening at the time
-     * - dragging, meaning there is currently an interaction with the navigation view
-     * - settling, meaning that there was an interaction with the navigation view, and the
-     * navigation view is now finishing it's closing or opening animation
-     */
-    onDrawerStateChanged: ReactPropTypes.func,
-    /**
-     * Function called whenever the navigation view has been opened.
-     */
-    onDrawerOpen: ReactPropTypes.func,
-    /**
-     * Function called whenever the navigation view has been closed.
-     */
-    onDrawerClose: ReactPropTypes.func,
-    /**
-     * The navigation view that will be rendered to the side of the screen and can be pulled in.
-     */
-    renderNavigationView: ReactPropTypes.func.isRequired,
-  },
+  _nativeRef = React.createRef<
+    Class<ReactNative.NativeComponent<NativeProps>>,
+  >();
 
-  mixins: [NativeMethodsMixin],
+  state = {statusBarBackgroundColor: null};
 
-  getInnerViewNode: function() {
-    return this.refs[INNERVIEW_REF].getInnerViewNode();
-  },
-
-  render: function() {
-    var drawerViewWrapper =
-      <View style={[styles.drawerSubview, {width: this.props.drawerWidth}]} collapsable={false}>
+  render() {
+    const {onDrawerStateChanged, ...props} = this.props;
+    const drawStatusBar =
+      Platform.Version >= 21 && this.props.statusBarBackgroundColor;
+    const drawerViewWrapper = (
+      <View
+        style={[
+          styles.drawerSubview,
+          {
+            width: this.props.drawerWidth,
+            backgroundColor: this.props.drawerBackgroundColor,
+          },
+        ]}
+        collapsable={false}>
         {this.props.renderNavigationView()}
-      </View>;
-    var childrenWrapper =
-      <View ref={INNERVIEW_REF} style={styles.mainSubview} collapsable={false}>
+        {drawStatusBar && <View style={styles.drawerStatusBar} />}
+      </View>
+    );
+    const childrenWrapper = (
+      <View style={styles.mainSubview} collapsable={false}>
+        {drawStatusBar && (
+          <StatusBar
+            translucent
+            backgroundColor={this.props.statusBarBackgroundColor}
+          />
+        )}
+        {drawStatusBar && (
+          <View
+            style={[
+              styles.statusBar,
+              {backgroundColor: this.props.statusBarBackgroundColor},
+            ]}
+          />
+        )}
         {this.props.children}
-      </View>;
+      </View>
+    );
     return (
       <AndroidDrawerLayout
-        {...this.props}
-        ref={RK_DRAWER_REF}
+        {...props}
+        /* $FlowFixMe(>=0.87.0 site=react_native_android_fb) This comment
+         * suppresses an error found when Flow v0.87 was deployed. To see the
+         * error, delete this comment and run Flow. */
+        ref={this._nativeRef}
         drawerWidth={this.props.drawerWidth}
         drawerPosition={this.props.drawerPosition}
-        style={styles.base}
+        drawerLockMode={this.props.drawerLockMode}
+        style={[styles.base, this.props.style]}
         onDrawerSlide={this._onDrawerSlide}
         onDrawerOpen={this._onDrawerOpen}
         onDrawerClose={this._onDrawerClose}
@@ -151,59 +247,138 @@ var DrawerLayoutAndroid = React.createClass({
         {drawerViewWrapper}
       </AndroidDrawerLayout>
     );
-  },
+  }
 
-  _onDrawerSlide: function(event) {
+  _onDrawerSlide = (event: DrawerSlideEvent) => {
     if (this.props.onDrawerSlide) {
       this.props.onDrawerSlide(event);
     }
     if (this.props.keyboardDismissMode === 'on-drag') {
       dismissKeyboard();
     }
-  },
+  };
 
-  _onDrawerOpen: function() {
+  _onDrawerOpen = () => {
     if (this.props.onDrawerOpen) {
       this.props.onDrawerOpen();
     }
-  },
+  };
 
-  _onDrawerClose: function() {
+  _onDrawerClose = () => {
     if (this.props.onDrawerClose) {
       this.props.onDrawerClose();
     }
-  },
+  };
 
-  _onDrawerStateChanged: function(event) {
+  _onDrawerStateChanged = (event: DrawerStateEvent) => {
     if (this.props.onDrawerStateChanged) {
-      this.props.onDrawerStateChanged(DRAWER_STATES[event.nativeEvent.drawerState]);
+      this.props.onDrawerStateChanged(
+        DRAWER_STATES[event.nativeEvent.drawerState],
+      );
     }
-  },
+  };
 
-  openDrawer: function() {
+  /**
+   * Opens the drawer.
+   */
+  openDrawer() {
     UIManager.dispatchViewManagerCommand(
       this._getDrawerLayoutHandle(),
-      UIManager.AndroidDrawerLayout.Commands.openDrawer,
-      null
+      UIManager.getViewManagerConfig('AndroidDrawerLayout').Commands.openDrawer,
+      null,
     );
-  },
+  }
 
-  closeDrawer: function() {
+  /**
+   * Closes the drawer.
+   */
+  closeDrawer() {
     UIManager.dispatchViewManagerCommand(
       this._getDrawerLayoutHandle(),
-      UIManager.AndroidDrawerLayout.Commands.closeDrawer,
-      null
+      UIManager.getViewManagerConfig('AndroidDrawerLayout').Commands
+        .closeDrawer,
+      null,
     );
-  },
+  }
 
-  _getDrawerLayoutHandle: function() {
-    return React.findNodeHandle(this.refs[RK_DRAWER_REF]);
-  },
-});
+  /**
+   * Closing and opening example
+   * Note: To access the drawer you have to give it a ref. Refs do not work on stateless components
+   * render () {
+   *   this.openDrawer = () => {
+   *     this.refs.DRAWER.openDrawer()
+   *   }
+   *   this.closeDrawer = () => {
+   *     this.refs.DRAWER.closeDrawer()
+   *   }
+   *   return (
+   *     <DrawerLayoutAndroid ref={'DRAWER'}>
+   *     </DrawerLayoutAndroid>
+   *   )
+   * }
+   */
+  _getDrawerLayoutHandle() {
+    return ReactNative.findNodeHandle(this._nativeRef.current);
+  }
 
-var styles = StyleSheet.create({
+  /**
+   * Native methods
+   */
+  blur() {
+    /* $FlowFixMe(>=0.87.0 site=react_native_android_fb) This comment
+     * suppresses an error found when Flow v0.87 was deployed. To see the
+     * error, delete this comment and run Flow. */
+    nullthrows(this._nativeRef.current).blur();
+  }
+
+  focus() {
+    /* $FlowFixMe(>=0.87.0 site=react_native_android_fb) This comment
+     * suppresses an error found when Flow v0.87 was deployed. To see the
+     * error, delete this comment and run Flow. */
+    nullthrows(this._nativeRef.current).focus();
+  }
+
+  measure(callback: MeasureOnSuccessCallback) {
+    /* $FlowFixMe(>=0.87.0 site=react_native_android_fb) This comment
+     * suppresses an error found when Flow v0.87 was deployed. To see the
+     * error, delete this comment and run Flow. */
+    nullthrows(this._nativeRef.current).measure(callback);
+  }
+
+  measureInWindow(callback: MeasureInWindowOnSuccessCallback) {
+    /* $FlowFixMe(>=0.87.0 site=react_native_android_fb) This comment
+     * suppresses an error found when Flow v0.87 was deployed. To see the
+     * error, delete this comment and run Flow. */
+    nullthrows(this._nativeRef.current).measureInWindow(callback);
+  }
+
+  measureLayout(
+    relativeToNativeNode: number,
+    onSuccess: MeasureLayoutOnSuccessCallback,
+    onFail?: () => void,
+  ) {
+    /* $FlowFixMe(>=0.87.0 site=react_native_android_fb) This comment
+     * suppresses an error found when Flow v0.87 was deployed. To see the
+     * error, delete this comment and run Flow. */
+    nullthrows(this._nativeRef.current).measureLayout(
+      relativeToNativeNode,
+      onSuccess,
+      onFail,
+    );
+  }
+
+  setNativeProps(nativeProps: Object) {
+    /* $FlowFixMe(>=0.87.0 site=react_native_android_fb) This comment
+     * suppresses an error found when Flow v0.87 was deployed. To see the
+     * error, delete this comment and run Flow. */
+    nullthrows(this._nativeRef.current).setNativeProps(nativeProps);
+  }
+}
+
+const styles = StyleSheet.create({
   base: {
     flex: 1,
+    elevation: 16,
   },
   mainSubview: {
     position: 'absolute',
@@ -217,9 +392,17 @@ var styles = StyleSheet.create({
     top: 0,
     bottom: 0,
   },
+  statusBar: {
+    height: StatusBar.currentHeight,
+  },
+  drawerStatusBar: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: StatusBar.currentHeight,
+    backgroundColor: 'rgba(0, 0, 0, 0.251)',
+  },
 });
-
-// The View that contains both the actual drawer and the main view
-var AndroidDrawerLayout = requireNativeComponent('AndroidDrawerLayout', DrawerLayoutAndroid);
 
 module.exports = DrawerLayoutAndroid;

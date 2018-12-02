@@ -1,23 +1,13 @@
 /**
- * @generated SignedSource<<32241616e13b8a54d1a7baadce8eae5d>>
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * !! This file is a check-in of a static_upstream project!      !!
- * !!                                                            !!
- * !! You should not modify this file directly. Instead:         !!
- * !! 1) Use `fjs use-upstream` to temporarily replace this with !!
- * !!    the latest version from upstream.                       !!
- * !! 2) Make your changes, test them, etc.                      !!
- * !! 3) Use `fjs push-upstream` to copy your changes back to    !!
- * !!    static_upstream.                                        !!
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * Copyright 2004-present Facebook. All Rights Reserved.
- *
- * @providesModule toIterator
- *
+ * @format
  */
 
+'use strict';
 
 /**
  * Given an object `toIterator` will return the itrator for that object. If the
@@ -29,17 +19,17 @@
  * Constants
  */
 
-var KIND_KEY = 'key';
-var KIND_VALUE = 'value';
-var KIND_KEY_VAL = 'key+value';
+const KIND_KEY = 'key';
+const KIND_VALUE = 'value';
+const KIND_KEY_VAL = 'key+value';
 /*global Symbol: true*/
-var ITERATOR_SYMBOL = (typeof Symbol === 'function')
-    ? Symbol.iterator
-    : '@@iterator';
+const ITERATOR_SYMBOL =
+  typeof Symbol === 'function' ? Symbol.iterator : '@@iterator';
 
-var toIterator = (function() {
-  if (!(Array.prototype[ITERATOR_SYMBOL] &&
-        String.prototype[ITERATOR_SYMBOL])) {
+const toIterator = (function() {
+  if (
+    !(Array.prototype[ITERATOR_SYMBOL] && String.prototype[ITERATOR_SYMBOL])
+  ) {
     // IIFE to avoid creating classes for no reason because of hoisting.
     return (function() {
       class ArrayIterator {
@@ -63,10 +53,10 @@ var toIterator = (function() {
             return createIterResultObject(undefined, true);
           }
 
-          var array = this._iteratedObject;
-          var len = this._iteratedObject.length;
-          var index = this._nextIndex;
-          var kind = this._kind;
+          const array = this._iteratedObject;
+          const len = this._iteratedObject.length;
+          const index = this._nextIndex;
+          const kind = this._kind;
 
           if (index >= len) {
             this._iteratedObject = undefined;
@@ -110,23 +100,23 @@ var toIterator = (function() {
             return createIterResultObject(undefined, true);
           }
 
-          var index = this._nextIndex;
-          var s = this._iteratedString;
-          var len = s.length;
+          const index = this._nextIndex;
+          const s = this._iteratedString;
+          const len = s.length;
 
           if (index >= len) {
             this._iteratedString = undefined;
             return createIterResultObject(undefined, true);
           }
 
-          var ret;
-          var first = s.charCodeAt(index);
+          let ret;
+          const first = s.charCodeAt(index);
 
-          if (first < 0xD800 || first > 0xDBFF || index + 1 === len) {
+          if (first < 0xd800 || first > 0xdbff || index + 1 === len) {
             ret = s[index];
           } else {
-            var second = s.charCodeAt(index + 1);
-            if (second < 0xDC00 || second > 0xDFFF) {
+            const second = s.charCodeAt(index + 1);
+            if (second < 0xdc00 || second > 0xdfff) {
               ret = s[index];
             } else {
               ret = s[index] + s[index + 1];
@@ -174,7 +164,7 @@ Object.assign(toIterator, {
   KIND_KEY,
   KIND_VALUE,
   KIND_KEY_VAL,
-  ITERATOR_SYMBOL
+  ITERATOR_SYMBOL,
 });
 
 module.exports = toIterator;

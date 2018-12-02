@@ -1,17 +1,15 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.bridge;
 
+import com.facebook.jni.HybridData;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.soloader.SoLoader;
 
 /**
  * Implementation of a write-only map stored in native memory. Use
@@ -20,9 +18,8 @@ import com.facebook.soloader.SoLoader;
  */
 @DoNotStrip
 public class WritableNativeMap extends ReadableNativeMap implements WritableMap {
-
   static {
-    SoLoader.loadLibrary(ReactBridge.REACT_NATIVE_LIB);
+    ReactBridge.staticInit();
   }
 
   @Override
@@ -58,6 +55,12 @@ public class WritableNativeMap extends ReadableNativeMap implements WritableMap 
     Assertions.assertCondition(source instanceof ReadableNativeMap, "Illegal type provided");
     mergeNativeMap((ReadableNativeMap) source);
   }
+
+  public WritableNativeMap() {
+    super(initHybrid());
+  }
+
+  private static native HybridData initHybrid();
 
   private native void putNativeMap(String key, WritableNativeMap value);
   private native void putNativeArray(String key, WritableNativeArray value);

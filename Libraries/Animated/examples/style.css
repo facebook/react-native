@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 html, h1, h2 {
  font-family: 'Roboto', sans-serif;
  font-weight: 300;
@@ -14,8 +21,8 @@ html, h1, h2 {
   height: 50px;
   position: absolute;
   display: inline-block;
-  box-shadow: 0px 1px 2px #999;
-  text-shadow: 0px 1px 2px #999;
+  box-shadow: 0 1px 2px #999;
+  text-shadow: 0 1px 2px #999;
   background-image: url(pic1.jpg);
   background-size: cover;
   line-height: 80px;
@@ -34,7 +41,7 @@ html, h1, h2 {
 }
 
 div.code {
-  box-shadow: 0px 1px 2px #999;
+  box-shadow: 0 1px 2px #999;
   width: 600px;
   padding: 5px;
   position: relative;

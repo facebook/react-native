@@ -1,0 +1,54 @@
+load(
+    "//tools/build_defs/oss:rn_defs.bzl",
+    "APPLE",
+    "fb_xplat_cxx_test",
+    "jni_instrumentation_test_lib",
+    "react_native_xplat_target",
+)
+
+TEST_SRCS = [
+    "RecoverableErrorTest.cpp",
+    "jsarg_helpers.cpp",
+    "jsbigstring.cpp",
+    "methodcall.cpp",
+]
+
+jni_instrumentation_test_lib(
+    name = "tests",
+    srcs = TEST_SRCS,
+    class_under_test = "com/facebook/react/XplatBridgeTest",
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-std=c++14",
+    ],
+    soname = "libxplat-bridge.so",
+    visibility = [
+        "fbandroid//instrumentation_tests/...",
+    ],
+    deps = [
+        "xplat//folly:dynamic",
+        "xplat//third-party/gmock:gtest",
+        "xplat//third-party/linker_lib:android",
+        "xplat//third-party/linker_lib:atomic",
+        react_native_xplat_target("cxxreact:bridge"),
+    ],
+)
+
+fb_xplat_cxx_test(
+    name = "tests",
+    srcs = TEST_SRCS,
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+    ],
+    platforms = APPLE,
+    visibility = [
+        react_native_xplat_target("cxxreact/..."),
+    ],
+    deps = [
+        "xplat//folly:molly",
+        "xplat//third-party/gmock:gtest",
+        react_native_xplat_target("cxxreact:bridge"),
+    ],
+)

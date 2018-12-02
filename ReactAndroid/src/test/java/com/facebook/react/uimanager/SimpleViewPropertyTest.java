@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.uimanager;
@@ -17,7 +15,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactTestHelper;
-import com.facebook.react.bridge.SimpleMap;
+import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
@@ -79,7 +77,7 @@ public class SimpleViewPropertyTest {
   }
 
   public ReactStylesDiffMap buildStyles(Object... keysAndValues) {
-    return new ReactStylesDiffMap(SimpleMap.of(keysAndValues));
+    return new ReactStylesDiffMap(JavaOnlyMap.of(keysAndValues));
   }
 
   @Test

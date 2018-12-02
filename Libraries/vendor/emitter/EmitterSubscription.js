@@ -1,31 +1,31 @@
 /**
- * @generated SignedSource<<d17b6e5d9b7118fb0ed9169f579e5b8a>>
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * !! This file is a check-in of a static_upstream project!      !!
- * !!                                                            !!
- * !! You should not modify this file directly. Instead:         !!
- * !! 1) Use `fjs use-upstream` to temporarily replace this with !!
- * !!    the latest version from upstream.                       !!
- * !! 2) Make your changes, test them, etc.                      !!
- * !! 3) Use `fjs push-upstream` to copy your changes back to    !!
- * !!    static_upstream.                                        !!
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule EmitterSubscription
- * @noflow
- * @typechecks
+ * @format
+ * @flow
  */
+
 'use strict';
 
-var EventSubscription = require('EventSubscription');
+const EventSubscription = require('EventSubscription');
+
+import type EventEmitter from 'EventEmitter';
+import type EventSubscriptionVendor from 'EventSubscriptionVendor';
 
 /**
  * EmitterSubscription represents a subscription with listener and context data.
  */
 class EmitterSubscription extends EventSubscription {
+  emitter: EventEmitter;
+  listener: Function;
+  context: ?Object;
 
   /**
+   * @param {EventEmitter} emitter - The event emitter that registered this
+   *   subscription
    * @param {EventSubscriptionVendor} subscriber - The subscriber that controls
    *   this subscription
    * @param {function} listener - Function to invoke when the specified event is
@@ -33,10 +33,26 @@ class EmitterSubscription extends EventSubscription {
    * @param {*} context - Optional context object to use when invoking the
    *   listener
    */
-  constructor(subscriber: EventSubscriptionVendor, listener, context: ?Object) {
+  constructor(
+    emitter: EventEmitter,
+    subscriber: EventSubscriptionVendor,
+    listener: Function,
+    context: ?Object,
+  ) {
     super(subscriber);
+    this.emitter = emitter;
     this.listener = listener;
     this.context = context;
+  }
+
+  /**
+   * Removes this subscription from the emitter that registered it.
+   * Note: we're overriding the `remove()` method of EventSubscription here
+   * but deliberately not calling `super.remove()` as the responsibility
+   * for removing the subscription lies with the EventEmitter.
+   */
+  remove() {
+    this.emitter.removeSubscription(this);
   }
 }
 

@@ -1,28 +1,30 @@
-include_defs('//ReactAndroid/DEFS')
+load("//tools/build_defs/oss:rn_defs.bzl", "JNI_TARGET", "oss_cxx_library", "subdir_glob")
 
-cxx_library(
-  name = 'fb',
-  soname = 'libfb.so',
-  srcs = [
-    'assert.cpp',
-    'log.cpp',
-  ],
-  header_namespace='fb',
-  exported_headers=subdir_glob([
-    ('', '*.h'),
-    ('include/fb', '*.h'),
-  ]),
-  preprocessor_flags=[
-    '-DLOG_TAG="libfb"',
-  ],
-  # We want to use this library during bootstrap
-  can_be_asset = False,
-  deps = [
-    react_native_target('jni/third-party/android-ndk:android'),
-    react_native_target('jni/third-party/android-ndk:log'),
-    react_native_target('jni/third-party/glibc:dl'),
-  ],
-  visibility = [
-    'PUBLIC'
-  ],
+# This target is only used in open source
+oss_cxx_library(
+    name = "jni",
+    srcs = glob([
+        "*.cpp",
+        "jni/*.cpp",
+        "lyra/*.cpp",
+    ]),
+    header_namespace = "",
+    exported_headers = subdir_glob([
+        ("include", "fb/**/*.h"),
+        ("include", "jni/*.h"),
+    ]),
+    compiler_flags = [
+        "-fno-omit-frame-pointer",
+        "-fexceptions",
+        "-Wall",
+        "-Werror",
+        "-std=c++11",
+        "-DDISABLE_CPUCAP",
+        "-DDISABLE_XPLAT",
+    ],
+    soname = "libfb.$(ext)",
+    visibility = ["PUBLIC"],
+    deps = [
+        JNI_TARGET,
+    ],
 )

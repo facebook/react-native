@@ -1,20 +1,18 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.bridge;
 
-import java.util.Collection;
-
+import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.common.annotations.VisibleForTesting;
+import java.util.Collection;
+import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * A higher level API on top of the asynchronous JSC bridge. This provides an
@@ -22,12 +20,30 @@ import com.facebook.react.common.annotations.VisibleForTesting;
  * Java APIs be invokable from JavaScript as well.
  */
 @DoNotStrip
-public interface CatalystInstance {
+public interface CatalystInstance
+    extends MemoryPressureListener, JSInstance, JSBundleLoaderDelegate {
   void runJSBundle();
+
+  // Returns the status of running the JS bundle; waits for an answer if runJSBundle is running
+  boolean hasRunJSBundle();
+
+  /**
+   * Return the source URL of the JS Bundle that was run, or {@code null} if no JS
+   * bundle has been run yet.
+   */
+  @Nullable String getSourceURL();
+
   // This is called from java code, so it won't be stripped anyway, but proguard will rename it,
   // which this prevents.
+  @Override @DoNotStrip
+  void invokeCallback(
+      int callbackID,
+      NativeArrayInterface arguments);
   @DoNotStrip
-  void invokeCallback(final int callbackID, final NativeArray arguments);
+  void callFunction(
+      String module,
+      String method,
+      NativeArray arguments);
   /**
    * Destroys this catalyst instance, waiting for any other threads in ReactQueueConfiguration
    * (besides the UI thread) to finish running. Must be called from the UI thread so that we can
@@ -45,10 +61,17 @@ public interface CatalystInstance {
   ReactQueueConfiguration getReactQueueConfiguration();
 
   <T extends JavaScriptModule> T getJSModule(Class<T> jsInterface);
+  <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface);
   <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface);
+  NativeModule getNativeModule(String moduleName);
+  <T extends JSIModule> T getJSIModule(Class<T> jsiModuleInterface);
   Collection<NativeModule> getNativeModules();
 
-  void handleMemoryPressure(MemoryPressure level);
+  /**
+   * This method permits a CatalystInstance to extend the known
+   * Native modules. This provided registry contains only the new modules to load.
+   */
+  void extendNativeModules(NativeModuleRegistry modules);
 
   /**
    * Adds a idle listener for this Catalyst instance. The listener will receive notifications
@@ -64,10 +87,20 @@ public interface CatalystInstance {
    */
   void removeBridgeIdleDebugListener(NotThreadSafeBridgeIdleDebugListener listener);
 
-  boolean supportsProfiling();
-  void startProfiler(String title);
-  void stopProfiler(String title, String filename);
+  /** This method registers the file path of an additional JS segment by its ID. */
+  void registerSegment(int segmentId, String path);
 
   @VisibleForTesting
   void setGlobalVariable(String propName, String jsonValue);
+
+  /**
+   * Get the C pointer (as a long) to the JavaScriptCore context associated with this instance.
+   *
+   * <p>Use the following pattern to ensure that the JS context is not cleared while you are using
+   * it: JavaScriptContextHolder jsContext = reactContext.getJavaScriptContextHolder()
+   * synchronized(jsContext) { nativeThingNeedingJsContext(jsContext.get()); }
+   */
+  JavaScriptContextHolder getJavaScriptContextHolder();
+
+  void addJSIModules(List<JSIModuleSpec> jsiModules);
 }

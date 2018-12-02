@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.textinput;
@@ -27,10 +25,9 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 
   public ReactTextInputSelectionEvent(
       int viewId,
-      long timestampMs,
       int selectionStart,
       int selectionEnd) {
-    super(viewId, timestampMs);
+    super(viewId);
     mSelectionStart = selectionStart;
     mSelectionEnd = selectionEnd;
   }
@@ -49,8 +46,8 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
     WritableMap eventData = Arguments.createMap();
 
     WritableMap selectionData = Arguments.createMap();
-    selectionData.putInt("start", mSelectionStart);
     selectionData.putInt("end", mSelectionEnd);
+    selectionData.putInt("start", mSelectionStart);
 
     eventData.putMap("selection", selectionData);
     return eventData;

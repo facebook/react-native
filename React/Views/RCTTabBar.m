@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTTabBar.h"
@@ -14,7 +12,6 @@
 #import "RCTTabBarItem.h"
 #import "RCTUtils.h"
 #import "RCTView.h"
-#import "RCTViewControllerProtocol.h"
 #import "RCTWrapperViewController.h"
 #import "UIView+React.h"
 
@@ -26,13 +23,11 @@
 {
   BOOL _tabsChanged;
   UITabBarController *_tabController;
-  NSMutableArray<RCTTabBarItem *> *_tabViews;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if ((self = [super initWithFrame:frame])) {
-    _tabViews = [NSMutableArray new];
     _tabController = [UITabBarController new];
     _tabController.delegate = self;
     [self addSubview:_tabController.view];
@@ -53,29 +48,29 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   [_tabController removeFromParentViewController];
 }
 
-- (NSArray<RCTTabBarItem *> *)reactSubviews
+- (void)insertReactSubview:(RCTTabBarItem *)subview atIndex:(NSInteger)atIndex
 {
-  return _tabViews;
-}
-
-- (void)insertReactSubview:(RCTTabBarItem *)view atIndex:(NSInteger)atIndex
-{
-  if (![view isKindOfClass:[RCTTabBarItem class]]) {
+  if (![subview isKindOfClass:[RCTTabBarItem class]]) {
     RCTLogError(@"subview should be of type RCTTabBarItem");
     return;
   }
-  [_tabViews insertObject:view atIndex:atIndex];
+  [super insertReactSubview:subview atIndex:atIndex];
   _tabsChanged = YES;
 }
 
 - (void)removeReactSubview:(RCTTabBarItem *)subview
 {
-  if (_tabViews.count == 0) {
+  if (self.reactSubviews.count == 0) {
     RCTLogError(@"should have at least one view to remove a subview");
     return;
   }
-  [_tabViews removeObject:subview];
+  [super removeReactSubview:subview];
   _tabsChanged = YES;
+}
+
+- (void)didUpdateReactSubviews
+{
+  // Do nothing, as subviews are managed by `uiManagerDidPerformMounting`
 }
 
 - (void)layoutSubviews
@@ -85,7 +80,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _tabController.view.frame = self.bounds;
 }
 
-- (void)reactBridgeDidFinishTransaction
+- (void)uiManagerDidPerformMounting
 {
   // we can't hook up the VC hierarchy in 'init' because the subviews aren't
   // hooked up yet, so we do it on demand here whenever a transaction has finished
@@ -106,13 +101,28 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     _tabsChanged = NO;
   }
 
-  [_tabViews enumerateObjectsUsingBlock:
-   ^(RCTTabBarItem *tab, NSUInteger index, __unused BOOL *stop) {
-    UIViewController *controller = _tabController.viewControllers[index];
-    controller.tabBarItem = tab.barItem;
-    if (tab.selected) {
-      _tabController.selectedViewController = controller;
+  [self.reactSubviews enumerateObjectsUsingBlock:^(UIView *view, NSUInteger index, __unused BOOL *stop) {
+
+    RCTTabBarItem *tab = (RCTTabBarItem *)view;
+    UIViewController *controller = self->_tabController.viewControllers[index];
+    if (self->_unselectedTintColor) {
+      [tab.barItem setTitleTextAttributes:@{NSForegroundColorAttributeName: self->_unselectedTintColor} forState:UIControlStateNormal];
     }
+
+    [tab.barItem setTitleTextAttributes:@{NSForegroundColorAttributeName: self.tintColor} forState:UIControlStateSelected];
+
+    controller.tabBarItem = tab.barItem;
+#if TARGET_OS_TV
+// On Apple TV, disable JS control of selection after initial render
+    if (tab.selected && !tab.wasSelectedInJS) {
+      self->_tabController.selectedViewController = controller;
+    }
+    tab.wasSelectedInJS = YES;
+#else
+    if (tab.selected) {
+      self->_tabController.selectedViewController = controller;
+    }
+#endif
   }];
 }
 
@@ -136,22 +146,92 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   _tabController.tabBar.tintColor = tintColor;
 }
 
-- (BOOL)translucent {
+- (BOOL)translucent
+{
   return _tabController.tabBar.isTranslucent;
 }
 
-- (void)setTranslucent:(BOOL)translucent {
+- (void)setTranslucent:(BOOL)translucent
+{
   _tabController.tabBar.translucent = translucent;
+}
+
+#if !TARGET_OS_TV
+- (UIBarStyle)barStyle
+{
+  return _tabController.tabBar.barStyle;
+}
+
+- (void)setBarStyle:(UIBarStyle)barStyle
+{
+  _tabController.tabBar.barStyle = barStyle;
+}
+#endif
+
+- (void)setUnselectedItemTintColor:(UIColor *)unselectedItemTintColor {
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+  if ([_tabController.tabBar respondsToSelector:@selector(unselectedItemTintColor)]) {
+    _tabController.tabBar.unselectedItemTintColor = unselectedItemTintColor;
+  }
+#endif
+}
+
+- (UITabBarItemPositioning)itemPositioning
+{
+#if TARGET_OS_TV
+  return 0;
+#else
+  return _tabController.tabBar.itemPositioning;
+#endif
+}
+
+- (void)setItemPositioning:(UITabBarItemPositioning)itemPositioning
+{
+#if !TARGET_OS_TV
+  _tabController.tabBar.itemPositioning = itemPositioning;
+#endif
 }
 
 #pragma mark - UITabBarControllerDelegate
 
+#if TARGET_OS_TV
+
+- (void)tabBarController:(UITabBarController *)tabBarController didSelectViewController:(nonnull UIViewController *)viewController
+{
+  NSUInteger index = [tabBarController.viewControllers indexOfObject:viewController];
+  RCTTabBarItem *tab = (RCTTabBarItem *)self.reactSubviews[index];
+  if (tab.onPress) tab.onPress(nil);
+  return;
+}
+
+#else
+
 - (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController
 {
   NSUInteger index = [tabBarController.viewControllers indexOfObject:viewController];
-  RCTTabBarItem *tab = _tabViews[index];
+  RCTTabBarItem *tab = (RCTTabBarItem *)self.reactSubviews[index];
   if (tab.onPress) tab.onPress(nil);
   return NO;
 }
+
+#endif
+
+#if TARGET_OS_TV
+
+- (BOOL)isUserInteractionEnabled
+{
+  return YES;
+}
+
+- (void)didUpdateFocusInContext:(UIFocusUpdateContext *)context withAnimationCoordinator:(UIFocusAnimationCoordinator *)coordinator
+{
+  if (context.nextFocusedView == self) {
+    [self becomeFirstResponder];
+  } else {
+    [self resignFirstResponder];
+  }
+}
+
+#endif
 
 @end

@@ -1,36 +1,39 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #include "JSLoader.h"
 
 #include <android/asset_manager_jni.h>
-#include <jni/Environment.h>
+#include <cxxreact/JSBigString.h>
+#include <fb/fbjni.h>
+#include <fb/log.h>
+#include <folly/Conv.h>
+#include <folly/Memory.h>
 #include <fstream>
 #include <sstream>
 #include <streambuf>
 #include <string>
-#include <fb/log.h>
+
 #ifdef WITH_FBSYSTRACE
 #include <fbsystrace.h>
 using fbsystrace::FbSystraceSection;
 #endif
 
+using namespace facebook::jni;
+
 namespace facebook {
 namespace react {
 
-static jclass gApplicationHolderClass;
-static jmethodID gGetApplicationMethod;
-static jmethodID gGetAssetManagerMethod;
-
-std::string loadScriptFromAssets(const std::string& assetName) {
-  JNIEnv *env = jni::Environment::current();
-  jobject application = env->CallStaticObjectMethod(
-    gApplicationHolderClass,
-    gGetApplicationMethod);
-  jobject assetManager = env->CallObjectMethod(application, gGetAssetManagerMethod);
-  return loadScriptFromAssets(AAssetManager_fromJava(env, assetManager), assetName);
+__attribute__((visibility("default")))
+AAssetManager *extractAssetManager(alias_ref<JAssetManager::javaobject> assetManager) {
+  auto env = Environment::current();
+  return AAssetManager_fromJava(env, assetManager.get());
 }
 
-std::string loadScriptFromAssets(
+__attribute__((visibility("default")))
+std::unique_ptr<const JSBigString> loadScriptFromAssets(
     AAssetManager *manager,
     const std::string& assetName) {
   #ifdef WITH_FBSYSTRACE
@@ -43,51 +46,21 @@ std::string loadScriptFromAssets(
       assetName.c_str(),
       AASSET_MODE_STREAMING); // Optimized for sequential read: see AssetManager.java for docs
     if (asset) {
-      std::stringbuf buf;
-      char BUF[0x800];
+      auto buf = folly::make_unique<JSBigBufferString>(AAsset_getLength(asset));
+      size_t offset = 0;
       int readbytes;
-      while ((readbytes = AAsset_read(asset, BUF, sizeof(BUF))) > 0) {
-        buf.sputn(BUF, readbytes);
+      while ((readbytes = AAsset_read(asset, buf->data() + offset, buf->size() - offset)) > 0) {
+        offset += readbytes;
       }
       AAsset_close(asset);
-      if (readbytes == 0) { // EOF!
-        return buf.str();
+      if (offset == buf->size()) {
+        return std::move(buf);
       }
     }
   }
-  FBLOGE("Unable to load script from assets: %s", assetName.c_str());
-  return "";
+
+  throw std::runtime_error(folly::to<std::string>("Unable to load script from assets '", assetName,
+    "'. Make sure your bundle is packaged correctly or you're running a packager server."));
 }
 
-std::string loadScriptFromFile(const std::string& fileName) {
-  #ifdef WITH_FBSYSTRACE
-  FbSystraceSection s(TRACE_TAG_REACT_CXX_BRIDGE, "reactbridge_jni_loadScriptFromFile",
-    "fileName", fileName);
-  #endif
-  std::ifstream jsfile(fileName);
-  if (jsfile) {
-    std::string output;
-    jsfile.seekg(0, std::ios::end);
-    output.reserve(jsfile.tellg());
-    jsfile.seekg(0, std::ios::beg);
-    output.assign(
-      (std::istreambuf_iterator<char>(jsfile)),
-      std::istreambuf_iterator<char>());
-    return output;
-  }
-
-  FBLOGE("Unable to load script from file: %s", fileName.c_str());
-  return "";
-}
-
-void registerJSLoaderNatives() {
-  JNIEnv *env = jni::Environment::current();
-  jclass applicationHolderClass = env->FindClass("com/facebook/react/common/ApplicationHolder");
-  gApplicationHolderClass = (jclass)env->NewGlobalRef(applicationHolderClass);
-  gGetApplicationMethod = env->GetStaticMethodID(applicationHolderClass, "getApplication", "()Landroid/app/Application;");
-
-  jclass appClass = env->FindClass("android/app/Application");
-  gGetAssetManagerMethod = env->GetMethodID(appClass, "getAssets", "()Landroid/content/res/AssetManager;");
-}
-
-} }
+}}

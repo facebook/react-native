@@ -1,89 +1,129 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @flow
+ * @format
  */
+
 'use strict';
 
-const attachHMRServer = require('./util/attachHMRServer');
-const connect = require('connect');
-const cpuProfilerMiddleware = require('./middleware/cpuProfilerMiddleware');
-const getDevToolsMiddleware = require('./middleware/getDevToolsMiddleware');
-const http = require('http');
-const isAbsolutePath = require('absolute-path');
-const loadRawBodyMiddleware = require('./middleware/loadRawBodyMiddleware');
-const openStackFrameInEditorMiddleware = require('./middleware/openStackFrameInEditorMiddleware');
+require('../../setupBabel')();
+
+const Metro = require('metro');
+
+const {Terminal} = require('metro-core');
+
+const messageSocket = require('./util/messageSocket');
+const morgan = require('morgan');
 const path = require('path');
-const ReactPackager = require('../../packager/react-packager');
-const statusPageMiddleware = require('./middleware/statusPageMiddleware.js');
-const systraceProfileMiddleware = require('./middleware/systraceProfileMiddleware.js');
-const webSocketProxy = require('./util/webSocketProxy.js');
+const webSocketProxy = require('./util/webSocketProxy');
+const MiddlewareManager = require('./middleware/MiddlewareManager');
 
-function runServer(args, config, readyCallback) {
-  var wsProxy = null;
-  const packagerServer = getPackagerServer(args, config);
-  const app = connect()
-    .use(loadRawBodyMiddleware)
-    .use(connect.compress())
-    .use(getDevToolsMiddleware(args, () => wsProxy && wsProxy.isChromeConnected()))
-    .use(openStackFrameInEditorMiddleware)
-    .use(statusPageMiddleware)
-    .use(systraceProfileMiddleware)
-    .use(cpuProfilerMiddleware)
-    .use(packagerServer.processRequest.bind(packagerServer));
+import type {ConfigT} from 'metro-config/src/configTypes.flow';
 
-  args.projectRoots.forEach(root => app.use(connect.static(root)));
+export type Args = {|
+  +assetExts: $ReadOnlyArray<string>,
+  +cert: string,
+  +customLogReporterPath?: string,
+  +host: string,
+  +https: boolean,
+  +maxWorkers: number,
+  +key: string,
+  +nonPersistent: boolean,
+  +platforms: $ReadOnlyArray<string>,
+  +port: number,
+  +projectRoot: string,
+  +providesModuleNodeModules: Array<string>,
+  +resetCache: boolean,
+  +sourceExts: $ReadOnlyArray<string>,
+  +transformer?: string,
+  +verbose: boolean,
+  +watchFolders: $ReadOnlyArray<string>,
+|};
 
-  app.use(connect.logger())
-    .use(connect.errorHandler());
+async function runServer(args: Args, config: ConfigT) {
+  const terminal = new Terminal(process.stdout);
+  const ReporterImpl = getReporterImpl(args.customLogReporterPath || null);
+  const reporter = new ReporterImpl(terminal);
+  const middlewareManager = new MiddlewareManager(args);
 
-  const serverInstance = http.createServer(app).listen(
-    args.port,
-    args.host,
-    function() {
-      attachHMRServer({
-        httpServer: serverInstance,
-        path: '/hot',
-        packagerServer,
-      });
+  middlewareManager.getConnectInstance().use(morgan('combined'));
 
-      wsProxy = webSocketProxy.attachToServer(serverInstance, '/debugger-proxy');
-      webSocketProxy.attachToServer(serverInstance, '/devtools');
-      readyCallback();
-    }
-  );
-  // Disable any kind of automatic timeout behavior for incoming
-  // requests in case it takes the packager more than the default
-  // timeout of 120 seconds to respond to a request.
-  serverInstance.timeout = 0;
-}
+  args.watchFolders.forEach(middlewareManager.serveStatic);
 
-function getPackagerServer(args, config) {
-  let transformerPath = args.transformer;
-  if (!isAbsolutePath(transformerPath)) {
-    transformerPath = path.resolve(process.cwd(), transformerPath);
+  // $FlowFixMe Metro configuration is immutable.
+  config.maxWorkers = args.maxWorkers;
+  // $FlowFixMe Metro configuration is immutable.
+  config.server.port = args.port;
+  // $FlowFixMe Metro configuration is immutable.
+  config.reporter = reporter;
+  // $FlowFixMe Metro configuration is immutable.
+  config.resetCache = args.resetCache;
+  // $FlowFixMe Metro configuration is immutable.
+  config.projectRoot = args.projectRoot;
+  // $FlowFixMe Metro configuration is immutable.
+  config.watchFolders = args.watchFolders.slice(0);
+  // $FlowFixMe Metro configuration is immutable.
+  config.server.enhanceMiddleware = middleware =>
+    middlewareManager.getConnectInstance().use(middleware);
+
+  if (args.sourceExts !== config.resolver.sourceExts) {
+    // $FlowFixMe Metro configuration is immutable.
+    config.resolver.sourceExts = args.sourceExts.concat(
+      config.resolver.sourceExts,
+    );
   }
 
-  return ReactPackager.createServer({
-    nonPersistent: args.nonPersistent,
-    projectRoots: args.projectRoots,
-    blacklistRE: config.getBlacklistRE(),
-    cacheVersion: '3',
-    getTransformOptionsModulePath: config.getTransformOptionsModulePath,
-    transformModulePath: transformerPath,
-    assetRoots: args.assetRoots,
-    assetExts: [
-      'bmp', 'gif', 'jpg', 'jpeg', 'png', 'psd', 'svg', 'webp', // Image formats
-      'm4v', 'mov', 'mp4', 'mpeg', 'mpg', 'webm', // Video formats
-      'aac', 'aiff', 'caf', 'm4a', 'mp3', 'wav', // Audio formats
-      'html', // Document formats
-    ],
-    resetCache: args.resetCache || args['reset-cache'],
-    verbose: args.verbose,
+  const serverInstance = await Metro.runServer(config, {
+    host: args.host,
+    secure: args.https,
+    secureCert: args.cert,
+    secureKey: args.key,
+    hmrEnabled: true,
   });
+
+  const wsProxy = webSocketProxy.attachToServer(
+    serverInstance,
+    '/debugger-proxy',
+  );
+  const ms = messageSocket.attachToServer(serverInstance, '/message');
+  middlewareManager.attachDevToolsSocket(wsProxy);
+  middlewareManager.attachDevToolsSocket(ms);
+
+  // In Node 8, the default keep-alive for an HTTP connection is 5 seconds. In
+  // early versions of Node 8, this was implemented in a buggy way which caused
+  // some HTTP responses (like those containing large JS bundles) to be
+  // terminated early.
+  //
+  // As a workaround, arbitrarily increase the keep-alive from 5 to 30 seconds,
+  // which should be enough to send even the largest of JS bundles.
+  //
+  // For more info: https://github.com/nodejs/node/issues/13391
+  //
+  serverInstance.keepAliveTimeout = 30000;
+}
+
+function getReporterImpl(customLogReporterPath: ?string) {
+  if (customLogReporterPath == null) {
+    return require('metro/src/lib/TerminalReporter');
+  }
+  try {
+    // First we let require resolve it, so we can require packages in node_modules
+    // as expected. eg: require('my-package/reporter');
+    /* $FlowFixMe: can't type dynamic require */
+    return require(customLogReporterPath);
+  } catch (e) {
+    if (e.code !== 'MODULE_NOT_FOUND') {
+      throw e;
+    }
+    // If that doesn't work, then we next try relative to the cwd, eg:
+    // require('./reporter');
+    /* $FlowFixMe: can't type dynamic require */
+    return require(path.resolve(customLogReporterPath));
+  }
 }
 
 module.exports = runServer;

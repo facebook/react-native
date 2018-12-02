@@ -1,16 +1,14 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #include "RCTDefines.h"
 #include "RCTMacros.h"
 
-#if RCT_DEV && defined(__x86_64__)
+#if RCT_PROFILE && defined(__x86_64__)
 
   .globl SYMBOL_NAME(RCTProfileTrampoline)
 SYMBOL_NAME(RCTProfileTrampoline):
@@ -59,7 +57,7 @@ SYMBOL_NAME(RCTProfileTrampoline):
    * This is a C function defined in `RCTProfile.m`, the object and the selector
    * already have to be on %rdi and %rsi respectively, as in any ObjC call.
    */
-  callq SYMBOL_NAME(RCTProfileGetImplementation)
+  callq SYMBOL_NAME_PIC(RCTProfileGetImplementation)
 
   // Restore/unalign the stack pointer, so we can access the registers we stored
   movq %r12, %rsp
@@ -90,7 +88,7 @@ SYMBOL_NAME(RCTProfileTrampoline):
 
   // allocate 16 bytes
   movq $0x10, %rdi
-  callq SYMBOL_NAME(malloc)
+  callq SYMBOL_NAME_PIC(RCTProfileMalloc)
 
   // store the initial value of calle saved registers %r13 and %r14
   movq %r13, 0x0(%rax)
@@ -108,7 +106,7 @@ SYMBOL_NAME(RCTProfileTrampoline):
   movq 0x38(%r12), %rsi // selector
 
   // void RCTProfileTrampolineStart(id, SEL) in RCTProfile.m
-  callq SYMBOL_NAME(RCTProfileTrampolineStart)
+  callq SYMBOL_NAME_PIC(RCTProfileTrampolineStart)
 
   // unalign the stack and restore %r12
   movq %r12, %rsp
@@ -148,7 +146,7 @@ SYMBOL_NAME(RCTProfileTrampoline):
   movdqa %xmm1, 0x10(%rsp)
 
   // void RCTProfileTrampolineEnd(void) in RCTProfile.m - just ends this profile
-  callq SYMBOL_NAME(RCTProfileTrampolineEnd)
+  callq SYMBOL_NAME_PIC(RCTProfileTrampolineEnd)
 
   /**
    * Restore the initial value of the callee saved registers, saved in the
@@ -169,7 +167,7 @@ SYMBOL_NAME(RCTProfileTrampoline):
   andq $-0x10, %rsp
 
   // Free the memory allocated to stash callee saved registers
-  callq SYMBOL_NAME(free)
+  callq SYMBOL_NAME_PIC(RCTProfileFree)
 
   // unalign  stack and restore %r12
   movq %r12, %rsp

@@ -1,53 +1,281 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule TextInput
  * @flow
+ * @format
  */
 'use strict';
 
-var DocumentSelectionState = require('DocumentSelectionState');
-var EventEmitter = require('EventEmitter');
-var NativeMethodsMixin = require('NativeMethodsMixin');
-var Platform = require('Platform');
-var PropTypes = require('ReactPropTypes');
-var React = require('React');
-var ReactChildren = require('ReactChildren');
-var StyleSheet = require('StyleSheet');
-var Text = require('Text');
-var TextInputState = require('TextInputState');
-var TimerMixin = require('react-timer-mixin');
-var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-var UIManager = require('UIManager');
-var View = require('View');
+const DeprecatedColorPropType = require('DeprecatedColorPropType');
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
+const DocumentSelectionState = require('DocumentSelectionState');
+const EventEmitter = require('EventEmitter');
+const NativeMethodsMixin = require('NativeMethodsMixin');
+const Platform = require('Platform');
+const PropTypes = require('prop-types');
+const React = require('React');
+const ReactNative = require('ReactNative');
+const StyleSheet = require('StyleSheet');
+const Text = require('Text');
+const TextAncestor = require('TextAncestor');
+const TextInputState = require('TextInputState');
+const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+const UIManager = require('UIManager');
 
-var createReactNativeComponentClass = require('createReactNativeComponentClass');
-var emptyFunction = require('emptyFunction');
-var invariant = require('invariant');
-var requireNativeComponent = require('requireNativeComponent');
+const createReactClass = require('create-react-class');
+const invariant = require('fbjs/lib/invariant');
+const requireNativeComponent = require('requireNativeComponent');
+const warning = require('fbjs/lib/warning');
 
-var onlyMultiline = {
-  onTextInput: true, // not supported in Open Source yet
+import type {TextStyleProp, ViewStyleProp} from 'StyleSheet';
+import type {ColorValue} from 'StyleSheetTypes';
+import type {ViewProps} from 'ViewPropTypes';
+import type {SyntheticEvent, ScrollEvent} from 'CoreEventTypes';
+import type {PressEvent} from 'CoreEventTypes';
+
+let AndroidTextInput;
+let RCTMultilineTextInputView;
+let RCTSinglelineTextInputView;
+
+if (Platform.OS === 'android') {
+  AndroidTextInput = requireNativeComponent('AndroidTextInput');
+} else if (Platform.OS === 'ios') {
+  RCTMultilineTextInputView = requireNativeComponent(
+    'RCTMultilineTextInputView',
+  );
+  RCTSinglelineTextInputView = requireNativeComponent(
+    'RCTSinglelineTextInputView',
+  );
+}
+
+const onlyMultiline = {
+  onTextInput: true,
   children: true,
 };
 
-var notMultiline = {
-  // nothing yet
-};
+export type ChangeEvent = SyntheticEvent<
+  $ReadOnly<{|
+    eventCount: number,
+    target: number,
+    text: string,
+  |}>,
+>;
 
-if (Platform.OS === 'android') {
-  var AndroidTextInput = requireNativeComponent('AndroidTextInput', null);
-} else if (Platform.OS === 'ios') {
-  var RCTTextView = requireNativeComponent('RCTTextView', null);
-  var RCTTextField = requireNativeComponent('RCTTextField', null);
-}
+export type TextInputEvent = SyntheticEvent<
+  $ReadOnly<{|
+    eventCount: number,
+    previousText: string,
+    range: $ReadOnly<{|
+      start: number,
+      end: number,
+    |}>,
+    target: number,
+    text: string,
+  |}>,
+>;
 
-type Event = Object;
+export type ContentSizeChangeEvent = SyntheticEvent<
+  $ReadOnly<{|
+    target: number,
+    contentSize: $ReadOnly<{|
+      width: number,
+      height: number,
+    |}>,
+  |}>,
+>;
+
+type TargetEvent = SyntheticEvent<
+  $ReadOnly<{|
+    target: number,
+  |}>,
+>;
+
+export type BlurEvent = TargetEvent;
+export type FocusEvent = TargetEvent;
+
+type Selection = $ReadOnly<{|
+  start: number,
+  end: number,
+|}>;
+
+export type SelectionChangeEvent = SyntheticEvent<
+  $ReadOnly<{|
+    selection: Selection,
+    target: number,
+  |}>,
+>;
+
+export type KeyPressEvent = SyntheticEvent<
+  $ReadOnly<{|
+    key: string,
+    target?: ?number,
+    eventCount?: ?number,
+  |}>,
+>;
+
+export type EditingEvent = SyntheticEvent<
+  $ReadOnly<{|
+    eventCount: number,
+    text: string,
+    target: number,
+  |}>,
+>;
+
+const DataDetectorTypes = [
+  'phoneNumber',
+  'link',
+  'address',
+  'calendarEvent',
+  'none',
+  'all',
+];
+
+type DataDetectorTypesType =
+  | 'phoneNumber'
+  | 'link'
+  | 'address'
+  | 'calendarEvent'
+  | 'none'
+  | 'all';
+
+export type KeyboardType =
+  // Cross Platform
+  | 'default'
+  | 'email-address'
+  | 'numeric'
+  | 'phone-pad'
+  | 'number-pad'
+  | 'decimal-pad'
+  // iOS-only
+  | 'ascii-capable'
+  | 'numbers-and-punctuation'
+  | 'url'
+  | 'name-phone-pad'
+  | 'twitter'
+  | 'web-search'
+  // Android-only
+  | 'visible-password';
+
+export type ReturnKeyType =
+  // Cross Platform
+  | 'done'
+  | 'go'
+  | 'next'
+  | 'search'
+  | 'send'
+  // Android-only
+  | 'none'
+  | 'previous'
+  // iOS-only
+  | 'default'
+  | 'emergency-call'
+  | 'google'
+  | 'join'
+  | 'route'
+  | 'yahoo';
+
+export type AutoCapitalize = 'none' | 'sentences' | 'words' | 'characters';
+
+type IOSProps = $ReadOnly<{|
+  spellCheck?: ?boolean,
+  keyboardAppearance?: ?('default' | 'light' | 'dark'),
+  enablesReturnKeyAutomatically?: ?boolean,
+  selectionState?: ?DocumentSelectionState,
+  clearButtonMode?: ?('never' | 'while-editing' | 'unless-editing' | 'always'),
+  clearTextOnFocus?: ?boolean,
+  dataDetectorTypes?:
+    | ?DataDetectorTypesType
+    | $ReadOnlyArray<DataDetectorTypesType>,
+  inputAccessoryViewID?: ?string,
+  textContentType?: ?(
+    | 'none'
+    | 'URL'
+    | 'addressCity'
+    | 'addressCityAndState'
+    | 'addressState'
+    | 'countryName'
+    | 'creditCardNumber'
+    | 'emailAddress'
+    | 'familyName'
+    | 'fullStreetAddress'
+    | 'givenName'
+    | 'jobTitle'
+    | 'location'
+    | 'middleName'
+    | 'name'
+    | 'namePrefix'
+    | 'nameSuffix'
+    | 'nickname'
+    | 'organizationName'
+    | 'postalCode'
+    | 'streetAddressLine1'
+    | 'streetAddressLine2'
+    | 'sublocality'
+    | 'telephoneNumber'
+    | 'username'
+    | 'password'
+    | 'newPassword'
+    | 'oneTimeCode'
+  ),
+  scrollEnabled?: ?boolean,
+|}>;
+
+type AndroidProps = $ReadOnly<{|
+  returnKeyLabel?: ?string,
+  numberOfLines?: ?number,
+  disableFullscreenUI?: ?boolean,
+  textBreakStrategy?: ?('simple' | 'highQuality' | 'balanced'),
+  underlineColorAndroid?: ?ColorValue,
+  inlineImageLeft?: ?string,
+  inlineImagePadding?: ?number,
+|}>;
+
+type Props = $ReadOnly<{|
+  ...$Diff<ViewProps, $ReadOnly<{|style: ?ViewStyleProp|}>>,
+  ...IOSProps,
+  ...AndroidProps,
+  autoCapitalize?: ?AutoCapitalize,
+  autoCorrect?: ?boolean,
+  autoFocus?: ?boolean,
+  allowFontScaling?: ?boolean,
+  maxFontSizeMultiplier?: ?number,
+  editable?: ?boolean,
+  keyboardType?: ?KeyboardType,
+  returnKeyType?: ?ReturnKeyType,
+  maxLength?: ?number,
+  multiline?: ?boolean,
+  onBlur?: ?(e: BlurEvent) => void,
+  onFocus?: ?(e: FocusEvent) => void,
+  onChange?: ?(e: ChangeEvent) => void,
+  onChangeText?: ?(text: string) => void,
+  onContentSizeChange?: ?(e: ContentSizeChangeEvent) => void,
+  onTextInput?: ?(e: TextInputEvent) => void,
+  onEndEditing?: ?(e: EditingEvent) => void,
+  onSelectionChange?: ?(e: SelectionChangeEvent) => void,
+  onSubmitEditing?: ?(e: EditingEvent) => void,
+  onKeyPress?: ?(e: KeyPressEvent) => void,
+  onScroll?: ?(e: ScrollEvent) => void,
+  placeholder?: ?Stringish,
+  placeholderTextColor?: ?ColorValue,
+  secureTextEntry?: ?boolean,
+  selectionColor?: ?ColorValue,
+  selection?: ?$ReadOnly<{|
+    start: number,
+    end?: ?number,
+  |}>,
+  value?: ?Stringish,
+  defaultValue?: ?Stringish,
+  selectTextOnFocus?: ?boolean,
+  blurOnSubmit?: ?boolean,
+  style?: ?TextStyleProp,
+  caretHidden?: ?boolean,
+  contextMenuHidden?: ?boolean,
+|}>;
+
+const emptyFunctionThatReturnsTrue = () => true;
 
 /**
  * A foundational component for inputting text into the app via a
@@ -60,31 +288,125 @@ type Event = Object;
  * such as `onSubmitEditing` and `onFocus` that can be subscribed to. A simple
  * example:
  *
- * ```
- *   <TextInput
- *     style={{height: 40, borderColor: 'gray', borderWidth: 1}}
- *     onChangeText={(text) => this.setState({text})}
- *     value={this.state.text}
- *   />
+ * ```ReactNativeWebPlayer
+ * import React, { Component } from 'react';
+ * import { AppRegistry, TextInput } from 'react-native';
+ *
+ * export default class UselessTextInput extends Component {
+ *   constructor(props) {
+ *     super(props);
+ *     this.state = { text: 'Useless Placeholder' };
+ *   }
+ *
+ *   render() {
+ *     return (
+ *       <TextInput
+ *         style={{height: 40, borderColor: 'gray', borderWidth: 1}}
+ *         onChangeText={(text) => this.setState({text})}
+ *         value={this.state.text}
+ *       />
+ *     );
+ *   }
+ * }
+ *
+ * // skip this line if using Create React Native App
+ * AppRegistry.registerComponent('AwesomeProject', () => UselessTextInput);
  * ```
  *
- * Note that some props are only available with `multiline={true/false}`:
+ * Two methods exposed via the native element are .focus() and .blur() that
+ * will focus or blur the TextInput programmatically.
+ *
+ * Note that some props are only available with `multiline={true/false}`.
+ * Additionally, border styles that apply to only one side of the element
+ * (e.g., `borderBottomColor`, `borderLeftWidth`, etc.) will not be applied if
+ * `multiline=false`. To achieve the same effect, you can wrap your `TextInput`
+ * in a `View`:
+ *
+ * ```ReactNativeWebPlayer
+ * import React, { Component } from 'react';
+ * import { AppRegistry, View, TextInput } from 'react-native';
+ *
+ * class UselessTextInput extends Component {
+ *   render() {
+ *     return (
+ *       <TextInput
+ *         {...this.props} // Inherit any props passed to it; e.g., multiline, numberOfLines below
+ *         editable = {true}
+ *         maxLength = {40}
+ *       />
+ *     );
+ *   }
+ * }
+ *
+ * export default class UselessTextInputMultiline extends Component {
+ *   constructor(props) {
+ *     super(props);
+ *     this.state = {
+ *       text: 'Useless Multiline Placeholder',
+ *     };
+ *   }
+ *
+ *   // If you type something in the text box that is a color, the background will change to that
+ *   // color.
+ *   render() {
+ *     return (
+ *      <View style={{
+ *        backgroundColor: this.state.text,
+ *        borderBottomColor: '#000000',
+ *        borderBottomWidth: 1 }}
+ *      >
+ *        <UselessTextInput
+ *          multiline = {true}
+ *          numberOfLines = {4}
+ *          onChangeText={(text) => this.setState({text})}
+ *          value={this.state.text}
+ *        />
+ *      </View>
+ *     );
+ *   }
+ * }
+ *
+ * // skip these lines if using Create React Native App
+ * AppRegistry.registerComponent(
+ *  'AwesomeProject',
+ *  () => UselessTextInputMultiline
+ * );
+ * ```
+ *
+ * `TextInput` has by default a border at the bottom of its view. This border
+ * has its padding set by the background image provided by the system, and it
+ * cannot be changed. Solutions to avoid this is to either not set height
+ * explicitly, case in which the system will take care of displaying the border
+ * in the correct position, or to not display the border by setting
+ * `underlineColorAndroid` to transparent.
+ *
+ * Note that on Android performing text selection in input can change
+ * app's activity `windowSoftInputMode` param to `adjustResize`.
+ * This may cause issues with components that have position: 'absolute'
+ * while keyboard is active. To avoid this behavior either specify `windowSoftInputMode`
+ * in AndroidManifest.xml ( https://developer.android.com/guide/topics/manifest/activity-element.html )
+ * or control this param programmatically with native code.
+ *
  */
-var TextInput = React.createClass({
-  statics: {
-    /* TODO(brentvatne) docs are needed for this */
-    State: TextInputState,
-  },
 
+const TextInput = createReactClass({
+  displayName: 'TextInput',
+  statics: {
+    State: {
+      currentlyFocusedField: TextInputState.currentlyFocusedField,
+      focusTextInput: TextInputState.focusTextInput,
+      blurTextInput: TextInputState.blurTextInput,
+    },
+  },
   propTypes: {
-    ...View.propTypes,
+    ...DeprecatedViewPropTypes,
     /**
-     * Can tell TextInput to automatically capitalize certain characters.
+     * Can tell `TextInput` to automatically capitalize certain characters.
      *
-     * - characters: all characters,
-     * - words: first letter of each word
-     * - sentences: first letter of each sentence (default)
-     * - none: don't auto capitalize anything
+     * - `characters`: all characters.
+     * - `words`: first letter of each word.
+     * - `sentences`: first letter of each sentence (*default*).
+     * - `none`: don't auto capitalize anything.
      */
     autoCapitalize: PropTypes.oneOf([
       'none',
@@ -93,25 +415,65 @@ var TextInput = React.createClass({
       'characters',
     ]),
     /**
-     * If false, disables auto-correct. The default value is true.
+     * If `false`, disables auto-correct. The default value is `true`.
      */
     autoCorrect: PropTypes.bool,
     /**
-     * If true, focuses the input on componentDidMount.
-     * The default value is false.
+     * If `false`, disables spell-check style (i.e. red underlines).
+     * The default value is inherited from `autoCorrect`.
+     * @platform ios
+     */
+    spellCheck: PropTypes.bool,
+    /**
+     * If `true`, focuses the input on `componentDidMount`.
+     * The default value is `false`.
      */
     autoFocus: PropTypes.bool,
     /**
-     * If false, text is not editable. The default value is true.
+     * Specifies whether fonts should scale to respect Text Size accessibility settings. The
+     * default is `true`.
+     */
+    allowFontScaling: PropTypes.bool,
+    /**
+     * Specifies largest possible scale a font can reach when `allowFontScaling` is enabled.
+     * Possible values:
+     * `null/undefined` (default): inherit from the parent node or the global default (0)
+     * `0`: no max, ignore parent/global default
+     * `>= 1`: sets the maxFontSizeMultiplier of this node to this value
+     */
+    maxFontSizeMultiplier: PropTypes.number,
+    /**
+     * If `false`, text is not editable. The default value is `true`.
      */
     editable: PropTypes.bool,
     /**
      * Determines which keyboard to open, e.g.`numeric`.
      *
      * The following values work across platforms:
-     * - default
-     * - numeric
-     * - email-address
+     *
+     * - `default`
+     * - `numeric`
+     * - `number-pad`
+     * - `decimal-pad`
+     * - `email-address`
+     * - `phone-pad`
+     *
+     * *iOS Only*
+     *
+     * The following values work on iOS only:
+     *
+     * - `ascii-capable`
+     * - `numbers-and-punctuation`
+     * - `url`
+     * - `name-phone-pad`
+     * - `twitter`
+     * - `web-search`
+     *
+     * *Android Only*
+     *
+     * The following values work on Android only:
+     *
+     * - `visible-password`
      */
     keyboardType: PropTypes.oneOf([
       // Cross-platform
@@ -119,70 +481,121 @@ var TextInput = React.createClass({
       'email-address',
       'numeric',
       'phone-pad',
+      'number-pad',
       // iOS-only
       'ascii-capable',
       'numbers-and-punctuation',
       'url',
-      'number-pad',
       'name-phone-pad',
       'decimal-pad',
       'twitter',
       'web-search',
+      // Android-only
+      'visible-password',
     ]),
     /**
      * Determines the color of the keyboard.
      * @platform ios
      */
-    keyboardAppearance: PropTypes.oneOf([
-      'default',
-      'light',
-      'dark',
-    ]),
+    keyboardAppearance: PropTypes.oneOf(['default', 'light', 'dark']),
     /**
-     * Determines how the return key should look.
-     * @platform ios
+     * Determines how the return key should look. On Android you can also use
+     * `returnKeyLabel`.
+     *
+     * *Cross platform*
+     *
+     * The following values work across platforms:
+     *
+     * - `done`
+     * - `go`
+     * - `next`
+     * - `search`
+     * - `send`
+     *
+     * *Android Only*
+     *
+     * The following values work on Android only:
+     *
+     * - `none`
+     * - `previous`
+     *
+     * *iOS Only*
+     *
+     * The following values work on iOS only:
+     *
+     * - `default`
+     * - `emergency-call`
+     * - `google`
+     * - `join`
+     * - `route`
+     * - `yahoo`
      */
     returnKeyType: PropTypes.oneOf([
-      'default',
+      // Cross-platform
+      'done',
       'go',
-      'google',
-      'join',
       'next',
-      'route',
       'search',
       'send',
-      'yahoo',
-      'done',
+      // Android-only
+      'none',
+      'previous',
+      // iOS-only
+      'default',
       'emergency-call',
+      'google',
+      'join',
+      'route',
+      'yahoo',
     ]),
+    /**
+     * Sets the return key to the label. Use it instead of `returnKeyType`.
+     * @platform android
+     */
+    returnKeyLabel: PropTypes.string,
     /**
      * Limits the maximum number of characters that can be entered. Use this
      * instead of implementing the logic in JS to avoid flicker.
      */
     maxLength: PropTypes.number,
     /**
-     * Sets the number of lines for a TextInput. Use it with multiline set to
-     * true to be able to fill the lines.
+     * Sets the number of lines for a `TextInput`. Use it with multiline set to
+     * `true` to be able to fill the lines.
      * @platform android
      */
     numberOfLines: PropTypes.number,
     /**
-     * If true, the keyboard disables the return key when there is no text and
-     * automatically enables it when there is text. The default value is false.
+     * When `false`, if there is a small amount of space available around a text input
+     * (e.g. landscape orientation on a phone), the OS may choose to have the user edit
+     * the text inside of a full screen text input mode. When `true`, this feature is
+     * disabled and users will always edit the text directly inside of the text input.
+     * Defaults to `false`.
+     * @platform android
+     */
+    disableFullscreenUI: PropTypes.bool,
+    /**
+     * If `true`, the keyboard disables the return key when there is no text and
+     * automatically enables it when there is text. The default value is `false`.
      * @platform ios
      */
     enablesReturnKeyAutomatically: PropTypes.bool,
     /**
-     * If true, the text input can be multiple lines.
-     * The default value is false.
+     * If `true`, the text input can be multiple lines.
+     * The default value is `false`.
      */
     multiline: PropTypes.bool,
     /**
-     * Callback that is called when the text input is blurred
+     * Set text break strategy on Android API Level 23+, possible values are `simple`, `highQuality`, `balanced`
+     * The default value is `simple`.
+     * @platform android
+     */
+    textBreakStrategy: PropTypes.oneOf(['simple', 'highQuality', 'balanced']),
+    /**
+     * Callback that is called when the text input is blurred.
      */
     onBlur: PropTypes.func,
     /**
-     * Callback that is called when the text input is focused
+     * Callback that is called when the text input is focused.
      */
     onFocus: PropTypes.func,
     /**
@@ -195,23 +608,35 @@ var TextInput = React.createClass({
      */
     onChangeText: PropTypes.func,
     /**
+     * Callback that is called when the text input's content size changes.
+     * This will be called with
+     * `{ nativeEvent: { contentSize: { width, height } } }`.
+     *
+     * Only called for multiline text inputs.
+     */
+    onContentSizeChange: PropTypes.func,
+    onTextInput: PropTypes.func,
+    /**
      * Callback that is called when text input ends.
      */
     onEndEditing: PropTypes.func,
     /**
-     * Callback that is called when the text input selection is changed
+     * Callback that is called when the text input selection is changed.
+     * This will be called with
+     * `{ nativeEvent: { selection: { start, end } } }`.
      */
     onSelectionChange: PropTypes.func,
     /**
      * Callback that is called when the text input's submit button is pressed.
-     * Invalid if multiline={true} is specified.
+     * Invalid if `multiline={true}` is specified.
      */
     onSubmitEditing: PropTypes.func,
     /**
      * Callback that is called when a key is pressed.
-     * Pressed key value is passed as an argument to the callback handler.
-     * Fires before onChange callbacks.
-     * @platform ios
+     * This will be called with `{ nativeEvent: { key: keyValue } }`
+     * where `keyValue` is `'Enter'` or `'Backspace'` for respective keys and
+     * the typed-in character otherwise including `' '` for space.
+     * Fires before `onChange` callbacks.
      */
     onKeyPress: PropTypes.func,
     /**
@@ -219,32 +644,62 @@ var TextInput = React.createClass({
      */
     onLayout: PropTypes.func,
     /**
-     * The string that will be rendered before text input has been entered
+     * Invoked on content scroll with `{ nativeEvent: { contentOffset: { x, y } } }`.
+     * May also contain other properties from ScrollEvent but on Android contentSize
+     * is not provided for performance reasons.
+     */
+    onScroll: PropTypes.func,
+    /**
+     * The string that will be rendered before text input has been entered.
      */
     placeholder: PropTypes.string,
     /**
-     * The text color of the placeholder string
+     * The text color of the placeholder string.
      */
-    placeholderTextColor: PropTypes.string,
+    placeholderTextColor: DeprecatedColorPropType,
     /**
-     * If true, the text input obscures the text entered so that sensitive text
-     * like passwords stay secure. The default value is false.
+     * If `false`, scrolling of the text view will be disabled.
+     * The default value is `true`. Does only work with 'multiline={true}'.
+     * @platform ios
+     */
+    scrollEnabled: PropTypes.bool,
+    /**
+     * If `true`, the text input obscures the text entered so that sensitive text
+     * like passwords stay secure. The default value is `false`. Does not work with 'multiline={true}'.
      */
     secureTextEntry: PropTypes.bool,
     /**
-    * The highlight (and cursor on ios) color of the text input
-    */
-    selectionColor: PropTypes.string,
+     * The highlight and cursor color of the text input.
+     */
+    selectionColor: DeprecatedColorPropType,
     /**
-     * See DocumentSelectionState.js, some state that is responsible for
-     * maintaining selection information for a document
+     * An instance of `DocumentSelectionState`, this is some state that is responsible for
+     * maintaining selection information for a document.
+     *
+     * Some functionality that can be performed with this instance is:
+     *
+     * - `blur()`
+     * - `focus()`
+     * - `update()`
+     *
+     * > You can reference `DocumentSelectionState` in
+     * > [`vendor/document/selection/DocumentSelectionState.js`](https://github.com/facebook/react-native/blob/master/Libraries/vendor/document/selection/DocumentSelectionState.js)
+     *
      * @platform ios
      */
     selectionState: PropTypes.instanceOf(DocumentSelectionState),
     /**
-     * The value to show for the text input. TextInput is a controlled
+     * The start and end of the text input's selection. Set start and end to
+     * the same value to position the cursor.
+     */
+    selection: PropTypes.shape({
+      start: PropTypes.number.isRequired,
+      end: PropTypes.number,
+    }),
+    /**
+     * The value to show for the text input. `TextInput` is a controlled
      * component, which means the native value will be forced to match this
-     * value prop if provided. For most uses this works great, but in some
+     * value prop if provided. For most uses, this works great, but in some
      * cases this may cause flickering - one common cause is preventing edits
      * by keeping value the same. In addition to simply setting the same value,
      * either set `editable={false}`, or set/update `maxLength` to prevent
@@ -253,12 +708,13 @@ var TextInput = React.createClass({
     value: PropTypes.string,
     /**
      * Provides an initial value that will change when the user starts typing.
-     * Useful for simple use-cases where you don't want to deal with listening
+     * Useful for simple use-cases where you do not want to deal with listening
      * to events and updating the value prop to keep the controlled state in sync.
      */
     defaultValue: PropTypes.string,
     /**
-     * When the clear button should appear on the right side of the text view
+     * When the clear button should appear on the right side of the text view.
+     * This property is supported only for single-line TextInput component.
      * @platform ios
      */
     clearButtonMode: PropTypes.oneOf([
@@ -268,79 +724,193 @@ var TextInput = React.createClass({
       'always',
     ]),
     /**
-     * If true, clears the text field automatically when editing begins
+     * If `true`, clears the text field automatically when editing begins.
      * @platform ios
      */
     clearTextOnFocus: PropTypes.bool,
     /**
-     * If true, all text will automatically be selected on focus
-     * @platform ios
+     * If `true`, all text will automatically be selected on focus.
      */
     selectTextOnFocus: PropTypes.bool,
     /**
-     * If true, the text field will blur when submitted.
+     * If `true`, the text field will blur when submitted.
      * The default value is true for single-line fields and false for
-     * multiline fields. Note that for multiline fields, setting blurOnSubmit
-     * to true means that pressing return will blur the field and trigger the
-     * onSubmitEditing event instead of inserting a newline into the field.
-     * @platform ios
+     * multiline fields. Note that for multiline fields, setting `blurOnSubmit`
+     * to `true` means that pressing return will blur the field and trigger the
+     * `onSubmitEditing` event instead of inserting a newline into the field.
      */
     blurOnSubmit: PropTypes.bool,
     /**
-     * Styles
+     * Note that not all Text styles are supported, an incomplete list of what is not supported includes:
+     *
+     * - `borderLeftWidth`
+     * - `borderTopWidth`
+     * - `borderRightWidth`
+     * - `borderBottomWidth`
+     * - `borderTopLeftRadius`
+     * - `borderTopRightRadius`
+     * - `borderBottomRightRadius`
+     * - `borderBottomLeftRadius`
+     *
+     * see [Issue#7070](https://github.com/facebook/react-native/issues/7070)
+     * for more detail.
+     *
+     * [Styles](docs/style.html)
      */
     style: Text.propTypes.style,
     /**
-     * The color of the textInput underline.
+     * The color of the `TextInput` underline.
      * @platform android
      */
-    underlineColorAndroid: PropTypes.string,
-  },
+    underlineColorAndroid: DeprecatedColorPropType,
 
+    /**
+     * If defined, the provided image resource will be rendered on the left.
+     * The image resource must be inside `/android/app/src/main/res/drawable` and referenced
+     * like
+     * ```
+     * <TextInput
+     *  inlineImageLeft='search_icon'
+     * />
+     * ```
+     * @platform android
+     */
+    inlineImageLeft: PropTypes.string,
+
+    /**
+     * Padding between the inline image, if any, and the text input itself.
+     * @platform android
+     */
+    inlineImagePadding: PropTypes.number,
+
+    /**
+     * Determines the types of data converted to clickable URLs in the text input.
+     * Only valid if `multiline={true}` and `editable={false}`.
+     * By default no data types are detected.
+     *
+     * You can provide one type or an array of many types.
+     *
+     * Possible values for `dataDetectorTypes` are:
+     *
+     * - `'phoneNumber'`
+     * - `'link'`
+     * - `'address'`
+     * - `'calendarEvent'`
+     * - `'none'`
+     * - `'all'`
+     *
+     * @platform ios
+     */
+    dataDetectorTypes: PropTypes.oneOfType([
+      PropTypes.oneOf(DataDetectorTypes),
+      PropTypes.arrayOf(PropTypes.oneOf(DataDetectorTypes)),
+    ]),
+    /**
+     * If `true`, caret is hidden. The default value is `false`.
+     * This property is supported only for single-line TextInput component on iOS.
+     */
+    caretHidden: PropTypes.bool,
+    /*
+     * If `true`, contextMenuHidden is hidden. The default value is `false`.
+     */
+    contextMenuHidden: PropTypes.bool,
+    /**
+     * An optional identifier which links a custom InputAccessoryView to
+     * this text input. The InputAccessoryView is rendered above the
+     * keyboard when this text input is focused.
+     * @platform ios
+     */
+    inputAccessoryViewID: PropTypes.string,
+    /**
+     * Give the keyboard and the system information about the
+     * expected semantic meaning for the content that users enter.
+     * @platform ios
+     */
+    textContentType: PropTypes.oneOf([
+      'none',
+      'URL',
+      'addressCity',
+      'addressCityAndState',
+      'addressState',
+      'countryName',
+      'creditCardNumber',
+      'emailAddress',
+      'familyName',
+      'fullStreetAddress',
+      'givenName',
+      'jobTitle',
+      'location',
+      'middleName',
+      'name',
+      'namePrefix',
+      'nameSuffix',
+      'nickname',
+      'organizationName',
+      'postalCode',
+      'streetAddressLine1',
+      'streetAddressLine2',
+      'sublocality',
+      'telephoneNumber',
+      'username',
+      'password',
+      'newPassword',
+      'oneTimeCode',
+    ]),
+  },
+  getDefaultProps() {
+    return {
+      allowFontScaling: true,
+      underlineColorAndroid: 'transparent',
+    };
+  },
   /**
    * `NativeMethodsMixin` will look for this when invoking `setNativeProps`. We
    * make `this` look like an actual native component class.
    */
-  mixins: [NativeMethodsMixin, TimerMixin],
+  mixins: [NativeMethodsMixin],
 
-  viewConfig:
-    ((Platform.OS === 'ios' && RCTTextField ?
-      RCTTextField.viewConfig :
-      (Platform.OS === 'android' && AndroidTextInput ?
-        AndroidTextInput.viewConfig :
-        {})) : Object),
-
+  /**
+   * Returns `true` if the input is currently focused; `false` otherwise.
+   */
   isFocused: function(): boolean {
-    return TextInputState.currentlyFocusedField() ===
-      React.findNodeHandle(this.refs.input);
+    return (
+      TextInputState.currentlyFocusedField() ===
+      ReactNative.findNodeHandle(this._inputRef)
+    );
   },
 
-  contextTypes: {
-    onFocusRequested: React.PropTypes.func,
-    focusEmitter: React.PropTypes.instanceOf(EventEmitter),
-  },
-
+  _inputRef: (undefined: any),
   _focusSubscription: (undefined: ?Function),
+  _lastNativeText: (undefined: ?string),
+  _lastNativeSelection: (undefined: ?Selection),
+  _rafId: (null: ?AnimationFrameID),
 
   componentDidMount: function() {
-    if (!this.context.focusEmitter) {
-      if (this.props.autoFocus) {
-        this.requestAnimationFrame(this.focus);
-      }
-      return;
+    this._lastNativeText = this.props.value;
+    const tag = ReactNative.findNodeHandle(this._inputRef);
+    if (tag != null) {
+      // tag is null only in unit tests
+      TextInputState.registerInput(tag);
     }
-    this._focusSubscription = this.context.focusEmitter.addListener(
-      'focus',
-      (el) => {
-        if (this === el) {
-          this.requestAnimationFrame(this.focus);
-        } else if (this.isFocused()) {
-          this.blur();
-        }
+
+    if (this.context.focusEmitter) {
+      this._focusSubscription = this.context.focusEmitter.addListener(
+        'focus',
+        el => {
+          if (this === el) {
+            this._rafId = requestAnimationFrame(this.focus);
+          } else if (this.isFocused()) {
+            this.blur();
+          }
+        },
+      );
+      if (this.props.autoFocus) {
+        this.context.onFocusRequested(this);
       }
-    );
-    if (this.props.autoFocus) {
-      this.context.onFocusRequested(this);
+    } else {
+      if (this.props.autoFocus) {
+        this._rafId = requestAnimationFrame(this.focus);
+      }
     }
   },
 
@@ -349,113 +919,194 @@ var TextInput = React.createClass({
     if (this.isFocused()) {
       this.blur();
     }
+    const tag = ReactNative.findNodeHandle(this._inputRef);
+    if (tag != null) {
+      TextInputState.unregisterInput(tag);
+    }
+    if (this._rafId != null) {
+      cancelAnimationFrame(this._rafId);
+    }
   },
 
-  getChildContext: function(): Object {
-    return {isInAParentText: true};
+  contextTypes: {
+    onFocusRequested: PropTypes.func,
+    focusEmitter: PropTypes.instanceOf(EventEmitter),
   },
 
-  childContextTypes: {
-    isInAParentText: React.PropTypes.bool
-  },
-
+  /**
+   * Removes all text from the `TextInput`.
+   */
   clear: function() {
     this.setNativeProps({text: ''});
   },
 
   render: function() {
+    let textInput;
     if (Platform.OS === 'ios') {
-      return this._renderIOS();
+      textInput = UIManager.getViewManagerConfig('RCTVirtualText')
+        ? this._renderIOS()
+        : this._renderIOSLegacy();
     } else if (Platform.OS === 'android') {
-      return this._renderAndroid();
+      textInput = this._renderAndroid();
     }
+    return (
+      <TextAncestor.Provider value={true}>{textInput}</TextAncestor.Provider>
+    );
   },
 
   _getText: function(): ?string {
-    return typeof this.props.value === 'string' ?
-      this.props.value :
-      this.props.defaultValue;
+    return typeof this.props.value === 'string'
+      ? this.props.value
+      : typeof this.props.defaultValue === 'string'
+        ? this.props.defaultValue
+        : '';
   },
 
-  _renderIOS: function() {
-    var textContainer;
+  _setNativeRef: function(ref: any) {
+    this._inputRef = ref;
+  },
 
-    var onSelectionChange;
-    if (this.props.selectionState || this.props.onSelectionChange) {
-      onSelectionChange = (event: Event) => {
-        if (this.props.selectionState) {
-          var selection = event.nativeEvent.selection;
-          this.props.selectionState.update(selection.start, selection.end);
-        }
-        this.props.onSelectionChange && this.props.onSelectionChange(event);
+  _renderIOSLegacy: function() {
+    let textContainer;
+
+    const props = Object.assign({}, this.props);
+    props.style = [this.props.style];
+
+    if (props.selection && props.selection.end == null) {
+      props.selection = {
+        start: props.selection.start,
+        end: props.selection.start,
       };
     }
 
-    var props = Object.assign({}, this.props);
-    props.style = [styles.input, this.props.style];
     if (!props.multiline) {
-      for (var propKey in onlyMultiline) {
-        if (props[propKey]) {
-          throw new Error(
-            'TextInput prop `' + propKey + '` is only supported with multiline.'
-          );
+      if (__DEV__) {
+        for (const propKey in onlyMultiline) {
+          if (props[propKey]) {
+            const error = new Error(
+              'TextInput prop `' +
+                propKey +
+                '` is only supported with multiline.',
+            );
+            warning(false, '%s', error.stack);
+          }
         }
       }
-      textContainer =
-        <RCTTextField
-          ref="input"
+      textContainer = (
+        <RCTSinglelineTextInputView
+          ref={this._setNativeRef}
           {...props}
           onFocus={this._onFocus}
           onBlur={this._onBlur}
           onChange={this._onChange}
-          onSelectionChange={onSelectionChange}
-          onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
+          onSelectionChange={this._onSelectionChange}
+          onSelectionChangeShouldSetResponder={emptyFunctionThatReturnsTrue}
           text={this._getText()}
-        />;
+        />
+      );
     } else {
-      for (var propKey in notMultiline) {
-        if (props[propKey]) {
-          throw new Error(
-            'TextInput prop `' + propKey + '` cannot be used with multiline.'
-          );
-        }
-      }
-
-      var children = props.children;
-      var childCount = 0;
-      ReactChildren.forEach(children, () => ++childCount);
+      let children = props.children;
+      let childCount = 0;
+      React.Children.forEach(children, () => ++childCount);
       invariant(
         !(props.value && childCount),
-        'Cannot specify both value and children.'
+        'Cannot specify both value and children.',
       );
-      if (childCount > 1) {
-        children = <Text>{children}</Text>;
+      if (childCount >= 1) {
+        children = (
+          <Text
+            style={props.style}
+            allowFontScaling={props.allowFontScaling}
+            maxFontSizeMultiplier={props.maxFontSizeMultiplier}>
+            {children}
+          </Text>
+        );
       }
       if (props.inputView) {
         children = [children, props.inputView];
       }
-      textContainer =
-        <RCTTextView
-          ref="input"
+      props.style.unshift(styles.multilineInput);
+      textContainer = (
+        <RCTMultilineTextInputView
+          ref={this._setNativeRef}
           {...props}
           children={children}
           onFocus={this._onFocus}
           onBlur={this._onBlur}
           onChange={this._onChange}
-          onSelectionChange={onSelectionChange}
+          onContentSizeChange={this.props.onContentSizeChange}
+          onSelectionChange={this._onSelectionChange}
           onTextInput={this._onTextInput}
-          onSelectionChangeShouldSetResponder={emptyFunction.thatReturnsTrue}
+          onSelectionChangeShouldSetResponder={emptyFunctionThatReturnsTrue}
           text={this._getText()}
-        />;
+          dataDetectorTypes={this.props.dataDetectorTypes}
+          onScroll={this._onScroll}
+        />
+      );
     }
 
     return (
       <TouchableWithoutFeedback
+        onLayout={props.onLayout}
         onPress={this._onPress}
         rejectResponderTermination={true}
         accessible={props.accessible}
         accessibilityLabel={props.accessibilityLabel}
-        accessibilityTraits={props.accessibilityTraits}
+        accessibilityRole={props.accessibilityRole}
+        accessibilityStates={props.accessibilityStates}
+        nativeID={this.props.nativeID}
+        testID={props.testID}>
+        {textContainer}
+      </TouchableWithoutFeedback>
+    );
+  },
+
+  _renderIOS: function() {
+    const props = Object.assign({}, this.props);
+    props.style = [this.props.style];
+
+    if (props.selection && props.selection.end == null) {
+      props.selection = {
+        start: props.selection.start,
+        end: props.selection.start,
+      };
+    }
+
+    const RCTTextInputView = props.multiline
+      ? RCTMultilineTextInputView
+      : RCTSinglelineTextInputView;
+
+    if (props.multiline) {
+      props.style.unshift(styles.multilineInput);
+    }
+
+    const textContainer = (
+      <RCTTextInputView
+        ref={this._setNativeRef}
+        {...props}
+        onFocus={this._onFocus}
+        onBlur={this._onBlur}
+        onChange={this._onChange}
+        onContentSizeChange={this.props.onContentSizeChange}
+        onSelectionChange={this._onSelectionChange}
+        onTextInput={this._onTextInput}
+        onSelectionChangeShouldSetResponder={emptyFunctionThatReturnsTrue}
+        text={this._getText()}
+        dataDetectorTypes={this.props.dataDetectorTypes}
+        onScroll={this._onScroll}
+      />
+    );
+
+    return (
+      <TouchableWithoutFeedback
+        onLayout={props.onLayout}
+        onPress={this._onPress}
+        rejectResponderTermination={true}
+        accessible={props.accessible}
+        accessibilityLabel={props.accessibilityLabel}
+        accessibilityRole={props.accessibilityRole}
+        accessibilityStates={props.accessibilityStates}
+        nativeID={this.props.nativeID}
         testID={props.testID}>
         {textContainer}
       </TouchableWithoutFeedback>
@@ -463,72 +1114,66 @@ var TextInput = React.createClass({
   },
 
   _renderAndroid: function() {
-    var onSelectionChange;
-    if (this.props.selectionState || this.props.onSelectionChange) {
-      onSelectionChange = (event: Event) => {
-        if (this.props.selectionState) {
-          var selection = event.nativeEvent.selection;
-          this.props.selectionState.update(selection.start, selection.end);
-        }
-        this.props.onSelectionChange && this.props.onSelectionChange(event);
-      };
-    }
-
-    var autoCapitalize =
-      UIManager.AndroidTextInput.Constants.AutoCapitalizationType[this.props.autoCapitalize];
-    var children = this.props.children;
-    var childCount = 0;
-    ReactChildren.forEach(children, () => ++childCount);
+    const props = Object.assign({}, this.props);
+    props.style = [this.props.style];
+    props.autoCapitalize = UIManager.getViewManagerConfig(
+      'AndroidTextInput',
+    ).Constants.AutoCapitalizationType[props.autoCapitalize || 'sentences'];
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
+    let children = this.props.children;
+    let childCount = 0;
+    React.Children.forEach(children, () => ++childCount);
     invariant(
       !(this.props.value && childCount),
-      'Cannot specify both value and children.'
+      'Cannot specify both value and children.',
     );
     if (childCount > 1) {
       children = <Text>{children}</Text>;
     }
 
-    var textContainer =
+    if (props.selection && props.selection.end == null) {
+      props.selection = {
+        start: props.selection.start,
+        end: props.selection.start,
+      };
+    }
+
+    const textContainer = (
       <AndroidTextInput
-        ref="input"
-        style={[this.props.style]}
-        autoCapitalize={autoCapitalize}
-        autoCorrect={this.props.autoCorrect}
-        keyboardType={this.props.keyboardType}
+        ref={this._setNativeRef}
+        {...props}
         mostRecentEventCount={0}
-        multiline={this.props.multiline}
-        numberOfLines={this.props.numberOfLines}
-        maxLength={this.props.maxLength}
         onFocus={this._onFocus}
         onBlur={this._onBlur}
         onChange={this._onChange}
-        onSelectionChange={onSelectionChange}
+        onSelectionChange={this._onSelectionChange}
         onTextInput={this._onTextInput}
-        onEndEditing={this.props.onEndEditing}
-        onSubmitEditing={this.props.onSubmitEditing}
-        onLayout={this.props.onLayout}
-        password={this.props.password || this.props.secureTextEntry}
-        placeholder={this.props.placeholder}
-        placeholderTextColor={this.props.placeholderTextColor}
-        selectionColor={this.props.selectionColor}
         text={this._getText()}
-        underlineColorAndroid={this.props.underlineColorAndroid}
         children={children}
-        editable={this.props.editable}
-      />;
+        disableFullscreenUI={this.props.disableFullscreenUI}
+        textBreakStrategy={this.props.textBreakStrategy}
+        onScroll={this._onScroll}
+      />
+    );
 
     return (
       <TouchableWithoutFeedback
+        onLayout={props.onLayout}
         onPress={this._onPress}
         accessible={this.props.accessible}
         accessibilityLabel={this.props.accessibilityLabel}
-        accessibilityComponentType={this.props.accessibilityComponentType}
+        accessibilityRole={this.props.accessibilityRole}
+        accessibilityStates={this.props.accessibilityStates}
+        nativeID={this.props.nativeID}
         testID={this.props.testID}>
         {textContainer}
       </TouchableWithoutFeedback>
     );
   },
 
-  _onFocus: function(event: Event) {
+  _onFocus: function(event: FocusEvent) {
     if (this.props.onFocus) {
       this.props.onFocus(event);
     }
@@ -538,40 +1183,92 @@ var TextInput = React.createClass({
     }
   },
 
-  _onPress: function(event: Event) {
+  _onPress: function(event: PressEvent) {
     if (this.props.editable || this.props.editable === undefined) {
       this.focus();
     }
   },
 
-  _onChange: function(event: Event) {
+  _onChange: function(event: ChangeEvent) {
     // Make sure to fire the mostRecentEventCount first so it is already set on
     // native when the text value is set.
-    this.refs.input.setNativeProps({
-      mostRecentEventCount: event.nativeEvent.eventCount,
-    });
+    if (this._inputRef && this._inputRef.setNativeProps) {
+      this._inputRef.setNativeProps({
+        mostRecentEventCount: event.nativeEvent.eventCount,
+      });
+    }
 
-    var text = event.nativeEvent.text;
+    const text = event.nativeEvent.text;
     this.props.onChange && this.props.onChange(event);
     this.props.onChangeText && this.props.onChangeText(text);
 
-    if (!this.refs.input) {
+    if (!this._inputRef) {
       // calling `this.props.onChange` or `this.props.onChangeText`
       // may clean up the input itself. Exits here.
       return;
     }
 
-    // This is necessary in case native updates the text and JS decides
-    // that the update should be ignored and we should stick with the value
-    // that we have in JS.
-    if (text !== this.props.value && typeof this.props.value === 'string') {
-      this.refs.input.setNativeProps({
-        text: this.props.value,
-      });
+    this._lastNativeText = text;
+    this.forceUpdate();
+  },
+
+  _onSelectionChange: function(event: SelectionChangeEvent) {
+    this.props.onSelectionChange && this.props.onSelectionChange(event);
+
+    if (!this._inputRef) {
+      // calling `this.props.onSelectionChange`
+      // may clean up the input itself. Exits here.
+      return;
+    }
+
+    this._lastNativeSelection = event.nativeEvent.selection;
+
+    if (this.props.selection || this.props.selectionState) {
+      this.forceUpdate();
     }
   },
 
-  _onBlur: function(event: Event) {
+  componentDidUpdate: function() {
+    // This is necessary in case native updates the text and JS decides
+    // that the update should be ignored and we should stick with the value
+    // that we have in JS.
+    const nativeProps = {};
+
+    if (
+      this._lastNativeText !== this.props.value &&
+      typeof this.props.value === 'string'
+    ) {
+      nativeProps.text = this.props.value;
+    }
+
+    // Selection is also a controlled prop, if the native value doesn't match
+    // JS, update to the JS value.
+    const {selection} = this.props;
+    if (
+      this._lastNativeSelection &&
+      selection &&
+      (this._lastNativeSelection.start !== selection.start ||
+        this._lastNativeSelection.end !== selection.end)
+    ) {
+      nativeProps.selection = this.props.selection;
+    }
+
+    if (
+      Object.keys(nativeProps).length > 0 &&
+      this._inputRef &&
+      this._inputRef.setNativeProps
+    ) {
+      this._inputRef.setNativeProps(nativeProps);
+    }
+
+    if (this.props.selectionState && selection) {
+      this.props.selectionState.update(selection.start, selection.end);
+    }
+  },
+
+  _onBlur: function(event: BlurEvent) {
+    // This is a hack to fix https://fburl.com/toehyir8
+    // @todo(rsnara) Figure out why this is necessary.
     this.blur();
     if (this.props.onBlur) {
       this.props.onBlur(event);
@@ -582,15 +1279,31 @@ var TextInput = React.createClass({
     }
   },
 
-  _onTextInput: function(event: Event) {
+  _onTextInput: function(event: TextInputEvent) {
     this.props.onTextInput && this.props.onTextInput(event);
   },
-});
 
-var styles = StyleSheet.create({
-  input: {
-    alignSelf: 'stretch',
+  _onScroll: function(event: ScrollEvent) {
+    this.props.onScroll && this.props.onScroll(event);
   },
 });
 
-module.exports = TextInput;
+class InternalTextInputType extends ReactNative.NativeComponent<Props> {
+  clear() {}
+
+  // $FlowFixMe
+  isFocused(): boolean {}
+}
+
+const TypedTextInput = ((TextInput: any): Class<InternalTextInputType>);
+
+const styles = StyleSheet.create({
+  multilineInput: {
+    // This default top inset makes RCTMultilineTextInputView seem as close as possible
+    // to single-line RCTSinglelineTextInputView defaults, using the system defaults
+    // of font size 17 and a height of 31 points.
+    paddingTop: 5,
+  },
+});
+
+module.exports = TypedTextInput;

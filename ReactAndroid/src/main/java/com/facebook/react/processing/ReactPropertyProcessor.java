@@ -1,7 +1,40 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 package com.facebook.react.processing;
 
+import static javax.lang.model.element.Modifier.ABSTRACT;
+import static javax.lang.model.element.Modifier.PRIVATE;
+import static javax.lang.model.element.Modifier.PUBLIC;
+import static javax.tools.Diagnostic.Kind.ERROR;
+import static javax.tools.Diagnostic.Kind.WARNING;
+
+import com.facebook.infer.annotation.SuppressFieldNotInitialized;
+import com.facebook.react.bridge.Dynamic;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.annotations.ReactPropGroup;
+import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.CodeBlock;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
+import com.squareup.javapoet.TypeVariableName;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javax.annotation.Nullable;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
@@ -19,36 +52,6 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import com.facebook.infer.annotation.SuppressFieldNotInitialized;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
-import com.facebook.react.uimanager.annotations.ReactProp;
-import com.facebook.react.uimanager.annotations.ReactPropGroup;
-
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.CodeBlock;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
-import com.squareup.javapoet.TypeVariableName;
-
-import static javax.lang.model.element.Modifier.*;
-import static javax.tools.Diagnostic.Kind.ERROR;
-import static javax.tools.Diagnostic.Kind.WARNING;
 
 /**
  * This annotation processor crawls subclasses of ReactShadowNode and ViewManager and finds their
@@ -68,11 +71,12 @@ public class ReactPropertyProcessor extends AbstractProcessor {
   private static final TypeName STRING_TYPE = TypeName.get(String.class);
   private static final TypeName READABLE_MAP_TYPE = TypeName.get(ReadableMap.class);
   private static final TypeName READABLE_ARRAY_TYPE = TypeName.get(ReadableArray.class);
+  private static final TypeName DYNAMIC_TYPE = TypeName.get(Dynamic.class);
 
   private static final TypeName VIEW_MANAGER_TYPE =
       ClassName.get("com.facebook.react.uimanager", "ViewManager");
-  private static final TypeName SHADOW_NODE_TYPE =
-      ClassName.get("com.facebook.react.uimanager", "ReactShadowNode");
+  private static final TypeName SHADOW_NODE_IMPL_TYPE =
+      ClassName.get("com.facebook.react.uimanager", "ReactShadowNodeImpl");
 
   private static final ClassName VIEW_MANAGER_SETTER_TYPE =
       ClassName.get(
@@ -118,6 +122,7 @@ public class ReactPropertyProcessor extends AbstractProcessor {
     DEFAULT_TYPES.put(STRING_TYPE, "String");
     DEFAULT_TYPES.put(READABLE_ARRAY_TYPE, "Array");
     DEFAULT_TYPES.put(READABLE_MAP_TYPE, "Map");
+    DEFAULT_TYPES.put(DYNAMIC_TYPE, "Dynamic");
 
     BOXED_PRIMITIVES = new HashSet<>();
     BOXED_PRIMITIVES.add(TypeName.BOOLEAN.box());
@@ -182,9 +187,13 @@ public class ReactPropertyProcessor extends AbstractProcessor {
     return true;
   }
 
+  private boolean isShadowNodeType(TypeName typeName) {
+    return typeName.equals(SHADOW_NODE_IMPL_TYPE);
+  }
+
   private ClassInfo parseClass(ClassName className, TypeElement typeElement) {
     TypeName targetType = getTargetType(typeElement.asType());
-    TypeName viewType = targetType.equals(SHADOW_NODE_TYPE) ? null : targetType;
+    TypeName viewType = isShadowNodeType(targetType) ? null : targetType;
 
     ClassInfo classInfo = new ClassInfo(className, typeElement, viewType);
     findProperties(classInfo, typeElement);
@@ -230,10 +239,10 @@ public class ReactPropertyProcessor extends AbstractProcessor {
       if (parameterizedTypeName.rawType.equals(VIEW_MANAGER_TYPE)) {
         return parameterizedTypeName.typeArguments.get(0);
       }
-    } else if (typeName.equals(SHADOW_NODE_TYPE)) {
-      return SHADOW_NODE_TYPE;
+    } else if (isShadowNodeType(typeName)) {
+      return SHADOW_NODE_IMPL_TYPE;
     } else if (typeName.equals(TypeName.OBJECT)) {
-      throw new IllegalArgumentException("Could not find target type");
+      throw new IllegalArgumentException("Could not find target type " + typeName);
     }
 
     List<? extends TypeMirror> types = mTypes.directSupertypes(mirror);
@@ -245,7 +254,8 @@ public class ReactPropertyProcessor extends AbstractProcessor {
     MethodSpec getMethods = MethodSpec.methodBuilder("getProperties")
         .addModifiers(PUBLIC)
         .addAnnotation(Override.class)
-        .returns(PROPERTY_MAP_TYPE)
+        .addParameter(PROPERTY_MAP_TYPE, "props")
+        .returns(TypeName.VOID)
         .addCode(generateGetProperties(properties))
         .build();
 
@@ -364,6 +374,8 @@ public class ReactPropertyProcessor extends AbstractProcessor {
       return builder.add("props.getArray(name)");
     } else if (propertyType.equals(READABLE_MAP_TYPE)) {
       return builder.add("props.getMap(name)");
+    } else if (propertyType.equals(DYNAMIC_TYPE)) {
+      return builder.add("props.getDynamic(name)");
     }
 
     if (BOXED_PRIMITIVES.contains(propertyType)) {
@@ -397,19 +409,7 @@ public class ReactPropertyProcessor extends AbstractProcessor {
 
   private static CodeBlock generateGetProperties(List<PropertyInfo> properties)
       throws ReactPropertyException {
-    if (properties.isEmpty()) {
-      return CodeBlock.builder()
-          .addStatement("return $T.emptyMap()", Collections.class)
-          .build();
-    }
-
-    CodeBlock.Builder builder = CodeBlock.builder()
-        .addStatement(
-            "$T props = new $T($L)",
-            PROPERTY_MAP_TYPE,
-            CONCRETE_PROPERTY_MAP_TYPE,
-            properties.size());
-
+    CodeBlock.Builder builder = CodeBlock.builder();
     for (PropertyInfo propertyInfo : properties) {
       try {
         String typeName = getPropertypTypeName(propertyInfo.mProperty, propertyInfo.propertyType);
@@ -419,9 +419,7 @@ public class ReactPropertyProcessor extends AbstractProcessor {
       }
     }
 
-    return builder
-        .addStatement("return props")
-        .build();
+    return builder.build();
   }
 
   private static String getPropertypTypeName(Property property, TypeName propertyType) {
@@ -578,7 +576,8 @@ public class ReactPropertyProcessor extends AbstractProcessor {
       if (checkPropertyExists(name)) {
         throw new ReactPropertyException(
             "Module " + mClassName + " has already registered a property named \"" +
-                name + '"', propertyInfo);
+                name + "\". If you want to override a property, don't add" +
+                "the @ReactProp annotation to the property in the subclass", propertyInfo);
       }
 
       mProperties.add(propertyInfo);

@@ -1,0 +1,15 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_target", "rn_android_library")
+
+rn_android_library(
+    name = "annotations",
+    srcs = glob(["**/*.java"]),
+    required_for_source_only_abi = True,
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        react_native_dep("third-party/java/infer-annotations:infer-annotations"),
+        react_native_dep("third-party/java/jsr-305:jsr-305"),
+        react_native_target("java/com/facebook/react/bridge:interfaces"),
+    ],
+)

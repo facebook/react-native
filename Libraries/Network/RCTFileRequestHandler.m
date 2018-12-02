@@ -1,17 +1,15 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTFileRequestHandler.h"
 
 #import <MobileCoreServices/MobileCoreServices.h>
 
-#import "RCTUtils.h"
+#import <React/RCTUtils.h>
 
 @implementation RCTFileRequestHandler
 {
@@ -30,11 +28,11 @@ RCT_EXPORT_MODULE()
 {
   return
   [request.URL.scheme caseInsensitiveCompare:@"file"] == NSOrderedSame
-  && !RCTIsXCAssetURL(request.URL);
+  && !RCTIsBundleAssetURL(request.URL);
 }
 
 - (NSOperation *)sendRequest:(NSURLRequest *)request
-     withDelegate:(id<RCTURLRequestDelegate>)delegate
+                withDelegate:(id<RCTURLRequestDelegate>)delegate
 {
   // Lazy setup
   if (!_fileQueue) {
@@ -49,7 +47,7 @@ RCT_EXPORT_MODULE()
     NSError *error = nil;
     NSFileManager *fileManager = [NSFileManager new];
     NSDictionary<NSString *, id> *fileAttributes = [fileManager attributesOfItemAtPath:request.URL.path error:&error];
-    if (error) {
+    if (!fileAttributes) {
       [delegate URLRequest:weakOp didCompleteWithError:error];
       return;
     }

@@ -1,21 +1,17 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <objc/runtime.h>
 
-#import <JavaScriptCore/JavaScriptCore.h>
-
-#import "RCTBridgeModule.h"
-#import "RCTInvalidating.h"
+#import <React/RCTBridgeModule.h>
+#import <React/RCTInvalidating.h>
 
 typedef void (^RCTJavaScriptCompleteBlock)(NSError *error);
-typedef void (^RCTJavaScriptCallback)(id json, NSError *error);
+typedef void (^RCTJavaScriptCallback)(id result, NSError *error);
 
 /**
  * Abstracts away a JavaScript execution context - we may be running code in a
@@ -76,19 +72,11 @@ typedef void (^RCTJavaScriptCallback)(id json, NSError *error);
  */
 - (void)executeBlockOnJavaScriptQueue:(dispatch_block_t)block;
 
-@optional
-
 /**
  * Special case for Timers + ContextExecutor - instead of the default
  *   if jsthread then call else dispatch call on jsthread
  * ensure the call is made async on the jsthread
  */
 - (void)executeAsyncBlockOnJavaScriptQueue:(dispatch_block_t)block;
-
-/**
- * For executors that support it, this method can be used to add a synchronous
- * callback function for communicating with the javascript context.
- */
-- (void)addSynchronousHookWithName:(NSString *)name usingBlock:(id)block;
 
 @end

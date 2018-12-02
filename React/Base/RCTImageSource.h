@@ -1,22 +1,20 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <Foundation/Foundation.h>
 
-#import "RCTConvert.h"
+#import <React/RCTConvert.h>
 
 /**
  * Object containing an image URL and associated metadata.
  */
 @interface RCTImageSource : NSObject
 
-@property (nonatomic, strong, readonly) NSURL *imageURL;
+@property (nonatomic, copy, readonly) NSURLRequest *request;
 @property (nonatomic, assign, readonly) CGSize size;
 @property (nonatomic, assign, readonly) CGFloat scale;
 
@@ -25,9 +23,9 @@
  * Pass a size of CGSizeZero if you do not know or wish to specify the image
  * size. Pass a scale of zero if you do not know or wish to specify the scale.
  */
-- (instancetype)initWithURL:(NSURL *)url
-                       size:(CGSize)size
-                      scale:(CGFloat)scale;
+- (instancetype)initWithURLRequest:(NSURLRequest *)request
+                              size:(CGSize)size
+                             scale:(CGFloat)scale;
 
 /**
  * Create a copy of the image source with the specified size and scale.
@@ -39,5 +37,6 @@
 @interface RCTConvert (ImageSource)
 
 + (RCTImageSource *)RCTImageSource:(id)json;
++ (NSArray<RCTImageSource *> *)RCTImageSourceArray:(id)json;
 
 @end

@@ -1,16 +1,15 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.modules.dialog;
 
 import javax.annotation.Nullable;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -21,7 +20,7 @@ import android.os.Bundle;
 /**
  * A fragment used to display the dialog.
  */
-/* package */ class AlertFragment extends DialogFragment implements DialogInterface.OnClickListener {
+public class AlertFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
   /* package */ static final String ARG_TITLE = "title";
   /* package */ static final String ARG_MESSAGE = "message";
@@ -32,6 +31,11 @@ import android.os.Bundle;
 
   private final @Nullable DialogModule.AlertFragmentListener mListener;
 
+  public AlertFragment() {
+      mListener = null;
+  }
+
+  @SuppressLint("ValidFragment")
   public AlertFragment(@Nullable DialogModule.AlertFragmentListener listener, Bundle arguments) {
     mListener = listener;
     setArguments(arguments);

@@ -1,22 +1,14 @@
 /**
- * @generated SignedSource<<7149bdac6fb48595f245ad6e76938e44>>
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
- * !! This file is a check-in of a static_upstream project!      !!
- * !!                                                            !!
- * !! You should not modify this file directly. Instead:         !!
- * !! 1) Use `fjs use-upstream` to temporarily replace this with !!
- * !!    the latest version from upstream.                       !!
- * !! 2) Make your changes, test them, etc.                      !!
- * !! 3) Use `fjs push-upstream` to copy your changes back to    !!
- * !!    static_upstream.                                        !!
- * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule EventValidator
+ * @format
+ * @flow
  */
-'use strict';
 
-var copyProperties = require('copyProperties');
+'use strict';
 
 /**
  * EventValidator is designed to validate event types to make it easier to catch
@@ -27,7 +19,7 @@ var copyProperties = require('copyProperties');
  * mistyped the event name it will suggest what you might have meant to type in
  * the error message.
  */
-var EventValidator = {
+const EventValidator = {
   /**
    * @param {Object} emitter - The object responsible for emitting the actual
    *                             events
@@ -35,22 +27,22 @@ var EventValidator = {
    *                         check for errors
    * @return {Object} A new emitter with event type validation
    * @example
-   *   var types = {someEvent: true, anotherEvent: true};
-   *   var emitter = EventValidator.addValidation(emitter, types);
+   *   const types = {someEvent: true, anotherEvent: true};
+   *   const emitter = EventValidator.addValidation(emitter, types);
    */
   addValidation: function(emitter: Object, types: Object) {
-    var eventTypes = Object.keys(types);
-    var emitterWithValidation = Object.create(emitter);
+    const eventTypes = Object.keys(types);
+    const emitterWithValidation = Object.create(emitter);
 
-    copyProperties(emitterWithValidation, {
+    Object.assign(emitterWithValidation, {
       emit: function emit(type, a, b, c, d, e, _) {
         assertAllowsEventType(type, eventTypes);
         return emitter.emit.call(this, type, a, b, c, d, e, _);
-      }
+      },
     });
 
     return emitterWithValidation;
-  }
+  },
 };
 
 function assertAllowsEventType(type, allowedTypes) {
@@ -60,7 +52,7 @@ function assertAllowsEventType(type, allowedTypes) {
 }
 
 function errorMessageFor(type, allowedTypes) {
-  var message = 'Unknown event type "' + type + '". ';
+  let message = 'Unknown event type "' + type + '". ';
   if (__DEV__) {
     message += recommendationFor(type, allowedTypes);
   }
@@ -70,8 +62,8 @@ function errorMessageFor(type, allowedTypes) {
 
 // Allow for good error messages
 if (__DEV__) {
-  var recommendationFor = function (type, allowedTypes) {
-    var closestTypeRecommendation = closestTypeFor(type, allowedTypes);
+  var recommendationFor = function(type, allowedTypes) {
+    const closestTypeRecommendation = closestTypeFor(type, allowedTypes);
     if (isCloseEnough(closestTypeRecommendation, type)) {
       return 'Did you mean "' + closestTypeRecommendation.type + '"? ';
     } else {
@@ -79,21 +71,21 @@ if (__DEV__) {
     }
   };
 
-  var closestTypeFor = function (type, allowedTypes) {
-    var typeRecommendations = allowedTypes.map(
-      typeRecommendationFor.bind(this, type)
+  const closestTypeFor = function(type, allowedTypes) {
+    const typeRecommendations = allowedTypes.map(
+      typeRecommendationFor.bind(this, type),
     );
     return typeRecommendations.sort(recommendationSort)[0];
   };
 
-  var typeRecommendationFor = function (type, recomendedType) {
+  const typeRecommendationFor = function(type, recommendedType) {
     return {
-      type: recomendedType,
-      distance: damerauLevenshteinDistance(type, recomendedType)
+      type: recommendedType,
+      distance: damerauLevenshteinDistance(type, recommendedType),
     };
   };
 
-  var recommendationSort = function (recommendationA, recommendationB) {
+  const recommendationSort = function(recommendationA, recommendationB) {
     if (recommendationA.distance < recommendationB.distance) {
       return -1;
     } else if (recommendationA.distance > recommendationB.distance) {
@@ -103,13 +95,13 @@ if (__DEV__) {
     }
   };
 
-  var isCloseEnough = function (closestType, actualType) {
-    return (closestType.distance / actualType.length) < 0.334;
+  const isCloseEnough = function(closestType, actualType) {
+    return closestType.distance / actualType.length < 0.334;
   };
 
-  var damerauLevenshteinDistance = function (a, b) {
-    var i, j;
-    var d = [];
+  const damerauLevenshteinDistance = function(a, b) {
+    let i, j;
+    const d = [];
 
     for (i = 0; i <= a.length; i++) {
       d[i] = [i];
@@ -121,17 +113,20 @@ if (__DEV__) {
 
     for (i = 1; i <= a.length; i++) {
       for (j = 1; j <= b.length; j++) {
-        var cost = a.charAt(i - 1) === b.charAt(j - 1) ? 0 : 1;
+        const cost = a.charAt(i - 1) === b.charAt(j - 1) ? 0 : 1;
 
         d[i][j] = Math.min(
           d[i - 1][j] + 1,
           d[i][j - 1] + 1,
-          d[i - 1][j - 1] + cost
+          d[i - 1][j - 1] + cost,
         );
 
-        if (i > 1 && j > 1 &&
-            a.charAt(i - 1) == b.charAt(j - 2) &&
-            a.charAt(i - 2) == b.charAt(j - 1)) {
+        if (
+          i > 1 &&
+          j > 1 &&
+          a.charAt(i - 1) === b.charAt(j - 2) &&
+          a.charAt(i - 2) === b.charAt(j - 1)
+        ) {
           d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + cost);
         }
       }

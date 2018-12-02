@@ -1,38 +1,35 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.textinput;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 
-import android.util.DisplayMetrics;
-import android.view.Choreographer;
 import android.widget.EditText;
-
 import com.facebook.react.ReactRootView;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ReactTestHelper;
+import com.facebook.react.bridge.JavaOnlyArray;
+import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.SimpleArray;
-import com.facebook.react.bridge.SimpleMap;
-import com.facebook.react.uimanager.DisplayMetricsHolder;
-import com.facebook.react.uimanager.ReactChoreographer;
-import com.facebook.react.uimanager.UIImplementation;
+import com.facebook.react.bridge.ReactTestHelper;
+import com.facebook.react.modules.core.ChoreographerCompat;
+import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewProps;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -40,14 +37,8 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
-import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
-
-import static org.fest.assertions.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for TextInput.
@@ -60,7 +51,7 @@ public class TextInputTest {
   @Rule
   public PowerMockRule rule = new PowerMockRule();
 
-  private ArrayList<Choreographer.FrameCallback> mPendingChoreographerCallbacks;
+  private ArrayList<ChoreographerCompat.FrameCallback> mPendingChoreographerCallbacks;
 
   @Before
   public void setUp() {
@@ -70,7 +61,7 @@ public class TextInputTest {
     PowerMockito.when(Arguments.createMap()).thenAnswer(new Answer<Object>() {
       @Override
       public Object answer(InvocationOnMock invocation) throws Throwable {
-        return new SimpleMap();
+        return new JavaOnlyMap();
       }
     });
     PowerMockito.when(ReactChoreographer.getInstance()).thenReturn(choreographerMock);
@@ -80,12 +71,12 @@ public class TextInputTest {
       @Override
       public Object answer(InvocationOnMock invocation) throws Throwable {
         mPendingChoreographerCallbacks
-            .add((Choreographer.FrameCallback) invocation.getArguments()[1]);
+            .add((ChoreographerCompat.FrameCallback) invocation.getArguments()[1]);
         return null;
       }
     }).when(choreographerMock).postFrameCallback(
         any(ReactChoreographer.CallbackType.class),
-        any(Choreographer.FrameCallback.class));
+        any(ChoreographerCompat.FrameCallback.class));
   }
 
   @Test
@@ -93,7 +84,8 @@ public class TextInputTest {
     UIManagerModule uiManager = getUIManagerModule();
 
     ReactRootView rootView = new ReactRootView(RuntimeEnvironment.application);
-    int rootTag = uiManager.addMeasuredRootView(rootView);
+    rootView.setLayoutParams(new ReactRootView.LayoutParams(100, 100));
+    int rootTag = uiManager.addRootView(rootView);
     int textInputTag = rootTag + 1;
     final String hintStr = "placeholder text";
 
@@ -101,15 +93,15 @@ public class TextInputTest {
         textInputTag,
         ReactTextInputManager.REACT_CLASS,
         rootTag,
-        SimpleMap.of(
+        JavaOnlyMap.of(
             ViewProps.FONT_SIZE, 13.37, ViewProps.HEIGHT, 20.0, "placeholder", hintStr));
 
     uiManager.manageChildren(
         rootTag,
         null,
         null,
-        SimpleArray.of(textInputTag),
-        SimpleArray.of(0),
+        JavaOnlyArray.of(textInputTag),
+        JavaOnlyArray.of(0),
         null);
 
     uiManager.onBatchComplete();
@@ -126,7 +118,8 @@ public class TextInputTest {
     UIManagerModule uiManager = getUIManagerModule();
 
     ReactRootView rootView = new ReactRootView(RuntimeEnvironment.application);
-    int rootTag = uiManager.addMeasuredRootView(rootView);
+    rootView.setLayoutParams(new ReactRootView.LayoutParams(100, 100));
+    int rootTag = uiManager.addRootView(rootView);
     int textInputTag = rootTag + 1;
     final String hintStr = "placeholder text";
 
@@ -134,15 +127,15 @@ public class TextInputTest {
         textInputTag,
         ReactTextInputManager.REACT_CLASS,
         rootTag,
-        SimpleMap.of(
+        JavaOnlyMap.of(
             ViewProps.FONT_SIZE, 13.37, ViewProps.HEIGHT, 20.0, "placeholder", hintStr));
 
     uiManager.manageChildren(
         rootTag,
         null,
         null,
-        SimpleArray.of(textInputTag),
-        SimpleArray.of(0),
+        JavaOnlyArray.of(textInputTag),
+        JavaOnlyArray.of(0),
         null);
     uiManager.onBatchComplete();
     executePendingChoreographerCallbacks();
@@ -156,7 +149,7 @@ public class TextInputTest {
     uiManager.updateView(
         textInputTag,
         ReactTextInputManager.REACT_CLASS,
-        SimpleMap.of(
+        JavaOnlyMap.of(
             ViewProps.FONT_SIZE, 26.74, ViewProps.HEIGHT, 40.0, "placeholder", hintStr2));
 
     uiManager.onBatchComplete();
@@ -169,10 +162,10 @@ public class TextInputTest {
   }
 
   private void executePendingChoreographerCallbacks() {
-    ArrayList<Choreographer.FrameCallback> callbacks =
+    ArrayList<ChoreographerCompat.FrameCallback> callbacks =
         new ArrayList<>(mPendingChoreographerCallbacks);
     mPendingChoreographerCallbacks.clear();
-    for (Choreographer.FrameCallback frameCallback : callbacks) {
+    for (ChoreographerCompat.FrameCallback frameCallback : callbacks) {
       frameCallback.doFrame(0);
     }
   }
@@ -183,12 +176,8 @@ public class TextInputTest {
         new ViewManager[] {
             new ReactTextInputManager(),
         });
-    DisplayMetrics displayMetrics = reactContext.getResources().getDisplayMetrics();
-    DisplayMetricsHolder.setDisplayMetrics(displayMetrics);
-    UIManagerModule uiManagerModule = new UIManagerModule(
-        reactContext,
-        viewManagers,
-        new UIImplementation(reactContext, viewManagers));
+    UIManagerModule uiManagerModule =
+        new UIManagerModule(reactContext, viewManagers, 0);
     uiManagerModule.onHostResume();
     return uiManagerModule;
   }

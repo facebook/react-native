@@ -1,16 +1,14 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #include "RCTDefines.h"
 #include "RCTMacros.h"
 
-#if RCT_DEV && defined(__i386__)
+#if RCT_PROFILE && defined(__i386__)
 
   .globl SYMBOL_NAME(RCTProfileTrampoline)
 SYMBOL_NAME(RCTProfileTrampoline):
@@ -30,7 +28,7 @@ SYMBOL_NAME(RCTProfileTrampoline):
    */
   subl $0x8, %esp // stack padding (16-byte alignment for function calls)
   pushl $0xc // allocate 12-bytes
-  calll SYMBOL_NAME(malloc)
+  calll SYMBOL_NAME(RCTProfileMalloc)
   addl $0xc, %esp // restore stack (8-byte padding + 4-byte argument)
 
   /**
@@ -85,7 +83,7 @@ SYMBOL_NAME(RCTProfileTrampoline):
    * the stack has already been padded and the first and only argument, the
    * memory address, is already in the bottom of the stack.
    */
-  calll SYMBOL_NAME(free)
+  calll SYMBOL_NAME(RCTProfileFree)
   addl $0x8, %esp
 
   /**

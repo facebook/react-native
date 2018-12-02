@@ -1,24 +1,20 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.uimanager;
 
+import javax.annotation.Nullable;
+
+import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.os.Bundle;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.LifecycleEventListener;
-
-//
 
 /**
  * Wraps {@link ReactContext} with the base {@link Context} passed into the constructor.
@@ -46,5 +42,15 @@ public class ThemedReactContext extends ReactContext {
   @Override
   public void removeLifecycleEventListener(LifecycleEventListener listener) {
     mReactApplicationContext.removeLifecycleEventListener(listener);
+  }
+
+  @Override
+  public boolean hasCurrentActivity() {
+    return mReactApplicationContext.hasCurrentActivity();
+  }
+
+  @Override
+  public @Nullable Activity getCurrentActivity() {
+    return mReactApplicationContext.getCurrentActivity();
   }
 }

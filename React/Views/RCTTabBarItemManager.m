@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTTabBarItemManager.h"
@@ -22,11 +20,15 @@ RCT_EXPORT_MODULE()
 }
 
 RCT_EXPORT_VIEW_PROPERTY(badge, id /* NSString or NSNumber */)
+RCT_EXPORT_VIEW_PROPERTY(renderAsOriginal, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(selected, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(icon, UIImage)
-RCT_REMAP_VIEW_PROPERTY(selectedIcon, barItem.selectedImage, UIImage)
+RCT_EXPORT_VIEW_PROPERTY(selectedIcon, UIImage)
 RCT_EXPORT_VIEW_PROPERTY(systemIcon, UITabBarSystemItem)
 RCT_EXPORT_VIEW_PROPERTY(onPress, RCTBubblingEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(badgeColor, UIColor)
+RCT_EXPORT_VIEW_PROPERTY(isTVSelectable, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(testID, NSString)
 RCT_CUSTOM_VIEW_PROPERTY(title, NSString, RCTTabBarItem)
 {
   view.barItem.title = json ? [RCTConvert NSString:json] : defaultView.barItem.title;

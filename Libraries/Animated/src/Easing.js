@@ -1,144 +1,246 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Easing
- * @flow
+ * @format
+ * @flow strict
  */
+
 'use strict';
 
-var _bezier = require('bezier');
+let ease;
 
 /**
- * This class implements common easing functions. The math is pretty obscure,
- * but this cool website has nice visual illustrations of what they represent:
- * http://xaedes.de/dev/transitions/
+ * The `Easing` module implements common easing functions. This module is used
+ * by [Animate.timing()](docs/animate.html#timing) to convey physically
+ * believable motion in animations.
+ *
+ * You can find a visualization of some common easing functions at
+ * http://easings.net/
+ *
+ * ### Predefined animations
+ *
+ * The `Easing` module provides several predefined animations through the
+ * following methods:
+ *
+ * - [`back`](docs/easing.html#back) provides a simple animation where the
+ *   object goes slightly back before moving forward
+ * - [`bounce`](docs/easing.html#bounce) provides a bouncing animation
+ * - [`ease`](docs/easing.html#ease) provides a simple inertial animation
+ * - [`elastic`](docs/easing.html#elastic) provides a simple spring interaction
+ *
+ * ### Standard functions
+ *
+ * Three standard easing functions are provided:
+ *
+ * - [`linear`](docs/easing.html#linear)
+ * - [`quad`](docs/easing.html#quad)
+ * - [`cubic`](docs/easing.html#cubic)
+ *
+ * The [`poly`](docs/easing.html#poly) function can be used to implement
+ * quartic, quintic, and other higher power functions.
+ *
+ * ### Additional functions
+ *
+ * Additional mathematical functions are provided by the following methods:
+ *
+ * - [`bezier`](docs/easing.html#bezier) provides a cubic bezier curve
+ * - [`circle`](docs/easing.html#circle) provides a circular function
+ * - [`sin`](docs/easing.html#sin) provides a sinusoidal function
+ * - [`exp`](docs/easing.html#exp) provides an exponential function
+ *
+ * The following helpers are used to modify other easing functions.
+ *
+ * - [`in`](docs/easing.html#in) runs an easing function forwards
+ * - [`inOut`](docs/easing.html#inout) makes any easing function symmetrical
+ * - [`out`](docs/easing.html#out) runs an easing function backwards
  */
 class Easing {
-  static step0(n) {
+  /**
+   * A stepping function, returns 1 for any positive value of `n`.
+   */
+  static step0(n: number) {
     return n > 0 ? 1 : 0;
   }
 
-  static step1(n) {
+  /**
+   * A stepping function, returns 1 if `n` is greater than or equal to 1.
+   */
+  static step1(n: number) {
     return n >= 1 ? 1 : 0;
   }
 
-  static linear(t) {
+  /**
+   * A linear function, `f(t) = t`. Position correlates to elapsed time one to
+   * one.
+   *
+   * http://cubic-bezier.com/#0,0,1,1
+   */
+  static linear(t: number) {
     return t;
   }
 
+  /**
+   * A simple inertial interaction, similar to an object slowly accelerating to
+   * speed.
+   *
+   * http://cubic-bezier.com/#.42,0,1,1
+   */
   static ease(t: number): number {
+    if (!ease) {
+      ease = Easing.bezier(0.42, 0, 1, 1);
+    }
     return ease(t);
   }
 
-  static quad(t) {
+  /**
+   * A quadratic function, `f(t) = t * t`. Position equals the square of elapsed
+   * time.
+   *
+   * http://easings.net/#easeInQuad
+   */
+  static quad(t: number) {
     return t * t;
   }
 
-  static cubic(t) {
+  /**
+   * A cubic function, `f(t) = t * t * t`. Position equals the cube of elapsed
+   * time.
+   *
+   * http://easings.net/#easeInCubic
+   */
+  static cubic(t: number) {
     return t * t * t;
   }
 
-  static poly(n) {
-    return (t) => Math.pow(t, n);
+  /**
+   * A power function. Position is equal to the Nth power of elapsed time.
+   *
+   * n = 4: http://easings.net/#easeInQuart
+   * n = 5: http://easings.net/#easeInQuint
+   */
+  static poly(n: number) {
+    return (t: number) => Math.pow(t, n);
   }
 
-  static sin(t) {
-    return 1 - Math.cos(t * Math.PI / 2);
+  /**
+   * A sinusoidal function.
+   *
+   * http://easings.net/#easeInSine
+   */
+  static sin(t: number) {
+    return 1 - Math.cos((t * Math.PI) / 2);
   }
 
-  static circle(t) {
+  /**
+   * A circular function.
+   *
+   * http://easings.net/#easeInCirc
+   */
+  static circle(t: number) {
     return 1 - Math.sqrt(1 - t * t);
   }
 
-  static exp(t) {
+  /**
+   * An exponential function.
+   *
+   * http://easings.net/#easeInExpo
+   */
+  static exp(t: number) {
     return Math.pow(2, 10 * (t - 1));
   }
 
   /**
-   * A simple elastic interaction, similar to a spring.  Default bounciness
-   * is 1, which overshoots a little bit once.  0 bounciness doesn't overshoot
-   * at all, and bounciness of N > 1 will overshoot about N times.
+   * A simple elastic interaction, similar to a spring oscillating back and
+   * forth.
    *
-   * Wolfram Plots:
+   * Default bounciness is 1, which overshoots a little bit once. 0 bounciness
+   * doesn't overshoot at all, and bounciness of N > 1 will overshoot about N
+   * times.
    *
-   *   http://tiny.cc/elastic_b_1 (default bounciness = 1)
-   *   http://tiny.cc/elastic_b_3 (bounciness = 3)
+   * http://easings.net/#easeInElastic
    */
   static elastic(bounciness: number = 1): (t: number) => number {
-    var p = bounciness * Math.PI;
-    return (t) => 1 - Math.pow(Math.cos(t * Math.PI / 2), 3) * Math.cos(t * p);
+    const p = bounciness * Math.PI;
+    return t => 1 - Math.pow(Math.cos((t * Math.PI) / 2), 3) * Math.cos(t * p);
   }
 
-  static back(s: number): (t: number) => number {
-    if (s === undefined) {
-      s = 1.70158;
-    }
-    return (t) => t * t * ((s + 1) * t - s);
+  /**
+   * Use with `Animated.parallel()` to create a simple effect where the object
+   * animates back slightly as the animation starts.
+   *
+   * Wolfram Plot:
+   *
+   * - http://tiny.cc/back_default (s = 1.70158, default)
+   */
+  static back(s: number = 1.70158): (t: number) => number {
+    return t => t * t * ((s + 1) * t - s);
   }
 
+  /**
+   * Provides a simple bouncing effect.
+   *
+   * http://easings.net/#easeInBounce
+   */
   static bounce(t: number): number {
     if (t < 1 / 2.75) {
       return 7.5625 * t * t;
     }
 
     if (t < 2 / 2.75) {
-      t -= 1.5 / 2.75;
-      return 7.5625 * t * t + 0.75;
+      const t2 = t - 1.5 / 2.75;
+      return 7.5625 * t2 * t2 + 0.75;
     }
 
     if (t < 2.5 / 2.75) {
-      t -= 2.25 / 2.75;
-      return 7.5625 * t * t + 0.9375;
+      const t2 = t - 2.25 / 2.75;
+      return 7.5625 * t2 * t2 + 0.9375;
     }
 
-    t -= 2.625 / 2.75;
-    return 7.5625 * t * t + 0.984375;
+    const t2 = t - 2.625 / 2.75;
+    return 7.5625 * t2 * t2 + 0.984375;
   }
 
+  /**
+   * Provides a cubic bezier curve, equivalent to CSS Transitions'
+   * `transition-timing-function`.
+   *
+   * A useful tool to visualize cubic bezier curves can be found at
+   * http://cubic-bezier.com/
+   */
   static bezier(
     x1: number,
     y1: number,
     x2: number,
     y2: number,
-    epsilon?: ?number,
   ): (t: number) => number {
-    if (epsilon === undefined) {
-      // epsilon determines the precision of the solved values
-      // a good approximation is:
-      var duration = 500; // duration of animation in milliseconds.
-      epsilon = (1000 / 60 / duration) / 4;
-    }
-
-    return _bezier(x1, y1, x2, y2, epsilon);
+    const _bezier = require('bezier');
+    return _bezier(x1, y1, x2, y2);
   }
 
-  static in(
-    easing: (t: number) => number,
-  ): (t: number) => number {
+  /**
+   * Runs an easing function forwards.
+   */
+  static in(easing: (t: number) => number): (t: number) => number {
     return easing;
   }
 
   /**
    * Runs an easing function backwards.
    */
-  static out(
-    easing: (t: number) => number,
-  ): (t: number) => number {
-    return (t) => 1 - easing(1 - t);
+  static out(easing: (t: number) => number): (t: number) => number {
+    return t => 1 - easing(1 - t);
   }
 
   /**
-   * Makes any easing function symmetrical.
+   * Makes any easing function symmetrical. The easing function will run
+   * forwards for half of the duration, then backwards for the rest of the
+   * duration.
    */
-  static inOut(
-    easing: (t: number) => number,
-  ): (t: number) => number {
-    return (t) => {
+  static inOut(easing: (t: number) => number): (t: number) => number {
+    return t => {
       if (t < 0.5) {
         return easing(t * 2) / 2;
       }
@@ -146,9 +248,5 @@ class Easing {
     };
   }
 }
-
-var ease = Easing.bezier(0.42, 0, 1, 1);
-
-
 
 module.exports = Easing;

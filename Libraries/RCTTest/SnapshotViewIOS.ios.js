@@ -1,33 +1,56 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule SnapshotViewIOS
+ * @format
  * @flow
  */
+
 'use strict';
 
-var React = require('React');
-var StyleSheet = require('StyleSheet');
-var { TestModule } = require('NativeModules');
-var UIManager = require('UIManager');
-var View = require('View');
+const React = require('React');
+const StyleSheet = require('StyleSheet');
+const UIManager = require('UIManager');
+const View = require('View');
 
-var requireNativeComponent = require('requireNativeComponent');
+const requireNativeComponent = require('requireNativeComponent');
 
-var SnapshotViewIOS = React.createClass({
-  onDefaultAction: function(event: Object) {
+const {TestModule} = require('NativeModules');
+
+import type {SyntheticEvent} from 'CoreEventTypes';
+import type {ViewProps} from 'ViewPropTypes';
+
+// Verify that RCTSnapshot is part of the UIManager since it is only loaded
+// if you have linked against RCTTest like in tests, otherwise we will have
+// a warning printed out
+const RCTSnapshot = UIManager.getViewManagerConfig('RCTSnapshot')
+  ? requireNativeComponent('RCTSnapshot')
+  : View;
+
+type SnapshotReadyEvent = SyntheticEvent<
+  $ReadOnly<{
+    testIdentifier: string,
+  }>,
+>;
+
+type Props = $ReadOnly<{|
+  ...ViewProps,
+  onSnapshotReady?: ?(event: SnapshotReadyEvent) => mixed,
+  testIdentifier?: ?string,
+|}>;
+
+class SnapshotViewIOS extends React.Component<Props> {
+  onDefaultAction = (event: SnapshotReadyEvent) => {
     TestModule.verifySnapshot(TestModule.markTestPassed);
-  },
+  };
 
-  render: function() {
-    var testIdentifier = this.props.testIdentifier || 'test';
-    var onSnapshotReady = this.props.onSnapshotReady || this.onDefaultAction;
+  render() {
+    const testIdentifier = this.props.testIdentifier || 'test';
+    const onSnapshotReady = this.props.onSnapshotReady || this.onDefaultAction;
     return (
+      // $FlowFixMe - Typing ReactNativeComponent revealed errors
       <RCTSnapshot
         style={style.snapshot}
         {...this.props}
@@ -35,28 +58,13 @@ var SnapshotViewIOS = React.createClass({
         testIdentifier={testIdentifier}
       />
     );
-  },
-
-  propTypes: {
-    ...View.propTypes,
-    // A callback when the Snapshot view is ready to be compared
-    onSnapshotReady : React.PropTypes.func,
-    // A name to identify the individual instance to the SnapshotView
-    testIdentifier : React.PropTypes.string,
   }
-});
+}
 
-var style = StyleSheet.create({
+const style = StyleSheet.create({
   snapshot: {
     flex: 1,
   },
 });
-
-// Verify that RCTSnapshot is part of the UIManager since it is only loaded
-// if you have linked against RCTTest like in tests, otherwise we will have
-// a warning printed out
-var RCTSnapshot = UIManager.RCTSnapshot ?
-  requireNativeComponent('RCTSnapshot', SnapshotViewIOS) :
-  View;
 
 module.exports = SnapshotViewIOS;

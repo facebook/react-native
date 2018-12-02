@@ -1,13 +1,13 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.uimanager.events;
+
+import com.facebook.react.common.SystemClock;
 
 /**
  * A UI event that can be dispatched to JS.
@@ -28,16 +28,16 @@ public abstract class Event<T extends Event> {
   protected Event() {
   }
 
-  protected Event(int viewTag, long timestampMs) {
-    init(viewTag, timestampMs);
+  protected Event(int viewTag) {
+    init(viewTag);
   }
 
   /**
    * This method needs to be called before event is sent to event dispatcher.
    */
-  protected void init(int viewTag, long timestampMs) {
+  protected void init(int viewTag) {
     mViewTag = viewTag;
-    mTimestampMs = timestampMs;
+    mTimestampMs = SystemClock.uptimeMillis();
     mInitialized = true;
   }
 
@@ -65,13 +65,13 @@ public abstract class Event<T extends Event> {
 
   /**
    * Given two events, coalesce them into a single event that will be sent to JS instead of two
-   * separate events. By default, just chooses the one the is more recent.
+   * separate events. By default, just chooses the one the is more recent, or {@code this} if timestamps are the same.
    *
    * Two events will only ever try to be coalesced if they have the same event name, view id, and
    * coalescing key.
    */
   public T coalesce(T otherEvent) {
-    return (T) (getTimestampMs() > otherEvent.getTimestampMs() ? this : otherEvent);
+    return (T) (getTimestampMs() >= otherEvent.getTimestampMs() ? this : otherEvent);
   }
 
   /**

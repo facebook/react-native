@@ -1,9 +1,14 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #pragma once
 
+#include <memory>
+
 #include <android/asset_manager.h>
-#include <react/JSModulesUnbundle.h>
+#include <cxxreact/JSModulesUnbundle.h>
 
 namespace facebook {
 namespace react {
@@ -14,9 +19,11 @@ class JniJSModulesUnbundle : public JSModulesUnbundle {
    */
 public:
   JniJSModulesUnbundle() = default;
-  JniJSModulesUnbundle(AAssetManager *assetManager, const std::string& entryFile);
+  JniJSModulesUnbundle(AAssetManager *assetManager, const std::string& moduleDirectory);
   JniJSModulesUnbundle(JniJSModulesUnbundle&& other) = delete;
   JniJSModulesUnbundle& operator= (JSModulesUnbundle&& other) = delete;
+
+  static std::unique_ptr<JniJSModulesUnbundle> fromEntryFile(AAssetManager *assetManager, const std::string& entryFile);
 
   static bool isUnbundle(
     AAssetManager *assetManager,

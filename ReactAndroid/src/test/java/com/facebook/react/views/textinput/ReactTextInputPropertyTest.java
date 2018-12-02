@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.textinput;
@@ -12,15 +10,17 @@ package com.facebook.react.views.textinput;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.text.InputType;
+import android.text.InputFilter;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.JSApplicationCausedNativeException;
-import com.facebook.react.bridge.SimpleMap;
+import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.views.text.DefaultStyleValuesUtil;
@@ -60,11 +60,11 @@ public class ReactTextInputPropertyTest {
     mContext.initializeWithInstance(mCatalystInstanceMock);
     mThemedContext = new ThemedReactContext(mContext, mContext);
     mManager = new ReactTextInputManager();
-    DisplayMetricsHolder.setDisplayMetrics(new DisplayMetrics());
+    DisplayMetricsHolder.setWindowDisplayMetrics(new DisplayMetrics());
   }
 
   public ReactStylesDiffMap buildStyles(Object... keysAndValues) {
-    return new ReactStylesDiffMap(SimpleMap.of(keysAndValues));
+    return new ReactStylesDiffMap(JavaOnlyMap.of(keysAndValues));
   }
 
   @Test
@@ -201,6 +201,20 @@ public class ReactTextInputPropertyTest {
   }
 
   @Test
+  public void testBlurMultiline() {
+    ReactEditText view = mManager.createViewInstance(mThemedContext);
+
+    mManager.updateProperties(view, buildStyles("multiline", true));
+    mManager.updateProperties(view, buildStyles("blurOnSubmit", true));
+
+    EditorInfo editorInfo = new EditorInfo();
+    editorInfo.imeOptions = EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_ENTER_ACTION;
+    view.onCreateInputConnection(editorInfo);
+
+    assertThat(editorInfo.imeOptions).isEqualTo(EditorInfo.IME_ACTION_DONE);
+  }
+
+  @Test
   public void testNumLines() {
     ReactEditText view = mManager.createViewInstance(mThemedContext);
 
@@ -217,21 +231,46 @@ public class ReactTextInputPropertyTest {
   @Test
   public void testKeyboardType() {
     ReactEditText view = mManager.createViewInstance(mThemedContext);
+    int numberPadTypeFlags = InputType.TYPE_CLASS_NUMBER;
+    int decimalPadTypeFlags = InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL;
+    int numericTypeFlags =
+        InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL |
+        InputType.TYPE_NUMBER_FLAG_SIGNED;
+    int emailTypeFlags = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS | InputType.TYPE_CLASS_TEXT;
+    int passwordVisibilityFlag = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD &
+        ~InputType.TYPE_TEXT_VARIATION_PASSWORD;
+
+    int generalKeyboardTypeFlags = numericTypeFlags |
+        InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS |
+        InputType.TYPE_CLASS_TEXT | InputType.TYPE_CLASS_PHONE |
+        passwordVisibilityFlag;
 
     mManager.updateProperties(view, buildStyles());
-    assertThat(view.getInputType() & InputType.TYPE_CLASS_NUMBER).isZero();
+    assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(InputType.TYPE_CLASS_TEXT);
 
     mManager.updateProperties(view, buildStyles("keyboardType", "text"));
-    assertThat(view.getInputType() & InputType.TYPE_CLASS_NUMBER).isZero();
+    assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(InputType.TYPE_CLASS_TEXT);
+
+    mManager.updateProperties(view, buildStyles("keyboardType", "number-pad"));
+    assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(numberPadTypeFlags);
+
+    mManager.updateProperties(view, buildStyles("keyboardType", "decimal-pad"));
+    assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(decimalPadTypeFlags);
 
     mManager.updateProperties(view, buildStyles("keyboardType", "numeric"));
-    assertThat(view.getInputType() & InputType.TYPE_CLASS_NUMBER).isNotZero();
+    assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(numericTypeFlags);
 
     mManager.updateProperties(view, buildStyles("keyboardType", "email-address"));
-    assertThat(view.getInputType() & InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS).isNotZero();
+    assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(emailTypeFlags);
+
+    mManager.updateProperties(view, buildStyles("keyboardType", "phone-pad"));
+    assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(InputType.TYPE_CLASS_PHONE);
+
+    mManager.updateProperties(view, buildStyles("keyboardType", "visible-password"));
+    assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(passwordVisibilityFlag);
 
     mManager.updateProperties(view, buildStyles("keyboardType", null));
-    assertThat(view.getInputType() & InputType.TYPE_CLASS_NUMBER).isZero();
+    assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(InputType.TYPE_CLASS_TEXT);
   }
 
   @Test
@@ -241,13 +280,13 @@ public class ReactTextInputPropertyTest {
     mManager.updateProperties(view, buildStyles());
     assertThat(view.getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD).isZero();
 
-    mManager.updateProperties(view, buildStyles("password", false));
+    mManager.updateProperties(view, buildStyles("secureTextEntry", false));
     assertThat(view.getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD).isZero();
 
-    mManager.updateProperties(view, buildStyles("password", true));
+    mManager.updateProperties(view, buildStyles("secureTextEntry", true));
     assertThat(view.getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD).isNotZero();
 
-    mManager.updateProperties(view, buildStyles("password", null));
+    mManager.updateProperties(view, buildStyles("secureTextEntry", null));
     assertThat(view.getInputType() & InputType.TYPE_TEXT_VARIATION_PASSWORD).isZero();
   }
 
@@ -289,26 +328,73 @@ public class ReactTextInputPropertyTest {
   @Test
   public void testTextAlign() {
     ReactEditText view = mManager.createViewInstance(mThemedContext);
-    int gravity = view.getGravity();
-    assertThat(view.getGravity() & Gravity.BOTTOM).isNotEqualTo(Gravity.BOTTOM);
+    int defaultGravity = view.getGravity();
+    int defaultHorizontalGravity = defaultGravity & Gravity.HORIZONTAL_GRAVITY_MASK;
+    int defaultVerticalGravity = defaultGravity & Gravity.VERTICAL_GRAVITY_MASK;
 
-    mManager.updateProperties(view, buildStyles("textAlignVertical", "bottom"));
-    assertThat(view.getGravity() & Gravity.BOTTOM).isEqualTo(Gravity.BOTTOM);
+    // Theme
+    assertThat(view.getGravity()).isNotEqualTo(Gravity.NO_GRAVITY);
 
-    mManager.updateProperties(
-        view,
-        buildStyles("textAlign", "right", "textAlignVertical", "top"));
-    assertThat(view.getGravity() & Gravity.BOTTOM).isNotEqualTo(Gravity.BOTTOM);
-    assertThat(view.getGravity() & (Gravity.RIGHT | Gravity.TOP))
-        .isEqualTo(Gravity.RIGHT | Gravity.TOP);
-
-    mManager.updateProperties(
-        view,
-        buildStyles("textAlignVertical", null));
-    assertThat(view.getGravity() & Gravity.RIGHT).isEqualTo(Gravity.RIGHT);
-    assertThat(view.getGravity() & Gravity.TOP).isNotEqualTo(Gravity.TOP);
-
+    // TextAlign
+    mManager.updateProperties(view, buildStyles("textAlign", "left"));
+    assertThat(view.getGravity() & Gravity.HORIZONTAL_GRAVITY_MASK).isEqualTo(Gravity.LEFT);
+    mManager.updateProperties(view, buildStyles("textAlign", "right"));
+    assertThat(view.getGravity() & Gravity.HORIZONTAL_GRAVITY_MASK).isEqualTo(Gravity.RIGHT);
+    mManager.updateProperties(view, buildStyles("textAlign", "center"));
+    assertThat(view.getGravity() & Gravity.HORIZONTAL_GRAVITY_MASK).isEqualTo(Gravity.CENTER_HORIZONTAL);
     mManager.updateProperties(view, buildStyles("textAlign", null));
-    assertThat(view.getGravity()).isEqualTo(gravity);
+    assertThat(view.getGravity() & Gravity.HORIZONTAL_GRAVITY_MASK).isEqualTo(defaultHorizontalGravity);
+
+    // TextAlignVertical
+    mManager.updateProperties(view, buildStyles("textAlignVertical", "top"));
+    assertThat(view.getGravity() & Gravity.VERTICAL_GRAVITY_MASK).isEqualTo(Gravity.TOP);
+    mManager.updateProperties(view, buildStyles("textAlignVertical", "bottom"));
+    assertThat(view.getGravity() & Gravity.VERTICAL_GRAVITY_MASK).isEqualTo(Gravity.BOTTOM);
+    mManager.updateProperties(view, buildStyles("textAlignVertical", "center"));
+    assertThat(view.getGravity() & Gravity.VERTICAL_GRAVITY_MASK).isEqualTo(Gravity.CENTER_VERTICAL);
+    mManager.updateProperties(view, buildStyles("textAlignVertical", null));
+    assertThat(view.getGravity() & Gravity.VERTICAL_GRAVITY_MASK).isEqualTo(defaultVerticalGravity);
+
+    // TextAlign + TextAlignVertical
+    mManager.updateProperties(
+      view,
+      buildStyles("textAlign", "center", "textAlignVertical", "center"));
+    assertThat(view.getGravity()).isEqualTo(Gravity.CENTER);
+    mManager.updateProperties(
+      view,
+      buildStyles("textAlign", "right", "textAlignVertical", "bottom"));
+    assertThat(view.getGravity()).isEqualTo(Gravity.RIGHT | Gravity.BOTTOM);
+    mManager.updateProperties(
+      view,
+      buildStyles("textAlign", null, "textAlignVertical", null));
+    assertThat(view.getGravity()).isEqualTo(defaultGravity);
+  }
+
+  @Test
+  public void testMaxLength() {
+    ReactEditText view = mManager.createViewInstance(mThemedContext);
+    InputFilter[] filters = new InputFilter[] { new InputFilter.AllCaps() };
+    view.setFilters(filters);
+    mManager.setMaxLength(view, null);
+    assertThat(view.getFilters()).isEqualTo(filters);
+  }
+
+  @Test
+  public void testSelection() {
+    ReactEditText view = mManager.createViewInstance(mThemedContext);
+    view.setText("Need some text to select something...");
+
+    mManager.updateProperties(view, buildStyles());
+    assertThat(view.getSelectionStart()).isEqualTo(0);
+    assertThat(view.getSelectionEnd()).isEqualTo(0);
+
+    JavaOnlyMap selection = JavaOnlyMap.of("start", 5, "end", 10);
+    mManager.updateProperties(view, buildStyles("selection", selection));
+    assertThat(view.getSelectionStart()).isEqualTo(5);
+    assertThat(view.getSelectionEnd()).isEqualTo(10);
+
+    mManager.updateProperties(view, buildStyles("selection", null));
+    assertThat(view.getSelectionStart()).isEqualTo(5);
+    assertThat(view.getSelectionEnd()).isEqualTo(10);
   }
 }

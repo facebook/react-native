@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.uimanager;
@@ -23,7 +21,7 @@ public class PixelUtil {
     return TypedValue.applyDimension(
         TypedValue.COMPLEX_UNIT_DIP,
         value,
-        DisplayMetricsHolder.getDisplayMetrics());
+        DisplayMetricsHolder.getWindowDisplayMetrics());
   }
 
   /**
@@ -34,13 +32,20 @@ public class PixelUtil {
   }
 
   /**
+   * Convert from PX to SP
+   */
+  public static float toSPFromPixel(float value) {
+    return value / DisplayMetricsHolder.getScreenDisplayMetrics().scaledDensity;
+  }
+
+  /**
    * Convert from SP to PX
    */
   public static float toPixelFromSP(float value) {
     return TypedValue.applyDimension(
         TypedValue.COMPLEX_UNIT_SP,
         value,
-        DisplayMetricsHolder.getDisplayMetrics());
+        DisplayMetricsHolder.getWindowDisplayMetrics());
   }
 
   /**
@@ -54,7 +59,14 @@ public class PixelUtil {
    * Convert from PX to DP
    */
   public static float toDIPFromPixel(float value) {
-    return value / DisplayMetricsHolder.getDisplayMetrics().density;
+    return value / DisplayMetricsHolder.getWindowDisplayMetrics().density;
+  }
+
+  /**
+   * @return {@link float} that represents the density of the display metrics for device screen.
+   */
+  public static float getDisplayMetricDensity() {
+    return DisplayMetricsHolder.getScreenDisplayMetrics().density;
   }
 
 }
