@@ -322,7 +322,7 @@ class TextExample extends React.Component<{}> {
           <Text style={{textAlign: 'center'}}>
             center center center center center center center center center
             center center
-        </Text>
+          </Text>
           <Text style={{textAlign: 'right'}}>
             right right right right right right right right right right right
             right right
