@@ -58,4 +58,11 @@ public interface MessageQueueThread {
    */
   @DoNotStrip
   void quitSynchronous();
+
+  /**
+   * Returns the time in milliseconds at which this thread was started.  This
+   * method is intended to be used for instrumentation purposes.
+   */
+  @DoNotStrip
+  long getStartTimeMillis();
 }
