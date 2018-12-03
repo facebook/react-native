@@ -23,8 +23,7 @@
 .*/Libraries/polyfills/.*
 
 ; These should not be required directly
-; require from fbjs/lib instead: require('fbjs/lib/invariant')
-.*/node_modules/invariant/.*
+; require from fbjs/lib instead: require('fbjs/lib/warning')
 .*/node_modules/warning/.*
 
 [include]

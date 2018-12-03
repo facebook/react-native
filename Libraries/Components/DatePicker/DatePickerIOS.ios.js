@@ -14,10 +14,10 @@
 'use strict';
 
 const React = require('React');
-const invariant = require('fbjs/lib/invariant');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
+const invariant = require('invariant');
 const requireNativeComponent = require('requireNativeComponent');
 
 import type {ViewProps} from 'ViewPropTypes';

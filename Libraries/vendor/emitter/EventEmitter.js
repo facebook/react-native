@@ -14,7 +14,7 @@
 const EmitterSubscription = require('EmitterSubscription');
 const EventSubscriptionVendor = require('EventSubscriptionVendor');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 /**
  * @class EventEmitter

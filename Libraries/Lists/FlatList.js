@@ -15,7 +15,7 @@ const View = require('View');
 const VirtualizedList = require('VirtualizedList');
 const StyleSheet = require('StyleSheet');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 import type {ViewStyleProp} from 'StyleSheet';
 import type {

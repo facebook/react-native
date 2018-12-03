@@ -14,7 +14,7 @@ const AppContainer = require('AppContainer');
 const React = require('React');
 const ReactFabricIndicator = require('ReactFabricIndicator');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 // require BackHandler so it sets the default handler that exits the app if no listeners respond
 require('BackHandler');

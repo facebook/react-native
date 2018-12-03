@@ -14,7 +14,7 @@ const NativeEventEmitter = require('NativeEventEmitter');
 const NativeModules = require('NativeModules');
 const Platform = require('Platform');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 const LinkingManager =
   Platform.OS === 'android'

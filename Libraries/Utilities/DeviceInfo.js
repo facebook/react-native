@@ -12,7 +12,7 @@
 
 const DeviceInfo = require('NativeModules').DeviceInfo;
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 invariant(DeviceInfo, 'DeviceInfo native module is not installed correctly');
 

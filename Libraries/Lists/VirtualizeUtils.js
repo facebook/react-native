@@ -9,7 +9,7 @@
  */
 'use strict';
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 /**
  * Used to find the indices of the frames that overlap the given offsets. Useful for finding the

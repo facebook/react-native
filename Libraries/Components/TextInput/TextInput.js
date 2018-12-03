@@ -26,7 +26,7 @@ const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 const UIManager = require('UIManager');
 
 const createReactClass = require('create-react-class');
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 const requireNativeComponent = require('requireNativeComponent');
 const warning = require('fbjs/lib/warning');
 

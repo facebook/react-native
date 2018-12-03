@@ -21,7 +21,7 @@ const Touchable = require('Touchable');
 const UIManager = require('UIManager');
 const View = require('View');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 export type ReactRenderer = {
   getInspectorDataForViewTag: (viewTag: number) => Object,

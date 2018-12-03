@@ -12,7 +12,7 @@
 const NativeAnimatedModule = require('NativeModules').NativeAnimatedModule;
 const NativeEventEmitter = require('NativeEventEmitter');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 import type {AnimationConfig} from './animations/Animation';
 import type {EventConfig} from './AnimatedEvent';
