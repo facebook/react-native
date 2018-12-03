@@ -956,10 +956,6 @@ var eventTypes$1 = {
       }
     }
   },
-  customBubblingEventTypes$1 =
-    ReactNativeViewConfigRegistry.customBubblingEventTypes,
-  customDirectEventTypes$1 =
-    ReactNativeViewConfigRegistry.customDirectEventTypes,
   ReactNativeBridgeEventPlugin = {
     eventTypes: ReactNativeViewConfigRegistry.eventTypes,
     extractEvents: function(
@@ -969,8 +965,10 @@ var eventTypes$1 = {
       nativeEventTarget
     ) {
       if (null == targetInst) return null;
-      var bubbleDispatchConfig = customBubblingEventTypes$1[topLevelType],
-        directDispatchConfig = customDirectEventTypes$1[topLevelType];
+      var bubbleDispatchConfig =
+          ReactNativeViewConfigRegistry.customBubblingEventTypes[topLevelType],
+        directDispatchConfig =
+          ReactNativeViewConfigRegistry.customDirectEventTypes[topLevelType];
       invariant(
         bubbleDispatchConfig || directDispatchConfig,
         'Unsupported top level event type "%s" dispatched',
@@ -1077,9 +1075,6 @@ function _receiveRootNodeIDEvent(rootNodeID, topLevelType, nativeEventParam) {
   });
 }
 RCTEventEmitter.register({
-  getListener: getListener,
-  registrationNames: registrationNameModules,
-  _receiveRootNodeIDEvent: _receiveRootNodeIDEvent,
   receiveEvent: function(rootNodeID, topLevelType, nativeEventParam) {
     _receiveRootNodeIDEvent(rootNodeID, topLevelType, nativeEventParam);
   },
@@ -1642,17 +1637,19 @@ function getStackByFiberInDevAndProd(workInProgress) {
   var info = "";
   do {
     a: switch (workInProgress.tag) {
-      case 2:
-      case 16:
-      case 0:
-      case 1:
-      case 5:
-      case 8:
-      case 13:
+      case 3:
+      case 4:
+      case 6:
+      case 7:
+      case 10:
+      case 9:
+        var JSCompiler_inline_result = "";
+        break a;
+      default:
         var owner = workInProgress._debugOwner,
           source = workInProgress._debugSource,
           name = getComponentName(workInProgress.type);
-        var JSCompiler_inline_result = null;
+        JSCompiler_inline_result = null;
         owner && (JSCompiler_inline_result = getComponentName(owner.type));
         owner = name;
         name = "";
@@ -1666,9 +1663,6 @@ function getStackByFiberInDevAndProd(workInProgress) {
           : JSCompiler_inline_result &&
             (name = " (created by " + JSCompiler_inline_result + ")");
         JSCompiler_inline_result = "\n    in " + (owner || "Unknown") + name;
-        break a;
-      default:
-        JSCompiler_inline_result = "";
     }
     info += JSCompiler_inline_result;
     workInProgress = workInProgress.return;
@@ -2375,7 +2369,7 @@ function createHook() {
 function cloneHook(hook) {
   return {
     memoizedState: hook.memoizedState,
-    baseState: hook.memoizedState,
+    baseState: hook.baseState,
     queue: hook.queue,
     baseUpdate: hook.baseUpdate,
     next: null
@@ -2500,6 +2494,9 @@ function pushEffect(tag, create, destroy, inputs) {
           (tag.next = destroy),
           (componentUpdateQueue.lastEffect = tag)));
   return tag;
+}
+function useLayoutEffect(create, inputs) {
+  useEffectImpl(4, 36, create, inputs);
 }
 function useEffectImpl(fiberEffectTag, hookEffectTag, create, inputs) {
   currentlyRenderingFiber$1 = resolveCurrentlyRenderingFiber();
@@ -3670,7 +3667,8 @@ function updateMemoComponent(
       "function" === typeof type &&
       !shouldConstruct(type) &&
       void 0 === type.defaultProps &&
-      null === Component.compare
+      null === Component.compare &&
+      void 0 === Component.defaultProps
     )
       return (
         (workInProgress.tag = 15),
@@ -4385,8 +4383,9 @@ function beginWork(current$$1, workInProgress, renderExpirationTime$jscomp$0) {
         default:
           invariant(
             !1,
-            "Element type is invalid. Received a promise that resolves to: %s. Promise elements must resolve to a class or function.",
-            current$$1
+            "Element type is invalid. Received a promise that resolves to: %s. Lazy element type must resolve to a class or function.%s",
+            current$$1,
+            ""
           );
       }
       return getDerivedStateFromProps;
@@ -4698,10 +4697,8 @@ function beginWork(current$$1, workInProgress, renderExpirationTime$jscomp$0) {
     case 14:
       return (
         (value = workInProgress.type),
-        (context = resolveDefaultProps(
-          value.type,
-          workInProgress.pendingProps
-        )),
+        (context = resolveDefaultProps(value, workInProgress.pendingProps)),
+        (context = resolveDefaultProps(value.type, context)),
         updateMemoComponent(
           current$$1,
           workInProgress,
@@ -5380,32 +5377,25 @@ var Dispatcher = {
         null !== inputs && void 0 !== inputs
           ? inputs.concat([ref])
           : [ref, create];
-      useEffectImpl(
-        4,
-        36,
-        function() {
-          if ("function" === typeof ref) {
-            var _inst = create();
-            ref(_inst);
-            return function() {
-              return ref(null);
-            };
-          }
-          if (null !== ref && void 0 !== ref)
-            return (
-              (_inst = create()),
-              (ref.current = _inst),
-              function() {
-                ref.current = null;
-              }
-            );
-        },
-        inputs
-      );
+      useLayoutEffect(function() {
+        if ("function" === typeof ref) {
+          var _inst = create();
+          ref(_inst);
+          return function() {
+            return ref(null);
+          };
+        }
+        if (null !== ref && void 0 !== ref)
+          return (
+            (_inst = create()),
+            (ref.current = _inst),
+            function() {
+              ref.current = null;
+            }
+          );
+      }, inputs);
     },
-    useLayoutEffect: function(create, inputs) {
-      useEffectImpl(4, 36, create, inputs);
-    },
+    useLayoutEffect: useLayoutEffect,
     useMemo: function(nextCreate, inputs) {
       currentlyRenderingFiber$1 = resolveCurrentlyRenderingFiber();
       workInProgressHook = createWorkInProgressHook();
@@ -5416,9 +5406,6 @@ var Dispatcher = {
       nextCreate = nextCreate();
       workInProgressHook.memoizedState = [nextCreate, inputs];
       return nextCreate;
-    },
-    useMutationEffect: function(create, inputs) {
-      useEffectImpl(260, 10, create, inputs);
     },
     useReducer: useReducer,
     useRef: function(initialValue) {
@@ -6532,13 +6519,18 @@ function completeRoot(root, finishedWork$jscomp$0, expirationTime) {
             commitWork(nextEffect.alternate, nextEffect);
             break;
           case 8:
-            (prevState = nextEffect),
-              unmountHostComponents(prevState),
-              (prevState.return = null),
-              (prevState.child = null),
-              prevState.alternate &&
-                ((prevState.alternate.child = null),
-                (prevState.alternate.return = null));
+            prevState = nextEffect;
+            unmountHostComponents(prevState);
+            prevState.return = null;
+            prevState.child = null;
+            prevState.memoizedState = null;
+            prevState.updateQueue = null;
+            var alternate = prevState.alternate;
+            null !== alternate &&
+              ((alternate.return = null),
+              (alternate.child = null),
+              (alternate.memoizedState = null),
+              (alternate.updateQueue = null));
         }
         nextEffect = nextEffect.nextEffect;
       }
@@ -6559,32 +6551,32 @@ function completeRoot(root, finishedWork$jscomp$0, expirationTime) {
     current$$1$jscomp$0 = void 0;
     try {
       for (
-        currentRef = root, current$$1 = expirationTime;
+        currentRef = root, alternate = expirationTime;
         null !== nextEffect;
 
       ) {
         var effectTag$jscomp$0 = nextEffect.effectTag;
         if (effectTag$jscomp$0 & 36) {
           var current$$1$jscomp$1 = nextEffect.alternate;
-          prevProps = nextEffect;
-          prevState = current$$1;
-          switch (prevProps.tag) {
+          current$$1 = nextEffect;
+          prevProps = alternate;
+          switch (current$$1.tag) {
             case 0:
             case 11:
             case 15:
-              commitHookEffectList(16, 32, prevProps);
+              commitHookEffectList(16, 32, current$$1);
               break;
             case 1:
-              var instance$jscomp$0 = prevProps.stateNode;
-              if (prevProps.effectTag & 4)
+              var instance$jscomp$0 = current$$1.stateNode;
+              if (current$$1.effectTag & 4)
                 if (null === current$$1$jscomp$1)
                   instance$jscomp$0.componentDidMount();
                 else {
                   var prevProps$jscomp$0 =
-                    prevProps.elementType === prevProps.type
+                    current$$1.elementType === current$$1.type
                       ? current$$1$jscomp$1.memoizedProps
                       : resolveDefaultProps(
-                          prevProps.type,
+                          current$$1.type,
                           current$$1$jscomp$1.memoizedProps
                         );
                   instance$jscomp$0.componentDidUpdate(
@@ -6593,28 +6585,33 @@ function completeRoot(root, finishedWork$jscomp$0, expirationTime) {
                     instance$jscomp$0.__reactInternalSnapshotBeforeUpdate
                   );
                 }
-              var updateQueue = prevProps.updateQueue;
+              var updateQueue = current$$1.updateQueue;
               null !== updateQueue &&
                 commitUpdateQueue(
-                  prevProps,
+                  current$$1,
                   updateQueue,
                   instance$jscomp$0,
-                  prevState
+                  prevProps
                 );
               break;
             case 3:
-              var _updateQueue = prevProps.updateQueue;
+              var _updateQueue = current$$1.updateQueue;
               if (null !== _updateQueue) {
-                instance = null;
-                if (null !== prevProps.child)
-                  switch (prevProps.child.tag) {
+                prevState = null;
+                if (null !== current$$1.child)
+                  switch (current$$1.child.tag) {
                     case 5:
-                      instance = prevProps.child.stateNode;
+                      prevState = current$$1.child.stateNode;
                       break;
                     case 1:
-                      instance = prevProps.child.stateNode;
+                      prevState = current$$1.child.stateNode;
                   }
-                commitUpdateQueue(prevProps, _updateQueue, instance, prevState);
+                commitUpdateQueue(
+                  current$$1,
+                  _updateQueue,
+                  prevState,
+                  prevProps
+                );
               }
               break;
             case 5:
@@ -6696,7 +6693,7 @@ function onUncaughtError(error) {
   nextFlushedRoot.expirationTime = 0;
   hasUnhandledError || ((hasUnhandledError = !0), (unhandledError = error));
 }
-function findHostInstance$1(component) {
+function findHostInstance(component) {
   var fiber = component._reactInternalFiber;
   void 0 === fiber &&
     ("function" === typeof component.render
@@ -6809,7 +6806,7 @@ function findNodeHandle(componentOrHandle) {
   if (componentOrHandle._nativeTag) return componentOrHandle._nativeTag;
   if (componentOrHandle.canonical && componentOrHandle.canonical._nativeTag)
     return componentOrHandle.canonical._nativeTag;
-  componentOrHandle = findHostInstance$1(componentOrHandle);
+  componentOrHandle = findHostInstance(componentOrHandle);
   return null == componentOrHandle
     ? componentOrHandle
     : componentOrHandle.canonical
@@ -6905,7 +6902,7 @@ var roots = new Map(),
         };
         return ReactNativeComponent;
       })(React.Component);
-    })(findNodeHandle, findHostInstance$1),
+    })(findNodeHandle, findHostInstance),
     findNodeHandle: findNodeHandle,
     render: function(element, containerTag, callback) {
       var root = roots.get(containerTag);
@@ -7018,7 +7015,7 @@ var roots = new Map(),
             TextInputState.blurTextInput(findNodeHandle(this));
           }
         };
-      })(findNodeHandle, findHostInstance$1),
+      })(findNodeHandle, findHostInstance),
       computeComponentStackForErrorReporting: function(reactTag) {
         return (reactTag = getInstanceFromTag(reactTag))
           ? getStackByFiberInDevAndProd(reactTag)
@@ -7045,7 +7042,7 @@ var roots = new Map(),
   findFiberByHostInstance: getInstanceFromTag,
   getInspectorDataForViewTag: getInspectorDataForViewTag,
   bundleType: 0,
-  version: "16.7.0-alpha.2",
+  version: "16.6.1",
   rendererPackageName: "react-native-renderer"
 });
 var ReactNativeRenderer$2 = { default: ReactNativeRenderer },
