@@ -636,6 +636,11 @@ jobs:
   # Test Coverage
   js_coverage:
     <<: *js_defaults
+    environment:
+      - CI_BRANCH: $CIRCLE_BRANCH
+      - CI_PULL_REQUEST: $CIRCLE_PULL_REQUEST
+      - CI_BUILD_NUMBER: $CIRCLE_BUILD_NUM
+      - CI_BUILD_URL: $CIRCLE_BUILD_URL
     steps:
       - checkout
       - restore-cache: *restore-yarn-cache
