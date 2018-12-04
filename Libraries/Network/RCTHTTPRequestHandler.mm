@@ -109,6 +109,21 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
 }
 
 - (void)URLSession:(NSURLSession *)session
+              task:(NSURLSessionTask *)task
+willPerformHTTPRedirection:(NSHTTPURLResponse *)response
+        newRequest:(NSURLRequest *)request
+ completionHandler:(void (^)(NSURLRequest *))completionHandler
+{
+  // Reset the cookies on redirect.
+  // This is necessary because we're not letting iOS handle cookies by itself
+  NSMutableURLRequest *nextRequest = [request mutableCopy];
+
+  NSArray<NSHTTPCookie *> *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:request.URL];
+  nextRequest.allHTTPHeaderFields = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
+  completionHandler(nextRequest);
+}
+
+- (void)URLSession:(NSURLSession *)session
           dataTask:(NSURLSessionDataTask *)task
 didReceiveResponse:(NSURLResponse *)response
  completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler

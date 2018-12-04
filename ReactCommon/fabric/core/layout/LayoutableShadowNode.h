@@ -12,9 +12,9 @@
 #include <memory>
 #include <vector>
 
-#include <fabric/core/LayoutMetrics.h>
-#include <fabric/core/Sealable.h>
-#include <fabric/debug/DebugStringConvertible.h>
+#include <react/core/LayoutMetrics.h>
+#include <react/core/Sealable.h>
+#include <react/debug/DebugStringConvertible.h>
 
 namespace facebook {
 namespace react {
@@ -58,6 +58,12 @@ class LayoutableShadowNode : public virtual Sealable {
    * Default implementation returns `false`.
    */
   virtual bool isLayoutOnly() const;
+
+  /*
+   * Returns layout metrics relatively to the given ancestor node.
+   */
+  LayoutMetrics getRelativeLayoutMetrics(
+      const LayoutableShadowNode &ancestorLayoutableShadowNode) const;
 
  protected:
   /*

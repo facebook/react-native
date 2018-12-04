@@ -11,7 +11,7 @@
 
 const RCTActionSheetManager = require('NativeModules').ActionSheetManager;
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 const processColor = require('processColor');
 
 /**

@@ -27,6 +27,8 @@ public:
 private:
   std::unordered_map<uint32_t, std::string> modules_;
   std::string startupCode_;
+
+  void patchModules(const folly::dynamic *delta);
 };
 
 class JSDeltaBundleClientRAMBundle : public JSModulesUnbundle {

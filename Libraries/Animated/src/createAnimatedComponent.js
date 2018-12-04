@@ -14,7 +14,7 @@ const AnimatedProps = require('./nodes/AnimatedProps');
 const React = require('React');
 const DeprecatedViewStylePropTypes = require('DeprecatedViewStylePropTypes');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 function createAnimatedComponent(Component: any): any {
   invariant(

@@ -10,8 +10,12 @@
 namespace facebook {
 namespace react {
 
-void SwitchEventEmitter::onChange(const bool &value) const {
-  dispatchEvent("change", folly::dynamic::object("value", value));
+void SwitchEventEmitter::onChange(bool value) const {
+  dispatchEvent("change", [value](jsi::Runtime &runtime) {
+    auto payload = jsi::Object(runtime);
+    payload.setProperty(runtime, "value", value);
+    return payload;
+  });
 }
 
 } // namespace react

@@ -28,7 +28,7 @@ rn_xplat_cxx_library(
         [
             ("", "*.h"),
         ],
-        prefix = "fabric/uimanager",
+        prefix = "react/uimanager",
     ),
     compiler_flags = [
         "-fexceptions",
@@ -60,6 +60,7 @@ rn_xplat_cxx_library(
         "xplat//third-party/glog:glog",
         react_native_xplat_target("fabric/components/root:root"),
         react_native_xplat_target("fabric/components/view:view"),
+        react_native_xplat_target("fabric/mounting:mounting"),
         react_native_xplat_target("fabric/core:core"),
         react_native_xplat_target("fabric/debug:debug"),
         react_native_xplat_target("fabric/events:events"),

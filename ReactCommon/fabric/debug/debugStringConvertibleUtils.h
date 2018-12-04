@@ -12,10 +12,10 @@
 #include <string>
 #include <vector>
 
-#include <fabric/debug/DebugStringConvertible.h>
-#include <fabric/debug/DebugStringConvertibleItem.h>
 #include <folly/Conv.h>
 #include <folly/Optional.h>
+#include <react/debug/DebugStringConvertible.h>
+#include <react/debug/DebugStringConvertibleItem.h>
 
 namespace facebook {
 namespace react {

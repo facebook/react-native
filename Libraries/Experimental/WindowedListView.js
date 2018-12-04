@@ -22,7 +22,7 @@ const ViewabilityHelper = require('ViewabilityHelper');
 const clamp = require('clamp');
 const deepDiffer = require('deepDiffer');
 const infoLog = require('infoLog');
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 const nullthrows = require('nullthrows');
 
 import type {NativeMethodsMixinType} from 'ReactNativeTypes';

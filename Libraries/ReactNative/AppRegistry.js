@@ -16,7 +16,7 @@ const ReactNative = require('ReactNative');
 const SceneTracker = require('SceneTracker');
 
 const infoLog = require('infoLog');
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 const renderApplication = require('renderApplication');
 
 type Task = (taskData: any) => Promise<void>;

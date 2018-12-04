@@ -58,13 +58,13 @@ class EventBeat {
    */
   void setFailCallback(const FailCallback &failCallback);
 
- protected:
   /*
    * Should be used by sublasses to send a beat.
    * Receiver might ignore the call if a beat was not requested.
    */
   void beat(jsi::Runtime &runtime) const;
 
+ protected:
   BeatCallback beatCallback_;
   FailCallback failCallback_;
   mutable std::atomic<bool> isRequested_{false};

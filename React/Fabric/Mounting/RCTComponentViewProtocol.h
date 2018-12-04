@@ -7,10 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import <fabric/core/LocalData.h>
-#import <fabric/core/Props.h>
-#import <fabric/core/LayoutMetrics.h>
-#import <fabric/events/EventEmitter.h>
+#import <react/core/LocalData.h>
+#import <react/core/Props.h>
+#import <react/core/LayoutMetrics.h>
+#import <react/events/EventEmitter.h>
 #import <React/RCTPrimitives.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -22,6 +22,12 @@ NS_ASSUME_NONNULL_BEGIN
  * for all of them.
  */
 @protocol RCTComponentViewProtocol <NSObject>
+
+/*
+ * Returns ComponentHandle of ComponentDescriptor which this ComponentView
+ * represents.
+ */
++ (facebook::react::ComponentHandle)componentHandle;
 
 /*
  * Called for mounting (attaching) a child component view inside `self`

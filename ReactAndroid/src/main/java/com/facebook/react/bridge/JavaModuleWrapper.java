@@ -141,10 +141,10 @@ public class JavaModuleWrapper {
     try {
       return Arguments.makeNativeMap(map);
     } finally {
-      ReactMarker.logMarker(CONVERT_CONSTANTS_END);
+      ReactMarker.logMarker(CONVERT_CONSTANTS_END, moduleName);
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
 
-      ReactMarker.logMarker(GET_CONSTANTS_END);
+      ReactMarker.logMarker(GET_CONSTANTS_END, moduleName);
       SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
     }
   }

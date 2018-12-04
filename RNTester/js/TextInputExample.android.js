@@ -48,7 +48,8 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
           }
           onContentSizeChange={event =>
             this.updateText(
-              'onContentSizeChange size: ' + event.nativeEvent.contentSize,
+              'onContentSizeChange size: ' +
+                JSON.stringify(event.nativeEvent.contentSize),
             )
           }
           onEndEditing={event =>
@@ -253,10 +254,10 @@ class ToggleDefaultPaddingExample extends React.Component<
 }
 
 type SelectionExampleState = {
-  selection: {
+  selection: $ReadOnly<{|
     start: number,
-    end: number,
-  },
+    end?: number,
+  |}>,
   value: string,
 };
 
@@ -314,8 +315,6 @@ class SelectionExample extends React.Component<
           onChangeText={value => this.setState({value})}
           onSelectionChange={this.onSelectionChange.bind(this)}
           ref={textInput => (this._textInput = textInput)}
-          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-           * found when making Flow check .android.js files. */
           selection={this.state.selection}
           style={this.props.style}
           value={this.state.value}

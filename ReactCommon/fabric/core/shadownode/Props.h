@@ -9,9 +9,9 @@
 
 #include <folly/dynamic.h>
 
-#include <fabric/core/ReactPrimitives.h>
-#include <fabric/core/Sealable.h>
-#include <fabric/debug/DebugStringConvertible.h>
+#include <react/core/ReactPrimitives.h>
+#include <react/core/Sealable.h>
+#include <react/debug/DebugStringConvertible.h>
 
 namespace facebook {
 namespace react {

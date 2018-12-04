@@ -24,7 +24,7 @@ const View = require('View');
 const WebViewShared = require('WebViewShared');
 
 const deprecatedPropType = require('deprecatedPropType');
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 const keyMirror = require('fbjs/lib/keyMirror');
 const processDecelerationRate = require('processDecelerationRate');
 const requireNativeComponent = require('requireNativeComponent');

@@ -32,11 +32,19 @@ void ParagraphShadowNode::setTextLayoutManager(
   textLayoutManager_ = textLayoutManager;
 }
 
-void ParagraphShadowNode::updateLocalData() {
+void ParagraphShadowNode::updateLocalDataIfNeeded() {
   ensureUnsealed();
 
+  auto attributedString = getAttributedString();
+  auto currentLocalData =
+      std::static_pointer_cast<const ParagraphLocalData>(getLocalData());
+  if (currentLocalData &&
+      currentLocalData->getAttributedString() == attributedString) {
+    return;
+  }
+
   auto localData = std::make_shared<ParagraphLocalData>();
-  localData->setAttributedString(getAttributedString());
+  localData->setAttributedString(std::move(attributedString));
   localData->setTextLayoutManager(textLayoutManager_);
   setLocalData(localData);
 }
@@ -45,14 +53,13 @@ void ParagraphShadowNode::updateLocalData() {
 
 Size ParagraphShadowNode::measure(LayoutConstraints layoutConstraints) const {
   return textLayoutManager_->measure(
-      getTag(),
       getAttributedString(),
       getProps()->paragraphAttributes,
       layoutConstraints);
 }
 
 void ParagraphShadowNode::layout(LayoutContext layoutContext) {
-  updateLocalData();
+  updateLocalDataIfNeeded();
   ConcreteViewShadowNode::layout(layoutContext);
 }
 

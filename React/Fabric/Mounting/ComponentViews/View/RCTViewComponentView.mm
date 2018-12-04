@@ -7,8 +7,9 @@
 
 #import "RCTViewComponentView.h"
 
-#import <fabric/components/view/ViewProps.h>
-#import <fabric/components/view/ViewEventEmitter.h>
+#import <react/components/view/ViewShadowNode.h>
+#import <react/components/view/ViewProps.h>
+#import <react/components/view/ViewEventEmitter.h>
 #import <objc/runtime.h>
 #import <React/RCTAssert.h>
 #import <React/RCTBorderDrawing.h>
@@ -76,6 +77,16 @@ using namespace facebook::react;
 - (void)setBackgroundColor:(UIColor *)backgroundColor
 {
   _backgroundColor = backgroundColor;
+}
+
+#pragma mark - RCTComponentViewProtocol
+
++ (ComponentHandle)componentHandle
+{
+  RCTAssert(
+    self == [RCTViewComponentView class],
+    @"`+[RCTComponentViewProtocol componentHandle]` must be implemented for all subclasses (and `%@` particularly).", NSStringFromClass([self class]));
+  return ViewShadowNode::Handle();
 }
 
 - (void)updateProps:(SharedProps)props
@@ -254,6 +265,12 @@ using namespace facebook::react;
   [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:oldLayoutMetrics];
 
   [self invalidateLayer];
+}
+
+- (void)prepareForRecycle
+{
+  [super prepareForRecycle];
+  _eventEmitter.reset();
 }
 
 - (UIView *)betterHitTest:(CGPoint)point withEvent:(UIEvent *)event

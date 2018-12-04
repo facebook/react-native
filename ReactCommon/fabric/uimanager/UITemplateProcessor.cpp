@@ -7,16 +7,16 @@
 
 #include "UITemplateProcessor.h"
 
-#include <fabric/components/view/ViewComponentDescriptor.h>
-#include <fabric/components/view/ViewProps.h>
-#include <fabric/components/view/ViewShadowNode.h>
-#include <fabric/core/LayoutContext.h>
-#include <fabric/core/ShadowNodeFragment.h>
-#include <fabric/core/componentDescriptor.h>
-#include <fabric/debug/DebugStringConvertible.h>
-#include <fabric/debug/DebugStringConvertibleItem.h>
 #include <folly/json.h>
 #include <glog/logging.h>
+#include <react/components/view/ViewComponentDescriptor.h>
+#include <react/components/view/ViewProps.h>
+#include <react/components/view/ViewShadowNode.h>
+#include <react/core/LayoutContext.h>
+#include <react/core/ShadowNodeFragment.h>
+#include <react/core/ComponentDescriptor.h>
+#include <react/debug/DebugStringConvertible.h>
+#include <react/debug/DebugStringConvertibleItem.h>
 
 namespace facebook {
 namespace react {

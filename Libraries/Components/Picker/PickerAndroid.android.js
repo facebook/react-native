@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -34,18 +34,34 @@ type PickerAndroidChangeEvent = SyntheticEvent<
 type PickerAndroidProps = $ReadOnly<{|
   children?: React.Node,
   style?: ?TextStyleProp,
-  selectedValue?: any,
+  selectedValue?: ?(number | string),
   enabled?: ?boolean,
   mode?: ?('dialog' | 'dropdown'),
-  onValueChange?: ?(newValue: any, newIndex: number) => mixed,
+  onValueChange?: ?(itemValue: ?(string | number), itemIndex: number) => mixed,
   prompt?: ?string,
   testID?: string,
 |}>;
 
+type Item = $ReadOnly<{|
+  label: string,
+  value: ?(number | string),
+  color?: ?number,
+|}>;
+
+type PickerAndroidState = {|
+  initialSelectedIndex: number,
+  selectedIndex: number,
+  items: $ReadOnlyArray<Item>,
+|};
+
 /**
  * Not exposed as a public API - use <Picker> instead.
  */
-class PickerAndroid extends React.Component<PickerAndroidProps, *> {
+
+class PickerAndroid extends React.Component<
+  PickerAndroidProps,
+  PickerAndroidState,
+> {
   /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
    * when making Flow check .android.js files. */
   constructor(props, context) {

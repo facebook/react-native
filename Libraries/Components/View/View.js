@@ -14,7 +14,7 @@ const React = require('React');
 const TextAncestor = require('TextAncestor');
 const ViewNativeComponent = require('ViewNativeComponent');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 import type {ViewProps} from 'ViewPropTypes';
 

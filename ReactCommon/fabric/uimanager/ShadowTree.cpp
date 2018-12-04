@@ -5,12 +5,12 @@
 
 #include "ShadowTree.h"
 
-#include <fabric/core/LayoutContext.h>
-#include <fabric/core/LayoutPrimitives.h>
+#include <react/core/LayoutContext.h>
+#include <react/core/LayoutPrimitives.h>
+#include <react/mounting/Differentiator.h>
+#include <react/mounting/ShadowViewMutation.h>
 
-#include "Differentiator.h"
 #include "ShadowTreeDelegate.h"
-#include "ShadowViewMutation.h"
 
 namespace facebook {
 namespace react {
@@ -98,6 +98,35 @@ bool ShadowTree::complete(
   return complete(oldRootShadowNode, newRootShadowNode);
 }
 
+bool ShadowTree::completeByReplacingShadowNode(
+    const SharedShadowNode &oldShadowNode,
+    const SharedShadowNode &newShadowNode) const {
+  auto rootShadowNode = getRootShadowNode();
+  std::vector<std::reference_wrapper<const ShadowNode>> ancestors;
+  oldShadowNode->constructAncestorPath(*rootShadowNode, ancestors);
+
+  if (ancestors.size() == 0) {
+    return false;
+  }
+
+  auto oldChild = oldShadowNode;
+  auto newChild = newShadowNode;
+
+  SharedShadowNodeUnsharedList sharedChildren;
+
+  for (const auto &ancestor : ancestors) {
+    auto children = ancestor.get().getChildren();
+    std::replace(children.begin(), children.end(), oldChild, newChild);
+
+    sharedChildren = std::make_shared<SharedShadowNodeList>(children);
+
+    oldChild = ancestor.get().shared_from_this();
+    newChild = oldChild->clone(ShadowNodeFragment{.children = sharedChildren});
+  }
+
+  return complete(sharedChildren);
+}
+
 bool ShadowTree::complete(
     const SharedRootShadowNode &oldRootShadowNode,
     const UnsharedRootShadowNode &newRootShadowNode) const {
@@ -181,14 +210,14 @@ void ShadowTree::toggleEventEmitters(
   std::lock_guard<std::recursive_mutex> lock(EventEmitter::DispatchMutex());
 
   for (const auto &mutation : mutations) {
-    if (mutation.type == ShadowViewMutation::Delete) {
-      mutation.oldChildShadowView.eventEmitter->setEnabled(false);
+    if (mutation.type == ShadowViewMutation::Create) {
+      mutation.newChildShadowView.eventEmitter->enable();
     }
   }
 
   for (const auto &mutation : mutations) {
-    if (mutation.type == ShadowViewMutation::Create) {
-      mutation.newChildShadowView.eventEmitter->setEnabled(true);
+    if (mutation.type == ShadowViewMutation::Delete) {
+      mutation.oldChildShadowView.eventEmitter->disable();
     }
   }
 }

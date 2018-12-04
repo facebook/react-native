@@ -10,10 +10,10 @@
 #include <limits>
 #include <memory>
 
-#include <fabric/attributedstring/ParagraphAttributes.h>
-#include <fabric/components/text/BaseTextProps.h>
-#include <fabric/components/view/ViewProps.h>
-#include <fabric/core/Props.h>
+#include <react/attributedstring/ParagraphAttributes.h>
+#include <react/components/text/BaseTextProps.h>
+#include <react/components/view/ViewProps.h>
+#include <react/core/Props.h>
 
 namespace facebook {
 namespace react {

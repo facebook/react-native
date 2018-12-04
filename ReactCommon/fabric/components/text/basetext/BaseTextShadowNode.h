@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <fabric/attributedstring/AttributedString.h>
-#include <fabric/attributedstring/TextAttributes.h>
+#include <react/attributedstring/AttributedString.h>
+#include <react/attributedstring/TextAttributes.h>
 
 namespace facebook {
 namespace react {

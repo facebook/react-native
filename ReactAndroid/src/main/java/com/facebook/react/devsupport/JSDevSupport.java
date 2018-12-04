@@ -20,7 +20,7 @@ import javax.annotation.Nullable;
 @ReactModule(name = JSDevSupport.MODULE_NAME)
 public class JSDevSupport extends ReactContextBaseJavaModule {
 
-  static final String MODULE_NAME = "JSDevSupport";
+  public static final String MODULE_NAME = "JSDevSupport";
 
   public static final int ERROR_CODE_EXCEPTION = 0;
   public static final int ERROR_CODE_VIEW_NOT_FOUND = 1;

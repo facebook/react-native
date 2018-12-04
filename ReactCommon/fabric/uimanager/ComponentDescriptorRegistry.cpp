@@ -5,8 +5,8 @@
 
 #include "ComponentDescriptorRegistry.h"
 
-#include <fabric/core/ShadowNodeFragment.h>
-#include <fabric/uimanager/primitives.h>
+#include <react/core/ShadowNodeFragment.h>
+#include <react/uimanager/primitives.h>
 
 namespace facebook {
 namespace react {
@@ -64,6 +64,10 @@ static const std::string componentNameByReactViewName(std::string viewName) {
     return "ScrollView";
   }
 
+  if (viewName == "RKShimmeringView") {
+    return "ShimmeringView";
+  }
+
   if (viewName == "AndroidProgressBar") {
     return "ActivityIndicatorView";
   }
@@ -72,7 +76,8 @@ static const std::string componentNameByReactViewName(std::string viewName) {
   // implementation of core components.
   if (viewName == "SinglelineTextInputView" ||
       viewName == "MultilineTextInputView" || viewName == "RefreshControl" ||
-      viewName == "SafeAreaView" || viewName == "ScrollContentView" ||
+      viewName == "AndroidSwipeRefreshLayout" || viewName == "SafeAreaView" ||
+      viewName == "ScrollContentView" ||
       viewName == "AndroidHorizontalScrollContentView" // Android
   ) {
     return "View";

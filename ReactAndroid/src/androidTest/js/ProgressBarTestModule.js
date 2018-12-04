@@ -11,6 +11,8 @@
 
 const BatchedBridge = require('BatchedBridge');
 const React = require('React');
+const ReactNative = require('react-native');
+const {StyleSheet} = ReactNative;
 const ProgressBar = require('ProgressBarAndroid');
 const View = require('View');
 
@@ -29,7 +31,7 @@ class ProgressBarSampleApp extends React.Component {
         <ProgressBar styleAttr="Inverse" testID="Inverse" />
         <ProgressBar styleAttr="SmallInverse" testID="SmallInverse" />
         <ProgressBar styleAttr="LargeInverse" testID="LargeInverse" />
-        <View style={{width: 200}}>
+        <View style={styles.wrapper}>
           <ProgressBar styleAttr="Horizontal" testID="Horizontal200" />
         </View>
       </View>
@@ -47,5 +49,11 @@ BatchedBridge.registerCallableModule(
   'ProgressBarTestModule',
   ProgressBarTestModule,
 );
+
+const styles = StyleSheet.create({
+  wrapper: {
+    width: 200,
+  },
+});
 
 module.exports = ProgressBarTestModule;
