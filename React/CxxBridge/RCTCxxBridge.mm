@@ -56,7 +56,6 @@ static NSString *const RCTJSThreadName = @"com.facebook.react.JavaScript";
 
 typedef void (^RCTPendingCall)();
 
-using namespace facebook::jsc;
 using namespace facebook::jsi;
 using namespace facebook::react;
 
@@ -90,6 +89,24 @@ public:
 private:
   RCTCxxBridge *bridge_;
   std::shared_ptr<JSExecutorFactory> factory_;
+};
+
+class JSCExecutorFactory : public JSExecutorFactory {
+public:
+  std::unique_ptr<JSExecutor> createJSExecutor(
+    std::shared_ptr<ExecutorDelegate> delegate,
+    std::shared_ptr<MessageQueueThread> jsQueue) override {
+    return folly::make_unique<JSIExecutor>(
+      facebook::jsc::makeJSCRuntime(),
+      delegate,
+      [](const std::string &message, unsigned int logLevel) {
+        _RCTLogJavaScriptInternal(
+          static_cast<RCTLogLevel>(logLevel),
+          [NSString stringWithUTF8String:message.c_str()]);
+      },
+      JSIExecutor::defaultTimeoutInvoker,
+      nullptr);
+  }
 };
 
 }
@@ -320,13 +337,7 @@ struct RCTInstanceCallback : public InstanceCallback {
       executorFactory = [cxxDelegate jsExecutorFactoryForBridge:self];
     }
     if (!executorFactory) {
-      executorFactory = std::make_shared<JSIExecutorFactory>(
-          makeJSCRuntime(),
-          [](const std::string &message, unsigned int logLevel) {
-              _RCTLogJavaScriptInternal(
-                  static_cast<RCTLogLevel>(logLevel),
-                  [NSString stringWithUTF8String:message.c_str()]);
-          }, nullptr);
+      executorFactory = std::make_shared<JSCExecutorFactory>();
     }
   } else {
     id<RCTJavaScriptExecutor> objcExecutor = [self moduleForClass:self.executorClass];
