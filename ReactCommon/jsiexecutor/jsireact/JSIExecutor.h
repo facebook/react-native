@@ -131,22 +131,5 @@ class JSIExecutor : public JSExecutor {
   folly::Optional<jsi::Function> callFunctionReturnResultAndFlushedQueue_;
 };
 
-class JSIExecutorFactory : public JSExecutorFactory {
- public:
-  explicit JSIExecutorFactory(
-      std::shared_ptr<jsi::Runtime> runtime,
-      JSIExecutor::Logger logger,
-      JSIExecutor::RuntimeInstaller);
-
-  std::unique_ptr<JSExecutor> createJSExecutor(
-      std::shared_ptr<ExecutorDelegate> delegate,
-      std::shared_ptr<MessageQueueThread> jsQueue) override;
-
- private:
-  std::shared_ptr<jsi::Runtime> runtime_;
-  JSIExecutor::Logger logger_;
-  JSIExecutor::RuntimeInstaller runtimeInstaller_;
-};
-
 } // namespace react
 } // namespace facebook
