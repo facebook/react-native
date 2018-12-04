@@ -16,7 +16,7 @@ const isWindows = process.platform === 'win32';
 function expectToBeCalledOnce(fn) {
   // todo fix this test case on widnows
   if (isWindows) {
-    return
+    return;
   }
   expect(fn.mock.calls.length).toBe(1);
 }
