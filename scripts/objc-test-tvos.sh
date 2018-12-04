@@ -24,15 +24,7 @@ source "scripts/.tests.env"
 export TEST_NAME="tvOS"
 export SCHEME="RNTester-tvOS"
 export SDK="appletvsimulator"
-<<<<<<< HEAD
-export DESTINATION="platform=tvOS Simulator,name=Apple TV,OS=11.4"
-
-# If there's a "test" argument, pass it to the test script.
-. ./scripts/objc-test.sh $1
-
-=======
 export DESTINATION="platform=tvOS Simulator,name=${TVOS_DEVICE},OS=${IOS_TARGET_OS}"
 
 # If there's a "test" argument, pass it to the test script.
 ./scripts/objc-test.sh $1
->>>>>>> 5194495e97... Propagate exit code in test_objc (#22562)
