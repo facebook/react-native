@@ -197,9 +197,13 @@ public class NativeViewHierarchyManager {
         if (parentViewManager instanceof ViewGroupManager) {
           parentViewGroupManager = (ViewGroupManager) parentViewManager;
         } else {
-          throw new IllegalViewOperationException(
-              "Trying to use view with tag " + tag +
-                  " as a parent, but its Manager doesn't extends ViewGroupManager");
+//          throw new IllegalViewOperationException(
+//              "Trying to use view with tag " + parentTag +
+//                  " as a parent, but its Manager doesn't extends ViewGroupManager");
+          // It's not a must to throw the exception. And the tag of the exception message should be parentTag.
+          FLog.e(TAG, "Trying to use view with tag " + parentTag +
+            " as a parent, but its Manager doesn't extends ViewGroupManager");
+          return;
         }
         if (parentViewGroupManager != null
             && !parentViewGroupManager.needsCustomLayoutForChildren()) {
