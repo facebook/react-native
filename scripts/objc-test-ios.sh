@@ -21,7 +21,7 @@ cd "$ROOT"
 export TEST_NAME="iOS"
 export SCHEME="RNTester"
 export SDK="iphonesimulator"
-export DESTINATION="platform=iOS Simulator,name=iPhone 5s,OS=11.4"
+export DESTINATION="platform=iOS Simulator,name=iPhone XS,OS=12.1"
 
 # If there's a "test" argument, pass it to the test script.
 . ./scripts/objc-test.sh $1
