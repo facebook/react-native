@@ -47,7 +47,7 @@ function mergeInto(one, two) {
   if (two != null) {
     checkMergeObjectArg(two);
     for (var key in two) {
-      if (!two.hasOwnProperty(key)) {
+      if (!Object.prototype.hasOwnProperty.call(two, key)) {
         continue;
       }
       one[key] = two[key];
