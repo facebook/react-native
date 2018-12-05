@@ -28,10 +28,12 @@ Scheduler::Scheduler(const SharedContextContainer &contextContainer)
   runtimeExecutor_ =
       contextContainer->getInstance<RuntimeExecutor>("runtime-executor");
 
+  reactNativeConfig_ =
+      contextContainer->getInstance<std::shared_ptr<const ReactNativeConfig>>();
+
   auto uiManager = std::make_unique<UIManager>();
   auto &uiManagerRef = *uiManager;
-  uiManagerBinding_ =
-      std::make_shared<UIManagerBinding>(std::move(uiManager));
+  uiManagerBinding_ = std::make_shared<UIManagerBinding>(std::move(uiManager));
 
   auto eventPipe = [uiManagerBinding = uiManagerBinding_.get()](
                        jsi::Runtime &runtime,
@@ -93,7 +95,8 @@ void Scheduler::renderTemplateToSurface(
         surfaceId,
         folly::dynamic::object(),
         *componentDescriptorRegistry_,
-        nMR);
+        nMR,
+        reactNativeConfig_);
 
     shadowTreeRegistry_.visit(surfaceId, [=](const ShadowTree &shadowTree) {
       shadowTree.complete(

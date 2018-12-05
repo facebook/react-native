@@ -8,6 +8,7 @@
 #include <memory>
 #include <mutex>
 
+#include <react/config/ReactNativeConfig.h>
 #include <react/core/ComponentDescriptor.h>
 #include <react/core/LayoutConstraints.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
@@ -94,6 +95,7 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
   SharedContextContainer contextContainer_;
   RuntimeExecutor runtimeExecutor_;
   std::shared_ptr<UIManagerBinding> uiManagerBinding_;
+  std::shared_ptr<const ReactNativeConfig> reactNativeConfig_;
 };
 
 } // namespace react
