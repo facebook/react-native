@@ -28,7 +28,7 @@ const processDecelerationRate = require('processDecelerationRate');
 const requireNativeComponent = require('requireNativeComponent');
 const resolveAssetSource = require('resolveAssetSource');
 
-import type {PressEvent} from 'CoreEventTypes';
+import type {ScrollEvent, LayoutEvent, PressEvent} from 'CoreEventTypes';
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type {NativeMethodsMixinType} from 'ReactNativeTypes';
 import type {ViewStyleProp} from 'StyleSheet';
@@ -220,7 +220,7 @@ type IOSProps = $ReadOnly<{|
    * Fires when the scroll view scrolls to top after the status bar has been tapped
    * @platform ios
    */
-  onScrollToTop?: ?Function,
+  onScrollToTop?: ?(e: ScrollEvent) => void,
   /**
    * When true, shows a horizontal scroll indicator.
    * The default value is true.
@@ -410,26 +410,26 @@ export type Props = $ReadOnly<{|
   /**
    * Called when the momentum scroll starts (scroll which occurs as the ScrollView glides to a stop).
    */
-  onMomentumScrollBegin?: ?Function,
+  onMomentumScrollBegin?: ?(e: ScrollEvent) => void,
   /**
    * Called when the momentum scroll ends (scroll which occurs as the ScrollView glides to a stop).
    */
-  onMomentumScrollEnd?: ?Function,
+  onMomentumScrollEnd?: ?(e: ScrollEvent) => void,
 
   /**
    * Fires at most once per frame during scrolling. The frequency of the
    * events can be controlled using the `scrollEventThrottle` prop.
    */
-  onScroll?: ?Function,
+  onScroll?: ?(e: ScrollEvent) => void,
   /**
    * Called when the user begins to drag the scroll view.
    */
-  onScrollBeginDrag?: ?Function,
+  onScrollBeginDrag?: ?(e: ScrollEvent) => void,
   /**
    * Called when the user stops dragging the scroll view and it either stops
    * or begins to glide.
    */
-  onScrollEndDrag?: ?Function,
+  onScrollEndDrag?: ?(e: ScrollEvent) => void,
   /**
    * Called when scrollable content view of the ScrollView changes.
    *
@@ -439,7 +439,7 @@ export type Props = $ReadOnly<{|
    * It's implemented using onLayout handler attached to the content container
    * which this ScrollView renders.
    */
-  onContentSizeChange?: ?Function,
+  onContentSizeChange?: ?(contentWidth: number, contentHeight: number) => void,
   onKeyboardDidShow?: (event: PressEvent) => void,
   /**
    * When true, the scroll view stops on multiples of the scroll view's size
@@ -613,11 +613,11 @@ const ScrollView = createReactClass({
     return this;
   },
 
-  getScrollableNode: function(): any {
+  getScrollableNode: function(): ?number {
     return ReactNative.findNodeHandle(this._scrollViewRef);
   },
 
-  getInnerViewNode: function(): any {
+  getInnerViewNode: function(): ?number {
     return ReactNative.findNodeHandle(this._innerViewRef);
   },
 
@@ -742,7 +742,7 @@ const ScrollView = createReactClass({
     }
   },
 
-  _handleScroll: function(e: Object) {
+  _handleScroll: function(e: ScrollEvent) {
     if (__DEV__) {
       if (
         this.props.onScroll &&
@@ -769,7 +769,7 @@ const ScrollView = createReactClass({
     this.scrollResponderHandleScroll(e);
   },
 
-  _handleLayout: function(e: Object) {
+  _handleLayout: function(e: LayoutEvent) {
     if (this.props.invertStickyHeaders) {
       this.setState({layoutHeight: e.nativeEvent.layout.height});
     }
@@ -778,7 +778,7 @@ const ScrollView = createReactClass({
     }
   },
 
-  _handleContentOnLayout: function(e: Object) {
+  _handleContentOnLayout: function(e: LayoutEvent) {
     const {width, height} = e.nativeEvent.layout;
     this.props.onContentSizeChange &&
       this.props.onContentSizeChange(width, height);
