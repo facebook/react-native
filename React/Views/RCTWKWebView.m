@@ -76,7 +76,9 @@ static NSString *const MessageHanderName = @"ReactNative";
     wkWebViewConfig.mediaTypesRequiringUserActionForPlayback = _mediaPlaybackRequiresUserAction
       ? WKAudiovisualMediaTypeAll
       : WKAudiovisualMediaTypeNone;
-   wkWebViewConfig.dataDetectorTypes = _dataDetectorTypes;
+    wkWebViewConfig.dataDetectorTypes = _dataDetectorTypes;
+#else
+    wkWebViewConfig.mediaPlaybackRequiresUserAction = _mediaPlaybackRequiresUserAction;
 #endif
 
     _webView = [[WKWebView alloc] initWithFrame:self.bounds configuration: wkWebViewConfig];
