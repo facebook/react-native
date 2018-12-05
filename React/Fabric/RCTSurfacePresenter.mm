@@ -50,9 +50,10 @@ using namespace facebook::react;
   RCTSurfaceRegistry *_surfaceRegistry;  // Thread-safe.
   RCTBridge *_bridge; // Unsafe. We are moving away from Bridge.
   RCTBridge *_batchedBridge;
+  std::shared_ptr<const ReactNativeConfig> _reactNativeConfig;
 }
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge
+- (instancetype)initWithBridge:(RCTBridge *)bridge config:(std::shared_ptr<const ReactNativeConfig>)config
 {
   if (self = [super init]) {
     _bridge = bridge;
@@ -62,6 +63,12 @@ using namespace facebook::react;
 
     _mountingManager = [[RCTMountingManager alloc] init];
     _mountingManager.delegate = self;
+
+    if (config != nullptr) {
+      _reactNativeConfig = config;
+    } else {
+      _reactNativeConfig = std::make_shared<const EmptyReactNativeConfig>();
+    }
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleBridgeWillReloadNotification:)
@@ -160,6 +167,8 @@ using namespace facebook::react;
   }
 
   auto contextContainer = std::make_shared<ContextContainer>();
+
+  contextContainer->registerInstance(_reactNativeConfig);
 
   auto messageQueueThread = _batchedBridge.jsMessageThread;
   auto runtime = (facebook::jsi::Runtime *)((RCTCxxBridge *)_batchedBridge).runtime;

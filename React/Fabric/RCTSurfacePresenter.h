@@ -11,6 +11,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTComponentViewFactory.h>
 #import <React/RCTPrimitives.h>
+#import <react/config/ReactNativeConfig.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,7 +26,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface RCTSurfacePresenter : NSObject
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge;
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+                        config:(std::shared_ptr<const facebook::react::ReactNativeConfig>)config;
 
 @property (nonatomic, readonly) RCTComponentViewFactory *componentViewFactory;
 
