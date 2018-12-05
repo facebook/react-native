@@ -3,17 +3,22 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @emails oncall+react_native
+ * @format
  */
 
-/* global device, element, by, expect */
+/* global element, by, expect */
 
-describe('Sanity', () => {
-  beforeEach(async () => {
-    await device.reloadReactNative();
-    await element(by.label('<Button> Simple React Native button component.')).tap();
+describe('Button', () => {
+  beforeAll(async () => {
+    await element(by.id('explorer_search')).replaceText('<Button>');
+    await element(
+      by.label('<Button> Simple React Native button component.'),
+    ).tap();
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     //TODO - remove app state persistency, till then, we must go back to main screen,
     await element(by.label('Back')).tap();
   });
@@ -42,6 +47,8 @@ describe('Sanity', () => {
 
   it('Disabled button should not interact', async () => {
     await element(by.label('I Am Disabled')).tap();
-    await expect(element(by.text('Disabled has been pressed!'))).toBeNotVisible();
+    await expect(
+      element(by.text('Disabled has been pressed!')),
+    ).toBeNotVisible();
   });
 });
