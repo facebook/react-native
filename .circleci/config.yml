@@ -574,7 +574,7 @@ jobs:
           command: |
             echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"
             sudo apt-get install -y shellcheck
-            yarn add @octokit/rest@15.10.0
+            yarn add @octokit/rest@15.18.0
             echo -e "\\x1B[36mAnalyzing shell scripts\\x1B[0m"; \
             GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" \
             GITHUB_OWNER="$CIRCLE_PROJECT_USERNAME" \
@@ -586,7 +586,7 @@ jobs:
       - run:
           name: Analyze Code
           command: |
-            echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"; yarn add @octokit/rest@15.10.0
+            echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"; yarn add @octokit/rest@15.18.0
             echo -e "\\x1B[36mAnalyzing code\\x1B[0m"; \
             GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" \
             GITHUB_OWNER="$CIRCLE_PROJECT_USERNAME" \
