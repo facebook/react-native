@@ -53,7 +53,7 @@ type Props = $ReadOnly<{|
  */
 const TouchableBounce = ((createReactClass({
   displayName: 'TouchableBounce',
-  mixins: [Touchable.Mixin, NativeMethodsMixin],
+  mixins: [Touchable.Mixin.withoutDefaultFocusAndBlur, NativeMethodsMixin],
 
   propTypes: {
     ...TouchableWithoutFeedback.propTypes,

@@ -184,14 +184,6 @@ const TouchableNativeFeedback = createReactClass({
     this._dispatchPressedStateChange(false);
   },
 
-  touchableHandleFocus: function(e: Event) {
-    this.props.onFocus && this.props.onFocus(e);
-  },
-
-  touchableHandleBlur: function(e: Event) {
-    this.props.onBlur && this.props.onBlur(e);
-  },
-
   touchableHandlePress: function(e: PressEvent) {
     this.props.onPress && this.props.onPress(e);
   },

@@ -132,7 +132,7 @@ type Props = $ReadOnly<{|
  */
 const TouchableOpacity = ((createReactClass({
   displayName: 'TouchableOpacity',
-  mixins: [Touchable.Mixin, NativeMethodsMixin],
+  mixins: [Touchable.Mixin.withoutDefaultFocusAndBlur, NativeMethodsMixin],
 
   propTypes: {
     ...TouchableWithoutFeedback.propTypes,

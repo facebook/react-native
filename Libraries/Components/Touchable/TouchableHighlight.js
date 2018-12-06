@@ -195,7 +195,7 @@ const TouchableHighlight = ((createReactClass({
     testOnly_pressed: PropTypes.bool,
   },
 
-  mixins: [NativeMethodsMixin, Touchable.Mixin],
+  mixins: [NativeMethodsMixin, Touchable.Mixin.withoutDefaultFocusAndBlur],
 
   getDefaultProps: () => DEFAULT_PROPS,
 
