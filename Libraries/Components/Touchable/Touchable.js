@@ -583,7 +583,7 @@ const TouchableMixin = {
    * visually distinguish the `VisualRect` so that the user knows that it
    * currently has the focus. Most platforms only support a single element being
    * focused at a time, in which case there may have been a previously focused
-   * element that was blurred just prior to this. This can be overridden when 
+   * element that was blurred just prior to this. This can be overridden when
    * using `Touchable.Mixin.withoutDefaultFocusAndBlur`.
    */
   touchableHandleFocus: function(e: Event) {
@@ -595,7 +595,7 @@ const TouchableMixin = {
    * visually distinguish the `VisualRect` so that the user knows that it
    * no longer has focus. Most platforms only support a single element being
    * focused at a time, in which case the focus may have moved to another.
-   * This can be overridden when using 
+   * This can be overridden when using
    * `Touchable.Mixin.withoutDefaultFocusAndBlur`.
    */
   touchableHandleBlur: function(e: Event) {
@@ -906,10 +906,10 @@ const TouchableMixin = {
 };
 
 /**
- * Provide an optional version of the mixin where `touchableHandleFocus` and 
+ * Provide an optional version of the mixin where `touchableHandleFocus` and
  * `touchableHandleBlur` can be overridden. This allows appropriate defaults to
- * be set on TV platforms, without breaking existing implementations of 
- * `Touchable`. 
+ * be set on TV platforms, without breaking existing implementations of
+ * `Touchable`.
  */
 const {touchableHandleFocus, touchableHandleBlur, ...TouchableMixinWithoutDefaultFocusAndBlur} = TouchableMixin;
 TouchableMixin.withoutDefaultFocusAndBlur = TouchableMixinWithoutDefaultFocusAndBlur;
