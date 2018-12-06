@@ -211,7 +211,7 @@ YGFloatOptional YGNode::relativePosition(
 
   YGFloatOptional trailingPosition = getTrailingPosition(axis, axisSize);
   if (!trailingPosition.isUndefined()) {
-    trailingPosition.setValue(-1 * trailingPosition.getValue());
+    trailingPosition = YGFloatOptional{-1 * trailingPosition.getValue()};
   }
   return trailingPosition;
 }

@@ -6,37 +6,33 @@
  */
 #pragma once
 
+#include <cmath>
+#include <limits>
+
 struct YGFloatOptional {
  private:
-  float value_ = 0;
-  bool isUndefined_ = true;
+  float value_ = std::numeric_limits<float>::quiet_NaN();
 
  public:
-  explicit YGFloatOptional(float value);
-  YGFloatOptional() = default;
+  explicit constexpr YGFloatOptional(float value) : value_(value) {}
+  constexpr YGFloatOptional() = default;
 
   // Program will terminate if the value of an undefined is accessed. Please
   // make sure to check if the optional is defined before calling this function.
   // To check if float optional is defined, use `isUndefined()`.
   float getValue() const;
 
-  // Sets the value of float optional, and thus isUndefined is assigned false.
-  void setValue(float val) {
-    value_ = val;
-    isUndefined_ = false;
-  }
-
   bool isUndefined() const {
-    return isUndefined_;
+    return std::isnan(value_);
   }
 
-  YGFloatOptional operator+(const YGFloatOptional& op);
-  bool operator>(const YGFloatOptional& op) const;
-  bool operator<(const YGFloatOptional& op) const;
-  bool operator>=(const YGFloatOptional& op) const;
-  bool operator<=(const YGFloatOptional& op) const;
-  bool operator==(const YGFloatOptional& op) const;
-  bool operator!=(const YGFloatOptional& op) const;
+  YGFloatOptional operator+(YGFloatOptional op) const;
+  bool operator>(YGFloatOptional op) const;
+  bool operator<(YGFloatOptional op) const;
+  bool operator>=(YGFloatOptional op) const;
+  bool operator<=(YGFloatOptional op) const;
+  bool operator==(YGFloatOptional op) const;
+  bool operator!=(YGFloatOptional op) const;
 
   bool operator==(float val) const;
   bool operator!=(float val) const;
