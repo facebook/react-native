@@ -53,8 +53,6 @@ void Instance::initializeBridge(
     m_syncCV.notify_all();
   });
 
-  // If the NativeToJsBridge ctor throws an exception, this check will
-  // likely happen before before the redbox can be rendered.
   CHECK(nativeToJsBridge_);
 }
 

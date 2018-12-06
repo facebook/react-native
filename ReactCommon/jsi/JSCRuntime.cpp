@@ -28,14 +28,6 @@ struct Lock {
   void unlock(const jsc::JSCRuntime&) const {}
 };
 
-#if __has_builtin(__builtin_expect)
-#define JSC_LIKELY(EXPR) __builtin_expect((bool)(EXPR), true)
-#define JSC_UNLIKELY(EXPR) __builtin_expect((bool)(EXPR), false)
-#else
-#define JSC_LIKELY(EXPR) (EXPR)
-#define JSC_UNLIKELY(EXPR) (EXPR)
-#endif
-
 class JSCRuntime : public jsi::Runtime {
  public:
   // Creates new context in new context group
@@ -199,31 +191,22 @@ class JSCRuntime : public jsi::Runtime {
   void checkException(JSValueRef exc, const char* msg);
   void checkException(JSValueRef res, JSValueRef exc, const char* msg);
 
-  void checkThreadId() {
-#ifndef NDEBUG
-    if (JSC_UNLIKELY(tid_ != std::this_thread::get_id())) {
-      // In the version of JSC on iOS 11, creating a JSContext on one
-      // thread and using it on another can trigger subtle and nearly
-      // impossible to debug reentrancy-related crashes in the VM (see
-      // https://bugs.webkit.org/show_bug.cgi?id=186827).  In !NDEBUG
-      // builds, check for this case and throw an exception, so it can
-      // be detected early.  This could be called anywhere, but for
-      // now, it's called only in a few less frequently used places to
-      // avoid unnecessary checks.
-      throw std::logic_error("Detected JSC thread hazard");
-    }
-#endif
-  }
-
   JSGlobalContextRef ctx_;
   std::atomic<bool> ctxInvalid_;
   std::string desc_;
 #ifndef NDEBUG
   mutable std::atomic<intptr_t> objectCounter_;
   mutable std::atomic<intptr_t> stringCounter_;
-  std::thread::id tid_;
 #endif
 };
+
+#if __has_builtin(__builtin_expect)
+#define JSC_LIKELY(EXPR) __builtin_expect((bool)(EXPR), true)
+#define JSC_UNLIKELY(EXPR) __builtin_expect((bool)(EXPR), false)
+#else
+#define JSC_LIKELY(EXPR) (EXPR)
+#define JSC_UNLIKELY(EXPR) (EXPR)
+#endif
 
 #define JSC_ASSERT(x)          \
   do {                         \
@@ -309,8 +292,7 @@ JSCRuntime::JSCRuntime(JSGlobalContextRef ctx)
 #ifndef NDEBUG
       ,
       objectCounter_(0),
-      stringCounter_(0),
-      tid_(std::this_thread::get_id())
+      stringCounter_(0)
 #endif
 {
 }
@@ -335,8 +317,6 @@ JSCRuntime::~JSCRuntime() {
 void JSCRuntime::evaluateJavaScript(
     std::unique_ptr<const jsi::Buffer> buffer,
     const std::string& sourceURL) {
-  checkThreadId();
-
   std::string tmp(
       reinterpret_cast<const char*>(buffer->data()), buffer->size());
   JSStringRef sourceRef = JSStringCreateWithUTF8CString(tmp.c_str());
@@ -355,8 +335,6 @@ void JSCRuntime::evaluateJavaScript(
 }
 
 jsi::Object JSCRuntime::global() {
-  checkThreadId();
-
   return createObject(JSContextGetGlobalObject(ctx_));
 }
 
