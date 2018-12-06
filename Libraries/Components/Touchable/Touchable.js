@@ -903,6 +903,8 @@ const TouchableMixin = {
       }
     }
   },
+
+  withoutDefaultFocusAndBlur: {},
 };
 
 /**
