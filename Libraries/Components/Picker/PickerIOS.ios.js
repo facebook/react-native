@@ -47,6 +47,7 @@ type RCTPickerIOSType = Class<
       onStartShouldSetResponder: () => boolean,
       selectedIndex: number,
       style?: ?TextStyleProp,
+      testID?: ?string,
     |}>,
   >,
 >;
