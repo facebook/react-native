@@ -117,7 +117,7 @@ public class EventDispatcher implements LifecycleEventListener {
     for (EventDispatcherListener listener : mListeners) {
       listener.onEventDispatch(event);
     }
-    
+
     synchronized (mEventsStagingLock) {
       mEventStaging.add(event);
       Systrace.startAsyncFlow(
@@ -135,6 +135,10 @@ public class EventDispatcher implements LifecycleEventListener {
       // touch event dispatch will hit this codepath, and we simply queue them so that they
       // are dispatched once ReactContext creation completes and JS app is running.
     }
+  }
+
+  public void dispatchAllEvents() {
+    mCurrentFrameCallback.maybePostFromNonUI();
   }
 
   /**
@@ -286,7 +290,7 @@ public class EventDispatcher implements LifecycleEventListener {
       try {
         moveStagedEventsToDispatchQueue();
 
-        if (mEventsToDispatchSize > 0 && !mHasDispatchScheduled) {
+        if (!mHasDispatchScheduled) {
           mHasDispatchScheduled = true;
           Systrace.startAsyncFlow(
               Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
@@ -347,26 +351,26 @@ public class EventDispatcher implements LifecycleEventListener {
         mHasDispatchScheduled = false;
         Assertions.assertNotNull(mReactEventEmitter);
         synchronized (mEventsToDispatchLock) {
-          // We avoid allocating an array and iterator, and "sorting" if we don't need to.
-          // This occurs when the size of mEventsToDispatch is zero or one.
-          if (mEventsToDispatchSize > 1) {
-            Arrays.sort(mEventsToDispatch, 0, mEventsToDispatchSize, EVENT_COMPARATOR);
-          }
-          for (int eventIdx = 0; eventIdx < mEventsToDispatchSize; eventIdx++) {
-            Event event = mEventsToDispatch[eventIdx];
-            // Event can be null if it has been coalesced into another event.
-            if (event == null) {
-              continue;
+          if (mEventsToDispatchSize > 0) {
+            // We avoid allocating an array and iterator, and "sorting" if we don't need to.
+            // This occurs when the size of mEventsToDispatch is zero or one.
+            if (mEventsToDispatchSize > 1) {
+              Arrays.sort(mEventsToDispatch, 0, mEventsToDispatchSize, EVENT_COMPARATOR);
             }
-            Systrace.endAsyncFlow(
-                Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-                event.getEventName(),
-                event.getUniqueID());
-            event.dispatch(mReactEventEmitter);
-            event.dispose();
+            for (int eventIdx = 0; eventIdx < mEventsToDispatchSize; eventIdx++) {
+              Event event = mEventsToDispatch[eventIdx];
+              // Event can be null if it has been coalesced into another event.
+              if (event == null) {
+                continue;
+              }
+              Systrace.endAsyncFlow(
+                  Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, event.getEventName(), event.getUniqueID());
+              event.dispatch(mReactEventEmitter);
+              event.dispose();
+            }
+            clearEventsToDispatch();
+            mEventCookieToLastEventIdx.clear();
           }
-          clearEventsToDispatch();
-          mEventCookieToLastEventIdx.clear();
         }
         for (BatchEventDispatchedListener listener : mPostEventDispatchListeners) {
           listener.onBatchEventDispatched();
