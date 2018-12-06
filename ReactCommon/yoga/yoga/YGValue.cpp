@@ -9,21 +9,3 @@
 const YGValue YGValueZero = {0, YGUnitPoint};
 const YGValue YGValueUndefined = {YGUndefined, YGUnitUndefined};
 const YGValue YGValueAuto = {YGUndefined, YGUnitAuto};
-
-bool operator==(const YGValue& lhs, const YGValue& rhs) {
-  if (lhs.unit != rhs.unit) {
-    return false;
-  }
-
-  switch (lhs.unit) {
-    case YGUnitUndefined:
-    case YGUnitAuto:
-      return true;
-    default:
-      return lhs.value == rhs.value;
-  }
-}
-
-bool operator!=(const YGValue& lhs, const YGValue& rhs) {
-  return !(lhs == rhs);
-}
