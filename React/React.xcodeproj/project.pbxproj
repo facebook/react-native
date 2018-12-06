@@ -846,8 +846,6 @@
 		53D1239F1FBF1EFB001B8A10 /* Yoga-internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 53CBF1851FB4FE80002CBB31 /* Yoga-internal.h */; };
 		53D123A01FBF1EFF001B8A10 /* Yoga.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53CBF1871FB4FE80002CBB31 /* Yoga.cpp */; };
 		53D123A11FBF1EFF001B8A10 /* Yoga.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53CBF1871FB4FE80002CBB31 /* Yoga.cpp */; };
-		53DEF6EA205AE5A0006A3890 /* YGFloatOptional.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53DEF6E6205AE59B006A3890 /* YGFloatOptional.cpp */; };
-		53DEF6EB205AE5A1006A3890 /* YGFloatOptional.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53DEF6E6205AE59B006A3890 /* YGFloatOptional.cpp */; };
 		53DEF6EC205AE5A6006A3890 /* YGFloatOptional.h in Headers */ = {isa = PBXBuildFile; fileRef = 53DEF6E7205AE59C006A3890 /* YGFloatOptional.h */; };
 		53DEF6ED205AE5A7006A3890 /* YGFloatOptional.h in Headers */ = {isa = PBXBuildFile; fileRef = 53DEF6E7205AE59C006A3890 /* YGFloatOptional.h */; };
 		53EC85E21FDEC75F0051B2B5 /* YGNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53EC85DF1FDEC75A0051B2B5 /* YGNode.cpp */; };
@@ -4376,7 +4374,6 @@
 			files = (
 				AC6B69E721B146B400B2B68A /* YGValue.cpp in Sources */,
 				AC8360D121B025BC00FC46B9 /* YGConfig.cpp in Sources */,
-				53DEF6EA205AE5A0006A3890 /* YGFloatOptional.cpp in Sources */,
 				53D123A01FBF1EFF001B8A10 /* Yoga.cpp in Sources */,
 				5352C5752038FF9500A3B97E /* YGStyle.cpp in Sources */,
 				53EC85E21FDEC75F0051B2B5 /* YGNode.cpp in Sources */,
@@ -4393,7 +4390,6 @@
 			files = (
 				AC6B69EA21B146E700B2B68A /* YGValue.cpp in Sources */,
 				BA0501B02109DD1800A6BBC4 /* YGConfig.cpp in Sources */,
-				53DEF6EB205AE5A1006A3890 /* YGFloatOptional.cpp in Sources */,
 				53D123A11FBF1EFF001B8A10 /* Yoga.cpp in Sources */,
 				5352C5762038FF9700A3B97E /* YGStyle.cpp in Sources */,
 				53EC85E31FDEC75F0051B2B5 /* YGNode.cpp in Sources */,
