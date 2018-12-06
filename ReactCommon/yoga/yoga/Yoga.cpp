@@ -579,16 +579,14 @@ void YGNodeCopyStyle(const YGNodeRef dstNode, const YGNodeRef srcNode) {
 }
 
 float YGNodeStyleGetFlexGrow(const YGNodeRef node) {
-  return node->getStyle().flexGrow.isUndefined()
-      ? kDefaultFlexGrow
-      : node->getStyle().flexGrow.getValue();
+  return node->getStyle().flexGrow.orElse(kDefaultFlexGrow);
 }
 
 float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
-  return node->getStyle().flexShrink.isUndefined()
-      ? (node->getConfig()->useWebDefaults ? kWebDefaultFlexShrink
-                                           : kDefaultFlexShrink)
-      : node->getStyle().flexShrink.getValue();
+  return node->getStyle().flexShrink.orElseGet([node] {
+    return node->getConfig()->useWebDefaults ? kWebDefaultFlexShrink
+                                             : kDefaultFlexShrink;
+  });
 }
 
 namespace {
@@ -856,8 +854,7 @@ void YGNodeStyleSetFlex(const YGNodeRef node, const float flex) {
 
 // TODO(T26792433): Change the API to accept YGFloatOptional.
 float YGNodeStyleGetFlex(const YGNodeRef node) {
-  return node->getStyle().flex.isUndefined() ? YGUndefined
-                                             : node->getStyle().flex.getValue();
+  return node->getStyle().flex.orElse(YGUndefined);
 }
 
 // TODO(T26792433): Change the API to accept YGFloatOptional.
@@ -959,7 +956,7 @@ float YGNodeStyleGetBorder(const YGNodeRef node, const YGEdge edge) {
 // TODO(T26792433): Change the API to accept YGFloatOptional.
 float YGNodeStyleGetAspectRatio(const YGNodeRef node) {
   const YGFloatOptional op = node->getStyle().aspectRatio;
-  return op.isUndefined() ? YGUndefined : op.getValue();
+  return op.orElse(YGUndefined);
 }
 
 // TODO(T26792433): Change the API to accept YGFloatOptional.
@@ -1229,15 +1226,15 @@ static YGFloatOptional YGNodeBoundAxisWithinMinAndMax(
         node->getStyle().maxDimensions[YGDimensionWidth], axisSize);
   }
 
-  if (!max.isUndefined() && max.getValue() >= 0 && value > max.getValue()) {
+  if (max >= YGFloatOptional{0} && YGFloatOptional{value} > max) {
     return max;
   }
 
-  if (!min.isUndefined() && min.getValue() >= 0 && value < min.getValue()) {
+  if (min >= YGFloatOptional{0} && YGFloatOptional{value} < min) {
     return min;
   }
 
-  return YGFloatOptional(value);
+  return YGFloatOptional{value};
 }
 
 // Like YGNodeBoundAxisWithinMinAndMax but also ensures that the value doesn't
@@ -1278,14 +1275,14 @@ static void YGConstrainMaxSizeForMode(
   switch (*mode) {
     case YGMeasureModeExactly:
     case YGMeasureModeAtMost:
-      *size = (maxSize.isUndefined() || *size < maxSize.getValue())
-          ? *size
-          : maxSize.getValue();
+      if (YGFloatOptional{*size} > maxSize) {
+        *size = maxSize.unwrap();
+      }
       break;
     case YGMeasureModeUndefined:
       if (!maxSize.isUndefined()) {
         *mode = YGMeasureModeAtMost;
-        *size = maxSize.getValue();
+        *size = maxSize.unwrap();
       }
       break;
   }
@@ -1395,16 +1392,15 @@ static void YGNodeComputeFlexBasisForChild(
       }
     }
 
-    if (!child->getStyle().aspectRatio.isUndefined()) {
+    auto hasAspectRatio = !child->getStyle().aspectRatio.isUndefined();
+    auto aspectRatio = child->getStyle().aspectRatio.unwrap();
+    if (hasAspectRatio) {
       if (!isMainAxisRow && childWidthMeasureMode == YGMeasureModeExactly) {
-        childHeight = marginColumn +
-            (childWidth - marginRow) / child->getStyle().aspectRatio.getValue();
+        childHeight = marginColumn + (childWidth - marginRow) / aspectRatio;
         childHeightMeasureMode = YGMeasureModeExactly;
       } else if (
           isMainAxisRow && childHeightMeasureMode == YGMeasureModeExactly) {
-        childWidth = marginRow +
-            (childHeight - marginColumn) *
-                child->getStyle().aspectRatio.getValue();
+        childWidth = marginRow + (childHeight - marginColumn) * aspectRatio;
         childWidthMeasureMode = YGMeasureModeExactly;
       }
     }
@@ -1422,9 +1418,8 @@ static void YGNodeComputeFlexBasisForChild(
         childWidthStretch) {
       childWidth = width;
       childWidthMeasureMode = YGMeasureModeExactly;
-      if (!child->getStyle().aspectRatio.isUndefined()) {
-        childHeight =
-            (childWidth - marginRow) / child->getStyle().aspectRatio.getValue();
+      if (hasAspectRatio) {
+        childHeight = (childWidth - marginRow) / aspectRatio;
         childHeightMeasureMode = YGMeasureModeExactly;
       }
     }
@@ -1439,9 +1434,8 @@ static void YGNodeComputeFlexBasisForChild(
       childHeight = height;
       childHeightMeasureMode = YGMeasureModeExactly;
 
-      if (!child->getStyle().aspectRatio.isUndefined()) {
-        childWidth = (childHeight - marginColumn) *
-            child->getStyle().aspectRatio.getValue();
+      if (hasAspectRatio) {
+        childWidth = (childHeight - marginColumn) * aspectRatio;
         childWidthMeasureMode = YGMeasureModeExactly;
       }
     }
@@ -1553,13 +1547,11 @@ static void YGNodeAbsoluteLayoutChild(
   // flexible.
   if (YGFloatIsUndefined(childWidth) ^ YGFloatIsUndefined(childHeight)) {
     if (!child->getStyle().aspectRatio.isUndefined()) {
+      auto aspectRatio = child->getStyle().aspectRatio.unwrap();
       if (YGFloatIsUndefined(childWidth)) {
-        childWidth = marginRow +
-            (childHeight - marginColumn) *
-                child->getStyle().aspectRatio.getValue();
+        childWidth = marginRow + (childHeight - marginColumn) * aspectRatio;
       } else if (YGFloatIsUndefined(childHeight)) {
-        childHeight = marginColumn +
-            (childWidth - marginRow) / child->getStyle().aspectRatio.getValue();
+        childHeight = marginColumn + (childWidth - marginRow) / aspectRatio;
       }
     }
   }
@@ -1885,16 +1877,15 @@ static float YGNodeCalculateAvailableInnerDim(
     // constraints
     const YGFloatOptional minDimensionOptional =
         YGResolveValue(node->getStyle().minDimensions[dimension], ownerDim);
-    const float minInnerDim = minDimensionOptional.isUndefined()
-        ? 0.0f
-        : minDimensionOptional.getValue() - paddingAndBorder;
+    const float minInnerDim =
+        (minDimensionOptional - YGFloatOptional{paddingAndBorder}).orElse(0.0f);
 
     const YGFloatOptional maxDimensionOptional =
         YGResolveValue(node->getStyle().maxDimensions[dimension], ownerDim);
 
-    const float maxInnerDim = maxDimensionOptional.isUndefined()
-        ? FLT_MAX
-        : maxDimensionOptional.getValue() - paddingAndBorder;
+    const float maxInnerDim =
+        (maxDimensionOptional - YGFloatOptional{paddingAndBorder})
+            .orElse(FLT_MAX);
     availableInnerDim =
         YGFloatMax(YGFloatMin(availableInnerDim, maxInnerDim), minInnerDim);
   }
@@ -2162,9 +2153,9 @@ static float YGDistributeFreeSpaceSecondPass(
 
     if (!currentRelativeChild->getStyle().aspectRatio.isUndefined()) {
       childCrossSize = isMainAxisRow ? (childMainSize - marginMain) /
-              currentRelativeChild->getStyle().aspectRatio.getValue()
+              currentRelativeChild->getStyle().aspectRatio.unwrap()
                                      : (childMainSize - marginMain) *
-              currentRelativeChild->getStyle().aspectRatio.getValue();
+              currentRelativeChild->getStyle().aspectRatio.unwrap();
       childCrossMeasureMode = YGMeasureModeExactly;
 
       childCrossSize += marginCross;
@@ -3131,9 +3122,9 @@ static void YGNodelayoutImpl(
                   ? ((YGUnwrapFloatOptional(child->getMarginForAxis(
                           crossAxis, availableInnerWidth)) +
                       (isMainAxisRow ? childMainSize /
-                               child->getStyle().aspectRatio.getValue()
+                               child->getStyle().aspectRatio.unwrap()
                                      : childMainSize *
-                               child->getStyle().aspectRatio.getValue())))
+                               child->getStyle().aspectRatio.unwrap())))
                   : collectedFlexItemsValues.crossDim;
 
               childMainSize += YGUnwrapFloatOptional(

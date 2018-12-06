@@ -40,7 +40,7 @@ inline Float floatFromYogaOptionalFloat(YGFloatOptional value) {
     return kFloatUndefined;
   }
 
-  return floatFromYogaFloat(value.getValue());
+  return floatFromYogaFloat(value.unwrap());
 }
 
 inline YGFloatOptional yogaOptionalFloatFromFloat(Float value) {
@@ -580,7 +580,7 @@ inline std::string toString(const YGFloatOptional &value) {
     return "undefined";
   }
 
-  return folly::to<std::string>(floatFromYogaFloat(value.getValue()));
+  return folly::to<std::string>(floatFromYogaFloat(value.unwrap()));
 }
 
 inline std::string toString(

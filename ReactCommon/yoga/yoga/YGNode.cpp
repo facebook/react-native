@@ -209,11 +209,7 @@ YGFloatOptional YGNode::relativePosition(
     return getLeadingPosition(axis, axisSize);
   }
 
-  YGFloatOptional trailingPosition = getTrailingPosition(axis, axisSize);
-  if (!trailingPosition.isUndefined()) {
-    trailingPosition = YGFloatOptional{-1 * trailingPosition.getValue()};
-  }
-  return trailingPosition;
+  return -getTrailingPosition(axis, axisSize);
 }
 
 void YGNode::setPosition(
@@ -304,7 +300,7 @@ YGValue YGNode::resolveFlexBasisPtr() const {
   if (flexBasis.unit != YGUnitAuto && flexBasis.unit != YGUnitUndefined) {
     return flexBasis;
   }
-  if (!style_.flex.isUndefined() && style_.flex.getValue() > 0.0f) {
+  if (style_.flex > YGFloatOptional{0.0f}) {
     return config_->useWebDefaults ? YGValueAuto : YGValueZero;
   }
   return YGValueAuto;
@@ -394,27 +390,23 @@ float YGNode::resolveFlexGrow() {
   if (owner_ == nullptr) {
     return 0.0;
   }
-  if (!style_.flexGrow.isUndefined()) {
-    return style_.flexGrow.getValue();
-  }
-  if (!style_.flex.isUndefined() && style_.flex.getValue() > 0.0f) {
-    return style_.flex.getValue();
-  }
-  return kDefaultFlexGrow;
+
+  return style_.flexGrow.orElseGet(
+      [this] { return style_.flex.orElse(kDefaultFlexGrow); });
 }
 
 float YGNode::resolveFlexShrink() {
   if (owner_ == nullptr) {
     return 0.0;
   }
-  if (!style_.flexShrink.isUndefined()) {
-    return style_.flexShrink.getValue();
-  }
-  if (!config_->useWebDefaults && !style_.flex.isUndefined() &&
-      style_.flex.getValue() < 0.0f) {
-    return -style_.flex.getValue();
-  }
-  return config_->useWebDefaults ? kWebDefaultFlexShrink : kDefaultFlexShrink;
+  return style_.flexShrink.orElseGet([this] {
+    if (style_.flex < YGFloatOptional{0.0f} && !config_->useWebDefaults) {
+      return -style_.flex.unwrap();
+    } else {
+      return config_->useWebDefaults ? kWebDefaultFlexShrink
+                                     : kDefaultFlexShrink;
+    }
+  });
 }
 
 bool YGNode::isNodeFlexible() {
@@ -455,9 +447,7 @@ YGFloatOptional YGNode::getLeadingPadding(
     const float widthSize) const {
   const YGFloatOptional& paddingEdgeStart =
       YGResolveValue(style_.padding[YGEdgeStart], widthSize);
-  if (YGFlexDirectionIsRow(axis) &&
-      style_.padding[YGEdgeStart].unit != YGUnitUndefined &&
-      !paddingEdgeStart.isUndefined() && paddingEdgeStart.getValue() >= 0.0f) {
+  if (YGFlexDirectionIsRow(axis) && paddingEdgeStart >= YGFloatOptional{0.0f}) {
     return paddingEdgeStart;
   }
 
@@ -470,11 +460,10 @@ YGFloatOptional YGNode::getLeadingPadding(
 YGFloatOptional YGNode::getTrailingPadding(
     const YGFlexDirection axis,
     const float widthSize) const {
-  if (YGFlexDirectionIsRow(axis) &&
-      style_.padding[YGEdgeEnd].unit != YGUnitUndefined &&
-      !YGResolveValue(style_.padding[YGEdgeEnd], widthSize).isUndefined() &&
-      YGResolveValue(style_.padding[YGEdgeEnd], widthSize).getValue() >= 0.0f) {
-    return YGResolveValue(style_.padding[YGEdgeEnd], widthSize);
+  const YGFloatOptional& paddingEdgeEnd =
+      YGResolveValue(style_.padding[YGEdgeEnd], widthSize);
+  if (YGFlexDirectionIsRow(axis) && paddingEdgeEnd >= YGFloatOptional{0.0f}) {
+    return paddingEdgeEnd;
   }
 
   YGFloatOptional resolvedValue = YGResolveValue(

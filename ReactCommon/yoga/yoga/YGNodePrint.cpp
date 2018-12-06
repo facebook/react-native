@@ -43,7 +43,7 @@ static void appendFloatOptionalIfDefined(
     const string key,
     const YGFloatOptional num) {
   if (!num.isUndefined()) {
-    appendFormatedString(base, "%s: %g; ", key.c_str(), num.getValue());
+    appendFormatedString(base, "%s: %g; ", key.c_str(), num.unwrap());
   }
 }
 
@@ -71,7 +71,6 @@ appendNumberIfNotAuto(string* base, const string& key, const YGValue number) {
 
 static void
 appendNumberIfNotZero(string* base, const string& str, const YGValue number) {
-
   if (number.unit == YGUnitAuto) {
     base->append(str + ": auto; ");
   } else if (!YGFloatsEqual(number.value, 0)) {

@@ -12,15 +12,6 @@
 
 using namespace facebook;
 
-float YGFloatOptional::getValue() const {
-  if (isUndefined()) {
-    // Abort, accessing a value of an undefined float optional
-    std::cerr << "Tried to get value of an undefined YGFloatOptional\n";
-    std::exit(EXIT_FAILURE);
-  }
-  return value_;
-}
-
 bool YGFloatOptional::operator==(YGFloatOptional op) const {
   return value_ == op.value_ || (isUndefined() && op.isUndefined());
 }
@@ -37,8 +28,16 @@ bool YGFloatOptional::operator!=(float val) const {
   return !(*this == val);
 }
 
+YGFloatOptional YGFloatOptional::operator-() const {
+  return YGFloatOptional{-value_};
+}
+
 YGFloatOptional YGFloatOptional::operator+(YGFloatOptional op) const {
   return YGFloatOptional{value_ + op.value_};
+}
+
+YGFloatOptional YGFloatOptional::operator-(YGFloatOptional op) const {
+  return YGFloatOptional{value_ - op.value_};
 }
 
 bool YGFloatOptional::operator>(YGFloatOptional op) const {

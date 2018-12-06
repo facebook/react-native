@@ -6,7 +6,6 @@
  */
 #pragma once
 
-#include <cmath>
 #include <limits>
 
 struct YGFloatOptional {
@@ -17,16 +16,28 @@ struct YGFloatOptional {
   explicit constexpr YGFloatOptional(float value) : value_(value) {}
   constexpr YGFloatOptional() = default;
 
-  // Program will terminate if the value of an undefined is accessed. Please
-  // make sure to check if the optional is defined before calling this function.
-  // To check if float optional is defined, use `isUndefined()`.
-  float getValue() const;
-
-  bool isUndefined() const {
-    return std::isnan(value_);
+  // returns the wrapped value, or a value x with YGIsUndefined(x) == true
+  float unwrap() const {
+    return value_;
   }
 
+  constexpr bool isUndefined() const {
+    // std::isnan is not constexpr
+    return !(value_ == value_);
+  }
+
+  constexpr float orElse(float other) const {
+    return isUndefined() ? other : value_;
+  }
+
+  template <typename Factory>
+  constexpr float orElseGet(Factory&& f) const {
+    return isUndefined() ? f() : value_;
+  }
+
+  YGFloatOptional operator-() const;
   YGFloatOptional operator+(YGFloatOptional op) const;
+  YGFloatOptional operator-(YGFloatOptional op) const;
   bool operator>(YGFloatOptional op) const;
   bool operator<(YGFloatOptional op) const;
   bool operator>=(YGFloatOptional op) const;
