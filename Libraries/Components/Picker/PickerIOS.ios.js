@@ -114,6 +114,7 @@ class PickerIOS extends React.Component<Props, State> {
           ref={picker => {
             this._picker = picker;
           }}
+          testID={this.props.testID}
           style={[styles.pickerIOS, this.props.itemStyle]}
           items={this.state.items}
           selectedIndex={this.state.selectedIndex}

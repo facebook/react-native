@@ -148,6 +148,7 @@ class DatePickerIOS extends React.Component<Props> {
     return (
       <View style={props.style}>
         <RCTDatePickerIOS
+          testID={props.testID}
           ref={picker => {
             this._picker = picker;
           }}

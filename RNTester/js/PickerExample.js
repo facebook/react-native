@@ -38,6 +38,7 @@ class PickerExample extends React.Component<{}, $FlowFixMeState> {
       <RNTesterPage title="<Picker>">
         <RNTesterBlock title="Basic Picker">
           <Picker
+            testID="basic-picker"
             style={styles.picker}
             selectedValue={this.state.selected1}
             onValueChange={this.onValueChange.bind(this, 'selected1')}>
