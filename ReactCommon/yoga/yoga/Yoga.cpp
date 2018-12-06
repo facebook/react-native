@@ -1057,7 +1057,7 @@ static void YGNodePrintInternal(
     const YGNodeRef node,
     const YGPrintOptions options) {
   std::string str;
-  facebook::yoga::YGNodeToString(&str, node, options, 0);
+  facebook::yoga::YGNodeToString(str, node, options, 0);
   YGLog(node, YGLogLevelDebug, str.c_str());
 }
 
