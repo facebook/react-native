@@ -60,8 +60,8 @@ bool YGFloatsEqual(const float a, const float b);
 float YGFloatMax(const float a, const float b);
 
 YGFloatOptional YGFloatOptionalMax(
-    const YGFloatOptional& op1,
-    const YGFloatOptional& op2);
+    const YGFloatOptional op1,
+    const YGFloatOptional op2);
 
 float YGFloatMin(const float a, const float b);
 
@@ -85,7 +85,7 @@ float YGFloatSanitize(const float val);
 // This function unwraps optional and returns YGUndefined if not defined or
 // op.value otherwise
 // TODO: Get rid off this function
-float YGUnwrapFloatOptional(const YGFloatOptional& op);
+float YGUnwrapFloatOptional(const YGFloatOptional op);
 
 YGFlexDirection YGFlexDirectionCross(
     const YGFlexDirection flexDirection,
