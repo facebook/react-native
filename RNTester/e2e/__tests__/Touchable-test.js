@@ -29,4 +29,9 @@ describe('Touchable', () => {
       element(by.text('TouchableWithoutFeedback onPress')),
     ).toBeVisible();
   });
+
+  it('Text should be tappable', async () => {
+    await element(by.text('Text has built-in onPress handling')).tap();
+    await expect(element(by.text('text onPress'))).toBeVisible();
+  });
 });
