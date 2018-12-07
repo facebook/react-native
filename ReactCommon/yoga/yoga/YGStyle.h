@@ -30,16 +30,16 @@ constexpr std::array<YGValue, 2> kYGDefaultDimensionValuesUnit = {
 struct YGStyle {
   using Dimensions = std::array<YGValue, 2>;
 
-  YGDirection direction : 2;
-  YGFlexDirection flexDirection : 2;
-  YGJustify justifyContent : 3;
-  YGAlign alignContent : 3;
-  YGAlign alignItems : 3;
-  YGAlign alignSelf : 3;
-  YGPositionType positionType : 1;
-  YGWrap flexWrap : 2;
-  YGOverflow overflow : 2;
-  YGDisplay display : 1;
+  YGDirection direction = YGDirectionInherit;
+  YGFlexDirection flexDirection = YGFlexDirectionColumn;
+  YGJustify justifyContent = YGJustifyFlexStart;
+  YGAlign alignContent = YGAlignFlexStart;
+  YGAlign alignItems = YGAlignStretch;
+  YGAlign alignSelf = YGAlignAuto;
+  YGPositionType positionType = YGPositionTypeRelative;
+  YGWrap flexWrap = YGWrapNoWrap;
+  YGOverflow overflow = YGOverflowVisible;
+  YGDisplay display = YGDisplayFlex;
   YGFloatOptional flex = {};
   YGFloatOptional flexGrow = {};
   YGFloatOptional flexShrink = {};
@@ -54,17 +54,7 @@ struct YGStyle {
   // Yoga specific properties, not compatible with flexbox specification
   YGFloatOptional aspectRatio = {};
 
-  YGStyle()
-      : direction(YGDirectionInherit),
-        flexDirection(YGFlexDirectionColumn),
-        justifyContent(YGJustifyFlexStart),
-        alignContent(YGAlignFlexStart),
-        alignItems(YGAlignStretch),
-        alignSelf(YGAlignAuto),
-        positionType(YGPositionTypeRelative),
-        flexWrap(YGWrapNoWrap),
-        overflow(YGOverflowVisible),
-        display(YGDisplayFlex) {}
+  YGStyle() = default;
   bool operator==(const YGStyle& style);
 
   bool operator!=(YGStyle style) {

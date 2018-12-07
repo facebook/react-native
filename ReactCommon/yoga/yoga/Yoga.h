@@ -17,9 +17,17 @@
 #include <stdbool.h>
 #endif
 
+/** Large positive number signifies that the property(float) is undefined.
+ *Earlier we used to have YGundefined as NAN, but the downside of this is that
+ *we can't use -ffast-math compiler flag as it assumes all floating-point
+ *calculation involve and result into finite numbers. For more information
+ *regarding -ffast-math compiler flag in clang, have a look at
+ *https://clang.llvm.org/docs/UsersManual.html#cmdoption-ffast-math
+ **/
+#define YGUndefined 10E20F
+
 #include "YGEnums.h"
 #include "YGMacros.h"
-#include "YGValue.h"
 
 YG_EXTERN_C_BEGIN
 
@@ -27,6 +35,25 @@ typedef struct YGSize {
   float width;
   float height;
 } YGSize;
+
+typedef struct YGValue {
+  float value;
+  YGUnit unit;
+} YGValue;
+
+extern const YGValue YGValueUndefined;
+extern const YGValue YGValueAuto;
+
+#ifdef __cplusplus
+
+YG_EXTERN_C_END
+
+extern bool operator==(const YGValue& lhs, const YGValue& rhs);
+extern bool operator!=(const YGValue& lhs, const YGValue& rhs);
+
+YG_EXTERN_C_BEGIN
+
+#endif
 
 typedef struct YGConfig* YGConfigRef;
 

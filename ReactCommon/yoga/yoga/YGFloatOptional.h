@@ -6,68 +6,38 @@
  */
 #pragma once
 
-#include <limits>
-#include "Yoga-internal.h"
-
 struct YGFloatOptional {
  private:
-  float value_ = std::numeric_limits<float>::quiet_NaN();
+  float value_ = 0;
+  bool isUndefined_ = true;
 
  public:
-  explicit constexpr YGFloatOptional(float value) : value_(value) {}
-  constexpr YGFloatOptional() = default;
+  explicit YGFloatOptional(float value);
+  YGFloatOptional() = default;
 
-  // returns the wrapped value, or a value x with YGIsUndefined(x) == true
-  constexpr float unwrap() const {
-    return value_;
-  }
+  // Program will terminate if the value of an undefined is accessed. Please
+  // make sure to check if the optional is defined before calling this function.
+  // To check if float optional is defined, use `isUndefined()`.
+  float getValue() const;
 
-  constexpr bool isUndefined() const {
-    // std::isnan is not constexpr
-    return !(value_ == value_);
-  }
-
-  constexpr float orElse(float other) const {
-    return isUndefined() ? other : value_;
+  // Sets the value of float optional, and thus isUndefined is assigned false.
+  void setValue(float val) {
+    value_ = val;
+    isUndefined_ = false;
   }
 
-  template <typename Factory>
-  constexpr float orElseGet(Factory&& f) const {
-    return isUndefined() ? f() : value_;
+  bool isUndefined() const {
+    return isUndefined_;
   }
 
-  YGFloatOptional operator-() const {
-    return YGFloatOptional{-value_};
-  }
-  YGFloatOptional operator+(YGFloatOptional op) const {
-    return YGFloatOptional{value_ + op.value_};
-  }
-  YGFloatOptional operator-(YGFloatOptional op) const {
-    return YGFloatOptional{value_ - op.value_};
-  }
-  bool operator>(YGFloatOptional op) const {
-    return value_ > op.value_;
-  }
-  bool operator<(YGFloatOptional op) const {
-    return value_ < op.value_;
-  }
-  bool operator>=(YGFloatOptional op) const {
-    return *this > op || *this == op;
-  }
-  bool operator<=(YGFloatOptional op) const {
-    return *this < op || *this == op;
-  }
-  bool operator==(YGFloatOptional op) const {
-    return value_ == op.value_ || (isUndefined() && op.isUndefined());
-  }
-  bool operator!=(YGFloatOptional op) const {
-    return !(*this == op);
-  }
+  YGFloatOptional operator+(const YGFloatOptional& op);
+  bool operator>(const YGFloatOptional& op) const;
+  bool operator<(const YGFloatOptional& op) const;
+  bool operator>=(const YGFloatOptional& op) const;
+  bool operator<=(const YGFloatOptional& op) const;
+  bool operator==(const YGFloatOptional& op) const;
+  bool operator!=(const YGFloatOptional& op) const;
 
-  bool operator==(float val) const {
-    return value_ == val || (isUndefined() && yoga::isUndefined(val));
-  }
-  bool operator!=(float val) const {
-    return !(*this == val);
-  }
+  bool operator==(float val) const;
+  bool operator!=(float val) const;
 };

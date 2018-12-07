@@ -846,6 +846,8 @@
 		53D1239F1FBF1EFB001B8A10 /* Yoga-internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 53CBF1851FB4FE80002CBB31 /* Yoga-internal.h */; };
 		53D123A01FBF1EFF001B8A10 /* Yoga.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53CBF1871FB4FE80002CBB31 /* Yoga.cpp */; };
 		53D123A11FBF1EFF001B8A10 /* Yoga.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53CBF1871FB4FE80002CBB31 /* Yoga.cpp */; };
+		53DEF6EA205AE5A0006A3890 /* YGFloatOptional.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53DEF6E6205AE59B006A3890 /* YGFloatOptional.cpp */; };
+		53DEF6EB205AE5A1006A3890 /* YGFloatOptional.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53DEF6E6205AE59B006A3890 /* YGFloatOptional.cpp */; };
 		53DEF6EC205AE5A6006A3890 /* YGFloatOptional.h in Headers */ = {isa = PBXBuildFile; fileRef = 53DEF6E7205AE59C006A3890 /* YGFloatOptional.h */; };
 		53DEF6ED205AE5A7006A3890 /* YGFloatOptional.h in Headers */ = {isa = PBXBuildFile; fileRef = 53DEF6E7205AE59C006A3890 /* YGFloatOptional.h */; };
 		53EC85E21FDEC75F0051B2B5 /* YGNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53EC85DF1FDEC75A0051B2B5 /* YGNode.cpp */; };
@@ -1067,14 +1069,6 @@
 		A2440AA21DF8D854006E7BFC /* RCTReloadCommand.h in Headers */ = {isa = PBXBuildFile; fileRef = A2440AA01DF8D854006E7BFC /* RCTReloadCommand.h */; };
 		A2440AA31DF8D854006E7BFC /* RCTReloadCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = A2440AA11DF8D854006E7BFC /* RCTReloadCommand.m */; };
 		A2440AA41DF8D865006E7BFC /* RCTReloadCommand.h in Headers */ = {isa = PBXBuildFile; fileRef = A2440AA01DF8D854006E7BFC /* RCTReloadCommand.h */; };
-		AC6B69E321B1467C00B2B68A /* YGValue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC6B69E121B1467C00B2B68A /* YGValue.cpp */; };
-		AC6B69E421B1467C00B2B68A /* YGValue.h in Headers */ = {isa = PBXBuildFile; fileRef = AC6B69E221B1467C00B2B68A /* YGValue.h */; };
-		AC6B69E521B1469A00B2B68A /* YGValue.h in Headers */ = {isa = PBXBuildFile; fileRef = AC6B69E221B1467C00B2B68A /* YGValue.h */; };
-		AC6B69E621B146A500B2B68A /* YGValue.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = AC6B69E221B1467C00B2B68A /* YGValue.h */; };
-		AC6B69E721B146B400B2B68A /* YGValue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC6B69E121B1467C00B2B68A /* YGValue.cpp */; };
-		AC6B69E821B146C500B2B68A /* YGValue.h in Headers */ = {isa = PBXBuildFile; fileRef = AC6B69E221B1467C00B2B68A /* YGValue.h */; };
-		AC6B69E921B146DB00B2B68A /* YGValue.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = AC6B69E221B1467C00B2B68A /* YGValue.h */; };
-		AC6B69EA21B146E700B2B68A /* YGValue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC6B69E121B1467C00B2B68A /* YGValue.cpp */; };
 		AC70D2E91DE489E4002E6351 /* RCTJavaScriptLoader.mm in Sources */ = {isa = PBXBuildFile; fileRef = AC70D2E81DE489E4002E6351 /* RCTJavaScriptLoader.mm */; };
 		AC71763521B0274000C06877 /* YGConfig.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5CE2080120772F7C009A43B3 /* YGConfig.h */; };
 		AC71763621B0274A00C06877 /* YGMarker.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = AC8360CC21B0256A00FC46B9 /* YGMarker.h */; };
@@ -1499,7 +1493,6 @@
 			dstPath = include/yoga;
 			dstSubfolderSpec = 16;
 			files = (
-				AC6B69E921B146DB00B2B68A /* YGValue.h in Copy Headers */,
 				AC71763621B0274A00C06877 /* YGMarker.h in Copy Headers */,
 				AC71763521B0274000C06877 /* YGConfig.h in Copy Headers */,
 				3DFE0D1A1DF8575800459392 /* YGEnums.h in Copy Headers */,
@@ -1700,7 +1693,6 @@
 			dstPath = include/yoga;
 			dstSubfolderSpec = 16;
 			files = (
-				AC6B69E621B146A500B2B68A /* YGValue.h in Copy Headers */,
 				AC8360D321B0263000FC46B9 /* YGMarker.h in Copy Headers */,
 				3DE4F8681DF85D8E00B9E5A0 /* YGEnums.h in Copy Headers */,
 				3DE4F8691DF85D8E00B9E5A0 /* YGMacros.h in Copy Headers */,
@@ -2222,8 +2214,6 @@
 		91076A881F743AB00081B4FA /* RCTModalManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTModalManager.h; sourceTree = "<group>"; };
 		A2440AA01DF8D854006E7BFC /* RCTReloadCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTReloadCommand.h; sourceTree = "<group>"; };
 		A2440AA11DF8D854006E7BFC /* RCTReloadCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTReloadCommand.m; sourceTree = "<group>"; };
-		AC6B69E121B1467C00B2B68A /* YGValue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = YGValue.cpp; sourceTree = "<group>"; };
-		AC6B69E221B1467C00B2B68A /* YGValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YGValue.h; sourceTree = "<group>"; };
 		AC70D2E81DE489E4002E6351 /* RCTJavaScriptLoader.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTJavaScriptLoader.mm; sourceTree = "<group>"; };
 		AC70D2EB1DE48A22002E6351 /* JSBundleType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSBundleType.cpp; sourceTree = "<group>"; };
 		AC8360CC21B0256A00FC46B9 /* YGMarker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YGMarker.h; sourceTree = "<group>"; };
@@ -2349,8 +2339,6 @@
 		130A77021DF767AF001F9587 /* yoga */ = {
 			isa = PBXGroup;
 			children = (
-				AC6B69E121B1467C00B2B68A /* YGValue.cpp */,
-				AC6B69E221B1467C00B2B68A /* YGValue.h */,
 				AC8360CC21B0256A00FC46B9 /* YGMarker.h */,
 				5CE2080020772F7C009A43B3 /* YGConfig.cpp */,
 				5CE2080120772F7C009A43B3 /* YGConfig.h */,
@@ -3278,7 +3266,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AC6B69E821B146C500B2B68A /* YGValue.h in Headers */,
 				AC8360D221B025EF00FC46B9 /* YGConfig.h in Headers */,
 				AC8360CE21B0256A00FC46B9 /* YGMarker.h in Headers */,
 				5352C5782038FF9B00A3B97E /* YGStyle.h in Headers */,
@@ -3342,7 +3329,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AC6B69E521B1469A00B2B68A /* YGValue.h in Headers */,
 				AC8360CF21B0258B00FC46B9 /* YGConfig.h in Headers */,
 				AC8360CD21B0256A00FC46B9 /* YGMarker.h in Headers */,
 				5352C5772038FF9A00A3B97E /* YGStyle.h in Headers */,
@@ -3481,7 +3467,6 @@
 				3D80DA541DF820620028D040 /* RCTI18nUtil.h in Headers */,
 				3D80DA551DF820620028D040 /* RCTKeyboardObserver.h in Headers */,
 				3D80DA561DF820620028D040 /* RCTRedBox.h in Headers */,
-				AC6B69E421B1467C00B2B68A /* YGValue.h in Headers */,
 				3D80DA571DF820620028D040 /* RCTSourceCode.h in Headers */,
 				EBF21BBC1FC498270052F4D5 /* InspectorInterfaces.h in Headers */,
 				3D80DA581DF820620028D040 /* RCTStatusBarManager.h in Headers */,
@@ -4372,8 +4357,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AC6B69E721B146B400B2B68A /* YGValue.cpp in Sources */,
 				AC8360D121B025BC00FC46B9 /* YGConfig.cpp in Sources */,
+				53DEF6EA205AE5A0006A3890 /* YGFloatOptional.cpp in Sources */,
 				53D123A01FBF1EFF001B8A10 /* Yoga.cpp in Sources */,
 				5352C5752038FF9500A3B97E /* YGStyle.cpp in Sources */,
 				53EC85E21FDEC75F0051B2B5 /* YGNode.cpp in Sources */,
@@ -4388,8 +4373,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AC6B69EA21B146E700B2B68A /* YGValue.cpp in Sources */,
 				BA0501B02109DD1800A6BBC4 /* YGConfig.cpp in Sources */,
+				53DEF6EB205AE5A1006A3890 /* YGFloatOptional.cpp in Sources */,
 				53D123A11FBF1EFF001B8A10 /* Yoga.cpp in Sources */,
 				5352C5762038FF9700A3B97E /* YGStyle.cpp in Sources */,
 				53EC85E31FDEC75F0051B2B5 /* YGNode.cpp in Sources */,
@@ -4486,7 +4471,6 @@
 				13134C8E1E296B2A00B9F3CB /* RCTMessageThread.mm in Sources */,
 				599FAA381FB274980058CCF6 /* RCTSurface.mm in Sources */,
 				59D031EF1F8353D3008361F0 /* RCTSafeAreaShadowView.m in Sources */,
-				AC6B69E321B1467C00B2B68A /* YGValue.cpp in Sources */,
 				3D1E68DB1CABD13900DD7465 /* RCTDisplayLink.m in Sources */,
 				14F3620E1AABD06A001CE568 /* RCTSwitchManager.m in Sources */,
 				13B080201A69489C00A75B9A /* RCTActivityIndicatorViewManager.m in Sources */,

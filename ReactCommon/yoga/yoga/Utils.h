@@ -57,12 +57,22 @@ bool YGValueEqual(const YGValue a, const YGValue b);
 // difference between two floats is less than 0.0001f or both are undefined.
 bool YGFloatsEqual(const float a, const float b);
 
+// We need custom max function, since we want that, if one argument is
+// YGUndefined then the max funtion should return the other argument as the max
+// value. We wouldn't have needed a custom max function if YGUndefined was NAN
+// as fmax has the same behaviour, but with NAN we cannot use `-ffast-math`
+// compiler flag.
 float YGFloatMax(const float a, const float b);
 
 YGFloatOptional YGFloatOptionalMax(
-    const YGFloatOptional op1,
-    const YGFloatOptional op2);
+    const YGFloatOptional& op1,
+    const YGFloatOptional& op2);
 
+// We need custom min function, since we want that, if one argument is
+// YGUndefined then the min funtion should return the other argument as the min
+// value. We wouldn't have needed a custom min function if YGUndefined was NAN
+// as fmin has the same behaviour, but with NAN we cannot use `-ffast-math`
+// compiler flag.
 float YGFloatMin(const float a, const float b);
 
 // This custom float comparision function compares the array of float with
@@ -82,6 +92,11 @@ bool YGFloatArrayEqual(
 // This function returns 0 if YGFloatIsUndefined(val) is true and val otherwise
 float YGFloatSanitize(const float val);
 
+// This function unwraps optional and returns YGUndefined if not defined or
+// op.value otherwise
+// TODO: Get rid off this function
+float YGUnwrapFloatOptional(const YGFloatOptional& op);
+
 YGFlexDirection YGFlexDirectionCross(
     const YGFlexDirection flexDirection,
     const YGDirection direction);
@@ -91,17 +106,18 @@ inline bool YGFlexDirectionIsRow(const YGFlexDirection flexDirection) {
       flexDirection == YGFlexDirectionRowReverse;
 }
 
-inline YGFloatOptional YGResolveValue(
-    const YGValue value,
-    const float ownerSize) {
+inline YGFloatOptional YGResolveValue(const YGValue value, const float ownerSize) {
   switch (value.unit) {
+    case YGUnitUndefined:
+    case YGUnitAuto:
+      return YGFloatOptional();
     case YGUnitPoint:
-      return YGFloatOptional{value.value};
+      return YGFloatOptional(value.value);
     case YGUnitPercent:
-      return YGFloatOptional{value.value * ownerSize * 0.01f};
-    default:
-      return YGFloatOptional{};
+      return YGFloatOptional(
+          static_cast<float>(value.value * ownerSize * 0.01));
   }
+  return YGFloatOptional();
 }
 
 inline bool YGFlexDirectionIsColumn(const YGFlexDirection flexDirection) {
@@ -123,7 +139,7 @@ inline YGFlexDirection YGResolveFlexDirection(
   return flexDirection;
 }
 
-inline YGFloatOptional YGResolveValueMargin(
+static inline YGFloatOptional YGResolveValueMargin(
     const YGValue value,
     const float ownerSize) {
   return value.unit == YGUnitAuto ? YGFloatOptional(0)
