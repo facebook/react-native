@@ -120,6 +120,7 @@ AppRegistry.registerComponent(
 <ul>
 <li><a href="/react-native/docs/next/textinput#allowfontscaling"><code>allowFontScaling</code></a></li>
 <li><a href="/react-native/docs/next/textinput#autocapitalize"><code>autoCapitalize</code></a></li>
+<li><a href="/react-native/docs/next/textinput#autocomplete"><code>autoCorrect</code></a></li>
 <li><a href="/react-native/docs/next/textinput#autocorrect"><code>autoCorrect</code></a></li>
 <li><a href="/react-native/docs/next/textinput#autofocus"><code>autoFocus</code></a></li>
 <li><a href="/react-native/docs/next/textinput#bluronsubmit"><code>blurOnSubmit</code></a></li>
@@ -200,6 +201,34 @@ AppRegistry.registerComponent(
 </thead>
 <tbody>
 <tr><td>enum('none', 'sentences', 'words', 'characters')</td><td>No</td></tr>
+</tbody>
+</table>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="autocomplete"></a><a href="#autocomplete" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>autoComplete</code></h3>
+<p>Specifies autocomplete hints for the system, so it can provide autofill.
+On Android, the system will aways attempt to offer autofill by using heuristics to identify the type of content. To disable autocomplete, set <code>autoComplete</code> to <code>off</code>.</p>
+<p>Possible values for <code>autoComplete</code> are:</p>
+<ul>
+<li><code>off</code></li>
+<li><code>username</code></li>
+<li><code>password</code></li>
+<li><code>email</code></li>
+<li><code>name</code></li>
+<li><code>tel</code></li>
+<li><code>street-address</code></li>
+<li><code>postal-code</code></li>
+<li><code>cc-number</code></li>
+<li><code>cc-csc</code></li>
+<li><code>cc-exp</code></li>
+<li><code>cc-exp-month</code></li>
+<li><code>cc-exp-year</code></li>
+</ul>
+<table>
+<thead>
+<tr><th>Type</th><th>Required</th><th>Platform</th></tr>
+</thead>
+<tbody>
+<tr><td>enum('off', 'username', 'password', 'email', 'name', 'tel', 'street-address', 'postal-code', 'cc-number', 'cc-csc', 'cc-exp', 'cc-exp-month', 'cc-exp-year')</td><td>No</td><td>Android</td></tr>
 </tbody>
 </table>
 <hr>
