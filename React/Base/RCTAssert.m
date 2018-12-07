@@ -12,6 +12,7 @@ NSString *const RCTErrorDomain = @"RCTErrorDomain";
 NSString *const RCTJSStackTraceKey = @"RCTJSStackTraceKey";
 NSString *const RCTJSRawStackTraceKey = @"RCTJSRawStackTraceKey";
 NSString *const RCTFatalExceptionName = @"RCTFatalException";
+NSString *const RCTUntruncatedMessageKey = @"RCTUntruncatedMessageKey";
 
 static NSString *const RCTAssertFunctionStack = @"RCTAssertFunctionStack";
 
@@ -128,8 +129,20 @@ void RCTFatal(NSError *error)
     @try {
 #endif
       NSString *name = [NSString stringWithFormat:@"%@: %@", RCTFatalExceptionName, error.localizedDescription];
-      NSString *message = RCTFormatError(error.localizedDescription, error.userInfo[RCTJSStackTraceKey], 75);
-      @throw [[NSException alloc]  initWithName:name reason:message userInfo:nil];
+
+      // Truncate the localized description to 175 characters to avoid wild screen overflows
+      NSString *message = RCTFormatError(error.localizedDescription, error.userInfo[RCTJSStackTraceKey], 175);
+
+      // Attach an untruncated copy of the description to the userInfo, in case it is needed
+      NSMutableDictionary *userInfo = [error.userInfo mutableCopy];
+      [userInfo setObject:RCTFormatError(error.localizedDescription, error.userInfo[RCTJSStackTraceKey], -1)
+                   forKey:RCTUntruncatedMessageKey];
+
+      // Expected resulting exception information:
+      // name: RCTFatalException: <underlying error description>
+      // reason: <underlying error description plus JS stack trace, truncated to 175 characters>
+      // userInfo: <underlying error userinfo, plus untruncated description plus JS stack trace>
+      @throw [[NSException alloc]  initWithName:name reason:message userInfo:userInfo];
 #if DEBUG
     } @catch (NSException *e) {}
 #endif
