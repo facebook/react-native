@@ -11,7 +11,7 @@
 'use strict';
 
 const path = require('path');
-const findPlugins = require('../local-cli/core/findPlugins');
+const findPlugins = require('react-native-local-cli/core/findPlugins');
 
 const REACT_NATIVE_CI = process.cwd() === path.resolve(__dirname, '..');
 
