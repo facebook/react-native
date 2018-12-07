@@ -7,6 +7,7 @@
 
 package com.facebook.react.views.modal;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -15,6 +16,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStructure;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
@@ -71,6 +73,12 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     ((ReactContext) context).addLifecycleEventListener(this);
 
     mHostView = new DialogRootViewGroup(context);
+  }
+
+  @TargetApi(23)
+  @Override
+  public void dispatchProvideStructure(ViewStructure structure) {
+    mHostView.dispatchProvideStructure(structure);
   }
 
   @Override
