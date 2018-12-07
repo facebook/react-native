@@ -480,10 +480,10 @@ const TouchableMixin = {
       : null;
 
     if (hitSlop) {
-      pressExpandLeft += hitSlop.left;
-      pressExpandTop += hitSlop.top;
-      pressExpandRight += hitSlop.right;
-      pressExpandBottom += hitSlop.bottom;
+      pressExpandLeft += hitSlop.left || 0;
+      pressExpandTop += hitSlop.top || 0;
+      pressExpandRight += hitSlop.right || 0;
+      pressExpandBottom += hitSlop.bottom || 0;
     }
 
     const touch = TouchEventUtils.extractSingleTouch(e.nativeEvent);
