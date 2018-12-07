@@ -1,6 +1,6 @@
 environment:
     ANDROID_HOME: "C:\\android-sdk-windows"
-    ANDROID_NDK: "C:\\android-sdk-windows\\android-ndk-r17b"
+    ANDROID_NDK: "C:\\android-sdk-windows\\android-ndk-r17c"
     ANDROID_BUILD_VERSION: 28
     ANDROID_TOOLS_VERSION: 28.0.2
 
