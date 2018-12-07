@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {PackagerAsset} from '../../Libraries/Image/AssetRegistry';
+import type {PackagerAsset} from './AssetRegistry';
 
 /**
  * FIXME: using number to represent discrete scale numbers is fragile in essence because of

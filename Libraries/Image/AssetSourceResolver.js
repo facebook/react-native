@@ -22,7 +22,7 @@ import type {PackagerAsset} from 'AssetRegistry';
 const PixelRatio = require('PixelRatio');
 const Platform = require('Platform');
 
-const assetPathUtils = require('../../local-cli/bundle/assetPathUtils');
+const assetPathUtils = require('./assetPathUtils');
 const invariant = require('invariant');
 
 /**

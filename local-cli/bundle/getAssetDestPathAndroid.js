@@ -10,7 +10,7 @@
 
 'use strict';
 
-const assetPathUtils = require('./assetPathUtils');
+const assetPathUtils = require('../../Libraries/Image/assetPathUtils');
 const path = require('path');
 
 import type {PackagerAsset} from '../../Libraries/Image/AssetRegistry';
