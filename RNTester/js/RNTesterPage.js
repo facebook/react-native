@@ -41,9 +41,7 @@ class RNTesterPage extends React.Component<Props> {
     return (
       <View style={styles.container}>
         {title}
-        <ContentWrapper
-          style={styles.wrapper}
-          {...wrapperProps}>
+        <ContentWrapper style={styles.wrapper} {...wrapperProps}>
           {this.props.children}
           {spacer}
         </ContentWrapper>
