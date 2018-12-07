@@ -62,24 +62,4 @@ describe('DatePickerIOS', () => {
 
     await expect(indicator).toHaveText('11/3/2006 4:10 AM');
   });
-
-  it('Should change indicator with time-only picker', async () => {
-    const testID = 'time-only';
-    const indicatorID = 'date-and-time-indicator';
-
-    const testElement = await element(
-      by.type('UIPickerView').withAncestor(by.id(testID)),
-    );
-    const indicator = await element(by.id(indicatorID));
-
-    await expect(indicator).toBeVisible();
-    await element(by.id('scroll-view')).scrollTo('bottom');
-    await expect(testElement).toBeVisible();
-
-    await testElement.setColumnToValue(0, '3');
-    await testElement.setColumnToValue(1, '20');
-    await testElement.setColumnToValue(2, 'PM');
-
-    await expect(indicator).toHaveText('11/3/2006 3:20 PM');
-  });
 });
