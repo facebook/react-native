@@ -553,6 +553,12 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
   return YES;
 }
 
+- (BOOL)accessibilityPerformEscape
+{
+  _eventEmitter->onAccessibilityEscape();
+  return YES;
+}
+
 - (BOOL)didActivateAccessibilityCustomAction:(UIAccessibilityCustomAction *)action
 {
   _eventEmitter->onAccessibilityAction(RCTStringFromNSString(action.name));
