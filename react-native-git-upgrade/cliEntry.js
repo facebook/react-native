@@ -290,8 +290,7 @@ async function run(requestedVersion, cliArgs) {
   const generatorDir = path.resolve(
     process.cwd(),
     'node_modules',
-    'react-native',
-    'local-cli',
+    'react-native-local-cli',
     'generator',
   );
   let projectBackupCreated = false;

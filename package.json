@@ -90,14 +90,12 @@
     ],
     "testEnvironment": "node",
     "collectCoverageFrom": [
-      "Libraries/**/*.js",
-      "local-cli/**/*.js"
+      "Libraries/**/*.js"
     ],
     "coveragePathIgnorePatterns": [
       "/__tests__/",
       "/vendor/",
-      "<rootDir>/Libraries/react-native/",
-      "<rootDir>/local-cli/templates/"
+      "<rootDir>/Libraries/react-native/"
     ]
   },
   "main": "Libraries/react-native/react-native-implementation.js",
