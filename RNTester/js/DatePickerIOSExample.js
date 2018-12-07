@@ -46,10 +46,13 @@ class DatePickerExample extends React.Component<
     return (
       <View>
         <WithLabel label="Value:">
-          <Text>
+          <Text testID="date-and-time-indicator">
             {this.state.date.toLocaleDateString() +
               ' ' +
-              this.state.date.toLocaleTimeString()}
+              this.state.date.toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
           </Text>
         </WithLabel>
         <WithLabel label="Timezone:">
@@ -62,6 +65,7 @@ class DatePickerExample extends React.Component<
         </WithLabel>
         <Heading label="Date + time picker" />
         <DatePickerIOS
+          testID="date-and-time"
           date={this.state.date}
           mode="datetime"
           timeZoneOffsetInMinutes={this.state.timeZoneOffsetInHours * 60}
@@ -69,6 +73,7 @@ class DatePickerExample extends React.Component<
         />
         <Heading label="Date picker" />
         <DatePickerIOS
+          testID="date-only"
           date={this.state.date}
           mode="date"
           timeZoneOffsetInMinutes={this.state.timeZoneOffsetInHours * 60}
@@ -76,6 +81,7 @@ class DatePickerExample extends React.Component<
         />
         <Heading label="Time picker, 10-minute interval" />
         <DatePickerIOS
+          testID="time-only"
           date={this.state.date}
           mode="time"
           timeZoneOffsetInMinutes={this.state.timeZoneOffsetInHours * 60}
