@@ -42,7 +42,6 @@ class RNTesterPage extends React.Component<Props> {
       <View style={styles.container}>
         {title}
         <ContentWrapper
-          testID="scroll-view"
           style={styles.wrapper}
           {...wrapperProps}>
           {this.props.children}
