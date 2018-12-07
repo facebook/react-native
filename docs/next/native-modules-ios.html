@@ -73,6 +73,8 @@ RCT_EXPORT_METHOD(addEvent:(<span class="hljs-built_in">NSString</span> *)name l
 {
   RCTLogInfo(<span class="hljs-string">@"Pretending to create an event %@ at %@"</span>, name, location);
 }
+
+<span class="hljs-keyword">@end</span>
 </code></pre>
 <p>Now, from your JavaScript file you can call the method like this:</p>
 <pre><code class="hljs css language-javascript"><span class="token keyword">import</span> <span class="token punctuation">{</span>NativeModules<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span><span class="token punctuation">;</span>
