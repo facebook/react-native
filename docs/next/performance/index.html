@@ -324,7 +324,7 @@ module.exports =<span class="hljs-built_in"> config;
 <span class="hljs-keyword">const</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>);
 
 <span class="hljs-comment">// Update the following line if the root folder of your app is somewhere else.</span>
-<span class="hljs-keyword">const</span> ROOT_FOLDER = path.resolve(__dirname, <span class="hljs-string">'..'</span>);
+<span class="hljs-keyword">const</span> ROOT_FOLDER = resolve(__dirname, <span class="hljs-string">'..'</span>);
 
 <span class="hljs-keyword">const</span> config = {
   <span class="hljs-attr">transformer</span>: {
@@ -341,6 +341,7 @@ module.exports =<span class="hljs-built_in"> config;
       };
     },
   },
+  <span class="hljs-attr">projectRoot</span>:ROOT_FOLDER,
 };
 
 <span class="hljs-built_in">module</span>.exports = config;
