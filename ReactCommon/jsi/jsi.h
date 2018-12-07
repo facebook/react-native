@@ -13,7 +13,9 @@
 #include <string>
 #include <vector>
 
+#ifndef JSI_EXPORT
 #define JSI_EXPORT __attribute__((visibility("default")))
+#endif
 
 class FBJSRuntime;
 namespace facebook {
