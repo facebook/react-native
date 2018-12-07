@@ -32,9 +32,9 @@
     },
     "testRegex": "/__tests__/.*-test\\.js$",
     "testPathIgnorePatterns": [
-      "Libraries/Renderer",
       "/node_modules/",
-      "local-cli/templates/",
+      "<rootDir>/template",
+      "Libraries/Renderer",
       "RNTester/e2e"
     ],
     "haste": {

@@ -3,7 +3,7 @@
 .*/*[.]ios.js
 
 ; Ignore templates for 'react-native init'
-.*/local-cli/templates/.*
+<PROJECT_ROOT>/template/.*
 
 ; Ignore the Dangerfile
 <PROJECT_ROOT>/bots/dangerfile.js
