@@ -195,7 +195,7 @@ const TouchableHighlight = ((createReactClass({
     testOnly_pressed: PropTypes.bool,
   },
 
-  mixins: [NativeMethodsMixin, Touchable.Mixin],
+  mixins: [NativeMethodsMixin, Touchable.Mixin.withoutDefaultFocusAndBlur],
 
   getDefaultProps: () => DEFAULT_PROPS,
 
@@ -255,6 +255,20 @@ const TouchableHighlight = ((createReactClass({
       this._hideUnderlay();
     }
     this.props.onPressOut && this.props.onPressOut(e);
+  },
+
+  touchableHandleFocus: function(e: Event) {
+    if (Platform.isTV) {
+      this._showUnderlay();
+    }
+    this.props.onFocus && this.props.onFocus(e);
+  },
+
+  touchableHandleBlur: function(e: Event) {
+    if (Platform.isTV) {
+      this._hideUnderlay();
+    }
+    this.props.onBlur && this.props.onBlur(e);
   },
 
   touchableHandlePress: function(e: PressEvent) {
