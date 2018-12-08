@@ -18,13 +18,11 @@ const Text = require('Text');
 const TextInput = require('TextInput');
 const TouchableHighlight = require('TouchableHighlight');
 const RNTesterActions = require('./RNTesterActions');
-const RNTesterStatePersister = require('./RNTesterStatePersister');
 const View = require('View');
 
 /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found when
  * making Flow check .android.js files. */
 import type {RNTesterExample} from './RNTesterList.ios';
-import type {PassProps} from './RNTesterStatePersister';
 import type {TextStyleProp, ViewStyleProp} from 'StyleSheet';
 
 type Props = {
@@ -33,7 +31,6 @@ type Props = {
     ComponentExamples: Array<RNTesterExample>,
     APIExamples: Array<RNTesterExample>,
   },
-  persister: PassProps<*>,
   searchTextInputStyle: TextStyleProp,
   style?: ?ViewStyleProp,
 };
@@ -73,8 +70,10 @@ const renderSectionHeader = ({section}) => (
 );
 
 class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
+  state = {filter: ''};
+
   render() {
-    const filterText = this.props.persister.state.filter;
+    const filterText = this.state.filter;
     let filterRegex = /.*/;
 
     try {
@@ -178,13 +177,13 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
           autoCorrect={false}
           clearButtonMode="always"
           onChangeText={text => {
-            this.props.persister.setState(() => ({filter: text}));
+            this.setState(() => ({filter: text}));
           }}
           placeholder="Search..."
           underlineColorAndroid="transparent"
           style={[styles.searchTextInput, this.props.searchTextInputStyle]}
           testID="explorer_search"
-          value={this.props.persister.state.filter}
+          value={this.state.filter}
         />
       </View>
     );
@@ -197,17 +196,6 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
 
 const ItemSeparator = ({highlighted}) => (
   <View style={highlighted ? styles.separatorHighlighted : styles.separator} />
-);
-
-/* $FlowFixMe(>=0.85.0 site=react_native_fb) This comment suppresses an error
- * found when Flow v0.85 was deployed. To see the error, delete this comment
- * and run Flow. */
-RNTesterExampleList = RNTesterStatePersister.createContainer(
-  RNTesterExampleList,
-  {
-    cacheKeySuffix: () => 'mainList',
-    getInitialState: () => ({filter: ''}),
-  },
 );
 
 const styles = StyleSheet.create({
