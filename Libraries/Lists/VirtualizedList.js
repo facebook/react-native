@@ -663,6 +663,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     first: number,
     last: number,
     inversionStyle: ViewStyleProp,
+    recycleEnabled = false,
   ) {
     const {
       CellRendererComponent,
@@ -679,7 +680,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     last = Math.min(end, last);
     for (let ii = first; ii <= last; ii++) {
       const item = getItem(data, ii);
-      const key = keyExtractor(item, ii);
+      const cellKey = keyExtractor(item, ii);
+      const key = recycleEnabled ? this._autoKeyGenerator(item, ii) : cellKey;
       this._indicesToKeys.set(ii, key);
       if (stickyIndicesFromProps.has(ii + stickyOffset)) {
         stickyHeaderIndices.push(cells.length);
@@ -688,7 +690,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         <CellRenderer
           CellRendererComponent={CellRendererComponent}
           ItemSeparatorComponent={ii < end ? ItemSeparatorComponent : undefined}
-          cellKey={key}
+          cellKey={cellKey}
           fillRateHelper={this._fillRateHelper}
           horizontal={horizontal}
           index={ii}
@@ -697,15 +699,15 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           key={key}
           prevCellKey={prevCellKey}
           onUpdateSeparators={this._onUpdateSeparators}
-          onLayout={e => this._onCellLayout(e, key, ii)}
+          onLayout={e => this._onCellLayout(e, cellKey, ii)}
           onUnmount={this._onCellUnmount}
           parentProps={this.props}
           ref={ref => {
-            this._cellRefs[key] = ref;
+            this._cellRefs[cellKey] = ref;
           }}
         />,
       );
-      prevCellKey = key;
+      prevCellKey = cellKey;
     }
   }
 
@@ -839,6 +841,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           );
         }
       }
+
+      const recycleEnabled = !isVirtualizationDisabled;
+
+      if (recycleEnabled) {
+        this._recycleCells(firstAfterInitial, last);
+      }
+
       this._pushCells(
         cells,
         stickyHeaderIndices,
@@ -846,6 +855,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         firstAfterInitial,
         last,
         inversionStyle,
+        recycleEnabled,
       );
       if (!this._hasWarned.keys && _usedIndexForKey) {
         console.warn(
@@ -1016,6 +1026,67 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _updateCellsToRenderBatcher: Batchinator;
   _viewabilityTuples: Array<ViewabilityHelperCallbackTuple> = [];
 
+  _startKey = 0;
+  _recyclePool = [];
+  _cellKeyToKey = {};
+
+  _recycleCells(first: number, last: number) {
+    const {getItem, data, keyExtractor} = this.props;
+    const activeCellKeySet = {};
+
+    for (let ii = first; ii <= last; ++ii) {
+      const item = getItem(data, ii);
+      const cellKey = keyExtractor(item, ii);
+
+      activeCellKeySet[cellKey] = 1;
+    }
+
+    const prevCellKeyToKeyArray = Object.keys(this._cellKeyToKey);
+
+    prevCellKeyToKeyArray.forEach(cellKey => {
+      if (!activeCellKeySet[cellKey]) {
+        this._recyclePool.push({
+          ...this._cellKeyToKey[cellKey],
+        });
+
+        this._onCellUnmount(cellKey);
+      }
+    });
+  }
+
+  _generateUniqueKey() {
+    return `__auto_${this._startKey++}`;
+  }
+
+  _autoKeyGenerator = (item: Item, index: number) => {
+    const cellKey = this.props.keyExtractor(item, index);
+
+    let key;
+    const currItem = this._cellKeyToKey[cellKey];
+
+    if (currItem !== undefined) {
+      return currItem.key;
+    }
+
+    if (this._recyclePool.length > 0) {
+      const recycledItem = this._recyclePool.pop();
+
+      this._cellKeyToKey[cellKey] = {
+        key: recycledItem.key,
+      };
+
+      return recycledItem.key;
+    }
+
+    key = this._generateUniqueKey();
+
+    this._cellKeyToKey[cellKey] = {
+      key,
+    };
+
+    return key;
+  };
+
   _captureScrollRef = ref => {
     this._scrollRef = ref;
   };
@@ -1110,6 +1181,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     if (curr) {
       this._frames[cellKey] = {...curr, inLayout: false};
     }
+
+    delete this._cellKeyToKey[cellKey];
   };
 
   measureLayoutRelativeToContainingList(): void {
