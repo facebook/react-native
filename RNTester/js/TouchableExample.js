@@ -135,13 +135,30 @@ exports.examples = [
 ];
 
 class TouchableHighlightBox extends React.Component<{}, $FlowFixMeState> {
+  state = {
+    timesPressed: 0,
+  };
+
+  touchableOnPress = () => {
+    this.setState({
+      timesPressed: this.state.timesPressed + 1,
+    });
+  };
+
   render() {
+    let textLog = '';
+    if (this.state.timesPressed > 1) {
+      textLog = this.state.timesPressed + 'x TouchableHighlightBox onPress';
+    } else if (this.state.timesPressed > 0) {
+      textLog = 'TouchableHighlightBox onPress';
+    }
+
     return (
       <View>
         <View style={styles.row}>
           <TouchableHighlight
             style={styles.wrapper}
-            onPress={() => console.log('stock THW image - highlight')}>
+            onPress={this.touchableOnPress}>
             <Image source={heartImage} style={styles.image} />
           </TouchableHighlight>
           <TouchableHighlight
@@ -152,11 +169,14 @@ class TouchableHighlightBox extends React.Component<{}, $FlowFixMeState> {
               pressDuration: 0.6,
             }}
             underlayColor="rgb(210, 230, 255)"
-            onPress={() => console.log('custom THW text - highlight')}>
+            onPress={this.touchableOnPress}>
             <View style={styles.wrapperCustom}>
               <Text style={styles.text}>Tap Here For Custom Highlight!</Text>
             </View>
           </TouchableHighlight>
+        </View>
+        <View style={styles.logBox}>
+          <Text>{textLog}</Text>
         </View>
       </View>
     );
