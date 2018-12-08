@@ -148,9 +148,9 @@ class TouchableHighlightBox extends React.Component<{}, $FlowFixMeState> {
   render() {
     let textLog = '';
     if (this.state.timesPressed > 1) {
-      textLog = this.state.timesPressed + 'x TouchableHighlightBox onPress';
+      textLog = this.state.timesPressed + 'x TouchableHighlight onPress';
     } else if (this.state.timesPressed > 0) {
-      textLog = 'TouchableHighlightBox onPress';
+      textLog = 'TouchableHighlight onPress';
     }
 
     return (
@@ -158,11 +158,13 @@ class TouchableHighlightBox extends React.Component<{}, $FlowFixMeState> {
         <View style={styles.row}>
           <TouchableHighlight
             style={styles.wrapper}
+            testID="touchable_highlight_image_button"
             onPress={this.touchableOnPress}>
             <Image source={heartImage} style={styles.image} />
           </TouchableHighlight>
           <TouchableHighlight
             style={styles.wrapper}
+            testID="touchable_highlight_text_button"
             activeOpacity={1}
             tvParallaxProperties={{
               pressMagnification: 1.3,
@@ -176,7 +178,9 @@ class TouchableHighlightBox extends React.Component<{}, $FlowFixMeState> {
           </TouchableHighlight>
         </View>
         <View style={styles.logBox}>
-          <Text>{textLog}</Text>
+          <Text testID="touchable_highlight_console">
+            {textLog}
+          </Text>
         </View>
       </View>
     );
