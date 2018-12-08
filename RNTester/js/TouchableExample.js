@@ -178,9 +178,7 @@ class TouchableHighlightBox extends React.Component<{}, $FlowFixMeState> {
           </TouchableHighlight>
         </View>
         <View style={styles.logBox}>
-          <Text testID="touchable_highlight_console">
-            {textLog}
-          </Text>
+          <Text testID="touchable_highlight_console">{textLog}</Text>
         </View>
       </View>
     );
