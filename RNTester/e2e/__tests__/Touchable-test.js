@@ -23,6 +23,13 @@ describe('Touchable', () => {
     await element(by.label('Back')).tap();
   });
 
+  it('Touchable Highlight should be tappable', async () => {
+    await element(by.id('touchable_highlight_image_button')).tap();
+    await expect(element(by.id('touchable_highlight_console'))).toHaveText(
+      'TouchableHighlight onPress',
+    );
+  });
+
   it('Touchable Without Feedback should be tappable', async () => {
     await element(by.label('Tap Here For No Feedback!')).tap();
     await expect(
