@@ -45,30 +45,7 @@ exports.examples = [
       'background color change as well with the activeOpacity and ' +
       'underlayColor props.',
     render: function() {
-      return (
-        <View>
-          <View style={styles.row}>
-            <TouchableHighlight
-              style={styles.wrapper}
-              onPress={() => console.log('stock THW image - highlight')}>
-              <Image source={heartImage} style={styles.image} />
-            </TouchableHighlight>
-            <TouchableHighlight
-              style={styles.wrapper}
-              activeOpacity={1}
-              tvParallaxProperties={{
-                pressMagnification: 1.3,
-                pressDuration: 0.6,
-              }}
-              underlayColor="rgb(210, 230, 255)"
-              onPress={() => console.log('custom THW text - highlight')}>
-              <View style={styles.wrapperCustom}>
-                <Text style={styles.text}>Tap Here For Custom Highlight!</Text>
-              </View>
-            </TouchableHighlight>
-          </View>
-        </View>
-      );
+      return <TouchableHighlightBox />;
     },
   },
   {
@@ -156,6 +133,35 @@ exports.examples = [
     },
   },
 ];
+
+class TouchableHighlightBox extends React.Component<{}, $FlowFixMeState> {
+  render() {
+    return (
+      <View>
+        <View style={styles.row}>
+          <TouchableHighlight
+            style={styles.wrapper}
+            onPress={() => console.log('stock THW image - highlight')}>
+            <Image source={heartImage} style={styles.image} />
+          </TouchableHighlight>
+          <TouchableHighlight
+            style={styles.wrapper}
+            activeOpacity={1}
+            tvParallaxProperties={{
+              pressMagnification: 1.3,
+              pressDuration: 0.6,
+            }}
+            underlayColor="rgb(210, 230, 255)"
+            onPress={() => console.log('custom THW text - highlight')}>
+            <View style={styles.wrapperCustom}>
+              <Text style={styles.text}>Tap Here For Custom Highlight!</Text>
+            </View>
+          </TouchableHighlight>
+        </View>
+      </View>
+    );
+  }
+}
 
 class TouchableWithoutFeedbackBox extends React.Component<{}, $FlowFixMeState> {
   state = {
