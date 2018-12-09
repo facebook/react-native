@@ -206,13 +206,15 @@ class TouchableWithoutFeedbackBox extends React.Component<{}, $FlowFixMeState> {
 
     return (
       <View>
-        <TouchableWithoutFeedback onPress={this.textOnPress}>
+        <TouchableWithoutFeedback
+          onPress={this.textOnPress}
+          testID="touchable_without_feedback_button">
           <View style={styles.wrapperCustom}>
             <Text style={styles.text}>Tap Here For No Feedback!</Text>
           </View>
         </TouchableWithoutFeedback>
         <View style={styles.logBox}>
-          <Text>{textLog}</Text>
+          <Text testID="touchable_without_feedback_console">{textLog}</Text>
         </View>
       </View>
     );
@@ -240,11 +242,14 @@ class TextOnPressBox extends React.Component<{}, $FlowFixMeState> {
 
     return (
       <View>
-        <Text style={styles.textBlock} onPress={this.textOnPress}>
+        <Text
+          style={styles.textBlock}
+          testID="tappable_text"
+          onPress={this.textOnPress}>
           Text has built-in onPress handling
         </Text>
         <View style={styles.logBox}>
-          <Text>{textLog}</Text>
+          <Text testID="tappable_text_console">{textLog}</Text>
         </View>
       </View>
     );
