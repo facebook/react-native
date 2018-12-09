@@ -24,21 +24,49 @@ describe('Touchable', () => {
   });
 
   it('Touchable Highlight should be tappable', async () => {
-    await element(by.id('touchable_highlight_image_button')).tap();
-    await expect(element(by.id('touchable_highlight_console'))).toHaveText(
+    const buttonID = 'touchable_highlight_image_button';
+    const button2ID = 'touchable_highlight_text_button';
+    const consoleID = 'touchable_highlight_console';
+
+    await element(by.id(buttonID)).tap();
+    await expect(element(by.id(consoleID))).toHaveText(
       'TouchableHighlight onPress',
+    );
+
+    await element(by.id(buttonID)).tap();
+    await expect(element(by.id(consoleID))).toHaveText(
+      '2x TouchableHighlight onPress',
+    );
+
+    await element(by.id(button2ID)).tap();
+    await expect(element(by.id(consoleID))).toHaveText(
+      '3x TouchableHighlight onPress',
     );
   });
 
   it('Touchable Without Feedback should be tappable', async () => {
-    await element(by.label('Tap Here For No Feedback!')).tap();
-    await expect(
-      element(by.text('TouchableWithoutFeedback onPress')),
-    ).toBeVisible();
+    const buttonID = 'touchable_without_feedback_button';
+    const consoleID = 'touchable_without_feedback_console';
+
+    await element(by.id(buttonID)).tap();
+    await expect(element(by.id(consoleID))).toHaveText(
+      'TouchableWithoutFeedback onPress',
+    );
+
+    await element(by.id(buttonID)).tap();
+    await expect(element(by.id(consoleID))).toHaveText(
+      '2x TouchableWithoutFeedback onPress',
+    );
   });
 
   it('Text should be tappable', async () => {
-    await element(by.text('Text has built-in onPress handling')).tap();
-    await expect(element(by.text('text onPress'))).toBeVisible();
+    const buttonID = 'tappable_text';
+    const consoleID = 'tappable_text_console';
+
+    await element(by.id(buttonID)).tap();
+    await expect(element(by.id(consoleID))).toHaveText('text onPress');
+
+    await element(by.id(buttonID)).tap();
+    await expect(element(by.id(consoleID))).toHaveText('2x text onPress');
   });
 });
