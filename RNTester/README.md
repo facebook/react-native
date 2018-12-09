@@ -62,7 +62,7 @@ _Note: The native libs are still built using gradle. Full build with buck is com
 
 Install Detox from [here](https://github.com/wix/Detox/blob/master/docs/Introduction.GettingStarted.md).
 
-To run the tests locally or on CI, run the following commands from the react-native folder:
+To run the e2e tests locally, run the following commands from the react-native folder:
 
     yarn build-ios-e2e
     yarn test-ios-e2e
