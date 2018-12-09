@@ -57,8 +57,8 @@ const WHITELISTED_PREFIXES /*: Array<string> */ = [
 const NAME_REDUCERS /*: Array<[RegExp, string]> */ = [
   // extract basename
   [/^(?:.*[\\\/])?([a-zA-Z0-9$_.-]+)$/, '$1'],
-  // strip .js/.ts/.tsx/.js.flow suffix
-  [/^(.*)\.((ts|tsx)|js(\.flow)?)$/, '$1'],
+  // strip .js/.js.flow suffix
+  [/^(.*)\.js(\.flow)?$/, '$1'],
   // strip platform suffix
   [/^(.*)\.(android|ios|native)$/, '$1'],
   // strip plugin platform suffixes
@@ -88,12 +88,7 @@ const haste = {
 };
 
 function isHastePath(filePath /*: string */) /*: boolean */ {
-  if (
-    !filePath.endsWith('.js') &&
-    !filePath.endsWith('.js.flow') &&
-    !filePath.endsWith('.ts') &&
-    !filePath.endsWith('.tsx')
-  ) {
+  if (!filePath.endsWith('.js') && !filePath.endsWith('.js.flow')) {
     return false;
   }
 

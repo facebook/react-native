@@ -123,16 +123,3 @@ it('does not calculate the haste name for a blacklisted file', () => {
     ),
   ).toBe(undefined);
 });
-
-it('returns the correct haste name for a typescrypt file', () => {
-  expect(
-    getHasteName(
-      getPath(
-        'Libraries',
-        'Components',
-        'AccessibilityInfo',
-        'AccessibilityInfo.ts',
-      ),
-    ),
-  ).toEqual('AccessibilityInfo');
-});
