@@ -248,6 +248,12 @@
         "build": "xcodebuild -project RNTester/RNTester.xcodeproj -scheme RNTester -configuration Release -sdk iphonesimulator -derivedDataPath RNTester/build -UseModernBuildSystem=NO -quiet",
         "type": "ios.simulator",
         "name": "iPhone 8"
+      },
+      "ios.sim.debug": {
+        "binaryPath": "RNTester/build/Build/Products/Debug-iphonesimulator/RNTester.app/",
+        "build": "xcodebuild -project RNTester/RNTester.xcodeproj -scheme RNTester -configuration Debug -sdk iphonesimulator -derivedDataPath RNTester/build -UseModernBuildSystem=NO -quiet",
+        "type": "ios.simulator",
+        "name": "iPhone 8"
       }
     }
   }
