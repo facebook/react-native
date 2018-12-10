@@ -26,7 +26,6 @@ Follow the [Getting Started guide](https://facebook.github.io/react-native/docs/
 - [Creating a New Application](https://facebook.github.io/react-native/docs/getting-started.html)
 - [Adding React Native to an Existing Application](https://facebook.github.io/react-native/docs/integration-with-existing-apps.html)
 
-
 ## How React Native works
 
 React Native lets you build mobile apps using JavaScript. It uses the same design as [React](https://facebook.github.io/react), letting you compose a rich mobile UI from declarative components.
