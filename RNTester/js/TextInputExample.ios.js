@@ -1085,19 +1085,4 @@ exports.examples = [
       );
     },
   },
-  {
-    title: 'Text Content Type',
-    render: function() {
-      return (
-        <View>
-          <WithLabel label="emailAddress">
-            <TextInput textContentType="emailAddress" style={styles.default} />
-          </WithLabel>
-          <WithLabel label="name">
-            <TextInput textContentType="name" style={styles.default} />
-          </WithLabel>
-        </View>
-      );
-    },
-  },
 ];
