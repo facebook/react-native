@@ -361,17 +361,6 @@ const inspect = (function() {
     return typeof arg === 'function';
   }
 
-  function isPrimitive(arg) {
-    return (
-      arg === null ||
-      typeof arg === 'boolean' ||
-      typeof arg === 'number' ||
-      typeof arg === 'string' ||
-      typeof arg === 'symbol' || // ES6 symbol
-      typeof arg === 'undefined'
-    );
-  }
-
   function objectToString(o) {
     return Object.prototype.toString.call(o);
   }
