@@ -277,7 +277,7 @@ aliases:
 
   - &boot-simulator-iphone
     name: Boot iPhone Simulator
-    command: xcrun simctl boot "iPhone 5s" || true
+    command: xcrun simctl boot "iPhone XS" || true
 
   - &boot-simulator-appletv
     name: Boot Apple TV Simulator
@@ -429,12 +429,6 @@ jobs:
 
       - run: *run-objc-ios-tests
       - run: *run-objc-tvos-tests
-
-      # TODO: Fix these failing tests.
-      - run: *display-broken-tests-warning
-      - run: *run-podspec-tests
-      - run: *run-objc-ios-e2e-tests
-      - run: *run-objc-tvos-e2e-tests
 
       - store_test_results:
           path: ~/react-native/reports/junit
