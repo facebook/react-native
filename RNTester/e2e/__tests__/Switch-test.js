@@ -8,12 +8,13 @@
  * @format
  */
 
-/* global element, by, expect */
+/* global device, element, by, expect */
 
 const jestExpect = require('expect');
 
 describe('Switch', () => {
   beforeAll(async () => {
+    await device.reloadReactNative();
     await element(by.id('explorer_search')).replaceText('<Switch>');
     await element(by.label('<Switch> Native boolean input')).tap();
   });
