@@ -24,29 +24,29 @@ describe('Button', () => {
   });
 
   it('Simple button should be tappable', async () => {
-    await element(by.label('Press Me')).tap();
+    await element(by.id('simple_button')).tap();
     await expect(element(by.text('Simple has been pressed!'))).toBeVisible();
     await element(by.text('OK')).tap();
   });
 
   it('Adjusted color button should be tappable', async () => {
-    await element(by.label('Press Purple')).tap();
+    await element(by.id('purple_button')).tap();
     await expect(element(by.text('Purple has been pressed!'))).toBeVisible();
     await element(by.text('OK')).tap();
   });
 
   it("Two buttons with JustifyContent:'space-between' should be tappable", async () => {
-    await element(by.label('This looks great!')).tap();
+    await element(by.id('left_button')).tap();
     await expect(element(by.text('Left has been pressed!'))).toBeVisible();
     await element(by.text('OK')).tap();
 
-    await element(by.label('Ok!')).tap();
+    await element(by.id('right_button')).tap();
     await expect(element(by.text('Right has been pressed!'))).toBeVisible();
     await element(by.text('OK')).tap();
   });
 
   it('Disabled button should not interact', async () => {
-    await element(by.label('I Am Disabled')).tap();
+    await element(by.id('disabled_button')).tap();
     await expect(
       element(by.text('Disabled has been pressed!')),
     ).toBeNotVisible();
