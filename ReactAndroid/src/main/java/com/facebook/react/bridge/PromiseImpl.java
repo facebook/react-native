@@ -170,7 +170,10 @@ public class PromiseImpl implements Promise {
       @Nullable Throwable throwable,
       @Nullable WritableMap userInfo
   ) {
-    if (mReject == null) return;
+    if (mReject == null) {
+      return;
+    }
+
     WritableNativeMap errorInfo = new WritableNativeMap();
 
     if (code == null) {
