@@ -103,7 +103,7 @@ public class NetInfoModule extends ReactContextBaseJavaModule
   @ReactMethod
   public void getCurrentConnectivity(Promise promise) {
     if (mNoNetworkPermission) {
-      promise.reject(ERROR_MISSING_PERMISSION, MISSING_PERMISSION_MESSAGE, null);
+      promise.reject(ERROR_MISSING_PERMISSION, MISSING_PERMISSION_MESSAGE);
       return;
     }
     promise.resolve(createConnectivityEventMap());
@@ -112,7 +112,7 @@ public class NetInfoModule extends ReactContextBaseJavaModule
   @ReactMethod
   public void isConnectionMetered(Promise promise) {
     if (mNoNetworkPermission) {
-      promise.reject(ERROR_MISSING_PERMISSION, MISSING_PERMISSION_MESSAGE, null);
+      promise.reject(ERROR_MISSING_PERMISSION, MISSING_PERMISSION_MESSAGE);
       return;
     }
     promise.resolve(ConnectivityManagerCompat.isActiveNetworkMetered(mConnectivityManager));
