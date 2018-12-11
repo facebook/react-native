@@ -382,6 +382,11 @@ public class NativeViewHierarchyManager {
                       tagsToDelete));
         }
         if (indexToRemove >= viewManager.getChildCount(viewToManage)) {
+          if (mRootTags.get(tag) && viewManager.getChildCount(viewToManage) == 0) {
+            // This root node has already been removed (likely due to a threading issue caused by
+            // async js execution). Ignore this root removal.
+            return;
+          }
           throw new IllegalViewOperationException(
               "Trying to remove a view index above child " +
                   "count " + indexToRemove + " view tag: " + tag + "\n detail: " +
