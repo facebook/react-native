@@ -173,6 +173,7 @@ public class PromiseImpl implements Promise {
       @Nullable WritableMap userInfo
   ) {
     if (mReject == null) {
+      mResolve = null;
       return;
     }
 
