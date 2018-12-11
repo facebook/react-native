@@ -59,7 +59,7 @@ function fetch_and_unpack () {
 
 mkdir -p third-party
 
-SCRIPTDIR=$(cd $(dirname "$0") && pwd)
+SCRIPTDIR=$(dirname "$0")
 
 fetch_and_unpack glog-0.3.5.tar.gz https://github.com/google/glog/archive/v0.3.5.tar.gz 61067502c5f9769d111ea1ee3f74e6ddf0a5f9cc "\"$SCRIPTDIR/ios-configure-glog.sh\""
 fetch_and_unpack double-conversion-1.1.6.tar.gz https://github.com/google/double-conversion/archive/v1.1.6.tar.gz 1c7d88afde3aaeb97bb652776c627b49e132e8e0
