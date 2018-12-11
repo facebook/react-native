@@ -10,9 +10,9 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {Clipboard, View, Text} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {Clipboard, View, Text, StyleSheet} = ReactNative;
 
 class ClipboardExample extends React.Component<{}, $FlowFixMeState> {
   state = {
@@ -22,7 +22,7 @@ class ClipboardExample extends React.Component<{}, $FlowFixMeState> {
   _setClipboardContent = async () => {
     Clipboard.setString('Hello World');
     try {
-      var content = await Clipboard.getString();
+      const content = await Clipboard.getString();
       this.setState({content});
     } catch (e) {
       this.setState({content: e.message});
@@ -32,10 +32,10 @@ class ClipboardExample extends React.Component<{}, $FlowFixMeState> {
   render() {
     return (
       <View>
-        <Text onPress={this._setClipboardContent} style={{color: 'blue'}}>
+        <Text onPress={this._setClipboardContent} style={styles.label}>
           Tap to put "Hello World" in the clipboard
         </Text>
-        <Text style={{color: 'red', marginTop: 20}}>{this.state.content}</Text>
+        <Text style={styles.content}>{this.state.content}</Text>
       </View>
     );
   }
@@ -51,3 +51,13 @@ exports.examples = [
     },
   },
 ];
+
+const styles = StyleSheet.create({
+  label: {
+    color: 'blue',
+  },
+  content: {
+    color: 'red',
+    marginTop: 20,
+  },
+});

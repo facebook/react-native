@@ -11,19 +11,12 @@ namespace facebook {
 namespace react {
 
 RawEvent::RawEvent(
-  const std::string &type,
-  const folly::dynamic &payload,
-  const EventTarget &eventTarget,
-  const std::function<bool()> &isDispatchable
-):
-  type(type),
-  payload(payload),
-  eventTarget(eventTarget),
-  isDispachable_(isDispatchable) {}
-
-bool RawEvent::isDispachable() const {
-  return isDispachable_();
-}
+    std::string type,
+    ValueFactory payloadFactory,
+    WeakEventTarget eventTarget)
+    : type(std::move(type)),
+      payloadFactory(std::move(payloadFactory)),
+      eventTarget(std::move(eventTarget)) {}
 
 } // namespace react
 } // namespace facebook

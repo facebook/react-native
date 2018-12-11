@@ -12,18 +12,20 @@
 namespace facebook {
 namespace react {
 
-EventQueue::EventQueue(const EventPipe &eventPipe, std::unique_ptr<EventBeat> eventBeat):
-  eventPipe_(eventPipe),
-  eventBeat_(std::move(eventBeat)) {
-    eventBeat_->setBeatCallback(std::bind(&EventQueue::onBeat, this));
-  }
+EventQueue::EventQueue(
+    EventPipe eventPipe,
+    std::unique_ptr<EventBeat> eventBeat)
+    : eventPipe_(std::move(eventPipe)), eventBeat_(std::move(eventBeat)) {
+  eventBeat_->setBeatCallback(
+      std::bind(&EventQueue::onBeat, this, std::placeholders::_1));
+}
 
 void EventQueue::enqueueEvent(const RawEvent &rawEvent) const {
   std::lock_guard<std::mutex> lock(queueMutex_);
   queue_.push_back(rawEvent);
 }
 
-void EventQueue::onBeat() const {
+void EventQueue::onBeat(jsi::Runtime &runtime) const {
   std::vector<RawEvent> queue;
 
   {
@@ -34,17 +36,18 @@ void EventQueue::onBeat() const {
     }
 
     queue = std::move(queue_);
-    assert(queue_.size() == 0);
+    queue_.clear();
   }
 
   {
     std::lock_guard<std::recursive_mutex> lock(EventEmitter::DispatchMutex());
+
     for (const auto &event : queue) {
       eventPipe_(
-        event.isDispachable() ? event.eventTarget : EmptyEventTarget,
-        event.type,
-        event.payload
-      );
+          runtime,
+          event.eventTarget.lock().get(),
+          event.type,
+          event.payloadFactory);
     }
   }
 }

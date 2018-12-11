@@ -10,7 +10,7 @@
 'use strict';
 
 module.exports = (moduleName, instanceMethods) => {
-  const RealComponent = require.requireActual(moduleName);
+  const RealComponent = jest.requireActual(moduleName);
   const React = require('react');
 
   const SuperClass =

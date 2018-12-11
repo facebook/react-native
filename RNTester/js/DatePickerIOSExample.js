@@ -10,9 +10,9 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {DatePickerIOS, StyleSheet, Text, TextInput, View} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {DatePickerIOS, StyleSheet, Text, TextInput, View} = ReactNative;
 
 class DatePickerExample extends React.Component<
   $FlowFixMeProps,
@@ -33,7 +33,7 @@ class DatePickerExample extends React.Component<
   };
 
   onTimezoneChange = event => {
-    var offset = parseInt(event.nativeEvent.text, 10);
+    const offset = parseInt(event.nativeEvent.text, 10);
     if (isNaN(offset)) {
       return;
     }
@@ -46,10 +46,13 @@ class DatePickerExample extends React.Component<
     return (
       <View>
         <WithLabel label="Value:">
-          <Text>
+          <Text testID="date-and-time-indicator">
             {this.state.date.toLocaleDateString() +
               ' ' +
-              this.state.date.toLocaleTimeString()}
+              this.state.date.toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
           </Text>
         </WithLabel>
         <WithLabel label="Timezone:">
@@ -62,6 +65,7 @@ class DatePickerExample extends React.Component<
         </WithLabel>
         <Heading label="Date + time picker" />
         <DatePickerIOS
+          testID="date-and-time"
           date={this.state.date}
           mode="datetime"
           timeZoneOffsetInMinutes={this.state.timeZoneOffsetInHours * 60}
@@ -69,6 +73,7 @@ class DatePickerExample extends React.Component<
         />
         <Heading label="Date picker" />
         <DatePickerIOS
+          testID="date-only"
           date={this.state.date}
           mode="date"
           timeZoneOffsetInMinutes={this.state.timeZoneOffsetInHours * 60}
@@ -76,6 +81,7 @@ class DatePickerExample extends React.Component<
         />
         <Heading label="Time picker, 10-minute interval" />
         <DatePickerIOS
+          testID="time-only"
           date={this.state.date}
           mode="time"
           timeZoneOffsetInMinutes={this.state.timeZoneOffsetInHours * 60}
@@ -122,7 +128,7 @@ exports.examples = [
   },
 ];
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   textinput: {
     height: 26,
     width: 50,

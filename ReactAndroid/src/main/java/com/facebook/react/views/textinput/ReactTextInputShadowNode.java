@@ -54,42 +54,8 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
     initMeasureFunction();
   }
 
-  private ReactTextInputShadowNode(ReactTextInputShadowNode node) {
-    super(node);
-    mMostRecentEventCount = node.mMostRecentEventCount;
-    mText = node.mText;
-    mLocalData = node.mLocalData;
-  }
-
-  @Override
-  protected ReactTextInputShadowNode copy() {
-    return new ReactTextInputShadowNode(this);
-  }
-
-  @Override
-  public ReactTextInputShadowNode mutableCopy(long instanceHandle) {
-    ReactTextInputShadowNode node = (ReactTextInputShadowNode) super.mutableCopy(instanceHandle);
-    node.initMeasureFunction();
-    ThemedReactContext themedContext = getThemedContext();
-    if (themedContext != null) {
-      node.setThemedContext(themedContext);
-    }
-    return node;
-  }
-
   private void initMeasureFunction() {
     setMeasureFunction(this);
-  }
-
-  @Override
-  public ReactTextInputShadowNode mutableCopyWithNewChildren(long instanceHandle) {
-    ReactTextInputShadowNode node = (ReactTextInputShadowNode) super.mutableCopyWithNewChildren(instanceHandle);
-    node.initMeasureFunction();
-    ThemedReactContext themedContext = getThemedContext();
-    if (themedContext != null) {
-      node.setThemedContext(themedContext);
-    }
-    return node;
   }
 
   @Override

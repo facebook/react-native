@@ -28,11 +28,6 @@ public class ARTGroupShadowNode extends ARTVirtualNode {
 
   public ARTGroupShadowNode() { }
 
-  public ARTGroupShadowNode(ARTGroupShadowNode node) {
-    super(node);
-    this.mClipping = new RectF(node.mClipping);
-  }
-
   @ReactProp(name = "clipping")
   public void setClipping(@Nullable ReadableArray clippingDims) {
     float[] clippingData = PropHelper.toFloatArray(clippingDims);
@@ -40,11 +35,6 @@ public class ARTGroupShadowNode extends ARTVirtualNode {
       mClipping = createClipping(clippingData);
       markUpdated();
     }
-  }
-
-  @Override
-  protected ReactShadowNodeImpl copy() {
-    return new ARTGroupShadowNode(this);
   }
 
   @Override

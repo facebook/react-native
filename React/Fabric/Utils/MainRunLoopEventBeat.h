@@ -7,7 +7,8 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreFoundation/CFRunLoop.h>
-#include <fabric/events/EventBeat.h>
+#include <react/uimanager/primitives.h>
+#include <react/events/EventBeat.h>
 
 namespace facebook {
 namespace react {
@@ -20,12 +21,15 @@ class MainRunLoopEventBeat final:
   public EventBeat {
 
 public:
-  MainRunLoopEventBeat();
+  MainRunLoopEventBeat(RuntimeExecutor runtimeExecutor);
   ~MainRunLoopEventBeat();
 
   void induce() const override;
 
 private:
+  void lockExecutorAndBeat() const;
+
+  const RuntimeExecutor runtimeExecutor_;
   CFRunLoopObserverRef mainRunLoopObserver_;
 };
 

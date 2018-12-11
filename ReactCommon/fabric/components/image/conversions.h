@@ -7,19 +7,16 @@
 
 #pragma once
 
-#include <fabric/imagemanager/primitives.h>
-#include <fabric/graphics/conversions.h>
 #include <folly/dynamic.h>
+#include <react/graphics/conversions.h>
+#include <react/imagemanager/primitives.h>
 
 namespace facebook {
 namespace react {
 
 inline void fromDynamic(const folly::dynamic &value, ImageSource &result) {
   if (value.isString()) {
-    result = {
-      .type = ImageSource::Type::Remote,
-      .uri = value.asString()
-    };
+    result = {.type = ImageSource::Type::Remote, .uri = value.asString()};
     return;
   }
 
@@ -68,21 +65,41 @@ inline std::string toString(const ImageSource &value) {
 inline void fromDynamic(const folly::dynamic &value, ImageResizeMode &result) {
   assert(value.isString());
   auto stringValue = value.asString();
-  if (stringValue == "cover") { result = ImageResizeMode::Cover; return; }
-  if (stringValue == "contain") { result = ImageResizeMode::Contain; return; }
-  if (stringValue == "stretch") { result = ImageResizeMode::Stretch; return; }
-  if (stringValue == "center") { result = ImageResizeMode::Center; return; }
-  if (stringValue == "repeat") { result = ImageResizeMode::Repeat; return; }
+  if (stringValue == "cover") {
+    result = ImageResizeMode::Cover;
+    return;
+  }
+  if (stringValue == "contain") {
+    result = ImageResizeMode::Contain;
+    return;
+  }
+  if (stringValue == "stretch") {
+    result = ImageResizeMode::Stretch;
+    return;
+  }
+  if (stringValue == "center") {
+    result = ImageResizeMode::Center;
+    return;
+  }
+  if (stringValue == "repeat") {
+    result = ImageResizeMode::Repeat;
+    return;
+  }
   abort();
 }
 
 inline std::string toString(const ImageResizeMode &value) {
   switch (value) {
-    case ImageResizeMode::Cover: return "cover";
-    case ImageResizeMode::Contain: return "contain";
-    case ImageResizeMode::Stretch: return "stretch";
-    case ImageResizeMode::Center: return "center";
-    case ImageResizeMode::Repeat: return "repeat";
+    case ImageResizeMode::Cover:
+      return "cover";
+    case ImageResizeMode::Contain:
+      return "contain";
+    case ImageResizeMode::Stretch:
+      return "stretch";
+    case ImageResizeMode::Center:
+      return "center";
+    case ImageResizeMode::Repeat:
+      return "repeat";
   }
 }
 

@@ -11,8 +11,9 @@
 
 const Animated = require('Animated');
 const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
-const EdgeInsetsPropType = require('EdgeInsetsPropType');
+const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
 const NativeMethodsMixin = require('NativeMethodsMixin');
+const Platform = require('Platform');
 const PropTypes = require('prop-types');
 const React = require('React');
 const Touchable = require('Touchable');
@@ -23,8 +24,7 @@ const createReactClass = require('create-react-class');
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type {ViewStyleProp} from 'StyleSheet';
 import type {Props as TouchableWithoutFeedbackProps} from 'TouchableWithoutFeedback';
-
-type Event = Object;
+import type {PressEvent} from 'CoreEventTypes';
 
 type State = {
   animationID: ?number,
@@ -36,8 +36,8 @@ const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 type Props = $ReadOnly<{|
   ...TouchableWithoutFeedbackProps,
 
-  onPressWithCompletion?: ?Function,
-  onPressAnimationComplete?: ?Function,
+  onPressWithCompletion?: ?(fn: () => void) => void,
+  onPressAnimationComplete?: ?() => void,
   pressRetentionOffset?: ?EdgeInsetsProp,
   releaseVelocity?: ?number,
   releaseBounciness?: ?number,
@@ -53,7 +53,7 @@ type Props = $ReadOnly<{|
  */
 const TouchableBounce = ((createReactClass({
   displayName: 'TouchableBounce',
-  mixins: [Touchable.Mixin, NativeMethodsMixin],
+  mixins: [Touchable.Mixin.withoutDefaultFocusAndBlur, NativeMethodsMixin],
 
   propTypes: {
     ...TouchableWithoutFeedback.propTypes,
@@ -70,7 +70,7 @@ const TouchableBounce = ((createReactClass({
      * reactivated! Move it back and forth several times while the scroll view
      * is disabled. Ensure you pass in a constant to reduce memory allocations.
      */
-    pressRetentionOffset: EdgeInsetsPropType,
+    pressRetentionOffset: DeprecatedEdgeInsetsPropType,
     releaseVelocity: PropTypes.number.isRequired,
     releaseBounciness: PropTypes.number.isRequired,
     /**
@@ -95,7 +95,7 @@ const TouchableBounce = ((createReactClass({
     value: number,
     velocity: number,
     bounciness: number,
-    callback?: ?Function,
+    callback?: ?() => void,
   ) {
     Animated.spring(this.state.scale, {
       toValue: value,
@@ -109,17 +109,31 @@ const TouchableBounce = ((createReactClass({
    * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
    * defined on your component.
    */
-  touchableHandleActivePressIn: function(e: Event) {
+  touchableHandleActivePressIn: function(e: PressEvent) {
     this.bounceTo(0.93, 0.1, 0);
     this.props.onPressIn && this.props.onPressIn(e);
   },
 
-  touchableHandleActivePressOut: function(e: Event) {
+  touchableHandleActivePressOut: function(e: PressEvent) {
     this.bounceTo(1, 0.4, 0);
     this.props.onPressOut && this.props.onPressOut(e);
   },
 
-  touchableHandlePress: function(e: Event) {
+  touchableHandleFocus: function(e: Event) {
+    if (Platform.isTV) {
+      this.bounceTo(0.93, 0.1, 0);
+    }
+    this.props.onFocus && this.props.onFocus(e);
+  },
+
+  touchableHandleBlur: function(e: Event) {
+    if (Platform.isTV) {
+      this.bounceTo(1, 0.4, 0);
+    }
+    this.props.onBlur && this.props.onBlur(e);
+  },
+
+  touchableHandlePress: function(e: PressEvent) {
     const onPressWithCompletion = this.props.onPressWithCompletion;
     if (onPressWithCompletion) {
       onPressWithCompletion(() => {
@@ -147,7 +161,7 @@ const TouchableBounce = ((createReactClass({
     return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
   },
 
-  touchableGetHitSlop: function(): ?Object {
+  touchableGetHitSlop: function(): ?EdgeInsetsProp {
     return this.props.hitSlop;
   },
 

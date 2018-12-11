@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Facebook, Inc. and its affiliates.
+ *  Copyright (c) Facebook, Inc.
  *
  *  This source code is licensed under the MIT license found in the LICENSE
  *  file in the root directory of this source tree.
@@ -16,7 +16,7 @@ public class YogaConfig {
   public static int SPACING_TYPE = 1;
 
   static {
-      SoLoader.loadLibrary("yoga");
+    SoLoader.loadLibrary("yoga");
   }
 
   long mNativePointer;

@@ -23,10 +23,9 @@ const InternalScrollViewType = require('InternalScrollViewType');
 const createReactClass = require('create-react-class');
 const dismissKeyboard = require('dismissKeyboard');
 const flattenStyle = require('flattenStyle');
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 const processDecelerationRate = require('processDecelerationRate');
 const requireNativeComponent = require('requireNativeComponent');
-const warning = require('fbjs/lib/warning');
 const resolveAssetSource = require('resolveAssetSource');
 
 import type {PressEvent} from 'CoreEventTypes';
@@ -218,6 +217,11 @@ type IOSProps = $ReadOnly<{|
    */
   scrollsToTop?: ?boolean,
   /**
+   * Fires when the scroll view scrolls to top after the status bar has been tapped
+   * @platform ios
+   */
+  onScrollToTop?: ?Function,
+  /**
    * When true, shows a horizontal scroll indicator.
    * The default value is true.
    */
@@ -297,6 +301,13 @@ type AndroidProps = $ReadOnly<{|
    * @platform android
    */
   overScrollMode?: ?('auto' | 'always' | 'never'),
+  /**
+   * Causes the scrollbars not to turn transparent when they are not in use.
+   * The default value is false.
+   *
+   * @platform android
+   */
+  persistentScrollbar?: ?boolean,
 |}>;
 
 type VRProps = $ReadOnly<{|
@@ -392,7 +403,9 @@ export type Props = $ReadOnly<{|
    *   - `false`, deprecated, use 'never' instead
    *   - `true`, deprecated, use 'always' instead
    */
-  // $FlowFixMe(site=react_native_fb) Issues found when typing ScrollView
+  /* $FlowFixMe(>=0.86.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.86 was deployed. To see the error, delete this comment
+   * and run Flow. */
   keyboardShouldPersistTaps?: ?('always' | 'never' | 'handled' | false | true),
   /**
    * Called when the momentum scroll starts (scroll which occurs as the ScrollView glides to a stop).
@@ -436,6 +449,7 @@ export type Props = $ReadOnly<{|
    * Note: Vertical pagination is not supported on Android.
    */
   pagingEnabled?: ?boolean,
+
   /**
    * When false, the view cannot be scrolled via touch interaction.
    * The default value is true.

@@ -9,7 +9,7 @@
 
 #import <React/RCTMountItemProtocol.h>
 #import <React/RCTPrimitives.h>
-#import <fabric/events/EventEmitter.h>
+#import <react/events/EventEmitter.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

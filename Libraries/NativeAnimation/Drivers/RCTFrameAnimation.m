@@ -97,7 +97,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   }
 
   _animationCurrentTime = currentTime;
-  NSTimeInterval currentDuration = _animationCurrentTime - _animationStartTime;
+  NSTimeInterval currentDuration = (_animationCurrentTime - _animationStartTime) / RCTAnimationDragCoefficient();
 
   // Determine how many frames have passed since last update.
   // Get index of frames that surround the current interval

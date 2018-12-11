@@ -109,7 +109,7 @@ class Switch extends React.Component<Props> {
       _thumbColor = thumbTintColor;
       if (__DEV__) {
         console.warn(
-          'Switch: `thumbTintColor` is deprecated, use `_thumbColor` instead.',
+          'Switch: `thumbTintColor` is deprecated, use `thumbColor` instead.',
         );
       }
     }
@@ -164,6 +164,7 @@ class Switch extends React.Component<Props> {
       <SwitchNativeComponent
         {...props}
         {...platformProps}
+        accessibilityRole={props.accessibilityRole ?? 'button'}
         onChange={this._handleChange}
         onResponderTerminationRequest={returnsFalse}
         onStartShouldSetResponder={returnsTrue}

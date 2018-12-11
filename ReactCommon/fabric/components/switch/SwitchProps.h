@@ -5,27 +5,25 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <fabric/components/view/ViewProps.h>
-#include <fabric/graphics/Color.h>
+#include <react/components/view/ViewProps.h>
+#include <react/graphics/Color.h>
 
 namespace facebook {
 namespace react {
 
 // TODO (T28334063): Consider for codegen.
-class SwitchProps final:
-  public ViewProps {
-
-public:
+class SwitchProps final : public ViewProps {
+ public:
   SwitchProps() = default;
   SwitchProps(const SwitchProps &sourceProps, const RawProps &rawProps);
 
 #pragma mark - Props
 
-  const bool value {false};
-  const bool disabled {false};
-  const SharedColor tintColor {};
-  const SharedColor onTintColor {};
-  const SharedColor thumbTintColor {};
+  const bool value{false};
+  const bool disabled{false};
+  const SharedColor tintColor{};
+  const SharedColor onTintColor{};
+  const SharedColor thumbTintColor{};
 };
 
 } // namespace react

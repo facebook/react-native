@@ -6,6 +6,7 @@
  */
 package com.facebook.react.views.text;
 
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.text.Layout;
@@ -150,7 +151,14 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       if (textShadowNode.mIsLineThroughTextDecorationSet) {
         ops.add(new SetSpanOperation(start, end, new StrikethroughSpan()));
       }
-      if (textShadowNode.mTextShadowOffsetDx != 0 || textShadowNode.mTextShadowOffsetDy != 0) {
+      if (
+        (
+          textShadowNode.mTextShadowOffsetDx != 0 ||
+          textShadowNode.mTextShadowOffsetDy != 0 ||
+          textShadowNode.mTextShadowRadius != 0
+        ) &&
+        Color.alpha(textShadowNode.mTextShadowColor) != 0
+      ) {
         ops.add(
             new SetSpanOperation(
                 start,
@@ -177,6 +185,11 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     }
   }
 
+  protected int getDefaultFontSize() {
+    return mAllowFontScaling ? (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP))
+      : (int) Math.ceil(PixelUtil.toPixelFromDIP(ViewDefaults.FONT_SIZE_SP));
+  }
+
   protected static Spannable spannedFromShadowNode(
       ReactBaseTextShadowNode textShadowNode, String text) {
     SpannableStringBuilder sb = new SpannableStringBuilder();
@@ -195,10 +208,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     }
 
     if (textShadowNode.mFontSize == UNSET) {
-      int defaultFontSize =
-          textShadowNode.mAllowFontScaling
-              ? (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP))
-              : (int) Math.ceil(PixelUtil.toPixelFromDIP(ViewDefaults.FONT_SIZE_SP));
+      int defaultFontSize = textShadowNode.getDefaultFontSize();
 
       ops.add(new SetSpanOperation(0, sb.length(), new AbsoluteSizeSpan(defaultFontSize)));
     }
@@ -264,7 +274,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
   protected float mTextShadowOffsetDx = 0;
   protected float mTextShadowOffsetDy = 0;
-  protected float mTextShadowRadius = 1;
+  protected float mTextShadowRadius = 0;
   protected int mTextShadowColor = DEFAULT_TEXT_SHADOW_COLOR;
 
   protected boolean mIsUnderlineTextDecorationSet = false;
@@ -301,38 +311,6 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   protected float mHeightOfTallestInlineImage = Float.NaN;
 
   public ReactBaseTextShadowNode() {}
-
-  public ReactBaseTextShadowNode(ReactBaseTextShadowNode node) {
-    super(node);
-    mLineHeight = node.mLineHeight;
-    mIsColorSet = node.mIsColorSet;
-    mAllowFontScaling = node.mAllowFontScaling;
-    mColor = node.mColor;
-    mIsBackgroundColorSet = node.mIsBackgroundColorSet;
-    mBackgroundColor = node.mBackgroundColor;
-
-    mNumberOfLines = node.mNumberOfLines;
-    mFontSize = node.mFontSize;
-    mFontSizeInput = node.mFontSizeInput;
-    mLineHeightInput = node.mLineHeightInput;
-    mTextAlign = node.mTextAlign;
-    mTextBreakStrategy = node.mTextBreakStrategy;
-    mTextTransform = node.mTextTransform;
-
-    mTextShadowOffsetDx = node.mTextShadowOffsetDx;
-    mTextShadowOffsetDy = node.mTextShadowOffsetDy;
-    mTextShadowRadius = node.mTextShadowRadius;
-    mTextShadowColor = node.mTextShadowColor;
-
-    mIsUnderlineTextDecorationSet = node.mIsUnderlineTextDecorationSet;
-    mIsLineThroughTextDecorationSet = node.mIsLineThroughTextDecorationSet;
-    mIncludeFontPadding = node.mIncludeFontPadding;
-    mFontStyle = node.mFontStyle;
-    mFontWeight = node.mFontWeight;
-    mFontFamily = node.mFontFamily;
-    mContainsImages = node.mContainsImages;
-    mHeightOfTallestInlineImage = node.mHeightOfTallestInlineImage;
-  }
 
   // Returns a line height which takes into account the requested line height
   // and the height of the inline images.

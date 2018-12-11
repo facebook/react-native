@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <fabric/attributedstring/AttributedString.h>
-#include <fabric/attributedstring/TextAttributes.h>
+#include <react/attributedstring/AttributedString.h>
+#include <react/attributedstring/TextAttributes.h>
 
 namespace facebook {
 namespace react {
@@ -18,15 +18,13 @@ namespace react {
  * such as Text and Paragraph (but not RawText).
  */
 class BaseTextShadowNode {
-public:
-
+ public:
   /*
    * Returns a `AttributedString` which represents text content of the node.
    */
   AttributedString getAttributedString(
-    const TextAttributes &baseTextAttributes,
-    const SharedShadowNode &parentNode
-  ) const;
+      const TextAttributes &baseTextAttributes,
+      const SharedShadowNode &parentNode) const;
 };
 
 } // namespace react

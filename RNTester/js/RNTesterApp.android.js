@@ -122,8 +122,6 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
   _renderDrawerContent = () => {
     return (
       <View style={styles.drawerContentWrapper}>
-        {/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-          * found when making Flow check .android.js files. */}
         <RNTesterExampleList
           list={RNTesterList}
           displayTitleRow={true}
@@ -188,8 +186,6 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
           style={styles.toolbar}
           title="RNTester"
         />
-        {/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-          * found when making Flow check .android.js files. */}
         <RNTesterExampleList
           onNavigate={this._handleAction}
           list={RNTesterList}

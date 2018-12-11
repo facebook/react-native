@@ -99,9 +99,10 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
 
     if (duration && easing) {
       LayoutAnimation.configureNext({
-        duration: duration,
+        // We have to pass the duration equal to minimal accepted duration defined here: RCTLayoutAnimation.m
+        duration: duration > 10 ? duration : 10,
         update: {
-          duration: duration,
+          duration: duration > 10 ? duration : 10,
           type: LayoutAnimation.Types[easing] || 'keyboard',
         },
       });
@@ -150,7 +151,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
       children,
       contentContainerStyle,
       enabled,
-      keyboardVerticalOffset, // eslint-disable-line no-unused-vars
+      keyboardVerticalOffset,
       style,
       ...props
     } = this.props;

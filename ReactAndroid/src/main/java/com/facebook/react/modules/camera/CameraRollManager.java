@@ -56,7 +56,7 @@ import javax.annotation.Nullable;
 @ReactModule(name = CameraRollManager.NAME)
 public class CameraRollManager extends ReactContextBaseJavaModule {
 
-  protected static final String NAME = "CameraRollManager";
+  public static final String NAME = "CameraRollManager";
 
   private static final String ERROR_UNABLE_TO_LOAD = "E_UNABLE_TO_LOAD";
   private static final String ERROR_UNABLE_TO_LOAD_PERMISSION = "E_UNABLE_TO_LOAD_PERMISSION";
@@ -443,7 +443,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
           retriever.release();
           photoDescriptor.close();
         }
-      } catch (IOException e) {
+      } catch (Exception e) {
         FLog.e(ReactConstants.TAG, "Could not get video metadata for " + photoUri.toString(), e);
         return false;
       }

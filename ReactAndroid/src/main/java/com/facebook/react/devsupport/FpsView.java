@@ -39,7 +39,7 @@ public class FpsView extends FrameLayout {
     super(reactContext);
     inflate(reactContext, R.layout.fps_view, this);
     mTextView = (TextView) findViewById(R.id.fps_text);
-    mFrameCallback = new FpsDebugFrameCallback(ChoreographerCompat.getInstance(), reactContext);
+    mFrameCallback = new FpsDebugFrameCallback(reactContext);
     mFPSMonitorRunnable = new FPSMonitorRunnable();
     setCurrentFPS(0, 0, 0, 0);
   }

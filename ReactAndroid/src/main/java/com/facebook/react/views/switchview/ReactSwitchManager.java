@@ -44,34 +44,8 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
       initMeasureFunction();
     }
 
-    private ReactSwitchShadowNode(ReactSwitchShadowNode node) {
-      super(node);
-      mWidth = node.mWidth;
-      mHeight = node.mHeight;
-      mMeasured = node.mMeasured;
-    }
-
     private void initMeasureFunction() {
       setMeasureFunction(this);
-    }
-
-    @Override
-    public ReactShadowNodeImpl mutableCopy(long instanceHandle) {
-      ReactSwitchShadowNode reactShadowNode = (ReactSwitchShadowNode) super.mutableCopy(instanceHandle);
-      reactShadowNode.initMeasureFunction();
-      return reactShadowNode;
-    }
-
-    @Override
-    public ReactShadowNodeImpl mutableCopyWithNewChildren(long instanceHandle) {
-      ReactSwitchShadowNode reactShadowNode = (ReactSwitchShadowNode) super.mutableCopyWithNewChildren(instanceHandle);
-      reactShadowNode.initMeasureFunction();
-      return reactShadowNode;
-    }
-
-    @Override
-    protected ReactSwitchShadowNode copy() {
-      return new ReactSwitchShadowNode(this);
     }
 
     @Override
@@ -88,7 +62,7 @@ public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
         ReactSwitch reactSwitch = new ReactSwitch(getThemedContext());
         reactSwitch.setShowText(false);
         final int spec = View.MeasureSpec.makeMeasureSpec(
-            ViewGroup.LayoutParams.WRAP_CONTENT,
+            0,
             View.MeasureSpec.UNSPECIFIED);
         reactSwitch.measure(spec, spec);
         mWidth = reactSwitch.getMeasuredWidth();

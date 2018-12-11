@@ -10,9 +10,10 @@ package com.facebook.react.bridge.queue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
+import android.os.SystemClock;
 import android.os.Looper;
 import android.os.Process;
-
+import android.util.Pair;
 import com.facebook.common.logging.FLog;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.AssertionException;
@@ -31,15 +32,25 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
   private final Looper mLooper;
   private final MessageQueueThreadHandler mHandler;
   private final String mAssertionErrorMessage;
+  private long mStartTimeMillis;
   private volatile boolean mIsFinished = false;
 
   private MessageQueueThreadImpl(
       String name,
       Looper looper,
       QueueThreadExceptionHandler exceptionHandler) {
+        this(name, looper, exceptionHandler, -1);
+  }
+
+  private MessageQueueThreadImpl(
+      String name,
+      Looper looper,
+      QueueThreadExceptionHandler exceptionHandler,
+      long startTimeMillis) {
     mName = name;
     mLooper = looper;
     mHandler = new MessageQueueThreadHandler(looper, exceptionHandler);
+    mStartTimeMillis = startTimeMillis;
     mAssertionErrorMessage = "Expected to be called from the '" + getName() + "' thread!";
   }
 
@@ -126,6 +137,12 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
     }
   }
 
+  @DoNotStrip
+  @Override
+  public long getStartTimeMillis() {
+    return mStartTimeMillis;
+  }
+
   public Looper getLooper() {
     return mLooper;
   }
@@ -180,21 +197,21 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
       final String name,
       long stackSize,
       QueueThreadExceptionHandler exceptionHandler) {
-    final SimpleSettableFuture<Looper> looperFuture = new SimpleSettableFuture<>();
+    final SimpleSettableFuture<Pair<Looper, Long>> dataFuture = new SimpleSettableFuture<>();
+    long startTimeMillis;
     Thread bgThread = new Thread(null,
         new Runnable() {
           @Override
           public void run() {
             Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
             Looper.prepare();
-
-            looperFuture.set(Looper.myLooper());
+            dataFuture.set(new Pair<>(Looper.myLooper(), SystemClock.uptimeMillis()));
             Looper.loop();
           }
         }, "mqt_" + name, stackSize);
     bgThread.start();
 
-    Looper myLooper = looperFuture.getOrThrow();
-    return new MessageQueueThreadImpl(name, myLooper, exceptionHandler);
+    Pair<Looper, Long> pair = dataFuture.getOrThrow();
+    return new MessageQueueThreadImpl(name, pair.first, exceptionHandler, pair.second);
   }
 }

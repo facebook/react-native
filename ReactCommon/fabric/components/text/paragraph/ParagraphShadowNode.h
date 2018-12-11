@@ -7,14 +7,14 @@
 
 #pragma once
 
-#include <fabric/components/text/ParagraphProps.h>
-#include <fabric/components/text/TextShadowNode.h>
-#include <fabric/components/view/ConcreteViewShadowNode.h>
-#include <fabric/core/ConcreteShadowNode.h>
-#include <fabric/core/ShadowNode.h>
-#include <fabric/core/LayoutContext.h>
-#include <fabric/textlayoutmanager/TextLayoutManager.h>
 #include <folly/Optional.h>
+#include <react/components/text/ParagraphProps.h>
+#include <react/components/text/TextShadowNode.h>
+#include <react/components/view/ConcreteViewShadowNode.h>
+#include <react/core/ConcreteShadowNode.h>
+#include <react/core/LayoutContext.h>
+#include <react/core/ShadowNode.h>
+#include <react/textlayoutmanager/TextLayoutManager.h>
 
 namespace facebook {
 namespace react {
@@ -28,16 +28,12 @@ using ParagraphEventEmitter = ViewEventEmitter;
  * containing and displaying text. Text content is represented as nested <Text>
  * and <RawText> components.
  */
-class ParagraphShadowNode:
-  public ConcreteViewShadowNode<
-    ParagraphComponentName,
-    ParagraphProps,
-    ParagraphEventEmitter
-  >,
-  public BaseTextShadowNode {
-
-public:
-
+class ParagraphShadowNode : public ConcreteViewShadowNode<
+                                ParagraphComponentName,
+                                ParagraphProps,
+                                ParagraphEventEmitter>,
+                            public BaseTextShadowNode {
+ public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
   /*
@@ -57,13 +53,12 @@ public:
   void layout(LayoutContext layoutContext) override;
   Size measure(LayoutConstraints layoutConstraints) const override;
 
-private:
-
+ private:
   /*
    * Creates a `LocalData` object (with `AttributedText` and
    * `TextLayoutManager`) if needed.
    */
-  void updateLocalData();
+  void updateLocalDataIfNeeded();
 
   SharedTextLayoutManager textLayoutManager_;
 
@@ -71,7 +66,7 @@ private:
    * Cached attributed string that represents the content of the subtree started
    * from the node.
    */
-  mutable folly::Optional<AttributedString> cachedAttributedString_ {};
+  mutable folly::Optional<AttributedString> cachedAttributedString_{};
 };
 
 } // namespace react

@@ -14,13 +14,12 @@ namespace react {
  * Represents retrieved image bitmap and any assotiated platform-specific info.
  */
 class ImageResponse final {
-
-public:
+ public:
   ImageResponse(const std::shared_ptr<void> &image);
 
   std::shared_ptr<void> getImage() const;
 
-private:
+ private:
   std::shared_ptr<void> image_;
 };
 

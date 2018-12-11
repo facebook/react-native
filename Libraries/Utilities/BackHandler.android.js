@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow
  * @format
  */
 
@@ -14,9 +15,7 @@ const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
 const DEVICE_BACK_EVENT = 'hardwareBackPress';
 
-type BackPressEventName = $Enum<{
-  backPress: string,
-}>;
+type BackPressEventName = 'backPress' | 'hardwareBackPress';
 
 const _backPressSubscriptions = [];
 
@@ -60,8 +59,19 @@ RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function() {
  * });
  * ```
  */
-const BackHandler = {
-  exitApp: function() {
+type TBackHandler = {|
+  +exitApp: () => void,
+  +addEventListener: (
+    eventName: BackPressEventName,
+    handler: Function,
+  ) => {remove: () => void},
+  +removeEventListener: (
+    eventName: BackPressEventName,
+    handler: Function,
+  ) => void,
+|};
+const BackHandler: TBackHandler = {
+  exitApp: function(): void {
     DeviceEventManager.invokeDefaultBackPressHandler();
   },
 
@@ -79,7 +89,7 @@ const BackHandler = {
       _backPressSubscriptions.push(handler);
     }
     return {
-      remove: () => BackHandler.removeEventListener(eventName, handler),
+      remove: (): void => BackHandler.removeEventListener(eventName, handler),
     };
   },
 

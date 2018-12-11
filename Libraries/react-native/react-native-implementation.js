@@ -10,10 +10,13 @@
 
 'use strict';
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
+
+let showedListViewDeprecation = false;
+let showedSwipeableListViewDeprecation = false;
 
 // Export React, plus some native additions.
-const ReactNative = {
+module.exports = {
   // Components
   get AccessibilityInfo() {
     return require('AccessibilityInfo');
@@ -58,6 +61,14 @@ const ReactNative = {
     return require('KeyboardAvoidingView');
   },
   get ListView() {
+    if (!showedListViewDeprecation) {
+      console.warn(
+        'ListView is deprecated and will be removed in a future release. ' +
+          'See https://fb.me/nolistview for more information',
+      );
+
+      showedListViewDeprecation = true;
+    }
     return require('ListView');
   },
   get MaskedViewIOS() {
@@ -109,6 +120,14 @@ const ReactNative = {
     return require('SwipeableFlatList');
   },
   get SwipeableListView() {
+    if (!showedSwipeableListViewDeprecation) {
+      console.warn(
+        'ListView and SwipeableListView are deprecated and will be removed in a future release. ' +
+          'See https://fb.me/nolistview for more information',
+      );
+
+      showedSwipeableListViewDeprecation = true;
+    }
     return require('SwipeableListView');
   },
   get TabBarIOS() {
@@ -119,9 +138,6 @@ const ReactNative = {
   },
   get TextInput() {
     return require('TextInput');
-  },
-  get ToastAndroid() {
-    return require('ToastAndroid');
   },
   get ToolbarAndroid() {
     return require('ToolbarAndroid');
@@ -176,9 +192,6 @@ const ReactNative = {
   get AsyncStorage() {
     return require('AsyncStorage');
   },
-  get BackAndroid() {
-    return require('BackAndroid');
-  }, // deprecated: use BackHandler instead
   get BackHandler() {
     return require('BackHandler');
   },
@@ -257,6 +270,9 @@ const ReactNative = {
   get TimePickerAndroid() {
     return require('TimePickerAndroid');
   },
+  get ToastAndroid() {
+    return require('ToastAndroid');
+  },
   get TVEventHandler() {
     return require('TVEventHandler');
   },
@@ -265,6 +281,9 @@ const ReactNative = {
   },
   get unstable_batchedUpdates() {
     return require('ReactNative').unstable_batchedUpdates;
+  },
+  get UTFSequence() {
+    return require('UTFSequence');
   },
   get Vibration() {
     return require('Vibration');
@@ -301,19 +320,27 @@ const ReactNative = {
 
   // Prop Types
   get ColorPropType() {
-    return require('ColorPropType');
+    return require('DeprecatedColorPropType');
   },
   get EdgeInsetsPropType() {
-    return require('EdgeInsetsPropType');
+    return require('DeprecatedEdgeInsetsPropType');
   },
   get PointPropType() {
-    return require('PointPropType');
+    return require('DeprecatedPointPropType');
   },
   get ViewPropTypes() {
     return require('DeprecatedViewPropTypes');
   },
 
   // Deprecated
+  get BackAndroid() {
+    invariant(
+      false,
+      'BackAndroid is deprecated and has been removed from this package. ' +
+        'Use BackHandler instead',
+    );
+  },
+
   get Navigator() {
     invariant(
       false,
@@ -330,5 +357,3 @@ const ReactNative = {
     );
   },
 };
-
-module.exports = ReactNative;

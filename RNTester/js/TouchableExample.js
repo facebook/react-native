@@ -10,9 +10,9 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Animated,
   Image,
   StyleSheet,
@@ -21,6 +21,7 @@ var {
   TouchableOpacity,
   Platform,
   TouchableNativeFeedback,
+  TouchableWithoutFeedback,
   View,
 } = ReactNative;
 
@@ -44,30 +45,13 @@ exports.examples = [
       'background color change as well with the activeOpacity and ' +
       'underlayColor props.',
     render: function() {
-      return (
-        <View>
-          <View style={styles.row}>
-            <TouchableHighlight
-              style={styles.wrapper}
-              onPress={() => console.log('stock THW image - highlight')}>
-              <Image source={heartImage} style={styles.image} />
-            </TouchableHighlight>
-            <TouchableHighlight
-              style={styles.wrapper}
-              activeOpacity={1}
-              tvParallaxProperties={{
-                pressMagnification: 1.3,
-                pressDuration: 0.6,
-              }}
-              underlayColor="rgb(210, 230, 255)"
-              onPress={() => console.log('custom THW text - highlight')}>
-              <View style={styles.wrapperCustom}>
-                <Text style={styles.text}>Tap Here For Custom Highlight!</Text>
-              </View>
-            </TouchableHighlight>
-          </View>
-        </View>
-      );
+      return <TouchableHighlightBox />;
+    },
+  },
+  {
+    title: '<TouchableWithoutFeedback>',
+    render: function() {
+      return <TouchableWithoutFeedbackBox />;
     },
   },
   {
@@ -150,6 +134,93 @@ exports.examples = [
   },
 ];
 
+class TouchableHighlightBox extends React.Component<{}, $FlowFixMeState> {
+  state = {
+    timesPressed: 0,
+  };
+
+  touchableOnPress = () => {
+    this.setState({
+      timesPressed: this.state.timesPressed + 1,
+    });
+  };
+
+  render() {
+    let textLog = '';
+    if (this.state.timesPressed > 1) {
+      textLog = this.state.timesPressed + 'x TouchableHighlight onPress';
+    } else if (this.state.timesPressed > 0) {
+      textLog = 'TouchableHighlight onPress';
+    }
+
+    return (
+      <View>
+        <View style={styles.row}>
+          <TouchableHighlight
+            style={styles.wrapper}
+            testID="touchable_highlight_image_button"
+            onPress={this.touchableOnPress}>
+            <Image source={heartImage} style={styles.image} />
+          </TouchableHighlight>
+          <TouchableHighlight
+            style={styles.wrapper}
+            testID="touchable_highlight_text_button"
+            activeOpacity={1}
+            tvParallaxProperties={{
+              pressMagnification: 1.3,
+              pressDuration: 0.6,
+            }}
+            underlayColor="rgb(210, 230, 255)"
+            onPress={this.touchableOnPress}>
+            <View style={styles.wrapperCustom}>
+              <Text style={styles.text}>Tap Here For Custom Highlight!</Text>
+            </View>
+          </TouchableHighlight>
+        </View>
+        <View style={styles.logBox}>
+          <Text testID="touchable_highlight_console">{textLog}</Text>
+        </View>
+      </View>
+    );
+  }
+}
+
+class TouchableWithoutFeedbackBox extends React.Component<{}, $FlowFixMeState> {
+  state = {
+    timesPressed: 0,
+  };
+
+  textOnPress = () => {
+    this.setState({
+      timesPressed: this.state.timesPressed + 1,
+    });
+  };
+
+  render() {
+    let textLog = '';
+    if (this.state.timesPressed > 1) {
+      textLog = this.state.timesPressed + 'x TouchableWithoutFeedback onPress';
+    } else if (this.state.timesPressed > 0) {
+      textLog = 'TouchableWithoutFeedback onPress';
+    }
+
+    return (
+      <View>
+        <TouchableWithoutFeedback
+          onPress={this.textOnPress}
+          testID="touchable_without_feedback_button">
+          <View style={styles.wrapperCustom}>
+            <Text style={styles.text}>Tap Here For No Feedback!</Text>
+          </View>
+        </TouchableWithoutFeedback>
+        <View style={styles.logBox}>
+          <Text testID="touchable_without_feedback_console">{textLog}</Text>
+        </View>
+      </View>
+    );
+  }
+}
+
 class TextOnPressBox extends React.Component<{}, $FlowFixMeState> {
   state = {
     timesPressed: 0,
@@ -162,7 +233,7 @@ class TextOnPressBox extends React.Component<{}, $FlowFixMeState> {
   };
 
   render() {
-    var textLog = '';
+    let textLog = '';
     if (this.state.timesPressed > 1) {
       textLog = this.state.timesPressed + 'x text onPress';
     } else if (this.state.timesPressed > 0) {
@@ -171,11 +242,14 @@ class TextOnPressBox extends React.Component<{}, $FlowFixMeState> {
 
     return (
       <View>
-        <Text style={styles.textBlock} onPress={this.textOnPress}>
+        <Text
+          style={styles.textBlock}
+          testID="tappable_text"
+          onPress={this.textOnPress}>
           Text has built-in onPress handling
         </Text>
         <View style={styles.logBox}>
-          <Text>{textLog}</Text>
+          <Text testID="tappable_text_console">{textLog}</Text>
         </View>
       </View>
     );
@@ -190,7 +264,7 @@ class TouchableFeedbackEvents extends React.Component<{}, $FlowFixMeState> {
   render() {
     return (
       <View testID="touchable_feedback_events">
-        <View style={[styles.row, {justifyContent: 'center'}]}>
+        <View style={[styles.row, styles.centered]}>
           <TouchableOpacity
             style={styles.wrapper}
             testID="touchable_feedback_events_button"
@@ -213,8 +287,8 @@ class TouchableFeedbackEvents extends React.Component<{}, $FlowFixMeState> {
   }
 
   _appendEvent = eventName => {
-    var limit = 6;
-    var eventLog = this.state.eventLog.slice(0, limit - 1);
+    const limit = 6;
+    const eventLog = this.state.eventLog.slice(0, limit - 1);
     eventLog.unshift(eventName);
     this.setState({eventLog});
   };
@@ -228,7 +302,7 @@ class TouchableDelayEvents extends React.Component<{}, $FlowFixMeState> {
   render() {
     return (
       <View testID="touchable_delay_events">
-        <View style={[styles.row, {justifyContent: 'center'}]}>
+        <View style={[styles.row, styles.centered]}>
           <TouchableOpacity
             style={styles.wrapper}
             testID="touchable_delay_events_button"
@@ -252,8 +326,8 @@ class TouchableDelayEvents extends React.Component<{}, $FlowFixMeState> {
   }
 
   _appendEvent = eventName => {
-    var limit = 6;
-    var eventLog = this.state.eventLog.slice(0, limit - 1);
+    const limit = 6;
+    const eventLog = this.state.eventLog.slice(0, limit - 1);
     eventLog.unshift(eventName);
     this.setState({eventLog});
   };
@@ -276,7 +350,7 @@ class ForceTouchExample extends React.Component<{}, $FlowFixMeState> {
         <View style={styles.forceTouchBox} testID="touchable_3dtouch_output">
           <Text>{this._renderConsoleText()}</Text>
         </View>
-        <View style={[styles.row, {justifyContent: 'center'}]}>
+        <View style={[styles.row, styles.centered]}>
           <View
             style={styles.wrapper}
             testID="touchable_3dtouch_button"
@@ -305,7 +379,7 @@ class TouchableHitSlop extends React.Component<{}, $FlowFixMeState> {
   };
 
   render() {
-    var log = '';
+    let log = '';
     if (this.state.timesPressed > 1) {
       log = this.state.timesPressed + 'x onPress';
     } else if (this.state.timesPressed > 0) {
@@ -314,7 +388,7 @@ class TouchableHitSlop extends React.Component<{}, $FlowFixMeState> {
 
     return (
       <View testID="touchable_hit_slop">
-        <View style={[styles.row, {justifyContent: 'center'}]}>
+        <View style={[styles.row, styles.centered]}>
           <TouchableOpacity
             onPress={this.onPress}
             style={styles.hitSlopWrapper}
@@ -360,6 +434,31 @@ class TouchableDisabled extends React.Component<{}> {
           <Text style={styles.button}>Enabled TouchableHighlight</Text>
         </TouchableHighlight>
 
+        <TouchableWithoutFeedback
+          onPress={() => console.log('TWOF has been clicked')}
+          disabled={true}>
+          <View style={styles.wrapperCustom}>
+            <Text
+              style={[
+                styles.button,
+                styles.nativeFeedbackButton,
+                styles.disabledButton,
+              ]}>
+              Disabled TouchableWithoutFeedback
+            </Text>
+          </View>
+        </TouchableWithoutFeedback>
+
+        <TouchableWithoutFeedback
+          onPress={() => console.log('TWOF has been clicked')}
+          disabled={false}>
+          <View style={styles.wrapperCustom}>
+            <Text style={[styles.button, styles.nativeFeedbackButton]}>
+              Enabled TouchableWithoutFeedback
+            </Text>
+          </View>
+        </TouchableWithoutFeedback>
+
         {Platform.OS === 'android' && (
           <TouchableNativeFeedback
             style={[styles.row, styles.block]}
@@ -392,16 +491,17 @@ class TouchableDisabled extends React.Component<{}> {
   }
 }
 
-var heartImage = {uri: 'https://pbs.twimg.com/media/BlXBfT3CQAA6cVZ.png:small'};
+const heartImage = {
+  uri: 'https://pbs.twimg.com/media/BlXBfT3CQAA6cVZ.png:small',
+};
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   row: {
     justifyContent: 'center',
     flexDirection: 'row',
   },
-  icon: {
-    width: 24,
-    height: 24,
+  centered: {
+    justifyContent: 'center',
   },
   image: {
     width: 50,

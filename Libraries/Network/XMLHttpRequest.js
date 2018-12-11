@@ -17,7 +17,7 @@ const RCTNetworking = require('RCTNetworking');
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
 const base64 = require('base64-js');
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
@@ -246,6 +246,8 @@ class XMLHttpRequest extends EventTarget(...XHR_EVENTS) {
       case 'blob':
         if (typeof this._response === 'object' && this._response) {
           this._cachedResponse = BlobManager.createFromOptions(this._response);
+        } else if (this._response === '') {
+          this._cachedResponse = null;
         } else {
           throw new Error(`Invalid response for blob: ${this._response}`);
         }

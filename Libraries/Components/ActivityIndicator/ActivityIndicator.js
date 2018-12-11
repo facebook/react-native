@@ -112,6 +112,7 @@ const ActivityIndicator = (
 
 // $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
 const ActivityIndicatorWithRef = React.forwardRef(ActivityIndicator);
+ActivityIndicatorWithRef.displayName = 'ActivityIndicator';
 
 ActivityIndicatorWithRef.defaultProps = {
   animating: true,

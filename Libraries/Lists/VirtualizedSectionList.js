@@ -13,7 +13,7 @@ const React = require('React');
 const View = require('View');
 const VirtualizedList = require('VirtualizedList');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 import type {ViewToken} from 'ViewabilityHelper';
 import type {Props as VirtualizedListProps} from 'VirtualizedList';

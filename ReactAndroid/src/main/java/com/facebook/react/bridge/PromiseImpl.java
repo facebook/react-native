@@ -55,6 +55,8 @@ public class PromiseImpl implements Promise {
   public void resolve(Object value) {
     if (mResolve != null) {
       mResolve.invoke(value);
+      mResolve = null;
+      mReject = null;
     }
   }
 
@@ -227,6 +229,8 @@ public class PromiseImpl implements Promise {
     }
 
     mReject.invoke(errorInfo);
+    mResolve = null;
+    mReject = null;
   }
 
   /* ------------

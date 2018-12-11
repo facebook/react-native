@@ -1,9 +1,8 @@
-/*
- *  Copyright (c) Facebook, Inc. and its affiliates.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
 #pragma once
 
@@ -47,8 +46,12 @@ extern const YGValue YGValueAuto;
 
 #ifdef __cplusplus
 
+YG_EXTERN_C_END
+
 extern bool operator==(const YGValue& lhs, const YGValue& rhs);
 extern bool operator!=(const YGValue& lhs, const YGValue& rhs);
+
+YG_EXTERN_C_BEGIN
 
 #endif
 
@@ -66,6 +69,7 @@ typedef float (
     *YGBaselineFunc)(YGNodeRef node, const float width, const float height);
 typedef void (*YGDirtiedFunc)(YGNodeRef node);
 typedef void (*YGPrintFunc)(YGNodeRef node);
+typedef void (*YGNodeCleanupFunc)(YGNodeRef node);
 typedef int (*YGLogger)(
     const YGConfigRef config,
     const YGNodeRef node,
@@ -80,6 +84,9 @@ WIN_EXPORT YGNodeRef YGNodeNew(void);
 WIN_EXPORT YGNodeRef YGNodeNewWithConfig(const YGConfigRef config);
 WIN_EXPORT YGNodeRef YGNodeClone(const YGNodeRef node);
 WIN_EXPORT void YGNodeFree(const YGNodeRef node);
+WIN_EXPORT void YGNodeFreeRecursiveWithCleanupFunc(
+    const YGNodeRef node,
+    YGNodeCleanupFunc cleanup);
 WIN_EXPORT void YGNodeFreeRecursive(const YGNodeRef node);
 WIN_EXPORT void YGNodeReset(const YGNodeRef node);
 WIN_EXPORT int32_t YGNodeGetInstanceCount(void);
@@ -109,6 +116,12 @@ WIN_EXPORT void YGNodeSetChildren(
     YGNodeRef const owner,
     const YGNodeRef children[],
     const uint32_t count);
+
+WIN_EXPORT void YGNodeSetIsReferenceBaseline(
+    YGNodeRef node,
+    bool isReferenceBaseline);
+
+WIN_EXPORT bool YGNodeIsReferenceBaseline(YGNodeRef node);
 
 WIN_EXPORT void YGNodeCalculateLayout(
     const YGNodeRef node,
@@ -153,11 +166,11 @@ WIN_EXPORT void YGNodeCopyStyle(
     const YGNodeRef dstNode,
     const YGNodeRef srcNode);
 
-void* YGNodeGetContext(YGNodeRef node);
-void YGNodeSetContext(YGNodeRef node, void* context);
+WIN_EXPORT void* YGNodeGetContext(YGNodeRef node);
+WIN_EXPORT void YGNodeSetContext(YGNodeRef node, void* context);
 void YGConfigSetPrintTreeFlag(YGConfigRef config, bool enabled);
 YGMeasureFunc YGNodeGetMeasureFunc(YGNodeRef node);
-void YGNodeSetMeasureFunc(YGNodeRef node, YGMeasureFunc measureFunc);
+WIN_EXPORT void YGNodeSetMeasureFunc(YGNodeRef node, YGMeasureFunc measureFunc);
 YGBaselineFunc YGNodeGetBaselineFunc(YGNodeRef node);
 void YGNodeSetBaselineFunc(YGNodeRef node, YGBaselineFunc baselineFunc);
 YGDirtiedFunc YGNodeGetDirtiedFunc(YGNodeRef node);

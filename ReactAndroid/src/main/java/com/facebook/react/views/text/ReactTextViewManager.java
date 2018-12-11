@@ -7,11 +7,18 @@
 
 package com.facebook.react.views.text;
 
+import android.text.Layout;
 import android.text.Spannable;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.yoga.YogaMeasureMode;
 import java.util.Map;
 import javax.annotation.Nullable;
 
@@ -63,7 +70,52 @@ public class ReactTextViewManager
   }
 
   @Override
+  public Object updateLocalData(ReactTextView view, ReactStylesDiffMap props, ReactStylesDiffMap localData) {
+    ReadableMap attributedString = localData.getMap("attributedString");
+
+    Spannable spanned = TextLayoutManager.getOrCreateSpannableForText(view.getContext(),
+      attributedString);
+    view.setSpanned(spanned);
+
+    TextAttributeProps textViewProps = new TextAttributeProps(props);
+
+    // TODO add textBreakStrategy prop into local Data
+    int textBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
+
+    return
+      new ReactTextUpdate(
+        spanned,
+        -1,             // TODO add this into local Data?
+        false,          // TODO add this into local Data
+        textViewProps.getStartPadding(),
+        textViewProps.getTopPadding(),
+        textViewProps.getEndPadding(),
+        textViewProps.getBottomPadding(),
+        textViewProps.getTextAlign(),
+        textBreakStrategy
+      );
+  }
+
+  @Override
   public @Nullable Map getExportedCustomDirectEventTypeConstants() {
     return MapBuilder.of("topTextLayout", MapBuilder.of("registrationName", "onTextLayout"));
+  }
+
+  public long measure(
+    ReactContext context,
+    ReadableNativeMap localData,
+    ReadableNativeMap props,
+    float width,
+    YogaMeasureMode widthMode,
+    float height,
+    YogaMeasureMode heightMode) {
+
+    return TextLayoutManager.measureText(context,
+      localData,
+      props,
+      width,
+      widthMode,
+      height,
+      heightMode);
   }
 }

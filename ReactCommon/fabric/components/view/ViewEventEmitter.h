@@ -8,8 +8,8 @@
 
 #include <memory>
 
-#include <fabric/core/LayoutMetrics.h>
-#include <fabric/core/ReactPrimitives.h>
+#include <react/core/LayoutMetrics.h>
+#include <react/core/ReactPrimitives.h>
 #include "TouchEventEmitter.h"
 
 namespace facebook {
@@ -19,9 +19,8 @@ class ViewEventEmitter;
 
 using SharedViewEventEmitter = std::shared_ptr<const ViewEventEmitter>;
 
-class ViewEventEmitter:
-  public TouchEventEmitter {
-public:
+class ViewEventEmitter : public TouchEventEmitter {
+ public:
   using TouchEventEmitter::TouchEventEmitter;
 
 #pragma mark - Accessibility
@@ -29,6 +28,7 @@ public:
   void onAccessibilityAction(const std::string &name) const;
   void onAccessibilityTap() const;
   void onAccessibilityMagicTap() const;
+  void onAccessibilityEscape() const;
 
 #pragma mark - Layout
 

@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <fabric/components/text/RawTextProps.h>
-#include <fabric/core/ConcreteShadowNode.h>
+#include <react/components/text/RawTextProps.h>
+#include <react/core/ConcreteShadowNode.h>
 
 namespace facebook {
 namespace react {
@@ -22,10 +22,7 @@ extern const char RawTextComponentName[];
  * <RawText> component must not have any children.
  */
 using RawTextShadowNode =
-  ConcreteShadowNode<
-    RawTextComponentName,
-    RawTextProps
-  >;
+    ConcreteShadowNode<RawTextComponentName, RawTextProps>;
 
 } // namespace react
 } // namespace facebook

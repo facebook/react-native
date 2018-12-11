@@ -8,6 +8,9 @@
 #include "EventEmitter.h"
 
 #include <folly/dynamic.h>
+#include <jsi/JSIDynamic.h>
+#include <jsi/jsi.h>
+#include <react/debug/SystraceSection.h>
 
 #include "RawEvent.h"
 
@@ -16,13 +19,15 @@ namespace react {
 
 // TODO(T29874519): Get rid of "top" prefix once and for all.
 /*
- * Capitalizes the first letter of the event type and adds "top" prefix
- * (e.g. "layout" becames "topLayout").
+ * Capitalizes the first letter of the event type and adds "top" prefix if
+ * necessary (e.g. "layout" becames "topLayout").
  */
 static std::string normalizeEventType(const std::string &type) {
   auto prefixedType = type;
-  prefixedType[0] = toupper(prefixedType[0]);
-  prefixedType.insert(0, "top");
+  if (type.find("top", 0) != 0) {
+    prefixedType.insert(0, "top");
+    prefixedType[3] = toupper(prefixedType[3]);
+  }
   return prefixedType;
 }
 
@@ -31,52 +36,72 @@ std::recursive_mutex &EventEmitter::DispatchMutex() {
   return mutex;
 }
 
-EventEmitter::EventEmitter(const EventTarget &eventTarget, const Tag &tag, const std::shared_ptr<const EventDispatcher> &eventDispatcher):
-  eventTarget_(eventTarget),
-  tag_(tag),
-  eventDispatcher_(eventDispatcher) {}
+ValueFactory EventEmitter::defaultPayloadFactory() {
+  static auto payloadFactory =
+      ValueFactory{[](jsi::Runtime &runtime) { return jsi::Object(runtime); }};
+  return payloadFactory;
+}
+
+EventEmitter::EventEmitter(
+    SharedEventTarget eventTarget,
+    Tag tag,
+    WeakEventDispatcher eventDispatcher)
+    : eventTarget_(std::move(eventTarget)),
+      weakEventTarget_({}),
+      eventDispatcher_(std::move(eventDispatcher)) {}
 
 void EventEmitter::dispatchEvent(
-  const std::string &type,
-  const folly::dynamic &payload,
-  const EventPriority &priority
-) const {
-  const auto &eventDispatcher = eventDispatcher_.lock();
+    const std::string &type,
+    const folly::dynamic &payload,
+    const EventPriority &priority) const {
+  dispatchEvent(
+      type,
+      [payload](jsi::Runtime &runtime) {
+        return valueFromDynamic(runtime, payload);
+      },
+      priority);
+}
+
+void EventEmitter::dispatchEvent(
+    const std::string &type,
+    const ValueFactory &payloadFactory,
+    const EventPriority &priority) const {
+  SystraceSection s("EventEmitter::dispatchEvent");
+
+  auto eventDispatcher = eventDispatcher_.lock();
   if (!eventDispatcher) {
     return;
   }
 
-  // Mixing `target` into `payload`.
-  assert(payload.isObject());
-  folly::dynamic extendedPayload = folly::dynamic::object("target", tag_);
-  extendedPayload.merge_patch(payload);
-
-  auto weakEventEmitter = std::weak_ptr<const EventEmitter> {shared_from_this()};
-
   eventDispatcher->dispatchEvent(
-    RawEvent(
-      normalizeEventType(type),
-      extendedPayload,
-      eventTarget_,
-      [weakEventEmitter]() {
-        auto eventEmitter = weakEventEmitter.lock();
-        if (!eventEmitter) {
-          return false;
-        }
-
-        return eventEmitter->getEnabled();
-      }
-    ),
-    priority
-  );
+      RawEvent(normalizeEventType(type), payloadFactory, eventTarget_),
+      priority);
 }
 
-void EventEmitter::setEnabled(bool enabled) const {
-  enabled_ = enabled;
+void EventEmitter::enable() const {
+  enableCounter_++;
+  toggleEventTargetOwnership_();
 }
 
-bool EventEmitter::getEnabled() const {
-  return enabled_;
+void EventEmitter::disable() const {
+  enableCounter_--;
+  toggleEventTargetOwnership_();
+}
+
+void EventEmitter::toggleEventTargetOwnership_() const {
+  bool shouldBeRetained = enableCounter_ > 0;
+  bool alreadyBeRetained = eventTarget_ != nullptr;
+  if (shouldBeRetained == alreadyBeRetained) {
+    return;
+  }
+
+  if (shouldBeRetained) {
+    eventTarget_ = weakEventTarget_.lock();
+    weakEventTarget_.reset();
+  } else {
+    weakEventTarget_ = eventTarget_;
+    eventTarget_.reset();
+  }
 }
 
 } // namespace react

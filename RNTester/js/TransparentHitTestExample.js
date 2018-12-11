@@ -10,15 +10,15 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {Text, View, TouchableOpacity} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {Text, View, TouchableOpacity, Alert} = ReactNative;
 
 class TransparentHitTestExample extends React.Component<{}> {
   render() {
     return (
       <View style={{flex: 1}}>
-        <TouchableOpacity onPress={() => alert('Hi!')}>
+        <TouchableOpacity onPress={() => Alert.alert('Alert', 'Hi!')}>
           <Text>HELLO!</Text>
         </TouchableOpacity>
 

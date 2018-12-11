@@ -9,8 +9,9 @@
 #import <memory>
 
 #import <React/RCTBridge.h>
+#import <React/RCTComponentViewFactory.h>
 #import <React/RCTPrimitives.h>
-#import <fabric/uimanager/FabricUIManager.h>
+#import <react/config/ReactNativeConfig.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,7 +26,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface RCTSurfacePresenter : NSObject
 
-- (instancetype)initWithBridge:(RCTBridge *)bridge;
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+                        config:(std::shared_ptr<const facebook::react::ReactNativeConfig>)config;
+
+@property (nonatomic, readonly) RCTComponentViewFactory *componentViewFactory;
 
 @end
 
@@ -37,6 +41,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)registerSurface:(RCTFabricSurface *)surface;
 - (void)unregisterSurface:(RCTFabricSurface *)surface;
+- (void)setProps:(NSDictionary *)props
+         surface:(RCTFabricSurface *)surface;
+
 - (nullable RCTFabricSurface *)surfaceForRootTag:(ReactTag)rootTag;
 
 /**
@@ -58,21 +65,15 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTSurfacePresenter (Deprecated)
 
 /**
- * We need to expose `uiManager` for registration
- * purposes. Eventually, we will move this down to C++ side.
- */
-- (std::shared_ptr<facebook::react::FabricUIManager>)uiManager_DO_NOT_USE;
-
-/**
  * Returns a underlying bridge.
  */
 - (RCTBridge *)bridge_DO_NOT_USE;
 
 @end
 
-@interface RCTBridge (RCTSurfacePresenter)
+@interface RCTBridge (Deprecated)
 
-- (RCTSurfacePresenter *)surfacePresenter;
+@property (nonatomic) RCTSurfacePresenter *surfacePresenter;
 
 @end
 

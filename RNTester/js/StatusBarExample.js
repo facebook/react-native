@@ -498,7 +498,7 @@ const examples = [
 
 exports.examples = examples;
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -517,11 +517,6 @@ var styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: '#eeeeee',
     padding: 10,
-  },
-  title: {
-    marginTop: 16,
-    marginBottom: 8,
-    fontWeight: 'bold',
   },
   modalButton: {
     marginTop: 10,

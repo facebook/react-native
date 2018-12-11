@@ -20,7 +20,7 @@ import com.facebook.react.util.JSStackTrace;
 @ReactModule(name = ExceptionsManagerModule.NAME)
 public class ExceptionsManagerModule extends BaseJavaModule {
 
-  protected static final String NAME = "ExceptionsManager";
+  public static final String NAME = "ExceptionsManager";
 
   private final DevSupportManager mDevSupportManager;
 

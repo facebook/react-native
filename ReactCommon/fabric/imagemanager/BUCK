@@ -32,7 +32,7 @@ rn_xplat_cxx_library(
         [
             ("", "*.h"),
         ],
-        prefix = "fabric/imagemanager",
+        prefix = "react/imagemanager",
     ),
     fbandroid_headers = subdir_glob(
         [
@@ -61,7 +61,7 @@ rn_xplat_cxx_library(
             ("", "*.h"),
             ("platform/ios", "RCTImagePrimitivesConversions.h"),
         ],
-        prefix = "fabric/imagemanager",
+        prefix = "react/imagemanager",
     ),
     ios_frameworks = [
         "$SDKROOT/System/Library/Frameworks/CoreGraphics.framework",
@@ -98,6 +98,7 @@ rn_xplat_cxx_library(
         "xplat//third-party/glog:glog",
         "xplat//yoga:yoga",
         react_native_xplat_target("fabric/core:core"),
+        react_native_xplat_target("fabric/mounting:mounting"),
         react_native_xplat_target("fabric/debug:debug"),
         react_native_xplat_target("fabric/graphics:graphics"),
     ],
@@ -114,7 +115,7 @@ fb_xplat_cxx_test(
         "-Wall",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
-    platforms = APPLE,
+    platforms = (ANDROID, APPLE),
     deps = [
         "xplat//folly:molly",
         "xplat//third-party/gmock:gtest",

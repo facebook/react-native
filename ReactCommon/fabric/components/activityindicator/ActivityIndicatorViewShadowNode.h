@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <fabric/components/activityindicator/ActivityIndicatorViewProps.h>
-#include <fabric/components/view/ConcreteViewShadowNode.h>
+#include <react/components/activityindicator/ActivityIndicatorViewProps.h>
+#include <react/components/view/ConcreteViewShadowNode.h>
 
 namespace facebook {
 namespace react {
@@ -18,11 +18,9 @@ extern const char ActivityIndicatorViewComponentName[];
 /*
  * `ShadowNode` for <ActivityIndicatorView> component.
  */
-using ActivityIndicatorViewShadowNode =
-  ConcreteViewShadowNode<
+using ActivityIndicatorViewShadowNode = ConcreteViewShadowNode<
     ActivityIndicatorViewComponentName,
-    ActivityIndicatorViewProps
-  >;
+    ActivityIndicatorViewProps>;
 
 } // namespace react
 } // namespace facebook

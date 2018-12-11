@@ -133,7 +133,7 @@
     return;
   }
 
-  [attributedText beginEditing];
+  __block CGFloat maximumFontLineHeight = 0;
 
   [attributedText enumerateAttribute:NSFontAttributeName
                              inRange:NSMakeRange(0, attributedText.length)
@@ -144,19 +144,21 @@
         return;
       }
 
-      if (maximumLineHeight <= font.lineHeight) {
-        return;
+      if (maximumFontLineHeight <= font.lineHeight) {
+        maximumFontLineHeight = font.lineHeight;
       }
+    }
+  ];
 
-      CGFloat baseLineOffset = maximumLineHeight / 2.0 - font.lineHeight / 2.0;
+  if (maximumLineHeight < maximumFontLineHeight) {
+    return;
+  }
 
-      [attributedText addAttribute:NSBaselineOffsetAttributeName
-                             value:@(baseLineOffset)
-                             range:range];
-     }
-   ];
+  CGFloat baseLineOffset = maximumLineHeight / 2.0 - maximumFontLineHeight / 2.0;
 
-   [attributedText endEditing];
+  [attributedText addAttribute:NSBaselineOffsetAttributeName
+                         value:@(baseLineOffset)
+                         range:NSMakeRange(0, attributedText.length)];
 }
 
 - (NSAttributedString *)attributedTextWithMeasuredAttachmentsThatFitSize:(CGSize)size
@@ -288,6 +290,9 @@
         RCTRoundPixelValue(attachmentSize.width),
         RCTRoundPixelValue(attachmentSize.height)
       }};
+      
+      NSRange truncatedGlyphRange = [layoutManager truncatedGlyphRangeInLineFragmentForGlyphAtIndex:range.location];
+      BOOL viewIsTruncated = NSIntersectionRange(range, truncatedGlyphRange).length != 0;
 
       RCTLayoutContext localLayoutContext = layoutContext;
       localLayoutContext.absolutePosition.x += frame.origin.x;
@@ -298,9 +303,11 @@
                         layoutDirection:self.layoutMetrics.layoutDirection
                           layoutContext:localLayoutContext];
 
-      // Reinforcing a proper frame origin for the Shadow View.
       RCTLayoutMetrics localLayoutMetrics = shadowView.layoutMetrics;
-      localLayoutMetrics.frame.origin = frame.origin;
+      localLayoutMetrics.frame.origin = frame.origin; // Reinforcing a proper frame origin for the Shadow View.
+      if (viewIsTruncated) {
+        localLayoutMetrics.displayType = RCTDisplayTypeNone;
+      }
       [shadowView layoutWithMetrics:localLayoutMetrics layoutContext:localLayoutContext];
     }
   ];

@@ -543,10 +543,12 @@ public class NativeViewHierarchyManager {
       ViewGroup view,
       ThemedReactContext themedContext) {
     if (view.getId() != View.NO_ID) {
-      throw new IllegalViewOperationException(
-          "Trying to add a root view with an explicit id already set. React Native uses " +
-          "the id field to track react tags and will overwrite this field. If that is fine, " +
-          "explicitly overwrite the id field to View.NO_ID before calling addRootView.");
+      FLog.e(
+        TAG,
+        "Trying to add a root view with an explicit id (" + view.getId() + ") already " +
+        "set. React Native uses the id field to track react tags and will overwrite this field. " +
+        "If that is fine, explicitly overwrite the id field to View.NO_ID before calling " +
+        "addRootView.");
     }
 
     mTagsToViews.put(tag, view);
@@ -560,6 +562,11 @@ public class NativeViewHierarchyManager {
    */
   protected synchronized void dropView(View view) {
     UiThreadUtil.assertOnUiThread();
+    if (mTagsToViewManagers.get(view.getId()) == null) {
+      // This view has already been dropped (likely due to a threading issue caused by async js
+      // execution). Ignore this drop operation.
+      return;
+    }
     if (!mRootTags.get(view.getId())) {
       // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
       resolveViewManager(view.getId()).onDropViewInstance(view);
@@ -570,7 +577,9 @@ public class NativeViewHierarchyManager {
       ViewGroupManager viewGroupManager = (ViewGroupManager) viewManager;
       for (int i = viewGroupManager.getChildCount(viewGroup) - 1; i >= 0; i--) {
         View child = viewGroupManager.getChildAt(viewGroup, i);
-        if (mTagsToViews.get(child.getId()) != null) {
+        if (child == null) {
+            FLog.e(TAG, "Unable to drop null child view");
+        } else if (mTagsToViews.get(child.getId()) != null) {
           dropView(child);
         }
       }

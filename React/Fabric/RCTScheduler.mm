@@ -7,37 +7,33 @@
 
 #import "RCTScheduler.h"
 
-#import <fabric/imagemanager/ImageManager.h>
-#import <fabric/uimanager/ContextContainer.h>
-#import <fabric/uimanager/Scheduler.h>
-#import <fabric/uimanager/SchedulerDelegate.h>
-#import <React/RCTImageLoader.h>
-#import <React/RCTBridge+Private.h>
+#import <react/uimanager/ContextContainer.h>
+#import <react/uimanager/Scheduler.h>
+#import <react/uimanager/SchedulerDelegate.h>
 
-#import "MainRunLoopEventBeat.h"
-#import "MessageQueueEventBeat.h"
+#import <React/RCTFollyConvert.h>
+
 #import "RCTConversions.h"
-
-@interface RCTBridge ()
-
-- (std::shared_ptr<facebook::react::MessageQueueThread>)jsMessageThread;
-
-@end
 
 using namespace facebook::react;
 
 class SchedulerDelegateProxy: public SchedulerDelegate {
 public:
-  SchedulerDelegateProxy(void *scheduler): scheduler_(scheduler) {}
+  SchedulerDelegateProxy(void *scheduler):
+    scheduler_(scheduler) {}
 
   void schedulerDidFinishTransaction(Tag rootTag, const ShadowViewMutationList &mutations) override {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
     [scheduler.delegate schedulerDidFinishTransaction:mutations rootTag:rootTag];
   }
 
-  void schedulerDidRequestPreliminaryViewAllocation(ComponentName componentName) override {
+  void schedulerDidRequestPreliminaryViewAllocation(SurfaceId surfaceId, ComponentName componentName, bool isLayoutable, ComponentHandle componentHandle) override {
+    if (!isLayoutable) {
+      return;
+    }
+
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
-    [scheduler.delegate schedulerDidRequestPreliminaryViewAllocationWithComponentName:RCTNSStringFromString(componentName, NSASCIIStringEncoding)];
+    [scheduler.delegate schedulerOptimisticallyCreateComponentViewWithComponentHandle:componentHandle];
   }
 
 private:
@@ -49,33 +45,11 @@ private:
   std::shared_ptr<SchedulerDelegateProxy> _delegateProxy;
 }
 
-- (instancetype)init
+- (instancetype)initWithContextContainer:(std::shared_ptr<void>)contextContatiner
 {
   if (self = [super init]) {
     _delegateProxy = std::make_shared<SchedulerDelegateProxy>((__bridge void *)self);
-
-    RCTBridge *bridge = [RCTBridge currentBridge];
-
-    SharedContextContainer contextContainer = std::make_shared<ContextContainer>();
-
-    EventBeatFactory synchronousBeatFactory = []() {
-      return std::make_unique<MainRunLoopEventBeat>();
-    };
-
-    EventBeatFactory asynchronousBeatFactory = [bridge]() {
-      return std::make_unique<MessageQueueEventBeat>(bridge.jsMessageThread);
-    };
-
-    contextContainer->registerInstance<EventBeatFactory>(synchronousBeatFactory, "synchronous");
-    contextContainer->registerInstance<EventBeatFactory>(asynchronousBeatFactory, "asynchronous");
-
-    contextContainer->registerInstance<std::shared_ptr<EventBeat>>(std::make_shared<MainRunLoopEventBeat>(), "synchronous");
-    contextContainer->registerInstance<std::shared_ptr<EventBeat>>(std::make_shared<MessageQueueEventBeat>(bridge.jsMessageThread), "asynchronous");
-
-    void *imageLoader = (__bridge void *)[[RCTBridge currentBridge] imageLoader];
-    contextContainer->registerInstance(std::make_shared<ImageManager>(imageLoader));
-
-    _scheduler = std::make_shared<Scheduler>(contextContainer);
+    _scheduler = std::make_shared<Scheduler>(std::static_pointer_cast<ContextContainer>(contextContatiner));
     _scheduler->setDelegate(_delegateProxy.get());
   }
 
@@ -87,37 +61,43 @@ private:
   _scheduler->setDelegate(nullptr);
 }
 
-- (void)registerRootTag:(ReactTag)tag
+- (void)startSurfaceWithSurfaceId:(SurfaceId)surfaceId
+                       moduleName:(NSString *)moduleName
+                     initailProps:(NSDictionary *)initialProps
+                layoutConstraints:(LayoutConstraints)layoutConstraints
+                    layoutContext:(LayoutContext)layoutContext;
 {
-  _scheduler->registerRootTag(tag);
+  auto props = convertIdToFollyDynamic(initialProps);
+  _scheduler->startSurface(
+      surfaceId,
+      RCTStringFromNSString(moduleName),
+      props,
+      layoutConstraints,
+      layoutContext);
+  _scheduler->renderTemplateToSurface(
+      surfaceId,
+      props.getDefault("navigationConfig")
+          .getDefault("initialUITemplate", "")
+          .getString());
 }
 
-- (void)unregisterRootTag:(ReactTag)tag
+- (void)stopSurfaceWithSurfaceId:(SurfaceId)surfaceId
 {
-  _scheduler->unregisterRootTag(tag);
+  _scheduler->stopSurface(surfaceId);
 }
 
-- (CGSize)measureWithLayoutConstraints:(LayoutConstraints)layoutConstraints
-                         layoutContext:(LayoutContext)layoutContext
-                               rootTag:(ReactTag)rootTag
-{
-  return RCTCGSizeFromSize(_scheduler->measure(rootTag, layoutConstraints, layoutContext));
-}
-
-- (void)constraintLayoutWithLayoutConstraints:(LayoutConstraints)layoutConstraints
+- (CGSize)measureSurfaceWithLayoutConstraints:(LayoutConstraints)layoutConstraints
                                 layoutContext:(LayoutContext)layoutContext
-                                      rootTag:(ReactTag)rootTag
+                                    surfaceId:(SurfaceId)surfaceId
 {
-  _scheduler->constraintLayout(rootTag, layoutConstraints, layoutContext);
+  return RCTCGSizeFromSize(_scheduler->measureSurface(surfaceId, layoutConstraints, layoutContext));
 }
 
-@end
-
-@implementation RCTScheduler (Deprecated)
-
-- (std::shared_ptr<FabricUIManager>)uiManager_DO_NOT_USE
+- (void)constraintSurfaceLayoutWithLayoutConstraints:(LayoutConstraints)layoutConstraints
+                                       layoutContext:(LayoutContext)layoutContext
+                                           surfaceId:(SurfaceId)surfaceId
 {
-  return _scheduler->getUIManager_DO_NOT_USE();
+  _scheduler->constraintSurfaceLayout(surfaceId, layoutConstraints, layoutContext);
 }
 
 @end

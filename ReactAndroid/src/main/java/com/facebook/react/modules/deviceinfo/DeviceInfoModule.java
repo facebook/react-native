@@ -24,11 +24,11 @@ import com.facebook.react.uimanager.DisplayMetricsHolder;
 /**
  * Module that exposes Android Constants to JS.
  */
-@ReactModule(name = DeviceInfoModule.sModuleName)
+@ReactModule(name = DeviceInfoModule.NAME)
 public class DeviceInfoModule extends BaseJavaModule implements
     LifecycleEventListener {
 
-  static final String sModuleName = "DeviceInfo";
+  public static final String NAME = "DeviceInfo";
 
   private @Nullable ReactApplicationContext mReactApplicationContext;
   private float mFontScale;
@@ -47,7 +47,7 @@ public class DeviceInfoModule extends BaseJavaModule implements
 
   @Override
   public String getName() {
-    return sModuleName;
+    return NAME;
   }
 
   @Override

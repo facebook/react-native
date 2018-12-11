@@ -10,35 +10,51 @@
 
 'use strict';
 
-var ProgressBar = require('ProgressBarAndroid');
-var React = require('React');
-var createReactClass = require('create-react-class');
-var RNTesterBlock = require('RNTesterBlock');
-var RNTesterPage = require('RNTesterPage');
+const ProgressBar = require('ProgressBarAndroid');
+const React = require('React');
+const RNTesterBlock = require('RNTesterBlock');
+const RNTesterPage = require('RNTesterPage');
 
-var TimerMixin = require('react-timer-mixin');
+import type {ProgressBarAndroidProps} from 'ProgressBarAndroid';
 
-var MovingBar = createReactClass({
-  displayName: 'MovingBar',
-  mixins: [TimerMixin],
+type MovingBarProps = $ReadOnly<{|
+  ...$Diff<
+    ProgressBarAndroidProps,
+    {
+      progress: ?number,
+    },
+  >,
+  indeterminate: false,
+|}>;
 
-  getInitialState: function() {
-    return {
-      progress: 0,
-    };
-  },
+type MovingBarState = {
+  progress: number,
+};
 
-  componentDidMount: function() {
-    this.setInterval(() => {
-      var progress = (this.state.progress + 0.02) % 1;
-      this.setState({progress: progress});
+class MovingBar extends React.Component<MovingBarProps, MovingBarState> {
+  _intervalID: ?IntervalID = null;
+
+  state = {
+    progress: 0,
+  };
+
+  componentDidMount() {
+    this._intervalID = setInterval(() => {
+      const progress = (this.state.progress + 0.02) % 1;
+      this.setState({progress});
     }, 50);
-  },
+  }
 
-  render: function() {
+  componentWillUnmount() {
+    if (this._intervalID != null) {
+      clearInterval(this._intervalID);
+    }
+  }
+
+  render() {
     return <ProgressBar progress={this.state.progress} {...this.props} />;
-  },
-});
+  }
+}
 
 class ProgressBarAndroidExample extends React.Component<{}> {
   static title = '<ProgressBarAndroid>';

@@ -303,7 +303,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       contentOffset.y = -(scrollViewSize.height - subviewSize.height) / 2.0;
     }
   }
-  super.contentOffset = contentOffset;
+
+  super.contentOffset = CGPointMake(
+    RCTSanitizeNaNValue(contentOffset.x, @"scrollView.contentOffset.x"),
+    RCTSanitizeNaNValue(contentOffset.y, @"scrollView.contentOffset.y"));
 }
 
 - (void)setFrame:(CGRect)frame
@@ -648,6 +651,7 @@ for (NSObject<UIScrollViewDelegate> *scrollViewListener in _scrollListeners) { \
 
 RCT_SCROLL_EVENT_HANDLER(scrollViewWillBeginDecelerating, onMomentumScrollBegin)
 RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
+RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
 
 - (void)addScrollListener:(NSObject<UIScrollViewDelegate> *)scrollListener
 {

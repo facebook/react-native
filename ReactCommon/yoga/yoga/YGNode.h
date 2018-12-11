@@ -1,9 +1,8 @@
-/*
- *  Copyright (c) Facebook, Inc. and its affiliates.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
 #pragma once
 #include <stdio.h>
@@ -17,6 +16,7 @@ struct YGNode {
   void* context_ = nullptr;
   YGPrintFunc print_ = nullptr;
   bool hasNewLayout_ = true;
+  bool isReferenceBaseline_ = false;
   YGNodeType nodeType_ = YGNodeTypeDefault;
   YGMeasureFunc measure_ = nullptr;
   YGBaselineFunc baseline_ = nullptr;
@@ -32,8 +32,8 @@ struct YGNode {
       {YGValueUndefined, YGValueUndefined}};
 
   YGFloatOptional relativePosition(
-      const YGFlexDirection& axis,
-      const float& axisSize) const;
+      const YGFlexDirection axis,
+      const float axisSize) const;
 
  public:
   YGNode() = default;
@@ -93,6 +93,10 @@ struct YGNode {
     return lineIndex_;
   }
 
+  bool isReferenceBaseline() {
+    return isReferenceBaseline_;
+  }
+
   // returns the YGNodeRef that owns this YGNode. An owner is used to identify
   // the YogaTree that a YGNode belongs to.
   // This method will return the parent of the YGNode when a YGNode only belongs
@@ -133,36 +137,36 @@ struct YGNode {
 
   // Methods related to positions, margin, padding and border
   YGFloatOptional getLeadingPosition(
-      const YGFlexDirection& axis,
-      const float& axisSize) const;
-  bool isLeadingPositionDefined(const YGFlexDirection& axis) const;
-  bool isTrailingPosDefined(const YGFlexDirection& axis) const;
+      const YGFlexDirection axis,
+      const float axisSize) const;
+  bool isLeadingPositionDefined(const YGFlexDirection axis) const;
+  bool isTrailingPosDefined(const YGFlexDirection axis) const;
   YGFloatOptional getTrailingPosition(
-      const YGFlexDirection& axis,
-      const float& axisSize) const;
+      const YGFlexDirection axis,
+      const float axisSize) const;
   YGFloatOptional getLeadingMargin(
-      const YGFlexDirection& axis,
-      const float& widthSize) const;
+      const YGFlexDirection axis,
+      const float widthSize) const;
   YGFloatOptional getTrailingMargin(
-      const YGFlexDirection& axis,
-      const float& widthSize) const;
-  float getLeadingBorder(const YGFlexDirection& flexDirection) const;
-  float getTrailingBorder(const YGFlexDirection& flexDirection) const;
+      const YGFlexDirection axis,
+      const float widthSize) const;
+  float getLeadingBorder(const YGFlexDirection flexDirection) const;
+  float getTrailingBorder(const YGFlexDirection flexDirection) const;
   YGFloatOptional getLeadingPadding(
-      const YGFlexDirection& axis,
-      const float& widthSize) const;
+      const YGFlexDirection axis,
+      const float widthSize) const;
   YGFloatOptional getTrailingPadding(
-      const YGFlexDirection& axis,
-      const float& widthSize) const;
+      const YGFlexDirection axis,
+      const float widthSize) const;
   YGFloatOptional getLeadingPaddingAndBorder(
-      const YGFlexDirection& axis,
-      const float& widthSize) const;
+      const YGFlexDirection axis,
+      const float widthSize) const;
   YGFloatOptional getTrailingPaddingAndBorder(
-      const YGFlexDirection& axis,
-      const float& widthSize) const;
+      const YGFlexDirection axis,
+      const float widthSize) const;
   YGFloatOptional getMarginForAxis(
-      const YGFlexDirection& axis,
-      const float& widthSize) const;
+      const YGFlexDirection axis,
+      const float widthSize) const;
   // Setters
 
   void setContext(void* context) {
@@ -209,6 +213,10 @@ struct YGNode {
 
   void setLineIndex(uint32_t lineIndex) {
     lineIndex_ = lineIndex;
+  }
+
+  void setIsReferenceBaseline(bool isReferenceBaseline) {
+    isReferenceBaseline_ = isReferenceBaseline;
   }
 
   void setOwner(YGNodeRef owner) {

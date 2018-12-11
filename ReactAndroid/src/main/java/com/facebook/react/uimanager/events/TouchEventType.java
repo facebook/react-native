@@ -11,18 +11,23 @@ package com.facebook.react.uimanager.events;
  * Touch event types that JS module RCTEventEmitter can understand
  */
 public enum TouchEventType {
-  START("topTouchStart"),
-  END("topTouchEnd"),
-  MOVE("topTouchMove"),
-  CANCEL("topTouchCancel");
+  START,
+  END,
+  MOVE,
+  CANCEL;
 
-  private final String mJSEventName;
-
-  TouchEventType(String jsEventName) {
-    mJSEventName = jsEventName;
-  }
-
-  public String getJSEventName() {
-    return mJSEventName;
+  public static String getJSEventName(TouchEventType type) {
+    switch (type) {
+      case START:
+        return "topTouchStart";
+      case END:
+        return "topTouchEnd";
+      case MOVE:
+        return "topTouchMove";
+      case CANCEL:
+        return "topTouchCancel";
+      default:
+        throw new IllegalArgumentException("Unexpected type " + type);
+    }
   }
 }

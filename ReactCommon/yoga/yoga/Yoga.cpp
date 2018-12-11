@@ -1,11 +1,9 @@
-/*
- *  Copyright (c) Facebook, Inc. and its affiliates.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
-
 #include "Yoga.h"
 #include <float.h>
 #include <string.h>
@@ -320,7 +318,9 @@ static void YGConfigFreeRecursive(const YGNodeRef root) {
   }
 }
 
-void YGNodeFreeRecursive(const YGNodeRef root) {
+void YGNodeFreeRecursiveWithCleanupFunc(
+    const YGNodeRef root,
+    YGNodeCleanupFunc cleanup) {
   while (YGNodeGetChildCount(root) > 0) {
     const YGNodeRef child = YGNodeGetChild(root, 0);
     if (child->getOwner() != root) {
@@ -330,7 +330,14 @@ void YGNodeFreeRecursive(const YGNodeRef root) {
     YGNodeRemoveChild(root, child);
     YGNodeFreeRecursive(child);
   }
+  if (cleanup != nullptr) {
+    cleanup(root);
+  }
   YGNodeFree(root);
+}
+
+void YGNodeFreeRecursive(const YGNodeRef root) {
+  return YGNodeFreeRecursiveWithCleanupFunc(root, nullptr);
 }
 
 void YGNodeReset(const YGNodeRef node) {
@@ -379,6 +386,17 @@ void YGConfigFree(const YGConfigRef config) {
 
 void YGConfigCopy(const YGConfigRef dest, const YGConfigRef src) {
   memcpy(dest, src, sizeof(YGConfig));
+}
+
+void YGNodeSetIsReferenceBaseline(YGNodeRef node, bool isReferenceBaseline) {
+  if (node->isReferenceBaseline() != isReferenceBaseline) {
+    node->setIsReferenceBaseline(isReferenceBaseline);
+    node->markDirtyAndPropogate();
+  }
+}
+
+bool YGNodeIsReferenceBaseline(YGNodeRef node) {
+  return node->isReferenceBaseline();
 }
 
 void YGNodeInsertChild(
@@ -1139,7 +1157,8 @@ static float YGBaseline(const YGNodeRef node) {
     if (child->getStyle().positionType == YGPositionTypeAbsolute) {
       continue;
     }
-    if (YGNodeAlignItem(node, child) == YGAlignBaseline) {
+    if (YGNodeAlignItem(node, child) == YGAlignBaseline ||
+        child->isReferenceBaseline()) {
       baselineChild = child;
       break;
     }
@@ -1212,9 +1231,9 @@ static inline bool YGNodeIsLayoutDimDefined(
 
 static YGFloatOptional YGNodeBoundAxisWithinMinAndMax(
     const YGNodeRef node,
-    const YGFlexDirection& axis,
-    const float& value,
-    const float& axisSize) {
+    const YGFlexDirection axis,
+    const float value,
+    const float axisSize) {
   YGFloatOptional min;
   YGFloatOptional max;
 
@@ -1362,6 +1381,16 @@ static void YGNodeComputeFlexBasisForChild(
         child->getMarginForAxis(YGFlexDirectionRow, ownerWidth));
     auto marginColumn = YGUnwrapFloatOptional(
         child->getMarginForAxis(YGFlexDirectionColumn, ownerWidth));
+
+    if (YGNodeAlignItem(node, child) == YGAlignStretch) {
+      if (isMainAxisRow && !YGFloatIsUndefined(height)) {
+        childHeight = height;
+        childHeightMeasureMode = YGMeasureModeExactly;
+      } else if (!isMainAxisRow && !YGFloatIsUndefined(width)) {
+        childWidth = width;
+        childWidthMeasureMode = YGMeasureModeExactly;
+      }
+    }
 
     if (isRowStyleDimDefined) {
       childWidth =
@@ -1851,7 +1880,9 @@ static bool YGNodeFixedSizeSetMeasuredDimensions(
 }
 
 static void YGZeroOutLayoutRecursivly(const YGNodeRef node) {
-  memset(&(node->getLayout()), 0, sizeof(YGLayout));
+  node->getLayout() = {};
+  node->setLayoutDimension(0, 0);
+  node->setLayoutDimension(0, 1);
   node->setHasNewLayout(true);
   node->cloneChildrenIfNeeded();
   const uint32_t childCount = YGNodeGetChildCount(node);
@@ -1901,7 +1932,7 @@ static float YGNodeCalculateAvailableInnerDim(
   return availableInnerDim;
 }
 
-static void YGNodeComputeFlexBasisForChildren(
+static float YGNodeComputeFlexBasisForChildren(
     const YGNodeRef node,
     const float availableInnerWidth,
     const float availableInnerHeight,
@@ -1910,8 +1941,8 @@ static void YGNodeComputeFlexBasisForChildren(
     YGDirection direction,
     YGFlexDirection mainAxis,
     const YGConfigRef config,
-    bool performLayout,
-    float& totalOuterFlexBasis) {
+    bool performLayout) {
+  float totalOuterFlexBasis = 0.0f;
   YGNodeRef singleFlexChild = nullptr;
   YGVector children = node->getChildren();
   YGMeasureMode measureModeMainDim =
@@ -1981,6 +2012,8 @@ static void YGNodeComputeFlexBasisForChildren(
         child->getLayout().computedFlexBasis +
         child->getMarginForAxis(mainAxis, availableInnerWidth));
   }
+
+  return totalOuterFlexBasis;
 }
 
 // This function assumes that all the children of node have their
@@ -2412,17 +2445,17 @@ static void YGResolveFlexibleLength(
 static void YGJustifyMainAxis(
     const YGNodeRef node,
     YGCollectFlexItemsRowValues& collectedFlexItemsValues,
-    const uint32_t& startOfLineIndex,
-    const YGFlexDirection& mainAxis,
-    const YGFlexDirection& crossAxis,
-    const YGMeasureMode& measureModeMainDim,
-    const YGMeasureMode& measureModeCrossDim,
-    const float& mainAxisownerSize,
-    const float& ownerWidth,
-    const float& availableInnerMainDim,
-    const float& availableInnerCrossDim,
-    const float& availableInnerWidth,
-    const bool& performLayout) {
+    const uint32_t startOfLineIndex,
+    const YGFlexDirection mainAxis,
+    const YGFlexDirection crossAxis,
+    const YGMeasureMode measureModeMainDim,
+    const YGMeasureMode measureModeCrossDim,
+    const float mainAxisownerSize,
+    const float ownerWidth,
+    const float availableInnerMainDim,
+    const float availableInnerCrossDim,
+    const float availableInnerWidth,
+    const bool performLayout) {
   const YGStyle& style = node->getStyle();
   const float leadingPaddingAndBorderMain = YGUnwrapFloatOptional(
       node->getLeadingPaddingAndBorder(mainAxis, ownerWidth));
@@ -2892,11 +2925,9 @@ static void YGNodelayoutImpl(
   const float availableInnerCrossDim =
       isMainAxisRow ? availableInnerHeight : availableInnerWidth;
 
-  float totalOuterFlexBasis = 0;
-
   // STEP 3: DETERMINE FLEX BASIS FOR EACH ITEM
 
-  YGNodeComputeFlexBasisForChildren(
+  float totalOuterFlexBasis = YGNodeComputeFlexBasisForChildren(
       node,
       availableInnerWidth,
       availableInnerHeight,
@@ -2905,8 +2936,7 @@ static void YGNodelayoutImpl(
       direction,
       mainAxis,
       config,
-      performLayout,
-      totalOuterFlexBasis);
+      performLayout);
 
   const bool flexBasisOverflows = measureModeMainDim == YGMeasureModeUndefined
       ? false
@@ -3608,7 +3638,27 @@ float YGRoundValueToPixelGrid(
     const bool forceCeil,
     const bool forceFloor) {
   float scaledValue = value * pointScaleFactor;
+  // We want to calculate `fractial` such that `floor(scaledValue) = scaledValue
+  // - fractial`.
   float fractial = fmodf(scaledValue, 1.0f);
+  if (fractial < 0) {
+    // This branch is for handling negative numbers for `value`.
+    //
+    // Regarding `floor` and `ceil`. Note that for a number x, `floor(x) <= x <=
+    // ceil(x)` even for negative numbers. Here are a couple of examples:
+    //   - x =  2.2: floor( 2.2) =  2, ceil( 2.2) =  3
+    //   - x = -2.2: floor(-2.2) = -3, ceil(-2.2) = -2
+    //
+    // Regarding `fmodf`. For fractional negative numbers, `fmodf` returns a
+    // negative number. For example, `fmodf(-2.2) = -0.2`. However, we want
+    // `fractial` to be the number such that subtracting it from `value` will
+    // give us `floor(value)`. In the case of negative numbers, adding 1 to
+    // `fmodf(value)` gives us this. Let's continue the example from above:
+    //   - fractial = fmodf(-2.2) = -0.2
+    //   - Add 1 to the fraction: fractial2 = fractial + 1 = -0.2 + 1 = 0.8
+    //   - Finding the `floor`: -2.2 - fractial2 = -2.2 - 0.8 = -3
+    ++fractial;
+  }
   if (YGFloatsEqual(fractial, 0)) {
     // First we check if the value is already rounded
     scaledValue = scaledValue - fractial;

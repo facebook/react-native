@@ -69,6 +69,13 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
   }
 }
 
+// We need RCTReachabilityCallback's and module methods to be called on the same thread so that we can have
+// guarantees about when we mess with the reachability callbacks.
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
+}
+
 #pragma mark - Lifecycle
 
 - (instancetype)initWithHost:(NSString *)host
@@ -102,6 +109,16 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
   if (_reachability) {
     SCNetworkReachabilityUnscheduleFromRunLoop(_reachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
     CFRelease(_reachability);
+  }
+}
+
+- (void)dealloc
+{
+  if (_firstTimeReachability) {
+    SCNetworkReachabilityUnscheduleFromRunLoop(self->_firstTimeReachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
+    CFRelease(self->_firstTimeReachability);
+    _firstTimeReachability = nil;
+    _resolve = nil;
   }
 }
 
@@ -176,6 +193,12 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
 RCT_EXPORT_METHOD(getCurrentConnectivity:(RCTPromiseResolveBlock)resolve
                   reject:(__unused RCTPromiseRejectBlock)reject)
 {
+  if (_firstTimeReachability) {
+    SCNetworkReachabilityUnscheduleFromRunLoop(self->_firstTimeReachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
+    CFRelease(self->_firstTimeReachability);
+    _firstTimeReachability = nil;
+    _resolve = nil;
+  }
   _firstTimeReachability = [self getReachabilityRef];
   _resolve = resolve;
 }

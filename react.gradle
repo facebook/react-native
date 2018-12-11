@@ -17,7 +17,9 @@ def bundleConfig = config.bundleConfig ? "${reactRoot}/${config.bundleConfig}" :
 
 
 afterEvaluate {
-    android.applicationVariants.all { def variant ->
+    def isAndroidLibrary = plugins.hasPlugin("com.android.library")
+    def variants = isAndroidLibrary ? android.libraryVariants : android.applicationVariants
+    variants.all { def variant ->
         // Create variant and target names
         def targetName = variant.name.capitalize()
         def targetPath = variant.dirName
@@ -96,6 +98,9 @@ afterEvaluate {
         def packageTask = variant.hasProperty("packageApplication")
             ? variant.packageApplication
             : tasks.findByName("package${targetName}")
+        if (variant.hasProperty("packageLibrary")) {
+            packageTask = variant.packageLibrary
+        }
 
         def resourcesDirConfigValue = config."resourcesDir${targetName}"
         if (resourcesDirConfigValue) {
@@ -122,9 +127,20 @@ afterEvaluate {
             group = "react"
             description = "copy bundled JS into ${targetName}."
 
-            from jsBundleDir
-            into file(config."jsBundleDir${targetName}" ?:
-                "$buildDir/intermediates/assets/${targetPath}")
+            if (config."jsBundleDir${targetName}") {
+                from jsBundleDir
+                into file(config."jsBundleDir${targetName}")
+            } else {
+                into ("$buildDir/intermediates")
+                into ("assets/${targetPath}") {
+                    from jsBundleDir
+                }
+
+                // Workaround for Android Gradle Plugin 3.2+ new asset directory
+                into ("merged_assets/${variant.name}/merge${targetName}Assets/out") {
+                    from jsBundleDir
+                }
+            }
 
             // mergeAssets must run first, as it clears the intermediates directory
             dependsOn(variant.mergeAssets)

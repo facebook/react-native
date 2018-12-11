@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
  */
 @DoNotStrip
 public interface CatalystInstance
-    extends MemoryPressureListener, JSInstance {
+    extends MemoryPressureListener, JSInstance, JSBundleLoaderDelegate {
   void runJSBundle();
 
   // Returns the status of running the JS bundle; waits for an answer if runJSBundle is running
@@ -63,6 +63,7 @@ public interface CatalystInstance
   <T extends JavaScriptModule> T getJSModule(Class<T> jsInterface);
   <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface);
   <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface);
+  NativeModule getNativeModule(String moduleName);
   <T extends JSIModule> T getJSIModule(Class<T> jsiModuleInterface);
   Collection<NativeModule> getNativeModules();
 

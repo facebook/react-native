@@ -6,15 +6,13 @@
  */
 #pragma once
 
-#include <fabric/components/view/ViewEventEmitter.h>
+#include <react/components/view/ViewEventEmitter.h>
 
 namespace facebook {
 namespace react {
 
-class ImageEventEmitter:
-  public ViewEventEmitter {
-
-public:
+class ImageEventEmitter : public ViewEventEmitter {
+ public:
   using ViewEventEmitter::ViewEventEmitter;
 
   void onLoadStart() const;

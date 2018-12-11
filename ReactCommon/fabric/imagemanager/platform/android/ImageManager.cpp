@@ -11,6 +11,8 @@ namespace facebook {
 namespace react {
 
 ImageManager::ImageManager(void *platformSpecificCounterpart) {
+  // Silence unused-private-field warning.
+  (void)self_;
   // Not implemented.
 }
 
@@ -20,6 +22,7 @@ ImageManager::~ImageManager() {
 
 ImageRequest ImageManager::requestImage(const ImageSource &imageSource) const {
   // Not implemented.
+  return {};
 }
 
 } // namespace react

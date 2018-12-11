@@ -28,11 +28,11 @@ aliases:
 
   - &restore-cache-android-packages
     keys:
-      - v1-android-sdkmanager-packages-api-27-alpha-{{ checksum "scripts/.tests.env" }}
+      - v1-android-sdkmanager-packages-api-28-alpha-{{ checksum "scripts/.tests.env" }}
   - &save-cache-android-packages
     paths:
       - /opt/android/sdk
-    key: v1-android-sdkmanager-packages-api-27-alpha-{{ checksum "scripts/.tests.env" }}
+    key: v1-android-sdkmanager-packages-api-28-alpha-{{ checksum "scripts/.tests.env" }}
 
   - &restore-cache-gradle
     keys:
@@ -49,21 +49,21 @@ aliases:
 
   - &restore-cache-ndk
     keys:
-      - v3-android-ndk-r17b-{{ checksum "scripts/android-setup.sh" }}
+      - v3-android-ndk-r17c-{{ checksum "scripts/android-setup.sh" }}
   - &save-cache-ndk
     paths:
       - /opt/ndk
-    key: v3-android-ndk-r17b-{{ checksum "scripts/android-setup.sh" }}
+    key: v3-android-ndk-r17c-{{ checksum "scripts/android-setup.sh" }}
 
   - &restore-cache-downloads-buck
     keys:
-      - v3-buck-v2018.07.23.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
-      - v3-buck-v2018.07.23.01-
+      - v3-buck-v2018.10.29.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
+      - v3-buck-v2018.10.29.01-
   - &save-cache-downloads-buck
     paths:
       - ~/buck
       - ~/okbuck
-    key: v3-buck-v2018.07.23.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}
+    key: v3-buck-v2018.10.29.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}
 
   - &restore-cache-watchman
     keys:
@@ -132,7 +132,7 @@ aliases:
     name: Install BUCK
     command: |
       if [[ ! -e ~/buck ]]; then
-        git clone https://github.com/facebook/buck.git ~/buck --branch v2018.07.23.01 --depth=1
+        git clone https://github.com/facebook/buck.git ~/buck --branch v2018.10.29.01 --depth=1
       fi
       cd ~/buck && ant
       buck --version
@@ -185,15 +185,26 @@ aliases:
     name: Lint code
     command: scripts/circleci/exec_swallow_error.sh yarn lint --format junit -o ~/react-native/reports/junit/eslint/results.xml
 
-  - &run-flow-checks
-    name: Check for errors in code using Flow
-    command: yarn flow check
+  - &run-flow-checks-ios
+    name: Check for errors in code using Flow (iOS)
+    command: yarn flow-check-ios
+
+  - &run-flow-checks-android
+    name: Check for errors in code using Flow (Android)
+    command: yarn flow-check-android
 
   - &run-sanity-checks
     name: Sanity checks
     command: |
       ./scripts/circleci/check_license.sh
-      ./scripts/circleci/check_cache.sh
+      ./scripts/circleci/validate_yarn_lockfile.sh
+    when: always
+
+  - &js-coverage
+    name: Test coverage
+    command: |
+      yarn test --coverage --maxWorkers=2
+      cat ./coverage/lcov.info | ./node_modules/.bin/coveralls
     when: always
 
   - &download-dependencies-gradle
@@ -333,20 +344,20 @@ js_defaults: &js_defaults
 android_defaults: &android_defaults
   <<: *defaults
   docker:
-    - image: circleci/android:api-27-node8-alpha
+    - image: circleci/android:api-28-node8-alpha
   resource_class: "large"
   environment:
     - TERM: "dumb"
     - ADB_INSTALL_TIMEOUT: 10
     - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
     - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
-    - ANDROID_NDK: '/opt/ndk/android-ndk-r17b'
+    - ANDROID_NDK: '/opt/ndk/android-ndk-r17c'
     - BUILD_THREADS: 2
 
 macos_defaults: &macos_defaults
   <<: *defaults
   macos:
-    xcode: "9.4.0"
+    xcode: "10.1.0"
 
 version: 2
 jobs:
@@ -377,7 +388,8 @@ jobs:
           at: ~/react-native
 
       - run: *run-lint-checks
-      - run: *run-flow-checks
+      - run: *run-flow-checks-ios
+      - run: *run-flow-checks-android
 
       - store_test_results:
           path: ~/react-native/reports/junit
@@ -554,33 +566,62 @@ jobs:
       - checkout
       - run: *setup-artifacts
 
-      - restore-cache: *restore-yarn-cache
+      - restore-cache: *restore-cache-analysis
       - run: *yarn
+
+      - run:
+          name: Analyze Shell Scripts
+          command: |
+            echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"
+            sudo apt-get install -y shellcheck
+            yarn add @octokit/rest@15.18.0
+            echo -e "\\x1B[36mAnalyzing shell scripts\\x1B[0m"; \
+            GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" \
+            GITHUB_OWNER="$CIRCLE_PROJECT_USERNAME" \
+            GITHUB_REPO="$CIRCLE_PROJECT_REPONAME" \
+            GITHUB_PR_NUMBER="$CIRCLE_PR_NUMBER" \
+            ./scripts/circleci/analyze_scripts.sh
+          when: always
 
       - run:
           name: Analyze Code
           command: |
-            if [ -n "$CIRCLE_PR_NUMBER" ]; then
-              echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"; yarn add @octokit/rest@15.10.0
-              echo -e "\\x1B[36mAnalyzing code\\x1B[0m"; GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" ./scripts/circleci/analyze_code.sh
-            else
-              echo "Skipping code analysis."
-            fi
+            echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"; yarn add @octokit/rest@15.18.0
+            echo -e "\\x1B[36mAnalyzing code\\x1B[0m"; \
+            GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" \
+            GITHUB_OWNER="$CIRCLE_PROJECT_USERNAME" \
+            GITHUB_REPO="$CIRCLE_PROJECT_REPONAME" \
+            GITHUB_PR_NUMBER="$CIRCLE_PR_NUMBER" \
+            ./scripts/circleci/analyze_code.sh
           when: always
 
-      - restore-cache: *restore-cache-analysis
       - run:
           name: Analyze Pull Request
           command: |
-            if [ -n "$CIRCLE_PR_NUMBER" ]; then
-              cd bots
-              yarn install --non-interactive --cache-folder ~/.cache/yarn
-              DANGER_GITHUB_API_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" yarn danger
-            else
-              echo "Skipping pull request analysis."
-            fi
+            echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"
+            cd bots
+            yarn install --non-interactive --cache-folder ~/.cache/yarn
+            echo -e "\\x1B[36mAnalyzing pull request\\x1B[0m"; \
+            DANGER_GITHUB_API_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" \
+            yarn danger
           when: always
       - save-cache: *save-cache-analysis
+
+  # Test Coverage
+  js_coverage:
+    <<: *js_defaults
+    environment:
+      - CI_BRANCH: $CIRCLE_BRANCH
+      - CI_PULL_REQUEST: $CIRCLE_PULL_REQUEST
+      - CI_BUILD_NUMBER: $CIRCLE_BUILD_NUM
+      - CI_BUILD_URL: $CIRCLE_BUILD_URL
+    steps:
+      - checkout
+      - restore-cache: *restore-yarn-cache
+      - run: *yarn
+      - run: *js-coverage
+      - store_artifacts:
+          path: ~/react-native/coverage/
 
   # Publishes new version onto npm
   # Only works on stable branches when a properly tagged commit is pushed
@@ -653,10 +694,6 @@ workflows:
           requires:
             - checkout_code
 
-      # Test JavaScript and Node 10 compatibility
-      - test_node10:
-          filters: *filter-ignore-gh-pages
-
       # Test Android
       - test_android:
           filters: *filter-ignore-gh-pages
@@ -674,19 +711,32 @@ workflows:
           requires:
             - checkout_code
 
+      # Tooling Compatibility Checks
+      - test_node10:
+          filters: *filter-ignore-gh-pages
+
+  releases:
+    jobs:
       # Only runs on vX.X.X tags if all tests are green
       - publish_npm_package:
           filters:
+            # ignore any commit on any branch by default
             branches:
-              only:
-                - /.*-stable/
+              ignore: /.*/
+            # only act on version tags
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
-          requires:
-            - test_javascript
-            - test_objc
-            - test_android
 
-      # Run code checks
+  analysis:
+    jobs:
+      # Run code checks on PRs from forks
       - analyze_pr:
-          filters: *filter-ignore-master-stable
+          filters:
+            branches:
+              only: /^pull\/.*$/
+
+      # Gather coverage on master
+      - js_coverage:
+          filters:
+            branches:
+              only: master

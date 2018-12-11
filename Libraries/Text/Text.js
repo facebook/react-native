@@ -10,10 +10,10 @@
 
 'use strict';
 
+const DeprecatedTextPropTypes = require('DeprecatedTextPropTypes');
 const React = require('React');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const TextAncestor = require('TextAncestor');
-const TextPropTypes = require('TextPropTypes');
 const Touchable = require('Touchable');
 const UIManager = require('UIManager');
 
@@ -27,10 +27,10 @@ import type {PressRetentionOffset, TextProps} from 'TextProps';
 
 type ResponseHandlers = $ReadOnly<{|
   onStartShouldSetResponder: () => boolean,
-  onResponderGrant: (event: SyntheticEvent<>, dispatchID: string) => void,
-  onResponderMove: (event: SyntheticEvent<>) => void,
-  onResponderRelease: (event: SyntheticEvent<>) => void,
-  onResponderTerminate: (event: SyntheticEvent<>) => void,
+  onResponderGrant: (event: PressEvent, dispatchID: string) => void,
+  onResponderMove: (event: PressEvent) => void,
+  onResponderRelease: (event: PressEvent) => void,
+  onResponderTerminate: (event: PressEvent) => void,
   onResponderTerminationRequest: () => boolean,
 |}>;
 
@@ -93,12 +93,12 @@ class TouchableText extends React.Component<Props, State> {
   touchableHandleLongPress: ?(event: PressEvent) => void;
   touchableHandlePress: ?(event: PressEvent) => void;
   touchableHandleResponderGrant: ?(
-    event: SyntheticEvent<>,
+    event: PressEvent,
     dispatchID: string,
   ) => void;
-  touchableHandleResponderMove: ?(event: SyntheticEvent<>) => void;
-  touchableHandleResponderRelease: ?(event: SyntheticEvent<>) => void;
-  touchableHandleResponderTerminate: ?(event: SyntheticEvent<>) => void;
+  touchableHandleResponderMove: ?(event: PressEvent) => void;
+  touchableHandleResponderRelease: ?(event: PressEvent) => void;
+  touchableHandleResponderTerminate: ?(event: PressEvent) => void;
   touchableHandleResponderTerminationRequest: ?() => boolean;
 
   state = {
@@ -108,10 +108,12 @@ class TouchableText extends React.Component<Props, State> {
     responseHandlers: null,
   };
 
-  static getDerivedStateFromProps(nextProps: Props, prevState: State): ?State {
+  static getDerivedStateFromProps(
+    nextProps: Props,
+    prevState: State,
+  ): $Shape<State> | null {
     return prevState.responseHandlers == null && isTouchable(nextProps)
       ? {
-          ...prevState,
           responseHandlers: prevState.createResponderHandlers(),
         }
       : null;
@@ -171,25 +173,25 @@ class TouchableText extends React.Component<Props, State> {
         }
         return shouldSetResponder;
       },
-      onResponderGrant: (event: SyntheticEvent<>, dispatchID: string): void => {
+      onResponderGrant: (event: PressEvent, dispatchID: string): void => {
         nullthrows(this.touchableHandleResponderGrant)(event, dispatchID);
         if (this.props.onResponderGrant != null) {
           this.props.onResponderGrant.call(this, event, dispatchID);
         }
       },
-      onResponderMove: (event: SyntheticEvent<>): void => {
+      onResponderMove: (event: PressEvent): void => {
         nullthrows(this.touchableHandleResponderMove)(event);
         if (this.props.onResponderMove != null) {
           this.props.onResponderMove.call(this, event);
         }
       },
-      onResponderRelease: (event: SyntheticEvent<>): void => {
+      onResponderRelease: (event: PressEvent): void => {
         nullthrows(this.touchableHandleResponderRelease)(event);
         if (this.props.onResponderRelease != null) {
           this.props.onResponderRelease.call(this, event);
         }
       },
-      onResponderTerminate: (event: SyntheticEvent<>): void => {
+      onResponderTerminate: (event: PressEvent): void => {
         nullthrows(this.touchableHandleResponderTerminate)(event);
         if (this.props.onResponderTerminate != null) {
           this.props.onResponderTerminate.call(this, event);
@@ -258,7 +260,7 @@ const RCTText = createReactNativeComponentClass(
 );
 
 const RCTVirtualText =
-  UIManager.RCTVirtualText == null
+  UIManager.getViewManagerConfig('RCTVirtualText') == null
     ? RCTText
     : createReactNativeComponentClass('RCTVirtualText', () => ({
         validAttributes: {
@@ -277,8 +279,9 @@ const Text = (
 };
 // $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
 const TextToExport = React.forwardRef(Text);
+TextToExport.displayName = 'Text';
 
 // TODO: Deprecate this.
-TextToExport.propTypes = TextPropTypes;
+TextToExport.propTypes = DeprecatedTextPropTypes;
 
 module.exports = (TextToExport: Class<NativeComponent<TextProps>>);

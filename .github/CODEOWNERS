@@ -9,6 +9,3 @@ React/CxxBridge/* @mhorowitz
 ReactAndroid/src/main/java/com/facebook/react/animated/* @janicduplessis
 **/*.md @hramos
 package.json @hramos
-local-cli/core/* @grabbou @kureev
-local-cli/link/* @grabbou @kureev
-local-cli/unlink/* @grabbou @kureev

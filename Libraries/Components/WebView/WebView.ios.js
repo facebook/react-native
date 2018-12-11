@@ -12,12 +12,11 @@
 
 const ActivityIndicator = require('ActivityIndicator');
 const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
-const EdgeInsetsPropType = require('EdgeInsetsPropType');
+const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
 const Linking = require('Linking');
 const PropTypes = require('prop-types');
 const React = require('React');
 const ReactNative = require('ReactNative');
-const ScrollView = require('ScrollView');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const UIManager = require('UIManager');
@@ -25,7 +24,7 @@ const View = require('View');
 const WebViewShared = require('WebViewShared');
 
 const deprecatedPropType = require('deprecatedPropType');
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 const keyMirror = require('fbjs/lib/keyMirror');
 const processDecelerationRate = require('processDecelerationRate');
 const requireNativeComponent = require('requireNativeComponent');
@@ -234,7 +233,7 @@ class WebView extends React.Component {
      * the scroll view. Defaults to {top: 0, left: 0, bottom: 0, right: 0}.
      * @platform ios
      */
-    contentInset: EdgeInsetsPropType,
+    contentInset: DeprecatedEdgeInsetsPropType,
     /**
      * Function that is invoked when the `WebView` loading starts or ends.
      */
@@ -561,10 +560,10 @@ class WebView extends React.Component {
 
   _getCommands() {
     if (!this.props.useWebKit) {
-      return UIManager.RCTWebView.Commands;
+      return UIManager.getViewManagerConfig('RCTWebView').Commands;
     }
 
-    return UIManager.RCTWKWebView.Commands;
+    return UIManager.getViewManagerConfig('RCTWKWebView').Commands;
   }
 
   /**

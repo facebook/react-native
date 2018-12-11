@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include <fabric/attributedstring/AttributedString.h>
-#include <fabric/core/LocalData.h>
-#include <fabric/textlayoutmanager/TextLayoutManager.h>
+#include <react/attributedstring/AttributedString.h>
+#include <react/core/LocalData.h>
+#include <react/textlayoutmanager/TextLayoutManager.h>
 
 namespace facebook {
 namespace react {
@@ -22,11 +22,8 @@ using SharedParagraphLocalData = std::shared_ptr<const ParagraphLocalData>;
  * LocalData for <Paragraph> component.
  * Represents what to render and how to render.
  */
-class ParagraphLocalData:
-  public LocalData {
-
-public:
-
+class ParagraphLocalData : public LocalData {
+ public:
   /*
    * All content of <Paragraph> component represented as an `AttributedString`.
    */
@@ -41,13 +38,16 @@ public:
   SharedTextLayoutManager getTextLayoutManager() const;
   void setTextLayoutManager(SharedTextLayoutManager textLayoutManager);
 
+  folly::dynamic getDynamic() const override;
+
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
   std::string getDebugName() const override;
   SharedDebugStringConvertibleList getDebugProps() const override;
+#endif
 
-private:
-
+ private:
   AttributedString attributedString_;
   SharedTextLayoutManager textLayoutManager_;
 };
