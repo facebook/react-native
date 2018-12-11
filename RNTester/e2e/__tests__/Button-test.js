@@ -8,10 +8,11 @@
  * @format
  */
 
-/* global element, by, expect */
+/* global device, element, by, expect */
 
 describe('Button', () => {
   beforeAll(async () => {
+    await device.reloadReactNative();
     await element(by.id('explorer_search')).replaceText('<Button>');
     await element(
       by.label('<Button> Simple React Native button component.'),
