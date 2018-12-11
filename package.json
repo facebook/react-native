@@ -116,10 +116,8 @@
     "jest",
     "lib",
     "rn-get-polyfills.js",
-    "setupBabel.js",
     "Libraries",
     "LICENSE",
-    "local-cli",
     "packager",
     "react.gradle",
     "React.podspec",
@@ -130,7 +128,7 @@
     "third-party-podspecs"
   ],
   "scripts": {
-    "start": "node ./local-cli/cli.js start",
+    "start": "node cli.js start",
     "test": "jest",
     "test-ci": "JEST_JUNIT_OUTPUT=\"reports/junit/js-test-results.xml\" jest --maxWorkers=2 --ci --testResultsProcessor=\"jest-junit\"",
     "flow": "flow",

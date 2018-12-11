@@ -7,7 +7,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 def config = project.hasProperty("react") ? project.react : [];
 
-def cliPath = config.cliPath ?: "node_modules/react-native/local-cli/cli.js"
+def cliPath = config.cliPath ?: "node_modules/react-native/cli.js"
 def bundleAssetName = config.bundleAssetName ?: "index.android.bundle"
 def entryFile = config.entryFile ?: "index.android.js"
 def bundleCommand = config.bundleCommand ?: "bundle"

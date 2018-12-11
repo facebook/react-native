@@ -7,10 +7,12 @@
  * @format
  */
 
-var cliEntry = require('react-native-local-cli');
+'use strict';
+
+var cli = require('react-native-local-cli');
 
 if (require.main === module) {
-  cliEntry.run();
+  cli.run();
 }
 
-module.exports = cliEntry;
+module.exports = cli;

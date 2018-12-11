@@ -84,7 +84,7 @@ fi
 
 [ -z "$NODE_ARGS" ] && export NODE_ARGS=""
 
-[ -z "$CLI_PATH" ] && export CLI_PATH="$REACT_NATIVE_DIR/local-cli/cli.js"
+[ -z "$CLI_PATH" ] && export CLI_PATH="$REACT_NATIVE_DIR/cli.js"
 
 [ -z "$BUNDLE_COMMAND" ] && BUNDLE_COMMAND="bundle"
 
