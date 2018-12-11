@@ -31,7 +31,6 @@ type Props = {
     ComponentExamples: Array<RNTesterExample>,
     APIExamples: Array<RNTesterExample>,
   },
-  searchTextInputStyle: TextStyleProp,
   style?: ?ViewStyleProp,
 };
 
@@ -181,7 +180,7 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
           }}
           placeholder="Search..."
           underlineColorAndroid="transparent"
-          style={[styles.searchTextInput, this.props.searchTextInputStyle]}
+          style={styles.searchTextInput}
           testID="explorer_search"
           value={this.state.filter}
         />
