@@ -659,6 +659,16 @@ struct RCTInstanceCallback : public InstanceCallback {
       }
     }
 
+    if (RCTTurboModuleEnabled() && [module conformsToProtocol:@protocol(RCTTurboModule)]) {
+#if RCT_DEBUG
+      // TODO: don't ask for extra module for when TurboModule is enabled.
+      RCTLogError(@"NativeModule '%@' was marked as TurboModule, but provided as an extra NativeModule "
+                  "by the class '%@', ignoring.",
+                  moduleName, moduleClass);
+#endif
+      continue;
+    }
+
     // Instantiate moduleData container
     RCTModuleData *moduleData = [[RCTModuleData alloc] initWithModuleInstance:module bridge:self];
     _moduleDataByName[moduleName] = moduleData;
