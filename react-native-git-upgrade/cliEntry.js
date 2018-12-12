@@ -114,10 +114,18 @@ function readPackageFiles(useYarn) {
     'package.json',
   );
   const pakPath = path.resolve(process.cwd(), 'package.json');
+  const appPath = path.resolve(process.cwd(), 'app.json');
+  let app = null;
+  try {
+    app = parseJsonFile(appPath);
+  } catch (err) {
+    log.warn('Unable to parse app.json', err.message);
+  }
   return {
     reactNativeNodeModulesPak: parseJsonFile(reactNativeNodeModulesPakPath),
     reactNodeModulesPak: parseJsonFile(reactNodeModulesPakPath),
     pak: parseJsonFile(pakPath),
+    app: app,
   };
 }
 
@@ -305,8 +313,9 @@ async function run(requestedVersion, cliArgs) {
       reactNativeNodeModulesPak,
       reactNodeModulesPak,
       pak,
+      app,
     } = readPackageFiles(useYarn);
-    const appName = pak.name;
+    const appName = (app && app.name) || pak.name;
     const currentVersion = reactNativeNodeModulesPak.version;
     const currentReactVersion = reactNodeModulesPak.version;
     const declaredVersion = pak.dependencies['react-native'];
