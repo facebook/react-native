@@ -16,6 +16,7 @@ import android.view.Surface;
 import android.graphics.PorterDuff;
 import android.graphics.SurfaceTexture;
 import android.view.TextureView;
+import android.os.Build;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.common.ReactConstants;
@@ -23,13 +24,15 @@ import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ViewProps;
+import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.bridge.LifecycleEventListener;
 
 /**
  * Shadow node for ART virtual tree root - ARTSurfaceView
  */
 public class ARTSurfaceViewShadowNode extends LayoutShadowNode
-  implements TextureView.SurfaceTextureListener {
+  implements TextureView.SurfaceTextureListener, LifecycleEventListener {
 
   private @Nullable Surface mSurface;
 
@@ -95,6 +98,33 @@ public class ARTSurfaceViewShadowNode extends LayoutShadowNode
       markChildrenUpdatesSeen(child);
     }
   }
+
+  @Override
+  public void setThemedContext(ThemedReactContext themedContext) {
+    super.setThemedContext(themedContext);
+    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N) {
+      themedContext.addLifecycleEventListener(this);
+    }
+  }
+
+  @Override
+  public void dispose() {
+    super.dispose();
+    if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N) {
+      getThemedContext().removeLifecycleEventListener(this);
+    }
+  }
+
+  @Override
+  public void onHostResume() {
+    drawOutput();
+  }
+
+  @Override
+  public void onHostPause() {}
+
+  @Override
+  public void onHostDestroy() {}
 
   @Override
   public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
