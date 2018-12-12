@@ -57,11 +57,11 @@ public class ARTSurfaceViewShadowNode extends LayoutShadowNode
   @Override
   public void onCollectExtraUpdates(UIViewOperationQueue uiUpdater) {
     super.onCollectExtraUpdates(uiUpdater);
-    drawOutput();
+    drawOutput(false);
     uiUpdater.enqueueUpdateExtraData(getReactTag(), this);
   }
 
-  private void drawOutput() {
+  private void drawOutput(boolean markAsUpdated) {
     if (mSurface == null || !mSurface.isValid()) {
       markChildrenUpdatesSeen(this);
       return;
@@ -78,16 +78,28 @@ public class ARTSurfaceViewShadowNode extends LayoutShadowNode
       for (int i = 0; i < getChildCount(); i++) {
         ARTVirtualNode child = (ARTVirtualNode) getChildAt(i);
         child.draw(canvas, paint, 1f);
-        child.markUpdateSeen();
+        if (markAsUpdated) {
+          child.markUpdated();
+        } else {
+          child.markUpdateSeen();
+        }
       }
 
       if (mSurface == null) {
         return;
       }
-
       mSurface.unlockCanvasAndPost(canvas);
     } catch (IllegalArgumentException | IllegalStateException e) {
       FLog.e(ReactConstants.TAG, e.getClass().getSimpleName() + " in Surface.unlockCanvasAndPost");
+    }
+  }
+
+  public void setupSurfaceTextureListener(ARTSurfaceView surfaceView) {
+    SurfaceTexture surface = surfaceView.getSurfaceTexture();
+    surfaceView.setSurfaceTextureListener(this);
+    if (surface != null && mSurface == null) {
+      mSurface = new Surface(surface);
+      drawOutput(true);
     }
   }
 
@@ -117,7 +129,7 @@ public class ARTSurfaceViewShadowNode extends LayoutShadowNode
 
   @Override
   public void onHostResume() {
-    drawOutput();
+    drawOutput(false);
   }
 
   @Override
@@ -129,7 +141,7 @@ public class ARTSurfaceViewShadowNode extends LayoutShadowNode
   @Override
   public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
     mSurface = new Surface(surface);
-    drawOutput();
+    drawOutput(false);
   }
 
   @Override
