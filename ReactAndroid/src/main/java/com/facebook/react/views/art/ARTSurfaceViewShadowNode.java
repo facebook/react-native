@@ -104,7 +104,7 @@ public class ARTSurfaceViewShadowNode extends LayoutShadowNode
 
   @Override
   public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-    surface.release();
+    mSurface.release();
     mSurface = null;
     return true;
   }
