@@ -231,7 +231,7 @@
     "prettier": "1.13.6",
     "react": "16.6.3",
     "react-native-dummy": "0.1.0",
-    "react-test-renderer": "16.6.3",
+    "react-test-renderer": "16.7.0-alpha.2",
     "shelljs": "^0.7.8"
   },
   "detox": {
