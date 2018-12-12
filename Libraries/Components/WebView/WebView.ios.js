@@ -286,6 +286,16 @@ class WebView extends React.Component {
     ]),
 
     /**
+     * Used on Android only to disable Hardware Acceleration if needed
+     * Hardware acceleration can not be enabled at view level but it can be
+     * disabled see:
+     * https://developer.android.com/guide/topics/graphics/hardware-accel
+     *
+     * @platform android
+     */
+    hardwareAccelerationEnabledExperimental: PropTypes.bool,
+
+    /**
      * Boolean value to enable JavaScript in the `WebView`. Used on Android only
      * as JavaScript is enabled by default on iOS. The default value is `true`.
      * @platform android

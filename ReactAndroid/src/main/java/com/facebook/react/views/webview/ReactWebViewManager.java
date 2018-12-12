@@ -16,6 +16,7 @@ import android.graphics.Picture;
 import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
+import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
@@ -83,6 +84,7 @@ import org.json.JSONObject;
  *  - canGoBack - boolean, whether there is anything on a history stack to go back
  *  - canGoForward - boolean, whether it is possible to request GO_FORWARD command
  */
+@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 @ReactModule(name = ReactWebViewManager.REACT_CLASS)
 public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
@@ -437,8 +439,20 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     if (ReactBuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
       WebView.setWebContentsDebuggingEnabled(true);
     }
-
     return webView;
+  }
+
+  @ReactProp(name = "hardwareAccelerationEnabledExperimental", defaultBoolean = true)
+  public void sethardwareAccelerationEnabledExperimental(WebView view, boolean enabled) {
+    // Hardware acceleration can not be enabled at view level but it can be disabled
+    // see: https://developer.android.com/guide/topics/graphics/hardware-accel
+    //
+    // Disabling hardware acceleration is sometimes required to workaround chromium bugs:
+    // https://bugs.chromium.org/p/chromium/issues/detail?id=501901
+    //
+    if (!enabled) {
+      view.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+    }
   }
 
   @ReactProp(name = "javaScriptEnabled")
