@@ -53,7 +53,7 @@ bool YGFloatOptional::operator!=(float val) const {
   return !(*this == val);
 }
 
-YGFloatOptional YGFloatOptional::operator+(const YGFloatOptional& op) {
+YGFloatOptional YGFloatOptional::operator+(const YGFloatOptional& op) const {
   if (!isUndefined_ && !op.isUndefined_) {
     return YGFloatOptional(value_ + op.value_);
   }

@@ -30,7 +30,7 @@ struct YGFloatOptional {
     return isUndefined_;
   }
 
-  YGFloatOptional operator+(const YGFloatOptional& op);
+  YGFloatOptional operator+(const YGFloatOptional& op) const;
   bool operator>(const YGFloatOptional& op) const;
   bool operator<(const YGFloatOptional& op) const;
   bool operator>=(const YGFloatOptional& op) const;
