@@ -28,26 +28,26 @@ bool YGStyle::operator==(const YGStyle& style) {
   if (areNonFloatValuesEqual && !flex.isUndefined() &&
       !style.flex.isUndefined()) {
     areNonFloatValuesEqual =
-        areNonFloatValuesEqual && flex.getValue() == style.flex.getValue();
+        areNonFloatValuesEqual && flex == style.flex;
   }
 
   areNonFloatValuesEqual = areNonFloatValuesEqual &&
       flexGrow.isUndefined() == style.flexGrow.isUndefined();
   if (areNonFloatValuesEqual && !flexGrow.isUndefined()) {
     areNonFloatValuesEqual = areNonFloatValuesEqual &&
-        flexGrow.getValue() == style.flexGrow.getValue();
+        flexGrow == style.flexGrow;
   }
 
   areNonFloatValuesEqual = areNonFloatValuesEqual &&
       flexShrink.isUndefined() == style.flexShrink.isUndefined();
   if (areNonFloatValuesEqual && !style.flexShrink.isUndefined()) {
     areNonFloatValuesEqual = areNonFloatValuesEqual &&
-        flexShrink.getValue() == style.flexShrink.getValue();
+        flexShrink == style.flexShrink;
   }
 
   if (!(aspectRatio.isUndefined() && style.aspectRatio.isUndefined())) {
     areNonFloatValuesEqual = areNonFloatValuesEqual &&
-        aspectRatio.getValue() == style.aspectRatio.getValue();
+        aspectRatio == style.aspectRatio;
   }
 
   return areNonFloatValuesEqual;

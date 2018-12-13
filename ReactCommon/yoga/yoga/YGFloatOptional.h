@@ -17,11 +17,6 @@ struct YGFloatOptional {
   explicit constexpr YGFloatOptional(float value) : value_(value) {}
   constexpr YGFloatOptional() = default;
 
-  // Program will terminate if the value of an undefined is accessed. Please
-  // make sure to check if the optional is defined before calling this function.
-  // To check if float optional is defined, use `isUndefined()`.
-  float getValue() const;
-
   // returns the wrapped value, or a value x with YGIsUndefined(x) == true
   float unwrap() const {
     return value_;

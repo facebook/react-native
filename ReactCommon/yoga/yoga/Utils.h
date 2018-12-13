@@ -60,8 +60,8 @@ bool YGFloatsEqual(const float a, const float b);
 float YGFloatMax(const float a, const float b);
 
 YGFloatOptional YGFloatOptionalMax(
-    const YGFloatOptional& op1,
-    const YGFloatOptional& op2);
+    const YGFloatOptional op1,
+    const YGFloatOptional op2);
 
 float YGFloatMin(const float a, const float b);
 

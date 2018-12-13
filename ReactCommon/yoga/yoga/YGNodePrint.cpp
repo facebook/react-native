@@ -43,7 +43,7 @@ static void appendFloatOptionalIfDefined(
     const string key,
     const YGFloatOptional num) {
   if (!num.isUndefined()) {
-    appendFormatedString(base, "%s: %g; ", key.c_str(), num.getValue());
+    appendFormatedString(base, "%s: %g; ", key.c_str(), num.unwrap());
   }
 }
 
