@@ -8,6 +8,7 @@
 
 #include <cmath>
 #include <limits>
+#include "Yoga-internal.h"
 
 struct YGFloatOptional {
  private:
@@ -18,7 +19,7 @@ struct YGFloatOptional {
   constexpr YGFloatOptional() = default;
 
   // returns the wrapped value, or a value x with YGIsUndefined(x) == true
-  float unwrap() const {
+  constexpr float unwrap() const {
     return value_;
   }
 
@@ -26,14 +27,32 @@ struct YGFloatOptional {
     return std::isnan(value_);
   }
 
-  YGFloatOptional operator+(YGFloatOptional op) const;
-  bool operator>(YGFloatOptional op) const;
-  bool operator<(YGFloatOptional op) const;
-  bool operator>=(YGFloatOptional op) const;
-  bool operator<=(YGFloatOptional op) const;
-  bool operator==(YGFloatOptional op) const;
-  bool operator!=(YGFloatOptional op) const;
+  YGFloatOptional operator+(YGFloatOptional op) const {
+    return YGFloatOptional{value_ + op.value_};
+  }
+  bool operator>(YGFloatOptional op) const {
+    return value_ > op.value_;
+  }
+  bool operator<(YGFloatOptional op) const {
+    return value_ < op.value_;
+  }
+  bool operator>=(YGFloatOptional op) const {
+    return *this > op || *this == op;
+  }
+  bool operator<=(YGFloatOptional op) const {
+    return *this < op || *this == op;
+  }
+  bool operator==(YGFloatOptional op) const {
+    return value_ == op.value_ || (isUndefined() && op.isUndefined());
+  }
+  bool operator!=(YGFloatOptional op) const {
+    return !(*this == op);
+  }
 
-  bool operator==(float val) const;
-  bool operator!=(float val) const;
+  bool operator==(float val) const {
+    return value_ == val || (isUndefined() && yoga::isUndefined(val));
+  }
+  bool operator!=(float val) const {
+    return !(*this == val);
+  }
 };
