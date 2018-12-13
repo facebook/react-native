@@ -236,20 +236,18 @@ void YGNode::setPosition(
       relativePosition(crossAxis, crossSize);
 
   setLayoutPosition(
-      YGUnwrapFloatOptional(
-          getLeadingMargin(mainAxis, ownerWidth) + relativePositionMain),
+      (getLeadingMargin(mainAxis, ownerWidth) + relativePositionMain).unwrap(),
       leading[mainAxis]);
   setLayoutPosition(
-      YGUnwrapFloatOptional(
-          getTrailingMargin(mainAxis, ownerWidth) + relativePositionMain),
+      (getTrailingMargin(mainAxis, ownerWidth) + relativePositionMain).unwrap(),
       trailing[mainAxis]);
   setLayoutPosition(
-      YGUnwrapFloatOptional(
-          getLeadingMargin(crossAxis, ownerWidth) + relativePositionCross),
+      (getLeadingMargin(crossAxis, ownerWidth) + relativePositionCross)
+          .unwrap(),
       leading[crossAxis]);
   setLayoutPosition(
-      YGUnwrapFloatOptional(
-          getTrailingMargin(crossAxis, ownerWidth) + relativePositionCross),
+      (getTrailingMargin(crossAxis, ownerWidth) + relativePositionCross)
+          .unwrap(),
       trailing[crossAxis]);
 }
 

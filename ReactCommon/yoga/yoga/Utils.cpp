@@ -55,10 +55,6 @@ float YGFloatSanitize(const float val) {
   return yoga::isUndefined(val) ? 0 : val;
 }
 
-float YGUnwrapFloatOptional(const YGFloatOptional& op) {
-  return op.isUndefined() ? YGUndefined : op.getValue();
-}
-
 YGFloatOptional YGFloatOptionalMax(
     const YGFloatOptional& op1,
     const YGFloatOptional& op2) {

@@ -22,6 +22,11 @@ struct YGFloatOptional {
   // To check if float optional is defined, use `isUndefined()`.
   float getValue() const;
 
+  // returns the wrapped value, or a value x with YGIsUndefined(x) == true
+  float unwrap() const {
+    return value_;
+  }
+
   bool isUndefined() const {
     return std::isnan(value_);
   }
