@@ -1325,14 +1325,14 @@ static void YGNodeComputeFlexBasisForChild(
              child->getConfig(), YGExperimentalFeatureWebFlexBasis) &&
          child->getLayout().computedFlexBasisGeneration !=
              gCurrentGenerationCount)) {
-      const YGFloatOptional& paddingAndBorder = YGFloatOptional(
+      const YGFloatOptional paddingAndBorder = YGFloatOptional(
           YGNodePaddingAndBorderForAxis(child, mainAxis, ownerWidth));
       child->setLayoutComputedFlexBasis(
           YGFloatOptionalMax(resolvedFlexBasis, paddingAndBorder));
     }
   } else if (isMainAxisRow && isRowStyleDimDefined) {
     // The width is definite, so use that as the flex basis.
-    const YGFloatOptional& paddingAndBorder = YGFloatOptional(
+    const YGFloatOptional paddingAndBorder = YGFloatOptional(
         YGNodePaddingAndBorderForAxis(child, YGFlexDirectionRow, ownerWidth));
 
     child->setLayoutComputedFlexBasis(YGFloatOptionalMax(
@@ -1341,7 +1341,7 @@ static void YGNodeComputeFlexBasisForChild(
         paddingAndBorder));
   } else if (!isMainAxisRow && isColumnStyleDimDefined) {
     // The height is definite, so use that as the flex basis.
-    const YGFloatOptional& paddingAndBorder =
+    const YGFloatOptional paddingAndBorder =
         YGFloatOptional(YGNodePaddingAndBorderForAxis(
             child, YGFlexDirectionColumn, ownerWidth));
     child->setLayoutComputedFlexBasis(YGFloatOptionalMax(

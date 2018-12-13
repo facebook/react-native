@@ -175,7 +175,7 @@ void YGNode::setLayoutLastOwnerDirection(YGDirection direction) {
 }
 
 void YGNode::setLayoutComputedFlexBasis(
-    const YGFloatOptional& computedFlexBasis) {
+    const YGFloatOptional computedFlexBasis) {
   layout_.computedFlexBasis = computedFlexBasis;
 }
 
@@ -451,7 +451,7 @@ float YGNode::getTrailingBorder(const YGFlexDirection flexDirection) const {
 YGFloatOptional YGNode::getLeadingPadding(
     const YGFlexDirection axis,
     const float widthSize) const {
-  const YGFloatOptional& paddingEdgeStart =
+  const YGFloatOptional paddingEdgeStart =
       YGResolveValue(style_.padding[YGEdgeStart], widthSize);
   if (YGFlexDirectionIsRow(axis) &&
       style_.padding[YGEdgeStart].unit != YGUnitUndefined &&
@@ -468,11 +468,10 @@ YGFloatOptional YGNode::getLeadingPadding(
 YGFloatOptional YGNode::getTrailingPadding(
     const YGFlexDirection axis,
     const float widthSize) const {
-  if (YGFlexDirectionIsRow(axis) &&
-      style_.padding[YGEdgeEnd].unit != YGUnitUndefined &&
-      !YGResolveValue(style_.padding[YGEdgeEnd], widthSize).isUndefined() &&
-      YGResolveValue(style_.padding[YGEdgeEnd], widthSize).unwrap() >= 0.0f) {
-    return YGResolveValue(style_.padding[YGEdgeEnd], widthSize);
+  const YGFloatOptional paddingEdgeEnd =
+      YGResolveValue(style_.padding[YGEdgeEnd], widthSize);
+  if (YGFlexDirectionIsRow(axis) && paddingEdgeEnd >= YGFloatOptional{0.0f}) {
+    return paddingEdgeEnd;
   }
 
   YGFloatOptional resolvedValue = YGResolveValue(
