@@ -593,19 +593,6 @@ float YGNodeStyleGetFlexShrink(const YGNodeRef node) {
 
 namespace {
 
-template <typename T, T YGStyle::*P>
-struct StyleProp {
-  static T get(YGNodeRef node) {
-    return node->getStyle().*P;
-  }
-  static void set(YGNodeRef node, T newValue) {
-    if (node->getStyle().*P != newValue) {
-      node->getStyle().*P = newValue;
-      node->markDirtyAndPropogate();
-    }
-  }
-};
-
 struct Value {
   template <YGUnit U>
   static YGValue create(float value) {
@@ -765,84 +752,88 @@ struct DimensionProp {
     return node->getLayout().instanceName[edge];                        \
   }
 
-void YGNodeStyleSetDirection(
-    const YGNodeRef node,
-    const YGDirection direction) {
-  StyleProp<YGDirection, &YGStyle::direction>::set(node, direction);
+#define YG_NODE_STYLE_SET(node, property, value) \
+  if (node->getStyle().property != value) {      \
+    node->getStyle().property = value;           \
+    node->markDirtyAndPropogate();               \
+  }
+
+void YGNodeStyleSetDirection(const YGNodeRef node, const YGDirection value) {
+  YG_NODE_STYLE_SET(node, direction, value);
 }
 YGDirection YGNodeStyleGetDirection(const YGNodeRef node) {
-  return StyleProp<YGDirection, &YGStyle::direction>::get(node);
+  return node->getStyle().direction;
 }
 
 void YGNodeStyleSetFlexDirection(
     const YGNodeRef node,
     const YGFlexDirection flexDirection) {
-  StyleProp<YGFlexDirection, &YGStyle::flexDirection>::set(node, flexDirection);
+  YG_NODE_STYLE_SET(node, flexDirection, flexDirection);
 }
 YGFlexDirection YGNodeStyleGetFlexDirection(const YGNodeRef node) {
-  return StyleProp<YGFlexDirection, &YGStyle::flexDirection>::get(node);
+  return node->getStyle().flexDirection;
 }
 
 void YGNodeStyleSetJustifyContent(
     const YGNodeRef node,
     const YGJustify justifyContent) {
-  StyleProp<YGJustify, &YGStyle::justifyContent>::set(node, justifyContent);
+  YG_NODE_STYLE_SET(node, justifyContent, justifyContent);
 }
 YGJustify YGNodeStyleGetJustifyContent(const YGNodeRef node) {
-  return StyleProp<YGJustify, &YGStyle::justifyContent>::get(node);
+  return node->getStyle().justifyContent;
 }
 
 void YGNodeStyleSetAlignContent(
     const YGNodeRef node,
     const YGAlign alignContent) {
-  StyleProp<YGAlign, &YGStyle::alignContent>::set(node, alignContent);
+  YG_NODE_STYLE_SET(node, alignContent, alignContent);
 }
 YGAlign YGNodeStyleGetAlignContent(const YGNodeRef node) {
-  return StyleProp<YGAlign, &YGStyle::alignContent>::get(node);
+  return node->getStyle().alignContent;
 }
 
 void YGNodeStyleSetAlignItems(const YGNodeRef node, const YGAlign alignItems) {
-  StyleProp<YGAlign, &YGStyle::alignItems>::set(node, alignItems);
+  YG_NODE_STYLE_SET(node, alignItems, alignItems);
 }
 YGAlign YGNodeStyleGetAlignItems(const YGNodeRef node) {
-  return StyleProp<YGAlign, &YGStyle::alignItems>::get(node);
+  return node->getStyle().alignItems;
 }
 
 void YGNodeStyleSetAlignSelf(const YGNodeRef node, const YGAlign alignSelf) {
-  StyleProp<YGAlign, &YGStyle::alignSelf>::set(node, alignSelf);
+  YG_NODE_STYLE_SET(node, alignSelf, alignSelf);
 }
 YGAlign YGNodeStyleGetAlignSelf(const YGNodeRef node) {
-  return StyleProp<YGAlign, &YGStyle::alignSelf>::get(node);
+  return node->getStyle().alignSelf;
 }
 
 void YGNodeStyleSetPositionType(
     const YGNodeRef node,
     const YGPositionType positionType) {
-  StyleProp<YGPositionType, &YGStyle::positionType>::set(node, positionType);
+  YG_NODE_STYLE_SET(node, positionType, positionType);
 }
 YGPositionType YGNodeStyleGetPositionType(const YGNodeRef node) {
-  return StyleProp<YGPositionType, &YGStyle::positionType>::get(node);
+  return node->getStyle().positionType;
 }
 
 void YGNodeStyleSetFlexWrap(const YGNodeRef node, const YGWrap flexWrap) {
-  StyleProp<YGWrap, &YGStyle::flexWrap>::set(node, flexWrap);
+  YG_NODE_STYLE_SET(node, flexWrap, flexWrap);
 }
 YGWrap YGNodeStyleGetFlexWrap(const YGNodeRef node) {
-  return StyleProp<YGWrap, &YGStyle::flexWrap>::get(node);
+  return node->getStyle().flexWrap;
 }
 
 void YGNodeStyleSetOverflow(const YGNodeRef node, const YGOverflow overflow) {
-  StyleProp<YGOverflow, &YGStyle::overflow>::set(node, overflow);
+  YG_NODE_STYLE_SET(node, overflow, overflow);
 }
 YGOverflow YGNodeStyleGetOverflow(const YGNodeRef node) {
-  return StyleProp<YGOverflow, &YGStyle::overflow>::get(node);
+  return node->getStyle().overflow;
 }
 
 void YGNodeStyleSetDisplay(const YGNodeRef node, const YGDisplay display) {
-  StyleProp<YGDisplay, &YGStyle::display>::set(node, display);
+  YG_NODE_STYLE_SET(node, display, display);
 }
 YGDisplay YGNodeStyleGetDisplay(const YGNodeRef node) {
-  return StyleProp<YGDisplay, &YGStyle::display>::get(node);
+  return node->getStyle().display;
 }
 
 // TODO(T26792433): Change the API to accept YGFloatOptional.
