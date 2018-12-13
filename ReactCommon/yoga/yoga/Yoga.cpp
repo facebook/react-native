@@ -1212,7 +1212,7 @@ static inline bool YGNodeIsLayoutDimDefined(
 static YGFloatOptional YGNodeBoundAxisWithinMinAndMax(
     const YGNodeRef node,
     const YGFlexDirection axis,
-    const float value,
+    const YGFloatOptional value,
     const float axisSize) {
   YGFloatOptional min;
   YGFloatOptional max;
@@ -1229,15 +1229,15 @@ static YGFloatOptional YGNodeBoundAxisWithinMinAndMax(
         node->getStyle().maxDimensions[YGDimensionWidth], axisSize);
   }
 
-  if (!max.isUndefined() && max.unwrap() >= 0 && value > max.unwrap()) {
+  if (max >= YGFloatOptional{0} && value > max) {
     return max;
   }
 
-  if (!min.isUndefined() && min.unwrap() >= 0 && value < min.unwrap()) {
+  if (min >= YGFloatOptional{0} && value < min) {
     return min;
   }
 
-  return YGFloatOptional(value);
+  return value;
 }
 
 // Like YGNodeBoundAxisWithinMinAndMax but also ensures that the value doesn't
@@ -1249,7 +1249,9 @@ static inline float YGNodeBoundAxis(
     const float axisSize,
     const float widthSize) {
   return YGFloatMax(
-      YGNodeBoundAxisWithinMinAndMax(node, axis, value, axisSize).unwrap(),
+      YGNodeBoundAxisWithinMinAndMax(
+          node, axis, YGFloatOptional{value}, axisSize)
+          .unwrap(),
       YGNodePaddingAndBorderForAxis(node, axis, widthSize));
 }
 
@@ -2021,7 +2023,7 @@ static YGCollectFlexItemsRowValues YGCalculateCollectFlexItemsRowValues(
         YGNodeBoundAxisWithinMinAndMax(
             child,
             mainAxis,
-            child->getLayout().computedFlexBasis.unwrap(),
+            child->getLayout().computedFlexBasis,
             mainAxisownerSize)
             .unwrap();
 
@@ -2096,13 +2098,12 @@ static float YGDistributeFreeSpaceSecondPass(
   const bool isNodeFlexWrap = node->getStyle().flexWrap != YGWrapNoWrap;
 
   for (auto currentRelativeChild : collectedFlexItemsValues.relativeChildren) {
-    childFlexBasis =
-        YGNodeBoundAxisWithinMinAndMax(
-            currentRelativeChild,
-            mainAxis,
-            currentRelativeChild->getLayout().computedFlexBasis.unwrap(),
-            mainAxisownerSize)
-            .unwrap();
+    childFlexBasis = YGNodeBoundAxisWithinMinAndMax(
+                         currentRelativeChild,
+                         mainAxis,
+                         currentRelativeChild->getLayout().computedFlexBasis,
+                         mainAxisownerSize)
+                         .unwrap();
     float updatedMainSize = childFlexBasis;
 
     if (!YGFloatIsUndefined(collectedFlexItemsValues.remainingFreeSpace) &&
@@ -2280,7 +2281,7 @@ static void YGDistributeFreeSpaceFirstPass(
         YGNodeBoundAxisWithinMinAndMax(
             currentRelativeChild,
             mainAxis,
-            currentRelativeChild->getLayout().computedFlexBasis.unwrap(),
+            currentRelativeChild->getLayout().computedFlexBasis,
             mainAxisownerSize)
             .unwrap();
 
@@ -3458,7 +3459,10 @@ static void YGNodelayoutImpl(
             YGFloatMin(
                 availableInnerMainDim + paddingAndBorderAxisMain,
                 YGNodeBoundAxisWithinMinAndMax(
-                    node, mainAxis, maxLineMainDim, mainAxisownerSize)
+                    node,
+                    mainAxis,
+                    YGFloatOptional{maxLineMainDim},
+                    mainAxisownerSize)
                     .unwrap()),
             paddingAndBorderAxisMain),
         dim[mainAxis]);
@@ -3488,7 +3492,8 @@ static void YGNodelayoutImpl(
                 YGNodeBoundAxisWithinMinAndMax(
                     node,
                     crossAxis,
-                    totalLineCrossDim + paddingAndBorderAxisCross,
+                    YGFloatOptional{totalLineCrossDim +
+                                    paddingAndBorderAxisCross},
                     crossAxisownerSize)
                     .unwrap()),
             paddingAndBorderAxisCross),
