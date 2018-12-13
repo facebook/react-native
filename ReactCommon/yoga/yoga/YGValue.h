@@ -33,8 +33,24 @@ YG_EXTERN_C_END
 
 #ifdef __cplusplus
 
-bool operator==(const YGValue& lhs, const YGValue& rhs);
+inline bool operator==(const YGValue& lhs, const YGValue& rhs) {
+  if (lhs.unit != rhs.unit) {
+    return false;
+  }
 
-bool operator!=(const YGValue& lhs, const YGValue& rhs);
+  switch (lhs.unit) {
+    case YGUnitUndefined:
+    case YGUnitAuto:
+      return true;
+    case YGUnitPoint:
+    case YGUnitPercent:
+    default:
+      return lhs.value == rhs.value;
+  }
+}
+
+inline bool operator!=(const YGValue& lhs, const YGValue& rhs) {
+  return !(lhs == rhs);
+}
 
 #endif
