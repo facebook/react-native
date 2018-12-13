@@ -1382,16 +1382,6 @@ static void YGNodeComputeFlexBasisForChild(
     auto marginColumn = YGUnwrapFloatOptional(
         child->getMarginForAxis(YGFlexDirectionColumn, ownerWidth));
 
-    if (YGNodeAlignItem(node, child) == YGAlignStretch) {
-      if (isMainAxisRow && !YGFloatIsUndefined(height)) {
-        childHeight = height;
-        childHeightMeasureMode = YGMeasureModeExactly;
-      } else if (!isMainAxisRow && !YGFloatIsUndefined(width)) {
-        childWidth = width;
-        childWidthMeasureMode = YGMeasureModeExactly;
-      }
-    }
-
     if (isRowStyleDimDefined) {
       childWidth =
           YGUnwrapFloatOptional(YGResolveValue(
