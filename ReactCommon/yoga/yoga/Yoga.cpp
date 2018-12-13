@@ -18,10 +18,7 @@
 /* define fmaxf if < VC12 */
 #if _MSC_VER < 1800
 __forceinline const float fmaxf(const float a, const float b) {
-  if (!YGFloatIsUndefined(a) && !YGFloatIsUndefined(b)) {
-    return (a > b) ? a : b;
-  }
-  return YGFloatIsUndefined(a) ? b : a;
+  return (a > b) ? a : b;
 }
 #endif
 #endif
