@@ -17,16 +17,9 @@
 #include <stdbool.h>
 #endif
 
-// Not defined in MSVC++
-#ifndef NAN
-static const unsigned long __nan[2] = {0xffffffff, 0x7fffffff};
-#define NAN (*(const float*)__nan)
-#endif
-
-#define YGUndefined NAN
-
 #include "YGEnums.h"
 #include "YGMacros.h"
+#include "YGValue.h"
 
 YG_EXTERN_C_BEGIN
 
@@ -34,25 +27,6 @@ typedef struct YGSize {
   float width;
   float height;
 } YGSize;
-
-typedef struct YGValue {
-  float value;
-  YGUnit unit;
-} YGValue;
-
-extern const YGValue YGValueUndefined;
-extern const YGValue YGValueAuto;
-
-#ifdef __cplusplus
-
-YG_EXTERN_C_END
-
-extern bool operator==(const YGValue& lhs, const YGValue& rhs);
-extern bool operator!=(const YGValue& lhs, const YGValue& rhs);
-
-YG_EXTERN_C_BEGIN
-
-#endif
 
 typedef struct YGConfig* YGConfigRef;
 
