@@ -95,16 +95,13 @@ inline YGFloatOptional YGResolveValue(
     const YGValue value,
     const float ownerSize) {
   switch (value.unit) {
-    case YGUnitUndefined:
-    case YGUnitAuto:
-      return YGFloatOptional();
     case YGUnitPoint:
-      return YGFloatOptional(value.value);
+      return YGFloatOptional{value.value};
     case YGUnitPercent:
-      return YGFloatOptional(
-          static_cast<float>(value.value * ownerSize * 0.01));
+      return YGFloatOptional{value.value * ownerSize * 0.01f};
+    default:
+      return YGFloatOptional{};
   }
-  return YGFloatOptional();
 }
 
 inline bool YGFlexDirectionIsColumn(const YGFlexDirection flexDirection) {
