@@ -44,7 +44,6 @@ inline bool operator==(const YGValue& lhs, const YGValue& rhs) {
       return true;
     case YGUnitPoint:
     case YGUnitPercent:
-    default:
       return lhs.value == rhs.value;
   }
 }
