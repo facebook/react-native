@@ -649,6 +649,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)send:(id)data;
 {
   RCTAssert(self.readyState != RCTSR_CONNECTING, @"Invalid State: Cannot call send: until connection is open");
+  if (nil == data) {
+    return;
+  }
   // TODO: maybe not copy this for performance
   data = [data copy];
   dispatch_async(_workQueue, ^{
@@ -656,8 +659,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       [self _sendFrameWithOpcode:RCTSROpCodeTextFrame data:[(NSString *)data dataUsingEncoding:NSUTF8StringEncoding]];
     } else if ([data isKindOfClass:[NSData class]]) {
       [self _sendFrameWithOpcode:RCTSROpCodeBinaryFrame data:data];
-    } else if (data == nil) {
-      [self _sendFrameWithOpcode:RCTSROpCodeTextFrame data:data];
     } else {
       assert(NO);
     }
@@ -1234,7 +1235,7 @@ static const char CRLFCRLFBytes[] = {'\r', '\n', '\r', '\n'};
 
 static const size_t RCTSRFrameHeaderOverhead = 32;
 
-- (void)_sendFrameWithOpcode:(RCTSROpCode)opcode data:(id)data;
+- (void)_sendFrameWithOpcode:(RCTSROpCode)opcode data:(NSData *)data;
 {
   [self assertOnWorkQueue];
 
@@ -1242,9 +1243,7 @@ static const size_t RCTSRFrameHeaderOverhead = 32;
     return;
   }
 
-  RCTAssert([data isKindOfClass:[NSData class]] || [data isKindOfClass:[NSString class]], @"NSString or NSData");
-
-  size_t payloadLength = [data isKindOfClass:[NSString class]] ? [(NSString *)data lengthOfBytesUsingEncoding:NSUTF8StringEncoding] : [data length];
+  size_t payloadLength = [data length];
 
   NSMutableData *frame = [[NSMutableData alloc] initWithLength:payloadLength + RCTSRFrameHeaderOverhead];
   if (!frame) {
@@ -1268,14 +1267,7 @@ static const size_t RCTSRFrameHeaderOverhead = 32;
 
   size_t frame_buffer_size = 2;
 
-  const uint8_t *unmasked_payload = NULL;
-  if ([data isKindOfClass:[NSData class]]) {
-    unmasked_payload = (uint8_t *)[data bytes];
-  } else if ([data isKindOfClass:[NSString class]]) {
-    unmasked_payload =  (const uint8_t *)[data UTF8String];
-  } else {
-    return;
-  }
+  const uint8_t *unmasked_payload = (uint8_t *)[data bytes];
 
   if (payloadLength < 126) {
     frame_buffer[1] |= payloadLength;
