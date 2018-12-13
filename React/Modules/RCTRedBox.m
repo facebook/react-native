@@ -56,10 +56,9 @@
         rootView.backgroundColor = [UIColor clearColor];
 
         const CGFloat buttonHeight = 60;
-        const CGFloat bottomSafeViewHeight = 27;
 
         CGRect detailsFrame = rootView.bounds;
-        detailsFrame.size.height -= buttonHeight;
+        detailsFrame.size.height -= buttonHeight + [self bottomSafeViewHeight];
 
         _stackTraceTableView = [[UITableView alloc] initWithFrame:detailsFrame style:UITableViewStylePlain];
         _stackTraceTableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -134,55 +133,38 @@
         [extraButton addTarget:self action:@selector(showExtraDataViewController) forControlEvents:UIControlEventTouchUpInside];
 
         CGFloat buttonWidth = self.bounds.size.width / 4;
-        CGFloat bottomButtonHeight = self.bounds.size.height - buttonHeight - ([self isIPhoneX] ? bottomSafeViewHeight : 0);
-
+        CGFloat bottomButtonHeight = self.bounds.size.height - buttonHeight - [self bottomSafeViewHeight];
+    
         dismissButton.frame = CGRectMake(0, bottomButtonHeight, buttonWidth, buttonHeight);
         reloadButton.frame = CGRectMake(buttonWidth, bottomButtonHeight, buttonWidth, buttonHeight);
         copyButton.frame = CGRectMake(buttonWidth * 2, bottomButtonHeight, buttonWidth, buttonHeight);
         extraButton.frame = CGRectMake(buttonWidth * 3, bottomButtonHeight, buttonWidth, buttonHeight);
 
-        UIView *topBorderDismissButton = [[UIView alloc] initWithFrame:CGRectMake(0, 0, dismissButton.frame.size.width, 1)];
-        topBorderDismissButton.backgroundColor = [UIColor colorWithRed:0.70 green:0.70 blue:0.70 alpha:1.0];
-        [dismissButton addSubview:topBorderDismissButton];
-
-        UIView *topBorderReloadButton = [[UIView alloc] initWithFrame:CGRectMake(0, 0, reloadButton.frame.size.width, 1)];
-        topBorderReloadButton.backgroundColor = [UIColor colorWithRed:0.70 green:0.70 blue:0.70 alpha:1.0];
-        [reloadButton addSubview:topBorderReloadButton];
-
-        UIView *topBorderCopyButton = [[UIView alloc] initWithFrame:CGRectMake(0, 0, copyButton.frame.size.width, 1)];
-        topBorderCopyButton.backgroundColor = [UIColor colorWithRed:0.70 green:0.70 blue:0.70 alpha:1.0];
-        [copyButton addSubview:topBorderCopyButton];
-
-        UIView *topBorderExtraButton = [[UIView alloc] initWithFrame:CGRectMake(0, 0, extraButton.frame.size.width, 1)];
-        topBorderExtraButton.backgroundColor = [UIColor colorWithRed:0.70 green:0.70 blue:0.70 alpha:1.0];
-        [extraButton addSubview:topBorderExtraButton];
-
-        UIView *bottomSafeView = [UIView new];
-        bottomSafeView.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
-        bottomSafeView.frame = CGRectMake(0, self.bounds.size.height - bottomSafeViewHeight, self.bounds.size.width, bottomSafeViewHeight);
+        UIView *topBorder = [[UIView alloc] initWithFrame:CGRectMake(0, bottomButtonHeight + 1, rootView.frame.size.width, 1)];
+        topBorder.backgroundColor = [UIColor colorWithRed:0.70 green:0.70 blue:0.70 alpha:1.0];
 
         [rootView addSubview:dismissButton];
         [rootView addSubview:reloadButton];
         [rootView addSubview:copyButton];
         [rootView addSubview:extraButton];
-
-        if ([self isIPhoneX]) {
-            [rootView addSubview:bottomSafeView];
-        }
+        [rootView addSubview:topBorder];
+        
+        UIView *bottomSafeView = [UIView new];
+        bottomSafeView.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
+        bottomSafeView.frame = CGRectMake(0, self.bounds.size.height - [self bottomSafeViewHeight], self.bounds.size.width, [self bottomSafeViewHeight]);
+        
+        [rootView addSubview:bottomSafeView];
     }
     return self;
 }
 
-- (BOOL)isIPhoneX
+- (NSInteger)bottomSafeViewHeight
 {
-    CGSize screenSize = [UIScreen mainScreen].nativeBounds.size;
-    CGSize iPhoneXScreenSize = CGSizeMake(1125, 2436);
-    CGSize iPhoneXMaxScreenSize = CGSizeMake(1242, 2688);
-    CGSize iPhoneXRScreenSize = CGSizeMake(828, 1792);
-
-    return CGSizeEqualToSize(screenSize, iPhoneXScreenSize) ||
-        CGSizeEqualToSize(screenSize, iPhoneXMaxScreenSize) ||
-        CGSizeEqualToSize(screenSize, iPhoneXRScreenSize);
+    if (@available(iOS 11.0, *)) {
+        return [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
+    } else {
+        return 0;
+    }
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
@@ -297,7 +279,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (UITableViewCell *)reuseCell:(UITableViewCell *)cell forErrorMessage:(NSString *)message
 {
     if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"msg-cell"];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"msg-cell"];
         cell.textLabel.accessibilityIdentifier = @"redbox-error";
         cell.textLabel.textColor = [UIColor whiteColor];
         cell.textLabel.font = [UIFont boldSystemFontOfSize:16];
