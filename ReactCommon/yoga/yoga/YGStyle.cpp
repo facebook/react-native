@@ -15,39 +15,35 @@ bool YGStyle::operator==(const YGStyle& style) {
       alignSelf == style.alignSelf && positionType == style.positionType &&
       flexWrap == style.flexWrap && overflow == style.overflow &&
       display == style.display && YGValueEqual(flexBasis, style.flexBasis) &&
-      YGValueArrayEqual(margin, style.margin) &&
-      YGValueArrayEqual(position, style.position) &&
-      YGValueArrayEqual(padding, style.padding) &&
-      YGValueArrayEqual(border, style.border) &&
-      YGValueArrayEqual(dimensions, style.dimensions) &&
-      YGValueArrayEqual(minDimensions, style.minDimensions) &&
-      YGValueArrayEqual(maxDimensions, style.maxDimensions);
+      margin == style.margin && position == style.position &&
+      padding == style.padding && border == style.border &&
+      dimensions == style.dimensions && minDimensions == style.minDimensions &&
+      maxDimensions == style.maxDimensions;
 
   areNonFloatValuesEqual =
       areNonFloatValuesEqual && flex.isUndefined() == style.flex.isUndefined();
   if (areNonFloatValuesEqual && !flex.isUndefined() &&
       !style.flex.isUndefined()) {
-    areNonFloatValuesEqual =
-        areNonFloatValuesEqual && flex == style.flex;
+    areNonFloatValuesEqual = areNonFloatValuesEqual && flex == style.flex;
   }
 
   areNonFloatValuesEqual = areNonFloatValuesEqual &&
       flexGrow.isUndefined() == style.flexGrow.isUndefined();
   if (areNonFloatValuesEqual && !flexGrow.isUndefined()) {
-    areNonFloatValuesEqual = areNonFloatValuesEqual &&
-        flexGrow == style.flexGrow;
+    areNonFloatValuesEqual =
+        areNonFloatValuesEqual && flexGrow == style.flexGrow;
   }
 
   areNonFloatValuesEqual = areNonFloatValuesEqual &&
       flexShrink.isUndefined() == style.flexShrink.isUndefined();
   if (areNonFloatValuesEqual && !style.flexShrink.isUndefined()) {
-    areNonFloatValuesEqual = areNonFloatValuesEqual &&
-        flexShrink == style.flexShrink;
+    areNonFloatValuesEqual =
+        areNonFloatValuesEqual && flexShrink == style.flexShrink;
   }
 
   if (!(aspectRatio.isUndefined() && style.aspectRatio.isUndefined())) {
-    areNonFloatValuesEqual = areNonFloatValuesEqual &&
-        aspectRatio == style.aspectRatio;
+    areNonFloatValuesEqual =
+        areNonFloatValuesEqual && aspectRatio == style.aspectRatio;
   }
 
   return areNonFloatValuesEqual;

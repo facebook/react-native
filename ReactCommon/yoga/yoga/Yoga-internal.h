@@ -42,17 +42,6 @@ extern const YGValue YGValueUndefined;
 extern const YGValue YGValueAuto;
 extern const YGValue YGValueZero;
 
-template <std::size_t size>
-bool YGValueArrayEqual(
-    const std::array<YGValue, size> val1,
-    const std::array<YGValue, size> val2) {
-  bool areEqual = true;
-  for (uint32_t i = 0; i < size && areEqual; ++i) {
-    areEqual = YGValueEqual(val1[i], val2[i]);
-  }
-  return areEqual;
-}
-
 struct YGCachedMeasurement {
   float availableWidth;
   float availableHeight;
@@ -98,6 +87,64 @@ struct YGCachedMeasurement {
 // This value was chosen based on empiracle data. Even the most complicated
 // layouts should not require more than 16 entries to fit within the cache.
 #define YG_MAX_CACHED_RESULT_COUNT 16
+
+namespace facebook {
+namespace yoga {
+namespace detail {
+
+template <size_t Size>
+class Values {
+ private:
+  std::array<YGValue, Size> values_;
+
+ public:
+  Values() = default;
+  explicit Values(const YGValue& defaultValue) noexcept {
+    values_.fill(defaultValue);
+  }
+
+  operator const std::array<YGValue, Size>&() const noexcept {
+    return values_;
+  }
+  operator std::array<YGValue, Size>&() noexcept {
+    return values_;
+  }
+  const YGValue& operator[](size_t i) const noexcept {
+    return values_[i];
+  }
+  YGValue& operator[](size_t i) noexcept {
+    return values_[i];
+  }
+
+  template <size_t I>
+  YGValue get() const noexcept {
+    return std::get<I>(values_);
+  }
+
+  template <size_t I>
+  void set(YGValue& value) noexcept {
+    std::get<I>(values_) = value;
+  }
+
+  bool operator==(const Values& other) const noexcept {
+    for (size_t i = 0; i < Size; ++i) {
+      if (values_[i] != other.values_[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  Values& operator=(const Values& other) = default;
+  Values& operator=(const std::array<YGValue, Size>& other) noexcept {
+    values_ = other;
+    return *this;
+  }
+};
+
+} // namespace detail
+} // namespace yoga
+} // namespace facebook
 
 static const float kDefaultFlexGrow = 0.0f;
 static const float kDefaultFlexShrink = 0.0f;

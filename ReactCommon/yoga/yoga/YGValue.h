@@ -46,6 +46,8 @@ inline bool operator==(const YGValue& lhs, const YGValue& rhs) {
     case YGUnitPercent:
       return lhs.value == rhs.value;
   }
+
+  return false;
 }
 
 inline bool operator!=(const YGValue& lhs, const YGValue& rhs) {
