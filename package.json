@@ -147,7 +147,7 @@
     "test-android-unit": "yarn run docker-build-android && yarn run test-android-run-unit",
     "test-android-e2e": "yarn run docker-build-android && yarn run test-android-run-e2e",
     "build-ios-e2e": "detox build -c ios.sim.release",
-    "test-ios-e2e": "detox test -c ios.sim.release --cleanup"
+    "test-ios-e2e": "detox test -c ios.sim.release"
   },
   "peerDependencies": {
     "react": "16.6.3"
