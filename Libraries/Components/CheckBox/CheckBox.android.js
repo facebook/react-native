@@ -190,9 +190,11 @@ const styles = StyleSheet.create({
  */
 type CheckBoxType = Class<NativeComponent<Props>>;
 
-// $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
 const CheckBoxWithRef = React.forwardRef(function CheckBoxWithRef(props, ref) {
   return <CheckBox {...props} forwardedRef={ref} />;
 });
 
+/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
 module.exports = (CheckBoxWithRef: CheckBoxType);

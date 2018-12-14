@@ -89,15 +89,20 @@ const ProgressBarAndroid = (
   return <AndroidProgressBar {...props} ref={forwardedRef} />;
 };
 
-// $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
 const ProgressBarAndroidToExport = React.forwardRef(ProgressBarAndroid);
 
+/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
 ProgressBarAndroidToExport.defaultProps = {
   styleAttr: 'Normal',
   indeterminate: true,
   animating: true,
 };
 
+/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
 module.exports = (ProgressBarAndroidToExport: Class<
   NativeComponent<ProgressBarAndroidProps>,
 >);

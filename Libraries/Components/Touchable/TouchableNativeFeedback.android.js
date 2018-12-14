@@ -75,6 +75,9 @@ const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 const TouchableNativeFeedback = createReactClass({
   displayName: 'TouchableNativeFeedback',
   propTypes: {
+    /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment
+     * suppresses an error found when Flow v0.89 was deployed. To see the
+     * error, delete this comment and run Flow. */
     ...TouchableWithoutFeedback.propTypes,
 
     /**
@@ -107,7 +110,10 @@ const TouchableNativeFeedback = createReactClass({
      * Creates an object that represents android theme's default background for
      * selectable elements (?android:attr/selectableItemBackground).
      */
-    SelectableBackground: function() {
+    SelectableBackground: function(): {
+      type: 'ThemeAttrAndroid',
+      attribute: 'selectableItemBackground',
+    } {
       return {type: 'ThemeAttrAndroid', attribute: 'selectableItemBackground'};
     },
     /**
@@ -115,7 +121,10 @@ const TouchableNativeFeedback = createReactClass({
      * selectable elements (?android:attr/selectableItemBackgroundBorderless).
      * Available on android API level 21+.
      */
-    SelectableBackgroundBorderless: function() {
+    SelectableBackgroundBorderless: function(): {
+      type: 'ThemeAttrAndroid',
+      attribute: 'selectableItemBackgroundBorderless',
+    } {
       return {
         type: 'ThemeAttrAndroid',
         attribute: 'selectableItemBackgroundBorderless',
@@ -131,7 +140,14 @@ const TouchableNativeFeedback = createReactClass({
      * @param color The ripple color
      * @param borderless If the ripple can render outside it's bounds
      */
-    Ripple: function(color: string, borderless: boolean) {
+    Ripple: function(
+      color: string,
+      borderless: boolean,
+    ): {
+      type: 'RippleAndroid',
+      color: ?number,
+      borderless: boolean,
+    } {
       return {
         type: 'RippleAndroid',
         color: processColor(color),
@@ -139,7 +155,7 @@ const TouchableNativeFeedback = createReactClass({
       };
     },
 
-    canUseNativeForeground: function() {
+    canUseNativeForeground: function(): boolean {
       return Platform.OS === 'android' && Platform.Version >= 23;
     },
   },
@@ -171,9 +187,18 @@ const TouchableNativeFeedback = createReactClass({
   touchableHandleActivePressIn: function(e: PressEvent) {
     this.props.onPressIn && this.props.onPressIn(e);
     this._dispatchPressedStateChange(true);
+    /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment
+     * suppresses an error found when Flow v0.89 was deployed. To see the
+     * error, delete this comment and run Flow. */
     if (this.pressInLocation) {
       this._dispatchHotspotUpdate(
+        /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment
+         * suppresses an error found when Flow v0.89 was deployed. To see the
+         * error, delete this comment and run Flow. */
         this.pressInLocation.locationX,
+        /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment
+         * suppresses an error found when Flow v0.89 was deployed. To see the
+         * error, delete this comment and run Flow. */
         this.pressInLocation.locationY,
       );
     }

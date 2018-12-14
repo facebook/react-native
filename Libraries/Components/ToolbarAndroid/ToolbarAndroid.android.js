@@ -236,7 +236,6 @@ class ToolbarAndroid extends React.Component<Props> {
   }
 }
 
-// $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
 const ToolbarAndroidToExport = React.forwardRef(
   (
     props: ToolbarAndroidProps,
@@ -246,6 +245,9 @@ const ToolbarAndroidToExport = React.forwardRef(
   },
 );
 
+/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
 module.exports = (ToolbarAndroidToExport: Class<
   NativeComponent<ToolbarAndroidProps>,
 >);

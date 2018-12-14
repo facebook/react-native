@@ -127,7 +127,6 @@ const styles = StyleSheet.create({
   },
 });
 
-// $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
 const SegmentedControlIOSWithRef = React.forwardRef(
   (
     props: SegmentedControlIOSProps,
@@ -137,4 +136,7 @@ const SegmentedControlIOSWithRef = React.forwardRef(
   },
 );
 
+/* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
 module.exports = (SegmentedControlIOSWithRef: NativeSegmentedControlIOS);

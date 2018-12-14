@@ -250,9 +250,11 @@ const Slider = (
   );
 };
 
-// $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
 const SliderWithRef = React.forwardRef(Slider);
 
+/* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an error
+ * found when Flow v0.89 was deployed. To see the error, delete this comment
+ * and run Flow. */
 SliderWithRef.defaultProps = {
   disabled: false,
   value: 0,
@@ -274,4 +276,7 @@ if (Platform.OS === 'ios') {
   });
 }
 
+/* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an error
+ * found when Flow v0.89 was deployed. To see the error, delete this comment
+ * and run Flow. */
 module.exports = (SliderWithRef: Class<ReactNative.NativeComponent<Props>>);
