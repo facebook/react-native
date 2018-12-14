@@ -450,7 +450,7 @@
     return NO;
   }
 
-  if (RCTIsMainQueue() && (stage == RCTSurfaceStageSurfaceDidInitialMounting)) {
+  if (RCTIsMainQueue() && (stage & RCTSurfaceStageSurfaceDidInitialMounting)) {
     // All main-threaded execution (especially mounting process) has to be
     // intercepted, captured and performed synchnously at the end of this method
     // right after the semaphore signals.
@@ -485,7 +485,7 @@
     dispatch_semaphore_signal(semaphore);
   }
 
-  if (RCTIsMainQueue() && (stage == RCTSurfaceStageSurfaceDidInitialMounting)) {
+  if (RCTIsMainQueue() && (stage & RCTSurfaceStageSurfaceDidInitialMounting)) {
     // Time to apply captured mounting block.
     RCTUIManagerMountingBlock mountingBlock;
     {
