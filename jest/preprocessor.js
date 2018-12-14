@@ -32,7 +32,7 @@ const nodeOptions = babelRegisterOnly.config([nodeFiles]);
 
 babelRegisterOnly([]);
 
-const transformer = require('metro/src/reactNativeTransformer');
+const transformer = require('metro-react-native-babel-transformer');
 module.exports = {
   process(src /*: string */, file /*: string */) {
     if (nodeFiles.test(file)) {
@@ -119,7 +119,7 @@ module.exports = {
 
   getCacheKey: createCacheKeyFunction([
     __filename,
-    require.resolve('metro/src/reactNativeTransformer'),
+    require.resolve('metro-react-native-babel-transformer'),
     require.resolve('@babel/core/package.json'),
   ]),
 };
