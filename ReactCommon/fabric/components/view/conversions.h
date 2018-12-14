@@ -583,12 +583,11 @@ inline std::string toString(const YGFloatOptional &value) {
   return folly::to<std::string>(floatFromYogaFloat(value.unwrap()));
 }
 
-inline std::string toString(
-    const std::array<YGValue, YGDimensionCount> &value) {
+inline std::string toString(const YGStyle::Dimensions &value) {
   return "{" + toString(value[0]) + ", " + toString(value[1]) + "}";
 }
 
-inline std::string toString(const std::array<YGValue, YGEdgeCount> &value) {
+inline std::string toString(const YGStyle::Edges &value) {
   static std::array<std::string, YGEdgeCount> names = {{"left",
                                                         "top",
                                                         "right",

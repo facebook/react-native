@@ -103,7 +103,7 @@ bool YGFloatIsUndefined(const float value) {
 }
 
 const YGValue* YGComputedEdgeValue(
-    const std::array<YGValue, YGEdgeCount>& edges,
+    const facebook::yoga::detail::Values<YGEdgeCount>& edges,
     const YGEdge edge,
     const YGValue* const defaultValue) {
   if (edges[edge].unit != YGUnitUndefined) {

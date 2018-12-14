@@ -103,12 +103,6 @@ class Values {
     values_.fill(defaultValue);
   }
 
-  operator const std::array<YGValue, Size>&() const noexcept {
-    return values_;
-  }
-  operator std::array<YGValue, Size>&() noexcept {
-    return values_;
-  }
   const YGValue& operator[](size_t i) const noexcept {
     return values_[i];
   }
@@ -136,10 +130,6 @@ class Values {
   }
 
   Values& operator=(const Values& other) = default;
-  Values& operator=(const std::array<YGValue, Size>& other) noexcept {
-    values_ = other;
-    return *this;
-  }
 };
 
 } // namespace detail
@@ -153,6 +143,6 @@ static const float kWebDefaultFlexShrink = 1.0f;
 extern bool YGFloatsEqual(const float a, const float b);
 extern bool YGValueEqual(const YGValue a, const YGValue b);
 extern const YGValue* YGComputedEdgeValue(
-    const std::array<YGValue, YGEdgeCount>& edges,
+    const facebook::yoga::detail::Values<YGEdgeCount>& edges,
     const YGEdge edge,
     const YGValue* const defaultValue);

@@ -20,7 +20,8 @@ static void indent(string& base, uint32_t level) {
   }
 }
 
-static bool areFourValuesEqual(const std::array<YGValue, YGEdgeCount>& four) {
+static bool areFourValuesEqual(
+    const facebook::yoga::detail::Values<YGEdgeCount>& four) {
   return YGValueEqual(four[0], four[1]) && YGValueEqual(four[0], four[2]) &&
       YGValueEqual(four[0], four[3]);
 }
@@ -81,7 +82,7 @@ appendNumberIfNotZero(string& base, const string& str, const YGValue number) {
 static void appendEdges(
     string& base,
     const string& key,
-    const std::array<YGValue, YGEdgeCount>& edges) {
+    const facebook::yoga::detail::Values<YGEdgeCount>& edges) {
   if (areFourValuesEqual(edges)) {
     appendNumberIfNotZero(base, key, edges[YGEdgeLeft]);
   } else {
@@ -95,7 +96,7 @@ static void appendEdges(
 static void appendEdgeIfNotUndefined(
     string& base,
     const string& str,
-    const std::array<YGValue, YGEdgeCount>& edges,
+    const facebook::yoga::detail::Values<YGEdgeCount>& edges,
     const YGEdge edge) {
   appendNumberIfNotUndefined(
       base, str, *YGComputedEdgeValue(edges, edge, &YGValueUndefined));
