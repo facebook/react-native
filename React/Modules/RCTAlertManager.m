@@ -30,6 +30,7 @@ RCT_ENUM_CONVERTER(RCTAlertViewStyle, (@{
 @implementation RCTAlertManager
 {
   NSHashTable *_alertControllers;
+  UIWindow *_window;
 }
 
 RCT_EXPORT_MODULE()
@@ -90,11 +91,16 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
     }
   }
 
-  UIViewController *presentingController = RCTPresentedViewController();
-  if (presentingController == nil) {
-    RCTLogError(@"Tried to display alert view but there is no application window. args: %@", args);
-    return;
-  }
+  CGSize screenSize = [UIScreen mainScreen].bounds.size;
+  self->_window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, screenSize.height)];
+#if TARGET_OS_TV
+  self->_window.windowLevel = UIWindowLevelNormal + 1;
+#else
+  self->_window.windowLevel = UIWindowLevelStatusBar + 1;
+#endif
+  UIViewController *presentingController = [UIViewController new];
+  self->_window.rootViewController = presentingController;
+  self->_window.hidden = NO;
 
   UIAlertController *alertController = [UIAlertController
                                         alertControllerWithTitle:title
@@ -152,6 +158,7 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
     [alertController addAction:[UIAlertAction actionWithTitle:buttonTitle
                                                         style:buttonStyle
                                                       handler:^(__unused UIAlertAction *action) {
+      self->_window = nil;
       switch (type) {
         case RCTAlertViewStylePlainTextInput:
         case RCTAlertViewStyleSecureTextInput:

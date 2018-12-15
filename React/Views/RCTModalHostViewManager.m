@@ -65,7 +65,9 @@ RCT_EXPORT_MODULE()
   return view;
 }
 
-- (void)presentModalHostView:(RCTModalHostView *)modalHostView withViewController:(RCTModalHostViewController *)viewController animated:(BOOL)animated
+- (void)presentModalHostView:(RCTModalHostView *)modalHostView
+          withViewController:(RCTModalHostViewController *)viewController
+                    animated:(BOOL)animated
 {
   dispatch_block_t completionBlock = ^{
     if (modalHostView.onShow) {
@@ -75,24 +77,36 @@ RCT_EXPORT_MODULE()
   if (_presentationBlock) {
     _presentationBlock([modalHostView reactViewController], viewController, animated, completionBlock);
   } else {
-    [[modalHostView reactViewController] presentViewController:viewController animated:animated completion:completionBlock];
+    [[modalHostView reactViewController]
+     presentViewController:viewController animated:animated completion:completionBlock];
   }
 }
 
-- (void)dismissModalHostView:(RCTModalHostView *)modalHostView withViewController:(RCTModalHostViewController *)viewController animated:(BOOL)animated
+- (void)dismissModalHostView:(RCTModalHostView *)modalHostView
+          withViewController:(RCTModalHostViewController *)viewController
+                    animated:(BOOL)animated
+                  completion:(void (^)(void))completionHandler
 {
   dispatch_block_t completionBlock = ^{
     if (modalHostView.identifier) {
       [[self.bridge moduleForClass:[RCTModalManager class]] modalDismissed:modalHostView.identifier];
     }
+    if (completionHandler) {
+      completionHandler();
+    }
   };
   if (_dismissalBlock) {
     _dismissalBlock([modalHostView reactViewController], viewController, animated, completionBlock);
   } else {
-    [viewController dismissViewControllerAnimated:animated completion:completionBlock];
+    if (viewController.presentedViewController && viewController.presentingViewController) {
+      // Ask the presenting view controller to dismiss any view controllers presented on top of the modal host
+      // together with the host itself.
+      [viewController.presentingViewController dismissViewControllerAnimated:animated completion:completionBlock];
+    } else {
+      [viewController dismissViewControllerAnimated:animated completion:completionBlock];
+    }
   }
 }
-
 
 - (RCTShadowView *)shadowView
 {
