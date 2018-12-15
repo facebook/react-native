@@ -125,7 +125,7 @@ android {
             signingConfig signingConfigs.debug
         }
         release {
-            // Caution in production, you may need to generate your own key, 
+            // Caution! In production, you need to generate your own keystore file.
             // see https://facebook.github.io/react-native/docs/signed-apk-android.
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
