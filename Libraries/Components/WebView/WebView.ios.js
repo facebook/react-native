@@ -363,12 +363,6 @@ class WebView extends React.Component {
     originWhitelist: PropTypes.arrayOf(PropTypes.string),
 
     /**
-     * Function that accepts a string that will be passed to the WebView and
-     * executed immediately as JavaScript.
-     */
-    injectJavaScript: PropTypes.func,
-
-    /**
      * Specifies the mixed content mode. i.e WebView will allow a secure origin to load content from any other origin.
      *
      * Possible values for `mixedContentMode` are:
