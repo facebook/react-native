@@ -131,6 +131,7 @@
 		C654F0B31EB34A73000B7A9A /* RNTesterTestModule.m in Sources */ = {isa = PBXBuildFile; fileRef = C654F0B21EB34A73000B7A9A /* RNTesterTestModule.m */; };
 		C654F17E1EB34D24000B7A9A /* RNTesterTestModule.m in Sources */ = {isa = PBXBuildFile; fileRef = C654F0B21EB34A73000B7A9A /* RNTesterTestModule.m */; };
 		D85B829E1AB6D5D7003F4FE2 /* libRCTVibration.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D85B829C1AB6D5CE003F4FE2 /* libRCTVibration.a */; };
+		E77B20F321C481F8007FDF6D /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EDEBC7DA214C681C00DD5AC8 /* JavaScriptCore.framework */; };
 		ED2970992150247000B7C4FE /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED2970982150247000B7C4FE /* JavaScriptCore.framework */; };
 		EDEBC856214C774100DD5AC8 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EDEBC7DA214C681C00DD5AC8 /* JavaScriptCore.framework */; };
 /* End PBXBuildFile section */
@@ -573,6 +574,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E77B20F321C481F8007FDF6D /* JavaScriptCore.framework in Frameworks */,
 				19BA89031F8439A700741C5A /* libRCTBlob.a in Frameworks */,
 				192F69DA1E8240E2008692C7 /* libRCTAnimation.a in Frameworks */,
 				14D6D71E1B2222EF001FB087 /* libRCTActionSheet.a in Frameworks */,
