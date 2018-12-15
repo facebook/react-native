@@ -12,11 +12,6 @@ import android.os.Build;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
-import android.text.style.AbsoluteSizeSpan;
-import android.text.style.BackgroundColorSpan;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.StrikethroughSpan;
-import android.text.style.UnderlineSpan;
 import android.view.Gravity;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableMap;
@@ -24,8 +19,6 @@ import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactShadowNode;
-import com.facebook.react.uimanager.UIManagerModule;
-import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.yoga.YogaDirection;
@@ -60,9 +53,9 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
   private static class SetSpanOperation {
     protected int start, end;
-    protected Object what;
+    protected ReactSpan what;
 
-    SetSpanOperation(int start, int end, Object what) {
+    SetSpanOperation(int start, int end, ReactSpan what) {
       this.start = start;
       this.end = end;
       this.what = what;
@@ -122,12 +115,12 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     int end = sb.length();
     if (end >= start) {
       if (textShadowNode.mIsColorSet) {
-        ops.add(new SetSpanOperation(start, end, new ForegroundColorSpan(textShadowNode.mColor)));
+        ops.add(new SetSpanOperation(start, end, new ReactForegroundColorSpan(textShadowNode.mColor)));
       }
       if (textShadowNode.mIsBackgroundColorSet) {
         ops.add(
             new SetSpanOperation(
-                start, end, new BackgroundColorSpan(textShadowNode.mBackgroundColor)));
+                start, end, new ReactBackgroundColorSpan(textShadowNode.mBackgroundColor)));
       }
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
         float effectiveLetterSpacing = textAttributes.getEffectiveLetterSpacing();
@@ -143,7 +136,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       if (// `getEffectiveFontSize` always returns a value so don't need to check for anything like
           // `Float.NaN`.
           parentTextAttributes == null || parentTextAttributes.getEffectiveFontSize() != effectiveFontSize) {
-        ops.add(new SetSpanOperation(start, end, new AbsoluteSizeSpan(effectiveFontSize)));
+        ops.add(new SetSpanOperation(start, end, new ReactAbsoluteSizeSpan(effectiveFontSize)));
       }
       if (textShadowNode.mFontStyle != UNSET
           || textShadowNode.mFontWeight != UNSET
@@ -159,10 +152,10 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
                     textShadowNode.getThemedContext().getAssets())));
       }
       if (textShadowNode.mIsUnderlineTextDecorationSet) {
-        ops.add(new SetSpanOperation(start, end, new UnderlineSpan()));
+        ops.add(new SetSpanOperation(start, end, new ReactUnderlineSpan()));
       }
       if (textShadowNode.mIsLineThroughTextDecorationSet) {
-        ops.add(new SetSpanOperation(start, end, new StrikethroughSpan()));
+        ops.add(new SetSpanOperation(start, end, new ReactStrikethroughSpan()));
       }
       if (
         (

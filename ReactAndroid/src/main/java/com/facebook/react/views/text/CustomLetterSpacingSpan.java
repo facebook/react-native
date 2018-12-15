@@ -23,7 +23,7 @@ import com.facebook.infer.annotation.Assertions;
  * spans affecting font size.
  */
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-public class CustomLetterSpacingSpan extends MetricAffectingSpan {
+public class CustomLetterSpacingSpan extends MetricAffectingSpan implements ReactSpan {
 
   private final float mLetterSpacing;
 
