@@ -57,8 +57,12 @@ public class TextLayoutManager {
       ReadableMap fragment = fragments.getMap(i);
       int start = sb.length();
 
-      //ReactRawText
-      sb.append(fragment.getString("string"));
+      // ReactRawText
+      TextAttributeProps textAttributes = new TextAttributeProps(new ReactStylesDiffMap(fragment.getMap("textAttributes")));
+
+      sb.append(TextTransform.apply(
+          fragment.getString("string"),
+          textAttributes.mTextTransform));
 
 // TODO: add support for TextInlineImage and BaseText
 //      if (child instanceof ReactRawTextShadowNode) {
@@ -79,7 +83,6 @@ public class TextLayoutManager {
 //          "Unexpected view type nested under text node: " + child.getClass());
 //      }
 
-      TextAttributeProps textAttributes = new TextAttributeProps(new ReactStylesDiffMap(fragment.getMap("textAttributes")));
       int end = sb.length();
       if (end >= start) {
         if (textAttributes.mIsColorSet) {
@@ -135,13 +138,6 @@ public class TextLayoutManager {
           ops.add(
             new SetSpanOperation(
               start, end, new CustomLineHeightSpan(textAttributes.getEffectiveLineHeight())));
-        }
-        if (textAttributes.mTextTransform != TextTransform.UNSET && textAttributes.mTextTransform != TextTransform.NONE) {
-          ops.add(
-            new SetSpanOperation(
-              start,
-              end,
-              new CustomTextTransformSpan(textAttributes.mTextTransform)));
         }
 
         int reactTag = fragment.getInt("reactTag");

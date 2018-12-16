@@ -600,6 +600,18 @@ class TextExample extends React.Component<{}> {
               '.aa\tbb\t\tcc  dd EE \r\nZZ I like to eat apples. \n中文éé 我喜欢吃苹果。awdawd   '
             }
           </Text>
+          <Text
+            style={{
+              textTransform: 'uppercase',
+              fontSize: 16,
+              color: 'turquoise',
+              backgroundColor: 'blue',
+              lineHeight: 32,
+              letterSpacing: 2,
+              alignSelf: 'flex-start',
+            }}>
+            Works with other text styles
+          </Text>
         </RNTesterBlock>
       </RNTesterPage>
     );
