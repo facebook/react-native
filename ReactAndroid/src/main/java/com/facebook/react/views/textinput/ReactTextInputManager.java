@@ -217,6 +217,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setTypeface(newTypeface);
   }
 
+  @ReactProp(name = ViewProps.MAX_FONT_SIZE_MULTIPLIER, defaultFloat = Float.NaN)
+  public void setMaxFontSizeMultiplier(ReactEditText view, float maxFontSizeMultiplier) {
+    view.setMaxFontSizeMultiplier(maxFontSizeMultiplier);
+  }
+
   /**
   /* This code was taken from the method setFontWeight of the class ReactTextShadowNode
   /* TODO: Factor into a common place they can both use

@@ -647,6 +647,13 @@ public class ReactEditText extends EditText {
     applyTextAttributes();
   }
 
+  public void setMaxFontSizeMultiplier(float maxFontSizeMultiplier) {
+    if (maxFontSizeMultiplier != mTextAttributes.getMaxFontSizeMultiplier()) {
+      mTextAttributes.setMaxFontSizeMultiplier(maxFontSizeMultiplier);
+      applyTextAttributes();
+    }
+  }
+
   protected void applyTextAttributes() {
     // In general, the `getEffective*` functions return `Float.NaN` if the
     // property hasn't been set.
