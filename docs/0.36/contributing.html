@@ -90,6 +90,36 @@
 <h3><a class="anchor" aria-hidden="true" id="contributor-license-agreement-cla"></a><a href="#contributor-license-agreement-cla" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Contributor License Agreement (&quot;CLA&quot;)</h3>
 <p>In order to accept your pull request, we need you to submit a CLA. You only need to do this once to work on any of Facebook's open source projects.</p>
 <p><a href="https://code.facebook.com/cla"><strong>Complete your CLA here.</strong></a></p>
+<h3><a class="anchor" aria-hidden="true" id="changelog"></a><a href="#changelog" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Changelog</h3>
+<p>Provide a changelog entry to help reviewers during the release process. Changes that do not impact React Native developers may be ommitted from the changelog.</p>
+<p>A changelog entry has the following format:</p>
+<pre><code class="hljs"><span class="hljs-string">[CATEGORY]</span> <span class="hljs-string">[TYPE]</span> - Message
+</code></pre>
+<ul>
+<li><p><code>CATEGORY</code> may be:</p>
+<ul>
+<li>[General]</li>
+<li>[iOS]</li>
+<li>[Android]</li>
+</ul></li>
+<li><p><code>TYPE</code> may be:</p>
+<ul>
+<li>[Added] for new features.</li>
+<li>[Changed] for changes in existing functionality.</li>
+<li>[Deprecated] for soon-to-be removed features.</li>
+<li>[Removed] for now removed features.</li>
+<li>[Fixed] for any bug fixes.</li>
+<li>[Security] in case of vulnerabilities.</li>
+</ul></li>
+<li><p><code>MESSAGE</code> may answer &quot;what and why&quot; on a feature level. Use this to briefly tell React Native users about notable changes.</p></li>
+</ul>
+<p>For more detail, see <a href="https://keepachangelog.com/en/1.0.0/#how">How do I make a good changelog?</a></p>
+<h4><a class="anchor" aria-hidden="true" id="changelog-examples"></a><a href="#changelog-examples" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Changelog Examples</h4>
+<ul>
+<li>[General][added] - Add snapToOffsets prop to ScrollView component</li>
+<li>[General][fixed] - Fix various issues in snapToInterval on ScrollView component</li>
+<li>[iOS][fixed] - Fix crash in RCTImagePicker</li>
+</ul>
 <h3><a class="anchor" aria-hidden="true" id="test-plan"></a><a href="#test-plan" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Test plan</h3>
 <p>A good test plan has the exact commands you ran and their output, provides screenshots or videos if the pull request changes UI or updates the website.</p>
 <ul>

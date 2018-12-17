@@ -79,7 +79,7 @@ ndk.<span class="hljs-attribute">dir</span>=/Users/your_unix_name/android-ndk/an
 <p>Add <code>gradle-download-task</code> as dependency in <code>android/build.gradle</code>:</p>
 <pre><code class="hljs css language-gradle">...
     <span class="hljs-keyword">dependencies</span> {
-        <span class="hljs-keyword">classpath</span> <span class="hljs-string">'com.android.tools.build:gradle:2.3.3'</span>
+        <span class="hljs-keyword">classpath</span> <span class="hljs-string">'com.android.tools.build:gradle:3.1.4'</span>
         <span class="hljs-keyword">classpath</span> <span class="hljs-string">'de.undercouch:gradle-download-task:3.1.2'</span>
 
         <span class="hljs-comment">// <span class="hljs-doctag">NOTE:</span> Do not place your application dependencies here; they belong</span>
@@ -100,7 +100,7 @@ ndk.<span class="hljs-attribute">dir</span>=/Users/your_unix_name/android-ndk/an
 <pre><code class="hljs css language-gradle">...
 <span class="hljs-keyword">dependencies</span> {
     implementation <span class="hljs-keyword">fileTree</span>(dir: <span class="hljs-string">'libs'</span>, <span class="hljs-keyword">include</span>: [<span class="hljs-string">'*.jar'</span>])
-    implementation <span class="hljs-string">'com.android.support:appcompat-v7:26.0.2'</span>
+    implementation <span class="hljs-string">'com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}'</span>
 
     implementation <span class="hljs-keyword">project</span>(<span class="hljs-string">':ReactAndroid'</span>)
 
