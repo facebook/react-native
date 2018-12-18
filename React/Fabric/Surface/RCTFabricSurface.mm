@@ -55,8 +55,6 @@
     _touchHandler = [RCTSurfaceTouchHandler new];
 
     _stage = RCTSurfaceStageSurfaceDidInitialize;
-
-    [self start];
   }
 
   return self;
