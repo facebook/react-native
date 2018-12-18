@@ -13,14 +13,10 @@
 const jestExpect = require('expect');
 
 describe('Switch', () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
     await device.reloadReactNative();
     await element(by.id('explorer_search')).replaceText('<Switch>');
     await element(by.label('<Switch> Native boolean input')).tap();
-  });
-
-  afterAll(async () => {
-    await element(by.label('Back')).tap();
   });
 
   it('Switch that starts off should switch', async () => {
