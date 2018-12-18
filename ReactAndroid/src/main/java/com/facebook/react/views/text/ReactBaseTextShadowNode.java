@@ -555,7 +555,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   public void setTextTransform(@Nullable String textTransform) {
     if (textTransform == null) {
       mTextTransform = TextTransform.UNSET;
-    } else if("none".equals(textTransform)) {
+    } else if ("none".equals(textTransform)) {
       mTextTransform = TextTransform.NONE;
     } else if ("uppercase".equals(textTransform)) {
       mTextTransform = TextTransform.UPPERCASE;
