@@ -25,6 +25,9 @@ public class ReactHorizontalScrollContainerView extends ViewGroup {
 
   @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+    // Allow overflow for current class instance
+    setClipChildren(false);
+
     if (mLayoutDirection == LAYOUT_DIRECTION_RTL) {
       // When the layout direction is RTL, we expect Yoga to give us a layout
       // that extends off the screen to the left so we re-center it with left=0
