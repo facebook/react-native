@@ -60,7 +60,7 @@ inline YGValue yogaStyleValueFromFloat(const Float &value) {
 }
 
 inline folly::Optional<Float> optionalFloatFromYogaValue(
-    const YGValue &value,
+    const YGValue value,
     folly::Optional<Float> base = {}) {
   switch (value.unit) {
     case YGUnitUndefined:
@@ -297,7 +297,9 @@ inline void fromDynamic(const folly::dynamic &value, YGDisplay &result) {
   abort();
 }
 
-inline void fromDynamic(const folly::dynamic &value, YGValue &result) {
+inline void fromDynamic(
+    const folly::dynamic &value,
+    decltype(YGStyle{}.margin[0]) /* type is subject to change */ &result) {
   if (value.isNumber()) {
     result = yogaStyleValueFromFloat(value.asDouble());
     return;
@@ -308,12 +310,12 @@ inline void fromDynamic(const folly::dynamic &value, YGValue &result) {
       return;
     } else {
       if (stringValue.back() == '%') {
-        result = {
+        result = YGValue{
             folly::to<float>(stringValue.substr(0, stringValue.length() - 1)),
             YGUnitPercent};
         return;
       } else {
-        result = {folly::to<float>(stringValue), YGUnitPoint};
+        result = YGValue{folly::to<float>(stringValue), YGUnitPoint};
         return;
       }
     }
@@ -602,10 +604,11 @@ inline std::string toString(const YGStyle::Edges &value) {
   auto separator = std::string{", "};
 
   for (auto i = 0; i < YGEdgeCount; i++) {
-    if (value[i].unit == YGUnitUndefined) {
+    YGValue v = value[i];
+    if (v.unit == YGUnitUndefined) {
       continue;
     }
-    result += names[i] + ": " + toString(value[i]) + separator;
+    result += names[i] + ": " + toString(v) + separator;
   }
 
   if (!result.empty()) {
