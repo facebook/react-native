@@ -6,7 +6,7 @@
  */
 #pragma once
 
-#include <yoga/YGValue.h>
+#include "YGValue.h"
 
 #include <cmath>
 #include <cstdint>
@@ -71,6 +71,10 @@ class CompactValue {
   template <YGUnit Unit>
   static CompactValue ofMaybe(float value) noexcept {
     return std::isnan(value) ? ofUndefined() : of<Unit>(value);
+  }
+
+  static constexpr CompactValue ofZero() noexcept {
+    return CompactValue{Payload{ZERO_BITS_POINT}};
   }
 
   static constexpr CompactValue ofUndefined() noexcept {

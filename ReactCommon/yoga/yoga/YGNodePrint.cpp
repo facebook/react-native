@@ -99,7 +99,9 @@ static void appendEdgeIfNotUndefined(
     const facebook::yoga::detail::Values<YGEdgeCount>& edges,
     const YGEdge edge) {
   appendNumberIfNotUndefined(
-      base, str, *YGComputedEdgeValue(edges, edge, &YGValueUndefined));
+      base,
+      str,
+      YGComputedEdgeValue(edges, edge, detail::CompactValue::ofUndefined()));
 }
 
 void YGNodeToString(

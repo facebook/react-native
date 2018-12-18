@@ -23,6 +23,8 @@ __forceinline const float fmaxf(const float a, const float b) {
 #endif
 #endif
 
+using namespace facebook::yoga;
+
 #ifdef ANDROID
 static int YGAndroidLog(
     const YGConfigRef config,
@@ -102,31 +104,31 @@ bool YGFloatIsUndefined(const float value) {
   return facebook::yoga::isUndefined(value);
 }
 
-const YGValue* YGComputedEdgeValue(
+detail::CompactValue YGComputedEdgeValue(
     const facebook::yoga::detail::Values<YGEdgeCount>& edges,
-    const YGEdge edge,
-    const YGValue* const defaultValue) {
-  if (edges[edge].unit != YGUnitUndefined) {
-    return &edges[edge];
+    YGEdge edge,
+    detail::CompactValue defaultValue) {
+  if (!edges[edge].isUndefined()) {
+    return edges[edge];
   }
 
   if ((edge == YGEdgeTop || edge == YGEdgeBottom) &&
-      edges[YGEdgeVertical].unit != YGUnitUndefined) {
-    return &edges[YGEdgeVertical];
+      !edges[YGEdgeVertical].isUndefined()) {
+    return edges[YGEdgeVertical];
   }
 
   if ((edge == YGEdgeLeft || edge == YGEdgeRight || edge == YGEdgeStart ||
        edge == YGEdgeEnd) &&
-      edges[YGEdgeHorizontal].unit != YGUnitUndefined) {
-    return &edges[YGEdgeHorizontal];
+      !edges[YGEdgeHorizontal].isUndefined()) {
+    return edges[YGEdgeHorizontal];
   }
 
-  if (edges[YGEdgeAll].unit != YGUnitUndefined) {
-    return &edges[YGEdgeAll];
+  if (!edges[YGEdgeAll].isUndefined()) {
+    return edges[YGEdgeAll];
   }
 
   if (edge == YGEdgeStart || edge == YGEdgeEnd) {
-    return &YGValueUndefined;
+    return detail::CompactValue::ofUndefined();
   }
 
   return defaultValue;
@@ -595,13 +597,20 @@ namespace {
 
 struct Value {
   template <YGUnit U>
-  static YGValue create(float value) {
-    return {
-        YGFloatSanitize(value),
-        YGFloatIsUndefined(value) ? YGUnitUndefined : U,
-    };
+  static detail::CompactValue create(float value) {
+    return detail::CompactValue::ofMaybe<U>(value);
   }
 };
+
+template <>
+inline detail::CompactValue Value::create<YGUnitUndefined>(float) {
+  return detail::CompactValue::ofUndefined();
+}
+
+template <>
+inline detail::CompactValue Value::create<YGUnitAuto>(float) {
+  return detail::CompactValue::ofAuto();
+}
 
 template <YGStyle::Dimensions YGStyle::*P>
 struct DimensionProp {
@@ -616,10 +625,8 @@ struct DimensionProp {
 
   template <YGDimension idx, YGUnit U>
   static void set(YGNodeRef node, float newValue) {
-    YGValue value = Value::create<U>(newValue);
-    if (((node->getStyle().*P)[idx].value != value.value &&
-         value.unit != YGUnitUndefined) ||
-        (node->getStyle().*P)[idx].unit != value.unit) {
+    auto value = Value::create<U>(newValue);
+    if ((node->getStyle().*P)[idx] != value) {
       (node->getStyle().*P)[idx] = value;
       node->markDirtyAndPropogate();
     }
@@ -628,37 +635,30 @@ struct DimensionProp {
 
 } // namespace
 
-#define YG_NODE_STYLE_PROPERTY_SETTER_UNIT_AUTO_IMPL(                        \
-    type, name, paramName, instanceName)                                     \
-  void YGNodeStyleSet##name(const YGNodeRef node, const type paramName) {    \
-    YGValue value = {                                                        \
-        YGFloatSanitize(paramName),                                          \
-        YGFloatIsUndefined(paramName) ? YGUnitUndefined : YGUnitPoint,       \
-    };                                                                       \
-    if ((node->getStyle().instanceName.value != value.value &&               \
-         value.unit != YGUnitUndefined) ||                                   \
-        node->getStyle().instanceName.unit != value.unit) {                  \
-      node->getStyle().instanceName = value;                                 \
-      node->markDirtyAndPropogate();                                         \
-    }                                                                        \
-  }                                                                          \
-                                                                             \
-  void YGNodeStyleSet##name##Percent(                                        \
-      const YGNodeRef node, const type paramName) {                          \
-    if (node->getStyle().instanceName.value != YGFloatSanitize(paramName) || \
-        node->getStyle().instanceName.unit != YGUnitPercent) {               \
-      node->getStyle().instanceName = YGFloatIsUndefined(paramName)          \
-          ? YGValue{0, YGUnitAuto}                                           \
-          : YGValue{paramName, YGUnitPercent};                               \
-      node->markDirtyAndPropogate();                                         \
-    }                                                                        \
-  }                                                                          \
-                                                                             \
-  void YGNodeStyleSet##name##Auto(const YGNodeRef node) {                    \
-    if (node->getStyle().instanceName.unit != YGUnitAuto) {                  \
-      node->getStyle().instanceName = {0, YGUnitAuto};                       \
-      node->markDirtyAndPropogate();                                         \
-    }                                                                        \
+#define YG_NODE_STYLE_PROPERTY_SETTER_UNIT_AUTO_IMPL(                      \
+    type, name, paramName, instanceName)                                   \
+  void YGNodeStyleSet##name(const YGNodeRef node, const type paramName) {  \
+    auto value = detail::CompactValue::ofMaybe<YGUnitPoint>(paramName);    \
+    if (node->getStyle().instanceName != value) {                          \
+      node->getStyle().instanceName = value;                               \
+      node->markDirtyAndPropogate();                                       \
+    }                                                                      \
+  }                                                                        \
+                                                                           \
+  void YGNodeStyleSet##name##Percent(                                      \
+      const YGNodeRef node, const type paramName) {                        \
+    auto value = detail::CompactValue::ofMaybe<YGUnitPercent>(paramName);  \
+    if (node->getStyle().instanceName != value) {                          \
+      node->getStyle().instanceName = value;                               \
+      node->markDirtyAndPropogate();                                       \
+    }                                                                      \
+  }                                                                        \
+                                                                           \
+  void YGNodeStyleSet##name##Auto(const YGNodeRef node) {                  \
+    if (node->getStyle().instanceName != detail::CompactValue::ofAuto()) { \
+      node->getStyle().instanceName = detail::CompactValue::ofAuto();      \
+      node->markDirtyAndPropogate();                                       \
+    }                                                                      \
   }
 
 #define YG_NODE_STYLE_PROPERTY_UNIT_AUTO_IMPL(                       \
@@ -676,49 +676,40 @@ struct DimensionProp {
 
 #define YG_NODE_STYLE_EDGE_PROPERTY_UNIT_AUTO_IMPL(type, name, instanceName) \
   void YGNodeStyleSet##name##Auto(const YGNodeRef node, const YGEdge edge) { \
-    if (node->getStyle().instanceName[edge].unit != YGUnitAuto) {            \
-      node->getStyle().instanceName[edge] = {0, YGUnitAuto};                 \
+    if (node->getStyle().instanceName[edge] !=                               \
+        detail::CompactValue::ofAuto()) {                                    \
+      node->getStyle().instanceName[edge] = detail::CompactValue::ofAuto();  \
       node->markDirtyAndPropogate();                                         \
     }                                                                        \
   }
 
-#define YG_NODE_STYLE_EDGE_PROPERTY_UNIT_IMPL(                           \
-    type, name, paramName, instanceName)                                 \
-  void YGNodeStyleSet##name(                                             \
-      const YGNodeRef node, const YGEdge edge, const float paramName) {  \
-    YGValue value = {                                                    \
-        YGFloatSanitize(paramName),                                      \
-        YGFloatIsUndefined(paramName) ? YGUnitUndefined : YGUnitPoint,   \
-    };                                                                   \
-    if ((node->getStyle().instanceName[edge].value != value.value &&     \
-         value.unit != YGUnitUndefined) ||                               \
-        node->getStyle().instanceName[edge].unit != value.unit) {        \
-      node->getStyle().instanceName[edge] = value;                       \
-      node->markDirtyAndPropogate();                                     \
-    }                                                                    \
-  }                                                                      \
-                                                                         \
-  void YGNodeStyleSet##name##Percent(                                    \
-      const YGNodeRef node, const YGEdge edge, const float paramName) {  \
-    YGValue value = {                                                    \
-        YGFloatSanitize(paramName),                                      \
-        YGFloatIsUndefined(paramName) ? YGUnitUndefined : YGUnitPercent, \
-    };                                                                   \
-    if ((node->getStyle().instanceName[edge].value != value.value &&     \
-         value.unit != YGUnitUndefined) ||                               \
-        node->getStyle().instanceName[edge].unit != value.unit) {        \
-      node->getStyle().instanceName[edge] = value;                       \
-      node->markDirtyAndPropogate();                                     \
-    }                                                                    \
-  }                                                                      \
-                                                                         \
-  WIN_STRUCT(type)                                                       \
-  YGNodeStyleGet##name(const YGNodeRef node, const YGEdge edge) {        \
-    YGValue value = node->getStyle().instanceName[edge];                 \
-    if (value.unit == YGUnitUndefined || value.unit == YGUnitAuto) {     \
-      value.value = YGUndefined;                                         \
-    }                                                                    \
-    return WIN_STRUCT_REF(value);                                        \
+#define YG_NODE_STYLE_EDGE_PROPERTY_UNIT_IMPL(                            \
+    type, name, paramName, instanceName)                                  \
+  void YGNodeStyleSet##name(                                              \
+      const YGNodeRef node, const YGEdge edge, const float paramName) {   \
+    auto value = detail::CompactValue::ofMaybe<YGUnitPoint>(paramName);   \
+    if (node->getStyle().instanceName[edge] != value) {                   \
+      node->getStyle().instanceName[edge] = value;                        \
+      node->markDirtyAndPropogate();                                      \
+    }                                                                     \
+  }                                                                       \
+                                                                          \
+  void YGNodeStyleSet##name##Percent(                                     \
+      const YGNodeRef node, const YGEdge edge, const float paramName) {   \
+    auto value = detail::CompactValue::ofMaybe<YGUnitPercent>(paramName); \
+    if (node->getStyle().instanceName[edge] != value) {                   \
+      node->getStyle().instanceName[edge] = value;                        \
+      node->markDirtyAndPropogate();                                      \
+    }                                                                     \
+  }                                                                       \
+                                                                          \
+  WIN_STRUCT(type)                                                        \
+  YGNodeStyleGet##name(const YGNodeRef node, const YGEdge edge) {         \
+    YGValue value = node->getStyle().instanceName[edge];                  \
+    if (value.unit == YGUnitUndefined || value.unit == YGUnitAuto) {      \
+      value.value = YGUndefined;                                          \
+    }                                                                     \
+    return WIN_STRUCT_REF(value);                                         \
   }
 
 #define YG_NODE_LAYOUT_PROPERTY_IMPL(type, name, instanceName) \
@@ -881,13 +872,8 @@ YGValue YGNodeStyleGetFlexBasis(const YGNodeRef node) {
 }
 
 void YGNodeStyleSetFlexBasis(const YGNodeRef node, const float flexBasis) {
-  YGValue value = {
-      YGFloatSanitize(flexBasis),
-      YGFloatIsUndefined(flexBasis) ? YGUnitUndefined : YGUnitPoint,
-  };
-  if ((node->getStyle().flexBasis.value != value.value &&
-       value.unit != YGUnitUndefined) ||
-      node->getStyle().flexBasis.unit != value.unit) {
+  auto value = detail::CompactValue::ofMaybe<YGUnitPoint>(flexBasis);
+  if (node->getStyle().flexBasis != value) {
     node->getStyle().flexBasis = value;
     node->markDirtyAndPropogate();
   }
@@ -896,18 +882,16 @@ void YGNodeStyleSetFlexBasis(const YGNodeRef node, const float flexBasis) {
 void YGNodeStyleSetFlexBasisPercent(
     const YGNodeRef node,
     const float flexBasisPercent) {
-  if (node->getStyle().flexBasis.value != flexBasisPercent ||
-      node->getStyle().flexBasis.unit != YGUnitPercent) {
-    node->getStyle().flexBasis = YGFloatIsUndefined(flexBasisPercent)
-        ? YGValue{0, YGUnitAuto}
-        : YGValue{flexBasisPercent, YGUnitPercent};
+  auto value = detail::CompactValue::ofMaybe<YGUnitPercent>(flexBasisPercent);
+  if (node->getStyle().flexBasis != value) {
+    node->getStyle().flexBasis = value;
     node->markDirtyAndPropogate();
   }
 }
 
 void YGNodeStyleSetFlexBasisAuto(const YGNodeRef node) {
-  if (node->getStyle().flexBasis.unit != YGUnitAuto) {
-    node->getStyle().flexBasis = {0, YGUnitAuto};
+  if (node->getStyle().flexBasis != detail::CompactValue::ofAuto()) {
+    node->getStyle().flexBasis = detail::CompactValue::ofAuto();
     node->markDirtyAndPropogate();
   }
 }
@@ -922,27 +906,23 @@ void YGNodeStyleSetBorder(
     const YGNodeRef node,
     const YGEdge edge,
     const float border) {
-  YGValue value = {
-      YGFloatSanitize(border),
-      YGFloatIsUndefined(border) ? YGUnitUndefined : YGUnitPoint,
-  };
-  if ((node->getStyle().border[edge].value != value.value &&
-       value.unit != YGUnitUndefined) ||
-      node->getStyle().border[edge].unit != value.unit) {
+  auto value = detail::CompactValue::ofMaybe<YGUnitPoint>(border);
+  if (node->getStyle().border[edge] != value) {
     node->getStyle().border[edge] = value;
     node->markDirtyAndPropogate();
   }
 }
 
 float YGNodeStyleGetBorder(const YGNodeRef node, const YGEdge edge) {
-  if (node->getStyle().border[edge].unit == YGUnitUndefined ||
-      node->getStyle().border[edge].unit == YGUnitAuto) {
+  if (node->getStyle().border[edge].isUndefined() ||
+      node->getStyle().border[edge].isAuto()) {
     // TODO(T26792433): Rather than returning YGUndefined, change the api to
     // return YGFloatOptional.
     return YGUndefined;
   }
 
-  return node->getStyle().border[edge].value;
+  auto border = (YGValue)node->getStyle().border[edge];
+  return border.value;
 }
 
 // Yoga specific properties, not compatible with flexbox specification
@@ -2433,7 +2413,7 @@ static void YGJustifyMainAxis(
   // remainingFreeSpace is 0 when min main dimension is not given
   if (measureModeMainDim == YGMeasureModeAtMost &&
       collectedFlexItemsValues.remainingFreeSpace > 0) {
-    if (style.minDimensions[dim[mainAxis]].unit != YGUnitUndefined &&
+    if (!style.minDimensions[dim[mainAxis]].isUndefined() &&
         !YGResolveValue(style.minDimensions[dim[mainAxis]], mainAxisownerSize)
              .isUndefined()) {
       // This condition makes sure that if the size of main dimension(after

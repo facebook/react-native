@@ -9,6 +9,7 @@
 #include <array>
 #include <cmath>
 #include <vector>
+#include "CompactValue.h"
 #include "Yoga.h"
 
 using YGVector = std::vector<YGNodeRef>;
@@ -95,7 +96,7 @@ namespace detail {
 template <size_t Size>
 class Values {
  private:
-  std::array<YGValue, Size> values_;
+  std::array<CompactValue, Size> values_;
 
  public:
   Values() = default;
@@ -103,10 +104,10 @@ class Values {
     values_.fill(defaultValue);
   }
 
-  const YGValue& operator[](size_t i) const noexcept {
+  const CompactValue& operator[](size_t i) const noexcept {
     return values_[i];
   }
-  YGValue& operator[](size_t i) noexcept {
+  CompactValue& operator[](size_t i) noexcept {
     return values_[i];
   }
 
@@ -118,6 +119,11 @@ class Values {
   template <size_t I>
   void set(YGValue& value) noexcept {
     std::get<I>(values_) = value;
+  }
+
+  template <size_t I>
+  void set(YGValue&& value) noexcept {
+    set<I>(value);
   }
 
   bool operator==(const Values& other) const noexcept {
@@ -142,7 +148,7 @@ static const float kWebDefaultFlexShrink = 1.0f;
 
 extern bool YGFloatsEqual(const float a, const float b);
 extern bool YGValueEqual(const YGValue a, const YGValue b);
-extern const YGValue* YGComputedEdgeValue(
+extern facebook::yoga::detail::CompactValue YGComputedEdgeValue(
     const facebook::yoga::detail::Values<YGEdgeCount>& edges,
-    const YGEdge edge,
-    const YGValue* const defaultValue);
+    YGEdge edge,
+    facebook::yoga::detail::CompactValue defaultValue);
