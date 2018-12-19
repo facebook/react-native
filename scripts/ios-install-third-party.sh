@@ -4,7 +4,11 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-cachedir="$HOME/Library/Caches/com.facebook.ReactNativeBuild"
+if [ -d "$HOME/.rncache" ]; then
+  cachedir="$HOME/.rncache" # react-native 0.57.8 and older
+else
+  cachedir="$HOME/Library/Caches/com.facebook.ReactNativeBuild"
+fi
 mkdir -p "$cachedir"
 
 function file_fail () {
