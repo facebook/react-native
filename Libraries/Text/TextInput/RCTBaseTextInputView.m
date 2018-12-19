@@ -249,7 +249,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
           #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 120000 /* __IPHONE_12_0 */
             if (@available(iOS 12.0, *)) {
               NSDictionary<NSString *, NSString *> * iOS12extras = @{@"newPassword": UITextContentTypeNewPassword,
-                                                                   @"oneTimeCode": UITextContentTypeOneTimeCode};
+                                                                     @"oneTimeCode": UITextContentTypeOneTimeCode};
 
               NSMutableDictionary<NSString *, NSString *> * iOS12baseMap = [contentTypeMap mutableCopy];
               [iOS12baseMap addEntriesFromDictionary:iOS12extras];
@@ -261,7 +261,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
         // Setting textContentType to an empty string will disable any
         // default behaviour, like the autofill bar for password inputs
-        self.backedTextInputView.textContentType = type ? contentTypeMap[type] : type;
+        self.backedTextInputView.textContentType = contentTypeMap[type] ?: type;
     }
   #endif
 }
