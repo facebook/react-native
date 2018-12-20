@@ -58,14 +58,14 @@ describe('FormData', function() {
 
   it('should return json object', function() {
 
-    let payoad = {
+    let payload = {
       key: 1,
       title : 'wine bottle'
     };
     let strPayloard = JSON.stringify(payload);
 
     formData.append('json', {
-      value: payoad,
+      value: payload,
       type: 'application/json',
       name :'wine'
     });
