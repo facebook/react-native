@@ -419,6 +419,7 @@ jobs:
           at: ~/react-native
 
       - run: *boot-simulator-iphone
+      - run: *brew-install-watchman
       - run: *run-objc-ios-tests
 
       - store_test_results:
