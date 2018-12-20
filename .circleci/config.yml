@@ -412,15 +412,13 @@ jobs:
           path: ~/react-native/reports/junit
 
   # Runs unit tests on iOS devices
-  test_objc:
+  test_ios:
     <<: *macos_defaults
     steps:
       - attach_workspace:
           at: ~/react-native
 
       - run: *boot-simulator-iphone
-      - run: *brew-install-watchman
-
       - run: *run-objc-ios-tests
 
       - store_test_results:
@@ -681,7 +679,7 @@ workflows:
             - checkout_code
 
       # Test iOS
-      - test_objc:
+      - test_ios:
           filters: *filter-ignore-gh-pages
           requires:
             - checkout_code
