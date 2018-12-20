@@ -60,9 +60,16 @@ public interface MessageQueueThread {
   void quitSynchronous();
 
   /**
-   * Returns the time in milliseconds at which this thread was started.  This
+   * Returns the perf counters taken when the framework was started.  This
    * method is intended to be used for instrumentation purposes.
    */
   @DoNotStrip
-  long getStartTimeMillis();
+  MessageQueueThreadPerfStats getPerfStats();
+
+  /**
+   * Resets the perf counters.  This is useful if the RN threads are being re-used.
+   * This method is intended to be used for instrumentation purposes.
+   */
+  @DoNotStrip
+  void resetPerfStats();
 }
