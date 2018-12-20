@@ -71,7 +71,7 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
   if (!image) {
     return;
   }
-  CGFloat bytes = image.size.width * image.size.height * image.scale * image.scale * 4;
+  NSInteger bytes = image.reactDecodedImageBytes;
   if (bytes <= RCTMaxCachableDecodedImageSizeInBytes) {
     [self->_decodedImageCache setObject:image
                                  forKey:cacheKey
