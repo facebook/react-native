@@ -64,10 +64,9 @@ describe('FormData', function() {
     };
     let strPayloard = JSON.stringify(payload);
 
-    formData.append('json', {
+    formData.append('wine', {
       value: payload,
-      type: 'application/json',
-      name :'wine'
+      type: 'application/json'
     });
 
     const expectedPart = {
@@ -77,7 +76,7 @@ describe('FormData', function() {
         'content-disposition': 'form-data; name="wine"',
         'content-type': 'application/json',
       },
-      fieldName: 'json',
+      fieldName: 'wine',
     };
     expect(formData.getParts()[0]).toMatchObject(expectedPart);
   });
