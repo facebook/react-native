@@ -104,7 +104,6 @@
     "android",
     "cli.js",
     "flow",
-    "flow-github",
     "init.sh",
     "scripts/ios-configure-glog.sh",
     "scripts/ios-install-third-party.sh",
