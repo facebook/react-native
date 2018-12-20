@@ -71,7 +71,6 @@ describe('FormData', function() {
 
     const expectedPart = {
       string: strPayloard,
-      type: 'application/json',
       headers: {
         'content-disposition': 'form-data; name="wine"',
         'content-type': 'application/json',
