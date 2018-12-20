@@ -55,4 +55,30 @@ describe('FormData', function() {
     };
     expect(formData.getParts()[0]).toMatchObject(expectedPart);
   });
+
+  it('should return json object', function() {
+
+    let payoad = {
+      key: 1,
+      title : 'wine bottle'
+    };
+    let strPayloard = JSON.stringify(payload);
+
+    formData.append('json', {
+      value: payoad,
+      type: 'application/json',
+      name :'wine'
+    });
+
+    const expectedPart = {
+      string: strPayloard,
+      type: 'application/json',
+      headers: {
+        'content-disposition': 'form-data; name="wine"',
+        'content-type': 'application/json',
+      },
+      fieldName: 'json',
+    };
+    expect(formData.getParts()[0]).toMatchObject(expectedPart);
+  });
 });

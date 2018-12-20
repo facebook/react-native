@@ -13,18 +13,18 @@
 type FormDataValue = any;
 type FormDataNameValuePair = [string, FormDataValue];
 
-type Headers = {[name: string]: string};
+type Headers = { [name: string]: string };
 type FormDataPart =
   | {
-      string: string,
-      headers: Headers,
-    }
+    string: string,
+    headers: Headers,
+  }
   | {
-      uri: string,
-      headers: Headers,
-      name?: string,
-      type?: string,
-    };
+    uri: string,
+    headers: Headers,
+    name?: string,
+    type?: string,
+  };
 
 /**
  * Polyfill for XMLHttpRequest2 FormData API, allowing multipart POST requests
@@ -38,9 +38,20 @@ type FormDataPart =
  *     name: 'photo.jpg',
  *   };
  *
+ *   var json = {
+ *     type: 'application/json',
+ *     value: {
+ *        a: 'a',
+ *        b: 'b',
+ *        k: 12
+ *     },
+ *     name:'ab'
+ *   };
+ * 
  *   var body = new FormData();
  *   body.append('authToken', 'secret');
  *   body.append('photo', photo);
+ *   body.append('obj', json);
  *   body.append('title', 'A beautiful photo!');
  *
  *   xhr.open('POST', serverURL);
@@ -66,10 +77,12 @@ class FormData {
     return this._parts.map(([name, value]) => {
       const contentDisposition = 'form-data; name="' + name + '"';
 
-      const headers: Headers = {'content-disposition': contentDisposition};
+      const headers: Headers = { 'content-disposition': contentDisposition };
 
       // The body part is a "blob", which in React Native just means
-      // an object with a `uri` attribute. Optionally, it can also
+      // an object with a `uri` attribute. 
+      // It could be a json object to serialize as well, if `value` attribute is an object.
+      // Optionally, it can also
       // have a `name` and `type` attribute to specify filename and
       // content type (cf. web Blob interface.)
       if (typeof value === 'object' && value) {
@@ -79,10 +92,13 @@ class FormData {
         if (typeof value.type === 'string') {
           headers['content-type'] = value.type;
         }
-        return {...value, headers, fieldName: name};
+        if (typeof value.value === 'object') {
+          return { string: JSON.stringify(value.value), headers, fieldName: name };
+        }
+        return { ...value, headers, fieldName: name };
       }
       // Convert non-object values to strings as per FormData.append() spec
-      return {string: String(value), headers, fieldName: name};
+      return { string: String(value), headers, fieldName: name };
     });
   }
 }
