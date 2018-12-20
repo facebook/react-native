@@ -284,11 +284,11 @@ aliases:
 
   - &boot-simulator-iphone
     name: Boot iPhone Simulator
-    command: xcrun simctl boot "iPhone XS" || true
+    command: source scripts/.tests.env && xcrun simctl boot "$IOS_DEVICE" || true
 
   - &boot-simulator-appletv
     name: Boot Apple TV Simulator
-    command: xcrun simctl boot "Apple TV" || true
+    command: source scripts/.tests.env && xcrun simctl boot "$TVOS_DEVICE" || true
 
   - &run-objc-ios-tests
     name: iOS Test Suite
