@@ -15,7 +15,7 @@
 set -ex
 
 SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-ROOT=$(dirname $SCRIPTS)
+ROOT=$(dirname "$SCRIPTS")
 
 cd "$ROOT"
 
