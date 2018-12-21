@@ -19,3 +19,13 @@ rn_android_library(
         react_native_target("java/com/facebook/react/views/view:view"),
     ],
 )
+rn_android_library(
+    name = "text_for_uimanager",
+    srcs = glob(["ReactBaseTextShadowNode.java","ReactRawTextManager.java"]),
+    required_for_source_only_abi = True,
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+    ],
+)
