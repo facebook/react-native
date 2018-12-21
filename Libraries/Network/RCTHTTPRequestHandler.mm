@@ -77,7 +77,7 @@ RCT_EXPORT_MODULE()
                                                capacity:0];
   }
   __block NSURLSessionDataTask *task = nil;
-  dispatch_async(self->_methodQueue, ^{
+  dispatch_sync(self->_methodQueue, ^{
     task = [self->_session dataTaskWithRequest:request];
   });
   {
