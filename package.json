@@ -98,6 +98,10 @@
       "<rootDir>/Libraries/react-native/"
     ]
   },
+  "jest-junit": {
+    "outputDirectory": "reports/junit",
+    "outputName": "js-test-results.xml"
+  },
   "main": "Libraries/react-native/react-native-implementation.js",
   "files": [
     ".flowconfig",
@@ -129,7 +133,7 @@
   "scripts": {
     "start": "node cli.js start",
     "test": "jest",
-    "test-ci": "JEST_JUNIT_OUTPUT=\"reports/junit/js-test-results.xml\" jest --maxWorkers=2 --ci --reporters=\"default\" --reporters=\"jest-junit\"",
+    "test-ci": "jest --maxWorkers=2 --ci --reporters=\"default\" --reporters=\"jest-junit\"",
     "flow": "flow",
     "flow-check-ios": "flow check",
     "flow-check-android": "flow check --flowconfig-name .flowconfig.android",
