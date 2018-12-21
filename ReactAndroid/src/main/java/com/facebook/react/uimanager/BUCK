@@ -69,7 +69,6 @@ rn_android_library(
     srcs = glob([
         "ReactShadowNode.java",
         "ReactShadowNodeImpl.java",
-        "annotations/ReactProp.java",
         "IllegalViewOperationException.java",
         "LayoutShadowNode.java",
         "PixelUtil.java",
