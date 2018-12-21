@@ -23,13 +23,16 @@
 }
 
 @synthesize bridge = _bridge;
+@synthesize methodQueue = _methodQueue;
 
 RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
-  [_session invalidateAndCancel];
-  _session = nil;
+  dispatch_async(self->_methodQueue, ^{
+    [self->_session invalidateAndCancel];
+    self->_session = nil;
+  });
 }
 
 - (BOOL)isValid
@@ -73,8 +76,10 @@ RCT_EXPORT_MODULE()
                                            valueOptions:NSPointerFunctionsStrongMemory
                                                capacity:0];
   }
-
-  NSURLSessionDataTask *task = [_session dataTaskWithRequest:request];
+  __block NSURLSessionDataTask *task = nil;
+  dispatch_async(self->_methodQueue, ^{
+    task = [self->_session dataTaskWithRequest:request];
+  });
   {
     std::lock_guard<std::mutex> lock(_mutex);
     [_delegates setObject:delegate forKey:task];
