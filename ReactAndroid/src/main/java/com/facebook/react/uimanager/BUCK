@@ -63,3 +63,28 @@ rn_android_library(
         react_native_target("java/com/facebook/react/bridge:bridge"),
     ],
 )
+
+rn_android_library(
+    name = "uimanager_for_text",
+    srcs = glob([
+        "ReactShadowNode.java",
+        "ReactShadowNodeImpl.java",
+        "annotations/ReactProp.java",
+        "IllegalViewOperationException.java",
+        "LayoutShadowNode.java",
+        "PixelUtil.java",
+        "ReactShadowNode.java",
+        "ViewDefaults.java",
+        "ViewProps.java",
+    ]),
+    required_for_source_only_abi = True,
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        YOGA_TARGET,
+        react_native_dep("third-party/java/infer-annotations:infer-annotations"),
+        react_native_target("java/com/facebook/react/uimanager/annotations:annotations"),
+        react_native_target("java/com/facebook/react/modules/i18nmanager:i18nmanager"),
+    ],
+)
