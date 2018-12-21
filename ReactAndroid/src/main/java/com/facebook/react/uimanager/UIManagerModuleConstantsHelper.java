@@ -33,7 +33,7 @@ import javax.annotation.Nullable;
    * registered on the JS side with the help of {@code UIManagerModule.getConstantsForViewManager}.
    */
   /* package */ static Map<String, Object> createConstants(
-      UIManagerModule.ViewManagerResolver resolver) {
+      ViewManagerResolver resolver) {
     Map<String, Object> constants = UIManagerModuleConstants.getConstants();
     if (!ReactFeatureFlags.lazilyLoadViewManagers) {
       constants.put("ViewManagerNames", resolver.getViewManagerNames());

@@ -7,8 +7,6 @@
 
 package com.facebook.react.uimanager.debug;
 
-import com.facebook.react.uimanager.UIManagerModule;
-
 /**
  * A listener that is notified about view hierarchy update events. This listener should only be
  * used for debug purposes and should not affect application state.

@@ -21,14 +21,35 @@ rn_android_library(
 )
 rn_android_library(
     name = "text_for_uimanager",
-    srcs = glob(["ReactBaseTextShadowNode.java","ReactRawTextManager.java"]),
+    srcs = glob([
+        "ReactBaseTextShadowNode.java",
+        "ReactRawTextShadowNode.java",
+        "ReactRawTextManager.java",
+        "ReactTextView.java",
+        "ReactTextUpdate.java",
+        "TextTransform.java",
+        "ReactTextInlineImageShadowNode.java",
+        "TextInlineImageSpan.java",
+        "CustomLetterSpacingSpan.java",
+        "*Span.java",
+        "ReactTextShadowNode.java",
+        "ReactFontManager.java",
+        "FontMetricsUtil.java",
+    ]),
     required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",
     ],
     deps = [
+        YOGA_TARGET,
+        react_native_dep("third-party/java/infer-annotations:infer-annotations"),
+        react_native_target("java/com/facebook/react/bridge:bridge"),
         react_native_target("java/com/facebook/react/common:common"),
-        react_native_target("java/com/facebook/react/uimanager:uimanager_for_text"),
         react_native_target("java/com/facebook/react/uimanager/annotations:annotations"),
+        react_native_target("java/com/facebook/react/module/annotations:annotations"),
+        react_native_target("java/com/facebook/react/uimanager:uimanager_for_text"),
+        react_native_target("java/com/facebook/react/views/view:view_for_text"),
+    ],
+    exported_deps = [
     ],
 )

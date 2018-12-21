@@ -61,16 +61,9 @@ public class UIImplementation {
   private long mLastCalculateLayoutTime = 0;
   protected @Nullable LayoutUpdateListener mLayoutUpdateListener;
 
-  /** Interface definition for a callback to be invoked when the layout has been updated */
-  public interface LayoutUpdateListener {
-
-    /** Called when the layout has been updated */
-    void onLayoutUpdated(ReactShadowNode root);
-  }
-
   public UIImplementation(
       ReactApplicationContext reactContext,
-      UIManagerModule.ViewManagerResolver viewManagerResolver,
+      ViewManagerResolver viewManagerResolver,
       EventDispatcher eventDispatcher,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     this(

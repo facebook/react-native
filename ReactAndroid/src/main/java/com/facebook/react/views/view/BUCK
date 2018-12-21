@@ -20,3 +20,25 @@ rn_android_library(
         react_native_target("java/com/facebook/react/uimanager/annotations:annotations"),
     ],
 )
+
+rn_android_library(
+    name = "view_for_text",
+    srcs = glob([
+        "ReactViewBackgroundManager.java",
+        "ReactViewBackgroundDrawable.java",
+        "ColorUtil.java",
+
+    ]),
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        YOGA_TARGET,
+        react_native_dep("third-party/java/infer-annotations:infer-annotations"),
+        react_native_dep("third-party/java/jsr-305:jsr-305"),
+        react_native_target("java/com/facebook/react/common:common"),
+        react_native_target("java/com/facebook/react/views/common:common"),
+        react_native_target("java/com/facebook/react/uimanager:uimanager_for_view"),
+        react_native_target("java/com/facebook/react/modules/i18nmanager:i18nmanager"),
+    ],
+)
