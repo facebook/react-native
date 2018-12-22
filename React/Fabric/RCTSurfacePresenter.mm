@@ -173,7 +173,7 @@ using namespace facebook::react;
 
   _scheduler = [[RCTScheduler alloc] initWithContextContainer:self.contextContainer];
   _scheduler.delegate = self;
-  
+
   return _scheduler;
 }
 
@@ -182,14 +182,14 @@ using namespace facebook::react;
 - (SharedContextContainer)contextContainer
 {
   std::lock_guard<std::mutex> lock(_contextContainerMutex);
-  
+
   if (_contextContainer) {
     return _contextContainer;
   }
 
   _contextContainer = std::make_shared<ContextContainer>();
 
-  _contextContainer->registerInstance(_reactNativeConfig);
+  _contextContainer->registerInstance(_reactNativeConfig, "ReactNativeConfig");
 
   auto messageQueueThread = _batchedBridge.jsMessageThread;
   auto runtime = (facebook::jsi::Runtime *)((RCTCxxBridge *)_batchedBridge).runtime;
@@ -214,7 +214,7 @@ using namespace facebook::react;
 
   _contextContainer->registerInstance(runtimeExecutor, "runtime-executor");
 
-  _contextContainer->registerInstance(std::make_shared<ImageManager>((__bridge void *)[_bridge imageLoader]));
+  _contextContainer->registerInstance(std::make_shared<ImageManager>((__bridge void *)[_bridge imageLoader]), "ImageManager");
   return _contextContainer;
 }
 

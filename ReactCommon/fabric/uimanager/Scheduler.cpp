@@ -28,7 +28,8 @@ Scheduler::Scheduler(const SharedContextContainer &contextContainer) {
       contextContainer->getInstance<RuntimeExecutor>("runtime-executor");
 
   reactNativeConfig_ =
-      contextContainer->getInstance<std::shared_ptr<const ReactNativeConfig>>();
+      contextContainer->getInstance<std::shared_ptr<const ReactNativeConfig>>(
+          "ReactNativeConfig");
 
   auto uiManager = std::make_unique<UIManager>();
   auto &uiManagerRef = *uiManager;
