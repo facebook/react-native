@@ -45,6 +45,7 @@ using namespace facebook::react;
 
 @implementation RCTSurfacePresenter {
   std::mutex _schedulerMutex;
+  std::mutex _contextContainerMutex;
   RCTScheduler *_Nullable _scheduler; // Thread-safe. Mutation of the instance variable is protected by `_schedulerMutex`.
   RCTMountingManager *_mountingManager; // Thread-safe.
   RCTSurfaceRegistry *_surfaceRegistry;  // Thread-safe.
@@ -166,9 +167,25 @@ using namespace facebook::react;
     return _scheduler;
   }
 
-  auto contextContainer = std::make_shared<ContextContainer>();
+  _scheduler = [[RCTScheduler alloc] initWithContextContainer:self.contextContainer];
+  _scheduler.delegate = self;
+  
+  return _scheduler;
+}
 
-  contextContainer->registerInstance(_reactNativeConfig);
+@synthesize contextContainer = _contextContainer;
+
+- (SharedContextContainer)contextContainer
+{
+  std::lock_guard<std::mutex> lock(_contextContainerMutex);
+  
+  if (_contextContainer) {
+    return _contextContainer;
+  }
+
+  _contextContainer = std::make_shared<ContextContainer>();
+
+  _contextContainer->registerInstance(_reactNativeConfig);
 
   auto messageQueueThread = _batchedBridge.jsMessageThread;
   auto runtime = (facebook::jsi::Runtime *)((RCTCxxBridge *)_batchedBridge).runtime;
@@ -188,17 +205,13 @@ using namespace facebook::react;
     return std::make_unique<RuntimeEventBeat>(runtimeExecutor);
   };
 
-  contextContainer->registerInstance<EventBeatFactory>(synchronousBeatFactory, "synchronous");
-  contextContainer->registerInstance<EventBeatFactory>(asynchronousBeatFactory, "asynchronous");
+  _contextContainer->registerInstance<EventBeatFactory>(synchronousBeatFactory, "synchronous");
+  _contextContainer->registerInstance<EventBeatFactory>(asynchronousBeatFactory, "asynchronous");
 
-  contextContainer->registerInstance(runtimeExecutor, "runtime-executor");
+  _contextContainer->registerInstance(runtimeExecutor, "runtime-executor");
 
-  contextContainer->registerInstance(std::make_shared<ImageManager>((__bridge void *)[_bridge imageLoader]));
-
-  _scheduler = [[RCTScheduler alloc] initWithContextContainer:contextContainer];
-  _scheduler.delegate = self;
-
-  return _scheduler;
+  _contextContainer->registerInstance(std::make_shared<ImageManager>((__bridge void *)[_bridge imageLoader]));
+  return _contextContainer;
 }
 
 - (void)_startSurface:(RCTFabricSurface *)surface
@@ -308,6 +321,7 @@ using namespace facebook::react;
   {
     std::lock_guard<std::mutex> lock(_schedulerMutex);
     _scheduler = nil;
+    _contextContainer = nil;
   }
 }
 

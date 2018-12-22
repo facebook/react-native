@@ -10,6 +10,7 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTComponentViewFactory.h>
+#import <react/uimanager/ContextContainer.h>
 #import <React/RCTPrimitives.h>
 #import <react/config/ReactNativeConfig.h>
 
@@ -30,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
                         config:(std::shared_ptr<const facebook::react::ReactNativeConfig>)config;
 
 @property (nonatomic, readonly) RCTComponentViewFactory *componentViewFactory;
+@property (nonatomic, readonly) facebook::react::SharedContextContainer contextContainer;
 
 @end
 
