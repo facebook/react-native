@@ -51,7 +51,6 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
 {
   if (self = [super initWithFrame:CGRectZero]) {
     _surface = surface;
-    [_surface start];
     _sizeMeasureMode = sizeMeasureMode;
 
     _surface.delegate = self;

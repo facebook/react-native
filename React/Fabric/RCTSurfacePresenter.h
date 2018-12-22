@@ -38,10 +38,14 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTSurfacePresenter (Surface)
 
 /**
- * Surface uses those methods to register itself in the Presenter.
- * Registering initiates running, rendering and mounting processes.
+ * Surface uses these methods to register itself in the Presenter.
  */
 - (void)registerSurface:(RCTFabricSurface *)surface;
+/**
+ * Starting initiates running, rendering and mounting processes.
+ * Should be called after registerSurface and any other surface-specific setup is done
+ */
+- (void)startSurface:(RCTFabricSurface *)surface;
 - (void)unregisterSurface:(RCTFabricSurface *)surface;
 - (void)setProps:(NSDictionary *)props
          surface:(RCTFabricSurface *)surface;
