@@ -5,17 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <Photos/Photos.h>
+#import <AssetsLibrary/AssetsLibrary.h>
 
 #import <React/RCTBridgeModule.h>
 #import <React/RCTConvert.h>
 
-@interface RCTConvert (PHFetchOptions)
+@interface RCTConvert (ALAssetGroup)
 
-+ (PHFetchOptions *)PHFetchOptionsFromMediaType:(NSString *)mediaType;
++ (ALAssetsGroupType)ALAssetsGroupType:(id)json;
++ (ALAssetsFilter *)ALAssetsFilter:(id)json;
 
 @end
-
 
 @interface RCTCameraRollManager : NSObject <RCTBridgeModule>
 

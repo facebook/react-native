@@ -39,7 +39,7 @@ RCT_EXPORT_MODULE()
   // Using PhotoKit for iOS 8+
   // The 'ph://' prefix is used by FBMediaKit to differentiate between
   // assets-library. It is prepended to the local ID so that it is in the
-  // form of an NSURL which is what assets-library uses.
+  // form of an, NSURL which is what assets-library uses.
   NSString *assetID = @"";
   PHFetchResult *results;
   if (!imageURL) {
