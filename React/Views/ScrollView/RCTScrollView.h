@@ -38,6 +38,7 @@
  */
 @property (nonatomic, readonly) UIScrollView *scrollView;
 
+@property (nonatomic, assign) BOOL allowScrollOutOfBounds;
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
 @property (nonatomic, assign) BOOL DEPRECATED_sendUpdatedChildFrames;

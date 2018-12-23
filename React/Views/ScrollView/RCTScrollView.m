@@ -585,12 +585,40 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(UIView *view, 
   [self scrollToOffset:offset animated:YES];
 }
 
+- (CGPoint)getMaxXOffset
+{
+    CGFloat offsetX = _scrollView.contentSize.width - _scrollView.bounds.size.width + _scrollView.contentInset.right;
+    return CGPointMake(fmax(offsetX, 0), 0);
+}
+
+- (CGPoint)getMaxYOffset
+{
+  CGFloat offsetY = _scrollView.contentSize.height - _scrollView.bounds.size.height + _scrollView.contentInset.bottom;
+  return CGPointMake(0, fmax(offsetY, 0));
+}
+
+- (CGPoint)getMaxOffset
+{
+  return [self isHorizontal:_scrollView] ? [self getMaxXOffset] : [self getMaxYOffset];
+}
+
 - (void)scrollToOffset:(CGPoint)offset animated:(BOOL)animated
 {
-  if (!CGPointEqualToPoint(_scrollView.contentOffset, offset)) {
+  CGPoint maxX = [self getMaxXOffset];
+  CGPoint maxY = [self getMaxYOffset];
+  CGPoint toOffset;
+
+  if (self.allowScrollOutOfBounds) {
+    toOffset = offset;
+  } else {
+    // Restrict inside the scroll view container bounds
+    toOffset = CGPointMake(fmax(0, fmin(offset.x, maxX.x)), fmax(0, fmin(offset.y, maxY.y)));
+  }
+
+  if (!CGPointEqualToPoint(_scrollView.contentOffset, toOffset)) {
     // Ensure at least one scroll event will fire
     _allowNextScrollNoMatterWhat = YES;
-    [_scrollView setContentOffset:offset animated:animated];
+    [_scrollView setContentOffset:toOffset animated:animated];
   }
 }
 
@@ -600,15 +628,7 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(UIView *view, 
  */
 - (void)scrollToEnd:(BOOL)animated
 {
-  BOOL isHorizontal = [self isHorizontal:_scrollView];
-  CGPoint offset;
-  if (isHorizontal) {
-    CGFloat offsetX = _scrollView.contentSize.width - _scrollView.bounds.size.width + _scrollView.contentInset.right;
-    offset = CGPointMake(fmax(offsetX, 0), 0);
-  } else {
-    CGFloat offsetY = _scrollView.contentSize.height - _scrollView.bounds.size.height + _scrollView.contentInset.bottom;
-    offset = CGPointMake(0, fmax(offsetY, 0));
-  }
+  CGPoint offset = [self getMaxOffset];
   if (!CGPointEqualToPoint(_scrollView.contentOffset, offset)) {
     // Ensure at least one scroll event will fire
     _allowNextScrollNoMatterWhat = YES;

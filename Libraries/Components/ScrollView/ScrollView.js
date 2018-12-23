@@ -76,6 +76,12 @@ type IOSProps = $ReadOnly<{|
    */
   automaticallyAdjustContentInsets?: ?boolean,
   /**
+   * Set to false if the scroll should be clamped to the bounds of the
+   * ScrollView children when using the scrollTo() function. The default value is true.
+   * @platform ios
+   */
+  allowScrollOutOfBounds?: ?boolean,
+  /**
    * The amount by which the scroll view content is inset from the edges
    * of the scroll view. Defaults to `{top: 0, left: 0, bottom: 0, right: 0}`.
    * @platform ios
@@ -976,6 +982,10 @@ class ScrollView extends React.Component<Props, State> {
       : styles.baseVertical;
     const props = {
       ...this.props,
+      allowScrollOutOfBounds:
+        this.props.allowScrollOutOfBounds !== undefined
+          ? this.props.allowScrollOutOfBounds
+          : true,
       alwaysBounceHorizontal,
       alwaysBounceVertical,
       style: ([baseStyle, this.props.style]: ?Array<any>),
