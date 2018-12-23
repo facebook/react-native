@@ -10,14 +10,13 @@
 
 'use strict';
 
-const Platform = require('Platform');
 const React = require('react');
 const SectionList = require('SectionList');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
-const TextInput = require('TextInput');
 const TouchableHighlight = require('TouchableHighlight');
 const RNTesterActions = require('./RNTesterActions');
+const RNTesterExampleFilter = require('./RNTesterExampleFilter');
 const View = require('View');
 
 /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found when
@@ -67,89 +66,6 @@ class RowComponent extends React.PureComponent<{
 const renderSectionHeader = ({section}) => (
   <Text style={styles.sectionHeader}>{section.title}</Text>
 );
-
-type FilterProps = {
-  render: Function,
-  list: {
-    ComponentExamples: Array<RNTesterExample>,
-    APIExamples: Array<RNTesterExample>,
-  },
-};
-
-class RNTesterExampleFilter extends React.Component<
-  FilterProps,
-  $FlowFixMeState,
-> {
-  state = {filter: ''};
-
-  render() {
-    const filterText = this.state.filter;
-    let filterRegex = /.*/;
-
-    try {
-      filterRegex = new RegExp(String(filterText), 'i');
-    } catch (error) {
-      console.warn(
-        'Failed to create RegExp: %s\n%s',
-        filterText,
-        error.message,
-      );
-    }
-
-    const filter = example =>
-      /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.68 was deployed. To see the error delete this
-       * comment and run Flow. */
-      this.props.disableSearch ||
-      (filterRegex.test(example.module.title) &&
-        (!Platform.isTV || example.supportsTVOS));
-
-    const sections = [
-      {
-        data: this.props.list.ComponentExamples.filter(filter),
-        title: 'COMPONENTS',
-        key: 'c',
-      },
-      {
-        data: this.props.list.APIExamples.filter(filter),
-        title: 'APIS',
-        key: 'a',
-      },
-    ];
-    return (
-      <View>
-        {this._renderTextInput()}
-        {this.props.render({sections})}
-      </View>
-    );
-  }
-
-  _renderTextInput(): ?React.Element<any> {
-    /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.68 was deployed. To see the error delete this
-     * comment and run Flow. */
-    if (this.props.disableSearch) {
-      return null;
-    }
-    return (
-      <View style={styles.searchRow}>
-        <TextInput
-          autoCapitalize="none"
-          autoCorrect={false}
-          clearButtonMode="always"
-          onChangeText={text => {
-            this.setState(() => ({filter: text}));
-          }}
-          placeholder="Search..."
-          underlineColorAndroid="transparent"
-          style={styles.searchTextInput}
-          testID="explorer_search"
-          value={this.state.filter}
-        />
-      </View>
-    );
-  }
-}
 
 class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
   render() {
@@ -259,19 +175,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#888888',
     lineHeight: 20,
-  },
-  searchRow: {
-    backgroundColor: '#eeeeee',
-    padding: 10,
-  },
-  searchTextInput: {
-    backgroundColor: 'white',
-    borderColor: '#cccccc',
-    borderRadius: 3,
-    borderWidth: 1,
-    paddingLeft: 8,
-    paddingVertical: 0,
-    height: 35,
   },
 });
 
