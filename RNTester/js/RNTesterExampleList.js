@@ -69,17 +69,30 @@ const renderSectionHeader = ({section}) => (
 
 class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
   render() {
+    const sections = [
+      {
+        data: this.props.list.ComponentExamples,
+        title: 'COMPONENTS',
+        key: 'c',
+      },
+      {
+        data: this.props.list.APIExamples,
+        title: 'APIS',
+        key: 'a',
+      },
+    ];
+
     return (
       <View style={[styles.listContainer, this.props.style]}>
         {this._renderTitleRow()}
         <RNTesterExampleFilter
-          list={this.props.list}
-          render={({sections}) => (
+          sections={sections}
+          render={({filteredSections}) => (
             <SectionList
               ItemSeparatorComponent={ItemSeparator}
               contentContainerStyle={{backgroundColor: 'white'}}
               style={styles.list}
-              sections={sections}
+              sections={filteredSections}
               renderItem={this._renderItem}
               enableEmptySections={true}
               itemShouldUpdate={this._itemShouldUpdate}

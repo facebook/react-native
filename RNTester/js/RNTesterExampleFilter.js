@@ -49,22 +49,15 @@ class RNTesterExampleFilter extends React.Component<Props, $FlowFixMeState> {
       (filterRegex.test(example.module.title) &&
         (!Platform.isTV || example.supportsTVOS));
 
-    const sections = [
-      {
-        data: this.props.list.ComponentExamples.filter(filter),
-        title: 'COMPONENTS',
-        key: 'c',
-      },
-      {
-        data: this.props.list.APIExamples.filter(filter),
-        title: 'APIS',
-        key: 'a',
-      },
-    ];
+    const filteredSections = this.props.sections.map(section => ({
+      ...section,
+      data: section.data.filter(filter),
+    }));
+
     return (
       <View>
         {this._renderTextInput()}
-        {this.props.render({sections})}
+        {this.props.render({filteredSections})}
       </View>
     );
   }
