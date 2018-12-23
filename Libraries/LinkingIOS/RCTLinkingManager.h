@@ -22,6 +22,6 @@
 
 + (BOOL)application:(nonnull UIApplication *)application
     continueUserActivity:(nonnull NSUserActivity *)userActivity
-      restorationHandler:(nonnull void (^)(NSArray *__nullable))restorationHandler;
+      restorationHandler:(nonnull void (^)(NSArray<id<UIUserActivityRestoring>> *_Nullable))restorationHandler;
 
 @end
