@@ -68,7 +68,18 @@ const renderSectionHeader = ({section}) => (
   <Text style={styles.sectionHeader}>{section.title}</Text>
 );
 
-class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
+type FilterProps = {
+  render: Function,
+  list: {
+    ComponentExamples: Array<RNTesterExample>,
+    APIExamples: Array<RNTesterExample>,
+  },
+};
+
+class RNTesterExampleFilter extends React.Component<
+  FilterProps,
+  $FlowFixMeState,
+> {
   state = {filter: ''};
 
   render() {
@@ -106,21 +117,62 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
       },
     ];
     return (
+      <View>
+        {this._renderTextInput()}
+        {this.props.render({sections})}
+      </View>
+    );
+  }
+
+  _renderTextInput(): ?React.Element<any> {
+    /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.68 was deployed. To see the error delete this
+     * comment and run Flow. */
+    if (this.props.disableSearch) {
+      return null;
+    }
+    return (
+      <View style={styles.searchRow}>
+        <TextInput
+          autoCapitalize="none"
+          autoCorrect={false}
+          clearButtonMode="always"
+          onChangeText={text => {
+            this.setState(() => ({filter: text}));
+          }}
+          placeholder="Search..."
+          underlineColorAndroid="transparent"
+          style={styles.searchTextInput}
+          testID="explorer_search"
+          value={this.state.filter}
+        />
+      </View>
+    );
+  }
+}
+
+class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
+  render() {
+    return (
       <View style={[styles.listContainer, this.props.style]}>
         {this._renderTitleRow()}
-        {this._renderTextInput()}
-        <SectionList
-          ItemSeparatorComponent={ItemSeparator}
-          contentContainerStyle={{backgroundColor: 'white'}}
-          style={styles.list}
-          sections={sections}
-          renderItem={this._renderItem}
-          enableEmptySections={true}
-          itemShouldUpdate={this._itemShouldUpdate}
-          keyboardShouldPersistTaps="handled"
-          automaticallyAdjustContentInsets={false}
-          keyboardDismissMode="on-drag"
-          renderSectionHeader={renderSectionHeader}
+        <RNTesterExampleFilter
+          list={this.props.list}
+          render={({sections}) => (
+            <SectionList
+              ItemSeparatorComponent={ItemSeparator}
+              contentContainerStyle={{backgroundColor: 'white'}}
+              style={styles.list}
+              sections={sections}
+              renderItem={this._renderItem}
+              enableEmptySections={true}
+              itemShouldUpdate={this._itemShouldUpdate}
+              keyboardShouldPersistTaps="handled"
+              automaticallyAdjustContentInsets={false}
+              keyboardDismissMode="on-drag"
+              renderSectionHeader={renderSectionHeader}
+            />
+          )}
         />
       </View>
     );
@@ -159,32 +211,6 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
           this.props.onNavigate(RNTesterActions.ExampleList());
         }}
       />
-    );
-  }
-
-  _renderTextInput(): ?React.Element<any> {
-    /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.68 was deployed. To see the error delete this
-     * comment and run Flow. */
-    if (this.props.disableSearch) {
-      return null;
-    }
-    return (
-      <View style={styles.searchRow}>
-        <TextInput
-          autoCapitalize="none"
-          autoCorrect={false}
-          clearButtonMode="always"
-          onChangeText={text => {
-            this.setState(() => ({filter: text}));
-          }}
-          placeholder="Search..."
-          underlineColorAndroid="transparent"
-          style={styles.searchTextInput}
-          testID="explorer_search"
-          value={this.state.filter}
-        />
-      </View>
     );
   }
 
