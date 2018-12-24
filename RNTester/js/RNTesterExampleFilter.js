@@ -8,20 +8,15 @@
  * @flow
  */
 
-const Platform = require('Platform');
 const React = require('react');
 const StyleSheet = require('StyleSheet');
 const TextInput = require('TextInput');
 const View = require('View');
 
-import type {RNTesterExample} from './RNTesterList.ios';
-
 type Props = {
+  filter: Function,
   render: Function,
-  list: {
-    ComponentExamples: Array<RNTesterExample>,
-    APIExamples: Array<RNTesterExample>,
-  },
+  sections: Object,
 };
 
 class RNTesterExampleFilter extends React.Component<Props, $FlowFixMeState> {
@@ -45,9 +40,7 @@ class RNTesterExampleFilter extends React.Component<Props, $FlowFixMeState> {
       /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
        * error found when Flow v0.68 was deployed. To see the error delete this
        * comment and run Flow. */
-      this.props.disableSearch ||
-      (filterRegex.test(example.module.title) &&
-        (!Platform.isTV || example.supportsTVOS));
+      this.props.disableSearch || this.props.filter({example, filterRegex});
 
     const filteredSections = this.props.sections.map(section => ({
       ...section,

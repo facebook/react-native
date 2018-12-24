@@ -10,6 +10,7 @@
 
 'use strict';
 
+const Platform = require('Platform');
 const React = require('react');
 const SectionList = require('SectionList');
 const StyleSheet = require('StyleSheet');
@@ -69,6 +70,13 @@ const renderSectionHeader = ({section}) => (
 
 class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
   render() {
+    const filter = ({example, filterRegex}) =>
+      /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
+      * error found when Flow v0.68 was deployed. To see the error delete this
+      * comment and run Flow. */
+      filterRegex.test(example.module.title) &&
+      (!Platform.isTV || example.supportsTVOS);
+
     const sections = [
       {
         data: this.props.list.ComponentExamples,
@@ -87,6 +95,7 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
         {this._renderTitleRow()}
         <RNTesterExampleFilter
           sections={sections}
+          filter={filter}
           render={({filteredSections}) => (
             <SectionList
               ItemSeparatorComponent={ItemSeparator}
