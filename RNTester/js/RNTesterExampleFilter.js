@@ -8,6 +8,8 @@
  * @flow
  */
 
+'use strict';
+
 const React = require('react');
 const StyleSheet = require('StyleSheet');
 const TextInput = require('TextInput');
