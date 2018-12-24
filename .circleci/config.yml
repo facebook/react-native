@@ -108,6 +108,14 @@ aliases:
         yarn install --non-interactive --cache-folder ~/.cache/yarn
       fi
 
+  - &validate-android-sdk
+    name: Validate Android SDK Install
+    command: ./scripts/validate-android-sdk.sh
+
+  - &validate-android-test-env
+    name: Validate Android Test Environment
+    command: ./scripts/validate-android-test-env.sh
+
   # Test Definitions
   - &run-js-tests
     name: JavaScript Test Suite
@@ -408,6 +416,9 @@ jobs:
       # Install Buck
       - restore-cache: *restore-cache-downloads-buck
       - save-cache: *save-cache-downloads-buck
+
+      # Validate Android test environment (including Buck)
+      - run: *validate-android-test-env
 
       # Download dependencies using Buck
       - run: *download-dependencies-buck
