@@ -99,7 +99,7 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
           render={({filteredSections}) => (
             <SectionList
               ItemSeparatorComponent={ItemSeparator}
-              contentContainerStyle={{backgroundColor: 'white'}}
+              contentContainerStyle={styles.sectionListContentContainer}
               style={styles.list}
               sections={filteredSections}
               renderItem={this._renderItem}
@@ -188,6 +188,9 @@ const styles = StyleSheet.create({
   separatorHighlighted: {
     height: StyleSheet.hairlineWidth,
     backgroundColor: 'rgb(217, 217, 217)',
+  },
+  sectionListContentContainer: {
+    backgroundColor: 'white',
   },
   rowTitleText: {
     fontSize: 17,
