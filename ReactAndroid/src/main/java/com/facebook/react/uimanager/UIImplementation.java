@@ -11,6 +11,7 @@ import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.UNSPECIFIED;
 
 import android.os.SystemClock;
+import android.text.TextUtils;
 import android.view.View.MeasureSpec;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -31,6 +32,8 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 import com.facebook.yoga.YogaDirection;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -44,6 +47,14 @@ import javax.annotation.Nullable;
  */
 public class UIImplementation {
 
+  static {
+    try {
+      mReactBaseTextShadowNodeClass = Class.forName("com.facebook.react.views.text.ReactBaseTextShadowNode");
+    } catch (ClassNotFoundException e) {
+      mReactBaseTextShadowNodeClass = null;
+    }
+  }
+  private static Class mReactBaseTextShadowNodeClass;
   protected final EventDispatcher mEventDispatcher;
   protected final ReactApplicationContext mReactContext;
   protected final ShadowNodeRegistry mShadowNodeRegistry = new ShadowNodeRegistry();
@@ -357,6 +368,141 @@ public class UIImplementation {
    * @param tagsToDelete list of tags corresponding to views that should be removed
    */
   public void manageChildren(
+    int viewTag,
+    @Nullable ReadableArray moveFrom,
+    @Nullable ReadableArray moveTo,
+    @Nullable ReadableArray addChildTags,
+    @Nullable ReadableArray addAtIndices,
+    @Nullable ReadableArray removeFrom) {
+    ReactShadowNode cssNodeToManage = mShadowNodeRegistry.getNode(viewTag);
+
+    int numToMove = moveFrom == null ? 0 : moveFrom.size();
+    int numToAdd = addChildTags == null ? 0 : addChildTags.size();
+    int numToRemove = removeFrom == null ? 0 : removeFrom.size();
+
+    if (numToMove != 0 && (moveTo == null || numToMove != moveTo.size())) {
+      throw new IllegalViewOperationException("Size of moveFrom != size of moveTo!");
+    }
+
+    if (numToAdd != 0 && (addAtIndices == null || numToAdd != addAtIndices.size())) {
+      throw new IllegalViewOperationException("Size of addChildTags != size of addAtIndices!");
+    }
+
+    // We treat moves as an add and a delete
+    ViewAtIndex[] viewsToAdd = new ViewAtIndex[numToMove + numToAdd];
+    int[] indicesToRemove = new int[numToMove + numToRemove];
+    int[] tagsToRemove = new int[indicesToRemove.length];
+    int[] tagsToDelete = new int[numToRemove];
+
+    if (numToMove > 0) {
+      Assertions.assertNotNull(moveFrom);
+      Assertions.assertNotNull(moveTo);
+      for (int i = 0; i < numToMove; i++) {
+        int moveFromIndex = moveFrom.getInt(i);
+        int tagToMove = cssNodeToManage.getChildAt(moveFromIndex).getReactTag();
+        viewsToAdd[i] = new ViewAtIndex(
+          tagToMove,
+          moveTo.getInt(i));
+        indicesToRemove[i] = moveFromIndex;
+        tagsToRemove[i] = tagToMove;
+      }
+    }
+
+    if (numToAdd > 0) {
+      Assertions.assertNotNull(addChildTags);
+      Assertions.assertNotNull(addAtIndices);
+      for (int i = 0; i < numToAdd; i++) {
+        int viewTagToAdd = addChildTags.getInt(i);
+        int indexToAddAt = addAtIndices.getInt(i);
+        viewsToAdd[numToMove + i] = new ViewAtIndex(viewTagToAdd, indexToAddAt);
+      }
+    }
+
+    if (numToRemove > 0) {
+      Assertions.assertNotNull(removeFrom);
+      for (int i = 0; i < numToRemove; i++) {
+        int indexToRemove = removeFrom.getInt(i);
+        int tagToRemove = cssNodeToManage.getChildAt(indexToRemove).getReactTag();
+        indicesToRemove[numToMove + i] = indexToRemove;
+        tagsToRemove[numToMove + i] = tagToRemove;
+        tagsToDelete[i] = tagToRemove;
+      }
+    }
+
+    // NB: moveFrom and removeFrom are both relative to the starting state of the View's children.
+    // moveTo and addAt are both relative to the final state of the View's children.
+    //
+    // 1) Sort the views to add and indices to remove by index
+    // 2) Iterate the indices being removed from high to low and remove them. Going high to low
+    //    makes sure we remove the correct index when there are multiple to remove.
+    // 3) Iterate the views being added by index low to high and add them. Like the view removal,
+    //    iteration direction is important to preserve the correct index.
+
+    Arrays.sort(viewsToAdd, ViewAtIndex.COMPARATOR);
+    Arrays.sort(indicesToRemove);
+
+    // Apply changes to CSSNodeDEPRECATED hierarchy
+    int lastIndexRemoved = -1;
+    for (int i = indicesToRemove.length - 1; i >= 0; i--) {
+      int indexToRemove = indicesToRemove[i];
+      if (indexToRemove == lastIndexRemoved) {
+        throw new IllegalViewOperationException("Repeated indices in Removal list for view tag: "
+          + viewTag);
+      }
+      cssNodeToManage.removeChildAt(indicesToRemove[i]);
+      lastIndexRemoved = indicesToRemove[i];
+    }
+    ArrayList<ViewAtIndex> vais = new ArrayList<>(Arrays.asList(viewsToAdd));
+    ArrayList<ViewAtIndex> illegals = new ArrayList<>();
+    for (int i = 0; i < vais.size(); i++) {
+      ViewAtIndex viewAtIndex = vais.get(i);
+      ReactShadowNode cssNodeToAdd = mShadowNodeRegistry.getNode(viewAtIndex.mTag);
+      if (cssNodeToAdd == null) {
+        throw new IllegalViewOperationException("Trying to add unknown view tag: "
+          + viewAtIndex.mTag);
+      }
+      // If there is a RCTRawText child node, and the parent is not a ReactBaseTextShadowNode,
+      // do not add the illegal RCTRawText childNode to the parent node.
+      if (TextUtils.equals(cssNodeToAdd.getViewClass(), "RCTRawText") && mReactBaseTextShadowNodeClass != null
+        && !mReactBaseTextShadowNodeClass.isAssignableFrom(cssNodeToAdd.getClass())) {
+        illegals.add(viewAtIndex);
+        continue;
+      }
+      cssNodeToManage.addChildAt(cssNodeToAdd, viewAtIndex.mIndex - illegals.size());
+    }
+    // Remove the illegal viewAtIndex, and correct the index of other viewAtIndexs.
+    if (illegals.size() > 0) {
+      for (int index = vais.size() - 1; index >= 0; index--) {
+        ViewAtIndex vai = vais.get(index);
+        if (illegals.size() > 0) {
+          // The index of ViewAtIndex is final, so we cannot edit it.
+          vais.remove(vai);
+          if (illegals.contains(vai)) {
+            illegals.remove(vai);
+          } else {
+            vais.add(index,new ViewAtIndex(vai.mTag,vai.mIndex-illegals.size()));
+          }
+        }
+      }
+      viewsToAdd = vais.toArray(new ViewAtIndex[0]);
+    }
+
+    if (!cssNodeToManage.isVirtual() && !cssNodeToManage.isVirtualAnchor()) {
+      mNativeViewHierarchyOptimizer.handleManageChildren(
+        cssNodeToManage,
+        indicesToRemove,
+        tagsToRemove,
+        viewsToAdd,
+        tagsToDelete);
+    }
+
+    for (int i = 0; i < tagsToDelete.length; i++) {
+      removeShadowNode(mShadowNodeRegistry.getNode(tagsToDelete[i]));
+    }
+  }
+
+  @Deprecated
+  public void manageChildrenDeprecated(
       int viewTag,
       @Nullable ReadableArray moveFrom,
       @Nullable ReadableArray moveTo,
@@ -474,6 +620,47 @@ public class UIImplementation {
    * @param childrenTags tags of the children
    */
   public void setChildren(
+    int viewTag,
+    ReadableArray childrenTags) {
+    ReactShadowNode cssNodeToManage = mShadowNodeRegistry.getNode(viewTag);
+
+    ArrayList<Integer> illegalChildrendTags = new ArrayList<>();
+    for (int i = 0; i < childrenTags.size(); i++) {
+      ReactShadowNode cssNodeToAdd = mShadowNodeRegistry.getNode(childrenTags.getInt(i));
+      if (cssNodeToAdd == null) {
+        throw new IllegalViewOperationException("Trying to add unknown view tag: "
+          + childrenTags.getInt(i));
+      }
+      // If there is a RCTRawText child node, and the parent is not a ReactBaseTextShadowNode,
+      // do not add the illegal RCTRawText childNode to the parent node.
+      if (TextUtils.equals(cssNodeToAdd.getViewClass(), "RCTRawText") && mReactBaseTextShadowNodeClass != null
+        && !mReactBaseTextShadowNodeClass.isAssignableFrom(cssNodeToAdd.getClass())) {
+        illegalChildrendTags.add(childrenTags.getInt(i));
+        continue;
+      }
+
+      cssNodeToManage.addChildAt(cssNodeToAdd, i - illegalChildrendTags.size());
+    }
+    // Remove the illegal child node.
+    if (illegalChildrendTags.size() > 0) {
+      // Donot use childrenTags.toArrayList.It will cast Int to Double.
+      ArrayList<Integer> children =  new ArrayList<>();
+      for (int i = 0; i < childrenTags.size(); i++) {
+        children.add(childrenTags.getInt(i));
+      }
+      children.removeAll(illegalChildrendTags);
+      childrenTags = Arguments.fromList(children);
+    }
+
+    if (!cssNodeToManage.isVirtual() && !cssNodeToManage.isVirtualAnchor()) {
+      mNativeViewHierarchyOptimizer.handleSetChildren(
+        cssNodeToManage,
+        childrenTags);
+    }
+  }
+
+  @Deprecated
+  public void setChildrenDeprecated(
     int viewTag,
     ReadableArray childrenTags) {
 
