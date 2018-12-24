@@ -198,7 +198,7 @@ aliases:
 
   - &build-android-rntester-app
     name: Build Android RNTester App
-    command: ./gradlew RNTester:android:app:assembleRelease -Pjobs=$BUILD_THREADS
+    command: ./gradlew RNTester:android:app:assembleRelease
 
   - &collect-android-test-results
     name: Collect Test Results
