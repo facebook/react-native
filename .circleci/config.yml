@@ -115,14 +115,6 @@ aliases:
       echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
       sudo apt-get update && sudo apt-get install yarn
 
-  - &validate-android-sdk
-    name: Validate Android SDK Install
-    command: ./scripts/validate-android-sdk.sh
-
-  - &validate-android-test-env
-    name: Validate Android Test Environment
-    command: ./scripts/validate-android-test-env.sh
-
   # Test Definitions
   - &run-js-tests
     name: JavaScript Test Suite
@@ -423,9 +415,6 @@ jobs:
       # Install Buck
       - restore-cache: *restore-cache-downloads-buck
       - save-cache: *save-cache-downloads-buck
-
-      # Validate Android test environment (including Buck)
-      - run: *validate-android-test-env
 
       # Download dependencies using Buck
       - run: *download-dependencies-buck
