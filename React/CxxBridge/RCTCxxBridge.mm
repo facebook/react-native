@@ -181,6 +181,8 @@ struct RCTInstanceCallback : public InstanceCallback {
   NSMutableDictionary<NSString *, RCTModuleData *> *_moduleDataByName;
   NSMutableArray<RCTModuleData *> *_moduleDataByID;
   NSMutableArray<Class> *_moduleClassesByID;
+  NSMutableArray<RCTModuleData *> *_batchDidCompleteCallbackModules;
+  NSMutableArray<RCTModuleData *> *_partialBatchDidFlushCallbackModules;
   NSUInteger _modulesInitializedOnMainQueue;
   RCTDisplayLink *_displayLink;
 
@@ -234,6 +236,8 @@ struct RCTInstanceCallback : public InstanceCallback {
     _moduleDataByName = [NSMutableDictionary new];
     _moduleClassesByID = [NSMutableArray new];
     _moduleDataByID = [NSMutableArray new];
+    _batchDidCompleteCallbackModules = [NSMutableArray new];
+    _partialBatchDidFlushCallbackModules = [NSMutableArray new];
 
     [RCTBridge setCurrentBridge:self];
   }
@@ -612,6 +616,7 @@ struct RCTInstanceCallback : public InstanceCallback {
     _moduleDataByName[moduleName] = moduleData;
     [_moduleClassesByID addObject:moduleClass];
     [moduleDataByID addObject:moduleData];
+    [self _registerBatchCallbackModule:moduleData];
   }
   [_moduleDataByID addObjectsFromArray:moduleDataByID];
 
@@ -674,6 +679,7 @@ struct RCTInstanceCallback : public InstanceCallback {
     _moduleDataByName[moduleName] = moduleData;
     [_moduleClassesByID addObject:moduleClass];
     [_moduleDataByID addObject:moduleData];
+    [self _registerBatchCallbackModule:moduleData];
   }
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
 }
@@ -722,6 +728,7 @@ struct RCTInstanceCallback : public InstanceCallback {
       _moduleDataByName[moduleName] = moduleData;
       [_moduleClassesByID addObject:moduleClass];
       [_moduleDataByID addObject:moduleData];
+      [self _registerBatchCallbackModule:moduleData];
     }
   }
 #endif
@@ -788,6 +795,16 @@ struct RCTInstanceCallback : public InstanceCallback {
     _reactInstance->getModuleRegistry().registerModules(createNativeModules(newModules, self, _reactInstance));
   } else {
     [self registerModulesForClasses:modules];
+  }
+}
+
+- (void)_registerBatchCallbackModule:(RCTModuleData *)moduleData
+{
+  if (moduleData.implementsBatchDidComplete) {
+    [_batchDidCompleteCallbackModules addObject:moduleData];
+  }
+  if (moduleData.implementsPartialBatchDidFlush) {
+    [_partialBatchDidFlushCallbackModules addObject:moduleData];
   }
 }
 
@@ -1069,6 +1086,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
     self->_moduleDataByName = nil;
     self->_moduleDataByID = nil;
+    self->_batchDidCompleteCallbackModules = nil;
+    self->_partialBatchDidFlushCallbackModules = nil;
     self->_moduleClassesByID = nil;
     self->_pendingCalls = nil;
 
@@ -1302,25 +1321,19 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
 - (void)partialBatchDidFlush
 {
-  for (RCTModuleData *moduleData in _moduleDataByID) {
-    if (moduleData.implementsPartialBatchDidFlush) {
-      [self dispatchBlock:^{
-        [moduleData.instance partialBatchDidFlush];
-      } queue:moduleData.methodQueue];
-    }
+  for (RCTModuleData *moduleData in _partialBatchDidFlushCallbackModules) {
+    [self dispatchBlock:^{
+      [moduleData.instance partialBatchDidFlush];
+    } queue:moduleData.methodQueue];
   }
 }
 
 - (void)batchDidComplete
 {
-  // TODO #12592471: batchDidComplete is only used by RCTUIManager,
-  // can we eliminate this special case?
-  for (RCTModuleData *moduleData in _moduleDataByID) {
-    if (moduleData.implementsBatchDidComplete) {
-      [self dispatchBlock:^{
-        [moduleData.instance batchDidComplete];
-      } queue:moduleData.methodQueue];
-    }
+  for (RCTModuleData *moduleData in _batchDidCompleteCallbackModules) {
+    [self dispatchBlock:^{
+      [moduleData.instance batchDidComplete];
+    } queue:moduleData.methodQueue];
   }
 }
 
