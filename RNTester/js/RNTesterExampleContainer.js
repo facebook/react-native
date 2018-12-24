@@ -12,6 +12,7 @@
 const React = require('react');
 const {Platform} = require('react-native');
 const RNTesterBlock = require('./RNTesterBlock');
+const RNTesterExampleFilter = require('./RNTesterExampleFilter');
 const RNTesterPage = require('./RNTesterPage');
 
 class RNTesterExampleContainer extends React.Component {
@@ -37,9 +38,25 @@ class RNTesterExampleContainer extends React.Component {
       return <this.props.module />;
     }
 
+    const filter = ({example, filterRegex}) => filterRegex.test(example.title);
+
+    const sections = [
+      {
+        data: this.props.module.examples,
+        title: 'EXAMPLES',
+        key: 'e',
+      },
+    ];
+
     return (
       <RNTesterPage title={this.props.title}>
-        {this.props.module.examples.map(this.renderExample)}
+        <RNTesterExampleFilter
+          sections={sections}
+          filter={filter}
+          render={({filteredSections}) =>
+            filteredSections[0].data.map(this.renderExample)
+          }
+        />
       </RNTesterPage>
     );
   }
