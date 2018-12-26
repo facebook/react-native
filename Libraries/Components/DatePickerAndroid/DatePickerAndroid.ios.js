@@ -5,13 +5,20 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
+type Options = $ReadOnly<{|
+  date?: ?(Date | number),
+  minDate?: ?(Date | number),
+  maxDate?: ?(Date | number),
+  mode?: ?('calender' | 'spinner' | 'default'),
+|}>;
+
 const DatePickerAndroid = {
-  async open(options: Object): Promise<Object> {
+  async open(options: Options): Promise<void> {
     return Promise.reject({
       message: 'DatePickerAndroid is not supported on this platform.',
     });

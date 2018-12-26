@@ -5,17 +5,38 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
 const DatePickerModule = require('NativeModules').DatePickerAndroid;
 
+type Options = $ReadOnly<{|
+  date?: ?(Date | number),
+  minDate?: ?(Date | number),
+  maxDate?: ?(Date | number),
+  mode?: ?('calender' | 'spinner' | 'default'),
+|}>;
+
+type DatePickerOpenAction =
+  | {|
+      action: 'dateSetAction',
+      year: number,
+      month: number,
+      day: number,
+    |}
+  | {|
+      action: 'dismissedAction',
+      year: typeof undefined,
+      month: typeof undefined,
+      day: typeof undefined,
+    |};
+
 /**
  * Convert a Date to a timestamp.
  */
-function _toMillis(options: Object, key: string) {
+function _toMillis(options: Options, key: string) {
   const dateVal = options[key];
   // Is it a Date object?
   if (typeof dateVal === 'object' && typeof dateVal.getMonth === 'function') {
@@ -65,7 +86,7 @@ class DatePickerAndroid {
    * Note the native date picker dialog has some UI glitches on Android 4 and lower
    * when using the `minDate` and `maxDate` options.
    */
-  static async open(options: Object): Promise<Object> {
+  static async open(options: Options): Promise<DatePickerOpenAction> {
     const optionsMs = options;
     if (optionsMs) {
       _toMillis(options, 'date');
@@ -78,15 +99,11 @@ class DatePickerAndroid {
   /**
    * A date has been selected.
    */
-  static get dateSetAction() {
-    return 'dateSetAction';
-  }
+  static dateSetAction = 'dateSetAction';
   /**
    * The dialog has been dismissed.
    */
-  static get dismissedAction() {
-    return 'dismissedAction';
-  }
+  static dismissedAction = 'dismissedAction';
 }
 
 module.exports = DatePickerAndroid;
