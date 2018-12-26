@@ -10,19 +10,21 @@
 
 'use strict';
 
-type Options = $ReadOnly<{|
-  date?: ?(Date | number),
-  minDate?: ?(Date | number),
-  maxDate?: ?(Date | number),
-  mode?: ?('calender' | 'spinner' | 'default'),
-|}>;
+import type {Options, DatePickerOpenAction} from 'DatePickerAndroidTypes';
 
-const DatePickerAndroid = {
-  async open(options: Options): Promise<void> {
-    return Promise.reject({
-      message: 'DatePickerAndroid is not supported on this platform.',
-    });
-  },
-};
+class DatePickerAndroid {
+  static async open(options: ?Options): Promise<DatePickerOpenAction> {
+    throw new Error('DatePickerAndroid is not supported on this platform.');
+  }
+
+  /**
+   * A date has been selected.
+   */
+  static +dateSetAction: 'dateSetAction' = 'dateSetAction';
+  /**
+   * The dialog has been dismissed.
+   */
+  static +dismissedAction: 'dismissedAction' = 'dismissedAction';
+}
 
 module.exports = DatePickerAndroid;
