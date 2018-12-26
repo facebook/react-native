@@ -131,7 +131,6 @@ type PasteEvent = SyntheticEvent<
   |}>,
 >;
 
-
 const DataDetectorTypes = [
   'phoneNumber',
   'link',

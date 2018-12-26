@@ -149,7 +149,6 @@ class TextInputTestApp extends React.Component {
           testID="onSubmitTextInput"
         />
         <TextInput
-          ref="onPasteTextInput"
           onPaste={this.handleOnPaste.bind(this)}
           defaultValue=""
           testID="onPasteTextInput"
