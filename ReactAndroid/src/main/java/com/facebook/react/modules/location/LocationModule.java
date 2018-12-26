@@ -8,6 +8,7 @@
 package com.facebook.react.modules.location;
 
 import android.annotation.SuppressLint;
+import android.Manifest;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
@@ -19,6 +20,7 @@ import android.os.Handler;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.PromiseImpl;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -28,6 +30,7 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.SystemClock;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
+import com.facebook.react.modules.permissions.PermissionsModule;
 import javax.annotation.Nullable;
 
 /**
@@ -115,6 +118,59 @@ public class LocationModule extends ReactContextBaseJavaModule {
    */
   @ReactMethod
   public void getCurrentPosition(
+      final ReadableMap options,
+      final Callback success,
+      final Callback error) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      final PermissionsModule perms = getReactApplicationContext().getNativeModule(PermissionsModule.class);
+
+      final Callback onPermissionGranted = new Callback() {
+        @Override
+        public void invoke(Object... args) {
+          String result = (String) args[0];
+          if (result == "granted") {
+            loadCurrentPosition(options, success, error);
+          } else {
+            error.invoke(PositionError.buildError(PositionError.PERMISSION_DENIED, "Location permission was not granted."));
+          }
+        }
+      };
+
+      final Callback onPermissionDenied = new Callback() {
+        @Override
+        public void invoke(Object... args) {
+          error.invoke(PositionError.buildError(PositionError.PERMISSION_DENIED, "Failed to request location permission."));
+        }
+      };
+
+      Callback onPermissionCheckFailed = new Callback() {
+        @Override
+        public void invoke(Object... args) {
+          error.invoke(PositionError.buildError(PositionError.PERMISSION_DENIED, "Failed to check location permission."));
+        }
+      };
+
+      Callback onPermissionChecked = new Callback() {
+        @Override
+        public void invoke(Object... args) {
+          boolean hasPermission = (boolean) args[0];
+
+          if (!hasPermission) {
+            perms.requestPermission(Manifest.permission.ACCESS_FINE_LOCATION, new PromiseImpl(onPermissionGranted, onPermissionDenied));
+          } else {
+            loadCurrentPosition(options, success, error);
+          }
+        }
+      };
+
+      perms.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION, new PromiseImpl(onPermissionChecked, onPermissionCheckFailed));
+      return;
+    }
+
+    loadCurrentPosition(options, success, error);
+  }
+
+  private void loadCurrentPosition(
       ReadableMap options,
       final Callback success,
       Callback error) {

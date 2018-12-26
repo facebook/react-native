@@ -82,27 +82,12 @@ const Geolocation = {
       typeof geo_success === 'function',
       'Must provide a valid geo_success callback.',
     );
-    let hasPermission = true;
-    // Supports Android's new permission model. For Android older devices,
-    // it's always on.
-    if (Platform.OS === 'android' && Platform.Version >= 23) {
-      hasPermission = await PermissionsAndroid.check(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-      );
-      if (!hasPermission) {
-        const status = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-        );
-        hasPermission = status === PermissionsAndroid.RESULTS.GRANTED;
-      }
-    }
-    if (hasPermission) {
-      RCTLocationObserver.getCurrentPosition(
-        geo_options || {},
-        geo_success,
-        geo_error || logError,
-      );
-    }
+    // Permission checks/requests are done on the native side
+    RCTLocationObserver.getCurrentPosition(
+      geo_options || {},
+      geo_success,
+      geo_error || logError,
+    );
   },
 
   /*
