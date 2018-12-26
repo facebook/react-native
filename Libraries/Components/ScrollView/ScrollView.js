@@ -35,6 +35,7 @@ import type {ViewProps} from 'ViewPropTypes';
 import type {PointProp} from 'PointPropType';
 
 import type {ColorValue} from 'StyleSheetTypes';
+import type {State as ScrollResponderState} from 'ScrollResponder';
 
 let AndroidScrollView;
 let AndroidHorizontalScrollContentView;
@@ -523,7 +524,22 @@ export type Props = $ReadOnly<{|
 
 type State = {|
   layoutHeight: ?number,
+  ...ScrollResponderState,
 |};
+
+function createScrollResponder(
+  node: React.ElementRef<typeof ScrollView>,
+): typeof ScrollResponder.Mixin {
+  const scrollResponder = {...ScrollResponder.Mixin};
+
+  for (const key in scrollResponder) {
+    if (typeof scrollResponder[key] === 'function') {
+      scrollResponder[key] = scrollResponder[key].bind(node);
+    }
+  }
+
+  return scrollResponder;
+}
 
 /**
  * Component that wraps platform ScrollView while providing
@@ -561,17 +577,52 @@ type State = {|
  * supports out of the box.
  */
 class ScrollView extends React.Component<Props, State> {
-  _createScrollResponder = () => {
-    const scrollResponder = {...ScrollResponder.Mixin};
+  /**
+   * Part 1: Removing ScrollResponder.Mixin:
+   *
+   * 1. Mixin methods should be flow typed. That's why we create a
+   *    copy of ScrollResponder.Mixin and attach it to this._scrollResponder.
+   *    Otherwise, we'd have to manually declare each method on the component
+   *    class and assign it a flow type.
+   * 2. Mixin methods can call component methods, and access the component's
+   *    props and state. So, we need to bind all mixin methods to the
+   *    component instance.
+   * 3. Continued...
+   */
+  _scrollResponder: typeof ScrollResponder.Mixin = createScrollResponder(this);
+
+  constructor(...args) {
+    super(...args);
+
+    /**
+     * Part 2: Removing ScrollResponder.Mixin
+     *
+     * 3. Mixin methods access other mixin methods via dynamic dispatch using
+     *    this. Since mixin methods are bound to the component instance, we need
+     *    to copy all mixin methods to the component instance.
+     */
     for (const key in ScrollResponder.Mixin) {
-      if (typeof scrollResponder[key] === 'function') {
-        scrollResponder[key] = scrollResponder[key].bind(this);
-        (this: any)[key] = scrollResponder[key].bind(this);
+      if (
+        typeof ScrollResponder.Mixin[key] === 'function' &&
+        key.startsWith('scrollResponder')
+      ) {
+        (this: any)[key] = ScrollResponder.Mixin[key].bind(this);
       }
     }
-    return scrollResponder;
-  };
-  _scrollResponder = this._createScrollResponder();
+
+    /**
+     * Part 3: Removing ScrollResponder.Mixin
+     *
+     * 4. Mixins can initialize properties and use properties on the component
+     *    instance.
+     */
+    Object.keys(ScrollResponder.Mixin)
+      .filter(key => typeof ScrollResponder.Mixin[key] !== 'function')
+      .forEach(key => {
+        (this: any)[key] = ScrollResponder.Mixin[key];
+      });
+  }
+
   _scrollAnimatedValue: AnimatedImplementation.Value = new AnimatedImplementation.Value(
     0,
   );
@@ -581,6 +632,7 @@ class ScrollView extends React.Component<Props, State> {
 
   state = {
     layoutHeight: null,
+    ...ScrollResponder.Mixin.scrollResponderMixinGetInitialState(),
   };
 
   UNSAFE_componentWillMount() {
@@ -610,9 +662,9 @@ class ScrollView extends React.Component<Props, State> {
     }
   }
 
-  setNativeProps = (props: Object) => {
+  setNativeProps(props: Object) {
     this._scrollViewRef && this._scrollViewRef.setNativeProps(props);
-  };
+  }
 
   /**
    * Returns a reference to the underlying scroll responder, which supports
@@ -620,17 +672,17 @@ class ScrollView extends React.Component<Props, State> {
    * implement this method so that they can be composed while providing access
    * to the underlying scroll responder's methods.
    */
-  getScrollResponder = (): ScrollView => {
+  getScrollResponder(): ScrollView {
     return this;
-  };
+  }
 
-  getScrollableNode = (): any => {
+  getScrollableNode(): any {
     return ReactNative.findNodeHandle(this._scrollViewRef);
-  };
+  }
 
-  getInnerViewNode = (): any => {
+  getInnerViewNode(): any {
     return ReactNative.findNodeHandle(this._innerViewRef);
-  };
+  }
 
   /**
    * Scrolls to a given x, y offset, either immediately or with a smooth animation.
@@ -643,11 +695,11 @@ class ScrollView extends React.Component<Props, State> {
    * the function also accepts separate arguments as an alternative to the options object.
    * This is deprecated due to ambiguity (y before x), and SHOULD NOT BE USED.
    */
-  scrollTo = (
+  scrollTo(
     y?: number | {x?: number, y?: number, animated?: boolean},
     x?: number,
     animated?: boolean,
-  ) => {
+  ) {
     if (typeof y === 'number') {
       console.warn(
         '`scrollTo(y, x, animated)` is deprecated. Use `scrollTo({x: 5, y: 5, ' +
@@ -661,7 +713,7 @@ class ScrollView extends React.Component<Props, State> {
       y: y || 0,
       animated: animated !== false,
     });
-  };
+  }
 
   /**
    * If this is a vertical ScrollView scrolls to the bottom.
@@ -671,40 +723,40 @@ class ScrollView extends React.Component<Props, State> {
    * `scrollToEnd({animated: false})` for immediate scrolling.
    * If no options are passed, `animated` defaults to true.
    */
-  scrollToEnd = (options?: {animated?: boolean}) => {
+  scrollToEnd(options?: {animated?: boolean}) {
     // Default to true
     const animated = (options && options.animated) !== false;
     this._scrollResponder.scrollResponderScrollToEnd({
       animated: animated,
     });
-  };
+  }
 
   /**
    * Deprecated, use `scrollTo` instead.
    */
-  scrollWithoutAnimationTo = (y: number = 0, x: number = 0) => {
+  scrollWithoutAnimationTo(y: number = 0, x: number = 0) {
     console.warn(
       '`scrollWithoutAnimationTo` is deprecated. Use `scrollTo` instead',
     );
     this.scrollTo({x, y, animated: false});
-  };
+  }
 
   /**
    * Displays the scroll indicators momentarily.
    *
    * @platform ios
    */
-  flashScrollIndicators = () => {
+  flashScrollIndicators() {
     this._scrollResponder.scrollResponderFlashScrollIndicators();
-  };
+  }
 
-  _getKeyForIndex = (index, childArray) => {
+  _getKeyForIndex(index, childArray) {
     // $FlowFixMe Invalid prop usage
     const child = childArray[index];
     return child && child.key;
-  };
+  }
 
-  _updateAnimatedNodeAttachment = () => {
+  _updateAnimatedNodeAttachment() {
     if (this._scrollAnimatedValueAttachment) {
       this._scrollAnimatedValueAttachment.detach();
     }
@@ -718,18 +770,19 @@ class ScrollView extends React.Component<Props, State> {
         [{nativeEvent: {contentOffset: {y: this._scrollAnimatedValue}}}],
       );
     }
-  };
+  }
 
-  _setStickyHeaderRef = (key, ref) => {
+  _setStickyHeaderRef(key, ref) {
     if (ref) {
       this._stickyHeaderRefs.set(key, ref);
     } else {
       this._stickyHeaderRefs.delete(key);
     }
-  };
+  }
 
-  _onStickyHeaderLayout = (index, event, key) => {
-    if (!this.props.stickyHeaderIndices) {
+  _onStickyHeaderLayout(index, event, key) {
+    const {stickyHeaderIndices} = this.props;
+    if (!stickyHeaderIndices) {
       return;
     }
     const childArray = React.Children.toArray(this.props.children);
@@ -741,19 +794,15 @@ class ScrollView extends React.Component<Props, State> {
     const layoutY = event.nativeEvent.layout.y;
     this._headerLayoutYs.set(key, layoutY);
 
-    // $FlowFixMe
-    const indexOfIndex = this.props.stickyHeaderIndices.indexOf(index);
-    const previousHeaderIndex = this.props.stickyHeaderIndices[
-      // $FlowFixMe
-      indexOfIndex - 1
-    ];
+    const indexOfIndex = stickyHeaderIndices.indexOf(index);
+    const previousHeaderIndex = stickyHeaderIndices[indexOfIndex - 1];
     if (previousHeaderIndex != null) {
       const previousHeader = this._stickyHeaderRefs.get(
         this._getKeyForIndex(previousHeaderIndex, childArray),
       );
       previousHeader && previousHeader.setNextHeaderY(layoutY);
     }
-  };
+  }
 
   _handleScroll = (e: Object) => {
     if (__DEV__) {
@@ -774,7 +823,7 @@ class ScrollView extends React.Component<Props, State> {
     if (Platform.OS === 'android') {
       if (
         this.props.keyboardDismissMode === 'on-drag' &&
-        this._scrollResponder.isTouching
+        this.state.isTouching
       ) {
         dismissKeyboard();
       }
@@ -858,40 +907,39 @@ class ScrollView extends React.Component<Props, State> {
     }
 
     const {stickyHeaderIndices} = this.props;
+    let children = this.props.children;
+
+    if (stickyHeaderIndices != null && stickyHeaderIndices.length > 0) {
+      const childArray = React.Children.toArray(this.props.children);
+
+      children = childArray.map((child, index) => {
+        const indexOfIndex = child ? stickyHeaderIndices.indexOf(index) : -1;
+        if (indexOfIndex > -1) {
+          const key = child.key;
+          const nextIndex = stickyHeaderIndices[indexOfIndex + 1];
+          return (
+            <ScrollViewStickyHeader
+              key={key}
+              ref={ref => this._setStickyHeaderRef(key, ref)}
+              nextHeaderLayoutY={this._headerLayoutYs.get(
+                this._getKeyForIndex(nextIndex, childArray),
+              )}
+              onLayout={event => this._onStickyHeaderLayout(index, event, key)}
+              scrollAnimatedValue={this._scrollAnimatedValue}
+              inverted={this.props.invertStickyHeaders}
+              scrollViewHeight={this.state.layoutHeight}>
+              {child}
+            </ScrollViewStickyHeader>
+          );
+        } else {
+          return child;
+        }
+      });
+    }
+
     const hasStickyHeaders =
       stickyHeaderIndices && stickyHeaderIndices.length > 0;
-    const childArray =
-      hasStickyHeaders && React.Children.toArray(this.props.children);
-    const children = hasStickyHeaders
-      ? // $FlowFixMe Invalid prop usage
-        childArray.map((child, index) => {
-          // $FlowFixMe
-          const indexOfIndex = child ? stickyHeaderIndices.indexOf(index) : -1;
-          if (indexOfIndex > -1) {
-            const key = child.key;
-            // $FlowFixMe
-            const nextIndex = stickyHeaderIndices[indexOfIndex + 1];
-            return (
-              <ScrollViewStickyHeader
-                key={key}
-                ref={ref => this._setStickyHeaderRef(key, ref)}
-                nextHeaderLayoutY={this._headerLayoutYs.get(
-                  this._getKeyForIndex(nextIndex, childArray),
-                )}
-                onLayout={event =>
-                  this._onStickyHeaderLayout(index, event, key)
-                }
-                scrollAnimatedValue={this._scrollAnimatedValue}
-                inverted={this.props.invertStickyHeaders}
-                scrollViewHeight={this.state.layoutHeight}>
-                {child}
-              </ScrollViewStickyHeader>
-            );
-          } else {
-            return child;
-          }
-        })
-      : this.props.children;
+
     const contentContainer = (
       <ScrollContentContainerViewClass
         {...contentSizeChangeProps}
