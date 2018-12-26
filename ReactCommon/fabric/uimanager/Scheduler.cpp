@@ -174,7 +174,7 @@ void Scheduler::uiManagerDidFinishTransaction(
     SurfaceId surfaceId,
     const SharedShadowNodeUnsharedList &rootChildNodes) {
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree &shadowTree) {
-    shadowTree.complete(rootChildNodes);
+    shadowTree.synchronize([&]() { shadowTree.complete(rootChildNodes); });
   });
 }
 
