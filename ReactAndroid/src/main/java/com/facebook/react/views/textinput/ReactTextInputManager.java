@@ -22,6 +22,8 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
+import android.content.ClipboardManager;
+import android.content.ClipData;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
@@ -810,6 +812,39 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
             }
 
             return true;
+          }
+        });
+    
+    editText.setOnPasteListener(
+        new ReactEditTextOnPasteListener() {
+          @Override
+          public void onPaste() {
+            ClipboardManager clipboard = (ClipboardManager) reactContext.getSystemService(ReactContext.CLIPBOARD_SERVICE);
+            ClipData clip = clipboard.getPrimaryClip();
+
+            if (clip != null) {
+              String[] mimeTypes = clip.getDescription().filterMimeTypes("*/*");
+              String mimeType = mimeTypes[0];
+              String text = "";
+
+              ClipData.Item firstItem = clip.getItemAt(0);
+              if (firstItem.getText() != null) {
+                text = firstItem.getText().toString();
+              } else if (firstItem.getUri() != null) {
+                text = firstItem.getUri().toString();
+              } else if (firstItem.getIntent() != null) {
+                text = firstItem.getIntent().toUri(0);
+              }
+
+              EventDispatcher eventDispatcher =
+                  reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+
+              eventDispatcher.dispatchEvent(
+                  new ReactTextInputPasteEvent(
+                      editText.getId(),
+                      text,
+                      mimeType));
+            }
           }
         });
   }

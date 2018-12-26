@@ -58,6 +58,11 @@ function enter(instance: ReactTestInstance, text: string) {
   input.instance._onChange({nativeEvent: {text}});
 }
 
+function paste(instance: ReactTestInstance, text: string, mimeType: string) {
+  const input = instance.findByType(TextInput);
+  input.instance._onPaste({nativeEvent: {text, mimeType}});
+}
+
 // Returns null if there is no error, otherwise returns an error message string.
 function maximumDepthError(
   tree: {toJSON: () => ReactTestRendererNode},
@@ -156,6 +161,7 @@ export {byClickable};
 export {byTestID};
 export {byTextMatching};
 export {enter};
+export {paste};
 export {expectNoConsoleWarn};
 export {expectNoConsoleError};
 export {maximumDepthError};

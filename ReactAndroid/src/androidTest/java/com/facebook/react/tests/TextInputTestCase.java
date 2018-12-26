@@ -7,6 +7,8 @@
 
 package com.facebook.react.tests;
 
+import java.util.List;
+
 import android.graphics.Color;
 import android.text.style.ForegroundColorSpan;
 import android.util.TypedValue;
@@ -15,6 +17,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.content.Context;
+import android.content.ClipboardManager;
+import android.content.ClipData;
 
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.testing.ReactAppInstrumentationTestCase;
@@ -111,6 +116,35 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
     fireEditorActionAndCheckRecording(reactEditText, EditorInfo.IME_ACTION_SEND);
     fireEditorActionAndCheckRecording(reactEditText, EditorInfo.IME_ACTION_UNSPECIFIED);
     fireEditorActionAndCheckRecording(reactEditText, EditorInfo.IME_ACTION_NONE);
+  }
+
+  public void testOnPaste() throws Throwable {
+    String testId = "onPasteTextInput";
+    final ReactEditText reactEditText = getViewByTestId(testId);
+
+    final String label = "Test Label";
+    final String text = "Test Text";
+    String mimeType = "text/plain";
+
+    mRecordingModule.reset();
+
+    runTestOnUiThread(
+      new Runnable() {
+        @Override
+        public void run() {
+          ClipboardManager clipboard = (ClipboardManager) reactEditText.getContext().getSystemService(Context.CLIPBOARD_SERVICE); 
+          ClipData clip = ClipData.newPlainText(label, text);
+          clipboard.setPrimaryClip(clip);
+
+          reactEditText.onTextContextMenuItem(android.R.id.paste);
+        }
+      });
+    waitForBridgeAndUIIdle();
+
+    List<String> calls = mRecordingModule.getCalls();
+    assertEquals(2, calls.size());
+    assertEquals(text, calls.get(0));
+    assertEquals(mimeType, calls.get(1));
   }
 
   private void fireEditorActionAndCheckRecording(final ReactEditText reactEditText,

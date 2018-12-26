@@ -35,6 +35,11 @@ import java.util.Map;
                 "phasedRegistrationNames",
                 MapBuilder.of("bubbled", "onSelect", "captured", "onSelectCapture")))
         .put(
+            "onPaste",
+            MapBuilder.of(
+                "phasedRegistrationNames",
+                MapBuilder.of("bubbled", "onPaste", "captured", "onPasteCapture")))
+        .put(
             TouchEventType.getJSEventName(TouchEventType.START),
             MapBuilder.of(
                 "phasedRegistrationNames",

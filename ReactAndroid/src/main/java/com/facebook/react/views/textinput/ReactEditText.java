@@ -80,6 +80,7 @@ public class ReactEditText extends EditText {
   private @Nullable ContentSizeWatcher mContentSizeWatcher;
   private @Nullable ScrollWatcher mScrollWatcher;
   private final InternalKeyListener mKeyListener;
+  private @Nullable ReactEditTextOnPasteListener mOnPasteListener;
   private boolean mDetectScrollMovement = false;
   private boolean mOnKeyPress = false;
   private float mLetterSpacingPt = 0;
@@ -105,6 +106,7 @@ public class ReactEditText extends EditText {
     mBlurOnSubmit = null;
     mDisableFullscreen = false;
     mListeners = null;
+    mOnPasteListener = null;
     mTextWatcherDelegator = null;
     mStagedInputType = getInputType();
     mKeyListener = new InternalKeyListener();
@@ -240,6 +242,10 @@ public class ReactEditText extends EditText {
     mScrollWatcher = scrollWatcher;
   }
 
+  public void setOnPasteListener(ReactEditTextOnPasteListener onPasteListener) {
+    mOnPasteListener = onPasteListener;
+  }
+
   @Override
   public void setSelection(int start, int end) {
     // Skip setting the selection if the text wasn't set because of an out of date value.
@@ -265,6 +271,15 @@ public class ReactEditText extends EditText {
     if (focused && mSelectionWatcher != null) {
       mSelectionWatcher.onSelectionChanged(getSelectionStart(), getSelectionEnd());
     }
+  }
+
+  @Override
+  public boolean onTextContextMenuItem(int id) {
+    if (id == android.R.id.paste && mOnPasteListener != null) {
+      mOnPasteListener.onPaste();
+    }
+
+    return super.onTextContextMenuItem(id);
   }
 
   public void setSelectionWatcher(SelectionWatcher selectionWatcher) {

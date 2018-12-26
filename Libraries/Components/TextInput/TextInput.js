@@ -124,6 +124,14 @@ export type EditingEvent = SyntheticEvent<
   |}>,
 >;
 
+type PasteEvent = SyntheticEvent<
+  $ReadOnly<{|
+    text: string,
+    mimeType: string,
+  |}>,
+>;
+
+
 const DataDetectorTypes = [
   'phoneNumber',
   'link',
@@ -258,6 +266,7 @@ type Props = $ReadOnly<{|
   onSubmitEditing?: ?(e: EditingEvent) => mixed,
   onKeyPress?: ?(e: KeyPressEvent) => mixed,
   onScroll?: ?(e: ScrollEvent) => mixed,
+  onPaste?: ?(e: PasteEvent) => mixed,
   placeholder?: ?Stringish,
   placeholderTextColor?: ?ColorValue,
   secureTextEntry?: ?boolean,
@@ -607,6 +616,12 @@ const TextInput = createReactClass({
      * Changed text is passed as an argument to the callback handler.
      */
     onChangeText: PropTypes.func,
+    /**
+     * Callback that is called when pasting from the clipboard.
+     * Pasted content and MIME type are passed as arguments to the
+     * callback handler.
+     */
+    onPaste: PropTypes.func,
     /**
      * Callback that is called when the text input's content size changes.
      * This will be called with
@@ -1155,6 +1170,7 @@ const TextInput = createReactClass({
         disableFullscreenUI={this.props.disableFullscreenUI}
         textBreakStrategy={this.props.textBreakStrategy}
         onScroll={this._onScroll}
+        onPaste={this._onPaste}
       />
     );
 
@@ -1285,6 +1301,12 @@ const TextInput = createReactClass({
 
   _onScroll: function(event: ScrollEvent) {
     this.props.onScroll && this.props.onScroll(event);
+  },
+
+  _onPaste: function(event: PasteEvent) {
+    if (this.props.onPaste != null) {
+      this.props.onPaste(event.nativeEvent.text, event.nativeEvent.mimeType);
+    }
   },
 });
 

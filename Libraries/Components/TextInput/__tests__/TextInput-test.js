@@ -17,7 +17,7 @@ const TextInput = require('TextInput');
 
 import Component from '@reactions/component';
 
-const {enter} = require('ReactNativeTestTools');
+const {enter, paste} = require('ReactNativeTestTools');
 
 jest.unmock('TextInput');
 
@@ -25,10 +25,12 @@ describe('TextInput tests', () => {
   let input;
   let onChangeListener;
   let onChangeTextListener;
+  let onPasteListener;
   const initialValue = 'initialValue';
   beforeEach(() => {
     onChangeListener = jest.fn();
     onChangeTextListener = jest.fn();
+    onPasteListener = jest.fn();
     const renderTree = ReactTestRenderer.create(
       <Component initialState={{text: initialValue}}>
         {({setState, state}) => (
@@ -40,6 +42,9 @@ describe('TextInput tests', () => {
             }}
             onChange={event => {
               onChangeListener(event);
+            }}
+            onPaste={(text, mimeType) => {
+              onPasteListener(text, mimeType);
             }}
           />
         )}
@@ -66,5 +71,11 @@ describe('TextInput tests', () => {
     expect(onChangeListener).toHaveBeenCalledWith({
       nativeEvent: {text: message},
     });
+  });
+  it('calls onPaste callback', () => {
+    const text = 'This is a test message';
+    const mimeType = 'text/plain';
+    paste(input, text, mimeType);
+    expect(onPasteListener).toHaveBeenCalledWith(text, mimeType);
   });
 });

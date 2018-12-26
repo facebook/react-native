@@ -90,6 +90,11 @@ class TextInputTestApp extends React.Component {
     Recording.record(record);
   };
 
+  handleOnPaste = (text, mimeType) => {
+    Recording.record(text);
+    Recording.record(mimeType);
+  };
+
   render() {
     return (
       <View style={styles.container}>
@@ -142,6 +147,12 @@ class TextInputTestApp extends React.Component {
           onSubmitEditing={this.handleOnSubmitEditing.bind(this, 'onSubmit')}
           defaultValue=""
           testID="onSubmitTextInput"
+        />
+        <TextInput
+          ref="onPasteTextInput"
+          onPaste={this.handleOnPaste.bind(this)}
+          defaultValue=""
+          testID="onPasteTextInput"
         />
         <TokenizedTextExample />
       </View>
