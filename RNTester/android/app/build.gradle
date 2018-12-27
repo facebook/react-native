@@ -92,7 +92,6 @@ def enableProguardInReleaseBuilds = true
 
 android {
     compileSdkVersion 28
-    buildToolsVersion "28.0.2"
 
     defaultConfig {
         applicationId "com.facebook.react.uiapp"
