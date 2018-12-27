@@ -125,6 +125,14 @@ public class EventDispatcher implements LifecycleEventListener {
           event.getEventName(),
           event.getUniqueID());
     }
+    maybePostFrameCallbackFromNonUI();
+  }
+
+  public void dispatchAllEvents() {
+    maybePostFrameCallbackFromNonUI();
+  }
+
+  private void maybePostFrameCallbackFromNonUI() {
     if (mReactEventEmitter != null) {
       // If the host activity is paused, the frame callback may not be currently
       // posted. Ensure that it is so that this event gets delivered promptly.
@@ -135,10 +143,6 @@ public class EventDispatcher implements LifecycleEventListener {
       // touch event dispatch will hit this codepath, and we simply queue them so that they
       // are dispatched once ReactContext creation completes and JS app is running.
     }
-  }
-
-  public void dispatchAllEvents() {
-    mCurrentFrameCallback.maybePostFromNonUI();
   }
 
   /**
