@@ -823,9 +823,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
             ClipData clip = clipboard.getPrimaryClip();
 
             if (clip != null) {
-              String[] mimeTypes = clip.getDescription().filterMimeTypes("*/*");
-              String mimeType = mimeTypes[0];
               String text = "";
+              String mimeType = clip.getDescription().getMimeType(0);
 
               ClipData.Item firstItem = clip.getItemAt(0);
               if (firstItem.getText() != null) {
