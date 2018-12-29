@@ -38,6 +38,11 @@ class RNTesterExampleContainer extends React.Component {
       return <this.props.module />;
     }
 
+    if (this.props.module.examples.length === 1) {
+      const Example = this.props.module.examples[0].render;
+      return <Example />;
+    }
+    
     const filter = ({example, filterRegex}) => filterRegex.test(example.title);
 
     const sections = [
