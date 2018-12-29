@@ -69,9 +69,6 @@ class SendIntentButton extends React.Component<Props> {
 }
 
 class IntentAndroidExample extends React.Component {
-  static title = 'Linking';
-  static description = 'Shows how to use Linking to open URLs.';
-
   render() {
     return (
       <View>
@@ -119,4 +116,13 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = IntentAndroidExample;
+exports.title = 'Linking';
+exports.description = 'Shows how to use Linking to open URLs.';
+exports.examples = [
+  {
+    title: 'Simple list of items',
+    render: function(): React.Element<typeof IntentAndroidExample> {
+      return <IntentAndroidExample />;
+    },
+  },
+];

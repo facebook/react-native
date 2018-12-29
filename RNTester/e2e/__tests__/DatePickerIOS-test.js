@@ -25,6 +25,9 @@ describe('DatePickerIOS', () => {
   });
 
   it('Should change indicator with datetime picker', async () => {
+    await element(by.id('explorer_example_search')).replaceText(
+      'Date and time picker',
+    );
     const testID = 'date-and-time';
     const indicatorID = 'date-and-time-indicator';
 
@@ -45,6 +48,7 @@ describe('DatePickerIOS', () => {
   });
 
   it('Should change indicator with date-only picker', async () => {
+    await element(by.id('explorer_example_search')).replaceText('Date only');
     const testID = 'date-only';
     const indicatorID = 'date-and-time-indicator';
 

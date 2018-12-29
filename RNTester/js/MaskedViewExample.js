@@ -23,10 +23,6 @@ const {
 } = require('react-native');
 
 class MaskedViewExample extends React.Component<{}, $FlowFixMeState> {
-  static title = '<MaskedViewIOS>';
-  static description =
-    'Renders the child view with a mask specified in the `renderMask` prop.';
-
   state = {
     alternateChildren: true,
   };
@@ -181,4 +177,14 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = MaskedViewExample;
+exports.title = '<MaskedViewIOS>';
+exports.description =
+  'Renders the child view with a mask specified in the `renderMask` prop.';
+exports.examples = [
+  {
+    title: 'Simple masked view',
+    render: function(): React.Element<typeof MaskedViewExample> {
+      return <MaskedViewExample />;
+    },
+  },
+];

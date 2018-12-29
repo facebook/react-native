@@ -24,6 +24,9 @@ describe('Touchable', () => {
   });
 
   it('Touchable Highlight should be tappable', async () => {
+    await element(by.id('explorer_example_search')).replaceText(
+      '<TouchableHighlight>',
+    );
     const buttonID = 'touchable_highlight_image_button';
     const button2ID = 'touchable_highlight_text_button';
     const consoleID = 'touchable_highlight_console';
@@ -45,6 +48,9 @@ describe('Touchable', () => {
   });
 
   it('Touchable Without Feedback should be tappable', async () => {
+    await element(by.id('explorer_example_search')).replaceText(
+      '<TouchableWithoutFeedback>',
+    );
     const buttonID = 'touchable_without_feedback_button';
     const consoleID = 'touchable_without_feedback_console';
 
@@ -60,6 +66,9 @@ describe('Touchable', () => {
   });
 
   it('Text should be tappable', async () => {
+    await element(by.id('explorer_example_search')).replaceText(
+      '<Text onPress={fn}> with highlight',
+    );
     const buttonID = 'tappable_text';
     const consoleID = 'tappable_text_console';
 

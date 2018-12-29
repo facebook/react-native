@@ -18,6 +18,13 @@ function onButtonPress(buttonName) {
   Alert.alert(`${buttonName} has been pressed!`);
 }
 
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+});
+
 exports.displayName = 'ButtonExample';
 exports.framework = 'React';
 exports.title = '<Button>';
@@ -99,10 +106,3 @@ exports.examples = [
     },
   },
 ];
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-});

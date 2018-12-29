@@ -92,7 +92,20 @@ class EventCheckBoxExample extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-let examples = [
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  checkbox: {
+    marginBottom: 10,
+  },
+});
+
+exports.title = '<CheckBox>';
+exports.displayName = 'CheckBoxExample';
+exports.description = 'Native boolean input';
+exports.examples = [
   {
     title: 'CheckBoxes can be set to true or false',
     render(): React.Element<any> {
@@ -118,18 +131,3 @@ let examples = [
     },
   },
 ];
-
-exports.title = '<CheckBox>';
-exports.displayName = 'CheckBoxExample';
-exports.description = 'Native boolean input';
-exports.examples = examples;
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  checkbox: {
-    marginBottom: 10,
-  },
-});

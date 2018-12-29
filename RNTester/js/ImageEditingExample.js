@@ -278,18 +278,6 @@ class ImageCropper extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   }
 }
 
-exports.framework = 'React';
-exports.title = 'ImageEditor';
-exports.description = 'Cropping and scaling with ImageEditor';
-exports.examples = [
-  {
-    title: 'Image Cropping',
-    render() {
-      return <SquareImageCropper />;
-    },
-  },
-];
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -314,3 +302,15 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 });
+
+exports.framework = 'React';
+exports.title = 'ImageEditor';
+exports.description = 'Cropping and scaling with ImageEditor';
+exports.examples = [
+  {
+    title: 'Image Cropping',
+    render() {
+      return <SquareImageCropper />;
+    },
+  },
+];

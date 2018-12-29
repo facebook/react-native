@@ -41,6 +41,16 @@ class ClipboardExample extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
+const styles = StyleSheet.create({
+  label: {
+    color: 'blue',
+  },
+  content: {
+    color: 'red',
+    marginTop: 20,
+  },
+});
+
 exports.title = 'Clipboard';
 exports.description = 'Show Clipboard contents.';
 exports.examples = [
@@ -51,13 +61,3 @@ exports.examples = [
     },
   },
 ];
-
-const styles = StyleSheet.create({
-  label: {
-    color: 'blue',
-  },
-  content: {
-    color: 'red',
-    marginTop: 20,
-  },
-});

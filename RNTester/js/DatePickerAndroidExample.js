@@ -22,9 +22,6 @@ const RNTesterBlock = require('./RNTesterBlock');
 const RNTesterPage = require('./RNTesterPage');
 
 class DatePickerAndroidExample extends React.Component {
-  static title = 'DatePickerAndroid';
-  static description = 'Standard Android date picker dialog';
-
   state = {
     presetDate: new Date(2020, 4, 5),
     simpleDate: new Date(2020, 4, 5),
@@ -144,4 +141,13 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = DatePickerAndroidExample;
+exports.title = 'DatePickerAndroid';
+exports.description = 'Standard Android date picker dialog';
+exports.examples = [
+  {
+    title: 'Simple date picker',
+    render: function(): React.Element<typeof DatePickerAndroidExample> {
+      return <DatePickerAndroidExample />;
+    },
+  },
+];

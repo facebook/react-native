@@ -153,7 +153,7 @@ exports.description =
 exports.examples = [
   {
     title: 'Photos',
-    render(): React.Node {
+    render(): React.Element<typeof CameraRollExample> {
       return <CameraRollExample />;
     },
   },

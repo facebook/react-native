@@ -25,6 +25,7 @@ describe('Picker', () => {
   });
 
   it('should be selectable by ID', async () => {
+    await element(by.id('explorer_example_search')).replaceText('Basic picker');
     await expect(element(by.id('basic-picker'))).toBeVisible();
   });
 });

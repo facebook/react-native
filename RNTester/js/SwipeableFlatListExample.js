@@ -44,9 +44,6 @@ const data = [
 ];
 
 class SwipeableFlatListExample extends React.Component<RNTesterProps> {
-  static title = '<SwipeableFlatList>';
-  static description = 'Performant, scrollable, swipeable list of data.';
-
   render() {
     return (
       <RNTesterPage
@@ -141,4 +138,13 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = SwipeableFlatListExample;
+exports.title = '<SwipeableFlatList>';
+exports.description = 'Performant, scrollable, swipeable list of data.';
+exports.examples = [
+  {
+    title: 'Simple swipable list',
+    render: function(): React.Element<typeof SwipeableFlatListExample> {
+      return <SwipeableFlatListExample />;
+    },
+  },
+];

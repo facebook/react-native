@@ -71,9 +71,6 @@ class AttributeToggler extends React.Component<{}, $FlowFixMeState> {
 }
 
 class TextExample extends React.Component<{}> {
-  static title = '<Text>';
-  static description = 'Base component for rendering styled text.';
-
   render() {
     return (
       <RNTesterPage title="<Text>">
@@ -605,4 +602,13 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = TextExample;
+exports.title = '<Text>';
+exports.description = 'Base component for rendering styled text.';
+exports.examples = [
+  {
+    title: 'Basic text',
+    render: function(): React.Element<typeof TextExample> {
+      return <TextExample />;
+    },
+  },
+];

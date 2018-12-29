@@ -92,10 +92,6 @@ class ProgressBar extends React.Component {
 }
 
 class ViewPagerAndroidExample extends React.Component {
-  static title = '<ViewPagerAndroid>';
-  static description =
-    'Container that allows to flip left and right between child views.';
-
   state = {
     page: 0,
     animationsAreEnabled: true,
@@ -291,4 +287,15 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = ViewPagerAndroidExample;
+exports.title = '<ViewPagerAndroid>';
+exports.description =
+  'Container that allows to flip left and right between child views.';
+
+exports.examples = [
+  {
+    title: 'Basic pager',
+    render(): React.Element<typeof ViewPagerAndroidExample> {
+      return <ViewPagerAndroidExample />;
+    },
+  },
+];

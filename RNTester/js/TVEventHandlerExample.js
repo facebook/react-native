@@ -15,18 +15,6 @@ const ReactNative = require('react-native');
 
 const {Platform, View, Text, TouchableOpacity, TVEventHandler} = ReactNative;
 
-exports.framework = 'React';
-exports.title = 'TVEventHandler example';
-exports.description = 'iOS alerts and action sheets';
-exports.examples = [
-  {
-    title: 'TVEventHandler',
-    render() {
-      return <TVEventHandlerView />;
-    },
-  },
-];
-
 class TVEventHandlerView extends React.Component<
   $FlowFixMeProps,
   {
@@ -92,3 +80,15 @@ class TVEventHandlerView extends React.Component<
     }
   }
 }
+
+exports.framework = 'React';
+exports.title = 'TVEventHandler example';
+exports.description = 'iOS alerts and action sheets';
+exports.examples = [
+  {
+    title: 'TVEventHandler',
+    render() {
+      return <TVEventHandlerView />;
+    },
+  },
+];

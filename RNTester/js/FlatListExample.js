@@ -220,4 +220,13 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = FlatListExample;
+exports.title = '<FlatList>';
+exports.description = 'Performant, scrollable list of data.';
+exports.examples = [
+  {
+    title: 'Simple list of items',
+    render: function(): React.Element<typeof FlatListExample> {
+      return <FlatListExample />;
+    },
+  },
+];
