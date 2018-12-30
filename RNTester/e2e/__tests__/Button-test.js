@@ -9,37 +9,36 @@
  */
 
 /* global device, element, by, expect */
+const {
+  openComponentWithLabel,
+  openExampleWithTitle,
+} = require('../e2e-helpers');
 
 describe('Button', () => {
   beforeAll(async () => {
     await device.reloadReactNative();
-    await element(by.id('explorer_search')).replaceText('<Button>');
-    await element(
-      by.label('<Button> Simple React Native button component.'),
-    ).tap();
-  });
-
-  afterAll(async () => {
-    //TODO - remove app state persistency, till then, we must go back to main screen,
-    await element(by.label('Back')).tap();
+    await openComponentWithLabel(
+      '<Button>',
+      '<Button> Simple React Native button component.',
+    );
   });
 
   it('Simple button should be tappable', async () => {
-    await element(by.id('example_search')).replaceText('Simple Button');
+    await openExampleWithTitle('Simple Button');
     await element(by.id('simple_button')).tap();
     await expect(element(by.text('Simple has been pressed!'))).toBeVisible();
     await element(by.text('OK')).tap();
   });
 
   it('Adjusted color button should be tappable', async () => {
-    await element(by.id('example_search')).replaceText('Adjusted color');
+    await openExampleWithTitle('Adjusted color');
     await element(by.id('purple_button')).tap();
     await expect(element(by.text('Purple has been pressed!'))).toBeVisible();
     await element(by.text('OK')).tap();
   });
 
   it("Two buttons with JustifyContent:'space-between' should be tappable", async () => {
-    await element(by.id('example_search')).replaceText('Fit to text layout');
+    await openExampleWithTitle('Fit to text layout');
     await element(by.id('left_button')).tap();
     await expect(element(by.text('Left has been pressed!'))).toBeVisible();
     await element(by.text('OK')).tap();
@@ -50,7 +49,7 @@ describe('Button', () => {
   });
 
   it('Disabled button should not interact', async () => {
-    await element(by.id('example_search')).replaceText('Disabled Button');
+    await openExampleWithTitle('Disabled Button');
     await element(by.id('disabled_button')).tap();
     await expect(
       element(by.text('Disabled has been pressed!')),

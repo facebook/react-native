@@ -8,23 +8,23 @@
  * @format
  */
 
-/* global element, by, expect */
+/* global device, element, by, expect */
+const {
+  openComponentWithLabel,
+  openExampleWithTitle,
+} = require('../e2e-helpers');
 
 describe('Touchable', () => {
   beforeAll(async () => {
-    await element(by.id('explorer_search')).replaceText('<Touchable*');
-    await element(
-      by.label('<Touchable*> and onPress Touchable and onPress examples.'),
-    ).tap();
-  });
-
-  afterAll(async () => {
-    //TODO - remove app state persistency, till then, we must go back to main screen,
-    await element(by.label('Back')).tap();
+    await device.reloadReactNative();
+    await openComponentWithLabel(
+      '<Touchable*',
+      '<Touchable*> and onPress Touchable and onPress examples.',
+    );
   });
 
   it('Touchable Highlight should be tappable', async () => {
-    await element(by.id('example_search')).replaceText('<TouchableHighlight>');
+    await openExampleWithTitle('<TouchableHighlight>');
     const buttonID = 'touchable_highlight_image_button';
     const button2ID = 'touchable_highlight_text_button';
     const consoleID = 'touchable_highlight_console';
@@ -46,9 +46,8 @@ describe('Touchable', () => {
   });
 
   it('Touchable Without Feedback should be tappable', async () => {
-    await element(by.id('example_search')).replaceText(
-      '<TouchableWithoutFeedback>',
-    );
+    await openExampleWithTitle('<TouchableWithoutFeedback>');
+
     const buttonID = 'touchable_without_feedback_button';
     const consoleID = 'touchable_without_feedback_console';
 
@@ -64,9 +63,8 @@ describe('Touchable', () => {
   });
 
   it('Text should be tappable', async () => {
-    await element(by.id('example_search')).replaceText(
-      '<Text onPress={fn}> with highlight',
-    );
+    await openExampleWithTitle('<Text onPress={fn}> with highlight');
+
     const buttonID = 'tappable_text';
     const consoleID = 'tappable_text_console';
 

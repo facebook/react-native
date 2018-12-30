@@ -8,24 +8,24 @@
  * @format
  */
 
-/* global element, by, expect */
+/* global element, by, expect, device */
+
+const {
+  openComponentWithLabel,
+  openExampleWithTitle,
+} = require('../e2e-helpers');
 
 describe('DatePickerIOS', () => {
   beforeAll(async () => {
-    await element(by.id('explorer_search')).replaceText('<DatePickerIOS>');
-    await element(
-      by.label(
-        '<DatePickerIOS> Select dates and times using the native UIDatePicker.',
-      ),
-    ).tap();
-  });
-
-  afterAll(async () => {
-    await element(by.label('Back')).tap();
+    await device.reloadReactNative();
+    await openComponentWithLabel(
+      '<DatePickerIOS>',
+      '<DatePickerIOS> Select dates and times using the native UIDatePicker.',
+    );
   });
 
   it('Should change indicator with datetime picker', async () => {
-    await element(by.id('example_search')).replaceText('Date and time picker');
+    await openExampleWithTitle('Date and time picker');
     const testID = 'date-and-time';
     const indicatorID = 'date-and-time-indicator';
 
@@ -46,7 +46,7 @@ describe('DatePickerIOS', () => {
   });
 
   it('Should change indicator with date-only picker', async () => {
-    await element(by.id('example_search')).replaceText('Date only');
+    await openExampleWithTitle('Date only');
     const testID = 'date-only';
     const indicatorID = 'date-and-time-indicator';
 

@@ -11,19 +11,20 @@
 /* global device, element, by, expect */
 
 const jestExpect = require('expect');
+const {
+  openComponentWithLabel,
+  openExampleWithTitle,
+} = require('../e2e-helpers');
 
 describe('Switch', () => {
   beforeAll(async () => {
     await device.reloadReactNative();
-    await element(by.id('explorer_search')).replaceText('<Switch>');
-    await element(by.label('<Switch> Native boolean input')).tap();
+    await openComponentWithLabel('<Switch>', '<Switch> Native boolean input');
   });
 
   describe('Switches can be set to true or false', () => {
-    beforeEach(async () => {
-      await element(by.id('example_search')).replaceText(
-        'Switches can be set to true or false',
-      );
+    beforeAll(async () => {
+      await openExampleWithTitle('Switches can be set to true or false');
     });
 
     it('Switch that starts off should switch', async () => {
@@ -50,10 +51,8 @@ describe('Switch', () => {
   });
 
   describe('Switches can be disabled', () => {
-    beforeEach(async () => {
-      await element(by.id('example_search')).replaceText(
-        'Switches can be disabled',
-      );
+    beforeAll(async () => {
+      await openExampleWithTitle('Switches can be disabled');
     });
 
     it('disabled switch should not toggle', async () => {
