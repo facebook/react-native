@@ -13,16 +13,10 @@
 import React, {Component} from 'react';
 import {ActivityIndicator, StyleSheet, View} from 'react-native';
 
-/**
- * Optional Flowtype state and timer types definition
- */
-type State = {animating: boolean};
+type State = {|animating: boolean|};
 type Timer = number;
 
-class ToggleAnimatingActivityIndicator extends Component<
-  $FlowFixMeProps,
-  State,
-> {
+class ToggleAnimatingActivityIndicator extends Component<{}, State> {
   _timer: Timer;
 
   /* $FlowFixMe(>=0.85.0 site=react_native_fb) This comment suppresses an error
@@ -66,6 +60,22 @@ class ToggleAnimatingActivityIndicator extends Component<
     );
   }
 }
+
+const styles = StyleSheet.create({
+  centering: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 8,
+  },
+  gray: {
+    backgroundColor: '#cccccc',
+  },
+  horizontal: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    padding: 8,
+  },
+});
 
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';
@@ -158,19 +168,3 @@ exports.examples = [
     },
   },
 ];
-
-const styles = StyleSheet.create({
-  centering: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 8,
-  },
-  gray: {
-    backgroundColor: '#cccccc',
-  },
-  horizontal: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    padding: 8,
-  },
-});

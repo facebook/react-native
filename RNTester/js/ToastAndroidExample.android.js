@@ -17,12 +17,7 @@ const {StyleSheet, Text, ToastAndroid, TouchableWithoutFeedback} = ReactNative;
 const RNTesterBlock = require('RNTesterBlock');
 const RNTesterPage = require('RNTesterPage');
 
-class ToastExample extends React.Component<{}, $FlowFixMeState> {
-  static title = 'Toast Example';
-  static description =
-    'Example that demonstrates the use of an Android Toast to provide feedback.';
-  state = {};
-
+class ToastExample extends React.Component<{}> {
   render() {
     return (
       <RNTesterPage title="ToastAndroid">
@@ -123,4 +118,14 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = ToastExample;
+exports.title = 'Toast Example';
+exports.description =
+  'Example that demonstrates the use of an Android Toast to provide feedback.';
+exports.examples = [
+  {
+    title: 'Basic toast',
+    render: function(): React.Element<typeof ToastExample> {
+      return <ToastExample />;
+    },
+  },
+];

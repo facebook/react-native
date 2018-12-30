@@ -14,7 +14,12 @@ const React = require('react');
 const ReactNative = require('react-native');
 const {CheckBox, Text, View, StyleSheet} = ReactNative;
 
-class BasicCheckBoxExample extends React.Component<{}, $FlowFixMeState> {
+type BasicState = {|
+  trueCheckBoxIsOn: boolean,
+  falseCheckBoxIsOn: boolean,
+|};
+
+class BasicCheckBoxExample extends React.Component<{}, BasicState> {
   state = {
     trueCheckBoxIsOn: true,
     falseCheckBoxIsOn: false,
@@ -37,7 +42,7 @@ class BasicCheckBoxExample extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-class DisabledCheckBoxExample extends React.Component<{}, $FlowFixMeState> {
+class DisabledCheckBoxExample extends React.Component<{}> {
   render() {
     return (
       <View>
@@ -48,7 +53,12 @@ class DisabledCheckBoxExample extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-class EventCheckBoxExample extends React.Component<{}, $FlowFixMeState> {
+type EventState = {|
+  eventCheckBoxIsOn: boolean,
+  eventCheckBoxRegressionIsOn: boolean,
+|};
+
+class EventCheckBoxExample extends React.Component<{}, EventState> {
   state = {
     eventCheckBoxIsOn: false,
     eventCheckBoxRegressionIsOn: true,
@@ -92,7 +102,20 @@ class EventCheckBoxExample extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-let examples = [
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  checkbox: {
+    marginBottom: 10,
+  },
+});
+
+exports.title = '<CheckBox>';
+exports.displayName = 'CheckBoxExample';
+exports.description = 'Native boolean input';
+exports.examples = [
   {
     title: 'CheckBoxes can be set to true or false',
     render(): React.Element<any> {
@@ -118,18 +141,3 @@ let examples = [
     },
   },
 ];
-
-exports.title = '<CheckBox>';
-exports.displayName = 'CheckBoxExample';
-exports.description = 'Native boolean input';
-exports.examples = examples;
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  checkbox: {
-    marginBottom: 10,
-  },
-});

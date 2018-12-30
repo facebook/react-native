@@ -21,10 +21,6 @@ const {Picker, Text} = ReactNative;
 const Item = Picker.Item;
 
 class PickerExample extends React.Component<{}, $FlowFixMeState> {
-  static title = '<Picker>';
-  static description =
-    'Provides multiple options to choose from, using either a dropdown menu or a dialog.';
-
   state = {
     selected1: 'key1',
     selected2: 'key1',
@@ -130,4 +126,14 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = PickerExample;
+exports.title = '<Picker>';
+exports.description =
+  'Provides multiple options to choose from, using either a dropdown menu or a dialog.';
+exports.examples = [
+  {
+    title: 'Simple picker',
+    render: function(): React.Element<typeof PickerExample> {
+      return <PickerExample />;
+    },
+  },
+];

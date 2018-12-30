@@ -15,6 +15,22 @@ const ReactNative = require('react-native');
 const {Animated, Easing, StyleSheet, Text, View} = ReactNative;
 const RNTesterButton = require('./RNTesterButton');
 
+const styles = StyleSheet.create({
+  content: {
+    backgroundColor: 'deepskyblue',
+    borderWidth: 1,
+    borderColor: 'dodgerblue',
+    padding: 20,
+    margin: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  rotatingImage: {
+    width: 70,
+    height: 70,
+  },
+});
+
 exports.framework = 'React';
 exports.title = 'Animated - Examples';
 exports.description =
@@ -287,19 +303,3 @@ exports.examples = [
     render: () => <Text>Checkout the Gratuitous Animation App!</Text>,
   },
 ];
-
-const styles = StyleSheet.create({
-  content: {
-    backgroundColor: 'deepskyblue',
-    borderWidth: 1,
-    borderColor: 'dodgerblue',
-    padding: 20,
-    margin: 20,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  rotatingImage: {
-    width: 70,
-    height: 70,
-  },
-});

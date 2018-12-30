@@ -372,10 +372,6 @@ const BorderExample = withRTLState(({isRTL, setRTL}) => {
 });
 
 class RTLExample extends React.Component<any, State> {
-  static title = 'RTLExample';
-  static description =
-    'Examples to show how to apply components to RTL layout.';
-
   _panResponder: Object;
 
   constructor(props: Object) {
@@ -679,4 +675,13 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = RTLExample;
+exports.title = 'RTLExample';
+exports.description = 'Examples to show how to apply components to RTL layout.';
+exports.examples = [
+  {
+    title: 'Simple RTL',
+    render: function(): React.Element<typeof RTLExample> {
+      return <RTLExample />;
+    },
+  },
+];

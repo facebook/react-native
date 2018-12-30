@@ -23,7 +23,7 @@ const {
   View,
 } = ReactNative;
 
-class Message extends React.PureComponent<*> {
+class Message extends React.PureComponent<{}> {
   render() {
     return (
       <View style={styles.textBubbleBackground}>
@@ -61,10 +61,6 @@ class TextInputBar extends React.PureComponent<*, *> {
 const BAR_HEIGHT = 44;
 
 class InputAccessoryViewExample extends React.Component<*> {
-  static title = '<InputAccessoryView>';
-  static description =
-    'Example showing how to use an InputAccessoryView to build an iMessage-like sticky text input';
-
   render() {
     return (
       <>
@@ -108,4 +104,14 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = InputAccessoryViewExample;
+exports.title = '<InputAccessoryView>';
+exports.description =
+  'Example showing how to use an InputAccessoryView to build an iMessage-like sticky text input';
+exports.examples = [
+  {
+    title: 'Simple view with sticky input',
+    render: function(): React.Element<any> {
+      return <InputAccessoryViewExample />;
+    },
+  },
+];

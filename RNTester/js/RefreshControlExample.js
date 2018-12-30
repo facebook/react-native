@@ -56,9 +56,6 @@ class Row extends React.Component {
 }
 
 class RefreshControlExample extends React.Component {
-  static title = '<RefreshControl>';
-  static description = 'Adds pull-to-refresh support to a scrollview.';
-
   state = {
     isRefreshing: false,
     loaded: 0,
@@ -118,4 +115,13 @@ class RefreshControlExample extends React.Component {
   };
 }
 
-module.exports = RefreshControlExample;
+exports.title = '<RefreshControl>';
+exports.description = 'Adds pull-to-refresh support to a scrollview.';
+exports.examples = [
+  {
+    title: 'Simple refresh',
+    render: function(): React.Element<typeof RefreshControlExample> {
+      return <RefreshControlExample />;
+    },
+  },
+];

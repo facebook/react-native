@@ -125,9 +125,6 @@ type State = {
 };
 
 class WebSocketExample extends React.Component<any, any, State> {
-  static title = 'WebSocket';
-  static description = 'WebSocket API';
-
   state: State = {
     url: DEFAULT_WS_URL,
     httpUrl: DEFAULT_HTTP_URL,
@@ -347,4 +344,13 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = WebSocketExample;
+exports.title = 'WebSocket';
+exports.description = 'WebSocket API';
+exports.examples = [
+  {
+    title: 'Basic websocket',
+    render(): React.Element<typeof WebSocketExample> {
+      return <WebSocketExample />;
+    },
+  },
+];

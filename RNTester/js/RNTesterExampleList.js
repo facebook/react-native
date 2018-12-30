@@ -22,7 +22,7 @@ const View = require('View');
 
 /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found when
  * making Flow check .android.js files. */
-import type {RNTesterExample} from './RNTesterList.ios';
+import type {RNTesterExample} from 'RNTesterTypes';
 import type {ViewStyleProp} from 'StyleSheet';
 
 type Props = {

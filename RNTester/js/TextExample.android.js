@@ -17,7 +17,7 @@ const RNTesterBlock = require('./RNTesterBlock');
 const RNTesterPage = require('./RNTesterPage');
 const TextLegend = require('./Shared/TextLegend');
 
-class Entity extends React.Component<$FlowFixMeProps> {
+class Entity extends React.Component<{|children: React.Node|}> {
   render() {
     return (
       <Text style={{fontWeight: 'bold', color: '#527fe4'}}>
@@ -26,8 +26,8 @@ class Entity extends React.Component<$FlowFixMeProps> {
     );
   }
 }
-
-class AttributeToggler extends React.Component<{}, $FlowFixMeState> {
+type AttributeState = {|fontWeight: string, fontSize: number|};
+class AttributeToggler extends React.Component<{}, AttributeState> {
   state = {fontWeight: 'bold', fontSize: 15};
 
   toggleWeight = () => {
@@ -71,9 +71,6 @@ class AttributeToggler extends React.Component<{}, $FlowFixMeState> {
 }
 
 class TextExample extends React.Component<{}> {
-  static title = '<Text>';
-  static description = 'Base component for rendering styled text.';
-
   render() {
     return (
       <RNTesterPage title="<Text>">
@@ -605,4 +602,13 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = TextExample;
+exports.title = '<Text>';
+exports.description = 'Base component for rendering styled text.';
+exports.examples = [
+  {
+    title: 'Basic text',
+    render: function(): React.Element<typeof TextExample> {
+      return <TextExample />;
+    },
+  },
+];
