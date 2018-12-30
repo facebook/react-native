@@ -20,6 +20,7 @@ type Props = {
   render: Function,
   sections: Object,
   disableSearch?: boolean,
+  testID?: string,
 };
 
 type State = {
@@ -75,7 +76,7 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
           placeholder="Search..."
           underlineColorAndroid="transparent"
           style={styles.searchTextInput}
-          testID="explorer_search"
+          testID={this.props.testID}
           value={this.state.filter}
         />
       </View>

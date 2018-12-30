@@ -94,6 +94,7 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
       <View style={[styles.listContainer, this.props.style]}>
         {this._renderTitleRow()}
         <RNTesterExampleFilter
+          testID="explorer_search"
           sections={sections}
           filter={filter}
           render={({filteredSections}) => (

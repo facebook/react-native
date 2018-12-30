@@ -25,18 +25,21 @@ describe('Button', () => {
   });
 
   it('Simple button should be tappable', async () => {
+    await element(by.id('example_search')).replaceText('Simple Button');
     await element(by.id('simple_button')).tap();
     await expect(element(by.text('Simple has been pressed!'))).toBeVisible();
     await element(by.text('OK')).tap();
   });
 
   it('Adjusted color button should be tappable', async () => {
+    await element(by.id('example_search')).replaceText('Adjusted color');
     await element(by.id('purple_button')).tap();
     await expect(element(by.text('Purple has been pressed!'))).toBeVisible();
     await element(by.text('OK')).tap();
   });
 
   it("Two buttons with JustifyContent:'space-between' should be tappable", async () => {
+    await element(by.id('example_search')).replaceText('Fit to text layout');
     await element(by.id('left_button')).tap();
     await expect(element(by.text('Left has been pressed!'))).toBeVisible();
     await element(by.text('OK')).tap();
@@ -47,6 +50,7 @@ describe('Button', () => {
   });
 
   it('Disabled button should not interact', async () => {
+    await element(by.id('example_search')).replaceText('Disabled Button');
     await element(by.id('disabled_button')).tap();
     await expect(
       element(by.text('Disabled has been pressed!')),
