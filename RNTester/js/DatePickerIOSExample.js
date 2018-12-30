@@ -14,12 +14,16 @@ const React = require('react');
 const ReactNative = require('react-native');
 const {DatePickerIOS, StyleSheet, Text, TextInput, View} = ReactNative;
 
-type State = {
+type State = {|
   date: Date,
   timeZoneOffsetInHours: number,
-};
+|};
 
-class WithDatePickerData extends React.Component<{}, State> {
+type Props = {|
+  children: (State, (Date) => void) => React.Node,
+|};
+
+class WithDatePickerData extends React.Component<Props, State> {
   state = {
     date: new Date(),
     timeZoneOffsetInHours: (-1 * new Date().getTimezoneOffset()) / 60,
@@ -66,7 +70,12 @@ class WithDatePickerData extends React.Component<{}, State> {
   }
 }
 
-class WithLabel extends React.Component<{}> {
+type LabelProps = {|
+  label: string,
+  children: React.Node,
+|};
+
+class WithLabel extends React.Component<LabelProps> {
   render() {
     return (
       <View style={styles.labelContainer}>

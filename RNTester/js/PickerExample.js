@@ -19,7 +19,7 @@ const {Picker, Text} = ReactNative;
 const Item = Picker.Item;
 
 type State = {
-  value: string,
+  value: string | number,
 };
 
 class BasicPickerExample extends React.Component<{}, State> {
@@ -97,7 +97,11 @@ class PromptPickerExample extends React.Component<{}, State> {
   }
 }
 
-class ColorPickerExample extends React.Component<{}, State> {
+type ColorState = {
+  color: string | number,
+};
+
+class ColorPickerExample extends React.Component<{}, ColorState> {
   state = {
     color: 'red',
   };
