@@ -26,8 +26,7 @@ class Entity extends React.Component<{|children: React.Node|}> {
     );
   }
 }
-type AttributeState = {|fontWeight: string, fontSize: number|};
-class AttributeToggler extends React.Component<{}, AttributeState> {
+class AttributeToggler extends React.Component<{}, $FlowFixMeState> {
   state = {fontWeight: 'bold', fontSize: 15};
 
   toggleWeight = () => {
