@@ -14,7 +14,8 @@ const React = require('react');
 const ReactNative = require('react-native');
 const {AccessibilityInfo, Text, View, TouchableOpacity, Alert} = ReactNative;
 
-class AccessibilityIOSExample extends React.Component<{}> {
+type Props = $ReadOnly<{||}>;
+class AccessibilityIOSExample extends React.Component<Props> {
   render() {
     return (
       <View>
