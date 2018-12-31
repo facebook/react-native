@@ -17,9 +17,7 @@ const {StyleSheet, View, Text, TouchableHighlight, AlertIOS} = ReactNative;
 const {SimpleAlertExampleBlock} = require('./AlertExample');
 
 type Props = $ReadOnly<{||}>;
-type State = {|
-  promptValue: ?string,
-|};
+type State = {|promptValue: ?string|};
 
 class PromptOptions extends React.Component<Props, State> {
   customButtons: Array<Object>;

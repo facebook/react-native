@@ -15,9 +15,7 @@ const ReactNative = require('react-native');
 const {StyleSheet, View, Text, TouchableHighlight, Share} = ReactNative;
 
 type Props = $ReadOnly<{||}>;
-type State = {|
-  result: string,
-|};
+type State = {|result: string|};
 
 class ShareMessageExample extends React.Component<Props, State> {
   _shareMessage: Function;
