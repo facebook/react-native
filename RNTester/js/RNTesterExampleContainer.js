@@ -56,6 +56,7 @@ class RNTesterExampleContainer extends React.Component {
     return (
       <RNTesterPage title={this.props.title}>
         <RNTesterExampleFilter
+          testID="example_search"
           sections={sections}
           filter={filter}
           render={({filteredSections}) =>
