@@ -21,6 +21,7 @@ const {
 const RNTesterBlock = require('./RNTesterBlock');
 const RNTesterPage = require('./RNTesterPage');
 
+type Props = $ReadOnly<{||}>;
 type State = {|
   presetDate: Date,
   simpleDate: Date,
@@ -38,7 +39,7 @@ type State = {|
   allText: string,
 |};
 
-class DatePickerAndroidExample extends React.Component<{}, State> {
+class DatePickerAndroidExample extends React.Component<Props, State> {
   state = {
     presetDate: new Date(2020, 4, 5),
     simpleDate: new Date(2020, 4, 5),

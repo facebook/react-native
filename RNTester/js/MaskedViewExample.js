@@ -22,11 +22,12 @@ const {
   View,
 } = require('react-native');
 
+type Props = $ReadOnly<{||}>;
 type State = {|
   alternateChildren: boolean,
 |};
 
-class MaskedViewExample extends React.Component<{}, State> {
+class MaskedViewExample extends React.Component<Props, State> {
   state = {
     alternateChildren: true,
   };

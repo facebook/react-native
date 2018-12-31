@@ -28,7 +28,7 @@ export type RNTesterExampleModuleItem = $ReadOnly<{|
   title: string,
   platform?: string,
   description?: string,
-  render: () => React.Element<any>,
+  render: () => React.Node,
 |}>;
 
 export type RNTesterExampleModule = $ReadOnly<{|

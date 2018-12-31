@@ -33,8 +33,9 @@ const IMAGE_URIS = [
   'https://apod.nasa.gov/apod/image/1510/lunareclipse_27Sep_beletskycrop4.jpg',
 ];
 
+type Props = $ReadOnly<{||}>;
 type State = {|likes: number|};
-class LikeCount extends React.Component<{}, State> {
+class LikeCount extends React.Component<Props, State> {
   state = {
     likes: 7,
   };

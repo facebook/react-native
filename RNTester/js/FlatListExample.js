@@ -42,6 +42,7 @@ const VIEWABILITY_CONFIG = {
   waitForInteraction: true,
 };
 
+type Props = $ReadOnly<{||}>;
 type State = {|
   data: Array<Item>,
   debug: boolean,
@@ -54,7 +55,7 @@ type State = {|
   empty: boolean,
 |};
 
-class FlatListExample extends React.PureComponent<{}, State> {
+class FlatListExample extends React.PureComponent<Props, State> {
   state = {
     data: genItemData(100),
     debug: false,

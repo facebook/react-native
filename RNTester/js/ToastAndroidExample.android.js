@@ -17,7 +17,8 @@ const {StyleSheet, Text, ToastAndroid, TouchableWithoutFeedback} = ReactNative;
 const RNTesterBlock = require('RNTesterBlock');
 const RNTesterPage = require('RNTesterPage');
 
-class ToastExample extends React.Component<{}> {
+type Props = $ReadOnly<{||}>;
+class ToastExample extends React.Component<Props> {
   render() {
     return (
       <RNTesterPage title="ToastAndroid">

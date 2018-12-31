@@ -15,9 +15,10 @@ const ReactNative = require('react-native');
 
 const {Platform, View, Text, TouchableOpacity, TVEventHandler} = ReactNative;
 
+type Props = $ReadOnly<{||}>;
 type State = {|lastEventType: string|};
-class TVEventHandlerView extends React.Component<{}, State> {
-  constructor(props: {}) {
+class TVEventHandlerView extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props);
     this.state = {
       lastEventType: '',

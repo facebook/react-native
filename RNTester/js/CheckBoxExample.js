@@ -19,7 +19,8 @@ type BasicState = {|
   falseCheckBoxIsOn: boolean,
 |};
 
-class BasicCheckBoxExample extends React.Component<{}, BasicState> {
+type BasicProps = $ReadOnly<{||}>;
+class BasicCheckBoxExample extends React.Component<BasicProps, BasicState> {
   state = {
     trueCheckBoxIsOn: true,
     falseCheckBoxIsOn: false,
@@ -42,7 +43,8 @@ class BasicCheckBoxExample extends React.Component<{}, BasicState> {
   }
 }
 
-class DisabledCheckBoxExample extends React.Component<{}> {
+type DisabledProps = $ReadOnly<{||}>;
+class DisabledCheckBoxExample extends React.Component<DisabledProps> {
   render() {
     return (
       <View>
@@ -53,12 +55,13 @@ class DisabledCheckBoxExample extends React.Component<{}> {
   }
 }
 
+type EventProps = $ReadOnly<{||}>;
 type EventState = {|
   eventCheckBoxIsOn: boolean,
   eventCheckBoxRegressionIsOn: boolean,
 |};
 
-class EventCheckBoxExample extends React.Component<{}, EventState> {
+class EventCheckBoxExample extends React.Component<EventProps, EventState> {
   state = {
     eventCheckBoxIsOn: false,
     eventCheckBoxRegressionIsOn: true,

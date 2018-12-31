@@ -14,11 +14,12 @@ const React = require('react');
 const ReactNative = require('react-native');
 const {StyleSheet, View, Text, TouchableHighlight, Share} = ReactNative;
 
+type Props = $ReadOnly<{||}>;
 type State = {|
   result: string,
 |};
 
-class ShareMessageExample extends React.Component<{}, State> {
+class ShareMessageExample extends React.Component<Props, State> {
   _shareMessage: Function;
   _shareText: Function;
   _showResult: Function;

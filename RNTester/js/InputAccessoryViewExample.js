@@ -23,7 +23,8 @@ const {
   View,
 } = ReactNative;
 
-class Message extends React.PureComponent<{}> {
+type MessageProps = $ReadOnly<{||}>;
+class Message extends React.PureComponent<MessageProps> {
   render() {
     return (
       <View style={styles.textBubbleBackground}>
@@ -33,7 +34,9 @@ class Message extends React.PureComponent<{}> {
   }
 }
 
-class TextInputBar extends React.PureComponent<*, *> {
+type TextInputProps = $ReadOnly<{||}>;
+type TextInputState = {|text: string|};
+class TextInputBar extends React.PureComponent<TextInputProps, TextInputState> {
   state = {text: ''};
 
   render() {
@@ -59,8 +62,8 @@ class TextInputBar extends React.PureComponent<*, *> {
 }
 
 const BAR_HEIGHT = 44;
-
-class InputAccessoryViewExample extends React.Component<*> {
+type InputAccessoryProps = $ReadOnly<{||}>;
+class InputAccessoryViewExample extends React.Component<InputAccessoryProps> {
   render() {
     return (
       <>
@@ -110,7 +113,7 @@ exports.description =
 exports.examples = [
   {
     title: 'Simple view with sticky input',
-    render: function(): React.Element<any> {
+    render: function(): React.Node {
       return <InputAccessoryViewExample />;
     },
   },

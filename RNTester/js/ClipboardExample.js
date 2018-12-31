@@ -14,11 +14,12 @@ const React = require('react');
 const ReactNative = require('react-native');
 const {Clipboard, View, Text, StyleSheet} = ReactNative;
 
+type Props = $ReadOnly<{||}>;
 type State = {|
   content: string,
 |};
 
-class ClipboardExample extends React.Component<{}, State> {
+class ClipboardExample extends React.Component<Props, State> {
   state = {
     content: 'Content will appear here',
   };

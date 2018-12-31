@@ -25,12 +25,13 @@ const {
 const RNTesterBlock = require('./RNTesterBlock');
 const RNTesterPage = require('./RNTesterPage');
 
+type Props = $ReadOnly<{||}>;
 type State = {|
   behavior: string,
   modalOpen: boolean,
 |};
 
-class KeyboardAvoidingViewExample extends React.Component<{}, State> {
+class KeyboardAvoidingViewExample extends React.Component<Props, State> {
   state = {
     behavior: 'padding',
     modalOpen: false,
