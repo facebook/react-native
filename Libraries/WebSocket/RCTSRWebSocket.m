@@ -1336,11 +1336,15 @@ static const size_t RCTSRFrameHeaderOverhead = 32;
   }
   
   // _workQueue cannot be NULL
-  if (!_workQueue) { return; }
+  if (!_workQueue) {
+    return;
+  }
   __weak typeof(self) weakSelf = self;
   dispatch_async(_workQueue, ^{
     typeof(self) strongSelf = weakSelf;
-    if (!strongSelf) { return; }
+    if (!strongSelf) {
+      return;
+    }
     [strongSelf safeHandleEvent:eventCode stream:aStream];
   });
 }
