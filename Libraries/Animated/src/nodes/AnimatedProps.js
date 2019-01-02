@@ -75,9 +75,6 @@ class AnimatedProps extends AnimatedNode {
   }
 
   __detach(): void {
-    if (this.__isNative && this._animatedView) {
-      this.__disconnectAnimatedView();
-    }
     for (const key in this._props) {
       const value = this._props[key];
       if (value instanceof AnimatedNode) {

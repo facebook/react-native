@@ -13,6 +13,11 @@
 #import <React/RCTRootView.h>
 #import <React/RCTViewManager.h>
 
+@protocol RCTUIManagerDelegate
+- (void)didDeregisteredView: (NSNumber *)viewTag;
+@end
+
+
 /**
  * Posted right before re-render happens. This is a chance for views to invalidate their state so
  * next render cycle will pick up updated views and layout appropriately.
@@ -26,6 +31,8 @@ RCT_EXTERN NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplier
  * The RCTUIManager is the module responsible for updating the view hierarchy.
  */
 @interface RCTUIManager : NSObject <RCTBridgeModule, RCTInvalidating>
+
+@property (weak) id<RCTUIManagerDelegate> delegate;
 
 /**
  * Register a root view tag and creates corresponding `rootView` and
