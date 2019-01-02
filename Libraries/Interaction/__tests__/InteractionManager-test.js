@@ -260,7 +260,7 @@ describe('promise tasks', () => {
     expectToBeCalledOnce(task2);
   });
 
-  const bigAsyncTest = resolve => {
+  const bigAsyncTest = resolveTest => {
     jest.useRealTimers();
 
     const task1 = createSequenceTask(1);
@@ -298,7 +298,7 @@ describe('promise tasks', () => {
       expectToBeCalledOnce(task5);
       expectToBeCalledOnce(task6);
 
-      resolve();
+      resolveTest();
     }, 100);
   };
 
