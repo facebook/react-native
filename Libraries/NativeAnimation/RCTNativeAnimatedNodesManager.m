@@ -27,6 +27,7 @@
 #import "RCTTransformAnimatedNode.h"
 #import "RCTValueAnimatedNode.h"
 #import "RCTTrackingAnimatedNode.h"
+#import <React/RCTUIManager.h>
 
 @implementation RCTNativeAnimatedNodesManager
 {
@@ -46,8 +47,16 @@
     _animationNodes = [NSMutableDictionary new];
     _eventDrivers = [NSMutableDictionary new];
     _activeAnimations = [NSMutableSet new];
+    _uiManager.delegate = self;
   }
   return self;
+}
+
+- (void)didDeregisteredView: (NSNumber *)viewTag {
+  RCTAnimatedNode *node = _animationNodes[viewTag];
+  if (node && [node isKindOfClass:RCTPropsAnimatedNode.class]) {
+    [(RCTPropsAnimatedNode *)node disconnectFromView:viewTag];
+  }
 }
 
 #pragma mark -- Graph
