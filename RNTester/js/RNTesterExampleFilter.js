@@ -18,6 +18,10 @@ const View = require('View');
 type Props = {
   filter: Function,
   render: Function,
+  /*
+   * $FlowFixMe: We shoudl better type this (ideally so that render and filter are
+   * aware of what they receive)
+   */
   sections: Object,
   disableSearch?: boolean,
 };
