@@ -34,10 +34,6 @@ class RNTesterExampleContainer extends React.Component {
   }
 
   render(): React.Element<any> {
-    if (!this.props.module.examples) {
-      return <this.props.module />;
-    }
-
     if (
       this.props.displayFilter === false ||
       this.props.module.examples.length === 1
