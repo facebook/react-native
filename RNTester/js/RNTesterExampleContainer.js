@@ -38,12 +38,10 @@ class RNTesterExampleContainer extends React.Component {
       return <this.props.module />;
     }
 
-    if (this.props.module.examples.length === 1) {
-      const Example = this.props.module.examples[0].render;
-      return <Example />;
-    }
-
-    if (this.props.displayFilter === false) {
+    if (
+      this.props.displayFilter === false ||
+      this.props.module.examples.length === 1
+    ) {
       return (
         <RNTesterPage title={this.props.title}>
           {this.props.module.examples.map(this.renderExample)}
