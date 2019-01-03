@@ -177,7 +177,10 @@ RNTesterList.ComponentExamples.concat(RNTesterList.APIExamples).forEach(
         render() {
           return (
             <SnapshotViewIOS>
-              <RNTesterExampleContainer module={ExampleModule} />
+              <RNTesterExampleContainer
+                module={ExampleModule}
+                displayFilter={false}
+              />
             </SnapshotViewIOS>
           );
         }
