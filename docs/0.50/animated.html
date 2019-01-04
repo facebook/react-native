@@ -249,9 +249,13 @@
 <p>Array of animations may run in parallel (overlap), but are started in sequence with successive delays. Nice for doing trailing effects.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="loop"></a><a href="#loop" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>loop()</code></h3>
-<pre><code class="hljs css language-javascript"><span class="token keyword">static</span> <span class="token function">loop</span><span class="token punctuation">(</span>animation<span class="token punctuation">)</span>
+<pre><code class="hljs css language-javascript"><span class="token keyword">static</span> <span class="token function">loop</span><span class="token punctuation">(</span>animation<span class="token punctuation">,</span> config<span class="token operator">?</span><span class="token punctuation">)</span>
 </code></pre>
-<p>Loops a given animation continuously, so that each time it reaches the end, it resets and begins again from the start. Can specify number of times to loop using the key 'iterations' in the config. Will loop without blocking the UI thread if the child animation is set to 'useNativeDriver'.</p>
+<p>Loops a given animation continuously, so that each time it reaches the end, it resets and begins again from the start. Will loop without blocking the UI thread if the child animation is set to <code>useNativeDriver: true</code>.</p>
+<p>Config is an object that may have the following options:</p>
+<ul>
+<li><code>iterations</code>: Number of times the animation should loop. Default <code>-1</code> (infinite).</li>
+</ul>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="event"></a><a href="#event" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>event()</code></h3>
 <pre><code class="hljs css language-javascript"><span class="token keyword">static</span> <span class="token function">event</span><span class="token punctuation">(</span>argMapping<span class="token punctuation">,</span> config<span class="token operator">?</span><span class="token punctuation">)</span>
