@@ -51,9 +51,10 @@ function getAndroidResourceFolderName(asset: PackagerAsset, scale: number) {
   var suffix = getAndroidAssetSuffix(scale);
   if (!suffix) {
     throw new Error(
-      'Don\'t know which android drawable suffix to use for scale: ' + scale +
-       '\nAsset: ' + JSON.stringify(asset, null, '\t') +
-       '\nPossible scales are:' +
+      "Don\'t know which android drawable suffix to use for scale: " + scale +
+       '\nAsset: ' + 
+       JSON.stringify(asset, null, '\t') + 
+       '\nPossible scales are:' + 
        JSON.stringify(androidScaleSuffix, null, '\t'),
     );
   }
