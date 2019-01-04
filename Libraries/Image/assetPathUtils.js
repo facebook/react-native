@@ -54,7 +54,7 @@ function getAndroidResourceFolderName(asset: PackagerAsset, scale: number) {
       'Don\'t know which android drawable suffix to use for scale: ' + scale +
         '\nAsset: ' + JSON.stringify(asset, null, '\t') +
         '\nPossible scales are:' +
-        JSON.stringify(androidScaleSuffix, null, '\t')
+        JSON.stringify(androidScaleSuffix, null, '\t'),
     );
   }
   const androidFolder = 'drawable-' + suffix;
