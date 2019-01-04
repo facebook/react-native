@@ -18,7 +18,7 @@ const androidScaleSuffix = {
   '1.5': 'hdpi',
   '2': 'xhdpi',
   '3': 'xxhdpi',
-  '4': 'xxxhdpi'
+  '4': 'xxxhdpi',
 };
 
 /**
