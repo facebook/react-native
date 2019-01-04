@@ -20,9 +20,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.touch.ReactHitSlopView;
@@ -670,6 +672,8 @@ public class ReactViewGroup extends ViewGroup implements
     try {
       dispatchOverflowDraw(canvas);
       super.dispatchDraw(canvas);
+    } catch (NullPointerException e) {
+      FLog.e(ReactConstants.TAG, "NullPointerException when executing ViewGroup.dispatchDraw method", e);
     } catch (StackOverflowError e) {
       // Adding special exception management for StackOverflowError for logging purposes.
       // This will be removed in the future.

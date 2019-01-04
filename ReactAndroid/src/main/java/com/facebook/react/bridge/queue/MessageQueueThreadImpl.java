@@ -32,25 +32,25 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
   private final Looper mLooper;
   private final MessageQueueThreadHandler mHandler;
   private final String mAssertionErrorMessage;
-  private long mStartTimeMillis;
+  private MessageQueueThreadPerfStats mPerfStats;
   private volatile boolean mIsFinished = false;
 
   private MessageQueueThreadImpl(
       String name,
       Looper looper,
       QueueThreadExceptionHandler exceptionHandler) {
-        this(name, looper, exceptionHandler, -1);
+        this(name, looper, exceptionHandler, null);
   }
 
   private MessageQueueThreadImpl(
       String name,
       Looper looper,
       QueueThreadExceptionHandler exceptionHandler,
-      long startTimeMillis) {
+      MessageQueueThreadPerfStats stats) {
     mName = name;
     mLooper = looper;
     mHandler = new MessageQueueThreadHandler(looper, exceptionHandler);
-    mStartTimeMillis = startTimeMillis;
+    mPerfStats = stats;
     mAssertionErrorMessage = "Expected to be called from the '" + getName() + "' thread!";
   }
 
@@ -139,8 +139,27 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
 
   @DoNotStrip
   @Override
-  public long getStartTimeMillis() {
-    return mStartTimeMillis;
+  public MessageQueueThreadPerfStats getPerfStats() {
+    return mPerfStats;
+  }
+
+  @DoNotStrip
+  @Override
+  public void resetPerfStats() {
+    assignToPerfStats(mPerfStats, -1, -1);
+    runOnQueue(new Runnable() {
+      @Override
+      public void run() {
+        long wallTime = SystemClock.uptimeMillis();
+        long cpuTime = SystemClock.currentThreadTimeMillis();
+        assignToPerfStats(mPerfStats, wallTime, cpuTime);
+      }
+    });
+  }
+
+  private static void assignToPerfStats(MessageQueueThreadPerfStats stats, long wall, long cpu) {
+    stats.wallTime = wall;
+    stats.cpuTime = cpu;
   }
 
   public Looper getLooper() {
@@ -197,7 +216,7 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
       final String name,
       long stackSize,
       QueueThreadExceptionHandler exceptionHandler) {
-    final SimpleSettableFuture<Pair<Looper, Long>> dataFuture = new SimpleSettableFuture<>();
+    final SimpleSettableFuture<Pair<Looper, MessageQueueThreadPerfStats>> dataFuture = new SimpleSettableFuture<>();
     long startTimeMillis;
     Thread bgThread = new Thread(null,
         new Runnable() {
@@ -205,13 +224,17 @@ public class MessageQueueThreadImpl implements MessageQueueThread {
           public void run() {
             Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
             Looper.prepare();
-            dataFuture.set(new Pair<>(Looper.myLooper(), SystemClock.uptimeMillis()));
+            MessageQueueThreadPerfStats stats = new MessageQueueThreadPerfStats();
+            long wallTime = SystemClock.uptimeMillis();
+            long cpuTime = SystemClock.currentThreadTimeMillis();
+            assignToPerfStats(stats, wallTime, cpuTime);
+            dataFuture.set(new Pair<>(Looper.myLooper(), stats));
             Looper.loop();
           }
         }, "mqt_" + name, stackSize);
     bgThread.start();
 
-    Pair<Looper, Long> pair = dataFuture.getOrThrow();
+    Pair<Looper, MessageQueueThreadPerfStats> pair = dataFuture.getOrThrow();
     return new MessageQueueThreadImpl(name, pair.first, exceptionHandler, pair.second);
   }
 }

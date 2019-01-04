@@ -22,9 +22,6 @@ const Switch = require('Switch');
 const ToolbarAndroid = require('ToolbarAndroid');
 
 class ToolbarAndroidExample extends React.Component<{}, $FlowFixMeState> {
-  static title = '<ToolbarAndroid>';
-  static description = 'Examples of using the Android toolbar.';
-
   state = {
     actionText: 'Example app with toolbar component',
     toolbarSwitch: false,
@@ -174,4 +171,13 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = ToolbarAndroidExample;
+exports.title = '<ToolbarAndroid>';
+exports.description = 'Examples of using the Android toolbar.';
+exports.examples = [
+  {
+    title: 'Basic toolbar',
+    render: function(): React.Element<typeof ToolbarAndroidExample> {
+      return <ToolbarAndroidExample />;
+    },
+  },
+];

@@ -108,13 +108,13 @@ import type EmitterSubscription from 'EmitterSubscription';
 
 const IS_ANIMATING_TOUCH_START_THRESHOLD_MS = 16;
 
-type State = {
+export type State = {|
   isTouching: boolean,
   lastMomentumScrollBeginTime: number,
   lastMomentumScrollEndTime: number,
   observedScrollSinceBecomingResponder: boolean,
   becameResponderWhileAnimating: boolean,
-};
+|};
 
 const ScrollResponderMixin = {
   _subscriptionKeyboardWillShow: (null: ?EmitterSubscription),
@@ -614,6 +614,7 @@ const ScrollResponderMixin = {
       'keyboardWillShow',
       this.scrollResponderKeyboardWillShow,
     );
+
     this._subscriptionKeyboardWillHide = Keyboard.addListener(
       'keyboardWillHide',
       this.scrollResponderKeyboardWillHide,

@@ -516,6 +516,14 @@ function consoleGroupEndPolyfill() {
 
 if (global.nativeLoggingHook) {
   const originalConsole = global.console;
+  // Preserve the original `console` as `originalConsole`
+  if (__DEV__ && originalConsole) {
+    const descriptor = Object.getOwnPropertyDescriptor(global, 'console');
+    if (descriptor) {
+      Object.defineProperty(global, 'originalConsole', descriptor);
+    }
+  }
+
   global.console = {
     error: getNativeLogFunction(LOG_LEVELS.error),
     info: getNativeLogFunction(LOG_LEVELS.info),
@@ -532,12 +540,6 @@ if (global.nativeLoggingHook) {
   // sometimes useful. Ex: on OS X, this will let you see rich output in
   // the Safari Web Inspector console.
   if (__DEV__ && originalConsole) {
-    // Preserve the original `console` as `originalConsole`
-    const descriptor = Object.getOwnPropertyDescriptor(global, 'console');
-    if (descriptor) {
-      Object.defineProperty(global, 'originalConsole', descriptor);
-    }
-
     Object.keys(console).forEach(methodName => {
       const reactNativeMethod = console[methodName];
       if (originalConsole[methodName]) {

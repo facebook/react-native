@@ -47,7 +47,7 @@ ADD build.gradle /app/build.gradle
 ADD react.gradle /app/react.gradle
 
 # run gradle downloads
-RUN ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSCHeaders
+RUN ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSC
 
 # compile native libs with Gradle script, we need bridge for unit and integration tests
 RUN ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=1 -Pcom.android.build.threadPoolSize=1

@@ -9,7 +9,6 @@
  */
 'use strict';
 
-const ActivityIndicator = require('ActivityIndicator');
 const Platform = require('Platform');
 const React = require('react');
 const ReactNative = require('react-native');
@@ -155,7 +154,6 @@ if (Platform.OS === 'ios') {
                   autoscrollToTopThreshold: 10,
                 }}
                 style={styles.scrollView}>
-                <ActivityIndicator style={{height: 40}} />
                 {this.state.items.map(item =>
                   React.cloneElement(item, {key: item.props.msg}),
                 )}
@@ -168,7 +166,6 @@ if (Platform.OS === 'ios') {
                   autoscrollToTopThreshold: 10,
                 }}
                 style={[styles.scrollView, styles.horizontalScrollView]}>
-                <ActivityIndicator style={{width: 40}} />
                 {this.state.items.map(item =>
                   React.cloneElement(item, {key: item.props.msg, style: null}),
                 )}
