@@ -8,10 +8,13 @@
 package com.facebook.react.tests;
 
 import java.util.List;
+import java.io.File;
+import java.io.FileOutputStream;
 
 import android.graphics.Color;
 import android.text.style.ForegroundColorSpan;
 import android.util.TypedValue;
+import android.util.Base64;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +23,10 @@ import android.widget.EditText;
 import android.content.Context;
 import android.content.ClipboardManager;
 import android.content.ClipData;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.provider.MediaStore;
+import android.net.Uri;
 
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.testing.ReactAppInstrumentationTestCase;
@@ -118,7 +125,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
     fireEditorActionAndCheckRecording(reactEditText, EditorInfo.IME_ACTION_NONE);
   }
 
-  public void testOnPaste() throws Throwable {
+  public void testOnPasteText() throws Throwable {
     String testId = "onPasteTextInput";
     final ReactEditText reactEditText = getViewByTestId(testId);
 
@@ -147,6 +154,41 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
     assertEquals(mimeType, calls.get(1));
   }
 
+  public void testOnPasteImage() throws Throwable {
+    String testId = "onPasteTextInput";
+    final ReactEditText reactEditText = getViewByTestId(testId);
+
+    final String base64Image =
+      "iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1S" +
+      "fMAAABQSURBVGje7dSxCQBACARB+2/ab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYG" +
+      "BgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw+P/eMrC5UTVAAAAABJRU5ErkJggg==";
+    String mimeType = "image/png";
+
+    mRecordingModule.reset();
+
+    runTestOnUiThread(
+      new Runnable() {
+        @Override
+        public void run() {
+          try {
+            createImageAndAddToClipboard(reactEditText.getContext(), base64Image);
+          } catch(Exception e) {
+            throw new RuntimeException(e);
+          }
+
+          reactEditText.onTextContextMenuItem(android.R.id.paste);
+        }
+      });
+    waitForBridgeAndUIIdle();
+
+    List<String> calls = mRecordingModule.getCalls();
+    assertEquals(2, calls.size());
+    // Remove new lines added by the Recording module
+    String recordedBase64Image = calls.get(0).replace(System.getProperty("line.separator"), "");
+    assertEquals(base64Image, recordedBase64Image);
+    assertEquals(mimeType, calls.get(1));
+  }
+
   private void fireEditorActionAndCheckRecording(final ReactEditText reactEditText,
                                                  final int actionId) throws Throwable {
     fireEditorActionAndCheckRecording(reactEditText, actionId, true);
@@ -171,6 +213,25 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
 
     assertEquals(1, mRecordingModule.getCalls().size());
     assertEquals(!blurOnSubmit, reactEditText.isFocused());
+  }
+
+  private void createImageAndAddToClipboard(Context context, String base64Image) throws Exception {
+    File file = new File(context.getExternalFilesDir(null), System.currentTimeMillis() + "_image.png");
+    FileOutputStream fileOut = new FileOutputStream(file);
+    byte[] decodedString = Base64.decode(base64Image, Base64.DEFAULT);
+    fileOut.write(decodedString);
+    fileOut.flush();
+    fileOut.close();
+
+    ContentValues values = new ContentValues(2);
+    values.put(MediaStore.Images.Media.MIME_TYPE, "image/png");
+    values.put(MediaStore.Images.Media.DATA, file.getAbsolutePath());
+    ContentResolver resolver = context.getContentResolver();
+    Uri imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+    ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+    ClipData imageClip = ClipData.newUri(resolver, "image", imageUri);
+    clipboard.setPrimaryClip(imageClip);
   }
 
   /**
