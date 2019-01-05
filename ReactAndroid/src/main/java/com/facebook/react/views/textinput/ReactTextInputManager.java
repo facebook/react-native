@@ -823,16 +823,16 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
             ClipData clip = clipboard.getPrimaryClip();
 
             if (clip != null) {
-              String text = "";
+              String content = "";
               String mimeType = clip.getDescription().getMimeType(0);
 
               ClipData.Item firstItem = clip.getItemAt(0);
               if (firstItem.getText() != null) {
-                text = firstItem.getText().toString();
+                content = firstItem.getText().toString();
               } else if (firstItem.getUri() != null) {
-                text = firstItem.getUri().toString();
+                content = firstItem.getUri().toString();
               } else if (firstItem.getIntent() != null) {
-                text = firstItem.getIntent().toUri(0);
+                content = firstItem.getIntent().toUri(0);
               }
 
               EventDispatcher eventDispatcher =
@@ -841,7 +841,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
               eventDispatcher.dispatchEvent(
                   new ReactTextInputPasteEvent(
                       editText.getId(),
-                      text,
+                      content,
                       mimeType));
             }
           }

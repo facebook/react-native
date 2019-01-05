@@ -126,7 +126,7 @@ export type EditingEvent = SyntheticEvent<
 
 type PasteEvent = SyntheticEvent<
   $ReadOnly<{|
-    text: string,
+    content: string,
     mimeType: string,
   |}>,
 >;
@@ -1304,7 +1304,7 @@ const TextInput = createReactClass({
 
   _onPaste: function(event: PasteEvent) {
     if (this.props.onPaste != null) {
-      this.props.onPaste(event.nativeEvent.text, event.nativeEvent.mimeType);
+      this.props.onPaste(event.nativeEvent.content, event.nativeEvent.mimeType);
     }
   },
 });

@@ -90,8 +90,8 @@ class TextInputTestApp extends React.Component {
     Recording.record(record);
   };
 
-  handleOnPaste = (text, mimeType) => {
-    Recording.record(text);
+  handleOnPaste = (content, mimeType) => {
+    Recording.record(content);
     Recording.record(mimeType);
   };
 

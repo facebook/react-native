@@ -123,7 +123,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
     final ReactEditText reactEditText = getViewByTestId(testId);
 
     final String label = "Test Label";
-    final String text = "Test Text";
+    final String content = "Test Content";
     String mimeType = "text/plain";
 
     mRecordingModule.reset();
@@ -133,7 +133,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
         @Override
         public void run() {
           ClipboardManager clipboard = (ClipboardManager) reactEditText.getContext().getSystemService(Context.CLIPBOARD_SERVICE); 
-          ClipData clip = ClipData.newPlainText(label, text);
+          ClipData clip = ClipData.newPlainText(label, content);
           clipboard.setPrimaryClip(clip);
 
           reactEditText.onTextContextMenuItem(android.R.id.paste);
@@ -143,7 +143,7 @@ public class TextInputTestCase extends ReactAppInstrumentationTestCase {
 
     List<String> calls = mRecordingModule.getCalls();
     assertEquals(2, calls.size());
-    assertEquals(text, calls.get(0));
+    assertEquals(content, calls.get(0));
     assertEquals(mimeType, calls.get(1));
   }
 

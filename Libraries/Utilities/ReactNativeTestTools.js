@@ -58,9 +58,9 @@ function enter(instance: ReactTestInstance, text: string) {
   input.instance._onChange({nativeEvent: {text}});
 }
 
-function paste(instance: ReactTestInstance, text: string, mimeType: string) {
+function paste(instance: ReactTestInstance, content: string, mimeType: string) {
   const input = instance.findByType(TextInput);
-  input.instance._onPaste({nativeEvent: {text, mimeType}});
+  input.instance._onPaste({nativeEvent: {content, mimeType}});
 }
 
 // Returns null if there is no error, otherwise returns an error message string.

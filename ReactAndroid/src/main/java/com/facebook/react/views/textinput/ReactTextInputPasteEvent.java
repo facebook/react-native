@@ -20,15 +20,15 @@ public class ReactTextInputPasteEvent extends Event<ReactTextInputPasteEvent> {
 
   public static final String EVENT_NAME = "onPaste";
 
-  private String mText;
+  private String mContent;
   private String mMimeType;
 
   public ReactTextInputPasteEvent(
       int viewId,
-      String text,
+      String content,
       String mimeType) {
     super(viewId);
-    mText = text;
+    mContent = content;
     mMimeType = mimeType;
   }
 
@@ -44,7 +44,7 @@ public class ReactTextInputPasteEvent extends Event<ReactTextInputPasteEvent> {
 
   private WritableMap serializeEventData() {
     WritableMap eventData = Arguments.createMap();
-    eventData.putString("text", mText);
+    eventData.putString("content", mContent);
     eventData.putString("mimeType", mMimeType);
     eventData.putInt("target", getViewTag());
     return eventData;

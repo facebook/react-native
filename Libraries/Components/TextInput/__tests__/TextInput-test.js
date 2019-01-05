@@ -43,8 +43,8 @@ describe('TextInput tests', () => {
             onChange={event => {
               onChangeListener(event);
             }}
-            onPaste={(text, mimeType) => {
-              onPasteListener(text, mimeType);
+            onPaste={(content, mimeType) => {
+              onPasteListener(content, mimeType);
             }}
           />
         )}
@@ -73,9 +73,9 @@ describe('TextInput tests', () => {
     });
   });
   it('calls onPaste callback', () => {
-    const text = 'This is a test message';
+    const content = 'This is a test message';
     const mimeType = 'text/plain';
-    paste(input, text, mimeType);
-    expect(onPasteListener).toHaveBeenCalledWith(text, mimeType);
+    paste(input, content, mimeType);
+    expect(onPasteListener).toHaveBeenCalledWith(content, mimeType);
   });
 });
