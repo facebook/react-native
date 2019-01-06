@@ -14,11 +14,15 @@ const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 const NativeAnimatedAPI = NativeAnimatedHelper.API;
 const invariant = require('invariant');
 
+type ValueListenerCallback = (state: {value: number}) => void;
+
 let _uniqueId = 1;
 
 // Note(vjeux): this would be better as an interface but flow doesn't
 // support them yet
 class AnimatedNode {
+  _listeners: {[key: string]: ValueListenerCallback};
+  __nativeAnimatedValueListener: ?any;
   __attach(): void {}
   __detach(): void {
     if (this.__isNative && this.__nativeTag != null) {
@@ -35,11 +39,15 @@ class AnimatedNode {
   __getChildren(): Array<AnimatedNode> {
     return [];
   }
-  _listeners = {};
 
   /* Methods and props used by native Animated impl */
   __isNative: boolean;
   __nativeTag: ?number;
+
+  constructor() {
+    this._listeners = {};
+  }
+
   __makeNative() {
     if (!this.__isNative) {
       throw new Error('This node cannot be made a "native" animated node');

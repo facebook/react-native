@@ -20,8 +20,6 @@ import type AnimatedTracking from './AnimatedTracking';
 
 const NativeAnimatedAPI = NativeAnimatedHelper.API;
 
-type ValueListenerCallback = (state: {value: number}) => void;
-
 /**
  * Animated works by building a directed acyclic graph of dependencies
  * transparently when you render your Animated components.
@@ -75,8 +73,6 @@ class AnimatedValue extends AnimatedWithChildren {
   _offset: number;
   _animation: ?Animation;
   _tracking: ?AnimatedTracking;
-  _listeners: {[key: string]: ValueListenerCallback};
-  __nativeAnimatedValueListener: ?any;
 
   constructor(value: number) {
     super();
