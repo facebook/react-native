@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,20 +13,20 @@ import android.graphics.drawable.LayerDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
-
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.LayoutShadowNode;
+import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.yoga.YogaNode;
-
 import java.util.Map;
 
 /**
@@ -38,7 +38,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
 
   private static final int STYLE = android.R.attr.seekBarStyle;
 
-  private static final String REACT_CLASS = "RCTSlider";
+  public static final String REACT_CLASS = "RCTSlider";
 
   static class ReactSliderShadowNode extends LayoutShadowNode implements
       YogaMeasureFunction {
@@ -51,21 +51,8 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
       initMeasureFunction();
     }
 
-    private ReactSliderShadowNode(ReactSliderShadowNode node) {
-      super(node);
-      mWidth = node.mWidth;
-      mHeight = node.mHeight;
-      mMeasured = node.mMeasured;
-      initMeasureFunction();
-    }
-
     private void initMeasureFunction() {
       setMeasureFunction(this);
-    }
-
-    @Override
-    protected ReactSliderShadowNode copy() {
-      return new ReactSliderShadowNode(this);
     }
 
     @Override

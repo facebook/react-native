@@ -1,3 +1,8 @@
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
 # Add project specific ProGuard rules here.
 # By default, the flags in this file are appended to flags specified
 # in /usr/local/Cellar/android-sdk/24.3.3/tools/proguard/proguard-android.txt
@@ -51,10 +56,6 @@
 -dontwarn com.facebook.react.**
 -keep,includedescriptorclasses class com.facebook.react.bridge.** { *; }
 
-# TextLayoutBuilder uses a non-public Android constructor within StaticLayout.
-# See libs/proxy/src/main/java/com/facebook/fbui/textlayoutbuilder/proxy for details.
--dontwarn android.text.StaticLayout
-
 # okhttp
 
 -keepattributes Signature
@@ -69,22 +70,3 @@
 -dontwarn java.nio.file.*
 -dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
 -dontwarn okio.**
-
-# Fresco
-# Keep our interfaces so they can be used by other ProGuard rules.
-# See http://sourceforge.net/p/proguard/bugs/466/
--keep,allowobfuscation @interface com.facebook.soloader.DoNotOptimize
-
-# Do not strip any method/class that is annotated with @DoNotOptimize
--keep @com.facebook.soloader.DoNotOptimize class *
--keepclassmembers class * {
-    @com.facebook.soloader.DoNotOptimize *;
-}
-
-# Keep native methods
--keepclassmembers class * {
-    native <methods>;
-}
-
--dontwarn javax.annotation.**
--dontwarn com.facebook.infer.**

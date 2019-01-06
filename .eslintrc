@@ -5,7 +5,6 @@
 
   "env": {
     "es6": true,
-    "jest": true,
   },
 
   "plugins": [
@@ -14,7 +13,7 @@
     "prettier",
     "react",
     "react-native",
-    "jest"
+    "jest",
   ],
 
   // Map from global var to bool specifying if it can be redefined
@@ -37,7 +36,6 @@
     "fetch": false,
     "FormData": false,
     "global": false,
-    "jest": false,
     "Map": true,
     "module": false,
     "navigator": false,
@@ -52,29 +50,18 @@
     "setTimeout": false,
     "window": false,
     "XMLHttpRequest": false,
-    "pit": false
   },
 
   "rules": {
   // General
-
-    // This must be disallowed in this repo because the minimum supported
-    // version of node is 4 which doesn't support trailing commas.
-    // Once the minimum supported version is 8 or greater this can be changed
-    "comma-dangle": [2, {            // disallow trailing commas in object literals
-        "arrays": "ignore",
-        "objects": "ignore",
-        "imports": "ignore",
-        "exports": "ignore",
-        "functions": "never"
-    }],
-
+    "comma-dangle": [1, "always-multiline"], // allow or disallow trailing commas
     "no-cond-assign": 1,             // disallow assignment in conditional expressions
     "no-console": 0,                 // disallow use of console (off by default in the node environment)
     "no-const-assign": 2,            // disallow assignment to const-declared variables
     "no-constant-condition": 0,      // disallow use of constant expressions in conditions
     "no-control-regex": 1,           // disallow control characters in regular expressions
     "no-debugger": 1,                // disallow use of debugger
+    "no-dupe-class-members": 2,      // Disallow duplicate name in class members
     "no-dupe-keys": 2,               // disallow duplicate keys when creating object literals
     "no-empty": 0,                   // disallow empty statements
     "no-ex-assign": 1,               // disallow assigning to the exception in a catch block
@@ -154,7 +141,7 @@
     "no-undef": 2,                   // disallow use of undeclared variables unless mentioned in a /*global */ block
     "no-undefined": 0,               // disallow use of undefined variable (off by default)
     "no-undef-init": 1,              // disallow use of undefined when initializing variables
-    "no-unused-vars": [1, {"vars": "all", "args": "none"}], // disallow declaration of variables that are not used in the code
+    "no-unused-vars": [1, {"vars": "all", "args": "none", ignoreRestSiblings: true}], // disallow declaration of variables that are not used in the code
     "no-use-before-define": 0,       // disallow use of variables before they are defined
 
   // Node.js
@@ -269,31 +256,29 @@
   "overrides": [
     {
       "files": [
-        "Libraries/**/*.js",
-        "RNTester/**/*.js",
+        "**/__fixtures__/**/*.js",
+        "**/__mocks__/**/*.js",
+        "**/__tests__/**/*.js",
         "jest/**/*.js",
+        "RNTester/**/*.js",
       ],
-      "rules": {
-        // These folders currently run through babel and don't need to be
-        // compatible with node 4
-        "comma-dangle": 0,
+      "globals": {
+        // Expose some Jest globals for test helpers
+        "afterAll": true,
+        "afterEach": true,
+        "beforeAll": true,
+        "beforeEach": true,
+        "expect": true,
+        "jest": true,
       },
     },
     {
       "files": [
-        "local-cli/**/*.js",
+        "**/__tests__/**/*-test.js",
       ],
-      "rules": {
-        // This folder currently runs through babel and doesn't need to be
-        // compatible with node 4
-        "comma-dangle": 0,
-
-        "lint/extra-arrow-initializer": 0,
-        "no-alert": 0,
-        "no-console-disallow": 0,
-      },
       "env": {
-        "node": true,
+        "jasmine": true,
+        "jest": true,
       },
     },
   ],

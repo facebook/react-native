@@ -1,10 +1,9 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule renderApplication
  * @format
  * @flow
  */
@@ -13,10 +12,9 @@
 
 const AppContainer = require('AppContainer');
 const React = require('React');
-const ReactFabric = require('ReactFabric');
-const ReactNative = require('ReactNative');
+const ReactFabricIndicator = require('ReactFabricIndicator');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 // require BackHandler so it sets the default handler that exits the app if no listeners respond
 require('BackHandler');
@@ -27,12 +25,16 @@ function renderApplication<Props: Object>(
   rootTag: any,
   WrapperComponent?: ?React.ComponentType<*>,
   fabric?: boolean,
+  showFabricIndicator?: boolean,
 ) {
   invariant(rootTag, 'Expect to have a valid rootTag, instead got ', rootTag);
 
   let renderable = (
     <AppContainer rootTag={rootTag} WrapperComponent={WrapperComponent}>
       <RootComponent {...initialProps} rootTag={rootTag} />
+      {fabric === true && showFabricIndicator === true ? (
+        <ReactFabricIndicator />
+      ) : null}
     </AppContainer>
   );
 
@@ -47,14 +49,14 @@ function renderApplication<Props: Object>(
     RootComponent.prototype.unstable_isAsyncReactComponent === true
   ) {
     // $FlowFixMe This is not yet part of the official public API
-    const AsyncMode = React.unstable_AsyncMode;
-    renderable = <AsyncMode>{renderable}</AsyncMode>;
+    const ConcurrentMode = React.unstable_ConcurrentMode;
+    renderable = <ConcurrentMode>{renderable}</ConcurrentMode>;
   }
 
   if (fabric) {
-    ReactFabric.render(renderable, rootTag);
+    require('ReactFabric').render(renderable, rootTag);
   } else {
-    ReactNative.render(renderable, rootTag);
+    require('ReactNative').render(renderable, rootTag);
   }
 }
 

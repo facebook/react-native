@@ -1,10 +1,10 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule DatePickerIOS
+ * @format
  */
 
 'use strict';
@@ -18,7 +18,9 @@ class DummyDatePickerIOS extends React.Component {
   render() {
     return (
       <View style={[styles.dummyDatePickerIOS, this.props.style]}>
-        <Text style={styles.datePickerText}>DatePickerIOS is not supported on this platform!</Text>
+        <Text style={styles.datePickerText}>
+          DatePickerIOS is not supported on this platform!
+        </Text>
       </View>
     );
   }
@@ -38,7 +40,7 @@ const styles = StyleSheet.create({
   datePickerText: {
     color: '#333333',
     margin: 20,
-  }
+  },
 });
 
 module.exports = DummyDatePickerIOS;

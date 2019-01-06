@@ -1,85 +1,25 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule AlertIOSExample
  */
+
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
-  StyleSheet,
-  View,
-  Text,
-  TouchableHighlight,
-  AlertIOS,
-} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {StyleSheet, View, Text, TouchableHighlight, AlertIOS} = ReactNative;
 
-var { SimpleAlertExampleBlock } = require('./AlertExample');
+const {SimpleAlertExampleBlock} = require('./AlertExample');
 
-exports.framework = 'React';
-exports.title = 'AlertIOS';
-exports.description = 'iOS alerts and action sheets';
-exports.examples = [{
-  title: 'Alerts',
-  render() {
-    return <SimpleAlertExampleBlock />;
-  }
-},
-{
-  title: 'Prompt Options',
-  render(): React.Element<any> {
-    return <PromptOptions />;
-  }
-},
-{
-  title: 'Prompt Types',
-  render() {
-    return (
-      <View>
-        <TouchableHighlight
-          style={styles.wrapper}
-          onPress={() => AlertIOS.prompt('Plain Text Entry')}>
+type Props = $ReadOnly<{||}>;
+type State = {|promptValue: ?string|};
 
-          <View style={styles.button}>
-            <Text>
-              plain-text
-            </Text>
-          </View>
-
-        </TouchableHighlight>
-        <TouchableHighlight
-          style={styles.wrapper}
-          onPress={() => AlertIOS.prompt('Secure Text', null, null, 'secure-text')}>
-
-          <View style={styles.button}>
-            <Text>
-              secure-text
-            </Text>
-          </View>
-
-        </TouchableHighlight>
-        <TouchableHighlight
-          style={styles.wrapper}
-          onPress={() => AlertIOS.prompt('Login & Password', null, null, 'login-password')}>
-
-          <View style={styles.button}>
-            <Text>
-              login-password
-            </Text>
-          </View>
-
-        </TouchableHighlight>
-      </View>
-    );
-  }
-}];
-
-class PromptOptions extends React.Component<$FlowFixMeProps, any> {
+class PromptOptions extends React.Component<Props, State> {
   customButtons: Array<Object>;
 
   constructor(props) {
@@ -88,13 +28,16 @@ class PromptOptions extends React.Component<$FlowFixMeProps, any> {
     // $FlowFixMe this seems to be a Flow bug, `saveResponse` is defined below
     this.saveResponse = this.saveResponse.bind(this);
 
-    this.customButtons = [{
-      text: 'Custom OK',
-      onPress: this.saveResponse
-    }, {
-      text: 'Custom Cancel',
-      style: 'cancel',
-    }];
+    this.customButtons = [
+      {
+        text: 'Custom OK',
+        onPress: this.saveResponse,
+      },
+      {
+        text: 'Custom Cancel',
+        style: 'cancel',
+      },
+    ];
 
     this.state = {
       promptValue: undefined,
@@ -104,58 +47,75 @@ class PromptOptions extends React.Component<$FlowFixMeProps, any> {
   render() {
     return (
       <View>
-        <Text style={{marginBottom: 10}}>
-          <Text style={{fontWeight: 'bold'}}>Prompt value:</Text> {this.state.promptValue}
+        <Text style={styles.promptValue}>
+          <Text style={styles.promptValueLabel}>Prompt value:</Text>{' '}
+          {this.state.promptValue}
         </Text>
 
         <TouchableHighlight
           style={styles.wrapper}
-          onPress={() => AlertIOS.prompt('Type a value', null, this.saveResponse)}>
-
+          onPress={() =>
+            AlertIOS.prompt('Type a value', null, this.saveResponse)
+          }>
           <View style={styles.button}>
-            <Text>
-              prompt with title & callback
-            </Text>
+            <Text>prompt with title & callback</Text>
           </View>
         </TouchableHighlight>
 
         <TouchableHighlight
           style={styles.wrapper}
-          onPress={() => AlertIOS.prompt('Type a value', null, this.customButtons)}>
-
+          onPress={() =>
+            AlertIOS.prompt('Type a value', null, this.customButtons)
+          }>
           <View style={styles.button}>
-            <Text>
-              prompt with title & custom buttons
-            </Text>
+            <Text>prompt with title & custom buttons</Text>
           </View>
         </TouchableHighlight>
 
         <TouchableHighlight
           style={styles.wrapper}
-          onPress={() => AlertIOS.prompt('Type a phone number', null, null, 'plain-text', undefined, 'phone-pad')}>
-
+          onPress={() =>
+            AlertIOS.prompt(
+              'Type a phone number',
+              null,
+              null,
+              'plain-text',
+              undefined,
+              'phone-pad',
+            )
+          }>
           <View style={styles.button}>
-            <Text>
-              prompt with title & custom keyboard
-            </Text>
+            <Text>prompt with title & custom keyboard</Text>
           </View>
         </TouchableHighlight>
 
         <TouchableHighlight
           style={styles.wrapper}
-          onPress={() => AlertIOS.prompt('Type a value', null, this.saveResponse, undefined, 'Default value')}>
-
+          onPress={() =>
+            AlertIOS.prompt(
+              'Type a value',
+              null,
+              this.saveResponse,
+              undefined,
+              'Default value',
+            )
+          }>
           <View style={styles.button}>
-            <Text>
-              prompt with title, callback & default value
-            </Text>
+            <Text>prompt with title, callback & default value</Text>
           </View>
         </TouchableHighlight>
 
         <TouchableHighlight
           style={styles.wrapper}
-          onPress={() => AlertIOS.prompt('Type a value', null, this.customButtons, 'login-password', 'admin@site.com')}>
-
+          onPress={() =>
+            AlertIOS.prompt(
+              'Type a value',
+              null,
+              this.customButtons,
+              'login-password',
+              'admin@site.com',
+            )
+          }>
           <View style={styles.button}>
             <Text>
               prompt with title, custom buttons, login/password & default value
@@ -167,11 +127,11 @@ class PromptOptions extends React.Component<$FlowFixMeProps, any> {
   }
 
   saveResponse(promptValue) {
-    this.setState({ promptValue: JSON.stringify(promptValue) });
+    this.setState({promptValue: JSON.stringify(promptValue)});
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   wrapper: {
     borderRadius: 5,
     marginBottom: 5,
@@ -180,4 +140,62 @@ var styles = StyleSheet.create({
     backgroundColor: '#eeeeee',
     padding: 10,
   },
+  promptValue: {
+    marginBottom: 10,
+  },
+  promptValueLabel: {
+    fontWeight: 'bold',
+  },
 });
+
+exports.framework = 'React';
+exports.title = 'AlertIOS';
+exports.description = 'iOS alerts and action sheets';
+exports.examples = [
+  {
+    title: 'Alerts',
+    render() {
+      return <SimpleAlertExampleBlock />;
+    },
+  },
+  {
+    title: 'Prompt Options',
+    render(): React.Element<any> {
+      return <PromptOptions />;
+    },
+  },
+  {
+    title: 'Prompt Types',
+    render() {
+      return (
+        <View>
+          <TouchableHighlight
+            style={styles.wrapper}
+            onPress={() => AlertIOS.prompt('Plain Text Entry')}>
+            <View style={styles.button}>
+              <Text>plain-text</Text>
+            </View>
+          </TouchableHighlight>
+          <TouchableHighlight
+            style={styles.wrapper}
+            onPress={() =>
+              AlertIOS.prompt('Secure Text', null, null, 'secure-text')
+            }>
+            <View style={styles.button}>
+              <Text>secure-text</Text>
+            </View>
+          </TouchableHighlight>
+          <TouchableHighlight
+            style={styles.wrapper}
+            onPress={() =>
+              AlertIOS.prompt('Login & Password', null, null, 'login-password')
+            }>
+            <View style={styles.button}>
+              <Text>login-password</Text>
+            </View>
+          </TouchableHighlight>
+        </View>
+      );
+    },
+  },
+];

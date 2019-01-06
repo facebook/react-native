@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,21 +7,17 @@
 
 package com.facebook.react;
 
-import com.facebook.react.bridge.JSIModulesProvider;
-import javax.annotation.Nullable;
-
-import java.util.List;
-
 import android.app.Application;
-
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.JSIModulesProvider;
+import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.uimanager.UIImplementationProvider;
+import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Simple class that holds an instance of {@link ReactInstanceManager}. This can be used in your
@@ -76,7 +72,7 @@ public abstract class ReactNativeHost {
       .setRedBoxHandler(getRedBoxHandler())
       .setJavaScriptExecutorFactory(getJavaScriptExecutorFactory())
       .setUIImplementationProvider(getUIImplementationProvider())
-      .setJSIModulesProvider(getJSIModulesProvider())
+      .setJSIModulesPackage(getJSIModulePackage())
       .setInitialLifecycleState(LifecycleState.BEFORE_CREATE);
 
     for (ReactPackage reactPackage : getPackages()) {
@@ -124,7 +120,7 @@ public abstract class ReactNativeHost {
   }
 
   protected @Nullable
-  JSIModulesProvider getJSIModulesProvider() {
+  JSIModulePackage getJSIModulePackage() {
     return null;
   }
 

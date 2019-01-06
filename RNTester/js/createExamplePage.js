@@ -1,23 +1,24 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule createExamplePage
+ * @format
  * @flow
  */
+
 'use strict';
 
 const React = require('react');
 
 const RNTesterExampleContainer = require('./RNTesterExampleContainer');
+import type {RNTesterExample} from 'RNTesterTypes';
 
-import type { ExampleModule } from 'ExampleTypes';
-
-var createExamplePage = function(title: ?string, exampleModule: ExampleModule)
-  : React.ComponentType<any> {
-
+const createExamplePage = function(
+  title: ?string,
+  exampleModule: RNTesterExample,
+): React.ComponentType<any> {
   class ExamplePage extends React.Component<{}> {
     render() {
       return <RNTesterExampleContainer module={exampleModule} title={title} />;

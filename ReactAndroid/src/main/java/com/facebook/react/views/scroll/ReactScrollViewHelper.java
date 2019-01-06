@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,10 +12,10 @@ import android.animation.PropertyValuesHolder;
 
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.events.EventDispatcher;
 
 /**
  * Helper class that deals with emitting Scroll Events.

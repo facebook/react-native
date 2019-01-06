@@ -1,19 +1,16 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @emails oncall+react_native
  */
+
 'use strict';
 
-jest
-  .enableAutomock()
-  .unmock('BatchedBridge')
-  .unmock('defineLazyObjectProperty')
-  .unmock('MessageQueue')
-  .unmock('NativeModules');
+jest.unmock('NativeModules');
 
 let BatchedBridge;
 let NativeModules;
@@ -59,7 +56,12 @@ describe('MessageQueue', function() {
     const onSucc = jest.fn();
 
     // Perform communication
-    NativeModules.RemoteModule1.promiseMethod('paloAlto', 'menloPark', onFail, onSucc);
+    NativeModules.RemoteModule1.promiseMethod(
+      'paloAlto',
+      'menloPark',
+      onFail,
+      onSucc,
+    );
     NativeModules.RemoteModule2.promiseMethod('mac', 'windows', onFail, onSucc);
 
     const resultingRemoteInvocations = BatchedBridge.flushedQueue();
@@ -73,9 +75,10 @@ describe('MessageQueue', function() {
 
     expect(resultingRemoteInvocations[0][0]).toBe(0); // `RemoteModule1`
     expect(resultingRemoteInvocations[1][0]).toBe(1); // `promiseMethod`
-    expect([                                          // the arguments
+    expect([
+      // the arguments
       resultingRemoteInvocations[2][0][0],
-      resultingRemoteInvocations[2][0][1]
+      resultingRemoteInvocations[2][0][1],
     ]).toEqual(['paloAlto', 'menloPark']);
     // Callbacks ids are tacked onto the end of the remote arguments.
     const firstFailCBID = resultingRemoteInvocations[2][0][2];
@@ -83,9 +86,10 @@ describe('MessageQueue', function() {
 
     expect(resultingRemoteInvocations[0][1]).toBe(1); // `RemoteModule2`
     expect(resultingRemoteInvocations[1][1]).toBe(1); // `promiseMethod`
-    expect([                                          // the arguments
+    expect([
+      // the arguments
       resultingRemoteInvocations[2][1][0],
-      resultingRemoteInvocations[2][1][1]
+      resultingRemoteInvocations[2][1][1],
     ]).toEqual(['mac', 'windows']);
     const secondFailCBID = resultingRemoteInvocations[2][1][2];
     const secondSuccCBID = resultingRemoteInvocations[2][1][3];

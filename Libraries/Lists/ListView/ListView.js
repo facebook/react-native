@@ -1,43 +1,160 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ListView
  * @flow
  * @format
  */
 'use strict';
 
-var ListViewDataSource = require('ListViewDataSource');
-var Platform = require('Platform');
-var React = require('React');
-var PropTypes = require('prop-types');
-var ReactNative = require('ReactNative');
-var RCTScrollViewManager = require('NativeModules').ScrollViewManager;
-var ScrollView = require('ScrollView');
-var ScrollResponder = require('ScrollResponder');
-var StaticRenderer = require('StaticRenderer');
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
-var TimerMixin = require('react-timer-mixin');
-var View = require('View');
+const InternalListViewType = require('InternalListViewType');
+const ListViewDataSource = require('ListViewDataSource');
+const Platform = require('Platform');
+const React = require('React');
+const ReactNative = require('ReactNative');
+const RCTScrollViewManager = require('NativeModules').ScrollViewManager;
+const ScrollView = require('ScrollView');
+const ScrollResponder = require('ScrollResponder');
+const StaticRenderer = require('StaticRenderer');
+const View = require('View');
+const cloneReferencedElement = require('react-clone-referenced-element');
+const createReactClass = require('create-react-class');
+const isEmpty = require('isEmpty');
+const merge = require('merge');
 
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
-var cloneReferencedElement = require('react-clone-referenced-element');
-var createReactClass = require('create-react-class');
-var isEmpty = require('isEmpty');
-var merge = require('merge');
+import type {Props as ScrollViewProps} from 'ScrollView';
 
-var DEFAULT_PAGE_SIZE = 1;
-var DEFAULT_INITIAL_ROWS = 10;
-var DEFAULT_SCROLL_RENDER_AHEAD = 1000;
-var DEFAULT_END_REACHED_THRESHOLD = 1000;
-var DEFAULT_SCROLL_CALLBACK_THROTTLE = 50;
+const DEFAULT_PAGE_SIZE = 1;
+const DEFAULT_INITIAL_ROWS = 10;
+const DEFAULT_SCROLL_RENDER_AHEAD = 1000;
+const DEFAULT_END_REACHED_THRESHOLD = 1000;
+const DEFAULT_SCROLL_CALLBACK_THROTTLE = 50;
+
+type Props = $ReadOnly<{|
+  ...ScrollViewProps,
+
+  /**
+   * An instance of [ListView.DataSource](docs/listviewdatasource.html) to use
+   */
+  dataSource: ListViewDataSource,
+  /**
+   * (sectionID, rowID, adjacentRowHighlighted) => renderable
+   *
+   * If provided, a renderable component to be rendered as the separator
+   * below each row but not the last row if there is a section header below.
+   * Take a sectionID and rowID of the row above and whether its adjacent row
+   * is highlighted.
+   */
+  renderSeparator?: ?Function,
+  /**
+   * (rowData, sectionID, rowID, highlightRow) => renderable
+   *
+   * Takes a data entry from the data source and its ids and should return
+   * a renderable component to be rendered as the row. By default the data
+   * is exactly what was put into the data source, but it's also possible to
+   * provide custom extractors. ListView can be notified when a row is
+   * being highlighted by calling `highlightRow(sectionID, rowID)`. This
+   * sets a boolean value of adjacentRowHighlighted in renderSeparator, allowing you
+   * to control the separators above and below the highlighted row. The highlighted
+   * state of a row can be reset by calling highlightRow(null).
+   */
+  renderRow: Function,
+  /**
+   * How many rows to render on initial component mount. Use this to make
+   * it so that the first screen worth of data appears at one time instead of
+   * over the course of multiple frames.
+   */
+  initialListSize?: ?number,
+  /**
+   * Called when all rows have been rendered and the list has been scrolled
+   * to within onEndReachedThreshold of the bottom. The native scroll
+   * event is provided.
+   */
+  onEndReached?: ?Function,
+  /**
+   * Threshold in pixels (virtual, not physical) for calling onEndReached.
+   */
+  onEndReachedThreshold?: ?number,
+  /**
+   * Number of rows to render per event loop. Note: if your 'rows' are actually
+   * cells, i.e. they don't span the full width of your view (as in the
+   * ListViewGridLayoutExample), you should set the pageSize to be a multiple
+   * of the number of cells per row, otherwise you're likely to see gaps at
+   * the edge of the ListView as new pages are loaded.
+   */
+  pageSize?: ?number,
+  /**
+   * () => renderable
+   *
+   * The header and footer are always rendered (if these props are provided)
+   * on every render pass. If they are expensive to re-render, wrap them
+   * in StaticContainer or other mechanism as appropriate. Footer is always
+   * at the bottom of the list, and header at the top, on every render pass.
+   * In a horizontal ListView, the header is rendered on the left and the
+   * footer on the right.
+   */
+  renderFooter?: ?Function,
+  renderHeader?: ?Function,
+  /**
+   * (sectionData, sectionID) => renderable
+   *
+   * If provided, a header is rendered for this section.
+   */
+  renderSectionHeader?: ?Function,
+  /**
+   * (props) => renderable
+   *
+   * A function that returns the scrollable component in which the list rows
+   * are rendered. Defaults to returning a ScrollView with the given props.
+   */
+  renderScrollComponent?: ?Function,
+  /**
+   * How early to start rendering rows before they come on screen, in
+   * pixels.
+   */
+  scrollRenderAheadDistance?: ?number,
+  /**
+   * (visibleRows, changedRows) => void
+   *
+   * Called when the set of visible rows changes. `visibleRows` maps
+   * { sectionID: { rowID: true }} for all the visible rows, and
+   * `changedRows` maps { sectionID: { rowID: true | false }} for the rows
+   * that have changed their visibility, with true indicating visible, and
+   * false indicating the view has moved out of view.
+   */
+  onChangeVisibleRows?: ?Function,
+  /**
+   * A performance optimization for improving scroll perf of
+   * large lists, used in conjunction with overflow: 'hidden' on the row
+   * containers. This is enabled by default.
+   */
+  removeClippedSubviews?: ?boolean,
+  /**
+   * Makes the sections headers sticky. The sticky behavior means that it
+   * will scroll with the content at the top of the section until it reaches
+   * the top of the screen, at which point it will stick to the top until it
+   * is pushed off the screen by the next section header. This property is
+   * not supported in conjunction with `horizontal={true}`. Only enabled by
+   * default on iOS because of typical platform standards.
+   */
+  stickySectionHeadersEnabled?: ?boolean,
+  /**
+   * An array of child indices determining which children get docked to the
+   * top of the screen when scrolling. For example, passing
+   * `stickyHeaderIndices={[0]}` will cause the first child to be fixed to the
+   * top of the scroll view. This property is not supported in conjunction
+   * with `horizontal={true}`.
+   */
+  stickyHeaderIndices?: ?$ReadOnlyArray<number>,
+  /**
+   * Flag indicating whether empty section headers should be rendered. In the future release
+   * empty section headers will be rendered by default, and the flag will be deprecated.
+   * If empty sections are not desired to be rendered their indices should be excluded from sectionID object.
+   */
+  enableEmptySections?: ?boolean,
+|}>;
 
 /**
  * DEPRECATED - use one of the new list components, such as [`FlatList`](docs/flatlist.html)
@@ -96,149 +213,20 @@ var DEFAULT_SCROLL_CALLBACK_THROTTLE = 50;
  *    rendering rows.
  */
 
-var ListView = createReactClass({
+const ListView = createReactClass({
   displayName: 'ListView',
+  _rafIds: ([]: Array<AnimationFrameID>),
   _childFrames: ([]: Array<Object>),
   _sentEndForContentLength: (null: ?number),
-  _scrollComponent: (null: any),
+  _scrollComponent: (null: ?React.ElementRef<typeof ScrollView>),
   _prevRenderedRowsCount: 0,
   _visibleRows: ({}: Object),
   scrollProperties: ({}: Object),
 
-  mixins: [ScrollResponder.Mixin, TimerMixin],
+  mixins: [ScrollResponder.Mixin],
 
   statics: {
     DataSource: ListViewDataSource,
-  },
-
-  /**
-   * You must provide a renderRow function. If you omit any of the other render
-   * functions, ListView will simply skip rendering them.
-   *
-   * - renderRow(rowData, sectionID, rowID, highlightRow);
-   * - renderSectionHeader(sectionData, sectionID);
-   */
-  propTypes: {
-    ...ScrollView.propTypes,
-    /**
-     * An instance of [ListView.DataSource](docs/listviewdatasource.html) to use
-     */
-    dataSource: PropTypes.instanceOf(ListViewDataSource).isRequired,
-    /**
-     * (sectionID, rowID, adjacentRowHighlighted) => renderable
-     *
-     * If provided, a renderable component to be rendered as the separator
-     * below each row but not the last row if there is a section header below.
-     * Take a sectionID and rowID of the row above and whether its adjacent row
-     * is highlighted.
-     */
-    renderSeparator: PropTypes.func,
-    /**
-     * (rowData, sectionID, rowID, highlightRow) => renderable
-     *
-     * Takes a data entry from the data source and its ids and should return
-     * a renderable component to be rendered as the row. By default the data
-     * is exactly what was put into the data source, but it's also possible to
-     * provide custom extractors. ListView can be notified when a row is
-     * being highlighted by calling `highlightRow(sectionID, rowID)`. This
-     * sets a boolean value of adjacentRowHighlighted in renderSeparator, allowing you
-     * to control the separators above and below the highlighted row. The highlighted
-     * state of a row can be reset by calling highlightRow(null).
-     */
-    renderRow: PropTypes.func.isRequired,
-    /**
-     * How many rows to render on initial component mount. Use this to make
-     * it so that the first screen worth of data appears at one time instead of
-     * over the course of multiple frames.
-     */
-    initialListSize: PropTypes.number.isRequired,
-    /**
-     * Called when all rows have been rendered and the list has been scrolled
-     * to within onEndReachedThreshold of the bottom. The native scroll
-     * event is provided.
-     */
-    onEndReached: PropTypes.func,
-    /**
-     * Threshold in pixels (virtual, not physical) for calling onEndReached.
-     */
-    onEndReachedThreshold: PropTypes.number.isRequired,
-    /**
-     * Number of rows to render per event loop. Note: if your 'rows' are actually
-     * cells, i.e. they don't span the full width of your view (as in the
-     * ListViewGridLayoutExample), you should set the pageSize to be a multiple
-     * of the number of cells per row, otherwise you're likely to see gaps at
-     * the edge of the ListView as new pages are loaded.
-     */
-    pageSize: PropTypes.number.isRequired,
-    /**
-     * () => renderable
-     *
-     * The header and footer are always rendered (if these props are provided)
-     * on every render pass. If they are expensive to re-render, wrap them
-     * in StaticContainer or other mechanism as appropriate. Footer is always
-     * at the bottom of the list, and header at the top, on every render pass.
-     * In a horizontal ListView, the header is rendered on the left and the
-     * footer on the right.
-     */
-    renderFooter: PropTypes.func,
-    renderHeader: PropTypes.func,
-    /**
-     * (sectionData, sectionID) => renderable
-     *
-     * If provided, a header is rendered for this section.
-     */
-    renderSectionHeader: PropTypes.func,
-    /**
-     * (props) => renderable
-     *
-     * A function that returns the scrollable component in which the list rows
-     * are rendered. Defaults to returning a ScrollView with the given props.
-     */
-    renderScrollComponent: PropTypes.func.isRequired,
-    /**
-     * How early to start rendering rows before they come on screen, in
-     * pixels.
-     */
-    scrollRenderAheadDistance: PropTypes.number.isRequired,
-    /**
-     * (visibleRows, changedRows) => void
-     *
-     * Called when the set of visible rows changes. `visibleRows` maps
-     * { sectionID: { rowID: true }} for all the visible rows, and
-     * `changedRows` maps { sectionID: { rowID: true | false }} for the rows
-     * that have changed their visibility, with true indicating visible, and
-     * false indicating the view has moved out of view.
-     */
-    onChangeVisibleRows: PropTypes.func,
-    /**
-     * A performance optimization for improving scroll perf of
-     * large lists, used in conjunction with overflow: 'hidden' on the row
-     * containers. This is enabled by default.
-     */
-    removeClippedSubviews: PropTypes.bool,
-    /**
-     * Makes the sections headers sticky. The sticky behavior means that it
-     * will scroll with the content at the top of the section until it reaches
-     * the top of the screen, at which point it will stick to the top until it
-     * is pushed off the screen by the next section header. This property is
-     * not supported in conjunction with `horizontal={true}`. Only enabled by
-     * default on iOS because of typical platform standards.
-     */
-    stickySectionHeadersEnabled: PropTypes.bool,
-    /**
-     * An array of child indices determining which children get docked to the
-     * top of the screen when scrolling. For example, passing
-     * `stickyHeaderIndices={[0]}` will cause the first child to be fixed to the
-     * top of the scroll view. This property is not supported in conjunction
-     * with `horizontal={true}`.
-     */
-    stickyHeaderIndices: PropTypes.arrayOf(PropTypes.number).isRequired,
-    /**
-     * Flag indicating whether empty section headers should be rendered. In the future release
-     * empty section headers will be rendered by default, and the flag will be deprecated.
-     * If empty sections are not desired to be rendered their indices should be excluded from sectionID object.
-     */
-    enableEmptySections: PropTypes.bool,
   },
 
   /**
@@ -279,7 +267,7 @@ var ListView = createReactClass({
    *
    * See `ScrollView#scrollTo`.
    */
-  scrollTo: function(...args: Array<mixed>) {
+  scrollTo: function(...args: any) {
     if (this._scrollComponent && this._scrollComponent.scrollTo) {
       this._scrollComponent.scrollTo(...args);
     }
@@ -295,7 +283,7 @@ var ListView = createReactClass({
    *
    * See `ScrollView#scrollToEnd`.
    */
-  scrollToEnd: function(options?: ?{animated?: ?boolean}) {
+  scrollToEnd: function(options?: ?{animated?: boolean}) {
     if (this._scrollComponent) {
       if (this._scrollComponent.scrollToEnd) {
         this._scrollComponent.scrollToEnd(options);
@@ -349,7 +337,7 @@ var ListView = createReactClass({
   },
 
   getInnerViewNode: function() {
-    return this._scrollComponent.getInnerViewNode();
+    return this._scrollComponent && this._scrollComponent.getInnerViewNode();
   },
 
   UNSAFE_componentWillMount: function() {
@@ -359,16 +347,23 @@ var ListView = createReactClass({
       contentLength: null,
       offset: 0,
     };
+
+    this._rafIds = [];
     this._childFrames = [];
     this._visibleRows = {};
     this._prevRenderedRowsCount = 0;
     this._sentEndForContentLength = null;
   },
 
+  componentWillUnmount: function() {
+    this._rafIds.forEach(cancelAnimationFrame);
+    this._rafIds = [];
+  },
+
   componentDidMount: function() {
     // do this in animation frame until componentDidMount actually runs after
     // the component is laid out
-    this.requestAnimationFrame(() => {
+    this._requestAnimationFrame(() => {
       this._measureAndUpdateScrollProps();
     });
   },
@@ -396,7 +391,7 @@ var ListView = createReactClass({
   },
 
   componentDidUpdate: function() {
-    this.requestAnimationFrame(() => {
+    this._requestAnimationFrame(() => {
       this._measureAndUpdateScrollProps();
     });
   },
@@ -406,28 +401,25 @@ var ListView = createReactClass({
   },
 
   render: function() {
-    var bodyComponents = [];
+    const bodyComponents = [];
 
-    var dataSource = this.props.dataSource;
-    var allRowIDs = dataSource.rowIdentities;
-    var rowCount = 0;
-    var stickySectionHeaderIndices = [];
+    const dataSource = this.props.dataSource;
+    const allRowIDs = dataSource.rowIdentities;
+    let rowCount = 0;
+    const stickySectionHeaderIndices = [];
 
     const {renderSectionHeader} = this.props;
 
-    var header = this.props.renderHeader && this.props.renderHeader();
-    var footer = this.props.renderFooter && this.props.renderFooter();
-    var totalIndex = header ? 1 : 0;
+    const header = this.props.renderHeader && this.props.renderHeader();
+    const footer = this.props.renderFooter && this.props.renderFooter();
+    let totalIndex = header ? 1 : 0;
 
-    for (var sectionIdx = 0; sectionIdx < allRowIDs.length; sectionIdx++) {
-      var sectionID = dataSource.sectionIdentities[sectionIdx];
-      var rowIDs = allRowIDs[sectionIdx];
+    for (let sectionIdx = 0; sectionIdx < allRowIDs.length; sectionIdx++) {
+      const sectionID = dataSource.sectionIdentities[sectionIdx];
+      const rowIDs = allRowIDs[sectionIdx];
       if (rowIDs.length === 0) {
         if (this.props.enableEmptySections === undefined) {
-          /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses
-           * an error found when Flow v0.54 was deployed. To see the error
-           * delete this comment and run Flow. */
-          var warning = require('fbjs/lib/warning');
+          const warning = require('fbjs/lib/warning');
           warning(
             false,
             'In next release empty section headers will be rendered.' +
@@ -435,7 +427,7 @@ var ListView = createReactClass({
           );
           continue;
         } else {
-          var invariant = require('fbjs/lib/invariant');
+          const invariant = require('invariant');
           invariant(
             this.props.enableEmptySections,
             "In next release 'enableEmptySections' flag will be deprecated, empty section headers will always be rendered." +
@@ -461,13 +453,13 @@ var ListView = createReactClass({
         }
       }
 
-      for (var rowIdx = 0; rowIdx < rowIDs.length; rowIdx++) {
-        var rowID = rowIDs[rowIdx];
-        var comboID = sectionID + '_' + rowID;
-        var shouldUpdateRow =
+      for (let rowIdx = 0; rowIdx < rowIDs.length; rowIdx++) {
+        const rowID = rowIDs[rowIdx];
+        const comboID = sectionID + '_' + rowID;
+        const shouldUpdateRow =
           rowCount >= this._prevRenderedRowsCount &&
           dataSource.rowShouldUpdate(sectionIdx, rowIdx);
-        var row = (
+        const row = (
           <StaticRenderer
             key={'r_' + comboID}
             shouldUpdate={!!shouldUpdateRow}
@@ -487,11 +479,11 @@ var ListView = createReactClass({
           this.props.renderSeparator &&
           (rowIdx !== rowIDs.length - 1 || sectionIdx === allRowIDs.length - 1)
         ) {
-          var adjacentRowHighlighted =
+          const adjacentRowHighlighted =
             this.state.highlightedRow.sectionID === sectionID &&
             (this.state.highlightedRow.rowID === rowID ||
               this.state.highlightedRow.rowID === rowIDs[rowIdx + 1]);
-          var separator = this.props.renderSeparator(
+          const separator = this.props.renderSeparator(
             sectionID,
             rowID,
             adjacentRowHighlighted,
@@ -510,7 +502,7 @@ var ListView = createReactClass({
       }
     }
 
-    var {renderScrollComponent, ...props} = this.props;
+    const {renderScrollComponent, ...props} = this.props;
     if (!props.scrollEventThrottle) {
       props.scrollEventThrottle = DEFAULT_SCROLL_CALLBACK_THROTTLE;
     }
@@ -550,8 +542,16 @@ var ListView = createReactClass({
    * Private methods
    */
 
+  _requestAnimationFrame: function(fn: () => void): void {
+    const rafId = requestAnimationFrame(() => {
+      this._rafIds = this._rafIds.filter(id => id !== rafId);
+      fn();
+    });
+    this._rafIds.push(rafId);
+  },
+
   _measureAndUpdateScrollProps: function() {
-    var scrollComponent = this.getScrollResponder();
+    const scrollComponent = this.getScrollResponder();
     if (!scrollComponent || !scrollComponent.getInnerViewNode) {
       return;
     }
@@ -566,12 +566,12 @@ var ListView = createReactClass({
       );
   },
 
-  _setScrollComponentRef: function(scrollComponent: Object) {
+  _setScrollComponentRef: function(scrollComponent) {
     this._scrollComponent = scrollComponent;
   },
 
   _onContentSizeChange: function(width: number, height: number) {
-    var contentLength = !this.props.horizontal ? height : width;
+    const contentLength = !this.props.horizontal ? height : width;
     if (contentLength !== this.scrollProperties.contentLength) {
       this.scrollProperties.contentLength = contentLength;
       this._updateVisibleRows();
@@ -582,8 +582,8 @@ var ListView = createReactClass({
   },
 
   _onLayout: function(event: Object) {
-    var {width, height} = event.nativeEvent.layout;
-    var visibleLength = !this.props.horizontal ? height : width;
+    const {width, height} = event.nativeEvent.layout;
+    const visibleLength = !this.props.horizontal ? height : width;
     if (visibleLength !== this.scrollProperties.visibleLength) {
       this.scrollProperties.visibleLength = visibleLength;
       this._updateVisibleRows();
@@ -623,7 +623,7 @@ var ListView = createReactClass({
       return;
     }
 
-    var distanceFromEnd = this._getDistanceFromEnd(this.scrollProperties);
+    const distanceFromEnd = this._getDistanceFromEnd(this.scrollProperties);
     if (distanceFromEnd < this.props.scrollRenderAheadDistance) {
       this._pageInNewRows();
     }
@@ -632,7 +632,7 @@ var ListView = createReactClass({
   _pageInNewRows: function() {
     this.setState(
       (state, props) => {
-        var rowsToRender = Math.min(
+        const rowsToRender = Math.min(
           state.curRenderedRowsCount + props.pageSize,
           props.enableEmptySections
             ? props.dataSource.getRowAndSectionCount()
@@ -667,32 +667,32 @@ var ListView = createReactClass({
         this._childFrames[newFrame.index] = merge(newFrame);
       });
     }
-    var isVertical = !this.props.horizontal;
-    var dataSource = this.props.dataSource;
-    var visibleMin = this.scrollProperties.offset;
-    var visibleMax = visibleMin + this.scrollProperties.visibleLength;
-    var allRowIDs = dataSource.rowIdentities;
+    const isVertical = !this.props.horizontal;
+    const dataSource = this.props.dataSource;
+    const visibleMin = this.scrollProperties.offset;
+    const visibleMax = visibleMin + this.scrollProperties.visibleLength;
+    const allRowIDs = dataSource.rowIdentities;
 
-    var header = this.props.renderHeader && this.props.renderHeader();
-    var totalIndex = header ? 1 : 0;
-    var visibilityChanged = false;
-    var changedRows = {};
-    for (var sectionIdx = 0; sectionIdx < allRowIDs.length; sectionIdx++) {
-      var rowIDs = allRowIDs[sectionIdx];
+    const header = this.props.renderHeader && this.props.renderHeader();
+    let totalIndex = header ? 1 : 0;
+    let visibilityChanged = false;
+    const changedRows = {};
+    for (let sectionIdx = 0; sectionIdx < allRowIDs.length; sectionIdx++) {
+      const rowIDs = allRowIDs[sectionIdx];
       if (rowIDs.length === 0) {
         continue;
       }
-      var sectionID = dataSource.sectionIdentities[sectionIdx];
+      const sectionID = dataSource.sectionIdentities[sectionIdx];
       if (this.props.renderSectionHeader) {
         totalIndex++;
       }
-      var visibleSection = this._visibleRows[sectionID];
+      let visibleSection = this._visibleRows[sectionID];
       if (!visibleSection) {
         visibleSection = {};
       }
-      for (var rowIdx = 0; rowIdx < rowIDs.length; rowIdx++) {
-        var rowID = rowIDs[rowIdx];
-        var frame = this._childFrames[totalIndex];
+      for (let rowIdx = 0; rowIdx < rowIDs.length; rowIdx++) {
+        const rowID = rowIDs[rowIdx];
+        const frame = this._childFrames[totalIndex];
         totalIndex++;
         if (
           this.props.renderSeparator &&
@@ -703,9 +703,9 @@ var ListView = createReactClass({
         if (!frame) {
           break;
         }
-        var rowVisible = visibleSection[rowID];
-        var min = isVertical ? frame.y : frame.x;
-        var max = min + (isVertical ? frame.height : frame.width);
+        const rowVisible = visibleSection[rowID];
+        const min = isVertical ? frame.y : frame.x;
+        const max = min + (isVertical ? frame.height : frame.width);
         if ((!min && !max) || min === max) {
           break;
         }
@@ -738,7 +738,7 @@ var ListView = createReactClass({
   },
 
   _onScroll: function(e: Object) {
-    var isVertical = !this.props.horizontal;
+    const isVertical = !this.props.horizontal;
     this.scrollProperties.visibleLength =
       e.nativeEvent.layoutMeasurement[isVertical ? 'height' : 'width'];
     this.scrollProperties.contentLength =
@@ -763,4 +763,4 @@ var ListView = createReactClass({
   },
 });
 
-module.exports = ListView;
+module.exports = ((ListView: any): Class<InternalListViewType<Props>>);

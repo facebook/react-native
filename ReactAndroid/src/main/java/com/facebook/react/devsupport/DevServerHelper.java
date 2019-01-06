@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,6 +10,7 @@ package com.facebook.react.devsupport;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Handler;
+import android.os.Looper;
 import android.widget.Toast;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -81,7 +82,13 @@ public class DevServerHelper {
     void onPackagerReloadCommand();
     void onPackagerDevMenuCommand();
     void onCaptureHeapCommand(final Responder responder);
-    void onPokeSamplingProfilerCommand(final Responder responder);
+
+    // Allow apps to provide listeners for custom packager commands.
+    @Nullable Map<String, RequestHandler> customCommandHandlers();
+  }
+
+  public interface PackagerCustomCommandProvider {
+
   }
 
   public interface SymbolicationListener {
@@ -131,7 +138,7 @@ public class DevServerHelper {
       .build();
     mBundleDownloader = new BundleDownloader(mClient);
 
-    mRestartOnChangePollingHandler = new Handler();
+    mRestartOnChangePollingHandler = new Handler(Looper.getMainLooper());
     mPackageName = packageName;
   }
 
@@ -163,12 +170,10 @@ public class DevServerHelper {
             commandListener.onCaptureHeapCommand(responder);
           }
         });
-        handlers.put("pokeSamplingProfiler", new RequestOnlyHandler() {
-          @Override
-          public void onRequest(@Nullable Object params, Responder responder) {
-            commandListener.onPokeSamplingProfilerCommand(responder);
-          }
-        });
+        Map<String, RequestHandler> customHandlers = commandListener.customCommandHandlers();
+        if (customHandlers != null) {
+          handlers.putAll(customHandlers);
+        }
         handlers.putAll(new FileIoHandler().handlers());
 
         ConnectionCallback onPackagerConnectedCallback =
@@ -375,7 +380,27 @@ public class DevServerHelper {
   public void downloadBundleFromURL(
     DevBundleDownloadListener callback,
     File outputFile, String bundleURL, BundleDownloader.BundleInfo bundleInfo) {
-    mBundleDownloader.downloadBundleFromURL(callback, outputFile, bundleURL, bundleInfo);
+    mBundleDownloader.downloadBundleFromURL(callback, outputFile, bundleURL, bundleInfo, getDeltaClientType());
+  }
+
+  public void downloadBundleFromURL(
+      DevBundleDownloadListener callback,
+      File outputFile,
+      String bundleURL,
+      BundleDownloader.BundleInfo bundleInfo,
+      Request.Builder requestBuilder) {
+    mBundleDownloader.downloadBundleFromURL(
+        callback, outputFile, bundleURL, bundleInfo, getDeltaClientType(), requestBuilder);
+  }
+
+  private BundleDeltaClient.ClientType getDeltaClientType() {
+    if (mSettings.isBundleDeltasCppEnabled()) {
+      return BundleDeltaClient.ClientType.NATIVE;
+    } else if (mSettings.isBundleDeltasEnabled()) {
+      return BundleDeltaClient.ClientType.DEV_SUPPORT;
+    } else {
+      return BundleDeltaClient.ClientType.NONE;
+    }
   }
 
   /**
@@ -479,10 +504,11 @@ public class DevServerHelper {
               callback.onPackagerStatusFetched(false);
               return;
             }
-            if (!PACKAGER_OK_STATUS.equals(body.string())) {
+            String bodyString = body.string(); // cannot call body.string() twice, stored it into variable. https://github.com/square/okhttp/issues/1240#issuecomment-68142603
+            if (!PACKAGER_OK_STATUS.equals(bodyString)) {
               FLog.e(
                   ReactConstants.TAG,
-                  "Got unexpected response from packager when requesting status: " + body.string());
+                  "Got unexpected response from packager when requesting status: " + bodyString);
               callback.onPackagerStatusFetched(false);
               return;
             }
@@ -514,7 +540,7 @@ public class DevServerHelper {
     mOnChangePollingEnabled = true;
     mOnServerContentChangeListener = onServerContentChangeListener;
     mOnChangePollingClient = new OkHttpClient.Builder()
-        .connectionPool(new ConnectionPool(1, LONG_POLL_KEEP_ALIVE_DURATION_MS, TimeUnit.MINUTES))
+        .connectionPool(new ConnectionPool(1, LONG_POLL_KEEP_ALIVE_DURATION_MS, TimeUnit.MILLISECONDS))
         .connectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS)
         .build();
     enqueueOnChangeEndpointLongPolling();

@@ -1,18 +1,16 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
- * @providesModule RNTesterList
  */
+
 'use strict';
 
-export type RNTesterExample = {
-  key: string,
-  module: Object,
-};
+import type {RNTesterExample} from 'RNTesterTypes';
 
 const ComponentExamples: Array<RNTesterExample> = [
   {
@@ -61,6 +59,8 @@ const ComponentExamples: Array<RNTesterExample> = [
   },
   {
     key: 'ProgressBarAndroidExample',
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
     module: require('./ProgressBarAndroidExample'),
   },
   {
@@ -85,11 +85,11 @@ const ComponentExamples: Array<RNTesterExample> = [
   },
   {
     key: 'SwipeableFlatListExample',
-    module: require('./SwipeableFlatListExample')
+    module: require('./SwipeableFlatListExample'),
   },
   {
     key: 'SwipeableListViewExample',
-    module: require('./SwipeableListViewExample')
+    module: require('./SwipeableListViewExample'),
   },
   {
     key: 'SwitchExample',
@@ -97,14 +97,20 @@ const ComponentExamples: Array<RNTesterExample> = [
   },
   {
     key: 'TextExample',
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
     module: require('./TextExample'),
   },
   {
     key: 'TextInputExample',
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
     module: require('./TextInputExample'),
   },
   {
     key: 'ToolbarAndroidExample',
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
     module: require('./ToolbarAndroidExample'),
   },
   {
@@ -117,6 +123,8 @@ const ComponentExamples: Array<RNTesterExample> = [
   },
   {
     key: 'ViewPagerAndroidExample',
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
     module: require('./ViewPagerAndroidExample'),
   },
   {
@@ -128,6 +136,8 @@ const ComponentExamples: Array<RNTesterExample> = [
 const APIExamples: Array<RNTesterExample> = [
   {
     key: 'AccessibilityAndroidExample',
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
     module: require('./AccessibilityAndroidExample'),
   },
   {
@@ -204,6 +214,8 @@ const APIExamples: Array<RNTesterExample> = [
   },
   {
     key: 'PermissionsExampleAndroid',
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
     module: require('./PermissionsExampleAndroid'),
   },
   {
@@ -228,6 +240,8 @@ const APIExamples: Array<RNTesterExample> = [
   },
   {
     key: 'ToastAndroidExample',
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
     module: require('./ToastAndroidExample'),
   },
   {

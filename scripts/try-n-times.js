@@ -1,11 +1,11 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
-
-/* globals echo:false */
 
 'use strict';
 
@@ -26,7 +26,7 @@ function tryExecNTimes(funcToRetry, retriesLeft, onEveryError) {
       onEveryError();
     }
     retriesLeft--;
-    echo(`Command failed, ${retriesLeft} retries left`);
+    console.warn(`Command failed, ${retriesLeft} retries left`);
     if (retriesLeft === 0) {
       return exitCode;
     } else {

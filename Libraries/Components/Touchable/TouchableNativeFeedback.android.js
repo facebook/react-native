@@ -1,11 +1,13 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule TouchableNativeFeedback
+ * @flow strict-local
+ * @format
  */
+
 'use strict';
 
 const Platform = require('Platform');
@@ -15,10 +17,13 @@ const ReactNative = require('ReactNative');
 const Touchable = require('Touchable');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 const UIManager = require('UIManager');
+const View = require('View');
 
 const createReactClass = require('create-react-class');
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 const processColor = require('processColor');
+
+import type {PressEvent} from 'CoreEventTypes';
 
 const rippleBackgroundPropType = PropTypes.shape({
   type: PropTypes.oneOf(['RippleAndroid']),
@@ -35,8 +40,6 @@ const backgroundPropType = PropTypes.oneOfType([
   rippleBackgroundPropType,
   themeAttributeBackgroundPropType,
 ]);
-
-type Event = Object;
 
 const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
@@ -72,6 +75,9 @@ const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 const TouchableNativeFeedback = createReactClass({
   displayName: 'TouchableNativeFeedback',
   propTypes: {
+    /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment
+     * suppresses an error found when Flow v0.89 was deployed. To see the
+     * error, delete this comment and run Flow. */
     ...TouchableWithoutFeedback.propTypes,
 
     /**
@@ -104,7 +110,10 @@ const TouchableNativeFeedback = createReactClass({
      * Creates an object that represents android theme's default background for
      * selectable elements (?android:attr/selectableItemBackground).
      */
-    SelectableBackground: function() {
+    SelectableBackground: function(): {
+      type: 'ThemeAttrAndroid',
+      attribute: 'selectableItemBackground',
+    } {
       return {type: 'ThemeAttrAndroid', attribute: 'selectableItemBackground'};
     },
     /**
@@ -112,8 +121,14 @@ const TouchableNativeFeedback = createReactClass({
      * selectable elements (?android:attr/selectableItemBackgroundBorderless).
      * Available on android API level 21+.
      */
-    SelectableBackgroundBorderless: function() {
-      return {type: 'ThemeAttrAndroid', attribute: 'selectableItemBackgroundBorderless'};
+    SelectableBackgroundBorderless: function(): {
+      type: 'ThemeAttrAndroid',
+      attribute: 'selectableItemBackgroundBorderless',
+    } {
+      return {
+        type: 'ThemeAttrAndroid',
+        attribute: 'selectableItemBackgroundBorderless',
+      };
     },
     /**
      * Creates an object that represents ripple drawable with specified color (as a
@@ -125,13 +140,24 @@ const TouchableNativeFeedback = createReactClass({
      * @param color The ripple color
      * @param borderless If the ripple can render outside it's bounds
      */
-    Ripple: function(color: string, borderless: boolean) {
-      return {type: 'RippleAndroid', color: processColor(color), borderless: borderless};
+    Ripple: function(
+      color: string,
+      borderless: boolean,
+    ): {
+      type: 'RippleAndroid',
+      color: ?number,
+      borderless: boolean,
+    } {
+      return {
+        type: 'RippleAndroid',
+        color: processColor(color),
+        borderless: borderless,
+      };
     },
 
-    canUseNativeForeground: function() {
+    canUseNativeForeground: function(): boolean {
       return Platform.OS === 'android' && Platform.Version >= 23;
-    }
+    },
   },
 
   mixins: [Touchable.Mixin],
@@ -158,24 +184,36 @@ const TouchableNativeFeedback = createReactClass({
    * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
    * defined on your component.
    */
-  touchableHandleActivePressIn: function(e: Event) {
+  touchableHandleActivePressIn: function(e: PressEvent) {
     this.props.onPressIn && this.props.onPressIn(e);
     this._dispatchPressedStateChange(true);
+    /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment
+     * suppresses an error found when Flow v0.89 was deployed. To see the
+     * error, delete this comment and run Flow. */
     if (this.pressInLocation) {
-      this._dispatchHotspotUpdate(this.pressInLocation.locationX, this.pressInLocation.locationY);
+      this._dispatchHotspotUpdate(
+        /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment
+         * suppresses an error found when Flow v0.89 was deployed. To see the
+         * error, delete this comment and run Flow. */
+        this.pressInLocation.locationX,
+        /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment
+         * suppresses an error found when Flow v0.89 was deployed. To see the
+         * error, delete this comment and run Flow. */
+        this.pressInLocation.locationY,
+      );
     }
   },
 
-  touchableHandleActivePressOut: function(e: Event) {
+  touchableHandleActivePressOut: function(e: PressEvent) {
     this.props.onPressOut && this.props.onPressOut(e);
     this._dispatchPressedStateChange(false);
   },
 
-  touchableHandlePress: function(e: Event) {
+  touchableHandlePress: function(e: PressEvent) {
     this.props.onPress && this.props.onPress(e);
   },
 
-  touchableHandleLongPress: function(e: Event) {
+  touchableHandleLongPress: function(e: PressEvent) {
     this.props.onLongPress && this.props.onLongPress(e);
   },
 
@@ -202,42 +240,55 @@ const TouchableNativeFeedback = createReactClass({
 
   _handleResponderMove: function(e) {
     this.touchableHandleResponderMove(e);
-    this._dispatchHotspotUpdate(e.nativeEvent.locationX, e.nativeEvent.locationY);
+    this._dispatchHotspotUpdate(
+      e.nativeEvent.locationX,
+      e.nativeEvent.locationY,
+    );
   },
 
   _dispatchHotspotUpdate: function(destX, destY) {
     UIManager.dispatchViewManagerCommand(
       ReactNative.findNodeHandle(this),
-      UIManager.RCTView.Commands.hotspotUpdate,
-      [destX || 0, destY || 0]
+      UIManager.getViewManagerConfig('RCTView').Commands.hotspotUpdate,
+      [destX || 0, destY || 0],
     );
   },
 
   _dispatchPressedStateChange: function(pressed) {
     UIManager.dispatchViewManagerCommand(
       ReactNative.findNodeHandle(this),
-      UIManager.RCTView.Commands.setPressed,
-      [pressed]
+      UIManager.getViewManagerConfig('RCTView').Commands.setPressed,
+      [pressed],
     );
   },
 
   render: function() {
     const child = React.Children.only(this.props.children);
     let children = child.props.children;
-    if (Touchable.TOUCH_TARGET_DEBUG && child.type.displayName === 'View') {
+    if (Touchable.TOUCH_TARGET_DEBUG && child.type === View) {
       if (!Array.isArray(children)) {
         children = [children];
       }
-      children.push(Touchable.renderDebugView({color: 'brown', hitSlop: this.props.hitSlop}));
+      children.push(
+        Touchable.renderDebugView({
+          color: 'brown',
+          hitSlop: this.props.hitSlop,
+        }),
+      );
     }
-    if (this.props.useForeground && !TouchableNativeFeedback.canUseNativeForeground()) {
+    if (
+      this.props.useForeground &&
+      !TouchableNativeFeedback.canUseNativeForeground()
+    ) {
       console.warn(
         'Requested foreground ripple, but it is not available on this version of Android. ' +
-        'Consider calling TouchableNativeFeedback.canUseNativeForeground() and using a different ' +
-        'Touchable if the result is false.');
+          'Consider calling TouchableNativeFeedback.canUseNativeForeground() and using a different ' +
+          'Touchable if the result is false.',
+      );
     }
     const drawableProp =
-      this.props.useForeground && TouchableNativeFeedback.canUseNativeForeground()
+      this.props.useForeground &&
+      TouchableNativeFeedback.canUseNativeForeground()
         ? 'nativeForegroundAndroid'
         : 'nativeBackgroundAndroid';
     const childProps = {
@@ -245,8 +296,8 @@ const TouchableNativeFeedback = createReactClass({
       [drawableProp]: this.props.background,
       accessible: this.props.accessible !== false,
       accessibilityLabel: this.props.accessibilityLabel,
-      accessibilityComponentType: this.props.accessibilityComponentType,
-      accessibilityTraits: this.props.accessibilityTraits,
+      accessibilityRole: this.props.accessibilityRole,
+      accessibilityStates: this.props.accessibilityStates,
       children,
       testID: this.props.testID,
       onLayout: this.props.onLayout,
@@ -254,7 +305,8 @@ const TouchableNativeFeedback = createReactClass({
       isTVSelectable: true,
       hasTVPreferredFocus: this.props.hasTVPreferredFocus,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
-      onResponderTerminationRequest: this.touchableHandleResponderTerminationRequest,
+      onResponderTerminationRequest: this
+        .touchableHandleResponderTerminationRequest,
       onResponderGrant: this.touchableHandleResponderGrant,
       onResponderMove: this._handleResponderMove,
       onResponderRelease: this.touchableHandleResponderRelease,
@@ -264,11 +316,8 @@ const TouchableNativeFeedback = createReactClass({
     // We need to clone the actual element so that the ripple background drawable
     // can be applied directly to the background of this element rather than to
     // a wrapper view as done in other Touchable*
-    return React.cloneElement(
-      child,
-      childProps
-    );
-  }
+    return React.cloneElement(child, childProps);
+  },
 });
 
 module.exports = TouchableNativeFeedback;

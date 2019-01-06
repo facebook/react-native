@@ -1,11 +1,10 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule CoreEventTypes
- * @flow
+ * @flow strict
  * @format
  */
 
@@ -20,7 +19,9 @@ export type SyntheticEvent<T> = $ReadOnly<{|
     registrationName: string,
   |}>,
   eventPhase: ?number,
+  preventDefault: () => void,
   isDefaultPrevented: () => boolean,
+  stopPropagation: () => void,
   isPropagationStopped: () => boolean,
   isTrusted: ?boolean,
   nativeEvent: T,
@@ -30,11 +31,43 @@ export type SyntheticEvent<T> = $ReadOnly<{|
   type: ?string,
 |}>;
 
+export type ResponderSyntheticEvent<T> = $ReadOnly<{|
+  ...SyntheticEvent<T>,
+  touchHistory: $ReadOnly<{|
+    indexOfSingleActiveTouch: number,
+    mostRecentTimeStamp: number,
+    numberActiveTouches: number,
+    touchBank: $ReadOnlyArray<
+      $ReadOnly<{|
+        touchActive: boolean,
+        startPageX: number,
+        startPageY: number,
+        startTimeStamp: number,
+        currentPageX: number,
+        currentPageY: number,
+        currentTimeStamp: number,
+        previousPageX: number,
+        previousPageY: number,
+        previousTimeStamp: number,
+      |}>,
+    >,
+  |}>,
+|}>;
+
 export type Layout = $ReadOnly<{|
   x: number,
   y: number,
   width: number,
   height: number,
+|}>;
+
+export type TextLayout = $ReadOnly<{|
+  ...Layout,
+  ascender: number,
+  capHeight: number,
+  descender: number,
+  text: string,
+  xHeight: number,
 |}>;
 
 export type LayoutEvent = SyntheticEvent<
@@ -43,7 +76,13 @@ export type LayoutEvent = SyntheticEvent<
   |}>,
 >;
 
-export type PressEvent = SyntheticEvent<
+export type TextLayoutEvent = SyntheticEvent<
+  $ReadOnly<{|
+    lines: Array<TextLayout>,
+  |}>,
+>;
+
+export type PressEvent = ResponderSyntheticEvent<
   $ReadOnly<{|
     changedTouches: $ReadOnlyArray<$PropertyType<PressEvent, 'nativeEvent'>>,
     force: number,
@@ -78,6 +117,20 @@ export type ScrollEvent = SyntheticEvent<
       height: number,
       width: number,
     |}>,
+    targetContentOffset?: $ReadOnly<{|
+      y: number,
+      x: number,
+    |}>,
+    velocity?: $ReadOnly<{|
+      y: number,
+      x: number,
+    |}>,
     zoomScale: number,
+  |}>,
+>;
+
+export type SwitchChangeEvent = SyntheticEvent<
+  $ReadOnly<{|
+    value: boolean,
   |}>,
 >;

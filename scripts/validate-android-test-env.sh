@@ -1,5 +1,9 @@
 #!/bin/bash
-
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+#
 # This script validates that Android is set up correctly for the
 # testing environment.
 #
@@ -10,7 +14,7 @@
 # Check that Buck is working.
 if [ -z "$(which buck)" ]; then
   echo "You need to install Buck."
-  echo "See https://buckbuild.com/setup/install.html for instructions."
+  echo "See https://buckbuild.com/setup/getting_started.html for instructions."
   exit 1
 fi
 
@@ -52,7 +56,7 @@ fi
 BUILD_TOOLS_VERSION=`grep buildToolsVersion $(dirname $0)/../ReactAndroid/build.gradle | sed 's/^[^"]*\"//' | sed 's/"//'`
 
 # MAJOR is something like "23"
-MAJOR=`echo $BUILD_TOOLS_VERSION | sed 's/\..*//'`
+MAJOR=`grep compileSdkVersion $(dirname $0)/../ReactAndroid/build.gradle | sed 's/[^[:digit:]]//g'`
 
 # Check that we have the right major version of the Android SDK.
 PLATFORM_DIR="$ANDROID_HOME/platforms/android-$MAJOR"
@@ -107,7 +111,7 @@ if [ -n "$(which csrutil)" ]; then
     exit 1
   fi
 fi
-  
+
 if [ -z "$JAVA_HOME" ]; then
   echo "Error: \$JAVA_HOME is not configured."
   echo "Try adding export JAVA_HOME=\$(/usr/libexec/java_home) to your .bashrc or equivalent."

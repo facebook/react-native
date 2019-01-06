@@ -1,34 +1,66 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Image
  * @flow
  * @format
  */
 'use strict';
 
-const EdgeInsetsPropType = require('EdgeInsetsPropType');
-const ImageProps = require('ImageProps');
-const ImageResizeMode = require('ImageResizeMode');
-const ImageSourcePropType = require('ImageSourcePropType');
-const ImageStylePropTypes = require('ImageStylePropTypes');
-const NativeMethodsMixin = require('NativeMethodsMixin');
+const DeprecatedImagePropType = require('DeprecatedImagePropType');
 const NativeModules = require('NativeModules');
 const React = require('React');
-const PropTypes = require('prop-types');
-const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
+const ReactNative = require('ReactNative'); // eslint-disable-line no-unused-vars
 const StyleSheet = require('StyleSheet');
-const StyleSheetPropType = require('StyleSheetPropType');
 
-const createReactClass = require('create-react-class');
 const flattenStyle = require('flattenStyle');
 const requireNativeComponent = require('requireNativeComponent');
 const resolveAssetSource = require('resolveAssetSource');
 
 const ImageViewManager = NativeModules.ImageViewManager;
+
+const RCTImageView = requireNativeComponent('RCTImageView');
+
+import type {ImageProps as ImagePropsType} from 'ImageProps';
+
+import type {ImageStyleProp} from 'StyleSheet';
+
+function getSize(
+  uri: string,
+  success: (width: number, height: number) => void,
+  failure?: (error: any) => void,
+) {
+  ImageViewManager.getSize(
+    uri,
+    success,
+    failure ||
+      function() {
+        console.warn('Failed to get size for image: ' + uri);
+      },
+  );
+}
+
+function prefetch(url: string) {
+  return ImageViewManager.prefetchImage(url);
+}
+
+async function queryCache(
+  urls: Array<string>,
+): Promise<Map<string, 'memory' | 'disk'>> {
+  return await ImageViewManager.queryCache(urls);
+}
+
+declare class ImageComponentType extends ReactNative.NativeComponent<
+  ImagePropsType,
+> {
+  static getSize: typeof getSize;
+  static prefetch: typeof prefetch;
+  static queryCache: typeof queryCache;
+  static resolveAssetSource: typeof resolveAssetSource;
+  static propTypes: typeof DeprecatedImagePropType;
+}
 
 /**
  * A React component for displaying different types of images,
@@ -37,109 +69,107 @@ const ImageViewManager = NativeModules.ImageViewManager;
  *
  * See https://facebook.github.io/react-native/docs/image.html
  */
-const Image = createReactClass({
-  displayName: 'Image',
-  propTypes: ImageProps,
+let Image = (
+  props: ImagePropsType,
+  forwardedRef: ?React.Ref<'RCTImageView'>,
+) => {
+  const source = resolveAssetSource(props.source) || {
+    uri: undefined,
+    width: undefined,
+    height: undefined,
+  };
 
-  statics: {
-    resizeMode: ImageResizeMode,
-    /**
-     * Retrieve the width and height (in pixels) of an image prior to displaying it.
-     *
-     * See https://facebook.github.io/react-native/docs/image.html#getsize
-     */
-    getSize: function(
-      uri: string,
-      success: (width: number, height: number) => void,
-      failure?: (error: any) => void,
-    ) {
-      ImageViewManager.getSize(
-        uri,
-        success,
-        failure ||
-          function() {
-            console.warn('Failed to get size for image: ' + uri);
-          },
-      );
-    },
-    /**
-     * Prefetches a remote image for later use by downloading it to the disk
-     * cache.
-     *
-     * See https://facebook.github.io/react-native/docs/image.html#prefetch
-     */
-    prefetch(url: string) {
-      return ImageViewManager.prefetchImage(url);
-    },
-    /**
-     * Resolves an asset reference into an object.
-     *
-     * See https://facebook.github.io/react-native/docs/image.html#resolveassetsource
-     */
-    resolveAssetSource: resolveAssetSource,
-  },
+  let sources;
+  let style: ImageStyleProp;
+  if (Array.isArray(source)) {
+    // $FlowFixMe flattenStyle is not strong enough
+    style = flattenStyle([styles.base, props.style]) || {};
+    sources = source;
+  } else {
+    const {width, height, uri} = source;
+    // $FlowFixMe flattenStyle is not strong enough
+    style = flattenStyle([{width, height}, styles.base, props.style]) || {};
+    sources = [source];
 
-  mixins: [NativeMethodsMixin],
-
-  /**
-   * `NativeMethodsMixin` will look for this when invoking `setNativeProps`. We
-   * make `this` look like an actual native component class.
-   */
-  viewConfig: {
-    uiViewClassName: 'UIView',
-    validAttributes: ReactNativeViewAttributes.UIView,
-  },
-
-  render: function() {
-    const source = resolveAssetSource(this.props.source) || {
-      uri: undefined,
-      width: undefined,
-      height: undefined,
-    };
-
-    let sources;
-    let style;
-    if (Array.isArray(source)) {
-      style = flattenStyle([styles.base, this.props.style]) || {};
-      sources = source;
-    } else {
-      const {width, height, uri} = source;
-      style =
-        flattenStyle([{width, height}, styles.base, this.props.style]) || {};
-      sources = [source];
-
-      if (uri === '') {
-        console.warn('source.uri should not be an empty string');
-      }
+    if (uri === '') {
+      console.warn('source.uri should not be an empty string');
     }
+  }
 
-    const resizeMode =
-      this.props.resizeMode || (style || {}).resizeMode || 'cover'; // Workaround for flow bug t7737108
-    const tintColor = (style || {}).tintColor; // Workaround for flow bug t7737108
+  const resizeMode = props.resizeMode || style.resizeMode || 'cover';
+  const tintColor = style.tintColor;
 
-    if (this.props.src) {
-      console.warn(
-        'The <Image> component requires a `source` property rather than `src`.',
-      );
-    }
-
-    if (this.props.children) {
-      throw new Error(
-        'The <Image> component cannot contain children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.',
-      );
-    }
-
-    return (
-      <RCTImageView
-        {...this.props}
-        style={style}
-        resizeMode={resizeMode}
-        tintColor={tintColor}
-        source={sources}
-      />
+  if (props.src != null) {
+    console.warn(
+      'The <Image> component requires a `source` property rather than `src`.',
     );
-  },
-});
+  }
+
+  if (props.children != null) {
+    throw new Error(
+      'The <Image> component cannot contain children. If you want to render content on top of the image, consider using the <ImageBackground> component or absolute positioning.',
+    );
+  }
+
+  return (
+    <RCTImageView
+      {...props}
+      ref={forwardedRef}
+      style={style}
+      resizeMode={resizeMode}
+      tintColor={tintColor}
+      source={sources}
+    />
+  );
+};
+
+Image = React.forwardRef(Image);
+
+/**
+ * Retrieve the width and height (in pixels) of an image prior to displaying it.
+ *
+ * See https://facebook.github.io/react-native/docs/image.html#getsize
+ */
+/* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
+Image.getSize = getSize;
+
+/**
+ * Prefetches a remote image for later use by downloading it to the disk
+ * cache.
+ *
+ * See https://facebook.github.io/react-native/docs/image.html#prefetch
+ */
+/* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
+Image.prefetch = prefetch;
+
+/**
+ * Performs cache interrogation.
+ *
+ *  See https://facebook.github.io/react-native/docs/image.html#querycache
+ */
+/* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
+Image.queryCache = queryCache;
+
+/**
+ * Resolves an asset reference into an object.
+ *
+ * See https://facebook.github.io/react-native/docs/image.html#resolveassetsource
+ */
+/* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
+Image.resolveAssetSource = resolveAssetSource;
+
+/* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
+Image.propTypes = DeprecatedImagePropType;
 
 const styles = StyleSheet.create({
   base: {
@@ -147,6 +177,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const RCTImageView = requireNativeComponent('RCTImageView', Image);
-
-module.exports = Image;
+/* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
+module.exports = (Image: Class<ImageComponentType>);

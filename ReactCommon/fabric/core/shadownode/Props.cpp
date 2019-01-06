@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,26 +8,18 @@
 #include "Props.h"
 
 #include <folly/dynamic.h>
+#include <react/core/propsConversions.h>
 
 namespace facebook {
 namespace react {
 
-void Props::apply(const RawProps &rawProps) {
-  ensureUnsealed();
-
-  for (auto const &pair : rawProps) {
-    auto const &name = pair.first;
-    auto const &value = pair.second;
-
-    if (name == "nativeID") {
-      nativeId_ = value.asString();
-    }
-  }
-}
-
-const std::string &Props::getNativeId() const {
-  return nativeId_;
-}
+Props::Props(const Props &sourceProps, const RawProps &rawProps)
+    : nativeId(convertRawProp(rawProps, "nativeID", sourceProps.nativeId))
+#ifdef ANDROID
+      ,
+      rawProps(rawProps)
+#endif
+          {};
 
 } // namespace react
 } // namespace facebook

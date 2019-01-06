@@ -1,18 +1,18 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
- * @providesModule ListViewGridLayoutExample
+ * @format
+ * @flow strict-local
  */
+
 'use strict';
 
-var React = require('react');
-var createReactClass = require('create-react-class');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Image,
   ListView,
   TouchableHighlight,
@@ -20,8 +20,11 @@ var {
   Text,
   View,
 } = ReactNative;
+const ListViewDataSource = require('ListViewDataSource');
 
-var THUMB_URLS = [
+import type {RNTesterProps} from 'RNTesterTypes';
+
+const THUMB_URLS = [
   require('./Thumbnails/like.png'),
   require('./Thumbnails/dislike.png'),
   require('./Thumbnails/call.png'),
@@ -36,28 +39,27 @@ var THUMB_URLS = [
   require('./Thumbnails/victory.png'),
 ];
 
-var ListViewGridLayoutExample = createReactClass({
-  displayName: 'ListViewGridLayoutExample',
+type State = {|
+  dataSource: ListViewDataSource,
+|};
 
-  statics: {
-    title: '<ListView> - Grid Layout',
-    description: 'Flexbox grid layout.'
-  },
+class ListViewGridLayoutExample extends React.Component<RNTesterProps, State> {
+  state = {
+    dataSource: this.getInitialDataSource(),
+  };
 
-  getInitialState: function() {
-    var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-    return {
-      dataSource: ds.cloneWithRows(this._genRows({})),
-    };
-  },
+  getInitialDataSource() {
+    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    return ds.cloneWithRows(this._genRows({}));
+  }
 
-  _pressData: ({}: {[key: number]: boolean}),
+  _pressData: {[key: number]: boolean} = {};
 
-  UNSAFE_componentWillMount: function() {
+  UNSAFE_componentWillMount() {
     this._pressData = {};
-  },
+  }
 
-  render: function() {
+  render() {
     return (
       // ListView wraps ScrollView and so takes on its properties.
       // With that in mind you can use the ScrollView's contentContainerStyle prop to style the items.
@@ -70,57 +72,59 @@ var ListViewGridLayoutExample = createReactClass({
         renderRow={this._renderRow}
       />
     );
-  },
+  }
 
-  _renderRow: function(rowData: string, sectionID: number, rowID: number) {
-    var rowHash = Math.abs(hashCode(rowData));
-    var imgSource = THUMB_URLS[rowHash % THUMB_URLS.length];
+  _renderRow = (rowData: string, sectionID: number, rowID: number) => {
+    const rowHash = Math.abs(hashCode(rowData));
+    const imgSource = THUMB_URLS[rowHash % THUMB_URLS.length];
     return (
-      <TouchableHighlight onPress={() => this._pressRow(rowID)} underlayColor="transparent">
+      <TouchableHighlight
+        onPress={() => this._pressRow(rowID)}
+        underlayColor="transparent">
         <View>
           <View style={styles.row}>
             <Image style={styles.thumb} source={imgSource} />
-            <Text style={styles.text}>
-              {rowData}
-            </Text>
+            <Text style={styles.text}>{rowData}</Text>
           </View>
         </View>
       </TouchableHighlight>
     );
-  },
+  };
 
-  _genRows: function(pressData: {[key: number]: boolean}): Array<string> {
-    var dataBlob = [];
-    for (var ii = 0; ii < 100; ii++) {
-      var pressedText = pressData[ii] ? ' (X)' : '';
+  _genRows(pressData: {[key: number]: boolean}): Array<string> {
+    const dataBlob = [];
+    for (let ii = 0; ii < 100; ii++) {
+      const pressedText = pressData[ii] ? ' (X)' : '';
       dataBlob.push('Cell ' + ii + pressedText);
     }
     return dataBlob;
-  },
+  }
 
-  _pressRow: function(rowID: number) {
+  _pressRow = (rowID: number) => {
     this._pressData[rowID] = !this._pressData[rowID];
-    this.setState({dataSource: this.state.dataSource.cloneWithRows(
-      this._genRows(this._pressData)
-    )});
-  },
-});
+    this.setState({
+      dataSource: this.state.dataSource.cloneWithRows(
+        this._genRows(this._pressData),
+      ),
+    });
+  };
+}
 
 /* eslint no-bitwise: 0 */
-var hashCode = function(str) {
-  var hash = 15;
-  for (var ii = str.length - 1; ii >= 0; ii--) {
-    hash = ((hash << 5) - hash) + str.charCodeAt(ii);
+const hashCode = function(str) {
+  let hash = 15;
+  for (let ii = str.length - 1; ii >= 0; ii--) {
+    hash = (hash << 5) - hash + str.charCodeAt(ii);
   }
   return hash;
 };
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   list: {
     justifyContent: 'space-around',
     flexDirection: 'row',
     flexWrap: 'wrap',
-    alignItems: 'flex-start'
+    alignItems: 'flex-start',
   },
   row: {
     justifyContent: 'center',
@@ -132,17 +136,26 @@ var styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderRadius: 5,
-    borderColor: '#CCC'
+    borderColor: '#CCC',
   },
   thumb: {
     width: 64,
-    height: 64
+    height: 64,
   },
   text: {
     flex: 1,
     marginTop: 5,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
 });
 
-module.exports = ListViewGridLayoutExample;
+exports.title = '<ListView> - Grid Layout';
+exports.description = 'Flexbox grid layout.';
+exports.examples = [
+  {
+    title: 'Simple list view with grid layout',
+    render: function(): React.Element<typeof ListViewGridLayoutExample> {
+      return <ListViewGridLayoutExample />;
+    },
+  },
+];

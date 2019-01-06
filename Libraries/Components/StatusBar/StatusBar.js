@@ -1,17 +1,16 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @providesModule StatusBar
+ * @format
  * @flow
  */
+
 'use strict';
 
 const React = require('React');
-const PropTypes = require('prop-types');
-const ColorPropType = require('ColorPropType');
 const Platform = require('Platform');
 
 const processColor = require('processColor');
@@ -25,7 +24,7 @@ export type StatusBarStyle = $Enum<{
   /**
    * Default status bar style (dark for iOS, light for Android)
    */
-  'default': string,
+  default: string,
   /**
    * Dark background, white texts and icons
    */
@@ -43,27 +42,73 @@ export type StatusBarAnimation = $Enum<{
   /**
    * No animation
    */
-  'none': string,
+  none: string,
   /**
    * Fade animation
    */
-  'fade': string,
+  fade: string,
   /**
    * Slide animation
    */
-  'slide': string,
+  slide: string,
 }>;
 
-type DefaultProps = {
-  animated: boolean,
-};
+type AndroidProps = $ReadOnly<{|
+  /**
+   * The background color of the status bar.
+   * @platform android
+   */
+  backgroundColor?: ?string,
+  /**
+   * If the status bar is translucent.
+   * When translucent is set to true, the app will draw under the status bar.
+   * This is useful when using a semi transparent status bar color.
+   *
+   * @platform android
+   */
+  translucent?: ?boolean,
+|}>;
+
+type IOSProps = $ReadOnly<{|
+  /**
+   * If the network activity indicator should be visible.
+   *
+   * @platform ios
+   */
+  networkActivityIndicatorVisible?: ?boolean,
+  /**
+   * The transition effect when showing and hiding the status bar using the `hidden`
+   * prop. Defaults to 'fade'.
+   *
+   * @platform ios
+   */
+  showHideTransition?: ?('fade' | 'slide'),
+|}>;
+
+type Props = $ReadOnly<{|
+  ...AndroidProps,
+  ...IOSProps,
+  /**
+   * If the status bar is hidden.
+   */
+  hidden?: ?boolean,
+  /**
+   * If the transition between status bar property changes should be animated.
+   * Supported for backgroundColor, barStyle and hidden.
+   */
+  animated?: ?boolean,
+  /**
+   * Sets the color of the status bar text.
+   */
+  barStyle?: ?('default' | 'light-content' | 'dark-content'),
+|}>;
 
 /**
  * Merges the prop stack with the default values.
  */
 function mergePropsStack(
   propsStack: Array<Object>,
-  defaultValues: Object
+  defaultValues: Object,
 ): Object {
   return propsStack.reduce((prev, cur) => {
     for (const prop in cur) {
@@ -147,15 +192,7 @@ function createStackEntry(props: any): any {
  *
  * `currentHeight` (Android only) The height of the status bar.
  */
-class StatusBar extends React.Component<{
-  hidden?: boolean,
-  animated?: boolean,
-  backgroundColor?: string,
-  translucent?: boolean,
-  barStyle?: 'default' | 'light-content' | 'dark-content',
-  networkActivityIndicatorVisible?: boolean,
-  showHideTransition?: 'fade' | 'slide',
-}> {
+class StatusBar extends React.Component<Props> {
   static _propsStack = [];
 
   static _defaultProps = createStackEntry({
@@ -224,7 +261,7 @@ class StatusBar extends React.Component<{
   static setNetworkActivityIndicatorVisible(visible: boolean) {
     if (Platform.OS !== 'ios') {
       console.warn(
-        '`setNetworkActivityIndicatorVisible` is only available on iOS'
+        '`setNetworkActivityIndicatorVisible` is only available on iOS',
       );
       return;
     }
@@ -259,48 +296,6 @@ class StatusBar extends React.Component<{
     StatusBar._defaultProps.translucent = translucent;
     StatusBarManager.setTranslucent(translucent);
   }
-
-  static propTypes = {
-    /**
-     * If the status bar is hidden.
-     */
-    hidden: PropTypes.bool,
-    /**
-     * If the transition between status bar property changes should be animated.
-     * Supported for backgroundColor, barStyle and hidden.
-     */
-    animated: PropTypes.bool,
-    /**
-     * The background color of the status bar.
-     * @platform android
-     */
-    backgroundColor: ColorPropType,
-    /**
-     * If the status bar is translucent.
-     * When translucent is set to true, the app will draw under the status bar.
-     * This is useful when using a semi transparent status bar color.
-     *
-     * @platform android
-     */
-    translucent: PropTypes.bool,
-    /**
-     * Sets the color of the status bar text.
-     */
-    barStyle: PropTypes.oneOf(['default', 'light-content', 'dark-content']),
-    /**
-     * If the network activity indicator should be visible.
-     *
-     * @platform ios
-     */
-    networkActivityIndicatorVisible: PropTypes.bool,
-    /**
-     * The transition effect when showing and hiding the status bar using the `hidden`
-     * prop. Defaults to 'fade'.
-     *
-     * @platform ios
-     */
-    showHideTransition: PropTypes.oneOf(['fade', 'slide']),
-  };
 
   static defaultProps = {
     animated: false,
@@ -346,7 +341,7 @@ class StatusBar extends React.Component<{
       const oldProps = StatusBar._currentValues;
       const mergedProps = mergePropsStack(
         StatusBar._propsStack,
-        StatusBar._defaultProps
+        StatusBar._defaultProps,
       );
 
       // Update the props that have changed using the merged values from the props stack.
@@ -357,13 +352,15 @@ class StatusBar extends React.Component<{
         ) {
           StatusBarManager.setStyle(
             mergedProps.barStyle.value,
-            mergedProps.barStyle.animated
+            mergedProps.barStyle.animated,
           );
         }
         if (!oldProps || oldProps.hidden.value !== mergedProps.hidden.value) {
           StatusBarManager.setHidden(
             mergedProps.hidden.value,
-            mergedProps.hidden.animated ? mergedProps.hidden.transition : 'none'
+            mergedProps.hidden.animated
+              ? mergedProps.hidden.transition
+              : 'none',
           );
         }
 
@@ -373,7 +370,7 @@ class StatusBar extends React.Component<{
             mergedProps.networkActivityIndicatorVisible
         ) {
           StatusBarManager.setNetworkActivityIndicatorVisible(
-            mergedProps.networkActivityIndicatorVisible
+            mergedProps.networkActivityIndicatorVisible,
           );
         }
       } else if (Platform.OS === 'android') {
@@ -389,7 +386,7 @@ class StatusBar extends React.Component<{
         ) {
           StatusBarManager.setColor(
             processColor(mergedProps.backgroundColor.value),
-            mergedProps.backgroundColor.animated
+            mergedProps.backgroundColor.animated,
           );
         }
         if (!oldProps || oldProps.hidden.value !== mergedProps.hidden.value) {

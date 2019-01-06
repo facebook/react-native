@@ -1,42 +1,68 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #pragma once
 
 #include <memory>
+#include <mutex>
 
-#include <fabric/core/ComponentDescriptor.h>
-#include <fabric/core/LayoutConstraints.h>
-#include <fabric/uimanager/SchedulerDelegate.h>
-#include <fabric/uimanager/UIManagerDelegate.h>
-#include <fabric/view/ViewShadowNode.h>
+#include <react/config/ReactNativeConfig.h>
+#include <react/core/ComponentDescriptor.h>
+#include <react/core/LayoutConstraints.h>
+#include <react/uimanager/ComponentDescriptorRegistry.h>
+#include <react/uimanager/ContextContainer.h>
+#include <react/uimanager/SchedulerDelegate.h>
+#include <react/uimanager/ShadowTree.h>
+#include <react/uimanager/ShadowTreeDelegate.h>
+#include <react/uimanager/ShadowTreeRegistry.h>
+#include <react/uimanager/UIManagerBinding.h>
+#include <react/uimanager/UIManagerDelegate.h>
+#include <react/uimanager/primitives.h>
 
 namespace facebook {
 namespace react {
 
 /*
- * We expect having a dedicated subclass for root shadow node.
- */
-using SharedRootShadowNode = SharedViewShadowNode;
-using RootShadowNode = ViewShadowNode;
-
-class FabricUIManager;
-
-/*
  * Scheduler coordinates Shadow Tree updates and event flows.
  */
-class Scheduler:
-  public UIManagerDelegate {
+class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
+ public:
+  Scheduler(const SharedContextContainer &contextContainer);
+  ~Scheduler();
 
-public:
-  Scheduler();
-  virtual ~Scheduler();
+#pragma mark - Surface Management
 
-#pragma mark - Root Nodes Managerment
+  void startSurface(
+      SurfaceId surfaceId,
+      const std::string &moduleName,
+      const folly::dynamic &initialProps,
+      const LayoutConstraints &layoutConstraints = {},
+      const LayoutContext &layoutContext = {}) const;
 
-  void registerRootTag(Tag rootTag);
-  void unregisterRootTag(Tag rootTag);
+  void renderTemplateToSurface(
+      SurfaceId surfaceId,
+      const std::string &uiTemplate);
 
-  void setLayoutConstraints(Tag rootTag, LayoutConstraints layoutConstraints);
+  void stopSurface(SurfaceId surfaceId) const;
+
+  Size measureSurface(
+      SurfaceId surfaceId,
+      const LayoutConstraints &layoutConstraints,
+      const LayoutContext &layoutContext) const;
+
+  /*
+   * Applies given `layoutConstraints` and `layoutContext` to a Surface.
+   * The user interface will be relaid out as a result. The operation will be
+   * performed synchronously (including mounting) if the method is called
+   * on the main thread.
+   * Can be called from any thread.
+   */
+  void constraintSurfaceLayout(
+      SurfaceId surfaceId,
+      const LayoutConstraints &layoutConstraints,
+      const LayoutContext &layoutContext) const;
 
 #pragma mark - Delegate
 
@@ -46,28 +72,29 @@ public:
    * the pointer before being destroyed.
    */
   void setDelegate(SchedulerDelegate *delegate);
-  SchedulerDelegate *getDelegate();
+  SchedulerDelegate *getDelegate() const;
 
 #pragma mark - UIManagerDelegate
 
-  void uiManagerDidFinishTransaction(Tag rootTag, const SharedShadowNodeUnsharedList &rootChildNodes) override;
-  void uiManagerDidCreateShadowNode(const SharedShadowNode &shadowNode) override;
+  void uiManagerDidFinishTransaction(
+      SurfaceId surfaceId,
+      const SharedShadowNodeUnsharedList &rootChildNodes) override;
+  void uiManagerDidCreateShadowNode(
+      const SharedShadowNode &shadowNode) override;
 
-#pragma mark - Deprecated
+#pragma mark - ShadowTreeDelegate
 
-  /*
-   * UIManager instance must be temporarily exposed for registration purposes.
-   */
-  std::shared_ptr<FabricUIManager> getUIManager_DO_NOT_USE();
+  void shadowTreeDidCommit(
+      const ShadowTree &shadowTree,
+      const ShadowViewMutationList &mutations) const override;
 
-private:
+ private:
   SchedulerDelegate *delegate_;
-  std::shared_ptr<FabricUIManager> uiManager_;
-
-  /*
-   * All commited `RootShadowNode` instances to differentiate against.
-   */
-  std::unordered_map<Tag, SharedRootShadowNode> rootNodeRegistry_;
+  SharedComponentDescriptorRegistry componentDescriptorRegistry_;
+  ShadowTreeRegistry shadowTreeRegistry_;
+  RuntimeExecutor runtimeExecutor_;
+  std::shared_ptr<UIManagerBinding> uiManagerBinding_;
+  std::shared_ptr<const ReactNativeConfig> reactNativeConfig_;
 };
 
 } // namespace react

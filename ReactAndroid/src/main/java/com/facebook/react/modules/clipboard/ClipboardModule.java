@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,16 +21,18 @@ import com.facebook.react.module.annotations.ReactModule;
 /**
  * A module that allows JS to get/set clipboard contents.
  */
-@ReactModule(name = "Clipboard")
+@ReactModule(name = ClipboardModule.NAME)
 public class ClipboardModule extends ContextBaseJavaModule {
 
   public ClipboardModule(Context context) {
     super(context);
   }
 
+  public static final String NAME = "Clipboard";
+
   @Override
   public String getName() {
-    return "Clipboard";
+    return ClipboardModule.NAME;
   }
 
   private ClipboardManager getClipboardService() {

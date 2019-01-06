@@ -10,7 +10,7 @@
   "license": "MIT",
   "main": "Animated.js",
   "dependencies": {
-    "fbjs": "^0.2.1"
+    "fbjs": "^1.0.0"
   },
   "scripts": {
     "build": "gulp"
@@ -19,7 +19,7 @@
     "babel-core": "^5.8.25",
     "babel-loader": "^5.3.2",
     "del": "^1.2.0",
-    "fbjs-scripts": "^0.2.0",
+    "fbjs-scripts": "^1.0.0",
     "gulp": "^3.9.0",
     "gulp-babel": "^5.1.0",
     "gulp-derequire": "^2.1.0",
