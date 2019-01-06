@@ -702,7 +702,9 @@ class ScrollView extends React.Component<Props, State> {
    *
    */
   scrollTo(
-    y?: number | {x?: number, y?: number, animated?: boolean, duration?: number},
+    y?:
+      | number
+      | {x?: number, y?: number, animated?: boolean, duration?: number},
     x?: number,
     animated?: boolean,
     duration?: number,
@@ -738,7 +740,7 @@ class ScrollView extends React.Component<Props, State> {
     const animated = (options && options.animated) !== false;
     this._scrollResponder.scrollResponderScrollToEnd({
       animated: animated,
-      duration: options && options.duration
+      duration: options && options.duration,
     });
   }
 

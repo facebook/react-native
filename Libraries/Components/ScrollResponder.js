@@ -441,10 +441,12 @@ const ScrollResponderMixin = {
    * Also note "duration" is currently only supported for Android.
    */
   scrollResponderScrollTo: function(
-    x?: number | { x?: number, y?: number, animated?: boolean, duration?: number },
+    x?:
+      | number
+      | {x?: number, y?: number, animated?: boolean, duration?: number},
     y?: number,
     animated?: boolean,
-    duration?: number
+    duration?: number,
   ) {
     if (typeof x === 'number') {
       console.warn(
@@ -471,9 +473,10 @@ const ScrollResponderMixin = {
    * or for Android, you can do:
    * `scrollResponderScrollToEnd({duration: 500})`
    */
-  scrollResponderScrollToEnd: function(
-    options?: { animated?: boolean, duration?: number },
-  ) {
+  scrollResponderScrollToEnd: function(options?: {
+    animated?: boolean,
+    duration?: number,
+  }) {
     // Default to true
     const animated = (options && options.animated) !== false;
     UIManager.dispatchViewManagerCommand(
