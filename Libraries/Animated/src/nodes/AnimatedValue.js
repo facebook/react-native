@@ -176,7 +176,7 @@ class AnimatedValue extends AnimatedWithChildren {
     this._value = this._startingValue;
   }
 
-  _onAnimatedValueUpdateReceived(value) {
+  _onAnimatedValueUpdateReceived(value: number): void {
     this._updateValue(value, false /*flush*/);
   }
 
