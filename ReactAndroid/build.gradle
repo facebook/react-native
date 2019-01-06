@@ -330,8 +330,6 @@ dependencies {
     api 'com.google.code.findbugs:jsr305:3.0.2'
     api "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
     api "com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}"
-    api 'org.bouncycastle:bcprov-jdk15on:1.60'
-    api 'org.conscrypt:conscrypt-openjdk-uber:1.4.0'
     api 'com.squareup.okio:okio:1.15.0'
 
     testImplementation "junit:junit:${JUNIT_VERSION}"
