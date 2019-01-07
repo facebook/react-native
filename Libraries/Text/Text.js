@@ -267,6 +267,7 @@ const RCTVirtualText =
           ...ReactNativeViewAttributes.UIView,
           isHighlighted: true,
           maxFontSizeMultiplier: true,
+          allowFontScaling: true,
         },
         uiViewClassName: 'RCTVirtualText',
       }));
