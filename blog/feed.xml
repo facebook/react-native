@@ -4,7 +4,7 @@
         <title>React Native Blog</title>
         <link>https://facebook.github.io/react-native/blog</link>
         <description>The best place to stay up-to-date with the latest React Native news and events.</description>
-        <lastBuildDate>Thu, 01 Nov 2018 06:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 06 Jan 2019 06:00:00 GMT</lastBuildDate>
         <docs>http://blogs.law.harvard.edu/tech/rss</docs>
         <generator>Feed for Node.js</generator>
         <image>
@@ -12,6 +12,13 @@
             <url>https://facebook.github.io/react-native/img/header_logo.png</url>
             <link>https://facebook.github.io/react-native/blog</link>
         </image>
+        <item>
+            <title><![CDATA[The State the React Native Community in 2018]]></title>
+            <link>https://facebook.github.io/react-native/blog/2019/01/06/state-of-react-native-community.html</link>
+            <guid>https://facebook.github.io/react-native/blog/2019/01/06/state-of-react-native-community.html</guid>
+            <pubDate>Sun, 06 Jan 2019 06:00:00 GMT</pubDate>
+            <description><![CDATA[<p>In 2018 the React Native Community made a number of changes to the way we develop and communicate about React Native. We believe that a few years from now we will look back and see that this shift was a turning point for React Native.</p> <p>A lot of people ...</p>]]></description>
+        </item>
         <item>
             <title><![CDATA[Open Source Roadmap]]></title>
             <link>https://facebook.github.io/react-native/blog/2018/11/01/oss-roadmap.html</link>

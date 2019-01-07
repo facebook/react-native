@@ -4,6 +4,7 @@
 <url> <loc>https://facebook.github.io/react-native/index</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> <xhtml:link rel="alternate" hreflang="en" href="https://facebook.github.io/react-native/en/index" /> </url>
 <url> <loc>https://facebook.github.io/react-native/showcase</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> <xhtml:link rel="alternate" hreflang="en" href="https://facebook.github.io/react-native/en/showcase" /> </url>
 <url> <loc>https://facebook.github.io/react-native/versions</loc> <changefreq>weekly</changefreq> <priority>0.5</priority> <xhtml:link rel="alternate" hreflang="en" href="https://facebook.github.io/react-native/en/versions" /> </url>
+<url> <loc>https://facebook.github.io/react-native/blog/2019/01/06/state-of-react-native-community</loc> <changefreq>weekly</changefreq> <priority>0.3</priority> </url>
 <url> <loc>https://facebook.github.io/react-native/blog/2018/11/01/oss-roadmap</loc> <changefreq>weekly</changefreq> <priority>0.3</priority> </url>
 <url> <loc>https://facebook.github.io/react-native/blog/2018/08/27/wkwebview</loc> <changefreq>weekly</changefreq> <priority>0.3</priority> </url>
 <url> <loc>https://facebook.github.io/react-native/blog/2018/08/13/react-native-accessibility-updates</loc> <changefreq>weekly</changefreq> <priority>0.3</priority> </url>
