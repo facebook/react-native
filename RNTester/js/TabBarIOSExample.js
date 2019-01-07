@@ -56,9 +56,10 @@ class TabBarExample extends React.Component<Props, State> {
           onPress={() => {
             this.setState({
               selectedTab: 'blueTab',
+              notifCount: this.state.notifCount + 1,
             });
           }}>
-          {this._renderContent('#414A8C', 'Blue Tab')}
+          {this._renderContent('#414A8C', 'Blue Tab', this.state.notifCount)}
         </TabBarIOS.Item>
         <TabBarIOS.Item
           systemIcon="history"
