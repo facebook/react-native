@@ -113,7 +113,8 @@ void YGNode::setMeasureFunc(YGMeasureFunc measureFunc) {
     YGAssertWithNode(
         this,
         children_.size() == 0,
-        "Cannot set measure function: Nodes with measure functions cannot have children.");
+        "Cannot set measure function: Nodes with measure functions cannot have "
+        "children.");
     measure_ = measureFunc;
     // TODO: t18095186 Move nodeType to opt-in function and mark appropriate
     // places in Litho

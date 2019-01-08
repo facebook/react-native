@@ -63,15 +63,19 @@ static void appendNumberIfNotUndefined(
   }
 }
 
-static void
-appendNumberIfNotAuto(string& base, const string& key, const YGValue number) {
+static void appendNumberIfNotAuto(
+    string& base,
+    const string& key,
+    const YGValue number) {
   if (number.unit != YGUnitAuto) {
     appendNumberIfNotUndefined(base, key, number);
   }
 }
 
-static void
-appendNumberIfNotZero(string& base, const string& str, const YGValue number) {
+static void appendNumberIfNotZero(
+    string& base,
+    const string& str,
+    const YGValue number) {
   if (number.unit == YGUnitAuto) {
     base.append(str + ": auto; ");
   } else if (!YGFloatsEqual(number.value, 0)) {

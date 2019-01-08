@@ -18,10 +18,10 @@ constexpr YGValue kYGValueUndefined = {0, YGUnitUndefined};
 constexpr YGValue kYGValueAuto = {0, YGUnitAuto};
 
 struct YGStyle {
- private:
+private:
   using CompactValue = facebook::yoga::detail::CompactValue;
 
- public:
+public:
   using Dimensions = facebook::yoga::detail::Values<2>;
   using Edges = facebook::yoga::detail::Values<YGEdgeCount>;
 

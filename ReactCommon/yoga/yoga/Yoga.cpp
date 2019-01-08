@@ -74,7 +74,7 @@ static int YGAndroidLog(
   return result;
 }
 #else
-#define YG_UNUSED(x) (void)(x);
+#define YG_UNUSED(x) (void) (x);
 
 static int YGDefaultLog(
     const YGConfigRef config,
@@ -921,7 +921,7 @@ float YGNodeStyleGetBorder(const YGNodeRef node, const YGEdge edge) {
     return YGUndefined;
   }
 
-  auto border = (YGValue)node->getStyle().border[edge];
+  auto border = (YGValue) node->getStyle().border[edge];
   return border.value;
 }
 
@@ -3745,8 +3745,8 @@ bool YGLayoutNodeInternal(
   if (needToVisitNode) {
     // Invalidate the cached results.
     layout->nextCachedMeasurementsIndex = 0;
-    layout->cachedLayout.widthMeasureMode = (YGMeasureMode)-1;
-    layout->cachedLayout.heightMeasureMode = (YGMeasureMode)-1;
+    layout->cachedLayout.widthMeasureMode = (YGMeasureMode) -1;
+    layout->cachedLayout.heightMeasureMode = (YGMeasureMode) -1;
     layout->cachedLayout.computedWidth = -1;
     layout->cachedLayout.computedHeight = -1;
   }

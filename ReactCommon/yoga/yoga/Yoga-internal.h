@@ -55,8 +55,8 @@ struct YGCachedMeasurement {
   YGCachedMeasurement()
       : availableWidth(0),
         availableHeight(0),
-        widthMeasureMode((YGMeasureMode)-1),
-        heightMeasureMode((YGMeasureMode)-1),
+        widthMeasureMode((YGMeasureMode) -1),
+        heightMeasureMode((YGMeasureMode) -1),
         computedWidth(-1),
         computedHeight(-1) {}
 
@@ -95,10 +95,10 @@ namespace detail {
 
 template <size_t Size>
 class Values {
- private:
+private:
   std::array<CompactValue, Size> values_;
 
- public:
+public:
   Values() = default;
   explicit Values(const YGValue& defaultValue) noexcept {
     values_.fill(defaultValue);
