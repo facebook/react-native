@@ -8,10 +8,15 @@
 
 #include "YGMacros.h"
 
+#define YG_ENUM_DECL(NAME, ...)                               \
+  typedef YG_ENUM_BEGIN(NAME){__VA_ARGS__} YG_ENUM_END(NAME); \
+  WIN_EXPORT const char* NAME##ToString(NAME);
+
 YG_EXTERN_C_BEGIN
 
 #define YGAlignCount 8
-typedef YG_ENUM_BEGIN(YGAlign){
+YG_ENUM_DECL(
+    YGAlign,
     YGAlignAuto,
     YGAlignFlexStart,
     YGAlignCenter,
@@ -19,34 +24,20 @@ typedef YG_ENUM_BEGIN(YGAlign){
     YGAlignStretch,
     YGAlignBaseline,
     YGAlignSpaceBetween,
-    YGAlignSpaceAround,
-} YG_ENUM_END(YGAlign);
-WIN_EXPORT const char* YGAlignToString(const YGAlign value);
+    YGAlignSpaceAround);
 
 #define YGDimensionCount 2
-typedef YG_ENUM_BEGIN(YGDimension){
-    YGDimensionWidth,
-    YGDimensionHeight,
-} YG_ENUM_END(YGDimension);
-WIN_EXPORT const char* YGDimensionToString(const YGDimension value);
+YG_ENUM_DECL(YGDimension, YGDimensionWidth, YGDimensionHeight)
 
 #define YGDirectionCount 3
-typedef YG_ENUM_BEGIN(YGDirection){
-    YGDirectionInherit,
-    YGDirectionLTR,
-    YGDirectionRTL,
-} YG_ENUM_END(YGDirection);
-WIN_EXPORT const char* YGDirectionToString(const YGDirection value);
+YG_ENUM_DECL(YGDirection, YGDirectionInherit, YGDirectionLTR, YGDirectionRTL)
 
 #define YGDisplayCount 2
-typedef YG_ENUM_BEGIN(YGDisplay){
-    YGDisplayFlex,
-    YGDisplayNone,
-} YG_ENUM_END(YGDisplay);
-WIN_EXPORT const char* YGDisplayToString(const YGDisplay value);
+YG_ENUM_DECL(YGDisplay, YGDisplayFlex, YGDisplayNone)
 
 #define YGEdgeCount 9
-typedef YG_ENUM_BEGIN(YGEdge){
+YG_ENUM_DECL(
+    YGEdge,
     YGEdgeLeft,
     YGEdgeTop,
     YGEdgeRight,
@@ -55,101 +46,68 @@ typedef YG_ENUM_BEGIN(YGEdge){
     YGEdgeEnd,
     YGEdgeHorizontal,
     YGEdgeVertical,
-    YGEdgeAll,
-} YG_ENUM_END(YGEdge);
-WIN_EXPORT const char* YGEdgeToString(const YGEdge value);
+    YGEdgeAll)
 
 #define YGExperimentalFeatureCount 1
-typedef YG_ENUM_BEGIN(YGExperimentalFeature){
-    YGExperimentalFeatureWebFlexBasis,
-} YG_ENUM_END(YGExperimentalFeature);
-WIN_EXPORT const char* YGExperimentalFeatureToString(
-    const YGExperimentalFeature value);
+YG_ENUM_DECL(YGExperimentalFeature, YGExperimentalFeatureWebFlexBasis)
 
 #define YGFlexDirectionCount 4
-typedef YG_ENUM_BEGIN(YGFlexDirection){
+YG_ENUM_DECL(
+    YGFlexDirection,
     YGFlexDirectionColumn,
     YGFlexDirectionColumnReverse,
     YGFlexDirectionRow,
-    YGFlexDirectionRowReverse,
-} YG_ENUM_END(YGFlexDirection);
-WIN_EXPORT const char* YGFlexDirectionToString(const YGFlexDirection value);
+    YGFlexDirectionRowReverse)
 
 #define YGJustifyCount 6
-typedef YG_ENUM_BEGIN(YGJustify){
+YG_ENUM_DECL(
+    YGJustify,
     YGJustifyFlexStart,
     YGJustifyCenter,
     YGJustifyFlexEnd,
     YGJustifySpaceBetween,
     YGJustifySpaceAround,
-    YGJustifySpaceEvenly,
-} YG_ENUM_END(YGJustify);
-WIN_EXPORT const char* YGJustifyToString(const YGJustify value);
+    YGJustifySpaceEvenly)
 
 #define YGLogLevelCount 6
-typedef YG_ENUM_BEGIN(YGLogLevel){
+YG_ENUM_DECL(
+    YGLogLevel,
     YGLogLevelError,
     YGLogLevelWarn,
     YGLogLevelInfo,
     YGLogLevelDebug,
     YGLogLevelVerbose,
-    YGLogLevelFatal,
-} YG_ENUM_END(YGLogLevel);
-WIN_EXPORT const char* YGLogLevelToString(const YGLogLevel value);
+    YGLogLevelFatal)
 
 #define YGMeasureModeCount 3
-typedef YG_ENUM_BEGIN(YGMeasureMode){
+YG_ENUM_DECL(
+    YGMeasureMode,
     YGMeasureModeUndefined,
     YGMeasureModeExactly,
-    YGMeasureModeAtMost,
-} YG_ENUM_END(YGMeasureMode);
-WIN_EXPORT const char* YGMeasureModeToString(const YGMeasureMode value);
+    YGMeasureModeAtMost)
 
 #define YGNodeTypeCount 2
-typedef YG_ENUM_BEGIN(YGNodeType){
-    YGNodeTypeDefault,
-    YGNodeTypeText,
-} YG_ENUM_END(YGNodeType);
-WIN_EXPORT const char* YGNodeTypeToString(const YGNodeType value);
+YG_ENUM_DECL(YGNodeType, YGNodeTypeDefault, YGNodeTypeText)
 
 #define YGOverflowCount 3
-typedef YG_ENUM_BEGIN(YGOverflow){
-    YGOverflowVisible,
-    YGOverflowHidden,
-    YGOverflowScroll,
-} YG_ENUM_END(YGOverflow);
-WIN_EXPORT const char* YGOverflowToString(const YGOverflow value);
+YG_ENUM_DECL(YGOverflow, YGOverflowVisible, YGOverflowHidden, YGOverflowScroll)
 
 #define YGPositionTypeCount 2
-typedef YG_ENUM_BEGIN(YGPositionType){
-    YGPositionTypeRelative,
-    YGPositionTypeAbsolute,
-} YG_ENUM_END(YGPositionType);
-WIN_EXPORT const char* YGPositionTypeToString(const YGPositionType value);
+YG_ENUM_DECL(YGPositionType, YGPositionTypeRelative, YGPositionTypeAbsolute)
 
 #define YGPrintOptionsCount 3
-typedef YG_ENUM_BEGIN(YGPrintOptions){
+YG_ENUM_DECL(
+    YGPrintOptions,
     YGPrintOptionsLayout = 1,
     YGPrintOptionsStyle = 2,
-    YGPrintOptionsChildren = 4,
-} YG_ENUM_END(YGPrintOptions);
-WIN_EXPORT const char* YGPrintOptionsToString(const YGPrintOptions value);
+    YGPrintOptionsChildren = 4)
 
 #define YGUnitCount 4
-typedef YG_ENUM_BEGIN(YGUnit){
-    YGUnitUndefined,
-    YGUnitPoint,
-    YGUnitPercent,
-    YGUnitAuto,
-} YG_ENUM_END(YGUnit);
-WIN_EXPORT const char* YGUnitToString(const YGUnit value);
+YG_ENUM_DECL(YGUnit, YGUnitUndefined, YGUnitPoint, YGUnitPercent, YGUnitAuto)
 
 #define YGWrapCount 3
-typedef YG_ENUM_BEGIN(YGWrap){
-    YGWrapNoWrap,
-    YGWrapWrap,
-    YGWrapWrapReverse,
-} YG_ENUM_END(YGWrap);
-WIN_EXPORT const char* YGWrapToString(const YGWrap value);
+YG_ENUM_DECL(YGWrap, YGWrapNoWrap, YGWrapWrap, YGWrapWrapReverse)
 
 YG_EXTERN_C_END
+
+#undef YG_ENUM_DECL
