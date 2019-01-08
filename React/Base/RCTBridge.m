@@ -289,7 +289,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   dispatch_async(dispatch_get_main_queue(), ^{
     [self invalidate];
     // Reload is a special case, do not preserve launchOptions and treat reload as a fresh start
-    _launchOptions = nil;
+    self->_launchOptions = nil;
     [self setUp];
   });
 }
