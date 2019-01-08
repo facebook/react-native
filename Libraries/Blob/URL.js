@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
  */
 
 'use strict';
@@ -51,15 +50,15 @@ if (BlobModule && typeof BlobModule.BLOB_URI_SCHEME === 'string') {
 // Small subset from whatwg-url: https://github.com/jsdom/whatwg-url/tree/master/lib
 // The reference code bloat comes from Unicode issues with URLs, so those won't work here.
 export class URLSearchParams {
-  constructor(params) {
-    this.searchParams = [];
+  searchParams = [];
 
+  constructor(params: any) {
     if (typeof params === 'object') {
       Object.keys(params).forEach(key => this.append(key, params[key]));
     }
   }
 
-  append(key, value) {
+  append(key: string, value: string) {
     this.searchParams.push([key, value]);
   }
 
@@ -82,7 +81,7 @@ export class URLSearchParams {
   }
 }
 
-class URL {
+export class URL {
   _searchParamsInstance = null;
   static urlRegexp = /^((http[s]?|ftp):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+[^#?\s]+)(.*)?(#[\w\-]+)?$/;
 
@@ -93,7 +92,7 @@ class URL {
     );
   }
 
-  constructor(url, base) {
+  constructor(url: string, base: string) {
     let baseUrl = null;
     if (base) {
       if (typeof base === 'string') {
@@ -119,11 +118,11 @@ class URL {
     }
   }
 
-  get href() {
+  get href(): string {
     return this.toString();
   }
 
-  toJSON() {
+  toJSON(): string {
     return this.toString();
   }
 
@@ -167,7 +166,7 @@ class URL {
     throw new Error('not implemented');
   }
 
-  toString() {
+  toString(): string {
     if (this._searchParamsInstance === null) {
       return this._url;
     }
@@ -175,12 +174,13 @@ class URL {
     return this._url + separator + this._searchParamsInstance.paramString;
   }
 
-  get searchParams() {
+  get searchParams(): URLSearchParams {
     if (this._searchParamsInstance == null) {
       this._searchParamsInstance = new URLSearchParams();
     }
     return this._searchParamsInstance;
   }
+
   static createObjectURL(blob: Blob) {
     if (BLOB_URL_PREFIX === null) {
       throw new Error('Cannot create URL for blob!');
@@ -194,5 +194,3 @@ class URL {
     // Do nothing.
   }
 }
-
-module.exports = URL;
