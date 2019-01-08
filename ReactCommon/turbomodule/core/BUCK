@@ -1,15 +1,13 @@
-load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "get_debug_preprocessor_flags")
-load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "get_apple_compiler_flags", "get_apple_inspector_flags", "react_native_xplat_target", "rn_xplat_cxx_library", "subdir_glob")
-
-APPLE_COMPILER_FLAGS = get_apple_compiler_flags()
+load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "OBJC_ARC_PREPROCESSOR_FLAGS", "get_debug_preprocessor_flags", "get_static_library_ios_flags")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "react_native_xplat_target", "rn_xplat_cxx_library", "subdir_glob")
 
 rn_xplat_cxx_library(
     name = "core",
-    srcs = glob(["**/*.cpp"]),
+    srcs = glob(["*.cpp"]),
     header_namespace = "",
     exported_headers = subdir_glob(
         [
-            ("", "**/*.h"),
+            ("", "*.h"),
         ],
         prefix = "jsireact",
     ),
@@ -19,9 +17,34 @@ rn_xplat_cxx_library(
         "-std=c++14",
         "-Wall",
     ],
-    fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
-    fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
+    fbobjc_compiler_flags = [
+        "-Wall",
+        "-fobjc-arc-exceptions",
+    ],
+    fbobjc_inherited_buck_flags = get_static_library_ios_flags(),
+    fbobjc_preprocessor_flags = OBJC_ARC_PREPROCESSOR_FLAGS + get_debug_preprocessor_flags(),
     force_static = True,
+    ios_deps = [
+        "xplat//FBBaseLite:FBBaseLite",
+        "xplat//js/react-native-github:RCTCxxBridge",
+        "xplat//js/react-native-github:RCTCxxModule",
+        "xplat//js/react-native-github:ReactInternal",
+    ],
+    ios_exported_headers = subdir_glob(
+        [
+            ("platform/ios", "*.h"),
+        ],
+        prefix = "jsireact",
+    ),
+    ios_frameworks = [
+        "$SDKROOT/System/Library/Frameworks/Foundation.framework",
+    ],
+    ios_srcs = glob(
+        [
+            "platform/ios/**/*.cpp",
+            "platform/ios/**/*.mm",
+        ],
+    ),
     platforms = (ANDROID, APPLE),
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",
