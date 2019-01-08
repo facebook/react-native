@@ -12,7 +12,7 @@
 
 import type {LayoutEvent, PressEvent, TextLayoutEvent} from 'CoreEventTypes';
 import type React from 'React';
-import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
+import type {TextStyleProp} from 'StyleSheet';
 import type {
   AccessibilityRole,
   AccessibilityStates,
@@ -128,7 +128,7 @@ export type TextProps = $ReadOnly<{
    * See https://facebook.github.io/react-native/docs/text.html#selectable
    */
   selectable?: ?boolean,
-  style?: ?DangerouslyImpreciseStyleProp,
+  style?: ?TextStyleProp,
 
   /**
    * Used to locate this view in end-to-end tests.

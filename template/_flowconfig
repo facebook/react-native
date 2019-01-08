@@ -24,7 +24,6 @@
 [libs]
 node_modules/react-native/Libraries/react-native/react-native-interface.js
 node_modules/react-native/flow/
-node_modules/react-native/flow-github/
 
 [options]
 emoji=true

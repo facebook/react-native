@@ -23,7 +23,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.annotation.Nullable;
 
 /**
  * Class responsible for dispatching UI events to JS. The main purpose of this class is to act as an
@@ -125,6 +124,14 @@ public class EventDispatcher implements LifecycleEventListener {
           event.getEventName(),
           event.getUniqueID());
     }
+    maybePostFrameCallbackFromNonUI();
+  }
+
+  public void dispatchAllEvents() {
+    maybePostFrameCallbackFromNonUI();
+  }
+
+  private void maybePostFrameCallbackFromNonUI() {
     if (mReactEventEmitter != null) {
       // If the host activity is paused, the frame callback may not be currently
       // posted. Ensure that it is so that this event gets delivered promptly.
@@ -135,10 +142,6 @@ public class EventDispatcher implements LifecycleEventListener {
       // touch event dispatch will hit this codepath, and we simply queue them so that they
       // are dispatched once ReactContext creation completes and JS app is running.
     }
-  }
-
-  public void dispatchAllEvents() {
-    mCurrentFrameCallback.maybePostFromNonUI();
   }
 
   /**

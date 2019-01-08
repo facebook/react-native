@@ -17,10 +17,6 @@ const {ScrollView, StyleSheet, Text, TouchableOpacity} = ReactNative;
 const NUM_ITEMS = 20;
 
 class ScrollViewSimpleExample extends React.Component<{}> {
-  static title = '<ScrollView>';
-  static description =
-    'Component that enables scrolling through child components.';
-
   /* $FlowFixMe(>=0.85.0 site=react_native_fb) This comment suppresses an error
    * found when Flow v0.85 was deployed. To see the error, delete this comment
    * and run Flow. */
@@ -90,4 +86,15 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = ScrollViewSimpleExample;
+exports.title = '<ScrollView>';
+exports.description =
+  'Component that enables scrolling through child components.';
+
+exports.examples = [
+  {
+    title: 'Simple scroll view',
+    render: function(): React.Element<typeof ScrollViewSimpleExample> {
+      return <ScrollViewSimpleExample />;
+    },
+  },
+];

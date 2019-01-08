@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <array>
 #include <initializer_list>
+#include "CompactValue.h"
 #include "YGFloatOptional.h"
 #include "Yoga-internal.h"
 #include "Yoga.h"
@@ -17,6 +18,10 @@ constexpr YGValue kYGValueUndefined = {0, YGUnitUndefined};
 constexpr YGValue kYGValueAuto = {0, YGUnitAuto};
 
 struct YGStyle {
+ private:
+  using CompactValue = facebook::yoga::detail::CompactValue;
+
+ public:
   using Dimensions = facebook::yoga::detail::Values<2>;
   using Edges = facebook::yoga::detail::Values<YGEdgeCount>;
 
@@ -33,14 +38,14 @@ struct YGStyle {
   YGFloatOptional flex = {};
   YGFloatOptional flexGrow = {};
   YGFloatOptional flexShrink = {};
-  YGValue flexBasis = kYGValueAuto;
-  Edges margin{kYGValueUndefined};
-  Edges position{kYGValueUndefined};
-  Edges padding{kYGValueUndefined};
-  Edges border{kYGValueUndefined};
-  Dimensions dimensions{kYGValueAuto};
-  Dimensions minDimensions{kYGValueUndefined};
-  Dimensions maxDimensions{kYGValueUndefined};
+  CompactValue flexBasis = CompactValue::ofAuto();
+  Edges margin = {};
+  Edges position = {};
+  Edges padding = {};
+  Edges border = {};
+  Dimensions dimensions{CompactValue::ofAuto()};
+  Dimensions minDimensions = {};
+  Dimensions maxDimensions = {};
   // Yoga specific properties, not compatible with flexbox specification
   YGFloatOptional aspectRatio = {};
 

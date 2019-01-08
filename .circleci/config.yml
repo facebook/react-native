@@ -84,6 +84,14 @@ aliases:
       - ReactAndroid/build/third-party-ndk
     key: v1-gradle-{{ checksum "ReactAndroid/build.gradle" }}-{{ checksum "scripts/circleci/gradle_download_deps.sh" }}
 
+  - &restore-cache-homebrew
+    keys:
+      - v1-homebrew
+  - &save-cache-homebrew
+    paths:
+      - /usr/local/Homebrew
+    key: v1-homebrew
+
   # Branch Filtering
   - &filter-only-master-stable
     branches:
@@ -284,19 +292,11 @@ aliases:
 
   - &boot-simulator-iphone
     name: Boot iPhone Simulator
-    command: xcrun simctl boot "iPhone XS" || true
-
-  - &boot-simulator-appletv
-    name: Boot Apple TV Simulator
-    command: xcrun simctl boot "Apple TV" || true
+    command: source scripts/.tests.env && xcrun simctl boot "$IOS_DEVICE" || true
 
   - &run-objc-ios-tests
     name: iOS Test Suite
     command: ./scripts/objc-test-ios.sh test
-
-  - &run-objc-tvos-tests
-    name: tvOS Test Suite
-    command: ./scripts/objc-test-tvos.sh test
 
   - &display-broken-tests-warning
     name: Running broken tests (Ignore any failures past this point)
@@ -311,15 +311,11 @@ aliases:
 
   - &run-e2e-tests
     name: End-to-End Test Suite (Disabled)
-    command: ./scripts/circleci/exec_author_check.sh node ./scripts/run-ci-e2e-tests.js --android --ios --tvos --js --retries 3;
+    command: ./scripts/circleci/exec_author_check.sh node ./scripts/run-ci-e2e-tests.js --android --ios --js --retries 3;
 
   - &run-objc-ios-e2e-tests
     name: iOS End-to-End Test Suite (Disabled)
     command: ./scripts/circleci/exec_author_check.sh node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
-
-  - &run-objc-tvos-e2e-tests
-    name: tvOS End-to-End Test Suite (Disabled)
-    command: ./scripts/circleci/exec_author_check.sh node ./scripts/run-ci-e2e-tests.js --tvos --js --retries 3;
 
   - &run-android-e2e-tests
     name: Android End-to-End Test Suite (Disabled)
@@ -423,19 +419,19 @@ jobs:
       - store_test_results:
           path: ~/react-native/reports/junit
 
-  # Runs unit tests on iOS and Apple TV devices
-  test_objc:
+  # Runs unit tests on iOS devices
+  test_ios:
     <<: *macos_defaults
     steps:
       - attach_workspace:
           at: ~/react-native
 
       - run: *boot-simulator-iphone
-      - run: *boot-simulator-appletv
-      - run: *brew-install-watchman
 
+      - restore-cache: *restore-cache-homebrew
+      - run: *brew-install-watchman
+      - save-cache: *save-cache-homebrew
       - run: *run-objc-ios-tests
-      - run: *run-objc-tvos-tests
 
       - store_test_results:
           path: ~/react-native/reports/junit
@@ -694,8 +690,8 @@ workflows:
           requires:
             - checkout_code
 
-      # Test iOS & tvOS
-      - test_objc:
+      # Test iOS
+      - test_ios:
           filters: *filter-ignore-gh-pages
           requires:
             - checkout_code

@@ -43,6 +43,7 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
                sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode
 {
   RCTSurface *surface = [[self class] createSurfaceWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
+  [surface start];
   return [self initWithSurface:surface sizeMeasureMode:sizeMeasureMode];
 }
 
@@ -50,7 +51,6 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
 {
   if (self = [super initWithFrame:CGRectZero]) {
     _surface = surface;
-    [_surface start];
     _sizeMeasureMode = sizeMeasureMode;
 
     _surface.delegate = self;

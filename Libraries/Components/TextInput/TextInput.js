@@ -12,7 +12,6 @@
 const DeprecatedColorPropType = require('DeprecatedColorPropType');
 const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const DocumentSelectionState = require('DocumentSelectionState');
-const EventEmitter = require('EventEmitter');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
 const PropTypes = require('prop-types');
@@ -247,17 +246,17 @@ type Props = $ReadOnly<{|
   returnKeyType?: ?ReturnKeyType,
   maxLength?: ?number,
   multiline?: ?boolean,
-  onBlur?: ?(e: BlurEvent) => void,
-  onFocus?: ?(e: FocusEvent) => void,
-  onChange?: ?(e: ChangeEvent) => void,
-  onChangeText?: ?(text: string) => void,
-  onContentSizeChange?: ?(e: ContentSizeChangeEvent) => void,
-  onTextInput?: ?(e: TextInputEvent) => void,
-  onEndEditing?: ?(e: EditingEvent) => void,
-  onSelectionChange?: ?(e: SelectionChangeEvent) => void,
-  onSubmitEditing?: ?(e: EditingEvent) => void,
-  onKeyPress?: ?(e: KeyPressEvent) => void,
-  onScroll?: ?(e: ScrollEvent) => void,
+  onBlur?: ?(e: BlurEvent) => mixed,
+  onFocus?: ?(e: FocusEvent) => mixed,
+  onChange?: ?(e: ChangeEvent) => mixed,
+  onChangeText?: ?(text: string) => mixed,
+  onContentSizeChange?: ?(e: ContentSizeChangeEvent) => mixed,
+  onTextInput?: ?(e: TextInputEvent) => mixed,
+  onEndEditing?: ?(e: EditingEvent) => mixed,
+  onSelectionChange?: ?(e: SelectionChangeEvent) => mixed,
+  onSubmitEditing?: ?(e: EditingEvent) => mixed,
+  onKeyPress?: ?(e: KeyPressEvent) => mixed,
+  onScroll?: ?(e: ScrollEvent) => mixed,
   placeholder?: ?Stringish,
   placeholderTextColor?: ?ColorValue,
   secureTextEntry?: ?boolean,
@@ -892,26 +891,6 @@ const TextInput = createReactClass({
       // tag is null only in unit tests
       TextInputState.registerInput(tag);
     }
-
-    if (this.context.focusEmitter) {
-      this._focusSubscription = this.context.focusEmitter.addListener(
-        'focus',
-        el => {
-          if (this === el) {
-            this._rafId = requestAnimationFrame(this.focus);
-          } else if (this.isFocused()) {
-            this.blur();
-          }
-        },
-      );
-      if (this.props.autoFocus) {
-        this.context.onFocusRequested(this);
-      }
-    } else {
-      if (this.props.autoFocus) {
-        this._rafId = requestAnimationFrame(this.focus);
-      }
-    }
   },
 
   componentWillUnmount: function() {
@@ -926,11 +905,6 @@ const TextInput = createReactClass({
     if (this._rafId != null) {
       cancelAnimationFrame(this._rafId);
     }
-  },
-
-  contextTypes: {
-    onFocusRequested: PropTypes.func,
-    focusEmitter: PropTypes.instanceOf(EventEmitter),
   },
 
   /**

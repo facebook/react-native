@@ -11,75 +11,86 @@
 /* global device, element, by, expect */
 
 const jestExpect = require('expect');
+const {
+  openComponentWithLabel,
+  openExampleWithTitle,
+} = require('../e2e-helpers');
 
 describe('Switch', () => {
   beforeAll(async () => {
     await device.reloadReactNative();
-    await element(by.id('explorer_search')).replaceText('<Switch>');
-    await element(by.label('<Switch> Native boolean input')).tap();
+    await openComponentWithLabel('<Switch>', '<Switch> Native boolean input');
   });
 
-  afterAll(async () => {
-    await element(by.label('Back')).tap();
+  describe('Switches can be set to true or false', () => {
+    beforeAll(async () => {
+      await openExampleWithTitle('Switches can be set to true or false');
+    });
+
+    it('Switch that starts off should switch', async () => {
+      const testID = 'on-off-initial-off';
+      const indicatorID = 'on-off-initial-off-indicator';
+
+      await expect(element(by.id(testID))).toHaveValue('0');
+      await expect(element(by.id(indicatorID))).toHaveText('Off');
+      await element(by.id(testID)).tap();
+      await expect(element(by.id(testID))).toHaveValue('1');
+      await expect(element(by.id(indicatorID))).toHaveText('On');
+    });
+
+    it('Switch that starts on should switch', async () => {
+      const testID = 'on-off-initial-on';
+      const indicatorID = 'on-off-initial-on-indicator';
+
+      await expect(element(by.id(testID))).toHaveValue('1');
+      await expect(element(by.id(indicatorID))).toHaveText('On');
+      await element(by.id(testID)).tap();
+      await expect(element(by.id(testID))).toHaveValue('0');
+      await expect(element(by.id(indicatorID))).toHaveText('Off');
+    });
   });
 
-  it('Switch that starts on should switch', async () => {
-    const testID = 'on-off-initial-off';
-    const indicatorID = 'on-off-initial-off-indicator';
+  describe('Switches can be disabled', () => {
+    beforeAll(async () => {
+      await openExampleWithTitle('Switches can be disabled');
+    });
 
-    await expect(element(by.id(testID))).toHaveValue('0');
-    await expect(element(by.id(indicatorID))).toHaveText('Off');
-    await element(by.id(testID)).tap();
-    await expect(element(by.id(testID))).toHaveValue('1');
-    await expect(element(by.id(indicatorID))).toHaveText('On');
-  });
+    it('disabled switch should not toggle', async () => {
+      const onTestID = 'disabled-initial-on';
+      const offTestID = 'disabled-initial-off';
+      const onIndicatorID = 'disabled-initial-on-indicator';
+      const offIndicatorID = 'disabled-initial-off-indicator';
 
-  it('Switch that starts off should switch', async () => {
-    const testID = 'on-off-initial-on';
-    const indicatorID = 'on-off-initial-on-indicator';
+      await expect(element(by.id(onTestID))).toHaveValue('1');
+      await expect(element(by.id(onIndicatorID))).toHaveText('On');
 
-    await expect(element(by.id(testID))).toHaveValue('1');
-    await expect(element(by.id(indicatorID))).toHaveText('On');
-    await element(by.id(testID)).tap();
-    await expect(element(by.id(testID))).toHaveValue('0');
-    await expect(element(by.id(indicatorID))).toHaveText('Off');
-  });
+      try {
+        await element(by.id(onTestID)).tap();
+        throw new Error('Does not match');
+      } catch (err) {
+        jestExpect(err.message.message).toEqual(
+          jestExpect.stringContaining(
+            'Cannot perform action due to constraint(s) failure',
+          ),
+        );
+      }
+      await expect(element(by.id(onTestID))).toHaveValue('1');
+      await expect(element(by.id(onIndicatorID))).toHaveText('On');
 
-  it('disabled switch should not toggle', async () => {
-    const onTestID = 'disabled-initial-on';
-    const offTestID = 'disabled-initial-off';
-    const onIndicatorID = 'disabled-initial-on-indicator';
-    const offIndicatorID = 'disabled-initial-off-indicator';
-
-    await expect(element(by.id(onTestID))).toHaveValue('1');
-    await expect(element(by.id(onIndicatorID))).toHaveText('On');
-
-    try {
-      await element(by.id(onTestID)).tap();
-      throw new Error('Does not match');
-    } catch (err) {
-      jestExpect(err.message.message).toEqual(
-        jestExpect.stringContaining(
-          'Cannot perform action due to constraint(s) failure',
-        ),
-      );
-    }
-    await expect(element(by.id(onTestID))).toHaveValue('1');
-    await expect(element(by.id(onIndicatorID))).toHaveText('On');
-
-    await expect(element(by.id(offTestID))).toHaveValue('0');
-    await expect(element(by.id(offIndicatorID))).toHaveText('Off');
-    try {
-      await element(by.id(offTestID)).tap();
-      throw new Error('Does not match');
-    } catch (err) {
-      jestExpect(err.message.message).toEqual(
-        jestExpect.stringContaining(
-          'Cannot perform action due to constraint(s) failure',
-        ),
-      );
-    }
-    await expect(element(by.id(offTestID))).toHaveValue('0');
-    await expect(element(by.id(offIndicatorID))).toHaveText('Off');
+      await expect(element(by.id(offTestID))).toHaveValue('0');
+      await expect(element(by.id(offIndicatorID))).toHaveText('Off');
+      try {
+        await element(by.id(offTestID)).tap();
+        throw new Error('Does not match');
+      } catch (err) {
+        jestExpect(err.message.message).toEqual(
+          jestExpect.stringContaining(
+            'Cannot perform action due to constraint(s) failure',
+          ),
+        );
+      }
+      await expect(element(by.id(offTestID))).toHaveValue('0');
+      await expect(element(by.id(offIndicatorID))).toHaveText('Off');
+    });
   });
 });

@@ -98,13 +98,16 @@
       "<rootDir>/Libraries/react-native/"
     ]
   },
+  "jest-junit": {
+    "outputDirectory": "reports/junit",
+    "outputName": "js-test-results.xml"
+  },
   "main": "Libraries/react-native/react-native-implementation.js",
   "files": [
     ".flowconfig",
     "android",
     "cli.js",
     "flow",
-    "flow-github",
     "init.sh",
     "scripts/ios-configure-glog.sh",
     "scripts/ios-install-third-party.sh",
@@ -130,7 +133,7 @@
   "scripts": {
     "start": "node cli.js start",
     "test": "jest",
-    "test-ci": "JEST_JUNIT_OUTPUT=\"reports/junit/js-test-results.xml\" jest --maxWorkers=2 --ci --testResultsProcessor=\"jest-junit\"",
+    "test-ci": "jest --maxWorkers=2 --ci --reporters=\"default\" --reporters=\"jest-junit\"",
     "flow": "flow",
     "flow-check-ios": "flow check",
     "flow-check-android": "flow check --flowconfig-name .flowconfig.android",
@@ -178,8 +181,8 @@
     "jest": "24.0.0-alpha.6",
     "jest-junit": "5.2.0",
     "lodash": "^4.17.5",
-    "metro-babel-register": "0.50.0",
-    "metro-react-native-babel-transformer": "0.50.0",
+    "metro-babel-register": "0.51.0",
+    "metro-react-native-babel-transformer": "0.51.0",
     "mime": "^1.3.4",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
@@ -228,6 +231,7 @@
     "flow-bin": "^0.89.0",
     "jest": "24.0.0-alpha.6",
     "jest-junit": "5.2.0",
+    "jscodeshift": "^0.6.2",
     "prettier": "1.13.6",
     "react": "16.6.3",
     "react-native-dummy": "0.1.0",

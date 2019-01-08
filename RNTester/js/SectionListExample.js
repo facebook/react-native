@@ -62,9 +62,6 @@ const CustomSeparatorComponent = ({highlighted, text}) => (
 );
 
 class SectionListExample extends React.PureComponent<{}, $FlowFixMeState> {
-  static title = '<SectionList>';
-  static description = 'Performant, scrollable list of data.';
-
   state = {
     data: genItemData(1000),
     debug: false,
@@ -275,4 +272,13 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = SectionListExample;
+exports.title = '<SectionList>';
+exports.description = 'Performant, scrollable list of data.';
+exports.examples = [
+  {
+    title: 'Simple scrollable list',
+    render: function(): React.Element<typeof SectionListExample> {
+      return <SectionListExample />;
+    },
+  },
+];

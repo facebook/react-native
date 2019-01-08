@@ -25,11 +25,13 @@ const {
 const RNTesterBlock = require('./RNTesterBlock');
 const RNTesterPage = require('./RNTesterPage');
 
-class KeyboardAvoidingViewExample extends React.Component {
-  static title = '<KeyboardAvoidingView>';
-  static description =
-    'Base component for views that automatically adjust their height or position to move out of the way of the keyboard.';
+type Props = $ReadOnly<{||}>;
+type State = {|
+  behavior: string,
+  modalOpen: boolean,
+|};
 
+class KeyboardAvoidingViewExample extends React.Component<Props, State> {
   state = {
     behavior: 'padding',
     modalOpen: false,
@@ -105,4 +107,14 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = KeyboardAvoidingViewExample;
+exports.title = '<KeyboardAvoidingView>';
+exports.description =
+  'Base component for views that automatically adjust their height or position to move out of the way of the keyboard.';
+exports.examples = [
+  {
+    title: 'Simple keyboard view',
+    render: function(): React.Element<typeof KeyboardAvoidingViewExample> {
+      return <KeyboardAvoidingViewExample />;
+    },
+  },
+];

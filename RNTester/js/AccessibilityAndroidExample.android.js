@@ -31,9 +31,6 @@ const importantForAccessibilityValues = [
 ];
 
 class AccessibilityAndroidExample extends React.Component {
-  static title = 'Accessibility';
-  static description = 'Examples of using Accessibility API.';
-
   state = {
     count: 0,
     backgroundImportantForAcc: 0,
@@ -306,4 +303,13 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = AccessibilityAndroidExample;
+exports.title = 'Accessibility';
+exports.description = 'Examples of using Accessibility API.';
+exports.examples = [
+  {
+    title: 'Accessibility elements',
+    render(): React.Element<typeof AccessibilityAndroidExample> {
+      return <AccessibilityAndroidExample />;
+    },
+  },
+];
