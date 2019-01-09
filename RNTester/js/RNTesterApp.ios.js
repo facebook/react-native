@@ -10,6 +10,7 @@
 
 'use strict';
 
+require('InitializeCore');
 const AsyncStorage = require('AsyncStorage');
 const BackHandler = require('BackHandler');
 const Linking = require('Linking');
