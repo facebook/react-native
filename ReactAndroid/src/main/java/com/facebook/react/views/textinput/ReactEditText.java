@@ -23,6 +23,7 @@ import android.text.method.QwertyKeyListener;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -654,7 +655,7 @@ public class ReactEditText extends EditText {
     
     // `getEffectiveFontSize` always returns a value so don't need to check for anything like
     // `Float.NaN`.
-    setTextSize(mTextAttributes.getEffectiveFontSize());
+    setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextAttributes.getEffectiveFontSize());
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       float effectiveLetterSpacing = mTextAttributes.getEffectiveLetterSpacing();
