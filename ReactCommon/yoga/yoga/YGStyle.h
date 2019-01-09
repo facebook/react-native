@@ -13,6 +13,12 @@
 #include "Yoga-internal.h"
 #include "Yoga.h"
 
+#if !defined(ENUM_BITFIELDS_NOT_SUPPORTED)
+#define BITFIELD_ENUM_SIZED(num) : num
+#else
+#define BITFIELD_ENUM_SIZED(num)
+#endif
+
 constexpr YGValue kYGValueUndefined = {0, YGUnitUndefined};
 
 constexpr YGValue kYGValueAuto = {0, YGUnitAuto};
@@ -25,16 +31,18 @@ public:
   using Dimensions = facebook::yoga::detail::Values<2>;
   using Edges = facebook::yoga::detail::Values<YGEdgeCount>;
 
-  YGDirection direction : 2;
-  YGFlexDirection flexDirection : 2;
-  YGJustify justifyContent : 3;
-  YGAlign alignContent : 3;
-  YGAlign alignItems : 3;
-  YGAlign alignSelf : 3;
-  YGPositionType positionType : 1;
-  YGWrap flexWrap : 2;
-  YGOverflow overflow : 2;
-  YGDisplay display : 1;
+  /* Some platforms don't support enum bitfields,
+     so please use BITFIELD_ENUM_SIZED(BITS_COUNT) */
+  YGDirection direction BITFIELD_ENUM_SIZED(2);
+  YGFlexDirection flexDirection BITFIELD_ENUM_SIZED(2);
+  YGJustify justifyContent BITFIELD_ENUM_SIZED(3);
+  YGAlign alignContent BITFIELD_ENUM_SIZED(3);
+  YGAlign alignItems BITFIELD_ENUM_SIZED(3);
+  YGAlign alignSelf BITFIELD_ENUM_SIZED(3);
+  YGPositionType positionType BITFIELD_ENUM_SIZED(1);
+  YGWrap flexWrap BITFIELD_ENUM_SIZED(2);
+  YGOverflow overflow BITFIELD_ENUM_SIZED(2);
+  YGDisplay display BITFIELD_ENUM_SIZED(1);
   YGFloatOptional flex = {};
   YGFloatOptional flexGrow = {};
   YGFloatOptional flexShrink = {};
