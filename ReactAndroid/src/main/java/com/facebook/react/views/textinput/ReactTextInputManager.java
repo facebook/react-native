@@ -319,6 +319,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setLetterSpacingPt(letterSpacing);
   }
 
+  @ReactProp(name = ViewProps.ALLOW_FONT_SCALING, defaultBoolean = true)
+  public void setAllowFontScaling(ReactEditText view, boolean allowFontScaling) {
+    view.setAllowFontScaling(allowFontScaling);
+  }
+
   @ReactProp(name = "placeholder")
   public void setPlaceholder(ReactEditText view, @Nullable String placeholder) {
     view.setHint(placeholder);
