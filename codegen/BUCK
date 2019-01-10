@@ -10,9 +10,9 @@ fb_native.sh_binary(
     resources = glob(
         [
             "**/*.js",
-            "buck_tests/generate-tests.js",
         ],
     ) + [
+        "buck_tests/generate-tests.js",
         "xplat//js:setup_env",
     ],
     visibility = ["PUBLIC"],
