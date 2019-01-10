@@ -12,6 +12,7 @@
 #include <react/components/view/primitives.h>
 #include <react/core/LayoutMetrics.h>
 #include <react/graphics/Geometry.h>
+#include <yoga/YGEnums.h>
 #include <yoga/YGNode.h>
 #include <yoga/Yoga.h>
 #include <cmath>
@@ -445,7 +446,7 @@ inline void fromDynamic(const folly::dynamic &value, BorderStyle &result) {
 }
 
 inline std::string toString(
-    const std::array<float, YGDimensionCount> &dimensions) {
+    const std::array<float, yoga::enums::count<YGDimension>()> &dimensions) {
   return "{" + folly::to<std::string>(dimensions[0]) + ", " +
       folly::to<std::string>(dimensions[1]) + "}";
 }
@@ -455,7 +456,8 @@ inline std::string toString(const std::array<float, 4> &position) {
       folly::to<std::string>(position[1]) + "}";
 }
 
-inline std::string toString(const std::array<float, YGEdgeCount> &edges) {
+inline std::string toString(
+    const std::array<float, yoga::enums::count<YGEdge>()> &edges) {
   return "{" + folly::to<std::string>(edges[0]) + ", " +
       folly::to<std::string>(edges[1]) + ", " +
       folly::to<std::string>(edges[2]) + ", " +
@@ -590,20 +592,21 @@ inline std::string toString(const YGStyle::Dimensions &value) {
 }
 
 inline std::string toString(const YGStyle::Edges &value) {
-  static std::array<std::string, YGEdgeCount> names = {{"left",
-                                                        "top",
-                                                        "right",
-                                                        "bottom",
-                                                        "start",
-                                                        "end",
-                                                        "horizontal",
-                                                        "vertical",
-                                                        "all"}};
+  static std::array<std::string, yoga::enums::count<YGEdge>()> names = {
+      {"left",
+       "top",
+       "right",
+       "bottom",
+       "start",
+       "end",
+       "horizontal",
+       "vertical",
+       "all"}};
 
   auto result = std::string{};
   auto separator = std::string{", "};
 
-  for (auto i = 0; i < YGEdgeCount; i++) {
+  for (auto i = 0; i < yoga::enums::count<YGEdge>(); i++) {
     YGValue v = value[i];
     if (v.unit == YGUnitUndefined) {
       continue;

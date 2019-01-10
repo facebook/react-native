@@ -8,14 +8,52 @@
 
 #include "YGMacros.h"
 
+#ifdef __cplusplus
+namespace facebook {
+namespace yoga {
+namespace enums {
+
+template <typename T>
+constexpr int count() = delete;
+
+namespace detail {
+template <int... xs>
+constexpr int n() {
+  return sizeof...(xs);
+}
+} // namespace detail
+
+} // namespace enums
+} // namespace yoga
+} // namespace facebook
+#endif
+
 #define YG_ENUM_DECL(NAME, ...)                               \
   typedef YG_ENUM_BEGIN(NAME){__VA_ARGS__} YG_ENUM_END(NAME); \
   WIN_EXPORT const char* NAME##ToString(NAME);
 
+#ifdef __cplusplus
+#define YG_ENUM_SEQ_DECL(NAME, ...)  \
+  YG_ENUM_DECL(NAME, __VA_ARGS__)    \
+  YG_EXTERN_C_END                    \
+  namespace facebook {               \
+  namespace yoga {                   \
+  namespace enums {                  \
+  template <>                        \
+  constexpr int count<NAME>() {      \
+    return detail::n<__VA_ARGS__>(); \
+  }                                  \
+  }                                  \
+  }                                  \
+  }                                  \
+  YG_EXTERN_C_BEGIN
+#else
+#define YG_ENUM_SEQ_DECL YG_ENUM_DECL
+#endif
+
 YG_EXTERN_C_BEGIN
 
-#define YGAlignCount 8
-YG_ENUM_DECL(
+YG_ENUM_SEQ_DECL(
     YGAlign,
     YGAlignAuto,
     YGAlignFlexStart,
@@ -26,17 +64,17 @@ YG_ENUM_DECL(
     YGAlignSpaceBetween,
     YGAlignSpaceAround);
 
-#define YGDimensionCount 2
-YG_ENUM_DECL(YGDimension, YGDimensionWidth, YGDimensionHeight)
+YG_ENUM_SEQ_DECL(YGDimension, YGDimensionWidth, YGDimensionHeight)
 
-#define YGDirectionCount 3
-YG_ENUM_DECL(YGDirection, YGDirectionInherit, YGDirectionLTR, YGDirectionRTL)
+YG_ENUM_SEQ_DECL(
+    YGDirection,
+    YGDirectionInherit,
+    YGDirectionLTR,
+    YGDirectionRTL)
 
-#define YGDisplayCount 2
-YG_ENUM_DECL(YGDisplay, YGDisplayFlex, YGDisplayNone)
+YG_ENUM_SEQ_DECL(YGDisplay, YGDisplayFlex, YGDisplayNone)
 
-#define YGEdgeCount 9
-YG_ENUM_DECL(
+YG_ENUM_SEQ_DECL(
     YGEdge,
     YGEdgeLeft,
     YGEdgeTop,
@@ -48,19 +86,16 @@ YG_ENUM_DECL(
     YGEdgeVertical,
     YGEdgeAll)
 
-#define YGExperimentalFeatureCount 1
-YG_ENUM_DECL(YGExperimentalFeature, YGExperimentalFeatureWebFlexBasis)
+YG_ENUM_SEQ_DECL(YGExperimentalFeature, YGExperimentalFeatureWebFlexBasis)
 
-#define YGFlexDirectionCount 4
-YG_ENUM_DECL(
+YG_ENUM_SEQ_DECL(
     YGFlexDirection,
     YGFlexDirectionColumn,
     YGFlexDirectionColumnReverse,
     YGFlexDirectionRow,
     YGFlexDirectionRowReverse)
 
-#define YGJustifyCount 6
-YG_ENUM_DECL(
+YG_ENUM_SEQ_DECL(
     YGJustify,
     YGJustifyFlexStart,
     YGJustifyCenter,
@@ -69,8 +104,7 @@ YG_ENUM_DECL(
     YGJustifySpaceAround,
     YGJustifySpaceEvenly)
 
-#define YGLogLevelCount 6
-YG_ENUM_DECL(
+YG_ENUM_SEQ_DECL(
     YGLogLevel,
     YGLogLevelError,
     YGLogLevelWarn,
@@ -79,35 +113,38 @@ YG_ENUM_DECL(
     YGLogLevelVerbose,
     YGLogLevelFatal)
 
-#define YGMeasureModeCount 3
-YG_ENUM_DECL(
+YG_ENUM_SEQ_DECL(
     YGMeasureMode,
     YGMeasureModeUndefined,
     YGMeasureModeExactly,
     YGMeasureModeAtMost)
 
-#define YGNodeTypeCount 2
-YG_ENUM_DECL(YGNodeType, YGNodeTypeDefault, YGNodeTypeText)
+YG_ENUM_SEQ_DECL(YGNodeType, YGNodeTypeDefault, YGNodeTypeText)
 
-#define YGOverflowCount 3
-YG_ENUM_DECL(YGOverflow, YGOverflowVisible, YGOverflowHidden, YGOverflowScroll)
+YG_ENUM_SEQ_DECL(
+    YGOverflow,
+    YGOverflowVisible,
+    YGOverflowHidden,
+    YGOverflowScroll)
 
-#define YGPositionTypeCount 2
-YG_ENUM_DECL(YGPositionType, YGPositionTypeRelative, YGPositionTypeAbsolute)
+YG_ENUM_SEQ_DECL(YGPositionType, YGPositionTypeRelative, YGPositionTypeAbsolute)
 
-#define YGPrintOptionsCount 3
 YG_ENUM_DECL(
     YGPrintOptions,
     YGPrintOptionsLayout = 1,
     YGPrintOptionsStyle = 2,
     YGPrintOptionsChildren = 4)
 
-#define YGUnitCount 4
-YG_ENUM_DECL(YGUnit, YGUnitUndefined, YGUnitPoint, YGUnitPercent, YGUnitAuto)
+YG_ENUM_SEQ_DECL(
+    YGUnit,
+    YGUnitUndefined,
+    YGUnitPoint,
+    YGUnitPercent,
+    YGUnitAuto)
 
-#define YGWrapCount 3
-YG_ENUM_DECL(YGWrap, YGWrapNoWrap, YGWrapWrap, YGWrapWrapReverse)
+YG_ENUM_SEQ_DECL(YGWrap, YGWrapNoWrap, YGWrapWrap, YGWrapWrapReverse)
 
 YG_EXTERN_C_END
 
 #undef YG_ENUM_DECL
+#undef YG_ENUM_SEQ_DECL
