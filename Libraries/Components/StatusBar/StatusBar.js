@@ -198,7 +198,10 @@ class StatusBar extends React.Component<Props> {
   static _defaultProps = createStackEntry({
     animated: false,
     showHideTransition: 'fade',
-    backgroundColor: 'black',
+    backgroundColor: Platform.select({
+      android: StatusBarManager.DEFAULT_BACKGROUND_COLOR ?? 'black',
+      ios: 'black',
+    }),
     barStyle: 'default',
     translucent: false,
     hidden: false,
