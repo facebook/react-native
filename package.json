@@ -128,7 +128,8 @@
     "ReactAndroid",
     "ReactCommon",
     "README.md",
-    "third-party-podspecs"
+    "third-party-podspecs",
+    "template"
   ],
   "scripts": {
     "start": "node cli.js start",
