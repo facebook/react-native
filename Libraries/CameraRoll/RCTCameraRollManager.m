@@ -76,6 +76,26 @@ RCT_EXPORT_MODULE()
 static NSString *const kErrorUnableToSave = @"E_UNABLE_TO_SAVE";
 static NSString *const kErrorUnableToLoad = @"E_UNABLE_TO_LOAD";
 
+static NSString *const kErrorAuthRestricted = @"E_PHOTO_LIBRARY_AUTH_RESTRICTED";
+static NSString *const kErrorAuthDenied = @"E_PHOTO_LIBRARY_AUTH_DENIED";
+
+typedef void (^PhotosAuthorizedBlock)(void);
+
+static void requestPhotoLibraryAccess(RCTPromiseRejectBlock reject, PhotosAuthorizedBlock authorizedBlock) {
+  PHAuthorizationStatus authStatus = [PHPhotoLibrary authorizationStatus];
+  if (authStatus == PHAuthorizationStatusRestricted) {
+    reject(kErrorAuthRestricted, @"Access to photo library is restricted", nil);
+  } else if (authStatus == PHAuthorizationStatusAuthorized) {
+    authorizedBlock();
+  } else if (authStatus == PHAuthorizationStatusNotDetermined) {
+    [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+      requestPhotoLibraryAccess(reject, authorizedBlock);
+    }];
+  } else {
+    reject(kErrorAuthDenied, @"Access to photo library was denied", nil);
+  }
+}
+
 RCT_EXPORT_METHOD(saveToCameraRoll:(NSURLRequest *)request
                   type:(NSString *)type
                   resolve:(RCTPromiseResolveBlock)resolve
@@ -115,21 +135,25 @@ RCT_EXPORT_METHOD(saveToCameraRoll:(NSURLRequest *)request
       }
     }];
   };
-
-  if ([type isEqualToString:@"video"]) {
-    inputURI = request.URL;
-    saveBlock();
-  } else {
-    [_bridge.imageLoader loadImageWithURLRequest:request callback:^(NSError *error, UIImage *image) {
-      if (error) {
-        reject(kErrorUnableToLoad, nil, error);
-        return;
-      }
-
-      inputImage = image;
+  
+  void (^loadBlock)(void) = ^void() {
+    if ([type isEqualToString:@"video"]) {
+      inputURI = request.URL;
       saveBlock();
-    }];
-  }
+    } else {
+      [self.bridge.imageLoader loadImageWithURLRequest:request callback:^(NSError *error, UIImage *image) {
+        if (error) {
+          reject(kErrorUnableToLoad, nil, error);
+          return;
+        }
+        
+        inputImage = image;
+        saveBlock();
+      }];
+    }
+  };
+  
+  requestPhotoLibraryAccess(reject, loadBlock);
 }
 
 static void RCTResolvePromise(RCTPromiseResolveBlock resolve,
@@ -190,102 +214,104 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
   if (groupName != nil) {
     collectionFetchOptions.predicate = [NSPredicate predicateWithFormat:[NSString stringWithFormat:@"localizedTitle == '%@'", groupName]];
   }
-
-  PHFetchResult<PHAssetCollection *> *const assetCollectionFetchResult = [PHAssetCollection fetchAssetCollectionsWithType:collectionType subtype:collectionSubtype options:collectionFetchOptions];
-  [assetCollectionFetchResult enumerateObjectsUsingBlock:^(PHAssetCollection * _Nonnull assetCollection, NSUInteger collectionIdx, BOOL * _Nonnull stopCollections) {
-    // Enumerate assets within the collection
-    PHFetchResult<PHAsset *> *const assetsFetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:assetFetchOptions];
-
-    [assetsFetchResult enumerateObjectsUsingBlock:^(PHAsset * _Nonnull asset, NSUInteger assetIdx, BOOL * _Nonnull stopAssets) {
-      NSString *const uri = [NSString stringWithFormat:@"ph://%@", [asset localIdentifier]];
-      if (afterCursor && !foundAfter) {
-        if ([afterCursor isEqualToString:uri]) {
-          foundAfter = YES;
-        }
-        return; // skip until we get to the first one
-      }
-
-      // Get underlying resources of an asset - this includes files as well as details about edited PHAssets
-      if ([mimeTypes count] > 0) {
-        NSArray<PHAssetResource *> *const assetResources = [PHAssetResource assetResourcesForAsset:asset];
-        if (![assetResources firstObject]) {
-          return;
-        }
-
-        PHAssetResource *const _Nonnull resource = [assetResources firstObject];
-        CFStringRef const uti = (__bridge CFStringRef _Nonnull)(resource.uniformTypeIdentifier);
-        NSString *const mimeType = (NSString *)CFBridgingRelease(UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType));
-
-        BOOL __block mimeTypeFound = NO;
-        [mimeTypes enumerateObjectsUsingBlock:^(NSString * _Nonnull mimeTypeFilter, NSUInteger idx, BOOL * _Nonnull stop) {
-          if ([mimeType isEqualToString:mimeTypeFilter]) {
-            mimeTypeFound = YES;
-            *stop = YES;
+  
+  requestPhotoLibraryAccess(reject, ^{
+    PHFetchResult<PHAssetCollection *> *const assetCollectionFetchResult = [PHAssetCollection fetchAssetCollectionsWithType:collectionType subtype:collectionSubtype options:collectionFetchOptions];
+    [assetCollectionFetchResult enumerateObjectsUsingBlock:^(PHAssetCollection * _Nonnull assetCollection, NSUInteger collectionIdx, BOOL * _Nonnull stopCollections) {
+      // Enumerate assets within the collection
+      PHFetchResult<PHAsset *> *const assetsFetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:assetFetchOptions];
+      
+      [assetsFetchResult enumerateObjectsUsingBlock:^(PHAsset * _Nonnull asset, NSUInteger assetIdx, BOOL * _Nonnull stopAssets) {
+        NSString *const uri = [NSString stringWithFormat:@"ph://%@", [asset localIdentifier]];
+        if (afterCursor && !foundAfter) {
+          if ([afterCursor isEqualToString:uri]) {
+            foundAfter = YES;
           }
-        }];
-
-        if (!mimeTypeFound) {
+          return; // skip until we get to the first one
+        }
+        
+        // Get underlying resources of an asset - this includes files as well as details about edited PHAssets
+        if ([mimeTypes count] > 0) {
+          NSArray<PHAssetResource *> *const assetResources = [PHAssetResource assetResourcesForAsset:asset];
+          if (![assetResources firstObject]) {
+            return;
+          }
+          
+          PHAssetResource *const _Nonnull resource = [assetResources firstObject];
+          CFStringRef const uti = (__bridge CFStringRef _Nonnull)(resource.uniformTypeIdentifier);
+          NSString *const mimeType = (NSString *)CFBridgingRelease(UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType));
+          
+          BOOL __block mimeTypeFound = NO;
+          [mimeTypes enumerateObjectsUsingBlock:^(NSString * _Nonnull mimeTypeFilter, NSUInteger idx, BOOL * _Nonnull stop) {
+            if ([mimeType isEqualToString:mimeTypeFilter]) {
+              mimeTypeFound = YES;
+              *stop = YES;
+            }
+          }];
+          
+          if (!mimeTypeFound) {
+            return;
+          }
+        }
+        
+        // If we've accumulated enough results to resolve a single promise
+        if (first == assets.count) {
+          *stopAssets = YES;
+          *stopCollections = YES;
+          hasNextPage = YES;
+          RCTAssert(resolvedPromise == NO, @"Resolved the promise before we finished processing the results.");
+          RCTResolvePromise(resolve, assets, hasNextPage);
+          resolvedPromise = YES;
           return;
         }
-      }
-
-      // If we've accumulated enough results to resolve a single promise
-      if (first == assets.count) {
-        *stopAssets = YES;
-        *stopCollections = YES;
-        hasNextPage = YES;
-        RCTAssert(resolvedPromise == NO, @"Resolved the promise before we finished processing the results.");
-        RCTResolvePromise(resolve, assets, hasNextPage);
-        resolvedPromise = YES;
-        return;
-      }
-
-      NSString *const assetMediaTypeLabel = (asset.mediaType == PHAssetMediaTypeVideo
-                                             ? @"video"
-                                             : (asset.mediaType == PHAssetMediaTypeImage
-                                                ? @"image"
-                                                : (asset.mediaType == PHAssetMediaTypeAudio
-                                                   ? @"audio"
-                                                   : @"unknown")));
-      CLLocation *const loc = asset.location;
-
-      // A note on isStored: in the previous code that used ALAssets, isStored
-      // was always set to YES, probably because iCloud-synced images were never returned (?).
-      // To get the "isStored" information and filename, we would need to actually request the
-      // image data from the image manager. Those operations could get really expensive and
-      // would definitely utilize the disk too much.
-      // Thus, this field is actually not reliable.
-      // Note that Android also does not return the `isStored` field at all.
-      [assets addObject:@{
-        @"node": @{
-          @"type": assetMediaTypeLabel, // TODO: switch to mimeType?
-          @"group_name": [assetCollection localizedTitle],
-          @"image": @{
-              @"uri": uri,
-              @"height": @([asset pixelHeight]),
-              @"width": @([asset pixelWidth]),
-              @"isStored": @YES, // this field doesn't seem to exist on android
-              @"playableDuration": @([asset duration]) // fractional seconds
-          },
-          @"timestamp": @(asset.creationDate.timeIntervalSince1970),
-          @"location": (loc ? @{
-            @"latitude": @(loc.coordinate.latitude),
-            @"longitude": @(loc.coordinate.longitude),
-            @"altitude": @(loc.altitude),
-            @"heading": @(loc.course),
-            @"speed": @(loc.speed), // speed in m/s
-          } : @{})
-        }
+        
+        NSString *const assetMediaTypeLabel = (asset.mediaType == PHAssetMediaTypeVideo
+                                               ? @"video"
+                                               : (asset.mediaType == PHAssetMediaTypeImage
+                                                  ? @"image"
+                                                  : (asset.mediaType == PHAssetMediaTypeAudio
+                                                     ? @"audio"
+                                                     : @"unknown")));
+        CLLocation *const loc = asset.location;
+        
+        // A note on isStored: in the previous code that used ALAssets, isStored
+        // was always set to YES, probably because iCloud-synced images were never returned (?).
+        // To get the "isStored" information and filename, we would need to actually request the
+        // image data from the image manager. Those operations could get really expensive and
+        // would definitely utilize the disk too much.
+        // Thus, this field is actually not reliable.
+        // Note that Android also does not return the `isStored` field at all.
+        [assets addObject:@{
+           @"node": @{
+             @"type": assetMediaTypeLabel, // TODO: switch to mimeType?
+             @"group_name": [assetCollection localizedTitle],
+             @"image": @{
+                 @"uri": uri,
+                 @"height": @([asset pixelHeight]),
+                 @"width": @([asset pixelWidth]),
+                 @"isStored": @YES, // this field doesn't seem to exist on android
+                 @"playableDuration": @([asset duration]) // fractional seconds
+             },
+             @"timestamp": @(asset.creationDate.timeIntervalSince1970),
+             @"location": (loc ? @{
+                 @"latitude": @(loc.coordinate.latitude),
+                 @"longitude": @(loc.coordinate.longitude),
+                 @"altitude": @(loc.altitude),
+                 @"heading": @(loc.course),
+                 @"speed": @(loc.speed), // speed in m/s
+               } : @{})
+             }
+        }];
       }];
     }];
-  }];
-
-  // If we get this far and haven't resolved the promise yet, we reached the end of the list of photos
-  if (!resolvedPromise) {
-    hasNextPage = NO;
-    RCTResolvePromise(resolve, assets, hasNextPage);
-    resolvedPromise = YES;
-  }
+    
+    // If we get this far and haven't resolved the promise yet, we reached the end of the list of photos
+    if (!resolvedPromise) {
+      hasNextPage = NO;
+      RCTResolvePromise(resolve, assets, hasNextPage);
+      resolvedPromise = YES;
+    }
+  });
 }
 
 RCT_EXPORT_METHOD(deletePhotos:(NSArray<NSString *>*)assets
