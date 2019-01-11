@@ -5,15 +5,30 @@ load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "rn_xplat_cxx_library")
 load("@fbsource//xplat/js/react-native-github/codegen:DEFS.bzl", "rn_codegen_test")
 
 fb_native.sh_binary(
+    name = "copy_fixture_schema",
+    main = "buck_tests/copy_fixture.sh",
+    resources = [
+        "buck_tests/copy-fixture.js",
+        "buck_tests/copy_fixture.sh",
+        "src/generators/__test_fixtures__/fixtures.js",
+        "xplat//js:setup_env",
+    ],
+    visibility = ["PUBLIC"],
+)
+
+fb_native.sh_binary(
     name = "rn_codegen",
     main = "buck_tests/generate_tests.sh",
     resources = glob(
         [
-            "**/*.js",
+            "buck_tests/**/*.js",
+            "src/**/*.js",
         ],
     ) + [
         "buck_tests/generate-tests.js",
+        "package.json",
         "xplat//js:setup_env",
+        "yarn.lock",
     ],
     visibility = ["PUBLIC"],
 )
