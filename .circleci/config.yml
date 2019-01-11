@@ -248,7 +248,7 @@ aliases:
 
   - &compile-native-libs
     name: Compile Native Libs for Unit and Integration Tests
-    command: ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=$BUILD_THREADS -Pcom.android.build.threadPoolSize=1
+    command: ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=$BUILD_THREADS
     no_output_timeout: 6m
 
   - &run-android-unit-tests
