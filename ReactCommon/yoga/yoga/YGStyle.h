@@ -9,7 +9,6 @@
 #include <array>
 #include <initializer_list>
 #include "CompactValue.h"
-#include "YGEnums.h"
 #include "YGFloatOptional.h"
 #include "Yoga-internal.h"
 #include "Yoga.h"
@@ -30,8 +29,7 @@ private:
 
 public:
   using Dimensions = facebook::yoga::detail::Values<2>;
-  using Edges =
-      facebook::yoga::detail::Values<facebook::yoga::enums::count<YGEdge>()>;
+  using Edges = facebook::yoga::detail::Values<YGEdgeCount>;
 
   /* Some platforms don't support enum bitfields,
      so please use BITFIELD_ENUM_SIZED(BITS_COUNT) */

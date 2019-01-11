@@ -10,8 +10,7 @@
 #include "Yoga.h"
 
 struct YGConfig {
-  std::array<bool, facebook::yoga::enums::count<YGExperimentalFeature>()>
-      experimentalFeatures = {};
+  std::array<bool, YGExperimentalFeatureCount> experimentalFeatures = {};
   bool useWebDefaults = false;
   bool useLegacyStretchBehaviour = false;
   bool shouldDiffLayoutWithoutLegacyStretchBehaviour = false;

@@ -105,7 +105,7 @@ bool YGFloatIsUndefined(const float value) {
 }
 
 detail::CompactValue YGComputedEdgeValue(
-    const YGStyle::Edges& edges,
+    const facebook::yoga::detail::Values<YGEdgeCount>& edges,
     YGEdge edge,
     detail::CompactValue defaultValue) {
   if (!edges[edge].isUndefined()) {
@@ -3546,12 +3546,14 @@ static const char* YGSpacer(const unsigned long level) {
 static const char* YGMeasureModeName(
     const YGMeasureMode mode,
     const bool performLayout) {
-  constexpr auto N = enums::count<YGMeasureMode>();
-  const char* kMeasureModeNames[N] = {"UNDEFINED", "EXACTLY", "AT_MOST"};
-  const char* kLayoutModeNames[N] = {
-      "LAY_UNDEFINED", "LAY_EXACTLY", "LAY_AT_MOST"};
+  const char* kMeasureModeNames[YGMeasureModeCount] = {
+      "UNDEFINED", "EXACTLY", "AT_MOST"};
+  const char* kLayoutModeNames[YGMeasureModeCount] = {"LAY_UNDEFINED",
+                                                      "LAY_EXACTLY",
+                                                      "LAY_AT_"
+                                                      "MOST"};
 
-  if (mode >= N) {
+  if (mode >= YGMeasureModeCount) {
     return "";
   }
 
