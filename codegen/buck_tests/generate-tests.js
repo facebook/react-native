@@ -11,29 +11,39 @@
 'use strict';
 
 const RNCodegen = require('../src/generators/RNCodegen.js');
-
-const fixtures = require('../src/generators/__test_fixtures__/fixtures.js');
+const fs = require('fs');
 const mkdirp = require('mkdirp');
 
 const args = process.argv.slice(2);
-if (args.length !== 2) {
+if (args.length !== 3) {
   throw new Error(
-    'Expected to receive the fixture name and output directory as the only arg',
+    `Expected to receive path to schema, library name, and output directory. Received ${args.join(
+      ', ',
+    )}`,
   );
 }
 
-const fixtureName = args[0];
-const outputDirectory = args[1];
+const schemaPath = args[0];
+const libraryName = args[1];
+const outputDirectory = args[2];
+
+const schemaText = fs.readFileSync(schemaPath, 'utf-8');
+
+if (schemaText == null) {
+  throw new Error(`Can't find schema at ${schemaPath}`);
+}
 
 mkdirp.sync(outputDirectory);
-const fixture = fixtures[fixtureName];
 
-if (fixture == null) {
-  throw new Error(`Can't find fixture with name ${fixtureName}`);
+let schema;
+try {
+  schema = JSON.parse(schemaText);
+} catch (err) {
+  throw new Error(`Can't parse schema to JSON. ${schemaPath}`);
 }
 
 RNCodegen.generate({
-  libraryName: fixtureName,
-  schema: fixture,
+  libraryName,
+  schema,
   outputDirectory,
 });
