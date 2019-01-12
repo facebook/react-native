@@ -32,20 +32,21 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
-/*
- * The `anchor` option takes a view to set as the anchor for the share
- * popup to point to, on iPads running iOS 8. If it is not passed, it
- * defaults to centering the share popup on screen without any arrows.
- */
-- (CGRect)sourceRectInView:(UIView *)sourceView
-             anchorViewTag:(NSNumber *)anchorViewTag
+- (void)presentViewController:(UIViewController *)alertController
+       onParentViewController:(UIViewController *)parentViewController
+                anchorViewTag:(NSNumber *)anchorViewTag
 {
+  alertController.modalPresentationStyle = UIModalPresentationPopover;
+  UIView *sourceView = parentViewController.view;
+
   if (anchorViewTag) {
-    UIView *anchorView = [self.bridge.uiManager viewForReactTag:anchorViewTag];
-    return [anchorView convertRect:anchorView.bounds toView:sourceView];
+    sourceView = [self.bridge.uiManager viewForReactTag:anchorViewTag];
   } else {
-    return (CGRect){sourceView.center, {1, 1}};
+    alertController.popoverPresentationController.permittedArrowDirections = 0;
   }
+  alertController.popoverPresentationController.sourceView = sourceView;
+  alertController.popoverPresentationController.sourceRect = sourceView.bounds;
+  [parentViewController presentViewController:alertController animated:YES completion:nil];
 }
 
 RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
@@ -79,9 +80,7 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
    * defaults to centering the share popup on screen without any arrows.
    */
   NSNumber *anchorViewTag = [RCTConvert NSNumber:options[@"anchor"]];
-  UIView *sourceView = controller.view;
-  CGRect sourceRect = [self sourceRectInView:sourceView anchorViewTag:anchorViewTag];
-
+  
   UIAlertController *alertController =
   [UIAlertController alertControllerWithTitle:title
                                       message:message
@@ -106,15 +105,8 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
     index++;
   }
 
-  alertController.modalPresentationStyle = UIModalPresentationPopover;
-  alertController.popoverPresentationController.sourceView = sourceView;
-  alertController.popoverPresentationController.sourceRect = sourceRect;
-  if (!anchorViewTag) {
-    alertController.popoverPresentationController.permittedArrowDirections = 0;
-  }
-  [controller presentViewController:alertController animated:YES completion:nil];
-
   alertController.view.tintColor = [RCTConvert UIColor:options[@"tintColor"]];
+  [self presentViewController:alertController onParentViewController:controller anchorViewTag:anchorViewTag];
 }
 
 RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
@@ -173,17 +165,10 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
     }
   };
 
-  shareController.modalPresentationStyle = UIModalPresentationPopover;
   NSNumber *anchorViewTag = [RCTConvert NSNumber:options[@"anchor"]];
-  if (!anchorViewTag) {
-    shareController.popoverPresentationController.permittedArrowDirections = 0;
-  }
-  shareController.popoverPresentationController.sourceView = controller.view;
-  shareController.popoverPresentationController.sourceRect = [self sourceRectInView:controller.view anchorViewTag:anchorViewTag];
-
-  [controller presentViewController:shareController animated:YES completion:nil];
-
   shareController.view.tintColor = [RCTConvert UIColor:options[@"tintColor"]];
+  
+  [self presentViewController:shareController onParentViewController:controller anchorViewTag:anchorViewTag];
 }
 
 @end

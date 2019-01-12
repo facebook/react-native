@@ -8,39 +8,54 @@
 #include <algorithm>
 #include <array>
 #include <initializer_list>
+#include "CompactValue.h"
+#include "YGEnums.h"
 #include "YGFloatOptional.h"
 #include "Yoga-internal.h"
 #include "Yoga.h"
+
+#if !defined(ENUM_BITFIELDS_NOT_SUPPORTED)
+#define BITFIELD_ENUM_SIZED(num) : num
+#else
+#define BITFIELD_ENUM_SIZED(num)
+#endif
 
 constexpr YGValue kYGValueUndefined = {0, YGUnitUndefined};
 
 constexpr YGValue kYGValueAuto = {0, YGUnitAuto};
 
 struct YGStyle {
-  using Dimensions = facebook::yoga::detail::Values<2>;
-  using Edges = facebook::yoga::detail::Values<YGEdgeCount>;
+private:
+  using CompactValue = facebook::yoga::detail::CompactValue;
 
-  YGDirection direction : 2;
-  YGFlexDirection flexDirection : 2;
-  YGJustify justifyContent : 3;
-  YGAlign alignContent : 3;
-  YGAlign alignItems : 3;
-  YGAlign alignSelf : 3;
-  YGPositionType positionType : 1;
-  YGWrap flexWrap : 2;
-  YGOverflow overflow : 2;
-  YGDisplay display : 1;
+public:
+  using Dimensions = facebook::yoga::detail::Values<2>;
+  using Edges =
+      facebook::yoga::detail::Values<facebook::yoga::enums::count<YGEdge>()>;
+
+  /* Some platforms don't support enum bitfields,
+     so please use BITFIELD_ENUM_SIZED(BITS_COUNT) */
+  YGDirection direction BITFIELD_ENUM_SIZED(2);
+  YGFlexDirection flexDirection BITFIELD_ENUM_SIZED(2);
+  YGJustify justifyContent BITFIELD_ENUM_SIZED(3);
+  YGAlign alignContent BITFIELD_ENUM_SIZED(3);
+  YGAlign alignItems BITFIELD_ENUM_SIZED(3);
+  YGAlign alignSelf BITFIELD_ENUM_SIZED(3);
+  YGPositionType positionType BITFIELD_ENUM_SIZED(1);
+  YGWrap flexWrap BITFIELD_ENUM_SIZED(2);
+  YGOverflow overflow BITFIELD_ENUM_SIZED(2);
+  YGDisplay display BITFIELD_ENUM_SIZED(1);
   YGFloatOptional flex = {};
   YGFloatOptional flexGrow = {};
   YGFloatOptional flexShrink = {};
-  YGValue flexBasis = kYGValueAuto;
-  Edges margin{kYGValueUndefined};
-  Edges position{kYGValueUndefined};
-  Edges padding{kYGValueUndefined};
-  Edges border{kYGValueUndefined};
-  Dimensions dimensions{kYGValueAuto};
-  Dimensions minDimensions{kYGValueUndefined};
-  Dimensions maxDimensions{kYGValueUndefined};
+  CompactValue flexBasis = CompactValue::ofAuto();
+  Edges margin = {};
+  Edges position = {};
+  Edges padding = {};
+  Edges border = {};
+  Dimensions dimensions{CompactValue::ofAuto()};
+  Dimensions minDimensions = {};
+  Dimensions maxDimensions = {};
   // Yoga specific properties, not compatible with flexbox specification
   YGFloatOptional aspectRatio = {};
 

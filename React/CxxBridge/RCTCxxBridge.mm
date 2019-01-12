@@ -458,6 +458,12 @@ struct RCTInstanceCallback : public InstanceCallback {
 
   RCTModuleData *moduleData = _moduleDataByName[moduleName];
   if (moduleData) {
+    if (![moduleData isKindOfClass:[RCTModuleData class]]) {
+      // There is rare race condition where the data stored in the dictionary
+      // may have been deallocated, which means the module instance is no longer
+      // usable.
+      return nil;
+    }
     return moduleData.instance;
   }
 

@@ -85,9 +85,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   private static void buildSpannedFromShadowNode(
       ReactBaseTextShadowNode textShadowNode,
       SpannableStringBuilder sb,
-      List<SetSpanOperation> ops) {
-
-    int start = sb.length();
+      List<SetSpanOperation> ops,
+      int start) {
 
     for (int i = 0, length = textShadowNode.getChildCount(); i < length; i++) {
       ReactShadowNode child = textShadowNode.getChildAt(i);
@@ -95,7 +94,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       if (child instanceof ReactRawTextShadowNode) {
         sb.append(((ReactRawTextShadowNode) child).getText());
       } else if (child instanceof ReactBaseTextShadowNode) {
-        buildSpannedFromShadowNode((ReactBaseTextShadowNode) child, sb, ops);
+        buildSpannedFromShadowNode((ReactBaseTextShadowNode) child, sb, ops, sb.length());
       } else if (child instanceof ReactTextInlineImageShadowNode) {
         // We make the image take up 1 character in the span and put a corresponding character into
         // the text so that the image doesn't run over any following text.
@@ -201,11 +200,13 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     // a new spannable will be wiped out
     List<SetSpanOperation> ops = new ArrayList<>();
 
-    buildSpannedFromShadowNode(textShadowNode, sb, ops);
-
     if (text != null) {
+      // Handle text that is provided via a prop (e.g. the `value` and `defaultValue` props on
+      // TextInput).
       sb.append(text);
     }
+
+    buildSpannedFromShadowNode(textShadowNode, sb, ops, 0);
 
     if (textShadowNode.mFontSize == UNSET) {
       int defaultFontSize = textShadowNode.getDefaultFontSize();

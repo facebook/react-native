@@ -23,7 +23,9 @@ const alertMessage =
 /**
  * Simple alert examples.
  */
-class SimpleAlertExampleBlock extends React.Component {
+type Props = $ReadOnly<{||}>;
+
+class SimpleAlertExampleBlock extends React.Component<Props> {
   render() {
     return (
       <View>

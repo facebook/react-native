@@ -12,12 +12,13 @@
 #include "Yoga-internal.h"
 
 struct YGNode {
- private:
+private:
   void* context_ = nullptr;
   YGPrintFunc print_ = nullptr;
-  bool hasNewLayout_ = true;
-  bool isReferenceBaseline_ = false;
-  YGNodeType nodeType_ = YGNodeTypeDefault;
+  bool hasNewLayout_ : 1;
+  bool isReferenceBaseline_ : 1;
+  bool isDirty_ : 1;
+  YGNodeType nodeType_ : 1;
   YGMeasureFunc measure_ = nullptr;
   YGBaselineFunc baseline_ = nullptr;
   YGDirtiedFunc dirtied_ = nullptr;
@@ -27,7 +28,6 @@ struct YGNode {
   YGNodeRef owner_ = nullptr;
   YGVector children_ = {};
   YGConfigRef config_ = nullptr;
-  bool isDirty_ = false;
   std::array<YGValue, 2> resolvedDimensions_ = {
       {YGValueUndefined, YGValueUndefined}};
 
@@ -35,8 +35,12 @@ struct YGNode {
       const YGFlexDirection axis,
       const float axisSize) const;
 
- public:
-  YGNode() = default;
+public:
+  YGNode()
+      : hasNewLayout_(true),
+        isReferenceBaseline_(false),
+        isDirty_(false),
+        nodeType_(YGNodeTypeDefault) {}
   ~YGNode() = default; // cleanup of owner/children relationships in YGNodeFree
   explicit YGNode(const YGConfigRef newConfig) : config_(newConfig){};
   YGNode(const YGNode& node) = default;

@@ -87,7 +87,7 @@ public class UIImplementation {
         minTimeLeftInFrameForNonBatchedOperationMs);
   }
 
-  private UIImplementation(
+  UIImplementation(
       ReactApplicationContext reactContext,
       ViewManagerRegistry viewManagers,
       EventDispatcher eventDispatcher,

@@ -6,6 +6,10 @@
 apply plugin: 'maven'
 apply plugin: 'signing'
 
+ext {
+    AAR_OUTPUT_URL = "file://${projectDir}/../android"
+}
+
 // Gradle tasks for publishing to maven
 // 1) To install in local maven repo use :installArchives task
 // 2) To upload artifact to maven central use: :uploadArchives (you'd need to have the permission to do that)
@@ -15,15 +19,15 @@ def isReleaseBuild() {
 }
 
 def getRepositoryUrl() {
-    return project.hasProperty('repositoryUrl') ? property('repositoryUrl') : 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+    return project.findProperty('repositoryUrl') ?: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
 }
 
 def getRepositoryUsername() {
-    return project.hasProperty('repositoryUsername') ? property('repositoryUsername') : ''
+    return project.findProperty('repositoryUsername') ?: ''
 }
 
 def getRepositoryPassword() {
-    return project.hasProperty('repositoryPassword') ? property('repositoryPassword') : ''
+    return project.findProperty('repositoryPassword') ?: ''
 }
 
 def configureReactNativePom(def pom) {
@@ -128,7 +132,7 @@ afterEvaluate { project ->
         configuration = configurations.archives
         repositories.mavenDeployer {
             // Deploy to react-native/android, ready to publish to npm
-            repository url: "file://${projectDir}/../android"
+            repository url: AAR_OUTPUT_URL
 
             configureReactNativePom pom
         }

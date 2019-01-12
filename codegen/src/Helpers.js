@@ -4,20 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow strict
+ * @format
  */
 
 'use strict';
 
-export type PlatformSelectSpec<A, I> = {|
-  android: A,
-  ios: I,
-|};
+function upperCaseFirst(inString: string): string {
+  return inString[0].toUpperCase() + inString.slice(1);
+}
 
-const PlatformOS = {
-  OS: 'ios',
-  select: <A, I>(spec: PlatformSelectSpec<A, I>): A | I => spec.ios,
+module.exports = {
+  upperCaseFirst,
 };
-
-module.exports = PlatformOS;

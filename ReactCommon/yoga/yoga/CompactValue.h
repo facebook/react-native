@@ -6,7 +6,7 @@
  */
 #pragma once
 
-#include <yoga/YGValue.h>
+#include "YGValue.h"
 
 #include <cmath>
 #include <cstdint>
@@ -42,7 +42,7 @@ namespace detail {
 class CompactValue {
   friend constexpr bool operator==(CompactValue, CompactValue) noexcept;
 
- public:
+public:
   static constexpr auto LOWER_BOUND = 1.08420217e-19f;
   static constexpr auto UPPER_BOUND_POINT = 36893485948395847680.0f;
   static constexpr auto UPPER_BOUND_PERCENT = 18446742974197923840.0f;
@@ -71,6 +71,10 @@ class CompactValue {
   template <YGUnit Unit>
   static CompactValue ofMaybe(float value) noexcept {
     return std::isnan(value) ? ofUndefined() : of<Unit>(value);
+  }
+
+  static constexpr CompactValue ofZero() noexcept {
+    return CompactValue{Payload{ZERO_BITS_POINT}};
   }
 
   static constexpr CompactValue ofUndefined() noexcept {
@@ -133,7 +137,7 @@ class CompactValue {
     return payload_.repr == AUTO_BITS;
   }
 
- private:
+private:
   union Payload {
     float value;
     uint32_t repr;

@@ -1,7 +1,7 @@
-load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "flags", "get_debug_preprocessor_flags", "get_static_library_ios_flags")
-load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "get_apple_inspector_flags", "rn_xplat_cxx_library")
 load("@fbsource//tools/build_defs:default_platform_defs.bzl", "ANDROID", "APPLE")
 load("@fbsource//tools/build_defs:glob_defs.bzl", "subdir_glob")
+load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "flags", "get_debug_preprocessor_flags", "get_static_library_ios_flags")
+load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "get_apple_inspector_flags", "rn_xplat_cxx_library")
 
 APPLE_COMPILER_FLAGS = flags.get_flag_value(
     get_static_library_ios_flags(),

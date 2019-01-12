@@ -9,6 +9,7 @@
 #include <array>
 #include <cmath>
 #include <vector>
+#include "CompactValue.h"
 #include "Yoga.h"
 
 using YGVector = std::vector<YGNodeRef>;
@@ -54,8 +55,8 @@ struct YGCachedMeasurement {
   YGCachedMeasurement()
       : availableWidth(0),
         availableHeight(0),
-        widthMeasureMode((YGMeasureMode)-1),
-        heightMeasureMode((YGMeasureMode)-1),
+        widthMeasureMode((YGMeasureMode) -1),
+        heightMeasureMode((YGMeasureMode) -1),
         computedWidth(-1),
         computedHeight(-1) {}
 
@@ -94,19 +95,19 @@ namespace detail {
 
 template <size_t Size>
 class Values {
- private:
-  std::array<YGValue, Size> values_;
+private:
+  std::array<CompactValue, Size> values_;
 
- public:
+public:
   Values() = default;
   explicit Values(const YGValue& defaultValue) noexcept {
     values_.fill(defaultValue);
   }
 
-  const YGValue& operator[](size_t i) const noexcept {
+  const CompactValue& operator[](size_t i) const noexcept {
     return values_[i];
   }
-  YGValue& operator[](size_t i) noexcept {
+  CompactValue& operator[](size_t i) noexcept {
     return values_[i];
   }
 
@@ -118,6 +119,11 @@ class Values {
   template <size_t I>
   void set(YGValue& value) noexcept {
     std::get<I>(values_) = value;
+  }
+
+  template <size_t I>
+  void set(YGValue&& value) noexcept {
+    set<I>(value);
   }
 
   bool operator==(const Values& other) const noexcept {
@@ -142,7 +148,8 @@ static const float kWebDefaultFlexShrink = 1.0f;
 
 extern bool YGFloatsEqual(const float a, const float b);
 extern bool YGValueEqual(const YGValue a, const YGValue b);
-extern const YGValue* YGComputedEdgeValue(
-    const facebook::yoga::detail::Values<YGEdgeCount>& edges,
-    const YGEdge edge,
-    const YGValue* const defaultValue);
+extern facebook::yoga::detail::CompactValue YGComputedEdgeValue(
+    const facebook::yoga::detail::Values<
+        facebook::yoga::enums::count<YGEdge>()>& edges,
+    YGEdge edge,
+    facebook::yoga::detail::CompactValue defaultValue);

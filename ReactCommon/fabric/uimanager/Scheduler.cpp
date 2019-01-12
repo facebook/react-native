@@ -18,8 +18,7 @@
 namespace facebook {
 namespace react {
 
-Scheduler::Scheduler(const SharedContextContainer &contextContainer)
-    : contextContainer_(contextContainer) {
+Scheduler::Scheduler(const SharedContextContainer &contextContainer) {
   const auto asynchronousEventBeatFactory =
       contextContainer->getInstance<EventBeatFactory>("asynchronous");
   const auto synchronousEventBeatFactory =
@@ -29,7 +28,8 @@ Scheduler::Scheduler(const SharedContextContainer &contextContainer)
       contextContainer->getInstance<RuntimeExecutor>("runtime-executor");
 
   reactNativeConfig_ =
-      contextContainer->getInstance<std::shared_ptr<const ReactNativeConfig>>();
+      contextContainer->getInstance<std::shared_ptr<const ReactNativeConfig>>(
+          "ReactNativeConfig");
 
   auto uiManager = std::make_unique<UIManager>();
   auto &uiManagerRef = *uiManager;
@@ -174,7 +174,7 @@ void Scheduler::uiManagerDidFinishTransaction(
     SurfaceId surfaceId,
     const SharedShadowNodeUnsharedList &rootChildNodes) {
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree &shadowTree) {
-    shadowTree.complete(rootChildNodes);
+    shadowTree.synchronize([&]() { shadowTree.complete(rootChildNodes); });
   });
 }
 

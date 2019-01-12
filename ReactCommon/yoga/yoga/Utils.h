@@ -7,6 +7,7 @@
 #pragma once
 #include "YGNode.h"
 #include "Yoga-internal.h"
+#include "CompactValue.h"
 
 // This struct is an helper model to hold the data for step 4 of flexbox
 // algo, which is collecting the flex items in a line.
@@ -124,8 +125,7 @@ inline YGFlexDirection YGResolveFlexDirection(
 }
 
 inline YGFloatOptional YGResolveValueMargin(
-    const YGValue value,
+    yoga::detail::CompactValue value,
     const float ownerSize) {
-  return value.unit == YGUnitAuto ? YGFloatOptional(0)
-                                  : YGResolveValue(value, ownerSize);
+  return value.isAuto() ? YGFloatOptional{0} : YGResolveValue(value, ownerSize);
 }
