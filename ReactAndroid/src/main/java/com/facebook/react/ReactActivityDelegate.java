@@ -7,6 +7,7 @@ package com.facebook.react;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.support.v4.app.FragmentActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -28,7 +29,7 @@ import javax.annotation.Nullable;
  */
 public class ReactActivityDelegate {
 
-  private final @Nullable Activity mActivity;
+  private final @Nullable ReactActivity mActivity;
   private final @Nullable String mMainComponentName;
 
   private @Nullable ReactRootView mReactRootView;
@@ -36,8 +37,14 @@ public class ReactActivityDelegate {
   private @Nullable PermissionListener mPermissionListener;
   private @Nullable Callback mPermissionsCallback;
 
-  public ReactActivityDelegate(Activity activity, @Nullable String mainComponentName) {
+  public ReactActivityDelegate(ReactActivity activity, @Nullable String mainComponentName) {
     mActivity = activity;
+    mMainComponentName = mainComponentName;
+  }
+
+  @Deprecated
+  public ReactActivityDelegate(FragmentActivity activity, @Nullable String mainComponentName) {
+    mActivity = (ReactActivity) activity;
     mMainComponentName = mainComponentName;
   }
 
