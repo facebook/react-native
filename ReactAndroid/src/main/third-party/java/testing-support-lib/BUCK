@@ -1,5 +1,5 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "rn_android_prebuilt_aar")
 load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+load("//tools/build_defs/oss:rn_defs.bzl", "rn_android_prebuilt_aar")
 
 rn_android_prebuilt_aar(
     name = "runner",

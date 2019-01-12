@@ -891,6 +891,10 @@ const TextInput = createReactClass({
       // tag is null only in unit tests
       TextInputState.registerInput(tag);
     }
+
+    if (this.props.autoFocus) {
+      this._rafId = requestAnimationFrame(this.focus);
+    }
   },
 
   componentWillUnmount: function() {

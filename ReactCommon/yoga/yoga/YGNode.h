@@ -12,7 +12,7 @@
 #include "Yoga-internal.h"
 
 struct YGNode {
- private:
+private:
   void* context_ = nullptr;
   YGPrintFunc print_ = nullptr;
   bool hasNewLayout_ : 1;
@@ -35,7 +35,7 @@ struct YGNode {
       const YGFlexDirection axis,
       const float axisSize) const;
 
- public:
+public:
   YGNode()
       : hasNewLayout_(true),
         isReferenceBaseline_(false),

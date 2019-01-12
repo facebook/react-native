@@ -113,7 +113,8 @@ void YGNode::setMeasureFunc(YGMeasureFunc measureFunc) {
     YGAssertWithNode(
         this,
         children_.size() == 0,
-        "Cannot set measure function: Nodes with measure functions cannot have children.");
+        "Cannot set measure function: Nodes with measure functions cannot have "
+        "children.");
     measure_ = measureFunc;
     // TODO: t18095186 Move nodeType to opt-in function and mark appropriate
     // places in Litho
@@ -312,7 +313,8 @@ YGValue YGNode::resolveFlexBasisPtr() const {
 }
 
 void YGNode::resolveDimension() {
-  for (uint32_t dim = YGDimensionWidth; dim < YGDimensionCount; dim++) {
+  using namespace yoga;
+  for (int dim = YGDimensionWidth; dim < enums::count<YGDimension>(); dim++) {
     if (!getStyle().maxDimensions[dim].isUndefined() &&
         YGValueEqual(
             getStyle().maxDimensions[dim], style_.minDimensions[dim])) {

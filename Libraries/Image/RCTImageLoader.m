@@ -236,7 +236,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     return image;
 }
 
-- (RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
+- (RCTImageLoaderCancellationBlock) loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
                                                   callback:(RCTImageLoaderCompletionBlock)callback
 {
     return [self loadImageWithURLRequest:imageURLRequest
