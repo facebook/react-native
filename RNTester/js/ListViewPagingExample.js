@@ -88,9 +88,6 @@ class Thumb extends React.Component<{}, $FlowFixMeState> {
 }
 
 class ListViewPagingExample extends React.Component<$FlowFixMeProps, *> {
-  static title = '<ListView> - Paging';
-  static description = 'Floating headers & layout animations.';
-
   // $FlowFixMe found when converting React.createClass to ES6
   constructor(props) {
     super(props);
@@ -223,13 +220,6 @@ const styles = StyleSheet.create({
     color: 'white',
     paddingHorizontal: 8,
   },
-  rowText: {
-    color: '#888888',
-  },
-  thumbText: {
-    fontSize: 20,
-    color: '#888888',
-  },
   buttonContents: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -289,4 +279,13 @@ const layoutAnimationConfigs = [
   animations.layout.easeInEaseOut,
 ];
 
-module.exports = ListViewPagingExample;
+exports.title = '<ListView> - Paging';
+exports.description = 'Floating headers & layout animations.';
+exports.examples = [
+  {
+    title: 'Simple list view with pagination',
+    render: function(): React.Element<typeof ListViewPagingExample> {
+      return <ListViewPagingExample />;
+    },
+  },
+];

@@ -7,9 +7,9 @@
 
 #import "RCTScheduler.h"
 
-#import <fabric/uimanager/ContextContainer.h>
-#import <fabric/uimanager/Scheduler.h>
-#import <fabric/uimanager/SchedulerDelegate.h>
+#import <react/uimanager/ContextContainer.h>
+#import <react/uimanager/Scheduler.h>
+#import <react/uimanager/SchedulerDelegate.h>
 
 #import <React/RCTFollyConvert.h>
 
@@ -27,9 +27,13 @@ public:
     [scheduler.delegate schedulerDidFinishTransaction:mutations rootTag:rootTag];
   }
 
-  void schedulerDidRequestPreliminaryViewAllocation(ComponentName componentName) override {
+  void schedulerDidRequestPreliminaryViewAllocation(SurfaceId surfaceId, ComponentName componentName, bool isLayoutable, ComponentHandle componentHandle) override {
+    if (!isLayoutable) {
+      return;
+    }
+
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
-    [scheduler.delegate schedulerDidRequestPreliminaryViewAllocationWithComponentName:RCTNSStringFromString(componentName, NSASCIIStringEncoding)];
+    [scheduler.delegate schedulerOptimisticallyCreateComponentViewWithComponentHandle:componentHandle];
   }
 
 private:
@@ -63,13 +67,18 @@ private:
                 layoutConstraints:(LayoutConstraints)layoutConstraints
                     layoutContext:(LayoutContext)layoutContext;
 {
+  auto props = convertIdToFollyDynamic(initialProps);
   _scheduler->startSurface(
-    surfaceId,
-    RCTStringFromNSString(moduleName),
-    convertIdToFollyDynamic(initialProps),
-    layoutConstraints,
-    layoutContext
-  );
+      surfaceId,
+      RCTStringFromNSString(moduleName),
+      props,
+      layoutConstraints,
+      layoutContext);
+  _scheduler->renderTemplateToSurface(
+      surfaceId,
+      props.getDefault("navigationConfig")
+          .getDefault("initialUITemplate", "")
+          .getString());
 }
 
 - (void)stopSurfaceWithSurfaceId:(SurfaceId)surfaceId
@@ -89,15 +98,6 @@ private:
                                            surfaceId:(SurfaceId)surfaceId
 {
   _scheduler->constraintSurfaceLayout(surfaceId, layoutConstraints, layoutContext);
-}
-
-@end
-
-@implementation RCTScheduler (Deprecated)
-
-- (std::shared_ptr<FabricUIManager>)uiManager_DO_NOT_USE
-{
-  return _scheduler->getUIManager_DO_NOT_USE();
 }
 
 @end

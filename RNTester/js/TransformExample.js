@@ -54,10 +54,8 @@ class Flip extends React.Component<{}, $FlowFixMeState> {
         <Animated.View
           style={[
             styles.flipCard,
+            styles.flipCard1,
             {
-              position: 'absolute',
-              top: 0,
-              backgroundColor: 'red',
               transform: [
                 {perspective: 850},
                 {
@@ -177,6 +175,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'blue',
     backfaceVisibility: 'hidden',
+  },
+  flipCard1: {
+    position: 'absolute',
+    top: 0,
+    backgroundColor: 'red',
   },
   flipText: {
     width: 90,

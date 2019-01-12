@@ -846,8 +846,6 @@
 		53D1239F1FBF1EFB001B8A10 /* Yoga-internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 53CBF1851FB4FE80002CBB31 /* Yoga-internal.h */; };
 		53D123A01FBF1EFF001B8A10 /* Yoga.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53CBF1871FB4FE80002CBB31 /* Yoga.cpp */; };
 		53D123A11FBF1EFF001B8A10 /* Yoga.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53CBF1871FB4FE80002CBB31 /* Yoga.cpp */; };
-		53DEF6EA205AE5A0006A3890 /* YGFloatOptional.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53DEF6E6205AE59B006A3890 /* YGFloatOptional.cpp */; };
-		53DEF6EB205AE5A1006A3890 /* YGFloatOptional.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53DEF6E6205AE59B006A3890 /* YGFloatOptional.cpp */; };
 		53DEF6EC205AE5A6006A3890 /* YGFloatOptional.h in Headers */ = {isa = PBXBuildFile; fileRef = 53DEF6E7205AE59C006A3890 /* YGFloatOptional.h */; };
 		53DEF6ED205AE5A7006A3890 /* YGFloatOptional.h in Headers */ = {isa = PBXBuildFile; fileRef = 53DEF6E7205AE59C006A3890 /* YGFloatOptional.h */; };
 		53EC85E21FDEC75F0051B2B5 /* YGNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53EC85DF1FDEC75A0051B2B5 /* YGNode.cpp */; };
@@ -1069,13 +1067,32 @@
 		A2440AA21DF8D854006E7BFC /* RCTReloadCommand.h in Headers */ = {isa = PBXBuildFile; fileRef = A2440AA01DF8D854006E7BFC /* RCTReloadCommand.h */; };
 		A2440AA31DF8D854006E7BFC /* RCTReloadCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = A2440AA11DF8D854006E7BFC /* RCTReloadCommand.m */; };
 		A2440AA41DF8D865006E7BFC /* RCTReloadCommand.h in Headers */ = {isa = PBXBuildFile; fileRef = A2440AA01DF8D854006E7BFC /* RCTReloadCommand.h */; };
+		AC6B69E321B1467C00B2B68A /* YGValue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC6B69E121B1467C00B2B68A /* YGValue.cpp */; };
+		AC6B69E421B1467C00B2B68A /* YGValue.h in Headers */ = {isa = PBXBuildFile; fileRef = AC6B69E221B1467C00B2B68A /* YGValue.h */; };
+		AC6B69E521B1469A00B2B68A /* YGValue.h in Headers */ = {isa = PBXBuildFile; fileRef = AC6B69E221B1467C00B2B68A /* YGValue.h */; };
+		AC6B69E621B146A500B2B68A /* YGValue.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = AC6B69E221B1467C00B2B68A /* YGValue.h */; };
+		AC6B69E721B146B400B2B68A /* YGValue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC6B69E121B1467C00B2B68A /* YGValue.cpp */; };
+		AC6B69E821B146C500B2B68A /* YGValue.h in Headers */ = {isa = PBXBuildFile; fileRef = AC6B69E221B1467C00B2B68A /* YGValue.h */; };
+		AC6B69E921B146DB00B2B68A /* YGValue.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = AC6B69E221B1467C00B2B68A /* YGValue.h */; };
+		AC6B69EA21B146E700B2B68A /* YGValue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC6B69E121B1467C00B2B68A /* YGValue.cpp */; };
 		AC70D2E91DE489E4002E6351 /* RCTJavaScriptLoader.mm in Sources */ = {isa = PBXBuildFile; fileRef = AC70D2E81DE489E4002E6351 /* RCTJavaScriptLoader.mm */; };
+		AC71763521B0274000C06877 /* YGConfig.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5CE2080120772F7C009A43B3 /* YGConfig.h */; };
+		AC71763621B0274A00C06877 /* YGMarker.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = AC8360CC21B0256A00FC46B9 /* YGMarker.h */; };
+		AC8360CD21B0256A00FC46B9 /* YGMarker.h in Headers */ = {isa = PBXBuildFile; fileRef = AC8360CC21B0256A00FC46B9 /* YGMarker.h */; };
+		AC8360CE21B0256A00FC46B9 /* YGMarker.h in Headers */ = {isa = PBXBuildFile; fileRef = AC8360CC21B0256A00FC46B9 /* YGMarker.h */; };
+		AC8360CF21B0258B00FC46B9 /* YGConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CE2080120772F7C009A43B3 /* YGConfig.h */; };
+		AC8360D121B025BC00FC46B9 /* YGConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE2080020772F7C009A43B3 /* YGConfig.cpp */; };
+		AC8360D221B025EF00FC46B9 /* YGConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CE2080120772F7C009A43B3 /* YGConfig.h */; };
+		AC8360D321B0263000FC46B9 /* YGMarker.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = AC8360CC21B0256A00FC46B9 /* YGMarker.h */; };
+		AC90463E21C91CC2005B24B3 /* CompactValue.h in Headers */ = {isa = PBXBuildFile; fileRef = AC90463D21C91CC2005B24B3 /* CompactValue.h */; };
+		AC90463F21C91D02005B24B3 /* CompactValue.h in Headers */ = {isa = PBXBuildFile; fileRef = AC90463D21C91CC2005B24B3 /* CompactValue.h */; };
+		AC90464021C91D14005B24B3 /* CompactValue.h in Headers */ = {isa = PBXBuildFile; fileRef = AC90463D21C91CC2005B24B3 /* CompactValue.h */; };
+		AC90464121C91DB8005B24B3 /* YGConfig.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5CE2080120772F7C009A43B3 /* YGConfig.h */; };
 		B233E6EA1D2D845D00BC68BA /* RCTI18nManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B233E6E91D2D845D00BC68BA /* RCTI18nManager.m */; };
 		B95154321D1B34B200FE7B80 /* RCTActivityIndicatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = B95154311D1B34B200FE7B80 /* RCTActivityIndicatorView.m */; };
 		BA0501AD2109DCF200A6BBC4 /* ReactMarker.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 13DA8A2F2097A90A00276ED4 /* ReactMarker.h */; };
 		BA0501AE2109DD0600A6BBC4 /* JSExecutor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E223624320875A8000108244 /* JSExecutor.cpp */; };
 		BA0501B02109DD1800A6BBC4 /* YGConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE2080020772F7C009A43B3 /* YGConfig.cpp */; };
-		BA0501B12109DD1C00A6BBC4 /* YGConfig.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5CE2080120772F7C009A43B3 /* YGConfig.h */; };
 		C60128AB1F3D1258009DF9FF /* RCTCxxConvert.h in Headers */ = {isa = PBXBuildFile; fileRef = C60128A91F3D1258009DF9FF /* RCTCxxConvert.h */; };
 		C60128AC1F3D1258009DF9FF /* RCTCxxConvert.h in Headers */ = {isa = PBXBuildFile; fileRef = C60128A91F3D1258009DF9FF /* RCTCxxConvert.h */; };
 		C60128AD1F3D1258009DF9FF /* RCTCxxConvert.m in Sources */ = {isa = PBXBuildFile; fileRef = C60128AA1F3D1258009DF9FF /* RCTCxxConvert.m */; };
@@ -1486,7 +1503,9 @@
 			dstPath = include/yoga;
 			dstSubfolderSpec = 16;
 			files = (
-				BA0501B12109DD1C00A6BBC4 /* YGConfig.h in Copy Headers */,
+				AC6B69E921B146DB00B2B68A /* YGValue.h in Copy Headers */,
+				AC71763621B0274A00C06877 /* YGMarker.h in Copy Headers */,
+				AC71763521B0274000C06877 /* YGConfig.h in Copy Headers */,
 				3DFE0D1A1DF8575800459392 /* YGEnums.h in Copy Headers */,
 				3DFE0D1B1DF8575800459392 /* YGMacros.h in Copy Headers */,
 				3DFE0D1C1DF8575800459392 /* Yoga.h in Copy Headers */,
@@ -1685,6 +1704,9 @@
 			dstPath = include/yoga;
 			dstSubfolderSpec = 16;
 			files = (
+				AC90464121C91DB8005B24B3 /* YGConfig.h in Copy Headers */,
+				AC6B69E621B146A500B2B68A /* YGValue.h in Copy Headers */,
+				AC8360D321B0263000FC46B9 /* YGMarker.h in Copy Headers */,
 				3DE4F8681DF85D8E00B9E5A0 /* YGEnums.h in Copy Headers */,
 				3DE4F8691DF85D8E00B9E5A0 /* YGMacros.h in Copy Headers */,
 				3DE4F86A1DF85D8E00B9E5A0 /* Yoga.h in Copy Headers */,
@@ -2085,7 +2107,6 @@
 		53CBF1861FB4FE80002CBB31 /* YGEnums.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = YGEnums.cpp; sourceTree = "<group>"; };
 		53CBF1871FB4FE80002CBB31 /* Yoga.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Yoga.cpp; sourceTree = "<group>"; };
 		53D123831FBF1D49001B8A10 /* libyoga.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libyoga.a; path = "../../../../../../../../../Library/Developer/Xcode/DerivedData/yoga-hdfifpwsinitsibujacpiefkjfdy/Build/Products/Debug/libyoga.a"; sourceTree = "<group>"; };
-		53DEF6E6205AE59B006A3890 /* YGFloatOptional.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = YGFloatOptional.cpp; sourceTree = "<group>"; };
 		53DEF6E7205AE59C006A3890 /* YGFloatOptional.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YGFloatOptional.h; sourceTree = "<group>"; };
 		53EC85DE1FDEC75A0051B2B5 /* YGNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YGNode.h; sourceTree = "<group>"; };
 		53EC85DF1FDEC75A0051B2B5 /* YGNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = YGNode.cpp; sourceTree = "<group>"; };
@@ -2205,8 +2226,12 @@
 		91076A881F743AB00081B4FA /* RCTModalManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTModalManager.h; sourceTree = "<group>"; };
 		A2440AA01DF8D854006E7BFC /* RCTReloadCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTReloadCommand.h; sourceTree = "<group>"; };
 		A2440AA11DF8D854006E7BFC /* RCTReloadCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTReloadCommand.m; sourceTree = "<group>"; };
+		AC6B69E121B1467C00B2B68A /* YGValue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = YGValue.cpp; sourceTree = "<group>"; };
+		AC6B69E221B1467C00B2B68A /* YGValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YGValue.h; sourceTree = "<group>"; };
 		AC70D2E81DE489E4002E6351 /* RCTJavaScriptLoader.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTJavaScriptLoader.mm; sourceTree = "<group>"; };
 		AC70D2EB1DE48A22002E6351 /* JSBundleType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSBundleType.cpp; sourceTree = "<group>"; };
+		AC8360CC21B0256A00FC46B9 /* YGMarker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YGMarker.h; sourceTree = "<group>"; };
+		AC90463D21C91CC2005B24B3 /* CompactValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CompactValue.h; sourceTree = "<group>"; };
 		ACDD3FDA1BC7430D00E7DE33 /* RCTBorderStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTBorderStyle.h; sourceTree = "<group>"; };
 		B233E6E81D2D843200BC68BA /* RCTI18nManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTI18nManager.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		B233E6E91D2D845D00BC68BA /* RCTI18nManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTI18nManager.m; sourceTree = "<group>"; };
@@ -2329,9 +2354,12 @@
 		130A77021DF767AF001F9587 /* yoga */ = {
 			isa = PBXGroup;
 			children = (
+				AC90463D21C91CC2005B24B3 /* CompactValue.h */,
+				AC6B69E121B1467C00B2B68A /* YGValue.cpp */,
+				AC6B69E221B1467C00B2B68A /* YGValue.h */,
+				AC8360CC21B0256A00FC46B9 /* YGMarker.h */,
 				5CE2080020772F7C009A43B3 /* YGConfig.cpp */,
 				5CE2080120772F7C009A43B3 /* YGConfig.h */,
-				53DEF6E6205AE59B006A3890 /* YGFloatOptional.cpp */,
 				53DEF6E7205AE59C006A3890 /* YGFloatOptional.h */,
 				5343895E203905B6008E0CB3 /* YGLayout.cpp */,
 				5343895F203905B6008E0CB3 /* YGLayout.h */,
@@ -3255,6 +3283,10 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AC90463F21C91D02005B24B3 /* CompactValue.h in Headers */,
+				AC6B69E821B146C500B2B68A /* YGValue.h in Headers */,
+				AC8360D221B025EF00FC46B9 /* YGConfig.h in Headers */,
+				AC8360CE21B0256A00FC46B9 /* YGMarker.h in Headers */,
 				5352C5782038FF9B00A3B97E /* YGStyle.h in Headers */,
 				53EC85E41FDEC7630051B2B5 /* YGNode.h in Headers */,
 				53D1239F1FBF1EFB001B8A10 /* Yoga-internal.h in Headers */,
@@ -3316,6 +3348,10 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AC90464021C91D14005B24B3 /* CompactValue.h in Headers */,
+				AC6B69E521B1469A00B2B68A /* YGValue.h in Headers */,
+				AC8360CF21B0258B00FC46B9 /* YGConfig.h in Headers */,
+				AC8360CD21B0256A00FC46B9 /* YGMarker.h in Headers */,
 				5352C5772038FF9A00A3B97E /* YGStyle.h in Headers */,
 				53EC85E51FDEC7630051B2B5 /* YGNode.h in Headers */,
 				53D1239E1FBF1EFB001B8A10 /* Yoga-internal.h in Headers */,
@@ -3428,6 +3464,7 @@
 				3D80DA3E1DF820620028D040 /* RCTRootViewDelegate.h in Headers */,
 				3D80DA3F1DF820620028D040 /* RCTRootViewInternal.h in Headers */,
 				3D80DA401DF820620028D040 /* RCTTouchEvent.h in Headers */,
+				AC90463E21C91CC2005B24B3 /* CompactValue.h in Headers */,
 				3D80DA411DF820620028D040 /* RCTTouchHandler.h in Headers */,
 				59E604A61FE9CCE300BD90C5 /* RCTScrollContentViewManager.h in Headers */,
 				13134C8C1E296B2A00B9F3CB /* RCTMessageThread.h in Headers */,
@@ -3452,6 +3489,7 @@
 				3D80DA541DF820620028D040 /* RCTI18nUtil.h in Headers */,
 				3D80DA551DF820620028D040 /* RCTKeyboardObserver.h in Headers */,
 				3D80DA561DF820620028D040 /* RCTRedBox.h in Headers */,
+				AC6B69E421B1467C00B2B68A /* YGValue.h in Headers */,
 				3D80DA571DF820620028D040 /* RCTSourceCode.h in Headers */,
 				EBF21BBC1FC498270052F4D5 /* InspectorInterfaces.h in Headers */,
 				3D80DA581DF820620028D040 /* RCTStatusBarManager.h in Headers */,
@@ -4023,14 +4061,10 @@
 				"../third-party/glog-0.3.5/src/glog/raw_logging.h",
 				"../third-party/glog-0.3.5/src/glog/stl_logging.h",
 				"../third-party/glog-0.3.5/src/glog/vlog_is_on.h",
-				"../third-party/folly-2018.10.22.00/folly/detail/MallocImpl.cpp",
-				"../third-party/folly-2018.10.22.00/folly/portability/BitsFunctexcept.cpp",
+				"../third-party/folly-2018.10.22.00/folly/memory/detail/MallocImpl.cpp",
 				"../third-party/folly-2018.10.22.00/folly/Demangle.cpp",
-				"../third-party/folly-2018.10.22.00/folly/StringBase.cpp",
 				"../third-party/folly-2018.10.22.00/folly/Unicode.cpp",
 				"../third-party/folly-2018.10.22.00/folly/AtomicIntrusiveLinkedList.h",
-				"../third-party/folly-2018.10.22.00/folly/Bits.cpp",
-				"../third-party/folly-2018.10.22.00/folly/Bits.h",
 				"../third-party/folly-2018.10.22.00/folly/Conv.cpp",
 				"../third-party/folly-2018.10.22.00/folly/Conv.h",
 				"../third-party/folly-2018.10.22.00/folly/dynamic-inl.h",
@@ -4043,6 +4077,15 @@
 				"../third-party/folly-2018.10.22.00/folly/MoveWrapper.h",
 				"../third-party/folly-2018.10.22.00/folly/Optional.h",
 				"../third-party/folly-2018.10.22.00/folly/ScopeGuard.h",
+				"../third-party/folly-2018.10.22.00/folly/json_pointer.cpp",
+				"../third-party/folly-2018.10.22.00/folly/String.cpp",
+				"../third-party/folly-2018.10.22.00/folly/detail/Demangle.cpp",
+				"../third-party/folly-2018.10.22.00/folly/hash/SpookyHashV2.cpp",
+				"../third-party/folly-2018.10.22.00/folly/lang/ColdClass.cpp",
+				"../third-party/folly-2018.10.22.00/folly/container/detail/F14Table.cpp",
+				"../third-party/folly-2018.10.22.00/folly/ScopeGuard.cpp",
+				"../third-party/folly-2018.10.22.00/folly/lang/Assume.cpp",
+				"../third-party/folly-2018.10.22.00/folly/Format.cpp",
 				"../third-party/double-conversion-1.1.6/src/bignum-dtoa.cc",
 				"../third-party/double-conversion-1.1.6/src/bignum-dtoa.h",
 				"../third-party/double-conversion-1.1.6/src/bignum.cc",
@@ -4337,7 +4380,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				53DEF6EA205AE5A0006A3890 /* YGFloatOptional.cpp in Sources */,
+				AC6B69E721B146B400B2B68A /* YGValue.cpp in Sources */,
+				AC8360D121B025BC00FC46B9 /* YGConfig.cpp in Sources */,
 				53D123A01FBF1EFF001B8A10 /* Yoga.cpp in Sources */,
 				5352C5752038FF9500A3B97E /* YGStyle.cpp in Sources */,
 				53EC85E21FDEC75F0051B2B5 /* YGNode.cpp in Sources */,
@@ -4352,8 +4396,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AC6B69EA21B146E700B2B68A /* YGValue.cpp in Sources */,
 				BA0501B02109DD1800A6BBC4 /* YGConfig.cpp in Sources */,
-				53DEF6EB205AE5A1006A3890 /* YGFloatOptional.cpp in Sources */,
 				53D123A11FBF1EFF001B8A10 /* Yoga.cpp in Sources */,
 				5352C5762038FF9700A3B97E /* YGStyle.cpp in Sources */,
 				53EC85E31FDEC75F0051B2B5 /* YGNode.cpp in Sources */,
@@ -4450,6 +4494,7 @@
 				13134C8E1E296B2A00B9F3CB /* RCTMessageThread.mm in Sources */,
 				599FAA381FB274980058CCF6 /* RCTSurface.mm in Sources */,
 				59D031EF1F8353D3008361F0 /* RCTSafeAreaShadowView.m in Sources */,
+				AC6B69E321B1467C00B2B68A /* YGValue.cpp in Sources */,
 				3D1E68DB1CABD13900DD7465 /* RCTDisplayLink.m in Sources */,
 				14F3620E1AABD06A001CE568 /* RCTSwitchManager.m in Sources */,
 				13B080201A69489C00A75B9A /* RCTActivityIndicatorViewManager.m in Sources */,

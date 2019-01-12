@@ -230,9 +230,6 @@ const styles = StyleSheet.create({
     borderColor: '#f0f0f0',
     backgroundColor: '#f9f9f9',
   },
-  bottomSpacer: {
-    marginBottom: 100,
-  },
 });
 
 exports.framework = 'React';

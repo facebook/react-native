@@ -8,23 +8,28 @@
  * This is a controlled component version of RCTDatePickerIOS
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
 const React = require('React');
-const invariant = require('fbjs/lib/invariant');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
+const invariant = require('invariant');
 const requireNativeComponent = require('requireNativeComponent');
 
 import type {ViewProps} from 'ViewPropTypes';
+import type {SyntheticEvent} from 'CoreEventTypes';
 
 const RCTDatePickerIOS = requireNativeComponent('RCTDatePicker');
 
-type Event = Object;
+type Event = SyntheticEvent<
+  $ReadOnly<{|
+    timestamp: number,
+  |}>,
+>;
 
 type Props = $ReadOnly<{|
   ...ViewProps,
@@ -143,6 +148,7 @@ class DatePickerIOS extends React.Component<Props> {
     return (
       <View style={props.style}>
         <RCTDatePickerIOS
+          testID={props.testID}
           ref={picker => {
             this._picker = picker;
           }}
@@ -154,7 +160,11 @@ class DatePickerIOS extends React.Component<Props> {
                 ? props.initialDate.getTime()
                 : undefined
           }
-          locale={props.locale ? props.locale : undefined}
+          locale={
+            props.locale != null && props.locale !== ''
+              ? props.locale
+              : undefined
+          }
           maximumDate={
             props.maximumDate ? props.maximumDate.getTime() : undefined
           }

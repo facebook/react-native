@@ -9,7 +9,6 @@
  */
 'use strict';
 
-const ActivityIndicator = require('ActivityIndicator');
 const Platform = require('Platform');
 const React = require('react');
 const ReactNative = require('react-native');
@@ -138,6 +137,9 @@ if (Platform.OS === 'ios') {
       let itemCount = 6;
       class AppendingList extends React.Component<{}, *> {
         state = {
+          /* $FlowFixMe(>=0.85.0 site=react_native_fb) This comment suppresses
+           * an error found when Flow v0.85 was deployed. To see the error,
+           * delete this comment and run Flow. */
           items: [...Array(itemCount)].map((_, ii) => (
             <Thumb msg={`Item ${ii}`} />
           )),
@@ -152,7 +154,6 @@ if (Platform.OS === 'ios') {
                   autoscrollToTopThreshold: 10,
                 }}
                 style={styles.scrollView}>
-                <ActivityIndicator style={{height: 40}} />
                 {this.state.items.map(item =>
                   React.cloneElement(item, {key: item.props.msg}),
                 )}
@@ -165,7 +166,6 @@ if (Platform.OS === 'ios') {
                   autoscrollToTopThreshold: 10,
                 }}
                 style={[styles.scrollView, styles.horizontalScrollView]}>
-                <ActivityIndicator style={{width: 40}} />
                 {this.state.items.map(item =>
                   React.cloneElement(item, {key: item.props.msg, style: null}),
                 )}

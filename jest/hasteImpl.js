@@ -11,7 +11,6 @@
 'use strict';
 
 const path = require('path');
-const findPlugins = require('../local-cli/core/findPlugins');
 
 const REACT_NATIVE_CI = process.cwd() === path.resolve(__dirname, '..');
 
@@ -23,7 +22,22 @@ if (REACT_NATIVE_CI) {
   pluginsPath = '../../../';
 }
 
-const plugins = findPlugins([path.resolve(__dirname, pluginsPath)]);
+function getPlugins() {
+  try {
+    const findPlugins = require('react-native-local-cli/core/findPlugins');
+
+    return findPlugins([path.resolve(__dirname, pluginsPath)]);
+  } catch (_) {
+    return {
+      haste: {
+        providesModuleNodeModules: [],
+        platforms: [],
+      },
+    };
+  }
+}
+
+const plugins = getPlugins();
 
 // Detect out-of-tree platforms and add them to the whitelists
 const pluginRoots /*: Array<

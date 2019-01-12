@@ -14,23 +14,17 @@ const React = require('react');
 const ReactNative = require('react-native');
 const {StyleSheet, View, Text, TouchableHighlight, Share} = ReactNative;
 
-exports.framework = 'React';
-exports.title = 'Share';
-exports.description = 'Share data with other Apps.';
-exports.examples = [
-  {
-    title: 'Share Text Content',
-    render() {
-      return <ShareMessageExample />;
-    },
-  },
-];
+type Props = $ReadOnly<{||}>;
+type State = {|result: string|};
 
-class ShareMessageExample extends React.Component<$FlowFixMeProps, any> {
+class ShareMessageExample extends React.Component<Props, State> {
   _shareMessage: Function;
   _shareText: Function;
   _showResult: Function;
 
+  /* $FlowFixMe(>=0.85.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.85 was deployed. To see the error, delete this comment
+   * and run Flow. */
   constructor(props) {
     super(props);
 
@@ -113,3 +107,15 @@ const styles = StyleSheet.create({
     padding: 10,
   },
 });
+
+exports.framework = 'React';
+exports.title = 'Share';
+exports.description = 'Share data with other Apps.';
+exports.examples = [
+  {
+    title: 'Share Text Content',
+    render() {
+      return <ShareMessageExample />;
+    },
+  },
+];

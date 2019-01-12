@@ -23,6 +23,7 @@ import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StrikethroughSpan;
 import android.text.style.UnderlineSpan;
+import android.util.LruCache;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
@@ -31,6 +32,7 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaMeasureMode;
+import com.facebook.yoga.YogaMeasureOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,11 +46,17 @@ public class TextLayoutManager {
   // The bug is that unicode emoticons aren't measured properly which causes text to be clipped.
   private static final TextPaint sTextPaintInstance = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
 
-  private static void buildSpannedFromShadowNode(
-    Context context,
-    ReadableArray fragments,
-    SpannableStringBuilder sb,
-    List<SetSpanOperation> ops) {
+  // Specifies the amount of spannable that are stored into the {@link sSpannableCache}.
+  private static final int spannableCacheSize = 100;
+
+  private static final Object sSpannableCacheLock = new Object();
+  private static LruCache<String, Spannable> sSpannableCache = new LruCache<>(spannableCacheSize);
+
+  private static void buildSpannableFromFragment(
+      Context context,
+      ReadableArray fragments,
+      SpannableStringBuilder sb,
+      List<SetSpanOperation> ops) {
 
     for (int i = 0, length = fragments.size(); i < length; i++) {
       ReadableMap fragment = fragments.getMap(i);
@@ -61,7 +69,7 @@ public class TextLayoutManager {
 //      if (child instanceof ReactRawTextShadowNode) {
 //        sb.append(((ReactRawTextShadowNode) child).getText());
 //      } else if (child instanceof ReactBaseTextShadowNode) {
-//        buildSpannedFromShadowNode((ReactBaseTextShadowNode) child, sb, ops);
+//        buildSpannableFromFragment((ReactBaseTextShadowNode) child, sb, ops);
 //      } else if (child instanceof ReactTextInlineImageShadowNode) {
 //        // We make the image take up 1 character in the span and put a corresponding character into
 //        // the text so that the image doesn't run over any following text.
@@ -95,11 +103,9 @@ public class TextLayoutManager {
               new CustomLetterSpacingSpan(textAttributes.mLetterSpacing)));
           }
         }
-        if (textAttributes.mFontSize != UNSET) {
-          ops.add(
-            new SetSpanOperation(
-              start, end, new AbsoluteSizeSpan((int) (textAttributes.mFontSize))));
-        }
+        ops.add(
+          new SetSpanOperation(
+            start, end, new AbsoluteSizeSpan(textAttributes.mFontSize)));
         if (textAttributes.mFontStyle != UNSET
           || textAttributes.mFontWeight != UNSET
           || textAttributes.mFontFamily != null) {
@@ -149,37 +155,48 @@ public class TextLayoutManager {
     }
   }
 
-  protected static Spannable spannedFromTextFragments(
-    Context context,
-    ReadableArray fragments, String text) {
-    SpannableStringBuilder sb = new SpannableStringBuilder();
+  protected static Spannable getOrCreateSpannableForText(
+      Context context,
+      ReadableMap attributedString) {
 
-    // TODO(5837930): Investigate whether it's worth optimizing this part and do it if so
+    Spannable preparedSpannableText;
+    String attributedStringPayload = attributedString.toString();
+    synchronized (sSpannableCacheLock) {
+      preparedSpannableText = sSpannableCache.get(attributedStringPayload);
+      //TODO: T31905686 implement proper equality of attributedStrings
+      if (preparedSpannableText != null) {
+        return preparedSpannableText;
+      }
+    }
+
+    preparedSpannableText = createSpannableFromAttributedString(context, attributedString);
+    synchronized (sSpannableCacheLock) {
+      sSpannableCache.put(attributedStringPayload, preparedSpannableText);
+    }
+    return preparedSpannableText;
+  }
+
+  private static Spannable createSpannableFromAttributedString(
+      Context context,
+      ReadableMap attributedString) {
+
+    SpannableStringBuilder sb = new SpannableStringBuilder();
 
     // The {@link SpannableStringBuilder} implementation require setSpan operation to be called
     // up-to-bottom, otherwise all the spannables that are withing the region for which one may set
     // a new spannable will be wiped out
     List<SetSpanOperation> ops = new ArrayList<>();
 
-    buildSpannedFromShadowNode(context, fragments, sb, ops);
+    buildSpannableFromFragment(context, attributedString.getArray("fragments"), sb, ops);
 
-    // TODO: add support for AllowScaling in C++
-//    if (textShadowNode.mFontSize == UNSET) {
-//      int defaultFontSize =
-//        textShadowNode.mAllowFontScaling
-//          ? (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP))
-//          : (int) Math.ceil(PixelUtil.toPixelFromDIP(ViewDefaults.FONT_SIZE_SP));
-//
-//      ops.add(new SetSpanOperation(0, sb.length(), new AbsoluteSizeSpan(defaultFontSize)));
-//    }
-//
+// TODO T31905686: add support for inline Images
 //    textShadowNode.mContainsImages = false;
 //    textShadowNode.mHeightOfTallestInlineImage = Float.NaN;
 
     // While setting the Spans on the final text, we also check whether any of them are images.
     int priority = 0;
     for (SetSpanOperation op : ops) {
-// TODO: add support for TextInlineImage in C++
+// TODO T31905686: add support for TextInlineImage in C++
 //      if (op.what instanceof TextInlineImageSpan) {
 //        int height = ((TextInlineImageSpan) op.what).getHeight();
 //        textShadowNode.mContainsImages = true;
@@ -198,29 +215,22 @@ public class TextLayoutManager {
     return sb;
   }
 
-  public static float[] measureText(
-    ReactContext context,
-    ReactTextView view,
-    ReadableNativeMap attributedString,
-    ReadableNativeMap paragraphAttributes,
-    float width,
-    YogaMeasureMode widthYogaMeasureMode,
-    float height,
-    YogaMeasureMode heightYogaMeasureMode) {
+  public static long measureText(
+      ReactContext context,
+      ReadableNativeMap attributedString,
+      ReadableNativeMap paragraphAttributes,
+      float width,
+      YogaMeasureMode widthYogaMeasureMode,
+      float height,
+      YogaMeasureMode heightYogaMeasureMode) {
 
     // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
     TextPaint textPaint = sTextPaintInstance;
-    Layout layout;
-
-    Spannable preparedSpannableText = view == null ? null : view.getSpanned();
+    Spannable preparedSpannableText = getOrCreateSpannableForText(context, attributedString);
 
     // TODO add these props to paragraph attributes
     int textBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
     boolean includeFontPadding = true;
-
-    if (preparedSpannableText == null) {
-      preparedSpannableText = spannedFromTextFragments(context, attributedString.getArray("fragments"), attributedString.getString("string"));
-    }
 
     if (preparedSpannableText == null) {
       throw new IllegalStateException("Spannable element has not been prepared in onBeforeLayout");
@@ -233,6 +243,7 @@ public class TextLayoutManager {
     // technically, width should never be negative, but there is currently a bug in
     boolean unconstrainedWidth = widthYogaMeasureMode == YogaMeasureMode.UNDEFINED || width < 0;
 
+    Layout layout;
     if (boring == null &&
       (unconstrainedWidth ||
         (!YogaConstants.isUndefined(desiredWidth) && desiredWidth <= width))) {
@@ -294,7 +305,10 @@ public class TextLayoutManager {
       }
     }
 
-    int maximumNumberOfLines = paragraphAttributes.hasKey("maximumNumberOfLines") ? paragraphAttributes.getInt("maximumNumberOfLines") : UNSET;
+    int maximumNumberOfLines =
+        paragraphAttributes.hasKey("maximumNumberOfLines")
+            ? paragraphAttributes.getInt("maximumNumberOfLines")
+            : UNSET;
 
     width = layout.getWidth();
     if (maximumNumberOfLines != UNSET
@@ -305,7 +319,7 @@ public class TextLayoutManager {
       height = layout.getHeight();
     }
 
-    return new float[] { PixelUtil.toSPFromPixel(width), PixelUtil.toSPFromPixel(height) };
+    return YogaMeasureOutput.make(PixelUtil.toSPFromPixel(width), PixelUtil.toSPFromPixel(height));
   }
 
   private static class SetSpanOperation {

@@ -1,9 +1,8 @@
-/*
- *  Copyright (c) Facebook, Inc. and its affiliates.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
 #pragma once
 
@@ -18,17 +17,9 @@
 #include <stdbool.h>
 #endif
 
-/** Large positive number signifies that the property(float) is undefined.
- *Earlier we used to have YGundefined as NAN, but the downside of this is that
- *we can't use -ffast-math compiler flag as it assumes all floating-point
- *calculation involve and result into finite numbers. For more information
- *regarding -ffast-math compiler flag in clang, have a look at
- *https://clang.llvm.org/docs/UsersManual.html#cmdoption-ffast-math
- **/
-#define YGUndefined 10E20F
-
 #include "YGEnums.h"
 #include "YGMacros.h"
+#include "YGValue.h"
 
 YG_EXTERN_C_BEGIN
 
@@ -36,25 +27,6 @@ typedef struct YGSize {
   float width;
   float height;
 } YGSize;
-
-typedef struct YGValue {
-  float value;
-  YGUnit unit;
-} YGValue;
-
-extern const YGValue YGValueUndefined;
-extern const YGValue YGValueAuto;
-
-#ifdef __cplusplus
-
-YG_EXTERN_C_END
-
-extern bool operator==(const YGValue& lhs, const YGValue& rhs);
-extern bool operator!=(const YGValue& lhs, const YGValue& rhs);
-
-YG_EXTERN_C_BEGIN
-
-#endif
 
 typedef struct YGConfig* YGConfigRef;
 
@@ -70,6 +42,7 @@ typedef float (
     *YGBaselineFunc)(YGNodeRef node, const float width, const float height);
 typedef void (*YGDirtiedFunc)(YGNodeRef node);
 typedef void (*YGPrintFunc)(YGNodeRef node);
+typedef void (*YGNodeCleanupFunc)(YGNodeRef node);
 typedef int (*YGLogger)(
     const YGConfigRef config,
     const YGNodeRef node,
@@ -84,6 +57,9 @@ WIN_EXPORT YGNodeRef YGNodeNew(void);
 WIN_EXPORT YGNodeRef YGNodeNewWithConfig(const YGConfigRef config);
 WIN_EXPORT YGNodeRef YGNodeClone(const YGNodeRef node);
 WIN_EXPORT void YGNodeFree(const YGNodeRef node);
+WIN_EXPORT void YGNodeFreeRecursiveWithCleanupFunc(
+    const YGNodeRef node,
+    YGNodeCleanupFunc cleanup);
 WIN_EXPORT void YGNodeFreeRecursive(const YGNodeRef node);
 WIN_EXPORT void YGNodeReset(const YGNodeRef node);
 WIN_EXPORT int32_t YGNodeGetInstanceCount(void);
@@ -113,6 +89,12 @@ WIN_EXPORT void YGNodeSetChildren(
     YGNodeRef const owner,
     const YGNodeRef children[],
     const uint32_t count);
+
+WIN_EXPORT void YGNodeSetIsReferenceBaseline(
+    YGNodeRef node,
+    bool isReferenceBaseline);
+
+WIN_EXPORT bool YGNodeIsReferenceBaseline(YGNodeRef node);
 
 WIN_EXPORT void YGNodeCalculateLayout(
     const YGNodeRef node,
@@ -376,8 +358,11 @@ WIN_EXPORT float YGNodeLayoutGetPadding(
     const YGEdge edge);
 
 WIN_EXPORT void YGConfigSetLogger(const YGConfigRef config, YGLogger logger);
-WIN_EXPORT void
-YGLog(const YGNodeRef node, YGLogLevel level, const char* message, ...);
+WIN_EXPORT void YGLog(
+    const YGNodeRef node,
+    YGLogLevel level,
+    const char* message,
+    ...);
 WIN_EXPORT void YGLogWithConfig(
     const YGConfigRef config,
     YGLogLevel level,

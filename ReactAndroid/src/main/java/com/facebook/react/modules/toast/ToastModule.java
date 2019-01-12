@@ -21,7 +21,7 @@ import java.util.Map;
 /**
  * {@link NativeModule} that allows JS to show an Android Toast.
  */
-@ReactModule(name = "ToastAndroid")
+@ReactModule(name = ToastModule.NAME)
 public class ToastModule extends ReactContextBaseJavaModule {
 
   private static final String DURATION_SHORT_KEY = "SHORT";
@@ -30,6 +30,7 @@ public class ToastModule extends ReactContextBaseJavaModule {
   private static final String GRAVITY_TOP_KEY = "TOP";
   private static final String GRAVITY_BOTTOM_KEY = "BOTTOM";
   private static final String GRAVITY_CENTER = "CENTER";
+  public static final String NAME = "ToastAndroid";
 
   public ToastModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -37,7 +38,7 @@ public class ToastModule extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "ToastAndroid";
+    return NAME;
   }
 
   @Override

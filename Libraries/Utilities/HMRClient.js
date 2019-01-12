@@ -10,7 +10,7 @@
 'use strict';
 
 const Platform = require('Platform');
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 const MetroHMRClient = require('metro/src/lib/bundle-modules/HMRClient');
 
@@ -89,7 +89,27 @@ Error: ${e.message}`;
 
     hmrClient.on('error', data => {
       HMRLoadingView.hide();
-      throw new Error(`${data.type} ${data.message}`);
+
+      if (data.type === 'GraphNotFoundError') {
+        hmrClient.disable();
+        throw new Error(
+          'The packager server has restarted since the last Hot update. Hot Reloading will be disabled until you reload the application.',
+        );
+      } else if (data.type === 'RevisionNotFoundError') {
+        hmrClient.disable();
+        throw new Error(
+          'The packager server and the client are out of sync. Hot Reloading will be disabled until you reload the application.',
+        );
+      } else {
+        throw new Error(`${data.type} ${data.message}`);
+      }
+    });
+
+    hmrClient.on('close', data => {
+      HMRLoadingView.hide();
+      throw new Error(
+        'Disconnected from the packager server. Hot Reloading will be disabled until you reload the application.',
+      );
     });
 
     hmrClient.enable();

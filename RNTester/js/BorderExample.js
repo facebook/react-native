@@ -18,6 +18,9 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
   },
+  wrapper: {
+    flexDirection: 'row',
+  },
   border1: {
     borderWidth: 10,
     borderColor: 'brown',
@@ -91,6 +94,18 @@ const styles = StyleSheet.create({
     borderColor: 'black',
     marginRight: 10,
     backgroundColor: 'lightgrey',
+  },
+  border8Top: {
+    borderTopWidth: 5,
+  },
+  border8Left: {
+    borderLeftWidth: 5,
+  },
+  border8Bottom: {
+    borderBottomWidth: 5,
+  },
+  border8Right: {
+    borderRightWidth: 5,
   },
   border9: {
     borderWidth: 10,
@@ -232,11 +247,11 @@ exports.examples = [
     description: 'top, left, bottom right',
     render() {
       return (
-        <View style={{flexDirection: 'row'}}>
-          <View style={[styles.box, styles.border8, {borderTopWidth: 5}]} />
-          <View style={[styles.box, styles.border8, {borderLeftWidth: 5}]} />
-          <View style={[styles.box, styles.border8, {borderBottomWidth: 5}]} />
-          <View style={[styles.box, styles.border8, {borderRightWidth: 5}]} />
+        <View style={styles.wrapper}>
+          <View style={[styles.box, styles.border8, styles.border8Top]} />
+          <View style={[styles.box, styles.border8, styles.border8Left]} />
+          <View style={[styles.box, styles.border8, styles.border8Bottom]} />
+          <View style={[styles.box, styles.border8, styles.border8Right]} />
         </View>
       );
     },

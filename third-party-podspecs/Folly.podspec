@@ -22,7 +22,6 @@ Pod::Spec.new do |spec|
                       'folly/Demangle.cpp',
                       'folly/Format.cpp',
                       'folly/ScopeGuard.cpp',
-                      'folly/StringBase.cpp',
                       'folly/Unicode.cpp',
                       'folly/dynamic.cpp',
                       'folly/json.cpp',
@@ -32,7 +31,6 @@ Pod::Spec.new do |spec|
                       'folly/hash/SpookyHashV2.cpp',
                       'folly/lang/Assume.cpp',
                       'folly/lang/ColdClass.cpp',
-                      'folly/portability/BitsFunctexcept.cpp',
                       'folly/memory/detail/MallocImpl.cpp'
   # workaround for https://github.com/facebook/react-native/issues/14326
   spec.preserve_paths = 'folly/*.h',

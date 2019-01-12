@@ -5,6 +5,8 @@
 # LICENSE file in the root directory of this source tree.
 
 THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
+
+# shellcheck source=/dev/null
 source "${THIS_DIR}/.packager.env"
-cd "$THIS_DIR/.."
-node "./local-cli/cli.js" start "$@"
+cd "$THIS_DIR/.." || exit
+node "./cli.js" start "$@"

@@ -5,7 +5,6 @@
 
   "env": {
     "es6": true,
-    "jest": true,
   },
 
   "plugins": [
@@ -14,7 +13,7 @@
     "prettier",
     "react",
     "react-native",
-    "jest"
+    "jest",
   ],
 
   // Map from global var to bool specifying if it can be redefined
@@ -37,7 +36,6 @@
     "fetch": false,
     "FormData": false,
     "global": false,
-    "jest": false,
     "Map": true,
     "module": false,
     "navigator": false,
@@ -52,8 +50,6 @@
     "setTimeout": false,
     "window": false,
     "XMLHttpRequest": false,
-    "pit": false,
-    "jasmine": true
   },
 
   "rules": {
@@ -260,15 +256,29 @@
   "overrides": [
     {
       "files": [
-        "local-cli/**/*.js",
+        "**/__fixtures__/**/*.js",
+        "**/__mocks__/**/*.js",
+        "**/__tests__/**/*.js",
+        "jest/**/*.js",
+        "RNTester/**/*.js",
       ],
-      "rules": {
-        "lint/extra-arrow-initializer": 0,
-        "no-alert": 0,
-        "no-console-disallow": 0,
+      "globals": {
+        // Expose some Jest globals for test helpers
+        "afterAll": true,
+        "afterEach": true,
+        "beforeAll": true,
+        "beforeEach": true,
+        "expect": true,
+        "jest": true,
       },
+    },
+    {
+      "files": [
+        "**/__tests__/**/*-test.js",
+      ],
       "env": {
-        "node": true,
+        "jasmine": true,
+        "jest": true,
       },
     },
   ],

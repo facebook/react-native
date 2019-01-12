@@ -10,11 +10,7 @@
 
 'use strict';
 
-export type RNTesterExample = {
-  key: string,
-  module: Object,
-  supportsTVOS: boolean,
-};
+import type {RNTesterExample} from 'RNTesterTypes';
 
 const ComponentExamples: Array<RNTesterExample> = [
   {

@@ -10,7 +10,7 @@
 
 'use strict';
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 let showedListViewDeprecation = false;
 let showedSwipeableListViewDeprecation = false;
@@ -138,9 +138,6 @@ module.exports = {
   },
   get TextInput() {
     return require('TextInput');
-  },
-  get ToastAndroid() {
-    return require('ToastAndroid');
   },
   get ToolbarAndroid() {
     return require('ToolbarAndroid');
@@ -273,6 +270,9 @@ module.exports = {
   get TimePickerAndroid() {
     return require('TimePickerAndroid');
   },
+  get ToastAndroid() {
+    return require('ToastAndroid');
+  },
   get TVEventHandler() {
     return require('TVEventHandler');
   },
@@ -281,6 +281,9 @@ module.exports = {
   },
   get unstable_batchedUpdates() {
     return require('ReactNative').unstable_batchedUpdates;
+  },
+  get UTFSequence() {
+    return require('UTFSequence');
   },
   get Vibration() {
     return require('Vibration');

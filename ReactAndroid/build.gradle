@@ -26,7 +26,6 @@ def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
 //   - double-conversion-1.1.6
 //   - folly-deprecate-dynamic-initializer
 //   - glog-0.3.5
-//   - jsc-headers
 def dependenciesPath = System.getenv("REACT_NATIVE_DEPENDENCIES")
 
 // The Boost library is a very large download (>100MB).
@@ -68,7 +67,7 @@ task prepareDoubleConversion(dependsOn: dependenciesPath ? [] : [downloadDoubleC
     from dependenciesPath ?: tarTree(downloadDoubleConversion.dest)
     from 'src/main/jni/third-party/double-conversion/Android.mk'
     include "double-conversion-${DOUBLE_CONVERSION_VERSION}/src/**/*", 'Android.mk'
-    filesMatching('*/src/**/*', {fname -> fname.path = "double-conversion/${fname.name}"})
+    filesMatching('*/src/**/*', { fname -> fname.path = "double-conversion/${fname.name}" })
     includeEmptyDirs = false
     into "$thirdPartyNdkDir/double-conversion"
 }
@@ -84,17 +83,17 @@ task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy
     from dependenciesPath ?: tarTree(downloadFolly.dest)
     from 'src/main/jni/third-party/folly/Android.mk'
     include "folly-${FOLLY_VERSION}/folly/**/*", 'Android.mk'
-    eachFile {fname -> fname.path = (fname.path - "folly-${FOLLY_VERSION}/")}
+    eachFile { fname -> fname.path = (fname.path - "folly-${FOLLY_VERSION}/") }
     includeEmptyDirs = false
 
     // Patch for folly build break on gcc 4.9 and could be removed after build by clang
     filesMatching('**/container/detail/F14Policy.h') {
         filter(ReplaceTokens, tokens: [
-            'ObjectHolder(Args&&... args) : value_{std::forward<Args>(args)...} {}': 'ObjectHolder(Args&&... args) : value_({std::forward<Args>(args)...}) {}',
-            'ObjectHolder(Args&&... args) : T{std::forward<Args>(args)...} {}': 'ObjectHolder(Args&&... args) : T({std::forward<Args>(args)...}) {}',
+                'ObjectHolder(Args&&... args) : value_{std::forward<Args>(args)...} {}': 'ObjectHolder(Args&&... args) : value_({std::forward<Args>(args)...}) {}',
+                'ObjectHolder(Args&&... args) : T{std::forward<Args>(args)...} {}'     : 'ObjectHolder(Args&&... args) : T({std::forward<Args>(args)...}) {}',
         ],
-        beginToken: '',
-        endToken: '')
+                beginToken: '',
+                endToken: '')
     }
 
     into "$thirdPartyNdkDir/folly"
@@ -116,20 +115,20 @@ task prepareGlog(dependsOn: dependenciesPath ? [] : [downloadGlog], type: Copy) 
     includeEmptyDirs = false
     filesMatching('**/*.h.in') {
         filter(ReplaceTokens, tokens: [
-                ac_cv_have_unistd_h: '1',
-                ac_cv_have_stdint_h: '1',
-                ac_cv_have_systypes_h: '1',
-                ac_cv_have_inttypes_h: '1',
-                ac_cv_have_libgflags: '0',
-                ac_google_start_namespace: 'namespace google {',
-                ac_cv_have_uint16_t: '1',
-                ac_cv_have_u_int16_t: '1',
-                ac_cv_have___uint16: '0',
-                ac_google_end_namespace: '}',
-                ac_cv_have___builtin_expect: '1',
-                ac_google_namespace: 'google',
-                ac_cv___attribute___noinline: '__attribute__ ((noinline))',
-                ac_cv___attribute___noreturn: '__attribute__ ((noreturn))',
+                ac_cv_have_unistd_h           : '1',
+                ac_cv_have_stdint_h           : '1',
+                ac_cv_have_systypes_h         : '1',
+                ac_cv_have_inttypes_h         : '1',
+                ac_cv_have_libgflags          : '0',
+                ac_google_start_namespace     : 'namespace google {',
+                ac_cv_have_uint16_t           : '1',
+                ac_cv_have_u_int16_t          : '1',
+                ac_cv_have___uint16           : '0',
+                ac_google_end_namespace       : '}',
+                ac_cv_have___builtin_expect   : '1',
+                ac_google_namespace           : 'google',
+                ac_cv___attribute___noinline  : '__attribute__ ((noinline))',
+                ac_cv___attribute___noreturn  : '__attribute__ ((noreturn))',
                 ac_cv___attribute___printf_4_5: '__attribute__((__format__ (__printf__, 4, 5)))'
         ])
         it.path = (it.name - '.in')
@@ -145,38 +144,41 @@ task prepareGlog(dependsOn: dependenciesPath ? [] : [downloadGlog], type: Copy) 
     }
 }
 
-task downloadJSCHeaders(type: Download) {
-    // in sync with webkit SVN revision 174650
-    def jscAPIBaseURL = 'https://raw.githubusercontent.com/WebKit/webkit/38b15a3ba3c1b0798f2036f7cea36ffdc096202e/Source/JavaScriptCore/API/'
-    def jscHeaderFiles = ['JavaScript.h', 'JSBase.h', 'JSContextRef.h', 'JSObjectRef.h', 'JSStringRef.h', 'JSValueRef.h', 'WebKitAvailability.h']
-    def output = new File(downloadsDir, 'jsc')
-    output.mkdirs()
-    src(jscHeaderFiles.collect { headerName -> "$jscAPIBaseURL$headerName" })
+task downloadJSC(dependsOn: createNativeDepsDirectories, type: Download) {
+    src "https://registry.npmjs.org/jsc-android/-/jsc-android-${JSC_VERSION}.tgz"
     onlyIfNewer true
     overwrite false
-    dest output
+    dest new File(downloadsDir, "jsc-${JSC_VERSION}.tar.gz")
 }
 
-// Create Android.mk library module based on so files from mvn + include headers fetched from webkit.org
-task prepareJSC(dependsOn: dependenciesPath ? [] : [downloadJSCHeaders]) << {
+// Create Android.mk library module based on jsc from npm
+task prepareJSC(dependsOn: downloadJSC) << {
+    def jscTar = tarTree(downloadJSC.dest)
+    def jscAAR = jscTar.matching({ it.include "**/android-jsc/**/*.aar" }).singleFile
+    def soFiles = zipTree(jscAAR).matching({ it.include "**/*.so" })
+
+    def headerFiles = jscTar.matching({ it.include "**/include/*.h" })
+
     copy {
-        from zipTree(configurations.compile.fileCollection { dep -> dep.name == 'android-jsc' }.singleFile)
-        from dependenciesPath ? "$dependenciesPath/jsc-headers" : {downloadJSCHeaders.dest}
-        from 'src/main/jni/third-party/jsc/Android.mk'
-        include 'jni/**/*.so', '*.h', 'Android.mk'
-        filesMatching('*.h', { fname -> fname.path = "JavaScriptCore/${fname.path}"})
-        into "$thirdPartyNdkDir/jsc";
+        from soFiles
+        from headerFiles
+        from "src/main/jni/third-party/jsc/Android.mk"
+
+        filesMatching("**/*.h", { it.path = "JavaScriptCore/${it.name}"})
+
+        includeEmptyDirs false
+        into "$thirdPartyNdkDir/jsc"
     }
 }
 
 task downloadNdkBuildDependencies {
-  if (!boostPath) {
-    dependsOn downloadBoost
-  }
-  dependsOn downloadDoubleConversion
-  dependsOn downloadFolly
-  dependsOn downloadGlog
-  dependsOn downloadJSCHeaders
+    if (!boostPath) {
+        dependsOn downloadBoost
+    }
+    dependsOn downloadDoubleConversion
+    dependsOn downloadFolly
+    dependsOn downloadGlog
+    dependsOn downloadJSC
 }
 
 def getNdkBuildName() {
@@ -215,23 +217,23 @@ def getNdkBuildFullPath() {
     def ndkBuildFullPath = findNdkBuildFullPath()
     if (ndkBuildFullPath == null) {
         throw new GradleScriptException(
-            "ndk-build binary cannot be found, check if you've set " +
-            "\$ANDROID_NDK environment variable correctly or if ndk.dir is " +
-            "setup in local.properties",
-            null)
+                "ndk-build binary cannot be found, check if you've set " +
+                        "\$ANDROID_NDK environment variable correctly or if ndk.dir is " +
+                        "setup in local.properties",
+                null)
     }
     if (!new File(ndkBuildFullPath).canExecute()) {
         throw new GradleScriptException(
-            "ndk-build binary " + ndkBuildFullPath + " doesn't exist or isn't executable.\n" +
-            "Check that the \$ANDROID_NDK environment variable, or ndk.dir in local.properties, is set correctly.\n" +
-            "(On Windows, make sure you escape backslashes in local.properties or use forward slashes, e.g. C:\\\\ndk or C:/ndk rather than C:\\ndk)",
-            null)
+                "ndk-build binary " + ndkBuildFullPath + " doesn't exist or isn't executable.\n" +
+                        "Check that the \$ANDROID_NDK environment variable, or ndk.dir in local.properties, is set correctly.\n" +
+                        "(On Windows, make sure you escape backslashes in local.properties or use forward slashes, e.g. C:\\\\ndk or C:/ndk rather than C:\\ndk)",
+                null)
     }
     return ndkBuildFullPath
 }
 
 task buildReactNdkLib(dependsOn: [prepareJSC, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog], type: Exec) {
-    inputs.file('src/main/jni/react')
+    inputs.dir('src/main/jni/react')
     outputs.dir("$buildDir/react-ndk/all")
     commandLine getNdkBuildFullPath(),
             'NDK_PROJECT_PATH=null',
@@ -242,21 +244,27 @@ task buildReactNdkLib(dependsOn: [prepareJSC, prepareBoost, prepareDoubleConvers
             "REACT_COMMON_DIR=$projectDir/../ReactCommon",
             "REACT_SRC_DIR=$projectDir/src/main/java/com/facebook/react",
             '-C', file('src/main/jni/react/jni').absolutePath,
-            '--jobs', project.hasProperty("jobs") ? project.property("jobs") : Runtime.runtime.availableProcessors()
+            '--jobs', project.findProperty("jobs") ?: Runtime.runtime.availableProcessors()
 }
 
 task cleanReactNdkLib(type: Exec) {
+    ignoreExitValue true
+    errorOutput new ByteArrayOutputStream()
     commandLine getNdkBuildFullPath(),
             "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
             "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
             "REACT_COMMON_DIR=$projectDir/../ReactCommon",
             '-C', file('src/main/jni/react/jni').absolutePath,
             'clean'
+    doLast {
+        file(AAR_OUTPUT_URL).delete()
+        println "Deleted aar output dir at ${file(AAR_OUTPUT_URL)}"
+    }
 }
 
 task packageReactNdkLibs(dependsOn: buildReactNdkLib, type: Copy) {
     from "$buildDir/react-ndk/all"
-    exclude '**/libjsc.so'
+    from "$thirdPartyNdkDir/jsc/jni"
     into "$buildDir/react-ndk/exported"
 }
 
@@ -266,8 +274,7 @@ task packageReactNdkLibsForBuck(dependsOn: packageReactNdkLibs, type: Copy) {
 }
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion "27.0.3"
+    compileSdkVersion 28
 
     defaultConfig {
         minSdkVersion 16
@@ -324,7 +331,6 @@ dependencies {
     api "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
     api "com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}"
     api 'com.squareup.okio:okio:1.14.0'
-    compile project(':android-jsc')
 
     testImplementation "junit:junit:${JUNIT_VERSION}"
     testImplementation "org.powermock:powermock-api-mockito:${POWERMOCK_VERSION}"

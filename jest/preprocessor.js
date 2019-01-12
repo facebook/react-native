@@ -25,7 +25,6 @@ const generate = require('@babel/generator').default;
 
 const nodeFiles = new RegExp(
   [
-    '/local-cli/',
     '/metro(?:-[^/]*)?/', // metro, metro-core, metro-source-map, metro-etc
   ].join('|'),
 );
@@ -33,8 +32,7 @@ const nodeOptions = babelRegisterOnly.config([nodeFiles]);
 
 babelRegisterOnly([]);
 
-/* $FlowFixMe(site=react_native_oss) */
-const transformer = require('metro/src/reactNativeTransformer');
+const transformer = require('metro-react-native-babel-transformer');
 module.exports = {
   process(src /*: string */, file /*: string */) {
     if (nodeFiles.test(file)) {
@@ -59,6 +57,7 @@ module.exports = {
         minify: false,
         platform: '',
         projectRoot: '',
+        publicPath: '/assets',
         retainLines: true,
         sourceType: 'unambiguous', // b7 required. detects module vs script mode
       },
@@ -120,7 +119,7 @@ module.exports = {
 
   getCacheKey: createCacheKeyFunction([
     __filename,
-    require.resolve('metro/src/reactNativeTransformer'),
+    require.resolve('metro-react-native-babel-transformer'),
     require.resolve('@babel/core/package.json'),
   ]),
 };

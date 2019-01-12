@@ -30,10 +30,11 @@
     "moduleNameMapper": {
       "^React$": "<rootDir>/Libraries/react-native/React.js"
     },
+    "testRegex": "/__tests__/.*-test\\.js$",
     "testPathIgnorePatterns": [
-      "Libraries/Renderer",
       "/node_modules/",
-      "local-cli/templates/",
+      "<rootDir>/template",
+      "Libraries/Renderer",
       "RNTester/e2e"
     ],
     "haste": {
@@ -87,7 +88,19 @@
       "denodeify",
       "fbjs"
     ],
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "collectCoverageFrom": [
+      "Libraries/**/*.js"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/__tests__/",
+      "/vendor/",
+      "<rootDir>/Libraries/react-native/"
+    ]
+  },
+  "jest-junit": {
+    "outputDirectory": "reports/junit",
+    "outputName": "js-test-results.xml"
   },
   "main": "Libraries/react-native/react-native-implementation.js",
   "files": [
@@ -95,7 +108,6 @@
     "android",
     "cli.js",
     "flow",
-    "flow-github",
     "init.sh",
     "scripts/ios-configure-glog.sh",
     "scripts/ios-install-third-party.sh",
@@ -107,10 +119,8 @@
     "jest",
     "lib",
     "rn-get-polyfills.js",
-    "setupBabel.js",
     "Libraries",
     "LICENSE",
-    "local-cli",
     "packager",
     "react.gradle",
     "React.podspec",
@@ -118,12 +128,13 @@
     "ReactAndroid",
     "ReactCommon",
     "README.md",
-    "third-party-podspecs"
+    "third-party-podspecs",
+    "template"
   ],
   "scripts": {
-    "start": "node ./local-cli/cli.js start",
+    "start": "node cli.js start",
     "test": "jest",
-    "test-ci": "JEST_JUNIT_OUTPUT=\"reports/junit/js-test-results.xml\" jest --maxWorkers=2 --ci --testResultsProcessor=\"jest-junit\"",
+    "test-ci": "jest --maxWorkers=2 --ci --reporters=\"default\" --reporters=\"jest-junit\"",
     "flow": "flow",
     "flow-check-ios": "flow check",
     "flow-check-android": "flow check --flowconfig-name .flowconfig.android",
@@ -140,27 +151,23 @@
     "test-android-unit": "yarn run docker-build-android && yarn run test-android-run-unit",
     "test-android-e2e": "yarn run docker-build-android && yarn run test-android-run-e2e",
     "build-ios-e2e": "detox build -c ios.sim.release",
-    "test-ios-e2e": "detox test -c ios.sim.release --cleanup"
-  },
-  "bin": {
-    "react-native": "local-cli/wrong-react-native.js"
+    "test-ios-e2e": "detox test -c ios.sim.release"
   },
   "peerDependencies": {
-    "react": "16.6.0-alpha.8af6728"
+    "react": "16.6.3"
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0",
     "absolute-path": "^0.0.0",
     "art": "^0.10.0",
     "base64-js": "^1.1.2",
-    "chalk": "^1.1.1",
+    "chalk": "^2.4.1",
     "commander": "^2.9.0",
     "compression": "^1.7.1",
     "connect": "^3.6.5",
     "create-react-class": "^15.6.3",
     "debug": "^2.2.0",
     "denodeify": "^1.2.1",
-    "envinfo": "^5.7.0",
     "errorhandler": "^1.5.0",
     "escape-string-regexp": "^1.0.5",
     "event-target-shim": "^1.0.5",
@@ -170,11 +177,12 @@
     "glob": "^7.1.1",
     "graceful-fs": "^4.1.3",
     "inquirer": "^3.0.6",
+    "invariant": "^2.2.4",
+    "jest": "24.0.0-alpha.6",
+    "jest-junit": "5.2.0",
     "lodash": "^4.17.5",
-    "metro": "^0.49.0",
-    "metro-babel-register": "^0.49.0",
-    "metro-core": "^0.49.0",
-    "metro-memory-fs": "^0.49.0",
+    "metro-babel-register": "0.51.0",
+    "metro-react-native-babel-transformer": "0.51.0",
     "mime": "^1.3.4",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
@@ -186,27 +194,30 @@
     "opn": "^3.0.2",
     "optimist": "^0.6.1",
     "plist": "^3.0.0",
-    "pretty-format": "^23.4.1",
+    "pretty-format": "24.0.0-alpha.6",
     "promise": "^7.1.1",
     "prop-types": "^15.5.8",
     "react-clone-referenced-element": "^1.0.1",
-    "react-devtools-core": "^3.4.0",
+    "react-devtools-core": "^3.4.2",
+    "react-native-local-cli": "1.0.0-alpha.4",
     "regenerator-runtime": "^0.11.0",
     "rimraf": "^2.5.4",
     "semver": "^5.0.3",
     "serve-static": "^1.13.1",
     "shell-quote": "1.6.1",
     "stacktrace-parser": "^0.1.3",
-    "ws": "^1.1.0",
+    "ws": "^1.1.5",
     "xcode": "^1.0.0",
     "xmldoc": "^0.4.0",
     "yargs": "^9.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
+    "@babel/generator": "^7.0.0",
+    "@reactions/component": "^2.0.2",
     "async": "^2.4.0",
     "babel-eslint": "9.0.0",
-    "babel-generator": "^6.26.0",
+    "coveralls": "^3.0.2",
     "detox": "9.0.4",
     "eslint": "5.1.0",
     "eslint-config-fb-strict": "22.1.0",
@@ -217,13 +228,14 @@
     "eslint-plugin-prettier": "2.6.0",
     "eslint-plugin-react": "7.8.2",
     "eslint-plugin-react-native": "3.5.0",
-    "flow-bin": "^0.84.0",
-    "jest": "24.0.0-alpha.2",
-    "jest-junit": "5.1.0",
+    "flow-bin": "^0.89.0",
+    "jest": "24.0.0-alpha.6",
+    "jest-junit": "5.2.0",
+    "jscodeshift": "^0.6.2",
     "prettier": "1.13.6",
-    "react": "16.6.0-alpha.8af6728",
+    "react": "16.6.3",
     "react-native-dummy": "0.1.0",
-    "react-test-renderer": "16.6.0-alpha.8af6728",
+    "react-test-renderer": "16.7.0-alpha.2",
     "shelljs": "^0.7.8"
   },
   "detox": {
@@ -233,7 +245,13 @@
     "configurations": {
       "ios.sim.release": {
         "binaryPath": "RNTester/build/Build/Products/Release-iphonesimulator/RNTester.app/",
-        "build": "xcodebuild -project RNTester/RNTester.xcodeproj -scheme RNTester -configuration Release -sdk iphonesimulator -derivedDataPath RNTester/build -quiet",
+        "build": "xcodebuild -project RNTester/RNTester.xcodeproj -scheme RNTester -configuration Release -sdk iphonesimulator -derivedDataPath RNTester/build -UseModernBuildSystem=NO -quiet",
+        "type": "ios.simulator",
+        "name": "iPhone 8"
+      },
+      "ios.sim.debug": {
+        "binaryPath": "RNTester/build/Build/Products/Debug-iphonesimulator/RNTester.app/",
+        "build": "xcodebuild -project RNTester/RNTester.xcodeproj -scheme RNTester -configuration Debug -sdk iphonesimulator -derivedDataPath RNTester/build -UseModernBuildSystem=NO -quiet",
         "type": "ios.simulator",
         "name": "iPhone 8"
       }

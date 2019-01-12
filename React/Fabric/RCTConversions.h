@@ -7,10 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import <fabric/components/view/primitives.h>
-#import <fabric/components/view/AccessibilityPrimitives.h>
-#import <fabric/graphics/Color.h>
-#import <fabric/graphics/Geometry.h>
+#import <react/components/view/primitives.h>
+#import <react/components/view/AccessibilityPrimitives.h>
+#import <react/graphics/Color.h>
+#import <react/graphics/Geometry.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

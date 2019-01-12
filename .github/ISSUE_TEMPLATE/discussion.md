@@ -1,6 +1,8 @@
 ---
 name: 🗣 Start a Discussion
 about: Use https://github.com/react-native-community/discussions-and-proposals to propose changes or discuss feature requests.
+title: [Discussion]
+labels: "For Discussion"
 ---
 
 Use https://github.com/react-native-community/discussions-and-proposals to propose changes or discuss feature requests. This helps us ensure bug reports and regressions are given the priority they require.

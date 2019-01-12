@@ -94,8 +94,6 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
 
   void removeAndDisposeAllChildren();
 
-  @Nullable ReactStylesDiffMap getNewProps();
-
   /**
    * This method will be called by {@link UIManagerModule} once per batch, before calculating
    * layout. Will be only called for nodes that are marked as updated with {@link #markUpdated()} or
@@ -348,12 +346,4 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   boolean isMeasureDefined();
 
   void dispose();
-
-  /**
-   * @return an immutable {@link List<ReactShadowNode>} containing the children of this
-   * {@link ReactShadowNode}.
-   */
-  List<ReactShadowNode> getChildrenList();
-
-  void updateScreenLayout(ReactShadowNode prevNode);
 }

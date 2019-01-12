@@ -83,20 +83,20 @@ stdout: ${stdout}`),
   });
 }
 
-function parseJsonFile(path, useYarn) {
+function parseJsonFile(filePath, useYarn) {
   const installHint = useYarn
     ? 'Make sure you ran "yarn" and that you are inside a React Native project.'
     : 'Make sure you ran "npm install" and that you are inside a React Native project.';
   let fileContents;
   try {
-    fileContents = fs.readFileSync(path, 'utf8');
+    fileContents = fs.readFileSync(filePath, 'utf8');
   } catch (err) {
-    throw new Error('Cannot find "' + path + '". ' + installHint);
+    throw new Error('Cannot find "' + filePath + '". ' + installHint);
   }
   try {
     return JSON.parse(fileContents);
   } catch (err) {
-    throw new Error('Cannot parse "' + path + '": ' + err.message);
+    throw new Error('Cannot parse "' + filePath + '": ' + err.message);
   }
 }
 
@@ -114,10 +114,18 @@ function readPackageFiles(useYarn) {
     'package.json',
   );
   const pakPath = path.resolve(process.cwd(), 'package.json');
+  const appPath = path.resolve(process.cwd(), 'app.json');
+  let app = null;
+  try {
+    app = parseJsonFile(appPath);
+  } catch (err) {
+    log.warn('Unable to parse app.json', err.message);
+  }
   return {
     reactNativeNodeModulesPak: parseJsonFile(reactNativeNodeModulesPakPath),
     reactNodeModulesPak: parseJsonFile(reactNodeModulesPakPath),
     pak: parseJsonFile(pakPath),
+    app: app,
   };
 }
 
@@ -290,8 +298,7 @@ async function run(requestedVersion, cliArgs) {
   const generatorDir = path.resolve(
     process.cwd(),
     'node_modules',
-    'react-native',
-    'local-cli',
+    'react-native-local-cli',
     'generator',
   );
   let projectBackupCreated = false;
@@ -306,8 +313,9 @@ async function run(requestedVersion, cliArgs) {
       reactNativeNodeModulesPak,
       reactNodeModulesPak,
       pak,
+      app,
     } = readPackageFiles(useYarn);
-    const appName = pak.name;
+    const appName = (app && app.name) || pak.name;
     const currentVersion = reactNativeNodeModulesPak.version;
     const currentReactVersion = reactNodeModulesPak.version;
     const declaredVersion = pak.dependencies['react-native'];

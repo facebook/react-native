@@ -25,7 +25,7 @@ rn_xplat_cxx_library(
         [
             ("", "*.h"),
         ],
-        prefix = "fabric/components/switch",
+        prefix = "react/components/switch",
     ),
     compiler_flags = [
         "-fexceptions",

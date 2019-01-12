@@ -27,14 +27,14 @@ import type {TextStyleProp} from 'StyleSheet';
 
 type PickerIOSChangeEvent = SyntheticEvent<
   $ReadOnly<{|
-    newValue: any,
+    newValue: number | string,
     newIndex: number,
   |}>,
 >;
 
 type RCTPickerIOSItemType = $ReadOnly<{|
   label: ?Label,
-  value: ?any,
+  value: ?(number | string),
   textColor: ?number,
 |}>;
 
@@ -47,6 +47,7 @@ type RCTPickerIOSType = Class<
       onStartShouldSetResponder: () => boolean,
       selectedIndex: number,
       style?: ?TextStyleProp,
+      testID?: ?string,
     |}>,
   >,
 >;
@@ -62,8 +63,8 @@ type Props = $ReadOnly<{|
   children: React.ChildrenArray<React.Element<typeof PickerIOSItem>>,
   itemStyle?: ?TextStyleProp,
   onChange?: ?(event: PickerIOSChangeEvent) => mixed,
-  onValueChange?: ?(newValue: any, newIndex: number) => mixed,
-  selectedValue: any,
+  onValueChange?: ?(itemValue: string | number, itemIndex: number) => mixed,
+  selectedValue: ?(number | string),
 |}>;
 
 type State = {|
@@ -73,7 +74,7 @@ type State = {|
 
 type ItemProps = $ReadOnly<{|
   label: ?Label,
-  value?: ?any,
+  value?: ?(number | string),
   color?: ?ColorValue,
 |}>;
 
@@ -114,6 +115,7 @@ class PickerIOS extends React.Component<Props, State> {
           ref={picker => {
             this._picker = picker;
           }}
+          testID={this.props.testID}
           style={[styles.pickerIOS, this.props.itemStyle]}
           items={this.state.items}
           selectedIndex={this.state.selectedIndex}

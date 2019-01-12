@@ -12,42 +12,51 @@
 
 const ProgressBar = require('ProgressBarAndroid');
 const React = require('React');
-const createReactClass = require('create-react-class');
 const RNTesterBlock = require('RNTesterBlock');
 const RNTesterPage = require('RNTesterPage');
 
-const MovingBar = createReactClass({
-  displayName: 'MovingBar',
-  _intervalID: (null: ?IntervalID),
+import type {ProgressBarAndroidProps} from 'ProgressBarAndroid';
 
-  getInitialState: function() {
-    return {
-      progress: 0,
-    };
-  },
+type MovingBarProps = $ReadOnly<{|
+  ...$Diff<
+    ProgressBarAndroidProps,
+    {
+      progress: ?number,
+    },
+  >,
+  indeterminate: false,
+|}>;
 
-  componentDidMount: function() {
+type MovingBarState = {
+  progress: number,
+};
+
+class MovingBar extends React.Component<MovingBarProps, MovingBarState> {
+  _intervalID: ?IntervalID = null;
+
+  state = {
+    progress: 0,
+  };
+
+  componentDidMount() {
     this._intervalID = setInterval(() => {
       const progress = (this.state.progress + 0.02) % 1;
-      this.setState({progress: progress});
+      this.setState({progress});
     }, 50);
-  },
+  }
 
-  componentWillUnmount: function() {
+  componentWillUnmount() {
     if (this._intervalID != null) {
       clearInterval(this._intervalID);
     }
-  },
+  }
 
-  render: function() {
+  render() {
     return <ProgressBar progress={this.state.progress} {...this.props} />;
-  },
-});
+  }
+}
 
 class ProgressBarAndroidExample extends React.Component<{}> {
-  static title = '<ProgressBarAndroid>';
-  static description = 'Horizontal bar to show the progress of some operation.';
-
   render() {
     return (
       <RNTesterPage title="ProgressBar Examples">
@@ -79,4 +88,13 @@ class ProgressBarAndroidExample extends React.Component<{}> {
   }
 }
 
-module.exports = ProgressBarAndroidExample;
+exports.title = '<ProgressBarAndroid>';
+exports.description = 'Horizontal bar to show the progress of some operation.';
+exports.examples = [
+  {
+    title: 'Simple progress bar',
+    render: function(): React.Element<typeof ProgressBarAndroidExample> {
+      return <ProgressBarAndroidExample />;
+    },
+  },
+];

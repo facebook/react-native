@@ -57,10 +57,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignSelf: 'center',
   },
-  textColumn: {
-    flex: 1,
-    flexDirection: 'column',
-  },
   imageWide: {
     borderWidth: 1,
     borderColor: 'black',

@@ -17,11 +17,8 @@ const StyleSheet = require('StyleSheet');
 const UIManager = require('UIManager');
 const View = require('View');
 
+import type {PressEvent} from 'CoreEventTypes';
 import type {ViewStyleProp} from 'StyleSheet';
-
-type EventLike = {
-  nativeEvent: Object,
-};
 
 type Inspected = $ReadOnly<{|
   frame?: Object,
@@ -35,7 +32,7 @@ type Props = $ReadOnly<{|
 |}>;
 
 class InspectorOverlay extends React.Component<Props> {
-  findViewForTouchEvent = (e: EventLike) => {
+  findViewForTouchEvent = (e: PressEvent) => {
     const {locationX, locationY} = e.nativeEvent.touches[0];
     UIManager.findSubviewIn(
       this.props.inspectedViewTag,
@@ -50,7 +47,7 @@ class InspectorOverlay extends React.Component<Props> {
     );
   };
 
-  shouldSetResponser = (e: EventLike): boolean => {
+  shouldSetResponser = (e: PressEvent): boolean => {
     this.findViewForTouchEvent(e);
     return true;
   };

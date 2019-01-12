@@ -3,7 +3,7 @@
 .*/*[.]android.js
 
 ; Ignore templates for 'react-native init'
-.*/local-cli/templates/.*
+<PROJECT_ROOT>/template/.*
 
 ; Ignore the Dangerfile
 <PROJECT_ROOT>/bots/dangerfile.js
@@ -22,12 +22,8 @@
 ; Ignore polyfills
 .*/Libraries/polyfills/.*
 
-; Ignore metro
-.*/node_modules/metro/.*
-
 ; These should not be required directly
-; require from fbjs/lib instead: require('fbjs/lib/invariant')
-.*/node_modules/invariant/.*
+; require from fbjs/lib instead: require('fbjs/lib/warning')
 .*/node_modules/warning/.*
 
 [include]
@@ -35,7 +31,6 @@
 [libs]
 Libraries/react-native/react-native-interface.js
 flow/
-flow-github/
 
 [options]
 emoji=true
@@ -101,4 +96,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.84.0
+^0.89.0

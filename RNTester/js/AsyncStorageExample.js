@@ -55,11 +55,11 @@ class BasicStorageExample extends React.Component<{}, $FlowFixMeState> {
           {'Selected: '}
           <Text style={{color}}>{this.state.selectedValue}</Text>
         </Text>
-        <Text> </Text>
+        <Text />
         <Text onPress={this._removeStorage}>
           Press here to remove from storage.
         </Text>
-        <Text> </Text>
+        <Text />
         <Text>Messages:</Text>
         {this.state.messages.map(m => <Text key={m}>{m}</Text>)}
       </View>

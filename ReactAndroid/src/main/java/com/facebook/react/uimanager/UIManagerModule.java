@@ -34,6 +34,7 @@ import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.common.MeasureSpecProvider;
 import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
@@ -112,6 +113,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   private final EventDispatcher mEventDispatcher;
   private final Map<String, Object> mModuleConstants;
   private final Map<String, Object> mCustomDirectEvents;
+  private final ViewManagerRegistry mViewManagerRegistry;
   private final UIImplementation mUIImplementation;
   private final MemoryTrimCallback mMemoryTrimCallback = new MemoryTrimCallback();
   private final List<UIManagerModuleListener> mListeners = new ArrayList<>();
@@ -155,10 +157,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     mEventDispatcher = new EventDispatcher(reactContext);
     mModuleConstants = createConstants(viewManagerResolver);
     mCustomDirectEvents = UIManagerModuleConstants.getDirectEventTypeConstants();
+    mViewManagerRegistry = new ViewManagerRegistry(viewManagerResolver);
     mUIImplementation =
         uiImplementationProvider.createUIImplementation(
             reactContext,
-            viewManagerResolver,
+            mViewManagerRegistry,
             mEventDispatcher,
             minTimeLeftInFrameForNonBatchedOperationMs);
 
@@ -176,10 +179,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     mEventDispatcher = new EventDispatcher(reactContext);
     mCustomDirectEvents = MapBuilder.newHashMap();
     mModuleConstants = createConstants(viewManagersList, null, mCustomDirectEvents);
+    mViewManagerRegistry = new ViewManagerRegistry(viewManagersList);
     mUIImplementation =
         uiImplementationProvider.createUIImplementation(
             reactContext,
-            viewManagersList,
+            mViewManagerRegistry,
             mEventDispatcher,
             minTimeLeftInFrameForNonBatchedOperationMs);
 
@@ -235,6 +239,15 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     getReactApplicationContext().unregisterComponentCallbacks(mMemoryTrimCallback);
     YogaNodePool.get().clear();
     ViewManagerPropertyUpdater.clear();
+  }
+
+  /**
+   * This method is intended to reuse the {@link ViewManagerRegistry} with FabricUIManager.
+   * Do not use this method as this will be removed in the near future.
+   */
+  @Deprecated
+  public ViewManagerRegistry getViewManagerRegistry_DO_NOT_USE() {
+    return mViewManagerRegistry;
   }
 
   private static Map<String, Object> createConstants(ViewManagerResolver viewManagerResolver) {
@@ -363,6 +376,11 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     return mUIImplementation.getProfiledBatchPerfCounters();
   }
 
+  public <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> int addRootView(
+      final T rootView) {
+        return addRootView(rootView, null, null);
+      }
+
   /**
    * Registers a new root view. JS can use the returned tag with manageChildren to add/remove
    * children to this view.
@@ -374,7 +392,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    */
   @Override
   public <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> int addRootView(
-      final T rootView) {
+      final T rootView, WritableMap initialProps, @Nullable String initialUITemplate) {
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "UIManagerModule.addRootView");
     final int tag = ReactRootViewTagGenerator.getNextRootViewTag();
     final ReactApplicationContext reactApplicationContext = getReactApplicationContext();
@@ -801,7 +819,9 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    * @return the rootTag
    */
   public int resolveRootTagFromReactTag(int reactTag) {
-    return mUIImplementation.resolveRootTagFromReactTag(reactTag);
+    return ViewUtil.isRootTag(reactTag)
+        ? reactTag
+        : mUIImplementation.resolveRootTagFromReactTag(reactTag);
   }
 
   /** Dirties the node associated with the given react tag */

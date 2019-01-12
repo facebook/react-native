@@ -26,6 +26,14 @@ namespace {
   }
 } // namespace
 
+void JSDeltaBundleClient::patchModules(const folly::dynamic *modules) {
+  for (const folly::dynamic pair : *modules) {
+    auto id = pair[0].getInt();
+    auto module = pair[1];
+    modules_.emplace(id, module.getString());
+  }
+}
+
 void JSDeltaBundleClient::patch(const folly::dynamic& delta) {
   auto const base = delta.get_ptr("base");
 
@@ -36,6 +44,11 @@ void JSDeltaBundleClient::patch(const folly::dynamic& delta) {
     auto const post = delta.get_ptr("post");
 
     startupCode_ = startupCode(pre, post);
+
+    const folly::dynamic *modules = delta.get_ptr("modules");
+    if (modules != nullptr) {
+      patchModules(modules);
+    }
   } else {
     const folly::dynamic *deleted = delta.get_ptr("deleted");
     if (deleted != nullptr) {
@@ -43,16 +56,25 @@ void JSDeltaBundleClient::patch(const folly::dynamic& delta) {
         modules_.erase(id.getInt());
       }
     }
-  }
 
-  const folly::dynamic *modules = delta.get_ptr("modules");
-  if (modules != nullptr) {
-    for (const folly::dynamic pair : *modules) {
-      auto id = pair[0].getInt();
-      auto module = pair[1];
-      modules_.emplace(id, module.getString());
+    // TODO T37123645 This is deprecated but necessary in order to support older
+    // versions of the Metro server.
+    const folly::dynamic *modules = delta.get_ptr("modules");
+    if (modules != nullptr) {
+      patchModules(modules);
+    }
+
+    const folly::dynamic *added = delta.get_ptr("added");
+    if (added != nullptr) {
+      patchModules(added);
+    }
+
+    const folly::dynamic *modified = delta.get_ptr("modified");
+    if (modified != nullptr) {
+      patchModules(modified);
     }
   }
+
 }
 
 JSModulesUnbundle::Module JSDeltaBundleClient::getModule(uint32_t moduleId) const {

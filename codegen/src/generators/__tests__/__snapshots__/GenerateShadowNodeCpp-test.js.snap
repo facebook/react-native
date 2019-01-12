@@ -1,0 +1,233 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GenerateShadowNodeCpp can generate fixture SINGLE_COMPONENT_WITH_BOOLEAN_PROP 1`] = `
+Map {
+  "ShadowNodes.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/SINGLE_COMPONENT_WITH_BOOLEAN_PROP/ShadowNodes.h>
+
+namespace facebook {
+namespace react {
+
+extern const char BooleanPropNativeComponentComponentName[] = \\"BooleanPropNativeComponent\\";
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateShadowNodeCpp can generate fixture SINGLE_COMPONENT_WITH_COLOR_PROP 1`] = `
+Map {
+  "ShadowNodes.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/SINGLE_COMPONENT_WITH_COLOR_PROP/ShadowNodes.h>
+
+namespace facebook {
+namespace react {
+
+extern const char ColorPropNativeComponentComponentName[] = \\"ColorPropNativeComponent\\";
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateShadowNodeCpp can generate fixture SINGLE_COMPONENT_WITH_ENUM_PROP 1`] = `
+Map {
+  "ShadowNodes.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/SINGLE_COMPONENT_WITH_ENUM_PROP/ShadowNodes.h>
+
+namespace facebook {
+namespace react {
+
+extern const char EnumPropsNativeComponentComponentName[] = \\"EnumPropsNativeComponent\\";
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateShadowNodeCpp can generate fixture SINGLE_COMPONENT_WITH_EVENT_NESTED_OBJECT_PROPS 1`] = `
+Map {
+  "ShadowNodes.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/SINGLE_COMPONENT_WITH_EVENT_NESTED_OBJECT_PROPS/ShadowNodes.h>
+
+namespace facebook {
+namespace react {
+
+extern const char EventsNestedObjectNativeComponentComponentName[] = \\"EventsNestedObjectNativeComponent\\";
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateShadowNodeCpp can generate fixture SINGLE_COMPONENT_WITH_EVENT_PROPS 1`] = `
+Map {
+  "ShadowNodes.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/SINGLE_COMPONENT_WITH_EVENT_PROPS/ShadowNodes.h>
+
+namespace facebook {
+namespace react {
+
+extern const char EventsNativeComponentComponentName[] = \\"EventsNativeComponent\\";
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateShadowNodeCpp can generate fixture SINGLE_COMPONENT_WITH_FLOAT_PROPS 1`] = `
+Map {
+  "ShadowNodes.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/SINGLE_COMPONENT_WITH_FLOAT_PROPS/ShadowNodes.h>
+
+namespace facebook {
+namespace react {
+
+extern const char FloatPropNativeComponentComponentName[] = \\"FloatPropNativeComponent\\";
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateShadowNodeCpp can generate fixture SINGLE_COMPONENT_WITH_INTEGER_PROPS 1`] = `
+Map {
+  "ShadowNodes.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/SINGLE_COMPONENT_WITH_INTEGER_PROPS/ShadowNodes.h>
+
+namespace facebook {
+namespace react {
+
+extern const char IntegerPropNativeComponentComponentName[] = \\"IntegerPropNativeComponent\\";
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateShadowNodeCpp can generate fixture SINGLE_COMPONENT_WITH_STRING_PROP 1`] = `
+Map {
+  "ShadowNodes.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/SINGLE_COMPONENT_WITH_STRING_PROP/ShadowNodes.h>
+
+namespace facebook {
+namespace react {
+
+extern const char StringPropComponentComponentName[] = \\"StringPropComponent\\";
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateShadowNodeCpp can generate fixture TWO_COMPONENTS_DIFFERENT_FILES 1`] = `
+Map {
+  "ShadowNodes.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/TWO_COMPONENTS_DIFFERENT_FILES/ShadowNodes.h>
+
+namespace facebook {
+namespace react {
+
+extern const char MultiFile1NativeComponentComponentName[] = \\"MultiFile1NativeComponent\\";
+extern const char MultiFile2NativeComponentComponentName[] = \\"MultiFile2NativeComponent\\";
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateShadowNodeCpp can generate fixture TWO_COMPONENTS_SAME_FILE 1`] = `
+Map {
+  "ShadowNodes.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/TWO_COMPONENTS_SAME_FILE/ShadowNodes.h>
+
+namespace facebook {
+namespace react {
+
+extern const char MultiComponent1NativeComponentComponentName[] = \\"MultiComponent1NativeComponent\\";
+extern const char MultiComponent2NativeComponentComponentName[] = \\"MultiComponent2NativeComponent\\";
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;

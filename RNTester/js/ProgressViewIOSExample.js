@@ -42,6 +42,9 @@ class ProgressViewExample extends React.Component<Props, State> {
     this._rafId = requestAnimationFrame(() => this.updateProgress());
   };
 
+  /* $FlowFixMe(>=0.85.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.85 was deployed. To see the error, delete this comment
+   * and run Flow. */
   getProgress = offset => {
     const progress = this.state.progress + offset;
     return Math.sin(progress % Math.PI) % 1;
@@ -79,6 +82,16 @@ class ProgressViewExample extends React.Component<Props, State> {
   }
 }
 
+const styles = StyleSheet.create({
+  container: {
+    marginTop: -20,
+    backgroundColor: 'transparent',
+  },
+  progressView: {
+    marginTop: 20,
+  },
+});
+
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';
 exports.title = 'ProgressViewIOS';
@@ -91,13 +104,3 @@ exports.examples = [
     },
   },
 ];
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: -20,
-    backgroundColor: 'transparent',
-  },
-  progressView: {
-    marginTop: 20,
-  },
-});

@@ -17,7 +17,6 @@ const Linking = require('Linking');
 const PropTypes = require('prop-types');
 const React = require('React');
 const ReactNative = require('ReactNative');
-const ScrollView = require('ScrollView');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const UIManager = require('UIManager');
@@ -25,7 +24,7 @@ const View = require('View');
 const WebViewShared = require('WebViewShared');
 
 const deprecatedPropType = require('deprecatedPropType');
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 const keyMirror = require('fbjs/lib/keyMirror');
 const processDecelerationRate = require('processDecelerationRate');
 const requireNativeComponent = require('requireNativeComponent');
@@ -285,6 +284,16 @@ class WebView extends React.Component {
       PropTypes.oneOf(DataDetectorTypes),
       PropTypes.arrayOf(PropTypes.oneOf(DataDetectorTypes)),
     ]),
+
+    /**
+     * Used on Android only to disable Hardware Acceleration if needed
+     * Hardware acceleration can not be enabled at view level but it can be
+     * disabled see:
+     * https://developer.android.com/guide/topics/graphics/hardware-accel
+     *
+     * @platform android
+     */
+    hardwareAccelerationEnabledExperimental: PropTypes.bool,
 
     /**
      * Boolean value to enable JavaScript in the `WebView`. Used on Android only

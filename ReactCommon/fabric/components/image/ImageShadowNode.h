@@ -7,11 +7,11 @@
 
 #pragma once
 
-#include <fabric/components/image/ImageEventEmitter.h>
-#include <fabric/components/image/ImageProps.h>
-#include <fabric/components/view/ConcreteViewShadowNode.h>
-#include <fabric/imagemanager/ImageManager.h>
-#include <fabric/imagemanager/primitives.h>
+#include <react/components/image/ImageEventEmitter.h>
+#include <react/components/image/ImageProps.h>
+#include <react/components/view/ConcreteViewShadowNode.h>
+#include <react/imagemanager/ImageManager.h>
+#include <react/imagemanager/primitives.h>
 
 namespace facebook {
 namespace react {

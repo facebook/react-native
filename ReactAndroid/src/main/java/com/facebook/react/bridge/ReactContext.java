@@ -70,6 +70,15 @@ public class ReactContext extends ContextWrapper {
     mJSMessageQueueThread = queueConfig.getJSQueueThread();
   }
 
+  public void resetPerfStats() {
+    if (mNativeModulesMessageQueueThread != null) {
+      mNativeModulesMessageQueueThread.resetPerfStats();
+    }
+    if (mJSMessageQueueThread != null) {
+      mJSMessageQueueThread.resetPerfStats();
+    }
+  }
+
   public void setNativeModuleCallExceptionHandler(
       @Nullable NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler) {
     mNativeModuleCallExceptionHandler = nativeModuleCallExceptionHandler;

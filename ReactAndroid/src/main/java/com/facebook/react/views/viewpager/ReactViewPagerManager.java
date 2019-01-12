@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
 @ReactModule(name = ReactViewPagerManager.REACT_CLASS)
 public class ReactViewPagerManager extends ViewGroupManager<ReactViewPager> {
 
-  protected static final String REACT_CLASS = "AndroidViewPager";
+  public static final String REACT_CLASS = "AndroidViewPager";
 
   public static final int COMMAND_SET_PAGE = 1;
   public static final int COMMAND_SET_PAGE_WITHOUT_ANIMATION = 2;

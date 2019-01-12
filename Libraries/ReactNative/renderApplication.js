@@ -14,7 +14,7 @@ const AppContainer = require('AppContainer');
 const React = require('React');
 const ReactFabricIndicator = require('ReactFabricIndicator');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 // require BackHandler so it sets the default handler that exits the app if no listeners respond
 require('BackHandler');
@@ -49,8 +49,8 @@ function renderApplication<Props: Object>(
     RootComponent.prototype.unstable_isAsyncReactComponent === true
   ) {
     // $FlowFixMe This is not yet part of the official public API
-    const AsyncMode = React.unstable_AsyncMode;
-    renderable = <AsyncMode>{renderable}</AsyncMode>;
+    const ConcurrentMode = React.unstable_ConcurrentMode;
+    renderable = <ConcurrentMode>{renderable}</ConcurrentMode>;
   }
 
   if (fabric) {

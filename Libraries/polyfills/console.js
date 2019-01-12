@@ -9,7 +9,7 @@
  * @format
  */
 
-/* eslint-disable no-shadow, eqeqeq, curly, no-unused-vars, no-void */
+/* eslint-disable no-shadow, eqeqeq, curly, no-unused-vars, no-void, no-control-regex  */
 
 /**
  * This pipes all of our console logging functions to native logging so that
@@ -361,17 +361,6 @@ const inspect = (function() {
     return typeof arg === 'function';
   }
 
-  function isPrimitive(arg) {
-    return (
-      arg === null ||
-      typeof arg === 'boolean' ||
-      typeof arg === 'number' ||
-      typeof arg === 'string' ||
-      typeof arg === 'symbol' || // ES6 symbol
-      typeof arg === 'undefined'
-    );
-  }
-
   function objectToString(o) {
     return Object.prototype.toString.call(o);
   }
@@ -527,6 +516,14 @@ function consoleGroupEndPolyfill() {
 
 if (global.nativeLoggingHook) {
   const originalConsole = global.console;
+  // Preserve the original `console` as `originalConsole`
+  if (__DEV__ && originalConsole) {
+    const descriptor = Object.getOwnPropertyDescriptor(global, 'console');
+    if (descriptor) {
+      Object.defineProperty(global, 'originalConsole', descriptor);
+    }
+  }
+
   global.console = {
     error: getNativeLogFunction(LOG_LEVELS.error),
     info: getNativeLogFunction(LOG_LEVELS.info),
@@ -543,18 +540,31 @@ if (global.nativeLoggingHook) {
   // sometimes useful. Ex: on OS X, this will let you see rich output in
   // the Safari Web Inspector console.
   if (__DEV__ && originalConsole) {
-    // Preserve the original `console` as `originalConsole`
-    const descriptor = Object.getOwnPropertyDescriptor(global, 'console');
-    if (descriptor) {
-      Object.defineProperty(global, 'originalConsole', descriptor);
-    }
-
     Object.keys(console).forEach(methodName => {
       const reactNativeMethod = console[methodName];
       if (originalConsole[methodName]) {
         console[methodName] = function() {
           originalConsole[methodName](...arguments);
           reactNativeMethod.apply(console, arguments);
+        };
+      }
+    });
+
+    // The following methods are not supported by this polyfill but
+    // we still should pass them to original console if they are
+    // supported by it.
+    [
+      'assert',
+      'clear',
+      'dir',
+      'dirxml',
+      'groupCollapsed',
+      'profile',
+      'profileEnd',
+    ].forEach(methodName => {
+      if (typeof originalConsole[methodName] === 'function') {
+        console[methodName] = function() {
+          originalConsole[methodName](...arguments);
         };
       }
     });

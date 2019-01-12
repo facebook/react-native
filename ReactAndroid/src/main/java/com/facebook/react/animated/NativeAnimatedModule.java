@@ -75,7 +75,7 @@ import com.facebook.react.uimanager.UIManagerModuleListener;
 public class NativeAnimatedModule extends ReactContextBaseJavaModule implements
     LifecycleEventListener, UIManagerModuleListener {
 
-  protected static final String NAME = "NativeAnimatedModule";
+  public static final String NAME = "NativeAnimatedModule";
 
   private interface UIThreadOperation {
     void execute(NativeAnimatedNodesManager animatedNodesManager);

@@ -9,10 +9,10 @@
 
 #include <memory>
 
-#include <fabric/attributedstring/AttributedString.h>
-#include <fabric/attributedstring/ParagraphAttributes.h>
-#include <fabric/core/LayoutConstraints.h>
-#include <fabric/uimanager/ContextContainer.h>
+#include <react/attributedstring/AttributedString.h>
+#include <react/attributedstring/ParagraphAttributes.h>
+#include <react/core/LayoutConstraints.h>
+#include <react/uimanager/ContextContainer.h>
 
 namespace facebook {
 namespace react {
@@ -34,7 +34,6 @@ class TextLayoutManager {
    * Measures `attributedString` using native text rendering infrastructure.
    */
   Size measure(
-      Tag reactTag,
       AttributedString attributedString,
       ParagraphAttributes paragraphAttributes,
       LayoutConstraints layoutConstraints) const;

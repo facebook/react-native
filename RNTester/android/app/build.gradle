@@ -65,7 +65,7 @@ import com.android.build.OutputFile
  */
 
 project.ext.react = [
-    cliPath: "$rootDir/local-cli/cli.js",
+    cliPath: "$rootDir/cli.js",
     bundleAssetName: "RNTesterApp.android.bundle",
     entryFile: file("../../js/RNTesterApp.android.js"),
     root: "$rootDir",
@@ -91,8 +91,7 @@ def enableSeparateBuildPerCPUArchitecture = true
 def enableProguardInReleaseBuilds = true
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion "27.0.3"
+    compileSdkVersion 28
 
     defaultConfig {
         applicationId "com.facebook.react.uiapp"

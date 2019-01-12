@@ -16,7 +16,8 @@ const ReactNative = require('react-native');
 const nativeImageSource = require('nativeImageSource');
 const {Image, StyleSheet, Text, View} = ReactNative;
 
-class ImageCapInsetsExample extends React.Component<{}> {
+type Props = $ReadOnly<{||}>;
+class ImageCapInsetsExample extends React.Component<Props> {
   render() {
     return (
       <View>
@@ -57,16 +58,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  horizontal: {
-    flexDirection: 'row',
-  },
   storyBackground: {
     width: 250,
     height: 150,
     borderWidth: 1,
-  },
-  text: {
-    fontSize: 13.5,
   },
 });
 
