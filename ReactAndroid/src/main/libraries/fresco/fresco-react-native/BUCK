@@ -32,6 +32,7 @@ rn_android_library(
         ":bolts",
         ":imagepipeline-base",
         ":imagepipeline-core",
+        ":nativeimagefilters",
     ],
 )
 
