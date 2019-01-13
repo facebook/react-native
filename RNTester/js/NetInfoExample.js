@@ -20,11 +20,11 @@ class ConnectionInfoSubscription extends React.Component<{}, $FlowFixMeState> {
   };
 
   componentDidMount() {
-    NetInfo.addEventListener('change', this._handleConnectionInfoChange);
+    NetInfo.addEventListener('connectionChange', this._handleConnectionInfoChange);
   }
 
   componentWillUnmount() {
-    NetInfo.removeEventListener('change', this._handleConnectionInfoChange);
+    NetInfo.removeEventListener('connectionChange', this._handleConnectionInfoChange);
   }
 
   _handleConnectionInfoChange = connectionInfo => {
@@ -50,14 +50,14 @@ class ConnectionInfoCurrent extends React.Component<{}, $FlowFixMeState> {
   };
 
   componentDidMount() {
-    NetInfo.addEventListener('change', this._handleConnectionInfoChange);
-    NetInfo.fetch().done(connectionInfo => {
+    NetInfo.addEventListener('connectionChange', this._handleConnectionInfoChange);
+    NetInfo.getConnectionInfo().then(connectionInfo => {
       this.setState({connectionInfo});
     });
   }
 
   componentWillUnmount() {
-    NetInfo.removeEventListener('change', this._handleConnectionInfoChange);
+    NetInfo.removeEventListener('connectionChange', this._handleConnectionInfoChange);
   }
 
   _handleConnectionInfoChange = connectionInfo => {
@@ -69,7 +69,7 @@ class ConnectionInfoCurrent extends React.Component<{}, $FlowFixMeState> {
   render() {
     return (
       <View>
-        <Text>{this.state.connectionInfo}</Text>
+        <Text>{JSON.stringify(this.state.connectionInfo)}</Text>
       </View>
     );
   }
@@ -82,17 +82,17 @@ class IsConnected extends React.Component<{}, $FlowFixMeState> {
 
   componentDidMount() {
     NetInfo.isConnected.addEventListener(
-      'change',
+      'connectionChange',
       this._handleConnectivityChange,
     );
-    NetInfo.isConnected.fetch().done(isConnected => {
+    NetInfo.isConnected.fetch().then(isConnected => {
       this.setState({isConnected});
     });
   }
 
   componentWillUnmount() {
     NetInfo.isConnected.removeEventListener(
-      'change',
+      'connectionChange',
       this._handleConnectivityChange,
     );
   }
