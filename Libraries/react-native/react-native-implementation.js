@@ -171,7 +171,8 @@ module.exports = {
     if (!showedWebWiewDeprecation) {
       console.warn(
         'WebView has been extracted from react-native core and will be removed in a future release. ' +
-          'See https://github.com/react-native-community/react-native-webview for more information',
+          "It can now be installed and imported from 'react-native-webview' instead of 'react-native'. " +
+          'See https://github.com/react-native-community/react-native-webview for more informations.',
       );
 
       showedWebWiewDeprecation = true;
