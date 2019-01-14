@@ -684,7 +684,7 @@ module.exports = {
    */
   forkEvent,
   unforkEvent,
-  
+
   /**
    * Expose Event class, so it can be used as a type for type checkers.
    */
