@@ -28,19 +28,12 @@ static NSString *const RCTEffectiveConnectionType2g = @"2g";
 static NSString *const RCTEffectiveConnectionType3g = @"3g";
 static NSString *const RCTEffectiveConnectionType4g = @"4g";
 
-// The RCTReachabilityState* values are deprecated.
-static NSString *const RCTReachabilityStateUnknown = @"unknown";
-static NSString *const RCTReachabilityStateNone = @"none";
-static NSString *const RCTReachabilityStateWifi = @"wifi";
-static NSString *const RCTReachabilityStateCell = @"cell";
-
 @implementation RCTNetInfo
 {
   SCNetworkReachabilityRef _firstTimeReachability;
   SCNetworkReachabilityRef _reachability;
   NSString *_connectionType;
   NSString *_effectiveConnectionType;
-  NSString *_statusDeprecated;
   NSString *_host;
   BOOL _isObserving;
   RCTPromiseResolveBlock _resolve;
@@ -55,22 +48,19 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
   
   NSString *connectionType = self->_connectionType ?: RCTConnectionTypeUnknown;
   NSString *effectiveConnectionType = self->_effectiveConnectionType ?: RCTEffectiveConnectionTypeUnknown;
-  NSString *networkInfo = self->_statusDeprecated ?: RCTReachabilityStateUnknown;
 
   if (self->_firstTimeReachability && self->_resolve) {
     SCNetworkReachabilityUnscheduleFromRunLoop(self->_firstTimeReachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
     CFRelease(self->_firstTimeReachability);
     self->_resolve(@{@"connectionType": connectionType,
-                     @"effectiveConnectionType": effectiveConnectionType,
-                     @"network_info": networkInfo});
+                     @"effectiveConnectionType": effectiveConnectionType});
     self->_firstTimeReachability = nil;
     self->_resolve = nil;
   }
 
   if (didSetReachabilityFlags && self->_isObserving) {
     [self sendEventWithName:@"networkStatusDidChange" body:@{@"connectionType": connectionType,
-                                                             @"effectiveConnectionType": effectiveConnectionType,
-                                                             @"network_info": networkInfo}];
+                                                             @"effectiveConnectionType": effectiveConnectionType}];
   }
 }
 
@@ -104,7 +94,6 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
   _isObserving = YES;
   _connectionType = RCTConnectionTypeUnknown;
   _effectiveConnectionType = RCTEffectiveConnectionTypeUnknown;
-  _statusDeprecated = RCTReachabilityStateUnknown;
   _reachability = [self getReachabilityRef];
 }
 
@@ -141,18 +130,15 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
 {
   NSString *connectionType = RCTConnectionTypeUnknown;
   NSString *effectiveConnectionType = RCTEffectiveConnectionTypeUnknown;
-  NSString *status = RCTReachabilityStateUnknown;
   if ((flags & kSCNetworkReachabilityFlagsReachable) == 0 ||
       (flags & kSCNetworkReachabilityFlagsConnectionRequired) != 0) {
     connectionType = RCTConnectionTypeNone;
-    status = RCTReachabilityStateNone;
   }
   
 #if !TARGET_OS_TV
   
   else if ((flags & kSCNetworkReachabilityFlagsIsWWAN) != 0) {
     connectionType = RCTConnectionTypeCellular;
-    status = RCTReachabilityStateCell;
     
     CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
     if (netinfo) {
@@ -178,15 +164,12 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
   
   else {
     connectionType = RCTConnectionTypeWifi;
-    status = RCTReachabilityStateWifi;
   }
   
   if (![connectionType isEqualToString:self->_connectionType] ||
-      ![effectiveConnectionType isEqualToString:self->_effectiveConnectionType] ||
-      ![status isEqualToString:self->_statusDeprecated]) {
+      ![effectiveConnectionType isEqualToString:self->_effectiveConnectionType]) {
     self->_connectionType = connectionType;
     self->_effectiveConnectionType = effectiveConnectionType;
-    self->_statusDeprecated = status;
     return YES;
   }
   
