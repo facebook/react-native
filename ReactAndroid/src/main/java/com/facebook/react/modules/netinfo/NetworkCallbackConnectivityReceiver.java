@@ -6,8 +6,6 @@ import android.net.LinkProperties;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 
@@ -16,7 +14,6 @@ import com.facebook.react.bridge.ReactApplicationContext;
  * method was added into Android from API level 24 (N) and we use it for all devices which support
  * it.
  */
-@RequiresApi(api = Build.VERSION_CODES.N)
 class NetworkCallbackConnectivityReceiver extends ConnectivityReceiver {
   private final ConnectivityNetworkCallback mNetworkCallback;
   private Network mNetwork = null;
