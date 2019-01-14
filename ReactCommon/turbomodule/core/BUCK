@@ -1,5 +1,5 @@
 load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "OBJC_ARC_PREPROCESSOR_FLAGS", "get_debug_preprocessor_flags", "get_static_library_ios_flags")
-load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "react_native_xplat_target", "rn_xplat_cxx_library", "subdir_glob")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "react_native_target", "react_native_xplat_target", "rn_xplat_cxx_library", "subdir_glob")
 
 rn_xplat_cxx_library(
     name = "core",
@@ -17,6 +17,20 @@ rn_xplat_cxx_library(
         "-std=c++14",
         "-Wall",
     ],
+    fbandroid_deps = [
+        react_native_target("jni/react/jni:jni"),
+    ],
+    fbandroid_exported_headers = subdir_glob(
+        [
+            ("platform/android", "*.h"),
+        ],
+        prefix = "jsireact",
+    ),
+    fbandroid_srcs = glob(
+        [
+            "platform/android/**/*.cpp",
+        ],
+    ),
     fbobjc_compiler_flags = [
         "-Wall",
         "-fobjc-arc-exceptions",
