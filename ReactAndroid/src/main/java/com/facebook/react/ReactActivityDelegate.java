@@ -7,7 +7,6 @@ package com.facebook.react;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.support.v4.app.FragmentActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -39,12 +38,6 @@ public class ReactActivityDelegate {
 
   public ReactActivityDelegate(ReactActivity activity, @Nullable String mainComponentName) {
     mActivity = activity;
-    mMainComponentName = mainComponentName;
-  }
-
-  @Deprecated
-  public ReactActivityDelegate(FragmentActivity activity, @Nullable String mainComponentName) {
-    mActivity = (ReactActivity) activity;
     mMainComponentName = mainComponentName;
   }
 
