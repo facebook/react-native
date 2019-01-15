@@ -101,9 +101,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     int inputType = editText.getInputType();
     editText.setInputType(inputType & (~InputType.TYPE_TEXT_FLAG_MULTI_LINE));
     editText.setReturnKeyType("done");
-    editText.setTextSize(
-        TypedValue.COMPLEX_UNIT_PX,
-        (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP)));
     return editText;
   }
 
@@ -204,9 +201,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = ViewProps.FONT_SIZE, defaultFloat = ViewDefaults.FONT_SIZE_SP)
   public void setFontSize(ReactEditText view, float fontSize) {
-    view.setTextSize(
-        TypedValue.COMPLEX_UNIT_PX,
-        (int) Math.ceil(PixelUtil.toPixelFromSP(fontSize)));
+    view.setFontSize(fontSize);
   }
 
   @ReactProp(name = ViewProps.FONT_FAMILY)
