@@ -15,9 +15,8 @@ const ReactNative = require('ReactNative');
 const UIManager = require('UIManager');
 
 const dismissKeyboard = require('dismissKeyboard');
-const requireNativeComponent = require('requireNativeComponent');
 
-const NativeAndroidViewPager = requireNativeComponent('AndroidViewPager');
+const NativeAndroidViewPager = require('AndroidViewPagerNativeComponent');
 
 import type {SyntheticEvent} from 'CoreEventTypes';
 import type {ViewStyleProp} from 'StyleSheet';
