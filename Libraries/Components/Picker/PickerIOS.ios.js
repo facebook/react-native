@@ -39,7 +39,7 @@ type RCTPickerIOSItemType = $ReadOnly<{|
 |}>;
 
 type RCTPickerIOSType = Class<
-  NativeComponent<
+  ReactNative.NativeComponent<
     $ReadOnly<{|
       items: $ReadOnlyArray<RCTPickerIOSItemType>,
       onChange: (event: PickerIOSChangeEvent) => void,
