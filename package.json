@@ -115,7 +115,7 @@
     "scripts/launchPackager.command",
     "scripts/packager.sh",
     "scripts/react-native-xcode.sh",
-    "jest-preset.json",
+    "jest-preset.js",
     "jest",
     "lib",
     "rn-get-polyfills.js",
