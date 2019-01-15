@@ -102,6 +102,9 @@ afterEvaluate {
             packageTask = variant.packageLibrary
         }
 
+        // pre bundle build task for Android plugin 3.2+
+        def buildPreBundleTask = tasks.findByName("build${targetName}PreBundle")
+
         def resourcesDirConfigValue = config."resourcesDir${targetName}"
         if (resourcesDirConfigValue) {
             def currentCopyResTask = tasks.create(
@@ -119,6 +122,9 @@ afterEvaluate {
             }
 
             packageTask.dependsOn(currentCopyResTask)
+            if (buildPreBundleTask != null) {
+                buildPreBundleTask.dependsOn(currentCopyResTask)
+            }
         }
 
         def currentAssetsCopyTask = tasks.create(
@@ -149,5 +155,8 @@ afterEvaluate {
         }
 
         packageTask.dependsOn(currentAssetsCopyTask)
+        if (buildPreBundleTask != null) {
+            buildPreBundleTask.dependsOn(currentAssetsCopyTask)
+        }
     }
 }
