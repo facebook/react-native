@@ -40,7 +40,7 @@ type NativeProps = $ReadOnly<{|
   accessibilityLabel?: ?string,
 |}>;
 
-type DialogPickerNativeType = Class<NativeComponent<NativeProps>>
+type DialogPickerNativeType = Class<NativeComponent<NativeProps>>;
 
 module.exports = ((requireNativeComponent(
   'AndroidDialogPicker',
