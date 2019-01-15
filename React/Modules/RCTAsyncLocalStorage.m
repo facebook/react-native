@@ -242,20 +242,20 @@ RCT_EXPORT_MODULE()
     NSDictionary *errorOut = nil;
     NSString *serialized = RCTReadFile(RCTGetManifestFilePath(), RCTManifestFileName, &errorOut);
     if (!serialized) {
-    	if (errorOut) {
-     		// We cannot simply create a new manifest in case the file does exist but we have no access to it.
-				// This can happen when data protection is enabled for the app and we are trying to read the manifect
-				// while the device is locked. (The app can be started by the system even if the device is locked due to
-				// e.g. a geofence event.)
-      	RCTLogError(@"Could not open the existing manifest, perhaps data protection is enabled?\n\n%@", errorOut);
-      	return errorOut;
+      if (errorOut) {
+     	  // We cannot simply create a new manifest in case the file does exist but we have no access to it.
+			  // This can happen when data protection is enabled for the app and we are trying to read the manifect
+			  // while the device is locked. (The app can be started by the system even if the device is locked due to
+			  // e.g. a geofence event.)
+        RCTLogError(@"Could not open the existing manifest, perhaps data protection is enabled?\n\n%@", errorOut);
+        return errorOut;
       } else {
-      	// We can get nil without errors only when the file does not exist.
+        // We can get nil without errors only when the file does not exist.
         RCTLogTrace(@"Manifest does not exist - creating a new one.\n\n%@", errorOut);
         _manifest = [NSMutableDictionary new];
       }
     } else {
-    	_manifest = RCTJSONParseMutable(serialized, &error);
+      _manifest = RCTJSONParseMutable(serialized, &error);
       if (!_manifest) {
         RCTLogError(@"Failed to parse manifest - creating a new one.\n\n%@", error);
         _manifest = [NSMutableDictionary new];
