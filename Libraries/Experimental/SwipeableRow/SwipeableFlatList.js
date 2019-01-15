@@ -34,6 +34,11 @@ type SwipableListProps = {
    * Callback method to render the view that will be unveiled on swipe
    */
   renderQuickActions: renderItemType,
+
+  /**
+   * Disable swipping on rows
+   */
+  disableSwipe: boolean,
 };
 
 type Props<ItemT> = SwipableListProps & FlatListProps<ItemT>;
@@ -67,6 +72,7 @@ class SwipeableFlatList<ItemT> extends React.Component<Props<ItemT>, State> {
     ...FlatList.defaultProps,
     bounceFirstRowOnMount: true,
     renderQuickActions: () => null,
+    disableSwipe: false,
   };
 
   constructor(props: Props<ItemT>, context: any): void {
@@ -113,7 +119,7 @@ class SwipeableFlatList<ItemT> extends React.Component<Props<ItemT>, State> {
     }
 
     let shouldBounceOnMount = false;
-    if (this._shouldBounceFirstRowOnMount) {
+    if (this._shouldBounceFirstRowOnMount && !this.props.disableSwipe) {
       this._shouldBounceFirstRowOnMount = false;
       shouldBounceOnMount = true;
     }
@@ -127,7 +133,8 @@ class SwipeableFlatList<ItemT> extends React.Component<Props<ItemT>, State> {
         onClose={() => this._onClose(key)}
         shouldBounceOnMount={shouldBounceOnMount}
         onSwipeEnd={this._setListViewScrollable}
-        onSwipeStart={this._setListViewNotScrollable}>
+        onSwipeStart={this._setListViewNotScrollable}
+        disableSwipe={this.props.disableSwipe}>
         {this.props.renderItem(info)}
       </SwipeableRow>
     );

@@ -67,6 +67,7 @@ type Props = $ReadOnly<{|
   shouldBounceOnMount?: ?boolean,
   slideoutView?: ?React.Node,
   swipeThreshold?: ?number,
+  disableSwipe?: ?boolean,
 |}>;
 
 type State = {
@@ -100,7 +101,11 @@ class SwipeableRow extends React.Component<Props, State> {
     event: PressEvent,
     gestureState: GestureState,
   ): void => {
-    if (this._isSwipingExcessivelyRightFromClosedPosition(gestureState)) {
+    const disableSwipe = this.props.disableSwipe ?? false;
+    if (
+      disableSwipe ||
+      this._isSwipingExcessivelyRightFromClosedPosition(gestureState)
+    ) {
       return;
     }
 
@@ -124,6 +129,10 @@ class SwipeableRow extends React.Component<Props, State> {
     event: PressEvent,
     gestureState: GestureState,
   ): void => {
+    const disableSwipe = this.props.disableSwipe ?? false;
+    if (disableSwipe) {
+      return;
+    }
     const horizontalDistance = IS_RTL ? -gestureState.dx : gestureState.dx;
     if (this._isSwipingRightFromClosed(gestureState)) {
       this.props.onOpen && this.props.onOpen();
