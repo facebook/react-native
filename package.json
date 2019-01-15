@@ -115,7 +115,7 @@
     "scripts/launchPackager.command",
     "scripts/packager.sh",
     "scripts/react-native-xcode.sh",
-    "jest-preset.json",
+    "jest-preset.js",
     "jest",
     "lib",
     "rn-get-polyfills.js",
@@ -128,7 +128,8 @@
     "ReactAndroid",
     "ReactCommon",
     "README.md",
-    "third-party-podspecs"
+    "third-party-podspecs",
+    "template"
   ],
   "scripts": {
     "start": "node cli.js start",
@@ -167,7 +168,6 @@
     "create-react-class": "^15.6.3",
     "debug": "^2.2.0",
     "denodeify": "^1.2.1",
-    "envinfo": "^5.7.0",
     "errorhandler": "^1.5.0",
     "escape-string-regexp": "^1.0.5",
     "event-target-shim": "^1.0.5",

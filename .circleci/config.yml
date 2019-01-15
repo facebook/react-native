@@ -57,13 +57,13 @@ aliases:
 
   - &restore-cache-downloads-buck
     keys:
-      - v3-buck-v2018.10.29.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
-      - v3-buck-v2018.10.29.01-
+      - v3-buck-v2019.01.10.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
+      - v3-buck-v2019.01.10.01-
   - &save-cache-downloads-buck
     paths:
       - ~/buck
       - ~/okbuck
-    key: v3-buck-v2018.10.29.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}
+    key: v3-buck-v2019.01.10.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}
 
   - &restore-cache-watchman
     keys:
@@ -140,7 +140,7 @@ aliases:
     name: Install BUCK
     command: |
       if [[ ! -e ~/buck ]]; then
-        git clone https://github.com/facebook/buck.git ~/buck --branch v2018.10.29.01 --depth=1
+        git clone https://github.com/facebook/buck.git ~/buck --branch v2019.01.10.01 --depth=1
       fi
       cd ~/buck && ant
       buck --version
@@ -248,7 +248,7 @@ aliases:
 
   - &compile-native-libs
     name: Compile Native Libs for Unit and Integration Tests
-    command: ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=$BUILD_THREADS -Pcom.android.build.threadPoolSize=1
+    command: ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=$BUILD_THREADS
     no_output_timeout: 6m
 
   - &run-android-unit-tests

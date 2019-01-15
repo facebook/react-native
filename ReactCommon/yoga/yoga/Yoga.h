@@ -358,8 +358,11 @@ WIN_EXPORT float YGNodeLayoutGetPadding(
     const YGEdge edge);
 
 WIN_EXPORT void YGConfigSetLogger(const YGConfigRef config, YGLogger logger);
-WIN_EXPORT void
-YGLog(const YGNodeRef node, YGLogLevel level, const char* message, ...);
+WIN_EXPORT void YGLog(
+    const YGNodeRef node,
+    YGLogLevel level,
+    const char* message,
+    ...);
 WIN_EXPORT void YGLogWithConfig(
     const YGConfigRef config,
     YGLogLevel level,

@@ -599,7 +599,11 @@ class ScrollView extends React.Component<Props, State> {
      *
      * 3. Mixin methods access other mixin methods via dynamic dispatch using
      *    this. Since mixin methods are bound to the component instance, we need
-     *    to copy all mixin methods to the component instance.
+     *    to copy all mixin methods to the component instance. This is also
+     *    necessary because getScrollResponder() is a public method that returns
+     *    an object that can be used to execute all scrollResponder methods.
+     *    Since the object returned from that method is the ScrollView instance,
+     *    we need to bind all mixin methods to the ScrollView instance.
      */
     for (const key in ScrollResponder.Mixin) {
       if (
@@ -672,8 +676,14 @@ class ScrollView extends React.Component<Props, State> {
    * implement this method so that they can be composed while providing access
    * to the underlying scroll responder's methods.
    */
-  getScrollResponder(): ScrollView {
-    return this;
+  getScrollResponder(): {
+    ...typeof ScrollView,
+    ...typeof ScrollResponder.Mixin,
+  } {
+    return ((this: any): {
+      ...typeof ScrollView,
+      ...typeof ScrollResponder.Mixin,
+    });
   }
 
   getScrollableNode(): any {

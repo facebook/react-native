@@ -74,7 +74,7 @@ static int YGAndroidLog(
   return result;
 }
 #else
-#define YG_UNUSED(x) (void)(x);
+#define YG_UNUSED(x) (void) (x);
 
 static int YGDefaultLog(
     const YGConfigRef config,
@@ -105,7 +105,7 @@ bool YGFloatIsUndefined(const float value) {
 }
 
 detail::CompactValue YGComputedEdgeValue(
-    const facebook::yoga::detail::Values<YGEdgeCount>& edges,
+    const YGStyle::Edges& edges,
     YGEdge edge,
     detail::CompactValue defaultValue) {
   if (!edges[edge].isUndefined()) {
@@ -921,7 +921,7 @@ float YGNodeStyleGetBorder(const YGNodeRef node, const YGEdge edge) {
     return YGUndefined;
   }
 
-  auto border = (YGValue)node->getStyle().border[edge];
+  auto border = (YGValue) node->getStyle().border[edge];
   return border.value;
 }
 
@@ -3546,14 +3546,12 @@ static const char* YGSpacer(const unsigned long level) {
 static const char* YGMeasureModeName(
     const YGMeasureMode mode,
     const bool performLayout) {
-  const char* kMeasureModeNames[YGMeasureModeCount] = {
-      "UNDEFINED", "EXACTLY", "AT_MOST"};
-  const char* kLayoutModeNames[YGMeasureModeCount] = {"LAY_UNDEFINED",
-                                                      "LAY_EXACTLY",
-                                                      "LAY_AT_"
-                                                      "MOST"};
+  constexpr auto N = enums::count<YGMeasureMode>();
+  const char* kMeasureModeNames[N] = {"UNDEFINED", "EXACTLY", "AT_MOST"};
+  const char* kLayoutModeNames[N] = {
+      "LAY_UNDEFINED", "LAY_EXACTLY", "LAY_AT_MOST"};
 
-  if (mode >= YGMeasureModeCount) {
+  if (mode >= N) {
     return "";
   }
 
@@ -3745,8 +3743,8 @@ bool YGLayoutNodeInternal(
   if (needToVisitNode) {
     // Invalidate the cached results.
     layout->nextCachedMeasurementsIndex = 0;
-    layout->cachedLayout.widthMeasureMode = (YGMeasureMode)-1;
-    layout->cachedLayout.heightMeasureMode = (YGMeasureMode)-1;
+    layout->cachedLayout.widthMeasureMode = (YGMeasureMode) -1;
+    layout->cachedLayout.heightMeasureMode = (YGMeasureMode) -1;
     layout->cachedLayout.computedWidth = -1;
     layout->cachedLayout.computedHeight = -1;
   }
