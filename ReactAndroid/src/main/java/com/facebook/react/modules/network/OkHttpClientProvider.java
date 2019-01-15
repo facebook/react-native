@@ -79,7 +79,7 @@ public class OkHttpClientProvider {
   }
 
   public static OkHttpClient.Builder createClientBuilder(Context context) {
-    int cacheSize = 10 * 1024 * 1024; // 10 Mo
+    int cacheSize = 10 * 1024 * 1024; // 10 Mb
     return createClientBuilder(context, cacheSize);
   }
 
