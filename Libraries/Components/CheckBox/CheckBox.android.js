@@ -12,13 +12,14 @@
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 
-const requireNativeComponent = require('requireNativeComponent');
+const AndroidCheckBoxNativeComponent = require('AndroidCheckBoxNativeComponent');
 const nullthrows = require('nullthrows');
 const setAndForwardRef = require('setAndForwardRef');
 
 import type {ViewProps} from 'ViewPropTypes';
 import type {SyntheticEvent} from 'CoreEventTypes';
 import type {NativeComponent} from 'ReactNative';
+import type {CheckBoxNativeType} from 'AndroidCheckBoxNativeComponent';
 
 type CheckBoxEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -46,15 +47,6 @@ type CommonProps = $ReadOnly<{|
   testID?: ?string,
 |}>;
 
-type NativeProps = $ReadOnly<{|
-  ...CommonProps,
-
-  on?: ?boolean,
-  enabled?: boolean,
-|}>;
-
-type CheckBoxNativeType = Class<NativeComponent<NativeProps>>;
-
 type Props = $ReadOnly<{|
   ...CommonProps,
 
@@ -75,10 +67,6 @@ type Props = $ReadOnly<{|
    */
   forwardedRef?: ?React.Ref<CheckBoxNativeType>,
 |}>;
-
-const RCTCheckBox = ((requireNativeComponent(
-  'AndroidCheckBox',
-): any): CheckBoxNativeType);
 
 /**
  * Renders a boolean input (Android only).
@@ -169,7 +157,7 @@ class CheckBox extends React.Component<Props> {
     };
 
     return (
-      <RCTCheckBox
+      <AndroidCheckBoxNativeComponent
         {...nativeProps}
         ref={this._setNativeRef}
         onChange={this._onChange}
