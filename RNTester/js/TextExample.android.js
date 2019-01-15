@@ -465,9 +465,10 @@ class TextExample extends React.Component<{}> {
           <Text>
             By default, text will respect Text Size accessibility setting on
             Android. It means that all font sizes will be increased or decreased
-            depending on the value of the Text Size setting in the OS's Settings app.
+            depending on the value of the Text Size setting in the OS's Settings
+            app.
           </Text>
-          <Text style={{ marginTop: 10 }}>
+          <Text style={{marginTop: 10}}>
             You can disable scaling for your Text component by passing {'"'}allowFontScaling={
               '{'
             }false{'}"'} prop.
