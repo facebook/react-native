@@ -11,12 +11,9 @@
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
-
-const requireNativeComponent = require('requireNativeComponent');
+const RCTMaskedViewNativeComponent = require('RCTMaskedViewNativeComponent');
 
 import type {ViewProps} from 'ViewPropTypes';
-
-const RCTMaskedView = requireNativeComponent('RCTMaskedView');
 
 type Props = $ReadOnly<{|
   ...ViewProps,
@@ -83,12 +80,12 @@ class MaskedViewIOS extends React.Component<Props> {
     }
 
     return (
-      <RCTMaskedView {...otherViewProps}>
+      <RCTMaskedViewNativeComponent {...otherViewProps}>
         <View pointerEvents="none" style={StyleSheet.absoluteFill}>
           {maskElement}
         </View>
         {children}
-      </RCTMaskedView>
+      </RCTMaskedViewNativeComponent>
     );
   }
 }
