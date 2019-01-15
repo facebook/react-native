@@ -38,6 +38,20 @@ type RCTPickerIOSItemType = $ReadOnly<{|
   textColor: ?number,
 |}>;
 
+type RCTPickerIOSType = Class<
+  NativeComponent<
+    $ReadOnly<{|
+      items: $ReadOnlyArray<RCTPickerIOSItemType>,
+      onChange: (event: PickerIOSChangeEvent) => void,
+      onResponderTerminationRequest: () => boolean,
+      onStartShouldSetResponder: () => boolean,
+      selectedIndex: number,
+      style?: ?TextStyleProp,
+      testID?: ?string,
+    |}>,
+  >,
+>;
+
 type Label = Stringish | number;
 
 type Props = $ReadOnly<{|
