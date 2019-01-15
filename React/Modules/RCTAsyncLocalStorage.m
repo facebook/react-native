@@ -244,9 +244,9 @@ RCT_EXPORT_MODULE()
     if (!serialized) {
       if (errorOut) {
         // We cannot simply create a new manifest in case the file does exist but we have no access to it.
-			  // This can happen when data protection is enabled for the app and we are trying to read the manifect
-			  // while the device is locked. (The app can be started by the system even if the device is locked due to
-			  // e.g. a geofence event.)
+        // This can happen when data protection is enabled for the app and we are trying to read the manifect
+        // while the device is locked. (The app can be started by the system even if the device is locked due to
+        // e.g. a geofence event.)
         RCTLogError(@"Could not open the existing manifest, perhaps data protection is enabled?\n\n%@", errorOut);
         return errorOut;
       } else {
