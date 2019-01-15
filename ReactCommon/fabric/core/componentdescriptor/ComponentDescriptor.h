@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <fabric/core/ShadowNode.h>
-#include <fabric/core/Props.h>
+#include <react/core/Props.h>
+#include <react/core/ShadowNode.h>
 
 namespace facebook {
 namespace react {
@@ -24,8 +24,7 @@ using SharedComponentDescriptor = std::shared_ptr<ComponentDescriptor>;
  * `ShadowNode`s (such as creating, cloning, props and children managing).
  */
 class ComponentDescriptor {
-public:
-
+ public:
   virtual ~ComponentDescriptor() = default;
 
   /*
@@ -45,24 +44,21 @@ public:
    * Creates a new `ShadowNode` of a particular type.
    */
   virtual SharedShadowNode createShadowNode(
-    const ShadowNodeFragment &fragment
-  ) const = 0;
+      const ShadowNodeFragment &fragment) const = 0;
 
   /*
    * Clones a `ShadowNode` with optionally new `props` and/or `children`.
    */
   virtual UnsharedShadowNode cloneShadowNode(
-    const ShadowNode &sourceShadowNode,
-    const ShadowNodeFragment &fragment
-  ) const = 0;
+      const ShadowNode &sourceShadowNode,
+      const ShadowNodeFragment &fragment) const = 0;
 
   /*
    * Appends (by mutating) a given `childShadowNode` to `parentShadowNode`.
    */
   virtual void appendChild(
-    const SharedShadowNode &parentShadowNode,
-    const SharedShadowNode &childShadowNode
-  ) const = 0;
+      const SharedShadowNode &parentShadowNode,
+      const SharedShadowNode &childShadowNode) const = 0;
 
   /*
    * Creates a new `Props` of a particular type with all values copied from
@@ -71,18 +67,16 @@ public:
    * will be used.
    */
   virtual SharedProps cloneProps(
-    const SharedProps &props,
-    const RawProps &rawProps
-  ) const = 0;
+      const SharedProps &props,
+      const RawProps &rawProps) const = 0;
 
   /*
    * Creates a new `EventEmitter` object compatible with particular type of
    * shadow nodes.
    */
   virtual SharedEventEmitter createEventEmitter(
-    const EventTarget &eventTarget,
-    const Tag &tag
-  ) const = 0;
+      SharedEventTarget eventTarget,
+      const Tag &tag) const = 0;
 };
 
 } // namespace react

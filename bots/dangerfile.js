@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,11 +9,9 @@
 
 'use strict';
 
-const fs = require('fs');
 const includes = require('lodash.includes');
-const minimatch = require('minimatch');
 
-const {danger, fail, markdown, message, warn} = require('danger');
+const {danger, fail, warn} = require('danger');
 
 // Fails if the description is too short.
 if (!danger.github.pr.body || danger.github.pr.body.length < 10) {
@@ -41,21 +39,19 @@ if (!includesTestPlan) {
 }
 
 // Regex looks for given categories, types, a file/framework/component, and a message - broken into 4 capture groups
-const releaseNotesRegex = /\[\s?(ANDROID|CLI|DOCS|GENERAL|INTERNAL|IOS|TVOS|WINDOWS)\s?\]\s*?\[\s?(BREAKING|BUGFIX|ENHANCEMENT|FEATURE|MINOR)\s?\]\s*?\[(.*)\]\s*?\-\s*?(.*)/gi;
-const includesReleaseNotes =
+const changelogRegex = /\[\s?(ANDROID|GENERAL|IOS)\s?\]\s*?\[\s?(ADDED|CHANGED|DEPRECATED|REMOVED|FIXED|SECURITY)\s?\]\s*?\-\s*?(.*)/gi;
+const includesChangelog =
   danger.github.pr.body &&
-  danger.github.pr.body.toLowerCase().includes('release notes');
-const correctlyFormattedReleaseNotes = releaseNotesRegex.test(
-  danger.github.pr.body,
-);
+  danger.github.pr.body.toLowerCase().includes('changelog');
+const correctlyFormattedChangelog = changelogRegex.test(danger.github.pr.body);
 
-if (!includesReleaseNotes) {
-  const title = ':clipboard: Release Notes';
-  const idea = 'This PR appears to be missing Release Notes.';
+if (!includesChangelog) {
+  const title = ':clipboard: Changelog';
+  const idea = 'This PR appears to be missing Changelog.';
   warn(`${title} - <i>${idea}</i>`);
-} else if (!correctlyFormattedReleaseNotes) {
-  const title = ':clipboard: Release Notes';
-  const idea = 'This PR may have incorrectly formatted Release Notes.';
+} else if (!correctlyFormattedChangelog) {
+  const title = ':clipboard: Changelog';
+  const idea = 'This PR may have incorrectly formatted Changelog.';
   warn(`${title} - <i>${idea}</i>`);
 }
 

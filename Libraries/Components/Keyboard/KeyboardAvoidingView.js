@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -99,9 +99,10 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
 
     if (duration && easing) {
       LayoutAnimation.configureNext({
-        duration: duration,
+        // We have to pass the duration equal to minimal accepted duration defined here: RCTLayoutAnimation.m
+        duration: duration > 10 ? duration : 10,
         update: {
-          duration: duration,
+          duration: duration > 10 ? duration : 10,
           type: LayoutAnimation.Types[easing] || 'keyboard',
         },
       });
@@ -150,7 +151,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
       children,
       contentContainerStyle,
       enabled,
-      keyboardVerticalOffset, // eslint-disable-line no-unused-vars
+      keyboardVerticalOffset,
       style,
       ...props
     } = this.props;

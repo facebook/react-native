@@ -1,9 +1,10 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -22,6 +23,8 @@ const createReactClass = require('create-react-class');
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 const processColor = require('processColor');
 
+import type {PressEvent} from 'CoreEventTypes';
+
 const rippleBackgroundPropType = PropTypes.shape({
   type: PropTypes.oneOf(['RippleAndroid']),
   color: PropTypes.number,
@@ -37,8 +40,6 @@ const backgroundPropType = PropTypes.oneOfType([
   rippleBackgroundPropType,
   themeAttributeBackgroundPropType,
 ]);
-
-type Event = Object;
 
 const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
@@ -74,6 +75,9 @@ const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 const TouchableNativeFeedback = createReactClass({
   displayName: 'TouchableNativeFeedback',
   propTypes: {
+    /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment
+     * suppresses an error found when Flow v0.89 was deployed. To see the
+     * error, delete this comment and run Flow. */
     ...TouchableWithoutFeedback.propTypes,
 
     /**
@@ -106,7 +110,10 @@ const TouchableNativeFeedback = createReactClass({
      * Creates an object that represents android theme's default background for
      * selectable elements (?android:attr/selectableItemBackground).
      */
-    SelectableBackground: function() {
+    SelectableBackground: function(): {
+      type: 'ThemeAttrAndroid',
+      attribute: 'selectableItemBackground',
+    } {
       return {type: 'ThemeAttrAndroid', attribute: 'selectableItemBackground'};
     },
     /**
@@ -114,7 +121,10 @@ const TouchableNativeFeedback = createReactClass({
      * selectable elements (?android:attr/selectableItemBackgroundBorderless).
      * Available on android API level 21+.
      */
-    SelectableBackgroundBorderless: function() {
+    SelectableBackgroundBorderless: function(): {
+      type: 'ThemeAttrAndroid',
+      attribute: 'selectableItemBackgroundBorderless',
+    } {
       return {
         type: 'ThemeAttrAndroid',
         attribute: 'selectableItemBackgroundBorderless',
@@ -130,7 +140,14 @@ const TouchableNativeFeedback = createReactClass({
      * @param color The ripple color
      * @param borderless If the ripple can render outside it's bounds
      */
-    Ripple: function(color: string, borderless: boolean) {
+    Ripple: function(
+      color: string,
+      borderless: boolean,
+    ): {
+      type: 'RippleAndroid',
+      color: ?number,
+      borderless: boolean,
+    } {
       return {
         type: 'RippleAndroid',
         color: processColor(color),
@@ -138,7 +155,7 @@ const TouchableNativeFeedback = createReactClass({
       };
     },
 
-    canUseNativeForeground: function() {
+    canUseNativeForeground: function(): boolean {
       return Platform.OS === 'android' && Platform.Version >= 23;
     },
   },
@@ -167,27 +184,36 @@ const TouchableNativeFeedback = createReactClass({
    * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
    * defined on your component.
    */
-  touchableHandleActivePressIn: function(e: Event) {
+  touchableHandleActivePressIn: function(e: PressEvent) {
     this.props.onPressIn && this.props.onPressIn(e);
     this._dispatchPressedStateChange(true);
+    /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment
+     * suppresses an error found when Flow v0.89 was deployed. To see the
+     * error, delete this comment and run Flow. */
     if (this.pressInLocation) {
       this._dispatchHotspotUpdate(
+        /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment
+         * suppresses an error found when Flow v0.89 was deployed. To see the
+         * error, delete this comment and run Flow. */
         this.pressInLocation.locationX,
+        /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment
+         * suppresses an error found when Flow v0.89 was deployed. To see the
+         * error, delete this comment and run Flow. */
         this.pressInLocation.locationY,
       );
     }
   },
 
-  touchableHandleActivePressOut: function(e: Event) {
+  touchableHandleActivePressOut: function(e: PressEvent) {
     this.props.onPressOut && this.props.onPressOut(e);
     this._dispatchPressedStateChange(false);
   },
 
-  touchableHandlePress: function(e: Event) {
+  touchableHandlePress: function(e: PressEvent) {
     this.props.onPress && this.props.onPress(e);
   },
 
-  touchableHandleLongPress: function(e: Event) {
+  touchableHandleLongPress: function(e: PressEvent) {
     this.props.onLongPress && this.props.onLongPress(e);
   },
 
@@ -223,7 +249,7 @@ const TouchableNativeFeedback = createReactClass({
   _dispatchHotspotUpdate: function(destX, destY) {
     UIManager.dispatchViewManagerCommand(
       ReactNative.findNodeHandle(this),
-      UIManager.RCTView.Commands.hotspotUpdate,
+      UIManager.getViewManagerConfig('RCTView').Commands.hotspotUpdate,
       [destX || 0, destY || 0],
     );
   },
@@ -231,7 +257,7 @@ const TouchableNativeFeedback = createReactClass({
   _dispatchPressedStateChange: function(pressed) {
     UIManager.dispatchViewManagerCommand(
       ReactNative.findNodeHandle(this),
-      UIManager.RCTView.Commands.setPressed,
+      UIManager.getViewManagerConfig('RCTView').Commands.setPressed,
       [pressed],
     );
   },

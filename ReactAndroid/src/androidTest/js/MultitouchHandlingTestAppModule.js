@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,11 +9,23 @@
 
 'use strict';
 
-var React = require('React');
-var Recording = require('NativeModules').Recording;
-var StyleSheet = require('StyleSheet');
-var TouchEventUtils = require('fbjs/lib/TouchEventUtils');
-var View = require('View');
+const React = require('React');
+const Recording = require('NativeModules').Recording;
+const StyleSheet = require('StyleSheet');
+const View = require('View');
+
+const extractSingleTouch = nativeEvent => {
+  const touches = nativeEvent.touches;
+  const changedTouches = nativeEvent.changedTouches;
+  const hasTouches = touches && touches.length > 0;
+  const hasChangedTouches = changedTouches && changedTouches.length > 0;
+
+  return !hasTouches && hasChangedTouches
+    ? changedTouches[0]
+    : hasTouches
+      ? touches[0]
+      : nativeEvent;
+};
 
 class TouchTestApp extends React.Component {
   handleStartShouldSetResponder = e => {
@@ -21,12 +33,12 @@ class TouchTestApp extends React.Component {
   };
 
   handleOnResponderMove = e => {
-    e = TouchEventUtils.extractSingleTouch(e.nativeEvent);
+    e = extractSingleTouch(e.nativeEvent);
     Recording.record('move;' + e.touches.length);
   };
 
   handleResponderStart = e => {
-    e = TouchEventUtils.extractSingleTouch(e.nativeEvent);
+    e = extractSingleTouch(e.nativeEvent);
     if (e.touches) {
       Recording.record('start;' + e.touches.length);
     } else {
@@ -35,7 +47,7 @@ class TouchTestApp extends React.Component {
   };
 
   handleResponderEnd = e => {
-    e = TouchEventUtils.extractSingleTouch(e.nativeEvent);
+    e = extractSingleTouch(e.nativeEvent);
     if (e.touches) {
       Recording.record('end;' + e.touches.length);
     } else {
@@ -57,7 +69,7 @@ class TouchTestApp extends React.Component {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
   },

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,7 +14,7 @@ const React = require('React');
 const TextAncestor = require('TextAncestor');
 const ViewNativeComponent = require('ViewNativeComponent');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 import type {ViewProps} from 'ViewPropTypes';
 
@@ -47,8 +47,8 @@ if (__DEV__) {
         </TextAncestor.Consumer>
       );
     };
-    // $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
     ViewToExport = React.forwardRef(View);
+    ViewToExport.displayName = 'View';
   }
 }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,34 +12,27 @@
 
 const Dimensions = require('Dimensions');
 const ElementBox = require('ElementBox');
-const PropTypes = require('prop-types');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const UIManager = require('UIManager');
 const View = require('View');
 
-type EventLike = {
-  nativeEvent: Object,
-};
+import type {PressEvent} from 'CoreEventTypes';
+import type {ViewStyleProp} from 'StyleSheet';
 
-class InspectorOverlay extends React.Component<{
-  inspected?: {
-    frame?: Object,
-    style?: any,
-  },
-  inspectedViewTag?: number,
-  onTouchViewTag: (tag: number, frame: Object, pointerY: number) => void,
-}> {
-  static propTypes = {
-    inspected: PropTypes.shape({
-      frame: PropTypes.object,
-      style: PropTypes.any,
-    }),
-    inspectedViewTag: PropTypes.number,
-    onTouchViewTag: PropTypes.func.isRequired,
-  };
+type Inspected = $ReadOnly<{|
+  frame?: Object,
+  style?: ViewStyleProp,
+|}>;
 
-  findViewForTouchEvent = (e: EventLike) => {
+type Props = $ReadOnly<{|
+  inspected?: Inspected,
+  inspectedViewTag?: ?number,
+  onTouchViewTag: (tag: number, frame: Object, pointerY: number) => mixed,
+|}>;
+
+class InspectorOverlay extends React.Component<Props> {
+  findViewForTouchEvent = (e: PressEvent) => {
     const {locationX, locationY} = e.nativeEvent.touches[0];
     UIManager.findSubviewIn(
       this.props.inspectedViewTag,
@@ -54,7 +47,7 @@ class InspectorOverlay extends React.Component<{
     );
   };
 
-  shouldSetResponser = (e: EventLike): boolean => {
+  shouldSetResponser = (e: PressEvent): boolean => {
     this.findViewForTouchEvent(e);
     return true;
   };

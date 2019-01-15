@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,19 +13,14 @@
 import React, {Component} from 'react';
 import {ActivityIndicator, StyleSheet, View} from 'react-native';
 
-/**
- * Optional Flowtype state and timer types definition
- */
-type State = {animating: boolean};
-type Timer = number;
+type State = {|animating: boolean|};
+type Props = $ReadOnly<{||}>;
+type Timer = TimeoutID;
 
-class ToggleAnimatingActivityIndicator extends Component<
-  $FlowFixMeProps,
-  State,
-> {
+class ToggleAnimatingActivityIndicator extends Component<Props, State> {
   _timer: Timer;
 
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
     this.state = {
       animating: true,
@@ -37,16 +32,10 @@ class ToggleAnimatingActivityIndicator extends Component<
   }
 
   componentWillUnmount() {
-    /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.63 was deployed. To see the error delete this
-     * comment and run Flow. */
     clearTimeout(this._timer);
   }
 
   setToggleTimeout() {
-    /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.63 was deployed. To see the error delete this
-     * comment and run Flow. */
     this._timer = setTimeout(() => {
       this.setState({animating: !this.state.animating});
       this.setToggleTimeout();
@@ -63,6 +52,22 @@ class ToggleAnimatingActivityIndicator extends Component<
     );
   }
 }
+
+const styles = StyleSheet.create({
+  centering: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 8,
+  },
+  gray: {
+    backgroundColor: '#cccccc',
+  },
+  horizontal: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    padding: 8,
+  },
+});
 
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';
@@ -87,9 +92,7 @@ exports.examples = [
       return (
         <View>
           <ActivityIndicator style={[styles.centering]} />
-          <ActivityIndicator
-            style={[styles.centering, {backgroundColor: '#eeeeee'}]}
-          />
+          <ActivityIndicator style={[styles.centering, styles.gray]} />
         </View>
       );
     },
@@ -157,19 +160,3 @@ exports.examples = [
     },
   },
 ];
-
-const styles = StyleSheet.create({
-  centering: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 8,
-  },
-  gray: {
-    backgroundColor: '#cccccc',
-  },
-  horizontal: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    padding: 8,
-  },
-});

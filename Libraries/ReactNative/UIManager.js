@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,11 +11,13 @@
 
 const NativeModules = require('NativeModules');
 const Platform = require('Platform');
+const UIManagerProperties = require('UIManagerProperties');
 
 const defineLazyObjectProperty = require('defineLazyObjectProperty');
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 const {UIManager} = NativeModules;
+const viewManagerConfigs = {};
 
 invariant(
   UIManager,
@@ -35,6 +37,81 @@ UIManager.takeSnapshot = function() {
       'Use ReactNative.takeSnapshot instead.',
   );
 };
+const triedLoadingConfig = new Set();
+UIManager.getViewManagerConfig = function(viewManagerName: string) {
+  if (
+    viewManagerConfigs[viewManagerName] === undefined &&
+    UIManager.getConstantsForViewManager
+  ) {
+    try {
+      viewManagerConfigs[
+        viewManagerName
+      ] = UIManager.getConstantsForViewManager(viewManagerName);
+    } catch (e) {
+      viewManagerConfigs[viewManagerName] = null;
+    }
+  }
+
+  const config = viewManagerConfigs[viewManagerName];
+  if (config) {
+    return config;
+  }
+
+  // If we're in the Chrome Debugger, let's not even try calling the sync
+  // method.
+  if (__DEV__) {
+    if (!global.nativeCallSyncHook) {
+      return config;
+    }
+  }
+
+  if (UIManager.lazilyLoadView && !triedLoadingConfig.has(viewManagerName)) {
+    const result = UIManager.lazilyLoadView(viewManagerName);
+    triedLoadingConfig.add(viewManagerName);
+    if (result.viewConfig) {
+      UIManager[viewManagerName] = result.viewConfig;
+      lazifyViewManagerConfig(viewManagerName);
+    }
+  }
+
+  return viewManagerConfigs[viewManagerName];
+};
+
+function lazifyViewManagerConfig(viewName) {
+  const viewConfig = UIManager[viewName];
+  if (viewConfig.Manager) {
+    viewManagerConfigs[viewName] = viewConfig;
+    defineLazyObjectProperty(viewConfig, 'Constants', {
+      get: () => {
+        const viewManager = NativeModules[viewConfig.Manager];
+        const constants = {};
+        viewManager &&
+          Object.keys(viewManager).forEach(key => {
+            const value = viewManager[key];
+            if (typeof value !== 'function') {
+              constants[key] = value;
+            }
+          });
+        return constants;
+      },
+    });
+    defineLazyObjectProperty(viewConfig, 'Commands', {
+      get: () => {
+        const viewManager = NativeModules[viewConfig.Manager];
+        const commands = {};
+        let index = 0;
+        viewManager &&
+          Object.keys(viewManager).forEach(key => {
+            const value = viewManager[key];
+            if (typeof value === 'function') {
+              commands[key] = index++;
+            }
+          });
+        return commands;
+      },
+    });
+  }
+}
 
 /**
  * Copies the ViewManager constants and commands into UIManager. This is
@@ -43,38 +120,7 @@ UIManager.takeSnapshot = function() {
  */
 if (Platform.OS === 'ios') {
   Object.keys(UIManager).forEach(viewName => {
-    const viewConfig = UIManager[viewName];
-    if (viewConfig.Manager) {
-      defineLazyObjectProperty(viewConfig, 'Constants', {
-        get: () => {
-          const viewManager = NativeModules[viewConfig.Manager];
-          const constants = {};
-          viewManager &&
-            Object.keys(viewManager).forEach(key => {
-              const value = viewManager[key];
-              if (typeof value !== 'function') {
-                constants[key] = value;
-              }
-            });
-          return constants;
-        },
-      });
-      defineLazyObjectProperty(viewConfig, 'Commands', {
-        get: () => {
-          const viewManager = NativeModules[viewConfig.Manager];
-          const commands = {};
-          let index = 0;
-          viewManager &&
-            Object.keys(viewManager).forEach(key => {
-              const value = viewManager[key];
-              if (typeof value === 'function') {
-                commands[key] = index++;
-              }
-            });
-          return commands;
-        },
-      });
-    }
+    lazifyViewManagerConfig(viewName);
   });
 } else if (UIManager.ViewManagerNames) {
   // We want to add all the view managers to the UIManager.
@@ -101,7 +147,28 @@ if (Platform.OS === 'ios') {
   // we also tell Prepack that it has only partial knowledge of the UIManager,
   // so that any accesses to unknown properties along the global code will fail
   // when Prepack encounters them.
-  if (global.__makePartial) global.__makePartial(UIManager);
+  if (global.__makePartial) {
+    global.__makePartial(UIManager);
+  }
+}
+
+if (__DEV__) {
+  Object.keys(UIManager).forEach(viewManagerName => {
+    if (!UIManagerProperties.includes(viewManagerName)) {
+      if (!viewManagerConfigs[viewManagerName]) {
+        viewManagerConfigs[viewManagerName] = UIManager[viewManagerName];
+      }
+      defineLazyObjectProperty(UIManager, viewManagerName, {
+        get: () => {
+          console.warn(
+            `Accessing view manager configs directly off UIManager via UIManager['${viewManagerName}'] ` +
+              `is no longer supported. Use UIManager.getViewManagerConfig('${viewManagerName}') instead.`,
+          );
+          return UIManager.getViewManagerConfig(viewManagerName);
+        },
+      });
+    }
+  });
 }
 
 module.exports = UIManager;

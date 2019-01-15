@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,18 +12,20 @@
 
 const React = require('React');
 
-const PropTypes = require('prop-types');
-
-class StaticRenderer extends React.Component<{
+type Props = $ReadOnly<{|
+  /**
+   * Indicates whether the render function needs to be called again
+   */
   shouldUpdate: boolean,
-  render: Function,
-}> {
-  static propTypes = {
-    shouldUpdate: PropTypes.bool.isRequired,
-    render: PropTypes.func.isRequired,
-  };
+  /**
+   * () => renderable
+   * A function that returns a renderable component
+   */
+  render: () => React.Node,
+|}>;
 
-  shouldComponentUpdate(nextProps: {shouldUpdate: boolean}): boolean {
+class StaticRenderer extends React.Component<Props> {
+  shouldComponentUpdate(nextProps: Props): boolean {
     return nextProps.shouldUpdate;
   }
 

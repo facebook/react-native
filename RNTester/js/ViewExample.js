@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -309,6 +309,74 @@ exports.examples = [
         };
       }
       return <ZIndexExample />;
+    },
+  },
+  {
+    title: 'BackfaceVisibility',
+    render: function() {
+      return (
+        <>
+          <Text style={{paddingBottom: 10}}>
+            View #1, front is visible, back is hidden.
+          </Text>
+          <View style={{justifyContent: 'center', alignItems: 'center'}}>
+            <View
+              style={{
+                height: 200,
+                width: 200,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'blue',
+                backfaceVisibility: 'hidden',
+              }}>
+              <Text>Front</Text>
+            </View>
+            <View
+              style={{
+                height: 200,
+                width: 200,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'red',
+                backfaceVisibility: 'hidden',
+                transform: [{rotateY: '180deg'}],
+                position: 'absolute',
+                top: 0,
+              }}>
+              <Text>Back (You should not see this)</Text>
+            </View>
+          </View>
+          <Text style={{paddingVertical: 10}}>
+            View #2, front is hidden, back is visible.
+          </Text>
+          <View style={{justifyContent: 'center', alignItems: 'center'}}>
+            <View
+              style={{
+                height: 200,
+                width: 200,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'blue',
+                backfaceVisibility: 'hidden',
+              }}>
+              <Text>Front (You should not see this)</Text>
+            </View>
+            <View
+              style={{
+                height: 200,
+                width: 200,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'red',
+                backfaceVisibility: 'hidden',
+                position: 'absolute',
+                top: 0,
+              }}>
+              <Text>Back</Text>
+            </View>
+          </View>
+        </>
+      );
     },
   },
 ];

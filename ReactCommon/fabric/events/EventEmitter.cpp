@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,42 +8,100 @@
 #include "EventEmitter.h"
 
 #include <folly/dynamic.h>
+#include <jsi/JSIDynamic.h>
+#include <jsi/jsi.h>
+#include <react/debug/SystraceSection.h>
+
+#include "RawEvent.h"
 
 namespace facebook {
 namespace react {
 
-EventEmitter::EventEmitter(const EventTarget &eventTarget, const Tag &tag, const SharedEventDispatcher &eventDispatcher):
-  eventTarget_(eventTarget),
-  tag_(tag),
-  eventDispatcher_(eventDispatcher) {
+// TODO(T29874519): Get rid of "top" prefix once and for all.
+/*
+ * Capitalizes the first letter of the event type and adds "top" prefix if
+ * necessary (e.g. "layout" becames "topLayout").
+ */
+static std::string normalizeEventType(const std::string &type) {
+  auto prefixedType = type;
+  if (type.find("top", 0) != 0) {
+    prefixedType.insert(0, "top");
+    prefixedType[3] = toupper(prefixedType[3]);
+  }
+  return prefixedType;
 }
 
-EventEmitter::~EventEmitter() {
-  auto &&eventDispatcher = eventDispatcher_.lock();
-  if (eventDispatcher && eventTarget_) {
-    eventDispatcher->releaseEventTarget(eventTarget_);
-  }
+std::recursive_mutex &EventEmitter::DispatchMutex() {
+  static std::recursive_mutex mutex;
+  return mutex;
+}
+
+ValueFactory EventEmitter::defaultPayloadFactory() {
+  static auto payloadFactory =
+      ValueFactory{[](jsi::Runtime &runtime) { return jsi::Object(runtime); }};
+  return payloadFactory;
+}
+
+EventEmitter::EventEmitter(
+    SharedEventTarget eventTarget,
+    Tag tag,
+    WeakEventDispatcher eventDispatcher)
+    : eventTarget_(std::move(eventTarget)),
+      weakEventTarget_({}),
+      eventDispatcher_(std::move(eventDispatcher)) {}
+
+void EventEmitter::dispatchEvent(
+    const std::string &type,
+    const folly::dynamic &payload,
+    const EventPriority &priority) const {
+  dispatchEvent(
+      type,
+      [payload](jsi::Runtime &runtime) {
+        return valueFromDynamic(runtime, payload);
+      },
+      priority);
 }
 
 void EventEmitter::dispatchEvent(
-  const std::string &type,
-  const folly::dynamic &payload,
-  const EventPriority &priority
-) const {
-  const auto &eventDispatcher = eventDispatcher_.lock();
+    const std::string &type,
+    const ValueFactory &payloadFactory,
+    const EventPriority &priority) const {
+  SystraceSection s("EventEmitter::dispatchEvent");
+
+  auto eventDispatcher = eventDispatcher_.lock();
   if (!eventDispatcher) {
     return;
   }
 
-  assert(eventTarget_ && "Attempted to dispatch an event without an eventTarget.");
+  eventDispatcher->dispatchEvent(
+      RawEvent(normalizeEventType(type), payloadFactory, eventTarget_),
+      priority);
+}
 
-  // Mixing `target` into `payload`.
-  assert(payload.isObject());
-  folly::dynamic extendedPayload = folly::dynamic::object("target", tag_);
-  extendedPayload.merge_patch(payload);
+void EventEmitter::enable() const {
+  enableCounter_++;
+  toggleEventTargetOwnership_();
+}
 
-  // TODO(T29610783): Reconsider using dynamic dispatch here.
-  eventDispatcher->dispatchEvent(eventTarget_, type, extendedPayload, priority);
+void EventEmitter::disable() const {
+  enableCounter_--;
+  toggleEventTargetOwnership_();
+}
+
+void EventEmitter::toggleEventTargetOwnership_() const {
+  bool shouldBeRetained = enableCounter_ > 0;
+  bool alreadyBeRetained = eventTarget_ != nullptr;
+  if (shouldBeRetained == alreadyBeRetained) {
+    return;
+  }
+
+  if (shouldBeRetained) {
+    eventTarget_ = weakEventTarget_.lock();
+    weakEventTarget_.reset();
+  } else {
+    weakEventTarget_ = eventTarget_;
+    eventTarget_.reset();
+  }
 }
 
 } // namespace react

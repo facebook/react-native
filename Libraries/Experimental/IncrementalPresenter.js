@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,7 +10,6 @@
 
 'use strict';
 
-const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const IncrementalGroup = require('IncrementalGroup');
 const PropTypes = require('prop-types');
 const React = require('React');
@@ -18,6 +17,7 @@ const View = require('View');
 
 import type {Context} from 'Incremental';
 import type {ViewStyleProp} from 'StyleSheet';
+import type {LayoutEvent} from 'CoreEventTypes';
 
 /**
  * WARNING: EXPERIMENTAL. Breaking changes will probably happen a lot and will
@@ -31,25 +31,19 @@ import type {ViewStyleProp} from 'StyleSheet';
  *
  * See Incremental.js for more info.
  */
-type Props = {
+type Props = $ReadOnly<{|
   name: string,
   disabled?: boolean,
-  onDone?: () => void,
-  onLayout?: (event: Object) => void,
+  onDone?: () => mixed,
+  onLayout?: (event: LayoutEvent) => mixed,
   style?: ViewStyleProp,
-  children?: any,
-};
+  children?: React.Node,
+|}>;
+
 class IncrementalPresenter extends React.Component<Props> {
   context: Context;
   _isDone: boolean;
 
-  static propTypes = {
-    name: PropTypes.string,
-    disabled: PropTypes.bool,
-    onDone: PropTypes.func,
-    onLayout: PropTypes.func,
-    style: DeprecatedViewPropTypes.style,
-  };
   static contextTypes = {
     incrementalGroup: PropTypes.object,
     incrementalGroupEnabled: PropTypes.bool,
@@ -74,14 +68,15 @@ class IncrementalPresenter extends React.Component<Props> {
     this.props.onDone && this.props.onDone();
   }
   render() {
+    let style: ViewStyleProp;
     if (
       this.props.disabled !== true &&
       this.context.incrementalGroupEnabled !== false &&
       !this._isDone
     ) {
-      var style = [this.props.style, {opacity: 0, position: 'absolute'}];
+      style = [this.props.style, {opacity: 0, position: 'absolute'}];
     } else {
-      var style = this.props.style;
+      style = this.props.style;
     }
     return (
       <IncrementalGroup

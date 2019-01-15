@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -24,15 +24,15 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 - (UIImage *)imageForUrl:(NSString *)url
                     size:(CGSize)size
                    scale:(CGFloat)scale
-              resizeMode:(RCTResizeMode)resizeMode
-            responseDate:(NSString *)responseDate;
+              resizeMode:(RCTResizeMode)resizeMode;
 
 - (void)addImageToCache:(UIImage *)image
                     URL:(NSString *)url
                    size:(CGSize)size
                   scale:(CGFloat)scale
              resizeMode:(RCTResizeMode)resizeMode
-           responseDate:(NSString *)responseDate;
+           responseDate:(NSString *)responseDate
+           cacheControl:(NSString *)cacheControl;
 
 @end
 
@@ -140,7 +140,7 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 
 /**
  * Allows developers to set their own caching implementation for
- * decoded images as long as it conforms to the RCTImageCacheDelegate
+ * decoded images as long as it conforms to the RCTImageCache
  * protocol. This method should be called in bridgeDidInitializeModule.
  */
 - (void)setImageCache:(id<RCTImageCache>)cache;

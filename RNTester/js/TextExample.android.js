@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,13 +10,14 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {Image, StyleSheet, Text, View} = ReactNative;
-var RNTesterBlock = require('./RNTesterBlock');
-var RNTesterPage = require('./RNTesterPage');
+const React = require('react');
+const ReactNative = require('react-native');
+const {Image, StyleSheet, Text, View} = ReactNative;
+const RNTesterBlock = require('./RNTesterBlock');
+const RNTesterPage = require('./RNTesterPage');
+const TextLegend = require('./Shared/TextLegend');
 
-class Entity extends React.Component<$FlowFixMeProps> {
+class Entity extends React.Component<{|children: React.Node|}> {
   render() {
     return (
       <Text style={{fontWeight: 'bold', color: '#527fe4'}}>
@@ -25,7 +26,6 @@ class Entity extends React.Component<$FlowFixMeProps> {
     );
   }
 }
-
 class AttributeToggler extends React.Component<{}, $FlowFixMeState> {
   state = {fontWeight: 'bold', fontSize: 15};
 
@@ -42,7 +42,7 @@ class AttributeToggler extends React.Component<{}, $FlowFixMeState> {
   };
 
   render() {
-    var curStyle = {
+    const curStyle = {
       fontWeight: this.state.fontWeight,
       fontSize: this.state.fontSize,
     };
@@ -70,9 +70,6 @@ class AttributeToggler extends React.Component<{}, $FlowFixMeState> {
 }
 
 class TextExample extends React.Component<{}> {
-  static title = '<Text>';
-  static description = 'Base component for rendering styled text.';
-
   render() {
     return (
       <RNTesterPage title="<Text>">
@@ -86,6 +83,9 @@ class TextExample extends React.Component<{}> {
           <Text style={{padding: 10}}>
             This text is indented by 10px padding on all sides.
           </Text>
+        </RNTesterBlock>
+        <RNTesterBlock title="Text metrics legend">
+          <TextLegend />
         </RNTesterBlock>
         <RNTesterBlock title="Font Family">
           <Text style={{fontFamily: 'sans-serif'}}>Sans-Serif</Text>
@@ -586,7 +586,7 @@ class TextExample extends React.Component<{}> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   backgroundColorText: {
     left: 5,
     backgroundColor: 'rgba(100, 100, 100, 0.3)',
@@ -601,4 +601,13 @@ var styles = StyleSheet.create({
   },
 });
 
-module.exports = TextExample;
+exports.title = '<Text>';
+exports.description = 'Base component for rendering styled text.';
+exports.examples = [
+  {
+    title: 'Basic text',
+    render: function(): React.Element<typeof TextExample> {
+      return <TextExample />;
+    },
+  },
+];
