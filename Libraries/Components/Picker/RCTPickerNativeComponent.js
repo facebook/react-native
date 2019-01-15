@@ -13,6 +13,7 @@ const requireNativeComponent = require('requireNativeComponent');
 
 import type {SyntheticEvent} from 'CoreEventTypes';
 import type {TextStyleProp} from 'StyleSheet';
+import type {NativeComponent} from 'ReactNative';
 
 type PickerIOSChangeEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -30,7 +31,7 @@ type RCTPickerIOSItemType = $ReadOnly<{|
 type Label = Stringish | number;
 
 type RCTPickerIOSType = Class<
-  ReactNative.NativeComponent<
+  NativeComponent<
     $ReadOnly<{|
       items: $ReadOnlyArray<RCTPickerIOSItemType>,
       onChange: (event: PickerIOSChangeEvent) => void,
@@ -43,6 +44,4 @@ type RCTPickerIOSType = Class<
   >,
 >;
 
-module.exports = ((requireNativeComponent(
-  'RCTPicker',
-): any): RCTPickerIOSType);
+module.exports = ((requireNativeComponent('RCTPicker'): any): RCTPickerIOSType);
