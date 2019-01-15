@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,6 +12,7 @@
 'use strict';
 
 function normalizeColor(color: string | number): ?number {
+  const matchers = getMatchers();
   let match;
 
   if (typeof color === 'number') {
@@ -156,16 +157,23 @@ function call(...args) {
   return '\\(\\s*(' + args.join(')\\s*,\\s*(') + ')\\s*\\)';
 }
 
-const matchers = {
-  rgb: new RegExp('rgb' + call(NUMBER, NUMBER, NUMBER)),
-  rgba: new RegExp('rgba' + call(NUMBER, NUMBER, NUMBER, NUMBER)),
-  hsl: new RegExp('hsl' + call(NUMBER, PERCENTAGE, PERCENTAGE)),
-  hsla: new RegExp('hsla' + call(NUMBER, PERCENTAGE, PERCENTAGE, NUMBER)),
-  hex3: /^#([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
-  hex4: /^#([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
-  hex6: /^#([0-9a-fA-F]{6})$/,
-  hex8: /^#([0-9a-fA-F]{8})$/,
-};
+let cachedMatchers;
+
+function getMatchers() {
+  if (cachedMatchers === undefined) {
+    cachedMatchers = {
+      rgb: new RegExp('rgb' + call(NUMBER, NUMBER, NUMBER)),
+      rgba: new RegExp('rgba' + call(NUMBER, NUMBER, NUMBER, NUMBER)),
+      hsl: new RegExp('hsl' + call(NUMBER, PERCENTAGE, PERCENTAGE)),
+      hsla: new RegExp('hsla' + call(NUMBER, PERCENTAGE, PERCENTAGE, NUMBER)),
+      hex3: /^#([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
+      hex4: /^#([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})([0-9a-fA-F]{1})$/,
+      hex6: /^#([0-9a-fA-F]{6})$/,
+      hex8: /^#([0-9a-fA-F]{8})$/,
+    };
+  }
+  return cachedMatchers;
+}
 
 function parse255(str: string): number {
   const int = parseInt(str, 10);
@@ -180,7 +188,7 @@ function parse255(str: string): number {
 
 function parse360(str: string): number {
   const int = parseFloat(str);
-  return ((int % 360 + 360) % 360) / 360;
+  return (((int % 360) + 360) % 360) / 360;
 }
 
 function parse1(str: string): number {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,7 @@
 
 #import "RCTMountingManager.h"
 
-#import <fabric/core/LayoutableShadowNode.h>
+#import <react/core/LayoutableShadowNode.h>
 #import <React/RCTAssert.h>
 #import <React/RCTUtils.h>
 
@@ -16,10 +16,12 @@
 #import "RCTMountItemProtocol.h"
 
 #import "RCTCreateMountItem.h"
+#import "RCTConversions.h"
 #import "RCTDeleteMountItem.h"
 #import "RCTInsertMountItem.h"
 #import "RCTRemoveMountItem.h"
 #import "RCTUpdatePropsMountItem.h"
+#import "RCTUpdateEventEmitterMountItem.h"
 #import "RCTUpdateLocalDataMountItem.h"
 #import "RCTUpdateLayoutMetricsMountItem.h"
 
@@ -36,110 +38,110 @@ using namespace facebook::react;
   return self;
 }
 
-- (void)mutateComponentViewTreeWithMutationInstructions:(facebook::react::TreeMutationInstructionList)instructions
-                                                rootTag:(ReactTag)rootTag
+- (void)performTransactionWithMutations:(facebook::react::ShadowViewMutationList)mutations
+                                rootTag:(ReactTag)rootTag
 {
   NSMutableArray<RCTMountItemProtocol> *mountItems =
-    [[NSMutableArray<RCTMountItemProtocol> alloc] initWithCapacity:instructions.size() * 2 /* ~ the worst case */];
+    [[NSMutableArray<RCTMountItemProtocol> alloc] initWithCapacity:mutations.size() * 2 /* ~ the worst case */];
 
-  for (auto instruction : instructions) {
-    switch (instruction.getType()) {
-      case TreeMutationInstruction::Creation: {
-        NSString *componentName = [NSString stringWithCString:instruction.getNewChildNode()->getComponentName().c_str()
-                                                     encoding:NSASCIIStringEncoding];
+  for (const auto &mutation : mutations) {
+    switch (mutation.type) {
+      case ShadowViewMutation::Create: {
         RCTCreateMountItem *mountItem =
-          [[RCTCreateMountItem alloc] initWithComponentName:componentName
-                                                        tag:instruction.getNewChildNode()->getTag()];
+          [[RCTCreateMountItem alloc] initWithComponentHandle:mutation.newChildShadowView.componentHandle
+                                                          tag:mutation.newChildShadowView.tag];
         [mountItems addObject:mountItem];
         break;
       }
-      case TreeMutationInstruction::Deletion: {
-        NSString *componentName = [NSString stringWithCString:instruction.getOldChildNode()->getComponentName().c_str()
-                                                     encoding:NSASCIIStringEncoding];
+
+      case ShadowViewMutation::Delete: {
         RCTDeleteMountItem *mountItem =
-          [[RCTDeleteMountItem alloc] initWithComponentName:componentName
-                                                        tag:instruction.getOldChildNode()->getTag()];
+          [[RCTDeleteMountItem alloc] initWithComponentHandle:mutation.oldChildShadowView.componentHandle
+                                                          tag:mutation.oldChildShadowView.tag];
         [mountItems addObject:mountItem];
         break;
       }
 
-      case TreeMutationInstruction::Insertion: {
-        RCTInsertMountItem *mountItem =
-          [[RCTInsertMountItem alloc] initWithChildTag:instruction.getNewChildNode()->getTag()
-                                             parentTag:instruction.getParentNode()->getTag()
-                                                 index:instruction.getIndex()];
-        [mountItems addObject:mountItem];
-
+      case ShadowViewMutation::Insert: {
         // Props
-        [mountItems addObject:[[RCTUpdatePropsMountItem alloc] initWithTag:instruction.getNewChildNode()->getTag()
+        [mountItems addObject:[[RCTUpdatePropsMountItem alloc] initWithTag:mutation.newChildShadowView.tag
                                                                   oldProps:nullptr
-                                                                  newProps:instruction.getNewChildNode()->getProps()]];
+                                                                  newProps:mutation.newChildShadowView.props]];
+
+        // EventEmitter
+        [mountItems addObject:[[RCTUpdateEventEmitterMountItem alloc] initWithTag:mutation.newChildShadowView.tag
+                                                                     eventEmitter:mutation.newChildShadowView.eventEmitter]];
 
         // LocalData
-        if (instruction.getNewChildNode()->getLocalData()) {
-          [mountItems addObject:[[RCTUpdateLocalDataMountItem alloc] initWithTag:instruction.getNewChildNode()->getTag()
+        if (mutation.newChildShadowView.localData) {
+          [mountItems addObject:[[RCTUpdateLocalDataMountItem alloc] initWithTag:mutation.newChildShadowView.tag
                                                                     oldLocalData:nullptr
-                                                                    newLocalData:instruction.getNewChildNode()->getLocalData()]];
+                                                                    newLocalData:mutation.newChildShadowView.localData]];
         }
 
         // Layout
-        SharedLayoutableShadowNode layoutableNewShadowNode =
-          std::dynamic_pointer_cast<const LayoutableShadowNode>(instruction.getNewChildNode());
-
-        if (layoutableNewShadowNode) {
-          [mountItems addObject:[[RCTUpdateLayoutMetricsMountItem alloc] initWithTag:instruction.getNewChildNode()->getTag()
+        if (mutation.newChildShadowView.layoutMetrics != EmptyLayoutMetrics) {
+          [mountItems addObject:[[RCTUpdateLayoutMetricsMountItem alloc] initWithTag:mutation.newChildShadowView.tag
                                                                     oldLayoutMetrics:{}
-                                                                    newLayoutMetrics:layoutableNewShadowNode->getLayoutMetrics()]];
+                                                                    newLayoutMetrics:mutation.newChildShadowView.layoutMetrics]];
         }
+
+        // Insertion
+        RCTInsertMountItem *mountItem =
+          [[RCTInsertMountItem alloc] initWithChildTag:mutation.newChildShadowView.tag
+                                             parentTag:mutation.parentShadowView.tag
+                                                 index:mutation.index];
+        [mountItems addObject:mountItem];
+
         break;
       }
 
-      case TreeMutationInstruction::Removal: {
+      case ShadowViewMutation::Remove: {
         RCTRemoveMountItem *mountItem =
-          [[RCTRemoveMountItem alloc] initWithChildTag:instruction.getOldChildNode()->getTag()
-                                             parentTag:instruction.getParentNode()->getTag()
-                                                 index:instruction.getIndex()];
+          [[RCTRemoveMountItem alloc] initWithChildTag:mutation.oldChildShadowView.tag
+                                             parentTag:mutation.parentShadowView.tag
+                                                 index:mutation.index];
         [mountItems addObject:mountItem];
         break;
       }
 
-      case TreeMutationInstruction::Replacement: {
-        SharedShadowNode oldShadowNode = instruction.getOldChildNode();
-        SharedShadowNode newShadowNode = instruction.getNewChildNode();
+      case ShadowViewMutation::Update: {
+        auto oldChildShadowView = mutation.oldChildShadowView;
+        auto newChildShadowView = mutation.newChildShadowView;
 
         // Props
-        if (oldShadowNode->getProps() != newShadowNode->getProps()) {
+        if (oldChildShadowView.props != newChildShadowView.props) {
           RCTUpdatePropsMountItem *mountItem =
-            [[RCTUpdatePropsMountItem alloc] initWithTag:instruction.getOldChildNode()->getTag()
-                                                oldProps:instruction.getOldChildNode()->getProps()
-                                                newProps:instruction.getNewChildNode()->getProps()];
+            [[RCTUpdatePropsMountItem alloc] initWithTag:mutation.oldChildShadowView.tag
+                                                oldProps:mutation.oldChildShadowView.props
+                                                newProps:mutation.newChildShadowView.props];
+          [mountItems addObject:mountItem];
+        }
+
+        // EventEmitter
+        if (oldChildShadowView.eventEmitter != newChildShadowView.eventEmitter) {
+          RCTUpdateEventEmitterMountItem *mountItem =
+            [[RCTUpdateEventEmitterMountItem alloc] initWithTag:mutation.oldChildShadowView.tag
+                                                   eventEmitter:mutation.oldChildShadowView.eventEmitter];
           [mountItems addObject:mountItem];
         }
 
         // LocalData
-        if (oldShadowNode->getLocalData() != newShadowNode->getLocalData()) {
+        if (oldChildShadowView.localData != newChildShadowView.localData) {
           RCTUpdateLocalDataMountItem *mountItem =
-            [[RCTUpdateLocalDataMountItem alloc] initWithTag:newShadowNode->getTag()
-                                                oldLocalData:oldShadowNode->getLocalData()
-                                                newLocalData:newShadowNode->getLocalData()];
+            [[RCTUpdateLocalDataMountItem alloc] initWithTag:newChildShadowView.tag
+                                                oldLocalData:oldChildShadowView.localData
+                                                newLocalData:newChildShadowView.localData];
           [mountItems addObject:mountItem];
         }
 
         // Layout
-        SharedLayoutableShadowNode layoutableOldShadowNode =
-          std::dynamic_pointer_cast<const LayoutableShadowNode>(oldShadowNode);
-
-        if (layoutableOldShadowNode) {
-          SharedLayoutableShadowNode layoutableNewShadowNode =
-            std::dynamic_pointer_cast<const LayoutableShadowNode>(newShadowNode);
-
-          if (layoutableOldShadowNode->getLayoutMetrics() != layoutableNewShadowNode->getLayoutMetrics()) {
-            RCTUpdateLayoutMetricsMountItem *mountItem =
-              [[RCTUpdateLayoutMetricsMountItem alloc] initWithTag:instruction.getOldChildNode()->getTag()
-                                                  oldLayoutMetrics:layoutableOldShadowNode->getLayoutMetrics()
-                                                  newLayoutMetrics:layoutableNewShadowNode->getLayoutMetrics()];
-            [mountItems addObject:mountItem];
-          }
+        if (oldChildShadowView.layoutMetrics != newChildShadowView.layoutMetrics) {
+          RCTUpdateLayoutMetricsMountItem *mountItem =
+            [[RCTUpdateLayoutMetricsMountItem alloc] initWithTag:mutation.oldChildShadowView.tag
+                                                oldLayoutMetrics:oldChildShadowView.layoutMetrics
+                                                newLayoutMetrics:newChildShadowView.layoutMetrics];
+          [mountItems addObject:mountItem];
         }
 
         break;
@@ -164,6 +166,13 @@ using namespace facebook::react;
   }
 
   [self.delegate mountingManager:self didMountComponentsWithRootTag:rootTag];
+}
+
+- (void)optimisticallyCreateComponentViewWithComponentHandle:(ComponentHandle)componentHandle
+{
+  RCTExecuteOnMainQueue(^{
+    [self->_componentViewRegistry optimisticallyCreateComponentViewWithComponentHandle:componentHandle];
+  });
 }
 
 @end

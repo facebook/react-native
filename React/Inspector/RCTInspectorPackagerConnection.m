@@ -1,3 +1,8 @@
+// Copyright (c) Facebook, Inc. and its affiliates.
+//
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
+
 #import "RCTInspectorPackagerConnection.h"
 
 #if RCT_DEV
@@ -95,9 +100,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)handleConnect:(NSDictionary *)payload
 {
   NSString *pageId = payload[@"pageId"];
-  if (_inspectorConnections[pageId]) {
+  RCTInspectorLocalConnection *existingConnection = _inspectorConnections[pageId];
+  if (existingConnection) {
     [_inspectorConnections removeObjectForKey:pageId];
-    RCTLogError(@"Already connected: %@", pageId);
+    [existingConnection disconnect];
+    RCTLogWarn(@"Already connected: %@", pageId);
     return;
   }
 

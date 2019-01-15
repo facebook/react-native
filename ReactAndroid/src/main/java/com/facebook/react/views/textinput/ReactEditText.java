@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,6 +23,7 @@ import android.text.method.QwertyKeyListener;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -38,6 +39,7 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.views.text.CustomStyleSpan;
 import com.facebook.react.views.text.ReactTagSpan;
 import com.facebook.react.views.text.ReactTextUpdate;
+import com.facebook.react.views.text.TextAttributes;
 import com.facebook.react.views.text.TextInlineImageSpan;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.util.ArrayList;
@@ -81,7 +83,8 @@ public class ReactEditText extends EditText {
   private @Nullable ScrollWatcher mScrollWatcher;
   private final InternalKeyListener mKeyListener;
   private boolean mDetectScrollMovement = false;
-  private float mLetterSpacingPt = 0;
+  private boolean mOnKeyPress = false;
+  private TextAttributes mTextAttributes;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
 
@@ -108,6 +111,9 @@ public class ReactEditText extends EditText {
     mStagedInputType = getInputType();
     mKeyListener = new InternalKeyListener();
     mScrollWatcher = null;
+    mTextAttributes = new TextAttributes();
+
+    applyTextAttributes();
   }
 
   // After the text changes inside an EditText, TextView checks if a layout() has been requested.
@@ -175,7 +181,7 @@ public class ReactEditText extends EditText {
   public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
     ReactContext reactContext = (ReactContext) getContext();
     InputConnection inputConnection = super.onCreateInputConnection(outAttrs);
-    if (inputConnection != null) {
+    if (inputConnection != null && mOnKeyPress) {
       inputConnection = new ReactEditTextInputConnectionWrapper(inputConnection, reactContext, this);
     }
 
@@ -272,6 +278,10 @@ public class ReactEditText extends EditText {
 
   public void setBlurOnSubmit(@Nullable Boolean blurOnSubmit) {
     mBlurOnSubmit = blurOnSubmit;
+  }
+
+  public void setOnKeyPress(boolean onKeyPress) {
+    mOnKeyPress = onKeyPress;
   }
 
   public boolean getBlurOnSubmit() {
@@ -630,25 +640,28 @@ public class ReactEditText extends EditText {
   }
 
   public void setLetterSpacingPt(float letterSpacingPt) {
-    mLetterSpacingPt = letterSpacingPt;
-    updateLetterSpacing();
+    mTextAttributes.setLetterSpacing(letterSpacingPt);
+    applyTextAttributes();
   }
 
-  @Override
-  public void setTextSize (float size) {
-    super.setTextSize(size);
-    updateLetterSpacing();
+  public void setFontSize(float fontSize) {
+    mTextAttributes.setFontSize(fontSize);
+    applyTextAttributes();
   }
 
-  @Override
-  public void setTextSize (int unit, float size) {
-    super.setTextSize(unit, size);
-    updateLetterSpacing();
-  }
+  protected void applyTextAttributes() {
+    // In general, the `getEffective*` functions return `Float.NaN` if the
+    // property hasn't been set.
+    
+    // `getEffectiveFontSize` always returns a value so don't need to check for anything like
+    // `Float.NaN`.
+    setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextAttributes.getEffectiveFontSize());
 
-  protected void updateLetterSpacing() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      setLetterSpacing(PixelUtil.toPixelFromSP(mLetterSpacingPt) / getTextSize());
+      float effectiveLetterSpacing = mTextAttributes.getEffectiveLetterSpacing();
+      if (!Float.isNaN(effectiveLetterSpacing)) {
+        setLetterSpacing(effectiveLetterSpacing / getTextSize());
+      }
     }
   }
 

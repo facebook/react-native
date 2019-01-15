@@ -1,10 +1,10 @@
 /**
- * Copyright (c) 2016-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 
@@ -20,6 +20,7 @@ const deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationI
  *  - Less chance of typos.
  */
 const UTFSequence = deepFreezeAndThrowOnMutationInDev({
+  BOM: '\ufeff', // byte order mark
   BULLET: '\u2022', // bullet: &#8226;
   BULLET_SP: '\u00A0\u2022\u00A0', // &nbsp;&#8226;&nbsp;
   MIDDOT: '\u00B7', // normal middle dot: &middot;
@@ -31,6 +32,8 @@ const UTFSequence = deepFreezeAndThrowOnMutationInDev({
   NDASH_SP: '\u00A0\u2013\u00A0', // &nbsp;&ndash;&nbsp;
   NBSP: '\u00A0', // non-breaking space: &nbsp;
   PIZZA: '\uD83C\uDF55',
+  TRIANGLE_LEFT: '\u25c0', // black left-pointing triangle
+  TRIANGLE_RIGHT: '\u25b6', // black right-pointing triangle
 });
 
 module.exports = UTFSequence;

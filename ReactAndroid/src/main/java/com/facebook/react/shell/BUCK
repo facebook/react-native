@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS.bzl", "rn_android_library", "react_native_dep", "react_native_target")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_target", "rn_android_library")
 
 rn_android_library(
     name = "shell",
@@ -19,7 +19,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react/bridge:bridge"),
         react_native_target("java/com/facebook/react/common:common"),
         react_native_target("java/com/facebook/react/devsupport:devsupport"),
-        react_native_target("java/com/facebook/react/flat:flat"),
         react_native_target("java/com/facebook/react/module/model:model"),
         react_native_target("java/com/facebook/react/modules/accessibilityinfo:accessibilityinfo"),
         react_native_target("java/com/facebook/react/modules/appstate:appstate"),
@@ -64,6 +63,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react/views/view:view"),
         react_native_target("java/com/facebook/react/views/viewpager:viewpager"),
         react_native_target("java/com/facebook/react/views/webview:webview"),
+        react_native_target("java/com/facebook/react/module/annotations:annotations"),
         react_native_target("res:shell"),
     ],
 )

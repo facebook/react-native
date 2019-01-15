@@ -1,0 +1,12 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "rn_android_library")
+
+rn_android_library(
+    name = "interfaces",
+    srcs = [
+        "TurboModule.java",
+    ],
+    required_for_source_only_abi = True,
+    visibility = [
+        "PUBLIC",
+    ],
+)

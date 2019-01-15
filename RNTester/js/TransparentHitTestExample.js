@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,15 +10,15 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {Text, View, TouchableOpacity} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {Text, View, TouchableOpacity, Alert} = ReactNative;
 
 class TransparentHitTestExample extends React.Component<{}> {
   render() {
     return (
       <View style={{flex: 1}}>
-        <TouchableOpacity onPress={() => alert('Hi!')}>
+        <TouchableOpacity onPress={() => Alert.alert('Alert', 'Hi!')}>
           <Text>HELLO!</Text>
         </TouchableOpacity>
 

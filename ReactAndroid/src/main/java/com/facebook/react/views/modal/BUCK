@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS.bzl", "rn_android_library", "YOGA_TARGET", "react_native_dep", "react_native_target")
+load("//tools/build_defs/oss:rn_defs.bzl", "YOGA_TARGET", "react_native_dep", "react_native_target", "rn_android_library")
 
 rn_android_library(
     name = "modal",
@@ -17,6 +17,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react/touch:touch"),
         react_native_target("java/com/facebook/react/uimanager:uimanager"),
         react_native_target("java/com/facebook/react/uimanager/annotations:annotations"),
+        react_native_target("java/com/facebook/react/views/common:common"),
         react_native_target("java/com/facebook/react/views/view:view"),
         react_native_target("res:modal"),
     ],

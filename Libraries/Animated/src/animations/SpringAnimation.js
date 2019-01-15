@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,7 +14,7 @@ const AnimatedValueXY = require('../nodes/AnimatedValueXY');
 const Animation = require('./Animation');
 const SpringConfig = require('../SpringConfig');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 const {shouldUseNativeDriver} = require('../NativeAnimatedHelper');
 
 import type {AnimationConfig, EndCallback} from './Animation';
@@ -266,7 +266,7 @@ class SpringAnimation extends Animation {
       position =
         this._toValue -
         envelope *
-          ((v0 + zeta * omega0 * x0) / omega1 * Math.sin(omega1 * t) +
+          (((v0 + zeta * omega0 * x0) / omega1) * Math.sin(omega1 * t) +
             x0 * Math.cos(omega1 * t));
       // This looks crazy -- it's actually just the derivative of the
       // oscillation function
@@ -274,7 +274,7 @@ class SpringAnimation extends Animation {
         zeta *
           omega0 *
           envelope *
-          (Math.sin(omega1 * t) * (v0 + zeta * omega0 * x0) / omega1 +
+          ((Math.sin(omega1 * t) * (v0 + zeta * omega0 * x0)) / omega1 +
             x0 * Math.cos(omega1 * t)) -
         envelope *
           (Math.cos(omega1 * t) * (v0 + zeta * omega0 * x0) -

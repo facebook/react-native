@@ -1,11 +1,11 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -22,10 +22,12 @@ const {
   View,
 } = require('react-native');
 
-class MaskedViewExample extends React.Component<{}, $FlowFixMeState> {
-  static title = '<MaskedViewIOS>';
-  static description = 'Renders the child view with a mask specified in the `renderMask` prop.';
+type Props = $ReadOnly<{||}>;
+type State = {|
+  alternateChildren: boolean,
+|};
 
+class MaskedViewExample extends React.Component<Props, State> {
   state = {
     alternateChildren: true,
   };
@@ -180,4 +182,14 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = MaskedViewExample;
+exports.title = '<MaskedViewIOS>';
+exports.description =
+  'Renders the child view with a mask specified in the `renderMask` prop.';
+exports.examples = [
+  {
+    title: 'Simple masked view',
+    render: function(): React.Element<typeof MaskedViewExample> {
+      return <MaskedViewExample />;
+    },
+  },
+];

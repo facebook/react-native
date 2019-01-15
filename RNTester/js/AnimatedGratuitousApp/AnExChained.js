@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,9 +10,9 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {Animated, PanResponder, StyleSheet, View} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {Animated, PanResponder, StyleSheet, View} = ReactNative;
 
 class AnExChained extends React.Component<Object, any> {
   constructor(props: Object) {
@@ -20,17 +20,17 @@ class AnExChained extends React.Component<Object, any> {
     this.state = {
       stickers: [new Animated.ValueXY()], // 1 leader
     };
-    var stickerConfig = {tension: 2, friction: 3}; // soft spring
-    for (var i = 0; i < 4; i++) {
+    const stickerConfig = {tension: 2, friction: 3}; // soft spring
+    for (let i = 0; i < 4; i++) {
       // 4 followers
-      var sticker = new Animated.ValueXY();
+      const sticker = new Animated.ValueXY();
       Animated.spring(sticker, {
         ...stickerConfig,
         toValue: this.state.stickers[i], // Animated toValue's are tracked
       }).start();
       this.state.stickers.push(sticker); // push on the followers
     }
-    var releaseChain = (e, gestureState) => {
+    const releaseChain = (e, gestureState) => {
       this.state.stickers[0].flattenOffset(); // merges offset into value and resets
       Animated.sequence([
         // spring to start after decay finishes
@@ -64,8 +64,8 @@ class AnExChained extends React.Component<Object, any> {
     return (
       <View style={styles.chained}>
         {this.state.stickers.map((_, i) => {
-          var j = this.state.stickers.length - i - 1; // reverse so leader is on top
-          var handlers = j === 0 ? this.state.chainResponder.panHandlers : {};
+          const j = this.state.stickers.length - i - 1; // reverse so leader is on top
+          const handlers = j === 0 ? this.state.chainResponder.panHandlers : {};
           return (
             <Animated.Image
               {...handlers}
@@ -85,7 +85,7 @@ class AnExChained extends React.Component<Object, any> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   chained: {
     alignSelf: 'flex-end',
     top: -160,
@@ -99,7 +99,7 @@ var styles = StyleSheet.create({
   },
 });
 
-var CHAIN_IMGS = [
+const CHAIN_IMGS = [
   require('../hawk.png'),
   require('../bunny.png'),
   require('../relay.png'),

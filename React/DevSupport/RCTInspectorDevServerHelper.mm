@@ -1,15 +1,17 @@
+// Copyright (c) Facebook, Inc. and its affiliates.
+//
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
+
 #import "RCTInspectorDevServerHelper.h"
 
 #if RCT_DEV
 
-#import <jschelpers/JSCWrapper.h>
 #import <UIKit/UIKit.h>
 #import <React/RCTLog.h>
 
 #import "RCTDefines.h"
 #import "RCTInspectorPackagerConnection.h"
-
-using namespace facebook::react;
 
 static NSString *const kDebuggerMsgDisable = @"{ \"id\":1,\"method\":\"Debugger.disable\" }";
 

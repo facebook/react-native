@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,9 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import <fabric/core/LocalData.h>
-#import <fabric/core/Props.h>
-#import <fabric/core/LayoutMetrics.h>
+#import <react/core/LocalData.h>
+#import <react/core/Props.h>
+#import <react/core/LayoutMetrics.h>
+#import <react/events/EventEmitter.h>
 #import <React/RCTPrimitives.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -21,6 +22,12 @@ NS_ASSUME_NONNULL_BEGIN
  * for all of them.
  */
 @protocol RCTComponentViewProtocol <NSObject>
+
+/*
+ * Returns ComponentHandle of ComponentDescriptor which this ComponentView
+ * represents.
+ */
++ (facebook::react::ComponentHandle)componentHandle;
 
 /*
  * Called for mounting (attaching) a child component view inside `self`
@@ -52,6 +59,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateLocalData:(facebook::react::SharedLocalData)localData
            oldLocalData:(facebook::react::SharedLocalData)oldLocalData;
 
+/*
+ * Called for updating component's event handlers set.
+ * Receiver must cache `eventEmitter` object inside and use it for emitting
+ * events when needed.
+ */
+- (void)updateEventEmitter:(facebook::react::SharedEventEmitter)eventEmitter;
 
 /*
  * Called for updating component's layout metrics.
