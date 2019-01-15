@@ -23,7 +23,7 @@ import type {ColorValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
 import type {SyntheticEvent} from 'CoreEventTypes';
 
-const RCTSlider = requireNativeComponent('RCTSlider');
+const RCTSlider = require('RCTSliderNativeComponent');
 
 type Event = SyntheticEvent<
   $ReadOnly<{|
