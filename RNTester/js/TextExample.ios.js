@@ -869,7 +869,7 @@ exports.examples = [
         <View>
           <Text>
             By default, text will respect Text Size accessibility setting on
-            iOS. It means that all font sizes will be increased or descreased
+            iOS. It means that all font sizes will be increased or decreased
             depending on the value of Text Size setting in{' '}
             <Text style={{fontWeight: 'bold'}}>
               Settings.app - Display & Brightness - Text Size
@@ -880,8 +880,12 @@ exports.examples = [
               '{'
             }false{'}"'} prop.
           </Text>
-          <Text allowFontScaling={false} style={{marginTop: 20}}>
-            This text will not scale.
+          <Text allowFontScaling={false} style={{marginTop: 20, fontSize: 15}}>
+            This text will not scale.{' '}
+            <Text style={{fontSize: 15}}>
+              This text also won't scale because it inherits "allowFontScaling"
+              from its parent.
+            </Text>
           </Text>
         </View>
       );
