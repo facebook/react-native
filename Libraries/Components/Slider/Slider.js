@@ -60,18 +60,9 @@ type IOSProps = $ReadOnly<{|
   thumbImage?: ?ImageSource,
 |}>;
 
-type AndroidProps = $ReadOnly<{|
-  /**
-   * Color of the foreground switch grip.
-   * @platform android
-   */
-  thumbTintColor?: ?ColorValue,
-|}>;
-
 type Props = $ReadOnly<{|
   ...ViewProps,
   ...IOSProps,
-  ...AndroidProps,
 
   /**
    * Used to style and layout the `Slider`.  See `StyleSheet.js` and
@@ -117,6 +108,11 @@ type Props = $ReadOnly<{|
    * Overrides the default blue gradient image on iOS.
    */
   maximumTrackTintColor?: ?ColorValue,
+  /**
+   * The color used to tint the default thumb images on iOS, or the
+   * color of the foreground switch grip on Android.
+   */
+  thumbTintColor?: ?ColorValue,
 
   /**
    * If true the user won't be able to move the slider.
