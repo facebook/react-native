@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,11 +7,11 @@
 
 #pragma once
 
-#include <fabric/core/LocalData.h>
-#include <fabric/core/Props.h>
-#include <fabric/core/ReactPrimitives.h>
-#include <fabric/core/ShadowNode.h>
-#include <fabric/events/EventEmitter.h>
+#include <react/core/LocalData.h>
+#include <react/core/Props.h>
+#include <react/core/ReactPrimitives.h>
+#include <react/core/ShadowNode.h>
+#include <react/events/EventEmitter.h>
 
 namespace facebook {
 namespace react {
@@ -31,7 +31,6 @@ struct ShadowNodeFragment {
   const SharedShadowNodeSharedList &children = nullSharedChildren();
   const SharedLocalData &localData = nullLocalData();
 
-private:
   static SharedProps &nullSharedProps();
   static SharedEventEmitter &nullSharedEventEmitter();
   static SharedShadowNodeSharedList &nullSharedChildren();

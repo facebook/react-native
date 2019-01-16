@@ -1,4 +1,4 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -161,6 +161,8 @@ void NativeToJsBridge::callFunction(
           "JSCall",
           systraceCookie);
       SystraceSection s("NativeToJsBridge::callFunction", "module", module, "method", method);
+      #else
+      (void)(systraceCookie);
       #endif
       // This is safe because we are running on the executor's thread: it won't
       // destruct until after it's been unregistered (which we check above) and
@@ -191,6 +193,8 @@ void NativeToJsBridge::invokeCallback(double callbackId, folly::dynamic&& argume
           "<callback>",
           systraceCookie);
       SystraceSection s("NativeToJsBridge::invokeCallback");
+      #else
+      (void)(systraceCookie);
       #endif
       executor->invokeCallback(callbackId, arguments);
     });

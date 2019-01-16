@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,10 +20,6 @@ const {
   View,
   Modal,
 } = ReactNative;
-
-exports.framework = 'React';
-exports.title = '<StatusBar>';
-exports.description = 'Component for controlling the status bar';
 
 const colors = ['#ff0000', '#00ff00', '#0000ff', 'rgba(0, 0, 0, 0.4)'];
 
@@ -434,7 +430,10 @@ class ModalExample extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-const examples = [
+exports.framework = 'React';
+exports.title = '<StatusBar>';
+exports.description = 'Component for controlling the status bar';
+exports.examples = [
   {
     title: 'StatusBar hidden',
     render() {
@@ -496,9 +495,7 @@ const examples = [
   },
 ];
 
-exports.examples = examples;
-
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -517,11 +514,6 @@ var styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: '#eeeeee',
     padding: 10,
-  },
-  title: {
-    marginTop: 16,
-    marginBottom: 8,
-    fontWeight: 'bold',
   },
   modalButton: {
     marginTop: 10,

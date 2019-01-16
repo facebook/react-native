@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,54 +10,89 @@
 namespace facebook {
 namespace react {
 
-void ScrollViewEventEmitter::onScroll(const ScrollViewMetrics &scrollViewMetrics) const {
+static jsi::Value scrollViewMetricsPayload(
+    jsi::Runtime &runtime,
+    const ScrollViewMetrics &scrollViewMetrics) {
+  auto payload = jsi::Object(runtime);
+
+  {
+    auto contentOffset = jsi::Object(runtime);
+    contentOffset.setProperty(runtime, "x", scrollViewMetrics.contentOffset.x);
+    contentOffset.setProperty(runtime, "y", scrollViewMetrics.contentOffset.y);
+    payload.setProperty(runtime, "contentOffset", contentOffset);
+  }
+
+  {
+    auto contentInset = jsi::Object(runtime);
+    contentInset.setProperty(
+        runtime, "top", scrollViewMetrics.contentInset.top);
+    contentInset.setProperty(
+        runtime, "left", scrollViewMetrics.contentInset.left);
+    contentInset.setProperty(
+        runtime, "bottom", scrollViewMetrics.contentInset.bottom);
+    contentInset.setProperty(
+        runtime, "right", scrollViewMetrics.contentInset.right);
+    payload.setProperty(runtime, "contentInset", contentInset);
+  }
+
+  {
+    auto contentSize = jsi::Object(runtime);
+    contentSize.setProperty(
+        runtime, "width", scrollViewMetrics.contentSize.width);
+    contentSize.setProperty(
+        runtime, "height", scrollViewMetrics.contentSize.height);
+    payload.setProperty(runtime, "contentSize", contentSize);
+  }
+
+  {
+    auto containerSize = jsi::Object(runtime);
+    containerSize.setProperty(
+        runtime, "width", scrollViewMetrics.containerSize.width);
+    containerSize.setProperty(
+        runtime, "height", scrollViewMetrics.containerSize.height);
+    payload.setProperty(runtime, "layoutMeasurement", containerSize);
+  }
+
+  payload.setProperty(runtime, "zoomScale", scrollViewMetrics.zoomScale);
+
+  return payload;
+}
+
+void ScrollViewEventEmitter::onScroll(
+    const ScrollViewMetrics &scrollViewMetrics) const {
   dispatchScrollViewEvent("scroll", scrollViewMetrics);
 }
 
-void ScrollViewEventEmitter::onScrollBeginDrag(const ScrollViewMetrics &scrollViewMetrics) const {
+void ScrollViewEventEmitter::onScrollBeginDrag(
+    const ScrollViewMetrics &scrollViewMetrics) const {
   dispatchScrollViewEvent("scrollBeginDrag", scrollViewMetrics);
 }
 
-void ScrollViewEventEmitter::onScrollEndDrag(const ScrollViewMetrics &scrollViewMetrics) const {
+void ScrollViewEventEmitter::onScrollEndDrag(
+    const ScrollViewMetrics &scrollViewMetrics) const {
   dispatchScrollViewEvent("scrollEndDrag", scrollViewMetrics);
 }
 
-void ScrollViewEventEmitter::onMomentumScrollBegin(const ScrollViewMetrics &scrollViewMetrics) const {
+void ScrollViewEventEmitter::onMomentumScrollBegin(
+    const ScrollViewMetrics &scrollViewMetrics) const {
   dispatchScrollViewEvent("momentumScrollBegin", scrollViewMetrics);
 }
 
-void ScrollViewEventEmitter::onMomentumScrollEnd(const ScrollViewMetrics &scrollViewMetrics) const {
+void ScrollViewEventEmitter::onMomentumScrollEnd(
+    const ScrollViewMetrics &scrollViewMetrics) const {
   dispatchScrollViewEvent("momentumScrollEnd", scrollViewMetrics);
 }
 
-void ScrollViewEventEmitter::dispatchScrollViewEvent(const std::string &name, const ScrollViewMetrics &scrollViewMetrics, const folly::dynamic &payload) const {
-  folly::dynamic compoundPayload = folly::dynamic::object();
-
-  compoundPayload["contentOffset"] = folly::dynamic::object
-    ("x", scrollViewMetrics.contentOffset.x)
-    ("y", scrollViewMetrics.contentOffset.y);
-
-  compoundPayload["contentInset"] = folly::dynamic::object
-    ("top", scrollViewMetrics.contentInset.top)
-    ("left", scrollViewMetrics.contentInset.left)
-    ("bottom", scrollViewMetrics.contentInset.bottom)
-    ("right", scrollViewMetrics.contentInset.right);
-
-  compoundPayload["contentSize"] = folly::dynamic::object
-    ("width", scrollViewMetrics.contentSize.width)
-    ("height", scrollViewMetrics.contentSize.height);
-
-  compoundPayload["layoutMeasurement"] = folly::dynamic::object
-    ("width", scrollViewMetrics.containerSize.width)
-    ("height", scrollViewMetrics.containerSize.height);
-
-  compoundPayload["zoomScale"] = scrollViewMetrics.zoomScale;
-
-  if (!payload.isNull()) {
-    compoundPayload.merge_patch(payload);
-  }
-
-  dispatchEvent(name, compoundPayload);
+void ScrollViewEventEmitter::dispatchScrollViewEvent(
+    const std::string &name,
+    const ScrollViewMetrics &scrollViewMetrics,
+    EventPriority priority) const {
+  dispatchEvent(
+      name,
+      [scrollViewMetrics](jsi::Runtime &runtime) {
+        return scrollViewMetricsPayload(runtime, scrollViewMetrics);
+      },
+      priority);
 }
 
 } // namespace react

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,7 +15,9 @@
 #import <React/RCTPointerEvents.h>
 #import <React/RCTTextDecorationLineType.h>
 #import <yoga/Yoga.h>
+#if TARGET_OS_IPHONE && WEBKIT_IOS_10_APIS_AVAILABLE
 #import <WebKit/WebKit.h>
+#endif
 
 /**
  * This class provides a collection of conversion functions for mapping

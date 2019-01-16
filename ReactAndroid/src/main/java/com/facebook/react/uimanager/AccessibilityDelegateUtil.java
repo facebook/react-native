@@ -1,20 +1,16 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
 
 package com.facebook.react.uimanager;
 
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.os.Build;
 import android.support.v4.view.AccessibilityDelegateCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.view.View;
-import android.view.accessibility.AccessibilityNodeInfo;
 import com.facebook.react.R;
-import com.facebook.react.bridge.ReadableArray;
 import java.util.Locale;
 import javax.annotation.Nullable;
 
@@ -33,36 +29,54 @@ public class AccessibilityDelegateUtil {
    */
 
   public enum AccessibilityRole {
-    NONE(null),
-    BUTTON("android.widget.Button"),
-    LINK("android.widget.ViewGroup"),
-    SEARCH("android.widget.EditText"),
-    IMAGE("android.widget.ImageView"),
-    IMAGEBUTTON("android.widget.ImageView"),
-    KEYBOARDKEY("android.inputmethodservice.Keyboard$Key"),
-    TEXT("android.widget.ViewGroup"),
-    ADJUSTABLE("android.widget.SeekBar"),
-    SUMMARY("android.widget.ViewGroup"),
-    HEADER("android.widget.ViewGroup");
+    NONE,
+    BUTTON,
+    LINK,
+    SEARCH,
+    IMAGE,
+    IMAGEBUTTON,
+    KEYBOARDKEY,
+    TEXT,
+    ADJUSTABLE,
+    SUMMARY,
+    HEADER;
 
-    @Nullable private final String mValue;
-
-    AccessibilityRole(String type) {
-      mValue = type;
+    public static String getValue(AccessibilityRole role) {
+      switch (role) {
+        case NONE:
+          return null;
+        case BUTTON:
+          return "android.widget.Button";
+        case LINK:
+          return "android.widget.ViewGroup";
+        case SEARCH:
+          return "android.widget.EditText";
+        case IMAGE:
+          return "android.widget.ImageView";
+        case IMAGEBUTTON:
+          return "android.widget.ImageView";
+        case KEYBOARDKEY:
+          return "android.inputmethodservice.Keyboard$Key";
+        case TEXT:
+          return "android.widget.ViewGroup";
+        case ADJUSTABLE:
+          return "android.widget.SeekBar";
+        case SUMMARY:
+          return "android.widget.ViewGroup";
+        case HEADER:
+          return "android.widget.ViewGroup";
+        default:
+          throw new IllegalArgumentException("Invalid accessibility role value: " + role);
+      }
     }
 
-    @Nullable
-    public String getValue() {
-      return mValue;
-    }
-
-    public static AccessibilityRole fromValue(String value) {
+    public static AccessibilityRole fromValue(@Nullable String value) {
       for (AccessibilityRole role : AccessibilityRole.values()) {
-        if (role.getValue() != null && role.getValue().equals(value)) {
+        if (role.name().equalsIgnoreCase(value)) {
           return role;
         }
       }
-      return AccessibilityRole.NONE;
+      throw new IllegalArgumentException("Invalid accessibility role value: " + value);
     }
   }
 
@@ -71,9 +85,12 @@ public class AccessibilityDelegateUtil {
   }
 
   public static void setDelegate(final View view) {
+    final String accessibilityHint = (String) view.getTag(R.id.accessibility_hint);
+    final AccessibilityRole accessibilityRole = (AccessibilityRole) view.getTag(R.id.accessibility_role);
     // if a view already has an accessibility delegate, replacing it could cause problems,
     // so leave it alone.
-    if (!ViewCompat.hasAccessibilityDelegate(view)) {
+    if (!ViewCompat.hasAccessibilityDelegate(view) &&
+      (accessibilityHint != null || accessibilityRole != null)) {
       ViewCompat.setAccessibilityDelegate(
         view,
         new AccessibilityDelegateCompat() {
@@ -81,8 +98,6 @@ public class AccessibilityDelegateUtil {
           public void onInitializeAccessibilityNodeInfo(
             View host, AccessibilityNodeInfoCompat info) {
             super.onInitializeAccessibilityNodeInfo(host, info);
-            String accessibilityHint = (String) view.getTag(R.id.accessibility_hint);
-            AccessibilityRole accessibilityRole = getAccessibilityRole((String) view.getTag(R.id.accessibility_role));
             setRole(info, accessibilityRole, view.getContext());
             if (!(accessibilityHint == null)) {
               String contentDescription=(String)info.getContentDescription();
@@ -104,8 +119,11 @@ public class AccessibilityDelegateUtil {
 
   //TODO: Eventually support for other languages on talkback
 
-  public static void setRole(AccessibilityNodeInfoCompat nodeInfo, final AccessibilityRole role, final Context context) {
-    nodeInfo.setClassName(role.getValue());
+  public static void setRole(AccessibilityNodeInfoCompat nodeInfo, AccessibilityRole role, final Context context) {
+    if (role == null) {
+      role = AccessibilityRole.NONE;
+    }
+    nodeInfo.setClassName(AccessibilityRole.getValue(role));
     if (Locale.getDefault().getLanguage().equals(new Locale("en").getLanguage())) {
       if (role.equals(AccessibilityRole.LINK)) {
         nodeInfo.setRoleDescription(context.getString(R.string.link_description));
@@ -126,15 +144,5 @@ public class AccessibilityDelegateUtil {
     if (role.equals(AccessibilityRole.IMAGEBUTTON)) {
       nodeInfo.setClickable(true);
     }
-  }
-
-  /**
-   * Method for setting accessibilityRole on view properties.
-   */
-  public static AccessibilityRole getAccessibilityRole(String role) {
-    if (role == null) {
-      return AccessibilityRole.NONE;
-    }
-    return AccessibilityRole.valueOf(role.toUpperCase());
   }
 }

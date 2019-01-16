@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <fabric/core/Props.h>
-#include <fabric/core/ShadowNode.h>
+#include <react/core/Props.h>
+#include <react/core/ShadowNode.h>
 
 namespace facebook {
 namespace react {
@@ -20,14 +20,15 @@ namespace react {
  * with many handy features.
  */
 template <
-  const char *concreteComponentName,
-  typename PropsT,
-  typename EventEmitterT = EventEmitter
->
-class ConcreteShadowNode: public ShadowNode {
-  static_assert(std::is_base_of<Props, PropsT>::value, "PropsT must be a descendant of Props");
+    const char *concreteComponentName,
+    typename PropsT,
+    typename EventEmitterT = EventEmitter>
+class ConcreteShadowNode : public ShadowNode {
+  static_assert(
+      std::is_base_of<Props, PropsT>::value,
+      "PropsT must be a descendant of Props");
 
-public:
+ public:
   using ShadowNode::ShadowNode;
 
   using ConcreteProps = PropsT;
@@ -44,12 +45,18 @@ public:
     return ComponentHandle(concreteComponentName);
   }
 
-  static SharedConcreteProps Props(const RawProps &rawProps, const SharedProps &baseProps = nullptr) {
-    return std::make_shared<const PropsT>(baseProps ? *std::static_pointer_cast<const PropsT>(baseProps) : PropsT(), rawProps);
+  static SharedConcreteProps Props(
+      const RawProps &rawProps,
+      const SharedProps &baseProps = nullptr) {
+    return std::make_shared<const PropsT>(
+        baseProps ? *std::static_pointer_cast<const PropsT>(baseProps)
+                  : PropsT(),
+        rawProps);
   }
 
   static SharedConcreteProps defaultSharedProps() {
-    static const SharedConcreteProps defaultSharedProps = std::make_shared<const PropsT>();
+    static const SharedConcreteProps defaultSharedProps =
+        std::make_shared<const PropsT>();
     return defaultSharedProps;
   }
 
@@ -69,13 +76,15 @@ public:
   /*
    * Returns subset of children that are inherited from `SpecificShadowNodeT`.
    */
-  template<typename SpecificShadowNodeT>
+  template <typename SpecificShadowNodeT>
   std::vector<SpecificShadowNodeT *> getChildrenSlice() const {
     std::vector<SpecificShadowNodeT *> children;
     for (const auto &childShadowNode : getChildren()) {
-      auto specificChildShadowNode = dynamic_cast<const SpecificShadowNodeT *>(childShadowNode.get());
+      auto specificChildShadowNode =
+          dynamic_cast<const SpecificShadowNodeT *>(childShadowNode.get());
       if (specificChildShadowNode) {
-        children.push_back(const_cast<SpecificShadowNodeT *>(specificChildShadowNode));
+        children.push_back(
+            const_cast<SpecificShadowNodeT *>(specificChildShadowNode));
       }
     }
     return children;

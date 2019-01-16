@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -422,6 +422,8 @@ RCT_ENUM_CONVERTER(UIViewContentMode, (@{
 RCT_ENUM_CONVERTER(UIBarStyle, (@{
   @"default": @(UIBarStyleDefault),
   @"black": @(UIBarStyleBlack),
+  @"blackOpaque": @(UIBarStyleBlackOpaque),
+  @"blackTranslucent": @(UIBarStyleBlackTranslucent),  
 }), UIBarStyleDefault, integerValue)
 #endif
 

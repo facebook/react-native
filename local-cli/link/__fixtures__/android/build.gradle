@@ -1,5 +1,0 @@
-dependencies {
-    compile fileTree(dir: "libs", include: ["*.jar"])
-    compile "com.android.support:appcompat-v7:27.1.1"
-    compile "com.facebook.react:react-native:+"
-}

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,7 +12,7 @@
 const BatchedBridge = require('BatchedBridge');
 
 const warning = require('fbjs/lib/warning');
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 const LoggingTestModule = {
   logToConsole: function(str) {

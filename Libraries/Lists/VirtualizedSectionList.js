@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,7 +13,7 @@ const React = require('React');
 const View = require('View');
 const VirtualizedList = require('VirtualizedList');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 import type {ViewToken} from 'ViewabilityHelper';
 import type {Props as VirtualizedListProps} from 'VirtualizedList';
@@ -509,6 +509,9 @@ class ItemWithSeparator extends React.Component<
       <SeparatorComponent {...this.state.separatorProps} />
     );
     return leadingSeparator || separator ? (
+      /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.89 was deployed. To see the error, delete
+       * this comment and run Flow. */
       <View>
         {leadingSeparator}
         {element}

@@ -1,4 +1,4 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -47,6 +47,22 @@ jdouble extractDouble(const folly::dynamic& value) {
   } else {
     return static_cast<jdouble>(value.getDouble());
   }
+}
+
+jint extractInteger(const folly::dynamic& value) {
+  // The logic here is taken from convertDynamicIfIntegral, but the
+  // return type and exception are different.
+  if (value.isInt()) {
+    return value.getInt();
+  }
+  double dbl = value.getDouble();
+  jint result = static_cast<jint>(dbl);
+  if (dbl != result) {
+    throw std::invalid_argument(
+      folly::to<std::string>(
+        "Tried to convert jint argument, but got a non-integral double: ", dbl));
+  }
+  return result;
 }
 
 local_ref<JCxxCallbackImpl::jhybridobject> extractCallback(std::weak_ptr<Instance>& instance, const folly::dynamic& value) {
@@ -101,10 +117,10 @@ jvalue extract(std::weak_ptr<Instance>& instance, char type, dynamic_iterator& i
       value.l = JBoolean::valueOf(static_cast<jboolean>(arg.getBool())).release();
       break;
     case 'i':
-      value.i = static_cast<jint>(arg.getInt());
+      value.i = extractInteger(arg);
       break;
     case 'I':
-      value.l = JInteger::valueOf(static_cast<jint>(arg.getInt())).release();
+      value.l = JInteger::valueOf(extractInteger(arg)).release();
       break;
     case 'f':
       value.f = static_cast<jfloat>(extractDouble(arg));

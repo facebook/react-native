@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,9 +13,9 @@
 const Animated = require('Animated');
 const Easing = require('Easing');
 const NativeMethodsMixin = require('NativeMethodsMixin');
+const Platform = require('Platform');
 const React = require('React');
 const PropTypes = require('prop-types');
-const TimerMixin = require('react-timer-mixin');
 const Touchable = require('Touchable');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 
@@ -25,14 +25,14 @@ const flattenStyle = require('flattenStyle');
 
 import type {Props as TouchableWithoutFeedbackProps} from 'TouchableWithoutFeedback';
 import type {ViewStyleProp} from 'StyleSheet';
-
-type Event = Object;
+import type {TVParallaxPropertiesType} from 'TVViewPropTypes';
+import type {PressEvent} from 'CoreEventTypes';
 
 const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 type TVProps = $ReadOnly<{|
   hasTVPreferredFocus?: ?boolean,
-  tvParallaxProperties?: ?Object,
+  tvParallaxProperties?: ?TVParallaxPropertiesType,
 |}>;
 
 type Props = $ReadOnly<{|
@@ -132,9 +132,12 @@ type Props = $ReadOnly<{|
  */
 const TouchableOpacity = ((createReactClass({
   displayName: 'TouchableOpacity',
-  mixins: [TimerMixin, Touchable.Mixin, NativeMethodsMixin],
+  mixins: [Touchable.Mixin.withoutDefaultFocusAndBlur, NativeMethodsMixin],
 
   propTypes: {
+    /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.89 was deployed. To see the error, delete this
+     * comment and run Flow. */
     ...TouchableWithoutFeedback.propTypes,
     /**
      * Determines what the opacity of the wrapped view should be when touch is
@@ -159,7 +162,13 @@ const TouchableOpacity = ((createReactClass({
 
   getInitialState: function() {
     return {
+      /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.89 was deployed. To see the error, delete
+       * this comment and run Flow. */
       ...this.touchableGetInitialState(),
+      /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.89 was deployed. To see the error, delete
+       * this comment and run Flow. */
       anim: new Animated.Value(this._getChildStyleOpacityWithDefault()),
     };
   },
@@ -194,7 +203,7 @@ const TouchableOpacity = ((createReactClass({
    * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
    * defined on your component.
    */
-  touchableHandleActivePressIn: function(e: Event) {
+  touchableHandleActivePressIn: function(e: PressEvent) {
     if (e.dispatchConfig.registrationName === 'onResponderGrant') {
       this._opacityActive(0);
     } else {
@@ -203,16 +212,30 @@ const TouchableOpacity = ((createReactClass({
     this.props.onPressIn && this.props.onPressIn(e);
   },
 
-  touchableHandleActivePressOut: function(e: Event) {
+  touchableHandleActivePressOut: function(e: PressEvent) {
     this._opacityInactive(250);
     this.props.onPressOut && this.props.onPressOut(e);
   },
 
-  touchableHandlePress: function(e: Event) {
+  touchableHandleFocus: function(e: Event) {
+    if (Platform.isTV) {
+      this._opacityActive(150);
+    }
+    this.props.onFocus && this.props.onFocus(e);
+  },
+
+  touchableHandleBlur: function(e: Event) {
+    if (Platform.isTV) {
+      this._opacityInactive(250);
+    }
+    this.props.onBlur && this.props.onBlur(e);
+  },
+
+  touchableHandlePress: function(e: PressEvent) {
     this.props.onPress && this.props.onPress(e);
   },
 
-  touchableHandleLongPress: function(e: Event) {
+  touchableHandleLongPress: function(e: PressEvent) {
     this.props.onLongPress && this.props.onLongPress(e);
   },
 
@@ -243,12 +266,15 @@ const TouchableOpacity = ((createReactClass({
   },
 
   _opacityInactive: function(duration: number) {
+    /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.89 was deployed. To see the error, delete this
+     * comment and run Flow. */
     this.setOpacityTo(this._getChildStyleOpacityWithDefault(), duration);
   },
 
   _getChildStyleOpacityWithDefault: function() {
     const childStyle = flattenStyle(this.props.style) || {};
-    return childStyle.opacity == undefined ? 1 : childStyle.opacity;
+    return childStyle.opacity == null ? 1 : childStyle.opacity;
   },
 
   render: function() {
@@ -267,13 +293,31 @@ const TouchableOpacity = ((createReactClass({
         hasTVPreferredFocus={this.props.hasTVPreferredFocus}
         tvParallaxProperties={this.props.tvParallaxProperties}
         hitSlop={this.props.hitSlop}
+        /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
+         * error found when Flow v0.89 was deployed. To see the error, delete
+         * this comment and run Flow. */
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={
+          /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses
+           * an error found when Flow v0.89 was deployed. To see the error,
+           * delete this comment and run Flow. */
           this.touchableHandleResponderTerminationRequest
         }
+        /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
+         * error found when Flow v0.89 was deployed. To see the error, delete
+         * this comment and run Flow. */
         onResponderGrant={this.touchableHandleResponderGrant}
+        /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
+         * error found when Flow v0.89 was deployed. To see the error, delete
+         * this comment and run Flow. */
         onResponderMove={this.touchableHandleResponderMove}
+        /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
+         * error found when Flow v0.89 was deployed. To see the error, delete
+         * this comment and run Flow. */
         onResponderRelease={this.touchableHandleResponderRelease}
+        /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
+         * error found when Flow v0.89 was deployed. To see the error, delete
+         * this comment and run Flow. */
         onResponderTerminate={this.touchableHandleResponderTerminate}>
         {this.props.children}
         {Touchable.renderDebugView({

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,28 +12,35 @@
 import type {Props as FlatListProps} from 'FlatList';
 import type {renderItemType} from 'VirtualizedList';
 
-const PropTypes = require('prop-types');
 const React = require('React');
 const SwipeableRow = require('SwipeableRow');
 const FlatList = require('FlatList');
 
+// TODO: Make this $ReadOnly and Exact. Will require doing the same to the props in
+//       Libraries/Lists/*
 type SwipableListProps = {
   /**
    * To alert the user that swiping is possible, the first row can bounce
    * on component mount.
    */
   bounceFirstRowOnMount: boolean,
-  // Maximum distance to open to after a swipe
+
+  /**
+   * Maximum distance to open to after a swipe
+   */
   maxSwipeDistance: number | (Object => number),
-  // Callback method to render the view that will be unveiled on swipe
+
+  /**
+   * Callback method to render the view that will be unveiled on swipe
+   */
   renderQuickActions: renderItemType,
 };
 
 type Props<ItemT> = SwipableListProps & FlatListProps<ItemT>;
 
-type State = {
+type State = {|
   openRowKey: ?string,
-};
+|};
 
 /**
  * A container component that renders multiple SwipeableRow's in a FlatList
@@ -53,28 +60,8 @@ type State = {
  */
 
 class SwipeableFlatList<ItemT> extends React.Component<Props<ItemT>, State> {
-  props: Props<ItemT>;
-  state: State;
-
   _flatListRef: ?FlatList<ItemT> = null;
   _shouldBounceFirstRowOnMount: boolean = false;
-
-  static propTypes = {
-    ...FlatList.propTypes,
-
-    /**
-     * To alert the user that swiping is possible, the first row can bounce
-     * on component mount.
-     */
-    bounceFirstRowOnMount: PropTypes.bool.isRequired,
-
-    // Maximum distance to open to after a swipe
-    maxSwipeDistance: PropTypes.oneOfType([PropTypes.number, PropTypes.func])
-      .isRequired,
-
-    // Callback method to render the view that will be unveiled on swipe
-    renderQuickActions: PropTypes.func.isRequired,
-  };
 
   static defaultProps = {
     ...FlatList.defaultProps,

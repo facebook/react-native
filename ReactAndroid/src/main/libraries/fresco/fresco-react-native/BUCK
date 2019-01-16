@@ -1,4 +1,5 @@
-load("//ReactNative:DEFS.bzl", "rn_android_library", "rn_android_prebuilt_aar", "rn_prebuilt_jar")
+load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+load("//tools/build_defs/oss:rn_defs.bzl", "rn_android_library", "rn_android_prebuilt_aar", "rn_prebuilt_jar")
 
 rn_android_prebuilt_aar(
     name = "fresco-react-native",
@@ -6,19 +7,19 @@ rn_android_prebuilt_aar(
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "fresco-binary-aar",
     sha1 = "076812472879be341f392c4aab469b8fdf8c6759",
     url = "mvn:com.facebook.fresco:fresco:aar:1.10.0",
 )
 
-android_prebuilt_aar(
+rn_android_prebuilt_aar(
     name = "fresco-drawee",
     aar = ":drawee-binary-aar",
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "drawee-binary-aar",
     sha1 = "c1fef7cdc5f6e4fd7d7c58522075c6b66f46a52b",
     url = "mvn:com.facebook.fresco:drawee:aar:1.10.0",
@@ -40,7 +41,7 @@ rn_android_prebuilt_aar(
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "imagepipeline-base-aar",
     sha1 = "56672fa5fa46bf4962adecc7c88a1544f5a20225",
     url = "mvn:com.facebook.fresco:imagepipeline-base:aar:1.10.0",
@@ -52,7 +53,7 @@ rn_android_prebuilt_aar(
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "imagepipeline-aar",
     sha1 = "e317bdb7f18f0f4ac4f3ab5d3edb49fd09290a6f",
     url = "mvn:com.facebook.fresco:imagepipeline:aar:1.10.0",
@@ -64,31 +65,31 @@ rn_prebuilt_jar(
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "download-bolts.jar",
     sha1 = "d85884acf6810a3bbbecb587f239005cbc846dc4",
     url = "mvn:com.parse.bolts:bolts-tasks:jar:1.4.0",
 )
 
-android_prebuilt_aar(
+rn_android_prebuilt_aar(
     name = "fbcore",
     aar = ":fbcore-aar",
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "fbcore-aar",
     sha1 = "d79dbf5e47d6e528dd1f90170e0299c14d835ab8",
     url = "mvn:com.facebook.fresco:fbcore:aar:1.10.0",
 )
 
-android_prebuilt_aar(
+rn_android_prebuilt_aar(
     name = "imagepipeline-okhttp3",
     aar = ":imagepipeline-okhttp3-binary-aar",
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "imagepipeline-okhttp3-binary-aar",
     sha1 = "3429ffb776d7511d0f911fbe9efda4c73179d416",
     url = "mvn:com.facebook.fresco:imagepipeline-okhttp3:aar:1.10.0",
