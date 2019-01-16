@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 'use strict';
@@ -19,7 +19,6 @@ const setAndForwardRef = require('setAndForwardRef');
 import type {ViewProps} from 'ViewPropTypes';
 import type {SyntheticEvent} from 'CoreEventTypes';
 import type {NativeComponent} from 'ReactNative';
-import type {CheckBoxNativeType} from 'AndroidCheckBoxNativeComponent';
 
 type CheckBoxEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -46,6 +45,15 @@ type CommonProps = $ReadOnly<{|
    */
   testID?: ?string,
 |}>;
+
+type NativeProps = $ReadOnly<{|
+  ...CommonProps,
+
+  on?: ?boolean,
+  enabled?: boolean,
+|}>;
+
+type CheckBoxNativeType = Class<NativeComponent<NativeProps>>;
 
 type Props = $ReadOnly<{|
   ...CommonProps,

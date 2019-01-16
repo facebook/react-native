@@ -44,7 +44,7 @@ type NativeProps = $ReadOnly<{|
   enabled?: boolean,
 |}>;
 
-export type CheckBoxNativeType = Class<NativeComponent<NativeProps>>;
+type CheckBoxNativeType = Class<NativeComponent<NativeProps>>;
 
 module.exports = ((requireNativeComponent(
   'AndroidCheckBox',
