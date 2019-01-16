@@ -32,6 +32,7 @@ def rn_codegen(
     generate_event_emitter_h_name = "generate_event_emitter_h-{}".format(name)
     generate_props_cpp_name = "generate_props_cpp-{}".format(name)
     generate_props_h_name = "generated_props_h-{}".format(name)
+    generate_shadow_node_cpp_name = "generated_shadow_node_cpp-{}".format(name)
     generate_shadow_node_h_name = "generated_shadow_node_h-{}".format(name)
 
     fb_native.genrule(
@@ -72,6 +73,12 @@ def rn_codegen(
     )
 
     fb_native.genrule(
+        name = generate_shadow_node_cpp_name,
+        cmd = "cp $(location :{})/ShadowNodes.cpp $OUT".format(generate_fixtures_rule_name),
+        out = "ShadowNodes.cpp",
+    )
+
+    fb_native.genrule(
         name = generate_shadow_node_h_name,
         cmd = "cp $(location :{})/ShadowNodes.h $OUT".format(generate_fixtures_rule_name),
         out = "ShadowNodes.h",
@@ -83,6 +90,7 @@ def rn_codegen(
         srcs = [
             ":{}".format(generate_event_emitter_cpp_name),
             ":{}".format(generate_props_cpp_name),
+            ":{}".format(generate_shadow_node_cpp_name),
         ],
         headers = [
             ":{}".format(generate_component_descriptor_h_name),
