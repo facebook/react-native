@@ -206,8 +206,8 @@ void YGNode::setLayoutDimension(float dimension, int index) {
   layout_.dimensions[index] = dimension;
 }
 
-// If both left and right are defined, then use left. Otherwise return
-// +left or -right depending on which is defined.
+// If both left and right are defined, then use left. Otherwise return +left or
+// -right depending on which is defined.
 YGFloatOptional YGNode::relativePosition(
     const YGFlexDirection axis,
     const float axisSize) const {
