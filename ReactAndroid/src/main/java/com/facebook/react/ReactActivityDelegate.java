@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
  */
 public class ReactActivityDelegate {
 
-  private final @Nullable ReactActivity mActivity;
+  private final @Nullable Activity mActivity;
   private final @Nullable String mMainComponentName;
 
   private @Nullable ReactRootView mReactRootView;
@@ -36,7 +36,7 @@ public class ReactActivityDelegate {
   private @Nullable PermissionListener mPermissionListener;
   private @Nullable Callback mPermissionsCallback;
 
-  public ReactActivityDelegate(ReactActivity activity, @Nullable String mainComponentName) {
+  public ReactActivityDelegate(Activity activity, @Nullable String mainComponentName) {
     mActivity = activity;
     mMainComponentName = mainComponentName;
   }
