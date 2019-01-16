@@ -8,6 +8,8 @@ package com.facebook.react.fabric;
 
 import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.queue.MessageQueueThread;
+import com.facebook.react.fabric.jsi.ComponentFactoryDelegate;
+import com.facebook.react.fabric.jsi.EventBeatManager;
 
 public interface FabricBinding {
 
@@ -15,8 +17,9 @@ public interface FabricBinding {
   void register(
       JavaScriptContextHolder jsContext,
       FabricBinder fabricBinder,
-      Object eventBeatManager,
-      MessageQueueThread jsMessageQueueThread);
+      EventBeatManager eventBeatManager,
+      MessageQueueThread jsMessageQueueThread,
+      ComponentFactoryDelegate componentFactoryDelegate);
 
   void unregister();
 }

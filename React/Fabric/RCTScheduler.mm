@@ -7,6 +7,7 @@
 
 #import "RCTScheduler.h"
 
+#import <react/uimanager/ComponentDescriptorFactory.h>
 #import <react/uimanager/ContextContainer.h>
 #import <react/uimanager/Scheduler.h>
 #import <react/uimanager/SchedulerDelegate.h>
@@ -49,7 +50,7 @@ private:
 {
   if (self = [super init]) {
     _delegateProxy = std::make_shared<SchedulerDelegateProxy>((__bridge void *)self);
-    _scheduler = std::make_shared<Scheduler>(std::static_pointer_cast<ContextContainer>(contextContatiner));
+    _scheduler = std::make_shared<Scheduler>(std::static_pointer_cast<ContextContainer>(contextContatiner), getDefaultComponentRegistryFactory());
     _scheduler->setDelegate(_delegateProxy.get());
   }
 

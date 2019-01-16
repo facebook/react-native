@@ -13,12 +13,12 @@
 #include <react/uimanager/UIManagerBinding.h>
 #include <react/uimanager/UITemplateProcessor.h>
 
-#include "ComponentDescriptorFactory.h"
-
 namespace facebook {
 namespace react {
 
-Scheduler::Scheduler(const SharedContextContainer &contextContainer) {
+Scheduler::Scheduler(
+    const SharedContextContainer &contextContainer,
+    ComponentRegistryFactory buildRegistryFunction) {
   const auto asynchronousEventBeatFactory =
       contextContainer->getInstance<EventBeatFactory>("asynchronous");
   const auto synchronousEventBeatFactory =
@@ -46,8 +46,8 @@ Scheduler::Scheduler(const SharedContextContainer &contextContainer) {
   auto eventDispatcher = std::make_shared<EventDispatcher>(
       eventPipe, synchronousEventBeatFactory, asynchronousEventBeatFactory);
 
-  componentDescriptorRegistry_ = ComponentDescriptorFactory::buildRegistry(
-      eventDispatcher, contextContainer);
+  componentDescriptorRegistry_ =
+      buildRegistryFunction(eventDispatcher, contextContainer);
 
   uiManagerRef.setDelegate(this);
   uiManagerRef.setShadowTreeRegistry(&shadowTreeRegistry_);
