@@ -14,7 +14,6 @@ const requireNativeComponent = require('requireNativeComponent');
 
 import type {SyntheticEvent} from 'CoreEventTypes';
 import type {ImageSource} from 'ImageSource';
-import type {ColorValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
 import type {NativeComponent} from 'ReactNative';
 
@@ -35,6 +34,8 @@ type NativeProps = $ReadOnly<{|
   onSelect: (event: ToolbarAndroidChangeEvent) => mixed,
   nativeActions?: Array<Action>,
 |}>;
+
+type ColorValue = null | string;
 
 type ToolbarAndroidProps = $ReadOnly<{|
   ...ViewProps,
