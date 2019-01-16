@@ -36,7 +36,13 @@ public class ReactActivityDelegate {
   private @Nullable PermissionListener mPermissionListener;
   private @Nullable Callback mPermissionsCallback;
 
+  @Deprecated
   public ReactActivityDelegate(Activity activity, @Nullable String mainComponentName) {
+    mActivity = activity;
+    mMainComponentName = mainComponentName;
+  }
+
+  public ReactActivityDelegate(ReactActivity activity, @Nullable String mainComponentName) {
     mActivity = activity;
     mMainComponentName = mainComponentName;
   }
