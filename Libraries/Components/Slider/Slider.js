@@ -109,7 +109,8 @@ type Props = $ReadOnly<{|
    */
   maximumTrackTintColor?: ?ColorValue,
   /**
-   * Color of the foreground switch grip.
+   * The color used to tint the default thumb images on iOS, or the 
+   * color of the foreground switch grip on Android.
    */
   thumbTintColor?: ?ColorValue,
 
