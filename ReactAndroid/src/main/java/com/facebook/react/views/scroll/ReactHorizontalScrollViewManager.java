@@ -173,6 +173,7 @@ public class ReactHorizontalScrollViewManager
       ReactHorizontalScrollView scrollView, ReactScrollViewCommandHelper.ScrollToCommandData data) {
     if (data.mAnimated && data.mDuration != 0) {
       if (data.mDuration > 0) {
+        // data.mDuration set to -1 to fallbacks to default platform behavior
         scrollView.animateScroll(data.mDestX, data.mDestY, data.mDuration);
       } else {
         scrollView.smoothScrollTo(data.mDestX, data.mDestY);
@@ -191,6 +192,7 @@ public class ReactHorizontalScrollViewManager
       scrollView.getChildAt(0).getWidth() + scrollView.getPaddingRight();
     if (data.mAnimated && data.mDuration != 0) {
       if (data.mDuration > 0) {
+        // data.mDuration set to -1 to fallbacks to default platform behavior
         scrollView.animateScroll(right, scrollView.getScrollY(), data.mDuration);
       } else {
         scrollView.smoothScrollTo(right, scrollView.getScrollY());
