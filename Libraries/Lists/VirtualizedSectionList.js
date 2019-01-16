@@ -238,7 +238,6 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
         const keyExtractor =
           this.props.getItemParam(section, 'keyExtractor') ||
           defaultKeyExtractor;
-        const sectionData = this.props.getItemParam(section, 'data');
         return {
           section,
           key:
