@@ -33,9 +33,9 @@
 #import <cxxreact/ModuleRegistry.h>
 #import <cxxreact/RAMBundleRegistry.h>
 #import <cxxreact/ReactMarker.h>
-#import <jsi/JSCRuntime.h>
 #import <jsireact/JSIExecutor.h>
 
+#import "JSCExecutorFactory.h"
 #import "NSDataBigString.h"
 #import "RCTMessageThread.h"
 #import "RCTObjcExecutor.h"
@@ -89,24 +89,6 @@ public:
 private:
   RCTCxxBridge *bridge_;
   std::shared_ptr<JSExecutorFactory> factory_;
-};
-
-class JSCExecutorFactory : public JSExecutorFactory {
-public:
-  std::unique_ptr<JSExecutor> createJSExecutor(
-    std::shared_ptr<ExecutorDelegate> delegate,
-    std::shared_ptr<MessageQueueThread> jsQueue) override {
-    return folly::make_unique<JSIExecutor>(
-      facebook::jsc::makeJSCRuntime(),
-      delegate,
-      [](const std::string &message, unsigned int logLevel) {
-        _RCTLogJavaScriptInternal(
-          static_cast<RCTLogLevel>(logLevel),
-          [NSString stringWithUTF8String:message.c_str()]);
-      },
-      JSIExecutor::defaultTimeoutInvoker,
-      nullptr);
-  }
 };
 
 }
@@ -337,7 +319,7 @@ struct RCTInstanceCallback : public InstanceCallback {
       executorFactory = [cxxDelegate jsExecutorFactoryForBridge:self];
     }
     if (!executorFactory) {
-      executorFactory = std::make_shared<JSCExecutorFactory>();
+      executorFactory = std::make_shared<JSCExecutorFactory>(nullptr);
     }
   } else {
     id<RCTJavaScriptExecutor> objcExecutor = [self moduleForClass:self.executorClass];
