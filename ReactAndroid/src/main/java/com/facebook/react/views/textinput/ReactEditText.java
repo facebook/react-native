@@ -667,7 +667,7 @@ public class ReactEditText extends EditText {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       float effectiveLetterSpacing = mTextAttributes.getEffectiveLetterSpacing();
       if (!Float.isNaN(effectiveLetterSpacing)) {
-        setLetterSpacing(effectiveLetterSpacing / getTextSize());
+        setLetterSpacing(effectiveLetterSpacing);
       }
     }
   }

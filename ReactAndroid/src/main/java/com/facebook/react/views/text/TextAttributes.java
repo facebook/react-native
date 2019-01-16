@@ -121,9 +121,13 @@ public class TextAttributes {
       return Float.NaN;
     }
 
-    return mAllowFontScaling
+    float letterSpacingPixels = mAllowFontScaling
       ? PixelUtil.toPixelFromSP(mLetterSpacing)
       : PixelUtil.toPixelFromDIP(mLetterSpacing);
+
+    // `letterSpacingPixels` and `getEffectiveFontSize` are both in pixels,
+    // yielding an accurate em value.
+    return letterSpacingPixels / getEffectiveFontSize();
   }
 
   public String toString() {
