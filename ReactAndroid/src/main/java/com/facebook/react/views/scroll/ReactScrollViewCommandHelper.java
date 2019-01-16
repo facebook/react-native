@@ -24,7 +24,6 @@ public class ReactScrollViewCommandHelper {
   public static final int COMMAND_SCROLL_TO_END = 2;
   public static final int COMMAND_FLASH_SCROLL_INDICATORS = 3;
 
-
   public interface ScrollCommandHandler<T> {
     void scrollTo(T scrollView, ScrollToCommandData data);
     void scrollToEnd(T scrollView, ScrollToEndCommandData data);
