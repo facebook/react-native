@@ -10,18 +10,17 @@
 
 'use strict';
 
-const React = require('React');
-const StaticContainer = require('StaticContainer.react');
-const StyleSheet = require('StyleSheet');
-const View = require('View');
-const RCTTabBarItemNativeComponent = require('RCTTabBarItemNativeComponent');
+const requireNativeComponent = require('requireNativeComponent');
 
 import type {ViewProps} from 'ViewPropTypes';
 import type {ColorValue} from 'StyleSheetTypes';
 import type {SyntheticEvent} from 'CoreEventTypes';
+import type {NativeComponent} from 'ReactNative';
 import type {ImageSource} from 'ImageSource';
 
-type Props = $ReadOnly<{|
+type TabBarItemEvent = SyntheticEvent<null>;
+
+type NativeProps = $ReadOnly<{|
   ...ViewProps,
 
   /**
@@ -69,7 +68,7 @@ type Props = $ReadOnly<{|
    * Callback when this tab is being selected, you should change the state of your
    * component to set selected={true}.
    */
-  onPress?: ?(event: SyntheticEvent<null>) => mixed,
+  onPress?: ?(event: TabBarItemEvent) => mixed,
 
   /**
    * If set to true it renders the image as original,
@@ -98,72 +97,8 @@ type Props = $ReadOnly<{|
   isTVSelectable?: ?boolean,
 |}>;
 
-type State = {|
-  hasBeenSelected: boolean,
-|};
+type RCTTabBarItemNativeType = Class<NativeComponent<NativeProps>>;
 
-let showedDeprecationWarning = false;
-
-class TabBarItemIOS extends React.Component<Props, State> {
-  state = {
-    hasBeenSelected: false,
-  };
-
-  UNSAFE_componentWillMount() {
-    if (this.props.selected) {
-      this.setState({hasBeenSelected: true});
-    }
-  }
-
-  UNSAFE_componentWillReceiveProps(nextProps: Props) {
-    if (this.state.hasBeenSelected || nextProps.selected) {
-      this.setState({hasBeenSelected: true});
-    }
-  }
-
-  componentDidMount() {
-    if (!showedDeprecationWarning) {
-      console.warn(
-        'TabBarIOS and TabBarItemIOS are deprecated and will be removed in a future release. ' +
-          'Please use react-native-tab-view instead.',
-      );
-
-      showedDeprecationWarning = true;
-    }
-  }
-
-  render() {
-    const {style, children, ...props} = this.props;
-
-    // if the tab has already been shown once, always continue to show it so we
-    // preserve state between tab transitions
-    let tabContents;
-    if (this.state.hasBeenSelected) {
-      tabContents = (
-        <StaticContainer shouldUpdate={this.props.selected}>
-          {children}
-        </StaticContainer>
-      );
-    } else {
-      tabContents = <View />;
-    }
-
-    return (
-      <RCTTabBarItemNativeComponent {...props} style={[styles.tab, style]}>
-        {tabContents}
-      </RCTTabBarItemNativeComponent>
-    );
-  }
-}
-
-const styles = StyleSheet.create({
-  tab: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-  },
-});
-
-module.exports = TabBarItemIOS;
+module.exports = ((requireNativeComponent(
+  'RCTTabBarItem',
+): any): RCTTabBarItemNativeType);
