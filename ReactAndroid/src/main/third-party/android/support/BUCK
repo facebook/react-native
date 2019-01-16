@@ -1,19 +1,42 @@
 load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
-load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "rn_android_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "rn_android_library", "rn_prebuilt_jar")
 
 rn_android_library(
-    name = "support-v4",
-    visibility = ["PUBLIC"],
+    name = "animated-vector-drawable",
+    visibility = [
+        "PUBLIC",
+    ],
     exported_deps = [
-        react_native_dep("third-party/android/support:support-v4"),
+        ":animated-vector-drawable-binary",
+        ":support-core-ui",
+        ":support-vector-drawable",
     ],
 )
 
 rn_android_library(
     name = "appcompat-v7",
-    visibility = ["PUBLIC"],
+    visibility = [
+        "PUBLIC",
+    ],
     exported_deps = [
-        react_native_dep("third-party/android/support:support-v4"),
+        ":appcompat-binary",
+        ":animated-vector-drawable",
+        ":collections",
+        ":cursoradapter",
+        ":support-annotations",
+        ":support-compat",
+        ":support-core-utils",
+        ":support-fragment",
+        ":support-vector-drawable",
+    ],
+)
+
+rn_android_library(
+    name = "asynclayoutinflater",
+    exported_deps = [
+        ":asynclayoutinflater-binary",
+        ":support-annotations",
+        ":support-compat",
     ],
 )
 
@@ -23,4 +46,668 @@ fb_native.genrule(
     out = ".",
     bash = "ls",
     visibility = ["PUBLIC"],
+)
+
+rn_android_library(
+    name = "collections",
+    visibility = [
+        "PUBLIC",
+    ],
+    exported_deps = [
+        ":collections-binary",
+        ":support-annotations",
+    ],
+)
+
+rn_android_library(
+    name = "common",
+    visibility = [
+        "PUBLIC",
+    ],
+    exported_deps = [
+        ":core-common",
+    ],
+)
+
+rn_android_library(
+    name = "coordinatorlayout",
+    exported_deps = [
+        ":coordinatorlayout-binary",
+        ":customview",
+        ":support-annotations",
+        ":support-compat",
+    ],
+)
+
+rn_android_library(
+    name = "core-common",
+    exported_deps = [
+        ":core-common-binary",
+        ":support-annotations",
+    ],
+)
+
+rn_android_library(
+    name = "core-runtime",
+    exported_deps = [
+        ":core-common",
+        ":core-runtime-binary",
+        ":support-annotations",
+    ],
+)
+
+rn_android_library(
+    name = "cursoradapter",
+    exported_deps = [
+        ":cursoradapter-binary",
+        ":support-annotations",
+    ],
+)
+
+rn_android_library(
+    name = "customview",
+    exported_deps = [
+        ":customview-binary",
+        ":support-annotations",
+        ":support-compat",
+    ],
+)
+
+rn_android_library(
+    name = "documentfile",
+    exported_deps = [
+        ":documentfile-binary",
+        ":support-annotations",
+    ],
+)
+
+rn_android_library(
+    name = "drawerlayout",
+    exported_deps = [
+        ":drawerlayout-binary",
+        ":customview",
+        ":support-annotations",
+        ":support-compat",
+    ],
+)
+
+rn_android_library(
+    name = "interpolator",
+    exported_deps = [
+        ":interpolator-binary",
+        ":support-annotations",
+    ],
+)
+
+rn_android_library(
+    name = "lifecycle-livedata-core",
+    exported_deps = [
+        ":core-common",
+        ":core-runtime",
+        ":lifecycle-common",
+        ":lifecycle-livedata-core-binary",
+    ],
+)
+
+rn_android_library(
+    name = "lifecycle-livedata",
+    exported_deps = [
+        ":core-common",
+        ":core-runtime",
+        ":lifecycle-livedata-binary",
+        ":lifecycle-livedata-core",
+    ],
+)
+
+rn_android_library(
+    name = "lifecycle-viewmodel",
+    exported_deps = [
+        ":loader-binary",
+        ":lifecycle-livedata",
+        ":lifecycle-viewmodel-binary",
+        ":support-annotations",
+        ":support-compat",
+    ],
+)
+
+rn_android_library(
+    name = "loader",
+    exported_deps = [
+        ":loader-binary",
+        ":lifecycle-livedata",
+        ":lifecycle-viewmodel",
+        ":support-annotations",
+        ":support-compat",
+    ],
+)
+
+rn_android_library(
+    name = "localbroadcastmanager",
+    exported_deps = [
+        ":localbroadcastmanager-binary",
+        ":support-annotations",
+    ],
+)
+
+rn_android_library(
+    name = "print",
+    exported_deps = [
+        ":print-binary",
+        ":support-annotations",
+    ],
+)
+
+rn_android_library(
+    name = "runtime",
+    visibility = [
+        "PUBLIC",
+    ],
+    exported_deps = [
+        ":common",
+        ":lifecycle-common",
+        ":lifecycle-runtime-binary",
+        ":support-annotations"
+    ],
+)
+
+rn_android_library(
+    name = "slidingpanelayout",
+    exported_deps = [
+        ":slidingpanelayout-binary",
+        ":customview",
+        ":support-annotations",
+        ":support-compat",
+    ],
+)
+
+rn_android_library(
+    name = "support-compat",
+    visibility = [
+        "PUBLIC",
+    ],
+    exported_deps = [
+        ":collections",
+        ":support-annotations",
+        ":support-compat-binary",
+    ],
+)
+
+rn_android_library(
+    name = "support-core-ui",
+    visibility = [
+        "PUBLIC",
+    ],
+    exported_deps = [
+        ":asynclayoutinflater",
+        ":coordinatorlayout",
+        ":cursoradapter",
+        ":customview",
+        ":drawerlayout",
+        ":interpolator",
+        ":slidingpanelayout",
+        ":support-annotations",
+        ":support-compat",
+        ":support-core-ui-binary",
+        ":support-core-utils",
+        ":swiperefreshlayout",
+        ":viewpager",
+    ],
+)
+
+rn_android_library(
+    name = "support-core-utils",
+    visibility = [
+        "PUBLIC",
+    ],
+    exported_deps = [
+        ":documentfile",
+        ":loader",
+        ":localbroadcastmanager",
+        ":print",
+        ":support-annotations",
+        ":support-compat",
+        ":support-core-utils-binary",
+    ],
+)
+
+rn_android_library(
+    name = "support-fragment",
+    visibility = [
+        "PUBLIC",
+    ],
+    exported_deps = [
+        ":lifecycle-viewmodel",
+        ":loader",
+        ":support-annotations",
+        ":support-compat",
+        ":support-core-ui",
+        ":support-core-utils",
+        ":support-fragment-binary",
+    ],
+)
+
+rn_android_library(
+    name = "support-media-compat",
+    visibility = [
+        "PUBLIC",
+    ],
+    exported_deps = [
+        ":collections",
+        ":runtime",
+        ":support-annotations",
+        ":support-compat",
+        ":versionedparcelable",
+    ],
+)
+
+rn_android_library(
+    name = "support-vector-drawable",
+    visibility = [
+        "PUBLIC",
+    ],
+    exported_deps = [
+        ":support-annotations",
+        ":support-compat",
+        ":support-vector-drawable-binary",
+    ],
+)
+
+rn_android_library(
+    name = "support-v4",
+    visibility = [
+        "PUBLIC",
+    ],
+    exported_deps = [
+        ":support-compat",
+        ":support-core-ui",
+        ":support-core-utils",
+        ":support-fragment",
+        ":support-media-compat",
+    ],
+)
+
+rn_android_library(
+    name = "swiperefreshlayout",
+    exported_deps = [
+        ":interpolator",
+        ":support-annotations",
+        ":support-compat",
+        ":swiperefreshlayout-binary",
+    ],
+)
+
+rn_android_library(
+    name = "versionedparcelable",
+    exported_deps = [
+        ":customview",
+        ":support-annotations",
+        ":support-compat",
+        ":versionedparcelable-binary",
+    ],
+)
+
+rn_android_library(
+    name = "viewpager",
+    exported_deps = [
+        ":collections",
+        ":support-annotations",
+        ":viewpager-binary",
+    ],
+)
+
+# remote files
+
+fb_native.android_prebuilt_aar(
+    name = "animated-vector-drawable-binary",
+    aar = ":animated-vector-drawable-binary-aar",
+)
+
+fb_native.remote_file(
+    name = "animated-vector-drawable-binary-aar",
+    sha1 = "e2d41c2a032145313f42ab38a2d9757c5d1ebc19",
+    url = "mvn:com.android.support:animated-vector-drawable:aar:28.0.0",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "appcompat-binary",
+    aar = ":appcompat-binary-aar",
+)
+
+fb_native.remote_file(
+    name = "appcompat-binary-aar",
+    sha1 = "132586ec59604a86703796851a063a0ac61f697b",
+    url = "mvn:com.android.support:appcompat-v7:aar:28.0.0",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "asynclayoutinflater-binary",
+    aar = ":asynclayoutinflater-binary-aar",
+)
+
+fb_native.remote_file(
+    name = "asynclayoutinflater-binary-aar",
+    sha1 = "3ae7643d120e6da3adbe2d698de923f48c904d1f",
+    url = "mvn:com.android.support:asynclayoutinflater:aar:28.0.0",
+)
+
+rn_prebuilt_jar(
+    name = "collections-binary",
+    binary_jar = ":collections-binary.jar",
+)
+
+fb_native.remote_file(
+    name = "collections-binary.jar",
+    sha1 = "c1bcdade4d3cc2836130424a3f3e4182c666a745",
+    url = "mvn:com.android.support:collections:jar:28.0.0",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "coordinatorlayout-binary",
+    aar = ":coordinatorlayout-binary-aar",
+)
+
+fb_native.remote_file(
+    name = "coordinatorlayout-binary-aar",
+    sha1 = "7a708aac3443762e58e84368040a6a23b2c63545",
+    url = "mvn:com.android.support:coordinatorlayout:aar:28.0.0",
+)
+
+rn_prebuilt_jar(
+    name = "core-common-binary",
+    binary_jar = ":core-common-binary.jar",
+)
+
+fb_native.remote_file(
+    name = "core-common-binary.jar",
+    sha1 = "e55b70d1f5620db124b3e85a7f4bdc7bd48d9f95",
+    url = "mvn:android.arch.core:common:jar:1.1.1",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "core-runtime-binary",
+    aar = ":core-runtime-binary-aar",
+)
+
+fb_native.remote_file(
+    name = "core-runtime-binary-aar",
+    sha1 = "a7e27caf787e14c0d8417be907f4a31f0306acb2",
+    url = "mvn:android.arch.core:runtime:aar:1.1.1",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "cursoradapter-binary",
+    aar = ":cursoradapter-binary-aar",
+)
+
+fb_native.remote_file(
+    name = "cursoradapter-binary-aar",
+    sha1 = "d803f573799e6cd2db8839e2a70fe6ad67e86b79",
+    url = "mvn:com.android.support:cursoradapter:aar:28.0.0",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "customview-binary",
+    aar = ":customview-binary-aar",
+)
+
+fb_native.remote_file(
+    name = "customview-binary-aar",
+    sha1 = "423fe0f417f2f8d9c718c2cf73f9253da43f1f11",
+    url = "mvn:com.android.support:customview:aar:28.0.0",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "documentfile-binary",
+    aar = ":documentfile-binary-aar",
+)
+
+fb_native.remote_file(
+    name = "documentfile-binary-aar",
+    sha1 = "1187e4a23ff6250b096249c734bdabf5403c6ba9",
+    url = "mvn:com.android.support:documentfile:aar:28.0.0",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "drawerlayout-binary",
+    aar = ":drawerlayout-binary-aar",
+)
+
+fb_native.remote_file(
+    name = "drawerlayout-binary-aar",
+    sha1 = "4de65d42b8e1b7f0ba40b5f35e5d4bafcd70019f",
+    url = "mvn:com.android.support:drawerlayout:aar:28.0.0",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "interpolator-binary",
+    aar = ":interpolator-binary-aar",
+)
+
+fb_native.remote_file(
+    name = "interpolator-binary-aar",
+    sha1 = "5d501569c8f7b667c47333a0b873aa529e0a0b9c",
+    url = "mvn:com.android.support:interpolator:aar:28.0.0",
+)
+
+rn_prebuilt_jar(
+    name = "lifecycle-common",
+    binary_jar = ":lifecycle-common-binary.jar",
+)
+
+fb_native.remote_file(
+    name = "lifecycle-common-binary.jar",
+    sha1 = "207a6efae6a3555e326de41f76bdadd9a239cbce",
+    url = "mvn:android.arch.lifecycle:common:jar:1.1.1",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "lifecycle-livedata-binary",
+    aar = ":lifecycle-livedata-binary-aar",
+)
+
+fb_native.remote_file(
+    name = "lifecycle-livedata-binary-aar",
+    sha1 = "82e0b1bf2dc8ce23898cf433cc150df7b3dba952",
+    url = "mvn:android.arch.lifecycle:livedata:aar:1.1.1",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "lifecycle-livedata-core-binary",
+    aar = ":lifecycle-livedata-core-binary-aar",
+)
+
+fb_native.remote_file(
+    name = "lifecycle-livedata-core-binary-aar",
+    sha1 = "30ede25cb577323f039c2e3d72b3b56526a2b2e6",
+    url = "mvn:android.arch.lifecycle:livedata-core:aar:1.1.1",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "lifecycle-runtime-binary",
+    aar = ":lifecycle-runtime-binary-aar",
+)
+
+fb_native.remote_file(
+    name = "lifecycle-runtime-binary-aar",
+    sha1 = "4286e1ae9364b485cb2ff7a370e355b7c570015b",
+    url = "mvn:android.arch.lifecycle:runtime:aar:1.1.1",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "lifecycle-viewmodel-binary",
+    aar = ":lifecycle-viewmodel-binary-aar",
+)
+
+fb_native.remote_file(
+    name = "lifecycle-viewmodel-binary-aar",
+    sha1 = "897b6e22c8357b23ab0c7600c961549c098f5ccf",
+    url = "mvn:android.arch.lifecycle:viewmodel:aar:1.1.1",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "loader-binary",
+    aar = ":loader-binary-aar",
+)
+
+fb_native.remote_file(
+    name = "loader-binary-aar",
+    sha1 = "49a297a4635e01ed55f31b5d4a718ba3416fde3d",
+    url = "mvn:com.android.support:loader:aar:28.0.0",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "localbroadcastmanager-binary",
+    aar = ":localbroadcastmanager-binary-aar",
+)
+
+fb_native.remote_file(
+    name = "localbroadcastmanager-binary-aar",
+    sha1 = "5c498cb7e2fa5910d6c50e28531c55b77d6bf0f6",
+    url = "mvn:com.android.support:localbroadcastmanager:aar:28.0.0",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "print-binary",
+    aar = ":print-binary-aar",
+)
+
+fb_native.remote_file(
+    name = "print-binary-aar",
+    sha1 = "d2c60bfbbdc2eadd4ff7c8f65743fab830339743",
+    url = "mvn:com.android.support:print:aar:28.0.0",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "slidingpanelayout-binary",
+    aar = ":slidingpanelayout-binary-aar",
+)
+
+fb_native.remote_file(
+    name = "slidingpanelayout-binary-aar",
+    sha1 = "20468e3ec8f36dc84846ddd99ff30516f4ffd05a",
+    url = "mvn:com.android.support:slidingpanelayout:aar:28.0.0",
+)
+
+rn_prebuilt_jar(
+    name = "support-annotations",
+    binary_jar = ":support-annotations-binary.jar",
+    visibility = [
+        "PUBLIC",
+    ],
+)
+
+fb_native.remote_file(
+    name = "support-annotations-binary.jar",
+    sha1 = "ed73f5337a002d1fd24339d5fb08c2c9d9ca60d8",
+    url = "mvn:com.android.support:support-annotations:jar:28.0.0",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "support-compat-binary",
+    aar = ":support-compat-binary-aar",
+)
+
+fb_native.remote_file(
+    name = "support-compat-binary-aar",
+    sha1 = "d252b640ed832cf8addc35ef0a9f9186dc7738a5",
+    url = "mvn:com.android.support:support-compat:aar:28.0.0",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "support-core-ui-binary",
+    aar = ":support-core-ui-binary-aar",
+)
+
+fb_native.remote_file(
+    name = "support-core-ui-binary-aar",
+    sha1 = "96035b1030d7c3a81903966c2fa52117d36aa5b7",
+    url = "mvn:com.android.support:support-core-ui:aar:28.0.0",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "support-core-utils-binary",
+    aar = ":support-core-utils-binary-aar",
+)
+
+fb_native.remote_file(
+    name = "support-core-utils-binary-aar",
+    sha1 = "29b1bb783f1a86eba7f1618bad58842bde72892a",
+    url = "mvn:com.android.support:support-core-utils:aar:28.0.0",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "support-fragment-binary",
+    aar = ":support-fragment-binary-aar",
+)
+
+fb_native.remote_file(
+    name = "support-fragment-binary-aar",
+    sha1 = "f21c8a8700b30dc57cb6277ae3c4c168a94a4e81",
+    url = "mvn:com.android.support:support-fragment:aar:28.0.0",
+)
+
+rn_prebuilt_jar(
+    name = "support-media-compat-binary",
+    binary_jar = ":support-media-compat-binary.jar",
+)
+
+fb_native.remote_file(
+    name = "support-media-compat-binary.jar",
+    sha1 = "b7ab2145c7f70e303cfe2e44667d61441b5b558c",
+    url = "mvn:com.android.support:support-media-compat:jar:28.0.0",
+)
+
+rn_prebuilt_jar(
+    name = "support_v4",
+    binary_jar = ":support-v4-binary.jar",
+)
+
+fb_native.remote_file(
+    name = "support-v4-binary.jar",
+    sha1 = "32a50cdcd418e69d5adf85affc533dcc88660da7",
+    url = "mvn:com.android.support:support-v4:jar:28.0.0",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "support-vector-drawable-binary",
+    aar = ":support-vector-drawable-binary-aar",
+)
+
+fb_native.remote_file(
+    name = "support-vector-drawable-binary-aar",
+    sha1 = "80387886ef55af284d8253e52d321f93b3f923dd",
+    url = "mvn:com.android.support:support-vector-drawable:aar:28.0.0",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "swiperefreshlayout-binary",
+    aar = ":swiperefreshlayout-binary-aar",
+)
+
+fb_native.remote_file(
+    name = "swiperefreshlayout-binary-aar",
+    sha1 = "bfa669303f0ac8a83d9c878fafadc2936625f781",
+    url = "mvn:com.android.support:swiperefreshlayout:aar:28.0.0",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "versionedparcelable-binary",
+    aar = ":versionedparcelable-binary-aar",
+)
+
+fb_native.remote_file(
+    name = "versionedparcelable-binary-aar",
+    sha1 = "90432a1e322e0e0bad2116dff0e64c708514808f",
+    url = "mvn:com.android.support:versionedparcelable:aar:28.0.0",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "viewpager-binary",
+    aar = ":viewpager-binary-aar",
+)
+
+fb_native.remote_file(
+    name = "viewpager-binary-aar",
+    sha1 = "f513ecf69dfea8b60987bd3e869970300ba7c0eb",
+    url = "mvn:com.android.support:viewpager:aar:28.0.0",
 )
