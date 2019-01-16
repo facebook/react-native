@@ -7,6 +7,7 @@
 
 #include <react/core/LayoutContext.h>
 #include <react/core/LayoutPrimitives.h>
+#include <react/debug/SystraceSection.h>
 #include <react/mounting/Differentiator.h>
 #include <react/mounting/ShadowViewMutation.h>
 
@@ -130,6 +131,7 @@ bool ShadowTree::completeByReplacingShadowNode(
 bool ShadowTree::complete(
     const SharedRootShadowNode &oldRootShadowNode,
     const UnsharedRootShadowNode &newRootShadowNode) const {
+  SystraceSection s("ShadowTree::complete");
   newRootShadowNode->layout();
   newRootShadowNode->sealRecursive();
 
@@ -153,6 +155,7 @@ bool ShadowTree::commit(
     const SharedRootShadowNode &oldRootShadowNode,
     const SharedRootShadowNode &newRootShadowNode,
     const ShadowViewMutationList &mutations) const {
+  SystraceSection s("ShadowTree::commit");
   std::lock_guard<std::recursive_mutex> lock(commitMutex_);
 
   if (oldRootShadowNode != rootShadowNode_) {
@@ -168,6 +171,8 @@ bool ShadowTree::commit(
 
 void ShadowTree::emitLayoutEvents(
     const ShadowViewMutationList &mutations) const {
+  SystraceSection s("ShadowTree::emitLayoutEvents");
+
   for (const auto &mutation : mutations) {
     // Only `Insert` and `Update` mutations can affect layout metrics.
     if (mutation.type != ShadowViewMutation::Insert &&

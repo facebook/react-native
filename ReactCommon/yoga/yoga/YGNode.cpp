@@ -313,7 +313,8 @@ YGValue YGNode::resolveFlexBasisPtr() const {
 }
 
 void YGNode::resolveDimension() {
-  for (uint32_t dim = YGDimensionWidth; dim < YGDimensionCount; dim++) {
+  using namespace yoga;
+  for (int dim = YGDimensionWidth; dim < enums::count<YGDimension>(); dim++) {
     if (!getStyle().maxDimensions[dim].isUndefined() &&
         YGValueEqual(
             getStyle().maxDimensions[dim], style_.minDimensions[dim])) {

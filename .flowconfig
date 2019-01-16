@@ -85,6 +85,7 @@ sketchy-null-mixed=warn
 # This is noisy for now. We *do* still want to warn on importing types
 # from untyped files, which is covered by untyped-type-import
 untyped-import=off
+deprecated-utility=error
 
 [strict]
 deprecated-type
