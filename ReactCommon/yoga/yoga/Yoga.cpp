@@ -2336,7 +2336,7 @@ static void YGDistributeFreeSpaceFirstPass(
 //
 // This two pass approach for resolving min/max constraints deviates from
 // the spec. The
-// spec (https://www.w3.org/TR/YG-flexbox-1/#resolve-flexible-lengths)
+// spec (https://www.w3.org/TR/CSS-flexbox-1/#resolve-flexible-lengths)
 // describes a process
 // that needs to be repeated a variable number of times. The algorithm
 // implemented here
@@ -2609,7 +2609,7 @@ static void YGJustifyMainAxis(
 //
 // This is the main routine that implements a subset of the flexbox layout
 // algorithm
-// described in the W3C YG documentation: https://www.w3.org/TR/YG3-flexbox/.
+// described in the W3C YG documentation: https://www.w3.org/TR/CSS3-flexbox/.
 //
 // Limitations of this algorithm, compared to the full standard:
 //  * Display property is always assumed to be 'flex' except for Text nodes,
@@ -2682,7 +2682,7 @@ static void YGJustifyMainAxis(
 //    support default
 //    minimum main sizes (see above for details). Each of our measure modes maps
 //    to a layout mode
-//    from the spec (https://www.w3.org/TR/YG3-sizing/#terms):
+//    from the spec (https://www.w3.org/TR/CSS3-sizing/#terms):
 //      - YGMeasureModeUndefined: max content
 //      - YGMeasureModeExactly: fill available
 //      - YGMeasureModeAtMost: fit content
