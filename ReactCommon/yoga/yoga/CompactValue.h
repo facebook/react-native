@@ -70,7 +70,8 @@ public:
 
   template <YGUnit Unit>
   static CompactValue ofMaybe(float value) noexcept {
-    return std::isnan(value) ? ofUndefined() : of<Unit>(value);
+    return std::isnan(value) || std::isinf(value) ? ofUndefined()
+                                                  : of<Unit>(value);
   }
 
   static constexpr CompactValue ofZero() noexcept {
