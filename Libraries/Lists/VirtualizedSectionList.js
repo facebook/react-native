@@ -19,7 +19,6 @@ import type {ViewToken} from 'ViewabilityHelper';
 import type {Props as VirtualizedListProps} from 'VirtualizedList';
 
 type Item = any;
-type SectionItem = any;
 type Option = any;
 
 type SectionBase = Object;
