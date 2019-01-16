@@ -10,14 +10,12 @@
 
 'use strict';
 
+const AndroidDropdownPickerNativeComponent = require('AndroidDropdownPickerNativeComponent');
+const AndroidDialogPickerNativeComponent = require('AndroidDialogPickerNativeComponent');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 
 const processColor = require('processColor');
-const requireNativeComponent = require('requireNativeComponent');
-
-const DropdownPicker = requireNativeComponent('AndroidDropdownPicker');
-const DialogPicker = requireNativeComponent('AndroidDialogPicker');
 
 const REF_PICKER = 'picker';
 const MODE_DROPDOWN = 'dropdown';
@@ -103,7 +101,9 @@ class PickerAndroid extends React.Component<
 
   render() {
     const Picker =
-      this.props.mode === MODE_DROPDOWN ? DropdownPicker : DialogPicker;
+      this.props.mode === MODE_DROPDOWN
+        ? AndroidDropdownPickerNativeComponent
+        : AndroidDialogPickerNativeComponent;
 
     const nativeProps = {
       enabled: this.props.enabled,
