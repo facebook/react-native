@@ -191,8 +191,12 @@ public class ReactScrollViewManager
   @Override
   public void scrollTo(
       ReactScrollView scrollView, ReactScrollViewCommandHelper.ScrollToCommandData data) {
-    if (data.mDuration > 0) {
-      scrollView.animateScroll(scrollView, data.mDestX, data.mDestY, data.mDuration);
+    if (data.mAnimated && data.mDuration !=0) {
+      if (data.mDuration > 0) {
+        scrollView.animateScroll(data.mDestX, data.mDestY, data.mDuration);
+      } else {
+        scrollView.smoothScrollTo(data.mDestX, data.mDestY);
+      }
     } else {
       scrollView.scrollTo(data.mDestX, data.mDestY);
     }
@@ -257,8 +261,12 @@ public class ReactScrollViewManager
     // ScrollView always has one child - the scrollable area
     int bottom =
       scrollView.getChildAt(0).getHeight() + scrollView.getPaddingBottom();
-    if (data.mDuration > 0) {
-      scrollView.animateScroll(scrollView, scrollView.getScrollX(), bottom, data.mDuration);
+    if (data.mAnimated && data.mDuration !=0) {
+      if (data.mDuration > 0) {
+        scrollView.animateScroll(scrollView.getScrollX(), bottom, data.mDuration);
+      } else {
+        scrollView.smoothScrollTo(scrollView.getScrollX(), bottom);
+      }
     } else {
       scrollView.scrollTo(scrollView.getScrollX(), bottom);
     }

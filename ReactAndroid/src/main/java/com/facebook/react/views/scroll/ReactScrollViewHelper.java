@@ -97,18 +97,4 @@ public class ReactScrollViewHelper {
       throw new JSApplicationIllegalArgumentException("wrong overScrollMode: " + jsOverScrollMode);
     }
   }
-
-  /**
-   * Helper method for animating to a ScrollView position with a given duration,
-   * instead of using "smoothScrollTo", which does not expose a duration argument.
-   */
-  public static ObjectAnimator animateScroll(final ViewGroup scrollView, int mDestX, int mDestY, int mDuration) {
-    PropertyValuesHolder scrollX = PropertyValuesHolder.ofInt("scrollX", mDestX);
-    PropertyValuesHolder scrollY = PropertyValuesHolder.ofInt("scrollY", mDestY);
-
-    final ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(scrollView, scrollX, scrollY);
-
-    animator.setDuration(mDuration).start();
-    return animator;
-  }
 }

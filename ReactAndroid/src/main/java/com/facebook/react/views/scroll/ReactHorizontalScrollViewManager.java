@@ -171,8 +171,12 @@ public class ReactHorizontalScrollViewManager
   @Override
   public void scrollTo(
       ReactHorizontalScrollView scrollView, ReactScrollViewCommandHelper.ScrollToCommandData data) {
-    if (data.mDuration > 0) {
-      scrollView.animateScroll(scrollView, data.mDestX, data.mDestY, data.mDuration);
+    if (data.mAnimated && data.mDuration !=0) {
+      if (data.mDuration > 0) {
+        scrollView.animateScroll(data.mDestX, data.mDestY, data.mDuration);
+      } else {
+        scrollView.smoothScrollTo(data.mDestX, data.mDestY);
+      }
     } else {
       scrollView.scrollTo(data.mDestX, data.mDestY);
     }
@@ -185,8 +189,12 @@ public class ReactHorizontalScrollViewManager
     // ScrollView always has one child - the scrollable area
     int right =
       scrollView.getChildAt(0).getWidth() + scrollView.getPaddingRight();
-    if (data.mDuration > 0) {
-      scrollView.animateScroll(scrollView, right, scrollView.getScrollY(), data.mDuration);
+    if (data.mAnimated && data.mDuration !=0) {
+      if (data.mDuration > 0) {
+        scrollView.animateScroll(right, scrollView.getScrollY(), data.mDuration);
+      } else {
+        scrollView.smoothScrollTo(right, scrollView.getScrollY());
+      }
     } else {
       scrollView.scrollTo(right, scrollView.getScrollY());
     }
