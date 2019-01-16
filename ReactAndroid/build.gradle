@@ -85,17 +85,6 @@ task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy
     include "folly-${FOLLY_VERSION}/folly/**/*", 'Android.mk'
     eachFile { fname -> fname.path = (fname.path - "folly-${FOLLY_VERSION}/") }
     includeEmptyDirs = false
-
-    // Patch for folly build break on gcc 4.9 and could be removed after build by clang
-    filesMatching('**/container/detail/F14Policy.h') {
-        filter(ReplaceTokens, tokens: [
-                'ObjectHolder(Args&&... args) : value_{std::forward<Args>(args)...} {}': 'ObjectHolder(Args&&... args) : value_({std::forward<Args>(args)...}) {}',
-                'ObjectHolder(Args&&... args) : T{std::forward<Args>(args)...} {}'     : 'ObjectHolder(Args&&... args) : T({std::forward<Args>(args)...}) {}',
-        ],
-                beginToken: '',
-                endToken: '')
-    }
-
     into "$thirdPartyNdkDir/folly"
 }
 
@@ -330,7 +319,7 @@ dependencies {
     api 'com.google.code.findbugs:jsr305:3.0.2'
     api "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
     api "com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}"
-    api 'com.squareup.okio:okio:1.14.0'
+    api 'com.squareup.okio:okio:1.15.0'
 
     testImplementation "junit:junit:${JUNIT_VERSION}"
     testImplementation "org.powermock:powermock-api-mockito:${POWERMOCK_VERSION}"

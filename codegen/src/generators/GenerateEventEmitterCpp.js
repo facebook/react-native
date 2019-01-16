@@ -8,17 +8,6 @@
  * @format
  */
 
-/*
-https://phabricator.internmc.facebook.com/diffusion/FBS/browse/master/xplat/js/react-native-github/ReactCommon/fabric/components/switch/SwitchEventEmitter.cpp
-void SwitchEventEmitter::onChange(bool value) const {
-  dispatchEvent("change", [value](jsi::Runtime &runtime) {
-    auto payload = jsi::Object(runtime);
-    payload.setProperty(runtime, "value", value);
-    return payload;
-  });
-}
-*/
-
 'use strict';
 
 const {generateStructName} = require('./EventEmitterHelpers.js');
@@ -60,7 +49,7 @@ namespace react {
 
 const componentTemplate = `
 void ::_CLASSNAME_::EventEmitter::::_EVENT_NAME_::(::_STRUCT_NAME_:: event) const {
-  dispatchEvent("::_EVENT_NAME_::", [event=std::move(event)](jsi::Runtime &runtime) {
+  dispatchEvent("::_DISPATCH_EVENT_NAME_::", [event=std::move(event)](jsi::Runtime &runtime) {
     ::_IMPLEMENTATION_::
   });
 }
@@ -123,9 +112,24 @@ function generateEvent(componentName: string, event): string {
     return payload;
   `.trim();
 
+  if (!event.name.startsWith('on')) {
+    throw new Error('Expected the event name to start with `on`');
+  }
+
+  // This is a gross hack necessary because native code is sending
+  // events named things like topChange to JS which is then converted back to
+  // call the onChange prop. We should be consistent throughout the system.
+  // In order to migrate to this new system we have to support the current
+  // naming scheme. We should delete this once we are able to control this name
+  // throughout the system.
+  const dispatchEventName = `${event.name[2].toLowerCase()}${event.name.slice(
+    3,
+  )}`;
+
   return componentTemplate
     .replace(/::_CLASSNAME_::/g, componentName)
     .replace(/::_EVENT_NAME_::/g, event.name)
+    .replace(/::_DISPATCH_EVENT_NAME_::/g, dispatchEventName)
     .replace(
       '::_STRUCT_NAME_::',
       generateStructName(componentName, [event.name]),
