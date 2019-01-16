@@ -15,7 +15,7 @@ import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 const DeprecatedColorPropType = require('DeprecatedColorPropType');
 const requireNativeComponent = require('requireNativeComponent');
 
-type InputAccessoryViewProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{|
   +children: React.Node,
   /**
    * An ID which is used to associate this `InputAccessoryView` to
@@ -26,7 +26,7 @@ type InputAccessoryViewProps = $ReadOnly<{|
   backgroundColor?: ?DeprecatedColorPropType,
 |}>;
 
-type NativeInputAccessoryView = Class<NativeComponent<InputAccessoryViewProps>>;
+type NativeInputAccessoryView = Class<NativeComponent<NativeProps>>;
 
 module.exports = ((requireNativeComponent(
   'RCTInputAccessoryView',
