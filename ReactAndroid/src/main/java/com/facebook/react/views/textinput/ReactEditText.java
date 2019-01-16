@@ -644,6 +644,13 @@ public class ReactEditText extends EditText {
     applyTextAttributes();
   }
 
+  public void setAllowFontScaling(boolean allowFontScaling) {
+    if (mTextAttributes.getAllowFontScaling() != allowFontScaling) {
+      mTextAttributes.setAllowFontScaling(allowFontScaling);
+      applyTextAttributes();
+    }
+  }
+
   public void setFontSize(float fontSize) {
     mTextAttributes.setFontSize(fontSize);
     applyTextAttributes();
