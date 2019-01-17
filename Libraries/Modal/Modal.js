@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -20,9 +20,7 @@ const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
-const requireNativeComponent = require('requireNativeComponent');
-
-const RCTModalHostView = requireNativeComponent('RCTModalHostView');
+const RCTModalHostView = require('RCTModalHostViewNativeComponent');
 
 const ModalEventEmitter =
   Platform.OS === 'ios' && NativeModules.ModalManager
