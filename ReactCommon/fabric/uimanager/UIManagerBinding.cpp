@@ -74,7 +74,7 @@ void UIManagerBinding::dispatchEvent(
 
   auto instanceHandle = eventTarget
     ? [&]() {
-      auto instanceHandle = eventTarget->release(runtime);
+      auto instanceHandle = eventTarget->getInstanceHandle(runtime);
       if (instanceHandle.isUndefined()) {
         return jsi::Value::null();
       }

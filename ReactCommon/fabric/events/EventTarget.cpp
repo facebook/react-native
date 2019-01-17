@@ -42,11 +42,20 @@ void EventTarget::retain(jsi::Runtime &runtime) const {
   assert(!strongInstanceHandle_.isUndefined());
 }
 
-jsi::Value EventTarget::release(jsi::Runtime &runtime) const {
+void EventTarget::release(jsi::Runtime &runtime) const {
   // The method does not use `jsi::Runtime` reference.
   // It takes it only to ensure thread-safety (if the caller has the reference,
   // we are on a proper thread).
-  return std::move(strongInstanceHandle_);
+  strongInstanceHandle_ = jsi::Value::null();
+}
+
+jsi::Value EventTarget::getInstanceHandle(jsi::Runtime &runtime) const {
+  if (strongInstanceHandle_.isNull()) {
+    // The `instanceHandle` is not retained.
+    return jsi::Value::null();
+  }
+
+  return jsi::Value(runtime, strongInstanceHandle_);
 }
 
 Tag EventTarget::getTag() const {

@@ -53,6 +53,13 @@ void EventQueue::onBeat(jsi::Runtime &runtime) const {
     eventPipe_(
         runtime, event.eventTarget.get(), event.type, event.payloadFactory);
   }
+
+  // No need to lock `EventEmitter::DispatchMutex()` here.
+  for (const auto &event : queue) {
+    if (event.eventTarget) {
+      event.eventTarget->release(runtime);
+    }
+  }
 }
 
 } // namespace react

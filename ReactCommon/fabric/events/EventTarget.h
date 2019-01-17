@@ -43,16 +43,21 @@ class EventTarget {
   void setEnabled(bool enabled) const;
 
   /*
-   * Creates a strong instance handle from a weak one and stores it inside the
-   * object.
+   * Retains an instance handler by creating a strong reference to it.
    * If the EventTarget is disabled, does nothing.
    */
   void retain(jsi::Runtime &runtime) const;
 
   /*
-   * Extract the stored strong instance handle from the object and returns it.
+   * Releases the instance handler by nulling a strong reference to it.
    */
-  jsi::Value release(jsi::Runtime &runtime) const;
+  void release(jsi::Runtime &runtime) const;
+
+  /*
+   * Creates and returns the `instanceHandle`.
+   * Returns `null` if the `instanceHandle` is not retained at this moment.
+   */
+  jsi::Value getInstanceHandle(jsi::Runtime &runtime) const;
 
   /*
    * Deprecated. Do not use.
