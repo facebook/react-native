@@ -100,7 +100,10 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
   if (!ancestorShadowNode) {
     shadowTreeRegistry_->visit(
         shadowNode.getRootTag(), [&](const ShadowTree &shadowTree) {
-          ancestorShadowNode = shadowTree.getRootShadowNode().get();
+          shadowTree.commit([&](const SharedRootShadowNode &oldRootShadowNode) {
+            ancestorShadowNode = oldRootShadowNode.get();
+            return nullptr;
+          });
         });
   }
 

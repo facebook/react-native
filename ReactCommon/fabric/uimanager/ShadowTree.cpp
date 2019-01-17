@@ -50,11 +50,6 @@ Tag ShadowTree::getSurfaceId() const {
   return surfaceId_;
 }
 
-SharedRootShadowNode ShadowTree::getRootShadowNode() const {
-  std::shared_lock<folly::SharedMutex> lock(commitMutex_);
-  return rootShadowNode_;
-}
-
 bool ShadowTree::commit(
     std::function<UnsharedRootShadowNode(
         const SharedRootShadowNode &oldRootShadowNode)> transaction,

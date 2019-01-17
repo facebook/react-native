@@ -54,11 +54,6 @@ class ShadowTree final {
       int attempts = 1,
       int *revision = nullptr) const;
 
-  /*
-   * Returns a root shadow node that represents the last committed three.
-   */
-  SharedRootShadowNode getRootShadowNode() const;
-
 #pragma mark - Delegate
 
   /*
