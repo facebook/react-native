@@ -39,28 +39,6 @@ class ShadowTree final {
    */
   SurfaceId getSurfaceId() const;
 
-#pragma mark - Layout
-
-  /*
-   * Measures the shadow tree with given `layoutConstraints` and
-   * `layoutContext`. Can be called from any thread, side-effect-less.
-   */
-  Size measure(
-      const LayoutConstraints &layoutConstraints,
-      const LayoutContext &layoutContext) const;
-
-  /*
-   * Applies given `layoutConstraints` and `layoutContext` and commit
-   * the new shadow tree.
-   * Returns `true` if the operation finished successfully.
-   * Can be called from any thread.
-   */
-  bool constraintLayout(
-      const LayoutConstraints &layoutConstraints,
-      const LayoutContext &layoutContext) const;
-
-#pragma mark - Application
-
   /*
    * Performs commit calling `transaction` function with a `oldRootShadowNode`
    * and expecting a `newRootShadowNode` as a return value.

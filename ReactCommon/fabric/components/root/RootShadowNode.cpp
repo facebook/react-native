@@ -25,5 +25,15 @@ void RootShadowNode::layout() {
   setLayoutMetrics(layoutMetricsFromYogaNode(yogaNode_));
 }
 
+UnsharedRootShadowNode RootShadowNode::clone(
+    const LayoutConstraints &layoutConstraints,
+    const LayoutContext &layoutContext) const {
+  auto props = std::make_shared<const RootProps>(
+      *getProps(), layoutConstraints, layoutContext);
+  auto newRootShadowNode = std::make_shared<RootShadowNode>(
+      *this, ShadowNodeFragment{.props = props});
+  return newRootShadowNode;
+}
+
 } // namespace react
 } // namespace facebook

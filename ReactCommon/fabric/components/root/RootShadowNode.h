@@ -39,6 +39,13 @@ class RootShadowNode final
    */
   void layout();
 
+  /*
+   * Clones the node with given `layoutConstraints` and `layoutContext`.
+   */
+  UnsharedRootShadowNode clone(
+      const LayoutConstraints &layoutConstraints,
+      const LayoutContext &layoutContext) const;
+
  private:
   using YogaLayoutableShadowNode::layout;
 };

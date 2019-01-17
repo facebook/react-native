@@ -55,37 +55,6 @@ SharedRootShadowNode ShadowTree::getRootShadowNode() const {
   return rootShadowNode_;
 }
 
-#pragma mark - Layout
-
-Size ShadowTree::measure(
-    const LayoutConstraints &layoutConstraints,
-    const LayoutContext &layoutContext) const {
-  auto newRootShadowNode = cloneRootShadowNode(
-      getRootShadowNode(), layoutConstraints, layoutContext);
-  newRootShadowNode->layout();
-  return newRootShadowNode->getLayoutMetrics().frame.size;
-}
-
-bool ShadowTree::constraintLayout(
-    const LayoutConstraints &layoutConstraints,
-    const LayoutContext &layoutContext) const {
-  return commit([&](const SharedRootShadowNode &oldRootShadowNode) {
-    return cloneRootShadowNode(
-        oldRootShadowNode, layoutConstraints, layoutContext);
-  });
-}
-
-UnsharedRootShadowNode ShadowTree::cloneRootShadowNode(
-    const SharedRootShadowNode &oldRootShadowNode,
-    const LayoutConstraints &layoutConstraints,
-    const LayoutContext &layoutContext) const {
-  auto props = std::make_shared<const RootProps>(
-      *oldRootShadowNode->getProps(), layoutConstraints, layoutContext);
-  auto newRootShadowNode = std::make_shared<RootShadowNode>(
-      *oldRootShadowNode, ShadowNodeFragment{.props = props});
-  return newRootShadowNode;
-}
-
 bool ShadowTree::completeByReplacingShadowNode(
     const SharedShadowNode &oldShadowNode,
     const SharedShadowNode &newShadowNode) const {
