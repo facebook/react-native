@@ -16,7 +16,7 @@ public interface FabricBinding {
   // TODO: T31905686 change types of UIManager and EventBeatManager when moving to OSS
   void register(
       JavaScriptContextHolder jsContext,
-      FabricBinder fabricBinder,
+      FabricUIManager fabricUIManager,
       EventBeatManager eventBeatManager,
       MessageQueueThread jsMessageQueueThread,
       ComponentFactoryDelegate componentFactoryDelegate);

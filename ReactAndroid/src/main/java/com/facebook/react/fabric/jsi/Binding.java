@@ -12,8 +12,8 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.queue.MessageQueueThread;
-import com.facebook.react.fabric.FabricBinder;
 import com.facebook.react.fabric.FabricBinding;
+import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.uimanager.PixelUtil;
 
 @DoNotStrip
@@ -53,13 +53,13 @@ public class Binding implements FabricBinding {
   @Override
   public void register(
        JavaScriptContextHolder jsContext,
-       FabricBinder fabricModule,
+       FabricUIManager fabricUIManager,
        EventBeatManager eventBeatManager,
        MessageQueueThread jsMessageQueueThread,
        ComponentFactoryDelegate componentFactoryDelegate) {
-     fabricModule.setBinding(this);
+    fabricUIManager.setBinding(this);
      installFabricUIManager(
-       jsContext.get(), fabricModule, eventBeatManager, jsMessageQueueThread, componentFactoryDelegate);
+       jsContext.get(), fabricUIManager, eventBeatManager, jsMessageQueueThread, componentFactoryDelegate);
      setPixelDensity(PixelUtil.getDisplayMetricDensity());
    }
 

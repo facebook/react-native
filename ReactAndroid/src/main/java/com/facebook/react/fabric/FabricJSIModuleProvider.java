@@ -36,7 +36,7 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
   public UIManager get() {
     final EventBeatManager eventBeatManager =
         new EventBeatManager(mJSContext, mReactApplicationContext);
-    final UIManager uiManager = createUIManager(eventBeatManager);
+    final FabricUIManager uiManager = createUIManager(eventBeatManager);
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricJSIModuleProvider.registerBinding");
     final FabricBinding binding = new Binding();
@@ -45,13 +45,13 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
             .getCatalystInstance()
             .getReactQueueConfiguration()
             .getJSQueueThread();
-    binding.register(mJSContext, (FabricBinder) uiManager, eventBeatManager, jsMessageQueueThread,
+    binding.register(mJSContext, uiManager, eventBeatManager, jsMessageQueueThread,
       mComponentFactoryDelegate);
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     return uiManager;
   }
 
-  private UIManager createUIManager(EventBeatManager eventBeatManager) {
+  private FabricUIManager createUIManager(EventBeatManager eventBeatManager) {
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricJSIModuleProvider.createUIManager");
     UIManagerModule nativeModule = mReactApplicationContext.getNativeModule(UIManagerModule.class);

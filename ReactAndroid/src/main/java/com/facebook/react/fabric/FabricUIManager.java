@@ -64,7 +64,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressLint("MissingNativeLoadLibrary")
-public class FabricUIManager implements UIManager, FabricBinder<Binding>, LifecycleEventListener {
+public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   private static final String TAG = FabricUIManager.class.getSimpleName();
 
@@ -310,7 +310,6 @@ public class FabricUIManager implements UIManager, FabricBinder<Binding>, Lifecy
     }
   }
 
-  @Override
   public void setBinding(Binding binding) {
     mBinding = binding;
   }
