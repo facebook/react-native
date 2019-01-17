@@ -7,6 +7,7 @@
 
 #import "RCTScheduler.h"
 
+#import <react/debug/SystraceSection.h>
 #import <react/uimanager/ComponentDescriptorFactory.h>
 #import <react/uimanager/ContextContainer.h>
 #import <react/uimanager/Scheduler.h>
@@ -68,6 +69,8 @@ private:
                 layoutConstraints:(LayoutConstraints)layoutConstraints
                     layoutContext:(LayoutContext)layoutContext;
 {
+  SystraceSection s("-[RCTScheduler startSurfaceWithSurfaceId:...]");
+
   auto props = convertIdToFollyDynamic(initialProps);
   _scheduler->startSurface(
       surfaceId,
@@ -84,6 +87,7 @@ private:
 
 - (void)stopSurfaceWithSurfaceId:(SurfaceId)surfaceId
 {
+  SystraceSection s("-[RCTScheduler stopSurfaceWithSurfaceId:]");
   _scheduler->stopSurface(surfaceId);
 }
 
@@ -91,6 +95,7 @@ private:
                                 layoutContext:(LayoutContext)layoutContext
                                     surfaceId:(SurfaceId)surfaceId
 {
+  SystraceSection s("-[RCTScheduler measureSurfaceWithLayoutConstraints:]");
   return RCTCGSizeFromSize(_scheduler->measureSurface(surfaceId, layoutConstraints, layoutContext));
 }
 
@@ -98,6 +103,7 @@ private:
                                        layoutContext:(LayoutContext)layoutContext
                                            surfaceId:(SurfaceId)surfaceId
 {
+  SystraceSection s("-[RCTScheduler constraintSurfaceLayoutWithLayoutConstraints:]");
   _scheduler->constraintSurfaceLayout(surfaceId, layoutConstraints, layoutContext);
 }
 
