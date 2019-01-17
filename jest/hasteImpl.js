@@ -24,7 +24,7 @@ if (REACT_NATIVE_CI) {
 
 function getPlugins() {
   try {
-    const findPlugins = require('react-native-local-cli/core/findPlugins');
+    const findPlugins = require('@react-native-community/cli/core/findPlugins');
 
     return findPlugins([path.resolve(__dirname, pluginsPath)]);
   } catch (_) {
