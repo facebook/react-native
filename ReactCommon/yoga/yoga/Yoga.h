@@ -104,16 +104,16 @@ WIN_EXPORT void YGNodeCalculateLayout(
 
 // Mark a node as dirty. Only valid for nodes with a custom measure function
 // set.
-// YG knows when to mark all other nodes as dirty but because nodes with
-// measure functions
-// depends on information not known to YG they must perform this dirty
-// marking manually.
+//
+// Yoga knows when to mark all other nodes as dirty but because nodes with
+// measure functions depend on information not known to Yoga they must perform
+// this dirty marking manually.
 WIN_EXPORT void YGNodeMarkDirty(const YGNodeRef node);
 
-// This function marks the current node and all its descendants as dirty. This
-// function is added to test yoga benchmarks. This function is not expected to
-// be used in production as calling `YGCalculateLayout` will cause the
-// recalculation of each and every node.
+// Marks the current node and all its descendants as dirty.
+//
+// Intended to be used for Uoga benchmarks. Don't use in production, as calling
+// `YGCalculateLayout` will cause the recalculation of each and every node.
 WIN_EXPORT void YGNodeMarkDirtyAndPropogateToDescendants(const YGNodeRef node);
 
 WIN_EXPORT void YGNodePrint(const YGNodeRef node, const YGPrintOptions options);
@@ -317,20 +317,20 @@ WIN_EXPORT void YGNodeStyleSetMaxHeightPercent(
     const float maxHeight);
 WIN_EXPORT YGValue YGNodeStyleGetMaxHeight(const YGNodeRef node);
 
-// Yoga specific properties, not compatible with flexbox specification
-// Aspect ratio control the size of the undefined dimension of a node.
-// Aspect ratio is encoded as a floating point value width/height. e.g. A value
-// of 2 leads to a node with a width twice the size of its height while a value
-// of 0.5 gives the opposite effect.
+// Yoga specific properties, not compatible with flexbox specification Aspect
+// ratio control the size of the undefined dimension of a node. Aspect ratio is
+// encoded as a floating point value width/height. e.g. A value of 2 leads to a
+// node with a width twice the size of its height while a value of 0.5 gives the
+// opposite effect.
 //
 // - On a node with a set width/height aspect ratio control the size of the
-// unset dimension
+//   unset dimension
 // - On a node with a set flex basis aspect ratio controls the size of the node
-// in the cross axis if unset
+//   in the cross axis if unset
 // - On a node with a measure function aspect ratio works as though the measure
-// function measures the flex basis
+//   function measures the flex basis
 // - On a node with flex grow/shrink aspect ratio controls the size of the node
-// in the cross axis if unset
+//   in the cross axis if unset
 // - Aspect ratio takes min/max dimensions into account
 WIN_EXPORT void YGNodeStyleSetAspectRatio(
     const YGNodeRef node,
@@ -377,8 +377,8 @@ WIN_EXPORT void YGAssertWithConfig(
     const YGConfigRef config,
     const bool condition,
     const char* message);
-// Set this to number of pixels in 1 point to round calculation results
-// If you want to avoid rounding - set PointScaleFactor to 0
+// Set this to number of pixels in 1 point to round calculation results If you
+// want to avoid rounding - set PointScaleFactor to 0
 WIN_EXPORT void YGConfigSetPointScaleFactor(
     const YGConfigRef config,
     const float pixelsInPoint);
@@ -409,8 +409,8 @@ WIN_EXPORT bool YGConfigIsExperimentalFeatureEnabled(
     const YGConfigRef config,
     const YGExperimentalFeature feature);
 
-// Using the web defaults is the prefered configuration for new projects.
-// Usage of non web defaults should be considered as legacy.
+// Using the web defaults is the prefered configuration for new projects. Usage
+// of non web defaults should be considered as legacy.
 WIN_EXPORT void YGConfigSetUseWebDefaults(
     const YGConfigRef config,
     const bool enabled);

@@ -23,8 +23,8 @@ typedef struct {
   // accepts marker type, a node ref, and marker data (depends on marker type)
   // can return a handle or id that Yoga will pass to endMarker
   void* (*startMarker)(YGMarkerType, YGNodeRef, YGMarkerData);
-  // accepts marker type, a node ref, marker data, and marker id as returned
-  // by startMarker
+  // accepts marker type, a node ref, marker data, and marker id as returned by
+  // startMarker
   void (*endMarker)(YGMarkerType, YGNodeRef, YGMarkerData, void* id);
 } YGMarkerCallbacks;
 

@@ -5,6 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+package com.facebook.react.views.text;
+
+import com.facebook.react.uimanager.PixelUtil;
+import com.facebook.react.uimanager.ViewDefaults;
+
 /*
  * Currently, TextAttributes consists of a subset of text props that need to be passed from parent
  * to child so inheritance can be implemented correctly. An example complexity that causes a prop
@@ -12,12 +17,6 @@
  * the rendered aka effective value. For example, to figure out the rendered/effective font size,
  * you need to take into account the fontSize and allowFontScaling props.
  */
-
-package com.facebook.react.views.text;
-
-import com.facebook.react.uimanager.PixelUtil;
-import com.facebook.react.uimanager.ViewDefaults;
-
 public class TextAttributes {
   private boolean mAllowFontScaling = true;
   private float mFontSize = Float.NaN;
@@ -121,9 +120,13 @@ public class TextAttributes {
       return Float.NaN;
     }
 
-    return mAllowFontScaling
+    float letterSpacingPixels = mAllowFontScaling
       ? PixelUtil.toPixelFromSP(mLetterSpacing)
       : PixelUtil.toPixelFromDIP(mLetterSpacing);
+
+    // `letterSpacingPixels` and `getEffectiveFontSize` are both in pixels,
+    // yielding an accurate em value.
+    return letterSpacingPixels / getEffectiveFontSize();
   }
 
   public String toString() {

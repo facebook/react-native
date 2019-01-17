@@ -42,10 +42,8 @@ public class CustomLetterSpacingSpan extends MetricAffectingSpan {
   }
 
   private void apply(TextPaint paint) {
-    // mLetterSpacing and paint.getTextSize() are both in pixels,
-    // yielding an accurate em value.
     if (!Float.isNaN(mLetterSpacing)) {
-      paint.setLetterSpacing(mLetterSpacing / paint.getTextSize());
+      paint.setLetterSpacing(mLetterSpacing);
     }
   }
 }

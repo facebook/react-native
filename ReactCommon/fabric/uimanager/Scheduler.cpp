@@ -8,17 +8,18 @@
 #include <jsi/jsi.h>
 
 #include <react/core/LayoutContext.h>
+#include <react/debug/SystraceSection.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
 #include <react/uimanager/UIManager.h>
 #include <react/uimanager/UIManagerBinding.h>
 #include <react/uimanager/UITemplateProcessor.h>
 
-#include "ComponentDescriptorFactory.h"
-
 namespace facebook {
 namespace react {
 
-Scheduler::Scheduler(const SharedContextContainer &contextContainer) {
+Scheduler::Scheduler(
+    const SharedContextContainer &contextContainer,
+    ComponentRegistryFactory buildRegistryFunction) {
   const auto asynchronousEventBeatFactory =
       contextContainer->getInstance<EventBeatFactory>("asynchronous");
   const auto synchronousEventBeatFactory =
@@ -46,8 +47,8 @@ Scheduler::Scheduler(const SharedContextContainer &contextContainer) {
   auto eventDispatcher = std::make_shared<EventDispatcher>(
       eventPipe, synchronousEventBeatFactory, asynchronousEventBeatFactory);
 
-  componentDescriptorRegistry_ = ComponentDescriptorFactory::buildRegistry(
-      eventDispatcher, contextContainer);
+  componentDescriptorRegistry_ =
+      buildRegistryFunction(eventDispatcher, contextContainer);
 
   uiManagerRef.setDelegate(this);
   uiManagerRef.setShadowTreeRegistry(&shadowTreeRegistry_);
@@ -68,6 +69,8 @@ void Scheduler::startSurface(
     const folly::dynamic &initialProps,
     const LayoutConstraints &layoutConstraints,
     const LayoutContext &layoutContext) const {
+  SystraceSection s("Scheduler::startSurface");
+
   auto shadowTree =
       std::make_unique<ShadowTree>(surfaceId, layoutConstraints, layoutContext);
   shadowTree->setDelegate(this);
@@ -85,6 +88,8 @@ void Scheduler::startSurface(
 void Scheduler::renderTemplateToSurface(
     SurfaceId surfaceId,
     const std::string &uiTemplate) {
+  SystraceSection s("Scheduler::renderTemplateToSurface");
+
   try {
     if (uiTemplate.size() == 0) {
       return;
@@ -99,8 +104,14 @@ void Scheduler::renderTemplateToSurface(
         reactNativeConfig_);
 
     shadowTreeRegistry_.visit(surfaceId, [=](const ShadowTree &shadowTree) {
-      shadowTree.complete(
-          std::make_shared<SharedShadowNodeList>(SharedShadowNodeList{tree}));
+      return shadowTree.tryCommit(
+          [&](const SharedRootShadowNode &oldRootShadowNode) {
+            return std::make_shared<RootShadowNode>(
+                *oldRootShadowNode,
+                ShadowNodeFragment{.children =
+                                       std::make_shared<SharedShadowNodeList>(
+                                           SharedShadowNodeList{tree})});
+          });
     });
   } catch (const std::exception &e) {
     LOG(ERROR) << "    >>>> EXCEPTION <<<  rendering uiTemplate in "
@@ -109,10 +120,17 @@ void Scheduler::renderTemplateToSurface(
 }
 
 void Scheduler::stopSurface(SurfaceId surfaceId) const {
+  SystraceSection s("Scheduler::stopSurface");
+
   shadowTreeRegistry_.visit(surfaceId, [](const ShadowTree &shadowTree) {
     // As part of stopping the Surface, we have to commit an empty tree.
-    shadowTree.complete(std::const_pointer_cast<SharedShadowNodeList>(
-        ShadowNode::emptySharedShadowNodeSharedList()));
+    return shadowTree.tryCommit(
+        [&](const SharedRootShadowNode &oldRootShadowNode) {
+          return std::make_shared<RootShadowNode>(
+              *oldRootShadowNode,
+              ShadowNodeFragment{
+                  .children = ShadowNode::emptySharedShadowNodeSharedList()});
+        });
   });
 
   auto shadowTree = shadowTreeRegistry_.remove(surfaceId);
@@ -129,9 +147,17 @@ Size Scheduler::measureSurface(
     SurfaceId surfaceId,
     const LayoutConstraints &layoutConstraints,
     const LayoutContext &layoutContext) const {
+  SystraceSection s("Scheduler::measureSurface");
+
   Size size;
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree &shadowTree) {
-    size = shadowTree.measure(layoutConstraints, layoutContext);
+    shadowTree.tryCommit([&](const SharedRootShadowNode &oldRootShadowNode) {
+      auto rootShadowNode =
+          oldRootShadowNode->clone(layoutConstraints, layoutContext);
+      rootShadowNode->layout();
+      size = rootShadowNode->getLayoutMetrics().frame.size;
+      return nullptr;
+    });
   });
   return size;
 }
@@ -140,9 +166,11 @@ void Scheduler::constraintSurfaceLayout(
     SurfaceId surfaceId,
     const LayoutConstraints &layoutConstraints,
     const LayoutContext &layoutContext) const {
+  SystraceSection s("Scheduler::constraintSurfaceLayout");
+
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree &shadowTree) {
-    shadowTree.synchronize([&]() {
-      shadowTree.constraintLayout(layoutConstraints, layoutContext);
+    shadowTree.commit([&](const SharedRootShadowNode &oldRootShadowNode) {
+      return oldRootShadowNode->clone(layoutConstraints, layoutContext);
     });
   });
 }
@@ -162,6 +190,8 @@ SchedulerDelegate *Scheduler::getDelegate() const {
 void Scheduler::shadowTreeDidCommit(
     const ShadowTree &shadowTree,
     const ShadowViewMutationList &mutations) const {
+  SystraceSection s("Scheduler::shadowTreeDidCommit");
+
   if (delegate_) {
     delegate_->schedulerDidFinishTransaction(
         shadowTree.getSurfaceId(), mutations);
@@ -173,13 +203,20 @@ void Scheduler::shadowTreeDidCommit(
 void Scheduler::uiManagerDidFinishTransaction(
     SurfaceId surfaceId,
     const SharedShadowNodeUnsharedList &rootChildNodes) {
+  SystraceSection s("Scheduler::uiManagerDidFinishTransaction");
+
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree &shadowTree) {
-    shadowTree.synchronize([&]() { shadowTree.complete(rootChildNodes); });
+    shadowTree.commit([&](const SharedRootShadowNode &oldRootShadowNode) {
+      return std::make_shared<RootShadowNode>(
+          *oldRootShadowNode, ShadowNodeFragment{.children = rootChildNodes});
+    });
   });
 }
 
 void Scheduler::uiManagerDidCreateShadowNode(
     const SharedShadowNode &shadowNode) {
+  SystraceSection s("Scheduler::uiManagerDidCreateShadowNode");
+
   if (delegate_) {
     auto layoutableShadowNode =
         dynamic_cast<const LayoutableShadowNode *>(shadowNode.get());

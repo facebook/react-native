@@ -23,11 +23,11 @@ class RawEvent {
   RawEvent(
       std::string type,
       ValueFactory payloadFactory,
-      WeakEventTarget eventTarget);
+      SharedEventTarget eventTarget);
 
   const std::string type;
   const ValueFactory payloadFactory;
-  const WeakEventTarget eventTarget;
+  const SharedEventTarget eventTarget;
 };
 
 } // namespace react
