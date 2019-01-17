@@ -14,7 +14,8 @@ const Platform = require('Platform');
 const React = require('React');
 const {NativeComponent} = require('ReactNative');
 
-const requireNativeComponent = require('requireNativeComponent');
+const AndroidSwipeRefreshLayoutNativeComponent = require('AndroidSwipeRefreshLayoutNativeComponent');
+const RCTRefreshControlNativeComponent = require('RCTRefreshControlNativeComponent');
 const nullthrows = require('nullthrows');
 
 import type {ColorValue} from 'StyleSheetTypes';
@@ -35,8 +36,8 @@ type NativeRefreshControlType = Class<NativeComponent<RefreshControlProps>>;
 
 const NativeRefreshControl: NativeRefreshControlType =
   Platform.OS === 'ios'
-    ? (requireNativeComponent('RCTRefreshControl'): any)
-    : (requireNativeComponent('AndroidSwipeRefreshLayout'): any);
+    ? RCTRefreshControlNativeComponent
+    : AndroidSwipeRefreshLayoutNativeComponent;
 
 type IOSProps = $ReadOnly<{|
   /**
