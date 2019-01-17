@@ -46,7 +46,6 @@ class EventEmitter {
   virtual ~EventEmitter() = default;
 
   /*
-   * `DispatchMutex` must be acquired before calling.
    * Enables/disables event emitter.
    * Enabled event emitter retains a pointer to `eventTarget` strongly (as
    * `std::shared_ptr`) whereas disabled one don't.
@@ -54,6 +53,7 @@ class EventEmitter {
    * a possibility to extract JSI value from it.
    * The enable state is additive; a number of `enable` calls should be equal to
    * a number of `disable` calls to release the event target.
+   * `DispatchMutex` must be acquired before calling.
    */
   void setEnabled(bool enabled) const;
 

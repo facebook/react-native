@@ -31,6 +31,15 @@ void EventTarget::retain(jsi::Runtime &runtime) const {
   }
 
   strongInstanceHandle_ = weakInstanceHandle_.lock(runtime);
+
+  // Having a `null` or `undefined` object here indicates that
+  // `weakInstanceHandle_` was already deallocated. This should *not* happen by
+  // design, and if it happens it's a severe problem. This basically means that
+  // particular implementation of JSI was able to detect this inconsistency and
+  // dealt with it, but some JSI implementation may not support this feature and
+  // that case will lead to a crash in those environments.
+  assert(!strongInstanceHandle_.isNull());
+  assert(!strongInstanceHandle_.isUndefined());
 }
 
 jsi::Value EventTarget::release(jsi::Runtime &runtime) const {
