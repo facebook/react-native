@@ -26,7 +26,7 @@ function getPlugins() {
   try {
     const findPlugins = require('@react-native-community/cli/core/findPlugins');
 
-    return findPlugins([path.resolve(__dirname, pluginsPath)]);
+    return findPlugins(path.resolve(__dirname, pluginsPath));
   } catch (_) {
     return {
       haste: {
