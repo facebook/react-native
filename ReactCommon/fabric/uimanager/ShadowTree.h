@@ -19,6 +19,9 @@
 namespace facebook {
 namespace react {
 
+using ShadowTreeCommitTransaction = std::function<UnsharedRootShadowNode(
+    const SharedRootShadowNode &oldRootShadowNode)>;
+
 /*
  * Represents the shadow tree and its lifecycle.
  */
@@ -45,14 +48,17 @@ class ShadowTree final {
    * The `transaction` function can abort commit returning `nullptr`.
    * If a `revision` pointer is not null, the method will store there a
    * contiguous revision number of the successfully performed transaction.
-   * Specify `attempts` to allow performing multiple tries.
    * Returns `true` if the operation finished successfully.
    */
-  bool commit(
-      std::function<UnsharedRootShadowNode(
-          const SharedRootShadowNode &oldRootShadowNode)> transaction,
-      int attempts = 1,
+  bool tryCommit(
+      ShadowTreeCommitTransaction transaction,
       int *revision = nullptr) const;
+
+  /*
+   * Calls `tryCommit` in a loop until it finishes successfully.
+   */
+  void commit(ShadowTreeCommitTransaction transaction, int *revision = nullptr)
+      const;
 
 #pragma mark - Delegate
 

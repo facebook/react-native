@@ -104,7 +104,7 @@ void Scheduler::renderTemplateToSurface(
         reactNativeConfig_);
 
     shadowTreeRegistry_.visit(surfaceId, [=](const ShadowTree &shadowTree) {
-      return shadowTree.commit(
+      return shadowTree.tryCommit(
           [&](const SharedRootShadowNode &oldRootShadowNode) {
             return std::make_shared<RootShadowNode>(
                 *oldRootShadowNode,
@@ -124,7 +124,7 @@ void Scheduler::stopSurface(SurfaceId surfaceId) const {
 
   shadowTreeRegistry_.visit(surfaceId, [](const ShadowTree &shadowTree) {
     // As part of stopping the Surface, we have to commit an empty tree.
-    return shadowTree.commit(
+    return shadowTree.tryCommit(
         [&](const SharedRootShadowNode &oldRootShadowNode) {
           return std::make_shared<RootShadowNode>(
               *oldRootShadowNode,
@@ -151,7 +151,7 @@ Size Scheduler::measureSurface(
 
   Size size;
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree &shadowTree) {
-    shadowTree.commit([&](const SharedRootShadowNode &oldRootShadowNode) {
+    shadowTree.tryCommit([&](const SharedRootShadowNode &oldRootShadowNode) {
       auto rootShadowNode =
           oldRootShadowNode->clone(layoutConstraints, layoutContext);
       rootShadowNode->layout();
@@ -169,11 +169,9 @@ void Scheduler::constraintSurfaceLayout(
   SystraceSection s("Scheduler::constraintSurfaceLayout");
 
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree &shadowTree) {
-    shadowTree.commit(
-        [&](const SharedRootShadowNode &oldRootShadowNode) {
-          return oldRootShadowNode->clone(layoutConstraints, layoutContext);
-        },
-        std::numeric_limits<int>::max());
+    shadowTree.commit([&](const SharedRootShadowNode &oldRootShadowNode) {
+      return oldRootShadowNode->clone(layoutConstraints, layoutContext);
+    });
   });
 }
 
@@ -208,13 +206,10 @@ void Scheduler::uiManagerDidFinishTransaction(
   SystraceSection s("Scheduler::uiManagerDidFinishTransaction");
 
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree &shadowTree) {
-    shadowTree.commit(
-        [&](const SharedRootShadowNode &oldRootShadowNode) {
-          return std::make_shared<RootShadowNode>(
-              *oldRootShadowNode,
-              ShadowNodeFragment{.children = rootChildNodes});
-        },
-        std::numeric_limits<int>::max());
+    shadowTree.commit([&](const SharedRootShadowNode &oldRootShadowNode) {
+      return std::make_shared<RootShadowNode>(
+          *oldRootShadowNode, ShadowNodeFragment{.children = rootChildNodes});
+    });
   });
 }
 

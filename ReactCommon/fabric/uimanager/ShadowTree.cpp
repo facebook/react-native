@@ -109,71 +109,81 @@ Tag ShadowTree::getSurfaceId() const {
   return surfaceId_;
 }
 
-bool ShadowTree::commit(
-    std::function<UnsharedRootShadowNode(
-        const SharedRootShadowNode &oldRootShadowNode)> transaction,
-    int attempts,
-    int *revision) const {
+void ShadowTree::commit(ShadowTreeCommitTransaction transaction, int *revision)
+    const {
   SystraceSection s("ShadowTree::commit");
 
-  while (attempts) {
-    attempts--;
+  int attempts = 0;
 
-    SharedRootShadowNode oldRootShadowNode;
-
-    {
-      // Reading `rootShadowNode_` in shared manner.
-      std::shared_lock<folly::SharedMutex> lock(commitMutex_);
-      oldRootShadowNode = rootShadowNode_;
+  while (true) {
+    attempts++;
+    if (tryCommit(transaction, revision)) {
+      return;
     }
 
-    UnsharedRootShadowNode newRootShadowNode = transaction(oldRootShadowNode);
+    // After multiple attempts, we failed to commit the transaction.
+    // Something internally went terribly wrong.
+    assert(attempts < 1024);
+  }
+}
 
-    if (!newRootShadowNode) {
-      break;
-    }
+bool ShadowTree::tryCommit(
+    ShadowTreeCommitTransaction transaction,
+    int *revision) const {
+  SystraceSection s("ShadowTree::tryCommit");
 
-    newRootShadowNode->layout();
-    newRootShadowNode->sealRecursive();
+  SharedRootShadowNode oldRootShadowNode;
 
-    auto mutations =
-        calculateShadowViewMutations(*oldRootShadowNode, *newRootShadowNode);
-
-    {
-      // Updating `rootShadowNode_` in unique manner if it hasn't changed.
-      std::unique_lock<folly::SharedMutex> lock(commitMutex_);
-
-      if (rootShadowNode_ != oldRootShadowNode) {
-        continue;
-      }
-
-      rootShadowNode_ = newRootShadowNode;
-
-      {
-        std::lock_guard<std::mutex> dispatchLock(EventEmitter::DispatchMutex());
-
-        updateMountedFlag(
-            oldRootShadowNode->getChildren(), newRootShadowNode->getChildren());
-      }
-
-      revision_++;
-
-      // Returning last revision if requested.
-      if (revision) {
-        *revision = revision_;
-      }
-    }
-
-    emitLayoutEvents(mutations);
-
-    if (delegate_) {
-      delegate_->shadowTreeDidCommit(*this, mutations);
-    }
-
-    return true;
+  {
+    // Reading `rootShadowNode_` in shared manner.
+    std::shared_lock<folly::SharedMutex> lock(commitMutex_);
+    oldRootShadowNode = rootShadowNode_;
   }
 
-  return false;
+  UnsharedRootShadowNode newRootShadowNode = transaction(oldRootShadowNode);
+
+  if (!newRootShadowNode) {
+    return false;
+  }
+
+  newRootShadowNode->layout();
+  newRootShadowNode->sealRecursive();
+
+  auto mutations =
+      calculateShadowViewMutations(*oldRootShadowNode, *newRootShadowNode);
+
+  {
+    // Updating `rootShadowNode_` in unique manner if it hasn't changed.
+    std::unique_lock<folly::SharedMutex> lock(commitMutex_);
+
+    if (rootShadowNode_ != oldRootShadowNode) {
+      return false;
+    }
+
+    rootShadowNode_ = newRootShadowNode;
+
+    {
+      std::lock_guard<std::mutex> dispatchLock(EventEmitter::DispatchMutex());
+
+      updateMountedFlag(
+          oldRootShadowNode->getChildren(), newRootShadowNode->getChildren());
+    }
+
+    revision_++;
+
+    // Returning last revision if requested.
+    if (revision) {
+      *revision = revision_;
+    }
+  }
+
+  emitLayoutEvents(mutations);
+
+  if (delegate_) {
+    delegate_->shadowTreeDidCommit(*this, mutations);
+  }
+
+  return true;
 }
 
 void ShadowTree::emitLayoutEvents(
