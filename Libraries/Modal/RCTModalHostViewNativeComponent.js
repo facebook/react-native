@@ -122,7 +122,7 @@ type ModalNativeProps = $ReadOnly<{|
    * The `identifier` is the unique number for identifying each Modal component
    * This is the native props
    */
-  identifier: number,
+  identifier?: ?number,
 |}>;
 
 type RCTModalHostViewNativeType = Class<NativeComponent<ModalNativeProps>>;
