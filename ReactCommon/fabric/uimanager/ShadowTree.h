@@ -70,7 +70,6 @@ class ShadowTree final {
       const LayoutConstraints &layoutConstraints,
       const LayoutContext &layoutContext) const;
 
-  void toggleEventEmitters(const ShadowViewMutationList &mutations) const;
   void emitLayoutEvents(const ShadowViewMutationList &mutations) const;
 
   const SurfaceId surfaceId_;

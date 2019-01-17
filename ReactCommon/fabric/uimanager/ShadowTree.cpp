@@ -16,6 +16,65 @@
 namespace facebook {
 namespace react {
 
+static void updateMountedFlag(
+    const SharedShadowNodeList &oldChildren,
+    const SharedShadowNodeList &newChildren) {
+  // This is a simplified version of Diffing algorithm that only updates
+  // `mounted` flag on `ShadowNode`s. The algorithm sets "mounted" flag before
+  // "unmounted" to allow `ShadowNode` detect a situation where the node was
+  // remounted.
+
+  if (&oldChildren == &newChildren) {
+    // Lists are identical, nothing to do.
+    return;
+  }
+
+  if (oldChildren.size() == 0 && newChildren.size() == 0) {
+    // Both lists are empty, nothing to do.
+    return;
+  }
+
+  int index;
+
+  // Stage 1: Mount and unmount "updated" children.
+  for (index = 0; index < oldChildren.size() && index < newChildren.size();
+       index++) {
+    const auto &oldChild = oldChildren[index];
+    const auto &newChild = newChildren[index];
+
+    if (oldChild == newChild) {
+      // Nodes are identical, skipping the subtree.
+      continue;
+    }
+
+    if (oldChild->getTag() != newChild->getTag()) {
+      // Totally different nodes, updating is impossible.
+      break;
+    }
+
+    newChild->setMounted(true);
+    oldChild->setMounted(false);
+
+    updateMountedFlag(oldChild->getChildren(), newChild->getChildren());
+  }
+
+  int lastIndexAfterFirstStage = index;
+
+  // State 2: Mount new children.
+  for (index = lastIndexAfterFirstStage; index < newChildren.size(); index++) {
+    const auto &newChild = newChildren[index];
+    newChild->setMounted(true);
+    updateMountedFlag({}, newChild->getChildren());
+  }
+
+  // State 3: Unmount old children.
+  for (index = lastIndexAfterFirstStage; index < oldChildren.size(); index++) {
+    const auto &oldChild = oldChildren[index];
+    oldChild->setMounted(false);
+    updateMountedFlag(oldChild->getChildren(), {});
+  }
+}
+
 ShadowTree::ShadowTree(
     SurfaceId surfaceId,
     const LayoutConstraints &layoutConstraints,
@@ -90,7 +149,12 @@ bool ShadowTree::commit(
 
       rootShadowNode_ = newRootShadowNode;
 
-      toggleEventEmitters(mutations);
+      {
+        std::lock_guard<std::mutex> dispatchLock(EventEmitter::DispatchMutex());
+
+        updateMountedFlag(
+            oldRootShadowNode->getChildren(), newRootShadowNode->getChildren());
+      }
 
       revision_++;
 
@@ -150,23 +214,6 @@ void ShadowTree::emitLayoutEvents(
     }
 
     viewEventEmitter->onLayout(mutation.newChildShadowView.layoutMetrics);
-  }
-}
-
-void ShadowTree::toggleEventEmitters(
-    const ShadowViewMutationList &mutations) const {
-  std::lock_guard<std::mutex> lock(EventEmitter::DispatchMutex());
-
-  for (const auto &mutation : mutations) {
-    if (mutation.type == ShadowViewMutation::Create) {
-      mutation.newChildShadowView.eventEmitter->setEnabled(true);
-    }
-  }
-
-  for (const auto &mutation : mutations) {
-    if (mutation.type == ShadowViewMutation::Delete) {
-      mutation.oldChildShadowView.eventEmitter->setEnabled(false);
-    }
   }
 }
 
