@@ -12,6 +12,7 @@
 import type {NativeComponent} from 'ReactNative';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 
+const React = require('React');
 const DeprecatedColorPropType = require('DeprecatedColorPropType');
 const requireNativeComponent = require('requireNativeComponent');
 
