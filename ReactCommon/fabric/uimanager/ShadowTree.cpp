@@ -38,7 +38,12 @@ ShadowTree::ShadowTree(
 }
 
 ShadowTree::~ShadowTree() {
-  complete(std::make_shared<SharedShadowNodeList>(SharedShadowNodeList{}));
+  commit([](const SharedRootShadowNode &oldRootShadowNode) {
+    return std::make_shared<RootShadowNode>(
+        *oldRootShadowNode,
+        ShadowNodeFragment{.children =
+                               ShadowNode::emptySharedShadowNodeSharedList()});
+  });
 }
 
 Tag ShadowTree::getSurfaceId() const {
@@ -46,13 +51,8 @@ Tag ShadowTree::getSurfaceId() const {
 }
 
 SharedRootShadowNode ShadowTree::getRootShadowNode() const {
-  std::lock_guard<std::recursive_mutex> lock(commitMutex_);
+  std::shared_lock<folly::SharedMutex> lock(commitMutex_);
   return rootShadowNode_;
-}
-
-void ShadowTree::synchronize(std::function<void(void)> function) const {
-  std::lock_guard<std::recursive_mutex> lock(commitMutex_);
-  function();
 }
 
 #pragma mark - Layout
@@ -69,13 +69,11 @@ Size ShadowTree::measure(
 bool ShadowTree::constraintLayout(
     const LayoutConstraints &layoutConstraints,
     const LayoutContext &layoutContext) const {
-  auto oldRootShadowNode = getRootShadowNode();
-  auto newRootShadowNode =
-      cloneRootShadowNode(oldRootShadowNode, layoutConstraints, layoutContext);
-  return complete(oldRootShadowNode, newRootShadowNode);
+  return commit([&](const SharedRootShadowNode &oldRootShadowNode) {
+    return cloneRootShadowNode(
+        oldRootShadowNode, layoutConstraints, layoutContext);
+  });
 }
-
-#pragma mark - Commiting
 
 UnsharedRootShadowNode ShadowTree::cloneRootShadowNode(
     const SharedRootShadowNode &oldRootShadowNode,
@@ -88,85 +86,98 @@ UnsharedRootShadowNode ShadowTree::cloneRootShadowNode(
   return newRootShadowNode;
 }
 
-bool ShadowTree::complete(
-    const SharedShadowNodeUnsharedList &rootChildNodes) const {
-  auto oldRootShadowNode = getRootShadowNode();
-  auto newRootShadowNode = std::make_shared<RootShadowNode>(
-      *oldRootShadowNode,
-      ShadowNodeFragment{.children =
-                             SharedShadowNodeSharedList(rootChildNodes)});
-
-  return complete(oldRootShadowNode, newRootShadowNode);
-}
-
 bool ShadowTree::completeByReplacingShadowNode(
     const SharedShadowNode &oldShadowNode,
     const SharedShadowNode &newShadowNode) const {
-  auto rootShadowNode = getRootShadowNode();
-  std::vector<std::reference_wrapper<const ShadowNode>> ancestors;
-  oldShadowNode->constructAncestorPath(*rootShadowNode, ancestors);
+  return commit([&](const SharedRootShadowNode &oldRootShadowNode) {
+    std::vector<std::reference_wrapper<const ShadowNode>> ancestors;
+    oldShadowNode->constructAncestorPath(*oldRootShadowNode, ancestors);
 
-  if (ancestors.size() == 0) {
-    return false;
-  }
+    if (ancestors.size() == 0) {
+      return UnsharedRootShadowNode{nullptr};
+    }
 
-  auto oldChild = oldShadowNode;
-  auto newChild = newShadowNode;
+    auto oldChild = oldShadowNode;
+    auto newChild = newShadowNode;
 
-  SharedShadowNodeUnsharedList sharedChildren;
+    SharedShadowNodeUnsharedList sharedChildren;
 
-  for (const auto &ancestor : ancestors) {
-    auto children = ancestor.get().getChildren();
-    std::replace(children.begin(), children.end(), oldChild, newChild);
+    for (const auto &ancestor : ancestors) {
+      auto children = ancestor.get().getChildren();
+      std::replace(children.begin(), children.end(), oldChild, newChild);
 
-    sharedChildren = std::make_shared<SharedShadowNodeList>(children);
+      sharedChildren = std::make_shared<SharedShadowNodeList>(children);
 
-    oldChild = ancestor.get().shared_from_this();
-    newChild = oldChild->clone(ShadowNodeFragment{.children = sharedChildren});
-  }
+      oldChild = ancestor.get().shared_from_this();
+      newChild =
+          oldChild->clone(ShadowNodeFragment{.children = sharedChildren});
+    }
 
-  return complete(sharedChildren);
-}
-
-bool ShadowTree::complete(
-    const SharedRootShadowNode &oldRootShadowNode,
-    const UnsharedRootShadowNode &newRootShadowNode) const {
-  SystraceSection s("ShadowTree::complete");
-  newRootShadowNode->layout();
-  newRootShadowNode->sealRecursive();
-
-  auto mutations =
-      calculateShadowViewMutations(*oldRootShadowNode, *newRootShadowNode);
-
-  if (!commit(oldRootShadowNode, newRootShadowNode, mutations)) {
-    return false;
-  }
-
-  emitLayoutEvents(mutations);
-
-  if (delegate_) {
-    delegate_->shadowTreeDidCommit(*this, mutations);
-  }
-
-  return true;
+    return std::make_shared<RootShadowNode>(
+        *oldRootShadowNode, ShadowNodeFragment{.children = sharedChildren});
+  });
 }
 
 bool ShadowTree::commit(
-    const SharedRootShadowNode &oldRootShadowNode,
-    const SharedRootShadowNode &newRootShadowNode,
-    const ShadowViewMutationList &mutations) const {
+    std::function<UnsharedRootShadowNode(
+        const SharedRootShadowNode &oldRootShadowNode)> transaction,
+    int attempts,
+    int *revision) const {
   SystraceSection s("ShadowTree::commit");
-  std::lock_guard<std::recursive_mutex> lock(commitMutex_);
 
-  if (oldRootShadowNode != rootShadowNode_) {
-    return false;
+  while (attempts) {
+    attempts--;
+
+    SharedRootShadowNode oldRootShadowNode;
+
+    {
+      // Reading `rootShadowNode_` in shared manner.
+      std::shared_lock<folly::SharedMutex> lock(commitMutex_);
+      oldRootShadowNode = rootShadowNode_;
+    }
+
+    UnsharedRootShadowNode newRootShadowNode = transaction(oldRootShadowNode);
+
+    if (!newRootShadowNode) {
+      break;
+    }
+
+    newRootShadowNode->layout();
+    newRootShadowNode->sealRecursive();
+
+    auto mutations =
+        calculateShadowViewMutations(*oldRootShadowNode, *newRootShadowNode);
+
+    {
+      // Updating `rootShadowNode_` in unique manner if it hasn't changed.
+      std::unique_lock<folly::SharedMutex> lock(commitMutex_);
+
+      if (rootShadowNode_ != oldRootShadowNode) {
+        continue;
+      }
+
+      rootShadowNode_ = newRootShadowNode;
+
+      toggleEventEmitters(mutations);
+
+      revision_++;
+
+      // Returning last revision if requested.
+      if (revision) {
+        *revision = revision_;
+      }
+    }
+
+    emitLayoutEvents(mutations);
+
+    if (delegate_) {
+      delegate_->shadowTreeDidCommit(*this, mutations);
+    }
+
+    return true;
   }
 
-  rootShadowNode_ = newRootShadowNode;
-
-  toggleEventEmitters(mutations);
-
-  return true;
+  return false;
 }
 
 void ShadowTree::emitLayoutEvents(

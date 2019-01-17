@@ -104,8 +104,14 @@ void Scheduler::renderTemplateToSurface(
         reactNativeConfig_);
 
     shadowTreeRegistry_.visit(surfaceId, [=](const ShadowTree &shadowTree) {
-      shadowTree.complete(
-          std::make_shared<SharedShadowNodeList>(SharedShadowNodeList{tree}));
+      return shadowTree.commit(
+          [&](const SharedRootShadowNode &oldRootShadowNode) {
+            return std::make_shared<RootShadowNode>(
+                *oldRootShadowNode,
+                ShadowNodeFragment{.children =
+                                       std::make_shared<SharedShadowNodeList>(
+                                           SharedShadowNodeList{tree})});
+          });
     });
   } catch (const std::exception &e) {
     LOG(ERROR) << "    >>>> EXCEPTION <<<  rendering uiTemplate in "
@@ -118,8 +124,13 @@ void Scheduler::stopSurface(SurfaceId surfaceId) const {
 
   shadowTreeRegistry_.visit(surfaceId, [](const ShadowTree &shadowTree) {
     // As part of stopping the Surface, we have to commit an empty tree.
-    shadowTree.complete(std::const_pointer_cast<SharedShadowNodeList>(
-        ShadowNode::emptySharedShadowNodeSharedList()));
+    return shadowTree.commit(
+        [&](const SharedRootShadowNode &oldRootShadowNode) {
+          return std::make_shared<RootShadowNode>(
+              *oldRootShadowNode,
+              ShadowNodeFragment{
+                  .children = ShadowNode::emptySharedShadowNodeSharedList()});
+        });
   });
 
   auto shadowTree = shadowTreeRegistry_.remove(surfaceId);
@@ -152,9 +163,7 @@ void Scheduler::constraintSurfaceLayout(
   SystraceSection s("Scheduler::constraintSurfaceLayout");
 
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree &shadowTree) {
-    shadowTree.synchronize([&]() {
-      shadowTree.constraintLayout(layoutConstraints, layoutContext);
-    });
+    return shadowTree.constraintLayout(layoutConstraints, layoutContext);
   });
 }
 
@@ -189,7 +198,13 @@ void Scheduler::uiManagerDidFinishTransaction(
   SystraceSection s("Scheduler::uiManagerDidFinishTransaction");
 
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree &shadowTree) {
-    shadowTree.synchronize([&]() { shadowTree.complete(rootChildNodes); });
+    shadowTree.commit(
+        [&](const SharedRootShadowNode &oldRootShadowNode) {
+          return std::make_shared<RootShadowNode>(
+              *oldRootShadowNode,
+              ShadowNodeFragment{.children = rootChildNodes});
+        },
+        std::numeric_limits<int>::max());
   });
 }
 
