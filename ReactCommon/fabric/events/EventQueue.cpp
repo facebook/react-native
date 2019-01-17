@@ -40,7 +40,7 @@ void EventQueue::onBeat(jsi::Runtime &runtime) const {
   }
 
   {
-    std::lock_guard<std::recursive_mutex> lock(EventEmitter::DispatchMutex());
+    std::lock_guard<std::mutex> lock(EventEmitter::DispatchMutex());
 
     for (const auto &event : queue) {
       if (event.eventTarget) {

@@ -34,7 +34,7 @@ class EventEmitter {
   using Tag = int32_t;
 
  public:
-  static std::recursive_mutex &DispatchMutex();
+  static std::mutex &DispatchMutex();
 
   static ValueFactory defaultPayloadFactory();
 

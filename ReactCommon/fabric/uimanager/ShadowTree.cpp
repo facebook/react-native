@@ -155,7 +155,7 @@ void ShadowTree::emitLayoutEvents(
 
 void ShadowTree::toggleEventEmitters(
     const ShadowViewMutationList &mutations) const {
-  std::lock_guard<std::recursive_mutex> lock(EventEmitter::DispatchMutex());
+  std::lock_guard<std::mutex> lock(EventEmitter::DispatchMutex());
 
   for (const auto &mutation : mutations) {
     if (mutation.type == ShadowViewMutation::Create) {

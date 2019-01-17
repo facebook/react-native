@@ -31,8 +31,8 @@ static std::string normalizeEventType(const std::string &type) {
   return prefixedType;
 }
 
-std::recursive_mutex &EventEmitter::DispatchMutex() {
-  static std::recursive_mutex mutex;
+std::mutex &EventEmitter::DispatchMutex() {
+  static std::mutex mutex;
   return mutex;
 }
 
