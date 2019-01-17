@@ -14,7 +14,7 @@ import com.facebook.systrace.Systrace;
 public class FabricSoLoader {
   private static boolean sDidInit = false;
 
-  public static synchronized void staticInit() {
+  public static void staticInit() {
     if (sDidInit) {
       return;
     }
