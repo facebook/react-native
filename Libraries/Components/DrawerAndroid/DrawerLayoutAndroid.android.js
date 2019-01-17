@@ -23,7 +23,7 @@ const DrawerConsts = UIManager.getViewManagerConfig('AndroidDrawerLayout')
   .Constants;
 
 const dismissKeyboard = require('dismissKeyboard');
-const requireNativeComponent = require('requireNativeComponent');
+const AndroidDrawerLayoutNativeComponent = require('AndroidDrawerLayoutNativeComponent');
 
 const DRAWER_STATES = ['Idle', 'Dragging', 'Settling'];
 
@@ -143,10 +143,6 @@ type State = {|
   statusBarBackgroundColor: ColorValue,
 |};
 
-// The View that contains both the actual drawer and the main view
-const AndroidDrawerLayout = ((requireNativeComponent(
-  'AndroidDrawerLayout',
-): any): Class<ReactNative.NativeComponent<NativeProps>>);
 
 /**
  * React component that wraps the platform `DrawerLayout` (Android only). The
@@ -229,7 +225,7 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
       </View>
     );
     return (
-      <AndroidDrawerLayout
+      <AndroidDrawerLayoutNativeComponent
         {...props}
         /* $FlowFixMe(>=0.87.0 site=react_native_android_fb) This comment
          * suppresses an error found when Flow v0.87 was deployed. To see the
@@ -245,7 +241,7 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
         onDrawerStateChanged={this._onDrawerStateChanged}>
         {childrenWrapper}
         {drawerViewWrapper}
-      </AndroidDrawerLayout>
+      </AndroidDrawerLayoutNativeComponent>
     );
   }
 
