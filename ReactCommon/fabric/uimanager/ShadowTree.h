@@ -55,16 +55,6 @@ class ShadowTree final {
       int *revision = nullptr) const;
 
   /*
-   * Replaces a given old shadow node with a new one in the tree by cloning all
-   * nodes on the path to the root node and then complete the tree.
-   * Can be called from any thread.
-   * Returns `true` if the operation finished successfully.
-   */
-  bool completeByReplacingShadowNode(
-      const SharedShadowNode &oldShadowNode,
-      const SharedShadowNode &newShadowNode) const;
-
-  /*
    * Returns a root shadow node that represents the last committed three.
    */
   SharedRootShadowNode getRootShadowNode() const;

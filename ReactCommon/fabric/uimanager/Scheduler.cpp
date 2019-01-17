@@ -151,8 +151,9 @@ Size Scheduler::measureSurface(
 
   Size size;
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree &shadowTree) {
-    shadowTree.commit([&] (const SharedRootShadowNode &oldRootShadowNode) {
-      auto rootShadowNode = oldRootShadowNode->clone(layoutConstraints, layoutContext);
+    shadowTree.commit([&](const SharedRootShadowNode &oldRootShadowNode) {
+      auto rootShadowNode =
+          oldRootShadowNode->clone(layoutConstraints, layoutContext);
       rootShadowNode->layout();
       size = rootShadowNode->getLayoutMetrics().frame.size;
       return nullptr;
@@ -168,9 +169,11 @@ void Scheduler::constraintSurfaceLayout(
   SystraceSection s("Scheduler::constraintSurfaceLayout");
 
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree &shadowTree) {
-    shadowTree.commit([&] (const SharedRootShadowNode &oldRootShadowNode) {
-      return oldRootShadowNode->clone(layoutConstraints, layoutContext);
-    }, std::numeric_limits<int>::max());
+    shadowTree.commit(
+        [&](const SharedRootShadowNode &oldRootShadowNode) {
+          return oldRootShadowNode->clone(layoutConstraints, layoutContext);
+        },
+        std::numeric_limits<int>::max());
   });
 }
 

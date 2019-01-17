@@ -86,7 +86,9 @@ void UIManager::setNativeProps(
 
   shadowTreeRegistry_->visit(
       shadowNode->getRootTag(), [&](const ShadowTree &shadowTree) {
-        shadowTree.completeByReplacingShadowNode(shadowNode, newShadowNode);
+        shadowTree.commit([&](const SharedRootShadowNode &oldRootShadowNode) {
+          return oldRootShadowNode->clone(shadowNode, newShadowNode);
+        });
       });
 }
 

@@ -55,38 +55,6 @@ SharedRootShadowNode ShadowTree::getRootShadowNode() const {
   return rootShadowNode_;
 }
 
-bool ShadowTree::completeByReplacingShadowNode(
-    const SharedShadowNode &oldShadowNode,
-    const SharedShadowNode &newShadowNode) const {
-  return commit([&](const SharedRootShadowNode &oldRootShadowNode) {
-    std::vector<std::reference_wrapper<const ShadowNode>> ancestors;
-    oldShadowNode->constructAncestorPath(*oldRootShadowNode, ancestors);
-
-    if (ancestors.size() == 0) {
-      return UnsharedRootShadowNode{nullptr};
-    }
-
-    auto oldChild = oldShadowNode;
-    auto newChild = newShadowNode;
-
-    SharedShadowNodeUnsharedList sharedChildren;
-
-    for (const auto &ancestor : ancestors) {
-      auto children = ancestor.get().getChildren();
-      std::replace(children.begin(), children.end(), oldChild, newChild);
-
-      sharedChildren = std::make_shared<SharedShadowNodeList>(children);
-
-      oldChild = ancestor.get().shared_from_this();
-      newChild =
-          oldChild->clone(ShadowNodeFragment{.children = sharedChildren});
-    }
-
-    return std::make_shared<RootShadowNode>(
-        *oldRootShadowNode, ShadowNodeFragment{.children = sharedChildren});
-  });
-}
-
 bool ShadowTree::commit(
     std::function<UnsharedRootShadowNode(
         const SharedRootShadowNode &oldRootShadowNode)> transaction,
