@@ -129,7 +129,7 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
 
       if (isUsingSupportLibrary()) {
         SupportAlertFragment alertFragment = new SupportAlertFragment(actionListener, arguments);
-        if (isInForeground) {
+        if (isInForeground && !mSupportFragmentManager.isStateSaved()) {
           if (arguments.containsKey(KEY_CANCELABLE)) {
             alertFragment.setCancelable(arguments.getBoolean(KEY_CANCELABLE));
           }
