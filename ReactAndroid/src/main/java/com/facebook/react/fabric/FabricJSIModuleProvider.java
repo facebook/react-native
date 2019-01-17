@@ -39,7 +39,7 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
     final FabricUIManager uiManager = createUIManager(eventBeatManager);
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricJSIModuleProvider.registerBinding");
-    final FabricBinding binding = new Binding();
+    final Binding binding = new Binding();
     MessageQueueThread jsMessageQueueThread =
         mReactApplicationContext
             .getCatalystInstance()

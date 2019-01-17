@@ -12,13 +12,12 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.queue.MessageQueueThread;
-import com.facebook.react.fabric.FabricBinding;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.uimanager.PixelUtil;
 
 @DoNotStrip
 @SuppressLint("MissingNativeLoadLibrary")
-public class Binding implements FabricBinding {
+public class Binding {
 
   static {
     FabricSoLoader.staticInit();
@@ -50,7 +49,6 @@ public class Binding implements FabricBinding {
   public native void setConstraints(
       int rootTag, float minWidth, float maxWidth, float minHeight, float maxHeight);
 
-  @Override
   public void register(
        JavaScriptContextHolder jsContext,
        FabricUIManager fabricUIManager,
@@ -65,7 +63,6 @@ public class Binding implements FabricBinding {
 
   private native void uninstallFabricUIManager();
 
-  @Override
   public void unregister() {
     uninstallFabricUIManager();
   }
