@@ -71,27 +71,27 @@ void UIManagerBinding::dispatchEvent(
   SystraceSection s("UIManagerBinding::dispatchEvent");
 
   auto payload = payloadFactory(runtime);
-  auto eventTargetValue = jsi::Value::null();
 
-  if (eventTarget) {
-    auto &eventTargetWrapper =
-        static_cast<const EventTargetWrapper &>(*eventTarget);
-    eventTargetValue = eventTargetWrapper.instanceHandle.lock(runtime);
-    if (eventTargetValue.isUndefined()) {
-      return;
-    }
+  auto instanceHandle = eventTarget
+    ? [&]() {
+      auto instanceHandle = eventTarget->release(runtime);
+      if (instanceHandle.isUndefined()) {
+        return jsi::Value::null();
+      }
 
-    // Mixing `target` into `payload`.
-    assert(payload.isObject());
-    payload.asObject(runtime).setProperty(
-        runtime, "target", eventTargetWrapper.tag);
-  }
+      // Mixing `target` into `payload`.
+      assert(payload.isObject());
+      payload.asObject(runtime).setProperty(runtime, "target", eventTarget->getTag());
+      return instanceHandle;
+    }()
+    : jsi::Value::null();
 
   auto &eventHandlerWrapper =
       static_cast<const EventHandlerWrapper &>(*eventHandler_);
+
   eventHandlerWrapper.callback.call(
       runtime,
-      {std::move(eventTargetValue),
+      {std::move(instanceHandle),
        jsi::String::createFromUtf8(runtime, type),
        std::move(payload)});
 }

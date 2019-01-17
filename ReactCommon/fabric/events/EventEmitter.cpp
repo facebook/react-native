@@ -77,29 +77,26 @@ void EventEmitter::dispatchEvent(
       priority);
 }
 
-void EventEmitter::enable() const {
-  enableCounter_++;
-  toggleEventTargetOwnership_();
-}
+void EventEmitter::setEnabled(bool enabled) const {
+  enableCounter_ += enabled ? 1 : -1;
 
-void EventEmitter::disable() const {
-  enableCounter_--;
-  toggleEventTargetOwnership_();
-}
+  bool shouldBeEnabled = enableCounter_ > 0;
+  if (isEnabled_ != shouldBeEnabled) {
+    isEnabled_ = shouldBeEnabled;
+    if (eventTarget_) {
+      eventTarget_->setEnabled(isEnabled_);
+    }
+  }
 
-void EventEmitter::toggleEventTargetOwnership_() const {
   // Note: Initially, the state of `eventTarget_` and the value `enableCounter_`
   // is mismatched intentionally (it's `non-null` and `0` accordingly). We need
   // this to support an initial nebula state where the event target must be
   // retained without any associated mounted node.
   bool shouldBeRetained = enableCounter_ > 0;
-  bool alreadyBeRetained = eventTarget_ != nullptr;
-  if (shouldBeRetained == alreadyBeRetained) {
-    return;
-  }
-
-  if (!shouldBeRetained) {
-    eventTarget_.reset();
+  if (shouldBeRetained != (eventTarget_ != nullptr)) {
+    if (!shouldBeRetained) {
+      eventTarget_.reset();
+    }
   }
 }
 

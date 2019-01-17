@@ -25,15 +25,6 @@ using SharedEventEmitter = std::shared_ptr<const EventEmitter>;
  * Stores a pointer to `EventTarget` identifying a particular component and
  * a weak pointer to `EventDispatcher` which is responsible for delivering the
  * event.
- *
- * Note: Retaining an `EventTarget` does *not* guarantee that actual event
- * target exists and/or valid in JavaScript realm. The `EventTarget` retains an
- * `EventTargetWrapper` which wraps JavaScript object in `unsafe-unretained`
- * manner. Retaining the `EventTarget` *does* indicate that we can use that to
- * get an actual JavaScript object from that in the future *ensuring safety
- * beforehand somehow*; JSI maintains `WeakObject` object as long as we retain
- * the `EventTarget`. All `EventTarget` instances must be deallocated before
- * stopping JavaScript machine.
  */
 class EventEmitter {
   /*
@@ -58,12 +49,13 @@ class EventEmitter {
    * `DispatchMutex` must be acquired before calling.
    * Enables/disables event emitter.
    * Enabled event emitter retains a pointer to `eventTarget` strongly (as
-   * `std::shared_ptr`) whereas disabled one weakly (as `std::weak_ptr`).
+   * `std::shared_ptr`) whereas disabled one don't.
+   * Enabled/disabled state is also proxied to `eventTarget` where it indicates
+   * a possibility to extract JSI value from it.
    * The enable state is additive; a number of `enable` calls should be equal to
    * a number of `disable` calls to release the event target.
    */
-  void enable() const;
-  void disable() const;
+  void setEnabled(bool enabled) const;
 
  protected:
 #ifdef ANDROID
@@ -93,6 +85,7 @@ class EventEmitter {
   mutable SharedEventTarget eventTarget_;
   WeakEventDispatcher eventDispatcher_;
   mutable int enableCounter_{0};
+  mutable bool isEnabled_{false};
 };
 
 } // namespace react

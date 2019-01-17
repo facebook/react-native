@@ -159,13 +159,13 @@ void ShadowTree::toggleEventEmitters(
 
   for (const auto &mutation : mutations) {
     if (mutation.type == ShadowViewMutation::Create) {
-      mutation.newChildShadowView.eventEmitter->enable();
+      mutation.newChildShadowView.eventEmitter->setEnabled(true);
     }
   }
 
   for (const auto &mutation : mutations) {
     if (mutation.type == ShadowViewMutation::Delete) {
-      mutation.oldChildShadowView.eventEmitter->disable();
+      mutation.oldChildShadowView.eventEmitter->setEnabled(false);
     }
   }
 }
