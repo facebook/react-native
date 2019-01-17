@@ -47,7 +47,6 @@ EventEmitter::EventEmitter(
     Tag tag,
     WeakEventDispatcher eventDispatcher)
     : eventTarget_(std::move(eventTarget)),
-      weakEventTarget_({}),
       eventDispatcher_(std::move(eventDispatcher)) {}
 
 void EventEmitter::dispatchEvent(
@@ -89,17 +88,17 @@ void EventEmitter::disable() const {
 }
 
 void EventEmitter::toggleEventTargetOwnership_() const {
+  // Note: Initially, the state of `eventTarget_` and the value `enableCounter_`
+  // is mismatched intentionally (it's `non-null` and `0` accordingly). We need
+  // this to support an initial nebula state where the event target must be
+  // retained without any associated mounted node.
   bool shouldBeRetained = enableCounter_ > 0;
   bool alreadyBeRetained = eventTarget_ != nullptr;
   if (shouldBeRetained == alreadyBeRetained) {
     return;
   }
 
-  if (shouldBeRetained) {
-    eventTarget_ = weakEventTarget_.lock();
-    weakEventTarget_.reset();
-  } else {
-    weakEventTarget_ = eventTarget_;
+  if (!shouldBeRetained) {
     eventTarget_.reset();
   }
 }

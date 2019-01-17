@@ -91,7 +91,6 @@ class EventEmitter {
   void toggleEventTargetOwnership_() const;
 
   mutable SharedEventTarget eventTarget_;
-  mutable WeakEventTarget weakEventTarget_;
   WeakEventDispatcher eventDispatcher_;
   mutable int enableCounter_{0};
 };
