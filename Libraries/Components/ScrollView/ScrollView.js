@@ -761,7 +761,6 @@ class ScrollView extends React.Component<Props, State> {
   }
 
   _getKeyForIndex(index, childArray) {
-    // $FlowFixMe Invalid prop usage
     const child = childArray[index];
     return child && child.key;
   }

@@ -20,8 +20,6 @@ const RNTesterActions = require('./RNTesterActions');
 const RNTesterExampleFilter = require('./RNTesterExampleFilter');
 const View = require('View');
 
-/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found when
- * making Flow check .android.js files. */
 import type {RNTesterExample} from 'RNTesterTypes';
 import type {ViewStyleProp} from 'StyleSheet';
 
@@ -71,9 +69,6 @@ const renderSectionHeader = ({section}) => (
 class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
   render() {
     const filter = ({example, filterRegex}) =>
-      /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
-      * error found when Flow v0.68 was deployed. To see the error delete this
-      * comment and run Flow. */
       filterRegex.test(example.module.title) &&
       (!Platform.isTV || example.supportsTVOS);
 

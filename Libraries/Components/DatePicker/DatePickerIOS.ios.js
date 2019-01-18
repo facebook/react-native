@@ -117,7 +117,6 @@ class DatePickerIOS extends React.Component<Props> {
     mode: 'datetime',
   };
 
-  // $FlowFixMe How to type a native component to be able to call setNativeProps
   _picker: ?React.ElementRef<typeof RCTDatePickerNativeComponent> = null;
 
   componentDidUpdate() {
