@@ -10,10 +10,10 @@
 'use strict';
 
 import type {NativeComponent} from 'ReactNative';
+import type {ColorValue} from 'StyleSheetTypes';
 import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 
 const React = require('React');
-const DeprecatedColorPropType = require('DeprecatedColorPropType');
 const requireNativeComponent = require('requireNativeComponent');
 
 type NativeProps = $ReadOnly<{|
@@ -24,7 +24,7 @@ type NativeProps = $ReadOnly<{|
    */
   nativeID?: ?string,
   style?: ?ViewStyleProp,
-  backgroundColor?: ?DeprecatedColorPropType,
+  backgroundColor?: ?ColorValue,
 |}>;
 
 type NativeInputAccessoryView = Class<NativeComponent<NativeProps>>;
