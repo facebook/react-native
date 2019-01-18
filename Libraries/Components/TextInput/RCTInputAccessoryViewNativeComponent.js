@@ -11,7 +11,7 @@
 
 import type {NativeComponent} from 'ReactNative';
 import type {ColorValue} from 'StyleSheetTypes';
-import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
+import type {ViewStyleProp} from 'StyleSheet';
 
 const React = require('React');
 const requireNativeComponent = require('requireNativeComponent');
