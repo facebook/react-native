@@ -26,6 +26,12 @@ type PageScrollEvent = SyntheticEvent<
   |}>,
 >;
 
+type PageScrollStateChangedEvent = SyntheticEvent<
+  $ReadOnly<{|
+    pageScrollState: PageScrollState,
+  |}>,
+>;
+
 type PageSelectedEvent = SyntheticEvent<
   $ReadOnly<{|
     position: number,
@@ -58,7 +64,7 @@ type NativeProps = $ReadOnly<{|
    * - settling, meaning that there was an interaction with the page scroller, and the
    *   page scroller is now finishing it's closing or opening animation
    */
-  onPageScrollStateChanged?: ?(e: PageScrollState) => void,
+  onPageScrollStateChanged?: ?(e: PageScrollStateChangedEvent) => void,
 
   /**
    * This callback will be called once ViewPager finish navigating to selected page

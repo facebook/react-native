@@ -76,7 +76,7 @@ type Props = $ReadOnly<{|
    * - settling, meaning that there was an interaction with the page scroller, and the
    *   page scroller is now finishing it's closing or opening animation
    */
-  onPageScrollStateChanged?: ?(e: PageScrollState) => void,
+  onPageScrollStateChanged?: ?(e: PageScrollStateChangedEvent) => void,
 
   /**
    * This callback will be called once ViewPager finish navigating to selected page
@@ -224,7 +224,7 @@ class ViewPagerAndroid extends React.Component<Props> {
 
   _onPageScrollStateChanged = (e: PageScrollStateChangedEvent) => {
     if (this.props.onPageScrollStateChanged) {
-      this.props.onPageScrollStateChanged(e.nativeEvent.pageScrollState);
+      this.props.onPageScrollStateChanged(e);
     }
   };
 
