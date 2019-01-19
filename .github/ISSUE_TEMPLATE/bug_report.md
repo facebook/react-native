@@ -15,4 +15,8 @@ Run `react-native info` in your terminal and paste its contents here.
 Describe your issue in detail. Include screenshots if needed. If this is a regression, let us know.
 
 ## Reproducible Demo
-Let us know how to reproduce the issue. Include a code sample, share a project, or     share an app that reproduces the issue using https://snack.expo.io/. Please follow the guidelines for providing a MCVE: https://stackoverflow.com/help/mcve
+Let us know how to reproduce the issue. Include a code sample, share a project, 
+or share an app that reproduces the issue using https://snack.expo.io/. 
+If you run into android or js build issue, please consider add CI to your project.
+It's very easy, you can refer to https://github.com/react-native-community/ci-sample for how to do this.
+Please follow the guidelines for providing a MCVE: https://stackoverflow.com/help/mcve.
