@@ -15,15 +15,13 @@ const Platform = require('Platform');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 
-const requireNativeComponent = require('requireNativeComponent');
-
 import type {ImageSource} from 'ImageSource';
 import type {ViewStyleProp} from 'StyleSheet';
 import type {ColorValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
 import type {SyntheticEvent} from 'CoreEventTypes';
 
-const RCTSlider = require('RCTSliderNativeComponent');
+const RCTSliderNativeComponent = require('RCTSliderNativeComponent');
 
 type Event = SyntheticEvent<
   $ReadOnly<{|
@@ -236,7 +234,7 @@ const Slider = (
     });
 
   return (
-    <RCTSlider
+    <RCTSliderNativeComponent
       {...props}
       ref={forwardedRef}
       style={style}

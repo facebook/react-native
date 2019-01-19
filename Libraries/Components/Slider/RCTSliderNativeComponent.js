@@ -10,6 +10,28 @@
 
 'use strict';
 
+import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'ReactNative';
+import type {ViewStyleProp} from 'StyleSheet';
+import type {ColorValue} from 'StyleSheetTypes';
+
 const requireNativeComponent = require('requireNativeComponent');
 
-module.exports = requireNativeComponent('RCTSlider');
+type NativeProps = $ReadOnly<{|
+    ...ViewProps,
+    style?: ?ViewStyleProp,
+    value?: ?number,
+    step?: ?number,
+    minimumValue?: ?number,
+    maximumValue?: ?number,
+    minimumTrackTintColor?: ?ColorValue,
+    maximumTrackTintColor?: ?ColorValue,
+    disabled?: ?boolean,
+    onValueChange?: ?(value: number) => void,
+    onSlidingComplete?: ?(value: number) => void,
+    testID?: ?string,
+|}>;
+
+type RCTSliderType = Class<NativeComponent<NativeProps>>;
+
+module.exports = ((requireNativeComponent('RCTSlider'): any): RCTSliderType;
