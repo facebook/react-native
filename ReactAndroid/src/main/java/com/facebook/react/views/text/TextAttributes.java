@@ -23,6 +23,7 @@ public class TextAttributes {
   private float mLineHeight = Float.NaN;
   private float mLetterSpacing = Float.NaN;
   private float mHeightOfTallestInlineImage = Float.NaN;
+  private TextTransform mTextTransform = TextTransform.UNSET;
 
   public TextAttributes() {
   }
@@ -38,6 +39,7 @@ public class TextAttributes {
     result.mLineHeight = !Float.isNaN(child.mLineHeight) ? child.mLineHeight : mLineHeight;
     result.mLetterSpacing = !Float.isNaN(child.mLetterSpacing) ? child.mLetterSpacing : mLetterSpacing;
     result.mHeightOfTallestInlineImage = !Float.isNaN(child.mHeightOfTallestInlineImage) ? child.mHeightOfTallestInlineImage : mHeightOfTallestInlineImage;
+    result.mTextTransform = child.mTextTransform != TextTransform.UNSET ? child.mTextTransform : mTextTransform;
 
     return result;
   }
@@ -83,6 +85,14 @@ public class TextAttributes {
 
   public void setHeightOfTallestInlineImage(float value) {
     mHeightOfTallestInlineImage = value;
+  }
+
+  public TextTransform getTextTransform() {
+    return mTextTransform;
+  }
+
+  public void setTextTransform(TextTransform textTransform) {
+    mTextTransform = textTransform;
   }
 
   // Getters for effective values
@@ -140,6 +150,7 @@ public class TextAttributes {
       + "\n  getEffectiveLetterSpacing(): " + getEffectiveLetterSpacing()
       + "\n  getLineHeight(): " + getLineHeight()
       + "\n  getEffectiveLineHeight(): " + getEffectiveLineHeight()
+      + "\n  getTextTransform(): " + getTextTransform()
       + "\n}"
     );
   }
