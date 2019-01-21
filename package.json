@@ -23,6 +23,9 @@
       "^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$": "<rootDir>/jest/assetFileTransformer.js",
       ".*": "./jest/preprocessor.js"
     },
+    "transformIgnorePatterns": [
+      "node_modules/(?!@react-native-community\/cli)"
+    ],
     "setupFiles": [
       "./jest/setup.js"
     ],
