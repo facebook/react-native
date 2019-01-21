@@ -12,12 +12,10 @@
 
 const React = require('React');
 
-const requireNativeComponent = require('requireNativeComponent');
-
 import type {NativeComponent} from 'ReactNative';
 import type {ViewProps} from 'ViewPropTypes';
 
-const AndroidProgressBar = requireNativeComponent('AndroidProgressBar');
+const AndroidProgressBar = require('AndroidProgressBarNativeComponent');
 
 export type ProgressBarAndroidProps = $ReadOnly<{|
   ...ViewProps,
