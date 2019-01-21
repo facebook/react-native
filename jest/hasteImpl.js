@@ -24,10 +24,11 @@ if (REACT_NATIVE_CI) {
 
 function getPlugins() {
   try {
-    const findPlugins = require('@react-native-community/cli/core/findPlugins');
+    // @todo do not rely on private files
+    const findPlugins = require('@react-native-community/cli/src/core/findPlugins');
 
     return findPlugins(path.resolve(__dirname, pluginsPath));
-  } catch (_) {
+  } catch (e) {
     return {
       haste: {
         providesModuleNodeModules: [],
