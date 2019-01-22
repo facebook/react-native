@@ -402,9 +402,6 @@ export type Props = $ReadOnly<{|
    *   - `false`, deprecated, use 'never' instead
    *   - `true`, deprecated, use 'always' instead
    */
-  /* $FlowFixMe(>=0.92.0 site=react_native_fb) This comment suppresses an error
-   * found when Flow v0.92 was deployed. To see the error, delete this comment
-   * and run Flow. */
   keyboardShouldPersistTaps?: ?('always' | 'never' | 'handled' | false | true),
   /**
    * Called when the momentum scroll starts (scroll which occurs as the ScrollView glides to a stop).
@@ -438,7 +435,7 @@ export type Props = $ReadOnly<{|
    * It's implemented using onLayout handler attached to the content container
    * which this ScrollView renders.
    */
-  onContentSizeChange?: (event: ScrollEvent) => void,
+  onContentSizeChange?: (contentWidth: number, contentHeight: number) => void,
   onKeyboardDidShow?: (event: PressEvent) => void,
   /**
    * When true, the scroll view stops on multiples of the scroll view's size
@@ -591,8 +588,8 @@ class ScrollView extends React.Component<Props, State> {
    */
   _scrollResponder: typeof ScrollResponder.Mixin = createScrollResponder(this);
 
-  constructor(...args) {
-    super(...args);
+  constructor(props: Props) {
+    super(props);
 
     /**
      * Part 2: Removing ScrollResponder.Mixin
@@ -610,6 +607,7 @@ class ScrollView extends React.Component<Props, State> {
         typeof ScrollResponder.Mixin[key] === 'function' &&
         key.startsWith('scrollResponder')
       ) {
+        // $FlowFixMe - dynamically adding properties to a class
         (this: any)[key] = ScrollResponder.Mixin[key].bind(this);
       }
     }
@@ -623,6 +621,7 @@ class ScrollView extends React.Component<Props, State> {
     Object.keys(ScrollResponder.Mixin)
       .filter(key => typeof ScrollResponder.Mixin[key] !== 'function')
       .forEach(key => {
+        // $FlowFixMe - dynamically adding properties to a class
         (this: any)[key] = ScrollResponder.Mixin[key];
       });
   }
@@ -666,8 +665,7 @@ class ScrollView extends React.Component<Props, State> {
     }
   }
 
-  // $FlowFixMe - what are the native props we can set for ScrollView?
-  setNativeProps(props: Object) {
+  setNativeProps(props: {[key: string]: mixed}) {
     this._scrollViewRef && this._scrollViewRef.setNativeProps(props);
   }
 
@@ -681,6 +679,7 @@ class ScrollView extends React.Component<Props, State> {
     ...typeof ScrollView,
     ...typeof ScrollResponder.Mixin,
   } {
+    // $FlowFixMe - overriding type to include ScrollResponder.Mixin
     return ((this: any): {
       ...typeof ScrollView,
       ...typeof ScrollResponder.Mixin,
@@ -848,7 +847,7 @@ class ScrollView extends React.Component<Props, State> {
   };
 
   _handleLayout = (e: LayoutEvent) => {
-    if (this.props.invertStickyHeaders) {
+    if (this.props.invertStickyHeaders === true) {
       this.setState({layoutHeight: e.nativeEvent.layout.height});
     }
     if (this.props.onLayout) {
@@ -876,7 +875,7 @@ class ScrollView extends React.Component<Props, State> {
     let ScrollViewClass;
     let ScrollContentContainerViewClass;
     if (Platform.OS === 'android') {
-      if (this.props.horizontal) {
+      if (this.props.horizontal === true) {
         ScrollViewClass = AndroidHorizontalScrollView;
         ScrollContentContainerViewClass = AndroidHorizontalScrollContentView;
       } else {
@@ -899,10 +898,10 @@ class ScrollView extends React.Component<Props, State> {
     );
 
     const contentContainerStyle = [
-      this.props.horizontal && styles.contentContainerHorizontal,
+      this.props.horizontal === true && styles.contentContainerHorizontal,
       this.props.contentContainerStyle,
     ];
-    if (__DEV__ && this.props.style) {
+    if (__DEV__ && this.props.style !== undefined) {
       const style = flattenStyle(this.props.style);
       const childLayoutProps = ['alignItems', 'justifyContent'].filter(
         prop => style && style[prop] !== undefined,
@@ -954,7 +953,7 @@ class ScrollView extends React.Component<Props, State> {
     }
 
     const hasStickyHeaders =
-      stickyHeaderIndices && stickyHeaderIndices.length > 0;
+      Array.isArray(stickyHeaderIndices) && stickyHeaderIndices.length > 0;
 
     const contentContainer = (
       <ScrollContentContainerViewClass
@@ -987,9 +986,10 @@ class ScrollView extends React.Component<Props, State> {
     const DEPRECATED_sendUpdatedChildFrames = !!this.props
       .DEPRECATED_sendUpdatedChildFrames;
 
-    const baseStyle = this.props.horizontal
-      ? styles.baseHorizontal
-      : styles.baseVertical;
+    const baseStyle =
+      this.props.horizontal === true
+        ? styles.baseHorizontal
+        : styles.baseVertical;
     const props = {
       ...this.props,
       alwaysBounceHorizontal,
@@ -1045,12 +1045,12 @@ class ScrollView extends React.Component<Props, State> {
       pagingEnabled: Platform.select({
         // on iOS, pagingEnabled must be set to false to have snapToInterval / snapToOffsets work
         ios:
-          this.props.pagingEnabled &&
+          this.props.pagingEnabled === true &&
           this.props.snapToInterval == null &&
           this.props.snapToOffsets == null,
         // on Android, pagingEnabled must be set to true to have snapToInterval / snapToOffsets work
         android:
-          this.props.pagingEnabled ||
+          this.props.pagingEnabled === true ||
           this.props.snapToInterval != null ||
           this.props.snapToOffsets != null,
       }),

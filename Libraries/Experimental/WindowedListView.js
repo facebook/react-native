@@ -208,6 +208,7 @@ class WindowedListView extends React.Component<Props, State> {
     return (
       this._scrollRef &&
       this._scrollRef.getScrollResponder &&
+      // $FlowFixMe - it actually returns ScrollView & ScrollResponder.Mixin
       this._scrollRef.getScrollResponder()
     );
   }
