@@ -18,7 +18,7 @@ import type {NativeComponent} from 'ReactNative';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
-  
+
   /**
    * Whether the indicator should hide when not animating (true by default).
    *
@@ -47,7 +47,7 @@ type NativeProps = $ReadOnly<{|
    * See http://facebook.github.io/react-native/docs/activityindicator.html#size
    */
   size?: ?(number | 'small' | 'large'),
-                        
+
   style?: ?ViewStyleProp,
   styleAttr?: ?string,
   indeterminate?: ?boolean,
