@@ -5,25 +5,22 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
+ * @flow
  */
 
 'use strict';
 
-const ReactNative = require('ReactNative');
 const Platform = require('Platform');
+const RCTSliderNativeComponent = require('RCTSliderNativeComponent');
 const React = require('React');
+const ReactNative = require('ReactNative');
 const StyleSheet = require('StyleSheet');
-
-const requireNativeComponent = require('requireNativeComponent');
 
 import type {ImageSource} from 'ImageSource';
 import type {ViewStyleProp} from 'StyleSheet';
 import type {ColorValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
 import type {SyntheticEvent} from 'CoreEventTypes';
-
-const RCTSlider = requireNativeComponent('RCTSlider');
 
 type Event = SyntheticEvent<
   $ReadOnly<{|
@@ -200,45 +197,43 @@ type Props = $ReadOnly<{|
  */
 const Slider = (
   props: Props,
-  forwardedRef?: ?React.Ref<'RCTActivityIndicatorView'>,
+  forwardedRef?: ?React.Ref<typeof RCTSliderNativeComponent>,
 ) => {
   const style = StyleSheet.compose(
     styles.slider,
     props.style,
   );
 
-  const onValueChange =
-    props.onValueChange &&
-    ((event: Event) => {
-      let userEvent = true;
-      if (Platform.OS === 'android') {
-        // On Android there's a special flag telling us the user is
-        // dragging the slider.
-        userEvent =
-          event.nativeEvent.fromUser != null && event.nativeEvent.fromUser;
+  const {onValueChange, onSlidingComplete, ...localProps} = props;
+
+  const onValueChangeEvent = onValueChange
+    ? (event: Event) => {
+        let userEvent = true;
+        if (Platform.OS === 'android') {
+          // On Android there's a special flag telling us the user is
+          // dragging the slider.
+          userEvent =
+            event.nativeEvent.fromUser != null && event.nativeEvent.fromUser;
+        }
+        userEvent && onValueChange(event.nativeEvent.value);
       }
-      props.onValueChange &&
-        userEvent &&
-        props.onValueChange(event.nativeEvent.value);
-    });
+    : null;
 
-  const onChange = onValueChange;
-
-  const onSlidingComplete =
-    props.onSlidingComplete &&
-    ((event: Event) => {
-      props.onSlidingComplete &&
-        props.onSlidingComplete(event.nativeEvent.value);
-    });
+  const onChangeEvent = onValueChangeEvent;
+  const onSlidingCompleteEvent = onSlidingComplete
+    ? (event: Event) => {
+        onSlidingComplete(event.nativeEvent.value);
+      }
+    : null;
 
   return (
-    <RCTSlider
-      {...props}
+    <RCTSliderNativeComponent
+      {...localProps}
       ref={forwardedRef}
       style={style}
-      onChange={onChange}
-      onSlidingComplete={onSlidingComplete}
-      onValueChange={onValueChange}
+      onChange={onChangeEvent}
+      onSlidingComplete={onSlidingCompleteEvent}
+      onValueChange={onValueChangeEvent}
       enabled={!props.disabled}
       onStartShouldSetResponder={() => true}
       onResponderTerminationRequest={() => false}
