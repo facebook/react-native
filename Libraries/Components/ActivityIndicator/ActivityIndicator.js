@@ -15,7 +15,7 @@ const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
-const RCTActivityIndicatorNativeComponent = require('RCTActivityIndicatorNativeComponent');
+const RCTActivityIndicatorViewNativeComponent = require('RCTActivityIndicatorViewNativeComponent');
 
 import type {NativeComponent} from 'ReactNative';
 import type {ViewProps} from 'ViewPropTypes';
@@ -23,7 +23,7 @@ import type {ViewProps} from 'ViewPropTypes';
 const RCTActivityIndicator =
   Platform.OS === 'android'
     ? require('ProgressBarAndroid')
-    : RCTActivityIndicatorNativeComponent;
+    : RCTActivityIndicatorViewNativeComponent;
 
 const GRAY = '#999999';
 
