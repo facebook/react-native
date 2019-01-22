@@ -16,20 +16,15 @@ import type {ViewProps} from 'ViewPropTypes';
 import type {ViewStyleProp} from 'StyleSheet';
 import type {NativeComponent} from 'ReactNative';
 
-type IndicatorSize = number | 'small' | 'large';
-
-type IOSProps = $ReadOnly<{|
+type NativeProps = $ReadOnly<{|
+  ...ViewProps,
+  
   /**
    * Whether the indicator should hide when not animating (true by default).
    *
    * See http://facebook.github.io/react-native/docs/activityindicator.html#hideswhenstopped
    */
   hidesWhenStopped?: ?boolean,
-|}>;
-
-type Props = $ReadOnly<{|
-  ...ViewProps,
-  ...IOSProps,
 
   /**
    * Whether to show the indicator (true, the default) or hide it (false).
@@ -51,16 +46,12 @@ type Props = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/activityindicator.html#size
    */
-  size?: ?IndicatorSize,
-|}>;
-
-type NativeProps = {
-  ...Props,
-  ref?: any,
+  size?: ?(number | 'small' | 'large'),
+                        
   style?: ?ViewStyleProp,
   styleAttr?: ?string,
   indeterminate?: ?boolean,
-};
+|}>;
 
 type ActivityIndicatorNativeType = Class<NativeComponent<NativeProps>>;
 
