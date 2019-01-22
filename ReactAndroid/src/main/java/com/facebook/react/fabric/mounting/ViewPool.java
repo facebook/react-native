@@ -15,7 +15,7 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
 import java.util.HashMap;
 import java.util.Map;
 
-final class ViewPool {
+public final class ViewPool {
   private static final int POOL_SIZE = 512;
   private final Map<String, ClearableSynchronizedPool<View>> mViewPool = new HashMap<>();
   private final ViewManagerRegistry mViewManagerRegistry;

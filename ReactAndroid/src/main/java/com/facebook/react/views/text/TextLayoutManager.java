@@ -317,7 +317,8 @@ public class TextLayoutManager {
     return YogaMeasureOutput.make(PixelUtil.toSPFromPixel(width), PixelUtil.toSPFromPixel(height));
   }
 
-  private static class SetSpanOperation {
+  // TODO T31905686: This class should be private
+  public static class SetSpanOperation {
     protected int start, end;
     protected ReactSpan what;
 
