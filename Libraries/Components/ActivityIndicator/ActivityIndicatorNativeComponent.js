@@ -10,12 +10,10 @@
 
 'use strict';
 
-const React = require('React');
 const requireNativeComponent = require('requireNativeComponent');
 
 import type {ViewProps} from 'ViewPropTypes';
 import type {ViewStyleProp} from 'StyleSheet';
-import type {SyntheticEvent} from 'CoreEventTypes';
 import type {NativeComponent} from 'ReactNative';
 
 type IndicatorSize = number | 'small' | 'large';
