@@ -88,29 +88,29 @@ fb_native.remote_file(
 fb_native.remote_file(
     name = "lib-support-v4-support-compat-aar",
     sha1 = "a55ad550d0b84c7fec7ecca012690636062c0e64",
-    url = "mvn:com.android.support:support-compat:aar:27.1.1",
+    url = "mvn:com.android.support:support-compat:aar:28.0.0",
 )
 
 fb_native.remote_file(
     name = "lib-support-v4-support-core-utils-aar",
     sha1 = "b3a7a4040fda0c5138dbc8c477103b6723b9dbe6",
-    url = "mvn:com.android.support:support-core-utils:aar:27.1.1",
+    url = "mvn:com.android.support:support-core-utils:aar:28.0.0",
 )
 
 fb_native.remote_file(
     name = "lib-support-v4-support-core-ui-aar",
     sha1 = "f9acdb8a4c3a9fe883fd7fa5efd3f0426bb9dcda",
-    url = "mvn:com.android.support:support-core-ui:aar:27.1.1",
+    url = "mvn:com.android.support:support-core-ui:aar:28.0.0",
 )
 
 fb_native.remote_file(
     name = "lib-support-v4-support-media-compat-aar",
     sha1 = "10e309e2cc22ff4cab30bd5f573e4bb30be707ad",
-    url = "mvn:com.android.support:support-media-compat:aar:27.1.1",
+    url = "mvn:com.android.support:support-media-compat:aar:28.0.0",
 )
 
 fb_native.remote_file(
     name = "lib-support-v4-support-fragment-aar",
     sha1 = "eb8053ebf038b7561c29e5e8964664fac05f375e",
-    url = "mvn:com.android.support:support-fragment:aar:27.1.1",
+    url = "mvn:com.android.support:support-fragment:aar:28.0.0",
 )
