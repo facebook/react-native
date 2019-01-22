@@ -12,7 +12,6 @@
 const requireNativeComponent = require('requireNativeComponent');
 
 import type {ViewProps} from 'ViewPropTypes';
-import type {SyntheticEvent} from 'CoreEventTypes';
 import type {NativeComponent} from 'ReactNative';
 
 export type ProgressBarAndroidProps = $ReadOnly<{|
