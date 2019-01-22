@@ -212,11 +212,6 @@ const APIExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
-    key: 'AlertExample',
-    module: require('./AlertExample').AlertExample,
-    supportsTVOS: true,
-  },
-  {
     key: 'AlertIOSExample',
     module: require('./AlertIOSExample'),
     supportsTVOS: true,
