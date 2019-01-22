@@ -15,7 +15,7 @@ import type {ViewProps} from 'ViewPropTypes';
 import type {SyntheticEvent} from 'CoreEventTypes';
 import type {NativeComponent} from 'ReactNative';
 
-type ProgressBarAndroidProps = $ReadOnly<{|
+export type ProgressBarAndroidProps = $ReadOnly<{|
   ...ViewProps,
 
   /**
