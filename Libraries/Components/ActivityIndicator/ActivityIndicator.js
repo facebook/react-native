@@ -15,7 +15,7 @@ const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
-const requireNativeComponent = require('requireNativeComponent');
+const ActivityIndicatorNativeComponent = require('ActivityIndicatorNativeComponent');
 
 import type {NativeComponent} from 'ReactNative';
 import type {ViewProps} from 'ViewPropTypes';
@@ -23,7 +23,7 @@ import type {ViewProps} from 'ViewPropTypes';
 const RCTActivityIndicator =
   Platform.OS === 'android'
     ? require('ProgressBarAndroid')
-    : requireNativeComponent('RCTActivityIndicatorView');
+    : ActivityIndicatorNativeComponent;
 
 const GRAY = '#999999';
 
@@ -69,10 +69,7 @@ type Props = $ReadOnly<{|
  *
  * See http://facebook.github.io/react-native/docs/activityindicator.html
  */
-const ActivityIndicator = (
-  props: Props,
-  forwardedRef?: ?React.Ref<'RCTActivityIndicatorView'>,
-) => {
+const ActivityIndicator = (props: Props, forwardedRef?: any) => {
   const {onLayout, style, ...restProps} = props;
   let sizeStyle;
 
