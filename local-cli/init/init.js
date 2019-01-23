@@ -90,7 +90,7 @@ function generateProject(destinationRoot, newProjectName, options) {
     });
   }
   if (!options['skip-jest']) {
-    const jestDeps = `jest babel-jest metro-react-native-babel-preset react-test-renderer@${reactVersion}`;
+    const jestDeps = `jest babel-core@^7.0.0-bridge.0 babel-jest metro-react-native-babel-preset react-test-renderer@${reactVersion}`;
     if (yarnVersion) {
       console.log('Adding Jest...');
       execSync(`yarn add ${jestDeps} --dev --exact`, {stdio: 'inherit'});
