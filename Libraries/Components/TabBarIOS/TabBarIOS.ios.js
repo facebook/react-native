@@ -14,12 +14,10 @@ const React = require('React');
 const StyleSheet = require('StyleSheet');
 const TabBarItemIOS = require('TabBarItemIOS');
 
-const requireNativeComponent = require('requireNativeComponent');
+const RCTTabBar = require('RCTTabBarNativeComponent');
 
 import type {ViewProps} from 'ViewPropTypes';
 import type {ColorValue} from 'StyleSheetTypes';
-
-const RCTTabBar = requireNativeComponent('RCTTabBar');
 
 type Props = $ReadOnly<{|
   ...ViewProps,
