@@ -9,6 +9,6 @@ rn_prebuilt_jar(
 
 fb_native.remote_file(
     name = "support-annotations-binary.jar",
-    sha1 = "39ded76b5e1ce1c5b2688e1d25cdc20ecee32007",
+    sha1 = "ed73f5337a002d1fd24339d5fb08c2c9d9ca60d8",
     url = "mvn:com.android.support:support-annotations:jar:28.0.0",
 )
