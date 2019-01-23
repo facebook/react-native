@@ -68,7 +68,7 @@ var bigPRThreshold = 600;
 if (danger.github.pr.additions + danger.github.pr.deletions > bigPRThreshold) {
   const title = ':exclamation: Big PR';
   const idea =
-    `This PR is very unlikely to get reviewed because it touches too many lines (${danger
+    `This PR is unlikely to get reviewed because it touches too many lines (${danger
       .github.pr.additions + danger.github.pr.deletions}). ` +
     'Consider sending smaller Pull Requests and stack them on top of each other.';
   warn(`${title} - <i>${idea}</i>`);
