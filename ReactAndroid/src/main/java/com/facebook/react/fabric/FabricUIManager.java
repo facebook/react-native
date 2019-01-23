@@ -14,8 +14,8 @@ import static com.facebook.infer.annotation.ThreadConfined.UI;
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 
 import android.annotation.SuppressLint;
-import android.support.annotation.GuardedBy;
-import android.support.annotation.Nullable;
+import javax.annotation.concurrent.GuardedBy;
+import javax.annotation.Nullable;
 import android.support.annotation.UiThread;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.fabric.jsi.Binding;

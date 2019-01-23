@@ -8,7 +8,7 @@ package com.facebook.react.fabric.mounting;
 
 import android.content.Context;
 import android.support.annotation.AnyThread;
-import android.support.annotation.Nullable;
+import javax.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.view.View;
 import android.view.ViewGroup;
