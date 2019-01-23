@@ -80,7 +80,7 @@ if (danger.github.pr.additions + danger.github.pr.deletions > bigPRThreshold) {
 ) {
   const title = ':exclamation: Big PR';
   const idea =
-    `This PR is very unlikely to get reviewed because it touches too many files (${danger
+    `This PR is unlikely to get reviewed because it touches too many files (${danger
       .git.modified_files +
       danger.git.added_files +
       danger.git.deleted_files}). ` +
