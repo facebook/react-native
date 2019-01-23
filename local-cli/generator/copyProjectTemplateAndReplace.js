@@ -127,6 +127,7 @@ function translateFilePath(path) {
     .replace('_BUCK', 'BUCK')
     .replace('_gitignore', '.gitignore')
     .replace('_gitattributes', '.gitattributes')
+    .replace('_babel.config.js', 'babel.config.js')
     .replace('_babelrc', '.babelrc')
     .replace('_flowconfig', '.flowconfig')
     .replace('_buckconfig', '.buckconfig')
