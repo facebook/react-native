@@ -85,17 +85,6 @@ task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy
     include "folly-${FOLLY_VERSION}/folly/**/*", 'Android.mk'
     eachFile { fname -> fname.path = (fname.path - "folly-${FOLLY_VERSION}/") }
     includeEmptyDirs = false
-
-    // Patch for folly build break on gcc 4.9 and could be removed after build by clang
-    filesMatching('**/container/detail/F14Policy.h') {
-        filter(ReplaceTokens, tokens: [
-                'ObjectHolder(Args&&... args) : value_{std::forward<Args>(args)...} {}': 'ObjectHolder(Args&&... args) : value_({std::forward<Args>(args)...}) {}',
-                'ObjectHolder(Args&&... args) : T{std::forward<Args>(args)...} {}'     : 'ObjectHolder(Args&&... args) : T({std::forward<Args>(args)...}) {}',
-        ],
-                beginToken: '',
-                endToken: '')
-    }
-
     into "$thirdPartyNdkDir/folly"
 }
 
@@ -323,14 +312,14 @@ android {
 dependencies {
     api 'com.facebook.infer.annotation:infer-annotation:0.11.2'
     api 'javax.inject:javax.inject:1'
-    api 'com.android.support:appcompat-v7:27.1.1'
+    api 'com.android.support:appcompat-v7:28.0.0'
     api "com.facebook.fresco:fresco:${FRESCO_VERSION}"
     api "com.facebook.fresco:imagepipeline-okhttp3:${FRESCO_VERSION}"
     api 'com.facebook.soloader:soloader:0.5.1'
     api 'com.google.code.findbugs:jsr305:3.0.2'
     api "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
     api "com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}"
-    api 'com.squareup.okio:okio:1.14.0'
+    api 'com.squareup.okio:okio:1.15.0'
 
     testImplementation "junit:junit:${JUNIT_VERSION}"
     testImplementation "org.powermock:powermock-api-mockito:${POWERMOCK_VERSION}"

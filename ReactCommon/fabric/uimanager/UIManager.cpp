@@ -86,7 +86,10 @@ void UIManager::setNativeProps(
 
   shadowTreeRegistry_->visit(
       shadowNode->getRootTag(), [&](const ShadowTree &shadowTree) {
-        shadowTree.completeByReplacingShadowNode(shadowNode, newShadowNode);
+        shadowTree.tryCommit(
+            [&](const SharedRootShadowNode &oldRootShadowNode) {
+              return oldRootShadowNode->clone(shadowNode, newShadowNode);
+            });
       });
 }
 
@@ -98,7 +101,11 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
   if (!ancestorShadowNode) {
     shadowTreeRegistry_->visit(
         shadowNode.getRootTag(), [&](const ShadowTree &shadowTree) {
-          ancestorShadowNode = shadowTree.getRootShadowNode().get();
+          shadowTree.tryCommit(
+              [&](const SharedRootShadowNode &oldRootShadowNode) {
+                ancestorShadowNode = oldRootShadowNode.get();
+                return nullptr;
+              });
         });
   }
 

@@ -18,11 +18,6 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
-import android.text.style.AbsoluteSizeSpan;
-import android.text.style.BackgroundColorSpan;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.StrikethroughSpan;
-import android.text.style.UnderlineSpan;
 import android.util.LruCache;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
@@ -88,12 +83,12 @@ public class TextLayoutManager {
       int end = sb.length();
       if (end >= start) {
         if (textAttributes.mIsColorSet) {
-          ops.add(new SetSpanOperation(start, end, new ForegroundColorSpan(textAttributes.mColor)));
+          ops.add(new SetSpanOperation(start, end, new ReactForegroundColorSpan(textAttributes.mColor)));
         }
         if (textAttributes.mIsBackgroundColorSet) {
           ops.add(
             new SetSpanOperation(
-              start, end, new BackgroundColorSpan(textAttributes.mBackgroundColor)));
+              start, end, new ReactBackgroundColorSpan(textAttributes.mBackgroundColor)));
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
           if (!Float.isNaN(textAttributes.mLetterSpacing)) {
@@ -105,7 +100,7 @@ public class TextLayoutManager {
         }
         ops.add(
           new SetSpanOperation(
-            start, end, new AbsoluteSizeSpan(textAttributes.mFontSize)));
+            start, end, new ReactAbsoluteSizeSpan(textAttributes.mFontSize)));
         if (textAttributes.mFontStyle != UNSET
           || textAttributes.mFontWeight != UNSET
           || textAttributes.mFontFamily != null) {
@@ -120,10 +115,10 @@ public class TextLayoutManager {
                 context.getAssets())));
         }
         if (textAttributes.mIsUnderlineTextDecorationSet) {
-          ops.add(new SetSpanOperation(start, end, new UnderlineSpan()));
+          ops.add(new SetSpanOperation(start, end, new ReactUnderlineSpan()));
         }
         if (textAttributes.mIsLineThroughTextDecorationSet) {
-          ops.add(new SetSpanOperation(start, end, new StrikethroughSpan()));
+          ops.add(new SetSpanOperation(start, end, new ReactStrikethroughSpan()));
         }
         if (textAttributes.mTextShadowOffsetDx != 0 || textAttributes.mTextShadowOffsetDy != 0) {
           ops.add(
@@ -322,11 +317,12 @@ public class TextLayoutManager {
     return YogaMeasureOutput.make(PixelUtil.toSPFromPixel(width), PixelUtil.toSPFromPixel(height));
   }
 
-  private static class SetSpanOperation {
+  // TODO T31905686: This class should be private
+  public static class SetSpanOperation {
     protected int start, end;
-    protected Object what;
+    protected ReactSpan what;
 
-    SetSpanOperation(int start, int end, Object what) {
+    SetSpanOperation(int start, int end, ReactSpan what) {
       this.start = start;
       this.end = end;
       this.what = what;

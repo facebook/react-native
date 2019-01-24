@@ -14,7 +14,8 @@ const Platform = require('Platform');
 const React = require('React');
 const {NativeComponent} = require('ReactNative');
 
-const requireNativeComponent = require('requireNativeComponent');
+const AndroidSwipeRefreshLayoutNativeComponent = require('AndroidSwipeRefreshLayoutNativeComponent');
+const RCTRefreshControlNativeComponent = require('RCTRefreshControlNativeComponent');
 const nullthrows = require('nullthrows');
 
 import type {ColorValue} from 'StyleSheetTypes';
@@ -31,12 +32,6 @@ if (Platform.OS === 'android') {
 } else {
   RefreshLayoutConsts = {SIZE: {}};
 }
-type NativeRefreshControlType = Class<NativeComponent<RefreshControlProps>>;
-
-const NativeRefreshControl: NativeRefreshControlType =
-  Platform.OS === 'ios'
-    ? (requireNativeComponent('RCTRefreshControl'): any)
-    : (requireNativeComponent('AndroidSwipeRefreshLayout'): any);
 
 type IOSProps = $ReadOnly<{|
   /**
@@ -143,7 +138,7 @@ export type RefreshControlProps = $ReadOnly<{|
 class RefreshControl extends React.Component<RefreshControlProps> {
   static SIZE = RefreshLayoutConsts.SIZE;
 
-  _nativeRef: ?React.ElementRef<NativeRefreshControlType> = null;
+  _setNativePropsOnRef: ?({refreshing: boolean}) => void;
   _lastNativeRefreshing = false;
 
   componentDidMount() {
@@ -156,8 +151,11 @@ class RefreshControl extends React.Component<RefreshControlProps> {
     // the js value.
     if (this.props.refreshing !== prevProps.refreshing) {
       this._lastNativeRefreshing = this.props.refreshing;
-    } else if (this.props.refreshing !== this._lastNativeRefreshing) {
-      nullthrows(this._nativeRef).setNativeProps({
+    } else if (
+      this.props.refreshing !== this._lastNativeRefreshing &&
+      this._setNativePropsOnRef
+    ) {
+      this._setNativePropsOnRef({
         refreshing: this.props.refreshing,
       });
       this._lastNativeRefreshing = this.props.refreshing;
@@ -165,15 +163,34 @@ class RefreshControl extends React.Component<RefreshControlProps> {
   }
 
   render() {
-    return (
-      <NativeRefreshControl
-        {...this.props}
-        ref={ref => {
-          this._nativeRef = ref;
-        }}
-        onRefresh={this._onRefresh}
-      />
-    );
+    const setRef = ref =>
+      (this._setNativePropsOnRef = ref ? ref.setNativeProps.bind(ref) : null);
+    if (Platform.OS === 'ios') {
+      const {
+        enabled,
+        colors,
+        progressBackgroundColor,
+        size,
+        progressViewOffset,
+        ...props
+      } = this.props;
+      return (
+        <RCTRefreshControlNativeComponent
+          {...props}
+          ref={setRef}
+          onRefresh={this._onRefresh}
+        />
+      );
+    } else {
+      const {tintColor, titleColor, title, ...props} = this.props;
+      return (
+        <AndroidSwipeRefreshLayoutNativeComponent
+          {...props}
+          ref={setRef}
+          onRefresh={this._onRefresh}
+        />
+      );
+    }
   }
 
   _onRefresh = () => {

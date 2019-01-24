@@ -403,8 +403,8 @@ export type Props = $ReadOnly<{|
    *   - `false`, deprecated, use 'never' instead
    *   - `true`, deprecated, use 'always' instead
    */
-  /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an error
-   * found when Flow v0.89 was deployed. To see the error, delete this comment
+  /* $FlowFixMe(>=0.91.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.91 was deployed. To see the error, delete this comment
    * and run Flow. */
   keyboardShouldPersistTaps?: ?('always' | 'never' | 'handled' | false | true),
   /**
@@ -599,7 +599,11 @@ class ScrollView extends React.Component<Props, State> {
      *
      * 3. Mixin methods access other mixin methods via dynamic dispatch using
      *    this. Since mixin methods are bound to the component instance, we need
-     *    to copy all mixin methods to the component instance.
+     *    to copy all mixin methods to the component instance. This is also
+     *    necessary because getScrollResponder() is a public method that returns
+     *    an object that can be used to execute all scrollResponder methods.
+     *    Since the object returned from that method is the ScrollView instance,
+     *    we need to bind all mixin methods to the ScrollView instance.
      */
     for (const key in ScrollResponder.Mixin) {
       if (
@@ -672,8 +676,14 @@ class ScrollView extends React.Component<Props, State> {
    * implement this method so that they can be composed while providing access
    * to the underlying scroll responder's methods.
    */
-  getScrollResponder(): ScrollView {
-    return this;
+  getScrollResponder(): {
+    ...typeof ScrollView,
+    ...typeof ScrollResponder.Mixin,
+  } {
+    return ((this: any): {
+      ...typeof ScrollView,
+      ...typeof ScrollResponder.Mixin,
+    });
   }
 
   getScrollableNode(): any {
@@ -751,7 +761,6 @@ class ScrollView extends React.Component<Props, State> {
   }
 
   _getKeyForIndex(index, childArray) {
-    // $FlowFixMe Invalid prop usage
     const child = childArray[index];
     return child && child.key;
   }

@@ -20,9 +20,7 @@ const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
-const requireNativeComponent = require('requireNativeComponent');
-
-const RCTModalHostView = requireNativeComponent('RCTModalHostView');
+const RCTModalHostView = require('RCTModalHostViewNativeComponent');
 
 const ModalEventEmitter =
   Platform.OS === 'ios' && NativeModules.ModalManager

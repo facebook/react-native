@@ -85,7 +85,7 @@ namespace facebook {
 namespace react {
 
 void EventsNestedObjectNativeComponentEventEmitter::onChange(EventsNestedObjectNativeComponentOnChangeStruct event) const {
-  dispatchEvent(\\"onChange\\", [event=std::move(event)](jsi::Runtime &runtime) {
+  dispatchEvent(\\"change\\", [event=std::move(event)](jsi::Runtime &runtime) {
     auto payload = jsi::Object(runtime);
     {
               auto location = jsi::Object(runtime);
@@ -126,7 +126,7 @@ namespace facebook {
 namespace react {
 
 void EventsNativeComponentEventEmitter::onChange(EventsNativeComponentOnChangeStruct event) const {
-  dispatchEvent(\\"onChange\\", [event=std::move(event)](jsi::Runtime &runtime) {
+  dispatchEvent(\\"change\\", [event=std::move(event)](jsi::Runtime &runtime) {
     auto payload = jsi::Object(runtime);
     payload.setProperty(runtime, \\"value\\", event.value);
 payload.setProperty(runtime, \\"source\\", event.source);
@@ -136,7 +136,7 @@ payload.setProperty(runtime, \\"scale\\", event.scale);
   });
 }
 void EventsNativeComponentEventEmitter::onEventDirect(EventsNativeComponentOnEventDirectStruct event) const {
-  dispatchEvent(\\"onEventDirect\\", [event=std::move(event)](jsi::Runtime &runtime) {
+  dispatchEvent(\\"eventDirect\\", [event=std::move(event)](jsi::Runtime &runtime) {
     auto payload = jsi::Object(runtime);
     payload.setProperty(runtime, \\"value\\", event.value);
     return payload;

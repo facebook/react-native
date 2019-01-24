@@ -15,7 +15,7 @@
 
 @interface RCTConvert (ART)
 
-+ (CGPathRef)CGPath:(id)json;
++ (CGPathRef)CGPath:(id)json CF_RETURNS_NOT_RETAINED;
 + (CTTextAlignment)CTTextAlignment:(id)json;
 + (ARTTextFrame)ARTTextFrame:(id)json;
 + (ARTCGFloatArray)ARTCGFloatArray:(id)json;
@@ -23,7 +23,7 @@
 
 + (CGPoint)CGPoint:(id)json offset:(NSUInteger)offset;
 + (CGRect)CGRect:(id)json offset:(NSUInteger)offset;
-+ (CGColorRef)CGColor:(id)json offset:(NSUInteger)offset;
-+ (CGGradientRef)CGGradient:(id)json offset:(NSUInteger)offset;
++ (CGColorRef)CGColor:(id)json offset:(NSUInteger)offset CF_RETURNS_NOT_RETAINED;
++ (CGGradientRef)CGGradient:(id)json offset:(NSUInteger)offset CF_RETURNS_NOT_RETAINED;
 
 @end

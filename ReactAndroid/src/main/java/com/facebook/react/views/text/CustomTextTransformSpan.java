@@ -12,7 +12,7 @@ import android.graphics.Paint;
 import android.text.style.ReplacementSpan;
 import java.text.BreakIterator;
 
-public class CustomTextTransformSpan extends ReplacementSpan {
+public class CustomTextTransformSpan extends ReplacementSpan implements ReactSpan {
 
   /**
    * A {@link ReplacementSpan} that allows declarative changing of text casing.

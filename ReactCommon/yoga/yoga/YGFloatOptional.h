@@ -11,10 +11,10 @@
 #include "Yoga-internal.h"
 
 struct YGFloatOptional {
- private:
+private:
   float value_ = std::numeric_limits<float>::quiet_NaN();
 
- public:
+public:
   explicit constexpr YGFloatOptional(float value) : value_(value) {}
   constexpr YGFloatOptional() = default;
 

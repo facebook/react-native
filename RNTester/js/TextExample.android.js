@@ -461,6 +461,26 @@ class TextExample extends React.Component<{}> {
             keep writing it{"'"}ll just keep going and going
           </Text>
         </RNTesterBlock>
+        <RNTesterBlock title="allowFontScaling attribute">
+          <Text>
+            By default, text will respect Text Size accessibility setting on
+            Android. It means that all font sizes will be increased or decreased
+            depending on the value of the Text Size setting in the OS's Settings
+            app.
+          </Text>
+          <Text style={{marginTop: 10}}>
+            You can disable scaling for your Text component by passing {'"'}allowFontScaling={
+              '{'
+            }false{'}"'} prop.
+          </Text>
+          <Text allowFontScaling={false} style={{marginTop: 20, fontSize: 15}}>
+            This text will not scale.{' '}
+            <Text style={{fontSize: 15}}>
+              This text also won't scale because it inherits "allowFontScaling"
+              from its parent.
+            </Text>
+          </Text>
+        </RNTesterBlock>
         <RNTesterBlock title="selectable attribute">
           <Text selectable>
             This text is selectable if you click-and-hold, and will offer the
