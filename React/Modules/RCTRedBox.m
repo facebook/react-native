@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -47,7 +47,7 @@
 #else
         self.windowLevel = UIWindowLevelStatusBar - 1;
 #endif
-        self.backgroundColor = [UIColor colorWithRed:0.8 green:0 blue:0 alpha:1];
+        self.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
         self.hidden = YES;
 
         UIViewController *rootController = [UIViewController new];
@@ -58,7 +58,7 @@
         const CGFloat buttonHeight = 60;
 
         CGRect detailsFrame = rootView.bounds;
-        detailsFrame.size.height -= buttonHeight;
+        detailsFrame.size.height -= buttonHeight + [self bottomSafeViewHeight];
 
         _stackTraceTableView = [[UITableView alloc] initWithFrame:detailsFrame style:UITableViewStylePlain];
         _stackTraceTableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -73,10 +73,10 @@
         [rootView addSubview:_stackTraceTableView];
 
 #if TARGET_OS_SIMULATOR
-        NSString *reloadText = @"Reload JS (\u2318R)";
-        NSString *dismissText = @"Dismiss (ESC)";
-        NSString *copyText = @"Copy (\u2325\u2318C)";
-        NSString *extraText = @"Extra Info (\u2318E)";
+        NSString *reloadText = @"Reload\n(\u2318R)";
+        NSString *dismissText = @"Dismiss\n(ESC)";
+        NSString *copyText = @"Copy\n(\u2325\u2318C)";
+        NSString *extraText = @"Extra Info\n(\u2318E)";
 #else
         NSString *reloadText = @"Reload JS";
         NSString *dismissText = @"Dismiss";
@@ -88,51 +88,83 @@
         dismissButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin;
         dismissButton.accessibilityIdentifier = @"redbox-dismiss";
         dismissButton.titleLabel.font = [UIFont systemFontOfSize:13];
+        dismissButton.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+        dismissButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+        dismissButton.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
         [dismissButton setTitle:dismissText forState:UIControlStateNormal];
-        [dismissButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateNormal];
-        [dismissButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
+        [dismissButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [dismissButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateHighlighted];
         [dismissButton addTarget:self action:@selector(dismiss) forControlEvents:UIControlEventTouchUpInside];
 
         UIButton *reloadButton = [UIButton buttonWithType:UIButtonTypeCustom];
         reloadButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin;
         reloadButton.accessibilityIdentifier = @"redbox-reload";
         reloadButton.titleLabel.font = [UIFont systemFontOfSize:13];
-
+        reloadButton.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+        reloadButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+        reloadButton.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
         [reloadButton setTitle:reloadText forState:UIControlStateNormal];
-        [reloadButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateNormal];
-        [reloadButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
+        [reloadButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [reloadButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateHighlighted];
         [reloadButton addTarget:self action:@selector(reload) forControlEvents:UIControlEventTouchUpInside];
 
         UIButton *copyButton = [UIButton buttonWithType:UIButtonTypeCustom];
         copyButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin;
         copyButton.accessibilityIdentifier = @"redbox-copy";
         copyButton.titleLabel.font = [UIFont systemFontOfSize:13];
+        copyButton.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+        copyButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+        copyButton.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
         [copyButton setTitle:copyText forState:UIControlStateNormal];
-        [copyButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateNormal];
-        [copyButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
+        [copyButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [copyButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateHighlighted];
         [copyButton addTarget:self action:@selector(copyStack) forControlEvents:UIControlEventTouchUpInside];
 
         UIButton *extraButton = [UIButton buttonWithType:UIButtonTypeCustom];
         extraButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleLeftMargin;
         extraButton.accessibilityIdentifier = @"redbox-extra";
         extraButton.titleLabel.font = [UIFont systemFontOfSize:13];
+        extraButton.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
+        extraButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+        extraButton.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
         [extraButton setTitle:extraText forState:UIControlStateNormal];
-        [extraButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateNormal];
-        [extraButton setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
+        [extraButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+        [extraButton setTitleColor:[UIColor colorWithWhite:1 alpha:0.5] forState:UIControlStateHighlighted];
         [extraButton addTarget:self action:@selector(showExtraDataViewController) forControlEvents:UIControlEventTouchUpInside];
 
         CGFloat buttonWidth = self.bounds.size.width / 4;
-        dismissButton.frame = CGRectMake(0, self.bounds.size.height - buttonHeight, buttonWidth, buttonHeight);
-        reloadButton.frame = CGRectMake(buttonWidth, self.bounds.size.height - buttonHeight, buttonWidth, buttonHeight);
-        copyButton.frame = CGRectMake(buttonWidth * 2, self.bounds.size.height - buttonHeight, buttonWidth, buttonHeight);
-        extraButton.frame = CGRectMake(buttonWidth * 3, self.bounds.size.height - buttonHeight, buttonWidth, buttonHeight);
+        CGFloat bottomButtonHeight = self.bounds.size.height - buttonHeight - [self bottomSafeViewHeight];
+    
+        dismissButton.frame = CGRectMake(0, bottomButtonHeight, buttonWidth, buttonHeight);
+        reloadButton.frame = CGRectMake(buttonWidth, bottomButtonHeight, buttonWidth, buttonHeight);
+        copyButton.frame = CGRectMake(buttonWidth * 2, bottomButtonHeight, buttonWidth, buttonHeight);
+        extraButton.frame = CGRectMake(buttonWidth * 3, bottomButtonHeight, buttonWidth, buttonHeight);
+
+        UIView *topBorder = [[UIView alloc] initWithFrame:CGRectMake(0, bottomButtonHeight + 1, rootView.frame.size.width, 1)];
+        topBorder.backgroundColor = [UIColor colorWithRed:0.70 green:0.70 blue:0.70 alpha:1.0];
 
         [rootView addSubview:dismissButton];
         [rootView addSubview:reloadButton];
         [rootView addSubview:copyButton];
         [rootView addSubview:extraButton];
+        [rootView addSubview:topBorder];
+        
+        UIView *bottomSafeView = [UIView new];
+        bottomSafeView.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
+        bottomSafeView.frame = CGRectMake(0, self.bounds.size.height - [self bottomSafeViewHeight], self.bounds.size.width, [self bottomSafeViewHeight]);
+        
+        [rootView addSubview:bottomSafeView];
     }
     return self;
+}
+
+- (NSInteger)bottomSafeViewHeight
+{
+    if (@available(iOS 11.0, *)) {
+        return [UIApplication sharedApplication].delegate.window.safeAreaInsets.bottom;
+    } else {
+        return 0;
+    }
 }
 
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
@@ -247,14 +279,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (UITableViewCell *)reuseCell:(UITableViewCell *)cell forErrorMessage:(NSString *)message
 {
     if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"msg-cell"];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"msg-cell"];
         cell.textLabel.accessibilityIdentifier = @"redbox-error";
         cell.textLabel.textColor = [UIColor whiteColor];
         cell.textLabel.font = [UIFont boldSystemFontOfSize:16];
         cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
         cell.textLabel.numberOfLines = 0;
         cell.detailTextLabel.textColor = [UIColor whiteColor];
-        cell.backgroundColor = [UIColor clearColor];
+        cell.backgroundColor = [UIColor colorWithRed:0.82 green:0.10 blue:0.15 alpha:1.0];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
 
@@ -267,11 +299,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 {
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"cell"];
-        cell.textLabel.textColor = [UIColor colorWithWhite:1 alpha:0.9];
+        cell.textLabel.textColor = [UIColor whiteColor];
         cell.textLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:14];
         cell.textLabel.lineBreakMode = NSLineBreakByCharWrapping;
         cell.textLabel.numberOfLines = 2;
-        cell.detailTextLabel.textColor = [UIColor colorWithWhite:1 alpha:0.7];
+        cell.detailTextLabel.textColor = [UIColor colorWithRed:0.70 green:0.70 blue:0.70 alpha:1.0];
         cell.detailTextLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:11];
         cell.detailTextLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
         cell.backgroundColor = [UIColor clearColor];

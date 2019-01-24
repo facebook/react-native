@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,7 +12,7 @@
 const NativeAnimatedModule = require('NativeModules').NativeAnimatedModule;
 const NativeEventEmitter = require('NativeEventEmitter');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 import type {AnimationConfig} from './animations/Animation';
 import type {EventConfig} from './AnimatedEvent';
@@ -153,6 +153,7 @@ const STYLES_WHITELIST = {
   borderTopLeftRadius: true,
   borderTopRightRadius: true,
   borderTopStartRadius: true,
+  elevation: true,
   /* ios styles */
   shadowOpacity: true,
   shadowRadius: true,

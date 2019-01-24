@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,37 +10,74 @@
 
 'use strict';
 
-var React = require('react');
-var createReactClass = require('create-react-class');
-var ReactNative = require('react-native');
-var {PanResponder, StyleSheet, View} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {PanResponder, StyleSheet, View} = ReactNative;
 
-var CIRCLE_SIZE = 80;
+import type {PanResponderInstance, GestureState} from 'PanResponder';
+import type {PressEvent} from 'CoreEventTypes';
 
-var PanResponderExample = createReactClass({
-  displayName: 'PanResponderExample',
+type CircleStyles = {
+  backgroundColor?: string,
+  left?: number,
+  top?: number,
+};
 
-  statics: {
-    title: 'PanResponder Sample',
-    description:
-      'Shows the use of PanResponder to provide basic gesture handling.',
-  },
+const CIRCLE_SIZE = 80;
 
-  _panResponder: {},
-  _previousLeft: 0,
-  _previousTop: 0,
-  _circleStyles: {},
-  circle: (null: ?{setNativeProps(props: Object): void}),
+type Props = $ReadOnly<{||}>;
 
-  UNSAFE_componentWillMount: function() {
-    this._panResponder = PanResponder.create({
-      onStartShouldSetPanResponder: this._handleStartShouldSetPanResponder,
-      onMoveShouldSetPanResponder: this._handleMoveShouldSetPanResponder,
-      onPanResponderGrant: this._handlePanResponderGrant,
-      onPanResponderMove: this._handlePanResponderMove,
-      onPanResponderRelease: this._handlePanResponderEnd,
-      onPanResponderTerminate: this._handlePanResponderEnd,
-    });
+class PanResponderExample extends React.Component<Props> {
+  _handleStartShouldSetPanResponder = (
+    event: PressEvent,
+    gestureState: GestureState,
+  ): boolean => {
+    // Should we become active when the user presses down on the circle?
+    return true;
+  };
+
+  _handleMoveShouldSetPanResponder = (
+    event: PressEvent,
+    gestureState: GestureState,
+  ): boolean => {
+    // Should we become active when the user moves a touch over the circle?
+    return true;
+  };
+
+  _handlePanResponderGrant = (
+    event: PressEvent,
+    gestureState: GestureState,
+  ) => {
+    this._highlight();
+  };
+
+  _handlePanResponderMove = (event: PressEvent, gestureState: GestureState) => {
+    this._circleStyles.style.left = this._previousLeft + gestureState.dx;
+    this._circleStyles.style.top = this._previousTop + gestureState.dy;
+    this._updateNativeStyles();
+  };
+
+  _handlePanResponderEnd = (event: PressEvent, gestureState: GestureState) => {
+    this._unHighlight();
+    this._previousLeft += gestureState.dx;
+    this._previousTop += gestureState.dy;
+  };
+
+  _panResponder: PanResponderInstance = PanResponder.create({
+    onStartShouldSetPanResponder: this._handleStartShouldSetPanResponder,
+    onMoveShouldSetPanResponder: this._handleMoveShouldSetPanResponder,
+    onPanResponderGrant: this._handlePanResponderGrant,
+    onPanResponderMove: this._handlePanResponderMove,
+    onPanResponderRelease: this._handlePanResponderEnd,
+    onPanResponderTerminate: this._handlePanResponderEnd,
+  });
+
+  _previousLeft: number = 0;
+  _previousTop: number = 0;
+  _circleStyles: {|style: CircleStyles|} = {style: {}};
+  circle: ?React.ElementRef<typeof View> = null;
+
+  UNSAFE_componentWillMount() {
     this._previousLeft = 20;
     this._previousTop = 84;
     this._circleStyles = {
@@ -50,13 +87,27 @@ var PanResponderExample = createReactClass({
         backgroundColor: 'green',
       },
     };
-  },
+  }
 
-  componentDidMount: function() {
+  componentDidMount() {
     this._updateNativeStyles();
-  },
+  }
 
-  render: function() {
+  _highlight() {
+    this._circleStyles.style.backgroundColor = 'blue';
+    this._updateNativeStyles();
+  }
+
+  _unHighlight() {
+    this._circleStyles.style.backgroundColor = 'green';
+    this._updateNativeStyles();
+  }
+
+  _updateNativeStyles() {
+    this.circle && this.circle.setNativeProps(this._circleStyles);
+  }
+
+  render() {
     return (
       <View style={styles.container}>
         <View
@@ -68,54 +119,10 @@ var PanResponderExample = createReactClass({
         />
       </View>
     );
-  },
+  }
+}
 
-  _highlight: function() {
-    this._circleStyles.style.backgroundColor = 'blue';
-    this._updateNativeStyles();
-  },
-
-  _unHighlight: function() {
-    this._circleStyles.style.backgroundColor = 'green';
-    this._updateNativeStyles();
-  },
-
-  _updateNativeStyles: function() {
-    this.circle && this.circle.setNativeProps(this._circleStyles);
-  },
-
-  _handleStartShouldSetPanResponder: function(
-    e: Object,
-    gestureState: Object,
-  ): boolean {
-    // Should we become active when the user presses down on the circle?
-    return true;
-  },
-
-  _handleMoveShouldSetPanResponder: function(
-    e: Object,
-    gestureState: Object,
-  ): boolean {
-    // Should we become active when the user moves a touch over the circle?
-    return true;
-  },
-
-  _handlePanResponderGrant: function(e: Object, gestureState: Object) {
-    this._highlight();
-  },
-  _handlePanResponderMove: function(e: Object, gestureState: Object) {
-    this._circleStyles.style.left = this._previousLeft + gestureState.dx;
-    this._circleStyles.style.top = this._previousTop + gestureState.dy;
-    this._updateNativeStyles();
-  },
-  _handlePanResponderEnd: function(e: Object, gestureState: Object) {
-    this._unHighlight();
-    this._previousLeft += gestureState.dx;
-    this._previousTop += gestureState.dy;
-  },
-});
-
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   circle: {
     width: CIRCLE_SIZE,
     height: CIRCLE_SIZE,
@@ -130,4 +137,14 @@ var styles = StyleSheet.create({
   },
 });
 
-module.exports = PanResponderExample;
+exports.title = 'PanResponder Sample';
+exports.description =
+  'Shows the Use of PanResponder to provide basic gesture handling';
+exports.examples = [
+  {
+    title: 'Basic gresture handling',
+    render: function(): React.Element<typeof PanResponderExample> {
+      return <PanResponderExample />;
+    },
+  },
+];

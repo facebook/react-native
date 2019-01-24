@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,16 +7,19 @@
 
 package com.facebook.react.modules.network;
 
+import android.content.Context;
 import android.os.Build;
 
 import com.facebook.common.logging.FLog;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
 
+import okhttp3.Cache;
 import okhttp3.ConnectionSpec;
 import okhttp3.OkHttpClient;
 import okhttp3.TlsVersion;
@@ -57,6 +60,13 @@ public class OkHttpClientProvider {
     return createClientBuilder().build();
   }
 
+  public static OkHttpClient createClient(Context context) {
+    if (sFactory != null) {
+      return sFactory.createNewNetworkModuleClient();
+    }
+    return createClientBuilder(context).build();
+  }
+
   public static OkHttpClient.Builder createClientBuilder() {
     // No timeouts by default
     OkHttpClient.Builder client = new OkHttpClient.Builder()
@@ -66,6 +76,24 @@ public class OkHttpClientProvider {
       .cookieJar(new ReactCookieJarContainer());
 
     return enableTls12OnPreLollipop(client);
+  }
+
+  public static OkHttpClient.Builder createClientBuilder(Context context) {
+    int cacheSize = 10 * 1024 * 1024; // 10 Mo
+    return createClientBuilder(context, cacheSize);
+  }
+
+  public static OkHttpClient.Builder createClientBuilder(Context context, int cacheSize) {
+    OkHttpClient.Builder client = createClientBuilder();
+
+    if (cacheSize == 0) {
+      return client;
+    }
+
+    File cacheDirectory = new File(context.getCacheDir(), "http-cache");
+    Cache cache = new Cache(cacheDirectory, cacheSize);
+
+    return client.cache(cache);
   }
 
   /*

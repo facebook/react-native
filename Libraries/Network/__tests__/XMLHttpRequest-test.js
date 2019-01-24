@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -37,12 +37,12 @@ jest.dontMock('event-target-shim').setMock('NativeModules', {
 const XMLHttpRequest = require('XMLHttpRequest');
 
 describe('XMLHttpRequest', function() {
-  var xhr;
-  var handleTimeout;
-  var handleError;
-  var handleLoad;
-  var handleReadyStateChange;
-  var handleLoadEnd;
+  let xhr;
+  let handleTimeout;
+  let handleError;
+  let handleLoad;
+  let handleReadyStateChange;
+  let handleLoadEnd;
 
   beforeEach(() => {
     xhr = new XMLHttpRequest();
@@ -197,7 +197,7 @@ describe('XMLHttpRequest', function() {
     xhr.send();
 
     xhr.upload.onprogress = jest.fn();
-    var handleProgress = jest.fn();
+    const handleProgress = jest.fn();
     xhr.upload.addEventListener('progress', handleProgress);
     setRequestId(6);
     xhr.__didUploadProgress(requestId, 42, 100);

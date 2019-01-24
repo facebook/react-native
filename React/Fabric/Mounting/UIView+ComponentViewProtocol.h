@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateProps:(facebook::react::SharedProps)props
            oldProps:(facebook::react::SharedProps)oldProps;
 
-- (void)updateEventHandlers:(facebook::react::SharedEventHandlers)eventHandlers;
+- (void)updateEventEmitter:(facebook::react::SharedEventEmitter)eventEmitter;
 
 - (void)updateLocalData:(facebook::react::SharedLocalData)localData
            oldLocalData:(facebook::react::SharedLocalData)oldLocalData;

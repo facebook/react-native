@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,10 +8,11 @@
 #import "RCTScrollViewComponentView.h"
 
 #import <React/RCTAssert.h>
-#import <fabric/graphics/Geometry.h>
-#import <fabric/scrollview/ScrollViewLocalData.h>
-#import <fabric/scrollview/ScrollViewProps.h>
-#import <fabric/scrollview/ScrollViewEventHandlers.h>
+#import <react/components/scrollview/ScrollViewShadowNode.h>
+#import <react/components/scrollview/ScrollViewLocalData.h>
+#import <react/components/scrollview/ScrollViewProps.h>
+#import <react/components/scrollview/ScrollViewEventEmitter.h>
+#import <react/graphics/Geometry.h>
 
 #import "RCTConversions.h"
 #import "RCTEnhancedScrollView.h"
@@ -33,6 +34,9 @@ using namespace facebook::react;
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
+    static const auto defaultProps = std::make_shared<const ScrollViewProps>();
+    _props = defaultProps;
+
     _scrollView = [[RCTEnhancedScrollView alloc] initWithFrame:self.bounds];
     _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _scrollView.delegate = self;
@@ -45,19 +49,19 @@ using namespace facebook::react;
   return self;
 }
 
-#pragma mark - ComponentViewProtocol
+#pragma mark - RCTComponentViewProtocol
+
++ (ComponentHandle)componentHandle
+{
+  return ScrollViewShadowNode::Handle();
+}
 
 - (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
 {
+  const auto &oldScrollViewProps = *std::static_pointer_cast<const ScrollViewProps>(oldProps ?: _props);
+  const auto &newScrollViewProps = *std::static_pointer_cast<const ScrollViewProps>(props);
+
   [super updateProps:props oldProps:oldProps];
-
-  if (!oldProps) {
-    oldProps = _props ?: std::make_shared<ScrollViewProps>();
-  }
-  _props = props;
-
-  auto oldScrollViewProps = *std::dynamic_pointer_cast<const ScrollViewProps>(oldProps);
-  auto newScrollViewProps = *std::dynamic_pointer_cast<const ScrollViewProps>(props);
 
 #define REMAP_PROP(reactName, localName, target) \
   if (oldScrollViewProps.reactName != newScrollViewProps.reactName) { \
@@ -135,47 +139,47 @@ using namespace facebook::react;
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
 {
-  std::static_pointer_cast<const ScrollViewEventHandlers>(_eventHandlers)->onScroll([self _scrollViewMetrics]);
+  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScroll([self _scrollViewMetrics]);
 }
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView
 {
-  std::static_pointer_cast<const ScrollViewEventHandlers>(_eventHandlers)->onScroll([self _scrollViewMetrics]);
+  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScroll([self _scrollViewMetrics]);
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
-  std::static_pointer_cast<const ScrollViewEventHandlers>(_eventHandlers)->onScrollBeginDrag([self _scrollViewMetrics]);
+  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScrollBeginDrag([self _scrollViewMetrics]);
 }
 
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
 {
-  std::static_pointer_cast<const ScrollViewEventHandlers>(_eventHandlers)->onScrollEndDrag([self _scrollViewMetrics]);
+  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScrollEndDrag([self _scrollViewMetrics]);
 }
 
 - (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView
 {
-  std::static_pointer_cast<const ScrollViewEventHandlers>(_eventHandlers)->onMomentumScrollBegin([self _scrollViewMetrics]);
+  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onMomentumScrollBegin([self _scrollViewMetrics]);
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
-  std::static_pointer_cast<const ScrollViewEventHandlers>(_eventHandlers)->onMomentumScrollEnd([self _scrollViewMetrics]);
+  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onMomentumScrollEnd([self _scrollViewMetrics]);
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
 {
-  std::static_pointer_cast<const ScrollViewEventHandlers>(_eventHandlers)->onMomentumScrollEnd([self _scrollViewMetrics]);
+  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onMomentumScrollEnd([self _scrollViewMetrics]);
 }
 
 - (void)scrollViewWillBeginZooming:(UIScrollView *)scrollView withView:(nullable UIView *)view
 {
-  std::static_pointer_cast<const ScrollViewEventHandlers>(_eventHandlers)->onScrollBeginDrag([self _scrollViewMetrics]);
+  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScrollBeginDrag([self _scrollViewMetrics]);
 }
 
 - (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(nullable UIView *)view atScale:(CGFloat)scale
 {
-  std::static_pointer_cast<const ScrollViewEventHandlers>(_eventHandlers)->onScrollEndDrag([self _scrollViewMetrics]);
+  std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScrollEndDrag([self _scrollViewMetrics]);
 }
 
 @end

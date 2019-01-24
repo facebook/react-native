@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,10 +7,7 @@
 
 package com.facebook.react.views.modal;
 
-import java.util.Map;
-
 import android.content.DialogInterface;
-
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.LayoutShadowNode;
@@ -19,6 +16,7 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import java.util.Map;
 
 /**
  * View manager for {@link ReactModalHostView} components.
@@ -26,7 +24,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 @ReactModule(name = ReactModalHostManager.REACT_CLASS)
 public class ReactModalHostManager extends ViewGroupManager<ReactModalHostView> {
 
-  protected static final String REACT_CLASS = "RCTModalHostView";
+  public static final String REACT_CLASS = "RCTModalHostView";
 
   @Override
   public String getName() {

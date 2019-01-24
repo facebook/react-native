@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #include "Instance.h"
 
@@ -145,6 +148,10 @@ void *Instance::getJavaScriptContext() {
 
 bool Instance::isInspectable() {
   return nativeToJsBridge_ ? nativeToJsBridge_->isInspectable() : false;
+}
+  
+bool Instance::isBatchActive() {
+  return nativeToJsBridge_ ? nativeToJsBridge_->isBatchActive() : false;
 }
 
 void Instance::callJSFunction(std::string &&module, std::string &&method,

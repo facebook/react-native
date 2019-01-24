@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,7 +9,12 @@
 
 #import <React/RCTConvert.h>
 #import <React/RCTDefines.h>
+
+#if __has_include(<React/fishhook.h>)
+#import <React/fishhook.h>
+#else
 #import <fishhook/fishhook.h>
+#endif
 
 #if __has_include(<os/log.h>) && defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 100300 /* __IPHONE_10_3 */
 #import <os/log.h>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -62,17 +62,14 @@ static BOOL RCTJSCSetOption(const char *option)
 
 static vm_size_t RCTGetResidentMemorySize(void)
 {
-  struct task_basic_info info;
-  mach_msg_type_number_t size = sizeof(info);
-  kern_return_t kerr = task_info(mach_task_self(),
-                                 TASK_BASIC_INFO,
-                                 (task_info_t)&info,
-                                 &size);
-  if (kerr != KERN_SUCCESS) {
-    return 0;
-  }
-
-  return info.resident_size;
+    vm_size_t memoryUsageInByte = 0;
+    task_vm_info_data_t vmInfo;
+    mach_msg_type_number_t count = TASK_VM_INFO_COUNT;
+    kern_return_t kernelReturn = task_info(mach_task_self(), TASK_VM_INFO, (task_info_t) &vmInfo, &count);
+    if(kernelReturn == KERN_SUCCESS) {
+        memoryUsageInByte = (vm_size_t) vmInfo.phys_footprint;
+    } 
+    return memoryUsageInByte;
 }
 
 @interface RCTPerfMonitor : NSObject <RCTBridgeModule, RCTInvalidating, UITableViewDataSource, UITableViewDelegate>

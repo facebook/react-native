@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -26,6 +26,12 @@
  * The native id of the view, used to locate view from native codes
  */
 @property (nonatomic, copy) NSString *nativeID;
+
+/**
+ * Determines whether or not a view should ignore inverted colors or not. Used to set
+ * UIView property accessibilityIgnoresInvertColors in iOS 11+.
+ */
+@property (nonatomic, assign) BOOL shouldAccessibilityIgnoresInvertColors;
 
 /**
  * Layout direction of the view.

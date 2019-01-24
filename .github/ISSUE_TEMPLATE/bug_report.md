@@ -1,28 +1,31 @@
 ---
-name: 🐛 Bug Report
-about: Something is not working as expected.
-
+name: I want to report an issue with React Native.
+about: You want to report a reproducible bug or regression in React Native.
 ---
 
-<!-- GitHub Issues in the `facebook/react-native` repository are used exclusively for tracking bugs in React Native. -->
-
-- [ ] I have reviewed the [documentation](https://facebook.github.io/react-native)
-- [ ] I have searched [existing issues](https://github.com/facebook/react-native/issues)
-- [ ] I am using the [latest React Native version](https://github.com/facebook/react-native/releases)
-
-<!-- Describe your issue in detail. -->
-
-## Environment
-<!-- Required. Run `react-native info` in your terminal and paste its contents here. -->
-
-## Steps to Reproduce
 <!--
-  Required. Let us know how to reproduce the issue. Include a code sample, share a project,
-  or share an app that reproduces the issue using [Snack](https://snack.expo.io/).
+  If you are looking for help, please review the documentation or ask a question on Stack Overflow:
+  - https://facebook.github.io/react-native
+  - https://stackoverflow.com/questions/tagged/react-native
+
+  If you want to report a problem with React Native itself, please fill out the template.
+
+  If you would like to report an issue in the documentation, or anything related to the React Native
+  website, please visit https://github.com/facebook/react-native-website/issues.
 -->
 
-## Expected Behavior
-<!-- Write what you thought would happen. -->
+## Environment
+<!-- Run `react-native info` in your terminal and paste its contents here. -->
 
-## Actual Behavior
-<!-- Write what happened. Include screenshots if needed. If this is a regression, let us know. -->
+## Description
+<!--
+  Describe your issue in detail. Include screenshots if needed. If this is a regression, let us know.
+  -->
+
+## Reproducible Demo
+<!--
+  Let us know how to reproduce the issue. Include a code sample, share a project,
+  or share an app that reproduces the issue using https://snack.expo.io/.
+
+  Please follow the guidelines for providing a minimal example: https://stackoverflow.com/help/mcve.
+-->

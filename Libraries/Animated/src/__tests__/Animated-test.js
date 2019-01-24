@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -134,7 +134,9 @@ describe('Animated tests', () => {
       expect(callback).toBeCalled();
     });
 
-    it('send toValue when an underdamped spring stops', () => {
+    // This test is flaky and we are asking open source to fix it
+    // https://github.com/facebook/react-native/issues/21517
+    it.skip('send toValue when an underdamped spring stops', () => {
       const anim = new Animated.Value(0);
       const listener = jest.fn();
       anim.addListener(listener);
@@ -572,7 +574,7 @@ describe('Animated tests', () => {
       expect(listener.mock.calls.length).toBe(1);
       expect(listener).toBeCalledWith({foo: 42});
     });
-    it('should call forked event listeners', () => {
+    it('should call forked event listeners, with Animated.event() listener', () => {
       const value = new Animated.Value(0);
       const listener = jest.fn();
       const handler = Animated.event([{foo: value}], {listener});
@@ -582,6 +584,24 @@ describe('Animated tests', () => {
       expect(value.__getValue()).toBe(42);
       expect(listener.mock.calls.length).toBe(1);
       expect(listener).toBeCalledWith({foo: 42});
+      expect(listener2.mock.calls.length).toBe(1);
+      expect(listener2).toBeCalledWith({foo: 42});
+    });
+    it('should call forked event listeners, with js listener', () => {
+      const listener = jest.fn();
+      const listener2 = jest.fn();
+      const forkedHandler = Animated.forkEvent(listener, listener2);
+      forkedHandler({foo: 42});
+      expect(listener.mock.calls.length).toBe(1);
+      expect(listener).toBeCalledWith({foo: 42});
+      expect(listener2.mock.calls.length).toBe(1);
+      expect(listener2).toBeCalledWith({foo: 42});
+    });
+    it('should call forked event listeners, with undefined listener', () => {
+      const listener = undefined;
+      const listener2 = jest.fn();
+      const forkedHandler = Animated.forkEvent(listener, listener2);
+      forkedHandler({foo: 42});
       expect(listener2.mock.calls.length).toBe(1);
       expect(listener2).toBeCalledWith({foo: 42});
     });

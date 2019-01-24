@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 #include <folly/dynamic.h>
 
@@ -19,23 +20,20 @@ namespace react {
  * `Tag` and `InstanceHandle` are used to address React Native components.
  */
 using Tag = int32_t;
-using InstanceHandle = void *;
+using InstanceHandle = struct InstanceHandleDummyStruct {
+} *;
+
+/*
+ * An id of a running Surface instance that is used to refer to the instance.
+ */
+using SurfaceId = int32_t;
 
 /*
  * `RawProps` represents untyped map with props comes from JavaScript side.
  */
 // TODO(T26954420): Use iterator as underlying type for RawProps.
-using RawProps = std::map<std::string, folly::dynamic>;
+using RawProps = std::unordered_map<std::string, folly::dynamic>;
 using SharedRawProps = std::shared_ptr<const RawProps>;
-
-/*
- * Components event handlers.
- * Something which usually called from JavaScript side.
- */
-using BubblingEventHandler = void (*)(void);
-using SharedBubblingEventHandler = std::shared_ptr<BubblingEventHandler>;
-using DirectEventHandler = void (*)(void);
-using SharedDirectEventHandler = std::shared_ptr<DirectEventHandler>;
 
 /*
  * Universal component handle which allows to refer to `ComponentDescriptor`s
@@ -43,7 +41,7 @@ using SharedDirectEventHandler = std::shared_ptr<DirectEventHandler>;
  * Practically, it's something that concrete ShadowNode and concrete
  * ComponentDescriptor have in common.
  */
-using ComponentHandle = size_t;
+using ComponentHandle = int64_t;
 
 /*
  * String identifier for components used for addressing them from
