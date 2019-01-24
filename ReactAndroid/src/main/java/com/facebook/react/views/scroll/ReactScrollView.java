@@ -186,12 +186,6 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   }
 
   @Override
-  protected void onLayout(boolean changed, int l, int t, int r, int b) {
-    // Call with the present values in order to re-layout if necessary
-    scrollTo(getScrollX(), getScrollY());
-  }
-
-  @Override
   protected void onSizeChanged(int w, int h, int oldw, int oldh) {
     super.onSizeChanged(w, h, oldw, oldh);
     if (mRemoveClippedSubviews) {
