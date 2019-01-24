@@ -14,7 +14,7 @@ import com.facebook.react.uimanager.ViewManagerRegistry;
 import java.util.WeakHashMap;
 
 /** Class that provides pool for views based on {@link ThemedReactContext}. */
-final class ContextBasedViewPool {
+public final class ContextBasedViewPool {
   private final WeakHashMap<ThemedReactContext, ViewPool> mContextViewPoolHashMap =
       new WeakHashMap<>();
   private final ViewManagerRegistry mViewManagerRegistry;

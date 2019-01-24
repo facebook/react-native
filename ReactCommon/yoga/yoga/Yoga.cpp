@@ -402,20 +402,6 @@ void YGNodeInsertChild(
   node->markDirtyAndPropogate();
 }
 
-void YGNodeInsertSharedChild(
-    const YGNodeRef node,
-    const YGNodeRef child,
-    const uint32_t index) {
-  YGAssertWithNode(
-      node,
-      node->getMeasure() == nullptr,
-      "Cannot add child: Nodes with measure functions cannot have children.");
-
-  node->insertChild(child, index);
-  child->setOwner(nullptr);
-  node->markDirtyAndPropogate();
-}
-
 void YGNodeRemoveChild(const YGNodeRef owner, const YGNodeRef excludedChild) {
   // This algorithm is a forked variant from cloneChildrenIfNeeded in YGNode
   // that excludes a child.

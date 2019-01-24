@@ -26,6 +26,9 @@
 ; require from fbjs/lib instead: require('fbjs/lib/warning')
 .*/node_modules/warning/.*
 
+[untyped]
+.*/node_modules/@react-native-community/cli/.*/.*
+
 [include]
 
 [libs]

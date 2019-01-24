@@ -345,6 +345,14 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     }
   }
 
+  @ReactProp(name = ViewProps.MAX_FONT_SIZE_MULTIPLIER, defaultFloat = Float.NaN)
+  public void setMaxFontSizeMultiplier(float maxFontSizeMultiplier) {
+    if (maxFontSizeMultiplier != mTextAttributes.getMaxFontSizeMultiplier()) {
+      mTextAttributes.setMaxFontSizeMultiplier(maxFontSizeMultiplier);
+      markUpdated();
+    }
+  }
+
   @ReactProp(name = ViewProps.TEXT_ALIGN)
   public void setTextAlign(@Nullable String textAlign) {
     if (textAlign == null || "auto".equals(textAlign)) {
