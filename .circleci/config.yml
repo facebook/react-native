@@ -41,13 +41,13 @@ aliases:
 
   - &restore-cache-downloads-buck
     keys:
-      - v3-buck-v2018.10.29.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
-      - v3-buck-v2018.10.29.01-
+      - v3-buck-v2019.01.10.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
+      - v3-buck-v2019.01.10.01-
   - &save-cache-downloads-buck
     paths:
       - ~/buck
       - ~/okbuck
-    key: v3-buck-v2018.10.29.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}
+    key: v3-buck-v2019.01.10.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}
 
   - &restore-cache-watchman
     keys:
