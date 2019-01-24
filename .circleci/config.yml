@@ -108,6 +108,16 @@ aliases:
         yarn install --non-interactive --cache-folder ~/.cache/yarn
       fi
 
+  - &install-buck
+    name: Install BUCK
+    command: |
+      buck --version
+      # Install related tooling
+      if [[ ! -e ~/okbuck ]]; then
+        git clone https://github.com/uber/okbuck.git ~/okbuck --depth=1
+      fi
+      mkdir -p ~/react-native/tooling/junit
+      cp -R ~/okbuck/tooling/junit/* ~/react-native/tooling/junit/.
   - &validate-android-sdk
     name: Validate Android SDK Install
     command: ./scripts/validate-android-sdk.sh
@@ -415,6 +425,7 @@ jobs:
 
       # Install Buck
       - restore-cache: *restore-cache-downloads-buck
+      - run: *install-buck
       - save-cache: *save-cache-downloads-buck
 
       # Validate Android test environment (including Buck)
