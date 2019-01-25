@@ -359,14 +359,6 @@ void jni_YGNodeInsertChild(
       _jlong2YGNodeRef(nativePointer), _jlong2YGNodeRef(childPointer), index);
 }
 
-void jni_YGNodeInsertSharedChild(
-    jlong nativePointer,
-    jlong childPointer,
-    jint index) {
-  YGNodeInsertSharedChild(
-      _jlong2YGNodeRef(nativePointer), _jlong2YGNodeRef(childPointer), index);
-}
-
 void jni_YGNodeRemoveChild(jlong nativePointer, jlong childPointer) {
   YGNodeRemoveChild(
       _jlong2YGNodeRef(nativePointer), _jlong2YGNodeRef(childPointer));
@@ -672,7 +664,6 @@ jint JNI_OnLoad(JavaVM* vm, void*) {
             YGMakeCriticalNativeMethod(jni_YGNodeReset),
             YGMakeCriticalNativeMethod(jni_YGNodeClearChildren),
             YGMakeCriticalNativeMethod(jni_YGNodeInsertChild),
-            YGMakeCriticalNativeMethod(jni_YGNodeInsertSharedChild),
             YGMakeCriticalNativeMethod(jni_YGNodeRemoveChild),
             YGMakeCriticalNativeMethod(jni_YGNodeSetIsReferenceBaseline),
             YGMakeCriticalNativeMethod(jni_YGNodeIsReferenceBaseline),

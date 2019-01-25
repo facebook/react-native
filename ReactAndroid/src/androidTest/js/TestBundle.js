@@ -59,6 +59,10 @@ const apps = [
     component: () => require('ImageOverlayColorTestApp'),
   },
   {
+    appKey: 'ImageErrorTestApp',
+    component: () => require('ImageErrorTestApp'),
+  },
+  {
     appKey: 'InitialPropsTestApp',
     component: () => require('InitialPropsTestApp'),
   },

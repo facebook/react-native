@@ -102,10 +102,9 @@ public:
   }
 
   // returns the YGNodeRef that owns this YGNode. An owner is used to identify
-  // the YogaTree that a YGNode belongs to.
-  // This method will return the parent of the YGNode when a YGNode only belongs
-  // to one YogaTree or nullptr when the YGNode is shared between two or more
-  // YogaTrees.
+  // the YogaTree that a YGNode belongs to. This method will return the parent
+  // of the YGNode when a YGNode only belongs to one YogaTree or nullptr when
+  // the YGNode is shared between two or more YogaTrees.
   YGNodeRef getOwner() const {
     return owner_;
   }

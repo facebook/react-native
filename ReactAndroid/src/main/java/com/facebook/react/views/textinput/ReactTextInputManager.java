@@ -217,6 +217,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setTypeface(newTypeface);
   }
 
+  @ReactProp(name = ViewProps.MAX_FONT_SIZE_MULTIPLIER, defaultFloat = Float.NaN)
+  public void setMaxFontSizeMultiplier(ReactEditText view, float maxFontSizeMultiplier) {
+    view.setMaxFontSizeMultiplier(maxFontSizeMultiplier);
+  }
+
   /**
   /* This code was taken from the method setFontWeight of the class ReactTextShadowNode
   /* TODO: Factor into a common place they can both use
@@ -317,6 +322,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = ViewProps.LETTER_SPACING, defaultFloat = 0)
   public void setLetterSpacing(ReactEditText view, float letterSpacing) {
     view.setLetterSpacingPt(letterSpacing);
+  }
+
+  @ReactProp(name = ViewProps.ALLOW_FONT_SCALING, defaultBoolean = true)
+  public void setAllowFontScaling(ReactEditText view, boolean allowFontScaling) {
+    view.setAllowFontScaling(allowFontScaling);
   }
 
   @ReactProp(name = "placeholder")

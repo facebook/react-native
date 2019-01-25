@@ -20,9 +20,6 @@ import android.text.TextWatcher;
 import android.text.TextUtils;
 import android.text.method.KeyListener;
 import android.text.method.QwertyKeyListener;
-import android.text.style.AbsoluteSizeSpan;
-import android.text.style.BackgroundColorSpan;
-import android.text.style.ForegroundColorSpan;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -34,10 +31,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerModule;
-import com.facebook.react.views.text.CustomStyleSpan;
-import com.facebook.react.views.text.ReactTagSpan;
+import com.facebook.react.views.text.ReactSpan;
 import com.facebook.react.views.text.ReactTextUpdate;
 import com.facebook.react.views.text.TextAttributes;
 import com.facebook.react.views.text.TextInlineImageSpan;
@@ -402,11 +397,7 @@ public class ReactEditText extends EditText {
     Object[] spans = getText().getSpans(0, length(), Object.class);
     for (int spanIdx = 0; spanIdx < spans.length; spanIdx++) {
       // Remove all styling spans we might have previously set
-      if (ForegroundColorSpan.class.isInstance(spans[spanIdx]) ||
-          BackgroundColorSpan.class.isInstance(spans[spanIdx]) ||
-          AbsoluteSizeSpan.class.isInstance(spans[spanIdx]) ||
-          CustomStyleSpan.class.isInstance(spans[spanIdx]) ||
-          ReactTagSpan.class.isInstance(spans[spanIdx])) {
+      if (spans[spanIdx] instanceof ReactSpan) {
         getText().removeSpan(spans[spanIdx]);
       }
 
@@ -644,9 +635,23 @@ public class ReactEditText extends EditText {
     applyTextAttributes();
   }
 
+  public void setAllowFontScaling(boolean allowFontScaling) {
+    if (mTextAttributes.getAllowFontScaling() != allowFontScaling) {
+      mTextAttributes.setAllowFontScaling(allowFontScaling);
+      applyTextAttributes();
+    }
+  }
+
   public void setFontSize(float fontSize) {
     mTextAttributes.setFontSize(fontSize);
     applyTextAttributes();
+  }
+
+  public void setMaxFontSizeMultiplier(float maxFontSizeMultiplier) {
+    if (maxFontSizeMultiplier != mTextAttributes.getMaxFontSizeMultiplier()) {
+      mTextAttributes.setMaxFontSizeMultiplier(maxFontSizeMultiplier);
+      applyTextAttributes();
+    }
   }
 
   protected void applyTextAttributes() {
@@ -660,7 +665,7 @@ public class ReactEditText extends EditText {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       float effectiveLetterSpacing = mTextAttributes.getEffectiveLetterSpacing();
       if (!Float.isNaN(effectiveLetterSpacing)) {
-        setLetterSpacing(effectiveLetterSpacing / getTextSize());
+        setLetterSpacing(effectiveLetterSpacing);
       }
     }
   }
