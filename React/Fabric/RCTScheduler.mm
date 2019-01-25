@@ -47,11 +47,11 @@ private:
   std::shared_ptr<SchedulerDelegateProxy> _delegateProxy;
 }
 
-- (instancetype)initWithContextContainer:(std::shared_ptr<void>)contextContatiner
+- (instancetype)initWithContextContainer:(std::shared_ptr<void>)contextContainer
 {
   if (self = [super init]) {
     _delegateProxy = std::make_shared<SchedulerDelegateProxy>((__bridge void *)self);
-    _scheduler = std::make_shared<Scheduler>(std::static_pointer_cast<ContextContainer>(contextContatiner), getDefaultComponentRegistryFactory());
+    _scheduler = std::make_shared<Scheduler>(std::static_pointer_cast<ContextContainer>(contextContainer), getDefaultComponentRegistryFactory());
     _scheduler->setDelegate(_delegateProxy.get());
   }
 
