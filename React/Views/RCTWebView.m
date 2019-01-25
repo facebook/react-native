@@ -247,7 +247,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   if (isJSNavigation && [request.URL.host isEqualToString:kPostMessageHost]) {
     NSString *data = request.URL.query;
     data = [data stringByReplacingOccurrencesOfString:@"+" withString:@" "];
-    data = [data stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLHostAllowedCharacterSet];
+    data = [data stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
 
     NSMutableDictionary<NSString *, id> *event = [self baseEvent];
     [event addEntriesFromDictionary: @{
