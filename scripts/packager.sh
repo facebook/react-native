@@ -9,4 +9,4 @@ THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOUR
 # shellcheck source=/dev/null
 source "${THIS_DIR}/.packager.env"
 cd "$THIS_DIR/.." || exit
-node "./cli.js" start "$@"
+node "./local-cli/cli.js" start "$@"
