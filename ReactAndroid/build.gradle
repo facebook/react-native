@@ -141,25 +141,26 @@ task downloadJSC(dependsOn: createNativeDepsDirectories, type: Download) {
 }
 
 // Create Android.mk library module based on jsc from npm
-task prepareJSC(dependsOn: downloadJSC) << {
-    def jscTar = tarTree(downloadJSC.dest)
-    def jscAAR = jscTar.matching({ it.include "**/android-jsc/**/*.aar" }).singleFile
-    def soFiles = zipTree(jscAAR).matching({ it.include "**/*.so" })
+task prepareJSC(dependsOn: downloadJSC) {
+    doLast {
+        def jscTar = tarTree(downloadJSC.dest)
+        def jscAAR = jscTar.matching({ it.include "**/android-jsc/**/*.aar" }).singleFile
+        def soFiles = zipTree(jscAAR).matching({ it.include "**/*.so" })
 
-    def headerFiles = jscTar.matching({ it.include "**/include/*.h" })
+        def headerFiles = jscTar.matching({ it.include "**/include/*.h" })
 
-    copy {
-        from soFiles
-        from headerFiles
-        from "src/main/jni/third-party/jsc/Android.mk"
+        copy {
+            from soFiles
+            from headerFiles
+            from "src/main/jni/third-party/jsc/Android.mk"
 
-        filesMatching("**/*.h", { it.path = "JavaScriptCore/${it.name}"})
+            filesMatching("**/*.h", { it.path = "JavaScriptCore/${it.name}" })
 
-        includeEmptyDirs false
-        into "$thirdPartyNdkDir/jsc"
+            includeEmptyDirs false
+            into "$thirdPartyNdkDir/jsc"
+        }
     }
 }
-
 task downloadNdkBuildDependencies {
     if (!boostPath) {
         dependsOn downloadBoost
