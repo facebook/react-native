@@ -11,8 +11,6 @@
 'use strict';
 
 const React = require('react');
-const RNTesterBlock = require('RNTesterBlock');
-const RNTesterPage = require('RNTesterPage');
 const {
   Animated,
   Image,
@@ -23,25 +21,15 @@ const {
 } = require('react-native');
 
 type Props = $ReadOnly<{||}>;
-type State = {|
+type ChangingChildrenState = {|
   alternateChildren: boolean,
 |};
 
-class MaskedViewExample extends React.Component<Props, State> {
-  state = {
-    alternateChildren: true,
-  };
-
+class AnimatedMaskExample extends React.Component<Props> {
   _maskRotateAnimatedValue = new Animated.Value(0);
   _maskScaleAnimatedValue = new Animated.Value(1);
 
   componentDidMount() {
-    setInterval(() => {
-      this.setState(state => ({
-        alternateChildren: !state.alternateChildren,
-      }));
-    }, 1000);
-
     Animated.loop(
       Animated.sequence([
         Animated.timing(this._maskScaleAnimatedValue, {
@@ -68,102 +56,73 @@ class MaskedViewExample extends React.Component<Props, State> {
 
   render() {
     return (
-      <RNTesterPage title="<MaskedViewIOS>">
-        <RNTesterBlock title="Basic Mask">
-          <View style={{width: 300, height: 300, alignSelf: 'center'}}>
-            <MaskedViewIOS
-              style={{flex: 1}}
-              maskElement={
-                <View style={styles.maskContainerStyle}>
-                  <Text style={styles.maskTextStyle}>Basic Mask</Text>
-                </View>
-              }>
-              <View style={{flex: 1, backgroundColor: 'blue'}} />
-              <View style={{flex: 1, backgroundColor: 'red'}} />
-            </MaskedViewIOS>
-          </View>
-        </RNTesterBlock>
-        <RNTesterBlock title="Image Mask">
-          <View
+      <View style={{width: 300, height: 300, alignSelf: 'center'}}>
+        <MaskedViewIOS
+          style={{flex: 1}}
+          maskElement={
+            <Animated.View
+              style={[
+                styles.maskContainerStyle,
+                {transform: [{scale: this._maskScaleAnimatedValue}]},
+              ]}>
+              <Text style={styles.maskTextStyle}>Basic Mask</Text>
+            </Animated.View>
+          }>
+          <Animated.View
             style={{
-              width: 300,
-              height: 300,
-              alignSelf: 'center',
-              backgroundColor: '#eeeeee',
+              flex: 1,
+              transform: [
+                {
+                  rotate: this._maskRotateAnimatedValue.interpolate({
+                    inputRange: [0, 360],
+                    outputRange: ['0deg', '360deg'],
+                  }),
+                },
+              ],
             }}>
-            <MaskedViewIOS
-              style={{flex: 1}}
-              maskElement={
-                <View style={styles.maskContainerStyle}>
-                  <Image
-                    style={{height: 200, width: 200}}
-                    source={require('./imageMask.png')}
-                  />
-                </View>
-              }>
-              <View style={styles.maskContainerStyle}>
-                <Image
-                  resizeMode="cover"
-                  style={{width: 200, height: 200}}
-                  source={{
-                    uri:
-                      'https://38.media.tumblr.com/9e9bd08c6e2d10561dd1fb4197df4c4e/tumblr_mfqekpMktw1rn90umo1_500.gif',
-                  }}
-                />
-              </View>
-            </MaskedViewIOS>
-          </View>
-        </RNTesterBlock>
-        <RNTesterBlock title="Animated Mask">
-          <View style={{width: 300, height: 300, alignSelf: 'center'}}>
-            <MaskedViewIOS
-              style={{flex: 1}}
-              maskElement={
-                <Animated.View
-                  style={[
-                    styles.maskContainerStyle,
-                    {transform: [{scale: this._maskScaleAnimatedValue}]},
-                  ]}>
-                  <Text style={styles.maskTextStyle}>Basic Mask</Text>
-                </Animated.View>
-              }>
-              <Animated.View
-                style={{
-                  flex: 1,
-                  transform: [
-                    {
-                      rotate: this._maskRotateAnimatedValue.interpolate({
-                        inputRange: [0, 360],
-                        outputRange: ['0deg', '360deg'],
-                      }),
-                    },
-                  ],
-                }}>
-                <View style={{flex: 1, backgroundColor: 'blue'}} />
-                <View style={{flex: 1, backgroundColor: 'red'}} />
-              </Animated.View>
-            </MaskedViewIOS>
-          </View>
-        </RNTesterBlock>
-        <RNTesterBlock title="Mask w/ Changing Children">
-          <View style={{width: 300, height: 300, alignSelf: 'center'}}>
-            <MaskedViewIOS
-              style={{flex: 1}}
-              maskElement={
-                <View style={styles.maskContainerStyle}>
-                  <Text style={styles.maskTextStyle}>Basic Mask</Text>
-                </View>
-              }>
-              {this.state.alternateChildren
-                ? [
-                    <View key={1} style={{flex: 1, backgroundColor: 'blue'}} />,
-                    <View key={2} style={{flex: 1, backgroundColor: 'red'}} />,
-                  ]
-                : null}
-            </MaskedViewIOS>
-          </View>
-        </RNTesterBlock>
-      </RNTesterPage>
+            <View style={{flex: 1, backgroundColor: 'blue'}} />
+            <View style={{flex: 1, backgroundColor: 'red'}} />
+          </Animated.View>
+        </MaskedViewIOS>
+      </View>
+    );
+  }
+}
+
+class ChangingChildrenMaskExample extends React.Component<
+  Props,
+  ChangingChildrenState,
+> {
+  state = {
+    alternateChildren: true,
+  };
+
+  componentDidMount() {
+    setInterval(() => {
+      this.setState(state => ({
+        alternateChildren: !state.alternateChildren,
+      }));
+    }, 1000);
+  }
+
+  render() {
+    return (
+      <View style={{width: 300, height: 300, alignSelf: 'center'}}>
+        <MaskedViewIOS
+          style={{flex: 1}}
+          maskElement={
+            <View style={styles.maskContainerStyle}>
+              <Text style={styles.maskTextStyle}>Basic Mask</Text>
+            </View>
+          }>
+          {this.state.alternateChildren
+            ? [
+                <View key={1} style={{flex: 1, backgroundColor: 'blue'}} />,
+                <View key={2} style={{flex: 1, backgroundColor: 'red'}} />,
+              ]
+            : null}
+        </MaskedViewIOS>
+      </View>
     );
   }
 }
@@ -187,9 +146,70 @@ exports.description =
   'Renders the child view with a mask specified in the `renderMask` prop.';
 exports.examples = [
   {
-    title: 'Simple masked view',
-    render: function(): React.Element<typeof MaskedViewExample> {
-      return <MaskedViewExample />;
+    title: 'Basic Mask',
+    render: function(): React.Element<typeof View> {
+      return (
+        <View style={{width: 300, height: 300, alignSelf: 'center'}}>
+          <MaskedViewIOS
+            style={{flex: 1}}
+            maskElement={
+              <View style={styles.maskContainerStyle}>
+                <Text style={styles.maskTextStyle}>Basic Mask</Text>
+              </View>
+            }>
+            <View style={{flex: 1, backgroundColor: 'blue'}} />
+            <View style={{flex: 1, backgroundColor: 'red'}} />
+          </MaskedViewIOS>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Image Mask',
+    render: function(): React.Element<typeof View> {
+      return (
+        <View
+          style={{
+            width: 300,
+            height: 300,
+            alignSelf: 'center',
+            backgroundColor: '#eeeeee',
+          }}>
+          <MaskedViewIOS
+            style={{flex: 1}}
+            maskElement={
+              <View style={styles.maskContainerStyle}>
+                <Image
+                  style={{height: 200, width: 200}}
+                  source={require('./imageMask.png')}
+                />
+              </View>
+            }>
+            <View style={styles.maskContainerStyle}>
+              <Image
+                resizeMode="cover"
+                style={{width: 200, height: 200}}
+                source={{
+                  uri:
+                    'https://38.media.tumblr.com/9e9bd08c6e2d10561dd1fb4197df4c4e/tumblr_mfqekpMktw1rn90umo1_500.gif',
+                }}
+              />
+            </View>
+          </MaskedViewIOS>
+        </View>
+      );
+    },
+  },
+  {
+    title: 'Animated Mask',
+    render: function(): React.Element<typeof AnimatedMaskExample> {
+      return <AnimatedMaskExample />;
+    },
+  },
+  {
+    title: 'Mask w/ Changing Children',
+    render: function(): React.Element<typeof ChangingChildrenMaskExample> {
+      return <ChangingChildrenMaskExample />;
     },
   },
 ];
