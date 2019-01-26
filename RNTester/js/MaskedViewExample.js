@@ -56,7 +56,7 @@ class AnimatedMaskExample extends React.Component<Props> {
 
   render() {
     return (
-      <View style={{width: 300, height: 300, alignSelf: 'center'}}>
+      <View style={{width: 340, height: 300, alignSelf: 'center'}}>
         <MaskedViewIOS
           style={{flex: 1}}
           maskElement={
@@ -107,7 +107,7 @@ class ChangingChildrenMaskExample extends React.Component<
 
   render() {
     return (
-      <View style={{width: 300, height: 300, alignSelf: 'center'}}>
+      <View style={{width: 340, height: 300, alignSelf: 'center'}}>
         <MaskedViewIOS
           style={{flex: 1}}
           maskElement={
@@ -149,7 +149,7 @@ exports.examples = [
     title: 'Basic Mask',
     render: function(): React.Element<typeof View> {
       return (
-        <View style={{width: 300, height: 300, alignSelf: 'center'}}>
+        <View style={{width: 340, height: 300, alignSelf: 'center'}}>
           <MaskedViewIOS
             style={{flex: 1}}
             maskElement={
@@ -170,7 +170,7 @@ exports.examples = [
       return (
         <View
           style={{
-            width: 300,
+            width: 340,
             height: 300,
             alignSelf: 'center',
             backgroundColor: '#eeeeee',
