@@ -553,15 +553,17 @@ module.exports = (function(global, undefined) {
       }
 
       if (isExtensible(o)) {
-        hashCounter += 1;
         if (isES5) {
           Object.defineProperty(o, hashProperty, {
             enumerable: false,
             writable: false,
             configurable: false,
-            value: hashCounter,
+            value: ++hashCounter,
           });
-        } else if (o.propertyIsEnumerable) {
+          return hashCounter;
+        }
+
+        if (o.propertyIsEnumerable) {
           // Since we can't define a non-enumerable property on the object
           // we'll hijack one of the less-used non-enumerable properties to
           // save our hash on it. Additionally, since this is a function it
@@ -569,22 +571,19 @@ module.exports = (function(global, undefined) {
           o.propertyIsEnumerable = function() {
             return propIsEnumerable.apply(this, arguments);
           };
-          o.propertyIsEnumerable[hashProperty] = hashCounter;
-        } else {
-          throw new Error('Unable to set a non-enumerable property on object.');
+          return o.propertyIsEnumerable[hashProperty] = ++hashCounter;
         }
-        return hashCounter;
-      } else {
-        // If the object is not extensible, fall back to storing it in an
-        // array and using Array.prototype.indexOf to find it.
-        let index = nonExtensibleObjects.indexOf(o);
-        if (index < 0) {
-          index = nonExtensibleObjects.length;
-          nonExtensibleObjects[index] = o;
-          nonExtensibleHashes[index] = ++hashCounter;
-        }
-        return nonExtensibleHashes[index];
       }
+
+      // If the object is not extensible, fall back to storing it in an
+      // array and using Array.prototype.indexOf to find it.
+      let index = nonExtensibleObjects.indexOf(o);
+      if (index < 0) {
+        index = nonExtensibleObjects.length;
+        nonExtensibleObjects[index] = o;
+        nonExtensibleHashes[index] = ++hashCounter;
+      }
+      return nonExtensibleHashes[index];
     };
   })();
 
