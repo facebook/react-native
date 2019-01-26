@@ -56,9 +56,9 @@ class AnimatedMaskExample extends React.Component<Props> {
 
   render() {
     return (
-      <View style={{width: 340, height: 300, alignSelf: 'center'}}>
+      <View style={styles.exampleWrapperStyle}>
         <MaskedViewIOS
-          style={{flex: 1}}
+          style={styles.flexStyle}
           maskElement={
             <Animated.View
               style={[
@@ -80,8 +80,8 @@ class AnimatedMaskExample extends React.Component<Props> {
                 },
               ],
             }}>
-            <View style={{flex: 1, backgroundColor: 'blue'}} />
-            <View style={{flex: 1, backgroundColor: 'red'}} />
+            <View style={styles.blueStyle} />
+            <View style={styles.redStyle} />
           </Animated.View>
         </MaskedViewIOS>
       </View>
@@ -107,9 +107,9 @@ class ChangingChildrenMaskExample extends React.Component<
 
   render() {
     return (
-      <View style={{width: 340, height: 300, alignSelf: 'center'}}>
+      <View style={styles.exampleWrapperStyle}>
         <MaskedViewIOS
-          style={{flex: 1}}
+          style={styles.flexStyle}
           maskElement={
             <View style={styles.maskContainerStyle}>
               <Text style={styles.maskTextStyle}>Basic Mask</Text>
@@ -117,8 +117,8 @@ class ChangingChildrenMaskExample extends React.Component<
           }>
           {this.state.alternateChildren
             ? [
-                <View key={1} style={{flex: 1, backgroundColor: 'blue'}} />,
-                <View key={2} style={{flex: 1, backgroundColor: 'red'}} />,
+                <View key={1} style={styles.blueStyle} />,
+                <View key={2} style={styles.redStyle} />,
               ]
             : null}
         </MaskedViewIOS>
@@ -128,6 +128,15 @@ class ChangingChildrenMaskExample extends React.Component<
 }
 
 const styles = StyleSheet.create({
+  exampleWrapperStyle: {
+    width: 340,
+    height: 300,
+    alignSelf: 'center',
+  },
+  imageStyle: {
+    height: 200,
+    width: 200,
+  },
   maskContainerStyle: {
     flex: 1,
     backgroundColor: 'transparent',
@@ -139,6 +148,20 @@ const styles = StyleSheet.create({
     fontSize: 40,
     fontWeight: 'bold',
   },
+  blueStyle: {
+    flex: 1,
+    backgroundColor: 'blue',
+  },
+  redStyle: {
+    flex: 1,
+    backgroundColor: 'red',
+  },
+  grayStyle: {
+    backgroundColor: '#eeeeee',
+  },
+  flexStyle: {
+    flex: 1,
+  },
 });
 
 exports.title = '<MaskedViewIOS>';
@@ -149,16 +172,16 @@ exports.examples = [
     title: 'Basic Mask',
     render: function(): React.Element<typeof View> {
       return (
-        <View style={{width: 340, height: 300, alignSelf: 'center'}}>
+        <View style={styles.exampleWrapperStyle}>
           <MaskedViewIOS
-            style={{flex: 1}}
+            style={styles.flexStyle}
             maskElement={
               <View style={styles.maskContainerStyle}>
                 <Text style={styles.maskTextStyle}>Basic Mask</Text>
               </View>
             }>
-            <View style={{flex: 1, backgroundColor: 'blue'}} />
-            <View style={{flex: 1, backgroundColor: 'red'}} />
+            <View style={styles.blueStyle} />
+            <View style={styles.redStyle} />
           </MaskedViewIOS>
         </View>
       );
@@ -168,19 +191,13 @@ exports.examples = [
     title: 'Image Mask',
     render: function(): React.Element<typeof View> {
       return (
-        <View
-          style={{
-            width: 340,
-            height: 300,
-            alignSelf: 'center',
-            backgroundColor: '#eeeeee',
-          }}>
+        <View style={[styles.exampleWrapperStyle, styles.grayStyle]}>
           <MaskedViewIOS
-            style={{flex: 1}}
+            style={styles.flexStyle}
             maskElement={
               <View style={styles.maskContainerStyle}>
                 <Image
-                  style={{height: 200, width: 200}}
+                  style={styles.imageStyle}
                   source={require('./imageMask.png')}
                 />
               </View>
@@ -188,7 +205,7 @@ exports.examples = [
             <View style={styles.maskContainerStyle}>
               <Image
                 resizeMode="cover"
-                style={{width: 200, height: 200}}
+                style={styles.imageStyle}
                 source={{
                   uri:
                     'https://38.media.tumblr.com/9e9bd08c6e2d10561dd1fb4197df4c4e/tumblr_mfqekpMktw1rn90umo1_500.gif',
