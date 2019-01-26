@@ -15,7 +15,8 @@
     "url": "https://github.com/facebook/react-native.git"
   },
   "dependencies": {
-    "babel-core": "^6.18.0",
+    "@babel/core": "^7.2.2",
+    "babel-core": "^7.0.0-bridge.0",
     "babel-preset-es2015-node": "^6.1.1",
     "babel-preset-stage-3": "^6.17.0",
     "babel-register": "^6.18.0",
