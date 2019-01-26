@@ -53,7 +53,7 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 @property (nonatomic, copy) CAKeyframeAnimation *reactKeyframeAnimation;
 
 /**
- * Image's memory bytes. It has the dafault calculation of single image of GIF, if you have custom calculation of image decoded bytes, you can assign it using your value.
+ * Image's memory bytes. It has the dafault calculation of static image or GIF, if you have custom calculation of image decoded bytes, you can assign it using your value.
  */
 @property (nonatomic, assign) NSInteger reactDecodedImageBytes;
 
