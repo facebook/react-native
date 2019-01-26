@@ -34,7 +34,7 @@ struct ShadowView final {
 
   ComponentName componentName = "";
   ComponentHandle componentHandle = 0;
-  Tag tag = -1;
+  Tag tag = -1; // Tag does not change during the lifetime of a shadow view.
   SharedProps props = {};
   SharedEventEmitter eventEmitter = {};
   LayoutMetrics layoutMetrics = EmptyLayoutMetrics;

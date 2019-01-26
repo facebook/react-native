@@ -9,6 +9,7 @@
 
 #include <limits>
 
+#include <folly/Hash.h>
 #include <react/attributedstring/primitives.h>
 #include <react/debug/DebugStringConvertible.h>
 #include <react/graphics/Geometry.h>
@@ -53,6 +54,9 @@ class ParagraphAttributes : public DebugStringConvertible {
   Float minimumFontSize{std::numeric_limits<Float>::quiet_NaN()};
   Float maximumFontSize{std::numeric_limits<Float>::quiet_NaN()};
 
+  bool operator==(const ParagraphAttributes &) const;
+  bool operator!=(const ParagraphAttributes &) const;
+
 #pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE
@@ -62,3 +66,22 @@ class ParagraphAttributes : public DebugStringConvertible {
 
 } // namespace react
 } // namespace facebook
+
+namespace std {
+
+template <>
+struct hash<facebook::react::ParagraphAttributes> {
+  size_t operator()(
+      const facebook::react::ParagraphAttributes &attributes) const {
+    size_t seed = 0;
+    folly::hash::hash_combine(seed, attributes.maximumNumberOfLines);
+    folly::hash::hash_combine(seed, attributes.ellipsizeMode);
+    folly::hash::hash_combine(seed, attributes.adjustsFontSizeToFit);
+    folly::hash::hash_combine(
+        seed, std::hash<float>{}(attributes.minimumFontSize));
+    folly::hash::hash_combine(
+        seed, std::hash<float>{}(attributes.maximumFontSize));
+    return hash<int>()(seed);
+  }
+};
+} // namespace std

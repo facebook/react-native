@@ -10,6 +10,7 @@
 #include <functional>
 #include <memory>
 
+#include <folly/Hash.h>
 #include <folly/Optional.h>
 #include <react/attributedstring/TextAttributes.h>
 #include <react/core/Sealable.h>
@@ -89,12 +90,12 @@ template <>
 struct hash<facebook::react::AttributedString::Fragment> {
   size_t operator()(
       const facebook::react::AttributedString::Fragment &fragment) const {
-    return std::hash<decltype(fragment.string)>{}(fragment.string) +
-        std::hash<decltype(fragment.textAttributes)>{}(
-               fragment.textAttributes) +
-        std::hash<decltype(fragment.shadowView)>{}(fragment.shadowView) +
-        std::hash<decltype(fragment.parentShadowView)>{}(
-               fragment.parentShadowView);
+    auto seed = size_t{0};
+    folly::hash::hash_combine(seed, fragment.string);
+    folly::hash::hash_combine(seed, fragment.textAttributes);
+    folly::hash::hash_combine(seed, fragment.shadowView);
+    folly::hash::hash_combine(seed, fragment.parentShadowView);
+    return seed;
   }
 };
 
@@ -102,14 +103,13 @@ template <>
 struct hash<facebook::react::AttributedString> {
   size_t operator()(
       const facebook::react::AttributedString &attributedString) const {
-    auto result = size_t{0};
+    auto seed = size_t{0};
 
     for (const auto &fragment : attributedString.getFragments()) {
-      result +=
-          std::hash<facebook::react::AttributedString::Fragment>{}(fragment);
+      folly::hash::hash_combine(seed, fragment);
     }
 
-    return result;
+    return seed;
   }
 };
 } // namespace std
