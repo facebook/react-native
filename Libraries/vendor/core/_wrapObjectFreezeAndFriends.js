@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @author Ben Newman (@benjamn) <ben@benjamn.com>
+ * @flow
+ * @format
  */
 
 'use strict';
@@ -20,7 +22,7 @@ function getTestMap() {
 ["freeze", "seal", "preventExtensions"].forEach(name => {
   const method = Object[name];
   if (typeof method === "function") {
-    Object[name] = function (obj) {
+    (Object: any)[name] = function (obj) {
       try {
         // If .set succeeds, also call .delete to avoid leaking memory.
         getTestMap().set(obj, obj).delete(obj);
