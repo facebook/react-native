@@ -36,14 +36,15 @@ inline bool operator==(
 namespace std {
 template <>
 struct hash<facebook::react::LayoutConstraints> {
-  size_t operator()(const facebook::react::LayoutConstraints &v) const {
-    size_t seed = 0;
+  size_t operator()(
+      const facebook::react::LayoutConstraints &constraints) const {
+    auto seed = size_t{0};
     folly::hash::hash_combine(
-        seed, std::hash<facebook::react::Size>()(v.minimumSize));
-    folly::hash::hash_combine(
-        seed, std::hash<facebook::react::Size>()(v.maximumSize));
-    folly::hash::hash_combine(seed, v.layoutDirection);
-    return hash<int>()(seed);
+        seed,
+        constraints.minimumSize,
+        constraints.maximumSize,
+        constraints.layoutDirection);
+    return seed;
   }
 };
 } // namespace std

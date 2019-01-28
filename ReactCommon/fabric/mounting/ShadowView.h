@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <folly/Hash.h>
 #include <react/core/LayoutMetrics.h>
 #include <react/core/LocalData.h>
 #include <react/core/Props.h>
@@ -65,13 +66,15 @@ namespace std {
 template <>
 struct hash<facebook::react::ShadowView> {
   size_t operator()(const facebook::react::ShadowView &shadowView) const {
-    return std::hash<decltype(shadowView.componentHandle)>{}(
-               shadowView.componentHandle) +
-        std::hash<decltype(shadowView.tag)>{}(shadowView.tag) +
-        std::hash<decltype(shadowView.props)>{}(shadowView.props) +
-        std::hash<decltype(shadowView.eventEmitter)>{}(
-               shadowView.eventEmitter) +
-        std::hash<decltype(shadowView.localData)>{}(shadowView.localData);
+    auto seed = size_t{0};
+    folly::hash::hash_combine(
+        seed,
+        shadowView.componentHandle,
+        shadowView.tag,
+        shadowView.props,
+        shadowView.eventEmitter,
+        shadowView.localData);
+    return seed;
   }
 };
 

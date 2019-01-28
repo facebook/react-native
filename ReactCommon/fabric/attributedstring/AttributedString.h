@@ -91,10 +91,12 @@ struct hash<facebook::react::AttributedString::Fragment> {
   size_t operator()(
       const facebook::react::AttributedString::Fragment &fragment) const {
     auto seed = size_t{0};
-    folly::hash::hash_combine(seed, fragment.string);
-    folly::hash::hash_combine(seed, fragment.textAttributes);
-    folly::hash::hash_combine(seed, fragment.shadowView);
-    folly::hash::hash_combine(seed, fragment.parentShadowView);
+    folly::hash::hash_combine(
+        seed,
+        fragment.string,
+        fragment.textAttributes,
+        fragment.shadowView,
+        fragment.parentShadowView);
     return seed;
   }
 };
