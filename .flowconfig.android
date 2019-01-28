@@ -98,11 +98,7 @@ untyped-import
 untyped-type-import
 
 [version]
-<<<<<<< HEAD
-^0.85.0
+^0.86.0
 
 [untyped]
 .*/node_modules/metro/.*
-=======
-^0.86.0
->>>>>>> parent of b864e7e63e... Revert "Merge branch 'master' into 0.58-stable"
