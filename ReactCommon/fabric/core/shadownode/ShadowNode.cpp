@@ -146,6 +146,25 @@ void ShadowNode::cloneChildrenIfShared() {
   children_ = std::make_shared<SharedShadowNodeList>(*children_);
 }
 
+bool ShadowNode::constructAncestorPath(
+    const ShadowNode &ancestorShadowNode,
+    std::vector<std::reference_wrapper<const ShadowNode>> &ancestors) const {
+  // Note: We have a decent idea of how to make it reasonable performant.
+  // This is not implemented yet though. See T36620537 for more details.
+  if (this == &ancestorShadowNode) {
+    return true;
+  }
+
+  for (const auto &childShadowNode : *ancestorShadowNode.children_) {
+    if (constructAncestorPath(*childShadowNode, ancestors)) {
+      ancestors.push_back(std::ref(ancestorShadowNode));
+      return true;
+    }
+  }
+
+  return false;
+}
+
 #pragma mark - DebugStringConvertible
 
 #if RN_DEBUG_STRING_CONVERTIBLE

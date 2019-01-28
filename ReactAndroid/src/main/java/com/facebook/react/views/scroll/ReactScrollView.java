@@ -309,8 +309,18 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
   @Override
   public void fling(int velocityY) {
+    // Workaround.
+    // On Android P if a ScrollView is inverted, we will get a wrong sign for
+    // velocityY (see https://issuetracker.google.com/issues/112385925). 
+    // At the same time, mOnScrollDispatchHelper tracks the correct velocity direction. 
+    //
+    // Hence, we can use the absolute value from whatever the OS gives
+    // us and use the sign of what mOnScrollDispatchHelper has tracked.
+    final int correctedVelocityY = (int)(Math.abs(velocityY) * Math.signum(mOnScrollDispatchHelper.getYFlingVelocity()));
+
+
     if (mPagingEnabled) {
-      flingAndSnap(velocityY);
+      flingAndSnap(correctedVelocityY);
     } else if (mScroller != null) {
       // FB SCROLLVIEW CHANGE
 
@@ -326,7 +336,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
         getScrollX(), // startX
         getScrollY(), // startY
         0, // velocityX
-        velocityY, // velocityY
+        correctedVelocityY, // velocityY
         0, // minX
         0, // maxX
         0, // minY
@@ -339,9 +349,9 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
       // END FB SCROLLVIEW CHANGE
     } else {
-      super.fling(velocityY);
+      super.fling(correctedVelocityY);
     }
-    handlePostTouchScrolling(0, velocityY);
+    handlePostTouchScrolling(0, correctedVelocityY);
   }
 
   private void enableFpsListener() {

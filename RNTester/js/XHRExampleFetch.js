@@ -27,7 +27,7 @@ class XHRExampleFetch extends React.Component<any, any> {
     this.responseHeaders = null;
   }
 
-  submit(uri: String) {
+  submit(uri: string) {
     fetch(uri)
       .then(response => {
         this.responseURL = response.url;

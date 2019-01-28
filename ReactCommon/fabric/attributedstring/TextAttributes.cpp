@@ -158,7 +158,7 @@ TextAttributes TextAttributes::defaultTextAttributes() {
     // Non-obvious (can be different among platforms) default text attributes.
     textAttributes.foregroundColor = blackColor();
     textAttributes.backgroundColor = clearColor();
-    textAttributes.fontSize = 12.0;
+    textAttributes.fontSize = 14.0;
     return textAttributes;
   }();
   return textAttributes;

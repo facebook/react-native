@@ -35,7 +35,7 @@ server.on('connection', ws => {
     console.log('Received message:', message);
     console.log('Cookie:', ws.upgradeReq.headers.cookie);
     if (respondWithBinary) {
-      message = new Buffer(message);
+      message = Buffer.from(message);
     }
     if (message === 'getImage') {
       message = fs.readFileSync(path.resolve(__dirname, 'flux@3x.png'));
