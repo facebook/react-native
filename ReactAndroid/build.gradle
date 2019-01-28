@@ -323,11 +323,7 @@ dependencies {
     api 'com.google.code.findbugs:jsr305:3.0.2'
     api "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
     api "com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}"
-<<<<<<< HEAD
     api 'com.squareup.okio:okio:1.15.0'
-=======
-    api 'com.squareup.okio:okio:1.14.0'
->>>>>>> parent of b864e7e63e... Revert "Merge branch 'master' into 0.58-stable"
     compile 'org.webkit:android-jsc:r174650'
 
     testImplementation "junit:junit:${JUNIT_VERSION}"
