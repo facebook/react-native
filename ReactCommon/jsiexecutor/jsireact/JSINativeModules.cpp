@@ -65,7 +65,7 @@ folly::Optional<Object> JSINativeModules::createModule(
 
   auto result = m_moduleRegistry->getConfig(name);
   if (!result.hasValue()) {
-    return nullptr;
+    return folly::none;
   }
 
   Value moduleInfo = m_genNativeModuleJS->call(

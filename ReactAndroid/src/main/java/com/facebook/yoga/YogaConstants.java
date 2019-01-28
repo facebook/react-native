@@ -35,4 +35,8 @@ public class YogaConstants {
   public static boolean isUndefined(YogaValue value) {
     return value.unit == YogaUnit.UNDEFINED;
   }
+
+  public static float getUndefined() {
+    return UNDEFINED;
+  }
 }

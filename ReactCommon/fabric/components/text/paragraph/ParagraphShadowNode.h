@@ -58,7 +58,7 @@ class ParagraphShadowNode : public ConcreteViewShadowNode<
    * Creates a `LocalData` object (with `AttributedText` and
    * `TextLayoutManager`) if needed.
    */
-  void updateLocalData();
+  void updateLocalDataIfNeeded();
 
   SharedTextLayoutManager textLayoutManager_;
 

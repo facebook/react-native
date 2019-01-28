@@ -114,6 +114,12 @@ WIN_EXPORT void YGNodeSetChildren(
     const YGNodeRef children[],
     const uint32_t count);
 
+WIN_EXPORT void YGNodeSetIsReferenceBaseline(
+    YGNodeRef node,
+    bool isReferenceBaseline);
+
+WIN_EXPORT bool YGNodeIsReferenceBaseline(YGNodeRef node);
+
 WIN_EXPORT void YGNodeCalculateLayout(
     const YGNodeRef node,
     const float availableWidth,

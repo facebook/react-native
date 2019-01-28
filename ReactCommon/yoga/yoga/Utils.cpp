@@ -52,7 +52,7 @@ bool YGFloatsEqual(const float a, const float b) {
   return yoga::isUndefined(a) && yoga::isUndefined(b);
 }
 
-float YGFloatSanitize(const float& val) {
+float YGFloatSanitize(const float val) {
   return yoga::isUndefined(val) ? 0 : val;
 }
 

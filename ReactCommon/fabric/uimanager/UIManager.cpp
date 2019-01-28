@@ -67,6 +67,33 @@ void UIManager::completeSurface(
   }
 }
 
+LayoutMetrics UIManager::getRelativeLayoutMetrics(
+    const ShadowNode &shadowNode,
+    const ShadowNode *ancestorShadowNode) const {
+  if (!ancestorShadowNode) {
+    shadowTreeRegistry_->get(
+        shadowNode.getRootTag(), [&](const ShadowTree &shadowTree) {
+          ancestorShadowNode = shadowTree.getRootShadowNode().get();
+        });
+  }
+
+  auto layoutableShadowNode =
+      dynamic_cast<const LayoutableShadowNode *>(&shadowNode);
+  auto layoutableAncestorShadowNode =
+      dynamic_cast<const LayoutableShadowNode *>(ancestorShadowNode);
+
+  if (!layoutableShadowNode || !layoutableAncestorShadowNode) {
+    return EmptyLayoutMetrics;
+  }
+
+  return layoutableShadowNode->getRelativeLayoutMetrics(
+      *layoutableAncestorShadowNode);
+}
+
+void UIManager::setShadowTreeRegistry(ShadowTreeRegistry *shadowTreeRegistry) {
+  shadowTreeRegistry_ = shadowTreeRegistry;
+}
+
 void UIManager::setComponentDescriptorRegistry(
     const SharedComponentDescriptorRegistry &componentDescriptorRegistry) {
   componentDescriptorRegistry_ = componentDescriptorRegistry;

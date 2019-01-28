@@ -339,7 +339,7 @@ module.exports = {
   ) {
     let value;
 
-    if (typeof ReactNativeStyleAttributes[property] === 'string') {
+    if (ReactNativeStyleAttributes[property] === true) {
       value = {};
     } else if (typeof ReactNativeStyleAttributes[property] === 'object') {
       value = ReactNativeStyleAttributes[property];
