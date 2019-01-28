@@ -17,7 +17,7 @@ const ImageViewNativeComponent = require('ImageViewNativeComponent');
 const NativeModules = require('NativeModules');
 const PropTypes = require('prop-types');
 const React = require('React');
-const ReactNative = require('ReactNative');
+const ReactNative = require('ReactNative'); // eslint-disable-line no-unused-vars
 const StyleSheet = require('StyleSheet');
 const TextAncestor = require('TextAncestor');
 
@@ -258,15 +258,16 @@ let Image = (
   );
 };
 
-// $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
 Image = React.forwardRef(Image);
 
 /**
- * Prefetches a remote image for later use by downloading it to the disk
- * cache
+ * Retrieve the width and height (in pixels) of an image prior to displaying it
  *
- * See https://facebook.github.io/react-native/docs/image.html#prefetch
+ * See https://facebook.github.io/react-native/docs/image.html#getsize
  */
+/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
 Image.getSize = getSize;
 
 /**
@@ -275,6 +276,9 @@ Image.getSize = getSize;
  *
  * See https://facebook.github.io/react-native/docs/image.html#prefetch
  */
+/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
 Image.prefetch = prefetch;
 
 /**
@@ -282,6 +286,9 @@ Image.prefetch = prefetch;
  *
  * See https://facebook.github.io/react-native/docs/image.html#abortprefetch
  */
+/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
 Image.abortPrefetch = abortPrefetch;
 
 /**
@@ -289,6 +296,9 @@ Image.abortPrefetch = abortPrefetch;
  *
  * See https://facebook.github.io/react-native/docs/image.html#querycache
  */
+/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
 Image.queryCache = queryCache;
 
 /**
@@ -296,8 +306,14 @@ Image.queryCache = queryCache;
  *
  * See https://facebook.github.io/react-native/docs/image.html#resolveassetsource
  */
+/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
 Image.resolveAssetSource = resolveAssetSource;
 
+/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
 Image.propTypes = ImageProps;
 
 const styles = StyleSheet.create({
@@ -306,4 +322,7 @@ const styles = StyleSheet.create({
   },
 });
 
+/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
 module.exports = (Image: Class<ImageComponentType>);

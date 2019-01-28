@@ -301,7 +301,7 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  * for the lifetime of the bridge, so it is not suitable for returning dynamic values, but may be used for long-lived
  * values such as session keys, that are regenerated only as part of a reload of the entire React application.
  *
- * If you implement this method and do not implement `requiresMainThreadSetup`, you will trigger deprecated logic
+ * If you implement this method and do not implement `requiresMainQueueSetup`, you will trigger deprecated logic
  * that eagerly initializes your module on bridge startup. In the future, this behaviour will be changed to default
  * to initializing lazily, and even modules with constants will be initialized lazily.
  */
@@ -324,9 +324,9 @@ RCT_EXTERN void RCTRegisterModule(Class); \
 
 /**
  * Experimental.
- * A protocol to declare that a class supports JSI-bound NativeModule.
+ * A protocol to declare that a class supports TurboModule.
  * This may be removed in the future.
  */
-@protocol RCTJSINativeModule <NSObject>
+@protocol RCTTurboModule <NSObject>
 
 @end

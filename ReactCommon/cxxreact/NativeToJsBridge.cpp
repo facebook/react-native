@@ -37,6 +37,10 @@ public:
   std::shared_ptr<ModuleRegistry> getModuleRegistry() override {
     return m_registry;
   }
+  
+  bool isBatchActive() {
+    return m_batchHadNativeModuleCalls;
+  }
 
   void callNativeModules(
       JSExecutor& executor, folly::dynamic&& calls, bool isEndOfBatch) override {
@@ -161,6 +165,8 @@ void NativeToJsBridge::callFunction(
           "JSCall",
           systraceCookie);
       SystraceSection s("NativeToJsBridge::callFunction", "module", module, "method", method);
+      #else
+      (void)(systraceCookie);
       #endif
       // This is safe because we are running on the executor's thread: it won't
       // destruct until after it's been unregistered (which we check above) and
@@ -191,6 +197,8 @@ void NativeToJsBridge::invokeCallback(double callbackId, folly::dynamic&& argume
           "<callback>",
           systraceCookie);
       SystraceSection s("NativeToJsBridge::invokeCallback");
+      #else
+      (void)(systraceCookie);
       #endif
       executor->invokeCallback(callbackId, arguments);
     });
@@ -217,6 +225,10 @@ void* NativeToJsBridge::getJavaScriptContext() {
 
 bool NativeToJsBridge::isInspectable() {
   return m_executor->isInspectable();
+}
+  
+bool NativeToJsBridge::isBatchActive() {
+  return m_delegate->isBatchActive();
 }
 
 void NativeToJsBridge::handleMemoryPressure(int pressureLevel) {

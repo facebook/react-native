@@ -9,14 +9,12 @@
 
 'use strict';
 
-const fs = require('fs');
 const includes = require('lodash.includes');
-const minimatch = require('minimatch');
 
-const {danger, fail, markdown, message, warn} = require('danger');
+const {danger, fail, warn} = require('danger');
 
 // Fails if the description is too short.
-if (!danger.github.pr.body || danger.github.pr.body.length < 10) {
+if (!danger.github.pr.body || danger.github.pr.body.length < 50) {
   fail(':grey_question: This pull request needs a description.');
 }
 
@@ -36,26 +34,32 @@ const includesTestPlan =
   danger.github.pr.body.toLowerCase().includes('test plan');
 if (!includesTestPlan) {
   const title = ':clipboard: Test Plan';
-  const idea = 'This PR appears to be missing a Test Plan.';
+  const idea =
+    'This PR appears to be missing a Test Plan. ' +
+    'Please add a section called "test plan" describing ' +
+    'how to verify your changes are correct.';
   warn(`${title} - <i>${idea}</i>`);
 }
 
 // Regex looks for given categories, types, a file/framework/component, and a message - broken into 4 capture groups
-const releaseNotesRegex = /\[\s?(ANDROID|CLI|DOCS|GENERAL|INTERNAL|IOS|TVOS|WINDOWS)\s?\]\s*?\[\s?(BREAKING|BUGFIX|ENHANCEMENT|FEATURE|MINOR)\s?\]\s*?\[(.*)\]\s*?\-\s*?(.*)/gi;
-const includesReleaseNotes =
+const changelogRegex = /\[\s?(ANDROID|GENERAL|IOS)\s?\]\s*?\[\s?(ADDED|CHANGED|DEPRECATED|REMOVED|FIXED|SECURITY)\s?\]\s*?\-\s*?(.*)/gi;
+const includesChangelog =
   danger.github.pr.body &&
-  danger.github.pr.body.toLowerCase().includes('release notes');
-const correctlyFormattedReleaseNotes = releaseNotesRegex.test(
-  danger.github.pr.body,
-);
+  danger.github.pr.body.toLowerCase().includes('changelog');
+const correctlyFormattedChangelog = changelogRegex.test(danger.github.pr.body);
 
-if (!includesReleaseNotes) {
-  const title = ':clipboard: Release Notes';
-  const idea = 'This PR appears to be missing Release Notes.';
+if (!includesChangelog) {
+  const title = ':clipboard: Changelog';
+  const idea =
+    'This PR appears to be missing Changelog. ' +
+    'Please add a section called "changelog" and ' +
+    'format it as explained in the [contributing guidelines](http://facebook.github.io/react-native/docs/contributing#changelog).';
   warn(`${title} - <i>${idea}</i>`);
-} else if (!correctlyFormattedReleaseNotes) {
-  const title = ':clipboard: Release Notes';
-  const idea = 'This PR may have incorrectly formatted Release Notes.';
+} else if (!correctlyFormattedChangelog) {
+  const title = ':clipboard: Changelog';
+  const idea =
+    'This PR may have incorrectly formatted Changelog. Please ' +
+    'format it as explained in the [contributing guidelines](http://facebook.github.io/react-native/docs/contributing#changelog).';
   warn(`${title} - <i>${idea}</i>`);
 }
 
@@ -63,8 +67,10 @@ if (!includesReleaseNotes) {
 var bigPRThreshold = 600;
 if (danger.github.pr.additions + danger.github.pr.deletions > bigPRThreshold) {
   const title = ':exclamation: Big PR';
-  const idea = `This PR is extremely unlikely to get reviewed because it touches ${danger
-    .github.pr.additions + danger.github.pr.deletions} lines.`;
+  const idea =
+    `This PR is unlikely to get reviewed because it touches too many lines (${danger
+      .github.pr.additions + danger.github.pr.deletions}). ` +
+    'Consider sending smaller Pull Requests and stack them on top of each other.';
   warn(`${title} - <i>${idea}</i>`);
 } else if (
   danger.git.modified_files +
@@ -73,10 +79,12 @@ if (danger.github.pr.additions + danger.github.pr.deletions > bigPRThreshold) {
   bigPRThreshold
 ) {
   const title = ':exclamation: Big PR';
-  const idea = `This PR is extremely unlikely to get reviewed because it touches ${danger
-    .git.modified_files +
-    danger.git.added_files +
-    danger.git.deleted_files} files.`;
+  const idea =
+    `This PR is unlikely to get reviewed because it touches too many files (${danger
+      .git.modified_files +
+      danger.git.added_files +
+      danger.git.deleted_files}). ` +
+    'Consider sending smaller Pull Requests and stack them on top of each other.';
   warn(`${title} - <i>${idea}</i>`);
 }
 

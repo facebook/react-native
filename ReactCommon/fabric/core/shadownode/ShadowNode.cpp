@@ -9,9 +9,9 @@
 
 #include <string>
 
-#include <fabric/core/ShadowNodeFragment.h>
-#include <fabric/debug/DebugStringConvertible.h>
-#include <fabric/debug/debugStringConvertibleUtils.h>
+#include <react/core/ShadowNodeFragment.h>
+#include <react/debug/DebugStringConvertible.h>
+#include <react/debug/debugStringConvertibleUtils.h>
 
 namespace facebook {
 namespace react {
@@ -144,6 +144,29 @@ void ShadowNode::cloneChildrenIfShared() {
   }
   childrenAreShared_ = false;
   children_ = std::make_shared<SharedShadowNodeList>(*children_);
+}
+
+void ShadowNode::setMounted(bool mounted) const {
+  eventEmitter_->setEnabled(mounted);
+}
+
+bool ShadowNode::constructAncestorPath(
+    const ShadowNode &ancestorShadowNode,
+    std::vector<std::reference_wrapper<const ShadowNode>> &ancestors) const {
+  // Note: We have a decent idea of how to make it reasonable performant.
+  // This is not implemented yet though. See T36620537 for more details.
+  if (this == &ancestorShadowNode) {
+    return true;
+  }
+
+  for (const auto &childShadowNode : *ancestorShadowNode.children_) {
+    if (constructAncestorPath(*childShadowNode, ancestors)) {
+      ancestors.push_back(std::ref(ancestorShadowNode));
+      return true;
+    }
+  }
+
+  return false;
 }
 
 #pragma mark - DebugStringConvertible

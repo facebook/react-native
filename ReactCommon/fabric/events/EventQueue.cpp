@@ -16,7 +16,8 @@ EventQueue::EventQueue(
     EventPipe eventPipe,
     std::unique_ptr<EventBeat> eventBeat)
     : eventPipe_(std::move(eventPipe)), eventBeat_(std::move(eventBeat)) {
-  eventBeat_->setBeatCallback(std::bind(&EventQueue::onBeat, this));
+  eventBeat_->setBeatCallback(
+      std::bind(&EventQueue::onBeat, this, std::placeholders::_1));
 }
 
 void EventQueue::enqueueEvent(const RawEvent &rawEvent) const {
@@ -24,7 +25,7 @@ void EventQueue::enqueueEvent(const RawEvent &rawEvent) const {
   queue_.push_back(rawEvent);
 }
 
-void EventQueue::onBeat() const {
+void EventQueue::onBeat(jsi::Runtime &runtime) const {
   std::vector<RawEvent> queue;
 
   {
@@ -35,14 +36,28 @@ void EventQueue::onBeat() const {
     }
 
     queue = std::move(queue_);
-    assert(queue_.size() == 0);
+    queue_.clear();
   }
 
   {
-    std::lock_guard<std::recursive_mutex> lock(EventEmitter::DispatchMutex());
+    std::lock_guard<std::mutex> lock(EventEmitter::DispatchMutex());
 
     for (const auto &event : queue) {
-      eventPipe_(event.eventTarget.lock().get(), event.type, event.payload);
+      if (event.eventTarget) {
+        event.eventTarget->retain(runtime);
+      }
+    }
+  }
+
+  for (const auto &event : queue) {
+    eventPipe_(
+        runtime, event.eventTarget.get(), event.type, event.payloadFactory);
+  }
+
+  // No need to lock `EventEmitter::DispatchMutex()` here.
+  for (const auto &event : queue) {
+    if (event.eventTarget) {
+      event.eventTarget->release(runtime);
     }
   }
 }

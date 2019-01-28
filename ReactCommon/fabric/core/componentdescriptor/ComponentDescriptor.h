@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <fabric/core/Props.h>
-#include <fabric/core/ShadowNode.h>
+#include <react/core/Props.h>
+#include <react/core/ShadowNode.h>
 
 namespace facebook {
 namespace react {

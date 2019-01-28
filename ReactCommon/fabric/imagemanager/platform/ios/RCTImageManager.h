@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import <fabric/imagemanager/ImageRequest.h>
-#import <fabric/imagemanager/primitives.h>
+#import <react/imagemanager/ImageRequest.h>
+#import <react/imagemanager/primitives.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

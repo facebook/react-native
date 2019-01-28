@@ -10,65 +10,16 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {StyleSheet, View, Text, TouchableHighlight, AlertIOS} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {StyleSheet, View, Text, TouchableHighlight, AlertIOS} = ReactNative;
 
-var {SimpleAlertExampleBlock} = require('./AlertExample');
+const {SimpleAlertExampleBlock} = require('./AlertExample');
 
-exports.framework = 'React';
-exports.title = 'AlertIOS';
-exports.description = 'iOS alerts and action sheets';
-exports.examples = [
-  {
-    title: 'Alerts',
-    render() {
-      return <SimpleAlertExampleBlock />;
-    },
-  },
-  {
-    title: 'Prompt Options',
-    render(): React.Element<any> {
-      return <PromptOptions />;
-    },
-  },
-  {
-    title: 'Prompt Types',
-    render() {
-      return (
-        <View>
-          <TouchableHighlight
-            style={styles.wrapper}
-            onPress={() => AlertIOS.prompt('Plain Text Entry')}>
-            <View style={styles.button}>
-              <Text>plain-text</Text>
-            </View>
-          </TouchableHighlight>
-          <TouchableHighlight
-            style={styles.wrapper}
-            onPress={() =>
-              AlertIOS.prompt('Secure Text', null, null, 'secure-text')
-            }>
-            <View style={styles.button}>
-              <Text>secure-text</Text>
-            </View>
-          </TouchableHighlight>
-          <TouchableHighlight
-            style={styles.wrapper}
-            onPress={() =>
-              AlertIOS.prompt('Login & Password', null, null, 'login-password')
-            }>
-            <View style={styles.button}>
-              <Text>login-password</Text>
-            </View>
-          </TouchableHighlight>
-        </View>
-      );
-    },
-  },
-];
+type Props = $ReadOnly<{||}>;
+type State = {|promptValue: ?string|};
 
-class PromptOptions extends React.Component<$FlowFixMeProps, any> {
+class PromptOptions extends React.Component<Props, State> {
   customButtons: Array<Object>;
 
   constructor(props) {
@@ -96,8 +47,8 @@ class PromptOptions extends React.Component<$FlowFixMeProps, any> {
   render() {
     return (
       <View>
-        <Text style={{marginBottom: 10}}>
-          <Text style={{fontWeight: 'bold'}}>Prompt value:</Text>{' '}
+        <Text style={styles.promptValue}>
+          <Text style={styles.promptValueLabel}>Prompt value:</Text>{' '}
           {this.state.promptValue}
         </Text>
 
@@ -180,7 +131,7 @@ class PromptOptions extends React.Component<$FlowFixMeProps, any> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   wrapper: {
     borderRadius: 5,
     marginBottom: 5,
@@ -189,4 +140,62 @@ var styles = StyleSheet.create({
     backgroundColor: '#eeeeee',
     padding: 10,
   },
+  promptValue: {
+    marginBottom: 10,
+  },
+  promptValueLabel: {
+    fontWeight: 'bold',
+  },
 });
+
+exports.framework = 'React';
+exports.title = 'AlertIOS';
+exports.description = 'iOS alerts and action sheets';
+exports.examples = [
+  {
+    title: 'Alerts',
+    render() {
+      return <SimpleAlertExampleBlock />;
+    },
+  },
+  {
+    title: 'Prompt Options',
+    render(): React.Element<any> {
+      return <PromptOptions />;
+    },
+  },
+  {
+    title: 'Prompt Types',
+    render() {
+      return (
+        <View>
+          <TouchableHighlight
+            style={styles.wrapper}
+            onPress={() => AlertIOS.prompt('Plain Text Entry')}>
+            <View style={styles.button}>
+              <Text>plain-text</Text>
+            </View>
+          </TouchableHighlight>
+          <TouchableHighlight
+            style={styles.wrapper}
+            onPress={() =>
+              AlertIOS.prompt('Secure Text', null, null, 'secure-text')
+            }>
+            <View style={styles.button}>
+              <Text>secure-text</Text>
+            </View>
+          </TouchableHighlight>
+          <TouchableHighlight
+            style={styles.wrapper}
+            onPress={() =>
+              AlertIOS.prompt('Login & Password', null, null, 'login-password')
+            }>
+            <View style={styles.button}>
+              <Text>login-password</Text>
+            </View>
+          </TouchableHighlight>
+        </View>
+      );
+    },
+  },
+];

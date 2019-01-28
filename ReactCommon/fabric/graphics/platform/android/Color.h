@@ -10,7 +10,7 @@
 #include <functional>
 #include <limits>
 
-#include <fabric/graphics/ColorComponents.h>
+#include <react/graphics/ColorComponents.h>
 
 namespace facebook {
 namespace react {

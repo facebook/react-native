@@ -11,7 +11,7 @@ package com.facebook.react.views.text;
 import android.text.TextPaint;
 import android.text.style.CharacterStyle;
 
-public class ShadowStyleSpan extends CharacterStyle {
+public class ShadowStyleSpan extends CharacterStyle implements ReactSpan {
   private final float mDx, mDy, mRadius;
   private final int mColor;
 

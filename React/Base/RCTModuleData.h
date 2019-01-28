@@ -69,7 +69,7 @@ typedef id<RCTBridgeModule>(^RCTBridgeModuleProvider)(void);
  * if it has not already been created. To check if the module instance exists
  * without causing it to be created, use `hasInstance` instead.
  */
-@property (nonatomic, strong, readonly) id<RCTBridgeModule> instance;
+@property (nonatomic, strong, readwrite) id<RCTBridgeModule> instance;
 
 /**
  * Returns the module method dispatch queue. Note that this will init both the

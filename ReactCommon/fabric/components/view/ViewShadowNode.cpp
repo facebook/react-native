@@ -15,8 +15,7 @@ const char ViewComponentName[] = "View";
 bool ViewShadowNode::isLayoutOnly() const {
   const auto &viewProps = *std::static_pointer_cast<const ViewProps>(props_);
 
-  return
-      viewProps.collapsable &&
+  return viewProps.collapsable &&
       // Event listeners
       !viewProps.onLayout &&
       // Generic Props

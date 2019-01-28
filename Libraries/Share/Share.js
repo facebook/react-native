@@ -12,7 +12,7 @@
 
 const Platform = require('Platform');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 const processColor = require('processColor');
 
 const {ActionSheetManager, ShareModule} = require('NativeModules');

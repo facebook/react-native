@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include <fabric/graphics/Geometry.h>
+#include <react/graphics/Geometry.h>
 
 namespace facebook {
 namespace react {

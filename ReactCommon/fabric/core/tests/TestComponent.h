@@ -9,11 +9,11 @@
 
 #include <memory>
 
-#include <fabric/core/ConcreteComponentDescriptor.h>
-#include <fabric/core/ConcreteShadowNode.h>
-#include <fabric/core/LocalData.h>
-#include <fabric/core/ShadowNode.h>
 #include <folly/dynamic.h>
+#include <react/core/ConcreteComponentDescriptor.h>
+#include <react/core/ConcreteShadowNode.h>
+#include <react/core/LocalData.h>
+#include <react/core/ShadowNode.h>
 
 using namespace facebook::react;
 

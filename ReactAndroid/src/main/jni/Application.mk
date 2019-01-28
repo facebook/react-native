@@ -1,3 +1,8 @@
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
 APP_BUILD_SCRIPT := Android.mk
 
 APP_ABI := armeabi-v7a x86 arm64-v8a x86_64
@@ -19,11 +24,11 @@ APP_MK_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 #   etc.) are defined inside build.gradle.
 NDK_MODULE_PATH := $(APP_MK_DIR)$(HOST_DIRSEP)$(THIRD_PARTY_NDK_DIR)$(HOST_DIRSEP)$(REACT_COMMON_DIR)$(HOST_DIRSEP)$(APP_MK_DIR)first-party$(HOST_DIRSEP)$(REACT_SRC_DIR)
 
-APP_STL := gnustl_shared
+APP_STL := c++_shared
 
 # Make sure every shared lib includes a .note.gnu.build-id header
 APP_CFLAGS := -Wall -Werror
 APP_CPPFLAGS := -std=c++1y
 APP_LDFLAGS := -Wl,--build-id
 
-NDK_TOOLCHAIN_VERSION := 4.9
+NDK_TOOLCHAIN_VERSION := clang

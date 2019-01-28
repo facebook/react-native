@@ -7,7 +7,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 def config = project.hasProperty("react") ? project.react : [];
 
-def cliPath = config.cliPath ?: "node_modules/react-native/local-cli/cli.js"
+def cliPath = config.cliPath ?: "node_modules/react-native/cli.js"
 def bundleAssetName = config.bundleAssetName ?: "index.android.bundle"
 def entryFile = config.entryFile ?: "index.android.js"
 def bundleCommand = config.bundleCommand ?: "bundle"
@@ -17,7 +17,9 @@ def bundleConfig = config.bundleConfig ? "${reactRoot}/${config.bundleConfig}" :
 
 
 afterEvaluate {
-    android.applicationVariants.all { def variant ->
+    def isAndroidLibrary = plugins.hasPlugin("com.android.library")
+    def variants = isAndroidLibrary ? android.libraryVariants : android.applicationVariants
+    variants.all { def variant ->
         // Create variant and target names
         def targetName = variant.name.capitalize()
         def targetPath = variant.dirName
@@ -90,12 +92,18 @@ afterEvaluate {
         } else {
             variant.registerResGeneratingTask(currentBundleTask)
         }
-        variant.mergeResources.dependsOn(currentBundleTask)
+        variant.mergeResourcesProvider.get().dependsOn(currentBundleTask)
 
         // packageApplication for Android plugin 3.x
         def packageTask = variant.hasProperty("packageApplication")
-            ? variant.packageApplication
+            ? variant.packageApplicationProvider.get()
             : tasks.findByName("package${targetName}")
+        if (variant.hasProperty("packageLibrary")) {
+            packageTask = variant.packageLibrary
+        }
+
+        // pre bundle build task for Android plugin 3.2+
+        def buildPreBundleTask = tasks.findByName("build${targetName}PreBundle")
 
         def resourcesDirConfigValue = config."resourcesDir${targetName}"
         if (resourcesDirConfigValue) {
@@ -114,6 +122,9 @@ afterEvaluate {
             }
 
             packageTask.dependsOn(currentCopyResTask)
+            if (buildPreBundleTask != null) {
+                buildPreBundleTask.dependsOn(currentCopyResTask)
+            }
         }
 
         def currentAssetsCopyTask = tasks.create(
@@ -132,17 +143,20 @@ afterEvaluate {
                 }
 
                 // Workaround for Android Gradle Plugin 3.2+ new asset directory
-                into ("merged_assets/${targetPath}/merge${targetName}Assets/out") {
+                into ("merged_assets/${variant.name}/merge${targetName}Assets/out") {
                     from jsBundleDir
                 }
             }
 
             // mergeAssets must run first, as it clears the intermediates directory
-            dependsOn(variant.mergeAssets)
+            dependsOn(variant.mergeAssetsProvider.get())
 
             enabled currentBundleTask.enabled
         }
 
         packageTask.dependsOn(currentAssetsCopyTask)
+        if (buildPreBundleTask != null) {
+            buildPreBundleTask.dependsOn(currentAssetsCopyTask)
+        }
     }
 }

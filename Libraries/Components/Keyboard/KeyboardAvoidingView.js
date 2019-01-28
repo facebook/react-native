@@ -52,8 +52,6 @@ type State = {|
   bottom: number,
 |};
 
-const viewRef = 'VIEW';
-
 /**
  * View that moves out of the way when the keyboard appears by automatically
  * adjusting its height, position, or bottom padding.
@@ -66,10 +64,13 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
 
   _frame: ?ViewLayout = null;
   _subscriptions: Array<EmitterSubscription> = [];
+  viewRef: {current: React.ElementRef<any> | null};
 
-  state = {
-    bottom: 0,
-  };
+  constructor(props: Props) {
+    super(props);
+    this.state = {bottom: 0};
+    this.viewRef = React.createRef();
+  }
 
   _relativeKeyboardHeight(keyboardFrame): number {
     const frame = this._frame;
@@ -99,9 +100,10 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
 
     if (duration && easing) {
       LayoutAnimation.configureNext({
-        duration: duration,
+        // We have to pass the duration equal to minimal accepted duration defined here: RCTLayoutAnimation.m
+        duration: duration > 10 ? duration : 10,
         update: {
-          duration: duration,
+          duration: duration > 10 ? duration : 10,
           type: LayoutAnimation.Types[easing] || 'keyboard',
         },
       });
@@ -150,7 +152,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
       children,
       contentContainerStyle,
       enabled,
-      keyboardVerticalOffset, // eslint-disable-line no-unused-vars
+      keyboardVerticalOffset,
       style,
       ...props
     } = this.props;
@@ -170,7 +172,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
         }
         return (
           <View
-            ref={viewRef}
+            ref={this.viewRef}
             style={StyleSheet.compose(
               style,
               heightStyle,
@@ -184,7 +186,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
       case 'position':
         return (
           <View
-            ref={viewRef}
+            ref={this.viewRef}
             style={style}
             onLayout={this._onLayout}
             {...props}>
@@ -203,7 +205,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
       case 'padding':
         return (
           <View
-            ref={viewRef}
+            ref={this.viewRef}
             style={StyleSheet.compose(
               style,
               {paddingBottom: bottomHeight},
@@ -217,7 +219,7 @@ class KeyboardAvoidingView extends React.Component<Props, State> {
       default:
         return (
           <View
-            ref={viewRef}
+            ref={this.viewRef}
             onLayout={this._onLayout}
             style={style}
             {...props}>

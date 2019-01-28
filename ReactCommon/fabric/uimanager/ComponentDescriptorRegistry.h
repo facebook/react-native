@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include <fabric/core/ComponentDescriptor.h>
+#include <react/core/ComponentDescriptor.h>
 
 namespace facebook {
 namespace react {
@@ -25,12 +25,19 @@ class ComponentDescriptorRegistry {
   void registerComponentDescriptor(
       SharedComponentDescriptor componentDescriptor);
 
+  const ComponentDescriptor &at(ComponentName componentName) const;
+  const ComponentDescriptor &at(ComponentHandle componentHandle) const;
+
   const SharedComponentDescriptor operator[](
       const SharedShadowNode &shadowNode) const;
   const SharedComponentDescriptor operator[](
       const ComponentName &componentName) const;
   SharedShadowNode createNode(
-    Tag tag, const std::string &viewName, Tag rootTag, const folly::dynamic &props, const SharedEventTarget &eventTarget) const;
+      Tag tag,
+      const std::string &viewName,
+      Tag rootTag,
+      const folly::dynamic &props,
+      const SharedEventTarget &eventTarget) const;
 
  private:
   std::unordered_map<ComponentHandle, SharedComponentDescriptor>

@@ -82,23 +82,17 @@ NSString *RCTBridgeModuleNameForClass(Class cls)
     name = NSStringFromClass(cls);
   }
 
-  if ([name hasPrefix:@"RK"]) {
-    name = [name substringFromIndex:2];
-  } else if ([name hasPrefix:@"RCT"]) {
-    name = [name substringFromIndex:3];
-  }
-
-  return name;
+  return RCTDropReactPrefixes(name);
 }
 
-static BOOL jsiNativeModuleEnabled = NO;
-BOOL RCTJSINativeModuleEnabled(void)
+static BOOL turboModuleEnabled = NO;
+BOOL RCTTurboModuleEnabled(void)
 {
-  return jsiNativeModuleEnabled;
+  return turboModuleEnabled;
 }
 
-void RCTEnableJSINativeModule(BOOL enabled) {
-  jsiNativeModuleEnabled = enabled;
+void RCTEnableTurboModule(BOOL enabled) {
+  turboModuleEnabled = enabled;
 }
 
 #if RCT_DEBUG
@@ -136,7 +130,8 @@ void RCTVerifyAllModulesExported(NSArray *extraModules)
           break;
         }
 
-        RCTLogWarn(@"Class %@ was not exported. Did you forget to use RCT_EXPORT_MODULE()?", cls);
+        // Note: Some modules may be lazily loaded and not exported up front, so this message is no longer a warning.
+        RCTLogInfo(@"Class %@ was not exported. Did you forget to use RCT_EXPORT_MODULE()?", cls);
         break;
       }
       superclass = class_getSuperclass(superclass);
@@ -246,9 +241,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [self.batchedBridge moduleForName:moduleName];
 }
 
+- (id)moduleForName:(NSString *)moduleName lazilyLoadIfNecessary:(BOOL)lazilyLoad
+{
+  return [self.batchedBridge moduleForName:moduleName lazilyLoadIfNecessary:lazilyLoad];
+}
+
 - (id)moduleForClass:(Class)moduleClass
 {
-  return [self moduleForName:RCTBridgeModuleNameForClass(moduleClass)];
+  id module = [self.batchedBridge moduleForClass:moduleClass];
+  if (!module) {
+    module = [self moduleForName:RCTBridgeModuleNameForClass(moduleClass)];
+  }
+  return module;
 }
 
 - (NSArray *)modulesConformingToProtocol:(Protocol *)protocol
@@ -284,6 +288,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
    */
   dispatch_async(dispatch_get_main_queue(), ^{
     [self invalidate];
+    // Reload is a special case, do not preserve launchOptions and treat reload as a fresh start
+    self->_launchOptions = nil;
     [self setUp];
   });
 }
@@ -355,6 +361,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       [batchedBridge invalidate];
     });
   }
+}
+
+- (void)updateModuleWithInstance:(id<RCTBridgeModule>)instance
+{
+  [self.batchedBridge updateModuleWithInstance:instance];
 }
 
 - (void)registerAdditionalModuleClasses:(NSArray<Class> *)modules

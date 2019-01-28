@@ -28,7 +28,7 @@ export type DimensionValue = null | number | string | AnimatedNode;
  * These properties are a subset of our styles that are consumed by the layout
  * algorithm and affect the positioning and sizing of views.
  */
-export type ____LayoutStyle_Internal = $ReadOnly<{|
+type ____LayoutStyle_Internal = $ReadOnly<{|
   /** `display` sets the display type of this component.
    *
    *  It works similarly to `display` in CSS, but only support 'flex' and 'none'.
@@ -460,7 +460,7 @@ export type ____LayoutStyle_Internal = $ReadOnly<{|
   direction?: 'inherit' | 'ltr' | 'rtl',
 |}>;
 
-export type ____TransformStyle_Internal = $ReadOnly<{|
+type ____TransformStyle_Internal = $ReadOnly<{|
   /**
    * `transform` accepts an array of transformation objects. Each object specifies
    * the property that will be transformed as the key, and the value to use in the

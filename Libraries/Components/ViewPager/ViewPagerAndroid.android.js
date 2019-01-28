@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -15,15 +15,34 @@ const ReactNative = require('ReactNative');
 const UIManager = require('UIManager');
 
 const dismissKeyboard = require('dismissKeyboard');
-const requireNativeComponent = require('requireNativeComponent');
 
-const NativeAndroidViewPager = requireNativeComponent('AndroidViewPager');
+const NativeAndroidViewPager = require('AndroidViewPagerNativeComponent');
 
+import type {SyntheticEvent} from 'CoreEventTypes';
 import type {ViewStyleProp} from 'StyleSheet';
 
 const VIEWPAGER_REF = 'viewPager';
 
-type Event = Object;
+type PageScrollState = 'idle' | 'dragging' | 'settling';
+
+type PageScrollEvent = SyntheticEvent<
+  $ReadOnly<{|
+    position: number,
+    offset: number,
+  |}>,
+>;
+
+type PageScrollStateChangedEvent = SyntheticEvent<
+  $ReadOnly<{|
+    pageScrollState: PageScrollState,
+  |}>,
+>;
+
+type PageSelectedEvent = SyntheticEvent<
+  $ReadOnly<{|
+    position: number,
+  |}>,
+>;
 
 export type ViewPagerScrollState = $Enum<{
   idle: string,
@@ -47,7 +66,7 @@ type Props = $ReadOnly<{|
    *    Value x means that (1 - x) fraction of the page at "position" index is
    *    visible, and x fraction of the next page is visible.
    */
-  onPageScroll?: ?Function,
+  onPageScroll?: ?(e: PageScrollEvent) => void,
 
   /**
    * Function called when the page scrolling state has changed.
@@ -57,7 +76,7 @@ type Props = $ReadOnly<{|
    * - settling, meaning that there was an interaction with the page scroller, and the
    *   page scroller is now finishing it's closing or opening animation
    */
-  onPageScrollStateChanged?: ?Function,
+  onPageScrollStateChanged?: ?(e: PageScrollStateChangedEvent) => void,
 
   /**
    * This callback will be called once ViewPager finish navigating to selected page
@@ -65,7 +84,7 @@ type Props = $ReadOnly<{|
    * callback will have following fields:
    *  - position - index of page that has been selected
    */
-  onPageSelected?: ?Function,
+  onPageSelected?: ?(e: PageSelectedEvent) => void,
 
   /**
    * Blank space to show between pages. This is only visible while scrolling, pages are still
@@ -194,7 +213,7 @@ class ViewPagerAndroid extends React.Component<Props> {
     });
   };
 
-  _onPageScroll = (e: Event) => {
+  _onPageScroll = (e: PageScrollEvent) => {
     if (this.props.onPageScroll) {
       this.props.onPageScroll(e);
     }
@@ -203,13 +222,13 @@ class ViewPagerAndroid extends React.Component<Props> {
     }
   };
 
-  _onPageScrollStateChanged = (e: Event) => {
+  _onPageScrollStateChanged = (e: PageScrollStateChangedEvent) => {
     if (this.props.onPageScrollStateChanged) {
-      this.props.onPageScrollStateChanged(e.nativeEvent.pageScrollState);
+      this.props.onPageScrollStateChanged(e);
     }
   };
 
-  _onPageSelected = (e: Event) => {
+  _onPageSelected = (e: PageSelectedEvent) => {
     if (this.props.onPageSelected) {
       this.props.onPageSelected(e);
     }

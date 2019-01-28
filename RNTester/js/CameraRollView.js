@@ -39,7 +39,7 @@ function rowHasChanged<T>(r1: Array<T>, r2: Array<T>): boolean {
     return true;
   }
 
-  for (var i = 0; i < r1.length; i++) {
+  for (let i = 0; i < r1.length; i++) {
     if (r1[i] !== r2[i]) {
       return true;
     }
@@ -259,15 +259,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flex: 1,
   },
-  url: {
-    fontSize: 9,
-    marginBottom: 14,
-  },
   image: {
     margin: 4,
-  },
-  info: {
-    flex: 1,
   },
   container: {
     flex: 1,

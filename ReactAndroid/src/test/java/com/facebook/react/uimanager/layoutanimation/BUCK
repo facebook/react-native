@@ -1,4 +1,4 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "YOGA_TARGET", "react_native_dep", "react_native_target", "react_native_tests_target", "rn_robolectric_test")
+load("//tools/build_defs/oss:rn_defs.bzl", "YOGA_TARGET", "react_native_dep", "react_native_target", "rn_robolectric_test")
 
 rn_robolectric_test(
     name = "layoutanimation",

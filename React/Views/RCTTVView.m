@@ -237,7 +237,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
       rootview = [rootview superview];
 
-      [(RCTRootView *)rootview setReactPreferredFocusedView:self];
       [rootview setNeedsFocusUpdate];
       [rootview updateFocusIfNeeded];
     });
