@@ -8,6 +8,7 @@
 package com.facebook.react.modules.core;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -30,6 +31,22 @@ public class HeadlessJsTaskSupportModule extends ReactContextBaseJavaModule {
   @Override
   public String getName() {
     return NAME;
+  }
+
+  @ReactMethod
+  public void notifyTaskRetry(int taskId, Promise promise) {
+    HeadlessJsTaskContext headlessJsTaskContext =
+      HeadlessJsTaskContext.getInstance(getReactApplicationContext());
+    if (headlessJsTaskContext.isTaskRunning(taskId)) {
+      final boolean retryPosted = headlessJsTaskContext.retryTask(taskId);
+      promise.resolve(retryPosted);
+    } else {
+      FLog.w(
+        HeadlessJsTaskSupportModule.class,
+        "Tried to retry non-active task with id %d. Did it time out?",
+        taskId);
+      promise.resolve(false);
+    }
   }
 
   @ReactMethod
