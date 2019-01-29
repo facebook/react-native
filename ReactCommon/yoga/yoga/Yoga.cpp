@@ -3803,6 +3803,9 @@ bool YGLayoutNodeInternal(
     layout->measuredDimensions[YGDimensionHeight] =
         cachedResults->computedHeight;
 
+    (performLayout ? layoutMarkerData.cachedLayouts
+                   : layoutMarkerData.cachedMeasures) += 1;
+
     if (gPrintChanges && gPrintSkips) {
       YGLog(
           node,
