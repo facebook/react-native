@@ -355,7 +355,10 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
 
   // Reset location accuracy if desiredAccuracy is changed.
   // Otherwise update accuracy will force triggering didUpdateLocations, watchPosition would keeping receiving location updates, even there's no location changes.
-  if (ABS(_locationManager.desiredAccuracy - RCT_DEFAULT_LOCATION_ACCURACY) > 0.000001) {
+  if (_observingLocation && ABS(_locationManager.desiredAccuracy - _observerOptions.accuracy) > 0.000001) {
+    _locationManager.desiredAccuracy = _observerOptions.accuracy;
+  }
+  if (!_observingLocation && ABS(_locationManager.desiredAccuracy - RCT_DEFAULT_LOCATION_ACCURACY) > 0.000001) {
     _locationManager.desiredAccuracy = RCT_DEFAULT_LOCATION_ACCURACY;
   }
 }
