@@ -32,22 +32,25 @@ public class ReactScrollViewCommandHelper {
 
   public static class ScrollToCommandData {
 
-    public final int mDestX, mDestY;
+    public final int mDestX, mDestY, mDuration;
     public final boolean mAnimated;
 
-    ScrollToCommandData(int destX, int destY, boolean animated) {
+    ScrollToCommandData(int destX, int destY, boolean animated, int duration) {
       mDestX = destX;
       mDestY = destY;
       mAnimated = animated;
+      mDuration = duration;
     }
   }
 
   public static class ScrollToEndCommandData {
 
+    public final int mDuration;
     public final boolean mAnimated;
 
-    ScrollToEndCommandData(boolean animated) {
+    ScrollToEndCommandData(boolean animated, int duration) {
       mAnimated = animated;
+      mDuration = duration;
     }
   }
 
@@ -74,12 +77,14 @@ public class ReactScrollViewCommandHelper {
         int destX = Math.round(PixelUtil.toPixelFromDIP(args.getDouble(0)));
         int destY = Math.round(PixelUtil.toPixelFromDIP(args.getDouble(1)));
         boolean animated = args.getBoolean(2);
-        viewManager.scrollTo(scrollView, new ScrollToCommandData(destX, destY, animated));
+        int duration = (int) Math.round(args.getDouble(3));
+        viewManager.scrollTo(scrollView, new ScrollToCommandData(destX, destY, animated, duration));
         return;
       }
       case COMMAND_SCROLL_TO_END: {
         boolean animated = args.getBoolean(0);
-        viewManager.scrollToEnd(scrollView, new ScrollToEndCommandData(animated));
+        int duration = (int) Math.round(args.getDouble(1));
+        viewManager.scrollToEnd(scrollView, new ScrollToEndCommandData(animated, duration));
         return;
       }
       case COMMAND_FLASH_SCROLL_INDICATORS:

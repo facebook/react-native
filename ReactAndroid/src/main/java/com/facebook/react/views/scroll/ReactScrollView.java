@@ -7,6 +7,8 @@
 
 package com.facebook.react.views.scroll;
 
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.annotation.TargetApi;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -53,6 +55,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   private final VelocityHelper mVelocityHelper = new VelocityHelper();
   private final Rect mRect = new Rect(); // for reuse to avoid allocation
 
+  private @Nullable ObjectAnimator mAnimator = null;
   private boolean mActivelyScrolling;
   private @Nullable Rect mClippingRect;
   private @Nullable String mOverflow = ViewProps.HIDDEN;
@@ -171,6 +174,20 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     awakenScrollBars();
   }
 
+  /**
+   * Method for animating to a ScrollView position with a given duration,
+   * instead of using "smoothScrollTo", which does not expose a duration argument.
+   */
+  public void animateScroll(int mDestX, int mDestY, int mDuration) {
+    if (mAnimator != null) {
+      mAnimator.cancel();
+    }
+    PropertyValuesHolder scrollX = PropertyValuesHolder.ofInt("scrollX", mDestX);
+    PropertyValuesHolder scrollY = PropertyValuesHolder.ofInt("scrollY", mDestY);
+    mAnimator = ObjectAnimator.ofPropertyValuesHolder(this, scrollX, scrollY);
+    mAnimator.setDuration(mDuration).start();
+  }
+
   public void setOverflow(String overflow) {
     mOverflow = overflow;
     invalidate();
@@ -253,6 +270,11 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   public boolean onTouchEvent(MotionEvent ev) {
     if (!mScrollEnabled) {
       return false;
+    }
+
+    if (mAnimator != null) {
+      mAnimator.cancel();
+      mAnimator = null;
     }
 
     mVelocityHelper.calculateVelocity(ev);

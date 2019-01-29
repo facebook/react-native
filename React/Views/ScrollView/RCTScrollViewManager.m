@@ -149,7 +149,9 @@ RCT_EXPORT_METHOD(calculateChildFrames:(nonnull NSNumber *)reactTag
 RCT_EXPORT_METHOD(scrollTo:(nonnull NSNumber *)reactTag
                   offsetX:(CGFloat)x
                   offsetY:(CGFloat)y
-                  animated:(BOOL)animated)
+                  animated:(BOOL)animated
+                  // TODO(dannycochran) Use the duration here for a ScrollView.
+                  duration:(CGFloat __unused)duration)
 {
   [self.bridge.uiManager addUIBlock:
    ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry){
@@ -164,7 +166,9 @@ RCT_EXPORT_METHOD(scrollTo:(nonnull NSNumber *)reactTag
 }
 
 RCT_EXPORT_METHOD(scrollToEnd:(nonnull NSNumber *)reactTag
-                  animated:(BOOL)animated)
+                  animated:(BOOL)animated
+                  // TODO(dannycochran) Use the duration here for a ScrollView.
+                  duration:(CGFloat __unused)duration)
 {
   [self.bridge.uiManager addUIBlock:
    ^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry){

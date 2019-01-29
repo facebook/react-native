@@ -116,6 +116,14 @@ export type State = {|
   becameResponderWhileAnimating: boolean,
 |};
 
+/**
+ * If a user has specified a duration, we will use it. Otherwise,
+ * set it to -1 as the bridge cannot handle undefined / null values.
+ */
+function getDuration(duration?: number): number {
+  return duration === undefined ? -1 : Math.max(duration, 0);
+}
+
 const ScrollResponderMixin = {
   _subscriptionKeyboardWillShow: (null: ?EmitterSubscription),
   _subscriptionKeyboardWillHide: (null: ?EmitterSubscription),
@@ -424,46 +432,55 @@ const ScrollResponderMixin = {
    * This is currently used to help focus child TextViews, but can also
    * be used to quickly scroll to any element we want to focus. Syntax:
    *
-   * `scrollResponderScrollTo(options: {x: number = 0; y: number = 0; animated: boolean = true})`
+   * `scrollResponderScrollTo(options: {x: number = 0; y: number = 0; animated: boolean = true, duration: number = 0})`
    *
    * Note: The weird argument signature is due to the fact that, for historical reasons,
    * the function also accepts separate arguments as as alternative to the options object.
    * This is deprecated due to ambiguity (y before x), and SHOULD NOT BE USED.
    */
   scrollResponderScrollTo: function(
-    x?: number | {x?: number, y?: number, animated?: boolean},
+    x?:
+      | number
+      | {x?: number, y?: number, animated?: boolean, duration?: number},
     y?: number,
     animated?: boolean,
+    duration?: number,
   ) {
     if (typeof x === 'number') {
       console.warn(
         '`scrollResponderScrollTo(x, y, animated)` is deprecated. Use `scrollResponderScrollTo({x: 5, y: 5, animated: true})` instead.',
       );
     } else {
-      ({x, y, animated} = x || {});
+      ({x, y, animated, duration} = x || {});
     }
     UIManager.dispatchViewManagerCommand(
       nullthrows(this.scrollResponderGetScrollableNode()),
       UIManager.getViewManagerConfig('RCTScrollView').Commands.scrollTo,
-      [x || 0, y || 0, animated !== false],
+      [x || 0, y || 0, animated !== false, getDuration(duration)],
     );
   },
 
   /**
    * Scrolls to the end of the ScrollView, either immediately or with a smooth
-   * animation.
+   * animation. For Android, you may specify a "duration" number instead of the
+   * "animated" boolean.
    *
    * Example:
    *
    * `scrollResponderScrollToEnd({animated: true})`
+   * or for Android, you can do:
+   * `scrollResponderScrollToEnd({duration: 500})`
    */
-  scrollResponderScrollToEnd: function(options?: {animated?: boolean}) {
+  scrollResponderScrollToEnd: function(options?: {
+    animated?: boolean,
+    duration?: number,
+  }) {
     // Default to true
     const animated = (options && options.animated) !== false;
     UIManager.dispatchViewManagerCommand(
       this.scrollResponderGetScrollableNode(),
       UIManager.getViewManagerConfig('RCTScrollView').Commands.scrollToEnd,
-      [animated],
+      [animated, getDuration(options && options.duration)],
     );
   },
 
