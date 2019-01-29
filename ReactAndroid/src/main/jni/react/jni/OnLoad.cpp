@@ -66,7 +66,6 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     gloginit::initialize();
     FLAGS_minloglevel = 0;
     JSLogging::registerNatives();
-    JSCJavaScriptExecutorHolder::registerNatives();
     ProxyJavaScriptExecutorHolder::registerNatives();
     CatalystInstanceImpl::registerNatives();
     CxxModuleWrapperBase::registerNatives();
