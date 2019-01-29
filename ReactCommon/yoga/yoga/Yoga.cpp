@@ -2685,6 +2685,8 @@ static void YGNodelayoutImpl(
       "availableHeight is indefinite so heightMeasureMode must be "
       "YGMeasureModeUndefined");
 
+  (performLayout ? layoutMarkerData.layouts : layoutMarkerData.measures) += 1;
+
   // Set the resolved resolution in the node's layout.
   const YGDirection direction = node->resolveDirection(ownerDirection);
   node->setLayoutDirection(direction);

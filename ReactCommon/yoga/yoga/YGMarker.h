@@ -18,7 +18,8 @@ typedef YG_ENUM_BEGIN(YGMarker){
 } YG_ENUM_END(YGMarker);
 
 typedef struct {
-  int unused;
+  int layouts;
+  int measures;
 } YGMarkerLayoutData;
 
 typedef union {
@@ -54,6 +55,15 @@ struct MarkerData<YGMarkerLayout> {
 };
 
 } // namespace detail
+
+template <YGMarker M>
+typename detail::MarkerData<M>::type* data(YGMarkerData) = delete;
+
+template <>
+inline YGMarkerLayoutData* data<YGMarkerLayout>(YGMarkerData d) {
+  return d.layout;
+}
+
 } // namespace marker
 } // namespace yoga
 } // namespace facebook
