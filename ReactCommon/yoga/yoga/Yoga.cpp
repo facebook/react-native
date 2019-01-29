@@ -12,6 +12,7 @@
 #include "YGNode.h"
 #include "YGNodePrint.h"
 #include "Yoga-internal.h"
+#include "instrumentation.h"
 #ifdef _MSC_VER
 #include <float.h>
 
@@ -4004,6 +4005,8 @@ void YGNodeCalculateLayout(
     const float ownerWidth,
     const float ownerHeight,
     const YGDirection ownerDirection) {
+  marker::MarkerSection<YGMarkerLayout> marker{node};
+
   // Increment the generation count. This will force the recursive routine to
   // visit all dirty nodes at least once. Subsequent visits will be skipped if
   // the input parameters don't change.
@@ -4118,8 +4121,9 @@ void YGNodeCalculateLayout(
           0.0f);
 
       // Set whether the two layouts are different or not.
-      node->setLayoutDoesLegacyFlagAffectsLayout(
-          !originalNode->isLayoutTreeEqualToNode(*node));
+      auto neededLegacyStretchBehaviour =
+          !originalNode->isLayoutTreeEqualToNode(*node);
+      node->setLayoutDoesLegacyFlagAffectsLayout(neededLegacyStretchBehaviour);
 
       if (originalNode->getConfig()->printTree) {
         YGNodePrint(
