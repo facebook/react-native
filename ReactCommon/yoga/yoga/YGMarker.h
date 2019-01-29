@@ -37,3 +37,25 @@ typedef struct {
 void YGConfigSetMarkerCallbacks(YGConfigRef, YGMarkerCallbacks);
 
 YG_EXTERN_C_END
+
+#ifdef __cplusplus
+
+namespace facebook {
+namespace yoga {
+namespace marker {
+namespace detail {
+
+template <YGMarker M>
+struct MarkerData;
+
+template <>
+struct MarkerData<YGMarkerLayout> {
+  using type = YGMarkerLayoutData;
+};
+
+} // namespace detail
+} // namespace marker
+} // namespace yoga
+} // namespace facebook
+
+#endif // __cplusplus
