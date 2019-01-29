@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.modules.fresco;
@@ -15,7 +13,6 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 
 import com.facebook.common.logging.FLog;
-import com.facebook.common.soloader.SoLoaderShim;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
@@ -40,10 +37,11 @@ import okhttp3.OkHttpClient;
  *
  * <p>Does not expose any methods to JavaScript code. For initialization and cleanup only.
  */
-@ReactModule(name = "FrescoModule")
+@ReactModule(name = FrescoModule.NAME, needsEagerInit = true)
 public class FrescoModule extends ReactContextBaseJavaModule implements
     ModuleDataCleaner.Cleanable, LifecycleEventListener {
 
+  public static final String NAME = "FrescoModule";
   private final boolean mClearOnDestroy;
   private @Nullable ImagePipelineConfig mConfig;
 
@@ -100,9 +98,6 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
     super.initialize();
     getReactApplicationContext().addLifecycleEventListener(this);
     if (!hasBeenInitialized()) {
-      // Make sure the SoLoaderShim is configured to use our loader for native libraries.
-      // This code can be removed if using Fresco from Maven rather than from source
-      SoLoaderShim.setHandler(new FrescoHandler());
       if (mConfig == null) {
         mConfig = getDefaultConfig(getReactApplicationContext());
       }
@@ -120,7 +115,7 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
 
   @Override
   public String getName() {
-    return "FrescoModule";
+    return NAME;
   }
 
   @Override
@@ -184,13 +179,6 @@ public class FrescoModule extends ReactContextBaseJavaModule implements
     // backgrounded.
     if (hasBeenInitialized() && mClearOnDestroy) {
       Fresco.getImagePipeline().clearMemoryCaches();
-    }
-  }
-
-  private static class FrescoHandler implements SoLoaderShim.Handler {
-    @Override
-    public void loadLibrary(String libraryName) {
-      SoLoader.loadLibrary(libraryName);
     }
   }
 }

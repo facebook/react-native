@@ -19,6 +19,14 @@ Mac OS and Xcode are required.
 
 See [Running on device](https://facebook.github.io/react-native/docs/running-on-device.html) if you want to use a physical device.
 
+### Running on iOS with CocoaPods
+
+Similar to above, you can build the app via Xcode with help of CocoaPods.
+
+- Install [CocoaPods](http://facebook.github.io/react-native/docs/integration-with-existing-apps.html#3-install-cocoapods)
+- Run `cd RNTester; pod install`
+- Open the generated `RNTesterPods.xcworkspace` (this is not checked in). Do not open `RNTesterPods.xcodeproj` directly.
+
 ### Running on Android
 
 You'll need to have all the [prerequisites](https://github.com/facebook/react-native/tree/master/ReactAndroid#prerequisites) (SDK, NDK) for Building React Native installed.
@@ -49,6 +57,29 @@ Run the following commands from the react-native folder:
     ./scripts/packager.sh
 
 _Note: The native libs are still built using gradle. Full build with buck is coming soon(tm)._
+
+## Running Detox Tests on iOS
+
+Install Detox from [here](https://github.com/wix/Detox/blob/master/docs/Introduction.GettingStarted.md).
+
+To run the e2e tests locally, run the following commands from the react-native folder:
+
+    yarn build-ios-e2e
+    yarn test-ios-e2e
+
+These are the equivalent of running:
+
+    detox build -c ios.sim.release
+    detox test -c ios.sim.release --cleanup
+
+These build the app in Release mode, so the production code is bundled and included in the built app.
+
+When developing E2E tests, you may want to run in development mode, so that changes to the production code show up immediately. To do this, run:
+
+    detox build -c ios.sim.debug
+    detox test -c ios.sim.debug
+
+You will also need to have Metro Bundler running in another terminal. Note that if you've previously run the E2E tests in release mode, you may need to delete the `RNTester/build` folder before rerunning `detox build`.
 
 ## Built from source
 

@@ -1,3 +1,5 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "cxx_library")
+
 cxx_library(
     name = "yoga",
     srcs = glob(["yoga/*.cpp"]),

@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <Foundation/Foundation.h>
@@ -36,7 +34,12 @@
 [[RCTTestRunner alloc] initWithApp:(app__) \
                 referenceDirectory:@FB_REFERENCE_IMAGE_DIR \
                     moduleProvider:(moduleProvider__) \
-                    scriptURL: scriptURL__]
+                         scriptURL: scriptURL__]
+
+#define RCTInitRunnerForAppWithDelegate(app__, bridgeDelegate__) \
+[[RCTTestRunner alloc] initWithApp:(app__) \
+                referenceDirectory:@FB_REFERENCE_IMAGE_DIR \
+                    bridgeDelegate:(bridgeDelegate__)]
 
 @protocol RCTBridgeModule;
 @class RCTBridge;
@@ -66,11 +69,25 @@
  * @param app The path to the app bundle without suffixes, e.g. IntegrationTests/IntegrationTestsApp
  * @param referenceDirectory The path for snapshot references images.
  * @param block A block that returns an array of extra modules to be used by the test runner.
+ * @param scriptURL URL to the JS bundle to use.
+ * @param bridgeDelegate Custom delegate for bridge activities.
  */
 - (instancetype)initWithApp:(NSString *)app
          referenceDirectory:(NSString *)referenceDirectory
              moduleProvider:(RCTBridgeModuleListProvider)block
-                  scriptURL:(NSURL *)scriptURL NS_DESIGNATED_INITIALIZER;
+                  scriptURL:(NSURL *)scriptURL
+             bridgeDelegate:(id<RCTBridgeDelegate>)bridgeDelegate NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithApp:(NSString *)app
+         referenceDirectory:(NSString *)referenceDirectory
+             moduleProvider:(RCTBridgeModuleListProvider)block
+                  scriptURL:(NSURL *)scriptURL;
+
+- (instancetype)initWithApp:(NSString *)app
+         referenceDirectory:(NSString *)referenceDirectory
+             bridgeDelegate:(id<RCTBridgeDelegate>)bridgeDelegate;
+
+- (NSURL *)defaultScriptURL;
 
 /**
  * Simplest runTest function simply mounts the specified JS module with no

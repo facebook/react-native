@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTView.h"
@@ -149,10 +147,41 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
 - (NSString *)accessibilityLabel
 {
-  if (super.accessibilityLabel) {
-    return super.accessibilityLabel;
+  NSString *label = super.accessibilityLabel;
+  if (label) {
+    return label;
   }
   return RCTRecursiveAccessibilityLabel(self);
+}
+
+- (NSArray <UIAccessibilityCustomAction *> *)accessibilityCustomActions
+{
+  if (!_accessibilityActions.count) {
+    return nil;
+  }
+
+  NSMutableArray *actions = [NSMutableArray array];
+  for (NSString *action in _accessibilityActions) {
+    [actions addObject:[[UIAccessibilityCustomAction alloc] initWithName:action
+                                                                  target:self
+                                                                selector:@selector(didActivateAccessibilityCustomAction:)]];
+  }
+
+  return [actions copy];
+}
+
+- (BOOL)didActivateAccessibilityCustomAction:(UIAccessibilityCustomAction *)action
+{
+  if (!_onAccessibilityAction) {
+    return NO;
+  }
+
+  _onAccessibilityAction(@{
+    @"action": action.name,
+    @"target": self.reactTag
+  });
+
+  return YES;
 }
 
 - (void)setPointerEvents:(RCTPointerEvents)pointerEvents
@@ -249,6 +278,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 {
   if (_onMagicTap) {
     _onMagicTap(nil);
+    return YES;
+  } else {
+    return NO;
+  }
+}
+
+- (BOOL)accessibilityPerformEscape
+{
+  if (_onAccessibilityEscape) {
+    _onAccessibilityEscape(nil);
     return YES;
   } else {
     return NO;
@@ -626,8 +665,8 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
     CGRectMake(
       insets.left / size.width,
       insets.top / size.height,
-      1.0 / size.width,
-      1.0 / size.height
+      (CGFloat)1.0 / size.width,
+      (CGFloat)1.0 / size.height
     );
   });
 
@@ -658,14 +697,6 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
 static BOOL RCTLayerHasShadow(CALayer *layer)
 {
   return layer.shadowOpacity * CGColorGetAlpha(layer.shadowColor) > 0;
-}
-
-- (void)reactSetInheritedBackgroundColor:(UIColor *)inheritedBackgroundColor
-{
-  // Inherit background color if a shadow has been set, as an optimization
-  if (RCTLayerHasShadow(self.layer)) {
-    self.backgroundColor = inheritedBackgroundColor;
-  }
 }
 
 static void RCTUpdateShadowPathForView(RCTView *view)

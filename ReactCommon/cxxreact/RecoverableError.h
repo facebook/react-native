@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -20,7 +23,7 @@ struct RecoverableError : public std::exception {
     : m_what { "facebook::react::Recoverable: " + what_ }
   {}
 
-  virtual const char* what() const throw() override { return m_what.c_str(); }
+  virtual const char* what() const noexcept override { return m_what.c_str(); }
 
   /**
    * runRethrowingAsRecoverable

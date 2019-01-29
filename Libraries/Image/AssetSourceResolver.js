@@ -1,39 +1,37 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule AssetSourceResolver
  * @flow
+ * @format
  */
 'use strict';
 
-export type ResolvedAssetSource = {
-  __packager_asset: boolean,
-  width: ?number,
-  height: ?number,
-  uri: string,
-  scale: number,
-};
+export type ResolvedAssetSource = {|
+  +__packager_asset: boolean,
+  +width: ?number,
+  +height: ?number,
+  +uri: string,
+  +scale: number,
+|};
 
-import type { PackagerAsset } from 'AssetRegistry';
+import type {PackagerAsset} from 'AssetRegistry';
 
 const PixelRatio = require('PixelRatio');
 const Platform = require('Platform');
 
-const assetPathUtils = require('../../local-cli/bundle/assetPathUtils');
-const invariant = require('fbjs/lib/invariant');
+const assetPathUtils = require('./assetPathUtils');
+const invariant = require('invariant');
 
 /**
  * Returns a path like 'assets/AwesomeModule/icon@2x.png'
  */
 function getScaledAssetPath(asset): string {
-  var scale = AssetSourceResolver.pickScale(asset.scales, PixelRatio.get());
-  var scaleSuffix = scale === 1 ? '' : '@' + scale + 'x';
-  var assetDir = assetPathUtils.getBasePath(asset);
+  const scale = AssetSourceResolver.pickScale(asset.scales, PixelRatio.get());
+  const scaleSuffix = scale === 1 ? '' : '@' + scale + 'x';
+  const assetDir = assetPathUtils.getBasePath(asset);
   return assetDir + '/' + asset.name + scaleSuffix + '.' + asset.type;
 }
 
@@ -41,30 +39,25 @@ function getScaledAssetPath(asset): string {
  * Returns a path like 'drawable-mdpi/icon.png'
  */
 function getAssetPathInDrawableFolder(asset): string {
-  var scale = AssetSourceResolver.pickScale(asset.scales, PixelRatio.get());
-  var drawbleFolder = assetPathUtils.getAndroidResourceFolderName(asset, scale);
-  var fileName =  assetPathUtils.getAndroidResourceIdentifier(asset);
+  const scale = AssetSourceResolver.pickScale(asset.scales, PixelRatio.get());
+  const drawbleFolder = assetPathUtils.getAndroidResourceFolderName(
+    asset,
+    scale,
+  );
+  const fileName = assetPathUtils.getAndroidResourceIdentifier(asset);
   return drawbleFolder + '/' + fileName + '.' + asset.type;
 }
 
 class AssetSourceResolver {
-
   serverUrl: ?string;
   // where the jsbundle is being run from
   jsbundleUrl: ?string;
-  // where the embedded bundle in the app is stored
-  embeddedBundleUrl: ?string;
   // the asset to resolve
   asset: PackagerAsset;
 
-  constructor(serverUrl: ?string,
-    jsbundleUrl: ?string,
-    embeddedBundleUrl: ?string,
-    asset: PackagerAsset
-  ) {
+  constructor(serverUrl: ?string, jsbundleUrl: ?string, asset: PackagerAsset) {
     this.serverUrl = serverUrl;
     this.jsbundleUrl = jsbundleUrl;
-    this.embeddedBundleUrl = embeddedBundleUrl;
     this.asset = asset;
   }
 
@@ -76,19 +69,15 @@ class AssetSourceResolver {
     return !!(this.jsbundleUrl && this.jsbundleUrl.startsWith('file://'));
   }
 
-  canLoadFromEmbeddedBundledLocation(): boolean {
-    return !!this.embeddedBundleUrl;
-  }
-
   defaultAsset(): ResolvedAssetSource {
     if (this.isLoadedFromServer()) {
       return this.assetServerURL();
     }
 
     if (Platform.OS === 'android') {
-      return this.isLoadedFromFileSystem() ?
-        this.drawableFolderInBundle() :
-        this.resourceIdentifierWithoutScale();
+      return this.isLoadedFromFileSystem()
+        ? this.drawableFolderInBundle()
+        : this.resourceIdentifierWithoutScale();
     } else {
       return this.scaledAssetURLNearBundle();
     }
@@ -101,8 +90,12 @@ class AssetSourceResolver {
   assetServerURL(): ResolvedAssetSource {
     invariant(!!this.serverUrl, 'need server to load from');
     return this.fromSource(
-      this.serverUrl + getScaledAssetPath(this.asset) +
-      '?platform=' + Platform.OS + '&hash=' + this.asset.hash
+      this.serverUrl +
+        getScaledAssetPath(this.asset) +
+        '?platform=' +
+        Platform.OS +
+        '&hash=' +
+        this.asset.hash,
     );
   }
 
@@ -124,23 +117,19 @@ class AssetSourceResolver {
   }
 
   /**
-   * Resolves to the asset that was bundled with the app, with a scaled asset filename
-   * E.g. 'file:///sdcard/bundle/assets/AwesomeModule/icon@2x.png'
-   */
-  scaledAssetURLInEmbeddedBundleUrl(): ResolvedAssetSource {
-    const path = this.embeddedBundleUrl || 'file://';
-    return this.fromSource(path + getScaledAssetPath(this.asset));
-  }
-
-  /**
    * The default location of assets bundled with the app, located by
    * resource identifier
    * The Android resource system picks the correct scale.
    * E.g. 'assets_awesomemodule_icon'
    */
   resourceIdentifierWithoutScale(): ResolvedAssetSource {
-    invariant(Platform.OS === 'android', 'resource identifiers work on Android');
-    return this.fromSource(assetPathUtils.getAndroidResourceIdentifier(this.asset));
+    invariant(
+      Platform.OS === 'android',
+      'resource identifiers work on Android',
+    );
+    return this.fromSource(
+      assetPathUtils.getAndroidResourceIdentifier(this.asset),
+    );
   }
 
   /**
@@ -150,9 +139,7 @@ class AssetSourceResolver {
    */
   drawableFolderInBundle(): ResolvedAssetSource {
     const path = this.jsbundleUrl || 'file://';
-    return this.fromSource(
-      path + getAssetPathInDrawableFolder(this.asset)
-    );
+    return this.fromSource(path + getAssetPathInDrawableFolder(this.asset));
   }
 
   fromSource(source: string): ResolvedAssetSource {
@@ -167,7 +154,7 @@ class AssetSourceResolver {
 
   static pickScale(scales: Array<number>, deviceScale: number): number {
     // Packager guarantees that `scales` array is sorted
-    for (var i = 0; i < scales.length; i++) {
+    for (let i = 0; i < scales.length; i++) {
       if (scales[i] >= deviceScale) {
         return scales[i];
       }
@@ -178,7 +165,6 @@ class AssetSourceResolver {
     // in which case we default to 1
     return scales[scales.length - 1] || 1;
   }
-
 }
 
- module.exports = AssetSourceResolver;
+module.exports = AssetSourceResolver;

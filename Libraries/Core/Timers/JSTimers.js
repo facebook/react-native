@@ -1,12 +1,9 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule JSTimers
  * @format
  * @flow
  */
@@ -15,8 +12,9 @@
 const Platform = require('Platform');
 const Systrace = require('Systrace');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 const {Timing} = require('NativeModules');
+const BatchedBridge = require('BatchedBridge');
 
 import type {ExtendedError} from 'parseErrorStack';
 
@@ -244,11 +242,7 @@ const JSTimers = {
    * @param {function} func Callback to be invoked after `duration` ms.
    * @param {number} duration Number of milliseconds.
    */
-  setTimeout: function(
-    func: Function,
-    duration: number,
-    ...args?: any
-  ): number {
+  setTimeout: function(func: Function, duration: number, ...args: any): number {
     if (__DEV__ && IS_ANDROID && duration > MAX_TIMER_DURATION_MS) {
       console.warn(
         ANDROID_LONG_TIMER_MESSAGE +
@@ -273,7 +267,7 @@ const JSTimers = {
   setInterval: function(
     func: Function,
     duration: number,
-    ...args?: any
+    ...args: any
   ): number {
     if (__DEV__ && IS_ANDROID && duration > MAX_TIMER_DURATION_MS) {
       console.warn(
@@ -296,7 +290,10 @@ const JSTimers = {
    * @param {function} func Callback to be invoked before the end of the
    * current JavaScript execution loop.
    */
-  setImmediate: function(func: Function, ...args?: any) {
+  /* $FlowFixMe(>=0.79.1 site=react_native_fb) This comment suppresses an
+   * error found when Flow v0.79 was deployed. To see the error delete this
+   * comment and run Flow. */
+  setImmediate: function(func: Function, ...args: any) {
     const id = _allocateCallback(
       () => func.apply(undefined, args),
       'setImmediate',
@@ -308,6 +305,9 @@ const JSTimers = {
   /**
    * @param {function} func Callback to be invoked every frame.
    */
+  /* $FlowFixMe(>=0.79.1 site=react_native_fb) This comment suppresses an
+   * error found when Flow v0.79 was deployed. To see the error delete this
+   * comment and run Flow. */
   requestAnimationFrame: function(func: Function) {
     const id = _allocateCallback(func, 'requestAnimationFrame');
     Timing.createTimer(id, 1, Date.now(), /* recurring */ false);
@@ -319,6 +319,9 @@ const JSTimers = {
    * with time remaining in frame.
    * @param {?object} options
    */
+  /* $FlowFixMe(>=0.79.1 site=react_native_fb) This comment suppresses an
+   * error found when Flow v0.79 was deployed. To see the error delete this
+   * comment and run Flow. */
   requestIdleCallback: function(func: Function, options: ?Object) {
     if (requestIdleCallbacks.length === 0) {
       Timing.setSendIdleEvents(true);
@@ -489,13 +492,20 @@ const JSTimers = {
   },
 };
 
+let ExportedJSTimers;
 if (!Timing) {
   console.warn("Timing native module is not available, can't set timers.");
   // $FlowFixMe: we can assume timers are generally available
-  module.exports = ({
+  ExportedJSTimers = ({
     callImmediates: JSTimers.callImmediates,
     setImmediate: JSTimers.setImmediate,
   }: typeof JSTimers);
 } else {
-  module.exports = JSTimers;
+  ExportedJSTimers = JSTimers;
 }
+
+BatchedBridge.setImmediatesCallback(
+  ExportedJSTimers.callImmediates.bind(ExportedJSTimers),
+);
+
+module.exports = ExportedJSTimers;

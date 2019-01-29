@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.modules.toast;
@@ -23,7 +21,7 @@ import java.util.Map;
 /**
  * {@link NativeModule} that allows JS to show an Android Toast.
  */
-@ReactModule(name = "ToastAndroid")
+@ReactModule(name = ToastModule.NAME)
 public class ToastModule extends ReactContextBaseJavaModule {
 
   private static final String DURATION_SHORT_KEY = "SHORT";
@@ -32,6 +30,7 @@ public class ToastModule extends ReactContextBaseJavaModule {
   private static final String GRAVITY_TOP_KEY = "TOP";
   private static final String GRAVITY_BOTTOM_KEY = "BOTTOM";
   private static final String GRAVITY_CENTER = "CENTER";
+  public static final String NAME = "ToastAndroid";
 
   public ToastModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -39,7 +38,7 @@ public class ToastModule extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "ToastAndroid";
+    return NAME;
   }
 
   @Override

@@ -1,14 +1,11 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
  * @format
- * @providesModule RTLExample
  */
 'use strict';
 
@@ -375,9 +372,6 @@ const BorderExample = withRTLState(({isRTL, setRTL}) => {
 });
 
 class RTLExample extends React.Component<any, State> {
-  static title = 'RTLExample';
-  static description = 'Examples to show how to apply components to RTL layout.';
-
   _panResponder: Object;
 
   constructor(props: Object) {
@@ -487,7 +481,7 @@ class RTLExample extends React.Component<any, State> {
           <RNTesterBlock
             title={'Controlling Animation'}
             description={'Animation direction according to layout'}>
-            <View Style={styles.view}>
+            <View style={styles.view}>
               <AnimationBlock
                 onPress={this._linearTap}
                 imgStyle={{
@@ -528,18 +522,18 @@ class RTLExample extends React.Component<any, State> {
     );
   };
 
-  _linearTap = (refName: string, e: Object) => {
+  _linearTap = (e: Object) => {
     this.setState({
       toggleStatus: {
         ...this.state.toggleStatus,
-        [refName]: !this.state.toggleStatus[refName],
+        [e]: !this.state.toggleStatus[e],
       },
     });
     const offset = IMAGE_SIZE[0] / SCALE / 2 + 10;
     const toMaxDistance =
       (IS_RTL ? -1 : 1) * (this.state.windowWidth / 2 - offset);
     Animated.timing(this.state.linear, {
-      toValue: this.state.toggleStatus[refName] ? toMaxDistance : 0,
+      toValue: this.state.toggleStatus[e] ? toMaxDistance : 0,
       duration: 2000,
       useNativeDriver: true,
     }).start();
@@ -681,4 +675,13 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = RTLExample;
+exports.title = 'RTLExample';
+exports.description = 'Examples to show how to apply components to RTL layout.';
+exports.examples = [
+  {
+    title: 'Simple RTL',
+    render: function(): React.Element<typeof RTLExample> {
+      return <RTLExample />;
+    },
+  },
+];

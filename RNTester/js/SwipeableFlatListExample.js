@@ -1,19 +1,15 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule SwipeableFlatListExample
  * @flow
  * @format
  */
 'use strict';
 
 const React = require('react');
-const createReactClass = require('create-react-class');
 const ReactNative = require('react-native');
 const {
   Image,
@@ -26,6 +22,8 @@ const {
 } = ReactNative;
 
 const RNTesterPage = require('./RNTesterPage');
+
+import type {RNTesterProps} from 'RNTesterTypes';
 
 const data = [
   {
@@ -45,14 +43,8 @@ const data = [
   },
 ];
 
-const SwipeableFlatListExample = createReactClass({
-  displayName: 'SwipeableFlatListExample',
-  statics: {
-    title: '<SwipeableFlatList>',
-    description: 'Performant, scrollable, swipeable list of data.',
-  },
-
-  render: function() {
+class SwipeableFlatListExample extends React.Component<RNTesterProps> {
+  render() {
     return (
       <RNTesterPage
         title={this.props.navigator ? null : '<SwipeableListView>'}
@@ -67,9 +59,9 @@ const SwipeableFlatListExample = createReactClass({
         />
       </RNTesterPage>
     );
-  },
+  }
 
-  _renderItem: function({item}): ?React.Element<any> {
+  _renderItem({item}): ?React.Element<any> {
     return (
       <View style={styles.row}>
         <Image style={styles.rowIcon} source={item.icon} />
@@ -78,9 +70,9 @@ const SwipeableFlatListExample = createReactClass({
         </View>
       </View>
     );
-  },
+  }
 
-  _renderQuickActions: function({item}: Object): ?React.Element<any> {
+  _renderQuickActions({item}: Object): ?React.Element<any> {
     return (
       <View style={styles.actionsContainer}>
         <TouchableHighlight
@@ -105,10 +97,10 @@ const SwipeableFlatListExample = createReactClass({
         </TouchableHighlight>
       </View>
     );
-  },
-});
+  }
+}
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -146,4 +138,13 @@ var styles = StyleSheet.create({
   },
 });
 
-module.exports = SwipeableFlatListExample;
+exports.title = '<SwipeableFlatList>';
+exports.description = 'Performant, scrollable, swipeable list of data.';
+exports.examples = [
+  {
+    title: 'Simple swipable list',
+    render: function(): React.Element<typeof SwipeableFlatListExample> {
+      return <SwipeableFlatListExample />;
+    },
+  },
+];

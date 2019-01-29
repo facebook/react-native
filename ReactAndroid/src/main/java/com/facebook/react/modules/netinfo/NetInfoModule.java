@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.modules.netinfo;
@@ -32,7 +30,7 @@ import static com.facebook.react.modules.core.DeviceEventManagerModule.RCTDevice
 /**
  * Module that monitors and provides information about the connectivity state of the device.
  */
-@ReactModule(name = "NetInfo")
+@ReactModule(name = NetInfoModule.NAME)
 public class NetInfoModule extends ReactContextBaseJavaModule
     implements LifecycleEventListener {
 
@@ -61,6 +59,7 @@ public class NetInfoModule extends ReactContextBaseJavaModule
       "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />";
 
   private static final String ERROR_MISSING_PERMISSION = "E_MISSING_PERMISSION";
+  public static final String NAME = "NetInfo";
 
   private final ConnectivityManager mConnectivityManager;
   private final ConnectivityBroadcastReceiver mConnectivityBroadcastReceiver;
@@ -98,13 +97,13 @@ public class NetInfoModule extends ReactContextBaseJavaModule
 
   @Override
   public String getName() {
-    return "NetInfo";
+    return NAME;
   }
 
   @ReactMethod
   public void getCurrentConnectivity(Promise promise) {
     if (mNoNetworkPermission) {
-      promise.reject(ERROR_MISSING_PERMISSION, MISSING_PERMISSION_MESSAGE, null);
+      promise.reject(ERROR_MISSING_PERMISSION, MISSING_PERMISSION_MESSAGE);
       return;
     }
     promise.resolve(createConnectivityEventMap());
@@ -113,7 +112,7 @@ public class NetInfoModule extends ReactContextBaseJavaModule
   @ReactMethod
   public void isConnectionMetered(Promise promise) {
     if (mNoNetworkPermission) {
-      promise.reject(ERROR_MISSING_PERMISSION, MISSING_PERMISSION_MESSAGE, null);
+      promise.reject(ERROR_MISSING_PERMISSION, MISSING_PERMISSION_MESSAGE);
       return;
     }
     promise.resolve(ConnectivityManagerCompat.isActiveNetworkMetered(mConnectivityManager));

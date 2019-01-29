@@ -1,12 +1,9 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule AppRegistry
  * @flow
  * @format
  */
@@ -19,11 +16,14 @@ const ReactNative = require('ReactNative');
 const SceneTracker = require('SceneTracker');
 
 const infoLog = require('infoLog');
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 const renderApplication = require('renderApplication');
 
 type Task = (taskData: any) => Promise<void>;
 type TaskProvider = () => Task;
+/* $FlowFixMe(>=0.90.0 site=react_native_fb) This comment suppresses an
+ * error found when Flow v0.90 was deployed. To see the error, delete this
+ * comment and run Flow. */
 export type ComponentProvider = () => React$ComponentType<any>;
 export type ComponentProviderInstrumentationHook = (
   component: ComponentProvider,
@@ -59,7 +59,7 @@ let wrapperComponentProvider: ?WrapperComponentProvider;
 
 /**
  * `AppRegistry` is the JavaScript entry point to running all React Native apps.
- * 
+ *
  * See http://facebook.github.io/react-native/docs/appregistry.html
  */
 const AppRegistry = {
@@ -89,7 +89,7 @@ const AppRegistry = {
 
   /**
    * Registers an app's root component.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/appregistry.html#registercomponent
    */
   registerComponent(
@@ -99,13 +99,15 @@ const AppRegistry = {
   ): string {
     runnables[appKey] = {
       componentProvider,
-      run: appParameters =>
+      run: appParameters => {
         renderApplication(
           componentProviderInstrumentationHook(componentProvider),
           appParameters.initialProps,
           appParameters.rootTag,
           wrapperComponentProvider && wrapperComponentProvider(appParameters),
-        ),
+          appParameters.fabric,
+        );
+      },
     };
     if (section) {
       sections[appKey] = runnables[appKey];
@@ -155,7 +157,7 @@ const AppRegistry = {
 
   /**
    * Loads the JavaScript bundle and runs the app.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/appregistry.html#runapplication
    */
   runApplication(appKey: string, appParameters: any): void {
@@ -197,8 +199,8 @@ const AppRegistry = {
   },
 
   /**
-   * Stops an application when a view should be destroyed. 
-   * 
+   * Stops an application when a view should be destroyed.
+   *
    * See http://facebook.github.io/react-native/docs/appregistry.html#unmountapplicationcomponentatroottag
    */
   unmountApplicationComponentAtRootTag(rootTag: number): void {
@@ -207,7 +209,7 @@ const AppRegistry = {
 
   /**
    * Register a headless task. A headless task is a bit of code that runs without a UI.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/appregistry.html#registerheadlesstask
    */
   registerHeadlessTask(taskKey: string, task: TaskProvider): void {

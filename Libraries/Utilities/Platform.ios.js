@@ -1,18 +1,21 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Platform
+ * @format
  * @flow
  */
 
 'use strict';
 
 const NativeModules = require('NativeModules');
+
+export type PlatformSelectSpec<D, I> = {
+  default?: D,
+  ios?: I,
+};
 
 const Platform = {
   OS: 'ios',
@@ -24,15 +27,25 @@ const Platform = {
     const constants = NativeModules.PlatformConstants;
     return constants ? constants.interfaceIdiom === 'pad' : false;
   },
+  /**
+   * Deprecated, use `isTV` instead.
+   */
   get isTVOS() {
+    return Platform.isTV;
+  },
+  get isTV() {
     const constants = NativeModules.PlatformConstants;
     return constants ? constants.interfaceIdiom === 'tv' : false;
   },
   get isTesting(): boolean {
-    const constants = NativeModules.PlatformConstants;
-    return constants && constants.isTesting;
+    if (__DEV__) {
+      const constants = NativeModules.PlatformConstants;
+      return constants && constants.isTesting;
+    }
+    return false;
   },
-  select: (obj: Object) => 'ios' in obj ? obj.ios : obj.default,
+  select: <D, I>(spec: PlatformSelectSpec<D, I>): D | I =>
+    'ios' in spec ? spec.ios : spec.default,
 };
 
 module.exports = Platform;

@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 package com.facebook.react;
 
@@ -8,7 +11,7 @@ import android.app.Activity;
 import android.app.Application;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSBundleLoader;
-import com.facebook.react.bridge.JSCJavaScriptExecutorFactory;
+import com.facebook.react.bridge.JSIModulePackage;
 import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.NativeModuleCallExceptionHandler;
 import com.facebook.react.bridge.NotThreadSafeBridgeIdleDebugListener;
@@ -16,10 +19,13 @@ import com.facebook.react.common.LifecycleState;
 import com.facebook.react.devsupport.RedBoxHandler;
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener;
 import com.facebook.react.devsupport.interfaces.DevSupportManager;
+import com.facebook.react.jscexecutor.JSCExecutorFactory;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
+import com.facebook.react.packagerconnection.RequestHandler;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
 
 /**
@@ -41,13 +47,13 @@ public class ReactInstanceManagerBuilder {
   private @Nullable Activity mCurrentActivity;
   private @Nullable DefaultHardwareBackBtnHandler mDefaultHardwareBackBtnHandler;
   private @Nullable RedBoxHandler mRedBoxHandler;
-  private boolean mLazyNativeModulesEnabled;
   private boolean mLazyViewManagersEnabled;
-  private boolean mDelayViewManagerClassLoadsEnabled;
   private @Nullable DevBundleDownloadListener mDevBundleDownloadListener;
   private @Nullable JavaScriptExecutorFactory mJavaScriptExecutorFactory;
   private int mMinNumShakes = 1;
   private int mMinTimeLeftInFrameForNonBatchedOperationMs = -1;
+  private @Nullable JSIModulePackage mJSIModulesPackage;
+  private @Nullable Map<String, RequestHandler> mCustomPackagerCommandHandlers;
 
   /* package protected */ ReactInstanceManagerBuilder() {
   }
@@ -59,6 +65,12 @@ public class ReactInstanceManagerBuilder {
   public ReactInstanceManagerBuilder setUIImplementationProvider(
     @Nullable UIImplementationProvider uiImplementationProvider) {
     mUIImplementationProvider = uiImplementationProvider;
+    return this;
+  }
+
+  public ReactInstanceManagerBuilder setJSIModulesPackage(
+    @Nullable JSIModulePackage jsiModulePackage) {
+    mJSIModulesPackage = jsiModulePackage;
     return this;
   }
 
@@ -97,7 +109,7 @@ public class ReactInstanceManagerBuilder {
 
   /**
    * Bundle loader to use when setting up JS environment. This supersedes
-   * prior invcations of {@link setJSBundleFile} and {@link setBundleAssetName}.
+   * prior invocations of {@link setJSBundleFile} and {@link setBundleAssetName}.
    *
    * Example: {@code JSBundleLoader.createFileLoader(application, bundleFile)}
    */
@@ -191,19 +203,8 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
-  public ReactInstanceManagerBuilder setLazyNativeModulesEnabled(boolean lazyNativeModulesEnabled) {
-    mLazyNativeModulesEnabled = lazyNativeModulesEnabled;
-    return this;
-  }
-
   public ReactInstanceManagerBuilder setLazyViewManagersEnabled(boolean lazyViewManagersEnabled) {
     mLazyViewManagersEnabled = lazyViewManagersEnabled;
-    return this;
-  }
-
-  public ReactInstanceManagerBuilder setDelayViewManagerClassLoadsEnabled(
-      boolean delayViewManagerClassLoadsEnabled) {
-    mDelayViewManagerClassLoadsEnabled = delayViewManagerClassLoadsEnabled;
     return this;
   }
 
@@ -224,6 +225,12 @@ public class ReactInstanceManagerBuilder {
     return this;
   }
 
+  public ReactInstanceManagerBuilder setCustomPackagerCommandHandlers(
+      Map<String, RequestHandler> customPackagerCommandHandlers) {
+    mCustomPackagerCommandHandlers = customPackagerCommandHandlers;
+    return this;
+  }
+
   /**
    * Instantiates a new {@link ReactInstanceManager}.
    * Before calling {@code build}, the following must be called:
@@ -231,7 +238,7 @@ public class ReactInstanceManagerBuilder {
    * <li> {@link #setApplication}
    * <li> {@link #setCurrentActivity} if the activity has already resumed
    * <li> {@link #setDefaultHardwareBackBtnHandler} if the activity has already resumed
-   * <li> {@link #setJSBundleFile} or {@link #setJSMainModuleName}
+   * <li> {@link #setJSBundleFile} or {@link #setJSMainModulePath}
    * </ul>
    */
   public ReactInstanceManager build() {
@@ -261,7 +268,7 @@ public class ReactInstanceManagerBuilder {
         mCurrentActivity,
         mDefaultHardwareBackBtnHandler,
         mJavaScriptExecutorFactory == null
-            ? new JSCJavaScriptExecutorFactory(appName, deviceName)
+            ? new JSCExecutorFactory(appName, deviceName)
             : mJavaScriptExecutorFactory,
         (mJSBundleLoader == null && mJSBundleAssetUrl != null)
             ? JSBundleLoader.createAssetLoader(
@@ -275,11 +282,11 @@ public class ReactInstanceManagerBuilder {
         mUIImplementationProvider,
         mNativeModuleCallExceptionHandler,
         mRedBoxHandler,
-        mLazyNativeModulesEnabled,
         mLazyViewManagersEnabled,
-        mDelayViewManagerClassLoadsEnabled,
         mDevBundleDownloadListener,
         mMinNumShakes,
-        mMinTimeLeftInFrameForNonBatchedOperationMs);
+        mMinTimeLeftInFrameForNonBatchedOperationMs,
+        mJSIModulesPackage,
+        mCustomPackagerCommandHandlers);
   }
 }

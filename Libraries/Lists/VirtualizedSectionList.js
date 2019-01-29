@@ -1,22 +1,20 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule VirtualizedSectionList
  * @flow
  * @format
  */
 'use strict';
 
+const Platform = require('Platform');
 const React = require('React');
 const View = require('View');
 const VirtualizedList = require('VirtualizedList');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 import type {ViewToken} from 'ViewabilityHelper';
 import type {Props as VirtualizedListProps} from 'VirtualizedList';
@@ -40,12 +38,12 @@ type SectionBase = {
       updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
     },
   }) => ?React.Element<any>,
-  ItemSeparatorComponent?: ?React.ComponentType<*>,
+  ItemSeparatorComponent?: ?React.ComponentType<any>,
   keyExtractor?: (item: SectionItem, index: ?number) => string,
 
   // TODO: support more optional/override props
-  // FooterComponent?: ?ReactClass<*>,
-  // HeaderComponent?: ?ReactClass<*>,
+  // FooterComponent?: ?ReactClass<any>,
+  // HeaderComponent?: ?ReactClass<any>,
   // onViewableItemsChanged?: ({viewableItems: Array<ViewToken>, changed: Array<ViewToken>}) => void,
 };
 
@@ -57,11 +55,11 @@ type OptionalProps<SectionT: SectionBase> = {
   /**
    * Rendered after the last item in the last section.
    */
-  ListFooterComponent?: ?(React.ComponentType<*> | React.Element<any>),
+  ListFooterComponent?: ?(React.ComponentType<any> | React.Element<any>),
   /**
    * Rendered at the very beginning of the list.
    */
-  ListHeaderComponent?: ?(React.ComponentType<*> | React.Element<any>),
+  ListHeaderComponent?: ?(React.ComponentType<any> | React.Element<any>),
   /**
    * Default renderer for every item in every section.
    */
@@ -87,11 +85,11 @@ type OptionalProps<SectionT: SectionBase> = {
    * Rendered at the bottom of every Section, except the very last one, in place of the normal
    * ItemSeparatorComponent.
    */
-  SectionSeparatorComponent?: ?React.ComponentType<*>,
+  SectionSeparatorComponent?: ?React.ComponentType<any>,
   /**
    * Rendered at the bottom of every Item except the very last one in the last section.
    */
-  ItemSeparatorComponent?: ?React.ComponentType<*>,
+  ItemSeparatorComponent?: ?React.ComponentType<any>,
   /**
    * Warning: Virtualization can drastically improve memory consumption for long lists, but trashes
    * the state of items when they scroll out of the render window, so make sure all relavent data is
@@ -104,7 +102,7 @@ type OptionalProps<SectionT: SectionBase> = {
    * If provided, a standard RefreshControl will be added for "Pull to Refresh" functionality. Make
    * sure to also set the `refreshing` prop correctly.
    */
-  onRefresh?: ?Function,
+  onRefresh?: ?() => void,
   /**
    * Called when the viewability of rows changes, as defined by the
    * `viewabilityConfig` prop.
@@ -137,10 +135,6 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
   Props<SectionT>,
   State,
 > {
-  props: Props<SectionT>;
-
-  state: State;
-
   static defaultProps: DefaultProps = {
     ...VirtualizedList.defaultProps,
     data: [],
@@ -152,7 +146,7 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
     sectionIndex: number,
     viewPosition?: number,
   }) {
-    let index = params.itemIndex + 1;
+    let index = Platform.OS === 'ios' ? params.itemIndex : params.itemIndex - 1;
     for (let ii = 0; ii < params.sectionIndex; ii++) {
       index += this.props.sections[ii].data.length + 2;
     }
@@ -165,6 +159,48 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
 
   getListRef(): VirtualizedList {
     return this._listRef;
+  }
+
+  constructor(props: Props<SectionT>, context: Object) {
+    super(props, context);
+    this.state = this._computeState(props);
+  }
+
+  UNSAFE_componentWillReceiveProps(nextProps: Props<SectionT>) {
+    this.setState(this._computeState(nextProps));
+  }
+
+  _computeState(props: Props<SectionT>): State {
+    const offset = props.ListHeaderComponent ? 1 : 0;
+    const stickyHeaderIndices = [];
+    const itemCount = props.sections.reduce((v, section) => {
+      stickyHeaderIndices.push(v + offset);
+      return v + section.data.length + 2; // Add two for the section header and footer.
+    }, 0);
+
+    return {
+      childProps: {
+        ...props,
+        renderItem: this._renderItem,
+        ItemSeparatorComponent: undefined, // Rendered with renderItem
+        data: props.sections,
+        getItemCount: () => itemCount,
+        getItem,
+        keyExtractor: this._keyExtractor,
+        onViewableItemsChanged: props.onViewableItemsChanged
+          ? this._onViewableItemsChanged
+          : undefined,
+        stickyHeaderIndices: props.stickySectionHeadersEnabled
+          ? stickyHeaderIndices
+          : undefined,
+      },
+    };
+  }
+
+  render() {
+    return (
+      <VirtualizedList {...this.state.childProps} ref={this._captureRef} />
+    );
   }
 
   _keyExtractor = (item: Item, index: number) => {
@@ -233,6 +269,9 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
     return {
       ...viewable,
       index: info.index,
+      /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.63 was deployed. To see the error delete this
+       * comment and run Flow. */
       key: keyExtractor(viewable.item, info.index),
       section: info.section,
     };
@@ -307,7 +346,7 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
   _getSeparatorComponent(
     index: number,
     info?: ?Object,
-  ): ?React.ComponentType<*> {
+  ): ?React.ComponentType<any> {
     info = info || this._subExtractor(index);
     if (!info) {
       return null;
@@ -326,48 +365,6 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
     return null;
   }
 
-  _computeState(props: Props<SectionT>): State {
-    const offset = props.ListHeaderComponent ? 1 : 0;
-    const stickyHeaderIndices = [];
-    const itemCount = props.sections.reduce((v, section) => {
-      stickyHeaderIndices.push(v + offset);
-      return v + section.data.length + 2; // Add two for the section header and footer.
-    }, 0);
-
-    return {
-      childProps: {
-        ...props,
-        renderItem: this._renderItem,
-        ItemSeparatorComponent: undefined, // Rendered with renderItem
-        data: props.sections,
-        getItemCount: () => itemCount,
-        getItem,
-        keyExtractor: this._keyExtractor,
-        onViewableItemsChanged: props.onViewableItemsChanged
-          ? this._onViewableItemsChanged
-          : undefined,
-        stickyHeaderIndices: props.stickySectionHeadersEnabled
-          ? stickyHeaderIndices
-          : undefined,
-      },
-    };
-  }
-
-  constructor(props: Props<SectionT>, context: Object) {
-    super(props, context);
-    this.state = this._computeState(props);
-  }
-
-  componentWillReceiveProps(nextProps: Props<SectionT>) {
-    this.setState(this._computeState(nextProps));
-  }
-
-  render() {
-    return (
-      <VirtualizedList {...this.state.childProps} ref={this._captureRef} />
-    );
-  }
-
   _cellRefs = {};
   _listRef: VirtualizedList;
   _captureRef = ref => {
@@ -378,25 +375,40 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
   };
 }
 
-type ItemWithSeparatorProps = {
-  LeadingSeparatorComponent: ?React.ComponentType<*>,
-  SeparatorComponent: ?React.ComponentType<*>,
+type ItemWithSeparatorCommonProps = $ReadOnly<{|
+  leadingItem: ?Item,
+  leadingSection: ?Object,
+  section: Object,
+  trailingItem: ?Item,
+  trailingSection: ?Object,
+|}>;
+
+type ItemWithSeparatorProps = $ReadOnly<{|
+  ...ItemWithSeparatorCommonProps,
+  LeadingSeparatorComponent: ?React.ComponentType<any>,
+  SeparatorComponent: ?React.ComponentType<any>,
   cellKey: string,
   index: number,
   item: Item,
   onUpdateSeparator: (cellKey: string, newProps: Object) => void,
   prevCellKey?: ?string,
   renderItem: Function,
-  section: Object,
-  leadingItem: ?Item,
-  leadingSection: ?Object,
-  trailingItem: ?Item,
-  trailingSection: ?Object,
+|}>;
+
+type ItemWithSeparatorState = {
+  separatorProps: $ReadOnly<{|
+    highlighted: false,
+    ...ItemWithSeparatorCommonProps,
+  |}>,
+  leadingSeparatorProps: $ReadOnly<{|
+    highlighted: false,
+    ...ItemWithSeparatorCommonProps,
+  |}>,
 };
 
 class ItemWithSeparator extends React.Component<
   ItemWithSeparatorProps,
-  $FlowFixMeState,
+  ItemWithSeparatorState,
 > {
   state = {
     separatorProps: {
@@ -430,7 +442,7 @@ class ItemWithSeparator extends React.Component<
     },
     updateProps: (select: 'leading' | 'trailing', newProps: Object) => {
       const {LeadingSeparatorComponent, cellKey, prevCellKey} = this.props;
-      if (select === 'leading' && LeadingSeparatorComponent) {
+      if (select === 'leading' && LeadingSeparatorComponent != null) {
         this.setState(state => ({
           leadingSeparatorProps: {...state.leadingSeparatorProps, ...newProps},
         }));
@@ -443,10 +455,13 @@ class ItemWithSeparator extends React.Component<
     },
   };
 
-  componentWillReceiveProps(props: ItemWithSeparatorProps) {
-    this.setState(state => ({
+  static getDerivedStateFromProps(
+    props: ItemWithSeparatorProps,
+    prevState: ItemWithSeparatorState,
+  ): ?ItemWithSeparatorState {
+    return {
       separatorProps: {
-        ...this.state.separatorProps,
+        ...prevState.separatorProps,
         leadingItem: props.item,
         leadingSection: props.leadingSection,
         section: props.section,
@@ -454,14 +469,14 @@ class ItemWithSeparator extends React.Component<
         trailingSection: props.trailingSection,
       },
       leadingSeparatorProps: {
-        ...this.state.leadingSeparatorProps,
+        ...prevState.leadingSeparatorProps,
         leadingItem: props.leadingItem,
         leadingSection: props.leadingSection,
         section: props.section,
         trailingItem: props.item,
         trailingSection: props.trailingSection,
       },
-    }));
+    };
   }
 
   updateSeparatorProps(newProps: Object) {
@@ -491,6 +506,9 @@ class ItemWithSeparator extends React.Component<
       <SeparatorComponent {...this.state.separatorProps} />
     );
     return leadingSeparator || separator ? (
+      /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.89 was deployed. To see the error, delete
+       * this comment and run Flow. */
       <View>
         {leadingSeparator}
         {element}

@@ -1,10 +1,14 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #pragma once
 
 #include <fb/fbjni.h>
 #include <folly/dynamic.h>
 #include <folly/json.h>
+#include <folly/Optional.h>
 
 #include "NativeCommon.h"
 #include "NativeMap.h"
@@ -15,9 +19,16 @@ namespace react {
 
 struct WritableNativeMap;
 
+struct ReadableMap : jni::JavaClass<ReadableMap> {
+  static auto constexpr kJavaDescriptor = "Lcom/facebook/react/bridge/ReadableMap;";
+};
+
 struct ReadableNativeMap : jni::HybridClass<ReadableNativeMap, NativeMap> {
   static auto constexpr kJavaDescriptor = "Lcom/facebook/react/bridge/ReadableNativeMap;";
 
+  jni::local_ref<jni::JArrayClass<jstring>> importKeys();
+  jni::local_ref<jni::JArrayClass<jobject>> importValues();
+  jni::local_ref<jni::JArrayClass<jobject>> importTypes();
   bool hasKey(const std::string& key);
   const folly::dynamic& getMapValue(const std::string& key);
   bool isNull(const std::string& key);
@@ -28,6 +39,7 @@ struct ReadableNativeMap : jni::HybridClass<ReadableNativeMap, NativeMap> {
   jni::local_ref<ReadableNativeArray::jhybridobject> getArrayKey(const std::string& key);
   jni::local_ref<jhybridobject> getMapKey(const std::string& key);
   jni::local_ref<ReadableType> getValueType(const std::string& key);
+  folly::Optional<folly::dynamic> keys_;
   static jni::local_ref<jhybridobject> createWithContents(folly::dynamic&& map);
 
   static void mapException(const std::exception& ex);

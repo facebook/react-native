@@ -1,16 +1,17 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.switchview;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.SwitchCompat;
+import javax.annotation.Nullable;
 
 /**
  * Switch that has its value controlled by JS. Whenever the value of the switch changes, we do not
@@ -20,10 +21,14 @@ import android.support.v7.widget.SwitchCompat;
 /*package*/ class ReactSwitch extends SwitchCompat {
 
   private boolean mAllowChange;
+  @Nullable private Integer mTrackColorForFalse;
+  @Nullable private Integer mTrackColorForTrue;
 
   public ReactSwitch(Context context) {
     super(context);
     mAllowChange = true;
+    mTrackColorForFalse = null;
+    mTrackColorForTrue = null;
   }
 
   @Override
@@ -34,11 +39,51 @@ import android.support.v7.widget.SwitchCompat;
     }
   }
 
+  void setColor(Drawable drawable, @Nullable Integer color) {
+    if (color == null) {
+      drawable.clearColorFilter();
+    } else {
+      drawable.setColorFilter(color, PorterDuff.Mode.MULTIPLY);
+    }
+  }
+
+  public void setTrackColor(@Nullable Integer color) {
+    setColor(super.getTrackDrawable(), color);
+  }
+
+  public void setThumbColor(@Nullable Integer color) {
+    setColor(super.getThumbDrawable(), color);
+  }
+
   /*package*/ void setOn(boolean on) {
     // If the switch has a different value than the value sent by JS, we must change it.
     if (isChecked() != on) {
       super.setChecked(on);
+      Integer currentTrackColor = on ? mTrackColorForTrue : mTrackColorForFalse;
+      setTrackColor(currentTrackColor);
     }
     mAllowChange = true;
+  }
+
+  public void setTrackColorForTrue(@Nullable Integer color) {
+    if (color == mTrackColorForTrue) {
+      return;
+    }
+
+    mTrackColorForTrue = color;
+    if (isChecked()) {
+      setTrackColor(mTrackColorForTrue);
+    }
+  }
+
+  public void setTrackColorForFalse(@Nullable Integer color) {
+    if (color == mTrackColorForFalse) {
+      return;
+    }
+
+    mTrackColorForFalse = color;
+    if (!isChecked()) {
+      setTrackColor(mTrackColorForFalse);
+    }
   }
 }

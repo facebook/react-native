@@ -45,11 +45,11 @@ exports[`FlatList renders all the bells and whistles 1`] = `
   refreshControl={
     <RefreshControlMock
       onRefresh={[MockFunction]}
-      progressViewOffset={undefined}
       refreshing={false}
     />
   }
   refreshing={false}
+  removeClippedSubviews={false}
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
@@ -61,22 +61,17 @@ exports[`FlatList renders all the bells and whistles 1`] = `
   <View>
     <View
       onLayout={[Function]}
-      style={null}
     >
       <header />
     </View>
     <View
-      onLayout={undefined}
       style={null}
     >
       <View
         style={
-          Array [
-            Object {
-              "flexDirection": "row",
-            },
-            undefined,
-          ]
+          Object {
+            "flexDirection": "row",
+          }
         }
       >
         <item
@@ -89,17 +84,13 @@ exports[`FlatList renders all the bells and whistles 1`] = `
       <separator />
     </View>
     <View
-      onLayout={undefined}
       style={null}
     >
       <View
         style={
-          Array [
-            Object {
-              "flexDirection": "row",
-            },
-            undefined,
-          ]
+          Object {
+            "flexDirection": "row",
+          }
         }
       >
         <item
@@ -112,17 +103,13 @@ exports[`FlatList renders all the bells and whistles 1`] = `
       <separator />
     </View>
     <View
-      onLayout={undefined}
       style={null}
     >
       <View
         style={
-          Array [
-            Object {
-              "flexDirection": "row",
-            },
-            undefined,
-          ]
+          Object {
+            "flexDirection": "row",
+          }
         }
       >
         <item
@@ -132,7 +119,6 @@ exports[`FlatList renders all the bells and whistles 1`] = `
     </View>
     <View
       onLayout={[Function]}
-      style={null}
     >
       <footer />
     </View>
@@ -158,6 +144,7 @@ exports[`FlatList renders empty list 1`] = `
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
+  removeClippedSubviews={false}
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
@@ -171,7 +158,6 @@ exports[`FlatList renders empty list 1`] = `
 
 exports[`FlatList renders null list 1`] = `
 <RCTScrollView
-  data={undefined}
   disableVirtualization={false}
   getItem={[Function]}
   getItemCount={[Function]}
@@ -187,6 +173,7 @@ exports[`FlatList renders null list 1`] = `
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
+  removeClippedSubviews={false}
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
@@ -228,6 +215,7 @@ exports[`FlatList renders simple list 1`] = `
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
+  removeClippedSubviews={false}
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}

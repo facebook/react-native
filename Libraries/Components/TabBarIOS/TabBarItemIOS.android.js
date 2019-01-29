@@ -1,34 +1,43 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule TabBarItemIOS
+ * @format
  */
 
 'use strict';
 
-var React = require('React');
-var View = require('View');
-var StyleSheet = require('StyleSheet');
+const React = require('React');
+const View = require('View');
+const StyleSheet = require('StyleSheet');
+
+let showedDeprecationWarning = false;
 
 class DummyTab extends React.Component {
+  componentDidMount() {
+    if (!showedDeprecationWarning) {
+      console.warn(
+        'TabBarIOS and TabBarItemIOS are deprecated and will be removed in a future release. ' +
+          'Please use react-native-tab-view instead.',
+      );
+
+      showedDeprecationWarning = true;
+    }
+  }
+
   render() {
     if (!this.props.selected) {
       return <View />;
     }
     return (
-      <View style={[this.props.style, styles.tab]}>
-        {this.props.children}
-      </View>
+      <View style={[this.props.style, styles.tab]}>{this.props.children}</View>
     );
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   tab: {
     // TODO(5405356): Implement overflow: visible so position: absolute isn't useless
     // position: 'absolute',
@@ -38,7 +47,7 @@ var styles = StyleSheet.create({
     left: 0,
     borderColor: 'red',
     borderWidth: 1,
-  }
+  },
 });
 
 module.exports = DummyTab;

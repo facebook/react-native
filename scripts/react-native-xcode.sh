@@ -1,14 +1,26 @@
 #!/bin/bash
-# Copyright (c) 2015-present, Facebook, Inc.
-# All rights reserved.
+# Copyright (c) Facebook, Inc. and its affiliates.
 #
-# This source code is licensed under the BSD-style license found in the
-# LICENSE file in the root directory of this source tree. An additional grant
-# of patent rights can be found in the PATENTS file in the same directory.
-
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+#
 # Bundle React Native app's code and image assets.
 # This script is supposed to be invoked as part of Xcode build process
 # and relies on environment variables (including PWD) set by Xcode
+
+# Print commands before executing them (useful for troubleshooting)
+set -x
+DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH
+
+# Enables iOS devices to get the IP address of the machine running Metro Bundler
+if [[ "$CONFIGURATION" = *Debug* && ! "$PLATFORM_NAME" == *simulator ]]; then
+  IP=$(ipconfig getifaddr en0)
+  if [ -z "$IP" ]; then
+    IP=$(ifconfig | grep 'inet ' | grep -v ' 127.' | cut -d\   -f2  | awk 'NR==1{print $1}')
+  fi
+
+  echo "$IP" > "$DEST/ip.txt"
+fi
 
 if [[ "$SKIP_BUNDLING" ]]; then
   echo "SKIP_BUNDLING enabled; skipping."
@@ -64,18 +76,30 @@ fi
 # Set up the nodenv node version manager if present
 if [[ -x "$HOME/.nodenv/bin/nodenv" ]]; then
   eval "$("$HOME/.nodenv/bin/nodenv" init -)"
+elif [[ -x "$(command -v brew)" && -x "$(brew --prefix nodenv)/bin/nodenv" ]]; then
+  eval "$("$(brew --prefix nodenv)/bin/nodenv" init -)"
+fi
+
+# Set up the ndenv of anyenv if preset
+if [[ ! -x node && -d ${HOME}/.anyenv/bin ]]; then
+  export PATH=${HOME}/.anyenv/bin:${PATH}
+  if [[ "$(anyenv envs | grep -c ndenv )" -eq 1 ]]; then
+    eval "$(anyenv init -)"
+  fi
 fi
 
 [ -z "$NODE_BINARY" ] && export NODE_BINARY="node"
 
-[ -z "$CLI_PATH" ] && export CLI_PATH="$REACT_NATIVE_DIR/local-cli/cli.js"
+[ -z "$NODE_ARGS" ] && export NODE_ARGS=""
+
+[ -z "$CLI_PATH" ] && export CLI_PATH="$REACT_NATIVE_DIR/cli.js"
 
 [ -z "$BUNDLE_COMMAND" ] && BUNDLE_COMMAND="bundle"
 
 if [[ -z "$BUNDLE_CONFIG" ]]; then
   CONFIG_ARG=""
 else
-  CONFIG_ARG="--config $(pwd)/$BUNDLE_CONFIG"
+  CONFIG_ARG="--config $BUNDLE_CONFIG"
 fi
 
 nodejs_not_found()
@@ -88,39 +112,19 @@ nodejs_not_found()
   exit 2
 }
 
-type $NODE_BINARY >/dev/null 2>&1 || nodejs_not_found
-
-# Print commands before executing them (useful for troubleshooting)
-set -x
-DEST=$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH
-
-if [[ "$CONFIGURATION" = "Debug" && ! "$PLATFORM_NAME" == *simulator ]]; then
-  PLISTBUDDY='/usr/libexec/PlistBuddy'
-  PLIST=$TARGET_BUILD_DIR/$INFOPLIST_PATH
-  IP=$(ipconfig getifaddr en0)
-  if [ -z "$IP" ]; then
-    IP=$(ifconfig | grep 'inet ' | grep -v ' 127.' | cut -d\   -f2  | awk 'NR==1{print $1}')
-  fi
-
-  if [ -z ${DISABLE_XIP+x} ]; then
-    IP="$IP.xip.io"
-  fi
-
-  $PLISTBUDDY -c "Add NSAppTransportSecurity:NSExceptionDomains:localhost:NSTemporaryExceptionAllowsInsecureHTTPLoads bool true" "$PLIST"
-  $PLISTBUDDY -c "Add NSAppTransportSecurity:NSExceptionDomains:$IP:NSTemporaryExceptionAllowsInsecureHTTPLoads bool true" "$PLIST"
-  echo "$IP" > "$DEST/ip.txt"
-fi
+type "$NODE_BINARY" >/dev/null 2>&1 || nodejs_not_found
 
 BUNDLE_FILE="$DEST/main.jsbundle"
 
-$NODE_BINARY $CLI_PATH $BUNDLE_COMMAND \
+"$NODE_BINARY" $NODE_ARGS "$CLI_PATH" $BUNDLE_COMMAND \
   $CONFIG_ARG \
   --entry-file "$ENTRY_FILE" \
   --platform ios \
   --dev $DEV \
   --reset-cache \
   --bundle-output "$BUNDLE_FILE" \
-  --assets-dest "$DEST"
+  --assets-dest "$DEST" \
+  $EXTRA_PACKAGER_ARGS
 
 if [[ $DEV != true && ! -f "$BUNDLE_FILE" ]]; then
   echo "error: File $BUNDLE_FILE does not exist. This must be a bug with" >&2

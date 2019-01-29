@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.textinput;
@@ -29,6 +27,7 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.UIManager;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.BaseViewManager;
@@ -70,12 +69,22 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   private static final int FOCUS_TEXT_INPUT = 1;
   private static final int BLUR_TEXT_INPUT = 2;
 
-  private static final int INPUT_TYPE_KEYBOARD_NUMBERED =
-      InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL |
+  private static final int INPUT_TYPE_KEYBOARD_NUMBER_PAD = InputType.TYPE_CLASS_NUMBER; 
+  private static final int INPUT_TYPE_KEYBOARD_DECIMAL_PAD = INPUT_TYPE_KEYBOARD_NUMBER_PAD |
+          InputType.TYPE_NUMBER_FLAG_DECIMAL;
+  private static final int INPUT_TYPE_KEYBOARD_NUMBERED = INPUT_TYPE_KEYBOARD_DECIMAL_PAD |
           InputType.TYPE_NUMBER_FLAG_SIGNED;
+  private static final int PASSWORD_VISIBILITY_FLAG = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD &
+        ~InputType.TYPE_TEXT_VARIATION_PASSWORD;
+  private static final int KEYBOARD_TYPE_FLAGS = INPUT_TYPE_KEYBOARD_NUMBERED |
+            InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS |
+            InputType.TYPE_CLASS_TEXT | InputType.TYPE_CLASS_PHONE |
+            PASSWORD_VISIBILITY_FLAG;
 
   private static final String KEYBOARD_TYPE_EMAIL_ADDRESS = "email-address";
   private static final String KEYBOARD_TYPE_NUMERIC = "numeric";
+  private static final String KEYBOARD_TYPE_DECIMAL_PAD = "decimal-pad";
+  private static final String KEYBOARD_TYPE_NUMBER_PAD = "number-pad";
   private static final String KEYBOARD_TYPE_PHONE_PAD = "phone-pad";
   private static final String KEYBOARD_TYPE_VISIBLE_PASSWORD = "visible-password";
   private static final InputFilter[] EMPTY_FILTERS = new InputFilter[0];
@@ -92,9 +101,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     int inputType = editText.getInputType();
     editText.setInputType(inputType & (~InputType.TYPE_TEXT_FLAG_MULTI_LINE));
     editText.setReturnKeyType("done");
-    editText.setTextSize(
-        TypedValue.COMPLEX_UNIT_PX,
-        (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP)));
     return editText;
   }
 
@@ -138,6 +144,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
             MapBuilder.of(
                 "phasedRegistrationNames",
                 MapBuilder.of("bubbled", "onBlur", "captured", "onBlurCapture")))
+        .put(
+            "topKeyPress",
+            MapBuilder.of(
+                "phasedRegistrationNames",
+                MapBuilder.of("bubbled", "onKeyPress", "captured", "onKeyPressCapture")))
         .build();
   }
 
@@ -145,7 +156,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @Override
   public Map<String, Object> getExportedCustomDirectEventTypeConstants() {
     return MapBuilder.<String, Object>builder()
-        .put(ScrollEventType.SCROLL.getJSEventName(), MapBuilder.of("registrationName", "onScroll"))
+        .put(ScrollEventType.getJSEventName(ScrollEventType.SCROLL), MapBuilder.of("registrationName", "onScroll"))
         .build();
   }
 
@@ -190,9 +201,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = ViewProps.FONT_SIZE, defaultFloat = ViewDefaults.FONT_SIZE_SP)
   public void setFontSize(ReactEditText view, float fontSize) {
-    view.setTextSize(
-        TypedValue.COMPLEX_UNIT_PX,
-        (int) Math.ceil(PixelUtil.toPixelFromSP(fontSize)));
+    view.setFontSize(fontSize);
   }
 
   @ReactProp(name = ViewProps.FONT_FAMILY)
@@ -206,6 +215,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         style,
         view.getContext().getAssets());
     view.setTypeface(newTypeface);
+  }
+
+  @ReactProp(name = ViewProps.MAX_FONT_SIZE_MULTIPLIER, defaultFloat = Float.NaN)
+  public void setMaxFontSizeMultiplier(ReactEditText view, float maxFontSizeMultiplier) {
+    view.setMaxFontSizeMultiplier(maxFontSizeMultiplier);
   }
 
   /**
@@ -297,6 +311,24 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
+  @ReactProp(name = "onKeyPress", defaultBoolean = false)
+  public void setOnKeyPress(final ReactEditText view, boolean onKeyPress) {
+    view.setOnKeyPress(onKeyPress);
+  }
+
+  // Sets the letter spacing as an absolute point size.
+  // This extra handling, on top of what ReactBaseTextShadowNode already does, is required for the
+  // correct display of spacing in placeholder (hint) text.
+  @ReactProp(name = ViewProps.LETTER_SPACING, defaultFloat = 0)
+  public void setLetterSpacing(ReactEditText view, float letterSpacing) {
+    view.setLetterSpacingPt(letterSpacing);
+  }
+
+  @ReactProp(name = ViewProps.ALLOW_FONT_SCALING, defaultBoolean = true)
+  public void setAllowFontScaling(ReactEditText view, boolean allowFontScaling) {
+    view.setAllowFontScaling(allowFontScaling);
+  }
+
   @ReactProp(name = "placeholder")
   public void setPlaceholder(ReactEditText view, @Nullable String placeholder) {
     view.setHint(placeholder);
@@ -359,6 +391,16 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = "caretHidden", defaultBoolean = false)
   public void setCaretHidden(ReactEditText view, boolean caretHidden) {
     view.setCursorVisible(!caretHidden);
+  }
+
+  @ReactProp(name = "contextMenuHidden", defaultBoolean = false)
+  public void setContextMenuHidden(ReactEditText view, boolean contextMenuHidden) {
+    final boolean _contextMenuHidden = contextMenuHidden;
+    view.setOnLongClickListener(new View.OnLongClickListener() {
+      public boolean onLongClick(View v) {
+        return _contextMenuHidden;
+      };
+    });
   }
 
   @ReactProp(name = "selectTextOnFocus", defaultBoolean = false)
@@ -530,17 +572,22 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     int flagsToSet = InputType.TYPE_CLASS_TEXT;
     if (KEYBOARD_TYPE_NUMERIC.equalsIgnoreCase(keyboardType)) {
       flagsToSet = INPUT_TYPE_KEYBOARD_NUMBERED;
+    } else if (KEYBOARD_TYPE_NUMBER_PAD.equalsIgnoreCase(keyboardType)) {
+      flagsToSet = INPUT_TYPE_KEYBOARD_NUMBER_PAD;
+    } else if (KEYBOARD_TYPE_DECIMAL_PAD.equalsIgnoreCase(keyboardType)) {
+      flagsToSet = INPUT_TYPE_KEYBOARD_DECIMAL_PAD;
     } else if (KEYBOARD_TYPE_EMAIL_ADDRESS.equalsIgnoreCase(keyboardType)) {
       flagsToSet = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS | InputType.TYPE_CLASS_TEXT;
     } else if (KEYBOARD_TYPE_PHONE_PAD.equalsIgnoreCase(keyboardType)) {
       flagsToSet = InputType.TYPE_CLASS_PHONE;
     } else if (KEYBOARD_TYPE_VISIBLE_PASSWORD.equalsIgnoreCase(keyboardType)) {
+      // This will supercede secureTextEntry={false}. If it doesn't, due to the way
+      //  the flags work out, the underlying field will end up a URI-type field.
       flagsToSet = InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
     }
     updateStagedInputTypeFlag(
         view,
-        INPUT_TYPE_KEYBOARD_NUMBERED | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS |
-            InputType.TYPE_CLASS_TEXT,
+        KEYBOARD_TYPE_FLAGS,
         flagsToSet);
     checkPasswordType(view);
   }

@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react;
@@ -56,19 +54,17 @@ import javax.inject.Provider;
 
   private final ReactInstanceManager mReactInstanceManager;
   private final DefaultHardwareBackBtnHandler mHardwareBackBtnHandler;
-  private final UIImplementationProvider mUIImplementationProvider;
   private final boolean mLazyViewManagersEnabled;
   private final int mMinTimeLeftInFrameForNonBatchedOperationMs;
 
   CoreModulesPackage(
       ReactInstanceManager reactInstanceManager,
       DefaultHardwareBackBtnHandler hardwareBackBtnHandler,
-      UIImplementationProvider uiImplementationProvider,
+      @Nullable UIImplementationProvider uiImplementationProvider,
       boolean lazyViewManagersEnabled,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     mReactInstanceManager = reactInstanceManager;
     mHardwareBackBtnHandler = hardwareBackBtnHandler;
-    mUIImplementationProvider = uiImplementationProvider;
     mLazyViewManagersEnabled = lazyViewManagersEnabled;
     mMinTimeLeftInFrameForNonBatchedOperationMs = minTimeLeftInFrameForNonBatchedOperationMs;
   }
@@ -77,15 +73,15 @@ import javax.inject.Provider;
   public List<ModuleSpec> getNativeModules(final ReactApplicationContext reactContext) {
     return Arrays.asList(
         ModuleSpec.nativeModuleSpec(
-            AndroidInfoModule.class,
+            AndroidInfoModule.NAME,
             new Provider<NativeModule>() {
               @Override
               public NativeModule get() {
-                return new AndroidInfoModule();
+                return new AndroidInfoModule(reactContext);
               }
             }),
         ModuleSpec.nativeModuleSpec(
-            DeviceEventManagerModule.class,
+            DeviceEventManagerModule.NAME,
             new Provider<NativeModule>() {
               @Override
               public NativeModule get() {
@@ -93,7 +89,7 @@ import javax.inject.Provider;
               }
             }),
         ModuleSpec.nativeModuleSpec(
-            ExceptionsManagerModule.class,
+            ExceptionsManagerModule.NAME,
             new Provider<NativeModule>() {
               @Override
               public NativeModule get() {
@@ -101,7 +97,7 @@ import javax.inject.Provider;
               }
             }),
         ModuleSpec.nativeModuleSpec(
-            HeadlessJsTaskSupportModule.class,
+            HeadlessJsTaskSupportModule.NAME,
             new Provider<NativeModule>() {
               @Override
               public NativeModule get() {
@@ -109,7 +105,7 @@ import javax.inject.Provider;
               }
             }),
         ModuleSpec.nativeModuleSpec(
-            SourceCodeModule.class,
+            SourceCodeModule.NAME,
             new Provider<NativeModule>() {
               @Override
               public NativeModule get() {
@@ -117,7 +113,7 @@ import javax.inject.Provider;
               }
             }),
         ModuleSpec.nativeModuleSpec(
-            Timing.class,
+            Timing.NAME,
             new Provider<NativeModule>() {
               @Override
               public NativeModule get() {
@@ -125,7 +121,7 @@ import javax.inject.Provider;
               }
             }),
         ModuleSpec.nativeModuleSpec(
-            UIManagerModule.class,
+            UIManagerModule.NAME,
             new Provider<NativeModule>() {
               @Override
               public NativeModule get() {
@@ -133,7 +129,7 @@ import javax.inject.Provider;
               }
             }),
         ModuleSpec.nativeModuleSpec(
-            DeviceInfoModule.class,
+            DeviceInfoModule.NAME,
             new Provider<NativeModule>() {
               @Override
               public NativeModule get() {
@@ -167,13 +163,11 @@ import javax.inject.Provider;
         return new UIManagerModule(
             reactContext,
             resolver,
-            mUIImplementationProvider,
             mMinTimeLeftInFrameForNonBatchedOperationMs);
       } else {
         return new UIManagerModule(
             reactContext,
-            mReactInstanceManager.createAllViewManagers(reactContext),
-            mUIImplementationProvider,
+            mReactInstanceManager.getOrCreateViewManagers(reactContext),
             mMinTimeLeftInFrameForNonBatchedOperationMs);
       }
     } finally {

@@ -1,24 +1,20 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.module.annotations;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import com.facebook.react.bridge.BaseJavaModule;
-
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
 /**
- * Annotation for use on {@link BaseJavaModule}s to describe properties for that module.
+ * Annotation for use on {@link com.facebook.react.bridge.BaseJavaModule}s to describe properties for that module.
  */
 @Retention(RUNTIME)
 @Target(TYPE)
@@ -46,4 +42,10 @@ public @interface ReactModule {
    *  correct annotation is not included
    */
   boolean hasConstants() default true;
+
+  /**
+   * Indicates if a module is a C++ module or a Java Module
+   * @return
+   */
+  boolean isCxxModule() default false;
 }

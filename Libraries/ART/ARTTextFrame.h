@@ -1,17 +1,15 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <CoreText/CoreText.h>
 
 // A little helper to make sure we have a set of lines including width ready for use.
 // We assume that we will only this in one place so no reference counting is necessary.
-// Needs to be freed when dealloced.
+// Needs to be freed when deallocated.
 
 // This is fragile since this relies on these values not getting reused. Consider
 // wrapping these in an Obj-C class or some ARC hackery to get refcounting.

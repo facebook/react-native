@@ -1,0 +1,48 @@
+environment:
+    ANDROID_HOME: "C:\\android-sdk-windows"
+    ANDROID_NDK: "C:\\android-sdk-windows\\android-ndk-r17c"
+    ANDROID_BUILD_VERSION: 28
+    ANDROID_TOOLS_VERSION: 28.0.3
+
+    GRADLE_OPTS: -Dorg.gradle.daemon=false
+
+    SDK_TOOLS_URL: https://dl.google.com/android/repository/sdk-tools-windows-3859397.zip
+    NDK_TOOLS_URL: https://dl.google.com/android/repository/android-ndk-r17c-windows-x86_64.zip
+
+    matrix:
+        - nodejs_version: 8
+        - nodejs_version: 10
+
+install:
+    # Install Android SDK Tools
+    - mkdir "%ANDROID_HOME%"
+    - appveyor DownloadFile "%SDK_TOOLS_URL%" -FileName "%TMP%/sdk-tools.zip"
+    - 7z x "%TMP%/sdk-tools.zip" -o"%ANDROID_HOME%" > nul
+    - set PATH=%PATH%;"%ANDROID_HOME%\tools\bin"
+
+    - yes 2> nul | sdkmanager --licenses > nul
+    - yes 2> nul | sdkmanager "system-images;android-19;google_apis;armeabi-v7a"
+    - yes 2> nul | sdkmanager "platforms;android-%ANDROID_BUILD_VERSION%"
+    - yes 2> nul | sdkmanager "build-tools;%ANDROID_TOOLS_VERSION%"
+    - yes 2> nul | sdkmanager "add-ons;addon-google_apis-google-23"
+    - yes 2> nul | sdkmanager "extras;android;m2repository"
+
+    - appveyor DownloadFile "%NDK_TOOLS_URL%" -FileName "%TMP%/ndk.zip"
+    - 7z x "%TMP%/ndk.zip" -o"%ANDROID_HOME%" > nul
+
+    - ps: Install-Product node $env:nodejs_version
+    - node --version
+    - yarn --version
+    - appveyor-retry yarn install
+
+build_script:
+  - gradlew.bat RNTester:android:app:assembleRelease
+
+test_script:
+    - npm test
+
+cache:
+  - node_modules
+  - "%LOCALAPPDATA%/Yarn"
+  - "%USERPROFILE%/.gradle/caches"
+  - "%USERPROFILE%/.gradle/wrapper"

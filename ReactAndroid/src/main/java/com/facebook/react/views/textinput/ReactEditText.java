@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.textinput;
@@ -19,11 +17,10 @@ import android.text.InputType;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextWatcher;
+import android.text.TextUtils;
 import android.text.method.KeyListener;
 import android.text.method.QwertyKeyListener;
-import android.text.style.AbsoluteSizeSpan;
-import android.text.style.BackgroundColorSpan;
-import android.text.style.ForegroundColorSpan;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -35,9 +32,9 @@ import android.widget.EditText;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
-import com.facebook.react.views.text.CustomStyleSpan;
-import com.facebook.react.views.text.ReactTagSpan;
+import com.facebook.react.views.text.ReactSpan;
 import com.facebook.react.views.text.ReactTextUpdate;
+import com.facebook.react.views.text.TextAttributes;
 import com.facebook.react.views.text.TextInlineImageSpan;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.util.ArrayList;
@@ -81,6 +78,8 @@ public class ReactEditText extends EditText {
   private @Nullable ScrollWatcher mScrollWatcher;
   private final InternalKeyListener mKeyListener;
   private boolean mDetectScrollMovement = false;
+  private boolean mOnKeyPress = false;
+  private TextAttributes mTextAttributes;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
 
@@ -107,6 +106,9 @@ public class ReactEditText extends EditText {
     mStagedInputType = getInputType();
     mKeyListener = new InternalKeyListener();
     mScrollWatcher = null;
+    mTextAttributes = new TextAttributes();
+
+    applyTextAttributes();
   }
 
   // After the text changes inside an EditText, TextView checks if a layout() has been requested.
@@ -117,16 +119,7 @@ public class ReactEditText extends EditText {
   // TODO: t6408636 verify if we should schedule a layout after a View does a requestLayout()
   @Override
   public boolean isLayoutRequested() {
-    // If we are watching and updating container height based on content size
-    // then we don't want to scroll right away. This isn't perfect -- you might
-    // want to limit the height the text input can grow to. Possible solution
-    // is to add another prop that determines whether we should scroll to end
-    // of text.
-    if (mContentSizeWatcher != null) {
-      return isMultiline();
-    } else {
-      return false;
-    }
+    return false;
   }
 
   @Override
@@ -181,12 +174,17 @@ public class ReactEditText extends EditText {
 
   @Override
   public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
-    InputConnection connection = super.onCreateInputConnection(outAttrs);
+    ReactContext reactContext = (ReactContext) getContext();
+    InputConnection inputConnection = super.onCreateInputConnection(outAttrs);
+    if (inputConnection != null && mOnKeyPress) {
+      inputConnection = new ReactEditTextInputConnectionWrapper(inputConnection, reactContext, this);
+    }
+
     if (isMultiline() && getBlurOnSubmit()) {
       // Remove IME_FLAG_NO_ENTER_ACTION to keep the original IME_OPTION
       outAttrs.imeOptions &= ~EditorInfo.IME_FLAG_NO_ENTER_ACTION;
     }
-    return connection;
+    return inputConnection;
   }
 
   @Override
@@ -277,6 +275,10 @@ public class ReactEditText extends EditText {
     mBlurOnSubmit = blurOnSubmit;
   }
 
+  public void setOnKeyPress(boolean onKeyPress) {
+    mOnKeyPress = onKeyPress;
+  }
+
   public boolean getBlurOnSubmit() {
     if (mBlurOnSubmit == null) {
       // Default blurOnSubmit
@@ -314,7 +316,10 @@ public class ReactEditText extends EditText {
 
   /*package*/ void commitStagedInputType() {
     if (getInputType() != mStagedInputType) {
+      int selectionStart = getSelectionStart();
+      int selectionEnd = getSelectionEnd();
       setInputType(mStagedInputType);
+      setSelection(selectionStart, selectionEnd);
     }
   }
 
@@ -351,6 +356,11 @@ public class ReactEditText extends EditText {
 
   // VisibleForTesting from {@link TextInputEventsTestCase}.
   public void maybeSetText(ReactTextUpdate reactTextUpdate) {
+    if( isSecureText() &&
+        TextUtils.equals(getText(), reactTextUpdate.getText())) {
+      return;
+    }
+
     // Only set the text if it is up to date.
     mMostRecentEventCount = reactTextUpdate.getJsEventCounter();
     if (mMostRecentEventCount < mNativeEventCount) {
@@ -387,11 +397,7 @@ public class ReactEditText extends EditText {
     Object[] spans = getText().getSpans(0, length(), Object.class);
     for (int spanIdx = 0; spanIdx < spans.length; spanIdx++) {
       // Remove all styling spans we might have previously set
-      if (ForegroundColorSpan.class.isInstance(spans[spanIdx]) ||
-          BackgroundColorSpan.class.isInstance(spans[spanIdx]) ||
-          AbsoluteSizeSpan.class.isInstance(spans[spanIdx]) ||
-          CustomStyleSpan.class.isInstance(spans[spanIdx]) ||
-          ReactTagSpan.class.isInstance(spans[spanIdx])) {
+      if (spans[spanIdx] instanceof ReactSpan) {
         getText().removeSpan(spans[spanIdx]);
       }
 
@@ -446,6 +452,14 @@ public class ReactEditText extends EditText {
 
   private boolean isMultiline() {
     return (getInputType() & InputType.TYPE_TEXT_FLAG_MULTI_LINE) != 0;
+  }
+
+  private boolean isSecureText() {
+    return
+      (getInputType() &
+        (InputType.TYPE_NUMBER_VARIATION_PASSWORD |
+          InputType.TYPE_TEXT_VARIATION_PASSWORD))
+      != 0;
   }
 
   private void onContentSizeChange() {
@@ -517,8 +531,8 @@ public class ReactEditText extends EditText {
 
   @Override
   protected boolean verifyDrawable(Drawable drawable) {
-    if (mContainsImages && getText() instanceof Spanned) {
-      Spanned text = (Spanned) getText();
+    if (mContainsImages) {
+      Spanned text = getText();
       TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
       for (TextInlineImageSpan span : spans) {
         if (span.getDrawable() == drawable) {
@@ -531,8 +545,8 @@ public class ReactEditText extends EditText {
 
   @Override
   public void invalidateDrawable(Drawable drawable) {
-    if (mContainsImages && getText() instanceof Spanned) {
-      Spanned text = (Spanned) getText();
+    if (mContainsImages) {
+      Spanned text = getText();
       TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
       for (TextInlineImageSpan span : spans) {
         if (span.getDrawable() == drawable) {
@@ -546,8 +560,8 @@ public class ReactEditText extends EditText {
   @Override
   public void onDetachedFromWindow() {
     super.onDetachedFromWindow();
-    if (mContainsImages && getText() instanceof Spanned) {
-      Spanned text = (Spanned) getText();
+    if (mContainsImages) {
+      Spanned text = getText();
       TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
       for (TextInlineImageSpan span : spans) {
         span.onDetachedFromWindow();
@@ -558,8 +572,8 @@ public class ReactEditText extends EditText {
   @Override
   public void onStartTemporaryDetach() {
     super.onStartTemporaryDetach();
-    if (mContainsImages && getText() instanceof Spanned) {
-      Spanned text = (Spanned) getText();
+    if (mContainsImages) {
+      Spanned text = getText();
       TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
       for (TextInlineImageSpan span : spans) {
         span.onStartTemporaryDetach();
@@ -570,8 +584,8 @@ public class ReactEditText extends EditText {
   @Override
   public void onAttachedToWindow() {
     super.onAttachedToWindow();
-    if (mContainsImages && getText() instanceof Spanned) {
-      Spanned text = (Spanned) getText();
+    if (mContainsImages) {
+      Spanned text = getText();
       TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
       for (TextInlineImageSpan span : spans) {
         span.onAttachedToWindow();
@@ -582,8 +596,8 @@ public class ReactEditText extends EditText {
   @Override
   public void onFinishTemporaryDetach() {
     super.onFinishTemporaryDetach();
-    if (mContainsImages && getText() instanceof Spanned) {
-      Spanned text = (Spanned) getText();
+    if (mContainsImages) {
+      Spanned text =  getText();
       TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
       for (TextInlineImageSpan span : spans) {
         span.onFinishTemporaryDetach();
@@ -614,6 +628,46 @@ public class ReactEditText extends EditText {
 
   public void setBorderStyle(@Nullable String style) {
     mReactBackgroundManager.setBorderStyle(style);
+  }
+
+  public void setLetterSpacingPt(float letterSpacingPt) {
+    mTextAttributes.setLetterSpacing(letterSpacingPt);
+    applyTextAttributes();
+  }
+
+  public void setAllowFontScaling(boolean allowFontScaling) {
+    if (mTextAttributes.getAllowFontScaling() != allowFontScaling) {
+      mTextAttributes.setAllowFontScaling(allowFontScaling);
+      applyTextAttributes();
+    }
+  }
+
+  public void setFontSize(float fontSize) {
+    mTextAttributes.setFontSize(fontSize);
+    applyTextAttributes();
+  }
+
+  public void setMaxFontSizeMultiplier(float maxFontSizeMultiplier) {
+    if (maxFontSizeMultiplier != mTextAttributes.getMaxFontSizeMultiplier()) {
+      mTextAttributes.setMaxFontSizeMultiplier(maxFontSizeMultiplier);
+      applyTextAttributes();
+    }
+  }
+
+  protected void applyTextAttributes() {
+    // In general, the `getEffective*` functions return `Float.NaN` if the
+    // property hasn't been set.
+    
+    // `getEffectiveFontSize` always returns a value so don't need to check for anything like
+    // `Float.NaN`.
+    setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextAttributes.getEffectiveFontSize());
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      float effectiveLetterSpacing = mTextAttributes.getEffectiveLetterSpacing();
+      if (!Float.isNaN(effectiveLetterSpacing)) {
+        setLetterSpacing(effectiveLetterSpacing);
+      }
+    }
   }
 
   /**

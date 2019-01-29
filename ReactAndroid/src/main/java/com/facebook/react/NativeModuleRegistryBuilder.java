@@ -1,146 +1,77 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 package com.facebook.react;
 
-import java.util.ArrayList;
+import com.facebook.react.bridge.ModuleHolder;
+import com.facebook.react.bridge.NativeModuleRegistry;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.config.ReactFeatureFlags;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import com.facebook.common.logging.FLog;
-import com.facebook.react.bridge.BaseJavaModule;
-import com.facebook.react.bridge.ModuleSpec;
-import com.facebook.react.bridge.ModuleHolder;
-import com.facebook.react.bridge.NativeModule;
-import com.facebook.react.bridge.NativeModuleRegistry;
-import com.facebook.react.bridge.OnBatchCompleteListener;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactMarker;
-import com.facebook.react.bridge.ReactMarkerConstants;
-import com.facebook.react.common.ReactConstants;
-import com.facebook.react.module.model.ReactModuleInfo;
-
-/**
- * Helper class to build NativeModuleRegistry.
- */
+/** Helper class to build NativeModuleRegistry. */
 public class NativeModuleRegistryBuilder {
 
   private final ReactApplicationContext mReactApplicationContext;
   private final ReactInstanceManager mReactInstanceManager;
-  private final boolean mLazyNativeModulesEnabled;
 
-  private final Map<Class<? extends NativeModule>, ModuleHolder> mModules = new HashMap<>();
-  private final Map<String, Class<? extends NativeModule>> namesToType = new HashMap<>();
+  private final Map<String, ModuleHolder> mModules = new HashMap<>();
 
   public NativeModuleRegistryBuilder(
-    ReactApplicationContext reactApplicationContext,
-    ReactInstanceManager reactInstanceManager,
-    boolean lazyNativeModulesEnabled) {
+      ReactApplicationContext reactApplicationContext, ReactInstanceManager reactInstanceManager) {
     mReactApplicationContext = reactApplicationContext;
     mReactInstanceManager = reactInstanceManager;
-    mLazyNativeModulesEnabled = lazyNativeModulesEnabled;
   }
 
   public void processPackage(ReactPackage reactPackage) {
-    if (mLazyNativeModulesEnabled) {
-      if (!(reactPackage instanceof LazyReactPackage)) {
-        throw new IllegalStateException("Lazy native modules requires all ReactPackage to " +
-          "inherit from LazyReactPackage");
-      }
-
-      LazyReactPackage lazyReactPackage = (LazyReactPackage) reactPackage;
-      List<ModuleSpec> moduleSpecs = lazyReactPackage.getNativeModules(mReactApplicationContext);
-      Map<Class, ReactModuleInfo> reactModuleInfoMap = lazyReactPackage.getReactModuleInfoProvider()
-        .getReactModuleInfos();
-
-      for (ModuleSpec moduleSpec : moduleSpecs) {
-        Class<? extends NativeModule> type = moduleSpec.getType();
-        ReactModuleInfo reactModuleInfo = reactModuleInfoMap.get(type);
-        ModuleHolder moduleHolder;
-        if (reactModuleInfo == null) {
-          if (BaseJavaModule.class.isAssignableFrom(type)) {
-            throw new IllegalStateException("Native Java module " + type.getSimpleName() +
-              " should be annotated with @ReactModule and added to a @ReactModuleList.");
-          }
-          NativeModule module;
-          ReactMarker.logMarker(
-            ReactMarkerConstants.CREATE_MODULE_START,
-            moduleSpec.getType().getName());
-          try {
-            module = moduleSpec.getProvider().get();
-          } finally {
-            ReactMarker.logMarker(ReactMarkerConstants.CREATE_MODULE_END);
-          }
-          moduleHolder = new ModuleHolder(module);
-        } else {
-          moduleHolder = new ModuleHolder(reactModuleInfo, moduleSpec.getProvider());
-        }
-
-        String name = moduleHolder.getName();
-        if (namesToType.containsKey(name)) {
-          Class<? extends NativeModule> existingNativeModule = namesToType.get(name);
-          if (!moduleHolder.getCanOverrideExistingModule()) {
-            throw new IllegalStateException("Native module " + type.getSimpleName() +
-              " tried to override " + existingNativeModule.getSimpleName() + " for module name " +
-              name + ". If this was your intention, set canOverrideExistingModule=true");
-          }
-
-          mModules.remove(existingNativeModule);
-        }
-
-        namesToType.put(name, type);
-        mModules.put(type, moduleHolder);
-      }
+    // We use an iterable instead of an iterator here to ensure thread safety, and that this list
+    // cannot be modified
+    Iterable<ModuleHolder> moduleHolders;
+    if (reactPackage instanceof LazyReactPackage) {
+      moduleHolders =
+          ((LazyReactPackage) reactPackage).getNativeModuleIterator(mReactApplicationContext);
+    } else if (reactPackage instanceof TurboReactPackage) {
+      moduleHolders =
+          ((TurboReactPackage) reactPackage).getNativeModuleIterator(mReactApplicationContext);
     } else {
-      FLog.d(
-        ReactConstants.TAG,
-        reactPackage.getClass().getSimpleName() +
-          " is not a LazyReactPackage, falling back to old version.");
-      List<NativeModule> nativeModules;
-      if (reactPackage instanceof ReactInstancePackage) {
-        ReactInstancePackage reactInstancePackage = (ReactInstancePackage) reactPackage;
-        nativeModules = reactInstancePackage.createNativeModules(
-            mReactApplicationContext,
-            mReactInstanceManager);
-      } else {
-        nativeModules = reactPackage.createNativeModules(mReactApplicationContext);
-      }
-      for (NativeModule nativeModule : nativeModules) {
-        addNativeModule(nativeModule);
-      }
-    }
-  }
-
-  public void addNativeModule(NativeModule nativeModule) {
-    String name = nativeModule.getName();
-    Class<? extends NativeModule> type = nativeModule.getClass();
-    if (namesToType.containsKey(name)) {
-      Class<? extends NativeModule> existingModule = namesToType.get(name);
-      if (!nativeModule.canOverrideExistingModule()) {
-        throw new IllegalStateException("Native module " + type.getSimpleName() +
-          " tried to override " + existingModule.getSimpleName() + " for module name " +
-          name + ". If this was your intention, set canOverrideExistingModule=true");
-      }
-
-      mModules.remove(existingModule);
+      moduleHolders =
+          ReactPackageHelper.getNativeModuleIterator(
+              reactPackage, mReactApplicationContext, mReactInstanceManager);
     }
 
-    namesToType.put(name, type);
-    ModuleHolder moduleHolder = new ModuleHolder(nativeModule);
-    mModules.put(type, moduleHolder);
+    for (ModuleHolder moduleHolder : moduleHolders) {
+      String name = moduleHolder.getName();
+      if (mModules.containsKey(name)) {
+        ModuleHolder existingNativeModule = mModules.get(name);
+        if (!moduleHolder.getCanOverrideExistingModule()) {
+          throw new IllegalStateException(
+              "Native module "
+                  + name
+                  + " tried to override "
+                  + existingNativeModule.getClassName()
+                  + " for module name .Check the getPackages() method in MainApplication.java, it might be that module is being created twice. If this was your intention, set canOverrideExistingModule=true");
+        }
+        mModules.remove(existingNativeModule);
+      }
+      if (ReactFeatureFlags.useTurboModules && moduleHolder.isTurboModule()) {
+        // If this module is a TurboModule, and if TurboModules are enabled, don't add this module
+
+        // This condition is after checking for overrides, since if there is already a module,
+        // and we want to override it with a turbo module, we would need to remove the modules thats
+        // already in the list, and then NOT add the new module, since that will be directly exposed
+
+        // Note that is someone uses {@link NativeModuleRegistry#registerModules}, we will NOT check
+        // for TurboModules - assuming that people wanted to explicitly register native modules there
+        continue;
+      }
+      mModules.put(name, moduleHolder);
+    }
   }
 
   public NativeModuleRegistry build() {
-    ArrayList<ModuleHolder> batchCompleteListenerModules = new ArrayList<>();
-    for (Map.Entry<Class<? extends NativeModule>, ModuleHolder> entry : mModules.entrySet()) {
-      if (OnBatchCompleteListener.class.isAssignableFrom(entry.getKey())) {
-        batchCompleteListenerModules.add(entry.getValue());
-      }
-    }
-
-    return new NativeModuleRegistry(
-      mReactApplicationContext,
-      mModules,
-      batchCompleteListenerModules);
+    return new NativeModuleRegistry(mReactApplicationContext, mModules);
   }
 }

@@ -1,12 +1,9 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule AnimatedImplementation
  * @flow
  * @format
  * @preventMunge
@@ -22,6 +19,7 @@ const AnimatedModulo = require('./nodes/AnimatedModulo');
 const AnimatedMultiplication = require('./nodes/AnimatedMultiplication');
 const AnimatedNode = require('./nodes/AnimatedNode');
 const AnimatedProps = require('./nodes/AnimatedProps');
+const AnimatedSubtraction = require('./nodes/AnimatedSubtraction');
 const AnimatedTracking = require('./nodes/AnimatedTracking');
 const AnimatedValue = require('./nodes/AnimatedValue');
 const AnimatedValueXY = require('./nodes/AnimatedValueXY');
@@ -41,7 +39,7 @@ import type {DecayAnimationConfig} from './animations/DecayAnimation';
 import type {SpringAnimationConfig} from './animations/SpringAnimation';
 import type {Mapping, EventConfig} from './AnimatedEvent';
 
-type CompositeAnimation = {
+export type CompositeAnimation = {
   start: (callback?: ?EndCallback) => void,
   stop: () => void,
   reset: () => void,
@@ -54,6 +52,13 @@ const add = function(
   b: AnimatedNode | number,
 ): AnimatedAddition {
   return new AnimatedAddition(a, b);
+};
+
+const subtract = function(
+  a: AnimatedNode | number,
+  b: AnimatedNode | number,
+): AnimatedSubtraction {
+  return new AnimatedSubtraction(a, b);
 };
 
 const divide = function(
@@ -523,19 +528,19 @@ module.exports = {
   /**
    * 2D value class for driving 2D animations, such as pan gestures.
    *
-   * See http://facebook.github.io/react-native/docs/animated.html#valuexy
+   * See https://facebook.github.io/react-native/docs/animatedvaluexy.html
    */
   ValueXY: AnimatedValueXY,
   /**
    * Exported to use the Interpolation type in flow.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/animated.html#interpolation
    */
   Interpolation: AnimatedInterpolation,
   /**
    * Exported for ease of type checking. All animated values derive from this
    * class.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/animated.html#node
    */
   Node: AnimatedNode,
@@ -557,7 +562,7 @@ module.exports = {
   /**
    * Animates a value according to an analytical spring model based on
    * damped harmonic oscillation.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/animated.html#spring
    */
   spring,
@@ -565,15 +570,23 @@ module.exports = {
   /**
    * Creates a new Animated value composed from two Animated values added
    * together.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/animated.html#add
    */
   add,
 
   /**
+   * Creates a new Animated value composed by subtracting the second Animated
+   * value from the first Animated value.
+   *
+   * See http://facebook.github.io/react-native/docs/animated.html#subtract
+   */
+  subtract,
+
+  /**
    * Creates a new Animated value composed by dividing the first Animated value
    * by the second Animated value.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/animated.html#divide
    */
   divide,
@@ -581,7 +594,7 @@ module.exports = {
   /**
    * Creates a new Animated value composed from two Animated values multiplied
    * together.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/animated.html#multiply
    */
   multiply,
@@ -589,7 +602,7 @@ module.exports = {
   /**
    * Creates a new Animated value that is the (non-negative) modulo of the
    * provided Animated value.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/animated.html#modulo
    */
   modulo,
@@ -598,14 +611,14 @@ module.exports = {
    * Create a new Animated value that is limited between 2 values. It uses the
    * difference between the last value so even if the value is far from the
    * bounds it will start changing when the value starts getting closer again.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/animated.html#diffclamp
    */
   diffClamp,
 
   /**
    * Starts an animation after the given delay.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/animated.html#delay
    */
   delay,
@@ -613,7 +626,7 @@ module.exports = {
    * Starts an array of animations in order, waiting for each to complete
    * before starting the next. If the current running animation is stopped, no
    * following animations will be started.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/animated.html#sequence
    */
   sequence,
@@ -621,44 +634,44 @@ module.exports = {
    * Starts an array of animations all at the same time. By default, if one
    * of the animations is stopped, they will all be stopped. You can override
    * this with the `stopTogether` flag.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/animated.html#parallel
    */
   parallel,
   /**
    * Array of animations may run in parallel (overlap), but are started in
    * sequence with successive delays.  Nice for doing trailing effects.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/animated.html#stagger
    */
   stagger,
   /**
    * Loops a given animation continuously, so that each time it reaches the
    * end, it resets and begins again from the start.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/animated.html#loop
-  */
+   */
   loop,
 
   /**
    * Takes an array of mappings and extracts values from each arg accordingly,
    * then calls `setValue` on the mapped outputs.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/animated.html#event
    */
   event,
 
   /**
    * Make any React component Animatable.  Used to create `Animated.View`, etc.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/animated.html#createanimatedcomponent
    */
   createAnimatedComponent,
 
   /**
-   * Imperative API to attach an animated value to an event on a view. Prefer 
+   * Imperative API to attach an animated value to an event on a view. Prefer
    * using `Animated.event` with `useNativeDrive: true` if possible.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/animated.html#attachnativeevent
    */
   attachNativeEvent,
@@ -666,11 +679,16 @@ module.exports = {
   /**
    * Advanced imperative API for snooping on animated events that are passed in
    * through props. Use values directly where possible.
-   * 
+   *
    * See http://facebook.github.io/react-native/docs/animated.html#forkevent
    */
   forkEvent,
   unforkEvent,
+
+  /**
+   * Expose Event class, so it can be used as a type for type checkers.
+   */
+  Event: AnimatedEvent,
 
   __PropsOnlyForTests: AnimatedProps,
 };

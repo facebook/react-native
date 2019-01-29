@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
- * <p/>
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.modules.statusbar;
@@ -36,10 +34,12 @@ import javax.annotation.Nullable;
 /**
  * {@link NativeModule} that allows changing the appearance of the status bar.
  */
-@ReactModule(name = "StatusBarManager")
+@ReactModule(name = StatusBarModule.NAME)
 public class StatusBarModule extends ReactContextBaseJavaModule {
 
   private static final String HEIGHT_KEY = "HEIGHT";
+  private static final String DEFAULT_BACKGROUND_COLOR_KEY = "DEFAULT_BACKGROUND_COLOR";
+  public static final String NAME = "StatusBarManager";
 
   public StatusBarModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -47,20 +47,28 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "StatusBarManager";
+    return NAME;
   }
 
   @Override
   public @Nullable Map<String, Object> getConstants() {
     final Context context = getReactApplicationContext();
+    final Activity activity = getCurrentActivity();
+
     final int heightResId = context.getResources()
       .getIdentifier("status_bar_height", "dimen", "android");
     final float height = heightResId > 0 ?
       PixelUtil.toDIPFromPixel(context.getResources().getDimensionPixelSize(heightResId)) :
       0;
+    String statusBarColorString = "black";
+
+    if (activity != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      final int statusBarColor = activity.getWindow().getStatusBarColor();
+      statusBarColorString = String.format("#%06X", (0xFFFFFF & statusBarColor));
+    }
 
     return MapBuilder.<String, Object>of(
-      HEIGHT_KEY, height);
+      HEIGHT_KEY, height, DEFAULT_BACKGROUND_COLOR_KEY, statusBarColorString);
   }
 
   @ReactMethod
@@ -167,7 +175,7 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setStyle(final String style) {
+  public void setStyle(@Nullable final String style) {
     final Activity activity = getCurrentActivity();
     if (activity == null) {
       FLog.w(ReactConstants.TAG, "StatusBarModule: Ignored status bar change, current activity is null.");
@@ -182,7 +190,7 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
           public void run() {
             View decorView = activity.getWindow().getDecorView();
             decorView.setSystemUiVisibility(
-              style.equals("dark-content") ? View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR : 0);
+              "dark-content".equals(style) ? View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR : 0);
           }
         }
       );

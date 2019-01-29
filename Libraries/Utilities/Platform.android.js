@@ -1,18 +1,21 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Platform
+ * @format
  * @flow
  */
 
 'use strict';
 
 const NativeModules = require('NativeModules');
+
+export type PlatformSelectSpec<A, D> = {
+  android?: A,
+  default?: D,
+};
 
 const Platform = {
   OS: 'android',
@@ -21,10 +24,18 @@ const Platform = {
     return constants && constants.Version;
   },
   get isTesting(): boolean {
-    const constants = NativeModules.PlatformConstants;
-    return constants && constants.isTesting;
+    if (__DEV__) {
+      const constants = NativeModules.PlatformConstants;
+      return constants && constants.isTesting;
+    }
+    return false;
   },
-  select: (obj: Object) => 'android' in obj ? obj.android : obj.default,
+  get isTV(): boolean {
+    const constants = NativeModules.PlatformConstants;
+    return constants && constants.uiMode === 'tv';
+  },
+  select: <A, D>(spec: PlatformSelectSpec<A, D>): A | D =>
+    'android' in spec ? spec.android : spec.default,
 };
 
 module.exports = Platform;

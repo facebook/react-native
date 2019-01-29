@@ -1,17 +1,17 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Keyboard
- * @flow
+ * @format
+ * @flow strict-local
  */
+
 'use strict';
 
-const invariant = require('fbjs/lib/invariant');
+const LayoutAnimation = require('LayoutAnimation');
+const invariant = require('invariant');
 const NativeEventEmitter = require('NativeEventEmitter');
 const KeyboardObserver = require('NativeModules').KeyboardObserver;
 const dismissKeyboard = require('dismissKeyboard');
@@ -25,16 +25,21 @@ type KeyboardEventName =
   | 'keyboardWillChangeFrame'
   | 'keyboardDidChangeFrame';
 
-type KeyboardEventData = {
-  endCoordinates: {
-    width: number,
-    height: number,
-    screenX: number,
-    screenY: number,
-  },
-};
+type ScreenRect = $ReadOnly<{|
+  screenX: number,
+  screenY: number,
+  width: number,
+  height: number,
+|}>;
 
-type KeyboardEventListener = (e: KeyboardEventData) => void;
+export type KeyboardEvent = $ReadOnly<{|
+  duration?: number,
+  easing?: string,
+  endCoordinates: ScreenRect,
+  startCoordinates?: ScreenRect,
+|}>;
+
+type KeyboardEventListener = (e: KeyboardEvent) => void;
 
 // The following object exists for documentation purposes
 // Actual work happens in
@@ -116,7 +121,10 @@ let Keyboard = {
    * @param {string} eventName The `nativeEvent` is the string that identifies the event you're listening for.
    * @param {function} callback function to be called when the event fires.
    */
-  removeListener(eventName: KeyboardEventName, callback: Function) {
+  removeListener(
+    eventName: KeyboardEventName,
+    callback: KeyboardEventListener,
+  ) {
     invariant(false, 'Dummy method used for documentation');
   },
 
@@ -134,11 +142,31 @@ let Keyboard = {
    */
   dismiss() {
     invariant(false, 'Dummy method used for documentation');
-  }
+  },
+
+  /**
+   * Useful for syncing TextInput (or other keyboard accessory view) size of
+   * position changes with keyboard movements.
+   */
+  scheduleLayoutAnimation(event: KeyboardEvent) {
+    invariant(false, 'Dummy method used for documentation');
+  },
 };
 
 // Throw away the dummy object and reassign it to original module
 Keyboard = KeyboardEventEmitter;
 Keyboard.dismiss = dismissKeyboard;
+Keyboard.scheduleLayoutAnimation = function(event: KeyboardEvent) {
+  const {duration, easing} = event;
+  if (duration != null && duration !== 0) {
+    LayoutAnimation.configureNext({
+      duration: duration,
+      update: {
+        duration: duration,
+        type: (easing != null && LayoutAnimation.Types[easing]) || 'keyboard',
+      },
+    });
+  }
+};
 
 module.exports = Keyboard;
