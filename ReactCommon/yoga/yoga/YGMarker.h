@@ -12,8 +12,8 @@ YG_EXTERN_C_BEGIN
 
 typedef struct YGNode* YGNodeRef;
 
-typedef YG_ENUM_BEGIN(YGMarkerType) {}
-YG_ENUM_END(YGMarkerType);
+typedef YG_ENUM_BEGIN(YGMarker) {}
+YG_ENUM_END(YGMarker);
 
 typedef union {
   int unused;
@@ -22,10 +22,10 @@ typedef union {
 typedef struct {
   // accepts marker type, a node ref, and marker data (depends on marker type)
   // can return a handle or id that Yoga will pass to endMarker
-  void* (*startMarker)(YGMarkerType, YGNodeRef, YGMarkerData);
+  void* (*startMarker)(YGMarker, YGNodeRef, YGMarkerData);
   // accepts marker type, a node ref, marker data, and marker id as returned by
   // startMarker
-  void (*endMarker)(YGMarkerType, YGNodeRef, YGMarkerData, void* id);
+  void (*endMarker)(YGMarker, YGNodeRef, YGMarkerData, void* id);
 } YGMarkerCallbacks;
 
 YG_EXTERN_C_END
