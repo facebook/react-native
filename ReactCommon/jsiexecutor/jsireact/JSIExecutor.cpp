@@ -13,7 +13,6 @@
 #include <folly/json.h>
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
-//#include <jsi/JSCRuntime.h>
 
 #include <sstream>
 #include <stdexcept>
