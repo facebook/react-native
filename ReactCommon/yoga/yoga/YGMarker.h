@@ -11,6 +11,7 @@
 YG_EXTERN_C_BEGIN
 
 typedef struct YGNode* YGNodeRef;
+typedef struct YGConfig* YGConfigRef;
 
 typedef YG_ENUM_BEGIN(YGMarker){
     YGMarkerLayout,
@@ -32,5 +33,7 @@ typedef struct {
   // startMarker
   void (*endMarker)(YGMarker, YGNodeRef, YGMarkerData, void* id);
 } YGMarkerCallbacks;
+
+void YGConfigSetMarkerCallbacks(YGConfigRef, YGMarkerCallbacks);
 
 YG_EXTERN_C_END
