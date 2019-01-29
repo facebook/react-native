@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include <fabric/core/LocalData.h>
-#include <fabric/imagemanager/ImageRequest.h>
-#include <fabric/imagemanager/primitives.h>
+#include <react/core/LocalData.h>
+#include <react/imagemanager/ImageRequest.h>
+#include <react/imagemanager/primitives.h>
 
 namespace facebook {
 namespace react {

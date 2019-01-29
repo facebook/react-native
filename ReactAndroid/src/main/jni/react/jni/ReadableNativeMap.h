@@ -19,6 +19,10 @@ namespace react {
 
 struct WritableNativeMap;
 
+struct ReadableMap : jni::JavaClass<ReadableMap> {
+  static auto constexpr kJavaDescriptor = "Lcom/facebook/react/bridge/ReadableMap;";
+};
+
 struct ReadableNativeMap : jni::HybridClass<ReadableNativeMap, NativeMap> {
   static auto constexpr kJavaDescriptor = "Lcom/facebook/react/bridge/ReadableNativeMap;";
 

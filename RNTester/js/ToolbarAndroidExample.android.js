@@ -22,9 +22,6 @@ const Switch = require('Switch');
 const ToolbarAndroid = require('ToolbarAndroid');
 
 class ToolbarAndroidExample extends React.Component<{}, $FlowFixMeState> {
-  static title = '<ToolbarAndroid>';
-  static description = 'Examples of using the Android toolbar.';
-
   state = {
     actionText: 'Example app with toolbar component',
     toolbarSwitch: false,
@@ -61,8 +58,7 @@ class ToolbarAndroidExample extends React.Component<{}, $FlowFixMeState> {
               height: 144,
             })}
             style={styles.toolbar}>
-            <View
-              style={{height: 56, flexDirection: 'row', alignItems: 'center'}}>
+            <View style={styles.switchWrapper}>
               <Switch
                 value={this.state.toolbarSwitch}
                 onValueChange={value => this.setState({toolbarSwitch: value})}
@@ -168,6 +164,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#e9eaed',
     height: 56,
   },
+  switchWrapper: {
+    height: 56,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
 });
 
-module.exports = ToolbarAndroidExample;
+exports.title = '<ToolbarAndroid>';
+exports.description = 'Examples of using the Android toolbar.';
+exports.examples = [
+  {
+    title: 'Basic toolbar',
+    render: function(): React.Element<typeof ToolbarAndroidExample> {
+      return <ToolbarAndroidExample />;
+    },
+  },
+];

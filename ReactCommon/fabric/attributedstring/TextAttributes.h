@@ -10,13 +10,13 @@
 #include <functional>
 #include <limits>
 
-#include <fabric/attributedstring/primitives.h>
-#include <fabric/core/LayoutPrimitives.h>
-#include <fabric/core/ReactPrimitives.h>
-#include <fabric/debug/DebugStringConvertible.h>
-#include <fabric/graphics/Color.h>
-#include <fabric/graphics/Geometry.h>
 #include <folly/Optional.h>
+#include <react/attributedstring/primitives.h>
+#include <react/core/LayoutPrimitives.h>
+#include <react/core/ReactPrimitives.h>
+#include <react/debug/DebugStringConvertible.h>
+#include <react/graphics/Color.h>
+#include <react/graphics/Geometry.h>
 
 namespace facebook {
 namespace react {

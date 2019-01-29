@@ -3,7 +3,7 @@
 .*/*[.]android.js
 
 ; Ignore templates for 'react-native init'
-.*/local-cli/templates/.*
+<PROJECT_ROOT>/template/.*
 
 ; Ignore the Dangerfile
 <PROJECT_ROOT>/bots/dangerfile.js
@@ -22,20 +22,18 @@
 ; Ignore polyfills
 .*/Libraries/polyfills/.*
 
-; Ignore metro
-.*/node_modules/metro/.*
-
 ; These should not be required directly
-; require from fbjs/lib instead: require('fbjs/lib/invariant')
-.*/node_modules/invariant/.*
+; require from fbjs/lib instead: require('fbjs/lib/warning')
 .*/node_modules/warning/.*
+
+[untyped]
+.*/node_modules/@react-native-community/cli/.*/.*
 
 [include]
 
 [libs]
 Libraries/react-native/react-native-interface.js
 flow/
-flow-github/
 
 [options]
 emoji=true
@@ -90,6 +88,7 @@ sketchy-null-mixed=warn
 # This is noisy for now. We *do* still want to warn on importing types
 # from untyped files, which is covered by untyped-type-import
 untyped-import=off
+deprecated-utility=error
 
 [strict]
 deprecated-type
@@ -101,4 +100,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.85.0
+^0.91.0

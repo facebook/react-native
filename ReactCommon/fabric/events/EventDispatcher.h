@@ -8,10 +8,10 @@
 
 #include <memory>
 
-#include <fabric/events/EventBeat.h>
-#include <fabric/events/EventQueue.h>
-#include <fabric/events/RawEvent.h>
-#include <fabric/events/primitives.h>
+#include <react/events/EventBeat.h>
+#include <react/events/EventQueue.h>
+#include <react/events/RawEvent.h>
+#include <react/events/primitives.h>
 
 namespace facebook {
 namespace react {

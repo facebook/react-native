@@ -10,6 +10,8 @@
 #import "RCTAutoInsetsProtocol.h"
 
 static NSString *const MessageHanderName = @"ReactNative";
+static NSURLCredential* clientAuthenticationCredential;
+
 
 @interface RCTWKWebView () <WKUIDelegate, WKNavigationDelegate, WKScriptMessageHandler, UIScrollViewDelegate, RCTAutoInsetsProtocol>
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingStart;
@@ -76,7 +78,9 @@ static NSString *const MessageHanderName = @"ReactNative";
     wkWebViewConfig.mediaTypesRequiringUserActionForPlayback = _mediaPlaybackRequiresUserAction
       ? WKAudiovisualMediaTypeAll
       : WKAudiovisualMediaTypeNone;
-   wkWebViewConfig.dataDetectorTypes = _dataDetectorTypes;
+    wkWebViewConfig.dataDetectorTypes = _dataDetectorTypes;
+#else
+    wkWebViewConfig.mediaPlaybackRequiresUserAction = _mediaPlaybackRequiresUserAction;
 #endif
 
     _webView = [[WKWebView alloc] initWithFrame:self.bounds configuration: wkWebViewConfig];
@@ -308,6 +312,25 @@ static NSString *const MessageHanderName = @"ReactNative";
   }
 
   [self setBackgroundColor: _savedBackgroundColor];
+}
+
++ (void)setClientAuthenticationCredential:(nullable NSURLCredential*)credential {
+  clientAuthenticationCredential = credential;
+}
+
+- (void)                    webView:(WKWebView *)webView
+  didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
+                  completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential * _Nullable))completionHandler
+{
+  if (!clientAuthenticationCredential) {
+    completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
+    return;
+  }
+  if ([[challenge protectionSpace] authenticationMethod] == NSURLAuthenticationMethodClientCertificate) {
+    completionHandler(NSURLSessionAuthChallengeUseCredential, clientAuthenticationCredential);
+  } else {
+    completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
+}
 }
 
 - (void)evaluateJS:(NSString *)js

@@ -4,14 +4,18 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 
-cachedir="$HOME/.rncache"
+if [ -d "$HOME/.rncache" ]; then
+  cachedir="$HOME/.rncache" # react-native 0.57.8 and older
+else
+  cachedir="$HOME/Library/Caches/com.facebook.ReactNativeBuild"
+fi
 mkdir -p "$cachedir"
 
 function file_fail () {
     cachefile=$1
     msg=$2
 
-    echo "$msg.  Debug info:" 2>&1
+    echo "$msg. Debug info:" 2>&1
     ls -l "$cachefile" 2>&1
     shasum "$cachefile" 2>&1
     exit 1
@@ -29,7 +33,7 @@ function fetch_and_unpack () {
     while true; do
         if [ -f "$cachedir/$file" ]; then
            if shasum -p "$cachedir/$file" |
-              awk -v hash="$hash" '{exit $1 != hash}'; then
+               awk -v hash="$hash" '{exit $1 != hash}'; then
                break
            else
                echo "Incorrect hash:" 2>&1
@@ -63,7 +67,7 @@ function fetch_and_unpack () {
 
 mkdir -p third-party
 
-SCRIPTDIR=$(cd $(dirname "$0") && pwd)
+SCRIPTDIR=$(dirname "$0")
 
 fetch_and_unpack glog-0.3.5.tar.gz https://github.com/google/glog/archive/v0.3.5.tar.gz 61067502c5f9769d111ea1ee3f74e6ddf0a5f9cc "\"$SCRIPTDIR/ios-configure-glog.sh\""
 fetch_and_unpack double-conversion-1.1.6.tar.gz https://github.com/google/double-conversion/archive/v1.1.6.tar.gz 1c7d88afde3aaeb97bb652776c627b49e132e8e0

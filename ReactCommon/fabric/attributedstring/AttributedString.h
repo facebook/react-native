@@ -10,11 +10,13 @@
 #include <functional>
 #include <memory>
 
-#include <fabric/attributedstring/TextAttributes.h>
-#include <fabric/core/Sealable.h>
-#include <fabric/core/ShadowNode.h>
-#include <fabric/debug/DebugStringConvertible.h>
+#include <folly/Hash.h>
 #include <folly/Optional.h>
+#include <react/attributedstring/TextAttributes.h>
+#include <react/core/Sealable.h>
+#include <react/core/ShadowNode.h>
+#include <react/debug/DebugStringConvertible.h>
+#include <react/mounting/ShadowView.h>
 
 namespace facebook {
 namespace react {
@@ -35,8 +37,8 @@ class AttributedString : public Sealable, public DebugStringConvertible {
    public:
     std::string string;
     TextAttributes textAttributes;
-    SharedShadowNode shadowNode;
-    SharedShadowNode parentShadowNode;
+    ShadowView shadowView;
+    ShadowView parentShadowView;
 
     bool operator==(const Fragment &rhs) const;
     bool operator!=(const Fragment &rhs) const;
@@ -88,12 +90,12 @@ template <>
 struct hash<facebook::react::AttributedString::Fragment> {
   size_t operator()(
       const facebook::react::AttributedString::Fragment &fragment) const {
-    return std::hash<decltype(fragment.string)>{}(fragment.string) +
-        std::hash<decltype(fragment.textAttributes)>{}(
-               fragment.textAttributes) +
-        std::hash<decltype(fragment.shadowNode)>{}(fragment.shadowNode) +
-        std::hash<decltype(fragment.parentShadowNode)>{}(
-               fragment.parentShadowNode);
+    auto seed = size_t{0};
+    folly::hash::hash_combine(seed, fragment.string);
+    folly::hash::hash_combine(seed, fragment.textAttributes);
+    folly::hash::hash_combine(seed, fragment.shadowView);
+    folly::hash::hash_combine(seed, fragment.parentShadowView);
+    return seed;
   }
 };
 
@@ -101,14 +103,13 @@ template <>
 struct hash<facebook::react::AttributedString> {
   size_t operator()(
       const facebook::react::AttributedString &attributedString) const {
-    auto result = size_t{0};
+    auto seed = size_t{0};
 
     for (const auto &fragment : attributedString.getFragments()) {
-      result +=
-          std::hash<facebook::react::AttributedString::Fragment>{}(fragment);
+      folly::hash::hash_combine(seed, fragment);
     }
 
-    return result;
+    return seed;
   }
 };
 } // namespace std

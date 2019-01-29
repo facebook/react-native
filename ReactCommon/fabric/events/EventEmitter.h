@@ -9,9 +9,9 @@
 #include <memory>
 #include <mutex>
 
-#include <fabric/events/EventDispatcher.h>
-#include <fabric/events/primitives.h>
 #include <folly/dynamic.h>
+#include <react/events/EventDispatcher.h>
+#include <react/events/primitives.h>
 
 namespace facebook {
 namespace react {
@@ -25,15 +25,6 @@ using SharedEventEmitter = std::shared_ptr<const EventEmitter>;
  * Stores a pointer to `EventTarget` identifying a particular component and
  * a weak pointer to `EventDispatcher` which is responsible for delivering the
  * event.
- *
- * Note: Retaining an `EventTarget` does *not* guarantee that actual event
- * target exists and/or valid in JavaScript realm. The `EventTarget` retains an
- * `EventTargetWrapper` which wraps JavaScript object in `unsafe-unretained`
- * manner. Retaining the `EventTarget` *does* indicate that we can use that to
- * get an actual JavaScript object from that in the future *ensuring safety
- * beforehand somehow*; JSI maintains `WeakObject` object as long as we retain
- * the `EventTarget`. All `EventTarget` instances must be deallocated before
- * stopping JavaScript machine.
  */
 class EventEmitter {
   /*
@@ -43,7 +34,9 @@ class EventEmitter {
   using Tag = int32_t;
 
  public:
-  static std::recursive_mutex &DispatchMutex();
+  static std::mutex &DispatchMutex();
+
+  static ValueFactory defaultPayloadFactory();
 
   EventEmitter(
       SharedEventTarget eventTarget,
@@ -53,13 +46,16 @@ class EventEmitter {
   virtual ~EventEmitter() = default;
 
   /*
-   * Indicates that an event can be delivered to `eventTarget`.
-   * Callsite must acquire `DispatchMutex` to access those methods.
-   * The `setEnabled` operation is not guaranteed: sometimes `EventEmitter`
-   * can be re-enabled after disabling, sometimes not.
+   * Enables/disables event emitter.
+   * Enabled event emitter retains a pointer to `eventTarget` strongly (as
+   * `std::shared_ptr`) whereas disabled one don't.
+   * Enabled/disabled state is also proxied to `eventTarget` where it indicates
+   * a possibility to extract JSI value from it.
+   * The enable state is additive; a number of `enable` calls should be equal to
+   * a number of `disable` calls to release the event target.
+   * `DispatchMutex` must be acquired before calling.
    */
   void setEnabled(bool enabled) const;
-  bool getEnabled() const;
 
  protected:
 #ifdef ANDROID
@@ -74,14 +70,22 @@ class EventEmitter {
    */
   void dispatchEvent(
       const std::string &type,
-      const folly::dynamic &payload = folly::dynamic::object(),
+      const ValueFactory &payloadFactory =
+          EventEmitter::defaultPayloadFactory(),
+      const EventPriority &priority = EventPriority::AsynchronousBatched) const;
+
+  void dispatchEvent(
+      const std::string &type,
+      const folly::dynamic &payload,
       const EventPriority &priority = EventPriority::AsynchronousBatched) const;
 
  private:
+  void toggleEventTargetOwnership_() const;
+
   mutable SharedEventTarget eventTarget_;
-  mutable WeakEventTarget weakEventTarget_;
-  Tag tag_;
   WeakEventDispatcher eventDispatcher_;
+  mutable int enableCounter_{0};
+  mutable bool isEnabled_{false};
 };
 
 } // namespace react

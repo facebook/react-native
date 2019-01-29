@@ -37,7 +37,7 @@ jest
   .mock('InitializeCore', () => {})
   .mock('Image', () => mockComponent('Image'))
   .mock('Text', () => mockComponent('Text', MockNativeMethods))
-  .mock('TextInput', () => mockComponent('TextInput', MockNativeMethods))
+  .mock('TextInput', () => mockComponent('TextInput'))
   .mock('Modal', () => mockComponent('Modal'))
   .mock('View', () => mockComponent('View', MockNativeMethods))
   .mock('RefreshControl', () => jest.requireMock('RefreshControlMock'))
@@ -115,6 +115,12 @@ const mockNativeModules = {
   BuildInfo: {
     appVersion: '0',
     buildVersion: '0',
+    getConstants() {
+      return {
+        appVersion: '0',
+        buildVersion: '0',
+      };
+    },
   },
   Clipboard: {
     setString: jest.fn(),
@@ -171,6 +177,7 @@ const mockNativeModules = {
     addEventListener: jest.fn(),
     getInitialURL: jest.fn(() => Promise.resolve()),
     removeEventListener: jest.fn(),
+    sendIntent: jest.fn(),
   },
   LocationObserver: {
     getCurrentPosition: jest.fn(),

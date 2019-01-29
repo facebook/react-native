@@ -6,8 +6,8 @@
  */
 
 #include "ParagraphShadowNode.h"
-
 #include "ParagraphLocalData.h"
+#include "ParagraphMeasurementCache.h"
 
 namespace facebook {
 namespace react {
@@ -32,11 +32,25 @@ void ParagraphShadowNode::setTextLayoutManager(
   textLayoutManager_ = textLayoutManager;
 }
 
-void ParagraphShadowNode::updateLocalData() {
+void ParagraphShadowNode::setMeasureCache(
+    SharedParagraphMeasurementCache cache) {
+  ensureUnsealed();
+  measureCache_ = cache;
+}
+
+void ParagraphShadowNode::updateLocalDataIfNeeded() {
   ensureUnsealed();
 
+  auto attributedString = getAttributedString();
+  auto currentLocalData =
+      std::static_pointer_cast<const ParagraphLocalData>(getLocalData());
+  if (currentLocalData &&
+      currentLocalData->getAttributedString() == attributedString) {
+    return;
+  }
+
   auto localData = std::make_shared<ParagraphLocalData>();
-  localData->setAttributedString(getAttributedString());
+  localData->setAttributedString(std::move(attributedString));
   localData->setTextLayoutManager(textLayoutManager_);
   setLocalData(localData);
 }
@@ -44,15 +58,27 @@ void ParagraphShadowNode::updateLocalData() {
 #pragma mark - LayoutableShadowNode
 
 Size ParagraphShadowNode::measure(LayoutConstraints layoutConstraints) const {
-  return textLayoutManager_->measure(
-      getTag(),
-      getAttributedString(),
-      getProps()->paragraphAttributes,
-      layoutConstraints);
+  AttributedString attributedString = getAttributedString();
+  const ParagraphAttributes attributes = getProps()->paragraphAttributes;
+
+  // Cache results of this function so we don't need to call measure()
+  // repeatedly
+  ParagraphMeasurementCacheKey hashValue =
+      std::make_tuple(attributedString, attributes, layoutConstraints);
+  if (measureCache_->exists(hashValue)) {
+    return measureCache_->get(hashValue);
+  }
+
+  Size measuredSize = textLayoutManager_->measure(
+      attributedString, getProps()->paragraphAttributes, layoutConstraints);
+
+  measureCache_->set(hashValue, measuredSize);
+
+  return measuredSize;
 }
 
 void ParagraphShadowNode::layout(LayoutContext layoutContext) {
-  updateLocalData();
+  updateLocalDataIfNeeded();
   ConcreteViewShadowNode::layout(layoutContext);
 }
 

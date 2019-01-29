@@ -7,11 +7,12 @@
 
 #pragma once
 
-#include <fabric/components/view/primitives.h>
-#include <fabric/core/LayoutMetrics.h>
-#include <fabric/graphics/Geometry.h>
 #include <folly/Conv.h>
 #include <folly/dynamic.h>
+#include <react/components/view/primitives.h>
+#include <react/core/LayoutMetrics.h>
+#include <react/graphics/Geometry.h>
+#include <yoga/YGEnums.h>
 #include <yoga/YGNode.h>
 #include <yoga/Yoga.h>
 #include <cmath>
@@ -40,7 +41,7 @@ inline Float floatFromYogaOptionalFloat(YGFloatOptional value) {
     return kFloatUndefined;
   }
 
-  return floatFromYogaFloat(value.getValue());
+  return floatFromYogaFloat(value.unwrap());
 }
 
 inline YGFloatOptional yogaOptionalFloatFromFloat(Float value) {
@@ -60,7 +61,7 @@ inline YGValue yogaStyleValueFromFloat(const Float &value) {
 }
 
 inline folly::Optional<Float> optionalFloatFromYogaValue(
-    const YGValue &value,
+    const YGValue value,
     folly::Optional<Float> base = {}) {
   switch (value.unit) {
     case YGUnitUndefined:
@@ -297,7 +298,9 @@ inline void fromDynamic(const folly::dynamic &value, YGDisplay &result) {
   abort();
 }
 
-inline void fromDynamic(const folly::dynamic &value, YGValue &result) {
+inline void fromDynamic(
+    const folly::dynamic &value,
+    decltype(YGStyle{}.margin[0]) /* type is subject to change */ &result) {
   if (value.isNumber()) {
     result = yogaStyleValueFromFloat(value.asDouble());
     return;
@@ -308,12 +311,12 @@ inline void fromDynamic(const folly::dynamic &value, YGValue &result) {
       return;
     } else {
       if (stringValue.back() == '%') {
-        result = {
+        result = YGValue{
             folly::to<float>(stringValue.substr(0, stringValue.length() - 1)),
             YGUnitPercent};
         return;
       } else {
-        result = {folly::to<float>(stringValue), YGUnitPoint};
+        result = YGValue{folly::to<float>(stringValue), YGUnitPoint};
         return;
       }
     }
@@ -443,7 +446,7 @@ inline void fromDynamic(const folly::dynamic &value, BorderStyle &result) {
 }
 
 inline std::string toString(
-    const std::array<float, YGDimensionCount> &dimensions) {
+    const std::array<float, yoga::enums::count<YGDimension>()> &dimensions) {
   return "{" + folly::to<std::string>(dimensions[0]) + ", " +
       folly::to<std::string>(dimensions[1]) + "}";
 }
@@ -453,7 +456,8 @@ inline std::string toString(const std::array<float, 4> &position) {
       folly::to<std::string>(position[1]) + "}";
 }
 
-inline std::string toString(const std::array<float, YGEdgeCount> &edges) {
+inline std::string toString(
+    const std::array<float, yoga::enums::count<YGEdge>()> &edges) {
   return "{" + folly::to<std::string>(edges[0]) + ", " +
       folly::to<std::string>(edges[1]) + ", " +
       folly::to<std::string>(edges[2]) + ", " +
@@ -580,33 +584,34 @@ inline std::string toString(const YGFloatOptional &value) {
     return "undefined";
   }
 
-  return folly::to<std::string>(floatFromYogaFloat(value.getValue()));
+  return folly::to<std::string>(floatFromYogaFloat(value.unwrap()));
 }
 
-inline std::string toString(
-    const std::array<YGValue, YGDimensionCount> &value) {
+inline std::string toString(const YGStyle::Dimensions &value) {
   return "{" + toString(value[0]) + ", " + toString(value[1]) + "}";
 }
 
-inline std::string toString(const std::array<YGValue, YGEdgeCount> &value) {
-  static std::array<std::string, YGEdgeCount> names = {{"left",
-                                                        "top",
-                                                        "right",
-                                                        "bottom",
-                                                        "start",
-                                                        "end",
-                                                        "horizontal",
-                                                        "vertical",
-                                                        "all"}};
+inline std::string toString(const YGStyle::Edges &value) {
+  static std::array<std::string, yoga::enums::count<YGEdge>()> names = {
+      {"left",
+       "top",
+       "right",
+       "bottom",
+       "start",
+       "end",
+       "horizontal",
+       "vertical",
+       "all"}};
 
   auto result = std::string{};
   auto separator = std::string{", "};
 
-  for (auto i = 0; i < YGEdgeCount; i++) {
-    if (value[i].unit == YGUnitUndefined) {
+  for (auto i = 0; i < yoga::enums::count<YGEdge>(); i++) {
+    YGValue v = value[i];
+    if (v.unit == YGUnitUndefined) {
       continue;
     }
-    result += names[i] + ": " + toString(value[i]) + separator;
+    result += names[i] + ": " + toString(v) + separator;
   }
 
   if (!result.empty()) {

@@ -49,13 +49,14 @@
     _rootTag = [RCTAllocateRootViewTag() integerValue];
 
     _minimumSize = CGSizeZero;
-    _maximumSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
+    // FIXME: Replace with `_maximumSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);`.
+    _maximumSize = RCTScreenSize();
 
     _touchHandler = [RCTSurfaceTouchHandler new];
 
     _stage = RCTSurfaceStageSurfaceDidInitialize;
 
-    [self start];
+    [_surfacePresenter registerSurface:self];
   }
 
   return self;
@@ -67,7 +68,8 @@
     return NO;
   }
 
-  [_surfacePresenter registerSurface:self];
+  [_surfacePresenter startSurface:self];
+
   return YES;
 }
 

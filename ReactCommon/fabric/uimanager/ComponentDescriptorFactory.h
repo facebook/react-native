@@ -9,9 +9,9 @@
 
 #include <memory>
 
-#include <fabric/core/ComponentDescriptor.h>
-#include <fabric/events/EventDispatcher.h>
-#include <fabric/uimanager/ContextContainer.h>
+#include <react/core/ComponentDescriptor.h>
+#include <react/events/EventDispatcher.h>
+#include <react/uimanager/ContextContainer.h>
 
 #include "ComponentDescriptorRegistry.h"
 
@@ -23,12 +23,12 @@ namespace react {
  * Each app must provide an implementation of the static class method which
  * should register its specific set of supported components.
  */
-class ComponentDescriptorFactory {
- public:
-  static SharedComponentDescriptorRegistry buildRegistry(
-      const SharedEventDispatcher &eventDispatcher,
-      const SharedContextContainer &contextContainer);
-};
+using ComponentRegistryFactory =
+    std::function<SharedComponentDescriptorRegistry(
+        const SharedEventDispatcher &eventDispatcher,
+        const SharedContextContainer &contextContainer)>;
+
+ComponentRegistryFactory getDefaultComponentRegistryFactory();
 
 } // namespace react
 } // namespace facebook

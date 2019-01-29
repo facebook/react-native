@@ -25,4 +25,13 @@ public class ViewUtil {
     return DEFAULT;
   }
 
+  /**
+   * @param reactTag {@link int} react tag
+   * @return if the react tag received by parameter is a RootTag or not.
+   */
+  @Deprecated
+  public static boolean isRootTag(int reactTag) {
+    return reactTag % 10 == 1;
+  }
+
 }

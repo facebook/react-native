@@ -17,6 +17,8 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import com.facebook.common.logging.FLog;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.ReactCompoundView;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
@@ -96,7 +98,14 @@ public class ReactTextView extends TextView implements ReactCompoundView {
     // TODO(5966918): Consider extending touchable area for text spans by some DP constant
     if (text instanceof Spanned && x >= lineStartX && x <= lineEndX) {
       Spanned spannedText = (Spanned) text;
-      int index = layout.getOffsetForHorizontal(line, x);
+      int index = -1;
+      try {
+        index = layout.getOffsetForHorizontal(line, x);
+      } catch (ArrayIndexOutOfBoundsException e) {
+        // https://issuetracker.google.com/issues/113348914
+        FLog.e(ReactConstants.TAG, "Crash in HorizontalMeasurementProvider: " + e.getMessage());
+        return target;
+      }
 
       // We choose the most inner span (shortest) containing character at the given index
       // if no such span can be found we will send the textview's react id as a touch handler

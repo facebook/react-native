@@ -10,10 +10,11 @@
 
 'use strict';
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 let showedListViewDeprecation = false;
 let showedSwipeableListViewDeprecation = false;
+let showedWebWiewDeprecation = false;
 
 // Export React, plus some native additions.
 module.exports = {
@@ -139,9 +140,6 @@ module.exports = {
   get TextInput() {
     return require('TextInput');
   },
-  get ToastAndroid() {
-    return require('ToastAndroid');
-  },
   get ToolbarAndroid() {
     return require('ToolbarAndroid');
   },
@@ -170,6 +168,15 @@ module.exports = {
     return require('VirtualizedList');
   },
   get WebView() {
+    if (!showedWebWiewDeprecation) {
+      console.warn(
+        'WebView has been extracted from react-native core and will be removed in a future release. ' +
+          "It can now be installed and imported from 'react-native-webview' instead of 'react-native'. " +
+          'See https://github.com/react-native-community/react-native-webview for more informations.',
+      );
+
+      showedWebWiewDeprecation = true;
+    }
     return require('WebView');
   },
 
@@ -273,6 +280,9 @@ module.exports = {
   get TimePickerAndroid() {
     return require('TimePickerAndroid');
   },
+  get ToastAndroid() {
+    return require('ToastAndroid');
+  },
   get TVEventHandler() {
     return require('TVEventHandler');
   },
@@ -281,6 +291,9 @@ module.exports = {
   },
   get unstable_batchedUpdates() {
     return require('ReactNative').unstable_batchedUpdates;
+  },
+  get UTFSequence() {
+    return require('UTFSequence');
   },
   get Vibration() {
     return require('Vibration');

@@ -221,13 +221,7 @@ const NetInfo = {
 
     removeEventListener(eventName: ChangeEventName, handler: Function): void {
       const listener = _isConnectedSubscriptions.get(handler);
-      NetInfo.removeEventListener(
-        eventName,
-        /* $FlowFixMe(>=0.36.0 site=react_native_fb,react_native_oss) Flow error
-         * detected during the deploy of Flow v0.36.0. To see the error, remove
-         * this comment and run Flow */
-        listener,
-      );
+      NetInfo.removeEventListener(eventName, listener);
       _isConnectedSubscriptions.delete(handler);
     },
 

@@ -14,7 +14,7 @@ const EventEmitter = require('EventEmitter');
 const Platform = require('Platform');
 const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 const eventEmitter = new EventEmitter();
 let dimensionsInitialized = false;

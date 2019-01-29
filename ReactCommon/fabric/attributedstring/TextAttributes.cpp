@@ -7,11 +7,13 @@
 
 #include "TextAttributes.h"
 
-#include <fabric/attributedstring/conversions.h>
-#include <fabric/core/conversions.h>
-#include <fabric/graphics/conversions.h>
+#include <react/attributedstring/conversions.h>
+#include <react/core/conversions.h>
+#include <react/graphics/conversions.h>
+#include <react/utils/FloatComparison.h>
+#include <cmath>
 
-#include <fabric/debug/debugStringConvertibleUtils.h>
+#include <react/debug/debugStringConvertibleUtils.h>
 
 namespace facebook {
 namespace react {
@@ -24,14 +26,15 @@ void TextAttributes::apply(TextAttributes textAttributes) {
   backgroundColor = textAttributes.backgroundColor
       ? textAttributes.backgroundColor
       : backgroundColor;
-  opacity = !isnan(textAttributes.opacity) ? textAttributes.opacity : opacity;
+  opacity =
+      !std::isnan(textAttributes.opacity) ? textAttributes.opacity : opacity;
 
   // Font
   fontFamily = !textAttributes.fontFamily.empty() ? textAttributes.fontFamily
                                                   : fontFamily;
   fontSize =
-      !isnan(textAttributes.fontSize) ? textAttributes.fontSize : fontSize;
-  fontSizeMultiplier = !isnan(textAttributes.fontSizeMultiplier)
+      !std::isnan(textAttributes.fontSize) ? textAttributes.fontSize : fontSize;
+  fontSizeMultiplier = !std::isnan(textAttributes.fontSizeMultiplier)
       ? textAttributes.fontSizeMultiplier
       : fontSizeMultiplier;
   fontWeight = textAttributes.fontWeight.hasValue() ? textAttributes.fontWeight
@@ -44,13 +47,14 @@ void TextAttributes::apply(TextAttributes textAttributes) {
   allowFontScaling = textAttributes.allowFontScaling.hasValue()
       ? textAttributes.allowFontScaling
       : allowFontScaling;
-  letterSpacing = !isnan(textAttributes.letterSpacing)
+  letterSpacing = !std::isnan(textAttributes.letterSpacing)
       ? textAttributes.letterSpacing
       : letterSpacing;
 
   // Paragraph Styles
-  lineHeight = !isnan(textAttributes.lineHeight) ? textAttributes.lineHeight
-                                                 : lineHeight;
+  lineHeight = !std::isnan(textAttributes.lineHeight)
+      ? textAttributes.lineHeight
+      : lineHeight;
   alignment = textAttributes.alignment.hasValue() ? textAttributes.alignment
                                                   : alignment;
   baseWritingDirection = textAttributes.baseWritingDirection.hasValue()
@@ -76,7 +80,7 @@ void TextAttributes::apply(TextAttributes textAttributes) {
   textShadowOffset = textAttributes.textShadowOffset.hasValue()
       ? textAttributes.textShadowOffset.value()
       : textShadowOffset;
-  textShadowRadius = !isnan(textAttributes.textShadowRadius)
+  textShadowRadius = !std::isnan(textAttributes.textShadowRadius)
       ? textAttributes.textShadowRadius
       : textShadowRadius;
   textShadowColor = textAttributes.textShadowColor
@@ -98,16 +102,11 @@ bool TextAttributes::operator==(const TextAttributes &rhs) const {
   return std::tie(
              foregroundColor,
              backgroundColor,
-             opacity,
              fontFamily,
-             fontSize,
-             fontSizeMultiplier,
              fontWeight,
              fontStyle,
              fontVariant,
              allowFontScaling,
-             letterSpacing,
-             lineHeight,
              alignment,
              baseWritingDirection,
              textDecorationColor,
@@ -115,23 +114,17 @@ bool TextAttributes::operator==(const TextAttributes &rhs) const {
              textDecorationLineStyle,
              textDecorationLinePattern,
              textShadowOffset,
-             textShadowRadius,
              textShadowColor,
              isHighlighted,
              layoutDirection) ==
       std::tie(
              rhs.foregroundColor,
              rhs.backgroundColor,
-             rhs.opacity,
              rhs.fontFamily,
-             rhs.fontSize,
-             rhs.fontSizeMultiplier,
              rhs.fontWeight,
              rhs.fontStyle,
              rhs.fontVariant,
              rhs.allowFontScaling,
-             rhs.letterSpacing,
-             rhs.lineHeight,
              rhs.alignment,
              rhs.baseWritingDirection,
              rhs.textDecorationColor,
@@ -139,10 +132,15 @@ bool TextAttributes::operator==(const TextAttributes &rhs) const {
              rhs.textDecorationLineStyle,
              rhs.textDecorationLinePattern,
              rhs.textShadowOffset,
-             rhs.textShadowRadius,
              rhs.textShadowColor,
              rhs.isHighlighted,
-             rhs.layoutDirection);
+             rhs.layoutDirection) &&
+      floatEquality(opacity, rhs.opacity) &&
+      floatEquality(fontSize, rhs.fontSize) &&
+      floatEquality(fontSizeMultiplier, rhs.fontSizeMultiplier) &&
+      floatEquality(letterSpacing, rhs.letterSpacing) &&
+      floatEquality(lineHeight, rhs.lineHeight) &&
+      floatEquality(textShadowRadius, rhs.textShadowRadius);
 }
 
 bool TextAttributes::operator!=(const TextAttributes &rhs) const {
@@ -155,7 +153,7 @@ TextAttributes TextAttributes::defaultTextAttributes() {
     // Non-obvious (can be different among platforms) default text attributes.
     textAttributes.foregroundColor = blackColor();
     textAttributes.backgroundColor = clearColor();
-    textAttributes.fontSize = 12.0;
+    textAttributes.fontSize = 14.0;
     return textAttributes;
   }();
   return textAttributes;

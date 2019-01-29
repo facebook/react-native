@@ -7,16 +7,16 @@
 
 #include "UITemplateProcessor.h"
 
-#include <fabric/components/view/ViewComponentDescriptor.h>
-#include <fabric/components/view/ViewProps.h>
-#include <fabric/components/view/ViewShadowNode.h>
-#include <fabric/core/LayoutContext.h>
-#include <fabric/core/ShadowNodeFragment.h>
-#include <fabric/core/componentDescriptor.h>
-#include <fabric/debug/DebugStringConvertible.h>
-#include <fabric/debug/DebugStringConvertibleItem.h>
 #include <folly/json.h>
 #include <glog/logging.h>
+#include <react/components/view/ViewComponentDescriptor.h>
+#include <react/components/view/ViewProps.h>
+#include <react/components/view/ViewShadowNode.h>
+#include <react/core/LayoutContext.h>
+#include <react/core/ShadowNodeFragment.h>
+#include <react/core/ComponentDescriptor.h>
+#include <react/debug/DebugStringConvertible.h>
+#include <react/debug/DebugStringConvertibleItem.h>
 
 namespace facebook {
 namespace react {
@@ -38,7 +38,8 @@ SharedShadowNode UITemplateProcessor::runCommand(
     std::vector<SharedShadowNode> &nodes,
     std::vector<folly::dynamic> &registers,
     const ComponentDescriptorRegistry &componentDescriptorRegistry,
-    const NativeModuleRegistry &nativeModuleRegistry) {
+    const NativeModuleRegistry &nativeModuleRegistry,
+    const std::shared_ptr<const ReactNativeConfig> reactNativeConfig) {
   const std::string &opcode = command[0].asString();
   const int tagOffset = 420000;
   // TODO: change to integer codes and a switch statement
@@ -61,9 +62,8 @@ SharedShadowNode UITemplateProcessor::runCommand(
     return nodes[command[1].asInt()];
   } else if (opcode == "loadNativeBool") {
     int registerNumber = command[1].asInt();
-    const folly::dynamic &value = nativeModuleRegistry.call(
-        command[2].asString(), command[3].asString(), command[4]);
-    registers[registerNumber] = value.asBool();
+    std::string param = command[4][0].asString();
+    registers[registerNumber] = reactNativeConfig->getBool(param);
   } else if (opcode == "conditional") {
     int registerNumber = command[1].asInt();
     auto conditionDynamic = registers[registerNumber];
@@ -89,7 +89,8 @@ SharedShadowNode UITemplateProcessor::runCommand(
           nodes,
           registers,
           componentDescriptorRegistry,
-          nativeModuleRegistry);
+          nativeModuleRegistry,
+          reactNativeConfig);
     }
   } else {
     throw std::runtime_error("Unsupported opcode: " + command[0].asString());
@@ -102,7 +103,8 @@ SharedShadowNode UITemplateProcessor::buildShadowTree(
     Tag rootTag,
     const folly::dynamic &params,
     const ComponentDescriptorRegistry &componentDescriptorRegistry,
-    const NativeModuleRegistry &nativeModuleRegistry) {
+    const NativeModuleRegistry &nativeModuleRegistry,
+    const std::shared_ptr<const ReactNativeConfig> reactNativeConfig) {
   LOG(INFO)
       << "(strt) UITemplateProcessor inject hardcoded 'server rendered' view tree";
 
@@ -129,7 +131,8 @@ SharedShadowNode UITemplateProcessor::buildShadowTree(
           nodes,
           registers,
           componentDescriptorRegistry,
-          nativeModuleRegistry);
+          nativeModuleRegistry,
+          reactNativeConfig);
       if (ret != nullptr) {
         return ret;
       }

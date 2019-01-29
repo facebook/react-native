@@ -23,11 +23,6 @@ const {
 
 const Item = Picker.Item;
 
-exports.displayName = (undefined: ?string);
-exports.framework = 'React';
-exports.title = 'PermissionsAndroid';
-exports.description = 'Permissions example for API 23+.';
-
 class PermissionsExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     permission: PermissionsAndroid.PERMISSIONS.CAMERA,
@@ -76,7 +71,7 @@ class PermissionsExample extends React.Component<{}, $FlowFixMeState> {
     );
   }
 
-  _onSelectPermission = (permission: string) => {
+  _onSelectPermission = (permission: string | number) => {
     this.setState({
       permission: permission,
     });
@@ -105,6 +100,10 @@ class PermissionsExample extends React.Component<{}, $FlowFixMeState> {
   };
 }
 
+exports.displayName = (undefined: ?string);
+exports.framework = 'React';
+exports.title = 'PermissionsAndroid';
+exports.description = 'Permissions example for API 23+.';
 exports.examples = [
   {
     title: 'Permissions Example',

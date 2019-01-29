@@ -104,10 +104,10 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
-  Folly: cd7933b82a5f7673ed71bafe631f44a575ae77ab
+  Folly: de497beb10f102453a1afa9edbf8cf8a251890de
   glog: aefd1eb5dda2ab95ba0938556f34b98e2da3a60d
   React: 9b873b38b92ed8012d7cdf3b965477095ed364c4
-  yoga: b1ce48b6cf950b98deae82838f5173ea7cf89e85
+  yoga: 0885622311729a02c2bc02dca97167787a51488b
 
 PODFILE CHECKSUM: 7af77fbc34af9646e8c6389e7e2c0b4663bb16d9
 

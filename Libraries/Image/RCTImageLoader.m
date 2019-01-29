@@ -20,6 +20,17 @@
 #import "RCTImageCache.h"
 #import "RCTImageUtils.h"
 
+static NSInteger RCTImageBytesForImage(UIImage *image)
+{
+  CAKeyframeAnimation *keyFrameAnimation = [image reactKeyframeAnimation];
+  NSInteger singleImageBytes = image.size.width * image.size.height * image.scale * image.scale * 4;
+  if (keyFrameAnimation) {
+    return keyFrameAnimation.values.count * singleImageBytes;
+  } else {
+    return image.images ? image.images.count * singleImageBytes : singleImageBytes;
+  }
+}
+
 @implementation UIImage (React)
 
 - (CAKeyframeAnimation *)reactKeyframeAnimation
@@ -30,6 +41,20 @@
 - (void)setReactKeyframeAnimation:(CAKeyframeAnimation *)reactKeyframeAnimation
 {
     objc_setAssociatedObject(self, @selector(reactKeyframeAnimation), reactKeyframeAnimation, OBJC_ASSOCIATION_COPY_NONATOMIC);
+}
+
+- (NSInteger)reactDecodedImageBytes
+{
+  NSNumber *imageBytes = objc_getAssociatedObject(self, _cmd);
+  if (!imageBytes) {
+    imageBytes = @(RCTImageBytesForImage(self));
+  }
+  return [imageBytes integerValue];
+}
+
+- (void)setReactDecodedImageBytes:(NSInteger)bytes
+{
+  objc_setAssociatedObject(self, @selector(reactDecodedImageBytes), @(bytes), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 @end
@@ -236,7 +261,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     return image;
 }
 
-- (RCTImageLoaderCancellationBlock)loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
+- (RCTImageLoaderCancellationBlock) loadImageWithURLRequest:(NSURLRequest *)imageURLRequest
                                                   callback:(RCTImageLoaderCompletionBlock)callback
 {
     return [self loadImageWithURLRequest:imageURLRequest

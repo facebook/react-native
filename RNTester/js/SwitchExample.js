@@ -11,10 +11,37 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {Switch, Text, View} = ReactNative;
+const {Switch, Text, View} = require('react-native');
 
-class BasicSwitchExample extends React.Component<{}, $FlowFixMeState> {
+type OnOffIndicatorProps = $ReadOnly<{|on: boolean, testID: string|}>;
+function OnOffIndicator({on, testID}: OnOffIndicatorProps) {
+  return <Text testID={testID}>{on ? 'On' : 'Off'}</Text>;
+}
+
+type ExampleRowProps = $ReadOnly<{|children: React.Node|}>;
+function ExampleRow({children}: ExampleRowProps) {
+  return (
+    <View
+      style={{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 10,
+      }}>
+      {children}
+    </View>
+  );
+}
+
+type SimpleSwitchExampleState = $ReadOnly<{|
+  trueSwitchIsOn: boolean,
+  falseSwitchIsOn: boolean,
+|}>;
+
+class BasicSwitchExample extends React.Component<
+  {||},
+  SimpleSwitchExampleState,
+> {
   state = {
     trueSwitchIsOn: true,
     falseSwitchIsOn: false,
@@ -23,26 +50,72 @@ class BasicSwitchExample extends React.Component<{}, $FlowFixMeState> {
   render() {
     return (
       <View>
-        <Switch
-          onValueChange={value => this.setState({falseSwitchIsOn: value})}
-          style={{marginBottom: 10}}
-          value={this.state.falseSwitchIsOn}
-        />
-        <Switch
-          onValueChange={value => this.setState({trueSwitchIsOn: value})}
-          value={this.state.trueSwitchIsOn}
-        />
+        <ExampleRow>
+          <Switch
+            testID="on-off-initial-off"
+            onValueChange={value => this.setState({falseSwitchIsOn: value})}
+            value={this.state.falseSwitchIsOn}
+          />
+          <OnOffIndicator
+            on={this.state.falseSwitchIsOn}
+            testID="on-off-initial-off-indicator"
+          />
+        </ExampleRow>
+        <ExampleRow>
+          <Switch
+            testID="on-off-initial-on"
+            onValueChange={value => this.setState({trueSwitchIsOn: value})}
+            value={this.state.trueSwitchIsOn}
+          />
+          <OnOffIndicator
+            on={this.state.trueSwitchIsOn}
+            testID="on-off-initial-on-indicator"
+          />
+        </ExampleRow>
       </View>
     );
   }
 }
 
-class DisabledSwitchExample extends React.Component<{}> {
+class DisabledSwitchExample extends React.Component<
+  {||},
+  SimpleSwitchExampleState,
+> {
+  state = {
+    trueSwitchIsOn: true,
+    falseSwitchIsOn: false,
+  };
+
   render() {
     return (
       <View>
-        <Switch disabled={true} style={{marginBottom: 10}} value={true} />
-        <Switch disabled={true} value={false} />
+        <ExampleRow>
+          <Switch
+            testID="disabled-initial-off"
+            disabled={true}
+            onValueChange={value => this.setState({falseSwitchIsOn: value})}
+            value={this.state.falseSwitchIsOn}
+          />
+
+          <OnOffIndicator
+            on={this.state.falseSwitchIsOn}
+            testID="disabled-initial-off-indicator"
+          />
+        </ExampleRow>
+
+        <ExampleRow>
+          <Switch
+            testID="disabled-initial-on"
+            disabled={true}
+            onValueChange={value => this.setState({trueSwitchIsOn: value})}
+            value={this.state.trueSwitchIsOn}
+          />
+
+          <OnOffIndicator
+            on={this.state.trueSwitchIsOn}
+            testID="disabled-initial-on-indicator"
+          />
+        </ExampleRow>
       </View>
     );
   }
@@ -125,7 +198,10 @@ class EventSwitchExample extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-const examples = [
+exports.title = '<Switch>';
+exports.displayName = 'SwitchExample';
+exports.description = 'Native boolean input';
+exports.examples = [
   {
     title: 'Switches can be set to true or false',
     render(): React.Element<any> {
@@ -157,8 +233,3 @@ const examples = [
     },
   },
 ];
-
-exports.title = '<Switch>';
-exports.displayName = 'SwitchExample';
-exports.description = 'Native boolean input';
-exports.examples = examples;

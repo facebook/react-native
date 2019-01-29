@@ -284,6 +284,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   }
 }
 
+- (BOOL)accessibilityPerformEscape
+{
+  if (_onAccessibilityEscape) {
+    _onAccessibilityEscape(nil);
+    return YES;
+  } else {
+    return NO;
+  }
+}
+
 - (NSString *)description
 {
   NSString *superDescription = super.description;

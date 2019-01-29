@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include <fabric/core/ShadowNode.h>
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
+#include <react/core/ShadowNode.h>
 
 namespace facebook {
 namespace react {
@@ -29,13 +29,6 @@ inline RawProps rawPropsFromDynamic(const folly::dynamic object) noexcept {
 
   return result;
 }
-
-struct EventTargetWrapper : public EventTarget {
-  EventTargetWrapper(jsi::WeakObject instanceHandle)
-      : instanceHandle(std::move(instanceHandle)) {}
-
-  mutable jsi::WeakObject instanceHandle;
-};
 
 struct EventHandlerWrapper : public EventHandler {
   EventHandlerWrapper(jsi::Function eventHandler)
@@ -97,9 +90,10 @@ inline static RawProps rawPropsFromValue(
 
 inline static SharedEventTarget eventTargetFromValue(
     jsi::Runtime &runtime,
-    const jsi::Value &value) {
-  return std::make_shared<EventTargetWrapper>(
-      jsi::WeakObject(runtime, value.getObject(runtime)));
+    const jsi::Value &eventTargetValue,
+    const jsi::Value &tagValue) {
+  return std::make_shared<EventTarget>(
+      runtime, eventTargetValue, tagValue.getNumber());
 }
 
 inline static Tag tagFromValue(jsi::Runtime &runtime, const jsi::Value &value) {

@@ -626,6 +626,7 @@ public class UIViewOperationQueue {
   private long mProfiledBatchRunStartTime;
   private long mProfiledBatchBatchedExecutionTime;
   private long mProfiledBatchNonBatchedExecutionTime;
+  private long mThreadCpuTime;
 
   public UIViewOperationQueue(
       ReactApplicationContext reactContext,
@@ -664,6 +665,7 @@ public class UIViewOperationQueue {
     perfMap.put("RunStartTime", mProfiledBatchRunStartTime);
     perfMap.put("BatchedExecutionTime", mProfiledBatchBatchedExecutionTime);
     perfMap.put("NonBatchedExecutionTime", mProfiledBatchNonBatchedExecutionTime);
+    perfMap.put("NativeModulesThreadCpuTime", mThreadCpuTime);
     return perfMap;
   }
 
@@ -866,6 +868,7 @@ public class UIViewOperationQueue {
       .flush();
     try {
       final long dispatchViewUpdatesTime = SystemClock.uptimeMillis();
+      final long nativeModulesThreadCpuTime = SystemClock.currentThreadTimeMillis();
 
       // Store the current operation queues to dispatch and create new empty ones to continue
       // receiving new operations
@@ -920,6 +923,7 @@ public class UIViewOperationQueue {
                   mProfiledBatchLayoutTime = layoutTime;
                   mProfiledBatchDispatchViewUpdatesTime = dispatchViewUpdatesTime;
                   mProfiledBatchRunStartTime = runStartTime;
+                  mThreadCpuTime = nativeModulesThreadCpuTime;
 
                   Systrace.beginAsyncSection(
                       Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,

@@ -26,14 +26,6 @@ aliases:
       - node_modules
     key: v1-analysis-dependencies-{{ arch }}-{{ checksum "package.json" }}{{ checksum "bots/package.json" }}
 
-  - &restore-cache-android-packages
-    keys:
-      - v1-android-sdkmanager-packages-api-27-alpha-{{ checksum "scripts/.tests.env" }}
-  - &save-cache-android-packages
-    paths:
-      - /opt/android/sdk
-    key: v1-android-sdkmanager-packages-api-27-alpha-{{ checksum "scripts/.tests.env" }}
-
   - &restore-cache-gradle
     keys:
       - v1-gradle-{{ .Branch }}-{{ checksum "build.gradle" }}-{{ checksum "ReactAndroid/build.gradle" }}
@@ -47,23 +39,15 @@ aliases:
       - ~/.gradle
     key: v1-gradle-{{ .Branch }}-{{ checksum "build.gradle" }}-{{ checksum "ReactAndroid/build.gradle" }}
 
-  - &restore-cache-ndk
-    keys:
-      - v3-android-ndk-r17c-{{ checksum "scripts/android-setup.sh" }}
-  - &save-cache-ndk
-    paths:
-      - /opt/ndk
-    key: v3-android-ndk-r17c-{{ checksum "scripts/android-setup.sh" }}
-
   - &restore-cache-downloads-buck
     keys:
-      - v3-buck-v2018.10.29.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
-      - v3-buck-v2018.10.29.01-
+      - v3-buck-v2019.01.10.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
+      - v3-buck-v2019.01.10.01-
   - &save-cache-downloads-buck
     paths:
       - ~/buck
       - ~/okbuck
-    key: v3-buck-v2018.10.29.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}
+    key: v3-buck-v2019.01.10.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}
 
   - &restore-cache-watchman
     keys:
@@ -83,6 +67,14 @@ aliases:
       - ReactAndroid/build/downloads
       - ReactAndroid/build/third-party-ndk
     key: v1-gradle-{{ checksum "ReactAndroid/build.gradle" }}-{{ checksum "scripts/circleci/gradle_download_deps.sh" }}
+
+  - &restore-cache-homebrew
+    keys:
+      - v1-homebrew
+  - &save-cache-homebrew
+    paths:
+      - /usr/local/Homebrew
+    key: v1-homebrew
 
   # Branch Filtering
   - &filter-only-master-stable
@@ -107,11 +99,6 @@ aliases:
         - /.*-stable/
         - gh-pages
 
-  # Dependency Management
-  - &install-ndk
-    name: Install Android NDK
-    command: source scripts/android-setup.sh && getAndroidNDK
-
   - &yarn
     name: Run Yarn
     command: |
@@ -121,20 +108,9 @@ aliases:
         yarn install --non-interactive --cache-folder ~/.cache/yarn
       fi
 
-  - &install-yarn
-    name: Install Yarn
-    command: |
-      curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-      echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-      sudo apt-get update && sudo apt-get install yarn
-
   - &install-buck
     name: Install BUCK
     command: |
-      if [[ ! -e ~/buck ]]; then
-        git clone https://github.com/facebook/buck.git ~/buck --branch v2018.10.29.01 --depth=1
-      fi
-      cd ~/buck && ant
       buck --version
       # Install related tooling
       if [[ ! -e ~/okbuck ]]; then
@@ -142,31 +118,6 @@ aliases:
       fi
       mkdir -p ~/react-native/tooling/junit
       cp -R ~/okbuck/tooling/junit/* ~/react-native/tooling/junit/.
-
-  - &create-ndk-directory
-    name: Create Android NDK Directory
-    command: |
-      if [[ ! -e /opt/ndk ]]; then
-        sudo mkdir /opt/ndk
-      fi
-      sudo chown ${USER:=$(/usr/bin/id -run)}:$USER /opt/ndk
-
-  # CircleCI does not support interpolating env variables in the environment
-  #  https://circleci.com/docs/2.0/env-vars/#interpolating-environment-variables-to-set-other-environment-variables
-  - &configure-android-path
-    name: Configure Environment Variables
-    command: |
-      echo 'export PATH=${ANDROID_NDK}:~/buck/bin:$PATH' >> $BASH_ENV
-      source $BASH_ENV
-
-  - &install-android-packages
-    name: Install Android SDK Packages
-    command: source scripts/android-setup.sh && getAndroidPackages
-
-  - &install-android-build-dependencies
-    name: Install Android Build Dependencies
-    command: ./scripts/circleci/apt-get-android-deps.sh
-
   - &validate-android-sdk
     name: Validate Android SDK Install
     command: ./scripts/validate-android-sdk.sh
@@ -200,6 +151,13 @@ aliases:
       ./scripts/circleci/validate_yarn_lockfile.sh
     when: always
 
+  - &js-coverage
+    name: Test coverage
+    command: |
+      yarn test --coverage --maxWorkers=2
+      cat ./coverage/lcov.info | ./node_modules/.bin/coveralls
+    when: always
+
   - &download-dependencies-gradle
     name: Download Dependencies Using Gradle
     command: ./scripts/circleci/gradle_download_deps.sh
@@ -229,11 +187,11 @@ aliases:
 
   - &build-js-bundle
     name: Build JavaScript Bundle
-    command: node local-cli/cli.js bundle --max-workers 2 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
+    command: node cli.js bundle --max-workers 2 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
 
   - &compile-native-libs
     name: Compile Native Libs for Unit and Integration Tests
-    command: ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=$BUILD_THREADS -Pcom.android.build.threadPoolSize=1
+    command: ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=$BUILD_THREADS
     no_output_timeout: 6m
 
   - &run-android-unit-tests
@@ -250,7 +208,7 @@ aliases:
 
   - &build-android-rntester-app
     name: Build Android RNTester App
-    command: ./gradlew RNTester:android:app:assembleRelease -Pjobs=$BUILD_THREADS
+    command: ./gradlew RNTester:android:app:assembleRelease
 
   - &collect-android-test-results
     name: Collect Test Results
@@ -277,19 +235,11 @@ aliases:
 
   - &boot-simulator-iphone
     name: Boot iPhone Simulator
-    command: xcrun simctl boot "iPhone 5s" || true
-
-  - &boot-simulator-appletv
-    name: Boot Apple TV Simulator
-    command: xcrun simctl boot "Apple TV" || true
+    command: source scripts/.tests.env && xcrun simctl boot "$IOS_DEVICE" || true
 
   - &run-objc-ios-tests
     name: iOS Test Suite
     command: ./scripts/objc-test-ios.sh test
-
-  - &run-objc-tvos-tests
-    name: tvOS Test Suite
-    command: ./scripts/objc-test-tvos.sh test
 
   - &display-broken-tests-warning
     name: Running broken tests (Ignore any failures past this point)
@@ -304,15 +254,11 @@ aliases:
 
   - &run-e2e-tests
     name: End-to-End Test Suite (Disabled)
-    command: ./scripts/circleci/exec_author_check.sh node ./scripts/run-ci-e2e-tests.js --android --ios --tvos --js --retries 3;
+    command: ./scripts/circleci/exec_author_check.sh node ./scripts/run-ci-e2e-tests.js --android --ios --js --retries 3;
 
   - &run-objc-ios-e2e-tests
     name: iOS End-to-End Test Suite (Disabled)
     command: ./scripts/circleci/exec_author_check.sh node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
-
-  - &run-objc-tvos-e2e-tests
-    name: tvOS End-to-End Test Suite (Disabled)
-    command: ./scripts/circleci/exec_author_check.sh node ./scripts/run-ci-e2e-tests.js --tvos --js --retries 3;
 
   - &run-android-e2e-tests
     name: Android End-to-End Test Suite (Disabled)
@@ -337,20 +283,19 @@ js_defaults: &js_defaults
 android_defaults: &android_defaults
   <<: *defaults
   docker:
-    - image: circleci/android:api-27-node8-alpha
+  - image: reactnativecommunity/react-native-android
   resource_class: "large"
   environment:
     - TERM: "dumb"
     - ADB_INSTALL_TIMEOUT: 10
     - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
     - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
-    - ANDROID_NDK: '/opt/ndk/android-ndk-r17c'
     - BUILD_THREADS: 2
 
 macos_defaults: &macos_defaults
   <<: *defaults
   macos:
-    xcode: "9.4.0"
+    xcode: "10.1.0"
 
 version: 2
 jobs:
@@ -416,51 +361,19 @@ jobs:
       - store_test_results:
           path: ~/react-native/reports/junit
 
-  # Runs unit tests on iOS and Apple TV devices
-  test_objc:
+  # Runs unit tests on iOS devices
+  test_ios:
     <<: *macos_defaults
     steps:
       - attach_workspace:
           at: ~/react-native
 
       - run: *boot-simulator-iphone
-      - run: *boot-simulator-appletv
+
+      - restore-cache: *restore-cache-homebrew
       - run: *brew-install-watchman
-
+      - save-cache: *save-cache-homebrew
       - run: *run-objc-ios-tests
-      - run: *run-objc-tvos-tests
-
-      # TODO: Fix these failing tests.
-      - run: *display-broken-tests-warning
-      - run: *run-podspec-tests
-      - run: *run-objc-ios-e2e-tests
-      - run: *run-objc-tvos-e2e-tests
-
-      - store_test_results:
-          path: ~/react-native/reports/junit
-
-  # Xcode 10: Runs unit tests on iOS and Apple TV devices
-  test_objc_xcode10:
-    <<: *defaults
-    macos:
-      xcode: "10.0.0"
-    steps:
-      - checkout
-      - run: *setup-artifacts
-      - run: *yarn
-
-      - run: *boot-simulator-iphone
-      - run: *boot-simulator-appletv
-      - run: *brew-install-watchman
-
-      - run: *run-objc-ios-tests
-      - run: *run-objc-tvos-tests
-
-      # TODO: Fix these failing tests.
-      - run: *display-broken-tests-warning
-      - run: *run-podspec-tests
-      - run: *run-objc-ios-e2e-tests
-      - run: *run-objc-tvos-e2e-tests
 
       - store_test_results:
           path: ~/react-native/reports/junit
@@ -501,15 +414,6 @@ jobs:
       - attach_workspace:
           at: ~/react-native
 
-      # Configure Android SDK and related dependencies
-      - run: *configure-android-path
-      # Android build deps install from the network faster than cache
-      - run: *install-android-build-dependencies
-
-      - restore-cache: *restore-cache-android-packages
-      - run: *install-android-packages
-      - save-cache: *save-cache-android-packages
-
       # Validate Android SDK installation and packages
       - run: *validate-android-sdk
 
@@ -518,12 +422,6 @@ jobs:
       - run: *launch-avd
 
       # Keep configuring Android dependencies while AVD boots up
-
-      # Install Android NDK
-      - run: *create-ndk-directory
-      - restore-cache: *restore-cache-ndk
-      - run: *install-ndk
-      - save-cache: *save-cache-ndk
 
       # Install Buck
       - restore-cache: *restore-cache-downloads-buck
@@ -593,7 +491,7 @@ jobs:
           command: |
             echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"
             sudo apt-get install -y shellcheck
-            yarn add @octokit/rest@15.10.0
+            yarn add @octokit/rest@15.18.0
             echo -e "\\x1B[36mAnalyzing shell scripts\\x1B[0m"; \
             GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" \
             GITHUB_OWNER="$CIRCLE_PROJECT_USERNAME" \
@@ -605,7 +503,7 @@ jobs:
       - run:
           name: Analyze Code
           command: |
-            echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"; yarn add @octokit/rest@15.10.0
+            echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"; yarn add @octokit/rest@15.18.0
             echo -e "\\x1B[36mAnalyzing code\\x1B[0m"; \
             GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" \
             GITHUB_OWNER="$CIRCLE_PROJECT_USERNAME" \
@@ -626,6 +524,22 @@ jobs:
           when: always
       - save-cache: *save-cache-analysis
 
+  # Test Coverage
+  js_coverage:
+    <<: *js_defaults
+    environment:
+      - CI_BRANCH: $CIRCLE_BRANCH
+      - CI_PULL_REQUEST: $CIRCLE_PULL_REQUEST
+      - CI_BUILD_NUMBER: $CIRCLE_BUILD_NUM
+      - CI_BUILD_URL: $CIRCLE_BUILD_URL
+    steps:
+      - checkout
+      - restore-cache: *restore-yarn-cache
+      - run: *yarn
+      - run: *js-coverage
+      - store_artifacts:
+          path: ~/react-native/coverage/
+
   # Publishes new version onto npm
   # Only works on stable branches when a properly tagged commit is pushed
   publish_npm_package:
@@ -636,21 +550,8 @@ jobs:
       - restore-cache: *restore-yarn-cache
       - run: *yarn
 
-      # Configure Android SDK and related dependencies
-      - run: *configure-android-path
-      - run: *install-android-build-dependencies
-
-      - restore-cache: *restore-cache-android-packages
-      - run: *install-android-packages
-
-      # Install Android NDK
-      - run: *create-ndk-directory
-      - restore-cache: *restore-cache-ndk
-      - run: *install-ndk
-
       # Fetch dependencies using Buck
       - restore-cache: *restore-cache-downloads-buck
-      - run: *install-buck
       - run: *download-dependencies-buck
 
       # Fetch dependencies using Gradle
@@ -703,8 +604,8 @@ workflows:
           requires:
             - checkout_code
 
-      # Test iOS & tvOS
-      - test_objc:
+      # Test iOS
+      - test_ios:
           filters: *filter-ignore-gh-pages
           requires:
             - checkout_code
@@ -715,11 +616,11 @@ workflows:
             - checkout_code
 
       # Tooling Compatibility Checks
-      - test_objc_xcode10:
-          filters: *filter-ignore-gh-pages
       - test_node10:
           filters: *filter-ignore-gh-pages
 
+  releases:
+    jobs:
       # Only runs on vX.X.X tags if all tests are green
       - publish_npm_package:
           filters:
@@ -730,8 +631,16 @@ workflows:
             tags:
               only: /v[0-9]+(\.[0-9]+)*(\-rc(\.[0-9]+)?)?/
 
+  analysis:
+    jobs:
       # Run code checks on PRs from forks
       - analyze_pr:
           filters:
             branches:
               only: /^pull\/.*$/
+
+      # Gather coverage on master
+      - js_coverage:
+          filters:
+            branches:
+              only: master

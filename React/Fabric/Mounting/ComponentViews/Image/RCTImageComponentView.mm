@@ -7,21 +7,54 @@
 
 #import "RCTImageComponentView.h"
 
-#import <fabric/components/image/ImageEventEmitter.h>
-#import <fabric/components/image/ImageLocalData.h>
-#import <fabric/components/image/ImageProps.h>
-#import <fabric/imagemanager/ImageRequest.h>
-#import <fabric/imagemanager/ImageResponse.h>
-#import <fabric/imagemanager/RCTImagePrimitivesConversions.h>
+#import <react/components/image/ImageEventEmitter.h>
+#import <react/components/image/ImageLocalData.h>
+#import <react/components/image/ImageProps.h>
+#import <react/components/image/ImageShadowNode.h>
+#import <react/imagemanager/ImageRequest.h>
+#import <react/imagemanager/ImageResponse.h>
+#import <react/imagemanager/ImageResponseObserver.h>
+#import <react/imagemanager/RCTImagePrimitivesConversions.h>
 
 #import "RCTConversions.h"
 #import "MainQueueExecutor.h"
 
 using namespace facebook::react;
 
+class ImageResponseObserverProxy: public ImageResponseObserver {
+public:
+    ImageResponseObserverProxy(void* delegate): delegate_((__bridge id<RCTImageResponseDelegate>)delegate) {}
+
+    void didReceiveImage(const ImageResponse &imageResponse) override {
+      UIImage *image = (__bridge UIImage *)imageResponse.getImage().get();
+      void *this_ = this;
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [delegate_ didReceiveImage:image fromObserver:this_];
+      });
+    }
+
+    void didReceiveProgress (float p) override {
+      void *this_ = this;
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [delegate_ didReceiveProgress:p fromObserver:this_];
+      });
+    }
+    void didReceiveFailure() override {
+      void *this_ = this;
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [delegate_ didReceiveFailureFromObserver:this_];
+      });
+    }
+
+private:
+  id<RCTImageResponseDelegate> delegate_;
+};
+
 @implementation RCTImageComponentView {
   UIImageView *_imageView;
   SharedImageLocalData _imageLocalData;
+  std::shared_ptr<const ImageResponseObserverCoordinator> _coordinator;
+  std::unique_ptr<ImageResponseObserverProxy> _imageResponseObserverProxy;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -34,6 +67,8 @@ using namespace facebook::react;
     _imageView.clipsToBounds = YES;
 
     _imageView.contentMode = (UIViewContentMode)RCTResizeModeFromImageResizeMode(defaultProps->resizeMode);
+      
+    _imageResponseObserverProxy = std::make_unique<ImageResponseObserverProxy>((__bridge void *)self);
 
     self.contentView = _imageView;
   }
@@ -42,6 +77,11 @@ using namespace facebook::react;
 }
 
 #pragma mark - RCTComponentViewProtocol
+
++ (ComponentHandle)componentHandle
+{
+  return ImageShadowNode::Handle();
+}
 
 - (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
 {
@@ -72,23 +112,42 @@ using namespace facebook::react;
 {
   _imageLocalData = std::static_pointer_cast<const ImageLocalData>(localData);
   assert(_imageLocalData);
-  auto future = _imageLocalData->getImageRequest().getResponseFuture();
-  future.via(&MainQueueExecutor::instance()).then([self](ImageResponse &&imageResponse) {
-    self.image = (__bridge UIImage *)imageResponse.getImage().get();
-  });
+  self.coordinator = _imageLocalData->getImageRequest().getObserverCoordinator();
+  
+  // Loading actually starts a little before this
+  std::static_pointer_cast<const ImageEventEmitter>(_eventEmitter)->onLoadStart();
+}
+
+- (void)setCoordinator:(std::shared_ptr<const ImageResponseObserverCoordinator>)coordinator {
+  if (_coordinator) {
+    _coordinator->removeObserver(_imageResponseObserverProxy.get());
+  }
+  _coordinator = coordinator;
+  if (_coordinator != nullptr) {
+    _coordinator->addObserver(_imageResponseObserverProxy.get());
+  }
 }
 
 - (void)prepareForRecycle
 {
   [super prepareForRecycle];
+  self.coordinator = nullptr;
   _imageView.image = nil;
   _imageLocalData.reset();
 }
 
-#pragma mark - Other
-
-- (void)setImage:(UIImage *)image
+-(void)dealloc
 {
+  self.coordinator = nullptr;
+  _imageResponseObserverProxy.reset();
+}
+
+#pragma mark - RCTImageResponseDelegate
+
+- (void)didReceiveImage:(UIImage *)image fromObserver:(void*)observer
+{
+  std::static_pointer_cast<const ImageEventEmitter>(_eventEmitter)->onLoad();
+
   const auto &imageProps = *std::static_pointer_cast<const ImageProps>(_props);
 
   if (imageProps.tintColor) {
@@ -104,11 +163,22 @@ using namespace facebook::react;
                                   resizingMode:UIImageResizingModeStretch];
   }
 
-  _imageView.image = image;
-
+  self->_imageView.image = image;
+  
   // Apply trilinear filtering to smooth out mis-sized images.
-  _imageView.layer.minificationFilter = kCAFilterTrilinear;
-  _imageView.layer.magnificationFilter = kCAFilterTrilinear;
+  self->_imageView.layer.minificationFilter = kCAFilterTrilinear;
+  self->_imageView.layer.magnificationFilter = kCAFilterTrilinear;
+
+  std::static_pointer_cast<const ImageEventEmitter>(self->_eventEmitter)->onLoadEnd();
 }
+
+- (void)didReceiveProgress:(float)progress fromObserver:(void*)observer {
+  std::static_pointer_cast<const ImageEventEmitter>(_eventEmitter)->onProgress(progress);
+}
+
+- (void)didReceiveFailureFromObserver:(void*)observer {
+  std::static_pointer_cast<const ImageEventEmitter>(_eventEmitter)->onError();
+}
+
 
 @end

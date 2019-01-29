@@ -85,14 +85,14 @@ NSString *RCTBridgeModuleNameForClass(Class cls)
   return RCTDropReactPrefixes(name);
 }
 
-static BOOL jsiNativeModuleEnabled = NO;
-BOOL RCTJSINativeModuleEnabled(void)
+static BOOL turboModuleEnabled = NO;
+BOOL RCTTurboModuleEnabled(void)
 {
-  return jsiNativeModuleEnabled;
+  return turboModuleEnabled;
 }
 
-void RCTEnableJSINativeModule(BOOL enabled) {
-  jsiNativeModuleEnabled = enabled;
+void RCTEnableTurboModule(BOOL enabled) {
+  turboModuleEnabled = enabled;
 }
 
 #if RCT_DEBUG
@@ -241,6 +241,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [self.batchedBridge moduleForName:moduleName];
 }
 
+- (id)moduleForName:(NSString *)moduleName lazilyLoadIfNecessary:(BOOL)lazilyLoad
+{
+  return [self.batchedBridge moduleForName:moduleName lazilyLoadIfNecessary:lazilyLoad];
+}
+
 - (id)moduleForClass:(Class)moduleClass
 {
   id module = [self.batchedBridge moduleForClass:moduleClass];
@@ -283,6 +288,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
    */
   dispatch_async(dispatch_get_main_queue(), ^{
     [self invalidate];
+    // Reload is a special case, do not preserve launchOptions and treat reload as a fresh start
+    self->_launchOptions = nil;
     [self setUp];
   });
 }
@@ -354,6 +361,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       [batchedBridge invalidate];
     });
   }
+}
+
+- (void)updateModuleWithInstance:(id<RCTBridgeModule>)instance
+{
+  [self.batchedBridge updateModuleWithInstance:instance];
 }
 
 - (void)registerAdditionalModuleClasses:(NSArray<Class> *)modules

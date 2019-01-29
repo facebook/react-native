@@ -13,7 +13,6 @@ rn_android_library(
     ),
     provided_deps = [
         react_native_dep("third-party/android/support/v4:lib-support-v4"),
-        react_native_dep("third-party/android/support-annotations:android-support-annotations"),
     ],
     required_for_source_only_abi = True,
     visibility = [
@@ -49,9 +48,9 @@ rn_android_library(
 
 rn_android_library(
     name = "DisplayMetrics",
-    srcs = glob([
+    srcs = [
         "DisplayMetricsHolder.java",
-    ]),
+    ],
     required_for_source_only_abi = True,
     visibility = [
         "PUBLIC",
