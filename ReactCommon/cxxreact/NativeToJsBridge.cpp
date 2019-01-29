@@ -8,7 +8,7 @@
 #include <folly/json.h>
 #include <folly/Memory.h>
 #include <folly/MoveWrapper.h>
-#include <folly/GLog.h>
+#include <glog/logging.h>
 
 #include "Instance.h"
 #include "JSBigString.h"

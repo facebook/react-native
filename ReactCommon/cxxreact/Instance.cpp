@@ -20,7 +20,7 @@
 #include <folly/MoveWrapper.h>
 #include <folly/json.h>
 
-#include <folly/GLog.h>
+#include <glog/logging.h>
 
 #include <condition_variable>
 #include <fstream>
@@ -37,7 +37,7 @@ Instance::~Instance() {
 }
 
 void Instance::initializeBridge(
-    std::shared_ptr<InstanceCallback> callback,
+    std::unique_ptr<InstanceCallback> callback,
     std::shared_ptr<JSExecutorFactory> jsef,
     std::shared_ptr<MessageQueueThread> jsQueue,
     std::shared_ptr<ModuleRegistry> moduleRegistry) {

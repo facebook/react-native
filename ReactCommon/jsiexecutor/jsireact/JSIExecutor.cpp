@@ -11,9 +11,9 @@
 #include <cxxreact/SystraceSection.h>
 #include <folly/Conv.h>
 #include <folly/json.h>
-#include <folly/GLog.h>
+#include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
-#include <jsi/JSCRuntime.h>
+//#include <jsi/JSCRuntime.h>
 
 #include <sstream>
 #include <stdexcept>

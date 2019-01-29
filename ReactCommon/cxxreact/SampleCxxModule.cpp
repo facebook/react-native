@@ -7,7 +7,7 @@
 #include <cxxreact/JsArgumentHelpers.h>
 
 #include <folly/Memory.h>
-#include <folly/GLog.h>
+#include <glog/logging.h>
 
 #include <thread>
 
