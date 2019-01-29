@@ -20,6 +20,7 @@ typedef YG_ENUM_BEGIN(YGMarker){
 typedef struct {
   int layouts;
   int measures;
+  int maxMeasureCache;
   int cachedLayouts;
   int cachedMeasures;
 } YGMarkerLayoutData;

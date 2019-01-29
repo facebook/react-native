@@ -3889,6 +3889,11 @@ bool YGLayoutNodeInternal(
     layout->lastOwnerDirection = ownerDirection;
 
     if (cachedResults == nullptr) {
+      if (layout->nextCachedMeasurementsIndex + 1 >
+          (uint32_t) layoutMarkerData.maxMeasureCache) {
+        layoutMarkerData.maxMeasureCache =
+            layout->nextCachedMeasurementsIndex + 1;
+      }
       if (layout->nextCachedMeasurementsIndex == YG_MAX_CACHED_RESULT_COUNT) {
         if (gPrintChanges) {
           YGLog(node, YGLogLevelVerbose, "Out of cache entries!\n");
