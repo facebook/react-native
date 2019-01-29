@@ -12,11 +12,16 @@ YG_EXTERN_C_BEGIN
 
 typedef struct YGNode* YGNodeRef;
 
-typedef YG_ENUM_BEGIN(YGMarker) {}
-YG_ENUM_END(YGMarker);
+typedef YG_ENUM_BEGIN(YGMarker){
+    YGMarkerLayout,
+} YG_ENUM_END(YGMarker);
+
+typedef struct {
+  int unused;
+} YGMarkerLayoutData;
 
 typedef union {
-  int unused;
+  YGMarkerLayoutData* layout;
 } YGMarkerData;
 
 typedef struct {
