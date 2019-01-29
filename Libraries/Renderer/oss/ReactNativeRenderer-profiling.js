@@ -957,10 +957,6 @@ var eventTypes$1 = {
       }
     }
   },
-  customBubblingEventTypes$1 =
-    ReactNativeViewConfigRegistry.customBubblingEventTypes,
-  customDirectEventTypes$1 =
-    ReactNativeViewConfigRegistry.customDirectEventTypes,
   ReactNativeBridgeEventPlugin = {
     eventTypes: ReactNativeViewConfigRegistry.eventTypes,
     extractEvents: function(
@@ -970,8 +966,10 @@ var eventTypes$1 = {
       nativeEventTarget
     ) {
       if (null == targetInst) return null;
-      var bubbleDispatchConfig = customBubblingEventTypes$1[topLevelType],
-        directDispatchConfig = customDirectEventTypes$1[topLevelType];
+      var bubbleDispatchConfig =
+          ReactNativeViewConfigRegistry.customBubblingEventTypes[topLevelType],
+        directDispatchConfig =
+          ReactNativeViewConfigRegistry.customDirectEventTypes[topLevelType];
       invariant(
         bubbleDispatchConfig || directDispatchConfig,
         'Unsupported top level event type "%s" dispatched',
@@ -1078,9 +1076,6 @@ function _receiveRootNodeIDEvent(rootNodeID, topLevelType, nativeEventParam) {
   });
 }
 RCTEventEmitter.register({
-  getListener: getListener,
-  registrationNames: registrationNameModules,
-  _receiveRootNodeIDEvent: _receiveRootNodeIDEvent,
   receiveEvent: function(rootNodeID, topLevelType, nativeEventParam) {
     _receiveRootNodeIDEvent(rootNodeID, topLevelType, nativeEventParam);
   },
@@ -1607,7 +1602,7 @@ function setTimeoutCallback() {
 function shim$1() {
   invariant(
     !1,
-    "The current renderer does not support hyration. This error is likely caused by a bug in React. Please file an issue."
+    "The current renderer does not support hydration. This error is likely caused by a bug in React. Please file an issue."
   );
 }
 var UPDATE_SIGNAL = {},
@@ -1643,17 +1638,19 @@ function getStackByFiberInDevAndProd(workInProgress) {
   var info = "";
   do {
     a: switch (workInProgress.tag) {
-      case 2:
-      case 16:
-      case 0:
-      case 1:
-      case 5:
-      case 8:
-      case 13:
+      case 3:
+      case 4:
+      case 6:
+      case 7:
+      case 10:
+      case 9:
+        var JSCompiler_inline_result = "";
+        break a;
+      default:
         var owner = workInProgress._debugOwner,
           source = workInProgress._debugSource,
           name = getComponentName(workInProgress.type);
-        var JSCompiler_inline_result = null;
+        JSCompiler_inline_result = null;
         owner && (JSCompiler_inline_result = getComponentName(owner.type));
         owner = name;
         name = "";
@@ -1667,9 +1664,6 @@ function getStackByFiberInDevAndProd(workInProgress) {
           : JSCompiler_inline_result &&
             (name = " (created by " + JSCompiler_inline_result + ")");
         JSCompiler_inline_result = "\n    in " + (owner || "Unknown") + name;
-        break a;
-      default:
-        JSCompiler_inline_result = "";
     }
     info += JSCompiler_inline_result;
     workInProgress = workInProgress.return;
@@ -3460,7 +3454,8 @@ function updateMemoComponent(
       "function" === typeof type &&
       !shouldConstruct(type) &&
       void 0 === type.defaultProps &&
-      null === Component.compare
+      null === Component.compare &&
+      void 0 === Component.defaultProps
     )
       return (
         (workInProgress.tag = 15),
@@ -3908,7 +3903,6 @@ function updateSuspenseComponent(
         current$$1.pendingProps,
         0
       );
-      renderExpirationTime.effectTag |= 2;
       0 === (workInProgress.mode & 1) &&
         ((nextDidTimeout =
           null !== workInProgress.memoizedState
@@ -3928,7 +3922,6 @@ function updateSuspenseComponent(
         nextProps,
         mode.expirationTime
       );
-      nextProps.effectTag |= 2;
       mode = renderExpirationTime;
       renderExpirationTime.childExpirationTime = 0;
       renderExpirationTime = nextProps;
@@ -3943,9 +3936,7 @@ function updateSuspenseComponent(
   else if (((current$$1 = current$$1.child), nextDidTimeout)) {
     nextDidTimeout = nextProps.fallback;
     nextProps = createFiberFromFragment(null, mode, 0, null);
-    nextProps.effectTag |= 2;
     nextProps.child = current$$1;
-    current$$1.return = nextProps;
     0 === (workInProgress.mode & 1) &&
       (nextProps.child =
         null !== workInProgress.memoizedState
@@ -4193,8 +4184,9 @@ function beginWork(current$$1, workInProgress, renderExpirationTime) {
         default:
           invariant(
             !1,
-            "Element type is invalid. Received a promise that resolves to: %s. Promise elements must resolve to a class or function.",
-            current$$1
+            "Element type is invalid. Received a promise that resolves to: %s. Lazy element type must resolve to a class or function.%s",
+            current$$1,
+            ""
           );
       }
       return getDerivedStateFromProps;
@@ -4502,9 +4494,10 @@ function beginWork(current$$1, workInProgress, renderExpirationTime) {
       return (
         (context = workInProgress.type),
         (hasContext = resolveDefaultProps(
-          context.type,
+          context,
           workInProgress.pendingProps
         )),
+        (hasContext = resolveDefaultProps(context.type, hasContext)),
         updateMemoComponent(
           current$$1,
           workInProgress,
@@ -5031,7 +5024,12 @@ function commitWork(current$$1, finishedWork) {
             }
           else {
             if (6 === newProps.tag) throw Error("Not yet implemented.");
-            if (null !== newProps.child) {
+            if (13 === newProps.tag && null !== newProps.memoizedState) {
+              current$$1 = newProps.child.sibling;
+              current$$1.return = newProps;
+              newProps = current$$1;
+              continue;
+            } else if (null !== newProps.child) {
               newProps.child.return = newProps;
               newProps = newProps.child;
               continue;
@@ -5149,14 +5147,7 @@ function throwException(
         thenable.then(returnFiber, returnFiber);
         if (0 === (value.mode & 1)) {
           value.effectTag |= 64;
-          reconcileChildren(
-            sourceFiber.alternate,
-            sourceFiber,
-            null,
-            renderExpirationTime
-          );
-          sourceFiber.effectTag &= -1025;
-          sourceFiber.effectTag &= -933;
+          sourceFiber.effectTag &= -1957;
           1 === sourceFiber.tag &&
             null === sourceFiber.alternate &&
             (sourceFiber.tag = 17);
@@ -5276,7 +5267,7 @@ var DispatcherWithoutHooks = { readContext: readContext },
 invariant(
   null != tracing.__interactionsRef &&
     null != tracing.__interactionsRef.current,
-  "It is not supported to run the profiling version of a renderer (for example, `react-dom/profiling`) without also replacing the `schedule/tracing` module with `schedule/tracing-profiling`. Your bundler might have a setting for aliasing both modules. Learn more at http://fb.me/react-profiling"
+  "It is not supported to run the profiling version of a renderer (for example, `react-dom/profiling`) without also replacing the `scheduler/tracing` module with `scheduler/tracing-profiling`. Your bundler might have a setting for aliasing both modules. Learn more at http://fb.me/react-profiling"
 );
 var isWorking = !1,
   nextUnitOfWork = null,
@@ -5356,9 +5347,14 @@ function commitAllHostEffects() {
           unmountHostComponents(effectTag),
           (effectTag.return = null),
           (effectTag.child = null),
-          effectTag.alternate &&
-            ((effectTag.alternate.child = null),
-            (effectTag.alternate.return = null));
+          (effectTag.memoizedState = null),
+          (effectTag.updateQueue = null),
+          (effectTag = effectTag.alternate),
+          null !== effectTag &&
+            ((effectTag.return = null),
+            (effectTag.child = null),
+            (effectTag.memoizedState = null),
+            (effectTag.updateQueue = null));
     }
     nextEffect = nextEffect.nextEffect;
   }
@@ -5769,19 +5765,24 @@ function completeUnitOfWork(workInProgress) {
               break a;
             }
             fiber = null !== fiber;
-            type = null !== current && null !== current.memoizedState;
+            renderExpirationTime =
+              null !== current && null !== current.memoizedState;
             null !== current &&
               !fiber &&
-              type &&
-              ((current = current.child.sibling),
-              null !== current &&
-                reconcileChildFibers(
-                  current$$1,
-                  current,
-                  null,
-                  renderExpirationTime
-                ));
-            if (fiber !== type || (0 === (current$$1.effectTag & 1) && fiber))
+              renderExpirationTime &&
+              ((type = current.child.sibling),
+              null !== type &&
+                ((current = current$$1.firstEffect),
+                null !== current
+                  ? ((current$$1.firstEffect = type),
+                    (type.nextEffect = current))
+                  : ((current$$1.firstEffect = current$$1.lastEffect = type),
+                    (type.nextEffect = null)),
+                (type.effectTag = 8)));
+            if (
+              fiber !== renderExpirationTime ||
+              (0 === (current$$1.effectTag & 1) && fiber)
+            )
               current$$1.effectTag |= 4;
             break;
           case 7:
@@ -6147,9 +6148,10 @@ function scheduleWorkToRoot(fiber, expirationTime) {
       }
       node = node.return;
     }
-  if (null === root) return null;
-  fiber = tracing.__interactionsRef.current;
-  if (0 < fiber.size) {
+  if (
+    null !== root &&
+    ((fiber = tracing.__interactionsRef.current), 0 < fiber.size)
+  ) {
     alternate = root.pendingInteractionMap;
     var pendingInteractions = alternate.get(expirationTime);
     null != pendingInteractions
@@ -6478,7 +6480,7 @@ function onUncaughtError(error) {
   nextFlushedRoot.expirationTime = 0;
   hasUnhandledError || ((hasUnhandledError = !0), (unhandledError = error));
 }
-function findHostInstance$1(component) {
+function findHostInstance(component) {
   var fiber = component._reactInternalFiber;
   void 0 === fiber &&
     ("function" === typeof component.render
@@ -6591,7 +6593,7 @@ function findNodeHandle(componentOrHandle) {
   if (componentOrHandle._nativeTag) return componentOrHandle._nativeTag;
   if (componentOrHandle.canonical && componentOrHandle.canonical._nativeTag)
     return componentOrHandle.canonical._nativeTag;
-  componentOrHandle = findHostInstance$1(componentOrHandle);
+  componentOrHandle = findHostInstance(componentOrHandle);
   return null == componentOrHandle
     ? componentOrHandle
     : componentOrHandle.canonical
@@ -6687,7 +6689,7 @@ var roots = new Map(),
         };
         return ReactNativeComponent;
       })(React.Component);
-    })(findNodeHandle, findHostInstance$1),
+    })(findNodeHandle, findHostInstance),
     findNodeHandle: findNodeHandle,
     render: function(element, containerTag, callback) {
       var root = roots.get(containerTag);
@@ -6805,7 +6807,7 @@ var roots = new Map(),
             TextInputState.blurTextInput(findNodeHandle(this));
           }
         };
-      })(findNodeHandle, findHostInstance$1),
+      })(findNodeHandle, findHostInstance),
       computeComponentStackForErrorReporting: function(reactTag) {
         return (reactTag = getInstanceFromTag(reactTag))
           ? getStackByFiberInDevAndProd(reactTag)

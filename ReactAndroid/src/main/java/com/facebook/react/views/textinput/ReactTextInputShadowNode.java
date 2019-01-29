@@ -101,10 +101,7 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
     if (mLocalData != null) {
       mLocalData.apply(editText);
     } else {
-      editText.setTextSize(
-          TypedValue.COMPLEX_UNIT_PX,
-          mFontSize == UNSET ?
-              (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP)) : mFontSize);
+      editText.setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextAttributes.getEffectiveFontSize());
 
       if (mNumberOfLines != UNSET) {
         editText.setLines(mNumberOfLines);

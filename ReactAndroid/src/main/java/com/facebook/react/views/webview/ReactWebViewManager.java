@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.views.webview;
 
 import android.annotation.TargetApi;
@@ -16,6 +15,7 @@ import android.graphics.Picture;
 import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
+import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
@@ -65,24 +65,17 @@ import org.json.JSONObject;
 /**
  * Manages instances of {@link WebView}
  *
- * Can accept following commands:
- *  - GO_BACK
- *  - GO_FORWARD
- *  - RELOAD
+ * <p>Can accept following commands: - GO_BACK - GO_FORWARD - RELOAD
  *
- * {@link WebView} instances could emit following direct events:
- *  - topLoadingFinish
- *  - topLoadingStart
- *  - topLoadingError
+ * <p>{@link WebView} instances could emit following direct events: - topLoadingFinish -
+ * topLoadingStart - topLoadingError
  *
- * Each event will carry the following properties:
- *  - target - view's react tag
- *  - url - url set for the webview
- *  - loading - whether webview is in a loading state
- *  - title - title of the current page
- *  - canGoBack - boolean, whether there is anything on a history stack to go back
- *  - canGoForward - boolean, whether it is possible to request GO_FORWARD command
+ * <p>Each event will carry the following properties: - target - view's react tag - url - url set
+ * for the webview - loading - whether webview is in a loading state - title - title of the current
+ * page - canGoBack - boolean, whether there is anything on a history stack to go back -
+ * canGoForward - boolean, whether it is possible to request GO_FORWARD command
  */
+@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 @ReactModule(name = ReactWebViewManager.REACT_CLASS)
 public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
@@ -132,10 +125,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       mLastLoadFailed = false;
 
       dispatchEvent(
-        webView,
-        new TopLoadingStartEvent(
-          webView.getId(),
-          createWebViewEvent(webView, url)));
+          webView, new TopLoadingStartEvent(webView.getId(), createWebViewEvent(webView, url)));
     }
 
     @Override
@@ -144,8 +134,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
       // url blacklisting
       if (mUrlPrefixesForDefaultIntent != null && mUrlPrefixesForDefaultIntent.size() > 0) {
-        ArrayList<Object> urlPrefixesForDefaultIntent =
-          mUrlPrefixesForDefaultIntent.toArrayList();
+        ArrayList<Object> urlPrefixesForDefaultIntent = mUrlPrefixesForDefaultIntent.toArrayList();
         for (Object urlPrefix : urlPrefixesForDefaultIntent) {
           if (url.startsWith((String) urlPrefix)) {
             launchIntent(view.getContext(), url);
@@ -188,10 +177,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
     @Override
     public void onReceivedError(
-      WebView webView,
-      int errorCode,
-      String description,
-      String failingUrl) {
+        WebView webView, int errorCode, String description, String failingUrl) {
       super.onReceivedError(webView, errorCode, description, failingUrl);
       mLastLoadFailed = true;
 
@@ -203,17 +189,12 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       eventData.putDouble("code", errorCode);
       eventData.putString("description", description);
 
-      dispatchEvent(
-        webView,
-        new TopLoadingErrorEvent(webView.getId(), eventData));
+      dispatchEvent(webView, new TopLoadingErrorEvent(webView.getId(), eventData));
     }
 
     protected void emitFinishEvent(WebView webView, String url) {
       dispatchEvent(
-        webView,
-        new TopLoadingFinishEvent(
-          webView.getId(),
-          createWebViewEvent(webView, url)));
+          webView, new TopLoadingFinishEvent(webView.getId(), createWebViewEvent(webView, url)));
     }
 
     protected WritableMap createWebViewEvent(WebView webView, String url) {
@@ -263,9 +244,8 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     /**
      * WebView must be created with an context of the current activity
      *
-     * Activity Context is required for creation of dialogs internally by WebView
-     * Reactive Native needed for access to ReactNative internal system functionality
-     *
+     * <p>Activity Context is required for creation of dialogs internally by WebView Reactive Native
+     * needed for access to ReactNative internal system functionality
      */
     public ReactWebView(ThemedReactContext reactContext) {
       super(reactContext);
@@ -289,7 +269,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     @Override
     public void setWebViewClient(WebViewClient client) {
       super.setWebViewClient(client);
-      mReactWebViewClient = (ReactWebViewClient)client;
+      mReactWebViewClient = (ReactWebViewClient) client;
     }
 
     public @Nullable ReactWebViewClient getReactWebViewClient() {
@@ -333,9 +313,9 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     }
 
     public void callInjectedJavaScript() {
-      if (getSettings().getJavaScriptEnabled() &&
-        injectedJS != null &&
-        !TextUtils.isEmpty(injectedJS)) {
+      if (getSettings().getJavaScriptEnabled()
+          && injectedJS != null
+          && !TextUtils.isEmpty(injectedJS)) {
         evaluateJavascriptWithFallback("(function() {\n" + injectedJS + ";\n})();");
       }
     }
@@ -344,23 +324,30 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       if (messagingEnabled) {
         if (ReactBuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
           // See isNative in lodash
-          String testPostMessageNative = "String(window.postMessage) === String(Object.hasOwnProperty).replace('hasOwnProperty', 'postMessage')";
-          evaluateJavascript(testPostMessageNative, new ValueCallback<String>() {
-            @Override
-            public void onReceiveValue(String value) {
-              if (value.equals("true")) {
-                FLog.w(ReactConstants.TAG, "Setting onMessage on a WebView overrides existing values of window.postMessage, but a previous value was defined");
-              }
-            }
-          });
+          String testPostMessageNative =
+              "String(window.postMessage) === String(Object.hasOwnProperty).replace('hasOwnProperty', 'postMessage')";
+          evaluateJavascript(
+              testPostMessageNative,
+              new ValueCallback<String>() {
+                @Override
+                public void onReceiveValue(String value) {
+                  if (value.equals("true")) {
+                    FLog.w(
+                        ReactConstants.TAG,
+                        "Setting onMessage on a WebView overrides existing values of window.postMessage, but a previous value was defined");
+                  }
+                }
+              });
         }
 
-        evaluateJavascriptWithFallback("(" +
-          "window.originalPostMessage = window.postMessage," +
-          "window.postMessage = function(data) {" +
-          BRIDGE_NAME + ".postMessage(String(data));" +
-          "}" +
-          ")");
+        evaluateJavascriptWithFallback(
+            "("
+                + "window.originalPostMessage = window.postMessage,"
+                + "window.postMessage = function(data) {"
+                + BRIDGE_NAME
+                + ".postMessage(String(data));"
+                + "}"
+                + ")");
       }
     }
 
@@ -375,10 +362,10 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   }
 
   public ReactWebViewManager() {
-    mWebViewConfig = new WebViewConfig() {
-      public void configWebView(WebView webView) {
-      }
-    };
+    mWebViewConfig =
+        new WebViewConfig() {
+          public void configWebView(WebView webView) {}
+        };
   }
 
   public ReactWebViewManager(WebViewConfig webViewConfig) {
@@ -398,21 +385,23 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   protected WebView createViewInstance(ThemedReactContext reactContext) {
     ReactWebView webView = createReactWebViewInstance(reactContext);
-    webView.setWebChromeClient(new WebChromeClient() {
-      @Override
-      public boolean onConsoleMessage(ConsoleMessage message) {
-        if (ReactBuildConfig.DEBUG) {
-          return super.onConsoleMessage(message);
-        }
-        // Ignore console logs in non debug builds.
-        return true;
-      }
+    webView.setWebChromeClient(
+        new WebChromeClient() {
+          @Override
+          public boolean onConsoleMessage(ConsoleMessage message) {
+            if (ReactBuildConfig.DEBUG) {
+              return super.onConsoleMessage(message);
+            }
+            // Ignore console logs in non debug builds.
+            return true;
+          }
 
-      @Override
-      public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
-        callback.invoke(origin, true, false);
-      }
-    });
+          @Override
+          public void onGeolocationPermissionsShowPrompt(
+              String origin, GeolocationPermissions.Callback callback) {
+            callback.invoke(origin, true, false);
+          }
+        });
     reactContext.addLifecycleEventListener(webView);
     mWebViewConfig.configWebView(webView);
     WebSettings settings = webView.getSettings();
@@ -429,16 +418,26 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     setMixedContentMode(webView, "never");
 
     // Fixes broken full-screen modals/galleries due to body height being 0.
-    webView.setLayoutParams(
-      new LayoutParams(LayoutParams.MATCH_PARENT,
-        LayoutParams.MATCH_PARENT));
+    webView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
     setGeolocationEnabled(webView, false);
     if (ReactBuildConfig.DEBUG && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
       WebView.setWebContentsDebuggingEnabled(true);
     }
-
     return webView;
+  }
+
+  @ReactProp(name = "hardwareAccelerationEnabledExperimental", defaultBoolean = true)
+  public void sethardwareAccelerationEnabledExperimental(WebView view, boolean enabled) {
+    // Hardware acceleration can not be enabled at view level but it can be disabled
+    // see: https://developer.android.com/guide/topics/graphics/hardware-accel
+    //
+    // Disabling hardware acceleration is sometimes required to workaround chromium bugs:
+    // https://bugs.chromium.org/p/chromium/issues/detail?id=501901
+    //
+    if (!enabled) {
+      view.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+    }
   }
 
   @ReactProp(name = "javaScriptEnabled")
@@ -503,7 +502,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         String html = source.getString("html");
         if (source.hasKey("baseUrl")) {
           view.loadDataWithBaseURL(
-            source.getString("baseUrl"), html, HTML_MIME_TYPE, HTML_ENCODING, null);
+              source.getString("baseUrl"), html, HTML_MIME_TYPE, HTML_ENCODING, null);
         } else {
           view.loadData(html, HTML_MIME_TYPE, HTML_ENCODING);
         }
@@ -580,8 +579,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
   @ReactProp(name = "urlPrefixesForDefaultIntent")
   public void setUrlPrefixesForDefaultIntent(
-    WebView view,
-    @Nullable ReadableArray urlPrefixesForDefaultIntent) {
+      WebView view, @Nullable ReadableArray urlPrefixesForDefaultIntent) {
     ReactWebViewClient client = ((ReactWebView) view).getReactWebViewClient();
     if (client != null && urlPrefixesForDefaultIntent != null) {
       client.setUrlPrefixesForDefaultIntent(urlPrefixesForDefaultIntent);
@@ -589,27 +587,21 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   }
 
   @ReactProp(name = "allowFileAccess")
-  public void setAllowFileAccess(
-    WebView view,
-    @Nullable Boolean allowFileAccess) {
+  public void setAllowFileAccess(WebView view, @Nullable Boolean allowFileAccess) {
     view.getSettings().setAllowFileAccess(allowFileAccess != null && allowFileAccess);
   }
 
   @ReactProp(name = "geolocationEnabled")
-  public void setGeolocationEnabled(
-    WebView view,
-    @Nullable Boolean isGeolocationEnabled) {
+  public void setGeolocationEnabled(WebView view, @Nullable Boolean isGeolocationEnabled) {
     view.getSettings().setGeolocationEnabled(isGeolocationEnabled != null && isGeolocationEnabled);
   }
 
   @ReactProp(name = "originWhitelist")
-  public void setOriginWhitelist(
-    WebView view,
-    @Nullable ReadableArray originWhitelist) {
+  public void setOriginWhitelist(WebView view, @Nullable ReadableArray originWhitelist) {
     ReactWebViewClient client = ((ReactWebView) view).getReactWebViewClient();
     if (client != null && originWhitelist != null) {
       List<Pattern> whiteList = new LinkedList<>();
-      for (int i = 0 ; i < originWhitelist.size() ; i++) {
+      for (int i = 0; i < originWhitelist.size(); i++) {
         whiteList.add(Pattern.compile(originWhitelist.getString(i)));
       }
       client.setOriginWhitelist(whiteList);
@@ -625,13 +617,12 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   @Override
   public @Nullable Map<String, Integer> getCommandsMap() {
     return MapBuilder.of(
-      "goBack", COMMAND_GO_BACK,
-      "goForward", COMMAND_GO_FORWARD,
-      "reload", COMMAND_RELOAD,
-      "stopLoading", COMMAND_STOP_LOADING,
-      "postMessage", COMMAND_POST_MESSAGE,
-      "injectJavaScript", COMMAND_INJECT_JAVASCRIPT
-    );
+        "goBack", COMMAND_GO_BACK,
+        "goForward", COMMAND_GO_FORWARD,
+        "reload", COMMAND_RELOAD,
+        "stopLoading", COMMAND_STOP_LOADING,
+        "postMessage", COMMAND_POST_MESSAGE,
+        "injectJavaScript", COMMAND_INJECT_JAVASCRIPT);
   }
 
   @Override
@@ -654,17 +645,20 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
           ReactWebView reactWebView = (ReactWebView) root;
           JSONObject eventInitDict = new JSONObject();
           eventInitDict.put("data", args.getString(0));
-          reactWebView.evaluateJavascriptWithFallback("(function () {" +
-            "var event;" +
-            "var data = " + eventInitDict.toString() + ";" +
-            "try {" +
-            "event = new MessageEvent('message', data);" +
-            "} catch (e) {" +
-            "event = document.createEvent('MessageEvent');" +
-            "event.initMessageEvent('message', true, true, data.data, data.origin, data.lastEventId, data.source);" +
-            "}" +
-            "document.dispatchEvent(event);" +
-            "})();");
+          reactWebView.evaluateJavascriptWithFallback(
+              "(function () {"
+                  + "var event;"
+                  + "var data = "
+                  + eventInitDict.toString()
+                  + ";"
+                  + "try {"
+                  + "event = new MessageEvent('message', data);"
+                  + "} catch (e) {"
+                  + "event = document.createEvent('MessageEvent');"
+                  + "event.initMessageEvent('message', true, true, data.data, data.origin, data.lastEventId, data.source);"
+                  + "}"
+                  + "document.dispatchEvent(event);"
+                  + "})();");
         } catch (JSONException e) {
           throw new RuntimeException(e);
         }
@@ -679,23 +673,23 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   @Override
   public void onDropViewInstance(WebView webView) {
     super.onDropViewInstance(webView);
-    ((ThemedReactContext) webView.getContext()).removeLifecycleEventListener((ReactWebView) webView);
+    ((ThemedReactContext) webView.getContext())
+        .removeLifecycleEventListener((ReactWebView) webView);
     ((ReactWebView) webView).cleanupCallbacksAndDestroy();
   }
 
   protected WebView.PictureListener getPictureListener() {
     if (mPictureListener == null) {
-      mPictureListener = new WebView.PictureListener() {
-        @Override
-        public void onNewPicture(WebView webView, Picture picture) {
-          dispatchEvent(
-            webView,
-            new ContentSizeChangeEvent(
-              webView.getId(),
-              webView.getWidth(),
-              webView.getContentHeight()));
-        }
-      };
+      mPictureListener =
+          new WebView.PictureListener() {
+            @Override
+            public void onNewPicture(WebView webView, Picture picture) {
+              dispatchEvent(
+                  webView,
+                  new ContentSizeChangeEvent(
+                      webView.getId(), webView.getWidth(), webView.getContentHeight()));
+            }
+          };
     }
     return mPictureListener;
   }
@@ -703,7 +697,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   protected static void dispatchEvent(WebView webView, Event event) {
     ReactContext reactContext = (ReactContext) webView.getContext();
     EventDispatcher eventDispatcher =
-      reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+        reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
     eventDispatcher.dispatchEvent(event);
   }
 }

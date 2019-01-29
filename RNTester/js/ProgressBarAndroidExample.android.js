@@ -57,9 +57,6 @@ class MovingBar extends React.Component<MovingBarProps, MovingBarState> {
 }
 
 class ProgressBarAndroidExample extends React.Component<{}> {
-  static title = '<ProgressBarAndroid>';
-  static description = 'Horizontal bar to show the progress of some operation.';
-
   render() {
     return (
       <RNTesterPage title="ProgressBar Examples">
@@ -91,4 +88,13 @@ class ProgressBarAndroidExample extends React.Component<{}> {
   }
 }
 
-module.exports = ProgressBarAndroidExample;
+exports.title = '<ProgressBarAndroid>';
+exports.description = 'Horizontal bar to show the progress of some operation.';
+exports.examples = [
+  {
+    title: 'Simple progress bar',
+    render: function(): React.Element<typeof ProgressBarAndroidExample> {
+      return <ProgressBarAndroidExample />;
+    },
+  },
+];

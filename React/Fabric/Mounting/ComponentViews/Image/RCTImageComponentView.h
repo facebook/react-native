@@ -11,10 +11,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@protocol RCTImageResponseDelegate <NSObject>
+
+- (void)didReceiveImage:(UIImage *)image fromObserver:(void*)observer;
+- (void)didReceiveProgress:(float)progress fromObserver:(void*)observer;
+- (void)didReceiveFailureFromObserver:(void*)observer;
+
+@end
+
 /**
  * UIView class for root <Image> component.
  */
-@interface RCTImageComponentView : RCTViewComponentView
+@interface RCTImageComponentView : RCTViewComponentView <RCTImageResponseDelegate>
 
 @end
 

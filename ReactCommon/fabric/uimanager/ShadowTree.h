@@ -5,8 +5,9 @@
 
 #pragma once
 
+#include <folly/SharedMutex.h>
 #include <memory>
-#include <mutex>
+#include <shared_mutex>
 
 #include <react/components/root/RootShadowNode.h>
 #include <react/core/LayoutConstraints.h>
@@ -17,6 +18,9 @@
 
 namespace facebook {
 namespace react {
+
+using ShadowTreeCommitTransaction = std::function<UnsharedRootShadowNode(
+    const SharedRootShadowNode &oldRootShadowNode)>;
 
 /*
  * Represents the shadow tree and its lifecycle.
@@ -39,58 +43,22 @@ class ShadowTree final {
   SurfaceId getSurfaceId() const;
 
   /*
-   * Synchronously runs `function` when `commitMutex_` is acquired.
-   * It is useful in cases when transactional consistency and/or successful
-   * commit are required. E.g. you might want to run `measure` and
-   * `constraintLayout` as part of a single congious transaction.
-   * Use this only if it is necessary. All public methods of the class are
-   * already thread-safe.
-   */
-  void synchronize(std::function<void(void)> function) const;
-
-#pragma mark - Layout
-
-  /*
-   * Measures the shadow tree with given `layoutConstraints` and
-   * `layoutContext`. Can be called from any thread, side-effect-less.
-   */
-  Size measure(
-      const LayoutConstraints &layoutConstraints,
-      const LayoutContext &layoutContext) const;
-
-  /*
-   * Applies given `layoutConstraints` and `layoutContext` and commit
-   * the new shadow tree.
-   * Returns `true` if the operation finished successfully.
-   * Can be called from any thread.
-   */
-  bool constraintLayout(
-      const LayoutConstraints &layoutConstraints,
-      const LayoutContext &layoutContext) const;
-
-#pragma mark - Application
-
-  /*
-   * Create a new shadow tree with given `rootChildNodes` and commit.
-   * Can be called from any thread.
+   * Performs commit calling `transaction` function with a `oldRootShadowNode`
+   * and expecting a `newRootShadowNode` as a return value.
+   * The `transaction` function can abort commit returning `nullptr`.
+   * If a `revision` pointer is not null, the method will store there a
+   * contiguous revision number of the successfully performed transaction.
    * Returns `true` if the operation finished successfully.
    */
-  bool complete(const SharedShadowNodeUnsharedList &rootChildNodes) const;
+  bool tryCommit(
+      ShadowTreeCommitTransaction transaction,
+      int *revision = nullptr) const;
 
   /*
-   * Replaces a given old shadow node with a new one in the tree by cloning all
-   * nodes on the path to the root node and then complete the tree.
-   * Can be called from any thread.
-   * Returns `true` if the operation finished successfully.
+   * Calls `tryCommit` in a loop until it finishes successfully.
    */
-  bool completeByReplacingShadowNode(
-      const SharedShadowNode &oldShadowNode,
-      const SharedShadowNode &newShadowNode) const;
-
-  /*
-   * Returns a root shadow node that represents the last committed three.
-   */
-  SharedRootShadowNode getRootShadowNode() const;
+  void commit(ShadowTreeCommitTransaction transaction, int *revision = nullptr)
+      const;
 
 #pragma mark - Delegate
 
@@ -108,22 +76,13 @@ class ShadowTree final {
       const LayoutConstraints &layoutConstraints,
       const LayoutContext &layoutContext) const;
 
-  bool complete(
-      const SharedRootShadowNode &oldRootShadowNode,
-      const UnsharedRootShadowNode &newRootShadowNode) const;
-
-  bool commit(
-      const SharedRootShadowNode &oldRootShadowNode,
-      const SharedRootShadowNode &newRootShadowNode,
-      const ShadowViewMutationList &mutations) const;
-
-  void toggleEventEmitters(const ShadowViewMutationList &mutations) const;
   void emitLayoutEvents(const ShadowViewMutationList &mutations) const;
 
   const SurfaceId surfaceId_;
+  mutable folly::SharedMutex commitMutex_;
   mutable SharedRootShadowNode rootShadowNode_; // Protected by `commitMutex_`.
+  mutable int revision_{1}; // Protected by `commitMutex_`.
   ShadowTreeDelegate const *delegate_;
-  mutable std::recursive_mutex commitMutex_;
 };
 
 } // namespace react

@@ -100,7 +100,7 @@ static void YGTransferLayoutOutputsRecursive(YGNodeRef root) {
   const int PADDING = 2;
   const int BORDER = 4;
 
-  int hasEdgeSetFlag = (int)obj->getFieldValue(edgeSetFlagField);
+  int hasEdgeSetFlag = (int) obj->getFieldValue(edgeSetFlagField);
 
   obj->setFieldValue(widthField, YGNodeLayoutGetWidth(root));
   obj->setFieldValue(heightField, YGNodeLayoutGetHeight(root));
@@ -180,8 +180,10 @@ static inline YGConfigRef _jlong2YGConfigRef(jlong addr) {
   return reinterpret_cast<YGConfigRef>(static_cast<intptr_t>(addr));
 }
 
-static YGNodeRef
-YGJNIOnNodeClonedFunc(YGNodeRef oldNode, YGNodeRef owner, int childIndex) {
+static YGNodeRef YGJNIOnNodeClonedFunc(
+    YGNodeRef oldNode,
+    YGNodeRef owner,
+    int childIndex) {
   auto config = oldNode->getConfig();
   if (!config) {
     return nullptr;
@@ -357,14 +359,6 @@ void jni_YGNodeInsertChild(
       _jlong2YGNodeRef(nativePointer), _jlong2YGNodeRef(childPointer), index);
 }
 
-void jni_YGNodeInsertSharedChild(
-    jlong nativePointer,
-    jlong childPointer,
-    jint index) {
-  YGNodeInsertSharedChild(
-      _jlong2YGNodeRef(nativePointer), _jlong2YGNodeRef(childPointer), index);
-}
-
 void jni_YGNodeRemoveChild(jlong nativePointer, jlong childPointer) {
   YGNodeRemoveChild(
       _jlong2YGNodeRef(nativePointer), _jlong2YGNodeRef(childPointer));
@@ -404,7 +398,7 @@ void jni_YGNodeMarkDirtyAndPropogateToDescendants(jlong nativePointer) {
 }
 
 jboolean jni_YGNodeIsDirty(jlong nativePointer) {
-  return (jboolean)_jlong2YGNodeRef(nativePointer)->isDirty();
+  return (jboolean) _jlong2YGNodeRef(nativePointer)->isDirty();
 }
 
 void jni_YGNodeSetHasMeasureFunc(jlong nativePointer, jboolean hasMeasureFunc) {
@@ -432,14 +426,14 @@ struct JYogaValue : public JavaClass<JYogaValue> {
   }
 };
 
-#define YG_NODE_JNI_STYLE_PROP(javatype, type, name)                        \
-  javatype jni_YGNodeStyleGet##name(jlong nativePointer) {                  \
-    return (javatype)YGNodeStyleGet##name(_jlong2YGNodeRef(nativePointer)); \
-  }                                                                         \
-                                                                            \
-  void jni_YGNodeStyleSet##name(jlong nativePointer, javatype value) {      \
-    YGNodeStyleSet##name(                                                   \
-        _jlong2YGNodeRef(nativePointer), static_cast<type>(value));         \
+#define YG_NODE_JNI_STYLE_PROP(javatype, type, name)                         \
+  javatype jni_YGNodeStyleGet##name(jlong nativePointer) {                   \
+    return (javatype) YGNodeStyleGet##name(_jlong2YGNodeRef(nativePointer)); \
+  }                                                                          \
+                                                                             \
+  void jni_YGNodeStyleSet##name(jlong nativePointer, javatype value) {       \
+    YGNodeStyleSet##name(                                                    \
+        _jlong2YGNodeRef(nativePointer), static_cast<type>(value));          \
   }
 
 #define YG_NODE_JNI_STYLE_UNIT_PROP(name)                                     \
@@ -467,7 +461,7 @@ struct JYogaValue : public JavaClass<JYogaValue> {
 
 #define YG_NODE_JNI_STYLE_EDGE_PROP(javatype, type, name)             \
   javatype jni_YGNodeStyleGet##name(jlong nativePointer, jint edge) { \
-    return (javatype)YGNodeStyleGet##name(                            \
+    return (javatype) YGNodeStyleGet##name(                           \
         _jlong2YGNodeRef(nativePointer), static_cast<YGEdge>(edge));  \
   }                                                                   \
                                                                       \
@@ -670,7 +664,6 @@ jint JNI_OnLoad(JavaVM* vm, void*) {
             YGMakeCriticalNativeMethod(jni_YGNodeReset),
             YGMakeCriticalNativeMethod(jni_YGNodeClearChildren),
             YGMakeCriticalNativeMethod(jni_YGNodeInsertChild),
-            YGMakeCriticalNativeMethod(jni_YGNodeInsertSharedChild),
             YGMakeCriticalNativeMethod(jni_YGNodeRemoveChild),
             YGMakeCriticalNativeMethod(jni_YGNodeSetIsReferenceBaseline),
             YGMakeCriticalNativeMethod(jni_YGNodeIsReferenceBaseline),

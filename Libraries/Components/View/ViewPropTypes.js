@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {Layout, LayoutEvent} from 'CoreEventTypes';
+import type {PressEvent, Layout, LayoutEvent} from 'CoreEventTypes';
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type React from 'React';
 import type {ViewStyleProp} from 'StyleSheet';
@@ -32,7 +32,7 @@ type DirectEventProps = $ReadOnly<{|
    *
    * @platform ios
    */
-  onAccessibilityAction?: ?Function,
+  onAccessibilityAction?: ?(string) => void,
 
   /**
    * When `accessible` is true, the system will try to invoke this function
@@ -40,7 +40,7 @@ type DirectEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onaccessibilitytap
    */
-  onAccessibilityTap?: ?Function,
+  onAccessibilityTap?: ?() => void,
 
   /**
    * Invoked on mount and layout changes with:
@@ -61,18 +61,26 @@ type DirectEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onmagictap
    */
-  onMagicTap?: ?Function,
+  onMagicTap?: ?() => void,
+
+  /**
+   * When `accessible` is `true`, the system will invoke this function when the
+   * user performs the escape gesture.
+   *
+   * See http://facebook.github.io/react-native/docs/view.html#onaccessibilityescape
+   */
+  onAccessibilityEscape?: ?() => void,
 |}>;
 
 type TouchEventProps = $ReadOnly<{|
-  onTouchCancel?: ?Function,
-  onTouchCancelCapture?: ?Function,
-  onTouchEnd?: ?Function,
-  onTouchEndCapture?: ?Function,
-  onTouchMove?: ?Function,
-  onTouchMoveCapture?: ?Function,
-  onTouchStart?: ?Function,
-  onTouchStartCapture?: ?Function,
+  onTouchCancel?: ?(e: PressEvent) => void,
+  onTouchCancelCapture?: ?(e: PressEvent) => void,
+  onTouchEnd?: ?(e: PressEvent) => void,
+  onTouchEndCapture?: ?(e: PressEvent) => void,
+  onTouchMove?: ?(e: PressEvent) => void,
+  onTouchMoveCapture?: ?(e: PressEvent) => void,
+  onTouchStart?: ?(e: PressEvent) => void,
+  onTouchStartCapture?: ?(e: PressEvent) => void,
 |}>;
 
 /**
@@ -90,7 +98,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onmoveshouldsetresponder
    */
-  onMoveShouldSetResponder?: ?Function,
+  onMoveShouldSetResponder?: ?(e: PressEvent) => boolean,
 
   /**
    * If a parent `View` wants to prevent a child `View` from becoming responder
@@ -101,7 +109,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onMoveShouldsetrespondercapture
    */
-  onMoveShouldSetResponderCapture?: ?Function,
+  onMoveShouldSetResponderCapture?: ?(e: PressEvent) => boolean,
 
   /**
    * The View is now responding for touch events. This is the time to highlight
@@ -110,9 +118,12 @@ type GestureResponderEventProps = $ReadOnly<{|
    * `View.props.onResponderGrant: (event) => {}`, where `event` is a synthetic
    * touch event as described above.
    *
+   * PanResponder includes a note `// TODO: t7467124 investigate if this can be removed` that
+   * should help fixing this return type.
+   *
    * See http://facebook.github.io/react-native/docs/view.html#onrespondergrant
    */
-  onResponderGrant?: ?Function,
+  onResponderGrant?: ?(e: PressEvent) => void | boolean,
 
   /**
    * The user is moving their finger.
@@ -122,7 +133,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onrespondermove
    */
-  onResponderMove?: ?Function,
+  onResponderMove?: ?(e: PressEvent) => void,
 
   /**
    * Another responder is already active and will not release it to that `View`
@@ -133,7 +144,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onresponderreject
    */
-  onResponderReject?: ?Function,
+  onResponderReject?: ?(e: PressEvent) => void,
 
   /**
    * Fired at the end of the touch.
@@ -143,10 +154,10 @@ type GestureResponderEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onresponderrelease
    */
-  onResponderRelease?: ?Function,
+  onResponderRelease?: ?(e: PressEvent) => void,
 
-  onResponderStart?: ?Function,
-  onResponderEnd?: ?Function,
+  onResponderStart?: ?(e: PressEvent) => void,
+  onResponderEnd?: ?(e: PressEvent) => void,
 
   /**
    * The responder has been taken from the `View`. Might be taken by other
@@ -159,7 +170,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onresponderterminate
    */
-  onResponderTerminate?: ?Function,
+  onResponderTerminate?: ?(e: PressEvent) => void,
 
   /**
    * Some other `View` wants to become responder and is asking this `View` to
@@ -170,7 +181,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onresponderterminationrequest
    */
-  onResponderTerminationRequest?: ?Function,
+  onResponderTerminationRequest?: ?(e: PressEvent) => boolean,
 
   /**
    * Does this view want to become responder on the start of a touch?
@@ -180,7 +191,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onstartshouldsetresponder
    */
-  onStartShouldSetResponder?: ?Function,
+  onStartShouldSetResponder?: ?(e: PressEvent) => boolean,
 
   /**
    * If a parent `View` wants to prevent a child `View` from becoming responder
@@ -191,7 +202,7 @@ type GestureResponderEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onstartshouldsetrespondercapture
    */
-  onStartShouldSetResponderCapture?: ?Function,
+  onStartShouldSetResponderCapture?: ?(e: PressEvent) => boolean,
 |}>;
 
 type AndroidViewProps = $ReadOnly<{|

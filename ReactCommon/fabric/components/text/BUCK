@@ -56,11 +56,13 @@ rn_xplat_cxx_library(
     visibility = ["PUBLIC"],
     deps = [
         "xplat//fbsystrace:fbsystrace",
+        "xplat//folly:evicting_cache_map",
         "xplat//folly:headers_only",
         "xplat//folly:memory",
         "xplat//folly:molly",
         "xplat//third-party/glog:glog",
         "xplat//yoga:yoga",
+        react_native_xplat_target("utils:utils"),
         react_native_xplat_target("fabric/attributedstring:attributedstring"),
         react_native_xplat_target("fabric/core:core"),
         react_native_xplat_target("fabric/debug:debug"),

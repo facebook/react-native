@@ -12,7 +12,7 @@
 
 const BatchedBridge = require('BatchedBridge');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 import type {ExtendedError} from 'parseErrorStack';
 

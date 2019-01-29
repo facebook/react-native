@@ -9,6 +9,7 @@
 #include <functional>
 #include <tuple>
 
+#include <folly/Hash.h>
 #include <react/graphics/Float.h>
 
 namespace facebook {
@@ -185,44 +186,51 @@ namespace std {
 template <>
 struct hash<facebook::react::Point> {
   size_t operator()(const facebook::react::Point &point) const {
-    return hash<decltype(point.x)>{}(point.x) +
-        hash<decltype(point.y)>{}(point.y);
+    auto seed = size_t{0};
+    folly::hash::hash_combine(seed, point.x, point.y);
+    return seed;
   }
 };
 
 template <>
 struct hash<facebook::react::Size> {
   size_t operator()(const facebook::react::Size &size) const {
-    return hash<decltype(size.width)>{}(size.width) +
-        hash<decltype(size.height)>{}(size.height);
+    auto seed = size_t{0};
+    folly::hash::hash_combine(seed, size.width, size.height);
+    return seed;
   }
 };
 
 template <>
 struct hash<facebook::react::Rect> {
   size_t operator()(const facebook::react::Rect &rect) const {
-    return hash<decltype(rect.origin)>{}(rect.origin) +
-        hash<decltype(rect.size)>{}(rect.size);
+    auto seed = size_t{0};
+    folly::hash::hash_combine(seed, rect.origin, rect.size);
+    return seed;
   }
 };
 
 template <typename T>
 struct hash<facebook::react::RectangleEdges<T>> {
   size_t operator()(const facebook::react::RectangleEdges<T> &edges) const {
-    return hash<decltype(edges.left)>{}(edges.left) +
-        hash<decltype(edges.right)>{}(edges.right) +
-        hash<decltype(edges.top)>{}(edges.top) +
-        hash<decltype(edges.bottom)>{}(edges.bottom);
+    auto seed = size_t{0};
+    folly::hash::hash_combine(
+        seed, edges.left, edges.right, edges.top, edges.bottom);
+    return seed;
   }
 };
 
 template <typename T>
 struct hash<facebook::react::RectangleCorners<T>> {
   size_t operator()(const facebook::react::RectangleCorners<T> &corners) const {
-    return hash<decltype(corners.topLeft)>{}(corners.topLeft) +
-        hash<decltype(corners.bottomLeft)>{}(corners.bottomLeft) +
-        hash<decltype(corners.topRight)>{}(corners.topRight) +
-        hash<decltype(corners.bottomRight)>{}(corners.bottomRight);
+    auto seed = size_t{0};
+    folly::hash::hash_combine(
+        seed,
+        corners.topLeft,
+        corners.bottomLeft,
+        corners.topRight,
+        corners.bottomRight);
+    return seed;
   }
 };
 

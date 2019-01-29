@@ -14,7 +14,8 @@ const React = require('react');
 const ReactNative = require('react-native');
 const {AccessibilityInfo, Text, View, TouchableOpacity, Alert} = ReactNative;
 
-class AccessibilityIOSExample extends React.Component<{}> {
+type Props = $ReadOnly<{||}>;
+class AccessibilityIOSExample extends React.Component<Props> {
   render() {
     return (
       <View>
@@ -29,6 +30,11 @@ class AccessibilityIOSExample extends React.Component<{}> {
           onMagicTap={() => Alert.alert('Alert', 'onMagicTap success')}
           accessible={true}>
           <Text>Accessibility magic tap example</Text>
+        </View>
+        <View
+          onAccessibilityEscape={() => alert('onAccessibilityEscape success')}
+          accessible={true}>
+          <Text>Accessibility escape example</Text>
         </View>
         <View accessibilityLabel="Some announcement" accessible={true}>
           <Text>Accessibility label example</Text>

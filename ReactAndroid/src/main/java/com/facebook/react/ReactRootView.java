@@ -308,6 +308,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   protected void onAttachedToWindow() {
     super.onAttachedToWindow();
     if (mIsAttachedToInstance) {
+      removeOnGlobalLayoutListener();
       getViewTreeObserver().addOnGlobalLayoutListener(getCustomGlobalLayoutListener());
     }
   }
@@ -316,11 +317,15 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   protected void onDetachedFromWindow() {
     super.onDetachedFromWindow();
     if (mIsAttachedToInstance) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-        getViewTreeObserver().removeOnGlobalLayoutListener(getCustomGlobalLayoutListener());
-      } else {
-        getViewTreeObserver().removeGlobalOnLayoutListener(getCustomGlobalLayoutListener());
-      }
+      removeOnGlobalLayoutListener();
+    }
+  }
+
+  private void removeOnGlobalLayoutListener() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+      getViewTreeObserver().removeOnGlobalLayoutListener(getCustomGlobalLayoutListener());
+    } else {
+      getViewTreeObserver().removeGlobalOnLayoutListener(getCustomGlobalLayoutListener());
     }
   }
 

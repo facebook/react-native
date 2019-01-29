@@ -8,6 +8,7 @@
 #pragma once
 
 #include <folly/Optional.h>
+#include <react/components/text/ParagraphMeasurementCache.h>
 #include <react/components/text/ParagraphProps.h>
 #include <react/components/text/TextShadowNode.h>
 #include <react/components/view/ConcreteViewShadowNode.h>
@@ -48,6 +49,13 @@ class ParagraphShadowNode : public ConcreteViewShadowNode<
    */
   void setTextLayoutManager(SharedTextLayoutManager textLayoutManager);
 
+  /*
+   * Associates a shared LRU cache with the node.
+   * `ParagraphShadowNode` uses this to cache the results of
+   * text rendering measurements.
+   */
+  void setMeasureCache(SharedParagraphMeasurementCache cache);
+
 #pragma mark - LayoutableShadowNode
 
   void layout(LayoutContext layoutContext) override;
@@ -61,6 +69,7 @@ class ParagraphShadowNode : public ConcreteViewShadowNode<
   void updateLocalDataIfNeeded();
 
   SharedTextLayoutManager textLayoutManager_;
+  SharedParagraphMeasurementCache measureCache_;
 
   /*
    * Cached attributed string that represents the content of the subtree started

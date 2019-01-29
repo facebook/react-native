@@ -9,7 +9,7 @@ This lets us build React Native:
  - At Facebook by running buck from the root of the fb repo
  - Outside of Facebook by running buck in the root of the git repo
 """
-# @lint-ignore-every SKYLINT BUCKRESTRICTEDSYNTAX
+# @lint-ignore-every BUCKRESTRICTEDSYNTAX
 
 _DEBUG_PREPROCESSOR_FLAGS = []
 
@@ -182,6 +182,7 @@ def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
     )
 
 def cxx_library(allow_jni_merging = None, **kwargs):
+    _ignore = allow_jni_merging
     args = {
         k: v
         for k, v in kwargs.items()
@@ -273,10 +274,10 @@ def _single_subdir_glob(dirpath, glob_pattern, exclude = None, prefix = None):
 def oss_cxx_library(**kwargs):
     cxx_library(**kwargs)
 
-def jni_instrumentation_test_lib(**kwargs):
+def jni_instrumentation_test_lib(**_kwargs):
     """A noop stub for OSS build."""
     pass
 
-def fb_xplat_cxx_test(**kwargs):
+def fb_xplat_cxx_test(**_kwargs):
     """A noop stub for OSS build."""
     pass

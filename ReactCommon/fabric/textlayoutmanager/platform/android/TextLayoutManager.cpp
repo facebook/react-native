@@ -30,16 +30,16 @@ Size TextLayoutManager::measure(
       contextContainer_->getInstance<jni::global_ref<jobject>>(
           "FabricUIManager");
 
-  auto clazz =
-      jni::findClassStatic("com/facebook/fbreact/fabric/FabricUIManager");
-  static auto measure = clazz->getMethod<jlong(
-      jstring,
-      ReadableNativeMap::javaobject,
-      ReadableNativeMap::javaobject,
-      jint,
-      jint,
-      jint,
-      jint)>("measure");
+  static auto measure =
+      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+          ->getMethod<jlong(
+              jstring,
+              ReadableNativeMap::javaobject,
+              ReadableNativeMap::javaobject,
+              jint,
+              jint,
+              jint,
+              jint)>("measure");
 
   auto minimumSize = layoutConstraints.minimumSize;
   auto maximumSize = layoutConstraints.maximumSize;

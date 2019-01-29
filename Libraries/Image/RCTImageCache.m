@@ -36,18 +36,20 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
 
 - (instancetype)init
 {
-  _decodedImageCache = [NSCache new];
-  _decodedImageCache.totalCostLimit = 20 * 1024 * 1024; // 20 MB
-  _cacheStaleTimes = [[NSMutableDictionary alloc] init];
+  if (self = [super init]) {
+    _decodedImageCache = [NSCache new];
+    _decodedImageCache.totalCostLimit = 20 * 1024 * 1024; // 20 MB
+    _cacheStaleTimes = [[NSMutableDictionary alloc] init];
 
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(clearCache)
-                                               name:UIApplicationDidReceiveMemoryWarningNotification
-                                             object:nil];
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(clearCache)
-                                               name:UIApplicationWillResignActiveNotification
-                                             object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(clearCache)
+                                                 name:UIApplicationDidReceiveMemoryWarningNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(clearCache)
+                                                 name:UIApplicationWillResignActiveNotification
+                                               object:nil];
+  }
 
   return self;
 }
@@ -71,7 +73,7 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
   if (!image) {
     return;
   }
-  CGFloat bytes = image.size.width * image.size.height * image.scale * image.scale * 4;
+  NSInteger bytes = image.reactDecodedImageBytes;
   if (bytes <= RCTMaxCachableDecodedImageSizeInBytes) {
     [self->_decodedImageCache setObject:image
                                  forKey:cacheKey

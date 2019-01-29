@@ -10,17 +10,14 @@
 namespace facebook {
 namespace react {
 
-ImageRequest::ImageRequest() {}
-
-ImageRequest::ImageRequest(
-    const ImageSource &imageSource,
-    folly::Future<ImageResponse> &&responseFuture) {
+ImageRequest::ImageRequest(const ImageSource &imageSource)
+    : imageSource_(imageSource) {
   // Not implemented.
 }
 
 ImageRequest::ImageRequest(ImageRequest &&other) noexcept
     : imageSource_(std::move(other.imageSource_)),
-      responseFutureSplitter_(std::move(other.responseFutureSplitter_)) {
+      coordinator_(std::move(other.coordinator_)) {
   // Not implemented.
 }
 
@@ -28,8 +25,9 @@ ImageRequest::~ImageRequest() {
   // Not implemented.
 }
 
-folly::Future<ImageResponse> ImageRequest::getResponseFuture() const {
-  // Not implemented.
+std::shared_ptr<const ImageResponseObserverCoordinator>
+ImageRequest::getObserverCoordinator() const {
+  // Not implemented
   abort();
 }
 

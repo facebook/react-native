@@ -60,7 +60,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
 
           // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
           TextPaint textPaint = sTextPaintInstance;
-          textPaint.setTextSize(mFontSize != UNSET ? mFontSize : getDefaultFontSize());
+          textPaint.setTextSize(mTextAttributes.getEffectiveFontSize());
           Layout layout;
           Spanned text =
               Assertions.assertNotNull(

@@ -80,11 +80,19 @@ elif [[ -x "$(command -v brew)" && -x "$(brew --prefix nodenv)/bin/nodenv" ]]; t
   eval "$("$(brew --prefix nodenv)/bin/nodenv" init -)"
 fi
 
+# Set up the ndenv of anyenv if preset
+if [[ ! -x node && -d ${HOME}/.anyenv/bin ]]; then
+  export PATH=${HOME}/.anyenv/bin:${PATH}
+  if [[ "$(anyenv envs | grep -c ndenv )" -eq 1 ]]; then
+    eval "$(anyenv init -)"
+  fi
+fi
+
 [ -z "$NODE_BINARY" ] && export NODE_BINARY="node"
 
 [ -z "$NODE_ARGS" ] && export NODE_ARGS=""
 
-[ -z "$CLI_PATH" ] && export CLI_PATH="$REACT_NATIVE_DIR/local-cli/cli.js"
+[ -z "$CLI_PATH" ] && export CLI_PATH="$REACT_NATIVE_DIR/cli.js"
 
 [ -z "$BUNDLE_COMMAND" ] && BUNDLE_COMMAND="bundle"
 

@@ -174,9 +174,9 @@ describe('VirtualizedList', () => {
     const props = {
       data,
       renderItem: ({item}) => <item value={item.key} />,
-      getItem: (data, index) => data[index],
-      getItemCount: data => data.length,
-      getItemLayout: (data, index) => ({
+      getItem: (items, index) => items[index],
+      getItemCount: items => items.length,
+      getItemLayout: (items, index) => ({
         length: ITEM_HEIGHT,
         offset: ITEM_HEIGHT * index,
         index,

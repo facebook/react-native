@@ -21,25 +21,6 @@ using namespace facebook::jsi;
 namespace facebook {
 namespace react {
 
-JSIExecutorFactory::JSIExecutorFactory(
-    std::shared_ptr<jsi::Runtime> runtime,
-    JSIExecutor::Logger logger,
-    JSIExecutor::RuntimeInstaller runtimeInstaller)
-    : runtime_(runtime),
-      logger_(logger),
-      runtimeInstaller_(runtimeInstaller) {}
-
-std::unique_ptr<JSExecutor> JSIExecutorFactory::createJSExecutor(
-    std::shared_ptr<ExecutorDelegate> delegate,
-    std::shared_ptr<MessageQueueThread>) {
-  return std::make_unique<JSIExecutor>(
-      runtime_,
-      delegate,
-      logger_,
-      JSIExecutor::defaultTimeoutInvoker,
-      runtimeInstaller_);
-}
-
 class JSIExecutor::NativeModuleProxy : public jsi::HostObject {
  public:
   NativeModuleProxy(JSIExecutor& executor) : executor_(executor) {}

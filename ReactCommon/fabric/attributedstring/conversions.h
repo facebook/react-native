@@ -438,8 +438,7 @@ inline folly::dynamic toDynamic(const TextAttributes &textAttributes) {
   }
   if (textAttributes.textDecorationLineType.has_value()) {
     _textAttributes(
-        "textDecorationLineType",
-        toString(*textAttributes.textDecorationLineType));
+        "textDecorationLine", toString(*textAttributes.textDecorationLineType));
   }
   if (textAttributes.textDecorationLineStyle.has_value()) {
     _textAttributes(

@@ -14,7 +14,7 @@
 const EmitterSubscription = require('EmitterSubscription');
 const EventSubscriptionVendor = require('EventSubscriptionVendor');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 /**
  * @class EventEmitter
@@ -176,7 +176,7 @@ class EventEmitter {
         const subscription = subscriptions[i];
 
         // The subscription may have been removed during this event loop.
-        if (subscription) {
+        if (subscription && subscription.listener) {
           this._currentSubscription = subscription;
           subscription.listener.apply(
             subscription.context,

@@ -357,7 +357,7 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
           requestURI.getHost(),
           requestURI.getPort());
       } else {
-        defaultOrigin = String.format("%s://%s/", scheme, requestURI.getHost());
+        defaultOrigin = String.format("%s://%s", scheme, requestURI.getHost());
       }
 
       return defaultOrigin;

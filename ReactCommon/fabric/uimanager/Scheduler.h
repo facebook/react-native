@@ -8,8 +8,10 @@
 #include <memory>
 #include <mutex>
 
+#include <react/config/ReactNativeConfig.h>
 #include <react/core/ComponentDescriptor.h>
 #include <react/core/LayoutConstraints.h>
+#include <react/uimanager/ComponentDescriptorFactory.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
 #include <react/uimanager/ContextContainer.h>
 #include <react/uimanager/SchedulerDelegate.h>
@@ -28,7 +30,9 @@ namespace react {
  */
 class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
  public:
-  Scheduler(const SharedContextContainer &contextContainer);
+  Scheduler(
+      const SharedContextContainer &contextContainer,
+      ComponentRegistryFactory buildRegistryFunction);
   ~Scheduler();
 
 #pragma mark - Surface Management
@@ -91,9 +95,9 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
   SchedulerDelegate *delegate_;
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
   ShadowTreeRegistry shadowTreeRegistry_;
-  SharedContextContainer contextContainer_;
   RuntimeExecutor runtimeExecutor_;
   std::shared_ptr<UIManagerBinding> uiManagerBinding_;
+  std::shared_ptr<const ReactNativeConfig> reactNativeConfig_;
 };
 
 } // namespace react

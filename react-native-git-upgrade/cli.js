@@ -16,7 +16,7 @@ require('babel-register')({
     require('babel-preset-stage-3'),
   ],
   // Enable transpiling for react-native-git-upgrade AND the generator, just like the upgrade CLI command does
-  only: /(react-native-git-upgrade\/(?!(node_modules)))|(local-cli\/generator)/,
+  only: /(react-native-git-upgrade\/(?!(node_modules)))/,
 });
 
 var cliEntry = require('./cliEntry');

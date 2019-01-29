@@ -26,6 +26,11 @@ module.exports = (function(global, undefined) {
     return global.Map;
   }
 
+  // In case this module has not already been evaluated, import it now.
+  require('./_wrapObjectFreezeAndFriends');
+
+  const hasOwn = Object.prototype.hasOwnProperty;
+
   /**
    * == ES6 Map Collection ==
    *
@@ -38,15 +43,17 @@ module.exports = (function(global, undefined) {
    *
    * https://people.mozilla.org/~jorendorff/es6-draft.html#sec-map-objects
    *
-   * There only two -- rather small -- diviations from the spec:
+   * There only two -- rather small -- deviations from the spec:
    *
-   * 1. The use of frozen objects as keys.
-   *    We decided not to allow and simply throw an error. The reason being is
-   *    we store a "hash" on the object for fast access to it's place in the
-   *    internal map entries.
-   *    If this turns out to be a popular use case it's possible to implement by
-   *    overiding `Object.freeze` to store a "hash" property on the object
-   *    for later use with the map.
+   * 1. The use of untagged frozen objects as keys.
+   *    We decided not to allow and simply throw an error, because this
+   *    implementation of Map works by tagging objects used as Map keys
+   *    with a secret hash property for fast access to the object's place
+   *    in the internal _mapData array. However, to limit the impact of
+   *    this spec deviation, Libraries/Core/InitializeCore.js also wraps
+   *    Object.freeze, Object.seal, and Object.preventExtensions so that
+   *    they tag objects before making them non-extensible, by inserting
+   *    each object into a Map and then immediately removing it.
    *
    * 2. The `size` property on a map object is a regular property and not a
    *    computed property on the prototype as described by the spec.
@@ -445,7 +452,7 @@ module.exports = (function(global, undefined) {
         // If the `SECRET_SIZE_PROP` property is already defined then we're not
         // in the first call to `initMap` (e.g. coming from `map.clear()`) so
         // all we need to do is reset the size without defining the properties.
-        if (map.hasOwnProperty(SECRET_SIZE_PROP)) {
+        if (hasOwn.call(map, SECRET_SIZE_PROP)) {
           map[SECRET_SIZE_PROP] = 0;
         } else {
           Object.defineProperty(map, SECRET_SIZE_PROP, {
@@ -524,6 +531,9 @@ module.exports = (function(global, undefined) {
     const hashProperty = '__MAP_POLYFILL_INTERNAL_HASH__';
     let hashCounter = 0;
 
+    const nonExtensibleObjects = [];
+    const nonExtensibleHashes = [];
+
     /**
      * Get the "hash" associated with an object.
      *
@@ -531,29 +541,29 @@ module.exports = (function(global, undefined) {
      * @return {number}
      */
     return function getHash(o) {
-      // eslint-disable-line no-shadow
-      if (o[hashProperty]) {
-        return o[hashProperty];
-      } else if (
-        !isES5 &&
-        o.propertyIsEnumerable &&
-        o.propertyIsEnumerable[hashProperty]
-      ) {
-        return o.propertyIsEnumerable[hashProperty];
-      } else if (!isES5 && o[hashProperty]) {
+      if (hasOwn.call(o, hashProperty)) {
         return o[hashProperty];
       }
 
+      if (!isES5) {
+        if (hasOwn.call(o, "propertyIsEnumerable") &&
+            hasOwn.call(o.propertyIsEnumerable, hashProperty)) {
+          return o.propertyIsEnumerable[hashProperty];
+        }
+      }
+
       if (isExtensible(o)) {
-        hashCounter += 1;
         if (isES5) {
           Object.defineProperty(o, hashProperty, {
             enumerable: false,
             writable: false,
             configurable: false,
-            value: hashCounter,
+            value: ++hashCounter,
           });
-        } else if (o.propertyIsEnumerable) {
+          return hashCounter;
+        }
+
+        if (o.propertyIsEnumerable) {
           // Since we can't define a non-enumerable property on the object
           // we'll hijack one of the less-used non-enumerable properties to
           // save our hash on it. Additionally, since this is a function it
@@ -561,14 +571,19 @@ module.exports = (function(global, undefined) {
           o.propertyIsEnumerable = function() {
             return propIsEnumerable.apply(this, arguments);
           };
-          o.propertyIsEnumerable[hashProperty] = hashCounter;
-        } else {
-          throw new Error('Unable to set a non-enumerable property on object.');
+          return o.propertyIsEnumerable[hashProperty] = ++hashCounter;
         }
-        return hashCounter;
-      } else {
-        throw new Error('Non-extensible objects are not allowed as keys.');
       }
+
+      // If the object is not extensible, fall back to storing it in an
+      // array and using Array.prototype.indexOf to find it.
+      let index = nonExtensibleObjects.indexOf(o);
+      if (index < 0) {
+        index = nonExtensibleObjects.length;
+        nonExtensibleObjects[index] = o;
+        nonExtensibleHashes[index] = ++hashCounter;
+      }
+      return nonExtensibleHashes[index];
     };
   })();
 

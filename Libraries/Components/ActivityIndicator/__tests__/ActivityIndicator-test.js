@@ -6,20 +6,49 @@
  *
  * @format
  * @emails oncall+react_native
+ * @flow
  */
 
 'use strict';
 
 const React = require('React');
-const ReactTestRenderer = require('react-test-renderer');
 const ActivityIndicator = require('ActivityIndicator');
+const render = require('../../../../jest/renderer');
 
 describe('ActivityIndicator', () => {
-  it('renders correctly', () => {
-    const instance = ReactTestRenderer.create(
+  it('should set displayName to prevent <Component /> regressions', () => {
+    expect(ActivityIndicator.displayName).toBe('ActivityIndicator');
+  });
+
+  it('should render as <ActivityIndicator> when mocked', () => {
+    const instance = render.create(
       <ActivityIndicator size="large" color="#0000ff" />,
     );
+    expect(instance).toMatchSnapshot();
+  });
 
-    expect(instance.toJSON()).toMatchSnapshot();
+  it('should shallow render as <ActivityIndicator> when mocked', () => {
+    const output = render.shallow(
+      <ActivityIndicator size="large" color="#0000ff" />,
+    );
+    expect(output).toMatchSnapshot();
+  });
+
+  it('should shallow render as <ForwardRef(ActivityIndicator)> when not mocked', () => {
+    jest.dontMock('ActivityIndicator');
+
+    const output = render.shallow(
+      <ActivityIndicator size="large" color="#0000ff" />,
+    );
+    expect(output).toMatchSnapshot();
+  });
+
+  it('should render as <View> when not mocked', () => {
+    jest.dontMock('ActivityIndicator');
+
+    const instance = render.create(
+      <ActivityIndicator size="large" color="#0000ff" />,
+    );
+    expect(instance).toMatchSnapshot();
   });
 });
