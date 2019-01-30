@@ -234,11 +234,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       float scale = DisplayMetricsHolder.getScreenDisplayMetrics().density;
 
       // The following converts the matrix's perspective to a camera distance
-      // such that the camera perspective looks the same on Android and iOS
-      // While comparing the output between android and ios, it seemed like
-      // the native android implementation removed the screen density from the
-      // calculation, so taking square and also the normalization value at
-      // sqrt(5) produced an exact replica with ios
+      // such that the camera perspective looks the same on Android and iOS.
+      // The native Android implementation removed the screen density from the
+      // calculation, so squaring and a normalization value of
+      // sqrt(5) produced an exact replica with ios.
+      // For more information, see https://github.com/facebook/react-native/pull/18302
       float normalizedCameraDistance = scale * scale * cameraDistance * CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER;
       view.setCameraDistance(normalizedCameraDistance);
 
