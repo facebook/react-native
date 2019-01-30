@@ -6,8 +6,8 @@
  */
 package com.facebook.react.fabric.mounting.mountitems;
 
-import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.systrace.Systrace;
 
 /**
