@@ -7,8 +7,6 @@
 
 package com.facebook.react.views.scroll;
 
-import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -57,7 +55,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
   private final Rect mRect = new Rect();
 
   private boolean mActivelyScrolling;
-  private @Nullable ObjectAnimator mAnimator = null;
   private @Nullable Rect mClippingRect;
   private @Nullable String mOverflow = ViewProps.HIDDEN;
   private boolean mDragging;
@@ -186,20 +183,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     awakenScrollBars();
   }
 
-  /**
-   * Method for animating to a ScrollView position with a given duration,
-   * instead of using "smoothScrollTo", which does not expose a duration argument.
-   */
-  public void animateScroll(int mDestX, int mDestY, int mDuration) {
-    if (mAnimator != null) {
-      mAnimator.cancel();
-    }
-    PropertyValuesHolder scrollX = PropertyValuesHolder.ofInt("scrollX", mDestX);
-    PropertyValuesHolder scrollY = PropertyValuesHolder.ofInt("scrollY", mDestY);
-    mAnimator = ObjectAnimator.ofPropertyValuesHolder(this, scrollX, scrollY);
-    mAnimator.setDuration(mDuration).start();
-  }
-
   public void setOverflow(String overflow) {
     mOverflow = overflow;
     invalidate();
@@ -281,11 +264,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
   public boolean onTouchEvent(MotionEvent ev) {
     if (!mScrollEnabled) {
       return false;
-    }
-
-    if (mAnimator != null) {
-      mAnimator.cancel();
-      mAnimator = null;
     }
 
     mVelocityHelper.calculateVelocity(ev);
