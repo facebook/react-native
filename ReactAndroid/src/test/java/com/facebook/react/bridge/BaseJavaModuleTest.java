@@ -62,14 +62,14 @@ public class BaseJavaModuleTest {
   @Test(expected = NativeArgumentsParseException.class)
   public void testCallMethodWithoutEnoughArgs() throws Exception {
     int methodId = findMethod("regularMethod",mMethods);
-    Mockito.stub(mArguments.size()).toReturn(1);
+    Mockito.when(mArguments.size()).thenReturn(1);
     mWrapper.invoke(methodId, mArguments);
   }
 
   @Test
   public void testCallMethodWithEnoughArgs() {
     int methodId = findMethod("regularMethod", mMethods);
-    Mockito.stub(mArguments.size()).toReturn(2);
+    Mockito.when(mArguments.size()).thenReturn(2);
     mWrapper.invoke(methodId, mArguments);
   }
 
@@ -77,14 +77,14 @@ public class BaseJavaModuleTest {
   public void testCallAsyncMethodWithEnoughArgs() {
     // Promise block evaluates to 2 args needing to be passed from JS
     int methodId = findMethod("asyncMethod", mMethods);
-    Mockito.stub(mArguments.size()).toReturn(3);
+    Mockito.when(mArguments.size()).thenReturn(3);
     mWrapper.invoke(methodId, mArguments);
   }
 
   @Test
   public void testCallSyncMethod() {
     int methodId = findMethod("syncMethod", mMethods);
-    Mockito.stub(mArguments.size()).toReturn(2);
+    Mockito.when(mArguments.size()).thenReturn(2);
     mWrapper.invoke(methodId, mArguments);
   }
 
