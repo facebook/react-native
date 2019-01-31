@@ -16,11 +16,6 @@
             options:(nonnull NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options;
 
 + (BOOL)application:(nonnull UIApplication *)application
-              openURL:(nonnull NSURL *)URL
-    sourceApplication:(nullable NSString *)sourceApplication
-           annotation:(nonnull id)annotation;
-
-+ (BOOL)application:(nonnull UIApplication *)application
     continueUserActivity:(nonnull NSUserActivity *)userActivity
       restorationHandler:(nonnull void (^)(NSArray *__nullable))restorationHandler;
 

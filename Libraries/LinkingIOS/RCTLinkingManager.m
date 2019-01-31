@@ -57,15 +57,6 @@ RCT_EXPORT_MODULE()
 }
 
 + (BOOL)application:(UIApplication *)application
-            openURL:(NSURL *)URL
-  sourceApplication:(NSString *)sourceApplication
-         annotation:(id)annotation
-{
-  postNotificationWithURL(URL, self);
-  return YES;
-}
-
-+ (BOOL)application:(UIApplication *)application
 continueUserActivity:(NSUserActivity *)userActivity
   restorationHandler:(void (^)(NSArray * __nullable))restorationHandler
 {
