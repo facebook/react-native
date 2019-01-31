@@ -24,7 +24,7 @@ import java.nio.charset.CharsetDecoder;
  * given encoding. Otherwise some parts of the data won't be decoded.
  *
  */
-public class ProgressiveStringDecoder {
+public class ProgressiveStringDecoder implements IProgressiveStringDecoder {
 
   private static final String EMPTY_STRING = "";
 

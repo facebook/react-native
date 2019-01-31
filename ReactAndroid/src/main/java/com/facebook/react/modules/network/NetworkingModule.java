@@ -7,6 +7,7 @@
 package com.facebook.react.modules.network;
 
 import android.net.Uri;
+import android.os.Build;
 import android.util.Base64;
 
 import com.facebook.react.bridge.Arguments;
@@ -568,7 +569,13 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     Charset charset = responseBody.contentType() == null ? StandardCharsets.UTF_8 :
       responseBody.contentType().charset(StandardCharsets.UTF_8);
 
-    ProgressiveStringDecoder streamDecoder = new ProgressiveStringDecoder(charset);
+    IProgressiveStringDecoder streamDecoder;
+    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT && charset == StandardCharsets.UTF_8) {
+      streamDecoder = new ProgressiveUTF8StringDecoder();
+    } else {
+      streamDecoder = new ProgressiveStringDecoder(charset);
+    }
+
     InputStream inputStream = responseBody.byteStream();
     try {
       byte[] buffer = new byte[MAX_CHUNK_SIZE_BETWEEN_FLUSHES];
