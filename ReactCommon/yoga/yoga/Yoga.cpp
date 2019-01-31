@@ -602,12 +602,12 @@ inline detail::CompactValue Value::create<YGUnitAuto>(float) {
 template <YGStyle::Dimensions YGStyle::*P>
 struct DimensionProp {
   template <YGDimension idx>
-  static WIN_STRUCT(YGValue) get(YGNodeRef node) {
+  static YGValue get(YGNodeRef node) {
     YGValue value = (node->getStyle().*P)[idx];
     if (value.unit == YGUnitUndefined || value.unit == YGUnitAuto) {
       value.value = YGUndefined;
     }
-    return WIN_STRUCT_REF(value);
+    return value;
   }
 
   template <YGDimension idx, YGUnit U>
@@ -690,13 +690,12 @@ struct DimensionProp {
     }                                                                     \
   }                                                                       \
                                                                           \
-  WIN_STRUCT(type)                                                        \
-  YGNodeStyleGet##name(const YGNodeRef node, const YGEdge edge) {         \
+  type YGNodeStyleGet##name(const YGNodeRef node, const YGEdge edge) {    \
     YGValue value = node->getStyle().instanceName[edge];                  \
     if (value.unit == YGUnitUndefined || value.unit == YGUnitAuto) {      \
       value.value = YGUndefined;                                          \
     }                                                                     \
-    return WIN_STRUCT_REF(value);                                         \
+    return value;                                                         \
   }
 
 #define YG_NODE_LAYOUT_PROPERTY_IMPL(type, name, instanceName) \
