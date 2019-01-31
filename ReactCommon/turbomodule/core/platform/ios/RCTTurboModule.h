@@ -39,9 +39,17 @@ public:
 } // namespace facebook
 
 @protocol RCTTurboModule <NSObject>
+@optional
+/**
+ * Used by TurboModules to get access to other TurboModules.
+ *
+ * Usage:
+ * Place `@synthesize turboModuleLookupDelegate = _turboModuleLookupDelegate`
+ * in the @implementation section of your TurboModule.
+ */
+@property (nonatomic, weak) id<RCTTurboModuleLookupDelegate> turboModuleLookupDelegate;
 
 @optional
-
 // This should be required, after migration is done.
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker;
 

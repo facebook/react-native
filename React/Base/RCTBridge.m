@@ -226,6 +226,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [self invalidate];
 }
 
+- (void)setRCTTurboModuleLookupDelegate:(id<RCTTurboModuleLookupDelegate>)turboModuleLookupDelegate
+{
+  [self.batchedBridge setRCTTurboModuleLookupDelegate:turboModuleLookupDelegate];
+}
+
 - (void)didReceiveReloadCommand
 {
   [self reload];

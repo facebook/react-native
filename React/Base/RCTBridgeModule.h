@@ -323,6 +323,26 @@ RCT_EXTERN void RCTRegisterModule(Class); \
 @end
 
 /**
+ * A protocol that allows TurboModules to do lookup on other TurboModules.
+ * Calling these methods may cause a module to be synchronously instantiated.
+ */
+ @protocol RCTTurboModuleLookupDelegate <NSObject>
+ - (id)moduleForName:(const char *)moduleName;
+
+ /**
+  * Rationale:
+  * When TurboModules lookup other modules by name, we first check the TurboModule
+  * registry to see if a TurboModule exists with the respective name. In this case,
+  * we don't want a RedBox to be raised if the TurboModule isn't found.
+  *
+  * This method is deprecated and will be deleted after the migration from
+  * TurboModules to TurboModules is complete.
+  */
+ - (id)moduleForName:(const char *)moduleName warnOnLookupFailure:(BOOL)warnOnLookupFailure;
+ - (BOOL)moduleIsInitialized:(const char *)moduleName;
+ @end
+
+/**
  * Experimental.
  * A protocol to declare that a class supports TurboModule.
  * This may be removed in the future.
