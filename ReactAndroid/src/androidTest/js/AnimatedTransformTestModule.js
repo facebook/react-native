@@ -11,18 +11,11 @@
 
 var BatchedBridge = require('BatchedBridge');
 var React = require('React');
-var ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 var StyleSheet = require('StyleSheet');
 var View = require('View');
-var Animated = require('Animated');
 var TouchableOpacity = require('TouchableOpacity');
 var Text = require('Text');
 var RecordingModule = require('NativeModules').Recording;
-
-
-var requireNativeComponent = require('requireNativeComponent');
-
-var appInstance = null;
 
 const styles = StyleSheet.create({
   base: {
@@ -50,16 +43,12 @@ class AnimatedTransformTestApp extends React.Component {
   }
 
   state = {
-    flag: false
+    flag: false,
   };
-
-  UNSAFE_componentWillMount() {
-    appInstance = this;
-  }
 
   toggle() {
     this.setState({
-      flag: !this.state.flag
+      flag: !this.state.flag,
     });
   }
 
