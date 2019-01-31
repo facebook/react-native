@@ -286,8 +286,18 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
 
   @Override
   public void fling(int velocityX) {
+
+    // Workaround.
+    // On Android P if a ScrollView is inverted, we will get a wrong sign for
+    // velocityX (see https://issuetracker.google.com/issues/112385925). 
+    // At the same time, mOnScrollDispatchHelper tracks the correct velocity direction. 
+    //
+    // Hence, we can use the absolute value from whatever the OS gives
+    // us and use the sign of what mOnScrollDispatchHelper has tracked.
+    final int correctedVelocityX = (int)(Math.abs(velocityX) * Math.signum(mOnScrollDispatchHelper.getXFlingVelocity()));
+
     if (mPagingEnabled) {
-      flingAndSnap(velocityX);
+      flingAndSnap(correctedVelocityX);
     } else if (mScroller != null) {
       // FB SCROLLVIEW CHANGE
 
@@ -302,7 +312,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
       mScroller.fling(
         getScrollX(), // startX
         getScrollY(), // startY
-        velocityX, // velocityX
+        correctedVelocityX, // velocityX
         0, // velocityY
         0, // minX
         Integer.MAX_VALUE, // maxX
@@ -316,9 +326,9 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
 
       // END FB SCROLLVIEW CHANGE
     } else {
-      super.fling(velocityX);
+      super.fling(correctedVelocityX);
     }
-    handlePostTouchScrolling(velocityX, 0);
+    handlePostTouchScrolling(correctedVelocityX, 0);
   }
 
   @Override
