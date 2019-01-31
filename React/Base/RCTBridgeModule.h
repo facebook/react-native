@@ -326,7 +326,6 @@ RCT_EXTERN void RCTRegisterModule(Class); \
  * Experimental.
  * A protocol to declare that a class supports TurboModule.
  * This may be removed in the future.
+ * See RCTTurboModule.h for actual signature.
  */
-@protocol RCTTurboModule <NSObject>
-
-@end
+@protocol RCTTurboModule;

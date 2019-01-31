@@ -111,17 +111,18 @@ static Class getFallbackClassFromName(const char *name) {
         }
       }
 
+      if ([module respondsToSelector:@selector(getTurboModuleWithJsInvoker:)]) {
+        return [module getTurboModuleWithJsInvoker:strongSelf->_jsInvoker];
+      }
+
       // RCTCxxModule compatibility layer.
       if ([moduleClass isSubclassOfClass:RCTCxxModule.class]) {
-        if ([module respondsToSelector:@selector(getTurboModuleWithJsInvoker:)]) {
-          return [((id<RCTTurboCxxModule>)module) getTurboModuleWithJsInvoker:strongSelf->_jsInvoker];
-        }
-
         // Use TurboCxxModule compat class to wrap the CxxModule instance.
         // This is only for migration convenience, despite less performant.
         return std::make_shared<react::TurboCxxModule>([((RCTCxxModule *)module) createModule], strongSelf->_jsInvoker);
       }
 
+      // This may be needed for migration purpose in case the module class doesn't provide the static getter.
       return [strongSelf->_delegate getTurboModule:name instance:module jsInvoker:strongSelf->_jsInvoker];
     };
 
