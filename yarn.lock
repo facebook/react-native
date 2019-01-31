@@ -6084,10 +6084,10 @@ react-is@^16.7.0-alpha.2:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.7.0-alpha.2.tgz#0dd7f95d45ad5318b7f7bcb99dcb84da9385cb57"
   integrity sha512-1Q3qN8nMWUfFcRz/bBC1f9zSL3il9OcSxMd9CNnpJbeFf4VCX0qYxL3TuwT4f+tFk1TkidwIL11yYgk4HjldYg==
 
-react-native-dummy@0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/react-native-dummy/-/react-native-dummy-0.1.0.tgz#8ec015b814df45acfac458150b67f8a947b36b93"
-  integrity sha512-IVgM7ZtoQPfbduQIj8DrSaDyCkBDZBoiJMLMIqdDl5FJP3hJsakVybl3TvUOycU6bg+kPQY8znu0akugosh/gw==
+react-native-dummy@0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-dummy/-/react-native-dummy-0.2.0.tgz#fbf0ff7607506882648f1b07f76e57951b7b8f8a"
+  integrity sha512-8efApfdopDKGdxbG8aMmYDXt33aZUoFIU+kRxrsdvVAtV2m121tVFrgV8pHr7M+Y7iuOl80wuxt6Xx8zclCIpQ==
 
 react-proxy@^1.1.7:
   version "1.1.8"

@@ -120,6 +120,7 @@ void Binding::uninstallFabricUIManager() {
   javaUIManager_ = nullptr;
 }
 
+//TODO: this method will be removed when binding for components are code-gen
 local_ref<JString> getPlatformComponentName(const ShadowView &shadowView) {
   local_ref<JString> componentName;
   auto newViewProps = std::dynamic_pointer_cast<const ScrollViewProps>(shadowView.props);

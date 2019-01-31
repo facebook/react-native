@@ -99,7 +99,7 @@ fi
 if [[ -z "$BUNDLE_CONFIG" ]]; then
   CONFIG_ARG=""
 else
-  CONFIG_ARG="--config $(pwd)/$BUNDLE_CONFIG"
+  CONFIG_ARG="--config $BUNDLE_CONFIG"
 fi
 
 nodejs_not_found()

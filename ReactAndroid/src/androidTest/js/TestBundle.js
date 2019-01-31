@@ -36,6 +36,11 @@ const AppRegistry = require('AppRegistry');
 
 const apps = [
   {
+    appKey: 'AnimatedTransformTestApp',
+    component: () =>
+      require('AnimatedTransformTestModule').AnimatedTransformTestApp,
+  },
+  {
     appKey: 'CatalystRootViewTestApp',
     component: () =>
       require('CatalystRootViewTestModule').CatalystRootViewTestApp,

@@ -38,19 +38,18 @@ public:
 } // namespace react
 } // namespace facebook
 
+@protocol RCTTurboModule <NSObject>
+
+@optional
+
+// This should be required, after migration is done.
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker;
+
+@end
+
 // TODO: Consolidate this extension with the one in RCTSurfacePresenter.
 @interface RCTBridge ()
 
 - (std::shared_ptr<facebook::react::MessageQueueThread>)jsMessageThread;
-
-@end
-
-/**
- * A backward-compatible protocol to be adopted by an existing RCTCxxModule-based class
- * so that it can support the TurboModule system.
- */
-@protocol RCTTurboCxxModule <RCTTurboModule>
-
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker;
 
 @end

@@ -11,21 +11,64 @@
 YG_EXTERN_C_BEGIN
 
 typedef struct YGNode* YGNodeRef;
+typedef struct YGConfig* YGConfigRef;
 
-typedef YG_ENUM_BEGIN(YGMarkerType) {}
-YG_ENUM_END(YGMarkerType);
+typedef YG_ENUM_BEGIN(YGMarker){
+    YGMarkerLayout,
+} YG_ENUM_END(YGMarker);
+
+typedef struct {
+  int layouts;
+  int measures;
+  int maxMeasureCache;
+  int cachedLayouts;
+  int cachedMeasures;
+} YGMarkerLayoutData;
 
 typedef union {
-  int unused;
+  YGMarkerLayoutData* layout;
 } YGMarkerData;
 
 typedef struct {
   // accepts marker type, a node ref, and marker data (depends on marker type)
   // can return a handle or id that Yoga will pass to endMarker
-  void* (*startMarker)(YGMarkerType, YGNodeRef, YGMarkerData);
+  void* (*startMarker)(YGMarker, YGNodeRef, YGMarkerData);
   // accepts marker type, a node ref, marker data, and marker id as returned by
   // startMarker
-  void (*endMarker)(YGMarkerType, YGNodeRef, YGMarkerData, void* id);
+  void (*endMarker)(YGMarker, YGNodeRef, YGMarkerData, void* id);
 } YGMarkerCallbacks;
 
+void YGConfigSetMarkerCallbacks(YGConfigRef, YGMarkerCallbacks);
+
 YG_EXTERN_C_END
+
+#ifdef __cplusplus
+
+namespace facebook {
+namespace yoga {
+namespace marker {
+namespace detail {
+
+template <YGMarker M>
+struct MarkerData;
+
+template <>
+struct MarkerData<YGMarkerLayout> {
+  using type = YGMarkerLayoutData;
+};
+
+} // namespace detail
+
+template <YGMarker M>
+typename detail::MarkerData<M>::type* data(YGMarkerData) = delete;
+
+template <>
+inline YGMarkerLayoutData* data<YGMarkerLayout>(YGMarkerData d) {
+  return d.layout;
+}
+
+} // namespace marker
+} // namespace yoga
+} // namespace facebook
+
+#endif // __cplusplus

@@ -20,14 +20,6 @@
 #define WIN_EXPORT
 #endif
 
-#ifdef WINARMDLL
-#define WIN_STRUCT(type) type*
-#define WIN_STRUCT_REF(value) &value
-#else
-#define WIN_STRUCT(type) type
-#define WIN_STRUCT_REF(value) value
-#endif
-
 #ifdef NS_ENUM
 // Cannot use NSInteger as NSInteger has a different size than int (which is the
 // default type of a enum). Therefor when linking the Yoga C library into obj-c

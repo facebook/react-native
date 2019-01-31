@@ -574,6 +574,8 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
       }
       return rt.valueRef(ret);
     }
+    
+    #define JSC_UNUSED(x) (void) (x);
 
     static bool setProperty(
         JSContextRef ctx,
@@ -581,6 +583,7 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
         JSStringRef propName,
         JSValueRef value,
         JSValueRef* exception) {
+      JSC_UNUSED(ctx);
       auto proxy = static_cast<HostObjectProxy*>(JSObjectGetPrivate(object));
       auto& rt = proxy->runtime;
       jsi::PropNameID sym = rt.createPropNameID(propName);
@@ -616,6 +619,7 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
         JSContextRef ctx,
         JSObjectRef object,
         JSPropertyNameAccumulatorRef propertyNames) noexcept {
+      JSC_UNUSED(ctx);
       auto proxy = static_cast<HostObjectProxy*>(JSObjectGetPrivate(object));
       auto& rt = proxy->runtime;
       auto names = proxy->hostObject->getPropertyNames(rt);
@@ -623,6 +627,8 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
         JSPropertyNameAccumulatorAddName(propertyNames, stringRef(name));
       }
     }
+    
+    #undef JSC_UNUSED
 
     static void finalize(JSObjectRef obj) {
       auto hostObject = static_cast<HostObjectProxy*>(JSObjectGetPrivate(obj));
@@ -822,7 +828,7 @@ size_t JSCRuntime::size(const jsi::Array& arr) {
 
 jsi::Value JSCRuntime::getValueAtIndex(const jsi::Array& arr, size_t i) {
   JSValueRef exc = nullptr;
-  auto res = JSObjectGetPropertyAtIndex(ctx_, objectRef(arr), i, &exc);
+  auto res = JSObjectGetPropertyAtIndex(ctx_, objectRef(arr), (int)i, &exc);
   checkException(exc);
   return createValue(res);
 }
@@ -832,7 +838,7 @@ void JSCRuntime::setValueAtIndexImpl(
     size_t i,
     const jsi::Value& value) {
   JSValueRef exc = nullptr;
-  JSObjectSetPropertyAtIndex(ctx_, objectRef(arr), i, valueRef(value), &exc);
+  JSObjectSetPropertyAtIndex(ctx_, objectRef(arr), (int)i, valueRef(value), &exc);
   checkException(exc);
 }
 

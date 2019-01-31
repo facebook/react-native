@@ -73,15 +73,15 @@ template <>
 struct hash<facebook::react::ParagraphAttributes> {
   size_t operator()(
       const facebook::react::ParagraphAttributes &attributes) const {
-    size_t seed = 0;
-    folly::hash::hash_combine(seed, attributes.maximumNumberOfLines);
-    folly::hash::hash_combine(seed, attributes.ellipsizeMode);
-    folly::hash::hash_combine(seed, attributes.adjustsFontSizeToFit);
+    auto seed = size_t{0};
     folly::hash::hash_combine(
-        seed, std::hash<float>{}(attributes.minimumFontSize));
-    folly::hash::hash_combine(
-        seed, std::hash<float>{}(attributes.maximumFontSize));
-    return hash<int>()(seed);
+        seed,
+        attributes.maximumNumberOfLines,
+        attributes.ellipsizeMode,
+        attributes.adjustsFontSizeToFit,
+        attributes.minimumFontSize,
+        attributes.maximumFontSize);
+    return seed;
   }
 };
 } // namespace std
