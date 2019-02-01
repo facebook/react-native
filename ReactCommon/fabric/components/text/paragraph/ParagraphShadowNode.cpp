@@ -33,7 +33,7 @@ void ParagraphShadowNode::setTextLayoutManager(
 }
 
 void ParagraphShadowNode::setMeasureCache(
-    SharedParagraphMeasurementCache cache) {
+    const ParagraphMeasurementCache *cache) {
   ensureUnsealed();
   measureCache_ = cache;
 }
@@ -63,16 +63,16 @@ Size ParagraphShadowNode::measure(LayoutConstraints layoutConstraints) const {
 
   // Cache results of this function so we don't need to call measure()
   // repeatedly
-  ParagraphMeasurementCacheKey hashValue =
+  ParagraphMeasurementCacheKey cacheKey =
       std::make_tuple(attributedString, attributes, layoutConstraints);
-  if (measureCache_->exists(hashValue)) {
-    return measureCache_->get(hashValue);
+  if (measureCache_->exists(cacheKey)) {
+    return measureCache_->get(cacheKey);
   }
 
-  Size measuredSize = textLayoutManager_->measure(
+  auto measuredSize = textLayoutManager_->measure(
       attributedString, getProps()->paragraphAttributes, layoutConstraints);
 
-  measureCache_->set(hashValue, measuredSize);
+  measureCache_->set(cacheKey, measuredSize);
 
   return measuredSize;
 }

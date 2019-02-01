@@ -34,7 +34,7 @@ class ParagraphComponentDescriptor final
     // Every single `ParagraphShadowNode` will have a reference to
     // a shared `EvictingCacheMap`, a simple LRU cache for Paragraph
     // measurements.
-    measureCache_ = std::make_shared<ParagraphMeasurementCache>();
+    measureCache_ = std::make_unique<ParagraphMeasurementCache>();
   }
 
   void adopt(UnsharedShadowNode shadowNode) const override {
@@ -50,7 +50,7 @@ class ParagraphComponentDescriptor final
 
     // `ParagraphShadowNode` uses this to cache the results of text rendering
     // measurements.
-    paragraphShadowNode->setMeasureCache(measureCache_);
+    paragraphShadowNode->setMeasureCache(measureCache_.get());
 
     // All `ParagraphShadowNode`s must have leaf Yoga nodes with properly
     // setup measure function.
@@ -59,7 +59,7 @@ class ParagraphComponentDescriptor final
 
  private:
   SharedTextLayoutManager textLayoutManager_;
-  SharedParagraphMeasurementCache measureCache_;
+  std::unique_ptr<const ParagraphMeasurementCache> measureCache_;
 };
 
 } // namespace react
