@@ -69,16 +69,6 @@ WIN_EXPORT void YGNodeInsertChild(
     const YGNodeRef child,
     const uint32_t index);
 
-// This function inserts the child YGNodeRef as a children of the node received
-// by parameter and set the Owner of the child object to null. This function is
-// expected to be called when using Yoga in persistent mode in order to share a
-// YGNodeRef object as a child of two different Yoga trees. The child YGNodeRef
-// is expected to be referenced from its original owner and from a clone of its
-// original owner.
-WIN_EXPORT void YGNodeInsertSharedChild(
-    const YGNodeRef node,
-    const YGNodeRef child,
-    const uint32_t index);
 WIN_EXPORT void YGNodeRemoveChild(const YGNodeRef node, const YGNodeRef child);
 WIN_EXPORT void YGNodeRemoveAllChildren(const YGNodeRef node);
 WIN_EXPORT YGNodeRef YGNodeGetChild(const YGNodeRef node, const uint32_t index);
@@ -150,11 +140,11 @@ YGDirtiedFunc YGNodeGetDirtiedFunc(YGNodeRef node);
 void YGNodeSetDirtiedFunc(YGNodeRef node, YGDirtiedFunc dirtiedFunc);
 YGPrintFunc YGNodeGetPrintFunc(YGNodeRef node);
 void YGNodeSetPrintFunc(YGNodeRef node, YGPrintFunc printFunc);
-bool YGNodeGetHasNewLayout(YGNodeRef node);
-void YGNodeSetHasNewLayout(YGNodeRef node, bool hasNewLayout);
+WIN_EXPORT bool YGNodeGetHasNewLayout(YGNodeRef node);
+WIN_EXPORT void YGNodeSetHasNewLayout(YGNodeRef node, bool hasNewLayout);
 YGNodeType YGNodeGetNodeType(YGNodeRef node);
 void YGNodeSetNodeType(YGNodeRef node, YGNodeType nodeType);
-bool YGNodeIsDirty(YGNodeRef node);
+WIN_EXPORT bool YGNodeIsDirty(YGNodeRef node);
 bool YGNodeLayoutGetDidUseLegacyFlag(const YGNodeRef node);
 
 WIN_EXPORT void YGNodeStyleSetDirection(
@@ -237,8 +227,8 @@ WIN_EXPORT void YGNodeStyleSetPositionPercent(
     const YGNodeRef node,
     const YGEdge edge,
     const float position);
-WIN_EXPORT WIN_STRUCT(YGValue)
-    YGNodeStyleGetPosition(const YGNodeRef node, const YGEdge edge);
+WIN_EXPORT YGValue
+YGNodeStyleGetPosition(const YGNodeRef node, const YGEdge edge);
 
 WIN_EXPORT void YGNodeStyleSetMargin(
     const YGNodeRef node,

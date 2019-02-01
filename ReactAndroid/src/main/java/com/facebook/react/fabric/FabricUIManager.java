@@ -29,6 +29,7 @@ import com.facebook.react.fabric.mounting.mountitems.DeleteMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.InsertMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
+import com.facebook.react.fabric.mounting.mountitems.PreAllocateViewMountItem;
 import com.facebook.react.fabric.mounting.mountitems.RemoveMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdateEventEmitterMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdateLayoutMountItem;
@@ -49,6 +50,7 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.modules.core.ReactChoreographer;
+import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.ReactRootViewTagGenerator;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManagerPropertyUpdater;
@@ -94,9 +96,13 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       new ConcurrentHashMap<>();
   private final EventBeatManager mEventBeatManager;
   private final Object mMountItemsLock = new Object();
+  private final Object mPreMountItemsLock = new Object();
 
   @GuardedBy("mMountItemsLock")
   private List<MountItem> mMountItems = new ArrayList<>();
+
+  @GuardedBy("mPreMountItemsLock")
+  private List<MountItem> mPreMountItems = new ArrayList<>();
 
   @ThreadConfined(UI)
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
@@ -177,17 +183,13 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @DoNotStrip
   private void preallocateView(final int rootTag, final String componentName) {
-    UiThreadUtil.runOnUiThread(
-        new GuardedRunnable(mReactApplicationContext) {
-          @Override
-          public void runGuarded() {
-            ThemedReactContext context =
-                Assertions.assertNotNull(mReactContextForRootTag.get(rootTag));
-            String component = sComponentNames.get(componentName);
-            Assertions.assertNotNull(component);
-            mMountingManager.preallocateView(context, component);
-          }
-        });
+    synchronized (mPreMountItemsLock) {
+      ThemedReactContext context =
+        Assertions.assertNotNull(mReactContextForRootTag.get(rootTag));
+      String component = sComponentNames.get(componentName);
+      Assertions.assertNotNull(component);
+      mPreMountItems.add(new PreAllocateViewMountItem(context, rootTag, component));
+    }
   }
 
   @DoNotStrip
@@ -286,14 +288,25 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     }
 
     try {
+      List<MountItem> preMountItemsToDispatch;
+      synchronized (mPreMountItemsLock) {
+        preMountItemsToDispatch = mPreMountItems;
+        mPreMountItems = new ArrayList<>();
+      }
+
       List<MountItem> mountItemsToDispatch;
       synchronized (mMountItemsLock) {
-        if (mMountItems.isEmpty()) {
-          return;
-        }
         mountItemsToDispatch = mMountItems;
         mMountItems = new ArrayList<>();
       }
+
+      Systrace.beginSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+        "FabricUIManager::premountViews (" + preMountItemsToDispatch.size() + " batches)");
+      for (MountItem mountItem : preMountItemsToDispatch) {
+        mountItem.execute(mMountingManager);
+      }
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
 
       Systrace.beginSection(
           Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
@@ -301,10 +314,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       for (MountItem mountItem : mountItemsToDispatch) {
         mountItem.execute(mMountingManager);
       }
-
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     } catch (Exception ex) {
-      FLog.i(ReactConstants.TAG, "Exception thrown when executing UIFrameGuarded", ex);
+      FLog.e(ReactConstants.TAG, "Exception thrown when executing UIFrameGuarded", ex);
       mIsMountingEnabled = false;
       throw ex;
     }

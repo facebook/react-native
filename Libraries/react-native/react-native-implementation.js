@@ -131,9 +131,6 @@ module.exports = {
     }
     return require('SwipeableListView');
   },
-  get TabBarIOS() {
-    return require('TabBarIOS');
-  },
   get Text() {
     return require('Text');
   },

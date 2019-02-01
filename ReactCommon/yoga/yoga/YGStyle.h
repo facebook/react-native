@@ -20,10 +20,6 @@
 #define BITFIELD_ENUM_SIZED(num)
 #endif
 
-constexpr YGValue kYGValueUndefined = {0, YGUnitUndefined};
-
-constexpr YGValue kYGValueAuto = {0, YGUnitAuto};
-
 struct YGStyle {
 private:
   using CompactValue = facebook::yoga::detail::CompactValue;

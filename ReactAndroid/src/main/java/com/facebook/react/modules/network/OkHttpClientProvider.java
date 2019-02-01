@@ -46,12 +46,6 @@ public class OkHttpClientProvider {
     }
     return sClient;
   }
-  
-  // okhttp3 OkHttpClient is immutable
-  // This allows app to init an OkHttpClient with custom settings.
-  public static void replaceOkHttpClient(OkHttpClient client) {
-    sClient = client;
-  }
 
   public static OkHttpClient createClient() {
     if (sFactory != null) {

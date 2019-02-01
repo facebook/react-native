@@ -1,6 +1,7 @@
 ---
 name: I want to report an issue with React Native.
 about: You want to report a reproducible bug or regression in React Native.
+labels: "Bug Report"
 ---
 
 <!--

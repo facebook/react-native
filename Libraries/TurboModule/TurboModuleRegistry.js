@@ -17,8 +17,9 @@ import {NativeModules} from 'react-native';
 // TODO
 function get<T: TurboModule>(name: string): ?T {
   // Backward compatibility layer during migration.
-  if (NativeModules[name] != null) {
-    return ((NativeModules[name]: any): T);
+  const legacyModule = NativeModules[name];
+  if (legacyModule != null) {
+    return ((legacyModule: any): T);
   }
 
   const module: ?T = global.__turboModuleProxy(name);

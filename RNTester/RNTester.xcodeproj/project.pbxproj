@@ -1880,6 +1880,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				BUNDLE_CONFIG = "$(SRCROOT)/../rn-cli.config.js";
 				DEVELOPMENT_TEAM = VYK7DLU38Z;
 				INFOPLIST_FILE = "$(SRCROOT)/RNTester/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -1895,6 +1896,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				BUNDLE_CONFIG = "$(SRCROOT)/../rn-cli.config.js";
 				DEVELOPMENT_TEAM = VYK7DLU38Z;
 				INFOPLIST_FILE = "$(SRCROOT)/RNTester/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
