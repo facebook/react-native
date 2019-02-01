@@ -37,6 +37,7 @@ export type KeyboardEvent = $ReadOnly<{|
   easing?: string,
   endCoordinates: ScreenRect,
   startCoordinates?: ScreenRect,
+  isEventFromThisApp?: boolean,
 |}>;
 
 type KeyboardEventListener = (e: KeyboardEvent) => void;
