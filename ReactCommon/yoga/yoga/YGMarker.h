@@ -16,6 +16,7 @@ typedef struct YGConfig* YGConfigRef;
 typedef YG_ENUM_BEGIN(YGMarker){
     YGMarkerLayout,
     YGMarkerMeasure,
+    YGMarkerBaselineFn,
 } YG_ENUM_END(YGMarker);
 
 typedef struct {
@@ -66,13 +67,18 @@ struct MarkerData<YGMarkerLayout> {
   }
 };
 
-template <>
-struct MarkerData<YGMarkerMeasure> {
+struct NoMarkerData {
   using type = YGMarkerNoData;
   static type*& get(YGMarkerData& d) {
     return d.noData;
   }
 };
+
+template <>
+struct MarkerData<YGMarkerMeasure> : NoMarkerData {};
+
+template <>
+struct MarkerData<YGMarkerBaselineFn> : NoMarkerData {};
 
 } // namespace detail
 

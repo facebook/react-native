@@ -1074,7 +1074,9 @@ static inline YGAlign YGNodeAlignItem(
 
 static float YGBaseline(const YGNodeRef node) {
   if (node->getBaseline() != nullptr) {
-    const float baseline = node->getBaseline()(
+    const float baseline = marker::MarkerSection<YGMarkerBaselineFn>::wrap(
+        node,
+        node->getBaseline(),
         node,
         node->getLayout().measuredDimensions[YGDimensionWidth],
         node->getLayout().measuredDimensions[YGDimensionHeight]);
