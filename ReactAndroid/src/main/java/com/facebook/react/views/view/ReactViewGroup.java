@@ -674,11 +674,7 @@ public class ReactViewGroup extends ViewGroup implements
    *     background
    */
   private void updateBackgroundDrawable(Drawable drawable) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-      super.setBackground(drawable);
-    } else {
-      super.setBackgroundDrawable(drawable);
-    }
+    super.setBackground(drawable);
   }
 
   @Override
