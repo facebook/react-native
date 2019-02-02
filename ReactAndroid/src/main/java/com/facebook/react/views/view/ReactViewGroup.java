@@ -668,7 +668,7 @@ public class ReactViewGroup extends ViewGroup implements
 
   /**
    * Set the background for the view or remove the background. It calls {@link
-   * #setBackground(Drawable)} or {@link #setBackgroundDrawable(Drawable)} based on the sdk version.
+   * #setBackground(Drawable)}.
    *
    * @param drawable {@link Drawable} The Drawable to use as the background, or null to remove the
    *     background
