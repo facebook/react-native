@@ -6,16 +6,14 @@
  */
 package com.facebook.react.testing;
 
-import static com.facebook.react.bridge.UiThreadUtil.runOnUiThread;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactInstanceManagerBuilder;
 import com.facebook.react.ReactRootView;
@@ -34,10 +32,7 @@ import com.facebook.react.modules.core.PermissionListener;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.react.testing.idledetection.ReactBridgeIdleSignaler;
 import com.facebook.react.testing.idledetection.ReactIdleDetectionUtil;
-import com.facebook.react.uimanager.UIManagerModule;
-import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.facebook.react.uimanager.events.EventDispatcher;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -45,7 +40,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 
 
-public class ReactAppTestActivity extends FragmentActivity
+public class ReactAppTestActivity extends ReactActivity
     implements DefaultHardwareBackBtnHandler, PermissionAwareActivity {
 
   public static final String EXTRA_IS_FABRIC_TEST = "is_fabric_test";
@@ -271,10 +266,6 @@ public class ReactAppTestActivity extends FragmentActivity
       throw new RuntimeException(
           "ReactInstanceManager never finished initializing " + bundleName, e);
     }
-  }
-
-  private ReactInstanceManager getReactInstanceManager() {
-    return mReactInstanceManager;
   }
 
   public boolean waitForLayout(long millis) throws InterruptedException {
