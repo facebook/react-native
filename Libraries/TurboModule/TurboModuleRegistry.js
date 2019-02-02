@@ -10,9 +10,10 @@
 
 'use strict';
 
+const NativeModules = require('NativeModules');
+
 import type {TurboModule} from 'RCTExport';
 import invariant from 'invariant';
-import {NativeModules} from 'react-native';
 
 // TODO
 function get<T: TurboModule>(name: string): ?T {
