@@ -2,8 +2,6 @@
 
 #include "UIManagerBinding.h"
 
-#include <react/debug/SystraceSection.h>
-
 #include <jsi/JSIDynamic.h>
 
 namespace facebook {
@@ -68,8 +66,6 @@ void UIManagerBinding::dispatchEvent(
     const EventTarget *eventTarget,
     const std::string &type,
     const ValueFactory &payloadFactory) const {
-  SystraceSection s("UIManagerBinding::dispatchEvent");
-
   auto payload = payloadFactory(runtime);
 
   auto instanceHandle = eventTarget
