@@ -61,20 +61,27 @@ Size ParagraphShadowNode::measure(LayoutConstraints layoutConstraints) const {
   AttributedString attributedString = getAttributedString();
   const ParagraphAttributes attributes = getProps()->paragraphAttributes;
 
+  auto makeMeasurements = [&] {
+    return textLayoutManager_->measure(
+        attributedString, getProps()->paragraphAttributes, layoutConstraints);
+  };
+
   // Cache results of this function so we don't need to call measure()
   // repeatedly
-  ParagraphMeasurementCacheKey cacheKey =
-      std::make_tuple(attributedString, attributes, layoutConstraints);
-  if (measureCache_->exists(cacheKey)) {
-    return measureCache_->get(cacheKey);
+  if (measureCache_ != nullptr) {
+    ParagraphMeasurementCacheKey cacheKey =
+        std::make_tuple(attributedString, attributes, layoutConstraints);
+    if (measureCache_->exists(cacheKey)) {
+      return measureCache_->get(cacheKey);
+    }
+
+    auto measuredSize = makeMeasurements();
+    measureCache_->set(cacheKey, measuredSize);
+
+    return measuredSize;
   }
 
-  auto measuredSize = textLayoutManager_->measure(
-      attributedString, getProps()->paragraphAttributes, layoutConstraints);
-
-  measureCache_->set(cacheKey, measuredSize);
-
-  return measuredSize;
+  return makeMeasurements();
 }
 
 void ParagraphShadowNode::layout(LayoutContext layoutContext) {
