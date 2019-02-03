@@ -14,13 +14,7 @@ const React = require('react');
 const ReactNative = require('react-native');
 const {CheckBox, Text, View, StyleSheet} = ReactNative;
 
-type BasicState = {|
-  trueCheckBoxIsOn: boolean,
-  falseCheckBoxIsOn: boolean,
-|};
-
-type BasicProps = $ReadOnly<{||}>;
-class BasicCheckBoxExample extends React.Component<BasicProps, BasicState> {
+class BasicCheckBoxExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     trueCheckBoxIsOn: true,
     falseCheckBoxIsOn: false,
@@ -43,8 +37,7 @@ class BasicCheckBoxExample extends React.Component<BasicProps, BasicState> {
   }
 }
 
-type DisabledProps = $ReadOnly<{||}>;
-class DisabledCheckBoxExample extends React.Component<DisabledProps> {
+class DisabledCheckBoxExample extends React.Component<{}, $FlowFixMeState> {
   render() {
     return (
       <View>
@@ -55,13 +48,7 @@ class DisabledCheckBoxExample extends React.Component<DisabledProps> {
   }
 }
 
-type EventProps = $ReadOnly<{||}>;
-type EventState = {|
-  eventCheckBoxIsOn: boolean,
-  eventCheckBoxRegressionIsOn: boolean,
-|};
-
-class EventCheckBoxExample extends React.Component<EventProps, EventState> {
+class EventCheckBoxExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     eventCheckBoxIsOn: false,
     eventCheckBoxRegressionIsOn: true,
@@ -105,20 +92,7 @@ class EventCheckBoxExample extends React.Component<EventProps, EventState> {
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  checkbox: {
-    marginBottom: 10,
-  },
-});
-
-exports.title = '<CheckBox>';
-exports.displayName = 'CheckBoxExample';
-exports.description = 'Native boolean input';
-exports.examples = [
+let examples = [
   {
     title: 'CheckBoxes can be set to true or false',
     render(): React.Element<any> {
@@ -144,3 +118,18 @@ exports.examples = [
     },
   },
 ];
+
+exports.title = '<CheckBox>';
+exports.displayName = 'CheckBoxExample';
+exports.description = 'Native boolean input';
+exports.examples = examples;
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  checkbox: {
+    marginBottom: 10,
+  },
+});
