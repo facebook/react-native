@@ -53,12 +53,14 @@ type NativeProps = $ReadOnly<{|
 
   on?: ?boolean,
   enabled?: boolean,
+  tintColors: {|true: ?number, false: ?number|} | null,
 |}>;
 
 type CheckBoxNativeType = Class<NativeComponent<NativeProps>>;
 
 type Props = $ReadOnly<{|
   ...CommonProps,
+  tintColors?: {|true?: ColorValue, false?: ColorValue|},
 
   /**
    * The value of the checkbox.  If true the checkbox will be turned on.
@@ -77,6 +79,9 @@ type Props = $ReadOnly<{|
    */
   forwardedRef?: ?React.Ref<CheckBoxNativeType>,
 
+  /**
+   * Controls the colors the checkbox has in checked and unchecked states.
+   */
   tintColors?: {|true?: ColorValue, false?: ColorValue|},
 |}>;
 
@@ -154,18 +159,24 @@ class CheckBox extends React.Component<Props> {
       this.props.onValueChange(event.nativeEvent.value);
   };
 
-  getTintColors() {
-    const {tintColors} = this.props;
-    if (!tintColors) {
-      return null;
-    }
-    const trueColor = tintColors.true && processColor(tintColors.true);
-    const falseColor = tintColors.false && processColor(tintColors.false);
-    return {true: trueColor, false: falseColor};
+  getTintColors(tintColors) {
+    return tintColors
+      ? {
+          true: processColor(tintColors.true),
+          false: processColor(tintColors.false),
+        }
+      : null;
   }
 
   render() {
-    const {disabled: _, value: __, style, forwardedRef, ...props} = this.props;
+    const {
+      disabled: _,
+      value: __,
+      tintColors,
+      style,
+      forwardedRef,
+      ...props
+    } = this.props;
     const disabled = this.props.disabled ?? false;
     const value = this.props.value ?? false;
 
@@ -175,7 +186,7 @@ class CheckBox extends React.Component<Props> {
       onResponderTerminationRequest: () => false,
       enabled: !disabled,
       on: value,
-      tintColors: this.getTintColors(),
+      tintColors: this.getTintColors(tintColors),
       style: [styles.rctCheckBox, style],
     };
 
