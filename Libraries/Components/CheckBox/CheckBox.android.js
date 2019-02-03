@@ -77,7 +77,7 @@ type Props = $ReadOnly<{|
    */
   forwardedRef?: ?React.Ref<CheckBoxNativeType>,
 
-  tintColors?: {| true?: ColorValue, false?: ColorValue, |},
+  tintColors?: {|true?: ColorValue, false?: ColorValue|},
 |}>;
 
 /**
@@ -161,7 +161,7 @@ class CheckBox extends React.Component<Props> {
     }
     const trueColor = tintColors.true && processColor(tintColors.true);
     const falseColor = tintColors.false && processColor(tintColors.false);
-    return { true: trueColor, false: falseColor };
+    return {true: trueColor, false: falseColor};
   }
 
   render() {
