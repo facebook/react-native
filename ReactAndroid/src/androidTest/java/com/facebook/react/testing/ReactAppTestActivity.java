@@ -26,9 +26,6 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.common.LifecycleState;
-import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
-import com.facebook.react.modules.core.PermissionAwareActivity;
-import com.facebook.react.modules.core.PermissionListener;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.react.testing.idledetection.ReactBridgeIdleSignaler;
 import com.facebook.react.testing.idledetection.ReactIdleDetectionUtil;
@@ -40,8 +37,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 
 
-public class ReactAppTestActivity extends ReactActivity
-    implements DefaultHardwareBackBtnHandler, PermissionAwareActivity {
+public class ReactAppTestActivity extends ReactActivity {
 
   public static final String EXTRA_IS_FABRIC_TEST = "is_fabric_test";
 
@@ -327,17 +323,4 @@ public class ReactAppTestActivity extends ReactActivity
   public void setScreenshotDimensions(int width, int height) {
     mScreenshotingFrameLayout.setLayoutParams(new FrameLayout.LayoutParams(width, height));
   }
-
-  @Override
-  public void invokeDefaultOnBackPressed() {
-    super.onBackPressed();
-  }
-
-  @Override
-  public void onRequestPermissionsResult(
-      int requestCode, String[] permissions, int[] grantResults) {}
-
-  @Override
-  public void requestPermissions(
-      String[] permissions, int requestCode, PermissionListener listener) {}
 }
