@@ -145,7 +145,7 @@
 
 - (NSAttributedString *)attributedText
 {
-  if(![super.attributedText.string isEqualToString:_attributesHolder.string]) {
+  if (![super.attributedText.string isEqualToString:_attributesHolder.string]) {
     [_attributesHolder setAttributedString:super.attributedText];
   }
 
