@@ -124,6 +124,7 @@ static Class getFallbackClassFromName(const char *name) {
   // allow it to do so.
   if ([module respondsToSelector:@selector(getTurboModuleWithJsInvoker:)]) {
     auto turboModule = [module getTurboModuleWithJsInvoker:_jsInvoker];
+    assert(turboModule != nullptr);
     _turboModuleCache.insert({moduleName, turboModule});
     return turboModule;
   }
@@ -144,7 +145,9 @@ static Class getFallbackClassFromName(const char *name) {
    * Step 2d: Return an exact sub-class of ObjC TurboModule
    */
   auto turboModule = [_delegate getTurboModule:moduleName instance:module jsInvoker:_jsInvoker];
-  _turboModuleCache.insert({moduleName, turboModule});
+  if (turboModule != nullptr) {
+    _turboModuleCache.insert({moduleName, turboModule});
+  }
   return turboModule;
 }
 
