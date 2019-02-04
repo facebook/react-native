@@ -247,4 +247,30 @@ describe('VirtualizedList', () => {
     cell._onLayout(event);
     expect(mock).toHaveBeenCalledWith(event, 'i4', 3);
   });
+
+  it('handles extraData correctly', () => {
+    const mock = jest.fn();
+    const data = [{key: 'i0'}, {key: 'i1'}, {key: 'i2'}];
+    const getItem = (data, index) => data[index];
+    const getItemCount = data => data.length;
+    const component = ReactTestRenderer.create(
+      <VirtualizedList
+        data={data}
+        renderItem={mock}
+        getItem={getItem}
+        getItemCount={getItemCount}
+      />,
+    );
+
+    component.update(
+      <VirtualizedList
+        data={data}
+        renderItem={mock}
+        getItem={getItem}
+        getItemCount={getItemCount}
+        extraData={{updated: false}}
+      />,
+    );
+    expect(mock).toHaveBeenCalledTimes(6);
+  });
 });

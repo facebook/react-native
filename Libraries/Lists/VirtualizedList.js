@@ -674,6 +674,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       keyExtractor,
       getItemLayout,
       renderItem,
+      extraData,
       debug,
     } = this.props;
     const stickyOffset = this.props.ListHeaderComponent ? 1 : 0;
@@ -704,6 +705,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           onUnmount={this._onCellUnmount}
           getItemLayout={getItemLayout}
           renderItem={renderItem}
+          extraData={extraData}
           debug={debug}
           ref={ref => {
             this._cellRefs[key] = ref;
