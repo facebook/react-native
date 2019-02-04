@@ -120,7 +120,7 @@ Pod::Spec.new do |s|
     ss.source_files         = "ReactCommon/jsiexecutor/jsireact/*.{cpp,h}"
     ss.private_header_files = "ReactCommon/jsiexecutor/jsireact/*.h"
     ss.header_dir           = "jsireact"
-    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
+    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\", \"$(PODS_TARGET_SRCROOT)/ReactCommon/jsiexecutor\"" }
   end
 
   s.subspec "jsi" do |ss|
