@@ -114,8 +114,9 @@ static Class getFallbackClassFromName(const char *name) {
 
   // If we request that a TurboModule be created, its respective ObjC class must exist
   // If the class doesn't exist, then provideRCTTurboModule returns nil
-  // Therefore, module cannot be nil.
-  assert(module);
+  if (!module) {
+    return nullptr;
+  }
 
   Class moduleClass = [module class];
 
