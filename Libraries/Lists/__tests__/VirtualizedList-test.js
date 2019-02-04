@@ -250,12 +250,12 @@ describe('VirtualizedList', () => {
 
   it('handles extraData correctly', () => {
     const mock = jest.fn();
-    const data = [{key: 'i0'}, {key: 'i1'}, {key: 'i2'}];
+    const listData = [{key: 'i0'}, {key: 'i1'}, {key: 'i2'}];
     const getItem = (data, index) => data[index];
     const getItemCount = data => data.length;
     const component = ReactTestRenderer.create(
       <VirtualizedList
-        data={data}
+        data={listData}
         renderItem={mock}
         getItem={getItem}
         getItemCount={getItemCount}
@@ -264,11 +264,11 @@ describe('VirtualizedList', () => {
 
     component.update(
       <VirtualizedList
-        data={data}
+        data={listData}
         renderItem={mock}
         getItem={getItem}
         getItemCount={getItemCount}
-        extraData={{updated: false}}
+        extraData={{updated: true}}
       />,
     );
     expect(mock).toHaveBeenCalledTimes(6);
