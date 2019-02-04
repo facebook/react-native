@@ -66,10 +66,10 @@ public:
         flexWrap(YGWrapNoWrap),
         overflow(YGOverflowVisible),
         display(YGDisplayFlex) {}
-  bool operator==(const YGStyle& style);
-
-  bool operator!=(YGStyle style) {
-    return !(*this == style);
-  }
   ~YGStyle() = default;
 };
+
+bool operator==(const YGStyle& lhs, const YGStyle& rhs);
+inline bool operator!=(const YGStyle& lhs, const YGStyle& rhs) {
+  return !(lhs == rhs);
+}
