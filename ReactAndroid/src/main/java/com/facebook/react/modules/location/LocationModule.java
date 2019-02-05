@@ -7,6 +7,7 @@
 
 package com.facebook.react.modules.location;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
@@ -32,6 +33,7 @@ import javax.annotation.Nullable;
 /**
  * Native module that exposes Geolocation to JS.
  */
+@SuppressLint("MissingPermission")
 @ReactModule(name = LocationModule.NAME)
 public class LocationModule extends ReactContextBaseJavaModule {
 
