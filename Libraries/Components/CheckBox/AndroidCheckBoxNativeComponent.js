@@ -42,7 +42,7 @@ type NativeProps = $ReadOnly<{|
 
   on?: ?boolean,
   enabled?: boolean,
-  tintColors: {|true: ?number, false: ?number|} | null,
+  tintColors: {|true: ?number, false: ?number|} | typeof undefined,
 |}>;
 
 type CheckBoxNativeType = Class<NativeComponent<NativeProps>>;

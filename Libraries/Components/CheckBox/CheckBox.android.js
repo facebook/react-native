@@ -53,7 +53,7 @@ type NativeProps = $ReadOnly<{|
 
   on?: ?boolean,
   enabled?: boolean,
-  tintColors: {|true: ?number, false: ?number|} | null,
+  tintColors: {|true: ?number, false: ?number|} | typeof undefined,
 |}>;
 
 type CheckBoxNativeType = Class<NativeComponent<NativeProps>>;
@@ -165,7 +165,7 @@ class CheckBox extends React.Component<Props> {
           true: processColor(tintColors.true),
           false: processColor(tintColors.false),
         }
-      : null;
+      : undefined;
   }
 
   render() {
