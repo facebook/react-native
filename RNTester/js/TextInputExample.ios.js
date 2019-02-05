@@ -630,7 +630,7 @@ exports.examples = [
           <WithLabel label="singleline">
             <TextInput style={styles.default} value="(value property)">
               (first raw text node)
-              <Text color="red">(internal raw text node)</Text>
+              <Text style={{color: 'red'}}>(internal raw text node)</Text>
               (last raw text node)
             </TextInput>
           </WithLabel>
@@ -640,7 +640,7 @@ exports.examples = [
               multiline={true}
               value="(value property)">
               (first raw text node)
-              <Text color="red">(internal raw text node)</Text>
+              <Text style={{color: 'red'}}>(internal raw text node)</Text>
               (last raw text node)
             </TextInput>
           </WithLabel>
