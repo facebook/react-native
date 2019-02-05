@@ -11,7 +11,3 @@
 
 [alias]
   rntester = //RNTester/android/app:app
-
-[java]
-source_level = 8
-target_level = 8
