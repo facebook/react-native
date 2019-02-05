@@ -10,7 +10,7 @@
 'use strict';
 
 const PropTypes = require('prop-types');
-const {checkPropTypes} = PropTypes;
+const { checkPropTypes } = PropTypes;
 const RCTCameraRollManager = require('NativeModules').CameraRollManager;
 
 const deprecatedCreateStrictShapeTypeChecker = require('deprecatedCreateStrictShapeTypeChecker');
@@ -179,19 +179,32 @@ class CameraRoll {
    * See https://facebook.github.io/react-native/docs/cameraroll.html#savetocameraroll
    */
   static saveToCameraRoll(
-    tag: string,
+    tag: (string | object),
     type?: 'photo' | 'video',
+    album?: string,
   ): Promise<string> {
     invariant(
-      typeof tag === 'string',
-      'CameraRoll.saveToCameraRoll must be a valid string.',
+      typeof tag === 'string' || typeof tag === 'object',
+      'CameraRoll.saveToCameraRoll must be a valid string or object.',
     );
 
     invariant(
       type === 'photo' || type === 'video' || type === undefined,
       `The second argument to saveToCameraRoll must be 'photo' or 'video'. You passed ${type ||
-        'unknown'}`,
+      'unknown'}`,
     );
+
+    invariant(
+      typeof album === 'string' || album === undefined,
+      `The thirth argument to saveToCameraRoll must be valid string. You passed ${album ||
+      'unknown'}`,
+    );
+
+    if (typeof tag === 'string') {
+      tag = {
+        'uri': tag
+      }
+    }
 
     let mediaType = 'photo';
     if (type) {
@@ -200,7 +213,11 @@ class CameraRoll {
       mediaType = 'video';
     }
 
-    return RCTCameraRollManager.saveToCameraRoll(tag, mediaType);
+    if (!album) {
+      album = '';
+    }
+
+    return RCTCameraRollManager.saveToCameraRoll(tag, mediaType, album);
   }
 
   /**
@@ -212,8 +229,8 @@ class CameraRoll {
   static getPhotos(params: GetPhotosParams): Promise<PhotoIdentifiersPage> {
     if (__DEV__) {
       checkPropTypes(
-        {params: getPhotosParamChecker},
-        {params},
+        { params: getPhotosParamChecker },
+        { params },
         'params',
         'CameraRoll.getPhotos',
       );
@@ -227,15 +244,15 @@ class CameraRoll {
         const callback = arguments[1];
         successCallback = response => {
           checkPropTypes(
-            {response: getPhotosReturnChecker},
-            {response},
+            { response: getPhotosReturnChecker },
+            { response },
             'response',
             'CameraRoll.getPhotos callback',
           );
           callback(response);
         };
       }
-      const errorCallback = arguments[2] || (() => {});
+      const errorCallback = arguments[2] || (() => { });
       RCTCameraRollManager.getPhotos(params).then(
         successCallback,
         errorCallback,

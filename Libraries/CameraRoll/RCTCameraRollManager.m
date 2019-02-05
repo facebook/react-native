@@ -96,11 +96,15 @@ static void requestPhotoLibraryAccess(RCTPromiseRejectBlock reject, PhotosAuthor
   }
 }
 
-RCT_EXPORT_METHOD(saveToCameraRoll:(NSURLRequest *)request
+RCT_EXPORT_METHOD(saveToCameraRoll:(NSDictionary *)tag
                   type:(NSString *)type
+                  albumName:(NSString *)albumName
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
+
+  NSURLRequest *request = [RCTConvert NSURLRequest:tag];
+  
   __block PHObjectPlaceholder *placeholder;
 
   // We load images and videos differently.
@@ -109,6 +113,8 @@ RCT_EXPORT_METHOD(saveToCameraRoll:(NSURLRequest *)request
   // more ways of loading videos in the future.
   __block NSURL *inputURI = nil;
   __block UIImage *inputImage = nil;
+  __block PHFetchResult *photosAsset;
+  __block PHAssetCollection *collection;
 
   void (^saveBlock)(void) = ^void() {
     // performChanges and the completionHandler are called on
@@ -125,7 +131,14 @@ RCT_EXPORT_METHOD(saveToCameraRoll:(NSURLRequest *)request
         changeRequest = [PHAssetChangeRequest creationRequestForAssetFromImage:inputImage];
       }
 
-      placeholder = [changeRequest placeholderForCreatedAsset];
+      if (albumName != nil) {
+        placeholder = [changeRequest placeholderForCreatedAsset];
+        photosAsset = [PHAsset fetchAssetsInAssetCollection:collection options:nil];
+        PHAssetCollectionChangeRequest *albumChangeRequest = [PHAssetCollectionChangeRequest changeRequestForAssetCollection:collection assets:photosAsset];
+        [albumChangeRequest addAssets:@[placeholder]];
+      } else {
+        placeholder = [changeRequest placeholderForCreatedAsset];
+      }
     } completionHandler:^(BOOL success, NSError * _Nullable error) {
       if (success) {
         NSString *uri = [NSString stringWithFormat:@"ph://%@", [placeholder localIdentifier]];
@@ -135,8 +148,8 @@ RCT_EXPORT_METHOD(saveToCameraRoll:(NSURLRequest *)request
       }
     }];
   };
-  
-  void (^loadBlock)(void) = ^void() {
+
+  void (^checkTypeSave)(void) = ^void() {
     if ([type isEqualToString:@"video"]) {
       inputURI = request.URL;
       saveBlock();
@@ -146,13 +159,43 @@ RCT_EXPORT_METHOD(saveToCameraRoll:(NSURLRequest *)request
           reject(kErrorUnableToLoad, nil, error);
           return;
         }
-        
+
         inputImage = image;
         saveBlock();
       }];
     }
   };
-  
+
+  void (^loadBlock)(void) = ^void() {
+
+    if (albumName != nil) {
+      // Find the album
+      PHFetchOptions *fetchOptions = [[PHFetchOptions alloc] init];
+      fetchOptions.predicate = [NSPredicate predicateWithFormat:@"title = %@", albumName];
+      collection = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum
+                                                            subtype:PHAssetCollectionSubtypeAny
+                                                            options:fetchOptions].firstObject;
+      // Create the album
+      if (!collection) {
+        [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+          PHAssetCollectionChangeRequest *createAlbum = [PHAssetCollectionChangeRequest creationRequestForAssetCollectionWithTitle:albumName];
+          placeholder = [createAlbum placeholderForCreatedAssetCollection];
+        } completionHandler:^(BOOL success, NSError *error) {
+          if (success) {
+            PHFetchResult *collectionFetchResult = [PHAssetCollection fetchAssetCollectionsWithLocalIdentifiers:@[placeholder.localIdentifier]
+                                                                                                        options:nil];
+            collection = collectionFetchResult.firstObject;
+            checkTypeSave();
+          }
+        }];
+      } else {
+        checkTypeSave();
+      }
+    } else {
+      checkTypeSave();
+    }
+  };
+
   requestPhotoLibraryAccess(reject, loadBlock);
 }
 
