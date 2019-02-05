@@ -10,6 +10,8 @@ import android.annotation.TargetApi;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.Picture;
 import android.net.Uri;
@@ -50,6 +52,7 @@ import com.facebook.react.views.webview.events.TopLoadingFinishEvent;
 import com.facebook.react.views.webview.events.TopLoadingStartEvent;
 import com.facebook.react.views.webview.events.TopMessageEvent;
 import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -97,6 +100,9 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   // Use `webView.loadUrl("about:blank")` to reliably reset the view
   // state and release page resources (including any running JavaScript).
   protected static final String BLANK_URL = "about:blank";
+
+  // Intent urls are a type of deeplinks which start with: intent://
+  private static final String INTENT_URL_PREFIX = "intent://";
 
   protected WebViewConfig mWebViewConfig;
   protected @Nullable WebView.PictureListener mPictureListener;
@@ -152,8 +158,38 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     }
 
     private void launchIntent(Context context, String url) {
+      Intent intent = null;
+
+      // URLs starting with 'intent://' require special handling.
+      if (url.startsWith(INTENT_URL_PREFIX)) {
+        try {
+          intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);
+        } catch (URISyntaxException e) {
+          FLog.e(ReactConstants.TAG, "Can't parse intent:// URI", e);
+        }
+      }
+
+      if (intent != null) {
+        // This is needed to prevent security issue where non-exported activities from the same process can be started with intent:// URIs.
+        // See: T10607927/S136245
+        intent.addCategory(Intent.CATEGORY_BROWSABLE);
+        intent.setComponent(null);
+        intent.setSelector(null);
+
+        PackageManager packageManager = context.getPackageManager();
+        ResolveInfo info = packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        if (info != null) {
+            // App is installed.
+            context.startActivity(intent);
+        } else {
+            String fallbackUrl = intent.getStringExtra("browser_fallback_url");
+            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(fallbackUrl));
+        }
+      } else {
+        intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+      }
+
       try {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addCategory(Intent.CATEGORY_BROWSABLE);
         context.startActivity(intent);
