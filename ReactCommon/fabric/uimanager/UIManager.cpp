@@ -3,6 +3,7 @@
 #include "UIManager.h"
 
 #include <react/core/ShadowNodeFragment.h>
+#include <react/uimanager/TimeUtils.h>
 
 namespace facebook {
 namespace react {
@@ -61,13 +62,15 @@ void UIManager::completeSurface(
     SurfaceId surfaceId,
     const SharedShadowNodeUnsharedList &rootChildren) const {
   if (delegate_) {
-    delegate_->uiManagerDidFinishTransaction(surfaceId, rootChildren);
+    delegate_->uiManagerDidFinishTransaction(
+        surfaceId, rootChildren, getTime());
   }
 }
 
 void UIManager::setNativeProps(
     const SharedShadowNode &shadowNode,
     const RawProps &rawProps) const {
+  long startCommitTime = getTime();
   auto &componentDescriptor =
       componentDescriptorRegistry_->at(shadowNode->getComponentHandle());
   auto props = componentDescriptor.cloneProps(shadowNode->getProps(), rawProps);
@@ -78,13 +81,15 @@ void UIManager::setNativeProps(
         shadowTree.tryCommit(
             [&](const SharedRootShadowNode &oldRootShadowNode) {
               return oldRootShadowNode->clone(shadowNode, newShadowNode);
-            });
+            },
+            startCommitTime);
       });
 }
 
 LayoutMetrics UIManager::getRelativeLayoutMetrics(
     const ShadowNode &shadowNode,
     const ShadowNode *ancestorShadowNode) const {
+  long startCommitTime = getTime();
   if (!ancestorShadowNode) {
     shadowTreeRegistry_->visit(
         shadowNode.getRootTag(), [&](const ShadowTree &shadowTree) {
@@ -92,7 +97,8 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
               [&](const SharedRootShadowNode &oldRootShadowNode) {
                 ancestorShadowNode = oldRootShadowNode.get();
                 return nullptr;
-              });
+              },
+              startCommitTime);
         });
   }
 

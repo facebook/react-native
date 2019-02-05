@@ -52,13 +52,16 @@ class ShadowTree final {
    */
   bool tryCommit(
       ShadowTreeCommitTransaction transaction,
+      long commitStartTime,
       int *revision = nullptr) const;
 
   /*
    * Calls `tryCommit` in a loop until it finishes successfully.
    */
-  void commit(ShadowTreeCommitTransaction transaction, int *revision = nullptr)
-      const;
+  void commit(
+      ShadowTreeCommitTransaction transaction,
+      long commitStartTime,
+      int *revision = nullptr) const;
 
 #pragma mark - Delegate
 
