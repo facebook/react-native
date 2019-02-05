@@ -28,14 +28,8 @@ public final class ReactTextInputLocalData {
     mTextSize = editText.getTextSize();
     mInputType = editText.getInputType();
     mPlaceholder = editText.getHint();
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-      mMinLines = editText.getMinLines();
-      mMaxLines = editText.getMaxLines();
-    } else {
-      mMinLines = 1;
-      mMaxLines = 1;
-    }
+    mMinLines = editText.getMinLines();
+    mMaxLines = editText.getMaxLines();
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       mBreakStrategy = editText.getBreakStrategy();

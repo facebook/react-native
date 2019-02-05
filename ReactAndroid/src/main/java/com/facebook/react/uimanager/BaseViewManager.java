@@ -198,7 +198,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   @ReactProp(name = PROP_ACCESSIBILITY_LIVE_REGION)
   public void setAccessibilityLiveRegion(T view, String liveRegion) {
-    if (Build.VERSION.SDK_INT >= 19) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
       if (liveRegion == null || liveRegion.equals("none")) {
         view.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_NONE);
       } else if (liveRegion.equals("polite")) {

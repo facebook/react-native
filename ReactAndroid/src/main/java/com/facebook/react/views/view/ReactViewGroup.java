@@ -254,8 +254,7 @@ public class ReactViewGroup extends ViewGroup implements
     ReactViewBackgroundDrawable backgroundDrawable = getOrCreateReactViewBackground();
     backgroundDrawable.setRadius(borderRadius);
 
-    if (Build.VERSION_CODES.HONEYCOMB < Build.VERSION.SDK_INT
-      && Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
       final int UPDATED_LAYER_TYPE =
         backgroundDrawable.hasRoundedBorders()
           ? View.LAYER_TYPE_SOFTWARE
@@ -271,8 +270,7 @@ public class ReactViewGroup extends ViewGroup implements
     ReactViewBackgroundDrawable backgroundDrawable = getOrCreateReactViewBackground();
     backgroundDrawable.setRadius(borderRadius, position);
 
-    if (Build.VERSION_CODES.HONEYCOMB < Build.VERSION.SDK_INT
-        && Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
       final int UPDATED_LAYER_TYPE =
           backgroundDrawable.hasRoundedBorders()
               ? View.LAYER_TYPE_SOFTWARE
