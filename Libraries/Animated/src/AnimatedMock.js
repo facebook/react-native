@@ -9,9 +9,15 @@
  */
 'use strict';
 
+const {AnimatedEvent, attachNativeEvent} = require('./AnimatedEvent');
 const AnimatedImplementation = require('AnimatedImplementation');
-const AnimatedValueXY = require('./nodes/AnimatedValueXY');
+const AnimatedInterpolation = require('./nodes/AnimatedInterpolation');
+const AnimatedNode = require('./nodes/AnimatedNode');
+const AnimatedProps = require('./nodes/AnimatedProps');
 const AnimatedValue = require('./nodes/AnimatedValue');
+const AnimatedValueXY = require('./nodes/AnimatedValueXY');
+
+const createAnimatedComponent = require('./createAnimatedComponent');
 
 import type {EndCallback} from './animations/Animation';
 import type {TimingAnimationConfig} from './animations/TimingAnimation';
@@ -104,14 +110,29 @@ const event = function(argMapping: Array<?Mapping>, config?: EventConfig): any {
 };
 
 module.exports = {
-  ...AnimatedImplementation,
+  Value: AnimatedValue,
+  ValueXY: AnimatedValueXY,
+  Interpolation: AnimatedInterpolation,
+  Node: AnimatedNode,
   decay,
   timing,
   spring,
+  add: AnimatedImplementation.add,
+  subtract: AnimatedImplementation.subtract,
+  divide: AnimatedImplementation.divide,
+  multiply: AnimatedImplementation.multiply,
+  modulo: AnimatedImplementation.modulo,
+  diffClamp: AnimatedImplementation.diffClamp,
   delay,
   sequence,
   parallel,
   stagger,
   loop,
   event,
+  createAnimatedComponent,
+  attachNativeEvent,
+  forkEvent: AnimatedImplementation.forkEvent,
+  unforkEvent: AnimatedImplementation.unforkEvent,
+  Event: AnimatedEvent,
+  __PropsOnlyForTests: AnimatedProps,
 };
