@@ -10,7 +10,7 @@
 'use strict';
 
 const PropTypes = require('prop-types');
-const { checkPropTypes } = PropTypes;
+const {checkPropTypes} = PropTypes;
 const RCTCameraRollManager = require('NativeModules').CameraRollManager;
 
 const deprecatedCreateStrictShapeTypeChecker = require('deprecatedCreateStrictShapeTypeChecker');
@@ -179,7 +179,7 @@ class CameraRoll {
    * See https://facebook.github.io/react-native/docs/cameraroll.html#savetocameraroll
    */
   static saveToCameraRoll(
-    tag: (string | object),
+    tag: string | object,
     type?: 'photo' | 'video',
     album?: string,
   ): Promise<string> {
@@ -190,21 +190,19 @@ class CameraRoll {
 
     invariant(
       type === 'photo' || type === 'video' || type === undefined,
-      `The second argument to saveToCameraRoll must be 'photo' or 'video'. You passed ${type ||
-      'unknown'}`,
+      `The second argument to saveToCameraRoll must be 'photo' or 'video'. You passed ${type || 'unknown'}`,
     );
 
     invariant(
       typeof album === 'string' || album === undefined,
-      `The thirth argument to saveToCameraRoll must be valid string. You passed ${album ||
-      'unknown'}`,
+      `The thirth argument to saveToCameraRoll must be valid string. You passed ${album || 'unknown'}`,
     );
 
     if (typeof tag === 'string') {
       tag = {
-        'uri': tag
+        uri: tag
       }
-    }
+    };
 
     let mediaType = 'photo';
     if (type) {
@@ -225,8 +223,8 @@ class CameraRoll {
   static getPhotos(params: GetPhotosParams): Promise<PhotoIdentifiersPage> {
     if (__DEV__) {
       checkPropTypes(
-        { params: getPhotosParamChecker },
-        { params },
+        {params: getPhotosParamChecker},
+        {params},
         'params',
         'CameraRoll.getPhotos',
       );
@@ -240,8 +238,8 @@ class CameraRoll {
         const callback = arguments[1];
         successCallback = response => {
           checkPropTypes(
-            { response: getPhotosReturnChecker },
-            { response },
+            {response: getPhotosReturnChecker},
+            {response},
             'response',
             'CameraRoll.getPhotos callback',
           );
