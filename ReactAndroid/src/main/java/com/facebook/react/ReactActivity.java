@@ -11,7 +11,7 @@ import javax.annotation.Nullable;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
@@ -21,7 +21,7 @@ import com.facebook.react.modules.core.PermissionListener;
 /**
  * Base Activity for React Native applications.
  */
-public abstract class ReactActivity extends FragmentActivity
+public abstract class ReactActivity extends AppCompatActivity
     implements DefaultHardwareBackBtnHandler, PermissionAwareActivity {
 
   private final ReactActivityDelegate mDelegate;
