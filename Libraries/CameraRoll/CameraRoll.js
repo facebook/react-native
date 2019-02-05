@@ -213,10 +213,6 @@ class CameraRoll {
       mediaType = 'video';
     }
 
-    if (!album) {
-      album = '';
-    }
-
     return RCTCameraRollManager.saveToCameraRoll(tag, mediaType, album);
   }
 
