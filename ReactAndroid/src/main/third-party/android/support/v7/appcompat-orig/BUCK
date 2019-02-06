@@ -19,11 +19,7 @@ rn_android_library(
         ":res-for-appcompat",
     ],
     exported_deps = [
-<<<<<<< HEAD
         ":classes-for-react-native"
-=======
-        ":classes-for-react-native",
->>>>>>> master
     ],
 )
 
