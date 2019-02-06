@@ -64,13 +64,24 @@ class Alert {
 		} else if (Platform.OS === 'android') {
 			AlertAndroid.alert(title, message, buttons, options);
 		}
-	}
+  }
+  
+  static prompt(title: ?string,
+		message?: ?string,
+		callbackOrButtons?: ?(((text: string) => void) | Buttons),
+		type?: ?AlertType = 'plain-text',
+		defaultValue?: string,
+		keyboardType?: string): void {
+      if (Platform.OS === 'ios') {
+        AlertIOS.prompt(title, message, callbackOrButtons, type, defaultValue, keyboardType);
+      }
+  }
 }
 
 /**
  * Wrapper around the iOS native module.
  */
-class AlertIOS {
+export class AlertIOS {
 	static alert(title: ?string, message?: ?string, callbackOrButtons?: ?((() => void) | Buttons)): void {
 		this.prompt(title, message, callbackOrButtons, 'default');
 	}
@@ -149,7 +160,7 @@ class AlertIOS {
 /**
  * Wrapper around the Android native module.
  */
-class AlertAndroid {
+export class AlertAndroid {
 	static alert(title: ?string, message?: ?string, buttons?: Buttons, options?: Options): void {
 		let config = {
 			title: title || '',

@@ -12,7 +12,7 @@
 
 const React = require('react');
 const ReactNative = require('react-native');
-const {StyleSheet, View, Text, TouchableHighlight, AlertIOS} = ReactNative;
+const {StyleSheet, View, Text, TouchableHighlight, Alert} = ReactNative;
 
 const {SimpleAlertExampleBlock} = require('./AlertExample');
 
@@ -55,7 +55,7 @@ class PromptOptions extends React.Component<Props, State> {
         <TouchableHighlight
           style={styles.wrapper}
           onPress={() =>
-            AlertIOS.prompt('Type a value', null, this.saveResponse)
+            Alert.prompt('Type a value', null, this.saveResponse)
           }>
           <View style={styles.button}>
             <Text>prompt with title & callback</Text>
@@ -65,7 +65,7 @@ class PromptOptions extends React.Component<Props, State> {
         <TouchableHighlight
           style={styles.wrapper}
           onPress={() =>
-            AlertIOS.prompt('Type a value', null, this.customButtons)
+            Alert.prompt('Type a value', null, this.customButtons)
           }>
           <View style={styles.button}>
             <Text>prompt with title & custom buttons</Text>
@@ -75,7 +75,7 @@ class PromptOptions extends React.Component<Props, State> {
         <TouchableHighlight
           style={styles.wrapper}
           onPress={() =>
-            AlertIOS.prompt(
+            Alert.prompt(
               'Type a phone number',
               null,
               null,
@@ -92,7 +92,7 @@ class PromptOptions extends React.Component<Props, State> {
         <TouchableHighlight
           style={styles.wrapper}
           onPress={() =>
-            AlertIOS.prompt(
+            Alert.prompt(
               'Type a value',
               null,
               this.saveResponse,
@@ -108,7 +108,7 @@ class PromptOptions extends React.Component<Props, State> {
         <TouchableHighlight
           style={styles.wrapper}
           onPress={() =>
-            AlertIOS.prompt(
+            Alert.prompt(
               'Type a value',
               null,
               this.customButtons,
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
 });
 
 exports.framework = 'React';
-exports.title = 'AlertIOS';
+exports.title = 'Alert';
 exports.description = 'iOS alerts and action sheets';
 exports.examples = [
   {
@@ -171,7 +171,7 @@ exports.examples = [
         <View>
           <TouchableHighlight
             style={styles.wrapper}
-            onPress={() => AlertIOS.prompt('Plain Text Entry')}>
+            onPress={() => Alert.prompt('Plain Text Entry')}>
             <View style={styles.button}>
               <Text>plain-text</Text>
             </View>
@@ -179,7 +179,7 @@ exports.examples = [
           <TouchableHighlight
             style={styles.wrapper}
             onPress={() =>
-              AlertIOS.prompt('Secure Text', null, null, 'secure-text')
+              Alert.prompt('Secure Text', null, null, 'secure-text')
             }>
             <View style={styles.button}>
               <Text>secure-text</Text>
@@ -188,7 +188,7 @@ exports.examples = [
           <TouchableHighlight
             style={styles.wrapper}
             onPress={() =>
-              AlertIOS.prompt('Login & Password', null, null, 'login-password')
+              Alert.prompt('Login & Password', null, null, 'login-password')
             }>
             <View style={styles.button}>
               <Text>login-password</Text>

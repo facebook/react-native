@@ -185,6 +185,12 @@ module.exports = {
   get Alert() {
     return require('Alert');
   },
+  get AlertIOS(){
+    warnOnce(
+      'AlertIOS',
+      'AlertIOS has been moved to Alert. '
+    );
+  },
   get Animated() {
     return require('Animated');
   },
