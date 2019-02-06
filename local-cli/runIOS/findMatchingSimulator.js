@@ -44,7 +44,8 @@ function findMatchingSimulator(simulators, simulatorString) {
     if (!version.includes('iOS') && !version.includes('tvOS')) {
       continue;
     }
-    if (simulatorVersion && !version.endsWith(simulatorVersion)) {
+    let versionWithDashReplacedByDot = version.replace(/-/g,'\.')
+    if (simulatorVersion && !versionWithDashReplacedByDot.endsWith(simulatorVersion)) {
       continue;
     }
     for (let i in devices[version]) {
