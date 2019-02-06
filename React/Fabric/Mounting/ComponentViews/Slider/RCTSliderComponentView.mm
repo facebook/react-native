@@ -69,6 +69,44 @@ using namespace facebook::react;
   return self;
 }
 
+// Recycling still doesn't work 100% properly
+// TODO: T40099998 implement recycling properly for Fabric Slider component
+- (void)prepareForRecycle
+{
+  [super prepareForRecycle];
+  
+  self.trackImageCoordinator = nullptr;
+  self.minimumTrackImageCoordinator = nullptr;
+  self.maximumTrackImageCoordinator = nullptr;
+  self.thumbImageCoordinator = nullptr;
+
+  _sliderLocalData.reset();
+
+  // Tint colors will be taken care of when props are set again - we just
+  // need to make sure that image properties are reset here
+  [_sliderView setMinimumTrackImage:nil forState:UIControlStateNormal];
+  [_sliderView setMaximumTrackImage:nil forState:UIControlStateNormal];
+  [_sliderView setThumbImage:nil forState:UIControlStateNormal];
+
+  _trackImage = nil;
+  _minimumTrackImage = nil;
+  _maximumTrackImage = nil;
+  _thumbImage = nil;
+}
+
+-(void)dealloc
+{
+  self.trackImageCoordinator = nullptr;
+  self.minimumTrackImageCoordinator = nullptr;
+  self.maximumTrackImageCoordinator = nullptr;
+  self.thumbImageCoordinator = nullptr;
+
+  _trackImageResponseObserverProxy.reset();
+  _minimumTrackImageResponseObserverProxy.reset();
+  _maximumTrackImageResponseObserverProxy.reset();
+  _thumbImageResponseObserverProxy.reset();
+}
+
 #pragma mark - RCTComponentViewProtocol
 
 + (ComponentHandle)componentHandle
