@@ -1,10 +1,7 @@
+// Copyright (c) Facebook, Inc. and its affiliates.
 //
-//  SampleCxxModule.cpp
-//  RNTesterUnitTests
-//
-//  Created by Julio Cesar Rocha on 11/1/18.
-//  Copyright © 2018 Facebook. All rights reserved.
-//
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #include "SampleCxxModule.hpp"
 
