@@ -54,8 +54,9 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
       if (mLocalMap == null) {
         Object[] values = Assertions.assertNotNull(importValues());
         mJniCallCounter++;
-        mLocalMap = new HashMap<>();
-        for(int i = 0; i< mKeys.length; i++) {
+        int length = mKeys.length;
+        mLocalMap = new HashMap<>(length);
+        for(int i = 0; i< length; i++) {
           mLocalMap.put(mKeys[i], values[i]);
         }
       }
@@ -80,8 +81,9 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
       if (mLocalTypeMap == null) {
         Object[] types = Assertions.assertNotNull(importTypes());
         mJniCallCounter++;
-        mLocalTypeMap = new HashMap<>();
-        for(int i = 0; i< mKeys.length; i++) {
+        int length = mKeys.length;
+        mLocalTypeMap = new HashMap<>(length);
+        for(int i = 0; i< length; i++) {
           mLocalTypeMap.put(mKeys[i], (ReadableType) types[i]);
         }
       }
