@@ -27,15 +27,17 @@ using namespace facebook::react;
   UIImage *_maximumTrackImage;
   UIImage *_thumbImage;
   
-  std::shared_ptr<const ImageResponseObserverCoordinator> _trackImageCoordinator;
+  const ImageResponseObserverCoordinator *_trackImageCoordinator;
+  const ImageResponseObserverCoordinator *_minimumTrackImageCoordinator;
+  const ImageResponseObserverCoordinator *_maximumTrackImageCoordinator;
+  const ImageResponseObserverCoordinator *_thumbImageCoordinator;
+
   std::unique_ptr<RCTImageResponseObserverProxy> _trackImageResponseObserverProxy;
-  std::shared_ptr<const ImageResponseObserverCoordinator> _minimumTrackImageCoordinator;
   std::unique_ptr<RCTImageResponseObserverProxy> _minimumTrackImageResponseObserverProxy;
-  std::shared_ptr<const ImageResponseObserverCoordinator> _maximumTrackImageCoordinator;
   std::unique_ptr<RCTImageResponseObserverProxy> _maximumTrackImageResponseObserverProxy;
-  std::shared_ptr<const ImageResponseObserverCoordinator> _thumbImageCoordinator;
   std::unique_ptr<RCTImageResponseObserverProxy> _thumbImageResponseObserverProxy;
 }
+
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -140,42 +142,42 @@ using namespace facebook::react;
   }
 }
 
-- (void)setTrackImageCoordinator:(std::shared_ptr<const ImageResponseObserverCoordinator>)coordinator {
+- (void)setTrackImageCoordinator:(const ImageResponseObserverCoordinator *)coordinator {
   if (_trackImageCoordinator) {
     _trackImageCoordinator->removeObserver(_trackImageResponseObserverProxy.get());
   }
   _trackImageCoordinator = coordinator;
-  if (_trackImageCoordinator != nullptr) {
+  if (_trackImageCoordinator) {
     _trackImageCoordinator->addObserver(_trackImageResponseObserverProxy.get());
   }
 }
 
-- (void)setMinimumTrackImageCoordinator:(std::shared_ptr<const ImageResponseObserverCoordinator>)coordinator {
+- (void)setMinimumTrackImageCoordinator:(const ImageResponseObserverCoordinator *)coordinator {
   if (_minimumTrackImageCoordinator) {
     _minimumTrackImageCoordinator->removeObserver(_minimumTrackImageResponseObserverProxy.get());
   }
   _minimumTrackImageCoordinator = coordinator;
-  if (_minimumTrackImageCoordinator != nullptr) {
+  if (_minimumTrackImageCoordinator) {
     _minimumTrackImageCoordinator->addObserver(_minimumTrackImageResponseObserverProxy.get());
   }
 }
 
-- (void)setMaximumTrackImageCoordinator:(std::shared_ptr<const ImageResponseObserverCoordinator>)coordinator {
+- (void)setMaximumTrackImageCoordinator:(const ImageResponseObserverCoordinator *)coordinator {
   if (_maximumTrackImageCoordinator) {
     _maximumTrackImageCoordinator->removeObserver(_maximumTrackImageResponseObserverProxy.get());
   }
   _maximumTrackImageCoordinator = coordinator;
-  if (_maximumTrackImageCoordinator != nullptr) {
+  if (_maximumTrackImageCoordinator) {
     _maximumTrackImageCoordinator->addObserver(_maximumTrackImageResponseObserverProxy.get());
   }
 }
 
-- (void)setThumbImageCoordinator:(std::shared_ptr<const ImageResponseObserverCoordinator>)coordinator {
+- (void)setThumbImageCoordinator:(const ImageResponseObserverCoordinator *)coordinator {
   if (_thumbImageCoordinator) {
     _thumbImageCoordinator->removeObserver(_thumbImageResponseObserverProxy.get());
   }
   _thumbImageCoordinator = coordinator;
-  if (_thumbImageCoordinator != nullptr) {
+  if (_thumbImageCoordinator) {
     _thumbImageCoordinator->addObserver(_thumbImageResponseObserverProxy.get());
   }
 }

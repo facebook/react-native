@@ -55,8 +55,7 @@ class ImageRequest final {
   /*
    * Get observer coordinator.
    */
-  std::shared_ptr<const ImageResponseObserverCoordinator>
-  getObserverCoordinator() const;
+  const ImageResponseObserverCoordinator *getObserverCoordinator() const;
 
  private:
   /*

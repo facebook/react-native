@@ -21,7 +21,7 @@
 @implementation RCTImageComponentView {
   UIImageView *_imageView;
   SharedImageLocalData _imageLocalData;
-  std::shared_ptr<const ImageResponseObserverCoordinator> _coordinator;
+  const ImageResponseObserverCoordinator *_coordinator;
   std::unique_ptr<RCTImageResponseObserverProxy> _imageResponseObserverProxy;
 }
 
@@ -92,7 +92,7 @@
   }
 }
 
-- (void)setCoordinator:(std::shared_ptr<const ImageResponseObserverCoordinator>)coordinator {
+- (void)setCoordinator:(const ImageResponseObserverCoordinator *)coordinator {
   if (_coordinator) {
     _coordinator->removeObserver(_imageResponseObserverProxy.get());
   }
