@@ -54,9 +54,7 @@ class PromptOptions extends React.Component<Props, State> {
 
         <TouchableHighlight
           style={styles.wrapper}
-          onPress={() =>
-            Alert.prompt('Type a value', null, this.saveResponse)
-          }>
+          onPress={() => Alert.prompt('Type a value', null, this.saveResponse)}>
           <View style={styles.button}>
             <Text>prompt with title & callback</Text>
           </View>

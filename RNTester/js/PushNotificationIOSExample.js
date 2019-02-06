@@ -110,16 +110,12 @@ class NotificationExample extends React.Component<{}> {
   }
 
   _onRegistered(deviceToken) {
-    Alert.alert(
-      'Registered For Remote Push',
-      `Device Token: ${deviceToken}`,
-      [
-        {
-          text: 'Dismiss',
-          onPress: null,
-        },
-      ],
-    );
+    Alert.alert('Registered For Remote Push', `Device Token: ${deviceToken}`, [
+      {
+        text: 'Dismiss',
+        onPress: null,
+      },
+    ]);
   }
 
   _onRegistrationError(error) {
