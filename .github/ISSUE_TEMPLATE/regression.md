@@ -1,21 +1,28 @@
 ---
-name: 🐛 Bug Report
-about: You want to report a reproducible bug or regression in React Native.
-labels: "Type: Bug Report"
+name: 💥 Regression Report
+about: You want to report unexpected behavior that worked in previous releases.
+labels: "Type: Bug Report", "Impact: Regression"
 ---
 
-## 🐛 Bug Report
+## 💥 Regression Report
 <!-- 
-  A clear and concise description of what the bug is.
-  Include screenshots if needed.
+  A clear and concise description of what the regression is.
 -->
 
+## Last working version
+
+Worked up to version:
+
+Stopped working in version:
+
 ## To Reproduce
-<!-- 
+
+<!--
   Steps to reproduce the behavior.
 -->
 
 ## Expected Behavior
+
 <!-- 
   A clear and concise description of what you expected to happen.
 -->
