@@ -17,15 +17,7 @@ const Platform = require('Platform');
 /**
  * Array or buttons
  * @typedef {Array} ButtonsArray
- * @property {string=} text Button label
- * @property {Function=} onPress Callback function when button pressed
- * @property {AlertButtonStyle=} style Button style
- */
-
-/**
- * Array or buttons
- * @typedef {Array} ButtonsArray
- * @property {string=} text Button label
+ * g@property {string=} text Button label
  * @property {Function=} onPress Callback function when button pressed
  * @property {AlertButtonStyle=} style Button style
  */
