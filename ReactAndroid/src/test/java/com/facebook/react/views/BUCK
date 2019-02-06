@@ -15,6 +15,7 @@ rn_robolectric_test(
         react_native_dep("libraries/fresco/fresco-react-native:imagepipeline"),
         react_native_dep("libraries/soloader/java/com/facebook/soloader:soloader"),
         react_native_dep("third-party/android/support/v4:lib-support-v4"),
+        react_native_dep("third-party/android/support/v7/appcompat-orig:appcompat"),
         react_native_dep("third-party/java/fest:fest"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_dep("third-party/java/junit:junit"),
