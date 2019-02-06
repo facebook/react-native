@@ -1,11 +1,8 @@
 ---
-name: 🚀 Discussion or Proposal
+name: 🚀 Discussion
 about: You have an idea that could make React Native better, or you want to discuss some aspect of the framework.
 labels: "Type: Discussion"
 ---
-
-The React Native community has set up a separate repository to track discussions and proposals:
-- https://github.com/react-native-community/discussions-and-proposals
 
 If you want to participate in casual discussions about the use of React Native, consider participating in one of the following forums:
 - Discord Community: https://discord.gg/0ZcbPKXt5bZjGY5n
@@ -15,4 +12,7 @@ If you want to participate in casual discussions about the use of React Native, 
 For a full list of community resources:
 - http://facebook.github.io/react-native/help
 
-### Please note that discussions and proposals opened as issues in the core React Native repository will be closed.
+If you'd like to discuss topics related to the future of React Native, please check out the discussions and proposals repo:
+- https://github.com/react-native-community/discussions-and-proposals
+
+### Please note that discussions opened as issues in the core React Native repository will be closed.
