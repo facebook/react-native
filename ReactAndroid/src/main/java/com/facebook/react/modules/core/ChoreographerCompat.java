@@ -8,10 +8,7 @@
  */
 package com.facebook.react.modules.core;
 
-import android.annotation.TargetApi;
-import android.os.Build;
 import android.os.Handler;
-import android.os.Looper;
 import android.view.Choreographer;
 import com.facebook.react.bridge.UiThreadUtil;
 
@@ -22,8 +19,6 @@ import com.facebook.react.bridge.UiThreadUtil;
 public class ChoreographerCompat {
 
   private static final long ONE_FRAME_MILLIS = 17;
-  private static final boolean IS_JELLYBEAN_OR_HIGHER =
-    Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
   private static ChoreographerCompat sInstance;
 
   private Handler mHandler;
@@ -38,55 +33,36 @@ public class ChoreographerCompat {
   }
 
   private ChoreographerCompat() {
-    if (IS_JELLYBEAN_OR_HIGHER) {
-      mChoreographer = getChoreographer();
-    } else {
-      mHandler = new Handler(Looper.getMainLooper());
-    }
+    mChoreographer = getChoreographer();
   }
 
   public void postFrameCallback(FrameCallback callbackWrapper) {
-    if (IS_JELLYBEAN_OR_HIGHER) {
-      choreographerPostFrameCallback(callbackWrapper.getFrameCallback());
-    } else {
-      mHandler.postDelayed(callbackWrapper.getRunnable(), 0);
-    }
+    choreographerPostFrameCallback(callbackWrapper.getFrameCallback());
   }
 
   public void postFrameCallbackDelayed(FrameCallback callbackWrapper, long delayMillis) {
-    if (IS_JELLYBEAN_OR_HIGHER) {
-      choreographerPostFrameCallbackDelayed(callbackWrapper.getFrameCallback(), delayMillis);
-    } else {
-      mHandler.postDelayed(callbackWrapper.getRunnable(), delayMillis + ONE_FRAME_MILLIS);
-    }
+    choreographerPostFrameCallbackDelayed(callbackWrapper.getFrameCallback(), delayMillis);
   }
 
   public void removeFrameCallback(FrameCallback callbackWrapper) {
-    if (IS_JELLYBEAN_OR_HIGHER) {
-      choreographerRemoveFrameCallback(callbackWrapper.getFrameCallback());
-    } else {
-      mHandler.removeCallbacks(callbackWrapper.getRunnable());
-    }
+    choreographerRemoveFrameCallback(callbackWrapper.getFrameCallback());
   }
 
-  @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
   private Choreographer getChoreographer() {
     return Choreographer.getInstance();
   }
 
-  @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+
   private void choreographerPostFrameCallback(Choreographer.FrameCallback frameCallback) {
     mChoreographer.postFrameCallback(frameCallback);
   }
 
-  @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
   private void choreographerPostFrameCallbackDelayed(
     Choreographer.FrameCallback frameCallback,
     long delayMillis) {
     mChoreographer.postFrameCallbackDelayed(frameCallback, delayMillis);
   }
 
-  @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
   private void choreographerRemoveFrameCallback(Choreographer.FrameCallback frameCallback) {
     mChoreographer.removeFrameCallback(frameCallback);
   }
@@ -101,7 +77,6 @@ public class ChoreographerCompat {
     private Runnable mRunnable;
     private Choreographer.FrameCallback mFrameCallback;
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     Choreographer.FrameCallback getFrameCallback() {
       if (mFrameCallback == null) {
         mFrameCallback = new Choreographer.FrameCallback() {
