@@ -52,7 +52,6 @@ public class ChoreographerCompat {
     return Choreographer.getInstance();
   }
 
-
   private void choreographerPostFrameCallback(Choreographer.FrameCallback frameCallback) {
     mChoreographer.postFrameCallback(frameCallback);
   }
