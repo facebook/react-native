@@ -10,12 +10,31 @@
 #import <react/components/slider/SliderEventEmitter.h>
 #import <react/components/slider/SliderProps.h>
 #import <react/components/slider/SliderShadowNode.h>
+#import <react/components/slider/SliderLocalData.h>
+#import <React/RCTImageResponseObserverProxy.h>
+
+#import "MainQueueExecutor.h"
 
 using namespace facebook::react;
 
 @implementation RCTSliderComponentView {
   UISlider *_sliderView;
-  float _prevValue;
+  float _previousValue;
+  SharedSliderLocalData _sliderLocalData;
+    
+  UIImage *_trackImage;
+  UIImage *_minimumTrackImage;
+  UIImage *_maximumTrackImage;
+  UIImage *_thumbImage;
+  
+  std::shared_ptr<const ImageResponseObserverCoordinator> _trackImageCoordinator;
+  std::unique_ptr<RCTImageResponseObserverProxy> _trackImageResponseObserverProxy;
+  std::shared_ptr<const ImageResponseObserverCoordinator> _minimumTrackImageCoordinator;
+  std::unique_ptr<RCTImageResponseObserverProxy> _minimumTrackImageResponseObserverProxy;
+  std::shared_ptr<const ImageResponseObserverCoordinator> _maximumTrackImageCoordinator;
+  std::unique_ptr<RCTImageResponseObserverProxy> _maximumTrackImageResponseObserverProxy;
+  std::shared_ptr<const ImageResponseObserverCoordinator> _thumbImageCoordinator;
+  std::unique_ptr<RCTImageResponseObserverProxy> _thumbImageResponseObserverProxy;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -29,8 +48,18 @@ using namespace facebook::react;
     [_sliderView addTarget:self
                     action:@selector(onChange:)
           forControlEvents:UIControlEventValueChanged];
+    [_sliderView addTarget:self
+                    action:@selector(sliderTouchEnd:)
+          forControlEvents:(UIControlEventTouchUpInside |
+                            UIControlEventTouchUpOutside |
+                            UIControlEventTouchCancel)];
 
     _sliderView.value = defaultProps->value;
+
+    _trackImageResponseObserverProxy = std::make_unique<RCTImageResponseObserverProxy>((__bridge void *)self);
+    _minimumTrackImageResponseObserverProxy = std::make_unique<RCTImageResponseObserverProxy>((__bridge void *)self);
+    _maximumTrackImageResponseObserverProxy = std::make_unique<RCTImageResponseObserverProxy>((__bridge void *)self);
+    _thumbImageResponseObserverProxy = std::make_unique<RCTImageResponseObserverProxy>((__bridge void *)self);
 
     self.contentView = _sliderView;
   }
@@ -55,7 +84,17 @@ using namespace facebook::react;
   // `value`
   if (oldSliderProps.value != newSliderProps.value) {
     _sliderView.value = newSliderProps.value;
-    _prevValue = newSliderProps.value;
+    _previousValue = newSliderProps.value;
+  }
+
+  // `minimumValue`
+  if (oldSliderProps.minimumValue != newSliderProps.minimumValue) {
+    _sliderView.minimumValue = newSliderProps.minimumValue;
+  }
+
+  // `maximumValue`
+  if (oldSliderProps.maximumValue != newSliderProps.maximumValue) {
+    _sliderView.maximumValue = newSliderProps.maximumValue;
   }
 
   // `disabled`
@@ -79,14 +118,178 @@ using namespace facebook::react;
   }
 }
 
-- (void)onChange:(UISlider *)sender
+- (void)updateLocalData:(SharedLocalData)localData
+           oldLocalData:(SharedLocalData)oldLocalData
 {
-  if (_prevValue == sender.value) {
+  SharedSliderLocalData previousData = _sliderLocalData;
+  _sliderLocalData = std::static_pointer_cast<const SliderLocalData>(localData);
+  assert(_sliderLocalData);
+  bool havePreviousData = previousData != nullptr;
+  
+  if (!havePreviousData || _sliderLocalData->getTrackImageSource() != previousData->getTrackImageSource()) {
+    self.trackImageCoordinator = _sliderLocalData->getTrackImageRequest().getObserverCoordinator();
+  }
+  if (!havePreviousData || _sliderLocalData->getMinimumTrackImageSource() != previousData->getMinimumTrackImageSource()) {
+    self.minimumTrackImageCoordinator = _sliderLocalData->getMinimumTrackImageRequest().getObserverCoordinator();
+  }
+  if (!havePreviousData || _sliderLocalData->getMaximumTrackImageSource() != previousData->getMaximumTrackImageSource()) {
+    self.maximumTrackImageCoordinator = _sliderLocalData->getMaximumTrackImageRequest().getObserverCoordinator();
+  }
+  if (!havePreviousData || _sliderLocalData->getThumbImageSource() != previousData->getThumbImageSource()) {
+    self.thumbImageCoordinator = _sliderLocalData->getThumbImageRequest().getObserverCoordinator();
+  }
+}
+
+- (void)setTrackImageCoordinator:(std::shared_ptr<const ImageResponseObserverCoordinator>)coordinator {
+  if (_trackImageCoordinator) {
+    _trackImageCoordinator->removeObserver(_trackImageResponseObserverProxy.get());
+  }
+  _trackImageCoordinator = coordinator;
+  if (_trackImageCoordinator != nullptr) {
+    _trackImageCoordinator->addObserver(_trackImageResponseObserverProxy.get());
+  }
+}
+
+- (void)setMinimumTrackImageCoordinator:(std::shared_ptr<const ImageResponseObserverCoordinator>)coordinator {
+  if (_minimumTrackImageCoordinator) {
+    _minimumTrackImageCoordinator->removeObserver(_minimumTrackImageResponseObserverProxy.get());
+  }
+  _minimumTrackImageCoordinator = coordinator;
+  if (_minimumTrackImageCoordinator != nullptr) {
+    _minimumTrackImageCoordinator->addObserver(_minimumTrackImageResponseObserverProxy.get());
+  }
+}
+
+- (void)setMaximumTrackImageCoordinator:(std::shared_ptr<const ImageResponseObserverCoordinator>)coordinator {
+  if (_maximumTrackImageCoordinator) {
+    _maximumTrackImageCoordinator->removeObserver(_maximumTrackImageResponseObserverProxy.get());
+  }
+  _maximumTrackImageCoordinator = coordinator;
+  if (_maximumTrackImageCoordinator != nullptr) {
+    _maximumTrackImageCoordinator->addObserver(_maximumTrackImageResponseObserverProxy.get());
+  }
+}
+
+- (void)setThumbImageCoordinator:(std::shared_ptr<const ImageResponseObserverCoordinator>)coordinator {
+  if (_thumbImageCoordinator) {
+    _thumbImageCoordinator->removeObserver(_thumbImageResponseObserverProxy.get());
+  }
+  _thumbImageCoordinator = coordinator;
+  if (_thumbImageCoordinator != nullptr) {
+    _thumbImageCoordinator->addObserver(_thumbImageResponseObserverProxy.get());
+  }
+}
+
+- (void)setTrackImage:(UIImage *)trackImage {
+  if ([trackImage isEqual:_trackImage]) {
     return;
   }
-  _prevValue = sender.value;
-
-  std::dynamic_pointer_cast<const SliderEventEmitter>(_eventEmitter)->onValueChange(sender.value);
+  
+  _trackImage = trackImage;
+  _minimumTrackImage = nil;
+  _maximumTrackImage = nil;
+  CGFloat width = trackImage.size.width / 2;
+  UIImage *minimumTrackImage = [trackImage resizableImageWithCapInsets:(UIEdgeInsets){
+      0, width, 0, width
+  } resizingMode:UIImageResizingModeStretch];
+  UIImage *maximumTrackImage = [trackImage resizableImageWithCapInsets:(UIEdgeInsets){
+      0, width, 0, width
+  } resizingMode:UIImageResizingModeStretch];
+  [_sliderView setMinimumTrackImage:minimumTrackImage forState:UIControlStateNormal];
+  [_sliderView setMaximumTrackImage:maximumTrackImage forState:UIControlStateNormal];
 }
+
+-(void)setMinimumTrackImage:(UIImage *)minimumTrackImage {
+  if ([minimumTrackImage isEqual:_minimumTrackImage] && _trackImage == nil) {
+    return;
+  }
+  
+  _trackImage = nil;
+  _minimumTrackImage = minimumTrackImage;
+  _minimumTrackImage = [_minimumTrackImage resizableImageWithCapInsets:(UIEdgeInsets) {
+    0, _minimumTrackImage.size.width, 0, 0
+  } resizingMode:UIImageResizingModeStretch];
+  [_sliderView setMinimumTrackImage:_minimumTrackImage forState:UIControlStateNormal];
+}
+
+-(void)setMaximumTrackImage:(UIImage *)maximumTrackImage {
+  if ([maximumTrackImage isEqual:_maximumTrackImage] && _trackImage == nil) {
+    return;
+  }
+  
+  _trackImage = nil;
+  _maximumTrackImage = maximumTrackImage;
+  _maximumTrackImage = [_maximumTrackImage resizableImageWithCapInsets:(UIEdgeInsets) {
+    0, 0, 0, _maximumTrackImage.size.width
+  } resizingMode:UIImageResizingModeStretch];
+  [_sliderView setMaximumTrackImage:_maximumTrackImage forState:UIControlStateNormal];
+}
+
+-(void)setThumbImage:(UIImage *)thumbImage {
+  if ([thumbImage isEqual:_thumbImage]) {
+    return;
+  }
+  
+  _thumbImage = thumbImage;
+  [_sliderView setThumbImage:thumbImage forState:UIControlStateNormal];
+}
+
+- (void)onChange:(UISlider *)sender
+{
+  [self onChange:sender withContinuous:YES];
+}
+
+- (void)sliderTouchEnd:(UISlider *)sender
+{
+  [self onChange:sender withContinuous:NO];
+}
+
+- (void)onChange:(UISlider *)sender withContinuous:(BOOL)continuous
+{
+  float value = sender.value;
+
+  const auto &props = *std::static_pointer_cast<const SliderProps>(_props);
+ 
+  if (props.step > 0 && value <= (props.maximumValue - props.minimumValue)) {
+    value = MAX(props.minimumValue,
+        MIN(props.maximumValue,
+            props.minimumValue + round((value - props.minimumValue) / props.step) * props.step
+            )
+        );
+    
+    [_sliderView setValue:value animated:YES];
+  }
+
+  if (continuous && _previousValue != value) {
+    std::dynamic_pointer_cast<const SliderEventEmitter>(_eventEmitter)->onValueChange(value);
+  }
+  if (!continuous) {
+    std::dynamic_pointer_cast<const SliderEventEmitter>(_eventEmitter)->onSlidingComplete(value);
+  }
+  
+  _previousValue = value;
+}
+
+#pragma mark - RCTImageResponseDelegate
+
+- (void)didReceiveImage:(UIImage *)image fromObserver:(void *)observer
+{
+  if (observer == _trackImageResponseObserverProxy.get()) {
+    self.trackImage = image;
+  } else if (observer == _minimumTrackImageResponseObserverProxy.get()) {
+    self.minimumTrackImage = image;
+  } else if (observer == _maximumTrackImageResponseObserverProxy.get()) {
+    self.maximumTrackImage = image;
+  } else if (observer == _thumbImageResponseObserverProxy.get()) {
+    self.thumbImage = image;
+  }
+}
+
+- (void)didReceiveProgress:(float)progress fromObserver:(void *)observer {
+}
+
+- (void)didReceiveFailureFromObserver:(void *)observer {
+}
+
 
 @end
