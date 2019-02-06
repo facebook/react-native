@@ -5,8 +5,9 @@ labels: "Type: Bug Report", "Impact: Regression"
 ---
 
 ## 💥 Regression Report
-
-A clear and concise description of what the regression is.
+<!-- 
+  A clear and concise description of what the regression is.
+-->
 
 ## Last working version
 
@@ -16,21 +17,26 @@ Stopped working in version:
 
 ## To Reproduce
 
-Steps to reproduce the behavior.
+<!--
+  Steps to reproduce the behavior.
+-->
 
 ## Expected Behavior
 
-A clear and concise description of what you expected to happen.
+<!-- 
+  A clear and concise description of what you expected to happen.
+-->
 
-## Link to Snack or repo (highly encouraged)
+## Code Example
+<!-- 
+  Please provide a Snack (https://snack.expo.io/), a link to a repository on GitHub, or
+  provide a minimal code example that reproduces the problem.
+  Here are some tips for providing a minimal example: https://stackoverflow.com/help/mcve.
 
-Please provide either a Snack (https://snack.expo.io/) or a minimal repository on GitHub.
-Here are some tips for providing a minimal example: https://stackoverflow.com/help/mcve.
-
-Issues without a reproduction link are likely to stall.
+  Issues without a reproduction link are likely to stall.
+-->
 
 ## Environment
-
-```bash
-Run `react-native info` in your terminal and copy the results here.
-```
+<!-- 
+  Run `react-native info` in your terminal and copy the results here.
+-->
