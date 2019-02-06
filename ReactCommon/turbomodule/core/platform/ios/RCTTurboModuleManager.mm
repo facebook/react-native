@@ -176,7 +176,7 @@ static Class getFallbackClassFromName(const char *name) {
     moduleClass = getFallbackClassFromName(moduleName);
   }
 
-  if (!moduleClass) {
+  if (![moduleClass conformsToProtocol:@protocol(RCTTurboModule)]) {
     return nil;
   }
 
