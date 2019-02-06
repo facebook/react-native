@@ -20,7 +20,6 @@ rn_android_library(
     ],
     exported_deps = [
         ":classes-for-react-native",
-        react_native_dep("third-party/android/support-annotations:android-support-annotations"),
     ],
 )
 
