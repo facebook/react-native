@@ -7,6 +7,7 @@
 
 package com.facebook.react.views.view;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -149,6 +150,7 @@ public class ReactViewGroup extends ViewGroup implements
   }
 
   @Override
+  @SuppressLint("MissingSuperCall")
   public void requestLayout() {
     // No-op, terminate `requestLayout` here, UIManagerModule handles laying out children and
     // `layout` is called on all RN-managed views by `NativeViewHierarchyManager`
@@ -672,11 +674,7 @@ public class ReactViewGroup extends ViewGroup implements
    *     background
    */
   private void updateBackgroundDrawable(Drawable drawable) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-      super.setBackground(drawable);
-    } else {
-      super.setBackgroundDrawable(drawable);
-    }
+    super.setBackground(drawable);
   }
 
   @Override

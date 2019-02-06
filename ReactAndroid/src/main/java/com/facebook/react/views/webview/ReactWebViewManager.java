@@ -78,7 +78,6 @@ import org.json.JSONObject;
  * page - canGoBack - boolean, whether there is anything on a history stack to go back -
  * canGoForward - boolean, whether it is possible to request GO_FORWARD command
  */
-@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 @ReactModule(name = ReactWebViewManager.REACT_CLASS)
 public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
@@ -447,10 +446,8 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
     settings.setAllowFileAccess(false);
     settings.setAllowContentAccess(false);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-      settings.setAllowFileAccessFromFileURLs(false);
-      setAllowUniversalAccessFromFileURLs(webView, false);
-    }
+    settings.setAllowFileAccessFromFileURLs(false);
+    setAllowUniversalAccessFromFileURLs(webView, false);
     setMixedContentMode(webView, "never");
 
     // Fixes broken full-screen modals/galleries due to body height being 0.
