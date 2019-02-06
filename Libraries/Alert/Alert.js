@@ -10,22 +10,55 @@
 
 'use strict';
 
-const AlertIOS = require('AlertIOS');
 const NativeModules = require('NativeModules');
+const RCTAlertManager = NativeModules.AlertManager;
 const Platform = require('Platform');
 
-import type {AlertType, AlertButtonStyle} from 'AlertIOS';
+/**
+ * Array or buttons
+ * @typedef {Array} ButtonsArray
+ * @property {string=} text Button label
+ * @property {Function=} onPress Callback function when button pressed
+ * @property {AlertButtonStyle=} style Button style
+ */
+
+/**
+ * Array or buttons
+ * @typedef {Array} ButtonsArray
+ * @property {string=} text Button label
+ * @property {Function=} onPress Callback function when button pressed
+ * @property {AlertButtonStyle=} style Button style
+ */
 
 export type Buttons = Array<{
-  text?: string,
-  onPress?: ?Function,
-  style?: AlertButtonStyle,
-}>;
-
+    text?: string,
+    onPress?: ?Function,
+    style?: AlertButtonStyle,
+  }>;
+  
 type Options = {
   cancelable?: ?boolean,
   onDismiss?: ?Function,
 };
+
+/**
+ * An Alert button type
+ */
+type AlertType = $Enum<{
+    default: string,
+    'plain-text': string,
+    'secure-text': string,
+    'login-password': string,
+  }>;
+  
+  /**
+   * An Alert button style
+   */
+type AlertButtonStyle = $Enum<{
+    default: string,
+    cancel: string,
+    destructive: string,
+  }>;
 
 /**
  * Launches an alert dialog with the specified title and message.
@@ -33,30 +66,100 @@ type Options = {
  * See http://facebook.github.io/react-native/docs/alert.html
  */
 class Alert {
-  /**
-   * Launches an alert dialog with the specified title and message.
-   *
-   * See http://facebook.github.io/react-native/docs/alert.html#alert
-   */
   static alert(
     title: ?string,
     message?: ?string,
     buttons?: Buttons,
-    options?: Options,
-    type?: AlertType,
+    options?: Options
   ): void {
     if (Platform.OS === 'ios') {
-      if (typeof type !== 'undefined') {
-        console.warn(
-          'Alert.alert() with a 5th "type" parameter is deprecated and will be removed. Use AlertIOS.prompt() instead.',
-        );
-        AlertIOS.alert(title, message, buttons, type);
-        return;
-      }
       AlertIOS.alert(title, message, buttons);
     } else if (Platform.OS === 'android') {
       AlertAndroid.alert(title, message, buttons, options);
     }
+  }
+}
+
+/**
+ * Wrapper around the iOS native module.
+ */
+class AlertIOS {
+    static alert(
+      title: ?string,
+      message?: ?string,
+      callbackOrButtons?: ?((() => void) | ButtonsArray)
+      ): void {
+      this.prompt(title, message, callbackOrButtons, 'default');
+    }
+
+  static prompt(
+    title: ?string,
+    message?: ?string,
+    callbackOrButtons?: ?(((text: string) => void) | ButtonsArray),
+    type?: ?AlertType = 'plain-text',
+    defaultValue?: string,
+    keyboardType?: string,
+  ): void {
+    if (typeof type === 'function') {
+      console.warn(
+        'You passed a callback function as the "type" argument to AlertIOS.prompt(). React Native is ' +
+          'assuming  you want to use the deprecated AlertIOS.prompt(title, defaultValue, buttons, callback) ' +
+          'signature. The current signature is AlertIOS.prompt(title, message, callbackOrButtons, type, defaultValue, ' +
+          'keyboardType) and the old syntax will be removed in a future version.',
+      );
+
+      const callback = type;
+      RCTAlertManager.alertWithArgs(
+        {
+          title: title || '',
+          type: 'plain-text',
+          defaultValue: message,
+        },
+        (id, value) => {
+          callback(value);
+        },
+      );
+      return;
+    }
+
+    let callbacks = [];
+    const buttons = [];
+    let cancelButtonKey;
+    let destructiveButtonKey;
+    if (typeof callbackOrButtons === 'function') {
+      callbacks = [callbackOrButtons];
+    } else if (callbackOrButtons instanceof Array) {
+      callbackOrButtons.forEach((btn, index) => {
+        callbacks[index] = btn.onPress;
+        if (btn.style === 'cancel') {
+          cancelButtonKey = String(index);
+        } else if (btn.style === 'destructive') {
+          destructiveButtonKey = String(index);
+        }
+        if (btn.text || index < (callbackOrButtons || []).length - 1) {
+          const btnDef = {};
+          btnDef[index] = btn.text || '';
+          buttons.push(btnDef);
+        }
+      });
+    }
+
+    RCTAlertManager.alertWithArgs(
+      {
+        title: title || '',
+        message: message || undefined,
+        buttons,
+        type: type || undefined,
+        defaultValue,
+        cancelButtonKey,
+        destructiveButtonKey,
+        keyboardType,
+      },
+      (id, value) => {
+        const cb = callbacks[id];
+        cb && cb(value);
+      },
+    );
   }
 }
 
