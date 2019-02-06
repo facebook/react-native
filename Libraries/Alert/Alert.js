@@ -178,7 +178,7 @@ export class AlertIOS {
 /**
  * Wrapper around the Android native module.
  */
-export class AlertAndroid {
+class AlertAndroid {
   static alert(
     title: ?string,
     message?: ?string,
