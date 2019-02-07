@@ -10,19 +10,26 @@
 
 'use strict';
 
+const NativeModules = require('NativeModules');
+
 import type {TurboModule} from 'RCTExport';
 import invariant from 'invariant';
-import {NativeModules} from 'react-native';
 
-// TODO
+const turboModuleProxy = global.__turboModuleProxy;
+
 function get<T: TurboModule>(name: string): ?T {
   // Backward compatibility layer during migration.
-  if (NativeModules[name] != null) {
-    return ((NativeModules[name]: any): T);
+  const legacyModule = NativeModules[name];
+  if (legacyModule != null) {
+    return ((legacyModule: any): T);
   }
 
-  const module: ?T = global.__turboModuleProxy(name);
-  return module;
+  if (turboModuleProxy != null) {
+    const module: ?T = turboModuleProxy(name);
+    return module;
+  }
+
+  return null;
 }
 
 function getEnforcing<T: TurboModule>(name: string): T {

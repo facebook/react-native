@@ -126,9 +126,9 @@ inline YGDirection yogaDirectionFromLayoutDirection(LayoutDirection direction) {
   }
 }
 
-inline void fromDynamic(const folly::dynamic &value, YGDirection &result) {
-  assert(value.isString());
-  auto stringValue = value.asString();
+inline void fromRawValue(const RawValue &value, YGDirection &result) {
+  assert(value.hasType<std::string>());
+  auto stringValue = (std::string)value;
   if (stringValue == "inherit") {
     result = YGDirectionInherit;
     return;
@@ -144,9 +144,9 @@ inline void fromDynamic(const folly::dynamic &value, YGDirection &result) {
   abort();
 }
 
-inline void fromDynamic(const folly::dynamic &value, YGFlexDirection &result) {
-  assert(value.isString());
-  auto stringValue = value.asString();
+inline void fromRawValue(const RawValue &value, YGFlexDirection &result) {
+  assert(value.hasType<std::string>());
+  auto stringValue = (std::string)value;
   if (stringValue == "column") {
     result = YGFlexDirectionColumn;
     return;
@@ -166,9 +166,9 @@ inline void fromDynamic(const folly::dynamic &value, YGFlexDirection &result) {
   abort();
 }
 
-inline void fromDynamic(const folly::dynamic &value, YGJustify &result) {
-  assert(value.isString());
-  auto stringValue = value.asString();
+inline void fromRawValue(const RawValue &value, YGJustify &result) {
+  assert(value.hasType<std::string>());
+  auto stringValue = (std::string)value;
   if (stringValue == "flex-start") {
     result = YGJustifyFlexStart;
     return;
@@ -196,9 +196,9 @@ inline void fromDynamic(const folly::dynamic &value, YGJustify &result) {
   abort();
 }
 
-inline void fromDynamic(const folly::dynamic &value, YGAlign &result) {
-  assert(value.isString());
-  auto stringValue = value.asString();
+inline void fromRawValue(const RawValue &value, YGAlign &result) {
+  assert(value.hasType<std::string>());
+  auto stringValue = (std::string)value;
   if (stringValue == "auto") {
     result = YGAlignAuto;
     return;
@@ -234,9 +234,9 @@ inline void fromDynamic(const folly::dynamic &value, YGAlign &result) {
   abort();
 }
 
-inline void fromDynamic(const folly::dynamic &value, YGPositionType &result) {
-  assert(value.isString());
-  auto stringValue = value.asString();
+inline void fromRawValue(const RawValue &value, YGPositionType &result) {
+  assert(value.hasType<std::string>());
+  auto stringValue = (std::string)value;
   if (stringValue == "relative") {
     result = YGPositionTypeRelative;
     return;
@@ -248,9 +248,9 @@ inline void fromDynamic(const folly::dynamic &value, YGPositionType &result) {
   abort();
 }
 
-inline void fromDynamic(const folly::dynamic &value, YGWrap &result) {
-  assert(value.isString());
-  auto stringValue = value.asString();
+inline void fromRawValue(const RawValue &value, YGWrap &result) {
+  assert(value.hasType<std::string>());
+  auto stringValue = (std::string)value;
   if (stringValue == "no-wrap") {
     result = YGWrapNoWrap;
     return;
@@ -266,9 +266,9 @@ inline void fromDynamic(const folly::dynamic &value, YGWrap &result) {
   abort();
 }
 
-inline void fromDynamic(const folly::dynamic &value, YGOverflow &result) {
-  assert(value.isString());
-  auto stringValue = value.asString();
+inline void fromRawValue(const RawValue &value, YGOverflow &result) {
+  assert(value.hasType<std::string>());
+  auto stringValue = (std::string)value;
   if (stringValue == "visible") {
     result = YGOverflowVisible;
     return;
@@ -284,9 +284,9 @@ inline void fromDynamic(const folly::dynamic &value, YGOverflow &result) {
   abort();
 }
 
-inline void fromDynamic(const folly::dynamic &value, YGDisplay &result) {
-  assert(value.isString());
-  auto stringValue = value.asString();
+inline void fromRawValue(const RawValue &value, YGDisplay &result) {
+  assert(value.hasType<std::string>());
+  auto stringValue = (std::string)value;
   if (stringValue == "flex") {
     result = YGDisplayFlex;
     return;
@@ -298,14 +298,14 @@ inline void fromDynamic(const folly::dynamic &value, YGDisplay &result) {
   abort();
 }
 
-inline void fromDynamic(
-    const folly::dynamic &value,
+inline void fromRawValue(
+    const RawValue &value,
     decltype(YGStyle{}.margin[0]) /* type is subject to change */ &result) {
-  if (value.isNumber()) {
-    result = yogaStyleValueFromFloat(value.asDouble());
+  if (value.hasType<Float>()) {
+    result = yogaStyleValueFromFloat((Float)value);
     return;
-  } else if (value.isString()) {
-    const auto stringValue = value.asString();
+  } else if (value.hasType<std::string>()) {
+    const auto stringValue = (std::string)value;
     if (stringValue == "auto") {
       result = YGValueUndefined;
       return;
@@ -324,12 +324,12 @@ inline void fromDynamic(
   result = YGValueUndefined;
 }
 
-inline void fromDynamic(const folly::dynamic &value, YGFloatOptional &result) {
-  if (value.isNumber()) {
-    result = YGFloatOptional(value.asDouble());
+inline void fromRawValue(const RawValue &value, YGFloatOptional &result) {
+  if (value.hasType<float>()) {
+    result = YGFloatOptional((float)value);
     return;
-  } else if (value.isString()) {
-    const auto stringValue = value.asString();
+  } else if (value.hasType<std::string>()) {
+    const auto stringValue = (std::string)value;
     if (stringValue == "auto") {
       result = YGFloatOptional();
       return;
@@ -338,76 +338,74 @@ inline void fromDynamic(const folly::dynamic &value, YGFloatOptional &result) {
   abort();
 }
 
-inline void fromDynamic(const folly::dynamic &value, Transform &result) {
-  assert(value.isArray());
+inline void fromRawValue(const RawValue &value, Transform &result) {
+  assert(value.hasType<std::vector<RawValue>>());
   auto transformMatrix = Transform{};
-  for (const auto &tranformConfiguration : value) {
-    assert(tranformConfiguration.isObject());
-    auto pair = *tranformConfiguration.items().begin();
-    const auto &operation = pair.first.asString();
-    const auto &parameters = pair.second;
+  auto configurations = (std::vector<RawValue>)value;
+
+  for (const auto &configuration : configurations) {
+    auto configurationPair =
+        (std::unordered_map<std::string, RawValue>)configuration;
+    auto pair = configurationPair.begin();
+    auto operation = pair->first;
+    auto &parameters = pair->second;
 
     if (operation == "matrix") {
-      assert(parameters.isArray());
-      assert(parameters.size() == transformMatrix.matrix.size());
+      assert(parameters.hasType<std::vector<Float>>());
+      auto numbers = (std::vector<Float>)parameters;
+      assert(numbers.size() == transformMatrix.matrix.size());
       auto i = 0;
-      for (auto item : parameters) {
-        transformMatrix.matrix[i++] = (Float)item.asDouble();
+      for (auto number : numbers) {
+        transformMatrix.matrix[i++] = number;
       }
     } else if (operation == "perspective") {
-      transformMatrix = transformMatrix *
-          Transform::Perspective((Float)parameters.asDouble());
-    } else if (operation == "rotateX") {
-      transformMatrix = transformMatrix *
-          Transform::Rotate((Float)parameters.asDouble(), 0, 0);
-    } else if (operation == "rotateY") {
-      transformMatrix = transformMatrix *
-          Transform::Rotate(0, (Float)parameters.asDouble(), 0);
-    } else if (operation == "rotateZ") {
-      transformMatrix = transformMatrix *
-          Transform::Rotate(0, 0, (Float)parameters.asDouble());
-    } else if (operation == "scale") {
-      transformMatrix = transformMatrix *
-          Transform::Scale((Float)parameters.asDouble(),
-                           (Float)parameters.asDouble(),
-                           (Float)parameters.asDouble());
-    } else if (operation == "scaleX") {
-      transformMatrix = transformMatrix *
-          Transform::Scale((Float)parameters.asDouble(), 0, 0);
-    } else if (operation == "scaleY") {
-      transformMatrix = transformMatrix *
-          Transform::Scale(0, (Float)parameters.asDouble(), 0);
-    } else if (operation == "scaleZ") {
-      transformMatrix = transformMatrix *
-          Transform::Scale(0, 0, (Float)parameters.asDouble());
-    } else if (operation == "translate") {
       transformMatrix =
-          transformMatrix *
-          Transform::Translate(
-              parameters[0].asDouble(), parameters[1].asDouble(), 0);
+          transformMatrix * Transform::Perspective((Float)parameters);
+    } else if (operation == "rotateX") {
+      transformMatrix =
+          transformMatrix * Transform::Rotate((Float)parameters, 0, 0);
+    } else if (operation == "rotateY") {
+      transformMatrix =
+          transformMatrix * Transform::Rotate(0, (Float)parameters, 0);
+    } else if (operation == "rotateZ") {
+      transformMatrix =
+          transformMatrix * Transform::Rotate(0, 0, (Float)parameters);
+    } else if (operation == "scale") {
+      auto number = (Float)parameters;
+      transformMatrix =
+          transformMatrix * Transform::Scale(number, number, number);
+    } else if (operation == "scaleX") {
+      transformMatrix =
+          transformMatrix * Transform::Scale((Float)parameters, 0, 0);
+    } else if (operation == "scaleY") {
+      transformMatrix =
+          transformMatrix * Transform::Scale(0, (Float)parameters, 0);
+    } else if (operation == "scaleZ") {
+      transformMatrix =
+          transformMatrix * Transform::Scale(0, 0, (Float)parameters);
+    } else if (operation == "translate") {
+      auto numbers = (std::vector<Float>)parameters;
+      transformMatrix = transformMatrix *
+          Transform::Translate(numbers.at(0), numbers.at(1), 0);
     } else if (operation == "translateX") {
       transformMatrix =
-          transformMatrix * Transform::Translate(parameters.asDouble(), 0, 0);
+          transformMatrix * Transform::Translate((Float)parameters, 0, 0);
     } else if (operation == "translateY") {
       transformMatrix =
-          transformMatrix * Transform::Translate(0, parameters.asDouble(), 0);
+          transformMatrix * Transform::Translate(0, (Float)parameters, 0);
     } else if (operation == "skewX") {
-      transformMatrix =
-          transformMatrix * Transform::Skew(parameters.asDouble(), 0);
+      transformMatrix = transformMatrix * Transform::Skew((Float)parameters, 0);
     } else if (operation == "skewY") {
-      transformMatrix =
-          transformMatrix * Transform::Skew(0, parameters.asDouble());
+      transformMatrix = transformMatrix * Transform::Skew(0, (Float)parameters);
     }
   }
 
   result = transformMatrix;
 }
 
-inline void fromDynamic(
-    const folly::dynamic &value,
-    PointerEventsMode &result) {
-  assert(value.isString());
-  auto stringValue = value.asString();
+inline void fromRawValue(const RawValue &value, PointerEventsMode &result) {
+  assert(value.hasType<std::string>());
+  auto stringValue = (std::string)value;
   if (stringValue == "auto") {
     result = PointerEventsMode::Auto;
     return;
@@ -427,9 +425,9 @@ inline void fromDynamic(
   abort();
 }
 
-inline void fromDynamic(const folly::dynamic &value, BorderStyle &result) {
-  assert(value.isString());
-  auto stringValue = value.asString();
+inline void fromRawValue(const RawValue &value, BorderStyle &result) {
+  assert(value.hasType<std::string>());
+  auto stringValue = (std::string)value;
   if (stringValue == "solid") {
     result = BorderStyle::Solid;
     return;

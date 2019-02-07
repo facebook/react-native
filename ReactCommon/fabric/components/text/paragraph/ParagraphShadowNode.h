@@ -53,8 +53,10 @@ class ParagraphShadowNode : public ConcreteViewShadowNode<
    * Associates a shared LRU cache with the node.
    * `ParagraphShadowNode` uses this to cache the results of
    * text rendering measurements.
+   * By design, the ParagraphComponentDescriptor outlives all
+   * shadow nodes, so it's safe for this to be a raw pointer.
    */
-  void setMeasureCache(SharedParagraphMeasurementCache cache);
+  void setMeasureCache(const ParagraphMeasurementCache *cache);
 
 #pragma mark - LayoutableShadowNode
 
@@ -69,7 +71,7 @@ class ParagraphShadowNode : public ConcreteViewShadowNode<
   void updateLocalDataIfNeeded();
 
   SharedTextLayoutManager textLayoutManager_;
-  SharedParagraphMeasurementCache measureCache_;
+  const ParagraphMeasurementCache *measureCache_;
 
   /*
    * Cached attributed string that represents the content of the subtree started

@@ -10,7 +10,6 @@
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
-#include <react/debug/SystraceSection.h>
 
 #include "RawEvent.h"
 
@@ -65,8 +64,6 @@ void EventEmitter::dispatchEvent(
     const std::string &type,
     const ValueFactory &payloadFactory,
     const EventPriority &priority) const {
-  SystraceSection s("EventEmitter::dispatchEvent");
-
   auto eventDispatcher = eventDispatcher_.lock();
   if (!eventDispatcher) {
     return;

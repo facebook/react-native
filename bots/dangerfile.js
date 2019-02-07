@@ -4,6 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * To test Danger during development, run yarn in this directory, then run:
+ * $ yarn danger pr <URL to GitHub PR>
+ *
  * @format
  */
 
@@ -13,9 +16,19 @@ const includes = require('lodash.includes');
 
 const {danger, fail, warn} = require('danger');
 
-// Fails if the description is too short.
+// Warns if a summary section is missing, or body is too short
+const includesSummary =
+  danger.github.pr.body &&
+  danger.github.pr.body.toLowerCase().includes('## summary');
 if (!danger.github.pr.body || danger.github.pr.body.length < 50) {
   fail(':grey_question: This pull request needs a description.');
+} else if (!includesSummary) {
+  const title = ':clipboard: Missing Summary';
+  const idea =
+    'Can you add a Summary? ' +
+    'To do so, add a "## Summary" section to your PR description. ' +
+    'This is a good place to explain the motivation for making this change.';
+  warn(`${title} - <i>${idea}</i>`);
 }
 
 // Warns if there are changes to package.json, and tags the team.
@@ -31,60 +44,36 @@ if (packageChanged) {
 // Warns if a test plan is missing.
 const includesTestPlan =
   danger.github.pr.body &&
-  danger.github.pr.body.toLowerCase().includes('test plan');
+  danger.github.pr.body.toLowerCase().includes('## test plan');
 if (!includesTestPlan) {
-  const title = ':clipboard: Test Plan';
+  const title = ':clipboard: Missing Test Plan';
   const idea =
-    'This PR appears to be missing a Test Plan. ' +
-    'Please add a section called "test plan" describing ' +
-    'how to verify your changes are correct.';
+    'Can you add a Test Plan? ' +
+    'To do so, add a "## Test Plan" section to your PR description. ' +
+    'A Test Plan lets us know how these changes were tested.';
   warn(`${title} - <i>${idea}</i>`);
 }
 
 // Regex looks for given categories, types, a file/framework/component, and a message - broken into 4 capture groups
-const changelogRegex = /\[\s?(ANDROID|GENERAL|IOS)\s?\]\s*?\[\s?(ADDED|CHANGED|DEPRECATED|REMOVED|FIXED|SECURITY)\s?\]\s*?\-\s*?(.*)/gi;
+const changelogRegex = /\[\s?(ANDROID|GENERAL|IOS)\s?\]\s*?\[\s?(ADDED|CHANGED|DEPRECATED|REMOVED|FIXED|SECURITY)\s?\]\s*?\-?\s*?(.*)/gi;
 const includesChangelog =
   danger.github.pr.body &&
-  danger.github.pr.body.toLowerCase().includes('changelog');
+  (danger.github.pr.body.toLowerCase().includes('## changelog') ||
+    danger.github.pr.body.toLowerCase().includes('release notes'));
 const correctlyFormattedChangelog = changelogRegex.test(danger.github.pr.body);
 
+const changelogInstructions =
+  'A changelog entry has the following format: [`[CATEGORY] [TYPE] - Message`](http://facebook.github.io/react-native/docs/contributing#changelog).';
 if (!includesChangelog) {
-  const title = ':clipboard: Changelog';
+  const title = ':clipboard: Missing Changelog';
   const idea =
-    'This PR appears to be missing Changelog. ' +
-    'Please add a section called "changelog" and ' +
-    'format it as explained in the [contributing guidelines](http://facebook.github.io/react-native/docs/contributing#changelog).';
+    'Can you add a Changelog? ' +
+    'To do so, add a "## Changelog" section to your PR description. ' +
+    changelogInstructions;
   warn(`${title} - <i>${idea}</i>`);
 } else if (!correctlyFormattedChangelog) {
-  const title = ':clipboard: Changelog';
-  const idea =
-    'This PR may have incorrectly formatted Changelog. Please ' +
-    'format it as explained in the [contributing guidelines](http://facebook.github.io/react-native/docs/contributing#changelog).';
-  warn(`${title} - <i>${idea}</i>`);
-}
-
-// Tags big PRs
-var bigPRThreshold = 600;
-if (danger.github.pr.additions + danger.github.pr.deletions > bigPRThreshold) {
-  const title = ':exclamation: Big PR';
-  const idea =
-    `This PR is unlikely to get reviewed because it touches too many lines (${danger
-      .github.pr.additions + danger.github.pr.deletions}). ` +
-    'Consider sending smaller Pull Requests and stack them on top of each other.';
-  warn(`${title} - <i>${idea}</i>`);
-} else if (
-  danger.git.modified_files +
-    danger.git.added_files +
-    danger.git.deleted_files >
-  bigPRThreshold
-) {
-  const title = ':exclamation: Big PR';
-  const idea =
-    `This PR is unlikely to get reviewed because it touches too many files (${danger
-      .git.modified_files +
-      danger.git.added_files +
-      danger.git.deleted_files}). ` +
-    'Consider sending smaller Pull Requests and stack them on top of each other.';
+  const title = ':clipboard: Changelog Format';
+  const idea = 'Did you include a Changelog? ' + changelogInstructions;
   warn(`${title} - <i>${idea}</i>`);
 }
 

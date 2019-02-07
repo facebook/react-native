@@ -46,7 +46,7 @@ private:
 
   void stopSurface(jint surfaceId);
 
-  void schedulerDidFinishTransaction(const Tag rootTag, const ShadowViewMutationList &mutations);
+  void schedulerDidFinishTransaction(const Tag rootTag, const ShadowViewMutationList &mutations, const long commitStartTime, const long layoutTime);
 
   void schedulerDidRequestPreliminaryViewAllocation(const SurfaceId surfaceId, const ComponentName componentName, bool isLayoutable, const ComponentHandle componentHandle);
 

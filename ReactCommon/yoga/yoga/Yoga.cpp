@@ -602,12 +602,12 @@ inline detail::CompactValue Value::create<YGUnitAuto>(float) {
 template <YGStyle::Dimensions YGStyle::*P>
 struct DimensionProp {
   template <YGDimension idx>
-  static WIN_STRUCT(YGValue) get(YGNodeRef node) {
+  static YGValue get(YGNodeRef node) {
     YGValue value = (node->getStyle().*P)[idx];
     if (value.unit == YGUnitUndefined || value.unit == YGUnitAuto) {
       value.value = YGUndefined;
     }
-    return WIN_STRUCT_REF(value);
+    return value;
   }
 
   template <YGDimension idx, YGUnit U>
@@ -690,13 +690,12 @@ struct DimensionProp {
     }                                                                     \
   }                                                                       \
                                                                           \
-  WIN_STRUCT(type)                                                        \
-  YGNodeStyleGet##name(const YGNodeRef node, const YGEdge edge) {         \
+  type YGNodeStyleGet##name(const YGNodeRef node, const YGEdge edge) {    \
     YGValue value = node->getStyle().instanceName[edge];                  \
     if (value.unit == YGUnitUndefined || value.unit == YGUnitAuto) {      \
       value.value = YGUndefined;                                          \
     }                                                                     \
-    return WIN_STRUCT_REF(value);                                         \
+    return value;                                                         \
   }
 
 #define YG_NODE_LAYOUT_PROPERTY_IMPL(type, name, instanceName) \
@@ -1075,7 +1074,9 @@ static inline YGAlign YGNodeAlignItem(
 
 static float YGBaseline(const YGNodeRef node) {
   if (node->getBaseline() != nullptr) {
-    const float baseline = node->getBaseline()(
+    const float baseline = marker::MarkerSection<YGMarkerBaselineFn>::wrap(
+        node,
+        node->getBaseline(),
         node,
         node->getLayout().measuredDimensions[YGDimensionWidth],
         node->getLayout().measuredDimensions[YGDimensionHeight]);
@@ -1689,8 +1690,14 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
         YGDimensionHeight);
   } else {
     // Measure the text under the current constraints.
-    const YGSize measuredSize = node->getMeasure()(
-        node, innerWidth, widthMeasureMode, innerHeight, heightMeasureMode);
+    const YGSize measuredSize = marker::MarkerSection<YGMarkerMeasure>::wrap(
+        node,
+        node->getMeasure(),
+        node,
+        innerWidth,
+        widthMeasureMode,
+        innerHeight,
+        heightMeasureMode);
 
     node->setLayoutMeasuredDimension(
         YGNodeBoundAxis(

@@ -80,8 +80,8 @@ namespace react {
 
 enum class EnumPropsNativeComponentAlignment { Top, Center, Bottom };
 
-static inline void fromDynamic(const folly::dynamic &value, EnumPropsNativeComponentAlignment &result) {
-  auto string = value.asString();
+static inline void fromRawValue(const RawValue &value, EnumPropsNativeComponentAlignment &result) {
+  auto string = (std::string)value;
   if (string == \\"top\\") { result = EnumPropsNativeComponentAlignment::Top; return; }
 if (string == \\"center\\") { result = EnumPropsNativeComponentAlignment::Center; return; }
 if (string == \\"bottom\\") { result = EnumPropsNativeComponentAlignment::Bottom; return; }

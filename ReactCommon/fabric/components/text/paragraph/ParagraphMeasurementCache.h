@@ -19,17 +19,11 @@ using ParagraphMeasurementCacheKey =
     std::tuple<AttributedString, ParagraphAttributes, LayoutConstraints>;
 using ParagraphMeasurementCacheValue = Size;
 
-using ParagraphMeasurementCacheHash = std::hash<ParagraphMeasurementCacheKey>;
-
-class ParagraphMeasurementCache;
-using SharedParagraphMeasurementCache =
-    std::shared_ptr<const ParagraphMeasurementCache>;
-
 class ParagraphMeasurementCache {
  public:
   ParagraphMeasurementCache() : cache_{256} {}
 
-  bool exists(ParagraphMeasurementCacheKey &key) const {
+  bool exists(const ParagraphMeasurementCacheKey &key) const {
     std::lock_guard<std::mutex> lock(mutex_);
     return cache_.exists(key);
   }
@@ -42,7 +36,7 @@ class ParagraphMeasurementCache {
 
   void set(
       const ParagraphMeasurementCacheKey &key,
-      ParagraphMeasurementCacheValue &value) const {
+      const ParagraphMeasurementCacheValue &value) const {
     std::lock_guard<std::mutex> lock(mutex_);
     cache_.set(key, value);
   }

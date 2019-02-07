@@ -20,6 +20,7 @@
 #include <react/uimanager/primitives.h>
 #include <react/uimanager/Scheduler.h>
 #include <react/uimanager/SchedulerDelegate.h>
+#include <react/uimanager/TimeUtils.h>
 
 using namespace facebook::jni;
 using namespace facebook::jsi;
@@ -170,11 +171,7 @@ local_ref<JMountItem::javaobject> createUpdatePropsMountItem(const jni::global_r
   auto newViewProps = *std::dynamic_pointer_cast<const ViewProps>(shadowView.props);
 
   // TODO: move props from map to a typed object.
-  auto rawProps = shadowView.props->rawProps;
-  folly::dynamic newProps = folly::dynamic::object();
-  for (auto element : rawProps) {
-    newProps[element.first] = element.second;
-  }
+  auto newProps = shadowView.props->rawProps;
 
   local_ref<ReadableNativeMap::jhybridobject> readableMap = ReadableNativeMap::newObjectCxxArgs(newProps);
 
@@ -249,11 +246,14 @@ local_ref<JMountItem::javaobject> createDeleteMountItem(const jni::global_ref<jo
   return deleteInstruction(javaUIManager, mutation.oldChildShadowView.tag);
 }
 
-void Binding::schedulerDidFinishTransaction(const Tag rootTag, const ShadowViewMutationList &mutations) {
+void Binding::schedulerDidFinishTransaction(const Tag rootTag, const ShadowViewMutationList &mutations, const long commitStartTime, const long layoutTime) {
   SystraceSection s("FabricUIManager::schedulerDidFinishTransaction");
   std::vector<local_ref<jobject>> queue;
   // Upper bound estimation of mount items to be delivered to Java side.
   int size = mutations.size() * 3 + 42;
+
+  long finishTransactionStartTime = getTime();
+
 
   local_ref<JArrayClass<JMountItem::javaobject>> mountItemsArray = JArrayClass<JMountItem::javaobject>::newArray(size);
 
@@ -341,9 +341,9 @@ void Binding::schedulerDidFinishTransaction(const Tag rootTag, const ShadowViewM
 
   static auto scheduleMountItems =
           jni::findClassStatic(UIManagerJavaDescriptor)
-              ->getMethod<void(JMountItem::javaobject)>("scheduleMountItems");
+              ->getMethod<void(JMountItem::javaobject,jlong,jlong,jlong)>("scheduleMountItems");
 
-  scheduleMountItems(javaUIManager_, batch.get());
+  scheduleMountItems(javaUIManager_, batch.get(), commitStartTime, layoutTime, finishTransactionStartTime);
 }
 
 void Binding::setPixelDensity(float pointScaleFactor) {

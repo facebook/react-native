@@ -114,11 +114,7 @@ public class ReactNativeTestRule implements TestRule {
                       @Override
                       public void onGlobalLayout() {
                         if (isLayoutUpdated.get()) {
-                          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                            mView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                          } else {
-                            mView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                          }
+                          mView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                           mLatch.countDown();
                         }
                       }
