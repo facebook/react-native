@@ -19,13 +19,15 @@ function getTestMap() {
 // Wrap Object.{freeze,seal,preventExtensions} so each function adds its
 // argument to a Map first, which gives our ./Map.js polyfill a chance to
 // tag the object before it becomes non-extensible.
-["freeze", "seal", "preventExtensions"].forEach(name => {
+['freeze', 'seal', 'preventExtensions'].forEach(name => {
   const method = Object[name];
-  if (typeof method === "function") {
-    (Object: any)[name] = function (obj) {
+  if (typeof method === 'function') {
+    (Object: any)[name] = function(obj) {
       try {
         // If .set succeeds, also call .delete to avoid leaking memory.
-        getTestMap().set(obj, obj).delete(obj);
+        getTestMap()
+          .set(obj, obj)
+          .delete(obj);
       } finally {
         // If .set fails, the exception will be silently swallowed
         // by this return-from-finally statement, and the method will
