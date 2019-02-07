@@ -514,6 +514,8 @@ const event = function(argMapping: Array<?Mapping>, config?: EventConfig): any {
  * easy to build and maintain. `Animated` focuses on declarative relationships
  * between inputs and outputs, with configurable transforms in between, and
  * simple `start`/`stop` methods to control time-based animation execution.
+ * If additional transforms are added, be sure to include them in
+ * AnimatedMock.js as well.
  *
  * See http://facebook.github.io/react-native/docs/animated.html
  */

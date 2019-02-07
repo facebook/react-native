@@ -11,10 +11,7 @@
 'use strict';
 
 const invariant = require('invariant');
-
-let showedListViewDeprecation = false;
-let showedSwipeableListViewDeprecation = false;
-let showedWebWiewDeprecation = false;
+const warnOnce = require('warnOnce');
 
 // Export React, plus some native additions.
 module.exports = {
@@ -62,14 +59,11 @@ module.exports = {
     return require('KeyboardAvoidingView');
   },
   get ListView() {
-    if (!showedListViewDeprecation) {
-      console.warn(
-        'ListView is deprecated and will be removed in a future release. ' +
-          'See https://fb.me/nolistview for more information',
-      );
-
-      showedListViewDeprecation = true;
-    }
+    warnOnce(
+      'listview-deprecation',
+      'ListView is deprecated and will be removed in a future release. ' +
+        'See https://fb.me/nolistview for more information',
+    );
     return require('ListView');
   },
   get MaskedViewIOS() {
@@ -121,14 +115,11 @@ module.exports = {
     return require('SwipeableFlatList');
   },
   get SwipeableListView() {
-    if (!showedSwipeableListViewDeprecation) {
-      console.warn(
-        'ListView and SwipeableListView are deprecated and will be removed in a future release. ' +
-          'See https://fb.me/nolistview for more information',
-      );
-
-      showedSwipeableListViewDeprecation = true;
-    }
+    warnOnce(
+      'swipablelistview-deprecation',
+      'ListView and SwipeableListView are deprecated and will be removed in a future release. ' +
+        'See https://fb.me/nolistview for more information',
+    );
     return require('SwipeableListView');
   },
   get Text() {
@@ -165,15 +156,12 @@ module.exports = {
     return require('VirtualizedList');
   },
   get WebView() {
-    if (!showedWebWiewDeprecation) {
-      console.warn(
-        'WebView has been extracted from react-native core and will be removed in a future release. ' +
-          "It can now be installed and imported from 'react-native-webview' instead of 'react-native'. " +
-          'See https://github.com/react-native-community/react-native-webview for more informations.',
-      );
-
-      showedWebWiewDeprecation = true;
-    }
+    warnOnce(
+      'webview-moved',
+      'WebView has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from 'react-native-webview' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-webview for more informations.',
+    );
     return require('WebView');
   },
 

@@ -38,6 +38,11 @@ RCT_EXPORT_MODULE(PlatformConstants)
 
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
+  return [self getConstants];
+}
+
+- (NSDictionary<NSString *, id> *)getConstants
+{
   UIDevice *device = [UIDevice currentDevice];
   return @{
     @"forceTouchAvailable": @(RCTForceTouchAvailable()),

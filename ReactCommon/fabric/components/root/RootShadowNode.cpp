@@ -8,7 +8,6 @@
 #include "RootShadowNode.h"
 
 #include <react/components/view/conversions.h>
-#include <react/debug/SystraceSection.h>
 
 namespace facebook {
 namespace react {
@@ -16,7 +15,6 @@ namespace react {
 const char RootComponentName[] = "RootView";
 
 void RootShadowNode::layout() {
-  SystraceSection s("RootShadowNode::layout");
   ensureUnsealed();
   layout(getProps()->layoutContext);
 

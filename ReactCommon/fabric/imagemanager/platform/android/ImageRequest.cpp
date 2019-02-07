@@ -25,8 +25,8 @@ ImageRequest::~ImageRequest() {
   // Not implemented.
 }
 
-std::shared_ptr<const ImageResponseObserverCoordinator>
-ImageRequest::getObserverCoordinator() const {
+const ImageResponseObserverCoordinator *ImageRequest::getObserverCoordinator()
+    const {
   // Not implemented
   abort();
 }

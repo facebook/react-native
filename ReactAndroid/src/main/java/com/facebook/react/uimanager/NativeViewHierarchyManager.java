@@ -7,9 +7,7 @@
 
 package com.facebook.react.uimanager;
 
-import android.annotation.TargetApi;
 import android.content.res.Resources;
-import android.os.Build;
 import com.facebook.common.logging.FLog;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
@@ -213,14 +211,12 @@ public class NativeViewHierarchyManager {
     }
   }
 
-  @TargetApi(Build.VERSION_CODES.DONUT)
   private void updateInstanceHandle(View viewToUpdate, long instanceHandle) {
     UiThreadUtil.assertOnUiThread();
     viewToUpdate.setTag(R.id.view_tag_instance_handle, instanceHandle);
   }
 
   @Nullable
-  @TargetApi(Build.VERSION_CODES.DONUT)
   public long getInstanceHandle(int reactTag) {
     View view = mTagsToViews.get(reactTag);
     if (view == null) {

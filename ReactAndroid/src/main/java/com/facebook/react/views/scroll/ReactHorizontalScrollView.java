@@ -7,7 +7,6 @@
 
 package com.facebook.react.views.scroll;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -42,7 +41,6 @@ import javax.annotation.Nullable;
 /**
  * Similar to {@link ReactScrollView} but only supports horizontal scrolling.
  */
-@TargetApi(16)
 public class ReactHorizontalScrollView extends HorizontalScrollView implements
     ReactClippingViewGroup {
 

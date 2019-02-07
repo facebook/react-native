@@ -24,7 +24,7 @@ public:
   SchedulerDelegateProxy(void *scheduler):
     scheduler_(scheduler) {}
 
-  void schedulerDidFinishTransaction(Tag rootTag, const ShadowViewMutationList &mutations) override {
+  void schedulerDidFinishTransaction(Tag rootTag, const ShadowViewMutationList &mutations, const long commitStartTime, const long layoutTime) override {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
     [scheduler.delegate schedulerDidFinishTransaction:mutations rootTag:rootTag];
   }

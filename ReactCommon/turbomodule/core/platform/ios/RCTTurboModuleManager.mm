@@ -114,8 +114,9 @@ static Class getFallbackClassFromName(const char *name) {
 
   // If we request that a TurboModule be created, its respective ObjC class must exist
   // If the class doesn't exist, then provideRCTTurboModule returns nil
-  // Therefore, module cannot be nil.
-  assert(module);
+  if (!module) {
+    return nullptr;
+  }
 
   Class moduleClass = [module class];
 
@@ -123,6 +124,7 @@ static Class getFallbackClassFromName(const char *name) {
   // allow it to do so.
   if ([module respondsToSelector:@selector(getTurboModuleWithJsInvoker:)]) {
     auto turboModule = [module getTurboModuleWithJsInvoker:_jsInvoker];
+    assert(turboModule != nullptr);
     _turboModuleCache.insert({moduleName, turboModule});
     return turboModule;
   }
@@ -143,7 +145,9 @@ static Class getFallbackClassFromName(const char *name) {
    * Step 2d: Return an exact sub-class of ObjC TurboModule
    */
   auto turboModule = [_delegate getTurboModule:moduleName instance:module jsInvoker:_jsInvoker];
-  _turboModuleCache.insert({moduleName, turboModule});
+  if (turboModule != nullptr) {
+    _turboModuleCache.insert({moduleName, turboModule});
+  }
   return turboModule;
 }
 
@@ -172,7 +176,7 @@ static Class getFallbackClassFromName(const char *name) {
     moduleClass = getFallbackClassFromName(moduleName);
   }
 
-  if (!moduleClass) {
+  if (![moduleClass conformsToProtocol:@protocol(RCTTurboModule)]) {
     return nil;
   }
 

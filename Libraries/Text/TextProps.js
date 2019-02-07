@@ -29,13 +29,15 @@ export type PressRetentionOffset = $ReadOnly<{|
 /**
  * @see https://facebook.github.io/react-native/docs/text.html#reference
  */
-export type TextProps = $ReadOnly<{
+export type TextProps = $ReadOnly<{|
   /**
    * Indicates whether the view is an accessibility element.
    *
    * See https://facebook.github.io/react-native/docs/text.html#accessible
    */
   accessible?: ?boolean,
+  accessibilityHint?: ?Stringish,
+  accessibilityLabel?: ?Stringish,
   accessibilityRole?: ?AccessibilityRole,
   accessibilityStates?: ?AccessibilityStates,
   accessibilityTraits?: ?(AccessibilityTrait | Array<AccessibilityTrait>),
@@ -112,6 +114,7 @@ export type TextProps = $ReadOnly<{
   onResponderTerminate?: ?(event: PressEvent) => void,
   onResponderTerminationRequest?: ?() => boolean,
   onStartShouldSetResponder?: ?() => boolean,
+  onMoveShouldSetResponder?: ?() => boolean,
   onTextLayout?: ?(event: TextLayoutEvent) => mixed,
 
   /**
@@ -180,4 +183,4 @@ export type TextProps = $ReadOnly<{
    * See https://facebook.github.io/react-native/docs/text.html#supperhighlighting
    */
   suppressHighlighting?: ?boolean,
-}>;
+|}>;
