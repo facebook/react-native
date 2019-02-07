@@ -55,6 +55,9 @@ void EventQueue::onBeat(jsi::Runtime &runtime) const {
   }
 
   // No need to lock `EventEmitter::DispatchMutex()` here.
+  // The mutex protects from a situation when the `instanceHandle` can be
+  // deallocated during accessing, but that's impossible at this point because
+  // we have a strong pointer to it.
   for (const auto &event : queue) {
     if (event.eventTarget) {
       event.eventTarget->release(runtime);
