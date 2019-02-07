@@ -53,8 +53,8 @@ const AsyncStorage = {
    */
   getItem: function(
     key: string,
-    callback?: ?(error: ?Error, result: ?string) => void,
-  ): Promise<?string> {
+    callback?: ?(error: ?Error, result: string | null) => void,
+  ): Promise<string | null> {
     return new Promise((resolve, reject) => {
       RCTAsyncStorage.multiGet([key], function(errors, result) {
         // Unpack result to get value from [[key,value]]
