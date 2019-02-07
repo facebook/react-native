@@ -129,7 +129,7 @@ public abstract class ReactActivity extends AppCompatActivity
     return mDelegate.getReactNativeHost();
   }
 
-  protected final ReactInstanceManager getReactInstanceManager() {
+  protected ReactInstanceManager getReactInstanceManager() {
     return mDelegate.getReactInstanceManager();
   }
 

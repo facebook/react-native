@@ -264,6 +264,11 @@ public class ReactAppTestActivity extends ReactActivity {
     }
   }
 
+  @Override
+  protected ReactInstanceManager getReactInstanceManager() {
+    return mReactInstanceManager;
+  }
+
   public boolean waitForLayout(long millis) throws InterruptedException {
     return mLayoutEvent.await(millis, TimeUnit.MILLISECONDS);
   }
