@@ -22,7 +22,7 @@ const Platform = require('Platform');
  * @property {AlertButtonStyle=} style Button style
  */
 
-export type Buttons = Array<{
+type Buttons = Array<{
   text?: string,
   onPress?: ?Function,
   style?: AlertButtonStyle,
@@ -95,7 +95,7 @@ class Alert {
 /**
  * Wrapper around the iOS native module.
  */
-export class AlertIOS {
+class AlertIOS {
   static alert(
     title: ?string,
     message?: ?string,
