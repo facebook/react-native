@@ -36,7 +36,7 @@ struct InstanceCallback {
 
 class RN_EXPORT Instance {
 public:
-  ~Instance();
+  virtual ~Instance();
   virtual void initializeBridge(std::unique_ptr<InstanceCallback> callback,
                         std::shared_ptr<JSExecutorFactory> jsef,
                         std::shared_ptr<MessageQueueThread> jsQueue,
