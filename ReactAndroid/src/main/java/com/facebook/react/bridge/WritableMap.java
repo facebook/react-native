@@ -7,18 +7,20 @@
 
 package com.facebook.react.bridge;
 
+import javax.annotation.Nonnull;
+
 /**
  * Interface for a mutable map. Used to pass arguments from Java to JS.
  */
 public interface WritableMap extends ReadableMap {
 
-  void putNull(String key);
-  void putBoolean(String key, boolean value);
-  void putDouble(String key, double value);
-  void putInt(String key, int value);
-  void putString(String key, String value);
-  void putArray(String key, WritableArray value);
-  void putMap(String key, WritableMap value);
+  void putNull(@Nonnull String key);
+  void putBoolean(@Nonnull String key, boolean value);
+  void putDouble(@Nonnull String key, double value);
+  void putInt(@Nonnull String key, int value);
+  void putString(@Nonnull String key, @Nonnull String value);
+  void putArray(@Nonnull String key, @Nonnull WritableArray value);
+  void putMap(@Nonnull String key, @Nonnull WritableMap value);
 
-  void merge(ReadableMap source);
+  void merge(@Nonnull ReadableMap source);
 }
