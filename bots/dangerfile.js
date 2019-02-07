@@ -16,7 +16,7 @@ const includes = require('lodash.includes');
 
 const {danger, fail, warn} = require('danger');
 
-// Warns if a summary section is missing, or body is too short
+// Provides advice if a summary section is missing, or body is too short
 const includesSummary =
   danger.github.pr.body &&
   danger.github.pr.body.toLowerCase().includes('## summary');
@@ -28,7 +28,7 @@ if (!danger.github.pr.body || danger.github.pr.body.length < 50) {
     'Can you add a Summary? ' +
     'To do so, add a "## Summary" section to your PR description. ' +
     'This is a good place to explain the motivation for making this change.';
-  warn(`${title} - <i>${idea}</i>`);
+  message(`${title} - <i>${idea}</i>`);
 }
 
 // Warns if there are changes to package.json, and tags the team.
@@ -41,7 +41,7 @@ if (packageChanged) {
   warn(`${title} - <i>${idea}</i>`);
 }
 
-// Warns if a test plan is missing.
+// Provides advice if a test plan is missing.
 const includesTestPlan =
   danger.github.pr.body &&
   danger.github.pr.body.toLowerCase().includes('## test plan');
@@ -51,7 +51,7 @@ if (!includesTestPlan) {
     'Can you add a Test Plan? ' +
     'To do so, add a "## Test Plan" section to your PR description. ' +
     'A Test Plan lets us know how these changes were tested.';
-  warn(`${title} - <i>${idea}</i>`);
+  message(`${title} - <i>${idea}</i>`);
 }
 
 // Regex looks for given categories, types, a file/framework/component, and a message - broken into 4 capture groups
@@ -62,6 +62,7 @@ const includesChangelog =
     danger.github.pr.body.toLowerCase().includes('release notes'));
 const correctlyFormattedChangelog = changelogRegex.test(danger.github.pr.body);
 
+// Provides advice if a changelog is missing
 const changelogInstructions =
   'A changelog entry has the following format: [`[CATEGORY] [TYPE] - Message`](http://facebook.github.io/react-native/docs/contributing#changelog).';
 if (!includesChangelog) {
@@ -70,11 +71,11 @@ if (!includesChangelog) {
     'Can you add a Changelog? ' +
     'To do so, add a "## Changelog" section to your PR description. ' +
     changelogInstructions;
-  warn(`${title} - <i>${idea}</i>`);
+  message(`${title} - <i>${idea}</i>`);
 } else if (!correctlyFormattedChangelog) {
   const title = ':clipboard: Changelog Format';
   const idea = 'Did you include a Changelog? ' + changelogInstructions;
-  warn(`${title} - <i>${idea}</i>`);
+  message(`${title} - <i>${idea}</i>`);
 }
 
 // Warns if the PR is opened against stable, as commits need to be cherry picked and tagged by a release maintainer.
