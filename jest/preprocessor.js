@@ -53,7 +53,7 @@ module.exports = {
         enableBabelRuntime: false,
         experimentalImportSupport: false,
         hot: false,
-        inlineRequires: true,
+        inlineRequires: false,
         minify: false,
         platform: '',
         projectRoot: '',
