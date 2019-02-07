@@ -32,7 +32,7 @@ rn_android_library(
         ":bolts",
         ":imagepipeline-base",
         ":imagepipeline-core",
-        ":nativeimagefilters",
+        ":native-filters",
     ],
 )
 
@@ -61,7 +61,7 @@ fb_native.remote_file(
 )
 
 rn_android_prebuilt_aar(
-    name = "nativeimagefilters",
+    name = "native-filters",
     aar = ":nativeimagefilters-aar",
     visibility = ["//ReactAndroid/..."],
 )
