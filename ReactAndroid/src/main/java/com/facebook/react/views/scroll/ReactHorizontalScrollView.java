@@ -305,7 +305,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
       // as there is content. See #onOverScrolled() to see the second part of this change which properly
       // aborts the scroller animation when we get to the bottom of the ScrollView content.
 
-      int scrollWindowWidth = getWidth() - getPaddingStart() - getPaddingEnd();
+      int scrollWindowWidth = getWidth() - ViewCompat.getPaddingStart(this) - ViewCompat.getPaddingEnd(this);
 
       mScroller.fling(
         getScrollX(), // startX
@@ -501,7 +501,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
 
     // predict where a fling would end up so we can scroll to the nearest snap offset
     int maximumOffset = Math.max(0, computeHorizontalScrollRange() - getWidth());
-    int width = getWidth() - getPaddingStart() - getPaddingEnd();
+    int width = getWidth() - ViewCompat.getPaddingStart(this) - ViewCompat.getPaddingEnd(this);
     scroller.fling(
       getScrollX(), // startX
       getScrollY(), // startY
@@ -583,7 +583,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     int largerOffset = maximumOffset;
     int firstOffset = 0;
     int lastOffset = maximumOffset;
-    int width = getWidth() - getPaddingStart() - getPaddingEnd();
+    int width = getWidth() - ViewCompat.getPaddingStart(this) - ViewCompat.getPaddingEnd(this);
 
     // offsets are from the right edge in RTL layouts
     boolean isRTL = TextUtilsCompat.getLayoutDirectionFromLocale(Locale.getDefault()) == ViewCompat.LAYOUT_DIRECTION_RTL;
