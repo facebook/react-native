@@ -375,6 +375,8 @@ inline std::string toString(
   }
 }
 
+#ifdef ANDROID
+
 inline folly::dynamic toDynamic(
     const ParagraphAttributes &paragraphAttributes) {
   auto values = folly::dynamic::object();
@@ -489,6 +491,8 @@ inline folly::dynamic toDynamic(const AttributedString &attributedString) {
   value("string", attributedString.getString());
   return value;
 }
+
+#endif
 
 } // namespace react
 } // namespace facebook
