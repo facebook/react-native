@@ -11,16 +11,30 @@
 
 const RCTImageStoreManager = require('NativeModules').ImageStoreManager;
 
+const Platform = require('Platform');
+
+function warnDeprecated(): void {
+  console.warn(`react-native: ImageStore is deprecated. 
+  To get a base64-encoded string from a local image use either of the following third-party libraries:
+  * expo-file-system: \`readAsStringAsync(filepath, 'base64')\`
+  * react-native-fs: \`readFile(filepath, 'base64')\``)
+}
+
+function warnUnimplementedMethod(methodName: string): void {
+  console.warn(`react-native: ImageStore.${methodName}() is not implemented on ${Platform.OS}`)
+}
+
 class ImageStore {
   /**
    * Check if the ImageStore contains image data for the specified URI.
    * @platform ios
    */
   static hasImageForTag(uri: string, callback: (hasImage: boolean) => void) {
+    warnDeprecated();
     if (RCTImageStoreManager.hasImageForTag) {
       RCTImageStoreManager.hasImageForTag(uri, callback);
     } else {
-      console.warn('hasImageForTag() not implemented');
+      warnUnimplementedMethod('hasImageForTag');
     }
   }
 
@@ -33,10 +47,11 @@ class ImageStore {
    * @platform ios
    */
   static removeImageForTag(uri: string) {
+    warnDeprecated();
     if (RCTImageStoreManager.removeImageForTag) {
       RCTImageStoreManager.removeImageForTag(uri);
     } else {
-      console.warn('removeImageForTag() not implemented');
+      warnUnimplementedMethod('removeImageForTag');
     }
   }
 
@@ -56,7 +71,12 @@ class ImageStore {
     success: (uri: string) => void,
     failure: (error: any) => void,
   ) {
-    RCTImageStoreManager.addImageFromBase64(base64ImageData, success, failure);
+    warnDeprecated();
+    if (RCTImageStoreManager.addImageFromBase64) {
+      RCTImageStoreManager.addImageFromBase64(base64ImageData, success, failure);
+    } else {
+      warnUnimplementedMethod('addImageFromBase64');
+    }
   }
 
   /**
@@ -75,7 +95,12 @@ class ImageStore {
     success: (base64ImageData: string) => void,
     failure: (error: any) => void,
   ) {
-    RCTImageStoreManager.getBase64ForTag(uri, success, failure);
+    warnDeprecated();
+    if (RCTImageStoreManager.getBase64ForTag) {
+      RCTImageStoreManager.getBase64ForTag(uri, success, failure);
+    } else {
+      warnUnimplementedMethod('getBase64ForTag');
+    }
   }
 }
 
