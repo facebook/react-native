@@ -9,16 +9,17 @@
 
 #include <react/core/LayoutContext.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
+#include <react/uimanager/TimeUtils.h>
 #include <react/uimanager/UIManager.h>
 #include <react/uimanager/UIManagerBinding.h>
 #include <react/uimanager/UITemplateProcessor.h>
 
-#include "ComponentDescriptorFactory.h"
-
 namespace facebook {
 namespace react {
 
-Scheduler::Scheduler(const SharedContextContainer &contextContainer) {
+Scheduler::Scheduler(
+    const SharedContextContainer &contextContainer,
+    ComponentRegistryFactory buildRegistryFunction) {
   const auto asynchronousEventBeatFactory =
       contextContainer->getInstance<EventBeatFactory>("asynchronous");
   const auto synchronousEventBeatFactory =
@@ -46,8 +47,8 @@ Scheduler::Scheduler(const SharedContextContainer &contextContainer) {
   auto eventDispatcher = std::make_shared<EventDispatcher>(
       eventPipe, synchronousEventBeatFactory, asynchronousEventBeatFactory);
 
-  componentDescriptorRegistry_ = ComponentDescriptorFactory::buildRegistry(
-      eventDispatcher, contextContainer);
+  componentDescriptorRegistry_ =
+      buildRegistryFunction(eventDispatcher, contextContainer);
 
   uiManagerRef.setDelegate(this);
   uiManagerRef.setShadowTreeRegistry(&shadowTreeRegistry_);
@@ -85,6 +86,7 @@ void Scheduler::startSurface(
 void Scheduler::renderTemplateToSurface(
     SurfaceId surfaceId,
     const std::string &uiTemplate) {
+  long commitStartTime = getTime();
   try {
     if (uiTemplate.size() == 0) {
       return;
@@ -99,8 +101,15 @@ void Scheduler::renderTemplateToSurface(
         reactNativeConfig_);
 
     shadowTreeRegistry_.visit(surfaceId, [=](const ShadowTree &shadowTree) {
-      shadowTree.complete(
-          std::make_shared<SharedShadowNodeList>(SharedShadowNodeList{tree}));
+      return shadowTree.tryCommit(
+          [&](const SharedRootShadowNode &oldRootShadowNode) {
+            return std::make_shared<RootShadowNode>(
+                *oldRootShadowNode,
+                ShadowNodeFragment{.children =
+                                       std::make_shared<SharedShadowNodeList>(
+                                           SharedShadowNodeList{tree})});
+          },
+          commitStartTime);
     });
   } catch (const std::exception &e) {
     LOG(ERROR) << "    >>>> EXCEPTION <<<  rendering uiTemplate in "
@@ -109,11 +118,20 @@ void Scheduler::renderTemplateToSurface(
 }
 
 void Scheduler::stopSurface(SurfaceId surfaceId) const {
-  shadowTreeRegistry_.visit(surfaceId, [](const ShadowTree &shadowTree) {
-    // As part of stopping the Surface, we have to commit an empty tree.
-    shadowTree.complete(std::const_pointer_cast<SharedShadowNodeList>(
-        ShadowNode::emptySharedShadowNodeSharedList()));
-  });
+  long commitStartTime = getTime();
+  shadowTreeRegistry_.visit(
+      surfaceId, [commitStartTime](const ShadowTree &shadowTree) {
+        // As part of stopping the Surface, we have to commit an empty tree.
+        return shadowTree.tryCommit(
+            [&](const SharedRootShadowNode &oldRootShadowNode) {
+              return std::make_shared<RootShadowNode>(
+                  *oldRootShadowNode,
+                  ShadowNodeFragment{
+                      .children =
+                          ShadowNode::emptySharedShadowNodeSharedList()});
+            },
+            commitStartTime);
+      });
 
   auto shadowTree = shadowTreeRegistry_.remove(surfaceId);
   shadowTree->setDelegate(nullptr);
@@ -129,9 +147,19 @@ Size Scheduler::measureSurface(
     SurfaceId surfaceId,
     const LayoutConstraints &layoutConstraints,
     const LayoutContext &layoutContext) const {
+  long commitStartTime = getTime();
+
   Size size;
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree &shadowTree) {
-    size = shadowTree.measure(layoutConstraints, layoutContext);
+    shadowTree.tryCommit(
+        [&](const SharedRootShadowNode &oldRootShadowNode) {
+          auto rootShadowNode =
+              oldRootShadowNode->clone(layoutConstraints, layoutContext);
+          rootShadowNode->layout();
+          size = rootShadowNode->getLayoutMetrics().frame.size;
+          return nullptr;
+        },
+        commitStartTime);
   });
   return size;
 }
@@ -140,10 +168,14 @@ void Scheduler::constraintSurfaceLayout(
     SurfaceId surfaceId,
     const LayoutConstraints &layoutConstraints,
     const LayoutContext &layoutContext) const {
+  long commitStartTime = getTime();
+
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree &shadowTree) {
-    shadowTree.synchronize([&]() {
-      shadowTree.constraintLayout(layoutConstraints, layoutContext);
-    });
+    shadowTree.commit(
+        [&](const SharedRootShadowNode &oldRootShadowNode) {
+          return oldRootShadowNode->clone(layoutConstraints, layoutContext);
+        },
+        commitStartTime);
   });
 }
 
@@ -161,10 +193,12 @@ SchedulerDelegate *Scheduler::getDelegate() const {
 
 void Scheduler::shadowTreeDidCommit(
     const ShadowTree &shadowTree,
-    const ShadowViewMutationList &mutations) const {
+    const ShadowViewMutationList &mutations,
+    long commitStartTime,
+    long layoutTime) const {
   if (delegate_) {
     delegate_->schedulerDidFinishTransaction(
-        shadowTree.getSurfaceId(), mutations);
+        shadowTree.getSurfaceId(), mutations, commitStartTime, layoutTime);
   }
 }
 
@@ -172,9 +206,16 @@ void Scheduler::shadowTreeDidCommit(
 
 void Scheduler::uiManagerDidFinishTransaction(
     SurfaceId surfaceId,
-    const SharedShadowNodeUnsharedList &rootChildNodes) {
+    const SharedShadowNodeUnsharedList &rootChildNodes,
+    long startCommitTime) {
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree &shadowTree) {
-    shadowTree.synchronize([&]() { shadowTree.complete(rootChildNodes); });
+    shadowTree.commit(
+        [&](const SharedRootShadowNode &oldRootShadowNode) {
+          return std::make_shared<RootShadowNode>(
+              *oldRootShadowNode,
+              ShadowNodeFragment{.children = rootChildNodes});
+        },
+        startCommitTime);
   });
 }
 

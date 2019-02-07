@@ -783,6 +783,15 @@ const TextInput = createReactClass({
     inlineImagePadding: PropTypes.number,
 
     /**
+     * If `true`, allows TextInput to pass touch events to the parent component.
+     * This allows components such as SwipeableListView to be swipeable from the TextInput on iOS,
+     * as is the case on Android by default.
+     * If `false`, TextInput always asks to handle the input (except when disabled).
+     * @platform ios
+     */
+    rejectResponderTermination: PropTypes.bool,
+
+    /**
      * Determines the types of data converted to clickable URLs in the text input.
      * Only valid if `multiline={true}` and `editable={false}`.
      * By default no data types are detected.
@@ -859,6 +868,7 @@ const TextInput = createReactClass({
   getDefaultProps() {
     return {
       allowFontScaling: true,
+      rejectResponderTermination: true,
       underlineColorAndroid: 'transparent',
     };
   },
@@ -1079,7 +1089,7 @@ const TextInput = createReactClass({
       <TouchableWithoutFeedback
         onLayout={props.onLayout}
         onPress={this._onPress}
-        rejectResponderTermination={true}
+        rejectResponderTermination={props.rejectResponderTermination}
         accessible={props.accessible}
         accessibilityLabel={props.accessibilityLabel}
         accessibilityRole={props.accessibilityRole}

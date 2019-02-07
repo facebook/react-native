@@ -56,8 +56,8 @@ class ::_CLASSNAME_:: final::_EXTEND_CLASSES_:: {
 const enumTemplate = `
 enum class ::_ENUM_NAME_:: { ::_VALUES_:: };
 
-static inline void fromDynamic(const folly::dynamic &value, ::_ENUM_NAME_:: &result) {
-  auto string = value.asString();
+static inline void fromRawValue(const RawValue &value, ::_ENUM_NAME_:: &result) {
+  auto string = (std::string)value;
   ::_FROM_CASES_::
   abort();
 }

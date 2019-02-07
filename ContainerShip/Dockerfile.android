@@ -9,7 +9,7 @@
 # image. Ideally, this image would be rebuilt with any new commit to the master
 # branch. Doing so will catch issues such as BUCK failing to fetch dependencies
 # or run tests, as well as unit test failures.
-FROM reactnativeci/android-base:latest
+FROM react-native-community/react-native
 
 LABEL Description="This image prepares and runs React Native's Android tests."
 LABEL maintainer="Héctor Ramos <hector@fb.com>"
@@ -50,7 +50,7 @@ ADD react.gradle /app/react.gradle
 RUN ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSC
 
 # compile native libs with Gradle script, we need bridge for unit and integration tests
-RUN ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=1 -Pcom.android.build.threadPoolSize=1
+RUN ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=1
 
 # add all react-native code
 ADD . /app

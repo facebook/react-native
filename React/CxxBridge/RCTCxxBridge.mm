@@ -33,9 +33,9 @@
 #import <cxxreact/ModuleRegistry.h>
 #import <cxxreact/RAMBundleRegistry.h>
 #import <cxxreact/ReactMarker.h>
-#import <jsi/JSCRuntime.h>
 #import <jsireact/JSIExecutor.h>
 
+#import "JSCExecutorFactory.h"
 #import "NSDataBigString.h"
 #import "RCTMessageThread.h"
 #import "RCTObjcExecutor.h"
@@ -89,24 +89,6 @@ public:
 private:
   RCTCxxBridge *bridge_;
   std::shared_ptr<JSExecutorFactory> factory_;
-};
-
-class JSCExecutorFactory : public JSExecutorFactory {
-public:
-  std::unique_ptr<JSExecutor> createJSExecutor(
-    std::shared_ptr<ExecutorDelegate> delegate,
-    std::shared_ptr<MessageQueueThread> jsQueue) override {
-    return folly::make_unique<JSIExecutor>(
-      facebook::jsc::makeJSCRuntime(),
-      delegate,
-      [](const std::string &message, unsigned int logLevel) {
-        _RCTLogJavaScriptInternal(
-          static_cast<RCTLogLevel>(logLevel),
-          [NSString stringWithUTF8String:message.c_str()]);
-      },
-      JSIExecutor::defaultTimeoutInvoker,
-      nullptr);
-  }
 };
 
 }
@@ -170,7 +152,6 @@ struct RCTInstanceCallback : public InstanceCallback {
 
 @implementation RCTCxxBridge
 {
-  BOOL _wasBatchActive;
   BOOL _didInvalidate;
   BOOL _moduleRegistryCreated;
 
@@ -191,12 +172,20 @@ struct RCTInstanceCallback : public InstanceCallback {
 
   // This is uniquely owned, but weak_ptr is used.
   std::shared_ptr<Instance> _reactInstance;
+
+  // Necessary for searching in TurboModuleRegistry
+  id<RCTTurboModuleLookupDelegate> _turboModuleLookupDelegate;
 }
 
 @synthesize bridgeDescription = _bridgeDescription;
 @synthesize loading = _loading;
 @synthesize performanceLogger = _performanceLogger;
 @synthesize valid = _valid;
+
+- (void) setRCTTurboModuleLookupDelegate:(id<RCTTurboModuleLookupDelegate>)turboModuleLookupDelegate
+{
+  _turboModuleLookupDelegate = turboModuleLookupDelegate;
+}
 
 - (std::shared_ptr<MessageQueueThread>)jsMessageThread
 {
@@ -337,7 +326,7 @@ struct RCTInstanceCallback : public InstanceCallback {
       executorFactory = [cxxDelegate jsExecutorFactoryForBridge:self];
     }
     if (!executorFactory) {
-      executorFactory = std::make_shared<JSCExecutorFactory>();
+      executorFactory = std::make_shared<JSCExecutorFactory>(nullptr);
     }
   } else {
     id<RCTJavaScriptExecutor> objcExecutor = [self moduleForClass:self.executorClass];
@@ -447,13 +436,23 @@ struct RCTInstanceCallback : public InstanceCallback {
 
 - (id)moduleForName:(NSString *)moduleName
 {
-  return _moduleDataByName[moduleName].instance;
+  return [self moduleForName:moduleName lazilyLoadIfNecessary:NO];
 }
 
 - (id)moduleForName:(NSString *)moduleName lazilyLoadIfNecessary:(BOOL)lazilyLoad
 {
+  if (RCTTurboModuleEnabled() && _turboModuleLookupDelegate) {
+    const char* moduleNameCStr = [moduleName UTF8String];
+    if (lazilyLoad || [_turboModuleLookupDelegate moduleIsInitialized:moduleNameCStr]) {
+      id<RCTTurboModule> module = [_turboModuleLookupDelegate moduleForName:moduleNameCStr warnOnLookupFailure:NO];
+      if (module != nil) {
+        return module;
+      }
+    }
+  }
+
   if (!lazilyLoad) {
-    return [self moduleForName:moduleName];
+    return _moduleDataByName[moduleName].instance;
   }
 
   RCTModuleData *moduleData = _moduleDataByName[moduleName];
@@ -482,7 +481,16 @@ struct RCTInstanceCallback : public InstanceCallback {
 
 - (BOOL)moduleIsInitialized:(Class)moduleClass
 {
-  return _moduleDataByName[RCTBridgeModuleNameForClass(moduleClass)].hasInstance;
+  NSString* moduleName = RCTBridgeModuleNameForClass(moduleClass);
+  if (_moduleDataByName[moduleName].hasInstance) {
+    return YES;
+  }
+
+  if (_turboModuleLookupDelegate) {
+    return [_turboModuleLookupDelegate moduleIsInitialized:[moduleName UTF8String]];
+  }
+
+  return NO;
 }
 
 - (id)moduleForClass:(Class)moduleClass
@@ -1366,7 +1374,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
 - (BOOL)isBatchActive
 {
-  return _wasBatchActive;
+  return _reactInstance ? _reactInstance->isBatchActive() : NO;
 }
 
 - (void *)runtime

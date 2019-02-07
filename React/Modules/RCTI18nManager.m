@@ -34,6 +34,11 @@ RCT_EXPORT_METHOD(swapLeftAndRightInRTL:(BOOL)value)
 
 - (NSDictionary *)constantsToExport
 {
+  return [self getConstants];
+}
+
+- (NSDictionary *)getConstants
+{
   return @{
     @"isRTL": @([[RCTI18nUtil sharedInstance] isRTL]),
     @"doLeftAndRightSwapInRTL": @([[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL])

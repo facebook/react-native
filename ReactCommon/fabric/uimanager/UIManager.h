@@ -42,7 +42,7 @@ class UIManager {
   SharedShadowNode cloneNode(
       const SharedShadowNode &shadowNode,
       const SharedShadowNodeSharedList &children = nullptr,
-      const folly::Optional<RawProps> &rawProps = {}) const;
+      const RawProps *rawProps = nullptr) const;
 
   void appendChild(
       const SharedShadowNode &parentShadowNode,

@@ -9,8 +9,8 @@ rn_android_prebuilt_aar(
 
 fb_native.remote_file(
     name = "appcompat-binary-aar",
-    sha1 = "22b1ef4ff9ef1a3513c18eb132d597eac6ef1a86",
-    url = "mvn:com.android.support:appcompat-v7:aar:27.1.1",
+    sha1 = "132586ec59604a86703796851a063a0ac61f697b",
+    url = "mvn:com.android.support:appcompat-v7:aar:28.0.0",
 )
 
 rn_android_prebuilt_aar(

@@ -9,7 +9,7 @@
 
 // A little helper to make sure we have a set of lines including width ready for use.
 // We assume that we will only this in one place so no reference counting is necessary.
-// Needs to be freed when dealloced.
+// Needs to be freed when deallocated.
 
 // This is fragile since this relies on these values not getting reused. Consider
 // wrapping these in an Obj-C class or some ARC hackery to get refcounting.

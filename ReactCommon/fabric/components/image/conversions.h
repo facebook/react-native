@@ -14,41 +14,43 @@
 namespace facebook {
 namespace react {
 
-inline void fromDynamic(const folly::dynamic &value, ImageSource &result) {
-  if (value.isString()) {
-    result = {.type = ImageSource::Type::Remote, .uri = value.asString()};
+inline void fromRawValue(const RawValue &value, ImageSource &result) {
+  if (value.hasType<std::string>()) {
+    result = {.type = ImageSource::Type::Remote, .uri = (std::string)value};
     return;
   }
 
-  if (value.isObject()) {
+  if (value.hasType<std::unordered_map<std::string, RawValue>>()) {
+    auto items = (std::unordered_map<std::string, RawValue>)value;
     result = {};
 
     result.type = ImageSource::Type::Remote;
 
-    if (value.count("__packager_asset")) {
+    if (items.find("__packager_asset") != items.end()) {
       result.type = ImageSource::Type::Local;
     }
 
-    if (value.count("width") && value.count("height")) {
-      fromDynamic(value, result.size);
+    if (items.find("width") != items.end() &&
+        items.find("height") != items.end()) {
+      result.size = {(Float)items.at("width"), (Float)items.at("height")};
     }
 
-    if (value.count("scale")) {
-      result.scale = (Float)value["scale"].asDouble();
+    if (items.find("scale") != items.end()) {
+      result.scale = (Float)items.at("scale");
     } else {
-      result.scale = value.count("deprecated") ? 0.0 : 1.0;
+      result.scale = items.find("deprecated") != items.end() ? 0.0 : 1.0;
     }
 
-    if (value.count("url")) {
-      result.uri = value["url"].asString();
+    if (items.find("url") != items.end()) {
+      result.uri = (std::string)items.at("url");
     }
 
-    if (value.count("uri")) {
-      result.uri = value["uri"].asString();
+    if (items.find("uri") != items.end()) {
+      result.uri = (std::string)items.at("uri");
     }
 
-    if (value.count("bundle")) {
-      result.bundle = value["bundle"].asString();
+    if (items.find("bundle") != items.end()) {
+      result.bundle = (std::string)items.at("bundle");
       result.type = ImageSource::Type::Local;
     }
 
@@ -62,9 +64,9 @@ inline std::string toString(const ImageSource &value) {
   return "{uri: " + value.uri + "}";
 }
 
-inline void fromDynamic(const folly::dynamic &value, ImageResizeMode &result) {
-  assert(value.isString());
-  auto stringValue = value.asString();
+inline void fromRawValue(const RawValue &value, ImageResizeMode &result) {
+  assert(value.hasType<std::string>());
+  auto stringValue = (std::string)value;
   if (stringValue == "cover") {
     result = ImageResizeMode::Cover;
     return;

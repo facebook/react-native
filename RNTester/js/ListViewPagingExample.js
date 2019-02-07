@@ -88,7 +88,6 @@ class Thumb extends React.Component<{}, $FlowFixMeState> {
 }
 
 class ListViewPagingExample extends React.Component<$FlowFixMeProps, *> {
-  // $FlowFixMe found when converting React.createClass to ES6
   constructor(props) {
     super(props);
     const getSectionData = (dataBlob, sectionID) => {

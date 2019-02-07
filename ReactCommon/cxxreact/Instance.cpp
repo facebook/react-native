@@ -43,7 +43,6 @@ void Instance::initializeBridge(
     std::shared_ptr<ModuleRegistry> moduleRegistry) {
   callback_ = std::move(callback);
   moduleRegistry_ = std::move(moduleRegistry);
-
   jsQueue->runOnQueueSync([this, &jsef, jsQueue]() mutable {
     nativeToJsBridge_ = folly::make_unique<NativeToJsBridge>(
         jsef.get(), moduleRegistry_, jsQueue, callback_);
@@ -148,6 +147,10 @@ void *Instance::getJavaScriptContext() {
 
 bool Instance::isInspectable() {
   return nativeToJsBridge_ ? nativeToJsBridge_->isInspectable() : false;
+}
+  
+bool Instance::isBatchActive() {
+  return nativeToJsBridge_ ? nativeToJsBridge_->isBatchActive() : false;
 }
 
 void Instance::callJSFunction(std::string &&module, std::string &&method,

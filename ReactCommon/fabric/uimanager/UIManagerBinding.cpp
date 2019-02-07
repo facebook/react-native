@@ -2,8 +2,6 @@
 
 #include "UIManagerBinding.h"
 
-#include <react/debug/SystraceSection.h>
-
 #include <jsi/JSIDynamic.h>
 
 namespace facebook {
@@ -68,30 +66,28 @@ void UIManagerBinding::dispatchEvent(
     const EventTarget *eventTarget,
     const std::string &type,
     const ValueFactory &payloadFactory) const {
-  SystraceSection s("UIManagerBinding::dispatchEvent");
-
   auto payload = payloadFactory(runtime);
-  auto eventTargetValue = jsi::Value::null();
 
-  if (eventTarget) {
-    auto &eventTargetWrapper =
-        static_cast<const EventTargetWrapper &>(*eventTarget);
-    eventTargetValue = eventTargetWrapper.instanceHandle.lock(runtime);
-    if (eventTargetValue.isUndefined()) {
-      return;
-    }
+  auto instanceHandle = eventTarget
+    ? [&]() {
+      auto instanceHandle = eventTarget->getInstanceHandle(runtime);
+      if (instanceHandle.isUndefined()) {
+        return jsi::Value::null();
+      }
 
-    // Mixing `target` into `payload`.
-    assert(payload.isObject());
-    payload.asObject(runtime).setProperty(
-        runtime, "target", eventTargetWrapper.tag);
-  }
+      // Mixing `target` into `payload`.
+      assert(payload.isObject());
+      payload.asObject(runtime).setProperty(runtime, "target", eventTarget->getTag());
+      return instanceHandle;
+    }()
+    : jsi::Value::null();
 
   auto &eventHandlerWrapper =
       static_cast<const EventHandlerWrapper &>(*eventHandler_);
+
   eventHandlerWrapper.callback.call(
       runtime,
-      {std::move(eventTargetValue),
+      {std::move(instanceHandle),
        jsi::String::createFromUtf8(runtime, type),
        std::move(payload)});
 }
@@ -124,7 +120,7 @@ jsi::Value UIManagerBinding::get(
                   tagFromValue(runtime, arguments[0]),
                   componentNameFromValue(runtime, arguments[1]),
                   surfaceIdFromValue(runtime, arguments[2]),
-                  rawPropsFromValue(runtime, arguments[3]),
+                  RawProps(runtime, arguments[3]),
                   eventTargetFromValue(runtime, arguments[4], arguments[0])));
         });
   }
@@ -176,12 +172,13 @@ jsi::Value UIManagerBinding::get(
             const jsi::Value &thisValue,
             const jsi::Value *arguments,
             size_t count) -> jsi::Value {
+          const auto &rawProps = RawProps(runtime, arguments[1]);
           return valueFromShadowNode(
               runtime,
               uiManager.cloneNode(
                   shadowNodeFromValue(runtime, arguments[0]),
                   nullptr,
-                  rawPropsFromValue(runtime, arguments[1])));
+                  &rawProps));
         });
   }
 
@@ -196,12 +193,13 @@ jsi::Value UIManagerBinding::get(
             const jsi::Value &thisValue,
             const jsi::Value *arguments,
             size_t count) -> jsi::Value {
+          const auto &rawProps = RawProps(runtime, arguments[1]);
           return valueFromShadowNode(
               runtime,
               uiManager.cloneNode(
                   shadowNodeFromValue(runtime, arguments[0]),
                   ShadowNode::emptySharedShadowNodeSharedList(),
-                  rawPropsFromValue(runtime, arguments[1])));
+                  &rawProps));
         });
   }
 
@@ -323,7 +321,7 @@ jsi::Value UIManagerBinding::get(
             size_t count) -> jsi::Value {
           uiManager.setNativeProps(
               shadowNodeFromValue(runtime, arguments[0]),
-              rawPropsFromValue(runtime, arguments[1]));
+              RawProps(runtime, arguments[1]));
 
           return jsi::Value::undefined();
         });

@@ -13,7 +13,7 @@ namespace react {
 RawEvent::RawEvent(
     std::string type,
     ValueFactory payloadFactory,
-    WeakEventTarget eventTarget)
+    SharedEventTarget eventTarget)
     : type(std::move(type)),
       payloadFactory(std::move(payloadFactory)),
       eventTarget(std::move(eventTarget)) {}

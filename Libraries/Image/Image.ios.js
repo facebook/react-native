@@ -124,6 +124,7 @@ let Image = (
 };
 
 Image = React.forwardRef(Image);
+Image.displayName = 'Image';
 
 /**
  * Retrieve the width and height (in pixels) of an image prior to displaying it.

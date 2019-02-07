@@ -14,6 +14,7 @@
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
 
+#include <sstream>
 #include <stdexcept>
 
 using namespace facebook::jsi;

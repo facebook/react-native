@@ -49,6 +49,11 @@ RCT_EXPORT_MODULE()
 
 - (NSDictionary *)constantsToExport
 {
+  return [self getConstants];
+}
+
+- (NSDictionary *)getConstants
+{
   return @{@"initialAppState": RCTCurrentAppBackgroundState()};
 }
 

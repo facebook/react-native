@@ -26,7 +26,7 @@ class UIManagerBinding : public jsi::HostObject {
   UIManagerBinding(std::unique_ptr<UIManager> uiManager);
 
   /*
-   * Stops React Native Surface with given id, moduleName, and props.
+   * Starts React Native Surface with given id, moduleName, and props.
    * Thread synchronization must be enforced externally.
    */
   void startSurface(

@@ -13,11 +13,10 @@
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 
-const requireNativeComponent = require('requireNativeComponent');
+const RCTSegmentedControlNativeComponent = require('RCTSegmentedControlNativeComponent');
 
 import type {SyntheticEvent} from 'CoreEventTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'ReactNative';
 
 type Event = SyntheticEvent<
   $ReadOnly<{|
@@ -64,12 +63,8 @@ type SegmentedControlIOSProps = $ReadOnly<{|
 
 type Props = $ReadOnly<{|
   ...SegmentedControlIOSProps,
-  forwardedRef: ?React.Ref<typeof RCTSegmentedControl>,
+  forwardedRef: ?React.Ref<typeof RCTSegmentedControlNativeComponent>,
 |}>;
-
-type NativeSegmentedControlIOS = Class<
-  NativeComponent<SegmentedControlIOSProps>,
->;
 
 /**
  * Use `SegmentedControlIOS` to render a UISegmentedControl iOS.
@@ -92,10 +87,6 @@ type NativeSegmentedControlIOS = Class<
  * ````
  */
 
-const RCTSegmentedControl = ((requireNativeComponent(
-  'RCTSegmentedControl',
-): any): NativeSegmentedControlIOS);
-
 class SegmentedControlIOS extends React.Component<Props> {
   static defaultProps = {
     values: [],
@@ -111,7 +102,7 @@ class SegmentedControlIOS extends React.Component<Props> {
   render() {
     const {forwardedRef, ...props} = this.props;
     return (
-      <RCTSegmentedControl
+      <RCTSegmentedControlNativeComponent
         {...props}
         ref={forwardedRef}
         style={[styles.segmentedControl, this.props.style]}
@@ -130,7 +121,7 @@ const styles = StyleSheet.create({
 const SegmentedControlIOSWithRef = React.forwardRef(
   (
     props: SegmentedControlIOSProps,
-    forwardedRef: ?React.Ref<typeof RCTSegmentedControl>,
+    forwardedRef: ?React.Ref<typeof RCTSegmentedControlNativeComponent>,
   ) => {
     return <SegmentedControlIOS {...props} forwardedRef={forwardedRef} />;
   },

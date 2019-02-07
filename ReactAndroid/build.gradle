@@ -85,17 +85,6 @@ task prepareFolly(dependsOn: dependenciesPath ? [] : [downloadFolly], type: Copy
     include "folly-${FOLLY_VERSION}/folly/**/*", 'Android.mk'
     eachFile { fname -> fname.path = (fname.path - "folly-${FOLLY_VERSION}/") }
     includeEmptyDirs = false
-
-    // Patch for folly build break on gcc 4.9 and could be removed after build by clang
-    filesMatching('**/container/detail/F14Policy.h') {
-        filter(ReplaceTokens, tokens: [
-                'ObjectHolder(Args&&... args) : value_{std::forward<Args>(args)...} {}': 'ObjectHolder(Args&&... args) : value_({std::forward<Args>(args)...}) {}',
-                'ObjectHolder(Args&&... args) : T{std::forward<Args>(args)...} {}'     : 'ObjectHolder(Args&&... args) : T({std::forward<Args>(args)...}) {}',
-        ],
-                beginToken: '',
-                endToken: '')
-    }
-
     into "$thirdPartyNdkDir/folly"
 }
 
@@ -152,25 +141,26 @@ task downloadJSC(dependsOn: createNativeDepsDirectories, type: Download) {
 }
 
 // Create Android.mk library module based on jsc from npm
-task prepareJSC(dependsOn: downloadJSC) << {
-    def jscTar = tarTree(downloadJSC.dest)
-    def jscAAR = jscTar.matching({ it.include "**/android-jsc/**/*.aar" }).singleFile
-    def soFiles = zipTree(jscAAR).matching({ it.include "**/*.so" })
+task prepareJSC(dependsOn: downloadJSC) {
+    doLast {
+        def jscTar = tarTree(downloadJSC.dest)
+        def jscAAR = jscTar.matching({ it.include "**/android-jsc/**/*.aar" }).singleFile
+        def soFiles = zipTree(jscAAR).matching({ it.include "**/*.so" })
 
-    def headerFiles = jscTar.matching({ it.include "**/include/*.h" })
+        def headerFiles = jscTar.matching({ it.include "**/include/*.h" })
 
-    copy {
-        from soFiles
-        from headerFiles
-        from "src/main/jni/third-party/jsc/Android.mk"
+        copy {
+            from soFiles
+            from headerFiles
+            from "src/main/jni/third-party/jsc/Android.mk"
 
-        filesMatching("**/*.h", { it.path = "JavaScriptCore/${it.name}"})
+            filesMatching("**/*.h", { it.path = "JavaScriptCore/${it.name}" })
 
-        includeEmptyDirs false
-        into "$thirdPartyNdkDir/jsc"
+            includeEmptyDirs false
+            into "$thirdPartyNdkDir/jsc"
+        }
     }
 }
-
 task downloadNdkBuildDependencies {
     if (!boostPath) {
         dependsOn downloadBoost
@@ -276,6 +266,11 @@ task packageReactNdkLibsForBuck(dependsOn: packageReactNdkLibs, type: Copy) {
 android {
     compileSdkVersion 28
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 27
@@ -323,14 +318,14 @@ android {
 dependencies {
     api 'com.facebook.infer.annotation:infer-annotation:0.11.2'
     api 'javax.inject:javax.inject:1'
-    api 'com.android.support:appcompat-v7:27.1.1'
+    api 'com.android.support:appcompat-v7:28.0.0'
     api "com.facebook.fresco:fresco:${FRESCO_VERSION}"
     api "com.facebook.fresco:imagepipeline-okhttp3:${FRESCO_VERSION}"
-    api 'com.facebook.soloader:soloader:0.5.1'
+    api "com.facebook.soloader:soloader:${SO_LOADER_VERSION}"
     api 'com.google.code.findbugs:jsr305:3.0.2'
     api "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
     api "com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}"
-    api 'com.squareup.okio:okio:1.14.0'
+    api 'com.squareup.okio:okio:1.15.0'
 
     testImplementation "junit:junit:${JUNIT_VERSION}"
     testImplementation "org.powermock:powermock-api-mockito:${POWERMOCK_VERSION}"
