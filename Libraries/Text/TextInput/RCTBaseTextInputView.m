@@ -105,7 +105,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   // Similarly, when the user is in the middle of inputting some text in Japanese/Chinese, there will be styling on the
   // text that we should disregard. See https://developer.apple.com/documentation/uikit/uitextinput/1614489-markedtextrange?language=objc
   // for more info.
-  // Also if user has added an emoji, the sytem adds a font attribute for the emoji and stores the original font in NSOriginalFont.
+  // If the user added an emoji, the sytem adds a font attribute for the emoji and stores the original font in NSOriginalFont.
   // Lastly, when entering a password, etc., there will be additional styling on the field as the native text view
   // handles showing the last character for a split second.
   __block BOOL fontHasBeenUpdatedBySystem = false;
