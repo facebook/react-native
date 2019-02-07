@@ -120,7 +120,7 @@ jsi::Value UIManagerBinding::get(
                   tagFromValue(runtime, arguments[0]),
                   componentNameFromValue(runtime, arguments[1]),
                   surfaceIdFromValue(runtime, arguments[2]),
-                  rawPropsFromValue(runtime, arguments[3]),
+                  RawProps(runtime, arguments[3]),
                   eventTargetFromValue(runtime, arguments[4], arguments[0])));
         });
   }
@@ -172,12 +172,13 @@ jsi::Value UIManagerBinding::get(
             const jsi::Value &thisValue,
             const jsi::Value *arguments,
             size_t count) -> jsi::Value {
+          const auto &rawProps = RawProps(runtime, arguments[1]);
           return valueFromShadowNode(
               runtime,
               uiManager.cloneNode(
                   shadowNodeFromValue(runtime, arguments[0]),
                   nullptr,
-                  rawPropsFromValue(runtime, arguments[1])));
+                  &rawProps));
         });
   }
 
@@ -192,12 +193,13 @@ jsi::Value UIManagerBinding::get(
             const jsi::Value &thisValue,
             const jsi::Value *arguments,
             size_t count) -> jsi::Value {
+          const auto &rawProps = RawProps(runtime, arguments[1]);
           return valueFromShadowNode(
               runtime,
               uiManager.cloneNode(
                   shadowNodeFromValue(runtime, arguments[0]),
                   ShadowNode::emptySharedShadowNodeSharedList(),
-                  rawPropsFromValue(runtime, arguments[1])));
+                  &rawProps));
         });
   }
 
@@ -319,7 +321,7 @@ jsi::Value UIManagerBinding::get(
             size_t count) -> jsi::Value {
           uiManager.setNativeProps(
               shadowNodeFromValue(runtime, arguments[0]),
-              rawPropsFromValue(runtime, arguments[1]));
+              RawProps(runtime, arguments[1]));
 
           return jsi::Value::undefined();
         });

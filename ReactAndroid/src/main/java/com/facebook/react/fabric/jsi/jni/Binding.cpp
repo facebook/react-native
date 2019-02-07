@@ -171,11 +171,7 @@ local_ref<JMountItem::javaobject> createUpdatePropsMountItem(const jni::global_r
   auto newViewProps = *std::dynamic_pointer_cast<const ViewProps>(shadowView.props);
 
   // TODO: move props from map to a typed object.
-  auto rawProps = shadowView.props->rawProps;
-  folly::dynamic newProps = folly::dynamic::object();
-  for (auto element : rawProps) {
-    newProps[element.first] = element.second;
-  }
+  auto newProps = shadowView.props->rawProps;
 
   local_ref<ReadableNativeMap::jhybridobject> readableMap = ReadableNativeMap::newObjectCxxArgs(newProps);
 

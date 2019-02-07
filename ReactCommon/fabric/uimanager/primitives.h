@@ -13,23 +13,6 @@ namespace react {
 using RuntimeExecutor = std::function<void(
     std::function<void(facebook::jsi::Runtime &runtime)> &&callback)>;
 
-inline RawProps rawPropsFromDynamic(const folly::dynamic object) noexcept {
-  RawProps result;
-
-  if (object.isNull()) {
-    return result;
-  }
-
-  assert(object.isObject());
-
-  for (const auto &pair : object.items()) {
-    assert(pair.first.isString());
-    result[pair.first.asString()] = pair.second;
-  }
-
-  return result;
-}
-
 struct EventHandlerWrapper : public EventHandler {
   EventHandlerWrapper(jsi::Function eventHandler)
       : callback(std::move(eventHandler)) {}
@@ -79,13 +62,6 @@ inline static jsi::Value valueFromShadowNodeList(
     const SharedShadowNodeUnsharedList &shadowNodeList) {
   return jsi::Object::createFromHostObject(
       runtime, std::make_unique<ShadowNodeListWrapper>(shadowNodeList));
-}
-
-inline static RawProps rawPropsFromValue(
-    jsi::Runtime &runtime,
-    const jsi::Value &value) {
-  return rawPropsFromDynamic(folly::dynamic{
-      value.isNull() ? nullptr : jsi::dynamicFromValue(runtime, value)});
 }
 
 inline static SharedEventTarget eventTargetFromValue(

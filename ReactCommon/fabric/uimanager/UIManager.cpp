@@ -33,17 +33,16 @@ SharedShadowNode UIManager::createNode(
 SharedShadowNode UIManager::cloneNode(
     const SharedShadowNode &shadowNode,
     const SharedShadowNodeSharedList &children,
-    const folly::Optional<RawProps> &rawProps) const {
+    const RawProps *rawProps) const {
   auto &componentDescriptor =
       componentDescriptorRegistry_->at(shadowNode->getComponentHandle());
 
   auto clonedShadowNode = componentDescriptor.cloneShadowNode(
       *shadowNode,
       {
-          .props = rawProps.has_value()
-              ? componentDescriptor.cloneProps(
-                    shadowNode->getProps(), rawProps.value())
-              : ShadowNodeFragment::nullSharedProps(),
+          .props = rawProps ? componentDescriptor.cloneProps(
+                                  shadowNode->getProps(), *rawProps)
+                            : ShadowNodeFragment::nullSharedProps(),
           .children = children,
       });
 
