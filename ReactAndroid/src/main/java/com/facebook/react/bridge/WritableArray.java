@@ -7,6 +7,8 @@
 
 package com.facebook.react.bridge;
 
+import javax.annotation.Nonnull;
+
 /**
  * Interface for a mutable array. Used to pass arguments from Java to JS.
  */
@@ -16,7 +18,7 @@ public interface WritableArray extends ReadableArray {
   void pushBoolean(boolean value);
   void pushDouble(double value);
   void pushInt(int value);
-  void pushString(String value);
-  void pushArray(WritableArray array);
-  void pushMap(WritableMap map);
+  void pushString(@Nonnull String value);
+  void pushArray(@Nonnull WritableArray array);
+  void pushMap(@Nonnull WritableMap map);
 }
