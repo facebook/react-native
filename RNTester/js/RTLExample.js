@@ -184,6 +184,12 @@ const SimpleListItemExample = withRTLState(({isRTL, setRTL}) => {
 class AnimationExample extends React.Component<any, State> {
   constructor(props: Object) {
     super(props);
+
+    this.state = {
+      toggleStatus: {},
+      linear: new Animated.Value(0),
+      windowWidth: 0,
+    };
   }
 
   render() {
@@ -193,10 +199,10 @@ class AnimationExample extends React.Component<any, State> {
         description={'Animation direction according to layout'}>
         <View style={styles.view}>
           <AnimationBlock
-            onPress={this.props.linearTap}
+            onPress={this._linearTap}
             imgStyle={{
               transform: [
-                {translateX: this.props.linear},
+                {translateX: this.state.linear},
                 {scaleX: IS_RTL ? -1 : 1},
               ],
             }}
@@ -205,6 +211,23 @@ class AnimationExample extends React.Component<any, State> {
       </RNTesterBlock>
     );
   }
+
+  _linearTap = (e: Object) => {
+    this.setState({
+      toggleStatus: {
+        ...this.state.toggleStatus,
+        [e]: !this.state.toggleStatus[e],
+      },
+    });
+    const offset = IMAGE_SIZE[0] / SCALE / 2 + 10;
+    const toMaxDistance =
+      (IS_RTL ? -1 : 1) * (this.state.windowWidth / 2 - offset);
+    Animated.timing(this.state.linear, {
+      toValue: this.state.toggleStatus[e] ? toMaxDistance : 0,
+      duration: 2000,
+      useNativeDriver: true,
+    }).start();
+  };
 }
 
 const PaddingExample = withRTLState(({isRTL, setRTL}) => {
@@ -522,10 +545,7 @@ class RTLExample extends React.Component<any, State> {
             style={[styles.fontSizeSmall, styles.textAlignRight]}
           />
           <IconsExample />
-          <AnimationExample
-            linearTap={this._linearTap}
-            linear={this.state.linear}
-          />
+          <AnimationExample />
           <PaddingExample />
           <MarginExample />
           <PositionExample />
