@@ -181,7 +181,7 @@ const SimpleListItemExample = withRTLState(({isRTL, setRTL}) => {
 });
 
 const AnimationContainer = withRTLState(({isRTL, setRTL}) => {
-  return <AnimationExample />;
+  return <AnimationExample isRTL={isRTL} setRTL={setRTL} />;
 });
 
 class AnimationExample extends React.Component<any, State> {
@@ -200,13 +200,14 @@ class AnimationExample extends React.Component<any, State> {
       <RNTesterBlock
         title={'Controlling Animation'}
         description={'Animation direction according to layout'}>
+        <RTLToggler setRTL={this.props.setRTL} isRTL={this.props.isRTL} />
         <View style={styles.view} onLayout={this._onLayout}>
           <AnimationBlock
             onPress={this._linearTap}
             imgStyle={{
               transform: [
                 {translateX: this.state.linear},
-                {scaleX: IS_RTL ? -1 : 1},
+                {scaleX: this.props.isRTL ? -1 : 1},
               ],
             }}
           />
@@ -230,7 +231,7 @@ class AnimationExample extends React.Component<any, State> {
     });
     const offset = IMAGE_SIZE[0] / SCALE / 2 + 10;
     const toMaxDistance =
-      (IS_RTL ? -1 : 1) * (this.state.windowWidth / 2 - offset);
+      (this.props.isRTL ? -1 : 1) * (this.state.windowWidth / 2 - offset);
     Animated.timing(this.state.linear, {
       toValue: this.state.toggleStatus[e] ? toMaxDistance : 0,
       duration: 2000,
