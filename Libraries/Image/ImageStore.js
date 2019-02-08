@@ -13,15 +13,11 @@ const RCTImageStoreManager = require('NativeModules').ImageStoreManager;
 
 const Platform = require('Platform');
 
-function warnDeprecated(): void {
-  console.warn(`react-native: ImageStore is deprecated. 
-  To get a base64-encoded string from a local image use either of the following third-party libraries:
-  * expo-file-system: \`readAsStringAsync(filepath, 'base64')\`
-  * react-native-fs: \`readFile(filepath, 'base64')\``);
-}
+const warnOnce = require('warnOnce');
 
 function warnUnimplementedMethod(methodName: string): void {
-  console.warn(
+  warnOnce(
+    `imagestore-${methodName}`,
     `react-native: ImageStore.${methodName}() is not implemented on ${
       Platform.OS
     }`,
@@ -34,7 +30,6 @@ class ImageStore {
    * @platform ios
    */
   static hasImageForTag(uri: string, callback: (hasImage: boolean) => void) {
-    warnDeprecated();
     if (RCTImageStoreManager.hasImageForTag) {
       RCTImageStoreManager.hasImageForTag(uri, callback);
     } else {
@@ -51,7 +46,6 @@ class ImageStore {
    * @platform ios
    */
   static removeImageForTag(uri: string) {
-    warnDeprecated();
     if (RCTImageStoreManager.removeImageForTag) {
       RCTImageStoreManager.removeImageForTag(uri);
     } else {
@@ -75,7 +69,6 @@ class ImageStore {
     success: (uri: string) => void,
     failure: (error: any) => void,
   ) {
-    warnDeprecated();
     if (RCTImageStoreManager.addImageFromBase64) {
       RCTImageStoreManager.addImageFromBase64(
         base64ImageData,
@@ -103,7 +96,6 @@ class ImageStore {
     success: (base64ImageData: string) => void,
     failure: (error: any) => void,
   ) {
-    warnDeprecated();
     if (RCTImageStoreManager.getBase64ForTag) {
       RCTImageStoreManager.getBase64ForTag(uri, success, failure);
     } else {
