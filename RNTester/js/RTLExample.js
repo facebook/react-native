@@ -197,7 +197,7 @@ class AnimationExample extends React.Component<any, State> {
       <RNTesterBlock
         title={'Controlling Animation'}
         description={'Animation direction according to layout'}>
-        <View style={styles.view}>
+        <View style={styles.view} onLayout={this._onLayout}>
           <AnimationBlock
             onPress={this._linearTap}
             imgStyle={{
@@ -211,6 +211,12 @@ class AnimationExample extends React.Component<any, State> {
       </RNTesterBlock>
     );
   }
+
+  _onLayout = (e: Object) => {
+    this.setState({
+      windowWidth: e.nativeEvent.layout.width,
+    });
+  };
 
   _linearTap = (e: Object) => {
     this.setState({
