@@ -65,10 +65,11 @@ function ListItem(props) {
   );
 }
 
-function TextAlignmentExample(props) {
+const TextAlignmentExample = withRTLState(({isRTL, setRTL, ...props}) => {
   return (
     <RNTesterBlock title={props.title} description={props.description}>
-      <View>
+      <RTLToggler setRTL={setRTL} isRTL={isRTL} />
+      <View style={{direction: isRTL ? 'rtl' : 'ltr'}}>
         <Text style={props.style}>
           Left-to-Right language without text alignment.
         </Text>
@@ -86,7 +87,7 @@ function TextAlignmentExample(props) {
       </View>
     </RNTesterBlock>
   );
-}
+});
 
 function AnimationBlock(props) {
   return (
@@ -116,7 +117,9 @@ function withRTLState(Component) {
 
     render() {
       const setRTL = isRTL => this.setState({isRTL: isRTL});
-      return <Component isRTL={this.state.isRTL} setRTL={setRTL} />;
+      return (
+        <Component isRTL={this.state.isRTL} setRTL={setRTL} {...this.props} />
+      );
     }
   };
 }
