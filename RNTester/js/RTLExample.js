@@ -181,6 +181,32 @@ const SimpleListItemExample = withRTLState(({isRTL, setRTL}) => {
   );
 });
 
+class AnimationExample extends React.Component<any, State> {
+  constructor(props: Object) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <RNTesterBlock
+        title={'Controlling Animation'}
+        description={'Animation direction according to layout'}>
+        <View style={styles.view}>
+          <AnimationBlock
+            onPress={this.props.linearTap}
+            imgStyle={{
+              transform: [
+                {translateX: this.props.linear},
+                {scaleX: IS_RTL ? -1 : 1},
+              ],
+            }}
+          />
+        </View>
+      </RNTesterBlock>
+    );
+  }
+}
+
 const PaddingExample = withRTLState(({isRTL, setRTL}) => {
   const color = 'teal';
 
@@ -496,21 +522,10 @@ class RTLExample extends React.Component<any, State> {
             style={[styles.fontSizeSmall, styles.textAlignRight]}
           />
           <IconsExample />
-          <RNTesterBlock
-            title={'Controlling Animation'}
-            description={'Animation direction according to layout'}>
-            <View style={styles.view}>
-              <AnimationBlock
-                onPress={this._linearTap}
-                imgStyle={{
-                  transform: [
-                    {translateX: this.state.linear},
-                    {scaleX: IS_RTL ? -1 : 1},
-                  ],
-                }}
-              />
-            </View>
-          </RNTesterBlock>
+          <AnimationExample
+            linearTap={this._linearTap}
+            linear={this.state.linear}
+          />
           <PaddingExample />
           <MarginExample />
           <PositionExample />
