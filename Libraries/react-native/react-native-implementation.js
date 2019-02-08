@@ -49,6 +49,10 @@ const ReactNative = {
     return require('ImageEditor');
   },
   get ImageStore() {
+    console.warn(`react-native: ImageStore is deprecated. 
+    To get a base64-encoded string from a local image use either of the following third-party libraries:
+    * expo-file-system: \`readAsStringAsync(filepath, 'base64')\`
+    * react-native-fs: \`readFile(filepath, 'base64')\``);
     return require('ImageStore');
   },
   get InputAccessoryView() {

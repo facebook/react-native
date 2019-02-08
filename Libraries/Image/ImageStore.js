@@ -17,11 +17,15 @@ function warnDeprecated(): void {
   console.warn(`react-native: ImageStore is deprecated. 
   To get a base64-encoded string from a local image use either of the following third-party libraries:
   * expo-file-system: \`readAsStringAsync(filepath, 'base64')\`
-  * react-native-fs: \`readFile(filepath, 'base64')\``)
+  * react-native-fs: \`readFile(filepath, 'base64')\``);
 }
 
 function warnUnimplementedMethod(methodName: string): void {
-  console.warn(`react-native: ImageStore.${methodName}() is not implemented on ${Platform.OS}`)
+  console.warn(
+    `react-native: ImageStore.${methodName}() is not implemented on ${
+      Platform.OS
+    }`,
+  );
 }
 
 class ImageStore {
@@ -73,7 +77,11 @@ class ImageStore {
   ) {
     warnDeprecated();
     if (RCTImageStoreManager.addImageFromBase64) {
-      RCTImageStoreManager.addImageFromBase64(base64ImageData, success, failure);
+      RCTImageStoreManager.addImageFromBase64(
+        base64ImageData,
+        success,
+        failure,
+      );
     } else {
       warnUnimplementedMethod('addImageFromBase64');
     }
