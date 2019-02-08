@@ -180,6 +180,10 @@ const SimpleListItemExample = withRTLState(({isRTL, setRTL}) => {
   );
 });
 
+const AnimationContainer = withRTLState(({isRTL, setRTL}) => {
+  return <AnimationExample />;
+});
+
 class AnimationExample extends React.Component<any, State> {
   constructor(props: Object) {
     super(props);
@@ -546,7 +550,7 @@ class RTLExample extends React.Component<any, State> {
             style={[styles.fontSizeSmall, styles.textAlignRight]}
           />
           <IconsExample />
-          <AnimationExample />
+          <AnimationContainer />
           <PaddingExample />
           <MarginExample />
           <PositionExample />
