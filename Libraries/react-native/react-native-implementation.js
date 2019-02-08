@@ -54,8 +54,8 @@ module.exports = {
       'imagestore-deprecation',
       'ImageStore is deprecated and will be removed in a future release. ' +
         'To get a base64-encoded string from a local image use either of the following third-party libraries:' +
-        '* expo-file-system: `readAsStringAsync(filepath, \'base64\')`' +
-        '* react-native-fs: `readFile(filepath, \'base64\')`',
+        "* expo-file-system: `readAsStringAsync(filepath, 'base64')`" +
+        "* react-native-fs: `readFile(filepath, 'base64')`",
     );
     return require('ImageStore');
   },
