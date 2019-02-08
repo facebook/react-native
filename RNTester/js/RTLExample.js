@@ -475,25 +475,6 @@ const BorderExample = withRTLState(({isRTL, setRTL}) => {
 });
 
 class RTLExample extends React.Component<any, State> {
-  _panResponder: Object;
-
-  constructor(props: Object) {
-    super(props);
-    const pan = new Animated.ValueXY();
-
-    this._panResponder = PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onPanResponderGrant: this._onPanResponderGrant,
-      onPanResponderMove: Animated.event([null, {dx: pan.x, dy: pan.y}]),
-      onPanResponderRelease: this._onPanResponderEnd,
-      onPanResponderTerminate: this._onPanResponderEnd,
-    });
-
-    this.state = {
-      pan,
-    };
-  }
-
   render() {
     return (
       <ScrollView style={styles.container}>
@@ -536,23 +517,6 @@ class RTLExample extends React.Component<any, State> {
       </ScrollView>
     );
   }
-
-  _onPanResponderGrant = (e: Object, gestureState: Object) => {
-    this.state.pan.stopAnimation(value => {
-      this.state.pan.setOffset(value);
-    });
-  };
-
-  _onPanResponderEnd = (e: Object, gestureState: Object) => {
-    this.state.pan.flattenOffset();
-    Animated.sequence([
-      Animated.decay(this.state.pan, {
-        velocity: {x: gestureState.vx, y: gestureState.vy},
-        deceleration: 0.995,
-      }),
-      Animated.spring(this.state.pan, {toValue: {x: 0, y: 0}}),
-    ]).start();
-  };
 }
 
 const styles = StyleSheet.create({
