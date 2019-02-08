@@ -491,40 +491,13 @@ class RTLExample extends React.Component<any, State> {
 
     this.state = {
       pan,
-      isRTL: IS_RTL,
     };
   }
 
   render() {
     return (
-      <ScrollView
-        style={[
-          styles.container,
-          // `direction` property is supported only on iOS now.
-          Platform.OS === 'ios'
-            ? {direction: this.state.isRTL ? 'rtl' : 'ltr'}
-            : null,
-        ]}>
+      <ScrollView style={styles.container}>
         <RNTesterPage title={'Right-to-Left (RTL) UI Layout'}>
-          <RNTesterBlock title={'Current Layout Direction'}>
-            <View style={styles.directionBox}>
-              <Text style={styles.directionText}>
-                {this.state.isRTL ? 'Right-to-Left' : 'Left-to-Right'}
-              </Text>
-            </View>
-          </RNTesterBlock>
-          <RNTesterBlock title={'Quickly Test RTL Layout'}>
-            <View style={styles.flexDirectionRow}>
-              <Text style={styles.switchRowTextView}>forceRTL</Text>
-              <View style={styles.switchRowSwitchView}>
-                <Switch
-                  onValueChange={this._onDirectionChange}
-                  style={styles.rightAlignStyle}
-                  value={this.state.isRTL}
-                />
-              </View>
-            </View>
-          </RNTesterBlock>
           <SimpleListItemExample />
           <TextAlignmentExample
             title={'Default Text Alignment'}
@@ -563,17 +536,6 @@ class RTLExample extends React.Component<any, State> {
       </ScrollView>
     );
   }
-
-  _onDirectionChange = () => {
-    I18nManager.forceRTL(!this.state.isRTL);
-    this.setState({isRTL: !this.state.isRTL});
-    Alert.alert(
-      'Reload this page',
-      'Please reload this page to change the UI direction! ' +
-        'All examples in this app will be affected. ' +
-        'Check them out to see what they look like in RTL layout.',
-    );
-  };
 
   _onPanResponderGrant = (e: Object, gestureState: Object) => {
     this.state.pan.stopAnimation(value => {
