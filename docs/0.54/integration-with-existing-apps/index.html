@@ -497,6 +497,42 @@ $ react-native <span class="hljs-keyword">run</span><span class="bash">-ios
 <pre><code class="hljs">&lt;activity android:name=&quot;com.facebook.react.devsupport.DevSettingsActivity&quot; /&gt;
 </code></pre>
 <p>This is only used in dev mode when reloading JavaScript from the development server, so you can strip this in release builds if you need to.</p>
+<h3><a class="anchor" aria-hidden="true" id="network-security-config-api-level-28"></a><a href="#network-security-config-api-level-28" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Network Security Config (API level 28+)</h3>
+<blockquote>
+<p>Starting with Android 9 (API level 28), cleartext traffic is disabled by default; this prevents your application from connecting to the React Native packager. These changes add domain rules that specifically allow cleartext traffic to the packager IPs.</p>
+</blockquote>
+<h4><a class="anchor" aria-hidden="true" id="1-create-the-following-resource-files"></a><a href="#1-create-the-following-resource-files" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>1. Create the following resource files</h4>
+<p><code>app/src/debug/res/xml/network_security_config.xml</code>:</p>
+<pre><code class="hljs css language-xml"><span class="php"><span class="hljs-meta">&lt;?</span>xml version=<span class="hljs-string">"1.0"</span> encoding=<span class="hljs-string">"utf-8"</span><span class="hljs-meta">?&gt;</span></span>
+<span class="hljs-tag">&lt;<span class="hljs-name">network-security-config</span>&gt;</span>
+  <span class="hljs-comment">&lt;!-- allow cleartext traffic for React Native packager ips in debug --&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">domain-config</span> <span class="hljs-attr">cleartextTrafficPermitted</span>=<span class="hljs-string">"true"</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">domain</span> <span class="hljs-attr">includeSubdomains</span>=<span class="hljs-string">"false"</span>&gt;</span>localhost<span class="hljs-tag">&lt;/<span class="hljs-name">domain</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">domain</span> <span class="hljs-attr">includeSubdomains</span>=<span class="hljs-string">"false"</span>&gt;</span>10.0.2.2<span class="hljs-tag">&lt;/<span class="hljs-name">domain</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">domain</span> <span class="hljs-attr">includeSubdomains</span>=<span class="hljs-string">"false"</span>&gt;</span>10.0.3.2<span class="hljs-tag">&lt;/<span class="hljs-name">domain</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">domain-config</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">network-security-config</span>&gt;</span>
+</code></pre>
+<p><code>app/src/release/res/xml/network_security_config.xml</code>:</p>
+<pre><code class="hljs css language-xml"><span class="php"><span class="hljs-meta">&lt;?</span>xml version=<span class="hljs-string">"1.0"</span> encoding=<span class="hljs-string">"utf-8"</span><span class="hljs-meta">?&gt;</span></span>
+<span class="hljs-tag">&lt;<span class="hljs-name">network-security-config</span>&gt;</span>
+  <span class="hljs-comment">&lt;!-- deny cleartext traffic for React Native packager ips in release --&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">domain-config</span> <span class="hljs-attr">cleartextTrafficPermitted</span>=<span class="hljs-string">"false"</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">domain</span> <span class="hljs-attr">includeSubdomains</span>=<span class="hljs-string">"false"</span>&gt;</span>localhost<span class="hljs-tag">&lt;/<span class="hljs-name">domain</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">domain</span> <span class="hljs-attr">includeSubdomains</span>=<span class="hljs-string">"false"</span>&gt;</span>10.0.2.2<span class="hljs-tag">&lt;/<span class="hljs-name">domain</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">domain</span> <span class="hljs-attr">includeSubdomains</span>=<span class="hljs-string">"false"</span>&gt;</span>10.0.3.2<span class="hljs-tag">&lt;/<span class="hljs-name">domain</span>&gt;</span>
+  <span class="hljs-tag">&lt;/<span class="hljs-name">domain-config</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">network-security-config</span>&gt;</span>
+</code></pre>
+<h4><a class="anchor" aria-hidden="true" id="2-apply-the-config-to-your-androidmanifestxml"></a><a href="#2-apply-the-config-to-your-androidmanifestxml" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>2. Apply the config to your <code>AndroidManifest.xml</code></h4>
+<pre><code class="hljs css language-xml"><span class="hljs-comment">&lt;!-- ... --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">application</span>
+  <span class="hljs-attr">android:networkSecurityConfig</span>=<span class="hljs-string">"@xml/network_security_config"</span>&gt;</span>
+  <span class="hljs-comment">&lt;!-- ... --&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">application</span>&gt;</span>
+<span class="hljs-comment">&lt;!-- ... --&gt;</span>
+</code></pre>
+<p>To learn more about Network Security Config and the cleartext traffic policy <a href="https://developer.android.com/training/articles/security-config#CleartextTrafficPermitted">see this link</a>.</p>
 <h3><a class="anchor" aria-hidden="true" id="code-integration-1"></a><a href="#code-integration-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Code integration</h3>
 <p>Now we will actually modify the native Android application to integrate React Native.</p>
 <h4><a class="anchor" aria-hidden="true" id="the-react-native-component-1"></a><a href="#the-react-native-component-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>The React Native component</h4>
