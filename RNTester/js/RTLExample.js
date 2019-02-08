@@ -137,6 +137,18 @@ const RTLToggler = ({isRTL, setRTL}) => {
   );
 };
 
+const SimpleListItemExample = withRTLState(({isRTL, setRTL}) => {
+  return (
+    <RNTesterBlock title={'A Simple List Item Layout'}>
+      <RTLToggler setRTL={setRTL} isRTL={isRTL} />
+      <View style={[styles.list, {direction: isRTL ? 'rtl' : 'ltr'}]}>
+        <ListItem imageSource={require('./Thumbnails/like.png')} />
+        <ListItem imageSource={require('./Thumbnails/poke.png')} />
+      </View>
+    </RNTesterBlock>
+  );
+});
+
 const PaddingExample = withRTLState(({isRTL, setRTL}) => {
   const color = 'teal';
 
@@ -426,12 +438,7 @@ class RTLExample extends React.Component<any, State> {
               </View>
             </View>
           </RNTesterBlock>
-          <RNTesterBlock title={'A Simple List Item Layout'}>
-            <View style={styles.list}>
-              <ListItem imageSource={require('./Thumbnails/like.png')} />
-              <ListItem imageSource={require('./Thumbnails/poke.png')} />
-            </View>
-          </RNTesterBlock>
+          <SimpleListItemExample />
           <TextAlignmentExample
             title={'Default Text Alignment'}
             description={
