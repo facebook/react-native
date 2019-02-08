@@ -36,7 +36,6 @@ type State = {
   pan: Object,
   linear: Object,
   isRTL: boolean,
-  windowWidth: number,
 };
 
 const SCALE = PixelRatio.get();
@@ -486,11 +485,8 @@ class RTLExample extends React.Component<any, State> {
     });
 
     this.state = {
-      toggleStatus: {},
       pan,
-      linear: new Animated.Value(0),
       isRTL: IS_RTL,
-      windowWidth: 0,
     };
   }
 
@@ -503,8 +499,7 @@ class RTLExample extends React.Component<any, State> {
           Platform.OS === 'ios'
             ? {direction: this.state.isRTL ? 'rtl' : 'ltr'}
             : null,
-        ]}
-        onLayout={this._onLayout}>
+        ]}>
         <RNTesterPage title={'Right-to-Left (RTL) UI Layout'}>
           <RNTesterBlock title={'Current Layout Direction'}>
             <View style={styles.directionBox}>
@@ -564,12 +559,6 @@ class RTLExample extends React.Component<any, State> {
     );
   }
 
-  _onLayout = (e: Object) => {
-    this.setState({
-      windowWidth: e.nativeEvent.layout.width,
-    });
-  };
-
   _onDirectionChange = () => {
     I18nManager.forceRTL(!this.state.isRTL);
     this.setState({isRTL: !this.state.isRTL});
@@ -579,23 +568,6 @@ class RTLExample extends React.Component<any, State> {
         'All examples in this app will be affected. ' +
         'Check them out to see what they look like in RTL layout.',
     );
-  };
-
-  _linearTap = (e: Object) => {
-    this.setState({
-      toggleStatus: {
-        ...this.state.toggleStatus,
-        [e]: !this.state.toggleStatus[e],
-      },
-    });
-    const offset = IMAGE_SIZE[0] / SCALE / 2 + 10;
-    const toMaxDistance =
-      (IS_RTL ? -1 : 1) * (this.state.windowWidth / 2 - offset);
-    Animated.timing(this.state.linear, {
-      toValue: this.state.toggleStatus[e] ? toMaxDistance : 0,
-      duration: 2000,
-      useNativeDriver: true,
-    }).start();
   };
 
   _onPanResponderGrant = (e: Object, gestureState: Object) => {
