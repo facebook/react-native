@@ -89,6 +89,35 @@ const TextAlignmentExample = withRTLState(({isRTL, setRTL, ...props}) => {
   );
 });
 
+const IconsExample = withRTLState(({isRTL, setRTL}) => {
+  return (
+    <RNTesterBlock title={'Working With Icons'}>
+      <RTLToggler setRTL={setRTL} isRTL={isRTL} />
+      <View
+        style={[styles.flexDirectionRow, {direction: isRTL ? 'rtl' : 'ltr'}]}>
+        <View>
+          <Image
+            source={require('./Thumbnails/like.png')}
+            style={styles.image}
+          />
+          <Text style={styles.fontSizeExtraSmall}>
+            Without directional meaning
+          </Text>
+        </View>
+        <View style={styles.rightAlignStyle}>
+          <Image
+            source={require('./Thumbnails/poke.png')}
+            style={[styles.image, styles.withRTLStyle]}
+          />
+          <Text style={styles.fontSizeExtraSmall}>
+            With directional meaning
+          </Text>
+        </View>
+      </View>
+    </RNTesterBlock>
+  );
+});
+
 function AnimationBlock(props) {
   return (
     <View style={styles.block}>
@@ -466,28 +495,7 @@ class RTLExample extends React.Component<any, State> {
             }
             style={[styles.fontSizeSmall, styles.textAlignRight]}
           />
-          <RNTesterBlock title={'Working With Icons'}>
-            <View style={styles.flexDirectionRow}>
-              <View>
-                <Image
-                  source={require('./Thumbnails/like.png')}
-                  style={styles.image}
-                />
-                <Text style={styles.fontSizeExtraSmall}>
-                  Without directional meaning
-                </Text>
-              </View>
-              <View style={styles.rightAlignStyle}>
-                <Image
-                  source={require('./Thumbnails/poke.png')}
-                  style={[styles.image, styles.withRTLStyle]}
-                />
-                <Text style={styles.fontSizeExtraSmall}>
-                  With directional meaning
-                </Text>
-              </View>
-            </View>
-          </RNTesterBlock>
+          <IconsExample />
           <RNTesterBlock
             title={'Controlling Animation'}
             description={'Animation direction according to layout'}>
