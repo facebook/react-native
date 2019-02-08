@@ -1,4 +1,4 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -52,6 +52,12 @@ void JReactMarker::logPerfMarker(const ReactMarker::ReactMarkerId markerId, cons
       break;
     case ReactMarker::NATIVE_MODULE_SETUP_STOP:
       JReactMarker::logMarker("NATIVE_MODULE_SETUP_END", tag);
+      break;
+    case ReactMarker::REGISTER_JS_SEGMENT_START:
+      JReactMarker::logMarker("REGISTER_JS_SEGMENT_START", tag);
+      break;
+    case ReactMarker::REGISTER_JS_SEGMENT_STOP:
+      JReactMarker::logMarker("REGISTER_JS_SEGMENT_STOP", tag);
       break;
     case ReactMarker::NATIVE_REQUIRE_START:
     case ReactMarker::NATIVE_REQUIRE_STOP:

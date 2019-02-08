@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,7 +13,7 @@
 const MatrixMath = require('MatrixMath');
 const Platform = require('Platform');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 const stringifySafe = require('stringifySafe');
 
 /**
@@ -170,17 +170,29 @@ function _validateTransform(key, value, transformation) {
   switch (key) {
     case 'matrix':
       invariant(
+        /* $FlowFixMe(>=0.88.0 site=react_native_fb) This comment suppresses an
+         * error found when Flow v0.88 was deployed. To see the error, delete
+         * this comment and run Flow. */
         value.length === 9 || value.length === 16,
         'Matrix transform must have a length of 9 (2d) or 16 (3d). ' +
           'Provided matrix has a length of %s: %s',
+        /* $FlowFixMe(>=0.84.0 site=react_native_fb) This comment suppresses an
+         * error found when Flow v0.84 was deployed. To see the error, delete
+         * this comment and run Flow. */
         value.length,
         stringifySafe(transformation),
       );
       break;
     case 'translate':
       invariant(
+        /* $FlowFixMe(>=0.88.0 site=react_native_fb) This comment suppresses an
+         * error found when Flow v0.88 was deployed. To see the error, delete
+         * this comment and run Flow. */
         value.length === 2 || value.length === 3,
         'Transform with key translate must be an array of length 2 or 3, found %s: %s',
+        /* $FlowFixMe(>=0.84.0 site=react_native_fb) This comment suppresses an
+         * error found when Flow v0.84 was deployed. To see the error, delete
+         * this comment and run Flow. */
         value.length,
         stringifySafe(transformation),
       );

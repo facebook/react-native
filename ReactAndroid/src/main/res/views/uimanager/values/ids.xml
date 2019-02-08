@@ -8,4 +8,11 @@
 
   <!-- tag is used to store the nativeID tag -->
   <item type="id" name="view_tag_instance_handle"/>
+
+  <!--tag is used to store accessibilityHint tag-->
+  <item type="id" name="accessibility_hint"/>
+
+  <!--tag is used to store accessibilityRole tag-->
+  <item type="id" name="accessibility_role"/>
+
 </resources>

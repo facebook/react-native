@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -58,4 +58,18 @@ public interface MessageQueueThread {
    */
   @DoNotStrip
   void quitSynchronous();
+
+  /**
+   * Returns the perf counters taken when the framework was started.  This
+   * method is intended to be used for instrumentation purposes.
+   */
+  @DoNotStrip
+  MessageQueueThreadPerfStats getPerfStats();
+
+  /**
+   * Resets the perf counters.  This is useful if the RN threads are being re-used.
+   * This method is intended to be used for instrumentation purposes.
+   */
+  @DoNotStrip
+  void resetPerfStats();
 }

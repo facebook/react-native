@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,16 +10,15 @@
 
 'use strict';
 
+const SwitchNativeComponent = require('SwitchNativeComponent');
 const Platform = require('Platform');
 const React = require('React');
-const ReactNative = require('ReactNative');
 const StyleSheet = require('StyleSheet');
-
-const requireNativeComponent = require('requireNativeComponent');
 
 import type {SwitchChangeEvent} from 'CoreEventTypes';
 import type {ColorValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
+import type {NativeAndroidProps, NativeIOSProps} from 'SwitchNativeComponent';
 
 export type Props = $ReadOnly<{|
   ...ViewProps,
@@ -75,41 +74,6 @@ export type Props = $ReadOnly<{|
   onValueChange?: ?(value: boolean) => Promise<void> | void,
 |}>;
 
-// @see ReactSwitchManager.java
-type NativeAndroidProps = $ReadOnly<{|
-  ...ViewProps,
-  enabled?: ?boolean,
-  on?: ?boolean,
-  onChange?: ?(event: SwitchChangeEvent) => mixed,
-  thumbTintColor?: ?string,
-  trackTintColor?: ?string,
-|}>;
-
-// @see RCTSwitchManager.m
-type NativeIOSProps = $ReadOnly<{|
-  ...ViewProps,
-  disabled?: ?boolean,
-  onChange?: ?(event: SwitchChangeEvent) => mixed,
-  onTintColor?: ?string,
-  thumbTintColor?: ?string,
-  tintColor?: ?string,
-  value?: ?boolean,
-|}>;
-
-type NativeSwitchType = Class<
-  ReactNative.NativeComponent<
-    $ReadOnly<{|
-      ...NativeAndroidProps,
-      ...NativeIOSProps,
-    |}>,
-  >,
->;
-
-const NativeSwitch: NativeSwitchType =
-  Platform.OS === 'android'
-    ? (requireNativeComponent('AndroidSwitch'): any)
-    : (requireNativeComponent('RCTSwitch'): any);
-
 /**
  * A visual toggle between two mutually exclusive states.
  *
@@ -119,7 +83,7 @@ const NativeSwitch: NativeSwitchType =
  * supplied `value` prop instead of the expected result of any user actions.
  */
 class Switch extends React.Component<Props> {
-  _nativeSwitchRef: ?React.ElementRef<NativeSwitchType>;
+  _nativeSwitchRef: ?React.ElementRef<typeof SwitchNativeComponent>;
 
   render() {
     const {
@@ -145,7 +109,7 @@ class Switch extends React.Component<Props> {
       _thumbColor = thumbTintColor;
       if (__DEV__) {
         console.warn(
-          'Switch: `thumbTintColor` is deprecated, use `_thumbColor` instead.',
+          'Switch: `thumbTintColor` is deprecated, use `thumbColor` instead.',
         );
       }
     }
@@ -197,13 +161,14 @@ class Switch extends React.Component<Props> {
           }: NativeIOSProps);
 
     return (
-      <NativeSwitch
+      <SwitchNativeComponent
         {...props}
         {...platformProps}
+        accessibilityRole={props.accessibilityRole ?? 'button'}
         onChange={this._handleChange}
         onResponderTerminationRequest={returnsFalse}
         onStartShouldSetResponder={returnsTrue}
-        ref={this._handleNativeSwitchRef}
+        ref={this._handleSwitchNativeComponentRef}
       />
     );
   }
@@ -230,7 +195,9 @@ class Switch extends React.Component<Props> {
     }
   };
 
-  _handleNativeSwitchRef = (ref: ?React.ElementRef<NativeSwitchType>) => {
+  _handleSwitchNativeComponentRef = (
+    ref: ?React.ElementRef<typeof SwitchNativeComponent>,
+  ) => {
     this._nativeSwitchRef = ref;
   };
 }

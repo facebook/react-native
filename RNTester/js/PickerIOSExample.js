@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,13 +10,13 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {PickerIOS, Text, View} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {PickerIOS, Text, View} = ReactNative;
 
-var PickerItemIOS = PickerIOS.Item;
+const PickerItemIOS = PickerIOS.Item;
 
-var CAR_MAKES_AND_MODELS = {
+const CAR_MAKES_AND_MODELS = {
   amc: {
     name: 'AMC',
     models: ['AMX', 'Concord', 'Eagle', 'Gremlin', 'Matador', 'Pacer'],
@@ -105,8 +105,9 @@ class PickerExample extends React.Component<{}, $FlowFixMeState> {
   };
 
   render() {
-    var make = CAR_MAKES_AND_MODELS[this.state.carMake];
-    var selectionString = make.name + ' ' + make.models[this.state.modelIndex];
+    const make = CAR_MAKES_AND_MODELS[this.state.carMake];
+    const selectionString =
+      make.name + ' ' + make.models[this.state.modelIndex];
     return (
       <View>
         <Text>Please choose a make for your car:</Text>

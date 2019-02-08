@@ -5,7 +5,6 @@
 
   "env": {
     "es6": true,
-    "jest": true,
   },
 
   "plugins": [
@@ -13,8 +12,9 @@
     "flowtype",
     "prettier",
     "react",
+    "react-hooks",
     "react-native",
-    "jest"
+    "jest",
   ],
 
   // Map from global var to bool specifying if it can be redefined
@@ -37,7 +37,6 @@
     "fetch": false,
     "FormData": false,
     "global": false,
-    "jest": false,
     "Map": true,
     "module": false,
     "navigator": false,
@@ -52,8 +51,6 @@
     "setTimeout": false,
     "window": false,
     "XMLHttpRequest": false,
-    "pit": false,
-    "jasmine": true
   },
 
   "rules": {
@@ -65,6 +62,7 @@
     "no-constant-condition": 0,      // disallow use of constant expressions in conditions
     "no-control-regex": 1,           // disallow control characters in regular expressions
     "no-debugger": 1,                // disallow use of debugger
+    "no-dupe-class-members": 2,      // Disallow duplicate name in class members
     "no-dupe-keys": 2,               // disallow duplicate keys when creating object literals
     "no-empty": 0,                   // disallow empty statements
     "no-ex-assign": 1,               // disallow assigning to the exception in a catch block
@@ -243,6 +241,10 @@
     "react/self-closing-comp": 1,
     "react/wrap-multilines": 0,
 
+  // React-Hooks Plugin
+  // The following rules are made available via `eslint-plugin-react-hooks`
+    "react-hooks/rules-of-hooks": "error",
+
   // React-Native Plugin
   // The following rules are made available via `eslint-plugin-react-native`
 
@@ -259,15 +261,29 @@
   "overrides": [
     {
       "files": [
-        "local-cli/**/*.js",
+        "**/__fixtures__/**/*.js",
+        "**/__mocks__/**/*.js",
+        "**/__tests__/**/*.js",
+        "jest/**/*.js",
+        "RNTester/**/*.js",
       ],
-      "rules": {
-        "lint/extra-arrow-initializer": 0,
-        "no-alert": 0,
-        "no-console-disallow": 0,
+      "globals": {
+        // Expose some Jest globals for test helpers
+        "afterAll": true,
+        "afterEach": true,
+        "beforeAll": true,
+        "beforeEach": true,
+        "expect": true,
+        "jest": true,
       },
+    },
+    {
+      "files": [
+        "**/__tests__/**/*-test.js",
+      ],
       "env": {
-        "node": true,
+        "jasmine": true,
+        "jest": true,
       },
     },
   ],

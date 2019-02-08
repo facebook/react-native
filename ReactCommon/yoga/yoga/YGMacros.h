@@ -1,10 +1,9 @@
 /**
- * Copyright (c) 2014-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
-
 #pragma once
 
 #ifdef __cplusplus
@@ -21,18 +20,10 @@
 #define WIN_EXPORT
 #endif
 
-#ifdef WINARMDLL
-#define WIN_STRUCT(type) type *
-#define WIN_STRUCT_REF(value) &value
-#else
-#define WIN_STRUCT(type) type
-#define WIN_STRUCT_REF(value) value
-#endif
-
 #ifdef NS_ENUM
-// Cannot use NSInteger as NSInteger has a different size than int (which is the default type of a
-// enum).
-// Therefor when linking the Yoga C library into obj-c the header is a missmatch for the Yoga ABI.
+// Cannot use NSInteger as NSInteger has a different size than int (which is the
+// default type of a enum). Therefor when linking the Yoga C library into obj-c
+// the header is a missmatch for the Yoga ABI.
 #define YG_ENUM_BEGIN(name) NS_ENUM(int, name)
 #define YG_ENUM_END(name)
 #else

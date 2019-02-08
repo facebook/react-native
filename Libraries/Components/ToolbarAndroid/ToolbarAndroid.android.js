@@ -1,32 +1,26 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @flow
  */
 
 'use strict';
 
-const Image = require('Image');
-const NativeMethodsMixin = require('NativeMethodsMixin');
 const React = require('React');
-const PropTypes = require('prop-types');
 const UIManager = require('UIManager');
-const ViewPropTypes = require('ViewPropTypes');
-const ColorPropType = require('ColorPropType');
 
-const createReactClass = require('create-react-class');
-const requireNativeComponent = require('requireNativeComponent');
+const ToolbarAndroidNativeComponent = require('ToolbarAndroidNativeComponent');
 const resolveAssetSource = require('resolveAssetSource');
 
-const optionalImageSource = PropTypes.oneOfType([
-  Image.propTypes.source,
-  // Image.propTypes.source is required but we want it to be optional, so we OR
-  // it with a nullable propType.
-  PropTypes.oneOf([]),
-]);
+import type {SyntheticEvent} from 'CoreEventTypes';
+import type {ImageSource} from 'ImageSource';
+import type {ColorValue} from 'StyleSheetTypes';
+import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'ReactNative';
 
 /**
  * React component that wraps the Android-only [`Toolbar` widget][0]. A Toolbar can display a logo,
@@ -63,149 +57,195 @@ const optionalImageSource = PropTypes.oneOfType([
  *
  * [0]: https://developer.android.com/reference/android/support/v7/widget/Toolbar.html
  */
-const ToolbarAndroid = createReactClass({
-  displayName: 'ToolbarAndroid',
-  mixins: [NativeMethodsMixin],
 
-  propTypes: {
-    ...ViewPropTypes,
-    /**
-     * Sets possible actions on the toolbar as part of the action menu. These are displayed as icons
-     * or text on the right side of the widget. If they don't fit they are placed in an 'overflow'
-     * menu.
-     *
-     * This property takes an array of objects, where each object has the following keys:
-     *
-     * * `title`: **required**, the title of this action
-     * * `icon`: the icon for this action, e.g. `require('./some_icon.png')`
-     * * `show`: when to show this action as an icon or hide it in the overflow menu: `always`,
-     * `ifRoom` or `never`
-     * * `showWithText`: boolean, whether to show text alongside the icon or not
-     */
-    actions: PropTypes.arrayOf(
-      PropTypes.shape({
-        title: PropTypes.string.isRequired,
-        icon: optionalImageSource,
-        show: PropTypes.oneOf(['always', 'ifRoom', 'never']),
-        showWithText: PropTypes.bool,
-      }),
-    ),
-    /**
-     * Sets the toolbar logo.
-     */
-    logo: optionalImageSource,
-    /**
-     * Sets the navigation icon.
-     */
-    navIcon: optionalImageSource,
-    /**
-     * Callback that is called when an action is selected. The only argument that is passed to the
-     * callback is the position of the action in the actions array.
-     */
-    onActionSelected: PropTypes.func,
-    /**
-     * Callback called when the icon is selected.
-     */
-    onIconClicked: PropTypes.func,
-    /**
-     * Sets the overflow icon.
-     */
-    overflowIcon: optionalImageSource,
-    /**
-     * Sets the toolbar subtitle.
-     */
-    subtitle: PropTypes.string,
-    /**
-     * Sets the toolbar subtitle color.
-     */
-    subtitleColor: ColorPropType,
-    /**
-     * Sets the toolbar title.
-     */
-    title: PropTypes.string,
-    /**
-     * Sets the toolbar title color.
-     */
-    titleColor: ColorPropType,
-    /**
-     * Sets the content inset for the toolbar starting edge.
-     *
-     * The content inset affects the valid area for Toolbar content other than
-     * the navigation button and menu. Insets define the minimum margin for
-     * these components and can be used to effectively align Toolbar content
-     * along well-known gridlines.
-     */
-    contentInsetStart: PropTypes.number,
-    /**
-     * Sets the content inset for the toolbar ending edge.
-     *
-     * The content inset affects the valid area for Toolbar content other than
-     * the navigation button and menu. Insets define the minimum margin for
-     * these components and can be used to effectively align Toolbar content
-     * along well-known gridlines.
-     */
-    contentInsetEnd: PropTypes.number,
-    /**
-     * Used to set the toolbar direction to RTL.
-     * In addition to this property you need to add
-     *
-     *   android:supportsRtl="true"
-     *
-     * to your application AndroidManifest.xml and then call
-     * `setLayoutDirection(LayoutDirection.RTL)` in your MainActivity
-     * `onCreate` method.
-     */
-    rtl: PropTypes.bool,
-    /**
-     * Used to locate this view in end-to-end tests.
-     */
-    testID: PropTypes.string,
-  },
+type Action = $ReadOnly<{|
+  title: string,
+  icon?: ?ImageSource,
+  show?: 'always' | 'ifRoom' | 'never',
+  showWithText?: boolean,
+|}>;
 
-  render: function() {
-    const nativeProps = {
-      ...this.props,
-    };
-    if (this.props.logo) {
-      nativeProps.logo = resolveAssetSource(this.props.logo);
-    }
-    if (this.props.navIcon) {
-      nativeProps.navIcon = resolveAssetSource(this.props.navIcon);
-    }
-    if (this.props.overflowIcon) {
-      nativeProps.overflowIcon = resolveAssetSource(this.props.overflowIcon);
-    }
-    if (this.props.actions) {
-      const nativeActions = [];
-      for (let i = 0; i < this.props.actions.length; i++) {
-        const action = {
-          ...this.props.actions[i],
-        };
-        if (action.icon) {
-          action.icon = resolveAssetSource(action.icon);
-        }
-        if (action.show) {
-          action.show =
-            UIManager.ToolbarAndroid.Constants.ShowAsAction[action.show];
-        }
-        nativeActions.push(action);
-      }
-      nativeProps.nativeActions = nativeActions;
-    }
+type ToolbarAndroidChangeEvent = SyntheticEvent<
+  $ReadOnly<{|
+    position: number,
+  |}>,
+>;
 
-    return <NativeToolbar onSelect={this._onSelect} {...nativeProps} />;
-  },
+type ToolbarAndroidProps = $ReadOnly<{|
+  ...ViewProps,
+  /**
+   * or text on the right side of the widget. If they don't fit they are placed in an 'overflow'
+   * Sets possible actions on the toolbar as part of the action menu. These are displayed as icons
+   * menu.
+   *
+   * This property takes an array of objects, where each object has the following keys:
+   *
+   * * `title`: **required**, the title of this action
+   * * `icon`: the icon for this action, e.g. `require('./some_icon.png')`
+   * * `show`: when to show this action as an icon or hide it in the overflow menu: `always`,
+   * `ifRoom` or `never`
+   * * `showWithText`: boolean, whether to show text alongside the icon or not
+   */
+  actions?: ?Array<Action>,
+  /**
+   * Sets the toolbar logo.
+   */
+  logo?: ?ImageSource,
+  /**
+   * Sets the navigation icon.
+   */
+  navIcon?: ?ImageSource,
+  /**
+   * Callback that is called when an action is selected. The only argument that is passed to the
+   * callback is the position of the action in the actions array.
+   */
+  onActionSelected?: ?(position: number) => void,
+  /**
+   * Callback called when the icon is selected.
+   */
+  onIconClicked?: ?() => void,
+  /**
+   * Sets the overflow icon.
+   */
+  overflowIcon?: ?ImageSource,
+  /**
+   * Sets the toolbar subtitle.
+   */
+  subtitle?: ?string,
+  /**
+   * Sets the toolbar subtitle color.
+   */
+  subtitleColor?: ?ColorValue,
+  /**
+   * Sets the toolbar title.
+   */
+  title?: ?Stringish,
+  /**
+   * Sets the toolbar title color.
+   */
+  titleColor?: ?ColorValue,
+  /**
+   * Sets the content inset for the toolbar starting edge.
+   *
+   * The content inset affects the valid area for Toolbar content other than
+   * the navigation button and menu. Insets define the minimum margin for
+   * these components and can be used to effectively align Toolbar content
+   * along well-known gridlines.
+   */
+  contentInsetStart?: ?number,
+  /**
+   * Sets the content inset for the toolbar ending edge.
+   *
+   * The content inset affects the valid area for Toolbar content other than
+   * the navigation button and menu. Insets define the minimum margin for
+   * these components and can be used to effectively align Toolbar content
+   * along well-known gridlines.
+   */
+  contentInsetEnd?: ?number,
+  /**
+   * Used to set the toolbar direction to RTL.
+   * In addition to this property you need to add
+   *
+   *   android:supportsRtl="true"
+   *
+   * to your application AndroidManifest.xml and then call
+   * `setLayoutDirection(LayoutDirection.RTL)` in your MainActivity
+   * `onCreate` method.
+   */
+  rtl?: ?boolean,
+  /**
+   * Used to locate this view in end-to-end tests.
+   */
+  testID?: ?string,
+|}>;
 
-  _onSelect: function(event) {
+type Props = $ReadOnly<{|
+  ...ToolbarAndroidProps,
+  forwardedRef: ?React.Ref<typeof ToolbarAndroidNativeComponent>,
+|}>;
+
+class ToolbarAndroid extends React.Component<Props> {
+  _onSelect = (event: ToolbarAndroidChangeEvent) => {
     const position = event.nativeEvent.position;
     if (position === -1) {
       this.props.onIconClicked && this.props.onIconClicked();
     } else {
       this.props.onActionSelected && this.props.onActionSelected(position);
     }
+  };
+
+  render() {
+    const {
+      onIconClicked,
+      onActionSelected,
+      forwardedRef,
+      ...otherProps
+    } = this.props;
+
+    const nativeProps: {...typeof otherProps, nativeActions?: Array<Action>} = {
+      ...otherProps,
+    };
+
+    if (this.props.logo) {
+      nativeProps.logo = resolveAssetSource(this.props.logo);
+    }
+
+    if (this.props.navIcon) {
+      nativeProps.navIcon = resolveAssetSource(this.props.navIcon);
+    }
+
+    if (this.props.overflowIcon) {
+      nativeProps.overflowIcon = resolveAssetSource(this.props.overflowIcon);
+    }
+
+    if (this.props.actions) {
+      const nativeActions = [];
+      for (let i = 0; i < this.props.actions.length; i++) {
+        const action = {
+          icon: this.props.actions[i].icon,
+          show: this.props.actions[i].show,
+        };
+
+        if (action.icon) {
+          action.icon = resolveAssetSource(action.icon);
+        }
+        if (action.show) {
+          action.show = UIManager.getViewManagerConfig(
+            'ToolbarAndroid',
+          ).Constants.ShowAsAction[action.show];
+        }
+
+        nativeActions.push({
+          ...this.props.actions[i],
+          ...action,
+        });
+      }
+
+      nativeProps.nativeActions = nativeActions;
+    }
+
+    return (
+      <ToolbarAndroidNativeComponent
+        onSelect={this._onSelect}
+        {...nativeProps}
+        ref={forwardedRef}
+      />
+    );
+  }
+}
+
+const ToolbarAndroidToExport = React.forwardRef(
+  (
+    props: ToolbarAndroidProps,
+    forwardedRef: ?React.Ref<typeof ToolbarAndroidNativeComponent>,
+  ) => {
+    return <ToolbarAndroid {...props} forwardedRef={forwardedRef} />;
   },
-});
+);
 
-const NativeToolbar = requireNativeComponent('ToolbarAndroid');
-
-module.exports = ToolbarAndroid;
+/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
+module.exports = (ToolbarAndroidToExport: Class<
+  NativeComponent<ToolbarAndroidProps>,
+>);

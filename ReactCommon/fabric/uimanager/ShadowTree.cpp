@@ -1,157 +1,241 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
 
 #include "ShadowTree.h"
 
-#include <fabric/core/LayoutContext.h>
-#include <fabric/core/LayoutPrimitives.h>
+#include <react/core/LayoutContext.h>
+#include <react/core/LayoutPrimitives.h>
+#include <react/mounting/Differentiator.h>
+#include <react/mounting/ShadowViewMutation.h>
+#include <react/uimanager/TimeUtils.h>
 
 #include "ShadowTreeDelegate.h"
-#include "Differentiator.h"
-#include "TreeMutationInstruction.h"
 
 namespace facebook {
 namespace react {
 
-ShadowTree::ShadowTree(Tag rootTag):
-  rootTag_(rootTag) {
+static void updateMountedFlag(
+    const SharedShadowNodeList &oldChildren,
+    const SharedShadowNodeList &newChildren) {
+  // This is a simplified version of Diffing algorithm that only updates
+  // `mounted` flag on `ShadowNode`s. The algorithm sets "mounted" flag before
+  // "unmounted" to allow `ShadowNode` detect a situation where the node was
+  // remounted.
 
-  const auto &noopEventEmitter = std::make_shared<const ViewEventEmitter>(nullptr, rootTag, nullptr);
-  rootShadowNode_ = std::make_shared<RootShadowNode>(
-    rootTag,
-    rootTag,
-    RootShadowNode::defaultSharedProps(),
-    noopEventEmitter,
-    ShadowNode::emptySharedShadowNodeSharedList(),
-    nullptr
-  );
-}
+  if (&oldChildren == &newChildren) {
+    // Lists are identical, nothing to do.
+    return;
+  }
 
-Tag ShadowTree::getRootTag() const {
-  return rootTag_;
-}
+  if (oldChildren.size() == 0 && newChildren.size() == 0) {
+    // Both lists are empty, nothing to do.
+    return;
+  }
 
-#pragma mark - Layout
+  int index;
 
-Size ShadowTree::measure(const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) const {
-  auto newRootShadowNode = cloneRootShadowNode(layoutConstraints, layoutContext);
-  newRootShadowNode->layout();
-  return newRootShadowNode->getLayoutMetrics().frame.size;
-}
+  // Stage 1: Mount and unmount "updated" children.
+  for (index = 0; index < oldChildren.size() && index < newChildren.size();
+       index++) {
+    const auto &oldChild = oldChildren[index];
+    const auto &newChild = newChildren[index];
 
-void ShadowTree::constraintLayout(const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) {
-  auto newRootShadowNode = cloneRootShadowNode(layoutConstraints, layoutContext);
-  complete(newRootShadowNode);
-}
-
-#pragma mark - Commiting
-
-UnsharedRootShadowNode ShadowTree::cloneRootShadowNode(const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) const {
-  auto oldRootShadowNode = rootShadowNode_;
-  const auto &props = std::make_shared<const RootProps>(*oldRootShadowNode->getProps(), layoutConstraints, layoutContext);
-  auto newRootShadowNode = std::make_shared<RootShadowNode>(oldRootShadowNode, props, nullptr, nullptr);
-  return newRootShadowNode;
-}
-
-void ShadowTree::complete(const SharedShadowNodeUnsharedList &rootChildNodes) {
-  auto oldRootShadowNode = rootShadowNode_;
-  auto newRootShadowNode =
-    std::make_shared<RootShadowNode>(oldRootShadowNode, nullptr, nullptr, SharedShadowNodeSharedList(rootChildNodes));
-
-  complete(newRootShadowNode);
-}
-
-void ShadowTree::complete(UnsharedRootShadowNode newRootShadowNode) {
-  SharedRootShadowNode oldRootShadowNode = rootShadowNode_;
-
-  newRootShadowNode->layout();
-
-  newRootShadowNode->sealRecursive();
-
-  TreeMutationInstructionList instructions = TreeMutationInstructionList();
-
-  calculateMutationInstructions(
-    instructions,
-    oldRootShadowNode,
-    newRootShadowNode
-  );
-
-  if (commit(oldRootShadowNode, newRootShadowNode)) {
-    emitLayoutEvents(instructions);
-
-    if (delegate_) {
-      delegate_->shadowTreeDidCommit(shared_from_this(), instructions);
+    if (oldChild == newChild) {
+      // Nodes are identical, skipping the subtree.
+      continue;
     }
+
+    if (oldChild->getTag() != newChild->getTag()) {
+      // Totally different nodes, updating is impossible.
+      break;
+    }
+
+    newChild->setMounted(true);
+    oldChild->setMounted(false);
+
+    updateMountedFlag(oldChild->getChildren(), newChild->getChildren());
+  }
+
+  int lastIndexAfterFirstStage = index;
+
+  // State 2: Mount new children.
+  for (index = lastIndexAfterFirstStage; index < newChildren.size(); index++) {
+    const auto &newChild = newChildren[index];
+    newChild->setMounted(true);
+    updateMountedFlag({}, newChild->getChildren());
+  }
+
+  // State 3: Unmount old children.
+  for (index = lastIndexAfterFirstStage; index < oldChildren.size(); index++) {
+    const auto &oldChild = oldChildren[index];
+    oldChild->setMounted(false);
+    updateMountedFlag(oldChild->getChildren(), {});
   }
 }
 
-bool ShadowTree::commit(const SharedRootShadowNode &oldRootShadowNode, const SharedRootShadowNode &newRootShadowNode) {
-  std::lock_guard<std::mutex> lock(commitMutex_);
+ShadowTree::ShadowTree(
+    SurfaceId surfaceId,
+    const LayoutConstraints &layoutConstraints,
+    const LayoutContext &layoutContext)
+    : surfaceId_(surfaceId) {
+  const auto noopEventEmitter = std::make_shared<const ViewEventEmitter>(
+      nullptr, -1, std::shared_ptr<const EventDispatcher>());
 
-  if (oldRootShadowNode != rootShadowNode_) {
+  const auto props = std::make_shared<const RootProps>(
+      *RootShadowNode::defaultSharedProps(), layoutConstraints, layoutContext);
+
+  rootShadowNode_ = std::make_shared<RootShadowNode>(
+      ShadowNodeFragment{
+          .tag = surfaceId,
+          .rootTag = surfaceId,
+          .props = props,
+          .eventEmitter = noopEventEmitter,
+      },
+      nullptr);
+}
+
+ShadowTree::~ShadowTree() {
+  commit(
+      [](const SharedRootShadowNode &oldRootShadowNode) {
+        return std::make_shared<RootShadowNode>(
+            *oldRootShadowNode,
+            ShadowNodeFragment{
+                .children = ShadowNode::emptySharedShadowNodeSharedList()});
+      },
+      getTime());
+}
+
+Tag ShadowTree::getSurfaceId() const {
+  return surfaceId_;
+}
+
+void ShadowTree::commit(
+    ShadowTreeCommitTransaction transaction,
+    long commitStartTime,
+    int *revision) const {
+  int attempts = 0;
+
+  while (true) {
+    attempts++;
+    if (tryCommit(transaction, commitStartTime, revision)) {
+      return;
+    }
+
+    // After multiple attempts, we failed to commit the transaction.
+    // Something internally went terribly wrong.
+    assert(attempts < 1024);
+  }
+}
+
+bool ShadowTree::tryCommit(
+    ShadowTreeCommitTransaction transaction,
+    long commitStartTime,
+    int *revision) const {
+  SharedRootShadowNode oldRootShadowNode;
+
+  {
+    // Reading `rootShadowNode_` in shared manner.
+    std::shared_lock<folly::SharedMutex> lock(commitMutex_);
+    oldRootShadowNode = rootShadowNode_;
+  }
+
+  UnsharedRootShadowNode newRootShadowNode = transaction(oldRootShadowNode);
+
+  if (!newRootShadowNode) {
     return false;
   }
 
-  rootShadowNode_ = newRootShadowNode;
+  long layoutTime = getTime();
+  newRootShadowNode->layout();
+  layoutTime = getTime() - layoutTime;
+  newRootShadowNode->sealRecursive();
+
+  auto mutations =
+      calculateShadowViewMutations(*oldRootShadowNode, *newRootShadowNode);
+
+  {
+    // Updating `rootShadowNode_` in unique manner if it hasn't changed.
+    std::unique_lock<folly::SharedMutex> lock(commitMutex_);
+
+    if (rootShadowNode_ != oldRootShadowNode) {
+      return false;
+    }
+
+    rootShadowNode_ = newRootShadowNode;
+
+    {
+      std::lock_guard<std::mutex> dispatchLock(EventEmitter::DispatchMutex());
+
+      updateMountedFlag(
+          oldRootShadowNode->getChildren(), newRootShadowNode->getChildren());
+    }
+
+    revision_++;
+
+    // Returning last revision if requested.
+    if (revision) {
+      *revision = revision_;
+    }
+  }
+
+  emitLayoutEvents(mutations);
+
+  if (delegate_) {
+    delegate_->shadowTreeDidCommit(
+        *this, mutations, commitStartTime, layoutTime);
+  }
+
   return true;
 }
 
-void ShadowTree::emitLayoutEvents(const TreeMutationInstructionList &instructions) {
-  for (const auto &instruction : instructions) {
-    const auto &type = instruction.getType();
-
-    // Only `Insertion` and `Replacement` instructions can affect layout metrics.
-    if (
-        type == TreeMutationInstruction::Insertion ||
-        type == TreeMutationInstruction::Replacement
-    ) {
-      const auto &newShadowNode = instruction.getNewChildNode();
-      const auto &eventEmitter = newShadowNode->getEventEmitter();
-      const auto &viewEventEmitter = std::dynamic_pointer_cast<const ViewEventEmitter>(eventEmitter);
-
-      // Checking if particular shadow node supports `onLayout` event (part of `ViewEventEmitter`).
-      if (viewEventEmitter) {
-        // Now we know that both (old and new) shadow nodes must be `LayoutableShadowNode` subclasses.
-        assert(std::dynamic_pointer_cast<const LayoutableShadowNode>(newShadowNode));
-
-        // Checking if the `onLayout` event was requested for the particular Shadow Node.
-        const auto &viewProps = std::dynamic_pointer_cast<const ViewProps>(newShadowNode->getProps());
-        if (viewProps && !viewProps->onLayout) {
-          continue;
-        }
-
-        // TODO(T29661055): Consider using `std::reinterpret_pointer_cast`.
-        const auto &newLayoutableShadowNode =
-          std::dynamic_pointer_cast<const LayoutableShadowNode>(newShadowNode);
-
-        // In case if we have `oldShadowNode`, we have to check that layout metrics have changed.
-        if (type == TreeMutationInstruction::Replacement) {
-          const auto &oldShadowNode = instruction.getOldChildNode();
-          assert(std::dynamic_pointer_cast<const LayoutableShadowNode>(oldShadowNode));
-          // TODO(T29661055): Consider using `std::reinterpret_pointer_cast`.
-          const auto &oldLayoutableShadowNode =
-            std::dynamic_pointer_cast<const LayoutableShadowNode>(oldShadowNode);
-
-          if (oldLayoutableShadowNode->getLayoutMetrics() == newLayoutableShadowNode->getLayoutMetrics()) {
-            continue;
-          }
-        }
-
-        viewEventEmitter->onLayout(newLayoutableShadowNode->getLayoutMetrics());
-      }
+void ShadowTree::emitLayoutEvents(
+    const ShadowViewMutationList &mutations) const {
+  for (const auto &mutation : mutations) {
+    // Only `Insert` and `Update` mutations can affect layout metrics.
+    if (mutation.type != ShadowViewMutation::Insert &&
+        mutation.type != ShadowViewMutation::Update) {
+      continue;
     }
+
+    const auto viewEventEmitter =
+        std::dynamic_pointer_cast<const ViewEventEmitter>(
+            mutation.newChildShadowView.eventEmitter);
+
+    // Checking if particular shadow node supports `onLayout` event (part of
+    // `ViewEventEmitter`).
+    if (!viewEventEmitter) {
+      continue;
+    }
+
+    // Checking if the `onLayout` event was requested for the particular Shadow
+    // Node.
+    const auto viewProps = std::dynamic_pointer_cast<const ViewProps>(
+        mutation.newChildShadowView.props);
+    if (viewProps && !viewProps->onLayout) {
+      continue;
+    }
+
+    // In case if we have `oldChildShadowView`, checking that layout metrics
+    // have changed.
+    if (mutation.type != ShadowViewMutation::Update &&
+        mutation.oldChildShadowView.layoutMetrics ==
+            mutation.newChildShadowView.layoutMetrics) {
+      continue;
+    }
+
+    viewEventEmitter->onLayout(mutation.newChildShadowView.layoutMetrics);
   }
 }
 
 #pragma mark - Delegate
 
-void ShadowTree::setDelegate(ShadowTreeDelegate *delegate) {
+void ShadowTree::setDelegate(ShadowTreeDelegate const *delegate) {
   delegate_ = delegate;
 }
 
-ShadowTreeDelegate *ShadowTree::getDelegate() const {
+ShadowTreeDelegate const *ShadowTree::getDelegate() const {
   return delegate_;
 }
 

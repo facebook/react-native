@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,6 +13,7 @@
 #import "RCTBridge.h"
 #import "RCTEventDispatcher.h"
 #import "RCTLog.h"
+#import "RCTSurfaceView.h"
 #import "RCTTouchEvent.h"
 #import "RCTUIManager.h"
 #import "RCTUtils.h"
@@ -246,7 +247,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
 - (void)_cacheRootView
 {
   UIView *rootView = self.view;
-  while (rootView.superview && ![rootView isReactRootView]) {
+  while (rootView.superview && ![rootView isReactRootView] && ![rootView isKindOfClass:[RCTSurfaceView class]]) {
     rootView = rootView.superview;
   }
   _cachedRootView = rootView;

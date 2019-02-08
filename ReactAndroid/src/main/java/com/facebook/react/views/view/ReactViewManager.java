@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -203,6 +203,22 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     view.setOverflow(overflow);
   }
 
+  @ReactProp(name = "backfaceVisibility")
+  public void setBackfaceVisibility(ReactViewGroup view, String backfaceVisibility) {
+    view.setBackfaceVisibility(backfaceVisibility);
+  }
+
+  @Override
+  public void setOpacity(ReactViewGroup view, float opacity) {
+    view.setOpacityIfPossible(opacity);
+  }
+
+  @Override
+  public void setTransform(ReactViewGroup view, ReadableArray matrix) {
+    super.setTransform(view, matrix);
+    view.setBackfaceVisibilityDependantOpacity();
+  }
+
   @Override
   public String getName() {
     return REACT_CLASS;
@@ -226,7 +242,7 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
           throw new JSApplicationIllegalArgumentException(
               "Illegal number of arguments for 'updateHotspot' command");
         }
-        if (Build.VERSION.SDK_INT >= 21) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
           float x = PixelUtil.toPixelFromDIP(args.getDouble(0));
           float y = PixelUtil.toPixelFromDIP(args.getDouble(1));
           root.drawableHotspotChanged(x, y);
@@ -295,26 +311,6 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
       parent.removeAllViewsWithSubviewClippingEnabled();
     } else {
       parent.removeAllViews();
-    }
-  }
-
-  @Override
-  public void startViewTransition(ReactViewGroup parent, View view) {
-    boolean removeClippedSubviews = parent.getRemoveClippedSubviews();
-    if (removeClippedSubviews) {
-      parent.startViewTransitionWithSubviewClippingEnabled(view);
-    } else {
-      parent.startViewTransition(view);
-    }
-  }
-
-  @Override
-  public void endViewTransition(ReactViewGroup parent, View view) {
-    boolean removeClippedSubviews = parent.getRemoveClippedSubviews();
-    if (removeClippedSubviews) {
-      parent.endViewTransitionWithSubviewClippingEnabled(view);
-    } else {
-      parent.endViewTransition(view);
     }
   }
 }

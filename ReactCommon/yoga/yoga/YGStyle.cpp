@@ -1,99 +1,50 @@
-/*
- *  Copyright (c) 2014-present, Facebook, Inc.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
 #include "YGStyle.h"
 
-const YGValue kYGValueUndefined = {0, YGUnitUndefined};
-
-const YGValue kYGValueAuto = {0, YGUnitAuto};
-
-const std::array<YGValue, YGEdgeCount> kYGDefaultEdgeValuesUnit = {
-    {kYGValueUndefined,
-     kYGValueUndefined,
-     kYGValueUndefined,
-     kYGValueUndefined,
-     kYGValueUndefined,
-     kYGValueUndefined,
-     kYGValueUndefined,
-     kYGValueUndefined,
-     kYGValueUndefined}};
-
-const std::array<YGValue, 2> kYGDefaultDimensionValuesAutoUnit = {
-    {kYGValueAuto, kYGValueAuto}};
-
-const std::array<YGValue, 2> kYGDefaultDimensionValuesUnit = {
-    {kYGValueUndefined, kYGValueUndefined}};
-
-YGStyle::YGStyle()
-    : direction(YGDirectionInherit),
-      flexDirection(YGFlexDirectionColumn),
-      justifyContent(YGJustifyFlexStart),
-      alignContent(YGAlignFlexStart),
-      alignItems(YGAlignStretch),
-      alignSelf(YGAlignAuto),
-      positionType(YGPositionTypeRelative),
-      flexWrap(YGWrapNoWrap),
-      overflow(YGOverflowVisible),
-      display(YGDisplayFlex),
-      flex(YGFloatOptional()),
-      flexGrow(YGFloatOptional()),
-      flexShrink(YGFloatOptional()),
-      flexBasis(kYGValueAuto),
-      margin(kYGDefaultEdgeValuesUnit),
-      position(kYGDefaultEdgeValuesUnit),
-      padding(kYGDefaultEdgeValuesUnit),
-      border(kYGDefaultEdgeValuesUnit),
-      dimensions(kYGDefaultDimensionValuesAutoUnit),
-      minDimensions(kYGDefaultDimensionValuesUnit),
-      maxDimensions(kYGDefaultDimensionValuesUnit),
-      aspectRatio(YGFloatOptional()) {}
-
 // Yoga specific properties, not compatible with flexbox specification
-bool YGStyle::operator==(const YGStyle& style) {
-  bool areNonFloatValuesEqual = direction == style.direction &&
-      flexDirection == style.flexDirection &&
-      justifyContent == style.justifyContent &&
-      alignContent == style.alignContent && alignItems == style.alignItems &&
-      alignSelf == style.alignSelf && positionType == style.positionType &&
-      flexWrap == style.flexWrap && overflow == style.overflow &&
-      display == style.display && YGValueEqual(flexBasis, style.flexBasis) &&
-      YGValueArrayEqual(margin, style.margin) &&
-      YGValueArrayEqual(position, style.position) &&
-      YGValueArrayEqual(padding, style.padding) &&
-      YGValueArrayEqual(border, style.border) &&
-      YGValueArrayEqual(dimensions, style.dimensions) &&
-      YGValueArrayEqual(minDimensions, style.minDimensions) &&
-      YGValueArrayEqual(maxDimensions, style.maxDimensions);
+bool operator==(const YGStyle& lhs, const YGStyle& rhs) {
+  bool areNonFloatValuesEqual = lhs.direction == rhs.direction &&
+      lhs.flexDirection == rhs.flexDirection &&
+      lhs.justifyContent == rhs.justifyContent &&
+      lhs.alignContent == rhs.alignContent &&
+      lhs.alignItems == rhs.alignItems && lhs.alignSelf == rhs.alignSelf &&
+      lhs.positionType == rhs.positionType && lhs.flexWrap == rhs.flexWrap &&
+      lhs.overflow == rhs.overflow && lhs.display == rhs.display &&
+      YGValueEqual(lhs.flexBasis, rhs.flexBasis) && lhs.margin == rhs.margin &&
+      lhs.position == rhs.position && lhs.padding == rhs.padding &&
+      lhs.border == rhs.border && lhs.dimensions == rhs.dimensions &&
+      lhs.minDimensions == rhs.minDimensions &&
+      lhs.maxDimensions == rhs.maxDimensions;
 
-  areNonFloatValuesEqual =
-      areNonFloatValuesEqual && flex.isUndefined() == style.flex.isUndefined();
-  if (areNonFloatValuesEqual && !flex.isUndefined() &&
-      !style.flex.isUndefined()) {
+  areNonFloatValuesEqual = areNonFloatValuesEqual &&
+      lhs.flex.isUndefined() == rhs.flex.isUndefined();
+  if (areNonFloatValuesEqual && !lhs.flex.isUndefined() &&
+      !rhs.flex.isUndefined()) {
+    areNonFloatValuesEqual = areNonFloatValuesEqual && lhs.flex == rhs.flex;
+  }
+
+  areNonFloatValuesEqual = areNonFloatValuesEqual &&
+      lhs.flexGrow.isUndefined() == rhs.flexGrow.isUndefined();
+  if (areNonFloatValuesEqual && !lhs.flexGrow.isUndefined()) {
     areNonFloatValuesEqual =
-        areNonFloatValuesEqual && flex.getValue() == style.flex.getValue();
+        areNonFloatValuesEqual && lhs.flexGrow == rhs.flexGrow;
   }
 
   areNonFloatValuesEqual = areNonFloatValuesEqual &&
-      flexGrow.isUndefined() == style.flexGrow.isUndefined();
-  if (areNonFloatValuesEqual && !flexGrow.isUndefined()) {
-    areNonFloatValuesEqual = areNonFloatValuesEqual &&
-        flexGrow.getValue() == style.flexGrow.getValue();
+      lhs.flexShrink.isUndefined() == rhs.flexShrink.isUndefined();
+  if (areNonFloatValuesEqual && !rhs.flexShrink.isUndefined()) {
+    areNonFloatValuesEqual =
+        areNonFloatValuesEqual && lhs.flexShrink == rhs.flexShrink;
   }
 
-  areNonFloatValuesEqual = areNonFloatValuesEqual &&
-      flexShrink.isUndefined() == style.flexShrink.isUndefined();
-  if (areNonFloatValuesEqual && !style.flexShrink.isUndefined()) {
-    areNonFloatValuesEqual = areNonFloatValuesEqual &&
-        flexShrink.getValue() == style.flexShrink.getValue();
-  }
-
-  if (!(aspectRatio.isUndefined() && style.aspectRatio.isUndefined())) {
-    areNonFloatValuesEqual = areNonFloatValuesEqual &&
-        aspectRatio.getValue() == style.aspectRatio.getValue();
+  if (!(lhs.aspectRatio.isUndefined() && rhs.aspectRatio.isUndefined())) {
+    areNonFloatValuesEqual =
+        areNonFloatValuesEqual && lhs.aspectRatio == rhs.aspectRatio;
   }
 
   return areNonFloatValuesEqual;

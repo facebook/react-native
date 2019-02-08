@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -38,7 +38,7 @@ const test_opts = {
     PATH: argv.path || './ReactAndroid/src/androidTest/java/com/facebook/react/tests',
     RETRIES: parseInt(argv.retries || 2, 10),
 
-    TEST_TIMEOUT: parseInt(argv['test-timeout'] || 1000 * 60 * 10),
+    TEST_TIMEOUT: parseInt(argv['test-timeout'] || 1000 * 60 * 10, 10),
 
     OFFSET: argv.offset,
     COUNT: argv.count,
@@ -68,7 +68,6 @@ testClasses = testClasses.map((clazz) => {
 
 // only process subset of the tests at corresponding offset and count if args provided
 if (test_opts.COUNT != null && test_opts.OFFSET != null) {
-    const testCount = testClasses.length;
     const start = test_opts.COUNT * test_opts.OFFSET;
     const end = start + test_opts.COUNT;
 

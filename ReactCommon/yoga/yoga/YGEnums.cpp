@@ -1,14 +1,13 @@
 /**
- * Copyright (c) 2014-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
-
 #include "YGEnums.h"
 
-const char *YGAlignToString(const YGAlign value){
-  switch(value){
+const char* YGAlignToString(const YGAlign value) {
+  switch (value) {
     case YGAlignAuto:
       return "auto";
     case YGAlignFlexStart:
@@ -29,8 +28,8 @@ const char *YGAlignToString(const YGAlign value){
   return "unknown";
 }
 
-const char *YGDimensionToString(const YGDimension value){
-  switch(value){
+const char* YGDimensionToString(const YGDimension value) {
+  switch (value) {
     case YGDimensionWidth:
       return "width";
     case YGDimensionHeight:
@@ -39,8 +38,8 @@ const char *YGDimensionToString(const YGDimension value){
   return "unknown";
 }
 
-const char *YGDirectionToString(const YGDirection value){
-  switch(value){
+const char* YGDirectionToString(const YGDirection value) {
+  switch (value) {
     case YGDirectionInherit:
       return "inherit";
     case YGDirectionLTR:
@@ -51,8 +50,8 @@ const char *YGDirectionToString(const YGDirection value){
   return "unknown";
 }
 
-const char *YGDisplayToString(const YGDisplay value){
-  switch(value){
+const char* YGDisplayToString(const YGDisplay value) {
+  switch (value) {
     case YGDisplayFlex:
       return "flex";
     case YGDisplayNone:
@@ -61,8 +60,8 @@ const char *YGDisplayToString(const YGDisplay value){
   return "unknown";
 }
 
-const char *YGEdgeToString(const YGEdge value){
-  switch(value){
+const char* YGEdgeToString(const YGEdge value) {
+  switch (value) {
     case YGEdgeLeft:
       return "left";
     case YGEdgeTop:
@@ -85,16 +84,16 @@ const char *YGEdgeToString(const YGEdge value){
   return "unknown";
 }
 
-const char *YGExperimentalFeatureToString(const YGExperimentalFeature value){
-  switch(value){
+const char* YGExperimentalFeatureToString(const YGExperimentalFeature value) {
+  switch (value) {
     case YGExperimentalFeatureWebFlexBasis:
       return "web-flex-basis";
   }
   return "unknown";
 }
 
-const char *YGFlexDirectionToString(const YGFlexDirection value){
-  switch(value){
+const char* YGFlexDirectionToString(const YGFlexDirection value) {
+  switch (value) {
     case YGFlexDirectionColumn:
       return "column";
     case YGFlexDirectionColumnReverse:
@@ -107,8 +106,8 @@ const char *YGFlexDirectionToString(const YGFlexDirection value){
   return "unknown";
 }
 
-const char *YGJustifyToString(const YGJustify value){
-  switch(value){
+const char* YGJustifyToString(const YGJustify value) {
+  switch (value) {
     case YGJustifyFlexStart:
       return "flex-start";
     case YGJustifyCenter:
@@ -125,8 +124,8 @@ const char *YGJustifyToString(const YGJustify value){
   return "unknown";
 }
 
-const char *YGLogLevelToString(const YGLogLevel value){
-  switch(value){
+const char* YGLogLevelToString(const YGLogLevel value) {
+  switch (value) {
     case YGLogLevelError:
       return "error";
     case YGLogLevelWarn:
@@ -143,8 +142,8 @@ const char *YGLogLevelToString(const YGLogLevel value){
   return "unknown";
 }
 
-const char *YGMeasureModeToString(const YGMeasureMode value){
-  switch(value){
+const char* YGMeasureModeToString(const YGMeasureMode value) {
+  switch (value) {
     case YGMeasureModeUndefined:
       return "undefined";
     case YGMeasureModeExactly:
@@ -155,8 +154,8 @@ const char *YGMeasureModeToString(const YGMeasureMode value){
   return "unknown";
 }
 
-const char *YGNodeTypeToString(const YGNodeType value){
-  switch(value){
+const char* YGNodeTypeToString(const YGNodeType value) {
+  switch (value) {
     case YGNodeTypeDefault:
       return "default";
     case YGNodeTypeText:
@@ -165,8 +164,8 @@ const char *YGNodeTypeToString(const YGNodeType value){
   return "unknown";
 }
 
-const char *YGOverflowToString(const YGOverflow value){
-  switch(value){
+const char* YGOverflowToString(const YGOverflow value) {
+  switch (value) {
     case YGOverflowVisible:
       return "visible";
     case YGOverflowHidden:
@@ -177,8 +176,8 @@ const char *YGOverflowToString(const YGOverflow value){
   return "unknown";
 }
 
-const char *YGPositionTypeToString(const YGPositionType value){
-  switch(value){
+const char* YGPositionTypeToString(const YGPositionType value) {
+  switch (value) {
     case YGPositionTypeRelative:
       return "relative";
     case YGPositionTypeAbsolute:
@@ -187,8 +186,8 @@ const char *YGPositionTypeToString(const YGPositionType value){
   return "unknown";
 }
 
-const char *YGPrintOptionsToString(const YGPrintOptions value){
-  switch(value){
+const char* YGPrintOptionsToString(const YGPrintOptions value) {
+  switch (value) {
     case YGPrintOptionsLayout:
       return "layout";
     case YGPrintOptionsStyle:
@@ -199,8 +198,8 @@ const char *YGPrintOptionsToString(const YGPrintOptions value){
   return "unknown";
 }
 
-const char *YGUnitToString(const YGUnit value){
-  switch(value){
+const char* YGUnitToString(const YGUnit value) {
+  switch (value) {
     case YGUnitUndefined:
       return "undefined";
     case YGUnitPoint:
@@ -213,8 +212,8 @@ const char *YGUnitToString(const YGUnit value){
   return "unknown";
 }
 
-const char *YGWrapToString(const YGWrap value){
-  switch(value){
+const char* YGWrapToString(const YGWrap value) {
+  switch (value) {
     case YGWrapNoWrap:
       return "no-wrap";
     case YGWrapWrap:

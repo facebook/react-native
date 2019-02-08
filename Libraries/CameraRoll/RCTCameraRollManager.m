@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,6 +13,7 @@
 #import <Photos/Photos.h>
 #import <dlfcn.h>
 #import <objc/runtime.h>
+#import <MobileCoreServices/UTType.h>
 
 #import <React/RCTBridge.h>
 #import <React/RCTConvert.h>
@@ -22,85 +23,46 @@
 
 #import "RCTAssetsLibraryRequestHandler.h"
 
-@implementation RCTConvert (ALAssetGroup)
+@implementation RCTConvert (PHAssetCollectionSubtype)
 
-RCT_ENUM_CONVERTER(ALAssetsGroupType, (@{
+RCT_ENUM_CONVERTER(PHAssetCollectionSubtype, (@{
+   @"album": @(PHAssetCollectionSubtypeAny),
+   @"all": @(PHAssetCollectionSubtypeAny),
+   @"event": @(PHAssetCollectionSubtypeAlbumSyncedEvent),
+   @"faces": @(PHAssetCollectionSubtypeAlbumSyncedFaces),
+   @"library": @(PHAssetCollectionSubtypeSmartAlbumUserLibrary),
+   @"photo-stream": @(PHAssetCollectionSubtypeAlbumMyPhotoStream), // incorrect, but legacy
+   @"photostream": @(PHAssetCollectionSubtypeAlbumMyPhotoStream),
+   @"saved-photos": @(PHAssetCollectionSubtypeAny), // incorrect, but legacy
+   @"savedphotos": @(PHAssetCollectionSubtypeAny), // This was ALAssetsGroupSavedPhotos, seems to have no direct correspondence in PHAssetCollectionSubtype
+}), PHAssetCollectionSubtypeAny, integerValue)
 
-  // New values
-  @"album": @(ALAssetsGroupAlbum),
-  @"all": @(ALAssetsGroupAll),
-  @"event": @(ALAssetsGroupEvent),
-  @"faces": @(ALAssetsGroupFaces),
-  @"library": @(ALAssetsGroupLibrary),
-  @"photo-stream": @(ALAssetsGroupPhotoStream),
-  @"saved-photos": @(ALAssetsGroupSavedPhotos),
 
-  // Legacy values
-  @"Album": @(ALAssetsGroupAlbum),
-  @"All": @(ALAssetsGroupAll),
-  @"Event": @(ALAssetsGroupEvent),
-  @"Faces": @(ALAssetsGroupFaces),
-  @"Library": @(ALAssetsGroupLibrary),
-  @"PhotoStream": @(ALAssetsGroupPhotoStream),
-  @"SavedPhotos": @(ALAssetsGroupSavedPhotos),
+@end
 
-}), ALAssetsGroupSavedPhotos, integerValue)
+@implementation RCTConvert (PHFetchOptions)
 
-static Class _ALAssetsFilter = nil;
-static NSString *_ALAssetsGroupPropertyName = nil;
-static NSString *_ALAssetPropertyAssetURL = nil;
-static NSString *_ALAssetPropertyLocation = nil;
-static NSString *_ALAssetPropertyDate = nil;
-static NSString *_ALAssetPropertyType = nil;
-static NSString *_ALAssetPropertyDuration = nil;
-static NSString *_ALAssetTypeVideo = nil;
-static NSString *lookupNSString(void * handle, const char * name)
++ (PHFetchOptions *)PHFetchOptionsFromMediaType:(NSString *)mediaType
 {
-  void ** sym = dlsym(handle, name);
-  return (__bridge NSString *)(sym ? *sym : nil);
-}
-static void ensureAssetsLibLoaded(void)
-{
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    void * handle = dlopen("/System/Library/Frameworks/AssetsLibrary.framework/AssetsLibrary", RTLD_LAZY);
-    RCTAssert(handle != NULL, @"Unable to load AssetsLibrary.framework.");
-    _ALAssetsFilter = objc_getClass("ALAssetsFilter");
-    _ALAssetsGroupPropertyName = lookupNSString(handle, "ALAssetsGroupPropertyName");
-    _ALAssetPropertyAssetURL = lookupNSString(handle, "ALAssetPropertyAssetURL");
-    _ALAssetPropertyLocation = lookupNSString(handle, "ALAssetPropertyLocation");
-    _ALAssetPropertyDate = lookupNSString(handle, "ALAssetPropertyDate");
-    _ALAssetPropertyType = lookupNSString(handle, "ALAssetPropertyType");
-    _ALAssetPropertyDuration = lookupNSString(handle, "ALAssetPropertyDuration");
-    _ALAssetTypeVideo = lookupNSString(handle, "ALAssetTypeVideo");
-  });
-}
+  // This is not exhaustive in terms of supported media type predicates; more can be added in the future
+  NSString *const lowercase = [mediaType lowercaseString];
 
-+ (ALAssetsFilter *)ALAssetsFilter:(id)json
-{
-  static NSDictionary<NSString *, ALAssetsFilter *> *options;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    ensureAssetsLibLoaded();
-    options = @{
-      // New values
-      @"photos": [_ALAssetsFilter allPhotos],
-      @"videos": [_ALAssetsFilter allVideos],
-      @"all": [_ALAssetsFilter allAssets],
-
-      // Legacy values
-      @"Photos": [_ALAssetsFilter allPhotos],
-      @"Videos": [_ALAssetsFilter allVideos],
-      @"All": [_ALAssetsFilter allAssets],
-    };
-  });
-
-  ALAssetsFilter *filter = options[json ?: @"photos"];
-  if (!filter) {
-    RCTLogError(@"Invalid filter option: '%@'. Expected one of 'photos',"
-                "'videos' or 'all'.", json);
+  if ([lowercase isEqualToString:@"photos"]) {
+    PHFetchOptions *const options = [PHFetchOptions new];
+    options.predicate = [NSPredicate predicateWithFormat:@"mediaType = %d", PHAssetMediaTypeImage];
+    return options;
+  } else if ([lowercase isEqualToString:@"videos"]) {
+    PHFetchOptions *const options = [PHFetchOptions new];
+    options.predicate = [NSPredicate predicateWithFormat:@"mediaType = %d", PHAssetMediaTypeVideo];
+    return options;
+  } else {
+    if (![lowercase isEqualToString:@"all"]) {
+      RCTLogError(@"Invalid filter option: '%@'. Expected one of 'photos',"
+                  "'videos' or 'all'.", mediaType);
+    }
+    // This case includes the "all" mediatype
+    return nil;
   }
-  return filter ?: [_ALAssetsFilter allPhotos];
 }
 
 @end
@@ -111,45 +73,87 @@ RCT_EXPORT_MODULE()
 
 @synthesize bridge = _bridge;
 
-static NSString *const kErrorUnableToLoad = @"E_UNABLE_TO_LOAD";
 static NSString *const kErrorUnableToSave = @"E_UNABLE_TO_SAVE";
+static NSString *const kErrorUnableToLoad = @"E_UNABLE_TO_LOAD";
+
+static NSString *const kErrorAuthRestricted = @"E_PHOTO_LIBRARY_AUTH_RESTRICTED";
+static NSString *const kErrorAuthDenied = @"E_PHOTO_LIBRARY_AUTH_DENIED";
+
+typedef void (^PhotosAuthorizedBlock)(void);
+
+static void requestPhotoLibraryAccess(RCTPromiseRejectBlock reject, PhotosAuthorizedBlock authorizedBlock) {
+  PHAuthorizationStatus authStatus = [PHPhotoLibrary authorizationStatus];
+  if (authStatus == PHAuthorizationStatusRestricted) {
+    reject(kErrorAuthRestricted, @"Access to photo library is restricted", nil);
+  } else if (authStatus == PHAuthorizationStatusAuthorized) {
+    authorizedBlock();
+  } else if (authStatus == PHAuthorizationStatusNotDetermined) {
+    [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+      requestPhotoLibraryAccess(reject, authorizedBlock);
+    }];
+  } else {
+    reject(kErrorAuthDenied, @"Access to photo library was denied", nil);
+  }
+}
 
 RCT_EXPORT_METHOD(saveToCameraRoll:(NSURLRequest *)request
                   type:(NSString *)type
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-  if ([type isEqualToString:@"video"]) {
-    // It's unclear if writeVideoAtPathToSavedPhotosAlbum is thread-safe
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [self->_bridge.assetsLibrary writeVideoAtPathToSavedPhotosAlbum:request.URL completionBlock:^(NSURL *assetURL, NSError *saveError) {
-        if (saveError) {
-          reject(kErrorUnableToSave, nil, saveError);
-        } else {
-          resolve(assetURL.absoluteString);
-        }
-      }];
-    });
-  } else {
-    [_bridge.imageLoader loadImageWithURLRequest:request
-                                        callback:^(NSError *loadError, UIImage *loadedImage) {
-      if (loadError) {
-        reject(kErrorUnableToLoad, nil, loadError);
-        return;
+  __block PHObjectPlaceholder *placeholder;
+
+  // We load images and videos differently.
+  // Images have many custom loaders which can load images from ALAssetsLibrary URLs, PHPhotoLibrary
+  // URLs, `data:` URIs, etc. Video URLs are passed directly through for now; it may be nice to support
+  // more ways of loading videos in the future.
+  __block NSURL *inputURI = nil;
+  __block UIImage *inputImage = nil;
+
+  void (^saveBlock)(void) = ^void() {
+    // performChanges and the completionHandler are called on
+    // arbitrary threads, not the main thread - this is safe
+    // for now since all JS is queued and executed on a single thread.
+    // We should reevaluate this if that assumption changes.
+    [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+      PHAssetChangeRequest *changeRequest;
+
+      // Defaults to "photo". `type` is an optional param.
+      if ([type isEqualToString:@"video"]) {
+        changeRequest = [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:inputURI];
+      } else {
+        changeRequest = [PHAssetChangeRequest creationRequestForAssetFromImage:inputImage];
       }
-      // It's unclear if writeImageToSavedPhotosAlbum is thread-safe
-      dispatch_async(dispatch_get_main_queue(), ^{
-        [self->_bridge.assetsLibrary writeImageToSavedPhotosAlbum:loadedImage.CGImage metadata:nil completionBlock:^(NSURL *assetURL, NSError *saveError) {
-          if (saveError) {
-            RCTLogWarn(@"Error saving cropped image: %@", saveError);
-            reject(kErrorUnableToSave, nil, saveError);
-          } else {
-            resolve(assetURL.absoluteString);
-          }
-        }];
-      });
+
+      placeholder = [changeRequest placeholderForCreatedAsset];
+    } completionHandler:^(BOOL success, NSError * _Nullable error) {
+      if (success) {
+        NSString *uri = [NSString stringWithFormat:@"ph://%@", [placeholder localIdentifier]];
+        resolve(uri);
+      } else {
+        reject(kErrorUnableToSave, nil, error);
+      }
     }];
-  }
+  };
+  
+  void (^loadBlock)(void) = ^void() {
+    if ([type isEqualToString:@"video"]) {
+      inputURI = request.URL;
+      saveBlock();
+    } else {
+      [self.bridge.imageLoader loadImageWithURLRequest:request callback:^(NSError *error, UIImage *image) {
+        if (error) {
+          reject(kErrorUnableToLoad, nil, error);
+          return;
+        }
+        
+        inputImage = image;
+        saveBlock();
+      }];
+    }
+  };
+  
+  requestPhotoLibraryAccess(reject, loadBlock);
 }
 
 static void RCTResolvePromise(RCTPromiseResolveBlock resolve,
@@ -181,89 +185,133 @@ RCT_EXPORT_METHOD(getPhotos:(NSDictionary *)params
 {
   checkPhotoLibraryConfig();
 
-  ensureAssetsLibLoaded();
-  NSUInteger first = [RCTConvert NSInteger:params[@"first"]];
-  NSString *afterCursor = [RCTConvert NSString:params[@"after"]];
-  NSString *groupName = [RCTConvert NSString:params[@"groupName"]];
-  ALAssetsFilter *assetType = [RCTConvert ALAssetsFilter:params[@"assetType"]];
-  ALAssetsGroupType groupTypes = [RCTConvert ALAssetsGroupType:params[@"groupTypes"]];
+  NSUInteger const first = [RCTConvert NSInteger:params[@"first"]];
+  NSString *const afterCursor = [RCTConvert NSString:params[@"after"]];
+  NSString *const groupName = [RCTConvert NSString:params[@"groupName"]];
+  NSString *const groupTypes = [[RCTConvert NSString:params[@"groupTypes"]] lowercaseString];
+  NSString *const mediaType = [RCTConvert NSString:params[@"assetType"]];
+  NSArray<NSString *> *const mimeTypes = [RCTConvert NSStringArray:params[@"mimeTypes"]];
+
+  // If groupTypes is "all", we want to fetch the SmartAlbum "all photos". Otherwise, all
+  // other groupTypes values require the "album" collection type.
+  PHAssetCollectionType const collectionType = ([groupTypes isEqualToString:@"all"]
+                                                ? PHAssetCollectionTypeSmartAlbum
+                                                : PHAssetCollectionTypeAlbum);
+  PHAssetCollectionSubtype const collectionSubtype = [RCTConvert PHAssetCollectionSubtype:groupTypes];
+
+  // Predicate for fetching assets within a collection
+  PHFetchOptions *const assetFetchOptions = [RCTConvert PHFetchOptionsFromMediaType:mediaType];
+  assetFetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
 
   BOOL __block foundAfter = NO;
   BOOL __block hasNextPage = NO;
   BOOL __block resolvedPromise = NO;
   NSMutableArray<NSDictionary<NSString *, id> *> *assets = [NSMutableArray new];
 
-  [_bridge.assetsLibrary enumerateGroupsWithTypes:groupTypes usingBlock:^(ALAssetsGroup *group, BOOL *stopGroups) {
-    if (group && (groupName == nil || [groupName isEqualToString:[group valueForProperty:_ALAssetsGroupPropertyName]])) {
-
-      [group setAssetsFilter:assetType];
-      [group enumerateAssetsWithOptions:NSEnumerationReverse usingBlock:^(ALAsset *result, NSUInteger index, BOOL *stopAssets) {
-        if (result) {
-          NSString *uri = ((NSURL *)[result valueForProperty:_ALAssetPropertyAssetURL]).absoluteString;
-          if (afterCursor && !foundAfter) {
-            if ([afterCursor isEqualToString:uri]) {
-              foundAfter = YES;
-            }
-            return; // Skip until we get to the first one
+  // Filter collection name ("group")
+  PHFetchOptions *const collectionFetchOptions = [PHFetchOptions new];
+  collectionFetchOptions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"endDate" ascending:NO]];
+  if (groupName != nil) {
+    collectionFetchOptions.predicate = [NSPredicate predicateWithFormat:[NSString stringWithFormat:@"localizedTitle == '%@'", groupName]];
+  }
+  
+  requestPhotoLibraryAccess(reject, ^{
+    PHFetchResult<PHAssetCollection *> *const assetCollectionFetchResult = [PHAssetCollection fetchAssetCollectionsWithType:collectionType subtype:collectionSubtype options:collectionFetchOptions];
+    [assetCollectionFetchResult enumerateObjectsUsingBlock:^(PHAssetCollection * _Nonnull assetCollection, NSUInteger collectionIdx, BOOL * _Nonnull stopCollections) {
+      // Enumerate assets within the collection
+      PHFetchResult<PHAsset *> *const assetsFetchResult = [PHAsset fetchAssetsInAssetCollection:assetCollection options:assetFetchOptions];
+      
+      [assetsFetchResult enumerateObjectsUsingBlock:^(PHAsset * _Nonnull asset, NSUInteger assetIdx, BOOL * _Nonnull stopAssets) {
+        NSString *const uri = [NSString stringWithFormat:@"ph://%@", [asset localIdentifier]];
+        if (afterCursor && !foundAfter) {
+          if ([afterCursor isEqualToString:uri]) {
+            foundAfter = YES;
           }
-          if (first == assets.count) {
-            *stopAssets = YES;
-            *stopGroups = YES;
-            hasNextPage = YES;
-            RCTAssert(resolvedPromise == NO, @"Resolved the promise before we finished processing the results.");
-            RCTResolvePromise(resolve, assets, hasNextPage);
-            resolvedPromise = YES;
+          return; // skip until we get to the first one
+        }
+        
+        // Get underlying resources of an asset - this includes files as well as details about edited PHAssets
+        if ([mimeTypes count] > 0) {
+          NSArray<PHAssetResource *> *const assetResources = [PHAssetResource assetResourcesForAsset:asset];
+          if (![assetResources firstObject]) {
             return;
           }
-          CGSize dimensions = [result defaultRepresentation].dimensions;
-          CLLocation *loc = [result valueForProperty:_ALAssetPropertyLocation];
-          NSDate *date = [result valueForProperty:_ALAssetPropertyDate];
-          NSString *filename = [result defaultRepresentation].filename;
-          int64_t duration = 0;
-          if ([[result valueForProperty:_ALAssetPropertyType] isEqualToString:_ALAssetTypeVideo]) {
-            duration = [[result valueForProperty:_ALAssetPropertyDuration] intValue];
-          }
-
-          [assets addObject:@{
-            @"node": @{
-              @"type": [result valueForProperty:_ALAssetPropertyType],
-              @"group_name": [group valueForProperty:_ALAssetsGroupPropertyName],
-              @"image": @{
-                @"uri": uri,
-                @"filename" : filename ?: [NSNull null],
-                @"height": @(dimensions.height),
-                @"width": @(dimensions.width),
-                @"isStored": @YES,
-                @"playableDuration": @(duration),
-              },
-              @"timestamp": @(date.timeIntervalSince1970),
-              @"location": loc ? @{
-                @"latitude": @(loc.coordinate.latitude),
-                @"longitude": @(loc.coordinate.longitude),
-                @"altitude": @(loc.altitude),
-                @"heading": @(loc.course),
-                @"speed": @(loc.speed),
-              } : @{},
+          
+          PHAssetResource *const _Nonnull resource = [assetResources firstObject];
+          CFStringRef const uti = (__bridge CFStringRef _Nonnull)(resource.uniformTypeIdentifier);
+          NSString *const mimeType = (NSString *)CFBridgingRelease(UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType));
+          
+          BOOL __block mimeTypeFound = NO;
+          [mimeTypes enumerateObjectsUsingBlock:^(NSString * _Nonnull mimeTypeFilter, NSUInteger idx, BOOL * _Nonnull stop) {
+            if ([mimeType isEqualToString:mimeTypeFilter]) {
+              mimeTypeFound = YES;
+              *stop = YES;
             }
           }];
+          
+          if (!mimeTypeFound) {
+            return;
+          }
         }
+        
+        // If we've accumulated enough results to resolve a single promise
+        if (first == assets.count) {
+          *stopAssets = YES;
+          *stopCollections = YES;
+          hasNextPage = YES;
+          RCTAssert(resolvedPromise == NO, @"Resolved the promise before we finished processing the results.");
+          RCTResolvePromise(resolve, assets, hasNextPage);
+          resolvedPromise = YES;
+          return;
+        }
+        
+        NSString *const assetMediaTypeLabel = (asset.mediaType == PHAssetMediaTypeVideo
+                                               ? @"video"
+                                               : (asset.mediaType == PHAssetMediaTypeImage
+                                                  ? @"image"
+                                                  : (asset.mediaType == PHAssetMediaTypeAudio
+                                                     ? @"audio"
+                                                     : @"unknown")));
+        CLLocation *const loc = asset.location;
+        
+        // A note on isStored: in the previous code that used ALAssets, isStored
+        // was always set to YES, probably because iCloud-synced images were never returned (?).
+        // To get the "isStored" information and filename, we would need to actually request the
+        // image data from the image manager. Those operations could get really expensive and
+        // would definitely utilize the disk too much.
+        // Thus, this field is actually not reliable.
+        // Note that Android also does not return the `isStored` field at all.
+        [assets addObject:@{
+           @"node": @{
+             @"type": assetMediaTypeLabel, // TODO: switch to mimeType?
+             @"group_name": [assetCollection localizedTitle],
+             @"image": @{
+                 @"uri": uri,
+                 @"height": @([asset pixelHeight]),
+                 @"width": @([asset pixelWidth]),
+                 @"isStored": @YES, // this field doesn't seem to exist on android
+                 @"playableDuration": @([asset duration]) // fractional seconds
+             },
+             @"timestamp": @(asset.creationDate.timeIntervalSince1970),
+             @"location": (loc ? @{
+                 @"latitude": @(loc.coordinate.latitude),
+                 @"longitude": @(loc.coordinate.longitude),
+                 @"altitude": @(loc.altitude),
+                 @"heading": @(loc.course),
+                 @"speed": @(loc.speed), // speed in m/s
+               } : @{})
+             }
+        }];
       }];
+    }];
+    
+    // If we get this far and haven't resolved the promise yet, we reached the end of the list of photos
+    if (!resolvedPromise) {
+      hasNextPage = NO;
+      RCTResolvePromise(resolve, assets, hasNextPage);
+      resolvedPromise = YES;
     }
-
-    if (!group) {
-      // Sometimes the enumeration continues even if we set stop above, so we guard against resolving the promise
-      // multiple times here.
-      if (!resolvedPromise) {
-        RCTResolvePromise(resolve, assets, hasNextPage);
-        resolvedPromise = YES;
-      }
-    }
-  } failureBlock:^(NSError *error) {
-    if (error.code != ALAssetsLibraryAccessUserDeniedError) {
-      RCTLogError(@"Failure while iterating through asset groups %@", error);
-    }
-    reject(kErrorUnableToLoad, nil, error);
-  }];
+  });
 }
 
 RCT_EXPORT_METHOD(deletePhotos:(NSArray<NSString *>*)assets

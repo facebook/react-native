@@ -1,10 +1,15 @@
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
 # React Native Android Unit Tests
 #
 # This image builds upon the React Native Base Android Development Environment
 # image. Ideally, this image would be rebuilt with any new commit to the master
 # branch. Doing so will catch issues such as BUCK failing to fetch dependencies
 # or run tests, as well as unit test failures.
-FROM reactnativeci/android-base:latest
+FROM react-native-community/react-native
 
 LABEL Description="This image prepares and runs React Native's Android tests."
 LABEL maintainer="Héctor Ramos <hector@fb.com>"
@@ -42,10 +47,10 @@ ADD build.gradle /app/build.gradle
 ADD react.gradle /app/react.gradle
 
 # run gradle downloads
-RUN ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSCHeaders
+RUN ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSC
 
 # compile native libs with Gradle script, we need bridge for unit and integration tests
-RUN ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=1 -Pcom.android.build.threadPoolSize=1
+RUN ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=1
 
 # add all react-native code
 ADD . /app

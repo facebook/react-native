@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,21 +10,31 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {AccessibilityInfo, Text, View, TouchableOpacity} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {AccessibilityInfo, Text, View, TouchableOpacity, Alert} = ReactNative;
 
-class AccessibilityIOSExample extends React.Component<{}> {
+type Props = $ReadOnly<{||}>;
+class AccessibilityIOSExample extends React.Component<Props> {
   render() {
     return (
       <View>
         <View
-          onAccessibilityTap={() => alert('onAccessibilityTap success')}
+          onAccessibilityTap={() =>
+            Alert.alert('Alert', 'onAccessibilityTap success')
+          }
           accessible={true}>
           <Text>Accessibility normal tap example</Text>
         </View>
-        <View onMagicTap={() => alert('onMagicTap success')} accessible={true}>
+        <View
+          onMagicTap={() => Alert.alert('Alert', 'onMagicTap success')}
+          accessible={true}>
           <Text>Accessibility magic tap example</Text>
+        </View>
+        <View
+          onAccessibilityEscape={() => alert('onAccessibilityEscape success')}
+          accessible={true}>
+          <Text>Accessibility escape example</Text>
         </View>
         <View accessibilityLabel="Some announcement" accessible={true}>
           <Text>Accessibility label example</Text>

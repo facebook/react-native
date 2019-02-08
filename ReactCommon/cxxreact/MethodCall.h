@@ -1,4 +1,4 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -27,6 +27,7 @@ struct MethodCall {
     , callId(cid) {}
 };
 
-std::vector<MethodCall> parseMethodCalls(folly::dynamic&& calls) throw(std::invalid_argument);
+/// \throws std::invalid_argument
+std::vector<MethodCall> parseMethodCalls(folly::dynamic&& calls);
 
 } }

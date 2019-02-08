@@ -1,5 +1,5 @@
-load("@xplat//tools/build_defs:glob_defs.bzl", "subdir_glob")
-load("//ReactNative:DEFS.bzl", "ANDROID", "ANDROID_JSC_DEPS", "APPLE", "get_apple_compiler_flags", "APPLE_JSC_DEPS", "get_debug_preprocessor_flags", "IS_OSS_BUILD", "get_android_inspector_flags", "get_apple_inspector_flags", "react_native_xplat_target", "rn_xplat_cxx_library")
+load("@fbsource//tools/build_defs:glob_defs.bzl", "subdir_glob")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "get_android_inspector_flags", "get_apple_compiler_flags", "get_apple_inspector_flags", "get_debug_preprocessor_flags", "react_native_xplat_target", "rn_xplat_cxx_library")
 
 CXX_LIBRARY_COMPILER_FLAGS = [
     "-std=c++14",
@@ -80,11 +80,8 @@ CXXREACT_PUBLIC_HEADERS = [
     "CxxNativeModule.h",
     "Instance.h",
     "JSBundleType.h",
-    "JSExecutor.h",
-    "JSCExecutor.h",
-    "JSCNativeModules.h",
-    "JSCUtils.h",
     "JSDeltaBundleClient.h",
+    "JSExecutor.h",
     "JSIndexedRAMBundle.h",
     "JSModulesUnbundle.h",
     "MessageQueueThread.h",
@@ -92,7 +89,6 @@ CXXREACT_PUBLIC_HEADERS = [
     "ModuleRegistry.h",
     "NativeModule.h",
     "NativeToJsBridge.h",
-    "Platform.h",
     "RAMBundleRegistry.h",
     "ReactMarker.h",
     "RecoverableError.h",
@@ -125,20 +121,10 @@ rn_xplat_cxx_library(
         "-fexceptions",
         "-frtti",
     ],
-    fbandroid_deps = ANDROID_JSC_DEPS,
-    fbandroid_preprocessor_flags = get_android_inspector_flags() + [
-        "-DWITH_JSC_EXTRA_TRACING=1",
-        "-DWITH_JSC_MEMORY_PRESSURE=1",
-        "-DWITH_FB_MEMORY_PROFILING=1",
-    ],
+    fbandroid_preprocessor_flags = get_android_inspector_flags(),
     fbobjc_compiler_flags = get_apple_compiler_flags(),
-    fbobjc_deps = APPLE_JSC_DEPS,
     fbobjc_force_static = True,
-    fbobjc_frameworks = [
-        "$SDKROOT/System/Library/Frameworks/JavaScriptCore.framework",
-    ],
     fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
-    force_static = True,
     macosx_tests_override = [],
     platforms = (ANDROID, APPLE),
     preprocessor_flags = [
@@ -156,12 +142,9 @@ rn_xplat_cxx_library(
         "xplat//folly:molly",
         ":jsbigstring",
         ":module",
-        react_native_xplat_target("jschelpers:jschelpers"),
         react_native_xplat_target("jsinspector:jsinspector"),
         react_native_xplat_target("microprofiler:microprofiler"),
         "xplat//folly:optional",
         "xplat//third-party/glog:glog",
-        react_native_xplat_target("jschelpers:jscinternalhelpers"),
-        react_native_xplat_target("privatedata:privatedata"),
     ],
 )

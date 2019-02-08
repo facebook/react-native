@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,10 +9,10 @@
  */
 'use strict';
 
-const ImageProps = require('ImageProps');
+const DeprecatedImagePropType = require('DeprecatedImagePropType');
 const NativeModules = require('NativeModules');
 const React = require('React');
-const ReactNative = require('ReactNative');
+const ReactNative = require('ReactNative'); // eslint-disable-line no-unused-vars
 const StyleSheet = require('StyleSheet');
 
 const flattenStyle = require('flattenStyle');
@@ -24,6 +24,8 @@ const ImageViewManager = NativeModules.ImageViewManager;
 const RCTImageView = requireNativeComponent('RCTImageView');
 
 import type {ImageProps as ImagePropsType} from 'ImageProps';
+
+import type {ImageStyleProp} from 'StyleSheet';
 
 function getSize(
   uri: string,
@@ -44,13 +46,20 @@ function prefetch(url: string) {
   return ImageViewManager.prefetchImage(url);
 }
 
+async function queryCache(
+  urls: Array<string>,
+): Promise<Map<string, 'memory' | 'disk'>> {
+  return await ImageViewManager.queryCache(urls);
+}
+
 declare class ImageComponentType extends ReactNative.NativeComponent<
   ImagePropsType,
 > {
   static getSize: typeof getSize;
   static prefetch: typeof prefetch;
+  static queryCache: typeof queryCache;
   static resolveAssetSource: typeof resolveAssetSource;
-  static propTypes: typeof ImageProps;
+  static propTypes: typeof DeprecatedImagePropType;
 }
 
 /**
@@ -71,12 +80,14 @@ let Image = (
   };
 
   let sources;
-  let style;
+  let style: ImageStyleProp;
   if (Array.isArray(source)) {
+    // $FlowFixMe flattenStyle is not strong enough
     style = flattenStyle([styles.base, props.style]) || {};
     sources = source;
   } else {
     const {width, height, uri} = source;
+    // $FlowFixMe flattenStyle is not strong enough
     style = flattenStyle([{width, height}, styles.base, props.style]) || {};
     sources = [source];
 
@@ -112,14 +123,17 @@ let Image = (
   );
 };
 
-// $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
 Image = React.forwardRef(Image);
+Image.displayName = 'Image';
 
 /**
  * Retrieve the width and height (in pixels) of an image prior to displaying it.
  *
  * See https://facebook.github.io/react-native/docs/image.html#getsize
  */
+/* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
 Image.getSize = getSize;
 
 /**
@@ -128,16 +142,35 @@ Image.getSize = getSize;
  *
  * See https://facebook.github.io/react-native/docs/image.html#prefetch
  */
+/* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
 Image.prefetch = prefetch;
+
+/**
+ * Performs cache interrogation.
+ *
+ *  See https://facebook.github.io/react-native/docs/image.html#querycache
+ */
+/* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
+Image.queryCache = queryCache;
 
 /**
  * Resolves an asset reference into an object.
  *
  * See https://facebook.github.io/react-native/docs/image.html#resolveassetsource
  */
+/* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
 Image.resolveAssetSource = resolveAssetSource;
 
-Image.propTypes = ImageProps;
+/* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
+Image.propTypes = DeprecatedImagePropType;
 
 const styles = StyleSheet.create({
   base: {
@@ -145,4 +178,7 @@ const styles = StyleSheet.create({
   },
 });
 
+/* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
 module.exports = (Image: Class<ImageComponentType>);

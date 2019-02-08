@@ -1,6 +1,11 @@
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
 Pod::Spec.new do |spec|
   spec.name = 'glog'
-  spec.version = '0.3.4'
+  spec.version = '0.3.5'
   spec.license = { :type => 'Google', :file => 'COPYING' }
   spec.homepage = 'https://github.com/google/glog'
   spec.summary = 'Google logging module'

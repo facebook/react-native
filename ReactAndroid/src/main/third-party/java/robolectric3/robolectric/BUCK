@@ -1,4 +1,5 @@
-load("//ReactNative:DEFS.bzl", "react_native_dep", "rn_android_library", "rn_prebuilt_jar")
+load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "rn_android_library", "rn_prebuilt_jar")
 
 rn_android_library(
     name = "robolectric",
@@ -26,7 +27,7 @@ rn_prebuilt_jar(
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "robolectric-binary.jar",
     sha1 = "f888cea3bc1a24110e315eb9827ab593610ea62f",
     url = "mvn:org.robolectric:robolectric:jar:3.0",
@@ -38,7 +39,7 @@ rn_prebuilt_jar(
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "robolectric-resources-binary.jar",
     sha1 = "1ab609054aab67cd13a434567467f4b4774f2465",
     url = "mvn:org.robolectric:robolectric-resources:jar:3.0",
@@ -50,7 +51,7 @@ rn_prebuilt_jar(
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "robolectric-annotations-binary.jar",
     sha1 = "2a6cfc072d7680694c1ff893c5dc8fec33163110",
     url = "mvn:org.robolectric:robolectric-annotations:jar:3.0",
@@ -62,7 +63,7 @@ rn_prebuilt_jar(
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "robolectric-utils-binary.jar",
     sha1 = "4bcecd8115fe7296088bb1636e6cbd7ae8927392",
     url = "mvn:org.robolectric:robolectric-utils:jar:3.0",
@@ -74,7 +75,7 @@ rn_prebuilt_jar(
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "bouncycastle-binary.jar",
     sha1 = "ce091790943599535cbb4de8ede84535b0c1260c",
     url = "mvn:org.bouncycastle:bcprov-jdk16:jar:1.46",
@@ -86,7 +87,7 @@ rn_prebuilt_jar(
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "vtd-xml-binary.jar",
     sha1 = "ee5bcf62c1acf76434ee9f1c67a840bafef72a6d",
     url = "mvn:com.ximpleware:vtd-xml:jar:2.11",
@@ -98,7 +99,7 @@ rn_prebuilt_jar(
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "icu-binary.jar",
     sha1 = "786d9055d4ca8c1aab4a7d4ac8283f973fd7e41f",
     url = "mvn:com.ibm.icu:icu4j:jar:53.1",
@@ -112,13 +113,13 @@ rn_prebuilt_jar(
 
 # This new rule will make the .jar file appear in the "right" location,
 # though that may change in the future
-export_file(
+fb_native.export_file(
     name = "robolectric-android-all-binary.jar",
     src = ":robolectric-android-all-binary-remote.jar",
     out = "../android-all-4.1.2_r1-robolectric-0.jar",  # name defines filename used by robolectric in runtime
 )
 
-remote_file(
+fb_native.remote_file(
     name = "robolectric-android-all-binary-remote.jar",
     sha1 = "aecc8ce5119a25fcea1cdf8285469c9d1261a352",
     url = "mvn:org.robolectric:android-all:jar:4.1.2_r1-robolectric-0",
@@ -130,13 +131,13 @@ rn_prebuilt_jar(
     visibility = ["//ReactAndroid/..."],
 )
 
-export_file(
+fb_native.export_file(
     name = "json.jar",
     src = ":json-remote.jar",
     out = "../json-20080701.jar",  # name defines filename used by robolectric in runtime
 )
 
-remote_file(
+fb_native.remote_file(
     name = "json-remote.jar",
     sha1 = "d652f102185530c93b66158b1859f35d45687258",
     url = "mvn:org.json:json:jar:20080701",
@@ -148,13 +149,13 @@ rn_prebuilt_jar(
     visibility = ["//ReactAndroid/..."],
 )
 
-export_file(
+fb_native.export_file(
     name = "tagsoup.jar",
     src = ":tagsoup-remote.jar",
     out = "../tagsoup-1.2.jar",  # name defines filename used by robolectric in runtime
 )
 
-remote_file(
+fb_native.remote_file(
     name = "tagsoup-remote.jar",
     sha1 = "639fd364750d7363c85797dc944b4a80f78fa684",
     url = "mvn:org.ccil.cowan.tagsoup:tagsoup:jar:1.2",
@@ -166,13 +167,13 @@ rn_prebuilt_jar(
     visibility = ["//ReactAndroid/..."],
 )
 
-export_file(
+fb_native.export_file(
     name = "robolectric-shadows-binary.jar",
     src = ":robolectric-shadows-binary-remote.jar",
     out = "../shadows-core-3.0-16.jar",  # name defines filename used by robolectric in runtime
 )
 
-remote_file(
+fb_native.remote_file(
     name = "robolectric-shadows-binary-remote.jar",
     sha1 = "39d7a856bf91640b1a6d044333336a2b3f3c198f",
     url = "https://repo1.maven.org/maven2/org/robolectric/shadows-core/3.0/shadows-core-3.0-16.jar",

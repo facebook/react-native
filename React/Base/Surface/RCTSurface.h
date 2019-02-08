@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -113,6 +113,15 @@ NS_ASSUME_NONNULL_BEGIN
  *    downgraded to `RCTSurfaceStageSurfaceDidInitialLayout`.
  */
 - (BOOL)synchronouslyWaitForStage:(RCTSurfaceStage)stage timeout:(NSTimeInterval)timeout;
+
+#pragma mark - Start & Stop
+
+/**
+ * Starts or stops the Surface.
+ * Those methods are a no-op for regular RCTSurface (for now), but all call sites must call them appropriately.
+ */
+- (BOOL)start;
+- (BOOL)stop;
 
 #pragma mark - Mounting/Unmounting of React components
 

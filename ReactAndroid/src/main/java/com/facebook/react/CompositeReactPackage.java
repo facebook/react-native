@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
  * directory of this source tree.
@@ -28,7 +28,7 @@ public class CompositeReactPackage implements ViewManagerOnDemandReactPackage, R
   private final List<ReactPackage> mChildReactPackages = new ArrayList<>();
 
   /**
-   * The order in which packages are passed matters. It may happen that a NativeModule or or a
+   * The order in which packages are passed matters. It may happen that a NativeModule or a
    * ViewManager exists in two or more ReactPackages. In that case the latter will win i.e. the
    * latter will overwrite the former. This re-occurrence is detected by comparing a name of a
    * module.

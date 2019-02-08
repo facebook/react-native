@@ -1,17 +1,18 @@
 ---
-name: 🗣 Start a Discussion
-about: Use https://github.com/react-native-community/discussions-and-proposals to propose changes or discuss feature requests.
+name: 🚀 Discussion
+about: You have an idea that could make React Native better, or you want to discuss some aspect of the framework.
+labels: "Type: Discussion"
 ---
 
-Please use https://github.com/react-native-community/discussions-and-proposals to propose changes or discuss feature requests.
+If you want to participate in casual discussions about the use of React Native, consider participating in one of the following forums:
+- Discord Community: https://discord.gg/0ZcbPKXt5bZjGY5n
+- Spectrum Chat: https://spectrum.chat/react-native
+- Facebook Group: https://www.facebook.com/groups/react.native.community
 
-We kindly ask that issues of this type are kept in that dedicated repo, to ensure bug reports and regressions are given the priority they require.
+For a full list of community resources:
+- http://facebook.github.io/react-native/help
 
-Maintainers may flag an issue for Stack Overflow or kindly ask you to move the discussion to https://github.com/react-native-community/discussions-and-proposals at their own discretion.
+If you'd like to discuss topics related to the future of React Native, please check out the discussions and proposals repo:
+- https://github.com/react-native-community/discussions-and-proposals
 
----
-
-# For Discussion
-
-<!-- Describe your issue in detail. -->
-
+### Please note that discussions opened as issues in the core React Native repository will be closed.

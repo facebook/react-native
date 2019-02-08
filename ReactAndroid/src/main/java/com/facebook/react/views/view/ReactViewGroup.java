@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,6 +7,8 @@
 
 package com.facebook.react.views.view;
 
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -19,10 +21,13 @@ import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStructure;
 import android.view.animation.Animation;
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.annotations.VisibleForTesting;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.touch.OnInterceptTouchEventListener;
 import com.facebook.react.touch.ReactHitSlopView;
@@ -39,9 +44,9 @@ import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.ViewGroupDrawingOrderHelper;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.yoga.YogaConstants;
-import java.util.ArrayList;
-import java.util.List;
 import javax.annotation.Nullable;
+
+import static com.facebook.react.common.ReactConstants.TAG;
 
 /**
  * Backing for a React View. Has support for borders, but since borders aren't common, lazy
@@ -108,18 +113,16 @@ public class ReactViewGroup extends ViewGroup implements
   private @Nullable ChildrenLayoutChangeListener mChildrenLayoutChangeListener;
   private @Nullable ReactViewBackgroundDrawable mReactBackgroundDrawable;
   private @Nullable OnInterceptTouchEventListener mOnInterceptTouchEventListener;
-  private @Nullable List<View> mTransitioningViews;
   private boolean mNeedsOffscreenAlphaCompositing = false;
   private final ViewGroupDrawingOrderHelper mDrawingOrderHelper;
   private @Nullable Path mPath;
   private int mLayoutDirection;
+  private float mBackfaceOpacity = 1.f;
+  private String mBackfaceVisibility = "visible";
 
   public ReactViewGroup(Context context) {
     super(context);
-    // TODO: Remove this check after a couple public releases.
-    if (!ViewProps.sDefaultOverflowHidden) {
-      setClipChildren(false);
-    }
+    setClipChildren(false);
     mDrawingOrderHelper = new ViewGroupDrawingOrderHelper(this);
   }
 
@@ -147,9 +150,20 @@ public class ReactViewGroup extends ViewGroup implements
   }
 
   @Override
+  @SuppressLint("MissingSuperCall")
   public void requestLayout() {
     // No-op, terminate `requestLayout` here, UIManagerModule handles laying out children and
     // `layout` is called on all RN-managed views by `NativeViewHierarchyManager`
+  }
+
+  @TargetApi(23)
+  @Override
+  public void dispatchProvideStructure(ViewStructure structure) {
+    try {
+      super.dispatchProvideStructure(structure);
+    } catch (NullPointerException e) {
+      FLog.e(TAG, "NullPointerException when executing dispatchProvideStructure", e);
+    }
   }
 
   @Override
@@ -242,8 +256,7 @@ public class ReactViewGroup extends ViewGroup implements
     ReactViewBackgroundDrawable backgroundDrawable = getOrCreateReactViewBackground();
     backgroundDrawable.setRadius(borderRadius);
 
-    if (Build.VERSION_CODES.HONEYCOMB < Build.VERSION.SDK_INT
-      && Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
       final int UPDATED_LAYER_TYPE =
         backgroundDrawable.hasRoundedBorders()
           ? View.LAYER_TYPE_SOFTWARE
@@ -259,8 +272,7 @@ public class ReactViewGroup extends ViewGroup implements
     ReactViewBackgroundDrawable backgroundDrawable = getOrCreateReactViewBackground();
     backgroundDrawable.setRadius(borderRadius, position);
 
-    if (Build.VERSION_CODES.HONEYCOMB < Build.VERSION.SDK_INT
-        && Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
       final int UPDATED_LAYER_TYPE =
           backgroundDrawable.hasRoundedBorders()
               ? View.LAYER_TYPE_SOFTWARE
@@ -337,16 +349,16 @@ public class ReactViewGroup extends ViewGroup implements
 
   private void updateClippingToRect(Rect clippingRect) {
     Assertions.assertNotNull(mAllChildren);
-    int childIndexOffset = 0;
+    int clippedSoFar = 0;
     for (int i = 0; i < mAllChildrenCount; i++) {
-      updateSubviewClipStatus(clippingRect, i, childIndexOffset);
-      if (!isChildInViewGroup(mAllChildren[i])) {
-        childIndexOffset++;
+      updateSubviewClipStatus(clippingRect, i, clippedSoFar);
+      if (mAllChildren[i].getParent() == null) {
+        clippedSoFar++;
       }
     }
   }
 
-  private void updateSubviewClipStatus(Rect clippingRect, int idx, int childIndexOffset) {
+  private void updateSubviewClipStatus(Rect clippingRect, int idx, int clippedSoFar) {
     View child = Assertions.assertNotNull(mAllChildren)[idx];
     sHelperRect.set(child.getLeft(), child.getTop(), child.getRight(), child.getBottom());
     boolean intersects = clippingRect
@@ -363,10 +375,10 @@ public class ReactViewGroup extends ViewGroup implements
     if (!intersects && child.getParent() != null && !isAnimating) {
       // We can try saving on invalidate call here as the view that we remove is out of visible area
       // therefore invalidation is not necessary.
-      super.removeViewsInLayout(idx - childIndexOffset, 1);
+      super.removeViewsInLayout(idx - clippedSoFar, 1);
       needUpdateClippingRecursive = true;
     } else if (intersects && child.getParent() == null) {
-      super.addViewInLayout(child, idx - childIndexOffset, sDefaultLayoutParam, true);
+      super.addViewInLayout(child, idx - clippedSoFar, sDefaultLayoutParam, true);
       invalidate();
       needUpdateClippingRecursive = true;
     } else if (intersects) {
@@ -402,23 +414,17 @@ public class ReactViewGroup extends ViewGroup implements
     boolean oldIntersects = (subview.getParent() != null);
 
     if (intersects != oldIntersects) {
-      int childIndexOffset = 0;
+      int clippedSoFar = 0;
       for (int i = 0; i < mAllChildrenCount; i++) {
         if (mAllChildren[i] == subview) {
-          updateSubviewClipStatus(mClippingRect, i, childIndexOffset);
+          updateSubviewClipStatus(mClippingRect, i, clippedSoFar);
           break;
         }
-        if (!isChildInViewGroup(mAllChildren[i])) {
-          childIndexOffset++;
+        if (mAllChildren[i].getParent() == null) {
+          clippedSoFar++;
         }
       }
     }
-  }
-
-  private boolean isChildInViewGroup(View view) {
-    // A child is in the group if it's not clipped and it's not transitioning.
-    return view.getParent() != null
-      && (mTransitioningViews == null || !mTransitioningViews.contains(view));
   }
 
   @Override
@@ -518,13 +524,13 @@ public class ReactViewGroup extends ViewGroup implements
     addInArray(child, index);
     // we add view as "clipped" and then run {@link #updateSubviewClipStatus} to conditionally
     // attach it
-    int childIndexOffset = 0;
+    int clippedSoFar = 0;
     for (int i = 0; i < index; i++) {
-      if (!isChildInViewGroup(mAllChildren[i])) {
-        childIndexOffset++;
+      if (mAllChildren[i].getParent() == null) {
+        clippedSoFar++;
       }
     }
-    updateSubviewClipStatus(mClippingRect, index, childIndexOffset);
+    updateSubviewClipStatus(mClippingRect, index, clippedSoFar);
     child.addOnLayoutChangeListener(mChildrenLayoutChangeListener);
   }
 
@@ -534,14 +540,14 @@ public class ReactViewGroup extends ViewGroup implements
     Assertions.assertNotNull(mAllChildren);
     view.removeOnLayoutChangeListener(mChildrenLayoutChangeListener);
     int index = indexOfChildInAllChildren(view);
-    if (isChildInViewGroup(mAllChildren[index])) {
-      int childIndexOffset = 0;
+    if (mAllChildren[index].getParent() != null) {
+      int clippedSoFar = 0;
       for (int i = 0; i < index; i++) {
-        if (!isChildInViewGroup(mAllChildren[i])) {
-          childIndexOffset++;
+        if (mAllChildren[i].getParent() == null) {
+          clippedSoFar++;
         }
       }
-      super.removeViewsInLayout(index - childIndexOffset, 1);
+      super.removeViewsInLayout(index - clippedSoFar, 1);
     }
     removeFromArray(index);
   }
@@ -554,26 +560,6 @@ public class ReactViewGroup extends ViewGroup implements
     }
     removeAllViewsInLayout();
     mAllChildrenCount = 0;
-  }
-
-  /*package*/ void startViewTransitionWithSubviewClippingEnabled(View view) {
-    // We're mirroring ViewGroup's mTransitioningViews since when a transitioning child is removed,
-    // its parent is not set to null unlike a regular child. Normally this wouldn't be an issue as
-    // ViewGroup pretends the transitioning child doesn't exist when calling any methods that expose
-    // child views, but we keep track of our children directly when subview clipping is enabled and
-    // need to be aware of these.
-    if (mTransitioningViews == null) {
-      mTransitioningViews = new ArrayList<>();
-    }
-    mTransitioningViews.add(view);
-    startViewTransition(view);
-  }
-
-  /*package*/ void endViewTransitionWithSubviewClippingEnabled(View view) {
-    if (mTransitioningViews != null) {
-      mTransitioningViews.remove(view);
-    }
-    endViewTransition(view);
   }
 
   private int indexOfChildInAllChildren(View child) {
@@ -676,6 +662,10 @@ public class ReactViewGroup extends ViewGroup implements
     invalidate();
   }
 
+  public @Nullable String getOverflow() {
+    return mOverflow;
+  }
+
   /**
    * Set the background for the view or remove the background. It calls {@link
    * #setBackground(Drawable)} or {@link #setBackgroundDrawable(Drawable)} based on the sdk version.
@@ -684,11 +674,7 @@ public class ReactViewGroup extends ViewGroup implements
    *     background
    */
   private void updateBackgroundDrawable(Drawable drawable) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-      super.setBackground(drawable);
-    } else {
-      super.setBackgroundDrawable(drawable);
-    }
+    super.setBackground(drawable);
   }
 
   @Override
@@ -696,6 +682,8 @@ public class ReactViewGroup extends ViewGroup implements
     try {
       dispatchOverflowDraw(canvas);
       super.dispatchDraw(canvas);
+    } catch (NullPointerException e) {
+      FLog.e(TAG, "NullPointerException when executing ViewGroup.dispatchDraw method", e);
     } catch (StackOverflowError e) {
       // Adding special exception management for StackOverflowError for logging purposes.
       // This will be removed in the future.
@@ -864,5 +852,37 @@ public class ReactViewGroup extends ViewGroup implements
           break;
       }
     }
+  }
+
+  public void setOpacityIfPossible(float opacity) {
+    mBackfaceOpacity = opacity;
+    setBackfaceVisibilityDependantOpacity();
+  }
+
+  public void setBackfaceVisibility(String backfaceVisibility) {
+    mBackfaceVisibility = backfaceVisibility;
+    setBackfaceVisibilityDependantOpacity();
+  }
+
+  public void setBackfaceVisibilityDependantOpacity() {
+    boolean isBackfaceVisible = mBackfaceVisibility.equals("visible");
+
+    if (isBackfaceVisible) {
+      setAlpha(mBackfaceOpacity);
+      return;
+    }
+
+    float rotationX = getRotationX();
+    float rotationY = getRotationY();
+
+    boolean isFrontfaceVisible = (rotationX >= -90.f && rotationX < 90.f) &&
+      (rotationY >= -90.f && rotationY < 90.f);
+
+    if (isFrontfaceVisible) {
+      setAlpha(mBackfaceOpacity);
+      return;
+    }
+
+    setAlpha(0);
   }
 }

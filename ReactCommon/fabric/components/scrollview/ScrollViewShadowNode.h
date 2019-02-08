@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,38 +7,31 @@
 
 #pragma once
 
-#include <memory>
-
-#include <fabric/components/scrollview/ScrollViewEventEmitter.h>
-#include <fabric/components/scrollview/ScrollViewProps.h>
-#include <fabric/components/view/ConcreteViewShadowNode.h>
-#include <fabric/core/LayoutContext.h>
+#include <react/components/scrollview/ScrollViewEventEmitter.h>
+#include <react/components/scrollview/ScrollViewProps.h>
+#include <react/components/view/ConcreteViewShadowNode.h>
+#include <react/core/LayoutContext.h>
 
 namespace facebook {
 namespace react {
 
-class ScrollViewShadowNode;
-
-using SharedScrollViewShadowNode = std::shared_ptr<const ScrollViewShadowNode>;
+extern const char ScrollViewComponentName[];
 
 /*
  * `ShadowNode` for <ScrollView> component.
  */
-class ScrollViewShadowNode final:
-  public ConcreteViewShadowNode<ScrollViewProps, ScrollViewEventEmitter> {
-
-public:
-
+class ScrollViewShadowNode final : public ConcreteViewShadowNode<
+                                       ScrollViewComponentName,
+                                       ScrollViewProps,
+                                       ScrollViewEventEmitter> {
+ public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
-
-  ComponentName getComponentName() const override;
 
 #pragma mark - LayoutableShadowNode
 
   void layout(LayoutContext layoutContext) override;
 
-private:
-
+ private:
   void updateLocalData();
 };
 

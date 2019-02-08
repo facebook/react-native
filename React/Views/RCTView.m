@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -278,6 +278,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 {
   if (_onMagicTap) {
     _onMagicTap(nil);
+    return YES;
+  } else {
+    return NO;
+  }
+}
+
+- (BOOL)accessibilityPerformEscape
+{
+  if (_onAccessibilityEscape) {
+    _onAccessibilityEscape(nil);
     return YES;
   } else {
     return NO;
@@ -655,8 +665,8 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
     CGRectMake(
       insets.left / size.width,
       insets.top / size.height,
-      1.0 / size.width,
-      1.0 / size.height
+      (CGFloat)1.0 / size.width,
+      (CGFloat)1.0 / size.height
     );
   });
 

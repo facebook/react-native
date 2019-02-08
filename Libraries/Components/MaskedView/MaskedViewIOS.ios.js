@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,27 +8,23 @@
  * @flow
  */
 
-const PropTypes = require('prop-types');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
-const ViewPropTypes = require('ViewPropTypes');
-const requireNativeComponent = require('requireNativeComponent');
+const RCTMaskedViewNativeComponent = require('RCTMaskedViewNativeComponent');
 
 import type {ViewProps} from 'ViewPropTypes';
 
-const RCTMaskedView = requireNativeComponent('RCTMaskedView');
-
-type Props = {
+type Props = $ReadOnly<{|
   ...ViewProps,
 
-  children: any,
+  children: React.Node,
   /**
    * Should be a React element to be rendered and applied as the
    * mask for the child element.
    */
   maskElement: React.Element<any>,
-};
+|}>;
 
 /**
  * Renders the child view with a mask specified in the `maskElement` prop.
@@ -67,11 +63,6 @@ type Props = {
  *
  */
 class MaskedViewIOS extends React.Component<Props> {
-  static propTypes = {
-    ...ViewPropTypes,
-    maskElement: PropTypes.element.isRequired,
-  };
-
   _hasWarnedInvalidRenderMask = false;
 
   render() {
@@ -89,12 +80,12 @@ class MaskedViewIOS extends React.Component<Props> {
     }
 
     return (
-      <RCTMaskedView {...otherViewProps}>
+      <RCTMaskedViewNativeComponent {...otherViewProps}>
         <View pointerEvents="none" style={StyleSheet.absoluteFill}>
           {maskElement}
         </View>
         {children}
-      </RCTMaskedView>
+      </RCTMaskedViewNativeComponent>
     );
   }
 }
