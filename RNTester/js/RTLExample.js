@@ -66,7 +66,7 @@ function ListItem(props) {
 
 const TextAlignmentExample = withRTLState(({isRTL, setRTL, ...props}) => {
   return (
-    <RNTesterBlock title={props.title} description={props.description}>
+    <View>
       <RTLToggler setRTL={setRTL} isRTL={isRTL} />
       <View style={{direction: isRTL ? 'rtl' : 'ltr'}}>
         <Text style={props.style}>
@@ -84,13 +84,13 @@ const TextAlignmentExample = withRTLState(({isRTL, setRTL, ...props}) => {
             '\u05D9\u05D9\u05E9\u05D5\u05E8 \u05D8\u05E7\u05E1\u05D8'}
         </Text>
       </View>
-    </RNTesterBlock>
+    </View>
   );
 });
 
 const IconsExample = withRTLState(({isRTL, setRTL}) => {
   return (
-    <RNTesterBlock title={'Working With Icons'}>
+    <View>
       <RTLToggler setRTL={setRTL} isRTL={isRTL} />
       <View
         style={[styles.flexDirectionRow, {direction: isRTL ? 'rtl' : 'ltr'}]}>
@@ -113,7 +113,7 @@ const IconsExample = withRTLState(({isRTL, setRTL}) => {
           </Text>
         </View>
       </View>
-    </RNTesterBlock>
+    </View>
   );
 });
 
@@ -170,13 +170,13 @@ const RTLToggler = ({isRTL, setRTL}) => {
 
 const SimpleListItemExample = withRTLState(({isRTL, setRTL}) => {
   return (
-    <RNTesterBlock title={'A Simple List Item Layout'}>
+    <View>
       <RTLToggler setRTL={setRTL} isRTL={isRTL} />
       <View style={[styles.list, {direction: isRTL ? 'rtl' : 'ltr'}]}>
         <ListItem imageSource={require('./Thumbnails/like.png')} />
         <ListItem imageSource={require('./Thumbnails/poke.png')} />
       </View>
-    </RNTesterBlock>
+    </View>
   );
 });
 
@@ -197,9 +197,7 @@ class AnimationExample extends React.Component<any, State> {
 
   render() {
     return (
-      <RNTesterBlock
-        title={'Controlling Animation'}
-        description={'Animation direction according to layout'}>
+      <View>
         <RTLToggler setRTL={this.props.setRTL} isRTL={this.props.isRTL} />
         <View style={styles.view} onLayout={this._onLayout}>
           <AnimationBlock
@@ -212,7 +210,7 @@ class AnimationExample extends React.Component<any, State> {
             }}
           />
         </View>
-      </RNTesterBlock>
+      </View>
     );
   }
 
@@ -244,7 +242,7 @@ const PaddingExample = withRTLState(({isRTL, setRTL}) => {
   const color = 'teal';
 
   return (
-    <RNTesterBlock title={'Padding Start/End'}>
+    <View>
       <Text style={styles.bold}>Styles</Text>
       <Text>paddingStart: 50,</Text>
       <Text>paddingEnd: 10</Text>
@@ -272,13 +270,13 @@ const PaddingExample = withRTLState(({isRTL, setRTL}) => {
           <RTLToggler setRTL={setRTL} isRTL={isRTL} />
         </View>
       </View>
-    </RNTesterBlock>
+    </View>
   );
 });
 
 const MarginExample = withRTLState(({isRTL, setRTL}) => {
   return (
-    <RNTesterBlock title={'Margin Start/End'}>
+    <View>
       <Text style={styles.bold}>Styles</Text>
       <Text>marginStart: 50,</Text>
       <Text>marginEnd: 10</Text>
@@ -306,13 +304,13 @@ const MarginExample = withRTLState(({isRTL, setRTL}) => {
           <RTLToggler setRTL={setRTL} isRTL={isRTL} />
         </View>
       </View>
-    </RNTesterBlock>
+    </View>
   );
 });
 
 const PositionExample = withRTLState(({isRTL, setRTL}) => {
   return (
-    <RNTesterBlock title={'Position Start/End'}>
+    <View>
       <Text style={styles.bold}>Styles</Text>
       <Text>start: 50</Text>
       <Text />
@@ -356,13 +354,13 @@ const PositionExample = withRTLState(({isRTL, setRTL}) => {
           <RTLToggler setRTL={setRTL} isRTL={isRTL} />
         </View>
       </View>
-    </RNTesterBlock>
+    </View>
   );
 });
 
 const BorderWidthExample = withRTLState(({isRTL, setRTL}) => {
   return (
-    <RNTesterBlock title={'Border Width Start/End'}>
+    <View>
       <Text style={styles.bold}>Styles</Text>
       <Text>borderStartWidth: 10,</Text>
       <Text>borderEndWidth: 50</Text>
@@ -379,13 +377,13 @@ const BorderWidthExample = withRTLState(({isRTL, setRTL}) => {
           </View>
         </View>
       </View>
-    </RNTesterBlock>
+    </View>
   );
 });
 
 const BorderColorExample = withRTLState(({isRTL, setRTL}) => {
   return (
-    <RNTesterBlock title={'Border Color Start/End'}>
+    <View>
       <Text style={styles.bold}>Styles</Text>
       <Text>borderStartColor: 'red',</Text>
       <Text>borderEndColor: 'green',</Text>
@@ -405,13 +403,13 @@ const BorderColorExample = withRTLState(({isRTL, setRTL}) => {
           </View>
         </View>
       </View>
-    </RNTesterBlock>
+    </View>
   );
 });
 
 const BorderRadiiExample = withRTLState(({isRTL, setRTL}) => {
   return (
-    <RNTesterBlock title={'Border Radii Start/End'}>
+    <View>
       <Text style={styles.bold}>Styles</Text>
       <Text>borderTopStartRadius: 10,</Text>
       <Text>borderTopEndRadius: 20,</Text>
@@ -434,13 +432,13 @@ const BorderRadiiExample = withRTLState(({isRTL, setRTL}) => {
           </View>
         </View>
       </View>
-    </RNTesterBlock>
+    </View>
   );
 });
 
 const BorderExample = withRTLState(({isRTL, setRTL}) => {
   return (
-    <RNTesterBlock title={'Border '}>
+    <View>
       <Text style={styles.bold}>Styles</Text>
       <Text>borderStartColor: 'red',</Text>
       <Text>borderEndColor: 'green',</Text>
@@ -470,54 +468,9 @@ const BorderExample = withRTLState(({isRTL, setRTL}) => {
           </View>
         </View>
       </View>
-    </RNTesterBlock>
+    </View>
   );
 });
-
-class RTLExample extends React.Component<any, State> {
-  render() {
-    return (
-      <ScrollView style={styles.container}>
-        <RNTesterPage title={'Right-to-Left (RTL) UI Layout'}>
-          <SimpleListItemExample />
-          <TextAlignmentExample
-            title={'Default Text Alignment'}
-            description={
-              'In iOS, it depends on active language. ' +
-              'In Android, it depends on the text content.'
-            }
-            style={styles.fontSizeSmall}
-          />
-          <TextAlignmentExample
-            title={"Using textAlign: 'left'"}
-            description={
-              'In iOS/Android, text alignment flips regardless of ' +
-              'languages or text content.'
-            }
-            style={[styles.fontSizeSmall, styles.textAlignLeft]}
-          />
-          <TextAlignmentExample
-            title={"Using textAlign: 'right'"}
-            description={
-              'In iOS/Android, text alignment flips regardless of ' +
-              'languages or text content.'
-            }
-            style={[styles.fontSizeSmall, styles.textAlignRight]}
-          />
-          <IconsExample />
-          <AnimationContainer />
-          <PaddingExample />
-          <MarginExample />
-          <PositionExample />
-          <BorderWidthExample />
-          <BorderColorExample />
-          <BorderRadiiExample />
-          <BorderExample />
-        </RNTesterPage>
-      </ScrollView>
-    );
-  }
-}
 
 const styles = StyleSheet.create({
   container: {
@@ -641,9 +594,99 @@ exports.title = 'RTLExample';
 exports.description = 'Examples to show how to apply components to RTL layout.';
 exports.examples = [
   {
-    title: 'Simple RTL',
+    title: 'A Simple List Item Layout',
     render: function(): React.Element<typeof RTLExample> {
-      return <RTLExample />;
+      return <SimpleListItemExample />;
+    },
+  },
+  {
+    title: 'Default Text Alignment',
+    description:
+      'In iOS, it depends on active language. ' +
+      'In Android, it depends on the text content.',
+    render: function(): React.Element<typeof RTLExample> {
+      return <TextAlignmentExample style={styles.fontSizeSmall} />;
+    },
+  },
+  {
+    title: "Using textAlign: 'left'",
+    description:
+      'In iOS/Android, text alignment flips regardless of ' +
+      'languages or text content.',
+    render: function(): React.Element<typeof RTLExample> {
+      return (
+        <TextAlignmentExample
+          style={[styles.fontSizeSmall, styles.textAlignLeft]}
+        />
+      );
+    },
+  },
+  {
+    title: "Using textAlign: 'right'",
+    description:
+      'In iOS/Android, text alignment flips regardless of ' +
+      'languages or text content.',
+    render: function(): React.Element<typeof RTLExample> {
+      return (
+        <TextAlignmentExample
+          style={[styles.fontSizeSmall, styles.textAlignRight]}
+        />
+      );
+    },
+  },
+  {
+    title: 'Working With Icons',
+    render: function(): React.Element<typeof RTLExample> {
+      return <IconsExample />;
+    },
+  },
+  {
+    title: 'Controlling Animation',
+    description: 'Animation direction according to layout',
+    render: function(): React.Element<typeof RTLExample> {
+      return <AnimationContainer />;
+    },
+  },
+  {
+    title: 'Padding Start/End',
+    render: function(): React.Element<typeof RTLExample> {
+      return <PaddingExample />;
+    },
+  },
+  {
+    title: 'Margin Start/End',
+    render: function(): React.Element<typeof RTLExample> {
+      return <MarginExample />;
+    },
+  },
+  {
+    title: 'Position Start/End',
+    render: function(): React.Element<typeof RTLExample> {
+      return <PositionExample />;
+    },
+  },
+  {
+    title: 'Border Width Start/End',
+    render: function(): React.Element<typeof RTLExample> {
+      return <BorderWidthExample />;
+    },
+  },
+  {
+    title: 'Border Color Start/End',
+    render: function(): React.Element<typeof RTLExample> {
+      return <BorderColorExample />;
+    },
+  },
+  {
+    title: 'Border Radii Start/End',
+    render: function(): React.Element<typeof RTLExample> {
+      return <BorderRadiiExample />;
+    },
+  },
+  {
+    title: 'Border',
+    render: function(): React.Element<typeof RTLExample> {
+      return <BorderExample />;
     },
   },
 ];
