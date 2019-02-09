@@ -73,7 +73,7 @@ const TextAlignmentExample = withRTLState(({isRTL, setRTL, ...props}) => {
   return (
     <View>
       <RTLToggler setRTL={setRTL} isRTL={isRTL} />
-      <View style={{direction: isRTL ? 'rtl' : 'ltr'}}>
+      <View style={directionStyle(isRTL)}>
         <Text style={props.style}>
           Left-to-Right language without text alignment.
         </Text>
@@ -97,8 +97,7 @@ const IconsExample = withRTLState(({isRTL, setRTL}) => {
   return (
     <View>
       <RTLToggler setRTL={setRTL} isRTL={isRTL} />
-      <View
-        style={[styles.flexDirectionRow, {direction: isRTL ? 'rtl' : 'ltr'}]}>
+      <View style={[styles.flexDirectionRow, directionStyle(isRTL)]}>
         <View>
           <Image
             source={require('./Thumbnails/like.png')}
@@ -220,7 +219,7 @@ const SimpleListItemExample = withRTLState(({isRTL, setRTL}) => {
   return (
     <View>
       <RTLToggler setRTL={setRTL} isRTL={isRTL} />
-      <View style={[styles.list, {direction: isRTL ? 'rtl' : 'ltr'}]}>
+      <View style={[styles.list, directionStyle(isRTL)]}>
         <ListItem imageSource={require('./Thumbnails/like.png')} />
         <ListItem imageSource={require('./Thumbnails/poke.png')} />
       </View>
@@ -414,7 +413,7 @@ const BorderWidthExample = withRTLState(({isRTL, setRTL}) => {
       <Text>borderEndWidth: 50</Text>
       <Text />
       <Text style={styles.bold}>Demo: </Text>
-      <View style={{direction: isRTL ? 'rtl' : 'ltr'}}>
+      <View style={directionStyle(isRTL)}>
         <View
           style={{
             borderStartWidth: 10,
@@ -437,7 +436,7 @@ const BorderColorExample = withRTLState(({isRTL, setRTL}) => {
       <Text>borderEndColor: 'green',</Text>
       <Text />
       <Text style={styles.bold}>Demo: </Text>
-      <View style={{direction: isRTL ? 'rtl' : 'ltr'}}>
+      <View style={directionStyle(isRTL)}>
         <View
           style={{
             borderStartColor: 'red',
@@ -465,7 +464,7 @@ const BorderRadiiExample = withRTLState(({isRTL, setRTL}) => {
       <Text>borderBottomEndRadius: 40</Text>
       <Text />
       <Text style={styles.bold}>Demo: </Text>
-      <View style={{direction: isRTL ? 'rtl' : 'ltr'}}>
+      <View style={directionStyle(isRTL)}>
         <View
           style={{
             borderWidth: 10,
@@ -498,7 +497,7 @@ const BorderExample = withRTLState(({isRTL, setRTL}) => {
       <Text>borderBottomEndRadius: 40</Text>
       <Text />
       <Text style={styles.bold}>Demo: </Text>
-      <View style={{direction: isRTL ? 'rtl' : 'ltr'}}>
+      <View style={directionStyle(isRTL)}>
         <View
           style={{
             borderStartColor: 'red',
@@ -519,6 +518,9 @@ const BorderExample = withRTLState(({isRTL, setRTL}) => {
     </View>
   );
 });
+
+const directionStyle = isRTL =>
+  Platform.OS === 'ios' ? {direction: isRTL ? 'rtl' : 'ltr'} : null;
 
 const styles = StyleSheet.create({
   container: {
