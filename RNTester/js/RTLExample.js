@@ -184,14 +184,21 @@ class RTLToggleExample extends React.Component<any, RTLToggleState> {
 
   render() {
     return (
-      <View style={styles.flexDirectionRow}>
-        <Text style={styles.switchRowTextView}>forceRTL</Text>
-        <View style={styles.switchRowSwitchView}>
-          <Switch
-            onValueChange={this._onDirectionChange}
-            style={styles.rightAlignStyle}
-            value={this.state.isRTL}
-          />
+      <View>
+        <View style={styles.directionBox}>
+          <Text style={styles.directionText}>
+            {this.state.isRTL ? 'Right-to-Left' : 'Left-to-Right'}
+          </Text>
+        </View>
+        <View style={styles.flexDirectionRow}>
+          <Text style={styles.switchRowTextView}>forceRTL</Text>
+          <View style={styles.switchRowSwitchView}>
+            <Switch
+              onValueChange={this._onDirectionChange}
+              style={styles.rightAlignStyle}
+              value={this.state.isRTL}
+            />
+          </View>
         </View>
       </View>
     );
@@ -523,6 +530,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f8f8',
     borderWidth: 0.5,
     borderColor: 'black',
+    marginBottom: 15,
   },
   directionText: {
     padding: 10,
@@ -635,7 +643,7 @@ exports.title = 'RTLExample';
 exports.description = 'Examples to show how to apply components to RTL layout.';
 exports.examples = [
   {
-    title: 'Quickly Test RTL Layout',
+    title: 'Current Layout Direction',
     render: function(): React.Element<any> {
       return <RTLToggleExample />;
     },
