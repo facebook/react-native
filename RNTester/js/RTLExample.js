@@ -168,6 +168,42 @@ const RTLToggler = ({isRTL, setRTL}) => {
   );
 };
 
+class ForceRTLExample extends React.Component {
+  constructor(props: Object) {
+    super(props);
+
+    this.state = {
+      isRTL: IS_RTL,
+    };
+  }
+
+  render() {
+    return (
+      <View style={styles.flexDirectionRow}>
+        <Text style={styles.switchRowTextView}>forceRTL</Text>
+        <View style={styles.switchRowSwitchView}>
+          <Switch
+            onValueChange={this._onDirectionChange}
+            style={styles.rightAlignStyle}
+            value={this.state.isRTL}
+          />
+        </View>
+      </View>
+    );
+  }
+
+  _onDirectionChange = () => {
+    I18nManager.forceRTL(!this.state.isRTL);
+    this.setState({isRTL: !this.state.isRTL});
+    Alert.alert(
+      'Reload this page',
+      'Please reload this page to change the UI direction! ' +
+        'All examples in this app will be affected. ' +
+        'Check them out to see what they look like in RTL layout.',
+    );
+  };
+}
+
 const SimpleListItemExample = withRTLState(({isRTL, setRTL}) => {
   return (
     <View>
@@ -593,6 +629,12 @@ const styles = StyleSheet.create({
 exports.title = 'RTLExample';
 exports.description = 'Examples to show how to apply components to RTL layout.';
 exports.examples = [
+  {
+    title: 'Quickly Test RTL Layout',
+    render: function(): React.Element<typeof RTLExample> {
+      return <ForceRTLExample />;
+    },
+  },
   {
     title: 'A Simple List Item Layout',
     render: function(): React.Element<typeof RTLExample> {
