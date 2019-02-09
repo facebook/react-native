@@ -33,6 +33,16 @@ type State = {
   isRTL: boolean,
 };
 
+type RTLToggleState = {
+  isRTL: boolean,
+};
+
+type AnimationState = {
+  toggleStatus: any,
+  linear: Object,
+  windowWidth: number,
+};
+
 const SCALE = PixelRatio.get();
 const IMAGE_DIMENSION = 100 * SCALE;
 const IMAGE_SIZE = [IMAGE_DIMENSION, IMAGE_DIMENSION];
@@ -163,7 +173,7 @@ const RTLToggler = ({isRTL, setRTL}) => {
   );
 };
 
-class ForceRTLExample extends React.Component {
+class RTLToggleExample extends React.Component<any, RTLToggleState> {
   constructor(props: Object) {
     super(props);
 
@@ -215,7 +225,7 @@ const AnimationContainer = withRTLState(({isRTL, setRTL}) => {
   return <AnimationExample isRTL={isRTL} setRTL={setRTL} />;
 });
 
-class AnimationExample extends React.Component<any, State> {
+class AnimationExample extends React.Component<any, AnimationState> {
   constructor(props: Object) {
     super(props);
 
@@ -626,13 +636,13 @@ exports.description = 'Examples to show how to apply components to RTL layout.';
 exports.examples = [
   {
     title: 'Quickly Test RTL Layout',
-    render: function(): React.Element<typeof RTLExample> {
-      return <ForceRTLExample />;
+    render: function(): React.Element<any> {
+      return <RTLToggleExample />;
     },
   },
   {
     title: 'A Simple List Item Layout',
-    render: function(): React.Element<typeof RTLExample> {
+    render: function(): React.Element<any> {
       return <SimpleListItemExample />;
     },
   },
@@ -641,7 +651,7 @@ exports.examples = [
     description:
       'In iOS, it depends on active language. ' +
       'In Android, it depends on the text content.',
-    render: function(): React.Element<typeof RTLExample> {
+    render: function(): React.Element<any> {
       return <TextAlignmentExample style={styles.fontSizeSmall} />;
     },
   },
@@ -650,7 +660,7 @@ exports.examples = [
     description:
       'In iOS/Android, text alignment flips regardless of ' +
       'languages or text content.',
-    render: function(): React.Element<typeof RTLExample> {
+    render: function(): React.Element<any> {
       return (
         <TextAlignmentExample
           style={[styles.fontSizeSmall, styles.textAlignLeft]}
@@ -663,7 +673,7 @@ exports.examples = [
     description:
       'In iOS/Android, text alignment flips regardless of ' +
       'languages or text content.',
-    render: function(): React.Element<typeof RTLExample> {
+    render: function(): React.Element<any> {
       return (
         <TextAlignmentExample
           style={[styles.fontSizeSmall, styles.textAlignRight]}
@@ -673,56 +683,56 @@ exports.examples = [
   },
   {
     title: 'Working With Icons',
-    render: function(): React.Element<typeof RTLExample> {
+    render: function(): React.Element<any> {
       return <IconsExample />;
     },
   },
   {
     title: 'Controlling Animation',
     description: 'Animation direction according to layout',
-    render: function(): React.Element<typeof RTLExample> {
+    render: function(): React.Element<any> {
       return <AnimationContainer />;
     },
   },
   {
     title: 'Padding Start/End',
-    render: function(): React.Element<typeof RTLExample> {
+    render: function(): React.Element<any> {
       return <PaddingExample />;
     },
   },
   {
     title: 'Margin Start/End',
-    render: function(): React.Element<typeof RTLExample> {
+    render: function(): React.Element<any> {
       return <MarginExample />;
     },
   },
   {
     title: 'Position Start/End',
-    render: function(): React.Element<typeof RTLExample> {
+    render: function(): React.Element<any> {
       return <PositionExample />;
     },
   },
   {
     title: 'Border Width Start/End',
-    render: function(): React.Element<typeof RTLExample> {
+    render: function(): React.Element<any> {
       return <BorderWidthExample />;
     },
   },
   {
     title: 'Border Color Start/End',
-    render: function(): React.Element<typeof RTLExample> {
+    render: function(): React.Element<any> {
       return <BorderColorExample />;
     },
   },
   {
     title: 'Border Radii Start/End',
-    render: function(): React.Element<typeof RTLExample> {
+    render: function(): React.Element<any> {
       return <BorderRadiiExample />;
     },
   },
   {
     title: 'Border',
-    render: function(): React.Element<typeof RTLExample> {
+    render: function(): React.Element<any> {
       return <BorderExample />;
     },
   },
