@@ -16,9 +16,7 @@ const {
   Animated,
   I18nManager,
   Image,
-  PanResponder,
   PixelRatio,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableWithoutFeedback,
@@ -27,9 +25,6 @@ const {
   Button,
 } = ReactNative;
 const Platform = require('Platform');
-
-const RNTesterPage = require('./RNTesterPage');
-const RNTesterBlock = require('./RNTesterBlock');
 
 type State = {
   toggleStatus: any,
