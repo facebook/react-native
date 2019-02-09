@@ -39,7 +39,7 @@ task createNativeDepsDirectories {
 }
 
 task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
-    src "https://github.com/react-native-community/boost-for-react-native/releases/download/v${BOOST_VERSION.replace("_", ".")}-0/boost_${BOOST_VERSION}.tar.gz"
+    src("https://github.com/react-native-community/boost-for-react-native/releases/download/v${BOOST_VERSION.replace("_", ".")}-0/boost_${BOOST_VERSION}.tar.gz")
     onlyIfNewer(true)
     overwrite(false)
     dest(new File(downloadsDir, "boost_${BOOST_VERSION}.tar.gz"))
@@ -67,7 +67,7 @@ task prepareDoubleConversion(dependsOn: dependenciesPath ? [] : [downloadDoubleC
     from(dependenciesPath ?: tarTree(downloadDoubleConversion.dest))
     from("src/main/jni/third-party/double-conversion/Android.mk")
     include("double-conversion-${DOUBLE_CONVERSION_VERSION}/src/**/*", "Android.mk")
-    filesMatching('*/src/**/*', { fname -> fname.path = "double-conversion/${fname.name}" })
+    filesMatching("*/src/**/*", { fname -> fname.path = "double-conversion/${fname.name}" })
     includeEmptyDirs = false
     into("$thirdPartyNdkDir/double-conversion")
 }
@@ -102,25 +102,25 @@ task prepareGlog(dependsOn: dependenciesPath ? [] : [downloadGlog], type: Copy) 
     from("src/main/jni/third-party/glog/")
     include("glog-${GLOG_VERSION}/src/**/*", "Android.mk", "config.h")
     includeEmptyDirs = false
-    filesMatching('**/*.h.in') {
+    filesMatching("**/*.h.in") {
         filter(ReplaceTokens, tokens: [
-                ac_cv_have_unistd_h           : '1',
-                ac_cv_have_stdint_h           : '1',
-                ac_cv_have_systypes_h         : '1',
-                ac_cv_have_inttypes_h         : '1',
-                ac_cv_have_libgflags          : '0',
-                ac_google_start_namespace     : 'namespace google {',
-                ac_cv_have_uint16_t           : '1',
-                ac_cv_have_u_int16_t          : '1',
-                ac_cv_have___uint16           : '0',
-                ac_google_end_namespace       : '}',
-                ac_cv_have___builtin_expect   : '1',
-                ac_google_namespace           : 'google',
-                ac_cv___attribute___noinline  : '__attribute__ ((noinline))',
-                ac_cv___attribute___noreturn  : '__attribute__ ((noreturn))',
-                ac_cv___attribute___printf_4_5: '__attribute__((__format__ (__printf__, 4, 5)))'
+                ac_cv_have_unistd_h           : "1",
+                ac_cv_have_stdint_h           : "1",
+                ac_cv_have_systypes_h         : "1",
+                ac_cv_have_inttypes_h         : "1",
+                ac_cv_have_libgflags          : "0",
+                ac_google_start_namespace     : "namespace google {",
+                ac_cv_have_uint16_t           : "1",
+                ac_cv_have_u_int16_t          : "1",
+                ac_cv_have___uint16           : "0",
+                ac_google_end_namespace       : "}",
+                ac_cv_have___builtin_expect   : "1",
+                ac_google_namespace           : "google",
+                ac_cv___attribute___noinline  : "__attribute__ ((noinline))",
+                ac_cv___attribute___noreturn  : "__attribute__ ((noreturn))",
+                ac_cv___attribute___printf_4_5: "__attribute__((__format__ (__printf__, 4, 5)))"
         ])
-        it.path = (it.name - '.in')
+        it.path = (it.name - ".in")
     }
     into("$thirdPartyNdkDir/glog")
 
@@ -181,21 +181,21 @@ def getNdkBuildName() {
 
 def findNdkBuildFullPath() {
     // we allow to provide full path to ndk-build tool
-    if (hasProperty('ndk.command')) {
-        return property('ndk.command')
+    if (hasProperty("ndk.command")) {
+        return property("ndk.command")
     }
     // or just a path to the containing directory
-    if (hasProperty('ndk.path')) {
-        def ndkDir = property('ndk.path')
+    if (hasProperty("ndk.path")) {
+        def ndkDir = property("ndk.path")
         return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
     }
-    if (System.getenv('ANDROID_NDK') != null) {
-        def ndkDir = System.getenv('ANDROID_NDK')
+    if (System.getenv("ANDROID_NDK") != null) {
+        def ndkDir = System.getenv("ANDROID_NDK")
         return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
     }
-    def ndkDir = android.hasProperty('plugin') ? android.plugin.ndkFolder :
-            plugins.getPlugin('com.android.library').hasProperty('sdkHandler') ?
-                    plugins.getPlugin('com.android.library').sdkHandler.getNdkFolder() :
+    def ndkDir = android.hasProperty("plugin") ? android.plugin.ndkFolder :
+            plugins.getPlugin("com.android.library").hasProperty("sdkHandler") ?
+                    plugins.getPlugin("com.android.library").sdkHandler.getNdkFolder() :
                     android.ndkDirectory.absolutePath
     if (ndkDir) {
         return new File(ndkDir, getNdkBuildName()).getAbsolutePath()
@@ -223,18 +223,18 @@ def getNdkBuildFullPath() {
 }
 
 task buildReactNdkLib(dependsOn: [prepareJSC, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog], type: Exec) {
-    inputs.dir('src/main/jni/react')
+    inputs.dir("src/main/jni/react")
     outputs.dir("$buildDir/react-ndk/all")
     commandLine(getNdkBuildFullPath(),
-            'NDK_PROJECT_PATH=null',
+            "NDK_PROJECT_PATH=null",
             "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
-            'NDK_OUT=' + temporaryDir,
+            "NDK_OUT=" + temporaryDir,
             "NDK_LIBS_OUT=$buildDir/react-ndk/all",
             "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
             "REACT_COMMON_DIR=$projectDir/../ReactCommon",
             "REACT_SRC_DIR=$projectDir/src/main/java/com/facebook/react",
-            '-C', file('src/main/jni/react/jni').absolutePath,
-            '--jobs', project.findProperty("jobs") ?: Runtime.runtime.availableProcessors()
+            "-C", file("src/main/jni/react/jni").absolutePath,
+            "--jobs", project.findProperty("jobs") ?: Runtime.runtime.availableProcessors()
     )
 }
 
@@ -245,8 +245,8 @@ task cleanReactNdkLib(type: Exec) {
             "NDK_APPLICATION_MK=$projectDir/src/main/jni/Application.mk",
             "THIRD_PARTY_NDK_DIR=$buildDir/third-party-ndk",
             "REACT_COMMON_DIR=$projectDir/../ReactCommon",
-            '-C', file('src/main/jni/react/jni').absolutePath,
-            'clean')
+            "-C", file("src/main/jni/react/jni").absolutePath,
+            "clean")
     doLast {
         file(AAR_OUTPUT_URL).delete()
         println("Deleted aar output dir at ${file(AAR_OUTPUT_URL)}")
@@ -293,9 +293,9 @@ android {
     sourceSets.main {
         jni.srcDirs = []
         jniLibs.srcDir("$buildDir/react-ndk/exported")
-        res.srcDirs = ['src/main/res/devsupport', 'src/main/res/shell', 'src/main/res/views/modal', 'src/main/res/views/uimanager']
+        res.srcDirs = ["src/main/res/devsupport", "src/main/res/shell", "src/main/res/views/modal", "src/main/res/views/uimanager"]
         java {
-            srcDirs = ['src/main/java', 'src/main/libraries/soloader/java', 'src/main/jni/first-party/fb/jni/java']
+            srcDirs = ["src/main/java", "src/main/libraries/soloader/java", "src/main/jni/first-party/fb/jni/java"]
             exclude("com/facebook/react/processing")
             exclude("com/facebook/react/module/processing")
         }
@@ -336,7 +336,7 @@ dependencies {
     testImplementation("org.easytesting:fest-assert-core:${FEST_ASSERT_CORE_VERSION}")
     testImplementation("org.robolectric:robolectric:${ROBOLECTRIC_VERSION}")
 
-    androidTestImplementation(fileTree(dir: 'src/main/third-party/java/buck-android-support/', include: ['*.jar']))
+    androidTestImplementation(fileTree(dir: "src/main/third-party/java/buck-android-support/", include: ["*.jar"]))
     androidTestImplementation("com.android.support.test:runner:${ANDROID_SUPPORT_TEST_VERSION}")
     androidTestImplementation("com.android.support.test:rules:${ANDROID_SUPPORT_TEST_VERSION}")
     androidTestImplementation("org.mockito:mockito-core:${MOCKITO_CORE_VERSION}")

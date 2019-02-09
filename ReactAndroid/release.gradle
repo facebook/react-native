@@ -15,7 +15,7 @@ ext {
 // 2) To upload artifact to maven central use: :uploadArchives (you'd need to have the permission to do that)
 
 def isReleaseBuild() {
-    return VERSION_NAME.contains('SNAPSHOT') == false
+    return VERSION_NAME.contains("SNAPSHOT") == false
 }
 
 def getRepositoryUrl() {
@@ -23,11 +23,11 @@ def getRepositoryUrl() {
 }
 
 def getRepositoryUsername() {
-    return project.findProperty('repositoryUsername') ?: ''
+    return project.findProperty("repositoryUsername") ?: ""
 }
 
 def getRepositoryPassword() {
-    return project.findProperty('repositoryPassword') ?: ''
+    return project.findProperty("repositoryPassword") ?: ""
 }
 
 def configureReactNativePom(def pom) {
@@ -74,18 +74,18 @@ afterEvaluate { project ->
     task androidJavadoc(type: Javadoc) {
         source = android.sourceSets.main.java.srcDirs
         classpath += files(android.bootClasspath)
-        classpath += files(project.getConfigurations().getByName('compile').asList())
+        classpath += files(project.getConfigurations().getByName("compile").asList())
         include("**/*.java")
         exclude("**/ReactBuildConfig.java")
     }
 
     task androidJavadocJar(type: Jar, dependsOn: androidJavadoc) {
-        classifier = 'javadoc'
+        classifier = "javadoc"
         from(androidJavadoc.destinationDir)
     }
 
     task androidSourcesJar(type: Jar) {
-        classifier = 'sources'
+        classifier = "sources"
         from(android.sourceSets.main.java.srcDirs)
         include("**/*.java")
     }
@@ -106,7 +106,7 @@ afterEvaluate { project ->
     group = GROUP
 
     signing {
-        required { isReleaseBuild() && gradle.taskGraph.hasTask('uploadArchives') }
+        required { isReleaseBuild() && gradle.taskGraph.hasTask("uploadArchives") }
         sign(configurations.archives)
     }
 
