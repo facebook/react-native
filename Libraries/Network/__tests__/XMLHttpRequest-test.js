@@ -87,12 +87,6 @@ describe('XMLHttpRequest', function() {
 
   it('should expose responseType correctly', function() {
     expect(xhr.responseType).toBe('');
-    console.log(xhr.responseType);
-    // Setting responseType to an unsupported value has no effect.
-    xhr.responseType = 'arrayblobbuffertextfile';
-    console.log(xhr.responseType);
-
-    expect(xhr.responseType).toBe('');
 
     xhr.responseType = 'arraybuffer';
     expect(xhr.responseType).toBe('arraybuffer');
