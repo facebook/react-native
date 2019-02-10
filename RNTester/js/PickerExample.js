@@ -110,7 +110,7 @@ class ColorPickerExample extends React.Component<{}, ColorState> {
     return (
       <>
         <Picker
-          style={[styles.picker, {color: 'white', backgroundColor: '#333'}]}
+          style={[styles.picker, {backgroundColor: '#333'}]}
           selectedValue={this.state.color}
           onValueChange={v => this.setState({color: v})}
           mode="dropdown">

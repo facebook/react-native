@@ -10,7 +10,6 @@
 
 'use strict';
 
-const PickerAndroid = require('PickerAndroid');
 const Platform = require('Platform');
 const StyleSheet = require('StyleSheet');
 const React = require('React');
@@ -18,6 +17,9 @@ const ReactNative = require('ReactNative');
 const View = require('View');
 const UnimplementedView = require('UnimplementedView');
 const requireNativeComponent = require('requireNativeComponent');
+
+const DropdownPicker = requireNativeComponent('AndroidDropdownPicker');
+const DialogPicker = requireNativeComponent('AndroidDialogPicker');
 
 import type {ViewStyleProp, TextStyleProp} from 'StyleSheet';
 import type {ColorValue} from 'StyleSheetTypes';
@@ -44,7 +46,7 @@ type PickerItemProps = $ReadOnly<{|
    * Color of this item's text.
    * @platform android
    */
-  color?: ColorValue,
+  color?: ?(number | string),
 
   /**
    * Color of this item's text.
@@ -127,6 +129,12 @@ type PickerProps = $ReadOnly<{|
   prompt?: ?string,
 
   /**
+   * accessibility Label string for this picker, used on Android when accessibility setting is on.
+   * @platform android
+   */
+  accessibilityLabel?: ?string,
+
+  /**
    * Used to locate this view in end-to-end tests.
    */
   testID?: ?string,
@@ -149,6 +157,12 @@ type RCTPickerIOSType = Class<
       testID?: ?string,
     |}>,
   >,
+>;
+
+type PickerAndroidChangeEvent = SyntheticEvent<
+  $ReadOnly<{|
+    position: number,
+  |}>,
 >;
 
 const RCTPickerIOS: RCTPickerIOSType = (requireNativeComponent(
@@ -190,6 +204,40 @@ class Picker extends React.Component<PickerProps, State> {
     mode: MODE_DIALOG,
   };
 
+  componentDidMount() {
+    if (Platform.OS === 'ios') {
+      return;
+    }
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
+    this._lastNativePosition = this.state.selectedIndex;
+  }
+
+  componentDidUpdate() {
+    if (Platform.OS === 'ios') {
+      return;
+    }
+    // The picker is a controlled component. This means we expect the
+    // on*Change handlers to be in charge of updating our
+    // `selectedValue` prop. That way they can also
+    // disallow/undo/mutate the selection of certain values. In other
+    // words, the embedder of this component should be the source of
+    // truth, not the native component.
+    if (
+      this._picker &&
+      /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+       * when making Flow check .android.js files. */
+      this.state.selectedIndex !== this._lastNativePosition
+    ) {
+      this._picker.setNativeProps({
+        selected: this.state.selectedIndex,
+      });
+      /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+       * when making Flow check .android.js files. */
+      this._lastNativePosition = this.state.selectedIndex;
+    }
+  }
+
   static getDerivedStateFromProps(props: PickerProps): State {
     let selectedIndex = 0;
     const items = [];
@@ -201,12 +249,35 @@ class Picker extends React.Component<PickerProps, State> {
         value: child.props.value,
         label: child.props.label,
         textColor: processColor(child.props.color),
+        color: processColor(child.props.color),
       });
     });
     return {selectedIndex, items};
   }
 
-  _onChange = event => {
+  _onChangeAndroid = (event: PickerAndroidChangeEvent) => {
+    const position = event.nativeEvent.position;
+    if (position >= 0) {
+      const children = React.Children.toArray(this.props.children);
+      const value = children[position].props.value;
+      /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+         * found when making Flow check .android.js files. */
+      if (this.props.onValueChange) {
+        this.props.onValueChange(value, position);
+      }
+    } else {
+      if (this.props.onValueChange) {
+        this.props.onValueChange(0, position);
+      }
+    }
+
+    /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+     * when making Flow check .android.js files. */
+    this._lastNativePosition = event.nativeEvent.position;
+    this.forceUpdate();
+  };
+
+  _onChangeIOS = event => {
     if (this.props.onChange) {
       this.props.onChange(event);
     }
@@ -244,20 +315,40 @@ class Picker extends React.Component<PickerProps, State> {
               this._picker = picker;
             }}
             testID={this.props.testID}
-            style={[styles.pickerIOS, this.props.itemStyle]}
+            style={[styles.picker, this.props.itemStyle]}
             items={this.state.items}
             selectedIndex={this.state.selectedIndex}
-            onChange={this._onChange}
+            onChange={this._onChangeIOS}
             onStartShouldSetResponder={() => true}
             onResponderTerminationRequest={() => false}
           />
         </View>
       );
     } else if (Platform.OS === 'android') {
+      const PickerComponentForAndroid =
+        this.props.mode === MODE_DROPDOWN ? DropdownPicker : DialogPicker;
+
+      const nativeProps = {
+        enabled: this.props.enabled,
+        items: this.state.items,
+        mode: this.props.mode,
+        onSelect: this._onChangeAndroid,
+        prompt: this.props.prompt,
+        selected: this.state.selectedIndex,
+        testID: this.props.testID,
+        style: [styles.picker, this.props.style],
+        /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+       * when making Flow check .android.js files. */
+        accessibilityLabel: this.props.accessibilityLabel,
+      };
+
       return (
-        /* $FlowFixMe(>=0.81.0 site=react_native_android_fb) This suppression
-         * was added when renaming suppression sites. */
-        <PickerAndroid {...this.props}>{this.props.children}</PickerAndroid>
+        <PickerComponentForAndroid
+          ref={picker => {
+            this._picker = picker;
+          }}
+          {...nativeProps}
+        />
       );
     } else {
       return <UnimplementedView />;
@@ -266,11 +357,20 @@ class Picker extends React.Component<PickerProps, State> {
 }
 
 const styles = StyleSheet.create({
-  pickerIOS: {
+  picker: {
     // The picker will conform to whatever width is given, but we do
     // have to set the component's height explicitly on the
     // surrounding view to ensure it gets rendered.
-    height: 216,
+    // TODO would be better to export a native constant for this,
+    // like in iOS the RCTDatePickerManager.m
+    ...Platform.select({
+      ios: {
+        height: 216,
+      },
+      android: {
+        height: 50,
+      },
+    }),
   },
 });
 
