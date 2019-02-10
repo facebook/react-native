@@ -25,6 +25,8 @@ import type {ColorValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
 import type {TextStyleProp} from 'StyleSheet';
 
+const warnOnce = require('warnOnce');
+
 type PickerIOSChangeEvent = SyntheticEvent<
   $ReadOnly<{|
     newValue: number | string,
@@ -85,6 +87,14 @@ class PickerIOS extends React.Component<Props, State> {
     selectedIndex: 0,
     items: [],
   };
+
+  componentDidMount() {
+    warnOnce(
+      'PickerIOS-deprecation',
+      'PickerIOS is deprecated and will be removed in a future release. ' +
+        'Use `Picker` instead of `PickerIOS`',
+    );
+  }
 
   static Item = PickerIOSItem;
 
