@@ -8,8 +8,9 @@
 package com.facebook.react.modules.dialog;
 
 import android.app.AlertDialog;
+import android.app.RobolectricActivityManager;
 import android.content.DialogInterface;
-import android.app.Activity;
+import android.support.v7.app.AppCompatActivity;
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -26,14 +27,15 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.util.ActivityController;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(RobolectricTestRunner.class)
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
 public class DialogModuleTest {
 
-  private ActivityController<Activity> mActivityController;
-  private Activity mActivity;
+  private ActivityController<AppCompatActivity> mActivityController;
+  private AppCompatActivity mActivity;
   private DialogModule mDialogModule;
 
   final static class SimpleCallback implements Callback {
@@ -57,7 +59,7 @@ public class DialogModuleTest {
 
   @Before
   public void setUp() throws Exception {
-    mActivityController = Robolectric.buildActivity(Activity.class);
+    mActivityController = Robolectric.buildActivity(AppCompatActivity.class);
     mActivity = mActivityController
         .create()
         .start()
@@ -94,7 +96,7 @@ public class DialogModuleTest {
 
     final AlertFragment fragment = getFragment();
     assertNotNull("Fragment was not displayed", fragment);
-    assertEquals(false, fragment.isCancelable());
+    assertFalse(fragment.isCancelable());
 
     final AlertDialog dialog = (AlertDialog) fragment.getDialog();
     assertEquals("OK", dialog.getButton(DialogInterface.BUTTON_POSITIVE).getText().toString());
@@ -164,7 +166,7 @@ public class DialogModuleTest {
   }
 
   private AlertFragment getFragment() {
-    return (AlertFragment) mActivity.getFragmentManager()
+    return (AlertFragment) mActivity.getSupportFragmentManager()
         .findFragmentByTag(DialogModule.FRAGMENT_TAG);
   }
 }
