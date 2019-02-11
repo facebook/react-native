@@ -211,6 +211,11 @@ public class ReactTextView extends TextView implements ReactCompoundView {
     }
   }
 
+  @Override
+  public boolean hasOverlappingRendering() {
+    return false;
+  }
+
   /* package */ void setGravityHorizontal(int gravityHorizontal) {
     if (gravityHorizontal == 0) {
       gravityHorizontal = mDefaultGravityHorizontal;
