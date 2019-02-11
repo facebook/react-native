@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,20 +10,19 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {ScrollView, StyleSheet, Text, TouchableOpacity} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {ScrollView, StyleSheet, Text, TouchableOpacity} = ReactNative;
 
-var NUM_ITEMS = 20;
+const NUM_ITEMS = 20;
 
 class ScrollViewSimpleExample extends React.Component<{}> {
-  static title = '<ScrollView>';
-  static description =
-    'Component that enables scrolling through child components.';
-
+  /* $FlowFixMe(>=0.85.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.85 was deployed. To see the error, delete this comment
+   * and run Flow. */
   makeItems = (nItems: number, styles): Array<any> => {
-    var items = [];
-    for (var i = 0; i < nItems; i++) {
+    const items = [];
+    for (let i = 0; i < nItems; i++) {
       items[i] = (
         <TouchableOpacity key={i} style={styles}>
           <Text>{'Item ' + i}</Text>
@@ -35,7 +34,7 @@ class ScrollViewSimpleExample extends React.Component<{}> {
 
   render() {
     // One of the items is a horizontal scroll view
-    var items = this.makeItems(NUM_ITEMS, styles.itemWrapper);
+    const items = this.makeItems(NUM_ITEMS, styles.itemWrapper);
     items[4] = (
       <ScrollView key={'scrollView'} horizontal={true}>
         {this.makeItems(NUM_ITEMS, [
@@ -58,7 +57,7 @@ class ScrollViewSimpleExample extends React.Component<{}> {
       </ScrollView>,
     );
 
-    var verticalScrollView = (
+    const verticalScrollView = (
       <ScrollView style={styles.verticalScrollView}>{items}</ScrollView>
     );
 
@@ -66,7 +65,7 @@ class ScrollViewSimpleExample extends React.Component<{}> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   verticalScrollView: {
     margin: 10,
   },
@@ -87,4 +86,15 @@ var styles = StyleSheet.create({
   },
 });
 
-module.exports = ScrollViewSimpleExample;
+exports.title = '<ScrollView>';
+exports.description =
+  'Component that enables scrolling through child components.';
+
+exports.examples = [
+  {
+    title: 'Simple scroll view',
+    render: function(): React.Element<typeof ScrollViewSimpleExample> {
+      return <ScrollViewSimpleExample />;
+    },
+  },
+];

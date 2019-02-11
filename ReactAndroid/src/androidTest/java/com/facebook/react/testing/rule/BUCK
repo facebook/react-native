@@ -1,0 +1,37 @@
+# BUILD FILE SYNTAX: SKYLARK
+load(
+    "//tools/build_defs/oss:rn_defs.bzl",
+    "IS_OSS_BUILD",
+    "react_native_dep",
+    "react_native_integration_tests_target",
+    "react_native_target",
+    "rn_android_library",
+)
+
+rn_android_library(
+    name = "rule",
+    srcs = glob(["*.java"]),
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = ([
+        react_native_dep("third-party/java/espresso:espresso"),
+        react_native_dep("third-party/java/jsr-305:jsr-305"),
+        react_native_dep("third-party/java/junit:junit"),
+        react_native_dep("third-party/java/testing-support-lib:testing-support-lib"),
+        react_native_dep("third-party/android/support/v4:lib-support-v4"),
+        react_native_dep("third-party/android/support/v7/appcompat-orig:appcompat"),
+        react_native_dep("third-party/java/jsr-305:jsr-305"),
+        react_native_integration_tests_target("java/com/facebook/react/testing:testing"),
+        react_native_integration_tests_target("java/com/facebook/react/testing/idledetection:idledetection"),
+        react_native_target("java/com/facebook/react:react"),
+        react_native_target("java/com/facebook/react/bridge:bridge"),
+        react_native_target("java/com/facebook/react/common:common"),
+        react_native_target("java/com/facebook/react/modules/core:core"),
+        react_native_target("java/com/facebook/react/shell:shell"),
+        react_native_target("java/com/facebook/react/uimanager:uimanager"),
+    ]) + ([
+        react_native_dep("java/com/facebook/testing/instrumentation:instrumentation"),
+        react_native_dep("java/com/facebook/testing/instrumentation/base:base"),
+    ]) if not IS_OSS_BUILD else [],
+)

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,15 +9,15 @@
 
 'use strict';
 
-const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const ActivityIndicator = require('ActivityIndicator');
-const React = require('React');
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
+const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
 const PropTypes = require('prop-types');
+const React = require('React');
 const ReactNative = require('ReactNative');
 const StyleSheet = require('StyleSheet');
 const UIManager = require('UIManager');
 const View = require('View');
-const ViewPropTypes = require('ViewPropTypes');
 const WebViewShared = require('WebViewShared');
 
 const deprecatedPropType = require('deprecatedPropType');
@@ -44,7 +44,7 @@ const defaultRenderLoading = () => (
  */
 class WebView extends React.Component {
   static propTypes = {
-    ...ViewPropTypes,
+    ...DeprecatedViewPropTypes,
     renderError: PropTypes.func,
     renderLoading: PropTypes.func,
     onLoad: PropTypes.func,
@@ -52,12 +52,12 @@ class WebView extends React.Component {
     onLoadStart: PropTypes.func,
     onError: PropTypes.func,
     automaticallyAdjustContentInsets: PropTypes.bool,
-    contentInset: EdgeInsetsPropType,
+    contentInset: DeprecatedEdgeInsetsPropType,
     onNavigationStateChange: PropTypes.func,
     onMessage: PropTypes.func,
     onContentSizeChange: PropTypes.func,
     startInLoadingState: PropTypes.bool, // force WebView to show loadingView on first load
-    style: ViewPropTypes.style,
+    style: DeprecatedViewPropTypes.style,
 
     html: deprecatedPropType(
       PropTypes.string,
@@ -110,6 +110,22 @@ class WebView extends React.Component {
     ]),
 
     /**
+     * If true, use WKWebView instead of UIWebView.
+     * @platform ios
+     */
+    useWebKit: PropTypes.bool,
+
+    /**
+     * Used on Android only to disable Hardware Acceleration if needed
+     * Hardware acceleration can not be enabled at view level but it can be
+     * disabled see:
+     * https://developer.android.com/guide/topics/graphics/hardware-accel
+     *
+     * @platform android
+     */
+    hardwareAccelerationEnabledExperimental: PropTypes.bool,
+
+    /**
      * Used on Android only, JS is enabled by default for WebView on iOS
      * @platform android
      */
@@ -143,6 +159,12 @@ class WebView extends React.Component {
      * Sets whether the webpage scales to fit the view and the user can change the scale.
      */
     scalesPageToFit: PropTypes.bool,
+
+    /**
+     * Sets whether the webview allow access to file system.
+     * @platform android
+     */
+    allowFileAccess: PropTypes.bool,
 
     /**
      * Sets the user-agent for this WebView. The user-agent can also be set in native using
@@ -236,6 +258,7 @@ class WebView extends React.Component {
     javaScriptEnabled: true,
     thirdPartyCookiesEnabled: true,
     scalesPageToFit: true,
+    hardwareAccelerationEnabledExperimental: true,
     saveFormDataDisabled: false,
     originWhitelist: WebViewShared.defaultOriginWhitelist,
   };
@@ -311,9 +334,13 @@ class WebView extends React.Component {
         style={webViewStyles}
         source={resolveAssetSource(source)}
         scalesPageToFit={this.props.scalesPageToFit}
+        allowFileAccess={this.props.allowFileAccess}
         injectedJavaScript={this.props.injectedJavaScript}
         userAgent={this.props.userAgent}
         javaScriptEnabled={this.props.javaScriptEnabled}
+        hardwareAccelerationEnabledExperimental={
+          this.props.hardwareAccelerationEnabledExperimental
+        }
         thirdPartyCookiesEnabled={this.props.thirdPartyCookiesEnabled}
         domStorageEnabled={this.props.domStorageEnabled}
         messagingEnabled={typeof this.props.onMessage === 'function'}
@@ -353,7 +380,7 @@ class WebView extends React.Component {
   goForward = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
-      UIManager.RCTWebView.Commands.goForward,
+      UIManager.getViewManagerConfig('RCTWebView').Commands.goForward,
       null,
     );
   };
@@ -361,7 +388,7 @@ class WebView extends React.Component {
   goBack = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
-      UIManager.RCTWebView.Commands.goBack,
+      UIManager.getViewManagerConfig('RCTWebView').Commands.goBack,
       null,
     );
   };
@@ -372,7 +399,7 @@ class WebView extends React.Component {
     });
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
-      UIManager.RCTWebView.Commands.reload,
+      UIManager.getViewManagerConfig('RCTWebView').Commands.reload,
       null,
     );
   };
@@ -380,7 +407,7 @@ class WebView extends React.Component {
   stopLoading = () => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
-      UIManager.RCTWebView.Commands.stopLoading,
+      UIManager.getViewManagerConfig('RCTWebView').Commands.stopLoading,
       null,
     );
   };
@@ -388,7 +415,7 @@ class WebView extends React.Component {
   postMessage = data => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
-      UIManager.RCTWebView.Commands.postMessage,
+      UIManager.getViewManagerConfig('RCTWebView').Commands.postMessage,
       [String(data)],
     );
   };
@@ -402,7 +429,7 @@ class WebView extends React.Component {
   injectJavaScript = data => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
-      UIManager.RCTWebView.Commands.injectJavaScript,
+      UIManager.getViewManagerConfig('RCTWebView').Commands.injectJavaScript,
       [data],
     );
   };

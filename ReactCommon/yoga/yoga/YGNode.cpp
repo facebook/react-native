@@ -1,99 +1,103 @@
-/*
- *  Copyright (c) 2014-present, Facebook, Inc.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
 #include "YGNode.h"
 #include <iostream>
+#include "CompactValue.h"
 #include "Utils.h"
 
 using namespace facebook;
+using facebook::yoga::detail::CompactValue;
 
 YGFloatOptional YGNode::getLeadingPosition(
-    const YGFlexDirection& axis,
-    const float& axisSize) const {
+    const YGFlexDirection axis,
+    const float axisSize) const {
   if (YGFlexDirectionIsRow(axis)) {
-    const YGValue* leadingPosition =
-        YGComputedEdgeValue(style_.position, YGEdgeStart, &YGValueUndefined);
-    if (leadingPosition->unit != YGUnitUndefined) {
-      return YGResolveValue(*leadingPosition, axisSize);
+    auto leadingPosition = YGComputedEdgeValue(
+        style_.position, YGEdgeStart, CompactValue::ofUndefined());
+    if (!leadingPosition.isUndefined()) {
+      return YGResolveValue(leadingPosition, axisSize);
     }
   }
 
-  const YGValue* leadingPosition =
-      YGComputedEdgeValue(style_.position, leading[axis], &YGValueUndefined);
+  auto leadingPosition = YGComputedEdgeValue(
+      style_.position, leading[axis], CompactValue::ofUndefined());
 
-  return leadingPosition->unit == YGUnitUndefined
-      ? YGFloatOptional(0)
-      : YGResolveValue(*leadingPosition, axisSize);
+  return leadingPosition.isUndefined()
+      ? YGFloatOptional{0}
+      : YGResolveValue(leadingPosition, axisSize);
 }
 
 YGFloatOptional YGNode::getTrailingPosition(
-    const YGFlexDirection& axis,
-    const float& axisSize) const {
+    const YGFlexDirection axis,
+    const float axisSize) const {
   if (YGFlexDirectionIsRow(axis)) {
-    const YGValue* trailingPosition =
-        YGComputedEdgeValue(style_.position, YGEdgeEnd, &YGValueUndefined);
-    if (trailingPosition->unit != YGUnitUndefined) {
-      return YGResolveValue(*trailingPosition, axisSize);
+    auto trailingPosition = YGComputedEdgeValue(
+        style_.position, YGEdgeEnd, CompactValue::ofUndefined());
+    if (!trailingPosition.isUndefined()) {
+      return YGResolveValue(trailingPosition, axisSize);
     }
   }
 
-  const YGValue* trailingPosition =
-      YGComputedEdgeValue(style_.position, trailing[axis], &YGValueUndefined);
+  auto trailingPosition = YGComputedEdgeValue(
+      style_.position, trailing[axis], CompactValue::ofUndefined());
 
-  return trailingPosition->unit == YGUnitUndefined
-      ? YGFloatOptional(0)
-      : YGResolveValue(*trailingPosition, axisSize);
+  return trailingPosition.isUndefined()
+      ? YGFloatOptional{0}
+      : YGResolveValue(trailingPosition, axisSize);
 }
 
-bool YGNode::isLeadingPositionDefined(const YGFlexDirection& axis) const {
+bool YGNode::isLeadingPositionDefined(const YGFlexDirection axis) const {
   return (YGFlexDirectionIsRow(axis) &&
-          YGComputedEdgeValue(style_.position, YGEdgeStart, &YGValueUndefined)
-                  ->unit != YGUnitUndefined) ||
-      YGComputedEdgeValue(style_.position, leading[axis], &YGValueUndefined)
-          ->unit != YGUnitUndefined;
+          !YGComputedEdgeValue(
+               style_.position, YGEdgeStart, CompactValue::ofUndefined())
+               .isUndefined()) ||
+      !YGComputedEdgeValue(
+           style_.position, leading[axis], CompactValue::ofUndefined())
+           .isUndefined();
 }
 
-bool YGNode::isTrailingPosDefined(const YGFlexDirection& axis) const {
+bool YGNode::isTrailingPosDefined(const YGFlexDirection axis) const {
   return (YGFlexDirectionIsRow(axis) &&
-          YGComputedEdgeValue(style_.position, YGEdgeEnd, &YGValueUndefined)
-                  ->unit != YGUnitUndefined) ||
-      YGComputedEdgeValue(style_.position, trailing[axis], &YGValueUndefined)
-          ->unit != YGUnitUndefined;
+          !YGComputedEdgeValue(
+               style_.position, YGEdgeEnd, CompactValue::ofUndefined())
+               .isUndefined()) ||
+      !YGComputedEdgeValue(
+           style_.position, trailing[axis], CompactValue::ofUndefined())
+           .isUndefined();
 }
 
 YGFloatOptional YGNode::getLeadingMargin(
-    const YGFlexDirection& axis,
-    const float& widthSize) const {
-  if (YGFlexDirectionIsRow(axis) &&
-      style_.margin[YGEdgeStart].unit != YGUnitUndefined) {
+    const YGFlexDirection axis,
+    const float widthSize) const {
+  if (YGFlexDirectionIsRow(axis) && !style_.margin[YGEdgeStart].isUndefined()) {
     return YGResolveValueMargin(style_.margin[YGEdgeStart], widthSize);
   }
 
   return YGResolveValueMargin(
-      *YGComputedEdgeValue(style_.margin, leading[axis], &YGValueZero),
+      YGComputedEdgeValue(style_.margin, leading[axis], CompactValue::ofZero()),
       widthSize);
 }
 
 YGFloatOptional YGNode::getTrailingMargin(
-    const YGFlexDirection& axis,
-    const float& widthSize) const {
-  if (YGFlexDirectionIsRow(axis) &&
-      style_.margin[YGEdgeEnd].unit != YGUnitUndefined) {
+    const YGFlexDirection axis,
+    const float widthSize) const {
+  if (YGFlexDirectionIsRow(axis) && !style_.margin[YGEdgeEnd].isUndefined()) {
     return YGResolveValueMargin(style_.margin[YGEdgeEnd], widthSize);
   }
 
   return YGResolveValueMargin(
-      *YGComputedEdgeValue(style_.margin, trailing[axis], &YGValueZero),
+      YGComputedEdgeValue(
+          style_.margin, trailing[axis], CompactValue::ofZero()),
       widthSize);
 }
 
 YGFloatOptional YGNode::getMarginForAxis(
-    const YGFlexDirection& axis,
-    const float& widthSize) const {
+    const YGFlexDirection axis,
+    const float widthSize) const {
   return getLeadingMargin(axis, widthSize) + getTrailingMargin(axis, widthSize);
 }
 
@@ -109,7 +113,8 @@ void YGNode::setMeasureFunc(YGMeasureFunc measureFunc) {
     YGAssertWithNode(
         this,
         children_.size() == 0,
-        "Cannot set measure function: Nodes with measure functions cannot have children.");
+        "Cannot set measure function: Nodes with measure functions cannot have "
+        "children.");
     measure_ = measureFunc;
     // TODO: t18095186 Move nodeType to opt-in function and mark appropriate
     // places in Litho
@@ -176,7 +181,7 @@ void YGNode::setLayoutLastOwnerDirection(YGDirection direction) {
 }
 
 void YGNode::setLayoutComputedFlexBasis(
-    const YGFloatOptional& computedFlexBasis) {
+    const YGFloatOptional computedFlexBasis) {
   layout_.computedFlexBasis = computedFlexBasis;
 }
 
@@ -201,18 +206,18 @@ void YGNode::setLayoutDimension(float dimension, int index) {
   layout_.dimensions[index] = dimension;
 }
 
-// If both left and right are defined, then use left. Otherwise return
-// +left or -right depending on which is defined.
+// If both left and right are defined, then use left. Otherwise return +left or
+// -right depending on which is defined.
 YGFloatOptional YGNode::relativePosition(
-    const YGFlexDirection& axis,
-    const float& axisSize) const {
+    const YGFlexDirection axis,
+    const float axisSize) const {
   if (isLeadingPositionDefined(axis)) {
     return getLeadingPosition(axis, axisSize);
   }
 
   YGFloatOptional trailingPosition = getTrailingPosition(axis, axisSize);
   if (!trailingPosition.isUndefined()) {
-    trailingPosition.setValue(-1 * trailingPosition.getValue());
+    trailingPosition = YGFloatOptional{-1 * trailingPosition.unwrap()};
   }
   return trailingPosition;
 }
@@ -237,20 +242,18 @@ void YGNode::setPosition(
       relativePosition(crossAxis, crossSize);
 
   setLayoutPosition(
-      YGUnwrapFloatOptional(
-          getLeadingMargin(mainAxis, ownerWidth) + relativePositionMain),
+      (getLeadingMargin(mainAxis, ownerWidth) + relativePositionMain).unwrap(),
       leading[mainAxis]);
   setLayoutPosition(
-      YGUnwrapFloatOptional(
-          getTrailingMargin(mainAxis, ownerWidth) + relativePositionMain),
+      (getTrailingMargin(mainAxis, ownerWidth) + relativePositionMain).unwrap(),
       trailing[mainAxis]);
   setLayoutPosition(
-      YGUnwrapFloatOptional(
-          getLeadingMargin(crossAxis, ownerWidth) + relativePositionCross),
+      (getLeadingMargin(crossAxis, ownerWidth) + relativePositionCross)
+          .unwrap(),
       leading[crossAxis]);
   setLayoutPosition(
-      YGUnwrapFloatOptional(
-          getTrailingMargin(crossAxis, ownerWidth) + relativePositionCross),
+      (getTrailingMargin(crossAxis, ownerWidth) + relativePositionCross)
+          .unwrap(),
       trailing[crossAxis]);
 }
 
@@ -283,8 +286,7 @@ YGNode& YGNode::operator=(const YGNode& node) {
 }
 
 YGValue YGNode::marginLeadingValue(const YGFlexDirection axis) const {
-  if (YGFlexDirectionIsRow(axis) &&
-      style_.margin[YGEdgeStart].unit != YGUnitUndefined) {
+  if (YGFlexDirectionIsRow(axis) && !style_.margin[YGEdgeStart].isUndefined()) {
     return style_.margin[YGEdgeStart];
   } else {
     return style_.margin[leading[axis]];
@@ -292,8 +294,7 @@ YGValue YGNode::marginLeadingValue(const YGFlexDirection axis) const {
 }
 
 YGValue YGNode::marginTrailingValue(const YGFlexDirection axis) const {
-  if (YGFlexDirectionIsRow(axis) &&
-      style_.margin[YGEdgeEnd].unit != YGUnitUndefined) {
+  if (YGFlexDirectionIsRow(axis) && !style_.margin[YGEdgeEnd].isUndefined()) {
     return style_.margin[YGEdgeEnd];
   } else {
     return style_.margin[trailing[axis]];
@@ -305,15 +306,16 @@ YGValue YGNode::resolveFlexBasisPtr() const {
   if (flexBasis.unit != YGUnitAuto && flexBasis.unit != YGUnitUndefined) {
     return flexBasis;
   }
-  if (!style_.flex.isUndefined() && style_.flex.getValue() > 0.0f) {
+  if (!style_.flex.isUndefined() && style_.flex.unwrap() > 0.0f) {
     return config_->useWebDefaults ? YGValueAuto : YGValueZero;
   }
   return YGValueAuto;
 }
 
 void YGNode::resolveDimension() {
-  for (uint32_t dim = YGDimensionWidth; dim < YGDimensionCount; dim++) {
-    if (getStyle().maxDimensions[dim].unit != YGUnitUndefined &&
+  using namespace yoga;
+  for (int dim = YGDimensionWidth; dim < enums::count<YGDimension>(); dim++) {
+    if (!getStyle().maxDimensions[dim].isUndefined() &&
         YGValueEqual(
             getStyle().maxDimensions[dim], style_.minDimensions[dim])) {
       resolvedDimensions_[dim] = style_.maxDimensions[dim];
@@ -396,10 +398,10 @@ float YGNode::resolveFlexGrow() {
     return 0.0;
   }
   if (!style_.flexGrow.isUndefined()) {
-    return style_.flexGrow.getValue();
+    return style_.flexGrow.unwrap();
   }
-  if (!style_.flex.isUndefined() && style_.flex.getValue() > 0.0f) {
-    return style_.flex.getValue();
+  if (!style_.flex.isUndefined() && style_.flex.unwrap() > 0.0f) {
+    return style_.flex.unwrap();
   }
   return kDefaultFlexGrow;
 }
@@ -409,11 +411,11 @@ float YGNode::resolveFlexShrink() {
     return 0.0;
   }
   if (!style_.flexShrink.isUndefined()) {
-    return style_.flexShrink.getValue();
+    return style_.flexShrink.unwrap();
   }
   if (!config_->useWebDefaults && !style_.flex.isUndefined() &&
-      style_.flex.getValue() < 0.0f) {
-    return -style_.flex.getValue();
+      style_.flex.unwrap() < 0.0f) {
+    return -style_.flex.unwrap();
   }
   return config_->useWebDefaults ? kWebDefaultFlexShrink : kDefaultFlexShrink;
 }
@@ -424,77 +426,80 @@ bool YGNode::isNodeFlexible() {
       (resolveFlexGrow() != 0 || resolveFlexShrink() != 0));
 }
 
-float YGNode::getLeadingBorder(const YGFlexDirection& axis) const {
-  if (YGFlexDirectionIsRow(axis) &&
-      style_.border[YGEdgeStart].unit != YGUnitUndefined &&
-      !yoga::isUndefined(style_.border[YGEdgeStart].value) &&
-      style_.border[YGEdgeStart].value >= 0.0f) {
-    return style_.border[YGEdgeStart].value;
+float YGNode::getLeadingBorder(const YGFlexDirection axis) const {
+  YGValue leadingBorder;
+  if (YGFlexDirectionIsRow(axis) && !style_.border[YGEdgeStart].isUndefined()) {
+    leadingBorder = style_.border[YGEdgeStart];
+    if (leadingBorder.value >= 0) {
+      return leadingBorder.value;
+    }
   }
 
-  float computedEdgeValue =
-      YGComputedEdgeValue(style_.border, leading[axis], &YGValueZero)->value;
-  return YGFloatMax(computedEdgeValue, 0.0f);
+  leadingBorder =
+      YGComputedEdgeValue(style_.border, leading[axis], CompactValue::ofZero());
+  return YGFloatMax(leadingBorder.value, 0.0f);
 }
 
-float YGNode::getTrailingBorder(const YGFlexDirection& flexDirection) const {
+float YGNode::getTrailingBorder(const YGFlexDirection flexDirection) const {
+  YGValue trailingBorder;
   if (YGFlexDirectionIsRow(flexDirection) &&
-      style_.border[YGEdgeEnd].unit != YGUnitUndefined &&
-      !yoga::isUndefined(style_.border[YGEdgeEnd].value) &&
-      style_.border[YGEdgeEnd].value >= 0.0f) {
-    return style_.border[YGEdgeEnd].value;
+      !style_.border[YGEdgeEnd].isUndefined()) {
+    trailingBorder = style_.border[YGEdgeEnd];
+    if (trailingBorder.value >= 0.0f) {
+      return trailingBorder.value;
+    }
   }
 
-  float computedEdgeValue =
-      YGComputedEdgeValue(style_.border, trailing[flexDirection], &YGValueZero)
-          ->value;
-  return YGFloatMax(computedEdgeValue, 0.0f);
+  trailingBorder = YGComputedEdgeValue(
+      style_.border, trailing[flexDirection], CompactValue::ofZero());
+  return YGFloatMax(trailingBorder.value, 0.0f);
 }
 
 YGFloatOptional YGNode::getLeadingPadding(
-    const YGFlexDirection& axis,
-    const float& widthSize) const {
-  const YGFloatOptional& paddingEdgeStart =
+    const YGFlexDirection axis,
+    const float widthSize) const {
+  const YGFloatOptional paddingEdgeStart =
       YGResolveValue(style_.padding[YGEdgeStart], widthSize);
   if (YGFlexDirectionIsRow(axis) &&
-      style_.padding[YGEdgeStart].unit != YGUnitUndefined &&
-      !paddingEdgeStart.isUndefined() && paddingEdgeStart.getValue() > 0.0f) {
+      !style_.padding[YGEdgeStart].isUndefined() &&
+      !paddingEdgeStart.isUndefined() && paddingEdgeStart.unwrap() >= 0.0f) {
     return paddingEdgeStart;
   }
 
   YGFloatOptional resolvedValue = YGResolveValue(
-      *YGComputedEdgeValue(style_.padding, leading[axis], &YGValueZero),
+      YGComputedEdgeValue(
+          style_.padding, leading[axis], CompactValue::ofZero()),
       widthSize);
   return YGFloatOptionalMax(resolvedValue, YGFloatOptional(0.0f));
 }
 
 YGFloatOptional YGNode::getTrailingPadding(
-    const YGFlexDirection& axis,
-    const float& widthSize) const {
-  if (YGFlexDirectionIsRow(axis) &&
-      style_.padding[YGEdgeEnd].unit != YGUnitUndefined &&
-      !YGResolveValue(style_.padding[YGEdgeEnd], widthSize).isUndefined() &&
-      YGResolveValue(style_.padding[YGEdgeEnd], widthSize).getValue() >= 0.0f) {
-    return YGResolveValue(style_.padding[YGEdgeEnd], widthSize);
+    const YGFlexDirection axis,
+    const float widthSize) const {
+  const YGFloatOptional paddingEdgeEnd =
+      YGResolveValue(style_.padding[YGEdgeEnd], widthSize);
+  if (YGFlexDirectionIsRow(axis) && paddingEdgeEnd >= YGFloatOptional{0.0f}) {
+    return paddingEdgeEnd;
   }
 
   YGFloatOptional resolvedValue = YGResolveValue(
-      *YGComputedEdgeValue(style_.padding, trailing[axis], &YGValueZero),
+      YGComputedEdgeValue(
+          style_.padding, trailing[axis], CompactValue::ofZero()),
       widthSize);
 
   return YGFloatOptionalMax(resolvedValue, YGFloatOptional(0.0f));
 }
 
 YGFloatOptional YGNode::getLeadingPaddingAndBorder(
-    const YGFlexDirection& axis,
-    const float& widthSize) const {
+    const YGFlexDirection axis,
+    const float widthSize) const {
   return getLeadingPadding(axis, widthSize) +
       YGFloatOptional(getLeadingBorder(axis));
 }
 
 YGFloatOptional YGNode::getTrailingPaddingAndBorder(
-    const YGFlexDirection& axis,
-    const float& widthSize) const {
+    const YGFlexDirection axis,
+    const float widthSize) const {
   return getTrailingPadding(axis, widthSize) +
       YGFloatOptional(getTrailingBorder(axis));
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -556,6 +556,22 @@ public class UIViewOperationQueue {
     }
   }
 
+  private final class LayoutUpdateFinishedOperation implements UIOperation {
+
+    private final ReactShadowNode mNode;
+    private final UIImplementation.LayoutUpdateListener mListener;
+
+    private LayoutUpdateFinishedOperation(ReactShadowNode node, UIImplementation.LayoutUpdateListener listener) {
+      mNode = node;
+      mListener = listener;
+    }
+
+    @Override
+    public void execute() {
+      mListener.onLayoutUpdated(mNode);
+    }
+  }
+
   private class UIBlockOperation implements UIOperation {
     private final UIBlock mBlock;
     public UIBlockOperation (UIBlock block) {
@@ -610,6 +626,7 @@ public class UIViewOperationQueue {
   private long mProfiledBatchRunStartTime;
   private long mProfiledBatchBatchedExecutionTime;
   private long mProfiledBatchNonBatchedExecutionTime;
+  private long mThreadCpuTime;
 
   public UIViewOperationQueue(
       ReactApplicationContext reactContext,
@@ -648,6 +665,7 @@ public class UIViewOperationQueue {
     perfMap.put("RunStartTime", mProfiledBatchRunStartTime);
     perfMap.put("BatchedExecutionTime", mProfiledBatchBatchedExecutionTime);
     perfMap.put("NonBatchedExecutionTime", mProfiledBatchNonBatchedExecutionTime);
+    perfMap.put("NativeModulesThreadCpuTime", mThreadCpuTime);
     return perfMap;
   }
 
@@ -829,6 +847,10 @@ public class UIViewOperationQueue {
     mOperations.add(new SendAccessibilityEvent(tag, eventType));
   }
 
+  public void enqueueLayoutUpdateFinished(ReactShadowNode node, UIImplementation.LayoutUpdateListener listener) {
+    mOperations.add(new LayoutUpdateFinishedOperation(node, listener));
+  }
+
   public void enqueueUIBlock(UIBlock block) {
     mOperations.add(new UIBlockOperation(block));
   }
@@ -846,6 +868,7 @@ public class UIViewOperationQueue {
       .flush();
     try {
       final long dispatchViewUpdatesTime = SystemClock.uptimeMillis();
+      final long nativeModulesThreadCpuTime = SystemClock.currentThreadTimeMillis();
 
       // Store the current operation queues to dispatch and create new empty ones to continue
       // receiving new operations
@@ -900,6 +923,7 @@ public class UIViewOperationQueue {
                   mProfiledBatchLayoutTime = layoutTime;
                   mProfiledBatchDispatchViewUpdatesTime = dispatchViewUpdatesTime;
                   mProfiledBatchRunStartTime = runStartTime;
+                  mThreadCpuTime = nativeModulesThreadCpuTime;
 
                   Systrace.beginAsyncSection(
                       Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,

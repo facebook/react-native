@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -62,9 +62,6 @@ const CustomSeparatorComponent = ({highlighted, text}) => (
 );
 
 class SectionListExample extends React.PureComponent<{}, $FlowFixMeState> {
-  static title = '<SectionList>';
-  static description = 'Performant, scrollable list of data.';
-
   state = {
     data: genItemData(1000),
     debug: false,
@@ -275,4 +272,13 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = SectionListExample;
+exports.title = '<SectionList>';
+exports.description = 'Performant, scrollable list of data.';
+exports.examples = [
+  {
+    title: 'Simple scrollable list',
+    render: function(): React.Element<typeof SectionListExample> {
+      return <SectionListExample />;
+    },
+  },
+];

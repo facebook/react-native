@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,7 +13,7 @@
 const NativeEventEmitter = require('NativeEventEmitter');
 const RCTLocationObserver = require('NativeModules').LocationObserver;
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 const logError = require('logError');
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
  * found when Flow v0.54 was deployed. To see the error delete this comment and

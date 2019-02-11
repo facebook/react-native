@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -68,7 +68,7 @@ NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotif
   NSHashTable<RCTShadowView *> *_shadowViewsWithUpdatedChildren; // UIManager queue only.
 
   // Keyed by viewName
-  NSDictionary *_componentDataByName;
+  NSMutableDictionary *_componentDataByName;
 }
 
 @synthesize bridge = _bridge;
@@ -148,17 +148,15 @@ RCT_EXPORT_MODULE()
 
   _observerCoordinator = [RCTUIManagerObserverCoordinator new];
 
-  // Get view managers from bridge
-  NSMutableDictionary *componentDataByName = [NSMutableDictionary new];
+  // Get view managers from bridge=
+  _componentDataByName = [NSMutableDictionary new];
   for (Class moduleClass in _bridge.moduleClasses) {
     if ([moduleClass isSubclassOfClass:[RCTViewManager class]]) {
       RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:moduleClass
                                                                                 bridge:_bridge];
-      componentDataByName[componentData.name] = componentData;
+      _componentDataByName[componentData.name] = componentData;
     }
   }
-
-  _componentDataByName = [componentDataByName copy];
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(didReceiveNewContentSizeMultiplier)
@@ -490,6 +488,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
     UIUserInterfaceLayoutDirection layoutDirection;
     BOOL isNew;
     BOOL parentIsNew;
+    RCTDisplayType displayType;
   } RCTFrameData;
 
   // Construct arrays then hand off to main thread
@@ -507,6 +506,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
         layoutMetrics.layoutDirection,
         shadowView.isNewView,
         shadowView.superview.isNewView,
+        layoutMetrics.displayType
       };
     }
   }
@@ -568,6 +568,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
       RCTLayoutAnimation *updatingLayoutAnimation = isNew ? nil : layoutAnimationGroup.updatingLayoutAnimation;
       BOOL shouldAnimateCreation = isNew && !frameData.parentIsNew;
       RCTLayoutAnimation *creatingLayoutAnimation = shouldAnimateCreation ? layoutAnimationGroup.creatingLayoutAnimation : nil;
+      BOOL isHidden = frameData.displayType == RCTDisplayTypeNone;
 
       void (^completion)(BOOL) = ^(BOOL finished) {
         completionsCalled++;
@@ -582,6 +583,10 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
 
       if (view.reactLayoutDirection != layoutDirection) {
         view.reactLayoutDirection = layoutDirection;
+      }
+      
+      if (view.isHidden != isHidden) {
+        view.hidden = isHidden;
       }
 
       if (creatingLayoutAnimation) {
@@ -1343,59 +1348,6 @@ RCT_EXPORT_METHOD(measureLayoutRelativeToParent:(nonnull NSNumber *)reactTag
   RCTMeasureLayout(shadowView, shadowView.reactSuperview, callback);
 }
 
-/**
- * Returns an array of computed offset layouts in a dictionary form. The layouts are of any React subviews
- * that are immediate descendants to the parent view found within a specified rect. The dictionary result
- * contains left, top, width, height and an index. The index specifies the position among the other subviews.
- * Only layouts for views that are within the rect passed in are returned. Invokes the error callback if the
- * passed in parent view does not exist. Invokes the supplied callback with the array of computed layouts.
- */
-RCT_EXPORT_METHOD(measureViewsInRect:(CGRect)rect
-                  parentView:(nonnull NSNumber *)reactTag
-                  errorCallback:(__unused RCTResponseSenderBlock)errorCallback
-                  callback:(RCTResponseSenderBlock)callback)
-{
-  RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
-  if (!shadowView) {
-    RCTLogError(@"Attempting to measure view that does not exist (tag #%@)", reactTag);
-    return;
-  }
-  NSArray<RCTShadowView *> *childShadowViews = [shadowView reactSubviews];
-  NSMutableArray<NSDictionary *> *results =
-    [[NSMutableArray alloc] initWithCapacity:childShadowViews.count];
-
-  [childShadowViews enumerateObjectsUsingBlock:
-   ^(RCTShadowView *childShadowView, NSUInteger idx, __unused BOOL *stop) {
-    CGRect childLayout = [childShadowView measureLayoutRelativeToAncestor:shadowView];
-    if (CGRectIsNull(childLayout)) {
-      RCTLogError(@"View %@ (tag #%@) is not a descendant of %@ (tag #%@)",
-                  childShadowView, childShadowView.reactTag, shadowView, shadowView.reactTag);
-      return;
-    }
-
-    CGFloat leftOffset = childLayout.origin.x;
-    CGFloat topOffset = childLayout.origin.y;
-    CGFloat width = childLayout.size.width;
-    CGFloat height = childLayout.size.height;
-
-    if (leftOffset <= rect.origin.x + rect.size.width &&
-        leftOffset + width >= rect.origin.x &&
-        topOffset <= rect.origin.y + rect.size.height &&
-        topOffset + height >= rect.origin.y) {
-
-      // This view is within the layout rect
-      NSDictionary *result = @{@"index": @(idx),
-                               @"left": @(leftOffset),
-                               @"top": @(topOffset),
-                               @"width": @(width),
-                               @"height": @(height)};
-
-      [results addObject:result];
-    }
-  }];
-  callback(@[results]);
-}
-
 RCT_EXPORT_METHOD(takeSnapshot:(id /* NSString or NSNumber */)target
                   withOptions:(NSDictionary *)options
                   resolve:(RCTPromiseResolveBlock)resolve
@@ -1485,67 +1437,125 @@ RCT_EXPORT_METHOD(clearJSResponder)
   }];
 }
 
+static NSMutableDictionary<NSString *, id> *moduleConstantsForComponent(
+    NSMutableDictionary<NSString *, NSDictionary *> *directEvents,
+    NSMutableDictionary<NSString *, NSDictionary *> *bubblingEvents,
+    RCTComponentData *componentData) {
+  NSMutableDictionary<NSString *, id> *moduleConstants = [NSMutableDictionary new];
+
+  // Register which event-types this view dispatches.
+  // React needs this for the event plugin.
+  NSMutableDictionary<NSString *, NSDictionary *> *bubblingEventTypes = [NSMutableDictionary new];
+  NSMutableDictionary<NSString *, NSDictionary *> *directEventTypes = [NSMutableDictionary new];
+
+  // Add manager class
+  moduleConstants[@"Manager"] = RCTBridgeModuleNameForClass(componentData.managerClass);
+
+  // Add native props
+  NSDictionary<NSString *, id> *viewConfig = [componentData viewConfig];
+  moduleConstants[@"NativeProps"] = viewConfig[@"propTypes"];
+  moduleConstants[@"baseModuleName"] = viewConfig[@"baseModuleName"];
+  moduleConstants[@"bubblingEventTypes"] = bubblingEventTypes;
+  moduleConstants[@"directEventTypes"] = directEventTypes;
+
+  // Add direct events
+  for (NSString *eventName in viewConfig[@"directEvents"]) {
+    if (!directEvents[eventName]) {
+      directEvents[eventName] = @{
+                                  @"registrationName": [eventName stringByReplacingCharactersInRange:(NSRange){0, 3} withString:@"on"],
+                                  };
+    }
+    directEventTypes[eventName] = directEvents[eventName];
+    if (RCT_DEBUG && bubblingEvents[eventName]) {
+      RCTLogError(@"Component '%@' re-registered bubbling event '%@' as a "
+                  "direct event", componentData.name, eventName);
+    }
+  }
+
+  // Add bubbling events
+  for (NSString *eventName in viewConfig[@"bubblingEvents"]) {
+    if (!bubblingEvents[eventName]) {
+      NSString *bubbleName = [eventName stringByReplacingCharactersInRange:(NSRange){0, 3} withString:@"on"];
+      bubblingEvents[eventName] = @{
+                                    @"phasedRegistrationNames": @{
+                                        @"bubbled": bubbleName,
+                                        @"captured": [bubbleName stringByAppendingString:@"Capture"],
+                                        }
+                                    };
+    }
+    bubblingEventTypes[eventName] = bubblingEvents[eventName];
+    if (RCT_DEBUG && directEvents[eventName]) {
+      RCTLogError(@"Component '%@' re-registered direct event '%@' as a "
+                  "bubbling event", componentData.name, eventName);
+    }
+  }
+
+  return moduleConstants;
+}
+
 - (NSDictionary<NSString *, id> *)constantsToExport
+{
+  return [self getConstants];
+}
+
+- (NSDictionary<NSString *, id> *)getConstants
 {
   NSMutableDictionary<NSString *, NSDictionary *> *constants = [NSMutableDictionary new];
   NSMutableDictionary<NSString *, NSDictionary *> *directEvents = [NSMutableDictionary new];
   NSMutableDictionary<NSString *, NSDictionary *> *bubblingEvents = [NSMutableDictionary new];
 
   [_componentDataByName enumerateKeysAndObjectsUsingBlock:^(NSString *name, RCTComponentData *componentData, __unused BOOL *stop) {
-     NSMutableDictionary<NSString *, id> *moduleConstants = [NSMutableDictionary new];
-
-     // Register which event-types this view dispatches.
-     // React needs this for the event plugin.
-     NSMutableDictionary<NSString *, NSDictionary *> *bubblingEventTypes = [NSMutableDictionary new];
-     NSMutableDictionary<NSString *, NSDictionary *> *directEventTypes = [NSMutableDictionary new];
-
-     // Add manager class
-     moduleConstants[@"Manager"] = RCTBridgeModuleNameForClass(componentData.managerClass);
-
-     // Add native props
-     NSDictionary<NSString *, id> *viewConfig = [componentData viewConfig];
-     moduleConstants[@"NativeProps"] = viewConfig[@"propTypes"];
-     moduleConstants[@"baseModuleName"] = viewConfig[@"baseModuleName"];
-     moduleConstants[@"bubblingEventTypes"] = bubblingEventTypes;
-     moduleConstants[@"directEventTypes"] = directEventTypes;
-
-     // Add direct events
-     for (NSString *eventName in viewConfig[@"directEvents"]) {
-       if (!directEvents[eventName]) {
-         directEvents[eventName] = @{
-           @"registrationName": [eventName stringByReplacingCharactersInRange:(NSRange){0, 3} withString:@"on"],
-         };
-       }
-       directEventTypes[eventName] = directEvents[eventName];
-       if (RCT_DEBUG && bubblingEvents[eventName]) {
-         RCTLogError(@"Component '%@' re-registered bubbling event '%@' as a "
-                     "direct event", componentData.name, eventName);
-       }
-     }
-
-     // Add bubbling events
-     for (NSString *eventName in viewConfig[@"bubblingEvents"]) {
-       if (!bubblingEvents[eventName]) {
-         NSString *bubbleName = [eventName stringByReplacingCharactersInRange:(NSRange){0, 3} withString:@"on"];
-         bubblingEvents[eventName] = @{
-           @"phasedRegistrationNames": @{
-             @"bubbled": bubbleName,
-             @"captured": [bubbleName stringByAppendingString:@"Capture"],
-           }
-         };
-       }
-       bubblingEventTypes[eventName] = bubblingEvents[eventName];
-       if (RCT_DEBUG && directEvents[eventName]) {
-         RCTLogError(@"Component '%@' re-registered direct event '%@' as a "
-                     "bubbling event", componentData.name, eventName);
-       }
-     }
-
-     RCTAssert(!constants[name], @"UIManager already has constants for %@", componentData.name);
-     constants[name] = moduleConstants;
+    RCTAssert(!constants[name], @"UIManager already has constants for %@", componentData.name);
+    NSMutableDictionary<NSString *, id> *moduleConstants = moduleConstantsForComponent(directEvents, bubblingEvents, componentData);
+    constants[name] = moduleConstants;
   }];
 
   return constants;
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(lazilyLoadView:(NSString *)name)
+{
+  if (_componentDataByName[name]) {
+    return @{};
+  }
+
+  id<RCTBridgeDelegate> delegate = self.bridge.delegate;
+  if (![delegate respondsToSelector:@selector(bridge:didNotFindModule:)]) {
+    return @{};
+  }
+
+  NSString *moduleName = name;
+  BOOL result = [delegate bridge:self.bridge didNotFindModule:moduleName];
+  if (!result) {
+    moduleName = [name stringByAppendingString:@"Manager"];
+    result = [delegate bridge:self.bridge didNotFindModule:moduleName];
+  }
+  if (!result) {
+    return @{};
+  }
+
+  id module = [self.bridge moduleForName:moduleName];
+  if (module == nil) {
+    // There is all sorts of code in this codebase that drops prefixes.
+    //
+    // If we didn't find a module, it's possible because it's stored under a key
+    // which had RCT Prefixes stripped. Lets check one more time...
+    module = [self.bridge moduleForName:RCTDropReactPrefixes(moduleName)];
+  }
+  
+  if (!module) {
+    return @{};
+  }
+
+  RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:[module class] bridge:self.bridge];
+  _componentDataByName[componentData.name] = componentData;
+  NSMutableDictionary *directEvents = [NSMutableDictionary new];
+  NSMutableDictionary *bubblingEvents = [NSMutableDictionary new];
+  NSMutableDictionary<NSString *, id> *moduleConstants = moduleConstantsForComponent(directEvents, bubblingEvents, componentData);
+  return
+  @{
+    @"viewConfig": moduleConstants,
+    };
 }
 
 RCT_EXPORT_METHOD(configureNextLayoutAnimation:(NSDictionary *)config

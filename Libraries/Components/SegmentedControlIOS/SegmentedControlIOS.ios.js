@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,39 +10,61 @@
 
 'use strict';
 
-const NativeMethodsMixin = require('NativeMethodsMixin');
 const React = require('React');
-const ReactNative = require('ReactNative');
-const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
-const ViewPropTypes = require('ViewPropTypes');
 
-const createReactClass = require('create-react-class');
-const requireNativeComponent = require('requireNativeComponent');
+const RCTSegmentedControlNativeComponent = require('RCTSegmentedControlNativeComponent');
 
+import type {SyntheticEvent} from 'CoreEventTypes';
 import type {ViewProps} from 'ViewPropTypes';
 
-const RCTSegmentedControl = requireNativeComponent('RCTSegmentedControl');
+type Event = SyntheticEvent<
+  $ReadOnly<{|
+    value: number,
+    selectedSegmentIndex: number,
+  |}>,
+>;
 
-type DefaultProps = {
-  values: $ReadOnlyArray<string>,
-  enabled: boolean,
-};
-
-type Props = $ReadOnly<{|
+type SegmentedControlIOSProps = $ReadOnly<{|
   ...ViewProps,
-  values?: ?$ReadOnlyArray<string>,
+  /**
+   * The labels for the control's segment buttons, in order.
+   */
+  values?: $ReadOnlyArray<string>,
+  /**
+   * The index in `props.values` of the segment to be (pre)selected.
+   */
   selectedIndex?: ?number,
-  onValueChange?: ?Function,
-  onChange?: ?Function,
-  enabled?: ?boolean,
+  /**
+   * Callback that is called when the user taps a segment;
+   * passes the segment's value as an argument
+   */
+  onValueChange?: ?(value: number) => mixed,
+  /**
+   * Callback that is called when the user taps a segment;
+   * passes the event as an argument
+   */
+  onChange?: ?(event: Event) => mixed,
+  /**
+   * If false the user won't be able to interact with the control.
+   * Default value is true.
+   */
+  enabled?: boolean,
+  /**
+   * Accent color of the control.
+   */
   tintColor?: ?string,
+  /**
+   * If true, then selecting a segment won't persist visually.
+   * The `onValueChange` callback will still work as expected.
+   */
   momentary?: ?boolean,
 |}>;
 
-const SEGMENTED_CONTROL_REFERENCE = 'segmentedcontrol';
-
-type Event = Object;
+type Props = $ReadOnly<{|
+  ...SegmentedControlIOSProps,
+  forwardedRef: ?React.Ref<typeof RCTSegmentedControlNativeComponent>,
+|}>;
 
 /**
  * Use `SegmentedControlIOS` to render a UISegmentedControl iOS.
@@ -64,76 +86,31 @@ type Event = Object;
  * />
  * ````
  */
-const SegmentedControlIOS = createReactClass({
-  displayName: 'SegmentedControlIOS',
-  mixins: [NativeMethodsMixin],
 
-  propTypes: {
-    ...ViewPropTypes,
-    /**
-     * The labels for the control's segment buttons, in order.
-     */
-    values: PropTypes.arrayOf(PropTypes.string),
+class SegmentedControlIOS extends React.Component<Props> {
+  static defaultProps = {
+    values: [],
+    enabled: true,
+  };
 
-    /**
-     * The index in `props.values` of the segment to be (pre)selected.
-     */
-    selectedIndex: PropTypes.number,
-
-    /**
-     * Callback that is called when the user taps a segment;
-     * passes the segment's value as an argument
-     */
-    onValueChange: PropTypes.func,
-
-    /**
-     * Callback that is called when the user taps a segment;
-     * passes the event as an argument
-     */
-    onChange: PropTypes.func,
-
-    /**
-     * If false the user won't be able to interact with the control.
-     * Default value is true.
-     */
-    enabled: PropTypes.bool,
-
-    /**
-     * Accent color of the control.
-     */
-    tintColor: PropTypes.string,
-
-    /**
-     * If true, then selecting a segment won't persist visually.
-     * The `onValueChange` callback will still work as expected.
-     */
-    momentary: PropTypes.bool,
-  },
-
-  getDefaultProps: function(): DefaultProps {
-    return {
-      values: [],
-      enabled: true,
-    };
-  },
-
-  _onChange: function(event: Event) {
+  _onChange = (event: Event) => {
     this.props.onChange && this.props.onChange(event);
     this.props.onValueChange &&
       this.props.onValueChange(event.nativeEvent.value);
-  },
+  };
 
-  render: function() {
+  render() {
+    const {forwardedRef, ...props} = this.props;
     return (
-      <RCTSegmentedControl
-        {...this.props}
-        ref={SEGMENTED_CONTROL_REFERENCE}
+      <RCTSegmentedControlNativeComponent
+        {...props}
+        ref={forwardedRef}
         style={[styles.segmentedControl, this.props.style]}
         onChange={this._onChange}
       />
     );
-  },
-});
+  }
+}
 
 const styles = StyleSheet.create({
   segmentedControl: {
@@ -141,6 +118,16 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = ((SegmentedControlIOS: any): Class<
-  ReactNative.NativeComponent<Props>,
->);
+const SegmentedControlIOSWithRef = React.forwardRef(
+  (
+    props: SegmentedControlIOSProps,
+    forwardedRef: ?React.Ref<typeof RCTSegmentedControlNativeComponent>,
+  ) => {
+    return <SegmentedControlIOS {...props} forwardedRef={forwardedRef} />;
+  },
+);
+
+/* $FlowFixMe(>=0.89.0 site=react_native_ios_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
+module.exports = (SegmentedControlIOSWithRef: NativeSegmentedControlIOS);

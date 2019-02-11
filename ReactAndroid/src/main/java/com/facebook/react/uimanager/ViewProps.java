@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,11 +16,6 @@ import java.util.HashSet;
  * Keys for props that need to be shared across multiple classes.
  */
 public class ViewProps {
-
-  /**
-   * Kill switch to make overflow hidden by default. This flag will eventually be removed.
-   */
-  public static boolean sDefaultOverflowHidden;
 
   public static final String VIEW_CLASS_NAME = "RCTView";
 
@@ -111,6 +106,7 @@ public class ViewProps {
   public static final String VISIBLE = "visible";
 
   public static final String ALLOW_FONT_SCALING = "allowFontScaling";
+  public static final String MAX_FONT_SIZE_MULTIPLIER = "maxFontSizeMultiplier";
   public static final String INCLUDE_FONT_PADDING = "includeFontPadding";
 
   public static final String BORDER_WIDTH = "borderWidth";

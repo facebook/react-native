@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,10 +8,11 @@
 #import "RCTScrollViewComponentView.h"
 
 #import <React/RCTAssert.h>
-#import <fabric/components/scrollview/ScrollViewLocalData.h>
-#import <fabric/components/scrollview/ScrollViewProps.h>
-#import <fabric/components/scrollview/ScrollViewEventEmitter.h>
-#import <fabric/graphics/Geometry.h>
+#import <react/components/scrollview/ScrollViewShadowNode.h>
+#import <react/components/scrollview/ScrollViewLocalData.h>
+#import <react/components/scrollview/ScrollViewProps.h>
+#import <react/components/scrollview/ScrollViewEventEmitter.h>
+#import <react/graphics/Geometry.h>
 
 #import "RCTConversions.h"
 #import "RCTEnhancedScrollView.h"
@@ -33,6 +34,9 @@ using namespace facebook::react;
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
+    static const auto defaultProps = std::make_shared<const ScrollViewProps>();
+    _props = defaultProps;
+
     _scrollView = [[RCTEnhancedScrollView alloc] initWithFrame:self.bounds];
     _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _scrollView.delegate = self;
@@ -45,19 +49,19 @@ using namespace facebook::react;
   return self;
 }
 
-#pragma mark - ComponentViewProtocol
+#pragma mark - RCTComponentViewProtocol
+
++ (ComponentHandle)componentHandle
+{
+  return ScrollViewShadowNode::Handle();
+}
 
 - (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
 {
+  const auto &oldScrollViewProps = *std::static_pointer_cast<const ScrollViewProps>(oldProps ?: _props);
+  const auto &newScrollViewProps = *std::static_pointer_cast<const ScrollViewProps>(props);
+
   [super updateProps:props oldProps:oldProps];
-
-  if (!oldProps) {
-    oldProps = _props ?: std::make_shared<ScrollViewProps>();
-  }
-  _props = props;
-
-  auto oldScrollViewProps = *std::dynamic_pointer_cast<const ScrollViewProps>(oldProps);
-  auto newScrollViewProps = *std::dynamic_pointer_cast<const ScrollViewProps>(props);
 
 #define REMAP_PROP(reactName, localName, target) \
   if (oldScrollViewProps.reactName != newScrollViewProps.reactName) { \

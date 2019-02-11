@@ -1,12 +1,13 @@
-load("//ReactNative:DEFS.bzl", "ANDROID", "ANDROID_JSC_DEPS", "APPLE_JSC_DEPS", "FBJNI_TARGET", "IS_OSS_BUILD", "react_native_xplat_target", "rn_xplat_cxx_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "IS_OSS_BUILD", "react_native_xplat_dep", "react_native_xplat_target", "rn_xplat_cxx_library")
 
 EXPORTED_HEADERS = [
-    "AndroidJSCFactory.h",
     "CxxModuleWrapper.h",
     "CxxModuleWrapperBase.h",
     "CxxSharedModuleWrapper.h",
     "JavaModuleWrapper.h",
     "JavaScriptExecutorHolder.h",
+    "JCallback.h",
+    "JMessageQueueThread.h",
     "JReactMarker.h",
     "JSLoader.h",
     "JSLogging.h",
@@ -40,8 +41,6 @@ rn_xplat_cxx_library(
         "-Wno-inconsistent-missing-override",
     ],
     fbandroid_allow_jni_merging = True,
-    fbandroid_deps = ANDROID_JSC_DEPS,
-    fbobjc_deps = APPLE_JSC_DEPS,
     platforms = ANDROID,
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNativeJNI\"",
@@ -54,11 +53,15 @@ rn_xplat_cxx_library(
     ],
     deps = ([
         "xplat//third-party/linker_lib:android",
+        "xplat//third-party/linker_lib:atomic",
         "xplat//folly:molly",
         "fbandroid//xplat/fbgloginit:fbgloginit",
         "xplat//fbsystrace:fbsystrace",
         react_native_xplat_target("cxxreact:bridge"),
+        react_native_xplat_target("cxxreact:jsbigstring"),
         react_native_xplat_target("cxxreact:module"),
+        react_native_xplat_target("jsinspector:jsinspector"),
+        react_native_xplat_dep("jsi:jsi"),
         FBJNI_TARGET,
     ]) if not IS_OSS_BUILD else [],
 )

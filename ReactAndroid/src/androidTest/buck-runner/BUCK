@@ -1,9 +1,9 @@
-load("//ReactNative:DEFS.bzl", "KEYSTORE_TARGET", "react_native_dep", "react_native_integration_tests_target", "react_native_target", "rn_android_binary")
+load("//tools/build_defs/oss:rn_defs.bzl", "KEYSTORE_TARGET", "react_native_dep", "react_native_integration_tests_target", "react_native_target", "rn_android_binary")
 
 # We are running instrumentation tests in simple mode: app code and instrumentation are in the same APK
 # Currently you need to run these commands to execute tests:
 #
-# node local-cli/cli.js bundle --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
+# node cli.js bundle --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
 # gradle :ReactAndroid:packageReactNdkLibsForBuck
 # buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests
 # ./scripts/run-android-instrumentation-tests.sh com.facebook.react.tests

@@ -1,4 +1,4 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -6,40 +6,66 @@
 #pragma once
 
 #include <memory>
+#include <mutex>
 
-#include <fabric/core/ComponentDescriptor.h>
-#include <fabric/core/LayoutConstraints.h>
-#include <fabric/uimanager/ContextContainer.h>
-#include <fabric/uimanager/SchedulerDelegate.h>
-#include <fabric/uimanager/SchedulerEventDispatcher.h>
-#include <fabric/uimanager/UIManagerDelegate.h>
-#include <fabric/uimanager/ShadowTree.h>
-#include <fabric/uimanager/ShadowTreeDelegate.h>
+#include <react/config/ReactNativeConfig.h>
+#include <react/core/ComponentDescriptor.h>
+#include <react/core/LayoutConstraints.h>
+#include <react/uimanager/ComponentDescriptorFactory.h>
+#include <react/uimanager/ComponentDescriptorRegistry.h>
+#include <react/uimanager/ContextContainer.h>
+#include <react/uimanager/SchedulerDelegate.h>
+#include <react/uimanager/ShadowTree.h>
+#include <react/uimanager/ShadowTreeDelegate.h>
+#include <react/uimanager/ShadowTreeRegistry.h>
+#include <react/uimanager/UIManagerBinding.h>
+#include <react/uimanager/UIManagerDelegate.h>
+#include <react/uimanager/primitives.h>
 
 namespace facebook {
 namespace react {
 
-class FabricUIManager;
-
 /*
  * Scheduler coordinates Shadow Tree updates and event flows.
  */
-class Scheduler final:
-  public UIManagerDelegate,
-  public ShadowTreeDelegate {
-
-public:
-
-  Scheduler(const SharedContextContainer &contextContainer);
+class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
+ public:
+  Scheduler(
+      const SharedContextContainer &contextContainer,
+      ComponentRegistryFactory buildRegistryFunction);
   ~Scheduler();
 
-#pragma mark - Shadow Tree Management
+#pragma mark - Surface Management
 
-  void registerRootTag(Tag rootTag);
-  void unregisterRootTag(Tag rootTag);
+  void startSurface(
+      SurfaceId surfaceId,
+      const std::string &moduleName,
+      const folly::dynamic &initialProps,
+      const LayoutConstraints &layoutConstraints = {},
+      const LayoutContext &layoutContext = {}) const;
 
-  Size measure(const Tag &rootTag, const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext) const;
-  void constraintLayout(const Tag &rootTag, const LayoutConstraints &layoutConstraints, const LayoutContext &layoutContext);
+  void renderTemplateToSurface(
+      SurfaceId surfaceId,
+      const std::string &uiTemplate);
+
+  void stopSurface(SurfaceId surfaceId) const;
+
+  Size measureSurface(
+      SurfaceId surfaceId,
+      const LayoutConstraints &layoutConstraints,
+      const LayoutContext &layoutContext) const;
+
+  /*
+   * Applies given `layoutConstraints` and `layoutContext` to a Surface.
+   * The user interface will be relaid out as a result. The operation will be
+   * performed synchronously (including mounting) if the method is called
+   * on the main thread.
+   * Can be called from any thread.
+   */
+  void constraintSurfaceLayout(
+      SurfaceId surfaceId,
+      const LayoutConstraints &layoutConstraints,
+      const LayoutContext &layoutContext) const;
 
 #pragma mark - Delegate
 
@@ -53,27 +79,28 @@ public:
 
 #pragma mark - UIManagerDelegate
 
-  void uiManagerDidFinishTransaction(Tag rootTag, const SharedShadowNodeUnsharedList &rootChildNodes) override;
-  void uiManagerDidCreateShadowNode(const SharedShadowNode &shadowNode) override;
+  void uiManagerDidFinishTransaction(
+      SurfaceId surfaceId,
+      const SharedShadowNodeUnsharedList &rootChildNodes,
+      long startCommitTime) override;
+  void uiManagerDidCreateShadowNode(
+      const SharedShadowNode &shadowNode) override;
 
 #pragma mark - ShadowTreeDelegate
 
-  void shadowTreeDidCommit(const SharedShadowTree &shadowTree, const TreeMutationInstructionList &instructions) override;
+  void shadowTreeDidCommit(
+      const ShadowTree &shadowTree,
+      const ShadowViewMutationList &mutations,
+      long commitStartTime,
+      long layoutTime) const override;
 
-#pragma mark - Deprecated
-
-  /*
-   * UIManager instance must be temporarily exposed for registration purposes.
-   */
-  std::shared_ptr<FabricUIManager> getUIManager_DO_NOT_USE();
-
-private:
-
+ private:
   SchedulerDelegate *delegate_;
-  std::shared_ptr<FabricUIManager> uiManager_;
-  std::unordered_map<Tag, SharedShadowTree> shadowTreeRegistry_;
-  SharedSchedulerEventDispatcher eventDispatcher_;
-  SharedContextContainer contextContainer_;
+  SharedComponentDescriptorRegistry componentDescriptorRegistry_;
+  ShadowTreeRegistry shadowTreeRegistry_;
+  RuntimeExecutor runtimeExecutor_;
+  std::shared_ptr<UIManagerBinding> uiManagerBinding_;
+  std::shared_ptr<const ReactNativeConfig> reactNativeConfig_;
 };
 
 } // namespace react

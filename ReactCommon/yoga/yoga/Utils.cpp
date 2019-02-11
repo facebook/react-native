@@ -1,9 +1,8 @@
-/*
- *  Copyright (c) 2014-present, Facebook, Inc.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
 #include "Utils.h"
 
@@ -52,19 +51,16 @@ bool YGFloatsEqual(const float a, const float b) {
   return yoga::isUndefined(a) && yoga::isUndefined(b);
 }
 
-float YGFloatSanitize(const float& val) {
+float YGFloatSanitize(const float val) {
   return yoga::isUndefined(val) ? 0 : val;
 }
 
-float YGUnwrapFloatOptional(const YGFloatOptional& op) {
-  return op.isUndefined() ? YGUndefined : op.getValue();
-}
-
-YGFloatOptional YGFloatOptionalMax(
-    const YGFloatOptional& op1,
-    const YGFloatOptional& op2) {
-  if (!op1.isUndefined() && !op2.isUndefined()) {
-    return op1.getValue() > op2.getValue() ? op1 : op2;
+YGFloatOptional YGFloatOptionalMax(YGFloatOptional op1, YGFloatOptional op2) {
+  if (op1 >= op2) {
+    return op1;
+  }
+  if (op2 > op1) {
+    return op2;
   }
   return op1.isUndefined() ? op2 : op1;
 }

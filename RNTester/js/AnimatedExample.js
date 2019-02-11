@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,10 +10,26 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {Animated, Easing, StyleSheet, Text, View} = ReactNative;
-var RNTesterButton = require('./RNTesterButton');
+const React = require('react');
+const ReactNative = require('react-native');
+const {Animated, Easing, StyleSheet, Text, View} = ReactNative;
+const RNTesterButton = require('./RNTesterButton');
+
+const styles = StyleSheet.create({
+  content: {
+    backgroundColor: 'deepskyblue',
+    borderWidth: 1,
+    borderColor: 'dodgerblue',
+    padding: 20,
+    margin: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  rotatingImage: {
+    width: 70,
+    height: 70,
+  },
+});
 
 exports.framework = 'React';
 exports.title = 'Animated - Examples';
@@ -58,8 +74,11 @@ exports.examples = [
           );
         }
       }
-      class FadeInExample extends React.Component<$FlowFixMeProps, any> {
-        constructor(props) {
+
+      type Props = $ReadOnly<{||}>;
+      type State = {|show: boolean|};
+      class FadeInExample extends React.Component<Props, State> {
+        constructor(props: Props) {
           super(props);
           this.state = {
             show: true,
@@ -158,7 +177,7 @@ exports.examples = [
         <View>
           <RNTesterButton
             onPress={() => {
-              var timing = Animated.timing;
+              const timing = Animated.timing;
               Animated.sequence([
                 // One after the other
                 timing(this.anims[0], {
@@ -243,7 +262,7 @@ exports.examples = [
           <Animated.Image
             source={require('./bunny.png')}
             style={[
-              {width: 70, height: 70},
+              styles.rotatingImage,
               {
                 transform: [
                   {
@@ -284,15 +303,3 @@ exports.examples = [
     render: () => <Text>Checkout the Gratuitous Animation App!</Text>,
   },
 ];
-
-var styles = StyleSheet.create({
-  content: {
-    backgroundColor: 'deepskyblue',
-    borderWidth: 1,
-    borderColor: 'dodgerblue',
-    padding: 20,
-    margin: 20,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-});
