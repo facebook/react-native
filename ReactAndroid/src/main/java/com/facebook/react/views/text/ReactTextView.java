@@ -32,8 +32,6 @@ public class ReactTextView extends TextView implements ReactCompoundView {
   private boolean mContainsImages;
   private int mDefaultGravityHorizontal;
   private int mDefaultGravityVertical;
-  private boolean mTextIsSelectable;
-  private float mLineHeight = Float.NaN;
   private int mTextAlign = Gravity.NO_GRAVITY;
   private int mNumberOfLines = ViewDefaults.NUMBER_OF_LINES;
   private TextUtils.TruncateAt mEllipsizeLocation = TextUtils.TruncateAt.END;
@@ -127,12 +125,6 @@ public class ReactTextView extends TextView implements ReactCompoundView {
     }
 
     return target;
-  }
-
-  @Override
-  public void setTextIsSelectable(boolean selectable) {
-    mTextIsSelectable = selectable;
-    super.setTextIsSelectable(selectable);
   }
 
   @Override
