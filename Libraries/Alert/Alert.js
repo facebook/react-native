@@ -14,15 +14,7 @@ const NativeModules = require('NativeModules');
 const RCTAlertManager = NativeModules.AlertManager;
 const Platform = require('Platform');
 
-/**
- * Array or buttons
- * @typedef {Array} Buttons
- * @property {string} text Button label
- * @property {Function=} onPress Callback function when button pressed
- * @property {AlertButtonStyle=} style Button style
- */
-
-type Buttons = Array<{
+export type Buttons = Array<{
   text?: string,
   onPress?: ?Function,
   style?: AlertButtonStyle,
@@ -33,9 +25,6 @@ type Options = {
   onDismiss?: ?Function,
 };
 
-/**
- * An Alert button type
- */
 type AlertType = $Enum<{
   default: string,
   'plain-text': string,
@@ -43,9 +32,6 @@ type AlertType = $Enum<{
   'login-password': string,
 }>;
 
-/**
- * An Alert button style
- */
 type AlertButtonStyle = $Enum<{
   default: string,
   cancel: string,

@@ -186,11 +186,11 @@ module.exports = {
     return require('Alert');
   },
   get AlertIOS() {
-    invariant(
-      false,
-      'AlertIOS is deprecated and has been removed from this package. ' +
-        'Learn about alternative alert solutions at http://facebook.github.io/react-native/docs/alertios.html',
+    warnOnce(
+      'alert-ios',
+      'AlertIOS is deprecated. Use the `Alert` module directly instead.',
     );
+    return require('Alert');
   },
   get Animated() {
     return require('Animated');
