@@ -178,6 +178,11 @@ using namespace facebook::react;
 
 - (void)optimisticallyCreateComponentViewWithComponentHandle:(ComponentHandle)componentHandle
 {
+  if (RCTIsMainQueue()) {
+    // There is no reason to allocate views ahead of time on the main thread.
+    return;
+  }
+
   RCTExecuteOnMainQueue(^{
     [self->_componentViewRegistry optimisticallyCreateComponentViewWithComponentHandle:componentHandle];
   });
