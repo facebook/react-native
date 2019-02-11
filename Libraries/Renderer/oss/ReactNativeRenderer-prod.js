@@ -3416,7 +3416,7 @@ var ContextOnlyDispatcher = {
       return mountEffectImpl(516, UnmountPassive | MountPassive, create, deps);
     },
     useImperativeHandle: function(ref, create, deps) {
-      deps = null !== deps && void 0 !== deps ? deps.concat([ref]) : [ref];
+      deps = null !== deps && void 0 !== deps ? deps.concat([ref]) : null;
       return mountEffectImpl(
         4,
         UnmountMutation | MountLayout,
@@ -3495,7 +3495,7 @@ var ContextOnlyDispatcher = {
       return updateEffectImpl(516, UnmountPassive | MountPassive, create, deps);
     },
     useImperativeHandle: function(ref, create, deps) {
-      deps = null !== deps && void 0 !== deps ? deps.concat([ref]) : [ref];
+      deps = null !== deps && void 0 !== deps ? deps.concat([ref]) : null;
       return updateEffectImpl(
         4,
         UnmountMutation | MountLayout,
@@ -5467,13 +5467,15 @@ function unmountHostComponents(current$$1) {
         node$jscomp$0.splice(child, 1);
         UIManager.manageChildren(root._nativeTag, [], [], [], [], [child]);
       }
-    } else if (
-      (4 === node.tag
-        ? ((currentParent = node.stateNode.containerInfo),
-          (currentParentIsContainer = !0))
-        : commitUnmount(node),
-      null !== node.child)
-    ) {
+    } else if (4 === node.tag) {
+      if (null !== node.child) {
+        currentParent = node.stateNode.containerInfo;
+        currentParentIsContainer = !0;
+        node.child.return = node;
+        node = node.child;
+        continue;
+      }
+    } else if ((commitUnmount(node), null !== node.child)) {
       node.child.return = node;
       node = node.child;
       continue;
