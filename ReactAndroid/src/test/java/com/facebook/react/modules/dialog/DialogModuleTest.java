@@ -8,9 +8,8 @@
 package com.facebook.react.modules.dialog;
 
 import android.app.AlertDialog;
-import android.app.RobolectricActivityManager;
 import android.content.DialogInterface;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.FragmentActivity;
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -34,8 +33,8 @@ import static org.junit.Assert.assertNotNull;
 @PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
 public class DialogModuleTest {
 
-  private ActivityController<AppCompatActivity> mActivityController;
-  private AppCompatActivity mActivity;
+  private ActivityController<FragmentActivity> mActivityController;
+  private FragmentActivity mActivity;
   private DialogModule mDialogModule;
 
   final static class SimpleCallback implements Callback {
@@ -59,7 +58,7 @@ public class DialogModuleTest {
 
   @Before
   public void setUp() throws Exception {
-    mActivityController = Robolectric.buildActivity(AppCompatActivity.class);
+    mActivityController = Robolectric.buildActivity(FragmentActivity.class);
     mActivity = mActivityController
         .create()
         .start()

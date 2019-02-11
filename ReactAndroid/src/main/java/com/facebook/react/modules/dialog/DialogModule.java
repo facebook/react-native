@@ -12,8 +12,8 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Callback;
@@ -241,6 +241,6 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
     if (activity == null) {
       return null;
     }
-    return new FragmentManagerHelper(((AppCompatActivity) activity).getSupportFragmentManager());
+    return new FragmentManagerHelper(((FragmentActivity) activity).getSupportFragmentManager());
   }
 }
