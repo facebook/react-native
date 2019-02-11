@@ -74,14 +74,11 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
    * code duplication.
    */
   private class FragmentManagerHelper {
-
-    // Exactly one of the two is null
-    private final @Nullable FragmentManager mFragmentManager;
-//    private final @Nullable android.support.v4.app.FragmentManager mSupportFragmentManager;
+    private final @Nonnull FragmentManager mFragmentManager;
 
     private @Nullable Object mFragmentToShow;
 
-    public FragmentManagerHelper(FragmentManager fragmentManager) {
+    public FragmentManagerHelper(@Nonnull FragmentManager fragmentManager) {
       mFragmentManager = fragmentManager;
     }
 
