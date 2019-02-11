@@ -104,6 +104,12 @@ module.exports = {
     return require('SegmentedControlIOS');
   },
   get Slider() {
+    warnOnce(
+      'slider-moved',
+      'Slider has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/slider' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-slider',
+    );
     return require('Slider');
   },
   get SnapshotViewIOS() {
