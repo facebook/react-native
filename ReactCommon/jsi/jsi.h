@@ -1,7 +1,7 @@
 //  Copyright (c) Facebook, Inc. and its affiliates.
 //
 // This source code is licensed under the MIT license found in the
- // LICENSE file in the root directory of this source tree.
+// LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -14,7 +14,11 @@
 #include <vector>
 
 #ifndef JSI_EXPORT
+#ifdef _MSC_VER
+#define JSI_EXPORT
+#else
 #define JSI_EXPORT __attribute__((visibility("default")))
+#endif
 #endif
 
 class FBJSRuntime;
@@ -300,8 +304,8 @@ class PropNameID : public Pointer {
  public:
   using Pointer::Pointer;
 
-  PropNameID(Runtime& runtime, const PropNameID& other)
-      : PropNameID(runtime.clonePropNameID(other.ptr_)) {}
+  PropNameID(Runtime &runtime, const PropNameID &other)
+      : Pointer(runtime.clonePropNameID(other.ptr_)) {}
 
   PropNameID(PropNameID&& other) = default;
   PropNameID& operator=(PropNameID&& other) = default;
