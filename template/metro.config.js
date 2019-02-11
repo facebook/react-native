@@ -3,7 +3,6 @@
  * https://github.com/facebook/react-native
  *
  * @format
- * @lint-ignore-every XPLATJSCOPYRIGHT1
  */
 
 module.exports = {
