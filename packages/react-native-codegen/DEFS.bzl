@@ -17,7 +17,7 @@ def rn_codegen_test(
     fb_native.genrule(
         name = copy_schema_name,
         srcs = [],
-        cmd = "$(exe xplat//js/react-native-github/codegen:copy_fixture_schema) {} $OUT".format(fixture_name),
+        cmd = "$(exe xplat//js/react-native-github/packages/react-native-codegen:copy_fixture_schema) {} $OUT".format(fixture_name),
         out = "schema-{}.json".format(fixture_name),
     )
 
@@ -38,7 +38,7 @@ def rn_codegen(
     fb_native.genrule(
         name = generate_fixtures_rule_name,
         srcs = [],
-        cmd = "$(exe xplat//js/react-native-github/codegen:rn_codegen) $(location {}) {} $OUT".format(schema_target, name),
+        cmd = "$(exe xplat//js/react-native-github/packages/react-native-codegen:rn_codegen) $(location {}) {} $OUT".format(schema_target, name),
         out = "codegenfiles-{}".format(name),
     )
 

@@ -458,8 +458,10 @@ BOOL RCTRunningInTestEnvironment(void)
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     NSDictionary *environment = [[NSProcessInfo processInfo] environment];
-    isTestEnvironment = objc_lookUpClass("SenTestCase") || objc_lookUpClass("XCTest") ||
-      [environment[@"IS_TESTING"] boolValue];
+    isTestEnvironment = objc_lookUpClass("SenTestCase") ||
+    objc_lookUpClass("XCTest") ||
+    objc_lookUpClass("SnapshotTestAppDelegate") ||
+    [environment[@"IS_TESTING"] boolValue];
   });
   return isTestEnvironment;
 }
