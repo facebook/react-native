@@ -191,6 +191,10 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @DoNotStrip
   private void preallocateView(final int rootTag, final String componentName) {
+    if (UiThreadUtil.isOnUiThread()) {
+      // There is no reason to allocate views ahead of time on the main thread.
+      return;
+    }
     synchronized (mPreMountItemsLock) {
       ThemedReactContext context =
         Assertions.assertNotNull(mReactContextForRootTag.get(rootTag));
