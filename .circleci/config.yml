@@ -358,6 +358,7 @@ jobs:
       - run: *setup-artifacts
       - run: *yarn
       - run: *run-js-tests
+      - run: yarn run format-check
       - store_test_results:
           path: ~/react-native/reports/junit
 
