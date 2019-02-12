@@ -38,7 +38,7 @@ private:
 
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
 
-  void installFabricUIManager(jlong jsContextNativePointer, jni::alias_ref<jobject> javaUIManager, EventBeatManager* eventBeatManager, jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread, ComponentFactoryDelegate* componentsRegistry);
+  void installFabricUIManager(jlong jsContextNativePointer, jni::alias_ref<jobject> javaUIManager, EventBeatManager* eventBeatManager, jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread, ComponentFactoryDelegate* componentsRegistry, jni::alias_ref<jobject> reactNativeConfig);
 
   void startSurface(jint surfaceId, NativeMap *initialProps);
 

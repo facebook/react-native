@@ -12,6 +12,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.queue.MessageQueueThread;
+import com.facebook.react.fabric.ReactNativeConfig;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.uimanager.PixelUtil;
 
@@ -36,7 +37,8 @@ public class Binding {
       Object uiManager,
       EventBeatManager eventBeatManager,
       MessageQueueThread jsMessageQueueThread,
-      ComponentFactoryDelegate componentsRegistry);
+      ComponentFactoryDelegate componentsRegistry,
+      Object reactNativeConfig);
 
   public native void startSurface(int surfaceId, NativeMap initialProps);
 
@@ -54,10 +56,11 @@ public class Binding {
        FabricUIManager fabricUIManager,
        EventBeatManager eventBeatManager,
        MessageQueueThread jsMessageQueueThread,
-       ComponentFactoryDelegate componentFactoryDelegate) {
+       ComponentFactoryDelegate componentFactoryDelegate,
+       ReactNativeConfig reactNativeConfig) {
     fabricUIManager.setBinding(this);
      installFabricUIManager(
-       jsContext.get(), fabricUIManager, eventBeatManager, jsMessageQueueThread, componentFactoryDelegate);
+       jsContext.get(), fabricUIManager, eventBeatManager, jsMessageQueueThread, componentFactoryDelegate, reactNativeConfig);
      setPixelDensity(PixelUtil.getDisplayMetricDensity());
    }
 

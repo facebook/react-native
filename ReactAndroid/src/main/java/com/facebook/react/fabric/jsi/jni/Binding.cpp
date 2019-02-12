@@ -5,13 +5,13 @@
 #include "AsyncEventBeat.h"
 #include "Binding.h"
 #include "EventEmitterWrapper.h"
+#include "ReactNativeConfigHolder.h"
 
 #include <android/log.h>
 #include <fb/fbjni.h>
 #include <jsi/jsi.h>
 #include <jsi/JSIDynamic.h>
 #include <react/components/scrollview/ScrollViewProps.h>
-#include <react/config/ReactNativeConfig.h>
 #include <react/debug/SystraceSection.h>
 #include <react/events/EventEmitter.h>
 #include <react/events/EventBeat.h>
@@ -79,7 +79,7 @@ void Binding::setConstraints(jint rootTag, jfloat minWidth, jfloat maxWidth, jfl
   }
 }
 
-void Binding::installFabricUIManager(jlong jsContextNativePointer, jni::alias_ref<jobject> javaUIManager, EventBeatManager* eventBeatManager, jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread, ComponentFactoryDelegate* componentsRegistry) {
+void Binding::installFabricUIManager(jlong jsContextNativePointer, jni::alias_ref<jobject> javaUIManager, EventBeatManager* eventBeatManager, jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread, ComponentFactoryDelegate* componentsRegistry, jni::alias_ref<jobject> reactNativeConfig) {
   Runtime* runtime = (Runtime*) jsContextNativePointer;
 
   javaUIManager_ = make_global(javaUIManager);
@@ -104,7 +104,7 @@ void Binding::installFabricUIManager(jlong jsContextNativePointer, jni::alias_re
   };
 
   // TODO: Provide non-empty impl for ReactNativeConfig.
-  std::shared_ptr<const ReactNativeConfig> config = std::make_shared<const EmptyReactNativeConfig>();
+  std::shared_ptr<const ReactNativeConfig> config = std::make_shared<const ReactNativeConfigHolder>(reactNativeConfig);
   contextContainer->registerInstance(config, "ReactNativeConfig");
   contextContainer->registerInstance<EventBeatFactory>(synchronousBeatFactory, "synchronous");
   contextContainer->registerInstance<EventBeatFactory>(asynchronousBeatFactory, "asynchronous");
