@@ -286,6 +286,12 @@ module.exports = {
     return require('PixelRatio');
   },
   get PushNotificationIOS() {
+    warnOnce(
+      'pushNotificationIOS-moved',
+      'PushNotificationIOS has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/push-notification-ios' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-push-notification-ios',
+    );
     return require('PushNotificationIOS');
   },
   get Settings() {
