@@ -1879,6 +1879,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					FOLLY_NO_CONFIG,
+					"FOLLY_USE_LIBCPP=1",
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/RNTesterUnitTests",
