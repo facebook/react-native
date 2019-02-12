@@ -67,12 +67,6 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
     return NAME;
   }
 
-  /**
-   * Helper to allow this module to work with both the standard FragmentManager
-   * and the Support FragmentManager (for apps that need to use it for legacy reasons).
-   * Since the two APIs don't share a common interface there's unfortunately some
-   * code duplication.
-   */
   private class FragmentManagerHelper {
     private final @Nonnull FragmentManager mFragmentManager;
 
@@ -230,8 +224,8 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
   }
 
   /**
-   * Creates a new helper to work with either the FragmentManager or the legacy support
-   * FragmentManager transparently. Returns null if we're not attached to an Activity.
+   * Creates a new helper to work with FragmentManager.
+   * Returns null if we're not attached to an Activity.
    *
    * DO NOT HOLD LONG-LIVED REFERENCES TO THE OBJECT RETURNED BY THIS METHOD, AS THIS WILL CAUSE
    * MEMORY LEAKS.
