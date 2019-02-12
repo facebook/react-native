@@ -198,7 +198,11 @@ module.exports = {
     return require('Alert');
   },
   get AlertIOS() {
-    return require('AlertIOS');
+    warnOnce(
+      'alert-ios',
+      'AlertIOS is deprecated. Use the `Alert` module directly instead.',
+    );
+    return require('Alert');
   },
   get Animated() {
     return require('Animated');

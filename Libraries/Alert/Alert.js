@@ -10,11 +10,9 @@
 
 'use strict';
 
-const AlertIOS = require('AlertIOS');
 const NativeModules = require('NativeModules');
+const RCTAlertManager = NativeModules.AlertManager;
 const Platform = require('Platform');
-
-import type {AlertType, AlertButtonStyle} from 'AlertIOS';
 
 export type Buttons = Array<{
   text?: string,
@@ -27,36 +25,139 @@ type Options = {
   onDismiss?: ?Function,
 };
 
+type AlertType = $Enum<{
+  default: string,
+  'plain-text': string,
+  'secure-text': string,
+  'login-password': string,
+}>;
+
+export type AlertButtonStyle = $Enum<{
+  default: string,
+  cancel: string,
+  destructive: string,
+}>;
+
 /**
  * Launches an alert dialog with the specified title and message.
  *
  * See http://facebook.github.io/react-native/docs/alert.html
  */
 class Alert {
-  /**
-   * Launches an alert dialog with the specified title and message.
-   *
-   * See http://facebook.github.io/react-native/docs/alert.html#alert
-   */
   static alert(
     title: ?string,
     message?: ?string,
     buttons?: Buttons,
     options?: Options,
-    type?: AlertType,
   ): void {
     if (Platform.OS === 'ios') {
-      if (typeof type !== 'undefined') {
-        console.warn(
-          'Alert.alert() with a 5th "type" parameter is deprecated and will be removed. Use AlertIOS.prompt() instead.',
-        );
-        AlertIOS.alert(title, message, buttons, type);
-        return;
-      }
       AlertIOS.alert(title, message, buttons);
     } else if (Platform.OS === 'android') {
       AlertAndroid.alert(title, message, buttons, options);
     }
+  }
+
+  static prompt(
+    title: ?string,
+    message?: ?string,
+    callbackOrButtons?: ?(((text: string) => void) | Buttons),
+    type?: ?AlertType = 'plain-text',
+    defaultValue?: string,
+    keyboardType?: string,
+  ): void {
+    if (Platform.OS === 'ios') {
+      AlertIOS.prompt(
+        title,
+        message,
+        callbackOrButtons,
+        type,
+        defaultValue,
+        keyboardType,
+      );
+    }
+  }
+}
+
+/**
+ * Wrapper around the iOS native module.
+ */
+class AlertIOS {
+  static alert(
+    title: ?string,
+    message?: ?string,
+    callbackOrButtons?: ?((() => void) | Buttons),
+  ): void {
+    this.prompt(title, message, callbackOrButtons, 'default');
+  }
+
+  static prompt(
+    title: ?string,
+    message?: ?string,
+    callbackOrButtons?: ?(((text: string) => void) | Buttons),
+    type?: ?AlertType = 'plain-text',
+    defaultValue?: string,
+    keyboardType?: string,
+  ): void {
+    if (typeof type === 'function') {
+      console.warn(
+        'You passed a callback function as the "type" argument to Alert.prompt(). React Native is ' +
+          'assuming  you want to use the deprecated Alert.prompt(title, defaultValue, buttons, callback) ' +
+          'signature. The current signature is Alert.prompt(title, message, callbackOrButtons, type, defaultValue, ' +
+          'keyboardType) and the old syntax will be removed in a future version.',
+      );
+
+      const callback = type;
+      RCTAlertManager.alertWithArgs(
+        {
+          title: title || '',
+          type: 'plain-text',
+          defaultValue: message,
+        },
+        (id, value) => {
+          callback(value);
+        },
+      );
+      return;
+    }
+
+    let callbacks = [];
+    const buttons = [];
+    let cancelButtonKey;
+    let destructiveButtonKey;
+    if (typeof callbackOrButtons === 'function') {
+      callbacks = [callbackOrButtons];
+    } else if (Array.isArray(callbackOrButtons)) {
+      callbackOrButtons.forEach((btn, index) => {
+        callbacks[index] = btn.onPress;
+        if (btn.style === 'cancel') {
+          cancelButtonKey = String(index);
+        } else if (btn.style === 'destructive') {
+          destructiveButtonKey = String(index);
+        }
+        if (btn.text || index < (callbackOrButtons || []).length - 1) {
+          const btnDef = {};
+          btnDef[index] = btn.text || '';
+          buttons.push(btnDef);
+        }
+      });
+    }
+
+    RCTAlertManager.alertWithArgs(
+      {
+        title: title || '',
+        message: message || undefined,
+        buttons,
+        type: type || undefined,
+        defaultValue,
+        cancelButtonKey,
+        destructiveButtonKey,
+        keyboardType,
+      },
+      (id, value) => {
+        const cb = callbacks[id];
+        cb && cb(value);
+      },
+    );
   }
 }
 
