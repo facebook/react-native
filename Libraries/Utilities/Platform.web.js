@@ -10,9 +10,15 @@
 
 'use strict';
 
+export type PlatformSelectSpec<D, I> = {
+  default?: D,
+  web?: I,
+};
+
 const Platform = {
   OS: 'web',
-  select: (obj: Object) => ('web' in obj ? obj.web : obj.default),
+  select: <D, I>(spec: PlatformSelectSpec<D, I>): D | I =>
+    'web' in spec ? spec.web : spec.default,
 };
 
 module.exports = Platform;
