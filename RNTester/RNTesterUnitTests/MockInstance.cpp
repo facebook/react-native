@@ -71,6 +71,11 @@ bool MockInstance::isInspectable()
   return false;
 }
 
+bool MockInstance::isBatchActive()
+{
+  return false;
+}
+
 void MockInstance::callJSFunction(std::string &&module, std::string &&method,
                     folly::dynamic &&params)
 {

@@ -42,6 +42,7 @@ public:
                                  std::unique_ptr<const facebook::react::JSBigString> jsonValue) override;
    void *getJavaScriptContext() override;
    bool isInspectable() override;
+   bool isBatchActive() override;
    void callJSFunction(std::string &&module, std::string &&method,
                               folly::dynamic &&params) override;
    void callJSCallback(uint64_t callbackId, folly::dynamic &&params) override;
