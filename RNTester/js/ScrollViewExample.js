@@ -143,7 +143,9 @@ exports.examples = [
                 scrollEnabled={this.state.scrollEnabled}>
                 {THUMB_URLS.map(createThumbRow)}
               </ScrollView>
-              <Text>{'Scrolling enabled = ' + this.state.scrollEnabled.toString()}</Text>
+              <Text>
+                {'Scrolling enabled = ' + this.state.scrollEnabled.toString()}
+              </Text>
               <Button
                 label="Disable Scrolling"
                 onPress={() => {
