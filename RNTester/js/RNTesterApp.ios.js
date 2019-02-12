@@ -110,7 +110,7 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
     }
     if (this.state.openExample) {
       const Component = RNTesterList.Modules[this.state.openExample];
-      if (Component.external) {
+      if (Component && Component.external) {
         return <Component onExampleExit={this._handleBack} />;
       } else {
         return (
