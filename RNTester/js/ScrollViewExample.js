@@ -128,8 +128,7 @@ exports.examples = [
   },
   {
     title: '<ScrollView> enable & disable\n',
-    description:
-      'ScrollView scrolling behaviour can be disabled and enabled',
+    description: 'ScrollView scrolling behaviour can be disabled and enabled',
     render: function() {
       class EnableDisableList extends React.Component<{}, *> {
         state = {
@@ -144,17 +143,17 @@ exports.examples = [
                 scrollEnabled={this.state.scrollEnabled}>
                 {THUMB_URLS.map(createThumbRow)}
               </ScrollView>
-              <Text>{ 'Scrolling enabled = ' + this.state.scrollEnabled }</Text>
+              <Text>{'Scrolling enabled = ' + this.state.scrollEnabled.toString()}</Text>
               <Button
                 label="Disable Scrolling"
                 onPress={() => {
-                  this.setState({ scrollEnabled: false });
+                  this.setState({scrollEnabled: false});
                 }}
               />
               <Button
                 label="Enable Scrolling"
                 onPress={() => {
-                  this.setState({ scrollEnabled: true });
+                  this.setState({scrollEnabled: true});
                 }}
               />
             </View>
