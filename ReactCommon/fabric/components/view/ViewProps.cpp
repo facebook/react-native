@@ -79,21 +79,24 @@ ViewProps::ViewProps(const ViewProps &sourceProps, const RawProps &rawProps)
 
 BorderMetrics ViewProps::resolveBorderMetrics(bool isRTL) const {
   auto borderWidths = CascadedBorderWidths{
-      .left = optionalFloatFromYogaValue(yogaStyle.border[YGEdgeLeft]),
-      .top = optionalFloatFromYogaValue(yogaStyle.border[YGEdgeTop]),
-      .right = optionalFloatFromYogaValue(yogaStyle.border[YGEdgeRight]),
-      .bottom = optionalFloatFromYogaValue(yogaStyle.border[YGEdgeBottom]),
-      .start = optionalFloatFromYogaValue(yogaStyle.border[YGEdgeStart]),
-      .end = optionalFloatFromYogaValue(yogaStyle.border[YGEdgeEnd]),
-      .horizontal =
-          optionalFloatFromYogaValue(yogaStyle.border[YGEdgeHorizontal]),
-      .vertical = optionalFloatFromYogaValue(yogaStyle.border[YGEdgeVertical]),
-      .all = optionalFloatFromYogaValue(yogaStyle.border[YGEdgeAll])};
+      optionalFloatFromYogaValue(yogaStyle.border[YGEdgeLeft]),   // left
+      optionalFloatFromYogaValue(yogaStyle.border[YGEdgeTop]),    // top
+      optionalFloatFromYogaValue(yogaStyle.border[YGEdgeRight]),  // right
+      optionalFloatFromYogaValue(yogaStyle.border[YGEdgeBottom]), // bottom
+      optionalFloatFromYogaValue(yogaStyle.border[YGEdgeStart]),  // start
+      optionalFloatFromYogaValue(yogaStyle.border[YGEdgeEnd]),    // end
+      optionalFloatFromYogaValue(
+          yogaStyle.border[YGEdgeHorizontal]), // horizontal
+      optionalFloatFromYogaValue(yogaStyle.border[YGEdgeVertical]), // vertical
+      optionalFloatFromYogaValue(yogaStyle.border[YGEdgeAll]),      // all
+  };
 
-  return {.borderColors = borderColors.resolve(isRTL, {}),
-          .borderWidths = borderWidths.resolve(isRTL, 0),
-          .borderRadii = borderRadii.resolve(isRTL, 0),
-          .borderStyles = borderStyles.resolve(isRTL, BorderStyle::Solid)};
+  return {
+      borderColors.resolve(isRTL, {}),                 // borderColors
+      borderWidths.resolve(isRTL, 0),                  // borderWidths
+      borderRadii.resolve(isRTL, 0),                   // borderRadii
+      borderStyles.resolve(isRTL, BorderStyle::Solid), // borderStyles
+  };
 }
 
 #pragma mark - DebugStringConvertible

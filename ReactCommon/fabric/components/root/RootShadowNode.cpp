@@ -29,7 +29,12 @@ UnsharedRootShadowNode RootShadowNode::clone(
   auto props = std::make_shared<const RootProps>(
       *getProps(), layoutConstraints, layoutContext);
   auto newRootShadowNode = std::make_shared<RootShadowNode>(
-      *this, ShadowNodeFragment{.props = props});
+      *this,
+      ShadowNodeFragment{
+          0,     // tag,
+          0,     // rootTag,
+          props, // props
+      });
   return newRootShadowNode;
 }
 
@@ -55,11 +60,24 @@ UnsharedRootShadowNode RootShadowNode::clone(
     sharedChildren = std::make_shared<SharedShadowNodeList>(children);
 
     oldChild = ancestor.get().shared_from_this();
-    newChild = oldChild->clone(ShadowNodeFragment{.children = sharedChildren});
+    newChild = oldChild->clone({
+        0,                                            // tag,
+        0,                                            // rootTag,
+        ShadowNodeFragment::nullSharedProps(),        // props
+        ShadowNodeFragment::nullSharedEventEmitter(), // eventEmitter
+        sharedChildren,                               // children
+    });
   }
 
   return std::make_shared<RootShadowNode>(
-      *this, ShadowNodeFragment{.children = sharedChildren});
+      *this,
+      ShadowNodeFragment{
+          0,                                            // tag,
+          0,                                            // rootTag,
+          ShadowNodeFragment::nullSharedProps(),        // props
+          ShadowNodeFragment::nullSharedEventEmitter(), // eventEmitter
+          sharedChildren,                               // children
+      });
 }
 
 } // namespace react

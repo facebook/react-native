@@ -16,12 +16,13 @@ SharedShadowNode UIManager::createNode(
     SharedEventTarget eventTarget) const {
   auto &componentDescriptor = componentDescriptorRegistry_->at(name);
 
-  auto shadowNode = componentDescriptor.createShadowNode(
-      {.tag = tag,
-       .rootTag = surfaceId,
-       .eventEmitter =
-           componentDescriptor.createEventEmitter(std::move(eventTarget), tag),
-       .props = componentDescriptor.cloneProps(nullptr, rawProps)});
+  auto shadowNode = componentDescriptor.createShadowNode({
+      tag,                                               // tag
+      surfaceId,                                         // rootTag
+      componentDescriptor.cloneProps(nullptr, rawProps), // props
+      componentDescriptor.createEventEmitter(
+          std::move(eventTarget), tag), // eventEmitter
+  });
 
   if (delegate_) {
     delegate_->uiManagerDidCreateShadowNode(shadowNode);
@@ -40,10 +41,13 @@ SharedShadowNode UIManager::cloneNode(
   auto clonedShadowNode = componentDescriptor.cloneShadowNode(
       *shadowNode,
       {
-          .props = rawProps ? componentDescriptor.cloneProps(
-                                  shadowNode->getProps(), *rawProps)
-                            : ShadowNodeFragment::nullSharedProps(),
-          .children = children,
+          0, // tag
+          0, // rootTag
+          rawProps ? componentDescriptor.cloneProps(
+                         shadowNode->getProps(), *rawProps)
+                   : ShadowNodeFragment::nullSharedProps(), // props
+          ShadowNodeFragment::nullSharedEventEmitter(),     // eventEmitter
+          children,                                         // children
       });
 
   return std::const_pointer_cast<ShadowNode>(clonedShadowNode);
@@ -73,7 +77,11 @@ void UIManager::setNativeProps(
   auto &componentDescriptor =
       componentDescriptorRegistry_->at(shadowNode->getComponentHandle());
   auto props = componentDescriptor.cloneProps(shadowNode->getProps(), rawProps);
-  auto newShadowNode = shadowNode->clone(ShadowNodeFragment{.props = props});
+  auto newShadowNode = shadowNode->clone(ShadowNodeFragment{
+      0,     // tag
+      0,     // rootTag
+      props, // props
+  });
 
   shadowTreeRegistry_->visit(
       shadowNode->getRootTag(), [&](const ShadowTree &shadowTree) {

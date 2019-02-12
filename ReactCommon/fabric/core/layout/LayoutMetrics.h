@@ -57,7 +57,10 @@ struct LayoutMetrics {
  * Represents some undefined, not-yet-computed or meaningless value of
  * `LayoutMetrics` type.
  */
-static const LayoutMetrics EmptyLayoutMetrics = {.frame = {.size = {-1, -1}}};
+static const LayoutMetrics EmptyLayoutMetrics = {{
+    {0, 0},  // origin
+    {-1, -1} // size
+}};
 
 } // namespace react
 } // namespace facebook

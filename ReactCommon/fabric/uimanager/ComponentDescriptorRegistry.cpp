@@ -113,12 +113,13 @@ SharedShadowNode ComponentDescriptorRegistry::createNode(
   ComponentName componentName = componentNameByReactViewName(viewName);
   const SharedComponentDescriptor &componentDescriptor = (*this)[componentName];
 
-  SharedShadowNode shadowNode = componentDescriptor->createShadowNode(
-      {.tag = tag,
-       .rootTag = rootTag,
-       .eventEmitter =
-           componentDescriptor->createEventEmitter(std::move(eventTarget), tag),
-       .props = componentDescriptor->cloneProps(nullptr, RawProps(props))});
+  SharedShadowNode shadowNode = componentDescriptor->createShadowNode({
+      tag,                                                       // tag
+      rootTag,                                                   // rootTag
+      componentDescriptor->cloneProps(nullptr, RawProps(props)), // props
+      componentDescriptor->createEventEmitter(
+          std::move(eventTarget), tag), // eventEmitter
+  });
   return shadowNode;
 }
 

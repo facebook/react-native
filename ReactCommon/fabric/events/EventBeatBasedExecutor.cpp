@@ -27,15 +27,19 @@ EventBeatBasedExecutor::EventBeatBasedExecutor(
 
 void EventBeatBasedExecutor::operator()(Routine routine, Mode mode) const {
   if (mode == Mode::Asynchronous) {
-    execute({.routine = std::move(routine)});
+    execute({
+        std::move(routine), // routine
+    });
     return;
   }
 
   std::mutex mutex;
   mutex.lock();
 
-  execute({.routine = std::move(routine),
-           .callback = [&mutex]() { mutex.unlock(); }});
+  execute({
+      std::move(routine),             // routine
+      [&mutex]() { mutex.unlock(); }, // callback
+  });
 
   mutex.lock();
 }

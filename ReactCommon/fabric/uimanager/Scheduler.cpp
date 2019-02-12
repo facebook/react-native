@@ -105,9 +105,15 @@ void Scheduler::renderTemplateToSurface(
           [&](const SharedRootShadowNode &oldRootShadowNode) {
             return std::make_shared<RootShadowNode>(
                 *oldRootShadowNode,
-                ShadowNodeFragment{.children =
-                                       std::make_shared<SharedShadowNodeList>(
-                                           SharedShadowNodeList{tree})});
+                ShadowNodeFragment{
+                    0,                                     // tag
+                    0,                                     // rootTag
+                    ShadowNodeFragment::nullSharedProps(), // sharedProps
+                    ShadowNodeFragment::
+                        nullSharedEventEmitter(), // eventEmitter
+                    std::make_shared<SharedShadowNodeList>(
+                        SharedShadowNodeList{tree}), // children
+                });
           },
           commitStartTime);
     });
@@ -127,8 +133,13 @@ void Scheduler::stopSurface(SurfaceId surfaceId) const {
               return std::make_shared<RootShadowNode>(
                   *oldRootShadowNode,
                   ShadowNodeFragment{
-                      .children =
-                          ShadowNode::emptySharedShadowNodeSharedList()});
+                      0,                                     // tag
+                      0,                                     // rootTag
+                      ShadowNodeFragment::nullSharedProps(), // sharedProps
+                      ShadowNodeFragment::
+                          nullSharedEventEmitter(), // eventEmitter
+                      ShadowNode::emptySharedShadowNodeSharedList(), // children
+                  });
             },
             commitStartTime);
       });
@@ -213,7 +224,13 @@ void Scheduler::uiManagerDidFinishTransaction(
         [&](const SharedRootShadowNode &oldRootShadowNode) {
           return std::make_shared<RootShadowNode>(
               *oldRootShadowNode,
-              ShadowNodeFragment{.children = rootChildNodes});
+              ShadowNodeFragment{
+                  0,                                            // tag
+                  0,                                            // rootTag
+                  ShadowNodeFragment::nullSharedProps(),        // sharedProps
+                  ShadowNodeFragment::nullSharedEventEmitter(), // eventEmitter
+                  rootChildNodes,                               // children
+              });
         },
         startCommitTime);
   });
