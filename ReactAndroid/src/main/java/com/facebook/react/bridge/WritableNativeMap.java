@@ -14,6 +14,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.proguard.annotations.DoNotStrip;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Implementation of a write-only map stored in native memory. Use
@@ -33,13 +34,13 @@ public class WritableNativeMap extends ReadableNativeMap implements WritableMap 
   @Override
   public native void putInt(@Nonnull String key, int value);
   @Override
-  public native void putString(@Nonnull String key, @Nonnull String value);
+  public native void putString(@Nonnull String key, @Nullable String value);
   @Override
   public native void putNull(@NonNull String key);
 
   // Note: this consumes the map so do not reuse it.
   @Override
-  public void putMap(@Nonnull String key, @Nonnull WritableMap value) {
+  public void putMap(@Nonnull String key, @Nullable WritableMap value) {
     Assertions.assertCondition(
         value == null || value instanceof WritableNativeMap, "Illegal type provided");
     putNativeMap(key, (WritableNativeMap) value);
@@ -47,7 +48,7 @@ public class WritableNativeMap extends ReadableNativeMap implements WritableMap 
 
   // Note: this consumes the map so do not reuse it.
   @Override
-  public void putArray(@Nonnull String key, @Nonnull WritableArray value) {
+  public void putArray(@Nonnull String key, @Nullable WritableArray value) {
     Assertions.assertCondition(
         value == null || value instanceof WritableNativeArray, "Illegal type provided");
     putNativeArray(key, (WritableNativeArray) value);
