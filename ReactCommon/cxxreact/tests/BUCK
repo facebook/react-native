@@ -8,6 +8,7 @@ load(
 
 TEST_SRCS = [
     "RecoverableErrorTest.cpp",
+    "JSDeltaBundleClientTest.cpp",
     "jsarg_helpers.cpp",
     "jsbigstring.cpp",
     "methodcall.cpp",
