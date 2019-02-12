@@ -74,6 +74,12 @@ module.exports = {
     return require('ListView');
   },
   get MaskedViewIOS() {
+    warnOnce(
+      'maskedviewios-moved',
+      'MaskedViewIOS has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/masked-view' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-masked-view',
+    );
     return require('MaskedViewIOS');
   },
   get Modal() {
