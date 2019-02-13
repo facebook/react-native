@@ -173,4 +173,8 @@ public class ReactNativeTestRule implements TestRule {
   public ReactRootView getView() {
     return mView;
   }
+
+  public ReactContext getContext() {
+    return mReactInstanceManager.getCurrentReactContext();
+  }
 }

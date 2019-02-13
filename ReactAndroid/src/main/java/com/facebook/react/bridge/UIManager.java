@@ -8,9 +8,8 @@
 package com.facebook.react.bridge;
 
 import com.facebook.react.bridge.WritableMap;
+import android.view.View;
 import com.facebook.react.uimanager.common.MeasureSpecProvider;
-import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
-
 import javax.annotation.Nullable;
 
 public interface UIManager extends JSIModule, PerformanceCounter {
@@ -18,7 +17,7 @@ public interface UIManager extends JSIModule, PerformanceCounter {
   /**
    * Registers a new root view.
    */
-  <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> int addRootView(final T rootView, WritableMap initialProps, @Nullable String initialUITemplate);
+  <T extends View & MeasureSpecProvider> int addRootView(final T rootView, WritableMap initialProps, @Nullable String initialUITemplate);
 
   /**
    * Unregisters a new root view.

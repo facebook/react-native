@@ -31,7 +31,6 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.yoga.YogaMeasureMode;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -53,7 +52,7 @@ public class MountingManager {
   }
 
   @UiThread
-  public void addRootView(int reactRootTag, SizeMonitoringFrameLayout rootView) {
+  public void addRootView(int reactRootTag, View rootView) {
     if (rootView.getId() != View.NO_ID) {
       throw new IllegalViewOperationException(
           "Trying to add a root view with an explicit id already set. React Native uses "

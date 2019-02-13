@@ -18,6 +18,7 @@ import android.os.SystemClock;
 import android.support.annotation.GuardedBy;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
+import android.view.View;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -57,7 +58,6 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManagerPropertyUpdater;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.common.MeasureSpecProvider;
-import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
@@ -132,7 +132,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   }
 
   @Override
-  public <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> int addRootView(
+  public <T extends View & MeasureSpecProvider> int addRootView(
       final T rootView, final WritableMap initialProps, final @Nullable String initialUITemplate) {
     final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
     ThemedReactContext reactContext =
