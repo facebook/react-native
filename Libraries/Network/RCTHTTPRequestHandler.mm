@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,13 +23,16 @@
 }
 
 @synthesize bridge = _bridge;
+@synthesize methodQueue = _methodQueue;
 
 RCT_EXPORT_MODULE()
 
 - (void)invalidate
 {
-  [_session invalidateAndCancel];
-  _session = nil;
+  dispatch_async(self->_methodQueue, ^{
+    [self->_session invalidateAndCancel];
+    self->_session = nil;
+  });
 }
 
 - (BOOL)isValid
@@ -73,8 +76,10 @@ RCT_EXPORT_MODULE()
                                            valueOptions:NSPointerFunctionsStrongMemory
                                                capacity:0];
   }
-
-  NSURLSessionDataTask *task = [_session dataTaskWithRequest:request];
+  __block NSURLSessionDataTask *task = nil;
+  dispatch_sync(self->_methodQueue, ^{
+    task = [self->_session dataTaskWithRequest:request];
+  });
   {
     std::lock_guard<std::mutex> lock(_mutex);
     [_delegates setObject:delegate forKey:task];
@@ -106,6 +111,21 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend
     delegate = [_delegates objectForKey:task];
   }
   [delegate URLRequest:task didSendDataWithProgress:totalBytesSent];
+}
+
+- (void)URLSession:(NSURLSession *)session
+              task:(NSURLSessionTask *)task
+willPerformHTTPRedirection:(NSHTTPURLResponse *)response
+        newRequest:(NSURLRequest *)request
+ completionHandler:(void (^)(NSURLRequest *))completionHandler
+{
+  // Reset the cookies on redirect.
+  // This is necessary because we're not letting iOS handle cookies by itself
+  NSMutableURLRequest *nextRequest = [request mutableCopy];
+
+  NSArray<NSHTTPCookie *> *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:request.URL];
+  nextRequest.allHTTPHeaderFields = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
+  completionHandler(nextRequest);
 }
 
 - (void)URLSession:(NSURLSession *)session

@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 package com.facebook.react.modules.accessibilityinfo;
 
@@ -21,11 +24,13 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
  * Module that monitors and provides information about the state of Touch Exploration service
  * on the device. For API >= 19.
  */
-@ReactModule(name = "AccessibilityInfo")
+@ReactModule(name = AccessibilityInfoModule.NAME)
 public class AccessibilityInfoModule extends ReactContextBaseJavaModule
         implements LifecycleEventListener {
 
-    @TargetApi(19)
+    public static final String NAME = "AccessibilityInfo";
+
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     private class ReactTouchExplorationStateChangeListener
             implements AccessibilityManager.TouchExplorationStateChangeListener {
 
@@ -46,7 +51,7 @@ public class AccessibilityInfoModule extends ReactContextBaseJavaModule
         Context appContext = context.getApplicationContext();
         mAccessibilityManager = (AccessibilityManager) appContext.getSystemService(Context.ACCESSIBILITY_SERVICE);
         mEnabled = mAccessibilityManager.isTouchExplorationEnabled();
-        if (Build.VERSION.SDK_INT >= 19) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             mTouchExplorationStateChangeListener = new ReactTouchExplorationStateChangeListener();
         }
     }
@@ -71,7 +76,7 @@ public class AccessibilityInfoModule extends ReactContextBaseJavaModule
 
     @Override
     public void onHostResume() {
-        if (Build.VERSION.SDK_INT >= 19) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             mAccessibilityManager.addTouchExplorationStateChangeListener(
                     mTouchExplorationStateChangeListener);
         }
@@ -80,7 +85,7 @@ public class AccessibilityInfoModule extends ReactContextBaseJavaModule
 
     @Override
     public void onHostPause() {
-        if (Build.VERSION.SDK_INT >= 19) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             mAccessibilityManager.removeTouchExplorationStateChangeListener(
                     mTouchExplorationStateChangeListener);
         }

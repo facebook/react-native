@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -68,7 +68,7 @@ public class DisplayMetricsHolder {
     // The real metrics include system decor elements (e.g. soft menu bar).
     //
     // See: http://developer.android.com/reference/android/view/Display.html#getRealMetrics(android.util.DisplayMetrics)
-    if (Build.VERSION.SDK_INT >= 17) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
       display.getRealMetrics(screenDisplayMetrics);
     } else {
       // For 14 <= API level <= 16, we need to invoke getRawHeight and getRawWidth to get the real dimensions.

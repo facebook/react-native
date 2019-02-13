@@ -1,39 +1,39 @@
 /**
- * Copyright (c) 2014-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
-
 #pragma once
 #include "YGNode.h"
 #include "Yoga-internal.h"
+#include "CompactValue.h"
 
-// This struct is an helper model to hold the data for step 4 of flexbox
-// algo, which is collecting the flex items in a line.
+// This struct is an helper model to hold the data for step 4 of flexbox algo,
+// which is collecting the flex items in a line.
 //
 // - itemsOnLine: Number of items which can fit in a line considering the
-// available Inner dimension, the flex items computed flexbasis and their
-// margin. It may be different than the difference between start and end
-// indicates because we skip over absolute-positioned items.
+//   available Inner dimension, the flex items computed flexbasis and their
+//   margin. It may be different than the difference between start and end
+//   indicates because we skip over absolute-positioned items.
 //
 // - sizeConsumedOnCurrentLine: It is accumulation of the dimensions and margin
-// of all the children on the current line. This will be used in order to either
-// set the dimensions of the node if none already exist or to compute the
-// remaining space left for the flexible children.
+//   of all the children on the current line. This will be used in order to
+//   either set the dimensions of the node if none already exist or to compute
+//   the remaining space left for the flexible children.
 //
 // - totalFlexGrowFactors: total flex grow factors of flex items which are to be
-// layed in the current line
+//   layed in the current line
 //
 // - totalFlexShrinkFactors: total flex shrink factors of flex items which are
-// to be layed in the current line
+//   to be layed in the current line
 //
 // - endOfLineIndex: Its the end index of the last flex item which was examined
-// and it may or may not be part of the current line(as it may be absolutely
-// positioned or inculding it may have caused to overshoot availableInnerDim)
+//   and it may or may not be part of the current line(as it may be absolutely
+//   positioned or inculding it may have caused to overshoot availableInnerDim)
 //
 // - relativeChildren: Maintain a vector of the child nodes that can shrink
-// and/or grow.
+//   and/or grow.
 
 struct YGCollectFlexItemsRowValues {
   uint32_t itemsOnLine;
@@ -58,22 +58,12 @@ bool YGValueEqual(const YGValue a, const YGValue b);
 // difference between two floats is less than 0.0001f or both are undefined.
 bool YGFloatsEqual(const float a, const float b);
 
-// We need custom max function, since we want that, if one argument is
-// YGUndefined then the max funtion should return the other argument as the max
-// value. We wouldn't have needed a custom max function if YGUndefined was NAN
-// as fmax has the same behaviour, but with NAN we cannot use `-ffast-math`
-// compiler flag.
 float YGFloatMax(const float a, const float b);
 
 YGFloatOptional YGFloatOptionalMax(
-    const YGFloatOptional& op1,
-    const YGFloatOptional& op2);
+    const YGFloatOptional op1,
+    const YGFloatOptional op2);
 
-// We need custom min function, since we want that, if one argument is
-// YGUndefined then the min funtion should return the other argument as the min
-// value. We wouldn't have needed a custom min function if YGUndefined was NAN
-// as fmin has the same behaviour, but with NAN we cannot use `-ffast-math`
-// compiler flag.
 float YGFloatMin(const float a, const float b);
 
 // This custom float comparision function compares the array of float with
@@ -91,12 +81,7 @@ bool YGFloatArrayEqual(
 }
 
 // This function returns 0 if YGFloatIsUndefined(val) is true and val otherwise
-float YGFloatSanitize(const float& val);
-
-// This function unwraps optional and returns YGUndefined if not defined or
-// op.value otherwise
-// TODO: Get rid off this function
-float YGUnwrapFloatOptional(const YGFloatOptional& op);
+float YGFloatSanitize(const float val);
 
 YGFlexDirection YGFlexDirectionCross(
     const YGFlexDirection flexDirection,
@@ -107,18 +92,17 @@ inline bool YGFlexDirectionIsRow(const YGFlexDirection flexDirection) {
       flexDirection == YGFlexDirectionRowReverse;
 }
 
-inline YGFloatOptional YGResolveValue(const YGValue value, const float ownerSize) {
+inline YGFloatOptional YGResolveValue(
+    const YGValue value,
+    const float ownerSize) {
   switch (value.unit) {
-    case YGUnitUndefined:
-    case YGUnitAuto:
-      return YGFloatOptional();
     case YGUnitPoint:
-      return YGFloatOptional(value.value);
+      return YGFloatOptional{value.value};
     case YGUnitPercent:
-      return YGFloatOptional(
-          static_cast<float>(value.value * ownerSize * 0.01));
+      return YGFloatOptional{value.value * ownerSize * 0.01f};
+    default:
+      return YGFloatOptional{};
   }
-  return YGFloatOptional();
 }
 
 inline bool YGFlexDirectionIsColumn(const YGFlexDirection flexDirection) {
@@ -140,9 +124,8 @@ inline YGFlexDirection YGResolveFlexDirection(
   return flexDirection;
 }
 
-static inline YGFloatOptional YGResolveValueMargin(
-    const YGValue value,
+inline YGFloatOptional YGResolveValueMargin(
+    yoga::detail::CompactValue value,
     const float ownerSize) {
-  return value.unit == YGUnitAuto ? YGFloatOptional(0)
-                                  : YGResolveValue(value, ownerSize);
+  return value.isAuto() ? YGFloatOptional{0} : YGResolveValue(value, ownerSize);
 }

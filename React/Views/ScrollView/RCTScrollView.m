@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -155,7 +155,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 @property (nonatomic, assign) BOOL centerContent;
 #if !TARGET_OS_TV
-@property (nonatomic, strong) RCTRefreshControl *rctRefreshControl;
+@property (nonatomic, strong) UIView<RCTCustomRefreshContolProtocol> *customRefreshControl;
 @property (nonatomic, assign) BOOL pinchGestureEnabled;
 #endif
 
@@ -303,7 +303,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       contentOffset.y = -(scrollViewSize.height - subviewSize.height) / 2.0;
     }
   }
-  super.contentOffset = contentOffset;
+
+  super.contentOffset = CGPointMake(
+    RCTSanitizeNaNValue(contentOffset.x, @"scrollView.contentOffset.x"),
+    RCTSanitizeNaNValue(contentOffset.y, @"scrollView.contentOffset.y"));
 }
 
 - (void)setFrame:(CGRect)frame
@@ -329,13 +332,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 }
 
 #if !TARGET_OS_TV
-- (void)setRctRefreshControl:(RCTRefreshControl *)refreshControl
+- (void)setCustomRefreshControl:(UIView<RCTCustomRefreshContolProtocol> *)refreshControl
 {
-  if (_rctRefreshControl) {
-    [_rctRefreshControl removeFromSuperview];
+  if (_customRefreshControl) {
+    [_customRefreshControl removeFromSuperview];
   }
-  _rctRefreshControl = refreshControl;
-  [self addSubview:_rctRefreshControl];
+  _customRefreshControl = refreshControl;
+  [self addSubview:_customRefreshControl];
 }
 
 - (void)setPinchGestureEnabled:(BOOL)pinchGestureEnabled
@@ -393,7 +396,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     // doesn't do weird things to UIScrollView insets automatically
     // and keeps it as an opt-in behavior.
     if ([_scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
+      if (@available(iOS 11.0, *)) {
         _scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+      }
     }
 #endif
 
@@ -441,13 +446,12 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(UIView *view, 
 {
   [super insertReactSubview:view atIndex:atIndex];
 #if !TARGET_OS_TV
-  if ([view isKindOfClass:[RCTRefreshControl class]]) {
-    [_scrollView setRctRefreshControl:(RCTRefreshControl *)view];
-  }
-  else if ([view conformsToProtocol:@protocol(UIScrollViewDelegate)]) {
-    [self addScrollListener:(UIView<UIScrollViewDelegate> *)view];
-    [_scrollView addSubview:view];
-    [_scrollView sendSubviewToBack:view];
+  if ([view conformsToProtocol:@protocol(RCTCustomRefreshContolProtocol)]) {
+    [_scrollView setCustomRefreshControl:(UIView<RCTCustomRefreshContolProtocol> *)view];
+    if (![view isKindOfClass:[UIRefreshControl class]]
+        && [view conformsToProtocol:@protocol(UIScrollViewDelegate)]) {
+      [self addScrollListener:(UIView<UIScrollViewDelegate> *)view];
+    }
   } else
 #endif
   {
@@ -462,11 +466,12 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(UIView *view, 
 {
   [super removeReactSubview:subview];
 #if !TARGET_OS_TV
-  if ([subview isKindOfClass:[RCTRefreshControl class]]) {
-    [_scrollView setRctRefreshControl:nil];
-  } else if ([subview conformsToProtocol:@protocol(UIScrollViewDelegate)]) {
-    [self removeScrollListener:(UIView<UIScrollViewDelegate> *)subview];
-    [subview removeFromSuperview];
+  if ([subview conformsToProtocol:@protocol(RCTCustomRefreshContolProtocol)]) {
+    [_scrollView setCustomRefreshControl:nil];
+    if (![subview isKindOfClass:[UIRefreshControl class]]
+        && [subview conformsToProtocol:@protocol(UIScrollViewDelegate)]) {
+      [self removeScrollListener:(UIView<UIScrollViewDelegate> *)subview];
+    }
   } else
 #endif
   {
@@ -517,8 +522,8 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(UIView *view, 
 
 #if !TARGET_OS_TV
   // Adjust the refresh control frame if the scrollview layout changes.
-  RCTRefreshControl *refreshControl = _scrollView.rctRefreshControl;
-  if (refreshControl && refreshControl.refreshing) {
+  UIView<RCTCustomRefreshContolProtocol> *refreshControl = _scrollView.customRefreshControl;
+  if (refreshControl && refreshControl.isRefreshing) {
     refreshControl.frame = (CGRect){_scrollView.contentOffset, {_scrollView.frame.size.width, refreshControl.frame.size.height}};
   }
 #endif
@@ -646,6 +651,7 @@ for (NSObject<UIScrollViewDelegate> *scrollViewListener in _scrollListeners) { \
 
 RCT_SCROLL_EVENT_HANDLER(scrollViewWillBeginDecelerating, onMomentumScrollBegin)
 RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
+RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
 
 - (void)addScrollListener:(NSObject<UIScrollViewDelegate> *)scrollListener
 {
@@ -725,12 +731,91 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
 
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
 {
-  // snapToInterval
-  // An alternative to enablePaging which allows setting custom stopping intervals,
-  // smaller than a full page size. Often seen in apps which feature horizonally
-  // scrolling items. snapToInterval does not enforce scrolling one interval at a time
-  // but guarantees that the scroll will stop at an interval point.
-  if (self.snapToInterval) {
+  if (self.snapToOffsets) {
+    // An alternative to enablePaging and snapToInterval which allows setting custom
+    // stopping points that don't have to be the same distance apart. Often seen in
+    // apps which feature horizonally scrolling items. snapToInterval does not enforce
+    // scrolling one interval at a time but guarantees that the scroll will stop at
+    // a snap offset point.
+
+    // Find which axis to snap
+    BOOL isHorizontal = [self isHorizontal:scrollView];
+    CGFloat velocityAlongAxis = isHorizontal ? velocity.x : velocity.y;
+    CGFloat offsetAlongAxis = isHorizontal ? _scrollView.contentOffset.x : _scrollView.contentOffset.y;
+
+    // Calculate maximum content offset
+    CGSize viewportSize = [self _calculateViewportSize];
+    CGFloat maximumOffset = isHorizontal
+      ? MAX(0, _scrollView.contentSize.width - viewportSize.width)
+      : MAX(0, _scrollView.contentSize.height - viewportSize.height);
+
+    // Calculate the snap offsets adjacent to the initial offset target
+    CGFloat targetOffset = isHorizontal ? targetContentOffset->x : targetContentOffset->y;
+    CGFloat smallerOffset = 0.0;
+    CGFloat largerOffset = maximumOffset;
+
+    for (int i = 0; i < self.snapToOffsets.count; i++) {
+      CGFloat offset = [[self.snapToOffsets objectAtIndex:i] floatValue];
+
+      if (offset <= targetOffset) {
+        if (targetOffset - offset < targetOffset - smallerOffset) {
+          smallerOffset = offset;
+        }
+      }
+
+      if (offset >= targetOffset) {
+        if (offset - targetOffset < largerOffset - targetOffset) {
+          largerOffset = offset;
+        }
+      }
+    }
+
+    // Calculate the nearest offset
+    CGFloat nearestOffset = targetOffset - smallerOffset < largerOffset - targetOffset
+      ? smallerOffset
+      : largerOffset;
+
+    CGFloat firstOffset = [[self.snapToOffsets firstObject] floatValue];
+    CGFloat lastOffset = [[self.snapToOffsets lastObject] floatValue];
+
+    // if scrolling after the last snap offset and snapping to the
+    // end of the list is disabled, then we allow free scrolling
+    if (!self.snapToEnd && targetOffset >= lastOffset) {
+      if (offsetAlongAxis >= lastOffset) {
+        // free scrolling
+      } else {
+        // snap to end
+        targetOffset = lastOffset;
+      }
+    } else if (!self.snapToStart && targetOffset <= firstOffset) {
+      if (offsetAlongAxis <= firstOffset) {
+        // free scrolling
+      } else {
+        // snap to beginning
+        targetOffset = firstOffset;
+      }
+    } else if (velocityAlongAxis > 0.0) {
+      targetOffset = largerOffset;
+    } else if (velocityAlongAxis < 0.0) {
+      targetOffset = smallerOffset;
+    } else {
+      targetOffset = nearestOffset;
+    }
+
+    // Make sure the new offset isn't out of bounds
+    targetOffset = MIN(MAX(0, targetOffset), maximumOffset);
+
+    // Set new targetContentOffset
+    if (isHorizontal) {
+      targetContentOffset->x = targetOffset;
+    } else {
+      targetContentOffset->y = targetOffset;
+    }
+  } else if (self.snapToInterval) {
+    // An alternative to enablePaging which allows setting custom stopping intervals,
+    // smaller than a full page size. Often seen in apps which feature horizonally
+    // scrolling items. snapToInterval does not enforce scrolling one interval at a time
+    // but guarantees that the scroll will stop at an interval point.
     CGFloat snapToIntervalF = (CGFloat)self.snapToInterval;
 
     // Find which axis to snap
@@ -1034,7 +1119,9 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIE
   // `contentInsetAdjustmentBehavior` is available since iOS 11.
   if ([_scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
     CGPoint contentOffset = _scrollView.contentOffset;
-    _scrollView.contentInsetAdjustmentBehavior = behavior;
+    if (@available(iOS 11.0, *)) {
+      _scrollView.contentInsetAdjustmentBehavior = behavior;
+    }
     _scrollView.contentOffset = contentOffset;
   }
 }

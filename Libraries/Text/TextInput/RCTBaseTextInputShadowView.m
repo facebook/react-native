@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,6 +23,7 @@
   NSAttributedString *_Nullable _localAttributedText;
   CGSize _previousContentSize;
 
+  NSString *_text;
   NSTextStorage *_textStorage;
   NSTextContainer *_textContainer;
   NSLayoutManager *_layoutManager;
@@ -99,6 +100,20 @@
     },
     @"target": self.reactTag,
   });
+}
+
+- (NSString *)text
+{
+  return _text;
+}
+
+- (void)setText:(NSString *)text
+{
+  _text = text;
+  // Clear `_previousAttributedText` to notify the view about the change
+  // when `text` native prop is set.
+  _previousAttributedText = nil;
+  [self dirtyLayout];
 }
 
 #pragma mark - RCTUIManagerObserver

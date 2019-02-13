@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,7 +9,6 @@ package com.facebook.react.devsupport;
 
 import java.util.Locale;
 
-import android.annotation.TargetApi;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -26,7 +25,6 @@ import com.facebook.react.modules.debug.FpsDebugFrameCallback;
  *
  * NB: Requires API 16 for use of FpsDebugFrameCallback.
  */
-@TargetApi(16)
 public class FpsView extends FrameLayout {
 
   private static final int UPDATE_INTERVAL_MS = 500;
@@ -39,7 +37,7 @@ public class FpsView extends FrameLayout {
     super(reactContext);
     inflate(reactContext, R.layout.fps_view, this);
     mTextView = (TextView) findViewById(R.id.fps_text);
-    mFrameCallback = new FpsDebugFrameCallback(ChoreographerCompat.getInstance(), reactContext);
+    mFrameCallback = new FpsDebugFrameCallback(reactContext);
     mFPSMonitorRunnable = new FPSMonitorRunnable();
     setCurrentFPS(0, 0, 0, 0);
   }

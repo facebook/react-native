@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,12 +7,14 @@
 
 package com.facebook.react.bridge;
 
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
-
+import com.facebook.react.config.ReactFeatureFlags;
 import java.util.ArrayList;
 import java.util.Arrays;
-import com.facebook.infer.annotation.Assertions;
+
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -34,9 +36,8 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
   private @Nullable ReadableType[] mLocalTypeArray;
 
   private static int jniPassCounter = 0;
-  private static boolean mUseNativeAccessor = false;
   public static void setUseNativeAccessor(boolean useNativeAccessor) {
-    mUseNativeAccessor = useNativeAccessor;
+    ReactFeatureFlags.useArrayNativeAccessor = useNativeAccessor;
   }
   public static int getJNIPassCounter() {
     return jniPassCounter;
@@ -77,7 +78,7 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
 
   @Override
   public int size() {
-    if (mUseNativeAccessor) {
+    if (ReactFeatureFlags.useArrayNativeAccessor) {
       jniPassCounter++;
       return sizeNative();
     }
@@ -87,7 +88,7 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
 
   @Override
   public boolean isNull(int index) {
-    if (mUseNativeAccessor) {
+    if (ReactFeatureFlags.useArrayNativeAccessor) {
       jniPassCounter++;
       return isNullNative(index);
     }
@@ -97,7 +98,7 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
 
   @Override
   public boolean getBoolean(int index) {
-    if (mUseNativeAccessor) {
+    if (ReactFeatureFlags.useArrayNativeAccessor) {
       jniPassCounter++;
       return getBooleanNative(index);
     }
@@ -107,7 +108,7 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
 
   @Override
   public double getDouble(int index) {
-    if (mUseNativeAccessor) {
+    if (ReactFeatureFlags.useArrayNativeAccessor) {
       jniPassCounter++;
       return getDoubleNative(index);
     }
@@ -117,7 +118,7 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
 
   @Override
   public int getInt(int index) {
-    if (mUseNativeAccessor) {
+    if (ReactFeatureFlags.useArrayNativeAccessor) {
       jniPassCounter++;
       return getIntNative(index);
     }
@@ -126,8 +127,8 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
   private native int getIntNative(int index);
 
   @Override
-  public String getString(int index) {
-    if (mUseNativeAccessor) {
+  public @Nullable String getString(int index) {
+    if (ReactFeatureFlags.useArrayNativeAccessor) {
       jniPassCounter++;
       return getStringNative(index);
     }
@@ -136,8 +137,8 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
   private native String getStringNative(int index);
 
   @Override
-  public ReadableNativeArray getArray(int index) {
-    if (mUseNativeAccessor) {
+  public @Nullable ReadableNativeArray getArray(int index) {
+    if (ReactFeatureFlags.useArrayNativeAccessor) {
       jniPassCounter++;
       return getArrayNative(index);
     }
@@ -146,8 +147,8 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
   private native ReadableNativeArray getArrayNative(int index);
 
   @Override
-  public ReadableNativeMap getMap(int index) {
-    if (mUseNativeAccessor) {
+  public @Nullable ReadableNativeMap getMap(int index) {
+    if (ReactFeatureFlags.useArrayNativeAccessor) {
       jniPassCounter++;
       return getMapNative(index);
     }
@@ -156,8 +157,8 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
   private native ReadableNativeMap getMapNative(int index);
 
   @Override
-  public ReadableType getType(int index) {
-    if (mUseNativeAccessor) {
+  public @Nonnull ReadableType getType(int index) {
+    if (ReactFeatureFlags.useArrayNativeAccessor) {
       jniPassCounter++;
       return getTypeNative(index);
     }
@@ -167,12 +168,12 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
   private native ReadableType getTypeNative(int index);
 
   @Override
-  public Dynamic getDynamic(int index) {
+  public @Nonnull Dynamic getDynamic(int index) {
     return DynamicFromArray.create(this, index);
   }
 
   @Override
-  public ArrayList<Object> toArrayList() {
+  public @Nonnull ArrayList<Object> toArrayList() {
     ArrayList<Object> arrayList = new ArrayList<>();
 
     for (int i = 0; i < this.size(); i++) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -36,12 +36,14 @@ static NSString *const RCTReachabilityStateCell = @"cell";
 
 @implementation RCTNetInfo
 {
+  SCNetworkReachabilityRef _firstTimeReachability;
   SCNetworkReachabilityRef _reachability;
   NSString *_connectionType;
   NSString *_effectiveConnectionType;
   NSString *_statusDeprecated;
   NSString *_host;
   BOOL _isObserving;
+  RCTPromiseResolveBlock _resolve;
 }
 
 RCT_EXPORT_MODULE()
@@ -49,11 +51,34 @@ RCT_EXPORT_MODULE()
 static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SCNetworkReachabilityFlags flags, void *info)
 {
   RCTNetInfo *self = (__bridge id)info;
-  if ([self setReachabilityStatus:flags] && self->_isObserving) {
-    [self sendEventWithName:@"networkStatusDidChange" body:@{@"connectionType": self->_connectionType,
-                                                             @"effectiveConnectionType": self->_effectiveConnectionType,
-                                                             @"network_info": self->_statusDeprecated}];
+  BOOL didSetReachabilityFlags = [self setReachabilityStatus:flags];
+  
+  NSString *connectionType = self->_connectionType ?: RCTConnectionTypeUnknown;
+  NSString *effectiveConnectionType = self->_effectiveConnectionType ?: RCTEffectiveConnectionTypeUnknown;
+  NSString *networkInfo = self->_statusDeprecated ?: RCTReachabilityStateUnknown;
+
+  if (self->_firstTimeReachability && self->_resolve) {
+    SCNetworkReachabilityUnscheduleFromRunLoop(self->_firstTimeReachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
+    CFRelease(self->_firstTimeReachability);
+    self->_resolve(@{@"connectionType": connectionType,
+                     @"effectiveConnectionType": effectiveConnectionType,
+                     @"network_info": networkInfo});
+    self->_firstTimeReachability = nil;
+    self->_resolve = nil;
   }
+
+  if (didSetReachabilityFlags && self->_isObserving) {
+    [self sendEventWithName:@"networkStatusDidChange" body:@{@"connectionType": connectionType,
+                                                             @"effectiveConnectionType": effectiveConnectionType,
+                                                             @"network_info": networkInfo}];
+  }
+}
+
+// We need RCTReachabilityCallback's and module methods to be called on the same thread so that we can have
+// guarantees about when we mess with the reachability callbacks.
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_get_main_queue();
 }
 
 #pragma mark - Lifecycle
@@ -89,6 +114,16 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
   if (_reachability) {
     SCNetworkReachabilityUnscheduleFromRunLoop(_reachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
     CFRelease(_reachability);
+  }
+}
+
+- (void)dealloc
+{
+  if (_firstTimeReachability) {
+    SCNetworkReachabilityUnscheduleFromRunLoop(self->_firstTimeReachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
+    CFRelease(self->_firstTimeReachability);
+    _firstTimeReachability = nil;
+    _resolve = nil;
   }
 }
 
@@ -163,12 +198,14 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
 RCT_EXPORT_METHOD(getCurrentConnectivity:(RCTPromiseResolveBlock)resolve
                   reject:(__unused RCTPromiseRejectBlock)reject)
 {
-  SCNetworkReachabilityRef reachability = [self getReachabilityRef];
-  SCNetworkReachabilityUnscheduleFromRunLoop(reachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
-  CFRelease(reachability);
-  resolve(@{@"connectionType": _connectionType ?: RCTConnectionTypeUnknown,
-            @"effectiveConnectionType": _effectiveConnectionType ?: RCTEffectiveConnectionTypeUnknown,
-            @"network_info": _statusDeprecated ?: RCTReachabilityStateUnknown});
+  if (_firstTimeReachability) {
+    SCNetworkReachabilityUnscheduleFromRunLoop(self->_firstTimeReachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
+    CFRelease(self->_firstTimeReachability);
+    _firstTimeReachability = nil;
+    _resolve = nil;
+  }
+  _firstTimeReachability = [self getReachabilityRef];
+  _resolve = resolve;
 }
 
 @end

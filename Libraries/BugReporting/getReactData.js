@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -142,8 +142,14 @@ function setInContext(inst, path: Array<string | number>, value: any) {
 
 function setIn(obj: Object, path: Array<string | number>, value: any) {
   const last = path.pop();
+  /* $FlowFixMe(>=0.88.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.88 was deployed. To see the error, delete this comment
+   * and run Flow. */
   const parent = path.reduce((obj_, attr) => (obj_ ? obj_[attr] : null), obj);
   if (parent) {
+    /* $FlowFixMe(>=0.88.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.88 was deployed. To see the error, delete this
+     * comment and run Flow. */
     parent[last] = value;
   }
 }

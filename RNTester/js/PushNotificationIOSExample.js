@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,10 +10,10 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
-  AlertIOS,
+const React = require('react');
+const ReactNative = require('react-native');
+const {
+  Alert,
   PushNotificationIOS,
   StyleSheet,
   Text,
@@ -110,20 +110,16 @@ class NotificationExample extends React.Component<{}> {
   }
 
   _onRegistered(deviceToken) {
-    AlertIOS.alert(
-      'Registered For Remote Push',
-      `Device Token: ${deviceToken}`,
-      [
-        {
-          text: 'Dismiss',
-          onPress: null,
-        },
-      ],
-    );
+    Alert.alert('Registered For Remote Push', `Device Token: ${deviceToken}`, [
+      {
+        text: 'Dismiss',
+        onPress: null,
+      },
+    ]);
   }
 
   _onRegistrationError(error) {
-    AlertIOS.alert(
+    Alert.alert(
       'Failed To Register For Remote Push',
       `Error (${error.code}): ${error.message}`,
       [
@@ -142,7 +138,7 @@ class NotificationExample extends React.Component<{}> {
       category: ${notification.getCategory()};\n
       content-available: ${notification.getContentAvailable()}.`;
 
-    AlertIOS.alert('Push Notification Received', result, [
+    Alert.alert('Push Notification Received', result, [
       {
         text: 'Dismiss',
         onPress: null,
@@ -151,7 +147,7 @@ class NotificationExample extends React.Component<{}> {
   }
 
   _onLocalNotification(notification) {
-    AlertIOS.alert(
+    Alert.alert(
       'Local Notification Received',
       'Alert message: ' + notification.getMessage(),
       [
@@ -192,7 +188,7 @@ class NotificationPermissionExample extends React.Component<
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   button: {
     padding: 10,
     alignItems: 'center',

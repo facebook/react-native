@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,16 +9,16 @@
  */
 'use strict';
 
-const MetroListView = require('MetroListView'); // Used as a fallback legacy option
+const Platform = require('Platform');
+const deepDiffer = require('deepDiffer');
 const React = require('React');
 const View = require('View');
 const VirtualizedList = require('VirtualizedList');
-const ListView = require('ListView');
 const StyleSheet = require('StyleSheet');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
-import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
+import type {ViewStyleProp} from 'StyleSheet';
 import type {
   ViewabilityConfig,
   ViewToken,
@@ -89,14 +89,22 @@ type OptionalProps<ItemT> = {
    */
   ListFooterComponent?: ?(React.ComponentType<any> | React.Element<any>),
   /**
+   * Styling for internal View for ListFooterComponent
+   */
+  ListFooterComponentStyle?: ViewStyleProp,
+  /**
    * Rendered at the top of all the items. Can be a React Component Class, a render function, or
    * a rendered element.
    */
   ListHeaderComponent?: ?(React.ComponentType<any> | React.Element<any>),
   /**
+   * Styling for internal View for ListHeaderComponent
+   */
+  ListHeaderComponentStyle?: ViewStyleProp,
+  /**
    * Optional custom style for multi-item rows generated when numColumns > 1.
    */
-  columnWrapperStyle?: DangerouslyImpreciseStyleProp,
+  columnWrapperStyle?: ViewStyleProp,
   /**
    * A marker property for telling the list to re-render (since it implements `PureComponent`). If
    * any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the
@@ -181,7 +189,10 @@ type OptionalProps<ItemT> = {
    * @platform android
    */
   progressViewOffset?: number,
-  legacyImplementation?: ?boolean,
+  /**
+   * The legacy implementation is no longer supported.
+   */
+  legacyImplementation?: empty,
   /**
    * Set this true while waiting for new data from a refresh.
    */
@@ -209,6 +220,12 @@ export type Props<ItemT> = RequiredProps<ItemT> &
 const defaultProps = {
   ...VirtualizedList.defaultProps,
   numColumns: 1,
+  /**
+   * Enabling this prop on Android greatly improves scrolling performance with no known issues.
+   * The alternative is that scrolling on Android is unusably bad. Enabling it on iOS has a few
+   * known issues.
+   */
+  removeClippedSubviews: Platform.OS === 'android',
 };
 export type DefaultProps = typeof defaultProps;
 
@@ -347,7 +364,6 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     viewPosition?: number,
   }) {
     if (this._listRef) {
-      // $FlowFixMe Found when typing ListView
       this._listRef.scrollToIndex(params);
     }
   }
@@ -364,7 +380,6 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     viewPosition?: number,
   }) {
     if (this._listRef) {
-      // $FlowFixMe Found when typing ListView
       this._listRef.scrollToItem(params);
     }
   }
@@ -376,7 +391,6 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
    */
   scrollToOffset(params: {animated?: ?boolean, offset: number}) {
     if (this._listRef) {
-      // $FlowFixMe Found when typing ListView
       this._listRef.scrollToOffset(params);
     }
   }
@@ -388,7 +402,6 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
    */
   recordInteraction() {
     if (this._listRef) {
-      // $FlowFixMe Found when typing ListView
       this._listRef.recordInteraction();
     }
   }
@@ -400,7 +413,6 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
    */
   flashScrollIndicators() {
     if (this._listRef) {
-      // $FlowFixMe Found when typing ListView
       this._listRef.flashScrollIndicators();
     }
   }
@@ -410,14 +422,12 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
    */
   getScrollResponder() {
     if (this._listRef) {
-      // $FlowFixMe Found when typing ListView
       return this._listRef.getScrollResponder();
     }
   }
 
   getScrollableNode() {
     if (this._listRef) {
-      // $FlowFixMe Found when typing ListView
       return this._listRef.getScrollableNode();
     }
   }
@@ -464,7 +474,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
       'Changing onViewableItemsChanged on the fly is not supported',
     );
     invariant(
-      prevProps.viewabilityConfig === this.props.viewabilityConfig,
+      !deepDiffer(prevProps.viewabilityConfig, this.props.viewabilityConfig),
       'Changing viewabilityConfig on the fly is not supported',
     );
     invariant(
@@ -476,8 +486,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     this._checkProps(this.props);
   }
 
-  _hasWarnedLegacy = false;
-  _listRef: null | VirtualizedList | ListView | MetroListView;
+  _listRef: ?React.ElementRef<typeof VirtualizedList>;
   _virtualizedListPairs: Array<ViewabilityConfigCallbackPair> = [];
 
   _captureRef = ref => {
@@ -489,7 +498,6 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
       getItem,
       getItemCount,
       horizontal,
-      legacyImplementation,
       numColumns,
       columnWrapperStyle,
       onViewableItemsChanged,
@@ -506,21 +514,6 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
         !columnWrapperStyle,
         'columnWrapperStyle not supported for single column lists',
       );
-    }
-    if (legacyImplementation) {
-      invariant(
-        numColumns === 1,
-        'Legacy list does not support multiple columns.',
-      );
-      // Warning: may not have full feature parity and is meant more for debugging and performance
-      // comparison.
-      if (!this._hasWarnedLegacy) {
-        console.warn(
-          'FlatList: Using legacyImplementation - some features not supported and performance ' +
-            'may suffer',
-        );
-        this._hasWarnedLegacy = true;
-      }
     }
     invariant(
       !(onViewableItemsChanged && viewabilityConfigCallbackPairs),
@@ -614,7 +607,11 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
         'Expected array of items with numColumns > 1',
       );
       return (
-        <View style={StyleSheet.compose(styles.row, columnWrapperStyle)}>
+        <View
+          style={StyleSheet.compose(
+            styles.row,
+            columnWrapperStyle,
+          )}>
           {item.map((it, kk) => {
             const element = renderItem({
               item: it,
@@ -631,33 +628,17 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   };
 
   render() {
-    if (this.props.legacyImplementation) {
-      return (
-        /* $FlowFixMe(>=0.66.0 site=react_native_fb) This comment suppresses an
-         * error found when Flow v0.66 was deployed. To see the error delete
-         * this comment and run Flow. */
-        <MetroListView
-          {...this.props}
-          /* $FlowFixMe(>=0.66.0 site=react_native_fb) This comment suppresses
-           * an error found when Flow v0.66 was deployed. To see the error
-           * delete this comment and run Flow. */
-          items={this.props.data}
-          ref={this._captureRef}
-        />
-      );
-    } else {
-      return (
-        <VirtualizedList
-          {...this.props}
-          renderItem={this._renderItem}
-          getItem={this._getItem}
-          getItemCount={this._getItemCount}
-          keyExtractor={this._keyExtractor}
-          ref={this._captureRef}
-          viewabilityConfigCallbackPairs={this._virtualizedListPairs}
-        />
-      );
-    }
+    return (
+      <VirtualizedList
+        {...this.props}
+        renderItem={this._renderItem}
+        getItem={this._getItem}
+        getItemCount={this._getItemCount}
+        keyExtractor={this._keyExtractor}
+        ref={this._captureRef}
+        viewabilityConfigCallbackPairs={this._virtualizedListPairs}
+      />
+    );
   }
 }
 

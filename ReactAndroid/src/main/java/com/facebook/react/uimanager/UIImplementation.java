@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,6 +11,7 @@ import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.UNSPECIFIED;
 
 import android.os.SystemClock;
+import android.view.View;
 import android.view.View.MeasureSpec;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -25,7 +26,6 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.common.MeasureSpecProvider;
-import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
@@ -87,7 +87,7 @@ public class UIImplementation {
         minTimeLeftInFrameForNonBatchedOperationMs);
   }
 
-  private UIImplementation(
+  UIImplementation(
       ReactApplicationContext reactContext,
       ViewManagerRegistry viewManagers,
       EventDispatcher eventDispatcher,
@@ -195,7 +195,7 @@ public class UIImplementation {
    * Registers a root node with a given tag, size and ThemedReactContext and adds it to a node
    * registry.
    */
-  public <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> void registerRootView(
+  public <T extends View & MeasureSpecProvider> void registerRootView(
       T rootView, int tag, ThemedReactContext context) {
     final ReactShadowNode rootCSSNode = createRootShadowNode();
     rootCSSNode.setReactTag(tag);
@@ -213,7 +213,7 @@ public class UIImplementation {
     });
 
     // register it within NativeViewHierarchyManager
-    mOperationsQueue.addRootView(tag, rootView, context);
+    mOperationsQueue.addRootView(tag, rootView);
   }
 
   /**
@@ -709,7 +709,7 @@ public class UIImplementation {
           }
 
           if (mLayoutUpdateListener != null) {
-            mLayoutUpdateListener.onLayoutUpdated(cssRoot);
+            mOperationsQueue.enqueueLayoutUpdateFinished(cssRoot, mLayoutUpdateListener);
           }
         }
       }
@@ -776,8 +776,14 @@ public class UIImplementation {
   }
 
   public void setJSResponder(int reactTag, boolean blockNativeResponder) {
-    assertViewExists(reactTag, "setJSResponder");
     ReactShadowNode node = mShadowNodeRegistry.getNode(reactTag);
+
+    if (node == null) {
+      //TODO: this should only happen when using Fabric renderer. This is a temporary approach
+      //and it will be refactored when fabric supports JS Responder.
+      return;
+    }
+
     while (node.isVirtual() || node.isLayoutOnly()) {
       node = node.getParent();
     }

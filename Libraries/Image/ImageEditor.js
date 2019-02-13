@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,25 +16,25 @@ type ImageCropData = {
    * The top-left corner of the cropped image, specified in the original
    * image's coordinate space.
    */
-  offset: {
+  offset: {|
     x: number,
     y: number,
-  },
+  |},
   /**
    * The size (dimensions) of the cropped image, specified in the original
    * image's coordinate space.
    */
-  size: {
+  size: {|
     width: number,
     height: number,
-  },
+  |},
   /**
    * (Optional) size to scale the cropped image to.
    */
-  displaySize?: ?{
+  displaySize?: ?{|
     width: number,
     height: number,
-  },
+  |},
   /**
    * (Optional) the resizing mode to use when scaling the image. If the
    * `displaySize` param is not specified, this has no effect.
@@ -50,7 +50,9 @@ class ImageEditor {
   /**
    * Crop the image specified by the URI param. If URI points to a remote
    * image, it will be downloaded automatically. If the image cannot be
-   * loaded/downloaded, the failure callback will be called.
+   * loaded/downloaded, the failure callback will be called. On Android, a
+   * downloaded image may be cached in external storage, a publicly accessible
+   * location, if it has more available space than internal storage.
    *
    * If the cropping process is successful, the resultant cropped image
    * will be stored in the ImageStore, and the URI returned in the success
