@@ -283,7 +283,7 @@ js_defaults: &js_defaults
 android_defaults: &android_defaults
   <<: *defaults
   docker:
-  - image: reactnativecommunity/react-native-android
+  - image: reactnativecommunity/react-native-android:2019-1-19
   resource_class: "large"
   environment:
     - TERM: "dumb"
