@@ -205,10 +205,11 @@ struct CascadedRectangleEdges {
         vertical.value_or(all.value_or(defaults));
 
     return {
-        left.value_or(leading.value_or(horizontalOrAllOrDefault)), // left
-        right.value_or(trailing.value_or(horizontalOrAllOrDefault)), // right
-        top.value_or(verticalOrAllOrDefault), // top
-        bottom.value_or(verticalOrAllOrDefault), // bottom
+        /* .left = */ left.value_or(leading.value_or(horizontalOrAllOrDefault)),
+        /* .right = */
+        right.value_or(trailing.value_or(horizontalOrAllOrDefault)),
+        /* .top = */ top.value_or(verticalOrAllOrDefault),
+        /* .bottom = */ bottom.value_or(verticalOrAllOrDefault),
     };
   }
 
@@ -262,14 +263,14 @@ struct CascadedRectangleCorners {
     const auto bottomTrailing = isRTL ? bottomStart : bottomEnd;
 
     return {
-        topLeft.value_or(
-            topLeading.value_or(all.value_or(defaults))), // topLeft
-        topRight.value_or(
-            topTrailing.value_or(all.value_or(defaults))), // topRight
-        bottomLeft.value_or(
-            topLeading.value_or(all.value_or(defaults))), // bottomLeft
-        bottomRight.value_or(
-            topTrailing.value_or(all.value_or(defaults))), // bottomRight
+        /* .topLeft = */ topLeft.value_or(
+            topLeading.value_or(all.value_or(defaults))),
+        /* .topRight = */
+        topRight.value_or(topTrailing.value_or(all.value_or(defaults))),
+        /* .bottomLeft = */
+        bottomLeft.value_or(topLeading.value_or(all.value_or(defaults))),
+        /* .bottomRight = */
+        bottomRight.value_or(topTrailing.value_or(all.value_or(defaults))),
     };
   }
 
