@@ -619,15 +619,12 @@ jobs:
     <<: *android_defaults
     steps:
       - checkout
-
-      - restore-cache: *restore-yarn-cache
       - run: *yarn
 
       # Configure Android SDK and related dependencies
       - run: *configure-android-path
       - run: *install-android-build-dependencies
 
-      - restore-cache: *restore-cache-android-packages
       - run: *install-android-packages
 
       # Install Android NDK
@@ -636,16 +633,11 @@ jobs:
       - run: *install-ndk
 
       # Fetch dependencies using Buck
-      - restore-cache: *restore-cache-downloads-buck
       - run: *install-buck
       - run: *download-dependencies-buck
 
       # Fetch dependencies using Gradle
-      - restore-cache: *restore-cache-downloads-gradle
       - run: *download-dependencies-gradle
-
-      - restore-cache: *restore-yarn-cache
-      - run: *yarn
 
       - run:
           name: Authenticate with npm
