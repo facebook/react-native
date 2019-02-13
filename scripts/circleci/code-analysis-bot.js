@@ -31,7 +31,8 @@ function push(arr, key, value) {
 }
 
 const converterSummary = {
-  eslint: '`eslint` found some issues. Run `yarn lint --fix` to automatically fix problems.',
+  eslint:
+    '`eslint` found some issues. Run `yarn lint --fix` to automatically fix problems.',
   flow: '`flow` found some issues.',
   shellcheck: '`shellcheck` found some issues.',
 };
