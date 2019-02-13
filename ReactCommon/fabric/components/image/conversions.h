@@ -17,8 +17,8 @@ namespace react {
 inline void fromRawValue(const RawValue &value, ImageSource &result) {
   if (value.hasType<std::string>()) {
     result = {
-        ImageSource::Type::Remote, // type
-        (std::string)value // uri
+        /* .type = */ ImageSource::Type::Remote,
+        /* .uri = */ (std::string)value,
     };
     return;
   }

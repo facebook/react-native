@@ -49,7 +49,7 @@ ImageSource ImageShadowNode::getImageSource() const {
 
   if (sources.size() == 0) {
     return {
-        ImageSource::Type::Invalid // type
+        /* .type = */ ImageSource::Type::Invalid,
     };
   }
 
