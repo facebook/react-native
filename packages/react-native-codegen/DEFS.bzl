@@ -17,7 +17,7 @@ def rn_codegen_test(
     fb_native.genrule(
         name = copy_schema_name,
         srcs = [],
-        cmd = "$(exe xplat//js/react-native-github/packages/react-native-codegen:copy_fixture_schema) {} $OUT".format(fixture_name),
+        cmd = "$(exe fbsource//xplat/js/react-native-github/packages/react-native-codegen:copy_fixture_schema) {} $OUT".format(fixture_name),
         out = "schema-{}.json".format(fixture_name),
     )
 
@@ -38,7 +38,7 @@ def rn_codegen(
     fb_native.genrule(
         name = generate_fixtures_rule_name,
         srcs = [],
-        cmd = "$(exe xplat//js/react-native-github/packages/react-native-codegen:rn_codegen) $(location {}) {} $OUT".format(schema_target, name),
+        cmd = "$(exe fbsource//xplat/js/react-native-github/packages/react-native-codegen:rn_codegen) $(location {}) {} $OUT".format(schema_target, name),
         out = "codegenfiles-{}".format(name),
     )
 
@@ -120,12 +120,12 @@ def rn_codegen(
         ],
         visibility = ["PUBLIC"],
         deps = [
-            "xplat//fbsystrace:fbsystrace",
-            "xplat//folly:headers_only",
-            "xplat//folly:memory",
-            "xplat//folly:molly",
-            "xplat//third-party/glog:glog",
-            "xplat//yoga:yoga",
+            "fbsource//xplat/fbsystrace:fbsystrace",
+            "fbsource//xplat/folly:headers_only",
+            "fbsource//xplat/folly:memory",
+            "fbsource//xplat/folly:molly",
+            "fbsource//xplat/third-party/glog:glog",
+            "fbsource//xplat/yoga:yoga",
             react_native_xplat_target("fabric/debug:debug"),
             react_native_xplat_target("fabric/core:core"),
             react_native_xplat_target("fabric/graphics:graphics"),
