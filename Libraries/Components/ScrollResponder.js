@@ -206,11 +206,9 @@ const ScrollResponderMixin = {
    *
    * Invoke this from an `onStartShouldSetResponderCapture` event.
    */
-
   scrollResponderHandleStartShouldSetResponderCapture: function(
     e: PressEvent,
   ): boolean {
-
     // The scroll view should receive taps instead of its descendants if:
     // * it is already animating/decelerating
     if (this.scrollResponderIsAnimating()) {
