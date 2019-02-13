@@ -346,7 +346,7 @@ jobs:
       - store_test_results:
           path: ~/react-native/reports/junit
 
-  # Run JavaScript tests on Node lts
+  # Run JavaScript tests on Node LTS
   test_node_lts:
     <<: *defaults
     docker:
