@@ -347,7 +347,7 @@ jobs:
           path: ~/react-native/reports/junit
 
   # Run JavaScript tests on Node lts
-  test_node10:
+  test_node_lts:
     <<: *defaults
     docker:
       - image: node:lts
@@ -615,7 +615,7 @@ workflows:
             - checkout_code
 
       # Tooling Compatibility Checks
-      - test_node10:
+      - test_node_lts:
           filters: *filter-ignore-gh-pages
 
   releases:
