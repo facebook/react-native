@@ -141,11 +141,10 @@ const ScrollResponderMixin = {
    * Invoke this from an `onScroll` event.
    */
   scrollResponderHandleScrollShouldSetResponder: function(): boolean {
-    
     // Allow any event touch pass through if the default pan responder is disabled
-    if(this.props.disableScrollViewPanResponder === true) {
+    if (this.props.disableScrollViewPanResponder === true) {
           return false;
-     }
+    }
     return this.state.isTouching;
   },
 
@@ -179,9 +178,9 @@ const ScrollResponderMixin = {
   ): boolean {
 
     // Allow any event touch pass through if the default pan responder is disabled
-    if(this.props.disableScrollViewPanResponder === true) {
-          return false;
-     }
+    if (this.props.disableScrollViewPanResponder === true) {
+      return false;
+    }
 
     const currentlyFocusedTextInput = TextInputState.currentlyFocusedField();
 
@@ -216,9 +215,9 @@ const ScrollResponderMixin = {
     }
       
     // Allow any event touch pass through if the default pan responder is disabled
-    if(this.props.disableScrollViewPanResponder === true) {
-          return false;
-     }
+    if (this.props.disableScrollViewPanResponder === true) {
+      return false;
+    }
 
     // * the keyboard is up, keyboardShouldPersistTaps is 'never' (the default),
     // and a new touch starts with a non-textinput target (in which case the
