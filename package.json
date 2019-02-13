@@ -132,7 +132,7 @@
     "template"
   ],
   "scripts": {
-    "start": "node cli.js start",
+    "start": "node cli.js start --reactNativePath .",
     "test": "jest",
     "test-ci": "jest --maxWorkers=2 --ci --reporters=\"default\" --reporters=\"jest-junit\"",
     "flow": "flow",

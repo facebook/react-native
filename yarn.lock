@@ -1108,10 +1108,10 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@react-native-community/cli@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-1.1.0.tgz#aa915a86d3242923a77f3035b02103488fc6f91a"
-  integrity sha512-cIMD7IsE+NCSnHRcqU5MvVhhqjopRU9VvBVIndfD4pe9pee+qodOY+II25fa93+3lytxxEx4LEtG5sn0RoAWAQ==
+"@react-native-community/cli@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-1.2.0.tgz#7c460156112f34172b968fe51721ef71759234bf"
+  integrity sha512-OpnhVJkpU4bgqQwk1izYtaf6/bgIvKSj5ALkFs5A5jUW/YThGJpbNjfkUGYjsoPvlKlmfWe40tbDyhDcUfYn8Q==
   dependencies:
     chalk "^1.1.1"
     commander "^2.9.0"
@@ -1137,14 +1137,14 @@
     morgan "^1.9.0"
     node-fetch "^2.2.0"
     node-notifier "^5.2.1"
-    npmlog "^2.0.4"
     opn "^3.0.2"
     plist "^3.0.0"
     semver "^5.0.3"
     serve-static "^1.13.1"
     shell-quote "1.6.1"
+    slash "^2.0.0"
     ws "^1.1.0"
-    xcode "^1.0.0"
+    xcode "^2.0.0"
     xmldoc "^0.4.0"
 
 "@reactions/component@^2.0.2":
@@ -1740,11 +1740,6 @@ balanced-match@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.0.tgz#89b4d199ab2bee49de164ea02b89ce462d71b767"
   integrity sha1-ibTRmasr7kneFk6gK4nORi1xt2c=
-
-base64-js@1.1.2:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.1.2.tgz#d6400cac1c4c660976d90d07a04351d89395f5e8"
-  integrity sha1-1kAMrBxMZgl22Q0HoENR2JOV9eg=
 
 base64-js@^1.1.2, base64-js@^1.2.3:
   version "1.3.0"
@@ -5825,11 +5820,6 @@ path-type@^2.0.0:
   dependencies:
     pify "^2.0.0"
 
-pegjs@^0.10.0:
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/pegjs/-/pegjs-0.10.0.tgz#cf8bafae6eddff4b5a7efb185269eaaf4610ddbd"
-  integrity sha1-z4uvrm7d/0tafvsYUmnqr0YQ3b0=
-
 performance-now@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/performance-now/-/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"
@@ -5878,16 +5868,7 @@ pkg-dir@^3.0.0:
   dependencies:
     find-up "^3.0.0"
 
-plist@2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/plist/-/plist-2.0.1.tgz#0a32ca9481b1c364e92e18dc55c876de9d01da8b"
-  integrity sha1-CjLKlIGxw2TpLhjcVch23p0B2os=
-  dependencies:
-    base64-js "1.1.2"
-    xmlbuilder "8.2.2"
-    xmldom "0.1.x"
-
-plist@^3.0.0:
+plist@^3.0.0, plist@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/plist/-/plist-3.0.1.tgz#a9b931d17c304e8912ef0ba3bdd6182baf2e1f8c"
   integrity sha512-GpgvHHocGRyQm74b6FWEZZVRroHKE1I0/BTjAmySaohK+cUn+hZpbqXkc3KWgW3gQYkqcQej35FohcT0FRlkRQ==
@@ -6651,14 +6632,14 @@ signal-exit@^3.0.0, signal-exit@^3.0.2:
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.2.tgz#b5fdc08f1287ea1178628e415e25132b73646c6d"
   integrity sha1-tf3AjxKH6hF4Yo5BXiUTK3NkbG0=
 
-simple-plist@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/simple-plist/-/simple-plist-0.2.1.tgz#71766db352326928cf3a807242ba762322636723"
-  integrity sha1-cXZts1IyaSjPOoByQrp2IyJjZyM=
+simple-plist@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/simple-plist/-/simple-plist-1.0.0.tgz#bed3085633b22f371e111f45d159a1ccf94b81eb"
+  integrity sha512-043L2rO80LVF7zfZ+fqhsEkoJFvW8o59rt/l4ctx1TJWoTx7/jkiS1R5TatD15Z1oYnuLJytzE7gcnnBuIPL2g==
   dependencies:
     bplist-creator "0.0.7"
     bplist-parser "0.1.1"
-    plist "2.0.1"
+    plist "^3.0.1"
 
 sisteransi@^1.0.0:
   version "1.0.0"
@@ -7286,11 +7267,6 @@ utils-merge@1.0.1:
   resolved "https://registry.yarnpkg.com/utils-merge/-/utils-merge-1.0.1.tgz#9f95710f50a267947b2ccc124741c1028427e713"
   integrity sha1-n5VxD1CiZ5R7LMwSR0HBAoQn5xM=
 
-uuid@3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.0.1.tgz#6544bba2dfda8c1cf17e629a3a305e2bb1fee6c1"
-  integrity sha1-ZUS7ot/ajBzxfmKaOjBeK7H+5sE=
-
 uuid@^3.0.1, uuid@^3.3.2:
   version "3.3.2"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.3.2.tgz#1b4af4955eb3077c501c23872fc6513811587131"
@@ -7471,14 +7447,13 @@ ws@^5.2.0:
   dependencies:
     async-limiter "~1.0.0"
 
-xcode@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/xcode/-/xcode-1.0.0.tgz#e1f5b1443245ded38c180796df1a10fdeda084ec"
-  integrity sha1-4fWxRDJF3tOMGAeW3xoQ/e2ghOw=
+xcode@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/xcode/-/xcode-2.0.0.tgz#134f1f94c26fbfe8a9aaa9724bfb2772419da1a2"
+  integrity sha512-5xF6RCjAdDEiEsbbZaS/gBRt3jZ/177otZcpoLCjGN/u1LrfgH7/Sgeeavpr/jELpyDqN2im3AKosl2G2W8hfw==
   dependencies:
-    pegjs "^0.10.0"
-    simple-plist "^0.2.1"
-    uuid "3.0.1"
+    simple-plist "^1.0.0"
+    uuid "^3.3.2"
 
 xml-name-validator@^3.0.0:
   version "3.0.0"
@@ -7489,11 +7464,6 @@ xml@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/xml/-/xml-1.0.1.tgz#78ba72020029c5bc87b8a81a3cfcd74b4a2fc1e5"
   integrity sha1-eLpyAgApxbyHuKgaPPzXS0ovweU=
-
-xmlbuilder@8.2.2:
-  version "8.2.2"
-  resolved "https://registry.yarnpkg.com/xmlbuilder/-/xmlbuilder-8.2.2.tgz#69248673410b4ba42e1a6136551d2922335aa773"
-  integrity sha1-aSSGc0ELS6QuGmE2VR0pIjNap3M=
 
 xmlbuilder@^9.0.7:
   version "9.0.7"
