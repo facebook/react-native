@@ -15,9 +15,7 @@
   NSInteger _index;
 }
 
-- (instancetype)initWithChildTag:(ReactTag)childTag
-                       parentTag:(ReactTag)parentTag
-                           index:(NSInteger)index
+- (instancetype)initWithChildTag:(ReactTag)childTag parentTag:(ReactTag)parentTag index:(NSInteger)index
 {
   if (self = [super init]) {
     _childTag = childTag;
@@ -37,8 +35,7 @@
     return;
   }
 
-  [parentComponentView unmountChildComponentView:childComponentView
-                                           index:_index];
+  [parentComponentView unmountChildComponentView:childComponentView index:_index];
 }
 
 @end
