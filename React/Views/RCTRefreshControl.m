@@ -12,6 +12,7 @@
 @implementation RCTRefreshControl {
   BOOL _isInitialRender;
   BOOL _currentRefreshingState;
+  UInt64 _currentRefreshingStateClock;
   UInt64 _currentRefreshingStateTimestamp;
   BOOL _refreshingProgrammatically;
   NSString *_title;
@@ -22,6 +23,7 @@
 {
   if ((self = [super init])) {
     [self addTarget:self action:@selector(refreshControlValueChanged) forControlEvents:UIControlEventValueChanged];
+    _currentRefreshingStateClock=1;
     _currentRefreshingStateTimestamp = 0;
     _isInitialRender = true;
     _currentRefreshingState = false;
@@ -65,7 +67,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                      animations:^(void) {
                        [scrollView setContentOffset:offset];
                      } completion:^(__unused BOOL finished) {
-                       if(beginRefreshingTimestamp == _currentRefreshingStateTimestamp) {
+                       if(beginRefreshingTimestamp == self->_currentRefreshingStateTimestamp) {
                          [super beginRefreshing];
                          [self setCurrentRefreshingState:super.refreshing];
                        }
@@ -86,7 +88,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                      animations:^(void) {
                        [scrollView setContentOffset:offset];
                      } completion:^(__unused BOOL finished) {
-                       if(endRefreshingTimestamp == _currentRefreshingStateTimestamp) {
+                       if(endRefreshingTimestamp == self->_currentRefreshingStateTimestamp) {
                          [super endRefreshing];
                          [self setCurrentRefreshingState:super.refreshing];
                        }
@@ -145,7 +147,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)setCurrentRefreshingState:(BOOL)refreshing
 {
   _currentRefreshingState = refreshing;
-  _currentRefreshingStateTimestamp = [[NSDate date] timeIntervalSince1970]*1000;
+  _currentRefreshingStateTimestamp = _currentRefreshingStateClock++;
 }
 
 - (void)refreshControlValueChanged
