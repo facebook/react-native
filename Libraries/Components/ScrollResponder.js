@@ -176,7 +176,6 @@ const ScrollResponderMixin = {
   scrollResponderHandleStartShouldSetResponder: function(
     e: PressEvent,
   ): boolean {
-
     // Allow any event touch pass through if the default pan responder is disabled
     if (this.props.disableScrollViewPanResponder === true) {
       return false;
