@@ -31,8 +31,8 @@ UnsharedRootShadowNode RootShadowNode::clone(
   auto newRootShadowNode = std::make_shared<RootShadowNode>(
       *this,
       ShadowNodeFragment{
-          0,     // tag,
-          0,     // rootTag,
+          0,     // tag
+          0,     // rootTag
           props, // props
       });
   return newRootShadowNode;
@@ -61,8 +61,8 @@ UnsharedRootShadowNode RootShadowNode::clone(
 
     oldChild = ancestor.get().shared_from_this();
     newChild = oldChild->clone({
-        0,                                            // tag,
-        0,                                            // rootTag,
+        0,                                            // tag
+        0,                                            // rootTag
         ShadowNodeFragment::nullSharedProps(),        // props
         ShadowNodeFragment::nullSharedEventEmitter(), // eventEmitter
         sharedChildren,                               // children
@@ -72,8 +72,8 @@ UnsharedRootShadowNode RootShadowNode::clone(
   return std::make_shared<RootShadowNode>(
       *this,
       ShadowNodeFragment{
-          0,                                            // tag,
-          0,                                            // rootTag,
+          0,                                            // tag
+          0,                                            // rootTag
           ShadowNodeFragment::nullSharedProps(),        // props
           ShadowNodeFragment::nullSharedEventEmitter(), // eventEmitter
           sharedChildren,                               // children
