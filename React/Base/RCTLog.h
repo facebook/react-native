@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -119,13 +119,6 @@ RCT_EXTERN void RCTPerformBlockWithLogFunction(void (^block)(void), RCTLogFuncti
  * messages. The block will be performed synchronously on the current thread.
  */
 RCT_EXTERN void RCTPerformBlockWithLogPrefix(void (^block)(void), NSString *prefix);
-
-/**
- * This method computes the current call stack, useful for error reporting.
- */
-RCT_EXTERN NSArray<NSDictionary *> *RCTGetCallStack(const char *fileName, int lineNumber);
-
-#define RCT_CALLSTACK RCTGetCallStack(__FILE__, __LINE__)
 
 /**
  * Private logging function - ignore this.

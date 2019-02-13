@@ -1,18 +1,20 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  */
 
 'use strict';
 
-var BatchedBridge = require('BatchedBridge');
-var TimePickerAndroid = require('TimePickerAndroid');
-var React = require('React');
-var RecordingModule = require('NativeModules').TimePickerDialogRecordingModule;
-var View = require('View');
+const BatchedBridge = require('BatchedBridge');
+const TimePickerAndroid = require('TimePickerAndroid');
+const React = require('React');
+const RecordingModule = require('NativeModules')
+  .TimePickerDialogRecordingModule;
+const View = require('View');
 
 class TimePickerDialogTestApp extends React.Component {
   render() {
@@ -20,7 +22,7 @@ class TimePickerDialogTestApp extends React.Component {
   }
 }
 
-var TimePickerDialogTestModule = {
+const TimePickerDialogTestModule = {
   TimePickerDialogTestApp: TimePickerDialogTestApp,
   showTimePickerDialog: function(options) {
     TimePickerAndroid.open(options).then(
@@ -31,14 +33,14 @@ var TimePickerDialogTestModule = {
           RecordingModule.recordDismissed();
         }
       },
-      ({code, message}) => RecordingModule.recordError()
+      ({code, message}) => RecordingModule.recordError(),
     );
   },
 };
 
 BatchedBridge.registerCallableModule(
   'TimePickerDialogTestModule',
-  TimePickerDialogTestModule
+  TimePickerDialogTestModule,
 );
 
 module.exports = TimePickerDialogTestModule;

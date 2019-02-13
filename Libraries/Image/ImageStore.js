@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,6 +11,19 @@
 
 const RCTImageStoreManager = require('NativeModules').ImageStoreManager;
 
+const Platform = require('Platform');
+
+const warnOnce = require('warnOnce');
+
+function warnUnimplementedMethod(methodName: string): void {
+  warnOnce(
+    `imagestore-${methodName}`,
+    `react-native: ImageStore.${methodName}() is not implemented on ${
+      Platform.OS
+    }`,
+  );
+}
+
 class ImageStore {
   /**
    * Check if the ImageStore contains image data for the specified URI.
@@ -20,7 +33,7 @@ class ImageStore {
     if (RCTImageStoreManager.hasImageForTag) {
       RCTImageStoreManager.hasImageForTag(uri, callback);
     } else {
-      console.warn('hasImageForTag() not implemented');
+      warnUnimplementedMethod('hasImageForTag');
     }
   }
 
@@ -36,7 +49,7 @@ class ImageStore {
     if (RCTImageStoreManager.removeImageForTag) {
       RCTImageStoreManager.removeImageForTag(uri);
     } else {
-      console.warn('removeImageForTag() not implemented');
+      warnUnimplementedMethod('removeImageForTag');
     }
   }
 
@@ -56,7 +69,15 @@ class ImageStore {
     success: (uri: string) => void,
     failure: (error: any) => void,
   ) {
-    RCTImageStoreManager.addImageFromBase64(base64ImageData, success, failure);
+    if (RCTImageStoreManager.addImageFromBase64) {
+      RCTImageStoreManager.addImageFromBase64(
+        base64ImageData,
+        success,
+        failure,
+      );
+    } else {
+      warnUnimplementedMethod('addImageFromBase64');
+    }
   }
 
   /**
@@ -75,7 +96,11 @@ class ImageStore {
     success: (base64ImageData: string) => void,
     failure: (error: any) => void,
   ) {
-    RCTImageStoreManager.getBase64ForTag(uri, success, failure);
+    if (RCTImageStoreManager.getBase64ForTag) {
+      RCTImageStoreManager.getBase64ForTag(uri, success, failure);
+    } else {
+      warnUnimplementedMethod('getBase64ForTag');
+    }
   }
 }
 

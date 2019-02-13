@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,14 +9,14 @@
  */
 'use strict';
 
-const ColorPropType = require('ColorPropType');
+const DeprecatedColorPropType = require('DeprecatedColorPropType');
+const Platform = require('Platform');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
-const ViewPropTypes = require('ViewPropTypes');
 
-const requireNativeComponent = require('requireNativeComponent');
+const RCTInputAccessoryViewNativeComponent = require('RCTInputAccessoryViewNativeComponent');
 
-const RCTInputAccessoryView = requireNativeComponent('RCTInputAccessoryView');
+import type {ViewStyleProp} from 'StyleSheet';
 
 /**
  * Note: iOS only
@@ -76,32 +76,34 @@ const RCTInputAccessoryView = requireNativeComponent('RCTInputAccessoryView');
  * For an example, look at InputAccessoryViewExample.js in RNTester.
  */
 
-type Props = {
+type Props = $ReadOnly<{|
   +children: React.Node,
   /**
    * An ID which is used to associate this `InputAccessoryView` to
    * specified TextInput(s).
    */
-  nativeID?: string,
-  style?: ViewPropTypes.style,
-  backgroundColor?: ColorPropType,
-};
+  nativeID?: ?string,
+  style?: ?ViewStyleProp,
+  backgroundColor?: ?DeprecatedColorPropType,
+|}>;
 
 class InputAccessoryView extends React.Component<Props> {
   render(): React.Node {
-    console.warn('<InputAccessoryView> is not supported on Android yet.');
+    if (Platform.OS !== 'ios') {
+      console.warn('<InputAccessoryView> is only supported on iOS.');
+    }
 
     if (React.Children.count(this.props.children) === 0) {
       return null;
     }
 
     return (
-      <RCTInputAccessoryView
+      <RCTInputAccessoryViewNativeComponent
         style={[this.props.style, styles.container]}
         nativeID={this.props.nativeID}
         backgroundColor={this.props.backgroundColor}>
         {this.props.children}
-      </RCTInputAccessoryView>
+      </RCTInputAccessoryViewNativeComponent>
     );
   }
 }

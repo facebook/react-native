@@ -1,169 +1,270 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
-var React = require('react');
-var createReactClass = require('create-react-class');
-var ReactNative = require('react-native');
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
-var TimerMixin = require('react-timer-mixin');
+const React = require('react');
+const ReactNative = require('react-native');
+const {StyleSheet, Text, View} = ReactNative;
+const {TestModule} = ReactNative.NativeModules;
 
-var {
-  StyleSheet,
-  Text,
-  View,
-} = ReactNative;
-var { TestModule  } = ReactNative.NativeModules;
+type Props = $ReadOnly<{||}>;
 
-var TimersTest = createReactClass({
-  displayName: 'TimersTest',
-  mixins: [TimerMixin],
+type State = {|
+  count: number,
+  done: boolean,
+|};
 
-  _nextTest: () => {},
-  _interval: -1,
+type ImmediateID = Object;
 
-  getInitialState() {
-    return {
-      count: 0,
-      done: false,
-    };
-  },
+class TimersTest extends React.Component<Props, State> {
+  _nextTest = () => {};
+  _interval: ?IntervalID = null;
+
+  _timeoutIDs: Set<TimeoutID> = new Set();
+  _intervalIDs: Set<IntervalID> = new Set();
+  _immediateIDs: Set<ImmediateID> = new Set();
+  _animationFrameIDs: Set<AnimationFrameID> = new Set();
+
+  state = {
+    count: 0,
+    done: false,
+  };
+
+  setTimeout(fn: () => void, time: number): TimeoutID {
+    const id = setTimeout(() => {
+      this._timeoutIDs.delete(id);
+      fn();
+    }, time);
+
+    this._timeoutIDs.add(id);
+
+    return id;
+  }
+
+  clearTimeout(id: TimeoutID) {
+    this._timeoutIDs.delete(id);
+    clearTimeout(id);
+  }
+
+  setInterval(fn: () => void, time: number): IntervalID {
+    const id = setInterval(() => {
+      fn();
+    }, time);
+
+    this._intervalIDs.add(id);
+
+    return id;
+  }
+
+  clearInterval(id: IntervalID) {
+    this._intervalIDs.delete(id);
+    clearInterval(id);
+  }
+
+  setImmediate(fn: () => void): ImmediateID {
+    const id = setImmediate(() => {
+      this._immediateIDs.delete(id);
+      fn();
+    });
+
+    this._immediateIDs.add(id);
+
+    return id;
+  }
+
+  requestAnimationFrame(fn: () => void): AnimationFrameID {
+    const id = requestAnimationFrame(() => {
+      this._animationFrameIDs.delete(id);
+      fn();
+    });
+
+    this._animationFrameIDs.add(id);
+
+    return id;
+  }
+
+  cancelAnimationFrame(id: AnimationFrameID): void {
+    this._animationFrameIDs.delete(id);
+    cancelAnimationFrame(id);
+  }
 
   componentDidMount() {
     this.setTimeout(this.testSetTimeout0, 1000);
-  },
+  }
 
   testSetTimeout0() {
     this.setTimeout(this.testSetTimeout1, 0);
-  },
+  }
 
   testSetTimeout1() {
     this.setTimeout(this.testSetTimeout50, 1);
-  },
+  }
 
   testSetTimeout50() {
     this.setTimeout(this.testRequestAnimationFrame, 50);
-  },
+  }
 
   testRequestAnimationFrame() {
     this.requestAnimationFrame(this.testSetInterval0);
-  },
+  }
 
   testSetInterval0() {
     this._nextTest = this.testSetInterval20;
     this._interval = this.setInterval(this._incrementInterval, 0);
-  },
+  }
 
   testSetInterval20() {
     this._nextTest = this.testSetImmediate;
     this._interval = this.setInterval(this._incrementInterval, 20);
-  },
+  }
 
   testSetImmediate() {
     this.setImmediate(this.testClearTimeout0);
-  },
+  }
 
   testClearTimeout0() {
-    var timeout = this.setTimeout(() => this._fail('testClearTimeout0'), 0);
+    const timeout = this.setTimeout(() => this._fail('testClearTimeout0'), 0);
     this.clearTimeout(timeout);
     this.testClearTimeout30();
-  },
+  }
 
   testClearTimeout30() {
-    var timeout = this.setTimeout(() => this._fail('testClearTimeout30'), 30);
+    const timeout = this.setTimeout(() => this._fail('testClearTimeout30'), 30);
     this.clearTimeout(timeout);
     this.setTimeout(this.testClearMulti, 50);
-  },
+  }
 
   testClearMulti() {
-    var fails = [];
+    const fails = [];
     fails.push(this.setTimeout(() => this._fail('testClearMulti-1'), 20));
     fails.push(this.setTimeout(() => this._fail('testClearMulti-2'), 50));
-    var delayClear = this.setTimeout(() => this._fail('testClearMulti-3'), 50);
+    const delayClear = this.setTimeout(
+      () => this._fail('testClearMulti-3'),
+      50,
+    );
     fails.push(this.setTimeout(() => this._fail('testClearMulti-4'), 0));
     fails.push(this.setTimeout(() => this._fail('testClearMulti-5'), 10));
 
-    fails.forEach((timeout) => this.clearTimeout(timeout));
+    fails.forEach(timeout => this.clearTimeout(timeout));
     this.setTimeout(() => this.clearTimeout(delayClear), 20);
 
     this.setTimeout(this.testOrdering, 50);
-  },
+  }
 
   testOrdering() {
     // Clear timers are set first because it's more likely to uncover bugs.
-    var fail0;
+    let fail0;
     this.setImmediate(() => this.clearTimeout(fail0));
     fail0 = this.setTimeout(
-      () => this._fail('testOrdering-t0, setImmediate should happen before ' +
-        'setTimeout 0'),
-      0
+      () =>
+        this._fail(
+          'testOrdering-t0, setImmediate should happen before ' +
+            'setTimeout 0',
+        ),
+      0,
     );
-    var failAnim; // This should fail without the t=0 fastpath feature.
+    let failAnim; // This should fail without the t=0 fastpath feature.
     this.setTimeout(() => this.cancelAnimationFrame(failAnim), 0);
-    failAnim = this.requestAnimationFrame(
-      () => this._fail('testOrdering-Anim, setTimeout 0 should happen before ' +
-        'requestAnimationFrame')
+    failAnim = this.requestAnimationFrame(() =>
+      this._fail(
+        'testOrdering-Anim, setTimeout 0 should happen before ' +
+          'requestAnimationFrame',
+      ),
     );
-    var fail25;
-    this.setTimeout(() => { this.clearTimeout(fail25); }, 20);
+    let fail25;
+    this.setTimeout(() => {
+      this.clearTimeout(fail25);
+    }, 20);
     fail25 = this.setTimeout(
-      () => this._fail('testOrdering-t25, setTimeout 20 should happen before ' +
-        'setTimeout 25'),
-      25
+      () =>
+        this._fail(
+          'testOrdering-t25, setTimeout 20 should happen before ' +
+            'setTimeout 25',
+        ),
+      25,
     );
     this.setTimeout(this.done, 50);
-  },
+  }
 
   done() {
     this.setState({done: true}, () => {
       TestModule.markTestCompleted();
     });
-  },
+  }
+
+  componentWillUnmount() {
+    for (const timeoutID of this._timeoutIDs) {
+      clearTimeout(timeoutID);
+    }
+
+    for (const intervalID of this._intervalIDs) {
+      clearInterval(intervalID);
+    }
+
+    for (const requestAnimationFrameID of this._animationFrameIDs) {
+      cancelAnimationFrame(requestAnimationFrameID);
+    }
+
+    for (const immediateID of this._immediateIDs) {
+      clearImmediate(immediateID);
+    }
+
+    this._timeoutIDs = new Set();
+    this._intervalIDs = new Set();
+    this._animationFrameIDs = new Set();
+    this._immediateIDs = new Set();
+
+    if (this._interval != null) {
+      clearInterval(this._interval);
+      this._interval = null;
+    }
+  }
 
   render() {
     return (
       <View style={styles.container}>
         <Text>
-          {this.constructor.displayName + ': \n'}
+          {this.constructor.name + ': \n'}
           Intervals: {this.state.count + '\n'}
           {this.state.done ? 'Done' : 'Testing...'}
         </Text>
       </View>
     );
-  },
+  }
 
   _incrementInterval() {
     if (this.state.count > 3) {
       throw new Error('interval incremented past end.');
     }
     if (this.state.count === 3) {
-      this.clearInterval(this._interval);
+      if (this._interval != null) {
+        this.clearInterval(this._interval);
+        this._interval = null;
+      }
       this.setState({count: 0}, this._nextTest);
       return;
     }
     this.setState({count: this.state.count + 1});
-  },
+  }
 
-  _fail(caller : string) : void {
+  _fail(caller: string): void {
     throw new Error('_fail called by ' + caller);
-  },
-});
+  }
+}
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
     padding: 40,
   },
 });
-
-TimersTest.displayName = 'TimersTest';
 
 module.exports = TimersTest;

@@ -1,11 +1,13 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 /**
@@ -36,11 +38,11 @@ const EventValidator = {
       emit: function emit(type, a, b, c, d, e, _) {
         assertAllowsEventType(type, eventTypes);
         return emitter.emit.call(this, type, a, b, c, d, e, _);
-      }
+      },
     });
 
     return emitterWithValidation;
-  }
+  },
 };
 
 function assertAllowsEventType(type, allowedTypes) {
@@ -60,7 +62,7 @@ function errorMessageFor(type, allowedTypes) {
 
 // Allow for good error messages
 if (__DEV__) {
-  var recommendationFor = function (type, allowedTypes) {
+  var recommendationFor = function(type, allowedTypes) {
     const closestTypeRecommendation = closestTypeFor(type, allowedTypes);
     if (isCloseEnough(closestTypeRecommendation, type)) {
       return 'Did you mean "' + closestTypeRecommendation.type + '"? ';
@@ -69,21 +71,21 @@ if (__DEV__) {
     }
   };
 
-  var closestTypeFor = function (type, allowedTypes) {
+  const closestTypeFor = function(type, allowedTypes) {
     const typeRecommendations = allowedTypes.map(
-      typeRecommendationFor.bind(this, type)
+      typeRecommendationFor.bind(this, type),
     );
     return typeRecommendations.sort(recommendationSort)[0];
   };
 
-  var typeRecommendationFor = function (type, recommendedType) {
+  const typeRecommendationFor = function(type, recommendedType) {
     return {
       type: recommendedType,
-      distance: damerauLevenshteinDistance(type, recommendedType)
+      distance: damerauLevenshteinDistance(type, recommendedType),
     };
   };
 
-  var recommendationSort = function (recommendationA, recommendationB) {
+  const recommendationSort = function(recommendationA, recommendationB) {
     if (recommendationA.distance < recommendationB.distance) {
       return -1;
     } else if (recommendationA.distance > recommendationB.distance) {
@@ -93,11 +95,11 @@ if (__DEV__) {
     }
   };
 
-  var isCloseEnough = function (closestType, actualType) {
-    return (closestType.distance / actualType.length) < 0.334;
+  const isCloseEnough = function(closestType, actualType) {
+    return closestType.distance / actualType.length < 0.334;
   };
 
-  var damerauLevenshteinDistance = function (a, b) {
+  const damerauLevenshteinDistance = function(a, b) {
     let i, j;
     const d = [];
 
@@ -116,12 +118,15 @@ if (__DEV__) {
         d[i][j] = Math.min(
           d[i - 1][j] + 1,
           d[i][j - 1] + 1,
-          d[i - 1][j - 1] + cost
+          d[i - 1][j - 1] + cost,
         );
 
-        if (i > 1 && j > 1 &&
-            a.charAt(i - 1) === b.charAt(j - 2) &&
-            a.charAt(i - 2) === b.charAt(j - 1)) {
+        if (
+          i > 1 &&
+          j > 1 &&
+          a.charAt(i - 1) === b.charAt(j - 2) &&
+          a.charAt(i - 2) === b.charAt(j - 1)
+        ) {
           d[i][j] = Math.min(d[i][j], d[i - 2][j - 2] + cost);
         }
       }

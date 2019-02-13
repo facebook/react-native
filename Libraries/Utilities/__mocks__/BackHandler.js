@@ -1,9 +1,10 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  */
 
 'use strict';
@@ -13,9 +14,9 @@ const _backPressSubscriptions = new Set();
 const BackHandler = {
   exitApp: jest.fn(),
 
-  addEventListener: function (
+  addEventListener: function(
     eventName: BackPressEventName,
-    handler: Function
+    handler: Function,
   ): {remove: () => void} {
     _backPressSubscriptions.add(handler);
     return {
@@ -25,11 +26,10 @@ const BackHandler = {
 
   removeEventListener: function(
     eventName: BackPressEventName,
-    handler: Function
+    handler: Function,
   ): void {
     _backPressSubscriptions.delete(handler);
   },
-
 
   mockPressBack: function() {
     let invokeDefault = true;

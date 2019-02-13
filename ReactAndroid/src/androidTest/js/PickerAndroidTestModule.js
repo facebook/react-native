@@ -1,22 +1,23 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  */
 
 'use strict';
 
-var BatchedBridge = require('BatchedBridge');
-var React = require('React');
-var RecordingModule = require('NativeModules').PickerAndroidRecordingModule;
-var Picker = require('Picker');
-var View = require('View');
+const BatchedBridge = require('BatchedBridge');
+const React = require('React');
+const RecordingModule = require('NativeModules').PickerAndroidRecordingModule;
+const Picker = require('Picker');
+const View = require('View');
 
-var Item = Picker.Item;
+const Item = Picker.Item;
 
-var appInstance;
+let appInstance;
 
 class PickerAndroidTestApp extends React.Component {
   state = {
@@ -62,13 +63,13 @@ class PickerAndroidTestApp extends React.Component {
     );
   }
 
-  onValueChange = (value) => {
+  onValueChange = value => {
     this.setState({selected: value});
     RecordingModule.recordSelection(value);
   };
 }
 
-var PickerAndroidTestModule = {
+const PickerAndroidTestModule = {
   PickerAndroidTestApp: PickerAndroidTestApp,
   selectItem: function(value) {
     appInstance.setState({selected: value});
@@ -83,7 +84,7 @@ var PickerAndroidTestModule = {
 
 BatchedBridge.registerCallableModule(
   'PickerAndroidTestModule',
-  PickerAndroidTestModule
+  PickerAndroidTestModule,
 );
 
 module.exports = PickerAndroidTestModule;

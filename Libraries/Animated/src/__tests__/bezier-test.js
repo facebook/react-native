@@ -1,18 +1,23 @@
 /**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
  * BezierEasing - use bezier curve for transition easing function
  * https://github.com/gre/bezier-easing
  *
  * @copyright 2014-2015 Gaetan Renaudeau. MIT License.
- * @noflow
  * @emails oncall+react_native
+ * @flow
  * @format
  */
 
 'use strict';
 
-var bezier = require('bezier');
+const bezier = require('bezier');
 
-var identity = function(x) {
+const identity = function(x) {
   return x;
 };
 
@@ -30,16 +35,16 @@ function allEquals(be1, be2, samples, assertion) {
   if (!assertion) {
     assertion = assertClose;
   }
-  for (var i = 0; i <= samples; ++i) {
-    var x = i / samples;
+  for (let i = 0; i <= samples; ++i) {
+    const x = i / samples;
     assertion(be1(x), be2(x));
   }
 }
 
 function repeat(n) {
   return function(f) {
-    for (var i = 0; i < n; ++i) {
-      f(i);
+    for (let i = 0; i < n; ++i) {
+      f();
     }
   };
 }
@@ -74,11 +79,11 @@ describe('bezier', function() {
   describe('common properties', function() {
     it('should be the right value at extremes', function() {
       repeat(10)(function() {
-        var a = Math.random(),
+        const a = Math.random(),
           b = 2 * Math.random() - 0.5,
           c = Math.random(),
           d = 2 * Math.random() - 0.5;
-        var easing = bezier(a, b, c, d);
+        const easing = bezier(a, b, c, d);
         expect(easing(0)).toBe(0);
         expect(easing(1)).toBe(1);
       });
@@ -86,13 +91,13 @@ describe('bezier', function() {
 
     it('should approach the projected value of its x=y projected curve', function() {
       repeat(10)(function() {
-        var a = Math.random(),
+        const a = Math.random(),
           b = Math.random(),
           c = Math.random(),
           d = Math.random();
-        var easing = bezier(a, b, c, d);
-        var projected = bezier(b, a, d, c);
-        var composed = function(x) {
+        const easing = bezier(a, b, c, d);
+        const projected = bezier(b, a, d, c);
+        const composed = function(x) {
           return projected(easing(x));
         };
         allEquals(identity, composed, 100, makeAssertCloseWithPrecision(2));
@@ -102,7 +107,7 @@ describe('bezier', function() {
   describe('two same instances', function() {
     it('should be strictly equals', function() {
       repeat(10)(function() {
-        var a = Math.random(),
+        const a = Math.random(),
           b = 2 * Math.random() - 0.5,
           c = Math.random(),
           d = 2 * Math.random() - 0.5;
@@ -113,22 +118,22 @@ describe('bezier', function() {
   describe('symetric curves', function() {
     it('should have a central value y~=0.5 at x=0.5', function() {
       repeat(10)(function() {
-        var a = Math.random(),
+        const a = Math.random(),
           b = 2 * Math.random() - 0.5,
           c = 1 - a,
           d = 1 - b;
-        var easing = bezier(a, b, c, d);
+        const easing = bezier(a, b, c, d);
         assertClose(easing(0.5), 0.5, 2);
       });
     });
     it('should be symmetrical', function() {
       repeat(10)(function() {
-        var a = Math.random(),
+        const a = Math.random(),
           b = 2 * Math.random() - 0.5,
           c = 1 - a,
           d = 1 - b;
-        var easing = bezier(a, b, c, d);
-        var sym = function(x) {
+        const easing = bezier(a, b, c, d);
+        const sym = function(x) {
           return 1 - easing(1 - x);
         };
         allEquals(easing, sym, 100, makeAssertCloseWithPrecision(2));

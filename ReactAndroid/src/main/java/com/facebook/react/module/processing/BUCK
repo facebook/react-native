@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS.bzl", "rn_java_annotation_processor", "rn_java_library", "react_native_dep", "react_native_target")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_target", "rn_java_annotation_processor", "rn_java_library")
 
 rn_java_annotation_processor(
     name = "processing",
@@ -22,7 +22,7 @@ rn_java_library(
         react_native_dep("third-party/java/javapoet:javapoet"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_target("java/com/facebook/react/module/annotations:annotations"),
-        react_native_target("java/com/facebook/react/bridge:bridge"),
         react_native_target("java/com/facebook/react/module/model:model"),
+        react_native_target("java/com/facebook/react/turbomodule/core/interfaces:interfaces"),
     ],
 )

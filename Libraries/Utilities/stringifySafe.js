@@ -1,11 +1,13 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 /**
@@ -13,8 +15,8 @@
  * (e.g. from circular objects) and always returns a string and never throws.
  */
 function stringifySafe(arg: any): string {
-  var ret;
-  var type = typeof arg;
+  let ret;
+  const type = typeof arg;
   if (arg === undefined) {
     ret = 'undefined';
   } else if (arg === null) {

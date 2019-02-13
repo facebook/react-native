@@ -1,9 +1,10 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @emails oncall+react_native
  */
 
@@ -12,37 +13,36 @@ jest.unmock('Platform');
 const Platform = require('Platform');
 let requestId = 1;
 
-function setRequestId(id){
+function setRequestId(id) {
   if (Platform.OS === 'ios') {
     return;
   }
   requestId = id;
 }
 
-jest
-  .dontMock('event-target-shim')
-  .setMock('NativeModules', {
-    Networking: {
-      addListener: function() {},
-      removeListeners: function() {},
-      sendRequest(options, callback) {
-        if (typeof callback === 'function') { // android does not pass a callback
-          callback(requestId);
-        }
-      },
-      abortRequest: function() {},
+jest.dontMock('event-target-shim').setMock('NativeModules', {
+  Networking: {
+    addListener: function() {},
+    removeListeners: function() {},
+    sendRequest(options, callback) {
+      if (typeof callback === 'function') {
+        // android does not pass a callback
+        callback(requestId);
+      }
     },
-  });
+    abortRequest: function() {},
+  },
+});
 
 const XMLHttpRequest = require('XMLHttpRequest');
 
 describe('XMLHttpRequest', function() {
-  var xhr;
-  var handleTimeout;
-  var handleError;
-  var handleLoad;
-  var handleReadyStateChange;
-  var handleLoadEnd;
+  let xhr;
+  let handleTimeout;
+  let handleError;
+  let handleLoad;
+  let handleReadyStateChange;
+  let handleLoadEnd;
 
   beforeEach(() => {
     xhr = new XMLHttpRequest();
@@ -98,7 +98,9 @@ describe('XMLHttpRequest', function() {
     // Can't change responseType after first data has been received.
     xhr.open('GET', 'blabla');
     xhr.send();
-    expect(() => { xhr.responseType = 'text'; }).toThrow();
+    expect(() => {
+      xhr.responseType = 'text';
+    }).toThrow();
   });
 
   it('should expose responseText correctly', function() {
@@ -115,7 +117,9 @@ describe('XMLHttpRequest', function() {
     expect(xhr.response).toBe('');
 
     // responseText is read-only.
-    expect(() => { xhr.responseText = 'hi'; }).toThrow();
+    expect(() => {
+      xhr.responseText = 'hi';
+    }).toThrow();
     expect(xhr.responseText).toBe('');
     expect(xhr.response).toBe('');
 
@@ -193,7 +197,7 @@ describe('XMLHttpRequest', function() {
     xhr.send();
 
     xhr.upload.onprogress = jest.fn();
-    var handleProgress = jest.fn();
+    const handleProgress = jest.fn();
     xhr.upload.addEventListener('progress', handleProgress);
     setRequestId(6);
     xhr.__didUploadProgress(requestId, 42, 100);
@@ -217,8 +221,7 @@ describe('XMLHttpRequest', function() {
     });
 
     expect(xhr.getAllResponseHeaders()).toBe(
-      'Content-Type: text/plain; charset=utf-8\r\n' +
-      'Content-Length: 32');
+      'Content-Type: text/plain; charset=utf-8\r\n' + 'Content-Length: 32',
+    );
   });
-
 });

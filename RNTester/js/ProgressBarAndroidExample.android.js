@@ -1,53 +1,68 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
-var ProgressBar = require('ProgressBarAndroid');
-var React = require('React');
-var createReactClass = require('create-react-class');
-var RNTesterBlock = require('RNTesterBlock');
-var RNTesterPage = require('RNTesterPage');
+const ProgressBar = require('ProgressBarAndroid');
+const React = require('React');
+const RNTesterBlock = require('RNTesterBlock');
+const RNTesterPage = require('RNTesterPage');
 
-var TimerMixin = require('react-timer-mixin');
+import type {ProgressBarAndroidProps} from 'ProgressBarAndroid';
 
-var MovingBar = createReactClass({
-  displayName: 'MovingBar',
-  mixins: [TimerMixin],
+type MovingBarProps = $ReadOnly<{|
+  ...$Diff<
+    ProgressBarAndroidProps,
+    {
+      progress: ?number,
+    },
+  >,
+  indeterminate: false,
+|}>;
 
-  getInitialState: function() {
-    return {
-      progress: 0
-    };
-  },
+type MovingBarState = {
+  progress: number,
+};
 
-  componentDidMount: function() {
-    this.setInterval(
-      () => {
-        var progress = (this.state.progress + 0.02) % 1;
-        this.setState({progress: progress});
-      }, 50
-    );
-  },
+class MovingBar extends React.Component<MovingBarProps, MovingBarState> {
+  _intervalID: ?IntervalID = null;
 
-  render: function() {
+  state = {
+    progress: 0,
+  };
+
+  componentDidMount() {
+    this._intervalID = setInterval(() => {
+      const progress = (this.state.progress + 0.02) % 1;
+      this.setState({progress});
+    }, 50);
+  }
+
+  componentWillUnmount() {
+    if (this._intervalID != null) {
+      clearInterval(this._intervalID);
+    }
+  }
+
+  render() {
     return <ProgressBar progress={this.state.progress} {...this.props} />;
-  },
-});
+  }
+}
 
 class ProgressBarAndroidExample extends React.Component<{}> {
-  static title = '<ProgressBarAndroid>';
-  static description = 'Horizontal bar to show the progress of some operation.';
-
   render() {
     return (
       <RNTesterPage title="ProgressBar Examples">
         <RNTesterBlock title="Horizontal Indeterminate ProgressBar">
+          {/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+            * found when making Flow check .android.js files. */}
           <ProgressBar styleAttr="Horizontal" />
         </RNTesterBlock>
 
@@ -56,15 +71,30 @@ class ProgressBarAndroidExample extends React.Component<{}> {
         </RNTesterBlock>
 
         <RNTesterBlock title="Horizontal Black Indeterminate ProgressBar">
+          {/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+            * found when making Flow check .android.js files. */}
           <ProgressBar styleAttr="Horizontal" color="black" />
         </RNTesterBlock>
 
         <RNTesterBlock title="Horizontal Blue ProgressBar">
-          <MovingBar styleAttr="Horizontal" indeterminate={false} color="blue" />
+          <MovingBar
+            styleAttr="Horizontal"
+            indeterminate={false}
+            color="blue"
+          />
         </RNTesterBlock>
       </RNTesterPage>
     );
   }
 }
 
-module.exports = ProgressBarAndroidExample;
+exports.title = '<ProgressBarAndroid>';
+exports.description = 'Horizontal bar to show the progress of some operation.';
+exports.examples = [
+  {
+    title: 'Simple progress bar',
+    render: function(): React.Element<typeof ProgressBarAndroidExample> {
+      return <ProgressBarAndroidExample />;
+    },
+  },
+];

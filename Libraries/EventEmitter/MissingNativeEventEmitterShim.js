@@ -1,17 +1,19 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 const EmitterSubscription = require('EmitterSubscription');
 const EventEmitter = require('EventEmitter');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 class MissingNativeEventEmitterShim extends EventEmitter {
   isAvailable: boolean = false;
@@ -28,9 +30,11 @@ class MissingNativeEventEmitterShim extends EventEmitter {
     invariant(
       false,
       `Cannot use '${this._nativeEventEmitterName}' module when ` +
-      `native '${this._nativeModuleName}' is not included in the build. ` +
-      `Either include it, or check '${this._nativeEventEmitterName}'.isAvailable ` +
-      'before calling any methods.'
+        `native '${this._nativeModuleName}' is not included in the build. ` +
+        `Either include it, or check '${
+          this._nativeEventEmitterName
+        }'.isAvailable ` +
+        'before calling any methods.',
     );
   }
 

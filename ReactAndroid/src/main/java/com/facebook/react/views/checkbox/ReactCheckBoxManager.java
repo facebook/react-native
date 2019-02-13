@@ -1,11 +1,13 @@
 /**
- * Copyright (c) 2017-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 package com.facebook.react.views.checkbox;
 
+import android.content.Context;
+import android.support.v7.widget.TintContextWrapper;
 import android.widget.CompoundButton;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.SimpleViewManager;
@@ -23,11 +25,21 @@ public class ReactCheckBoxManager extends SimpleViewManager<ReactCheckBox> {
       new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-          ReactContext reactContext = (ReactContext) buttonView.getContext();
+          ReactContext reactContext = getReactContext(buttonView);
           reactContext
-              .getNativeModule(UIManagerModule.class)
-              .getEventDispatcher()
+              .getNativeModule(UIManagerModule.class).getEventDispatcher()
               .dispatchEvent(new ReactCheckBoxEvent(buttonView.getId(), isChecked));
+        }
+
+        private ReactContext getReactContext(CompoundButton buttonView) {
+          ReactContext reactContext;
+          Context ctx = buttonView.getContext();
+          if (ctx instanceof TintContextWrapper) {
+            reactContext = (ReactContext) ((TintContextWrapper) ctx).getBaseContext();
+          } else {
+            reactContext = (ReactContext) buttonView.getContext();
+          }
+          return reactContext;
         }
       };
 

@@ -1,10 +1,11 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
+#import <React/RCTPrimitives.h>
 #import <React/RCTSurfaceStage.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -35,17 +36,12 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTFabricSurface : NSObject
 
 @property (atomic, readonly) RCTSurfaceStage stage;
-@property (atomic, readonly) RCTBridge *bridge;
 @property (atomic, readonly) NSString *moduleName;
-@property (atomic, readonly) NSNumber *rootViewTag;
+@property (atomic, readonly) ReactTag rootTag;
 
 @property (atomic, readwrite, weak, nullable) id<RCTSurfaceDelegate> delegate;
 
 @property (atomic, copy, readwrite) NSDictionary *properties;
-
-- (instancetype)initWithBridge:(RCTBridge *)bridge
-                    moduleName:(NSString *)moduleName
-             initialProperties:(NSDictionary *)initialProperties;
 
 - (instancetype)initWithSurfacePresenter:(RCTSurfacePresenter *)surfacePresenter
                               moduleName:(NSString *)moduleName
@@ -67,13 +63,28 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (RCTSurfaceView *)view;
 
+#pragma mark - Start & Stop
+
+/**
+ * Starts or stops the Surface.
+ * A Surface object can be stopped and then restarted.
+ * The starting process includes initializing all underlying React Native
+ * infrastructure and running React app.
+ * Just initialized Surface object starts automatically, there is no need
+ * to call `start` explicitly. Surface also stops itself on deallocation
+ * automatically.
+ * Returns YES in case of success. Returns NO if the Surface is already
+ * started or stopped.
+ */
+- (BOOL)start;
+- (BOOL)stop;
+
 #pragma mark - Layout: Setting the size constrains
 
 /**
  * Sets `minimumSize` and `maximumSize` layout constraints for the Surface.
  */
-- (void)setMinimumSize:(CGSize)minimumSize
-           maximumSize:(CGSize)maximumSize;
+- (void)setMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize;
 
 /**
  * Previously set `minimumSize` layout constraint.
@@ -98,8 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Measures the Surface with given constraints.
  * This method does not cause any side effects on the surface object.
  */
-- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize
-                      maximumSize:(CGSize)maximumSize;
+- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize;
 
 /**
  * Return the current size of the root view based on (but not clamp by) current
@@ -120,7 +130,28 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RCTFabricSurface (Internal)
 
-- (void)_setStage:(RCTSurfaceStage)stage;
+/**
+ * Sets and clears given stage flags (bitmask).
+ * Returns `YES` if the actual state was changed.
+ */
+- (BOOL)_setStage:(RCTSurfaceStage)stage;
+- (BOOL)_unsetStage:(RCTSurfaceStage)stage;
+
+@end
+
+@interface RCTFabricSurface (Deprecated)
+
+/**
+ * Deprecated. Use `initWithSurfacePresenter:moduleName:initialProperties` instead.
+ */
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+                    moduleName:(NSString *)moduleName
+             initialProperties:(NSDictionary *)initialProperties;
+
+/**
+ * Deprecated. Use `rootTag` instead.
+ */
+@property (atomic, readonly) NSNumber *rootViewTag;
 
 @end
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -25,10 +25,10 @@ import com.facebook.react.modules.network.ForwardingCookieHandler;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 import okhttp3.OkHttpClient;
@@ -38,9 +38,9 @@ import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 import okio.ByteString;
 
-@ReactModule(name = "WebSocketModule", hasConstants = false)
+@ReactModule(name = WebSocketModule.NAME, hasConstants = false)
 public final class WebSocketModule extends ReactContextBaseJavaModule {
-
+  public static final String NAME="WebSocketModule";
   public interface ContentHandler {
     void onMessage(String text, WritableMap params);
 
@@ -67,7 +67,7 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "WebSocketModule";
+    return NAME;
   }
 
   public void setContentHandler(final int id, final ContentHandler contentHandler) {
@@ -145,6 +145,11 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
             WritableMap params = Arguments.createMap();
             params.putInt("id", id);
             sendEvent("websocketOpen", params);
+          }
+
+          @Override
+          public void onClosing(WebSocket websocket, int code, String reason) {
+            websocket.close(code, reason);
           }
 
           @Override
@@ -352,7 +357,7 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
           requestURI.getHost(),
           requestURI.getPort());
       } else {
-        defaultOrigin = String.format("%s://%s/", scheme, requestURI.getHost());
+        defaultOrigin = String.format("%s://%s", scheme, requestURI.getHost());
       }
 
       return defaultOrigin;

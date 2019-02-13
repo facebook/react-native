@@ -1,19 +1,22 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
  *
  * Resolves an asset into a `source` for `Image`.
+ *
+ * @format
+ * @flow
  */
+
 'use strict';
 
 const AssetRegistry = require('AssetRegistry');
 const AssetSourceResolver = require('AssetSourceResolver');
 
-import type { ResolvedAssetSource } from 'AssetSourceResolver';
+import type {ResolvedAssetSource} from 'AssetSourceResolver';
 
 let _customSourceTransformer, _serverURL, _scriptURL;
 
@@ -23,7 +26,8 @@ function getSourceCodeScriptURL(): ?string {
     return _sourceCodeScriptURL;
   }
 
-  let sourceCode = global.nativeExtensions && global.nativeExtensions.SourceCode;
+  let sourceCode =
+    global.nativeExtensions && global.nativeExtensions.SourceCode;
   if (!sourceCode) {
     const NativeModules = require('NativeModules');
     sourceCode = NativeModules && NativeModules.SourceCode;
@@ -35,7 +39,8 @@ function getSourceCodeScriptURL(): ?string {
 function getDevServerURL(): ?string {
   if (_serverURL === undefined) {
     const sourceCodeScriptURL = getSourceCodeScriptURL();
-    const match = sourceCodeScriptURL && sourceCodeScriptURL.match(/^https?:\/\/.*?\//);
+    const match =
+      sourceCodeScriptURL && sourceCodeScriptURL.match(/^https?:\/\/.*?\//);
     if (match) {
       // jsBundle was loaded from network
       _serverURL = match[0];
@@ -85,7 +90,7 @@ function resolveAssetSource(source: any): ?ResolvedAssetSource {
     return source;
   }
 
-  var asset = AssetRegistry.getAssetByID(source);
+  const asset = AssetRegistry.getAssetByID(source);
   if (!asset) {
     return null;
   }

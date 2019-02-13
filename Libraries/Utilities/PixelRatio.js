@@ -1,14 +1,16 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @format
+ * @flow strict-local
  */
+
 'use strict';
 
-var Dimensions = require('Dimensions');
+const Dimensions = require('Dimensions');
 
 /**
  * PixelRatio class gives access to the device pixel density.
@@ -66,9 +68,15 @@ class PixelRatio {
    *     - iPhone 4, 4S
    *     - iPhone 5, 5c, 5s
    *     - iPhone 6
+   *     - iPhone 7
+   *     - iPhone 8
+   *     - iPhone SE
    *     - xhdpi Android devices (320 dpi)
    *   - PixelRatio.get() === 3
-   *     - iPhone 6 plus
+   *     - iPhone 6 Plus
+   *     - iPhone 7 Plus
+   *     - iPhone 8 Plus
+   *     - iPhone X
    *     - xxhdpi Android devices (480 dpi)
    *   - PixelRatio.get() === 3.5
    *     - Nexus 6
@@ -108,7 +116,7 @@ class PixelRatio {
    * exactly (8.33 * 3) = 25 pixels.
    */
   static roundToNearestPixel(layoutSize: number): number {
-    var ratio = PixelRatio.get();
+    const ratio = PixelRatio.get();
     return Math.round(layoutSize * ratio) / ratio;
   }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,13 +21,15 @@ public final class ReactTextInputLocalData {
   private final int mMaxLines;
   private final int mInputType;
   private final int mBreakStrategy;
+  private final  CharSequence mPlaceholder;
 
   public ReactTextInputLocalData(EditText editText) {
     mText = new SpannableStringBuilder(editText.getText());
     mTextSize = editText.getTextSize();
+    mInputType = editText.getInputType();
+    mPlaceholder = editText.getHint();
     mMinLines = editText.getMinLines();
     mMaxLines = editText.getMaxLines();
-    mInputType = editText.getInputType();
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       mBreakStrategy = editText.getBreakStrategy();
@@ -42,6 +44,7 @@ public final class ReactTextInputLocalData {
     editText.setMinLines(mMinLines);
     editText.setMaxLines(mMaxLines);
     editText.setInputType(mInputType);
+    editText.setHint(mPlaceholder);
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       editText.setBreakStrategy(mBreakStrategy);
     }

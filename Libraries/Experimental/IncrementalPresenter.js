@@ -1,21 +1,23 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 const IncrementalGroup = require('IncrementalGroup');
-const React = require('React');
 const PropTypes = require('prop-types');
+const React = require('React');
 const View = require('View');
 
-const ViewPropTypes = require('ViewPropTypes');
-
 import type {Context} from 'Incremental';
+import type {ViewStyleProp} from 'StyleSheet';
+import type {LayoutEvent} from 'CoreEventTypes';
 
 /**
  * WARNING: EXPERIMENTAL. Breaking changes will probably happen a lot and will
@@ -29,25 +31,19 @@ import type {Context} from 'Incremental';
  *
  * See Incremental.js for more info.
  */
-type Props = {
+type Props = $ReadOnly<{|
   name: string,
   disabled?: boolean,
-  onDone?: () => void,
-  onLayout?: (event: Object) => void,
-  style?: mixed,
-  children?: any,
-}
+  onDone?: () => mixed,
+  onLayout?: (event: LayoutEvent) => mixed,
+  style?: ViewStyleProp,
+  children?: React.Node,
+|}>;
+
 class IncrementalPresenter extends React.Component<Props> {
   context: Context;
   _isDone: boolean;
 
-  static propTypes = {
-    name: PropTypes.string,
-    disabled: PropTypes.bool,
-    onDone: PropTypes.func,
-    onLayout: PropTypes.func,
-    style: ViewPropTypes.style,
-  };
   static contextTypes = {
     incrementalGroup: PropTypes.object,
     incrementalGroupEnabled: PropTypes.bool,
@@ -60,22 +56,27 @@ class IncrementalPresenter extends React.Component<Props> {
   }
   onDone() {
     this._isDone = true;
-    if (this.props.disabled !== true &&
-        this.context.incrementalGroupEnabled !== false) {
+    if (
+      this.props.disabled !== true &&
+      this.context.incrementalGroupEnabled !== false
+    ) {
       // Avoid expensive re-renders and use setNativeProps
-      this.refs.view.setNativeProps(
-        {style: [this.props.style, {opacity: 1, position: 'relative'}]}
-      );
+      this.refs.view.setNativeProps({
+        style: [this.props.style, {opacity: 1, position: 'relative'}],
+      });
     }
     this.props.onDone && this.props.onDone();
   }
   render() {
-    if (this.props.disabled !== true &&
-        this.context.incrementalGroupEnabled !== false &&
-        !this._isDone) {
-      var style = [this.props.style, {opacity: 0, position: 'absolute'}];
+    let style: ViewStyleProp;
+    if (
+      this.props.disabled !== true &&
+      this.context.incrementalGroupEnabled !== false &&
+      !this._isDone
+    ) {
+      style = [this.props.style, {opacity: 0, position: 'absolute'}];
     } else {
-      var style = this.props.style;
+      style = this.props.style;
     }
     return (
       <IncrementalGroup

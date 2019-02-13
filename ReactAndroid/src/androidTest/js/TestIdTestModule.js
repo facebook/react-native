@@ -1,24 +1,24 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  */
 
 'use strict';
 
-var Image = require('Image');
-var React = require('React');
-var StyleSheet = require('StyleSheet');
-var Switch = require('Switch');
-var Text = require('Text');
-var TextInput = require('TextInput');
-var TouchableBounce = require('TouchableBounce');
-var TouchableHighlight = require('TouchableHighlight');
-var TouchableOpacity = require('TouchableOpacity');
-var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-var View = require('View');
+const Image = require('Image');
+const React = require('React');
+const StyleSheet = require('StyleSheet');
+const Text = require('Text');
+const TextInput = require('TextInput');
+const TouchableBounce = require('TouchableBounce');
+const TouchableHighlight = require('TouchableHighlight');
+const TouchableOpacity = require('TouchableOpacity');
+const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+const View = require('View');
 
 /**
  * All the views implemented on Android, each with the testID property set.
@@ -30,16 +30,19 @@ class TestIdTestApp extends React.Component {
   render() {
     return (
       <View>
-
         <Image
           testID="Image"
-          source={{uri: 'data:image/gif;base64,' +
+          source={{
+            uri:
+              'data:image/gif;base64,' +
               'R0lGODdhMAAwAPAAAAAAAP///ywAAAAAMAAwAAAC8IyPqcvt3wCcDkiLc7C0qwyGHhSWpjQu5yqmCYsapy' +
               'uvUUlvONmOZtfzgFzByTB10QgxOR0TqBQejhRNzOfkVJ+5YiUqrXF5Y5lKh/DeuNcP5yLWGsEbtLiOSpa/' +
               'TPg7JpJHxyendzWTBfX0cxOnKPjgBzi4diinWGdkF8kjdfnycQZXZeYGejmJlZeGl9i2icVqaNVailT6F5' +
               'iJ90m6mvuTS4OK05M0vDk0Q4XUtwvKOzrcd3iq9uisF81M1OIcR7lEewwcLp7tuNNkM3uNna3F2JQFo97V' +
-              'riy/Xl4/f1cf5VWzXyym7PHhhx4dbgYKAAA7'}}
-          style={styles.base} />
+              'riy/Xl4/f1cf5VWzXyym7PHhhx4dbgYKAAA7',
+          }}
+          style={styles.base}
+        />
 
         <Text testID="Text">text</Text>
 
@@ -64,13 +67,12 @@ class TestIdTestApp extends React.Component {
         </TouchableWithoutFeedback>
 
         <View testID="View" />
-
       </View>
     );
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   base: {
     width: 150,
     height: 50,

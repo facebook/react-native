@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 package com.facebook.react.bridge;
 
@@ -22,6 +25,7 @@ public enum ReactMarkerConstants {
   NATIVE_MODULE_INITIALIZE_END,
   SETUP_REACT_CONTEXT_START,
   SETUP_REACT_CONTEXT_END,
+  CHANGE_THREAD_PRIORITY,
   CREATE_UI_MANAGER_MODULE_START,
   CREATE_UI_MANAGER_MODULE_END,
   CREATE_VIEW_MANAGERS_START,
@@ -82,4 +86,14 @@ public enum ReactMarkerConstants {
   CREATE_MC_MODULE_END,
   CREATE_MC_MODULE_GET_METADATA_START,
   CREATE_MC_MODULE_GET_METADATA_END,
+  REGISTER_JS_SEGMENT_START,
+  REGISTER_JS_SEGMENT_STOP,
+  VM_INIT,
+  ON_FRAGMENT_CREATE,
+  JAVASCRIPT_EXECUTOR_FACTORY_INJECT_START,
+  JAVASCRIPT_EXECUTOR_FACTORY_INJECT_END,
+  LOAD_REACT_NATIVE_SO_FILE_START,
+  LOAD_REACT_NATIVE_SO_FILE_END,
+  LOAD_REACT_NATIVE_FABRIC_SO_FILE_START,
+  LOAD_REACT_NATIVE_FABRIC_SO_FILE_END,
 }

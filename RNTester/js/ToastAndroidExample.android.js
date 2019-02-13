@@ -1,45 +1,46 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
-  StyleSheet,
-  Text,
-  ToastAndroid,
-  TouchableWithoutFeedback,
-} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {StyleSheet, Text, ToastAndroid, TouchableWithoutFeedback} = ReactNative;
 
-var RNTesterBlock = require('RNTesterBlock');
-var RNTesterPage = require('RNTesterPage');
+const RNTesterBlock = require('RNTesterBlock');
+const RNTesterPage = require('RNTesterPage');
 
-class ToastExample extends React.Component<{}, $FlowFixMeState> {
-  static title = 'Toast Example';
-  static description = 'Example that demonstrates the use of an Android Toast to provide feedback.';
-  state = {};
-
+type Props = $ReadOnly<{||}>;
+class ToastExample extends React.Component<Props> {
   render() {
     return (
       <RNTesterPage title="ToastAndroid">
         <RNTesterBlock title="Simple toast">
           <TouchableWithoutFeedback
             onPress={() =>
-              ToastAndroid.show('This is a toast with short duration', ToastAndroid.SHORT)}>
+              ToastAndroid.show(
+                'This is a toast with short duration',
+                ToastAndroid.SHORT,
+              )
+            }>
             <Text style={styles.text}>Click me.</Text>
           </TouchableWithoutFeedback>
         </RNTesterBlock>
         <RNTesterBlock title="Toast with long duration">
           <TouchableWithoutFeedback
             onPress={() =>
-              ToastAndroid.show('This is a toast with long duration', ToastAndroid.LONG)}>
+              ToastAndroid.show(
+                'This is a toast with long duration',
+                ToastAndroid.LONG,
+              )
+            }>
             <Text style={styles.text}>Click me.</Text>
           </TouchableWithoutFeedback>
         </RNTesterBlock>
@@ -112,10 +113,20 @@ class ToastExample extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   text: {
     color: 'black',
   },
 });
 
-module.exports = ToastExample;
+exports.title = 'Toast Example';
+exports.description =
+  'Example that demonstrates the use of an Android Toast to provide feedback.';
+exports.examples = [
+  {
+    title: 'Basic toast',
+    render: function(): React.Element<typeof ToastExample> {
+      return <ToastExample />;
+    },
+  },
+];

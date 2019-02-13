@@ -1,13 +1,11 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.textinput;
-
-import javax.annotation.Nullable;
 
 import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
@@ -16,6 +14,7 @@ import android.view.inputmethod.InputConnectionWrapper;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import javax.annotation.Nullable;
 
 /**
  * A class to implement the TextInput 'onKeyPress' API on android for soft keyboards.

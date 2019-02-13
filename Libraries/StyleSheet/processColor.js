@@ -1,11 +1,13 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @format
+ * @flow strict-local
  */
+
 'use strict';
 
 const Platform = require('Platform');
@@ -13,7 +15,7 @@ const Platform = require('Platform');
 const normalizeColor = require('normalizeColor');
 
 /* eslint no-bitwise: 0 */
-function processColor(color?: string | number): ?number {
+function processColor(color?: ?(string | number)): ?number {
   if (color === undefined || color === null) {
     return color;
   }
@@ -24,7 +26,7 @@ function processColor(color?: string | number): ?number {
   }
 
   // Converts 0xrrggbbaa into 0xaarrggbb
-  int32Color = (int32Color << 24 | int32Color >>> 8) >>> 0;
+  int32Color = ((int32Color << 24) | (int32Color >>> 8)) >>> 0;
 
   if (Platform.OS === 'android') {
     // Android use 32 bit *signed* integer to represent the color

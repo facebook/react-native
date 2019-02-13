@@ -1,11 +1,13 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 const AppContainer = require('AppContainer');
@@ -18,13 +20,16 @@ const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
-const deprecatedPropType = require('deprecatedPropType');
-const requireNativeComponent = require('requireNativeComponent');
-const RCTModalHostView = requireNativeComponent('RCTModalHostView', null);
-const ModalEventEmitter = Platform.OS === 'ios' && NativeModules.ModalManager ?
-  new NativeEventEmitter(NativeModules.ModalManager) : null;
+const RCTModalHostView = require('RCTModalHostViewNativeComponent');
+
+const ModalEventEmitter =
+  Platform.OS === 'ios' && NativeModules.ModalManager
+    ? new NativeEventEmitter(NativeModules.ModalManager)
+    : null;
 
 import type EmitterSubscription from 'EmitterSubscription';
+import type {ViewProps} from 'ViewPropTypes';
+import type {SyntheticEvent} from 'CoreEventTypes';
 
 /**
  * The Modal component is a simple way to present content above an enclosing view.
@@ -36,81 +41,112 @@ import type EmitterSubscription from 'EmitterSubscription';
 // <Modal> on screen. There can be different ones, either nested or as siblings.
 // We cannot pass the onDismiss callback to native as the view will be
 // destroyed before the callback is fired.
-var uniqueModalIdentifier = 0;
+let uniqueModalIdentifier = 0;
 
-class Modal extends React.Component<Object> {
-  static propTypes = {
-    /**
-     * The `animationType` prop controls how the modal animates.
-     *
-     * See https://facebook.github.io/react-native/docs/modal.html#animationtype
-     */
-    animationType: PropTypes.oneOf(['none', 'slide', 'fade']),
-    /**
-     * The `presentationStyle` prop controls how the modal appears.
-     *
-     * See https://facebook.github.io/react-native/docs/modal.html#presentationstyle
-     */
-    presentationStyle: PropTypes.oneOf(['fullScreen', 'pageSheet', 'formSheet', 'overFullScreen']),
-    /**
-     * The `transparent` prop determines whether your modal will fill the
-     * entire view.
-     *
-     * See https://facebook.github.io/react-native/docs/modal.html#transparent
-     */
-    transparent: PropTypes.bool,
-    /**
-     * The `hardwareAccelerated` prop controls whether to force hardware
-     * acceleration for the underlying window.
-     *
-     * See https://facebook.github.io/react-native/docs/modal.html#hardwareaccelerated
-     */
-    hardwareAccelerated: PropTypes.bool,
-    /**
-     * The `visible` prop determines whether your modal is visible.
-     *
-     * See https://facebook.github.io/react-native/docs/modal.html#visible
-     */
-    visible: PropTypes.bool,
-    /**
-     * The `onRequestClose` callback is called when the user taps the hardware
-     * back button on Android or the menu button on Apple TV.
-     *
-     * See https://facebook.github.io/react-native/docs/modal.html#onrequestclose
-     */
-    onRequestClose: (Platform.isTVOS || Platform.OS === 'android') ? PropTypes.func.isRequired : PropTypes.func,
-    /**
-     * The `onShow` prop allows passing a function that will be called once the
-     * modal has been shown.
-     *
-     * See https://facebook.github.io/react-native/docs/modal.html#onshow
-     */
-    onShow: PropTypes.func,
-    /**
-     * The `onDismiss` prop allows passing a function that will be called once
-     * the modal has been dismissed.
-     *
-     * See https://facebook.github.io/react-native/docs/modal.html#ondismiss
-     */
-    onDismiss: PropTypes.func,
-    animated: deprecatedPropType(
-      PropTypes.bool,
-      'Use the `animationType` prop instead.'
-    ),
-    /**
-     * The `supportedOrientations` prop allows the modal to be rotated to any of the specified orientations.
-     *
-     * See https://facebook.github.io/react-native/docs/modal.html#supportedorientations
-     */
-    supportedOrientations: PropTypes.arrayOf(PropTypes.oneOf(['portrait', 'portrait-upside-down', 'landscape', 'landscape-left', 'landscape-right'])),
-    /**
-     * The `onOrientationChange` callback is called when the orientation changes while the modal is being displayed.
-     *
-     * See https://facebook.github.io/react-native/docs/modal.html#onorientationchange
-     */
-    onOrientationChange: PropTypes.func,
-  };
+type OrientationChangeEvent = SyntheticEvent<
+  $ReadOnly<{|
+    orientation: 'portrait' | 'landscape',
+  |}>,
+>;
 
+type Props = $ReadOnly<{|
+  ...ViewProps,
+
+  /**
+   * The `animationType` prop controls how the modal animates.
+   *
+   * See https://facebook.github.io/react-native/docs/modal.html#animationtype
+   */
+  animationType?: ?('none' | 'slide' | 'fade'),
+
+  /**
+   * The `presentationStyle` prop controls how the modal appears.
+   *
+   * See https://facebook.github.io/react-native/docs/modal.html#presentationstyle
+   */
+  presentationStyle?: ?(
+    | 'fullScreen'
+    | 'pageSheet'
+    | 'formSheet'
+    | 'overFullScreen'
+  ),
+
+  /**
+   * The `transparent` prop determines whether your modal will fill the
+   * entire view.
+   *
+   * See https://facebook.github.io/react-native/docs/modal.html#transparent
+   */
+  transparent?: ?boolean,
+
+  /**
+   * The `hardwareAccelerated` prop controls whether to force hardware
+   * acceleration for the underlying window.
+   *
+   * See https://facebook.github.io/react-native/docs/modal.html#hardwareaccelerated
+   */
+  hardwareAccelerated?: ?boolean,
+
+  /**
+   * The `visible` prop determines whether your modal is visible.
+   *
+   * See https://facebook.github.io/react-native/docs/modal.html#visible
+   */
+  visible?: ?boolean,
+
+  /**
+   * The `onRequestClose` callback is called when the user taps the hardware
+   * back button on Android or the menu button on Apple TV.
+   *
+   * This is required on Apple TV and Android.
+   *
+   * See https://facebook.github.io/react-native/docs/modal.html#onrequestclose
+   */
+  onRequestClose?: ?(event?: SyntheticEvent<null>) => mixed,
+
+  /**
+   * The `onShow` prop allows passing a function that will be called once the
+   * modal has been shown.
+   *
+   * See https://facebook.github.io/react-native/docs/modal.html#onshow
+   */
+  onShow?: ?(event?: SyntheticEvent<null>) => mixed,
+
+  /**
+   * The `onDismiss` prop allows passing a function that will be called once
+   * the modal has been dismissed.
+   *
+   * See https://facebook.github.io/react-native/docs/modal.html#ondismiss
+   */
+  onDismiss?: ?() => mixed,
+
+  /**
+   * Deprecated. Use the `animationType` prop instead.
+   */
+  animated?: ?boolean,
+
+  /**
+   * The `supportedOrientations` prop allows the modal to be rotated to any of the specified orientations.
+   *
+   * See https://facebook.github.io/react-native/docs/modal.html#supportedorientations
+   */
+  supportedOrientations?: ?$ReadOnlyArray<
+    | 'portrait'
+    | 'portrait-upside-down'
+    | 'landscape'
+    | 'landscape-left'
+    | 'landscape-right',
+  >,
+
+  /**
+   * The `onOrientationChange` callback is called when the orientation changes while the modal is being displayed.
+   *
+   * See https://facebook.github.io/react-native/docs/modal.html#onorientationchange
+   */
+  onOrientationChange?: ?(event: OrientationChangeEvent) => mixed,
+|}>;
+
+class Modal extends React.Component<Props> {
   static defaultProps = {
     visible: true,
     hardwareAccelerated: false,
@@ -123,10 +159,22 @@ class Modal extends React.Component<Object> {
   _identifier: number;
   _eventSubscription: ?EmitterSubscription;
 
-  constructor(props: Object) {
+  constructor(props: Props) {
     super(props);
     Modal._confirmProps(props);
     this._identifier = uniqueModalIdentifier++;
+  }
+
+  static childContextTypes = {
+    virtualizedList: PropTypes.object,
+  };
+
+  getChildContext() {
+    // Reset the context so VirtualizedList doesn't get confused by nesting
+    // in the React tree that doesn't reflect the native component heirarchy.
+    return {
+      virtualizedList: null,
+    };
   }
 
   componentDidMount() {
@@ -148,18 +196,26 @@ class Modal extends React.Component<Object> {
     }
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps: Object) {
+  UNSAFE_componentWillReceiveProps(nextProps: Props) {
     Modal._confirmProps(nextProps);
   }
 
-  static _confirmProps(props: Object) {
-    if (props.presentationStyle && props.presentationStyle !== 'overFullScreen' && props.transparent) {
-      console.warn(`Modal with '${props.presentationStyle}' presentation style and 'transparent' value is not supported.`);
+  static _confirmProps(props: Props) {
+    if (
+      props.presentationStyle &&
+      props.presentationStyle !== 'overFullScreen' &&
+      props.transparent
+    ) {
+      console.warn(
+        `Modal with '${
+          props.presentationStyle
+        }' presentation style and 'transparent' value is not supported.`,
+      );
     }
   }
 
   render(): React.Node {
-    if (this.props.visible === false) {
+    if (this.props.visible !== true) {
       return null;
     }
 
@@ -184,11 +240,13 @@ class Modal extends React.Component<Object> {
       }
     }
 
-    const innerChildren = __DEV__ ?
-      ( <AppContainer rootTag={this.context.rootTag}>
-          {this.props.children}
-        </AppContainer>) :
-      this.props.children;
+    const innerChildren = __DEV__ ? (
+      <AppContainer rootTag={this.context.rootTag}>
+        {this.props.children}
+      </AppContainer>
+    ) : (
+      this.props.children
+    );
 
     return (
       <RCTModalHostView
@@ -202,11 +260,8 @@ class Modal extends React.Component<Object> {
         style={styles.modal}
         onStartShouldSetResponder={this._shouldSetResponder}
         supportedOrientations={this.props.supportedOrientations}
-        onOrientationChange={this.props.onOrientationChange}
-        >
-        <View style={[styles.container, containerStyles]}>
-          {innerChildren}
-        </View>
+        onOrientationChange={this.props.onOrientationChange}>
+        <View style={[styles.container, containerStyles]}>{innerChildren}</View>
       </RCTModalHostView>
     );
   }
@@ -224,9 +279,9 @@ const styles = StyleSheet.create({
   },
   container: {
     position: 'absolute',
-    [side] : 0,
+    [side]: 0,
     top: 0,
-  }
+  },
 });
 
 module.exports = Modal;

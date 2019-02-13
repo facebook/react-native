@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -24,7 +24,6 @@ public class ViewProps {
   public static final String ALIGN_ITEMS = "alignItems";
   public static final String ALIGN_SELF = "alignSelf";
   public static final String ALIGN_CONTENT = "alignContent";
-  public static final String OVERFLOW = "overflow";
   public static final String DISPLAY = "display";
   public static final String BOTTOM = "bottom";
   public static final String COLLAPSABLE = "collapsable";
@@ -100,8 +99,14 @@ public class ViewProps {
   public static final String TEXT_DECORATION_LINE = "textDecorationLine";
   public static final String TEXT_BREAK_STRATEGY = "textBreakStrategy";
   public static final String OPACITY = "opacity";
+  public static final String OVERFLOW = "overflow";
+
+  public static final String HIDDEN = "hidden";
+  public static final String SCROLL = "scroll";
+  public static final String VISIBLE = "visible";
 
   public static final String ALLOW_FONT_SCALING = "allowFontScaling";
+  public static final String MAX_FONT_SIZE_MULTIPLIER = "maxFontSizeMultiplier";
   public static final String INCLUDE_FONT_PADDING = "includeFontPadding";
 
   public static final String BORDER_WIDTH = "borderWidth";
@@ -166,7 +171,6 @@ public class ViewProps {
               FLEX_SHRINK,
               FLEX_WRAP,
               JUSTIFY_CONTENT,
-              OVERFLOW,
               ALIGN_CONTENT,
               DISPLAY,
 
@@ -209,8 +213,6 @@ public class ViewProps {
               PADDING_START,
               PADDING_END));
 
-  public static boolean sIsOptimizationsEnabled;
-
   public static boolean isLayoutOnly(ReadableMap map, String prop) {
     if (LAYOUT_ONLY_PROPS.contains(prop)) {
       return true;
@@ -219,47 +221,43 @@ public class ViewProps {
       return AUTO.equals(value) || BOX_NONE.equals(value);
     }
 
-
-    if (sIsOptimizationsEnabled) {
-      switch (prop) {
-        case OPACITY:
-          // null opacity behaves like opacity = 1
-          // Ignore if explicitly set to default opacity.
-          return map.isNull(OPACITY) || map.getDouble(OPACITY) == 1d;
-        case BORDER_RADIUS: // Without a background color or border width set, a border won't show.
-          if (map.hasKey(BACKGROUND_COLOR) && map.getInt(BACKGROUND_COLOR) != Color.TRANSPARENT) {
-            return false;
-          }
-          if (map.hasKey(BORDER_WIDTH)
-            && !map.isNull(BORDER_WIDTH)
-            && map.getDouble(BORDER_WIDTH) != 0d) {
-            return false;
-          }
-          return true;
-        case BORDER_LEFT_COLOR:
-          return map.getInt(BORDER_LEFT_COLOR) == Color.TRANSPARENT;
-        case BORDER_RIGHT_COLOR:
-          return map.getInt(BORDER_RIGHT_COLOR) == Color.TRANSPARENT;
-        case BORDER_TOP_COLOR:
-          return map.getInt(BORDER_TOP_COLOR) == Color.TRANSPARENT;
-        case BORDER_BOTTOM_COLOR:
-          return map.getInt(BORDER_BOTTOM_COLOR) == Color.TRANSPARENT;
-        case BORDER_WIDTH:
-          return map.isNull(BORDER_WIDTH) || map.getDouble(BORDER_WIDTH) == 0d;
-        case BORDER_LEFT_WIDTH:
-          return map.isNull(BORDER_LEFT_WIDTH) || map.getDouble(BORDER_LEFT_WIDTH) == 0d;
-        case BORDER_TOP_WIDTH:
-          return map.isNull(BORDER_TOP_WIDTH) || map.getDouble(BORDER_TOP_WIDTH) == 0d;
-        case BORDER_RIGHT_WIDTH:
-          return map.isNull(BORDER_RIGHT_WIDTH) || map.getDouble(BORDER_RIGHT_WIDTH) == 0d;
-        case BORDER_BOTTOM_WIDTH:
-          return map.isNull(BORDER_BOTTOM_WIDTH) || map.getDouble(BORDER_BOTTOM_WIDTH) == 0d;
-        case OVERFLOW: // We do nothing with this right now.
-          return true;
-        default:
+    switch (prop) {
+      case OPACITY:
+        // null opacity behaves like opacity = 1
+        // Ignore if explicitly set to default opacity.
+        return map.isNull(OPACITY) || map.getDouble(OPACITY) == 1d;
+      case BORDER_RADIUS: // Without a background color or border width set, a border won't show.
+        if (map.hasKey(BACKGROUND_COLOR) && map.getInt(BACKGROUND_COLOR) != Color.TRANSPARENT) {
           return false;
+        }
+        if (map.hasKey(BORDER_WIDTH)
+          && !map.isNull(BORDER_WIDTH)
+          && map.getDouble(BORDER_WIDTH) != 0d) {
+          return false;
+        }
+        return true;
+      case BORDER_LEFT_COLOR:
+        return map.getInt(BORDER_LEFT_COLOR) == Color.TRANSPARENT;
+      case BORDER_RIGHT_COLOR:
+        return map.getInt(BORDER_RIGHT_COLOR) == Color.TRANSPARENT;
+      case BORDER_TOP_COLOR:
+        return map.getInt(BORDER_TOP_COLOR) == Color.TRANSPARENT;
+      case BORDER_BOTTOM_COLOR:
+        return map.getInt(BORDER_BOTTOM_COLOR) == Color.TRANSPARENT;
+      case BORDER_WIDTH:
+        return map.isNull(BORDER_WIDTH) || map.getDouble(BORDER_WIDTH) == 0d;
+      case BORDER_LEFT_WIDTH:
+        return map.isNull(BORDER_LEFT_WIDTH) || map.getDouble(BORDER_LEFT_WIDTH) == 0d;
+      case BORDER_TOP_WIDTH:
+        return map.isNull(BORDER_TOP_WIDTH) || map.getDouble(BORDER_TOP_WIDTH) == 0d;
+      case BORDER_RIGHT_WIDTH:
+        return map.isNull(BORDER_RIGHT_WIDTH) || map.getDouble(BORDER_RIGHT_WIDTH) == 0d;
+      case BORDER_BOTTOM_WIDTH:
+        return map.isNull(BORDER_BOTTOM_WIDTH) || map.getDouble(BORDER_BOTTOM_WIDTH) == 0d;
+      case OVERFLOW:
+        return map.isNull(OVERFLOW) || VISIBLE.equals(map.getString(OVERFLOW));
+      default:
+        return false;
       }
-    }
-    return false;
   }
 }
