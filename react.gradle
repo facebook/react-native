@@ -76,9 +76,11 @@ afterEvaluate {
                     "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir, *extraArgs)
             }
 
-            enabled config."bundleIn${targetName}" ||
-                config."bundleIn${variant.buildType.name.capitalize()}" ?:
-                targetName.toLowerCase().contains("release")
+            enabled config."bundleIn${targetName}" != null
+              ? config."bundleIn${targetName}"
+              : config."bundleIn${buildTypeName.capitalize()}" != null
+                ? config."bundleIn${buildTypeName.capitalize()}"
+                : targetName.toLowerCase().contains("release")
         }
 
         // Expose a minimal interface on the application variant and the task itself:
