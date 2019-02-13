@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -174,9 +174,9 @@ describe('VirtualizedList', () => {
     const props = {
       data,
       renderItem: ({item}) => <item value={item.key} />,
-      getItem: (data, index) => data[index],
-      getItemCount: data => data.length,
-      getItemLayout: (data, index) => ({
+      getItem: (items, index) => items[index],
+      getItemCount: items => items.length,
+      getItemLayout: (items, index) => ({
         length: ITEM_HEIGHT,
         offset: ITEM_HEIGHT * index,
         index,

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,7 +14,6 @@ const Batchinator = require('Batchinator');
 const IncrementalGroup = require('IncrementalGroup');
 const React = require('React');
 const ScrollView = require('ScrollView');
-const Set = require('Set');
 const StyleSheet = require('StyleSheet');
 const Systrace = require('Systrace');
 const View = require('View');
@@ -23,8 +22,8 @@ const ViewabilityHelper = require('ViewabilityHelper');
 const clamp = require('clamp');
 const deepDiffer = require('deepDiffer');
 const infoLog = require('infoLog');
-const invariant = require('fbjs/lib/invariant');
-const nullthrows = require('fbjs/lib/nullthrows');
+const invariant = require('invariant');
+const nullthrows = require('nullthrows');
 
 import type {NativeMethodsMixinType} from 'ReactNativeTypes';
 
@@ -778,11 +777,7 @@ class CellRenderer extends React.Component<CellProps> {
     if (DEBUG) {
       infoLog('render cell ' + this.props.rowIndex);
       const Text = require('Text');
-      debug = (
-        <Text style={{backgroundColor: 'lightblue'}}>
-          Row: {this.props.rowIndex}
-        </Text>
-      );
+      debug = <Text style={styles.debug}>Row: {this.props.rowIndex}</Text>;
     }
     const style = this._includeInLayoutLatch ? styles.include : styles.remove;
     return (
@@ -819,6 +814,9 @@ const styles = StyleSheet.create({
     left: removedXOffset,
     right: -removedXOffset,
     opacity: DEBUG ? 0.1 : 0,
+  },
+  debug: {
+    backgroundColor: 'lightblue',
   },
 });
 

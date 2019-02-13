@@ -1,19 +1,19 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {Image, View} = ReactNative;
-var {TestModule} = ReactNative.NativeModules;
+const React = require('react');
+const ReactNative = require('react-native');
+const {Image} = ReactNative;
+const {TestModule} = ReactNative.NativeModules;
 
 class ImageSnapshotTest extends React.Component<{}> {
   componentDidMount() {

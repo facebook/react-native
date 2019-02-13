@@ -1,0 +1,11 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "rn_android_library")
+
+rn_android_library(
+    name = "config",
+    srcs = glob(["**/*.java"]),
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+    ],
+)

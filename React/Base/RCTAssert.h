@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -24,8 +24,8 @@ RCT_EXTERN BOOL RCTIsMainQueue(void);
   if ((condition) == 0) { \
     _RCTAssertFormat(#condition, __FILE__, __LINE__, __func__, __VA_ARGS__); \
     if (RCT_NSASSERT) { \
-      [[NSAssertionHandler currentHandler] handleFailureInFunction:@(__func__) \
-        file:@(__FILE__) lineNumber:__LINE__ description:__VA_ARGS__]; \
+      [[NSAssertionHandler currentHandler] handleFailureInFunction:(NSString * _Nonnull)@(__func__) \
+        file:(NSString * _Nonnull)@(__FILE__) lineNumber:__LINE__ description:__VA_ARGS__]; \
     } \
   } \
 } while (false)

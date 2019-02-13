@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,7 +10,7 @@
 'use strict';
 
 const Platform = require('Platform');
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 const MetroHMRClient = require('metro/src/lib/bundle-modules/HMRClient');
 
@@ -27,6 +27,9 @@ const HMRClient = {
     // Moving to top gives errors due to NativeModules not being initialized
     const HMRLoadingView = require('HMRLoadingView');
 
+    /* $FlowFixMe(>=0.84.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.84 was deployed. To see the error, delete this
+     * comment and run Flow. */
     const wsHostPort = port !== null && port !== '' ? `${host}:${port}` : host;
 
     bundleEntry = bundleEntry.replace(/\.(bundle|delta)/, '.js');
@@ -86,7 +89,27 @@ Error: ${e.message}`;
 
     hmrClient.on('error', data => {
       HMRLoadingView.hide();
-      throw new Error(`${data.type} ${data.message}`);
+
+      if (data.type === 'GraphNotFoundError') {
+        hmrClient.disable();
+        throw new Error(
+          'The packager server has restarted since the last Hot update. Hot Reloading will be disabled until you reload the application.',
+        );
+      } else if (data.type === 'RevisionNotFoundError') {
+        hmrClient.disable();
+        throw new Error(
+          'The packager server and the client are out of sync. Hot Reloading will be disabled until you reload the application.',
+        );
+      } else {
+        throw new Error(`${data.type} ${data.message}`);
+      }
+    });
+
+    hmrClient.on('close', data => {
+      HMRLoadingView.hide();
+      throw new Error(
+        'Disconnected from the packager server. Hot Reloading will be disabled until you reload the application.',
+      );
     });
 
     hmrClient.enable();

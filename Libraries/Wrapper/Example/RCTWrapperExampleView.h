@@ -1,4 +1,4 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 //
 // This source code is licensed under the license found in the
 // LICENSE-examples file in the root directory of this source tree.

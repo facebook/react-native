@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -19,6 +19,8 @@ jest
   .setMock('View', ClassComponentMock)
   .setMock('Image', ClassComponentMock)
   .setMock('ScrollView', ClassComponentMock)
+  .setMock('FlatList', ClassComponentMock)
+  .setMock('SectionList', ClassComponentMock)
   .setMock('React', {Component: class {}})
   .setMock('NativeModules', {
     NativeAnimatedModule: {},
@@ -81,7 +83,7 @@ describe('Native Animated', () => {
       // via component refs table that we override here.
       c.refs = {
         node: {
-          setNativeProps: jest.genMockFunction(),
+          setNativeProps: jest.fn(),
         },
       };
 

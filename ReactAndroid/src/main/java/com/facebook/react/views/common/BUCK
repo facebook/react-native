@@ -1,9 +1,10 @@
-load("//ReactNative:DEFS.bzl", "rn_android_library", "react_native_dep")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "rn_android_library")
 
 rn_android_library(
     name = "common",
     srcs = glob(["*.java"]),
     provided_deps = [
+        react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_dep("third-party/android/support/v4:lib-support-v4"),
     ],
     visibility = [

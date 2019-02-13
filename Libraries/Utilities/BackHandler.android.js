@@ -1,9 +1,10 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow
  * @format
  */
 
@@ -14,26 +15,18 @@ const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
 const DEVICE_BACK_EVENT = 'hardwareBackPress';
 
-type BackPressEventName = $Enum<{
-  backPress: string,
-}>;
+type BackPressEventName = 'backPress' | 'hardwareBackPress';
 
-const _backPressSubscriptions = new Set();
+const _backPressSubscriptions = [];
 
 RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function() {
-  let invokeDefault = true;
-  const subscriptions = Array.from(_backPressSubscriptions.values()).reverse();
-
-  for (let i = 0; i < subscriptions.length; ++i) {
-    if (subscriptions[i]()) {
-      invokeDefault = false;
-      break;
+  for (let i = _backPressSubscriptions.length - 1; i >= 0; i--) {
+    if (_backPressSubscriptions[i]()) {
+      return;
     }
   }
 
-  if (invokeDefault) {
-    BackHandler.exitApp();
-  }
+  BackHandler.exitApp();
 });
 
 /**
@@ -66,8 +59,19 @@ RCTDeviceEventEmitter.addListener(DEVICE_BACK_EVENT, function() {
  * });
  * ```
  */
-const BackHandler = {
-  exitApp: function() {
+type TBackHandler = {|
+  +exitApp: () => void,
+  +addEventListener: (
+    eventName: BackPressEventName,
+    handler: Function,
+  ) => {remove: () => void},
+  +removeEventListener: (
+    eventName: BackPressEventName,
+    handler: Function,
+  ) => void,
+|};
+const BackHandler: TBackHandler = {
+  exitApp: function(): void {
     DeviceEventManager.invokeDefaultBackPressHandler();
   },
 
@@ -81,9 +85,11 @@ const BackHandler = {
     eventName: BackPressEventName,
     handler: Function,
   ): {remove: () => void} {
-    _backPressSubscriptions.add(handler);
+    if (_backPressSubscriptions.indexOf(handler) === -1) {
+      _backPressSubscriptions.push(handler);
+    }
     return {
-      remove: () => BackHandler.removeEventListener(eventName, handler),
+      remove: (): void => BackHandler.removeEventListener(eventName, handler),
     };
   },
 
@@ -94,7 +100,12 @@ const BackHandler = {
     eventName: BackPressEventName,
     handler: Function,
   ): void {
-    _backPressSubscriptions.delete(handler);
+    if (_backPressSubscriptions.indexOf(handler) !== -1) {
+      _backPressSubscriptions.splice(
+        _backPressSubscriptions.indexOf(handler),
+        1,
+      );
+    }
   },
 };
 

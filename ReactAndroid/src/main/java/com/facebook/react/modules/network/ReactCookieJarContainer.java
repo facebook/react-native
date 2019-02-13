@@ -1,5 +1,13 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 package com.facebook.react.modules.network;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -7,11 +15,12 @@ import javax.annotation.Nullable;
 
 import okhttp3.Cookie;
 import okhttp3.CookieJar;
+import okhttp3.Headers;
 import okhttp3.HttpUrl;
 
 /**
- * Basic okhttp3 CookieJar container 
- */ 
+ * Basic okhttp3 CookieJar container
+ */
 public class ReactCookieJarContainer implements CookieJarContainer {
 
   @Nullable
@@ -37,7 +46,17 @@ public class ReactCookieJarContainer implements CookieJarContainer {
   @Override
   public List<Cookie> loadForRequest(HttpUrl url) {
     if (cookieJar != null) {
-      return cookieJar.loadForRequest(url);
+      List<Cookie> cookies = cookieJar.loadForRequest(url);
+      ArrayList<Cookie> validatedCookies = new ArrayList<>();
+      for (Cookie cookie : cookies) {
+        try {
+          Headers.Builder cookieChecker = new Headers.Builder();
+          cookieChecker.add(cookie.name(), cookie.value());
+          validatedCookies.add(cookie);
+        } catch (IllegalArgumentException ignored) {
+        }
+      }
+      return validatedCookies;
     }
     return Collections.emptyList();
   }

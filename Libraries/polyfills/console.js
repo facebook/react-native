@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,7 +9,7 @@
  * @format
  */
 
-/* eslint-disable no-shadow, eqeqeq, curly, no-unused-vars, no-void */
+/* eslint-disable no-shadow, eqeqeq, curly, no-unused-vars, no-void, no-control-regex  */
 
 /**
  * This pipes all of our console logging functions to native logging so that
@@ -361,17 +361,6 @@ const inspect = (function() {
     return typeof arg === 'function';
   }
 
-  function isPrimitive(arg) {
-    return (
-      arg === null ||
-      typeof arg === 'boolean' ||
-      typeof arg === 'number' ||
-      typeof arg === 'string' ||
-      typeof arg === 'symbol' || // ES6 symbol
-      typeof arg === 'undefined'
-    );
-  }
-
   function objectToString(o) {
     return Object.prototype.toString.call(o);
   }
@@ -427,6 +416,9 @@ function getNativeLogFunction(level) {
         [].slice.call(arguments),
         INSPECTOR_FRAMES_TO_SKIP,
       );
+    }
+    if (groupStack.length) {
+      str = groupFormat('', str);
     }
     global.nativeLoggingHook(str, logLevel);
   };
@@ -501,8 +493,42 @@ function consoleTablePolyfill(rows) {
   global.nativeLoggingHook('\n' + table.join('\n'), LOG_LEVELS.info);
 }
 
+const GROUP_PAD = '\u2502'; // Box light vertical
+const GROUP_OPEN = '\u2510'; // Box light down+left
+const GROUP_CLOSE = '\u2518'; // Box light up+left
+
+const groupStack = [];
+
+function groupFormat(prefix, msg) {
+  // Insert group formatting before the console message
+  return groupStack.join('') + prefix + ' ' + (msg || '');
+}
+
+function consoleGroupPolyfill(label) {
+  global.nativeLoggingHook(groupFormat(GROUP_OPEN, label), LOG_LEVELS.info);
+  groupStack.push(GROUP_PAD);
+}
+
+function consoleGroupCollapsedPolyfill(label) {
+  global.nativeLoggingHook(groupFormat(GROUP_CLOSE, label), LOG_LEVELS.info);
+  groupStack.push(GROUP_PAD);
+}
+
+function consoleGroupEndPolyfill() {
+  groupStack.pop();
+  global.nativeLoggingHook(groupFormat(GROUP_CLOSE), LOG_LEVELS.info);
+}
+
 if (global.nativeLoggingHook) {
   const originalConsole = global.console;
+  // Preserve the original `console` as `originalConsole`
+  if (__DEV__ && originalConsole) {
+    const descriptor = Object.getOwnPropertyDescriptor(global, 'console');
+    if (descriptor) {
+      Object.defineProperty(global, 'originalConsole', descriptor);
+    }
+  }
+
   global.console = {
     error: getNativeLogFunction(LOG_LEVELS.error),
     info: getNativeLogFunction(LOG_LEVELS.info),
@@ -511,24 +537,40 @@ if (global.nativeLoggingHook) {
     trace: getNativeLogFunction(LOG_LEVELS.trace),
     debug: getNativeLogFunction(LOG_LEVELS.trace),
     table: consoleTablePolyfill,
+    group: consoleGroupPolyfill,
+    groupEnd: consoleGroupEndPolyfill,
+    groupCollapsed: consoleGroupCollapsedPolyfill,
   };
 
   // If available, also call the original `console` method since that is
   // sometimes useful. Ex: on OS X, this will let you see rich output in
   // the Safari Web Inspector console.
   if (__DEV__ && originalConsole) {
-    // Preserve the original `console` as `originalConsole`
-    const descriptor = Object.getOwnPropertyDescriptor(global, 'console');
-    if (descriptor) {
-      Object.defineProperty(global, 'originalConsole', descriptor);
-    }
-
     Object.keys(console).forEach(methodName => {
       const reactNativeMethod = console[methodName];
       if (originalConsole[methodName]) {
         console[methodName] = function() {
           originalConsole[methodName](...arguments);
           reactNativeMethod.apply(console, arguments);
+        };
+      }
+    });
+
+    // The following methods are not supported by this polyfill but
+    // we still should pass them to original console if they are
+    // supported by it.
+    [
+      'assert',
+      'clear',
+      'dir',
+      'dirxml',
+      'groupCollapsed',
+      'profile',
+      'profileEnd',
+    ].forEach(methodName => {
+      if (typeof originalConsole[methodName] === 'function') {
+        console[methodName] = function() {
+          originalConsole[methodName](...arguments);
         };
       }
     });

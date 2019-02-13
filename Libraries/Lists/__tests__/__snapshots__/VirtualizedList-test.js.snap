@@ -17,7 +17,6 @@ exports[`VirtualizedList handles nested lists 1`] = `
   getItemCount={[Function]}
   horizontal={false}
   initialNumToRender={10}
-  invertStickyHeaders={undefined}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
@@ -54,7 +53,6 @@ exports[`VirtualizedList handles nested lists 1`] = `
         getItemCount={[Function]}
         horizontal={false}
         initialNumToRender={10}
-        invertStickyHeaders={undefined}
         keyExtractor={[Function]}
         maxToRenderPerBatch={10}
         onContentSizeChange={[Function]}
@@ -108,7 +106,6 @@ exports[`VirtualizedList handles nested lists 1`] = `
         getItemCount={[Function]}
         horizontal={true}
         initialNumToRender={10}
-        invertStickyHeaders={undefined}
         keyExtractor={[Function]}
         maxToRenderPerBatch={10}
         onContentSizeChange={[Function]}
@@ -183,7 +180,6 @@ exports[`VirtualizedList handles separators correctly 1`] = `
   getItemCount={[Function]}
   horizontal={false}
   initialNumToRender={10}
-  invertStickyHeaders={undefined}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
@@ -265,7 +261,6 @@ exports[`VirtualizedList handles separators correctly 2`] = `
   getItemCount={[Function]}
   horizontal={false}
   initialNumToRender={10}
-  invertStickyHeaders={undefined}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
@@ -347,7 +342,6 @@ exports[`VirtualizedList handles separators correctly 3`] = `
   getItemCount={[Function]}
   horizontal={false}
   initialNumToRender={10}
-  invertStickyHeaders={undefined}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
@@ -455,7 +449,6 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
   refreshControl={
     <RefreshControlMock
       onRefresh={[MockFunction]}
-      progressViewOffset={undefined}
       refreshing={false}
     />
   }
@@ -495,7 +488,6 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
       <header />
     </View>
     <View
-      onLayout={undefined}
       style={
         Array [
           Object {
@@ -517,7 +509,6 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
       <separator />
     </View>
     <View
-      onLayout={undefined}
       style={
         Array [
           Object {
@@ -539,7 +530,6 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
       <separator />
     </View>
     <View
-      onLayout={undefined}
       style={
         Array [
           Object {
@@ -561,7 +551,6 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
       <separator />
     </View>
     <View
-      onLayout={undefined}
       style={
         Array [
           Object {
@@ -583,7 +572,6 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
       <separator />
     </View>
     <View
-      onLayout={undefined}
       style={
         Array [
           Object {
@@ -629,7 +617,6 @@ exports[`VirtualizedList renders empty list 1`] = `
   getItemCount={[Function]}
   horizontal={false}
   initialNumToRender={10}
-  invertStickyHeaders={undefined}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
@@ -660,7 +647,6 @@ exports[`VirtualizedList renders empty list with empty component 1`] = `
   getItemCount={[Function]}
   horizontal={false}
   initialNumToRender={10}
-  invertStickyHeaders={undefined}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
@@ -679,14 +665,12 @@ exports[`VirtualizedList renders empty list with empty component 1`] = `
   <View>
     <View
       onLayout={[Function]}
-      style={null}
     >
       <header />
     </View>
     <empty />
     <View
       onLayout={[Function]}
-      style={null}
     >
       <footer />
     </View>
@@ -709,7 +693,6 @@ exports[`VirtualizedList renders list with empty component 1`] = `
   getItemCount={[Function]}
   horizontal={false}
   initialNumToRender={10}
-  invertStickyHeaders={undefined}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
@@ -740,13 +723,11 @@ exports[`VirtualizedList renders list with empty component 1`] = `
 
 exports[`VirtualizedList renders null list 1`] = `
 <RCTScrollView
-  data={undefined}
   disableVirtualization={false}
   getItem={[Function]}
   getItemCount={[Function]}
   horizontal={false}
   initialNumToRender={10}
-  invertStickyHeaders={undefined}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
@@ -786,7 +767,6 @@ exports[`VirtualizedList renders simple list 1`] = `
   getItemCount={[Function]}
   horizontal={false}
   initialNumToRender={10}
-  invertStickyHeaders={undefined}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
@@ -845,7 +825,6 @@ exports[`VirtualizedList test getItem functionality where data is not an Array 1
   getItemCount={[Function]}
   horizontal={false}
   initialNumToRender={10}
-  invertStickyHeaders={undefined}
   keyExtractor={[Function]}
   maxToRenderPerBatch={10}
   onContentSizeChange={[Function]}
