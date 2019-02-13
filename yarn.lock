@@ -1108,10 +1108,10 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@react-native-community/cli@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-1.2.0.tgz#7c460156112f34172b968fe51721ef71759234bf"
-  integrity sha512-OpnhVJkpU4bgqQwk1izYtaf6/bgIvKSj5ALkFs5A5jUW/YThGJpbNjfkUGYjsoPvlKlmfWe40tbDyhDcUfYn8Q==
+"@react-native-community/cli@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-1.2.1.tgz#990b0b0e199e4a75357dfb445eaae13100f60a1b"
+  integrity sha512-PwOLWckcQbgyekCcKKGfBqNnK5SFJtdUQdNemF4odn5bWKigr4JsNd4wT2BRqvRHuzYa7kY6MjriwgYTHSSChA==
   dependencies:
     chalk "^1.1.1"
     commander "^2.9.0"
