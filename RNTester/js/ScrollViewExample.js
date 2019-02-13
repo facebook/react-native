@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,9 +9,6 @@
  */
 'use strict';
 
-import type {DangerouslyImpreciseStyleProp} from 'StyleSheet';
-
-const ActivityIndicator = require('ActivityIndicator');
 const Platform = require('Platform');
 const React = require('react');
 const ReactNative = require('react-native');
@@ -23,6 +20,8 @@ const {
   View,
   Image,
 } = ReactNative;
+
+import type {ViewStyleProp} from 'StyleSheet';
 
 exports.displayName = 'ScrollViewExample';
 exports.title = '<ScrollView>';
@@ -79,7 +78,7 @@ exports.examples = [
     render: function() {
       function renderScrollView(
         title: string,
-        additionalStyles: typeof StyleSheet,
+        additionalStyles: ViewStyleProp,
       ) {
         let _scrollView: ?ScrollView;
         return (
@@ -121,16 +120,49 @@ exports.examples = [
 
       return (
         <View>
-          {/* $FlowFixMe(>=0.70.0 site=react_native_fb) This comment
-             * suppresses an error found when Flow v0.70 was deployed. To see
-             * the error delete this comment and run Flow. */
-          renderScrollView('LTR layout', {direction: 'ltr'})}
-          {/* $FlowFixMe(>=0.70.0 site=react_native_fb) This comment
-             * suppresses an error found when Flow v0.70 was deployed. To see
-             * the error delete this comment and run Flow. */
-          renderScrollView('RTL layout', {direction: 'rtl'})}
+          {renderScrollView('LTR layout', {direction: 'ltr'})}
+          {renderScrollView('RTL layout', {direction: 'rtl'})}
         </View>
       );
+    },
+  },
+  {
+    title: '<ScrollView> enable & disable\n',
+    description: 'ScrollView scrolling behaviour can be disabled and enabled',
+    render: function() {
+      class EnableDisableList extends React.Component<{}, *> {
+        state = {
+          scrollEnabled: true,
+        };
+        render() {
+          return (
+            <View>
+              <ScrollView
+                automaticallyAdjustContentInsets={false}
+                style={styles.scrollView}
+                scrollEnabled={this.state.scrollEnabled}>
+                {THUMB_URLS.map(createThumbRow)}
+              </ScrollView>
+              <Text>
+                {'Scrolling enabled = ' + this.state.scrollEnabled.toString()}
+              </Text>
+              <Button
+                label="Disable Scrolling"
+                onPress={() => {
+                  this.setState({scrollEnabled: false});
+                }}
+              />
+              <Button
+                label="Enable Scrolling"
+                onPress={() => {
+                  this.setState({scrollEnabled: true});
+                }}
+              />
+            </View>
+          );
+        }
+      }
+      return <EnableDisableList />;
     },
   },
 ];
@@ -144,6 +176,9 @@ if (Platform.OS === 'ios') {
       let itemCount = 6;
       class AppendingList extends React.Component<{}, *> {
         state = {
+          /* $FlowFixMe(>=0.85.0 site=react_native_fb) This comment suppresses
+           * an error found when Flow v0.85 was deployed. To see the error,
+           * delete this comment and run Flow. */
           items: [...Array(itemCount)].map((_, ii) => (
             <Thumb msg={`Item ${ii}`} />
           )),
@@ -158,7 +193,6 @@ if (Platform.OS === 'ios') {
                   autoscrollToTopThreshold: 10,
                 }}
                 style={styles.scrollView}>
-                <ActivityIndicator style={{height: 40}} />
                 {this.state.items.map(item =>
                   React.cloneElement(item, {key: item.props.msg}),
                 )}
@@ -171,7 +205,6 @@ if (Platform.OS === 'ios') {
                   autoscrollToTopThreshold: 10,
                 }}
                 style={[styles.scrollView, styles.horizontalScrollView]}>
-                <ActivityIndicator style={{width: 40}} />
                 {this.state.items.map(item =>
                   React.cloneElement(item, {key: item.props.msg, style: null}),
                 )}
@@ -261,7 +294,7 @@ if (Platform.OS === 'ios') {
 class Thumb extends React.PureComponent<{|
   source?: string | number,
   msg?: string,
-  style?: DangerouslyImpreciseStyleProp,
+  style?: ViewStyleProp,
 |}> {
   render() {
     const {source} = this.props;

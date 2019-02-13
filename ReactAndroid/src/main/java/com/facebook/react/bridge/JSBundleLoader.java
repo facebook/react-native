@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,12 +8,11 @@
 package com.facebook.react.bridge;
 
 import android.content.Context;
-import com.facebook.react.bridge.NativeDeltaClient;
 import com.facebook.react.common.DebugServerException;
 
 /**
- * A class that stores JS bundle information and allows {@link CatalystInstance} to load a correct
- * bundle through {@link ReactBridge}.
+ * A class that stores JS bundle information and allows a {@link JSBundleLoaderDelegate}
+ * (e.g. {@link CatalystInstance}) to load a correct bundle through {@link ReactBridge}.
  */
 public abstract class JSBundleLoader {
 
@@ -28,8 +27,8 @@ public abstract class JSBundleLoader {
       final boolean loadSynchronously) {
     return new JSBundleLoader() {
       @Override
-      public String loadScript(CatalystInstanceImpl instance) {
-        instance.loadScriptFromAssets(context.getAssets(), assetUrl, loadSynchronously);
+      public String loadScript(JSBundleLoaderDelegate delegate) {
+        delegate.loadScriptFromAssets(context.getAssets(), assetUrl, loadSynchronously);
         return assetUrl;
       }
     };
@@ -49,8 +48,8 @@ public abstract class JSBundleLoader {
       final boolean loadSynchronously) {
     return new JSBundleLoader() {
       @Override
-      public String loadScript(CatalystInstanceImpl instance) {
-        instance.loadScriptFromFile(fileName, assetUrl, loadSynchronously);
+      public String loadScript(JSBundleLoaderDelegate delegate) {
+        delegate.loadScriptFromFile(fileName, assetUrl, loadSynchronously);
         return fileName;
       }
     };
@@ -68,9 +67,9 @@ public abstract class JSBundleLoader {
       final String cachedFileLocation) {
     return new JSBundleLoader() {
       @Override
-      public String loadScript(CatalystInstanceImpl instance) {
+      public String loadScript(JSBundleLoaderDelegate delegate) {
         try {
-          instance.loadScriptFromFile(cachedFileLocation, sourceURL, false);
+          delegate.loadScriptFromFile(cachedFileLocation, sourceURL, false);
           return sourceURL;
         } catch (Exception e) {
           throw DebugServerException.makeGeneric(e.getMessage(), e);
@@ -90,9 +89,9 @@ public abstract class JSBundleLoader {
     final NativeDeltaClient nativeDeltaClient) {
     return new JSBundleLoader() {
       @Override
-      public String loadScript(CatalystInstanceImpl instance) {
+      public String loadScript(JSBundleLoaderDelegate delegate) {
         try {
-          instance.loadScriptFromDeltaBundle(sourceURL, nativeDeltaClient, false);
+          delegate.loadScriptFromDeltaBundle(sourceURL, nativeDeltaClient, false);
           return sourceURL;
         } catch (Exception e) {
           throw DebugServerException.makeGeneric(e.getMessage(), e);
@@ -110,13 +109,13 @@ public abstract class JSBundleLoader {
       final String realSourceURL) {
     return new JSBundleLoader() {
       @Override
-      public String loadScript(CatalystInstanceImpl instance) {
-        instance.setSourceURLs(realSourceURL, proxySourceURL);
+      public String loadScript(JSBundleLoaderDelegate delegate) {
+        delegate.setSourceURLs(realSourceURL, proxySourceURL);
         return realSourceURL;
       }
     };
   }
 
   /** Loads the script, returning the URL of the source it loaded. */
-  public abstract String loadScript(CatalystInstanceImpl instance);
+  public abstract String loadScript(JSBundleLoaderDelegate delegate);
 }

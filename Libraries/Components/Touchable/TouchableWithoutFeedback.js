@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,40 +10,51 @@
 
 'use strict';
 
-const EdgeInsetsPropType = require('EdgeInsetsPropType');
+const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
 const React = require('React');
 const PropTypes = require('prop-types');
-const TimerMixin = require('react-timer-mixin');
 const Touchable = require('Touchable');
+const View = require('View');
 
 const createReactClass = require('create-react-class');
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
-const warning = require('fbjs/lib/warning');
 
 const {
-  AccessibilityComponentTypes,
-  AccessibilityTraits,
-} = require('ViewAccessibility');
+  DeprecatedAccessibilityComponentTypes,
+  DeprecatedAccessibilityRoles,
+  DeprecatedAccessibilityStates,
+  DeprecatedAccessibilityTraits,
+} = require('DeprecatedViewAccessibility');
 
-import type {PressEvent} from 'CoreEventTypes';
+import type {SyntheticEvent, LayoutEvent, PressEvent} from 'CoreEventTypes';
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type {
   AccessibilityComponentType,
-  AccessibilityTraits as AccessibilityTraitsFlow,
+  AccessibilityRole,
+  AccessibilityStates,
+  AccessibilityTraits,
 } from 'ViewAccessibility';
+
+type TargetEvent = SyntheticEvent<
+  $ReadOnly<{|
+    target: number,
+  |}>,
+>;
+
+type BlurEvent = TargetEvent;
+type FocusEvent = TargetEvent;
 
 const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 export type Props = $ReadOnly<{|
   accessible?: ?boolean,
   accessibilityComponentType?: ?AccessibilityComponentType,
-  accessibilityLabel?:
-    | null
-    | React$PropType$Primitive<any>
-    | string
-    | Array<any>
-    | any,
-  accessibilityTraits?: ?AccessibilityTraitsFlow,
+  accessibilityLabel?: ?Stringish,
+  accessibilityHint?: ?Stringish,
+  accessibilityIgnoresInvertColors?: ?boolean,
+  accessibilityRole?: ?AccessibilityRole,
+  accessibilityStates?: ?AccessibilityStates,
+  accessibilityTraits?: ?AccessibilityTraits,
   children?: ?React.Node,
   delayLongPress?: ?number,
   delayPressIn?: ?number,
@@ -51,11 +62,13 @@ export type Props = $ReadOnly<{|
   disabled?: ?boolean,
   hitSlop?: ?EdgeInsetsProp,
   nativeID?: ?string,
-  onLayout?: ?Function,
-  onLongPress?: ?Function,
-  onPress?: ?Function,
-  onPressIn?: ?Function,
-  onPressOut?: ?Function,
+  onBlur?: ?(e: BlurEvent) => void,
+  onFocus?: ?(e: FocusEvent) => void,
+  onLayout?: ?(event: LayoutEvent) => mixed,
+  onLongPress?: ?(event: PressEvent) => mixed,
+  onPress?: ?(event: PressEvent) => mixed,
+  onPressIn?: ?(event: PressEvent) => mixed,
+  onPressOut?: ?(event: PressEvent) => mixed,
   pressRetentionOffset?: ?EdgeInsetsProp,
   rejectResponderTermination?: ?boolean,
   testID?: ?string,
@@ -70,16 +83,35 @@ export type Props = $ReadOnly<{|
  */
 const TouchableWithoutFeedback = ((createReactClass({
   displayName: 'TouchableWithoutFeedback',
-  mixins: [TimerMixin, Touchable.Mixin],
+  mixins: [Touchable.Mixin],
 
   propTypes: {
     accessible: PropTypes.bool,
     accessibilityLabel: PropTypes.node,
-    accessibilityComponentType: PropTypes.oneOf(AccessibilityComponentTypes),
+    accessibilityHint: PropTypes.string,
+    accessibilityComponentType: PropTypes.oneOf(
+      DeprecatedAccessibilityComponentTypes,
+    ),
+    accessibilityRole: PropTypes.oneOf(DeprecatedAccessibilityRoles),
+    accessibilityStates: PropTypes.arrayOf(
+      PropTypes.oneOf(DeprecatedAccessibilityStates),
+    ),
     accessibilityTraits: PropTypes.oneOfType([
-      PropTypes.oneOf(AccessibilityTraits),
-      PropTypes.arrayOf(PropTypes.oneOf(AccessibilityTraits)),
+      PropTypes.oneOf(DeprecatedAccessibilityTraits),
+      PropTypes.arrayOf(PropTypes.oneOf(DeprecatedAccessibilityTraits)),
     ]),
+    /**
+     * When `accessible` is true (which is the default) this may be called when
+     * the OS-specific concept of "focus" occurs. Some platforms may not have
+     * the concept of focus.
+     */
+    onFocus: PropTypes.func,
+    /**
+     * When `accessible` is true (which is the default) this may be called when
+     * the OS-specific concept of "blur" occurs, meaning the element lost focus.
+     * Some platforms may not have the concept of blur.
+     */
+    onBlur: PropTypes.func,
     /**
      * If true, disable all interactions for this component.
      */
@@ -129,7 +161,7 @@ const TouchableWithoutFeedback = ((createReactClass({
      * reactivated! Move it back and forth several times while the scroll view
      * is disabled. Ensure you pass in a constant to reduce memory allocations.
      */
-    pressRetentionOffset: EdgeInsetsPropType,
+    pressRetentionOffset: DeprecatedEdgeInsetsPropType,
     /**
      * This defines how far your touch can start away from the button. This is
      * added to `pressRetentionOffset` when moving off of the button.
@@ -138,7 +170,7 @@ const TouchableWithoutFeedback = ((createReactClass({
      * of sibling views always takes precedence if a touch hits two overlapping
      * views.
      */
-    hitSlop: EdgeInsetsPropType,
+    hitSlop: DeprecatedEdgeInsetsPropType,
   },
 
   getInitialState: function() {
@@ -201,32 +233,19 @@ const TouchableWithoutFeedback = ((createReactClass({
     // $FlowFixMe(>=0.41.0)
     const child = React.Children.only(this.props.children);
     let children = child.props.children;
-    warning(
-      !child.type || child.type.displayName !== 'Text',
-      'TouchableWithoutFeedback does not work well with Text children. Wrap children in a View instead. See ' +
-        ((child._owner && child._owner.getName && child._owner.getName()) ||
-          '<unknown>'),
-    );
-    if (
-      Touchable.TOUCH_TARGET_DEBUG &&
-      child.type &&
-      child.type.displayName === 'View'
-    ) {
+    if (Touchable.TOUCH_TARGET_DEBUG && child.type === View) {
       children = React.Children.toArray(children);
       children.push(
         Touchable.renderDebugView({color: 'red', hitSlop: this.props.hitSlop}),
       );
     }
-    const style =
-      Touchable.TOUCH_TARGET_DEBUG &&
-      child.type &&
-      child.type.displayName === 'Text'
-        ? [child.props.style, {color: 'red'}]
-        : child.props.style;
     return (React: any).cloneElement(child, {
       accessible: this.props.accessible !== false,
       accessibilityLabel: this.props.accessibilityLabel,
+      accessibilityHint: this.props.accessibilityHint,
       accessibilityComponentType: this.props.accessibilityComponentType,
+      accessibilityRole: this.props.accessibilityRole,
+      accessibilityStates: this.props.accessibilityStates,
       accessibilityTraits: this.props.accessibilityTraits,
       nativeID: this.props.nativeID,
       testID: this.props.testID,
@@ -239,7 +258,6 @@ const TouchableWithoutFeedback = ((createReactClass({
       onResponderMove: this.touchableHandleResponderMove,
       onResponderRelease: this.touchableHandleResponderRelease,
       onResponderTerminate: this.touchableHandleResponderTerminate,
-      style,
       children,
     });
   },

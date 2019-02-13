@@ -1,3 +1,12 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
 // Fork of https://github.com/github/fetch/blob/master/fetch.js that does not
 // use reponseType: 'blob' by default. RN already has specific native implementations
 // for different response types so there is no need to add the extra blob overhead.
@@ -505,6 +514,10 @@
         xhr.withCredentials = true;
       } else if (request.credentials === 'omit') {
         xhr.withCredentials = false;
+      }
+
+      if ('responseType' in xhr && support.blob) {
+        xhr.responseType = 'blob';
       }
 
       request.headers.forEach(function(value, name) {

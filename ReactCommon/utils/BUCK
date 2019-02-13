@@ -1,0 +1,27 @@
+load("@fbsource//tools/build_defs:glob_defs.bzl", "subdir_glob")
+load("//tools/build_defs/oss:rn_defs.bzl", "get_apple_compiler_flags", "rn_xplat_cxx_library")
+
+CXX_LIBRARY_COMPILER_FLAGS = [
+    "-std=c++14",
+    "-Wall",
+]
+
+rn_xplat_cxx_library(
+    name = "utils",
+    header_namespace = "",
+    exported_headers = subdir_glob(
+        [
+            ("", "FloatComparison.h"),
+        ],
+        prefix = "react/utils",
+    ),
+    compiler_flags = CXX_LIBRARY_COMPILER_FLAGS + [
+        "-fexceptions",
+        "-frtti",
+    ],
+    fbobjc_compiler_flags = get_apple_compiler_flags(),
+    force_static = True,
+    visibility = [
+        "PUBLIC",
+    ],
+)

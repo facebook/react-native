@@ -49,6 +49,7 @@ exports[`FlatList renders all the bells and whistles 1`] = `
     />
   }
   refreshing={false}
+  removeClippedSubviews={false}
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
@@ -60,7 +61,6 @@ exports[`FlatList renders all the bells and whistles 1`] = `
   <View>
     <View
       onLayout={[Function]}
-      style={null}
     >
       <header />
     </View>
@@ -119,7 +119,6 @@ exports[`FlatList renders all the bells and whistles 1`] = `
     </View>
     <View
       onLayout={[Function]}
-      style={null}
     >
       <footer />
     </View>
@@ -145,6 +144,7 @@ exports[`FlatList renders empty list 1`] = `
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
+  removeClippedSubviews={false}
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
@@ -173,6 +173,7 @@ exports[`FlatList renders null list 1`] = `
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
+  removeClippedSubviews={false}
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
@@ -214,6 +215,7 @@ exports[`FlatList renders simple list 1`] = `
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
+  removeClippedSubviews={false}
   renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}

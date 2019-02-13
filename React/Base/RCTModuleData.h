@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -69,7 +69,7 @@ typedef id<RCTBridgeModule>(^RCTBridgeModuleProvider)(void);
  * if it has not already been created. To check if the module instance exists
  * without causing it to be created, use `hasInstance` instead.
  */
-@property (nonatomic, strong, readonly) id<RCTBridgeModule> instance;
+@property (nonatomic, strong, readwrite) id<RCTBridgeModule> instance;
 
 /**
  * Returns the module method dispatch queue. Note that this will init both the

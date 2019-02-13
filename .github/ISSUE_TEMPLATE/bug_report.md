@@ -1,27 +1,35 @@
 ---
 name: 🐛 Bug Report
-about: Report a reproducible bug or regression in the core React Native library.
+about: You want to report a reproducible bug or regression in React Native.
+labels: "Type: Bug Report"
 ---
 
-<!-- Requirements: please go through this checklist before opening a new issue -->
-  - [ ] Review the documentation: https://facebook.github.io/react-native
-  - [ ] Search for existing issues: https://github.com/facebook/react-native/issues
-  - [ ] Use the latest React Native version: https://github.com/facebook/react-native/releases
-  - [ ] Run `react-native info` in your terminal and paste its contents under "Environment"
-  - [ ] Let us know how to reproduce the issue. Include a code sample, share a project, or
-    share an app that reproduces the issue using https://snack.expo.io/
+## 🐛 Bug Report
+<!-- 
+  A clear and concise description of what the bug is.
+  Include screenshots if needed.
+-->
 
-## Environment
-<!-- Required. -->
-
-## Description
-<!-- Describe your issue in detail. -->
-
-## Steps to Reproduce
-<!-- Required. -->
+## To Reproduce
+<!-- 
+  Steps to reproduce the behavior.
+-->
 
 ## Expected Behavior
-<!-- Write what you thought would happen. -->
+<!-- 
+  A clear and concise description of what you expected to happen.
+-->
 
-## Actual Behavior
-<!-- Write what happened. Include screenshots if needed. If this is a regression, let us know. -->
+## Code Example
+<!-- 
+  Please provide a Snack (https://snack.expo.io/), a link to a repository on GitHub, or
+  provide a minimal code example that reproduces the problem.
+  Here are some tips for providing a minimal example: https://stackoverflow.com/help/mcve.
+
+  Issues without a reproduction link are likely to stall.
+-->
+
+## Environment
+<!-- 
+  Run `react-native info` in your terminal and copy the results here.
+-->

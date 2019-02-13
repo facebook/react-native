@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,7 +9,7 @@
  */
 'use strict';
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 const isEmpty = require('isEmpty');
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
  * found when Flow v0.54 was deployed. To see the error delete this comment and
@@ -62,7 +62,7 @@ type ParamType = {
  *
  * ```
  * getInitialState: function() {
- *   var ds = new ListView.DataSource({rowHasChanged: this._rowHasChanged});
+ *   const ds = new ListView.DataSource({rowHasChanged: this._rowHasChanged});
  *   return {ds};
  * },
  * _onDataArrived(newData) {
@@ -356,7 +356,7 @@ class ListViewDataSource {
     const prevSectionsHash = keyedDictionaryFromArray(prevSectionIDs);
     const prevRowsHash = {};
     for (let ii = 0; ii < prevRowIDs.length; ii++) {
-      var sectionID = prevSectionIDs[ii];
+      const sectionID = prevSectionIDs[ii];
       warning(
         !prevRowsHash[sectionID],
         'SectionID appears more than once: ' + sectionID,
@@ -370,7 +370,7 @@ class ListViewDataSource {
 
     let dirty;
     for (let sIndex = 0; sIndex < this.sectionIdentities.length; sIndex++) {
-      var sectionID = this.sectionIdentities[sIndex];
+      const sectionID = this.sectionIdentities[sIndex];
       // dirty if the sectionHeader is new or _sectionHasChanged is true
       dirty = !prevSectionsHash[sectionID];
       const sectionHeaderHasChanged = this._sectionHeaderHasChanged;

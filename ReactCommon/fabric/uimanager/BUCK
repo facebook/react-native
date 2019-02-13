@@ -1,29 +1,34 @@
-load("//configurations/buck/apple:flag_defs.bzl", "get_debug_preprocessor_flags")
-load("//ReactNative:DEFS.bzl", "ANDROID", "APPLE", "IS_OSS_BUILD", "get_apple_inspector_flags", "react_native_xplat_target", "rn_xplat_cxx_library")
+load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "get_debug_preprocessor_flags")
+load(
+    "//tools/build_defs/oss:rn_defs.bzl",
+    "ANDROID",
+    "APPLE",
+    "fb_xplat_cxx_test",
+    "get_apple_compiler_flags",
+    "get_apple_inspector_flags",
+    "react_native_xplat_target",
+    "rn_xplat_cxx_library",
+    "subdir_glob",
+)
 
-APPLE_COMPILER_FLAGS = []
-
-if not IS_OSS_BUILD:
-    load("@xplat//configurations/buck/apple:flag_defs.bzl", "flags", "get_static_library_ios_flags")
-
-    APPLE_COMPILER_FLAGS = flags.get_flag_value(get_static_library_ios_flags(), "compiler_flags")
+APPLE_COMPILER_FLAGS = get_apple_compiler_flags()
 
 rn_xplat_cxx_library(
     name = "uimanager",
     srcs = glob(
         ["**/*.cpp"],
-        excludes = glob(["tests/**/*.cpp"]),
+        exclude = glob(["tests/**/*.cpp"]),
     ),
     headers = glob(
         ["**/*.h"],
-        excludes = glob(["tests/**/*.h"]),
+        exclude = glob(["tests/**/*.h"]),
     ),
     header_namespace = "",
     exported_headers = subdir_glob(
         [
             ("", "*.h"),
         ],
-        prefix = "fabric/uimanager",
+        prefix = "react/uimanager",
     ),
     compiler_flags = [
         "-fexceptions",
@@ -33,51 +38,57 @@ rn_xplat_cxx_library(
     ],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
-    fbobjc_tests = [
-        ":tests",
-    ],
     force_static = True,
     macosx_tests_override = [],
     platforms = (ANDROID, APPLE),
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",
-        "-DWITH_FBSYSTRACE=1",
+        # Systraces are temporary disabled.
+        # "-DWITH_FBSYSTRACE=1",
     ],
-    tests = [],
+    tests = [":tests"],
     visibility = ["PUBLIC"],
     deps = [
         "xplat//fbsystrace:fbsystrace",
         "xplat//folly:headers_only",
         "xplat//folly:memory",
         "xplat//folly:molly",
+        "xplat//jsi:JSIDynamic",
+        "xplat//jsi:jsi",
         "xplat//third-party/glog:glog",
+        react_native_xplat_target("config:config"),
+        react_native_xplat_target("fabric/components/root:root"),
+        react_native_xplat_target("fabric/components/view:view"),
+        react_native_xplat_target("fabric/mounting:mounting"),
         react_native_xplat_target("fabric/core:core"),
         react_native_xplat_target("fabric/debug:debug"),
-        react_native_xplat_target("fabric/text:text"),
-        react_native_xplat_target("fabric/view:view"),
-        react_native_xplat_target("fabric/scrollview:scrollview"),
-        react_native_xplat_target("fabric/text:text"),
+        react_native_xplat_target("fabric/events:events"),
     ],
 )
 
-if not IS_OSS_BUILD:
-    load("@xplat//build_defs:fb_xplat_cxx_test.bzl", "fb_xplat_cxx_test")
-
-    fb_xplat_cxx_test(
-        name = "tests",
-        srcs = glob(["tests/**/*.cpp"]),
-        headers = glob(["tests/**/*.h"]),
-        contacts = ["oncall+react_native@xmail.facebook.com"],
-        compiler_flags = [
-            "-fexceptions",
-            "-frtti",
-            "-std=c++14",
-            "-Wall",
-        ],
-        platforms = APPLE,
-        deps = [
-            "xplat//folly:molly",
-            "xplat//third-party/gmock:gtest",
-            ":uimanager",
-        ],
-    )
+fb_xplat_cxx_test(
+    name = "tests",
+    srcs = glob(["tests/**/*.cpp"]),
+    headers = glob(["tests/**/*.h"]),
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-std=c++14",
+        "-Wall",
+    ],
+    contacts = ["oncall+react_native@xmail.facebook.com"],
+    fbandroid_use_instrumentation_test = True,
+    platforms = (ANDROID, APPLE),
+    deps = [
+        "xplat//folly:molly",
+        "xplat//third-party/gmock:gtest",
+        ":uimanager",
+        react_native_xplat_target("config:config"),
+        react_native_xplat_target("fabric/components/activityindicator:activityindicator"),
+        react_native_xplat_target("fabric/components/image:image"),
+        react_native_xplat_target("fabric/components/root:root"),
+        react_native_xplat_target("fabric/components/scrollview:scrollview"),
+        react_native_xplat_target("fabric/components/text:text"),
+        react_native_xplat_target("fabric/components/view:view"),
+    ],
+)

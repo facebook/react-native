@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -50,8 +50,8 @@ describe('Android Test App', function() {
     driver.on('status', function(info) {
       console.log(info.cyan);
     });
-    driver.on('command', function(method, path, data) {
-      if (path === 'source()' && data) {
+    driver.on('command', function(method, command, data) {
+      if (command === 'source()' && data) {
         console.log(
           ' > ' + method.yellow,
           'Screen contents'.grey,
@@ -59,11 +59,11 @@ describe('Android Test App', function() {
           pd.xml(data).yellow,
         );
       } else {
-        console.log(' > ' + method.yellow, path.grey, data || '');
+        console.log(' > ' + method.yellow, command.grey, data || '');
       }
     });
-    driver.on('http', function(method, path, data) {
-      console.log(' > ' + method.magenta, path, (data || '').grey);
+    driver.on('http', function(method, urlPath, data) {
+      console.log(' > ' + method.magenta, urlPath, (data || '').grey);
     });
 
     // every interval print what is on the screen
@@ -147,7 +147,6 @@ describe('Android Test App', function() {
   });
 
   it('should have Debug In Chrome working', function() {
-    const androidAppCode = fs.readFileSync('index.js', 'utf-8');
     // http://developer.android.com/reference/android/view/KeyEvent.html#KEYCODE_MENU
     return driver
       .waitForElementByXPath(

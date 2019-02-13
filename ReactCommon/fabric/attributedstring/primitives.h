@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,16 +7,15 @@
 
 #pragma once
 
+#include <functional>
+#include <limits>
+
 namespace facebook {
 namespace react {
 
-enum class FontStyle {
-  Normal,
-  Italic,
-  Oblique
-};
+enum class FontStyle { Normal, Italic, Oblique };
 
-enum class FontWeight: int {
+enum class FontWeight : int {
   Weight100 = 100,
   UltraLight = 100,
   Weight200 = 200,
@@ -38,7 +37,7 @@ enum class FontWeight: int {
   Black = 900
 };
 
-enum class FontVariant: int {
+enum class FontVariant : int {
   Default = 0,
   SmallCaps = 1 << 1,
   OldstyleNums = 1 << 2,
@@ -48,24 +47,25 @@ enum class FontVariant: int {
 };
 
 enum class EllipsizeMode {
-  Clip,  // Do not add ellipsize, simply clip.
-  Head,  // Truncate at head of line: "...wxyz".
-  Tail,  // Truncate at tail of line: "abcd...".
+  Clip, // Do not add ellipsize, simply clip.
+  Head, // Truncate at head of line: "...wxyz".
+  Tail, // Truncate at tail of line: "abcd...".
   Middle // Truncate middle of line: "ab...yz".
 };
 
 enum class TextAlignment {
-  Natural,  // Indicates the default alignment for script.
-  Left,     // Visually left aligned.
-  Center,   // Visually centered.
-  Right,    // Visually right aligned.
+  Natural, // Indicates the default alignment for script.
+  Left, // Visually left aligned.
+  Center, // Visually centered.
+  Right, // Visually right aligned.
   Justified // Fully-justified. The last line in a paragraph is natural-aligned.
 };
 
 enum class WritingDirection {
-  Natural,     // Determines direction using the Unicode Bidi Algorithm rules P2 and P3.
+  Natural, // Determines direction using the Unicode Bidi Algorithm rules P2 and
+           // P3.
   LeftToRight, // Left to right writing direction.
-  RightToLeft  // Right to left writing direction.
+  RightToLeft // Right to left writing direction.
 };
 
 enum class TextDecorationLineType {
@@ -75,11 +75,7 @@ enum class TextDecorationLineType {
   UnderlineStrikethrough
 };
 
-enum class TextDecorationLineStyle {
-  Single,
-  Thick,
-  Double
-};
+enum class TextDecorationLineStyle { Single, Thick, Double };
 
 enum class TextDecorationLinePattern {
   Solid,
@@ -92,3 +88,67 @@ enum class TextDecorationLinePattern {
 } // namespace react
 } // namespace facebook
 
+namespace std {
+template <>
+struct hash<facebook::react::FontVariant> {
+  size_t operator()(const facebook::react::FontVariant &v) const {
+    return hash<int>()(static_cast<int>(v));
+  }
+};
+
+template <>
+struct hash<facebook::react::TextAlignment> {
+  size_t operator()(const facebook::react::TextAlignment &v) const {
+    return hash<int>()(static_cast<int>(v));
+  }
+};
+
+template <>
+struct hash<facebook::react::FontStyle> {
+  size_t operator()(const facebook::react::FontStyle &v) const {
+    return hash<int>()(static_cast<int>(v));
+  }
+};
+
+template <>
+struct hash<facebook::react::TextDecorationLineType> {
+  size_t operator()(const facebook::react::TextDecorationLineType &v) const {
+    return hash<int>()(static_cast<int>(v));
+  }
+};
+
+template <>
+struct hash<facebook::react::WritingDirection> {
+  size_t operator()(const facebook::react::WritingDirection &v) const {
+    return hash<int>()(static_cast<int>(v));
+  }
+};
+
+template <>
+struct hash<facebook::react::TextDecorationLinePattern> {
+  size_t operator()(const facebook::react::TextDecorationLinePattern &v) const {
+    return hash<int>()(static_cast<int>(v));
+  }
+};
+
+template <>
+struct hash<facebook::react::TextDecorationLineStyle> {
+  size_t operator()(const facebook::react::TextDecorationLineStyle &v) const {
+    return hash<int>()(static_cast<int>(v));
+  }
+};
+
+template <>
+struct hash<facebook::react::FontWeight> {
+  size_t operator()(const facebook::react::FontWeight &v) const {
+    return hash<int>()(static_cast<int>(v));
+  }
+};
+
+template <>
+struct hash<facebook::react::EllipsizeMode> {
+  size_t operator()(const facebook::react::EllipsizeMode &v) const {
+    return hash<int>()(static_cast<int>(v));
+  }
+};
+} // namespace std

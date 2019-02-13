@@ -1,4 +1,4 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -59,8 +59,9 @@ std::unique_ptr<const JSBigString> loadScriptFromAssets(
     }
   }
 
-  throw std::runtime_error(folly::to<std::string>("Unable to load script from assets '", assetName,
-    "'. Make sure your bundle is packaged correctly or you're running a packager server."));
+  throw std::runtime_error(folly::to<std::string>("Unable to load script. Make sure you're "
+    "either running a Metro server (run 'react-native start') or that your bundle '", assetName,
+    "' is packaged correctly for release."));
 }
 
 }}

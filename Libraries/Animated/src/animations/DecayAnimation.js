@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -81,8 +81,7 @@ class DecayAnimation extends Animation {
 
     const value =
       this._fromValue +
-      this._velocity /
-        (1 - this._deceleration) *
+      (this._velocity / (1 - this._deceleration)) *
         (1 - Math.exp(-(1 - this._deceleration) * (now - this._startTime)));
 
     this._onUpdate(value);

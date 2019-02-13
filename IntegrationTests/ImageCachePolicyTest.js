@@ -1,11 +1,11 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -58,7 +58,7 @@ class ImageCachePolicyTest extends React.Component<Props, $FlowFixMeState> {
 
   render() {
     return (
-      <View style={{flex: 1}}>
+      <View style={styles.container}>
         <Text>Hello</Text>
         <Image
           source={{
@@ -110,6 +110,9 @@ class ImageCachePolicyTest extends React.Component<Props, $FlowFixMeState> {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   base: {
     width: 100,
     height: 100,

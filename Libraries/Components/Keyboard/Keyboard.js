@@ -1,29 +1,36 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
 const LayoutAnimation = require('LayoutAnimation');
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 const NativeEventEmitter = require('NativeEventEmitter');
 const KeyboardObserver = require('NativeModules').KeyboardObserver;
 const dismissKeyboard = require('dismissKeyboard');
 const KeyboardEventEmitter = new NativeEventEmitter(KeyboardObserver);
 
-type KeyboardEventName =
+export type KeyboardEventName =
   | 'keyboardWillShow'
   | 'keyboardDidShow'
   | 'keyboardWillHide'
   | 'keyboardDidHide'
   | 'keyboardWillChangeFrame'
   | 'keyboardDidChangeFrame';
+
+export type KeyboardEventEasing =
+  | 'easeIn'
+  | 'easeInEaseOut'
+  | 'easeOut'
+  | 'linear'
+  | 'keyboard';
 
 type ScreenRect = $ReadOnly<{|
   screenX: number,
@@ -33,10 +40,11 @@ type ScreenRect = $ReadOnly<{|
 |}>;
 
 export type KeyboardEvent = $ReadOnly<{|
-  duration?: number,
-  easing?: string,
+  duration: number,
+  easing: KeyboardEventEasing,
   endCoordinates: ScreenRect,
-  startCoordinates?: ScreenRect,
+  startCoordinates: ScreenRect,
+  isEventFromThisApp: boolean,
 |}>;
 
 type KeyboardEventListener = (e: KeyboardEvent) => void;
@@ -121,7 +129,10 @@ let Keyboard = {
    * @param {string} eventName The `nativeEvent` is the string that identifies the event you're listening for.
    * @param {function} callback function to be called when the event fires.
    */
-  removeListener(eventName: KeyboardEventName, callback: Function) {
+  removeListener(
+    eventName: KeyboardEventName,
+    callback: KeyboardEventListener,
+  ) {
     invariant(false, 'Dummy method used for documentation');
   },
 
@@ -155,12 +166,12 @@ Keyboard = KeyboardEventEmitter;
 Keyboard.dismiss = dismissKeyboard;
 Keyboard.scheduleLayoutAnimation = function(event: KeyboardEvent) {
   const {duration, easing} = event;
-  if (duration) {
+  if (duration != null && duration !== 0) {
     LayoutAnimation.configureNext({
       duration: duration,
       update: {
         duration: duration,
-        type: (easing && LayoutAnimation.Types[easing]) || 'keyboard',
+        type: (easing != null && LayoutAnimation.Types[easing]) || 'keyboard',
       },
     });
   }

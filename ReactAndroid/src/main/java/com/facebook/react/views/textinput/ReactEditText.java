@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,9 +20,7 @@ import android.text.TextWatcher;
 import android.text.TextUtils;
 import android.text.method.KeyListener;
 import android.text.method.QwertyKeyListener;
-import android.text.style.AbsoluteSizeSpan;
-import android.text.style.BackgroundColorSpan;
-import android.text.style.ForegroundColorSpan;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -33,11 +31,10 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerModule;
-import com.facebook.react.views.text.CustomStyleSpan;
-import com.facebook.react.views.text.ReactTagSpan;
+import com.facebook.react.views.text.ReactSpan;
 import com.facebook.react.views.text.ReactTextUpdate;
+import com.facebook.react.views.text.TextAttributes;
 import com.facebook.react.views.text.TextInlineImageSpan;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.util.ArrayList;
@@ -82,7 +79,7 @@ public class ReactEditText extends EditText {
   private final InternalKeyListener mKeyListener;
   private boolean mDetectScrollMovement = false;
   private boolean mOnKeyPress = false;
-  private float mLetterSpacingPt = 0;
+  private TextAttributes mTextAttributes;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
 
@@ -109,6 +106,9 @@ public class ReactEditText extends EditText {
     mStagedInputType = getInputType();
     mKeyListener = new InternalKeyListener();
     mScrollWatcher = null;
+    mTextAttributes = new TextAttributes();
+
+    applyTextAttributes();
   }
 
   // After the text changes inside an EditText, TextView checks if a layout() has been requested.
@@ -397,11 +397,7 @@ public class ReactEditText extends EditText {
     Object[] spans = getText().getSpans(0, length(), Object.class);
     for (int spanIdx = 0; spanIdx < spans.length; spanIdx++) {
       // Remove all styling spans we might have previously set
-      if (ForegroundColorSpan.class.isInstance(spans[spanIdx]) ||
-          BackgroundColorSpan.class.isInstance(spans[spanIdx]) ||
-          AbsoluteSizeSpan.class.isInstance(spans[spanIdx]) ||
-          CustomStyleSpan.class.isInstance(spans[spanIdx]) ||
-          ReactTagSpan.class.isInstance(spans[spanIdx])) {
+      if (spans[spanIdx] instanceof ReactSpan) {
         getText().removeSpan(spans[spanIdx]);
       }
 
@@ -635,25 +631,42 @@ public class ReactEditText extends EditText {
   }
 
   public void setLetterSpacingPt(float letterSpacingPt) {
-    mLetterSpacingPt = letterSpacingPt;
-    updateLetterSpacing();
+    mTextAttributes.setLetterSpacing(letterSpacingPt);
+    applyTextAttributes();
   }
 
-  @Override
-  public void setTextSize (float size) {
-    super.setTextSize(size);
-    updateLetterSpacing();
+  public void setAllowFontScaling(boolean allowFontScaling) {
+    if (mTextAttributes.getAllowFontScaling() != allowFontScaling) {
+      mTextAttributes.setAllowFontScaling(allowFontScaling);
+      applyTextAttributes();
+    }
   }
 
-  @Override
-  public void setTextSize (int unit, float size) {
-    super.setTextSize(unit, size);
-    updateLetterSpacing();
+  public void setFontSize(float fontSize) {
+    mTextAttributes.setFontSize(fontSize);
+    applyTextAttributes();
   }
 
-  protected void updateLetterSpacing() {
+  public void setMaxFontSizeMultiplier(float maxFontSizeMultiplier) {
+    if (maxFontSizeMultiplier != mTextAttributes.getMaxFontSizeMultiplier()) {
+      mTextAttributes.setMaxFontSizeMultiplier(maxFontSizeMultiplier);
+      applyTextAttributes();
+    }
+  }
+
+  protected void applyTextAttributes() {
+    // In general, the `getEffective*` functions return `Float.NaN` if the
+    // property hasn't been set.
+    
+    // `getEffectiveFontSize` always returns a value so don't need to check for anything like
+    // `Float.NaN`.
+    setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextAttributes.getEffectiveFontSize());
+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      setLetterSpacing(PixelUtil.toPixelFromSP(mLetterSpacingPt) / getTextSize());
+      float effectiveLetterSpacing = mTextAttributes.getEffectiveLetterSpacing();
+      if (!Float.isNaN(effectiveLetterSpacing)) {
+        setLetterSpacing(effectiveLetterSpacing);
+      }
     }
   }
 

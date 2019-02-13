@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,76 +9,100 @@
  */
 
 'use strict';
-const PropTypes = require('prop-types');
+
+export type TVParallaxPropertiesType = $ReadOnly<{|
+  /**
+   * If true, parallax effects are enabled.  Defaults to true.
+   */
+  enabled?: boolean,
+
+  /**
+   * Defaults to 2.0.
+   */
+  shiftDistanceX?: number,
+
+  /**
+   * Defaults to 2.0.
+   */
+  shiftDistanceY?: number,
+
+  /**
+   * Defaults to 0.05.
+   */
+  tiltAngle?: number,
+
+  /**
+   * Defaults to 1.0
+   */
+  magnification?: number,
+
+  /**
+   * Defaults to 1.0
+   */
+  pressMagnification?: number,
+
+  /**
+   * Defaults to 0.3
+   */
+  pressDuration?: number,
+
+  /**
+   * Defaults to 0.3
+   */
+  pressDelay?: number,
+|}>;
 
 /**
  * Additional View properties for Apple TV
  */
-const TVViewPropTypes = {
+export type TVViewProps = $ReadOnly<{|
   /**
-   * When set to true, this view will be focusable
-   * and navigable using the TV remote.
+   * *(Apple TV only)* When set to true, this view will be focusable
+   * and navigable using the Apple TV remote.
+   *
+   * @platform ios
    */
-  isTVSelectable: PropTypes.bool,
+  isTVSelectable?: boolean,
 
   /**
-   * May be set to true to force the TV focus engine to move focus to this view.
+   * *(Apple TV only)* May be set to true to force the Apple TV focus engine to move focus to this view.
+   *
+   * @platform ios
    */
-  hasTVPreferredFocus: PropTypes.bool,
+  hasTVPreferredFocus?: boolean,
 
   /**
    * *(Apple TV only)* Object with properties to control Apple TV parallax effects.
    *
-   * enabled: If true, parallax effects are enabled.  Defaults to true.
-   * shiftDistanceX: Defaults to 2.0.
-   * shiftDistanceY: Defaults to 2.0.
-   * tiltAngle: Defaults to 0.05.
-   * magnification: Defaults to 1.0.
-   * pressMagnification: Defaults to 1.0.
-   * pressDuration: Defaults to 0.3.
-   * pressDelay: Defaults to 0.0.
-   *
    * @platform ios
    */
-  tvParallaxProperties: PropTypes.object,
+  tvParallaxProperties?: TVParallaxPropertiesType,
 
   /**
    * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 2.0.
    *
    * @platform ios
    */
-  tvParallaxShiftDistanceX: PropTypes.number,
+  tvParallaxShiftDistanceX?: number,
 
   /**
    * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 2.0.
    *
    * @platform ios
    */
-  tvParallaxShiftDistanceY: PropTypes.number,
+  tvParallaxShiftDistanceY?: number,
 
   /**
    * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 0.05.
    *
    * @platform ios
    */
-  tvParallaxTiltAngle: PropTypes.number,
+  tvParallaxTiltAngle?: number,
 
   /**
    * *(Apple TV only)* May be used to change the appearance of the Apple TV parallax effect when this view goes in or out of focus.  Defaults to 1.0.
    *
    * @platform ios
    */
-  tvParallaxMagnification: PropTypes.number,
-};
-
-export type TVViewProps = $ReadOnly<{|
-  isTVSelectable?: boolean,
-  hasTVPreferredFocus?: boolean,
-  tvParallaxProperties?: Object,
-  tvParallaxShiftDistanceX?: number,
-  tvParallaxShiftDistanceY?: number,
-  tvParallaxTiltAngle?: number,
   tvParallaxMagnification?: number,
 |}>;
-
-module.exports = TVViewPropTypes;

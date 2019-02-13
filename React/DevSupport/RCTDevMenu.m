@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -269,12 +269,6 @@ RCT_EXPORT_MODULE()
     }]];
   }
 
-  if (devSettings.isJSCSamplingProfilerAvailable) {
-    [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Start / Stop JS Sampling Profiler" handler:^{
-      [devSettings toggleJSCSamplingProfiler];
-    }]];
-  }
-
   [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
     return @"Toggle Inspector";
   } handler:^{
@@ -398,6 +392,7 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled:(BOOL)enabled)
 - (void)addItem:(NSString *)title handler:(dispatch_block_t)handler {}
 - (void)addItem:(RCTDevMenu *)item {}
 - (BOOL)isActionSheetShown { return NO; }
++ (NSString *)moduleName { return @""; }
 
 @end
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -23,6 +23,8 @@ enum ReactMarkerId {
   JS_BUNDLE_STRING_CONVERT_STOP,
   NATIVE_MODULE_SETUP_START,
   NATIVE_MODULE_SETUP_STOP,
+  REGISTER_JS_SEGMENT_START,
+  REGISTER_JS_SEGMENT_STOP
 };
 
 #ifdef __APPLE__
@@ -37,7 +39,7 @@ typedef void(*LogTaggedMarker)(const ReactMarkerId, const char* tag);
 
 extern RN_EXPORT LogTaggedMarker logTaggedMarker;
 
-extern void logMarker(const ReactMarkerId markerId);
+extern RN_EXPORT void logMarker(const ReactMarkerId markerId);
 
 }
 }
