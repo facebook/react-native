@@ -26,6 +26,14 @@ aliases:
       - node_modules
     key: v1-analysis-dependencies-{{ arch }}-{{ checksum "package.json" }}{{ checksum "bots/package.json" }}
 
+  - &restore-cache-android-packages
+    keys:
+      - v1-android-sdkmanager-packages-api-28-alpha-{{ checksum "scripts/.tests.env" }}
+  - &save-cache-android-packages
+    paths:
+      - /opt/android/sdk
+    key: v1-android-sdkmanager-packages-api-28-alpha-{{ checksum "scripts/.tests.env" }}
+
   - &restore-cache-gradle
     keys:
       - v1-gradle-{{ .Branch }}-{{ checksum "build.gradle" }}-{{ checksum "ReactAndroid/build.gradle" }}
@@ -38,6 +46,14 @@ aliases:
     paths:
       - ~/.gradle
     key: v1-gradle-{{ .Branch }}-{{ checksum "build.gradle" }}-{{ checksum "ReactAndroid/build.gradle" }}
+
+  - &restore-cache-ndk
+    keys:
+      - v3-android-ndk-r17c-{{ checksum "scripts/android-setup.sh" }}
+  - &save-cache-ndk
+    paths:
+      - /opt/ndk
+    key: v3-android-ndk-r17c-{{ checksum "scripts/android-setup.sh" }}
 
   - &restore-cache-downloads-buck
     keys:
@@ -99,6 +115,11 @@ aliases:
         - /.*-stable/
         - gh-pages
 
+  # Dependency Management
+  - &install-ndk
+    name: Install Android NDK
+    command: source scripts/android-setup.sh && getAndroidNDK
+
   - &yarn
     name: Run Yarn
     command: |
@@ -108,9 +129,20 @@ aliases:
         yarn install --non-interactive --cache-folder ~/.cache/yarn
       fi
 
+  - &install-yarn
+    name: Install Yarn
+    command: |
+      curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+      echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+      sudo apt-get update && sudo apt-get install yarn
+
   - &install-buck
     name: Install BUCK
     command: |
+      if [[ ! -e ~/buck ]]; then
+        git clone https://github.com/facebook/buck.git ~/buck --branch v2019.01.10.01 --depth=1
+      fi
+      cd ~/buck && ant
       buck --version
       # Install related tooling
       if [[ ! -e ~/okbuck ]]; then
@@ -118,6 +150,30 @@ aliases:
       fi
       mkdir -p ~/react-native/tooling/junit
       cp -R ~/okbuck/tooling/junit/* ~/react-native/tooling/junit/.
+
+  - &create-ndk-directory
+    name: Create Android NDK Directory
+    command: |
+      if [[ ! -e /opt/ndk ]]; then
+        sudo mkdir /opt/ndk
+      fi
+      sudo chown ${USER:=$(/usr/bin/id -run)}:$USER /opt/ndk
+
+  # CircleCI does not support interpolating env variables in the environment
+  # https://circleci.com/docs/2.0/env-vars/#interpolating-environment-variables-to-set-other-environment-variables
+  - &configure-android-path
+    name: Configure Environment Variables
+    command: |
+      echo 'export PATH=${ANDROID_NDK}:~/buck/bin:$PATH' >> $BASH_ENV
+      source $BASH_ENV
+  - &install-android-packages
+    name: Install Android SDK Packages
+    command: source scripts/android-setup.sh && getAndroidPackages
+
+  - &install-android-build-dependencies
+    name: Install Android Build Dependencies
+    command: ./scripts/circleci/apt-get-android-deps.sh
+
   - &validate-android-sdk
     name: Validate Android SDK Install
     command: ./scripts/validate-android-sdk.sh
@@ -208,7 +264,7 @@ aliases:
 
   - &build-android-rntester-app
     name: Build Android RNTester App
-    command: ./gradlew RNTester:android:app:assembleRelease
+    command: ./gradlew RNTester:android:app:assembleRelease -Pjobs=$BUILD_THREADS
 
   - &collect-android-test-results
     name: Collect Test Results
@@ -283,13 +339,14 @@ js_defaults: &js_defaults
 android_defaults: &android_defaults
   <<: *defaults
   docker:
-  - image: reactnativecommunity/react-native-android
+  - image: circleci/android:api-28-node8-alpha
   resource_class: "large"
   environment:
     - TERM: "dumb"
     - ADB_INSTALL_TIMEOUT: 10
     - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
     - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
+    - ANDROID_NDK: '/opt/ndk/android-ndk-r17c'
     - BUILD_THREADS: 2
 
 macos_defaults: &macos_defaults
@@ -415,6 +472,15 @@ jobs:
       - attach_workspace:
           at: ~/react-native
 
+      # Configure Android SDK and related dependencies
+      - run: *configure-android-path
+      # Android build deps install from the network faster than cache
+      - run: *install-android-build-dependencies
+
+      - restore-cache: *restore-cache-android-packages
+      - run: *install-android-packages
+      - save-cache: *save-cache-android-packages
+
       # Validate Android SDK installation and packages
       - run: *validate-android-sdk
 
@@ -423,6 +489,12 @@ jobs:
       - run: *launch-avd
 
       # Keep configuring Android dependencies while AVD boots up
+
+      # Install Android NDK
+      - run: *create-ndk-directory
+      - restore-cache: *restore-cache-ndk
+      - run: *install-ndk
+      - save-cache: *save-cache-ndk
 
       # Install Buck
       - restore-cache: *restore-cache-downloads-buck
@@ -551,8 +623,21 @@ jobs:
       - restore-cache: *restore-yarn-cache
       - run: *yarn
 
+      # Configure Android SDK and related dependencies
+      - run: *configure-android-path
+      - run: *install-android-build-dependencies
+
+      - restore-cache: *restore-cache-android-packages
+      - run: *install-android-packages
+
+      # Install Android NDK
+      - run: *create-ndk-directory
+      - restore-cache: *restore-cache-ndk
+      - run: *install-ndk
+
       # Fetch dependencies using Buck
       - restore-cache: *restore-cache-downloads-buck
+      - run: *install-buck
       - run: *download-dependencies-buck
 
       # Fetch dependencies using Gradle
