@@ -23,6 +23,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
@@ -78,14 +79,20 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
 
     public void showPendingAlert() {
       UiThreadUtil.assertOnUiThread();
+      SoftAssertions.assertCondition(mIsInForeground, "showPendingAlert() called in background");
       if (mFragmentToShow == null) {
         return;
       }
+
+      dismissExisting();
       ((AlertFragment) mFragmentToShow).show(mFragmentManager, FRAGMENT_TAG);
       mFragmentToShow = null;
     }
 
     private void dismissExisting() {
+      if (!mIsInForeground) {
+        return;
+      }
       AlertFragment oldFragment =
         (AlertFragment) mFragmentManager.findFragmentByTag(FRAGMENT_TAG);
       if (oldFragment != null && oldFragment.isResumed()) {
@@ -93,7 +100,7 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
       }
     }
 
-    public void showNewAlert(boolean isInForeground, Bundle arguments, Callback actionCallback) {
+    public void showNewAlert(Bundle arguments, Callback actionCallback) {
       UiThreadUtil.assertOnUiThread();
 
       dismissExisting();
@@ -217,7 +224,7 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        fragmentManagerHelper.showNewAlert(mIsInForeground, args, actionCallback);
+        fragmentManagerHelper.showNewAlert(args, actionCallback);
       }
     });
 

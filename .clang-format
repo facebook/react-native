@@ -60,8 +60,8 @@ MacroBlockEnd:   ''
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: None
 ObjCBlockIndentWidth: 2
-ObjCSpaceAfterProperty: false
-ObjCSpaceBeforeProtocolList: false
+ObjCSpaceAfterProperty: true
+ObjCSpaceBeforeProtocolList: true
 PenaltyBreakBeforeFirstCallParameter: 1
 PenaltyBreakComment: 300
 PenaltyBreakFirstLessLess: 120
@@ -84,4 +84,8 @@ SpacesInSquareBrackets: false
 Standard:        Cpp11
 TabWidth:        8
 UseTab:          Never
+---
+Language: ObjC
+ColumnLimit:     120
+BreakBeforeBraces: WebKit
 ...

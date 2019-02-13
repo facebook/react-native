@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
@@ -48,7 +49,6 @@ import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.common.MeasureSpecProvider;
-import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
@@ -66,8 +66,7 @@ import javax.annotation.Nullable;
  * subsequent touch events related to that gesture (in case when JS code wants to handle that
  * gesture).
  */
-public class ReactRootView extends SizeMonitoringFrameLayout
-    implements RootView, MeasureSpecProvider {
+public class ReactRootView extends FrameLayout implements RootView, MeasureSpecProvider {
 
   /**
    * Listener interface for react root view events

@@ -3380,7 +3380,7 @@ var ContextOnlyDispatcher = {
       return mountEffectImpl(516, UnmountPassive | MountPassive, create, deps);
     },
     useImperativeHandle: function(ref, create, deps) {
-      deps = null !== deps && void 0 !== deps ? deps.concat([ref]) : [ref];
+      deps = null !== deps && void 0 !== deps ? deps.concat([ref]) : null;
       return mountEffectImpl(
         4,
         UnmountMutation | MountLayout,
@@ -3459,7 +3459,7 @@ var ContextOnlyDispatcher = {
       return updateEffectImpl(516, UnmountPassive | MountPassive, create, deps);
     },
     useImperativeHandle: function(ref, create, deps) {
-      deps = null !== deps && void 0 !== deps ? deps.concat([ref]) : [ref];
+      deps = null !== deps && void 0 !== deps ? deps.concat([ref]) : null;
       return updateEffectImpl(
         4,
         UnmountMutation | MountLayout,

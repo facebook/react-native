@@ -8,6 +8,7 @@
 #include <jsi/jsi.h>
 
 #include <react/core/LayoutContext.h>
+#include <react/debug/SystraceSection.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
 #include <react/uimanager/TimeUtils.h>
 #include <react/uimanager/UIManager.h>
@@ -69,6 +70,8 @@ void Scheduler::startSurface(
     const folly::dynamic &initialProps,
     const LayoutConstraints &layoutConstraints,
     const LayoutContext &layoutContext) const {
+  SystraceSection s("Scheduler::startSurface");
+
   auto shadowTree =
       std::make_unique<ShadowTree>(surfaceId, layoutConstraints, layoutContext);
   shadowTree->setDelegate(this);
@@ -86,7 +89,9 @@ void Scheduler::startSurface(
 void Scheduler::renderTemplateToSurface(
     SurfaceId surfaceId,
     const std::string &uiTemplate) {
+  SystraceSection s("Scheduler::renderTemplateToSurface");
   long commitStartTime = getTime();
+
   try {
     if (uiTemplate.size() == 0) {
       return;
@@ -118,6 +123,8 @@ void Scheduler::renderTemplateToSurface(
 }
 
 void Scheduler::stopSurface(SurfaceId surfaceId) const {
+  SystraceSection s("Scheduler::stopSurface");
+
   long commitStartTime = getTime();
   shadowTreeRegistry_.visit(
       surfaceId, [commitStartTime](const ShadowTree &shadowTree) {
@@ -147,6 +154,8 @@ Size Scheduler::measureSurface(
     SurfaceId surfaceId,
     const LayoutConstraints &layoutConstraints,
     const LayoutContext &layoutContext) const {
+  SystraceSection s("Scheduler::measureSurface");
+
   long commitStartTime = getTime();
 
   Size size;
@@ -168,6 +177,8 @@ void Scheduler::constraintSurfaceLayout(
     SurfaceId surfaceId,
     const LayoutConstraints &layoutConstraints,
     const LayoutContext &layoutContext) const {
+  SystraceSection s("Scheduler::constraintSurfaceLayout");
+
   long commitStartTime = getTime();
 
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree &shadowTree) {
@@ -196,6 +207,8 @@ void Scheduler::shadowTreeDidCommit(
     const ShadowViewMutationList &mutations,
     long commitStartTime,
     long layoutTime) const {
+  SystraceSection s("Scheduler::shadowTreeDidCommit");
+
   if (delegate_) {
     delegate_->schedulerDidFinishTransaction(
         shadowTree.getSurfaceId(), mutations, commitStartTime, layoutTime);
@@ -208,6 +221,8 @@ void Scheduler::uiManagerDidFinishTransaction(
     SurfaceId surfaceId,
     const SharedShadowNodeUnsharedList &rootChildNodes,
     long startCommitTime) {
+  SystraceSection s("Scheduler::uiManagerDidFinishTransaction");
+
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree &shadowTree) {
     shadowTree.commit(
         [&](const SharedRootShadowNode &oldRootShadowNode) {
@@ -221,6 +236,8 @@ void Scheduler::uiManagerDidFinishTransaction(
 
 void Scheduler::uiManagerDidCreateShadowNode(
     const SharedShadowNode &shadowNode) {
+  SystraceSection s("Scheduler::uiManagerDidCreateShadowNode");
+
   if (delegate_) {
     auto layoutableShadowNode =
         dynamic_cast<const LayoutableShadowNode *>(shadowNode.get());

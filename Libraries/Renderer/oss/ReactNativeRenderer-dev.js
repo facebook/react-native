@@ -104,7 +104,7 @@ var invokeGuardedCallbackImpl = function(
   // invokeGuardedCallback uses a try-catch, all user exceptions are treated
   // like caught exceptions, and the DevTools won't pause unless the developer
   // takes the extra step of enabling pause on caught exceptions. This is
-  // untintuitive, though, because even though React has caught the error, from
+  // unintuitive, though, because even though React has caught the error, from
   // the developer's perspective, the error is uncaught.
   //
   // To preserve the expected "Pause on exceptions" behavior, we don't use a
@@ -8543,7 +8543,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     newChildren,
     expirationTime
   ) {
-    // This algorithm can't optimize by searching from boths ends since we
+    // This algorithm can't optimize by searching from both ends since we
     // don't have backpointers on fibers. I'm trying to see how far we can get
     // with that model. If it ends up not being worth the tradeoffs, we can
     // add it later.
@@ -9978,7 +9978,7 @@ function mountImperativeHandle(ref, create, deps) {
 
   // TODO: If deps are provided, should we skip comparing the ref itself?
   var effectDeps =
-    deps !== null && deps !== undefined ? deps.concat([ref]) : [ref];
+    deps !== null && deps !== undefined ? deps.concat([ref]) : null;
 
   return mountEffectImpl(
     Update,
@@ -10002,7 +10002,7 @@ function updateImperativeHandle(ref, create, deps) {
 
   // TODO: If deps are provided, should we skip comparing the ref itself?
   var effectDeps =
-    deps !== null && deps !== undefined ? deps.concat([ref]) : [ref];
+    deps !== null && deps !== undefined ? deps.concat([ref]) : null;
 
   return updateEffectImpl(
     Update,
@@ -10074,7 +10074,7 @@ function updateMemo(nextCreate, deps) {
 var shouldWarnForUnbatchedSetState = false;
 
 {
-  // jest isnt' a 'global', it's just exposed to tests via a wrapped function
+  // jest isn't a 'global', it's just exposed to tests via a wrapped function
   // further, this isn't a test file, so flow doesn't recognize the symbol. So...
   // $FlowExpectedError - because requirements don't give a damn about your type sigs.
   if ("undefined" !== typeof jest) {
@@ -14948,7 +14948,7 @@ function commitLifeCycles(
 
 function hideOrUnhideAllChildren(finishedWork, isHidden) {
   if (supportsMutation) {
-    // We only have the top Fiber that was inserted but we need recurse down its
+    // We only have the top Fiber that was inserted but we need to recurse down its
     var node = finishedWork;
     while (true) {
       if (node.tag === HostComponent) {
@@ -15292,7 +15292,7 @@ function commitPlacement(finishedWork) {
   }
 
   var before = getHostSibling(finishedWork);
-  // We only have the top Fiber that was inserted but we need recurse down its
+  // We only have the top Fiber that was inserted but we need to recurse down its
   // children to find all the terminal nodes.
   var node = finishedWork;
   while (true) {
@@ -15334,7 +15334,7 @@ function commitPlacement(finishedWork) {
 }
 
 function unmountHostComponents(current$$1) {
-  // We only have the top Fiber that was deleted but we need recurse down its
+  // We only have the top Fiber that was deleted but we need to recurse down its
   var node = current$$1;
 
   // Each iteration, currentParent is populated with node's host parent if not
@@ -15384,12 +15384,12 @@ function unmountHostComponents(current$$1) {
       }
       // Don't visit children because we already visited them.
     } else if (node.tag === HostPortal) {
-      // When we go into a portal, it becomes the parent to remove from.
-      // We will reassign it back when we pop the portal on the way up.
-      currentParent = node.stateNode.containerInfo;
-      currentParentIsContainer = true;
-      // Visit children because portals might contain host components.
       if (node.child !== null) {
+        // When we go into a portal, it becomes the parent to remove from.
+        // We will reassign it back when we pop the portal on the way up.
+        currentParent = node.stateNode.containerInfo;
+        currentParentIsContainer = true;
+        // Visit children because portals might contain host components.
         node.child.return = node;
         node = node.child;
         continue;
@@ -17223,7 +17223,7 @@ function renderRoot(root, isYieldy) {
       return;
     } else if (
       // There's no lower priority work, but we're rendering asynchronously.
-      // Synchronsouly attempt to render the same level one more time. This is
+      // Synchronously attempt to render the same level one more time. This is
       // similar to a suspend, but without a timeout because we're not waiting
       // for a promise to resolve.
       !root.didError &&

@@ -160,7 +160,7 @@ public class JavaOnlyArray implements ReadableArray, WritableArray {
   }
 
   @Override
-  public void pushString(@Nonnull String value) {
+  public void pushString(@Nullable String value) {
     mBackingList.add(value);
   }
 
@@ -170,7 +170,7 @@ public class JavaOnlyArray implements ReadableArray, WritableArray {
   }
 
   @Override
-  public void pushMap(@Nonnull WritableMap map) {
+  public void pushMap(@Nullable WritableMap map) {
     mBackingList.add(map);
   }
 

@@ -7,6 +7,7 @@
 
 #include <better/map.h>
 #include <react/core/LayoutableShadowNode.h>
+#include <react/debug/SystraceSection.h>
 #include "ShadowView.h"
 
 namespace facebook {
@@ -215,6 +216,8 @@ static void calculateShadowViewMutations(
 ShadowViewMutationList calculateShadowViewMutations(
     const ShadowNode &oldRootShadowNode,
     const ShadowNode &newRootShadowNode) {
+  SystraceSection s("calculateShadowViewMutations");
+
   // Root shadow nodes must have same tag.
   assert(oldRootShadowNode.getTag() == newRootShadowNode.getTag());
 

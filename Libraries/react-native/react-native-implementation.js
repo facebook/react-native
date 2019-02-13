@@ -50,6 +50,13 @@ module.exports = {
     return require('ImageEditor');
   },
   get ImageStore() {
+    warnOnce(
+      'imagestore-deprecation',
+      'ImageStore is deprecated and will be removed in a future release. ' +
+        'To get a base64-encoded string from a local image use either of the following third-party libraries:' +
+        "* expo-file-system: `readAsStringAsync(filepath, 'base64')`" +
+        "* react-native-fs: `readFile(filepath, 'base64')`",
+    );
     return require('ImageStore');
   },
   get InputAccessoryView() {
@@ -67,6 +74,12 @@ module.exports = {
     return require('ListView');
   },
   get MaskedViewIOS() {
+    warnOnce(
+      'maskedviewios-moved',
+      'MaskedViewIOS has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/masked-view' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-masked-view',
+    );
     return require('MaskedViewIOS');
   },
   get Modal() {
@@ -97,6 +110,12 @@ module.exports = {
     return require('SegmentedControlIOS');
   },
   get Slider() {
+    warnOnce(
+      'slider-moved',
+      'Slider has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/slider' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-slider',
+    );
     return require('Slider');
   },
   get SnapshotViewIOS() {
@@ -150,6 +169,12 @@ module.exports = {
     return require('View');
   },
   get ViewPagerAndroid() {
+    warnOnce(
+      'viewpager-moved',
+      'ViewPagerAndroid has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/viewpager' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-viewpager',
+    );
     return require('ViewPagerAndroid');
   },
   get VirtualizedList() {
@@ -160,7 +185,7 @@ module.exports = {
       'webview-moved',
       'WebView has been extracted from react-native core and will be removed in a future release. ' +
         "It can now be installed and imported from 'react-native-webview' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-webview for more informations.',
+        'See https://github.com/react-native-community/react-native-webview',
     );
     return require('WebView');
   },
@@ -173,7 +198,11 @@ module.exports = {
     return require('Alert');
   },
   get AlertIOS() {
-    return require('AlertIOS');
+    warnOnce(
+      'alert-ios',
+      'AlertIOS is deprecated. Use the `Alert` module directly instead.',
+    );
+    return require('Alert');
   },
   get Animated() {
     return require('Animated');
@@ -185,6 +214,12 @@ module.exports = {
     return require('AppState');
   },
   get AsyncStorage() {
+    warnOnce(
+      'async-storage-moved',
+      'Async Storage has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/async-storage' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-async-storage',
+    );
     return require('AsyncStorage');
   },
   get BackHandler() {
@@ -233,6 +268,12 @@ module.exports = {
     return require('NativeEventEmitter');
   },
   get NetInfo() {
+    warnOnce(
+      'netinfo-moved',
+      'NetInfo has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/netinfo' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-netinfo',
+    );
     return require('NetInfo');
   },
   get PanResponder() {
@@ -245,6 +286,12 @@ module.exports = {
     return require('PixelRatio');
   },
   get PushNotificationIOS() {
+    warnOnce(
+      'pushNotificationIOS-moved',
+      'PushNotificationIOS has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/push-notification-ios' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-push-notification-ios',
+    );
     return require('PushNotificationIOS');
   },
   get Settings() {

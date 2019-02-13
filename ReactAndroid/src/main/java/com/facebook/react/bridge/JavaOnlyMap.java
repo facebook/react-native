@@ -12,6 +12,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Java {@link HashMap} backed implementation of {@link ReadableMap} and {@link WritableMap}
@@ -179,7 +180,7 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
   }
 
   @Override
-  public void putString(@Nonnull String key, @Nonnull String value) {
+  public void putString(@Nonnull String key, @Nullable String value) {
     mBackingMap.put(key, value);
   }
 
@@ -189,7 +190,7 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
   }
 
   @Override
-  public void putMap(@Nonnull String key, @Nonnull WritableMap value) {
+  public void putMap(@Nonnull String key, @Nullable WritableMap value) {
     mBackingMap.put(key, value);
   }
 
@@ -199,7 +200,7 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
   }
 
   @Override
-  public void putArray(@Nonnull String key, @Nonnull WritableArray value) {
+  public void putArray(@Nonnull String key, @Nullable WritableArray value) {
     mBackingMap.put(key, value);
   }
 

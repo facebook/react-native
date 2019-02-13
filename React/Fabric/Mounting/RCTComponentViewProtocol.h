@@ -7,11 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import <React/RCTPrimitives.h>
+#import <react/core/LayoutMetrics.h>
 #import <react/core/LocalData.h>
 #import <react/core/Props.h>
-#import <react/core/LayoutMetrics.h>
 #import <react/events/EventEmitter.h>
-#import <React/RCTPrimitives.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -34,23 +34,20 @@ NS_ASSUME_NONNULL_BEGIN
  * component view.
  * Receiver must add `childComponentView` as a subview.
  */
-- (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView
-                          index:(NSInteger)index;
+- (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index;
 
 /*
  * Called for unmounting (detaching) a child component view from `self`
  * component view.
  * Receiver must remove `childComponentView` as a subview.
  */
-- (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView
-                            index:(NSInteger)index;
+- (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index;
 
 /*
  * Called for updating component's props.
  * Receiver must update native view props accordingly changed props.
  */
-- (void)updateProps:(facebook::react::SharedProps)props
-           oldProps:(facebook::react::SharedProps)oldProps;
+- (void)updateProps:(facebook::react::SharedProps)props oldProps:(facebook::react::SharedProps)oldProps;
 
 /*
  * Called for updating component's local data.

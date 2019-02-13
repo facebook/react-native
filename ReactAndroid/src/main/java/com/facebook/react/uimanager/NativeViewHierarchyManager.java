@@ -8,7 +8,7 @@
 package com.facebook.react.uimanager;
 
 import android.content.res.Resources;
-import com.facebook.common.logging.FLog;
+import android.os.Build;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.view.Menu;
@@ -17,8 +17,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.PopupMenu;
-import com.facebook.react.R;
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.R;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.animation.AnimationListener;
 import com.facebook.react.animation.AnimationRegistry;
@@ -30,7 +31,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.touch.JSResponderHandler;
-import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationListener;
 import com.facebook.systrace.Systrace;
@@ -532,17 +532,11 @@ public class NativeViewHierarchyManager {
   /**
    * See {@link UIManagerModule#addRootView}.
    */
-  public synchronized void addRootView(
-      int tag,
-      SizeMonitoringFrameLayout view,
-      ThemedReactContext themedContext) {
-    addRootViewGroup(tag, view, themedContext);
+  public synchronized void addRootView(int tag, View view) {
+    addRootViewGroup(tag, view);
   }
 
-  protected synchronized final void addRootViewGroup(
-      int tag,
-      ViewGroup view,
-      ThemedReactContext themedContext) {
+  protected synchronized final void addRootViewGroup(int tag, View view) {
     if (view.getId() != View.NO_ID) {
       FLog.e(
         TAG,

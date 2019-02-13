@@ -7,6 +7,7 @@
 
 #include <react/core/LayoutContext.h>
 #include <react/core/LayoutPrimitives.h>
+#include <react/debug/SystraceSection.h>
 #include <react/mounting/Differentiator.h>
 #include <react/mounting/ShadowViewMutation.h>
 #include <react/uimanager/TimeUtils.h>
@@ -115,6 +116,8 @@ void ShadowTree::commit(
     ShadowTreeCommitTransaction transaction,
     long commitStartTime,
     int *revision) const {
+  SystraceSection s("ShadowTree::commit");
+
   int attempts = 0;
 
   while (true) {
@@ -133,6 +136,8 @@ bool ShadowTree::tryCommit(
     ShadowTreeCommitTransaction transaction,
     long commitStartTime,
     int *revision) const {
+  SystraceSection s("ShadowTree::tryCommit");
+
   SharedRootShadowNode oldRootShadowNode;
 
   {
@@ -192,6 +197,8 @@ bool ShadowTree::tryCommit(
 
 void ShadowTree::emitLayoutEvents(
     const ShadowViewMutationList &mutations) const {
+  SystraceSection s("ShadowTree::emitLayoutEvents");
+
   for (const auto &mutation : mutations) {
     // Only `Insert` and `Update` mutations can affect layout metrics.
     if (mutation.type != ShadowViewMutation::Insert &&

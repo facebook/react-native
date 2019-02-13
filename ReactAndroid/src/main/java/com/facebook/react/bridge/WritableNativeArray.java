@@ -38,7 +38,7 @@ public class WritableNativeArray extends ReadableNativeArray implements Writable
   @Override
   public native void pushInt(int value);
   @Override
-  public native void pushString(@Nonnull String value);
+  public native void pushString(@Nullable String value);
 
   // Note: this consumes the map so do not reuse it.
   @Override
@@ -50,7 +50,7 @@ public class WritableNativeArray extends ReadableNativeArray implements Writable
 
   // Note: this consumes the map so do not reuse it.
   @Override
-  public void pushMap(@Nonnull WritableMap map) {
+  public void pushMap(@Nullable WritableMap map) {
     Assertions.assertCondition(
         map == null || map instanceof WritableNativeMap, "Illegal type provided");
     pushNativeMap((WritableNativeMap) map);

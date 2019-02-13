@@ -30,7 +30,8 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Creates a component view with given component handle.
  */
-- (UIView<RCTComponentViewProtocol> *)createComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle;
+- (UIView<RCTComponentViewProtocol> *)createComponentViewWithComponentHandle:
+    (facebook::react::ComponentHandle)componentHandle;
 
 @end
 
