@@ -23,7 +23,7 @@
 {
   if ((self = [super init])) {
     [self addTarget:self action:@selector(refreshControlValueChanged) forControlEvents:UIControlEventValueChanged];
-    _currentRefreshingStateClock=1;
+    _currentRefreshingStateClock = 1;
     _currentRefreshingStateTimestamp = 0;
     _isInitialRender = true;
     _currentRefreshingState = false;
