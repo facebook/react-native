@@ -1,26 +1,26 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @format
+ * @flow strict-local
  */
+
 'use strict';
 
-import React, { Component } from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import React, {Component} from 'react';
+import {ActivityIndicator, StyleSheet, View} from 'react-native';
 
-/**
- * Optional Flowtype state and timer types definition
- */
-type State = { animating: boolean; };
-type Timer = number;
+type State = {|animating: boolean|};
+type Props = $ReadOnly<{||}>;
+type Timer = TimeoutID;
 
-class ToggleAnimatingActivityIndicator extends Component<$FlowFixMeProps, State> {
+class ToggleAnimatingActivityIndicator extends Component<Props, State> {
   _timer: Timer;
 
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
     this.state = {
       animating: true,
@@ -32,16 +32,10 @@ class ToggleAnimatingActivityIndicator extends Component<$FlowFixMeProps, State>
   }
 
   componentWillUnmount() {
-    /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.63 was deployed. To see the error delete this
-     * comment and run Flow. */
     clearTimeout(this._timer);
   }
 
   setToggleTimeout() {
-    /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.63 was deployed. To see the error delete this
-     * comment and run Flow. */
     this._timer = setTimeout(() => {
       this.setState({animating: !this.state.animating});
       this.setToggleTimeout();
@@ -59,7 +53,21 @@ class ToggleAnimatingActivityIndicator extends Component<$FlowFixMeProps, State>
   }
 }
 
-
+const styles = StyleSheet.create({
+  centering: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 8,
+  },
+  gray: {
+    backgroundColor: '#cccccc',
+  },
+  horizontal: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    padding: 8,
+  },
+});
 
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';
@@ -76,22 +84,18 @@ exports.examples = [
           color="white"
         />
       );
-    }
+    },
   },
   {
     title: 'Gray',
     render() {
       return (
         <View>
-          <ActivityIndicator
-            style={[styles.centering]}
-          />
-          <ActivityIndicator
-            style={[styles.centering, {backgroundColor: '#eeeeee'}]}
-          />
+          <ActivityIndicator style={[styles.centering]} />
+          <ActivityIndicator style={[styles.centering, styles.gray]} />
         </View>
       );
-    }
+    },
   },
   {
     title: 'Custom colors',
@@ -104,7 +108,7 @@ exports.examples = [
           <ActivityIndicator color="#00aa00" />
         </View>
       );
-    }
+    },
   },
   {
     title: 'Large',
@@ -116,38 +120,26 @@ exports.examples = [
           color="white"
         />
       );
-    }
+    },
   },
   {
     title: 'Large, custom colors',
     render() {
       return (
         <View style={styles.horizontal}>
-          <ActivityIndicator
-            size="large"
-            color="#0000ff"
-          />
-          <ActivityIndicator
-            size="large"
-            color="#aa00aa"
-          />
-          <ActivityIndicator
-            size="large"
-            color="#aa3300"
-          />
-          <ActivityIndicator
-            size="large"
-            color="#00aa00"
-          />
+          <ActivityIndicator size="large" color="#0000ff" />
+          <ActivityIndicator size="large" color="#aa00aa" />
+          <ActivityIndicator size="large" color="#aa3300" />
+          <ActivityIndicator size="large" color="#00aa00" />
         </View>
       );
-    }
+    },
   },
   {
     title: 'Start/stop',
     render() {
       return <ToggleAnimatingActivityIndicator />;
-    }
+    },
   },
   {
     title: 'Custom size',
@@ -158,35 +150,13 @@ exports.examples = [
           size="large"
         />
       );
-    }
+    },
   },
   {
     platform: 'android',
     title: 'Custom size (size: 75)',
     render() {
-      return (
-        <ActivityIndicator
-          style={styles.centering}
-          size={75}
-        />
-      );
-    }
+      return <ActivityIndicator style={styles.centering} size={75} />;
+    },
   },
 ];
-
-
-const styles = StyleSheet.create({
-  centering: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 8,
-  },
-  gray: {
-    backgroundColor: '#cccccc',
-  },
-  horizontal: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    padding: 8,
-  },
-});

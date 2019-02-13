@@ -1,15 +1,17 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  */
+
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Image,
   StyleSheet,
   Text,
@@ -19,11 +21,11 @@ var {
   ViewPagerAndroid,
 } = ReactNative;
 
-import type { ViewPagerScrollState } from 'ViewPagerAndroid';
+import type {ViewPagerScrollState} from 'ViewPagerAndroid';
 
-var PAGES = 5;
-var BGCOLOR = ['#fdc08e', '#fff6b9', '#99d1b7', '#dde5fe', '#f79273'];
-var IMAGE_URIS = [
+const PAGES = 5;
+const BGCOLOR = ['#fdc08e', '#fff6b9', '#99d1b7', '#dde5fe', '#f79273'];
+const IMAGE_URIS = [
   'https://apod.nasa.gov/apod/image/1410/20141008tleBaldridge001h990.jpg',
   'https://apod.nasa.gov/apod/image/1409/volcanicpillar_vetter_960.jpg',
   'https://apod.nasa.gov/apod/image/1409/m27_snyder_960.jpg',
@@ -31,7 +33,9 @@ var IMAGE_URIS = [
   'https://apod.nasa.gov/apod/image/1510/lunareclipse_27Sep_beletskycrop4.jpg',
 ];
 
-class LikeCount extends React.Component {
+type Props = $ReadOnly<{||}>;
+type State = {|likes: number|};
+class LikeCount extends React.Component<Props, State> {
   state = {
     likes: 7,
   };
@@ -41,17 +45,13 @@ class LikeCount extends React.Component {
   };
 
   render() {
-    var thumbsUp = '\uD83D\uDC4D';
+    const thumbsUp = '\uD83D\uDC4D';
     return (
       <View style={styles.likeContainer}>
         <TouchableOpacity onPress={this.onClick} style={styles.likeButton}>
-          <Text style={styles.likesText}>
-            {thumbsUp + ' Like'}
-          </Text>
+          <Text style={styles.likesText}>{thumbsUp + ' Like'}</Text>
         </TouchableOpacity>
-        <Text style={styles.likesText}>
-          {this.state.likes + ' likes'}
-        </Text>
+        <Text style={styles.likesText}>{this.state.likes + ' likes'}</Text>
       </View>
     );
   }
@@ -67,7 +67,11 @@ class Button extends React.Component {
   render() {
     return (
       <TouchableWithoutFeedback onPress={this._handlePress}>
-        <View style={[styles.button, this.props.enabled ? {} : styles.buttonDisabled]}>
+        <View
+          style={[
+            styles.button,
+            this.props.enabled ? {} : styles.buttonDisabled,
+          ]}>
           <Text style={styles.buttonText}>{this.props.text}</Text>
         </View>
       </TouchableWithoutFeedback>
@@ -77,20 +81,19 @@ class Button extends React.Component {
 
 class ProgressBar extends React.Component {
   render() {
-    var fractionalPosition = (this.props.progress.position + this.props.progress.offset);
-    var progressBarSize = (fractionalPosition / (PAGES - 1)) * this.props.size;
+    const fractionalPosition =
+      this.props.progress.position + this.props.progress.offset;
+    const progressBarSize =
+      (fractionalPosition / (PAGES - 1)) * this.props.size;
     return (
       <View style={[styles.progressBarContainer, {width: this.props.size}]}>
-        <View style={[styles.progressBar, {width: progressBarSize}]}/>
+        <View style={[styles.progressBar, {width: progressBarSize}]} />
       </View>
     );
   }
 }
 
 class ViewPagerAndroidExample extends React.Component {
-  static title = '<ViewPagerAndroid>';
-  static description = 'Container that allows to flip left and right between child views.';
-
   state = {
     page: 0,
     animationsAreEnabled: true,
@@ -101,24 +104,24 @@ class ViewPagerAndroidExample extends React.Component {
     },
   };
 
-  onPageSelected = (e) => {
+  onPageSelected = e => {
     this.setState({page: e.nativeEvent.position});
   };
 
-  onPageScroll = (e) => {
+  onPageScroll = e => {
     this.setState({progress: e.nativeEvent});
   };
 
-  onPageScrollStateChanged = (state : ViewPagerScrollState) => {
+  onPageScrollStateChanged = (state: ViewPagerScrollState) => {
     this.setState({scrollState: state});
   };
 
-  move = (delta) => {
-    var page = this.state.page + delta;
+  move = delta => {
+    const page = this.state.page + delta;
     this.go(page);
   };
 
-  go = (page) => {
+  go = page => {
     if (this.state.animationsAreEnabled) {
       this.viewPager.setPage(page);
     } else {
@@ -129,9 +132,9 @@ class ViewPagerAndroidExample extends React.Component {
   };
 
   render() {
-    var pages = [];
-    for (var i = 0; i < PAGES; i++) {
-      var pageStyle = {
+    const pages = [];
+    for (let i = 0; i < PAGES; i++) {
+      const pageStyle = {
         backgroundColor: BGCOLOR[i % BGCOLOR.length],
         alignItems: 'center',
         padding: 20,
@@ -143,10 +146,10 @@ class ViewPagerAndroidExample extends React.Component {
             source={{uri: IMAGE_URIS[i % BGCOLOR.length]}}
           />
           <LikeCount />
-       </View>
+        </View>,
       );
     }
-    var { page, animationsAreEnabled } = this.state;
+    const {page, animationsAreEnabled} = this.state;
     return (
       <View style={styles.container}>
         <ViewPagerAndroid
@@ -157,44 +160,68 @@ class ViewPagerAndroidExample extends React.Component {
           onPageSelected={this.onPageSelected}
           onPageScrollStateChanged={this.onPageScrollStateChanged}
           pageMargin={10}
-          ref={viewPager => { this.viewPager = viewPager; }}>
+          ref={viewPager => {
+            this.viewPager = viewPager;
+          }}>
           {pages}
         </ViewPagerAndroid>
         <View style={styles.buttons}>
           <Button
             enabled={true}
-            text={this.state.scrollEnabled ? 'Scroll Enabled' : 'Scroll Disabled'}
-            onPress={() => this.setState({scrollEnabled: !this.state.scrollEnabled})}
+            text={
+              this.state.scrollEnabled ? 'Scroll Enabled' : 'Scroll Disabled'
+            }
+            onPress={() =>
+              this.setState({scrollEnabled: !this.state.scrollEnabled})
+            }
           />
         </View>
         <View style={styles.buttons}>
-          { animationsAreEnabled ?
+          {animationsAreEnabled ? (
             <Button
               text="Turn off animations"
               enabled={true}
               onPress={() => this.setState({animationsAreEnabled: false})}
-            /> :
+            />
+          ) : (
             <Button
               text="Turn animations back on"
               enabled={true}
               onPress={() => this.setState({animationsAreEnabled: true})}
-            /> }
-          <Text style={styles.scrollStateText}>ScrollState[ {this.state.scrollState} ]</Text>
+            />
+          )}
+          <Text style={styles.scrollStateText}>
+            ScrollState[ {this.state.scrollState} ]
+          </Text>
         </View>
         <View style={styles.buttons}>
-          <Button text="Start" enabled={page > 0} onPress={() => this.go(0)}/>
-          <Button text="Prev" enabled={page > 0} onPress={() => this.move(-1)}/>
-          <Text style={styles.buttonText}>Page {page + 1} / {PAGES}</Text>
-          <ProgressBar size={100} progress={this.state.progress}/>
-          <Button text="Next" enabled={page < PAGES - 1} onPress={() => this.move(1)}/>
-          <Button text="Last" enabled={page < PAGES - 1} onPress={() => this.go(PAGES - 1)}/>
+          <Button text="Start" enabled={page > 0} onPress={() => this.go(0)} />
+          <Button
+            text="Prev"
+            enabled={page > 0}
+            onPress={() => this.move(-1)}
+          />
+          <Text style={styles.buttonText}>
+            Page {page + 1} / {PAGES}
+          </Text>
+          <ProgressBar size={100} progress={this.state.progress} />
+          <Button
+            text="Next"
+            enabled={page < PAGES - 1}
+            onPress={() => this.move(1)}
+          />
+          <Button
+            text="Last"
+            enabled={page < PAGES - 1}
+            onPress={() => this.go(PAGES - 1)}
+          />
         </View>
       </View>
     );
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   buttons: {
     flexDirection: 'row',
     height: 30,
@@ -262,4 +289,15 @@ var styles = StyleSheet.create({
   },
 });
 
-module.exports = ViewPagerAndroidExample;
+exports.title = '<ViewPagerAndroid>';
+exports.description =
+  'Container that allows to flip left and right between child views.';
+
+exports.examples = [
+  {
+    title: 'Basic pager',
+    render(): React.Element<typeof ViewPagerAndroidExample> {
+      return <ViewPagerAndroidExample />;
+    },
+  },
+];

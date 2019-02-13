@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,11 +16,14 @@ const ReactNative = require('ReactNative');
 const SceneTracker = require('SceneTracker');
 
 const infoLog = require('infoLog');
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 const renderApplication = require('renderApplication');
 
 type Task = (taskData: any) => Promise<void>;
 type TaskProvider = () => Task;
+/* $FlowFixMe(>=0.90.0 site=react_native_fb) This comment suppresses an
+ * error found when Flow v0.90 was deployed. To see the error, delete this
+ * comment and run Flow. */
 export type ComponentProvider = () => React$ComponentType<any>;
 export type ComponentProviderInstrumentationHook = (
   component: ComponentProvider,

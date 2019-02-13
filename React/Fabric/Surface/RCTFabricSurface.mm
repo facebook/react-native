@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,28 +7,23 @@
 
 #import "RCTFabricSurface.h"
 
-#import <React/RCTSurfaceView+Internal.h>
-
 #import <mutex>
-#import <stdatomic.h>
 
 #import <React/RCTAssert.h>
-#import <React/RCTBridge.h>
 #import <React/RCTSurfaceDelegate.h>
 #import <React/RCTSurfaceRootView.h>
+#import <React/RCTSurfaceTouchHandler.h>
+#import <React/RCTSurfaceView+Internal.h>
 #import <React/RCTSurfaceView.h>
-#import <React/RCTTouchHandler.h>
 #import <React/RCTUIManagerUtils.h>
 #import <React/RCTUtils.h>
 
 #import "RCTSurfacePresenter.h"
-#import "RCTMountingManager.h"
 
 @implementation RCTFabricSurface {
   // Immutable
   RCTSurfacePresenter *_surfacePresenter;
   NSString *_moduleName;
-  ReactTag _rootTag;
 
   // Protected by the `_mutex`
   std::mutex _mutex;
@@ -40,27 +35,13 @@
 
   // The Main thread only
   RCTSurfaceView *_Nullable _view;
-  RCTTouchHandler *_Nullable _touchHandler;
-}
-
-- (instancetype)initWithBridge:(RCTBridge *)bridge
-                    moduleName:(NSString *)moduleName
-             initialProperties:(NSDictionary *)initialProperties
-{
-  RCTAssert(bridge.valid, @"Valid bridge is required to instanciate `RCTSurface`.");
-
-  self = [self initWithSurfacePresenter:bridge.surfacePresenter
-                             moduleName:moduleName
-                      initialProperties:initialProperties];
-
-  return self;
+  RCTSurfaceTouchHandler *_Nullable _touchHandler;
 }
 
 - (instancetype)initWithSurfacePresenter:(RCTSurfacePresenter *)surfacePresenter
                               moduleName:(NSString *)moduleName
                        initialProperties:(NSDictionary *)initialProperties
 {
-
   if (self = [super init]) {
     _surfacePresenter = surfacePresenter;
     _moduleName = moduleName;
@@ -68,19 +49,43 @@
     _rootTag = [RCTAllocateRootViewTag() integerValue];
 
     _minimumSize = CGSizeZero;
-    _maximumSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
+    // FIXME: Replace with `_maximumSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);`.
+    _maximumSize = RCTScreenSize();
+
+    _touchHandler = [RCTSurfaceTouchHandler new];
 
     _stage = RCTSurfaceStageSurfaceDidInitialize;
 
-    [self _run];
+    [_surfacePresenter registerSurface:self];
   }
 
   return self;
 }
 
+- (BOOL)start
+{
+  if (![self _setStage:RCTSurfaceStageStarted]) {
+    return NO;
+  }
+
+  [_surfacePresenter startSurface:self];
+
+  return YES;
+}
+
+- (BOOL)stop
+{
+  if (![self _unsetStage:RCTSurfaceStageStarted]) {
+    return NO;
+  }
+
+  [_surfacePresenter unregisterSurface:self];
+  return YES;
+}
+
 - (void)dealloc
 {
-  [self _stop];
+  [self stop];
 }
 
 #pragma mark - Immutable Properties (no need to enforce synchonization)
@@ -88,11 +93,6 @@
 - (NSString *)moduleName
 {
   return _moduleName;
-}
-
-- (NSNumber *)rootViewTag
-{
-  return @(_rootTag);
 }
 
 #pragma mark - Main-Threaded Routines
@@ -103,6 +103,7 @@
 
   if (!_view) {
     _view = [[RCTSurfaceView alloc] initWithSurface:(RCTSurface *)self];
+    [_touchHandler attachToView:_view];
   }
 
   return _view;
@@ -116,21 +117,37 @@
   return _stage;
 }
 
-- (void)_setStage:(RCTSurfaceStage)stage
+- (BOOL)_setStage:(RCTSurfaceStage)stage
+{
+  return [self _setStage:stage setOrUnset:YES];
+}
+
+- (BOOL)_unsetStage:(RCTSurfaceStage)stage
+{
+  return [self _setStage:stage setOrUnset:NO];
+}
+
+- (BOOL)_setStage:(RCTSurfaceStage)stage setOrUnset:(BOOL)setOrUnset
 {
   RCTSurfaceStage updatedStage;
   {
     std::lock_guard<std::mutex> lock(_mutex);
 
-    if (_stage & stage) {
-      return;
+    if (setOrUnset) {
+      updatedStage = (RCTSurfaceStage)(_stage | stage);
+    } else {
+      updatedStage = (RCTSurfaceStage)(_stage & ~stage);
     }
 
-    updatedStage = (RCTSurfaceStage)(_stage | stage);
+    if (updatedStage == _stage) {
+      return NO;
+    }
+
     _stage = updatedStage;
   }
 
   [self _propagateStageChange:updatedStage];
+  return YES;
 }
 
 - (void)_propagateStageChange:(RCTSurfaceStage)stage
@@ -167,30 +184,14 @@
     _properties = [properties copy];
   }
 
-  [self _run];
-}
-
-#pragma mark - Running
-
-- (void)_run
-{
-  [_surfacePresenter registerSurface:self];
-  [self _setStage:RCTSurfaceStageSurfaceDidRun];
-}
-
-- (void)_stop
-{
-  [_surfacePresenter unregisterSurface:self];
-  [self _setStage:RCTSurfaceStageSurfaceDidStop];
+  [_surfacePresenter setProps:properties surface:self];
 }
 
 #pragma mark - Layout
 
-- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize
-                      maximumSize:(CGSize)maximumSize
+- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize
 {
-  // TODO: Not supported yet.
-  return CGSizeZero;
+  return [_surfacePresenter sizeThatFitsMinimumSize:minimumSize maximumSize:maximumSize surface:self];
 }
 
 #pragma mark - Size Constraints
@@ -200,13 +201,11 @@
   [self setMinimumSize:size maximumSize:size];
 }
 
-- (void)setMinimumSize:(CGSize)minimumSize
-           maximumSize:(CGSize)maximumSize
+- (void)setMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize
 {
   {
     std::lock_guard<std::mutex> lock(_mutex);
-    if (CGSizeEqualToSize(minimumSize, _minimumSize) &&
-        CGSizeEqualToSize(maximumSize, _maximumSize)) {
+    if (CGSizeEqualToSize(minimumSize, _minimumSize) && CGSizeEqualToSize(maximumSize, _maximumSize)) {
       return;
     }
 
@@ -214,7 +213,7 @@
     _minimumSize = minimumSize;
   }
 
-  // TODO: Not supported yet.
+  [_surfacePresenter setMinimumSize:minimumSize maximumSize:maximumSize surface:self];
 }
 
 - (CGSize)minimumSize
@@ -261,6 +260,22 @@
 {
   // TODO: Not supported yet.
   return NO;
+}
+
+#pragma mark - Deprecated
+
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+                    moduleName:(NSString *)moduleName
+             initialProperties:(NSDictionary *)initialProperties
+{
+  return [self initWithSurfacePresenter:bridge.surfacePresenter
+                             moduleName:moduleName
+                      initialProperties:initialProperties];
+}
+
+- (NSNumber *)rootViewTag
+{
+  return @(_rootTag);
 }
 
 @end

@@ -1,17 +1,18 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  */
 
 'use strict';
 
-var BatchedBridge = require('BatchedBridge');
-var Recording = require('NativeModules').Recording;
+const BatchedBridge = require('BatchedBridge');
+const Recording = require('NativeModules').Recording;
 
-var TestJSToJavaParametersModule = {
+const TestJSToJavaParametersModule = {
   returnBasicTypes: function() {
     Recording.receiveBasicTypes('foo', 3.14, true, null);
   },
@@ -49,9 +50,9 @@ var TestJSToJavaParametersModule = {
   },
   returnMapWithArrays: function() {
     Recording.receiveMap({
-      'empty': [],
-      'ints': [43, 44],
-      'mixed': [77, 'string', ['another', 'array']],
+      empty: [],
+      ints: [43, 44],
+      mixed: [77, 'string', ['another', 'array']],
     });
   },
   returnArrayWithStringDoubleIntMapArrayBooleanNull: function() {
@@ -65,7 +66,7 @@ var TestJSToJavaParametersModule = {
       int: -55,
       array: [],
       boolean: true,
-      null: null
+      null: null,
     });
   },
   returnArrayWithLargeInts: function() {
@@ -80,7 +81,7 @@ var TestJSToJavaParametersModule = {
       b: 41,
       c: 'string',
       d: 'other string',
-      e: [1,'foo','bar'],
+      e: [1, 'foo', 'bar'],
       f: null,
     });
   },
@@ -99,7 +100,8 @@ var TestJSToJavaParametersModule = {
       'two-bytes': '\u00A2',
       'three-bytes': '\u20AC',
       'four-bytes': '\uD83D\uDE1C',
-      'mixed': '\u017C\u00F3\u0142\u0107 g\u0119\u015Bl\u0105 \u6211 \uD83D\uDE0E ja\u017A\u0107'
+      mixed:
+        '\u017C\u00F3\u0142\u0107 g\u0119\u015Bl\u0105 \u6211 \uD83D\uDE0E ja\u017A\u0107',
     });
   },
   returnArrayWithMultibyteUTF8CharacterString: function() {
@@ -108,14 +110,14 @@ var TestJSToJavaParametersModule = {
       '\u00A2',
       '\u20AC',
       '\uD83D\uDE1C',
-      '\u017C\u00F3\u0142\u0107 g\u0119\u015Bl\u0105 \u6211 \uD83D\uDE0E ja\u017A\u0107'
+      '\u017C\u00F3\u0142\u0107 g\u0119\u015Bl\u0105 \u6211 \uD83D\uDE0E ja\u017A\u0107',
     ]);
   },
 };
 
 BatchedBridge.registerCallableModule(
   'TestJSToJavaParametersModule',
-  TestJSToJavaParametersModule
+  TestJSToJavaParametersModule,
 );
 
 module.exports = TestJSToJavaParametersModule;

@@ -1,185 +1,348 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @polyfill
+ * Regenerate through
+ *    `js1 upgrade babel-helpers` + manual tweaks
+ *
+ * Components used for this file;
+ *   - arrayWithHoles
+ *   - arrayWithoutHoles
+ *   - assertThisInitialized
+ *   - classCallCheck
+ *   - construct
+ *   - createClass
+ *   - defineProperty
+ *   - extends
+ *   - get
+ *   - getPrototypeOf
+ *   - inherits
+ *   - interopRequireDefault
+ *   - interopRequireWildcard
+ *   - iterableToArray
+ *   - iterableToArrayLimit
+ *   - nonIterableRest
+ *   - nonIterableSpread
+ *   - objectSpread
+ *   - objectWithoutProperties
+ *   - possibleConstructorReturn
+ *   - setPrototypeOf
+ *   - slicedToArray
+ *   - superPropBase
+ *   - taggedTemplateLiteral
+ *   - taggedTemplateLiteralLoose
+ *   - toArray
+ *   - toConsumableArray
+ *   - wrapNativeSuper
+ *
+ * @flow
+ * @generated (with babel 7.0.0-beta.47)
+ * @format
  * @nolint
+ * @polyfill
  */
 
-/* eslint-disable quotes, curly, no-proto, no-undef-init, dot-notation */
+/* eslint-disable no-func-assign, no-shadow, no-proto, no-void, no-undef-init */
 
-// Created by running:
-// require('fs').writeFileSync('babelExternalHelpers.js', require('@babel/core').buildExternalHelpers('_extends classCallCheck createClass createRawReactElement defineProperty get inherits  interopRequireDefault interopRequireWildcard objectWithoutProperties possibleConstructorReturn slicedToArray taggedTemplateLiteral toArray toConsumableArray wrapNativeSuper assertThisInitialized taggedTemplateLiteralLoose'.split(' ')))// then replacing the `global` reference in the last line to also use `this`.
-//
-// Actually, that's a lie, because babel omits _extends and
-// createRawReactElement. the file is also cleaned up a bit.
-// You may need to clear wrapNativeSuper while the bug hasn't been fixed yet.
-// Do try to keep diffs to a minimum.
+'use strict';
 
-var babelHelpers = global.babelHelpers = {};
+var babelHelpers = (global.babelHelpers = {});
 
-babelHelpers.createRawReactElement = (function () {
-  var REACT_ELEMENT_TYPE = typeof Symbol === "function" && Symbol.for && Symbol.for("react.element") || 0xeac7;
-  return function createRawReactElement(type, key, props) {
-    return {
-      $$typeof: REACT_ELEMENT_TYPE,
-      type: type,
-      key: key,
-      ref: null,
-      props: props,
-      _owner: null
-    };
-  };
-})();
+// ### classCallCheck ###
 
-babelHelpers.classCallCheck = function (instance, Constructor) {
+function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
-    throw new TypeError("Cannot call a class as a function");
+    throw new TypeError('Cannot call a class as a function');
   }
-};
+}
+
+babelHelpers.classCallCheck = _classCallCheck;
+
+// ### createClass ###
 
 function _defineProperties(target, props) {
   for (var i = 0; i < props.length; i++) {
     var descriptor = props[i];
     descriptor.enumerable = descriptor.enumerable || false;
     descriptor.configurable = true;
-    if ("value" in descriptor) descriptor.writable = true;
+    if ('value' in descriptor) {
+      descriptor.writable = true;
+    }
     Object.defineProperty(target, descriptor.key, descriptor);
   }
 }
 
-babelHelpers.createClass = function(Constructor, protoProps, staticProps) {
-  if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-  if (staticProps) _defineProperties(Constructor, staticProps);
+function _createClass(Constructor, protoProps, staticProps) {
+  if (protoProps) {
+    _defineProperties(Constructor.prototype, protoProps);
+  }
+  if (staticProps) {
+    _defineProperties(Constructor, staticProps);
+  }
   return Constructor;
-};
+}
 
-babelHelpers.defineProperty = function (obj, key, value) {
+babelHelpers.createClass = _createClass;
+
+// ### defineProperty ###
+
+function _defineProperty(obj, key, value) {
   if (key in obj) {
     Object.defineProperty(obj, key, {
       value: value,
       enumerable: true,
       configurable: true,
-      writable: true
+      writable: true,
     });
   } else {
     obj[key] = value;
   }
 
   return obj;
-};
+}
 
-babelHelpers._extends = babelHelpers.extends = Object.assign || function (target) {
-  for (var i = 1; i < arguments.length; i++) {
-    var source = arguments[i];
+babelHelpers.defineProperty = _defineProperty;
 
-    for (var key in source) {
-      if (Object.prototype.hasOwnProperty.call(source, key)) {
-        target[key] = source[key];
+// ### extends ###
+
+function _extends() {
+  babelHelpers.extends = _extends =
+    Object.assign ||
+    function(target) {
+      for (var i = 1; i < arguments.length; i++) {
+        var source = arguments[i];
+
+        for (var key in source) {
+          if (Object.prototype.hasOwnProperty.call(source, key)) {
+            target[key] = source[key];
+          }
+        }
       }
+
+      return target;
+    };
+
+  return _extends.apply(this, arguments);
+}
+
+babelHelpers.extends = _extends;
+
+// ### setPrototypeOf ###
+
+function _setPrototypeOf(o, p) {
+  babelHelpers.setPrototypeOf = _setPrototypeOf =
+    Object.setPrototypeOf ||
+    function _setPrototypeOf(o, p) {
+      o.__proto__ = p;
+      return o;
+    };
+
+  return _setPrototypeOf(o, p);
+}
+
+babelHelpers.setPrototypeOf = _setPrototypeOf;
+
+// ### superPropBase ###
+
+function _superPropBase(object, property) {
+  while (!Object.prototype.hasOwnProperty.call(object, property)) {
+    object = babelHelpers.getPrototypeOf(object);
+    if (object === null) {
+      break;
     }
   }
 
-  return target;
+  return object;
+}
+
+babelHelpers.superPropBase = _superPropBase;
+
+// ### get ###
+
+// FB:
+// TODO: prepack does not like Reflect (and we can use the fallback just fine)
+// function _get(target, property, receiver) {
+//   if (typeof Reflect !== 'undefined' && Reflect.get) {
+//     babelHelpers.get = _get = Reflect.get;
+//   } else {
+//     babelHelpers.get = _get = function _get(target, property, receiver) {
+//       var base = babelHelpers.superPropBase(target, property);
+//       if (!base) {
+//         return;
+//       }
+//       var desc = Object.getOwnPropertyDescriptor(base, property);
+//
+//       if (desc.get) {
+//         return desc.get.call(receiver);
+//       }
+//
+//       return desc.value;
+//     };
+//   }
+//
+//   return _get(target, property, receiver || target);
+// }
+//
+// babelHelpers.get = _get;
+
+babelHelpers.get = function _get(target, property, receiver = target) {
+  var base = babelHelpers.superPropBase(target, property);
+  if (!base) {
+    return;
+  }
+  var desc = Object.getOwnPropertyDescriptor(base, property);
+
+  if (desc.get) {
+    return desc.get.call(receiver);
+  }
+
+  return desc.value;
 };
 
-babelHelpers.get = function get(object, property, receiver) {
-  if (object === null) object = Function.prototype;
-  var desc = Object.getOwnPropertyDescriptor(object, property);
+// ### inherits ###
 
-  if (desc === undefined) {
-    var parent = Object.getPrototypeOf(object);
-
-    if (parent === null) {
-      return undefined;
-    } else {
-      return get(parent, property, receiver);
-    }
-  } else if ("value" in desc) {
-    return desc.value;
-  } else {
-    var getter = desc.get;
-
-    if (getter === undefined) {
-      return undefined;
-    }
-
-    return getter.call(receiver);
+function _inherits(subClass, superClass) {
+  if (typeof superClass !== 'function' && superClass !== null) {
+    throw new TypeError('Super expression must either be null or a function');
   }
-};
 
-babelHelpers.inherits = function (subClass, superClass) {
-  if (typeof superClass !== "function" && superClass !== null) {
-    throw new TypeError("Super expression must either be null or a function");
-  }
-  subClass.prototype = Object.create(superClass && superClass.prototype, {
-    constructor: {
-      value: subClass,
-      enumerable: false,
-      writable: true,
-      configurable: true
-    }
-  });
-  if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
-};
-
-var _gPO = Object.getPrototypeOf || function _gPO(o) { return o.__proto__ };
-var _sPO = Object.setPrototypeOf || function _sPO(o, p) { o.__proto__ = p; return o };
-var _construct =
-// TODO: prepack does not like this line (and we can use the fallback just fine)
-// (typeof Reflect === "object" && Reflect.construct) ||
-  function _construct(Parent, args, Class) {
-    var Constructor, a = [null];
-    a.push.apply(a, args);
-    Constructor = Parent.bind.apply(Parent, a);
-    return _sPO(new Constructor, Class.prototype);
-  };
-var _cache = typeof Map === "function" && new Map();
-babelHelpers.wrapNativeSuper = function(Class) {
-  // FB:
-  // Note: while extending native classes is pretty meh we do have cases, for
-  // example; Error. There is also a false positive, for example; Blob.
-
-  if (typeof Class !== "function") {
-    throw new TypeError("Super expression must either be null or a function");
-  }
-  if (typeof _cache !== "undefined") {
-    if (_cache.has(Class)) return _cache.get(Class);
-    _cache.set(Class, Wrapper);
-  }
-  function Wrapper() {
-    // this is a temporary fix for a babel bug (it's invoking the wrong func
-    // when you do `super()`)
-    return _construct(Class, arguments, _gPO(this).constructor);
-  }
-  Wrapper.prototype = Object.create(Class.prototype, {
-    constructor: {
-      value: Wrapper,
-      enumerable: false,
-      writeable: true,
-      configurable: true,
-    }
-  });
-  return _sPO(
-    Wrapper,
-    _sPO(
-      function Super() {
-        return _construct(Class, arguments, _gPO(this).constructor);
-      },
-      Class
-    )
+  babelHelpers.setPrototypeOf(
+    subClass.prototype,
+    superClass && superClass.prototype,
   );
-};
+  if (superClass) {
+    babelHelpers.setPrototypeOf(subClass, superClass);
+  }
+}
 
-babelHelpers.interopRequireDefault = function (obj) {
-  return obj && obj.__esModule ? obj : {
-    default: obj
+babelHelpers.inherits = _inherits;
+
+// ### construct ###
+
+function _construct(Parent, args, Class) {
+  // FB:
+  // TODO: prepack does not like this line (and we can use the fallback just fine)
+  // if (typeof Reflect !== 'undefined' && Reflect.construct) {
+  //   babelHelpers.construct = _construct = Reflect.construct;
+  // } else {
+  babelHelpers.construct = _construct = function _construct(
+    Parent,
+    args,
+    Class,
+  ) {
+    var a = [null];
+    a.push.apply(a, args);
+    var Constructor = Parent.bind.apply(Parent, a);
+    var instance = new Constructor();
+    if (Class) {
+      babelHelpers.setPrototypeOf(instance, Class.prototype);
+    }
+    return instance;
   };
-};
+  // }
 
-babelHelpers.interopRequireWildcard = function (obj) {
+  return _construct.apply(null, arguments);
+}
+
+babelHelpers.construct = _construct;
+
+// ### getPrototypeOf ###
+
+function _getPrototypeOf(o) {
+  babelHelpers.getPrototypeOf = _getPrototypeOf =
+    Object.getPrototypeOf ||
+    function _getPrototypeOf(o) {
+      return o.__proto__;
+    };
+
+  return _getPrototypeOf(o);
+}
+
+babelHelpers.getPrototypeOf = _getPrototypeOf;
+
+// ### assertThisInitialized ###
+
+function _assertThisInitialized(self) {
+  if (self === void 0) {
+    throw new ReferenceError(
+      "this hasn't been initialised - super() hasn't been called",
+    );
+  }
+
+  return self;
+}
+
+babelHelpers.assertThisInitialized = _assertThisInitialized;
+
+// ### wrapNativeSuper ###
+
+function _wrapNativeSuper(Class) {
+  var _cache = typeof Map === 'function' ? new Map() : undefined;
+
+  babelHelpers.wrapNativeSuper = _wrapNativeSuper = function _wrapNativeSuper(
+    Class,
+  ) {
+    if (typeof Class !== 'function') {
+      throw new TypeError('Super expression must either be null or a function');
+    }
+
+    if (typeof _cache !== 'undefined') {
+      if (_cache.has(Class)) {
+        return _cache.get(Class);
+      }
+
+      _cache.set(Class, Wrapper);
+    }
+
+    function Wrapper() {
+      // FB:
+      // this is a temporary fix for a babel bug (it's invoking the wrong func
+      // when you do `super()`)
+      return _construct(Class, arguments, _getPrototypeOf(this).constructor);
+    }
+
+    Wrapper.prototype = Object.create(Class.prototype, {
+      constructor: {
+        value: Wrapper,
+        enumerable: false,
+        writable: true,
+        configurable: true,
+      },
+    });
+    return babelHelpers.setPrototypeOf(
+      Wrapper,
+      babelHelpers.setPrototypeOf(function Super() {
+        return babelHelpers.construct(
+          Class,
+          arguments,
+          babelHelpers.getPrototypeOf(this).constructor,
+        );
+      }, Class),
+    );
+  };
+
+  return _wrapNativeSuper(Class);
+}
+
+babelHelpers.wrapNativeSuper = _wrapNativeSuper;
+
+// ### interopRequireDefault ###
+
+function _interopRequireDefault(obj) {
+  return obj && obj.__esModule
+    ? obj
+    : {
+        default: obj,
+      };
+}
+
+babelHelpers.interopRequireDefault = _interopRequireDefault;
+
+// ### interopRequireWildcard ###
+
+function _interopRequireWildcard(obj) {
   if (obj && obj.__esModule) {
     return obj;
   } else {
@@ -188,7 +351,10 @@ babelHelpers.interopRequireWildcard = function (obj) {
     if (obj != null) {
       for (var key in obj) {
         if (Object.prototype.hasOwnProperty.call(obj, key)) {
-          var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {};
+          var desc =
+            Object.defineProperty && Object.getOwnPropertyDescriptor
+              ? Object.getOwnPropertyDescriptor(obj, key)
+              : {};
 
           if (desc.get || desc.set) {
             Object.defineProperty(newObj, key, desc);
@@ -202,17 +368,25 @@ babelHelpers.interopRequireWildcard = function (obj) {
     newObj.default = obj;
     return newObj;
   }
-};
+}
 
-babelHelpers.objectWithoutProperties = function(source, excluded) {
-  if (source == null) return {};
+babelHelpers.interopRequireWildcard = _interopRequireWildcard;
+
+// ### objectWithoutProperties ###
+
+function _objectWithoutProperties(source, excluded) {
+  if (source == null) {
+    return {};
+  }
   var target = {};
   var sourceKeys = Object.keys(source);
   var key, i;
 
   for (i = 0; i < sourceKeys.length; i++) {
     key = sourceKeys[i];
-    if (excluded.indexOf(key) >= 0) continue;
+    if (excluded.indexOf(key) >= 0) {
+      continue;
+    }
     target[key] = source[key];
   }
 
@@ -221,96 +395,214 @@ babelHelpers.objectWithoutProperties = function(source, excluded) {
 
     for (i = 0; i < sourceSymbolKeys.length; i++) {
       key = sourceSymbolKeys[i];
-      if (excluded.indexOf(key) >= 0) continue;
-      if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
+      if (excluded.indexOf(key) >= 0) {
+        continue;
+      }
+      if (!Object.prototype.propertyIsEnumerable.call(source, key)) {
+        continue;
+      }
       target[key] = source[key];
     }
   }
 
   return target;
-};
+}
 
-babelHelpers.possibleConstructorReturn = function (self, call) {
-  if (call && (typeof call === "object" || typeof call === "function")) {
+babelHelpers.objectWithoutProperties = _objectWithoutProperties;
+
+// ### possibleConstructorReturn ###
+
+function _possibleConstructorReturn(self, call) {
+  if (call && (typeof call === 'object' || typeof call === 'function')) {
     return call;
   }
 
-  if (self === void 0) {
-    throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+  return babelHelpers.assertThisInitialized(self);
+}
+
+babelHelpers.possibleConstructorReturn = _possibleConstructorReturn;
+
+// ### arrayWithHoles ###
+
+function _arrayWithHoles(arr) {
+  if (Array.isArray(arr)) {
+    return arr;
   }
+}
 
-  return self;
-};
+babelHelpers.arrayWithHoles = _arrayWithHoles;
 
-function _sliceIterator(arr, i) {
+// ### arrayWithoutHoles ###
+
+function _arrayWithoutHoles(arr) {
+  if (Array.isArray(arr)) {
+    for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) {
+      arr2[i] = arr[i];
+    }
+
+    return arr2;
+  }
+}
+
+babelHelpers.arrayWithoutHoles = _arrayWithoutHoles;
+
+// ### iterableToArrayLimit ###
+
+function _iterableToArrayLimit(arr, i) {
   var _arr = [];
   var _n = true;
   var _d = false;
   var _e = undefined;
 
   try {
-    for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+    for (
+      var _i = arr[Symbol.iterator](), _s;
+      !(_n = (_s = _i.next()).done);
+      _n = true
+    ) {
       _arr.push(_s.value);
 
-      if (i && _arr.length === i) break;
+      if (i && _arr.length === i) {
+        break;
+      }
     }
   } catch (err) {
     _d = true;
     _e = err;
   } finally {
     try {
-      if (!_n && _i["return"] != null) _i["return"]();
+      if (!_n && _i.return != null) {
+        _i.return();
+      }
     } finally {
-      if (_d) throw _e;
+      if (_d) {
+        throw _e;
+      }
     }
   }
 
   return _arr;
 }
 
-babelHelpers.slicedToArray = function(arr, i) {
-  if (Array.isArray(arr)) {
-    return arr;
-  } else if (Symbol.iterator in Object(arr)) {
-    return _sliceIterator(arr, i);
-  } else {
-    throw new TypeError("Invalid attempt to destructure non-iterable instance");
-  }
-};
+babelHelpers.iterableToArrayLimit = _iterableToArrayLimit;
 
-babelHelpers.taggedTemplateLiteral = function (strings, raw) {
-  return Object.freeze(Object.defineProperties(strings, {
-    raw: {
-      value: Object.freeze(raw)
-    }
-  }));
-};
+// ### nonIterableRest ###
 
-babelHelpers.toArray = function (arr) {
-  return Array.isArray(arr) ? arr : Array.from(arr);
-};
+function _nonIterableRest() {
+  throw new TypeError('Invalid attempt to destructure non-iterable instance');
+}
 
-babelHelpers.toConsumableArray = function (arr) {
-  if (Array.isArray(arr)) {
-    for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];
+babelHelpers.nonIterableRest = _nonIterableRest;
 
-    return arr2;
-  } else {
-    return Array.from(arr);
-  }
-};
+// ### nonIterableSpread ###
 
-babelHelpers.assertThisInitialized = function(self) {
-  if (self === void 0) {
-    throw new ReferenceError(
-      "this hasn't been initialised - super() hasn't been called",
-    );
+function _nonIterableSpread() {
+  throw new TypeError('Invalid attempt to spread non-iterable instance');
+}
+
+babelHelpers.nonIterableSpread = _nonIterableSpread;
+
+// ### slicedToArray ###
+
+function _slicedToArray(arr, i) {
+  return (
+    babelHelpers.arrayWithHoles(arr) ||
+    babelHelpers.iterableToArrayLimit(arr, i) ||
+    babelHelpers.nonIterableRest()
+  );
+}
+
+babelHelpers.slicedToArray = _slicedToArray;
+
+// ### taggedTemplateLiteral ###
+
+function _taggedTemplateLiteral(strings, raw) {
+  if (!raw) {
+    raw = strings.slice(0);
   }
 
-  return self;
-};
+  return Object.freeze(
+    Object.defineProperties(strings, {
+      raw: {
+        value: Object.freeze(raw),
+      },
+    }),
+  );
+}
 
-babelHelpers.taggedTemplateLiteralLoose = function(strings, raw) {
+babelHelpers.taggedTemplateLiteral = _taggedTemplateLiteral;
+
+// ### toArray ###
+
+function _toArray(arr) {
+  return (
+    babelHelpers.arrayWithHoles(arr) ||
+    babelHelpers.iterableToArray(arr) ||
+    babelHelpers.nonIterableRest()
+  );
+}
+
+babelHelpers.toArray = _toArray;
+
+// ### toConsumableArray ###
+
+function _toConsumableArray(arr) {
+  return (
+    babelHelpers.arrayWithoutHoles(arr) ||
+    babelHelpers.iterableToArray(arr) ||
+    babelHelpers.nonIterableSpread()
+  );
+}
+
+babelHelpers.toConsumableArray = _toConsumableArray;
+
+// ### taggedTemplateLiteralLoose ###
+
+function _taggedTemplateLiteralLoose(strings, raw) {
+  if (!raw) {
+    raw = strings.slice(0);
+  }
+
   strings.raw = raw;
   return strings;
-};
+}
+
+babelHelpers.taggedTemplateLiteralLoose = _taggedTemplateLiteralLoose;
+
+// ### objectSpread ###
+
+function _objectSpread(target) {
+  for (var i = 1; i < arguments.length; i++) {
+    var source = arguments[i] != null ? arguments[i] : {};
+    var ownKeys = Object.keys(source);
+
+    if (typeof Object.getOwnPropertySymbols === 'function') {
+      ownKeys = ownKeys.concat(
+        Object.getOwnPropertySymbols(source).filter(function(sym) {
+          return Object.getOwnPropertyDescriptor(source, sym).enumerable;
+        }),
+      );
+    }
+
+    ownKeys.forEach(function(key) {
+      babelHelpers.defineProperty(target, key, source[key]);
+    });
+  }
+
+  return target;
+}
+
+babelHelpers.objectSpread = _objectSpread;
+
+// ### iterableToArray ###
+
+function _iterableToArray(iter) {
+  if (
+    Symbol.iterator in Object(iter) ||
+    Object.prototype.toString.call(iter) === '[object Arguments]'
+  ) {
+    return Array.from(iter);
+  }
+}
+
+babelHelpers.iterableToArray = _iterableToArray;

@@ -1,17 +1,19 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @format
+ * @flow strict
  */
+
 'use strict';
 
 // This is a stub for flow to make it understand require('./icon.png')
 // See metro/src/Bundler/index.js
 
-var AssetRegistry = require('AssetRegistry');
+const AssetRegistry = require('AssetRegistry');
 
 module.exports = AssetRegistry.registerAsset({
   __packager_asset: true,

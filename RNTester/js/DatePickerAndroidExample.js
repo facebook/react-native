@@ -1,28 +1,45 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  */
+
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   DatePickerAndroid,
   StyleSheet,
   Text,
   TouchableWithoutFeedback,
 } = ReactNative;
 
-var RNTesterBlock = require('./RNTesterBlock');
-var RNTesterPage = require('./RNTesterPage');
+const RNTesterBlock = require('./RNTesterBlock');
+const RNTesterPage = require('./RNTesterPage');
 
-class DatePickerAndroidExample extends React.Component {
-  static title = 'DatePickerAndroid';
-  static description = 'Standard Android date picker dialog';
+type Props = $ReadOnly<{||}>;
+type State = {|
+  presetDate: Date,
+  simpleDate: Date,
+  spinnerDate: Date,
+  calendarDate: Date,
+  defaultDate: Date,
+  allDate: Date,
+  simpleText: string,
+  spinnerText: string,
+  calendarText: string,
+  defaultText: string,
+  minText: string,
+  maxText: string,
+  presetText: string,
+  allText: string,
+|};
 
+class DatePickerAndroidExample extends React.Component<Props, State> {
   state = {
     presetDate: new Date(2020, 4, 5),
     simpleDate: new Date(2020, 4, 5),
@@ -42,12 +59,12 @@ class DatePickerAndroidExample extends React.Component {
 
   showPicker = async (stateKey, options) => {
     try {
-      var newState = {};
+      const newState = {};
       const {action, year, month, day} = await DatePickerAndroid.open(options);
       if (action === DatePickerAndroid.dismissedAction) {
         newState[stateKey + 'Text'] = 'dismissed';
       } else {
-        var date = new Date(year, month, day);
+        const date = new Date(year, month, day);
         newState[stateKey + 'Text'] = date.toLocaleDateString();
         newState[stateKey + 'Date'] = date;
       }
@@ -62,31 +79,44 @@ class DatePickerAndroidExample extends React.Component {
       <RNTesterPage title="DatePickerAndroid">
         <RNTesterBlock title="Simple date picker">
           <TouchableWithoutFeedback
-            onPress={this.showPicker.bind(this, 'simple', {date: this.state.simpleDate})}>
+            onPress={this.showPicker.bind(this, 'simple', {
+              date: this.state.simpleDate,
+            })}>
             <Text style={styles.text}>{this.state.simpleText}</Text>
           </TouchableWithoutFeedback>
         </RNTesterBlock>
         <RNTesterBlock title="Simple spinner date picker">
           <TouchableWithoutFeedback
-            onPress={this.showPicker.bind(this, 'spinner', {date: this.state.spinnerDate, mode: 'spinner'})}>
+            onPress={this.showPicker.bind(this, 'spinner', {
+              date: this.state.spinnerDate,
+              mode: 'spinner',
+            })}>
             <Text style={styles.text}>{this.state.spinnerText}</Text>
           </TouchableWithoutFeedback>
         </RNTesterBlock>
         <RNTesterBlock title="Simple calendar date picker">
           <TouchableWithoutFeedback
-            onPress={this.showPicker.bind(this, 'calendar', {date: this.state.calendarDate, mode: 'calendar'})}>
+            onPress={this.showPicker.bind(this, 'calendar', {
+              date: this.state.calendarDate,
+              mode: 'calendar',
+            })}>
             <Text style={styles.text}>{this.state.calendarText}</Text>
           </TouchableWithoutFeedback>
         </RNTesterBlock>
         <RNTesterBlock title="Simple default date picker">
           <TouchableWithoutFeedback
-            onPress={this.showPicker.bind(this, 'default', {date: this.state.defaultDate, mode: 'default'})}>
+            onPress={this.showPicker.bind(this, 'default', {
+              date: this.state.defaultDate,
+              mode: 'default',
+            })}>
             <Text style={styles.text}>{this.state.defaultText}</Text>
           </TouchableWithoutFeedback>
         </RNTesterBlock>
         <RNTesterBlock title="Date picker with pre-set date">
           <TouchableWithoutFeedback
-            onPress={this.showPicker.bind(this, 'preset', {date: this.state.presetDate})}>
+            onPress={this.showPicker.bind(this, 'preset', {
+              date: this.state.presetDate,
+            })}>
             <Text style={styles.text}>{this.state.presetText}</Text>
           </TouchableWithoutFeedback>
         </RNTesterBlock>
@@ -117,16 +147,25 @@ class DatePickerAndroidExample extends React.Component {
             })}>
             <Text style={styles.text}>{this.state.allText}</Text>
           </TouchableWithoutFeedback>
-          </RNTesterBlock>
+        </RNTesterBlock>
       </RNTesterPage>
     );
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   text: {
     color: 'black',
   },
 });
 
-module.exports = DatePickerAndroidExample;
+exports.title = 'DatePickerAndroid';
+exports.description = 'Standard Android date picker dialog';
+exports.examples = [
+  {
+    title: 'Simple date picker',
+    render: function(): React.Element<typeof DatePickerAndroidExample> {
+      return <DatePickerAndroidExample />;
+    },
+  },
+];

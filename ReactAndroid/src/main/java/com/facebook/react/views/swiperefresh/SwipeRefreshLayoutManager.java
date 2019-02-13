@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,14 +7,11 @@
 
 package com.facebook.react.views.swiperefresh;
 
-import javax.annotation.Nullable;
-
-import java.util.Map;
+import static com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager.REACT_CLASS;
 
 import android.graphics.Color;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
-
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
@@ -23,8 +20,9 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
-
-import static com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager.REACT_CLASS;
+import com.facebook.react.uimanager.events.EventDispatcher;
+import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * ViewManager for {@link ReactSwipeRefreshLayout} which allows the user to "pull to refresh" a
@@ -33,7 +31,7 @@ import static com.facebook.react.views.swiperefresh.SwipeRefreshLayoutManager.RE
 @ReactModule(name = REACT_CLASS)
 public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefreshLayout> {
 
-  protected static final String REACT_CLASS = "AndroidSwipeRefreshLayout";
+  public static final String REACT_CLASS = "AndroidSwipeRefreshLayout";
 
   @Override
   protected ReactSwipeRefreshLayout createViewInstance(ThemedReactContext reactContext) {

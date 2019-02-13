@@ -1,10 +1,12 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  */
+
 'use strict';
 
 /**
@@ -12,11 +14,9 @@
  * correctly dispatches to commonJS modules. The `testHook` is overriden by test
  * cases.
  */
-var MessageQueueTestModule = {
-  testHook1: function() {
-  },
-  testHook2: function() {
-  }
+const MessageQueueTestModule = {
+  testHook1: function() {},
+  testHook2: function() {},
 };
 
 module.exports = MessageQueueTestModule;

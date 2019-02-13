@@ -1,9 +1,10 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
 
@@ -20,11 +21,7 @@ const Touchable = require('Touchable');
 const UIManager = require('UIManager');
 const View = require('View');
 
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
-const emptyObject = require('fbjs/lib/emptyObject');
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 export type ReactRenderer = {
   getInspectorDataForViewTag: (viewTag: number) => Object,
@@ -37,36 +34,50 @@ const renderers = findRenderers();
 hook.resolveRNStyle = require('flattenStyle');
 
 function findRenderers(): $ReadOnlyArray<ReactRenderer> {
-  const allRenderers = Object.keys(hook._renderers).map(key => hook._renderers[key]);
-  invariant(allRenderers.length >= 1, 'Expected to find at least one React Native renderer on DevTools hook.');
+  const allRenderers = Object.keys(hook._renderers).map(
+    key => hook._renderers[key],
+  );
+  invariant(
+    allRenderers.length >= 1,
+    'Expected to find at least one React Native renderer on DevTools hook.',
+  );
   return allRenderers;
 }
 
 function getInspectorDataForViewTag(touchedViewTag: number) {
   for (let i = 0; i < renderers.length; i++) {
     const renderer = renderers[i];
-    const inspectorData = renderer.getInspectorDataForViewTag(touchedViewTag);
-    if (inspectorData.hierarchy.length > 0) {
-      return inspectorData;
+    if (
+      Object.prototype.hasOwnProperty.call(
+        renderer,
+        'getInspectorDataForViewTag',
+      )
+    ) {
+      const inspectorData = renderer.getInspectorDataForViewTag(touchedViewTag);
+      if (inspectorData.hierarchy.length > 0) {
+        return inspectorData;
+      }
     }
   }
   throw new Error('Expected to find at least one React renderer.');
 }
-
-class Inspector extends React.Component<{
-  inspectedViewTag: ?number,
-  onRequestRerenderApp: (callback: (tag: ?number) => void) => void
-}, {
-  devtoolsAgent: ?Object,
-  hierarchy: any,
-  panelPos: string,
-  inspecting: bool,
-  selection: ?number,
-  perfing: bool,
-  inspected: any,
-  inspectedViewTag: any,
-  networking: bool,
-}> {
+class Inspector extends React.Component<
+  {
+    inspectedViewTag: ?number,
+    onRequestRerenderApp: (callback: (tag: ?number) => void) => void,
+  },
+  {
+    devtoolsAgent: ?Object,
+    hierarchy: any,
+    panelPos: string,
+    inspecting: boolean,
+    selection: ?number,
+    perfing: boolean,
+    inspected: any,
+    inspectedViewTag: any,
+    networking: boolean,
+  },
+> {
   _subs: ?Array<() => void>;
 
   constructor(props: Object) {
@@ -107,9 +118,6 @@ class Inspector extends React.Component<{
   attachToDevtools = (agent: Object) => {
     let _hideWait = null;
     const hlSub = agent.sub('highlight', ({node, name, props}) => {
-      /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.63 was deployed. To see the error delete this
-       * comment and run Flow. */
       clearTimeout(_hideWait);
 
       if (typeof node !== 'number') {
@@ -122,7 +130,7 @@ class Inspector extends React.Component<{
           hierarchy: [],
           inspected: {
             frame: {left, top, width, height},
-            style: props ? props.style : emptyObject,
+            style: props ? props.style : {},
           },
         });
       });
@@ -149,15 +157,12 @@ class Inspector extends React.Component<{
     });
   };
 
-
   setSelection(i: number) {
     const hierarchyItem = this.state.hierarchy[i];
     // we pass in ReactNative.findNodeHandle as the method is injected
-    const {
-      measure,
-      props,
-      source,
-    } = hierarchyItem.getInspectorData(ReactNative.findNodeHandle);
+    const {measure, props, source} = hierarchyItem.getInspectorData(
+      ReactNative.findNodeHandle,
+    );
 
     measure((x, y, width, height, left, top) => {
       this.setState({
@@ -175,21 +180,23 @@ class Inspector extends React.Component<{
     // Most likely the touched instance is a native wrapper (like RCTView)
     // which is not very interesting. Most likely user wants a composite
     // instance that contains it (like View)
-    const {
-      hierarchy,
-      props,
-      selection,
-      source,
-    } = getInspectorDataForViewTag(touchedViewTag);
+    const {hierarchy, props, selection, source} = getInspectorDataForViewTag(
+      touchedViewTag,
+    );
 
     if (this.state.devtoolsAgent) {
       // Skip host leafs
       const offsetFromLeaf = hierarchy.length - 1 - selection;
-      this.state.devtoolsAgent.selectFromDOMNode(touchedViewTag, true, offsetFromLeaf);
+      this.state.devtoolsAgent.selectFromDOMNode(
+        touchedViewTag,
+        true,
+        offsetFromLeaf,
+      );
     }
 
     this.setState({
-      panelPos: pointerY > Dimensions.get('window').height / 2 ? 'top' : 'bottom',
+      panelPos:
+        pointerY > Dimensions.get('window').height / 2 ? 'top' : 'bottom',
       selection,
       hierarchy,
       inspected: {
@@ -200,7 +207,7 @@ class Inspector extends React.Component<{
     });
   }
 
-  setPerfing(val: bool) {
+  setPerfing(val: boolean) {
     this.setState({
       perfing: val,
       inspecting: false,
@@ -209,21 +216,21 @@ class Inspector extends React.Component<{
     });
   }
 
-  setInspecting(val: bool) {
+  setInspecting(val: boolean) {
     this.setState({
       inspecting: val,
-      inspected: null
+      inspected: null,
     });
   }
 
-  setTouchTargeting(val: bool) {
+  setTouchTargeting(val: boolean) {
     Touchable.TOUCH_TARGET_DEBUG = val;
-    this.props.onRequestRerenderApp((inspectedViewTag) => {
+    this.props.onRequestRerenderApp(inspectedViewTag => {
       this.setState({inspectedViewTag});
     });
   }
 
-  setNetworking(val: bool) {
+  setNetworking(val: boolean) {
     this.setState({
       networking: val,
       perfing: false,
@@ -233,17 +240,19 @@ class Inspector extends React.Component<{
   }
 
   render() {
-    const panelContainerStyle = (this.state.panelPos === 'bottom') ?
-      {bottom: 0} :
-      {top: Platform.OS === 'ios' ? 20 : 0};
+    const panelContainerStyle =
+      this.state.panelPos === 'bottom'
+        ? {bottom: 0}
+        : {top: Platform.OS === 'ios' ? 20 : 0};
     return (
       <View style={styles.container} pointerEvents="box-none">
-        {this.state.inspecting &&
+        {this.state.inspecting && (
           <InspectorOverlay
             inspected={this.state.inspected}
             inspectedViewTag={this.state.inspectedViewTag}
             onTouchViewTag={this.onTouchViewTag.bind(this)}
-          />}
+          />
+        )}
         <View style={[styles.panelContainer, panelContainerStyle]}>
           <InspectorPanel
             devtoolsIsOpen={!!this.state.devtoolsAgent}

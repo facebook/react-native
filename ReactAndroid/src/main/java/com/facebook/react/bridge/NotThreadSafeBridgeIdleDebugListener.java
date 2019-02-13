@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -28,4 +28,9 @@ public interface NotThreadSafeBridgeIdleDebugListener {
    * Called when the bridge was in an idle state and executes a JS call or callback.
    */
   void onTransitionToBridgeBusy();
+
+  /**
+   * Called when the bridge is destroyed
+   */
+  void onBridgeDestroyed();
 }

@@ -1,11 +1,13 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 const ReactNative = require('react-native');
@@ -13,11 +15,9 @@ const RNTesterActions = require('./RNTesterActions');
 // $FlowFixMe : This is a platform-forked component, and flow seems to only run on iOS?
 const RNTesterList = require('./RNTesterList');
 
-const {
-  Alert,
-} = ReactNative;
+const {Alert} = ReactNative;
 
-import type { RNTesterAction } from './RNTesterActions';
+import type {RNTesterAction} from './RNTesterActions';
 
 function PathActionMap(path: string): ?RNTesterAction {
   // Warning! Hacky parsing for example code. Use a library for this!

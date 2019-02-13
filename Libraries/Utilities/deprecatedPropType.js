@@ -1,11 +1,13 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @format
+ * @flow strict-local
  */
+
 'use strict';
 
 const UIManager = require('UIManager');
@@ -15,20 +17,20 @@ const UIManager = require('UIManager');
  */
 function deprecatedPropType(
   propType: ReactPropsCheckType,
-  explanation: string
+  explanation: string,
 ): ReactPropsCheckType {
   return function validate(props, propName, componentName, ...rest) {
     // Don't warn for native components.
-    if (!UIManager[componentName] && props[propName] !== undefined) {
-      console.warn(`\`${propName}\` supplied to \`${componentName}\` has been deprecated. ${explanation}`);
+    if (
+      !UIManager.getViewManagerConfig(componentName) &&
+      props[propName] !== undefined
+    ) {
+      console.warn(
+        `\`${propName}\` supplied to \`${componentName}\` has been deprecated. ${explanation}`,
+      );
     }
 
-    return propType(
-      props,
-      propName,
-      componentName,
-      ...rest
-    );
+    return propType(props, propName, componentName, ...rest);
   };
 }
 

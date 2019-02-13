@@ -1,20 +1,16 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @format
+ * @flow strict
  */
+
 'use strict';
 
-var PropTypes = require('prop-types');
-
-var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
-
-var PointPropType = createStrictShapeTypeChecker({
-  x: PropTypes.number,
-  y: PropTypes.number,
-});
-
-module.exports = PointPropType;
+export type PointProp = $ReadOnly<{
+  x: number,
+  y: number,
+}>;

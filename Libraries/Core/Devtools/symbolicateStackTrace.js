@@ -1,11 +1,13 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
 const getDevServer = require('getDevServer');
@@ -21,7 +23,9 @@ function isSourcedFromDisk(sourcePath: string): boolean {
   return !/^http/.test(sourcePath) && /[\\/]/.test(sourcePath);
 }
 
-async function symbolicateStackTrace(stack: Array<StackFrame>): Promise<Array<StackFrame>> {
+async function symbolicateStackTrace(
+  stack: Array<StackFrame>,
+): Promise<Array<StackFrame>> {
   // RN currently lazy loads whatwg-fetch using a custom fetch module, which,
   // when called for the first time, requires and re-exports 'whatwg-fetch'.
   // However, when a dependency of the project tries to require whatwg-fetch

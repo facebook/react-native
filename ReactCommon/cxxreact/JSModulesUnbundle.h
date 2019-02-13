@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -7,12 +10,11 @@
 #include <stdexcept>
 
 #include <folly/Conv.h>
-#include <jschelpers/noncopyable.h>
 
 namespace facebook {
 namespace react {
 
-class JSModulesUnbundle : noncopyable {
+class JSModulesUnbundle {
   /**
    * Represents the set of JavaScript modules that the application consists of.
    * The source code of each module can be retrieved by module ID.
@@ -31,8 +33,12 @@ public:
     std::string name;
     std::string code;
   };
+  JSModulesUnbundle() {}
   virtual ~JSModulesUnbundle() {}
   virtual Module getModule(uint32_t moduleId) const = 0;
+
+private:
+  JSModulesUnbundle(const JSModulesUnbundle&) = delete;
 };
 
 }

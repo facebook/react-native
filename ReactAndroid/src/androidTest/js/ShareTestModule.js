@@ -1,38 +1,36 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  */
 
 'use strict';
 
-var BatchedBridge = require('BatchedBridge');
-var React = require('React');
-var RecordingModule = require('NativeModules').ShareRecordingModule;
-var Share = require('Share');
-var View = require('View');
+const BatchedBridge = require('BatchedBridge');
+const React = require('React');
+const RecordingModule = require('NativeModules').ShareRecordingModule;
+const Share = require('Share');
+const View = require('View');
 
 class ShareTestApp extends React.Component {
   render() {
-    return (<View />);
+    return <View />;
   }
 }
 
-var ShareTestModule = {
+const ShareTestModule = {
   ShareTestApp: ShareTestApp,
   showShareDialog: function(content, options) {
     Share.share(content, options).then(
       () => RecordingModule.recordOpened(),
-      ({code, message}) => RecordingModule.recordError()
+      ({code, message}) => RecordingModule.recordError(),
     );
   },
 };
 
-BatchedBridge.registerCallableModule(
-  'ShareTestModule',
-  ShareTestModule
-);
+BatchedBridge.registerCallableModule('ShareTestModule', ShareTestModule);
 
 module.exports = ShareTestModule;

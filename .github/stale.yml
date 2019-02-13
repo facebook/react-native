@@ -1,12 +1,17 @@
+# Configuration for probot-stale - https://github.com/probot/stale
 # Number of days of inactivity before an issue becomes stale
-daysUntilStale: 180
+daysUntilStale: 90
 # Number of days of inactivity before a stale issue is closed
-daysUntilClose: 60
+daysUntilClose: 7
 # Issues with these labels will never be considered stale
 exemptLabels:
   - Good first issue
-  - For Discussion
-  - Core Team 
+  - "Type: Discussion"
+  - Partner
+  - Core Team
+  - "Help Wanted :octocat:"
+  - "Impact: Regression"
+  - "Resolution: PR Submitted"
 # Label to use when marking an issue as stale
 staleLabel: Stale 
 # Comment to post when marking an issue as stale. Set to `false` to disable

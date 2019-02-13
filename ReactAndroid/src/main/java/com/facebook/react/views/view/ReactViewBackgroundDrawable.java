@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -53,14 +53,13 @@ public class ReactViewBackgroundDrawable extends Drawable {
   // 0 == 0x00000000, all bits set to 0.
   private static final int ALL_BITS_UNSET = 0;
 
-
-  private static enum BorderStyle {
+  private enum BorderStyle {
     SOLID,
     DASHED,
     DOTTED;
 
-    public @Nullable PathEffect getPathEffect(float borderWidth) {
-      switch (this) {
+    public static @Nullable PathEffect getPathEffect(BorderStyle style, float borderWidth) {
+      switch (style) {
         case SOLID:
           return null;
 
@@ -958,7 +957,7 @@ public class ReactViewBackgroundDrawable extends Drawable {
    */
   private void updatePathEffect() {
     mPathEffectForBorderStyle = mBorderStyle != null
-        ? mBorderStyle.getPathEffect(getFullBorderWidth())
+        ? BorderStyle.getPathEffect(mBorderStyle, getFullBorderWidth())
         : null;
 
     mPaint.setPathEffect(mPathEffectForBorderStyle);

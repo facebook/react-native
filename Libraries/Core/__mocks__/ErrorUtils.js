@@ -1,8 +1,10 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
+ * @format
  */
 
 // This mock only provides short-circuited methods of applyWithGuard and guard.
@@ -19,7 +21,7 @@ function reportError(error) {
   throw error;
 }
 
-var ErrorUtils = {
+const ErrorUtils = {
   apply: jest.fn(execute),
   applyWithGuard: jest.fn(execute),
   guard: jest.fn(callback => callback),

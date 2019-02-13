@@ -4,7 +4,9 @@
 
 # libpthread is implicitly included in the android runtime so, when building
 # on an android platform, we don't do anything.
-prebuilt_cxx_library(
+load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+
+fb_native.prebuilt_cxx_library(
     name = "pthread",
     exported_platform_linker_flags = [
         (
@@ -26,7 +28,7 @@ prebuilt_cxx_library(
     ],
 )
 
-prebuilt_cxx_library(
+fb_native.prebuilt_cxx_library(
     name = "dl",
     exported_linker_flags = [
         "-ldl",
@@ -37,7 +39,7 @@ prebuilt_cxx_library(
     ],
 )
 
-prebuilt_cxx_library(
+fb_native.prebuilt_cxx_library(
     name = "m",
     exported_linker_flags = [
         "-lm",
@@ -48,7 +50,7 @@ prebuilt_cxx_library(
     ],
 )
 
-prebuilt_cxx_library(
+fb_native.prebuilt_cxx_library(
     name = "rt",
     exported_platform_linker_flags = [
         (

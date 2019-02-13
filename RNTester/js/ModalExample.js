@@ -1,16 +1,18 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @format
+ * @flow strict-local
  */
+
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Modal,
   Picker,
   Platform,
@@ -42,7 +44,7 @@ class Button extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   };
 
   render() {
-    var colorStyle = {
+    const colorStyle = {
       color: this.state.active ? '#fff' : '#000',
     };
     return (
@@ -52,7 +54,9 @@ class Button extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
         onShowUnderlay={this._onHighlight}
         style={[styles.button, this.props.style]}
         underlayColor="#a9d9d4">
-          <Text style={[styles.buttonText, colorStyle]}>{this.props.children}</Text>
+        <Text style={[styles.buttonText, colorStyle]}>
+          {this.props.children}
+        </Text>
       </TouchableHighlight>
     );
   }
@@ -77,11 +81,11 @@ class ModalExample extends React.Component<{}, $FlowFixMeState> {
     currentOrientation: 'unknown',
   };
 
-  _setModalVisible = (visible) => {
+  _setModalVisible = visible => {
     this.setState({modalVisible: visible});
   };
 
-  _setAnimationType = (type) => {
+  _setAnimationType = type => {
     this.setState({animationType: type});
   };
 
@@ -90,23 +94,28 @@ class ModalExample extends React.Component<{}, $FlowFixMeState> {
   };
 
   renderSwitch() {
-    if (Platform.isTVOS) {
+    if (Platform.isTV) {
       return null;
     }
     return (
-      <Switch value={this.state.transparent} onValueChange={this._toggleTransparent} />
+      <Switch
+        value={this.state.transparent}
+        onValueChange={this._toggleTransparent}
+      />
     );
   }
 
   render() {
-    var modalBackgroundStyle = {
-      backgroundColor: this.state.transparent ? 'rgba(0, 0, 0, 0.5)' : '#f5fcff',
+    const modalBackgroundStyle = {
+      backgroundColor: this.state.transparent
+        ? 'rgba(0, 0, 0, 0.5)'
+        : '#f5fcff',
     };
-    var innerContainerTransparentStyle = this.state.transparent
+    const innerContainerTransparentStyle = this.state.transparent
       ? {backgroundColor: '#fff', padding: 20}
       : null;
-    var activeButtonStyle = {
-      backgroundColor: '#ddd'
+    const activeButtonStyle = {
+      backgroundColor: '#ddd',
     };
 
     return (
@@ -117,13 +126,26 @@ class ModalExample extends React.Component<{}, $FlowFixMeState> {
           transparent={this.state.transparent}
           visible={this.state.modalVisible}
           onRequestClose={() => this._setModalVisible(false)}
-          supportedOrientations={supportedOrientationsPickerValues[this.state.selectedSupportedOrientation]}
-          onOrientationChange={evt => this.setState({currentOrientation: evt.nativeEvent.orientation})}
-          >
+          supportedOrientations={
+            supportedOrientationsPickerValues[
+              this.state.selectedSupportedOrientation
+            ]
+          }
+          onOrientationChange={evt =>
+            this.setState({currentOrientation: evt.nativeEvent.orientation})
+          }>
           <View style={[styles.container, modalBackgroundStyle]}>
-            <View style={[styles.innerContainer, innerContainerTransparentStyle]}>
-              <Text>This modal was presented {this.state.animationType === 'none' ? 'without' : 'with'} animation.</Text>
-              <Text>It is currently displayed in {this.state.currentOrientation} mode.</Text>
+            <View
+              style={[styles.innerContainer, innerContainerTransparentStyle]}>
+              <Text>
+                This modal was presented{' '}
+                {this.state.animationType === 'none' ? 'without' : 'with'}{' '}
+                animation.
+              </Text>
+              <Text>
+                It is currently displayed in {this.state.currentOrientation}{' '}
+                mode.
+              </Text>
               <Button
                 onPress={this._setModalVisible.bind(this, false)}
                 style={styles.modalButton}>
@@ -134,13 +156,25 @@ class ModalExample extends React.Component<{}, $FlowFixMeState> {
         </Modal>
         <View style={styles.row}>
           <Text style={styles.rowTitle}>Animation Type</Text>
-          <Button onPress={this._setAnimationType.bind(this, 'none')} style={this.state.animationType === 'none' ? activeButtonStyle : {}}>
+          <Button
+            onPress={this._setAnimationType.bind(this, 'none')}
+            style={
+              this.state.animationType === 'none' ? activeButtonStyle : {}
+            }>
             none
           </Button>
-          <Button onPress={this._setAnimationType.bind(this, 'slide')} style={this.state.animationType === 'slide' ? activeButtonStyle : {}}>
+          <Button
+            onPress={this._setAnimationType.bind(this, 'slide')}
+            style={
+              this.state.animationType === 'slide' ? activeButtonStyle : {}
+            }>
             slide
           </Button>
-          <Button onPress={this._setAnimationType.bind(this, 'fade')} style={this.state.animationType === 'fade' ? activeButtonStyle : {}}>
+          <Button
+            onPress={this._setAnimationType.bind(this, 'fade')}
+            style={
+              this.state.animationType === 'fade' ? activeButtonStyle : {}
+            }>
             fade
           </Button>
         </View>
@@ -157,7 +191,7 @@ class ModalExample extends React.Component<{}, $FlowFixMeState> {
     );
   }
   renderPickers() {
-    if (Platform.isTVOS) {
+    if (Platform.isTV) {
       return null;
     }
     return (
@@ -166,9 +200,10 @@ class ModalExample extends React.Component<{}, $FlowFixMeState> {
           <Text style={styles.rowTitle}>Presentation style</Text>
           <Picker
             selectedValue={this.state.presentationStyle}
-            onValueChange={(presentationStyle) => this.setState({presentationStyle})}
-            itemStyle={styles.pickerItem}
-          >
+            onValueChange={presentationStyle =>
+              this.setState({presentationStyle})
+            }
+            itemStyle={styles.pickerItem}>
             <Item label="Full Screen" value="fullScreen" />
             <Item label="Page Sheet" value="pageSheet" />
             <Item label="Form Sheet" value="formSheet" />
@@ -181,9 +216,10 @@ class ModalExample extends React.Component<{}, $FlowFixMeState> {
           <Text style={styles.rowTitle}>Supported orientations</Text>
           <Picker
             selectedValue={this.state.selectedSupportedOrientation}
-            onValueChange={(_, i) => this.setState({selectedSupportedOrientation: i})}
-            itemStyle={styles.pickerItem}
-            >
+            onValueChange={(_, i) =>
+              this.setState({selectedSupportedOrientation: i})
+            }
+            itemStyle={styles.pickerItem}>
             <Item label="Portrait" value={0} />
             <Item label="Landscape" value={1} />
             <Item label="Landscape left" value={2} />
@@ -197,7 +233,6 @@ class ModalExample extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-
 exports.examples = [
   {
     title: 'Modal Presentation',
@@ -206,7 +241,7 @@ exports.examples = [
   },
 ];
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',

@@ -1,11 +1,13 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @format
+ * @flow strict-local
  */
+
 'use strict';
 
 const React = require('react');
@@ -47,33 +49,25 @@ That is my proper element.
 --Faust, JW Goethe
 `;
 
-
 class XHRExampleBinaryUpload extends React.Component<{}, $FlowFixMeState> {
-
   static handlePostTestServerUpload(xhr: XMLHttpRequest) {
     if (xhr.status !== 200) {
       Alert.alert(
         'Upload failed',
-        'Expected HTTP 200 OK response, got ' + xhr.status
+        'Expected HTTP 200 OK response, got ' + xhr.status,
       );
       return;
     }
     if (!xhr.responseText) {
-      Alert.alert(
-        'Upload failed',
-        'No response payload.'
-      );
+      Alert.alert('Upload failed', 'No response payload.');
       return;
     }
-    var index = xhr.responseText.indexOf('http://www.posttestserver.com/');
+    const index = xhr.responseText.indexOf('http://www.posttestserver.com/');
     if (index === -1) {
-      Alert.alert(
-        'Upload failed',
-        'Invalid response payload.'
-      );
+      Alert.alert('Upload failed', 'Invalid response payload.');
       return;
     }
-    var url = xhr.responseText.slice(index).split('\n')[0];
+    const url = xhr.responseText.slice(index).split('\n')[0];
     console.log('Upload successful: ' + url);
     Linking.openURL(url);
   }
@@ -83,7 +77,7 @@ class XHRExampleBinaryUpload extends React.Component<{}, $FlowFixMeState> {
   };
 
   _upload = () => {
-    var xhr = new XMLHttpRequest();
+    const xhr = new XMLHttpRequest();
     xhr.open('POST', 'http://posttestserver.com/post.php');
     xhr.onload = () => XHRExampleBinaryUpload.handlePostTestServerUpload(xhr);
     xhr.setRequestHeader('Content-Type', 'text/plain');
@@ -117,8 +111,8 @@ class XHRExampleBinaryUpload extends React.Component<{}, $FlowFixMeState> {
         <Text>Upload 255 bytes as...</Text>
         <Picker
           selectedValue={this.state.type}
-          onValueChange={(type) => this.setState({type})}>
-          {Object.keys(BINARY_TYPES).map((type) => (
+          onValueChange={type => this.setState({type})}>
+          {Object.keys(BINARY_TYPES).map(type => (
             <Picker.Item key={type} label={type} value={type} />
           ))}
         </Picker>
@@ -132,7 +126,6 @@ class XHRExampleBinaryUpload extends React.Component<{}, $FlowFixMeState> {
       </View>
     );
   }
-
 }
 
 const styles = StyleSheet.create({

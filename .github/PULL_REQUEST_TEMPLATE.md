@@ -1,53 +1,15 @@
-Thank you for sending the PR! We appreciate you spending the time to work on these changes. 
-Help us understand your motivation by explaining why you decided to make this change.
+<!-- Thanks for submitting a pull request! We appreciate you spending the time to work on these changes. Please provide enough information so that others can review your pull request. The three fields below are mandatory. -->
 
-<!-- 
-  Required: Write your motivation here.
-  If this PR fixes an issue, type "Fixes #issueNumber" to automatically close the issue when the PR is merged.
--->
+## Summary
+
+<!-- Explain the **motivation** for making this change. What existing problem does the pull request solve? -->
+
+## Changelog
+
+<!-- Help reviewers and the release process by writing your own changelog entry. See http://facebook.github.io/react-native/docs/contributing#changelog for an example. -->
+
+[CATEGORY] [TYPE] - Message
 
 ## Test Plan
 
-<!-- 
-  Required: Write your test plan here. If you changed any code, please provide us with 
-  clear instructions on how you verified your changes work. Bonus points for screenshots and videos! 
--->
-
-## Related PRs
-
-<!-- 
-  Does this PR require a documentation change? 
-  Create a PR at https://github.com/facebook/react-native-website and add a link to it here.
--->
-
-## Release Notes
-
-<!-- 
-  Required. 
-  Help reviewers and the release process by writing your own release notes. See below for an example.
--->
-
-[CATEGORY] [TYPE] [LOCATION] - Message
-
-<!--
-  **INTERNAL and MINOR tagged notes will not be included in the next version's final release notes.**
-
-    CATEGORY
-  [----------]      TYPE
-  [ CLI      ] [-------------]    LOCATION
-  [ DOCS     ] [ BREAKING    ] [-------------]
-  [ GENERAL  ] [ BUGFIX      ] [ {Component} ]
-  [ INTERNAL ] [ ENHANCEMENT ] [ {Filename}  ]
-  [ IOS      ] [ FEATURE     ] [ {Directory} ]   |-----------|
-  [ ANDROID  ] [ MINOR       ] [ {Framework} ] - | {Message} |
-  [----------] [-------------] [-------------]   |-----------|
-
- EXAMPLES:
-
- [IOS] [BREAKING] [FlatList] - Change a thing that breaks other things
- [ANDROID] [BUGFIX] [TextInput] - Did a thing to TextInput
- [CLI] [FEATURE] [local-cli/info/info.js] - CLI easier to do things with
- [DOCS] [BUGFIX] [GettingStarted.md] - Accidentally a thing/word
- [GENERAL] [ENHANCEMENT] [Yoga] - Added new yoga thing/position
- [INTERNAL] [FEATURE] [./scripts] - Added thing to script that nobody will see
--->
+<!-- Demonstrate the code is solid. Example: The exact commands you ran and their output, screenshots / videos if the pull request changes UI. -->

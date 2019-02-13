@@ -1,9 +1,10 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @emails oncall+jsinfra
  */
 
@@ -23,12 +24,12 @@ describe('Object (ES7)', () => {
     });
 
     it('should check for type', () => {
-      expect(Object.entries.bind(null, null)).toThrow(TypeError(
-        'Object.entries called on non-object'
-      ));
-      expect(Object.entries.bind(null, undefined)).toThrow(TypeError(
-        'Object.entries called on non-object'
-      ));
+      expect(Object.entries.bind(null, null)).toThrow(
+        TypeError('Object.entries called on non-object'),
+      );
+      expect(Object.entries.bind(null, undefined)).toThrow(
+        TypeError('Object.entries called on non-object'),
+      );
       expect(Object.entries.bind(null, [])).not.toThrow();
       expect(Object.entries.bind(null, () => {})).not.toThrow();
       expect(Object.entries.bind(null, {})).not.toThrow();
@@ -36,10 +37,13 @@ describe('Object (ES7)', () => {
     });
 
     it('should return enumerable entries', () => {
-      const foo = Object.defineProperties({}, {
-        x: {value: 10, enumerable: true},
-        y: {value: 20},
-      });
+      const foo = Object.defineProperties(
+        {},
+        {
+          x: {value: 10, enumerable: true},
+          y: {value: 20},
+        },
+      );
 
       expect(Object.entries(foo)).toEqual([['x', 10]]);
 
@@ -57,10 +61,13 @@ describe('Object (ES7)', () => {
     });
 
     it('should return only own entries', () => {
-      const foo = Object.create({z: 30}, {
-        x: {value: 10, enumerable: true},
-        y: {value: 20},
-      });
+      const foo = Object.create(
+        {z: 30},
+        {
+          x: {value: 10, enumerable: true},
+          y: {value: 20},
+        },
+      );
 
       expect(Object.entries(foo)).toEqual([['x', 10]]);
     });
@@ -76,19 +83,22 @@ describe('Object (ES7)', () => {
     });
 
     it('should check for type', () => {
-      expect(Object.values.bind(null, null)).toThrow(TypeError(
-        'Object.values called on non-object'
-      ));
+      expect(Object.values.bind(null, null)).toThrow(
+        TypeError('Object.values called on non-object'),
+      );
       expect(Object.values.bind(null, [])).not.toThrow();
       expect(Object.values.bind(null, () => {})).not.toThrow();
       expect(Object.values.bind(null, {})).not.toThrow();
     });
 
     it('should return enumerable values', () => {
-      const foo = Object.defineProperties({}, {
-        x: {value: 10, enumerable: true},
-        y: {value: 20},
-      });
+      const foo = Object.defineProperties(
+        {},
+        {
+          x: {value: 10, enumerable: true},
+          y: {value: 20},
+        },
+      );
 
       expect(Object.values(foo)).toEqual([10]);
 
@@ -106,10 +116,13 @@ describe('Object (ES7)', () => {
     });
 
     it('should return only own values', () => {
-      const foo = Object.create({z: 30}, {
-        x: {value: 10, enumerable: true},
-        y: {value: 20},
-      });
+      const foo = Object.create(
+        {z: 30},
+        {
+          x: {value: 10, enumerable: true},
+          y: {value: 20},
+        },
+      );
 
       expect(Object.values(foo)).toEqual([10]);
     });

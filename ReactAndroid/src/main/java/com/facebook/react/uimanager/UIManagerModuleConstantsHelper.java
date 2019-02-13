@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,7 +10,7 @@ package com.facebook.react.uimanager;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 import com.facebook.react.common.MapBuilder;
-import com.facebook.systrace.Systrace;
+import com.facebook.react.config.ReactFeatureFlags;
 import com.facebook.systrace.SystraceMessage;
 import java.util.List;
 import java.util.Map;
@@ -28,14 +28,17 @@ import javax.annotation.Nullable;
   /**
    * Generates a lazy discovery enabled version of {@link UIManagerModule} constants. It only
    * contains a list of view manager names, so that JS side is aware of the managers there are.
-   * Actual ViewManager instantiation happens when {@code UIManager.SpecificViewManager} call happens.
-   * The View Manager is then registered on the JS side with the help of
-   * {@code UIManagerModule.getConstantsForViewManager}.
+   * Actual ViewManager instantiation happens when
+   * {@code UIManager.getViewManagerConfig('SpecificViewManager')} call happens. The View Manager is then
+   * registered on the JS side with the help of {@code UIManagerModule.getConstantsForViewManager}.
    */
   /* package */ static Map<String, Object> createConstants(
       UIManagerModule.ViewManagerResolver resolver) {
     Map<String, Object> constants = UIManagerModuleConstants.getConstants();
-    constants.put("ViewManagerNames", resolver.getViewManagerNames());
+    if (!ReactFeatureFlags.lazilyLoadViewManagers) {
+      constants.put("ViewManagerNames", resolver.getViewManagerNames());
+    }
+    constants.put("LazyViewManagersEnabled", true);
     return constants;
   }
 
@@ -99,7 +102,7 @@ import javax.annotation.Nullable;
           constants.put(viewManagerName, viewManagerConstants);
         }
       } finally {
-        Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+        SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
       }
     }
 
