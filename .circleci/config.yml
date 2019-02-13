@@ -276,9 +276,7 @@ defaults: &defaults
 js_defaults: &js_defaults
   <<: *defaults
   docker:
-    - image: circleci/node:8
-  environment:
-    - PATH: "/opt/yarn/yarn-v1.5.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+    - image: node:8
 
 android_defaults: &android_defaults
   <<: *defaults
