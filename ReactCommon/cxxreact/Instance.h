@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -55,6 +58,7 @@ public:
                          std::unique_ptr<const JSBigString> jsonValue);
   void *getJavaScriptContext();
   bool isInspectable();
+  bool isBatchActive();
   void callJSFunction(std::string &&module, std::string &&method,
                       folly::dynamic &&params);
   void callJSCallback(uint64_t callbackId, folly::dynamic &&params);

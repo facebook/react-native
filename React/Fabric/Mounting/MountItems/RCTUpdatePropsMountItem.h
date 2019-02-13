@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,7 +9,7 @@
 
 #import <React/RCTMountItemProtocol.h>
 #import <React/RCTPrimitives.h>
-#import <fabric/core/Props.h>
+#import <react/core/Props.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

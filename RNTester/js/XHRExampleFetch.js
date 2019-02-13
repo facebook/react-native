@@ -1,23 +1,18 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-  Platform,
-} = ReactNative;
-
+const React = require('react');
+const ReactNative = require('react-native');
+const {StyleSheet, Text, TextInput, View, Platform} = ReactNative;
 
 class XHRExampleFetch extends React.Component<any, any> {
   responseURL: ?string;
@@ -26,20 +21,22 @@ class XHRExampleFetch extends React.Component<any, any> {
   constructor(props: any) {
     super(props);
     this.state = {
-     responseText: null,
+      responseText: null,
     };
     this.responseURL = null;
     this.responseHeaders = null;
   }
 
-  submit(uri: String) {
-    fetch(uri).then((response) => {
-      this.responseURL = response.url;
-      this.responseHeaders = response.headers;
-      return response.text();
-    }).then((body) => {
-      this.setState({responseText: body});
-    });
+  submit(uri: string) {
+    fetch(uri)
+      .then(response => {
+        this.responseURL = response.url;
+        this.responseHeaders = response.headers;
+        return response.text();
+      })
+      .then(body => {
+        this.setState({responseText: body});
+      });
   }
 
   _renderHeaders() {
@@ -47,33 +44,36 @@ class XHRExampleFetch extends React.Component<any, any> {
       return null;
     }
 
-    var responseHeaders = [];
-    var keys = Object.keys(this.responseHeaders.map);
-    for (var i = 0; i < keys.length; i++) {
-      var key = keys[i];
-      var value = this.responseHeaders.get(key);
-      responseHeaders.push(<Text>{key}: {value}</Text>);
+    const responseHeaders = [];
+    const keys = Object.keys(this.responseHeaders.map);
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      const value = this.responseHeaders.get(key);
+      responseHeaders.push(
+        <Text>
+          {key}: {value}
+        </Text>,
+      );
     }
     return responseHeaders;
   }
 
   render() {
-
-    var responseURL = this.responseURL ? (
+    const responseURL = this.responseURL ? (
       <View style={{marginTop: 10}}>
         <Text style={styles.label}>Server response URL:</Text>
         <Text>{this.responseURL}</Text>
       </View>
     ) : null;
 
-    var responseHeaders = this.responseHeaders ? (
+    const responseHeaders = this.responseHeaders ? (
       <View style={{marginTop: 10}}>
         <Text style={styles.label}>Server response headers:</Text>
         {this._renderHeaders()}
       </View>
     ) : null;
 
-    var response = this.state.responseText ? (
+    const response = this.state.responseText ? (
       <View style={{marginTop: 10}}>
         <Text style={styles.label}>Server response:</Text>
         <TextInput
@@ -91,7 +91,7 @@ class XHRExampleFetch extends React.Component<any, any> {
         <TextInput
           returnKeyType="go"
           defaultValue="http://www.posttestserver.com/post.php"
-          onSubmitEditing={(event)=> {
+          onSubmitEditing={event => {
             this.submit(event.nativeEvent.text);
           }}
           style={styles.textInput}
@@ -104,7 +104,7 @@ class XHRExampleFetch extends React.Component<any, any> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   textInput: {
     flex: 1,
     borderRadius: 3,

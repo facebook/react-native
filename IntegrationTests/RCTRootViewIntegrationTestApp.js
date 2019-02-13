@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,12 +9,10 @@
 
 'use strict';
 
-require('regenerator-runtime/runtime');
+const React = require('react');
+const ReactNative = require('react-native');
 
-var React = require('react');
-var ReactNative = require('react-native');
-
-var {
+const {
   AppRegistry,
   ScrollView,
   StyleSheet,
@@ -24,7 +22,7 @@ var {
 } = ReactNative;
 
 /* Keep this list in sync with RCTRootViewIntegrationTests.m */
-var TESTS = [
+const TESTS = [
   require('./PropertiesUpdateTest'),
   require('./ReactContentSizeUpdateTest'),
   require('./SizeFlexibilityUpdateTest'),
@@ -70,7 +68,7 @@ class RCTRootViewIntegrationTestApp extends React.Component {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
     marginTop: 40,

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -22,8 +22,8 @@ import type {PackagerAsset} from 'AssetRegistry';
 const PixelRatio = require('PixelRatio');
 const Platform = require('Platform');
 
-const assetPathUtils = require('../../local-cli/bundle/assetPathUtils');
-const invariant = require('fbjs/lib/invariant');
+const assetPathUtils = require('./assetPathUtils');
+const invariant = require('invariant');
 
 /**
  * Returns a path like 'assets/AwesomeModule/icon@2x.png'

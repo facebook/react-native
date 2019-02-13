@@ -1,28 +1,26 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @format
+ * @flow strict-local
  */
+
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
-  StyleSheet,
-  Text,
-  View,
-} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {StyleSheet, Text, View} = ReactNative;
 
-var RNTesterBlock = require('./RNTesterBlock');
-var RNTesterPage = require('./RNTesterPage');
+const RNTesterBlock = require('./RNTesterBlock');
+const RNTesterPage = require('./RNTesterPage');
 
 class Circle extends React.Component<$FlowFixMeProps> {
   render() {
-    var size = this.props.size || 20;
-    var backgroundColor = this.props.bgColor || '#527fe4';
+    const size = this.props.size || 20;
+    const backgroundColor = this.props.bgColor || '#527fe4';
     return (
       <View
         style={{
@@ -39,7 +37,7 @@ class Circle extends React.Component<$FlowFixMeProps> {
 
 class CircleBlock extends React.Component<$FlowFixMeProps> {
   render() {
-    var circleStyle = {
+    const circleStyle = {
       flexDirection: 'row',
       backgroundColor: '#f6f7f8',
       borderWidth: 0.5,
@@ -47,25 +45,19 @@ class CircleBlock extends React.Component<$FlowFixMeProps> {
       marginBottom: 2,
     };
     return (
-      <View style={[circleStyle, this.props.style]}>
-        {this.props.children}
-      </View>
+      <View style={[circleStyle, this.props.style]}>{this.props.children}</View>
     );
   }
 }
 
 class LayoutExample extends React.Component<$FlowFixMeProps> {
-  static title = 'Layout - Flexbox';
-  static description = 'Examples of using the flexbox API to layout views.';
-  static displayName = 'LayoutExample';
-
   render() {
-    var fiveColoredCircles = [
+    const fiveColoredCircles = [
       <Circle bgColor="#527fe4" key="blue" />,
       <Circle bgColor="#D443E3" key="violet" />,
       <Circle bgColor="#FF9049" key="orange" />,
       <Circle bgColor="#FFE649" key="yellow" />,
-      <Circle bgColor="#7FE040" key="green" />
+      <Circle bgColor="#7FE040" key="green" />,
     ];
 
     return (
@@ -87,7 +79,11 @@ class LayoutExample extends React.Component<$FlowFixMeProps> {
           <CircleBlock style={{flexDirection: 'column-reverse'}}>
             {fiveColoredCircles}
           </CircleBlock>
-          <View style={[styles.overlay, {position: 'absolute', top: 15, left: 160}]}>
+          <View
+            style={[
+              styles.overlay,
+              {position: 'absolute', top: 15, left: 160},
+            ]}>
             <Text>{'top: 15, left: 160'}</Text>
           </View>
         </RNTesterBlock>
@@ -117,30 +113,63 @@ class LayoutExample extends React.Component<$FlowFixMeProps> {
         <RNTesterBlock title="Align Items - Other Direction">
           <Text>flex-start</Text>
           <CircleBlock style={{alignItems: 'flex-start', height: 30}}>
-            <Circle size={15} /><Circle size={10} /><Circle size={20} />
-            <Circle size={17} /><Circle size={12} /><Circle size={15} />
-            <Circle size={10} /><Circle size={20} /><Circle size={17} />
-            <Circle size={12} /><Circle size={15} /><Circle size={10} />
-            <Circle size={20} /><Circle size={17} /><Circle size={12} />
-            <Circle size={15} /><Circle size={8} />
+            <Circle size={15} />
+            <Circle size={10} />
+            <Circle size={20} />
+            <Circle size={17} />
+            <Circle size={12} />
+            <Circle size={15} />
+            <Circle size={10} />
+            <Circle size={20} />
+            <Circle size={17} />
+            <Circle size={12} />
+            <Circle size={15} />
+            <Circle size={10} />
+            <Circle size={20} />
+            <Circle size={17} />
+            <Circle size={12} />
+            <Circle size={15} />
+            <Circle size={8} />
           </CircleBlock>
           <Text>center</Text>
           <CircleBlock style={{alignItems: 'center', height: 30}}>
-            <Circle size={15} /><Circle size={10} /><Circle size={20} />
-            <Circle size={17} /><Circle size={12} /><Circle size={15} />
-            <Circle size={10} /><Circle size={20} /><Circle size={17} />
-            <Circle size={12} /><Circle size={15} /><Circle size={10} />
-            <Circle size={20} /><Circle size={17} /><Circle size={12} />
-            <Circle size={15} /><Circle size={8} />
+            <Circle size={15} />
+            <Circle size={10} />
+            <Circle size={20} />
+            <Circle size={17} />
+            <Circle size={12} />
+            <Circle size={15} />
+            <Circle size={10} />
+            <Circle size={20} />
+            <Circle size={17} />
+            <Circle size={12} />
+            <Circle size={15} />
+            <Circle size={10} />
+            <Circle size={20} />
+            <Circle size={17} />
+            <Circle size={12} />
+            <Circle size={15} />
+            <Circle size={8} />
           </CircleBlock>
           <Text>flex-end</Text>
           <CircleBlock style={{alignItems: 'flex-end', height: 30}}>
-            <Circle size={15} /><Circle size={10} /><Circle size={20} />
-            <Circle size={17} /><Circle size={12} /><Circle size={15} />
-            <Circle size={10} /><Circle size={20} /><Circle size={17} />
-            <Circle size={12} /><Circle size={15} /><Circle size={10} />
-            <Circle size={20} /><Circle size={17} /><Circle size={12} />
-            <Circle size={15} /><Circle size={8} />
+            <Circle size={15} />
+            <Circle size={10} />
+            <Circle size={20} />
+            <Circle size={17} />
+            <Circle size={12} />
+            <Circle size={15} />
+            <Circle size={10} />
+            <Circle size={20} />
+            <Circle size={17} />
+            <Circle size={12} />
+            <Circle size={15} />
+            <Circle size={10} />
+            <Circle size={20} />
+            <Circle size={17} />
+            <Circle size={12} />
+            <Circle size={15} />
+            <Circle size={8} />
           </CircleBlock>
         </RNTesterBlock>
         <RNTesterBlock title="Flex Wrap">
@@ -153,7 +182,7 @@ class LayoutExample extends React.Component<$FlowFixMeProps> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   overlay: {
     backgroundColor: '#aaccff',
     borderRadius: 10,
@@ -163,4 +192,14 @@ var styles = StyleSheet.create({
   },
 });
 
-module.exports = LayoutExample;
+exports.title = 'Layout - Flexbox';
+exports.description = 'Examples of using the flexbox API to layout views.';
+exports.displayName = 'LayoutExample';
+exports.examples = [
+  {
+    title: 'Simple layout using flexbox',
+    render: function(): React.Element<typeof LayoutExample> {
+      return <LayoutExample />;
+    },
+  },
+];

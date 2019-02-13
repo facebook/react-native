@@ -1,17 +1,19 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
-  AlertIOS,
+const React = require('react');
+const ReactNative = require('react-native');
+const {
+  Alert,
   PushNotificationIOS,
   StyleSheet,
   Text,
@@ -26,9 +28,7 @@ class Button extends React.Component<$FlowFixMeProps> {
         underlayColor={'white'}
         style={styles.button}
         onPress={this.props.onPress}>
-        <Text style={styles.buttonLabel}>
-          {this.props.label}
-        </Text>
+        <Text style={styles.buttonLabel}>{this.props.label}</Text>
       </TouchableHighlight>
     );
   }
@@ -37,18 +37,36 @@ class Button extends React.Component<$FlowFixMeProps> {
 class NotificationExample extends React.Component<{}> {
   UNSAFE_componentWillMount() {
     PushNotificationIOS.addEventListener('register', this._onRegistered);
-    PushNotificationIOS.addEventListener('registrationError', this._onRegistrationError);
-    PushNotificationIOS.addEventListener('notification', this._onRemoteNotification);
-    PushNotificationIOS.addEventListener('localNotification', this._onLocalNotification);
+    PushNotificationIOS.addEventListener(
+      'registrationError',
+      this._onRegistrationError,
+    );
+    PushNotificationIOS.addEventListener(
+      'notification',
+      this._onRemoteNotification,
+    );
+    PushNotificationIOS.addEventListener(
+      'localNotification',
+      this._onLocalNotification,
+    );
 
     PushNotificationIOS.requestPermissions();
   }
 
   componentWillUnmount() {
     PushNotificationIOS.removeEventListener('register', this._onRegistered);
-    PushNotificationIOS.removeEventListener('registrationError', this._onRegistrationError);
-    PushNotificationIOS.removeEventListener('notification', this._onRemoteNotification);
-    PushNotificationIOS.removeEventListener('localNotification', this._onLocalNotification);
+    PushNotificationIOS.removeEventListener(
+      'registrationError',
+      this._onRegistrationError,
+    );
+    PushNotificationIOS.removeEventListener(
+      'notification',
+      this._onRemoteNotification,
+    );
+    PushNotificationIOS.removeEventListener(
+      'localNotification',
+      this._onLocalNotification,
+    );
   }
 
   render() {
@@ -86,30 +104,30 @@ class NotificationExample extends React.Component<{}> {
         alert: 'Sample local notification',
         badge: '+1',
         sound: 'default',
-        category: 'REACT_NATIVE'
+        category: 'REACT_NATIVE',
       },
     });
   }
 
   _onRegistered(deviceToken) {
-    AlertIOS.alert(
-      'Registered For Remote Push',
-      `Device Token: ${deviceToken}`,
-      [{
+    Alert.alert('Registered For Remote Push', `Device Token: ${deviceToken}`, [
+      {
         text: 'Dismiss',
         onPress: null,
-      }]
-    );
+      },
+    ]);
   }
 
   _onRegistrationError(error) {
-    AlertIOS.alert(
+    Alert.alert(
       'Failed To Register For Remote Push',
       `Error (${error.code}): ${error.message}`,
-      [{
-        text: 'Dismiss',
-        onPress: null,
-      }]
+      [
+        {
+          text: 'Dismiss',
+          onPress: null,
+        },
+      ],
     );
   }
 
@@ -120,29 +138,32 @@ class NotificationExample extends React.Component<{}> {
       category: ${notification.getCategory()};\n
       content-available: ${notification.getContentAvailable()}.`;
 
-    AlertIOS.alert(
-      'Push Notification Received',
-      result,
-      [{
+    Alert.alert('Push Notification Received', result, [
+      {
         text: 'Dismiss',
         onPress: null,
-      }]
-    );
+      },
+    ]);
   }
 
-  _onLocalNotification(notification){
-    AlertIOS.alert(
+  _onLocalNotification(notification) {
+    Alert.alert(
       'Local Notification Received',
       'Alert message: ' + notification.getMessage(),
-      [{
-        text: 'Dismiss',
-        onPress: null,
-      }]
+      [
+        {
+          text: 'Dismiss',
+          onPress: null,
+        },
+      ],
     );
   }
 }
 
-class NotificationPermissionExample extends React.Component<$FlowFixMeProps, any> {
+class NotificationPermissionExample extends React.Component<
+  $FlowFixMeProps,
+  any,
+> {
   constructor(props) {
     super(props);
     this.state = {permissions: null};
@@ -155,21 +176,19 @@ class NotificationPermissionExample extends React.Component<$FlowFixMeProps, any
           onPress={this._showPermissions.bind(this)}
           label="Show enabled permissions"
         />
-        <Text>
-          {JSON.stringify(this.state.permissions)}
-        </Text>
+        <Text>{JSON.stringify(this.state.permissions)}</Text>
       </View>
     );
   }
 
   _showPermissions() {
-    PushNotificationIOS.checkPermissions((permissions) => {
+    PushNotificationIOS.checkPermissions(permissions => {
       this.setState({permissions});
     });
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   button: {
     padding: 10,
     alignItems: 'center',
@@ -183,32 +202,35 @@ var styles = StyleSheet.create({
 exports.title = 'PushNotificationIOS';
 exports.description = 'Apple PushNotification and badge value';
 exports.examples = [
-{
-  title: 'Badge Number',
-  render(): React.Element<any> {
-    return (
-      <View>
-        <Button
-          onPress={() => PushNotificationIOS.setApplicationIconBadgeNumber(42)}
-          label="Set app's icon badge to 42"
-        />
-        <Button
-          onPress={() => PushNotificationIOS.setApplicationIconBadgeNumber(0)}
-          label="Clear app's icon badge"
-        />
-      </View>
-    );
+  {
+    title: 'Badge Number',
+    render(): React.Element<any> {
+      return (
+        <View>
+          <Button
+            onPress={() =>
+              PushNotificationIOS.setApplicationIconBadgeNumber(42)
+            }
+            label="Set app's icon badge to 42"
+          />
+          <Button
+            onPress={() => PushNotificationIOS.setApplicationIconBadgeNumber(0)}
+            label="Clear app's icon badge"
+          />
+        </View>
+      );
+    },
   },
-},
-{
-  title: 'Push Notifications',
-  render(): React.Element<any> {
-    return <NotificationExample />;
-  }
-},
-{
-  title: 'Notifications Permissions',
-  render(): React.Element<any> {
-    return <NotificationPermissionExample />;
-  }
-}];
+  {
+    title: 'Push Notifications',
+    render(): React.Element<any> {
+      return <NotificationExample />;
+    },
+  },
+  {
+    title: 'Notifications Permissions',
+    render(): React.Element<any> {
+      return <NotificationPermissionExample />;
+    },
+  },
+];

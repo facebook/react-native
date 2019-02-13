@@ -1,24 +1,20 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @noflow
  */
+
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  View,
-} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {StyleSheet, Text, TouchableHighlight, View} = ReactNative;
 
 class XHRExampleHeaders extends React.Component {
-
   xhr: XMLHttpRequest;
   cancelled: boolean;
 
@@ -36,7 +32,7 @@ class XHRExampleHeaders extends React.Component {
   download() {
     this.xhr && this.xhr.abort();
 
-    var xhr = this.xhr || new XMLHttpRequest();
+    const xhr = this.xhr || new XMLHttpRequest();
     xhr.onreadystatechange = () => {
       if (xhr.readyState === xhr.DONE) {
         if (this.cancelled) {
@@ -46,11 +42,15 @@ class XHRExampleHeaders extends React.Component {
         if (xhr.status === 200) {
           this.setState({
             status: 'Download complete!',
-            headers: xhr.getAllResponseHeaders()
+            headers: xhr.getAllResponseHeaders(),
           });
         } else if (xhr.status !== 0) {
           this.setState({
-            status: 'Error: Server returned HTTP status of ' + xhr.status + ' ' + xhr.responseText,
+            status:
+              'Error: Server returned HTTP status of ' +
+              xhr.status +
+              ' ' +
+              xhr.responseText,
           });
         } else {
           this.setState({
@@ -59,7 +59,10 @@ class XHRExampleHeaders extends React.Component {
         }
       }
     };
-    xhr.open('GET', 'https://httpbin.org/response-headers?header1=value&header2=value1&header2=value2');
+    xhr.open(
+      'GET',
+      'https://httpbin.org/response-headers?header1=value&header2=value1&header2=value2',
+    );
     xhr.send();
     this.xhr = xhr;
 
@@ -72,21 +75,22 @@ class XHRExampleHeaders extends React.Component {
   }
 
   render() {
-    var button = this.state.status === 'Downloading...' ? (
-      <View style={styles.wrapper}>
-        <View style={styles.button}>
-          <Text>...</Text>
+    const button =
+      this.state.status === 'Downloading...' ? (
+        <View style={styles.wrapper}>
+          <View style={styles.button}>
+            <Text>...</Text>
+          </View>
         </View>
-      </View>
-    ) : (
-      <TouchableHighlight
-        style={styles.wrapper}
-        onPress={this.download.bind(this)}>
-        <View style={styles.button}>
-         <Text>Get headers</Text>
-        </View>
-      </TouchableHighlight>
-    );
+      ) : (
+        <TouchableHighlight
+          style={styles.wrapper}
+          onPress={this.download.bind(this)}>
+          <View style={styles.button}>
+            <Text>Get headers</Text>
+          </View>
+        </TouchableHighlight>
+      );
 
     return (
       <View>
@@ -97,7 +101,7 @@ class XHRExampleHeaders extends React.Component {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   wrapper: {
     borderRadius: 5,
     marginBottom: 5,

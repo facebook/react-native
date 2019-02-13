@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,9 +10,10 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+require('InitializeCore');
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   AppRegistry,
   ScrollView,
   StyleSheet,
@@ -22,7 +23,7 @@ var {
 } = ReactNative;
 
 // Keep this list in sync with RNTesterIntegrationTests.m
-var TESTS = [
+const TESTS = [
   require('./IntegrationTestHarnessTest'),
   require('./TimersTest'),
   require('./AsyncStorageTest'),
@@ -89,7 +90,7 @@ class IntegrationTestsApp extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
     marginTop: 40,

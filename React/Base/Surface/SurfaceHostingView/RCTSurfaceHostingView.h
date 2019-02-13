@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,7 +14,7 @@
 @class RCTBridge;
 @class RCTSurface;
 
-typedef UIView *(^RCTSurfaceHostingViewActivityIndicatorViewFactory)();
+typedef UIView *_Nullable(^RCTSurfaceHostingViewActivityIndicatorViewFactory)(void);
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,6 +25,13 @@ NS_ASSUME_NONNULL_BEGIN
  * of ReactNative-powered experiences in UIKit based apps.
  */
 @interface RCTSurfaceHostingView : UIView <RCTSurfaceDelegate>
+
+/**
+ * Create an instance of RCTSurface to be hosted.
+ */
++ (RCTSurface *)createSurfaceWithBridge:(RCTBridge *)bridge
+                             moduleName:(NSString *)moduleName
+                      initialProperties:(NSDictionary *)initialProperties;
 
 /**
  * Designated initializer.
@@ -43,13 +50,6 @@ NS_ASSUME_NONNULL_BEGIN
                     moduleName:(NSString *)moduleName
              initialProperties:(NSDictionary *)initialProperties
                sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode;
-
-/**
- * Create an instance of RCTSurface to be hosted.
- */
-- (RCTSurface *)createSurfaceWithBridge:(RCTBridge *)bridge
-                             moduleName:(NSString *)moduleName
-                      initialProperties:(NSDictionary *)initialProperties;
 
 /**
  * Surface object which is currently using to power the view.

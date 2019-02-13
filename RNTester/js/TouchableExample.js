@@ -1,16 +1,18 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  * @flow
  */
+
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   Animated,
   Image,
   StyleSheet,
@@ -19,120 +21,103 @@ var {
   TouchableOpacity,
   Platform,
   TouchableNativeFeedback,
+  TouchableWithoutFeedback,
   View,
 } = ReactNative;
 
 const NativeModules = require('NativeModules');
 
-const forceTouchAvailable = (NativeModules.PlatformConstants &&
-  NativeModules.PlatformConstants.forceTouchAvailable) || false;
+const forceTouchAvailable =
+  (NativeModules.PlatformConstants &&
+    NativeModules.PlatformConstants.forceTouchAvailable) ||
+  false;
 
-exports.displayName = (undefined: ?string);
-exports.description = 'Touchable and onPress examples.';
-exports.title = '<Touchable*> and onPress';
-exports.examples = [
-{
-  title: '<TouchableHighlight>',
-  description: 'TouchableHighlight works by adding an extra view with a ' +
-    'black background under the single child view.  This works best when the ' +
-    'child view is fully opaque, although it can be made to work as a simple ' +
-    'background color change as well with the activeOpacity and ' +
-    'underlayColor props.',
-  render: function() {
+class TouchableHighlightBox extends React.Component<{}, $FlowFixMeState> {
+  state = {
+    timesPressed: 0,
+  };
+
+  touchableOnPress = () => {
+    this.setState({
+      timesPressed: this.state.timesPressed + 1,
+    });
+  };
+
+  render() {
+    let textLog = '';
+    if (this.state.timesPressed > 1) {
+      textLog = this.state.timesPressed + 'x TouchableHighlight onPress';
+    } else if (this.state.timesPressed > 0) {
+      textLog = 'TouchableHighlight onPress';
+    }
+
     return (
       <View>
         <View style={styles.row}>
           <TouchableHighlight
             style={styles.wrapper}
-            onPress={() => console.log('stock THW image - highlight')}>
-            <Image
-              source={heartImage}
-              style={styles.image}
-            />
+            testID="touchable_highlight_image_button"
+            onPress={this.touchableOnPress}>
+            <Image source={heartImage} style={styles.image} />
           </TouchableHighlight>
           <TouchableHighlight
             style={styles.wrapper}
+            testID="touchable_highlight_text_button"
             activeOpacity={1}
-            animationVelocity={0}
-            tvParallaxProperties={{pressMagnification: 1.3, pressDuration: 0.6}}
+            tvParallaxProperties={{
+              pressMagnification: 1.3,
+              pressDuration: 0.6,
+            }}
             underlayColor="rgb(210, 230, 255)"
-            onPress={() => console.log('custom THW text - highlight')}>
+            onPress={this.touchableOnPress}>
             <View style={styles.wrapperCustom}>
-              <Text style={styles.text}>
-                Tap Here For Custom Highlight!
-              </Text>
+              <Text style={styles.text}>Tap Here For Custom Highlight!</Text>
             </View>
           </TouchableHighlight>
         </View>
-      </View>
-    );
-  },
- }, {
-  title: 'TouchableNativeFeedback with Animated child',
-  description: 'TouchableNativeFeedback can have an AnimatedComponent as a' +
-    'direct child.',
-  platform: 'android',
-  render: function() {
-    const mScale = new Animated.Value(1);
-    Animated.timing(mScale, {toValue: 0.3, duration: 1000}).start();
-    const style = {
-      backgroundColor: 'rgb(180, 64, 119)',
-      width: 200,
-      height: 100,
-      transform: [{scale: mScale}]
-    };
-    return (
-      <View>
-        <View style={styles.row}>
-          <TouchableNativeFeedback>
-            <Animated.View style={style}/>
-          </TouchableNativeFeedback>
+        <View style={styles.logBox}>
+          <Text testID="touchable_highlight_console">{textLog}</Text>
         </View>
       </View>
     );
-  },
-}, {
-  title: '<Text onPress={fn}> with highlight',
-  render: function(): React.Element<any> {
-    return <TextOnPressBox />;
-  },
-}, {
-  title: 'Touchable feedback events',
-  description: '<Touchable*> components accept onPress, onPressIn, ' +
-    'onPressOut, and onLongPress as props.',
-  render: function(): React.Element<any> {
-    return <TouchableFeedbackEvents />;
-  },
-}, {
-  title: 'Touchable delay for events',
-  description: '<Touchable*> components also accept delayPressIn, ' +
-    'delayPressOut, and delayLongPress as props. These props impact the ' +
-    'timing of feedback events.',
-  render: function(): React.Element<any> {
-    return <TouchableDelayEvents />;
-  },
-}, {
-  title: '3D Touch / Force Touch',
-  description: 'iPhone 6s and 6s plus support 3D touch, which adds a force property to touches',
-  render: function(): React.Element<any> {
-    return <ForceTouchExample />;
-  },
-  platform: 'ios',
-}, {
-   title: 'Touchable Hit Slop',
-   description: '<Touchable*> components accept hitSlop prop which extends the touch area ' +
-     'without changing the view bounds.',
-   render: function(): React.Element<any> {
-     return <TouchableHitSlop />;
-   },
-}, {
-   title: 'Disabled Touchable*',
-   description: '<Touchable*> components accept disabled prop which prevents ' +
-     'any interaction with component',
-   render: function(): React.Element<any> {
-     return <TouchableDisabled />;
-   },
- }];
+  }
+}
+
+class TouchableWithoutFeedbackBox extends React.Component<{}, $FlowFixMeState> {
+  state = {
+    timesPressed: 0,
+  };
+
+  textOnPress = () => {
+    this.setState({
+      timesPressed: this.state.timesPressed + 1,
+    });
+  };
+
+  render() {
+    let textLog = '';
+    if (this.state.timesPressed > 1) {
+      textLog = this.state.timesPressed + 'x TouchableWithoutFeedback onPress';
+    } else if (this.state.timesPressed > 0) {
+      textLog = 'TouchableWithoutFeedback onPress';
+    }
+
+    return (
+      <View>
+        <TouchableWithoutFeedback
+          onPress={this.textOnPress}
+          testID="touchable_without_feedback_button">
+          <View style={styles.wrapperCustom}>
+            <Text style={styles.text}>Tap Here For No Feedback!</Text>
+          </View>
+        </TouchableWithoutFeedback>
+        <View style={styles.logBox}>
+          <Text testID="touchable_without_feedback_console">{textLog}</Text>
+        </View>
+      </View>
+    );
+  }
+}
 
 class TextOnPressBox extends React.Component<{}, $FlowFixMeState> {
   state = {
@@ -146,7 +131,7 @@ class TextOnPressBox extends React.Component<{}, $FlowFixMeState> {
   };
 
   render() {
-    var textLog = '';
+    let textLog = '';
     if (this.state.timesPressed > 1) {
       textLog = this.state.timesPressed + 'x text onPress';
     } else if (this.state.timesPressed > 0) {
@@ -157,13 +142,12 @@ class TextOnPressBox extends React.Component<{}, $FlowFixMeState> {
       <View>
         <Text
           style={styles.textBlock}
+          testID="tappable_text"
           onPress={this.textOnPress}>
           Text has built-in onPress handling
         </Text>
         <View style={styles.logBox}>
-          <Text>
-            {textLog}
-          </Text>
+          <Text testID="tappable_text_console">{textLog}</Text>
         </View>
       </View>
     );
@@ -178,32 +162,31 @@ class TouchableFeedbackEvents extends React.Component<{}, $FlowFixMeState> {
   render() {
     return (
       <View testID="touchable_feedback_events">
-        <View style={[styles.row, {justifyContent: 'center'}]}>
+        <View style={[styles.row, styles.centered]}>
           <TouchableOpacity
             style={styles.wrapper}
             testID="touchable_feedback_events_button"
             accessibilityLabel="touchable feedback events"
-            accessibilityTraits="button"
-            accessibilityComponentType="button"
+            accessibilityRole="button"
             onPress={() => this._appendEvent('press')}
             onPressIn={() => this._appendEvent('pressIn')}
             onPressOut={() => this._appendEvent('pressOut')}
             onLongPress={() => this._appendEvent('longPress')}>
-            <Text style={styles.button}>
-              Press Me
-            </Text>
+            <Text style={styles.button}>Press Me</Text>
           </TouchableOpacity>
         </View>
-        <View testID="touchable_feedback_events_console" style={styles.eventLogBox}>
+        <View
+          testID="touchable_feedback_events_console"
+          style={styles.eventLogBox}>
           {this.state.eventLog.map((e, ii) => <Text key={ii}>{e}</Text>)}
         </View>
       </View>
     );
   }
 
-  _appendEvent = (eventName) => {
-    var limit = 6;
-    var eventLog = this.state.eventLog.slice(0, limit - 1);
+  _appendEvent = eventName => {
+    const limit = 6;
+    const eventLog = this.state.eventLog.slice(0, limit - 1);
     eventLog.unshift(eventName);
     this.setState({eventLog});
   };
@@ -217,7 +200,7 @@ class TouchableDelayEvents extends React.Component<{}, $FlowFixMeState> {
   render() {
     return (
       <View testID="touchable_delay_events">
-        <View style={[styles.row, {justifyContent: 'center'}]}>
+        <View style={[styles.row, styles.centered]}>
           <TouchableOpacity
             style={styles.wrapper}
             testID="touchable_delay_events_button"
@@ -228,21 +211,21 @@ class TouchableDelayEvents extends React.Component<{}, $FlowFixMeState> {
             onPressOut={() => this._appendEvent('pressOut - 1000ms delay')}
             delayLongPress={800}
             onLongPress={() => this._appendEvent('longPress - 800ms delay')}>
-            <Text style={styles.button}>
-              Press Me
-            </Text>
+            <Text style={styles.button}>Press Me</Text>
           </TouchableOpacity>
         </View>
-        <View style={styles.eventLogBox} testID="touchable_delay_events_console">
+        <View
+          style={styles.eventLogBox}
+          testID="touchable_delay_events_console">
           {this.state.eventLog.map((e, ii) => <Text key={ii}>{e}</Text>)}
         </View>
       </View>
     );
   }
 
-  _appendEvent = (eventName) => {
-    var limit = 6;
-    var eventLog = this.state.eventLog.slice(0, limit - 1);
+  _appendEvent = eventName => {
+    const limit = 6;
+    const eventLog = this.state.eventLog.slice(0, limit - 1);
     eventLog.unshift(eventName);
     this.setState({eventLog});
   };
@@ -254,9 +237,9 @@ class ForceTouchExample extends React.Component<{}, $FlowFixMeState> {
   };
 
   _renderConsoleText = () => {
-    return forceTouchAvailable ?
-      'Force: ' + this.state.force.toFixed(3) :
-      '3D Touch is not available on this device';
+    return forceTouchAvailable
+      ? 'Force: ' + this.state.force.toFixed(3)
+      : '3D Touch is not available on this device';
   };
 
   render() {
@@ -265,16 +248,16 @@ class ForceTouchExample extends React.Component<{}, $FlowFixMeState> {
         <View style={styles.forceTouchBox} testID="touchable_3dtouch_output">
           <Text>{this._renderConsoleText()}</Text>
         </View>
-        <View style={[styles.row, {justifyContent: 'center'}]}>
+        <View style={[styles.row, styles.centered]}>
           <View
             style={styles.wrapper}
             testID="touchable_3dtouch_button"
             onStartShouldSetResponder={() => true}
-            onResponderMove={(event) => this.setState({force: event.nativeEvent.force})}
-            onResponderRelease={(event) => this.setState({force: 0})}>
-            <Text style={styles.button}>
-              Press Me
-            </Text>
+            onResponderMove={event =>
+              this.setState({force: event.nativeEvent.force})
+            }
+            onResponderRelease={event => this.setState({force: 0})}>
+            <Text style={styles.button}>Press Me</Text>
           </View>
         </View>
       </View>
@@ -294,7 +277,7 @@ class TouchableHitSlop extends React.Component<{}, $FlowFixMeState> {
   };
 
   render() {
-    var log = '';
+    let log = '';
     if (this.state.timesPressed > 1) {
       log = this.state.timesPressed + 'x onPress';
     } else if (this.state.timesPressed > 0) {
@@ -303,21 +286,17 @@ class TouchableHitSlop extends React.Component<{}, $FlowFixMeState> {
 
     return (
       <View testID="touchable_hit_slop">
-        <View style={[styles.row, {justifyContent: 'center'}]}>
+        <View style={[styles.row, styles.centered]}>
           <TouchableOpacity
             onPress={this.onPress}
             style={styles.hitSlopWrapper}
             hitSlop={{top: 30, bottom: 30, left: 60, right: 60}}
             testID="touchable_hit_slop_button">
-            <Text style={styles.hitSlopButton}>
-              Press Outside This View
-            </Text>
+            <Text style={styles.hitSlopButton}>Press Outside This View</Text>
           </TouchableOpacity>
-         </View>
+        </View>
         <View style={styles.logBox}>
-          <Text>
-            {log}
-          </Text>
+          <Text>{log}</Text>
         </View>
       </View>
     );
@@ -339,27 +318,46 @@ class TouchableDisabled extends React.Component<{}> {
         <TouchableHighlight
           activeOpacity={1}
           disabled={true}
-          animationVelocity={0}
           underlayColor="rgb(210, 230, 255)"
           style={[styles.row, styles.block]}
           onPress={() => console.log('custom THW text - highlight')}>
-          <Text style={styles.disabledButton}>
-            Disabled TouchableHighlight
-          </Text>
+          <Text style={styles.disabledButton}>Disabled TouchableHighlight</Text>
         </TouchableHighlight>
 
         <TouchableHighlight
           activeOpacity={1}
-          animationVelocity={0}
           underlayColor="rgb(210, 230, 255)"
           style={[styles.row, styles.block]}
           onPress={() => console.log('custom THW text - highlight')}>
-          <Text style={styles.button}>
-            Enabled TouchableHighlight
-          </Text>
+          <Text style={styles.button}>Enabled TouchableHighlight</Text>
         </TouchableHighlight>
 
-        {Platform.OS === 'android' &&
+        <TouchableWithoutFeedback
+          onPress={() => console.log('TWOF has been clicked')}
+          disabled={true}>
+          <View style={styles.wrapperCustom}>
+            <Text
+              style={[
+                styles.button,
+                styles.nativeFeedbackButton,
+                styles.disabledButton,
+              ]}>
+              Disabled TouchableWithoutFeedback
+            </Text>
+          </View>
+        </TouchableWithoutFeedback>
+
+        <TouchableWithoutFeedback
+          onPress={() => console.log('TWOF has been clicked')}
+          disabled={false}>
+          <View style={styles.wrapperCustom}>
+            <Text style={[styles.button, styles.nativeFeedbackButton]}>
+              Enabled TouchableWithoutFeedback
+            </Text>
+          </View>
+        </TouchableWithoutFeedback>
+
+        {Platform.OS === 'android' && (
           <TouchableNativeFeedback
             style={[styles.row, styles.block]}
             onPress={() => console.log('custom TNF has been clicked')}
@@ -370,36 +368,38 @@ class TouchableDisabled extends React.Component<{}> {
               </Text>
             </View>
           </TouchableNativeFeedback>
-        }
+        )}
 
-        {Platform.OS === 'android' &&
+        {Platform.OS === 'android' && (
           <TouchableNativeFeedback
             disabled={true}
             style={[styles.row, styles.block]}
             onPress={() => console.log('custom TNF has been clicked')}
             background={TouchableNativeFeedback.SelectableBackground()}>
             <View>
-              <Text style={[styles.disabledButton, styles.nativeFeedbackButton]}>
+              <Text
+                style={[styles.disabledButton, styles.nativeFeedbackButton]}>
                 Disabled TouchableNativeFeedback
               </Text>
             </View>
           </TouchableNativeFeedback>
-        }
+        )}
       </View>
     );
   }
 }
 
-var heartImage = {uri: 'https://pbs.twimg.com/media/BlXBfT3CQAA6cVZ.png:small'};
+const heartImage = {
+  uri: 'https://pbs.twimg.com/media/BlXBfT3CQAA6cVZ.png:small',
+};
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   row: {
     justifyContent: 'center',
     flexDirection: 'row',
   },
-  icon: {
-    width: 24,
-    height: 24,
+  centered: {
+    justifyContent: 'center',
   },
   image: {
     width: 50,
@@ -464,3 +464,105 @@ var styles = StyleSheet.create({
     color: 'blue',
   },
 });
+
+exports.displayName = (undefined: ?string);
+exports.description = 'Touchable and onPress examples.';
+exports.title = '<Touchable*> and onPress';
+exports.examples = [
+  {
+    title: '<TouchableHighlight>',
+    description:
+      'TouchableHighlight works by adding an extra view with a ' +
+      'black background under the single child view.  This works best when the ' +
+      'child view is fully opaque, although it can be made to work as a simple ' +
+      'background color change as well with the activeOpacity and ' +
+      'underlayColor props.',
+    render: function() {
+      return <TouchableHighlightBox />;
+    },
+  },
+  {
+    title: '<TouchableWithoutFeedback>',
+    render: function() {
+      return <TouchableWithoutFeedbackBox />;
+    },
+  },
+  {
+    title: 'TouchableNativeFeedback with Animated child',
+    description:
+      'TouchableNativeFeedback can have an AnimatedComponent as a' +
+      'direct child.',
+    platform: 'android',
+    render: function() {
+      const mScale = new Animated.Value(1);
+      Animated.timing(mScale, {toValue: 0.3, duration: 1000}).start();
+      const style = {
+        backgroundColor: 'rgb(180, 64, 119)',
+        width: 200,
+        height: 100,
+        transform: [{scale: mScale}],
+      };
+      return (
+        <View>
+          <View style={styles.row}>
+            <TouchableNativeFeedback>
+              <Animated.View style={style} />
+            </TouchableNativeFeedback>
+          </View>
+        </View>
+      );
+    },
+  },
+  {
+    title: '<Text onPress={fn}> with highlight',
+    render: function(): React.Element<any> {
+      return <TextOnPressBox />;
+    },
+  },
+  {
+    title: 'Touchable feedback events',
+    description:
+      '<Touchable*> components accept onPress, onPressIn, ' +
+      'onPressOut, and onLongPress as props.',
+    render: function(): React.Element<any> {
+      return <TouchableFeedbackEvents />;
+    },
+  },
+  {
+    title: 'Touchable delay for events',
+    description:
+      '<Touchable*> components also accept delayPressIn, ' +
+      'delayPressOut, and delayLongPress as props. These props impact the ' +
+      'timing of feedback events.',
+    render: function(): React.Element<any> {
+      return <TouchableDelayEvents />;
+    },
+  },
+  {
+    title: '3D Touch / Force Touch',
+    description:
+      'iPhone 6s and 6s plus support 3D touch, which adds a force property to touches',
+    render: function(): React.Element<any> {
+      return <ForceTouchExample />;
+    },
+    platform: 'ios',
+  },
+  {
+    title: 'Touchable Hit Slop',
+    description:
+      '<Touchable*> components accept hitSlop prop which extends the touch area ' +
+      'without changing the view bounds.',
+    render: function(): React.Element<any> {
+      return <TouchableHitSlop />;
+    },
+  },
+  {
+    title: 'Disabled Touchable*',
+    description:
+      '<Touchable*> components accept disabled prop which prevents ' +
+      'any interaction with component',
+    render: function(): React.Element<any> {
+      return <TouchableDisabled />;
+    },
+  },
+];

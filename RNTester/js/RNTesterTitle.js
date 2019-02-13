@@ -1,34 +1,30 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @format
+ * @flow strict-local
  */
+
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
-  StyleSheet,
-  Text,
-  View,
-} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {StyleSheet, Text, View} = ReactNative;
 
 class RNTesterTitle extends React.Component<$FlowFixMeProps> {
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.text}>
-          {this.props.title}
-        </Text>
+        <Text style={styles.text}>{this.props.title}</Text>
       </View>
     );
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     borderRadius: 4,
     borderWidth: 0.5,

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,11 +7,13 @@
 
 package com.facebook.react.modules.location;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import com.facebook.common.logging.FLog;
@@ -31,9 +33,11 @@ import javax.annotation.Nullable;
 /**
  * Native module that exposes Geolocation to JS.
  */
-@ReactModule(name = "LocationObserver")
+@SuppressLint("MissingPermission")
+@ReactModule(name = LocationModule.NAME)
 public class LocationModule extends ReactContextBaseJavaModule {
 
+  public static final String NAME = "LocationObserver";
   private @Nullable String mWatchedProvider;
   private static final float RCT_DEFAULT_LOCATION_ACCURACY = 100;
 
@@ -66,7 +70,7 @@ public class LocationModule extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "LocationObserver";
+    return NAME;
   }
 
   private static class LocationOptions {
@@ -215,7 +219,7 @@ public class LocationModule extends ReactContextBaseJavaModule {
     map.putMap("coords", coords);
     map.putDouble("timestamp", location.getTime());
 
-    if (android.os.Build.VERSION.SDK_INT >= 18) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
       map.putBoolean("mocked", location.isFromMockProvider());
     }
 

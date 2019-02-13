@@ -1,11 +1,11 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict
  */
 
 'use strict';
@@ -78,6 +78,17 @@ const QuickPerformanceLogger = {
   ): void {
     if (global.nativeQPLMarkerCancel) {
       global.nativeQPLMarkerCancel(markerId, instanceKey);
+    }
+  },
+
+  markerPoint(
+    markerId: number,
+    name: string,
+    instanceKey: number = DUMMY_INSTANCE_KEY,
+    timestamp: number = AUTO_SET_TIMESTAMP,
+  ): void {
+    if (global.nativeQPLMarkerPoint) {
+      global.nativeQPLMarkerPoint(markerId, name, instanceKey, timestamp);
     }
   },
 

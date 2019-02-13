@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,6 +7,8 @@
 
 package com.facebook.react;
 
+import static com.facebook.react.uimanager.common.UIManagerType.DEFAULT;
+import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 import android.content.Context;
@@ -23,11 +25,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.CatalystInstance;
-import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
@@ -44,9 +46,10 @@ import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.RootView;
+import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.common.MeasureSpecProvider;
-import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
+import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
 import javax.annotation.Nullable;
@@ -63,8 +66,7 @@ import javax.annotation.Nullable;
  * subsequent touch events related to that gesture (in case when JS code wants to handle that
  * gesture).
  */
-public class ReactRootView extends SizeMonitoringFrameLayout
-    implements RootView, MeasureSpecProvider {
+public class ReactRootView extends FrameLayout implements RootView, MeasureSpecProvider {
 
   /**
    * Listener interface for react root view events
@@ -79,6 +81,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   private @Nullable ReactInstanceManager mReactInstanceManager;
   private @Nullable String mJSModuleName;
   private @Nullable Bundle mAppProperties;
+  private @Nullable String mInitialUITemplate;
   private @Nullable CustomGlobalLayoutListener mCustomGlobalLayoutListener;
   private @Nullable ReactRootViewEventListener mRootViewEventListener;
   private int mRootViewTag;
@@ -89,19 +92,25 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   private boolean mWasMeasured = false;
   private int mWidthMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
   private int mHeightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
-  private @Nullable Runnable mJSEntryPoint;
-  private boolean mIsFabric = false;
+  private @UIManagerType int mUIManagerType = DEFAULT;
 
   public ReactRootView(Context context) {
     super(context);
+    init();
   }
 
   public ReactRootView(Context context, AttributeSet attrs) {
     super(context, attrs);
+    init();
   }
 
   public ReactRootView(Context context, AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
+    init();
+  }
+
+  private void init() {
+    setClipChildren(false);
   }
 
   @Override
@@ -190,8 +199,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
       return;
     }
     ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
-    EventDispatcher eventDispatcher = reactContext.getNativeModule(UIManagerModule.class)
-      .getEventDispatcher();
+    EventDispatcher eventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
     mJSTouchDispatcher.onChildStartedNativeGesture(androidEvent, eventDispatcher);
   }
 
@@ -277,8 +285,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
       return;
     }
     ReactContext reactContext = mReactInstanceManager.getCurrentReactContext();
-    EventDispatcher eventDispatcher = reactContext.getNativeModule(UIManagerModule.class)
-      .getEventDispatcher();
+    EventDispatcher eventDispatcher = reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
     mJSTouchDispatcher.handleTouchEvent(event, eventDispatcher);
   }
 
@@ -300,6 +307,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   protected void onAttachedToWindow() {
     super.onAttachedToWindow();
     if (mIsAttachedToInstance) {
+      removeOnGlobalLayoutListener();
       getViewTreeObserver().addOnGlobalLayoutListener(getCustomGlobalLayoutListener());
     }
   }
@@ -308,12 +316,12 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   protected void onDetachedFromWindow() {
     super.onDetachedFromWindow();
     if (mIsAttachedToInstance) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-        getViewTreeObserver().removeOnGlobalLayoutListener(getCustomGlobalLayoutListener());
-      } else {
-        getViewTreeObserver().removeGlobalOnLayoutListener(getCustomGlobalLayoutListener());
-      }
+      removeOnGlobalLayoutListener();
     }
+  }
+
+  private void removeOnGlobalLayoutListener() {
+    getViewTreeObserver().removeOnGlobalLayoutListener(getCustomGlobalLayoutListener());
   }
 
   @Override
@@ -337,6 +345,13 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   }
 
   /**
+   * {@see #startReactApplication(ReactInstanceManager, String, android.os.Bundle, String)}
+   */
+  public void startReactApplication(ReactInstanceManager reactInstanceManager, String moduleName, @Nullable Bundle initialProperties) {
+    startReactApplication(reactInstanceManager, moduleName, initialProperties, null);
+  }
+
+  /**
    * Schedule rendering of the react component rendered by the JS application from the given JS
    * module (@{param moduleName}) using provided {@param reactInstanceManager} to attach to the
    * JS context of that manager. Extra parameter {@param launchOptions} can be used to pass initial
@@ -345,7 +360,8 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   public void startReactApplication(
       ReactInstanceManager reactInstanceManager,
       String moduleName,
-      @Nullable Bundle initialProperties) {
+      @Nullable Bundle initialProperties,
+      @Nullable String initialUITemplate) {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "startReactApplication");
     try {
       UiThreadUtil.assertOnUiThread();
@@ -360,6 +376,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
       mReactInstanceManager = reactInstanceManager;
       mJSModuleName = moduleName;
       mAppProperties = initialProperties;
+      mInitialUITemplate = initialUITemplate;
 
       if (!mReactInstanceManager.hasStartedCreatingInitialContext()) {
         mReactInstanceManager.createReactContextInBackground();
@@ -397,17 +414,10 @@ public class ReactRootView extends SizeMonitoringFrameLayout
       return;
     }
     final ReactContext reactApplicationContext = mReactInstanceManager.getCurrentReactContext();
+
     if (reactApplicationContext != null) {
-      reactApplicationContext.runOnNativeModulesQueueThread(
-          new GuardedRunnable(reactApplicationContext) {
-            @Override
-            public void runGuarded() {
-              reactApplicationContext
-                  .getCatalystInstance()
-                  .getNativeModule(UIManagerModule.class)
-                  .updateRootLayoutSpecs(getRootViewTag(), widthMeasureSpec, heightMeasureSpec);
-            }
-          });
+      UIManagerHelper.getUIManager(reactApplicationContext, getUIManagerType())
+        .updateRootLayoutSpecs(getRootViewTag(), widthMeasureSpec, heightMeasureSpec);
     }
   }
 
@@ -420,6 +430,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   public void unmountReactApplication() {
     if (mReactInstanceManager != null && mIsAttachedToInstance) {
       mReactInstanceManager.detachRootView(this);
+      mReactInstanceManager = null;
       mIsAttachedToInstance = false;
     }
     mShouldLogContentAppeared = false;
@@ -448,11 +459,15 @@ public class ReactRootView extends SizeMonitoringFrameLayout
     return mAppProperties;
   }
 
+  public @Nullable String getInitialUITemplate() {
+    return mInitialUITemplate;
+  }
+
   public void setAppProperties(@Nullable Bundle appProperties) {
     UiThreadUtil.assertOnUiThread();
     mAppProperties = appProperties;
     if (getRootViewTag() != 0) {
-      invokeJSEntryPoint();
+      runApplication();
     }
   }
 
@@ -460,34 +475,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
    * Calls into JS to start the React application. Can be called multiple times with the
    * same rootTag, which will re-render the application from the root.
    */
-  /*package */ void invokeJSEntryPoint() {
-    if (mJSEntryPoint == null) {
-      defaultJSEntryPoint();
-    } else {
-      mJSEntryPoint.run();
-    }
-  }
-
-  /**
-   * Set a custom entry point for invoking JS. By default, this is AppRegistry.runApplication
-   * @param jsEntryPoint
-   */
-  public void setJSEntryPoint(Runnable jsEntryPoint) {
-    mJSEntryPoint = jsEntryPoint;
-  }
-
-  public void invokeDefaultJSEntryPoint(@Nullable Bundle appProperties) {
-    UiThreadUtil.assertOnUiThread();
-    if (appProperties != null) {
-      mAppProperties = appProperties;
-    }
-    defaultJSEntryPoint();
-  }
-
-  /**
-   * Calls the default entry point into JS which is AppRegistry.runApplication()
-   */
-  private void defaultJSEntryPoint() {
+  /* package */ void runApplication() {
       Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactRootView.runApplication");
       try {
         if (mReactInstanceManager == null || !mIsAttachedToInstance) {
@@ -507,7 +495,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
         if (appProperties != null) {
           appParams.putMap("initialProps", Arguments.fromBundle(appProperties));
         }
-        if (isFabric()) {
+        if (getUIManagerType() == FABRIC) {
           appParams.putBoolean("fabric", true);
         }
 
@@ -527,6 +515,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   @VisibleForTesting
   /* package */ void simulateAttachForTesting() {
     mIsAttachedToInstance = true;
+    mJSTouchDispatcher = new JSTouchDispatcher(this);
   }
 
   private CustomGlobalLayoutListener getCustomGlobalLayoutListener() {
@@ -583,11 +572,11 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   }
 
   public void setIsFabric(boolean isFabric) {
-    mIsFabric = isFabric;
+    mUIManagerType = isFabric ? FABRIC : DEFAULT;
   }
 
-  public boolean isFabric() {
-    return mIsFabric;
+  public @UIManagerType int getUIManagerType() {
+    return mUIManagerType;
   }
 
   @Nullable
@@ -675,7 +664,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
     }
 
     private boolean areMetricsEqual(DisplayMetrics displayMetrics, DisplayMetrics otherMetrics) {
-      if (Build.VERSION.SDK_INT >= 17) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
         return displayMetrics.equals(otherMetrics);
       } else {
         // DisplayMetrics didn't have an equals method before API 17.

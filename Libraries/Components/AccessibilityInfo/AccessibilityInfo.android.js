@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,6 +12,7 @@
 
 const NativeModules = require('NativeModules');
 const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+const UIManager = require('UIManager');
 
 const RCTAccessibilityInfo = NativeModules.AccessibilityInfo;
 
@@ -34,6 +35,8 @@ const _subscriptions = new Map();
  */
 
 const AccessibilityInfo = {
+  /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+   * when making Flow check .android.js files. */
   fetch: function(): Promise {
     return new Promise((resolve, reject) => {
       RCTAccessibilityInfo.isTouchExplorationEnabled(function(resp) {
@@ -65,6 +68,18 @@ const AccessibilityInfo = {
     }
     listener.remove();
     _subscriptions.delete(handler);
+  },
+
+  /**
+   * Set accessibility focus to a react component.
+   *
+   * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#setaccessibilityfocus
+   */
+  setAccessibilityFocus: function(reactTag: number): void {
+    UIManager.sendAccessibilityEvent(
+      reactTag,
+      UIManager.AccessibilityEventTypes.typeViewFocused,
+    );
   },
 };
 

@@ -1,51 +1,52 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @format
  */
 
 'use strict';
 
-var BatchedBridge = require('BatchedBridge');
-var React = require('React');
-var ReactNative = require('ReactNative');
-var View = require('View');
-var StyleSheet = require('StyleSheet');
-var UIManager = require('UIManager');
+const BatchedBridge = require('BatchedBridge');
+const React = require('React');
+const ReactNative = require('ReactNative');
+const View = require('View');
+const StyleSheet = require('StyleSheet');
+const UIManager = require('UIManager');
 
-var assertEquals = require('Asserts').assertEquals;
+const assertEquals = require('Asserts').assertEquals;
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   A: {
-    'width': 500,
-    'height': 500,
+    width: 500,
+    height: 500,
   },
   B: {
     backgroundColor: 'rgb(255, 0, 0)',
-    'left': 50,
-    'top': 80,
-    'width': 200,
-    'height': 300,
+    left: 50,
+    top: 80,
+    width: 200,
+    height: 300,
   },
   C: {
     backgroundColor: 'rgb(0, 255, 0)',
-    'left': 100,
-    'top': 70,
-    'width': 50,
-    'height': 150,
+    left: 100,
+    top: 70,
+    width: 50,
+    height: 150,
   },
   D: {
     backgroundColor: 'rgb(0, 0, 255)',
-    'left': 400,
-    'top': 100,
-    'width': 50,
-    'height': 200,
+    left: 400,
+    top: 100,
+    width: 50,
+    height: 200,
   },
 });
 
-var A, B, C, D;
+let A, B, C, D;
 
 class MeasureLayoutTestApp extends React.Component {
   componentDidMount() {
@@ -71,7 +72,7 @@ function shouldNotCallThisCallback() {
   assertEquals(false, true);
 }
 
-var MeasureLayoutTestModule = {
+const MeasureLayoutTestModule = {
   MeasureLayoutTestApp: MeasureLayoutTestApp,
   verifyMeasureOnViewA: function() {
     UIManager.measure(A, function(a, b, width, height, x, y) {
@@ -90,114 +91,124 @@ var MeasureLayoutTestModule = {
     });
   },
   verifyMeasureLayoutCRelativeToA: function() {
-    UIManager.measureLayout(
-      C,
-      A,
-      shouldNotCallThisCallback,
-      function (x, y, width, height) {
-        assertEquals(50, width);
-        assertEquals(150, height);
-        assertEquals(150, x);
-        assertEquals(150, y);
-      });
+    UIManager.measureLayout(C, A, shouldNotCallThisCallback, function(
+      x,
+      y,
+      width,
+      height,
+    ) {
+      assertEquals(50, width);
+      assertEquals(150, height);
+      assertEquals(150, x);
+      assertEquals(150, y);
+    });
   },
   verifyMeasureLayoutCRelativeToB: function() {
-    UIManager.measureLayout(
-      C,
-      B,
-      shouldNotCallThisCallback,
-      function (x, y, width, height) {
-        assertEquals(50, width);
-        assertEquals(150, height);
-        assertEquals(100, x);
-        assertEquals(70, y);
-      });
+    UIManager.measureLayout(C, B, shouldNotCallThisCallback, function(
+      x,
+      y,
+      width,
+      height,
+    ) {
+      assertEquals(50, width);
+      assertEquals(150, height);
+      assertEquals(100, x);
+      assertEquals(70, y);
+    });
   },
   verifyMeasureLayoutCRelativeToSelf: function() {
-    UIManager.measureLayout(
-      C,
-      C,
-      shouldNotCallThisCallback,
-      function (x, y, width, height) {
-        assertEquals(50, width);
-        assertEquals(150, height);
-        assertEquals(0, x);
-        assertEquals(0, y);
-      });
+    UIManager.measureLayout(C, C, shouldNotCallThisCallback, function(
+      x,
+      y,
+      width,
+      height,
+    ) {
+      assertEquals(50, width);
+      assertEquals(150, height);
+      assertEquals(0, x);
+      assertEquals(0, y);
+    });
   },
   verifyMeasureLayoutRelativeToParentOnViewA: function() {
     UIManager.measureLayoutRelativeToParent(
       A,
       shouldNotCallThisCallback,
-      function (x, y, width, height) {
+      function(x, y, width, height) {
         assertEquals(500, width);
         assertEquals(500, height);
         assertEquals(0, x);
         assertEquals(0, y);
-      });
+      },
+    );
   },
   verifyMeasureLayoutRelativeToParentOnViewB: function() {
     UIManager.measureLayoutRelativeToParent(
       B,
       shouldNotCallThisCallback,
-      function (x, y, width, height) {
+      function(x, y, width, height) {
         assertEquals(200, width);
         assertEquals(300, height);
         assertEquals(50, x);
         assertEquals(80, y);
-      });
+      },
+    );
   },
   verifyMeasureLayoutRelativeToParentOnViewC: function() {
     UIManager.measureLayoutRelativeToParent(
       C,
       shouldNotCallThisCallback,
-      function (x, y, width, height) {
+      function(x, y, width, height) {
         assertEquals(50, width);
         assertEquals(150, height);
         assertEquals(100, x);
         assertEquals(70, y);
-      });
+      },
+    );
   },
   verifyMeasureLayoutDRelativeToB: function() {
     UIManager.measureLayout(
       D,
       B,
-      function () {
+      function() {
         assertEquals(true, true);
       },
-      shouldNotCallThisCallback);
+      shouldNotCallThisCallback,
+    );
   },
   verifyMeasureLayoutNonExistentTag: function() {
     UIManager.measureLayout(
       192,
       A,
-      function () {
+      function() {
         assertEquals(true, true);
       },
-      shouldNotCallThisCallback);
+      shouldNotCallThisCallback,
+    );
   },
   verifyMeasureLayoutNonExistentAncestor: function() {
     UIManager.measureLayout(
       B,
       192,
-      function () {
+      function() {
         assertEquals(true, true);
       },
-      shouldNotCallThisCallback);
+      shouldNotCallThisCallback,
+    );
   },
   verifyMeasureLayoutRelativeToParentNonExistentTag: function() {
     UIManager.measureLayoutRelativeToParent(
       192,
-      function () {
+      function() {
         assertEquals(true, true);
       },
-      shouldNotCallThisCallback);
+      shouldNotCallThisCallback,
+    );
   },
 };
 
 BatchedBridge.registerCallableModule(
   'MeasureLayoutTestModule',
-  MeasureLayoutTestModule
+  MeasureLayoutTestModule,
 );
 
 module.exports = MeasureLayoutTestModule;

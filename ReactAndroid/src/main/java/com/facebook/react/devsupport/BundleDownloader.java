@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -104,14 +104,25 @@ public class BundleDownloader {
   }
 
   public void downloadBundleFromURL(
-    final DevBundleDownloadListener callback,
-    final File outputFile,
-    final String bundleURL,
-    final @Nullable BundleInfo bundleInfo,
-    final BundleDeltaClient.ClientType clientType) {
+      final DevBundleDownloadListener callback,
+      final File outputFile,
+      final String bundleURL,
+      final @Nullable BundleInfo bundleInfo,
+      final BundleDeltaClient.ClientType clientType) {
+    downloadBundleFromURL(
+        callback, outputFile, bundleURL, bundleInfo, clientType, new Request.Builder());
+  }
+
+  public void downloadBundleFromURL(
+      final DevBundleDownloadListener callback,
+      final File outputFile,
+      final String bundleURL,
+      final @Nullable BundleInfo bundleInfo,
+      final BundleDeltaClient.ClientType clientType,
+      Request.Builder requestBuilder) {
 
     final Request request =
-        new Request.Builder()
+        requestBuilder
             .url(formatBundleUrl(bundleURL, clientType))
             // FIXME: there is a bug that makes MultipartStreamReader to never find the end of the
             // multipart message. This temporarily disables the multipart mode to work around it,
