@@ -26,7 +26,7 @@ EventBeatBasedExecutor::EventBeatBasedExecutor(
 void EventBeatBasedExecutor::operator()(Routine routine, Mode mode) const {
   if (mode == Mode::Asynchronous) {
     execute({
-        std::move(routine), // routine
+        /* .routine = */ std::move(routine),
     });
     return;
   }
@@ -35,8 +35,8 @@ void EventBeatBasedExecutor::operator()(Routine routine, Mode mode) const {
   mutex.lock();
 
   execute({
-      std::move(routine), // routine
-      [&mutex]() { mutex.unlock(); }, // callback
+      /* .routine = */ std::move(routine),
+      /* .callback = */ [&mutex]() { mutex.unlock(); },
   });
 
   mutex.lock();

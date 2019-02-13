@@ -12,21 +12,21 @@ namespace react {
 
 ShadowViewMutation ShadowViewMutation::CreateMutation(ShadowView shadowView) {
   return {
-      Create, // type
-      {}, // parentShadowView
-      shadowView, // newChildShadowView
-      {}, // oldChildShadowView
-      -1, // index
+      /* .type = */ Create,
+      /* .parentShadowView = */ {},
+      /* .newChildShadowView = */ shadowView,
+      /* .oldChildShadowView = */ {},
+      /* .index = */ -1,
   };
 }
 
 ShadowViewMutation ShadowViewMutation::DeleteMutation(ShadowView shadowView) {
   return {
-      Delete, // type
-      {}, // parentShadowView
-      shadowView, // oldChildShadowView
-      {}, // newChildShadowView
-      -1, // index
+      /* .type = */ Delete,
+      /* .parentShadowView = */ {},
+      /* .oldChildShadowView = */ shadowView,
+      /* .newChildShadowView = */ {},
+      /* .index = */ -1,
   };
 }
 
@@ -35,11 +35,11 @@ ShadowViewMutation ShadowViewMutation::InsertMutation(
     ShadowView childShadowView,
     int index) {
   return {
-      Insert, // type
-      parentShadowView, // parentShadowView
-      {}, // oldChildShadowView
-      childShadowView, // newChildShadowView
-      index, // index
+      /* .type = */ Insert,
+      /* .parentShadowView = */ parentShadowView,
+      /* .oldChildShadowView = */ {},
+      /* .newChildShadowView = */ childShadowView,
+      /* .index = */ index,
   };
 }
 
@@ -48,11 +48,11 @@ ShadowViewMutation ShadowViewMutation::RemoveMutation(
     ShadowView childShadowView,
     int index) {
   return {
-      Remove, // type
-      parentShadowView, // parentShadowView
-      childShadowView, // oldChildShadowView
-      {}, // newChildShadowView
-      index, // index
+      /* .type = */ Remove,
+      /* .parentShadowView = */ parentShadowView,
+      /* .oldChildShadowView = */ childShadowView,
+      /* .newChildShadowView = */ {},
+      /* .index = */ index,
   };
 }
 
@@ -62,11 +62,11 @@ ShadowViewMutation ShadowViewMutation::UpdateMutation(
     ShadowView newChildShadowView,
     int index) {
   return {
-      Update, // type
-      parentShadowView, // parentShadowView
-      oldChildShadowView, // oldChildShadowView
-      newChildShadowView, // newChildShadowView
-      index, // index
+      /* .type = */ Update,
+      /* .parentShadowView = */ parentShadowView,
+      /* .oldChildShadowView = */ oldChildShadowView,
+      /* .newChildShadowView = */ newChildShadowView,
+      /* .index = */ index,
   };
 }
 
