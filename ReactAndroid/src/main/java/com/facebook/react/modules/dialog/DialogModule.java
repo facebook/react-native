@@ -109,7 +109,7 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
           actionCallback != null ? new AlertFragmentListener(actionCallback) : null;
 
       AlertFragment alertFragment = new AlertFragment(actionListener, arguments);
-      if (isInForeground && !mFragmentManager.isStateSaved()) {
+      if (mIsInForeground && !mFragmentManager.isStateSaved()) {
         if (arguments.containsKey(KEY_CANCELABLE)) {
           alertFragment.setCancelable(arguments.getBoolean(KEY_CANCELABLE));
         }
