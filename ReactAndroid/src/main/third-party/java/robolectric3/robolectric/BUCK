@@ -76,7 +76,7 @@ rn_prebuilt_jar(
 )
 
 fb_native.remote_file(
-    name = "bouncycastle-binary-jar",
+    name = "bouncycastle-binary.jar",
     sha1 = "2507204241ab450456bdb8e8c0a8f986e418bd99",
     url = "mvn:org.bouncycastle:bcprov-jdk15on:jar:1.59",
 )
