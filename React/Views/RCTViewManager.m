@@ -129,6 +129,7 @@ RCT_REMAP_VIEW_PROPERTY(shadowColor, layer.shadowColor, CGColor)
 RCT_REMAP_VIEW_PROPERTY(shadowOffset, layer.shadowOffset, CGSize)
 RCT_REMAP_VIEW_PROPERTY(shadowOpacity, layer.shadowOpacity, float)
 RCT_REMAP_VIEW_PROPERTY(shadowRadius, layer.shadowRadius, CGFloat)
+RCT_REMAP_VIEW_PROPERTY(needsOffscreenAlphaCompositing, layer.allowsGroupOpacity, BOOL)
 RCT_CUSTOM_VIEW_PROPERTY(overflow, YGOverflow, RCTView)
 {
   if (json) {
