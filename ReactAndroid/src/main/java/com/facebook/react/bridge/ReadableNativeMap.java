@@ -47,7 +47,7 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
     if (mLocalMap != null) {
       return mLocalMap;
     }
-    // Check and when necessary get keys atomicaly
+    // Check and when necessary get keys atomically
     synchronized (this) {
       if (mKeys == null) {
         mKeys = Assertions.assertNotNull(importKeys());

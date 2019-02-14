@@ -121,6 +121,10 @@ void Binding::uninstallFabricUIManager() {
   javaUIManager_ = nullptr;
 }
 
+inline local_ref<ReadableMap::javaobject> castReadableMap(local_ref<ReadableNativeMap::javaobject> nativeMap) {
+  return make_local(reinterpret_cast<ReadableMap::javaobject>(nativeMap.get()));
+}
+
 //TODO: this method will be removed when binding for components are code-gen
 local_ref<JString> getPlatformComponentName(const ShadowView &shadowView) {
   local_ref<JString> componentName;
@@ -173,11 +177,10 @@ local_ref<JMountItem::javaobject> createUpdatePropsMountItem(const jni::global_r
   // TODO: move props from map to a typed object.
   auto newProps = shadowView.props->rawProps;
 
-  local_ref<ReadableNativeMap::jhybridobject> readableMap = ReadableNativeMap::newObjectCxxArgs(newProps);
-
+  local_ref<ReadableMap::javaobject> readableMap = castReadableMap(ReadableNativeMap::newObjectCxxArgs(newProps));
   static auto updatePropsInstruction =
          jni::findClassStatic(UIManagerJavaDescriptor)
-           ->getMethod<alias_ref<JMountItem>(jint,ReadableNativeMap::javaobject)>("updatePropsMountItem");
+           ->getMethod<alias_ref<JMountItem>(jint,ReadableMap::javaobject)>("updatePropsMountItem");
 
   return updatePropsInstruction(javaUIManager,
        mutation.newChildShadowView.tag,
@@ -217,7 +220,7 @@ local_ref<JMountItem::javaobject> createInsertMountItem(const jni::global_ref<jo
 local_ref<JMountItem::javaobject> createUpdateLocalData(const jni::global_ref<jobject> &javaUIManager, const ShadowViewMutation &mutation) {
   static auto updateLocalDataInstruction =
           jni::findClassStatic(UIManagerJavaDescriptor)
-            ->getMethod<alias_ref<JMountItem>(jint, ReadableNativeMap::javaobject)>("updateLocalDataMountItem");
+            ->getMethod<alias_ref<JMountItem>(jint, ReadableMap::javaobject)>("updateLocalDataMountItem");
 
   auto localData = mutation.newChildShadowView.localData;
 
@@ -225,9 +228,9 @@ local_ref<JMountItem::javaobject> createUpdateLocalData(const jni::global_ref<jo
   if (localData) {
     newLocalData = localData->getDynamic();
   }
-  local_ref<ReadableNativeMap::jhybridobject> readableMap = ReadableNativeMap::newObjectCxxArgs(newLocalData);
 
-  return updateLocalDataInstruction(javaUIManager, mutation.newChildShadowView.tag, readableMap.get());
+  local_ref<ReadableNativeMap::jhybridobject> readableNativeMap = ReadableNativeMap::newObjectCxxArgs(newLocalData);
+  return updateLocalDataInstruction(javaUIManager, mutation.newChildShadowView.tag, castReadableMap(readableNativeMap).get());
 }
 
 local_ref<JMountItem::javaobject> createRemoveMountItem(const jni::global_ref<jobject> &javaUIManager, const ShadowViewMutation &mutation) {
