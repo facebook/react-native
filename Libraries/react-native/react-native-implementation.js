@@ -330,9 +330,6 @@ module.exports = {
   get Vibration() {
     return require('Vibration');
   },
-  get VibrationIOS() {
-    return require('VibrationIOS');
-  },
   get YellowBox() {
     return require('YellowBox');
   },
