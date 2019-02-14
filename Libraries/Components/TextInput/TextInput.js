@@ -163,18 +163,18 @@ type IOSProps = $ReadOnly<{|
 
 type AndroidProps = $ReadOnly<{|
   autoCompleteType?: ?(
-    | 'username'
-    | 'password'
-    | 'email'
-    | 'name'
-    | 'tel'
-    | 'street-address'
-    | 'postal-code'
-    | 'cc-number'
     | 'cc-csc'
     | 'cc-exp'
     | 'cc-exp-month'
     | 'cc-exp-year'
+    | 'cc-number'
+    | 'email'
+    | 'name'
+    | 'password'
+    | 'postal-code'
+    | 'street-address'
+    | 'tel'
+    | 'username'
     | 'off'
   ),
   returnKeyLabel?: ?string,
@@ -390,18 +390,18 @@ const TextInput = createReactClass({
      * @platform android
      */
     autoCompleteType: PropTypes.oneOf([
-      'username',
-      'password',
-      'email',
-      'name',
-      'tel',
-      'street-address',
-      'postal-code',
-      'cc-number',
       'cc-csc',
       'cc-exp',
       'cc-exp-month',
       'cc-exp-year',
+      'cc-number',
+      'email',
+      'name',
+      'password',
+      'postal-code',
+      'street-address',
+      'tel',
+      'username',
       'off',
     ]),
     /**
