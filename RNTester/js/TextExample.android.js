@@ -505,8 +505,8 @@ class TextExample extends React.Component<{}> {
             <View
               style={{width: 25, height: 25, backgroundColor: 'steelblue'}}
             />{' '}
-            and an inline image{' '}
-            <Image source={require('./flux.png')} />. Neat, huh?
+            and an inline image <Image source={require('./flux.png')} />. Neat,
+            huh?
           </Text>
         </RNTesterBlock>
         <RNTesterBlock title="Text shadow">
