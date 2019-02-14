@@ -373,29 +373,4 @@ module.exports = {
   get ViewPropTypes() {
     return require('DeprecatedViewPropTypes');
   },
-
-  // Deprecated
-  get BackAndroid() {
-    invariant(
-      false,
-      'BackAndroid is deprecated and has been removed from this package. ' +
-        'Use BackHandler instead',
-    );
-  },
-
-  get Navigator() {
-    invariant(
-      false,
-      'Navigator is deprecated and has been removed from this package. It can now be installed ' +
-        'and imported from `react-native-deprecated-custom-components` instead of `react-native`. ' +
-        'Learn about alternative navigation solutions at http://facebook.github.io/react-native/docs/navigation.html',
-    );
-  },
-  get NavigatorIOS() {
-    invariant(
-      false,
-      'NavigatorIOS is deprecated and has been removed from this package. ' +
-        'Learn about alternative navigation solutions at http://facebook.github.io/react-native/docs/navigation.html',
-    );
-  },
 };
