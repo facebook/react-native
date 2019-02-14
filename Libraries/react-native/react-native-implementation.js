@@ -47,6 +47,12 @@ module.exports = {
     return require('ImageBackground');
   },
   get ImageEditor() {
+    warnOnce(
+      'image-editor-moved',
+      'Image Editor has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/image-editor' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-image-editor',
+    );
     return require('ImageEditor');
   },
   get ImageStore() {
