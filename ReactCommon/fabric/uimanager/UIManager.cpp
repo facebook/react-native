@@ -47,7 +47,7 @@ SharedShadowNode UIManager::cloneNode(
       {
           .props = rawProps ? componentDescriptor.cloneProps(
                                   shadowNode->getProps(), *rawProps)
-                            : ShadowNodeFragment::nullSharedProps(),
+                            : ShadowNodeFragment::propsPlaceholder(),
           .children = children,
       });
 
