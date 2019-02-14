@@ -127,9 +127,7 @@ void Binding::installFabricUIManager(
             eventBeatManager, runtime, localJavaUIManager);
       };
 
-  // TODO: Provide non-empty impl for ReactNativeConfig.
-  std::shared_ptr<const ReactNativeConfig> config =
-      std::make_shared<const ReactNativeConfigHolder>(reactNativeConfig);
+  std::shared_ptr<const ReactNativeConfig> config = std::make_shared<const ReactNativeConfigHolder>(reactNativeConfig);
   contextContainer->registerInstance(config, "ReactNativeConfig");
   contextContainer->registerInstance<EventBeatFactory>(
       synchronousBeatFactory, "synchronous");
