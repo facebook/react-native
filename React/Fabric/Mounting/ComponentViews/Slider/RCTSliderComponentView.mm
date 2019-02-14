@@ -161,18 +161,18 @@ using namespace facebook::react;
   bool havePreviousData = previousData != nullptr;
 
   if (!havePreviousData || _sliderLocalData->getTrackImageSource() != previousData->getTrackImageSource()) {
-    self.trackImageCoordinator = _sliderLocalData->getTrackImageRequest().getObserverCoordinator();
+    self.trackImageCoordinator = &_sliderLocalData->getTrackImageRequest().getObserverCoordinator();
   }
   if (!havePreviousData ||
       _sliderLocalData->getMinimumTrackImageSource() != previousData->getMinimumTrackImageSource()) {
-    self.minimumTrackImageCoordinator = _sliderLocalData->getMinimumTrackImageRequest().getObserverCoordinator();
+    self.minimumTrackImageCoordinator = &_sliderLocalData->getMinimumTrackImageRequest().getObserverCoordinator();
   }
   if (!havePreviousData ||
       _sliderLocalData->getMaximumTrackImageSource() != previousData->getMaximumTrackImageSource()) {
-    self.maximumTrackImageCoordinator = _sliderLocalData->getMaximumTrackImageRequest().getObserverCoordinator();
+    self.maximumTrackImageCoordinator = &_sliderLocalData->getMaximumTrackImageRequest().getObserverCoordinator();
   }
   if (!havePreviousData || _sliderLocalData->getThumbImageSource() != previousData->getThumbImageSource()) {
-    self.thumbImageCoordinator = _sliderLocalData->getThumbImageRequest().getObserverCoordinator();
+    self.thumbImageCoordinator = &_sliderLocalData->getThumbImageRequest().getObserverCoordinator();
   }
 }
 

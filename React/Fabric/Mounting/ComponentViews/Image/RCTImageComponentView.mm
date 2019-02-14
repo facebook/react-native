@@ -83,7 +83,7 @@
   bool havePreviousData = previousData != nullptr;
 
   if (!havePreviousData || _imageLocalData->getImageSource() != previousData->getImageSource()) {
-    self.coordinator = _imageLocalData->getImageRequest().getObserverCoordinator();
+    self.coordinator = &_imageLocalData->getImageRequest().getObserverCoordinator();
 
     // Loading actually starts a little before this, but this is the first time we know
     // the image is loading and can fire an event from this component

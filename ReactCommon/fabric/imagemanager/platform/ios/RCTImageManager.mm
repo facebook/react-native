@@ -30,11 +30,17 @@ using namespace facebook::react;
 - (ImageRequest)requestImage:(const ImageSource &)imageSource {
   auto imageRequest = ImageRequest(imageSource);
 
-  auto observerCoordinator = imageRequest.getObserverCoordinator();
+  auto weakObserverCoordinator =
+      (std::weak_ptr<const ImageResponseObserverCoordinator>)imageRequest.getSharedObserverCoordinator();
 
   NSURLRequest *request = NSURLRequestFromImageSource(imageSource);
 
   auto completionBlock = ^(NSError *error, UIImage *image) {
+    auto observerCoordinator = weakObserverCoordinator.lock();
+    if (!observerCoordinator) {
+      return;
+    }
+
     if (image && !error) {
       auto imageResponse = ImageResponse(
           std::shared_ptr<void>((__bridge_retained void *)image, CFRelease));
@@ -46,6 +52,11 @@ using namespace facebook::react;
   };
 
   auto progressBlock = ^(int64_t progress, int64_t total) {
+    auto observerCoordinator = weakObserverCoordinator.lock();
+    if (!observerCoordinator) {
+      return;
+    }
+
     observerCoordinator->nativeImageResponseProgress(progress / (float)total);
   };
 

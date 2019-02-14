@@ -40,9 +40,14 @@ void ImageRequest::setCancelationFunction(
   cancelRequest_ = cancelationFunction;
 }
 
-const ImageResponseObserverCoordinator *ImageRequest::getObserverCoordinator()
+const ImageResponseObserverCoordinator &ImageRequest::getObserverCoordinator()
     const {
-  return coordinator_.get();
+  return *coordinator_;
+}
+
+const std::shared_ptr<const ImageResponseObserverCoordinator>
+    &ImageRequest::getSharedObserverCoordinator() const {
+  return coordinator_;
 }
 
 } // namespace react
