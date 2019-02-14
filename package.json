@@ -109,6 +109,7 @@
     "cli.js",
     "flow",
     "init.sh",
+    "local-cli",
     "scripts/ios-configure-glog.sh",
     "scripts/ios-install-third-party.sh",
     "scripts/launchPackager.bat",
