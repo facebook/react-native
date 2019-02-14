@@ -525,7 +525,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = "autoComplete")
   public void setTextContentType(ReactEditText view, @Nullable String autocomplete) {
-    if ("username".equals(autocomplete)) {
+    if (autocomplete == null) {
+      view.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO);
+    } else if ("username".equals(autocomplete)) {
       view.setAutofillHints(View.AUTOFILL_HINT_USERNAME);
     } else if ("password".equals(autocomplete)) {
       view.setAutofillHints(View.AUTOFILL_HINT_PASSWORD);
