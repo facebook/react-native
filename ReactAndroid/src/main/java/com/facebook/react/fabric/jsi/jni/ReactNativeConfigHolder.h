@@ -7,28 +7,30 @@
 
 #pragma once
 
-#include <memory>
 #include <fb/fbjni.h>
+#include <react/config/ReactNativeConfig.h>
 #include <react/jni/JMessageQueueThread.h>
 #include <react/jni/ReadableNativeMap.h>
-#include <react/config/ReactNativeConfig.h>
+#include <memory>
 
 namespace facebook {
 namespace react {
 
 /**
- * Implementation of ReactNativeConfig that wraps a FabricMobileConfig Java object.
+ * Implementation of ReactNativeConfig that wraps a FabricMobileConfig Java
+ * object.
  */
 class ReactNativeConfigHolder : public ReactNativeConfig {
-public:
-  ReactNativeConfigHolder(jni::alias_ref<jobject> reactNativeConfig) : reactNativeConfig_(reactNativeConfig) {};
+ public:
+  ReactNativeConfigHolder(jni::alias_ref<jobject> reactNativeConfig)
+      : reactNativeConfig_(reactNativeConfig){};
 
-  bool getBool(const std::string &param) const override;
-  std::string getString(const std::string &param) const override;
-  int64_t getInt64(const std::string &param) const override;
-  double getDouble(const std::string &param) const override;
+  bool getBool(const std::string& param) const override;
+  std::string getString(const std::string& param) const override;
+  int64_t getInt64(const std::string& param) const override;
+  double getDouble(const std::string& param) const override;
 
-private:
+ private:
   jni::alias_ref<jobject> reactNativeConfig_;
 };
 
