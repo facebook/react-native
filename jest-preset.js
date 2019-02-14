@@ -24,7 +24,7 @@ module.exports = {
   },
   modulePathIgnorePatterns: [`${dir}/Libraries/react-native/`],
   transform: {
-    '^.+\\.(js|ts|tsx)$': 'babel-jest',
+    '^.+\\.(js|ts|tsx|jsx)$': 'babel-jest',
     '^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp)$': require.resolve(
       './jest/assetFileTransformer.js',
     ),
@@ -33,8 +33,8 @@ module.exports = {
     'node_modules/(?!(jest-)?react-native|react-clone-referenced-element)',
   ],
   testMatch: [
-    '**/__tests__/**/*.(js|ts|tsx)',
-    '**/?(*.)+(spec|test).(js|ts|tsx)',
+    '**/__tests__/**/*.(js|ts|tsx|jsx)',
+    '**/?(*.)+(spec|test).(js|ts|tsx|jsx)',
   ],
   setupFiles: [require.resolve('./jest/setup.js')],
   testEnvironment: 'node',
