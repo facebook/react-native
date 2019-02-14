@@ -78,8 +78,8 @@ afterEvaluate {
 
             enabled config."bundleIn${targetName}" != null
               ? config."bundleIn${targetName}"
-              : config."bundleIn${buildTypeName.capitalize()}" != null
-                ? config."bundleIn${buildTypeName.capitalize()}"
+              : config."bundleIn${variant.buildType.name.capitalize()}" != null
+                ? config."bundleIn${variant.buildType.name.capitalize()}"
                 : targetName.toLowerCase().contains("release")
         }
 
