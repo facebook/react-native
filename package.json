@@ -129,7 +129,8 @@
     "ReactCommon",
     "README.md",
     "third-party-podspecs",
-    "template"
+    "template",
+    "local-cli"
   ],
   "scripts": {
     "start": "node cli.js start",
