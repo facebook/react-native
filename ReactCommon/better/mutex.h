@@ -9,16 +9,11 @@
 
 #include <folly/SharedMutex.h>
 #include <mutex>
-#include <shared_mutex>
 
 namespace facebook {
 namespace better {
 
-template <typename T>
-using shared_lock = std::shared_lock<T>;
-
-template <typename T>
-using shared_mutex = folly::SharedMutex<T>;
+using shared_mutex = folly::SharedMutex;
 
 } // namespace better
 } // namespace facebook
