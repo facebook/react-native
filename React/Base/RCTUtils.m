@@ -706,9 +706,9 @@ UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
     image = [UIImage imageNamed:imageName];
   }
 
-  if (!image && imageURL.isFileURL) {
+  if (!image) {
     // Attempt to load from the file system
-    NSString *filePath = imageURL.path;
+    NSString *filePath = [NSString stringWithUTF8String:[imageURL fileSystemRepresentation]];
     if (filePath.pathExtension.length == 0) {
       filePath = [filePath stringByAppendingPathExtension:@"png"];
     }
