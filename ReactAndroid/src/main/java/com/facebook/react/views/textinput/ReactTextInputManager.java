@@ -354,7 +354,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     setCursorColor(view, color);
   }
 
-  private void setCursorColor(ReactEditText view, @Nullable Integer color) {
+  @ReactProp(name = "cursorColor", customType = "Color")
+  public void setCursorColor(ReactEditText view, @Nullable Integer color) {
     // Evil method that uses reflection because there is no public API to changes
     // the cursor color programmatically.
     // Based on http://stackoverflow.com/questions/25996032/how-to-change-programatically-edittext-cursor-color-in-android.
