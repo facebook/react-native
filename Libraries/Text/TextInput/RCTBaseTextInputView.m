@@ -365,8 +365,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
 
-  // Detect when `backedTextInputView` updates happend that didn't invoke `shouldChangeTextInRange`
-  // (e.g. typing simplified chinese in pinyin will insert and remove spaces without
+  // Detect when `backedTextInputView` updates happened that didn't invoke `shouldChangeTextInRange`
+  // (e.g. typing simplified Chinese in pinyin will insert and remove spaces without
   // calling shouldChangeTextInRange).  This will cause JS to get out of sync so we
   // update the mismatched range.
   NSRange currentRange;
