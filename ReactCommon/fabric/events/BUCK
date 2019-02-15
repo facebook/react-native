@@ -49,13 +49,13 @@ rn_xplat_cxx_library(
     tests = [":tests"],
     visibility = ["PUBLIC"],
     deps = [
-        "xplat//fbsystrace:fbsystrace",
-        "xplat//folly:headers_only",
-        "xplat//folly:memory",
-        "xplat//folly:molly",
-        "xplat//jsi:JSIDynamic",
-        "xplat//jsi:jsi",
-        "xplat//third-party/glog:glog",
+        "fbsource//xplat/fbsystrace:fbsystrace",
+        "fbsource//xplat/folly:headers_only",
+        "fbsource//xplat/folly:memory",
+        "fbsource//xplat/folly:molly",
+        "fbsource//xplat/jsi:JSIDynamic",
+        "fbsource//xplat/jsi:jsi",
+        "fbsource//xplat/third-party/glog:glog",
         react_native_xplat_target("fabric/debug:debug"),
     ],
 )
@@ -73,8 +73,8 @@ fb_xplat_cxx_test(
     contacts = ["oncall+react_native@xmail.facebook.com"],
     platforms = (ANDROID, APPLE),
     deps = [
-        "xplat//folly:molly",
-        "xplat//third-party/gmock:gtest",
+        "fbsource//xplat/folly:molly",
+        "fbsource//xplat/third-party/gmock:gtest",
         ":events",
     ],
 )

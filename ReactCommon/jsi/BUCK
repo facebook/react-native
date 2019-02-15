@@ -55,7 +55,7 @@ rn_xplat_cxx_library(
     ],
     xcode_public_headers_symlinks = True,
     deps = [
-        "xplat//folly:molly",
+        "fbsource//xplat/folly:molly",
         react_native_xplat_dep("jsi:jsi"),
     ],
 )
@@ -82,7 +82,7 @@ rn_xplat_cxx_library(
         (
             "^(linux|gcc|platform)",
             [
-                "xplat//jsc:jsc",
+                "fbsource//xplat/jsc:jsc",
             ],
         ),
     ],
@@ -92,7 +92,7 @@ rn_xplat_cxx_library(
         "-O3",
     ],
     fbandroid_deps = [
-        "xplat//jsc:jsc",
+        "fbsource//xplat/jsc:jsc",
     ],
     fbobjc_compiler_flags = [
         "-Os",
