@@ -18,7 +18,7 @@ We have added a number of default run scripts to the `package.json` file to simp
 
 `npm run test-android-run-unit` - Runs all the unit tests that have been built in the latest react/android docker image (note: you need to run test-android-build before executing this if the image does not exist it will fail)
 
-`npm run test-android-run-instrumentation` - Runs all the instrumentation tests that have been built in the latest react/android docker image (note: you need to run test-android-build before executing this if the image does not exist it will fail). You can also pass additional flags to filter which tests instrumentation tests are run. Ex: `npm run test-android-run-instrumentation -- --filter=TestIdTestCase` to only run the TestIdTestCase instrumentation test. See below for more information
+`npm run test-android-run-instrumentation` - Runs all the instrumentation tests that have been built in the latest react/android docker image. If the image does not exist, run `test-android-build` before. You can also pass additional flags to filter which tests instrumentation tests are run. Ex: `npm run test-android-run-instrumentation -- --filter=TestIdTestCase` to only run the TestIdTestCase instrumentation test. See below for more information
 on the instrumentation test flags.
 
 `npm run test-android-run-e2e` - Runs all the end to end tests that have been built in the latest react/android docker image (note: you need to run test-android-build before executing this if the image does not exist it will fail)
