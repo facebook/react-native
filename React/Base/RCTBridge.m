@@ -287,6 +287,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
    * Any thread
    */
   dispatch_async(dispatch_get_main_queue(), ^{
+    // WARNING: Invalidation is async, so it may not finish before re-setting up the bridge,
+    // causing some issues. TODO: revisit this post-Fabric/TurboModule.
     [self invalidate];
     [self setUp];
   });
