@@ -338,11 +338,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   NSString *previousText = [_predictedText substringWithRange:range] ?: @"";
 
-  if (!_predictedText || backedTextInputView.attributedText.string.length == 0) {
-    _predictedText = text;
-  } else {
-    _predictedText = [_predictedText stringByReplacingCharactersInRange:range withString:text];
-  }
+  _predictedText = [backedTextInputView.attributedText.string stringByReplacingCharactersInRange:range withString:text];
 
   if (_onTextInput) {
     _onTextInput(@{
