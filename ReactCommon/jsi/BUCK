@@ -12,6 +12,7 @@ rn_xplat_cxx_library(
         "instrumentation.h",
         "jsi.h",
         "jsi-inl.h",
+        "jsilib.h",
     ],
     compiler_flags = [
         "-O3",

@@ -9,6 +9,7 @@
 #include <atomic>
 #include <condition_variable>
 #include <cstdlib>
+#include <jsi/jsilib.h>
 #include <mutex>
 #include <queue>
 #include <sstream>
@@ -35,6 +36,13 @@ class JSCRuntime : public jsi::Runtime {
   // Retains ctx
   JSCRuntime(JSGlobalContextRef ctx);
   ~JSCRuntime();
+
+  std::shared_ptr<const jsi::PreparedJavaScript> prepareJavaScript(
+      const std::shared_ptr<const jsi::Buffer> &buffer,
+      std::string sourceURL) override;
+
+  void evaluatePreparedJavaScript(
+    const std::shared_ptr<const jsi::PreparedJavaScript>& js) override;
 
   void evaluateJavaScript(
       const std::shared_ptr<const jsi::Buffer> &buffer,
@@ -316,6 +324,23 @@ JSCRuntime::~JSCRuntime() {
   assert(
       stringCounter_ == 0 && "JSCRuntime destroyed with a dangling API string");
 #endif
+}
+
+std::shared_ptr<const jsi::PreparedJavaScript> JSCRuntime::prepareJavaScript(
+    const std::shared_ptr<const jsi::Buffer> &buffer,
+    std::string sourceURL) {
+  return std::make_shared<jsi::SourceJavaScriptPreparation>(
+      buffer, std::move(sourceURL));
+}
+
+void JSCRuntime::evaluatePreparedJavaScript(
+  const std::shared_ptr<const jsi::PreparedJavaScript>& js) {
+  assert(
+      dynamic_cast<const jsi::SourceJavaScriptPreparation*>(js.get()) &&
+      "preparedJavaScript must be a SourceJavaScriptPreparation");
+  auto sourceJs =
+      std::static_pointer_cast<const jsi::SourceJavaScriptPreparation>(js);
+  evaluateJavaScript(sourceJs, sourceJs->sourceURL());
 }
 
 void JSCRuntime::evaluateJavaScript(

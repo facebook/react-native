@@ -794,6 +794,9 @@
 		3DFE0D1B1DF8575800459392 /* YGMacros.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 130A77041DF767AF001F9587 /* YGMacros.h */; };
 		3DFE0D1C1DF8575800459392 /* Yoga.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 130A77081DF767AF001F9587 /* Yoga.h */; };
 		3EDCA8A51D3591E700450C31 /* RCTErrorInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3EDCA8A41D3591E700450C31 /* RCTErrorInfo.m */; };
+		4F56C93822167A4800DB9F3F /* jsilib.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F56C93722167A4800DB9F3F /* jsilib.h */; };
+		4F56C93922167A4D00DB9F3F /* jsilib.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 4F56C93722167A4800DB9F3F /* jsilib.h */; };
+		4F56C93A2216A3B700DB9F3F /* jsilib.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 4F56C93722167A4800DB9F3F /* jsilib.h */; };
 		50E98FEA21460B0D00CD9289 /* RCTWKWebViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 50E98FE621460B0D00CD9289 /* RCTWKWebViewManager.m */; };
 		50E98FEB21460B0D00CD9289 /* RCTWKWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 50E98FE721460B0D00CD9289 /* RCTWKWebView.h */; };
 		50E98FEC21460B0D00CD9289 /* RCTWKWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 50E98FE821460B0D00CD9289 /* RCTWKWebView.m */; };
@@ -1753,6 +1756,7 @@
 				ED296FC7214C9B4B00B7C4FE /* instrumentation.h in Copy Headers */,
 				ED296FC6214C9B4400B7C4FE /* JSIDynamic.h in Copy Headers */,
 				ED296FC5214C9B3E00B7C4FE /* jsi-inl.h in Copy Headers */,
+				4F56C93A2216A3B700DB9F3F /* jsilib.h in Copy Headers */,
 			);
 			name = "Copy Headers";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1780,6 +1784,7 @@
 				EDEBC71D214B40F900DD5AC8 /* JSIDynamic.h in Copy Headers */,
 				EDEBC71E214B40F900DD5AC8 /* JSCRuntime.h in Copy Headers */,
 				EDEBC71F214B40F900DD5AC8 /* jsi.h in Copy Headers */,
+				4F56C93922167A4D00DB9F3F /* jsilib.h in Copy Headers */,
 			);
 			name = "Copy Headers";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2058,6 +2063,7 @@
 		3EDCA8A21D3591E700450C31 /* RCTErrorCustomizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTErrorCustomizer.h; sourceTree = "<group>"; };
 		3EDCA8A31D3591E700450C31 /* RCTErrorInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTErrorInfo.h; sourceTree = "<group>"; };
 		3EDCA8A41D3591E700450C31 /* RCTErrorInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTErrorInfo.m; sourceTree = "<group>"; };
+		4F56C93722167A4800DB9F3F /* jsilib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jsilib.h; sourceTree = "<group>"; };
 		50E98FE621460B0D00CD9289 /* RCTWKWebViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTWKWebViewManager.m; sourceTree = "<group>"; };
 		50E98FE721460B0D00CD9289 /* RCTWKWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTWKWebView.h; sourceTree = "<group>"; };
 		50E98FE821460B0D00CD9289 /* RCTWKWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTWKWebView.m; sourceTree = "<group>"; };
@@ -3040,6 +3046,7 @@
 				EDEBC6DF214B3F6800DD5AC8 /* BUCK */,
 				EDEBC6E0214B3F6800DD5AC8 /* instrumentation.h */,
 				EDEBC6E1214B3F6800DD5AC8 /* jsi.h */,
+				4F56C93722167A4800DB9F3F /* jsilib.h */,
 			);
 			path = jsi;
 			sourceTree = "<group>";
@@ -3590,6 +3597,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EDEBC6E9214B3F6800DD5AC8 /* jsi.h in Headers */,
+				4F56C93822167A4800DB9F3F /* jsilib.h in Headers */,
 				EDEBC6E7214B3F6800DD5AC8 /* JSCRuntime.h in Headers */,
 				EDEBC6E5214B3F6800DD5AC8 /* JSIDynamic.h in Headers */,
 				EDEBC6E2214B3F6800DD5AC8 /* jsi-inl.h in Headers */,
