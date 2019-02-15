@@ -1,0 +1,8 @@
+{
+  "name": "react-native-symbolicate",
+  "version": "0.0.1",
+  "dependencies": {
+    "source-map": "^0.5.6",
+    "through2": "^2.0.1"
+  }
+}
