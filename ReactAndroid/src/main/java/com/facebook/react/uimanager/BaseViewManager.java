@@ -7,6 +7,7 @@ package com.facebook.react.uimanager;
 
 import android.graphics.Color;
 import android.os.Build;
+import android.support.v4.view.ViewCompat;
 import android.view.View;
 import android.view.ViewParent;
 import com.facebook.react.R;
@@ -156,13 +157,13 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @ReactProp(name = PROP_IMPORTANT_FOR_ACCESSIBILITY)
   public void setImportantForAccessibility(T view, String importantForAccessibility) {
     if (importantForAccessibility == null || importantForAccessibility.equals("auto")) {
-      view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+      ViewCompat.setImportantForAccessibility(view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
     } else if (importantForAccessibility.equals("yes")) {
-      view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+      ViewCompat.setImportantForAccessibility(view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES);
     } else if (importantForAccessibility.equals("no")) {
-      view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+      ViewCompat.setImportantForAccessibility(view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO);
     } else if (importantForAccessibility.equals("no-hide-descendants")) {
-      view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+      ViewCompat.setImportantForAccessibility(view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
     }
   }
 

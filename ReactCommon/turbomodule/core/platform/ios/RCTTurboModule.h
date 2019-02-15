@@ -15,7 +15,8 @@
 #import <jsireact/JSCallInvoker.h>
 #import <jsireact/TurboModule.h>
 
-#define RCT_IS_TURBO_MODULE_INSTANCE(module) ((RCTTurboModuleEnabled() && [[(module) class] conformsToProtocol:@protocol(RCTTurboModule)]))
+#define RCT_IS_TURBO_MODULE_CLASS(klass) ((RCTTurboModuleEnabled() && [(klass) conformsToProtocol:@protocol(RCTTurboModule)]))
+#define RCT_IS_TURBO_MODULE_INSTANCE(module) RCT_IS_TURBO_MODULE_CLASS([(module) class])
 
 namespace facebook {
 namespace react {

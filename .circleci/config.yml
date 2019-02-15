@@ -520,7 +520,7 @@ jobs:
             yarn install --non-interactive --cache-folder ~/.cache/yarn
             echo -e "\\x1B[36mAnalyzing pull request\\x1B[0m"; \
             DANGER_GITHUB_API_TOKEN="$PUBLIC_PULLBOT_GITHUB_TOKEN_A""$PUBLIC_PULLBOT_GITHUB_TOKEN_B" \
-            yarn danger
+            yarn danger ci --use-github-checks
           when: always
       - save-cache: *save-cache-analysis
 

@@ -153,7 +153,7 @@
     "test-ios-e2e": "detox test -c ios.sim.release"
   },
   "peerDependencies": {
-    "react": "16.6.3"
+    "react": "16.8.1"
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0",
@@ -223,15 +223,16 @@
     "eslint-plugin-jest": "21.8.0",
     "eslint-plugin-prettier": "2.6.0",
     "eslint-plugin-react": "7.8.2",
+    "eslint-plugin-react-hooks": "^1.0.1",
     "eslint-plugin-react-native": "3.5.0",
     "flow-bin": "^0.92.0",
     "jest": "24.0.0-alpha.6",
     "jest-junit": "5.2.0",
     "jscodeshift": "^0.6.2",
     "prettier": "1.13.6",
-    "react": "16.6.3",
+    "react": "16.8.1",
     "react-native-dummy": "0.2.0",
-    "react-test-renderer": "16.7.0-alpha.2",
+    "react-test-renderer": "16.8.1",
     "shelljs": "^0.7.8"
   },
   "detox": {
