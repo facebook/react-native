@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,9 +10,9 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {Slider, Text, StyleSheet, View} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {Slider, Text, StyleSheet, View} = ReactNative;
 
 class SliderExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   static defaultProps = {
@@ -68,11 +68,7 @@ class SlidingCompleteExample extends React.Component<
   }
 }
 
-var styles = StyleSheet.create({
-  slider: {
-    height: 10,
-    margin: 10,
-  },
+const styles = StyleSheet.create({
   text: {
     fontSize: 14,
     textAlign: 'center',
@@ -128,8 +124,7 @@ exports.examples = [
     },
   },
   {
-    title: 'Custom thumb color',
-    platform: 'android',
+    title: 'Custom thumb tint color',
     render(): React.Element<any> {
       return <SliderExample thumbTintColor={'blue'} />;
     },

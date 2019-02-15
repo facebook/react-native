@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -35,10 +35,10 @@ const TEMP = exec('mktemp -d /tmp/react-native-XXXXXXXX').stdout.trim();
 // of react-native, we will create a temp file inside the template
 // and check that it exists after `react-native init
 const MARKER_IOS = exec(
-  `mktemp ${ROOT}/local-cli/templates/HelloWorld/ios/HelloWorld/XXXXXXXX`,
+  `mktemp ${ROOT}/template/ios/HelloWorld/XXXXXXXX`,
 ).stdout.trim();
 const MARKER_ANDROID = exec(
-  `mktemp ${ROOT}/local-cli/templates/HelloWorld/android/XXXXXXXX`,
+  `mktemp ${ROOT}/template/android/XXXXXXXX`,
 ).stdout.trim();
 const numberOfRetries = argv.retries || 1;
 let SERVER_PID;
@@ -216,6 +216,7 @@ try {
             `"${scheme}"`,
             '-sdk',
             sdk,
+            '-UseModernBuildSystem=NO',
             'test',
           ].join(' ') +
             ' | ' +

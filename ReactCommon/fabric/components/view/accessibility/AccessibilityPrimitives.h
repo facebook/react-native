@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,7 +12,7 @@
 namespace facebook {
 namespace react {
 
-enum class AccessibilityTraits: uint32_t {
+enum class AccessibilityTraits : uint32_t {
   None = 0,
   Button = (1 << 0),
   Link = (1 << 1),
@@ -27,13 +27,21 @@ enum class AccessibilityTraits: uint32_t {
   SearchField = (1 << 10),
   StartsMediaSession = (1 << 11),
   Adjustable = (1 << 12),
-  DirectInteraction = (1 << 13),
+  AllowsDirectInteraction = (1 << 13),
   CausesPageTurn = (1 << 14),
   Header = (1 << 15),
 };
 
-constexpr enum AccessibilityTraits operator |(const enum AccessibilityTraits lhs, const enum AccessibilityTraits rhs) {
+constexpr enum AccessibilityTraits operator|(
+    const enum AccessibilityTraits lhs,
+    const enum AccessibilityTraits rhs) {
   return (enum AccessibilityTraits)((uint32_t)lhs | (uint32_t)rhs);
+}
+
+constexpr enum AccessibilityTraits operator&(
+    const enum AccessibilityTraits lhs,
+    const enum AccessibilityTraits rhs) {
+  return (enum AccessibilityTraits)((uint32_t)lhs & (uint32_t)rhs);
 }
 
 } // namespace react

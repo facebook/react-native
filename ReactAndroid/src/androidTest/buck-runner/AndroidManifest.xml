@@ -7,6 +7,8 @@
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
   <!-- needed for screenshot tests -->
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+  <!-- needed for image onError tests -->
+  <uses-permission android:name="android.permission.INTERNET" />
 
   <application
     android:hardwareAccelerated="false">

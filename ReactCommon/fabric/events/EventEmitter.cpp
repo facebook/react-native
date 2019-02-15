@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,42 +8,96 @@
 #include "EventEmitter.h"
 
 #include <folly/dynamic.h>
+#include <jsi/JSIDynamic.h>
+#include <jsi/jsi.h>
+#include <react/debug/SystraceSection.h>
+
+#include "RawEvent.h"
 
 namespace facebook {
 namespace react {
 
-EventEmitter::EventEmitter(const EventTarget &eventTarget, const Tag &tag, const SharedEventDispatcher &eventDispatcher):
-  eventTarget_(eventTarget),
-  tag_(tag),
-  eventDispatcher_(eventDispatcher) {
+// TODO(T29874519): Get rid of "top" prefix once and for all.
+/*
+ * Capitalizes the first letter of the event type and adds "top" prefix if
+ * necessary (e.g. "layout" becames "topLayout").
+ */
+static std::string normalizeEventType(const std::string &type) {
+  auto prefixedType = type;
+  if (type.find("top", 0) != 0) {
+    prefixedType.insert(0, "top");
+    prefixedType[3] = toupper(prefixedType[3]);
+  }
+  return prefixedType;
 }
 
-EventEmitter::~EventEmitter() {
-  auto &&eventDispatcher = eventDispatcher_.lock();
-  if (eventDispatcher && eventTarget_) {
-    eventDispatcher->releaseEventTarget(eventTarget_);
-  }
+std::mutex &EventEmitter::DispatchMutex() {
+  static std::mutex mutex;
+  return mutex;
+}
+
+ValueFactory EventEmitter::defaultPayloadFactory() {
+  static auto payloadFactory =
+      ValueFactory{[](jsi::Runtime &runtime) { return jsi::Object(runtime); }};
+  return payloadFactory;
+}
+
+EventEmitter::EventEmitter(
+    SharedEventTarget eventTarget,
+    Tag tag,
+    WeakEventDispatcher eventDispatcher)
+    : eventTarget_(std::move(eventTarget)),
+      eventDispatcher_(std::move(eventDispatcher)) {}
+
+void EventEmitter::dispatchEvent(
+    const std::string &type,
+    const folly::dynamic &payload,
+    const EventPriority &priority) const {
+  dispatchEvent(
+      type,
+      [payload](jsi::Runtime &runtime) {
+        return valueFromDynamic(runtime, payload);
+      },
+      priority);
 }
 
 void EventEmitter::dispatchEvent(
-  const std::string &type,
-  const folly::dynamic &payload,
-  const EventPriority &priority
-) const {
-  const auto &eventDispatcher = eventDispatcher_.lock();
+    const std::string &type,
+    const ValueFactory &payloadFactory,
+    const EventPriority &priority) const {
+  SystraceSection s("EventEmitter::dispatchEvent");
+
+  auto eventDispatcher = eventDispatcher_.lock();
   if (!eventDispatcher) {
     return;
   }
 
-  assert(eventTarget_ && "Attempted to dispatch an event without an eventTarget.");
+  eventDispatcher->dispatchEvent(
+      RawEvent(normalizeEventType(type), payloadFactory, eventTarget_),
+      priority);
+}
 
-  // Mixing `target` into `payload`.
-  assert(payload.isObject());
-  folly::dynamic extendedPayload = folly::dynamic::object("target", tag_);
-  extendedPayload.merge_patch(payload);
+void EventEmitter::setEnabled(bool enabled) const {
+  enableCounter_ += enabled ? 1 : -1;
 
-  // TODO(T29610783): Reconsider using dynamic dispatch here.
-  eventDispatcher->dispatchEvent(eventTarget_, type, extendedPayload, priority);
+  bool shouldBeEnabled = enableCounter_ > 0;
+  if (isEnabled_ != shouldBeEnabled) {
+    isEnabled_ = shouldBeEnabled;
+    if (eventTarget_) {
+      eventTarget_->setEnabled(isEnabled_);
+    }
+  }
+
+  // Note: Initially, the state of `eventTarget_` and the value `enableCounter_`
+  // is mismatched intentionally (it's `non-null` and `0` accordingly). We need
+  // this to support an initial nebula state where the event target must be
+  // retained without any associated mounted node.
+  bool shouldBeRetained = enableCounter_ > 0;
+  if (shouldBeRetained != (eventTarget_ != nullptr)) {
+    if (!shouldBeRetained) {
+      eventTarget_.reset();
+    }
+  }
 }
 
 } // namespace react

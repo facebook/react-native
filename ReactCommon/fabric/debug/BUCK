@@ -1,17 +1,14 @@
 load(
-    "//configurations/buck/apple:flag_defs.bzl",
-    "OBJC_ARC_PREPROCESSOR_FLAGS",
-    "get_application_ios_flags",
+    "@fbsource//tools/build_defs/apple:flag_defs.bzl",
     "get_debug_preprocessor_flags",
 )
 load(
-    "//ReactNative:DEFS.bzl",
+    "//tools/build_defs/oss:rn_defs.bzl",
     "ANDROID",
     "APPLE",
     "fb_xplat_cxx_test",
     "get_apple_compiler_flags",
     "get_apple_inspector_flags",
-    "react_native_xplat_target",
     "rn_xplat_cxx_library",
     "subdir_glob",
 )
@@ -33,7 +30,7 @@ rn_xplat_cxx_library(
         [
             ("", "*.h"),
         ],
-        prefix = "fabric/debug",
+        prefix = "react/debug",
     ),
     compiler_flags = [
         "-fexceptions",
@@ -43,9 +40,6 @@ rn_xplat_cxx_library(
     ],
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
-    fbobjc_tests = [
-        ":tests",
-    ],
     force_static = True,
     macosx_tests_override = [],
     platforms = (ANDROID, APPLE),
@@ -53,13 +47,13 @@ rn_xplat_cxx_library(
         "-DLOG_TAG=\"ReactNative\"",
         "-DWITH_FBSYSTRACE=1",
     ],
-    tests = [],
+    tests = [":tests"],
     visibility = ["PUBLIC"],
     deps = [
-        "xplat//fbsystrace:fbsystrace",
-        "xplat//folly:headers_only",
-        "xplat//folly:memory",
-        "xplat//folly:molly",
+        "fbsource//xplat/fbsystrace:fbsystrace",
+        "fbsource//xplat/folly:headers_only",
+        "fbsource//xplat/folly:memory",
+        "fbsource//xplat/folly:molly",
     ],
 )
 
@@ -74,10 +68,10 @@ fb_xplat_cxx_test(
         "-Wall",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
-    platforms = APPLE,
+    platforms = (ANDROID, APPLE),
     deps = [
-        "xplat//folly:molly",
-        "xplat//third-party/gmock:gtest",
+        "fbsource//xplat/folly:molly",
+        "fbsource//xplat/third-party/gmock:gtest",
         ":debug",
     ],
 )

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -101,9 +101,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     int inputType = editText.getInputType();
     editText.setInputType(inputType & (~InputType.TYPE_TEXT_FLAG_MULTI_LINE));
     editText.setReturnKeyType("done");
-    editText.setTextSize(
-        TypedValue.COMPLEX_UNIT_PX,
-        (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP)));
     return editText;
   }
 
@@ -159,7 +156,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @Override
   public Map<String, Object> getExportedCustomDirectEventTypeConstants() {
     return MapBuilder.<String, Object>builder()
-        .put(ScrollEventType.SCROLL.getJSEventName(), MapBuilder.of("registrationName", "onScroll"))
+        .put(ScrollEventType.getJSEventName(ScrollEventType.SCROLL), MapBuilder.of("registrationName", "onScroll"))
         .build();
   }
 
@@ -204,9 +201,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = ViewProps.FONT_SIZE, defaultFloat = ViewDefaults.FONT_SIZE_SP)
   public void setFontSize(ReactEditText view, float fontSize) {
-    view.setTextSize(
-        TypedValue.COMPLEX_UNIT_PX,
-        (int) Math.ceil(PixelUtil.toPixelFromSP(fontSize)));
+    view.setFontSize(fontSize);
   }
 
   @ReactProp(name = ViewProps.FONT_FAMILY)
@@ -220,6 +215,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         style,
         view.getContext().getAssets());
     view.setTypeface(newTypeface);
+  }
+
+  @ReactProp(name = ViewProps.MAX_FONT_SIZE_MULTIPLIER, defaultFloat = Float.NaN)
+  public void setMaxFontSizeMultiplier(ReactEditText view, float maxFontSizeMultiplier) {
+    view.setMaxFontSizeMultiplier(maxFontSizeMultiplier);
   }
 
   /**
@@ -322,6 +322,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = ViewProps.LETTER_SPACING, defaultFloat = 0)
   public void setLetterSpacing(ReactEditText view, float letterSpacing) {
     view.setLetterSpacingPt(letterSpacing);
+  }
+
+  @ReactProp(name = ViewProps.ALLOW_FONT_SCALING, defaultBoolean = true)
+  public void setAllowFontScaling(ReactEditText view, boolean allowFontScaling) {
+    view.setAllowFontScaling(allowFontScaling);
   }
 
   @ReactProp(name = "placeholder")

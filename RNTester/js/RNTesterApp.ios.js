@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,6 +10,7 @@
 
 'use strict';
 
+require('InitializeCore');
 const AsyncStorage = require('AsyncStorage');
 const BackHandler = require('BackHandler');
 const Linking = require('Linking');
@@ -30,15 +31,22 @@ const {
   Text,
   View,
   SafeAreaView,
+  YellowBox,
 } = ReactNative;
 
-import type {RNTesterExample} from './RNTesterList.ios';
+import type {RNTesterExample} from 'RNTesterTypes';
 import type {RNTesterAction} from './RNTesterActions';
 import type {RNTesterNavigationState} from './RNTesterNavigationReducer';
 
 type Props = {
   exampleFromAppetizeParams: string,
 };
+
+YellowBox.ignoreWarnings([
+  'ListView and SwipeableListView are deprecated',
+  'ListView is deprecated',
+  'Module RCTImagePickerManager requires main queue setup',
+]);
 
 const APP_STATE_KEY = 'RNTesterAppState.v2';
 
@@ -70,17 +78,8 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
         );
         const urlAction = URIActionMap(url);
         const launchAction = exampleAction || urlAction;
-        if (err || !storedString) {
-          const initialAction = launchAction || {type: 'InitialAction'};
-          this.setState(RNTesterNavigationReducer(undefined, initialAction));
-          return;
-        }
-        const storedState = JSON.parse(storedString);
-        if (launchAction) {
-          this.setState(RNTesterNavigationReducer(storedState, launchAction));
-          return;
-        }
-        this.setState(storedState);
+        const initialAction = launchAction || {type: 'InitialAction'};
+        this.setState(RNTesterNavigationReducer(undefined, initialAction));
       });
     });
 
@@ -111,7 +110,7 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
     }
     if (this.state.openExample) {
       const Component = RNTesterList.Modules[this.state.openExample];
-      if (Component.external) {
+      if (Component && Component.external) {
         return <Component onExampleExit={this._handleBack} />;
       } else {
         return (
@@ -125,9 +124,6 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
     return (
       <View style={styles.exampleContainer}>
         <Header title="RNTester" />
-        {/* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
-          * comment suppresses an error when upgrading Flow's support for
-          * React. To see the error delete this comment and run Flow. */}
         <RNTesterExampleList
           onNavigate={this._handleAction}
           list={RNTesterList}

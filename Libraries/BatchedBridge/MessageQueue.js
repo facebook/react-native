@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,7 +14,7 @@ const ErrorUtils = require('ErrorUtils');
 const Systrace = require('Systrace');
 
 const deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 const stringifySafe = require('stringifySafe');
 
 export type SpyData = {
@@ -60,7 +60,7 @@ class MessageQueue {
     this._failureCallbacks = {};
     this._callID = 0;
     this._lastFlush = 0;
-    this._eventLoopStartTime = new Date().getTime();
+    this._eventLoopStartTime = Date.now();
     this._immediatesCallback = null;
 
     if (__DEV__) {
@@ -141,7 +141,7 @@ class MessageQueue {
   }
 
   getEventLoopRunningTime() {
-    return new Date().getTime() - this._eventLoopStartTime;
+    return Date.now() - this._eventLoopStartTime;
   }
 
   registerCallableModule(name: string, module: Object) {
@@ -213,10 +213,12 @@ class MessageQueue {
           t === 'undefined' ||
           t === 'null' ||
           t === 'boolean' ||
-          t === 'number' ||
           t === 'string'
         ) {
           return true;
+        }
+        if (t === 'number') {
+          return isFinite(val);
         }
         if (t === 'function' || t !== 'object') {
           return false;
@@ -232,10 +234,25 @@ class MessageQueue {
         return true;
       };
 
+      // Replacement allows normally non-JSON-convertible values to be
+      // seen.  There is ambiguity with string values, but in context,
+      // it should at least be a strong hint.
+      const replacer = (key, val) => {
+        const t = typeof val;
+        if (t === 'function') {
+          return '<<Function ' + val.name + '>>';
+        } else if (t === 'number' && !isFinite(val)) {
+          return '<<' + val.toString() + '>>';
+        } else {
+          return val;
+        }
+      };
+
+      // Note that JSON.stringify
       invariant(
         isValidArgument(params),
         '%s is not usable as a native method argument',
-        params,
+        JSON.stringify(params, replacer),
       );
 
       // The params object should not be mutated after being queued
@@ -243,7 +260,7 @@ class MessageQueue {
     }
     this._queue[PARAMS].push(params);
 
-    const now = new Date().getTime();
+    const now = Date.now();
     if (
       global.nativeFlushQueueImmediate &&
       now - this._lastFlush >= MIN_TIME_BETWEEN_FLUSHES_MS
@@ -323,7 +340,7 @@ class MessageQueue {
   }
 
   __callFunction(module: string, method: string, args: any[]): any {
-    this._lastFlush = new Date().getTime();
+    this._lastFlush = Date.now();
     this._eventLoopStartTime = this._lastFlush;
     if (__DEV__ || this.__spy) {
       Systrace.beginEvent(`${module}.${method}(${stringifySafe(args)})`);
@@ -352,7 +369,7 @@ class MessageQueue {
   }
 
   __invokeCallback(cbID: number, args: any[]) {
-    this._lastFlush = new Date().getTime();
+    this._lastFlush = Date.now();
     this._eventLoopStartTime = this._lastFlush;
 
     // The rightmost bit of cbID indicates fail (0) or success (1), the other bits are the callID shifted left.

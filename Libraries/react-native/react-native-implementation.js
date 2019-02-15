@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,10 +10,11 @@
 
 'use strict';
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
+const warnOnce = require('warnOnce');
 
 // Export React, plus some native additions.
-const ReactNative = {
+module.exports = {
   // Components
   get AccessibilityInfo() {
     return require('AccessibilityInfo');
@@ -46,9 +47,22 @@ const ReactNative = {
     return require('ImageBackground');
   },
   get ImageEditor() {
+    warnOnce(
+      'image-editor-moved',
+      'Image Editor has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/image-editor' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-image-editor',
+    );
     return require('ImageEditor');
   },
   get ImageStore() {
+    warnOnce(
+      'imagestore-deprecation',
+      'ImageStore is deprecated and will be removed in a future release. ' +
+        'To get a base64-encoded string from a local image use either of the following third-party libraries:' +
+        "* expo-file-system: `readAsStringAsync(filepath, 'base64')`" +
+        "* react-native-fs: `readFile(filepath, 'base64')`",
+    );
     return require('ImageStore');
   },
   get InputAccessoryView() {
@@ -58,16 +72,24 @@ const ReactNative = {
     return require('KeyboardAvoidingView');
   },
   get ListView() {
+    warnOnce(
+      'listview-deprecation',
+      'ListView is deprecated and will be removed in a future release. ' +
+        'See https://fb.me/nolistview for more information',
+    );
     return require('ListView');
   },
   get MaskedViewIOS() {
+    warnOnce(
+      'maskedviewios-moved',
+      'MaskedViewIOS has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/masked-view' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-masked-view',
+    );
     return require('MaskedViewIOS');
   },
   get Modal() {
     return require('Modal');
-  },
-  get NavigatorIOS() {
-    return require('NavigatorIOS');
   },
   get Picker() {
     return require('Picker');
@@ -94,6 +116,12 @@ const ReactNative = {
     return require('SegmentedControlIOS');
   },
   get Slider() {
+    warnOnce(
+      'slider-moved',
+      'Slider has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/slider' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-slider',
+    );
     return require('Slider');
   },
   get SnapshotViewIOS() {
@@ -112,19 +140,18 @@ const ReactNative = {
     return require('SwipeableFlatList');
   },
   get SwipeableListView() {
+    warnOnce(
+      'swipablelistview-deprecation',
+      'ListView and SwipeableListView are deprecated and will be removed in a future release. ' +
+        'See https://fb.me/nolistview for more information',
+    );
     return require('SwipeableListView');
-  },
-  get TabBarIOS() {
-    return require('TabBarIOS');
   },
   get Text() {
     return require('Text');
   },
   get TextInput() {
     return require('TextInput');
-  },
-  get ToastAndroid() {
-    return require('ToastAndroid');
   },
   get ToolbarAndroid() {
     return require('ToolbarAndroid');
@@ -148,12 +175,24 @@ const ReactNative = {
     return require('View');
   },
   get ViewPagerAndroid() {
+    warnOnce(
+      'viewpager-moved',
+      'ViewPagerAndroid has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/viewpager' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-viewpager',
+    );
     return require('ViewPagerAndroid');
   },
   get VirtualizedList() {
     return require('VirtualizedList');
   },
   get WebView() {
+    warnOnce(
+      'webview-moved',
+      'WebView has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from 'react-native-webview' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-webview',
+    );
     return require('WebView');
   },
 
@@ -165,7 +204,11 @@ const ReactNative = {
     return require('Alert');
   },
   get AlertIOS() {
-    return require('AlertIOS');
+    warnOnce(
+      'alert-ios',
+      'AlertIOS is deprecated. Use the `Alert` module directly instead.',
+    );
+    return require('Alert');
   },
   get Animated() {
     return require('Animated');
@@ -177,11 +220,14 @@ const ReactNative = {
     return require('AppState');
   },
   get AsyncStorage() {
+    warnOnce(
+      'async-storage-moved',
+      'Async Storage has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/async-storage' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-async-storage',
+    );
     return require('AsyncStorage');
   },
-  get BackAndroid() {
-    return require('BackAndroid');
-  }, // deprecated: use BackHandler instead
   get BackHandler() {
     return require('BackHandler');
   },
@@ -228,6 +274,12 @@ const ReactNative = {
     return require('NativeEventEmitter');
   },
   get NetInfo() {
+    warnOnce(
+      'netinfo-moved',
+      'NetInfo has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/netinfo' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-netinfo',
+    );
     return require('NetInfo');
   },
   get PanResponder() {
@@ -240,6 +292,12 @@ const ReactNative = {
     return require('PixelRatio');
   },
   get PushNotificationIOS() {
+    warnOnce(
+      'pushNotificationIOS-moved',
+      'PushNotificationIOS has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/push-notification-ios' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-push-notification-ios',
+    );
     return require('PushNotificationIOS');
   },
   get Settings() {
@@ -260,6 +318,9 @@ const ReactNative = {
   get TimePickerAndroid() {
     return require('TimePickerAndroid');
   },
+  get ToastAndroid() {
+    return require('ToastAndroid');
+  },
   get TVEventHandler() {
     return require('TVEventHandler');
   },
@@ -269,11 +330,11 @@ const ReactNative = {
   get unstable_batchedUpdates() {
     return require('ReactNative').unstable_batchedUpdates;
   },
+  get UTFSequence() {
+    return require('UTFSequence');
+  },
   get Vibration() {
     return require('Vibration');
-  },
-  get VibrationIOS() {
-    return require('VibrationIOS');
   },
   get YellowBox() {
     return require('YellowBox');
@@ -304,27 +365,15 @@ const ReactNative = {
 
   // Prop Types
   get ColorPropType() {
-    return require('ColorPropType');
+    return require('DeprecatedColorPropType');
   },
   get EdgeInsetsPropType() {
-    return require('EdgeInsetsPropType');
+    return require('DeprecatedEdgeInsetsPropType');
   },
   get PointPropType() {
-    return require('PointPropType');
+    return require('DeprecatedPointPropType');
   },
   get ViewPropTypes() {
-    return require('ViewPropTypes');
-  },
-
-  // Deprecated
-  get Navigator() {
-    invariant(
-      false,
-      'Navigator is deprecated and has been removed from this package. It can now be installed ' +
-        'and imported from `react-native-deprecated-custom-components` instead of `react-native`. ' +
-        'Learn about alternative navigation solutions at http://facebook.github.io/react-native/docs/navigation.html',
-    );
+    return require('DeprecatedViewPropTypes');
   },
 };
-
-module.exports = ReactNative;

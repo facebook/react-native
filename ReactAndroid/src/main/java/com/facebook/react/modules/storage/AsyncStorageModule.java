@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -38,7 +38,7 @@ import static com.facebook.react.modules.storage.ReactDatabaseSupplier.VALUE_COL
 public final class AsyncStorageModule
     extends ReactContextBaseJavaModule implements ModuleDataCleaner.Cleanable {
 
-  protected static final String NAME = "AsyncSQLiteDBStorage";
+  public static final String NAME = "AsyncSQLiteDBStorage";
 
   // SQL variable number limit, defined by SQLITE_LIMIT_VARIABLE_NUMBER:
   // https://raw.githubusercontent.com/android/platform_external_sqlite/master/dist/sqlite3.c

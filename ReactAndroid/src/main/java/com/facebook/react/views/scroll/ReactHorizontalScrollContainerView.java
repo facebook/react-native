@@ -1,4 +1,4 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -6,6 +6,7 @@
 package com.facebook.react.views.scroll;
 
 import android.content.Context;
+import android.support.v4.view.ViewCompat;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
@@ -19,7 +20,7 @@ public class ReactHorizontalScrollContainerView extends ViewGroup {
   public ReactHorizontalScrollContainerView(Context context) {
     super(context);
     mLayoutDirection =
-        I18nUtil.getInstance().isRTL(context) ? LAYOUT_DIRECTION_RTL : LAYOUT_DIRECTION_LTR;
+        I18nUtil.getInstance().isRTL(context) ? ViewCompat.LAYOUT_DIRECTION_RTL : ViewCompat.LAYOUT_DIRECTION_LTR;
     mCurrentWidth = 0;
   }
 

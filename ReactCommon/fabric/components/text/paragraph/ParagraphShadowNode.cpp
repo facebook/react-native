@@ -1,42 +1,56 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
 #include "ParagraphShadowNode.h"
-
-#include <fabric/debug/DebugStringConvertibleItem.h>
-
-#import "ParagraphLocalData.h"
+#include "ParagraphLocalData.h"
+#include "ParagraphMeasurementCache.h"
 
 namespace facebook {
 namespace react {
 
-ComponentName ParagraphShadowNode::getComponentName() const {
-  return ComponentName("Paragraph");
-}
+const char ParagraphComponentName[] = "Paragraph";
 
 AttributedString ParagraphShadowNode::getAttributedString() const {
   if (!cachedAttributedString_.has_value()) {
-    cachedAttributedString_ =
-      BaseTextShadowNode::getAttributedString(getProps()->textAttributes, getChildren());
+    auto textAttributes = TextAttributes::defaultTextAttributes();
+    textAttributes.apply(getProps()->textAttributes);
+
+    cachedAttributedString_ = BaseTextShadowNode::getAttributedString(
+        textAttributes, shared_from_this());
   }
 
   return cachedAttributedString_.value();
 }
 
-void ParagraphShadowNode::setTextLayoutManager(SharedTextLayoutManager textLayoutManager) {
+void ParagraphShadowNode::setTextLayoutManager(
+    SharedTextLayoutManager textLayoutManager) {
   ensureUnsealed();
   textLayoutManager_ = textLayoutManager;
 }
 
-void ParagraphShadowNode::updateLocalData() {
+void ParagraphShadowNode::setMeasureCache(
+    const ParagraphMeasurementCache *cache) {
+  ensureUnsealed();
+  measureCache_ = cache;
+}
+
+void ParagraphShadowNode::updateLocalDataIfNeeded() {
   ensureUnsealed();
 
+  auto attributedString = getAttributedString();
+  auto currentLocalData =
+      std::static_pointer_cast<const ParagraphLocalData>(getLocalData());
+  if (currentLocalData &&
+      currentLocalData->getAttributedString() == attributedString) {
+    return;
+  }
+
   auto localData = std::make_shared<ParagraphLocalData>();
-  localData->setAttributedString(getAttributedString());
+  localData->setAttributedString(std::move(attributedString));
   localData->setTextLayoutManager(textLayoutManager_);
   setLocalData(localData);
 }
@@ -44,16 +58,35 @@ void ParagraphShadowNode::updateLocalData() {
 #pragma mark - LayoutableShadowNode
 
 Size ParagraphShadowNode::measure(LayoutConstraints layoutConstraints) const {
-  return textLayoutManager_->measure(
-    getAttributedString(),
-    getProps()->paragraphAttributes,
-    layoutConstraints
-  );
+  AttributedString attributedString = getAttributedString();
+  const ParagraphAttributes attributes = getProps()->paragraphAttributes;
+
+  auto makeMeasurements = [&] {
+    return textLayoutManager_->measure(
+        attributedString, getProps()->paragraphAttributes, layoutConstraints);
+  };
+
+  // Cache results of this function so we don't need to call measure()
+  // repeatedly
+  if (measureCache_ != nullptr) {
+    ParagraphMeasurementCacheKey cacheKey =
+        std::make_tuple(attributedString, attributes, layoutConstraints);
+    if (measureCache_->exists(cacheKey)) {
+      return measureCache_->get(cacheKey);
+    }
+
+    auto measuredSize = makeMeasurements();
+    measureCache_->set(cacheKey, measuredSize);
+
+    return measuredSize;
+  }
+
+  return makeMeasurements();
 }
 
 void ParagraphShadowNode::layout(LayoutContext layoutContext) {
-  updateLocalData();
-  ConcreteViewShadowNode<ParagraphProps>::layout(layoutContext);
+  updateLocalDataIfNeeded();
+  ConcreteViewShadowNode::layout(layoutContext);
 }
 
 } // namespace react

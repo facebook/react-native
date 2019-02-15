@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,11 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
-#import <fabric/core/LocalData.h>
-#import <fabric/core/Props.h>
-#import <fabric/core/LayoutMetrics.h>
-#import <fabric/events/EventEmitter.h>
 #import <React/RCTPrimitives.h>
+#import <react/core/LayoutMetrics.h>
+#import <react/core/LocalData.h>
+#import <react/core/Props.h>
+#import <react/events/EventEmitter.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -24,27 +24,30 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RCTComponentViewProtocol <NSObject>
 
 /*
+ * Returns ComponentHandle of ComponentDescriptor which this ComponentView
+ * represents.
+ */
++ (facebook::react::ComponentHandle)componentHandle;
+
+/*
  * Called for mounting (attaching) a child component view inside `self`
  * component view.
  * Receiver must add `childComponentView` as a subview.
  */
-- (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView
-                          index:(NSInteger)index;
+- (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index;
 
 /*
  * Called for unmounting (detaching) a child component view from `self`
  * component view.
  * Receiver must remove `childComponentView` as a subview.
  */
-- (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView
-                            index:(NSInteger)index;
+- (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index;
 
 /*
  * Called for updating component's props.
  * Receiver must update native view props accordingly changed props.
  */
-- (void)updateProps:(facebook::react::SharedProps)props
-           oldProps:(facebook::react::SharedProps)oldProps;
+- (void)updateProps:(facebook::react::SharedProps)props oldProps:(facebook::react::SharedProps)oldProps;
 
 /*
  * Called for updating component's local data.

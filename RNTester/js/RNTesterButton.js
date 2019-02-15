@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,34 +10,30 @@
 
 'use strict';
 
-var React = require('react');
-var PropTypes = require('prop-types');
-var ReactNative = require('react-native');
-var {StyleSheet, Text, TouchableHighlight} = ReactNative;
+const React = require('react');
+const {StyleSheet, Text, TouchableHighlight} = require('react-native');
 
-class RNTesterButton extends React.Component<{onPress?: Function}> {
-  static propTypes = {
-    onPress: PropTypes.func,
-  };
+import type {PressEvent} from 'CoreEventTypes';
 
+type Props = $ReadOnly<{|
+  children?: React.Node,
+  onPress?: ?(event: PressEvent) => mixed,
+|}>;
+
+class RNTesterButton extends React.Component<Props> {
   render() {
     return (
       <TouchableHighlight
         onPress={this.props.onPress}
         style={styles.button}
         underlayColor="grey">
-        <Text>
-          {
-            // $FlowFixMe found when converting React.createClass to ES6
-            this.props.children
-          }
-        </Text>
+        <Text>{this.props.children}</Text>
       </TouchableHighlight>
     );
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   button: {
     borderColor: '#696969',
     borderRadius: 8,

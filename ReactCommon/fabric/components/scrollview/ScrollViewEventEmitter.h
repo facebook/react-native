@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,16 +8,16 @@
 
 #include <memory>
 
-#include <fabric/components/view/ViewEventEmitter.h>
-#include <fabric/events/EventEmitter.h>
-#include <fabric/graphics/Geometry.h>
 #include <folly/dynamic.h>
+#include <react/components/view/ViewEventEmitter.h>
+#include <react/events/EventEmitter.h>
+#include <react/graphics/Geometry.h>
 
 namespace facebook {
 namespace react {
 
 class ScrollViewMetrics {
-public:
+ public:
   Size contentSize;
   Point contentOffset;
   EdgeInsets contentInset;
@@ -27,13 +27,11 @@ public:
 
 class ScrollViewEventEmitter;
 
-using SharedScrollViewEventEmitter = std::shared_ptr<const ScrollViewEventEmitter>;
+using SharedScrollViewEventEmitter =
+    std::shared_ptr<const ScrollViewEventEmitter>;
 
-class ScrollViewEventEmitter:
-  public ViewEventEmitter {
-
-public:
-
+class ScrollViewEventEmitter : public ViewEventEmitter {
+ public:
   using ViewEventEmitter::ViewEventEmitter;
 
   void onScroll(const ScrollViewMetrics &scrollViewMetrics) const;
@@ -42,9 +40,11 @@ public:
   void onMomentumScrollBegin(const ScrollViewMetrics &scrollViewMetrics) const;
   void onMomentumScrollEnd(const ScrollViewMetrics &scrollViewMetrics) const;
 
-private:
-
-  void dispatchScrollViewEvent(const std::string &name, const ScrollViewMetrics &scrollViewMetrics, const folly::dynamic &payload = {}) const;
+ private:
+  void dispatchScrollViewEvent(
+      const std::string &name,
+      const ScrollViewMetrics &scrollViewMetrics,
+      EventPriority priority = EventPriority::AsynchronousBatched) const;
 };
 
 } // namespace react

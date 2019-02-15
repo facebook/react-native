@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -17,13 +17,12 @@
  */
 const fs = require('fs');
 const {cat, echo, exec, exit, sed} = require('shelljs');
+const yargs = require('yargs');
 
-const minimist = require('minimist');
-
-let argv = minimist(process.argv.slice(2), {
-  alias: {remote: 'r'},
-  default: {remote: 'origin'},
-});
+let argv = yargs.option('r', {
+  alias: 'remote',
+  default: 'origin',
+}).argv;
 
 // - check we are in release branch, e.g. 0.33-stable
 let branch = exec('git symbolic-ref --short HEAD', {

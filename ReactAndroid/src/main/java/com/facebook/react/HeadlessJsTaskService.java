@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -67,6 +68,7 @@ public abstract class HeadlessJsTaskService extends Service implements HeadlessJ
   /**
    * Acquire a wake lock to ensure the device doesn't go to sleep while processing background tasks.
    */
+  @SuppressLint("WakelockTimeout")
   public static void acquireWakeLockNow(Context context) {
     if (sWakeLock == null || !sWakeLock.isHeld()) {
       PowerManager powerManager =

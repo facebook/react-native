@@ -1,3 +1,10 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 apply plugin: 'com.android.application'
 
 import com.android.build.OutputFile
@@ -58,7 +65,7 @@ import com.android.build.OutputFile
  */
 
 project.ext.react = [
-    cliPath: "$rootDir/local-cli/cli.js",
+    cliPath: "$rootDir/cli.js",
     bundleAssetName: "RNTesterApp.android.bundle",
     entryFile: file("../../js/RNTesterApp.android.js"),
     root: "$rootDir",
@@ -76,7 +83,7 @@ apply from: "../../../react.gradle"
  * Upload all the APKs to the Play Store and people will download
  * the correct one based on the CPU architecture of their device.
  */
-def enableSeparateBuildPerCPUArchitecture = false
+def enableSeparateBuildPerCPUArchitecture = true
 
 /**
  * Run Proguard to shrink the Java bytecode in release builds.
@@ -84,18 +91,19 @@ def enableSeparateBuildPerCPUArchitecture = false
 def enableProguardInReleaseBuilds = true
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.3"
+    compileSdkVersion 28
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 
     defaultConfig {
         applicationId "com.facebook.react.uiapp"
         minSdkVersion 16
-        targetSdkVersion 26
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
-        ndk {
-            abiFilters "armeabi-v7a", "x86"
-        }
     }
     signingConfigs {
         release {
@@ -110,7 +118,7 @@ android {
             enable enableSeparateBuildPerCPUArchitecture
             universalApk false
             reset()
-            include "armeabi-v7a", "x86"
+            include "armeabi-v7a", "x86", "x86_64", "arm64-v8a"
         }
     }
     buildTypes {
@@ -123,26 +131,12 @@ android {
             signingConfig signingConfigs.release
         }
     }
-
-    // applicationVariants are e.g. debug, release
-    applicationVariants.all { variant ->
-        variant.outputs.each { output ->
-            // For each separate APK per architecture, set a unique version code as described here:
-            // http://tools.android.com/tech-docs/new-build-system/user-guide/apk-splits
-            def versionCodes = ["armeabi-v7a":1, "x86":2]
-            def abi = output.getFilter(OutputFile.ABI)
-            if (abi != null) {  // null for the universal-debug, universal-release variants
-                output.versionCodeOverride =
-                        versionCodes.get(abi) * 1048576 + defaultConfig.versionCode
-            }
-        }
-    }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:26.1.0'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:28.0.0'
 
     // Build React Native from source
-    compile project(':ReactAndroid')
+    implementation project(':ReactAndroid')
 }

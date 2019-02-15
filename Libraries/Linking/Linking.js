@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,7 +14,7 @@ const NativeEventEmitter = require('NativeEventEmitter');
 const NativeModules = require('NativeModules');
 const Platform = require('Platform');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 const LinkingManager =
   Platform.OS === 'android'
@@ -79,6 +79,20 @@ class Linking extends NativeEventEmitter {
    */
   getInitialURL(): Promise<?string> {
     return LinkingManager.getInitialURL();
+  }
+
+  /*
+  * Launch an Android intent with extras (optional)
+  *
+  * @platform android
+  *
+  * See https://facebook.github.io/react-native/docs/linking.html#sendintent
+  */
+  sendIntent(
+    action: String,
+    extras?: [{key: string, value: string | number | boolean}],
+  ) {
+    return LinkingManager.sendIntent(action, extras);
   }
 
   _validateURL(url: string) {

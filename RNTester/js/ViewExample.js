@@ -1,11 +1,11 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -104,21 +104,33 @@ exports.examples = [
             <TouchableWithoutFeedback onPress={this._handlePress}>
               <View>
                 <View
-                  style={{
-                    borderWidth: 1,
-                    borderStyle: this.state.showBorder ? 'dashed' : null,
-                    padding: 5,
-                  }}>
+                  style={[
+                    {
+                      borderWidth: 1,
+                      padding: 5,
+                    },
+                    this.state.showBorder
+                      ? {
+                          borderStyle: 'dashed',
+                        }
+                      : null,
+                  ]}>
                   <Text style={{fontSize: 11}}>Dashed border style</Text>
                 </View>
                 <View
-                  style={{
-                    marginTop: 5,
-                    borderWidth: 1,
-                    borderRadius: 5,
-                    borderStyle: this.state.showBorder ? 'dotted' : null,
-                    padding: 5,
-                  }}>
+                  style={[
+                    {
+                      marginTop: 5,
+                      borderWidth: 1,
+                      borderRadius: 5,
+                      padding: 5,
+                    },
+                    this.state.showBorder
+                      ? {
+                          borderStyle: 'dotted',
+                        }
+                      : null,
+                  ]}>
                   <Text style={{fontSize: 11}}>Dotted border style</Text>
                 </View>
               </View>
@@ -214,6 +226,93 @@ exports.examples = [
     },
   },
   {
+    title: 'Offscreen Alpha Compositing',
+    render() {
+      type Props = $ReadOnly<{||}>;
+      type State = {|
+        active: boolean,
+      |};
+
+      const styles = StyleSheet.create({
+        alphaCompositing: {
+          justifyContent: 'space-around',
+          width: 100,
+          height: 50,
+          borderRadius: 100,
+        },
+      });
+
+      class OffscreenAlphaCompositing extends React.Component<Props, State> {
+        state = {
+          active: false,
+        };
+
+        render() {
+          return (
+            <TouchableWithoutFeedback onPress={this._handlePress}>
+              <View>
+                <Text style={{paddingBottom: 10}}>Blobs</Text>
+                <View
+                  style={{opacity: 1.0, paddingBottom: 30}}
+                  needsOffscreenAlphaCompositing={this.state.active}>
+                  <View
+                    style={[
+                      styles.alphaCompositing,
+                      {marginTop: 0, marginLeft: 0, backgroundColor: '#FF6F59'},
+                    ]}
+                  />
+                  <View
+                    style={[
+                      styles.alphaCompositing,
+                      {
+                        marginTop: -50,
+                        marginLeft: 50,
+                        backgroundColor: '#F7CB15',
+                      },
+                    ]}
+                  />
+                </View>
+                <Text style={{paddingBottom: 10}}>
+                  Same blobs, but their shared container have 0.5 opacity
+                </Text>
+                <Text style={{paddingBottom: 10}}>
+                  Tap to {this.state.active ? 'activate' : 'deactivate'}{' '}
+                  needsOffscreenAlphaCompositing
+                </Text>
+                <View
+                  style={{opacity: 0.8}}
+                  needsOffscreenAlphaCompositing={this.state.active}>
+                  <View
+                    style={[
+                      styles.alphaCompositing,
+                      {marginTop: 0, marginLeft: 0, backgroundColor: '#FF6F59'},
+                    ]}
+                  />
+                  <View
+                    style={[
+                      styles.alphaCompositing,
+                      {
+                        marginTop: -50,
+                        marginLeft: 50,
+                        backgroundColor: '#F7CB15',
+                      },
+                    ]}
+                  />
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          );
+        }
+
+        _handlePress = () => {
+          this.setState({active: !this.state.active});
+        };
+      }
+
+      return <OffscreenAlphaCompositing />;
+    },
+  },
+  {
     title: 'ZIndex',
     render() {
       type Props = $ReadOnly<{||}>;
@@ -297,6 +396,74 @@ exports.examples = [
         };
       }
       return <ZIndexExample />;
+    },
+  },
+  {
+    title: 'BackfaceVisibility',
+    render: function() {
+      return (
+        <>
+          <Text style={{paddingBottom: 10}}>
+            View #1, front is visible, back is hidden.
+          </Text>
+          <View style={{justifyContent: 'center', alignItems: 'center'}}>
+            <View
+              style={{
+                height: 200,
+                width: 200,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'blue',
+                backfaceVisibility: 'hidden',
+              }}>
+              <Text>Front</Text>
+            </View>
+            <View
+              style={{
+                height: 200,
+                width: 200,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'red',
+                backfaceVisibility: 'hidden',
+                transform: [{rotateY: '180deg'}],
+                position: 'absolute',
+                top: 0,
+              }}>
+              <Text>Back (You should not see this)</Text>
+            </View>
+          </View>
+          <Text style={{paddingVertical: 10}}>
+            View #2, front is hidden, back is visible.
+          </Text>
+          <View style={{justifyContent: 'center', alignItems: 'center'}}>
+            <View
+              style={{
+                height: 200,
+                width: 200,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'blue',
+                backfaceVisibility: 'hidden',
+              }}>
+              <Text>Front (You should not see this)</Text>
+            </View>
+            <View
+              style={{
+                height: 200,
+                width: 200,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'red',
+                backfaceVisibility: 'hidden',
+                position: 'absolute',
+                top: 0,
+              }}>
+              <Text>Back</Text>
+            </View>
+          </View>
+        </>
+      );
     },
   },
 ];

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -34,6 +34,8 @@ RCT_ENUM_CONVERTER(UIScrollViewIndicatorStyle, (@{
   @"white": @(UIScrollViewIndicatorStyleWhite),
 }), UIScrollViewIndicatorStyleDefault, integerValue)
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunguarded-availability-new"
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
 RCT_ENUM_CONVERTER(UIScrollViewContentInsetAdjustmentBehavior, (@{
   @"automatic": @(UIScrollViewContentInsetAdjustmentAutomatic),
@@ -42,6 +44,7 @@ RCT_ENUM_CONVERTER(UIScrollViewContentInsetAdjustmentBehavior, (@{
   @"always": @(UIScrollViewContentInsetAdjustmentAlways),
 }), UIScrollViewContentInsetAdjustmentNever, integerValue)
 #endif
+#pragma clang diagnostic pop
 
 @end
 
@@ -81,10 +84,14 @@ RCT_EXPORT_VIEW_PROPERTY(zoomScale, CGFloat)
 RCT_EXPORT_VIEW_PROPERTY(contentInset, UIEdgeInsets)
 RCT_EXPORT_VIEW_PROPERTY(scrollIndicatorInsets, UIEdgeInsets)
 RCT_EXPORT_VIEW_PROPERTY(snapToInterval, int)
+RCT_EXPORT_VIEW_PROPERTY(snapToOffsets, NSArray<NSNumber *>)
+RCT_EXPORT_VIEW_PROPERTY(snapToStart, BOOL)
+RCT_EXPORT_VIEW_PROPERTY(snapToEnd, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(snapToAlignment, NSString)
 RCT_REMAP_VIEW_PROPERTY(contentOffset, scrollView.contentOffset, CGPoint)
 RCT_EXPORT_VIEW_PROPERTY(onScrollBeginDrag, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onScroll, RCTDirectEventBlock)
+RCT_EXPORT_VIEW_PROPERTY(onScrollToTop, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onScrollEndDrag, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMomentumScrollBegin, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onMomentumScrollEnd, RCTDirectEventBlock)

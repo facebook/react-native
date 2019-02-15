@@ -1,4 +1,4 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -75,6 +75,7 @@ public:
   void setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue);
   void* getJavaScriptContext();
   bool isInspectable();
+  bool isBatchActive();
 
   void handleMemoryPressure(int pressureLevel);
 

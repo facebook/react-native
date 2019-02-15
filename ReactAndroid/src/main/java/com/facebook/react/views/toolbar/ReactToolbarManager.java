@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.support.v4.view.ViewCompat;
 import android.util.LayoutDirection;
 import android.view.MenuItem;
 import android.view.View;
@@ -62,7 +63,7 @@ public class ReactToolbarManager extends ViewGroupManager<ReactToolbar> {
 
   @ReactProp(name = "rtl")
   public void setRtl(ReactToolbar view, boolean rtl) {
-    view.setLayoutDirection(rtl ? LayoutDirection.RTL : LayoutDirection.LTR);
+    ViewCompat.setLayoutDirection(view, rtl ? ViewCompat.LAYOUT_DIRECTION_RTL : ViewCompat.LAYOUT_DIRECTION_LTR);
   }
 
   @ReactProp(name = "subtitle")

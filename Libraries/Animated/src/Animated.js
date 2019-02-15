@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,20 +10,30 @@
 
 'use strict';
 
-const AnimatedImplementation = require('AnimatedImplementation');
-const FlatList = require('FlatList');
-const Image = require('Image');
-const ScrollView = require('ScrollView');
-const SectionList = require('SectionList');
-const Text = require('Text');
-const View = require('View');
+import Platform from 'Platform';
+
+const AnimatedImplementation = Platform.isTesting
+  ? require('AnimatedMock')
+  : require('AnimatedImplementation');
 
 module.exports = {
+  get FlatList() {
+    return require('AnimatedFlatList');
+  },
+  get Image() {
+    return require('AnimatedImage');
+  },
+  get ScrollView() {
+    return require('AnimatedScrollView');
+  },
+  get SectionList() {
+    return require('AnimatedSectionList');
+  },
+  get Text() {
+    return require('AnimatedText');
+  },
+  get View() {
+    return require('AnimatedView');
+  },
   ...AnimatedImplementation,
-  View: AnimatedImplementation.createAnimatedComponent(View),
-  Text: AnimatedImplementation.createAnimatedComponent(Text),
-  Image: AnimatedImplementation.createAnimatedComponent(Image),
-  ScrollView: AnimatedImplementation.createAnimatedComponent(ScrollView),
-  FlatList: AnimatedImplementation.createAnimatedComponent(FlatList),
-  SectionList: AnimatedImplementation.createAnimatedComponent(SectionList),
 };

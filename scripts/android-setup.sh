@@ -1,3 +1,9 @@
+#!/bin/bash
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+#
 # inspired by https://github.com/Originate/guide/blob/master/android/guide/Continuous%20Integration.md
 
 # shellcheck disable=SC1091
@@ -34,7 +40,7 @@ function getAndroidNDK {
   if [ ! -e $DEPS ]; then
     cd $NDK_HOME || exit
     echo "Downloading NDK..."
-    curl -o ndk.zip https://dl.google.com/android/repository/android-ndk-r17b-linux-x86_64.zip
+    curl -o ndk.zip https://dl.google.com/android/repository/android-ndk-r17c-linux-x86_64.zip
     unzip -o -q ndk.zip
     echo "Installed Android NDK at $NDK_HOME"
     touch $DEPS
