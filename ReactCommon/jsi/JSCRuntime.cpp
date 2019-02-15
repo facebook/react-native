@@ -37,7 +37,7 @@ class JSCRuntime : public jsi::Runtime {
   ~JSCRuntime();
 
   void evaluateJavaScript(
-      std::unique_ptr<const jsi::Buffer> buffer,
+      const std::shared_ptr<const jsi::Buffer> &buffer,
       const std::string& sourceURL) override;
   jsi::Object global() override;
 
@@ -319,7 +319,7 @@ JSCRuntime::~JSCRuntime() {
 }
 
 void JSCRuntime::evaluateJavaScript(
-    std::unique_ptr<const jsi::Buffer> buffer,
+    const std::shared_ptr<const jsi::Buffer> &buffer,
     const std::string& sourceURL) {
   std::string tmp(
       reinterpret_cast<const char*>(buffer->data()), buffer->size());
@@ -574,7 +574,7 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
       }
       return rt.valueRef(ret);
     }
-    
+
     #define JSC_UNUSED(x) (void) (x);
 
     static bool setProperty(
@@ -627,7 +627,7 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
         JSPropertyNameAccumulatorAddName(propertyNames, stringRef(name));
       }
     }
-    
+
     #undef JSC_UNUSED
 
     static void finalize(JSObjectRef obj) {
