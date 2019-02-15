@@ -136,17 +136,6 @@ module.exports = {
   get StatusBar() {
     return require('StatusBar');
   },
-  get SwipeableFlatList() {
-    return require('SwipeableFlatList');
-  },
-  get SwipeableListView() {
-    warnOnce(
-      'swipablelistview-deprecation',
-      'ListView and SwipeableListView are deprecated and will be removed in a future release. ' +
-        'See https://fb.me/nolistview for more information',
-    );
-    return require('SwipeableListView');
-  },
   get Text() {
     return require('Text');
   },
