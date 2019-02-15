@@ -133,7 +133,7 @@ RCT_EXPORT_MODULE()
 
 - (void)setBridge:(RCTBridge *)bridge
 {
-  RCTAssert(_bridge == nil, @"Should not re-use same UIIManager instance");
+  RCTAssert(_bridge == nil, @"Should not re-use same UIManager instance");
   _bridge = bridge;
 
   _shadowViewRegistry = [NSMutableDictionary new];
@@ -584,7 +584,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
       if (view.reactLayoutDirection != layoutDirection) {
         view.reactLayoutDirection = layoutDirection;
       }
-      
+
       if (view.isHidden != isHidden) {
         view.hidden = isHidden;
       }
@@ -1542,7 +1542,7 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(lazilyLoadView:(NSString *)name)
     // which had RCT Prefixes stripped. Lets check one more time...
     module = [self.bridge moduleForName:RCTDropReactPrefixes(moduleName)];
   }
-  
+
   if (!module) {
     return @{};
   }
