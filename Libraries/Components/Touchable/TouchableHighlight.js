@@ -203,15 +203,9 @@ const TouchableHighlight = ((createReactClass({
   getDefaultProps: () => DEFAULT_PROPS,
 
   getInitialState: function() {
-    /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.89 was deployed. To see the error, delete this
-     * comment and run Flow. */
     this._isMounted = false;
     if (this.props.testOnly_pressed) {
       return {
-        /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-         * error found when Flow v0.89 was deployed. To see the error, delete
-         * this comment and run Flow. */
         ...this.touchableGetInitialState(),
         extraChildStyle: {
           opacity: this.props.activeOpacity,
@@ -222,9 +216,6 @@ const TouchableHighlight = ((createReactClass({
       };
     } else {
       return {
-        /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-         * error found when Flow v0.89 was deployed. To see the error, delete
-         * this comment and run Flow. */
         ...this.touchableGetInitialState(),
         extraChildStyle: null,
         extraUnderlayStyle: null,
@@ -233,21 +224,12 @@ const TouchableHighlight = ((createReactClass({
   },
 
   componentDidMount: function() {
-    /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.89 was deployed. To see the error, delete this
-     * comment and run Flow. */
     this._isMounted = true;
     ensurePositiveDelayProps(this.props);
   },
 
   componentWillUnmount: function() {
-    /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.89 was deployed. To see the error, delete this
-     * comment and run Flow. */
     this._isMounted = false;
-    /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.89 was deployed. To see the error, delete this
-     * comment and run Flow. */
     clearTimeout(this._hideTimeout);
   },
 
@@ -265,22 +247,13 @@ const TouchableHighlight = ((createReactClass({
    * defined on your component.
    */
   touchableHandleActivePressIn: function(e: PressEvent) {
-    /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.89 was deployed. To see the error, delete this
-     * comment and run Flow. */
     clearTimeout(this._hideTimeout);
-    /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.89 was deployed. To see the error, delete this
-     * comment and run Flow. */
     this._hideTimeout = null;
     this._showUnderlay();
     this.props.onPressIn && this.props.onPressIn(e);
   },
 
   touchableHandleActivePressOut: function(e: PressEvent) {
-    /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.89 was deployed. To see the error, delete this
-     * comment and run Flow. */
     if (!this._hideTimeout) {
       this._hideUnderlay();
     }
@@ -302,15 +275,9 @@ const TouchableHighlight = ((createReactClass({
   },
 
   touchableHandlePress: function(e: PressEvent) {
-    /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.89 was deployed. To see the error, delete this
-     * comment and run Flow. */
     clearTimeout(this._hideTimeout);
     if (!Platform.isTV) {
       this._showUnderlay();
-      /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.89 was deployed. To see the error, delete
-       * this comment and run Flow. */
       this._hideTimeout = setTimeout(
         this._hideUnderlay,
         this.props.delayPressOut,
@@ -344,9 +311,6 @@ const TouchableHighlight = ((createReactClass({
   },
 
   _showUnderlay: function() {
-    /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.89 was deployed. To see the error, delete this
-     * comment and run Flow. */
     if (!this._isMounted || !this._hasPressHandler()) {
       return;
     }
@@ -362,13 +326,7 @@ const TouchableHighlight = ((createReactClass({
   },
 
   _hideUnderlay: function() {
-    /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.89 was deployed. To see the error, delete this
-     * comment and run Flow. */
     clearTimeout(this._hideTimeout);
-    /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.89 was deployed. To see the error, delete this
-     * comment and run Flow. */
     this._hideTimeout = null;
     if (this.props.testOnly_pressed) {
       return;
@@ -409,31 +367,13 @@ const TouchableHighlight = ((createReactClass({
         isTVSelectable={true}
         tvParallaxProperties={this.props.tvParallaxProperties}
         hasTVPreferredFocus={this.props.hasTVPreferredFocus}
-        /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-         * error found when Flow v0.89 was deployed. To see the error, delete
-         * this comment and run Flow. */
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={
-          /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses
-           * an error found when Flow v0.89 was deployed. To see the error,
-           * delete this comment and run Flow. */
           this.touchableHandleResponderTerminationRequest
         }
-        /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-         * error found when Flow v0.89 was deployed. To see the error, delete
-         * this comment and run Flow. */
         onResponderGrant={this.touchableHandleResponderGrant}
-        /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-         * error found when Flow v0.89 was deployed. To see the error, delete
-         * this comment and run Flow. */
         onResponderMove={this.touchableHandleResponderMove}
-        /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-         * error found when Flow v0.89 was deployed. To see the error, delete
-         * this comment and run Flow. */
         onResponderRelease={this.touchableHandleResponderRelease}
-        /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-         * error found when Flow v0.89 was deployed. To see the error, delete
-         * this comment and run Flow. */
         onResponderTerminate={this.touchableHandleResponderTerminate}
         nativeID={this.props.nativeID}
         testID={this.props.testID}>
