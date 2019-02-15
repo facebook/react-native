@@ -126,12 +126,12 @@ static NSString *FontWeightDescriptionFromUIFontWeight(UIFontWeight fontWeight)
 static UIFont *cachedSystemFont(CGFloat size, RCTFontWeight weight)
 {
   static NSCache *fontCache;
-  static std::mutex fontCacheMutex;
+  static std::mutex *fontCacheMutex = new std::mutex;
 
   NSString *cacheKey = [NSString stringWithFormat:@"%.1f/%.2f", size, weight];
   UIFont *font;
   {
-    std::lock_guard<std::mutex> lock(fontCacheMutex);
+    std::lock_guard<std::mutex> lock(*fontCacheMutex);
     if (!fontCache) {
       fontCache = [NSCache new];
     }
@@ -158,7 +158,7 @@ static UIFont *cachedSystemFont(CGFloat size, RCTFontWeight weight)
     }
 
     {
-      std::lock_guard<std::mutex> lock(fontCacheMutex);
+      std::lock_guard<std::mutex> lock(*fontCacheMutex);
       [fontCache setObject:font forKey:cacheKey];
     }
   }

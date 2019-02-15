@@ -10,8 +10,8 @@ fb_native.sh_binary(
     resources = [
         "buck_tests/copy-fixture.js",
         "buck_tests/copy_fixture.sh",
+        "fbsource//xplat/js:setup_env",
         "src/generators/__test_fixtures__/fixtures.js",
-        "xplat//js:setup_env",
     ],
 )
 
@@ -21,7 +21,7 @@ fb_native.sh_binary(
     resources = [
         "buck_tests/combine-js-to-schema.js",
         "buck_tests/combine_js_to_schema.sh",
-        "xplat//js:setup_env",
+        "fbsource//xplat/js:setup_env",
     ],
     visibility = ["PUBLIC"],
 )
@@ -37,7 +37,7 @@ fb_native.sh_binary(
     ) + [
         "buck_tests/generate-tests.js",
         "package.json",
-        "xplat//js:setup_env",
+        "fbsource//xplat/js:setup_env",
         "yarn.lock",
     ],
     visibility = ["PUBLIC"],

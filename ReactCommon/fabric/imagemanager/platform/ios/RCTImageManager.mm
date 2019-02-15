@@ -7,6 +7,9 @@
 
 #import "RCTImageManager.h"
 
+#import <react/debug/SystraceSection.h>
+#import <react/utils/SharedFunction.h>
+
 #import <React/RCTImageLoader.h>
 #import <react/imagemanager/ImageResponse.h>
 #import <react/imagemanager/ImageResponseObserver.h>
@@ -27,56 +30,61 @@ using namespace facebook::react;
   return self;
 }
 
-- (ImageRequest)requestImage:(const ImageSource &)imageSource {
-  auto imageRequest = ImageRequest(imageSource);
+- (ImageRequest)requestImage:(ImageSource)imageSource
+{
+  SystraceSection s("RCTImageManager::requestImage");
 
+  auto imageRequest = ImageRequest(imageSource);
   auto weakObserverCoordinator =
       (std::weak_ptr<const ImageResponseObserverCoordinator>)imageRequest.getSharedObserverCoordinator();
 
-  NSURLRequest *request = NSURLRequestFromImageSource(imageSource);
+  auto sharedCancelationFunction = SharedFunction<>();
+  imageRequest.setCancelationFunction(sharedCancelationFunction);
 
-  auto completionBlock = ^(NSError *error, UIImage *image) {
-    auto observerCoordinator = weakObserverCoordinator.lock();
-    if (!observerCoordinator) {
-      return;
-    }
+  /*
+   * Even if an image is being loaded asynchronously on some other background thread, some other preparation
+   * work (such as creating an `NSURLRequest` object and some obscure logic inside `RCTImageLoader`) can take a couple
+   * of milliseconds, so we have to offload this to a separate thread. `ImageRequest` can be created as part of the
+   * layout process, so it must be highly performant.
+   */
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    NSURLRequest *request = NSURLRequestFromImageSource(imageSource);
 
-    if (image && !error) {
-      auto imageResponse = ImageResponse(
-          std::shared_ptr<void>((__bridge_retained void *)image, CFRelease));
-      observerCoordinator->nativeImageResponseComplete(
-          std::move(imageResponse));
-    } else {
-      observerCoordinator->nativeImageResponseFailed();
-    }
-  };
+    auto completionBlock = ^(NSError *error, UIImage *image) {
+      auto observerCoordinator = weakObserverCoordinator.lock();
+      if (!observerCoordinator) {
+        return;
+      }
 
-  auto progressBlock = ^(int64_t progress, int64_t total) {
-    auto observerCoordinator = weakObserverCoordinator.lock();
-    if (!observerCoordinator) {
-      return;
-    }
+      if (image && !error) {
+        auto imageResponse = ImageResponse(std::shared_ptr<void>((__bridge_retained void *)image, CFRelease));
+        observerCoordinator->nativeImageResponseComplete(std::move(imageResponse));
+      } else {
+        observerCoordinator->nativeImageResponseFailed();
+      }
+    };
 
-    observerCoordinator->nativeImageResponseProgress(progress / (float)total);
-  };
+    auto progressBlock = ^(int64_t progress, int64_t total) {
+      auto observerCoordinator = weakObserverCoordinator.lock();
+      if (!observerCoordinator) {
+        return;
+      }
 
-  RCTImageLoaderCancellationBlock cancelationBlock =
-      [_imageLoader loadImageWithURLRequest:request
-                                       size:CGSizeMake(
-                                                imageSource.size.width,
-                                                imageSource.size.height)
-                                      scale:imageSource.scale
-                                    clipped:YES
-                                 resizeMode:RCTResizeModeStretch
-                              progressBlock:progressBlock
-                           partialLoadBlock:nil
-                            completionBlock:completionBlock];
+      observerCoordinator->nativeImageResponseProgress(progress / (float)total);
+    };
 
-  std::function<void(void)> cancelationFunction = [cancelationBlock](void) {
-    cancelationBlock();
-  };
+    RCTImageLoaderCancellationBlock cancelationBlock =
+        [self->_imageLoader loadImageWithURLRequest:request
+                                               size:CGSizeMake(imageSource.size.width, imageSource.size.height)
+                                              scale:imageSource.scale
+                                            clipped:YES
+                                         resizeMode:RCTResizeModeStretch
+                                      progressBlock:progressBlock
+                                   partialLoadBlock:nil
+                                    completionBlock:completionBlock];
 
-  imageRequest.setCancelationFunction(cancelationFunction);
+    sharedCancelationFunction.assign([cancelationBlock]() { cancelationBlock(); });
+  });
 
   return imageRequest;
 }

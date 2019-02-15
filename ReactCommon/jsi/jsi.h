@@ -52,6 +52,18 @@ class StringBuffer : public Buffer {
   std::string s_;
 };
 
+/// PreparedJavaScript is a base class repesenting JavaScript which is in a form
+/// optimized for execution, in a runtime-specific way. Construct one via
+/// jsi::Runtime::prepareJavaScript().
+/// ** This is an experimental API that is subject to change. **
+class PreparedJavaScript {
+ protected:
+  PreparedJavaScript() = default;
+
+ public:
+  virtual ~PreparedJavaScript() = 0;
+};
+
 class Runtime;
 class Pointer;
 class PropNameID;
@@ -143,8 +155,27 @@ class Runtime {
   /// format is unknown, or evaluation causes an error, a JSIException
   /// will be thrown.
   virtual void evaluateJavaScript(
-      std::unique_ptr<const Buffer> buffer,
+      const std::shared_ptr<const Buffer>& buffer,
       const std::string& sourceURL) = 0;
+
+  /// Prepares to evaluate the given JavaScript \c buffer by processing it into
+  /// a form optimized for execution. This may include pre-parsing, compiling,
+  /// etc. If the input is invalid (for example, cannot be parsed), a
+  /// JSIException will be thrown. The resulting object is tied to the
+  /// particular concrete type of Runtime from which it was created. It may be
+  /// used (via evaluatePreparedJavaScript) in any Runtime of the same concrete
+  /// type.
+  /// The PreparedJavaScript object may be passed to multiple VM instances, so
+  /// they can all share and benefit from the prepared script.
+  virtual std::shared_ptr<const PreparedJavaScript> prepareJavaScript(
+      const std::shared_ptr<const Buffer>& buffer,
+      std::string sourceURL) = 0;
+
+  /// Evaluates a PreparedJavaScript. If evaluation causes an error, a
+  /// JSIException will be thrown.
+  virtual void evaluatePreparedJavaScript(
+      const std::shared_ptr<const PreparedJavaScript>& js) = 0;
+
   /// \return the global object
   virtual Object global() = 0;
 
@@ -188,7 +219,7 @@ class Runtime {
     virtual void invalidate() = 0;
 
    protected:
-    ~PointerValue() = default;
+    virtual ~PointerValue() = default;
   };
 
   virtual PointerValue* cloneString(const Runtime::PointerValue* pv) = 0;
@@ -304,8 +335,8 @@ class PropNameID : public Pointer {
  public:
   using Pointer::Pointer;
 
-  PropNameID(Runtime &runtime, const PropNameID &other)
-      : Pointer(runtime.clonePropNameID(other.ptr_)) {}
+  PropNameID(Runtime& runtime, const PropNameID& other)
+      : PropNameID(runtime.clonePropNameID(other.ptr_)) {}
 
   PropNameID(PropNameID&& other) = default;
   PropNameID& operator=(PropNameID&& other) = default;
@@ -1031,13 +1062,7 @@ class Value {
   ValueKind kind_;
   Data data_;
 
-  // In the future: Value becomes NaN-boxed.  In the Hermes impl, if
-  // the object contains a PinnedHermesValue, we need to be able to
-  // get a pointer to it; this can be casted from 'this'.  In the JSC
-  // impl, we need to be able to convert the boxed value into a JSC
-  // ref.  This can be done by casting this, deferencing it to get a
-  // number, doing some bit masks, and then casting again into the
-  // desired JSC ref type.
+  // In the future: Value becomes NaN-boxed. See T40538354.
 };
 
 /// Not movable and not copyable RAII marker advising the underlying
