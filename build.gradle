@@ -10,13 +10,8 @@ buildscript {
         jcenter()
     }
     dependencies {
-<<<<<<< HEAD
         classpath 'com.android.tools.build:gradle:3.3.0'
         classpath 'de.undercouch:gradle-download-task:3.4.3'
-=======
-        classpath("com.android.tools.build:gradle:3.3.1")
-        classpath("de.undercouch:gradle-download-task:3.4.3")
->>>>>>> 4b107194d9a4d8378b0d67871bbaee5dbb2ea940
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
