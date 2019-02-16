@@ -281,31 +281,53 @@ SEL resolveMethodSelector(
 
   // PromiseKind expects 2 additional function args for resolve() and reject()
   size_t adjustedCount = valueKind == PromiseKind ? argCount + 2 : argCount;
-  NSString *baseMethodName = [NSString stringWithUTF8String:methodName.c_str()];
 
+  // Notes:
+  // - This may be expensive lookup. The codegen output should specify the exact selector name.
+  // - Some classes may have strictly typed arg that isn't compatible with plain NSDictionary/NSArray. For those, allow a helper method
+  //   with "__turbo__" prefix (hand-written) that can do the translation from plain NSDictionary/NSArray to the stricter type.
+  //   This is only for migration purpose.
   if (adjustedCount == 0) {
-    selector = NSSelectorFromString(baseMethodName);
-    if (![module respondsToSelector:selector]) {
-      throw std::runtime_error("Unable to find method: " + methodName + " for module: " + moduleName + ". Make sure the module is installed correctly.");
+    SEL turboSelector = NSSelectorFromString([NSString stringWithFormat:@"__turbo__%s", methodName.c_str()]);
+    if ([module respondsToSelector:turboSelector]) {
+      selector = turboSelector;
+    } else {
+      selector = NSSelectorFromString([NSString stringWithUTF8String:methodName.c_str()]);
+      if (![module respondsToSelector:selector]) {
+        throw std::runtime_error("Unable to find method: " + methodName + " for module: " + moduleName + ". Make sure the module is installed correctly.");
+      }
     }
   } else if (adjustedCount == 1) {
-    selector = NSSelectorFromString([NSString stringWithFormat:@"%@:", baseMethodName]);
-    if (![module respondsToSelector:selector]) {
-      throw std::runtime_error("Unable to find method: " + methodName + " for module: " + moduleName + ". Make sure the module is installed correctly.");
+    SEL turboSelector = NSSelectorFromString([NSString stringWithFormat:@"__turbo__%s:", methodName.c_str()]);
+    if ([module respondsToSelector:turboSelector]) {
+      selector = turboSelector;
+    } else {
+      selector = NSSelectorFromString([NSString stringWithFormat:@"%s:", methodName.c_str()]);
+      if (![module respondsToSelector:selector]) {
+        throw std::runtime_error("Unable to find method: " + methodName + " for module: " + moduleName + ". Make sure the module is installed correctly.");
+      }
     }
   } else {
-    // TODO: This may be expensive lookup. The codegen output should specify the exact selector name.
+    SEL turboSelector = nil;
     unsigned int numberOfMethods;
     Method *methods = class_copyMethodList([module class], &numberOfMethods);
     if (methods) {
+      NSString *methodPrefix = [NSString stringWithFormat:@"%s:", methodName.c_str()];
+      NSString *turboMethodPrefix = [NSString stringWithFormat:@"__turbo__%s:", methodName.c_str()];
       for (unsigned int i = 0; i < numberOfMethods; i++) {
         SEL s = method_getName(methods[i]);
-        if ([NSStringFromSelector(s) hasPrefix:[NSString stringWithFormat:@"%@:", baseMethodName]]) {
+        NSString *objcMethodName = NSStringFromSelector(s);
+        if ([objcMethodName hasPrefix:methodPrefix]) {
           selector = s;
+        } else if ([objcMethodName hasPrefix:turboMethodPrefix]) {
+          turboSelector = s;
           break;
         }
       }
       free(methods);
+    }
+    if (turboSelector) {
+      selector = turboSelector;
     }
     if (!selector) {
       throw std::runtime_error("Unable to find method: " + methodName + " for module: " + moduleName + ". Make sure the module is installed correctly.");
