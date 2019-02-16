@@ -1534,13 +1534,13 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(lazilyLoadView:(NSString *)name)
     return @{};
   }
 
-  id module = [self.bridge moduleForName:moduleName];
+  id module = [self.bridge moduleForName:moduleName lazilyLoadIfNecessary:RCTTurboModuleEnabled()];
   if (module == nil) {
     // There is all sorts of code in this codebase that drops prefixes.
     //
     // If we didn't find a module, it's possible because it's stored under a key
     // which had RCT Prefixes stripped. Lets check one more time...
-    module = [self.bridge moduleForName:RCTDropReactPrefixes(moduleName)];
+    module = [self.bridge moduleForName:RCTDropReactPrefixes(moduleName) lazilyLoadIfNecessary:RCTTurboModuleEnabled()];
   }
 
   if (!module) {
