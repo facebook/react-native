@@ -12,7 +12,7 @@ import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableNativeMap;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -215,8 +215,8 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
 
   public long measure(
       ReactContext context,
-      ReadableNativeMap localData,
-      ReadableNativeMap props,
+      ReadableMap localData,
+      ReadableMap props,
       float width,
       YogaMeasureMode widthMode,
       float height,

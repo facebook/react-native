@@ -116,15 +116,19 @@ Pod::Spec.new do |s|
     ss.dependency             "React/cxxreact"
     ss.dependency             "React/jsi"
     ss.dependency             "Folly", folly_version
+    ss.dependency             "DoubleConversion"
+    ss.dependency             "glog"
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "ReactCommon/jsiexecutor/jsireact/*.{cpp,h}"
     ss.private_header_files = "ReactCommon/jsiexecutor/jsireact/*.h"
     ss.header_dir           = "jsireact"
-    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
+    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\", \"$(PODS_TARGET_SRCROOT)/ReactCommon/jsiexecutor\"" }
   end
 
   s.subspec "jsi" do |ss|
     ss.dependency             "Folly", folly_version
+    ss.dependency             "DoubleConversion"
+    ss.dependency             "glog"
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "ReactCommon/jsi/*.{cpp,h}"
     ss.private_header_files = "ReactCommon/jsi/*.h"
@@ -142,6 +146,8 @@ Pod::Spec.new do |s|
     ss.dependency             "React/jsinspector"
     ss.dependency             "boost-for-react-native", "1.63.0"
     ss.dependency             "Folly", folly_version
+    ss.dependency             "DoubleConversion"
+    ss.dependency             "glog"
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "ReactCommon/cxxreact/*.{cpp,h}"
     ss.exclude_files        = "ReactCommon/cxxreact/SampleCxxModule.*"

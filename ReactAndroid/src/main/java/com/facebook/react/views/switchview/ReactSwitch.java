@@ -59,8 +59,12 @@ import javax.annotation.Nullable;
     // If the switch has a different value than the value sent by JS, we must change it.
     if (isChecked() != on) {
       super.setChecked(on);
-      Integer currentTrackColor = on ? mTrackColorForTrue : mTrackColorForFalse;
-      setTrackColor(currentTrackColor);
+      if (mTrackColorForTrue != null || mTrackColorForFalse != null) {
+        // Update the track color to reflect the new value. We only want to do this if these
+        // props were actually set from JS; otherwise we'll just reset the color to the default.
+        Integer currentTrackColor = on ? mTrackColorForTrue : mTrackColorForFalse;
+        setTrackColor(currentTrackColor);
+      }
     }
     mAllowChange = true;
   }

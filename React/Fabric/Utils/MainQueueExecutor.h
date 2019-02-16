@@ -10,10 +10,8 @@
 namespace facebook {
 namespace react {
 
-class MainQueueExecutor:
-  public folly::Executor {
-
-public:
+class MainQueueExecutor : public folly::Executor {
+ public:
   static MainQueueExecutor &instance();
 
   void add(folly::Func function) override;

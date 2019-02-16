@@ -223,6 +223,21 @@ type IOSProps = $ReadOnly<{|
 |}>;
 
 type AndroidProps = $ReadOnly<{|
+  autoCompleteType?: ?(
+    | 'cc-csc'
+    | 'cc-exp'
+    | 'cc-exp-month'
+    | 'cc-exp-year'
+    | 'cc-number'
+    | 'email'
+    | 'name'
+    | 'password'
+    | 'postal-code'
+    | 'street-address'
+    | 'tel'
+    | 'username'
+    | 'off'
+  ),
   returnKeyLabel?: ?string,
   numberOfLines?: ?number,
   disableFullscreenUI?: ?boolean,
@@ -412,6 +427,45 @@ const TextInput = createReactClass({
       'sentences',
       'words',
       'characters',
+    ]),
+    /**
+     * Determines which content to suggest on auto complete, e.g.`username`.
+     * To disable auto complete, use `off`.
+     *
+     * *Android Only*
+     *
+     * The following values work on Android only:
+     *
+     * - `username`
+     * - `password`
+     * - `email`
+     * - `name`
+     * - `tel`
+     * - `street-address`
+     * - `postal-code`
+     * - `cc-number`
+     * - `cc-csc`
+     * - `cc-exp`
+     * - `cc-exp-month`
+     * - `cc-exp-year`
+     * - `off`
+     *
+     * @platform android
+     */
+    autoCompleteType: PropTypes.oneOf([
+      'cc-csc',
+      'cc-exp',
+      'cc-exp-month',
+      'cc-exp-year',
+      'cc-number',
+      'email',
+      'name',
+      'password',
+      'postal-code',
+      'street-address',
+      'tel',
+      'username',
+      'off',
     ]),
     /**
      * If `false`, disables auto-correct. The default value is `true`.
@@ -783,6 +837,15 @@ const TextInput = createReactClass({
     inlineImagePadding: PropTypes.number,
 
     /**
+     * If `true`, allows TextInput to pass touch events to the parent component.
+     * This allows components such as SwipeableListView to be swipeable from the TextInput on iOS,
+     * as is the case on Android by default.
+     * If `false`, TextInput always asks to handle the input (except when disabled).
+     * @platform ios
+     */
+    rejectResponderTermination: PropTypes.bool,
+
+    /**
      * Determines the types of data converted to clickable URLs in the text input.
      * Only valid if `multiline={true}` and `editable={false}`.
      * By default no data types are detected.
@@ -859,6 +922,7 @@ const TextInput = createReactClass({
   getDefaultProps() {
     return {
       allowFontScaling: true,
+      rejectResponderTermination: true,
       underlineColorAndroid: 'transparent',
     };
   },
@@ -1079,7 +1143,7 @@ const TextInput = createReactClass({
       <TouchableWithoutFeedback
         onLayout={props.onLayout}
         onPress={this._onPress}
-        rejectResponderTermination={true}
+        rejectResponderTermination={props.rejectResponderTermination}
         accessible={props.accessible}
         accessibilityLabel={props.accessibilityLabel}
         accessibilityRole={props.accessibilityRole}
@@ -1097,9 +1161,6 @@ const TextInput = createReactClass({
     props.autoCapitalize = UIManager.getViewManagerConfig(
       'AndroidTextInput',
     ).Constants.AutoCapitalizationType[props.autoCapitalize || 'sentences'];
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error when upgrading Flow's support for React. To see the
-     * error delete this comment and run Flow. */
     let children = this.props.children;
     let childCount = 0;
     React.Children.forEach(children, () => ++childCount);

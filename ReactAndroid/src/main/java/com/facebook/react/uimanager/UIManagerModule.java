@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.util.ArrayMap;
+import android.view.View;
 import com.facebook.common.logging.FLog;
 import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
@@ -37,7 +38,6 @@ import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.common.MeasureSpecProvider;
-import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -376,7 +376,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     return mUIImplementation.getProfiledBatchPerfCounters();
   }
 
-  public <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> int addRootView(
+  public <T extends View & MeasureSpecProvider> int addRootView(
       final T rootView) {
         return addRootView(rootView, null, null);
       }
@@ -391,7 +391,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    * <p>TODO(6242243): Make addRootView thread safe NB: this method is horribly not-thread-safe.
    */
   @Override
-  public <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> int addRootView(
+  public <T extends View & MeasureSpecProvider> int addRootView(
       final T rootView, WritableMap initialProps, @Nullable String initialUITemplate) {
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "UIManagerModule.addRootView");
     final int tag = ReactRootViewTagGenerator.getNextRootViewTag();
@@ -400,21 +400,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
         new ThemedReactContext(reactApplicationContext, rootView.getContext());
 
     mUIImplementation.registerRootView(rootView, tag, themedRootContext);
-
-    rootView.setOnSizeChangedListener(
-        new SizeMonitoringFrameLayout.OnSizeChangedListener() {
-          @Override
-          public void onSizeChanged(final int width, final int height, int oldW, int oldH) {
-            reactApplicationContext.runOnNativeModulesQueueThread(
-                new GuardedRunnable(reactApplicationContext) {
-                  @Override
-                  public void runGuarded() {
-                    updateNodeSize(tag, width, height);
-                  }
-                });
-          }
-        });
-
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     return tag;
   }

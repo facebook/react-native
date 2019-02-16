@@ -64,7 +64,12 @@ using namespace facebook::react;
   return moduleMethods;
 }
 
-- (NSDictionary<NSString *, id> *)constantsToExport;
+- (NSDictionary<NSString *, id> *)constantsToExport
+{
+  return [self getConstants];
+}
+
+- (NSDictionary<NSString *, id> *)getConstants;
 {
   [self lazyInit];
   if (!_module) {

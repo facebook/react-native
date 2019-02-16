@@ -1,17 +1,15 @@
 ---
-name: I need help using React Native.
+name: 💬 Questions and Help
 about: You need help writing your React Native app.
-labels: "Question"
+labels: "Type: Question"
 ---
 
-GitHub Issues in the `facebook/react-native` repository are used exclusively for tracking bugs
-in the React Native framework. Please do not submit support requests through GitHub.
+GitHub Issues in the `facebook/react-native` repository are used exclusively for tracking bugs in the React Native framework. Please do not submit support requests through GitHub.
 
-Many members of the community use Stack Overflow to ask questions:
-* Read through the existing questions tagged with **react-native**:
-  http://stackoverflow.com/questions/tagged/react-native
+For questions or help, please see:
+- The React Native help page: http://facebook.github.io/react-native/help
+- The React Native channel in Reactiflux: https://discord.gg/0ZcbPKXt5bZjGY5n
+- The react-native tag on Stack Overflow: http://stackoverflow.com/questions/tagged/react-native
 
-* Ask your own:
-  http://stackoverflow.com/questions/ask?tags=react-native
 
-If you need an answer right away, check out the Reactiflux Discord community at https://discord.gg/0ZcbPKXt5bZjGY5n. There are usually a number of React Native experts there who can help out or point you to somewhere you might want to look.
+### Please note that this issue tracker is not a help forum and requests for help will be closed.

@@ -13,4 +13,3 @@
 @interface RCTFabricSurfaceHostingView : RCTSurfaceHostingView
 
 @end
-

@@ -6,6 +6,7 @@
  */
 package com.facebook.react.views.text;
 
+import android.annotation.TargetApi;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -22,6 +23,7 @@ import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.yoga.YogaDirection;
+
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -36,6 +38,7 @@ import javax.annotation.Nullable;
  * <p>This also node calculates {@link Spannable} object based on subnodes of the same type, which
  * can be used in concrete classes to feed native views and compute layout.
  */
+@TargetApi(Build.VERSION_CODES.M)
 public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
   private static final String INLINE_IMAGE_PLACEHOLDER = "I";
@@ -94,7 +97,10 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       ReactShadowNode child = textShadowNode.getChildAt(i);
 
       if (child instanceof ReactRawTextShadowNode) {
-        sb.append(((ReactRawTextShadowNode) child).getText());
+        sb.append(
+            TextTransform.apply(
+                ((ReactRawTextShadowNode) child).getText(),
+                textAttributes.getTextTransform()));
       } else if (child instanceof ReactBaseTextShadowNode) {
         buildSpannedFromShadowNode((ReactBaseTextShadowNode) child, sb, ops, textAttributes, sb.length());
       } else if (child instanceof ReactTextInlineImageShadowNode) {
@@ -182,13 +188,6 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
             new SetSpanOperation(
                 start, end, new CustomLineHeightSpan(effectiveLineHeight)));
       }
-      if (textShadowNode.mTextTransform != TextTransform.UNSET) {
-        ops.add(
-          new SetSpanOperation(
-            start,
-            end,
-            new CustomTextTransformSpan(textShadowNode.mTextTransform)));
-      }
       ops.add(new SetSpanOperation(start, end, new ReactTagSpan(textShadowNode.getReactTag())));
     }
   }
@@ -207,7 +206,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     if (text != null) {
       // Handle text that is provided via a prop (e.g. the `value` and `defaultValue` props on
       // TextInput).
-      sb.append(text);
+      sb.append(TextTransform.apply(text, textShadowNode.mTextAttributes.getTextTransform()));
     }
 
     buildSpannedFromShadowNode(textShadowNode, sb, ops, null, 0);
@@ -266,7 +265,6 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   protected int mTextAlign = Gravity.NO_GRAVITY;
   protected int mTextBreakStrategy =
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
-  protected TextTransform mTextTransform = TextTransform.UNSET;
 
   protected float mTextShadowOffsetDx = 0;
   protected float mTextShadowOffsetDy = 0;
@@ -528,14 +526,16 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
   @ReactProp(name = PROP_TEXT_TRANSFORM)
   public void setTextTransform(@Nullable String textTransform) {
-    if (textTransform == null || "none".equals(textTransform)) {
-      mTextTransform = TextTransform.NONE;
+    if (textTransform == null) {
+      mTextAttributes.setTextTransform(TextTransform.UNSET);
+    } else if ("none".equals(textTransform)) {
+      mTextAttributes.setTextTransform(TextTransform.NONE);
     } else if ("uppercase".equals(textTransform)) {
-      mTextTransform = TextTransform.UPPERCASE;
+      mTextAttributes.setTextTransform(TextTransform.UPPERCASE);
     } else if ("lowercase".equals(textTransform)) {
-      mTextTransform = TextTransform.LOWERCASE;
+      mTextAttributes.setTextTransform(TextTransform.LOWERCASE);
     } else if ("capitalize".equals(textTransform)) {
-      mTextTransform = TextTransform.CAPITALIZE;
+      mTextAttributes.setTextTransform(TextTransform.CAPITALIZE);
     } else {
       throw new JSApplicationIllegalArgumentException("Invalid textTransform: " + textTransform);
     }

@@ -85,6 +85,8 @@ RCT_EXPORT_METHOD(openCameraDialog:(NSDictionary *)config
   RCTImagePickerController *imagePicker = [RCTImagePickerController new];
   imagePicker.delegate = self;
   imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+  NSArray<NSString *> *availableMediaTypes = [UIImagePickerController availableMediaTypesForSourceType:UIImagePickerControllerSourceTypeCamera];
+  imagePicker.mediaTypes = availableMediaTypes;
   imagePicker.unmirrorFrontFacingCamera = [RCTConvert BOOL:config[@"unmirrorFrontFacingCamera"]];
 
   if ([RCTConvert BOOL:config[@"videoMode"]]) {

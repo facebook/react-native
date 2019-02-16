@@ -10,6 +10,7 @@
 #include <react/core/LayoutContext.h>
 #include <react/debug/SystraceSection.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
+#include <react/uimanager/TimeUtils.h>
 #include <react/uimanager/UIManager.h>
 #include <react/uimanager/UIManagerBinding.h>
 #include <react/uimanager/UITemplateProcessor.h>
@@ -89,6 +90,7 @@ void Scheduler::renderTemplateToSurface(
     SurfaceId surfaceId,
     const std::string &uiTemplate) {
   SystraceSection s("Scheduler::renderTemplateToSurface");
+  long commitStartTime = getTime();
 
   try {
     if (uiTemplate.size() == 0) {
@@ -111,7 +113,8 @@ void Scheduler::renderTemplateToSurface(
                 ShadowNodeFragment{.children =
                                        std::make_shared<SharedShadowNodeList>(
                                            SharedShadowNodeList{tree})});
-          });
+          },
+          commitStartTime);
     });
   } catch (const std::exception &e) {
     LOG(ERROR) << "    >>>> EXCEPTION <<<  rendering uiTemplate in "
@@ -122,16 +125,20 @@ void Scheduler::renderTemplateToSurface(
 void Scheduler::stopSurface(SurfaceId surfaceId) const {
   SystraceSection s("Scheduler::stopSurface");
 
-  shadowTreeRegistry_.visit(surfaceId, [](const ShadowTree &shadowTree) {
-    // As part of stopping the Surface, we have to commit an empty tree.
-    return shadowTree.tryCommit(
-        [&](const SharedRootShadowNode &oldRootShadowNode) {
-          return std::make_shared<RootShadowNode>(
-              *oldRootShadowNode,
-              ShadowNodeFragment{
-                  .children = ShadowNode::emptySharedShadowNodeSharedList()});
-        });
-  });
+  long commitStartTime = getTime();
+  shadowTreeRegistry_.visit(
+      surfaceId, [commitStartTime](const ShadowTree &shadowTree) {
+        // As part of stopping the Surface, we have to commit an empty tree.
+        return shadowTree.tryCommit(
+            [&](const SharedRootShadowNode &oldRootShadowNode) {
+              return std::make_shared<RootShadowNode>(
+                  *oldRootShadowNode,
+                  ShadowNodeFragment{
+                      .children =
+                          ShadowNode::emptySharedShadowNodeSharedList()});
+            },
+            commitStartTime);
+      });
 
   auto shadowTree = shadowTreeRegistry_.remove(surfaceId);
   shadowTree->setDelegate(nullptr);
@@ -149,15 +156,19 @@ Size Scheduler::measureSurface(
     const LayoutContext &layoutContext) const {
   SystraceSection s("Scheduler::measureSurface");
 
+  long commitStartTime = getTime();
+
   Size size;
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree &shadowTree) {
-    shadowTree.tryCommit([&](const SharedRootShadowNode &oldRootShadowNode) {
-      auto rootShadowNode =
-          oldRootShadowNode->clone(layoutConstraints, layoutContext);
-      rootShadowNode->layout();
-      size = rootShadowNode->getLayoutMetrics().frame.size;
-      return nullptr;
-    });
+    shadowTree.tryCommit(
+        [&](const SharedRootShadowNode &oldRootShadowNode) {
+          auto rootShadowNode =
+              oldRootShadowNode->clone(layoutConstraints, layoutContext);
+          rootShadowNode->layout();
+          size = rootShadowNode->getLayoutMetrics().frame.size;
+          return nullptr;
+        },
+        commitStartTime);
   });
   return size;
 }
@@ -168,10 +179,14 @@ void Scheduler::constraintSurfaceLayout(
     const LayoutContext &layoutContext) const {
   SystraceSection s("Scheduler::constraintSurfaceLayout");
 
+  long commitStartTime = getTime();
+
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree &shadowTree) {
-    shadowTree.commit([&](const SharedRootShadowNode &oldRootShadowNode) {
-      return oldRootShadowNode->clone(layoutConstraints, layoutContext);
-    });
+    shadowTree.commit(
+        [&](const SharedRootShadowNode &oldRootShadowNode) {
+          return oldRootShadowNode->clone(layoutConstraints, layoutContext);
+        },
+        commitStartTime);
   });
 }
 
@@ -189,12 +204,14 @@ SchedulerDelegate *Scheduler::getDelegate() const {
 
 void Scheduler::shadowTreeDidCommit(
     const ShadowTree &shadowTree,
-    const ShadowViewMutationList &mutations) const {
+    const ShadowViewMutationList &mutations,
+    long commitStartTime,
+    long layoutTime) const {
   SystraceSection s("Scheduler::shadowTreeDidCommit");
 
   if (delegate_) {
     delegate_->schedulerDidFinishTransaction(
-        shadowTree.getSurfaceId(), mutations);
+        shadowTree.getSurfaceId(), mutations, commitStartTime, layoutTime);
   }
 }
 
@@ -202,14 +219,18 @@ void Scheduler::shadowTreeDidCommit(
 
 void Scheduler::uiManagerDidFinishTransaction(
     SurfaceId surfaceId,
-    const SharedShadowNodeUnsharedList &rootChildNodes) {
+    const SharedShadowNodeUnsharedList &rootChildNodes,
+    long startCommitTime) {
   SystraceSection s("Scheduler::uiManagerDidFinishTransaction");
 
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree &shadowTree) {
-    shadowTree.commit([&](const SharedRootShadowNode &oldRootShadowNode) {
-      return std::make_shared<RootShadowNode>(
-          *oldRootShadowNode, ShadowNodeFragment{.children = rootChildNodes});
-    });
+    shadowTree.commit(
+        [&](const SharedRootShadowNode &oldRootShadowNode) {
+          return std::make_shared<RootShadowNode>(
+              *oldRootShadowNode,
+              ShadowNodeFragment{.children = rootChildNodes});
+        },
+        startCommitTime);
   });
 }
 

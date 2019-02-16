@@ -4,6 +4,7 @@
 
 #include <react/core/ShadowNodeFragment.h>
 #include <react/debug/SystraceSection.h>
+#include <react/uimanager/TimeUtils.h>
 
 namespace facebook {
 namespace react {
@@ -35,7 +36,7 @@ SharedShadowNode UIManager::createNode(
 SharedShadowNode UIManager::cloneNode(
     const SharedShadowNode &shadowNode,
     const SharedShadowNodeSharedList &children,
-    const folly::Optional<RawProps> &rawProps) const {
+    const RawProps *rawProps) const {
   SystraceSection s("UIManager::cloneNode");
 
   auto &componentDescriptor =
@@ -44,10 +45,9 @@ SharedShadowNode UIManager::cloneNode(
   auto clonedShadowNode = componentDescriptor.cloneShadowNode(
       *shadowNode,
       {
-          .props = rawProps.has_value()
-              ? componentDescriptor.cloneProps(
-                    shadowNode->getProps(), rawProps.value())
-              : ShadowNodeFragment::nullSharedProps(),
+          .props = rawProps ? componentDescriptor.cloneProps(
+                                  shadowNode->getProps(), *rawProps)
+                            : ShadowNodeFragment::propsPlaceholder(),
           .children = children,
       });
 
@@ -70,7 +70,8 @@ void UIManager::completeSurface(
   SystraceSection s("UIManager::completeSurface");
 
   if (delegate_) {
-    delegate_->uiManagerDidFinishTransaction(surfaceId, rootChildren);
+    delegate_->uiManagerDidFinishTransaction(
+        surfaceId, rootChildren, getTime());
   }
 }
 
@@ -78,6 +79,8 @@ void UIManager::setNativeProps(
     const SharedShadowNode &shadowNode,
     const RawProps &rawProps) const {
   SystraceSection s("UIManager::setNativeProps");
+
+  long startCommitTime = getTime();
 
   auto &componentDescriptor =
       componentDescriptorRegistry_->at(shadowNode->getComponentHandle());
@@ -89,7 +92,8 @@ void UIManager::setNativeProps(
         shadowTree.tryCommit(
             [&](const SharedRootShadowNode &oldRootShadowNode) {
               return oldRootShadowNode->clone(shadowNode, newShadowNode);
-            });
+            },
+            startCommitTime);
       });
 }
 
@@ -98,6 +102,8 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
     const ShadowNode *ancestorShadowNode) const {
   SystraceSection s("UIManager::getRelativeLayoutMetrics");
 
+  long startCommitTime = getTime();
+
   if (!ancestorShadowNode) {
     shadowTreeRegistry_->visit(
         shadowNode.getRootTag(), [&](const ShadowTree &shadowTree) {
@@ -105,7 +111,8 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
               [&](const SharedRootShadowNode &oldRootShadowNode) {
                 ancestorShadowNode = oldRootShadowNode.get();
                 return nullptr;
-              });
+              },
+              startCommitTime);
         });
   }
 

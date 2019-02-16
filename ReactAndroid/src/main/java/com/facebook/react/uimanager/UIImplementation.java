@@ -11,6 +11,7 @@ import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.UNSPECIFIED;
 
 import android.os.SystemClock;
+import android.view.View;
 import android.view.View.MeasureSpec;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -25,7 +26,6 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.common.MeasureSpecProvider;
-import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
@@ -195,7 +195,7 @@ public class UIImplementation {
    * Registers a root node with a given tag, size and ThemedReactContext and adds it to a node
    * registry.
    */
-  public <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> void registerRootView(
+  public <T extends View & MeasureSpecProvider> void registerRootView(
       T rootView, int tag, ThemedReactContext context) {
     final ReactShadowNode rootCSSNode = createRootShadowNode();
     rootCSSNode.setReactTag(tag);
@@ -213,7 +213,7 @@ public class UIImplementation {
     });
 
     // register it within NativeViewHierarchyManager
-    mOperationsQueue.addRootView(tag, rootView, context);
+    mOperationsQueue.addRootView(tag, rootView);
   }
 
   /**

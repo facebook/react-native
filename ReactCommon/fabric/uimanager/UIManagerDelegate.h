@@ -24,7 +24,8 @@ class UIManagerDelegate {
    */
   virtual void uiManagerDidFinishTransaction(
       SurfaceId surfaceId,
-      const SharedShadowNodeUnsharedList &rootChildNodes) = 0;
+      const SharedShadowNodeUnsharedList &rootChildNodes,
+      long startCommitTime) = 0;
 
   /*
    * Called each time when UIManager constructs a new Shadow Node. Receiver

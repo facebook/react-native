@@ -6,18 +6,34 @@
  */
 package com.facebook.react.fabric;
 
+import static com.facebook.infer.annotation.ThreadConfined.UI;
 import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getMaxSize;
 import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getMinSize;
 import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getYogaMeasureMode;
 import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getYogaSize;
-import static com.facebook.infer.annotation.ThreadConfined.UI;
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 
 import android.annotation.SuppressLint;
+import android.os.SystemClock;
 import android.support.annotation.GuardedBy;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
+import android.view.View;
 import com.facebook.common.logging.FLog;
+import com.facebook.infer.annotation.Assertions;
+import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.bridge.GuardedRunnable;
+import com.facebook.react.bridge.LifecycleEventListener;
+import com.facebook.react.bridge.NativeMap;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.UIManager;
+import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.ReactConstants;
 import com.facebook.react.fabric.jsi.Binding;
 import com.facebook.react.fabric.jsi.EventBeatManager;
 import com.facebook.react.fabric.jsi.EventEmitterWrapper;
@@ -29,32 +45,18 @@ import com.facebook.react.fabric.mounting.mountitems.DeleteMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.InsertMountItem;
 import com.facebook.react.fabric.mounting.mountitems.MountItem;
+import com.facebook.react.fabric.mounting.mountitems.PreAllocateViewMountItem;
 import com.facebook.react.fabric.mounting.mountitems.RemoveMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdateEventEmitterMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdateLayoutMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdateLocalDataMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdatePropsMountItem;
-import com.facebook.infer.annotation.Assertions;
-import com.facebook.infer.annotation.ThreadConfined;
-import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.bridge.GuardedRunnable;
-import com.facebook.react.bridge.LifecycleEventListener;
-import com.facebook.react.bridge.NativeMap;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableNativeMap;
-import com.facebook.react.bridge.UIManager;
-import com.facebook.react.bridge.UiThreadUtil;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.common.ReactConstants;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.ReactRootViewTagGenerator;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManagerPropertyUpdater;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.common.MeasureSpecProvider;
-import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
@@ -94,15 +96,26 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       new ConcurrentHashMap<>();
   private final EventBeatManager mEventBeatManager;
   private final Object mMountItemsLock = new Object();
+  private final Object mPreMountItemsLock = new Object();
 
   @GuardedBy("mMountItemsLock")
   private List<MountItem> mMountItems = new ArrayList<>();
+
+  @GuardedBy("mPreMountItemsLock")
+  private List<MountItem> mPreMountItems = new ArrayList<>();
 
   @ThreadConfined(UI)
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
 
   @ThreadConfined(UI)
   private boolean mIsMountingEnabled = true;
+  private long mRunStartTime = 0l;
+  private long mBatchedExecutionTime = 0l;
+  private long mNonBatchedExecutionTime = 0l;
+  private long mDispatchViewUpdatesTime = 0l;
+  private long mCommitStartTime = 0l;
+  private long mLayoutTime = 0l;
+  private long mFinishTransactionTime = 0l;
 
   public FabricUIManager(
       ReactApplicationContext reactContext,
@@ -118,7 +131,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   }
 
   @Override
-  public <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> int addRootView(
+  public <T extends View & MeasureSpecProvider> int addRootView(
       final T rootView, final WritableMap initialProps, final @Nullable String initialUITemplate) {
     final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
     ThemedReactContext reactContext =
@@ -177,17 +190,17 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @DoNotStrip
   private void preallocateView(final int rootTag, final String componentName) {
-    UiThreadUtil.runOnUiThread(
-        new GuardedRunnable(mReactApplicationContext) {
-          @Override
-          public void runGuarded() {
-            ThemedReactContext context =
-                Assertions.assertNotNull(mReactContextForRootTag.get(rootTag));
-            String component = sComponentNames.get(componentName);
-            Assertions.assertNotNull(component);
-            mMountingManager.preallocateView(context, component);
-          }
-        });
+    if (UiThreadUtil.isOnUiThread()) {
+      // There is no reason to allocate views ahead of time on the main thread.
+      return;
+    }
+    synchronized (mPreMountItemsLock) {
+      ThemedReactContext context =
+        Assertions.assertNotNull(mReactContextForRootTag.get(rootTag));
+      String component = sComponentNames.get(componentName);
+      Assertions.assertNotNull(component);
+      mPreMountItems.add(new PreAllocateViewMountItem(context, rootTag, component));
+    }
   }
 
   @DoNotStrip
@@ -216,13 +229,13 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @DoNotStrip
   @SuppressWarnings("unused")
-  private MountItem updatePropsMountItem(int reactTag, ReadableNativeMap map) {
+  private MountItem updatePropsMountItem(int reactTag, ReadableMap map) {
     return new UpdatePropsMountItem(reactTag, map);
   }
 
   @DoNotStrip
   @SuppressWarnings("unused")
-  private MountItem updateLocalDataMountItem(int reactTag, ReadableNativeMap newLocalData) {
+  private MountItem updateLocalDataMountItem(int reactTag, ReadableMap newLocalData) {
     return new UpdateLocalDataMountItem(reactTag, newLocalData);
   }
 
@@ -242,8 +255,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @SuppressWarnings("unused")
   private long measure(
       String componentName,
-      ReadableNativeMap localData,
-      ReadableNativeMap props,
+      ReadableMap localData,
+      ReadableMap props,
       int minWidth,
       int maxWidth,
       int minHeight,
@@ -266,7 +279,17 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
    */
   @DoNotStrip
   @SuppressWarnings("unused")
-  private void scheduleMountItems(final MountItem mountItems) {
+  private void scheduleMountItems(
+      final MountItem mountItems,
+      long commitStartTime,
+      long layoutTime,
+      long finishTransactionStartTime) {
+
+    // TODO T31905686: support multithreading
+    mCommitStartTime = commitStartTime;
+    mLayoutTime = layoutTime;
+    mFinishTransactionTime = SystemClock.uptimeMillis() - finishTransactionStartTime;
+    mDispatchViewUpdatesTime = SystemClock.uptimeMillis();
     synchronized (mMountItemsLock) {
       mMountItems.add(mountItems);
     }
@@ -286,25 +309,41 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     }
 
     try {
+      List<MountItem> preMountItemsToDispatch;
+      synchronized (mPreMountItemsLock) {
+        preMountItemsToDispatch = mPreMountItems;
+        mPreMountItems = new ArrayList<>();
+      }
+
+      mRunStartTime = SystemClock.uptimeMillis();
       List<MountItem> mountItemsToDispatch;
       synchronized (mMountItemsLock) {
-        if (mMountItems.isEmpty()) {
-          return;
-        }
         mountItemsToDispatch = mMountItems;
         mMountItems = new ArrayList<>();
       }
 
+      long nonBatchedExecutionStartTime = SystemClock.uptimeMillis();
+      Systrace.beginSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+        "FabricUIManager::premountViews (" + preMountItemsToDispatch.size() + " batches)");
+      for (MountItem mountItem : preMountItemsToDispatch) {
+        mountItem.execute(mMountingManager);
+      }
+      mNonBatchedExecutionTime = SystemClock.uptimeMillis() - nonBatchedExecutionStartTime;
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+
       Systrace.beginSection(
           Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
           "FabricUIManager::mountViews (" + mountItemsToDispatch.size() + " batches)");
+
+      long batchedExecutionStartTime = SystemClock.uptimeMillis();
       for (MountItem mountItem : mountItemsToDispatch) {
         mountItem.execute(mMountingManager);
       }
-
+      mBatchedExecutionTime = SystemClock.uptimeMillis() - batchedExecutionStartTime;
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     } catch (Exception ex) {
-      FLog.i(ReactConstants.TAG, "Exception thrown when executing UIFrameGuarded", ex);
+      FLog.e(ReactConstants.TAG, "Exception thrown when executing UIFrameGuarded", ex);
       mIsMountingEnabled = false;
       throw ex;
     }
@@ -367,7 +406,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @Override
   public void dispatchCommand(
       final int reactTag, final int commandId, final ReadableArray commandArgs) {
-    scheduleMountItems(new DispatchCommandMountItem(reactTag, commandId, commandArgs));
+    synchronized (mMountItemsLock) {
+      mMountItems.add(new DispatchCommandMountItem(reactTag, commandId, commandArgs));
+    }
   }
 
   @Override
@@ -382,12 +423,20 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @Override
   public void profileNextBatch() {
-    // do nothing for now.
+    // TODO T31905686: Remove this method and add support for multi-threading performance counters
   }
 
   @Override
   public Map<String, Long> getPerformanceCounters() {
-    return new HashMap<>();
+    HashMap<String, Long> performanceCounters = new HashMap<>();
+    performanceCounters.put("CommitStartTime", mCommitStartTime);
+    performanceCounters.put("LayoutTime", mLayoutTime);
+    performanceCounters.put("DispatchViewUpdatesTime", mDispatchViewUpdatesTime);
+    performanceCounters.put("RunStartTime", mRunStartTime);
+    performanceCounters.put("BatchedExecutionTime", mBatchedExecutionTime);
+    performanceCounters.put("NonBatchedExecutionTime", mNonBatchedExecutionTime);
+    performanceCounters.put("FinishFabricTransactionTime", mFinishTransactionTime);
+    return performanceCounters;
   }
 
   private class DispatchUIFrameCallback extends GuardedFrameCallback {

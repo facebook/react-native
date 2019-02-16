@@ -7,11 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import <React/RCTMountingManagerDelegate.h>
+#import <React/RCTPrimitives.h>
 #import <react/core/ReactPrimitives.h>
 #import <react/mounting/ShadowView.h>
 #import <react/mounting/ShadowViewMutation.h>
-#import <React/RCTPrimitives.h>
-#import <React/RCTMountingManagerDelegate.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface RCTMountingManager : NSObject
 
-@property (nonatomic, weak) id <RCTMountingManagerDelegate> delegate;
+@property (nonatomic, weak) id<RCTMountingManagerDelegate> delegate;
 @property (nonatomic, strong) RCTComponentViewRegistry *componentViewRegistry;
 
 /**
@@ -30,8 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
  * The order of mutation tnstructions matters.
  * Can be called from any thread.
  */
-- (void)performTransactionWithMutations:(facebook::react::ShadowViewMutationList)mutations
-                                rootTag:(ReactTag)rootTag;
+- (void)performTransactionWithMutations:(facebook::react::ShadowViewMutationList)mutations rootTag:(ReactTag)rootTag;
 
 /**
  * Suggests preliminary creation of a component view of given type.

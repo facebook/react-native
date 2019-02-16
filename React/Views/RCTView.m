@@ -616,7 +616,6 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
   const RCTBorderColors borderColors = [self borderColors];
 
   BOOL useIOSBorderRendering =
-  !RCTRunningInTestEnvironment() &&
   RCTCornerRadiiAreEqual(cornerRadii) &&
   RCTBorderInsetsAreEqual(borderInsets) &&
   RCTBorderColorsAreEqual(borderColors) &&
@@ -669,15 +668,6 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
       (CGFloat)1.0 / size.height
     );
   });
-
-  if (RCTRunningInTestEnvironment()) {
-    const CGSize size = self.bounds.size;
-    UIGraphicsBeginImageContextWithOptions(size, NO, image.scale);
-    [image drawInRect:(CGRect){CGPointZero, size}];
-    image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    contentsCenter = CGRectMake(0, 0, 1, 1);
-  }
 
   layer.contents = (id)image.CGImage;
   layer.contentsScale = image.scale;

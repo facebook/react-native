@@ -28,7 +28,7 @@ global.cancelAnimationFrame = function(id) {
   clearTimeout(id);
 };
 
-jest.mock('setupDevtools').mock('npmlog');
+jest.mock('setupDevtools');
 
 // there's a __mock__ for it.
 jest.setMock('ErrorUtils', require('ErrorUtils'));

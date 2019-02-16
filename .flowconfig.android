@@ -75,19 +75,17 @@ suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
 suppress_comment=\\(.\\|\n\\)*\\$FlowExpectedError
 
 [lints]
-all=warn
-unnecessary-optional-chain=off
-
-# There is an ESLint rule for this
-unclear-type=off
-
-sketchy-null=off
 sketchy-null-number=warn
 sketchy-null-mixed=warn
-
-# This is noisy for now. We *do* still want to warn on importing types
-# from untyped files, which is covered by untyped-type-import
-untyped-import=off
+sketchy-number=warn
+untyped-type-import=warn
+nonstrict-import=warn
+deprecated-type=warn
+unsafe-getters-setters=warn
+inexact-spread=warn
+unnecessary-invariant=warn
+deprecated-call-syntax=warn
+signature-verification-failure=warn
 deprecated-utility=error
 
 [strict]
@@ -100,4 +98,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.91.0
+^0.93.0

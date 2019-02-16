@@ -103,7 +103,7 @@ class AnimatedTransform extends AnimatedWithChildren {
           transConfigs.push({
             type: 'static',
             property: key,
-            value,
+            value: NativeAnimatedHelper.transformDataType(value),
           });
         }
       }

@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
@@ -48,7 +49,6 @@ import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.common.MeasureSpecProvider;
-import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
@@ -66,8 +66,7 @@ import javax.annotation.Nullable;
  * subsequent touch events related to that gesture (in case when JS code wants to handle that
  * gesture).
  */
-public class ReactRootView extends SizeMonitoringFrameLayout
-    implements RootView, MeasureSpecProvider {
+public class ReactRootView extends FrameLayout implements RootView, MeasureSpecProvider {
 
   /**
    * Listener interface for react root view events
@@ -322,11 +321,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   }
 
   private void removeOnGlobalLayoutListener() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-      getViewTreeObserver().removeOnGlobalLayoutListener(getCustomGlobalLayoutListener());
-    } else {
-      getViewTreeObserver().removeGlobalOnLayoutListener(getCustomGlobalLayoutListener());
-    }
+    getViewTreeObserver().removeOnGlobalLayoutListener(getCustomGlobalLayoutListener());
   }
 
   @Override
@@ -669,7 +664,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
     }
 
     private boolean areMetricsEqual(DisplayMetrics displayMetrics, DisplayMetrics otherMetrics) {
-      if (Build.VERSION.SDK_INT >= 17) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
         return displayMetrics.equals(otherMetrics);
       } else {
         // DisplayMetrics didn't have an equals method before API 17.

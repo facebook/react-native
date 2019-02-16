@@ -354,7 +354,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     setCursorColor(view, color);
   }
 
-  private void setCursorColor(ReactEditText view, @Nullable Integer color) {
+  @ReactProp(name = "cursorColor", customType = "Color")
+  public void setCursorColor(ReactEditText view, @Nullable Integer color) {
     // Evil method that uses reflection because there is no public API to changes
     // the cursor color programmatically.
     // Based on http://stackoverflow.com/questions/25996032/how-to-change-programatically-edittext-cursor-color-in-android.
@@ -526,6 +527,41 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
 
     view.setFilters(newFilters);
+  }
+
+  @ReactProp(name = "autoComplete")
+  public void setTextContentType(ReactEditText view, @Nullable String autocomplete) {
+    if (autocomplete == null) {
+      view.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO);
+    } else if ("username".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_USERNAME);
+    } else if ("password".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_PASSWORD);
+    } else if ("email".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_EMAIL_ADDRESS);
+    } else if ("name".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_NAME);
+    } else if ("tel".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_PHONE);
+    } else if ("street-address".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_POSTAL_ADDRESS);
+    } else if ("postal-code".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_POSTAL_CODE);
+    } else if ("cc-number".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_NUMBER);
+    } else if ("cc-csc".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_SECURITY_CODE);
+    } else if ("cc-exp".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DATE);
+    } else if ("cc-exp-month".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_MONTH);
+    } else if ("cc-exp-year".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_YEAR);
+    } else if ("off".equals(autocomplete)) {
+      view.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO);
+    } else {
+      throw new JSApplicationIllegalArgumentException("Invalid autocomplete option: " + autocomplete);
+    }
   }
 
   @ReactProp(name = "autoCorrect")

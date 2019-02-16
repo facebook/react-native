@@ -33,9 +33,13 @@ void ParagraphLocalData::setTextLayoutManager(
   textLayoutManager_ = textLayoutManager;
 }
 
+#ifdef ANDROID
+
 folly::dynamic ParagraphLocalData::getDynamic() const {
   return toDynamic(*this);
 }
+
+#endif
 
 #pragma mark - DebugStringConvertible
 

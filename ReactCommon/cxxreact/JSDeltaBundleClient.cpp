@@ -30,7 +30,7 @@ void JSDeltaBundleClient::patchModules(const folly::dynamic *modules) {
   for (const folly::dynamic pair : *modules) {
     auto id = pair[0].getInt();
     auto module = pair[1];
-    modules_.emplace(id, module.getString());
+    modules_[id] = std::move(module.getString());
   }
 }
 

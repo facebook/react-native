@@ -7,11 +7,13 @@
 
 package com.facebook.react.modules.location;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import com.facebook.common.logging.FLog;
@@ -31,6 +33,7 @@ import javax.annotation.Nullable;
 /**
  * Native module that exposes Geolocation to JS.
  */
+@SuppressLint("MissingPermission")
 @ReactModule(name = LocationModule.NAME)
 public class LocationModule extends ReactContextBaseJavaModule {
 
@@ -216,7 +219,7 @@ public class LocationModule extends ReactContextBaseJavaModule {
     map.putMap("coords", coords);
     map.putDouble("timestamp", location.getTime());
 
-    if (android.os.Build.VERSION.SDK_INT >= 18) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
       map.putBoolean("mocked", location.isFromMockProvider());
     }
 

@@ -26,15 +26,17 @@ namespace react {
 struct ShadowNodeFragment {
   Tag tag = 0;
   Tag rootTag = 0;
-  const SharedProps &props = nullSharedProps();
-  const SharedEventEmitter &eventEmitter = nullSharedEventEmitter();
-  const SharedShadowNodeSharedList &children = nullSharedChildren();
-  const SharedLocalData &localData = nullLocalData();
+  const SharedProps &props = propsPlaceholder();
+  const SharedEventEmitter &eventEmitter = eventEmitterPlaceholder();
+  const SharedShadowNodeSharedList &children = childrenPlaceholder();
+  const SharedLocalData &localData = localDataPlaceholder();
 
-  static SharedProps &nullSharedProps();
-  static SharedEventEmitter &nullSharedEventEmitter();
-  static SharedShadowNodeSharedList &nullSharedChildren();
-  static SharedLocalData &nullLocalData();
+  static Tag tagPlaceholder();
+  static Tag surfaceIdPlaceholder();
+  static SharedProps &propsPlaceholder();
+  static SharedEventEmitter &eventEmitterPlaceholder();
+  static SharedShadowNodeSharedList &childrenPlaceholder();
+  static SharedLocalData &localDataPlaceholder();
 };
 
 } // namespace react
