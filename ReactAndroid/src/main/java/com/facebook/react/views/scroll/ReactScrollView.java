@@ -93,7 +93,7 @@ public class ReactScrollView extends NestedScrollView implements ReactClippingVi
     if (!sTriedToGetScrollerField) {
       sTriedToGetScrollerField = true;
       try {
-        sScrollerField = ScrollView.class.getDeclaredField("mScroller");
+        sScrollerField = NestedScrollView.class.getDeclaredField("mScroller");
         sScrollerField.setAccessible(true);
       } catch (NoSuchFieldException e) {
         Log.w(
