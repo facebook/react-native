@@ -65,7 +65,7 @@ class AnimatedNode {
    *
    * See http://facebook.github.io/react-native/docs/animatedvalue.html#addlistener
    */
-  addListener(callback: ValueListenerCallback): string {
+  addListener(callback: any): string {
     const id = String(_uniqueId++);
     this._listeners[id] = callback;
     if (this.__isNative) {

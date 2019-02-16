@@ -242,7 +242,7 @@ class AnimatedValue extends AnimatedWithChildren {
     if (flush) {
       _flush(this);
     }
-    this._callListeners(this.__getValue());
+    super._callListeners(this.__getValue());
   }
 
   __getNativeConfig(): Object {
