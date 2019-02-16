@@ -14,7 +14,7 @@ const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 const NativeAnimatedAPI = NativeAnimatedHelper.API;
 const invariant = require('invariant');
 
-type ValueListenerCallback = (state: {value: number}) => void;
+type ValueListenerCallback = (state: {value: number}) => mixed;
 
 let _uniqueId = 1;
 
@@ -65,7 +65,7 @@ class AnimatedNode {
    *
    * See http://facebook.github.io/react-native/docs/animatedvalue.html#addlistener
    */
-  addListener(callback: (value: any) => void): string {
+  addListener(callback: (value: any) => mixed): string {
     const id = String(_uniqueId++);
     this._listeners[id] = callback;
     if (this.__isNative) {
