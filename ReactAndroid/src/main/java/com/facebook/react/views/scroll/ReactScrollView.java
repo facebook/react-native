@@ -18,7 +18,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.OverScroller;
-import android.widget.ScrollView;
+import android.support.v4.widget.NestedScrollView;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
@@ -35,13 +35,13 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 /**
- * A simple subclass of ScrollView that doesn't dispatch measure and layout to its children and has
+ * A simple subclass of NestedScrollView that doesn't dispatch measure and layout to its children and has
  * a scroll listener to send scroll events to JS.
  *
  * <p>ReactScrollView only supports vertical scrolling. For horizontal scrolling,
  * use {@link ReactHorizontalScrollView}.
  */
-public class ReactScrollView extends ScrollView implements ReactClippingViewGroup, ViewGroup.OnHierarchyChangeListener, View.OnLayoutChangeListener {
+public class ReactScrollView extends NestedScrollView implements ReactClippingViewGroup, ViewGroup.OnHierarchyChangeListener, View.OnLayoutChangeListener {
 
   private static @Nullable Field sScrollerField;
   private static boolean sTriedToGetScrollerField = false;
@@ -198,7 +198,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   }
 
   @Override
-  protected void onAttachedToWindow() {
+  public void onAttachedToWindow() {
     super.onAttachedToWindow();
     if (mRemoveClippedSubviews) {
       updateClippingRect();
