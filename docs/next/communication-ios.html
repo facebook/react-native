@@ -63,7 +63,7 @@ RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 
-AppRegistry<span class="token punctuation">.</span><span class="token function">registerComponent</span><span class="token punctuation">(</span><span class="token string">'AwesomeProject'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> ImageBrowserApp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+AppRegistry<span class="token punctuation">.</span><span class="token function">registerComponent</span><span class="token punctuation">(</span><span class="token string">'ImageBrowserApp'</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> ImageBrowserApp<span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre>
 <p><code>RCTRootView</code> also provides a read-write property <code>appProperties</code>. After <code>appProperties</code> is set, the React Native app is re-rendered with new properties. The update is only performed when the new updated properties differ from the previous ones.</p>
 <pre><code class="hljs css language-objectivec"><span class="hljs-built_in">NSArray</span> *imageList = @[<span class="hljs-string">@"http://foo.com/bar3.png"</span>,
