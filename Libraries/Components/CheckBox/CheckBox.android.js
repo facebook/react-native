@@ -60,7 +60,6 @@ type CheckBoxNativeType = Class<NativeComponent<NativeProps>>;
 
 type Props = $ReadOnly<{|
   ...CommonProps,
-  tintColors?: {|true?: ColorValue, false?: ColorValue|},
 
   /**
    * The value of the checkbox.  If true the checkbox will be turned on.
@@ -189,7 +188,7 @@ class CheckBox extends React.Component<Props> {
       tintColors: this.getTintColors(tintColors),
       style: [styles.rctCheckBox, style],
     };
-
+    console.warn('render');
     return (
       <AndroidCheckBoxNativeComponent
         {...nativeProps}
