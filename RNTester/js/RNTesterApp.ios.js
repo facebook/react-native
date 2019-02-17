@@ -21,12 +21,12 @@ const RNTesterExampleContainer = require('./RNTesterExampleContainer');
 const RNTesterExampleList = require('./RNTesterExampleList');
 const RNTesterList = require('./RNTesterList.ios');
 const RNTesterNavigationReducer = require('./RNTesterNavigationReducer');
+const SnapshotViewIOS = require('./SnapshotViewIOS.ios');
 const URIActionMap = require('./URIActionMap');
 
 const {
   Button,
   AppRegistry,
-  SnapshotViewIOS,
   StyleSheet,
   Text,
   View,
