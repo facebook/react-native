@@ -250,8 +250,7 @@ public class MountingManager {
     if (viewState.mCurrentLocalData != null
         && newLocalData.hasKey("hash")
         && viewState.mCurrentLocalData.getDouble("hash") == newLocalData.getDouble("hash")
-        && viewState.mCurrentLocalData.toString().equals(newLocalData.toString())) {
-        // TODO: T31905686 implement a proper equality method
+        && viewState.mCurrentLocalData.equals(newLocalData)) {
       return;
     }
     viewState.mCurrentLocalData = newLocalData;
