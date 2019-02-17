@@ -19,6 +19,7 @@ const React = require('React');
 const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
+const SafeAreaView = require('SafeAreaView');
 
 const RCTModalHostView = require('RCTModalHostViewNativeComponent');
 
@@ -261,7 +262,7 @@ class Modal extends React.Component<Props> {
         onStartShouldSetResponder={this._shouldSetResponder}
         supportedOrientations={this.props.supportedOrientations}
         onOrientationChange={this.props.onOrientationChange}>
-        <View style={[styles.container, containerStyles]}>{innerChildren}</View>
+        <SafeAreaView style={[styles.container, containerStyles]}>{innerChildren}</SafeAreaView>
       </RCTModalHostView>
     );
   }
