@@ -179,7 +179,7 @@
     "react-devtools-core": "^3.6.0",
     "regenerator-runtime": "^0.11.0",
     "stacktrace-parser": "^0.1.3",
-    "ws": "^1.1.5",
+    "ws": "^6.1.4",
     "yargs": "^9.0.0"
   },
   "devDependencies": {
