@@ -48,7 +48,7 @@ type State = {|
  * standard React Native `FlatList`, so use it as if it were a FlatList, but
  * with extra props, i.e.
  *
- * <SwipeableListView renderRow={..} renderQuickActions={..} {..FlatList props} />
+ * <SwipeableFlatList renderRow={..} renderQuickActions={..} {..FlatList props} />
  *
  * SwipeableRow can be used independently of this component, but the main
  * benefit of using this component is

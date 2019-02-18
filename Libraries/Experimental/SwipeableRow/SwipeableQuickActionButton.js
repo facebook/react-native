@@ -21,7 +21,7 @@ import type {ImageSource} from 'ImageSource';
 
 /**
  * Standard set of quick action buttons that can, if the user chooses, be used
- * with SwipeableListView. Each button takes an image and text with optional
+ * with SwipeableFlatList. Each button takes an image and text with optional
  * formatting.
  */
 class SwipeableQuickActionButton extends React.Component<{

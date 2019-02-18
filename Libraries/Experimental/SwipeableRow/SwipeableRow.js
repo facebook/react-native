@@ -36,7 +36,7 @@ const SLOW_SPEED_SWIPE_FACTOR = 4;
 const SWIPE_DURATION = 300;
 
 /**
- * On SwipeableListView mount, the 1st item will bounce to show users it's
+ * On SwipeableFlatList mount, the 1st item will bounce to show users it's
  * possible to swipe
  */
 const ON_MOUNT_BOUNCE_DELAY = 700;
@@ -78,8 +78,8 @@ type State = {
 /**
  * Creates a swipable row that allows taps on the main item and a custom View
  * on the item hidden behind the row. Typically this should be used in
- * conjunction with SwipeableListView for additional functionality, but can be
- * used in a normal ListView. See the renderRow for SwipeableListView to see how
+ * conjunction with SwipeableFlatList for additional functionality, but can be
+ * used in a normal ListView. See the renderRow for SwipeableFlatList to see how
  * to use this component separately.
  */
 class SwipeableRow extends React.Component<Props, State> {

@@ -23,7 +23,7 @@ type Props = $ReadOnly<{|
 
 /**
  * A thin wrapper around standard quick action buttons that can, if the user
- * chooses, be used with SwipeableListView. Sample usage is as follows, in the
+ * chooses, be used with SwipeableFlatList. Sample usage is as follows, in the
  * renderQuickActions callback:
  *
  * <SwipeableQuickActions>
