@@ -80,7 +80,6 @@ function attachNativeEvent(
 class AnimatedEvent {
   _argMapping: Array<?Mapping>;
   _listeners: Array<Function> = [];
-  _callListeners: Function;
   _attachedEvent: ?{
     detach: () => void,
   };
