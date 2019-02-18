@@ -26,6 +26,10 @@ can "symbolicate a single entry" \
   <(symbolicate testfile.js.map 1 161) \
   <(echo thrower.js:18:null)
 
+can "symbolicate a sectioned file" \
+  <(symbolicate sectioned-testfile.js.map 1 72) \
+  <(echo nested-thrower.js:6:start)
+
 can "symbolicate a profiler map" \
   <(symbolicate testfile.js.map testfile.profmap) \
   testfile.symbolicated.profmap
