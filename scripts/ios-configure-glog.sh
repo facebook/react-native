@@ -20,8 +20,6 @@ if [ -z "$CURRENT_ARCH" ] || [ "$CURRENT_ARCH" == "undefined_arch" ]; then
     fi
 fi
 
-export CXX="$(xcrun -find -sdk $PLATFORM_NAME cc) -arch $CURRENT_ARCH -isysroot $(xcrun -sdk $PLATFORM_NAME --show-sdk-path)"
-
 # Remove automake symlink if it exists
 if [ -h "test-driver" ]; then
     rm test-driver
