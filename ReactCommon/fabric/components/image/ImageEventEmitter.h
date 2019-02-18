@@ -18,7 +18,7 @@ class ImageEventEmitter : public ViewEventEmitter {
   void onLoadStart() const;
   void onLoad() const;
   void onLoadEnd() const;
-  void onProgress() const;
+  void onProgress(double) const;
   void onError() const;
   void onPartialLoad() const;
 };

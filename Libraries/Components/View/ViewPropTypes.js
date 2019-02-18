@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -69,7 +69,7 @@ type DirectEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onaccessibilityescape
    */
-  onAccessibilityEscape?: ?Function,
+  onAccessibilityEscape?: ?() => void,
 |}>;
 
 type TouchEventProps = $ReadOnly<{|
@@ -205,9 +205,22 @@ type GestureResponderEventProps = $ReadOnly<{|
   onStartShouldSetResponderCapture?: ?(e: PressEvent) => boolean,
 |}>;
 
+type AndroidDrawableThemeAttr = $ReadOnly<{|
+  type: 'ThemeAttrAndroid',
+  attribute: string,
+|}>;
+
+type AndroidDrawableRipple = $ReadOnly<{|
+  type: 'RippleAndroid',
+  color?: ?number,
+  borderless?: ?boolean,
+|}>;
+
+type AndroidDrawable = AndroidDrawableThemeAttr | AndroidDrawableRipple;
+
 type AndroidViewProps = $ReadOnly<{|
-  nativeBackgroundAndroid?: ?Object,
-  nativeForegroundAndroid?: ?Object,
+  nativeBackgroundAndroid?: ?AndroidDrawable,
+  nativeForegroundAndroid?: ?AndroidDrawable,
 
   /**
    * Whether this `View` should render itself (and all of its children) into a

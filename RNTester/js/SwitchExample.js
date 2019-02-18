@@ -198,7 +198,10 @@ class EventSwitchExample extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-const examples = [
+exports.title = '<Switch>';
+exports.displayName = 'SwitchExample';
+exports.description = 'Native boolean input';
+exports.examples = [
   {
     title: 'Switches can be set to true or false',
     render(): React.Element<any> {
@@ -230,8 +233,3 @@ const examples = [
     },
   },
 ];
-
-exports.title = '<Switch>';
-exports.displayName = 'SwitchExample';
-exports.description = 'Native boolean input';
-exports.examples = examples;

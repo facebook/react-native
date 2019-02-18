@@ -47,14 +47,20 @@ function findRenderers(): $ReadOnlyArray<ReactRenderer> {
 function getInspectorDataForViewTag(touchedViewTag: number) {
   for (let i = 0; i < renderers.length; i++) {
     const renderer = renderers[i];
-    const inspectorData = renderer.getInspectorDataForViewTag(touchedViewTag);
-    if (inspectorData.hierarchy.length > 0) {
-      return inspectorData;
+    if (
+      Object.prototype.hasOwnProperty.call(
+        renderer,
+        'getInspectorDataForViewTag',
+      )
+    ) {
+      const inspectorData = renderer.getInspectorDataForViewTag(touchedViewTag);
+      if (inspectorData.hierarchy.length > 0) {
+        return inspectorData;
+      }
     }
   }
   throw new Error('Expected to find at least one React renderer.');
 }
-
 class Inspector extends React.Component<
   {
     inspectedViewTag: ?number,
@@ -112,9 +118,6 @@ class Inspector extends React.Component<
   attachToDevtools = (agent: Object) => {
     let _hideWait = null;
     const hlSub = agent.sub('highlight', ({node, name, props}) => {
-      /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.63 was deployed. To see the error delete this
-       * comment and run Flow. */
       clearTimeout(_hideWait);
 
       if (typeof node !== 'number') {

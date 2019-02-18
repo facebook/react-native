@@ -13,4 +13,3 @@
 @interface RCTFabricSurfaceHostingProxyRootView : RCTSurfaceHostingProxyRootView
 
 @end
-

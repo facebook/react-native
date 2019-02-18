@@ -195,11 +195,6 @@ class Circle extends React.Component<any, any> {
 }
 
 class AnExApp extends React.Component<any, any> {
-  static title = 'Animated - Gratuitous App';
-  static description =
-    'Bunch of Animations - tap a circle to ' +
-    'open a view with more animations, or longPress and drag to reorder circles.';
-
   _onMove: (position: Point) => void;
   constructor(props: any): void {
     super(props);
@@ -365,4 +360,14 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = AnExApp;
+exports.title = 'Animated - Gratuitous App';
+exports.description =
+  'Bunch of Animations - tap a circle to open a view with more animations, or longPress and drag to reorder circles.';
+exports.examples = [
+  {
+    title: 'And example app',
+    render(): React.Element<typeof AnExApp> {
+      return <AnExApp />;
+    },
+  },
+];

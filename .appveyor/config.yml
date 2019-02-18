@@ -2,7 +2,7 @@ environment:
     ANDROID_HOME: "C:\\android-sdk-windows"
     ANDROID_NDK: "C:\\android-sdk-windows\\android-ndk-r17c"
     ANDROID_BUILD_VERSION: 28
-    ANDROID_TOOLS_VERSION: 28.0.2
+    ANDROID_TOOLS_VERSION: 28.0.3
 
     GRADLE_OPTS: -Dorg.gradle.daemon=false
 
@@ -21,11 +21,11 @@ install:
     - set PATH=%PATH%;"%ANDROID_HOME%\tools\bin"
 
     - yes 2> nul | sdkmanager --licenses > nul
-    - sdkmanager "system-images;android-19;google_apis;armeabi-v7a"
-    - sdkmanager "platforms;android-%ANDROID_BUILD_VERSION%"
-    - sdkmanager  "build-tools;%ANDROID_TOOLS_VERSION%"
-    - sdkmanager "add-ons;addon-google_apis-google-23"
-    - sdkmanager "extras;android;m2repository"
+    - yes 2> nul | sdkmanager "system-images;android-19;google_apis;armeabi-v7a"
+    - yes 2> nul | sdkmanager "platforms;android-%ANDROID_BUILD_VERSION%"
+    - yes 2> nul | sdkmanager "build-tools;%ANDROID_TOOLS_VERSION%"
+    - yes 2> nul | sdkmanager "add-ons;addon-google_apis-google-23"
+    - yes 2> nul | sdkmanager "extras;android;m2repository"
 
     - appveyor DownloadFile "%NDK_TOOLS_URL%" -FileName "%TMP%/ndk.zip"
     - 7z x "%TMP%/ndk.zip" -o"%ANDROID_HOME%" > nul

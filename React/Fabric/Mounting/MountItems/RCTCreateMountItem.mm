@@ -16,8 +16,7 @@ using namespace facebook::react;
   ReactTag _tag;
 }
 
-- (instancetype)initWithComponentHandle:(facebook::react::ComponentHandle)componentHandle
-                                    tag:(ReactTag)tag
+- (instancetype)initWithComponentHandle:(facebook::react::ComponentHandle)componentHandle tag:(ReactTag)tag
 {
   if (self = [super init]) {
     _componentHandle = componentHandle;

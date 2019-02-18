@@ -69,16 +69,6 @@ WIN_EXPORT void YGNodeInsertChild(
     const YGNodeRef child,
     const uint32_t index);
 
-// This function inserts the child YGNodeRef as a children of the node received
-// by parameter and set the Owner of the child object to null. This function is
-// expected to be called when using Yoga in persistent mode in order to share a
-// YGNodeRef object as a child of two different Yoga trees. The child YGNodeRef
-// is expected to be referenced from its original owner and from a clone of its
-// original owner.
-WIN_EXPORT void YGNodeInsertSharedChild(
-    const YGNodeRef node,
-    const YGNodeRef child,
-    const uint32_t index);
 WIN_EXPORT void YGNodeRemoveChild(const YGNodeRef node, const YGNodeRef child);
 WIN_EXPORT void YGNodeRemoveAllChildren(const YGNodeRef node);
 WIN_EXPORT YGNodeRef YGNodeGetChild(const YGNodeRef node, const uint32_t index);
@@ -104,16 +94,16 @@ WIN_EXPORT void YGNodeCalculateLayout(
 
 // Mark a node as dirty. Only valid for nodes with a custom measure function
 // set.
-// YG knows when to mark all other nodes as dirty but because nodes with
-// measure functions
-// depends on information not known to YG they must perform this dirty
-// marking manually.
+//
+// Yoga knows when to mark all other nodes as dirty but because nodes with
+// measure functions depend on information not known to Yoga they must perform
+// this dirty marking manually.
 WIN_EXPORT void YGNodeMarkDirty(const YGNodeRef node);
 
-// This function marks the current node and all its descendants as dirty. This
-// function is added to test yoga benchmarks. This function is not expected to
-// be used in production as calling `YGCalculateLayout` will cause the
-// recalculation of each and every node.
+// Marks the current node and all its descendants as dirty.
+//
+// Intended to be used for Uoga benchmarks. Don't use in production, as calling
+// `YGCalculateLayout` will cause the recalculation of each and every node.
 WIN_EXPORT void YGNodeMarkDirtyAndPropogateToDescendants(const YGNodeRef node);
 
 WIN_EXPORT void YGNodePrint(const YGNodeRef node, const YGPrintOptions options);
@@ -150,11 +140,11 @@ YGDirtiedFunc YGNodeGetDirtiedFunc(YGNodeRef node);
 void YGNodeSetDirtiedFunc(YGNodeRef node, YGDirtiedFunc dirtiedFunc);
 YGPrintFunc YGNodeGetPrintFunc(YGNodeRef node);
 void YGNodeSetPrintFunc(YGNodeRef node, YGPrintFunc printFunc);
-bool YGNodeGetHasNewLayout(YGNodeRef node);
-void YGNodeSetHasNewLayout(YGNodeRef node, bool hasNewLayout);
+WIN_EXPORT bool YGNodeGetHasNewLayout(YGNodeRef node);
+WIN_EXPORT void YGNodeSetHasNewLayout(YGNodeRef node, bool hasNewLayout);
 YGNodeType YGNodeGetNodeType(YGNodeRef node);
 void YGNodeSetNodeType(YGNodeRef node, YGNodeType nodeType);
-bool YGNodeIsDirty(YGNodeRef node);
+WIN_EXPORT bool YGNodeIsDirty(YGNodeRef node);
 bool YGNodeLayoutGetDidUseLegacyFlag(const YGNodeRef node);
 
 WIN_EXPORT void YGNodeStyleSetDirection(
@@ -237,8 +227,8 @@ WIN_EXPORT void YGNodeStyleSetPositionPercent(
     const YGNodeRef node,
     const YGEdge edge,
     const float position);
-WIN_EXPORT WIN_STRUCT(YGValue)
-    YGNodeStyleGetPosition(const YGNodeRef node, const YGEdge edge);
+WIN_EXPORT YGValue
+YGNodeStyleGetPosition(const YGNodeRef node, const YGEdge edge);
 
 WIN_EXPORT void YGNodeStyleSetMargin(
     const YGNodeRef node,
@@ -317,20 +307,20 @@ WIN_EXPORT void YGNodeStyleSetMaxHeightPercent(
     const float maxHeight);
 WIN_EXPORT YGValue YGNodeStyleGetMaxHeight(const YGNodeRef node);
 
-// Yoga specific properties, not compatible with flexbox specification
-// Aspect ratio control the size of the undefined dimension of a node.
-// Aspect ratio is encoded as a floating point value width/height. e.g. A value
-// of 2 leads to a node with a width twice the size of its height while a value
-// of 0.5 gives the opposite effect.
+// Yoga specific properties, not compatible with flexbox specification Aspect
+// ratio control the size of the undefined dimension of a node. Aspect ratio is
+// encoded as a floating point value width/height. e.g. A value of 2 leads to a
+// node with a width twice the size of its height while a value of 0.5 gives the
+// opposite effect.
 //
 // - On a node with a set width/height aspect ratio control the size of the
-// unset dimension
+//   unset dimension
 // - On a node with a set flex basis aspect ratio controls the size of the node
-// in the cross axis if unset
+//   in the cross axis if unset
 // - On a node with a measure function aspect ratio works as though the measure
-// function measures the flex basis
+//   function measures the flex basis
 // - On a node with flex grow/shrink aspect ratio controls the size of the node
-// in the cross axis if unset
+//   in the cross axis if unset
 // - Aspect ratio takes min/max dimensions into account
 WIN_EXPORT void YGNodeStyleSetAspectRatio(
     const YGNodeRef node,
@@ -358,8 +348,11 @@ WIN_EXPORT float YGNodeLayoutGetPadding(
     const YGEdge edge);
 
 WIN_EXPORT void YGConfigSetLogger(const YGConfigRef config, YGLogger logger);
-WIN_EXPORT void
-YGLog(const YGNodeRef node, YGLogLevel level, const char* message, ...);
+WIN_EXPORT void YGLog(
+    const YGNodeRef node,
+    YGLogLevel level,
+    const char* message,
+    ...);
 WIN_EXPORT void YGLogWithConfig(
     const YGConfigRef config,
     YGLogLevel level,
@@ -374,8 +367,8 @@ WIN_EXPORT void YGAssertWithConfig(
     const YGConfigRef config,
     const bool condition,
     const char* message);
-// Set this to number of pixels in 1 point to round calculation results
-// If you want to avoid rounding - set PointScaleFactor to 0
+// Set this to number of pixels in 1 point to round calculation results If you
+// want to avoid rounding - set PointScaleFactor to 0
 WIN_EXPORT void YGConfigSetPointScaleFactor(
     const YGConfigRef config,
     const float pixelsInPoint);
@@ -406,8 +399,8 @@ WIN_EXPORT bool YGConfigIsExperimentalFeatureEnabled(
     const YGConfigRef config,
     const YGExperimentalFeature feature);
 
-// Using the web defaults is the prefered configuration for new projects.
-// Usage of non web defaults should be considered as legacy.
+// Using the web defaults is the prefered configuration for new projects. Usage
+// of non web defaults should be considered as legacy.
 WIN_EXPORT void YGConfigSetUseWebDefaults(
     const YGConfigRef config,
     const bool enabled);

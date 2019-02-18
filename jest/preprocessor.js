@@ -25,7 +25,7 @@ const generate = require('@babel/generator').default;
 
 const nodeFiles = new RegExp(
   [
-    '/metro(?:-[^/]*)?/', // metro, metro-core, metro-source-map, metro-etc
+    '/metro(?:-[^/]*)?/', // metro, metro-core, metro-source-map, metro-etc.
   ].join('|'),
 );
 const nodeOptions = babelRegisterOnly.config([nodeFiles]);
