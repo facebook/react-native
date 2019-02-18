@@ -43,6 +43,7 @@ type Props = {
 };
 
 YellowBox.ignoreWarnings([
+  'ListView and SwipeableListView are deprecated',
   'ListView is deprecated',
   'Module RCTImagePickerManager requires main queue setup',
 ]);

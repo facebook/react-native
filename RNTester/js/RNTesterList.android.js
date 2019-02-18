@@ -84,6 +84,14 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('./StatusBarExample'),
   },
   {
+    key: 'SwipeableFlatListExample',
+    module: require('./SwipeableFlatListExample'),
+  },
+  {
+    key: 'SwipeableListViewExample',
+    module: require('./SwipeableListViewExample'),
+  },
+  {
     key: 'SwitchExample',
     module: require('./SwitchExample'),
   },
