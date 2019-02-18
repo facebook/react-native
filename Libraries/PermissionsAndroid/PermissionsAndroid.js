@@ -15,7 +15,7 @@ const NativeModules = require('NativeModules');
 export type Rationale = {
   title: string,
   message: string,
-  buttonPositive: string,
+  buttonPositive?: string,
   buttonNegative?: string,
   buttonNeutral?: string,
 };
