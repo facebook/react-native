@@ -17,15 +17,13 @@ const {
   Alert,
   CameraRoll,
   Image,
-  ListView,
+  FlatList,
   PermissionsAndroid,
   Platform,
   StyleSheet,
   View,
 } = ReactNative;
-const ListViewDataSource = require('ListViewDataSource');
 
-const groupByEveryN = require('groupByEveryN');
 const logError = require('logError');
 
 import type {
@@ -33,20 +31,6 @@ import type {
   PhotoIdentifiersPage,
   GetPhotosParams,
 } from 'CameraRoll';
-
-function rowHasChanged<T>(r1: Array<T>, r2: Array<T>): boolean {
-  if (r1.length !== r2.length) {
-    return true;
-  }
-
-  for (let i = 0; i < r1.length; i++) {
-    if (r1[i] !== r2[i]) {
-      return true;
-    }
-  }
-
-  return false;
-}
 
 type Props = $ReadOnly<{|
   /**
@@ -74,10 +58,9 @@ type Props = $ReadOnly<{|
   renderImage: PhotoIdentifier => React.Node,
 
   /**
-   * imagesPerRow: Number of images to be shown in each row.
+   * A boolean that indicates if we should render large or small images.
    */
-
-  imagesPerRow: number,
+  bigImages: Boolean,
 
   /**
    * The asset type, one of 'Photos', 'Videos' or 'All'
@@ -90,14 +73,16 @@ type State = {|
   lastCursor: ?string,
   noMore: boolean,
   loadingMore: boolean,
-  dataSource: ListViewDataSource,
 |};
+
+type Row = {
+  item: PhotoIdentifier,
+};
 
 class CameraRollView extends React.Component<Props, State> {
   static defaultProps = {
     groupTypes: 'SavedPhotos',
     batchSize: 5,
-    imagesPerRow: 1,
     assetType: 'Photos',
     renderImage: function(asset: PhotoIdentifier) {
       const imageSize = 150;
@@ -114,19 +99,7 @@ class CameraRollView extends React.Component<Props, State> {
       lastCursor: null,
       noMore: false,
       loadingMore: false,
-      dataSource: new ListView.DataSource({rowHasChanged: rowHasChanged}),
     };
-  }
-
-  /**
-   * This should be called when the image renderer is changed to tell the
-   * component to re-render its assets.
-   */
-  rendererChanged() {
-    const ds = new ListView.DataSource({rowHasChanged: rowHasChanged});
-    this.state.dataSource = ds.cloneWithRows(
-      groupByEveryN(this.state.assets, this.props.imagesPerRow),
-    );
   }
 
   componentDidMount() {
@@ -194,13 +167,13 @@ class CameraRollView extends React.Component<Props, State> {
 
   render() {
     return (
-      <ListView
-        renderRow={this._renderRow}
-        renderFooter={this._renderFooterSpinner}
+      <FlatList
+        renderItem={this._renderRow}
+        ListFooterComponent={this._renderFooterSpinner}
         onEndReached={this._onEndReached}
         style={styles.container}
-        dataSource={this.state.dataSource}
-        enableEmptySections
+        data={this.state.assets}
+        extraData={this.props.bigImages}
       />
     );
   }
@@ -212,20 +185,8 @@ class CameraRollView extends React.Component<Props, State> {
     return null;
   };
 
-  // rowData is an array of images
-  _renderRow = (
-    rowData: Array<PhotoIdentifier>,
-    sectionID: string,
-    rowID: string,
-  ) => {
-    const images = rowData.map(image => {
-      if (image === null) {
-        return null;
-      }
-      return this.props.renderImage(image);
-    });
-
-    return <View style={styles.row}>{images}</View>;
+  _renderRow = (row: Row) => {
+    return <View style={styles.row}>{this.props.renderImage(row.item)}</View>;
   };
 
   _appendAssets(data: PhotoIdentifiersPage) {
@@ -239,9 +200,6 @@ class CameraRollView extends React.Component<Props, State> {
     if (assets.length > 0) {
       newState.lastCursor = data.page_info.end_cursor;
       newState.assets = this.state.assets.concat(assets);
-      newState.dataSource = this.state.dataSource.cloneWithRows(
-        groupByEveryN(newState.assets, this.props.imagesPerRow),
-      );
     }
 
     this.setState(newState);
