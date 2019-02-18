@@ -60,7 +60,7 @@ type Props = $ReadOnly<{|
   /**
    * A boolean that indicates if we should render large or small images.
    */
-  bigImages: Boolean,
+  bigImages: boolean,
 
   /**
    * The asset type, one of 'Photos', 'Videos' or 'All'
