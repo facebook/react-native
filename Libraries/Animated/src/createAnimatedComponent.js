@@ -30,7 +30,6 @@ function createAnimatedComponent(Component: any): any {
     _prevComponent: any;
     _propsAnimated: AnimatedProps;
     _eventDetachers: Array<Function> = [];
-    _setComponentRef: Function;
 
     static __skipSetNativeProps_FOR_TESTS_ONLY = false;
 
