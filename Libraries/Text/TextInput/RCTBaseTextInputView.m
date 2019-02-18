@@ -283,6 +283,25 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   }
 }
 
+- (BOOL)secureTextEntry {
+  return self.backedTextInputView.secureTextEntry;
+}
+
+- (void)setSecureTextEntry:(BOOL)secureTextEntry {
+  UIView<RCTBackedTextInputViewProtocol> *textInputView = self.backedTextInputView;
+    
+  if (textInputView.secureTextEntry != secureTextEntry) {
+    textInputView.secureTextEntry = secureTextEntry;
+      
+    // Fix #5859
+    // Reason works: https://stackoverflow.com/questions/14220187/uitextfield-has-trailing-whitespace-after-securetextentry-toggle/22537788#22537788
+    NSAttributedString *originalText = [textInputView.attributedText copy];
+    self.backedTextInputView.attributedText = [NSAttributedString new];
+    self.backedTextInputView.attributedText = originalText;
+  }
+    
+}
+
 #pragma mark - RCTBackedTextInputDelegate
 
 - (BOOL)textInputShouldBeginEditing
