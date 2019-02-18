@@ -168,6 +168,7 @@ class CameraRollView extends React.Component<Props, State> {
   render() {
     return (
       <FlatList
+        keyExtractor={item => item.node.image.uri}
         renderItem={this._renderRow}
         ListFooterComponent={this._renderFooterSpinner}
         onEndReached={this._onEndReached}
