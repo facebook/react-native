@@ -49,12 +49,12 @@ public class UIImplementation {
 
   static {
     try {
-      mReactBaseTextShadowNodeClass = Class.forName("com.facebook.react.views.text.ReactBaseTextShadowNode");
+      sReactBaseTextShadowNodeClass = Class.forName("com.facebook.react.views.text.ReactBaseTextShadowNode");
     } catch (ClassNotFoundException e) {
-      mReactBaseTextShadowNodeClass = null;
+      sReactBaseTextShadowNodeClass = null;
     }
   }
-  private static Class mReactBaseTextShadowNodeClass;
+  private static Class sReactBaseTextShadowNodeClass;
   protected final EventDispatcher mEventDispatcher;
   protected final ReactApplicationContext mReactContext;
   protected final ShadowNodeRegistry mShadowNodeRegistry = new ShadowNodeRegistry();
@@ -463,8 +463,8 @@ public class UIImplementation {
       }
       // If there is a RCTRawText child node, and the parent is not a ReactBaseTextShadowNode,
       // do not add the illegal RCTRawText childNode to the parent node.
-      if (TextUtils.equals(cssNodeToAdd.getViewClass(), "RCTRawText") && mReactBaseTextShadowNodeClass != null
-        && !mReactBaseTextShadowNodeClass.isAssignableFrom(cssNodeToAdd.getClass())) {
+      if (TextUtils.equals(cssNodeToAdd.getViewClass(), "RCTRawText") && sReactBaseTextShadowNodeClass != null
+        && !sReactBaseTextShadowNodeClass.isAssignableFrom(cssNodeToAdd.getClass())) {
         illegals.add(viewAtIndex);
         continue;
       }
@@ -633,8 +633,8 @@ public class UIImplementation {
       }
       // If there is a RCTRawText child node, and the parent is not a ReactBaseTextShadowNode,
       // do not add the illegal RCTRawText childNode to the parent node.
-      if (TextUtils.equals(cssNodeToAdd.getViewClass(), "RCTRawText") && mReactBaseTextShadowNodeClass != null
-        && !mReactBaseTextShadowNodeClass.isAssignableFrom(cssNodeToAdd.getClass())) {
+      if (TextUtils.equals(cssNodeToAdd.getViewClass(), "RCTRawText") && sReactBaseTextShadowNodeClass != null
+        && !sReactBaseTextShadowNodeClass.isAssignableFrom(cssNodeToAdd.getClass())) {
         illegalChildrendTags.add(childrenTags.getInt(i));
         continue;
       }
