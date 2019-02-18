@@ -795,4 +795,12 @@ public class YogaNode implements Cloneable {
     newNode.mOwner = this;
     return newNode.mNativePointer;
   }
+
+  public static YogaNode create() {
+    return new YogaNode();
+  }
+
+  public static YogaNode create(YogaConfig config) {
+    return new YogaNode(config);
+  }
 }
