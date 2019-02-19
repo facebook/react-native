@@ -10,17 +10,24 @@
 #include "Yoga.h"
 
 struct YGConfig {
-  std::array<bool, facebook::yoga::enums::count<YGExperimentalFeature>()>
-      experimentalFeatures = {};
+private:
+  YGLogger logger_;
+
+public:
   bool useWebDefaults = false;
   bool useLegacyStretchBehaviour = false;
   bool shouldDiffLayoutWithoutLegacyStretchBehaviour = false;
   bool printTree = false;
   float pointScaleFactor = 1.0f;
-  YGLogger logger;
   YGCloneNodeFunc cloneNodeCallback = nullptr;
+  std::array<bool, facebook::yoga::enums::count<YGExperimentalFeature>()>
+      experimentalFeatures = {};
   void* context = nullptr;
   YGMarkerCallbacks markerCallbacks = {nullptr, nullptr};
 
   YGConfig(YGLogger logger);
+  void log(YGConfig*, YGNode*, YGLogLevel, const char*, va_list);
+  void setLogger(YGLogger logger) {
+    logger_ = logger;
+  }
 };
