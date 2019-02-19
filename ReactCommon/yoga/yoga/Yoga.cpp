@@ -3843,7 +3843,7 @@ bool YGLayoutNodeInternal(
           "%s%d.{[skipped] ",
           YGSpacer(gDepth),
           gDepth);
-      node->print();
+      node->print(layoutContext);
       Log::log(
           node,
           YGLogLevelVerbose,
@@ -3867,7 +3867,7 @@ bool YGLayoutNodeInternal(
           YGSpacer(gDepth),
           gDepth,
           needToVisitNode ? "*" : "");
-      node->print();
+      node->print(layoutContext);
       Log::log(
           node,
           YGLogLevelVerbose,
@@ -3903,7 +3903,7 @@ bool YGLayoutNodeInternal(
           YGSpacer(gDepth),
           gDepth,
           needToVisitNode ? "*" : "");
-      node->print();
+      node->print(layoutContext);
       Log::log(
           node,
           YGLogLevelVerbose,

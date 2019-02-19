@@ -15,16 +15,17 @@ struct YGNode {
   using MeasureWithContextFn =
       YGSize (*)(YGNode*, float, YGMeasureMode, float, YGMeasureMode, void*);
   using BaselineWithContextFn = float (*)(YGNode*, float, float, void*);
+  using PrintWithContextFn = void (*)(YGNode*, void*);
 
 private:
   void* context_ = nullptr;
-  YGPrintFunc print_ = nullptr;
   bool hasNewLayout_ : 1;
   bool isReferenceBaseline_ : 1;
   bool isDirty_ : 1;
   YGNodeType nodeType_ : 1;
   bool measureUsesContext_ : 1;
   bool baselineUsesContext_ : 1;
+  bool printUsesContext_ : 1;
   union {
     YGMeasureFunc noContext;
     MeasureWithContextFn withContext;
@@ -33,6 +34,10 @@ private:
     YGBaselineFunc noContext;
     BaselineWithContextFn withContext;
   } baseline_ = {nullptr};
+  union {
+    YGPrintFunc noContext;
+    PrintWithContextFn withContext;
+  } print_ = {nullptr};
   YGDirtiedFunc dirtied_ = nullptr;
   YGStyle style_ = {};
   YGLayout layout_ = {};
@@ -57,7 +62,8 @@ public:
         isDirty_{false},
         nodeType_{YGNodeTypeDefault},
         measureUsesContext_{false},
-        baselineUsesContext_{false} {}
+        baselineUsesContext_{false},
+        printUsesContext_{false} {}
   ~YGNode() = default; // cleanup of owner/children relationships in YGNodeFree
   explicit YGNode(const YGConfigRef newConfig) : config_(newConfig){};
   YGNode(const YGNode& node) = default;
@@ -68,7 +74,7 @@ public:
     return context_;
   }
 
-  void print();
+  void print(void*);
 
   bool getHasNewLayout() const {
     return hasNewLayout_;
@@ -196,7 +202,15 @@ public:
   }
 
   void setPrintFunc(YGPrintFunc printFunc) {
-    print_ = printFunc;
+    print_.noContext = printFunc;
+    printUsesContext_ = false;
+  }
+  void setPrintFunc(PrintWithContextFn printFunc) {
+    print_.withContext = printFunc;
+    printUsesContext_ = true;
+  }
+  void setPrintFunc(std::nullptr_t) {
+    setPrintFunc(YGPrintFunc{nullptr});
   }
 
   void setHasNewLayout(bool hasNewLayout) {
