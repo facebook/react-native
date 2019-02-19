@@ -12,6 +12,12 @@
 using namespace facebook;
 using facebook::yoga::detail::CompactValue;
 
+void YGNode::print() {
+  if (print_ != nullptr) {
+    print_(this);
+  }
+}
+
 YGFloatOptional YGNode::getLeadingPosition(
     const YGFlexDirection axis,
     const float axisSize) const {
@@ -298,7 +304,7 @@ YGNode& YGNode::operator=(const YGNode& node) {
   }
 
   context_ = node.getContext();
-  print_ = node.getPrintFunc();
+  print_ = node.print_;
   hasNewLayout_ = node.getHasNewLayout();
   nodeType_ = node.getNodeType();
   measureUsesContext_ = node.measureUsesContext_;

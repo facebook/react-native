@@ -68,9 +68,7 @@ public:
     return context_;
   }
 
-  YGPrintFunc getPrintFunc() const {
-    return print_;
-  }
+  void print();
 
   bool getHasNewLayout() const {
     return hasNewLayout_;

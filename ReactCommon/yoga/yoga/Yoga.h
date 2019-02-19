@@ -138,7 +138,6 @@ bool YGNodeHasBaselineFunc(YGNodeRef node);
 void YGNodeSetBaselineFunc(YGNodeRef node, YGBaselineFunc baselineFunc);
 YGDirtiedFunc YGNodeGetDirtiedFunc(YGNodeRef node);
 void YGNodeSetDirtiedFunc(YGNodeRef node, YGDirtiedFunc dirtiedFunc);
-YGPrintFunc YGNodeGetPrintFunc(YGNodeRef node);
 void YGNodeSetPrintFunc(YGNodeRef node, YGPrintFunc printFunc);
 WIN_EXPORT bool YGNodeGetHasNewLayout(YGNodeRef node);
 WIN_EXPORT void YGNodeSetHasNewLayout(YGNodeRef node, bool hasNewLayout);
