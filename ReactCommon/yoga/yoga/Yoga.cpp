@@ -4182,12 +4182,12 @@ void YGNodeCalculateLayout(
 
 void YGConfigSetLogger(const YGConfigRef config, YGLogger logger) {
   if (logger != nullptr) {
-    config->logger = logger;
+    config->setLogger(logger);
   } else {
 #ifdef ANDROID
-    config->logger = &YGAndroidLog;
+    config->setLogger(&YGAndroidLog);
 #else
-    config->logger = &YGDefaultLog;
+    config->setLogger(&YGDefaultLog);
 #endif
   }
 }

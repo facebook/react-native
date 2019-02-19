@@ -24,7 +24,7 @@ void vlog(
     const char* format,
     va_list args) {
   YGConfig* logConfig = config != nullptr ? config : YGConfigGetDefault();
-  logConfig->logger(logConfig, node, level, format, args);
+  logConfig->log(logConfig, node, level, format, args);
 
   if (level == YGLogLevelFatal) {
     abort();

@@ -6,4 +6,13 @@
  */
 #include "YGConfig.h"
 
-YGConfig::YGConfig(YGLogger logger) : logger(logger) {}
+YGConfig::YGConfig(YGLogger logger) : logger_{logger} {}
+
+void YGConfig::log(
+    YGConfig* config,
+    YGNode* node,
+    YGLogLevel logLevel,
+    const char* format,
+    va_list args) {
+  logger_(config, node, logLevel, format, args);
+}
