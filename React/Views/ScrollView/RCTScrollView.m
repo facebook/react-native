@@ -356,6 +356,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 }
 #endif //TARGET_OS_TV
 
+- (BOOL)shouldGroupAccessibilityChildren
+{
+  return YES;
+}
+
 @end
 
 @interface RCTScrollView () <RCTUIManagerObserver>
