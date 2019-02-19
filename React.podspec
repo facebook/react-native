@@ -66,7 +66,6 @@ Pod::Spec.new do |s|
                               "React/Views/RCTSlider*",
                               "React/Views/RCTSwitch*",
                               "React/Views/RCTWebView*"
-    ss.compiler_flags       = folly_compiler_flags
     ss.header_dir           = "React"
     ss.framework            = "JavaScriptCore"
     ss.libraries            = "stdc++"
@@ -95,8 +94,10 @@ Pod::Spec.new do |s|
     ss.dependency             "React/Core"
     ss.dependency             "React/fabric"
     ss.compiler_flags       = folly_compiler_flags
-    ss.source_files         = "React/Fabric/**/*.{c,h,m,mm,S,cpp}"
-    ss.exclude_files        = "**/tests/*"
+    ss.source_files         = "React/Fabric/**/*.{c,h,m,mm,S,cpp}",
+                              "ReactCommon/fabric/**/*.{c,h,m,mm,S,cpp}"
+    ss.exclude_files        = "**/tests/*",
+                              "**/android/*"
     ss.header_dir           = "React"
     ss.framework            = "JavaScriptCore"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
@@ -117,19 +118,15 @@ Pod::Spec.new do |s|
     ss.dependency             "React/cxxreact"
     ss.dependency             "React/jsi"
     ss.dependency             "Folly", folly_version
-    ss.dependency             "DoubleConversion"
-    ss.dependency             "glog"
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "ReactCommon/jsiexecutor/jsireact/*.{cpp,h}"
     ss.private_header_files = "ReactCommon/jsiexecutor/jsireact/*.h"
     ss.header_dir           = "jsireact"
-    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\", \"$(PODS_TARGET_SRCROOT)/ReactCommon/jsiexecutor\"" }
+    ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
   end
 
   s.subspec "jsi" do |ss|
     ss.dependency             "Folly", folly_version
-    ss.dependency             "DoubleConversion"
-    ss.dependency             "glog"
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "ReactCommon/jsi/*.{cpp,h}"
     ss.private_header_files = "ReactCommon/jsi/*.h"
@@ -147,8 +144,6 @@ Pod::Spec.new do |s|
     ss.dependency             "React/jsinspector"
     ss.dependency             "boost-for-react-native", "1.63.0"
     ss.dependency             "Folly", folly_version
-    ss.dependency             "DoubleConversion"
-    ss.dependency             "glog"
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "ReactCommon/cxxreact/*.{cpp,h}"
     ss.exclude_files        = "ReactCommon/cxxreact/SampleCxxModule.*"
@@ -160,9 +155,9 @@ Pod::Spec.new do |s|
     ss.subspec "activityindicator" do |sss|
       sss.dependency             "Folly", folly_version
       sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "ReactCommon/fabric/activityindicator/**/*.{cpp,h}"
+      sss.source_files         = "ReactCommon/fabric/components/activityindicator/*.{cpp,h}"
       sss.exclude_files        = "**/tests/*"
-      sss.header_dir           = "fabric/activityindicator"
+      sss.header_dir           = "react/components/activityindicator"
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
     end
 
@@ -171,7 +166,16 @@ Pod::Spec.new do |s|
       sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "ReactCommon/fabric/attributedstring/**/*.{cpp,h}"
       sss.exclude_files        = "**/tests/*"
-      sss.header_dir           = "fabric/attributedstring"
+      sss.header_dir           = "react/attributedstring"
+      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
+    end
+
+    ss.subspec "config" do |sss|
+      sss.dependency             "Folly", folly_version
+      sss.compiler_flags       = folly_compiler_flags
+      sss.source_files         = "ReactCommon/config/**/*.{cpp,h}"
+      sss.exclude_files        = "**/tests/*"
+      sss.header_dir           = "react/config"
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
     end
 
@@ -180,7 +184,7 @@ Pod::Spec.new do |s|
       sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "ReactCommon/fabric/core/**/*.{cpp,h}"
       sss.exclude_files        = "**/tests/*"
-      sss.header_dir           = "fabric/core"
+      sss.header_dir           = "react/core"
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
     end
 
@@ -189,43 +193,105 @@ Pod::Spec.new do |s|
       sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "ReactCommon/fabric/debug/**/*.{cpp,h}"
       sss.exclude_files        = "**/tests/*"
-      sss.header_dir           = "fabric/debug"
+      sss.header_dir           = "react/debug"
+      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
+    end
+
+    ss.subspec "events" do |sss|
+      sss.dependency             "Folly", folly_version
+      sss.compiler_flags       = folly_compiler_flags
+      sss.source_files         = "ReactCommon/fabric/events/*.{cpp,h}"
+      sss.exclude_files        = "**/tests/*"
+      sss.header_dir           = "react/events"
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
     end
 
     ss.subspec "graphics" do |sss|
       sss.dependency             "Folly", folly_version
       sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "ReactCommon/fabric/graphics/**/*.{cpp,h}"
+      sss.source_files         = "ReactCommon/fabric/graphics/*.{cpp,h}", 
+                                 "ReactCommon/fabric/graphics/platform/ios/*.{cpp,h}"
       sss.exclude_files        = "**/tests/*"
-      sss.header_dir           = "fabric/graphics"
+      sss.header_dir           = "react/graphics"
+      sss.frameworks           = "CoreGraphics", 
+                                 "UIKit", 
+                                 "Foundation"
+      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
+    end
+
+    ss.subspec "image" do |sss|
+      sss.dependency             "Folly", folly_version
+      sss.compiler_flags       = folly_compiler_flags
+      sss.source_files         = "ReactCommon/fabric/components/image/*.{cpp,h}" 
+      sss.exclude_files        = "**/tests/*"
+      sss.header_dir           = "react/components/image"
+      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
+    end
+
+    ss.subspec "imagemanager" do |sss|
+      sss.dependency             "Folly", folly_version
+      sss.compiler_flags       = folly_compiler_flags
+      sss.source_files         = "ReactCommon/fabric/imagemanager/*.{cpp,h}", 
+                                 "ReactCommon/fabric/imagemanager/platform/ios/*.{cpp,h,mm}"
+      sss.exclude_files        = "**/tests/*"
+      sss.header_dir           = "react/imagemanager"
+      sss.frameworks           = "CoreGraphics", 
+                                 "UIKit", 
+                                 "Foundation"
+      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
+    end
+
+    ss.subspec "mounting" do |sss|
+      sss.dependency             "Folly", folly_version
+      sss.compiler_flags       = folly_compiler_flags
+      sss.source_files         = "ReactCommon/fabric/mounting/*.{cpp,h}"
+      sss.exclude_files        = "**/tests/*"
+      sss.header_dir           = "react/mounting"
+      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
+    end
+
+    ss.subspec "root" do |sss|
+      sss.dependency             "Folly", folly_version
+      sss.compiler_flags       = folly_compiler_flags
+      sss.source_files         = "ReactCommon/fabric/components/root/**/*.{cpp,h}"
+      sss.exclude_files        = "**/tests/*"
+      sss.header_dir           = "react/components/root"
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
     end
 
     ss.subspec "scrollview" do |sss|
       sss.dependency             "Folly", folly_version
       sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "ReactCommon/fabric/scrollview/**/*.{cpp,h}"
+      sss.source_files         = "ReactCommon/fabric/components/scrollview/*.{cpp,h}"
       sss.exclude_files        = "**/tests/*"
-      sss.header_dir           = "fabric/scrollview"
+      sss.header_dir           = "react/components/scrollview"
+      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
+    end
+
+    ss.subspec "slider" do |sss|
+      sss.dependency             "Folly", folly_version
+      sss.compiler_flags       = folly_compiler_flags
+      sss.source_files         = "ReactCommon/fabric/components/slider/*.{cpp,h}"
+      sss.exclude_files        = "**/tests/*"
+      sss.header_dir           = "react/components/slider"
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
     end
 
     ss.subspec "text" do |sss|
       sss.dependency             "Folly", folly_version
       sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "ReactCommon/fabric/text/**/*.{cpp,h}"
+      sss.source_files         = "ReactCommon/fabric/components/text/**/*.{cpp,h}"
       sss.exclude_files        = "**/tests/*"
-      sss.header_dir           = "fabric/text"
+      sss.header_dir           = "react/components/text"
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
     end
 
     ss.subspec "textlayoutmanager" do |sss|
       sss.dependency             "Folly", folly_version
       sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "ReactCommon/fabric/textlayoutmanager/**/*.{cpp,h,mm}"
+      sss.source_files         = "ReactCommon/fabric/textlayoutmanager/platform/ios/**/*.{cpp,h,mm}"
       sss.exclude_files        = "**/tests/*"
-      sss.header_dir           = "fabric/textlayoutmanager"
+      sss.header_dir           = "react/textlayoutmanager"
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
     end
 
@@ -234,7 +300,16 @@ Pod::Spec.new do |s|
       sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "ReactCommon/fabric/uimanager/**/*.{cpp,h}"
       sss.exclude_files        = "**/tests/*"
-      sss.header_dir           = "fabric/uimanager"
+      sss.header_dir           = "react/uimanager"
+      sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
+    end
+
+    ss.subspec "utils" do |sss|
+      sss.dependency             "Folly", folly_version
+      sss.compiler_flags       = folly_compiler_flags
+      sss.source_files         = "ReactCommon/utils/*.{cpp,h}"
+      sss.exclude_files        = "**/tests/*"
+      sss.header_dir           = "react/utils"
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
     end
 
@@ -242,9 +317,9 @@ Pod::Spec.new do |s|
       sss.dependency             "Folly", folly_version
       sss.dependency             "yoga"
       sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "ReactCommon/fabric/view/**/*.{cpp,h}"
+      sss.source_files         = "ReactCommon/fabric/components/view/**/*.{cpp,h}"
       sss.exclude_files        = "**/tests/*"
-      sss.header_dir           = "fabric/view"
+      sss.header_dir           = "react/components/view"
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
     end
   end
