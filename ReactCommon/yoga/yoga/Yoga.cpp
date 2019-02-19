@@ -169,10 +169,6 @@ void YGNodeSetDirtiedFunc(YGNodeRef node, YGDirtiedFunc dirtiedFunc) {
   node->setDirtiedFunc(dirtiedFunc);
 }
 
-YGPrintFunc YGNodeGetPrintFunc(YGNodeRef node) {
-  return node->getPrintFunc();
-}
-
 void YGNodeSetPrintFunc(YGNodeRef node, YGPrintFunc printFunc) {
   node->setPrintFunc(printFunc);
 }
@@ -3847,9 +3843,7 @@ bool YGLayoutNodeInternal(
           "%s%d.{[skipped] ",
           YGSpacer(gDepth),
           gDepth);
-      if (node->getPrintFunc() != nullptr) {
-        node->getPrintFunc()(node);
-      }
+      node->print();
       Log::log(
           node,
           YGLogLevelVerbose,
@@ -3873,9 +3867,7 @@ bool YGLayoutNodeInternal(
           YGSpacer(gDepth),
           gDepth,
           needToVisitNode ? "*" : "");
-      if (node->getPrintFunc() != nullptr) {
-        node->getPrintFunc()(node);
-      }
+      node->print();
       Log::log(
           node,
           YGLogLevelVerbose,
@@ -3911,9 +3903,7 @@ bool YGLayoutNodeInternal(
           YGSpacer(gDepth),
           gDepth,
           needToVisitNode ? "*" : "");
-      if (node->getPrintFunc() != nullptr) {
-        node->getPrintFunc()(node);
-      }
+      node->print();
       Log::log(
           node,
           YGLogLevelVerbose,
