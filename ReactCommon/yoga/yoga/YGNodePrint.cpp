@@ -214,7 +214,7 @@ void YGNodeToString(
         str, "bottom", node->getStyle().position, YGEdgeBottom);
     appendFormatedString(str, "\" ");
 
-    if (node->getMeasure() != nullptr) {
+    if (node->hasMeasureFunc()) {
       appendFormatedString(str, "has-custom-measure=\"true\"");
     }
   }
