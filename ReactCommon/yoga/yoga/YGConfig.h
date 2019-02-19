@@ -10,8 +10,20 @@
 #include "Yoga.h"
 
 struct YGConfig {
+  using LogWithContextFn = void (*)(
+      YGConfigRef config,
+      YGNodeRef node,
+      YGLogLevel level,
+      void* context,
+      const char* format,
+      va_list args);
+
 private:
-  YGLogger logger_;
+  union {
+    LogWithContextFn withContext;
+    YGLogger noContext;
+  } logger_;
+  bool loggerUsesContext_;
 
 public:
   bool useWebDefaults = false;
@@ -26,8 +38,16 @@ public:
   YGMarkerCallbacks markerCallbacks = {nullptr, nullptr};
 
   YGConfig(YGLogger logger);
-  void log(YGConfig*, YGNode*, YGLogLevel, const char*, va_list);
+  void log(YGConfig*, YGNode*, YGLogLevel, void*, const char*, va_list);
   void setLogger(YGLogger logger) {
-    logger_ = logger;
+    logger_.noContext = logger;
+    loggerUsesContext_ = false;
+  }
+  void setLogger(LogWithContextFn logger) {
+    logger_.withContext = logger;
+    loggerUsesContext_ = true;
+  }
+  void setLogger(std::nullptr_t) {
+    setLogger(YGLogger{nullptr});
   }
 };

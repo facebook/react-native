@@ -1030,7 +1030,7 @@ static void YGNodePrintInternal(
     const YGPrintOptions options) {
   std::string str;
   facebook::yoga::YGNodeToString(str, node, options, 0);
-  Log::log(node, YGLogLevelDebug, str.c_str());
+  Log::log(node, YGLogLevelDebug, nullptr, str.c_str());
 }
 
 void YGNodePrint(const YGNodeRef node, const YGPrintOptions options) {
@@ -3819,6 +3819,7 @@ bool YGLayoutNodeInternal(
       Log::log(
           node,
           YGLogLevelVerbose,
+          nullptr,
           "%s%d.{[skipped] ",
           YGSpacer(gDepth),
           gDepth);
@@ -3828,6 +3829,7 @@ bool YGLayoutNodeInternal(
       Log::log(
           node,
           YGLogLevelVerbose,
+          nullptr,
           "wm: %s, hm: %s, aw: %f ah: %f => d: (%f, %f) %s\n",
           YGMeasureModeName(widthMeasureMode, performLayout),
           YGMeasureModeName(heightMeasureMode, performLayout),
@@ -3842,6 +3844,7 @@ bool YGLayoutNodeInternal(
       Log::log(
           node,
           YGLogLevelVerbose,
+          nullptr,
           "%s%d.{%s",
           YGSpacer(gDepth),
           gDepth,
@@ -3852,6 +3855,7 @@ bool YGLayoutNodeInternal(
       Log::log(
           node,
           YGLogLevelVerbose,
+          nullptr,
           "wm: %s, hm: %s, aw: %f ah: %f %s\n",
           YGMeasureModeName(widthMeasureMode, performLayout),
           YGMeasureModeName(heightMeasureMode, performLayout),
@@ -3877,6 +3881,7 @@ bool YGLayoutNodeInternal(
       Log::log(
           node,
           YGLogLevelVerbose,
+          nullptr,
           "%s%d.}%s",
           YGSpacer(gDepth),
           gDepth,
@@ -3887,6 +3892,7 @@ bool YGLayoutNodeInternal(
       Log::log(
           node,
           YGLogLevelVerbose,
+          nullptr,
           "wm: %s, hm: %s, d: (%f, %f) %s\n",
           YGMeasureModeName(widthMeasureMode, performLayout),
           YGMeasureModeName(heightMeasureMode, performLayout),
@@ -3905,7 +3911,7 @@ bool YGLayoutNodeInternal(
       }
       if (layout->nextCachedMeasurementsIndex == YG_MAX_CACHED_RESULT_COUNT) {
         if (gPrintChanges) {
-          Log::log(node, YGLogLevelVerbose, "Out of cache entries!\n");
+          Log::log(node, YGLogLevelVerbose, nullptr, "Out of cache entries!\n");
         }
         layout->nextCachedMeasurementsIndex = 0;
       }
@@ -4200,7 +4206,7 @@ void YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviour(
 
 void YGAssert(const bool condition, const char* message) {
   if (!condition) {
-    Log::log(YGNodeRef{nullptr}, YGLogLevelFatal, "%s\n", message);
+    Log::log(YGNodeRef{nullptr}, YGLogLevelFatal, nullptr, "%s\n", message);
   }
 }
 
@@ -4209,7 +4215,7 @@ void YGAssertWithNode(
     const bool condition,
     const char* message) {
   if (!condition) {
-    Log::log(node, YGLogLevelFatal, "%s\n", message);
+    Log::log(node, YGLogLevelFatal, nullptr, "%s\n", message);
   }
 }
 
@@ -4218,7 +4224,7 @@ void YGAssertWithConfig(
     const bool condition,
     const char* message) {
   if (!condition) {
-    Log::log(config, YGLogLevelFatal, "%s\n", message);
+    Log::log(config, YGLogLevelFatal, nullptr, "%s\n", message);
   }
 }
 

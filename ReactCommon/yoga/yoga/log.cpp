@@ -21,10 +21,11 @@ void vlog(
     YGConfig* config,
     YGNode* node,
     YGLogLevel level,
+    void* context,
     const char* format,
     va_list args) {
   YGConfig* logConfig = config != nullptr ? config : YGConfigGetDefault();
-  logConfig->log(logConfig, node, level, format, args);
+  logConfig->log(logConfig, node, level, context, format, args);
 
   if (level == YGLogLevelFatal) {
     abort();
@@ -35,23 +36,30 @@ void vlog(
 void Log::log(
     YGNode* node,
     YGLogLevel level,
+    void* context,
     const char* format,
     ...) noexcept {
   va_list args;
   va_start(args, format);
   vlog(
-      node == nullptr ? nullptr : node->getConfig(), node, level, format, args);
+      node == nullptr ? nullptr : node->getConfig(),
+      node,
+      level,
+      context,
+      format,
+      args);
   va_end(args);
 }
 
 void Log::log(
     YGConfig* config,
     YGLogLevel level,
+    void* context,
     const char* format,
     ...) noexcept {
   va_list args;
   va_start(args, format);
-  vlog(config, nullptr, level, format, args);
+  vlog(config, nullptr, level, context, format, args);
   va_end(args);
 }
 

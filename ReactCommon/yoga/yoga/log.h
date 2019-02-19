@@ -20,12 +20,14 @@ struct Log {
   static void log(
       YGNode* node,
       YGLogLevel level,
+      void*,
       const char* message,
       ...) noexcept;
 
   static void log(
       YGConfig* config,
       YGLogLevel level,
+      void*,
       const char* format,
       ...) noexcept;
 };
