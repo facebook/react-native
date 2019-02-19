@@ -132,9 +132,9 @@ WIN_EXPORT void YGNodeCopyStyle(
 WIN_EXPORT void* YGNodeGetContext(YGNodeRef node);
 WIN_EXPORT void YGNodeSetContext(YGNodeRef node, void* context);
 void YGConfigSetPrintTreeFlag(YGConfigRef config, bool enabled);
-YGMeasureFunc YGNodeGetMeasureFunc(YGNodeRef node);
+bool YGNodeHasMeasureFunc(YGNodeRef node);
 WIN_EXPORT void YGNodeSetMeasureFunc(YGNodeRef node, YGMeasureFunc measureFunc);
-YGBaselineFunc YGNodeGetBaselineFunc(YGNodeRef node);
+bool YGNodeHasBaselineFunc(YGNodeRef node);
 void YGNodeSetBaselineFunc(YGNodeRef node, YGBaselineFunc baselineFunc);
 YGDirtiedFunc YGNodeGetDirtiedFunc(YGNodeRef node);
 void YGNodeSetDirtiedFunc(YGNodeRef node, YGDirtiedFunc dirtiedFunc);

@@ -63,12 +63,24 @@ public:
     return nodeType_;
   }
 
-  YGMeasureFunc getMeasure() const {
-    return measure_;
+  bool hasMeasureFunc() const noexcept {
+    return measure_ != nullptr;
   }
 
-  YGBaselineFunc getBaseline() const {
-    return baseline_;
+  YGSize measure(
+      float width,
+      YGMeasureMode widthMode,
+      float height,
+      YGMeasureMode heightMode) {
+    return measure_(this, width, widthMode, height, heightMode);
+  }
+
+  bool hasBaselineFunc() const noexcept {
+    return baseline_ != nullptr;
+  }
+
+  float baseline(float width, float height) {
+    return baseline_(this, width, height);
   }
 
   YGDirtiedFunc getDirtied() const {

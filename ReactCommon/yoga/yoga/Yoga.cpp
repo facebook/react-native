@@ -145,16 +145,16 @@ void YGNodeSetContext(YGNodeRef node, void* context) {
   return node->setContext(context);
 }
 
-YGMeasureFunc YGNodeGetMeasureFunc(YGNodeRef node) {
-  return node->getMeasure();
+bool YGNodeHasMeasureFunc(YGNodeRef node) {
+  return node->hasMeasureFunc();
 }
 
 void YGNodeSetMeasureFunc(YGNodeRef node, YGMeasureFunc measureFunc) {
   node->setMeasureFunc(measureFunc);
 }
 
-YGBaselineFunc YGNodeGetBaselineFunc(YGNodeRef node) {
-  return node->getBaseline();
+bool YGNodeHasBaselineFunc(YGNodeRef node) {
+  return node->hasBaselineFunc();
 }
 
 void YGNodeSetBaselineFunc(YGNodeRef node, YGBaselineFunc baselineFunc) {
@@ -395,7 +395,7 @@ void YGNodeInsertChild(
 
   YGAssertWithNode(
       node,
-      node->getMeasure() == nullptr,
+      !node->hasMeasureFunc(),
       "Cannot add child: Nodes with measure functions cannot have children.");
 
   node->cloneChildrenIfNeeded();
@@ -555,7 +555,7 @@ YGNodeRef YGNodeGetParent(const YGNodeRef node) {
 void YGNodeMarkDirty(const YGNodeRef node) {
   YGAssertWithNode(
       node,
-      node->getMeasure() != nullptr,
+      node->hasMeasureFunc(),
       "Only leaf nodes with custom measure functions"
       "should manually mark themselves as dirty");
 
@@ -1075,11 +1075,10 @@ static inline YGAlign YGNodeAlignItem(
 }
 
 static float YGBaseline(const YGNodeRef node) {
-  if (node->getBaseline() != nullptr) {
+  if (node->hasBaselineFunc()) {
     const float baseline = marker::MarkerSection<YGMarkerBaselineFn>::wrap(
         node,
-        node->getBaseline(),
-        node,
+        &YGNode::baseline,
         node->getLayout().measuredDimensions[YGDimensionWidth],
         node->getLayout().measuredDimensions[YGDimensionHeight]);
     YGAssertWithNode(
@@ -1650,7 +1649,7 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
     const float ownerHeight) {
   YGAssertWithNode(
       node,
-      node->getMeasure() != nullptr,
+      node->hasMeasureFunc(),
       "Expected node to have custom measure function");
 
   const float paddingAndBorderAxisRow =
@@ -1694,8 +1693,7 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
     // Measure the text under the current constraints.
     const YGSize measuredSize = marker::MarkerSection<YGMarkerMeasure>::wrap(
         node,
-        node->getMeasure(),
-        node,
+        &YGNode::measure,
         innerWidth,
         widthMeasureMode,
         innerHeight,
@@ -2737,7 +2735,7 @@ static void YGNodelayoutImpl(
       node->getTrailingPadding(flexColumnDirection, ownerWidth).unwrap(),
       YGEdgeBottom);
 
-  if (node->getMeasure() != nullptr) {
+  if (node->hasMeasureFunc()) {
     YGNodeWithMeasureFuncSetMeasuredDimensions(
         node,
         availableWidth,
@@ -3741,7 +3739,7 @@ bool YGLayoutNodeInternal(
   // dimensions. We handle nodes with measure functions specially here because
   // they are the most expensive to measure, so it's worth avoiding redundant
   // measurements if at all possible.
-  if (node->getMeasure() != nullptr) {
+  if (node->hasMeasureFunc()) {
     const float marginAxisRow =
         node->getMarginForAxis(YGFlexDirectionRow, ownerWidth).unwrap();
     const float marginAxisColumn =
