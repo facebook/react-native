@@ -15,7 +15,7 @@ using namespace std;
 using facebook::yoga::detail::Log;
 
 struct JYogaNode : public JavaClass<JYogaNode> {
-  static constexpr auto kJavaDescriptor = "Lcom/facebook/yoga/YogaNode;";
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/yoga/YogaNodeJNI;";
 };
 
 struct JYogaConfig : public JavaClass<JYogaConfig> {
@@ -98,7 +98,7 @@ static void YGTransferLayoutOutputsRecursive(YGNodeRef root) {
   static auto doesLegacyStretchBehaviour = obj->getClass()->getField<jboolean>(
       "mDoesLegacyStretchFlagAffectsLayout");
 
-  /* Those flags needs be in sync with YogaNode.java */
+  /* Those flags needs be in sync with YogaNodeJNI.java */
   const int MARGIN = 1;
   const int PADDING = 2;
   const int BORDER = 4;
@@ -168,7 +168,7 @@ static void YGPrint(YGNodeRef node) {
 static float YGJNIBaselineFunc(YGNodeRef node, float width, float height) {
   if (auto obj = YGNodeJobject(node)->lockLocal()) {
     static auto baselineFunc =
-        findClassStatic("com/facebook/yoga/YogaNode")
+        findClassStatic("com/facebook/yoga/YogaNodeJNI")
             ->getMethod<jfloat(jfloat, jfloat)>("baseline");
     return baselineFunc(obj, width, height);
   } else {
@@ -208,7 +208,7 @@ static YGNodeRef YGJNIOnNodeClonedFunc(
       childIndex);
 
   static auto replaceChild =
-      findClassStatic("com/facebook/yoga/YogaNode")
+      findClassStatic("com/facebook/yoga/YogaNodeJNI")
           ->getMethod<jlong(local_ref<JYogaNode>, jint)>("replaceChild");
 
   jlong newNodeNativePointer =
@@ -225,7 +225,7 @@ static YGSize YGJNIMeasureFunc(
     YGMeasureMode heightMode) {
   if (auto obj = YGNodeJobject(node)->lockLocal()) {
     static auto measureFunc =
-        findClassStatic("com/facebook/yoga/YogaNode")
+        findClassStatic("com/facebook/yoga/YogaNodeJNI")
             ->getMethod<jlong(jfloat, jint, jfloat, jint)>("measure");
 
     YGTransferLayoutDirection(node, obj);
@@ -661,7 +661,7 @@ jint jni_YGNodeGetInstanceCount() {
 jint JNI_OnLoad(JavaVM* vm, void*) {
   return initialize(vm, [] {
     registerNatives(
-        "com/facebook/yoga/YogaNode",
+        "com/facebook/yoga/YogaNodeJNI",
         {
             YGMakeNativeMethod(jni_YGNodeNew),
             YGMakeNativeMethod(jni_YGNodeNewWithConfig),
