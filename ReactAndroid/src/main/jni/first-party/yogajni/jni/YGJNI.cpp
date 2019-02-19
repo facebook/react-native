@@ -7,10 +7,12 @@
 #include <fb/fbjni.h>
 #include <yoga/YGNode.h>
 #include <yoga/Yoga.h>
+#include <yoga/log.h>
 #include <iostream>
 
 using namespace facebook::jni;
 using namespace std;
+using facebook::yoga::detail::Log;
 
 struct JYogaNode : public JavaClass<JYogaNode> {
   static constexpr auto kJavaDescriptor = "Lcom/facebook/yoga/YogaNode;";
@@ -51,7 +53,7 @@ static void YGTransferLayoutOutputsRecursive(YGNodeRef root) {
   }
   auto obj = YGNodeJobject(root)->lockLocal();
   if (!obj) {
-    YGLog(
+    Log::log(
         root,
         YGLogLevelError,
         "Java YGNode was GCed during layout calculation\n");
@@ -154,7 +156,7 @@ static void YGPrint(YGNodeRef node) {
   if (auto obj = YGNodeJobject(node)->lockLocal()) {
     cout << obj->toString() << endl;
   } else {
-    YGLog(
+    Log::log(
         node,
         YGLogLevelError,
         "Java YGNode was GCed during layout calculation\n");
@@ -240,7 +242,7 @@ static YGSize YGJNIMeasureFunc(
 
     return YGSize{*measuredWidth, *measuredHeight};
   } else {
-    YGLog(
+    Log::log(
         node,
         YGLogLevelError,
         "Java YGNode was GCed during layout calculation\n");

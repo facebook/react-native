@@ -5,6 +5,7 @@
  * file in the root directory of this source tree.
  */
 #include "Yoga.h"
+#include "log.h"
 #include <float.h>
 #include <string.h>
 #include <algorithm>
@@ -25,6 +26,7 @@ __forceinline const float fmaxf(const float a, const float b) {
 #endif
 
 using namespace facebook::yoga;
+using detail::Log;
 
 #ifdef ANDROID
 static int YGAndroidLog(
@@ -1028,7 +1030,7 @@ static void YGNodePrintInternal(
     const YGPrintOptions options) {
   std::string str;
   facebook::yoga::YGNodeToString(str, node, options, 0);
-  YGLog(node, YGLogLevelDebug, str.c_str());
+  Log::log(node, YGLogLevelDebug, str.c_str());
 }
 
 void YGNodePrint(const YGNodeRef node, const YGPrintOptions options) {
@@ -3814,7 +3816,7 @@ bool YGLayoutNodeInternal(
                    : layoutMarkerData.cachedMeasures) += 1;
 
     if (gPrintChanges && gPrintSkips) {
-      YGLog(
+      Log::log(
           node,
           YGLogLevelVerbose,
           "%s%d.{[skipped] ",
@@ -3823,7 +3825,7 @@ bool YGLayoutNodeInternal(
       if (node->getPrintFunc() != nullptr) {
         node->getPrintFunc()(node);
       }
-      YGLog(
+      Log::log(
           node,
           YGLogLevelVerbose,
           "wm: %s, hm: %s, aw: %f ah: %f => d: (%f, %f) %s\n",
@@ -3837,7 +3839,7 @@ bool YGLayoutNodeInternal(
     }
   } else {
     if (gPrintChanges) {
-      YGLog(
+      Log::log(
           node,
           YGLogLevelVerbose,
           "%s%d.{%s",
@@ -3847,7 +3849,7 @@ bool YGLayoutNodeInternal(
       if (node->getPrintFunc() != nullptr) {
         node->getPrintFunc()(node);
       }
-      YGLog(
+      Log::log(
           node,
           YGLogLevelVerbose,
           "wm: %s, hm: %s, aw: %f ah: %f %s\n",
@@ -3872,7 +3874,7 @@ bool YGLayoutNodeInternal(
         layoutMarkerData);
 
     if (gPrintChanges) {
-      YGLog(
+      Log::log(
           node,
           YGLogLevelVerbose,
           "%s%d.}%s",
@@ -3882,7 +3884,7 @@ bool YGLayoutNodeInternal(
       if (node->getPrintFunc() != nullptr) {
         node->getPrintFunc()(node);
       }
-      YGLog(
+      Log::log(
           node,
           YGLogLevelVerbose,
           "wm: %s, hm: %s, d: (%f, %f) %s\n",
@@ -3903,7 +3905,7 @@ bool YGLayoutNodeInternal(
       }
       if (layout->nextCachedMeasurementsIndex == YG_MAX_CACHED_RESULT_COUNT) {
         if (gPrintChanges) {
-          YGLog(node, YGLogLevelVerbose, "Out of cache entries!\n");
+          Log::log(node, YGLogLevelVerbose, "Out of cache entries!\n");
         }
         layout->nextCachedMeasurementsIndex = 0;
       }
@@ -4196,43 +4198,9 @@ void YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviour(
   config->shouldDiffLayoutWithoutLegacyStretchBehaviour = shouldDiffLayout;
 }
 
-static void YGVLog(
-    const YGConfigRef config,
-    const YGNodeRef node,
-    YGLogLevel level,
-    const char* format,
-    va_list args) {
-  const YGConfigRef logConfig =
-      config != nullptr ? config : YGConfigGetDefault();
-  logConfig->logger(logConfig, node, level, format, args);
-
-  if (level == YGLogLevelFatal) {
-    abort();
-  }
-}
-
-void YGLogWithConfig(
-    const YGConfigRef config,
-    YGLogLevel level,
-    const char* format,
-    ...) {
-  va_list args;
-  va_start(args, format);
-  YGVLog(config, nullptr, level, format, args);
-  va_end(args);
-}
-
-void YGLog(const YGNodeRef node, YGLogLevel level, const char* format, ...) {
-  va_list args;
-  va_start(args, format);
-  YGVLog(
-      node == nullptr ? nullptr : node->getConfig(), node, level, format, args);
-  va_end(args);
-}
-
 void YGAssert(const bool condition, const char* message) {
   if (!condition) {
-    YGLog(nullptr, YGLogLevelFatal, "%s\n", message);
+    Log::log(YGNodeRef{nullptr}, YGLogLevelFatal, "%s\n", message);
   }
 }
 
@@ -4241,7 +4209,7 @@ void YGAssertWithNode(
     const bool condition,
     const char* message) {
   if (!condition) {
-    YGLog(node, YGLogLevelFatal, "%s\n", message);
+    Log::log(node, YGLogLevelFatal, "%s\n", message);
   }
 }
 
@@ -4250,7 +4218,7 @@ void YGAssertWithConfig(
     const bool condition,
     const char* message) {
   if (!condition) {
-    YGLogWithConfig(config, YGLogLevelFatal, "%s\n", message);
+    Log::log(config, YGLogLevelFatal, "%s\n", message);
   }
 }
 
