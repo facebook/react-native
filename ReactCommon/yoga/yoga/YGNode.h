@@ -12,6 +12,10 @@
 #include "Yoga-internal.h"
 
 struct YGNode {
+  using MeasureWithContextFn =
+      YGSize (*)(YGNode*, float, YGMeasureMode, float, YGMeasureMode, void*);
+  using BaselineWithContextFn = float (*)(YGNode*, float, float, void*);
+
 private:
   void* context_ = nullptr;
   YGPrintFunc print_ = nullptr;
@@ -19,8 +23,16 @@ private:
   bool isReferenceBaseline_ : 1;
   bool isDirty_ : 1;
   YGNodeType nodeType_ : 1;
-  YGMeasureFunc measure_ = nullptr;
-  YGBaselineFunc baseline_ = nullptr;
+  bool measureUsesContext_ : 1;
+  bool baselineUsesContext_ : 1;
+  union {
+    YGMeasureFunc noContext;
+    MeasureWithContextFn withContext;
+  } measure_ = {nullptr};
+  union {
+    YGBaselineFunc noContext;
+    BaselineWithContextFn withContext;
+  } baseline_ = {nullptr};
   YGDirtiedFunc dirtied_ = nullptr;
   YGStyle style_ = {};
   YGLayout layout_ = {};
@@ -35,12 +47,17 @@ private:
       const YGFlexDirection axis,
       const float axisSize) const;
 
+  void setMeasureFunc(decltype(measure_));
+  void setBaseLineFunc(decltype(baseline_));
+
 public:
   YGNode()
-      : hasNewLayout_(true),
-        isReferenceBaseline_(false),
-        isDirty_(false),
-        nodeType_(YGNodeTypeDefault) {}
+      : hasNewLayout_{true},
+        isReferenceBaseline_{false},
+        isDirty_{false},
+        nodeType_{YGNodeTypeDefault},
+        measureUsesContext_{false},
+        baselineUsesContext_{false} {}
   ~YGNode() = default; // cleanup of owner/children relationships in YGNodeFree
   explicit YGNode(const YGConfigRef newConfig) : config_(newConfig){};
   YGNode(const YGNode& node) = default;
@@ -64,24 +81,16 @@ public:
   }
 
   bool hasMeasureFunc() const noexcept {
-    return measure_ != nullptr;
+    return measure_.noContext != nullptr;
   }
 
-  YGSize measure(
-      float width,
-      YGMeasureMode widthMode,
-      float height,
-      YGMeasureMode heightMode) {
-    return measure_(this, width, widthMode, height, heightMode);
-  }
+  YGSize measure(float, YGMeasureMode, float, YGMeasureMode, void*);
 
   bool hasBaselineFunc() const noexcept {
-    return baseline_ != nullptr;
+    return baseline_.noContext != nullptr;
   }
 
-  float baseline(float width, float height) {
-    return baseline_(this, width, height);
-  }
+  float baseline(float width, float height, void* layoutContext);
 
   YGDirtiedFunc getDirtied() const {
     return dirtied_;
@@ -209,9 +218,21 @@ public:
   }
 
   void setMeasureFunc(YGMeasureFunc measureFunc);
+  void setMeasureFunc(MeasureWithContextFn);
+  void setMeasureFunc(std::nullptr_t) {
+    return setMeasureFunc(YGMeasureFunc{nullptr});
+  }
 
   void setBaseLineFunc(YGBaselineFunc baseLineFunc) {
-    baseline_ = baseLineFunc;
+    baselineUsesContext_ = false;
+    baseline_.noContext = baseLineFunc;
+  }
+  void setBaseLineFunc(BaselineWithContextFn baseLineFunc) {
+    baselineUsesContext_ = true;
+    baseline_.withContext = baseLineFunc;
+  }
+  void setBaseLineFunc(std::nullptr_t) {
+    return setBaseLineFunc(YGBaselineFunc{nullptr});
   }
 
   void setDirtiedFunc(YGDirtiedFunc dirtiedFunc) {

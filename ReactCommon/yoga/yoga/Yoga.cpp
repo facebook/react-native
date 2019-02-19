@@ -1080,7 +1080,8 @@ static float YGBaseline(const YGNodeRef node) {
         node,
         &YGNode::baseline,
         node->getLayout().measuredDimensions[YGDimensionWidth],
-        node->getLayout().measuredDimensions[YGDimensionHeight]);
+        node->getLayout().measuredDimensions[YGDimensionHeight],
+        (void*) nullptr);
     YGAssertWithNode(
         node,
         !YGFloatIsUndefined(baseline),
@@ -1697,7 +1698,8 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
         innerWidth,
         widthMeasureMode,
         innerHeight,
-        heightMeasureMode);
+        heightMeasureMode,
+        (void*) nullptr);
 
     node->setLayoutMeasuredDimension(
         YGNodeBoundAxis(
