@@ -56,6 +56,7 @@ static void YGTransferLayoutOutputsRecursive(YGNodeRef root) {
     Log::log(
         root,
         YGLogLevelError,
+        nullptr,
         "Java YGNode was GCed during layout calculation\n");
     return;
   }
@@ -159,6 +160,7 @@ static void YGPrint(YGNodeRef node) {
     Log::log(
         node,
         YGLogLevelError,
+        nullptr,
         "Java YGNode was GCed during layout calculation\n");
   }
 }
@@ -245,6 +247,7 @@ static YGSize YGJNIMeasureFunc(
     Log::log(
         node,
         YGLogLevelError,
+        nullptr,
         "Java YGNode was GCed during layout calculation\n");
     return YGSize{
         widthMode == YGMeasureModeUndefined ? 0 : width,
