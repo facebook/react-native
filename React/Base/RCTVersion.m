@@ -22,7 +22,7 @@ static void __makeVersion()
   __rnVersion = @{
                   RCTVersionMajor: @(0),
                   RCTVersionMinor: @(58),
-                  RCTVersionPatch: @(5),
+                  RCTVersionPatch: @(4),
                   RCTVersionPrerelease: [NSNull null],
                   };
 }
