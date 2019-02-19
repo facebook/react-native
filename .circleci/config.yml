@@ -3,7 +3,7 @@ aliases:
   - &restore-yarn-cache
     keys:
       - v1-yarn-cache-{{ arch }}-{{ checksum "package.json" }}
-      - v1-yarn-cache-{{ arch }}
+      - v1-yarn-cache-{{ arch }}-fixed
   - &save-yarn-cache
     paths:
       - ~/.cache/yarn
@@ -39,9 +39,7 @@ aliases:
       - v2-gradle-{{ .Branch }}-{{ checksum "build.gradle" }}-{{ checksum "ReactAndroid/build.gradle" }}
       # Fallback in case checksum fails
       - v2-gradle-{{ .Branch }}-{{ checksum "build.gradle" }}-
-      - v2-gradle-{{ .Branch }}-
-      # Fallback in case this is a first-time run on a fork
-      - v2-gradle-master-
+      - v2-gradle-{{ .Branch }}-fixed
   - &save-cache-gradle
     paths:
       - ~/.gradle
@@ -58,7 +56,7 @@ aliases:
   - &restore-cache-downloads-buck
     keys:
       - v3-buck-v2018.10.29.01-{{ checksum "scripts/circleci/buck_fetch.sh" }}}
-      - v3-buck-v2018.10.29.01-
+      - v3-buck-v2018.10.29.01-fixed
   - &save-cache-downloads-buck
     paths:
       - ~/buck
@@ -76,7 +74,7 @@ aliases:
   - &restore-cache-downloads-gradle
     keys:
       - v2-gradle-{{ checksum "ReactAndroid/build.gradle" }}-{{ checksum "scripts/circleci/gradle_download_deps.sh" }}
-      - v2-gradle-
+      - v2-gradle-fixed
   - &save-cache-downloads-gradle
     paths:
       - ~/.gradle
@@ -86,7 +84,7 @@ aliases:
 
   - &restore-cache-homebrew
     keys:
-      - v1-homebrew
+      - v1-homebrew-fixed
   - &save-cache-homebrew
     paths:
       - /usr/local/Homebrew
