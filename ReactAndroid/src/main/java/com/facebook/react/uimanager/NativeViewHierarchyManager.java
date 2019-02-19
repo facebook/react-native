@@ -410,10 +410,11 @@ public class NativeViewHierarchyManager {
         if (mLayoutAnimationEnabled &&
             mLayoutAnimator.shouldAnimateLayout(viewToRemove) &&
             arrayContains(tagsToDelete, viewToRemove.getId())) {
-          // The view will be removed and dropped by the 'delete' layout animation
-          // instead, so do nothing
+          // Mark the View so that it will be removed and dropped by the 'delete'
+          // layout animation and ensure the index won't be miscalculated.
+          viewManager.addDeleteMark(viewToManage, indexToRemove);
         } else {
-          viewManager.removeViewAt(viewToManage, indexToRemove);
+          viewManager.removeView(viewToManage, viewToRemove);
         }
 
         lastIndexToRemove = indexToRemove;

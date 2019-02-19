@@ -68,6 +68,16 @@ public abstract class ViewGroupManager <T extends ViewGroup>
     return parent.getChildAt(index);
   }
 
+  /**
+   * Use the method when a view should be removed by layout animation
+   * Note that this is only used in ReactViewGroup at the moment
+   *
+   * @param parent the parent ViewGroup
+   * @param index the index that should attatch a delete mark
+   */
+  public void addDeleteMark(T parent, int index) {
+  }
+
   public void removeViewAt(T parent, int index) {
     parent.removeViewAt(index);
   }

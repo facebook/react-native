@@ -44,6 +44,7 @@ import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.ViewGroupDrawingOrderHelper;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.yoga.YogaConstants;
+import java.util.ArrayList;
 import javax.annotation.Nullable;
 
 import static com.facebook.react.common.ReactConstants.TAG;
@@ -61,6 +62,11 @@ public class ReactViewGroup extends ViewGroup implements
   private static final LayoutParams sDefaultLayoutParam = new ViewGroup.LayoutParams(0, 0);
   /* should only be used in {@link #updateClippingToRect} */
   private static final Rect sHelperRect = new Rect();
+  /* should only be used when using layout animation. */
+  public @Nullable ArrayList<Integer> mDeleteMark = null;
+  /* -1 represents the delete mark is not enabled. */
+  public int mMarkedChildCount = -1;
+
 
   /**
    * This listener will be set for child views when removeClippedSubview property is enabled. When

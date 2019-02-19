@@ -26,6 +26,7 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.yoga.YogaConstants;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -260,13 +261,30 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     }
   }
 
+  private int getPrefixMarkedChildCount(ReactViewGroup parent, int index) {
+    int cnt = 0;
+    Integer tmpInteger = new Integer(1);
+    for (int i = 0; i < parent.mDeleteMark.size() && i <= index + cnt; i++) {
+      if (parent.mDeleteMark.get(i).equals(tmpInteger)) {
+        ++cnt;
+      }
+    }
+    return cnt;
+  }
+
   @Override
   public void addView(ReactViewGroup parent, View child, int index) {
     boolean removeClippedSubviews = parent.getRemoveClippedSubviews();
     if (removeClippedSubviews) {
       parent.addViewWithSubviewClippingEnabled(child, index);
     } else {
-      parent.addView(child, index);
+      if (parent.mMarkedChildCount == -1) {
+        parent.addView(child, index);
+      } else {
+        int mIndex = index + getPrefixMarkedChildCount(parent, index);
+        parent.mDeleteMark.add(mIndex, new Integer(0));
+        parent.addView(child, mIndex);
+      }
     }
   }
 
@@ -276,7 +294,11 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     if (removeClippedSubviews) {
       return parent.getAllChildrenCount();
     } else {
-      return parent.getChildCount();
+      if (parent.mMarkedChildCount == -1) {
+        return parent.getChildCount();
+      } else {
+        return parent.getChildCount() - parent.mMarkedChildCount;
+      }
     }
   }
 
@@ -286,8 +308,25 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     if (removeClippedSubviews) {
       return parent.getChildAtWithSubviewClippingEnabled(index);
     } else {
-      return parent.getChildAt(index);
+      if (parent.mMarkedChildCount == -1) {
+        return parent.getChildAt(index);
+      } else {
+        return parent.getChildAt(index + getPrefixMarkedChildCount(parent, index));
+      }
     }
+  }
+
+  @Override
+  public void addDeleteMark(ReactViewGroup parent, int index) {
+    if (parent.mMarkedChildCount == -1) {
+      parent.mMarkedChildCount = 0;
+      parent.mDeleteMark = new ArrayList<Integer>();
+      for (int i = 0; i < parent.getChildCount(); i++) {
+        parent.mDeleteMark.add(i, new Integer(0));
+      }
+    }
+    parent.mMarkedChildCount++;
+    parent.mDeleteMark.set(index + getPrefixMarkedChildCount(parent, index), new Integer(1));
   }
 
   @Override
@@ -300,7 +339,27 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
       }
       parent.removeViewWithSubviewClippingEnabled(child);
     } else {
+      if (parent.mMarkedChildCount != -1) {
+        if (parent.mDeleteMark.get(index).equals(new Integer(1))) {
+          parent.mMarkedChildCount--;
+        }
+        parent.mDeleteMark.remove(index);
+      }
       parent.removeViewAt(index);
+    }
+  }
+
+  @Override
+  public void removeView(ReactViewGroup parent, View view) {
+    // Temporarily disable the delete mark to iterate the children.
+    int cnt = parent.mMarkedChildCount;
+    parent.mMarkedChildCount = -1;
+    for (int i = 0; i < getChildCount(parent); i++) {
+      if (getChildAt(parent, i) == view) {
+        parent.mMarkedChildCount = cnt;
+        removeViewAt(parent, i);
+        break;
+      }
     }
   }
 
@@ -310,6 +369,12 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     if (removeClippedSubviews) {
       parent.removeAllViewsWithSubviewClippingEnabled();
     } else {
+      if (parent.mMarkedChildCount != -1) {
+        // The delete mark is not set to null as layout animation may
+        // be used later.
+        parent.mMarkedChildCount = 0;
+        parent.mDeleteMark.clear();
+      }
       parent.removeAllViews();
     }
   }
