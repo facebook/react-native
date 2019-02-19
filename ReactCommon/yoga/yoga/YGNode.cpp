@@ -12,9 +12,13 @@
 using namespace facebook;
 using facebook::yoga::detail::CompactValue;
 
-void YGNode::print() {
-  if (print_ != nullptr) {
-    print_(this);
+void YGNode::print(void* printContext) {
+  if (print_.noContext != nullptr) {
+    if (printUsesContext_) {
+      print_.withContext(this, printContext);
+    } else {
+      print_.noContext(this);
+    }
   }
 }
 
@@ -304,13 +308,14 @@ YGNode& YGNode::operator=(const YGNode& node) {
   }
 
   context_ = node.getContext();
-  print_ = node.print_;
   hasNewLayout_ = node.getHasNewLayout();
   nodeType_ = node.getNodeType();
   measureUsesContext_ = node.measureUsesContext_;
   baselineUsesContext_ = node.baselineUsesContext_;
+  printUsesContext_ = node.printUsesContext_;
   measure_ = node.measure_;
   baseline_ = node.baseline_;
+  print_ = node.print_;
   dirtied_ = node.getDirtied();
   style_ = node.style_;
   layout_ = node.layout_;

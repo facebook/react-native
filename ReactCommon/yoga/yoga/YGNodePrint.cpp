@@ -114,7 +114,6 @@ void YGNodeToString(
     uint32_t level) {
   indent(str, level);
   appendFormatedString(str, "<div ");
-  node->print();
 
   if (options & YGPrintOptionsLayout) {
     appendFormatedString(str, "layout=\"");
