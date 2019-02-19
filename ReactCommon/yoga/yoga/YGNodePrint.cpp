@@ -169,7 +169,7 @@ void YGNodeToString(
 
     if (node->getStyle().flexWrap != YGNode().getStyle().flexWrap) {
       appendFormatedString(
-          str, "flexWrap: %s; ", YGWrapToString(node->getStyle().flexWrap));
+          str, "flex-wrap: %s; ", YGWrapToString(node->getStyle().flexWrap));
     }
 
     if (node->getStyle().overflow != YGNode().getStyle().overflow) {
