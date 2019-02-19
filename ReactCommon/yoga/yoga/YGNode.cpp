@@ -101,11 +101,29 @@ YGFloatOptional YGNode::getMarginForAxis(
   return getLeadingMargin(axis, widthSize) + getTrailingMargin(axis, widthSize);
 }
 
+YGSize YGNode::measure(
+    float width,
+    YGMeasureMode widthMode,
+    float height,
+    YGMeasureMode heightMode,
+    void* layoutContext) {
+
+  return measureUsesContext_
+      ? measure_.withContext(
+            this, width, widthMode, height, heightMode, layoutContext)
+      : measure_.noContext(this, width, widthMode, height, heightMode);
+}
+
+float YGNode::baseline(float width, float height, void* layoutContext) {
+  return baselineUsesContext_
+      ? baseline_.withContext(this, width, height, layoutContext)
+      : baseline_.noContext(this, width, height);
+}
+
 // Setters
 
-void YGNode::setMeasureFunc(YGMeasureFunc measureFunc) {
-  if (measureFunc == nullptr) {
-    measure_ = nullptr;
+void YGNode::setMeasureFunc(decltype(YGNode::measure_) measureFunc) {
+  if (measureFunc.noContext == nullptr) {
     // TODO: t18095186 Move nodeType to opt-in function and mark appropriate
     // places in Litho
     nodeType_ = YGNodeTypeDefault;
@@ -115,13 +133,26 @@ void YGNode::setMeasureFunc(YGMeasureFunc measureFunc) {
         children_.size() == 0,
         "Cannot set measure function: Nodes with measure functions cannot have "
         "children.");
-    measure_ = measureFunc;
     // TODO: t18095186 Move nodeType to opt-in function and mark appropriate
     // places in Litho
     setNodeType(YGNodeTypeText);
   }
 
   measure_ = measureFunc;
+}
+
+void YGNode::setMeasureFunc(YGMeasureFunc measureFunc) {
+  measureUsesContext_ = false;
+  decltype(YGNode::measure_) m;
+  m.noContext = measureFunc;
+  setMeasureFunc(m);
+}
+
+void YGNode::setMeasureFunc(MeasureWithContextFn measureFunc) {
+  measureUsesContext_ = true;
+  decltype(YGNode::measure_) m;
+  m.withContext = measureFunc;
+  setMeasureFunc(m);
 }
 
 void YGNode::replaceChild(YGNodeRef child, uint32_t index) {
@@ -270,6 +301,8 @@ YGNode& YGNode::operator=(const YGNode& node) {
   print_ = node.getPrintFunc();
   hasNewLayout_ = node.getHasNewLayout();
   nodeType_ = node.getNodeType();
+  measureUsesContext_ = node.measureUsesContext_;
+  baselineUsesContext_ = node.baselineUsesContext_;
   measure_ = node.measure_;
   baseline_ = node.baseline_;
   dirtied_ = node.getDirtied();
