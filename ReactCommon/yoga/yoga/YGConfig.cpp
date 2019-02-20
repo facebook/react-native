@@ -6,7 +6,7 @@
  */
 #include "YGConfig.h"
 
-YGConfig::YGConfig(YGLogger logger) {
+YGConfig::YGConfig(YGLogger logger) : cloneNodeCallback_{nullptr} {
   logger_.noContext = logger;
   loggerUsesContext_ = false;
 }
@@ -23,4 +23,15 @@ void YGConfig::log(
   } else {
     logger_.noContext(config, node, logLevel, format, args);
   }
+}
+
+YGNodeRef YGConfig::cloneNode(YGNodeRef node, YGNodeRef owner, int childIndex) {
+  YGNodeRef clone = nullptr;
+  if (cloneNodeCallback_ != nullptr) {
+    clone = cloneNodeCallback_(node, owner, childIndex);
+  }
+  if (clone == nullptr) {
+    clone = YGNodeClone(node);
+  }
+  return clone;
 }
