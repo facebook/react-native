@@ -302,14 +302,16 @@ static void YGConfigFreeRecursive(const YGNodeRef root) {
 void YGNodeFreeRecursiveWithCleanupFunc(
     const YGNodeRef root,
     YGNodeCleanupFunc cleanup) {
-  while (YGNodeGetChildCount(root) > 0) {
-    const YGNodeRef child = YGNodeGetChild(root, 0);
+  uint32_t skipped = 0;
+  while (YGNodeGetChildCount(root) > skipped) {
+    const YGNodeRef child = YGNodeGetChild(root, skipped);
     if (child->getOwner() != root) {
       // Don't free shared nodes that we don't own.
-      break;
+      skipped += 1;
+    } else {
+      YGNodeRemoveChild(root, child);
+      YGNodeFreeRecursive(child);
     }
-    YGNodeRemoveChild(root, child);
-    YGNodeFreeRecursive(child);
   }
   if (cleanup != nullptr) {
     cleanup(root);
@@ -381,70 +383,40 @@ bool YGNodeIsReferenceBaseline(YGNodeRef node) {
 }
 
 void YGNodeInsertChild(
-    const YGNodeRef node,
+    const YGNodeRef owner,
     const YGNodeRef child,
     const uint32_t index) {
   YGAssertWithNode(
-      node,
+      owner,
       child->getOwner() == nullptr,
       "Child already has a owner, it must be removed first.");
 
   YGAssertWithNode(
-      node,
-      !node->hasMeasureFunc(),
+      owner,
+      !owner->hasMeasureFunc(),
       "Cannot add child: Nodes with measure functions cannot have children.");
 
-  node->cloneChildrenIfNeeded();
-  node->insertChild(child, index);
-  YGNodeRef owner = child->getOwner() ? nullptr : node;
+  owner->insertChild(child, index);
   child->setOwner(owner);
-  node->markDirtyAndPropogate();
+  owner->markDirtyAndPropogate();
 }
 
 void YGNodeRemoveChild(const YGNodeRef owner, const YGNodeRef excludedChild) {
-  // This algorithm is a forked variant from cloneChildrenIfNeeded in YGNode
-  // that excludes a child.
-  const uint32_t childCount = YGNodeGetChildCount(owner);
-
-  if (childCount == 0) {
+  if (YGNodeGetChildCount(owner) == 0) {
     // This is an empty set. Nothing to remove.
     return;
   }
-  const YGNodeRef firstChild = YGNodeGetChild(owner, 0);
-  if (firstChild->getOwner() == owner) {
-    // If the first child has this node as its owner, we assume that it is
-    // already unique. We can now try to delete a child in this list.
-    if (owner->removeChild(excludedChild)) {
-      excludedChild->setLayout(
-          YGNode().getLayout()); // layout is no longer valid
-      excludedChild->setOwner(nullptr);
-      owner->markDirtyAndPropogate();
-    }
-    return;
-  }
-  // Otherwise we have to clone the node list except for the child we're trying
-  // to delete. We don't want to simply clone all children, because then the
-  // host will need to free the clone of the child that was just deleted.
-  uint32_t nextInsertIndex = 0;
-  for (uint32_t i = 0; i < childCount; i++) {
-    const YGNodeRef oldChild = owner->getChild(i);
-    if (excludedChild == oldChild) {
-      // Ignore the deleted child. Don't reset its layout or owner since it is
-      // still valid in the other owner. However, since this owner has now
-      // changed, we need to mark it as dirty.
-      owner->markDirtyAndPropogate();
-      continue;
-    }
-    YGNodeRef newChild =
-        owner->getConfig()->cloneNode(oldChild, owner, nextInsertIndex);
-    owner->replaceChild(newChild, nextInsertIndex);
-    newChild->setOwner(owner);
 
-    nextInsertIndex++;
-  }
-  while (nextInsertIndex < childCount) {
-    owner->removeChild(nextInsertIndex);
-    nextInsertIndex++;
+  // Children may be shared between parents, which is indicated by not having an
+  // owner. We only want to reset the child completely if it is owned
+  // exclusively by one node.
+  auto childOwner = excludedChild->getOwner();
+  if (owner->removeChild(excludedChild)) {
+    if (owner == childOwner) {
+      excludedChild->setLayout({}); // layout is no longer valid
+      excludedChild->setOwner(nullptr);
+    }
+    owner->markDirtyAndPropogate();
   }
 }
 
@@ -1822,12 +1794,8 @@ static void YGZeroOutLayoutRecursivly(const YGNodeRef node) {
   node->setLayoutDimension(0, 0);
   node->setLayoutDimension(0, 1);
   node->setHasNewLayout(true);
-  node->cloneChildrenIfNeeded();
-  const uint32_t childCount = YGNodeGetChildCount(node);
-  for (uint32_t i = 0; i < childCount; i++) {
-    const YGNodeRef child = node->getChild(i);
-    YGZeroOutLayoutRecursivly(child);
-  }
+
+  node->iterChildrenAfterCloningIfNeeded(YGZeroOutLayoutRecursivly);
 }
 
 static float YGNodeCalculateAvailableInnerDim(
