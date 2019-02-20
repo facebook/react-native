@@ -97,7 +97,7 @@ public:
     RCTAssert(NO, @"RAM bundles are not supported in RCTObjcExecutor");
   }
 
-  void registerBundle(uint32_t bundleId, const std::string &bundlePath) override {
+  void registerBundle(uint32_t __unused bundleId, const std::string __unused &bundlePath) override {
     RCTAssert(NO, @"RAM bundles are not supported in RCTObjcExecutor");
   }
 
