@@ -111,14 +111,14 @@ RCT_EXPORT_METHOD(canOpenURL:(NSURL *)URL
 
   NSString *scheme = [URL scheme];
     
-  // in iOS 9 and above canOpenURL returns NO without a helpful error
-  // check if a custom scheme is being used, and if it exists in LSApplicationQueriesSchemes
+  // On iOS 9 and above canOpenURL returns NO without a helpful error.
+  // Check if a custom scheme is being used, and if it exists in LSApplicationQueriesSchemes
   if (![[scheme lowercaseString] hasPrefix:@"http"] && ![[scheme lowercaseString] hasPrefix:@"https"]) {
     NSArray *querySchemes = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"LSApplicationQueriesSchemes"];
     if (querySchemes != nil && ([querySchemes containsObject:scheme] || [querySchemes containsObject:[scheme lowercaseString]])) {
       resolve(@(canOpen));
     } else {
-      reject(RCTErrorUnspecified, [NSString stringWithFormat:@"Unable to open URL: %@, add %@ to LSApplicationQueriesSchemes in Info.plist.", URL, scheme], nil);
+      reject(RCTErrorUnspecified, [NSString stringWithFormat:@"Unable to open URL: %@. Add %@ to LSApplicationQueriesSchemes in your Info.plist.", URL, scheme], nil);
     }
   } else {
     resolve(@(canOpen));
