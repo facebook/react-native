@@ -425,8 +425,6 @@ void YGNodeRemoveChild(const YGNodeRef owner, const YGNodeRef excludedChild) {
   // Otherwise we have to clone the node list except for the child we're trying
   // to delete. We don't want to simply clone all children, because then the
   // host will need to free the clone of the child that was just deleted.
-  const YGCloneNodeFunc cloneNodeCallback =
-      owner->getConfig()->cloneNodeCallback;
   uint32_t nextInsertIndex = 0;
   for (uint32_t i = 0; i < childCount; i++) {
     const YGNodeRef oldChild = owner->getChild(i);
@@ -437,13 +435,8 @@ void YGNodeRemoveChild(const YGNodeRef owner, const YGNodeRef excludedChild) {
       owner->markDirtyAndPropogate();
       continue;
     }
-    YGNodeRef newChild = nullptr;
-    if (cloneNodeCallback) {
-      newChild = cloneNodeCallback(oldChild, owner, nextInsertIndex);
-    }
-    if (newChild == nullptr) {
-      newChild = YGNodeClone(oldChild);
-    }
+    YGNodeRef newChild =
+        owner->getConfig()->cloneNode(oldChild, owner, nextInsertIndex);
     owner->replaceChild(newChild, nextInsertIndex);
     newChild->setOwner(owner);
 
@@ -4293,7 +4286,7 @@ void* YGConfigGetContext(const YGConfigRef config) {
 void YGConfigSetCloneNodeFunc(
     const YGConfigRef config,
     const YGCloneNodeFunc callback) {
-  config->cloneNodeCallback = callback;
+  config->setCloneNodeCallback(callback);
 }
 
 static void YGTraverseChildrenPreOrder(

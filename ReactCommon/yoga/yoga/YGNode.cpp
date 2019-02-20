@@ -404,16 +404,9 @@ void YGNode::cloneChildrenIfNeeded() {
     return;
   }
 
-  const YGCloneNodeFunc cloneNodeCallback = config_->cloneNodeCallback;
   for (uint32_t i = 0; i < childCount; ++i) {
     const YGNodeRef oldChild = children_[i];
-    YGNodeRef newChild = nullptr;
-    if (cloneNodeCallback) {
-      newChild = cloneNodeCallback(oldChild, this, i);
-    }
-    if (newChild == nullptr) {
-      newChild = YGNodeClone(oldChild);
-    }
+    YGNodeRef newChild = config_->cloneNode(oldChild, this, i);
     replaceChild(newChild, i);
     newChild->setOwner(this);
   }

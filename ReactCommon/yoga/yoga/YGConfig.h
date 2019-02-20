@@ -19,6 +19,7 @@ struct YGConfig {
       va_list args);
 
 private:
+  YGCloneNodeFunc cloneNodeCallback_ = nullptr;
   union {
     LogWithContextFn withContext;
     YGLogger noContext;
@@ -31,7 +32,6 @@ public:
   bool shouldDiffLayoutWithoutLegacyStretchBehaviour = false;
   bool printTree = false;
   float pointScaleFactor = 1.0f;
-  YGCloneNodeFunc cloneNodeCallback = nullptr;
   std::array<bool, facebook::yoga::enums::count<YGExperimentalFeature>()>
       experimentalFeatures = {};
   void* context = nullptr;
@@ -49,5 +49,10 @@ public:
   }
   void setLogger(std::nullptr_t) {
     setLogger(YGLogger{nullptr});
+  }
+
+  YGNodeRef cloneNode(YGNodeRef node, YGNodeRef owner, int childIndex);
+  void setCloneNodeCallback(YGCloneNodeFunc cloneNode) {
+    cloneNodeCallback_ = cloneNode;
   }
 };
