@@ -26,6 +26,9 @@
 ; require from fbjs/lib instead: require('fbjs/lib/warning')
 .*/node_modules/warning/.*
 
+; Ignore duplicate for internal Facebook repo
+.*/Libraries/Utilities/HMRLoadingView.js
+
 [untyped]
 .*/node_modules/@react-native-community/cli/.*/.*
 
