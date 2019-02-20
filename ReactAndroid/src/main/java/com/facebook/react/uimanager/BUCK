@@ -9,7 +9,9 @@ rn_android_library(
             "events/*.java",
             "layoutanimation/*.java",
         ],
-        exclude = ["DisplayMetricsHolder.java"],
+        exclude = [
+            "DisplayMetricsHolder.java",
+        ],
     ),
     provided_deps = [
         react_native_dep("third-party/android/support/v4:lib-support-v4"),
