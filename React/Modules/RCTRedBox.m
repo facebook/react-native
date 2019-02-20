@@ -484,7 +484,11 @@ RCT_EXPORT_MODULE()
             self->_extraDataViewController = [RCTRedBoxExtraDataViewController new];
             self->_extraDataViewController.actionDelegate = self;
         }
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [self->_bridge.eventDispatcher sendDeviceEventWithName:@"collectRedBoxExtraData" body:nil];
+#pragma clang diagnostic pop
 
         if (!self->_window) {
             self->_window = [[RCTRedBoxWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];

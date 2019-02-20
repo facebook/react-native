@@ -101,7 +101,7 @@ static bool isRAMBundle(NSData *script) {
 
 static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogger) {
   __weak RCTPerformanceLogger *weakPerformanceLogger = performanceLogger;
-  ReactMarker::logTaggedMarker = [weakPerformanceLogger](const ReactMarker::ReactMarkerId markerId, const char *tag) {
+  ReactMarker::logTaggedMarker = [weakPerformanceLogger](const ReactMarker::ReactMarkerId markerId, const char *__unused tag) {
     switch (markerId) {
       case ReactMarker::RUN_JS_BUNDLE_START:
         [weakPerformanceLogger markStartForTag:RCTPLScriptExecution];
