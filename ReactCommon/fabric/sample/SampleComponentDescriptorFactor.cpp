@@ -20,7 +20,7 @@ ComponentRegistryFactory getDefaultComponentRegistryFactory() {
             const SharedContextContainer &contextContainer) {
     auto registry = std::make_shared<ComponentDescriptorRegistry>();
     return registry;
-  }
+  };
 }
 
 } // namespace react
