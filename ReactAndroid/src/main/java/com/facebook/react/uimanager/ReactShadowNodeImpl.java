@@ -182,6 +182,14 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     } else if (getParent() != null) {
       // Virtual nodes aren't involved in layout but they need to have the dirty signal
       // propagated to their ancestors.
+      //
+      // TODO: There are some edge cases that currently aren't supported. For example, if the size
+      //   of your inline image/view changes, its size on-screen is not be updated. Similarly,
+      //   if the size of a view inside of an inline view changes, its size on-screen is not
+      //   updated. The problem may be that dirty propagation stops at inline views because the
+      //   parent of each inline view is null. A possible fix would be to implement an `onDirty`
+      //   handler in Yoga that will propagate the dirty signal to the ancestors of the inline view.
+      //
       getParent().dirty();
     }
   }
