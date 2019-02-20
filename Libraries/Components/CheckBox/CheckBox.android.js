@@ -188,7 +188,6 @@ class CheckBox extends React.Component<Props> {
       tintColors: this.getTintColors(tintColors),
       style: [styles.rctCheckBox, style],
     };
-    console.warn('render');
     return (
       <AndroidCheckBoxNativeComponent
         {...nativeProps}
