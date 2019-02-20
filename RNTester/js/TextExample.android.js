@@ -499,14 +499,10 @@ class TextExample extends React.Component<{}> {
             This text will have a orange highlight on selection.
           </Text>
         </RNTesterBlock>
-        <RNTesterBlock title="Inline views">
+        <RNTesterBlock title="Inline images">
           <Text>
-            This text contains an inline blue view{' '}
-            <View
-              style={{width: 25, height: 25, backgroundColor: 'steelblue'}}
-            />{' '}
-            and an inline image <Image source={require('./flux.png')} />. Neat,
-            huh?
+            This text contains an inline image{' '}
+            <Image source={require('./flux.png')} />. Neat, huh?
           </Text>
         </RNTesterBlock>
         <RNTesterBlock title="Text shadow">
