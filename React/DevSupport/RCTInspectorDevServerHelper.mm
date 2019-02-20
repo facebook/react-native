@@ -91,8 +91,8 @@ static void displayErrorAlert(UIViewController *view, NSString *message) {
 
   __weak UIViewController *viewCapture = view;
   [[[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:
-    ^(NSData *_Nullable data,
-      NSURLResponse *_Nullable response,
+    ^(__unused NSData *_Nullable data,
+      __unused NSURLResponse *_Nullable response,
       NSError *_Nullable error) {
       UIViewController *viewCaptureStrong = viewCapture;
       if (error != nullptr && viewCaptureStrong != nullptr) {
