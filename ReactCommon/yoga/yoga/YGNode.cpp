@@ -386,30 +386,7 @@ void YGNode::clearChildren() {
 // Other Methods
 
 void YGNode::cloneChildrenIfNeeded() {
-  // YGNodeRemoveChild in yoga.cpp has a forked variant of this algorithm
-  // optimized for deletions.
-
-  const uint32_t childCount = static_cast<uint32_t>(children_.size());
-  if (childCount == 0) {
-    // This is an empty set. Nothing to clone.
-    return;
-  }
-
-  const YGNodeRef firstChild = children_.front();
-  if (firstChild->getOwner() == this) {
-    // If the first child has this node as its owner, we assume that it is
-    // already unique. We can do this because if we have it has a child, that
-    // means that its owner was at some point cloned which made that subtree
-    // immutable. We also assume that all its sibling are cloned as well.
-    return;
-  }
-
-  for (uint32_t i = 0; i < childCount; ++i) {
-    const YGNodeRef oldChild = children_[i];
-    YGNodeRef newChild = config_->cloneNode(oldChild, this, i);
-    replaceChild(newChild, i);
-    newChild->setOwner(this);
-  }
+  iterChildrenAfterCloningIfNeeded([](YGNodeRef) {});
 }
 
 void YGNode::markDirtyAndPropogate() {

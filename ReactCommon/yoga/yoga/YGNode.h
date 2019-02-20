@@ -143,6 +143,22 @@ public:
     return children_;
   }
 
+  // Applies a callback to all children, after cloning them if they are not
+  // owned.
+  template <typename T>
+  void iterChildrenAfterCloningIfNeeded(T callback) {
+    int i = 0;
+    for (YGNodeRef& child : children_) {
+      if (child->getOwner() != this) {
+        child = config_->cloneNode(child, this, i);
+        child->setOwner(this);
+      }
+      i += 1;
+
+      callback(child);
+    }
+  }
+
   YGNodeRef getChild(uint32_t index) const {
     return children_.at(index);
   }
