@@ -14,6 +14,7 @@ Pod::Spec.new do |spec|
   spec.source = { :git => 'https://github.com/google/double-conversion.git',
                   :tag => "v#{spec.version}" }
   spec.module_name = 'DoubleConversion'
+  spec.header_dir = 'double-conversion'
   spec.source_files = 'double-conversion/*.{h,cc}'
 
   # Pinning to the same version as React.podspec.

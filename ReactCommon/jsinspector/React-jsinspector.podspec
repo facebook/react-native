@@ -27,6 +27,5 @@ Pod::Spec.new do |s|
   s.platforms              = { :ios => "10.0", :tvos => "9.2" }
   s.source                 = source
   s.source_files           = "*.{cpp,h}"
-  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\"" }
   s.header_dir             = 'jsinspector'
 end
