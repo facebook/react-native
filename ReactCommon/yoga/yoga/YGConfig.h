@@ -17,13 +17,22 @@ struct YGConfig {
       void* context,
       const char* format,
       va_list args);
+  using CloneWithContextFn = YGNodeRef (*)(
+      YGNodeRef node,
+      YGNodeRef owner,
+      int childIndex,
+      void* cloneContext);
 
 private:
-  YGCloneNodeFunc cloneNodeCallback_ = nullptr;
+  union {
+    CloneWithContextFn withContext;
+    YGCloneNodeFunc noContext;
+  } cloneNodeCallback_;
   union {
     LogWithContextFn withContext;
     YGLogger noContext;
   } logger_;
+  bool cloneNodeUsesContext_;
   bool loggerUsesContext_;
 
 public:
@@ -51,8 +60,20 @@ public:
     setLogger(YGLogger{nullptr});
   }
 
-  YGNodeRef cloneNode(YGNodeRef node, YGNodeRef owner, int childIndex);
+  YGNodeRef cloneNode(
+      YGNodeRef node,
+      YGNodeRef owner,
+      int childIndex,
+      void* cloneContext);
   void setCloneNodeCallback(YGCloneNodeFunc cloneNode) {
-    cloneNodeCallback_ = cloneNode;
+    cloneNodeCallback_.noContext = cloneNode;
+    cloneNodeUsesContext_ = false;
+  }
+  void setCloneNodeCallback(CloneWithContextFn cloneNode) {
+    cloneNodeCallback_.withContext = cloneNode;
+    cloneNodeUsesContext_ = true;
+  }
+  void setCloneNodeCallback(std::nullptr_t) {
+    setCloneNodeCallback(YGCloneNodeFunc{nullptr});
   }
 };

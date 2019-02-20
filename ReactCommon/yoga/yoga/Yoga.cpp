@@ -1789,13 +1789,16 @@ static bool YGNodeFixedSizeSetMeasuredDimensions(
   return false;
 }
 
-static void YGZeroOutLayoutRecursivly(const YGNodeRef node) {
+static void YGZeroOutLayoutRecursivly(
+    const YGNodeRef node,
+    void* layoutContext) {
   node->getLayout() = {};
   node->setLayoutDimension(0, 0);
   node->setLayoutDimension(0, 1);
   node->setHasNewLayout(true);
 
-  node->iterChildrenAfterCloningIfNeeded(YGZeroOutLayoutRecursivly);
+  node->iterChildrenAfterCloningIfNeeded(
+      YGZeroOutLayoutRecursivly, layoutContext);
 }
 
 static float YGNodeCalculateAvailableInnerDim(
@@ -1877,7 +1880,7 @@ static float YGNodeComputeFlexBasisForChildren(
   for (auto child : children) {
     child->resolveDimension();
     if (child->getStyle().display == YGDisplayNone) {
-      YGZeroOutLayoutRecursivly(child);
+      YGZeroOutLayoutRecursivly(child, layoutContext);
       child->setHasNewLayout(true);
       child->setDirty(false);
       continue;
@@ -2751,7 +2754,7 @@ static void YGNodelayoutImpl(
 
   // At this point we know we're going to perform work. Ensure that each child
   // has a mutable copy.
-  node->cloneChildrenIfNeeded();
+  node->cloneChildrenIfNeeded(layoutContext);
   // Reset layout flags, as they could have changed.
   node->setLayoutHadOverflow(false);
 

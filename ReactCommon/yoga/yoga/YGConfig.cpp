@@ -25,10 +25,16 @@ void YGConfig::log(
   }
 }
 
-YGNodeRef YGConfig::cloneNode(YGNodeRef node, YGNodeRef owner, int childIndex) {
+YGNodeRef YGConfig::cloneNode(
+    YGNodeRef node,
+    YGNodeRef owner,
+    int childIndex,
+    void* cloneContext) {
   YGNodeRef clone = nullptr;
-  if (cloneNodeCallback_ != nullptr) {
-    clone = cloneNodeCallback_(node, owner, childIndex);
+  if (cloneNodeCallback_.noContext != nullptr) {
+    clone = cloneNodeUsesContext_
+        ? cloneNodeCallback_.withContext(node, owner, childIndex, cloneContext)
+        : cloneNodeCallback_.noContext(node, owner, childIndex);
   }
   if (clone == nullptr) {
     clone = YGNodeClone(node);
