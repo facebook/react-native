@@ -15,22 +15,21 @@
  *
  * See https://our.intern.facebook.com/intern/dex/symbolicating-javascript-stack-traces-for-react-native/
  *
- * @flow
  * @format
  */
 
 'use strict';
 
-var SourceMapConsumer = require('source-map').SourceMapConsumer;
-var Symbolication = require('./Symbolication.js');
+const SourceMapConsumer = require('source-map').SourceMapConsumer;
+const Symbolication = require('./Symbolication.js');
 
-var fs = require('fs');
-var through2 = require('through2');
+const fs = require('fs');
+const through2 = require('through2');
 
-var argv = process.argv.slice(2);
+const argv = process.argv.slice(2);
 if (argv.length < 1 || argv.length > 3) {
   /* eslint no-path-concat: "off" */
-  var usages = [
+  const usages = [
     'Usage: ' + __filename + ' <source-map-file>',
     '       ' + __filename + ' <source-map-file> <line> [column]',
     '       ' + __filename + ' <source-map-file> <moduleId>.js <line> [column]',
@@ -45,26 +44,49 @@ if (argv.length < 1 || argv.length > 3) {
 }
 
 // Read the source map.
-var sourceMapFileName = argv.shift();
-var content = fs.readFileSync(sourceMapFileName, 'utf8');
-var context = Symbolication.createContext(SourceMapConsumer, content);
+const sourceMapFileName = argv.shift();
+const content = fs.readFileSync(sourceMapFileName, 'utf8');
+const context = Symbolication.createContext(SourceMapConsumer, content);
 
 if (argv.length === 0) {
-  // read-from-stdin form.
-  var stackTrace = fs.readFileSync('/dev/stdin', 'utf8');
-  var result = Symbolication.symbolicate(stackTrace, context);
-  process.stdout.write(result);
+  const read = stream => {
+    return new Promise(resolve => {
+      let data = '';
+      if (stream.isTTY) {
+        resolve(data);
+        return;
+      }
+
+      stream.setEncoding('utf8');
+      stream.on('readable', () => {
+        let chunk;
+        while ((chunk = stream.read())) {
+          data += chunk;
+        }
+      });
+      stream.on('end', () => {
+        resolve(data);
+      });
+    });
+  };
+
+  (async () => {
+    const stackTrace = await read(process.stdin);
+    process.stdout.write(Symbolication.symbolicate(stackTrace, context));
+  })().catch(error => {
+    console.error(error);
+  });
 } else if (argv[0].endsWith('.profmap')) {
   process.stdout.write(Symbolication.symbolicateProfilerMap(argv[0], context));
 } else if (argv[0] === '--attribution') {
-  var buffer = '';
+  let buffer = '';
   process.stdin
     .pipe(
       through2(function(data, enc, callback) {
         // Take arbitrary strings, output single lines
         buffer += data;
-        var lines = buffer.split('\n');
-        for (var i = 0, e = lines.length - 1; i < e; i++) {
+        const lines = buffer.split('\n');
+        for (let i = 0, e = lines.length - 1; i < e; i++) {
           this.push(lines[i]);
         }
         buffer = lines[lines.length - 1];
@@ -74,7 +96,7 @@ if (argv.length === 0) {
     .pipe(
       through2.obj(function(data, enc, callback) {
         // This is JSONL, so each line is a separate JSON object
-        var obj = JSON.parse(data);
+        const obj = JSON.parse(data);
         Symbolication.symbolicateAttribution(obj, context);
         this.push(JSON.stringify(obj) + '\n');
         callback();
@@ -85,7 +107,7 @@ if (argv.length === 0) {
   Symbolication.symbolicateChromeTrace(argv[0], context);
 } else {
   // read-from-argv form.
-  var moduleIds, lineNumber, columnNumber;
+  let moduleIds, lineNumber, columnNumber;
   if (argv[0].endsWith('.js')) {
     moduleIds = Symbolication.parseFileName(argv[1]);
     argv.shift();
@@ -94,7 +116,7 @@ if (argv.length === 0) {
   }
   lineNumber = argv.shift();
   columnNumber = argv.shift() || 0;
-  var original = Symbolication.getOriginalPositionFor(
+  const original = Symbolication.getOriginalPositionFor(
     lineNumber,
     columnNumber,
     moduleIds,
