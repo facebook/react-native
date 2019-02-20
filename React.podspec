@@ -17,8 +17,6 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'
-
 Pod::Spec.new do |s|
   s.name                   = "React"
   s.version                = version
