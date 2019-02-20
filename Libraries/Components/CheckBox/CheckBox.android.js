@@ -81,7 +81,7 @@ type Props = $ReadOnly<{|
   /**
    * Controls the colors the checkbox has in checked and unchecked states.
    */
-  tintColors?: {|true?: ColorValue, false?: ColorValue|},
+  tintColors?: {|true?: ?ColorValue, false?: ?ColorValue|},
 |}>;
 
 /**
