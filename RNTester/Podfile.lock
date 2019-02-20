@@ -90,7 +90,7 @@ DEPENDENCIES:
   - DoubleConversion (from `../third-party-podspecs/DoubleConversion.podspec`)
   - Folly (from `../third-party-podspecs/Folly.podspec`)
   - glog (from `../third-party-podspecs/glog.podspec`)
-  - React (from `../React`)
+  - React (from `../`)
   - React-ART (from `../Libraries/ART`)
   - React-Core (from `../React`)
   - React-CxxBridge (from `../React`)
@@ -127,7 +127,7 @@ EXTERNAL SOURCES:
   glog:
     :podspec: "../third-party-podspecs/glog.podspec"
   React:
-    :path: "../React"
+    :path: "../"
   React-ART:
     :path: "../Libraries/ART"
   React-Core:
@@ -180,31 +180,31 @@ SPEC CHECKSUMS:
   DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
   Folly: de497beb10f102453a1afa9edbf8cf8a251890de
   glog: aefd1eb5dda2ab95ba0938556f34b98e2da3a60d
-  React: 93ab8284dcaee478e28f78ed056711a1eb092477
-  React-ART: 39127807bcdfc764207dc052ccdc3843a3171e6e
-  React-Core: fbd4cae32812f622a7fbd5136458d54b9dc3c98e
-  React-CxxBridge: 23f1860a12c84c4247550186193bc0b132dda5af
-  React-cxxreact: cee735f98bd3e83b953ac9eec14c08dd4c8ed4df
-  React-DevSupport: 4326b3d09e05d54603d264e980238ca786fdfad5
-  React-fishhook: 2a6f5672b5e58e14f12cfa5dc73c6fb81ebe5df7
-  React-jsi: 3905d724154a8d8f955c11bafaa3270b72adda7f
-  React-jsiexecutor: 42fda7d91868be9e2f80f4f58afc8de6c369828d
-  React-jsinspector: db0f9f275bae20a9d0c04ad24233a111a1a57ad9
-  React-RCTActionSheet: 65adf81580ebbd3ac216ed302232756e80046068
-  React-RCTAnimation: b424f705378871572dc86e1996baa2cf6f3c4fda
-  React-RCTBlob: 8e5894a27d0a4c648e544c16d76c11045ee02654
-  React-RCTCameraRoll: f0ac318e04c612a9a1a8714338d77ad125a43715
-  React-RCTGeolocation: 92184516fe6a769cbcd61da9b009952f3171e162
-  React-RCTImage: 6f47e3d63611421cebdcbd0d5da15dfaa89ae8d1
-  React-RCTLinking: 9a484497ce6f557da89c401fbedef9fcdbf25ed5
-  React-RCTNetwork: 8cbfd254998e5a48d70a65af1743356c47edae4f
-  React-RCTPushNotification: 6d2466738cee9df50b443506d3a3f7f9bfdbe9f4
-  React-RCTSettings: d4f1724d1d1b5aa69dccff5e513b0127fbf7198c
-  React-RCTText: 9ab787cac9c30b11dd5abb5b9f02018015e7d8de
-  React-RCTVibration: 5e03be4d916314dce8708e9daad78f9eca6af170
-  React-RCTWebSocket: c825788f7857cbf4aad9345d481b904567e41d06
-  yoga: b7caec9aff529e108e09fa49d2261cb61218860f
+  React: cfc5d12f2d0e614e4a0be8dc05613dddc027c0bf
+  React-ART: df9f3fdc7319ca70ca58aed1fbcb6b6d629a45b9
+  React-Core: 447bb2e9d9fa9c3f0b855caeac6e39691b881db2
+  React-CxxBridge: d0f04a3c361b9ef81d9f89ca33ba10947b8020a9
+  React-cxxreact: e7ba0dc9ae5cf8097e82c2418374f5d0f95098bf
+  React-DevSupport: b5dfcb4af67c3732dcee0a1a58dc258dd5a33359
+  React-fishhook: 764077fda2f247b1e956c135e8c4c1303672d53c
+  React-jsi: ae28442f0ca35b2028cf45bb91a95bd969cee7af
+  React-jsiexecutor: 4d613f805980b8240b92d5797822ddda58b17b4a
+  React-jsinspector: 2c2782d12260ae0babd19f1201c4daa30419a71a
+  React-RCTActionSheet: 0bacd4e14baacf0644608f15e2b472e9ce6a0064
+  React-RCTAnimation: 3681e60dcb0ebb5c71a7166b3e7c8df8cce58b16
+  React-RCTBlob: 7cb4ac5ff77797abf8fc93ab172175ef3ca8b201
+  React-RCTCameraRoll: 6e221ad6dcc9016a700726279f991671ee2d1559
+  React-RCTGeolocation: 9775cba7160128e8fa0c9fdde2011c88a13d0a54
+  React-RCTImage: 33fba01ae8e80823f86fe99946df171c387aeacb
+  React-RCTLinking: e692c05029586a24720c989fac77935036990e77
+  React-RCTNetwork: 7633f77c663aa9ee1aa12e55f2b0a3d30a7597a0
+  React-RCTPushNotification: b8527158d5cfbe63262a49647708ef55146ad8fe
+  React-RCTSettings: f72bdf5b6cff9cfcdec8622a9f4d53fbe425f62d
+  React-RCTText: 7a8b4ebd36b3e2deaf4445bc8bc8f86ad0ae3e6a
+  React-RCTVibration: a29e8d37178e72c9e58d671bbd35aacc3d843fbc
+  React-RCTWebSocket: c6e5690c98e614291072bd3266ec02d7d0efe97c
+  yoga: 627b4b9a19799f3227363d72e2fdaf2297062860
 
-PODFILE CHECKSUM: 96abf9cb9c5f2963733c04b0a6f9a58556193714
+PODFILE CHECKSUM: f971831e6e938d46d4569c2d0d98cabef4bf2a11
 
 COCOAPODS: 1.6.0

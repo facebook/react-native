@@ -6,7 +6,7 @@ target 'RNTester' do
 
   project 'RNTesterPods.xcodeproj'
 
-  pod 'React', :path => '../React'
+  pod 'React', :path => '../'
   pod 'React-ART', :path => '../Libraries/ART'
   pod 'React-Core', :path => '../React'
   pod 'React-CxxBridge', :path => '../React'
