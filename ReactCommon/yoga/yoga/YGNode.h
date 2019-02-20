@@ -146,16 +146,16 @@ public:
   // Applies a callback to all children, after cloning them if they are not
   // owned.
   template <typename T>
-  void iterChildrenAfterCloningIfNeeded(T callback) {
+  void iterChildrenAfterCloningIfNeeded(T callback, void* cloneContext) {
     int i = 0;
     for (YGNodeRef& child : children_) {
       if (child->getOwner() != this) {
-        child = config_->cloneNode(child, this, i);
+        child = config_->cloneNode(child, this, i, cloneContext);
         child->setOwner(this);
       }
       i += 1;
 
-      callback(child);
+      callback(child, cloneContext);
     }
   }
 
@@ -335,7 +335,7 @@ public:
   bool removeChild(YGNodeRef child);
   void removeChild(uint32_t index);
 
-  void cloneChildrenIfNeeded();
+  void cloneChildrenIfNeeded(void*);
   void markDirtyAndPropogate();
   float resolveFlexGrow();
   float resolveFlexShrink();
