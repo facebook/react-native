@@ -882,13 +882,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		14D6D6EA1B2205C0001FB087 /* OCMock */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = OCMock;
-			sourceTree = "<group>";
-		};
 		14D6D7011B220AE3001FB087 /* OCMock */ = {
 			isa = PBXGroup;
 			children = (
@@ -1006,7 +999,6 @@
 				143BC57C1B21E18100462512 /* RNTesterUnitTests */,
 				143BC5961B21E3E100462512 /* RNTesterIntegrationTests */,
 				3D13F83F1D6F6AE000E69E0E /* RNTesterBundle */,
-				14D6D6EA1B2205C0001FB087 /* OCMock */,
 				2DD323911DA2DD8B000FE1B8 /* RNTester-tvOS */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2DE7E7D81FB2A4F3009E225D /* Frameworks */,
