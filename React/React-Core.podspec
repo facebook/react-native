@@ -18,6 +18,7 @@ else
 end
 
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'
+folly_version = '2018.10.22.00'
 
 Pod::Spec.new do |s|
   s.name                   = "React-Core"
@@ -29,8 +30,7 @@ Pod::Spec.new do |s|
   s.platforms              = { :ios => "10.0", :tvos => "9.2" }
   s.source                 = source
   s.source_files           = "**/*.{c,h,m,mm,S,cpp}"
-  s.exclude_files          = "Cxx*/*",
-                             "DevSupport/**/*",
+  s.exclude_files          = "DevSupport/**/*",
                              "Fabric/**/*",
                              "Inspector/**/*"
   s.ios.exclude_files      = "**/RCTTV*.*"
@@ -47,6 +47,8 @@ Pod::Spec.new do |s|
   s.library                = "stdc++"
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Folly\"" }
 
+  s.dependency "Folly", folly_version
   s.dependency "React-cxxreact", version
+  s.dependency "React-jsiexecutor", version
   s.dependency "yoga", "#{version}.React"
 end

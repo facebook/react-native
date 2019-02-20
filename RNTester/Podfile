@@ -9,7 +9,6 @@ target 'RNTester' do
   pod 'React', :path => '../'
   pod 'React-ART', :path => '../Libraries/ART'
   pod 'React-Core', :path => '../React'
-  pod 'React-CxxBridge', :path => '../React'
   pod 'React-DevSupport', :path => '../React'
   pod 'React-fishhook', :path => '../Libraries/fishhook'
   pod 'React-RCTActionSheet', :path => '../Libraries/ActionSheetIOS'
