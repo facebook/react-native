@@ -247,7 +247,7 @@ public class NetworkingModuleTest {
     body.putString("string", "This is request body");
 
     mockEvents();
-    
+
     networkingModule.sendRequest(
       "POST",
       "http://somedomain/bar",
@@ -307,6 +307,55 @@ public class NetworkingModuleTest {
     assertThat(requestHeaders.size()).isEqualTo(2);
     assertThat(requestHeaders.get("Accept")).isEqualTo("text/plain");
     assertThat(requestHeaders.get("User-Agent")).isEqualTo("React test agent/1.0");
+  }
+
+  @Test
+  public void testPostJsonContentTypeHeader() throws Exception {
+    RCTDeviceEventEmitter emitter = mock(RCTDeviceEventEmitter.class);
+    ReactApplicationContext context = mock(ReactApplicationContext.class);
+    when(context.getJSModule(any(Class.class))).thenReturn(emitter);
+
+    OkHttpClient httpClient = mock(OkHttpClient.class);
+    when(httpClient.newCall(any(Request.class))).thenAnswer(new Answer<Object>() {
+      @Override
+      public Object answer(InvocationOnMock invocation) throws Throwable {
+        Call callMock = mock(Call.class);
+        return callMock;
+      }
+    });
+    OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
+    when(clientBuilder.build()).thenReturn(httpClient);
+    when(httpClient.newBuilder()).thenReturn(clientBuilder);
+    NetworkingModule networkingModule = new NetworkingModule(context, "", httpClient);
+
+    JavaOnlyMap body = new JavaOnlyMap();
+    body.putString("string", "{ \"key\": \"value\" }");
+
+    mockEvents();
+
+    networkingModule.sendRequest(
+      "POST",
+      "http://somedomain/bar",
+      0,
+      JavaOnlyArray.of(JavaOnlyArray.of("Content-Type", "application/json")),
+      body,
+      /* responseType */ "text",
+      /* useIncrementalUpdates*/ true,
+      /* timeout */ 0,
+      /* withCredentials */ false);
+
+    ArgumentCaptor<Request> argumentCaptor = ArgumentCaptor.forClass(Request.class);
+    verify(httpClient).newCall(argumentCaptor.capture());
+
+    // Verify content was written correctly
+    Buffer contentBuffer = new Buffer();
+    argumentCaptor.getValue().body().writeTo(contentBuffer);
+    assertThat(contentBuffer.readUtf8()).isEqualTo(body.getString("string"));
+
+    // Verify okhttp does not append "charset=utf8
+    assertThat(argumentCaptor.getValue().body().contentType().type()).isEqualTo("application");
+    assertThat(argumentCaptor.getValue().body().contentType().subtype()).isEqualTo("json");
+    assertThat(argumentCaptor.getValue().body().contentType().charset()).isEqualTo(null);
   }
 
   @Test
