@@ -16,6 +16,7 @@ const React = require('react');
 const {Image, StyleSheet, Text, View} = require('react-native');
 const RNTesterBlock = require('./RNTesterBlock');
 const RNTesterPage = require('./RNTesterPage');
+const TextInlineView = require('./Shared/TextInlineView');
 const TextLegend = require('./Shared/TextLegend');
 
 class Entity extends React.Component<{|children: React.Node|}> {
@@ -507,14 +508,19 @@ class TextExample extends React.Component<{}> {
           </Text>
         </RNTesterBlock>
         <RNTesterBlock title="Inline views">
-          <Text>
-            This text contains an inline blue view{' '}
-            <View
-              style={{width: 25, height: 25, backgroundColor: 'steelblue'}}
-            />{' '}
-            and an inline image <Image source={require('./flux.png')} />. Neat,
-            huh?
-          </Text>
+          <TextInlineView.Basic />
+        </RNTesterBlock>
+        <RNTesterBlock title="Inline image/view clipped by <Text>">
+          <TextInlineView.ClippedByText />
+        </RNTesterBlock>
+        <RNTesterBlock title="Relayout inline image">
+          <TextInlineView.ChangeImageSize />
+        </RNTesterBlock>
+        <RNTesterBlock title="Relayout inline view">
+          <TextInlineView.ChangeViewSize />
+        </RNTesterBlock>
+        <RNTesterBlock title="Relayout nested inline view">
+          <TextInlineView.ChangeInnerViewSize />
         </RNTesterBlock>
         <RNTesterBlock title="Text shadow">
           <Text
