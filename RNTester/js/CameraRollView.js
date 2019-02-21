@@ -76,7 +76,7 @@ type Props = $ReadOnly<{|
 
 type State = {|
   assets: Array<PhotoIdentifier>,
-  data: ?Array<Array<?PhotoIdentifier>>,
+  data: Array<Array<?PhotoIdentifier>>,
   seen: Set<string>,
   lastCursor: ?string,
   noMore: boolean,
@@ -239,7 +239,10 @@ class CameraRollView extends React.Component<Props, State> {
       }
 
       newState.assets = this.state.assets.concat(uniqAssets);
-      newState.data = groupByEveryN(newState.assets, this.props.imagesPerRow);
+      newState.data = groupByEveryN<PhotoIdentifier>(
+        newState.assets,
+        this.props.imagesPerRow,
+      );
     }
 
     this.setState(newState);
