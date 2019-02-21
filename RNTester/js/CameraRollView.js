@@ -203,7 +203,7 @@ class CameraRollView extends React.Component<Props, State> {
     return (
       <View style={styles.row}>
         {row.item.map(image => {
-          if (image === null) {
+          if (!image) {
             return null;
           }
 
