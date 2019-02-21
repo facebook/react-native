@@ -47,15 +47,7 @@ let exitCode;
 
 try {
   // install CLI
-  cd('react-native-cli');
-  exec('yarn pack');
-  const CLI_PACKAGE = path.join(
-    ROOT,
-    'react-native-cli',
-    'react-native-cli-*.tgz',
-  );
-  cd('..');
-
+  const CLI_PACKAGE = 'react-native-cli';
   if (!argv['skip-cli-install']) {
     if (exec(`sudo yarn global add ${CLI_PACKAGE}`).code) {
       echo('Could not install react-native-cli globally.');
