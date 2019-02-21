@@ -249,13 +249,6 @@ aliases:
     name: JavaScript End-to-End Test Suite
     command: node ./scripts/run-ci-e2e-tests.js --js --retries 3;
 
-  - &display-broken-tests-warning
-    name: Running broken tests (Ignore any failures past this point)
-    command: |
-      echo 'The following steps are known to be failing on master.'
-      echo 'They will no-op for most users.'
-      echo 'PRs that bring these back to green are appreciated.'
-
   # DISABLED TESTS
   - &run-podspec-tests
     name: Test CocoaPods
