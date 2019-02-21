@@ -248,22 +248,19 @@ aliases:
       echo 'They will no-op for most users.'
       echo 'PRs that bring these back to green are appreciated.'
 
+  # DISABLED TESTS
   - &run-podspec-tests
-    name: Test CocoaPods (Disabled)
-    command: ./scripts/circleci/exec_author_check.sh ./scripts/process-podspecs.sh
-
+    name: Test CocoaPods
+    command: ./scripts/process-podspecs.sh
   - &run-e2e-tests
-    name: End-to-End Test Suite (Disabled)
-    command: ./scripts/circleci/exec_author_check.sh node ./scripts/run-ci-e2e-tests.js --android --ios --js --retries 3;
-
+    name: End-to-End Test Suite
+    command: ./scripts/run-ci-e2e-tests.js --android --ios --js --retries 3;
   - &run-objc-ios-e2e-tests
-    name: iOS End-to-End Test Suite (Disabled)
-    command: ./scripts/circleci/exec_author_check.sh node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
-
+    name: iOS End-to-End Test Suite
+    command: node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
   - &run-android-e2e-tests
-    name: Android End-to-End Test Suite (Disabled)
-    command: ./scripts/circleci/exec_author_check.sh node ./scripts/run-ci-e2e-tests.js --android --retries 3;
-
+    name: Android End-to-End Test Suite
+    command: node ./scripts/run-ci-e2e-tests.js --android --retries 3;
   - &run-js-e2e-tests
     name: JavaScript End-to-End Test Suite
     command: node ./scripts/run-ci-e2e-tests.js --js --retries 3;
@@ -450,11 +447,6 @@ jobs:
       - run: *run-android-unit-tests
       - run: *run-android-instrumentation-tests
       - run: *build-android-rntester-app
-
-      # Run Android end-to-end tests
-      # TODO: Fix these failing tests.
-      - run: *display-broken-tests-warning
-      - run: *run-android-e2e-tests
 
       # Collect Results
       - run: *collect-android-test-results
