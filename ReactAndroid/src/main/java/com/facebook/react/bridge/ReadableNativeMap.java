@@ -237,6 +237,20 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
   }
 
   @Override
+  public int hashCode() {
+    return getLocalMap().hashCode();
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (!(obj instanceof ReadableNativeMap)) {
+      return false;
+    }
+    ReadableNativeMap other = (ReadableNativeMap) obj;
+    return getLocalMap().equals(other.getLocalMap());
+  }
+
+  @Override
   public @Nonnull HashMap<String, Object> toHashMap() {
     if (ReactFeatureFlags.useMapNativeAccessor) {
       ReadableMapKeySetIterator iterator = keySetIterator();

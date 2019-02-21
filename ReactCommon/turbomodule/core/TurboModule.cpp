@@ -26,7 +26,8 @@ jsi::Value TurboModule::get(jsi::Runtime& runtime, const jsi::PropNameID& propNa
   std::string propNameUtf8 = propName.utf8(runtime);
   auto p = methodMap_.find(propNameUtf8);
   if (p == methodMap_.end()) {
-    throw std::runtime_error("Function '" + propNameUtf8 + "' cannot be found on module: " + name_);
+    // Method was not found, let JS decide what to do.
+    return jsi::Value::undefined();
   }
   MethodMetadata meta = p->second;
   return jsi::Function::createFromHostFunction(

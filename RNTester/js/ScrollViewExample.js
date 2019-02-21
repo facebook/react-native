@@ -47,7 +47,7 @@ exports.examples = [
             }}
             scrollEventThrottle={200}
             style={styles.scrollView}>
-            {THUMB_URLS.map(createThumbRow)}
+            {ITEMS.map(createItemRow)}
           </ScrollView>
           <Button
             label="Scroll to top"
@@ -91,7 +91,7 @@ exports.examples = [
               automaticallyAdjustContentInsets={false}
               horizontal={true}
               style={[styles.scrollView, styles.horizontalScrollView]}>
-              {THUMB_URLS.map(createThumbRow)}
+              {ITEMS.map(createItemRow)}
             </ScrollView>
             <Button
               label="Scroll to start"
@@ -141,7 +141,7 @@ exports.examples = [
                 automaticallyAdjustContentInsets={false}
                 style={styles.scrollView}
                 scrollEnabled={this.state.scrollEnabled}>
-                {THUMB_URLS.map(createThumbRow)}
+                {ITEMS.map(createItemRow)}
               </ScrollView>
               <Text>
                 {'Scrolling enabled = ' + this.state.scrollEnabled.toString()}
@@ -180,7 +180,7 @@ if (Platform.OS === 'ios') {
            * an error found when Flow v0.85 was deployed. To see the error,
            * delete this comment and run Flow. */
           items: [...Array(itemCount)].map((_, ii) => (
-            <Thumb msg={`Item ${ii}`} />
+            <Item msg={`Item ${ii}`} />
           )),
         };
         render() {
@@ -217,7 +217,7 @@ if (Platform.OS === 'ios') {
                       const idx = itemCount++;
                       return {
                         items: [
-                          <Thumb
+                          <Item
                             style={{paddingTop: idx * 5}}
                             msg={`Item ${idx}`}
                           />,
@@ -253,7 +253,7 @@ if (Platform.OS === 'ios') {
                   onPress={() => {
                     this.setState(state => ({
                       items: state.items.concat(
-                        <Thumb msg={`Item ${itemCount++}`} />,
+                        <Item msg={`Item ${itemCount++}`} />,
                       ),
                     }));
                   }}
@@ -291,43 +291,22 @@ if (Platform.OS === 'ios') {
   });
 }
 
-class Thumb extends React.PureComponent<{|
-  source?: string | number,
+class Item extends React.PureComponent<{|
   msg?: string,
   style?: ViewStyleProp,
 |}> {
   render() {
-    const {source} = this.props;
     return (
-      <View style={[styles.thumb, this.props.style]}>
-        <Image
-          style={styles.img}
-          source={source == null ? THUMB_URLS[6] : source}
-        />
+      <View style={[styles.item, this.props.style]}>
         <Text>{this.props.msg}</Text>
       </View>
     );
   }
 }
 
-let THUMB_URLS = [
-  require('./Thumbnails/like.png'),
-  require('./Thumbnails/dislike.png'),
-  require('./Thumbnails/call.png'),
-  require('./Thumbnails/fist.png'),
-  require('./Thumbnails/bandaged.png'),
-  require('./Thumbnails/flowers.png'),
-  require('./Thumbnails/heart.png'),
-  require('./Thumbnails/liking.png'),
-  require('./Thumbnails/party.png'),
-  require('./Thumbnails/poke.png'),
-  require('./Thumbnails/superlike.png'),
-  require('./Thumbnails/victory.png'),
-];
+let ITEMS = [...Array(12)].map((_, i) => `Item ${i}`);
 
-THUMB_URLS = THUMB_URLS.concat(THUMB_URLS); // double length of THUMB_URLS
-
-const createThumbRow = (uri, i) => <Thumb key={i} source={uri} />;
+const createItemRow = (msg, index) => <Item key={index} msg={msg} />;
 
 const Button = ({label, onPress}) => (
   <TouchableOpacity style={styles.button} onPress={onPress}>
@@ -359,15 +338,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
   },
-  thumb: {
+  item: {
     margin: 5,
     padding: 5,
     backgroundColor: '#cccccc',
     borderRadius: 3,
     minWidth: 96,
-  },
-  img: {
-    width: 64,
-    height: 64,
   },
 });

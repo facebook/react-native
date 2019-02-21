@@ -4,7 +4,7 @@ exports[`GenerateViewConfigJs can generate fixture SINGLE_COMPONENT_WITH_BOOLEAN
 Map {
   "ViewConfigs.js" => "
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -39,7 +39,7 @@ exports[`GenerateViewConfigJs can generate fixture SINGLE_COMPONENT_WITH_COLOR_P
 Map {
   "ViewConfigs.js" => "
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -74,7 +74,7 @@ exports[`GenerateViewConfigJs can generate fixture SINGLE_COMPONENT_WITH_ENUM_PR
 Map {
   "ViewConfigs.js" => "
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -109,7 +109,7 @@ exports[`GenerateViewConfigJs can generate fixture SINGLE_COMPONENT_WITH_EVENT_N
 Map {
   "ViewConfigs.js" => "
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -153,7 +153,7 @@ exports[`GenerateViewConfigJs can generate fixture SINGLE_COMPONENT_WITH_EVENT_P
 Map {
   "ViewConfigs.js" => "
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -203,7 +203,7 @@ exports[`GenerateViewConfigJs can generate fixture SINGLE_COMPONENT_WITH_FLOAT_P
 Map {
   "ViewConfigs.js" => "
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -242,7 +242,7 @@ exports[`GenerateViewConfigJs can generate fixture SINGLE_COMPONENT_WITH_INTEGER
 Map {
   "ViewConfigs.js" => "
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -279,7 +279,7 @@ exports[`GenerateViewConfigJs can generate fixture SINGLE_COMPONENT_WITH_STRING_
 Map {
   "ViewConfigs.js" => "
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -314,7 +314,7 @@ exports[`GenerateViewConfigJs can generate fixture TWO_COMPONENTS_DIFFERENT_FILE
 Map {
   "ViewConfigs.js" => "
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -363,7 +363,7 @@ exports[`GenerateViewConfigJs can generate fixture TWO_COMPONENTS_SAME_FILE 1`] 
 Map {
   "ViewConfigs.js" => "
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.

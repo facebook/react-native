@@ -1,4 +1,3 @@
-load("@fbsource//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 load("@fbsource//tools/build_defs/third_party:node_defs.bzl", "nodejs_binary")
 load("@fbsource//tools/build_defs/third_party:yarn_defs.bzl", "yarn_install", "yarn_workspace")
 
@@ -42,13 +41,4 @@ nodejs_binary(
         "--stack_size=10000",
     ],
     visibility = ["PUBLIC"],
-)
-
-fb_native.sh_test(
-    name = "symbolicate-integration-test",
-    args = ["$(exe :symbolicate)"],
-    test = "tests/symbolicate_test.sh",
-    deps = [
-        ":symbolicate",
-    ],
 )

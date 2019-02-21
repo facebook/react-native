@@ -124,9 +124,6 @@ module.exports = {
     );
     return require('Slider');
   },
-  get SnapshotViewIOS() {
-    return require('SnapshotViewIOS');
-  },
   get Switch() {
     return require('Switch');
   },

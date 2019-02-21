@@ -53,6 +53,7 @@ import com.facebook.react.fabric.mounting.mountitems.UpdateLocalDataMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdatePropsMountItem;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.ReactRootViewTagGenerator;
+import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManagerPropertyUpdater;
 import com.facebook.react.uimanager.ViewManagerRegistry;
@@ -271,6 +272,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         getYogaMeasureMode(minWidth, maxWidth),
         getYogaSize(minHeight, maxHeight),
         getYogaMeasureMode(minHeight, maxHeight));
+  }
+
+  @Override
+  public void synchronouslyUpdateViewOnUIThread(int reactTag, ReadableMap props) {
+    long time = SystemClock.uptimeMillis();
+    scheduleMountItems(updatePropsMountItem(reactTag, props), time, time, time);
   }
 
   /**

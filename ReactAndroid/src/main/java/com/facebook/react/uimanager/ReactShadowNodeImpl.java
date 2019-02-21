@@ -86,7 +86,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     mDefaultPadding = new Spacing(0);
     if (!isVirtual()) {
       YogaNode node = YogaNodePool.get().acquire();
-      mYogaNode = node == null ? new YogaNode(sYogaConfig) : node;
+      mYogaNode = node == null ? YogaNode.create(sYogaConfig) : node;
       mYogaNode.setData(this);
       Arrays.fill(mPadding, YogaConstants.UNDEFINED);
     } else {

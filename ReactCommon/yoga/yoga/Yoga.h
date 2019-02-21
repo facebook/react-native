@@ -132,13 +132,12 @@ WIN_EXPORT void YGNodeCopyStyle(
 WIN_EXPORT void* YGNodeGetContext(YGNodeRef node);
 WIN_EXPORT void YGNodeSetContext(YGNodeRef node, void* context);
 void YGConfigSetPrintTreeFlag(YGConfigRef config, bool enabled);
-YGMeasureFunc YGNodeGetMeasureFunc(YGNodeRef node);
+bool YGNodeHasMeasureFunc(YGNodeRef node);
 WIN_EXPORT void YGNodeSetMeasureFunc(YGNodeRef node, YGMeasureFunc measureFunc);
-YGBaselineFunc YGNodeGetBaselineFunc(YGNodeRef node);
+bool YGNodeHasBaselineFunc(YGNodeRef node);
 void YGNodeSetBaselineFunc(YGNodeRef node, YGBaselineFunc baselineFunc);
 YGDirtiedFunc YGNodeGetDirtiedFunc(YGNodeRef node);
 void YGNodeSetDirtiedFunc(YGNodeRef node, YGDirtiedFunc dirtiedFunc);
-YGPrintFunc YGNodeGetPrintFunc(YGNodeRef node);
 void YGNodeSetPrintFunc(YGNodeRef node, YGPrintFunc printFunc);
 WIN_EXPORT bool YGNodeGetHasNewLayout(YGNodeRef node);
 WIN_EXPORT void YGNodeSetHasNewLayout(YGNodeRef node, bool hasNewLayout);
@@ -348,16 +347,6 @@ WIN_EXPORT float YGNodeLayoutGetPadding(
     const YGEdge edge);
 
 WIN_EXPORT void YGConfigSetLogger(const YGConfigRef config, YGLogger logger);
-WIN_EXPORT void YGLog(
-    const YGNodeRef node,
-    YGLogLevel level,
-    const char* message,
-    ...);
-WIN_EXPORT void YGLogWithConfig(
-    const YGConfigRef config,
-    YGLogLevel level,
-    const char* format,
-    ...);
 WIN_EXPORT void YGAssert(const bool condition, const char* message);
 WIN_EXPORT void YGAssertWithNode(
     const YGNodeRef node,

@@ -7,13 +7,15 @@
 #include <fb/fbjni.h>
 #include <yoga/YGNode.h>
 #include <yoga/Yoga.h>
+#include <yoga/log.h>
 #include <iostream>
 
 using namespace facebook::jni;
 using namespace std;
+using facebook::yoga::detail::Log;
 
 struct JYogaNode : public JavaClass<JYogaNode> {
-  static constexpr auto kJavaDescriptor = "Lcom/facebook/yoga/YogaNode;";
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/yoga/YogaNodeJNI;";
 };
 
 struct JYogaConfig : public JavaClass<JYogaConfig> {
@@ -51,9 +53,10 @@ static void YGTransferLayoutOutputsRecursive(YGNodeRef root) {
   }
   auto obj = YGNodeJobject(root)->lockLocal();
   if (!obj) {
-    YGLog(
+    Log::log(
         root,
         YGLogLevelError,
+        nullptr,
         "Java YGNode was GCed during layout calculation\n");
     return;
   }
@@ -95,7 +98,7 @@ static void YGTransferLayoutOutputsRecursive(YGNodeRef root) {
   static auto doesLegacyStretchBehaviour = obj->getClass()->getField<jboolean>(
       "mDoesLegacyStretchFlagAffectsLayout");
 
-  /* Those flags needs be in sync with YogaNode.java */
+  /* Those flags needs be in sync with YogaNodeJNI.java */
   const int MARGIN = 1;
   const int PADDING = 2;
   const int BORDER = 4;
@@ -154,9 +157,10 @@ static void YGPrint(YGNodeRef node) {
   if (auto obj = YGNodeJobject(node)->lockLocal()) {
     cout << obj->toString() << endl;
   } else {
-    YGLog(
+    Log::log(
         node,
         YGLogLevelError,
+        nullptr,
         "Java YGNode was GCed during layout calculation\n");
   }
 }
@@ -164,7 +168,7 @@ static void YGPrint(YGNodeRef node) {
 static float YGJNIBaselineFunc(YGNodeRef node, float width, float height) {
   if (auto obj = YGNodeJobject(node)->lockLocal()) {
     static auto baselineFunc =
-        findClassStatic("com/facebook/yoga/YogaNode")
+        findClassStatic("com/facebook/yoga/YogaNodeJNI")
             ->getMethod<jfloat(jfloat, jfloat)>("baseline");
     return baselineFunc(obj, width, height);
   } else {
@@ -204,7 +208,7 @@ static YGNodeRef YGJNIOnNodeClonedFunc(
       childIndex);
 
   static auto replaceChild =
-      findClassStatic("com/facebook/yoga/YogaNode")
+      findClassStatic("com/facebook/yoga/YogaNodeJNI")
           ->getMethod<jlong(local_ref<JYogaNode>, jint)>("replaceChild");
 
   jlong newNodeNativePointer =
@@ -221,7 +225,7 @@ static YGSize YGJNIMeasureFunc(
     YGMeasureMode heightMode) {
   if (auto obj = YGNodeJobject(node)->lockLocal()) {
     static auto measureFunc =
-        findClassStatic("com/facebook/yoga/YogaNode")
+        findClassStatic("com/facebook/yoga/YogaNodeJNI")
             ->getMethod<jlong(jfloat, jint, jfloat, jint)>("measure");
 
     YGTransferLayoutDirection(node, obj);
@@ -240,9 +244,10 @@ static YGSize YGJNIMeasureFunc(
 
     return YGSize{*measuredWidth, *measuredHeight};
   } else {
-    YGLog(
+    Log::log(
         node,
         YGLogLevelError,
+        nullptr,
         "Java YGNode was GCed during layout calculation\n");
     return YGSize{
         widthMode == YGMeasureModeUndefined ? 0 : width,
@@ -656,7 +661,7 @@ jint jni_YGNodeGetInstanceCount() {
 jint JNI_OnLoad(JavaVM* vm, void*) {
   return initialize(vm, [] {
     registerNatives(
-        "com/facebook/yoga/YogaNode",
+        "com/facebook/yoga/YogaNodeJNI",
         {
             YGMakeNativeMethod(jni_YGNodeNew),
             YGMakeNativeMethod(jni_YGNodeNewWithConfig),

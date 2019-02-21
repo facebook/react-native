@@ -39,7 +39,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 /**
- * An class that is used to receive React commands from JS and translate them into a
+ * A class that is used to receive React commands from JS and translate them into a
  * shadow node hierarchy that is then mapped to a native view hierarchy.
  */
 public class UIImplementation {

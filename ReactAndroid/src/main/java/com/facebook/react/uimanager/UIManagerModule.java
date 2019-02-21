@@ -9,6 +9,7 @@ package com.facebook.react.uimanager;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.CREATE_UI_MANAGER_MODULE_CONSTANTS_START;
 import static com.facebook.react.uimanager.common.UIManagerType.DEFAULT;
+import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 
 import android.content.ComponentCallbacks2;
 import android.content.Context;
@@ -32,6 +33,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
+import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
@@ -217,7 +219,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
 
   @Override
   public void onHostResume() {
-
     mUIImplementation.onHostResume();
   }
 
@@ -382,6 +383,23 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       }
 
   /**
+   * Used by native animated module to bypass the process of updating the values through the shadow
+   * view hierarchy. This method will directly update native views, which means that updates for
+   * layout-related propertied won't be handled properly.
+   * Make sure you know what you're doing before calling this method :)
+   */
+  @Override
+  public void synchronouslyUpdateViewOnUIThread(int tag, ReadableMap props) {
+    int uiManagerType = ViewUtil.getUIManagerType(tag);
+    if (uiManagerType == FABRIC) {
+      UIManager fabricUIManager = UIManagerHelper.getUIManager(getReactApplicationContext(), uiManagerType);
+      fabricUIManager.synchronouslyUpdateViewOnUIThread(tag, props);
+    } else {
+      mUIImplementation.synchronouslyUpdateViewOnUIThread(tag, new ReactStylesDiffMap(props));
+    }
+  }
+
+  /**
    * Registers a new root view. JS can use the returned tag with manageChildren to add/remove
    * children to this view.
    *
@@ -455,6 +473,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       FLog.d(ReactConstants.TAG, message);
       PrinterHolder.getPrinter().logMessage(ReactDebugOverlayTags.UI_MANAGER, message);
     }
+
     mUIImplementation.updateView(tag, className, props);
   }
 

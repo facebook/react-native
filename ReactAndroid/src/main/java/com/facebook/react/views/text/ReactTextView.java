@@ -10,13 +10,13 @@ package com.facebook.react.views.text;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.support.v7.widget.AppCompatTextView;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.ReactCompoundView;
@@ -24,7 +24,7 @@ import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import javax.annotation.Nullable;
 
-public class ReactTextView extends TextView implements ReactCompoundView {
+public class ReactTextView extends AppCompatTextView implements ReactCompoundView {
 
   private static final ViewGroup.LayoutParams EMPTY_LAYOUT_PARAMS =
     new ViewGroup.LayoutParams(0, 0);

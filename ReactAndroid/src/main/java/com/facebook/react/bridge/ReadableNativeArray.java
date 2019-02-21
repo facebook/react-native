@@ -173,6 +173,20 @@ public class ReadableNativeArray extends NativeArray implements ReadableArray {
   }
 
   @Override
+  public int hashCode() {
+    return getLocalArray().hashCode();
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (!(obj instanceof ReadableNativeArray)) {
+      return false;
+    }
+    ReadableNativeArray other = (ReadableNativeArray) obj;
+    return Arrays.deepEquals(getLocalArray(), other.getLocalArray());
+  }
+
+  @Override
   public @Nonnull ArrayList<Object> toArrayList() {
     ArrayList<Object> arrayList = new ArrayList<>();
 
