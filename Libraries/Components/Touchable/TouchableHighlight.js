@@ -43,9 +43,18 @@ type IOSProps = $ReadOnly<{|
   tvParallaxProperties?: ?TVParallaxPropertiesType,
 |}>;
 
+type AndroidProps = $ReadOnly<{|
+  nextFocusDown?: ?number,
+  nextFocusForward?: ?number,
+  nextFocusLeft?: ?number,
+  nextFocusRight?: ?number,
+  nextFocusUp?: ?number,
+|}>;
+
 type Props = $ReadOnly<{|
   ...TouchableWithoutFeedbackProps,
   ...IOSProps,
+  ...AndroidProps,
 
   activeOpacity?: ?number,
   underlayColor?: ?ColorValue,
@@ -189,7 +198,48 @@ const TouchableHighlight = ((createReactClass({
      */
     hasTVPreferredFocus: PropTypes.bool,
     /**
-     * Apple TV parallax effects
+     * TV next focus down (see documentation for the View component).
+     *
+     * @platform android
+     */
+    nextFocusDown: PropTypes.number,
+    /**
+     * TV next focus forward (see documentation for the View component).
+     *
+     * @platform android
+     */
+    nextFocusForward: PropTypes.number,
+    /**
+     * TV next focus left (see documentation for the View component).
+     *
+     * @platform android
+     */
+    nextFocusLeft: PropTypes.number,
+    /**
+     * TV next focus right (see documentation for the View component).
+     *
+     * @platform android
+     */
+    nextFocusRight: PropTypes.number,
+    /**
+     * TV next focus up (see documentation for the View component).
+     *
+     * @platform android
+     */
+    nextFocusUp: PropTypes.number,
+    /**
+     * *(Apple TV only)* Object with properties to control Apple TV parallax effects.
+     *
+     * enabled: If true, parallax effects are enabled.  Defaults to true.
+     * shiftDistanceX: Defaults to 2.0.
+     * shiftDistanceY: Defaults to 2.0.
+     * tiltAngle: Defaults to 0.05.
+     * magnification: Defaults to 1.0.
+     * pressMagnification: Defaults to 1.0.
+     * pressDuration: Defaults to 0.3.
+     * pressDelay: Defaults to 0.0.
+     *
+     * @platform ios
      */
     tvParallaxProperties: PropTypes.object,
     /**
@@ -367,6 +417,11 @@ const TouchableHighlight = ((createReactClass({
         isTVSelectable={true}
         tvParallaxProperties={this.props.tvParallaxProperties}
         hasTVPreferredFocus={this.props.hasTVPreferredFocus}
+        nextFocusDown={this.props.nextFocusDown}
+        nextFocusForward={this.props.nextFocusForward}
+        nextFocusLeft={this.props.nextFocusLeft}
+        nextFocusRight={this.props.nextFocusRight}
+        nextFocusUp={this.props.nextFocusUp}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={
           this.touchableHandleResponderTerminationRequest

@@ -32,6 +32,11 @@ const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 type TVProps = $ReadOnly<{|
   hasTVPreferredFocus?: ?boolean,
+  nextFocusDown?: ?number,
+  nextFocusForward?: ?number,
+  nextFocusLeft?: ?number,
+  nextFocusRight?: ?number,
+  nextFocusUp?: ?number,
   tvParallaxProperties?: ?TVParallaxPropertiesType,
 |}>;
 
@@ -148,6 +153,36 @@ const TouchableOpacity = ((createReactClass({
      * TV preferred focus (see documentation for the View component).
      */
     hasTVPreferredFocus: PropTypes.bool,
+    /**
+     * TV next focus down (see documentation for the View component).
+     *
+     * @platform android
+     */
+    nextFocusDown: PropTypes.number,
+    /**
+     * TV next focus forward (see documentation for the View component).
+     *
+     * @platform android
+     */
+    nextFocusForward: PropTypes.number,
+    /**
+     * TV next focus left (see documentation for the View component).
+     *
+     * @platform android
+     */
+    nextFocusLeft: PropTypes.number,
+    /**
+     * TV next focus right (see documentation for the View component).
+     *
+     * @platform android
+     */
+    nextFocusRight: PropTypes.number,
+    /**
+     * TV next focus up (see documentation for the View component).
+     *
+     * @platform android
+     */
+    nextFocusUp: PropTypes.number,
     /**
      * Apple TV parallax effects
      */
@@ -281,6 +316,11 @@ const TouchableOpacity = ((createReactClass({
         testID={this.props.testID}
         onLayout={this.props.onLayout}
         isTVSelectable={true}
+        nextFocusDown={this.props.nextFocusDown}
+        nextFocusForward={this.props.nextFocusForward}
+        nextFocusLeft={this.props.nextFocusLeft}
+        nextFocusRight={this.props.nextFocusRight}
+        nextFocusUp={this.props.nextFocusUp}
         hasTVPreferredFocus={this.props.hasTVPreferredFocus}
         tvParallaxProperties={this.props.tvParallaxProperties}
         hitSlop={this.props.hitSlop}
