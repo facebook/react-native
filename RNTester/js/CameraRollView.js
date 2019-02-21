@@ -24,6 +24,7 @@ const {
   View,
 } = ReactNative;
 
+const groupByEveryN = require('groupByEveryN');
 const logError = require('logError');
 
 import type {
@@ -58,6 +59,11 @@ type Props = $ReadOnly<{|
   renderImage: PhotoIdentifier => React.Node,
 
   /**
+   * imagesPerRow: Number of images to be shown in each row.
+   */
+  imagesPerRow: number,
+
+  /**
    * A boolean that indicates if we should render large or small images.
    */
   bigImages: boolean,
@@ -70,19 +76,40 @@ type Props = $ReadOnly<{|
 
 type State = {|
   assets: Array<PhotoIdentifier>,
+  data: Array<Array<PhotoIdentifier>>,
   lastCursor: ?string,
   noMore: boolean,
   loadingMore: boolean,
 |};
 
 type Row = {
-  item: PhotoIdentifier,
+  item: Array<PhotoIdentifier>,
 };
+
+function debounce(func, wait, immediate) {
+  var timeout;
+  return function() {
+    var args = arguments;
+    var later = function() {
+      timeout = null;
+      if (!immediate) {
+        func.apply(this, args);
+      }
+    };
+    var callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) {
+      func.apply(this, args);
+    }
+  };
+}
 
 class CameraRollView extends React.Component<Props, State> {
   static defaultProps = {
     groupTypes: 'SavedPhotos',
     batchSize: 5,
+    imagesPerRow: 1,
     assetType: 'Photos',
     renderImage: function(asset: PhotoIdentifier) {
       const imageSize = 150;
@@ -96,6 +123,8 @@ class CameraRollView extends React.Component<Props, State> {
   getInitialState() {
     return {
       assets: [],
+      data: [],
+      seen: new Set(),
       lastCursor: null,
       noMore: false,
       loadingMore: false,
@@ -169,12 +198,13 @@ class CameraRollView extends React.Component<Props, State> {
   render() {
     return (
       <FlatList
-        keyExtractor={item => item.node.image.uri}
-        renderItem={this._renderRow}
+        keyExtractor={(_, idx) => String(idx)}
+        renderItem={this._renderItem}
         ListFooterComponent={this._renderFooterSpinner}
         onEndReached={this._onEndReached}
+        onEndReachedThreshold={0.2}
         style={styles.container}
-        data={this.state.assets}
+        data={this.state.data}
         extraData={this.props.bigImages + this.state.noMore}
       />
     );
@@ -187,8 +217,12 @@ class CameraRollView extends React.Component<Props, State> {
     return null;
   };
 
-  _renderRow = (row: Row) => {
-    return <View style={styles.row}>{this.props.renderImage(row.item)}</View>;
+  _renderItem = (row: Row) => {
+    return (
+      <View style={styles.row}>
+        {row.item.map(image => this.props.renderImage(image))}
+      </View>
+    );
   };
 
   _appendAssets(data: PhotoIdentifiersPage) {
@@ -201,15 +235,23 @@ class CameraRollView extends React.Component<Props, State> {
 
     if (assets.length > 0) {
       newState.lastCursor = data.page_info.end_cursor;
+      newState.seen = new Set(this.state.seen);
 
-      // Dedup assets we want to append
-      newState.assets = this.state.assets
-        .concat(assets)
-        .filter(
-          (a1, index, self) =>
-            index ===
-            self.findIndex(a2 => a1.node.image.uri === a2.node.image.uri),
-        );
+      // Unique assets efficiently
+      // Checks new pages against seen objects
+      const uniqAssets = [];
+      for (let index = 0; index < assets.length; index++) {
+        const asset = assets[index];
+        let value = asset.node.image.uri;
+        if (newState.seen.has(value)) {
+          continue;
+        }
+        newState.seen.add(value);
+        uniqAssets.push(asset);
+      }
+
+      newState.assets = this.state.assets.concat(uniqAssets);
+      newState.data = groupByEveryN(newState.assets, this.props.imagesPerRow);
     }
 
     this.setState(newState);
