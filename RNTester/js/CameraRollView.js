@@ -76,7 +76,8 @@ type Props = $ReadOnly<{|
 
 type State = {|
   assets: Array<PhotoIdentifier>,
-  data: Array<Array<PhotoIdentifier>>,
+  data: ?Array<Array<PhotoIdentifier>>,
+  seen: Set<string>,
   lastCursor: ?string,
   noMore: boolean,
   loadingMore: boolean,
@@ -204,7 +205,7 @@ class CameraRollView extends React.Component<Props, State> {
         onEndReached={this._onEndReached}
         onEndReachedThreshold={0.2}
         style={styles.container}
-        data={this.state.data}
+        data={this.state.data || []}
         extraData={this.props.bigImages + this.state.noMore}
       />
     );
