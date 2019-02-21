@@ -6,23 +6,20 @@
 #include "JSCRuntime.h"
 
 #include <JavaScriptCore/JavaScript.h>
+#include <atomic>
 #include <condition_variable>
 #include <cstdlib>
+#include <jsi/jsilib.h>
 #include <mutex>
 #include <queue>
 #include <sstream>
 #include <thread>
-
-#ifndef NDEBUG
-#include <atomic>
-#endif
 
 namespace facebook {
 namespace jsc {
 
 namespace detail {
 class ArgsConverter;
-class ProtectionQueue;
 } // namespace detail
 
 class JSCRuntime;
@@ -40,8 +37,15 @@ class JSCRuntime : public jsi::Runtime {
   JSCRuntime(JSGlobalContextRef ctx);
   ~JSCRuntime();
 
+  std::shared_ptr<const jsi::PreparedJavaScript> prepareJavaScript(
+      const std::shared_ptr<const jsi::Buffer> &buffer,
+      std::string sourceURL) override;
+
+  void evaluatePreparedJavaScript(
+    const std::shared_ptr<const jsi::PreparedJavaScript>& js) override;
+
   void evaluateJavaScript(
-      std::unique_ptr<const jsi::Buffer> buffer,
+      const std::shared_ptr<const jsi::Buffer> &buffer,
       const std::string& sourceURL) override;
   jsi::Object global() override;
 
@@ -65,7 +69,6 @@ class JSCRuntime : public jsi::Runtime {
 
  protected:
   friend class detail::ArgsConverter;
-  friend class detail::ProtectionQueue;
   class JSCStringValue final : public PointerValue {
 #ifndef NDEBUG
     JSCStringValue(JSStringRef str, std::atomic<intptr_t>& counter);
@@ -83,31 +86,26 @@ class JSCRuntime : public jsi::Runtime {
   };
 
   class JSCObjectValue final : public PointerValue {
-#ifndef NDEBUG
     JSCObjectValue(
         JSGlobalContextRef ctx,
-        detail::ProtectionQueue& pq,
-        JSObjectRef obj,
-        std::atomic<intptr_t>& counter);
-#else
-    JSCObjectValue(
-        JSGlobalContextRef context,
-        detail::ProtectionQueue& pq,
-        JSObjectRef obj);
+        const std::atomic<bool>& ctxInvalid,
+        JSObjectRef obj
+#ifndef NDEBUG
+        ,
+        std::atomic<intptr_t>& counter
 #endif
+                   );
 
     void invalidate() override;
-    void unprotect();
 
     JSGlobalContextRef ctx_;
+    const std::atomic<bool>& ctxInvalid_;
     JSObjectRef obj_;
-    detail::ProtectionQueue& protectionQueue_;
 #ifndef NDEBUG
     std::atomic<intptr_t>& counter_;
 #endif
    protected:
     friend class JSCRuntime;
-    friend class detail::ProtectionQueue;
   };
 
   PointerValue* cloneString(const Runtime::PointerValue* pv) override;
@@ -202,17 +200,19 @@ class JSCRuntime : public jsi::Runtime {
   void checkException(JSValueRef res, JSValueRef exc, const char* msg);
 
   JSGlobalContextRef ctx_;
+  std::atomic<bool> ctxInvalid_;
   std::string desc_;
-  // We make this a pointer so that we can control explicitly when it's deleted
-  // namely before the context is released.
-  mutable std::unique_ptr<detail::ProtectionQueue> protectionQueue_;
 #ifndef NDEBUG
   mutable std::atomic<intptr_t> objectCounter_;
   mutable std::atomic<intptr_t> stringCounter_;
 #endif
 };
 
-#if __has_builtin(__builtin_expect)
+#ifndef __has_builtin
+#define __has_builtin(x) 0
+#endif
+
+#if __has_builtin(__builtin_expect) || defined(__GNUC__)
 #define JSC_LIKELY(EXPR) __builtin_expect((bool)(EXPR), true)
 #define JSC_UNLIKELY(EXPR) __builtin_expect((bool)(EXPR), false)
 #else
@@ -293,98 +293,6 @@ std::string to_string(void* value) {
 }
 } // namespace
 
-// UnprotectQueue
-namespace detail {
-class ProtectionQueue {
- public:
-  ProtectionQueue()
-      : ctxInvalid_(false)
-      , shuttingDown_(false)
-#ifndef NDEBUG
-        ,
-        didShutdown_ {
-    false
-  }
-#endif
-  , unprotectorThread_(&ProtectionQueue::unprotectThread, this) {}
-
-  void setContextInvalid() {
-    std::lock_guard<std::mutex> locker(mutex_);
-    ctxInvalid_ = true;
-  }
-
-  void shutdown() {
-    {
-      std::lock_guard<std::mutex> locker(mutex_);
-      assert(ctxInvalid_);
-      shuttingDown_ = true;
-      notEmpty_.notify_one();
-    }
-    unprotectorThread_.join();
-  }
-
-  void push(JSCRuntime::JSCObjectValue* value) {
-    std::lock_guard<std::mutex> locker(mutex_);
-    assert(!didShutdown_);
-    queue_.push(value);
-    notEmpty_.notify_one();
-  }
-
- private:
-  // This this the function that runs in the background deleting (and thus
-  // unprotecting JSObjectRefs as need be). This needs to be explicitly on a
-  // separate thread so that we don't have the API lock when `JSValueUnprotect`
-  // is called already (i.e. if we did this on the same thread that calls
-  // invalidate() on an Object then we might be in the middle of a GC pass, and
-  // already have the API lock).
-  void unprotectThread() {
-#if defined(__APPLE__)
-    pthread_setname_np("jsc-protectionqueue-unprotectthread");
-#endif
-
-    std::unique_lock<std::mutex> locker(mutex_);
-    while (!shuttingDown_ || !queue_.empty()) {
-      if (queue_.empty()) {
-        // This will wake up when shuttingDown_ becomes true
-        notEmpty_.wait(locker);
-      } else {
-        JSCRuntime::JSCObjectValue* value = queue_.front();
-        queue_.pop();
-        // We need to drop the lock here since this calls JSValueUnprotect and
-        // that may make another GC pass, which could call another finalizer
-        // and thus attempt to push to this queue then, and deadlock.
-        locker.unlock();
-        if (ctxInvalid_) {
-          value->ctx_ = nullptr;
-        }
-        value->unprotect();
-        locker.lock();
-      }
-    }
-#ifndef NDEBUG
-    didShutdown_ = true;
-#endif
-  }
-  // Used to lock the queue_/shuttingDown_ ivars
-  std::mutex mutex_;
-  // Used to signal queue_ empty status changing
-  std::condition_variable notEmpty_;
-  // The actual underlying queue
-  std::queue<JSCRuntime::JSCObjectValue*> queue_;
-  // A flag which is set before shutting down JSC
-  bool ctxInvalid_;
-  // A flag dictating whether or not we need to stop all execution
-  bool shuttingDown_;
-#ifndef NDEBUG
-  bool didShutdown_;
-#endif
-  // The thread that dequeues and processes the queue. Note this is the last
-  // member on purpose so the thread starts up after all state has been
-  // properly initialized
-  std::thread unprotectorThread_;
-};
-} // namespace detail
-
 JSCRuntime::JSCRuntime()
     : JSCRuntime(JSGlobalContextCreateInGroup(nullptr, nullptr)) {
   JSGlobalContextRelease(ctx_);
@@ -392,7 +300,7 @@ JSCRuntime::JSCRuntime()
 
 JSCRuntime::JSCRuntime(JSGlobalContextRef ctx)
     : ctx_(JSGlobalContextRetain(ctx)),
-      protectionQueue_(std::make_unique<detail::ProtectionQueue>())
+      ctxInvalid_(false)
 #ifndef NDEBUG
       ,
       objectCounter_(0),
@@ -405,15 +313,11 @@ JSCRuntime::~JSCRuntime() {
   // On shutting down and cleaning up: when JSC is actually torn down,
   // it calls JSC::Heap::lastChanceToFinalize internally which
   // finalizes anything left over.  But at this point,
-  // JSUnprotectValue() can no longer be called.  So there's a
-  // multiphase shutdown here.  We tell the protection queue that the
-  // VM is invalid, which causes it not to call JSUnprotectValue.  but
-  // it will decrement its counters, if !NDEBUG.  Then we shut down
-  // the VM, which will clean everything up.  Finally, we shut down
-  // the queue itself.
-  protectionQueue_->setContextInvalid();
+  // JSValueUnprotect() can no longer be called.  We use an
+  // atomic<bool> to avoid unsafe unprotects happening after shutdown
+  // has started.
+  ctxInvalid_ = true;
   JSGlobalContextRelease(ctx_);
-  protectionQueue_->shutdown();
 #ifndef NDEBUG
   assert(
       objectCounter_ == 0 && "JSCRuntime destroyed with a dangling API object");
@@ -422,8 +326,25 @@ JSCRuntime::~JSCRuntime() {
 #endif
 }
 
+std::shared_ptr<const jsi::PreparedJavaScript> JSCRuntime::prepareJavaScript(
+    const std::shared_ptr<const jsi::Buffer> &buffer,
+    std::string sourceURL) {
+  return std::make_shared<jsi::SourceJavaScriptPreparation>(
+      buffer, std::move(sourceURL));
+}
+
+void JSCRuntime::evaluatePreparedJavaScript(
+  const std::shared_ptr<const jsi::PreparedJavaScript>& js) {
+  assert(
+      dynamic_cast<const jsi::SourceJavaScriptPreparation*>(js.get()) &&
+      "preparedJavaScript must be a SourceJavaScriptPreparation");
+  auto sourceJs =
+      std::static_pointer_cast<const jsi::SourceJavaScriptPreparation>(js);
+  evaluateJavaScript(sourceJs, sourceJs->sourceURL());
+}
+
 void JSCRuntime::evaluateJavaScript(
-    std::unique_ptr<const jsi::Buffer> buffer,
+    const std::shared_ptr<const jsi::Buffer> &buffer,
     const std::string& sourceURL) {
   std::string tmp(
       reinterpret_cast<const char*>(buffer->data()), buffer->size());
@@ -473,15 +394,9 @@ JSCRuntime::JSCStringValue::JSCStringValue(JSStringRef str)
 #endif
 
 void JSCRuntime::JSCStringValue::invalidate() {
-  // We want to immediately JSStringRelease once a String is released,
-  // and queue a JSObjectRef to unprotected (see comment on
-  // ProtectionQueue::unprotectThread above).
-  //
   // These JSC{String,Object}Value objects are implicitly owned by the
   // {String,Object} objects, thus when a String/Object is destructed
-  // the JSC{String,Object}Value should be released (again this has
-  // the caveat that objects must be unprotected on a separate
-  // thread).
+  // the JSC{String,Object}Value should be released.
 #ifndef NDEBUG
   counter_ -= 1;
 #endif
@@ -492,7 +407,7 @@ void JSCRuntime::JSCStringValue::invalidate() {
 
 JSCRuntime::JSCObjectValue::JSCObjectValue(
     JSGlobalContextRef ctx,
-    detail::ProtectionQueue& pq,
+    const std::atomic<bool>& ctxInvalid,
     JSObjectRef obj
 #ifndef NDEBUG
     ,
@@ -500,8 +415,8 @@ JSCRuntime::JSCObjectValue::JSCObjectValue(
 #endif
     )
     : ctx_(ctx),
-      obj_(obj),
-      protectionQueue_(pq)
+      ctxInvalid_(ctxInvalid),
+      obj_(obj)
 #ifndef NDEBUG
       ,
       counter_(counter)
@@ -514,16 +429,32 @@ JSCRuntime::JSCObjectValue::JSCObjectValue(
 }
 
 void JSCRuntime::JSCObjectValue::invalidate() {
-  // See comment in JSCRuntime::JSCStringValue::invalidate as well as
-  // on ProtectionQueue::unprotectThread.
-  protectionQueue_.push(this);
-}
-
-void JSCRuntime::JSCObjectValue::unprotect() {
 #ifndef NDEBUG
   counter_ -= 1;
 #endif
-  if (ctx_) {
+  // When shutting down the VM, if there is a HostObject which
+  // contains or otherwise owns a jsi::Object, then the final GC will
+  // finalize the HostObject, leading to a call to invalidate().  But
+  // at that point, making calls to JSValueUnprotect will crash.
+  // It is up to the application to make sure that any other calls to
+  // invalidate() happen before VM destruction; see the comment on
+  // jsi::Runtime.
+  //
+  // Another potential concern here is that in the non-shutdown case,
+  // if a HostObject is GCd, JSValueUnprotect will be called from the
+  // JSC finalizer.  The documentation warns against this: "You must
+  // not call any function that may cause a garbage collection or an
+  // allocation of a garbage collected object from within a
+  // JSObjectFinalizeCallback. This includes all functions that have a
+  // JSContextRef parameter." However, an audit of the source code for
+  // JSValueUnprotect in late 2018 shows that it cannot cause
+  // allocation or a GC, and further, this code has not changed in
+  // about two years.  In the future, we may choose to reintroduce the
+  // mechanism previously used here which uses a separate thread for
+  // JSValueUnprotect, in order to conform to the documented API, but
+  // use the "unsafe" synchronous version on iOS 11 and earlier.
+
+  if (!ctxInvalid_) {
     JSValueUnprotect(ctx_, obj_);
   }
   delete this;
@@ -669,12 +600,15 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
       return rt.valueRef(ret);
     }
 
+    #define JSC_UNUSED(x) (void) (x);
+
     static bool setProperty(
         JSContextRef ctx,
         JSObjectRef object,
         JSStringRef propName,
         JSValueRef value,
         JSValueRef* exception) {
+      JSC_UNUSED(ctx);
       auto proxy = static_cast<HostObjectProxy*>(JSObjectGetPrivate(object));
       auto& rt = proxy->runtime;
       jsi::PropNameID sym = rt.createPropNameID(propName);
@@ -710,6 +644,7 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
         JSContextRef ctx,
         JSObjectRef object,
         JSPropertyNameAccumulatorRef propertyNames) noexcept {
+      JSC_UNUSED(ctx);
       auto proxy = static_cast<HostObjectProxy*>(JSObjectGetPrivate(object));
       auto& rt = proxy->runtime;
       auto names = proxy->hostObject->getPropertyNames(rt);
@@ -717,6 +652,8 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
         JSPropertyNameAccumulatorAddName(propertyNames, stringRef(name));
       }
     }
+
+    #undef JSC_UNUSED
 
     static void finalize(JSObjectRef obj) {
       auto hostObject = static_cast<HostObjectProxy*>(JSObjectGetPrivate(obj));
@@ -916,7 +853,7 @@ size_t JSCRuntime::size(const jsi::Array& arr) {
 
 jsi::Value JSCRuntime::getValueAtIndex(const jsi::Array& arr, size_t i) {
   JSValueRef exc = nullptr;
-  auto res = JSObjectGetPropertyAtIndex(ctx_, objectRef(arr), i, &exc);
+  auto res = JSObjectGetPropertyAtIndex(ctx_, objectRef(arr), (int)i, &exc);
   checkException(exc);
   return createValue(res);
 }
@@ -926,7 +863,7 @@ void JSCRuntime::setValueAtIndexImpl(
     size_t i,
     const jsi::Value& value) {
   JSValueRef exc = nullptr;
-  JSObjectSetPropertyAtIndex(ctx_, objectRef(arr), i, valueRef(value), &exc);
+  JSObjectSetPropertyAtIndex(ctx_, objectRef(arr), (int)i, valueRef(value), &exc);
   checkException(exc);
 }
 
@@ -1222,9 +1159,9 @@ jsi::Runtime::PointerValue* JSCRuntime::makeObjectValue(
     objectRef = JSObjectMake(ctx_, nullptr, nullptr);
   }
 #ifndef NDEBUG
-  return new JSCObjectValue(ctx_, *protectionQueue_, objectRef, objectCounter_);
+  return new JSCObjectValue(ctx_, ctxInvalid_, objectRef, objectCounter_);
 #else
-  return new JSCObjectValue(ctx_, *protectionQueue_, objectRef);
+  return new JSCObjectValue(ctx_, ctxInvalid_, objectRef);
 #endif
 }
 

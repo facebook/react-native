@@ -12,12 +12,9 @@
 
 const React = require('React');
 
-const requireNativeComponent = require('requireNativeComponent');
+const ProgressBarAndroidNativeComponent = require('ProgressBarAndroidNativeComponent');
 
-import type {NativeComponent} from 'ReactNative';
 import type {ViewProps} from 'ViewPropTypes';
-
-const AndroidProgressBar = requireNativeComponent('AndroidProgressBar');
 
 export type ProgressBarAndroidProps = $ReadOnly<{|
   ...ViewProps,
@@ -84,20 +81,23 @@ export type ProgressBarAndroidProps = $ReadOnly<{|
  */
 const ProgressBarAndroid = (
   props: ProgressBarAndroidProps,
-  forwardedRef: ?React.Ref<'AndroidProgressBar'>,
+  forwardedRef: ?React.Ref<typeof ProgressBarAndroidNativeComponent>,
 ) => {
-  return <AndroidProgressBar {...props} ref={forwardedRef} />;
+  return <ProgressBarAndroidNativeComponent {...props} ref={forwardedRef} />;
 };
 
-// $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
 const ProgressBarAndroidToExport = React.forwardRef(ProgressBarAndroid);
 
+/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
 ProgressBarAndroidToExport.defaultProps = {
   styleAttr: 'Normal',
   indeterminate: true,
   animating: true,
 };
 
-module.exports = (ProgressBarAndroidToExport: Class<
-  NativeComponent<ProgressBarAndroidProps>,
->);
+/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
+module.exports = (ProgressBarAndroidToExport: ProgressBarAndroidNativeComponent);

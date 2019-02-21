@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <fabric/components/view/ViewProps.h>
-#include <fabric/graphics/Color.h>
-#include <fabric/imagemanager/primitives.h>
+#include <react/components/view/ViewProps.h>
+#include <react/graphics/Color.h>
+#include <react/imagemanager/primitives.h>
 
 namespace facebook {
 namespace react {

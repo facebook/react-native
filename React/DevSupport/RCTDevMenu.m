@@ -217,7 +217,7 @@ RCT_EXPORT_MODULE()
         preferredStyle:UIAlertControllerStyleAlert];
       __weak typeof(alertController) weakAlertController = alertController;
       [alertController addAction:
-       [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
+       [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(__unused UIAlertAction *action){
         [weakAlertController dismissViewControllerAnimated:YES completion:nil];
       }]];
       [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
@@ -251,7 +251,7 @@ RCT_EXPORT_MODULE()
           preferredStyle:UIAlertControllerStyleAlert];
         __weak typeof(alertController) weakAlertController = alertController;
         [alertController addAction:
-         [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
+         [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(__unused UIAlertAction *action){
           [weakAlertController dismissViewControllerAnimated:YES completion:nil];
         }]];
         [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
@@ -392,6 +392,7 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled:(BOOL)enabled)
 - (void)addItem:(NSString *)title handler:(dispatch_block_t)handler {}
 - (void)addItem:(RCTDevMenu *)item {}
 - (BOOL)isActionSheetShown { return NO; }
++ (NSString *)moduleName { return @""; }
 
 @end
 

@@ -23,7 +23,7 @@ const WebSocketEvent = require('WebSocketEvent');
  * run Flow. */
 const base64 = require('base64-js');
 const binaryToBase64 = require('binaryToBase64');
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 const {WebSocketModule} = NativeModules;
 

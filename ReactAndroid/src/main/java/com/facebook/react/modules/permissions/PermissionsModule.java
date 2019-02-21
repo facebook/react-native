@@ -29,10 +29,11 @@ import java.util.ArrayList;
 /**
  * Module that exposes the Android M Permission system to JS.
  */
-@ReactModule(name = "PermissionsAndroid")
+@ReactModule(name = PermissionsModule.NAME)
 public class PermissionsModule extends ReactContextBaseJavaModule implements PermissionListener {
 
   private static final String ERROR_INVALID_ACTIVITY = "E_INVALID_ACTIVITY";
+  public static final String NAME = "PermissionsAndroid";
   private final SparseArray<Callback> mCallbacks;
   private int mRequestCode = 0;
   private final String GRANTED = "granted";
@@ -46,7 +47,7 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
 
   @Override
   public String getName() {
-    return "PermissionsAndroid";
+    return NAME;
   }
 
   /**

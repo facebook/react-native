@@ -12,20 +12,7 @@
 
 const React = require('react');
 const ReactNative = require('react-native');
-const {StyleSheet, Text, View} = ReactNative;
-
-exports.framework = 'React';
-exports.title = 'Geolocation';
-exports.description = 'Examples of using the Geolocation API.';
-
-exports.examples = [
-  {
-    title: 'navigator.geolocation',
-    render: function(): React.Element<any> {
-      return <GeolocationExample />;
-    },
-  },
-];
+const {StyleSheet, Text, View, Alert} = ReactNative;
 
 class GeolocationExample extends React.Component<{}, $FlowFixMeState> {
   state = {
@@ -41,7 +28,7 @@ class GeolocationExample extends React.Component<{}, $FlowFixMeState> {
         const initialPosition = JSON.stringify(position);
         this.setState({initialPosition});
       },
-      error => alert(JSON.stringify(error)),
+      error => Alert.alert('Error', JSON.stringify(error)),
       {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
     );
     this.watchID = navigator.geolocation.watchPosition(position => {
@@ -75,3 +62,16 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 });
+
+exports.framework = 'React';
+exports.title = 'Geolocation';
+exports.description = 'Examples of using the Geolocation API.';
+
+exports.examples = [
+  {
+    title: 'navigator.geolocation',
+    render: function(): React.Element<any> {
+      return <GeolocationExample />;
+    },
+  },
+];

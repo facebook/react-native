@@ -7,12 +7,13 @@
 
 #import "RCTParagraphComponentView.h"
 
-#import <fabric/components/text/ParagraphLocalData.h>
-#import <fabric/components/text/ParagraphProps.h>
-#import <fabric/core/LocalData.h>
-#import <fabric/graphics/Geometry.h>
-#import <fabric/textlayoutmanager/TextLayoutManager.h>
-#import <fabric/textlayoutmanager/RCTTextLayoutManager.h>
+#import <react/components/text/ParagraphLocalData.h>
+#import <react/components/text/ParagraphProps.h>
+#import <react/components/text/ParagraphShadowNode.h>
+#import <react/core/LocalData.h>
+#import <react/graphics/Geometry.h>
+#import <react/textlayoutmanager/RCTTextLayoutManager.h>
+#import <react/textlayoutmanager/TextLayoutManager.h>
 #import "RCTConversions.h"
 
 using namespace facebook::react;
@@ -37,6 +38,13 @@ using namespace facebook::react;
   return self;
 }
 
+#pragma mark - RCTComponentViewProtocol
+
++ (ComponentHandle)componentHandle
+{
+  return ParagraphShadowNode::Handle();
+}
+
 - (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
 {
   const auto &paragraphProps = std::static_pointer_cast<const ParagraphProps>(props);
@@ -47,12 +55,17 @@ using namespace facebook::react;
   _paragraphAttributes = paragraphProps->paragraphAttributes;
 }
 
-- (void)updateLocalData:(SharedLocalData)localData
-           oldLocalData:(SharedLocalData)oldLocalData
+- (void)updateLocalData:(SharedLocalData)localData oldLocalData:(SharedLocalData)oldLocalData
 {
   _paragraphLocalData = std::static_pointer_cast<const ParagraphLocalData>(localData);
   assert(_paragraphLocalData);
   [self setNeedsDisplay];
+}
+
+- (void)prepareForRecycle
+{
+  [super prepareForRecycle];
+  _paragraphLocalData.reset();
 }
 
 - (void)drawRect:(CGRect)rect
@@ -61,10 +74,9 @@ using namespace facebook::react;
     return;
   }
 
-  SharedTextLayoutManager textLayoutManager =
-    _paragraphLocalData->getTextLayoutManager();
+  SharedTextLayoutManager textLayoutManager = _paragraphLocalData->getTextLayoutManager();
   RCTTextLayoutManager *nativeTextLayoutManager =
-    (__bridge RCTTextLayoutManager *)textLayoutManager->getNativeTextLayoutManager();
+      (__bridge RCTTextLayoutManager *)textLayoutManager->getNativeTextLayoutManager();
 
   CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
 
@@ -77,8 +89,7 @@ using namespace facebook::react;
 
 - (NSString *)accessibilityLabel
 {
-  NSString *superAccessibilityLabel =
-    RCTNSStringFromStringNilIfEmpty(_props->accessibilityLabel);
+  NSString *superAccessibilityLabel = RCTNSStringFromStringNilIfEmpty(_props->accessibilityLabel);
   if (superAccessibilityLabel) {
     return superAccessibilityLabel;
   }
@@ -97,21 +108,22 @@ using namespace facebook::react;
   }
 
   SharedTextLayoutManager textLayoutManager = _paragraphLocalData->getTextLayoutManager();
-  RCTTextLayoutManager *nativeTextLayoutManager = (__bridge RCTTextLayoutManager *)textLayoutManager->getNativeTextLayoutManager();
+  RCTTextLayoutManager *nativeTextLayoutManager =
+      (__bridge RCTTextLayoutManager *)textLayoutManager->getNativeTextLayoutManager();
   CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
 
-  SharedShadowNode textShadowNode = [nativeTextLayoutManager getParentShadowNodeWithAttributeString:_paragraphLocalData->getAttributedString()
-                                                                                paragraphAttributes:_paragraphAttributes
-                                                                                              frame:frame
-                                                                                            atPoint:point];
+  SharedEventEmitter eventEmitter =
+      [nativeTextLayoutManager getEventEmitterWithAttributeString:_paragraphLocalData->getAttributedString()
+                                              paragraphAttributes:_paragraphAttributes
+                                                            frame:frame
+                                                          atPoint:point];
 
-  if (!textShadowNode) {
+  if (!eventEmitter) {
     return _eventEmitter;
   }
 
-  SharedEventEmitter eventEmitter = textShadowNode->getEventEmitter();
   assert(std::dynamic_pointer_cast<const TouchEventEmitter>(eventEmitter));
   return std::static_pointer_cast<const TouchEventEmitter>(eventEmitter);
 }
 
- @end
+@end

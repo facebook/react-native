@@ -33,7 +33,9 @@ const IMAGE_URIS = [
   'https://apod.nasa.gov/apod/image/1510/lunareclipse_27Sep_beletskycrop4.jpg',
 ];
 
-class LikeCount extends React.Component {
+type Props = $ReadOnly<{||}>;
+type State = {|likes: number|};
+class LikeCount extends React.Component<Props, State> {
   state = {
     likes: 7,
   };
@@ -92,10 +94,6 @@ class ProgressBar extends React.Component {
 }
 
 class ViewPagerAndroidExample extends React.Component {
-  static title = '<ViewPagerAndroid>';
-  static description =
-    'Container that allows to flip left and right between child views.';
-
   state = {
     page: 0,
     animationsAreEnabled: true,
@@ -291,4 +289,15 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = ViewPagerAndroidExample;
+exports.title = '<ViewPagerAndroid>';
+exports.description =
+  'Container that allows to flip left and right between child views.';
+
+exports.examples = [
+  {
+    title: 'Basic pager',
+    render(): React.Element<typeof ViewPagerAndroidExample> {
+      return <ViewPagerAndroidExample />;
+    },
+  },
+];

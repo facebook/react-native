@@ -8,6 +8,9 @@
 #include "EventEmitter.h"
 
 #include <folly/dynamic.h>
+#include <jsi/JSIDynamic.h>
+#include <jsi/jsi.h>
+#include <react/debug/SystraceSection.h>
 
 #include "RawEvent.h"
 
@@ -28,9 +31,15 @@ static std::string normalizeEventType(const std::string &type) {
   return prefixedType;
 }
 
-std::recursive_mutex &EventEmitter::DispatchMutex() {
-  static std::recursive_mutex mutex;
+std::mutex &EventEmitter::DispatchMutex() {
+  static std::mutex mutex;
   return mutex;
+}
+
+ValueFactory EventEmitter::defaultPayloadFactory() {
+  static auto payloadFactory =
+      ValueFactory{[](jsi::Runtime &runtime) { return jsi::Object(runtime); }};
+  return payloadFactory;
 }
 
 EventEmitter::EventEmitter(
@@ -38,46 +47,57 @@ EventEmitter::EventEmitter(
     Tag tag,
     WeakEventDispatcher eventDispatcher)
     : eventTarget_(std::move(eventTarget)),
-      weakEventTarget_({}),
-      tag_(tag),
       eventDispatcher_(std::move(eventDispatcher)) {}
 
 void EventEmitter::dispatchEvent(
     const std::string &type,
     const folly::dynamic &payload,
     const EventPriority &priority) const {
+  dispatchEvent(
+      type,
+      [payload](jsi::Runtime &runtime) {
+        return valueFromDynamic(runtime, payload);
+      },
+      priority);
+}
+
+void EventEmitter::dispatchEvent(
+    const std::string &type,
+    const ValueFactory &payloadFactory,
+    const EventPriority &priority) const {
+  SystraceSection s("EventEmitter::dispatchEvent");
+
   auto eventDispatcher = eventDispatcher_.lock();
   if (!eventDispatcher) {
     return;
   }
 
-  // Mixing `target` into `payload`.
-  assert(payload.isObject());
-  folly::dynamic extendedPayload = folly::dynamic::object("target", tag_);
-  extendedPayload.merge_patch(payload);
-
   eventDispatcher->dispatchEvent(
-      RawEvent(normalizeEventType(type), extendedPayload, eventTarget_),
+      RawEvent(normalizeEventType(type), payloadFactory, eventTarget_),
       priority);
 }
 
 void EventEmitter::setEnabled(bool enabled) const {
-  bool alreadyEnabled = eventTarget_ != nullptr;
-  if (enabled == alreadyEnabled) {
-    return;
+  enableCounter_ += enabled ? 1 : -1;
+
+  bool shouldBeEnabled = enableCounter_ > 0;
+  if (isEnabled_ != shouldBeEnabled) {
+    isEnabled_ = shouldBeEnabled;
+    if (eventTarget_) {
+      eventTarget_->setEnabled(isEnabled_);
+    }
   }
 
-  if (enabled) {
-    eventTarget_ = weakEventTarget_.lock();
-    weakEventTarget_.reset();
-  } else {
-    weakEventTarget_ = eventTarget_;
-    eventTarget_.reset();
+  // Note: Initially, the state of `eventTarget_` and the value `enableCounter_`
+  // is mismatched intentionally (it's `non-null` and `0` accordingly). We need
+  // this to support an initial nebula state where the event target must be
+  // retained without any associated mounted node.
+  bool shouldBeRetained = enableCounter_ > 0;
+  if (shouldBeRetained != (eventTarget_ != nullptr)) {
+    if (!shouldBeRetained) {
+      eventTarget_.reset();
+    }
   }
-}
-
-bool EventEmitter::getEnabled() const {
-  return eventTarget_ != nullptr;
 }
 
 } // namespace react

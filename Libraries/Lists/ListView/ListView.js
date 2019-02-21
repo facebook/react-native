@@ -427,7 +427,7 @@ const ListView = createReactClass({
           );
           continue;
         } else {
-          const invariant = require('fbjs/lib/invariant');
+          const invariant = require('invariant');
           invariant(
             this.props.enableEmptySections,
             "In next release 'enableEmptySections' flag will be deprecated, empty section headers will always be rendered." +

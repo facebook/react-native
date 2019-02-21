@@ -7,8 +7,8 @@
 
 #include "ParagraphLocalData.h"
 
-#include <fabric/components/text/conversions.h>
-#include <fabric/debug/debugStringConvertibleUtils.h>
+#include <react/components/text/conversions.h>
+#include <react/debug/debugStringConvertibleUtils.h>
 
 namespace facebook {
 namespace react {
@@ -33,9 +33,13 @@ void ParagraphLocalData::setTextLayoutManager(
   textLayoutManager_ = textLayoutManager;
 }
 
+#ifdef ANDROID
+
 folly::dynamic ParagraphLocalData::getDynamic() const {
   return toDynamic(*this);
 }
+
+#endif
 
 #pragma mark - DebugStringConvertible
 

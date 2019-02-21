@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 'use strict';
@@ -12,7 +12,7 @@
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 
-const requireNativeComponent = require('requireNativeComponent');
+const AndroidCheckBoxNativeComponent = require('AndroidCheckBoxNativeComponent');
 const nullthrows = require('nullthrows');
 const setAndForwardRef = require('setAndForwardRef');
 
@@ -75,10 +75,6 @@ type Props = $ReadOnly<{|
    */
   forwardedRef?: ?React.Ref<CheckBoxNativeType>,
 |}>;
-
-const RCTCheckBox = ((requireNativeComponent(
-  'AndroidCheckBox',
-): any): CheckBoxNativeType);
 
 /**
  * Renders a boolean input (Android only).
@@ -169,7 +165,7 @@ class CheckBox extends React.Component<Props> {
     };
 
     return (
-      <RCTCheckBox
+      <AndroidCheckBoxNativeComponent
         {...nativeProps}
         ref={this._setNativeRef}
         onChange={this._onChange}
@@ -190,9 +186,11 @@ const styles = StyleSheet.create({
  */
 type CheckBoxType = Class<NativeComponent<Props>>;
 
-// $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
 const CheckBoxWithRef = React.forwardRef(function CheckBoxWithRef(props, ref) {
   return <CheckBox {...props} forwardedRef={ref} />;
 });
 
+/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
 module.exports = (CheckBoxWithRef: CheckBoxType);

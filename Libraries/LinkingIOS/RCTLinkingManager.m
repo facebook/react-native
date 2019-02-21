@@ -106,13 +106,23 @@ RCT_EXPORT_METHOD(canOpenURL:(NSURL *)URL
     return;
   }
 
-  // TODO: on iOS9 this will fail if URL isn't included in the plist
-  // we should probably check for that and reject in that case instead of
-  // simply resolving with NO
-
   // This can be expensive, so we deliberately don't call on main thread
   BOOL canOpen = [RCTSharedApplication() canOpenURL:URL];
-  resolve(@(canOpen));
+
+  NSString *scheme = [URL scheme];
+    
+  // On iOS 9 and above canOpenURL returns NO without a helpful error.
+  // Check if a custom scheme is being used, and if it exists in LSApplicationQueriesSchemes
+  if (![[scheme lowercaseString] hasPrefix:@"http"] && ![[scheme lowercaseString] hasPrefix:@"https"]) {
+    NSArray *querySchemes = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"LSApplicationQueriesSchemes"];
+    if (querySchemes != nil && ([querySchemes containsObject:scheme] || [querySchemes containsObject:[scheme lowercaseString]])) {
+      resolve(@(canOpen));
+    } else {
+      reject(RCTErrorUnspecified, [NSString stringWithFormat:@"Unable to open URL: %@. Add %@ to LSApplicationQueriesSchemes in your Info.plist.", URL, scheme], nil);
+    }
+  } else {
+    resolve(@(canOpen));
+  }
 }
 
 RCT_EXPORT_METHOD(getInitialURL:(RCTPromiseResolveBlock)resolve

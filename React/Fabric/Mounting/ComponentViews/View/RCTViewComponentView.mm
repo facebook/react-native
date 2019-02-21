@@ -7,18 +7,18 @@
 
 #import "RCTViewComponentView.h"
 
-#import <fabric/components/view/ViewProps.h>
-#import <fabric/components/view/ViewEventEmitter.h>
-#import <objc/runtime.h>
 #import <React/RCTAssert.h>
 #import <React/RCTBorderDrawing.h>
+#import <objc/runtime.h>
+#import <react/components/view/ViewEventEmitter.h>
+#import <react/components/view/ViewProps.h>
+#import <react/components/view/ViewShadowNode.h>
 
 #import "RCTConversions.h"
 
 using namespace facebook::react;
 
-@implementation RCTViewComponentView
-{
+@implementation RCTViewComponentView {
   UIColor *_backgroundColor;
   CALayer *_borderLayer;
 }
@@ -78,20 +78,28 @@ using namespace facebook::react;
   _backgroundColor = backgroundColor;
 }
 
-- (void)updateProps:(SharedProps)props
-           oldProps:(SharedProps)oldProps
+#pragma mark - RCTComponentViewProtocol
+
++ (ComponentHandle)componentHandle
+{
+  RCTAssert(
+      self == [RCTViewComponentView class],
+      @"`+[RCTComponentViewProtocol componentHandle]` must be implemented for all subclasses (and `%@` particularly).",
+      NSStringFromClass([self class]));
+  return ViewShadowNode::Handle();
+}
+
+- (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
 {
 #ifndef NS_BLOCK_ASSERTIONS
   auto propsRawPtr = _props.get();
   RCTAssert(
-    propsRawPtr &&
-    (
-      [self class] == [RCTViewComponentView class] ||
-      typeid(*propsRawPtr).hash_code() != typeid(const ViewProps).hash_code()
-    ),
-    @"`RCTViewComponentView` subclasses (and `%@` particularly) must setup `_props`"
-      " instance variable with a default value in the constructor.", NSStringFromClass([self class])
-  );
+      propsRawPtr &&
+          ([self class] == [RCTViewComponentView class] ||
+           typeid(*propsRawPtr).hash_code() != typeid(const ViewProps).hash_code()),
+      @"`RCTViewComponentView` subclasses (and `%@` particularly) must setup `_props`"
+       " instance variable with a default value in the constructor.",
+      NSStringFromClass([self class]));
 #endif
 
   const auto &oldViewProps = *std::static_pointer_cast<const ViewProps>(oldProps ?: _props);
@@ -183,11 +191,8 @@ using namespace facebook::react;
   }
 
   // `border`
-  if (
-    oldViewProps.borderStyles != newViewProps.borderStyles ||
-    oldViewProps.borderRadii != newViewProps.borderRadii ||
-    oldViewProps.borderColors != newViewProps.borderColors
-  ) {
+  if (oldViewProps.borderStyles != newViewProps.borderStyles || oldViewProps.borderRadii != newViewProps.borderRadii ||
+      oldViewProps.borderColors != newViewProps.borderColors) {
     needsInvalidateLayer = YES;
   }
 
@@ -213,7 +218,8 @@ using namespace facebook::react;
 
   // `accessibilityTraits`
   if (oldViewProps.accessibilityTraits != newViewProps.accessibilityTraits) {
-    self.accessibilityElement.accessibilityTraits = RCTUIAccessibilityTraitsFromAccessibilityTraits(newViewProps.accessibilityTraits);
+    self.accessibilityElement.accessibilityTraits =
+        RCTUIAccessibilityTraitsFromAccessibilityTraits(newViewProps.accessibilityTraits);
   }
 
   // `accessibilityViewIsModal`
@@ -246,14 +252,19 @@ using namespace facebook::react;
   _eventEmitter = std::static_pointer_cast<const ViewEventEmitter>(eventEmitter);
 }
 
-- (void)updateLayoutMetrics:(LayoutMetrics)layoutMetrics
-           oldLayoutMetrics:(LayoutMetrics)oldLayoutMetrics
+- (void)updateLayoutMetrics:(LayoutMetrics)layoutMetrics oldLayoutMetrics:(LayoutMetrics)oldLayoutMetrics
 {
   _layoutMetrics = layoutMetrics;
 
   [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:oldLayoutMetrics];
 
   [self invalidateLayer];
+}
+
+- (void)prepareForRecycle
+{
+  [super prepareForRecycle];
+  _eventEmitter.reset();
 }
 
 - (UIView *)betterHitTest:(CGPoint)point withEvent:(UIEvent *)event
@@ -274,11 +285,11 @@ using namespace facebook::react;
   }
 
   NSArray<__kindof UIView *> *sortedSubviews =
-    [self.subviews sortedArrayUsingComparator:^NSComparisonResult(UIView *a, UIView *b) {
-      // Ensure sorting is stable by treating equal `zIndex` as ascending so
-      // that original order is preserved.
-      return a.layer.zPosition > b.layer.zPosition ? NSOrderedDescending : NSOrderedAscending;
-    }];
+      [self.subviews sortedArrayUsingComparator:^NSComparisonResult(UIView *a, UIView *b) {
+        // Ensure sorting is stable by treating equal `zIndex` as ascending so
+        // that original order is preserved.
+        return a.layer.zPosition > b.layer.zPosition ? NSOrderedDescending : NSOrderedAscending;
+      }];
 
   for (UIView *subview in [sortedSubviews reverseObjectEnumerator]) {
     UIView *hitView = [subview hitTest:[subview convertPoint:point fromView:self] withEvent:event];
@@ -305,34 +316,32 @@ using namespace facebook::react;
   }
 }
 
-static RCTCornerRadii RCTCornerRadiiFromBorderRadii(BorderRadii borderRadii) {
-  return RCTCornerRadii {
-    .topLeft = (CGFloat)borderRadii.topLeft,
-    .topRight = (CGFloat)borderRadii.topRight,
-    .bottomLeft = (CGFloat)borderRadii.bottomLeft,
-    .bottomRight = (CGFloat)borderRadii.bottomRight
-  };
+static RCTCornerRadii RCTCornerRadiiFromBorderRadii(BorderRadii borderRadii)
+{
+  return RCTCornerRadii{.topLeft = (CGFloat)borderRadii.topLeft,
+                        .topRight = (CGFloat)borderRadii.topRight,
+                        .bottomLeft = (CGFloat)borderRadii.bottomLeft,
+                        .bottomRight = (CGFloat)borderRadii.bottomRight};
 }
 
-static RCTBorderColors RCTBorderColorsFromBorderColors(BorderColors borderColors) {
-  return RCTBorderColors {
-    .left = RCTCGColorRefFromSharedColor(borderColors.left),
-    .top = RCTCGColorRefFromSharedColor(borderColors.top),
-    .bottom = RCTCGColorRefFromSharedColor(borderColors.bottom),
-    .right = RCTCGColorRefFromSharedColor(borderColors.right)
-  };
+static RCTBorderColors RCTBorderColorsFromBorderColors(BorderColors borderColors)
+{
+  return RCTBorderColors{.left = RCTCGColorRefFromSharedColor(borderColors.left),
+                         .top = RCTCGColorRefFromSharedColor(borderColors.top),
+                         .bottom = RCTCGColorRefFromSharedColor(borderColors.bottom),
+                         .right = RCTCGColorRefFromSharedColor(borderColors.right)};
 }
 
-static UIEdgeInsets UIEdgeInsetsFromBorderInsets(EdgeInsets edgeInsets) {
-  return UIEdgeInsets {
-    .left = (CGFloat)edgeInsets.left,
-    .top = (CGFloat)edgeInsets.top,
-    .bottom = (CGFloat)edgeInsets.bottom,
-    .right = (CGFloat)edgeInsets.right
-  };
+static UIEdgeInsets UIEdgeInsetsFromBorderInsets(EdgeInsets edgeInsets)
+{
+  return UIEdgeInsets{.left = (CGFloat)edgeInsets.left,
+                      .top = (CGFloat)edgeInsets.top,
+                      .bottom = (CGFloat)edgeInsets.bottom,
+                      .right = (CGFloat)edgeInsets.right};
 }
 
-static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle) {
+static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
+{
   switch (borderStyle) {
     case BorderStyle::Solid:
       return RCTBorderStyleSolid;
@@ -346,7 +355,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle) {
 - (void)invalidateLayer
 {
   const auto borderMetrics =
-    _props->resolveBorderMetrics(_layoutMetrics.layoutDirection == LayoutDirection::RightToLeft);
+      _props->resolveBorderMetrics(_layoutMetrics.layoutDirection == LayoutDirection::RightToLeft);
 
   CALayer *layer = self.layer;
 
@@ -356,7 +365,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle) {
     if (CGColorGetAlpha(_backgroundColor.CGColor) > 0.999) {
       // If view has a solid background color, calculate shadow path from border.
       const RCTCornerInsets cornerInsets =
-        RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero);
+          RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero);
       CGPathRef shadowPath = RCTPathCreateWithRoundedRect(self.bounds, cornerInsets, nil);
       layer.shadowPath = shadowPath;
       CGPathRelease(shadowPath);
@@ -370,19 +379,15 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle) {
 
   // Stage 2. Border Rendering
   const bool useCoreAnimationBorderRendering =
-    borderMetrics.borderColors.isUniform() &&
-    borderMetrics.borderWidths.isUniform() &&
-    borderMetrics.borderStyles.isUniform() &&
-    borderMetrics.borderRadii.isUniform() &&
-    borderMetrics.borderStyles.left == BorderStyle::Solid &&
-    (
-      // iOS draws borders in front of the content whereas CSS draws them behind
-      // the content. For this reason, only use iOS border drawing when clipping
-      // or when the border is hidden.
-      borderMetrics.borderWidths.left == 0 ||
-      colorComponentsFromColor(borderMetrics.borderColors.left).alpha == 0 ||
-      self.clipsToBounds
-    );
+      borderMetrics.borderColors.isUniform() && borderMetrics.borderWidths.isUniform() &&
+      borderMetrics.borderStyles.isUniform() && borderMetrics.borderRadii.isUniform() &&
+      borderMetrics.borderStyles.left == BorderStyle::Solid &&
+      (
+          // iOS draws borders in front of the content whereas CSS draws them behind
+          // the content. For this reason, only use iOS border drawing when clipping
+          // or when the border is hidden.
+          borderMetrics.borderWidths.left == 0 ||
+          colorComponentsFromColor(borderMetrics.borderColors.left).alpha == 0 || self.clipsToBounds);
 
   if (useCoreAnimationBorderRendering) {
     if (_borderLayer) {
@@ -413,24 +418,22 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle) {
     _contentView.layer.masksToBounds = NO;
 
     UIImage *image = RCTGetBorderImage(
-      RCTBorderStyleFromBorderStyle(borderMetrics.borderStyles.left),
-      layer.bounds.size,
-      RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
-      UIEdgeInsetsFromBorderInsets(borderMetrics.borderWidths),
-      RCTBorderColorsFromBorderColors(borderMetrics.borderColors),
-      _backgroundColor.CGColor,
-      self.clipsToBounds
-    );
+        RCTBorderStyleFromBorderStyle(borderMetrics.borderStyles.left),
+        layer.bounds.size,
+        RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii),
+        UIEdgeInsetsFromBorderInsets(borderMetrics.borderWidths),
+        RCTBorderColorsFromBorderColors(borderMetrics.borderColors),
+        _backgroundColor.CGColor,
+        self.clipsToBounds);
 
     if (image == nil) {
       _borderLayer.contents = nil;
     } else {
       CGSize imageSize = image.size;
       UIEdgeInsets imageCapInsets = image.capInsets;
-      CGRect contentsCenter = CGRect {
-        CGPoint {imageCapInsets.left / imageSize.width, imageCapInsets.top / imageSize.height},
-        CGSize {(CGFloat)1.0 / imageSize.width, (CGFloat)1.0 / imageSize.height}
-      };
+      CGRect contentsCenter =
+          CGRect{CGPoint{imageCapInsets.left / imageSize.width, imageCapInsets.top / imageSize.height},
+                 CGSize{(CGFloat)1.0 / imageSize.width, (CGFloat)1.0 / imageSize.height}};
 
       _borderLayer.contents = (id)image.CGImage;
       _borderLayer.contentsScale = image.scale;
@@ -439,7 +442,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle) {
       if (isResizable) {
         _borderLayer.contentsCenter = contentsCenter;
       } else {
-        _borderLayer.contentsCenter = CGRect { CGPoint {0.0, 0.0}, CGSize {1.0, 1.0}};
+        _borderLayer.contentsCenter = CGRect{CGPoint{0.0, 0.0}, CGSize{1.0, 1.0}};
       }
     }
 
@@ -453,10 +456,9 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle) {
       } else {
         // In this case we have to generate masking layer manually.
         CGPathRef path = RCTPathCreateWithRoundedRect(
-          self.bounds,
-          RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero),
-          nil
-        );
+            self.bounds,
+            RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero),
+            nil);
 
         maskLayer = [CAShapeLayer layer];
         maskLayer.path = path;
@@ -516,9 +518,10 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
   NSMutableArray<UIAccessibilityCustomAction *> *customActions = [NSMutableArray array];
   for (const auto &accessibilityAction : accessibilityActions) {
-    [customActions addObject:[[UIAccessibilityCustomAction alloc] initWithName:RCTNSStringFromString(accessibilityAction)
-                                                                        target:self
-                                                                      selector:@selector(didActivateAccessibilityCustomAction:)]];
+    [customActions
+        addObject:[[UIAccessibilityCustomAction alloc] initWithName:RCTNSStringFromString(accessibilityAction)
+                                                             target:self
+                                                           selector:@selector(didActivateAccessibilityCustomAction:)]];
   }
 
   return [customActions copy];
@@ -533,6 +536,12 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 - (BOOL)accessibilityPerformMagicTap
 {
   _eventEmitter->onAccessibilityMagicTap();
+  return YES;
+}
+
+- (BOOL)accessibilityPerformEscape
+{
+  _eventEmitter->onAccessibilityEscape();
   return YES;
 }
 

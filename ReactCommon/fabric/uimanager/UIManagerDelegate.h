@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <fabric/core/ReactPrimitives.h>
-#include <fabric/core/ShadowNode.h>
+#include <react/core/ReactPrimitives.h>
+#include <react/core/ShadowNode.h>
 
 namespace facebook {
 namespace react {
@@ -23,8 +23,9 @@ class UIManagerDelegate {
    * The tree is not layed out and not sealed at this time.
    */
   virtual void uiManagerDidFinishTransaction(
-      Tag rootTag,
-      const SharedShadowNodeUnsharedList &rootChildNodes) = 0;
+      SurfaceId surfaceId,
+      const SharedShadowNodeUnsharedList &rootChildNodes,
+      long startCommitTime) = 0;
 
   /*
    * Called each time when UIManager constructs a new Shadow Node. Receiver

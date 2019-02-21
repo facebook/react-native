@@ -14,18 +14,19 @@ const React = require('react');
 const ReactNative = require('react-native');
 const {DatePickerIOS, StyleSheet, Text, TextInput, View} = ReactNative;
 
-class DatePickerExample extends React.Component<
-  $FlowFixMeProps,
-  $FlowFixMeState,
-> {
-  static defaultProps = {
+type State = {|
+  date: Date,
+  timeZoneOffsetInHours: number,
+|};
+
+type Props = {|
+  children: (State, (Date) => void) => React.Node,
+|};
+
+class WithDatePickerData extends React.Component<Props, State> {
+  state = {
     date: new Date(),
     timeZoneOffsetInHours: (-1 * new Date().getTimezoneOffset()) / 60,
-  };
-
-  state = {
-    date: this.props.date,
-    timeZoneOffsetInHours: this.props.timeZoneOffsetInHours,
   };
 
   onDateChange = date => {
@@ -46,10 +47,13 @@ class DatePickerExample extends React.Component<
     return (
       <View>
         <WithLabel label="Value:">
-          <Text>
+          <Text testID="date-and-time-indicator">
             {this.state.date.toLocaleDateString() +
               ' ' +
-              this.state.date.toLocaleTimeString()}
+              this.state.date.toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
           </Text>
         </WithLabel>
         <WithLabel label="Timezone:">
@@ -60,34 +64,18 @@ class DatePickerExample extends React.Component<
           />
           <Text> hours from UTC</Text>
         </WithLabel>
-        <Heading label="Date + time picker" />
-        <DatePickerIOS
-          date={this.state.date}
-          mode="datetime"
-          timeZoneOffsetInMinutes={this.state.timeZoneOffsetInHours * 60}
-          onDateChange={this.onDateChange}
-        />
-        <Heading label="Date picker" />
-        <DatePickerIOS
-          date={this.state.date}
-          mode="date"
-          timeZoneOffsetInMinutes={this.state.timeZoneOffsetInHours * 60}
-          onDateChange={this.onDateChange}
-        />
-        <Heading label="Time picker, 10-minute interval" />
-        <DatePickerIOS
-          date={this.state.date}
-          mode="time"
-          timeZoneOffsetInMinutes={this.state.timeZoneOffsetInHours * 60}
-          onDateChange={this.onDateChange}
-          minuteInterval={10}
-        />
+        {this.props.children(this.state, this.onDateChange)}
       </View>
     );
   }
 }
 
-class WithLabel extends React.Component<$FlowFixMeProps> {
+type LabelProps = {|
+  label: string,
+  children: React.Node,
+|};
+
+class WithLabel extends React.Component<LabelProps> {
   render() {
     return (
       <View style={styles.labelContainer}>
@@ -99,28 +87,6 @@ class WithLabel extends React.Component<$FlowFixMeProps> {
     );
   }
 }
-
-class Heading extends React.Component<$FlowFixMeProps> {
-  render() {
-    return (
-      <View style={styles.headingContainer}>
-        <Text style={styles.heading}>{this.props.label}</Text>
-      </View>
-    );
-  }
-}
-
-exports.displayName = (undefined: ?string);
-exports.title = '<DatePickerIOS>';
-exports.description = 'Select dates and times using the native UIDatePicker.';
-exports.examples = [
-  {
-    title: '<DatePickerIOS>',
-    render: function(): React.Element<any> {
-      return <DatePickerExample />;
-    },
-  },
-];
 
 const styles = StyleSheet.create({
   textinput: {
@@ -143,12 +109,63 @@ const styles = StyleSheet.create({
   label: {
     fontWeight: '500',
   },
-  headingContainer: {
-    padding: 4,
-    backgroundColor: '#f6f7f8',
-  },
-  heading: {
-    fontWeight: '500',
-    fontSize: 14,
-  },
 });
+
+exports.title = '<DatePickerIOS>';
+exports.description = 'Select dates and times using the native UIDatePicker.';
+exports.examples = [
+  {
+    title: 'Date and time picker',
+    render: function(): React.Element<any> {
+      return (
+        <WithDatePickerData>
+          {(state, onDateChange) => (
+            <DatePickerIOS
+              testID="date-and-time"
+              date={state.date}
+              mode="datetime"
+              timeZoneOffsetInMinutes={state.timeZoneOffsetInHours * 60}
+              onDateChange={onDateChange}
+            />
+          )}
+        </WithDatePickerData>
+      );
+    },
+  },
+  {
+    title: 'Date only picker',
+    render: function(): React.Element<any> {
+      return (
+        <WithDatePickerData>
+          {(state, onDateChange) => (
+            <DatePickerIOS
+              testID="date-only"
+              date={state.date}
+              mode="date"
+              timeZoneOffsetInMinutes={state.timeZoneOffsetInHours * 60}
+              onDateChange={onDateChange}
+            />
+          )}
+        </WithDatePickerData>
+      );
+    },
+  },
+  {
+    title: 'Time only picker, 10-minute interval',
+    render: function(): React.Element<any> {
+      return (
+        <WithDatePickerData>
+          {(state, onDateChange) => (
+            <DatePickerIOS
+              testID="time-only"
+              date={state.date}
+              mode="time"
+              timeZoneOffsetInMinutes={state.timeZoneOffsetInHours * 60}
+              onDateChange={onDateChange}
+            />
+          )}
+        </WithDatePickerData>
+      );
+    },
+  },
+];

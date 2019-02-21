@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <fabric/core/LayoutPrimitives.h>
+#include <react/core/LayoutPrimitives.h>
 
 namespace facebook {
 namespace react {
@@ -32,6 +32,20 @@ inline std::string toString(const DisplayType &displayType) {
     case DisplayType::Inline:
       return "inline";
   }
+}
+
+inline Size yogaMeassureToSize(int64_t value) {
+  static_assert(
+      sizeof(value) == 8,
+      "Expected measureResult to be 8 bytes, or two 32 bit ints");
+
+  int32_t wBits = 0xFFFFFFFF & (value >> 32);
+  int32_t hBits = 0xFFFFFFFF & value;
+
+  float *measuredWidth = reinterpret_cast<float *>(&wBits);
+  float *measuredHeight = reinterpret_cast<float *>(&hBits);
+
+  return {*measuredWidth, *measuredHeight};
 }
 
 } // namespace react

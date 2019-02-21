@@ -12,12 +12,13 @@ import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableNativeMap;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.react.uimanager.annotations.ReactPropertyHolder;
+import com.facebook.yoga.YogaMeasureMode;
 import java.util.Map;
 import javax.annotation.Nullable;
 
@@ -212,15 +213,14 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     return null;
   }
 
-  public float[] measure(
+  public long measure(
       ReactContext context,
-      T view,
-      ReadableNativeMap localData,
-      ReadableNativeMap props,
+      ReadableMap localData,
+      ReadableMap props,
       float width,
-      int widthMode,
+      YogaMeasureMode widthMode,
       float height,
-      int heightMode) {
-    return null;
+      YogaMeasureMode heightMode) {
+    return 0;
   }
 }

@@ -14,16 +14,15 @@
 'use strict';
 
 const React = require('React');
-const invariant = require('fbjs/lib/invariant');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
-const requireNativeComponent = require('requireNativeComponent');
+const invariant = require('invariant');
 
 import type {ViewProps} from 'ViewPropTypes';
 import type {SyntheticEvent} from 'CoreEventTypes';
 
-const RCTDatePickerIOS = requireNativeComponent('RCTDatePicker');
+const RCTDatePickerNativeComponent = require('RCTDatePickerNativeComponent');
 
 type Event = SyntheticEvent<
   $ReadOnly<{|
@@ -118,8 +117,7 @@ class DatePickerIOS extends React.Component<Props> {
     mode: 'datetime',
   };
 
-  // $FlowFixMe How to type a native component to be able to call setNativeProps
-  _picker: ?React.ElementRef<typeof RCTDatePickerIOS> = null;
+  _picker: ?React.ElementRef<typeof RCTDatePickerNativeComponent> = null;
 
   componentDidUpdate() {
     if (this.props.date) {
@@ -147,7 +145,8 @@ class DatePickerIOS extends React.Component<Props> {
     );
     return (
       <View style={props.style}>
-        <RCTDatePickerIOS
+        <RCTDatePickerNativeComponent
+          testID={props.testID}
           ref={picker => {
             this._picker = picker;
           }}

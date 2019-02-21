@@ -8,8 +8,8 @@ package com.facebook.react.views.view;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.support.v4.view.ViewCompat;
 import android.view.View;
-import com.facebook.react.views.common.ViewHelper;
 import javax.annotation.Nullable;
 
 /** Class that manages the background for views and borders. */
@@ -26,15 +26,15 @@ public class ReactViewBackgroundManager {
     if (mReactBackgroundDrawable == null) {
       mReactBackgroundDrawable = new ReactViewBackgroundDrawable(mView.getContext());
       Drawable backgroundDrawable = mView.getBackground();
-      ViewHelper.setBackground(
+      ViewCompat.setBackground(
           mView, null); // required so that drawable callback is cleared before we add the
       // drawable back as a part of LayerDrawable
       if (backgroundDrawable == null) {
-        ViewHelper.setBackground(mView, mReactBackgroundDrawable);
+        ViewCompat.setBackground(mView, mReactBackgroundDrawable);
       } else {
         LayerDrawable layerDrawable =
             new LayerDrawable(new Drawable[] {mReactBackgroundDrawable, backgroundDrawable});
-        ViewHelper.setBackground(mView, layerDrawable);
+        ViewCompat.setBackground(mView, layerDrawable);
       }
     }
     return mReactBackgroundDrawable;

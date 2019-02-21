@@ -22,8 +22,8 @@ import type {PackagerAsset} from 'AssetRegistry';
 const PixelRatio = require('PixelRatio');
 const Platform = require('Platform');
 
-const assetPathUtils = require('../../local-cli/bundle/assetPathUtils');
-const invariant = require('fbjs/lib/invariant');
+const assetPathUtils = require('./assetPathUtils');
+const invariant = require('invariant');
 
 /**
  * Returns a path like 'assets/AwesomeModule/icon@2x.png'

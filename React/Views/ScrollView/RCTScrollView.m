@@ -303,7 +303,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       contentOffset.y = -(scrollViewSize.height - subviewSize.height) / 2.0;
     }
   }
-  super.contentOffset = contentOffset;
+
+  super.contentOffset = CGPointMake(
+    RCTSanitizeNaNValue(contentOffset.x, @"scrollView.contentOffset.x"),
+    RCTSanitizeNaNValue(contentOffset.y, @"scrollView.contentOffset.y"));
 }
 
 - (void)setFrame:(CGRect)frame
@@ -320,11 +323,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   if (CGSizeEqualToSize(contentSize, CGSizeZero)) {
     self.contentOffset = originalOffset;
   } else {
-    // Make sure offset don't exceed bounds. This could happen on screen rotation.
+    if (@available(iOS 11.0, *)) {
+      if (!UIEdgeInsetsEqualToEdgeInsets(UIEdgeInsetsZero, self.adjustedContentInset)) {
+        contentInset = self.adjustedContentInset;
+      }
+    }
     CGSize boundsSize = self.bounds.size;
+    CGFloat xMaxOffset = contentSize.width - boundsSize.width + contentInset.right;
+    CGFloat yMaxOffset = contentSize.height - boundsSize.height + contentInset.bottom;
+    // Make sure offset doesn't exceed bounds. This can happen on screen rotation.
+    if ((originalOffset.x >= -contentInset.left) && (originalOffset.x <= xMaxOffset) &&
+        (originalOffset.y >= -contentInset.top) && (originalOffset.y <= yMaxOffset)) {
+      return;
+    }
     self.contentOffset = CGPointMake(
-      MAX(-contentInset.left, MIN(contentSize.width - boundsSize.width + contentInset.right, originalOffset.x)),
-      MAX(-contentInset.top, MIN(contentSize.height - boundsSize.height + contentInset.bottom, originalOffset.y)));
+      MAX(-contentInset.left, MIN(xMaxOffset, originalOffset.x)),
+      MAX(-contentInset.top, MIN(yMaxOffset, originalOffset.y)));
   }
 }
 
@@ -352,6 +366,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   self.pinchGestureRecognizer.enabled = _pinchGestureEnabled;
 }
 #endif //TARGET_OS_TV
+
+- (BOOL)shouldGroupAccessibilityChildren
+{
+  return YES;
+}
 
 @end
 
@@ -751,7 +770,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
     CGFloat smallerOffset = 0.0;
     CGFloat largerOffset = maximumOffset;
 
-    for (int i = 0; i < self.snapToOffsets.count; i++) {
+    for (unsigned long i = 0; i < self.snapToOffsets.count; i++) {
       CGFloat offset = [[self.snapToOffsets objectAtIndex:i] floatValue];
 
       if (offset <= targetOffset) {
@@ -1016,7 +1035,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
 - (void)uiManagerWillPerformMounting:(RCTUIManager *)manager
 {
   RCTAssertUIManagerQueue();
-  [manager prependUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+  [manager prependUIBlock:^(__unused RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     BOOL horz = [self isHorizontal:self->_scrollView];
     NSUInteger minIdx = [self->_maintainVisibleContentPosition[@"minIndexForVisible"] integerValue];
     for (NSUInteger ii = minIdx; ii < self->_contentView.subviews.count; ++ii) {
@@ -1033,7 +1052,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
       }
     }
   }];
-  [manager addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+  [manager addUIBlock:^(__unused RCTUIManager *uiManager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     if (self->_maintainVisibleContentPosition == nil) {
       return; // The prop might have changed in the previous UIBlocks, so need to abort here.
     }
@@ -1112,7 +1131,7 @@ RCT_SET_AND_PRESERVE_OFFSET(setScrollIndicatorInsets, scrollIndicatorInsets, UIE
 
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
 - (void)setContentInsetAdjustmentBehavior:(UIScrollViewContentInsetAdjustmentBehavior)behavior
-{
+API_AVAILABLE(ios(11.0)){
   // `contentInsetAdjustmentBehavior` is available since iOS 11.
   if ([_scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
     CGPoint contentOffset = _scrollView.contentOffset;

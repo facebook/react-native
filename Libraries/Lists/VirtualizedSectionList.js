@@ -9,11 +9,12 @@
  */
 'use strict';
 
+const Platform = require('Platform');
 const React = require('React');
 const View = require('View');
 const VirtualizedList = require('VirtualizedList');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 import type {ViewToken} from 'ViewabilityHelper';
 import type {Props as VirtualizedListProps} from 'VirtualizedList';
@@ -145,7 +146,7 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
     sectionIndex: number,
     viewPosition?: number,
   }) {
-    let index = params.itemIndex + 1;
+    let index = Platform.OS === 'ios' ? params.itemIndex : params.itemIndex - 1;
     for (let ii = 0; ii < params.sectionIndex; ii++) {
       index += this.props.sections[ii].data.length + 2;
     }
@@ -505,6 +506,9 @@ class ItemWithSeparator extends React.Component<
       <SeparatorComponent {...this.state.separatorProps} />
     );
     return leadingSeparator || separator ? (
+      /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.89 was deployed. To see the error, delete
+       * this comment and run Flow. */
       <View>
         {leadingSeparator}
         {element}

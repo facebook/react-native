@@ -85,14 +85,14 @@ NSString *RCTBridgeModuleNameForClass(Class cls)
   return RCTDropReactPrefixes(name);
 }
 
-static BOOL jsiNativeModuleEnabled = NO;
-BOOL RCTJSINativeModuleEnabled(void)
+static BOOL turboModuleEnabled = NO;
+BOOL RCTTurboModuleEnabled(void)
 {
-  return jsiNativeModuleEnabled;
+  return turboModuleEnabled;
 }
 
-void RCTEnableJSINativeModule(BOOL enabled) {
-  jsiNativeModuleEnabled = enabled;
+void RCTEnableTurboModule(BOOL enabled) {
+  turboModuleEnabled = enabled;
 }
 
 #if RCT_DEBUG
@@ -226,6 +226,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [self invalidate];
 }
 
+- (void)setRCTTurboModuleLookupDelegate:(id<RCTTurboModuleLookupDelegate>)turboModuleLookupDelegate
+{
+  [self.batchedBridge setRCTTurboModuleLookupDelegate:turboModuleLookupDelegate];
+}
+
 - (void)didReceiveReloadCommand
 {
   [self reload];
@@ -239,6 +244,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (id)moduleForName:(NSString *)moduleName
 {
   return [self.batchedBridge moduleForName:moduleName];
+}
+
+- (id)moduleForName:(NSString *)moduleName lazilyLoadIfNecessary:(BOOL)lazilyLoad
+{
+  return [self.batchedBridge moduleForName:moduleName lazilyLoadIfNecessary:lazilyLoad];
 }
 
 - (id)moduleForClass:(Class)moduleClass
@@ -282,7 +292,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
    * Any thread
    */
   dispatch_async(dispatch_get_main_queue(), ^{
+    // WARNING: Invalidation is async, so it may not finish before re-setting up the bridge,
+    // causing some issues. TODO: revisit this post-Fabric/TurboModule.
     [self invalidate];
+    // Reload is a special case, do not preserve launchOptions and treat reload as a fresh start
+    self->_launchOptions = nil;
     [self setUp];
   });
 }
@@ -354,6 +368,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       [batchedBridge invalidate];
     });
   }
+}
+
+- (void)updateModuleWithInstance:(id<RCTBridgeModule>)instance
+{
+  [self.batchedBridge updateModuleWithInstance:instance];
 }
 
 - (void)registerAdditionalModuleClasses:(NSArray<Class> *)modules

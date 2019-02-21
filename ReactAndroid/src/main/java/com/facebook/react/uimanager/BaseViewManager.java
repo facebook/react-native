@@ -7,6 +7,7 @@ package com.facebook.react.uimanager;
 
 import android.graphics.Color;
 import android.os.Build;
+import android.support.v4.view.ViewCompat;
 import android.view.View;
 import android.view.ViewParent;
 import com.facebook.react.R;
@@ -44,7 +45,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final String PROP_TRANSLATE_Y = "translateY";
 
   private static final int PERSPECTIVE_ARRAY_INVERTED_CAMERA_DISTANCE_INDEX = 2;
-  private static final float CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER = 5;
+  private static final float CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER = (float)Math.sqrt(5);
 
   /**
    * Used to locate views in end-to-end (UI) tests.
@@ -156,13 +157,13 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @ReactProp(name = PROP_IMPORTANT_FOR_ACCESSIBILITY)
   public void setImportantForAccessibility(T view, String importantForAccessibility) {
     if (importantForAccessibility == null || importantForAccessibility.equals("auto")) {
-      view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+      ViewCompat.setImportantForAccessibility(view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
     } else if (importantForAccessibility.equals("yes")) {
-      view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+      ViewCompat.setImportantForAccessibility(view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES);
     } else if (importantForAccessibility.equals("no")) {
-      view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+      ViewCompat.setImportantForAccessibility(view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO);
     } else if (importantForAccessibility.equals("no-hide-descendants")) {
-      view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+      ViewCompat.setImportantForAccessibility(view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
     }
   }
 
@@ -198,7 +199,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   @ReactProp(name = PROP_ACCESSIBILITY_LIVE_REGION)
   public void setAccessibilityLiveRegion(T view, String liveRegion) {
-    if (Build.VERSION.SDK_INT >= 19) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
       if (liveRegion == null || liveRegion.equals("none")) {
         view.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_NONE);
       } else if (liveRegion.equals("polite")) {
@@ -234,8 +235,12 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       float scale = DisplayMetricsHolder.getScreenDisplayMetrics().density;
 
       // The following converts the matrix's perspective to a camera distance
-      // such that the camera perspective looks the same on Android and iOS
-      float normalizedCameraDistance = scale * cameraDistance * CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER;
+      // such that the camera perspective looks the same on Android and iOS.
+      // The native Android implementation removed the screen density from the
+      // calculation, so squaring and a normalization value of
+      // sqrt(5) produces an exact replica with iOS.
+      // For more information, see https://github.com/facebook/react-native/pull/18302
+      float normalizedCameraDistance = scale * scale * cameraDistance * CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER;
       view.setCameraDistance(normalizedCameraDistance);
 
     }

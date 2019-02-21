@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include <fabric/uimanager/UIManager.h>
-#include <fabric/uimanager/primitives.h>
 #include <folly/dynamic.h>
 #include <jsi/jsi.h>
+#include <react/uimanager/UIManager.h>
+#include <react/uimanager/primitives.h>
 
 namespace facebook {
 namespace react {
@@ -26,7 +26,7 @@ class UIManagerBinding : public jsi::HostObject {
   UIManagerBinding(std::unique_ptr<UIManager> uiManager);
 
   /*
-   * Stops React Native Surface with given id, moduleName, and props.
+   * Starts React Native Surface with given id, moduleName, and props.
    * Thread synchronization must be enforced externally.
    */
   void startSurface(
@@ -49,7 +49,7 @@ class UIManagerBinding : public jsi::HostObject {
       jsi::Runtime &runtime,
       const EventTarget *eventTarget,
       const std::string &type,
-      const folly::dynamic &payload) const;
+      const ValueFactory &payloadFactory) const;
 
   /*
    * Invalidates the binding and underlying UIManager.

@@ -16,6 +16,7 @@ const {Image, LayoutAnimation, StyleSheet, Text, View} = ReactNative;
 
 import type {ViewLayout, ViewLayoutEvent} from 'ViewPropTypes';
 
+type Props = $ReadOnly<{||}>;
 type State = {
   containerStyle?: {|width: number|},
   extraText?: string,
@@ -25,7 +26,7 @@ type State = {
   viewStyle: {|margin: number|},
 };
 
-class LayoutEventExample extends React.Component<{}, State> {
+class LayoutEventExample extends React.Component<Props, State> {
   state: State = {
     viewStyle: {
       margin: 20,

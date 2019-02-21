@@ -18,7 +18,7 @@ const TouchableNativeFeedback = require('TouchableNativeFeedback');
 const TouchableOpacity = require('TouchableOpacity');
 const View = require('View');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 import type {PressEvent} from 'CoreEventTypes';
 
