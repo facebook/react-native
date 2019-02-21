@@ -246,15 +246,8 @@ try {
       exitCode = 1;
       throw Error(exitCode);
     }
-
-    if (exec('yarn flow-check-ios').code) {
-      echo('Flow check does not pass');
-      exitCode = 1;
-      throw Error(exitCode);
-    }
-
-    if (exec('yarn test-ci').code) {
-      echo('Flow check does not pass');
+    if (exec('yarn test').code) {
+      echo('Jest does not pass');
       exitCode = 1;
       throw Error(exitCode);
     }
