@@ -53,7 +53,7 @@ private:
       const float axisSize) const;
 
   void setMeasureFunc(decltype(measure_));
-  void setBaseLineFunc(decltype(baseline_));
+  void setBaselineFunc(decltype(baseline_));
 
 public:
   YGNode()
@@ -251,16 +251,16 @@ public:
     return setMeasureFunc(YGMeasureFunc{nullptr});
   }
 
-  void setBaseLineFunc(YGBaselineFunc baseLineFunc) {
+  void setBaselineFunc(YGBaselineFunc baseLineFunc) {
     baselineUsesContext_ = false;
     baseline_.noContext = baseLineFunc;
   }
-  void setBaseLineFunc(BaselineWithContextFn baseLineFunc) {
+  void setBaselineFunc(BaselineWithContextFn baseLineFunc) {
     baselineUsesContext_ = true;
     baseline_.withContext = baseLineFunc;
   }
-  void setBaseLineFunc(std::nullptr_t) {
-    return setBaseLineFunc(YGBaselineFunc{nullptr});
+  void setBaselineFunc(std::nullptr_t) {
+    return setBaselineFunc(YGBaselineFunc{nullptr});
   }
 
   void setDirtiedFunc(YGDirtiedFunc dirtiedFunc) {

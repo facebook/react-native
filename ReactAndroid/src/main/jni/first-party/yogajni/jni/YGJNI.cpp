@@ -478,7 +478,7 @@ void jni_YGNodeSetHasBaselineFunc(
     jlong nativePointer,
     jboolean hasBaselineFunc) {
   _jlong2YGNodeRef(nativePointer)
-      ->setBaseLineFunc(hasBaselineFunc ? YGJNIBaselineFunc : nullptr);
+      ->setBaselineFunc(hasBaselineFunc ? YGJNIBaselineFunc : nullptr);
 }
 
 void jni_YGNodeCopyStyle(jlong dstNativePointer, jlong srcNativePointer) {
