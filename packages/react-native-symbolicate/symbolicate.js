@@ -27,7 +27,7 @@ const fs = require('fs');
 const through2 = require('through2');
 
 const argv = process.argv.slice(2);
-if (argv.length < 1 || argv.length > 3) {
+if (argv.length < 1 || argv.length > 4) {
   /* eslint no-path-concat: "off" */
   const usages = [
     'Usage: ' + __filename + ' <source-map-file>',
@@ -109,7 +109,7 @@ if (argv.length === 0) {
   // read-from-argv form.
   let moduleIds, lineNumber, columnNumber;
   if (argv[0].endsWith('.js')) {
-    moduleIds = Symbolication.parseFileName(argv[1]);
+    moduleIds = Symbolication.parseFileName(argv[0]);
     argv.shift();
   } else {
     moduleIds = {segmentId: 0, localId: undefined};

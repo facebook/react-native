@@ -50,7 +50,7 @@ const execute = (args: Array<string>, stdin: string): Promise<string> =>
 afterAll(() => {
   try {
     fs.unlinkSync(resolve('testfile.temp.cpuprofile'));
-  } catch {}
+  } catch (e) {}
 });
 
 const TESTFILE_MAP = resolve('testfile.js.map');
@@ -64,6 +64,11 @@ test('symbolicating a single entry', async () =>
   await expect(execute([TESTFILE_MAP, '1', '161'])).resolves.toEqual(
     'thrower.js:18:null\n',
   ));
+
+test('symbolicating a sectioned source map', async () =>
+  await expect(
+    execute([resolve('testfile.sectioned.js.map'), '353.js', '1', '72']),
+  ).resolves.toEqual('nested-thrower.js:6:start\n'));
 
 test('symbolicating a profiler map', async () =>
   await expect(
