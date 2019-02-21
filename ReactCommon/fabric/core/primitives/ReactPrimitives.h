@@ -7,11 +7,12 @@
 
 #pragma once
 
+#include <folly/dynamic.h>
+#include <react/core/RawProps.h>
+#include <react/core/RawValue.h>
 #include <memory>
 #include <string>
 #include <unordered_map>
-
-#include <folly/dynamic.h>
 
 namespace facebook {
 namespace react {
@@ -27,13 +28,6 @@ using InstanceHandle = struct InstanceHandleDummyStruct {
  * An id of a running Surface instance that is used to refer to the instance.
  */
 using SurfaceId = int32_t;
-
-/*
- * `RawProps` represents untyped map with props comes from JavaScript side.
- */
-// TODO(T26954420): Use iterator as underlying type for RawProps.
-using RawProps = std::unordered_map<std::string, folly::dynamic>;
-using SharedRawProps = std::shared_ptr<const RawProps>;
 
 /*
  * Universal component handle which allows to refer to `ComponentDescriptor`s

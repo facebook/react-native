@@ -24,7 +24,7 @@
   }
 }
 
-- (void)displayLayer:(CALayer *)layer
+- (void)displayLayer:(__unused CALayer *)layer
 {
   // RCTView uses displayLayer to do border rendering.
   // We don't need to do that in RCTMaskedView, so we

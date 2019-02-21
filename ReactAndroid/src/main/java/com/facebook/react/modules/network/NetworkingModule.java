@@ -163,7 +163,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
    * @param context the ReactContext of the application
    */
   public NetworkingModule(final ReactApplicationContext context) {
-    this(context, null, OkHttpClientProvider.createClient(), null);
+    this(context, null, OkHttpClientProvider.createClient(context), null);
   }
 
   /**
@@ -174,7 +174,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   public NetworkingModule(
     ReactApplicationContext context,
     List<NetworkInterceptorCreator> networkInterceptorCreators) {
-    this(context, null, OkHttpClientProvider.createClient(), networkInterceptorCreators);
+    this(context, null, OkHttpClientProvider.createClient(context), networkInterceptorCreators);
   }
 
   /**
@@ -183,7 +183,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
    * caller does not provide one explicitly
    */
   public NetworkingModule(ReactApplicationContext context, String defaultUserAgent) {
-    this(context, defaultUserAgent, OkHttpClientProvider.createClient(), null);
+    this(context, defaultUserAgent, OkHttpClientProvider.createClient(context), null);
   }
 
   @Override
@@ -325,7 +325,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     // shared under the hood.
     // See https://github.com/square/okhttp/wiki/Recipes#per-call-configuration for more information
     if (timeout != mClient.connectTimeoutMillis()) {
-      clientBuilder.readTimeout(timeout, TimeUnit.MILLISECONDS);
+      clientBuilder.connectTimeout(timeout, TimeUnit.MILLISECONDS);
     }
     OkHttpClient client = clientBuilder.build();
 

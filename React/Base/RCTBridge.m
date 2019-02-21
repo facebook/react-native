@@ -85,14 +85,14 @@ NSString *RCTBridgeModuleNameForClass(Class cls)
   return RCTDropReactPrefixes(name);
 }
 
-static BOOL jsiNativeModuleEnabled = NO;
-BOOL RCTJSINativeModuleEnabled(void)
+static BOOL turboModuleEnabled = NO;
+BOOL RCTTurboModuleEnabled(void)
 {
-  return jsiNativeModuleEnabled;
+  return turboModuleEnabled;
 }
 
-void RCTEnableJSINativeModule(BOOL enabled) {
-  jsiNativeModuleEnabled = enabled;
+void RCTEnableTurboModule(BOOL enabled) {
+  turboModuleEnabled = enabled;
 }
 
 #if RCT_DEBUG
@@ -130,7 +130,8 @@ void RCTVerifyAllModulesExported(NSArray *extraModules)
           break;
         }
 
-        RCTLogWarn(@"Class %@ was not exported. Did you forget to use RCT_EXPORT_MODULE()?", cls);
+        // Note: Some modules may be lazily loaded and not exported up front, so this message is no longer a warning.
+        RCTLogInfo(@"Class %@ was not exported. Did you forget to use RCT_EXPORT_MODULE()?", cls);
         break;
       }
       superclass = class_getSuperclass(superclass);
@@ -225,6 +226,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   [self invalidate];
 }
 
+- (void)setRCTTurboModuleLookupDelegate:(id<RCTTurboModuleLookupDelegate>)turboModuleLookupDelegate
+{
+  [self.batchedBridge setRCTTurboModuleLookupDelegate:turboModuleLookupDelegate];
+}
+
 - (void)didReceiveReloadCommand
 {
   [self reload];
@@ -240,9 +246,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   return [self.batchedBridge moduleForName:moduleName];
 }
 
+- (id)moduleForName:(NSString *)moduleName lazilyLoadIfNecessary:(BOOL)lazilyLoad
+{
+  return [self.batchedBridge moduleForName:moduleName lazilyLoadIfNecessary:lazilyLoad];
+}
+
 - (id)moduleForClass:(Class)moduleClass
 {
-  return [self moduleForName:RCTBridgeModuleNameForClass(moduleClass)];
+  id module = [self.batchedBridge moduleForClass:moduleClass];
+  if (!module) {
+    module = [self moduleForName:RCTBridgeModuleNameForClass(moduleClass)];
+  }
+  return module;
 }
 
 - (NSArray *)modulesConformingToProtocol:(Protocol *)protocol
@@ -277,7 +292,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
    * Any thread
    */
   dispatch_async(dispatch_get_main_queue(), ^{
+    // WARNING: Invalidation is async, so it may not finish before re-setting up the bridge,
+    // causing some issues. TODO: revisit this post-Fabric/TurboModule.
     [self invalidate];
+    // Reload is a special case, do not preserve launchOptions and treat reload as a fresh start
+    self->_launchOptions = nil;
     [self setUp];
   });
 }
@@ -349,6 +368,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       [batchedBridge invalidate];
     });
   }
+}
+
+- (void)updateModuleWithInstance:(id<RCTBridgeModule>)instance
+{
+  [self.batchedBridge updateModuleWithInstance:instance];
 }
 
 - (void)registerAdditionalModuleClasses:(NSArray<Class> *)modules

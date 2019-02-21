@@ -6,17 +6,13 @@
  */
 package com.facebook.react.views.text;
 
+import android.annotation.TargetApi;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
-import android.text.style.AbsoluteSizeSpan;
-import android.text.style.BackgroundColorSpan;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.StrikethroughSpan;
-import android.text.style.UnderlineSpan;
 import android.view.Gravity;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableMap;
@@ -24,10 +20,10 @@ import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactShadowNode;
-import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.yoga.YogaDirection;
+
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -42,6 +38,7 @@ import javax.annotation.Nullable;
  * <p>This also node calculates {@link Spannable} object based on subnodes of the same type, which
  * can be used in concrete classes to feed native views and compute layout.
  */
+@TargetApi(Build.VERSION_CODES.M)
 public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
   private static final String INLINE_IMAGE_PLACEHOLDER = "I";
@@ -59,9 +56,9 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
   private static class SetSpanOperation {
     protected int start, end;
-    protected Object what;
+    protected ReactSpan what;
 
-    SetSpanOperation(int start, int end, Object what) {
+    SetSpanOperation(int start, int end, ReactSpan what) {
       this.start = start;
       this.end = end;
       this.what = what;
@@ -85,17 +82,27 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   private static void buildSpannedFromShadowNode(
       ReactBaseTextShadowNode textShadowNode,
       SpannableStringBuilder sb,
-      List<SetSpanOperation> ops) {
+      List<SetSpanOperation> ops,
+      TextAttributes parentTextAttributes,
+      int start) {
 
-    int start = sb.length();
+    TextAttributes textAttributes;
+    if (parentTextAttributes != null) {
+      textAttributes = parentTextAttributes.applyChild(textShadowNode.mTextAttributes);
+    } else {
+      textAttributes = textShadowNode.mTextAttributes;
+    }
 
     for (int i = 0, length = textShadowNode.getChildCount(); i < length; i++) {
       ReactShadowNode child = textShadowNode.getChildAt(i);
 
       if (child instanceof ReactRawTextShadowNode) {
-        sb.append(((ReactRawTextShadowNode) child).getText());
+        sb.append(
+            TextTransform.apply(
+                ((ReactRawTextShadowNode) child).getText(),
+                textAttributes.getTextTransform()));
       } else if (child instanceof ReactBaseTextShadowNode) {
-        buildSpannedFromShadowNode((ReactBaseTextShadowNode) child, sb, ops);
+        buildSpannedFromShadowNode((ReactBaseTextShadowNode) child, sb, ops, textAttributes, sb.length());
       } else if (child instanceof ReactTextInlineImageShadowNode) {
         // We make the image take up 1 character in the span and put a corresponding character into
         // the text so that the image doesn't run over any following text.
@@ -114,23 +121,28 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     int end = sb.length();
     if (end >= start) {
       if (textShadowNode.mIsColorSet) {
-        ops.add(new SetSpanOperation(start, end, new ForegroundColorSpan(textShadowNode.mColor)));
+        ops.add(new SetSpanOperation(start, end, new ReactForegroundColorSpan(textShadowNode.mColor)));
       }
       if (textShadowNode.mIsBackgroundColorSet) {
         ops.add(
             new SetSpanOperation(
-                start, end, new BackgroundColorSpan(textShadowNode.mBackgroundColor)));
+                start, end, new ReactBackgroundColorSpan(textShadowNode.mBackgroundColor)));
       }
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        if (!Float.isNaN(textShadowNode.mLetterSpacing)) {
+        float effectiveLetterSpacing = textAttributes.getEffectiveLetterSpacing();
+        if (!Float.isNaN(effectiveLetterSpacing)
+            && (parentTextAttributes == null || parentTextAttributes.getEffectiveLetterSpacing() != effectiveLetterSpacing)) {
           ops.add(new SetSpanOperation(
             start,
             end,
-            new CustomLetterSpacingSpan(textShadowNode.mLetterSpacing)));
+            new CustomLetterSpacingSpan(effectiveLetterSpacing)));
         }
       }
-      if (textShadowNode.mFontSize != UNSET) {
-        ops.add(new SetSpanOperation(start, end, new AbsoluteSizeSpan(textShadowNode.mFontSize)));
+      int effectiveFontSize = textAttributes.getEffectiveFontSize();
+      if (// `getEffectiveFontSize` always returns a value so don't need to check for anything like
+          // `Float.NaN`.
+          parentTextAttributes == null || parentTextAttributes.getEffectiveFontSize() != effectiveFontSize) {
+        ops.add(new SetSpanOperation(start, end, new ReactAbsoluteSizeSpan(effectiveFontSize)));
       }
       if (textShadowNode.mFontStyle != UNSET
           || textShadowNode.mFontWeight != UNSET
@@ -146,15 +158,19 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
                     textShadowNode.getThemedContext().getAssets())));
       }
       if (textShadowNode.mIsUnderlineTextDecorationSet) {
-        ops.add(new SetSpanOperation(start, end, new UnderlineSpan()));
+        ops.add(new SetSpanOperation(start, end, new ReactUnderlineSpan()));
       }
       if (textShadowNode.mIsLineThroughTextDecorationSet) {
-        ops.add(new SetSpanOperation(start, end, new StrikethroughSpan()));
+        ops.add(new SetSpanOperation(start, end, new ReactStrikethroughSpan()));
       }
-      if ((textShadowNode.mTextShadowOffsetDx != 0
-        || textShadowNode.mTextShadowOffsetDy != 0
-        || textShadowNode.mTextShadowRadius != 0)
-        && Color.alpha(textShadowNode.mTextShadowColor) != 0) {
+      if (
+        (
+          textShadowNode.mTextShadowOffsetDx != 0 ||
+          textShadowNode.mTextShadowOffsetDy != 0 ||
+          textShadowNode.mTextShadowRadius != 0
+        ) &&
+        Color.alpha(textShadowNode.mTextShadowColor) != 0
+      ) {
         ops.add(
             new SetSpanOperation(
                 start,
@@ -165,25 +181,15 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
                     textShadowNode.mTextShadowRadius,
                     textShadowNode.mTextShadowColor)));
       }
-      if (!Float.isNaN(textShadowNode.getEffectiveLineHeight())) {
+      float effectiveLineHeight = textAttributes.getEffectiveLineHeight();
+      if (!Float.isNaN(effectiveLineHeight)
+          && (parentTextAttributes == null || parentTextAttributes.getEffectiveLineHeight() != effectiveLineHeight)) {
         ops.add(
             new SetSpanOperation(
-                start, end, new CustomLineHeightSpan(textShadowNode.getEffectiveLineHeight())));
-      }
-      if (textShadowNode.mTextTransform != TextTransform.UNSET) {
-        ops.add(
-          new SetSpanOperation(
-            start,
-            end,
-            new CustomTextTransformSpan(textShadowNode.mTextTransform)));
+                start, end, new CustomLineHeightSpan(effectiveLineHeight)));
       }
       ops.add(new SetSpanOperation(start, end, new ReactTagSpan(textShadowNode.getReactTag())));
     }
-  }
-
-  protected int getDefaultFontSize() {
-    return mAllowFontScaling ? (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP))
-      : (int) Math.ceil(PixelUtil.toPixelFromDIP(ViewDefaults.FONT_SIZE_SP));
   }
 
   protected static Spannable spannedFromShadowNode(
@@ -197,20 +203,16 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     // a new spannable will be wiped out
     List<SetSpanOperation> ops = new ArrayList<>();
 
-    buildSpannedFromShadowNode(textShadowNode, sb, ops);
-
     if (text != null) {
-      sb.append(text);
+      // Handle text that is provided via a prop (e.g. the `value` and `defaultValue` props on
+      // TextInput).
+      sb.append(TextTransform.apply(text, textShadowNode.mTextAttributes.getTextTransform()));
     }
 
-    if (textShadowNode.mFontSize == UNSET) {
-      int defaultFontSize = textShadowNode.getDefaultFontSize();
-
-      ops.add(new SetSpanOperation(0, sb.length(), new AbsoluteSizeSpan(defaultFontSize)));
-    }
+    buildSpannedFromShadowNode(textShadowNode, sb, ops, null, 0);
 
     textShadowNode.mContainsImages = false;
-    textShadowNode.mHeightOfTallestInlineImage = Float.NaN;
+    float heightOfTallestInlineImage = Float.NaN;
 
     // While setting the Spans on the final text, we also check whether any of them are images.
     int priority = 0;
@@ -218,9 +220,9 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       if (op.what instanceof TextInlineImageSpan) {
         int height = ((TextInlineImageSpan) op.what).getHeight();
         textShadowNode.mContainsImages = true;
-        if (Float.isNaN(textShadowNode.mHeightOfTallestInlineImage)
-            || height > textShadowNode.mHeightOfTallestInlineImage) {
-          textShadowNode.mHeightOfTallestInlineImage = height;
+        if (Float.isNaN(heightOfTallestInlineImage)
+            || height > heightOfTallestInlineImage) {
+          heightOfTallestInlineImage = height;
         }
       }
 
@@ -229,6 +231,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       op.execute(sb, priority);
       priority++;
     }
+
+    textShadowNode.mTextAttributes.setHeightOfTallestInlineImage(heightOfTallestInlineImage);
 
     return sb;
   }
@@ -250,27 +254,21 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
         : -1;
   }
 
-  protected float mLineHeight = Float.NaN;
-  protected float mLetterSpacing = Float.NaN;
+  protected TextAttributes mTextAttributes;
+
   protected boolean mIsColorSet = false;
-  protected boolean mAllowFontScaling = true;
   protected int mColor;
   protected boolean mIsBackgroundColorSet = false;
   protected int mBackgroundColor;
 
   protected int mNumberOfLines = UNSET;
-  protected int mFontSize = UNSET;
-  protected float mFontSizeInput = UNSET;
-  protected float mLineHeightInput = UNSET;
-  protected float mLetterSpacingInput = Float.NaN;
   protected int mTextAlign = Gravity.NO_GRAVITY;
   protected int mTextBreakStrategy =
       (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
-  protected TextTransform mTextTransform = TextTransform.UNSET;
 
   protected float mTextShadowOffsetDx = 0;
   protected float mTextShadowOffsetDy = 0;
-  protected float mTextShadowRadius = 1;
+  protected float mTextShadowRadius = 0;
   protected int mTextShadowColor = DEFAULT_TEXT_SHADOW_COLOR;
 
   protected boolean mIsUnderlineTextDecorationSet = false;
@@ -306,16 +304,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   protected boolean mContainsImages = false;
   protected float mHeightOfTallestInlineImage = Float.NaN;
 
-  public ReactBaseTextShadowNode() {}
-
-  // Returns a line height which takes into account the requested line height
-  // and the height of the inline images.
-  public float getEffectiveLineHeight() {
-    boolean useInlineViewHeight =
-        !Float.isNaN(mLineHeight)
-            && !Float.isNaN(mHeightOfTallestInlineImage)
-            && mHeightOfTallestInlineImage > mLineHeight;
-    return useInlineViewHeight ? mHeightOfTallestInlineImage : mLineHeight;
+  public ReactBaseTextShadowNode() {
+    mTextAttributes = new TextAttributes();
   }
 
   // Return text alignment according to LTR or RTL style
@@ -337,36 +327,30 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     markUpdated();
   }
 
-  @ReactProp(name = ViewProps.LINE_HEIGHT, defaultFloat = UNSET)
+  @ReactProp(name = ViewProps.LINE_HEIGHT, defaultFloat = Float.NaN)
   public void setLineHeight(float lineHeight) {
-    mLineHeightInput = lineHeight;
-    if (lineHeight == UNSET) {
-      mLineHeight = Float.NaN;
-    } else {
-      mLineHeight =
-          mAllowFontScaling
-              ? PixelUtil.toPixelFromSP(lineHeight)
-              : PixelUtil.toPixelFromDIP(lineHeight);
-    }
+    mTextAttributes.setLineHeight(lineHeight);
     markUpdated();
   }
 
   @ReactProp(name = ViewProps.LETTER_SPACING, defaultFloat = Float.NaN)
   public void setLetterSpacing(float letterSpacing) {
-    mLetterSpacingInput = letterSpacing;
-    mLetterSpacing = mAllowFontScaling
-      ? PixelUtil.toPixelFromSP(mLetterSpacingInput)
-      : PixelUtil.toPixelFromDIP(mLetterSpacingInput);
+    mTextAttributes.setLetterSpacing(letterSpacing);
     markUpdated();
   }
 
   @ReactProp(name = ViewProps.ALLOW_FONT_SCALING, defaultBoolean = true)
   public void setAllowFontScaling(boolean allowFontScaling) {
-    if (allowFontScaling != mAllowFontScaling) {
-      mAllowFontScaling = allowFontScaling;
-      setFontSize(mFontSizeInput);
-      setLineHeight(mLineHeightInput);
-      setLetterSpacing(mLetterSpacingInput);
+    if (allowFontScaling != mTextAttributes.getAllowFontScaling()) {
+      mTextAttributes.setAllowFontScaling(allowFontScaling);
+      markUpdated();
+    }
+  }
+
+  @ReactProp(name = ViewProps.MAX_FONT_SIZE_MULTIPLIER, defaultFloat = Float.NaN)
+  public void setMaxFontSizeMultiplier(float maxFontSizeMultiplier) {
+    if (maxFontSizeMultiplier != mTextAttributes.getMaxFontSizeMultiplier()) {
+      mTextAttributes.setMaxFontSizeMultiplier(maxFontSizeMultiplier);
       markUpdated();
     }
   }
@@ -390,16 +374,9 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     markUpdated();
   }
 
-  @ReactProp(name = ViewProps.FONT_SIZE, defaultFloat = UNSET)
+  @ReactProp(name = ViewProps.FONT_SIZE, defaultFloat = Float.NaN)
   public void setFontSize(float fontSize) {
-    mFontSizeInput = fontSize;
-    if (fontSize != UNSET) {
-      fontSize =
-          mAllowFontScaling
-              ? (float) Math.ceil(PixelUtil.toPixelFromSP(fontSize))
-              : (float) Math.ceil(PixelUtil.toPixelFromDIP(fontSize));
-    }
-    mFontSize = (int) fontSize;
+    mTextAttributes.setFontSize(fontSize);
     markUpdated();
   }
 
@@ -549,14 +526,16 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
   @ReactProp(name = PROP_TEXT_TRANSFORM)
   public void setTextTransform(@Nullable String textTransform) {
-    if (textTransform == null || "none".equals(textTransform)) {
-      mTextTransform = TextTransform.NONE;
+    if (textTransform == null) {
+      mTextAttributes.setTextTransform(TextTransform.UNSET);
+    } else if ("none".equals(textTransform)) {
+      mTextAttributes.setTextTransform(TextTransform.NONE);
     } else if ("uppercase".equals(textTransform)) {
-      mTextTransform = TextTransform.UPPERCASE;
+      mTextAttributes.setTextTransform(TextTransform.UPPERCASE);
     } else if ("lowercase".equals(textTransform)) {
-      mTextTransform = TextTransform.LOWERCASE;
+      mTextAttributes.setTextTransform(TextTransform.LOWERCASE);
     } else if ("capitalize".equals(textTransform)) {
-      mTextTransform = TextTransform.CAPITALIZE;
+      mTextAttributes.setTextTransform(TextTransform.CAPITALIZE);
     } else {
       throw new JSApplicationIllegalArgumentException("Invalid textTransform: " + textTransform);
     }

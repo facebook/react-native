@@ -25,6 +25,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.REACT_CONTEXT_THREA
 import static com.facebook.react.bridge.ReactMarkerConstants.REACT_CONTEXT_THREAD_START;
 import static com.facebook.react.bridge.ReactMarkerConstants.SETUP_REACT_CONTEXT_END;
 import static com.facebook.react.bridge.ReactMarkerConstants.SETUP_REACT_CONTEXT_START;
+import static com.facebook.react.bridge.ReactMarkerConstants.CHANGE_THREAD_PRIORITY;
 import static com.facebook.react.bridge.ReactMarkerConstants.VM_INIT;
 import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_APPS;
@@ -35,6 +36,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Process;
 import android.support.v4.view.ViewCompat;
 import android.util.Log;
@@ -45,6 +47,7 @@ import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.infer.annotation.ThreadSafe;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.CatalystInstance;
 import com.facebook.react.bridge.CatalystInstanceImpl;
 import com.facebook.react.bridge.JSBundleLoader;
@@ -63,6 +66,7 @@ import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.common.ReactConstants;
@@ -95,6 +99,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nullable;
 
 /**
@@ -130,8 +135,8 @@ public class ReactInstanceManager {
     void onReactContextInitialized(ReactContext context);
   }
 
-  private final List<ReactRootView> mAttachedRootViews = Collections.synchronizedList(
-    new ArrayList<ReactRootView>());
+  private final Set<ReactRootView> mAttachedRootViews = Collections.synchronizedSet(
+    new HashSet<ReactRootView>());
 
   private volatile LifecycleState mLifecycleState;
 
@@ -738,10 +743,13 @@ public class ReactInstanceManager {
   @ThreadConfined(UI)
   public void detachRootView(ReactRootView rootView) {
     UiThreadUtil.assertOnUiThread();
-    if (mAttachedRootViews.remove(rootView)) {
-      ReactContext currentContext = getCurrentReactContext();
-      if (currentContext != null && currentContext.hasActiveCatalystInstance()) {
-        detachViewFromInstance(rootView, currentContext.getCatalystInstance());
+    synchronized (mAttachedRootViews) {
+      if (mAttachedRootViews.contains(rootView)) {
+        ReactContext currentContext = getCurrentReactContext();
+        mAttachedRootViews.remove(rootView);
+        if (currentContext != null && currentContext.hasActiveCatalystInstance()) {
+          detachViewFromInstance(rootView, currentContext.getCatalystInstance());
+        }
       }
     }
   }
@@ -900,10 +908,12 @@ public class ReactInstanceManager {
   private void runCreateReactContextOnNewThread(final ReactContextInitParams initParams) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.runCreateReactContextOnNewThread()");
     UiThreadUtil.assertOnUiThread();
-    synchronized (mReactContextLock) {
-      if (mCurrentReactContext != null) {
-        tearDownReactContext(mCurrentReactContext);
-        mCurrentReactContext = null;
+    synchronized (mAttachedRootViews) {
+      synchronized (mReactContextLock) {
+        if (mCurrentReactContext != null) {
+          tearDownReactContext(mCurrentReactContext);
+          mCurrentReactContext = null;
+        }
       }
     }
 
@@ -975,24 +985,25 @@ public class ReactInstanceManager {
     ReactMarker.logMarker(PRE_SETUP_REACT_CONTEXT_END);
     ReactMarker.logMarker(SETUP_REACT_CONTEXT_START);
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "setupReactContext");
-    synchronized (mReactContextLock) {
-      mCurrentReactContext = Assertions.assertNotNull(reactContext);
-    }
-    CatalystInstance catalystInstance =
-      Assertions.assertNotNull(reactContext.getCatalystInstance());
-
-    catalystInstance.initialize();
-    mDevSupportManager.onNewReactContextCreated(reactContext);
-    mMemoryPressureRouter.addMemoryPressureListener(catalystInstance);
-    moveReactContextToCurrentLifecycleState();
-
-    ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_START);
     synchronized (mAttachedRootViews) {
+      synchronized (mReactContextLock) {
+        mCurrentReactContext = Assertions.assertNotNull(reactContext);
+      }
+
+      CatalystInstance catalystInstance =
+          Assertions.assertNotNull(reactContext.getCatalystInstance());
+
+      catalystInstance.initialize();
+      mDevSupportManager.onNewReactContextCreated(reactContext);
+      mMemoryPressureRouter.addMemoryPressureListener(catalystInstance);
+      moveReactContextToCurrentLifecycleState();
+
+      ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_START);
       for (ReactRootView rootView : mAttachedRootViews) {
         attachRootViewToInstance(rootView);
       }
+      ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_END);
     }
-    ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_END);
 
     ReactInstanceEventListener[] listeners =
       new ReactInstanceEventListener[mReactInstanceEventListeners.size()];
@@ -1015,6 +1026,7 @@ public class ReactInstanceManager {
           @Override
           public void run() {
             Process.setThreadPriority(Process.THREAD_PRIORITY_DEFAULT);
+            ReactMarker.logMarker(CHANGE_THREAD_PRIORITY, "js_default");
           }
         });
     reactContext.runOnNativeModulesQueueThread(
@@ -1026,13 +1038,17 @@ public class ReactInstanceManager {
         });
   }
 
-  private void attachRootViewToInstance(
-      final ReactRootView rootView) {
+  private void attachRootViewToInstance(final ReactRootView rootView) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.attachRootViewToInstance()");
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachRootViewToInstance");
     UIManager uiManagerModule = UIManagerHelper.getUIManager(mCurrentReactContext, rootView.getUIManagerType());
 
-    final int rootTag = uiManagerModule.addRootView(rootView);
+    @Nullable Bundle initialProperties = rootView.getAppProperties();
+    final int rootTag = uiManagerModule.addRootView(
+      rootView,
+      initialProperties == null ?
+            new WritableNativeMap() : Arguments.fromBundle(initialProperties),
+        rootView.getInitialUITemplate());
     rootView.setRootViewTag(rootTag);
     rootView.runApplication();
     Systrace.beginAsyncSection(
@@ -1076,11 +1092,7 @@ public class ReactInstanceManager {
 
     synchronized (mAttachedRootViews) {
       for (ReactRootView rootView : mAttachedRootViews) {
-        if (rootView.getUIManagerType() != FABRIC) {
-          // All the views created in surfaces that are managed by Fabric, are removed and deleted
-          // by the Mounting Layer.
-          rootView.removeAllViews();
-        }
+        rootView.removeAllViews();
         rootView.setId(View.NO_ID);
       }
     }

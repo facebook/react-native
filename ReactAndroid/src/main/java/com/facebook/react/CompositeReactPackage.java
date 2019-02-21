@@ -28,7 +28,7 @@ public class CompositeReactPackage implements ViewManagerOnDemandReactPackage, R
   private final List<ReactPackage> mChildReactPackages = new ArrayList<>();
 
   /**
-   * The order in which packages are passed matters. It may happen that a NativeModule or or a
+   * The order in which packages are passed matters. It may happen that a NativeModule or a
    * ViewManager exists in two or more ReactPackages. In that case the latter will win i.e. the
    * latter will overwrite the former. This re-occurrence is detected by comparing a name of a
    * module.

@@ -29,10 +29,7 @@ type State = {|
   dataSource: ListViewDataSource,
 |};
 
-class ListViewSimpleExample extends React.Component<RNTesterProps, State> {
-  static title = '<ListView>';
-  static description = 'Performant, scrollable list of data.';
-
+class ListViewExample extends React.Component<RNTesterProps, State> {
   state = {
     dataSource: this.getInitialDataSource(),
   };
@@ -69,8 +66,8 @@ class ListViewSimpleExample extends React.Component<RNTesterProps, State> {
     rowID: number,
     highlightRow: (sectionID: number, rowID: number) => void,
   ) => {
-    var rowHash = Math.abs(hashCode(rowData));
-    var imgSource = THUMB_URLS[rowHash % THUMB_URLS.length];
+    const rowHash = Math.abs(hashCode(rowData));
+    const imgSource = THUMB_URLS[rowHash % THUMB_URLS.length];
     return (
       <TouchableHighlight
         onPress={() => {
@@ -90,9 +87,9 @@ class ListViewSimpleExample extends React.Component<RNTesterProps, State> {
   };
 
   _genRows(pressData: {[key: number]: boolean}): Array<string> {
-    var dataBlob = [];
-    for (var ii = 0; ii < 100; ii++) {
-      var pressedText = pressData[ii] ? ' (pressed)' : '';
+    const dataBlob = [];
+    for (let ii = 0; ii < 100; ii++) {
+      const pressedText = pressData[ii] ? ' (pressed)' : '';
       dataBlob.push('Row ' + ii + pressedText);
     }
     return dataBlob;
@@ -124,7 +121,7 @@ class ListViewSimpleExample extends React.Component<RNTesterProps, State> {
   }
 }
 
-var THUMB_URLS = [
+const THUMB_URLS = [
   require('./Thumbnails/like.png'),
   require('./Thumbnails/dislike.png'),
   require('./Thumbnails/call.png'),
@@ -138,19 +135,19 @@ var THUMB_URLS = [
   require('./Thumbnails/superlike.png'),
   require('./Thumbnails/victory.png'),
 ];
-var LOREM_IPSUM =
+const LOREM_IPSUM =
   'Lorem ipsum dolor sit amet, ius ad pertinax oportere accommodare, an vix civibus corrumpit referrentur. Te nam case ludus inciderint, te mea facilisi adipiscing. Sea id integre luptatum. In tota sale consequuntur nec. Erat ocurreret mei ei. Eu paulo sapientem vulputate est, vel an accusam intellegam interesset. Nam eu stet pericula reprimique, ea vim illud modus, putant invidunt reprehendunt ne qui.';
 
 /* eslint no-bitwise: 0 */
-var hashCode = function(str) {
-  var hash = 15;
-  for (var ii = str.length - 1; ii >= 0; ii--) {
+const hashCode = function(str) {
+  let hash = 15;
+  for (let ii = str.length - 1; ii >= 0; ii--) {
     hash = (hash << 5) - hash + str.charCodeAt(ii);
   }
   return hash;
 };
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -166,4 +163,13 @@ var styles = StyleSheet.create({
   },
 });
 
-module.exports = ListViewSimpleExample;
+exports.title = '<ListView>';
+exports.description = 'Performant, scrollable list of data.';
+exports.examples = [
+  {
+    title: 'Simple list of items',
+    render: function(): React.Element<typeof ListViewExample> {
+      return <ListViewExample />;
+    },
+  },
+];

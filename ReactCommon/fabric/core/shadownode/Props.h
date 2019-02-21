@@ -9,9 +9,9 @@
 
 #include <folly/dynamic.h>
 
-#include <fabric/core/ReactPrimitives.h>
-#include <fabric/core/Sealable.h>
-#include <fabric/debug/DebugStringConvertible.h>
+#include <react/core/ReactPrimitives.h>
+#include <react/core/Sealable.h>
+#include <react/debug/DebugStringConvertible.h>
 
 namespace facebook {
 namespace react {
@@ -32,7 +32,7 @@ class Props : public virtual Sealable, public virtual DebugStringConvertible {
   const std::string nativeId;
 
 #ifdef ANDROID
-  const RawProps rawProps;
+  const folly::dynamic rawProps = folly::dynamic::object();
 #endif
 };
 

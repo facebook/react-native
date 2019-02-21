@@ -23,7 +23,7 @@ const WebSocketEvent = require('WebSocketEvent');
  * run Flow. */
 const base64 = require('base64-js');
 const binaryToBase64 = require('binaryToBase64');
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 const {WebSocketModule} = NativeModules;
 
@@ -173,10 +173,6 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
       }
     }
     this._binaryType = binaryType;
-  }
-
-  get binaryType(): ?BinaryType {
-    return this._binaryType;
   }
 
   close(code?: number, reason?: string): void {

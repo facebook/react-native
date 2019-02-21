@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
  */
 @DoNotStrip
 public interface CatalystInstance
-    extends MemoryPressureListener, JSInstance {
+    extends MemoryPressureListener, JSInstance, JSBundleLoaderDelegate {
   void runJSBundle();
 
   // Returns the status of running the JS bundle; waits for an answer if runJSBundle is running

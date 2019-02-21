@@ -5,10 +5,10 @@
 
 #pragma once
 
-#include <CoreFoundation/CoreFoundation.h>
 #include <CoreFoundation/CFRunLoop.h>
-#include <cxxreact/MessageQueueThread.h>
-#include <fabric/events/EventBeat.h>
+#include <CoreFoundation/CoreFoundation.h>
+#include <react/events/EventBeat.h>
+#include <react/uimanager/primitives.h>
 
 namespace facebook {
 namespace react {
@@ -17,19 +17,17 @@ namespace react {
  * Event beat associated with main run loop cycle.
  * The callback is always called on the main thread.
  */
-class MainRunLoopEventBeat final:
-  public EventBeat {
-
-public:
-  MainRunLoopEventBeat(std::shared_ptr<MessageQueueThread> messageQueueThread);
+class MainRunLoopEventBeat final : public EventBeat {
+ public:
+  MainRunLoopEventBeat(RuntimeExecutor runtimeExecutor);
   ~MainRunLoopEventBeat();
 
   void induce() const override;
 
-private:
-  void blockMessageQueueAndThenBeat() const;
+ private:
+  void lockExecutorAndBeat() const;
 
-  std::shared_ptr<MessageQueueThread> messageQueueThread_;
+  const RuntimeExecutor runtimeExecutor_;
   CFRunLoopObserverRef mainRunLoopObserver_;
 };
 

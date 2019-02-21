@@ -28,6 +28,7 @@ import type {PressEvent} from 'CoreEventTypes';
 import type {ViewStyleProp} from 'StyleSheet';
 import type {ColorValue} from 'StyleSheetTypes';
 import type {Props as TouchableWithoutFeedbackProps} from 'TouchableWithoutFeedback';
+import type {TVParallaxPropertiesType} from 'TVViewPropTypes';
 
 const DEFAULT_PROPS = {
   activeOpacity: 0.85,
@@ -39,7 +40,7 @@ const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 type IOSProps = $ReadOnly<{|
   hasTVPreferredFocus?: ?boolean,
-  tvParallaxProperties?: ?Object,
+  tvParallaxProperties?: ?TVParallaxPropertiesType,
 |}>;
 
 type Props = $ReadOnly<{|
@@ -49,8 +50,8 @@ type Props = $ReadOnly<{|
   activeOpacity?: ?number,
   underlayColor?: ?ColorValue,
   style?: ?ViewStyleProp,
-  onShowUnderlay?: ?Function,
-  onHideUnderlay?: ?Function,
+  onShowUnderlay?: ?() => void,
+  onHideUnderlay?: ?() => void,
   testOnly_pressed?: ?boolean,
 |}>;
 
@@ -154,6 +155,9 @@ type Props = $ReadOnly<{|
 const TouchableHighlight = ((createReactClass({
   displayName: 'TouchableHighlight',
   propTypes: {
+    /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.89 was deployed. To see the error, delete this
+     * comment and run Flow. */
     ...TouchableWithoutFeedback.propTypes,
     /**
      * Determines what the opacity of the wrapped view should be when touch is
@@ -185,18 +189,7 @@ const TouchableHighlight = ((createReactClass({
      */
     hasTVPreferredFocus: PropTypes.bool,
     /**
-     * *(Apple TV only)* Object with properties to control Apple TV parallax effects.
-     *
-     * enabled: If true, parallax effects are enabled.  Defaults to true.
-     * shiftDistanceX: Defaults to 2.0.
-     * shiftDistanceY: Defaults to 2.0.
-     * tiltAngle: Defaults to 0.05.
-     * magnification: Defaults to 1.0.
-     * pressMagnification: Defaults to 1.0.
-     * pressDuration: Defaults to 0.3.
-     * pressDelay: Defaults to 0.0.
-     *
-     * @platform ios
+     * Apple TV parallax effects
      */
     tvParallaxProperties: PropTypes.object,
     /**
@@ -205,7 +198,7 @@ const TouchableHighlight = ((createReactClass({
     testOnly_pressed: PropTypes.bool,
   },
 
-  mixins: [NativeMethodsMixin, Touchable.Mixin],
+  mixins: [NativeMethodsMixin, Touchable.Mixin.withoutDefaultFocusAndBlur],
 
   getDefaultProps: () => DEFAULT_PROPS,
 
@@ -265,6 +258,20 @@ const TouchableHighlight = ((createReactClass({
       this._hideUnderlay();
     }
     this.props.onPressOut && this.props.onPressOut(e);
+  },
+
+  touchableHandleFocus: function(e: Event) {
+    if (Platform.isTV) {
+      this._showUnderlay();
+    }
+    this.props.onFocus && this.props.onFocus(e);
+  },
+
+  touchableHandleBlur: function(e: Event) {
+    if (Platform.isTV) {
+      this._hideUnderlay();
+    }
+    this.props.onBlur && this.props.onBlur(e);
   },
 
   touchableHandlePress: function(e: PressEvent) {

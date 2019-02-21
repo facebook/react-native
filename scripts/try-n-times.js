@@ -7,8 +7,6 @@
  * @format
  */
 
-/* globals echo:false */
-
 'use strict';
 
 /**

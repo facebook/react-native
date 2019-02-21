@@ -9,11 +9,12 @@
 
 #include <memory>
 
-#include <fabric/core/ConcreteComponentDescriptor.h>
-#include <fabric/core/ConcreteShadowNode.h>
-#include <fabric/core/LocalData.h>
-#include <fabric/core/ShadowNode.h>
 #include <folly/dynamic.h>
+#include <react/core/ConcreteComponentDescriptor.h>
+#include <react/core/ConcreteShadowNode.h>
+#include <react/core/LocalData.h>
+#include <react/core/RawProps.h>
+#include <react/core/ShadowNode.h>
 
 using namespace facebook::react;
 
@@ -41,7 +42,8 @@ static const char TestComponentName[] = "Test";
 class TestProps : public Props {
  public:
   using Props::Props;
-  TestProps() : Props(Props(), {{"nativeID", "testNativeID"}}) {}
+  TestProps()
+      : Props(Props(), RawProps(folly::dynamic::object("nativeID", "testNativeID"))) {}
 };
 using SharedTestProps = std::shared_ptr<const TestProps>;
 

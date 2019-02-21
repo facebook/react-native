@@ -14,31 +14,13 @@
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
 
+#include <sstream>
 #include <stdexcept>
 
 using namespace facebook::jsi;
 
 namespace facebook {
 namespace react {
-
-JSIExecutorFactory::JSIExecutorFactory(
-    std::shared_ptr<jsi::Runtime> runtime,
-    JSIExecutor::Logger logger,
-    JSIExecutor::RuntimeInstaller runtimeInstaller)
-    : runtime_(runtime),
-      logger_(logger),
-      runtimeInstaller_(runtimeInstaller) {}
-
-std::unique_ptr<JSExecutor> JSIExecutorFactory::createJSExecutor(
-    std::shared_ptr<ExecutorDelegate> delegate,
-    std::shared_ptr<MessageQueueThread>) {
-  return std::make_unique<JSIExecutor>(
-      runtime_,
-      delegate,
-      logger_,
-      JSIExecutor::defaultTimeoutInvoker,
-      runtimeInstaller_);
-}
 
 class JSIExecutor::NativeModuleProxy : public jsi::HostObject {
  public:
@@ -303,13 +285,8 @@ void JSIExecutor::bindBridge() {
     Value batchedBridgeValue =
         runtime_->global().getProperty(*runtime_, "__fbBatchedBridge");
     if (batchedBridgeValue.isUndefined()) {
-      Function requireBatchedBridge = runtime_->global().getPropertyAsFunction(
-          *runtime_, "__fbRequireBatchedBridge");
-      batchedBridgeValue = requireBatchedBridge.call(*runtime_);
-      if (batchedBridgeValue.isUndefined()) {
-        throw JSINativeException(
-            "Could not get BatchedBridge, make sure your bundle is packaged correctly");
-      }
+      throw JSINativeException(
+                               "Could not get BatchedBridge, make sure your bundle is packaged correctly");
     }
 
     Object batchedBridge = batchedBridgeValue.asObject(*runtime_);

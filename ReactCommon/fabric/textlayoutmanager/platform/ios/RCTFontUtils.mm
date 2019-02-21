@@ -120,8 +120,8 @@ static UIFont *RCTDefaultFontWithFontProperties(
 
       fontDescriptor =
           [fontDescriptor fontDescriptorWithSymbolicTraits:symbolicTraits];
-      font =
-          [UIFont fontWithDescriptor:fontDescriptor size:fontProperties.size];
+      font = [UIFont fontWithDescriptor:fontDescriptor
+                                   size:fontProperties.size];
     }
 
     {

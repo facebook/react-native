@@ -26,10 +26,4 @@ public @interface ReactModuleList {
    * @return List of Native modules in the package.
    */
   Class<? extends NativeModule>[] nativeModules();
-
-  /**
-   * The View Managers in this list should be annotated with {@link ReactModule}.
-   * @return List of view manager in the package.
-   */
-  Class<? extends NativeModule>[] viewManagers() default {};
 }

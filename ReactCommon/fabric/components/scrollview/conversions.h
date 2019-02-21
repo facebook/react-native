@@ -7,16 +7,16 @@
 
 #pragma once
 
-#include <fabric/components/scrollview/primitives.h>
 #include <folly/dynamic.h>
+#include <react/components/scrollview/primitives.h>
 
 namespace facebook {
 namespace react {
 
-inline void fromDynamic(
-    const folly::dynamic &value,
+inline void fromRawValue(
+    const RawValue &value,
     ScrollViewSnapToAlignment &result) {
-  auto string = value.asString();
+  auto string = (std::string)value;
   if (string == "start") {
     result = ScrollViewSnapToAlignment::Start;
     return;
@@ -32,10 +32,10 @@ inline void fromDynamic(
   abort();
 }
 
-inline void fromDynamic(
-    const folly::dynamic &value,
+inline void fromRawValue(
+    const RawValue &value,
     ScrollViewIndicatorStyle &result) {
-  auto string = value.asString();
+  auto string = (std::string)value;
   if (string == "default") {
     result = ScrollViewIndicatorStyle::Default;
     return;
@@ -51,10 +51,10 @@ inline void fromDynamic(
   abort();
 }
 
-inline void fromDynamic(
-    const folly::dynamic &value,
+inline void fromRawValue(
+    const RawValue &value,
     ScrollViewKeyboardDismissMode &result) {
-  auto string = value.asString();
+  auto string = (std::string)value;
   if (string == "none") {
     result = ScrollViewKeyboardDismissMode::None;
     return;

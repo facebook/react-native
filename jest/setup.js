@@ -28,7 +28,7 @@ global.cancelAnimationFrame = function(id) {
   clearTimeout(id);
 };
 
-jest.mock('setupDevtools').mock('npmlog');
+jest.mock('setupDevtools');
 
 // there's a __mock__ for it.
 jest.setMock('ErrorUtils', require('ErrorUtils'));
@@ -115,6 +115,12 @@ const mockNativeModules = {
   BuildInfo: {
     appVersion: '0',
     buildVersion: '0',
+    getConstants() {
+      return {
+        appVersion: '0',
+        buildVersion: '0',
+      };
+    },
   },
   Clipboard: {
     setString: jest.fn(),
@@ -171,6 +177,7 @@ const mockNativeModules = {
     addEventListener: jest.fn(),
     getInitialURL: jest.fn(() => Promise.resolve()),
     removeEventListener: jest.fn(),
+    sendIntent: jest.fn(),
   },
   LocationObserver: {
     getCurrentPosition: jest.fn(),

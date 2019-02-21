@@ -11,7 +11,7 @@
 
 const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 // Note(vjeux): this would be better as an interface but flow doesn't
 // support them yet

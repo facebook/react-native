@@ -37,12 +37,12 @@ jest.dontMock('event-target-shim').setMock('NativeModules', {
 const XMLHttpRequest = require('XMLHttpRequest');
 
 describe('XMLHttpRequest', function() {
-  var xhr;
-  var handleTimeout;
-  var handleError;
-  var handleLoad;
-  var handleReadyStateChange;
-  var handleLoadEnd;
+  let xhr;
+  let handleTimeout;
+  let handleError;
+  let handleLoad;
+  let handleReadyStateChange;
+  let handleLoadEnd;
 
   beforeEach(() => {
     xhr = new XMLHttpRequest();
@@ -197,7 +197,7 @@ describe('XMLHttpRequest', function() {
     xhr.send();
 
     xhr.upload.onprogress = jest.fn();
-    var handleProgress = jest.fn();
+    const handleProgress = jest.fn();
     xhr.upload.addEventListener('progress', handleProgress);
     setRequestId(6);
     xhr.__didUploadProgress(requestId, 42, 100);

@@ -116,6 +116,16 @@ class WebView extends React.Component {
     useWebKit: PropTypes.bool,
 
     /**
+     * Used on Android only to disable Hardware Acceleration if needed
+     * Hardware acceleration can not be enabled at view level but it can be
+     * disabled see:
+     * https://developer.android.com/guide/topics/graphics/hardware-accel
+     *
+     * @platform android
+     */
+    hardwareAccelerationEnabledExperimental: PropTypes.bool,
+
+    /**
      * Used on Android only, JS is enabled by default for WebView on iOS
      * @platform android
      */
@@ -248,6 +258,7 @@ class WebView extends React.Component {
     javaScriptEnabled: true,
     thirdPartyCookiesEnabled: true,
     scalesPageToFit: true,
+    hardwareAccelerationEnabledExperimental: true,
     saveFormDataDisabled: false,
     originWhitelist: WebViewShared.defaultOriginWhitelist,
   };
@@ -327,6 +338,9 @@ class WebView extends React.Component {
         injectedJavaScript={this.props.injectedJavaScript}
         userAgent={this.props.userAgent}
         javaScriptEnabled={this.props.javaScriptEnabled}
+        hardwareAccelerationEnabledExperimental={
+          this.props.hardwareAccelerationEnabledExperimental
+        }
         thirdPartyCookiesEnabled={this.props.thirdPartyCookiesEnabled}
         domStorageEnabled={this.props.domStorageEnabled}
         messagingEnabled={typeof this.props.onMessage === 'function'}

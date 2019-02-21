@@ -114,11 +114,7 @@ public class ReactNativeTestRule implements TestRule {
                       @Override
                       public void onGlobalLayout() {
                         if (isLayoutUpdated.get()) {
-                          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                            mView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                          } else {
-                            mView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                          }
+                          mView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                           mLatch.countDown();
                         }
                       }
@@ -176,5 +172,9 @@ public class ReactNativeTestRule implements TestRule {
   /** Returns the react view */
   public ReactRootView getView() {
     return mView;
+  }
+
+  public ReactContext getContext() {
+    return mReactInstanceManager.getCurrentReactContext();
   }
 }

@@ -30,6 +30,13 @@ function push(arr, key, value) {
   arr[key].push(value);
 }
 
+const converterSummary = {
+  eslint:
+    '`eslint` found some issues. Run `yarn lint --fix` to automatically fix problems.',
+  flow: '`flow` found some issues.',
+  shellcheck: '`shellcheck` found some issues.',
+};
+
 /**
  * There is unfortunately no standard format to report an error, so we have
  * to write a specific converter for each tool we want to support.
@@ -118,19 +125,17 @@ function getShaFromPullRequest(owner, repo, number, callback) {
   });
 }
 
-function getFilesFromCommit(owner, repo, sha, callback) {
-  octokit.repos.getCommit({owner, repo, sha}, (error, res) => {
-    if (error) {
-      console.error(error);
-      return;
-    }
-    // A merge commit should not have any new changes to report
-    if (res.parents && res.parents.length > 1) {
-      return;
-    }
-
-    callback(res.data.files);
-  });
+function getFilesFromPullRequest(owner, repo, number, callback) {
+  octokit.pullRequests.listFiles(
+    {owner, repo, number, per_page: 100},
+    (error, res) => {
+      if (error) {
+        console.error(error);
+        return;
+      }
+      callback(res.data);
+    },
+  );
 }
 
 /**
@@ -227,7 +232,7 @@ function main(messages, owner, repo, number) {
   }
 
   getShaFromPullRequest(owner, repo, number, sha => {
-    getFilesFromCommit(owner, repo, sha, files => {
+    getFilesFromPullRequest(owner, repo, number, files => {
       let comments = [];
       let convertersUsed = [];
       files.filter(file => messages[file.filename]).forEach(file => {
@@ -252,11 +257,11 @@ function main(messages, owner, repo, number) {
       let body = '**Code analysis results:**\n\n';
       const uniqueconvertersUsed = [...new Set(convertersUsed)];
       uniqueconvertersUsed.forEach(converter => {
-        body += '* `' + converter + '` found some issues.\n';
+        body += '* ' + converterSummary[converter] + '\n';
       });
 
       sendReview(owner, repo, number, sha, body, comments);
-    }); // getFilesFromCommit
+    }); // getFilesFromPullRequest
   }); // getShaFromPullRequest
 }
 

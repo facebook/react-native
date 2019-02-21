@@ -10,6 +10,8 @@
 #import "RCTAutoInsetsProtocol.h"
 
 static NSString *const MessageHanderName = @"ReactNative";
+static NSURLCredential* clientAuthenticationCredential;
+
 
 @interface RCTWKWebView () <WKUIDelegate, WKNavigationDelegate, WKScriptMessageHandler, UIScrollViewDelegate, RCTAutoInsetsProtocol>
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingStart;
@@ -76,7 +78,9 @@ static NSString *const MessageHanderName = @"ReactNative";
     wkWebViewConfig.mediaTypesRequiringUserActionForPlayback = _mediaPlaybackRequiresUserAction
       ? WKAudiovisualMediaTypeAll
       : WKAudiovisualMediaTypeNone;
-   wkWebViewConfig.dataDetectorTypes = _dataDetectorTypes;
+    wkWebViewConfig.dataDetectorTypes = _dataDetectorTypes;
+#else
+    wkWebViewConfig.mediaPlaybackRequiresUserAction = _mediaPlaybackRequiresUserAction;
 #endif
 
     _webView = [[WKWebView alloc] initWithFrame:self.bounds configuration: wkWebViewConfig];
@@ -115,7 +119,7 @@ static NSString *const MessageHanderName = @"ReactNative";
  * This method is called whenever JavaScript running within the web view calls:
  *   - window.webkit.messageHandlers.[MessageHanderName].postMessage
  */
-- (void)userContentController:(WKUserContentController *)userContentController
+- (void)userContentController:(__unused WKUserContentController *)userContentController
        didReceiveScriptMessage:(WKScriptMessage *)message
 {
   if (_onMessage != nil) {
@@ -228,7 +232,7 @@ static NSString *const MessageHanderName = @"ReactNative";
  * Decides whether to allow or cancel a navigation.
  * @see https://fburl.com/42r9fxob
  */
-- (void)                  webView:(WKWebView *)webView
+- (void)                  webView:(__unused WKWebView *)webView
   decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction
                   decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 {
@@ -258,7 +262,7 @@ static NSString *const MessageHanderName = @"ReactNative";
     if (![self.delegate webView:self
       shouldStartLoadForRequest:event
                    withCallback:_onShouldStartLoadWithRequest]) {
-      decisionHandler(WKNavigationResponsePolicyCancel);
+      decisionHandler(WKNavigationActionPolicyCancel);
       return;
     }
   }
@@ -277,15 +281,15 @@ static NSString *const MessageHanderName = @"ReactNative";
   }
 
   // Allow all navigation by default
-  decisionHandler(WKNavigationResponsePolicyAllow);
+  decisionHandler(WKNavigationActionPolicyAllow);
 }
 
 /**
  * Called when an error occurs while the web view is loading content.
  * @see https://fburl.com/km6vqenw
  */
-- (void)               webView:(WKWebView *)webView
-  didFailProvisionalNavigation:(WKNavigation *)navigation
+- (void)               webView:(__unused WKWebView *)webView
+  didFailProvisionalNavigation:(__unused WKNavigation *)navigation
                      withError:(NSError *)error
 {
   if (_onLoadingError) {
@@ -310,6 +314,25 @@ static NSString *const MessageHanderName = @"ReactNative";
   [self setBackgroundColor: _savedBackgroundColor];
 }
 
++ (void)setClientAuthenticationCredential:(nullable NSURLCredential*)credential {
+  clientAuthenticationCredential = credential;
+}
+
+- (void)                    webView:(__unused WKWebView *)webView
+  didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
+                  completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential * _Nullable))completionHandler
+{
+  if (!clientAuthenticationCredential) {
+    completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
+    return;
+  }
+  if ([[challenge protectionSpace] authenticationMethod] == NSURLAuthenticationMethodClientCertificate) {
+    completionHandler(NSURLSessionAuthChallengeUseCredential, clientAuthenticationCredential);
+  } else {
+    completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
+}
+}
+
 - (void)evaluateJS:(NSString *)js
           thenCall: (void (^)(NSString*)) callback
 {
@@ -325,8 +348,8 @@ static NSString *const MessageHanderName = @"ReactNative";
  * Called when the navigation is complete.
  * @see https://fburl.com/rtys6jlb
  */
-- (void)      webView:(WKWebView *)webView
-  didFinishNavigation:(WKNavigation *)navigation
+- (void)      webView:(__unused WKWebView *)webView
+  didFinishNavigation:(__unused WKNavigation *)navigation
 {
   if (_messagingEnabled) {
     #if RCT_DEV

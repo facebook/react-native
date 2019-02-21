@@ -8,13 +8,13 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTComponentViewProtocol.h>
-#import <React/UIView+ComponentViewProtocol.h>
-#import <fabric/core/LayoutMetrics.h>
-#import <fabric/core/Props.h>
-#import <fabric/components/view/ViewEventEmitter.h>
-#import <fabric/components/view/ViewProps.h>
-#import <fabric/events/EventEmitter.h>
 #import <React/RCTTouchableComponentViewProtocol.h>
+#import <React/UIView+ComponentViewProtocol.h>
+#import <react/components/view/ViewEventEmitter.h>
+#import <react/components/view/ViewProps.h>
+#import <react/core/LayoutMetrics.h>
+#import <react/core/Props.h>
+#import <react/events/EventEmitter.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
  * UIView class for <View> component.
  */
 @interface RCTViewComponentView : UIView <RCTComponentViewProtocol, RCTTouchableComponentViewProtocol> {
-@protected
+ @protected
   facebook::react::LayoutMetrics _layoutMetrics;
   facebook::react::SharedViewProps _props;
   facebook::react::SharedViewEventEmitter _eventEmitter;

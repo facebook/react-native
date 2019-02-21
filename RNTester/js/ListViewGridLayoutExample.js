@@ -24,7 +24,7 @@ const ListViewDataSource = require('ListViewDataSource');
 
 import type {RNTesterProps} from 'RNTesterTypes';
 
-var THUMB_URLS = [
+const THUMB_URLS = [
   require('./Thumbnails/like.png'),
   require('./Thumbnails/dislike.png'),
   require('./Thumbnails/call.png'),
@@ -44,9 +44,6 @@ type State = {|
 |};
 
 class ListViewGridLayoutExample extends React.Component<RNTesterProps, State> {
-  static title = '<ListView> - Grid Layout';
-  static description = 'Flexbox grid layout.';
-
   state = {
     dataSource: this.getInitialDataSource(),
   };
@@ -78,8 +75,8 @@ class ListViewGridLayoutExample extends React.Component<RNTesterProps, State> {
   }
 
   _renderRow = (rowData: string, sectionID: number, rowID: number) => {
-    var rowHash = Math.abs(hashCode(rowData));
-    var imgSource = THUMB_URLS[rowHash % THUMB_URLS.length];
+    const rowHash = Math.abs(hashCode(rowData));
+    const imgSource = THUMB_URLS[rowHash % THUMB_URLS.length];
     return (
       <TouchableHighlight
         onPress={() => this._pressRow(rowID)}
@@ -95,9 +92,9 @@ class ListViewGridLayoutExample extends React.Component<RNTesterProps, State> {
   };
 
   _genRows(pressData: {[key: number]: boolean}): Array<string> {
-    var dataBlob = [];
-    for (var ii = 0; ii < 100; ii++) {
-      var pressedText = pressData[ii] ? ' (X)' : '';
+    const dataBlob = [];
+    for (let ii = 0; ii < 100; ii++) {
+      const pressedText = pressData[ii] ? ' (X)' : '';
       dataBlob.push('Cell ' + ii + pressedText);
     }
     return dataBlob;
@@ -114,15 +111,15 @@ class ListViewGridLayoutExample extends React.Component<RNTesterProps, State> {
 }
 
 /* eslint no-bitwise: 0 */
-var hashCode = function(str) {
-  var hash = 15;
-  for (var ii = str.length - 1; ii >= 0; ii--) {
+const hashCode = function(str) {
+  let hash = 15;
+  for (let ii = str.length - 1; ii >= 0; ii--) {
     hash = (hash << 5) - hash + str.charCodeAt(ii);
   }
   return hash;
 };
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   list: {
     justifyContent: 'space-around',
     flexDirection: 'row',
@@ -152,4 +149,13 @@ var styles = StyleSheet.create({
   },
 });
 
-module.exports = ListViewGridLayoutExample;
+exports.title = '<ListView> - Grid Layout';
+exports.description = 'Flexbox grid layout.';
+exports.examples = [
+  {
+    title: 'Simple list view with grid layout',
+    render: function(): React.Element<typeof ListViewGridLayoutExample> {
+      return <ListViewGridLayoutExample />;
+    },
+  },
+];
