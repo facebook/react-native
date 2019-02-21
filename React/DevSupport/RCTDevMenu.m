@@ -217,7 +217,7 @@ RCT_EXPORT_MODULE()
         preferredStyle:UIAlertControllerStyleAlert];
       __weak typeof(alertController) weakAlertController = alertController;
       [alertController addAction:
-       [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
+       [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(__unused UIAlertAction *action){
         [weakAlertController dismissViewControllerAnimated:YES completion:nil];
       }]];
       [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
@@ -251,7 +251,7 @@ RCT_EXPORT_MODULE()
           preferredStyle:UIAlertControllerStyleAlert];
         __weak typeof(alertController) weakAlertController = alertController;
         [alertController addAction:
-         [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
+         [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(__unused UIAlertAction *action){
           [weakAlertController dismissViewControllerAnimated:YES completion:nil];
         }]];
         [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
