@@ -11,6 +11,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import androidx.appcompat.widget.AppCompatTextView;
+import android.support.v7.widget.TintContextWrapper;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.Spanned;
@@ -84,6 +85,13 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     return json;
   }
 
+  private ReactContext getReactContext() {
+    Context context = getContext();
+    return (context instanceof TintContextWrapper)
+        ? (ReactContext)((TintContextWrapper)context).getBaseContext()
+        : (ReactContext)context;
+  }
+
   @Override
   protected void onLayout(boolean changed,
                           int textViewLeft,
@@ -107,7 +115,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
       return;
     }
 
-    UIManagerModule uiManager = ((ReactContext) getContext()).getNativeModule(UIManagerModule.class);
+    UIManagerModule uiManager = getReactContext().getNativeModule(UIManagerModule.class);
 
     Spanned text = (Spanned) getText();
     Layout layout = getLayout();
@@ -229,8 +237,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
       WritableMap event = Arguments.createMap();
       event.putArray("inlineViews", inlineViewInfoArray2);
-      ReactContext reactContext = (ReactContext) getContext();
-      reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
+      getReactContext().getJSModule(RCTEventEmitter.class).receiveEvent(
           getId(),
           "topInlineViewLayout",
           event
