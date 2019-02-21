@@ -141,6 +141,7 @@ class CameraRollView extends React.Component<Props, State> {
       // not supported in android
       delete fetchParams.groupTypes;
     }
+
     if (this.state.lastCursor) {
       fetchParams.after = this.state.lastCursor;
     }
@@ -174,7 +175,7 @@ class CameraRollView extends React.Component<Props, State> {
         onEndReached={this._onEndReached}
         style={styles.container}
         data={this.state.assets}
-        extraData={this.props.bigImages}
+        extraData={this.props.bigImages + this.state.noMore}
       />
     );
   }
@@ -200,7 +201,15 @@ class CameraRollView extends React.Component<Props, State> {
 
     if (assets.length > 0) {
       newState.lastCursor = data.page_info.end_cursor;
-      newState.assets = this.state.assets.concat(assets);
+
+      // Dedup assets we want to append
+      newState.assets = this.state.assets
+        .concat(assets)
+        .filter(
+          (a1, index, self) =>
+            index ===
+            self.findIndex(a2 => a1.node.image.uri === a2.node.image.uri),
+        );
     }
 
     this.setState(newState);
