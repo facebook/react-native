@@ -69,9 +69,23 @@ static NSURL *serverRootWithHost(NSString *host)
 - (BOOL)isPackagerRunning:(NSString *)host
 {
   NSURL *url = [serverRootWithHost(host) URLByAppendingPathComponent:@"status"];
+  
+  NSURLSession *session = [NSURLSession sharedSession];
   NSURLRequest *request = [NSURLRequest requestWithURL:url];
-  NSURLResponse *response;
-  NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:NULL];
+  __block NSURLResponse *response;
+  __block NSData *data;
+  
+  dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+  [[session dataTaskWithRequest:request
+            completionHandler:^(NSData *d,
+                                NSURLResponse *res,
+                                __unused NSError *err) {
+              data = d;
+              response = res;
+              dispatch_semaphore_signal(semaphore);
+            }] resume];
+  dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+  
   NSString *status = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
   return [status isEqualToString:@"packager-status:running"];
 }
