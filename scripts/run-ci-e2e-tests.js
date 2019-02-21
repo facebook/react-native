@@ -246,13 +246,15 @@ try {
       exitCode = 1;
       throw Error(exitCode);
     }
-    if (exec(`${ROOT}/node_modules/.bin/flow check`).code) {
+
+    if (exec('yarn flow check').code) {
       echo('Flow check does not pass');
       exitCode = 1;
       throw Error(exitCode);
     }
-    if (exec('yarn test').code) {
-      echo('Jest test failure');
+
+    if (exec('yarn test-ci').code) {
+      echo('Flow check does not pass');
       exitCode = 1;
       throw Error(exitCode);
     }
