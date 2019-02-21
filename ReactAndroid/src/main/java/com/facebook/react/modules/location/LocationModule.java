@@ -9,6 +9,7 @@ package com.facebook.react.modules.location;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -16,6 +17,7 @@ import android.location.LocationProvider;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.content.ContextCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -192,8 +194,9 @@ public class LocationModule extends ReactContextBaseJavaModule {
     mWatchedProvider = null;
   }
 
+  // Would mark this private, but we want to make it available for testing
   @Nullable
-  private static String getValidProvider(LocationManager locationManager, boolean highAccuracy) {
+  String getValidProvider(LocationManager locationManager, boolean highAccuracy) {
     String provider =
         highAccuracy ? LocationManager.GPS_PROVIDER : LocationManager.NETWORK_PROVIDER;
     if (!locationManager.isProviderEnabled(provider)) {
@@ -203,6 +206,11 @@ public class LocationModule extends ReactContextBaseJavaModule {
       if (!locationManager.isProviderEnabled(provider)) {
         return null;
       }
+    }
+    // If it's an enabled provider, but we don't have permissions, ignore it
+    int finePermission = ContextCompat.checkSelfPermission(getReactApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION);
+    if (provider.equals(LocationManager.GPS_PROVIDER) && finePermission != PackageManager.PERMISSION_GRANTED) {
+      return null;
     }
     return provider;
   }
