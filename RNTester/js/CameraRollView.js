@@ -76,7 +76,7 @@ type Props = $ReadOnly<{|
 
 type State = {|
   assets: Array<PhotoIdentifier>,
-  data: ?Array<Array<PhotoIdentifier>>,
+  data: ?Array<Array<?PhotoIdentifier>>,
   seen: Set<string>,
   lastCursor: ?string,
   noMore: boolean,
