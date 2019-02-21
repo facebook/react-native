@@ -249,6 +249,10 @@ aliases:
     name: JavaScript End-to-End Test Suite
     command: node ./scripts/run-ci-e2e-tests.js --js --retries 3;
 
+  - &run-android-e2e-tests
+    name: Android End-to-End Test Suite
+    command: node ./scripts/run-ci-e2e-tests.js --android --retries 3;
+
   - &display-broken-tests-warning
     name: Running broken tests (Ignore any failures past this point)
     command: |
@@ -263,9 +267,6 @@ aliases:
   - &run-e2e-tests
     name: End-to-End Test Suite
     command: ./scripts/run-ci-e2e-tests.js --android --ios --js --retries 3;
-  - &run-android-e2e-tests
-    name: Android End-to-End Test Suite
-    command: node ./scripts/run-ci-e2e-tests.js --android --retries 3;
 
 defaults: &defaults
   working_directory: ~/react-native
@@ -420,7 +421,8 @@ jobs:
       - run: *launch-avd
 
       # Keep configuring Android dependencies while AVD boots up
-
+      - run: *run-android-e2e-tests
+        
       # Install Buck
       - restore-cache: *restore-cache-downloads-buck
       - run: *install-buck
