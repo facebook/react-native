@@ -53,7 +53,7 @@ try {
   // install CLI
   const CLI_PACKAGE = 'react-native-cli';
   if (!argv['skip-cli-install']) {
-    if (exec(`sudo yarn global add ${CLI_PACKAGE}`).code) {
+    if (exec(`yarn global add ${CLI_PACKAGE}`).code) {
       echo('Could not install react-native-cli globally.');
       echo('Run with --skip-cli-install to skip this step');
       exitCode = 1;
