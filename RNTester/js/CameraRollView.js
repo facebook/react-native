@@ -87,25 +87,6 @@ type Row = {
   item: Array<PhotoIdentifier>,
 };
 
-function debounce(func, wait, immediate) {
-  var timeout;
-  return function() {
-    var args = arguments;
-    var later = function() {
-      timeout = null;
-      if (!immediate) {
-        func.apply(this, args);
-      }
-    };
-    var callNow = immediate && !timeout;
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-    if (callNow) {
-      func.apply(this, args);
-    }
-  };
-}
-
 class CameraRollView extends React.Component<Props, State> {
   static defaultProps = {
     groupTypes: 'SavedPhotos',
