@@ -189,7 +189,7 @@ try {
     if (
       tryExecNTimes(() => {
         exec('sleep 10s');
-        let destination = 'platform=iOS Simulator,name=iPhone 5s,OS=11.4';
+        let destination = 'platform=iOS Simulator,name=iPhone 5s,OS=12.1';
         let sdk = 'iphonesimulator';
         let scheme = 'EndToEndTest';
 
