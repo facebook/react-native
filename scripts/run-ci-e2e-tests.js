@@ -247,7 +247,7 @@ try {
       throw Error(exitCode);
     }
 
-    if (exec('yarn flow check').code) {
+    if (exec('yarn flow-check-ios').code) {
       echo('Flow check does not pass');
       exitCode = 1;
       throw Error(exitCode);
