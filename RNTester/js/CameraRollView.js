@@ -84,7 +84,7 @@ type State = {|
 |};
 
 type Row = {
-  item: Array<PhotoIdentifier>,
+  item: Array<?PhotoIdentifier>,
 };
 
 class CameraRollView extends React.Component<Props, State> {
@@ -202,7 +202,13 @@ class CameraRollView extends React.Component<Props, State> {
   _renderItem = (row: Row) => {
     return (
       <View style={styles.row}>
-        {row.item.map(image => this.props.renderImage(image))}
+        {row.item.map(image => {
+          if (image === null) {
+            return null;
+          }
+
+          return this.props.renderImage(image);
+        })}
       </View>
     );
   };
