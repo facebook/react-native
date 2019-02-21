@@ -246,11 +246,6 @@ try {
       exitCode = 1;
       throw Error(exitCode);
     }
-    if (exec('yarn test').code) {
-      echo('Jest does not pass');
-      exitCode = 1;
-      throw Error(exitCode);
-    }
   }
   exitCode = 0;
 } finally {
