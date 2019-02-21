@@ -323,11 +323,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   if (CGSizeEqualToSize(contentSize, CGSizeZero)) {
     self.contentOffset = originalOffset;
   } else {
-    // Make sure offset don't exceed bounds. This could happen on screen rotation.
+    if (@available(iOS 11.0, *)) {
+      if (!UIEdgeInsetsEqualToEdgeInsets(UIEdgeInsetsZero, self.adjustedContentInset)) {
+        contentInset = self.adjustedContentInset;
+      }
+    }
     CGSize boundsSize = self.bounds.size;
+    CGFloat xMaxOffset = contentSize.width - boundsSize.width + contentInset.right;
+    CGFloat yMaxOffset = contentSize.height - boundsSize.height + contentInset.bottom;
+    // Make sure offset doesn't exceed bounds. This can happen on screen rotation.
+    if ((originalOffset.x >= -contentInset.left) && (originalOffset.x <= xMaxOffset) &&
+        (originalOffset.y >= -contentInset.top) && (originalOffset.y <= yMaxOffset)) {
+      return;
+    }
     self.contentOffset = CGPointMake(
-      MAX(-contentInset.left, MIN(contentSize.width - boundsSize.width + contentInset.right, originalOffset.x)),
-      MAX(-contentInset.top, MIN(contentSize.height - boundsSize.height + contentInset.bottom, originalOffset.y)));
+      MAX(-contentInset.left, MIN(xMaxOffset, originalOffset.x)),
+      MAX(-contentInset.top, MIN(yMaxOffset, originalOffset.y)));
   }
 }
 
