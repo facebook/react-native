@@ -338,7 +338,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init);
 
 - (void)invalidate
 {
-  _methodQueue = nil;
 }
 
 - (NSString *)description
