@@ -285,13 +285,8 @@ void JSIExecutor::bindBridge() {
     Value batchedBridgeValue =
         runtime_->global().getProperty(*runtime_, "__fbBatchedBridge");
     if (batchedBridgeValue.isUndefined()) {
-      Function requireBatchedBridge = runtime_->global().getPropertyAsFunction(
-          *runtime_, "__fbRequireBatchedBridge");
-      batchedBridgeValue = requireBatchedBridge.call(*runtime_);
-      if (batchedBridgeValue.isUndefined()) {
-        throw JSINativeException(
-            "Could not get BatchedBridge, make sure your bundle is packaged correctly");
-      }
+      throw JSINativeException(
+                               "Could not get BatchedBridge, make sure your bundle is packaged correctly");
     }
 
     Object batchedBridge = batchedBridgeValue.asObject(*runtime_);
