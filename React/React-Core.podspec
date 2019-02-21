@@ -17,8 +17,9 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma'
+folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
 folly_version = '2018.10.22.00'
+boost_compiler_flags = '-Wno-documentation'
 
 Pod::Spec.new do |s|
   s.name                   = "React-Core"
@@ -41,7 +42,7 @@ Pod::Spec.new do |s|
                              "Views/RCTSlider*",
                              "Views/RCTSwitch*",
                              "Views/RCTWebView*"
-  s.compiler_flags         = folly_compiler_flags
+  s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.header_dir             = "React"
   s.framework              = "JavaScriptCore"
   s.library                = "stdc++"
