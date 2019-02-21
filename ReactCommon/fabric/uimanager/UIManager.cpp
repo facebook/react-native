@@ -30,7 +30,7 @@ SharedShadowNode UIManager::createNode(
     delegate_->uiManagerDidCreateShadowNode(shadowNode);
   }
 
-  return std::const_pointer_cast<ShadowNode>(shadowNode);
+  return shadowNode;
 }
 
 SharedShadowNode UIManager::cloneNode(
@@ -51,7 +51,7 @@ SharedShadowNode UIManager::cloneNode(
           .children = children,
       });
 
-  return std::const_pointer_cast<ShadowNode>(clonedShadowNode);
+  return clonedShadowNode;
 }
 
 void UIManager::appendChild(
