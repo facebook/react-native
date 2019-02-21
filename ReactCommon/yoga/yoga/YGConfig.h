@@ -10,7 +10,7 @@
 #include "Yoga.h"
 
 struct YGConfig {
-  using LogWithContextFn = void (*)(
+  using LogWithContextFn = int (*)(
       YGConfigRef config,
       YGNodeRef node,
       YGLogLevel level,
