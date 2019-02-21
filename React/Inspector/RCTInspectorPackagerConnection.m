@@ -201,7 +201,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     [self abort:@"Websocket exception"
       withCause:error];
   }
-  if (!_closed) {
+  if (!_closed && [error code] != ECONNREFUSED) {
     [self reconnect];
   }
 }
