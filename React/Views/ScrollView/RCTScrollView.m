@@ -331,7 +331,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     CGSize boundsSize = self.bounds.size;
     CGFloat xMaxOffset = contentSize.width - boundsSize.width + contentInset.right;
     CGFloat yMaxOffset = contentSize.height - boundsSize.height + contentInset.bottom;
-    // Make sure offset don't exceed bounds. This could happen on screen rotation.
+    // Make sure offset doesn't exceed bounds. This can happen on screen rotation.
     if ((originalOffset.x >= -contentInset.left) && (originalOffset.x <= xMaxOffset) &&
         (originalOffset.y >= -contentInset.top) && (originalOffset.y <= yMaxOffset)) {
       return;
