@@ -224,6 +224,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     Activity currentActivity = getCurrentActivity();
     Context context = currentActivity == null ? getContext() : currentActivity;
     mDialog = new Dialog(context, theme);
+    mDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
 
     mDialog.setContentView(getContentView());
     updateProperties();
@@ -263,6 +264,12 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     }
     if (currentActivity != null && !currentActivity.isFinishing()) {
       mDialog.show();
+      if (context instanceof Activity){
+        mDialog.getWindow().getDecorView().setSystemUiVisibility(
+          ((Activity)context).getWindow().getDecorView().getSystemUiVisibility()
+        );
+      }
+      mDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
     }
   }
 
