@@ -245,12 +245,9 @@ aliases:
     name: iOS End-to-End Test Suite
     command: node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
 
-  - &display-broken-tests-warning
-    name: Running broken tests (Ignore any failures past this point)
-    command: |
-      echo 'The following steps are known to be failing on master.'
-      echo 'They will no-op for most users.'
-      echo 'PRs that bring these back to green are appreciated.'
+  - &run-js-e2e-tests
+    name: JavaScript End-to-End Test Suite
+    command: node ./scripts/run-ci-e2e-tests.js --js --retries 3;
 
   # DISABLED TESTS
   - &run-podspec-tests
@@ -262,9 +259,6 @@ aliases:
   - &run-android-e2e-tests
     name: Android End-to-End Test Suite
     command: node ./scripts/run-ci-e2e-tests.js --android --retries 3;
-  - &run-js-e2e-tests
-    name: JavaScript End-to-End Test Suite
-    command: node ./scripts/run-ci-e2e-tests.js --js --retries 3;
 
 defaults: &defaults
   working_directory: ~/react-native
@@ -338,6 +332,7 @@ jobs:
           at: ~/react-native
 
       - run: *run-js-tests
+      - run: *run-js-e2e-tests
 
       - store_test_results:
           path: ~/react-native/reports/junit

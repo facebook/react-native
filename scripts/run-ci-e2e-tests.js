@@ -34,22 +34,26 @@ const TEMP = exec('mktemp -d /tmp/react-native-XXXXXXXX').stdout.trim();
 // To make sure we actually installed the local version
 // of react-native, we will create a temp file inside the template
 // and check that it exists after `react-native init
-const MARKER_IOS = exec(
-  `mktemp ${ROOT}/template/ios/HelloWorld/XXXXXXXX`,
-).stdout.trim();
-const MARKER_ANDROID = exec(
-  `mktemp ${ROOT}/template/android/XXXXXXXX`,
-).stdout.trim();
+const MARKER = exec(`mktemp ${ROOT}/template/XXXXXXXX`).stdout.trim();
 const numberOfRetries = argv.retries || 1;
 let SERVER_PID;
 let APPIUM_PID;
 let exitCode;
 
+// Make sure we installed local version of react-native
+function checkMarker() {
+  if (!test('-e', path.basename(MARKER))) {
+    echo('Marker was not found, react native init command failed?');
+    exitCode = 1;
+    throw Error(exitCode);
+  }
+}
+
 try {
   // install CLI
   const CLI_PACKAGE = 'react-native-cli';
   if (!argv['skip-cli-install']) {
-    if (exec(`sudo yarn global add ${CLI_PACKAGE}`).code) {
+    if (exec(`yarn global add ${CLI_PACKAGE}`).code) {
       echo('Could not install react-native-cli globally.');
       echo('Run with --skip-cli-install to skip this step');
       exitCode = 1;
@@ -97,6 +101,7 @@ try {
 
   if (argv.android) {
     echo('Running an Android end-to-end test');
+    checkMarker();
     echo('Installing end-to-end framework');
     if (
       tryExecNTimes(
@@ -117,12 +122,6 @@ try {
     cd('android');
     echo('Downloading Maven deps');
     exec('./gradlew :app:copyDownloadableDepsToLibs');
-    // Make sure we installed local version of react-native
-    if (!test('-e', path.basename(MARKER_ANDROID))) {
-      echo('Android marker was not found, react native init command failed?');
-      exitCode = 1;
-      throw Error(exitCode);
-    }
     cd('..');
     exec(
       'keytool -genkey -v -keystore android/keystores/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"',
@@ -162,15 +161,10 @@ try {
   }
 
   if (argv.ios || argv.tvos) {
+    checkMarker();
     var iosTestType = argv.tvos ? 'tvOS' : 'iOS';
     echo('Running the ' + iosTestType + ' app');
     cd('ios');
-    // Make sure we installed local version of react-native
-    if (!test('-e', path.join('EndToEndTest', path.basename(MARKER_IOS)))) {
-      echo('iOS marker was not found, `react-native init` command failed?');
-      exitCode = 1;
-      throw Error(exitCode);
-    }
     // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
     const packagerEnv = Object.create(process.env);
     packagerEnv.REACT_NATIVE_MAX_WORKERS = 1;
@@ -232,6 +226,7 @@ try {
   }
 
   if (argv.js) {
+    checkMarker();
     // Check the packager produces a bundle (doesn't throw an error)
     if (
       exec(
@@ -251,22 +246,11 @@ try {
       exitCode = 1;
       throw Error(exitCode);
     }
-    if (exec(`${ROOT}/node_modules/.bin/flow check`).code) {
-      echo('Flow check does not pass');
-      exitCode = 1;
-      throw Error(exitCode);
-    }
-    if (exec('yarn test').code) {
-      echo('Jest test failure');
-      exitCode = 1;
-      throw Error(exitCode);
-    }
   }
   exitCode = 0;
 } finally {
   cd(ROOT);
-  rm(MARKER_IOS);
-  rm(MARKER_ANDROID);
+  rm(MARKER);
 
   if (SERVER_PID) {
     echo(`Killing packager ${SERVER_PID}`);
