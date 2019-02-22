@@ -311,10 +311,6 @@ public class NetworkingModuleTest {
 
   @Test
   public void testPostJsonContentTypeHeader() throws Exception {
-    RCTDeviceEventEmitter emitter = mock(RCTDeviceEventEmitter.class);
-    ReactApplicationContext context = mock(ReactApplicationContext.class);
-    when(context.getJSModule(any(Class.class))).thenReturn(emitter);
-
     OkHttpClient httpClient = mock(OkHttpClient.class);
     when(httpClient.newCall(any(Request.class))).thenAnswer(new Answer<Object>() {
       @Override
@@ -326,12 +322,11 @@ public class NetworkingModuleTest {
     OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
     when(clientBuilder.build()).thenReturn(httpClient);
     when(httpClient.newBuilder()).thenReturn(clientBuilder);
-    NetworkingModule networkingModule = new NetworkingModule(context, "", httpClient);
+    NetworkingModule networkingModule =
+      new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
 
     JavaOnlyMap body = new JavaOnlyMap();
     body.putString("string", "{ \"key\": \"value\" }");
-
-    mockEvents();
 
     networkingModule.sendRequest(
       "POST",
@@ -347,15 +342,8 @@ public class NetworkingModuleTest {
     ArgumentCaptor<Request> argumentCaptor = ArgumentCaptor.forClass(Request.class);
     verify(httpClient).newCall(argumentCaptor.capture());
 
-    // Verify content was written correctly
-    Buffer contentBuffer = new Buffer();
-    argumentCaptor.getValue().body().writeTo(contentBuffer);
-    assertThat(contentBuffer.readUtf8()).isEqualTo(body.getString("string"));
-
     // Verify okhttp does not append "charset=utf8
-    assertThat(argumentCaptor.getValue().body().contentType().type()).isEqualTo("application");
-    assertThat(argumentCaptor.getValue().body().contentType().subtype()).isEqualTo("json");
-    assertThat(argumentCaptor.getValue().body().contentType().charset()).isEqualTo(null);
+    assertThat(argumentCaptor.getValue().body().contentType().toString()).isEqualTo("application/json");
   }
 
   @Test
