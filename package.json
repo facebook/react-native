@@ -178,7 +178,7 @@
     "pretty-format": "24.0.0-alpha.6",
     "promise": "^7.1.1",
     "prop-types": "^15.5.8",
-    "react-clone-referenced-element": "^1.0.1",
+    "react-clone-referenced-element": "^1.1.0",
     "react-devtools-core": "^3.6.0",
     "regenerator-runtime": "^0.11.0",
     "stacktrace-parser": "^0.1.3",
