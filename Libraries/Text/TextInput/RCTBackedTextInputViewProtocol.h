@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @protocol RCTBackedTextInputDelegate;
+@class RCTTextAttributes;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -24,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) UIView *inputAccessoryView;
 @property (nonatomic, weak, nullable) id<RCTBackedTextInputDelegate> textInputDelegate;
 @property (nonatomic, readonly) CGSize contentSize;
+@property (nonatomic, strong, nullable) RCTTextAttributes *reactTextAttributes;
 
 // This protocol disallows direct access to `selectedTextRange` property because
 // unwise usage of it can break the `delegate` behavior. So, we always have to

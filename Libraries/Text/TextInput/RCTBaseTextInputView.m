@@ -68,13 +68,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 - (void)enforceTextAttributesIfNeeded
 {
   id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
-  if (backedTextInputView.attributedText.string.length == 0) {
-    return;
-  }
-
-  backedTextInputView.font = _textAttributes.effectiveFont;
-  backedTextInputView.textColor = _textAttributes.effectiveForegroundColor;
-  backedTextInputView.textAlignment = _textAttributes.alignment;
+  backedTextInputView.reactTextAttributes = _textAttributes;
 }
 
 - (void)setReactPaddingInsets:(UIEdgeInsets)reactPaddingInsets
