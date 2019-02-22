@@ -48,7 +48,6 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.UIManagerModule;
-import com.facebook.react.uimanager.common.MeasureSpecProvider;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
@@ -66,7 +65,7 @@ import javax.annotation.Nullable;
  * subsequent touch events related to that gesture (in case when JS code wants to handle that
  * gesture).
  */
-public class ReactRootView extends FrameLayout implements RootView, MeasureSpecProvider {
+public class ReactRootView extends FrameLayout implements RootView {
 
   /**
    * Listener interface for react root view events
@@ -156,31 +155,13 @@ public class ReactRootView extends FrameLayout implements RootView, MeasureSpecP
       // Check if we were waiting for onMeasure to attach the root view.
       if (mReactInstanceManager != null && !mIsAttachedToInstance) {
         attachToReactInstanceManager();
-        enableLayoutCalculation();
       } else {
-        enableLayoutCalculation();
         updateRootLayoutSpecs(mWidthMeasureSpec, mHeightMeasureSpec);
       }
 
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
-  }
-
-  @Override
-  public int getWidthMeasureSpec() {
-    if (!mWasMeasured && getLayoutParams() != null && getLayoutParams().width > 0) {
-      return MeasureSpec.makeMeasureSpec(getLayoutParams().width, MeasureSpec.EXACTLY);
-    }
-    return mWidthMeasureSpec;
-  }
-
-  @Override
-  public int getHeightMeasureSpec() {
-    if (!mWasMeasured && getLayoutParams() != null && getLayoutParams().height > 0) {
-      return MeasureSpec.makeMeasureSpec(getLayoutParams().height, MeasureSpec.EXACTLY);
-    }
-    return mHeightMeasureSpec;
   }
 
   @Override
@@ -389,23 +370,6 @@ public class ReactRootView extends FrameLayout implements RootView, MeasureSpecP
     }
   }
 
-  private void enableLayoutCalculation() {
-    if (mReactInstanceManager == null) {
-      FLog.w(
-          ReactConstants.TAG,
-          "Unable to enable layout calculation for uninitialized ReactInstanceManager");
-      return;
-    }
-    final ReactContext reactApplicationContext = mReactInstanceManager.getCurrentReactContext();
-    if (reactApplicationContext != null) {
-      reactApplicationContext
-          .getCatalystInstance()
-          .getNativeModule(UIManagerModule.class)
-          .getUIImplementation()
-          .enableLayoutCalculationForRootNode(getRootViewTag());
-    }
-  }
-
   private void updateRootLayoutSpecs(final int widthMeasureSpec, final int heightMeasureSpec) {
     if (mReactInstanceManager == null) {
       FLog.w(
@@ -487,6 +451,9 @@ public class ReactRootView extends FrameLayout implements RootView, MeasureSpecP
           return;
         }
 
+        if (mWasMeasured) {
+          updateRootLayoutSpecs(mWidthMeasureSpec, mHeightMeasureSpec);
+        }
         CatalystInstance catalystInstance = reactContext.getCatalystInstance();
 
         WritableNativeMap appParams = new WritableNativeMap();

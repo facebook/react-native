@@ -81,6 +81,8 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   private final float[] mPadding = new float[Spacing.ALL + 1];
   private final boolean[] mPaddingIsPercent = new boolean[Spacing.ALL + 1];
   private YogaNode mYogaNode;
+  private Integer mWidthMeasureSpec;
+  private Integer mHeightMeasureSpec;
 
   public ReactShadowNodeImpl() {
     mDefaultPadding = new Spacing(0);
@@ -418,7 +420,12 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
 
   @Override
   public void calculateLayout() {
-    mYogaNode.calculateLayout(YogaConstants.UNDEFINED, YogaConstants.UNDEFINED);
+    calculateLayout(YogaConstants.UNDEFINED, YogaConstants.UNDEFINED);
+  }
+
+  @Override
+  public void calculateLayout(float width, float height) {
+    mYogaNode.calculateLayout(width, height);
   }
 
   @Override
@@ -956,4 +963,19 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
     }
   }
 
+  @Override
+  public void setMeasureSpecs(int widthMeasureSpec, int heightMeasureSpec) {
+    mWidthMeasureSpec = widthMeasureSpec;
+    mHeightMeasureSpec = heightMeasureSpec;
+  }
+
+  @Override
+  public Integer getWidthMeasureSpec() {
+    return mWidthMeasureSpec;
+  }
+
+  @Override
+  public Integer getHeightMeasureSpec() {
+    return mHeightMeasureSpec;
+  }
 }
