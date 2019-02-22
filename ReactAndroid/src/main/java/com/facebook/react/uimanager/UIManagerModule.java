@@ -39,7 +39,6 @@ import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.uimanager.common.MeasureSpecProvider;
 import com.facebook.react.uimanager.common.ViewUtil;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
@@ -377,7 +376,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
     return mUIImplementation.getProfiledBatchPerfCounters();
   }
 
-  public <T extends View & MeasureSpecProvider> int addRootView(
+  public <T extends View> int addRootView(
       final T rootView) {
         return addRootView(rootView, null, null);
       }
@@ -409,7 +408,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    * <p>TODO(6242243): Make addRootView thread safe NB: this method is horribly not-thread-safe.
    */
   @Override
-  public <T extends View & MeasureSpecProvider> int addRootView(
+  public <T extends View> int addRootView(
       final T rootView, WritableMap initialProps, @Nullable String initialUITemplate) {
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "UIManagerModule.addRootView");
     final int tag = ReactRootViewTagGenerator.getNextRootViewTag();

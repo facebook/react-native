@@ -56,7 +56,6 @@ import com.facebook.react.uimanager.ReactRootViewTagGenerator;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManagerPropertyUpdater;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.facebook.react.uimanager.common.MeasureSpecProvider;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
@@ -131,7 +130,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   }
 
   @Override
-  public <T extends View & MeasureSpecProvider> int addRootView(
+  public <T extends View> int addRootView(
       final T rootView, final WritableMap initialProps, final @Nullable String initialUITemplate) {
     final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
     ThemedReactContext reactContext =
@@ -139,7 +138,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mMountingManager.addRootView(rootTag, rootView);
     mReactContextForRootTag.put(rootTag, reactContext);
     mBinding.startSurface(rootTag, (NativeMap) initialProps);
-    updateRootLayoutSpecs(rootTag, rootView.getWidthMeasureSpec(), rootView.getHeightMeasureSpec());
     if (initialUITemplate != null) {
       mBinding.renderTemplateToSurface(rootTag, initialUITemplate);
     }
