@@ -18,6 +18,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.StandardCharsets;
 import com.facebook.react.common.network.OkHttpCallUtil;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
@@ -344,6 +345,49 @@ public class NetworkingModuleTest {
 
     // Verify okhttp does not append "charset=utf-8"
     assertThat(argumentCaptor.getValue().body().contentType().toString()).isEqualTo("application/json");
+  }
+
+  @Test
+  public void testRespectsExistingCharacterSet() throws Exception {
+    RCTDeviceEventEmitter emitter = mock(RCTDeviceEventEmitter.class);
+    ReactApplicationContext context = mock(ReactApplicationContext.class);
+    when(context.getJSModule(any(Class.class))).thenReturn(emitter);
+
+    OkHttpClient httpClient = mock(OkHttpClient.class);
+    when(httpClient.newCall(any(Request.class))).thenAnswer(new Answer<Object>() {
+      @Override
+      public Object answer(InvocationOnMock invocation) throws Throwable {
+        Call callMock = mock(Call.class);
+        return callMock;
+      }
+    });
+    OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
+    when(clientBuilder.build()).thenReturn(httpClient);
+    when(httpClient.newBuilder()).thenReturn(clientBuilder);
+    NetworkingModule networkingModule = new NetworkingModule(context, "", httpClient);
+
+    JavaOnlyMap body = new JavaOnlyMap();
+    body.putString("string", "Friðjónsson");
+
+    mockEvents();
+
+    networkingModule.sendRequest(
+      "POST",
+      "http://somedomain/bar",
+      0,
+      JavaOnlyArray.of(JavaOnlyArray.of("Content-Type", "text/plain; charset=utf-16")),
+      body,
+      /* responseType */ "text",
+      /* useIncrementalUpdates*/ true,
+      /* timeout */ 0,
+      /* withCredentials */ false);
+
+    ArgumentCaptor<Request> argumentCaptor = ArgumentCaptor.forClass(Request.class);
+    verify(httpClient).newCall(argumentCaptor.capture());
+
+    Buffer contentBuffer = new Buffer();
+    argumentCaptor.getValue().body().writeTo(contentBuffer);
+    assertThat(contentBuffer.readString(StandardCharsets.UTF_16)).isEqualTo("Friðjónsson");
   }
 
   @Test
