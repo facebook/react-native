@@ -342,7 +342,7 @@ public class NetworkingModuleTest {
     ArgumentCaptor<Request> argumentCaptor = ArgumentCaptor.forClass(Request.class);
     verify(httpClient).newCall(argumentCaptor.capture());
 
-    // Verify okhttp does not append "charset=utf8
+    // Verify okhttp does not append "charset=utf-8"
     assertThat(argumentCaptor.getValue().body().contentType().toString()).isEqualTo("application/json");
   }
 
