@@ -372,7 +372,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
           return;
         }
       } else {
-        requestBody = RequestBody.create(contentMediaType, body);
+        requestBody = RequestBody.create(contentMediaType, body.getBytes(StandardCharsets.UTF_8));
       }
     } else if (data.hasKey(REQUEST_BODY_KEY_BASE64)) {
       if (contentType == null) {

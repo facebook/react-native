@@ -247,7 +247,7 @@ public class NetworkingModuleTest {
     body.putString("string", "This is request body");
 
     mockEvents();
-    
+
     networkingModule.sendRequest(
       "POST",
       "http://somedomain/bar",
@@ -307,6 +307,43 @@ public class NetworkingModuleTest {
     assertThat(requestHeaders.size()).isEqualTo(2);
     assertThat(requestHeaders.get("Accept")).isEqualTo("text/plain");
     assertThat(requestHeaders.get("User-Agent")).isEqualTo("React test agent/1.0");
+  }
+
+  @Test
+  public void testPostJsonContentTypeHeader() throws Exception {
+    OkHttpClient httpClient = mock(OkHttpClient.class);
+    when(httpClient.newCall(any(Request.class))).thenAnswer(new Answer<Object>() {
+      @Override
+      public Object answer(InvocationOnMock invocation) throws Throwable {
+        Call callMock = mock(Call.class);
+        return callMock;
+      }
+    });
+    OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
+    when(clientBuilder.build()).thenReturn(httpClient);
+    when(httpClient.newBuilder()).thenReturn(clientBuilder);
+    NetworkingModule networkingModule =
+      new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
+
+    JavaOnlyMap body = new JavaOnlyMap();
+    body.putString("string", "{ \"key\": \"value\" }");
+
+    networkingModule.sendRequest(
+      "POST",
+      "http://somedomain/bar",
+      0,
+      JavaOnlyArray.of(JavaOnlyArray.of("Content-Type", "application/json")),
+      body,
+      /* responseType */ "text",
+      /* useIncrementalUpdates*/ true,
+      /* timeout */ 0,
+      /* withCredentials */ false);
+
+    ArgumentCaptor<Request> argumentCaptor = ArgumentCaptor.forClass(Request.class);
+    verify(httpClient).newCall(argumentCaptor.capture());
+
+    // Verify okhttp does not append "charset=utf-8"
+    assertThat(argumentCaptor.getValue().body().contentType().toString()).isEqualTo("application/json");
   }
 
   @Test
