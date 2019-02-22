@@ -40,6 +40,7 @@ public class YogaNodeJNI extends YogaNode implements Cloneable {
   private int mEdgeSetFlag = 0;
 
   private boolean mHasSetPosition = false;
+  private final boolean mAvoidGlobalJNIRefs;
 
   @DoNotStrip
   private float mWidth = YogaConstants.UNDEFINED;
@@ -81,15 +82,17 @@ public class YogaNodeJNI extends YogaNode implements Cloneable {
 
   private native long jni_YGNodeNew();
   public YogaNodeJNI() {
+    mAvoidGlobalJNIRefs = false;
     mNativePointer = jni_YGNodeNew();
     if (mNativePointer == 0) {
       throw new IllegalStateException("Failed to allocate native memory");
     }
   }
 
-  private native long jni_YGNodeNewWithConfig(long configPointer);
+  private native long jni_YGNodeNewWithConfig(long configPointer, boolean avoidGlobalJNIRefs);
   public YogaNodeJNI(YogaConfig config) {
-    mNativePointer = jni_YGNodeNewWithConfig(config.mNativePointer);
+    mAvoidGlobalJNIRefs = config.avoidGlobalJNIRefs;
+    mNativePointer = jni_YGNodeNewWithConfig(config.mNativePointer, mAvoidGlobalJNIRefs);
     if (mNativePointer == 0) {
       throw new IllegalStateException("Failed to allocate native memory");
     }
@@ -188,13 +191,13 @@ public class YogaNodeJNI extends YogaNode implements Cloneable {
 
   private static native void jni_YGNodeSetOwner(long nativePointer, long newOwnerNativePointer);
 
-  private native long jni_YGNodeClone(long nativePointer, Object newNode);
+  private native long jni_YGNodeClone(long nativePointer, Object newNode, boolean avoidGlobalJNIRefs);
 
   @Override
   public YogaNodeJNI clone() {
     try {
       YogaNodeJNI clonedYogaNode = (YogaNodeJNI) super.clone();
-      long clonedNativePointer = jni_YGNodeClone(mNativePointer, clonedYogaNode);
+      long clonedNativePointer = jni_YGNodeClone(mNativePointer, clonedYogaNode, mAvoidGlobalJNIRefs);
 
       if (mChildren != null) {
         for (YogaNodeJNI child : mChildren) {
@@ -222,7 +225,7 @@ public class YogaNodeJNI extends YogaNode implements Cloneable {
   public YogaNodeJNI cloneWithNewChildren() {
     try {
       YogaNodeJNI clonedYogaNode = (YogaNodeJNI) super.clone();
-      long clonedNativePointer = jni_YGNodeClone(mNativePointer, clonedYogaNode);
+      long clonedNativePointer = jni_YGNodeClone(mNativePointer, clonedYogaNode, mAvoidGlobalJNIRefs);
       clonedYogaNode.mOwner = null;
       clonedYogaNode.mNativePointer = clonedNativePointer;
       clonedYogaNode.clearChildren();
@@ -276,9 +279,29 @@ public class YogaNodeJNI extends YogaNode implements Cloneable {
     return mChildren == null ? -1 : mChildren.indexOf(child);
   }
 
-  private static native void jni_YGNodeCalculateLayout(long nativePointer, float width, float height);
+  private static native void jni_YGNodeCalculateLayout(long nativePointer, float width, float height, long[] nativePointers, YogaNodeJNI[] nodes);
   public void calculateLayout(float width, float height) {
-    jni_YGNodeCalculateLayout(mNativePointer, width, height);
+    long[] nativePointers = null;
+    YogaNodeJNI[] nodes = null;
+
+    if (mAvoidGlobalJNIRefs) {
+      ArrayList<YogaNodeJNI> n = new ArrayList<>();
+      n.add(this);
+      for (int i = 0; i < n.size(); ++i) {
+        List<YogaNodeJNI> children  = n.get(i).mChildren;
+        if (children != null) {
+          n.addAll(children);
+        }
+      }
+
+      nodes = n.toArray(new YogaNodeJNI[n.size()]);
+      nativePointers = new long[nodes.length];
+      for (int i = 0; i < nodes.length; ++i) {
+        nativePointers[i] = nodes[i].mNativePointer;
+      }
+    }
+
+    jni_YGNodeCalculateLayout(mNativePointer, width, height, nativePointers, nodes);
   }
 
   public boolean hasNewLayout() {
