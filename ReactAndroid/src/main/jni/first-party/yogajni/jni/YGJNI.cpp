@@ -376,7 +376,7 @@ jlong jni_YGNodeClone(
   return reinterpret_cast<jlong>(clonedYogaNode);
 }
 
-void jni_YGNodeFree(jlong nativePointer) {
+void jni_YGNodeFree(alias_ref<jclass>, jlong nativePointer) {
   if (nativePointer == 0) {
     return;
   }
@@ -728,7 +728,7 @@ jint JNI_OnLoad(JavaVM* vm, void*) {
         {
             YGMakeNativeMethod(jni_YGNodeNew),
             YGMakeNativeMethod(jni_YGNodeNewWithConfig),
-            YGMakeCriticalNativeMethod(jni_YGNodeFree),
+            YGMakeNativeMethod(jni_YGNodeFree),
             YGMakeCriticalNativeMethod(jni_YGNodeReset),
             YGMakeCriticalNativeMethod(jni_YGNodeClearChildren),
             YGMakeCriticalNativeMethod(jni_YGNodeInsertChild),
