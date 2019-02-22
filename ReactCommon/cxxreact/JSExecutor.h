@@ -103,7 +103,7 @@ public:
    */
   virtual std::string getDescription() = 0;
 
-  virtual void handleMemoryPressure(int pressureLevel) {}
+  virtual void handleMemoryPressure(__unused int pressureLevel) {}
 
   virtual void destroy() {}
   virtual ~JSExecutor() {}
