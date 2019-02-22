@@ -615,9 +615,9 @@ struct RCTInstanceCallback : public InstanceCallback {
         continue;
       } else if ([moduleData.moduleClass new] != nil) {
         // Both modules were non-nil, so it's unclear which should take precedence
-        RCTLogError(@"Attempted to register RCTBridgeModule class %@ for the "
-                    "name '%@', but name was already registered by class %@",
-                    moduleClass, moduleName, moduleData.moduleClass);
+        RCTLogWarn(@"Attempted to register RCTBridgeModule class %@ for the "
+                   "name '%@', but name was already registered by class %@",
+                   moduleClass, moduleName, moduleData.moduleClass);
       }
     }
 
