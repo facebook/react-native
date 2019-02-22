@@ -719,7 +719,7 @@ jint jni_YGNodeGetInstanceCount() {
 }
 
 #define YGMakeNativeMethod(name) makeNativeMethod(#name, name)
-#define YGMakeCriticalNativeMethod(name) makeCriticalNativeMethod(#name, name)
+#define YGMakeCriticalNativeMethod(name) makeCriticalNativeMethod_DO_NOT_USE_OR_YOU_WILL_BE_FIRED(#name, name)
 
 jint JNI_OnLoad(JavaVM* vm, void*) {
   return initialize(vm, [] {
