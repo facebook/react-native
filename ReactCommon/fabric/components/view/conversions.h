@@ -12,6 +12,7 @@
 #include <react/components/view/primitives.h>
 #include <react/core/LayoutMetrics.h>
 #include <react/graphics/Geometry.h>
+#include <stdlib.h>
 #include <yoga/YGEnums.h>
 #include <yoga/YGNode.h>
 #include <yoga/Yoga.h>
@@ -338,6 +339,22 @@ inline void fromRawValue(const RawValue &value, YGFloatOptional &result) {
   abort();
 }
 
+inline Float toRadians(const RawValue &value) {
+  if (value.hasType<Float>()) {
+    return (Float)value;
+  }
+  assert(value.hasType<std::string>());
+  auto stringValue = (std::string)value;
+  char *suffixStart;
+  double num = strtod(
+      stringValue.c_str(), &suffixStart); // can't use std::stod, probably
+                                          // because of old Android NDKs
+  if (0 == strncmp(suffixStart, "deg", 3)) {
+    return num * M_PI / 180;
+  }
+  return num; // assume suffix is "rad"
+}
+
 inline void fromRawValue(const RawValue &value, Transform &result) {
   assert(value.hasType<std::vector<RawValue>>());
   auto transformMatrix = Transform{};
@@ -363,13 +380,13 @@ inline void fromRawValue(const RawValue &value, Transform &result) {
           transformMatrix * Transform::Perspective((Float)parameters);
     } else if (operation == "rotateX") {
       transformMatrix =
-          transformMatrix * Transform::Rotate((Float)parameters, 0, 0);
+          transformMatrix * Transform::Rotate(toRadians(parameters), 0, 0);
     } else if (operation == "rotateY") {
       transformMatrix =
-          transformMatrix * Transform::Rotate(0, (Float)parameters, 0);
-    } else if (operation == "rotateZ") {
+          transformMatrix * Transform::Rotate(0, toRadians(parameters), 0);
+    } else if (operation == "rotateZ" || operation == "rotate") {
       transformMatrix =
-          transformMatrix * Transform::Rotate(0, 0, (Float)parameters);
+          transformMatrix * Transform::Rotate(0, 0, toRadians(parameters));
     } else if (operation == "scale") {
       auto number = (Float)parameters;
       transformMatrix =
@@ -394,9 +411,11 @@ inline void fromRawValue(const RawValue &value, Transform &result) {
       transformMatrix =
           transformMatrix * Transform::Translate(0, (Float)parameters, 0);
     } else if (operation == "skewX") {
-      transformMatrix = transformMatrix * Transform::Skew((Float)parameters, 0);
+      transformMatrix =
+          transformMatrix * Transform::Skew(toRadians(parameters), 0);
     } else if (operation == "skewY") {
-      transformMatrix = transformMatrix * Transform::Skew(0, (Float)parameters);
+      transformMatrix =
+          transformMatrix * Transform::Skew(0, toRadians(parameters));
     }
   }
 
