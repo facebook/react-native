@@ -23,7 +23,6 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -364,21 +363,13 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   public void updateRootLayoutSpecs(
       final int rootTag, final int widthMeasureSpec, final int heightMeasureSpec) {
 
-    // TODO T31905686: this should not run in a different thread.
-    // This is a workaround because a race condition that happens in core of RN.
-    // We are analyzing this and fixing it as part of another diff.
-    mReactApplicationContext.runOnJSQueueThread(
-        new GuardedRunnable(mReactApplicationContext) {
-          @Override
-          public void runGuarded() {
-            mBinding.setConstraints(
-                rootTag,
-                getMinSize(widthMeasureSpec),
-                getMaxSize(widthMeasureSpec),
-                getMinSize(heightMeasureSpec),
-                getMaxSize(heightMeasureSpec));
-          }
-        });
+    mBinding.setConstraints(
+      rootTag,
+      getMinSize(widthMeasureSpec),
+      getMaxSize(widthMeasureSpec),
+      getMinSize(heightMeasureSpec),
+      getMaxSize(heightMeasureSpec));
+
   }
 
   public void receiveEvent(int reactTag, String eventName, @Nullable WritableMap params) {
