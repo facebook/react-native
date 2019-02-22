@@ -28,16 +28,16 @@ aliases:
 
   - &restore-cache-gradle
     keys:
-      - v1-gradle-{{ .Branch }}-{{ checksum "build.gradle" }}-{{ checksum "ReactAndroid/build.gradle" }}
+      - v1-gradle-{{ .Branch }}-{{ checksum "build.gradle.kts" }}-{{ checksum "ReactAndroid/build.gradle" }}
       # Fallback in case checksum fails
-      - v1-gradle-{{ .Branch }}-{{ checksum "build.gradle" }}-
+      - v1-gradle-{{ .Branch }}-{{ checksum "build.gradle.kts" }}-
       - v1-gradle-{{ .Branch }}-
       # Fallback in case this is a first-time run on a fork
       - v1-gradle-master-
   - &save-cache-gradle
     paths:
       - ~/.gradle
-    key: v1-gradle-{{ .Branch }}-{{ checksum "build.gradle" }}-{{ checksum "ReactAndroid/build.gradle" }}
+    key: v1-gradle-{{ .Branch }}-{{ checksum "build.gradle.kts" }}-{{ checksum "ReactAndroid/build.gradle" }}
 
   - &restore-cache-downloads-buck
     keys:
