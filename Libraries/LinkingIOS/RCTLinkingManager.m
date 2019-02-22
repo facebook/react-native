@@ -56,6 +56,7 @@ RCT_EXPORT_MODULE()
   return YES;
 }
 
+// Corresponding api deprecated in iOS 9
 + (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)URL
   sourceApplication:(NSString *)sourceApplication
