@@ -23,10 +23,5 @@ allprojects {
         mavenLocal()
         google()
         jcenter()
-
-        def androidSdk = System.getenv("ANDROID_SDK")
-        maven {
-            url("$androidSdk/extras/m2repository/")
-        }
     }
 }
