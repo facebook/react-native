@@ -49,4 +49,9 @@ public class BatchMountItem implements MountItem {
 
     Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
   }
+
+  @Override
+  public String toString() {
+    return "BatchMountItem - size " + mMountItems.length;
+  }
 }
