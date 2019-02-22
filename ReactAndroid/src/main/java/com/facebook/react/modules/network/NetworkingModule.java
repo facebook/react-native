@@ -375,7 +375,9 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
         // Use getBytes() to convert the body into a byte[], preventing okhttp from
         // appending the character set to the Content-Type header when otherwise unspecified
         // https://github.com/facebook/react-native/issues/8237
-        Charset charset = contentMediaType.charset(StandardCharsets.UTF_8);
+        Charset charset = contentMediaType == null
+          ? StandardCharsets.UTF_8
+          : contentMediaType.charset(StandardCharsets.UTF_8);
         requestBody = RequestBody.create(contentMediaType, body.getBytes(charset));
       }
     } else if (data.hasKey(REQUEST_BODY_KEY_BASE64)) {

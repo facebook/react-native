@@ -391,6 +391,51 @@ public class NetworkingModuleTest {
   }
 
   @Test
+  public void testGracefullyRecoversFromInvalidContentType() throws Exception {
+    RCTDeviceEventEmitter emitter = mock(RCTDeviceEventEmitter.class);
+    ReactApplicationContext context = mock(ReactApplicationContext.class);
+    when(context.getJSModule(any(Class.class))).thenReturn(emitter);
+
+    OkHttpClient httpClient = mock(OkHttpClient.class);
+    when(httpClient.newCall(any(Request.class))).thenAnswer(new Answer<Object>() {
+      @Override
+      public Object answer(InvocationOnMock invocation) throws Throwable {
+        Call callMock = mock(Call.class);
+        return callMock;
+      }
+    });
+    OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
+    when(clientBuilder.build()).thenReturn(httpClient);
+    when(httpClient.newBuilder()).thenReturn(clientBuilder);
+    NetworkingModule networkingModule = new NetworkingModule(context, "", httpClient);
+
+    JavaOnlyMap body = new JavaOnlyMap();
+    body.putString("string", "test");
+
+    mockEvents();
+
+    networkingModule.sendRequest(
+      "POST",
+      "http://somedomain/bar",
+      0,
+      JavaOnlyArray.of(JavaOnlyArray.of("Content-Type", "invalid")),
+      body,
+      /* responseType */ "text",
+      /* useIncrementalUpdates*/ true,
+      /* timeout */ 0,
+      /* withCredentials */ false);
+
+    ArgumentCaptor<Request> argumentCaptor = ArgumentCaptor.forClass(Request.class);
+    verify(httpClient).newCall(argumentCaptor.capture());
+
+    Buffer contentBuffer = new Buffer();
+    argumentCaptor.getValue().body().writeTo(contentBuffer);
+
+    assertThat(contentBuffer.readString(StandardCharsets.UTF_8)).isEqualTo("test");
+    assertThat(argumentCaptor.getValue().header("Content-Type")).isEqualTo("invalid");
+  }
+
+  @Test
   public void testMultipartPostRequestSimple() throws Exception {
     PowerMockito.mockStatic(RequestBodyUtil.class);
     when(RequestBodyUtil.getFileInputStream(any(ReactContext.class), any(String.class)))
