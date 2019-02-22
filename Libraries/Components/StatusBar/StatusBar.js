@@ -14,8 +14,16 @@ const React = require('React');
 const Platform = require('Platform');
 
 const processColor = require('processColor');
+const warnOnce = require('warnOnce');
 
 const StatusBarManager = require('NativeModules').StatusBarManager;
+
+warnOnce(
+  'statusbar-moved',
+  'StatusBar has been extracted from react-native core and will be removed in a future release. ' +
+    "It can now be installed and imported from '@react-native-community/status-bar' instead of 'react-native'. " +
+    'https://github.com/react-native-community/react-native-statusbar',
+);
 
 /**
  * Status bar style

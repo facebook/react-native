@@ -15,6 +15,15 @@ const NativeModules = require('NativeModules');
 const Platform = require('Platform');
 const RCTNetInfo = NativeModules.NetInfo;
 
+const warnOnce = require('warnOnce');
+
+warnOnce(
+  'netinfo-moved',
+  'NetInfo has been extracted from react-native core and will be removed in a future release. ' +
+    "It can now be installed and imported from '@react-native-community/netinfo' instead of 'react-native'. " +
+    'See https://github.com/react-native-community/react-native-netinfo',
+);
+
 const NetInfoEventEmitter = new NativeEventEmitter(RCTNetInfo);
 
 const DEVICE_CONNECTIVITY_EVENT = 'networkStatusDidChange';

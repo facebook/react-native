@@ -13,7 +13,16 @@ const StyleSheet = require('StyleSheet');
 const View = require('View');
 const RCTMaskedViewNativeComponent = require('RCTMaskedViewNativeComponent');
 
+const warnOnce = require('warnOnce');
+
 import type {ViewProps} from 'ViewPropTypes';
+
+warnOnce(
+  'maskedviewios-moved',
+  'MaskedViewIOS has been extracted from react-native core and will be removed in a future release. ' +
+    "It can now be installed and imported from '@react-native-community/masked-view' instead of 'react-native'. " +
+    'See https://github.com/react-native-community/react-native-masked-view',
+);
 
 type Props = $ReadOnly<{|
   ...ViewProps,

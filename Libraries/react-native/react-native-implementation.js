@@ -10,365 +10,121 @@
 
 'use strict';
 
-const invariant = require('invariant');
-const warnOnce = require('warnOnce');
+// Components
+export {default as AccessibilityInfo} from 'AccessibilityInfo';
+export {default as ActivityIndicator} from 'ActivityIndicator';
+export {default as ART} from 'ReactNativeART';
+export {default as Button} from 'Button';
+export {default as CheckBox} from 'CheckBox';
+export {default as DatePickerIOS} from 'DatePickerIOS';
+export {default as DrawerLayoutAndroid} from 'DrawerLayoutAndroid';
+export {default as FlatList} from 'FlatList';
+export {default as Image} from 'Image';
+export {default as ImageBackground} from 'ImageBackground';
+export {default as ImageEditor} from 'ImageEditor';
+export {default as ImageStore} from 'ImageStore';
+export {default as InputAccessoryView} from 'InputAccessoryView';
+export {default as KeyboardAvoidingView} from 'KeyboardAvoidingView';
+export {default as MaskedViewIOS} from 'MaskedViewIOS';
+export {default as Modal} from 'Modal';
+export {default as Picker} from 'Picker';
+export {default as PickerIOS} from 'PickerIOS';
+export {default as ProgressBarAndroid} from 'ProgressBarAndroid';
+export {default as ProgressViewIOS} from 'ProgressViewIOS';
+export {default as SafeAreaView} from 'SafeAreaView';
+export {default as ScrollView} from 'ScrollView';
+export {default as SectionList} from 'SectionList';
+export {default as SegmentedControlIOS} from 'SegmentedControlIOS';
+export {default as Slider} from 'Slider';
+export {default as Switch} from 'Switch';
+export {default as RefreshControl} from 'RefreshControl';
+export {default as StatusBar} from 'StatusBar';
+export {default as SwipeableFlatList} from 'SwipeableFlatList';
+export {default as Text} from 'Text';
+export {default as TextInput} from 'TextInput';
+export {default as ToolbarAndroid} from 'ToolbarAndroid';
+export {default as Touchable} from 'Touchable';
+export {default as TouchableHighlight} from 'TouchableHighlight';
+export {default as TouchableNativeFeedback} from 'TouchableNativeFeedback';
+export {default as TouchableOpacity} from 'TouchableOpacity';
+export {default as TouchableWithoutFeedback} from 'TouchableWithoutFeedback';
+export {default as View} from 'View';
+export {default as ViewPagerAndroid} from 'ViewPagerAndroid';
+export {default as VirtualizedList} from 'VirtualizedList';
+export {default as WebView} from 'WebView';
 
-// Export React, plus some native additions.
-module.exports = {
-  // Components
-  get AccessibilityInfo() {
-    return require('AccessibilityInfo');
-  },
-  get ActivityIndicator() {
-    return require('ActivityIndicator');
-  },
-  get ART() {
-    return require('ReactNativeART');
-  },
-  get Button() {
-    return require('Button');
-  },
-  get CheckBox() {
-    return require('CheckBox');
-  },
-  get DatePickerIOS() {
-    return require('DatePickerIOS');
-  },
-  get DrawerLayoutAndroid() {
-    return require('DrawerLayoutAndroid');
-  },
-  get FlatList() {
-    return require('FlatList');
-  },
-  get Image() {
-    return require('Image');
-  },
-  get ImageBackground() {
-    return require('ImageBackground');
-  },
-  get ImageEditor() {
-    warnOnce(
-      'image-editor-moved',
-      'Image Editor has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/image-editor' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-image-editor',
-    );
-    return require('ImageEditor');
-  },
-  get ImageStore() {
-    warnOnce(
-      'imagestore-deprecation',
-      'ImageStore is deprecated and will be removed in a future release. ' +
-        'To get a base64-encoded string from a local image use either of the following third-party libraries:' +
-        "* expo-file-system: `readAsStringAsync(filepath, 'base64')`" +
-        "* react-native-fs: `readFile(filepath, 'base64')`",
-    );
-    return require('ImageStore');
-  },
-  get InputAccessoryView() {
-    return require('InputAccessoryView');
-  },
-  get KeyboardAvoidingView() {
-    return require('KeyboardAvoidingView');
-  },
-  get MaskedViewIOS() {
-    warnOnce(
-      'maskedviewios-moved',
-      'MaskedViewIOS has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/masked-view' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-masked-view',
-    );
-    return require('MaskedViewIOS');
-  },
-  get Modal() {
-    return require('Modal');
-  },
-  get Picker() {
-    return require('Picker');
-  },
-  get PickerIOS() {
-    return require('PickerIOS');
-  },
-  get ProgressBarAndroid() {
-    return require('ProgressBarAndroid');
-  },
-  get ProgressViewIOS() {
-    return require('ProgressViewIOS');
-  },
-  get SafeAreaView() {
-    return require('SafeAreaView');
-  },
-  get ScrollView() {
-    return require('ScrollView');
-  },
-  get SectionList() {
-    return require('SectionList');
-  },
-  get SegmentedControlIOS() {
-    return require('SegmentedControlIOS');
-  },
-  get Slider() {
-    warnOnce(
-      'slider-moved',
-      'Slider has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/slider' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-slider',
-    );
-    return require('Slider');
-  },
-  get Switch() {
-    return require('Switch');
-  },
-  get RefreshControl() {
-    return require('RefreshControl');
-  },
-  get StatusBar() {
-    warnOnce(
-      'statusbar-moved',
-      'StatusBar has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/status-bar' instead of 'react-native'. " +
-        'https://github.com/react-native-community/react-native-statusbar',
-    );
-    return require('StatusBar');
-  },
-  get SwipeableFlatList() {
-    return require('SwipeableFlatList');
-  },
-  get Text() {
-    return require('Text');
-  },
-  get TextInput() {
-    return require('TextInput');
-  },
-  get ToolbarAndroid() {
-    return require('ToolbarAndroid');
-  },
-  get Touchable() {
-    return require('Touchable');
-  },
-  get TouchableHighlight() {
-    return require('TouchableHighlight');
-  },
-  get TouchableNativeFeedback() {
-    return require('TouchableNativeFeedback');
-  },
-  get TouchableOpacity() {
-    return require('TouchableOpacity');
-  },
-  get TouchableWithoutFeedback() {
-    return require('TouchableWithoutFeedback');
-  },
-  get View() {
-    return require('View');
-  },
-  get ViewPagerAndroid() {
-    warnOnce(
-      'viewpager-moved',
-      'ViewPagerAndroid has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/viewpager' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-viewpager',
-    );
-    return require('ViewPagerAndroid');
-  },
-  get VirtualizedList() {
-    return require('VirtualizedList');
-  },
-  get WebView() {
-    warnOnce(
-      'webview-moved',
-      'WebView has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from 'react-native-webview' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-webview',
-    );
-    return require('WebView');
-  },
+// APIs
+export {default as ActionSheetIOS} from 'ActionSheetIOS';
+export {default as Alert} from 'Alert';
+export {default as Animated} from 'Animated';
+export {default as AppRegistry} from 'AppRegistry';
+export {default as AppState} from 'AppState';
+export {default as AsyncStorage} from 'AsyncStorage';
+export {default as BackHandler} from 'BackHandler';
+export {default as CameraRoll} from 'CameraRoll';
+export {default as Clipboard} from 'Clipboard';
+export {default as DatePickerAndroid} from 'DatePickerAndroid';
+export {default as DeviceInfo} from 'DeviceInfo';
+export {default as Dimensions} from 'Dimensions';
+export {default as Easing} from 'Easing';
+export {findNodeHandle} from 'ReactNative';
+export {default as I18nManager} from 'I18nManager';
+export {default as ImagePickerIOS} from 'ImagePickerIOS';
+export {default as InteractionManager} from 'InteractionManager';
+export {default as Keyboard} from 'Keyboard';
+export {default as LayoutAnimation} from 'LayoutAnimation';
+export {default as Linking} from 'Linking';
+export {default as NativeEventEmitter} from 'NativeEventEmitter';
+export {default as NetInfo} from 'NetInfo';
+export {default as PanResponder} from 'PanResponder';
+export {default as PermissionsAndroid} from 'PermissionsAndroid';
+export {default as PixelRatio} from 'PixelRatio';
+export {default as PushNotificationIOS} from 'PushNotificationIOS';
+export {default as Settings} from 'Settings';
+export {default as Share} from 'Share';
+export {default as StatusBarIOS} from 'StatusBarIOS';
+export {default as StyleSheet} from 'StyleSheet';
+export {default as Systrace} from 'Systrace';
+export {default as TimePickerAndroid} from 'TimePickerAndroid';
+export {default as ToastAndroid} from 'ToastAndroid';
+export {default as TVEventHandler} from 'TVEventHandler';
+export {default as UIManager} from 'UIManager';
+export {unstable_batchedUpdates} from 'ReactNative';
+export {default as UTFSequence} from 'UTFSequence';
+export {default as Vibration} from 'Vibration';
+export {default as YellowBox} from 'YellowBox';
 
-  // APIs
-  get ActionSheetIOS() {
-    return require('ActionSheetIOS');
-  },
-  get Alert() {
-    return require('Alert');
-  },
-  get AlertIOS() {
+// Plugins
+export {default as DeviceEventEmitter} from 'RCTDeviceEventEmitter';
+export {default as NativeAppEventEmitter} from 'RCTNativeAppEventEmitter';
+export {default as NativeModules} from 'NativeModules';
+export {default as Platform} from 'Platform';
+export {default as processColor} from 'processColor';
+export {default as requireNativeComponent} from 'requireNativeComponent';
+
+// Prop Types
+export {default as ColorPropType} from 'DeprecatedColorPropType';
+export {default as EdgeInsetsPropType} from 'DeprecatedEdgeInsetsPropType';
+export {default as PointPropType} from 'DeprecatedPointPropType';
+export {default as ViewPropTypes} from 'DeprecatedViewPropTypes';
+
+// NOTE(2019-03-19): Legacy alias that is deprecated and not yet removed
+// $FlowFixMe: Flow always wants a "value" property: https://github.com/facebook/flow/issues/5380
+Object.defineProperty(exports, 'AlertIOS', {
+  enumerable: true,
+  get() {
+    const warnOnce = require('warnOnce');
     warnOnce(
       'alert-ios',
       'AlertIOS is deprecated. Use the `Alert` module directly instead.',
     );
     return require('Alert');
   },
-  get Animated() {
-    return require('Animated');
-  },
-  get AppRegistry() {
-    return require('AppRegistry');
-  },
-  get AppState() {
-    return require('AppState');
-  },
-  get AsyncStorage() {
-    warnOnce(
-      'async-storage-moved',
-      'Async Storage has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/async-storage' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-async-storage',
-    );
-    return require('AsyncStorage');
-  },
-  get BackHandler() {
-    return require('BackHandler');
-  },
-  get CameraRoll() {
-    warnOnce(
-      'cameraroll-moved',
-      'CameraRoll has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/cameraroll' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-cameraroll',
-    );
-    return require('CameraRoll');
-  },
-  get Clipboard() {
-    return require('Clipboard');
-  },
-  get DatePickerAndroid() {
-    return require('DatePickerAndroid');
-  },
-  get DeviceInfo() {
-    return require('DeviceInfo');
-  },
-  get Dimensions() {
-    return require('Dimensions');
-  },
-  get Easing() {
-    return require('Easing');
-  },
-  get findNodeHandle() {
-    return require('ReactNative').findNodeHandle;
-  },
-  get I18nManager() {
-    return require('I18nManager');
-  },
-  get ImagePickerIOS() {
-    return require('ImagePickerIOS');
-  },
-  get InteractionManager() {
-    return require('InteractionManager');
-  },
-  get Keyboard() {
-    return require('Keyboard');
-  },
-  get LayoutAnimation() {
-    return require('LayoutAnimation');
-  },
-  get Linking() {
-    return require('Linking');
-  },
-  get NativeEventEmitter() {
-    return require('NativeEventEmitter');
-  },
-  get NetInfo() {
-    warnOnce(
-      'netinfo-moved',
-      'NetInfo has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/netinfo' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-netinfo',
-    );
-    return require('NetInfo');
-  },
-  get PanResponder() {
-    return require('PanResponder');
-  },
-  get PermissionsAndroid() {
-    return require('PermissionsAndroid');
-  },
-  get PixelRatio() {
-    return require('PixelRatio');
-  },
-  get PushNotificationIOS() {
-    warnOnce(
-      'pushNotificationIOS-moved',
-      'PushNotificationIOS has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/push-notification-ios' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-push-notification-ios',
-    );
-    return require('PushNotificationIOS');
-  },
-  get Settings() {
-    return require('Settings');
-  },
-  get Share() {
-    return require('Share');
-  },
-  get StatusBarIOS() {
-    return require('StatusBarIOS');
-  },
-  get StyleSheet() {
-    return require('StyleSheet');
-  },
-  get Systrace() {
-    return require('Systrace');
-  },
-  get TimePickerAndroid() {
-    return require('TimePickerAndroid');
-  },
-  get ToastAndroid() {
-    return require('ToastAndroid');
-  },
-  get TVEventHandler() {
-    return require('TVEventHandler');
-  },
-  get UIManager() {
-    return require('UIManager');
-  },
-  get unstable_batchedUpdates() {
-    return require('ReactNative').unstable_batchedUpdates;
-  },
-  get UTFSequence() {
-    return require('UTFSequence');
-  },
-  get Vibration() {
-    return require('Vibration');
-  },
-  get YellowBox() {
-    return require('YellowBox');
-  },
-
-  // Plugins
-  get DeviceEventEmitter() {
-    return require('RCTDeviceEventEmitter');
-  },
-  get NativeAppEventEmitter() {
-    return require('RCTNativeAppEventEmitter');
-  },
-  get NativeModules() {
-    return require('NativeModules');
-  },
-  get Platform() {
-    return require('Platform');
-  },
-  get processColor() {
-    return require('processColor');
-  },
-  get requireNativeComponent() {
-    return require('requireNativeComponent');
-  },
-
-  // Prop Types
-  get ColorPropType() {
-    return require('DeprecatedColorPropType');
-  },
-  get EdgeInsetsPropType() {
-    return require('DeprecatedEdgeInsetsPropType');
-  },
-  get PointPropType() {
-    return require('DeprecatedPointPropType');
-  },
-  get ViewPropTypes() {
-    return require('DeprecatedViewPropTypes');
-  },
-};
+});
 
 if (__DEV__) {
+  const invariant = require('invariant');
+
   // $FlowFixMe This is intentional: Flow will error when attempting to access ListView.
   Object.defineProperty(module.exports, 'ListView', {
     configurable: true,

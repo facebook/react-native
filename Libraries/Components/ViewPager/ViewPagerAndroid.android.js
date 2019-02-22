@@ -15,11 +15,19 @@ const ReactNative = require('ReactNative');
 const UIManager = require('UIManager');
 
 const dismissKeyboard = require('dismissKeyboard');
+const warnOnce = require('warnOnce');
 
 const NativeAndroidViewPager = require('AndroidViewPagerNativeComponent');
 
 import type {SyntheticEvent} from 'CoreEventTypes';
 import type {ViewStyleProp} from 'StyleSheet';
+
+warnOnce(
+  'viewpager-moved',
+  'ViewPagerAndroid has been extracted from react-native core and will be removed in a future release. ' +
+    "It can now be installed and imported from '@react-native-community/viewpager' instead of 'react-native'. " +
+    'See https://github.com/react-native-community/react-native-viewpager',
+);
 
 const VIEWPAGER_REF = 'viewPager';
 

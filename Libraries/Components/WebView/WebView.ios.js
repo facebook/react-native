@@ -29,9 +29,17 @@ const keyMirror = require('fbjs/lib/keyMirror');
 const processDecelerationRate = require('processDecelerationRate');
 const requireNativeComponent = require('requireNativeComponent');
 const resolveAssetSource = require('resolveAssetSource');
+const warnOnce = require('warnOnce');
 
 const RCTWebViewManager = require('NativeModules').WebViewManager;
 const RCTWKWebViewManager = require('NativeModules').WKWebViewManager;
+
+warnOnce(
+  'webview-moved',
+  'WebView has been extracted from react-native core and will be removed in a future release. ' +
+    "It can now be installed and imported from 'react-native-webview' instead of 'react-native'. " +
+    'See https://github.com/react-native-community/react-native-webview',
+);
 
 const BGWASH = 'rgba(255,255,255,0.8)';
 const RCT_WEBVIEW_REF = 'webview';
