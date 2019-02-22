@@ -385,7 +385,13 @@ public class ReactEditText extends EditText {
     mContainsImages = reactTextUpdate.containsImages();
     mIsSettingTextFromJS = true;
 
-    getText().replace(0, length(), spannableStringBuilder);
+    // On some devices, when the text is cleared, buggy keyboards will not clear the composing
+    // text so, we have to set text to null, which will clear the currently composing text.
+    if (reactTextUpdate.getText().length() == 0) {
+      setText(null);
+    } else {
+      getText().replace(0, length(), spannableStringBuilder);
+    }
 
     mIsSettingTextFromJS = false;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
