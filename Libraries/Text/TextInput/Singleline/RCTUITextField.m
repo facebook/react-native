@@ -14,7 +14,6 @@
 
 @implementation RCTUITextField {
   RCTBackedTextFieldDelegateAdapter *_textInputDelegateAdapter;
-  NSMutableAttributedString *_attributesHolder;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -26,7 +25,6 @@
                                                object:self];
 
     _textInputDelegateAdapter = [[RCTBackedTextFieldDelegateAdapter alloc] initWithTextField:self];
-    _attributesHolder = [[NSMutableAttributedString alloc] init];
   }
 
   return self;
@@ -119,48 +117,6 @@
   return [super caretRectForPosition:position];
 }
 
-#pragma mark - Fix for CJK Languages
-
-/* 
- * The workaround to fix inputting complex locales (like CJK languages).
- * When we use `setAttrbutedText:` while user is inputting text in a complex
- * locale (like Chinese, Japanese or Korean), some internal state breaks and
- * input stops working.
- *
- * To workaround that, we don't skip underlying attributedString in the text
- * field if only attributes were changed. We keep track of these attributes in
- * a local variable.
- *
- * There are two methods that are altered by this workaround:
- *
- * (1) `-setAttributedText:` 
- *     Applies the attributed string change to a local variable `_attributesHolder` instead of calling `-[super setAttributedText:]`.
- *     If new attributed text differs from the existing one only in attributes,
- *     skips `-[super setAttributedText:`] completely.
- *
- * (2) `-attributedText` 
- *     Return `_attributesHolder` context.
- *     Updates `_atributesHolder` before returning if the underlying `super.attributedText.string` was changed.
- *
- */
-- (void)setAttributedText:(NSAttributedString *)attributedText
-{
-  BOOL textWasChanged = ![_attributesHolder.string isEqualToString:attributedText.string];
-  [_attributesHolder setAttributedString:attributedText];
-
-  if (textWasChanged) {
-    [super setAttributedText:attributedText];
-  }
-}
-
-- (NSAttributedString *)attributedText
-{
-  if (![super.attributedText.string isEqualToString:_attributesHolder.string]) {
-    [_attributesHolder setAttributedString:super.attributedText];
-  }
-
-  return _attributesHolder;
-}
 
 #pragma mark - Positioning Overrides
 
