@@ -220,7 +220,7 @@ jobs:
           name: Analyze Shell Scripts
           command: |
             echo -e "\\x1B[36mInstalling additional dependencies\\x1B[0m"
-            apt update && apt install -y shellcheck
+            apt update && apt install -y shellcheck jq
             yarn add @octokit/rest@15.18.0
             echo -e "\\x1B[36mAnalyzing shell scripts\\x1B[0m"; \
             GITHUB_TOKEN="$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_A""$PUBLIC_ANALYSISBOT_GITHUB_TOKEN_B" \
