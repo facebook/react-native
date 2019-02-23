@@ -245,14 +245,13 @@ class JSCRuntime : public jsi::Runtime {
 
 // JSStringRef utilities
 namespace {
+
 std::string JSStringToSTLString(JSStringRef str) {
-  std::string result;
   size_t maxBytes = JSStringGetMaximumUTF8CStringSize(str);
-  result.resize(maxBytes);
-  size_t bytesWritten = JSStringGetUTF8CString(str, &result[0], maxBytes);
-  // JSStringGetUTF8CString writes the null terminator, so we want to resize
-  // to `bytesWritten - 1` so that `result` has the correct length.
-  result.resize(bytesWritten - 1);
+  char* string = (char*)malloc(maxBytes);
+  JSStringGetUTF8CString(str, string, maxBytes);
+  std::string result (string);
+  free(string);
   return result;
 }
 
@@ -1180,18 +1179,8 @@ jsi::Value JSCRuntime::createValue(JSValueRef value) const {
     return jsi::Value();
   } else if (JSValueIsString(ctx_, value)) {
     JSStringRef str = JSValueToStringCopy(ctx_, value, nullptr);
-    
-    size_t sizeUTF8 = JSStringGetMaximumUTF8CStringSize(str);
-    char* stringUTF8 = (char*)malloc(sizeUTF8);
-    JSStringGetUTF8CString(str, stringUTF8, sizeUTF8);
-    JSStringRef correctedStr = JSStringCreateWithUTF8CString(stringUTF8);
-    
-    auto result = jsi::Value(createString(correctedStr));
-    
-    free(stringUTF8);
+    auto result = jsi::Value(createString(str));
     JSStringRelease(str);
-    JSStringRelease(correctedStr);
-    
     return result;
   } else if (JSValueIsObject(ctx_, value)) {
     JSObjectRef objRef = JSValueToObject(ctx_, value, nullptr);
