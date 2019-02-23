@@ -1,0 +1,14 @@
+{
+  "version": "0.0.1",
+  "name": "react-native-codgen",
+  "description": "⚛️ Code generation tools for React Native",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:facebook/react-native.git"
+  },
+  "dependencies": {
+    "jscodeshift": "^0.6.2",
+    "nullthrows": "^1.1.0"
+  },
+  "license": "MIT"
+}

@@ -218,8 +218,8 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
 }
 
 void YogaLayoutableShadowNode::initializeYogaConfig(YGConfig &config) {
-  config.cloneNodeCallback =
-      YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector;
+  config.setCloneNodeCallback(
+      YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector);
 }
 
 } // namespace react

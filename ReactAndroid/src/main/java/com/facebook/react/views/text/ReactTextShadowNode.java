@@ -6,6 +6,7 @@
  */
 package com.facebook.react.views.text;
 
+import android.annotation.TargetApi;
 import android.os.Build;
 import android.text.BoringLayout;
 import android.text.Layout;
@@ -37,6 +38,7 @@ import javax.annotation.Nullable;
  * <p>The class measures text in {@code <Text>} view and feeds native {@link TextView} using {@code
  * Spannable} object constructed in superclass.
  */
+@TargetApi(Build.VERSION_CODES.M)
 public class ReactTextShadowNode extends ReactBaseTextShadowNode {
 
   // It's important to pass the ANTI_ALIAS_FLAG flag to the constructor rather than setting it

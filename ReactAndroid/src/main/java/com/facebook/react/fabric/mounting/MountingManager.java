@@ -13,16 +13,15 @@ import android.support.annotation.UiThread;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import com.facebook.react.fabric.FabricUIManager;
-import com.facebook.react.fabric.jsi.EventEmitterWrapper;
-import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.fabric.FabricUIManager;
+import com.facebook.react.fabric.jsi.EventEmitterWrapper;
+import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.RootView;
@@ -31,7 +30,6 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.yoga.YogaMeasureMode;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -53,7 +51,7 @@ public class MountingManager {
   }
 
   @UiThread
-  public void addRootView(int reactRootTag, SizeMonitoringFrameLayout rootView) {
+  public void addRootView(int reactRootTag, View rootView) {
     if (rootView.getId() != View.NO_ID) {
       throw new IllegalViewOperationException(
           "Trying to add a root view with an explicit id already set. React Native uses "
@@ -252,8 +250,7 @@ public class MountingManager {
     if (viewState.mCurrentLocalData != null
         && newLocalData.hasKey("hash")
         && viewState.mCurrentLocalData.getDouble("hash") == newLocalData.getDouble("hash")
-        && viewState.mCurrentLocalData.toString().equals(newLocalData.toString())) {
-      // TODO: T31905686 implement a proper equality method
+        && viewState.mCurrentLocalData.equals(newLocalData)) {
       return;
     }
     viewState.mCurrentLocalData = newLocalData;
@@ -289,8 +286,8 @@ public class MountingManager {
   public long measure(
       ReactContext context,
       String componentName,
-      ReadableNativeMap localData,
-      ReadableNativeMap props,
+      ReadableMap localData,
+      ReadableMap props,
       float width,
       YogaMeasureMode widthMode,
       float height,

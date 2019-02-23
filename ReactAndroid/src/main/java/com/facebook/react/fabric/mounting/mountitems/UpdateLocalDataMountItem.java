@@ -15,7 +15,7 @@ public class UpdateLocalDataMountItem implements MountItem {
   private final int mReactTag;
   private final ReadableMap mNewLocalData;
 
-  public UpdateLocalDataMountItem(int reactTag, ReadableNativeMap newLocalData) {
+  public UpdateLocalDataMountItem(int reactTag, ReadableMap newLocalData) {
     mReactTag = reactTag;
     mNewLocalData = newLocalData;
   }

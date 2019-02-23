@@ -68,7 +68,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 - (void)enforceTextAttributesIfNeeded
 {
   id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
-  if (backedTextInputView.attributedText.string.length != 0) {
+  if (backedTextInputView.attributedText.string.length == 0) {
     return;
   }
 
@@ -105,12 +105,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   // Similarly, when the user is in the middle of inputting some text in Japanese/Chinese, there will be styling on the
   // text that we should disregard. See https://developer.apple.com/documentation/uikit/uitextinput/1614489-markedtextrange?language=objc
   // for more info.
+  // If the user added an emoji, the sytem adds a font attribute for the emoji and stores the original font in NSOriginalFont.
   // Lastly, when entering a password, etc., there will be additional styling on the field as the native text view
   // handles showing the last character for a split second.
+  __block BOOL fontHasBeenUpdatedBySystem = false;
+  [oldText enumerateAttribute:@"NSOriginalFont" inRange:NSMakeRange(0, oldText.length) options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
+    if (value){
+      fontHasBeenUpdatedBySystem = true;
+    }
+  }];
+
   BOOL shouldFallbackToBareTextComparison =
     [self.backedTextInputView.textInputMode.primaryLanguage isEqualToString:@"dictation"] ||
     self.backedTextInputView.markedTextRange ||
-    self.backedTextInputView.isSecureTextEntry;
+    self.backedTextInputView.isSecureTextEntry ||
+    fontHasBeenUpdatedBySystem;
+
   if (shouldFallbackToBareTextComparison) {
     return ([newText.string isEqualToString:oldText.string]);
   } else {
@@ -131,9 +141,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   [attributedTextCopy removeAttribute:RCTTextAttributesTagAttributeName
                                 range:NSMakeRange(0, attributedTextCopy.length)];
-  
+
   textNeedsUpdate = ([self textOf:attributedTextCopy equals:backedTextInputViewTextCopy] == NO);
-  
+
   if (eventLag == 0 && textNeedsUpdate) {
     UITextRange *selection = self.backedTextInputView.selectedTextRange;
     NSInteger oldTextLength = self.backedTextInputView.attributedText.string.length;
@@ -193,9 +203,65 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 {
   #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
     if (@available(iOS 10.0, *)) {
+
+        static dispatch_once_t onceToken;
+        static NSDictionary<NSString *, NSString *> *contentTypeMap;
+
+        dispatch_once(&onceToken, ^{
+          contentTypeMap = @{@"none": @"",
+                             @"URL": UITextContentTypeURL,
+                             @"addressCity": UITextContentTypeAddressCity,
+                             @"addressCityAndState":UITextContentTypeAddressCityAndState,
+                             @"addressState": UITextContentTypeAddressState,
+                             @"countryName": UITextContentTypeCountryName,
+                             @"creditCardNumber": UITextContentTypeCreditCardNumber,
+                             @"emailAddress": UITextContentTypeEmailAddress,
+                             @"familyName": UITextContentTypeFamilyName,
+                             @"fullStreetAddress": UITextContentTypeFullStreetAddress,
+                             @"givenName": UITextContentTypeGivenName,
+                             @"jobTitle": UITextContentTypeJobTitle,
+                             @"location": UITextContentTypeLocation,
+                             @"middleName": UITextContentTypeMiddleName,
+                             @"name": UITextContentTypeName,
+                             @"namePrefix": UITextContentTypeNamePrefix,
+                             @"nameSuffix": UITextContentTypeNameSuffix,
+                             @"nickname": UITextContentTypeNickname,
+                             @"organizationName": UITextContentTypeOrganizationName,
+                             @"postalCode": UITextContentTypePostalCode,
+                             @"streetAddressLine1": UITextContentTypeStreetAddressLine1,
+                             @"streetAddressLine2": UITextContentTypeStreetAddressLine2,
+                             @"sublocality": UITextContentTypeSublocality,
+                             @"telephoneNumber": UITextContentTypeTelephoneNumber,
+                             };
+
+          #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
+            if (@available(iOS 11.0, tvOS 11.0, *)) {
+              NSDictionary<NSString *, NSString *> * iOS11extras = @{@"username": UITextContentTypeUsername,
+                                                                     @"password": UITextContentTypePassword};
+
+              NSMutableDictionary<NSString *, NSString *> * iOS11baseMap = [contentTypeMap mutableCopy];
+              [iOS11baseMap addEntriesFromDictionary:iOS11extras];
+
+              contentTypeMap = [iOS11baseMap copy];
+            }
+          #endif
+
+          #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 120000 /* __IPHONE_12_0 */
+            if (@available(iOS 12.0, tvOS 12.0, *)) {
+              NSDictionary<NSString *, NSString *> * iOS12extras = @{@"newPassword": UITextContentTypeNewPassword,
+                                                                     @"oneTimeCode": UITextContentTypeOneTimeCode};
+
+              NSMutableDictionary<NSString *, NSString *> * iOS12baseMap = [contentTypeMap mutableCopy];
+              [iOS12baseMap addEntriesFromDictionary:iOS12extras];
+
+              contentTypeMap = [iOS12baseMap copy];
+            }
+          #endif
+        });
+
         // Setting textContentType to an empty string will disable any
         // default behaviour, like the autofill bar for password inputs
-        self.backedTextInputView.textContentType = [type isEqualToString:@"none"] ? @"" : type;
+        self.backedTextInputView.textContentType = contentTypeMap[type] ?: type;
     }
   #endif
 }
@@ -215,6 +281,24 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
       [textInputView reloadInputViews];
     }
   }
+}
+
+- (BOOL)secureTextEntry {
+  return self.backedTextInputView.secureTextEntry;
+}
+
+- (void)setSecureTextEntry:(BOOL)secureTextEntry {
+  UIView<RCTBackedTextInputViewProtocol> *textInputView = self.backedTextInputView;
+    
+  if (textInputView.secureTextEntry != secureTextEntry) {
+    textInputView.secureTextEntry = secureTextEntry;
+      
+    // Fix #5859, see https://stackoverflow.com/questions/14220187/uitextfield-has-trailing-whitespace-after-securetextentry-toggle/22537788#22537788
+    NSAttributedString *originalText = [textInputView.attributedText copy];
+    self.backedTextInputView.attributedText = [NSAttributedString new];
+    self.backedTextInputView.attributedText = originalText;
+  }
+    
 }
 
 #pragma mark - RCTBackedTextInputDelegate
@@ -295,9 +379,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   }
 
   if (_maxLength) {
-    NSUInteger allowedLength = _maxLength.integerValue - backedTextInputView.attributedText.string.length + range.length;
+    NSInteger allowedLength = _maxLength.integerValue - backedTextInputView.attributedText.string.length + range.length;
 
-    if (text.length > allowedLength) {
+    if (allowedLength < 0 || text.length > allowedLength) {
       // If we typed/pasted more than one character, limit the text inputted.
       if (text.length > 1) {
         // Truncate the input string so the result is exactly maxLength
@@ -355,8 +439,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
 
-  // Detect when `backedTextInputView` updates happend that didn't invoke `shouldChangeTextInRange`
-  // (e.g. typing simplified chinese in pinyin will insert and remove spaces without
+  // Detect when `backedTextInputView` updates happened that didn't invoke `shouldChangeTextInRange`
+  // (e.g. typing simplified Chinese in pinyin will insert and remove spaces without
   // calling shouldChangeTextInRange).  This will cause JS to get out of sync so we
   // update the mismatched range.
   NSRange currentRange;

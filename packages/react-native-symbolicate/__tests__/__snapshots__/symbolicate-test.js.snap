@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`symbolicating a profiler map 1`] = `
+"JS_0000_xxxxxxxxxxxxxxxxxxxxxx throws0::thrower.js:48:11
+JS_0001_xxxxxxxxxxxxxxxxxxxxxx throws6::thrower.js:35:38
+JS_0002_xxxxxxxxxxxxxxxxxxxxxx name::thrower.js:1:0
+JS_0003_xxxxxxxxxxxxxxxxxxxxxx (unknown)::thrower.js:1:0"
+`;
+
+exports[`symbolicating a stack trace 1`] = `
+"thrower.js:18:null
+thrower.js:30:arg
+null:null:null
+thrower.js:30:arguments
+thrower.js:35:this
+eval code
+null:null:null
+thrower.js:27:null
+thrower.js:39:throws3
+thrower.js:44:throws2
+thrower.js:49:throws1
+thrower.js:53:throws0
+global thrower.js:1:null
+"
+`;
+
+exports[`symbolicating an attribution file 1`] = `
+"{\\"functionId\\":1,\\"location\\":{\\"file\\":\\"thrower.js\\",\\"line\\":4,\\"column\\":11},\\"usage\\":[]}
+{\\"functionId\\":2,\\"location\\":{\\"file\\":\\"thrower.js\\",\\"line\\":14,\\"column\\":14},\\"usage\\":[]}
+"
+`;
+
+exports[`symbolicating with a cpuprofile 1`] = `"{\\"stackFrames\\":{\\"1\\":{\\"funcVirtAddr\\":\\"0\\",\\"offset\\":\\"0\\",\\"name\\":\\"global+0(temp/bench.js:2:1)\\",\\"category\\":\\"JavaScript\\"},\\"2\\":{\\"funcVirtAddr\\":\\"0\\",\\"offset\\":\\"55\\",\\"name\\":\\"global+55(temp/bench.js:21:11)\\",\\"category\\":\\"JavaScript\\"},\\"3\\":{\\"funcVirtAddr\\":\\"67\\",\\"offset\\":\\"16\\",\\"name\\":\\"entryPoint+16(temp/bench.js:3:9)\\",\\"category\\":\\"JavaScript\\",\\"parent\\":2},\\"4\\":{\\"funcVirtAddr\\":\\"89\\",\\"offset\\":\\"0\\",\\"name\\":\\"helper+0(temp/bench.js:6:19)\\",\\"category\\":\\"JavaScript\\",\\"parent\\":3},\\"5\\":{\\"funcVirtAddr\\":\\"89\\",\\"offset\\":\\"146\\",\\"name\\":\\"helper+146(temp/bench.js:14:20)\\",\\"category\\":\\"JavaScript\\",\\"parent\\":3},\\"6\\":{\\"name\\":\\"[Native]4367295792\\",\\"category\\":\\"Native\\",\\"parent\\":5}}}"`;

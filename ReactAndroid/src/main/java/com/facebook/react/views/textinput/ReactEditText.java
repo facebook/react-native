@@ -331,6 +331,14 @@ public class ReactEditText extends EditText {
     // Input type password defaults to monospace font, so we need to re-apply the font
     super.setTypeface(tf);
 
+    /**
+     *  If set forces multiline on input, because of a restriction on Android source that enables multiline only for inputs of type Text and Multiline on method {@link android.widget.TextView#isMultilineInputType(int)}}
+     *  Source: {@Link <a href='https://android.googlesource.com/platform/frameworks/base/+/jb-release/core/java/android/widget/TextView.java'>TextView.java</a>}
+     */
+    if (isMultiline()) {
+      setSingleLine(false);
+    }
+
     // We override the KeyListener so that all keys on the soft input keyboard as well as hardware
     // keyboards work. Some KeyListeners like DigitsKeyListener will display the keyboard but not
     // accept all input from it
@@ -377,7 +385,13 @@ public class ReactEditText extends EditText {
     mContainsImages = reactTextUpdate.containsImages();
     mIsSettingTextFromJS = true;
 
-    getText().replace(0, length(), spannableStringBuilder);
+    // On some devices, when the text is cleared, buggy keyboards will not clear the composing
+    // text so, we have to set text to null, which will clear the currently composing text.
+    if (reactTextUpdate.getText().length() == 0) {
+      setText(null);
+    } else {
+      getText().replace(0, length(), spannableStringBuilder);
+    }
 
     mIsSettingTextFromJS = false;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -645,6 +659,13 @@ public class ReactEditText extends EditText {
   public void setFontSize(float fontSize) {
     mTextAttributes.setFontSize(fontSize);
     applyTextAttributes();
+  }
+
+  public void setMaxFontSizeMultiplier(float maxFontSizeMultiplier) {
+    if (maxFontSizeMultiplier != mTextAttributes.getMaxFontSizeMultiplier()) {
+      mTextAttributes.setMaxFontSizeMultiplier(maxFontSizeMultiplier);
+      applyTextAttributes();
+    }
   }
 
   protected void applyTextAttributes() {

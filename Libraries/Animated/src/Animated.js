@@ -10,7 +10,11 @@
 
 'use strict';
 
-const AnimatedImplementation = require('AnimatedImplementation');
+import Platform from 'Platform';
+
+const AnimatedImplementation = Platform.isTesting
+  ? require('AnimatedMock')
+  : require('AnimatedImplementation');
 
 module.exports = {
   get FlatList() {

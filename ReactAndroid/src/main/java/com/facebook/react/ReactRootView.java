@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
@@ -47,8 +48,6 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.UIManagerModule;
-import com.facebook.react.uimanager.common.MeasureSpecProvider;
-import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
@@ -66,8 +65,7 @@ import javax.annotation.Nullable;
  * subsequent touch events related to that gesture (in case when JS code wants to handle that
  * gesture).
  */
-public class ReactRootView extends SizeMonitoringFrameLayout
-    implements RootView, MeasureSpecProvider {
+public class ReactRootView extends FrameLayout implements RootView {
 
   /**
    * Listener interface for react root view events
@@ -157,31 +155,13 @@ public class ReactRootView extends SizeMonitoringFrameLayout
       // Check if we were waiting for onMeasure to attach the root view.
       if (mReactInstanceManager != null && !mIsAttachedToInstance) {
         attachToReactInstanceManager();
-        enableLayoutCalculation();
       } else {
-        enableLayoutCalculation();
         updateRootLayoutSpecs(mWidthMeasureSpec, mHeightMeasureSpec);
       }
 
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
-  }
-
-  @Override
-  public int getWidthMeasureSpec() {
-    if (!mWasMeasured && getLayoutParams() != null && getLayoutParams().width > 0) {
-      return MeasureSpec.makeMeasureSpec(getLayoutParams().width, MeasureSpec.EXACTLY);
-    }
-    return mWidthMeasureSpec;
-  }
-
-  @Override
-  public int getHeightMeasureSpec() {
-    if (!mWasMeasured && getLayoutParams() != null && getLayoutParams().height > 0) {
-      return MeasureSpec.makeMeasureSpec(getLayoutParams().height, MeasureSpec.EXACTLY);
-    }
-    return mHeightMeasureSpec;
   }
 
   @Override
@@ -322,11 +302,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
   }
 
   private void removeOnGlobalLayoutListener() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-      getViewTreeObserver().removeOnGlobalLayoutListener(getCustomGlobalLayoutListener());
-    } else {
-      getViewTreeObserver().removeGlobalOnLayoutListener(getCustomGlobalLayoutListener());
-    }
+    getViewTreeObserver().removeOnGlobalLayoutListener(getCustomGlobalLayoutListener());
   }
 
   @Override
@@ -391,23 +367,6 @@ public class ReactRootView extends SizeMonitoringFrameLayout
 
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
-    }
-  }
-
-  private void enableLayoutCalculation() {
-    if (mReactInstanceManager == null) {
-      FLog.w(
-          ReactConstants.TAG,
-          "Unable to enable layout calculation for uninitialized ReactInstanceManager");
-      return;
-    }
-    final ReactContext reactApplicationContext = mReactInstanceManager.getCurrentReactContext();
-    if (reactApplicationContext != null) {
-      reactApplicationContext
-          .getCatalystInstance()
-          .getNativeModule(UIManagerModule.class)
-          .getUIImplementation()
-          .enableLayoutCalculationForRootNode(getRootViewTag());
     }
   }
 
@@ -492,6 +451,9 @@ public class ReactRootView extends SizeMonitoringFrameLayout
           return;
         }
 
+        if (mWasMeasured) {
+          updateRootLayoutSpecs(mWidthMeasureSpec, mHeightMeasureSpec);
+        }
         CatalystInstance catalystInstance = reactContext.getCatalystInstance();
 
         WritableNativeMap appParams = new WritableNativeMap();
@@ -669,7 +631,7 @@ public class ReactRootView extends SizeMonitoringFrameLayout
     }
 
     private boolean areMetricsEqual(DisplayMetrics displayMetrics, DisplayMetrics otherMetrics) {
-      if (Build.VERSION.SDK_INT >= 17) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
         return displayMetrics.equals(otherMetrics);
       } else {
         // DisplayMetrics didn't have an equals method before API 17.

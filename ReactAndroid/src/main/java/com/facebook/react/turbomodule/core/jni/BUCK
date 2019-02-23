@@ -28,11 +28,11 @@ rn_xplat_cxx_library(
     ],
     deps = [
         react_native_target("jni/react/jni:jni"),
-        "xplat//jsi:JSIDynamic",
-        "xplat//jsi:jsi",
+        "fbsource//xplat/jsi:JSIDynamic",
+        "fbsource//xplat/jsi:jsi",
     ],
     exported_deps = [
-        "xplat//jsi:jsi",
+        "fbsource//xplat/jsi:jsi",
         react_native_xplat_target("turbomodule/core:core"),
     ],
 )

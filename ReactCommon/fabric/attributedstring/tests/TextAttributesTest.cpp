@@ -17,6 +17,8 @@
 namespace facebook {
 namespace react {
 
+#ifdef ANDROID
+
 TEST(TextAttributesTest, testToDynamic) {
   auto text = TextAttributes();
   text.foregroundColor = {
@@ -32,6 +34,8 @@ TEST(TextAttributesTest, testToDynamic) {
   assert(result["fontStyle"] == toString(*text.fontStyle));
   assert(result["fontWeight"] == toString(*text.fontWeight));
 }
+
+#endif
 
 } // namespace react
 } // namespace facebook

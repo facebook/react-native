@@ -80,7 +80,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 + (RCTInspectorLocalConnection *)connectPage:(NSInteger)pageId
                          forRemoteConnection:(RCTInspectorRemoteConnection *)remote
 {
-  auto localConnection = getInstance()->connect(pageId, std::make_unique<RemoteConnection>(remote));
+  auto localConnection = getInstance()->connect((int)pageId, std::make_unique<RemoteConnection>(remote));
   return [[RCTInspectorLocalConnection alloc] initWithConnection:std::move(localConnection)];
 }
 

@@ -37,6 +37,10 @@ class SwipeableQuickActionButton extends React.Component<{
    * found when Flow v0.82 was deployed. To see the error delete this comment
    * and run Flow. */
   style?: ?DeprecatedViewPropTypes.style,
+  /* $FlowFixMe(>=0.82.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.82 was deployed. To see the error delete this comment
+   * and run Flow. */
+  containerStyle?: ?DeprecatedViewPropTypes.style,
   testID?: string,
   text?: ?(string | Object | Array<string | Object>),
   /* $FlowFixMe(>=0.82.0 site=react_native_fb) This comment suppresses an error
@@ -64,8 +68,9 @@ class SwipeableQuickActionButton extends React.Component<{
       <TouchableHighlight
         onPress={this.props.onPress}
         testID={this.props.testID}
-        underlayColor="transparent">
-        <View style={this.props.style}>{mainView}</View>
+        underlayColor="transparent"
+        style={this.props.containerStyle}>
+        {mainView}
       </TouchableHighlight>
     );
   }

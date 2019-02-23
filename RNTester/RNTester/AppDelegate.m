@@ -61,13 +61,6 @@
   return [RCTLinkingManager application:app openURL:url options:options];
 }
 
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url
-  sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
-{
-  return [RCTLinkingManager application:application openURL:url
-                      sourceApplication:sourceApplication annotation:annotation];
-}
-
 - (void)loadSourceForBridge:(RCTBridge *)bridge
                  onProgress:(RCTSourceLoadProgressBlock)onProgress
                  onComplete:(RCTSourceLoadBlock)loadCallback

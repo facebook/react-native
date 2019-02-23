@@ -7,13 +7,17 @@
 
 package com.facebook.react.modules.location;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.content.ContextCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -31,6 +35,7 @@ import javax.annotation.Nullable;
 /**
  * Native module that exposes Geolocation to JS.
  */
+@SuppressLint("MissingPermission")
 @ReactModule(name = LocationModule.NAME)
 public class LocationModule extends ReactContextBaseJavaModule {
 
@@ -190,7 +195,7 @@ public class LocationModule extends ReactContextBaseJavaModule {
   }
 
   @Nullable
-  private static String getValidProvider(LocationManager locationManager, boolean highAccuracy) {
+  private String getValidProvider(LocationManager locationManager, boolean highAccuracy) {
     String provider =
         highAccuracy ? LocationManager.GPS_PROVIDER : LocationManager.NETWORK_PROVIDER;
     if (!locationManager.isProviderEnabled(provider)) {
@@ -200,6 +205,11 @@ public class LocationModule extends ReactContextBaseJavaModule {
       if (!locationManager.isProviderEnabled(provider)) {
         return null;
       }
+    }
+    // If it's an enabled provider, but we don't have permissions, ignore it
+    int finePermission = ContextCompat.checkSelfPermission(getReactApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION);
+    if (provider.equals(LocationManager.GPS_PROVIDER) && finePermission != PackageManager.PERMISSION_GRANTED) {
+      return null;
     }
     return provider;
   }
@@ -216,7 +226,7 @@ public class LocationModule extends ReactContextBaseJavaModule {
     map.putMap("coords", coords);
     map.putDouble("timestamp", location.getTime());
 
-    if (android.os.Build.VERSION.SDK_INT >= 18) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
       map.putBoolean("mocked", location.isFromMockProvider());
     }
 

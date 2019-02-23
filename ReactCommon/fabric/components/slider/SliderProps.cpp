@@ -6,6 +6,7 @@
  */
 
 #include <react/components/slider/SliderProps.h>
+#include <react/components/image/conversions.h>
 #include <react/core/propsConversions.h>
 
 namespace facebook {
@@ -16,24 +17,54 @@ SliderProps::SliderProps(
     const RawProps &rawProps)
     : ViewProps(sourceProps, rawProps),
       value(convertRawProp(rawProps, "value", sourceProps.value, value)),
-      steps(convertRawProp(rawProps, "steps", sourceProps.steps, steps)),
+      minimumValue(convertRawProp(
+          rawProps,
+          "minimumValue",
+          sourceProps.minimumValue,
+          minimumValue)),
+      maximumValue(convertRawProp(
+          rawProps,
+          "maximumValue",
+          sourceProps.maximumValue,
+          maximumValue)),
+      step(convertRawProp(rawProps, "step", sourceProps.step, step)),
       disabled(
           convertRawProp(rawProps, "disabled", sourceProps.disabled, disabled)),
       minimumTrackTintColor(convertRawProp(
           rawProps,
-          "minimumTintColor",
-          sourceProps.thumbTintColor,
-          thumbTintColor)),
+          "minimumTrackTintColor",
+          sourceProps.minimumTrackTintColor,
+          minimumTrackTintColor)),
       maximumTrackTintColor(convertRawProp(
           rawProps,
-          "maximumTintColor",
-          sourceProps.thumbTintColor,
-          thumbTintColor)),
+          "maximumTrackTintColor",
+          sourceProps.maximumTrackTintColor,
+          maximumTrackTintColor)),
       thumbTintColor(convertRawProp(
           rawProps,
           "thumbTintColor",
           sourceProps.thumbTintColor,
-          thumbTintColor)) {}
+          thumbTintColor)),
+      trackImage(convertRawProp(
+          rawProps,
+          "trackImage",
+          sourceProps.trackImage,
+          trackImage)),
+      minimumTrackImage(convertRawProp(
+          rawProps,
+          "minimumTrackImage",
+          sourceProps.minimumTrackImage,
+          minimumTrackImage)),
+      maximumTrackImage(convertRawProp(
+          rawProps,
+          "maximumTrackImage",
+          sourceProps.maximumTrackImage,
+          maximumTrackImage)),
+      thumbImage(convertRawProp(
+          rawProps,
+          "thumbImage",
+          sourceProps.thumbImage,
+          thumbImage)) {}
 
 } // namespace react
 } // namespace facebook
