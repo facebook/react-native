@@ -212,7 +212,11 @@ class SecureEntryExample extends React.Component<$FlowFixMeProps, any> {
    * comment and run Flow. */
   constructor(props) {
     super(props);
-    this.state = {text: ''};
+    this.state = {
+      text: '',
+      password: '',
+      isSecureTextEntry: true,
+    };
   }
   render() {
     return (
@@ -225,6 +229,26 @@ class SecureEntryExample extends React.Component<$FlowFixMeProps, any> {
           value={this.state.text}
         />
         <Text>Current text is: {this.state.text}</Text>
+        <View
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+          }}>
+          <TextInput
+            style={styles.default}
+            defaultValue="cde"
+            onChangeText={text => this.setState({password: text})}
+            secureTextEntry={this.state.isSecureTextEntry}
+            value={this.state.password}
+          />
+          <Switch
+            onValueChange={value => {
+              this.setState({isSecureTextEntry: value});
+            }}
+            style={{marginLeft: 4}}
+            value={this.state.isSecureTextEntry}
+          />
+        </View>
       </View>
     );
   }

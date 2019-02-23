@@ -235,7 +235,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
                              };
 
           #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-            if (@available(iOS 11.0, *)) {
+            if (@available(iOS 11.0, tvOS 11.0, *)) {
               NSDictionary<NSString *, NSString *> * iOS11extras = @{@"username": UITextContentTypeUsername,
                                                                      @"password": UITextContentTypePassword};
 
@@ -247,7 +247,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
           #endif
 
           #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 120000 /* __IPHONE_12_0 */
-            if (@available(iOS 12.0, *)) {
+            if (@available(iOS 12.0, tvOS 12.0, *)) {
               NSDictionary<NSString *, NSString *> * iOS12extras = @{@"newPassword": UITextContentTypeNewPassword,
                                                                      @"oneTimeCode": UITextContentTypeOneTimeCode};
 
@@ -281,6 +281,24 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
       [textInputView reloadInputViews];
     }
   }
+}
+
+- (BOOL)secureTextEntry {
+  return self.backedTextInputView.secureTextEntry;
+}
+
+- (void)setSecureTextEntry:(BOOL)secureTextEntry {
+  UIView<RCTBackedTextInputViewProtocol> *textInputView = self.backedTextInputView;
+    
+  if (textInputView.secureTextEntry != secureTextEntry) {
+    textInputView.secureTextEntry = secureTextEntry;
+      
+    // Fix #5859, see https://stackoverflow.com/questions/14220187/uitextfield-has-trailing-whitespace-after-securetextentry-toggle/22537788#22537788
+    NSAttributedString *originalText = [textInputView.attributedText copy];
+    self.backedTextInputView.attributedText = [NSAttributedString new];
+    self.backedTextInputView.attributedText = originalText;
+  }
+    
 }
 
 #pragma mark - RCTBackedTextInputDelegate

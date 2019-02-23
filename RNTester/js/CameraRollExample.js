@@ -74,6 +74,7 @@ class CameraRollExample extends React.Component<Props, State> {
           batchSize={20}
           groupTypes={this.state.groupTypes}
           renderImage={this._renderImage}
+          bigImages={this.state.bigImages}
         />
       </View>
     );
@@ -125,7 +126,6 @@ class CameraRollExample extends React.Component<Props, State> {
 
   _onSwitchChange = value => {
     invariant(this._cameraRollView, 'ref should be set');
-    this._cameraRollView.rendererChanged();
     this.setState({bigImages: value});
   };
 }
