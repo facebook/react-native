@@ -1180,12 +1180,18 @@ jsi::Value JSCRuntime::createValue(JSValueRef value) const {
     return jsi::Value();
   } else if (JSValueIsString(ctx_, value)) {
     JSStringRef str = JSValueToStringCopy(ctx_, value, nullptr);
+    
     size_t sizeUTF8 = JSStringGetMaximumUTF8CStringSize(str);
     char* stringUTF8 = (char*)malloc(sizeUTF8);
     JSStringGetUTF8CString(str, stringUTF8, sizeUTF8);
-    auto result = jsi::Value(createString(JSStringCreateWithUTF8CString(stringUTF8)));
+    JSStringRef correctedStr = JSStringCreateWithUTF8CString(stringUTF8);
+    
+    auto result = jsi::Value(createString(correctedStr));
+    
     free(stringUTF8);
     JSStringRelease(str);
+    JSStringRelease(correctedStr);
+    
     return result;
   } else if (JSValueIsObject(ctx_, value)) {
     JSObjectRef objRef = JSValueToObject(ctx_, value, nullptr);
