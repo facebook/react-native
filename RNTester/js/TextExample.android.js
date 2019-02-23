@@ -81,6 +81,9 @@ class TextExample extends React.Component<{}> {
             going to the next line.
           </Text>
         </RNTesterBlock>
+        <RNTesterBlock title="Substring Emoji (should only see 'test')">
+          <Text>{'test🙃'.substring(0, 5)}</Text>
+        </RNTesterBlock>
         <RNTesterBlock title="Padding">
           <Text style={{padding: 10}}>
             This text is indented by 10px padding on all sides.
@@ -619,7 +622,6 @@ class TextExample extends React.Component<{}> {
     );
   }
 }
-
 const styles = StyleSheet.create({
   backgroundColorText: {
     left: 5,
