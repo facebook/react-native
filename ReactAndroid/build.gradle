@@ -203,6 +203,11 @@ def findNdkBuildFullPath() {
     return null
 }
 
+def debugHostPort(String defaultValue){
+    def value = project.getProperties().get("debugHostPort")
+    return value != null ? value : defaultValue
+}
+
 def getNdkBuildFullPath() {
     def ndkBuildFullPath = findNdkBuildFullPath()
     if (ndkBuildFullPath == null) {
@@ -289,6 +294,8 @@ android {
 
         buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
         buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
+        buildConfigField("int", "DEBUG_SERVER_HOST_PORT", debugHostPort("8081"))
+
         testApplicationId("com.facebook.react.tests.gradle")
         testInstrumentationRunner("androidx.test.runner.AndroidJUnitRunner")
     }

@@ -44,7 +44,7 @@ public class PackagerConnectionSettings {
     if (host.equals(AndroidInfoHelpers.DEVICE_LOCALHOST)) {
       FLog.w(
         TAG,
-        "You seem to be running on device. Run 'adb reverse tcp:8081 tcp:8081' " +
+        "You seem to be running on device. Run '" + AndroidInfoHelpers.getAdbReverseTcpCommand() + "' " +
           "to forward the debug server's port to the device.");
     }
 

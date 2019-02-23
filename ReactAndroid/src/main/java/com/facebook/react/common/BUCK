@@ -38,6 +38,7 @@ rn_android_build_config(
     package = "com.facebook.react",
     values = [
         "boolean IS_INTERNAL_BUILD = true",
+        "int DEBUG_SERVER_HOST_PORT = 8081",
     ],
     visibility = [
         "PUBLIC",
