@@ -10,7 +10,7 @@ package com.facebook.react.views.switchview;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.support.v7.widget.SwitchCompat;
+import androidx.appcompat.widget.SwitchCompat;
 import javax.annotation.Nullable;
 
 /**
