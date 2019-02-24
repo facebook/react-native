@@ -292,8 +292,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
                                        text:nil
                                         key:text
                                  eventCount:_nativeEventCount];
-  } else {
-    [self textInputDidPaste];
   }
 
   if (_maxLength) {
@@ -396,36 +394,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
       @"end": @(selection.end),
     },
   });
-}
-
-- (void)textInputDidPaste
-{
-  #if !TARGET_OS_TV
-  if (_onPaste) {
-    UIPasteboard *pb = [UIPasteboard generalPasteboard];
-
-    NSString *content = pb.string;
-    NSPredicate *pred = [NSPredicate predicateWithFormat:@"SELF BEGINSWITH 'public'"];
-    NSString *mimeType = [[pb.pasteboardTypes filteredArrayUsingPredicate:pred] firstObject];
-
-    if (pb.hasImages) {
-      NSData *imageData;
-      if ([mimeType isEqualToString:@"public.jpeg"]) {
-        imageData = UIImageJPEGRepresentation(pb.image, 1.0);
-      } else {
-        imageData = UIImagePNGRepresentation(pb.image);
-      }
-
-      content = [imageData base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
-    }
-
-    _onPaste(@{
-       @"content": content,
-       @"mimeType": mimeType,
-       @"target": self.reactTag,
-     });
-  }
-  #endif /* !TARGET_OS_TV */
 }
 
 - (void)updateLocalData
