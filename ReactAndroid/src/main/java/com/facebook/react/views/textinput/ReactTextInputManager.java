@@ -24,10 +24,8 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 import android.content.ClipboardManager;
 import android.content.ClipData;
-import android.content.pm.PackageManager;
 import android.util.Base64;
 import android.util.Log;
-import android.Manifest;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
@@ -842,27 +840,21 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
                 content = firstItem.getIntent().toUri(0);
               } else if (firstItem.getUri() != null) {
                 if (mimeType.contains("image")) {
-                  // TODO: move this logic to a `getBase64ImageStringFromUri(firstItem.getUri())`
-                  if (ContextCompat.checkSelfPermission(reactContext, Manifest.permission.READ_EXTERNAL_STORAGE)
-                        == PackageManager.PERMISSION_GRANTED) {
-                    try {
-                      InputStream imageStream = reactContext.getContentResolver().openInputStream(firstItem.getUri());
-                      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                      byte[] buffer = new byte[1024];
-                      int bytesRead = 0;
-                      while ((bytesRead = imageStream.read(buffer)) != -1) {
-                        baos.write(buffer, 0, bytesRead);
-                      }
-                      baos.close();
-                      byte[] byteArray = baos.toByteArray();
-                      content = Base64.encodeToString(byteArray, Base64.DEFAULT);
-                    } catch (FileNotFoundException e) {
-                      Log.e(ReactConstants.TAG, "Pasted image file not found " + e.toString());
-                    } catch (IOException e) {
-                      Log.e(ReactConstants.TAG, "Error reading pasted image " + e.toString());
+                  try {
+                    InputStream imageStream = reactContext.getContentResolver().openInputStream(firstItem.getUri());
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    byte[] buffer = new byte[1024];
+                    int bytesRead = 0;
+                    while ((bytesRead = imageStream.read(buffer)) != -1) {
+                      baos.write(buffer, 0, bytesRead);
                     }
-                  } else {
-                    Log.e(ReactConstants.TAG, "READ_EXTERNAL_STORAGE permission required to read pages image");
+                    baos.close();
+                    byte[] byteArray = baos.toByteArray();
+                    content = Base64.encodeToString(byteArray, Base64.DEFAULT);
+                  } catch (FileNotFoundException e) {
+                    Log.e(ReactConstants.TAG, "Pasted image file not found " + e.toString());
+                  } catch (IOException e) {
+                    Log.e(ReactConstants.TAG, "Error reading pasted imaged " + e.toString());
                   }
                 } else {
                   content = firstItem.getUri().toString();
