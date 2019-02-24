@@ -114,8 +114,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   private long mCommitStartTime = 0l;
   private long mLayoutTime = 0l;
   private long mFinishTransactionTime = 0l;
-  private int mLastWidthMeasureSpec = 0;
-  private int mLastHeightMeasureSpec = 0;
 
   public FabricUIManager(
       ReactApplicationContext reactContext,
@@ -365,16 +363,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   public void updateRootLayoutSpecs(
       final int rootTag, final int widthMeasureSpec, final int heightMeasureSpec) {
 
-    if (mLastWidthMeasureSpec != widthMeasureSpec || mLastHeightMeasureSpec != heightMeasureSpec) {
-      mLastWidthMeasureSpec = widthMeasureSpec;
-      mLastHeightMeasureSpec = heightMeasureSpec;
-      mBinding.setConstraints(
-          rootTag,
-          getMinSize(widthMeasureSpec),
-          getMaxSize(widthMeasureSpec),
-          getMinSize(heightMeasureSpec),
-          getMaxSize(heightMeasureSpec));
-    }
+    mBinding.setConstraints(
+        rootTag,
+        getMinSize(widthMeasureSpec),
+        getMaxSize(widthMeasureSpec),
+        getMinSize(heightMeasureSpec),
+        getMaxSize(heightMeasureSpec));
   }
 
   public void receiveEvent(int reactTag, String eventName, @Nullable WritableMap params) {
