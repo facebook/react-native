@@ -839,7 +839,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
               } else if (firstItem.getIntent() != null) {
                 content = firstItem.getIntent().toUri(0);
               } else if (firstItem.getUri() != null) {
-                if (mimeType.contains("image")) {
+                if (mimeType.startsWith("image/")) {
                   try {
                     InputStream imageStream = reactContext.getContentResolver().openInputStream(firstItem.getUri());
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
