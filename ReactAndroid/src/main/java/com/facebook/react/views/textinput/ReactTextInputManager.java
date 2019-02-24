@@ -24,8 +24,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
 import android.content.ClipboardManager;
 import android.content.ClipData;
-import android.util.Base64;
-import android.util.Log;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
@@ -33,7 +31,6 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.common.ReactConstants;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.LayoutShadowNode;
@@ -58,10 +55,6 @@ import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.Map;
 import javax.annotation.Nullable;
-import java.io.InputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 /**
  * Manages instances of TextInput.
@@ -836,29 +829,10 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
               ClipData.Item firstItem = clip.getItemAt(0);
               if (firstItem.getText() != null) {
                 content = firstItem.getText().toString();
+              } else if (firstItem.getUri() != null) {
+                content = firstItem.getUri().toString();
               } else if (firstItem.getIntent() != null) {
                 content = firstItem.getIntent().toUri(0);
-              } else if (firstItem.getUri() != null) {
-                if (mimeType.startsWith("image/")) {
-                  try {
-                    InputStream imageStream = reactContext.getContentResolver().openInputStream(firstItem.getUri());
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    byte[] buffer = new byte[1024];
-                    int bytesRead = 0;
-                    while ((bytesRead = imageStream.read(buffer)) != -1) {
-                      baos.write(buffer, 0, bytesRead);
-                    }
-                    baos.close();
-                    byte[] byteArray = baos.toByteArray();
-                    content = Base64.encodeToString(byteArray, Base64.DEFAULT);
-                  } catch (FileNotFoundException e) {
-                    Log.e(ReactConstants.TAG, "Pasted image file not found " + e.toString());
-                  } catch (IOException e) {
-                    Log.e(ReactConstants.TAG, "Error reading pasted imaged " + e.toString());
-                  }
-                } else {
-                  content = firstItem.getUri().toString();
-                }
               }
 
               EventDispatcher eventDispatcher =
