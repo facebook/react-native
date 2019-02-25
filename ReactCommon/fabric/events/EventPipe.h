@@ -4,31 +4,24 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
 #pragma once
 
-#include <memory>
+#include <functional>
 #include <string>
 
+#include <jsi/jsi.h>
 #include <react/events/EventTarget.h>
 #include <react/events/ValueFactory.h>
 
 namespace facebook {
 namespace react {
 
-/*
- * Represents ready-to-dispatch event object.
- */
-class RawEvent {
- public:
-  RawEvent(
-      std::string type,
-      ValueFactory payloadFactory,
-      SharedEventTarget eventTarget);
-
-  const std::string type;
-  const ValueFactory payloadFactory;
-  const SharedEventTarget eventTarget;
-};
+using EventPipe = std::function<void(
+    jsi::Runtime &runtime,
+    const EventTarget *eventTarget,
+    const std::string &type,
+    const ValueFactory &payloadFactory)>;
 
 } // namespace react
 } // namespace facebook

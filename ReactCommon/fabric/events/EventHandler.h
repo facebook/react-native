@@ -7,25 +7,10 @@
 
 #pragma once
 
-#include <folly/dynamic.h>
-#include <jsi/jsi.h>
-
-#include <react/events/EventTarget.h>
+#include <memory>
 
 namespace facebook {
 namespace react {
-
-enum class EventPriority : int {
-  SynchronousUnbatched,
-  SynchronousBatched,
-  AsynchronousUnbatched,
-  AsynchronousBatched,
-
-  Sync = SynchronousUnbatched,
-  Work = SynchronousBatched,
-  Interactive = AsynchronousUnbatched,
-  Deferred = AsynchronousBatched
-};
 
 /*
  * We need this types only to ensure type-safety when we deal with them.
@@ -40,14 +25,6 @@ struct EventHandler {
   virtual ~EventHandler() = default;
 };
 using UniqueEventHandler = std::unique_ptr<const EventHandler>;
-
-using ValueFactory = std::function<jsi::Value(jsi::Runtime &runtime)>;
-
-using EventPipe = std::function<void(
-    jsi::Runtime &runtime,
-    const EventTarget *eventTarget,
-    const std::string &type,
-    const ValueFactory &payloadFactory)>;
 
 } // namespace react
 } // namespace facebook

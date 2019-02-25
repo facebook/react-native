@@ -6,12 +6,14 @@
  */
 #pragma once
 
+#include <array>
 #include <memory>
 
 #include <react/events/EventBeat.h>
+#include <react/events/EventPipe.h>
+#include <react/events/EventPriority.h>
 #include <react/events/EventQueue.h>
 #include <react/events/RawEvent.h>
-#include <react/events/primitives.h>
 
 namespace facebook {
 namespace react {
