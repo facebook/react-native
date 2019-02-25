@@ -93,6 +93,10 @@
     return NO;
   }
 
+  if (action == @selector(paste:)) {
+    return [UIPasteboard generalPasteboard].string != nil || [UIPasteboard generalPasteboard].image != nil;
+  }
+
   return [super canPerformAction:action withSender:sender];
 }
 

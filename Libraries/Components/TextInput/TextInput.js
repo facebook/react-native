@@ -1016,6 +1016,7 @@ const TextInput = createReactClass({
           onSelectionChange={this._onSelectionChange}
           onSelectionChangeShouldSetResponder={emptyFunctionThatReturnsTrue}
           text={this._getText()}
+          onPaste={this._onPaste}
         />
       );
     } else {
@@ -1055,6 +1056,7 @@ const TextInput = createReactClass({
           text={this._getText()}
           dataDetectorTypes={this.props.dataDetectorTypes}
           onScroll={this._onScroll}
+          onPaste={this._onPaste}
         />
       );
     }
@@ -1108,6 +1110,7 @@ const TextInput = createReactClass({
         text={this._getText()}
         dataDetectorTypes={this.props.dataDetectorTypes}
         onScroll={this._onScroll}
+        onPaste={this._onPaste}
       />
     );
 
