@@ -280,8 +280,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
  */
 - (BOOL)touchesShouldCancelInContentView:(__unused UIView *)view
 {
-  //TODO: shouldn't this call super if _shouldDisableScrollInteraction returns NO?
-  return ![self _shouldDisableScrollInteraction];
+  BOOL shouldDisableScrollInteraction = [self _shouldDisableScrollInteraction];
+  
+  if (shouldDisableScrollInteraction == NO) {
+    [super touchesShouldCancelInContentView:view];
+  }
+  
+  return !shouldDisableScrollInteraction;
 }
 
 /*
