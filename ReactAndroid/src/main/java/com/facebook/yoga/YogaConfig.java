@@ -22,6 +22,7 @@ public class YogaConfig {
   long mNativePointer;
   private YogaLogger mLogger;
   private YogaNodeCloneFunction mYogaNodeCloneFunction;
+  public boolean avoidGlobalJNIRefs = false;
 
   private native long jni_YGConfigNew();
   public YogaConfig() {
@@ -106,7 +107,7 @@ public class YogaConfig {
   }
 
   @DoNotStrip
-  private final YogaNode cloneNode(YogaNode oldNode, YogaNode parent, int childIndex) {
-    return mYogaNodeCloneFunction.cloneNode(oldNode, parent, childIndex);
+  private final YogaNodeJNI cloneNode(YogaNodeJNI oldNode, YogaNodeJNI parent, int childIndex) {
+    return (YogaNodeJNI) mYogaNodeCloneFunction.cloneNode(oldNode, parent, childIndex);
   }
 }

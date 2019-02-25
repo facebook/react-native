@@ -163,7 +163,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
    * @param context the ReactContext of the application
    */
   public NetworkingModule(final ReactApplicationContext context) {
-    this(context, null, OkHttpClientProvider.createClient(), null);
+    this(context, null, OkHttpClientProvider.createClient(context), null);
   }
 
   /**
@@ -174,7 +174,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   public NetworkingModule(
     ReactApplicationContext context,
     List<NetworkInterceptorCreator> networkInterceptorCreators) {
-    this(context, null, OkHttpClientProvider.createClient(), networkInterceptorCreators);
+    this(context, null, OkHttpClientProvider.createClient(context), networkInterceptorCreators);
   }
 
   /**
@@ -183,7 +183,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
    * caller does not provide one explicitly
    */
   public NetworkingModule(ReactApplicationContext context, String defaultUserAgent) {
-    this(context, defaultUserAgent, OkHttpClientProvider.createClient(), null);
+    this(context, defaultUserAgent, OkHttpClientProvider.createClient(context), null);
   }
 
   @Override
@@ -372,7 +372,13 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
           return;
         }
       } else {
-        requestBody = RequestBody.create(contentMediaType, body);
+        // Use getBytes() to convert the body into a byte[], preventing okhttp from
+        // appending the character set to the Content-Type header when otherwise unspecified
+        // https://github.com/facebook/react-native/issues/8237
+        Charset charset = contentMediaType == null
+          ? StandardCharsets.UTF_8
+          : contentMediaType.charset(StandardCharsets.UTF_8);
+        requestBody = RequestBody.create(contentMediaType, body.getBytes(charset));
       }
     } else if (data.hasKey(REQUEST_BODY_KEY_BASE64)) {
       if (contentType == null) {

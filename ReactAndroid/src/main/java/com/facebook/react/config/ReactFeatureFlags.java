@@ -30,4 +30,11 @@ public class ReactFeatureFlags {
    * Reduce the number of Java-JS interops while accessing native maps
    */
   public static boolean useMapNativeAccessor = false;
+
+  /**
+   * Should this application use TurboModules. If yes, then any module that inherits
+   * {@link com.facebook.react.turbomodule.core.interfaces.TurboModule} will NOT be passed in to
+   * C++ CatalystInstanceImpl
+   */
+  public static boolean useTurboModules = false;
 }

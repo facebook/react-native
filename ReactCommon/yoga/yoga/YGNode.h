@@ -12,15 +12,32 @@
 #include "Yoga-internal.h"
 
 struct YGNode {
- private:
+  using MeasureWithContextFn =
+      YGSize (*)(YGNode*, float, YGMeasureMode, float, YGMeasureMode, void*);
+  using BaselineWithContextFn = float (*)(YGNode*, float, float, void*);
+  using PrintWithContextFn = void (*)(YGNode*, void*);
+
+private:
   void* context_ = nullptr;
-  YGPrintFunc print_ = nullptr;
   bool hasNewLayout_ : 1;
   bool isReferenceBaseline_ : 1;
   bool isDirty_ : 1;
   YGNodeType nodeType_ : 1;
-  YGMeasureFunc measure_ = nullptr;
-  YGBaselineFunc baseline_ = nullptr;
+  bool measureUsesContext_ : 1;
+  bool baselineUsesContext_ : 1;
+  bool printUsesContext_ : 1;
+  union {
+    YGMeasureFunc noContext;
+    MeasureWithContextFn withContext;
+  } measure_ = {nullptr};
+  union {
+    YGBaselineFunc noContext;
+    BaselineWithContextFn withContext;
+  } baseline_ = {nullptr};
+  union {
+    YGPrintFunc noContext;
+    PrintWithContextFn withContext;
+  } print_ = {nullptr};
   YGDirtiedFunc dirtied_ = nullptr;
   YGStyle style_ = {};
   YGLayout layout_ = {};
@@ -35,12 +52,18 @@ struct YGNode {
       const YGFlexDirection axis,
       const float axisSize) const;
 
- public:
+  void setMeasureFunc(decltype(measure_));
+  void setBaselineFunc(decltype(baseline_));
+
+public:
   YGNode()
-      : hasNewLayout_(true),
-        isReferenceBaseline_(false),
-        isDirty_(false),
-        nodeType_(YGNodeTypeDefault) {}
+      : hasNewLayout_{true},
+        isReferenceBaseline_{false},
+        isDirty_{false},
+        nodeType_{YGNodeTypeDefault},
+        measureUsesContext_{false},
+        baselineUsesContext_{false},
+        printUsesContext_{false} {}
   ~YGNode() = default; // cleanup of owner/children relationships in YGNodeFree
   explicit YGNode(const YGConfigRef newConfig) : config_(newConfig){};
   YGNode(const YGNode& node) = default;
@@ -51,9 +74,7 @@ struct YGNode {
     return context_;
   }
 
-  YGPrintFunc getPrintFunc() const {
-    return print_;
-  }
+  void print(void*);
 
   bool getHasNewLayout() const {
     return hasNewLayout_;
@@ -63,13 +84,17 @@ struct YGNode {
     return nodeType_;
   }
 
-  YGMeasureFunc getMeasure() const {
-    return measure_;
+  bool hasMeasureFunc() const noexcept {
+    return measure_.noContext != nullptr;
   }
 
-  YGBaselineFunc getBaseline() const {
-    return baseline_;
+  YGSize measure(float, YGMeasureMode, float, YGMeasureMode, void*);
+
+  bool hasBaselineFunc() const noexcept {
+    return baseline_.noContext != nullptr;
   }
+
+  float baseline(float width, float height, void* layoutContext);
 
   YGDirtiedFunc getDirtied() const {
     return dirtied_;
@@ -102,10 +127,9 @@ struct YGNode {
   }
 
   // returns the YGNodeRef that owns this YGNode. An owner is used to identify
-  // the YogaTree that a YGNode belongs to.
-  // This method will return the parent of the YGNode when a YGNode only belongs
-  // to one YogaTree or nullptr when the YGNode is shared between two or more
-  // YogaTrees.
+  // the YogaTree that a YGNode belongs to. This method will return the parent
+  // of the YGNode when a YGNode only belongs to one YogaTree or nullptr when
+  // the YGNode is shared between two or more YogaTrees.
   YGNodeRef getOwner() const {
     return owner_;
   }
@@ -117,6 +141,22 @@ struct YGNode {
 
   const YGVector& getChildren() const {
     return children_;
+  }
+
+  // Applies a callback to all children, after cloning them if they are not
+  // owned.
+  template <typename T>
+  void iterChildrenAfterCloningIfNeeded(T callback, void* cloneContext) {
+    int i = 0;
+    for (YGNodeRef& child : children_) {
+      if (child->getOwner() != this) {
+        child = config_->cloneNode(child, this, i, cloneContext);
+        child->setOwner(this);
+      }
+      i += 1;
+
+      callback(child, cloneContext);
+    }
   }
 
   YGNodeRef getChild(uint32_t index) const {
@@ -178,7 +218,15 @@ struct YGNode {
   }
 
   void setPrintFunc(YGPrintFunc printFunc) {
-    print_ = printFunc;
+    print_.noContext = printFunc;
+    printUsesContext_ = false;
+  }
+  void setPrintFunc(PrintWithContextFn printFunc) {
+    print_.withContext = printFunc;
+    printUsesContext_ = true;
+  }
+  void setPrintFunc(std::nullptr_t) {
+    setPrintFunc(YGPrintFunc{nullptr});
   }
 
   void setHasNewLayout(bool hasNewLayout) {
@@ -198,9 +246,21 @@ struct YGNode {
   }
 
   void setMeasureFunc(YGMeasureFunc measureFunc);
+  void setMeasureFunc(MeasureWithContextFn);
+  void setMeasureFunc(std::nullptr_t) {
+    return setMeasureFunc(YGMeasureFunc{nullptr});
+  }
 
-  void setBaseLineFunc(YGBaselineFunc baseLineFunc) {
-    baseline_ = baseLineFunc;
+  void setBaselineFunc(YGBaselineFunc baseLineFunc) {
+    baselineUsesContext_ = false;
+    baseline_.noContext = baseLineFunc;
+  }
+  void setBaselineFunc(BaselineWithContextFn baseLineFunc) {
+    baselineUsesContext_ = true;
+    baseline_.withContext = baseLineFunc;
+  }
+  void setBaselineFunc(std::nullptr_t) {
+    return setBaselineFunc(YGBaselineFunc{nullptr});
   }
 
   void setDirtiedFunc(YGDirtiedFunc dirtiedFunc) {
@@ -275,7 +335,7 @@ struct YGNode {
   bool removeChild(YGNodeRef child);
   void removeChild(uint32_t index);
 
-  void cloneChildrenIfNeeded();
+  void cloneChildrenIfNeeded(void*);
   void markDirtyAndPropogate();
   float resolveFlexGrow();
   float resolveFlexShrink();

@@ -18,6 +18,8 @@
 namespace facebook {
 namespace react {
 
+#ifdef ANDROID
+
 TEST(ParagraphLocalDataTest, testSomething) {
   auto attString = AttributedString();
   auto fragment = AttributedString::Fragment();
@@ -45,6 +47,8 @@ TEST(ParagraphLocalDataTest, testSomething) {
   assert(textAttribute["fontStyle"] == toString(*text.fontStyle));
   assert(textAttribute["fontWeight"] == toString(*text.fontWeight));
 }
+
+#endif
 
 } // namespace react
 } // namespace facebook

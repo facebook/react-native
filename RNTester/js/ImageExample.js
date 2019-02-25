@@ -335,6 +335,71 @@ class MultipleSourcesExample extends React.Component<
   }
 }
 
+const fullImage = {
+  uri: 'https://facebook.github.io/react-native/img/opengraph.png',
+};
+const smallImage = {
+  uri: 'https://facebook.github.io/react-native/img/favicon.png',
+};
+
+const styles = StyleSheet.create({
+  base: {
+    width: 38,
+    height: 38,
+  },
+  progress: {
+    flex: 1,
+    alignItems: 'center',
+    flexDirection: 'row',
+    width: 100,
+  },
+  leftMargin: {
+    marginLeft: 10,
+  },
+  background: {
+    backgroundColor: '#222222',
+  },
+  sectionText: {
+    marginVertical: 6,
+  },
+  nestedText: {
+    marginLeft: 12,
+    marginTop: 20,
+    backgroundColor: 'transparent',
+    color: 'white',
+  },
+  resizeMode: {
+    width: 90,
+    height: 60,
+    borderWidth: 0.5,
+    borderColor: 'black',
+  },
+  resizeModeText: {
+    fontSize: 11,
+    marginBottom: 3,
+  },
+  icon: {
+    width: 15,
+    height: 15,
+  },
+  horizontal: {
+    flexDirection: 'row',
+  },
+  gif: {
+    flex: 1,
+    height: 200,
+  },
+  base64: {
+    flex: 1,
+    height: 50,
+    resizeMode: 'contain',
+  },
+  touchableText: {
+    fontWeight: '500',
+    color: 'blue',
+  },
+});
+
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';
 exports.title = '<Image>';
@@ -890,68 +955,3 @@ exports.examples = [
     },
   },
 ];
-
-const fullImage = {
-  uri: 'https://facebook.github.io/react-native/img/opengraph.png',
-};
-const smallImage = {
-  uri: 'https://facebook.github.io/react-native/img/favicon.png',
-};
-
-const styles = StyleSheet.create({
-  base: {
-    width: 38,
-    height: 38,
-  },
-  progress: {
-    flex: 1,
-    alignItems: 'center',
-    flexDirection: 'row',
-    width: 100,
-  },
-  leftMargin: {
-    marginLeft: 10,
-  },
-  background: {
-    backgroundColor: '#222222',
-  },
-  sectionText: {
-    marginVertical: 6,
-  },
-  nestedText: {
-    marginLeft: 12,
-    marginTop: 20,
-    backgroundColor: 'transparent',
-    color: 'white',
-  },
-  resizeMode: {
-    width: 90,
-    height: 60,
-    borderWidth: 0.5,
-    borderColor: 'black',
-  },
-  resizeModeText: {
-    fontSize: 11,
-    marginBottom: 3,
-  },
-  icon: {
-    width: 15,
-    height: 15,
-  },
-  horizontal: {
-    flexDirection: 'row',
-  },
-  gif: {
-    flex: 1,
-    height: 200,
-  },
-  base64: {
-    flex: 1,
-    height: 50,
-    resizeMode: 'contain',
-  },
-  touchableText: {
-    fontWeight: '500',
-    color: 'blue',
-  },
-});

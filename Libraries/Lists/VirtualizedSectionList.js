@@ -9,6 +9,7 @@
  */
 'use strict';
 
+const Platform = require('Platform');
 const React = require('React');
 const View = require('View');
 const VirtualizedList = require('VirtualizedList');
@@ -145,7 +146,7 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
     sectionIndex: number,
     viewPosition?: number,
   }) {
-    let index = params.itemIndex + 1;
+    let index = Platform.OS === 'ios' ? params.itemIndex : params.itemIndex - 1;
     for (let ii = 0; ii < params.sectionIndex; ii++) {
       index += this.props.sections[ii].data.length + 2;
     }

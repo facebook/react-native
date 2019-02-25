@@ -12,6 +12,16 @@
 using namespace facebook;
 using facebook::yoga::detail::CompactValue;
 
+void YGNode::print(void* printContext) {
+  if (print_.noContext != nullptr) {
+    if (printUsesContext_) {
+      print_.withContext(this, printContext);
+    } else {
+      print_.noContext(this);
+    }
+  }
+}
+
 YGFloatOptional YGNode::getLeadingPosition(
     const YGFlexDirection axis,
     const float axisSize) const {
@@ -101,11 +111,29 @@ YGFloatOptional YGNode::getMarginForAxis(
   return getLeadingMargin(axis, widthSize) + getTrailingMargin(axis, widthSize);
 }
 
+YGSize YGNode::measure(
+    float width,
+    YGMeasureMode widthMode,
+    float height,
+    YGMeasureMode heightMode,
+    void* layoutContext) {
+
+  return measureUsesContext_
+      ? measure_.withContext(
+            this, width, widthMode, height, heightMode, layoutContext)
+      : measure_.noContext(this, width, widthMode, height, heightMode);
+}
+
+float YGNode::baseline(float width, float height, void* layoutContext) {
+  return baselineUsesContext_
+      ? baseline_.withContext(this, width, height, layoutContext)
+      : baseline_.noContext(this, width, height);
+}
+
 // Setters
 
-void YGNode::setMeasureFunc(YGMeasureFunc measureFunc) {
-  if (measureFunc == nullptr) {
-    measure_ = nullptr;
+void YGNode::setMeasureFunc(decltype(YGNode::measure_) measureFunc) {
+  if (measureFunc.noContext == nullptr) {
     // TODO: t18095186 Move nodeType to opt-in function and mark appropriate
     // places in Litho
     nodeType_ = YGNodeTypeDefault;
@@ -113,14 +141,28 @@ void YGNode::setMeasureFunc(YGMeasureFunc measureFunc) {
     YGAssertWithNode(
         this,
         children_.size() == 0,
-        "Cannot set measure function: Nodes with measure functions cannot have children.");
-    measure_ = measureFunc;
+        "Cannot set measure function: Nodes with measure functions cannot have "
+        "children.");
     // TODO: t18095186 Move nodeType to opt-in function and mark appropriate
     // places in Litho
     setNodeType(YGNodeTypeText);
   }
 
   measure_ = measureFunc;
+}
+
+void YGNode::setMeasureFunc(YGMeasureFunc measureFunc) {
+  measureUsesContext_ = false;
+  decltype(YGNode::measure_) m;
+  m.noContext = measureFunc;
+  setMeasureFunc(m);
+}
+
+void YGNode::setMeasureFunc(MeasureWithContextFn measureFunc) {
+  measureUsesContext_ = true;
+  decltype(YGNode::measure_) m;
+  m.withContext = measureFunc;
+  setMeasureFunc(m);
 }
 
 void YGNode::replaceChild(YGNodeRef child, uint32_t index) {
@@ -205,8 +247,8 @@ void YGNode::setLayoutDimension(float dimension, int index) {
   layout_.dimensions[index] = dimension;
 }
 
-// If both left and right are defined, then use left. Otherwise return
-// +left or -right depending on which is defined.
+// If both left and right are defined, then use left. Otherwise return +left or
+// -right depending on which is defined.
 YGFloatOptional YGNode::relativePosition(
     const YGFlexDirection axis,
     const float axisSize) const {
@@ -266,11 +308,14 @@ YGNode& YGNode::operator=(const YGNode& node) {
   }
 
   context_ = node.getContext();
-  print_ = node.getPrintFunc();
   hasNewLayout_ = node.getHasNewLayout();
   nodeType_ = node.getNodeType();
-  measure_ = node.getMeasure();
-  baseline_ = node.getBaseline();
+  measureUsesContext_ = node.measureUsesContext_;
+  baselineUsesContext_ = node.baselineUsesContext_;
+  printUsesContext_ = node.printUsesContext_;
+  measure_ = node.measure_;
+  baseline_ = node.baseline_;
+  print_ = node.print_;
   dirtied_ = node.getDirtied();
   style_ = node.style_;
   layout_ = node.layout_;
@@ -312,7 +357,8 @@ YGValue YGNode::resolveFlexBasisPtr() const {
 }
 
 void YGNode::resolveDimension() {
-  for (uint32_t dim = YGDimensionWidth; dim < YGDimensionCount; dim++) {
+  using namespace yoga;
+  for (int dim = YGDimensionWidth; dim < enums::count<YGDimension>(); dim++) {
     if (!getStyle().maxDimensions[dim].isUndefined() &&
         YGValueEqual(
             getStyle().maxDimensions[dim], style_.minDimensions[dim])) {
@@ -339,38 +385,8 @@ void YGNode::clearChildren() {
 
 // Other Methods
 
-void YGNode::cloneChildrenIfNeeded() {
-  // YGNodeRemoveChild in yoga.cpp has a forked variant of this algorithm
-  // optimized for deletions.
-
-  const uint32_t childCount = static_cast<uint32_t>(children_.size());
-  if (childCount == 0) {
-    // This is an empty set. Nothing to clone.
-    return;
-  }
-
-  const YGNodeRef firstChild = children_.front();
-  if (firstChild->getOwner() == this) {
-    // If the first child has this node as its owner, we assume that it is
-    // already unique. We can do this because if we have it has a child, that
-    // means that its owner was at some point cloned which made that subtree
-    // immutable. We also assume that all its sibling are cloned as well.
-    return;
-  }
-
-  const YGCloneNodeFunc cloneNodeCallback = config_->cloneNodeCallback;
-  for (uint32_t i = 0; i < childCount; ++i) {
-    const YGNodeRef oldChild = children_[i];
-    YGNodeRef newChild = nullptr;
-    if (cloneNodeCallback) {
-      newChild = cloneNodeCallback(oldChild, this, i);
-    }
-    if (newChild == nullptr) {
-      newChild = YGNodeClone(oldChild);
-    }
-    replaceChild(newChild, i);
-    newChild->setOwner(this);
-  }
+void YGNode::cloneChildrenIfNeeded(void* cloneContext) {
+  iterChildrenAfterCloningIfNeeded([](YGNodeRef, void*) {}, cloneContext);
 }
 
 void YGNode::markDirtyAndPropogate() {

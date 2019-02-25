@@ -9,7 +9,6 @@ package com.facebook.react.devsupport;
 
 import java.util.Locale;
 
-import android.annotation.TargetApi;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -26,7 +25,6 @@ import com.facebook.react.modules.debug.FpsDebugFrameCallback;
  *
  * NB: Requires API 16 for use of FpsDebugFrameCallback.
  */
-@TargetApi(16)
 public class FpsView extends FrameLayout {
 
   private static final int UPDATE_INTERVAL_MS = 500;

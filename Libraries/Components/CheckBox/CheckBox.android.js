@@ -4,21 +4,23 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 'use strict';
 
 const React = require('React');
 const StyleSheet = require('StyleSheet');
+const processColor = require('processColor');
 
-const requireNativeComponent = require('requireNativeComponent');
+const AndroidCheckBoxNativeComponent = require('AndroidCheckBoxNativeComponent');
 const nullthrows = require('nullthrows');
 const setAndForwardRef = require('setAndForwardRef');
 
 import type {ViewProps} from 'ViewPropTypes';
 import type {SyntheticEvent} from 'CoreEventTypes';
 import type {NativeComponent} from 'ReactNative';
+import type {ColorValue} from 'StyleSheetTypes';
 
 type CheckBoxEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -51,6 +53,7 @@ type NativeProps = $ReadOnly<{|
 
   on?: ?boolean,
   enabled?: boolean,
+  tintColors: {|true: ?number, false: ?number|} | typeof undefined,
 |}>;
 
 type CheckBoxNativeType = Class<NativeComponent<NativeProps>>;
@@ -74,11 +77,12 @@ type Props = $ReadOnly<{|
    * Used to get the ref for the native checkbox
    */
   forwardedRef?: ?React.Ref<CheckBoxNativeType>,
-|}>;
 
-const RCTCheckBox = ((requireNativeComponent(
-  'AndroidCheckBox',
-): any): CheckBoxNativeType);
+  /**
+   * Controls the colors the checkbox has in checked and unchecked states.
+   */
+  tintColors?: {|true?: ?ColorValue, false?: ?ColorValue|},
+|}>;
 
 /**
  * Renders a boolean input (Android only).
@@ -154,8 +158,24 @@ class CheckBox extends React.Component<Props> {
       this.props.onValueChange(event.nativeEvent.value);
   };
 
+  getTintColors(tintColors) {
+    return tintColors
+      ? {
+          true: processColor(tintColors.true),
+          false: processColor(tintColors.false),
+        }
+      : undefined;
+  }
+
   render() {
-    const {disabled: _, value: __, style, forwardedRef, ...props} = this.props;
+    const {
+      disabled: _,
+      value: __,
+      tintColors,
+      style,
+      forwardedRef,
+      ...props
+    } = this.props;
     const disabled = this.props.disabled ?? false;
     const value = this.props.value ?? false;
 
@@ -165,11 +185,11 @@ class CheckBox extends React.Component<Props> {
       onResponderTerminationRequest: () => false,
       enabled: !disabled,
       on: value,
+      tintColors: this.getTintColors(tintColors),
       style: [styles.rctCheckBox, style],
     };
-
     return (
-      <RCTCheckBox
+      <AndroidCheckBoxNativeComponent
         {...nativeProps}
         ref={this._setNativeRef}
         onChange={this._onChange}

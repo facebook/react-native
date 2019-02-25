@@ -7,4 +7,4 @@ Libraries/Renderer/*
 pr-inactivity-bookmarklet.js
 question-bookmarklet.js
 flow/
-danger/
+bots/node_modules

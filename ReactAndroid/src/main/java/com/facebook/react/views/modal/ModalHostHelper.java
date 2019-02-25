@@ -5,7 +5,6 @@
 
 package com.facebook.react.views.modal;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -34,7 +33,6 @@ import com.facebook.infer.annotation.Assertions;
    * and landscape on tablets.
    * This should only be called on the native modules/shadow nodes thread.
    */
-  @TargetApi(16)
   public static Point getModalHostSize(Context context) {
     WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
     Display display = Assertions.assertNotNull(wm).getDefaultDisplay();

@@ -9,32 +9,38 @@
 #include <array>
 #include <initializer_list>
 #include "CompactValue.h"
+#include "YGEnums.h"
 #include "YGFloatOptional.h"
 #include "Yoga-internal.h"
 #include "Yoga.h"
 
-constexpr YGValue kYGValueUndefined = {0, YGUnitUndefined};
-
-constexpr YGValue kYGValueAuto = {0, YGUnitAuto};
+#if !defined(ENUM_BITFIELDS_NOT_SUPPORTED)
+#define BITFIELD_ENUM_SIZED(num) : num
+#else
+#define BITFIELD_ENUM_SIZED(num)
+#endif
 
 struct YGStyle {
- private:
+private:
   using CompactValue = facebook::yoga::detail::CompactValue;
 
- public:
+public:
   using Dimensions = facebook::yoga::detail::Values<2>;
-  using Edges = facebook::yoga::detail::Values<YGEdgeCount>;
+  using Edges =
+      facebook::yoga::detail::Values<facebook::yoga::enums::count<YGEdge>()>;
 
-  YGDirection direction : 2;
-  YGFlexDirection flexDirection : 2;
-  YGJustify justifyContent : 3;
-  YGAlign alignContent : 3;
-  YGAlign alignItems : 3;
-  YGAlign alignSelf : 3;
-  YGPositionType positionType : 1;
-  YGWrap flexWrap : 2;
-  YGOverflow overflow : 2;
-  YGDisplay display : 1;
+  /* Some platforms don't support enum bitfields,
+     so please use BITFIELD_ENUM_SIZED(BITS_COUNT) */
+  YGDirection direction BITFIELD_ENUM_SIZED(2);
+  YGFlexDirection flexDirection BITFIELD_ENUM_SIZED(2);
+  YGJustify justifyContent BITFIELD_ENUM_SIZED(3);
+  YGAlign alignContent BITFIELD_ENUM_SIZED(3);
+  YGAlign alignItems BITFIELD_ENUM_SIZED(3);
+  YGAlign alignSelf BITFIELD_ENUM_SIZED(3);
+  YGPositionType positionType BITFIELD_ENUM_SIZED(1);
+  YGWrap flexWrap BITFIELD_ENUM_SIZED(2);
+  YGOverflow overflow BITFIELD_ENUM_SIZED(2);
+  YGDisplay display BITFIELD_ENUM_SIZED(1);
   YGFloatOptional flex = {};
   YGFloatOptional flexGrow = {};
   YGFloatOptional flexShrink = {};
@@ -60,10 +66,10 @@ struct YGStyle {
         flexWrap(YGWrapNoWrap),
         overflow(YGOverflowVisible),
         display(YGDisplayFlex) {}
-  bool operator==(const YGStyle& style);
-
-  bool operator!=(YGStyle style) {
-    return !(*this == style);
-  }
   ~YGStyle() = default;
 };
+
+bool operator==(const YGStyle& lhs, const YGStyle& rhs);
+inline bool operator!=(const YGStyle& lhs, const YGStyle& rhs) {
+  return !(lhs == rhs);
+}

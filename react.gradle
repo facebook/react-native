@@ -50,11 +50,11 @@ afterEvaluate {
 
             // Set up inputs and outputs so gradle can cache the result
             inputs.files fileTree(dir: reactRoot, excludes: inputExcludes)
-            outputs.dir jsBundleDir
-            outputs.dir resourcesDir
+            outputs.dir(jsBundleDir)
+            outputs.dir(resourcesDir)
 
             // Set up the call to the react-native cli
-            workingDir reactRoot
+            workingDir(reactRoot)
 
             // Set up dev mode
             def devEnabled = !(config."devDisabledIn${targetName}"
@@ -76,9 +76,11 @@ afterEvaluate {
                     "--reset-cache", "--entry-file", entryFile, "--bundle-output", jsBundleFile, "--assets-dest", resourcesDir, *extraArgs)
             }
 
-            enabled config."bundleIn${targetName}" ||
-                config."bundleIn${variant.buildType.name.capitalize()}" ?:
-                targetName.toLowerCase().contains("release")
+            enabled config."bundleIn${targetName}" != null
+              ? config."bundleIn${targetName}"
+              : config."bundleIn${variant.buildType.name.capitalize()}" != null
+                ? config."bundleIn${variant.buildType.name.capitalize()}"
+                : targetName.toLowerCase().contains("release")
         }
 
         // Expose a minimal interface on the application variant and the task itself:
@@ -92,15 +94,18 @@ afterEvaluate {
         } else {
             variant.registerResGeneratingTask(currentBundleTask)
         }
-        variant.mergeResources.dependsOn(currentBundleTask)
+        variant.mergeResourcesProvider.get().dependsOn(currentBundleTask)
 
         // packageApplication for Android plugin 3.x
         def packageTask = variant.hasProperty("packageApplication")
-            ? variant.packageApplication
+            ? variant.packageApplicationProvider.get()
             : tasks.findByName("package${targetName}")
         if (variant.hasProperty("packageLibrary")) {
             packageTask = variant.packageLibrary
         }
+
+        // pre bundle build task for Android plugin 3.2+
+        def buildPreBundleTask = tasks.findByName("build${targetName}PreBundle")
 
         def resourcesDirConfigValue = config."resourcesDir${targetName}"
         if (resourcesDirConfigValue) {
@@ -110,15 +115,18 @@ afterEvaluate {
                 group = "react"
                 description = "copy bundled resources into custom location for ${targetName}."
 
-                from resourcesDir
-                into file(resourcesDirConfigValue)
+                from(resourcesDir)
+                into(file(resourcesDirConfigValue))
 
                 dependsOn(currentBundleTask)
 
-                enabled currentBundleTask.enabled
+                enabled(currentBundleTask.enabled)
             }
 
             packageTask.dependsOn(currentCopyResTask)
+            if (buildPreBundleTask != null) {
+                buildPreBundleTask.dependsOn(currentCopyResTask)
+            }
         }
 
         def currentAssetsCopyTask = tasks.create(
@@ -128,26 +136,29 @@ afterEvaluate {
             description = "copy bundled JS into ${targetName}."
 
             if (config."jsBundleDir${targetName}") {
-                from jsBundleDir
-                into file(config."jsBundleDir${targetName}")
+                from(jsBundleDir)
+                into(file(config."jsBundleDir${targetName}"))
             } else {
                 into ("$buildDir/intermediates")
                 into ("assets/${targetPath}") {
-                    from jsBundleDir
+                    from(jsBundleDir)
                 }
 
                 // Workaround for Android Gradle Plugin 3.2+ new asset directory
                 into ("merged_assets/${variant.name}/merge${targetName}Assets/out") {
-                    from jsBundleDir
+                    from(jsBundleDir)
                 }
             }
 
             // mergeAssets must run first, as it clears the intermediates directory
-            dependsOn(variant.mergeAssets)
+            dependsOn(variant.mergeAssetsProvider.get())
 
-            enabled currentBundleTask.enabled
+            enabled(currentBundleTask.enabled)
         }
 
         packageTask.dependsOn(currentAssetsCopyTask)
+        if (buildPreBundleTask != null) {
+            buildPreBundleTask.dependsOn(currentAssetsCopyTask)
+        }
     }
 }

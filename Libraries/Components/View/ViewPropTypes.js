@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -69,7 +69,7 @@ type DirectEventProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onaccessibilityescape
    */
-  onAccessibilityEscape?: ?Function,
+  onAccessibilityEscape?: ?() => void,
 |}>;
 
 type TouchEventProps = $ReadOnly<{|
@@ -205,9 +205,22 @@ type GestureResponderEventProps = $ReadOnly<{|
   onStartShouldSetResponderCapture?: ?(e: PressEvent) => boolean,
 |}>;
 
+type AndroidDrawableThemeAttr = $ReadOnly<{|
+  type: 'ThemeAttrAndroid',
+  attribute: string,
+|}>;
+
+type AndroidDrawableRipple = $ReadOnly<{|
+  type: 'RippleAndroid',
+  color?: ?number,
+  borderless?: ?boolean,
+|}>;
+
+type AndroidDrawable = AndroidDrawableThemeAttr | AndroidDrawableRipple;
+
 type AndroidViewProps = $ReadOnly<{|
-  nativeBackgroundAndroid?: ?Object,
-  nativeForegroundAndroid?: ?Object,
+  nativeBackgroundAndroid?: ?AndroidDrawable,
+  nativeForegroundAndroid?: ?AndroidDrawable,
 
   /**
    * Whether this `View` should render itself (and all of its children) into a
@@ -271,6 +284,41 @@ type AndroidViewProps = $ReadOnly<{|
    * See http://facebook.github.io/react-native/docs/view.html#importantforaccessibility
    */
   importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
+
+  /**
+   * TV next focus down (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusDown?: ?number,
+
+  /**
+   * TV next focus forward (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusForward?: ?number,
+
+  /**
+   * TV next focus left (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusLeft?: ?number,
+
+  /**
+   * TV next focus right (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusRight?: ?number,
+
+  /**
+   * TV next focus up (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusUp?: ?number,
 |}>;
 
 type IOSViewProps = $ReadOnly<{|

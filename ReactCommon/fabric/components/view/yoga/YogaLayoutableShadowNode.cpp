@@ -14,6 +14,7 @@
 #include <react/core/LayoutConstraints.h>
 #include <react/core/LayoutContext.h>
 #include <react/debug/DebugStringConvertibleItem.h>
+#include <react/debug/SystraceSection.h>
 #include <yoga/Yoga.h>
 
 namespace facebook {
@@ -114,8 +115,13 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
      * (and this is by design).
      */
     yogaConfig_.pointScaleFactor = layoutContext.pointScaleFactor;
-    YGNodeCalculateLayout(
-        &yogaNode_, YGUndefined, YGUndefined, YGDirectionInherit);
+
+    {
+      SystraceSection s("YogaLayoutableShadowNode::YGNodeCalculateLayout");
+
+      YGNodeCalculateLayout(
+          &yogaNode_, YGUndefined, YGUndefined, YGDirectionInherit);
+    }
   }
 
   LayoutableShadowNode::layout(layoutContext);
@@ -153,6 +159,8 @@ YGNode *YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector(
     YGNode *oldYogaNode,
     YGNode *parentYogaNode,
     int childIndex) {
+  SystraceSection s("YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector");
+
   // At this point it is garanteed that all shadow nodes associated with yoga
   // nodes are `YogaLayoutableShadowNode` subclasses.
   auto parentNode =
@@ -170,6 +178,9 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
     YGMeasureMode widthMode,
     float height,
     YGMeasureMode heightMode) {
+  SystraceSection s(
+      "YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector");
+
   auto shadowNodeRawPtr =
       static_cast<YogaLayoutableShadowNode *>(yogaNode->getContext());
 
@@ -207,8 +218,8 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
 }
 
 void YogaLayoutableShadowNode::initializeYogaConfig(YGConfig &config) {
-  config.cloneNodeCallback =
-      YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector;
+  config.setCloneNodeCallback(
+      YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector);
 }
 
 } // namespace react

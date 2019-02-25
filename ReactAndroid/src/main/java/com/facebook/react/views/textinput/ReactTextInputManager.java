@@ -10,6 +10,7 @@ package com.facebook.react.views.textinput;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -103,9 +104,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     int inputType = editText.getInputType();
     editText.setInputType(inputType & (~InputType.TYPE_TEXT_FLAG_MULTI_LINE));
     editText.setReturnKeyType("done");
-    editText.setTextSize(
-        TypedValue.COMPLEX_UNIT_PX,
-        (int) Math.ceil(PixelUtil.toPixelFromSP(ViewDefaults.FONT_SIZE_SP)));
     return editText;
   }
 
@@ -206,9 +204,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = ViewProps.FONT_SIZE, defaultFloat = ViewDefaults.FONT_SIZE_SP)
   public void setFontSize(ReactEditText view, float fontSize) {
-    view.setTextSize(
-        TypedValue.COMPLEX_UNIT_PX,
-        (int) Math.ceil(PixelUtil.toPixelFromSP(fontSize)));
+    view.setFontSize(fontSize);
   }
 
   @ReactProp(name = ViewProps.FONT_FAMILY)
@@ -222,6 +218,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         style,
         view.getContext().getAssets());
     view.setTypeface(newTypeface);
+  }
+
+  @ReactProp(name = ViewProps.MAX_FONT_SIZE_MULTIPLIER, defaultFloat = Float.NaN)
+  public void setMaxFontSizeMultiplier(ReactEditText view, float maxFontSizeMultiplier) {
+    view.setMaxFontSizeMultiplier(maxFontSizeMultiplier);
   }
 
   /**
@@ -281,6 +282,24 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
   }
 
+  @ReactProp(name = "importantForAutofill")
+  public void setImportantForAutofill(ReactEditText view, @Nullable String value) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+      return;
+    }
+    int mode = View.IMPORTANT_FOR_AUTOFILL_AUTO;
+    if ("no".equals(value)) {
+      mode = View.IMPORTANT_FOR_AUTOFILL_NO;
+    } else if ("noExcludeDescendants".equals(value)) {
+      mode = View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS;
+    } else if ("yes".equals(value)) {
+      mode = View.IMPORTANT_FOR_AUTOFILL_YES;
+    } else if ("yesExcludeDescendants".equals(value)) {
+      mode = View.IMPORTANT_FOR_AUTOFILL_YES_EXCLUDE_DESCENDANTS;
+    }
+    view.setImportantForAutofill(mode);
+  }
+
   @ReactProp(name = "onSelectionChange", defaultBoolean = false)
   public void setOnSelectionChange(final ReactEditText view, boolean onSelectionChange) {
     if (onSelectionChange) {
@@ -326,6 +345,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     view.setLetterSpacingPt(letterSpacing);
   }
 
+  @ReactProp(name = ViewProps.ALLOW_FONT_SCALING, defaultBoolean = true)
+  public void setAllowFontScaling(ReactEditText view, boolean allowFontScaling) {
+    view.setAllowFontScaling(allowFontScaling);
+  }
+
   @ReactProp(name = "placeholder")
   public void setPlaceholder(ReactEditText view, @Nullable String placeholder) {
     view.setHint(placeholder);
@@ -351,7 +375,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     setCursorColor(view, color);
   }
 
-  private void setCursorColor(ReactEditText view, @Nullable Integer color) {
+  @ReactProp(name = "cursorColor", customType = "Color")
+  public void setCursorColor(ReactEditText view, @Nullable Integer color) {
     // Evil method that uses reflection because there is no public API to changes
     // the cursor color programmatically.
     // Based on http://stackoverflow.com/questions/25996032/how-to-change-programatically-edittext-cursor-color-in-android.
@@ -523,6 +548,41 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
 
     view.setFilters(newFilters);
+  }
+
+  @ReactProp(name = "autoComplete")
+  public void setTextContentType(ReactEditText view, @Nullable String autocomplete) {
+    if (autocomplete == null) {
+      view.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO);
+    } else if ("username".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_USERNAME);
+    } else if ("password".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_PASSWORD);
+    } else if ("email".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_EMAIL_ADDRESS);
+    } else if ("name".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_NAME);
+    } else if ("tel".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_PHONE);
+    } else if ("street-address".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_POSTAL_ADDRESS);
+    } else if ("postal-code".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_POSTAL_CODE);
+    } else if ("cc-number".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_NUMBER);
+    } else if ("cc-csc".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_SECURITY_CODE);
+    } else if ("cc-exp".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DATE);
+    } else if ("cc-exp-month".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_MONTH);
+    } else if ("cc-exp-year".equals(autocomplete)) {
+      view.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_YEAR);
+    } else if ("off".equals(autocomplete)) {
+      view.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO);
+    } else {
+      throw new JSApplicationIllegalArgumentException("Invalid autocomplete option: " + autocomplete);
+    }
   }
 
   @ReactProp(name = "autoCorrect")

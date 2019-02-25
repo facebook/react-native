@@ -33,9 +33,9 @@
 #import <cxxreact/ModuleRegistry.h>
 #import <cxxreact/RAMBundleRegistry.h>
 #import <cxxreact/ReactMarker.h>
-#import <jsi/JSCRuntime.h>
 #import <jsireact/JSIExecutor.h>
 
+#import "JSCExecutorFactory.h"
 #import "NSDataBigString.h"
 #import "RCTMessageThread.h"
 #import "RCTObjcExecutor.h"
@@ -83,30 +83,12 @@ public:
     bridge_.bridgeDescription =
       [NSString stringWithFormat:@"RCTCxxBridge %s",
                 ret->getDescription().c_str()];
-    return std::move(ret);
+    return ret;
   }
 
 private:
   RCTCxxBridge *bridge_;
   std::shared_ptr<JSExecutorFactory> factory_;
-};
-
-class JSCExecutorFactory : public JSExecutorFactory {
-public:
-  std::unique_ptr<JSExecutor> createJSExecutor(
-    std::shared_ptr<ExecutorDelegate> delegate,
-    std::shared_ptr<MessageQueueThread> jsQueue) override {
-    return folly::make_unique<JSIExecutor>(
-      facebook::jsc::makeJSCRuntime(),
-      delegate,
-      [](const std::string &message, unsigned int logLevel) {
-        _RCTLogJavaScriptInternal(
-          static_cast<RCTLogLevel>(logLevel),
-          [NSString stringWithUTF8String:message.c_str()]);
-      },
-      JSIExecutor::defaultTimeoutInvoker,
-      nullptr);
-  }
 };
 
 }
@@ -119,7 +101,7 @@ static bool isRAMBundle(NSData *script) {
 
 static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogger) {
   __weak RCTPerformanceLogger *weakPerformanceLogger = performanceLogger;
-  ReactMarker::logTaggedMarker = [weakPerformanceLogger](const ReactMarker::ReactMarkerId markerId, const char *tag) {
+  ReactMarker::logTaggedMarker = [weakPerformanceLogger](const ReactMarker::ReactMarkerId markerId, const char *__unused tag) {
     switch (markerId) {
       case ReactMarker::RUN_JS_BUNDLE_START:
         [weakPerformanceLogger markStartForTag:RCTPLScriptExecution];
@@ -170,7 +152,6 @@ struct RCTInstanceCallback : public InstanceCallback {
 
 @implementation RCTCxxBridge
 {
-  BOOL _wasBatchActive;
   BOOL _didInvalidate;
   BOOL _moduleRegistryCreated;
 
@@ -191,12 +172,20 @@ struct RCTInstanceCallback : public InstanceCallback {
 
   // This is uniquely owned, but weak_ptr is used.
   std::shared_ptr<Instance> _reactInstance;
+
+  // Necessary for searching in TurboModuleRegistry
+  id<RCTTurboModuleLookupDelegate> _turboModuleLookupDelegate;
 }
 
 @synthesize bridgeDescription = _bridgeDescription;
 @synthesize loading = _loading;
 @synthesize performanceLogger = _performanceLogger;
 @synthesize valid = _valid;
+
+- (void) setRCTTurboModuleLookupDelegate:(id<RCTTurboModuleLookupDelegate>)turboModuleLookupDelegate
+{
+  _turboModuleLookupDelegate = turboModuleLookupDelegate;
+}
 
 - (std::shared_ptr<MessageQueueThread>)jsMessageThread
 {
@@ -337,7 +326,7 @@ struct RCTInstanceCallback : public InstanceCallback {
       executorFactory = [cxxDelegate jsExecutorFactoryForBridge:self];
     }
     if (!executorFactory) {
-      executorFactory = std::make_shared<JSCExecutorFactory>();
+      executorFactory = std::make_shared<JSCExecutorFactory>(nullptr);
     }
   } else {
     id<RCTJavaScriptExecutor> objcExecutor = [self moduleForClass:self.executorClass];
@@ -368,7 +357,9 @@ struct RCTInstanceCallback : public InstanceCallback {
     dispatch_group_leave(prepareBridge);
   } onProgress:^(RCTLoadingProgress *progressData) {
 #if RCT_DEV && __has_include("RCTDevLoadingView.h")
-    RCTDevLoadingView *loadingView = [weakSelf moduleForClass:[RCTDevLoadingView class]];
+    // Note: RCTDevLoadingView should have been loaded at this point, so no need to allow lazy loading.
+    RCTDevLoadingView *loadingView = [weakSelf moduleForName:RCTBridgeModuleNameForClass([RCTDevLoadingView class])
+                                       lazilyLoadIfNecessary:NO];
     [loadingView updateProgress:progressData];
 #endif
   }];
@@ -447,17 +438,33 @@ struct RCTInstanceCallback : public InstanceCallback {
 
 - (id)moduleForName:(NSString *)moduleName
 {
-  return _moduleDataByName[moduleName].instance;
+  return [self moduleForName:moduleName lazilyLoadIfNecessary:NO];
 }
 
 - (id)moduleForName:(NSString *)moduleName lazilyLoadIfNecessary:(BOOL)lazilyLoad
 {
+  if (RCTTurboModuleEnabled() && _turboModuleLookupDelegate) {
+    const char* moduleNameCStr = [moduleName UTF8String];
+    if (lazilyLoad || [_turboModuleLookupDelegate moduleIsInitialized:moduleNameCStr]) {
+      id<RCTTurboModule> module = [_turboModuleLookupDelegate moduleForName:moduleNameCStr warnOnLookupFailure:NO];
+      if (module != nil) {
+        return module;
+      }
+    }
+  }
+
   if (!lazilyLoad) {
-    return [self moduleForName:moduleName];
+    return _moduleDataByName[moduleName].instance;
   }
 
   RCTModuleData *moduleData = _moduleDataByName[moduleName];
   if (moduleData) {
+    if (![moduleData isKindOfClass:[RCTModuleData class]]) {
+      // There is rare race condition where the data stored in the dictionary
+      // may have been deallocated, which means the module instance is no longer
+      // usable.
+      return nil;
+    }
     return moduleData.instance;
   }
 
@@ -476,7 +483,16 @@ struct RCTInstanceCallback : public InstanceCallback {
 
 - (BOOL)moduleIsInitialized:(Class)moduleClass
 {
-  return _moduleDataByName[RCTBridgeModuleNameForClass(moduleClass)].hasInstance;
+  NSString* moduleName = RCTBridgeModuleNameForClass(moduleClass);
+  if (_moduleDataByName[moduleName].hasInstance) {
+    return YES;
+  }
+
+  if (_turboModuleLookupDelegate) {
+    return [_turboModuleLookupDelegate moduleIsInitialized:[moduleName UTF8String]];
+  }
+
+  return NO;
 }
 
 - (id)moduleForClass:(Class)moduleClass
@@ -599,9 +615,9 @@ struct RCTInstanceCallback : public InstanceCallback {
         continue;
       } else if ([moduleData.moduleClass new] != nil) {
         // Both modules were non-nil, so it's unclear which should take precedence
-        RCTLogError(@"Attempted to register RCTBridgeModule class %@ for the "
-                    "name '%@', but name was already registered by class %@",
-                    moduleClass, moduleName, moduleData.moduleClass);
+        RCTLogWarn(@"Attempted to register RCTBridgeModule class %@ for the "
+                   "name '%@', but name was already registered by class %@",
+                   moduleClass, moduleName, moduleData.moduleClass);
       }
     }
 
@@ -1360,7 +1376,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 
 - (BOOL)isBatchActive
 {
-  return _wasBatchActive;
+  return _reactInstance ? _reactInstance->isBatchActive() : NO;
 }
 
 - (void *)runtime

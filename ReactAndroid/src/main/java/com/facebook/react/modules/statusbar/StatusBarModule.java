@@ -38,6 +38,7 @@ import javax.annotation.Nullable;
 public class StatusBarModule extends ReactContextBaseJavaModule {
 
   private static final String HEIGHT_KEY = "HEIGHT";
+  private static final String DEFAULT_BACKGROUND_COLOR_KEY = "DEFAULT_BACKGROUND_COLOR";
   public static final String NAME = "StatusBarManager";
 
   public StatusBarModule(ReactApplicationContext reactContext) {
@@ -52,14 +53,22 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
   @Override
   public @Nullable Map<String, Object> getConstants() {
     final Context context = getReactApplicationContext();
+    final Activity activity = getCurrentActivity();
+
     final int heightResId = context.getResources()
       .getIdentifier("status_bar_height", "dimen", "android");
     final float height = heightResId > 0 ?
       PixelUtil.toDIPFromPixel(context.getResources().getDimensionPixelSize(heightResId)) :
       0;
+    String statusBarColorString = "black";
+
+    if (activity != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      final int statusBarColor = activity.getWindow().getStatusBarColor();
+      statusBarColorString = String.format("#%06X", (0xFFFFFF & statusBarColor));
+    }
 
     return MapBuilder.<String, Object>of(
-      HEIGHT_KEY, height);
+      HEIGHT_KEY, height, DEFAULT_BACKGROUND_COLOR_KEY, statusBarColorString);
   }
 
   @ReactMethod
@@ -180,8 +189,13 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
           @Override
           public void run() {
             View decorView = activity.getWindow().getDecorView();
-            decorView.setSystemUiVisibility(
-              "dark-content".equals(style) ? View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR : 0);
+            int systemUiVisibilityFlags = decorView.getSystemUiVisibility();
+            if ("dark-content".equals(style)) {
+              systemUiVisibilityFlags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+            } else {
+              systemUiVisibilityFlags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+            }
+            decorView.setSystemUiVisibility(systemUiVisibilityFlags);
           }
         }
       );

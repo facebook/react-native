@@ -17,9 +17,7 @@ using namespace facebook::react;
   SharedProps _newProps;
 }
 
-- (instancetype)initWithTag:(ReactTag)tag
-                   oldProps:(SharedProps)oldProps
-                   newProps:(SharedProps)newProps
+- (instancetype)initWithTag:(ReactTag)tag oldProps:(SharedProps)oldProps newProps:(SharedProps)newProps
 {
   if (self = [super init]) {
     _tag = tag;

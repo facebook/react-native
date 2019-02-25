@@ -8,17 +8,8 @@
 #import <React/RCTBridge.h>
 #import <React/RCTURLRequestHandler.h>
 
-@class ALAssetsLibrary;
+@class PHPhotoLibrary;
 
 @interface RCTAssetsLibraryRequestHandler : NSObject <RCTURLRequestHandler>
-
-@end
-
-@interface RCTBridge (RCTAssetsLibraryImageLoader)
-
-/**
- * The shared asset library instance.
- */
-@property (nonatomic, readonly) ALAssetsLibrary *assetsLibrary;
 
 @end

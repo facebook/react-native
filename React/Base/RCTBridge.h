@@ -160,6 +160,12 @@ RCT_EXTERN void RCTEnableTurboModule(BOOL enabled);
 - (id)moduleForClass:(Class)moduleClass;
 
 /**
+ * When a NativeModule performs a lookup for a TurboModule, we need to query
+ * the lookupDelegate.
+ */
+- (void)setRCTTurboModuleLookupDelegate:(id<RCTTurboModuleLookupDelegate>)turboModuleLookupDelegate;
+
+/**
  * Convenience method for retrieving all modules conforming to a given protocol.
  * Modules will be sychronously instantiated if they haven't already been,
  * potentially blocking both the calling thread and main thread for a short time.

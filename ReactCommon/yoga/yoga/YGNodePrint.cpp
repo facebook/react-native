@@ -20,8 +20,7 @@ static void indent(string& base, uint32_t level) {
   }
 }
 
-static bool areFourValuesEqual(
-    const facebook::yoga::detail::Values<YGEdgeCount>& four) {
+static bool areFourValuesEqual(const YGStyle::Edges& four) {
   return YGValueEqual(four[0], four[1]) && YGValueEqual(four[0], four[2]) &&
       YGValueEqual(four[0], four[3]);
 }
@@ -63,15 +62,19 @@ static void appendNumberIfNotUndefined(
   }
 }
 
-static void
-appendNumberIfNotAuto(string& base, const string& key, const YGValue number) {
+static void appendNumberIfNotAuto(
+    string& base,
+    const string& key,
+    const YGValue number) {
   if (number.unit != YGUnitAuto) {
     appendNumberIfNotUndefined(base, key, number);
   }
 }
 
-static void
-appendNumberIfNotZero(string& base, const string& str, const YGValue number) {
+static void appendNumberIfNotZero(
+    string& base,
+    const string& str,
+    const YGValue number) {
   if (number.unit == YGUnitAuto) {
     base.append(str + ": auto; ");
   } else if (!YGFloatsEqual(number.value, 0)) {
@@ -82,7 +85,7 @@ appendNumberIfNotZero(string& base, const string& str, const YGValue number) {
 static void appendEdges(
     string& base,
     const string& key,
-    const facebook::yoga::detail::Values<YGEdgeCount>& edges) {
+    const YGStyle::Edges& edges) {
   if (areFourValuesEqual(edges)) {
     appendNumberIfNotZero(base, key, edges[YGEdgeLeft]);
   } else {
@@ -96,7 +99,7 @@ static void appendEdges(
 static void appendEdgeIfNotUndefined(
     string& base,
     const string& str,
-    const facebook::yoga::detail::Values<YGEdgeCount>& edges,
+    const YGStyle::Edges& edges,
     const YGEdge edge) {
   appendNumberIfNotUndefined(
       base,
@@ -111,9 +114,6 @@ void YGNodeToString(
     uint32_t level) {
   indent(str, level);
   appendFormatedString(str, "<div ");
-  if (node->getPrintFunc() != nullptr) {
-    node->getPrintFunc()(node);
-  }
 
   if (options & YGPrintOptionsLayout) {
     appendFormatedString(str, "layout=\"");
@@ -166,7 +166,7 @@ void YGNodeToString(
 
     if (node->getStyle().flexWrap != YGNode().getStyle().flexWrap) {
       appendFormatedString(
-          str, "flexWrap: %s; ", YGWrapToString(node->getStyle().flexWrap));
+          str, "flex-wrap: %s; ", YGWrapToString(node->getStyle().flexWrap));
     }
 
     if (node->getStyle().overflow != YGNode().getStyle().overflow) {
@@ -211,7 +211,7 @@ void YGNodeToString(
         str, "bottom", node->getStyle().position, YGEdgeBottom);
     appendFormatedString(str, "\" ");
 
-    if (node->getMeasure() != nullptr) {
+    if (node->hasMeasureFunc()) {
       appendFormatedString(str, "has-custom-measure=\"true\"");
     }
   }
