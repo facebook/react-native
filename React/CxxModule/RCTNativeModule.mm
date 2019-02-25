@@ -110,10 +110,7 @@ static MethodCallResult invokeInner(RCTBridge *bridge, RCTModuleData *moduleData
       @throw exception;
     }
 
-    NSString *message = [NSString stringWithFormat:
-                         @"Exception '%@' was thrown while invoking %s on target %@ with params %@\ncallstack: %@",
-                         exception, method.JSMethodName, moduleData.name, objcParams, exception.callStackSymbols];
-    RCTFatal(RCTErrorWithMessage(message));
+    RCTFatalException(exception);
   }
 
   return folly::none;
