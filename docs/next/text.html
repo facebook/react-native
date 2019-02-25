@@ -152,7 +152,7 @@ AppRegistry.registerComponent(<span class="hljs-string">'AwesomeProject'</span>,
   <span class="token operator">&lt;</span><span class="token operator">/</span>Text<span class="token operator">></span>
 <span class="token operator">&lt;</span><span class="token operator">/</span>View<span class="token operator">></span>
 </code></pre>
-<p>You also lose the ability to set up a default font for an entire subtree. The recommended way to use consistent fonts and sizes across your application is to create a component <code>MyAppText</code> that includes them and use this component across your app. You can also use this component to make more specific components like <code>MyAppHeaderText</code> for other kinds of text.</p>
+<p>You also lose the ability to set up a default font for an entire subtree. Meanwhile, <code>fontFamily</code> only accepts a single font name, which is different from <code>font-family</code> in CSS. The recommended way to use consistent fonts and sizes across your application is to create a component <code>MyAppText</code> that includes them and use this component across your app. You can also use this component to make more specific components like <code>MyAppHeaderText</code> for other kinds of text.</p>
 <pre><code class="hljs css language-javascript"><span class="token operator">&lt;</span>View<span class="token operator">></span>
   <span class="token operator">&lt;</span>MyAppText<span class="token operator">></span>
     Text styled <span class="token keyword">with</span> the <span class="token keyword">default</span> font <span class="token keyword">for</span> the entire application
