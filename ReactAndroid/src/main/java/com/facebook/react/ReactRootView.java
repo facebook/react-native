@@ -91,6 +91,8 @@ public class ReactRootView extends FrameLayout implements RootView {
   private boolean mWasMeasured = false;
   private int mWidthMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
   private int mHeightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+  private int mLastWidth = 0;
+  private int mLastHeight = 0;
   private @UIManagerType int mUIManagerType = DEFAULT;
 
   public ReactRootView(Context context) {
@@ -116,6 +118,8 @@ public class ReactRootView extends FrameLayout implements RootView {
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactRootView.onMeasure");
     try {
+      boolean measureSpecsUpdated = widthMeasureSpec != mWidthMeasureSpec ||
+        heightMeasureSpec != mHeightMeasureSpec;
       mWidthMeasureSpec = widthMeasureSpec;
       mHeightMeasureSpec = heightMeasureSpec;
 
@@ -155,9 +159,11 @@ public class ReactRootView extends FrameLayout implements RootView {
       // Check if we were waiting for onMeasure to attach the root view.
       if (mReactInstanceManager != null && !mIsAttachedToInstance) {
         attachToReactInstanceManager();
-      } else {
+      } else if (measureSpecsUpdated || mLastWidth != width || mLastHeight != height) {
         updateRootLayoutSpecs(mWidthMeasureSpec, mHeightMeasureSpec);
       }
+      mLastWidth = width;
+      mLastHeight = height;
 
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);

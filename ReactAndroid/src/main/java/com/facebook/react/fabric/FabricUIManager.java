@@ -23,7 +23,6 @@ import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.proguard.annotations.DoNotStrip;
-import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -115,6 +114,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   private long mCommitStartTime = 0l;
   private long mLayoutTime = 0l;
   private long mFinishTransactionTime = 0l;
+  private int mLastWidthMeasureSpec = 0;
+  private int mLastHeightMeasureSpec = 0;
+  private long mFinishTransactionCPPTime = 0l;
 
   public FabricUIManager(
       ReactApplicationContext reactContext,
@@ -274,7 +276,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @Override
   public void synchronouslyUpdateViewOnUIThread(int reactTag, ReadableMap props) {
     long time = SystemClock.uptimeMillis();
-    scheduleMountItems(updatePropsMountItem(reactTag, props), time, time, time);
+    scheduleMountItems(updatePropsMountItem(reactTag, props), time, 0, time, time);
   }
 
   /**
@@ -287,11 +289,13 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       final MountItem mountItems,
       long commitStartTime,
       long layoutTime,
-      long finishTransactionStartTime) {
+      long finishTransactionStartTime,
+      long finishTransactionEndTime) {
 
     // TODO T31905686: support multithreading
     mCommitStartTime = commitStartTime;
     mLayoutTime = layoutTime;
+    mFinishTransactionCPPTime = finishTransactionEndTime - finishTransactionStartTime;
     mFinishTransactionTime = SystemClock.uptimeMillis() - finishTransactionStartTime;
     mDispatchViewUpdatesTime = SystemClock.uptimeMillis();
     synchronized (mMountItemsLock) {
@@ -364,21 +368,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   public void updateRootLayoutSpecs(
       final int rootTag, final int widthMeasureSpec, final int heightMeasureSpec) {
 
-    // TODO T31905686: this should not run in a different thread.
-    // This is a workaround because a race condition that happens in core of RN.
-    // We are analyzing this and fixing it as part of another diff.
-    mReactApplicationContext.runOnJSQueueThread(
-        new GuardedRunnable(mReactApplicationContext) {
-          @Override
-          public void runGuarded() {
-            mBinding.setConstraints(
-                rootTag,
-                getMinSize(widthMeasureSpec),
-                getMaxSize(widthMeasureSpec),
-                getMinSize(heightMeasureSpec),
-                getMaxSize(heightMeasureSpec));
-          }
-        });
+    mBinding.setConstraints(
+        rootTag,
+        getMinSize(widthMeasureSpec),
+        getMaxSize(widthMeasureSpec),
+        getMinSize(heightMeasureSpec),
+        getMaxSize(heightMeasureSpec));
   }
 
   public void receiveEvent(int reactTag, String eventName, @Nullable WritableMap params) {
@@ -440,6 +435,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     performanceCounters.put("BatchedExecutionTime", mBatchedExecutionTime);
     performanceCounters.put("NonBatchedExecutionTime", mNonBatchedExecutionTime);
     performanceCounters.put("FinishFabricTransactionTime", mFinishTransactionTime);
+    performanceCounters.put("FinishFabricTransactionCPPTime", mFinishTransactionCPPTime);
     return performanceCounters;
   }
 

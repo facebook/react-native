@@ -441,15 +441,18 @@ void Binding::schedulerDidFinishTransaction(
 
   static auto scheduleMountItems =
       jni::findClassStatic(UIManagerJavaDescriptor)
-          ->getMethod<void(JMountItem::javaobject, jlong, jlong, jlong)>(
+          ->getMethod<void(JMountItem::javaobject, jlong, jlong, jlong, jlong)>(
               "scheduleMountItems");
+
+  long finishTransactionEndTime = getTime();
 
   scheduleMountItems(
       javaUIManager_,
       batch.get(),
       commitStartTime,
       layoutTime,
-      finishTransactionStartTime);
+      finishTransactionStartTime,
+      finishTransactionEndTime);
 }
 
 void Binding::setPixelDensity(float pointScaleFactor) {

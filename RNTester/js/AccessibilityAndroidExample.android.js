@@ -111,6 +111,31 @@ class AccessibilityAndroidExample extends React.Component {
           </View>
         </RNTesterBlock>
 
+        <RNTesterBlock title="Touchable with accessibilityRole = header">
+          <View
+            accessible={true}
+            accessibilityLabel="I'm a header, so I read it instead of embedded text."
+            accessibilityRole="header">
+            <Text style={{color: 'green'}}>This is</Text>
+            <Text style={{color: 'blue'}}>
+              nontouchable accessible view with label.
+            </Text>
+          </View>
+        </RNTesterBlock>
+
+        <RNTesterBlock title="Touchable with accessibilityRole = link">
+          <TouchableWithoutFeedback
+            onPress={() =>
+              ToastAndroid.show('Toasts work by default', ToastAndroid.SHORT)
+            }
+            accessibilityRole="link">
+            <View style={styles.embedded}>
+              <Text>Click me</Text>
+              <Text>Or not</Text>
+            </View>
+          </TouchableWithoutFeedback>
+        </RNTesterBlock>
+
         <RNTesterBlock title="Touchable with accessibilityRole = button">
           <TouchableWithoutFeedback
             onPress={() =>
