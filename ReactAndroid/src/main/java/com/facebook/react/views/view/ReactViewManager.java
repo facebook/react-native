@@ -65,6 +65,31 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     }
   }
 
+  @ReactProp(name = "nextFocusDown", defaultInt = View.NO_ID)
+  public void nextFocusDown(ReactViewGroup view, int viewId) {
+    view.setNextFocusDownId(viewId);
+  }
+
+  @ReactProp(name = "nextFocusForward", defaultInt = View.NO_ID)
+  public void nextFocusForward(ReactViewGroup view, int viewId) {
+    view.setNextFocusForwardId(viewId);
+  }
+
+  @ReactProp(name = "nextFocusLeft", defaultInt = View.NO_ID)
+  public void nextFocusLeft(ReactViewGroup view, int viewId) {
+    view.setNextFocusLeftId(viewId);
+  }
+
+  @ReactProp(name = "nextFocusRight", defaultInt = View.NO_ID)
+  public void nextFocusRight(ReactViewGroup view, int viewId) {
+    view.setNextFocusRightId(viewId);
+  }
+
+  @ReactProp(name = "nextFocusUp", defaultInt = View.NO_ID)
+  public void nextFocusUp(ReactViewGroup view, int viewId) {
+    view.setNextFocusUpId(viewId);
+  }
+
   @ReactPropGroup(names = {
       ViewProps.BORDER_RADIUS,
       ViewProps.BORDER_TOP_LEFT_RADIUS,
@@ -242,7 +267,7 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
           throw new JSApplicationIllegalArgumentException(
               "Illegal number of arguments for 'updateHotspot' command");
         }
-        if (Build.VERSION.SDK_INT >= 21) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
           float x = PixelUtil.toPixelFromDIP(args.getDouble(0));
           float y = PixelUtil.toPixelFromDIP(args.getDouble(1));
           root.drawableHotspotChanged(x, y);

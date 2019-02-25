@@ -412,8 +412,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       return;
     }
 
-    // Don't reload if the current image size is the maximum size of the image source
-    CGSize imageSourceSize = _imageSource.size;
+    // Don't reload if the current image size is the maximum size of either the pending image source or image source
+    CGSize imageSourceSize = (_imageSource ? _imageSource : _pendingImageSource).size;
     if (imageSize.width * imageScale == imageSourceSize.width * _imageSource.scale &&
         imageSize.height * imageScale == imageSourceSize.height * _imageSource.scale) {
       return;

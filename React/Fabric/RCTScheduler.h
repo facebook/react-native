@@ -9,6 +9,7 @@
 #import <memory>
 
 #import <React/RCTPrimitives.h>
+#import <react/core/ComponentDescriptor.h>
 #import <react/core/LayoutConstraints.h>
 #import <react/core/LayoutContext.h>
 #import <react/mounting/ShadowViewMutation.h>
@@ -53,6 +54,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)constraintSurfaceLayoutWithLayoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints
                                        layoutContext:(facebook::react::LayoutContext)layoutContext
                                            surfaceId:(facebook::react::SurfaceId)surfaceId;
+
+- (const facebook::react::ComponentDescriptor &)getComponentDescriptor:(facebook::react::ComponentHandle)handle;
 
 @end
 

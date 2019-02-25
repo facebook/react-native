@@ -11,7 +11,8 @@
 
 #include <folly/dynamic.h>
 #include <react/events/EventDispatcher.h>
-#include <react/events/primitives.h>
+#include <react/events/EventPriority.h>
+#include <react/events/EventTarget.h>
 
 namespace facebook {
 namespace react {

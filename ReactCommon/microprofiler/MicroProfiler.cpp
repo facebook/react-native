@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <chrono>
 #include <mutex>
+#include <sstream>
 #include <vector>
 #include <time.h>
 
@@ -17,7 +18,7 @@
 // we can get rid of this
 #if defined(__APPLE__)
 #define MICRO_PROFILER_STUB_IMPLEMENTATION 1
-#else
+#elif !defined(MICRO_PROFILER_STUB_IMPLEMENTATION)
 #define MICRO_PROFILER_STUB_IMPLEMENTATION 0
 #endif
 

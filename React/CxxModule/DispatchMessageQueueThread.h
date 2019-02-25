@@ -28,7 +28,7 @@ public:
       dispatch_async(queue, block);
     }
   }
-  void runOnQueueSync(std::function<void()>&& func) override {
+  void runOnQueueSync(std::function<void()>&& __unused func) override {
     LOG(FATAL) << "Unsupported operation";
   }
   void quitSynchronous() override {

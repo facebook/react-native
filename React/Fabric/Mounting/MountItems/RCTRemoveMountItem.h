@@ -17,9 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface RCTRemoveMountItem : NSObject <RCTMountItemProtocol>
 
-- (instancetype)initWithChildTag:(ReactTag)childTag
-                       parentTag:(ReactTag)parentTag
-                           index:(NSInteger)index;
+- (instancetype)initWithChildTag:(ReactTag)childTag parentTag:(ReactTag)parentTag index:(NSInteger)index;
 
 @end
 

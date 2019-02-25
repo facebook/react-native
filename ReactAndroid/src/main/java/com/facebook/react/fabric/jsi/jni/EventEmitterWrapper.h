@@ -14,21 +14,19 @@ namespace react {
 class Instance;
 
 class EventEmitterWrapper : public jni::HybridClass<EventEmitterWrapper> {
-public:
-  constexpr static const char *const kJavaDescriptor =
-    "Lcom/facebook/react/fabric/jsi/EventEmitterWrapper;";
+ public:
+  constexpr static const char* const kJavaDescriptor =
+      "Lcom/facebook/react/fabric/jsi/EventEmitterWrapper;";
 
   static void registerNatives();
 
   SharedEventEmitter eventEmitter;
 
-  void invokeEvent(std::string eventName, NativeMap *params);
+  void invokeEvent(std::string eventName, NativeMap* params);
 
-private:
-
+ private:
   static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>);
-
 };
 
-}
-}
+} // namespace react
+} // namespace facebook

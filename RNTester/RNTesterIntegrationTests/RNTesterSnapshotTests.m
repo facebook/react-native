@@ -44,7 +44,6 @@ RCT_TEST(TextExample)
 // No switch or slider available on tvOS
 RCT_TEST(SwitchExample)
 RCT_TEST(SliderExample)
-RCT_TEST(TabBarExample)
 #endif
 
 - (void)testZZZNotInRecordMode

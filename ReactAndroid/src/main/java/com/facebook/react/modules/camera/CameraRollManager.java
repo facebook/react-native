@@ -68,36 +68,17 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
   private static final String ASSET_TYPE_VIDEOS = "Videos";
   private static final String ASSET_TYPE_ALL = "All";
 
-
-  public static final boolean IS_JELLY_BEAN_OR_LATER =
-      Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
-
-  private static final String[] PROJECTION;
-  static {
-    if (IS_JELLY_BEAN_OR_LATER) {
-      PROJECTION = new String[] {
-          Images.Media._ID,
-          Images.Media.MIME_TYPE,
-          Images.Media.BUCKET_DISPLAY_NAME,
-          Images.Media.DATE_TAKEN,
-          MediaStore.MediaColumns.WIDTH,
-          MediaStore.MediaColumns.HEIGHT,
-          Images.Media.LONGITUDE,
-          Images.Media.LATITUDE,
-          MediaStore.MediaColumns.DATA
-      };
-    } else {
-      PROJECTION = new String[] {
-          Images.Media._ID,
-          Images.Media.MIME_TYPE,
-          Images.Media.BUCKET_DISPLAY_NAME,
-          Images.Media.DATE_TAKEN,
-          Images.Media.LONGITUDE,
-          Images.Media.LATITUDE,
-          MediaStore.MediaColumns.DATA
-      };
-    }
-  }
+  private static final String[] PROJECTION = {
+    Images.Media._ID,
+    Images.Media.MIME_TYPE,
+    Images.Media.BUCKET_DISPLAY_NAME,
+    Images.Media.DATE_TAKEN,
+    MediaStore.MediaColumns.WIDTH,
+    MediaStore.MediaColumns.HEIGHT,
+    Images.Media.LONGITUDE,
+    Images.Media.LATITUDE,
+    MediaStore.MediaColumns.DATA
+  };
 
   private static final String SELECTION_BUCKET = Images.Media.BUCKET_DISPLAY_NAME + " = ?";
   private static final String SELECTION_DATE_TAKEN = Images.Media.DATE_TAKEN + " < ?";
@@ -375,8 +356,8 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
     int mimeTypeIndex = media.getColumnIndex(Images.Media.MIME_TYPE);
     int groupNameIndex = media.getColumnIndex(Images.Media.BUCKET_DISPLAY_NAME);
     int dateTakenIndex = media.getColumnIndex(Images.Media.DATE_TAKEN);
-    int widthIndex = IS_JELLY_BEAN_OR_LATER ? media.getColumnIndex(MediaStore.MediaColumns.WIDTH) : -1;
-    int heightIndex = IS_JELLY_BEAN_OR_LATER ? media.getColumnIndex(MediaStore.MediaColumns.HEIGHT) : -1;
+    int widthIndex = media.getColumnIndex(MediaStore.MediaColumns.WIDTH);
+    int heightIndex = media.getColumnIndex(MediaStore.MediaColumns.HEIGHT);
     int longitudeIndex = media.getColumnIndex(Images.Media.LONGITUDE);
     int latitudeIndex = media.getColumnIndex(Images.Media.LATITUDE);
     int dataIndex = media.getColumnIndex(MediaStore.MediaColumns.DATA);
@@ -424,18 +405,13 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
     WritableMap image = new WritableNativeMap();
     Uri photoUri = Uri.parse("file://" + media.getString(dataIndex));
     image.putString("uri", photoUri.toString());
-    float width = -1;
-    float height = -1;
-    if (IS_JELLY_BEAN_OR_LATER) {
-      width = media.getInt(widthIndex);
-      height = media.getInt(heightIndex);
-    }
+    float width = media.getInt(widthIndex);
+    float height = media.getInt(heightIndex);
 
     String mimeType = URLConnection.guessContentTypeFromName(photoUri.toString());
 
     if (mimeType != null
-        && mimeType.startsWith("video")
-        && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.GINGERBREAD_MR1) {
+        && mimeType.startsWith("video")) {
       try {
         AssetFileDescriptor photoDescriptor = resolver.openAssetFileDescriptor(photoUri, "r");
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();

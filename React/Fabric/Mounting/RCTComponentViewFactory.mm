@@ -10,19 +10,18 @@
 #import <React/RCTAssert.h>
 #import <react/core/ReactPrimitives.h>
 
-#import "RCTViewComponentView.h"
+#import "RCTActivityIndicatorViewComponentView.h"
 #import "RCTImageComponentView.h"
-#import "RCTScrollViewComponentView.h"
 #import "RCTParagraphComponentView.h"
 #import "RCTRootComponentView.h"
-#import "RCTActivityIndicatorViewComponentView.h"
+#import "RCTScrollViewComponentView.h"
 #import "RCTSliderComponentView.h"
 #import "RCTSwitchComponentView.h"
+#import "RCTViewComponentView.h"
 
 using namespace facebook::react;
 
-@implementation RCTComponentViewFactory
-{
+@implementation RCTComponentViewFactory {
   std::unordered_map<ComponentHandle, Class<RCTComponentViewProtocol>> _registry;
 }
 
@@ -52,14 +51,17 @@ using namespace facebook::react;
   _registry[componentHandle] = componentViewClass;
 }
 
-- (UIView<RCTComponentViewProtocol> *)createComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle
+- (UIView<RCTComponentViewProtocol> *)createComponentViewWithComponentHandle:
+    (facebook::react::ComponentHandle)componentHandle
 {
   RCTAssertMainQueue();
 
   auto iterator = _registry.find(componentHandle);
   RCTAssert(
-    iterator != _registry.end(),
-    @"ComponentView with componentHandle `%lli` (`%s`) not found.", componentHandle, (char *)componentHandle);
+      iterator != _registry.end(),
+      @"ComponentView with componentHandle `%lli` (`%s`) not found.",
+      componentHandle,
+      (char *)componentHandle);
   Class componentViewClass = iterator->second;
   return [[componentViewClass alloc] init];
 }

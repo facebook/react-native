@@ -10,22 +10,30 @@
 namespace facebook {
 namespace react {
 
-SharedProps &ShadowNodeFragment::nullSharedProps() {
+Tag ShadowNodeFragment::tagPlaceholder() {
+  return 0;
+}
+
+Tag ShadowNodeFragment::surfaceIdPlaceholder() {
+  return 0;
+}
+
+SharedProps &ShadowNodeFragment::propsPlaceholder() {
   static auto &instance = *new SharedProps();
   return instance;
 }
 
-SharedEventEmitter &ShadowNodeFragment::nullSharedEventEmitter() {
+SharedEventEmitter &ShadowNodeFragment::eventEmitterPlaceholder() {
   static auto &instance = *new SharedEventEmitter();
   return instance;
 }
 
-SharedShadowNodeSharedList &ShadowNodeFragment::nullSharedChildren() {
+SharedShadowNodeSharedList &ShadowNodeFragment::childrenPlaceholder() {
   static auto &instance = *new SharedShadowNodeSharedList();
   return instance;
 }
 
-SharedLocalData &ShadowNodeFragment::nullLocalData() {
+SharedLocalData &ShadowNodeFragment::localDataPlaceholder() {
   static auto &instance = *new SharedLocalData();
   return instance;
 }

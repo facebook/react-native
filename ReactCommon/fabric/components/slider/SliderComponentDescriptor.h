@@ -13,7 +13,37 @@
 namespace facebook {
 namespace react {
 
-using SliderComponentDescriptor = ConcreteComponentDescriptor<SliderShadowNode>;
+/*
+ * Descriptor for <Slider> component.
+ */
+class SliderComponentDescriptor final
+    : public ConcreteComponentDescriptor<SliderShadowNode> {
+ public:
+  SliderComponentDescriptor(
+      SharedEventDispatcher eventDispatcher,
+      const SharedContextContainer &contextContainer)
+      : ConcreteComponentDescriptor(eventDispatcher),
+        imageManager_(
+            contextContainer
+                ? contextContainer->getInstance<SharedImageManager>(
+                      "ImageManager")
+                : nullptr) {}
+
+  void adopt(UnsharedShadowNode shadowNode) const override {
+    ConcreteComponentDescriptor::adopt(shadowNode);
+
+    assert(std::dynamic_pointer_cast<SliderShadowNode>(shadowNode));
+    auto sliderShadowNode =
+        std::static_pointer_cast<SliderShadowNode>(shadowNode);
+
+    // `SliderShadowNode` uses `ImageManager` to initiate image loading and
+    // communicate the loading state and results to mounting layer.
+    sliderShadowNode->setImageManager(imageManager_);
+  }
+
+ private:
+  const SharedImageManager imageManager_;
+};
 
 } // namespace react
 } // namespace facebook

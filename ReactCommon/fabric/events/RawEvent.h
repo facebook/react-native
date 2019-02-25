@@ -7,10 +7,10 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
-#include <folly/dynamic.h>
-#include <jsi/jsi.h>
-#include <react/events/primitives.h>
+#include <react/events/EventTarget.h>
+#include <react/events/ValueFactory.h>
 
 namespace facebook {
 namespace react {

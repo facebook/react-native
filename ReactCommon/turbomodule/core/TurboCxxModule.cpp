@@ -62,7 +62,7 @@ jsi::Value TurboCxxModule::get(jsi::Runtime& runtime, const jsi::PropNameID& pro
           runtime,
           propName,
           0,
-          [this, &propNameUtf8](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) {
+          [this, propNameUtf8](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) {
             return invokeMethod(rt, VoidKind, propNameUtf8, args, count);
           });
     }

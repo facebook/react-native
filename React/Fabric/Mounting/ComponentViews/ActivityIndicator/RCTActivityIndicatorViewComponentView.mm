@@ -7,12 +7,13 @@
 
 #import "RCTActivityIndicatorViewComponentView.h"
 
-#import <react/components/activityindicator/ActivityIndicatorViewShadowNode.h>
 #import <react/components/activityindicator/ActivityIndicatorViewProps.h>
+#import <react/components/activityindicator/ActivityIndicatorViewShadowNode.h>
 
 using namespace facebook::react;
 
-static UIActivityIndicatorViewStyle convertActivityIndicatorViewStyle(const ActivityIndicatorViewSize &size) {
+static UIActivityIndicatorViewStyle convertActivityIndicatorViewStyle(const ActivityIndicatorViewSize &size)
+{
   switch (size) {
     case ActivityIndicatorViewSize::Small:
       return UIActivityIndicatorViewStyleWhite;

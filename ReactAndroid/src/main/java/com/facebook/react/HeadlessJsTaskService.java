@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -67,6 +68,7 @@ public abstract class HeadlessJsTaskService extends Service implements HeadlessJ
   /**
    * Acquire a wake lock to ensure the device doesn't go to sleep while processing background tasks.
    */
+  @SuppressLint("WakelockTimeout")
   public static void acquireWakeLockNow(Context context) {
     if (sWakeLock == null || !sWakeLock.isHeld()) {
       PowerManager powerManager =

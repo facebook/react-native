@@ -223,6 +223,21 @@ type IOSProps = $ReadOnly<{|
 |}>;
 
 type AndroidProps = $ReadOnly<{|
+  autoCompleteType?: ?(
+    | 'cc-csc'
+    | 'cc-exp'
+    | 'cc-exp-month'
+    | 'cc-exp-year'
+    | 'cc-number'
+    | 'email'
+    | 'name'
+    | 'password'
+    | 'postal-code'
+    | 'street-address'
+    | 'tel'
+    | 'username'
+    | 'off'
+  ),
   returnKeyLabel?: ?string,
   numberOfLines?: ?number,
   disableFullscreenUI?: ?boolean,
@@ -230,6 +245,13 @@ type AndroidProps = $ReadOnly<{|
   underlineColorAndroid?: ?ColorValue,
   inlineImageLeft?: ?string,
   inlineImagePadding?: ?number,
+  importantForAutofill?: ?(
+    | 'auto'
+    | 'no'
+    | 'noExcludeDescendants'
+    | 'yes'
+    | 'yesExcludeDescendants'
+  ),
 |}>;
 
 type Props = $ReadOnly<{|
@@ -412,6 +434,45 @@ const TextInput = createReactClass({
       'sentences',
       'words',
       'characters',
+    ]),
+    /**
+     * Determines which content to suggest on auto complete, e.g.`username`.
+     * To disable auto complete, use `off`.
+     *
+     * *Android Only*
+     *
+     * The following values work on Android only:
+     *
+     * - `username`
+     * - `password`
+     * - `email`
+     * - `name`
+     * - `tel`
+     * - `street-address`
+     * - `postal-code`
+     * - `cc-number`
+     * - `cc-csc`
+     * - `cc-exp`
+     * - `cc-exp-month`
+     * - `cc-exp-year`
+     * - `off`
+     *
+     * @platform android
+     */
+    autoCompleteType: PropTypes.oneOf([
+      'cc-csc',
+      'cc-exp',
+      'cc-exp-month',
+      'cc-exp-year',
+      'cc-number',
+      'email',
+      'name',
+      'password',
+      'postal-code',
+      'street-address',
+      'tel',
+      'username',
+      'off',
     ]),
     /**
      * If `false`, disables auto-correct. The default value is `true`.
@@ -1107,9 +1168,6 @@ const TextInput = createReactClass({
     props.autoCapitalize = UIManager.getViewManagerConfig(
       'AndroidTextInput',
     ).Constants.AutoCapitalizationType[props.autoCapitalize || 'sentences'];
-    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
-     * suppresses an error when upgrading Flow's support for React. To see the
-     * error delete this comment and run Flow. */
     let children = this.props.children;
     let childCount = 0;
     React.Children.forEach(children, () => ++childCount);

@@ -21,12 +21,12 @@ const RNTesterExampleContainer = require('./RNTesterExampleContainer');
 const RNTesterExampleList = require('./RNTesterExampleList');
 const RNTesterList = require('./RNTesterList.ios');
 const RNTesterNavigationReducer = require('./RNTesterNavigationReducer');
+const SnapshotViewIOS = require('./SnapshotViewIOS.ios');
 const URIActionMap = require('./URIActionMap');
 
 const {
   Button,
   AppRegistry,
-  SnapshotViewIOS,
   StyleSheet,
   Text,
   View,
@@ -110,7 +110,7 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
     }
     if (this.state.openExample) {
       const Component = RNTesterList.Modules[this.state.openExample];
-      if (Component.external) {
+      if (Component && Component.external) {
         return <Component onExampleExit={this._handleBack} />;
       } else {
         return (

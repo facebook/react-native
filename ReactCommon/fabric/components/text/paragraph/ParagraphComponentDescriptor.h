@@ -34,7 +34,24 @@ class ParagraphComponentDescriptor final
     // Every single `ParagraphShadowNode` will have a reference to
     // a shared `EvictingCacheMap`, a simple LRU cache for Paragraph
     // measurements.
-    measureCache_ = std::make_shared<ParagraphMeasurementCache>();
+#ifdef ANDROID
+    auto paramName = "react_fabric:enabled_paragraph_measure_cache_android";
+#else
+    auto paramName = "react_fabric:enabled_paragraph_measure_cache_ios";
+#endif
+    // TODO: T39927960 - get rid of this if statement
+    bool enableCache =
+        (contextContainer != nullptr
+             ? contextContainer
+                   ->getInstance<std::shared_ptr<const ReactNativeConfig>>(
+                       "ReactNativeConfig")
+                   ->getBool(paramName)
+             : false);
+    if (enableCache) {
+      measureCache_ = std::make_unique<ParagraphMeasurementCache>();
+    } else {
+      measureCache_ = nullptr;
+    }
   }
 
   void adopt(UnsharedShadowNode shadowNode) const override {
@@ -50,7 +67,8 @@ class ParagraphComponentDescriptor final
 
     // `ParagraphShadowNode` uses this to cache the results of text rendering
     // measurements.
-    paragraphShadowNode->setMeasureCache(measureCache_);
+    paragraphShadowNode->setMeasureCache(
+        measureCache_ ? measureCache_.get() : nullptr);
 
     // All `ParagraphShadowNode`s must have leaf Yoga nodes with properly
     // setup measure function.
@@ -59,7 +77,7 @@ class ParagraphComponentDescriptor final
 
  private:
   SharedTextLayoutManager textLayoutManager_;
-  SharedParagraphMeasurementCache measureCache_;
+  std::unique_ptr<const ParagraphMeasurementCache> measureCache_;
 };
 
 } // namespace react

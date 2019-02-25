@@ -28,11 +28,13 @@ namespace react {
 template <
     const char *concreteComponentName,
     typename ViewPropsT = ViewProps,
-    typename ViewEventEmitterT = ViewEventEmitter>
+    typename ViewEventEmitterT = ViewEventEmitter,
+    typename... Ts>
 class ConcreteViewShadowNode : public ConcreteShadowNode<
                                    concreteComponentName,
                                    ViewPropsT,
-                                   ViewEventEmitterT>,
+                                   ViewEventEmitterT,
+                                   Ts...>,
                                public AccessibleShadowNode,
                                public YogaLayoutableShadowNode {
   static_assert(
@@ -46,8 +48,11 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
       "ViewPropsT must be a descendant of AccessibilityProps");
 
  public:
-  using BaseShadowNode =
-      ConcreteShadowNode<concreteComponentName, ViewPropsT, ViewEventEmitterT>;
+  using BaseShadowNode = ConcreteShadowNode<
+      concreteComponentName,
+      ViewPropsT,
+      ViewEventEmitterT,
+      Ts...>;
   using ConcreteViewProps = ViewPropsT;
 
   ConcreteViewShadowNode(

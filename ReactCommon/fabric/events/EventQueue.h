@@ -13,8 +13,8 @@
 
 #include <jsi/jsi.h>
 #include <react/events/EventBeat.h>
+#include <react/events/EventPipe.h>
 #include <react/events/RawEvent.h>
-#include <react/events/primitives.h>
 
 namespace facebook {
 namespace react {

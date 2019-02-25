@@ -96,7 +96,7 @@ public class OkHttpClientProvider {
     enables it.
    */
   public static OkHttpClient.Builder enableTls12OnPreLollipop(OkHttpClient.Builder client) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
       try {
         client.sslSocketFactory(new TLSSocketFactory());
 

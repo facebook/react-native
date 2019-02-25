@@ -40,8 +40,13 @@ void ImageRequest::setCancelationFunction(
   cancelRequest_ = cancelationFunction;
 }
 
-std::shared_ptr<const ImageResponseObserverCoordinator>
-ImageRequest::getObserverCoordinator() const {
+const ImageResponseObserverCoordinator &ImageRequest::getObserverCoordinator()
+    const {
+  return *coordinator_;
+}
+
+const std::shared_ptr<const ImageResponseObserverCoordinator>
+    &ImageRequest::getSharedObserverCoordinator() const {
   return coordinator_;
 }
 

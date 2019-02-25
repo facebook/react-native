@@ -31,8 +31,7 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
                    size:(CGSize)size
                   scale:(CGFloat)scale
              resizeMode:(RCTResizeMode)resizeMode
-           responseDate:(NSString *)responseDate
-           cacheControl:(NSString *)cacheControl;
+               response:(NSURLResponse *)response;
 
 @end
 

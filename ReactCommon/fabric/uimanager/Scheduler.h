@@ -67,6 +67,8 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
       const LayoutConstraints &layoutConstraints,
       const LayoutContext &layoutContext) const;
 
+  const ComponentDescriptor &getComponentDescriptor(ComponentHandle handle);
+
 #pragma mark - Delegate
 
   /*
@@ -81,7 +83,8 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
 
   void uiManagerDidFinishTransaction(
       SurfaceId surfaceId,
-      const SharedShadowNodeUnsharedList &rootChildNodes) override;
+      const SharedShadowNodeUnsharedList &rootChildNodes,
+      long startCommitTime) override;
   void uiManagerDidCreateShadowNode(
       const SharedShadowNode &shadowNode) override;
 
@@ -89,7 +92,9 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
 
   void shadowTreeDidCommit(
       const ShadowTree &shadowTree,
-      const ShadowViewMutationList &mutations) const override;
+      const ShadowViewMutationList &mutations,
+      long commitStartTime,
+      long layoutTime) const override;
 
  private:
   SchedulerDelegate *delegate_;

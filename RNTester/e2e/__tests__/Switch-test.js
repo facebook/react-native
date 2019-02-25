@@ -37,17 +37,6 @@ describe('Switch', () => {
       await expect(element(by.id(testID))).toHaveValue('1');
       await expect(element(by.id(indicatorID))).toHaveText('On');
     });
-
-    it('Switch that starts on should switch', async () => {
-      const testID = 'on-off-initial-on';
-      const indicatorID = 'on-off-initial-on-indicator';
-
-      await expect(element(by.id(testID))).toHaveValue('1');
-      await expect(element(by.id(indicatorID))).toHaveText('On');
-      await element(by.id(testID)).tap();
-      await expect(element(by.id(testID))).toHaveValue('0');
-      await expect(element(by.id(indicatorID))).toHaveText('Off');
-    });
   });
 
   describe('Switches can be disabled', () => {

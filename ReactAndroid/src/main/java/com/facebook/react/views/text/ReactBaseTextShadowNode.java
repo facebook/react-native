@@ -6,6 +6,7 @@
  */
 package com.facebook.react.views.text;
 
+import android.annotation.TargetApi;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -37,6 +38,7 @@ import javax.annotation.Nullable;
  * <p>This also node calculates {@link Spannable} object based on subnodes of the same type, which
  * can be used in concrete classes to feed native views and compute layout.
  */
+@TargetApi(Build.VERSION_CODES.M)
 public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
   private static final String INLINE_IMAGE_PLACEHOLDER = "I";
