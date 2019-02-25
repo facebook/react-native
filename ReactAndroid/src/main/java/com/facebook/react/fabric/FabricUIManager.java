@@ -116,6 +116,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   private long mFinishTransactionTime = 0l;
   private int mLastWidthMeasureSpec = 0;
   private int mLastHeightMeasureSpec = 0;
+  private long mFinishTransactionCPPTime = 0l;
 
   public FabricUIManager(
       ReactApplicationContext reactContext,
@@ -275,7 +276,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @Override
   public void synchronouslyUpdateViewOnUIThread(int reactTag, ReadableMap props) {
     long time = SystemClock.uptimeMillis();
-    scheduleMountItems(updatePropsMountItem(reactTag, props), time, time, time);
+    scheduleMountItems(updatePropsMountItem(reactTag, props), time, 0, time, time);
   }
 
   /**
@@ -288,11 +289,13 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       final MountItem mountItems,
       long commitStartTime,
       long layoutTime,
-      long finishTransactionStartTime) {
+      long finishTransactionStartTime,
+      long finishTransactionEndTime) {
 
     // TODO T31905686: support multithreading
     mCommitStartTime = commitStartTime;
     mLayoutTime = layoutTime;
+    mFinishTransactionCPPTime = finishTransactionEndTime - finishTransactionStartTime;
     mFinishTransactionTime = SystemClock.uptimeMillis() - finishTransactionStartTime;
     mDispatchViewUpdatesTime = SystemClock.uptimeMillis();
     synchronized (mMountItemsLock) {
@@ -365,16 +368,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   public void updateRootLayoutSpecs(
       final int rootTag, final int widthMeasureSpec, final int heightMeasureSpec) {
 
-    if (mLastWidthMeasureSpec != widthMeasureSpec || mLastHeightMeasureSpec != heightMeasureSpec) {
-      mLastWidthMeasureSpec = widthMeasureSpec;
-      mLastHeightMeasureSpec = heightMeasureSpec;
-      mBinding.setConstraints(
-          rootTag,
-          getMinSize(widthMeasureSpec),
-          getMaxSize(widthMeasureSpec),
-          getMinSize(heightMeasureSpec),
-          getMaxSize(heightMeasureSpec));
-    }
+    mBinding.setConstraints(
+        rootTag,
+        getMinSize(widthMeasureSpec),
+        getMaxSize(widthMeasureSpec),
+        getMinSize(heightMeasureSpec),
+        getMaxSize(heightMeasureSpec));
   }
 
   public void receiveEvent(int reactTag, String eventName, @Nullable WritableMap params) {
@@ -436,6 +435,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     performanceCounters.put("BatchedExecutionTime", mBatchedExecutionTime);
     performanceCounters.put("NonBatchedExecutionTime", mNonBatchedExecutionTime);
     performanceCounters.put("FinishFabricTransactionTime", mFinishTransactionTime);
+    performanceCounters.put("FinishFabricTransactionCPPTime", mFinishTransactionCPPTime);
     return performanceCounters;
   }
 

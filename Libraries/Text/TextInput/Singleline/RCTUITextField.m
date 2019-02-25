@@ -11,10 +11,13 @@
 #import <React/UIView+React.h>
 
 #import "RCTBackedTextInputDelegateAdapter.h"
+#import "RCTTextAttributes.h"
 
 @implementation RCTUITextField {
   RCTBackedTextFieldDelegateAdapter *_textInputDelegateAdapter;
 }
+
+@synthesize reactTextAttributes = _reactTextAttributes;
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -58,6 +61,20 @@
 {
   _placeholderColor = placeholderColor;
   [self _updatePlaceholder];
+}
+
+- (void)setReactTextAttributes:(RCTTextAttributes *)reactTextAttributes
+{
+  if ([reactTextAttributes isEqual:_reactTextAttributes]) {
+    return;
+  }
+  self.defaultTextAttributes = reactTextAttributes.effectiveTextAttributes;
+  _reactTextAttributes = reactTextAttributes;
+}
+
+- (RCTTextAttributes *)reactTextAttributes
+{
+  return _reactTextAttributes;
 }
 
 - (void)_updatePlaceholder

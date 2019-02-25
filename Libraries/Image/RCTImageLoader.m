@@ -808,9 +808,13 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
       NSCachedURLResponse *cachedResponse = [NSURLCache.sharedURLCache cachedResponseForRequest:urlRequest];
       if (cachedResponse) {
         if (cachedResponse.storagePolicy == NSURLCacheStorageAllowedInMemoryOnly) {
-          [results setObject:@"memory" forKey:urlRequest.URL.absoluteString];
+          results[urlRequest.URL.absoluteString] = @"memory";
+        } else if (NSURLCache.sharedURLCache.currentMemoryUsage == 0) {
+          // We can't check whether the file is cached on disk or memory.
+          // However, if currentMemoryUsage is disabled, it must be read from disk.
+          results[urlRequest.URL.absoluteString] = @"disk";
         } else {
-          [results setObject:@"disk" forKey:urlRequest.URL.absoluteString];
+          results[urlRequest.URL.absoluteString] = @"disk/memory";
         }
       }
     }
