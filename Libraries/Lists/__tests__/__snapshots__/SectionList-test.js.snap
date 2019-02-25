@@ -2,6 +2,7 @@
 
 exports[`SectionList rendering empty section headers is fine 1`] = `
 <RCTScrollView
+  contentContainerStyle={null}
   data={
     Array [
       Object {
@@ -61,11 +62,19 @@ exports[`SectionList rendering empty section headers is fine 1`] = `
   <View>
     <View
       onLayout={[Function]}
-      style={null}
+      style={
+        Object {
+          "flexDirection": "column",
+        }
+      }
     />
     <View
       onLayout={[Function]}
-      style={null}
+      style={
+        Object {
+          "flexDirection": "column",
+        }
+      }
     >
       <item
         v="i1"
@@ -73,7 +82,11 @@ exports[`SectionList rendering empty section headers is fine 1`] = `
     </View>
     <View
       onLayout={[Function]}
-      style={null}
+      style={
+        Object {
+          "flexDirection": "column",
+        }
+      }
     >
       <item
         v="i2"
@@ -81,7 +94,11 @@ exports[`SectionList rendering empty section headers is fine 1`] = `
     </View>
     <View
       onLayout={[Function]}
-      style={null}
+      style={
+        Object {
+          "flexDirection": "column",
+        }
+      }
     />
   </View>
 </RCTScrollView>
@@ -89,6 +106,7 @@ exports[`SectionList rendering empty section headers is fine 1`] = `
 
 exports[`SectionList renders a footer when there is no data 1`] = `
 <RCTScrollView
+  contentContainerStyle={null}
   data={
     Array [
       Object {
@@ -135,7 +153,11 @@ exports[`SectionList renders a footer when there is no data 1`] = `
   <View>
     <View
       onLayout={[Function]}
-      style={null}
+      style={
+        Object {
+          "flexDirection": "column",
+        }
+      }
     >
       <sectionHeader
         v="section:s1"
@@ -143,7 +165,11 @@ exports[`SectionList renders a footer when there is no data 1`] = `
     </View>
     <View
       onLayout={[Function]}
-      style={null}
+      style={
+        Object {
+          "flexDirection": "column",
+        }
+      }
     >
       <sectionFooter
         v="section:s1"
@@ -155,6 +181,7 @@ exports[`SectionList renders a footer when there is no data 1`] = `
 
 exports[`SectionList renders a footer when there is no data and no header 1`] = `
 <RCTScrollView
+  contentContainerStyle={null}
   data={
     Array [
       Object {
@@ -200,11 +227,19 @@ exports[`SectionList renders a footer when there is no data and no header 1`] = 
   <View>
     <View
       onLayout={[Function]}
-      style={null}
+      style={
+        Object {
+          "flexDirection": "column",
+        }
+      }
     />
     <View
       onLayout={[Function]}
-      style={null}
+      style={
+        Object {
+          "flexDirection": "column",
+        }
+      }
     >
       <sectionFooter
         v="section:s1"
@@ -220,6 +255,7 @@ exports[`SectionList renders all the bells and whistles 1`] = `
   ListFooterComponent={[Function]}
   ListHeaderComponent={[Function]}
   SectionSeparatorComponent={[Function]}
+  contentContainerStyle={null}
   data={
     Array [
       Object {
@@ -348,7 +384,11 @@ exports[`SectionList renders all the bells and whistles 1`] = `
     </View>
     <View
       onLayout={[Function]}
-      style={null}
+      style={
+        Object {
+          "flexDirection": "column",
+        }
+      }
     >
       <sectionHeader
         v="section:s1"
@@ -356,7 +396,11 @@ exports[`SectionList renders all the bells and whistles 1`] = `
     </View>
     <View
       onLayout={[Function]}
-      style={null}
+      style={
+        Object {
+          "flexDirection": "column",
+        }
+      }
     >
       <View>
         <sectionSeparator
@@ -372,7 +416,11 @@ exports[`SectionList renders all the bells and whistles 1`] = `
     </View>
     <View
       onLayout={[Function]}
-      style={null}
+      style={
+        Object {
+          "flexDirection": "column",
+        }
+      }
     >
       <View>
         <itemForSection1
@@ -385,7 +433,11 @@ exports[`SectionList renders all the bells and whistles 1`] = `
     </View>
     <View
       onLayout={[Function]}
-      style={null}
+      style={
+        Object {
+          "flexDirection": "column",
+        }
+      }
     >
       <sectionFooter
         v="section:s1"
@@ -393,7 +445,11 @@ exports[`SectionList renders all the bells and whistles 1`] = `
     </View>
     <View
       onLayout={[Function]}
-      style={null}
+      style={
+        Object {
+          "flexDirection": "column",
+        }
+      }
     >
       <sectionHeader
         v="section:s2"
@@ -401,7 +457,11 @@ exports[`SectionList renders all the bells and whistles 1`] = `
     </View>
     <View
       onLayout={[Function]}
-      style={null}
+      style={
+        Object {
+          "flexDirection": "column",
+        }
+      }
     >
       <View>
         <sectionSeparator
@@ -417,7 +477,11 @@ exports[`SectionList renders all the bells and whistles 1`] = `
     </View>
     <View
       onLayout={[Function]}
-      style={null}
+      style={
+        Object {
+          "flexDirection": "column",
+        }
+      }
     >
       <View>
         <defaultItem
@@ -430,7 +494,11 @@ exports[`SectionList renders all the bells and whistles 1`] = `
     </View>
     <View
       onLayout={[Function]}
-      style={null}
+      style={
+        Object {
+          "flexDirection": "column",
+        }
+      }
     >
       <sectionFooter
         v="section:s2"
@@ -438,7 +506,11 @@ exports[`SectionList renders all the bells and whistles 1`] = `
     </View>
     <View
       onLayout={[Function]}
-      style={null}
+      style={
+        Object {
+          "flexDirection": "column",
+        }
+      }
     >
       <sectionHeader
         v="section:s3"
@@ -446,7 +518,11 @@ exports[`SectionList renders all the bells and whistles 1`] = `
     </View>
     <View
       onLayout={[Function]}
-      style={null}
+      style={
+        Object {
+          "flexDirection": "column",
+        }
+      }
     >
       <View>
         <sectionSeparator
@@ -462,7 +538,11 @@ exports[`SectionList renders all the bells and whistles 1`] = `
     </View>
     <View
       onLayout={[Function]}
-      style={null}
+      style={
+        Object {
+          "flexDirection": "column",
+        }
+      }
     >
       <View>
         <defaultItem
@@ -475,7 +555,11 @@ exports[`SectionList renders all the bells and whistles 1`] = `
     </View>
     <View
       onLayout={[Function]}
-      style={null}
+      style={
+        Object {
+          "flexDirection": "column",
+        }
+      }
     >
       <sectionFooter
         v="section:s3"
@@ -494,6 +578,7 @@ exports[`SectionList renders all the bells and whistles 1`] = `
 
 exports[`SectionList renders empty list 1`] = `
 <RCTScrollView
+  contentContainerStyle={null}
   data={Array []}
   disableVirtualization={false}
   getItem={[Function]}

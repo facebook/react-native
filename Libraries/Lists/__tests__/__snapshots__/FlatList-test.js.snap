@@ -6,6 +6,7 @@ exports[`FlatList renders all the bells and whistles 1`] = `
   ListEmptyComponent={[Function]}
   ListFooterComponent={[Function]}
   ListHeaderComponent={[Function]}
+  contentContainerStyle={null}
   data={
     Array [
       Object {
@@ -65,7 +66,11 @@ exports[`FlatList renders all the bells and whistles 1`] = `
       <header />
     </View>
     <View
-      style={null}
+      style={
+        Object {
+          "flexDirection": "column",
+        }
+      }
     >
       <View
         style={
@@ -84,7 +89,11 @@ exports[`FlatList renders all the bells and whistles 1`] = `
       <separator />
     </View>
     <View
-      style={null}
+      style={
+        Object {
+          "flexDirection": "column",
+        }
+      }
     >
       <View
         style={
@@ -103,7 +112,11 @@ exports[`FlatList renders all the bells and whistles 1`] = `
       <separator />
     </View>
     <View
-      style={null}
+      style={
+        Object {
+          "flexDirection": "column",
+        }
+      }
     >
       <View
         style={
@@ -128,6 +141,7 @@ exports[`FlatList renders all the bells and whistles 1`] = `
 
 exports[`FlatList renders empty list 1`] = `
 <RCTScrollView
+  contentContainerStyle={null}
   data={Array []}
   disableVirtualization={false}
   getItem={[Function]}
@@ -158,6 +172,7 @@ exports[`FlatList renders empty list 1`] = `
 
 exports[`FlatList renders null list 1`] = `
 <RCTScrollView
+  contentContainerStyle={null}
   disableVirtualization={false}
   getItem={[Function]}
   getItemCount={[Function]}
@@ -187,6 +202,7 @@ exports[`FlatList renders null list 1`] = `
 
 exports[`FlatList renders simple list 1`] = `
 <RCTScrollView
+  contentContainerStyle={null}
   data={
     Array [
       Object {
@@ -226,7 +242,11 @@ exports[`FlatList renders simple list 1`] = `
   <View>
     <View
       onLayout={[Function]}
-      style={null}
+      style={
+        Object {
+          "flexDirection": "column",
+        }
+      }
     >
       <item
         value="i1"
@@ -234,7 +254,11 @@ exports[`FlatList renders simple list 1`] = `
     </View>
     <View
       onLayout={[Function]}
-      style={null}
+      style={
+        Object {
+          "flexDirection": "column",
+        }
+      }
     >
       <item
         value="i2"
@@ -242,7 +266,11 @@ exports[`FlatList renders simple list 1`] = `
     </View>
     <View
       onLayout={[Function]}
-      style={null}
+      style={
+        Object {
+          "flexDirection": "column",
+        }
+      }
     >
       <item
         value="i3"
