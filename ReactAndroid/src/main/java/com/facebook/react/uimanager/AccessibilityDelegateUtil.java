@@ -158,11 +158,8 @@ public class AccessibilityDelegateUtil {
       }
       if (role.equals(AccessibilityRole.HEADER)) {
         nodeInfo.setRoleDescription(context.getString(R.string.header_description));
-
         final AccessibilityNodeInfoCompat.CollectionItemInfoCompat itemInfo =
-        AccessibilityNodeInfoCompat.CollectionItemInfoCompat.obtain(
-                0, 1, 0, 1,
-                true);
+          AccessibilityNodeInfoCompat.CollectionItemInfoCompat.obtain(0, 1, 0, 1, true);
         nodeInfo.setCollectionItemInfo(itemInfo);
       }
     }
