@@ -190,6 +190,11 @@ void Scheduler::constraintSurfaceLayout(
   });
 }
 
+const ComponentDescriptor &Scheduler::getComponentDescriptor(
+    ComponentHandle handle) {
+  return componentDescriptorRegistry_->at(handle);
+}
+
 #pragma mark - Delegate
 
 void Scheduler::setDelegate(SchedulerDelegate *delegate) {

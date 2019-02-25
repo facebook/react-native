@@ -107,4 +107,9 @@ private:
   _scheduler->constraintSurfaceLayout(surfaceId, layoutConstraints, layoutContext);
 }
 
+- (const ComponentDescriptor &)getComponentDescriptor:(ComponentHandle)handle
+{
+  return _scheduler->getComponentDescriptor(handle);
+}
+
 @end

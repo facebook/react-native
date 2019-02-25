@@ -67,6 +67,8 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
       const LayoutConstraints &layoutConstraints,
       const LayoutContext &layoutContext) const;
 
+  const ComponentDescriptor &getComponentDescriptor(ComponentHandle handle);
+
 #pragma mark - Delegate
 
   /*

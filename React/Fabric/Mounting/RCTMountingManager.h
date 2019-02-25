@@ -39,6 +39,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)optimisticallyCreateComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle;
 
+- (void)synchronouslyUpdateViewOnUIThread:(ReactTag)reactTag
+                                 oldProps:(facebook::react::SharedProps)oldProps
+                                 newProps:(facebook::react::SharedProps)newProps;
 @end
 
 NS_ASSUME_NONNULL_END

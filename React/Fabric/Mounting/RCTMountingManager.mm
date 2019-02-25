@@ -176,6 +176,17 @@ using namespace facebook::react;
   [self.delegate mountingManager:self didMountComponentsWithRootTag:rootTag];
 }
 
+- (void)synchronouslyUpdateViewOnUIThread:(ReactTag)reactTag
+                                 oldProps:(SharedProps)oldProps
+                                 newProps:(SharedProps)newProps
+{
+  RCTUpdatePropsMountItem *mountItem = [[RCTUpdatePropsMountItem alloc] initWithTag:reactTag
+                                                                           oldProps:oldProps
+                                                                           newProps:newProps];
+  RCTAssertMainQueue();
+  [mountItem executeWithRegistry:self->_componentViewRegistry];
+}
+
 - (void)optimisticallyCreateComponentViewWithComponentHandle:(ComponentHandle)componentHandle
 {
   if (RCTIsMainQueue()) {
