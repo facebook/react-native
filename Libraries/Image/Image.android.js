@@ -157,7 +157,7 @@ function abortPrefetch(requestId: number) {
  */
 async function queryCache(
   urls: Array<string>,
-): Promise<Map<string, 'memory' | 'disk'>> {
+): Promise<any> {
   return await ImageLoader.queryCache(urls);
 }
 
