@@ -94,7 +94,9 @@ ShadowTree::ShadowTree(
           .props = props,
           .eventEmitter = noopEventEmitter,
       },
-      nullptr);
+      [](const ShadowNode &shadowNode, const ShadowNodeFragment &fragment) {
+        return std::make_shared<RootShadowNode>(shadowNode, fragment);
+      });
 }
 
 ShadowTree::~ShadowTree() {
