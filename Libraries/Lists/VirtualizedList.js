@@ -653,7 +653,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     stickyIndicesFromProps: Set<number>,
     first: number,
     last: number,
-    inversionStyle: ViewStyleProp,
   ) {
     const {
       CellRendererComponent,
@@ -683,7 +682,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           fillRateHelper={this._fillRateHelper}
           horizontal={horizontal}
           index={ii}
-          inversionStyle={inversionStyle}
           item={item}
           key={key}
           prevCellKey={prevCellKey}
@@ -758,10 +756,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           key="$header">
           <View
             onLayout={this._onLayoutHeader}
-            style={StyleSheet.compose(
-              inversionStyle,
-              this.props.ListHeaderComponentStyle,
-            )}>
+            style={this.props.ListHeaderComponentStyle}>
             {
               // $FlowFixMe - Typing ReactNativeComponent revealed errors
               element
@@ -785,7 +780,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         stickyIndicesFromProps,
         0,
         lastInitialIndex,
-        inversionStyle,
       );
       const firstAfterInitial = Math.max(lastInitialIndex + 1, first);
       if (!isVirtualizationDisabled && first > lastInitialIndex + 1) {
@@ -810,7 +804,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
                 stickyIndicesFromProps,
                 ii,
                 ii,
-                inversionStyle,
               );
               const trailSpace =
                 this._getFrameMetricsApprox(first).offset -
@@ -839,7 +832,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         stickyIndicesFromProps,
         firstAfterInitial,
         last,
-        inversionStyle,
       );
       if (!this._hasWarned.keys && _usedIndexForKey) {
         console.warn(
@@ -884,7 +876,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
               element.props.onLayout(event);
             }
           },
-          style: [element.props.style, inversionStyle],
+          style: element.props.style,
         }),
       );
     }
@@ -901,10 +893,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           key="$footer">
           <View
             onLayout={this._onLayoutFooter}
-            style={StyleSheet.compose(
-              inversionStyle,
-              this.props.ListFooterComponentStyle,
-            )}>
+            style={this.props.ListFooterComponentStyle}>
             {
               // $FlowFixMe - Typing ReactNativeComponent revealed errors
               element
@@ -921,6 +910,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       onScrollBeginDrag: this._onScrollBeginDrag,
       onScrollEndDrag: this._onScrollEndDrag,
       onMomentumScrollEnd: this._onMomentumScrollEnd,
+      contentContainerStyle: inversionStyle,
       scrollEventThrottle: this.props.scrollEventThrottle, // TODO: Android support
       invertStickyHeaders:
         this.props.invertStickyHeaders !== undefined
@@ -928,12 +918,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           : this.props.inverted,
       stickyHeaderIndices,
     };
-    if (inversionStyle && itemCount !== 0) {
-      /* $FlowFixMe(>=0.70.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.70 was deployed. To see the error delete
-       * this comment and run Flow. */
-      scrollProps.style = [inversionStyle, this.props.style];
-    }
 
     this._hasMore =
       this.state.last < this.props.getItemCount(this.props.data) - 1;
@@ -1243,9 +1227,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       getItemCount,
       onEndReached,
       onEndReachedThreshold,
+      inverted,
     } = this.props;
     const {contentLength, visibleLength, offset} = this._scrollMetrics;
-    const distanceFromEnd = contentLength - visibleLength - offset;
+    const distanceFromEnd = inverted
+      ? offset
+      : contentLength - visibleLength - offset;
     if (
       onEndReached &&
       this.state.last === getItemCount(data) - 1 &&
@@ -1253,12 +1240,15 @@ class VirtualizedList extends React.PureComponent<Props, State> {
        * error found when Flow v0.63 was deployed. To see the error delete this
        * comment and run Flow. */
       distanceFromEnd < onEndReachedThreshold * visibleLength &&
+      distanceFromEnd !== this._distanceFromEnd &&
       (this._hasDataChangedSinceEndReached ||
         this._scrollMetrics.contentLength !== this._sentEndForContentLength)
     ) {
       // Only call onEndReached once for a given dataset + content length.
       this._hasDataChangedSinceEndReached = false;
       this._sentEndForContentLength = this._scrollMetrics.contentLength;
+      //We record the value to prevent from calling twice, especially when distanceFromEnd===0 as the scroll will stick to the top
+      this._distanceFromEnd = distanceFromEnd;
       onEndReached({distanceFromEnd});
     }
   }
@@ -1447,7 +1437,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   };
 
   _updateCellsToRender = () => {
-    const {data, getItemCount, onEndReachedThreshold} = this.props;
+    const {data, getItemCount, onEndReachedThreshold, inverted} = this.props;
     const isVirtualizationDisabled = this._isVirtualizationDisabled();
     this._updateViewableItems(data);
     if (!data) {
@@ -1476,7 +1466,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         }
       } else {
         const {contentLength, offset, visibleLength} = this._scrollMetrics;
-        const distanceFromEnd = contentLength - visibleLength - offset;
+        const distanceFromEnd = inverted
+          ? offset
+          : contentLength - visibleLength - offset;
         const renderAhead =
           /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses
            * an error found when Flow v0.63 was deployed. To see the error
@@ -1619,7 +1611,6 @@ class CellRenderer extends React.Component<
     fillRateHelper: FillRateHelper,
     horizontal: ?boolean,
     index: number,
-    inversionStyle: ViewStyleProp,
     item: Item,
     onLayout: (event: Object) => void, // This is extracted by ScrollViewStickyHeader
     onUnmount: (cellKey: string) => void,
@@ -1695,7 +1686,6 @@ class CellRenderer extends React.Component<
       horizontal,
       item,
       index,
-      inversionStyle,
       parentProps,
     } = this.props;
     const {renderItem, getItemLayout} = parentProps;
@@ -1717,13 +1707,9 @@ class CellRenderer extends React.Component<
     const itemSeparator = ItemSeparatorComponent && (
       <ItemSeparatorComponent {...this.state.separatorProps} />
     );
-    const cellStyle = inversionStyle
-      ? horizontal
-        ? [{flexDirection: 'row-reverse'}, inversionStyle]
-        : [{flexDirection: 'column-reverse'}, inversionStyle]
-      : horizontal
-        ? [{flexDirection: 'row'}, inversionStyle]
-        : inversionStyle;
+    const cellStyle = horizontal
+      ? {flexDirection: 'row'}
+      : {flexDirection: 'column'};
     if (!CellRendererComponent) {
       return (
         /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
@@ -1772,10 +1758,10 @@ class VirtualizedCellWrapper extends React.Component<{
 
 const styles = StyleSheet.create({
   verticallyInverted: {
-    transform: [{scaleY: -1}],
+    flexDirection: 'row-reverse',
   },
   horizontallyInverted: {
-    transform: [{scaleX: -1}],
+    flexDirection: 'column-reverse',
   },
   debug: {
     flex: 1,
