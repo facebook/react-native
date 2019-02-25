@@ -22,7 +22,8 @@ namespace react {
 template <
     const char *concreteComponentName,
     typename PropsT,
-    typename EventEmitterT = EventEmitter>
+    typename EventEmitterT = EventEmitter,
+    typename... Ts>
 class ConcreteShadowNode : public ShadowNode {
   static_assert(
       std::is_base_of<Props, PropsT>::value,
