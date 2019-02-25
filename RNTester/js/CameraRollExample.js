@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -22,22 +22,38 @@ const {
   TouchableOpacity,
 } = ReactNative;
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 const CameraRollView = require('./CameraRollView');
 
 const AssetScaledImageExampleView = require('./AssetScaledImageExample');
 
-class CameraRollExample extends React.Component<
-  $FlowFixMeProps,
-  $FlowFixMeState,
-> {
+import type {PhotoIdentifier, GroupTypes} from 'CameraRoll';
+
+type Props = $ReadOnly<{|
+  navigator?: ?Array<
+    $ReadOnly<{|
+      title: string,
+      component: Class<React.Component<any, any>>,
+      backButtonTitle: string,
+      passProps: $ReadOnly<{|asset: PhotoIdentifier|}>,
+    |}>,
+  >,
+|}>;
+
+type State = {|
+  groupTypes: GroupTypes,
+  sliderValue: number,
+  bigImages: boolean,
+|};
+
+class CameraRollExample extends React.Component<Props, State> {
   state = {
     groupTypes: 'SavedPhotos',
     sliderValue: 1,
     bigImages: true,
   };
-  _cameraRollView: ?CameraRollView;
+  _cameraRollView: ?React.ElementRef<typeof CameraRollView>;
   render() {
     return (
       <View>
@@ -58,6 +74,7 @@ class CameraRollExample extends React.Component<
           batchSize={20}
           groupTypes={this.state.groupTypes}
           renderImage={this._renderImage}
+          bigImages={this.state.bigImages}
         />
       </View>
     );
@@ -74,7 +91,7 @@ class CameraRollExample extends React.Component<
     }
   }
 
-  _renderImage = asset => {
+  _renderImage = (asset: PhotoIdentifier) => {
     const imageSize = this.state.bigImages ? 150 : 75;
     const imageStyle = [styles.image, {width: imageSize, height: imageSize}];
     const {location} = asset.node;
@@ -82,7 +99,9 @@ class CameraRollExample extends React.Component<
       ? JSON.stringify(location)
       : 'Unknown location';
     return (
-      <TouchableOpacity key={asset} onPress={this.loadAsset.bind(this, asset)}>
+      <TouchableOpacity
+        key={asset.node.image.uri}
+        onPress={this.loadAsset.bind(this, asset)}>
         <View style={styles.row}>
           <Image source={asset.node.image} style={imageStyle} />
           <View style={styles.info}>
@@ -107,7 +126,6 @@ class CameraRollExample extends React.Component<
 
   _onSwitchChange = value => {
     invariant(this._cameraRollView, 'ref should be set');
-    this._cameraRollView.rendererChanged();
     this.setState({bigImages: value});
   };
 }
@@ -135,7 +153,7 @@ exports.description =
 exports.examples = [
   {
     title: 'Photos',
-    render(): React.Element<any> {
+    render(): React.Node {
       return <CameraRollExample />;
     },
   },

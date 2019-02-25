@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -182,7 +182,7 @@
 
 #pragma mark - Bridge Events
 
-- (void)handleBridgeWillLoadJavaScriptNotification:(NSNotification *)notification
+- (void)handleBridgeWillLoadJavaScriptNotification:(__unused NSNotification *)notification
 {
   RCTAssertMainQueue();
 
@@ -450,7 +450,7 @@
     return NO;
   }
 
-  if (RCTIsMainQueue() && (stage == RCTSurfaceStageSurfaceDidInitialMounting)) {
+  if (RCTIsMainQueue() && (stage & RCTSurfaceStageSurfaceDidInitialMounting)) {
     // All main-threaded execution (especially mounting process) has to be
     // intercepted, captured and performed synchnously at the end of this method
     // right after the semaphore signals.
@@ -485,7 +485,7 @@
     dispatch_semaphore_signal(semaphore);
   }
 
-  if (RCTIsMainQueue() && (stage == RCTSurfaceStageSurfaceDidInitialMounting)) {
+  if (RCTIsMainQueue() && (stage & RCTSurfaceStageSurfaceDidInitialMounting)) {
     // Time to apply captured mounting block.
     RCTUIManagerMountingBlock mountingBlock;
     {
@@ -505,19 +505,19 @@
 
 #pragma mark - RCTSurfaceRootShadowViewDelegate
 
-- (void)rootShadowView:(RCTRootShadowView *)rootShadowView didChangeIntrinsicSize:(CGSize)intrinsicSize
+- (void)rootShadowView:(__unused RCTRootShadowView *)rootShadowView didChangeIntrinsicSize:(CGSize)intrinsicSize
 {
   self.intrinsicSize = intrinsicSize;
 }
 
-- (void)rootShadowViewDidStartRendering:(RCTSurfaceRootShadowView *)rootShadowView
+- (void)rootShadowViewDidStartRendering:(__unused RCTSurfaceRootShadowView *)rootShadowView
 {
   [self _setStage:RCTSurfaceStageSurfaceDidInitialRendering];
 
   dispatch_semaphore_signal(_rootShadowViewDidStartRenderingSemaphore);
 }
 
-- (void)rootShadowViewDidStartLayingOut:(RCTSurfaceRootShadowView *)rootShadowView
+- (void)rootShadowViewDidStartLayingOut:(__unused RCTSurfaceRootShadowView *)rootShadowView
 {
   [self _setStage:RCTSurfaceStageSurfaceDidInitialLayout];
 
@@ -531,7 +531,7 @@
 
 #pragma mark - RCTUIManagerObserver
 
-- (BOOL)uiManager:(RCTUIManager *)manager performMountingWithBlock:(RCTUIManagerMountingBlock)block
+- (BOOL)uiManager:(__unused RCTUIManager *) manager performMountingWithBlock:(RCTUIManagerMountingBlock)block
 {
   if (atomic_load(&_waitingForMountingStageOnMainQueue) && (self.stage & RCTSurfaceStageSurfaceDidInitialLayout)) {
     // Atomic equivalent of `_waitingForMountingStageOnMainQueue = NO;`.
@@ -547,7 +547,7 @@
   return NO;
 }
 
-- (void)uiManagerDidPerformMounting:(RCTUIManager *)manager
+- (void)uiManagerDidPerformMounting:(__unused RCTUIManager *)manager
 {
   if (self.stage & RCTSurfaceStageSurfaceDidInitialLayout) {
     [self _setStage:RCTSurfaceStageSurfaceDidInitialMounting];
@@ -558,6 +558,20 @@
       [self->_bridge.uiManager.observerCoordinator removeObserver:self];
     });
   }
+}
+
+- (BOOL)start
+{
+  // Does nothing.
+  // The Start&Stop feature is not implemented for regular Surface yet.
+  return YES;
+}
+
+- (BOOL)stop
+{
+  // Does nothing.
+  // The Start&Stop feature is not implemented for regular Surface yet.
+  return YES;
 }
 
 #pragma mark - Mounting/Unmounting of React components

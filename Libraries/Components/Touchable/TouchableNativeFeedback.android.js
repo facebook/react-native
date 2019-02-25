@@ -1,9 +1,10 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow strict-local
  * @format
  */
 
@@ -16,10 +17,13 @@ const ReactNative = require('ReactNative');
 const Touchable = require('Touchable');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 const UIManager = require('UIManager');
+const View = require('View');
 
 const createReactClass = require('create-react-class');
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 const processColor = require('processColor');
+
+import type {PressEvent} from 'CoreEventTypes';
 
 const rippleBackgroundPropType = PropTypes.shape({
   type: PropTypes.oneOf(['RippleAndroid']),
@@ -36,8 +40,6 @@ const backgroundPropType = PropTypes.oneOfType([
   rippleBackgroundPropType,
   themeAttributeBackgroundPropType,
 ]);
-
-type Event = Object;
 
 const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
@@ -73,6 +75,9 @@ const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 const TouchableNativeFeedback = createReactClass({
   displayName: 'TouchableNativeFeedback',
   propTypes: {
+    /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment
+     * suppresses an error found when Flow v0.89 was deployed. To see the
+     * error, delete this comment and run Flow. */
     ...TouchableWithoutFeedback.propTypes,
 
     /**
@@ -87,6 +92,31 @@ const TouchableNativeFeedback = createReactClass({
      * TV preferred focus (see documentation for the View component).
      */
     hasTVPreferredFocus: PropTypes.bool,
+
+    /**
+     * TV next focus down (see documentation for the View component).
+     */
+    nextFocusDown: PropTypes.number,
+
+    /**
+     * TV next focus forward (see documentation for the View component).
+     */
+    nextFocusForward: PropTypes.number,
+
+    /**
+     * TV next focus left (see documentation for the View component).
+     */
+    nextFocusLeft: PropTypes.number,
+
+    /**
+     * TV next focus right (see documentation for the View component).
+     */
+    nextFocusRight: PropTypes.number,
+
+    /**
+     * TV next focus up (see documentation for the View component).
+     */
+    nextFocusUp: PropTypes.number,
 
     /**
      * Set to true to add the ripple effect to the foreground of the view, instead of the
@@ -105,7 +135,10 @@ const TouchableNativeFeedback = createReactClass({
      * Creates an object that represents android theme's default background for
      * selectable elements (?android:attr/selectableItemBackground).
      */
-    SelectableBackground: function() {
+    SelectableBackground: function(): {
+      type: 'ThemeAttrAndroid',
+      attribute: 'selectableItemBackground',
+    } {
       return {type: 'ThemeAttrAndroid', attribute: 'selectableItemBackground'};
     },
     /**
@@ -113,7 +146,10 @@ const TouchableNativeFeedback = createReactClass({
      * selectable elements (?android:attr/selectableItemBackgroundBorderless).
      * Available on android API level 21+.
      */
-    SelectableBackgroundBorderless: function() {
+    SelectableBackgroundBorderless: function(): {
+      type: 'ThemeAttrAndroid',
+      attribute: 'selectableItemBackgroundBorderless',
+    } {
       return {
         type: 'ThemeAttrAndroid',
         attribute: 'selectableItemBackgroundBorderless',
@@ -129,7 +165,14 @@ const TouchableNativeFeedback = createReactClass({
      * @param color The ripple color
      * @param borderless If the ripple can render outside it's bounds
      */
-    Ripple: function(color: string, borderless: boolean) {
+    Ripple: function(
+      color: string,
+      borderless: boolean,
+    ): {
+      type: 'RippleAndroid',
+      color: ?number,
+      borderless: boolean,
+    } {
       return {
         type: 'RippleAndroid',
         color: processColor(color),
@@ -137,7 +180,7 @@ const TouchableNativeFeedback = createReactClass({
       };
     },
 
-    canUseNativeForeground: function() {
+    canUseNativeForeground: function(): boolean {
       return Platform.OS === 'android' && Platform.Version >= 23;
     },
   },
@@ -166,27 +209,36 @@ const TouchableNativeFeedback = createReactClass({
    * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
    * defined on your component.
    */
-  touchableHandleActivePressIn: function(e: Event) {
+  touchableHandleActivePressIn: function(e: PressEvent) {
     this.props.onPressIn && this.props.onPressIn(e);
     this._dispatchPressedStateChange(true);
+    /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment
+     * suppresses an error found when Flow v0.89 was deployed. To see the
+     * error, delete this comment and run Flow. */
     if (this.pressInLocation) {
       this._dispatchHotspotUpdate(
+        /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment
+         * suppresses an error found when Flow v0.89 was deployed. To see the
+         * error, delete this comment and run Flow. */
         this.pressInLocation.locationX,
+        /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment
+         * suppresses an error found when Flow v0.89 was deployed. To see the
+         * error, delete this comment and run Flow. */
         this.pressInLocation.locationY,
       );
     }
   },
 
-  touchableHandleActivePressOut: function(e: Event) {
+  touchableHandleActivePressOut: function(e: PressEvent) {
     this.props.onPressOut && this.props.onPressOut(e);
     this._dispatchPressedStateChange(false);
   },
 
-  touchableHandlePress: function(e: Event) {
+  touchableHandlePress: function(e: PressEvent) {
     this.props.onPress && this.props.onPress(e);
   },
 
-  touchableHandleLongPress: function(e: Event) {
+  touchableHandleLongPress: function(e: PressEvent) {
     this.props.onLongPress && this.props.onLongPress(e);
   },
 
@@ -222,7 +274,7 @@ const TouchableNativeFeedback = createReactClass({
   _dispatchHotspotUpdate: function(destX, destY) {
     UIManager.dispatchViewManagerCommand(
       ReactNative.findNodeHandle(this),
-      UIManager.RCTView.Commands.hotspotUpdate,
+      UIManager.getViewManagerConfig('RCTView').Commands.hotspotUpdate,
       [destX || 0, destY || 0],
     );
   },
@@ -230,7 +282,7 @@ const TouchableNativeFeedback = createReactClass({
   _dispatchPressedStateChange: function(pressed) {
     UIManager.dispatchViewManagerCommand(
       ReactNative.findNodeHandle(this),
-      UIManager.RCTView.Commands.setPressed,
+      UIManager.getViewManagerConfig('RCTView').Commands.setPressed,
       [pressed],
     );
   },
@@ -238,7 +290,7 @@ const TouchableNativeFeedback = createReactClass({
   render: function() {
     const child = React.Children.only(this.props.children);
     let children = child.props.children;
-    if (Touchable.TOUCH_TARGET_DEBUG && child.type.displayName === 'View') {
+    if (Touchable.TOUCH_TARGET_DEBUG && child.type === View) {
       if (!Array.isArray(children)) {
         children = [children];
       }
@@ -269,13 +321,18 @@ const TouchableNativeFeedback = createReactClass({
       [drawableProp]: this.props.background,
       accessible: this.props.accessible !== false,
       accessibilityLabel: this.props.accessibilityLabel,
-      accessibilityComponentType: this.props.accessibilityComponentType,
-      accessibilityTraits: this.props.accessibilityTraits,
+      accessibilityRole: this.props.accessibilityRole,
+      accessibilityStates: this.props.accessibilityStates,
       children,
       testID: this.props.testID,
       onLayout: this.props.onLayout,
       hitSlop: this.props.hitSlop,
       isTVSelectable: true,
+      nextFocusDown: this.props.nextFocusDown,
+      nextFocusForward: this.props.nextFocusForward,
+      nextFocusLeft: this.props.nextFocusLeft,
+      nextFocusRight: this.props.nextFocusRight,
+      nextFocusUp: this.props.nextFocusUp,
       hasTVPreferredFocus: this.props.hasTVPreferredFocus,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
       onResponderTerminationRequest: this

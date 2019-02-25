@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,11 +10,11 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {StyleSheet, Text, TouchableHighlight, View, WebView} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {StyleSheet, Text, TouchableHighlight, View, WebView} = ReactNative;
 
-var RCTNetworking = require('RCTNetworking');
+const RCTNetworking = require('RCTNetworking');
 
 class XHRExampleCookies extends React.Component<any, any> {
   cancelled: boolean;
@@ -30,8 +30,8 @@ class XHRExampleCookies extends React.Component<any, any> {
   }
 
   setCookie(domain: string) {
-    var {a, b} = this.state;
-    var url = `https://${domain}/cookies/set?a=${a}&b=${b}`;
+    const {a, b} = this.state;
+    const url = `https://${domain}/cookies/set?a=${a}&b=${b}`;
     fetch(url).then(response => {
       this.setStatus(`Cookies a=${a}, b=${b} set`);
       this.refreshWebview();
@@ -130,7 +130,7 @@ class XHRExampleCookies extends React.Component<any, any> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   wrapper: {
     borderRadius: 5,
     marginBottom: 5,

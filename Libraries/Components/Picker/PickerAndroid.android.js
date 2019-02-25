@@ -1,81 +1,67 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
-const ColorPropType = require('ColorPropType');
+const AndroidDropdownPickerNativeComponent = require('AndroidDropdownPickerNativeComponent');
+const AndroidDialogPickerNativeComponent = require('AndroidDialogPickerNativeComponent');
 const React = require('React');
-const ReactPropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
-const StyleSheetPropType = require('StyleSheetPropType');
-const ViewPropTypes = require('ViewPropTypes');
-const ViewStylePropTypes = require('ViewStylePropTypes');
 
 const processColor = require('processColor');
-const requireNativeComponent = require('requireNativeComponent');
-
-const DropdownPicker = requireNativeComponent('AndroidDropdownPicker');
-const DialogPicker = requireNativeComponent('AndroidDialogPicker');
 
 const REF_PICKER = 'picker';
 const MODE_DROPDOWN = 'dropdown';
 
-const pickerStyleType = StyleSheetPropType({
-  ...ViewStylePropTypes,
-  color: ColorPropType,
-});
+import type {SyntheticEvent} from 'CoreEventTypes';
+import type {TextStyleProp} from 'StyleSheet';
 
-type Event = Object;
+type PickerAndroidChangeEvent = SyntheticEvent<
+  $ReadOnly<{|
+    position: number,
+  |}>,
+>;
+
+type PickerAndroidProps = $ReadOnly<{|
+  children?: React.Node,
+  style?: ?TextStyleProp,
+  selectedValue?: ?(number | string),
+  enabled?: ?boolean,
+  mode?: ?('dialog' | 'dropdown'),
+  onValueChange?: ?(itemValue: ?(string | number), itemIndex: number) => mixed,
+  prompt?: ?string,
+  testID?: string,
+|}>;
+
+type Item = $ReadOnly<{|
+  label: string,
+  value: ?(number | string),
+  color?: ?number,
+|}>;
+
+type PickerAndroidState = {|
+  selectedIndex: number,
+  items: $ReadOnlyArray<Item>,
+|};
 
 /**
  * Not exposed as a public API - use <Picker> instead.
  */
+
 class PickerAndroid extends React.Component<
-  {
-    style?: $FlowFixMe,
-    selectedValue?: any,
-    enabled?: boolean,
-    mode?: 'dialog' | 'dropdown',
-    onValueChange?: Function,
-    prompt?: string,
-    testID?: string,
-  },
-  *,
+  PickerAndroidProps,
+  PickerAndroidState,
 > {
-  static propTypes = {
-    ...ViewPropTypes,
-    style: pickerStyleType,
-    selectedValue: ReactPropTypes.any,
-    enabled: ReactPropTypes.bool,
-    mode: ReactPropTypes.oneOf(['dialog', 'dropdown']),
-    onValueChange: ReactPropTypes.func,
-    prompt: ReactPropTypes.string,
-    testID: ReactPropTypes.string,
-  };
-
-  constructor(props, context) {
-    super(props, context);
-    const state = this._stateFromProps(props);
-
-    this.state = {
-      ...state,
-      initialSelectedIndex: state.selectedIndex,
-    };
-  }
-
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    this.setState(this._stateFromProps(nextProps));
-  }
-
-  // Translate prop and children into stuff that the native picker understands.
-  _stateFromProps = props => {
+  static getDerivedStateFromProps(
+    props: PickerAndroidProps,
+  ): PickerAndroidState {
     let selectedIndex = 0;
     const items = React.Children.map(props.children, (child, index) => {
       if (child.props.value === props.selectedValue) {
@@ -86,16 +72,22 @@ class PickerAndroid extends React.Component<
         label: child.props.label,
       };
       if (child.props.color) {
+        /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+         * found when making Flow check .android.js files. */
         childProps.color = processColor(child.props.color);
       }
       return childProps;
     });
     return {selectedIndex, items};
-  };
+  }
+
+  state = PickerAndroid.getDerivedStateFromProps(this.props);
 
   render() {
     const Picker =
-      this.props.mode === MODE_DROPDOWN ? DropdownPicker : DialogPicker;
+      this.props.mode === MODE_DROPDOWN
+        ? AndroidDropdownPickerNativeComponent
+        : AndroidDialogPickerNativeComponent;
 
     const nativeProps = {
       enabled: this.props.enabled,
@@ -103,35 +95,31 @@ class PickerAndroid extends React.Component<
       mode: this.props.mode,
       onSelect: this._onChange,
       prompt: this.props.prompt,
-      selected: this.state.initialSelectedIndex,
+      selected: this.state.selectedIndex,
       testID: this.props.testID,
       style: [styles.pickerAndroid, this.props.style],
+      /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+       * when making Flow check .android.js files. */
       accessibilityLabel: this.props.accessibilityLabel,
     };
 
     return <Picker ref={REF_PICKER} {...nativeProps} />;
   }
 
-  _onChange = (event: Event) => {
+  _onChange = (event: PickerAndroidChangeEvent) => {
     if (this.props.onValueChange) {
       const position = event.nativeEvent.position;
       if (position >= 0) {
         const children = React.Children.toArray(this.props.children);
         const value = children[position].props.value;
+        /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
+         * found when making Flow check .android.js files. */
         this.props.onValueChange(value, position);
       } else {
         this.props.onValueChange(null, position);
       }
     }
-    this._lastNativePosition = event.nativeEvent.position;
-    this.forceUpdate();
-  };
 
-  componentDidMount() {
-    this._lastNativePosition = this.state.initialSelectedIndex;
-  }
-
-  componentDidUpdate() {
     // The picker is a controlled component. This means we expect the
     // on*Change handlers to be in charge of updating our
     // `selectedValue` prop. That way they can also
@@ -140,14 +128,13 @@ class PickerAndroid extends React.Component<
     // truth, not the native component.
     if (
       this.refs[REF_PICKER] &&
-      this.state.selectedIndex !== this._lastNativePosition
+      this.state.selectedIndex !== event.nativeEvent.position
     ) {
       this.refs[REF_PICKER].setNativeProps({
         selected: this.state.selectedIndex,
       });
-      this._lastNativePosition = this.state.selectedIndex;
     }
-  }
+  };
 }
 
 const styles = StyleSheet.create({

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,15 +12,54 @@
 
 const path = require('path');
 
-const ROOTS = [
-  path.resolve(__dirname, '..') + path.sep,
-  path.resolve(__dirname, '../../react-native-windows') + path.sep,
-];
+const REACT_NATIVE_CI = process.cwd() === path.resolve(__dirname, '..');
+
+let pluginsPath;
+
+if (REACT_NATIVE_CI) {
+  pluginsPath = '..';
+} else {
+  pluginsPath = '../../../';
+}
+
+function getPlugins() {
+  try {
+    // @todo do not rely on private files
+    const findPlugins = require('@react-native-community/cli/build/core/findPlugins');
+
+    return findPlugins(path.resolve(__dirname, pluginsPath));
+  } catch (e) {
+    return {
+      haste: {
+        providesModuleNodeModules: [],
+        platforms: [],
+      },
+    };
+  }
+}
+
+const plugins = getPlugins();
+
+// Detect out-of-tree platforms and add them to the whitelists
+const pluginRoots /*: Array<
+  string,
+> */ = plugins.haste.providesModuleNodeModules.map(
+  name => path.resolve(__dirname, '../../', name) + path.sep,
+);
+
+const pluginNameReducers /*: Array<
+  [RegExp, string],
+> */ = plugins.haste.platforms.map(name => [
+  new RegExp(`^(.*)\.(${name})$`),
+  '$1',
+]);
+
+const ROOTS = [path.resolve(__dirname, '..') + path.sep, ...pluginRoots];
 
 const BLACKLISTED_PATTERNS /*: Array<RegExp> */ = [
-  /.*\/__(mocks|tests)__\/.*/,
-  /^Libraries\/Animated\/src\/polyfills\/.*/,
-  /^Libraries\/Renderer\/fb\/.*/,
+  /.*[\\\/]__(mocks|tests)__[\\\/].*/,
+  /^Libraries[\\\/]Animated[\\\/]src[\\\/]polyfills[\\\/].*/,
+  /^Libraries[\\\/]Renderer[\\\/]fb[\\\/].*/,
 ];
 
 const WHITELISTED_PREFIXES /*: Array<string> */ = [
@@ -32,11 +71,13 @@ const WHITELISTED_PREFIXES /*: Array<string> */ = [
 
 const NAME_REDUCERS /*: Array<[RegExp, string]> */ = [
   // extract basename
-  [/^(?:.*\/)?([a-zA-Z0-9$_.-]+)$/, '$1'],
+  [/^(?:.*[\\\/])?([a-zA-Z0-9$_.-]+)$/, '$1'],
   // strip .js/.js.flow suffix
   [/^(.*)\.js(\.flow)?$/, '$1'],
-  // strip .android/.ios/.native/.web suffix
-  [/^(.*)\.(android|ios|native|web|windows)$/, '$1'],
+  // strip platform suffix
+  [/^(.*)\.(android|ios|native)$/, '$1'],
+  // strip plugin platform suffixes
+  ...pluginNameReducers,
 ];
 
 const haste = {

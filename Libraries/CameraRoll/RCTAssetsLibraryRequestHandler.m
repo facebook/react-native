@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,41 +11,26 @@
 #import <dlfcn.h>
 #import <objc/runtime.h>
 
-#import <AssetsLibrary/AssetsLibrary.h>
+#import <Photos/Photos.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 
 #import <React/RCTBridge.h>
 #import <React/RCTUtils.h>
 
 @implementation RCTAssetsLibraryRequestHandler
-{
-  ALAssetsLibrary *_assetsLibrary;
-}
 
 RCT_EXPORT_MODULE()
-
-@synthesize bridge = _bridge;
-static Class _ALAssetsLibrary = nil;
-static void ensureAssetsLibLoaded(void)
-{
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    void * handle = dlopen("/System/Library/Frameworks/AssetsLibrary.framework/AssetsLibrary", RTLD_LAZY);
-#pragma unused(handle)
-    _ALAssetsLibrary = objc_getClass("ALAssetsLibrary");
-  });
-}
-- (ALAssetsLibrary *)assetsLibrary
-{
-  ensureAssetsLibLoaded();
-  return _assetsLibrary ?: (_assetsLibrary = [_ALAssetsLibrary new]);
-}
 
 #pragma mark - RCTURLRequestHandler
 
 - (BOOL)canHandleRequest:(NSURLRequest *)request
 {
-  return [request.URL.scheme caseInsensitiveCompare:@"assets-library"] == NSOrderedSame;
+  if (![PHAsset class]) {
+    return NO;
+  }
+
+  return [request.URL.scheme caseInsensitiveCompare:@"assets-library"] == NSOrderedSame
+    || [request.URL.scheme caseInsensitiveCompare:@"ph"] == NSOrderedSame;
 }
 
 - (id)sendRequest:(NSURLRequest *)request
@@ -55,73 +40,81 @@ static void ensureAssetsLibLoaded(void)
   void (^cancellationBlock)(void) = ^{
     atomic_store(&cancelled, YES);
   };
+  
+  if (!request.URL) {
+    NSString *const msg = [NSString stringWithFormat:@"Cannot send request without URL"];
+    [delegate URLRequest:cancellationBlock didCompleteWithError:RCTErrorWithMessage(msg)];
+    return cancellationBlock;
+  }
+  
+  PHFetchResult<PHAsset *> *fetchResult;
+ 
+  if ([request.URL.scheme caseInsensitiveCompare:@"ph"] == NSOrderedSame) {
+    // Fetch assets using PHAsset localIdentifier (recommended)
+    NSString *const localIdentifier = [request.URL.absoluteString substringFromIndex:@"ph://".length];
+    fetchResult = [PHAsset fetchAssetsWithLocalIdentifiers:@[localIdentifier] options:nil];
+  } else if ([request.URL.scheme caseInsensitiveCompare:@"assets-library"] == NSOrderedSame) {
+    // This is the older, deprecated way of fetching assets from assets-library
+    // using the "assets-library://" protocol
+    fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[request.URL] options:nil];
+  } else {
+    NSString *const msg = [NSString stringWithFormat:@"Cannot send request with unknown protocol: %@", request.URL];
+    [delegate URLRequest:cancellationBlock didCompleteWithError:RCTErrorWithMessage(msg)];
+    return cancellationBlock;
+  }
+  
+  if (![fetchResult firstObject]) {
+    NSString *errorMessage = [NSString stringWithFormat:@"Failed to load asset"
+                              " at URL %@ with no error message.", request.URL];
+    NSError *error = RCTErrorWithMessage(errorMessage);
+    [delegate URLRequest:cancellationBlock didCompleteWithError:error];
+    return cancellationBlock;
+  }
+  
+  if (atomic_load(&cancelled)) {
+    return cancellationBlock;
+  }
 
-  [[self assetsLibrary] assetForURL:request.URL resultBlock:^(ALAsset *asset) {
-    if (atomic_load(&cancelled)) {
-      return;
-    }
+  PHAsset *const _Nonnull asset = [fetchResult firstObject];
 
-    if (asset) {
-
-      ALAssetRepresentation *representation = [asset defaultRepresentation];
-      NSInteger length = (NSInteger)representation.size;
-      CFStringRef MIMEType = UTTypeCopyPreferredTagWithClass((__bridge CFStringRef _Nonnull)(representation.UTI), kUTTagClassMIMEType);
-
-      NSURLResponse *response =
-      [[NSURLResponse alloc] initWithURL:request.URL
-                                MIMEType:(__bridge NSString *)(MIMEType)
-                   expectedContentLength:length
-                        textEncodingName:nil];
-
-      [delegate URLRequest:cancellationBlock didReceiveResponse:response];
-
-      NSError *error = nil;
-      uint8_t *buffer = (uint8_t *)malloc((size_t)length);
-      if ([representation getBytes:buffer
-                        fromOffset:0
-                            length:length
-                             error:&error]) {
-
-        NSData *data = [[NSData alloc] initWithBytesNoCopy:buffer
-                                                    length:length
-                                              freeWhenDone:YES];
-
-        [delegate URLRequest:cancellationBlock didReceiveData:data];
-        [delegate URLRequest:cancellationBlock didCompleteWithError:nil];
-
-      } else {
-        free(buffer);
-        [delegate URLRequest:cancellationBlock didCompleteWithError:error];
-      }
-
-    } else {
-      NSString *errorMessage = [NSString stringWithFormat:@"Failed to load asset"
-                                " at URL %@ with no error message.", request.URL];
-      NSError *error = RCTErrorWithMessage(errorMessage);
+  // By default, allow downloading images from iCloud
+  PHImageRequestOptions *const requestOptions = [PHImageRequestOptions new];
+  requestOptions.networkAccessAllowed = YES;
+  
+  [[PHImageManager defaultManager] requestImageDataForAsset:asset
+                                                    options:requestOptions
+                                              resultHandler:^(NSData * _Nullable imageData,
+                                                              NSString * _Nullable dataUTI,
+                                                              UIImageOrientation orientation,
+                                                              NSDictionary * _Nullable info) {
+    NSError *const error = [info objectForKey:PHImageErrorKey];
+    if (error) {
       [delegate URLRequest:cancellationBlock didCompleteWithError:error];
-    }
-  } failureBlock:^(NSError *loadError) {
-    if (atomic_load(&cancelled)) {
       return;
     }
-    [delegate URLRequest:cancellationBlock didCompleteWithError:loadError];
-  }];
 
+    NSInteger const length = [imageData length];
+    CFStringRef const dataUTIStringRef = (__bridge CFStringRef _Nonnull)(dataUTI);
+    CFStringRef const mimeType = UTTypeCopyPreferredTagWithClass(dataUTIStringRef, kUTTagClassMIMEType);
+
+    NSURLResponse *const response = [[NSURLResponse alloc] initWithURL:request.URL
+                                                              MIMEType:(__bridge NSString *)(mimeType)
+                                                 expectedContentLength:length
+                                                      textEncodingName:nil];
+    CFRelease(mimeType);
+    
+    [delegate URLRequest:cancellationBlock didReceiveResponse:response];
+    
+    [delegate URLRequest:cancellationBlock didReceiveData:imageData];
+    [delegate URLRequest:cancellationBlock didCompleteWithError:nil];
+  }];
+  
   return cancellationBlock;
 }
 
 - (void)cancelRequest:(id)requestToken
 {
   ((void (^)(void))requestToken)();
-}
-
-@end
-
-@implementation RCTBridge (RCTAssetsLibraryImageLoader)
-
-- (ALAssetsLibrary *)assetsLibrary
-{
-  return [[self moduleForClass:[RCTAssetsLibraryRequestHandler class]] assetsLibrary];
 }
 
 @end

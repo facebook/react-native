@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string
+    name="link_description"
+    translatable="false"
+    >Link</string>
+  <string
+    name="search_description"
+    translatable="false"
+    >Search Field</string>
+  <string
+    name="image_description"
+    translatable="false"
+    >Image</string>
+  <string
+    name="image_button_description"
+    translatable="false"
+    >Button, Image</string>
+  <string
+    name="adjustable_description"
+    translatable="false"
+    >Adjustable</string>
+  <string
+    name="header_description"
+    translatable="false"
+    >Heading</string>
+</resources>

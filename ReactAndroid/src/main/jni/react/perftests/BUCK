@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS.bzl", "ANDROID", "react_native_xplat_target", "rn_xplat_cxx_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "react_native_xplat_target", "rn_xplat_cxx_library")
 
 rn_xplat_cxx_library(
     name = "perftests",
@@ -15,7 +15,7 @@ rn_xplat_cxx_library(
     deps = [
         "fbandroid//native:base",
         "fbandroid//native/fb:fb",
-        "xplat//folly:molly",
+        "fbsource//xplat/folly:molly",
         react_native_xplat_target("cxxreact:module"),
     ],
 )

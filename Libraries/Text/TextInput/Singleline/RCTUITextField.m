@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -85,6 +85,16 @@
   self.enabled = editable;
 }
 
+- (void)setScrollEnabled:(BOOL)enabled
+{
+  // Do noting, compatible with multiline textinput
+}
+
+- (BOOL)scrollEnabled
+{
+  return NO;
+}
+
 #pragma mark - Context Menu
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
@@ -106,6 +116,7 @@
 
   return [super caretRectForPosition:position];
 }
+
 
 #pragma mark - Positioning Overrides
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -56,7 +56,10 @@ public class ForwardingCookieHandler extends CookieHandler {
   @Override
   public Map<String, List<String>> get(URI uri, Map<String, List<String>> headers)
       throws IOException {
-    String cookies = getCookieManager().getCookie(uri.toString());
+    CookieManager cookieManager = getCookieManager();
+    if (cookieManager == null) return Collections.emptyMap();
+
+    String cookies = cookieManager.getCookie(uri.toString());
     if (TextUtils.isEmpty(cookies)) {
       return Collections.emptyMap();
     }
@@ -80,7 +83,10 @@ public class ForwardingCookieHandler extends CookieHandler {
       new GuardedResultAsyncTask<Boolean>(mContext) {
         @Override
         protected Boolean doInBackgroundGuarded() {
-          getCookieManager().removeAllCookie();
+          CookieManager cookieManager = getCookieManager();
+          if (cookieManager != null) {
+            cookieManager.removeAllCookie();
+          }
           mCookieSaver.onCookiesModified();
           return true;
         }
@@ -96,31 +102,40 @@ public class ForwardingCookieHandler extends CookieHandler {
   }
 
   private void clearCookiesAsync(final Callback callback) {
-    getCookieManager().removeAllCookies(
-        new ValueCallback<Boolean>() {
-          @Override
-          public void onReceiveValue(Boolean value) {
-            mCookieSaver.onCookiesModified();
-            callback.invoke(value);
-          }
-        });
+    CookieManager cookieManager = getCookieManager();
+    if (cookieManager != null) {
+      cookieManager.removeAllCookies(
+          new ValueCallback<Boolean>() {
+            @Override
+            public void onReceiveValue(Boolean value) {
+              mCookieSaver.onCookiesModified();
+              callback.invoke(value);
+            }
+          });
+    }
   }
 
   public void destroy() {
     if (USES_LEGACY_STORE) {
-      getCookieManager().removeExpiredCookie();
+      CookieManager cookieManager = getCookieManager();
+      if (cookieManager != null) {
+        cookieManager.removeExpiredCookie();
+      }
       mCookieSaver.persistCookies();
     }
   }
 
   private void addCookies(final String url, final List<String> cookies) {
+    final CookieManager cookieManager = getCookieManager();
+    if (cookieManager == null) return;
+
     if (USES_LEGACY_STORE) {
       runInBackground(
           new Runnable() {
             @Override
             public void run() {
               for (String cookie : cookies) {
-                getCookieManager().setCookie(url, cookie);
+                cookieManager.setCookie(url, cookie);
               }
               mCookieSaver.onCookiesModified();
             }
@@ -129,13 +144,17 @@ public class ForwardingCookieHandler extends CookieHandler {
       for (String cookie : cookies) {
         addCookieAsync(url, cookie);
       }
+      cookieManager.flush();
       mCookieSaver.onCookiesModified();
     }
   }
 
   @TargetApi(21)
   private void addCookieAsync(String url, String cookie) {
-    getCookieManager().setCookie(url, cookie, null);
+    CookieManager cookieManager = getCookieManager();
+    if (cookieManager != null) {
+      cookieManager.setCookie(url, cookie, null);
+    }
   }
 
   private static boolean isCookieHeader(String name) {
@@ -155,10 +174,15 @@ public class ForwardingCookieHandler extends CookieHandler {
    * Instantiating CookieManager in KitKat+ will load the Chromium task taking a 100ish ms so we
    * do it lazily to make sure it's done on a background thread as needed.
    */
-  private CookieManager getCookieManager() {
+  private @Nullable CookieManager getCookieManager() {
     if (mCookieManager == null) {
       possiblyWorkaroundSyncManager(mContext);
-      mCookieManager = CookieManager.getInstance();
+      try {
+          mCookieManager = CookieManager.getInstance();
+      } catch (IllegalArgumentException ex) {
+        // https://bugs.chromium.org/p/chromium/issues/detail?id=559720
+        return null;
+      }
 
       if (USES_LEGACY_STORE) {
         mCookieManager.removeExpiredCookie();
@@ -227,7 +251,10 @@ public class ForwardingCookieHandler extends CookieHandler {
 
     @TargetApi(21)
     private void flush() {
-      getCookieManager().flush();
+      CookieManager cookieManager = getCookieManager();
+      if (cookieManager != null) {
+        cookieManager.flush();
+      }
     }
   }
 }

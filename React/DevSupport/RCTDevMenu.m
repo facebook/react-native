@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,6 +12,8 @@
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
+#import "RCTDefines.h"
+#import <React/RCTBundleURLProvider.h>
 
 #if RCT_DEV
 
@@ -189,6 +191,12 @@ RCT_EXPORT_MODULE()
   [_extraMenuItems addObject:item];
 }
 
+- (void)setDefaultJSBundle {
+  [[RCTBundleURLProvider sharedSettings] resetToDefaults];
+  self->_bridge.bundleURL = [[RCTBundleURLProvider sharedSettings] jsBundleURLForFallbackResource:nil fallbackExtension:nil];
+  [self->_bridge reload];
+}
+
 - (NSArray<RCTDevMenuItem *> *)_menuItemsToPresent
 {
   NSMutableArray<RCTDevMenuItem *> *items = [NSMutableArray new];
@@ -217,7 +225,7 @@ RCT_EXPORT_MODULE()
         preferredStyle:UIAlertControllerStyleAlert];
       __weak typeof(alertController) weakAlertController = alertController;
       [alertController addAction:
-       [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
+       [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(__unused UIAlertAction *action){
         [weakAlertController dismissViewControllerAnimated:YES completion:nil];
       }]];
       [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
@@ -251,7 +259,7 @@ RCT_EXPORT_MODULE()
           preferredStyle:UIAlertControllerStyleAlert];
         __weak typeof(alertController) weakAlertController = alertController;
         [alertController addAction:
-         [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
+         [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(__unused UIAlertAction *action){
           [weakAlertController dismissViewControllerAnimated:YES completion:nil];
         }]];
         [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
@@ -269,11 +277,53 @@ RCT_EXPORT_MODULE()
     }]];
   }
 
-  if (devSettings.isJSCSamplingProfilerAvailable) {
-    [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Start / Stop JS Sampling Profiler" handler:^{
-      [devSettings toggleJSCSamplingProfiler];
+  [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
+    return @"Change packager location";
+  } handler:^{
+    UIAlertController * alertController = [UIAlertController alertControllerWithTitle: @"Change packager location"
+                                                                              message: @"Input packager IP, port and entrypoint"
+                                                                       preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+      textField.placeholder = @"0.0.0.0";
+    }];
+    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+      textField.placeholder = @"8081";
+    }];
+    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+      textField.placeholder = @"index";
+    }];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Use bundled JS" style:UIAlertActionStyleDefault handler:^(__unused UIAlertAction *action) {
+      [self setDefaultJSBundle];
     }]];
-  }
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Use packager location" style:UIAlertActionStyleDefault handler:^(__unused UIAlertAction *action) {
+      NSArray * textfields = alertController.textFields;
+      UITextField * ipTextField = textfields[0];
+      UITextField * portTextField = textfields[1];
+      UITextField * bundleRootTextField = textfields[2];
+      NSString * bundleRoot = bundleRootTextField.text;
+      if(bundleRoot.length==0){
+        bundleRoot = @"index";
+      }
+      if(ipTextField.text.length == 0 && portTextField.text.length == 0) {
+        [self setDefaultJSBundle];
+        return;
+      }
+      NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+      formatter.numberStyle = NSNumberFormatterDecimalStyle;
+      NSNumber *portNumber = [formatter numberFromString:portTextField.text];
+      if (portNumber == nil) {
+        portNumber = [NSNumber numberWithInt: RCT_METRO_PORT];
+      }
+      [RCTBundleURLProvider sharedSettings].jsLocation = [NSString stringWithFormat:@"%@:%d",
+                                                          ipTextField.text, portNumber.intValue];
+      self->_bridge.bundleURL = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:bundleRoot fallbackResource:nil];
+      [self->_bridge reload];
+    }]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(__unused UIAlertAction *action) {
+      return;
+    }]];
+    [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
+  }]];
 
   [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
     return @"Toggle Inspector";
@@ -398,6 +448,7 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled:(BOOL)enabled)
 - (void)addItem:(NSString *)title handler:(dispatch_block_t)handler {}
 - (void)addItem:(RCTDevMenu *)item {}
 - (BOOL)isActionSheetShown { return NO; }
++ (NSString *)moduleName { return @""; }
 
 @end
 

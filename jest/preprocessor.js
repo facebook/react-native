@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -23,40 +23,41 @@ const babelRegisterOnly = require('metro-babel-register');
 const createCacheKeyFunction = require('fbjs-scripts/jest/createCacheKeyFunction');
 const generate = require('@babel/generator').default;
 
-const nodeFiles = RegExp(
+const nodeFiles = new RegExp(
   [
-    '/local-cli/',
-    '/metro(?:-[^/]*)?/', // metro, metro-core, metro-source-map, metro-etc
+    '/metro(?:-[^/]*)?/', // metro, metro-core, metro-source-map, metro-etc.
   ].join('|'),
 );
 const nodeOptions = babelRegisterOnly.config([nodeFiles]);
 
 babelRegisterOnly([]);
 
-/* $FlowFixMe(site=react_native_oss) */
-const transformer = require('metro/src/reactNativeTransformer');
+const transformer = require('metro-react-native-babel-transformer');
 module.exports = {
   process(src /*: string */, file /*: string */) {
     if (nodeFiles.test(file)) {
       // node specific transforms only
-      return babelTransformSync(
-        src,
-        Object.assign(
-          {filename: file},
-          {sourceType: 'script', ...nodeOptions, ast: false},
-        ),
-      ).code;
+      return babelTransformSync(src, {
+        filename: file,
+        sourceType: 'script',
+        ...nodeOptions,
+        ast: false,
+      }).code;
     }
 
     const {ast} = transformer.transform({
       filename: file,
-      localPath: file,
       options: {
         ast: true, // needed for open source (?) https://github.com/facebook/react-native/commit/f8d6b97140cffe8d18b2558f94570c8d1b410d5c#r28647044
         dev: true,
+        enableBabelRuntime: false,
+        experimentalImportSupport: false,
+        hot: false,
         inlineRequires: true,
+        minify: false,
         platform: '',
         projectRoot: '',
+        publicPath: '/assets',
         retainLines: true,
         sourceType: 'unambiguous', // b7 required. detects module vs script mode
       },
@@ -118,7 +119,7 @@ module.exports = {
 
   getCacheKey: createCacheKeyFunction([
     __filename,
-    require.resolve('metro/src/reactNativeTransformer'),
+    require.resolve('metro-react-native-babel-transformer'),
     require.resolve('@babel/core/package.json'),
   ]),
 };

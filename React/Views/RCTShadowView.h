@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -22,7 +22,7 @@ typedef void (^RCTApplierBlock)(NSDictionary<NSNumber *, UIView *> *viewRegistry
  * 1. A node is in one of three lifecycles: uninitialized, computed, dirtied.
  * 1. RCTBridge may call any of the padding/margin/width/height/top/left setters. A setter would dirty
  *    the node and all of its ancestors.
- * 2. At the end of each Bridge transaction, we call collectUpdatedFrames:widthConstraint:heightConstraint
+ * 2. At the end of each Bridge transaction, we call layoutWithMinimumSize:maximumSize:layoutDirection:layoutContext
  *    at the root node to recursively lay out the entire hierarchy.
  * 3. If a node is "computed" and the constraint passed from above is identical to the constraint used to
  *    perform the last computation, we skip laying out the subtree entirely.

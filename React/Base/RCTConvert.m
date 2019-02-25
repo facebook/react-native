@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -89,7 +89,14 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
 
     // Check if it has a scheme
     if ([path rangeOfString:@":"].location != NSNotFound) {
-      path = [path stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+      NSMutableCharacterSet *urlAllowedCharacterSet = [NSMutableCharacterSet new];
+      [urlAllowedCharacterSet formUnionWithCharacterSet:[NSCharacterSet URLUserAllowedCharacterSet]];
+      [urlAllowedCharacterSet formUnionWithCharacterSet:[NSCharacterSet URLPasswordAllowedCharacterSet]];
+      [urlAllowedCharacterSet formUnionWithCharacterSet:[NSCharacterSet URLHostAllowedCharacterSet]];
+      [urlAllowedCharacterSet formUnionWithCharacterSet:[NSCharacterSet URLPathAllowedCharacterSet]];
+      [urlAllowedCharacterSet formUnionWithCharacterSet:[NSCharacterSet URLQueryAllowedCharacterSet]];
+      [urlAllowedCharacterSet formUnionWithCharacterSet:[NSCharacterSet URLFragmentAllowedCharacterSet]];
+      path = [path stringByAddingPercentEncodingWithAllowedCharacters:urlAllowedCharacterSet];
       URL = [NSURL URLWithString:path];
       if (URL) {
         return URL;
@@ -348,6 +355,7 @@ RCT_ENUM_CONVERTER(UIKeyboardType, (@{
   @"decimal-pad": @(UIKeyboardTypeDecimalPad),
   @"twitter": @(UIKeyboardTypeTwitter),
   @"web-search": @(UIKeyboardTypeWebSearch),
+  @"ascii-capable-number-pad": @(UIKeyboardTypeASCIICapableNumberPad),
   // Added for Android compatibility
   @"numeric": @(UIKeyboardTypeDecimalPad),
 }), UIKeyboardTypeDefault, integerValue)
@@ -361,7 +369,22 @@ RCT_MULTI_ENUM_CONVERTER(UIDataDetectorTypes, (@{
   @"none": @(UIDataDetectorTypeNone),
   @"all": @(UIDataDetectorTypeAll),
 }), UIDataDetectorTypePhoneNumber, unsignedLongLongValue)
-#endif
+
+#if WEBKIT_IOS_10_APIS_AVAILABLE
+RCT_MULTI_ENUM_CONVERTER(WKDataDetectorTypes, (@{
+ @"phoneNumber": @(WKDataDetectorTypePhoneNumber),
+ @"link": @(WKDataDetectorTypeLink),
+ @"address": @(WKDataDetectorTypeAddress),
+ @"calendarEvent": @(WKDataDetectorTypeCalendarEvent),
+ @"trackingNumber": @(WKDataDetectorTypeTrackingNumber),
+ @"flightNumber": @(WKDataDetectorTypeFlightNumber),
+ @"lookupSuggestion": @(WKDataDetectorTypeLookupSuggestion),
+ @"none": @(WKDataDetectorTypeNone),
+ @"all": @(WKDataDetectorTypeAll),
+ }), WKDataDetectorTypePhoneNumber, unsignedLongLongValue)
+ #endif // WEBKIT_IOS_10_APIS_AVAILABLE
+
+ #endif // !TARGET_OS_TV
 
 RCT_ENUM_CONVERTER(UIKeyboardAppearance, (@{
   @"default": @(UIKeyboardAppearanceDefault),
@@ -407,6 +430,8 @@ RCT_ENUM_CONVERTER(UIViewContentMode, (@{
 RCT_ENUM_CONVERTER(UIBarStyle, (@{
   @"default": @(UIBarStyleDefault),
   @"black": @(UIBarStyleBlack),
+  @"blackOpaque": @(UIBarStyleBlackOpaque),
+  @"blackTranslucent": @(UIBarStyleBlackTranslucent),  
 }), UIBarStyleDefault, integerValue)
 #endif
 

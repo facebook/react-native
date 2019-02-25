@@ -1,6 +1,6 @@
 # Dockerfile Tests
 
-This is a high level overview of the test configuration using docker. It explains how to run the tests locally
+This is a high-level overview of the test configuration using Docker. It explains how to run the tests locally
 and how they integrate with the Jenkins Pipeline script to run the automated tests on ContainerShip <https://www.containership.io/>.
 
 ## Docker Installation
@@ -12,22 +12,22 @@ See <https://docs.docker.com/engine/installation/> for more information on how t
 
 We have added a number of default run scripts to the `package.json` file to simplify building and running your tests.
 
-`npm run test-android-setup` - Pulls down the base android docker image used for running the tests
+`npm run docker-setup-android` - Pulls down the base android docker image used for running the tests
 
-`npm run test-android-build` - Builds the docker image used to run the tests
+`npm run docker-build-android` - Builds the docker image used to run the tests
 
-`npm run test-android-run-unit` - Runs all the unit tests that have been built in the latest react/android docker image (note: you need to run test-android-build before executing this, if the image does not exist it will fail)
+`npm run test-android-run-unit` - Runs all the unit tests that have been built in the latest react/android docker image (note: you need to run test-android-build before executing this if the image does not exist it will fail)
 
-`npm run test-android-run-instrumentation` - Runs all the instrumentation tests that have been built in the latest react/android docker image (note: you need to run test-android-build before executing this, if the image does not exist it will fail). You can also pass additional flags to filter which tests instrumentation tests are run. Ex: `npm run test-android-run-instrumentation -- --filter=TestIdTestCase` to only run the TestIdTestCase instrumentation test. See below for more information
+`npm run test-android-run-instrumentation` - Runs all the instrumentation tests that have been built in the latest react/android docker image. If the image does not exist, run `test-android-build` before. You can also pass additional flags to filter which tests instrumentation tests are run. Ex: `npm run test-android-run-instrumentation -- --filter=TestIdTestCase` to only run the TestIdTestCase instrumentation test. See below for more information
 on the instrumentation test flags.
 
-`npm run test-android-run-e2e` - Runs all the end to end tests that have been built in the latest react/android docker image (note: you need to run test-android-build before executing this, if the image does not exist it will fail)
+`npm run test-android-run-e2e` - Runs all the end to end tests that have been built in the latest react/android docker image (note: you need to run test-android-build before executing this if the image does not exist it will fail)
 
-`npm run test-android-unit` - Builds and runs the android unit tests.
+`npm run test-android-unit` - Builds and runs the Android unit tests.
 
-`npm run test-android-instrumentation` - Builds and runs the android instrumentation tests.
+`npm run test-android-instrumentation` - Builds and runs the Android instrumentation tests.
 
-`npm run test-android-e2e` - Builds and runs the android end to end tests.
+`npm run test-android-e2e` - Builds and runs the Android end to end tests.
 
 ## Detailed Android Setup
 
@@ -35,7 +35,7 @@ There are two Dockerfiles for use with the Android codebase.
 
 The `Dockerfile.android-base` contains all the necessary prerequisites required to run the React Android tests. It is
 separated out into a separate Dockerfile because these are dependencies that rarely change and also because it is quite
-a beastly image since it contains all the Android dependencies for running android and the emulators (~9GB).
+a beastly image since it contains all the Android dependencies for running Android and the emulators (~9GB).
 
 The good news is you should rarely have to build or pull down the base image! All iterative code updates happen as
 part of the `Dockerfile.android` image build.
@@ -62,7 +62,7 @@ The following shell scripts have been provided for android testing:
 
 `ContainerShip/scripts/run-android-docker-unit-tests.sh` - Runs the standard android unit tests
 
-`ContainerShip/scripts/run-android-docker-instrumentation-tests.sh` - Runs the android instrumentation tests on the emulator. *Note* that these
+`ContainerShip/scripts/run-android-docker-instrumentation-tests.sh` - Runs the Android instrumentation tests on the emulator. *Note* that these
 tests take quite some time to run so there are various flags you can pass in order to filter which tests are run (see below)
 
 `ContainerShip/scripts/run-ci-e2e-tests.sh` - Runs the android end to end tests

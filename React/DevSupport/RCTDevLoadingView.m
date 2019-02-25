@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -72,7 +72,7 @@ RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgro
     self->_showDate = [NSDate date];
     if (!self->_window && !RCTRunningInTestEnvironment()) {
       CGSize screenSize = [UIScreen mainScreen].bounds.size;
-      
+
       if (@available(iOS 11.0, *)) {
         UIWindow *window = UIApplication.sharedApplication.keyWindow;
         self->_window = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, screenSize.width, window.safeAreaInsets.top + 30)];
@@ -90,7 +90,8 @@ RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgro
       // set a root VC so rotation is supported
       self->_window.rootViewController = [UIViewController new];
 
-      self->_label.font = [UIFont systemFontOfSize:12.0];
+      self->_label.font = [UIFont monospacedDigitSystemFontOfSize:12.0
+                                                           weight:UIFontWeightRegular];
       self->_label.textAlignment = NSTextAlignmentCenter;
     }
 
@@ -131,6 +132,10 @@ RCT_EXPORT_METHOD(hide)
   UIColor *backgroundColor;
   NSString *source;
   if (URL.fileURL) {
+    // If dev mode is not enabled, we don't want to show this kind of notification
+#if !RCT_DEV
+    return;
+#endif
     color = [UIColor grayColor];
     backgroundColor = [UIColor blackColor];
     source = @"pre-bundled file";

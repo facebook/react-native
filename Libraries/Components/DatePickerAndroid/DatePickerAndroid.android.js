@@ -1,21 +1,22 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
 
 const DatePickerModule = require('NativeModules').DatePickerAndroid;
+import type {Options, DatePickerOpenAction} from 'DatePickerAndroidTypes';
 
 /**
  * Convert a Date to a timestamp.
  */
-function _toMillis(options: Object, key: string) {
+function _toMillis(options: Options, key: string) {
   const dateVal = options[key];
   // Is it a Date object?
   if (typeof dateVal === 'object' && typeof dateVal.getMonth === 'function') {
@@ -65,12 +66,12 @@ class DatePickerAndroid {
    * Note the native date picker dialog has some UI glitches on Android 4 and lower
    * when using the `minDate` and `maxDate` options.
    */
-  static async open(options: Object): Promise<Object> {
+  static async open(options: ?Options): Promise<DatePickerOpenAction> {
     const optionsMs = options;
-    if (optionsMs) {
-      _toMillis(options, 'date');
-      _toMillis(options, 'minDate');
-      _toMillis(options, 'maxDate');
+    if (optionsMs != null) {
+      _toMillis(optionsMs, 'date');
+      _toMillis(optionsMs, 'minDate');
+      _toMillis(optionsMs, 'maxDate');
     }
     return DatePickerModule.open(options);
   }
@@ -78,15 +79,11 @@ class DatePickerAndroid {
   /**
    * A date has been selected.
    */
-  static get dateSetAction() {
-    return 'dateSetAction';
-  }
+  static +dateSetAction: 'dateSetAction' = 'dateSetAction';
   /**
    * The dialog has been dismissed.
    */
-  static get dismissedAction() {
-    return 'dismissedAction';
-  }
+  static +dismissedAction: 'dismissedAction' = 'dismissedAction';
 }
 
 module.exports = DatePickerAndroid;
