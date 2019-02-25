@@ -9,6 +9,9 @@ import android.content.Context;
 import android.support.v4.view.AccessibilityDelegateCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
+import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat.CollectionItemInfoCompat;
+import android.text.SpannableString;
+import android.text.style.URLSpan;
 import android.view.View;
 import com.facebook.react.R;
 import java.util.Locale;
@@ -98,7 +101,6 @@ public class AccessibilityDelegateUtil {
           public void onInitializeAccessibilityNodeInfo(
             View host, AccessibilityNodeInfoCompat info) {
             super.onInitializeAccessibilityNodeInfo(host, info);
-            setRole(info, accessibilityRole, view.getContext());
             if (!(accessibilityHint == null)) {
               String contentDescription=(String)info.getContentDescription();
               if (contentDescription != null) {
@@ -108,6 +110,8 @@ public class AccessibilityDelegateUtil {
                 info.setContentDescription(accessibilityHint);
               }
             }
+
+            setRole(info, accessibilityRole, view.getContext());
           }
         });
     }
@@ -127,6 +131,18 @@ public class AccessibilityDelegateUtil {
     if (Locale.getDefault().getLanguage().equals(new Locale("en").getLanguage())) {
       if (role.equals(AccessibilityRole.LINK)) {
         nodeInfo.setRoleDescription(context.getString(R.string.link_description));
+
+        if (nodeInfo.getContentDescription() != null) {
+          SpannableString spannable = new SpannableString(nodeInfo.getContentDescription());
+          spannable.setSpan(new URLSpan(""), 0, spannable.length(), 0);
+          nodeInfo.setContentDescription(spannable);
+        }
+
+        if (nodeInfo.getText() != null) {
+          SpannableString spannable = new SpannableString(nodeInfo.getText());
+          spannable.setSpan(new URLSpan(""), 0, spannable.length(), 0);
+          nodeInfo.setText(spannable);
+        }
       }
       if (role.equals(AccessibilityRole.SEARCH)) {
         nodeInfo.setRoleDescription(context.getString(R.string.search_description));
@@ -139,6 +155,12 @@ public class AccessibilityDelegateUtil {
       }
       if (role.equals(AccessibilityRole.ADJUSTABLE)) {
         nodeInfo.setRoleDescription(context.getString(R.string.adjustable_description));
+      }
+      if (role.equals(AccessibilityRole.HEADER)) {
+        nodeInfo.setRoleDescription(context.getString(R.string.header_description));
+        final AccessibilityNodeInfoCompat.CollectionItemInfoCompat itemInfo =
+          AccessibilityNodeInfoCompat.CollectionItemInfoCompat.obtain(0, 1, 0, 1, true);
+        nodeInfo.setCollectionItemInfo(itemInfo);
       }
     }
     if (role.equals(AccessibilityRole.IMAGEBUTTON)) {
