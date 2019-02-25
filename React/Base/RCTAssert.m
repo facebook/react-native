@@ -150,9 +150,9 @@ void RCTFatal(NSError *error)
   }
 }
 
-void RCTSetFatalHandler(RCTFatalHandler fatalhandler)
+void RCTSetFatalHandler(RCTFatalHandler fatalHandler)
 {
-  RCTCurrentFatalHandler = fatalhandler;
+  RCTCurrentFatalHandler = fatalHandler;
 }
 
 RCTFatalHandler RCTGetFatalHandler(void)
