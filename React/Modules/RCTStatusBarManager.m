@@ -108,11 +108,8 @@ RCT_EXPORT_METHOD(setStyle:(UIStatusBarStyle)statusBarStyle
     RCTLogError(@"RCTStatusBarManager module requires that the \
                 UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
   } else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [RCTSharedApplication() setStatusBarStyle:statusBarStyle
                                      animated:animated];
-#pragma clang diagnostic pop
   }
 }
 
@@ -123,11 +120,8 @@ RCT_EXPORT_METHOD(setHidden:(BOOL)hidden
     RCTLogError(@"RCTStatusBarManager module requires that the \
                 UIViewControllerBasedStatusBarAppearance key in the Info.plist is set to NO");
   } else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [RCTSharedApplication() setStatusBarHidden:hidden
                                  withAnimation:animation];
-#pragma clang diagnostic pop
   }
 }
 
