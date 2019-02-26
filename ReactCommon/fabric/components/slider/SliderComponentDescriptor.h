@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/components/slider/SliderMeasurementsManager.h>
 #include <react/components/slider/SliderShadowNode.h>
 #include <react/core/ConcreteComponentDescriptor.h>
 
@@ -23,11 +24,20 @@ class SliderComponentDescriptor final
       SharedEventDispatcher eventDispatcher,
       const SharedContextContainer &contextContainer)
       : ConcreteComponentDescriptor(eventDispatcher),
+  // TODO (39486757): implement image manager on Android, currently Android does
+  // not have an ImageManager so this will crash
+#ifndef ANDROID
         imageManager_(
             contextContainer
                 ? contextContainer->getInstance<SharedImageManager>(
                       "ImageManager")
-                : nullptr) {}
+                : nullptr),
+#else
+        imageManager_(nullptr),
+#endif
+        measurementsManager_(
+            std::make_shared<SliderMeasurementsManager>(contextContainer)) {
+  }
 
   void adopt(UnsharedShadowNode shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);
@@ -39,10 +49,19 @@ class SliderComponentDescriptor final
     // `SliderShadowNode` uses `ImageManager` to initiate image loading and
     // communicate the loading state and results to mounting layer.
     sliderShadowNode->setImageManager(imageManager_);
+
+    // `SliderShadowNode` uses `SliderMeasurementsManager` to
+    // provide measurements to Yoga.
+    sliderShadowNode->setSliderMeasurementsManager(measurementsManager_);
+
+    // All `SliderShadowNode`s must have leaf Yoga nodes with properly
+    // setup measure function.
+    sliderShadowNode->enableMeasurement();
   }
 
  private:
   const SharedImageManager imageManager_;
+  const std::shared_ptr<SliderMeasurementsManager> measurementsManager_;
 };
 
 } // namespace react

@@ -77,6 +77,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     sComponentNames.put("View", "RCTView");
     sComponentNames.put("Image", "RCTImageView");
     sComponentNames.put("ScrollView", "RCTScrollView");
+    sComponentNames.put("Slider", "RCTSlider");
     sComponentNames.put("ReactPerformanceLoggerFlag", "ReactPerformanceLoggerFlag");
     sComponentNames.put("Paragraph", "RCTText");
     sComponentNames.put("Text", "RCText");

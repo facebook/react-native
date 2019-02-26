@@ -96,6 +96,7 @@ public class ReactTextViewManager
     return MapBuilder.of("topTextLayout", MapBuilder.of("registrationName", "onTextLayout"));
   }
 
+  @Override
   public long measure(
       ReactContext context,
       ReadableMap localData,
