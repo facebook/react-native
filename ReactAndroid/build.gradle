@@ -294,7 +294,8 @@ android {
 
         buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
         buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
-        buildConfigField("int", "DEBUG_SERVER_HOST_PORT", debugHostPort("8081"))
+
+        resValue "integer", "REACT_NATIVE_DEV_SERVER_PORT", "8081"
 
         testApplicationId("com.facebook.react.tests.gradle")
         testInstrumentationRunner("androidx.test.runner.AndroidJUnitRunner")

@@ -8,6 +8,7 @@
 package com.facebook.react.devsupport;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
@@ -261,7 +262,7 @@ public class DevServerHelper {
 
       public boolean doSync() {
         try {
-          String attachToNuclideUrl = getInspectorAttachUrl(title);
+          String attachToNuclideUrl = getInspectorAttachUrl(context, title);
           OkHttpClient client = new OkHttpClient();
           Request request = new Request.Builder().url(attachToNuclideUrl).build();
           client.newCall(request).execute();
@@ -367,11 +368,16 @@ public class DevServerHelper {
         mPackageName);
   }
 
-  private String getInspectorAttachUrl(String title) {
+  private String getInspectorAttachUrl(Context context, String title) {
+
+    Resources resources = context.getResources();
+
+    Integer port = resources.getInteger(R.integer.REACT_NATIVE_DEV_SERVER_PORT);
+
     return String.format(
         Locale.US,
         "http://%s/nuclide/attach-debugger-nuclide?title=%s&app=%s&device=%s",
-        AndroidInfoHelpers.getServerHost(),
+        AndroidInfoHelpers.getServerHost(port),
         title,
         mPackageName,
         AndroidInfoHelpers.getFriendlyDeviceName());

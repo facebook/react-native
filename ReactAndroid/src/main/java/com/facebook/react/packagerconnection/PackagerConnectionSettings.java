@@ -11,11 +11,13 @@ import javax.annotation.Nullable;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.R;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
 
 public class PackagerConnectionSettings {
@@ -24,10 +26,15 @@ public class PackagerConnectionSettings {
 
   private final SharedPreferences mPreferences;
   private final String mPackageName;
+  private final Integer mServerPort;
 
   public PackagerConnectionSettings(Context applicationContext) {
     mPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
     mPackageName = applicationContext.getPackageName();
+
+    Resources resources = applicationContext.getResources();
+
+    mServerPort = resources.getInteger(R.integer.REACT_NATIVE_DEV_SERVER_PORT);
   }
 
   public String getDebugServerHost() {
@@ -39,12 +46,12 @@ public class PackagerConnectionSettings {
       return Assertions.assertNotNull(hostFromSettings);
     }
 
-    String host = AndroidInfoHelpers.getServerHost();
+    String host = AndroidInfoHelpers.getServerHost(mServerPort);
 
     if (host.equals(AndroidInfoHelpers.DEVICE_LOCALHOST)) {
       FLog.w(
         TAG,
-        "You seem to be running on device. Run '" + AndroidInfoHelpers.getAdbReverseTcpCommand() + "' " +
+        "You seem to be running on device. Run '" + AndroidInfoHelpers.getAdbReverseTcpCommand(mServerPort) + "' " +
           "to forward the debug server's port to the device.");
     }
 

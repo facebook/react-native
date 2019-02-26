@@ -37,12 +37,12 @@ public class AndroidInfoHelpers {
     return Build.FINGERPRINT.contains("generic");
   }
 
-  public static String getServerHost() {
-    return getServerIpAddress(DEBUG_SERVER_HOST_PORT);
+  public static String getServerHost(Integer port) {
+    return getServerIpAddress(port);
   }
 
-  public static String getAdbReverseTcpCommand() {
-    return "adb reverse tcp:" + DEBUG_SERVER_HOST_PORT + " tcp:" + DEBUG_SERVER_HOST_PORT;
+  public static String getAdbReverseTcpCommand(Integer port) {
+    return "adb reverse tcp:" + port + " tcp:" + port;
   }
 
   public static String getInspectorProxyHost() {
