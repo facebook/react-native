@@ -98,6 +98,7 @@ static UIColor *defaultPlaceholderColor()
   }
   self.typingAttributes = reactTextAttributes.effectiveTextAttributes;
   _reactTextAttributes = reactTextAttributes;
+  _placeholderView.font = self.font ?: defaultPlaceholderFont();
 }
 
 - (RCTTextAttributes *)reactTextAttributes
