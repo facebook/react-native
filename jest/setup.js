@@ -43,28 +43,6 @@ jest
   .mock('RefreshControl', () => jest.requireMock('RefreshControlMock'))
   .mock('ScrollView', () => jest.requireMock('ScrollViewMock'))
   .mock('ActivityIndicator', () => mockComponent('ActivityIndicator'))
-  .mock('ListView', () => jest.requireMock('ListViewMock'))
-  .mock('ListViewDataSource', () => {
-    const DataSource = jest.requireActual('ListViewDataSource');
-    DataSource.prototype.toJSON = function() {
-      function ListViewDataSource(dataBlob) {
-        this.items = 0;
-        // Ensure this doesn't throw.
-        try {
-          Object.keys(dataBlob).forEach(key => {
-            this.items +=
-              dataBlob[key] &&
-              (dataBlob[key].length || dataBlob[key].size || 0);
-          });
-        } catch (e) {
-          this.items = 'unknown';
-        }
-      }
-
-      return new ListViewDataSource(this._dataBlob);
-    };
-    return DataSource;
-  })
   .mock('AnimatedImplementation', () => {
     const AnimatedImplementation = jest.requireActual('AnimatedImplementation');
     const oldCreate = AnimatedImplementation.createAnimatedComponent;

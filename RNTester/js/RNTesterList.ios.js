@@ -59,21 +59,6 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
-    key: 'ListViewExample',
-    module: require('./ListViewExample'),
-    supportsTVOS: true,
-  },
-  {
-    key: 'ListViewGridLayoutExample',
-    module: require('./ListViewGridLayoutExample'),
-    supportsTVOS: true,
-  },
-  {
-    key: 'ListViewPagingExample',
-    module: require('./ListViewPagingExample'),
-    supportsTVOS: true,
-  },
-  {
     key: 'MaskedViewExample',
     module: require('./MaskedViewExample'),
     supportsTVOS: true,
@@ -146,11 +131,6 @@ const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'SwipeableFlatListExample',
     module: require('./SwipeableFlatListExample'),
-    supportsTVOS: false,
-  },
-  {
-    key: 'SwipeableListViewExample',
-    module: require('./SwipeableListViewExample'),
     supportsTVOS: false,
   },
   {

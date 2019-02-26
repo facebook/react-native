@@ -71,14 +71,6 @@ module.exports = {
   get KeyboardAvoidingView() {
     return require('KeyboardAvoidingView');
   },
-  get ListView() {
-    warnOnce(
-      'listview-deprecation',
-      'ListView is deprecated and will be removed in a future release. ' +
-        'See https://fb.me/nolistview for more information',
-    );
-    return require('ListView');
-  },
   get MaskedViewIOS() {
     warnOnce(
       'maskedviewios-moved',
@@ -135,14 +127,6 @@ module.exports = {
   },
   get SwipeableFlatList() {
     return require('SwipeableFlatList');
-  },
-  get SwipeableListView() {
-    warnOnce(
-      'swipablelistview-deprecation',
-      'ListView and SwipeableListView are deprecated and will be removed in a future release. ' +
-        'See https://fb.me/nolistview for more information',
-    );
-    return require('SwipeableListView');
   },
   get Text() {
     return require('Text');
@@ -374,3 +358,31 @@ module.exports = {
     return require('DeprecatedViewPropTypes');
   },
 };
+
+if (__DEV__) {
+  // $FlowFixMe This is intentional: Flow will error when attempting to access ListView.
+  Object.defineProperty(module.exports, 'ListView', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'ListView has been removed from React Native. ' +
+          'See https://fb.me/nolistview for more information or use ' +
+          '`deprecated-react-native-listview`.',
+      );
+    },
+  });
+
+  // $FlowFixMe This is intentional: Flow will error when attempting to access SwipeableListView.
+  Object.defineProperty(module.exports, 'SwipeableListView', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'SwipeableListView has been removed from React Native. ' +
+          'See https://fb.me/nolistview for more information or use ' +
+          '`deprecated-react-native-swipeable-listview`.',
+      );
+    },
+  });
+}

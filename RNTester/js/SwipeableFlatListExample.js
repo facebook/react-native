@@ -47,7 +47,7 @@ class SwipeableFlatListExample extends React.Component<RNTesterProps> {
   render() {
     return (
       <RNTesterPage
-        title={this.props.navigator ? null : '<SwipeableListView>'}
+        title={this.props.navigator ? null : '<SwipeableFlatList>'}
         noSpacer={true}
         noScroll={true}>
         <SwipeableFlatList
