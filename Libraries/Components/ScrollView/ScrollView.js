@@ -658,6 +658,18 @@ class ScrollView extends React.Component<Props, State> {
     this._headerLayoutYs = new Map();
   }
 
+  UNSAFE_componentWillReceiveProps(nextProps: Props) {
+    const currentContentInsetTop = this.props.contentInset
+      ? this.props.contentInset.top
+      : 0;
+    const nextContentInsetTop = nextProps.contentInset
+      ? nextProps.contentInset.top
+      : 0;
+    if (currentContentInsetTop !== nextContentInsetTop) {
+      this._scrollAnimatedValue.setOffset(nextContentInsetTop || 0);
+    }
+  }
+
   componentDidMount() {
     this._updateAnimatedNodeAttachment();
   }
