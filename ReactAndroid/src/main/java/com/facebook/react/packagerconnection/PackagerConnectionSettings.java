@@ -12,11 +12,11 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
+import javax.annotation.Nullable;
+
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
-
-import javax.annotation.Nullable;
 
 public class PackagerConnectionSettings {
   private static final String TAG = PackagerConnectionSettings.class.getSimpleName();

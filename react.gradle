@@ -13,7 +13,7 @@ def entryFile = config.entryFile ?: "index.android.js"
 def bundleCommand = config.bundleCommand ?: "bundle"
 def reactRoot = file(config.root ?: "../../")
 def inputExcludes = config.inputExcludes ?: ["android/**", "ios/**"]
-def bundleConfig = config.bundleConfig ? "${reactRoot}/${config.bundleConfig}" : null;
+def bundleConfig = config.bundleConfig ? "${reactRoot}/${config.bundleConfig}" : null ;
 
 def debugHostPort(String defaultValue) {
     def value = project.getProperties().get("debugHostPort")
@@ -29,7 +29,6 @@ android {
 afterEvaluate {
     def isAndroidLibrary = plugins.hasPlugin("com.android.library")
     def variants = isAndroidLibrary ? android.libraryVariants : android.applicationVariants
-
     variants.all { def variant ->
         // Create variant and target names
         def targetName = variant.name.capitalize()

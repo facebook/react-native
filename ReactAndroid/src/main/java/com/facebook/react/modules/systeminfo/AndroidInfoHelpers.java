@@ -8,7 +8,6 @@ package com.facebook.react.modules.systeminfo;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 import android.content.Context;
@@ -17,7 +16,6 @@ import android.os.Build;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.R;
-import com.facebook.react.common.build.ReactBuildConfig;
 
 public class AndroidInfoHelpers {
 
