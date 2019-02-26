@@ -48,7 +48,7 @@ function prefetch(url: string) {
 
 async function queryCache(
   urls: Array<string>,
-): Promise<{string: 'memory' | 'disk' | 'disk/memory'}> {
+): Promise<{[string]: 'memory' | 'disk' | 'disk/memory'}> {
   return await ImageViewManager.queryCache(urls);
 }
 
