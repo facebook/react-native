@@ -662,9 +662,7 @@ class ScrollView extends React.Component<Props, State> {
     const currentContentInset = this.props.contentInset || {};
     const nextContentInset = nextProps.contentInset || {};
     if (currentContentInset.top !== nextContentInset.top) {
-      this._scrollAnimatedValue.setOffset(
-        nextContentInset.top || 0,
-      );
+      this._scrollAnimatedValue.setOffset(nextContentInset.top || 0);
     }
   }
 
