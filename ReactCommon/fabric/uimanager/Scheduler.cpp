@@ -248,11 +248,11 @@ void Scheduler::uiManagerDidCreateShadowNode(
         dynamic_cast<const LayoutableShadowNode *>(shadowNode.get());
     auto isLayoutable = layoutableShadowNode != nullptr;
 
+    auto shadowView = ShadowView(*shadowNode);
     delegate_->schedulerDidRequestPreliminaryViewAllocation(
         shadowNode->getRootTag(),
-        shadowNode->getComponentName(),
         isLayoutable,
-        shadowNode->getComponentHandle());
+        shadowView);
   }
 }
 
