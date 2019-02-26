@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -97,7 +97,7 @@ public:
     RCTAssert(NO, @"RAM bundles are not supported in RCTObjcExecutor");
   }
 
-  void registerBundle(uint32_t bundleId, const std::string &bundlePath) override {
+  void registerBundle(uint32_t __unused bundleId, const std::string __unused &bundlePath) override {
     RCTAssert(NO, @"RAM bundles are not supported in RCTObjcExecutor");
   }
 

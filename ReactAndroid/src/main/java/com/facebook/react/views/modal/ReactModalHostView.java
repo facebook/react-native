@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,6 +7,7 @@
 
 package com.facebook.react.views.modal;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -15,6 +16,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStructure;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
@@ -28,6 +30,7 @@ import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.react.views.common.ContextUtils;
 import com.facebook.react.views.view.ReactViewGroup;
 import java.util.ArrayList;
 import javax.annotation.Nullable;
@@ -70,6 +73,12 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     ((ReactContext) context).addLifecycleEventListener(this);
 
     mHostView = new DialogRootViewGroup(context);
+  }
+
+  @TargetApi(23)
+  @Override
+  public void dispatchProvideStructure(ViewStructure structure) {
+    mHostView.dispatchProvideStructure(structure);
   }
 
   @Override
@@ -123,9 +132,11 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
 
   private void dismiss() {
     if (mDialog != null) {
-      Activity currentActivity = getCurrentActivity();
-      if (mDialog.isShowing() && (currentActivity == null || !currentActivity.isFinishing())) {
-        mDialog.dismiss();
+      if (mDialog.isShowing()) {
+        Activity dialogContext = ContextUtils.findContextOfType(mDialog.getContext(), Activity.class);
+        if (dialogContext == null || !dialogContext.isFinishing()) {
+          mDialog.dismiss();
+        }
       }
       mDialog = null;
 
@@ -213,6 +224,7 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     Activity currentActivity = getCurrentActivity();
     Context context = currentActivity == null ? getContext() : currentActivity;
     mDialog = new Dialog(context, theme);
+    mDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
 
     mDialog.setContentView(getContentView());
     updateProperties();
@@ -252,6 +264,12 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     }
     if (currentActivity != null && !currentActivity.isFinishing()) {
       mDialog.show();
+      if (context instanceof Activity){
+        mDialog.getWindow().getDecorView().setSystemUiVisibility(
+          ((Activity)context).getWindow().getDecorView().getSystemUiVisibility()
+        );
+      }
+      mDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
     }
   }
 
@@ -309,6 +327,9 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
    * UIManagerModule, and will then cause the children to layout as if they can fill the window.
    */
   static class DialogRootViewGroup extends ReactViewGroup implements RootView {
+    private boolean hasAdjustedSize = false;
+    private int viewWidth;
+    private int viewHeight;
 
     private final JSTouchDispatcher mJSTouchDispatcher = new JSTouchDispatcher(this);
 
@@ -319,7 +340,14 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     @Override
     protected void onSizeChanged(final int w, final int h, int oldw, int oldh) {
       super.onSizeChanged(w, h, oldw, oldh);
+      viewWidth = w;
+      viewHeight = h;
+      updateFirstChildView();
+    }
+
+    private void updateFirstChildView() {
       if (getChildCount() > 0) {
+        hasAdjustedSize = false;
         final int viewTag = getChildAt(0).getId();
         ReactContext reactContext = getReactContext();
         reactContext.runOnNativeModulesQueueThread(
@@ -327,9 +355,19 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
             @Override
             public void runGuarded() {
               (getReactContext()).getNativeModule(UIManagerModule.class)
-                .updateNodeSize(viewTag, w, h);
+                .updateNodeSize(viewTag, viewWidth, viewHeight);
             }
           });
+      } else {
+        hasAdjustedSize = true;
+      }
+    }
+
+    @Override
+    public void addView(View child, int index, LayoutParams params) {
+      super.addView(child, index, params);
+      if (hasAdjustedSize) {
+        updateFirstChildView();
       }
     }
 

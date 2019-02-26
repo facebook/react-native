@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,7 +18,6 @@ import com.facebook.react.bridge.queue.MessageQueueThread;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
 import java.lang.ref.WeakReference;
-import java.util.concurrent.CopyOnWriteArraySet;
 import javax.annotation.Nullable;
 
 /**
@@ -32,10 +31,35 @@ public class ReactContext extends ContextWrapper {
       "ReactContext#getJSModule should only happen once initialize() has been called on your " +
       "native module.";
 
-  private final CopyOnWriteArraySet<LifecycleEventListener> mLifecycleEventListeners =
-      new CopyOnWriteArraySet<>();
-  private final CopyOnWriteArraySet<ActivityEventListener> mActivityEventListeners =
-      new CopyOnWriteArraySet<>();
+  private final SynchronizedWeakHashSet<LifecycleEventListener> mLifecycleEventListeners =
+      new SynchronizedWeakHashSet<>();
+  private final SynchronizedWeakHashSet<ActivityEventListener> mActivityEventListeners =
+      new SynchronizedWeakHashSet<>();
+
+
+  private final GuardedIteration<LifecycleEventListener> mResumeIteration =
+    new GuardedIteration<LifecycleEventListener>() {
+      @Override
+      public void onIterate(LifecycleEventListener listener) {
+        listener.onHostResume();
+      }
+    };
+
+  private final GuardedIteration<LifecycleEventListener> mPauseIteration =
+    new GuardedIteration<LifecycleEventListener>() {
+      @Override
+      public void onIterate(LifecycleEventListener listener) {
+        listener.onHostPause();
+      }
+    };
+
+  private final GuardedIteration<LifecycleEventListener> mDestroyIteration =
+    new GuardedIteration<LifecycleEventListener>() {
+      @Override
+      public void onIterate(LifecycleEventListener listener) {
+        listener.onHostDestroy();
+      }
+    };
 
   private LifecycleState mLifecycleState = LifecycleState.BEFORE_CREATE;
 
@@ -68,6 +92,15 @@ public class ReactContext extends ContextWrapper {
     mUiMessageQueueThread = queueConfig.getUIQueueThread();
     mNativeModulesMessageQueueThread = queueConfig.getNativeModulesQueueThread();
     mJSMessageQueueThread = queueConfig.getJSQueueThread();
+  }
+
+  public void resetPerfStats() {
+    if (mNativeModulesMessageQueueThread != null) {
+      mNativeModulesMessageQueueThread.resetPerfStats();
+    }
+    if (mJSMessageQueueThread != null) {
+      mJSMessageQueueThread.resetPerfStats();
+    }
   }
 
   public void setNativeModuleCallExceptionHandler(
@@ -179,26 +212,19 @@ public class ReactContext extends ContextWrapper {
     mLifecycleState = LifecycleState.RESUMED;
     mCurrentActivity = new WeakReference(activity);
     ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_RESUME_START);
-    for (LifecycleEventListener listener : mLifecycleEventListeners) {
-      try {
-        listener.onHostResume();
-      } catch (RuntimeException e) {
-        handleException(e);
-      }
-    }
+    mLifecycleEventListeners.iterate(mResumeIteration);
     ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_RESUME_END);
   }
 
-  public void onNewIntent(@Nullable Activity activity, Intent intent) {
+  public void onNewIntent(@Nullable Activity activity, final Intent intent) {
     UiThreadUtil.assertOnUiThread();
     mCurrentActivity = new WeakReference(activity);
-    for (ActivityEventListener listener : mActivityEventListeners) {
-      try {
+    mActivityEventListeners.iterate(new GuardedIteration<ActivityEventListener>() {
+      @Override
+      public void onIterate(ActivityEventListener listener) {
         listener.onNewIntent(intent);
-      } catch (RuntimeException e) {
-        handleException(e);
       }
-    }
+    });
   }
 
   /**
@@ -207,13 +233,7 @@ public class ReactContext extends ContextWrapper {
   public void onHostPause() {
     mLifecycleState = LifecycleState.BEFORE_RESUME;
     ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_PAUSE_START);
-    for (LifecycleEventListener listener : mLifecycleEventListeners) {
-      try {
-        listener.onHostPause();
-      } catch (RuntimeException e) {
-        handleException(e);
-      }
-    }
+    mLifecycleEventListeners.iterate(mPauseIteration);
     ReactMarker.logMarker(ReactMarkerConstants.ON_HOST_PAUSE_END);
   }
 
@@ -223,13 +243,7 @@ public class ReactContext extends ContextWrapper {
   public void onHostDestroy() {
     UiThreadUtil.assertOnUiThread();
     mLifecycleState = LifecycleState.BEFORE_CREATE;
-    for (LifecycleEventListener listener : mLifecycleEventListeners) {
-      try {
-        listener.onHostDestroy();
-      } catch (RuntimeException e) {
-        handleException(e);
-      }
-    }
+    mLifecycleEventListeners.iterate(mDestroyIteration);
     mCurrentActivity = null;
   }
 
@@ -247,14 +261,13 @@ public class ReactContext extends ContextWrapper {
   /**
    * Should be called by the hosting Fragment in {@link Fragment#onActivityResult}
    */
-  public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-    for (ActivityEventListener listener : mActivityEventListeners) {
-      try {
+  public void onActivityResult(final Activity activity, final int requestCode, final int resultCode, final Intent data) {
+    mActivityEventListeners.iterate(new GuardedIteration<ActivityEventListener>() {
+      @Override
+      public void onIterate(ActivityEventListener listener) {
         listener.onActivityResult(activity, requestCode, resultCode, data);
-      } catch (RuntimeException e) {
-        handleException(e);
       }
-    }
+    });
   }
 
   public void assertOnUiQueueThread() {
@@ -348,5 +361,18 @@ public class ReactContext extends ContextWrapper {
    */
   public JavaScriptContextHolder getJavaScriptContextHolder() {
     return mCatalystInstance.getJavaScriptContextHolder();
+  }
+
+  private abstract class GuardedIteration<T> implements SynchronizedWeakHashSet.Iteration<T> {
+    @Override
+    public void iterate(T listener) {
+      try {
+        onIterate(listener);
+      } catch (RuntimeException e) {
+        handleException(e);
+      }
+    }
+
+    public abstract void onIterate(T listener);
   }
 }

@@ -1,16 +1,13 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 package com.facebook.react.uimanager;
 
-import static android.view.View.MeasureSpec.AT_MOST;
-import static android.view.View.MeasureSpec.EXACTLY;
-import static android.view.View.MeasureSpec.UNSPECIFIED;
-
 import android.os.SystemClock;
+import android.view.View;
 import android.view.View.MeasureSpec;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -24,12 +21,11 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.modules.i18nmanager.I18nUtil;
-import com.facebook.react.uimanager.common.MeasureSpecProvider;
-import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
+import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -39,7 +35,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 /**
- * An class that is used to receive React commands from JS and translate them into a
+ * A class that is used to receive React commands from JS and translate them into a
  * shadow node hierarchy that is then mapped to a native view hierarchy.
  */
 public class UIImplementation {
@@ -47,7 +43,6 @@ public class UIImplementation {
   protected final EventDispatcher mEventDispatcher;
   protected final ReactApplicationContext mReactContext;
   protected final ShadowNodeRegistry mShadowNodeRegistry = new ShadowNodeRegistry();
-  private final Set<Integer> mMeasuredRootNodes = new HashSet<>();
   private final ViewManagerRegistry mViewManagers;
   private final UIViewOperationQueue mOperationsQueue;
   private final NativeViewHierarchyOptimizer mNativeViewHierarchyOptimizer;
@@ -87,7 +82,7 @@ public class UIImplementation {
         minTimeLeftInFrameForNonBatchedOperationMs);
   }
 
-  private UIImplementation(
+  UIImplementation(
       ReactApplicationContext reactContext,
       ViewManagerRegistry viewManagers,
       EventDispatcher eventDispatcher,
@@ -162,48 +157,18 @@ public class UIImplementation {
    */
   public void updateRootView(
       ReactShadowNode rootCSSNode, int widthMeasureSpec, int heightMeasureSpec) {
-    int widthMode = MeasureSpec.getMode(widthMeasureSpec);
-    int widthSize = MeasureSpec.getSize(widthMeasureSpec);
-    switch (widthMode) {
-      case EXACTLY:
-        rootCSSNode.setStyleWidth(widthSize);
-        break;
-      case AT_MOST:
-        rootCSSNode.setStyleMaxWidth(widthSize);
-        break;
-      case UNSPECIFIED:
-        rootCSSNode.setStyleWidthAuto();
-        break;
-    }
-
-    int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-    int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-    switch (heightMode) {
-      case EXACTLY:
-        rootCSSNode.setStyleHeight(heightSize);
-        break;
-      case AT_MOST:
-        rootCSSNode.setStyleMaxHeight(heightSize);
-        break;
-      case UNSPECIFIED:
-        rootCSSNode.setStyleHeightAuto();
-        break;
-    }
+    rootCSSNode.setMeasureSpecs(widthMeasureSpec, heightMeasureSpec);
   }
 
   /**
    * Registers a root node with a given tag, size and ThemedReactContext and adds it to a node
    * registry.
    */
-  public <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> void registerRootView(
+  public <T extends View> void registerRootView(
       T rootView, int tag, ThemedReactContext context) {
     final ReactShadowNode rootCSSNode = createRootShadowNode();
     rootCSSNode.setReactTag(tag);
     rootCSSNode.setThemedContext(context);
-
-    int widthMeasureSpec = rootView.getWidthMeasureSpec();
-    int heightMeasureSpec = rootView.getHeightMeasureSpec();
-    updateRootView(rootCSSNode, widthMeasureSpec, heightMeasureSpec);
 
     context.runOnNativeModulesQueueThread(new Runnable() {
       @Override
@@ -213,7 +178,7 @@ public class UIImplementation {
     });
 
     // register it within NativeViewHierarchyManager
-    mOperationsQueue.addRootView(tag, rootView, context);
+    mOperationsQueue.addRootView(tag, rootView);
   }
 
   /**
@@ -685,7 +650,7 @@ public class UIImplementation {
         int tag = mShadowNodeRegistry.getRootTag(i);
         ReactShadowNode cssRoot = mShadowNodeRegistry.getNode(tag);
 
-        if (mMeasuredRootNodes.contains(tag)) {
+        if (cssRoot.getWidthMeasureSpec() != null && cssRoot.getHeightMeasureSpec() != null) {
           SystraceMessage.beginSection(
                   Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
                   "UIImplementation.notifyOnBeforeLayoutRecursive")
@@ -709,7 +674,7 @@ public class UIImplementation {
           }
 
           if (mLayoutUpdateListener != null) {
-            mLayoutUpdateListener.onLayoutUpdated(cssRoot);
+            mOperationsQueue.enqueueLayoutUpdateFinished(cssRoot, mLayoutUpdateListener);
           }
         }
       }
@@ -776,8 +741,14 @@ public class UIImplementation {
   }
 
   public void setJSResponder(int reactTag, boolean blockNativeResponder) {
-    assertViewExists(reactTag, "setJSResponder");
     ReactShadowNode node = mShadowNodeRegistry.getNode(reactTag);
+
+    if (node == null) {
+      //TODO: this should only happen when using Fabric renderer. This is a temporary approach
+      //and it will be refactored when fabric supports JS Responder.
+      return;
+    }
+
     while (node.isVirtual() || node.isLayoutOnly()) {
       node = node.getParent();
     }
@@ -840,7 +811,6 @@ public class UIImplementation {
   private void removeShadowNodeRecursive(ReactShadowNode nodeToRemove) {
     NativeViewHierarchyOptimizer.handleRemoveNode(nodeToRemove);
     mShadowNodeRegistry.removeNode(nodeToRemove.getReactTag());
-    mMeasuredRootNodes.remove(nodeToRemove.getReactTag());
     for (int i = nodeToRemove.getChildCount() - 1; i >= 0; i--) {
       removeShadowNodeRecursive(nodeToRemove.getChildAt(i));
     }
@@ -949,7 +919,15 @@ public class UIImplementation {
         .flush();
     long startTime = SystemClock.uptimeMillis();
     try {
-      cssRoot.calculateLayout();
+      int widthSpec = cssRoot.getWidthMeasureSpec();
+      int heightSpec = cssRoot.getHeightMeasureSpec();
+      cssRoot.calculateLayout(
+        MeasureSpec.getMode(widthSpec) == MeasureSpec.UNSPECIFIED
+          ? YogaConstants.UNDEFINED
+          : MeasureSpec.getSize(widthSpec),
+        MeasureSpec.getMode(heightSpec) == MeasureSpec.UNSPECIFIED
+          ? YogaConstants.UNDEFINED
+          : MeasureSpec.getSize(heightSpec));
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       mLastCalculateLayoutTime = SystemClock.uptimeMillis() - startTime;
@@ -1021,15 +999,6 @@ public class UIImplementation {
     }
 
     return rootTag;
-  }
-
-  /**
-   * Enables Layout calculation for a Root node that has been measured.
-   *
-   * @param rootViewTag {@link int} Tag of the root node
-   */
-  public void enableLayoutCalculationForRootNode(int rootViewTag) {
-    this.mMeasuredRootNodes.add(rootViewTag);
   }
 
   public void setLayoutUpdateListener(LayoutUpdateListener listener) {

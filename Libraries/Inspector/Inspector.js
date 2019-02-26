@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,11 +21,7 @@ const Touchable = require('Touchable');
 const UIManager = require('UIManager');
 const View = require('View');
 
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
-const emptyObject = require('fbjs/lib/emptyObject');
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 export type ReactRenderer = {
   getInspectorDataForViewTag: (viewTag: number) => Object,
@@ -51,14 +47,20 @@ function findRenderers(): $ReadOnlyArray<ReactRenderer> {
 function getInspectorDataForViewTag(touchedViewTag: number) {
   for (let i = 0; i < renderers.length; i++) {
     const renderer = renderers[i];
-    const inspectorData = renderer.getInspectorDataForViewTag(touchedViewTag);
-    if (inspectorData.hierarchy.length > 0) {
-      return inspectorData;
+    if (
+      Object.prototype.hasOwnProperty.call(
+        renderer,
+        'getInspectorDataForViewTag',
+      )
+    ) {
+      const inspectorData = renderer.getInspectorDataForViewTag(touchedViewTag);
+      if (inspectorData.hierarchy.length > 0) {
+        return inspectorData;
+      }
     }
   }
   throw new Error('Expected to find at least one React renderer.');
 }
-
 class Inspector extends React.Component<
   {
     inspectedViewTag: ?number,
@@ -116,9 +118,6 @@ class Inspector extends React.Component<
   attachToDevtools = (agent: Object) => {
     let _hideWait = null;
     const hlSub = agent.sub('highlight', ({node, name, props}) => {
-      /* $FlowFixMe(>=0.63.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.63 was deployed. To see the error delete this
-       * comment and run Flow. */
       clearTimeout(_hideWait);
 
       if (typeof node !== 'number') {
@@ -131,7 +130,7 @@ class Inspector extends React.Component<
           hierarchy: [],
           inspected: {
             frame: {left, top, width, height},
-            style: props ? props.style : emptyObject,
+            style: props ? props.style : {},
           },
         });
       });

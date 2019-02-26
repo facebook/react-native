@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -16,6 +16,16 @@
 #import <React/RCTRootView.h>
 #import <React/RCTUtils.h>
 
+@interface RCTImagePickerController : UIImagePickerController
+
+@property (nonatomic, assign) BOOL unmirrorFrontFacingCamera;
+
+@end
+
+@implementation RCTImagePickerController
+
+@end
+
 @interface RCTImagePickerManager () <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
 @end
@@ -30,6 +40,22 @@
 RCT_EXPORT_MODULE(ImagePickerIOS);
 
 @synthesize bridge = _bridge;
+
+- (id)init
+{
+  if (self = [super init]) {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(cameraChanged:)
+                                                 name:@"AVCaptureDeviceDidStartRunningNotification"
+                                               object:nil];
+  }
+  return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"AVCaptureDeviceDidStartRunningNotification" object:nil];
+}
 
 - (dispatch_queue_t)methodQueue
 {
@@ -56,9 +82,12 @@ RCT_EXPORT_METHOD(openCameraDialog:(NSDictionary *)config
     return;
   }
 
-  UIImagePickerController *imagePicker = [UIImagePickerController new];
+  RCTImagePickerController *imagePicker = [RCTImagePickerController new];
   imagePicker.delegate = self;
   imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+  NSArray<NSString *> *availableMediaTypes = [UIImagePickerController availableMediaTypesForSourceType:UIImagePickerControllerSourceTypeCamera];
+  imagePicker.mediaTypes = availableMediaTypes;
+  imagePicker.unmirrorFrontFacingCamera = [RCTConvert BOOL:config[@"unmirrorFrontFacingCamera"]];
 
   if ([RCTConvert BOOL:config[@"videoMode"]]) {
     imagePicker.cameraCaptureMode = UIImagePickerControllerCameraCaptureModeVideo;
@@ -123,7 +152,7 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
   // WARNING: Using ImageStoreManager may cause a memory leak because the
   // image isn't automatically removed from store once we're done using it.
   [_bridge.imageStoreManager storeImage:originalImage withBlock:^(NSString *tempImageTag) {
-    [self _dismissPicker:picker args:tempImageTag ? @[tempImageTag, height, width] : nil];
+    [self _dismissPicker:picker args:tempImageTag ? @[tempImageTag, RCTNullIfNil(height), RCTNullIfNil(width)] : nil];
   }];
 }
 
@@ -153,6 +182,11 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
 - (void)_dismissPicker:(UIImagePickerController *)picker args:(NSArray *)args
 {
   NSUInteger index = [_pickers indexOfObject:picker];
+  if (index == NSNotFound) {
+    // This happens if the user selects multiple items in succession.
+    return;
+  }
+
   RCTResponseSenderBlock successCallback = _pickerCallbacks[index];
   RCTResponseSenderBlock cancelCallback = _pickerCancelCallbacks[index];
 
@@ -167,6 +201,19 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
     successCallback(args);
   } else {
     cancelCallback(@[]);
+  }
+}
+
+- (void)cameraChanged:(NSNotification *)notification
+{
+  for (UIImagePickerController *picker in _pickers) {
+    if ([picker isKindOfClass:[RCTImagePickerController class]]
+      && ((RCTImagePickerController *)picker).unmirrorFrontFacingCamera
+      && picker.cameraDevice == UIImagePickerControllerCameraDeviceFront) {
+      picker.cameraViewTransform = CGAffineTransformScale(CGAffineTransformIdentity, -1, 1);
+    } else {
+      picker.cameraViewTransform = CGAffineTransformIdentity;
+    }
   }
 }
 

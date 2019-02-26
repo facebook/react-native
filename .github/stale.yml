@@ -2,14 +2,16 @@
 # Number of days of inactivity before an issue becomes stale
 daysUntilStale: 90
 # Number of days of inactivity before a stale issue is closed
-daysUntilClose: 30
+daysUntilClose: 7
 # Issues with these labels will never be considered stale
 exemptLabels:
   - Good first issue
-  - For Discussion
+  - "Type: Discussion"
+  - Partner
   - Core Team
   - "Help Wanted :octocat:"
-  - ":warning:Regression"
+  - "Impact: Regression"
+  - "Resolution: PR Submitted"
 # Label to use when marking an issue as stale
 staleLabel: Stale 
 # Comment to post when marking an issue as stale. Set to `false` to disable

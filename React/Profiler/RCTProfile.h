@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -167,9 +167,9 @@ RCT_EXTERN void RCTProfileSendResult(RCTBridge *bridge, NSString *route, NSData 
 
 typedef struct {
   const char *key;
-  int key_len;
+  unsigned long key_len;
   const char *value;
-  int value_len;
+  unsigned long value_len;
 } systrace_arg_t;
 
 typedef struct {

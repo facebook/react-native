@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -68,17 +68,6 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
    */
   boolean isYogaLeafNode();
 
-  /**
-   * @return a mutable copy of the {@link ReactShadowNode}
-   */
-  T mutableCopy();
-
-  T mutableCopyWithNewProps(@Nullable ReactStylesDiffMap newProps);
-
-  T mutableCopyWithNewChildren();
-
-  T mutableCopyWithNewChildrenAndProps(@Nullable ReactStylesDiffMap newProps);
-
   String getViewClass();
 
   boolean hasUpdates();
@@ -104,8 +93,6 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   int indexOf(T child);
 
   void removeAndDisposeAllChildren();
-
-  @Nullable ReactStylesDiffMap getNewProps();
 
   /**
    * This method will be called by {@link UIManagerModule} once per batch, before calculating
@@ -160,6 +147,8 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   boolean shouldNotifyOnLayout();
 
   void calculateLayout();
+
+  void calculateLayout(float width, float height);
 
   boolean hasNewLayout();
 
@@ -360,17 +349,9 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
 
   void dispose();
 
-  /**
-   * @return an immutable {@link List<ReactShadowNode>} containing the children of this
-   * {@link ReactShadowNode}.
-   */
-  List<ReactShadowNode> getChildrenList();
+  void setMeasureSpecs(int widthMeasureSpec, int heightMeasureSpec);
 
-  /**
-   * @return the {@link ReactShadowNode} that was used during the cloning mechanism to create
-   * this {@link ReactShadowNode} or null if this object was not created using a clone operation.
-   */
-  @Nullable ReactShadowNode getOriginalReactShadowNode();
+  Integer getWidthMeasureSpec();
 
-  void setOriginalReactShadowNode(@Nullable ReactShadowNode node);
+  Integer getHeightMeasureSpec();
 }

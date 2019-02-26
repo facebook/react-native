@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -63,6 +63,31 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
       view.setFocusableInTouchMode(true);
       view.requestFocus();
     }
+  }
+
+  @ReactProp(name = "nextFocusDown", defaultInt = View.NO_ID)
+  public void nextFocusDown(ReactViewGroup view, int viewId) {
+    view.setNextFocusDownId(viewId);
+  }
+
+  @ReactProp(name = "nextFocusForward", defaultInt = View.NO_ID)
+  public void nextFocusForward(ReactViewGroup view, int viewId) {
+    view.setNextFocusForwardId(viewId);
+  }
+
+  @ReactProp(name = "nextFocusLeft", defaultInt = View.NO_ID)
+  public void nextFocusLeft(ReactViewGroup view, int viewId) {
+    view.setNextFocusLeftId(viewId);
+  }
+
+  @ReactProp(name = "nextFocusRight", defaultInt = View.NO_ID)
+  public void nextFocusRight(ReactViewGroup view, int viewId) {
+    view.setNextFocusRightId(viewId);
+  }
+
+  @ReactProp(name = "nextFocusUp", defaultInt = View.NO_ID)
+  public void nextFocusUp(ReactViewGroup view, int viewId) {
+    view.setNextFocusUpId(viewId);
   }
 
   @ReactPropGroup(names = {
@@ -203,6 +228,22 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     view.setOverflow(overflow);
   }
 
+  @ReactProp(name = "backfaceVisibility")
+  public void setBackfaceVisibility(ReactViewGroup view, String backfaceVisibility) {
+    view.setBackfaceVisibility(backfaceVisibility);
+  }
+
+  @Override
+  public void setOpacity(ReactViewGroup view, float opacity) {
+    view.setOpacityIfPossible(opacity);
+  }
+
+  @Override
+  public void setTransform(ReactViewGroup view, ReadableArray matrix) {
+    super.setTransform(view, matrix);
+    view.setBackfaceVisibilityDependantOpacity();
+  }
+
   @Override
   public String getName() {
     return REACT_CLASS;
@@ -226,7 +267,7 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
           throw new JSApplicationIllegalArgumentException(
               "Illegal number of arguments for 'updateHotspot' command");
         }
-        if (Build.VERSION.SDK_INT >= 21) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
           float x = PixelUtil.toPixelFromDIP(args.getDouble(0));
           float y = PixelUtil.toPixelFromDIP(args.getDouble(1));
           root.drawableHotspotChanged(x, y);

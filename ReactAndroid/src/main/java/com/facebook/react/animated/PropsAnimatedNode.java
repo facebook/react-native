@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,9 +11,8 @@ import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
-import com.facebook.react.uimanager.ReactStylesDiffMap;
-import com.facebook.react.uimanager.UIImplementation;
 
+import com.facebook.react.bridge.UIManager;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,14 +27,11 @@ import javax.annotation.Nullable;
 
   private int mConnectedViewTag = -1;
   private final NativeAnimatedNodesManager mNativeAnimatedNodesManager;
-  private final UIImplementation mUIImplementation;
+  private final UIManager mUIManager;
   private final Map<String, Integer> mPropNodeMapping;
-  // This is the backing map for `mDiffMap` we can mutate this to update it instead of having to
-  // create a new one for each update.
   private final JavaOnlyMap mPropMap;
-  private final ReactStylesDiffMap mDiffMap;
 
-  PropsAnimatedNode(ReadableMap config, NativeAnimatedNodesManager nativeAnimatedNodesManager, UIImplementation uiImplementation) {
+  PropsAnimatedNode(ReadableMap config, NativeAnimatedNodesManager nativeAnimatedNodesManager, UIManager uiManager) {
     ReadableMap props = config.getMap("props");
     ReadableMapKeySetIterator iter = props.keySetIterator();
     mPropNodeMapping = new HashMap<>();
@@ -45,9 +41,8 @@ import javax.annotation.Nullable;
       mPropNodeMapping.put(propKey, nodeIndex);
     }
     mPropMap = new JavaOnlyMap();
-    mDiffMap = new ReactStylesDiffMap(mPropMap);
     mNativeAnimatedNodesManager = nativeAnimatedNodesManager;
-    mUIImplementation = uiImplementation;
+    mUIManager = uiManager;
   }
 
   public void connectToView(int viewTag) {
@@ -73,9 +68,9 @@ import javax.annotation.Nullable;
       mPropMap.putNull(it.nextKey());
     }
 
-    mUIImplementation.synchronouslyUpdateViewOnUIThread(
+    mUIManager.synchronouslyUpdateViewOnUIThread(
       mConnectedViewTag,
-      mDiffMap);
+      mPropMap);
   }
 
   public final void updateView() {
@@ -96,8 +91,8 @@ import javax.annotation.Nullable;
       }
     }
 
-    mUIImplementation.synchronouslyUpdateViewOnUIThread(
+    mUIManager.synchronouslyUpdateViewOnUIThread(
       mConnectedViewTag,
-      mDiffMap);
+      mPropMap);
   }
 }

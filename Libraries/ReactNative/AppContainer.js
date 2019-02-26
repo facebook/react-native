@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -126,5 +126,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
+
+if (__DEV__) {
+  if (!global.__RCTProfileIsProfiling) {
+    const YellowBox = require('YellowBox');
+    YellowBox.install();
+  }
+}
 
 module.exports = AppContainer;

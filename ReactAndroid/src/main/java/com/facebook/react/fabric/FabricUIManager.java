@@ -1,478 +1,468 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) 2014-present, Facebook, Inc.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.fabric;
 
-import static android.view.View.MeasureSpec.AT_MOST;
-import static android.view.View.MeasureSpec.EXACTLY;
-import static android.view.View.MeasureSpec.UNSPECIFIED;
+import static com.facebook.infer.annotation.ThreadConfined.UI;
+import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getMaxSize;
+import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getMinSize;
+import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getYogaMeasureMode;
+import static com.facebook.react.fabric.mounting.LayoutMetricsConversions.getYogaSize;
+import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 
-import android.util.Log;
+import android.annotation.SuppressLint;
+import android.os.SystemClock;
+import android.support.annotation.GuardedBy;
+import android.support.annotation.Nullable;
+import android.support.annotation.UiThread;
 import android.view.View;
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.GuardedRunnable;
+import com.facebook.infer.annotation.ThreadConfined;
+import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.bridge.LifecycleEventListener;
+import com.facebook.react.bridge.NativeMap;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.UIManager;
+import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
-import com.facebook.react.common.annotations.VisibleForTesting;
-import com.facebook.react.modules.i18nmanager.I18nUtil;
-import com.facebook.react.uimanager.DisplayMetricsHolder;
-import com.facebook.react.uimanager.NativeViewHierarchyManager;
+import com.facebook.react.fabric.jsi.Binding;
+import com.facebook.react.fabric.jsi.EventBeatManager;
+import com.facebook.react.fabric.jsi.EventEmitterWrapper;
+import com.facebook.react.fabric.jsi.FabricSoLoader;
+import com.facebook.react.fabric.mounting.MountingManager;
+import com.facebook.react.fabric.mounting.mountitems.BatchMountItem;
+import com.facebook.react.fabric.mounting.mountitems.CreateMountItem;
+import com.facebook.react.fabric.mounting.mountitems.DeleteMountItem;
+import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
+import com.facebook.react.fabric.mounting.mountitems.InsertMountItem;
+import com.facebook.react.fabric.mounting.mountitems.MountItem;
+import com.facebook.react.fabric.mounting.mountitems.PreAllocateViewMountItem;
+import com.facebook.react.fabric.mounting.mountitems.RemoveMountItem;
+import com.facebook.react.fabric.mounting.mountitems.UpdateEventEmitterMountItem;
+import com.facebook.react.fabric.mounting.mountitems.UpdateLayoutMountItem;
+import com.facebook.react.fabric.mounting.mountitems.UpdateLocalDataMountItem;
+import com.facebook.react.fabric.mounting.mountitems.UpdatePropsMountItem;
+import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.ReactRootViewTagGenerator;
-import com.facebook.react.uimanager.ReactShadowNode;
-import com.facebook.react.uimanager.ReactShadowNodeImpl;
-import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ThemedReactContext;
-import com.facebook.react.uimanager.UIViewOperationQueue;
-import com.facebook.react.uimanager.ViewManager;
+import com.facebook.react.uimanager.ViewManagerPropertyUpdater;
 import com.facebook.react.uimanager.ViewManagerRegistry;
-import com.facebook.react.uimanager.common.MeasureSpecProvider;
-import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
-import com.facebook.yoga.YogaDirection;
+import com.facebook.react.uimanager.events.EventDispatcher;
+import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-import javax.annotation.Nullable;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * This class is responsible to create, clone and update {@link ReactShadowNode} using the Fabric
- * API.
- */
-@SuppressWarnings("unused") // used from JNI
-public class FabricUIManager implements UIManager {
+@SuppressLint("MissingNativeLoadLibrary")
+public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   private static final String TAG = FabricUIManager.class.getSimpleName();
-  private static final boolean DEBUG = true;
 
-  private final RootShadowNodeRegistry mRootShadowNodeRegistry = new RootShadowNodeRegistry();
+  private static final Map<String, String> sComponentNames = new HashMap<>();
+
+  static {
+    FabricSoLoader.staticInit();
+
+    // TODO T31905686: unify component names between JS - Android - iOS - C++
+    sComponentNames.put("View", "RCTView");
+    sComponentNames.put("Image", "RCTImageView");
+    sComponentNames.put("ScrollView", "RCTScrollView");
+    sComponentNames.put("ReactPerformanceLoggerFlag", "ReactPerformanceLoggerFlag");
+    sComponentNames.put("Paragraph", "RCTText");
+    sComponentNames.put("Text", "RCText");
+    sComponentNames.put("RawText", "RCTRawText");
+    sComponentNames.put("ActivityIndicatorView", "AndroidProgressBar");
+    sComponentNames.put("ShimmeringView", "RKShimmeringView");
+    sComponentNames.put("TemplateView", "RCTTemplateView");
+  }
+
+  private Binding mBinding;
   private final ReactApplicationContext mReactApplicationContext;
-  private final ViewManagerRegistry mViewManagerRegistry;
-  private final UIViewOperationQueue mUIViewOperationQueue;
-  private volatile int mCurrentBatch = 0;
-  private FabricReconciler mFabricReconciler;
+  private final MountingManager mMountingManager;
+  private final EventDispatcher mEventDispatcher;
+  private final ConcurrentHashMap<Integer, ThemedReactContext> mReactContextForRootTag =
+      new ConcurrentHashMap<>();
+  private final EventBeatManager mEventBeatManager;
+  private final Object mMountItemsLock = new Object();
+  private final Object mPreMountItemsLock = new Object();
+
+  @GuardedBy("mMountItemsLock")
+  private List<MountItem> mMountItems = new ArrayList<>();
+
+  @GuardedBy("mPreMountItemsLock")
+  private List<MountItem> mPreMountItems = new ArrayList<>();
+
+  @ThreadConfined(UI)
+  private final DispatchUIFrameCallback mDispatchUIFrameCallback;
+
+  @ThreadConfined(UI)
+  private boolean mIsMountingEnabled = true;
+  private long mRunStartTime = 0l;
+  private long mBatchedExecutionTime = 0l;
+  private long mNonBatchedExecutionTime = 0l;
+  private long mDispatchViewUpdatesTime = 0l;
+  private long mCommitStartTime = 0l;
+  private long mLayoutTime = 0l;
+  private long mFinishTransactionTime = 0l;
+  private long mFinishTransactionCPPTime = 0l;
 
   public FabricUIManager(
-      ReactApplicationContext reactContext, ViewManagerRegistry viewManagerRegistry) {
-    DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(reactContext);
+      ReactApplicationContext reactContext,
+      ViewManagerRegistry viewManagerRegistry,
+      EventDispatcher eventDispatcher,
+      EventBeatManager eventBeatManager) {
+    mDispatchUIFrameCallback = new DispatchUIFrameCallback(reactContext);
     mReactApplicationContext = reactContext;
-    mViewManagerRegistry = viewManagerRegistry;
-    mUIViewOperationQueue =
-        new UIViewOperationQueue(
-            reactContext, new NativeViewHierarchyManager(viewManagerRegistry), 0);
-    mFabricReconciler = new FabricReconciler(mUIViewOperationQueue);
-  }
-
-  public void registerEventHandler(long eventHandlerPointer) {
-    // TODO: Release this event handler at some point.
-  }
-
-  /** Creates a new {@link ReactShadowNode} */
-  @Nullable
-  public ReactShadowNode createNode(
-      int reactTag, String viewName, int rootTag, ReadableNativeMap props, long instanceHandle) {
-    if (DEBUG) {
-      Log.d(TAG, "createNode \n\ttag: " + reactTag +
-          "\n\tviewName: " + viewName +
-          "\n\trootTag: " + rootTag +
-          "\n\tprops: " + props);
-    }
-    try {
-      ViewManager viewManager = mViewManagerRegistry.get(viewName);
-      ReactShadowNode node = viewManager.createShadowNodeInstance(mReactApplicationContext);
-      ReactShadowNode rootNode = getRootNode(rootTag);
-      node.setRootTag(rootNode.getReactTag());
-      node.setViewClassName(viewName);
-      node.setReactTag(reactTag);
-      node.setThemedContext(rootNode.getThemedContext());
-
-      ReactStylesDiffMap styles = updateProps(node, props);
-
-      if (!node.isVirtual()) {
-        mUIViewOperationQueue.enqueueCreateView(
-            rootNode.getThemedContext(), reactTag, viewName, styles);
-      }
-      return node;
-    } catch (Throwable t) {
-      handleException(getRootNode(rootTag), t);
-      return null;
-    }
-  }
-
-  @VisibleForTesting
-  ReactShadowNode getRootNode(int rootTag) {
-    return mRootShadowNodeRegistry.getNode(rootTag);
-  }
-
-  private ReactStylesDiffMap updateProps(ReactShadowNode node, @Nullable ReadableNativeMap props) {
-    ReactStylesDiffMap styles = null;
-    if (props != null) {
-      styles = new ReactStylesDiffMap(props);
-      node.updateProperties(styles);
-    }
-    return styles;
-  }
-
-  /**
-   * @return a clone of the {@link ReactShadowNode} received by parameter. The cloned
-   *     ReactShadowNode will contain a copy of all the internal data of the original node,
-   *     including its children set (note that the children nodes will not be cloned).
-   */
-  @Nullable
-  public ReactShadowNode cloneNode(ReactShadowNode node, long instanceHandle) {
-    if (DEBUG) {
-      Log.d(TAG, "cloneNode \n\tnode: " + node);
-    }
-    try {
-      // TODO: Pass new instanceHandle
-      ReactShadowNode clone = node.mutableCopy();
-      assertReactShadowNodeCopy(node, clone);
-      return clone;
-    } catch (Throwable t) {
-      handleException(node, t);
-      return null;
-    }
-  }
-
-  /**
-   * @return a clone of the {@link ReactShadowNode} received by parameter. The cloned
-   *     ReactShadowNode will contain a copy of all the internal data of the original node, but its
-   *     children set will be empty.
-   */
-  @Nullable
-  public ReactShadowNode cloneNodeWithNewChildren(ReactShadowNode node, long instanceHandle) {
-    if (DEBUG) {
-      Log.d(TAG, "cloneNodeWithNewChildren \n\tnode: " + node);
-    }
-    try {
-      // TODO: Pass new instanceHandle
-      ReactShadowNode clone = node.mutableCopyWithNewChildren();
-      assertReactShadowNodeCopy(node, clone);
-      return clone;
-    } catch (Throwable t) {
-      handleException(node, t);
-      return null;
-    }
-  }
-
-  /**
-   * @return a clone of the {@link ReactShadowNode} received by parameter. The cloned
-   *     ReactShadowNode will contain a copy of all the internal data of the original node, but its
-   *     props will be overridden with the {@link ReadableMap} received by parameter.
-   */
-  @Nullable
-  public ReactShadowNode cloneNodeWithNewProps(
-      ReactShadowNode node, @Nullable ReadableNativeMap newProps, long instanceHandle) {
-    if (DEBUG) {
-      Log.d(TAG, "cloneNodeWithNewProps \n\tnode: " + node + "\n\tprops: " + newProps);
-    }
-    try {
-      // TODO: Pass new instanceHandle
-      ReactShadowNode clone =
-          node.mutableCopyWithNewProps(newProps == null ? null : new ReactStylesDiffMap(newProps));
-      assertReactShadowNodeCopy(node, clone);
-      return clone;
-    } catch (Throwable t) {
-      handleException(node, t);
-      return null;
-    }
-  }
-
-  /**
-   * @return a clone of the {@link ReactShadowNode} received by parameter. The cloned
-   *     ReactShadowNode will contain a copy of all the internal data of the original node, but its
-   *     props will be overridden with the {@link ReadableMap} received by parameter and its
-   *     children set will be empty.
-   */
-  @Nullable
-  public ReactShadowNode cloneNodeWithNewChildrenAndProps(
-      ReactShadowNode node, ReadableNativeMap newProps, long instanceHandle) {
-    if (DEBUG) {
-      Log.d(TAG, "cloneNodeWithNewChildrenAndProps \n\tnode: " + node + "\n\tnewProps: " + newProps);
-    }
-    try {
-      // TODO: Pass new instanceHandle
-      ReactShadowNode clone =
-          node.mutableCopyWithNewChildrenAndProps(
-              newProps == null ? null : new ReactStylesDiffMap(newProps));
-      assertReactShadowNodeCopy(node, clone);
-      return clone;
-    } catch (Throwable t) {
-      handleException(node, t);
-      return null;
-    }
-  }
-
-  private void assertReactShadowNodeCopy(ReactShadowNode source, ReactShadowNode target) {
-    Assertions.assertCondition(
-        source.getClass().equals(target.getClass()),
-        "Found "
-            + target.getClass()
-            + " class when expecting: "
-            + source.getClass()
-            + ". Check that "
-            + source.getClass()
-            + " implements the copy() method correctly.");
-  }
-
-  /**
-   * Appends the child {@link ReactShadowNode} to the children set of the parent {@link
-   * ReactShadowNode}.
-   */
-  @Nullable
-  public void appendChild(ReactShadowNode parent, ReactShadowNode child) {
-    if (DEBUG) {
-      Log.d(TAG, "appendChild \n\tparent: " + parent + "\n\tchild: " + child);
-    }
-    try {
-      // If the child to append is shared with another tree (child.getParent() != null),
-      // then we add a mutation of it. In the future this will be performed by FabricJS / Fiber.
-      //TODO: T27926878 avoid cloning shared child
-      if (child.getParent() != null) {
-        child = child.mutableCopy();
-      }
-      parent.addChildAt(child, parent.getChildCount());
-    } catch (Throwable t) {
-      handleException(parent, t);
-    }
-  }
-
-  /**
-   * @return an empty {@link List<ReactShadowNode>} that will be used to append the {@link
-   *     ReactShadowNode} elements of the root. Typically this List will contain one element.
-   */
-  public List<ReactShadowNode> createChildSet(int rootTag) {
-    if (DEBUG) {
-      Log.d(TAG, "createChildSet rootTag: " + rootTag);
-    }
-    return new ArrayList<>(1);
-  }
-
-  /**
-   * Adds the {@link ReactShadowNode} to the {@link List<ReactShadowNode>} received by parameter.
-   */
-  public void appendChildToSet(List<ReactShadowNode> childList, ReactShadowNode child) {
-    childList.add(child);
-  }
-
-  public synchronized void completeRoot(int rootTag, @Nullable List<ReactShadowNode> childList) {
-    try {
-      childList = childList == null ? new LinkedList<ReactShadowNode>() : childList;
-      if (DEBUG) {
-        Log.d(TAG, "completeRoot rootTag: " + rootTag + ", childList: " + childList);
-      }
-      ReactShadowNode currentRootShadowNode = getRootNode(rootTag);
-      Assertions.assertNotNull(
-          currentRootShadowNode,
-          "Root view with tag " + rootTag + " must be added before completeRoot is called");
-
-      currentRootShadowNode = calculateDiffingAndCreateNewRootNode(currentRootShadowNode, childList);
-
-      if (DEBUG) {
-        Log.d(
-          TAG,
-          "ReactShadowNodeHierarchy after diffing: " + currentRootShadowNode.getHierarchyInfo());
-      }
-
-      applyUpdatesRecursive(currentRootShadowNode, 0, 0);
-      mUIViewOperationQueue.dispatchViewUpdates(
-        mCurrentBatch++, System.currentTimeMillis(), System.currentTimeMillis());
-
-      mRootShadowNodeRegistry.replaceNode(currentRootShadowNode);
-    } catch (Exception e) {
-      handleException(getRootNode(rootTag), e);
-    }
-  }
-
-  public void dispatchCommand(int reactTag, int commandId, @Nullable ReadableArray commandArgs) {
-    mUIViewOperationQueue.enqueueDispatchCommand(reactTag, commandId, commandArgs);
-  }
-
-  private void notifyOnBeforeLayoutRecursive(ReactShadowNode node) {
-    if (!node.hasUpdates()) {
-      return;
-    }
-    for (int i = 0; i < node.getChildCount(); i++) {
-      notifyOnBeforeLayoutRecursive(node.getChildAt(i));
-    }
-    node.onBeforeLayout();
-  }
-
-  private ReactShadowNode calculateDiffingAndCreateNewRootNode(
-    ReactShadowNode currentRootShadowNode, List<ReactShadowNode> newChildList) {
-    ReactShadowNode newRootShadowNode = currentRootShadowNode.mutableCopyWithNewChildren();
-    for (ReactShadowNode child : newChildList) {
-      appendChild(newRootShadowNode, child);
-    }
-
-    if (DEBUG) {
-      Log.d(
-        TAG,
-        "ReactShadowNodeHierarchy before calculateLayout: " + newRootShadowNode.getHierarchyInfo());
-    }
-
-    notifyOnBeforeLayoutRecursive(newRootShadowNode);
-    newRootShadowNode.calculateLayout();
-
-    if (DEBUG) {
-      Log.d(
-        TAG,
-        "ReactShadowNodeHierarchy after calculateLayout: " + newRootShadowNode.getHierarchyInfo());
-    }
-
-    mFabricReconciler.manageChildren(currentRootShadowNode, newRootShadowNode);
-    return newRootShadowNode;
-  }
-
-  private void applyUpdatesRecursive(ReactShadowNode node, float absoluteX, float absoluteY) {
-    if (!node.hasUpdates()) {
-      return;
-    }
-
-    if (!node.isVirtualAnchor()) {
-      for (int i = 0; i < node.getChildCount(); i++) {
-        applyUpdatesRecursive(
-            node.getChildAt(i),
-            absoluteX + node.getLayoutX(),
-            absoluteY + node.getLayoutY());
-      }
-    }
-
-    int tag = node.getReactTag();
-    if (mRootShadowNodeRegistry.getNode(tag) == null) {
-      boolean frameDidChange =
-          node.dispatchUpdates(absoluteX, absoluteY, mUIViewOperationQueue, null);
-    }
-    // Set the reference to the OriginalReactShadowNode to NULL, as the tree is already committed
-    // and we do not need to hold references to the previous tree anymore
-    node.setOriginalReactShadowNode(null);
-    node.markUpdateSeen();
+    mMountingManager = new MountingManager(viewManagerRegistry);
+    mEventDispatcher = eventDispatcher;
+    mEventBeatManager = eventBeatManager;
+    mReactApplicationContext.addLifecycleEventListener(this);
   }
 
   @Override
-  public <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> int addRootView(
-      final T rootView) {
+  public <T extends View> int addRootView(
+      final T rootView, final WritableMap initialProps, final @Nullable String initialUITemplate) {
     final int rootTag = ReactRootViewTagGenerator.getNextRootViewTag();
-    ThemedReactContext themedRootContext =
+    ThemedReactContext reactContext =
         new ThemedReactContext(mReactApplicationContext, rootView.getContext());
-
-    ReactShadowNode rootShadowNode = createRootShadowNode(rootTag, themedRootContext);
-
-    int widthMeasureSpec = rootView.getWidthMeasureSpec();
-    int heightMeasureSpec = rootView.getHeightMeasureSpec();
-    updateRootView(rootShadowNode, widthMeasureSpec, heightMeasureSpec);
-
-    rootView.setOnSizeChangedListener(
-      new SizeMonitoringFrameLayout.OnSizeChangedListener() {
-        @Override
-        public void onSizeChanged(final int width, final int height, int oldW, int oldH) {
-          updateRootSize(rootTag, width, height);
-        }
-      });
-
-    mRootShadowNodeRegistry.registerNode(rootShadowNode);
-    mUIViewOperationQueue.addRootView(rootTag, rootView, themedRootContext);
+    mMountingManager.addRootView(rootTag, rootView);
+    mReactContextForRootTag.put(rootTag, reactContext);
+    mBinding.startSurface(rootTag, (NativeMap) initialProps);
+    if (initialUITemplate != null) {
+      mBinding.renderTemplateToSurface(rootTag, initialUITemplate);
+    }
     return rootTag;
   }
 
+  /** Method called when an event has been dispatched on the C++ side. */
+  @DoNotStrip
+  public void onRequestEventBeat() {
+    mEventDispatcher.dispatchAllEvents();
+  }
+
   @Override
-  public void updateRootLayoutSpecs(int rootViewTag, int widthMeasureSpec, int heightMeasureSpec) {
-    ReactShadowNode rootNode = mRootShadowNodeRegistry.getNode(rootViewTag);
-    if (rootNode == null) {
-      Log.w(ReactConstants.TAG, "Tried to update non-existent root tag: " + rootViewTag);
+  public void removeRootView(int reactRootTag) {
+    // TODO T31905686: integrate with the unmounting of Fabric React Renderer.
+    mMountingManager.removeRootView(reactRootTag);
+    mReactContextForRootTag.remove(reactRootTag);
+  }
+
+  @DoNotStrip
+  @SuppressWarnings("unused")
+  private MountItem createMountItem(
+      String componentName, int reactRootTag, int reactTag, boolean isVirtual) {
+    String component = sComponentNames.get(componentName);
+    if (component == null) {
+      throw new IllegalArgumentException("Unable to find component with name " + componentName);
+    }
+    ThemedReactContext reactContext = mReactContextForRootTag.get(reactRootTag);
+    if (reactContext == null) {
+      throw new IllegalArgumentException("Unable to find ReactContext for root: " + reactRootTag);
+    }
+    return new CreateMountItem(reactContext, component, reactTag, isVirtual);
+  }
+
+  @Override
+  public void initialize() {
+    mEventDispatcher.registerEventEmitter(FABRIC, new FabricEventEmitter(this));
+    mEventDispatcher.addBatchEventDispatchedListener(mEventBeatManager);
+  }
+
+  @Override
+  public void onCatalystInstanceDestroy() {
+    mEventDispatcher.removeBatchEventDispatchedListener(mEventBeatManager);
+    mEventDispatcher.unregisterEventEmitter(FABRIC);
+    mBinding.unregister();
+    ViewManagerPropertyUpdater.clear();
+  }
+
+  @DoNotStrip
+  private void preallocateView(int rootTag, int reactTag, final String componentName, ReadableMap props) {
+    if (UiThreadUtil.isOnUiThread()) {
+      // There is no reason to allocate views ahead of time on the main thread.
       return;
     }
-    updateRootView(rootNode, widthMeasureSpec, heightMeasureSpec);
+    synchronized (mPreMountItemsLock) {
+      ThemedReactContext context =
+        Assertions.assertNotNull(mReactContextForRootTag.get(rootTag));
+      String component = sComponentNames.get(componentName);
+      Assertions.assertNotNull(component);
+      mPreMountItems.add(new PreAllocateViewMountItem(context, rootTag, reactTag, component, props));
+    }
+  }
+
+  @DoNotStrip
+  @SuppressWarnings("unused")
+  private MountItem removeMountItem(int reactTag, int parentReactTag, int index) {
+    return new RemoveMountItem(reactTag, parentReactTag, index);
+  }
+
+  @DoNotStrip
+  @SuppressWarnings("unused")
+  private MountItem insertMountItem(int reactTag, int parentReactTag, int index) {
+    return new InsertMountItem(reactTag, parentReactTag, index);
+  }
+
+  @DoNotStrip
+  @SuppressWarnings("unused")
+  private MountItem deleteMountItem(int reactTag) {
+    return new DeleteMountItem(reactTag);
+  }
+
+  @DoNotStrip
+  @SuppressWarnings("unused")
+  private MountItem updateLayoutMountItem(int reactTag, int x, int y, int width, int height) {
+    return new UpdateLayoutMountItem(reactTag, x, y, width, height);
+  }
+
+  @DoNotStrip
+  @SuppressWarnings("unused")
+  private MountItem updatePropsMountItem(int reactTag, ReadableMap map) {
+    return new UpdatePropsMountItem(reactTag, map);
+  }
+
+  @DoNotStrip
+  @SuppressWarnings("unused")
+  private MountItem updateLocalDataMountItem(int reactTag, ReadableMap newLocalData) {
+    return new UpdateLocalDataMountItem(reactTag, newLocalData);
+  }
+
+  @DoNotStrip
+  @SuppressWarnings("unused")
+  private MountItem updateEventEmitterMountItem(int reactTag, Object eventEmitter) {
+    return new UpdateEventEmitterMountItem(reactTag, (EventEmitterWrapper) eventEmitter);
+  }
+
+  @DoNotStrip
+  @SuppressWarnings("unused")
+  private MountItem createBatchMountItem(MountItem[] items, int size) {
+    return new BatchMountItem(items, size);
+  }
+
+  @DoNotStrip
+  @SuppressWarnings("unused")
+  private long measure(
+      String componentName,
+      ReadableMap localData,
+      ReadableMap props,
+      int minWidth,
+      int maxWidth,
+      int minHeight,
+      int maxHeight) {
+
+    return mMountingManager.measure(
+        mReactApplicationContext,
+        componentName,
+        localData,
+        props,
+        getYogaSize(minWidth, maxWidth),
+        getYogaMeasureMode(minWidth, maxWidth),
+        getYogaSize(minHeight, maxHeight),
+        getYogaMeasureMode(minHeight, maxHeight));
+  }
+
+  @Override
+  public void synchronouslyUpdateViewOnUIThread(int reactTag, ReadableMap props) {
+    long time = SystemClock.uptimeMillis();
+    scheduleMountItems(updatePropsMountItem(reactTag, props), time, 0, time, time);
   }
 
   /**
-   * Updates the root view size and re-render the RN surface.
-   *
-   * //TODO: change synchronization to integrate with new #render loop.
+   * This method enqueues UI operations directly to the UI thread. This might change in the future
+   * to enforce execution order using {@link ReactChoreographer#CallbackType}.
    */
-  private synchronized void updateRootSize(int rootTag, int newWidth, int newHeight) {
-    ReactShadowNode rootNode = mRootShadowNodeRegistry.getNode(rootTag);
-    if (rootNode == null) {
-      Log.w(
-        ReactConstants.TAG,
-        "Tried to update size of non-existent tag: " + rootTag);
+  @DoNotStrip
+  @SuppressWarnings("unused")
+  private void scheduleMountItems(
+      final MountItem mountItems,
+      long commitStartTime,
+      long layoutTime,
+      long finishTransactionStartTime,
+      long finishTransactionEndTime) {
+
+    // TODO T31905686: support multithreading
+    mCommitStartTime = commitStartTime;
+    mLayoutTime = layoutTime;
+    mFinishTransactionCPPTime = finishTransactionEndTime - finishTransactionStartTime;
+    mFinishTransactionTime = SystemClock.uptimeMillis() - finishTransactionStartTime;
+    mDispatchViewUpdatesTime = SystemClock.uptimeMillis();
+    synchronized (mMountItemsLock) {
+      mMountItems.add(mountItems);
+    }
+
+    if (UiThreadUtil.isOnUiThread()) {
+      flushMountItems();
+    }
+  }
+
+  @UiThread
+  private void flushMountItems() {
+    if (!mIsMountingEnabled) {
+      FLog.w(
+          ReactConstants.TAG,
+          "Not flushing pending UI operations because of previously thrown Exception");
       return;
     }
-    int newWidthSpec = View.MeasureSpec.makeMeasureSpec(newWidth, View.MeasureSpec.EXACTLY);
-    int newHeightSpec = View.MeasureSpec.makeMeasureSpec(newHeight, View.MeasureSpec.EXACTLY);
-    updateRootView(rootNode, newWidthSpec, newHeightSpec);
 
-    completeRoot(rootTag, rootNode.getChildrenList());
-  }
-
-  public void removeRootView(int rootTag) {
-    mRootShadowNodeRegistry.removeNode(rootTag);
-  }
-
-  private ReactShadowNode createRootShadowNode(int rootTag, ThemedReactContext themedReactContext) {
-    ReactShadowNode rootNode = new ReactShadowNodeImpl();
-    I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
-    if (sharedI18nUtilInstance.isRTL(themedReactContext)) {
-      rootNode.setLayoutDirection(YogaDirection.RTL);
-    }
-    rootNode.setViewClassName("Root");
-    rootNode.setReactTag(rootTag);
-    rootNode.setThemedContext(themedReactContext);
-    return rootNode;
-  }
-
-  /**
-   * Updates the styles of the {@link ReactShadowNode} based on the Measure specs received by
-   * parameters.
-   */
-  public void updateRootView(
-      ReactShadowNode node, int widthMeasureSpec, int heightMeasureSpec) {
-    int widthMode = View.MeasureSpec.getMode(widthMeasureSpec);
-    int widthSize = View.MeasureSpec.getSize(widthMeasureSpec);
-    switch (widthMode) {
-      case EXACTLY:
-        node.setStyleWidth(widthSize);
-        break;
-      case AT_MOST:
-        node.setStyleMaxWidth(widthSize);
-        break;
-      case UNSPECIFIED:
-        node.setStyleWidthAuto();
-        break;
-    }
-
-    int heightMode = View.MeasureSpec.getMode(heightMeasureSpec);
-    int heightSize = View.MeasureSpec.getSize(heightMeasureSpec);
-    switch (heightMode) {
-      case EXACTLY:
-        node.setStyleHeight(heightSize);
-        break;
-      case AT_MOST:
-        node.setStyleMaxHeight(heightSize);
-        break;
-      case UNSPECIFIED:
-        node.setStyleHeightAuto();
-        break;
-    }
-  }
-
-  private void handleException(ReactShadowNode node, Throwable t) {
     try {
-      ThemedReactContext context = node.getThemedContext();
-      // TODO move exception management to JNI side, and refactor to avoid wrapping Throwable into
-      // a RuntimeException
-      context.handleException(new RuntimeException(t));
+      List<MountItem> preMountItemsToDispatch;
+      synchronized (mPreMountItemsLock) {
+        preMountItemsToDispatch = mPreMountItems;
+        mPreMountItems = new ArrayList<>();
+      }
+
+      mRunStartTime = SystemClock.uptimeMillis();
+      List<MountItem> mountItemsToDispatch;
+      synchronized (mMountItemsLock) {
+        mountItemsToDispatch = mMountItems;
+        mMountItems = new ArrayList<>();
+      }
+
+      long nonBatchedExecutionStartTime = SystemClock.uptimeMillis();
+      Systrace.beginSection(
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+        "FabricUIManager::premountViews (" + preMountItemsToDispatch.size() + " batches)");
+      for (MountItem mountItem : preMountItemsToDispatch) {
+        mountItem.execute(mMountingManager);
+      }
+      mNonBatchedExecutionTime = SystemClock.uptimeMillis() - nonBatchedExecutionStartTime;
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+
+      Systrace.beginSection(
+          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+          "FabricUIManager::mountViews (" + mountItemsToDispatch.size() + " batches)");
+
+      long batchedExecutionStartTime = SystemClock.uptimeMillis();
+      for (MountItem mountItem : mountItemsToDispatch) {
+        mountItem.execute(mMountingManager);
+      }
+      mBatchedExecutionTime = SystemClock.uptimeMillis() - batchedExecutionStartTime;
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     } catch (Exception ex) {
-      Log.e(TAG, "Exception while executing a Fabric method", t);
-      throw new RuntimeException(ex.getMessage(), t);
+      FLog.e(ReactConstants.TAG, "Exception thrown when executing UIFrameGuarded", ex);
+      mIsMountingEnabled = false;
+      throw ex;
+    }
+  }
+
+  public void setBinding(Binding binding) {
+    mBinding = binding;
+  }
+
+  /**
+   * Updates the layout metrics of the root view based on the Measure specs received by parameters.
+   */
+  @Override
+  public void updateRootLayoutSpecs(
+      final int rootTag, final int widthMeasureSpec, final int heightMeasureSpec) {
+
+    mBinding.setConstraints(
+        rootTag,
+        getMinSize(widthMeasureSpec),
+        getMaxSize(widthMeasureSpec),
+        getMinSize(heightMeasureSpec),
+        getMaxSize(heightMeasureSpec));
+  }
+
+  public void receiveEvent(int reactTag, String eventName, @Nullable WritableMap params) {
+    EventEmitterWrapper eventEmitter = mMountingManager.getEventEmitter(reactTag);
+    if (eventEmitter == null) {
+      // This can happen if the view has disappeared from the screen (because of async events)
+      FLog.d(TAG, "Unable to invoke event: " + eventName + " for reactTag: " + reactTag);
+      return;
+    }
+
+    eventEmitter.invoke(eventName, params);
+  }
+
+  @Override
+  public void onHostResume() {
+    ReactChoreographer.getInstance()
+        .postFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
+  }
+
+  @Override
+  public void onHostPause() {
+    ReactChoreographer.getInstance()
+        .removeFrameCallback(ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
+  }
+
+  @Override
+  public void onHostDestroy() {}
+
+  @Override
+  public void dispatchCommand(
+      final int reactTag, final int commandId, final ReadableArray commandArgs) {
+    synchronized (mMountItemsLock) {
+      mMountItems.add(new DispatchCommandMountItem(reactTag, commandId, commandArgs));
+    }
+  }
+
+  @Override
+  public void setJSResponder(int reactTag, boolean blockNativeResponder) {
+    // do nothing for now.
+  }
+
+  @Override
+  public void clearJSResponder() {
+    // do nothing for now.
+  }
+
+  @Override
+  public void profileNextBatch() {
+    // TODO T31905686: Remove this method and add support for multi-threading performance counters
+  }
+
+  @Override
+  public Map<String, Long> getPerformanceCounters() {
+    HashMap<String, Long> performanceCounters = new HashMap<>();
+    performanceCounters.put("CommitStartTime", mCommitStartTime);
+    performanceCounters.put("LayoutTime", mLayoutTime);
+    performanceCounters.put("DispatchViewUpdatesTime", mDispatchViewUpdatesTime);
+    performanceCounters.put("RunStartTime", mRunStartTime);
+    performanceCounters.put("BatchedExecutionTime", mBatchedExecutionTime);
+    performanceCounters.put("NonBatchedExecutionTime", mNonBatchedExecutionTime);
+    performanceCounters.put("FinishFabricTransactionTime", mFinishTransactionTime);
+    performanceCounters.put("FinishFabricTransactionCPPTime", mFinishTransactionCPPTime);
+    return performanceCounters;
+  }
+
+  private class DispatchUIFrameCallback extends GuardedFrameCallback {
+
+    private DispatchUIFrameCallback(ReactContext reactContext) {
+      super(reactContext);
+    }
+
+    @Override
+    public void doFrameGuarded(long frameTimeNanos) {
+      if (!mIsMountingEnabled) {
+        FLog.w(
+            ReactConstants.TAG,
+            "Not flushing pending UI operations because of previously thrown Exception");
+        return;
+      }
+
+      try {
+        flushMountItems();
+      } catch (Exception ex) {
+        FLog.i(ReactConstants.TAG, "Exception thrown when executing UIFrameGuarded", ex);
+        mIsMountingEnabled = false;
+        throw ex;
+      } finally {
+        ReactChoreographer.getInstance()
+            .postFrameCallback(
+                ReactChoreographer.CallbackType.DISPATCH_UI, mDispatchUIFrameCallback);
+      }
     }
   }
 }

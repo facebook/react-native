@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,9 +15,7 @@
   NSInteger _index;
 }
 
-- (instancetype)initWithChildTag:(ReactTag)childTag
-                       parentTag:(ReactTag)parentTag
-                           index:(NSInteger)index
+- (instancetype)initWithChildTag:(ReactTag)childTag parentTag:(ReactTag)parentTag index:(NSInteger)index
 {
   if (self = [super init]) {
     _childTag = childTag;
@@ -37,8 +35,7 @@
     return;
   }
 
-  [parentComponentView mountChildComponentView:childComponentView
-                                         index:_index];
+  [parentComponentView mountChildComponentView:childComponentView index:_index];
 }
 
 @end

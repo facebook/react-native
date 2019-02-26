@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,7 +21,9 @@ import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.UnexpectedNativeTypeException;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.appstate.AppStateModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
@@ -29,7 +31,6 @@ import com.facebook.react.modules.systeminfo.AndroidInfoModule;
 import com.facebook.react.testing.FakeWebSocketModule;
 import com.facebook.react.testing.ReactIntegrationTestCase;
 import com.facebook.react.testing.ReactTestHelper;
-import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.views.view.ReactViewManager;
@@ -85,7 +86,7 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
     List<ViewManager> viewManagers = Arrays.<ViewManager>asList(
         new ReactViewManager());
     final UIManagerModule mUIManager =
-        new UIManagerModule(getContext(), viewManagers, new UIImplementationProvider(), 0);
+        new UIManagerModule(getContext(), viewManagers, 0);
     UiThreadUtil.runOnUiThread(
         new Runnable() {
           @Override
@@ -475,6 +476,78 @@ public class CatalystNativeJSToJavaParametersTestCase extends ReactIntegrationTe
     assertTrue(dest.isNull("e"));
     assertEquals(3, dest.getArray("f").size());
     assertEquals("newvalue", dest.getString("newkey"));
+  }
+
+  public void testEqualityMapAfterMerge() {
+    mCatalystInstance.getJSModule(TestJSToJavaParametersModule.class).returnMapForMerge1();
+    waitForBridgeAndUIIdle();
+
+    List<ReadableMap> maps = mRecordingTestModule.getMapCalls();
+    assertEquals(1, maps.size());
+
+    WritableMap map1 = new WritableNativeMap();
+    map1.merge(maps.get(0));
+    WritableMap map2 = new WritableNativeMap();
+    map2.merge(maps.get(0));
+
+    assertTrue(map1.equals(map2));
+  }
+
+  public void testWritableNativeMapEquals() {
+    WritableMap map1 = new WritableNativeMap();
+    WritableMap map2 = new WritableNativeMap();
+
+    map1.putInt("key1", 123);
+    map2.putInt("key1", 123);
+    map1.putString("key2", "value");
+    map2.putString("key2", "value");
+
+    assertTrue(map1.equals(map2));
+  }
+
+  public void testWritableNativeMapArraysEquals() {
+    WritableMap map1 = new WritableNativeMap();
+    WritableMap map2 = new WritableNativeMap();
+
+    map1.putInt("key1", 123);
+    map2.putInt("key1", 123);
+    map1.putString("key2", "value");
+    map2.putString("key2", "value");
+    WritableArray array1 = new WritableNativeArray();
+    array1.pushInt(321);
+    array1.pushNull();
+    array1.pushString("test");
+    map1.putArray("key3", array1);
+
+    WritableArray array2 = new WritableNativeArray();
+    array1.pushInt(321);
+    array1.pushNull();
+    array1.pushString("test");
+    map2.putArray("key3", array2);
+
+    assertTrue(map1.equals(map2));
+  }
+
+  public void testWritableNativeMapArraysNonEquals() {
+    WritableMap map1 = new WritableNativeMap();
+    WritableMap map2 = new WritableNativeMap();
+
+    map1.putInt("key1", 123);
+    map2.putInt("key1", 123);
+    map1.putString("key2", "value");
+    map2.putString("key2", "value");
+    WritableArray array1 = new WritableNativeArray();
+    array1.pushInt(321);
+    array1.pushNull();
+    array1.pushString("test");
+    map1.putArray("key3", array1);
+
+    WritableArray array2 = new WritableNativeArray();
+    array1.pushNull();
+    array1.pushString("test");
+    map2.putArray("key3", array2);
+
+    assertTrue(map1.equals(map2));
   }
 
   public void testMapAccessibleAfterMerge() {

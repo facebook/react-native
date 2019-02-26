@@ -1,6 +1,9 @@
 #!/bin/bash
-set -ex
-
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+#
 # Script used to run iOS and tvOS tests.
 # Environment variables are used to configure what test to run.
 # If not arguments are passed to the script, it will only compile
@@ -9,20 +12,22 @@ set -ex
 # also run the RNTester integration test (needs JS and packager).
 # ./objc-test.sh test
 
-SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-ROOT=$(dirname $SCRIPTS)
+set -ex
 
-cd $ROOT
+SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+ROOT=$(dirname "$SCRIPTS")
+
+cd "$ROOT"
 
 # Create cleanup handler
 function cleanup {
-  EXIT_CODE=$?
+  EXIT=$?
   set +e
 
-  if [ $EXIT_CODE -ne 0 ];
+  if [ $EXIT -ne 0 ];
   then
     WATCHMAN_LOGS=/usr/local/Cellar/watchman/3.1/var/run/watchman/$USER.log
-    [ -f $WATCHMAN_LOGS ] && cat $WATCHMAN_LOGS
+    [ -f "$WATCHMAN_LOGS" ] && cat "$WATCHMAN_LOGS"
   fi
   # kill whatever is occupying port 8081 (packager)
   lsof -i tcp:8081 | awk 'NR!=1 {print $2}' | xargs kill
@@ -56,7 +61,7 @@ function waitForPackager {
 if [ "$1" = "test" ]; then
 
 # Start the packager
-./scripts/packager.sh --max-workers=1 || echo "Can't start packager automatically" &
+yarn start --max-workers=1 || echo "Can't start packager automatically" &
 # Start the WebSocket test server
 open "./IntegrationTests/launchWebSocketServer.command" || echo "Can't start web socket server automatically"
 
@@ -75,19 +80,22 @@ rm temp.bundle
 # Run tests
 xcodebuild \
   -project "RNTester/RNTester.xcodeproj" \
-  -scheme $SCHEME \
-  -sdk $SDK \
+  -scheme "$SCHEME" \
+  -sdk "$SDK" \
   -destination "$DESTINATION" \
+  -UseModernBuildSystem=NO \
   build test \
-  | xcpretty --report junit --output ~/react-native/reports/junit/objc-xcodebuild-results.xml
+  | xcpretty --report junit --output "$HOME/react-native/reports/junit/$TEST_NAME/results.xml" \
+  && exit "${PIPESTATUS[0]}"
 
 else
 
 # Don't run tests. No need to pass -destination to xcodebuild.
 xcodebuild \
   -project "RNTester/RNTester.xcodeproj" \
-  -scheme $SCHEME \
-  -sdk $SDK \
+  -scheme "$SCHEME" \
+  -sdk "$SDK" \
+  -UseModernBuildSystem=NO \
   build
 
 fi

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -34,7 +34,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTSurface : NSObject
 
 @property (atomic, readonly) RCTSurfaceStage stage;
-@property (atomic, readonly) RCTBridge *bridge;
 @property (atomic, readonly) NSString *moduleName;
 @property (atomic, readonly) NSNumber *rootViewTag;
 
@@ -44,7 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
-             initialProperties:(NSDictionary *)initialProperties NS_DESIGNATED_INITIALIZER;
+             initialProperties:(NSDictionary *)initialProperties;
 
 #pragma mark - Dealing with UIView representation, the Main thread only access
 
@@ -114,6 +113,15 @@ NS_ASSUME_NONNULL_BEGIN
  *    downgraded to `RCTSurfaceStageSurfaceDidInitialLayout`.
  */
 - (BOOL)synchronouslyWaitForStage:(RCTSurfaceStage)stage timeout:(NSTimeInterval)timeout;
+
+#pragma mark - Start & Stop
+
+/**
+ * Starts or stops the Surface.
+ * Those methods are a no-op for regular RCTSurface (for now), but all call sites must call them appropriately.
+ */
+- (BOOL)start;
+- (BOOL)stop;
 
 #pragma mark - Mounting/Unmounting of React components
 

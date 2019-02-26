@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -43,7 +43,7 @@
         self.keyLabel.textColor = [UIColor whiteColor];
         self.keyLabel.numberOfLines = 0;
 #if !TARGET_OS_TV
-        self.keyLabel.lineBreakMode = UILineBreakModeWordWrap;
+        self.keyLabel.lineBreakMode = NSLineBreakByWordWrapping;
         self.keyLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:12.0f];
 #endif
         self.valueLabel = [UILabel new];
@@ -63,7 +63,7 @@
         self.valueLabel.textColor = [UIColor whiteColor];
         self.valueLabel.numberOfLines = 0;
 #if !TARGET_OS_TV
-        self.valueLabel.lineBreakMode = UILineBreakModeWordWrap;
+        self.valueLabel.lineBreakMode = NSLineBreakByWordWrapping;
         self.valueLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:12.0f];
 #endif
     }
@@ -181,17 +181,17 @@
     [_tableView reloadData];
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+- (NSInteger)tableView:(__unused UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     return [[_extraData objectAtIndex:section] count];
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+- (CGFloat)tableView:(__unused UITableView *)tableView heightForHeaderInSection:(__unused NSInteger)section
 {
     return 40;
 }
 
-- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+- (UIView *)tableView:(__unused UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     UIView *view = [UIView new];
     view.backgroundColor = [UIColor colorWithRed:1 green:0 blue:0 alpha:1];
@@ -237,7 +237,7 @@
     return cell;
 }
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+- (NSInteger)numberOfSectionsInTableView:(__unused UITableView *)tableView
 {
     return _extraDataTitle.count;
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -145,5 +145,8 @@ RCT_EXTERN NSString *RCTUIKitLocalizedString(NSString *string);
 // URL manipulation
 RCT_EXTERN NSString *__nullable RCTGetURLQueryParam(NSURL *__nullable URL, NSString *param);
 RCT_EXTERN NSURL *__nullable RCTURLByReplacingQueryParam(NSURL *__nullable URL, NSString *param, NSString *__nullable value);
+
+// Given a string, drop common RN prefixes (RCT, RK, etc.)
+RCT_EXTERN NSString *RCTDropReactPrefixes(NSString *s);
 
 NS_ASSUME_NONNULL_END

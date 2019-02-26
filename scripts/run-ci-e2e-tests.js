@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -34,30 +34,26 @@ const TEMP = exec('mktemp -d /tmp/react-native-XXXXXXXX').stdout.trim();
 // To make sure we actually installed the local version
 // of react-native, we will create a temp file inside the template
 // and check that it exists after `react-native init
-const MARKER_IOS = exec(
-  `mktemp ${ROOT}/local-cli/templates/HelloWorld/ios/HelloWorld/XXXXXXXX`,
-).stdout.trim();
-const MARKER_ANDROID = exec(
-  `mktemp ${ROOT}/local-cli/templates/HelloWorld/android/XXXXXXXX`,
-).stdout.trim();
+const MARKER = exec(`mktemp ${ROOT}/template/XXXXXXXX`).stdout.trim();
 const numberOfRetries = argv.retries || 1;
 let SERVER_PID;
 let APPIUM_PID;
 let exitCode;
 
+// Make sure we installed local version of react-native
+function checkMarker() {
+  if (!test('-e', path.basename(MARKER))) {
+    echo('Marker was not found, react native init command failed?');
+    exitCode = 1;
+    throw Error(exitCode);
+  }
+}
+
 try {
   // install CLI
-  cd('react-native-cli');
-  exec('yarn pack');
-  const CLI_PACKAGE = path.join(
-    ROOT,
-    'react-native-cli',
-    'react-native-cli-*.tgz',
-  );
-  cd('..');
-
+  const CLI_PACKAGE = 'react-native-cli';
   if (!argv['skip-cli-install']) {
-    if (exec(`sudo yarn global add ${CLI_PACKAGE}`).code) {
+    if (exec(`yarn global add ${CLI_PACKAGE}`).code) {
       echo('Could not install react-native-cli globally.');
       echo('Run with --skip-cli-install to skip this step');
       exitCode = 1;
@@ -104,8 +100,9 @@ try {
   cd('EndToEndTest');
 
   if (argv.android) {
-    echo('Running an Android e2e test');
-    echo('Installing e2e framework');
+    echo('Running an Android end-to-end test');
+    checkMarker();
+    echo('Installing end-to-end framework');
     if (
       tryExecNTimes(
         () =>
@@ -125,12 +122,6 @@ try {
     cd('android');
     echo('Downloading Maven deps');
     exec('./gradlew :app:copyDownloadableDepsToLibs');
-    // Make sure we installed local version of react-native
-    if (!test('-e', path.basename(MARKER_ANDROID))) {
-      echo('Android marker was not found, react native init command failed?');
-      exitCode = 1;
-      throw Error(exitCode);
-    }
     cd('..');
     exec(
       'keytool -genkey -v -keystore android/keystores/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"',
@@ -155,14 +146,14 @@ try {
     SERVER_PID = packagerProcess.pid;
     // wait a bit to allow packager to startup
     exec('sleep 15s');
-    echo('Executing android e2e test');
+    echo('Executing android end-to-end test');
     if (
       tryExecNTimes(() => {
         exec('sleep 10s');
         return exec('node node_modules/.bin/_mocha android-e2e-test.js').code;
       }, numberOfRetries)
     ) {
-      echo('Failed to run Android e2e tests');
+      echo('Failed to run Android end-to-end tests');
       echo('Most likely the code is broken');
       exitCode = 1;
       throw Error(exitCode);
@@ -170,15 +161,10 @@ try {
   }
 
   if (argv.ios || argv.tvos) {
+    checkMarker();
     var iosTestType = argv.tvos ? 'tvOS' : 'iOS';
-    echo('Running the ' + iosTestType + 'app');
+    echo('Running the ' + iosTestType + ' app');
     cd('ios');
-    // Make sure we installed local version of react-native
-    if (!test('-e', path.join('EndToEndTest', path.basename(MARKER_IOS)))) {
-      echo('iOS marker was not found, `react-native init` command failed?');
-      exitCode = 1;
-      throw Error(exitCode);
-    }
     // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
     const packagerEnv = Object.create(process.env);
     packagerEnv.REACT_NATIVE_MAX_WORKERS = 1;
@@ -193,22 +179,45 @@ try {
       'response=$(curl --write-out %{http_code} --silent --output /dev/null localhost:8081/index.bundle?platform=ios&dev=true)',
     );
     echo(`Starting packager server, ${SERVER_PID}`);
-    echo('Executing ' + iosTestType + ' e2e test');
+    echo('Executing ' + iosTestType + ' end-to-end test');
     if (
       tryExecNTimes(() => {
         exec('sleep 10s');
+        let destination = 'platform=iOS Simulator,name=iPhone 5s,OS=12.1';
+        let sdk = 'iphonesimulator';
+        let scheme = 'EndToEndTest';
+
         if (argv.tvos) {
-          return exec(
-            'xcodebuild -destination "platform=tvOS Simulator,name=Apple TV 1080p,OS=10.0" -scheme EndToEndTest-tvOS -sdk appletvsimulator test | xcpretty && exit ${PIPESTATUS[0]}',
-          ).code;
-        } else {
-          return exec(
-            'xcodebuild -destination "platform=iOS Simulator,name=iPhone 5s,OS=10.3.1" -scheme EndToEndTest -sdk iphonesimulator test | xcpretty && exit ${PIPESTATUS[0]}',
-          ).code;
+          destination = 'platform=tvOS Simulator,name=Apple TV,OS=11.4';
+          sdk = 'appletvsimulator';
+          scheme = 'EndToEndTest-tvOS';
         }
+
+        return exec(
+          [
+            'xcodebuild',
+            '-destination',
+            `"${destination}"`,
+            '-scheme',
+            `"${scheme}"`,
+            '-sdk',
+            sdk,
+            '-UseModernBuildSystem=NO',
+            'test',
+          ].join(' ') +
+            ' | ' +
+            [
+              'xcpretty',
+              '--report',
+              'junit',
+              '--output',
+              `"~/react-native/reports/junit/${iosTestType}-e2e/results.xml"`,
+            ].join(' ') +
+            ' && exit ${PIPESTATUS[0]}',
+        ).code;
       }, numberOfRetries)
     ) {
-      echo('Failed to run ' + iosTestType + ' e2e tests');
+      echo('Failed to run ' + iosTestType + ' end-to-end tests');
       echo('Most likely the code is broken');
       exitCode = 1;
       throw Error(exitCode);
@@ -217,6 +226,7 @@ try {
   }
 
   if (argv.js) {
+    checkMarker();
     // Check the packager produces a bundle (doesn't throw an error)
     if (
       exec(
@@ -236,22 +246,11 @@ try {
       exitCode = 1;
       throw Error(exitCode);
     }
-    if (exec(`${ROOT}/node_modules/.bin/flow check`).code) {
-      echo('Flow check does not pass');
-      exitCode = 1;
-      throw Error(exitCode);
-    }
-    if (exec('yarn test').code) {
-      echo('Jest test failure');
-      exitCode = 1;
-      throw Error(exitCode);
-    }
   }
   exitCode = 0;
 } finally {
   cd(ROOT);
-  rm(MARKER_IOS);
-  rm(MARKER_ANDROID);
+  rm(MARKER);
 
   if (SERVER_PID) {
     echo(`Killing packager ${SERVER_PID}`);

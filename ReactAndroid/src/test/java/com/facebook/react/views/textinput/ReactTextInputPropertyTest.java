@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -231,6 +231,8 @@ public class ReactTextInputPropertyTest {
   @Test
   public void testKeyboardType() {
     ReactEditText view = mManager.createViewInstance(mThemedContext);
+    int numberPadTypeFlags = InputType.TYPE_CLASS_NUMBER;
+    int decimalPadTypeFlags = InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL;
     int numericTypeFlags =
         InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL |
         InputType.TYPE_NUMBER_FLAG_SIGNED;
@@ -248,6 +250,12 @@ public class ReactTextInputPropertyTest {
 
     mManager.updateProperties(view, buildStyles("keyboardType", "text"));
     assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(InputType.TYPE_CLASS_TEXT);
+
+    mManager.updateProperties(view, buildStyles("keyboardType", "number-pad"));
+    assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(numberPadTypeFlags);
+
+    mManager.updateProperties(view, buildStyles("keyboardType", "decimal-pad"));
+    assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(decimalPadTypeFlags);
 
     mManager.updateProperties(view, buildStyles("keyboardType", "numeric"));
     assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(numericTypeFlags);

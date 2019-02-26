@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -151,12 +151,14 @@ RCT_EXPORT_MODULE()
 
 #pragma mark - Private API
 
-- (void)beginLocationUpdatesWithDesiredAccuracy:(CLLocationAccuracy)desiredAccuracy distanceFilter:(CLLocationDistance)distanceFilter useSignificantChanges:(BOOL)useSignificantChanges
+- (void)_beginLocationUpdatesWithDesiredAccuracy:(CLLocationAccuracy)desiredAccuracy
+                                  distanceFilter:(CLLocationDistance)distanceFilter
+                           useSignificantChanges:(BOOL)useSignificantChanges
 {
   if (!_locationConfiguration.skipPermissionRequests) {
     [self requestAuthorization];
   }
-  
+
   if (!_locationManager) {
     _locationManager = [CLLocationManager new];
     _locationManager.delegate = self;
@@ -172,6 +174,32 @@ RCT_EXPORT_MODULE()
     [_locationManager startUpdatingLocation];
 }
 
+- (void)_stopUpdatingIfIdle {
+  if (_pendingRequests.count == 0 && !_observingLocation) {
+    _usingSignificantChanges ?
+    [_locationManager stopMonitoringSignificantLocationChanges] :
+    [_locationManager stopUpdatingLocation];
+  }
+}
+
+#pragma mark - Static Helpers
+
+static BOOL locationEventValid(NSDictionary<NSString *, id> *event, RCTLocationOptions options) {
+  return [NSDate date].timeIntervalSince1970 - [RCTConvert NSTimeInterval:event[@"timestamp"]] < options.maximumAge &&
+  [event[@"coords"][@"accuracy"] doubleValue] <= options.accuracy;
+}
+
+static void checkLocationConfig()
+{
+#if RCT_DEV
+  if (!([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"] ||
+        [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"] ||
+        [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysAndWhenInUseUsageDescription"])) {
+    RCTLogError(@"Either NSLocationWhenInUseUsageDescription or NSLocationAlwaysUsageDescription or NSLocationAlwaysAndWhenInUseUsageDescription key must be present in Info.plist to use geolocation.");
+  }
+#endif
+}
+
 #pragma mark - Timeout handler
 
 - (void)timeout:(NSTimer *)timer
@@ -181,12 +209,8 @@ RCT_EXPORT_MODULE()
   request.errorBlock(@[RCTPositionError(RCTPositionErrorTimeout, message)]);
   [_pendingRequests removeObject:request];
 
-  // Stop updating if no pending requests
-  if (_pendingRequests.count == 0 && !_observingLocation) {
-    _usingSignificantChanges ?
-      [_locationManager stopMonitoringSignificantLocationChanges] :
-      [_locationManager stopUpdatingLocation];
-  }
+  // Stop updating if not observing and no pending requests
+  [self _stopUpdatingIfIdle];
 }
 
 #pragma mark - Public API
@@ -202,19 +226,17 @@ RCT_EXPORT_METHOD(requestAuthorization)
     _locationManager = [CLLocationManager new];
     _locationManager.delegate = self;
   }
-
+  // On iOS 9+ we also need to enable background updates
+  NSArray *backgroundModes  = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIBackgroundModes"];
+  if (backgroundModes && [backgroundModes containsObject:@"location"]) {
+    if ([_locationManager respondsToSelector:@selector(setAllowsBackgroundLocationUpdates:)]) {
+      [_locationManager setAllowsBackgroundLocationUpdates:YES];
+    }
+  }
   // Request location access permission
   if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"] &&
     [_locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
     [_locationManager requestAlwaysAuthorization];
-
-    // On iOS 9+ we also need to enable background updates
-    NSArray *backgroundModes  = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIBackgroundModes"];
-    if (backgroundModes && [backgroundModes containsObject:@"location"]) {
-      if ([_locationManager respondsToSelector:@selector(setAllowsBackgroundLocationUpdates:)]) {
-        [_locationManager setAllowsBackgroundLocationUpdates:YES];
-      }
-    }
   } else if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"] &&
     [_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
     [_locationManager requestWhenInUseAuthorization];
@@ -231,9 +253,9 @@ RCT_EXPORT_METHOD(startObserving:(RCTLocationOptions)options)
     _observerOptions.accuracy = MIN(_observerOptions.accuracy, request.options.accuracy);
   }
 
-  [self beginLocationUpdatesWithDesiredAccuracy:_observerOptions.accuracy
-                                 distanceFilter:_observerOptions.distanceFilter
-                          useSignificantChanges:_observerOptions.useSignificantChanges];
+  [self _beginLocationUpdatesWithDesiredAccuracy:_observerOptions.accuracy
+                                  distanceFilter:_observerOptions.distanceFilter
+                           useSignificantChanges:_observerOptions.useSignificantChanges];
   _observingLocation = YES;
 }
 
@@ -243,11 +265,8 @@ RCT_EXPORT_METHOD(stopObserving)
   _observingLocation = NO;
 
   // Stop updating if no pending requests
-  if (_pendingRequests.count == 0) {
-    _usingSignificantChanges ?
-      [_locationManager stopMonitoringSignificantLocationChanges] :
-      [_locationManager stopUpdatingLocation];
-  }
+  [self _stopUpdatingIfIdle];
+
 }
 
 RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
@@ -280,9 +299,7 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
   }
 
   // Check if previous recorded location exists and is good enough
-  if (_lastLocationEvent &&
-      [NSDate date].timeIntervalSince1970 - [RCTConvert NSTimeInterval:_lastLocationEvent[@"timestamp"]] < options.maximumAge &&
-      [_lastLocationEvent[@"coords"][@"accuracy"] doubleValue] <= options.accuracy) {
+  if (_lastLocationEvent && locationEventValid(_lastLocationEvent, options)) {
 
     // Call success block with most recent known location
     successBlock(@[_lastLocationEvent]);
@@ -309,9 +326,9 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
   if (_locationManager) {
     accuracy = MIN(_locationManager.desiredAccuracy, accuracy);
   }
-  [self beginLocationUpdatesWithDesiredAccuracy:accuracy
-                                 distanceFilter:options.distanceFilter
-                          useSignificantChanges:options.useSignificantChanges];
+  [self _beginLocationUpdatesWithDesiredAccuracy:accuracy
+                                  distanceFilter:options.distanceFilter
+                           useSignificantChanges:options.useSignificantChanges];
 }
 
 #pragma mark - CLLocationManagerDelegate
@@ -339,25 +356,17 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
     [self sendEventWithName:@"geolocationDidChange" body:_lastLocationEvent];
   }
 
-  // Fire all queued callbacks
-  for (RCTLocationRequest *request in _pendingRequests) {
-    request.successBlock(@[_lastLocationEvent]);
-    [request.timeoutTimer invalidate];
-  }
-  [_pendingRequests removeAllObjects];
-
-  // Stop updating if not observing
-  if (!_observingLocation) {
-    _usingSignificantChanges ?
-      [_locationManager stopMonitoringSignificantLocationChanges] :
-      [_locationManager stopUpdatingLocation];
+  // Fire off queued callbacks that pass maximumAge and accuracy filters
+  for (RCTLocationRequest *request in [_pendingRequests copy]) {
+    if (locationEventValid(_lastLocationEvent, request.options)) {
+      request.successBlock(@[_lastLocationEvent]);
+      [request.timeoutTimer invalidate];
+      [_pendingRequests removeObject:request];
+    }
   }
 
-  // Reset location accuracy if desiredAccuracy is changed.
-  // Otherwise update accuracy will force triggering didUpdateLocations, watchPosition would keeping receiving location updates, even there's no location changes.
-  if (ABS(_locationManager.desiredAccuracy - RCT_DEFAULT_LOCATION_ACCURACY) > 0.000001) {
-    _locationManager.desiredAccuracy = RCT_DEFAULT_LOCATION_ACCURACY;
-  }
+  // Stop updating if not observing and no pending requests
+  [self _stopUpdatingIfIdle];
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
@@ -389,22 +398,6 @@ RCT_EXPORT_METHOD(getCurrentPosition:(RCTLocationOptions)options
   }
   [_pendingRequests removeAllObjects];
 
-  // Reset location accuracy if desiredAccuracy is changed.
-  // Otherwise update accuracy will force triggering didUpdateLocations, watchPosition would keeping receiving location updates, even there's no location changes.
-  if (ABS(_locationManager.desiredAccuracy - RCT_DEFAULT_LOCATION_ACCURACY) > 0.000001) {
-    _locationManager.desiredAccuracy = RCT_DEFAULT_LOCATION_ACCURACY;
-  }
-}
-
-static void checkLocationConfig()
-{
-#if RCT_DEV
-  if (!([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"] ||
-    [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"] ||
-    [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysAndWhenInUseUsageDescription"])) {
-    RCTLogError(@"Either NSLocationWhenInUseUsageDescription or NSLocationAlwaysUsageDescription or NSLocationAlwaysAndWhenInUseUsageDescription key must be present in Info.plist to use geolocation.");
-  }
-#endif
 }
 
 @end

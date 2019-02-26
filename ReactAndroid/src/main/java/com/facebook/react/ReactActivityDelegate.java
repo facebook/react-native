@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 package com.facebook.react;
 
@@ -8,7 +11,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.view.KeyEvent;
 
 import com.facebook.infer.annotation.Assertions;
@@ -27,7 +29,6 @@ import javax.annotation.Nullable;
 public class ReactActivityDelegate {
 
   private final @Nullable Activity mActivity;
-  private final @Nullable FragmentActivity mFragmentActivity;
   private final @Nullable String mMainComponentName;
 
   private @Nullable ReactRootView mReactRootView;
@@ -35,18 +36,15 @@ public class ReactActivityDelegate {
   private @Nullable PermissionListener mPermissionListener;
   private @Nullable Callback mPermissionsCallback;
 
+  @Deprecated
   public ReactActivityDelegate(Activity activity, @Nullable String mainComponentName) {
     mActivity = activity;
     mMainComponentName = mainComponentName;
-    mFragmentActivity = null;
   }
 
-  public ReactActivityDelegate(
-    FragmentActivity fragmentActivity,
-    @Nullable String mainComponentName) {
-    mFragmentActivity = fragmentActivity;
+  public ReactActivityDelegate(ReactActivity activity, @Nullable String mainComponentName) {
+    mActivity = activity;
     mMainComponentName = mainComponentName;
-    mActivity = null;
   }
 
   protected @Nullable Bundle getLaunchOptions() {
@@ -72,9 +70,14 @@ public class ReactActivityDelegate {
     return getReactNativeHost().getReactInstanceManager();
   }
 
+  public String getMainComponentName() {
+    return mMainComponentName;
+  }
+
   protected void onCreate(Bundle savedInstanceState) {
-    if (mMainComponentName != null) {
-      loadApp(mMainComponentName);
+    String mainComponentName = getMainComponentName();
+    if (mainComponentName != null) {
+      loadApp(mainComponentName);
     }
     mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
   }
@@ -202,14 +205,11 @@ public class ReactActivityDelegate {
     };
   }
 
-  private Context getContext() {
-    if (mActivity != null) {
-      return mActivity;
-    }
-    return Assertions.assertNotNull(mFragmentActivity);
+  protected Context getContext() {
+    return Assertions.assertNotNull(mActivity);
   }
 
-  private Activity getPlainActivity() {
+  protected Activity getPlainActivity() {
     return ((Activity) getContext());
   }
 }

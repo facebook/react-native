@@ -1,42 +1,45 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 #pragma once
 
+#include <array>
 #include <memory>
 
-#include <fabric/core/ReactPrimitives.h>
-#include <fabric/core/EventPrimitives.h>
-#include <folly/dynamic.h>
+#include <react/core/EventBeat.h>
+#include <react/core/EventPipe.h>
+#include <react/core/EventPriority.h>
+#include <react/core/EventQueue.h>
+#include <react/core/RawEvent.h>
 
 namespace facebook {
 namespace react {
 
 class EventDispatcher;
-
 using SharedEventDispatcher = std::shared_ptr<const EventDispatcher>;
+using WeakEventDispatcher = std::weak_ptr<const EventDispatcher>;
 
 /*
- * Abstract class that represent event-delivery infrastructure.
- * Particular `EventHandlers` clases use an object of this class to invoke
- * events.
+ * Represents event-delivery infrastructure.
+ * Particular `EventEmitter` clases use this for sending events.
  */
 class EventDispatcher {
-
-public:
+ public:
+  EventDispatcher(
+      const EventPipe &eventPipe,
+      const EventBeatFactory &synchonousEventBeatFactory,
+      const EventBeatFactory &asynchonousEventBeatFactory);
 
   /*
-   * Dispatches "raw" event using some event-delivery infrastructure.
+   * Dispatches a raw event with given priority using event-delivery pipe.
    */
-  virtual void dispatchEvent(
-    const InstanceHandle &instanceHandle,
-    const std::string &name,
-    const folly::dynamic &payload,
-    const EventPriority &priority
-  ) const = 0;
+  void dispatchEvent(const RawEvent &rawEvent, EventPriority priority) const;
+
+ private:
+  std::array<std::unique_ptr<EventQueue>, 4> eventQueues_;
 };
 
 } // namespace react

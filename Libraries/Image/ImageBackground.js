@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -60,7 +60,10 @@ class ImageBackground extends React.Component<$FlowFixMeProps> {
     const {children, style, imageStyle, imageRef, ...props} = this.props;
 
     return (
-      <View style={style} ref={this._captureRef}>
+      <View
+        accessibilityIgnoresInvertColors={true}
+        style={style}
+        ref={this._captureRef}>
         <Image
           {...props}
           style={[

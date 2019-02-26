@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,6 +11,7 @@
 #import <React/UIView+React.h>
 
 #import "RCTBackedTextInputDelegateAdapter.h"
+#import "RCTTextAttributes.h"
 
 @implementation RCTUITextView
 {
@@ -18,6 +19,8 @@
   UITextView *_detachedTextView;
   RCTBackedTextViewDelegateAdapter *_textInputDelegateAdapter;
 }
+
+@synthesize reactTextAttributes = _reactTextAttributes;
 
 static UIFont *defaultPlaceholderFont()
 {
@@ -88,6 +91,20 @@ static UIColor *defaultPlaceholderColor()
   _placeholderView.textColor = _placeholderColor ?: defaultPlaceholderColor();
 }
 
+- (void)setReactTextAttributes:(RCTTextAttributes *)reactTextAttributes
+{
+  if ([reactTextAttributes isEqual:_reactTextAttributes]) {
+    return;
+  }
+  self.typingAttributes = reactTextAttributes.effectiveTextAttributes;
+  _reactTextAttributes = reactTextAttributes;
+}
+
+- (RCTTextAttributes *)reactTextAttributes
+{
+  return _reactTextAttributes;
+}
+
 - (void)textDidChange
 {
   _textWasPasted = NO;
@@ -108,15 +125,23 @@ static UIColor *defaultPlaceholderColor()
   _placeholderView.textAlignment = textAlignment;
 }
 
-- (void)setText:(NSString *)text
-{
-  [super setText:text];
-  [self textDidChange];
-}
-
 - (void)setAttributedText:(NSAttributedString *)attributedText
 {
-  [super setAttributedText:attributedText];
+  // Using `setAttributedString:` while user is typing breaks some internal mechanics
+  // when entering complex input languages such as Chinese, Korean or Japanese.
+  // see: https://github.com/facebook/react-native/issues/19339
+
+  // We try to avoid calling this method as much as we can.
+  // If the text has changed, there is nothing we can do.
+  if (![super.attributedText.string isEqualToString:attributedText.string]) {
+    [super setAttributedText:attributedText];
+  } else {
+  // But if the text is preserved, we just copying the attributes from the source string.
+    if (![super.attributedText isEqualToAttributedString:attributedText]) {
+      [self copyTextAttributesFrom:attributedText];
+    }
+  }
+
   [self textDidChange];
 }
 
@@ -245,6 +270,22 @@ static UIColor *defaultPlaceholderColor()
 {
   BOOL isVisible = _placeholder.length != 0 && self.attributedText.length == 0;
   _placeholderView.hidden = !isVisible;
+}
+
+#pragma mark - Utility Methods
+
+- (void)copyTextAttributesFrom:(NSAttributedString *)sourceString
+{
+  [self.textStorage beginEditing];
+
+  NSTextStorage *textStorage = self.textStorage;
+  [sourceString enumerateAttributesInRange:NSMakeRange(0, sourceString.length)
+                                   options:NSAttributedStringEnumerationReverse
+                                usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
+                                  [textStorage setAttributes:attrs range:range];
+                                }];
+
+  [self.textStorage endEditing];
 }
 
 @end

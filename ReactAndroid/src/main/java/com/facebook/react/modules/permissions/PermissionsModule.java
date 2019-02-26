@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -29,10 +29,11 @@ import java.util.ArrayList;
 /**
  * Module that exposes the Android M Permission system to JS.
  */
-@ReactModule(name = "PermissionsAndroid")
+@ReactModule(name = PermissionsModule.NAME)
 public class PermissionsModule extends ReactContextBaseJavaModule implements PermissionListener {
 
   private static final String ERROR_INVALID_ACTIVITY = "E_INVALID_ACTIVITY";
+  public static final String NAME = "PermissionsAndroid";
   private final SparseArray<Callback> mCallbacks;
   private int mRequestCode = 0;
   private final String GRANTED = "granted";
@@ -46,7 +47,7 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
 
   @Override
   public String getName() {
-    return "PermissionsAndroid";
+    return NAME;
   }
 
   /**
@@ -86,9 +87,9 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
   }
 
   /**
-   * Request the given permission. successCallback is called with true if the permission had been
-   * granted, false otherwise. For devices before Android M, this instead checks if the user has
-   * the permission given or not.
+   * Request the given permission. successCallback is called with GRANTED if the permission had been
+   * granted, DENIED or NEVER_ASK_AGAIN otherwise. For devices before Android M, this checks if the user has
+   * the permission given or not and resolves with GRANTED or DENIED.
    * See {@link Activity#checkSelfPermission}.
    */
   @ReactMethod
@@ -96,7 +97,7 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
     Context context = getReactApplicationContext().getBaseContext();
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
       promise.resolve(context.checkPermission(permission, Process.myPid(), Process.myUid()) ==
-              PackageManager.PERMISSION_GRANTED);
+              PackageManager.PERMISSION_GRANTED ? GRANTED : DENIED);
       return;
     }
     if (context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED) {

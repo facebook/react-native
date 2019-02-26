@@ -1,15 +1,23 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 package com.facebook.react.uimanager;
 
 import android.graphics.Color;
 import android.os.Build;
+import android.support.v4.view.ViewCompat;
 import android.view.View;
 import android.view.ViewParent;
 import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.uimanager.AccessibilityDelegateUtil.AccessibilityRole;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Base class that should be suitable for the majority of subclasses of {@link ViewManager}.
@@ -25,7 +33,10 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final String PROP_RENDER_TO_HARDWARE_TEXTURE = "renderToHardwareTextureAndroid";
   private static final String PROP_ACCESSIBILITY_LABEL = "accessibilityLabel";
   private static final String PROP_ACCESSIBILITY_COMPONENT_TYPE = "accessibilityComponentType";
+  private static final String PROP_ACCESSIBILITY_HINT = "accessibilityHint";
   private static final String PROP_ACCESSIBILITY_LIVE_REGION = "accessibilityLiveRegion";
+  private static final String PROP_ACCESSIBILITY_ROLE = "accessibilityRole";
+  private static final String PROP_ACCESSIBILITY_STATES = "accessibilityStates";
   private static final String PROP_IMPORTANT_FOR_ACCESSIBILITY = "importantForAccessibility";
 
   // DEPRECATED
@@ -36,7 +47,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final String PROP_TRANSLATE_Y = "translateY";
 
   private static final int PERSPECTIVE_ARRAY_INVERTED_CAMERA_DISTANCE_INDEX = 2;
-  private static final float CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER = 5;
+  private static final float CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER = (float)Math.sqrt(5);
 
   /**
    * Used to locate views in end-to-end (UI) tests.
@@ -49,12 +60,12 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static double[] sTransformDecompositionArray = new double[16];
 
   @ReactProp(name = PROP_BACKGROUND_COLOR, defaultInt = Color.TRANSPARENT, customType = "Color")
-  public void setBackgroundColor(T view, int backgroundColor) {
+  public void setBackgroundColor(@Nonnull T view, int backgroundColor) {
     view.setBackgroundColor(backgroundColor);
   }
 
   @ReactProp(name = PROP_TRANSFORM)
-  public void setTransform(T view, ReadableArray matrix) {
+  public void setTransform(@Nonnull T view, @Nullable ReadableArray matrix) {
     if (matrix == null) {
       resetTransformProperty(view);
     } else {
@@ -63,20 +74,17 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   @ReactProp(name = ViewProps.OPACITY, defaultFloat = 1.f)
-  public void setOpacity(T view, float opacity) {
+  public void setOpacity(@Nonnull T view, float opacity) {
     view.setAlpha(opacity);
   }
 
   @ReactProp(name = PROP_ELEVATION)
-  public void setElevation(T view, float elevation) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      view.setElevation(PixelUtil.toPixelFromDIP(elevation));
-    }
-    // Do nothing on API < 21
+  public void setElevation(@Nonnull T view, float elevation) {
+    ViewCompat.setElevation(view, PixelUtil.toPixelFromDIP(elevation));
   }
 
   @ReactProp(name = PROP_Z_INDEX)
-  public void setZIndex(T view, float zIndex) {
+  public void setZIndex(@Nonnull T view, float zIndex) {
     int integerZIndex = Math.round(zIndex);
     ViewGroupManager.setViewZIndex(view, integerZIndex);
     ViewParent parent = view.getParent();
@@ -86,12 +94,12 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   @ReactProp(name = PROP_RENDER_TO_HARDWARE_TEXTURE)
-  public void setRenderToHardwareTexture(T view, boolean useHWTexture) {
+  public void setRenderToHardwareTexture(@Nonnull T view, boolean useHWTexture) {
     view.setLayerType(useHWTexture ? View.LAYER_TYPE_HARDWARE : View.LAYER_TYPE_NONE, null);
   }
 
   @ReactProp(name = PROP_TEST_ID)
-  public void setTestId(T view, String testId) {
+  public void setTestId(@Nonnull T view, String testId) {
     view.setTag(R.id.react_test_id, testId);
 
     // temporarily set the tag and keyed tags to avoid end to end test regressions
@@ -99,78 +107,107 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   @ReactProp(name = PROP_NATIVE_ID)
-  public void setNativeId(T view, String nativeId) {
+  public void setNativeId(@Nonnull T view, String nativeId) {
     view.setTag(R.id.view_tag_native_id, nativeId);
     ReactFindViewUtil.notifyViewRendered(view);
   }
 
   @ReactProp(name = PROP_ACCESSIBILITY_LABEL)
-  public void setAccessibilityLabel(T view, String accessibilityLabel) {
+  public void setAccessibilityLabel(@Nonnull T view, String accessibilityLabel) {
     view.setContentDescription(accessibilityLabel);
   }
 
   @ReactProp(name = PROP_ACCESSIBILITY_COMPONENT_TYPE)
-  public void setAccessibilityComponentType(T view, String accessibilityComponentType) {
+  public void setAccessibilityComponentType(@Nonnull T view, String accessibilityComponentType) {
     AccessibilityHelper.updateAccessibilityComponentType(view, accessibilityComponentType);
   }
 
+  @ReactProp(name = PROP_ACCESSIBILITY_HINT)
+  public void setAccessibilityHint(@Nonnull T view, String accessibilityHint) {
+    view.setTag(R.id.accessibility_hint, accessibilityHint);
+  }
+
+  @ReactProp(name = PROP_ACCESSIBILITY_ROLE)
+  public void setAccessibilityRole(@Nonnull T view, @Nullable String accessibilityRole) {
+    if (accessibilityRole == null) {
+      return;
+    }
+
+    view.setTag(R.id.accessibility_role, AccessibilityRole.fromValue(accessibilityRole));
+  }
+
+  @ReactProp(name = PROP_ACCESSIBILITY_STATES)
+  public void setViewStates(@Nonnull T view, @Nullable ReadableArray accessibilityStates) {
+    view.setSelected(false);
+    view.setEnabled(true);
+    if (accessibilityStates == null) {
+      return;
+    }
+    for (int i = 0; i < accessibilityStates.size(); i++) {
+      String state = accessibilityStates.getString(i);
+      if (state.equals("selected")) {
+        view.setSelected(true);
+      } else if (state.equals("disabled")) {
+        view.setEnabled(false);
+      }
+    }
+  }
+
   @ReactProp(name = PROP_IMPORTANT_FOR_ACCESSIBILITY)
-  public void setImportantForAccessibility(T view, String importantForAccessibility) {
+  public void setImportantForAccessibility(@Nonnull T view, @Nullable String importantForAccessibility) {
     if (importantForAccessibility == null || importantForAccessibility.equals("auto")) {
-      view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+      ViewCompat.setImportantForAccessibility(view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
     } else if (importantForAccessibility.equals("yes")) {
-      view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+      ViewCompat.setImportantForAccessibility(view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES);
     } else if (importantForAccessibility.equals("no")) {
-      view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+      ViewCompat.setImportantForAccessibility(view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO);
     } else if (importantForAccessibility.equals("no-hide-descendants")) {
-      view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+      ViewCompat.setImportantForAccessibility(view, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
     }
   }
 
   @Deprecated
   @ReactProp(name = PROP_ROTATION)
-  public void setRotation(T view, float rotation) {
+  public void setRotation(@Nonnull T view, float rotation) {
     view.setRotation(rotation);
   }
 
   @Deprecated
   @ReactProp(name = PROP_SCALE_X, defaultFloat = 1f)
-  public void setScaleX(T view, float scaleX) {
+  public void setScaleX(@Nonnull T view, float scaleX) {
     view.setScaleX(scaleX);
   }
 
   @Deprecated
   @ReactProp(name = PROP_SCALE_Y, defaultFloat = 1f)
-  public void setScaleY(T view, float scaleY) {
+  public void setScaleY(@Nonnull T view, float scaleY) {
     view.setScaleY(scaleY);
   }
 
   @Deprecated
   @ReactProp(name = PROP_TRANSLATE_X, defaultFloat = 0f)
-  public void setTranslateX(T view, float translateX) {
+  public void setTranslateX(@Nonnull T view, float translateX) {
     view.setTranslationX(PixelUtil.toPixelFromDIP(translateX));
   }
 
   @Deprecated
   @ReactProp(name = PROP_TRANSLATE_Y, defaultFloat = 0f)
-  public void setTranslateY(T view, float translateY) {
+  public void setTranslateY(@Nonnull T view, float translateY) {
     view.setTranslationY(PixelUtil.toPixelFromDIP(translateY));
   }
 
   @ReactProp(name = PROP_ACCESSIBILITY_LIVE_REGION)
-  public void setAccessibilityLiveRegion(T view, String liveRegion) {
-    if (Build.VERSION.SDK_INT >= 19) {
+  public void setAccessibilityLiveRegion(@Nonnull T view, @Nullable String liveRegion) {
       if (liveRegion == null || liveRegion.equals("none")) {
-        view.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_NONE);
+        ViewCompat.setAccessibilityLiveRegion(view, ViewCompat.ACCESSIBILITY_LIVE_REGION_NONE);
       } else if (liveRegion.equals("polite")) {
-        view.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
+        ViewCompat.setAccessibilityLiveRegion(view, ViewCompat.ACCESSIBILITY_LIVE_REGION_POLITE);
       } else if (liveRegion.equals("assertive")) {
-        view.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_ASSERTIVE);
+        ViewCompat.setAccessibilityLiveRegion(view, ViewCompat.ACCESSIBILITY_LIVE_REGION_ASSERTIVE);
       }
-    }
   }
 
-  private static void setTransformProperty(View view, ReadableArray transforms) {
+  private static void setTransformProperty(@Nonnull View view, ReadableArray transforms) {
     TransformHelper.processTransform(transforms, sTransformDecompositionArray);
     MatrixMathHelper.decomposeMatrix(sTransformDecompositionArray, sMatrixDecompositionContext);
     view.setTranslationX(
@@ -195,14 +232,18 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       float scale = DisplayMetricsHolder.getScreenDisplayMetrics().density;
 
       // The following converts the matrix's perspective to a camera distance
-      // such that the camera perspective looks the same on Android and iOS
-      float normalizedCameraDistance = scale * cameraDistance * CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER;
+      // such that the camera perspective looks the same on Android and iOS.
+      // The native Android implementation removed the screen density from the
+      // calculation, so squaring and a normalization value of
+      // sqrt(5) produces an exact replica with iOS.
+      // For more information, see https://github.com/facebook/react-native/pull/18302
+      float normalizedCameraDistance = scale * scale * cameraDistance * CAMERA_DISTANCE_NORMALIZATION_MULTIPLIER;
       view.setCameraDistance(normalizedCameraDistance);
 
     }
   }
 
-  private static void resetTransformProperty(View view) {
+  private static void resetTransformProperty(@Nonnull View view) {
     view.setTranslationX(PixelUtil.toPixelFromDIP(0));
     view.setTranslationY(PixelUtil.toPixelFromDIP(0));
     view.setRotation(0);
@@ -211,5 +252,15 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     view.setScaleX(1);
     view.setScaleY(1);
     view.setCameraDistance(0);
+  }
+
+  private void updateViewAccessibility(@Nonnull T view) {
+    AccessibilityDelegateUtil.setDelegate(view);
+  }
+
+  @Override
+  protected void onAfterUpdateTransaction(@Nonnull T view) {
+    super.onAfterUpdateTransaction(view);
+    updateViewAccessibility(view);
   }
 }

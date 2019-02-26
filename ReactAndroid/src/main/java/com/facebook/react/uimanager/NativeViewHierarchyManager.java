@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,7 +8,7 @@
 package com.facebook.react.uimanager;
 
 import android.content.res.Resources;
-import android.util.Log;
+import android.os.Build;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.view.Menu;
@@ -17,7 +17,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.PopupMenu;
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
+import com.facebook.react.R;
 import com.facebook.react.animation.Animation;
 import com.facebook.react.animation.AnimationListener;
 import com.facebook.react.animation.AnimationRegistry;
@@ -29,7 +31,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.touch.JSResponderHandler;
-import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationListener;
 import com.facebook.systrace.Systrace;
@@ -114,15 +115,28 @@ public class NativeViewHierarchyManager {
     mLayoutAnimationEnabled = enabled;
   }
 
+  public synchronized void updateInstanceHandle(int tag, long instanceHandle) {
+    UiThreadUtil.assertOnUiThread();
+
+    try {
+      updateInstanceHandle(resolveView(tag), instanceHandle);
+    } catch (IllegalViewOperationException e) {
+      FLog.e(TAG, "Unable to update properties for view tag " + tag, e);
+    }
+  }
+
   public synchronized void updateProperties(int tag, ReactStylesDiffMap props) {
     UiThreadUtil.assertOnUiThread();
 
     try {
       ViewManager viewManager = resolveViewManager(tag);
       View viewToUpdate = resolveView(tag);
-      viewManager.updateProperties(viewToUpdate, props);
+
+      if (props != null) {
+        viewManager.updateProperties(viewToUpdate, props);
+      }
     } catch (IllegalViewOperationException e) {
-      Log.e(TAG, "Unable to update properties for view tag " + tag, e);
+      FLog.e(TAG, "Unable to update properties for view tag " + tag, e);
     }
   }
 
@@ -182,7 +196,7 @@ public class NativeViewHierarchyManager {
           parentViewGroupManager = (ViewGroupManager) parentViewManager;
         } else {
           throw new IllegalViewOperationException(
-              "Trying to use view with tag " + tag +
+              "Trying to use view with tag " + parentTag +
                   " as a parent, but its Manager doesn't extends ViewGroupManager");
         }
         if (parentViewGroupManager != null
@@ -195,6 +209,24 @@ public class NativeViewHierarchyManager {
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_VIEW);
     }
+  }
+
+  private void updateInstanceHandle(View viewToUpdate, long instanceHandle) {
+    UiThreadUtil.assertOnUiThread();
+    viewToUpdate.setTag(R.id.view_tag_instance_handle, instanceHandle);
+  }
+
+  @Nullable
+  public long getInstanceHandle(int reactTag) {
+    View view = mTagsToViews.get(reactTag);
+    if (view == null) {
+      throw new IllegalViewOperationException("Unable to find view for tag: " + reactTag);
+    }
+    Long instanceHandle = (Long) view.getTag(R.id.view_tag_instance_handle);
+    if (instanceHandle == null) {
+      throw new IllegalViewOperationException("Unable to find instanceHandle for tag: " + reactTag);
+    }
+    return instanceHandle;
   }
 
   private void updateLayout(View viewToUpdate, int x, int y, int width, int height) {
@@ -346,6 +378,11 @@ public class NativeViewHierarchyManager {
                       tagsToDelete));
         }
         if (indexToRemove >= viewManager.getChildCount(viewToManage)) {
+          if (mRootTags.get(tag) && viewManager.getChildCount(viewToManage) == 0) {
+            // This root node has already been removed (likely due to a threading issue caused by
+            // async js execution). Ignore this root removal.
+            return;
+          }
           throw new IllegalViewOperationException(
               "Trying to remove a view index above child " +
                   "count " + indexToRemove + " view tag: " + tag + "\n detail: " +
@@ -495,22 +532,18 @@ public class NativeViewHierarchyManager {
   /**
    * See {@link UIManagerModule#addRootView}.
    */
-  public synchronized void addRootView(
-      int tag,
-      SizeMonitoringFrameLayout view,
-      ThemedReactContext themedContext) {
-    addRootViewGroup(tag, view, themedContext);
+  public synchronized void addRootView(int tag, View view) {
+    addRootViewGroup(tag, view);
   }
 
-  protected synchronized final void addRootViewGroup(
-      int tag,
-      ViewGroup view,
-      ThemedReactContext themedContext) {
+  protected synchronized final void addRootViewGroup(int tag, View view) {
     if (view.getId() != View.NO_ID) {
-      throw new IllegalViewOperationException(
-          "Trying to add a root view with an explicit id already set. React Native uses " +
-          "the id field to track react tags and will overwrite this field. If that is fine, " +
-          "explicitly overwrite the id field to View.NO_ID before calling addRootView.");
+      FLog.e(
+        TAG,
+        "Trying to add a root view with an explicit id (" + view.getId() + ") already " +
+        "set. React Native uses the id field to track react tags and will overwrite this field. " +
+        "If that is fine, explicitly overwrite the id field to View.NO_ID before calling " +
+        "addRootView.");
     }
 
     mTagsToViews.put(tag, view);
@@ -524,6 +557,11 @@ public class NativeViewHierarchyManager {
    */
   protected synchronized void dropView(View view) {
     UiThreadUtil.assertOnUiThread();
+    if (mTagsToViewManagers.get(view.getId()) == null) {
+      // This view has already been dropped (likely due to a threading issue caused by async js
+      // execution). Ignore this drop operation.
+      return;
+    }
     if (!mRootTags.get(view.getId())) {
       // For non-root views we notify viewmanager with {@link ViewManager#onDropInstance}
       resolveViewManager(view.getId()).onDropViewInstance(view);
@@ -534,7 +572,9 @@ public class NativeViewHierarchyManager {
       ViewGroupManager viewGroupManager = (ViewGroupManager) viewManager;
       for (int i = viewGroupManager.getChildCount(viewGroup) - 1; i >= 0; i--) {
         View child = viewGroupManager.getChildAt(viewGroup, i);
-        if (mTagsToViews.get(child.getId()) != null) {
+        if (child == null) {
+            FLog.e(TAG, "Unable to drop null child view");
+        } else if (mTagsToViews.get(child.getId()) != null) {
           dropView(child);
         }
       }

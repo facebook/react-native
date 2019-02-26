@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,30 +11,53 @@
 'use strict';
 
 const ListView = require('ListView');
-const PropTypes = require('prop-types');
 const React = require('React');
 const SwipeableListViewDataSource = require('SwipeableListViewDataSource');
 const SwipeableRow = require('SwipeableRow');
 
-type DefaultProps = {
-  bounceFirstRowOnMount: boolean,
-  renderQuickActions: Function,
-};
+type ListViewProps = React.ElementConfig<typeof ListView>;
 
-type Props = {
+type Props = $ReadOnly<{|
+  ...ListViewProps,
+
+  /**
+   * To alert the user that swiping is possible, the first row can bounce
+   * on component mount.
+   */
   bounceFirstRowOnMount: boolean,
+  /**
+   * Use `SwipeableListView.getNewDataSource()` to get a data source to use,
+   * then use it just like you would a normal ListView data source
+   */
   dataSource: SwipeableListViewDataSource,
+  /**
+   * Maximum distance to open to after a swipe
+   */
   maxSwipeDistance:
     | number
-    | ((rowData: any, sectionID: string, rowID: string) => number),
+    | ((rowData: Object, sectionID: string, rowID: string) => number),
   onScroll?: ?Function,
-  renderRow: Function,
-  renderQuickActions: Function,
-};
+  /**
+   * Callback method to render the swipeable view
+   */
+  renderRow: (
+    rowData: Object,
+    sectionID: string,
+    rowID: string,
+  ) => React.Element<any>,
+  /**
+   * Callback method to render the view that will be unveiled on swipe
+   */
+  renderQuickActions: (
+    rowData: Object,
+    sectionID: string,
+    rowID: string,
+  ) => ?React.Element<any>,
+|}>;
 
-type State = {
+type State = {|
   dataSource: Object,
-};
+|};
 
 /**
  * A container component that renders multiple SwipeableRow's in a ListView
@@ -69,26 +92,6 @@ class SwipeableListView extends React.Component<Props, State> {
       sectionHeaderHasChanged: (s1, s2) => s1 !== s2,
     });
   }
-
-  static propTypes = {
-    /**
-     * To alert the user that swiping is possible, the first row can bounce
-     * on component mount.
-     */
-    bounceFirstRowOnMount: PropTypes.bool.isRequired,
-    /**
-     * Use `SwipeableListView.getNewDataSource()` to get a data source to use,
-     * then use it just like you would a normal ListView data source
-     */
-    dataSource: PropTypes.instanceOf(SwipeableListViewDataSource).isRequired,
-    // Maximum distance to open to after a swipe
-    maxSwipeDistance: PropTypes.oneOfType([PropTypes.number, PropTypes.func])
-      .isRequired,
-    // Callback method to render the swipeable view
-    renderRow: PropTypes.func.isRequired,
-    // Callback method to render the view that will be unveiled on swipe
-    renderQuickActions: PropTypes.func.isRequired,
-  };
 
   static defaultProps = {
     bounceFirstRowOnMount: false,

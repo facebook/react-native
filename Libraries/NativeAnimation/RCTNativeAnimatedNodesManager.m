@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -30,7 +30,7 @@
 
 @implementation RCTNativeAnimatedNodesManager
 {
-  __weak RCTUIManager *_uiManager;
+  __weak RCTBridge *_bridge;
   NSMutableDictionary<NSNumber *, RCTAnimatedNode *> *_animationNodes;
   // Mapping of a view tag and an event name to a list of event animation drivers. 99% of the time
   // there will be only one driver per mapping so all code code should be optimized around that.
@@ -39,10 +39,10 @@
   CADisplayLink *_displayLink;
 }
 
-- (instancetype)initWithUIManager:(nonnull RCTUIManager *)uiManager
+- (instancetype)initWithBridge:(nonnull RCTBridge *)bridge
 {
   if ((self = [super init])) {
-    _uiManager = uiManager;
+    _bridge = bridge;
     _animationNodes = [NSMutableDictionary new];
     _eventDrivers = [NSMutableDictionary new];
     _activeAnimations = [NSMutableSet new];
@@ -124,7 +124,7 @@
 {
   RCTAnimatedNode *node = _animationNodes[nodeTag];
   if ([node isKindOfClass:[RCTPropsAnimatedNode class]]) {
-    [(RCTPropsAnimatedNode *)node connectToView:viewTag viewName:viewName uiManager:_uiManager];
+    [(RCTPropsAnimatedNode *)node connectToView:viewTag viewName:viewName bridge:_bridge];
   }
   [node setNeedsUpdate];
 }

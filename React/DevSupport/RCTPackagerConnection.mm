@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -71,7 +71,7 @@ struct Registration {
      addObserverForName:RCTBundleURLProviderUpdatedNotification
      object:nil
      queue:[NSOperationQueue mainQueue]
-     usingBlock:^(NSNotification *_Nonnull note) {
+     usingBlock:^(NSNotification *_Nonnull __unused note) {
        [weakSelf bundleURLSettingsChanged];
      }];
   }
@@ -198,7 +198,7 @@ static BOOL isSupportedVersion(NSNumber *version)
 
 #pragma mark - RCTReconnectingWebSocketDelegate
 
-- (void)reconnectingWebSocketDidOpen:(RCTReconnectingWebSocket *)webSocket
+- (void)reconnectingWebSocketDidOpen:(__unused RCTReconnectingWebSocket *)webSocket
 {
   std::vector<Registration<RCTConnectedHandler>> registrations;
   {
@@ -259,7 +259,7 @@ static BOOL isSupportedVersion(NSNumber *version)
   }
 }
 
-- (void)reconnectingWebSocketDidClose:(RCTReconnectingWebSocket *)webSocket
+- (void)reconnectingWebSocketDidClose:(__unused RCTReconnectingWebSocket *)webSocket
 {
   std::lock_guard<std::mutex> l(_mutex);
   _socketConnected = NO;

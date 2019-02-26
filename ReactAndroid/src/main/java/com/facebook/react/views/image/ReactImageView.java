@@ -1,5 +1,6 @@
+
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -30,7 +31,6 @@ import com.facebook.drawee.controller.ControllerListener;
 import com.facebook.drawee.controller.ForwardingControllerListener;
 import com.facebook.drawee.drawable.AutoRotateDrawable;
 import com.facebook.drawee.drawable.RoundedColorDrawable;
-
 import com.facebook.drawee.drawable.ScalingUtils;
 import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
@@ -53,7 +53,6 @@ import com.facebook.react.uimanager.FloatUtil;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
-import com.facebook.react.views.image.ImageResizeMode;
 import com.facebook.react.views.imagehelper.ImageSource;
 import com.facebook.react.views.imagehelper.MultiSourceHelper;
 import com.facebook.react.views.imagehelper.MultiSourceHelper.MultiSourceResult;
@@ -71,6 +70,9 @@ import javax.annotation.Nullable;
 public class ReactImageView extends GenericDraweeView {
 
   public static final int REMOTE_IMAGE_FADE_DURATION_MS = 300;
+
+  public static final String REMOTE_TRANSPARENT_BITMAP_URI =
+    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
 
   private static float[] sComputedCornerRadii = new float[4];
 
@@ -234,8 +236,7 @@ public class ReactImageView extends GenericDraweeView {
     if (!shouldNotify) {
       mControllerListener = null;
     } else {
-      final EventDispatcher mEventDispatcher = ((ReactContext) getContext()).
-        getNativeModule(UIManagerModule.class).getEventDispatcher();
+      final EventDispatcher mEventDispatcher = ((ReactContext) getContext()).getNativeModule(UIManagerModule.class).getEventDispatcher();
 
       mControllerListener = new BaseControllerListener<ImageInfo>() {
         @Override
@@ -261,9 +262,8 @@ public class ReactImageView extends GenericDraweeView {
         @Override
         public void onFailure(String id, Throwable throwable) {
           mEventDispatcher.dispatchEvent(
-            new ImageLoadEvent(getId(), ImageLoadEvent.ON_ERROR));
-          mEventDispatcher.dispatchEvent(
-            new ImageLoadEvent(getId(), ImageLoadEvent.ON_LOAD_END));
+            new ImageLoadEvent(getId(), ImageLoadEvent.ON_ERROR,
+              true, throwable.getMessage()));
         }
       };
     }
@@ -341,7 +341,10 @@ public class ReactImageView extends GenericDraweeView {
 
   public void setSource(@Nullable ReadableArray sources) {
     mSources.clear();
-    if (sources != null && sources.size() != 0) {
+    if (sources == null || sources.size() == 0) {
+      ImageSource imageSource = new ImageSource(getContext(), REMOTE_TRANSPARENT_BITMAP_URI);
+      mSources.add(imageSource);
+    } else {
       // Optimize for the case where we have just one uri, case in which we don't need the sizes
       if (sources.size() == 1) {
         ReadableMap source = sources.getMap(0);
@@ -435,7 +438,7 @@ public class ReactImageView extends GenericDraweeView {
     hierarchy.setActualImageScaleType(mScaleType);
 
     if (mDefaultImageDrawable != null) {
-      hierarchy.setPlaceholderImage(mDefaultImageDrawable, ScalingUtils.ScaleType.CENTER);
+      hierarchy.setPlaceholderImage(mDefaultImageDrawable, mScaleType);
     }
 
     if (mLoadingImageDrawable != null) {
@@ -575,9 +578,9 @@ public class ReactImageView extends GenericDraweeView {
   private void setSourceImage() {
     mImageSource = null;
     if (mSources.isEmpty()) {
-      return;
-    }
-    if (hasMultipleSources()) {
+      ImageSource imageSource = new ImageSource(getContext(), REMOTE_TRANSPARENT_BITMAP_URI);
+      mSources.add(imageSource);
+    } else if (hasMultipleSources()) {
       MultiSourceResult multiSource =
         MultiSourceHelper.getBestSourceForSize(getWidth(), getHeight(), mSources);
       mImageSource = multiSource.getBestResult();
@@ -612,4 +615,3 @@ public class ReactImageView extends GenericDraweeView {
     }
   }
 }
-

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,8 +12,9 @@
 const Platform = require('Platform');
 const Systrace = require('Systrace');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 const {Timing} = require('NativeModules');
+const BatchedBridge = require('BatchedBridge');
 
 import type {ExtendedError} from 'parseErrorStack';
 
@@ -493,5 +494,9 @@ if (!Timing) {
 } else {
   ExportedJSTimers = JSTimers;
 }
+
+BatchedBridge.setImmediatesCallback(
+  ExportedJSTimers.callImmediates.bind(ExportedJSTimers),
+);
 
 module.exports = ExportedJSTimers;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -127,8 +127,10 @@ static id RCTPropChecker(NSString *prop, NSNumber *value)
 {
   [super setUp];
 
+  RCTBridge *bridge = [OCMockObject niceMockForClass:[RCTBridge class]];
   _uiManager = [OCMockObject niceMockForClass:[RCTUIManager class]];
-  _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithUIManager:_uiManager];
+  OCMStub([bridge uiManager]).andReturn(_uiManager);
+  _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:bridge];
   _displayLink = [RCTFakeDisplayLink new];
 }
 

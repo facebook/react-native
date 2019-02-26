@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #pragma once
 
@@ -7,6 +10,10 @@
 
 #include <cxxreact/NativeModule.h>
 #include <folly/dynamic.h>
+
+#ifndef RN_EXPORT
+#define RN_EXPORT __attribute__((visibility("default")))
+#endif
 
 namespace facebook {
 namespace react {
@@ -42,7 +49,7 @@ public:
   virtual ~JSExecutorFactory() {}
 };
 
-class JSExecutor {
+class RN_EXPORT JSExecutor {
 public:
   /**
    * Execute an application script bundle in the JS context.
@@ -75,8 +82,7 @@ public:
    */
   virtual void invokeCallback(const double callbackId, const folly::dynamic& arguments) = 0;
 
-  virtual void setGlobalVariable(std::string propName,
-                                 std::unique_ptr<const JSBigString> jsonValue) = 0;
+  virtual void setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue) = 0;
 
   virtual void* getJavaScriptContext() {
     return nullptr;
@@ -97,7 +103,7 @@ public:
    */
   virtual std::string getDescription() = 0;
 
-  virtual void handleMemoryPressure(int pressureLevel) {}
+  virtual void handleMemoryPressure(__unused int pressureLevel) {}
 
   virtual void destroy() {}
   virtual ~JSExecutor() {}

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -24,7 +24,7 @@ const {
   View,
 } = ReactNative;
 
-type Item = {
+export type Item = {
   title: string,
   text: string,
   key: string,
@@ -38,7 +38,7 @@ function genItemData(count: number, start: number = 0): Array<Item> {
     const itemHash = Math.abs(hashCode('Item ' + ii));
     dataBlob.push({
       title: 'Item ' + ii,
-      text: LOREM_IPSUM.substr(0, itemHash % 301 + 20),
+      text: LOREM_IPSUM.substr(0, (itemHash % 301) + 20),
       key: String(ii),
       pressed: false,
     });
@@ -237,7 +237,7 @@ function pressItem(context: Object, key: string) {
 }
 
 function renderSmallSwitchOption(context: Object, key: string) {
-  if (Platform.isTVOS) {
+  if (Platform.isTV) {
     return null;
   }
   return (

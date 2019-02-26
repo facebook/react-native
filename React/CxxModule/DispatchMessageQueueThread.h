@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -28,7 +28,7 @@ public:
       dispatch_async(queue, block);
     }
   }
-  void runOnQueueSync(std::function<void()>&& func) override {
+  void runOnQueueSync(std::function<void()>&& __unused func) override {
     LOG(FATAL) << "Unsupported operation";
   }
   void quitSynchronous() override {
