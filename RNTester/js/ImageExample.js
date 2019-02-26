@@ -93,7 +93,7 @@ class NetworkImageCallbackExample extends React.Component<
                     `✔ Prefetch OK (+${new Date() - mountTime}ms)`,
                   );
                   Image.queryCache([IMAGE_PREFETCH_URL]).then(map => {
-                    const result = map.get(IMAGE_PREFETCH_URL);
+                    const result = map[IMAGE_PREFETCH_URL];
                     if (result) {
                       this._loadEventFired(
                         `✔ queryCache "${result}" (+${new Date() -
