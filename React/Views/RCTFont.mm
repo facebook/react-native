@@ -142,19 +142,8 @@ static UIFont *cachedSystemFont(CGFloat size, RCTFontWeight weight)
     if (defaultFontHandler) {
       NSString *fontWeightDescription = FontWeightDescriptionFromUIFontWeight(weight);
       font = defaultFontHandler(size, fontWeightDescription);
-    } else if ([UIFont respondsToSelector:@selector(systemFontOfSize:weight:)]) {
-      // Only supported on iOS8.2 and above
-      font = [UIFont systemFontOfSize:size weight:weight];
     } else {
-      if (weight >= UIFontWeightBold) {
-        font = [UIFont boldSystemFontOfSize:size];
-      } else if (weight >= UIFontWeightMedium) {
-        font = [UIFont fontWithName:@"HelveticaNeue-Medium" size:size];
-      } else if (weight <= UIFontWeightLight) {
-        font = [UIFont fontWithName:@"HelveticaNeue-Light" size:size];
-      } else {
-        font = [UIFont systemFontOfSize:size];
-      }
+      font = [UIFont systemFontOfSize:size weight:weight];
     }
 
     {
