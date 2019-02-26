@@ -369,15 +369,10 @@ public class DevServerHelper {
   }
 
   private String getInspectorAttachUrl(Context context, String title) {
-
-    Resources resources = context.getResources();
-
-    Integer port = resources.getInteger(R.integer.REACT_NATIVE_DEV_SERVER_PORT);
-
     return String.format(
         Locale.US,
         "http://%s/nuclide/attach-debugger-nuclide?title=%s&app=%s&device=%s",
-        AndroidInfoHelpers.getServerHost(port),
+        AndroidInfoHelpers.getServerHost(context),
         title,
         mPackageName,
         AndroidInfoHelpers.getFriendlyDeviceName());

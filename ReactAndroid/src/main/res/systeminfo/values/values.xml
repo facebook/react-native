@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <integer name="REACT_NATIVE_DEV_SERVER_PORT">8081</integer>
+</resources>

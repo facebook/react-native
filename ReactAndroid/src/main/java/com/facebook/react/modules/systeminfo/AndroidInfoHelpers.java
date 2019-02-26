@@ -11,9 +11,12 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.os.Build;
 
 import com.facebook.common.logging.FLog;
+import com.facebook.react.R;
 import com.facebook.react.common.build.ReactBuildConfig;
 
 public class AndroidInfoHelpers {
@@ -41,8 +44,16 @@ public class AndroidInfoHelpers {
     return getServerIpAddress(port);
   }
 
+  public static String getServerHost(Context context) {
+    return getServerIpAddress(getDevServerPort(context));
+  }
+
   public static String getAdbReverseTcpCommand(Integer port) {
     return "adb reverse tcp:" + port + " tcp:" + port;
+  }
+
+  public static String getAdbReverseTcpCommand(Context context) {
+    return getAdbReverseTcpCommand(getDevServerPort(context));
   }
 
   public static String getInspectorProxyHost() {
@@ -57,6 +68,11 @@ public class AndroidInfoHelpers {
     } else {
       return Build.MODEL + " - " + Build.VERSION.RELEASE + " - API " + Build.VERSION.SDK_INT;
     }
+  }
+
+  private static Integer getDevServerPort(Context context) {
+    Resources resources = context.getResources();
+    return resources.getInteger(R.integer.REACT_NATIVE_DEV_SERVER_PORT);
   }
 
   private static String getServerIpAddress(int port) {

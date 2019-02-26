@@ -7,18 +7,16 @@
 
 package com.facebook.react.packagerconnection;
 
-import javax.annotation.Nullable;
-
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.R;
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers;
+
+import javax.annotation.Nullable;
 
 public class PackagerConnectionSettings {
   private static final String TAG = PackagerConnectionSettings.class.getSimpleName();
@@ -26,15 +24,12 @@ public class PackagerConnectionSettings {
 
   private final SharedPreferences mPreferences;
   private final String mPackageName;
-  private final Integer mServerPort;
+  private final Context mAppContext;
 
   public PackagerConnectionSettings(Context applicationContext) {
     mPreferences = PreferenceManager.getDefaultSharedPreferences(applicationContext);
     mPackageName = applicationContext.getPackageName();
-
-    Resources resources = applicationContext.getResources();
-
-    mServerPort = resources.getInteger(R.integer.REACT_NATIVE_DEV_SERVER_PORT);
+    mAppContext = applicationContext;
   }
 
   public String getDebugServerHost() {
@@ -46,12 +41,12 @@ public class PackagerConnectionSettings {
       return Assertions.assertNotNull(hostFromSettings);
     }
 
-    String host = AndroidInfoHelpers.getServerHost(mServerPort);
+    String host = AndroidInfoHelpers.getServerHost(mAppContext);
 
     if (host.equals(AndroidInfoHelpers.DEVICE_LOCALHOST)) {
       FLog.w(
         TAG,
-        "You seem to be running on device. Run '" + AndroidInfoHelpers.getAdbReverseTcpCommand(mServerPort) + "' " +
+        "You seem to be running on device. Run '" + AndroidInfoHelpers.getAdbReverseTcpCommand(mAppContext) + "' " +
           "to forward the debug server's port to the device.");
     }
 
