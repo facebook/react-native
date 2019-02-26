@@ -155,7 +155,9 @@ function abortPrefetch(requestId: number) {
  *
  * See https://facebook.github.io/react-native/docs/image.html#querycache
  */
-async function queryCache(urls: Array<string>): Promise<any> {
+async function queryCache(
+  urls: Array<string>,
+): Promise<{string: 'memory' | 'disk' | 'disk/memory'}> {
   return await ImageLoader.queryCache(urls);
 }
 
