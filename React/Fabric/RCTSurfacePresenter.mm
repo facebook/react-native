@@ -16,17 +16,18 @@
 #import <React/RCTBridge+Private.h>
 #import <React/RCTComponentViewRegistry.h>
 #import <React/RCTFabricSurface.h>
+#import <React/RCTFollyConvert.h>
 #import <React/RCTImageLoader.h>
 #import <React/RCTMountingManager.h>
 #import <React/RCTMountingManagerDelegate.h>
 #import <React/RCTScheduler.h>
 #import <React/RCTSurfaceRegistry.h>
-#import <React/RCTSurfaceView.h>
 #import <React/RCTSurfaceView+Internal.h>
+#import <React/RCTSurfaceView.h>
 #import <React/RCTUtils.h>
-#import <react/core/LayoutContext.h>
-#import <react/core/LayoutConstraints.h>
 #import <react/components/root/RootShadowNode.h>
+#import <react/core/LayoutConstraints.h>
+#import <react/core/LayoutContext.h>
 #import <react/imagemanager/ImageManager.h>
 #import <react/uimanager/ContextContainer.h>
 
@@ -59,6 +60,7 @@ using namespace facebook::react;
   if (self = [super init]) {
     _bridge = bridge;
     _batchedBridge = [_bridge batchedBridge] ?: _bridge;
+    [_batchedBridge setSurfacePresenter:self];
 
     _surfaceRegistry = [[RCTSurfaceRegistry alloc] init];
 
@@ -159,6 +161,29 @@ using namespace facebook::react;
   [self._scheduler constraintSurfaceLayoutWithLayoutConstraints:layoutConstraints
                                                   layoutContext:layoutContext
                                                       surfaceId:surface.rootTag];
+}
+
+- (BOOL)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag props:(NSDictionary *)props
+{
+  ReactTag tag = [reactTag integerValue];
+  UIView<RCTComponentViewProtocol> *componentView = [_mountingManager.componentViewRegistry componentViewByTag:tag];
+  if (componentView == nil) {
+    return NO; // This view probably isn't managed by Fabric
+  }
+  ComponentHandle handle = [[componentView class] componentHandle];
+  const facebook::react::ComponentDescriptor &componentDescriptor = [self._scheduler getComponentDescriptor:handle];
+
+  // Note: we use an empty object for `oldProps` to rely on the diffing algorithm internal to the
+  // RCTComponentViewProtocol::updateProps method. If there is a bug in that diffing, some props
+  // could get reset. One way around this would be to require all RCTComponentViewProtocol
+  // implementations to expose their current props so we could clone them, but that could be
+  // problematic for threading and other reasons.
+  facebook::react::SharedProps newProps =
+      componentDescriptor.cloneProps(nullptr, RawProps(convertIdToFollyDynamic(props)));
+  facebook::react::SharedProps oldProps = componentDescriptor.cloneProps(nullptr, RawProps(folly::dynamic::object()));
+
+  [self->_mountingManager synchronouslyUpdateViewOnUIThread:tag oldProps:oldProps newProps:newProps];
+  return YES;
 }
 
 #pragma mark - Private

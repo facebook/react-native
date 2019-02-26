@@ -12,6 +12,7 @@
     "flowtype",
     "prettier",
     "react",
+    "react-hooks",
     "react-native",
     "jest",
   ],
@@ -240,6 +241,10 @@
     "react/self-closing-comp": 1,
     "react/wrap-multilines": 0,
 
+  // React-Hooks Plugin
+  // The following rules are made available via `eslint-plugin-react-hooks`
+    "react-hooks/rules-of-hooks": "error",
+
   // React-Native Plugin
   // The following rules are made available via `eslint-plugin-react-native`
 
@@ -254,6 +259,14 @@
   },
 
   "overrides": [
+    {
+      "files": [
+        "packages/react-native-symbolicate/**/*.js",
+      ],
+      "env": {
+        "node": true,
+      },
+    },
     {
       "files": [
         "**/__fixtures__/**/*.js",

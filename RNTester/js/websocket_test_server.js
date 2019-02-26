@@ -33,7 +33,6 @@ const server = new WebSocket.Server({port: 5555});
 server.on('connection', ws => {
   ws.on('message', message => {
     console.log('Received message:', message);
-    console.log('Cookie:', ws.upgradeReq.headers.cookie);
     if (respondWithBinary) {
       message = Buffer.from(message);
     }

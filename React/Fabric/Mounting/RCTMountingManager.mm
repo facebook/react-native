@@ -7,24 +7,24 @@
 
 #import "RCTMountingManager.h"
 
-#import <react/core/LayoutableShadowNode.h>
-#import <react/debug/SystraceSection.h>
 #import <React/RCTAssert.h>
 #import <React/RCTUtils.h>
+#import <react/core/LayoutableShadowNode.h>
+#import <react/debug/SystraceSection.h>
 
 #import "RCTComponentViewProtocol.h"
 #import "RCTComponentViewRegistry.h"
 #import "RCTMountItemProtocol.h"
 
-#import "RCTCreateMountItem.h"
 #import "RCTConversions.h"
+#import "RCTCreateMountItem.h"
 #import "RCTDeleteMountItem.h"
 #import "RCTInsertMountItem.h"
 #import "RCTRemoveMountItem.h"
-#import "RCTUpdatePropsMountItem.h"
 #import "RCTUpdateEventEmitterMountItem.h"
-#import "RCTUpdateLocalDataMountItem.h"
 #import "RCTUpdateLayoutMetricsMountItem.h"
+#import "RCTUpdateLocalDataMountItem.h"
+#import "RCTUpdatePropsMountItem.h"
 
 using namespace facebook::react;
 
@@ -39,8 +39,7 @@ using namespace facebook::react;
   return self;
 }
 
-- (void)performTransactionWithMutations:(facebook::react::ShadowViewMutationList)mutations
-                                rootTag:(ReactTag)rootTag
+- (void)performTransactionWithMutations:(facebook::react::ShadowViewMutationList)mutations rootTag:(ReactTag)rootTag
 {
   NSMutableArray<RCTMountItemProtocol> *mountItems;
 
@@ -48,22 +47,23 @@ using namespace facebook::react;
     // This section is measured separately from `_performMountItems:rootTag:` because that can be asynchronous.
     SystraceSection s("-[RCTMountingManager performTransactionWithMutations:rootTag:]");
 
-    mountItems = [[NSMutableArray<RCTMountItemProtocol> alloc] initWithCapacity:mutations.size() * 2 /* ~ the worst case */];
+    mountItems =
+        [[NSMutableArray<RCTMountItemProtocol> alloc] initWithCapacity:mutations.size() * 2 /* ~ the worst case */];
 
     for (const auto &mutation : mutations) {
       switch (mutation.type) {
         case ShadowViewMutation::Create: {
           RCTCreateMountItem *mountItem =
-            [[RCTCreateMountItem alloc] initWithComponentHandle:mutation.newChildShadowView.componentHandle
-                                                            tag:mutation.newChildShadowView.tag];
+              [[RCTCreateMountItem alloc] initWithComponentHandle:mutation.newChildShadowView.componentHandle
+                                                              tag:mutation.newChildShadowView.tag];
           [mountItems addObject:mountItem];
           break;
         }
 
         case ShadowViewMutation::Delete: {
           RCTDeleteMountItem *mountItem =
-            [[RCTDeleteMountItem alloc] initWithComponentHandle:mutation.oldChildShadowView.componentHandle
-                                                            tag:mutation.oldChildShadowView.tag];
+              [[RCTDeleteMountItem alloc] initWithComponentHandle:mutation.oldChildShadowView.componentHandle
+                                                              tag:mutation.oldChildShadowView.tag];
           [mountItems addObject:mountItem];
           break;
         }
@@ -75,38 +75,39 @@ using namespace facebook::react;
                                                                     newProps:mutation.newChildShadowView.props]];
 
           // EventEmitter
-          [mountItems addObject:[[RCTUpdateEventEmitterMountItem alloc] initWithTag:mutation.newChildShadowView.tag
-                                                                       eventEmitter:mutation.newChildShadowView.eventEmitter]];
+          [mountItems
+              addObject:[[RCTUpdateEventEmitterMountItem alloc] initWithTag:mutation.newChildShadowView.tag
+                                                               eventEmitter:mutation.newChildShadowView.eventEmitter]];
 
           // LocalData
           if (mutation.newChildShadowView.localData) {
-            [mountItems addObject:[[RCTUpdateLocalDataMountItem alloc] initWithTag:mutation.newChildShadowView.tag
-                                                                      oldLocalData:nullptr
-                                                                      newLocalData:mutation.newChildShadowView.localData]];
+            [mountItems
+                addObject:[[RCTUpdateLocalDataMountItem alloc] initWithTag:mutation.newChildShadowView.tag
+                                                              oldLocalData:nullptr
+                                                              newLocalData:mutation.newChildShadowView.localData]];
           }
 
           // Layout
           if (mutation.newChildShadowView.layoutMetrics != EmptyLayoutMetrics) {
-            [mountItems addObject:[[RCTUpdateLayoutMetricsMountItem alloc] initWithTag:mutation.newChildShadowView.tag
-                                                                      oldLayoutMetrics:{}
-                                                                      newLayoutMetrics:mutation.newChildShadowView.layoutMetrics]];
+            [mountItems addObject:[[RCTUpdateLayoutMetricsMountItem alloc]
+                                           initWithTag:mutation.newChildShadowView.tag
+                                      oldLayoutMetrics:{}
+                                      newLayoutMetrics:mutation.newChildShadowView.layoutMetrics]];
           }
 
           // Insertion
-          RCTInsertMountItem *mountItem =
-            [[RCTInsertMountItem alloc] initWithChildTag:mutation.newChildShadowView.tag
-                                               parentTag:mutation.parentShadowView.tag
-                                                   index:mutation.index];
+          RCTInsertMountItem *mountItem = [[RCTInsertMountItem alloc] initWithChildTag:mutation.newChildShadowView.tag
+                                                                             parentTag:mutation.parentShadowView.tag
+                                                                                 index:mutation.index];
           [mountItems addObject:mountItem];
 
           break;
         }
 
         case ShadowViewMutation::Remove: {
-          RCTRemoveMountItem *mountItem =
-            [[RCTRemoveMountItem alloc] initWithChildTag:mutation.oldChildShadowView.tag
-                                               parentTag:mutation.parentShadowView.tag
-                                                   index:mutation.index];
+          RCTRemoveMountItem *mountItem = [[RCTRemoveMountItem alloc] initWithChildTag:mutation.oldChildShadowView.tag
+                                                                             parentTag:mutation.parentShadowView.tag
+                                                                                 index:mutation.index];
           [mountItems addObject:mountItem];
           break;
         }
@@ -118,35 +119,35 @@ using namespace facebook::react;
           // Props
           if (oldChildShadowView.props != newChildShadowView.props) {
             RCTUpdatePropsMountItem *mountItem =
-              [[RCTUpdatePropsMountItem alloc] initWithTag:mutation.oldChildShadowView.tag
-                                                  oldProps:mutation.oldChildShadowView.props
-                                                  newProps:mutation.newChildShadowView.props];
+                [[RCTUpdatePropsMountItem alloc] initWithTag:mutation.oldChildShadowView.tag
+                                                    oldProps:mutation.oldChildShadowView.props
+                                                    newProps:mutation.newChildShadowView.props];
             [mountItems addObject:mountItem];
           }
 
           // EventEmitter
           if (oldChildShadowView.eventEmitter != newChildShadowView.eventEmitter) {
             RCTUpdateEventEmitterMountItem *mountItem =
-              [[RCTUpdateEventEmitterMountItem alloc] initWithTag:mutation.oldChildShadowView.tag
-                                                     eventEmitter:mutation.oldChildShadowView.eventEmitter];
+                [[RCTUpdateEventEmitterMountItem alloc] initWithTag:mutation.oldChildShadowView.tag
+                                                       eventEmitter:mutation.oldChildShadowView.eventEmitter];
             [mountItems addObject:mountItem];
           }
 
           // LocalData
           if (oldChildShadowView.localData != newChildShadowView.localData) {
             RCTUpdateLocalDataMountItem *mountItem =
-              [[RCTUpdateLocalDataMountItem alloc] initWithTag:newChildShadowView.tag
-                                                  oldLocalData:oldChildShadowView.localData
-                                                  newLocalData:newChildShadowView.localData];
+                [[RCTUpdateLocalDataMountItem alloc] initWithTag:newChildShadowView.tag
+                                                    oldLocalData:oldChildShadowView.localData
+                                                    newLocalData:newChildShadowView.localData];
             [mountItems addObject:mountItem];
           }
 
           // Layout
           if (oldChildShadowView.layoutMetrics != newChildShadowView.layoutMetrics) {
             RCTUpdateLayoutMetricsMountItem *mountItem =
-              [[RCTUpdateLayoutMetricsMountItem alloc] initWithTag:mutation.oldChildShadowView.tag
-                                                  oldLayoutMetrics:oldChildShadowView.layoutMetrics
-                                                  newLayoutMetrics:newChildShadowView.layoutMetrics];
+                [[RCTUpdateLayoutMetricsMountItem alloc] initWithTag:mutation.oldChildShadowView.tag
+                                                    oldLayoutMetrics:oldChildShadowView.layoutMetrics
+                                                    newLayoutMetrics:newChildShadowView.layoutMetrics];
             [mountItems addObject:mountItem];
           }
 
@@ -161,8 +162,7 @@ using namespace facebook::react;
   });
 }
 
-- (void)_performMountItems:(NSArray<RCTMountItemProtocol> *)mountItems
-                   rootTag:(ReactTag)rootTag
+- (void)_performMountItems:(NSArray<RCTMountItemProtocol> *)mountItems rootTag:(ReactTag)rootTag
 {
   SystraceSection s("-[RCTMountingManager _performMountItems:rootTag:]");
   RCTAssertMainQueue();
@@ -176,8 +176,24 @@ using namespace facebook::react;
   [self.delegate mountingManager:self didMountComponentsWithRootTag:rootTag];
 }
 
+- (void)synchronouslyUpdateViewOnUIThread:(ReactTag)reactTag
+                                 oldProps:(SharedProps)oldProps
+                                 newProps:(SharedProps)newProps
+{
+  RCTUpdatePropsMountItem *mountItem = [[RCTUpdatePropsMountItem alloc] initWithTag:reactTag
+                                                                           oldProps:oldProps
+                                                                           newProps:newProps];
+  RCTAssertMainQueue();
+  [mountItem executeWithRegistry:self->_componentViewRegistry];
+}
+
 - (void)optimisticallyCreateComponentViewWithComponentHandle:(ComponentHandle)componentHandle
 {
+  if (RCTIsMainQueue()) {
+    // There is no reason to allocate views ahead of time on the main thread.
+    return;
+  }
+
   RCTExecuteOnMainQueue(^{
     [self->_componentViewRegistry optimisticallyCreateComponentViewWithComponentHandle:componentHandle];
   });

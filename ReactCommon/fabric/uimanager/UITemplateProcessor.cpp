@@ -12,9 +12,9 @@
 #include <react/components/view/ViewComponentDescriptor.h>
 #include <react/components/view/ViewProps.h>
 #include <react/components/view/ViewShadowNode.h>
+#include <react/core/ComponentDescriptor.h>
 #include <react/core/LayoutContext.h>
 #include <react/core/ShadowNodeFragment.h>
-#include <react/core/ComponentDescriptor.h>
 #include <react/debug/DebugStringConvertible.h>
 #include <react/debug/DebugStringConvertibleItem.h>
 

@@ -11,6 +11,7 @@
 #import <React/UIView+React.h>
 
 #import "RCTBackedTextInputDelegateAdapter.h"
+#import "RCTTextAttributes.h"
 
 @implementation RCTUITextView
 {
@@ -18,6 +19,8 @@
   UITextView *_detachedTextView;
   RCTBackedTextViewDelegateAdapter *_textInputDelegateAdapter;
 }
+
+@synthesize reactTextAttributes = _reactTextAttributes;
 
 static UIFont *defaultPlaceholderFont()
 {
@@ -86,6 +89,20 @@ static UIColor *defaultPlaceholderColor()
 {
   _placeholderColor = placeholderColor;
   _placeholderView.textColor = _placeholderColor ?: defaultPlaceholderColor();
+}
+
+- (void)setReactTextAttributes:(RCTTextAttributes *)reactTextAttributes
+{
+  if ([reactTextAttributes isEqual:_reactTextAttributes]) {
+    return;
+  }
+  self.typingAttributes = reactTextAttributes.effectiveTextAttributes;
+  _reactTextAttributes = reactTextAttributes;
+}
+
+- (RCTTextAttributes *)reactTextAttributes
+{
+  return _reactTextAttributes;
 }
 
 - (void)textDidChange

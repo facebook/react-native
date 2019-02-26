@@ -31,6 +31,10 @@ RCT_EXPORT_MODULE()
                                  completionHandler:(RCTImageLoaderCompletionBlock)completionHandler
 {
   CGImageSourceRef imageSource = CGImageSourceCreateWithData((CFDataRef)imageData, NULL);
+  if (!imageSource) {
+    completionHandler(nil, nil);
+    return ^{};
+  }
   NSDictionary<NSString *, id> *properties = (__bridge_transfer NSDictionary *)CGImageSourceCopyProperties(imageSource, NULL);
   CGFloat loopCount = 0;
   if ([[properties[(id)kCGImagePropertyGIFDictionary] allKeys] containsObject:(id)kCGImagePropertyGIFLoopCount]) {
@@ -54,6 +58,9 @@ RCT_EXPORT_MODULE()
     for (size_t i = 0; i < imageCount; i++) {
 
       CGImageRef imageRef = CGImageSourceCreateImageAtIndex(imageSource, i, NULL);
+      if (!imageRef) {
+        continue;
+      }
       if (!image) {
         image = [UIImage imageWithCGImage:imageRef scale:scale orientation:UIImageOrientationUp];
       }
@@ -64,10 +71,10 @@ RCT_EXPORT_MODULE()
       const NSTimeInterval kDelayTimeIntervalDefault = 0.1;
       NSNumber *delayTime = frameGIFProperties[(id)kCGImagePropertyGIFUnclampedDelayTime] ?: frameGIFProperties[(id)kCGImagePropertyGIFDelayTime];
       if (delayTime == nil) {
-        if (i == 0) {
+        if (delays.count == 0) {
           delayTime = @(kDelayTimeIntervalDefault);
         } else {
-          delayTime = delays[i - 1];
+          delayTime = delays.lastObject;
         }
       }
 
@@ -77,8 +84,8 @@ RCT_EXPORT_MODULE()
       }
 
       duration += delayTime.doubleValue;
-      delays[i] = delayTime;
-      images[i] = (__bridge_transfer id)imageRef;
+      [delays addObject:delayTime];
+      [images addObject:(__bridge_transfer id)imageRef];
     }
     CFRelease(imageSource);
 

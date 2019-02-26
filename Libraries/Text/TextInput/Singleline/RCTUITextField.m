@@ -11,10 +11,13 @@
 #import <React/UIView+React.h>
 
 #import "RCTBackedTextInputDelegateAdapter.h"
+#import "RCTTextAttributes.h"
 
 @implementation RCTUITextField {
   RCTBackedTextFieldDelegateAdapter *_textInputDelegateAdapter;
 }
+
+@synthesize reactTextAttributes = _reactTextAttributes;
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -60,6 +63,20 @@
   [self _updatePlaceholder];
 }
 
+- (void)setReactTextAttributes:(RCTTextAttributes *)reactTextAttributes
+{
+  if ([reactTextAttributes isEqual:_reactTextAttributes]) {
+    return;
+  }
+  self.defaultTextAttributes = reactTextAttributes.effectiveTextAttributes;
+  _reactTextAttributes = reactTextAttributes;
+}
+
+- (RCTTextAttributes *)reactTextAttributes
+{
+  return _reactTextAttributes;
+}
+
 - (void)_updatePlaceholder
 {
   if (self.placeholder == nil) {
@@ -85,6 +102,16 @@
   self.enabled = editable;
 }
 
+- (void)setScrollEnabled:(BOOL)enabled
+{
+  // Do noting, compatible with multiline textinput
+}
+
+- (BOOL)scrollEnabled
+{
+  return NO;
+}
+
 #pragma mark - Context Menu
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
@@ -106,6 +133,7 @@
 
   return [super caretRectForPosition:position];
 }
+
 
 #pragma mark - Positioning Overrides
 

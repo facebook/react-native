@@ -21,7 +21,6 @@ class InternalListViewType<Props> extends React.Component<Props> {
   flashScrollIndicators() {}
   getScrollResponder(): any {}
   getScrollableNode(): any {}
-  // $FlowFixMe
   getMetrics(): Object {}
   scrollTo(...args: Array<mixed>) {}
   scrollToEnd(options?: ?{animated?: ?boolean}) {}

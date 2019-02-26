@@ -64,8 +64,14 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
   NSString *title = [RCTConvert NSString:options[@"title"]];
   NSString *message = [RCTConvert NSString:options[@"message"]];
   NSArray<NSString *> *buttons = [RCTConvert NSStringArray:options[@"options"]];
-  NSInteger destructiveButtonIndex = options[@"destructiveButtonIndex"] ? [RCTConvert NSInteger:options[@"destructiveButtonIndex"]] : -1;
   NSInteger cancelButtonIndex = options[@"cancelButtonIndex"] ? [RCTConvert NSInteger:options[@"cancelButtonIndex"]] : -1;
+  NSArray<NSNumber *> *destructiveButtonIndices;
+  if ([options[@"destructiveButtonIndex"] isKindOfClass:[NSArray class]]) {
+    destructiveButtonIndices = [RCTConvert NSArray:options[@"destructiveButtonIndex"]];
+  } else {
+    NSNumber *destructiveButtonIndex = options[@"destructiveButtonIndex"] ? [RCTConvert NSNumber:options[@"destructiveButtonIndex"]] : @-1;
+    destructiveButtonIndices = @[destructiveButtonIndex];
+  }
 
   UIViewController *controller = RCTPresentedViewController();
 
@@ -89,7 +95,7 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
   NSInteger index = 0;
   for (NSString *option in buttons) {
     UIAlertActionStyle style = UIAlertActionStyleDefault;
-    if (index == destructiveButtonIndex) {
+    if ([destructiveButtonIndices containsObject:@(index)]) {
       style = UIAlertActionStyleDestructive;
     } else if (index == cancelButtonIndex) {
       style = UIAlertActionStyleCancel;

@@ -41,12 +41,12 @@ RCT_EXPORT_MODULE();
 {
   [super setBridge:bridge];
 
-  _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithUIManager:self.bridge.uiManager];
+  _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:self.bridge];
   _operations = [NSMutableArray new];
   _preOperations = [NSMutableArray new];
 
   [bridge.eventDispatcher addDispatchObserver:self];
-  [bridge.uiManager.observerCoordinator addObserver:self];
+  [bridge.uiManager.observerCoordinator addObserver:self]; // TODO: add fabric equivalent?
 }
 
 #pragma mark -- API
@@ -196,7 +196,7 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
 
 #pragma mark - RCTUIManagerObserver
 
-- (void)uiManagerWillPerformMounting:(RCTUIManager *)uiManager
+- (void)uiManagerWillPerformMounting:(RCTUIManager *)uiManager // TODO: need fabric equivalent
 {
   if (_preOperations.count == 0 && _operations.count == 0) {
     return;

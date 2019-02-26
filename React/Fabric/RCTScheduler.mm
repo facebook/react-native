@@ -24,18 +24,18 @@ public:
   SchedulerDelegateProxy(void *scheduler):
     scheduler_(scheduler) {}
 
-  void schedulerDidFinishTransaction(Tag rootTag, const ShadowViewMutationList &mutations) override {
+  void schedulerDidFinishTransaction(Tag rootTag, const ShadowViewMutationList &mutations, const long commitStartTime, const long layoutTime) override {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
     [scheduler.delegate schedulerDidFinishTransaction:mutations rootTag:rootTag];
   }
 
-  void schedulerDidRequestPreliminaryViewAllocation(SurfaceId surfaceId, ComponentName componentName, bool isLayoutable, ComponentHandle componentHandle) override {
+  void schedulerDidRequestPreliminaryViewAllocation(SurfaceId surfaceId, bool isLayoutable, const ShadowView &shadowView) override {
     if (!isLayoutable) {
       return;
     }
 
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
-    [scheduler.delegate schedulerOptimisticallyCreateComponentViewWithComponentHandle:componentHandle];
+    [scheduler.delegate schedulerOptimisticallyCreateComponentViewWithComponentHandle:shadowView.componentHandle];
   }
 
 private:
@@ -47,11 +47,11 @@ private:
   std::shared_ptr<SchedulerDelegateProxy> _delegateProxy;
 }
 
-- (instancetype)initWithContextContainer:(std::shared_ptr<void>)contextContatiner
+- (instancetype)initWithContextContainer:(std::shared_ptr<void>)contextContainer
 {
   if (self = [super init]) {
     _delegateProxy = std::make_shared<SchedulerDelegateProxy>((__bridge void *)self);
-    _scheduler = std::make_shared<Scheduler>(std::static_pointer_cast<ContextContainer>(contextContatiner), getDefaultComponentRegistryFactory());
+    _scheduler = std::make_shared<Scheduler>(std::static_pointer_cast<ContextContainer>(contextContainer), getDefaultComponentRegistryFactory());
     _scheduler->setDelegate(_delegateProxy.get());
   }
 
@@ -105,6 +105,11 @@ private:
 {
   SystraceSection s("-[RCTScheduler constraintSurfaceLayoutWithLayoutConstraints:]");
   _scheduler->constraintSurfaceLayout(surfaceId, layoutConstraints, layoutContext);
+}
+
+- (const ComponentDescriptor &)getComponentDescriptor:(ComponentHandle)handle
+{
+  return _scheduler->getComponentDescriptor(handle);
 }
 
 @end

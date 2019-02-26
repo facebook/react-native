@@ -10,6 +10,7 @@
 #include <react/debug/SystraceSection.h>
 #include <react/mounting/Differentiator.h>
 #include <react/mounting/ShadowViewMutation.h>
+#include <react/uimanager/TimeUtils.h>
 
 #include "ShadowTreeDelegate.h"
 
@@ -93,31 +94,37 @@ ShadowTree::ShadowTree(
           .props = props,
           .eventEmitter = noopEventEmitter,
       },
-      nullptr);
+      [](const ShadowNode &shadowNode, const ShadowNodeFragment &fragment) {
+        return std::make_shared<RootShadowNode>(shadowNode, fragment);
+      });
 }
 
 ShadowTree::~ShadowTree() {
-  commit([](const SharedRootShadowNode &oldRootShadowNode) {
-    return std::make_shared<RootShadowNode>(
-        *oldRootShadowNode,
-        ShadowNodeFragment{.children =
-                               ShadowNode::emptySharedShadowNodeSharedList()});
-  });
+  commit(
+      [](const SharedRootShadowNode &oldRootShadowNode) {
+        return std::make_shared<RootShadowNode>(
+            *oldRootShadowNode,
+            ShadowNodeFragment{
+                .children = ShadowNode::emptySharedShadowNodeSharedList()});
+      },
+      getTime());
 }
 
 Tag ShadowTree::getSurfaceId() const {
   return surfaceId_;
 }
 
-void ShadowTree::commit(ShadowTreeCommitTransaction transaction, int *revision)
-    const {
+void ShadowTree::commit(
+    ShadowTreeCommitTransaction transaction,
+    long commitStartTime,
+    int *revision) const {
   SystraceSection s("ShadowTree::commit");
 
   int attempts = 0;
 
   while (true) {
     attempts++;
-    if (tryCommit(transaction, revision)) {
+    if (tryCommit(transaction, commitStartTime, revision)) {
       return;
     }
 
@@ -129,6 +136,7 @@ void ShadowTree::commit(ShadowTreeCommitTransaction transaction, int *revision)
 
 bool ShadowTree::tryCommit(
     ShadowTreeCommitTransaction transaction,
+    long commitStartTime,
     int *revision) const {
   SystraceSection s("ShadowTree::tryCommit");
 
@@ -146,7 +154,9 @@ bool ShadowTree::tryCommit(
     return false;
   }
 
+  long layoutTime = getTime();
   newRootShadowNode->layout();
+  layoutTime = getTime() - layoutTime;
   newRootShadowNode->sealRecursive();
 
   auto mutations =
@@ -180,7 +190,8 @@ bool ShadowTree::tryCommit(
   emitLayoutEvents(mutations);
 
   if (delegate_) {
-    delegate_->shadowTreeDidCommit(*this, mutations);
+    delegate_->shadowTreeDidCommit(
+        *this, mutations, commitStartTime, layoutTime);
   }
 
   return true;
