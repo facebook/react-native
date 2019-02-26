@@ -7,11 +7,11 @@
 
 #pragma once
 
+#include <react/core/EventEmitter.h>
 #include <react/core/LocalData.h>
 #include <react/core/Props.h>
 #include <react/core/ReactPrimitives.h>
 #include <react/core/ShadowNode.h>
-#include <react/events/EventEmitter.h>
 
 namespace facebook {
 namespace react {

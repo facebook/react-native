@@ -12,9 +12,9 @@
 #import <React/UIView+ComponentViewProtocol.h>
 #import <react/components/view/ViewEventEmitter.h>
 #import <react/components/view/ViewProps.h>
+#import <react/core/EventEmitter.h>
 #import <react/core/LayoutMetrics.h>
 #import <react/core/Props.h>
-#import <react/events/EventEmitter.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

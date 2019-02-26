@@ -6,7 +6,7 @@
 
 #include <fb/fbjni.h>
 #include <jsi/jsi.h>
-#include <react/events/EventBeat.h>
+#include <react/core/EventBeat.h>
 #include <mutex>
 #include <unordered_set>
 

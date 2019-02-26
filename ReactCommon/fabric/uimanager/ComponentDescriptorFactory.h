@@ -10,7 +10,7 @@
 #include <memory>
 
 #include <react/core/ComponentDescriptor.h>
-#include <react/events/EventDispatcher.h>
+#include <react/core/EventDispatcher.h>
 #include <react/uimanager/ContextContainer.h>
 
 #include "ComponentDescriptorRegistry.h"

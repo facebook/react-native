@@ -5,7 +5,7 @@
 #pragma once
 
 #include <fb/fbjni.h>
-#include <react/events/EventEmitter.h>
+#include <react/core/EventEmitter.h>
 #include <react/jni/ReadableNativeMap.h>
 
 namespace facebook {

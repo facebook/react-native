@@ -8,10 +8,10 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTPrimitives.h>
+#import <react/core/EventEmitter.h>
 #import <react/core/LayoutMetrics.h>
 #import <react/core/LocalData.h>
 #import <react/core/Props.h>
-#import <react/events/EventEmitter.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -7,16 +7,16 @@
 
 #pragma once
 
-#include <react/events/EventQueue.h>
+#include <react/core/EventQueue.h>
 
 namespace facebook {
 namespace react {
 
 /*
- * Event Queue that dispatches event in batches synchronizing them with
- * an Event Beat.
+ * Event Queue that dispatches events as granular as possible without waiting
+ * for the next beat.
  */
-class BatchedEventQueue final : public EventQueue {
+class UnbatchedEventQueue final : public EventQueue {
  public:
   using EventQueue::EventQueue;
 

@@ -57,7 +57,6 @@ rn_xplat_cxx_library(
         react_native_xplat_target("better:better"),
         react_native_xplat_target("fabric/core:core"),
         react_native_xplat_target("fabric/debug:debug"),
-        react_native_xplat_target("fabric/events:events"),
     ],
 )
 

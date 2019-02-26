@@ -11,8 +11,8 @@
 #include <string>
 
 #include <jsi/jsi.h>
-#include <react/events/EventTarget.h>
-#include <react/events/ValueFactory.h>
+#include <react/core/EventTarget.h>
+#include <react/core/ValueFactory.h>
 
 namespace facebook {
 namespace react {

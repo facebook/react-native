@@ -10,9 +10,9 @@
 #include <mutex>
 
 #include <folly/dynamic.h>
-#include <react/events/EventDispatcher.h>
-#include <react/events/EventPriority.h>
-#include <react/events/EventTarget.h>
+#include <react/core/EventDispatcher.h>
+#include <react/core/EventPriority.h>
+#include <react/core/EventTarget.h>
 
 namespace facebook {
 namespace react {

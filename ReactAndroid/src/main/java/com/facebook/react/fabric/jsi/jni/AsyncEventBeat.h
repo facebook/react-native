@@ -5,7 +5,7 @@
 #pragma once
 
 #include <jsi/jsi.h>
-#include <react/events/EventBeat.h>
+#include <react/core/EventBeat.h>
 #include "EventBeatManager.h"
 
 namespace facebook {

@@ -7,7 +7,7 @@
 
 #include <CoreFoundation/CFRunLoop.h>
 #include <CoreFoundation/CoreFoundation.h>
-#include <react/events/EventBeat.h>
+#include <react/core/EventBeat.h>
 #include <react/uimanager/primitives.h>
 
 namespace facebook {

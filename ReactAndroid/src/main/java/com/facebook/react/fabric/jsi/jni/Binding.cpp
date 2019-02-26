@@ -13,8 +13,8 @@
 #include <jsi/jsi.h>
 #include <react/components/scrollview/ScrollViewProps.h>
 #include <react/debug/SystraceSection.h>
-#include <react/events/EventBeat.h>
-#include <react/events/EventEmitter.h>
+#include <react/core/EventBeat.h>
+#include <react/core/EventEmitter.h>
 #include <react/uimanager/ComponentDescriptorFactory.h>
 #include <react/uimanager/ContextContainer.h>
 #include <react/uimanager/Scheduler.h>

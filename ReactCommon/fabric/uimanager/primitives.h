@@ -5,8 +5,8 @@
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
+#include <react/core/EventHandler.h>
 #include <react/core/ShadowNode.h>
-#include <react/events/EventHandler.h>
 
 namespace facebook {
 namespace react {
