@@ -114,8 +114,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   private long mCommitStartTime = 0l;
   private long mLayoutTime = 0l;
   private long mFinishTransactionTime = 0l;
-  private int mLastWidthMeasureSpec = 0;
-  private int mLastHeightMeasureSpec = 0;
   private long mFinishTransactionCPPTime = 0l;
 
   public FabricUIManager(
