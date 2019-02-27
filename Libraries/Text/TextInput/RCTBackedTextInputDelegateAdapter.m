@@ -16,7 +16,6 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 @implementation RCTBackedTextFieldDelegateAdapter {
   __weak UITextField<RCTBackedTextInputViewProtocol> *_backedTextInputView;
-  BOOL _textDidChangeIsComing;
   UITextRange *_previousSelectedTextRange;
 }
 
@@ -58,22 +57,12 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 - (void)textFieldDidEndEditing:(__unused UITextField *)textField
 {
-  if (_textDidChangeIsComing) {
-    // iOS does't call `textViewDidChange:` delegate method if the change was happened because of autocorrection
-    // which was triggered by losing focus. So, we call it manually.
-    _textDidChangeIsComing = NO;
-    [_backedTextInputView.textInputDelegate textInputDidChange];
-  }
-
   [_backedTextInputView.textInputDelegate textInputDidEndEditing];
 }
 
 - (BOOL)textField:(__unused UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
   BOOL result = [_backedTextInputView.textInputDelegate textInputShouldChangeTextInRange:range replacementText:string];
-  if (result) {
-    _textDidChangeIsComing = YES;
-  }
   return result;
 }
 
@@ -86,9 +75,7 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 - (void)textFieldDidChange
 {
-  _textDidChangeIsComing = NO;
   [_backedTextInputView.textInputDelegate textInputDidChange];
-
   // `selectedTextRangeWasSet` isn't triggered during typing.
   [self textFieldProbablyDidChangeSelection];
 }
@@ -136,12 +123,11 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 #pragma mark - RCTBackedTextViewDelegateAdapter (for UITextView)
 
-@interface RCTBackedTextViewDelegateAdapter () <UITextViewDelegate>
+@interface RCTBackedTextViewDelegateAdapter () <UITextViewDelegate, NSTextStorageDelegate>
 @end
 
 @implementation RCTBackedTextViewDelegateAdapter {
   __weak UITextView<RCTBackedTextInputViewProtocol> *_backedTextInputView;
-  BOOL _textDidChangeIsComing;
   UITextRange *_previousSelectedTextRange;
 }
 
@@ -150,10 +136,20 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   if (self = [super init]) {
     _backedTextInputView = backedTextInputView;
     backedTextInputView.delegate = self;
+    backedTextInputView.textStorage.delegate = self;
   }
 
   return self;
 }
+
+#pragma mark -
+- (void)textStorage:(NSTextStorage *)textStorage
+  didProcessEditing:(__unused NSTextStorageEditActions)editedMask
+              range:(__unused NSRange)editedRange
+     changeInLength:(__unused NSInteger)delta {
+  [_backedTextInputView.textInputDelegate textInputDidChange];
+}
+
 
 #pragma mark - UITextViewDelegate
 
@@ -174,13 +170,6 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 - (void)textViewDidEndEditing:(__unused UITextView *)textView
 {
-  if (_textDidChangeIsComing) {
-    // iOS does't call `textViewDidChange:` delegate method if the change was happened because of autocorrection
-    // which was triggered by losing focus. So, we call it manually.
-    _textDidChangeIsComing = NO;
-    [_backedTextInputView.textInputDelegate textInputDidChange];
-  }
-
   [_backedTextInputView.textInputDelegate textInputDidEndEditing];
 }
 
@@ -196,16 +185,7 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
   }
 
   BOOL result = [_backedTextInputView.textInputDelegate textInputShouldChangeTextInRange:range replacementText:text];
-  if (result) {
-    _textDidChangeIsComing = YES;
-  }
   return result;
-}
-
-- (void)textViewDidChange:(__unused UITextView *)textView
-{
-  _textDidChangeIsComing = NO;
-  [_backedTextInputView.textInputDelegate textInputDidChange];
 }
 
 - (void)textViewDidChangeSelection:(__unused UITextView *)textView
