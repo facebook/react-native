@@ -155,7 +155,7 @@
     "test-ios-e2e": "detox test -c ios.sim.release"
   },
   "peerDependencies": {
-    "react": "16.8.1"
+    "react": "16.8.3"
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0",
@@ -232,9 +232,9 @@
     "jest-junit": "5.2.0",
     "jscodeshift": "^0.6.2",
     "prettier": "1.13.6",
-    "react": "16.8.1",
+    "react": "16.8.3",
     "react-native-dummy": "0.2.0",
-    "react-test-renderer": "16.8.1",
+    "react-test-renderer": "16.8.3",
     "shelljs": "^0.7.8"
   },
   "detox": {
