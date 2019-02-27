@@ -38,5 +38,5 @@ node cli.js bundle --platform android --dev true --entry-file ReactAndroid/src/a
 source ./scripts/android-setup.sh && NO_BUCKD=1 retry3 buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=1
 
 # run installed apk with tests
-node ./ContainerShip/scripts/run-android-ci-instrumentation-tests.js "$*"
+node ./.circleci/Dockerfiles/scripts/run-android-ci-instrumentation-tests.js "$*"
 exit $?
