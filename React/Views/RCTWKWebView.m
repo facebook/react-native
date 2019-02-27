@@ -9,7 +9,7 @@
 #import <React/RCTConvert.h>
 #import "RCTAutoInsetsProtocol.h"
 
-static NSString *const MessageHanderName = @"ReactNative";
+static NSString *const MessageHandlerName = @"ReactNative";
 static NSURLCredential* clientAuthenticationCredential;
 
 
@@ -72,7 +72,7 @@ static NSURLCredential* clientAuthenticationCredential;
 
     WKWebViewConfiguration *wkWebViewConfig = [WKWebViewConfiguration new];
     wkWebViewConfig.userContentController = [WKUserContentController new];
-    [wkWebViewConfig.userContentController addScriptMessageHandler: self name: MessageHanderName];
+    [wkWebViewConfig.userContentController addScriptMessageHandler: self name: MessageHandlerName];
     wkWebViewConfig.allowsInlineMediaPlayback = _allowsInlineMediaPlayback;
 #if WEBKIT_IOS_10_APIS_AVAILABLE
     wkWebViewConfig.mediaTypesRequiringUserActionForPlayback = _mediaPlaybackRequiresUserAction
@@ -117,7 +117,7 @@ static NSURLCredential* clientAuthenticationCredential;
 
 /**
  * This method is called whenever JavaScript running within the web view calls:
- *   - window.webkit.messageHandlers.[MessageHanderName].postMessage
+ *   - window.webkit.messageHandlers.[MessageHandlerName].postMessage
  */
 - (void)userContentController:(__unused WKUserContentController *)userContentController
        didReceiveScriptMessage:(WKScriptMessage *)message
@@ -371,7 +371,7 @@ static NSURLCredential* clientAuthenticationCredential;
           "window.webkit.messageHandlers.%@.postMessage(String(data));"
         "};"
       "})();",
-      MessageHanderName
+      MessageHandlerName
     ];
     [self evaluateJS: source thenCall: nil];
   }
