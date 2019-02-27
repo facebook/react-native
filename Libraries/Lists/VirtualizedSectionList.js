@@ -230,8 +230,7 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
         };
       } else {
         const keyExtractor =
-          this.props.getItem(section, 'keyExtractor') ||
-          defaultKeyExtractor;
+          this.props.getItem(section, 'keyExtractor') || defaultKeyExtractor;
         return {
           section,
           key:
@@ -302,8 +301,7 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
       }
     } else {
       const renderItem =
-        this.props.getItem(info.section, 'renderItem') ||
-        this.props.renderItem;
+        this.props.getItem(info.section, 'renderItem') || this.props.renderItem;
       const SeparatorComponent = this._getSeparatorComponent(index, info);
       invariant(renderItem, 'no renderItem!');
       return (
