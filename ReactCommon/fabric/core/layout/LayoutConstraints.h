@@ -21,6 +21,12 @@ struct LayoutConstraints {
   Size minimumSize{0, 0};
   Size maximumSize{kFloatUndefined, kFloatUndefined};
   LayoutDirection layoutDirection{LayoutDirection::Undefined};
+
+  /*
+   * Clamps the provided `Size` between the `minimumSize` and `maximumSize`
+   * bounds of this `LayoutConstraints`.
+   */
+  Size clamp(const Size &size) const;
 };
 
 inline bool operator==(
