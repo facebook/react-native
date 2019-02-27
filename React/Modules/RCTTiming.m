@@ -96,6 +96,7 @@ static const NSTimeInterval kIdleCallbackFrameDeadline = 0.001;
   NSMutableDictionary<NSNumber *, _RCTTimer *> *_timers;
   NSTimer *_sleepTimer;
   BOOL _sendIdleEvents;
+  BOOL _inBackground;
 }
 
 @synthesize bridge = _bridge;
@@ -110,12 +111,13 @@ RCT_EXPORT_MODULE()
 
   _paused = YES;
   _timers = [NSMutableDictionary new];
+  _inBackground = NO;
 
   for (NSString *name in @[UIApplicationWillResignActiveNotification,
                            UIApplicationDidEnterBackgroundNotification,
                            UIApplicationWillTerminateNotification]) {
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(stopTimers)
+                                             selector:@selector(appDidMoveToBackground)
                                                  name:name
                                                object:nil];
   }
@@ -123,7 +125,7 @@ RCT_EXPORT_MODULE()
   for (NSString *name in @[UIApplicationDidBecomeActiveNotification,
                            UIApplicationWillEnterForegroundNotification]) {
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(startTimers)
+                                             selector:@selector(appDidMoveToForeground)
                                                  name:name
                                                object:nil];
   }
@@ -148,8 +150,29 @@ RCT_EXPORT_MODULE()
   _bridge = nil;
 }
 
+- (void)appDidMoveToBackground
+{
+  // Deactivate the CADisplayLink while in the background.
+  [self stopTimers];
+  _inBackground = YES;
+
+  // Issue one final timer callback, which will schedule a
+  // background NSTimer, if needed.
+  [self didUpdateFrame:nil];
+}
+
+- (void)appDidMoveToForeground
+{
+  _inBackground = NO;
+  [self startTimers];
+}
+
 - (void)stopTimers
 {
+  if (_inBackground) {
+    return;
+  }
+
   if (!_paused) {
     _paused = YES;
     if (_pauseCallback) {
@@ -160,7 +183,7 @@ RCT_EXPORT_MODULE()
 
 - (void)startTimers
 {
-  if (!_bridge || ![self hasPendingTimers]) {
+  if (!_bridge || _inBackground || ![self hasPendingTimers]) {
     return;
   }
 
@@ -174,7 +197,9 @@ RCT_EXPORT_MODULE()
 
 - (BOOL)hasPendingTimers
 {
-  return _sendIdleEvents || _timers.count > 0;
+  @synchronized (_timers) {
+    return _sendIdleEvents || _timers.count > 0;
+  }
 }
 
 - (void)didUpdateFrame:(RCTFrameUpdate *)update
@@ -182,11 +207,13 @@ RCT_EXPORT_MODULE()
   NSDate *nextScheduledTarget = [NSDate distantFuture];
   NSMutableArray<_RCTTimer *> *timersToCall = [NSMutableArray new];
   NSDate *now = [NSDate date]; // compare all the timers to the same base time
-  for (_RCTTimer *timer in _timers.allValues) {
-    if ([timer shouldFire:now]) {
-      [timersToCall addObject:timer];
-    } else {
-      nextScheduledTarget = [nextScheduledTarget earlierDate:timer.target];
+  @synchronized (_timers) {
+    for (_RCTTimer *timer in _timers.allValues) {
+      if ([timer shouldFire:now]) {
+        [timersToCall addObject:timer];
+      } else {
+        nextScheduledTarget = [nextScheduledTarget earlierDate:timer.target];
+      }
     }
   }
 
@@ -206,7 +233,9 @@ RCT_EXPORT_MODULE()
       [timer reschedule];
       nextScheduledTarget = [nextScheduledTarget earlierDate:timer.target];
     } else {
-      [_timers removeObjectForKey:timer.callbackID];
+      @synchronized (_timers) {
+        [_timers removeObjectForKey:timer.callbackID];
+      }
     }
   }
 
@@ -225,10 +254,18 @@ RCT_EXPORT_MODULE()
   // Switch to a paused state only if we didn't call any timer this frame, so if
   // in response to this timer another timer is scheduled, we don't pause and unpause
   // the displaylink frivolously.
-  if (!_sendIdleEvents && timersToCall.count == 0) {
+  NSUInteger timerCount;
+  @synchronized (_timers) {
+    timerCount = _timers.count;
+  }
+  if (_inBackground) {
+    if (timerCount) {
+      [self scheduleSleepTimer:nextScheduledTarget];
+    }
+  } else if (!_sendIdleEvents && timersToCall.count == 0) {
     // No need to call the pauseCallback as RCTDisplayLink will ask us about our paused
     // status immediately after completing this call
-    if (_timers.count == 0) {
+    if (timerCount == 0) {
       _paused = YES;
     }
     // If the next timer is more than 1 second out, pause and schedule an NSTimer;
@@ -241,16 +278,18 @@ RCT_EXPORT_MODULE()
 
 - (void)scheduleSleepTimer:(NSDate *)sleepTarget
 {
-  if (!_sleepTimer || !_sleepTimer.valid) {
-    _sleepTimer = [[NSTimer alloc] initWithFireDate:sleepTarget
-                                           interval:0
-                                             target:[_RCTTimingProxy proxyWithTarget:self]
-                                           selector:@selector(timerDidFire)
-                                           userInfo:nil
-                                            repeats:NO];
-    [[NSRunLoop currentRunLoop] addTimer:_sleepTimer forMode:NSDefaultRunLoopMode];
-  } else {
-    _sleepTimer.fireDate = [_sleepTimer.fireDate earlierDate:sleepTarget];
+  @synchronized (self) {
+    if (!_sleepTimer || !_sleepTimer.valid) {
+      _sleepTimer = [[NSTimer alloc] initWithFireDate:sleepTarget
+                                            interval:0
+                                              target:[_RCTTimingProxy proxyWithTarget:self]
+                                            selector:@selector(timerDidFire)
+                                            userInfo:nil
+                                              repeats:NO];
+      [[NSRunLoop currentRunLoop] addTimer:_sleepTimer forMode:NSDefaultRunLoopMode];
+    } else {
+      _sleepTimer.fireDate = [_sleepTimer.fireDate earlierDate:sleepTarget];
+    }
   }
 }
 
@@ -294,8 +333,13 @@ RCT_EXPORT_METHOD(createTimer:(nonnull NSNumber *)callbackID
                                                   interval:jsDuration
                                                 targetTime:targetTime
                                                    repeats:repeats];
-  _timers[callbackID] = timer;
-  if (_paused) {
+  @synchronized (_timers) {
+    _timers[callbackID] = timer;
+  }
+  
+  if (_inBackground) {
+    [self scheduleSleepTimer:timer.target];
+  } else if (_paused) {
     if ([timer.target timeIntervalSinceNow] > kMinimumSleepInterval) {
       [self scheduleSleepTimer:timer.target];
     } else {
@@ -306,7 +350,9 @@ RCT_EXPORT_METHOD(createTimer:(nonnull NSNumber *)callbackID
 
 RCT_EXPORT_METHOD(deleteTimer:(nonnull NSNumber *)timerID)
 {
-  [_timers removeObjectForKey:timerID];
+  @synchronized (_timers) {
+    [_timers removeObjectForKey:timerID];
+  }
   if (![self hasPendingTimers]) {
     [self stopTimers];
   }
