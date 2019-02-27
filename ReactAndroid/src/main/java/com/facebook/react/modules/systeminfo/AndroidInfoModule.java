@@ -101,7 +101,7 @@ public class AndroidInfoModule extends ReactContextBaseJavaModule {
   private String getServerHost() {
     Resources resources = getReactApplicationContext().getApplicationContext().getResources();
 
-    Integer devServerPort = resources.getInteger(R.integer.REACT_NATIVE_DEV_SERVER_PORT);
+    Integer devServerPort = resources.getInteger(R.integer.react_native_dev_server_port);
 
     return AndroidInfoHelpers.getServerHost(devServerPort);
   }

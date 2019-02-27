@@ -15,14 +15,14 @@ def reactRoot = file(config.root ?: "../../")
 def inputExcludes = config.inputExcludes ?: ["android/**", "ios/**"]
 def bundleConfig = config.bundleConfig ? "${reactRoot}/${config.bundleConfig}" : null ;
 
-def debugHostPort(String defaultValue) {
-    def value = project.getProperties().get("debugHostPort")
+def reactNativeDevServerPort(String defaultValue) {
+    def value = project.getProperties().get("reactNativeDevServerPort")
     return value != null ? value : defaultValue
 }
 
 android {
     buildTypes.all {
-        resValue "integer", "REACT_NATIVE_DEV_SERVER_PORT", debugHostPort("8081")
+        resValue "integer", "react_native_dev_server_port", reactNativeDevServerPort("8081")
     }
 }
 

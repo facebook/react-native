@@ -70,7 +70,7 @@ public class AndroidInfoHelpers {
 
   private static Integer getDevServerPort(Context context) {
     Resources resources = context.getResources();
-    return resources.getInteger(R.integer.REACT_NATIVE_DEV_SERVER_PORT);
+    return resources.getInteger(R.integer.react_native_dev_server_port);
   }
 
   private static String getServerIpAddress(int port) {
