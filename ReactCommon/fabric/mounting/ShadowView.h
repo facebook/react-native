@@ -40,6 +40,7 @@ struct ShadowView final {
   SharedEventEmitter eventEmitter = {};
   LayoutMetrics layoutMetrics = EmptyLayoutMetrics;
   SharedLocalData localData = {};
+  State::Shared state = {};
 };
 
 /*

@@ -22,6 +22,7 @@ rn_xplat_cxx_library(
             ("componentdescriptor", "*.h"),
             ("layout", "*.h"),
             ("shadownode", "*.h"),
+            ("state", "*.h"),
         ],
         prefix = "react/core",
     ),

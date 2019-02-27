@@ -38,5 +38,10 @@ SharedLocalData &ShadowNodeFragment::localDataPlaceholder() {
   return instance;
 }
 
+State::Shared &ShadowNodeFragment::statePlaceholder() {
+  static auto &instance = *new State::Shared();
+  return instance;
+}
+
 } // namespace react
 } // namespace facebook

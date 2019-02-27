@@ -45,7 +45,7 @@ ValueFactory EventEmitter::defaultPayloadFactory() {
 EventEmitter::EventEmitter(
     SharedEventTarget eventTarget,
     Tag tag,
-    WeakEventDispatcher eventDispatcher)
+    EventDispatcher::Weak eventDispatcher)
     : eventTarget_(std::move(eventTarget)),
       eventDispatcher_(std::move(eventDispatcher)) {}
 

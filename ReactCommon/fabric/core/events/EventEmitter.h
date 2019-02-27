@@ -42,7 +42,7 @@ class EventEmitter {
   EventEmitter(
       SharedEventTarget eventTarget,
       Tag tag,
-      WeakEventDispatcher eventDispatcher);
+      EventDispatcher::Weak eventDispatcher);
 
   virtual ~EventEmitter() = default;
 
@@ -84,7 +84,7 @@ class EventEmitter {
   void toggleEventTargetOwnership_() const;
 
   mutable SharedEventTarget eventTarget_;
-  WeakEventDispatcher eventDispatcher_;
+  EventDispatcher::Weak eventDispatcher_;
   mutable int enableCounter_{0};
   mutable bool isEnabled_{false};
 };

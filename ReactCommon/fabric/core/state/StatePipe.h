@@ -7,14 +7,16 @@
 
 #pragma once
 
-#include <folly/SharedMutex.h>
-#include <shared_mutex>
-#include <mutex>
+#include <functional>
+
+#include <react/core/StateData.h>
+#include <react/core/StateTarget.h>
 
 namespace facebook {
-namespace better {
+namespace react {
 
-using shared_mutex = folly::SharedMutex;
+using StatePipe = std::function<
+    void(const StateData::Shared &data, const StateTarget &target)>;
 
-} // namespace better
+} // namespace react
 } // namespace facebook

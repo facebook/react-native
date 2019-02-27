@@ -5,16 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#pragma once
-
-#include <folly/SharedMutex.h>
-#include <shared_mutex>
-#include <mutex>
+#include "StateUpdate.h"
 
 namespace facebook {
-namespace better {
+namespace react {
 
-using shared_mutex = folly::SharedMutex;
+std::pair<StateTarget, StateData::Shared> StateUpdate::operator()() const {
+  return callback_();
+}
 
-} // namespace better
+} // namespace react
 } // namespace facebook

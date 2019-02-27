@@ -15,6 +15,8 @@
 #include <react/core/EventBeat.h>
 #include <react/core/EventPipe.h>
 #include <react/core/RawEvent.h>
+#include <react/core/StatePipe.h>
+#include <react/core/StateUpdate.h>
 
 namespace facebook {
 namespace react {
@@ -25,7 +27,10 @@ namespace react {
  */
 class EventQueue {
  public:
-  EventQueue(EventPipe eventPipe, std::unique_ptr<EventBeat> eventBeat);
+  EventQueue(
+      EventPipe eventPipe,
+      StatePipe statePipe,
+      std::unique_ptr<EventBeat> eventBeat);
   virtual ~EventQueue() = default;
 
   /*
@@ -33,6 +38,12 @@ class EventQueue {
    * Can be called on any thread.
    */
   void enqueueEvent(const RawEvent &rawEvent) const;
+
+  /*
+   * Enqueues and (probably later) dispatch a given state update.
+   * Can be called on any thread.
+   */
+  void enqueueStateUpdate(const StateUpdate &stateUpdate) const;
 
  protected:
   /*
@@ -44,11 +55,14 @@ class EventQueue {
   void onBeat(jsi::Runtime &runtime) const;
 
   void flushEvents(jsi::Runtime &runtime) const;
+  void flushStateUpdates() const;
 
   const EventPipe eventPipe_;
+  const StatePipe statePipe_;
   const std::unique_ptr<EventBeat> eventBeat_;
   // Thread-safe, protected by `queueMutex_`.
-  mutable std::vector<RawEvent> queue_;
+  mutable std::vector<RawEvent> eventQueue_;
+  mutable std::vector<StateUpdate> stateUpdateQueue_;
   mutable std::mutex queueMutex_;
 };
 

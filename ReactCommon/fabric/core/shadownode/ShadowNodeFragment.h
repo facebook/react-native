@@ -12,6 +12,7 @@
 #include <react/core/Props.h>
 #include <react/core/ReactPrimitives.h>
 #include <react/core/ShadowNode.h>
+#include <react/core/State.h>
 
 namespace facebook {
 namespace react {
@@ -20,7 +21,7 @@ namespace react {
  * An object which supposed to be used as a parameter specifying a shape
  * of created or cloned ShadowNode.
  * Note: Most of the fields are `const &` references (essentially just raw
- * pointers) which means that the Fragment does not copy/store them or
+ * pointers) which means that the Fragment does not copy/store them nor
  * retain ownership of them.
  */
 struct ShadowNodeFragment {
@@ -30,6 +31,7 @@ struct ShadowNodeFragment {
   const SharedEventEmitter &eventEmitter = eventEmitterPlaceholder();
   const SharedShadowNodeSharedList &children = childrenPlaceholder();
   const SharedLocalData &localData = localDataPlaceholder();
+  const State::Shared &state = statePlaceholder();
 
   static Tag tagPlaceholder();
   static Tag surfaceIdPlaceholder();
@@ -37,6 +39,7 @@ struct ShadowNodeFragment {
   static SharedEventEmitter &eventEmitterPlaceholder();
   static SharedShadowNodeSharedList &childrenPlaceholder();
   static SharedLocalData &localDataPlaceholder();
+  static State::Shared &statePlaceholder();
 };
 
 } // namespace react

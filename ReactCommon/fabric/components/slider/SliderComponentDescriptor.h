@@ -21,7 +21,7 @@ class SliderComponentDescriptor final
     : public ConcreteComponentDescriptor<SliderShadowNode> {
  public:
   SliderComponentDescriptor(
-      SharedEventDispatcher eventDispatcher,
+      EventDispatcher::Shared eventDispatcher,
       const SharedContextContainer &contextContainer)
       : ConcreteComponentDescriptor(eventDispatcher),
   // TODO (39486757): implement image manager on Android, currently Android does

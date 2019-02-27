@@ -7,14 +7,18 @@
 
 #pragma once
 
-#include <folly/SharedMutex.h>
-#include <shared_mutex>
-#include <mutex>
+#include <memory>
 
 namespace facebook {
-namespace better {
+namespace react {
 
-using shared_mutex = folly::SharedMutex;
+/*
+ * Dummy type that is used as a placeholder for state data for nodes that
+ * don't have a state.
+ */
+struct StateData {
+  using Shared = std::shared_ptr<void>;
+};
 
-} // namespace better
+} // namespace react
 } // namespace facebook

@@ -13,14 +13,13 @@
 #include <react/core/EventPipe.h>
 #include <react/core/EventPriority.h>
 #include <react/core/EventQueue.h>
-#include <react/core/RawEvent.h>
+#include <react/core/StatePipe.h>
 
 namespace facebook {
 namespace react {
 
-class EventDispatcher;
-using SharedEventDispatcher = std::shared_ptr<const EventDispatcher>;
-using WeakEventDispatcher = std::weak_ptr<const EventDispatcher>;
+class RawEvent;
+class StateUpdate;
 
 /*
  * Represents event-delivery infrastructure.
@@ -28,8 +27,12 @@ using WeakEventDispatcher = std::weak_ptr<const EventDispatcher>;
  */
 class EventDispatcher {
  public:
+  using Shared = std::shared_ptr<const EventDispatcher>;
+  using Weak = std::weak_ptr<const EventDispatcher>;
+
   EventDispatcher(
       const EventPipe &eventPipe,
+      const StatePipe &statePipe,
       const EventBeatFactory &synchonousEventBeatFactory,
       const EventBeatFactory &asynchonousEventBeatFactory);
 
@@ -38,7 +41,15 @@ class EventDispatcher {
    */
   void dispatchEvent(const RawEvent &rawEvent, EventPriority priority) const;
 
+  /*
+   * Dispatches a state update with given priority.
+   */
+  void dispatchStateUpdate(StateUpdate &&stateUpdate, EventPriority priority)
+      const;
+
  private:
+  const EventQueue &getEventQueue(EventPriority priority) const;
+
   std::array<std::unique_ptr<EventQueue>, 4> eventQueues_;
 };
 

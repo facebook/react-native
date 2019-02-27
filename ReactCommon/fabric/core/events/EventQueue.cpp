@@ -14,8 +14,11 @@ namespace react {
 
 EventQueue::EventQueue(
     EventPipe eventPipe,
+    StatePipe statePipe,
     std::unique_ptr<EventBeat> eventBeat)
-    : eventPipe_(std::move(eventPipe)), eventBeat_(std::move(eventBeat)) {
+    : eventPipe_(std::move(eventPipe)),
+      statePipe_(std::move(statePipe)),
+      eventBeat_(std::move(eventBeat)) {
   eventBeat_->setBeatCallback(
       std::bind(&EventQueue::onBeat, this, std::placeholders::_1));
 }
@@ -23,7 +26,16 @@ EventQueue::EventQueue(
 void EventQueue::enqueueEvent(const RawEvent &rawEvent) const {
   {
     std::lock_guard<std::mutex> lock(queueMutex_);
-    queue_.push_back(rawEvent);
+    eventQueue_.push_back(rawEvent);
+  }
+
+  onEnqueue();
+}
+
+void EventQueue::enqueueStateUpdate(const StateUpdate &stateUpdate) const {
+  {
+    std::lock_guard<std::mutex> lock(queueMutex_);
+    stateUpdateQueue_.push_back(stateUpdate);
   }
 
   onEnqueue();
@@ -35,6 +47,7 @@ void EventQueue::onEnqueue() const {
 
 void EventQueue::onBeat(jsi::Runtime &runtime) const {
   flushEvents(runtime);
+  flushStateUpdates();
 }
 
 void EventQueue::flushEvents(jsi::Runtime &runtime) const {
@@ -43,12 +56,12 @@ void EventQueue::flushEvents(jsi::Runtime &runtime) const {
   {
     std::lock_guard<std::mutex> lock(queueMutex_);
 
-    if (queue_.size() == 0) {
+    if (eventQueue_.size() == 0) {
       return;
     }
 
-    queue = std::move(queue_);
-    queue_.clear();
+    queue = std::move(eventQueue_);
+    eventQueue_.clear();
   }
 
   {
@@ -74,6 +87,26 @@ void EventQueue::flushEvents(jsi::Runtime &runtime) const {
     if (event.eventTarget) {
       event.eventTarget->release(runtime);
     }
+  }
+}
+
+void EventQueue::flushStateUpdates() const {
+  std::vector<StateUpdate> stateUpdateQueue;
+
+  {
+    std::lock_guard<std::mutex> lock(queueMutex_);
+
+    if (stateUpdateQueue_.size() == 0) {
+      return;
+    }
+
+    stateUpdateQueue = std::move(stateUpdateQueue_);
+    stateUpdateQueue_.clear();
+  }
+
+  for (const auto &stateUpdate : stateUpdateQueue) {
+    auto pair = stateUpdate();
+    statePipe_(pair.second, pair.first);
   }
 }
 

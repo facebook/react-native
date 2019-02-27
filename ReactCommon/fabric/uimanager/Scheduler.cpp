@@ -45,8 +45,18 @@ Scheduler::Scheduler(
     uiManagerBinding->dispatchEvent(runtime, eventTarget, type, payloadFactory);
   };
 
+  auto statePipe = [uiManager = &uiManagerRef](
+                       const StateData::Shared &data,
+                       const StateTarget &stateTarget) {
+    uiManager->updateState(
+        stateTarget.getShadowNode().shared_from_this(), data);
+  };
+
   auto eventDispatcher = std::make_shared<EventDispatcher>(
-      eventPipe, synchronousEventBeatFactory, asynchronousEventBeatFactory);
+      eventPipe,
+      statePipe,
+      synchronousEventBeatFactory,
+      asynchronousEventBeatFactory);
 
   componentDescriptorRegistry_ =
       buildRegistryFunction(eventDispatcher, contextContainer);
