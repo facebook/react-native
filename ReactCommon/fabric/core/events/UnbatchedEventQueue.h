@@ -20,7 +20,7 @@ class UnbatchedEventQueue final : public EventQueue {
  public:
   using EventQueue::EventQueue;
 
-  void enqueueEvent(const RawEvent &rawEvent) const override;
+  void onEnqueue() const override;
 };
 
 } // namespace react

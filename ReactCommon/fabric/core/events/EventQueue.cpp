@@ -21,11 +21,23 @@ EventQueue::EventQueue(
 }
 
 void EventQueue::enqueueEvent(const RawEvent &rawEvent) const {
-  std::lock_guard<std::mutex> lock(queueMutex_);
-  queue_.push_back(rawEvent);
+  {
+    std::lock_guard<std::mutex> lock(queueMutex_);
+    queue_.push_back(rawEvent);
+  }
+
+  onEnqueue();
+}
+
+void EventQueue::onEnqueue() const {
+  // Default implementation does nothing.
 }
 
 void EventQueue::onBeat(jsi::Runtime &runtime) const {
+  flushEvents(runtime);
+}
+
+void EventQueue::flushEvents(jsi::Runtime &runtime) const {
   std::vector<RawEvent> queue;
 
   {

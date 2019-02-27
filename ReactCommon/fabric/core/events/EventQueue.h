@@ -32,10 +32,18 @@ class EventQueue {
    * Enqueues and (probably later) dispatch a given event.
    * Can be called on any thread.
    */
-  virtual void enqueueEvent(const RawEvent &rawEvent) const;
+  void enqueueEvent(const RawEvent &rawEvent) const;
 
  protected:
+  /*
+   * Called on any enqueue operation.
+   * Override in subclasses to trigger beat `request` and/or beat `induce`.
+   * Default implementation does nothing.
+   */
+  virtual void onEnqueue() const;
   void onBeat(jsi::Runtime &runtime) const;
+
+  void flushEvents(jsi::Runtime &runtime) const;
 
   const EventPipe eventPipe_;
   const std::unique_ptr<EventBeat> eventBeat_;

@@ -10,8 +10,8 @@
 namespace facebook {
 namespace react {
 
-void UnbatchedEventQueue::enqueueEvent(const RawEvent &rawEvent) const {
-  EventQueue::enqueueEvent(rawEvent);
+void UnbatchedEventQueue::onEnqueue() const {
+  EventQueue::onEnqueue();
 
   eventBeat_->request();
   eventBeat_->induce();
