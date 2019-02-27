@@ -188,7 +188,7 @@ type OptionalProps<SectionT: SectionBase<any>> = {
 
 export type Props<SectionT> = RequiredProps<SectionT> &
   OptionalProps<SectionT> &
-  VirtualizedSectionListProps<SectionT>;
+  VirtualizedSectionListProps;
 
 const defaultProps = {
   ...VirtualizedSectionList.defaultProps,
@@ -335,10 +335,10 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
   }
 
   _checkProps(props: Props<SectionT>) {
-    const {getItem, getItemCount, getItemParam} = props;
+    const {getItem, getItemCount} = props;
 
     if (__DEV__) {
-      if (getItem || getItemCount || getItemParam) {
+      if (getItem || getItemCount) {
         console.warn('SectionList does not support custom data formats.');
       }
     }
@@ -354,7 +354,6 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
         ref={this._captureRef}
         getItemCount={items => items.length}
         getItem={(items, index) => items[index]}
-        getItemParam={(item, param) => item[param]}
       />
     );
   }

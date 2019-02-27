@@ -23,9 +23,8 @@ describe('VirtualizedSectionList', () => {
           {title: 's1', data: [{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]},
         ]}
         renderItem={({item}) => <item value={item.key} />}
-        getItem={(data, index) => data[index]}
+        getItem={(data, key) => data[key]}
         getItemCount={data => data.length}
-        getItemParam={(data, name) => data[name]}
       />,
     );
     expect(component).toMatchSnapshot();
@@ -36,9 +35,8 @@ describe('VirtualizedSectionList', () => {
       <VirtualizedSectionList
         sections={[]}
         renderItem={({item}) => <item value={item.key} />}
-        getItem={(data, index) => data[index]}
+        getItem={(data, key) => data[key]}
         getItemCount={data => data.length}
-        getItemParam={(data, name) => data[name]}
       />,
     );
     expect(component).toMatchSnapshot();
@@ -49,9 +47,8 @@ describe('VirtualizedSectionList', () => {
       <VirtualizedSectionList
         sections={undefined}
         renderItem={({item}) => <item value={item.key} />}
-        getItem={(data, index) => data[index]}
+        getItem={(data, key) => data[key]}
         getItemCount={data => 0}
-        getItemParam={(data, name) => data[name]}
       />,
     );
     expect(component).toMatchSnapshot();
@@ -64,9 +61,8 @@ describe('VirtualizedSectionList', () => {
         ListEmptyComponent={() => <empty />}
         ListFooterComponent={() => <footer />}
         ListHeaderComponent={() => <header />}
-        getItem={(data, index) => data[index]}
+        getItem={(data, key) => data[key]}
         getItemCount={data => data.length}
-        getItemParam={(data, name) => data[name]}
         renderItem={({item}) => <item value={item.key} />}
       />,
     );
@@ -78,9 +74,8 @@ describe('VirtualizedSectionList', () => {
       <VirtualizedSectionList
         sections={[{title: 's1', data: [{key: 'hello'}]}]}
         ListEmptyComponent={() => <empty />}
-        getItem={(data, index) => data[index]}
+        getItem={(data, key) => data[key]}
         getItemCount={data => data.length}
-        getItemParam={(data, name) => data[name]}
         renderItem={({item}) => <item value={item.key} />}
       />,
     );
@@ -100,9 +95,8 @@ describe('VirtualizedSectionList', () => {
             data: new Array(5).fill().map((_, ii) => ({id: String(ii)})),
           },
         ]}
-        getItem={(data, index) => data[index]}
+        getItem={(data, key) => data[key]}
         getItemCount={data => data.length}
-        getItemParam={(data, name) => data[name]}
         getItemLayout={({index}) => ({length: 50, offset: index * 50})}
         inverted={true}
         keyExtractor={(item, index) => item.id}
@@ -126,9 +120,8 @@ describe('VirtualizedSectionList', () => {
           infos.push(info);
           return <item title={info.item.key} />;
         }}
-        getItem={(data, index) => data[index]}
+        getItem={(data, key) => data[key]}
         getItemCount={data => data.length}
-        getItemParam={(data, name) => data[name]}
       />,
     );
     expect(component).toMatchSnapshot();
@@ -158,14 +151,12 @@ describe('VirtualizedSectionList', () => {
             renderItem={innerInfo => {
               return <item title={innerInfo.item.key} />;
             }}
-            getItem={(data, index) => data[index]}
+            getItem={(data, key) => data[key]}
             getItemCount={data => data.length}
-            getItemParam={(data, name) => data[name]}
           />
         )}
-        getItem={(data, index) => data[index]}
+        getItem={(data, key) => data[key]}
         getItemCount={data => data.length}
-        getItemParam={(data, name) => data[name]}
       />,
     );
     expect(component).toMatchSnapshot();
