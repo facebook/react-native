@@ -63,6 +63,7 @@ NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotif
 
   NSMutableDictionary<NSNumber *, RCTShadowView *> *_shadowViewRegistry; // RCT thread only
   NSMutableDictionary<NSNumber *, UIView *> *_viewRegistry; // Main thread only
+  NSMapTable<NSString *, UIView *> *_nativeIDRegistry;  // Main thread only
 
   NSMapTable<RCTShadowView *, NSArray<NSString *> *> *_shadowViewsWithUpdatedProps; // UIManager queue only.
   NSHashTable<RCTShadowView *> *_shadowViewsWithUpdatedChildren; // UIManager queue only.
@@ -106,6 +107,7 @@ RCT_EXPORT_MODULE()
     self->_rootViewTags = nil;
     self->_shadowViewRegistry = nil;
     self->_viewRegistry = nil;
+    self->_nativeIDRegistry = nil;
     self->_bridge = nil;
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -131,6 +133,15 @@ RCT_EXPORT_MODULE()
   return _viewRegistry;
 }
 
+- (NSMapTable *)nativeIDRegistry
+{
+  // Should be called on main queue
+  if (!_nativeIDRegistry) {
+    _nativeIDRegistry = [NSMapTable strongToWeakObjectsMapTable];
+  }
+  return _nativeIDRegistry;
+}
+
 - (void)setBridge:(RCTBridge *)bridge
 {
   RCTAssert(_bridge == nil, @"Should not re-use same UIManager instance");
@@ -138,6 +149,7 @@ RCT_EXPORT_MODULE()
 
   _shadowViewRegistry = [NSMutableDictionary new];
   _viewRegistry = [NSMutableDictionary new];
+  _nativeIDRegistry = [NSMapTable strongToWeakObjectsMapTable];
 
   _shadowViewsWithUpdatedProps = [NSMapTable weakToStrongObjectsMapTable];
   _shadowViewsWithUpdatedChildren = [NSHashTable weakObjectsHashTable];
@@ -366,31 +378,27 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
   } forTag:view.reactTag];
 }
 
-/**
- * TODO(yuwang): implement the nativeID functionality in a more efficient way
- *               instead of searching the whole view tree
- */
 - (UIView *)viewForNativeID:(NSString *)nativeID withRootTag:(NSNumber *)rootTag
 {
   RCTAssertMainQueue();
-  UIView *view = [self viewForReactTag:rootTag];
-  return [self _lookupViewForNativeID:nativeID inView:view];
+  if (!nativeID || !rootTag) {
+    return nil;
+  }
+  return [_nativeIDRegistry objectForKey:[NSString stringWithFormat:@"%@%@", nativeID, rootTag]];
 }
 
-- (UIView *)_lookupViewForNativeID:(NSString *)nativeID inView:(UIView *)view
+- (void)setNativeID:(NSString *)nativeID forView:(UIView *)view
 {
   RCTAssertMainQueue();
-  if (view != nil && [nativeID isEqualToString:view.nativeID]) {
-    return view;
+  if (!nativeID) {
+    return;
   }
-
-  for (UIView *subview in view.subviews) {
-    UIView *targetView = [self _lookupViewForNativeID:nativeID inView:subview];
-    if (targetView != nil) {
-      return targetView;
+  __weak RCTUIManager *weakSelf = self;
+  [self rootViewForReactTag:view.reactTag withCompletion:^(UIView *rootView) {
+    if (rootView) {
+      [weakSelf.nativeIDRegistry setObject:view forKey:[NSString stringWithFormat:@"%@%@", nativeID, rootView.reactTag]];
     }
-  }
-  return nil;
+  }];
 }
 
 - (void)setSize:(CGSize)size forView:(UIView *)view
