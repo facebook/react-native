@@ -12,6 +12,7 @@
 #import <react/core/LayoutMetrics.h>
 #import <react/core/LocalData.h>
 #import <react/core/Props.h>
+#import <react/core/State.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -55,6 +56,12 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)updateLocalData:(facebook::react::SharedLocalData)localData
            oldLocalData:(facebook::react::SharedLocalData)oldLocalData;
+
+/*
+ * Called for updating component's state.
+ * Receiver must update native view according to changed state.
+ */
+- (void)updateState:(facebook::react::State::Shared)state oldState:(facebook::react::State::Shared)oldState;
 
 /*
  * Called for updating component's event handlers set.

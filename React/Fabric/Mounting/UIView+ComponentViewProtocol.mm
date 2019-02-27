@@ -43,6 +43,11 @@ using namespace facebook::react;
   // Default implementation does nothing.
 }
 
+- (void)updateState:(facebook::react::State::Shared)state oldState:(facebook::react::State::Shared)oldState
+{
+  // Default implementation does nothing.
+}
+
 - (void)updateLayoutMetrics:(LayoutMetrics)layoutMetrics oldLayoutMetrics:(LayoutMetrics)oldLayoutMetrics
 {
   if (layoutMetrics.frame != oldLayoutMetrics.frame) {
