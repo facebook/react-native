@@ -9,13 +9,18 @@
  */
 'use strict';
 
+const {resolve} = require('path');
+const {mergeConfig} = require('metro-config');
 const getPolyfills = require('./rn-get-polyfills');
+
+const projectRoot = __dirname;
+const reactNativePath = resolve(projectRoot);
 
 /**
  * This cli config is needed for development purposes, e.g. for running
  * integration tests during local development or on CI services.
  */
-module.exports = {
+const config = {
   extraNodeModules: {
     'react-native': __dirname,
   },
@@ -32,3 +37,5 @@ module.exports = {
     assetRegistryPath: require.resolve('./Libraries/Image/AssetRegistry'),
   },
 };
+
+module.exports = mergeConfig({projectRoot, reactNativePath}, config);
