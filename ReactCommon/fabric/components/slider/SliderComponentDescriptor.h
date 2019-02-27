@@ -36,7 +36,9 @@ class SliderComponentDescriptor final
         imageManager_(nullptr),
 #endif
         measurementsManager_(
-            std::make_shared<SliderMeasurementsManager>(contextContainer)) {
+            SliderMeasurementsManager::shouldMeasureSlider()
+                ? std::make_shared<SliderMeasurementsManager>(contextContainer)
+                : nullptr) {
   }
 
   void adopt(UnsharedShadowNode shadowNode) const override {
@@ -50,13 +52,15 @@ class SliderComponentDescriptor final
     // communicate the loading state and results to mounting layer.
     sliderShadowNode->setImageManager(imageManager_);
 
-    // `SliderShadowNode` uses `SliderMeasurementsManager` to
-    // provide measurements to Yoga.
-    sliderShadowNode->setSliderMeasurementsManager(measurementsManager_);
+    if (measurementsManager_) {
+      // `SliderShadowNode` uses `SliderMeasurementsManager` to
+      // provide measurements to Yoga.
+      sliderShadowNode->setSliderMeasurementsManager(measurementsManager_);
 
-    // All `SliderShadowNode`s must have leaf Yoga nodes with properly
-    // setup measure function.
-    sliderShadowNode->enableMeasurement();
+      // All `SliderShadowNode`s must have leaf Yoga nodes with properly
+      // setup measure function.
+      sliderShadowNode->enableMeasurement();
+    }
   }
 
  private:

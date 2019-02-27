@@ -22,11 +22,18 @@ class SliderMeasurementsManager {
  public:
   SliderMeasurementsManager(const SharedContextContainer &contextContainer)
       : contextContainer_(contextContainer) {}
-  const bool shouldMeasureSlider() const;
+
+  static inline bool shouldMeasureSlider() {
+    return true;
+  }
+
   Size measure(LayoutConstraints layoutConstraints) const;
 
  private:
   const SharedContextContainer contextContainer_;
+  mutable std::mutex mutex_;
+  mutable bool hasBeenMeasured_ = false;
+  mutable Size cachedMeasurement_{};
 };
 
 } // namespace react

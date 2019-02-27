@@ -21,7 +21,11 @@ namespace react {
 class SliderMeasurementsManager {
  public:
   SliderMeasurementsManager(const SharedContextContainer &contextContainer) {}
-  const bool shouldMeasureSlider() const;
+
+  static inline bool shouldMeasureSlider() {
+    return false;
+  }
+
   Size measure(LayoutConstraints layoutConstraints) const;
 };
 

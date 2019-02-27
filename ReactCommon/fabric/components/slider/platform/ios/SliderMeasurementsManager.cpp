@@ -10,10 +10,6 @@
 namespace facebook {
 namespace react {
 
-const bool SliderMeasurementsManager::shouldMeasureSlider() const {
-  return false;
-}
-
 Size SliderMeasurementsManager::measure(
     LayoutConstraints layoutConstraints) const {
   assert(false); // should never reach this point

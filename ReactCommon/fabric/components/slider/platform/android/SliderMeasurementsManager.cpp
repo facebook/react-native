@@ -16,12 +16,15 @@ using namespace facebook::jni;
 namespace facebook {
 namespace react {
 
-const bool SliderMeasurementsManager::shouldMeasureSlider() const {
-  return true;
-}
-
 Size SliderMeasurementsManager::measure(
     LayoutConstraints layoutConstraints) const {
+  {
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (hasBeenMeasured_) {
+      return cachedMeasurement_;
+    }
+  }
+
   const jni::global_ref<jobject> &fabricUIManager =
       contextContainer_->getInstance<jni::global_ref<jobject>>(
           "FabricUIManager");
@@ -46,7 +49,7 @@ Size SliderMeasurementsManager::measure(
 
   local_ref<JString> componentName = make_jstring("RCTSlider");
 
-  return yogaMeassureToSize(measure(
+  auto measurement = yogaMeassureToSize(measure(
       fabricUIManager,
       componentName.get(),
       nullptr,
@@ -55,6 +58,10 @@ Size SliderMeasurementsManager::measure(
       maxWidth,
       minHeight,
       maxHeight));
+
+  std::lock_guard<std::mutex> lock(mutex_);
+  cachedMeasurement_ = measurement;
+  return measurement;
 }
 
 } // namespace react
