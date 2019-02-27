@@ -226,40 +226,6 @@ static inline YGConfigRef _jlong2YGConfigRef(jlong addr) {
   return reinterpret_cast<YGConfigRef>(static_cast<intptr_t>(addr));
 }
 
-static YGNodeRef YGJNIOnNodeClonedFunc(
-    YGNodeRef oldNode,
-    YGNodeRef owner,
-    int childIndex,
-    void* layoutContext) {
-  auto config = oldNode->getConfig();
-  if (!config) {
-    return nullptr;
-  }
-
-  static auto onNodeClonedFunc =
-      findClassStatic("com/facebook/yoga/YogaConfig")
-          ->getMethod<alias_ref<JYogaNode>(
-              local_ref<JYogaNode>, local_ref<JYogaNode>, jint)>("cloneNode");
-
-  auto context = reinterpret_cast<YGConfigContext*>(YGConfigGetContext(config));
-  auto javaConfig = context->config;
-
-  auto newNode = onNodeClonedFunc(
-      javaConfig->get(),
-      YGNodeJobject(oldNode, layoutContext),
-      YGNodeJobject(owner, layoutContext),
-      childIndex);
-
-  static auto replaceChild =
-      findClassStatic("com/facebook/yoga/YogaNodeJNI")
-          ->getMethod<jlong(local_ref<JYogaNode>, jint)>("replaceChild");
-
-  jlong newNodeNativePointer =
-      replaceChild(YGNodeJobject(owner, layoutContext), newNode, childIndex);
-
-  return _jlong2YGNodeRef(newNodeNativePointer);
-}
-
 static YGSize YGJNIMeasureFunc(
     YGNodeRef node,
     float width,
@@ -354,26 +320,6 @@ jlong jni_YGNodeNewWithConfig(
     node->setContext(new weak_ref<jobject>(make_weak(thiz)));
   }
   return reinterpret_cast<jlong>(node);
-}
-
-void jni_YGNodeSetOwner(jlong nativePointer, jlong newOwnerNativePointer) {
-  const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
-  const YGNodeRef newOwnerNode = _jlong2YGNodeRef(newOwnerNativePointer);
-
-  node->setOwner(newOwnerNode);
-}
-
-jlong jni_YGNodeClone(
-    alias_ref<jobject> thiz,
-    jlong nativePointer,
-    alias_ref<jobject> clonedJavaObject,
-    jboolean avoidGlobalJNIRefs) {
-  const YGNodeRef clonedYogaNode = YGNodeClone(_jlong2YGNodeRef(nativePointer));
-  if (!avoidGlobalJNIRefs) {
-    clonedYogaNode->setContext(
-        new weak_ref<jobject>(make_weak(clonedJavaObject)));
-  }
-  return reinterpret_cast<jlong>(clonedYogaNode);
 }
 
 void jni_YGNodeFree(alias_ref<jclass>, jlong nativePointer) {
@@ -668,29 +614,6 @@ void jni_YGConfigSetUseLegacyStretchBehaviour(
   YGConfigSetUseLegacyStretchBehaviour(config, useLegacyStretchBehaviour);
 }
 
-void jni_YGConfigSetHasCloneNodeFunc(
-    alias_ref<jobject> thiz,
-    jlong nativePointer,
-    jboolean hasCloneNodeFunc) {
-  const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
-  auto context = reinterpret_cast<YGConfigContext*>(YGConfigGetContext(config));
-  if (context && context->config) {
-    delete context->config;
-    context->config = nullptr;
-  }
-
-  if (hasCloneNodeFunc) {
-    if (!context) {
-      context = new YGConfigContext();
-      YGConfigSetContext(config, context);
-    }
-    context->config = new global_ref<jobject>(make_global(thiz));
-    config->setCloneNodeCallback(YGJNIOnNodeClonedFunc);
-  } else {
-    config->setCloneNodeCallback(nullptr);
-  }
-}
-
 void jni_YGConfigSetLogger(
     alias_ref<jobject>,
     jlong nativePointer,
@@ -719,7 +642,8 @@ jint jni_YGNodeGetInstanceCount() {
 }
 
 #define YGMakeNativeMethod(name) makeNativeMethod(#name, name)
-#define YGMakeCriticalNativeMethod(name) makeCriticalNativeMethod_DO_NOT_USE_OR_YOU_WILL_BE_FIRED(#name, name)
+#define YGMakeCriticalNativeMethod(name) \
+  makeCriticalNativeMethod_DO_NOT_USE_OR_YOU_WILL_BE_FIRED(#name, name)
 
 jint JNI_OnLoad(JavaVM* vm, void*) {
   return initialize(vm, [] {
@@ -807,8 +731,6 @@ jint JNI_OnLoad(JavaVM* vm, void*) {
             YGMakeCriticalNativeMethod(jni_YGNodeStyleSetAspectRatio),
             YGMakeCriticalNativeMethod(jni_YGNodeGetInstanceCount),
             YGMakeCriticalNativeMethod(jni_YGNodePrint),
-            YGMakeNativeMethod(jni_YGNodeClone),
-            YGMakeCriticalNativeMethod(jni_YGNodeSetOwner),
         });
     registerNatives(
         "com/facebook/yoga/YogaConfig",
@@ -821,7 +743,6 @@ jint JNI_OnLoad(JavaVM* vm, void*) {
             YGMakeNativeMethod(jni_YGConfigSetPointScaleFactor),
             YGMakeNativeMethod(jni_YGConfigSetUseLegacyStretchBehaviour),
             YGMakeNativeMethod(jni_YGConfigSetLogger),
-            YGMakeNativeMethod(jni_YGConfigSetHasCloneNodeFunc),
             YGMakeNativeMethod(
                 jni_YGConfigSetShouldDiffLayoutWithoutLegacyStretchBehaviour),
         });

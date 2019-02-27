@@ -13,7 +13,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 @DoNotStrip
-public class YogaNodeJNI extends YogaNode implements Cloneable {
+public class YogaNodeJNI extends YogaNode {
 
   static {
     SoLoader.loadLibrary("yoga");
@@ -187,53 +187,6 @@ public class YogaNodeJNI extends YogaNode implements Cloneable {
 
   public boolean isReferenceBaseline() {
     return jni_YGNodeIsReferenceBaseline(mNativePointer);
-  }
-
-  private static native void jni_YGNodeSetOwner(long nativePointer, long newOwnerNativePointer);
-
-  private native long jni_YGNodeClone(long nativePointer, Object newNode, boolean avoidGlobalJNIRefs);
-
-  @Override
-  public YogaNodeJNI clone() {
-    try {
-      YogaNodeJNI clonedYogaNode = (YogaNodeJNI) super.clone();
-      long clonedNativePointer = jni_YGNodeClone(mNativePointer, clonedYogaNode, mAvoidGlobalJNIRefs);
-
-      if (mChildren != null) {
-        for (YogaNodeJNI child : mChildren) {
-          jni_YGNodeSetOwner(child.mNativePointer, 0);
-          child.mOwner = null;
-        }
-      }
-
-      clonedYogaNode.mNativePointer = clonedNativePointer;
-      clonedYogaNode.mOwner = null;
-      clonedYogaNode.mChildren =
-          mChildren != null ? (List<YogaNodeJNI>) ((ArrayList) mChildren).clone() : null;
-      if (clonedYogaNode.mChildren != null) {
-        for (YogaNodeJNI child : clonedYogaNode.mChildren) {
-          child.mOwner = null;
-        }
-      }
-      return clonedYogaNode;
-    } catch (CloneNotSupportedException ex) {
-      // This class implements Cloneable, this should not happen
-      throw new RuntimeException(ex);
-    }
-  }
-
-  public YogaNodeJNI cloneWithNewChildren() {
-    try {
-      YogaNodeJNI clonedYogaNode = (YogaNodeJNI) super.clone();
-      long clonedNativePointer = jni_YGNodeClone(mNativePointer, clonedYogaNode, mAvoidGlobalJNIRefs);
-      clonedYogaNode.mOwner = null;
-      clonedYogaNode.mNativePointer = clonedNativePointer;
-      clonedYogaNode.clearChildren();
-      return clonedYogaNode;
-    } catch (CloneNotSupportedException ex) {
-      // This class implements Cloneable, this should not happen
-      throw new RuntimeException(ex);
-    }
   }
 
   private static native void jni_YGNodeClearChildren(long nativePointer);
