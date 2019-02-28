@@ -584,6 +584,9 @@ YG_NODE_JNI_STYLE_PROP(jint, YGWrap, FlexWrap);
 YG_NODE_JNI_STYLE_PROP(jint, YGOverflow, Overflow);
 YG_NODE_JNI_STYLE_PROP(jint, YGDisplay, Display);
 
+jfloat jni_YGNodeStyleGetFlex(jlong nativePointer) {
+  return YGNodeStyleGetFlex(_jlong2YGNodeRef(nativePointer));
+}
 void jni_YGNodeStyleSetFlex(jlong nativePointer, jfloat value) {
   YGNodeStyleSetFlex(
       _jlong2YGNodeRef(nativePointer), static_cast<float>(value));
@@ -988,11 +991,13 @@ jint JNI_OnLoad(JavaVM* vm, void*) {
             YGMakeCriticalNativeMethod(jni_YGNodeStyleSetAlignContent),
             YGMakeCriticalNativeMethod(jni_YGNodeStyleGetPositionType),
             YGMakeCriticalNativeMethod(jni_YGNodeStyleSetPositionType),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleGetFlexWrap),
             YGMakeCriticalNativeMethod(jni_YGNodeStyleSetFlexWrap),
             YGMakeCriticalNativeMethod(jni_YGNodeStyleGetOverflow),
             YGMakeCriticalNativeMethod(jni_YGNodeStyleSetOverflow),
             YGMakeCriticalNativeMethod(jni_YGNodeStyleGetDisplay),
             YGMakeCriticalNativeMethod(jni_YGNodeStyleSetDisplay),
+            YGMakeCriticalNativeMethod(jni_YGNodeStyleGetFlex),
             YGMakeCriticalNativeMethod(jni_YGNodeStyleSetFlex),
             YGMakeCriticalNativeMethod(jni_YGNodeStyleGetFlexGrow),
             YGMakeCriticalNativeMethod(jni_YGNodeStyleSetFlexGrow),

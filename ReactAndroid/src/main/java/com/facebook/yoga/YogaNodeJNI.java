@@ -351,6 +351,11 @@ public class YogaNodeJNI extends YogaNode {
     jni_YGNodeStyleSetPositionType(mNativePointer, positionType.intValue());
   }
 
+  private static native int jni_YGNodeStyleGetFlexWrap(long nativePointer);
+  public YogaWrap getWrap() {
+    return YogaWrap.fromInt(jni_YGNodeStyleGetFlexWrap(mNativePointer));
+  }
+
   private static native void jni_YGNodeStyleSetFlexWrap(long nativePointer, int wrapType);
   public void setWrap(YogaWrap flexWrap) {
     jni_YGNodeStyleSetFlexWrap(mNativePointer, flexWrap.intValue());
@@ -374,6 +379,11 @@ public class YogaNodeJNI extends YogaNode {
   private static native void jni_YGNodeStyleSetDisplay(long nativePointer, int display);
   public void setDisplay(YogaDisplay display) {
     jni_YGNodeStyleSetDisplay(mNativePointer, display.intValue());
+  }
+
+  private static native float jni_YGNodeStyleGetFlex(long nativePointer);
+  public float getFlex() {
+    return jni_YGNodeStyleGetFlex(mNativePointer);
   }
 
   private static native void jni_YGNodeStyleSetFlex(long nativePointer, float flex);

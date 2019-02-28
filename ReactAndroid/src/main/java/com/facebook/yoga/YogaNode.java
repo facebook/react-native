@@ -89,6 +89,8 @@ public abstract class YogaNode {
 
   public abstract void setPositionType(YogaPositionType positionType);
 
+  public abstract YogaWrap getWrap();
+
   public abstract void setWrap(YogaWrap flexWrap);
 
   public abstract YogaOverflow getOverflow();
@@ -98,6 +100,8 @@ public abstract class YogaNode {
   public abstract YogaDisplay getDisplay();
 
   public abstract void setDisplay(YogaDisplay display);
+
+  public abstract float getFlex();
 
   public abstract void setFlex(float flex);
 
