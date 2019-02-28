@@ -730,6 +730,12 @@ public class YogaNodeJNI extends YogaNode {
     jni_YGNodePrint(mNativePointer);
   }
 
+  private static native void jni_YGNodeSetStyleInputs(long nativePointer, float[] styleInputsArray, int size);
+
+  public void setStyleInputs(float[] styleInputsArray, int size) {
+    jni_YGNodeSetStyleInputs(mNativePointer, styleInputsArray, size);
+  }
+
   /**
    * This method replaces the child at childIndex position with the newNode received by parameter.
    * This is different than calling removeChildAt and addChildAt because this method ONLY replaces

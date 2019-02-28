@@ -212,4 +212,6 @@ public abstract class YogaNode {
   public abstract Object getData();
 
   public abstract void print();
+
+  public abstract void setStyleInputs(float[] styleInputs, int size);
 }

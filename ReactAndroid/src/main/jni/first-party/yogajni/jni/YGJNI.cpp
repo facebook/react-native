@@ -15,6 +15,49 @@ using namespace facebook::jni;
 using namespace std;
 using facebook::yoga::detail::Log;
 
+enum YGStyleInput {
+  LayoutDirection,
+  FlexDirection,
+  Flex,
+  FlexGrow,
+  FlexShrink,
+  FlexBasis,
+  FlexBasisPercent,
+  FlexBasisAuto,
+  FlexWrap,
+  Width,
+  WidthPercent,
+  WidthAuto,
+  MinWidth,
+  MinWidthPercent,
+  MaxWidth,
+  MaxWidthPercent,
+  Height,
+  HeightPercent,
+  HeightAuto,
+  MinHeight,
+  MinHeightPercent,
+  MaxHeight,
+  MaxHeightPercent,
+  JustifyContent,
+  AlignItems,
+  AlignSelf,
+  AlignContent,
+  PositionType,
+  AspectRatio,
+  Overflow,
+  Display,
+  Margin,
+  MarginPercent,
+  MarginAuto,
+  Padding,
+  PaddingPercent,
+  Border,
+  Position,
+  PositionPercent,
+  IsReferenceBaseline,
+};
+
 struct JYogaNode : public JavaClass<JYogaNode> {
   static constexpr auto kJavaDescriptor = "Lcom/facebook/yoga/YogaNodeJNI;";
 };
@@ -647,6 +690,178 @@ void jni_YGConfigSetLogger(
   }
 }
 
+static void YGNodeSetStyleInputs(
+    const YGNodeRef node,
+    float* styleInputs,
+    int size) {
+  const auto end = styleInputs + size;
+  while (styleInputs < end) {
+    auto styleInputKey = static_cast<YGStyleInput>((int) *styleInputs++);
+    switch (styleInputKey) {
+      case LayoutDirection:
+        YGNodeStyleSetDirection(node, static_cast<YGDirection>(*styleInputs++));
+        break;
+      case FlexDirection:
+        YGNodeStyleSetFlexDirection(
+            node, static_cast<YGFlexDirection>(*styleInputs++));
+        break;
+      case Flex:
+        YGNodeStyleSetFlex(node, *styleInputs++);
+        break;
+      case FlexGrow:
+        YGNodeStyleSetFlexGrow(node, *styleInputs++);
+        break;
+      case FlexShrink:
+        YGNodeStyleSetFlexShrink(node, *styleInputs++);
+        break;
+      case FlexBasis:
+        YGNodeStyleSetFlexBasis(node, *styleInputs++);
+        break;
+      case FlexBasisPercent:
+        YGNodeStyleSetFlexBasisPercent(node, *styleInputs++);
+        break;
+      case FlexBasisAuto:
+        YGNodeStyleSetFlexBasisAuto(node);
+        break;
+      case FlexWrap:
+        YGNodeStyleSetFlexWrap(node, static_cast<YGWrap>(*styleInputs++));
+        break;
+      case Width:
+        YGNodeStyleSetWidth(node, *styleInputs++);
+        break;
+      case WidthPercent:
+        YGNodeStyleSetWidthPercent(node, *styleInputs++);
+        break;
+      case WidthAuto:
+        YGNodeStyleSetWidthAuto(node);
+        break;
+      case MinWidth:
+        YGNodeStyleSetMinWidth(node, *styleInputs++);
+        break;
+      case MinWidthPercent:
+        YGNodeStyleSetMinWidthPercent(node, *styleInputs++);
+        break;
+      case MaxWidth:
+        YGNodeStyleSetMaxWidth(node, *styleInputs++);
+        break;
+      case MaxWidthPercent:
+        YGNodeStyleSetMaxWidthPercent(node, *styleInputs++);
+        break;
+      case Height:
+        YGNodeStyleSetHeight(node, *styleInputs++);
+        break;
+      case HeightPercent:
+        YGNodeStyleSetHeightPercent(node, *styleInputs++);
+        break;
+      case HeightAuto:
+        YGNodeStyleSetHeightAuto(node);
+        break;
+      case MinHeight:
+        YGNodeStyleSetMinHeight(node, *styleInputs++);
+        break;
+      case MinHeightPercent:
+        YGNodeStyleSetMinHeightPercent(node, *styleInputs++);
+        break;
+      case MaxHeight:
+        YGNodeStyleSetMaxHeight(node, *styleInputs++);
+        break;
+      case MaxHeightPercent:
+        YGNodeStyleSetMaxHeightPercent(node, *styleInputs++);
+        break;
+      case JustifyContent:
+        YGNodeStyleSetJustifyContent(
+            node, static_cast<YGJustify>(*styleInputs++));
+        break;
+      case AlignItems:
+        YGNodeStyleSetAlignItems(node, static_cast<YGAlign>(*styleInputs++));
+        break;
+      case AlignSelf:
+        YGNodeStyleSetAlignSelf(node, static_cast<YGAlign>(*styleInputs++));
+        break;
+      case AlignContent:
+        YGNodeStyleSetAlignContent(node, static_cast<YGAlign>(*styleInputs++));
+        break;
+      case PositionType:
+        YGNodeStyleSetPositionType(
+            node, static_cast<YGPositionType>(*styleInputs++));
+        break;
+      case AspectRatio:
+        YGNodeStyleSetAspectRatio(node, *styleInputs++);
+        break;
+      case Overflow:
+        YGNodeStyleSetOverflow(node, static_cast<YGOverflow>(*styleInputs++));
+        break;
+      case Display:
+        YGNodeStyleSetDisplay(node, static_cast<YGDisplay>(*styleInputs++));
+        break;
+      case Margin: {
+        float edge = *styleInputs++;
+        float marginValue = *styleInputs++;
+        YGNodeStyleSetMargin(node, static_cast<YGEdge>(edge), marginValue);
+        break;
+      }
+      case MarginPercent: {
+        float edge = *styleInputs++;
+        float marginPercent = *styleInputs++;
+        YGNodeStyleSetMarginPercent(
+            node, static_cast<YGEdge>(edge), marginPercent);
+        break;
+      }
+      case MarginAuto:
+        YGNodeStyleSetMarginAuto(node, static_cast<YGEdge>(*styleInputs++));
+        break;
+      case Padding: {
+        float edge = *styleInputs++;
+        float paddingValue = *styleInputs++;
+        YGNodeStyleSetPadding(node, static_cast<YGEdge>(edge), paddingValue);
+        break;
+      }
+      case PaddingPercent: {
+        float edge = *styleInputs++;
+        float paddingPercent = *styleInputs++;
+        YGNodeStyleSetPaddingPercent(
+            node, static_cast<YGEdge>(edge), paddingPercent);
+        break;
+      }
+      case Border: {
+        float edge = *styleInputs++;
+        float borderValue = *styleInputs++;
+        YGNodeStyleSetBorder(node, static_cast<YGEdge>(edge), borderValue);
+        break;
+      }
+      case Position: {
+        float edge = *styleInputs++;
+        float positionValue = *styleInputs++;
+        YGNodeStyleSetPosition(node, static_cast<YGEdge>(edge), positionValue);
+        break;
+      }
+      case PositionPercent: {
+        float edge = *styleInputs++;
+        float positionPercent = *styleInputs++;
+        YGNodeStyleSetPositionPercent(
+            node, static_cast<YGEdge>(edge), positionPercent);
+        break;
+      }
+      case IsReferenceBaseline: {
+        YGNodeSetIsReferenceBaseline(node, *styleInputs++ == 1 ? true : false);
+        break;
+      }
+      default:
+        break;
+    }
+  }
+}
+
+void jni_YGNodeSetStyleInputs(
+    alias_ref<jobject> thiz,
+    jlong nativePointer,
+    alias_ref<JArrayFloat> styleInputs,
+    jint size) {
+  float result[size];
+  styleInputs->getRegion(0, size, result);
+  YGNodeSetStyleInputs(_jlong2YGNodeRef(nativePointer), result, size);
+}
+
 jint jni_YGNodeGetInstanceCount() {
   return YGNodeGetInstanceCount();
 }
@@ -823,6 +1038,7 @@ jint JNI_OnLoad(JavaVM* vm, void*) {
             YGMakeCriticalNativeMethod(jni_YGNodeStyleSetAspectRatio),
             YGMakeCriticalNativeMethod(jni_YGNodeGetInstanceCount),
             YGMakeCriticalNativeMethod(jni_YGNodePrint),
+            YGMakeNativeMethod(jni_YGNodeSetStyleInputs),
         });
     registerNatives(
         "com/facebook/yoga/YogaConfig",
