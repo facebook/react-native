@@ -5,6 +5,8 @@
 
 #include "JSIndexedRAMBundle.h"
 
+#include <glog/logging.h>
+
 #include <folly/Memory.h>
 
 namespace facebook {

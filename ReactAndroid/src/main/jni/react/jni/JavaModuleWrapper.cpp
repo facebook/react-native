@@ -5,6 +5,8 @@
 
 #include "JavaModuleWrapper.h"
 
+#include <glog/logging.h>
+
 #include <fb/fbjni.h>
 #include <folly/json.h>
 #include <cxxreact/CxxModule.h>

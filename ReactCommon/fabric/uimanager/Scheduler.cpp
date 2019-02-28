@@ -5,6 +5,7 @@
 
 #include "Scheduler.h"
 
+#include <glog/logging.h>
 #include <jsi/jsi.h>
 
 #include <react/core/LayoutContext.h>

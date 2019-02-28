@@ -5,6 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#include <glog/logging.h>
+
 #include <React/RCTLog.h>
 #include <cxxreact/MessageQueueThread.h>
 

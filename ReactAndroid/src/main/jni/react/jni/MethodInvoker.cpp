@@ -9,6 +9,8 @@
 #include <fbsystrace.h>
 #endif
 
+#include <glog/logging.h>
+
 #include <cxxreact/CxxNativeModule.h>
 #include <fb/fbjni.h>
 
