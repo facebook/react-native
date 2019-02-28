@@ -323,25 +323,8 @@ void YGNodeFreeRecursive(const YGNodeRef root) {
   return YGNodeFreeRecursiveWithCleanupFunc(root, nullptr);
 }
 
-void YGNodeReset(const YGNodeRef node) {
-  YGAssertWithNode(
-      node,
-      YGNodeGetChildCount(node) == 0,
-      "Cannot reset a node which still has children attached");
-  YGAssertWithNode(
-      node,
-      node->getOwner() == nullptr,
-      "Cannot reset a node still attached to a owner");
-
-  node->clearChildren();
-
-  const YGConfigRef config = node->getConfig();
-  *node = YGNode();
-  if (config->useWebDefaults) {
-    node->setStyleFlexDirection(YGFlexDirectionRow);
-    node->setStyleAlignContent(YGAlignStretch);
-  }
-  node->setConfig(config);
+void YGNodeReset(YGNodeRef node) {
+  node->reset();
 }
 
 int32_t YGNodeGetInstanceCount(void) {

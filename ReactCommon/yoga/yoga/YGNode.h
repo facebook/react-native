@@ -342,4 +342,5 @@ public:
   bool isNodeFlexible();
   bool didUseLegacyFlag();
   bool isLayoutTreeEqualToNode(const YGNode& node) const;
+  void reset();
 };

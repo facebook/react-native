@@ -571,3 +571,22 @@ bool YGNode::isLayoutTreeEqualToNode(const YGNode& node) const {
   }
   return isLayoutTreeEqual;
 }
+
+void YGNode::reset() {
+  YGAssertWithNode(
+      this,
+      children_.size() == 0,
+      "Cannot reset a node which still has children attached");
+  YGAssertWithNode(
+      this, owner_ == nullptr, "Cannot reset a node still attached to a owner");
+
+  clearChildren();
+
+  auto config = getConfig();
+  *this = YGNode{};
+  if (config->useWebDefaults) {
+    setStyleFlexDirection(YGFlexDirectionRow);
+    setStyleAlignContent(YGAlignStretch);
+  }
+  setConfig(config);
+}
