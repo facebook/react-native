@@ -661,6 +661,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       getItem,
       getItemCount,
       horizontal,
+      inverted,
       keyExtractor,
     } = this.props;
     const stickyOffset = this.props.ListHeaderComponent ? 1 : 0;
@@ -681,6 +682,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           cellKey={key}
           fillRateHelper={this._fillRateHelper}
           horizontal={horizontal}
+          inverted={inverted}
           index={ii}
           item={item}
           key={key}
@@ -1611,6 +1613,7 @@ class CellRenderer extends React.Component<
     cellKey: string,
     fillRateHelper: FillRateHelper,
     horizontal: ?boolean,
+    inverted: ?boolean,
     index: number,
     item: Item,
     onLayout: (event: Object) => void, // This is extracted by ScrollViewStickyHeader
@@ -1685,6 +1688,7 @@ class CellRenderer extends React.Component<
       ItemSeparatorComponent,
       fillRateHelper,
       horizontal,
+      inverted,
       item,
       index,
       parentProps,
@@ -1709,8 +1713,8 @@ class CellRenderer extends React.Component<
       <ItemSeparatorComponent {...this.state.separatorProps} />
     );
     const cellStyle = horizontal
-      ? {flexDirection: 'row'}
-      : {flexDirection: 'column'};
+      ? {flexDirection: inverted ? 'row-reverse' : 'row'}
+      : {flexDirection: inverted ? 'column-reverse' : 'column'};
     if (!CellRendererComponent) {
       return (
         /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
