@@ -76,7 +76,8 @@ public class AndroidInfoModule extends ReactContextBaseJavaModule {
     if (ReactBuildConfig.DEBUG) {
       constants.put("ServerHost", AndroidInfoHelpers.getServerHost());
     }
-    constants.put("isTesting", "true".equals(System.getProperty(IS_TESTING)));
+    constants.put("isTesting", "true".equals(System.getProperty(IS_TESTING))
+    || isRunningScreenshotTest());
     constants.put("reactNativeVersion", ReactNativeVersion.VERSION);
     constants.put("uiMode", uiMode());
     return constants;
@@ -85,5 +86,14 @@ public class AndroidInfoModule extends ReactContextBaseJavaModule {
   @ReactMethod(isBlockingSynchronousMethod = true)
   public String getAndroidID(){
     return Secure.getString(getReactApplicationContext().getContentResolver(),Secure.ANDROID_ID);
+  }
+
+  private Boolean isRunningScreenshotTest() {
+    try {
+      Class.forName("android.support.test.rule.ActivityTestRule");
+      return true;
+    } catch (ClassNotFoundException ignored) {
+      return false;
+    }
   }
 }
