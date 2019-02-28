@@ -392,6 +392,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
                                    notifyDelegate:YES];
 
         [self textInputDidChange];
+        
+        _nativeEventCount++;
+        
+        if (_onChange) {
+          _onChange(@{
+                      @"text": _predictedText,
+                      @"target": self.reactTag,
+                      @"eventCount": @(_nativeEventCount),
+                      });
+        }
       }
 
       return NO;
@@ -423,6 +433,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
       @"eventCount": @(_nativeEventCount),
     });
   }
+  
+  _nativeEventCount++;
+  
+  if (_onChange) {
+    _onChange(@{
+                @"text": _predictedText,
+                @"target": self.reactTag,
+                @"eventCount": @(_nativeEventCount),
+                });
+  }
 
   return YES;
 }
@@ -445,16 +465,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     // JS will assume the selection changed based on the location of our shouldChangeTextInRange, so reset it.
     [self textInputDidChangeSelection];
     _predictedText = backedTextInputView.attributedText.string;
-  }
-
-  _nativeEventCount++;
-
-  if (_onChange) {
-    _onChange(@{
-       @"text": self.attributedText.string,
-       @"target": self.reactTag,
-       @"eventCount": @(_nativeEventCount),
-    });
   }
 }
 
