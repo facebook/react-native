@@ -11,7 +11,9 @@
 'use strict';
 
 const AppContainer = require('AppContainer');
-import PerformanceLogger from 'GlobalPerformanceLogger';
+import GlobalPerformanceLogger from 'GlobalPerformanceLogger';
+import type {IPerformanceLogger} from 'createPerformanceLogger';
+import PerformanceLoggerContext from 'PerformanceLoggerContext';
 const React = require('React');
 const ReactFabricIndicator = require('ReactFabricIndicator');
 
@@ -27,16 +29,20 @@ function renderApplication<Props: Object>(
   WrapperComponent?: ?React.ComponentType<*>,
   fabric?: boolean,
   showFabricIndicator?: boolean,
+  scopedPerformanceLogger?: IPerformanceLogger,
 ) {
   invariant(rootTag, 'Expect to have a valid rootTag, instead got ', rootTag);
 
   let renderable = (
-    <AppContainer rootTag={rootTag} WrapperComponent={WrapperComponent}>
-      <RootComponent {...initialProps} rootTag={rootTag} />
-      {fabric === true && showFabricIndicator === true ? (
-        <ReactFabricIndicator />
-      ) : null}
-    </AppContainer>
+    <PerformanceLoggerContext.Provider
+      value={scopedPerformanceLogger ?? GlobalPerformanceLogger}>
+      <AppContainer rootTag={rootTag} WrapperComponent={WrapperComponent}>
+        <RootComponent {...initialProps} rootTag={rootTag} />
+        {fabric === true && showFabricIndicator === true ? (
+          <ReactFabricIndicator />
+        ) : null}
+      </AppContainer>
+    </PerformanceLoggerContext.Provider>
   );
 
   // If the root component is async, the user probably wants the initial render
@@ -54,13 +60,13 @@ function renderApplication<Props: Object>(
     renderable = <ConcurrentMode>{renderable}</ConcurrentMode>;
   }
 
-  PerformanceLogger.startTimespan('renderApplication_React_render');
+  GlobalPerformanceLogger.startTimespan('renderApplication_React_render');
   if (fabric) {
     require('ReactFabric').render(renderable, rootTag);
   } else {
     require('ReactNative').render(renderable, rootTag);
   }
-  PerformanceLogger.stopTimespan('renderApplication_React_render');
+  GlobalPerformanceLogger.stopTimespan('renderApplication_React_render');
 }
 
 module.exports = renderApplication;

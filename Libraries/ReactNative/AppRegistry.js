@@ -18,6 +18,8 @@ const SceneTracker = require('SceneTracker');
 const infoLog = require('infoLog');
 const invariant = require('invariant');
 const renderApplication = require('renderApplication');
+const createPerformanceLogger = require('createPerformanceLogger');
+import type {IPerformanceLogger} from 'createPerformanceLogger';
 
 type Task = (taskData: any) => Promise<void>;
 type TaskProvider = () => Task;
@@ -30,6 +32,7 @@ type TaskCancelProvider = () => TaskCanceller;
 export type ComponentProvider = () => React$ComponentType<any>;
 export type ComponentProviderInstrumentationHook = (
   component: ComponentProvider,
+  scopedPerformanceLogger: IPerformanceLogger,
 ) => React$ComponentType<any>;
 export type AppConfig = {
   appKey: string,
@@ -101,15 +104,21 @@ const AppRegistry = {
     componentProvider: ComponentProvider,
     section?: boolean,
   ): string {
+    let scopedPerformanceLogger = createPerformanceLogger();
     runnables[appKey] = {
       componentProvider,
       run: appParameters => {
         renderApplication(
-          componentProviderInstrumentationHook(componentProvider),
+          componentProviderInstrumentationHook(
+            componentProvider,
+            scopedPerformanceLogger,
+          ),
           appParameters.initialProps,
           appParameters.rootTag,
           wrapperComponentProvider && wrapperComponentProvider(appParameters),
           appParameters.fabric,
+          false,
+          scopedPerformanceLogger,
         );
       },
     };
