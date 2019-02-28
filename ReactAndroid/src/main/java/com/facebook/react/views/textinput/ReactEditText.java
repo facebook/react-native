@@ -236,6 +236,10 @@ public class ReactEditText extends EditText {
     mContentSizeWatcher = contentSizeWatcher;
   }
 
+  public void setMostRecentEventCount(int mostRecentEventCount) {
+    mMostRecentEventCount = mostRecentEventCount;
+  }
+
   public void setScrollWatcher(ScrollWatcher scrollWatcher) {
     mScrollWatcher = scrollWatcher;
   }
