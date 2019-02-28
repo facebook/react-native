@@ -86,7 +86,7 @@ return async.mapSeries(testClasses, (clazz, callback) => {
     }
 
     return async.retry(test_opts.RETRIES, (retryCb) => {
-        const test_process = child_process.spawn('./ContainerShip/scripts/run-instrumentation-tests-via-adb-shell.sh', [test_opts.PACKAGE, clazz], {
+        const test_process = child_process.spawn('./.circleci/Dockerfiles/scripts/run-instrumentation-tests-via-adb-shell.sh', [test_opts.PACKAGE, clazz], {
             stdio: 'inherit',
         });
 
