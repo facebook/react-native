@@ -11,7 +11,7 @@
 'use strict';
 
 import React from 'react';
-import {NativeModules, Button, StyleSheet} from 'react-native';
+import {NativeModules, Button} from 'react-native';
 
 const {CrashyCrash} = NativeModules;
 
