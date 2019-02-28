@@ -50,11 +50,3 @@ exports.examples = [
     },
   },
 ];
-
-const styles = StyleSheet.create({
-  centering: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 8,
-  },
-});
