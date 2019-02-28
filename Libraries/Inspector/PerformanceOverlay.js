@@ -10,7 +10,7 @@
 
 'use strict';
 
-const PerformanceLogger = require('PerformanceLogger');
+const PerformanceLogger = require('GlobalPerformanceLogger');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');

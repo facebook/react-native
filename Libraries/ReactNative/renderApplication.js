@@ -11,7 +11,7 @@
 'use strict';
 
 const AppContainer = require('AppContainer');
-import PerformanceLogger from 'PerformanceLogger';
+import PerformanceLogger from 'GlobalPerformanceLogger';
 const React = require('React');
 const ReactFabricIndicator = require('ReactFabricIndicator');
 
