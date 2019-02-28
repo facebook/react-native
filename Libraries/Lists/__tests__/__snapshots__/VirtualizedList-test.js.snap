@@ -463,7 +463,7 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
   ListHeaderComponent={[Function]}
   contentContainerStyle={
     Object {
-      "flexDirection": "row-reverse",
+      "flexDirection": "column-reverse",
     }
   }
   data={

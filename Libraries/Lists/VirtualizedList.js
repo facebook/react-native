@@ -1759,10 +1759,10 @@ class VirtualizedCellWrapper extends React.Component<{
 
 const styles = StyleSheet.create({
   verticallyInverted: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'column-reverse',
   },
   horizontallyInverted: {
-    flexDirection: 'column-reverse',
+    flexDirection: 'row-reverse',
   },
   debug: {
     flex: 1,
