@@ -593,15 +593,17 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                            completionBlock:(RCTImageLoaderCompletionBlock)completionBlock
 {
     __block atomic_bool cancelled = ATOMIC_VAR_INIT(NO);
-    // TODO: Protect this variable shared between threads.
     __block dispatch_block_t cancelLoad = nil;
+    __block NSLock *cancelLoadLock = [NSLock new];
     dispatch_block_t cancellationBlock = ^{
         BOOL alreadyCancelled = atomic_fetch_or(&cancelled, 1);
         if (alreadyCancelled) {
             return;
         }
+        [cancelLoadLock lock];
         dispatch_block_t cancelLoadLocal = cancelLoad;
         cancelLoad = nil;
+        [cancelLoadLock unlock];
         if (cancelLoadLocal) {
             cancelLoadLocal();
         }
@@ -615,7 +617,9 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
         }
 
         if (!imageOrData || [imageOrData isKindOfClass:[UIImage class]]) {
+            [cancelLoadLock lock];
             cancelLoad = nil;
+            [cancelLoadLock unlock];
             completionBlock(error, imageOrData);
             return;
         }
@@ -630,19 +634,22 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                               resizeMode:resizeMode
                                                 response:response];
             }
-
+            [cancelLoadLock lock];
             cancelLoad = nil;
+            [cancelLoadLock unlock];
             completionBlock(error_, image);
         };
-
-        cancelLoad = [strongSelf decodeImageData:imageOrData
-                                            size:size
-                                           scale:scale
-                                         clipped:clipped
-                                      resizeMode:resizeMode
-                                 completionBlock:decodeCompletionHandler];
+        dispatch_block_t cancelLoadLocal = [strongSelf decodeImageData:imageOrData
+                                                                size:size
+                                                               scale:scale
+                                                             clipped:clipped
+                                                          resizeMode:resizeMode
+                                                     completionBlock:decodeCompletionHandler];
+        [cancelLoadLock lock];
+        cancelLoad = cancelLoadLocal;
+        [cancelLoadLock unlock];
     };
-
+  
     cancelLoad = [self _loadImageOrDataWithURLRequest:imageURLRequest
                                                  size:size
                                                 scale:scale
