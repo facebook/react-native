@@ -800,28 +800,34 @@ static void YGNodeSetStyleInputs(
       case Margin: {
         float edge = *styleInputs++;
         float marginValue = *styleInputs++;
+        ygNodeRefToYGNodeContext(node)->edgeSetFlag |= MARGIN;
         YGNodeStyleSetMargin(node, static_cast<YGEdge>(edge), marginValue);
         break;
       }
       case MarginPercent: {
         float edge = *styleInputs++;
         float marginPercent = *styleInputs++;
+        ygNodeRefToYGNodeContext(node)->edgeSetFlag |= MARGIN;
         YGNodeStyleSetMarginPercent(
             node, static_cast<YGEdge>(edge), marginPercent);
         break;
       }
-      case MarginAuto:
+      case MarginAuto: {
+        ygNodeRefToYGNodeContext(node)->edgeSetFlag |= MARGIN;
         YGNodeStyleSetMarginAuto(node, static_cast<YGEdge>(*styleInputs++));
         break;
+      }
       case Padding: {
         float edge = *styleInputs++;
         float paddingValue = *styleInputs++;
+        ygNodeRefToYGNodeContext(node)->edgeSetFlag |= PADDING;
         YGNodeStyleSetPadding(node, static_cast<YGEdge>(edge), paddingValue);
         break;
       }
       case PaddingPercent: {
         float edge = *styleInputs++;
         float paddingPercent = *styleInputs++;
+        ygNodeRefToYGNodeContext(node)->edgeSetFlag |= PADDING;
         YGNodeStyleSetPaddingPercent(
             node, static_cast<YGEdge>(edge), paddingPercent);
         break;
@@ -829,6 +835,7 @@ static void YGNodeSetStyleInputs(
       case Border: {
         float edge = *styleInputs++;
         float borderValue = *styleInputs++;
+        ygNodeRefToYGNodeContext(node)->edgeSetFlag |= BORDER;
         YGNodeStyleSetBorder(node, static_cast<YGEdge>(edge), borderValue);
         break;
       }
