@@ -188,7 +188,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   }
 
   @DoNotStrip
-  private void preallocateView(int rootTag, int reactTag, final String componentName, ReadableMap props) {
+  private void preallocateView(final int rootTag, final String componentName) {
     if (UiThreadUtil.isOnUiThread()) {
       // There is no reason to allocate views ahead of time on the main thread.
       return;
@@ -198,7 +198,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         Assertions.assertNotNull(mReactContextForRootTag.get(rootTag));
       String component = sComponentNames.get(componentName);
       Assertions.assertNotNull(component);
-      mPreMountItems.add(new PreAllocateViewMountItem(context, rootTag, reactTag, component, props));
+      mPreMountItems.add(new PreAllocateViewMountItem(context, rootTag, component));
     }
   }
 

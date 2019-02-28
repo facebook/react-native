@@ -29,13 +29,18 @@ public:
     [scheduler.delegate schedulerDidFinishTransaction:mutations rootTag:rootTag];
   }
 
-  void schedulerDidRequestPreliminaryViewAllocation(SurfaceId surfaceId, bool isLayoutable, const ShadowView &shadowView) override {
+  void schedulerDidRequestPreliminaryViewAllocation(
+      SurfaceId surfaceId,
+      ComponentName componentName,
+      bool isLayoutable,
+      ComponentHandle componentHandle) override
+  {
     if (!isLayoutable) {
       return;
     }
 
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
-    [scheduler.delegate schedulerOptimisticallyCreateComponentViewWithComponentHandle:shadowView.componentHandle];
+    [scheduler.delegate schedulerOptimisticallyCreateComponentViewWithComponentHandle:componentHandle];
   }
 
 private:

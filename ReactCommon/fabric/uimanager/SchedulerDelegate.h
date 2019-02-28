@@ -35,8 +35,9 @@ class SchedulerDelegate {
    */
   virtual void schedulerDidRequestPreliminaryViewAllocation(
       SurfaceId surfaceId,
+      ComponentName componentName,
       bool isLayoutable,
-      const ShadowView &shadowView) = 0;
+      ComponentHandle componentHandle) = 0;
 
   virtual ~SchedulerDelegate() noexcept = default;
 };
