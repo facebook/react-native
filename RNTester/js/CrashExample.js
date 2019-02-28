@@ -13,8 +13,7 @@
 import React from 'react';
 import {NativeModules, Button, StyleSheet} from 'react-native';
 
-const { CrashyCrash } = NativeModules
-
+const {CrashyCrash} = NativeModules;
 
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';
@@ -27,13 +26,13 @@ exports.examples = [
     render() {
       return (
         <Button
-          title='JS crash'
+          title="JS crash"
           onPress={() => {
-            const a = {}
-            const b = a.w.q // js crash here
-            console.log(b)
+            const a = {};
+            const b = a.w.q; // js crash here
+            console.log(b);
           }}
-        /> 
+        />
       );
     },
   },
@@ -42,11 +41,11 @@ exports.examples = [
     render() {
       return (
         <Button
-          title='Native crash'
+          title="Native crash"
           onPress={() => {
-            CrashyCrash.letsCrash()
+            CrashyCrash.letsCrash();
           }}
-        /> 
+        />
       );
     },
   },
