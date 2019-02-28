@@ -13,8 +13,6 @@
   "devDependencies": {
     "babel-eslint": "9.0.0",
     "eslint": "5.1.0",
-    "eslint-config-fb-strict": "22.1.0",
-    "eslint-config-fbjs": "2.0.1",
     "eslint-plugin-eslint-comments": "^3.0.1",
     "eslint-plugin-flowtype": "2.43.0",
     "eslint-plugin-jest": "21.8.0",
