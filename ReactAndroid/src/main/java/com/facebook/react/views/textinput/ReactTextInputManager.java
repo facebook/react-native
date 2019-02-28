@@ -408,6 +408,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     } catch (IllegalAccessException ex) {}
   }
 
+  @ReactProp(name= "mostRecentEventCount", defaultInt = 0)
+  public void setMostRecentEventCount(ReactEditText view, int mostRecentEventCount) {
+    view.setMostRecentEventCount(mostRecentEventCount);
+  }
+
   @ReactProp(name = "caretHidden", defaultBoolean = false)
   public void setCaretHidden(ReactEditText view, boolean caretHidden) {
     view.setCursorVisible(!caretHidden);
