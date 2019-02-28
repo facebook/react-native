@@ -36,10 +36,6 @@ public class YogaNodeJNI extends YogaNode {
   private static final int PADDING = 2;
   private static final int BORDER = 4;
 
-  @DoNotStrip
-  private int mEdgeSetFlag = 0;
-
-  private boolean mHasSetPosition = false;
   private final boolean mAvoidGlobalJNIRefs;
 
   @DoNotStrip
@@ -120,8 +116,6 @@ public class YogaNodeJNI extends YogaNode {
 
   private static native void jni_YGNodeReset(long nativePointer);
   public void reset() {
-    mEdgeSetFlag = 0;
-    mHasSetPosition = false;
     mHasNewLayout = true;
 
     mWidth = YogaConstants.UNDEFINED;
@@ -429,81 +423,61 @@ public class YogaNodeJNI extends YogaNode {
 
   private static native Object jni_YGNodeStyleGetMargin(long nativePointer, int edge);
   public YogaValue getMargin(YogaEdge edge) {
-    if (!((mEdgeSetFlag & MARGIN) == MARGIN)) {
-      return YogaValue.UNDEFINED;
-    }
     return (YogaValue) jni_YGNodeStyleGetMargin(mNativePointer, edge.intValue());
   }
 
   private static native void jni_YGNodeStyleSetMargin(long nativePointer, int edge, float margin);
   public void setMargin(YogaEdge edge, float margin) {
-    mEdgeSetFlag |= MARGIN;
     jni_YGNodeStyleSetMargin(mNativePointer, edge.intValue(), margin);
   }
 
   private static native void jni_YGNodeStyleSetMarginPercent(long nativePointer, int edge, float percent);
   public void setMarginPercent(YogaEdge edge, float percent) {
-    mEdgeSetFlag |= MARGIN;
     jni_YGNodeStyleSetMarginPercent(mNativePointer, edge.intValue(), percent);
   }
 
   private static native void jni_YGNodeStyleSetMarginAuto(long nativePointer, int edge);
   public void setMarginAuto(YogaEdge edge) {
-    mEdgeSetFlag |= MARGIN;
     jni_YGNodeStyleSetMarginAuto(mNativePointer, edge.intValue());
   }
 
   private static native Object jni_YGNodeStyleGetPadding(long nativePointer, int edge);
   public YogaValue getPadding(YogaEdge edge) {
-    if (!((mEdgeSetFlag & PADDING) == PADDING)) {
-      return YogaValue.UNDEFINED;
-    }
     return (YogaValue) jni_YGNodeStyleGetPadding(mNativePointer, edge.intValue());
   }
 
   private static native void jni_YGNodeStyleSetPadding(long nativePointer, int edge, float padding);
   public void setPadding(YogaEdge edge, float padding) {
-    mEdgeSetFlag |= PADDING;
     jni_YGNodeStyleSetPadding(mNativePointer, edge.intValue(), padding);
   }
 
   private static native void jni_YGNodeStyleSetPaddingPercent(long nativePointer, int edge, float percent);
   public void setPaddingPercent(YogaEdge edge, float percent) {
-    mEdgeSetFlag |= PADDING;
     jni_YGNodeStyleSetPaddingPercent(mNativePointer, edge.intValue(), percent);
   }
 
   private static native float jni_YGNodeStyleGetBorder(long nativePointer, int edge);
   public float getBorder(YogaEdge edge) {
-    if (!((mEdgeSetFlag & BORDER) == BORDER)) {
-      return YogaConstants.UNDEFINED;
-    }
     return jni_YGNodeStyleGetBorder(mNativePointer, edge.intValue());
   }
 
   private static native void jni_YGNodeStyleSetBorder(long nativePointer, int edge, float border);
   public void setBorder(YogaEdge edge, float border) {
-    mEdgeSetFlag |= BORDER;
     jni_YGNodeStyleSetBorder(mNativePointer, edge.intValue(), border);
   }
 
   private static native Object jni_YGNodeStyleGetPosition(long nativePointer, int edge);
   public YogaValue getPosition(YogaEdge edge) {
-    if (!mHasSetPosition) {
-      return YogaValue.UNDEFINED;
-    }
     return (YogaValue) jni_YGNodeStyleGetPosition(mNativePointer, edge.intValue());
   }
 
   private static native void jni_YGNodeStyleSetPosition(long nativePointer, int edge, float position);
   public void setPosition(YogaEdge edge, float position) {
-    mHasSetPosition = true;
     jni_YGNodeStyleSetPosition(mNativePointer, edge.intValue(), position);
   }
 
   private static native void jni_YGNodeStyleSetPositionPercent(long nativePointer, int edge, float percent);
   public void setPositionPercent(YogaEdge edge, float percent) {
-    mHasSetPosition = true;
     jni_YGNodeStyleSetPositionPercent(mNativePointer, edge.intValue(), percent);
   }
 
