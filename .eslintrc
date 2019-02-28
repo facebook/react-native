@@ -261,14 +261,6 @@
   "overrides": [
     {
       "files": [
-        "packages/react-native-symbolicate/**/*.js",
-      ],
-      "env": {
-        "node": true,
-      },
-    },
-    {
-      "files": [
         "**/__fixtures__/**/*.js",
         "**/__mocks__/**/*.js",
         "**/__tests__/**/*.js",
