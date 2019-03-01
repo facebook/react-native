@@ -2,11 +2,23 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://facebook.github.io/react-native/blog</id>
     <title>React Native Blog</title>
-    <updated>2019-01-07T06:00:00Z</updated>
+    <updated>2019-03-01T06:00:00Z</updated>
     <generator>Feed for Node.js</generator>
     <link rel="alternate" href="https://facebook.github.io/react-native/blog"/>
     <subtitle>The best place to stay up-to-date with the latest React Native news and events.</subtitle>
     <logo>https://facebook.github.io/react-native/img/header_logo.png</logo>
+    <entry>
+        <title type="html"><![CDATA[React Native Open Source Update March 2019]]></title>
+        <id>https://facebook.github.io/react-native/blog/2019/03/01/react-native-open-source-update.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2019/03/01/react-native-open-source-update.html">
+        </link>
+        <updated>2019-03-01T06:00:00Z</updated>
+        <summary type="html"><![CDATA[<p>We announced our <a href="https://facebook.github.io/react-native/blog/2018/11/01/oss-roadmap">React Native Open Source roadmap</a> in Q4 2018 after deciding to invest more in the React Native open source community.</p> <p>For our first milestone, we focused on identifying and improving the most visible aspects of our community. Our goal...</p>]]></summary>
+        <author>
+            <name>Christoph Nakazawa</name>
+            <uri>https://twitter.com/cpojer</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[The State of the React Native Community in 2018]]></title>
         <id>https://facebook.github.io/react-native/blog/2019/01/07/state-of-react-native-community.html</id>
@@ -236,18 +248,6 @@
         </author>
     </entry>
     <entry>
-        <title type="html"><![CDATA[idx: The Existential Function]]></title>
-        <id>https://facebook.github.io/react-native/blog/2017/03/13/idx-the-existential-function.html</id>
-        <link href="https://facebook.github.io/react-native/blog/2017/03/13/idx-the-existential-function.html">
-        </link>
-        <updated>2017-03-13T06:00:00Z</updated>
-        <summary type="html"><![CDATA[<p>At Facebook, we often need to access deeply nested values in data structures fetched with GraphQL. On the way to accessing these deeply nested values, it is common for one or more intermediate fields to be nullable. These intermediate fields may be n...</p>]]></summary>
-        <author>
-            <name>Timothy Yung</name>
-            <uri>https://github.com/yungsters</uri>
-        </author>
-    </entry>
-    <entry>
         <title type="html"><![CDATA[Better List Views in React Native]]></title>
         <id>https://facebook.github.io/react-native/blog/2017/03/13/better-list-views.html</id>
         <link href="https://facebook.github.io/react-native/blog/2017/03/13/better-list-views.html">
@@ -257,6 +257,18 @@
         <author>
             <name>Spencer Ahrens</name>
             <uri>https://github.com/sahrens</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[idx: The Existential Function]]></title>
+        <id>https://facebook.github.io/react-native/blog/2017/03/13/idx-the-existential-function.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2017/03/13/idx-the-existential-function.html">
+        </link>
+        <updated>2017-03-13T06:00:00Z</updated>
+        <summary type="html"><![CDATA[<p>At Facebook, we often need to access deeply nested values in data structures fetched with GraphQL. On the way to accessing these deeply nested values, it is common for one or more intermediate fields to be nullable. These intermediate fields may be n...</p>]]></summary>
+        <author>
+            <name>Timothy Yung</name>
+            <uri>https://github.com/yungsters</uri>
         </author>
     </entry>
     <entry>
