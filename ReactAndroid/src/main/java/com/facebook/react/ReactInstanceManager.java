@@ -1045,7 +1045,7 @@ public class ReactInstanceManager {
 
     @Nullable Bundle initialProperties = rootView.getAppProperties();
     final int rootTag = uiManagerModule.addRootView(
-      rootView,
+      rootView.getView(),
       initialProperties == null ?
             new WritableNativeMap() : Arguments.fromBundle(initialProperties),
         rootView.getInitialUITemplate());
