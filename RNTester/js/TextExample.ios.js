@@ -429,6 +429,12 @@ exports.examples = [
     },
   },
   {
+    title: "Substring Emoji (should only see 'test')",
+    render: function() {
+      return <Text>{'test🙃'.substring(0, 5)}</Text>;
+    },
+  },
+  {
     title: 'Text metrics',
     render: function() {
       return <TextRenderInfoExample />;
