@@ -2,7 +2,6 @@ load("//ReactNative:DEFS.bzl", "react_native_dep", "react_native_target", "rn_ja
 
 rn_java_annotation_processor(
     name = "processing",
-    does_not_affect_abi = True,
     processor_class = "com.facebook.react.module.processing.ReactModuleSpecProcessor",
     visibility = [
         "PUBLIC",

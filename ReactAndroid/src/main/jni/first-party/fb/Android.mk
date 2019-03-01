@@ -16,6 +16,7 @@ LOCAL_SRC_FILES:= \
        jni/ReadableByteChannel.cpp \
        jni/References.cpp \
        jni/WeakReference.cpp \
+       CRTSafeAPIs.cpp \
        log.cpp \
        lyra/lyra.cpp \
        onload.cpp \
@@ -23,7 +24,8 @@ LOCAL_SRC_FILES:= \
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/include
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/include
 
-LOCAL_CFLAGS := -DLOG_TAG=\"libfb\" -DDISABLE_CPUCAP -DDISABLE_XPLAT -fexceptions -frtti
+LOCAL_CFLAGS := -DLOG_TAG=\"libfb\" -DDISABLE_CPUCAP -DDISABLE_XPLAT
+LOCAL_CXXFLAGS += -frtti -fexceptions 
 # include/utils/threads.h has unused parameters
 LOCAL_CFLAGS += -Wno-unused-parameter
 ifeq ($(TOOLCHAIN_PERMISSIVE),true)

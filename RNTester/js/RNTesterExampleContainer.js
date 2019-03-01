@@ -18,11 +18,21 @@ class RNTesterExampleContainer extends React.Component {
   renderExample(example, i) {
     // Filter platform-specific examples
     var {title, description, platform} = example;
+    let platformSupported;
     if (platform) {
-      if (Platform.OS !== platform) {
-        return null;
+      if (Array.isArray(platform)) {
+        if (!platform.includes(Platform.OS)) {
+          return null;
+        }
+        platformSupported = platform.join(' & ');
+      } else {
+        if (Platform.OS !== platform) {
+          return null;
+        }
+        platformSupported = platform;
       }
-      title += ' (' + platform + ' only)';
+
+      title += ' (' + platformSupported + ' only)';
     }
     return (
       <RNTesterBlock key={i} title={title} description={description}>

@@ -1,0 +1,28 @@
+LIBLETNAME = fbjni
+LIBLET_ANDROID = 1
+LIBLET_NO_PRECOMP = 1
+
+!include $(OPENSOURCE_REACTNATIVE)\OfficeISS\ReactCommon\make.inc
+
+TARGETNAME = fbjni
+
+INCLUDES = $(INCLUDES); \
+    $(OPENSOURCE_REACTNATIVE)\OfficeISS\ReactAndroid\src\main\jni\first-party\fb\include; \
+    $(OPENSOURCE_REACTNATIVE)\OfficeISS\glog\src; \
+
+SOURCES = \
+    ..\ByteBuffer.cpp \
+    ..\Countable.cpp \
+    ..\Environment.cpp \
+    ..\Exceptions.cpp \
+    ..\fbjni.cpp \
+    ..\Hybrid.cpp \
+    ..\jni_helpers.cpp \
+    ..\LocalString.cpp \
+    ..\OnLoad.cpp \
+    ..\ReadableByteChannel.cpp \
+    ..\References.cpp \
+    ..\WeakReference.cpp \
+
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -Wno-c++11-compat -Wno-shadow -Wno-unused-local-typedef
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -DDISABLE_CPUCAP -DDISABLE_XPLAT $(CXX11_FLAGS)

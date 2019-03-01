@@ -47,6 +47,9 @@
 
 - (void)drawRect:(CGRect)rect
 {
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+  [super drawRect:rect];
+#endif // ]TODO(macOS ISS#2323203)
   CGContextRef context = UIGraphicsGetCurrentContext();
   for (ARTNode *node in self.subviews) {
     [node renderTo:context];

@@ -139,6 +139,19 @@ exports.examples = [
     },
   },
   {
+    platform: 'ios',
+    title: 'Custom size',
+    render() {
+      return (
+        <ActivityIndicator
+          style={[styles.centering, {transform: [{scale: 1.5}]}]}
+          size="large"
+        />
+      );
+    }
+  },
+  {
+    platform: 'android',
     title: 'Custom size',
     render() {
       return (

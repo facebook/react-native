@@ -68,6 +68,7 @@ void addNativeTracingLegacyHooks(JSGlobalContextRef ctx) {
   installGlobalFunction(ctx, "nativeTraceBeginLegacy", nativeTraceBeginLegacy);
   installGlobalFunction(ctx, "nativeTraceEndLegacy", nativeTraceEndLegacy);
 #endif
+  (void)ctx;
 }
 
 } }

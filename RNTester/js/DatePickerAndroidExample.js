@@ -54,8 +54,9 @@ class DatePickerAndroidExample extends React.Component {
         newState[stateKey + 'Date'] = date;
       }
       this.setState(newState);
-    } catch ({code, message}) {
-      console.warn(`Error in example '${stateKey}': `, message);
+      // Change here can go away once we sync to 0.57
+    } catch (err) {
+      console.warn(`Error in example '${stateKey}': `, err.message);
     }
   };
 

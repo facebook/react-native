@@ -11,6 +11,7 @@
 #import <React/RCTAssert.h>
 #import <React/RCTBridge.h>
 #import <React/RCTLog.h>
+#import <React/RCTBundleURLProvider.h>
 
 @interface RCTLoggingTests : XCTestCase
 
@@ -31,13 +32,14 @@
   NSURL *scriptURL;
   if (getenv("CI_USE_PACKAGER")) {
     NSString *app = @"IntegrationTests/IntegrationTestsApp";
-    scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.bundle?platform=ios&dev=true", app]];
+    scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.bundle?platform=%@&dev=true", app, kRCTPlatformName]];
   } else {
     scriptURL = [[NSBundle bundleForClass:[RCTBridge class]] URLForResource:@"main" withExtension:@"jsbundle"];
   }
   RCTAssert(scriptURL != nil, @"No scriptURL set");
 
   _bridge = [[RCTBridge alloc] initWithBundleURL:scriptURL moduleProvider:NULL launchOptions:nil];
+
   NSDate *date = [NSDate dateWithTimeIntervalSinceNow:60];
   while (date.timeIntervalSinceNow > 0 && _bridge.loading) {
     [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
@@ -54,6 +56,8 @@
 
   RCTSetLogFunction(RCTDefaultLogFunction);
 }
+
+#define RCT_TEST_LOGGING_TIMEOUT dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 15) // TODO(OSS Candidate ISS#2710739)
 
 - (void)testLogging
 {
@@ -72,32 +76,32 @@
     }
   });
   // Wait for console log to signal the semaphore
-  dispatch_semaphore_wait(_logSem, DISPATCH_TIME_FOREVER);
+  dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // TODO(OSS Candidate ISS#2710739)
 
   XCTAssertEqual(_lastLogLevel, RCTLogLevelInfo);
   XCTAssertEqual(_lastLogSource, RCTLogSourceJavaScript);
   XCTAssertEqualObjects(_lastLogMessage, @"Invoking console.log");
 
   [_bridge enqueueJSCall:@"LoggingTestModule.warning" args:@[@"Generating warning"]];
-  dispatch_semaphore_wait(_logSem, DISPATCH_TIME_FOREVER);
+  dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // TODO(OSS Candidate ISS#2710739)
 
   XCTAssertEqual(_lastLogLevel, RCTLogLevelWarning);
   XCTAssertEqual(_lastLogSource, RCTLogSourceJavaScript);
   XCTAssertEqualObjects(_lastLogMessage, @"Warning: Generating warning");
 
   [_bridge enqueueJSCall:@"LoggingTestModule.invariant" args:@[@"Invariant failed"]];
-  dispatch_semaphore_wait(_logSem, DISPATCH_TIME_FOREVER);
+  dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // TODO(OSS Candidate ISS#2710739)
 
   XCTAssertEqual(_lastLogLevel, RCTLogLevelError);
   XCTAssertEqual(_lastLogSource, RCTLogSourceJavaScript);
   XCTAssertEqualObjects(_lastLogMessage, @"Invariant failed");
 
   [_bridge enqueueJSCall:@"LoggingTestModule.logErrorToConsole" args:@[@"Invoking console.error"]];
-  dispatch_semaphore_wait(_logSem, DISPATCH_TIME_FOREVER);
+  dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // TODO(OSS Candidate ISS#2710739)
 
   // For local bundles, we'll first get a warning about symbolication
   if ([_bridge.bundleURL isFileURL]) {
-    dispatch_semaphore_wait(_logSem, DISPATCH_TIME_FOREVER);
+    dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // TODO(OSS Candidate ISS#2710739)
   }
 
   XCTAssertEqual(_lastLogLevel, RCTLogLevelError);
@@ -105,11 +109,11 @@
   XCTAssertEqualObjects(_lastLogMessage, @"Invoking console.error");
 
   [_bridge enqueueJSCall:@"LoggingTestModule.throwError" args:@[@"Throwing an error"]];
-  dispatch_semaphore_wait(_logSem, DISPATCH_TIME_FOREVER);
+  dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // TODO(OSS Candidate ISS#2710739)
 
   // For local bundles, we'll first get a warning about symbolication
   if ([_bridge.bundleURL isFileURL]) {
-    dispatch_semaphore_wait(_logSem, DISPATCH_TIME_FOREVER);
+    dispatch_semaphore_wait(_logSem, RCT_TEST_LOGGING_TIMEOUT); // TODO(OSS Candidate ISS#2710739)
   }
 
   XCTAssertEqual(_lastLogLevel, RCTLogLevelError);

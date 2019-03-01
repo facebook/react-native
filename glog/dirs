@@ -1,0 +1,2 @@
+DIRS = \
+    src{droidarm,droidx86} \

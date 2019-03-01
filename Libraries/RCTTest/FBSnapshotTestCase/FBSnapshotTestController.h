@@ -7,7 +7,7 @@
  */
 
 #import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
+#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 
 typedef NS_ENUM(NSInteger, FBSnapshotTestControllerErrorCode) {
   FBSnapshotTestControllerErrorCodeUnknown,

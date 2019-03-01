@@ -6,13 +6,17 @@
 #include "JSCExecutor.h"
 
 #include <fcntl.h>
+#if !defined(WIN32)
 #include <sys/socket.h>
 #include <sys/time.h>
+#endif
 #include <algorithm>
 #include <condition_variable>
 #include <mutex>
 #include <sstream>
 #include <string>
+#include <sys/time.h>
+#include <sys/socket.h>
 #include <system_error>
 
 #include <arpa/inet.h>
@@ -41,6 +45,7 @@
 #include "RAMBundleRegistry.h"
 #include "RecoverableError.h"
 #include "SystraceSection.h"
+#include "MessageQueueThread.h"
 
 #if defined(WITH_FB_JSC_TUNING) && defined(__ANDROID__)
 #include <jsc_config_android.h>
@@ -57,7 +62,7 @@ inline JSObjectCallAsFunctionCallback exceptionWrapMethod() {
     static JSValueRef call(
         JSContextRef ctx,
         JSObjectRef function,
-        JSObjectRef thisObject,
+        JSObjectRef /*thisObject*/,
         size_t argumentCount,
         const JSValueRef arguments[],
         JSValueRef* exception) {
@@ -107,11 +112,11 @@ inline JSObjectGetPropertyCallback exceptionWrapMethod() {
 #if DEBUG
 static JSValueRef nativeInjectHMRUpdate(
     JSContextRef ctx,
-    JSObjectRef function,
-    JSObjectRef thisObject,
-    size_t argumentCount,
+    JSObjectRef /*function*/,
+    JSObjectRef /*thisObject*/,
+    size_t /*argumentCount*/,
     const JSValueRef arguments[],
-    JSValueRef* exception) {
+    JSValueRef* /*exception*/) {
   String execJSString = Value(ctx, arguments[0]).toString();
   String jsURL = Value(ctx, arguments[1]).toString();
   evaluateScript(ctx, execJSString, jsURL);
@@ -129,7 +134,7 @@ std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(
 JSCExecutor::JSCExecutor(
     std::shared_ptr<ExecutorDelegate> delegate,
     std::shared_ptr<MessageQueueThread> messageQueueThread,
-    const folly::dynamic& jscConfig) throw(JSException)
+    const folly::dynamic& jscConfig)
     : m_delegate(delegate),
       m_messageQueueThread(messageQueueThread),
       m_nativeModules(delegate ? delegate->getModuleRegistry() : nullptr),
@@ -165,6 +170,7 @@ void JSCExecutor::setContextName(const std::string& name) {
 }
 
 static bool canUseInspector(JSContextRef context) {
+  (void)context;
 #ifdef WITH_INSPECTOR
 #if defined(__APPLE__)
   return isCustomJSCPtr(context); // WITH_INSPECTOR && Apple
@@ -177,6 +183,7 @@ static bool canUseInspector(JSContextRef context) {
 }
 
 static bool canUseSamplingProfiler(JSContextRef context) {
+  (void)context;
 #if defined(__APPLE__) || defined(WITH_JSC_EXTRA_TRACING)
   return JSC_JSSamplingProfilerEnabled(context);
 #else
@@ -184,7 +191,7 @@ static bool canUseSamplingProfiler(JSContextRef context) {
 #endif
 }
 
-void JSCExecutor::initOnJSVMThread() throw(JSException) {
+void JSCExecutor::initOnJSVMThread() {
   SystraceSection s("JSCExecutor::initOnJSVMThread");
 
 #if defined(__APPLE__)
@@ -219,7 +226,7 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
 
   // Add a pointer to ourselves so we can retrieve it later in our hooks
   Object::getGlobalObject(m_context).setPrivate(this);
-
+#ifdef WITH_INSPECTOR
   if (canUseInspector(m_context)) {
     const std::string ownerId =
         m_jscConfig.getDefault("OwnerIdentity", "unknown").getString();
@@ -235,6 +242,7 @@ void JSCExecutor::initOnJSVMThread() throw(JSException) {
     JSC_JSGlobalContextEnableDebugger(
         m_context, globalInspector, ownerId.c_str(), checkIsInspectedRemote);
   }
+#endif
 
   installNativeHook<&JSCExecutor::nativeFlushQueueImmediate>(
       "nativeFlushQueueImmediate");
@@ -368,6 +376,7 @@ bool JSCExecutor::isNetworkInspected(
   ::close(socket_desc);
   return found;
 #else //! WITH_FB_DBG_ATTACH_BEFORE_EXEC
+  (void)owner;(void)app;(void)device;
   return false;
 #endif // WITH_FB_DBG_ATTACH_BEFORE_EXEC
 }
@@ -415,7 +424,9 @@ static std::string simpleBasename(const std::string& path) {
 
 void JSCExecutor::loadApplicationScript(
     std::unique_ptr<const JSBigString> script,
-    std::string sourceURL) {
+    uint64_t /*scriptVersion*/,
+    std::string sourceURL,
+    std::string&& /*bytecodeFileName*/) {
   SystraceSection s(
       "JSCExecutor::loadApplicationScript", "sourceURL", sourceURL);
 
@@ -517,7 +528,7 @@ void JSCExecutor::registerBundle(
   }
 }
 
-void JSCExecutor::bindBridge() throw(JSException) {
+void JSCExecutor::bindBridge() {
   SystraceSection s("JSCExecutor::bindBridge");
   std::call_once(m_bindFlag, [this] {
     auto global = Object::getGlobalObject(m_context);
@@ -718,7 +729,7 @@ void JSCExecutor::installNativeHook(const char* name) {
 }
 
 JSValueRef JSCExecutor::getNativeModule(
-    JSObjectRef object,
+    JSObjectRef /*object*/,
     JSStringRef propertyName) {
   if (JSC_JSStringIsEqualToUTF8CString(m_context, propertyName, "name")) {
     return Value(m_context, String(m_context, "NativeModules"));

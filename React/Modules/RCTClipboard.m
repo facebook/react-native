@@ -7,7 +7,7 @@
 
 #import "RCTClipboard.h"
 
-#import <UIKit/UIKit.h>
+#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 
 @implementation RCTClipboard
 
@@ -21,15 +21,26 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(setString:(NSString *)content)
 {
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
   clipboard.string = (content ? : @"");
+#else // [TODO(macOS ISS#2323203)
+  NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
+  [pasteboard clearContents];
+  [pasteboard setString:(content ? : @"") forType:NSPasteboardTypeString];
+#endif // ]TODO(macOS ISS#2323203)
 }
 
 RCT_EXPORT_METHOD(getString:(RCTPromiseResolveBlock)resolve
                   rejecter:(__unused RCTPromiseRejectBlock)reject)
 {
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   UIPasteboard *clipboard = [UIPasteboard generalPasteboard];
   resolve((clipboard.string ? : @""));
+#else // [TODO(macOS ISS#2323203)
+  NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
+  resolve(([pasteboard stringForType:NSPasteboardTypeString] ? : @""));
+#endif // ]TODO(macOS ISS#2323203)
 }
 
 @end

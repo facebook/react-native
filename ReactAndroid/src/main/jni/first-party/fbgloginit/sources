@@ -1,0 +1,23 @@
+LIBLETNAME = glog_init
+LIBLET_DYNLINK = 1
+LIBLET_NO_PRECOMP = 1
+
+!include $(WAREHOUSEIMPORTDIR)\libletmake\x-none\nmake\make.inc
+
+TARGETNAME = glog_init
+
+INCLUDES = $(INCLUDES); \
+    $(OPENSOURCE_REACTNATIVE)\OfficeISS\glog\src; \
+
+SOURCES = \
+    glog_init.cpp \
+
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -DLOG_TAG=\"ReactNative\" -Wno-c++11-compat -Wno-shadow -std=c++11
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -Wno-unused-variable -Wno-unused-local-typedefs
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -D_START_GOOGLE_NAMESPACE_="namespace google {"
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -D_END_GOOGLE_NAMESPACE_="}"
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) $(CXX11_FLAGS)
+
+LOCAL_LDLIBS = \
+    $(LOCAL_LDLIBS) \
+    $(OPENSOURCE_REACTNATIVETARGETDIR)\libglog.so \

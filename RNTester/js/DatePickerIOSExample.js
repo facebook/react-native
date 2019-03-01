@@ -44,7 +44,13 @@ class DatePickerExample extends React.Component<
     // Ideally, the timezone input would be a picker rather than a
     // text input, but we don't have any pickers yet :(
     return (
-      <View>
+      <View style=
+        {{
+         flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+         backgroundColor: 'gray'
+       }}>
         <WithLabel label="Value:">
           <Text>
             {this.state.date.toLocaleDateString() +

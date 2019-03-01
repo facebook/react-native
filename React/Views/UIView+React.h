@@ -5,22 +5,22 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
+#import "RCTUIKit.h" // TODO(macOS ISS#2323203)
 
 #import <React/RCTComponent.h>
 #import <yoga/YGEnums.h>
 
 @class RCTShadowView;
 
-@interface UIView (React) <RCTComponent>
+@interface RCTPlatformView (React) <RCTComponent> // TODO(macOS ISS#2323203)
 
 /**
  * RCTComponent interface.
  */
-- (NSArray<UIView *> *)reactSubviews NS_REQUIRES_SUPER;
-- (UIView *)reactSuperview NS_REQUIRES_SUPER;
-- (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex NS_REQUIRES_SUPER;
-- (void)removeReactSubview:(UIView *)subview NS_REQUIRES_SUPER;
+- (NSArray<RCTPlatformView *> *)reactSubviews NS_REQUIRES_SUPER; // TODO(macOS ISS#2323203)
+- (RCTPlatformView *)reactSuperview NS_REQUIRES_SUPER; // TODO(macOS ISS#2323203)
+- (void)insertReactSubview:(RCTPlatformView *)subview atIndex:(NSInteger)atIndex NS_REQUIRES_SUPER; // TODO(macOS ISS#2323203)
+- (void)removeReactSubview:(RCTPlatformView *)subview NS_REQUIRES_SUPER; // TODO(macOS ISS#2323203)
 
 /**
  * The native id of the view, used to locate view from native codes
@@ -56,7 +56,7 @@
  * Subviews sorted by z-index. Note that this method doesn't do any caching (yet)
  * and sorts all the views each call.
  */
-- (NSArray<UIView *> *)reactZIndexSortedSubviews;
+- (NSArray<RCTPlatformView *> *)reactZIndexSortedSubviews; // TODO(macOS ISS#2323203)
 
 /**
  * Updates the subviews array based on the reactSubviews. Default behavior is
@@ -81,6 +81,7 @@
  */
 - (UIViewController *)reactViewController;
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 /**
  * This method attaches the specified controller as a child of the
  * the owning view controller of this view. Returns NO if no view
@@ -88,6 +89,7 @@
  * attached to the view hierarchy).
  */
 - (void)reactAddControllerToClosestParent:(UIViewController *)controller;
+#endif // TODO(macOS ISS#2323203)
 
 /**
  * Focus manipulation.
@@ -111,6 +113,6 @@
  * transparent in favour of some subview.
  * Defaults to `self`.
  */
-@property (nonatomic, readonly) UIView *reactAccessibilityElement;
+@property (nonatomic, readonly) RCTPlatformView *reactAccessibilityElement; // TODO(macOS ISS#2323203)
 
 @end

@@ -8,6 +8,7 @@
 package com.facebook.react.views.textinput;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -64,7 +65,6 @@ public class ReactEditText extends EditText {
   private boolean mIsSettingTextFromJS;
   // This component is controlled, so we want it to get focused only when JS ask it to do so.
   // Whenever android requests focus (which it does for random reasons), it will be ignored.
-  private boolean mIsJSSettingFocus;
   private int mDefaultGravityHorizontal;
   private int mDefaultGravityVertical;
   private int mNativeEventCount;
@@ -101,7 +101,6 @@ public class ReactEditText extends EditText {
     mNativeEventCount = 0;
     mMostRecentEventCount = 0;
     mIsSettingTextFromJS = false;
-    mIsJSSettingFocus = false;
     mBlurOnSubmit = null;
     mDisableFullscreen = false;
     mListeners = null;
@@ -188,29 +187,6 @@ public class ReactEditText extends EditText {
   }
 
   @Override
-  public void clearFocus() {
-    setFocusableInTouchMode(false);
-    super.clearFocus();
-    hideSoftKeyboard();
-  }
-
-  @Override
-  public boolean requestFocus(int direction, Rect previouslyFocusedRect) {
-    // Always return true if we are already focused. This is used by android in certain places,
-    // such as text selection.
-    if (isFocused()) {
-      return true;
-    }
-    if (!mIsJSSettingFocus) {
-      return false;
-    }
-    setFocusableInTouchMode(true);
-    boolean focused = super.requestFocus(direction, previouslyFocusedRect);
-    showSoftKeyboard();
-    return focused;
-  }
-
-  @Override
   public void addTextChangedListener(TextWatcher watcher) {
     if (mListeners == null) {
       mListeners = new ArrayList<>();
@@ -261,6 +237,16 @@ public class ReactEditText extends EditText {
   @Override
   protected void onFocusChanged(
       boolean focused, int direction, Rect previouslyFocusedRect) {
+
+    /**
+     * Setting focusableInTouchMode false upon losing focus ensures that 
+     * any sync requestFocus call should not give focus to this control unless 
+     * it is initiated from JS which will set focusableInTouchMode true 
+     * before calling requestFocus.
+     */
+    if (!focused) {
+      setFocusableInTouchMode(false);
+    }
     super.onFocusChanged(focused, direction, previouslyFocusedRect);
     if (focused && mSelectionWatcher != null) {
       mSelectionWatcher.onSelectionChanged(getSelectionStart(), getSelectionEnd());
@@ -280,12 +266,9 @@ public class ReactEditText extends EditText {
   }
 
   public boolean getBlurOnSubmit() {
-    if (mBlurOnSubmit == null) {
-      // Default blurOnSubmit
-      return isMultiline() ? false : true;
-    }
-
-    return mBlurOnSubmit;
+    // Ignore if Hardware Keyboard is attached (to avoid leaks)
+    // Default Value - true for single line and false for multiline
+    return !isHardwareKeyboardAvailable() && (mBlurOnSubmit != null ? mBlurOnSubmit : !isMultiline() /*default value based on multiline*/);
   }
 
   public void setDisableFullscreenUI(boolean disableFullscreenUI) {
@@ -340,9 +323,13 @@ public class ReactEditText extends EditText {
 
   // VisibleForTesting from {@link TextInputEventsTestCase}.
   public void requestFocusFromJS() {
-    mIsJSSettingFocus = true;
+    // Return if the view is already focused.
+    if (isFocused()) {
+      return;
+    }
+    // Ensure that the control can take focus in touch mode.
+    setFocusableInTouchMode(true);
     requestFocus();
-    mIsJSSettingFocus = false;
   }
 
   /* package */ void clearFocusFromJS() {
@@ -439,11 +426,20 @@ public class ReactEditText extends EditText {
     return true;
   }
 
-  private boolean showSoftKeyboard() {
-    return mInputMethodManager.showSoftInput(this, 0);
+  private boolean isHardwareKeyboardAvailable() {
+    return getContext().getResources().getConfiguration().keyboard != Configuration.KEYBOARD_NOKEYS;
   }
 
-  private void hideSoftKeyboard() {
+  protected void showSoftKeyboard() {
+    // Don't show soft keyboard when a hardware keyboard is attached
+    if (!isHardwareKeyboardAvailable()) {
+      mInputMethodManager.showSoftInput(this, 0);
+    }
+  }
+
+  protected void hideSoftKeyboard() {
+    // We don't expect the soft keyboard to be up if a hardware keyboard is attached.
+    // But to ensure we do hide the keyboard for all cases, we do this unconditionally.
     mInputMethodManager.hideSoftInputFromWindow(getWindowToken(), 0);
   }
 

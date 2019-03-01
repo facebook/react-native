@@ -163,6 +163,7 @@ const TouchableBounce = ((createReactClass({
         accessibilityHint={this.props.accessibilityHint}
         accessibilityRole={this.props.accessibilityRole}
         accessibilityStates={this.props.accessibilityStates}
+        onAccessibilityTap={this.props.onAccessibilityTap} // TODO(OSS Candidate ISS#2710739)
         nativeID={this.props.nativeID}
         testID={this.props.testID}
         hitSlop={this.props.hitSlop}
@@ -173,7 +174,16 @@ const TouchableBounce = ((createReactClass({
         onResponderGrant={this.touchableHandleResponderGrant}
         onResponderMove={this.touchableHandleResponderMove}
         onResponderRelease={this.touchableHandleResponderRelease}
-        onResponderTerminate={this.touchableHandleResponderTerminate}>
+        onResponderTerminate={this.touchableHandleResponderTerminate}
+        clickable={this.props.clickable !== false && this.props.onPress !== undefined && !this.props.disabled} // TODO(android ISS)
+        onClick={this.touchableHandlePress} // TODO(android ISS)
+        onMouseEnter={this.props.onMouseEnter} // [TODO(macOS ISS#2323203)
+        onMouseLeave={this.props.onMouseLeave}
+        onDragEnter={this.props.onDragEnter}
+        onDragLeave={this.props.onDragLeave}
+        onDrop={this.props.onDrop}
+        draggedTypes={this.props.draggedTypes} // ]TODO(macOS ISS#2323203)
+        >
         {this.props.children}
         {Touchable.renderDebugView({
           color: 'orange',

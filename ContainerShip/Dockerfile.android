@@ -9,9 +9,12 @@ FROM reactnativeci/android-base:latest
 LABEL Description="This image prepares and runs React Native's Android tests."
 LABEL maintainer="Héctor Ramos <hector@fb.com>"
 
+ARG BUCK_BUILD
 # set default environment variables
 ENV GRADLE_OPTS="-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=\"-Xmx512m -XX:+HeapDumpOnOutOfMemoryError\""
 ENV JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
+
+ENV BUCK_BUILD="1"
 
 # add ReactAndroid directory
 ADD .buckconfig /app/.buckconfig
@@ -20,6 +23,13 @@ ADD ReactAndroid /app/ReactAndroid
 ADD ReactCommon /app/ReactCommon
 ADD ReactNative /app/ReactNative
 ADD keystores /app/keystores
+
+# add third party dependencies
+ADD Folly /app/Folly
+ADD glog /app/glog
+ADD double-conversion /app/double-conversion
+ADD jsc /app/jsc
+ADD v8 /app/v8
 
 # set workdir
 WORKDIR /app
@@ -40,9 +50,6 @@ ADD gradlew /app/gradlew
 ADD settings.gradle /app/settings.gradle
 ADD build.gradle /app/build.gradle
 ADD react.gradle /app/react.gradle
-
-# run gradle downloads
-RUN ./gradlew :ReactAndroid:downloadBoost :ReactAndroid:downloadDoubleConversion :ReactAndroid:downloadFolly :ReactAndroid:downloadGlog :ReactAndroid:downloadJSCHeaders
 
 # compile native libs with Gradle script, we need bridge for unit and integration tests
 RUN ./gradlew :ReactAndroid:packageReactNdkLibsForBuck -Pjobs=1 -Pcom.android.build.threadPoolSize=1

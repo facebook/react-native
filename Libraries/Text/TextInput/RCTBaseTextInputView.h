@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
+#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 
 #import <React/RCTView.h>
 
@@ -29,6 +29,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) UIView<RCTBackedTextInputViewProtocol> *backedTextInputView;
 
+/**
+ Whether this text input ignores the `textAttributes` property. Defaults to `NO`. If set to `YES`, the value of `textAttributes` will be ignored in favor of standard text input behavior.
+ */
+@property (nonatomic) BOOL ignoresTextAttributes; // [TODO(OSS Candidate ISS#2710739)
 @property (nonatomic, strong, nullable) RCTTextAttributes *textAttributes;
 @property (nonatomic, assign) UIEdgeInsets reactPaddingInsets;
 @property (nonatomic, assign) UIEdgeInsets reactBorderInsets;
@@ -46,8 +50,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) RCTTextSelection *selection;
 @property (nonatomic, strong, nullable) NSNumber *maxLength;
 @property (nonatomic, copy) NSAttributedString *attributedText;
+@property (nonatomic, copy) NSString *predictedText; // TODO(OSS Candidate ISS#2710739)
 @property (nonatomic, copy) NSString *inputAccessoryViewID;
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 @property (nonatomic, assign) UIKeyboardType keyboardType;
+#endif // TODO(macOS ISS#2323203)
 
 @end
 

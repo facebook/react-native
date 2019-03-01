@@ -11,6 +11,7 @@
 
 const Batchinator = require('Batchinator');
 const FillRateHelper = require('FillRateHelper');
+const Platform = require('Platform'); // TODO(macOS ISS#2323203)
 const PropTypes = require('prop-types');
 const React = require('React');
 const ReactNative = require('ReactNative');
@@ -50,6 +51,11 @@ type ViewabilityHelperCallbackTuple = {
   }) => void,
 };
 
+export type SelectedRowIndexPathType = { // [TODO(macOS ISS#2323203)
+  sectionIndex: number,
+  rowIndex: number
+}; // ]TODO(macOS ISS#2323203)
+
 type RequiredProps = {
   // TODO: Conflicts with the optional `renderItem` in
   // `VirtualizedSectionList`'s props.
@@ -80,6 +86,12 @@ type OptionalProps = {
    * this for debugging purposes.
    */
   disableVirtualization: boolean,
+  /**
+   * Handles key down events and updates selection based on the key event
+   *
+   * @platform macos
+   */
+  enableSelectionOnKeyPress?: ?boolean, // TODO(macOS ISS#2323203)
   /**
    * A marker property for telling the list to re-render (since it implements `PureComponent`). If
    * any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the
@@ -168,6 +180,19 @@ type OptionalProps = {
     averageItemLength: number,
   }) => void,
   /**
+   * If provided, will be invoked whenever the selection on the list changes. Make sure to set 
+   * the property enableSelectionOnKeyPress to true to change selection via keyboard (macOS).
+   *
+   * @platform macos
+   */
+  onSelectionChanged?: ?Function, // TODO(macOS ISS#2323203)
+  /**
+   * If provided, called when 'Enter' key is pressed on an item.
+   *
+   * @platform macos
+   */
+  onSelectionEntered?: ?Function, // TODO(macOS ISS#2323203)
+  /**
    * Called when the viewability of rows changes, as defined by the
    * `viewabilityConfig` prop.
    */
@@ -240,7 +265,11 @@ type ChildListState = {
   frames: {[key: number]: Frame},
 };
 
-type State = {first: number, last: number};
+type State = {
+  first: number,
+  last: number,
+  selectedRowIndex: number // TODO(macOS ISS#2323203)
+};
 
 /**
  * Base implementation for the more convenient [`<FlatList>`](/react-native/docs/flatlist.html)
@@ -387,6 +416,25 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       this.props.horizontal ? {x: offset, animated} : {y: offset, animated},
     );
   }
+
+  // [TODO(macOS ISS#2323203)
+  ensureItemAtIndexIsVisible = (rowIndex: number) => {
+   const frame = this._getFrameMetricsApprox(rowIndex);
+   const visTop = this._scrollMetrics.offset;
+   const visLen = this._scrollMetrics.visibleLength;
+   const visEnd = visTop + visLen;
+   const contentLength = this._scrollMetrics.contentLength;
+   const frameEnd = frame.offset + frame.length;
+   
+    if (frameEnd > visEnd) {
+      const newOffset = Math.min(contentLength, visTop + (frameEnd - visEnd));
+      this.scrollToOffset({offset : newOffset});
+    } else if (frame.offset < visTop) {
+      const newOffset = Math.max(0, visTop - frame.length);
+      this.scrollToOffset({offset : newOffset });
+    }
+  }
+  // ]TODO(macOS ISS#2323203)
 
   recordInteraction() {
     this._nestedChildLists.forEach(childList => {
@@ -597,6 +645,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           this.props.getItemCount(this.props.data),
           (this.props.initialScrollIndex || 0) + this.props.initialNumToRender,
         ) - 1,
+      selectedRowIndex: 0 // TODO(macOS ISS#2323203)
     };
 
     if (this._isNestedWithSameOrientation()) {
@@ -693,6 +742,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           index={ii}
           inversionStyle={inversionStyle}
           item={item}
+          isSelected={ this.state.selectedRowIndex == ii ? true : false } // TODO(macOS ISS#2323203)
           key={key}
           prevCellKey={prevCellKey}
           onUpdateSeparators={this._onUpdateSeparators}
@@ -1029,6 +1079,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   _defaultRenderScrollComponent = props => {
+    let keyEventHandler = this.props.onKeyDown; // [TODO(macOS ISS#2323203)
+    if (!keyEventHandler) {
+      keyEventHandler = this.props.enableSelectionOnKeyPress ? this._handleKeyDown : null; 
+    } // ]TODO(macOS ISS#2323203)
     const onRefresh = props.onRefresh;
     if (this._isNestedWithSameOrientation()) {
       // $FlowFixMe - Typing ReactNativeComponent revealed errors
@@ -1039,11 +1093,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         '`refreshing` prop must be set as a boolean in order to use `onRefresh`, but got `' +
           JSON.stringify(props.refreshing) +
           '`',
-      );
+      ); 
       return (
         // $FlowFixMe Invalid prop usage
         <ScrollView
           {...props}
+          onKeyDown={keyEventHandler} // TODO(macOS ISS#2323203)
           refreshControl={
             props.refreshControl == null ? (
               <RefreshControl
@@ -1059,7 +1114,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       );
     } else {
       // $FlowFixMe Invalid prop usage
-      return <ScrollView {...props} />;
+      return <ScrollView {...props} onKeyDown={keyEventHandler} />; // TODO(macOS ISS#2323203)
     }
   };
 
@@ -1163,6 +1218,70 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _onLayoutHeader = e => {
     this._headerLength = this._selectLength(e.nativeEvent.layout);
   };
+
+  // [TODO(macOS ISS#2323203)
+  _selectRowAboveIndex = (rowIndex) => {
+    const rowAbove = rowIndex > 0 ? rowIndex - 1 : rowIndex;
+    this.setState( state => { return {selectedRowIndex: rowAbove}; });
+    return rowAbove;
+  }
+  
+  _selectRowBelowIndex = (rowIndex) => {   
+    if (this.props.getItemCount) {
+      const {data} = this.props;
+      const itemCount = this.props.getItemCount(data);
+      const rowBelow = rowIndex < (itemCount - 1) ? rowIndex + 1 : rowIndex;
+      this.setState( state => { return {selectedRowIndex: rowBelow}; });
+      return rowBelow;
+    } else {
+      return rowIndex;
+    }
+  }
+ 
+  _handleKeyDown = (e) => {
+    if (this.props.onKeyDown) {
+      this.props.onKeyDown(e);
+    }
+    else {
+      if (Platform.OS === 'macos') {
+        const event = e['nativeEvent'];
+        const key = event['key'];
+        
+        let prevIndex = -1;
+        let newIndex = -1;
+        if ("selectedRowIndex" in this.state) {
+            prevIndex = this.state.selectedRowIndex;
+        }
+
+        const {data, getItem} = this.props;
+        if (key === 'DOWN_ARROW') {
+            newIndex = this._selectRowBelowIndex(prevIndex);
+            this.ensureItemAtIndexIsVisible(newIndex);
+            
+            if (this.props.onSelectionChanged && prevIndex != newIndex) {
+              const item = getItem(data, newIndex);
+              this.props.onSelectionChanged( {previousSelection: prevIndex, newSelection: newIndex, item: item});
+            }
+        }
+        else if (key === 'UP_ARROW') {
+            newIndex = this._selectRowAboveIndex(prevIndex);
+            this.ensureItemAtIndexIsVisible(newIndex);
+            
+            if (this.props.onSelectionChanged && prevIndex != newIndex) {
+              const item = getItem(data, newIndex);
+              this.props.onSelectionChanged( {previousSelection: prevIndex, newSelection: newIndex, item: item});
+            }
+        }
+        else if (key === 'ENTER') {
+            if (this.props.onSelectionEntered) {
+              const item = getItem(data, prevIndex);
+              this.props.onSelectionEntered(item);
+            }
+        }
+      }
+    }
+  }
+  // ]TODO(macOS ISS#2323203)
 
   _renderDebugOverlay() {
     const normalize =
@@ -1620,6 +1739,7 @@ class CellRenderer extends React.Component<
     horizontal: ?boolean,
     index: number,
     inversionStyle: ?DangerouslyImpreciseStyleProp,
+    isSelected: ?boolean, // TODO(macOS ISS#2323203)
     item: Item,
     onLayout: (event: Object) => void, // This is extracted by ScrollViewStickyHeader
     onUnmount: (cellKey: string) => void,
@@ -1696,6 +1816,7 @@ class CellRenderer extends React.Component<
       item,
       index,
       inversionStyle,
+      isSelected, // TODO(macOS ISS#2323203)
       parentProps,
     } = this.props;
     const {renderItem, getItemLayout} = parentProps;
@@ -1703,6 +1824,7 @@ class CellRenderer extends React.Component<
     const element = renderItem({
       item,
       index,
+      isSelected, // TODO(macOS ISS#2323203)
       separators: this._separators,
     });
     const onLayout =

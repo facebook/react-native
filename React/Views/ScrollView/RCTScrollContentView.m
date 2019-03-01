@@ -18,7 +18,12 @@
 {
   [super reactSetFrame:frame];
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   RCTScrollView *scrollView = (RCTScrollView *)self.superview.superview;
+#else // [TODO(macOS ISS#2323203)
+  // macOS also has a NSClipView in its hierarchy
+  RCTScrollView *scrollView = (RCTScrollView *)self.superview.superview.superview;
+#endif // ]TODO(macOS ISS#2323203)
 
   if (!scrollView) {
     return;

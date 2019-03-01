@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <Foundation/Foundation.h>
+#import "RCTUIKit.h" // TODO(macOS ISS#2323203)
 
 #import <React/RCTComponent.h>
 #import <React/RCTDefines.h>
@@ -24,7 +24,7 @@
 - (instancetype)initWithManagerClass:(Class)managerClass
                               bridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 
-- (UIView *)createViewWithTag:(NSNumber *)tag;
+- (RCTPlatformView *)createViewWithTag:(NSNumber *)tag; // TODO(macOS ISS#2323203)
 - (RCTShadowView *)createShadowViewWithTag:(NSNumber *)tag;
 - (void)setProps:(NSDictionary<NSString *, id> *)props forView:(id<RCTComponent>)view;
 - (void)setProps:(NSDictionary<NSString *, id> *)props forShadowView:(RCTShadowView *)shadowView;

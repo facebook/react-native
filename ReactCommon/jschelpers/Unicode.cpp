@@ -64,7 +64,12 @@ std::string utf16toUTF8(const uint16_t* utf16String, size_t utf16StringLen) noex
     if (ch < kUtf8OneByteBoundary) {
       *idx8++ = (ch & 0x7F);
     } else if (ch < kUtf8TwoBytesBoundary) {
+#ifdef _MSC_VER
+      #pragma warning(suppress: 4244)
       *idx8++ = 0b11000000 | (ch >> 6);
+#else
+      *idx8++ = 0b11000000 | (ch >> 6);
+#endif
       *idx8++ = 0b10000000 | (ch & 0x3F);
     } else if (
         (ch >= kUtf16HighSubLowBoundary) && (ch < kUtf16HighSubHighBoundary) &&

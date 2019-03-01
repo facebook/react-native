@@ -41,7 +41,12 @@ const ComponentExamples: Array<RNTesterExample> = [
     key: 'FlatListExample',
     module: require('./FlatListExample'),
     supportsTVOS: true,
-  },
+  },// [TODO(OSS Candidate ISS#2710739)
+  {
+    key: 'FocusEvents',
+    module: require('./FocusEventsExample'),
+    supportsTVOS: true,
+  },// ]TODO(OSS Candidate ISS#2710739)
   {
     key: 'ImageExample',
     module: require('./ImageExample'),

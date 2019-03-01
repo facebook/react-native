@@ -1,0 +1,53 @@
+apply plugin: 'com.android.library'
+apply plugin: 'maven'
+
+buildscript {
+    repositories {
+        maven {
+            url "$System.env.MAVEN_REPOSITORY"
+        }
+    }
+    dependencies {
+        classpath "$System.env._classpath"
+    }
+}
+
+repositories {
+    maven {
+        url "$System.env.NUGETREACTNATIVEDEPENDENCIESANDROID//cross//cross//x-none//maven"
+    }
+}
+
+apply from: "$System.env.GRADLE_PATH/common_library_build.gradle"
+
+dependencies {
+    api 'com.squareup:javapoet:1.9.0'
+    api 'com.google.code.findbugs:jsr305:3.0.2'
+    api 'com.facebook.infer:annotation:1.5'
+    api 'edu.washington.cs.types:jsr308-compiler:1.5.0'
+}
+
+android {
+    sourceSets.main {
+        java {
+            srcDirs = ["$System.env.SRCROOT/opensource/reactnative/OfficeISS/ReactAndroid/src/main/java"]
+            includes = [
+                'com/facebook/react/processing/ReactNativeModuleProcessor.java',
+                'com/facebook/react/processing/ReactPropertyProcessor.java',
+                'com/facebook/react/bridge/Callback.java',
+                'com/facebook/react/bridge/Promise.java',
+                'com/facebook/react/bridge/ReadableArray.java',
+                'com/facebook/react/bridge/ReadableType.java',
+                'com/facebook/react/bridge/ReadableMap.java',
+                'com/facebook/react/bridge/WritableMap.java',
+                'com/facebook/react/bridge/WritableArray.java',
+                'com/facebook/react/bridge/Dynamic.java',
+                'com/facebook/react/bridge/ReactMethod.java',
+                'com/facebook/react/bridge/ReadableMapKeySetIterator.java',
+                'com/facebook/proguard/annotations/DoNotStrip.java',
+                'com/facebook/react/uimanager/annotations/*.java',
+            ]
+            resources.srcDirs = ['../src/main/resources']
+        }
+    }
+}

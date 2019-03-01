@@ -842,4 +842,20 @@ public class NativeViewHierarchyManager {
     }
     AccessibilityHelper.sendAccessibilityEvent(view, eventType);
   }
+
+  public void performAccessibilityAction(int tag, int action) {
+    View view = mTagsToViews.get(tag);
+    if (view == null) {
+      throw new JSApplicationIllegalArgumentException("Could not find view with tag " + tag);
+    }
+    AccessibilityHelper.performAccessibilityAction(view, action);
+  }
+
+  public void announceForAccessibility(int tag, String announcement) {
+    View view = mTagsToViews.get(tag);
+    if (view == null) {
+      throw new JSApplicationIllegalArgumentException("Could not find view with tag " + tag);
+    }
+    AccessibilityHelper.announceForAccessibility(view, announcement);
+  }
 }

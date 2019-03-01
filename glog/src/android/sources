@@ -1,0 +1,17 @@
+LIBLET_ANDROID = 1
+LIBLET_DYNLINK = 1
+
+!include ..\sources.inc
+
+TARGETNAME = glog
+
+INCLUDES = $(INCLUDES); \
+    $(OPENSOURCE_REACTNATIVE)\OfficeISS\glog\src\; \
+    $(OPENSOURCE_REACTNATIVE)\OfficeISS\glog\src\glog; \
+
+SOURCES = $(SOURCES_ANDROID)
+
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -DLOG_TAG=\"ReactNative\" -Wno-c++11-compat -Wno-shadow -std=c++11
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -Wno-unused-variable -Wno-unused-local-typedefs -Wno-header-hygiene
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -Wno-macro-redefined -Wno-unused-function $(CXX11_FLAGS)
+

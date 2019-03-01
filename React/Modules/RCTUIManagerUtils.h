@@ -6,6 +6,7 @@
  */
 
 #import <Foundation/Foundation.h>
+#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 
 #import <React/RCTAssert.h>
 #import <React/RCTDefines.h>

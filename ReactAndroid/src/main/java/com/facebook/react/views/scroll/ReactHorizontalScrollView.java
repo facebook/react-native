@@ -19,6 +19,7 @@ import android.hardware.SensorManager;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.text.TextUtilsCompat;
 import android.util.Log;
+import android.view.FocusFinder;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -37,6 +38,8 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Locale;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Similar to {@link ReactScrollView} but only supports horizontal scrolling.
@@ -69,6 +72,9 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
   private float mDecelerationRate = 0.985f;
   private @Nullable List<Integer> mSnapOffsets;
   private ReactViewBackgroundManager mReactBackgroundManager;
+  private boolean mPagedArrowScrolling = false;
+
+  private final Rect mTempRect = new Rect();
 
   public ReactHorizontalScrollView(Context context) {
     this(context, null);
@@ -193,6 +199,82 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     scrollTo(getScrollX(), getScrollY());
   }
 
+  /**
+   * Since ReactHorizontalScrollView handles layout changes on JS side, it does not call super.onlayout
+   * due to which mIsLayoutDirty flag in HorizontalScrollView remains true and prevents scrolling to child
+   * when requestChildFocus is called.
+   * Overriding this method and scrolling to child without checking any layout dirty flag. This will fix
+   * focus navigation issue for KeyEvents which are not handled in HorizontalScrollView, for example: KEYCODE_TAB.
+   */
+  @Override
+  public void requestChildFocus(View child, View focused) {
+    if (focused != null && !mPagingEnabled) {
+      scrollToChild(focused);
+    }
+    super.requestChildFocus(child, focused); 
+  }
+
+  @Override
+  public void addFocusables(ArrayList<View> views, int direction, int focusableMode) {
+    if (mPagingEnabled && !mPagedArrowScrolling) {
+      // Only add elements within the current page to list of focusables
+      ArrayList<View> candidateViews = new ArrayList<View>();
+      super.addFocusables(candidateViews, direction, focusableMode);
+      for (View candidate : candidateViews) {
+        // We must also include the currently focused in the focusables list or focus search will always
+        // return the first element within the focusables list
+        if (isScrolledInView(candidate) || isPartiallyScrolledInView(candidate) || candidate.isFocused()) {
+          views.add(candidate);
+        }
+      }
+    } else {
+      super.addFocusables(views, direction, focusableMode);
+    }
+  }
+
+  /**
+   * Calculates the x delta required to scroll the given descendent into view
+   */
+  private int getScrollDelta(View descendent) {
+    descendent.getDrawingRect(mTempRect);
+    offsetDescendantRectToMyCoords(descendent, mTempRect);
+    return computeScrollDeltaToGetChildRectOnScreen(mTempRect);
+  }
+
+  /**
+   * Returns whether the given descendent is scrolled fully in view
+   */
+  private boolean isScrolledInView(View descendent) {
+    return getScrollDelta(descendent) == 0;
+  }
+
+
+  /**
+   * Returns whether the given descendent is partially scrolled in view
+   */
+  private boolean isPartiallyScrolledInView(View descendent) {
+    int scrollDelta = getScrollDelta(descendent);
+    descendent.getDrawingRect(mTempRect);
+    return scrollDelta != 0 && Math.abs(scrollDelta) < mTempRect.width();
+  }
+
+  /**
+   * Returns whether the given descendent is "mostly" (>50%) scrolled in view
+   */
+  private boolean isMostlyScrolledInView(View descendent) {
+    int scrollDelta = getScrollDelta(descendent);
+    descendent.getDrawingRect(mTempRect);
+    return scrollDelta != 0 && Math.abs(scrollDelta) < (mTempRect.width() / 2);
+  }
+
+  private void scrollToChild(View child) {
+    int scrollDelta = getScrollDelta(child);
+
+    if (scrollDelta != 0) {
+      scrollBy(scrollDelta, 0);
+    }
+  }
+
   @Override
   protected void onScrollChanged(int x, int y, int oldX, int oldY) {
     super.onScrollChanged(x, y, oldX, oldY);
@@ -233,6 +315,48 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     }
 
     return false;
+  }
+
+  @Override
+  public boolean pageScroll(int direction) {
+    boolean handled = super.pageScroll(direction);
+
+    if (mPagingEnabled && handled) {
+      handlePostTouchScrolling(0, 0);
+    }
+
+    return handled;
+  }
+
+  @Override
+  public boolean arrowScroll(int direction) {
+    boolean handled = false;
+
+    if (mPagingEnabled) {
+      mPagedArrowScrolling = true;
+
+      if (getChildCount() > 0) {
+        View currentFocused = findFocus();
+        View nextFocused = FocusFinder.getInstance().findNextFocus(this, currentFocused, direction);
+        View rootChild = getChildAt(0);
+        if (rootChild != null && nextFocused != null && nextFocused.getParent() == rootChild) {
+          if (!isScrolledInView(nextFocused) && !isMostlyScrolledInView(nextFocused)) {
+            smoothScrollToNextPage(direction);
+          }
+          nextFocused.requestFocus();
+          handled = true;
+        } else {
+          smoothScrollToNextPage(direction);
+          handled = true;
+        }
+      }
+
+      mPagedArrowScrolling = false;
+    } else {
+      handled = super.arrowScroll(direction);
+    }
+
+    return handled;
   }
 
   @Override
@@ -578,6 +702,29 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     } else {
       smoothScrollTo(targetOffset, getScrollY());
     }
+  }
+
+  private void smoothScrollToNextPage(int direction) {
+    int width = getWidth();
+    int currentX = getScrollX();
+
+    int page = currentX / width;
+    if (currentX % width != 0) {
+      page++;
+    }
+
+    if (direction == View.FOCUS_LEFT) {
+      page = page - 1;
+    } else {
+      page = page + 1;
+    }
+
+    if (page < 0) {
+      page = 0;
+    }
+
+    smoothScrollTo(page * width, getScrollY());
+    handlePostTouchScrolling(0, 0);
   }
 
   @Override

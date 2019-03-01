@@ -1,0 +1,17 @@
+LIBLET_WIN32 = 1
+LIBLET_LOB = 1
+
+V8_ENABLED = 1
+
+# Currently this nuget package is windows only.
+!LISTFILES -recursive V8_HEADERS = $(PKGOFFICE_GOOGLE_V8_1_6_0_0)\build\include *.h
+
+HEADERS = $(HEADERS) \
+    $(V8_HEADERS) \
+
+INCLUDES = $(INCLUDES); \
+    $(PKGOFFICE_GOOGLE_V8_1_6_0_0)\build\include; \
+
+!include ..\sources.inc
+
+SOURCES = $(SOURCES_WIN32)

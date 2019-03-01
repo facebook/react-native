@@ -1,0 +1,6 @@
+DIRS = \
+    detail \
+    portability{!droidarm,!droidx86} \
+    android{droidarm,droidx86} \
+    win32{!arm,!droidarm,!droidx86} \
+    winrt{x86,x64,arm} \

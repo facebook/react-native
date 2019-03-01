@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
+#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 
 #import <React/RCTFrameUpdate.h>
 
@@ -19,5 +19,8 @@
 - (void)detachFromView:(UIView *)view;
 
 - (void)cancel;
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+- (void)willShowMenuWithEvent:(NSEvent*)event;
+#endif // ]TODO(macOS ISS#2323203)
 
 @end

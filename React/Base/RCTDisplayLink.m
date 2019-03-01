@@ -8,8 +8,8 @@
 #import "RCTDisplayLink.h"
 
 #import <Foundation/Foundation.h>
-#import <QuartzCore/CADisplayLink.h>
 
+#import "RCTPlatformDisplayLink.h" // TODO(macOS ISS#2323203)
 #import "RCTAssert.h"
 #import "RCTBridgeModule.h"
 #import "RCTFrameUpdate.h"

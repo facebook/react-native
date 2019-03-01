@@ -16,6 +16,7 @@ const React = require('React');
 const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
+const TouchableHighlight = require('TouchableHighlight'); // [TODO(windows ISS)
 const TouchableNativeFeedback = require('TouchableNativeFeedback');
 const TouchableOpacity = require('TouchableOpacity');
 const View = require('View');
@@ -56,6 +57,7 @@ class Button extends React.Component<{
   color?: ?string,
   hasTVPreferredFocus?: ?boolean,
   accessibilityLabel?: ?string,
+  accessibilityHint?: string, // TODO(OSS Candidate ISS#2710739)
   disabled?: ?boolean,
   testID?: ?string,
 }> {
@@ -69,7 +71,11 @@ class Button extends React.Component<{
      */
     accessibilityLabel: PropTypes.string,
     /**
-     * Color of the text (iOS), or background color of the button (Android)
+    * Hint text to display blindness accessibility features
+    */
+    accessibilityHint: PropTypes.string, // TODO(OSS Candidate ISS#2710739)
+    /**
+     * Color of the text (iOS, macOS), or background color of the button (Android)
      */
     color: ColorPropType,
     /**
@@ -93,6 +99,7 @@ class Button extends React.Component<{
   render() {
     const {
       accessibilityLabel,
+      accessibilityHint, // TODO(OSS Candidate ISS#2710739)
       color,
       onPress,
       title,
@@ -103,7 +110,7 @@ class Button extends React.Component<{
     const buttonStyles = [styles.button];
     const textStyles = [styles.text];
     if (color) {
-      if (Platform.OS === 'ios') {
+      if (Platform.OS === 'ios' || Platform.OS === 'macos') { // TODO(macOS ISS#2323203)
         textStyles.push({color: color});
       } else {
         buttonStyles.push({backgroundColor: color});
@@ -122,10 +129,15 @@ class Button extends React.Component<{
     const formattedTitle =
       Platform.OS === 'android' ? title.toUpperCase() : title;
     const Touchable =
-      Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
+       (Platform.OS === 'android') // [TODO(windows ISS)
+         ? TouchableNativeFeedback
+         : (Platform.OS === 'uwp' || Platform.OS === 'windesktop')
+           ? TouchableHighlight
+           : TouchableOpacity; // ]TODO(windows ISS)
     return (
       <Touchable
         accessibilityLabel={accessibilityLabel}
+        accessibilityHint={accessibilityHint} // TODO(OSS Candidate ISS#2710739)
         accessibilityRole="button"
         accessibilityStates={accessibilityStates}
         hasTVPreferredFocus={hasTVPreferredFocus}
@@ -151,6 +163,12 @@ const styles = StyleSheet.create({
       backgroundColor: '#2196F3',
       borderRadius: 2,
     },
+    macos: {}, // TODO(macOS ISS#2323203)
+    uwp: {  // [TODO(windows ISS)
+      backgroundColor: '#2196F3',
+      borderRadius: 2,
+    },
+    windesktop: {},  // ]TODO(windows ISS)
   }),
   text: Platform.select({
     ios: {
@@ -166,6 +184,19 @@ const styles = StyleSheet.create({
       padding: 8,
       fontWeight: '500',
     },
+    macos: { // [TODO(macOS ISS#2323203)
+      color: '#007AFF',
+      textAlign: 'center',
+      padding: 8,
+      fontSize: 18,
+    }, // ]TODO(macOS ISS#2323203)
+    uwp: { // [TODO(windows ISS)
+      textAlign: 'center',
+      color: 'white',
+      padding: 8,
+      fontWeight: '500',
+    },
+    windesktop: {}, // ]TODO(windows ISS)
   }),
   buttonDisabled: Platform.select({
     ios: {},
@@ -173,14 +204,28 @@ const styles = StyleSheet.create({
       elevation: 0,
       backgroundColor: '#dfdfdf',
     },
+    macos: {}, // TODO(macOS ISS#2323203)
+    uwp: { // [TODO(windows ISS)
+      backgroundColor: '#dfdfdf',
+    },
+    windesktop: {}, // ]TODO(windows ISS)
   }),
   textDisabled: Platform.select({
     ios: {
       color: '#cdcdcd',
     },
+    macos: { // [TODO(macOS ISS#2323203)
+      color: '#cdcdcd',
+    }, // ]TODO(macOS ISS#2323203)
     android: {
       color: '#a1a1a1',
     },
+    uwp: { // [TODO(windows ISS)
+      color: '#a1a1a1',
+    },
+    windesktop: {
+      color: '#a1a1a1',
+    }, // ]TODO(windows ISS)
   }),
 });
 

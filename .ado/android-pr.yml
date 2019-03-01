@@ -1,0 +1,143 @@
+# This file defines the Android PR build steps used during the CI loop
+name: $(Date:yyyyMMdd).$(Rev:.r)
+
+trigger: none # will disable CI builds entirely
+
+pr: none # disable on PRs until stable
+
+jobs:
+  - job: AndroidRNPR
+    displayName: Android React Native PR
+    pool:
+      name: OE Standard Pool
+      demands: ['Agent.OS -equals Windows_NT', 'ANDROID_NDK', 'OnPrem -equals False']
+    timeoutInMinutes: 90 # how long to run the job before automatically cancelling
+    cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
+    steps:
+      - checkout: self # self represents the repo where the initial Pipelines YAML file was found
+        clean: true # whether to fetch clean each time
+        fetchDepth: 2 # the depth of commits to ask Git to fetch
+        lfs: false # whether to download Git-LFS files
+        submodules: recursive # set to 'true' for a single level of submodules or 'recursive' to get submodules of submodules
+        persistCredentials: false # set to 'true' to leave the OAuth token in the Git config after the initial fetch
+
+      # - task: npmAuthenticate@0
+      #   displayName: NPM Authenticate # friendly name displayed in the UI
+      #   inputs:
+      #     workingFile: common\config\rush\.npmrc
+
+      - task: PowerShell@2
+        displayName: Cleanup any packagers left over from other builds
+        inputs:
+          targetType: inline # filePath | inline
+          script: |
+            echo "ports:{"
+            echo ${env:RNTester.PackagerPort}
+            echo "}"
+            Get-NetTCPConnection -LocalPort 8081 -ErrorAction Ignore | ForEach-Object { Stop-Process $_.OwningProcess -ErrorAction Ignore }
+            Get-NetTCPConnection -LocalPort 5555 -ErrorAction Ignore | ForEach-Object { Stop-Process $_.OwningProcess -ErrorAction Ignore }
+
+      - task: CmdLine@2
+        displayName: npm install
+        inputs:
+          script: npm install
+
+      - task: NuGetCommand@2
+        displayName: NuGet restore
+        inputs:
+          command: restore
+          restoreSolution: ReactAndroid/packages.config
+          feedsToUse: config
+          #vstsFeed: # Required when feedsToUse == Select
+          #includeNuGetOrg: true # Required when feedsToUse == Select
+          nugetConfigPath: ReactAndroid/NuGet.Config
+          #externalFeedCredentials: # Optional
+          #noCache: false
+          #disableParallelProcessing: false
+          restoreDirectory: packages/
+          verbosityRestore: Detailed # Options: quiet, normal, detailed
+          #packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg' # Required when command == Push
+          #nuGetFeedType: 'internal' # Required when command == Push# Options: internal, external
+          #publishVstsFeed: # Required when command == Push && NuGetFeedType == Internal
+          #publishPackageMetadata: true # Optional
+          #allowPackageConflicts: # Optional
+          #publishFeedCredentials: # Required when command == Push && NuGetFeedType == External
+          #verbosityPush: 'Detailed' # Options: quiet, normal, detailed
+          #packagesToPack: '**/*.csproj' # Required when command == Pack
+          #configuration: '$(BuildConfiguration)' # Optional
+          #packDestination: '$(Build.ArtifactStagingDirectory)' # Optional
+          #versioningScheme: 'off' # Options: off, byPrereleaseNumber, byEnvVar, byBuildNumber
+          #includeReferencedProjects: false # Optional
+          #versionEnvVar: # Required when versioningScheme == ByEnvVar
+          #majorVersion: '1' # Required when versioningScheme == ByPrereleaseNumber
+          #minorVersion: '0' # Required when versioningScheme == ByPrereleaseNumber
+          #patchVersion: '0' # Required when versioningScheme == ByPrereleaseNumber
+          #packTimezone: 'utc' # Required when versioningScheme == ByPrereleaseNumber# Options: utc, local
+          #includeSymbols: false # Optional
+          #toolPackage: # Optional
+          #buildProperties: # Optional
+          #basePath: # Optional
+          #verbosityPack: 'Detailed' # Options: quiet, normal, detailed
+          #arguments: # Required when command == Custom
+
+      - task: CmdLine@2
+        displayName: Remove RNTesterApp.android.bundle
+        inputs:
+          script: del RNTesterApp.android.bundle
+
+      - task: CmdLine@2
+        displayName: Create RNTester bundle
+        inputs:
+          script: node .\local-cli\cli.js bundle --entry-file .\RNTester\js\RNTesterApp.android.js --bundle-output RNTesterApp.android.bundle --platform android
+
+      - task: Gradle@1
+        displayName: gradlew installArchives
+        inputs:
+          gradleWrapperFile: gradlew
+          # workingDirectory: src\react-native\
+          #options: # Optional
+          tasks: installArchives
+          publishJUnitResults: false
+          #testResultsFiles: '**/TEST-*.xml' # Required when publishJUnitResults == True
+          #testRunTitle: # Optional
+          #codeCoverageToolOption: 'None' # Optional. Options: none, cobertura, jaCoCo
+          #codeCoverageClassFilesDirectories: 'build/classes/main/' # Required when codeCoverageToolOption == False
+          #codeCoverageClassFilter: # Optional
+          #codeCoverageFailIfEmpty: false # Optional
+          #javaHomeOption: 'JDKVersion' # Options: jDKVersion, path
+          #jdkVersionOption: 'default' # Optional. Options: default, 1.11, 1.10, 1.9, 1.8, 1.7, 1.6
+          #jdkDirectory: # Required when javaHomeOption == Path
+          #jdkArchitectureOption: 'x64' # Optional. Options: x86, x64
+          #gradleOptions: '-Xmx1024m' # Optional
+          #sonarQubeRunAnalysis: false
+          #sqGradlePluginVersionChoice: 'specify' # Required when sonarQubeRunAnalysis == True# Options: specify, build
+          #sonarQubeGradlePluginVersion: '2.6.1' # Required when sonarQubeRunAnalysis == True && SqGradlePluginVersionChoice == Specify
+          #checkStyleRunAnalysis: false # Optional
+          #findBugsRunAnalysis: false # Optional
+          #pmdRunAnalysis: false # Optional
+
+      - task: Gradle@1
+        displayName: gradlew clean
+        inputs:
+          gradleWrapperFile: gradlew
+          # workingDirectory: src\
+          #options: # Optional
+          tasks: clean
+          publishJUnitResults: false
+          #testResultsFiles: '**/build/test-results/TEST-*.xml'
+          #testRunTitle: # Optional
+          #codeCoverageToolOption: 'None' # Optional. Options: none, cobertura, jaCoCo
+          #codeCoverageClassFilesDirectories: 'build/classes/main/' # Required when codeCoverageToolOption == False
+          #codeCoverageClassFilter: # Optional
+          #codeCoverageFailIfEmpty: false # Optional
+          #javaHomeOption: 'JDKVersion' # Options: jDKVersion, path
+          #jdkVersionOption: 'default' # Optional. Options: default, 1.11, 1.10, 1.9, 1.8, 1.7, 1.6
+          #jdkDirectory: # Required when javaHomeOption == Path
+          #jdkArchitectureOption: 'x64' # Optional. Options: x86, x64
+          #gradleOptions: '-Xmx1024m' # Optional
+          #sonarQubeRunAnalysis: false
+          #sqGradlePluginVersionChoice: 'specify' # Required when sonarQubeRunAnalysis == True# Options: specify, build
+          #sonarQubeGradlePluginVersion: '2.6.1' # Required when sonarQubeRunAnalysis == True && SqGradlePluginVersionChoice == Specify
+          #checkStyleRunAnalysis: false # Optional
+          #findBugsRunAnalysis: false # Optional
+          #pmdRunAnalysis: false # Optional

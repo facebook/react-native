@@ -14,6 +14,7 @@
 #import <React/RCTRootView.h>
 #import <React/RCTUIManager.h>
 #import <React/RCTUtils.h>
+#import <React/RCTBundleURLProvider.h> // TODO(macOS ISS#2323203)
 
 #import "FBSnapshotTestController.h"
 #import "RCTTestModule.h"
@@ -61,7 +62,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)updateScript
 {
   if (getenv("CI_USE_PACKAGER") || _useBundler) {
-    _scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.bundle?platform=ios&dev=true", _appPath]];
+    _scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.bundle?platform=%@&dev=true", _appPath, kRCTPlatformName]]; // TODO(macOS ISS#2323203)
   } else {
     _scriptURL = [[NSBundle bundleForClass:[RCTBridge class]] URLForResource:@"main" withExtension:@"jsbundle"];
   }
@@ -135,8 +136,10 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
     [bridge.devSettings setIsDebuggingRemotely:_useJSDebugger];
     batchedBridge = [bridge batchedBridge];
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
     UIViewController *vc = RCTSharedApplication().delegate.window.rootViewController;
     vc.view = [UIView new];
+#endif // TODO(macOS ISS#2323203)
 
     RCTTestModule *testModule = [bridge moduleForClass:[RCTTestModule class]];
     RCTAssert(_testController != nil, @"_testController should not be nil");
@@ -156,7 +159,9 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
       rootTag = rootView.reactTag;
       testModule.view = rootView;
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
       [vc.view addSubview:rootView]; // Add as subview so it doesn't get resized
+#endif // TODO(macOS ISS#2323203)
 
       if (configurationBlock) {
         configurationBlock(rootView);
@@ -183,7 +188,7 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
       }
     });
 
-#if RCT_DEV
+#if RCT_DEV && !TARGET_OS_OSX // TODO(macOS ISS#2323203)
     NSArray<UIView *> *nonLayoutSubviews = [vc.view.subviews filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id subview, NSDictionary *bindings) {
       return ![NSStringFromClass([subview class]) isEqualToString:@"_UILayoutGuide"];
     }]];
@@ -217,7 +222,9 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
     [[NSRunLoop mainRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
     [[NSRunLoop mainRunLoop] runMode:NSRunLoopCommonModes beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
   }
-  RCTAssert(errors == nil, @"RedBox errors during bridge invalidation: %@", errors);
+  if (!expectErrorBlock) { // TODO(tomun): need this to pass -[RNTesterIntegrationTests testTheTester_ExpectError]
+    RCTAssert(errors == nil, @"RedBox errors during bridge invalidation: %@", errors);
+  }
   RCTAssert(batchedBridge == nil, @"Bridge should be deallocated after the test");
 
   RCTSetLogFunction(defaultLogFunction);

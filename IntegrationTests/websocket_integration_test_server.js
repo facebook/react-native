@@ -35,7 +35,12 @@ server.on('connection', ws => {
       process.exit(0);
     }
     console.log('Cookie:', ws.upgradeReq.headers.cookie);
-    ws.send(message + '_response');
+
+    if (message instanceof Buffer) {
+      ws.send(message);
+    } else {
+      ws.send(message + '_response');
+    }
   });
 
   ws.send('hello');

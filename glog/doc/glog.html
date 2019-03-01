@@ -1,0 +1,613 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+<title>How To Use Google Logging Library (glog)</title>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="http://www.google.com/favicon.ico" type="image/x-icon"
+      rel="shortcut icon">
+<link href="designstyle.css" type="text/css" rel="stylesheet">
+<style type="text/css">
+<!--
+  ol.bluelist li {
+    color: #3366ff;
+    font-family: sans-serif;
+  }
+  ol.bluelist li p {
+    color: #000;
+    font-family: "Times Roman", times, serif;
+  }
+  ul.blacklist li {
+    color: #000;
+    font-family: "Times Roman", times, serif;
+  }
+//-->
+</style>
+</head>
+
+<body>
+
+<h1>How To Use Google Logging Library (glog)</h1>
+<small>(as of
+<script type=text/javascript>
+  var lm = new Date(document.lastModified);
+  document.write(lm.toDateString());
+</script>)
+</small>
+<br>
+
+<h2> <A NAME=intro>Introduction</A> </h2>
+
+<p><b>Google glog</b> is a library that implements application-level
+logging.  This library provides logging APIs based on C++-style
+streams and various helper macros.
+You can log a message by simply streaming things to LOG(&lt;a
+particular <a href="#severity">severity level</a>&gt;), e.g.
+
+<pre>
+   #include &lt;glog/logging.h&gt;
+
+   int main(int argc, char* argv[]) {
+     // Initialize Google's logging library.
+     google::InitGoogleLogging(argv[0]);
+
+     // ...
+     LOG(INFO) &lt;&lt; "Found " &lt;&lt; num_cookies &lt;&lt; " cookies";
+   }
+</pre>
+
+<p>Google glog defines a series of macros that simplify many common logging
+tasks.  You can log messages by severity level, control logging
+behavior from the command line, log based on conditionals, abort the
+program when expected conditions are not met, introduce your own
+verbose logging levels, and more.  This document describes the
+functionality supported by glog.  Please note that this document
+doesn't describe all features in this library, but the most useful
+ones.  If you want to find less common features, please check
+header files under <code>src/glog</code> directory.
+
+<h2> <A NAME=severity>Severity Level</A> </h2>
+
+<p>
+You can specify one of the following severity levels (in
+increasing order of severity): <code>INFO</code>, <code>WARNING</code>,
+<code>ERROR</code>, and <code>FATAL</code>.
+Logging a <code>FATAL</code> message terminates the program (after the
+message is logged).
+Note that messages of a given severity are logged not only in the
+logfile for that severity, but also in all logfiles of lower severity.
+E.g., a message of severity <code>FATAL</code> will be logged to the
+logfiles of severity <code>FATAL</code>, <code>ERROR</code>,
+<code>WARNING</code>, and <code>INFO</code>.
+
+<p>
+The <code>DFATAL</code> severity logs a <code>FATAL</code> error in
+debug mode (i.e., there is no <code>NDEBUG</code> macro defined), but
+avoids halting the program in production by automatically reducing the
+severity to <code>ERROR</code>.
+
+<p>Unless otherwise specified, glog writes to the filename
+"/tmp/&lt;program name&gt;.&lt;hostname&gt;.&lt;user name&gt;.log.&lt;severity level&gt;.&lt;date&gt;.&lt;time&gt;.&lt;pid&gt;"
+(e.g., "/tmp/hello_world.example.com.hamaji.log.INFO.20080709-222411.10474").
+By default, glog copies the log messages of severity level
+<code>ERROR</code> or <code>FATAL</code> to standard error (stderr)
+in addition to log files.
+
+<h2><A NAME=flags>Setting Flags</A></h2>
+
+<p>Several flags influence glog's output behavior.
+If the <a href="http://code.google.com/p/google-gflags/">Google
+gflags library</a> is installed on your machine, the
+<code>configure</code> script (see the INSTALL file in the package for
+detail of this script) will automatically detect and use it,
+allowing you to pass flags on the command line.  For example, if you
+want to turn the flag <code>--logtostderr</code> on, you can start
+your application with the following command line:
+
+<pre>
+   ./your_application --logtostderr=1
+</pre>
+
+If the Google gflags library isn't installed, you set flags via
+environment variables, prefixing the flag name with "GLOG_", e.g.
+
+<pre>
+   GLOG_logtostderr=1 ./your_application
+</pre>
+
+<!-- TODO(hamaji): Fill the version number
+<p>By glog version 0.x.x, you can use GLOG_* environment variables
+even if you have gflags. If both an environment variable and a flag
+are specified, the value specified by a flag wins. E.g., if GLOG_v=0
+and --v=1, the verbosity will be 1, not 0.
+-->
+
+<p>The following flags are most commonly used:
+
+<dl>
+<dt><code>logtostderr</code> (<code>bool</code>, default=<code>false</code>)
+<dd>Log messages to stderr instead of logfiles.<br>
+Note: you can set binary flags to <code>true</code> by specifying
+<code>1</code>, <code>true</code>, or <code>yes</code> (case
+insensitive).
+Also, you can set binary flags to <code>false</code> by specifying
+<code>0</code>, <code>false</code>, or <code>no</code> (again, case
+insensitive).
+<dt><code>stderrthreshold</code> (<code>int</code>, default=2, which
+is <code>ERROR</code>)
+<dd>Copy log messages at or above this level to stderr in
+addition to logfiles.  The numbers of severity levels
+<code>INFO</code>, <code>WARNING</code>, <code>ERROR</code>, and
+<code>FATAL</code> are 0, 1, 2, and 3, respectively.
+<dt><code>minloglevel</code> (<code>int</code>, default=0, which
+is <code>INFO</code>)
+<dd>Log messages at or above this level.  Again, the numbers of
+severity levels <code>INFO</code>, <code>WARNING</code>,
+<code>ERROR</code>, and <code>FATAL</code> are 0, 1, 2, and 3,
+respectively.
+<dt><code>log_dir</code> (<code>string</code>, default="")
+<dd>If specified, logfiles are written into this directory instead
+of the default logging directory.
+<dt><code>v</code> (<code>int</code>, default=0)
+<dd>Show all <code>VLOG(m)</code> messages for <code>m</code> less or
+equal the value of this flag.  Overridable by --vmodule.
+See <a href="#verbose">the section about verbose logging</a> for more
+detail.
+<dt><code>vmodule</code> (<code>string</code>, default="")
+<dd>Per-module verbose level.  The argument has to contain a
+comma-separated list of &lt;module name&gt;=&lt;log level&gt;.
+&lt;module name&gt;
+is a glob pattern (e.g., <code>gfs*</code> for all modules whose name
+starts with "gfs"), matched against the filename base
+(that is, name ignoring .cc/.h./-inl.h).
+&lt;log level&gt; overrides any value given by --v.
+See also <a href="#verbose">the section about verbose logging</a>.
+</dl>
+
+<p>There are some other flags defined in logging.cc.  Please grep the
+source code for "DEFINE_" to see a complete list of all flags.
+
+<p>You can also modify flag values in your program by modifying global
+variables <code>FLAGS_*</code> . Most settings start working
+immediately after you update <code>FLAGS_*</code> . The exceptions are
+the flags related to destination files. For example, you might want to
+set <code>FLAGS_log_dir</code> before
+calling <code>google::InitGoogleLogging</code> . Here is an example:
+
+<pre>
+   LOG(INFO) << "file";
+   // Most flags work immediately after updating values.
+   FLAGS_logtostderr = 1;
+   LOG(INFO) << "stderr";
+   FLAGS_logtostderr = 0;
+   // This won't change the log destination. If you want to set this
+   // value, you should do this before google::InitGoogleLogging .
+   FLAGS_log_dir = "/some/log/directory";
+   LOG(INFO) << "the same file";
+</pre>
+
+<h2><A NAME=conditional>Conditional / Occasional Logging</A></h2>
+
+<p>Sometimes, you may only want to log a message under certain
+conditions. You can use the following macros to perform conditional
+logging:
+
+<pre>
+   LOG_IF(INFO, num_cookies &gt; 10) &lt;&lt; "Got lots of cookies";
+</pre>
+
+The "Got lots of cookies" message is logged only when the variable
+<code>num_cookies</code> exceeds 10.
+
+If a line of code is executed many times, it may be useful to only log
+a message at certain intervals.  This kind of logging is most useful
+for informational messages.
+
+<pre>
+   LOG_EVERY_N(INFO, 10) &lt;&lt; "Got the " &lt;&lt; google::COUNTER &lt;&lt; "th cookie";
+</pre>
+
+<p>The above line outputs a log messages on the 1st, 11th,
+21st, ... times it is executed.  Note that the special
+<code>google::COUNTER</code> value is used to identify which repetition is
+happening.
+
+<p>You can combine conditional and occasional logging with the
+following macro.
+
+<pre>
+   LOG_IF_EVERY_N(INFO, (size &gt; 1024), 10) &lt;&lt; "Got the " &lt;&lt; google::COUNTER
+                                           &lt;&lt; "th big cookie";
+</pre>
+
+<p>Instead of outputting a message every nth time, you can also limit
+the output to the first n occurrences:
+
+<pre>
+   LOG_FIRST_N(INFO, 20) &lt;&lt; "Got the " &lt;&lt; google::COUNTER &lt;&lt; "th cookie";
+</pre>
+
+<p>Outputs log messages for the first 20 times it is executed.  Again,
+the <code>google::COUNTER</code> identifier indicates which repetition is
+happening.
+
+<h2><A NAME=debug>Debug Mode Support</A></h2>
+
+<p>Special "debug mode" logging macros only have an effect in debug
+mode and are compiled away to nothing for non-debug mode
+compiles.  Use these macros to avoid slowing down your production
+application due to excessive logging.
+
+<pre>
+   DLOG(INFO) &lt;&lt; "Found cookies";
+
+   DLOG_IF(INFO, num_cookies &gt; 10) &lt;&lt; "Got lots of cookies";
+
+   DLOG_EVERY_N(INFO, 10) &lt;&lt; "Got the " &lt;&lt; google::COUNTER &lt;&lt; "th cookie";
+</pre>
+
+<h2><A NAME=check>CHECK Macros</A></h2>
+
+<p>It is a good practice to check expected conditions in your program
+frequently to detect errors as early as possible. The
+<code>CHECK</code> macro provides the ability to abort the application
+when a condition is not met, similar to the <code>assert</code> macro
+defined in the standard C library.
+
+<p><code>CHECK</code> aborts the application if a condition is not
+true.  Unlike <code>assert</code>, it is *not* controlled by
+<code>NDEBUG</code>, so the check will be executed regardless of
+compilation mode.  Therefore, <code>fp-&gt;Write(x)</code> in the
+following example is always executed:
+
+<pre>
+   CHECK(fp-&gt;Write(x) == 4) &lt;&lt; "Write failed!";
+</pre>
+
+<p>There are various helper macros for
+equality/inequality checks - <code>CHECK_EQ</code>,
+<code>CHECK_NE</code>, <code>CHECK_LE</code>, <code>CHECK_LT</code>,
+<code>CHECK_GE</code>, and <code>CHECK_GT</code>.
+They compare two values, and log a
+<code>FATAL</code> message including the two values when the result is
+not as expected.  The values must have <code>operator&lt;&lt;(ostream,
+...)</code> defined.
+
+<p>You may append to the error message like so:
+
+<pre>
+   CHECK_NE(1, 2) &lt;&lt; ": The world must be ending!";
+</pre>
+
+<p>We are very careful to ensure that each argument is evaluated exactly
+once, and that anything which is legal to pass as a function argument is
+legal here.  In particular, the arguments may be temporary expressions
+which will end up being destroyed at the end of the apparent statement,
+for example:
+
+<pre>
+   CHECK_EQ(string("abc")[1], 'b');
+</pre>
+
+<p>The compiler reports an error if one of the arguments is a
+pointer and the other is NULL. To work around this, simply static_cast
+NULL to the type of the desired pointer.
+
+<pre>
+   CHECK_EQ(some_ptr, static_cast&lt;SomeType*&gt;(NULL));
+</pre>
+
+<p>Better yet, use the CHECK_NOTNULL macro:
+
+<pre>
+   CHECK_NOTNULL(some_ptr);
+   some_ptr-&gt;DoSomething();
+</pre>
+
+<p>Since this macro returns the given pointer, this is very useful in
+constructor initializer lists.
+
+<pre>
+   struct S {
+     S(Something* ptr) : ptr_(CHECK_NOTNULL(ptr)) {}
+     Something* ptr_;
+   };
+</pre>
+
+<p>Note that you cannot use this macro as a C++ stream due to this
+feature.  Please use <code>CHECK_EQ</code> described above to log a
+custom message before aborting the application.
+
+<p>If you are comparing C strings (char *), a handy set of macros
+performs case sensitive as well as case insensitive comparisons -
+<code>CHECK_STREQ</code>, <code>CHECK_STRNE</code>,
+<code>CHECK_STRCASEEQ</code>, and <code>CHECK_STRCASENE</code>.  The
+CASE versions are case-insensitive.  You can safely pass <code>NULL</code>
+pointers for this macro.  They treat <code>NULL</code> and any
+non-<code>NULL</code> string as not equal.  Two <code>NULL</code>s are
+equal.
+
+<p>Note that both arguments may be temporary strings which are
+destructed at the end of the current "full expression"
+(e.g., <code>CHECK_STREQ(Foo().c_str(), Bar().c_str())</code> where
+<code>Foo</code> and <code>Bar</code> return C++'s
+<code>std::string</code>).
+
+<p>The <code>CHECK_DOUBLE_EQ</code> macro checks the equality of two
+floating point values, accepting a small error margin.
+<code>CHECK_NEAR</code> accepts a third floating point argument, which
+specifies the acceptable error margin.
+
+<h2><A NAME=verbose>Verbose Logging</A></h2>
+
+<p>When you are chasing difficult bugs, thorough log messages are very
+useful.  However, you may want to ignore too verbose messages in usual
+development.  For such verbose logging, glog provides the
+<code>VLOG</code> macro, which allows you to define your own numeric
+logging levels.  The <code>--v</code> command line option controls
+which verbose messages are logged:
+
+<pre>
+   VLOG(1) &lt;&lt; "I'm printed when you run the program with --v=1 or higher";
+   VLOG(2) &lt;&lt; "I'm printed when you run the program with --v=2 or higher";
+</pre>
+
+<p>With <code>VLOG</code>, the lower the verbose level, the more
+likely messages are to be logged.  For example, if
+<code>--v==1</code>, <code>VLOG(1)</code> will log, but
+<code>VLOG(2)</code> will not log.  This is opposite of the severity
+level, where <code>INFO</code> is 0, and <code>ERROR</code> is 2.
+<code>--minloglevel</code> of 1 will log <code>WARNING</code> and
+above.  Though you can specify any integers for both <code>VLOG</code>
+macro and <code>--v</code> flag, the common values for them are small
+positive integers.  For example, if you write <code>VLOG(0)</code>,
+you should specify <code>--v=-1</code> or lower to silence it.  This
+is less useful since we may not want verbose logs by default in most
+cases.  The <code>VLOG</code> macros always log at the
+<code>INFO</code> log level (when they log at all).
+
+<p>Verbose logging can be controlled from the command line on a
+per-module basis:
+
+<pre>
+   --vmodule=mapreduce=2,file=1,gfs*=3 --v=0
+</pre>
+
+<p>will:
+
+<ul>
+  <li>a. Print VLOG(2) and lower messages from mapreduce.{h,cc}
+  <li>b. Print VLOG(1) and lower messages from file.{h,cc}
+  <li>c. Print VLOG(3) and lower messages from files prefixed with "gfs"
+  <li>d. Print VLOG(0) and lower messages from elsewhere
+</ul>
+
+<p>The wildcarding functionality shown by (c) supports both '*'
+(matches 0 or more characters) and '?' (matches any single character)
+wildcards.  Please also check the section about <a
+href="#flags">command line flags</a>.
+
+<p>There's also <code>VLOG_IS_ON(n)</code> "verbose level" condition
+macro.  This macro returns true when the <code>--v</code> is equal or
+greater than <code>n</code>.  To be used as
+
+<pre>
+   if (VLOG_IS_ON(2)) {
+     // do some logging preparation and logging
+     // that can't be accomplished with just VLOG(2) &lt;&lt; ...;
+   }
+</pre>
+
+<p>Verbose level condition macros <code>VLOG_IF</code>,
+<code>VLOG_EVERY_N</code> and <code>VLOG_IF_EVERY_N</code> behave
+analogous to <code>LOG_IF</code>, <code>LOG_EVERY_N</code>,
+<code>LOF_IF_EVERY</code>, but accept a numeric verbosity level as
+opposed to a severity level.
+
+<pre>
+   VLOG_IF(1, (size &gt; 1024))
+      &lt;&lt; "I'm printed when size is more than 1024 and when you run the "
+         "program with --v=1 or more";
+   VLOG_EVERY_N(1, 10)
+      &lt;&lt; "I'm printed every 10th occurrence, and when you run the program "
+         "with --v=1 or more. Present occurence is " &lt;&lt; google::COUNTER;
+   VLOG_IF_EVERY_N(1, (size &gt; 1024), 10)
+      &lt;&lt; "I'm printed on every 10th occurence of case when size is more "
+         " than 1024, when you run the program with --v=1 or more. ";
+         "Present occurence is " &lt;&lt; google::COUNTER;
+</pre>
+
+<h2> <A name="signal">Failure Signal Handler</A> </h2>
+
+<p>
+The library provides a convenient signal handler that will dump useful
+information when the program crashes on certain signals such as SIGSEGV.
+The signal handler can be installed by
+google::InstallFailureSignalHandler().  The following is an example of output
+from the signal handler.
+
+<pre>
+*** Aborted at 1225095260 (unix time) try "date -d @1225095260" if you are using GNU date ***
+*** SIGSEGV (@0x0) received by PID 17711 (TID 0x7f893090a6f0) from PID 0; stack trace: ***
+PC: @           0x412eb1 TestWaitingLogSink::send()
+    @     0x7f892fb417d0 (unknown)
+    @           0x412eb1 TestWaitingLogSink::send()
+    @     0x7f89304f7f06 google::LogMessage::SendToLog()
+    @     0x7f89304f35af google::LogMessage::Flush()
+    @     0x7f89304f3739 google::LogMessage::~LogMessage()
+    @           0x408cf4 TestLogSinkWaitTillSent()
+    @           0x4115de main
+    @     0x7f892f7ef1c4 (unknown)
+    @           0x4046f9 (unknown)
+</pre>
+
+<p>
+By default, the signal handler writes the failure dump to the standard
+error.  You can customize the destination by InstallFailureWriter().
+
+<h2> <A name="misc">Miscellaneous Notes</A> </h2>
+
+<h3><A NAME=message>Performance of Messages</A></h3>
+
+<p>The conditional logging macros provided by glog (e.g.,
+<code>CHECK</code>, <code>LOG_IF</code>, <code>VLOG</code>, ...) are
+carefully implemented and don't execute the right hand side
+expressions when the conditions are false.  So, the following check
+may not sacrifice the performance of your application.
+
+<pre>
+   CHECK(obj.ok) &lt;&lt; obj.CreatePrettyFormattedStringButVerySlow();
+</pre>
+
+<h3><A NAME=failure>User-defined Failure Function</A></h3>
+
+<p><code>FATAL</code> severity level messages or unsatisfied
+<code>CHECK</code> condition terminate your program.  You can change
+the behavior of the termination by
+<code>InstallFailureFunction</code>.
+
+<pre>
+   void YourFailureFunction() {
+     // Reports something...
+     exit(1);
+   }
+
+   int main(int argc, char* argv[]) {
+     google::InstallFailureFunction(&amp;YourFailureFunction);
+   }
+</pre>
+
+<p>By default, glog tries to dump stacktrace and makes the program
+exit with status 1.  The stacktrace is produced only when you run the
+program on an architecture for which glog supports stack tracing (as
+of September 2008, glog supports stack tracing for x86 and x86_64).
+
+<h3><A NAME=raw>Raw Logging</A></h3>
+
+<p>The header file <code>&lt;glog/raw_logging.h&gt;</code> can be
+used for thread-safe logging, which does not allocate any memory or
+acquire any locks.  Therefore, the macros defined in this
+header file can be used by low-level memory allocation and
+synchronization code.
+Please check <code>src/glog/raw_logging.h.in</code> for detail.
+</p>
+
+<h3><A NAME=plog>Google Style perror()</A></h3>
+
+<p><code>PLOG()</code> and <code>PLOG_IF()</code> and
+<code>PCHECK()</code> behave exactly like their <code>LOG*</code> and
+<code>CHECK</code> equivalents with the addition that they append a
+description of the current state of errno to their output lines.
+E.g.
+
+<pre>
+   PCHECK(write(1, NULL, 2) &gt;= 0) &lt;&lt; "Write NULL failed";
+</pre>
+
+<p>This check fails with the following error message.
+
+<pre>
+   F0825 185142 test.cc:22] Check failed: write(1, NULL, 2) &gt;= 0 Write NULL failed: Bad address [14]
+</pre>
+
+<h3><A NAME=syslog>Syslog</A></h3>
+
+<p><code>SYSLOG</code>, <code>SYSLOG_IF</code>, and
+<code>SYSLOG_EVERY_N</code> macros are available.
+These log to syslog in addition to the normal logs.  Be aware that
+logging to syslog can drastically impact performance, especially if
+syslog is configured for remote logging!  Make sure you understand the
+implications of outputting to syslog before you use these macros. In
+general, it's wise to use these macros sparingly.
+
+<h3><A NAME=strip>Strip Logging Messages</A></h3>
+
+<p>Strings used in log messages can increase the size of your binary
+and present a privacy concern.  You can therefore instruct glog to
+remove all strings which fall below a certain severity level by using
+the GOOGLE_STRIP_LOG macro:
+
+<p>If your application has code like this:
+
+<pre>
+   #define GOOGLE_STRIP_LOG 1    // this must go before the #include!
+   #include &lt;glog/logging.h&gt;
+</pre>
+
+<p>The compiler will remove the log messages whose severities are less
+than the specified integer value.  Since
+<code>VLOG</code> logs at the severity level <code>INFO</code>
+(numeric value <code>0</code>),
+setting <code>GOOGLE_STRIP_LOG</code> to 1 or greater removes
+all log messages associated with <code>VLOG</code>s as well as
+<code>INFO</code> log statements.
+
+<h3><A NAME=windows>Notes for Windows users</A></h3>
+
+<p>Google glog defines a severity level <code>ERROR</code>, which is
+also defined in <code>windows.h</code> . You can make glog not define
+<code>INFO</code>, <code>WARNING</code>, <code>ERROR</code>,
+and <code>FATAL</code> by defining
+<code>GLOG_NO_ABBREVIATED_SEVERITIES</code> before
+including <code>glog/logging.h</code> . Even with this macro, you can
+still use the iostream like logging facilities:
+
+<pre>
+  #define GLOG_NO_ABBREVIATED_SEVERITIES
+  #include &lt;windows.h&gt;
+  #include &lt;glog/logging.h&gt;
+
+  // ...
+
+  LOG(ERROR) &lt;&lt; "This should work";
+  LOG_IF(ERROR, x &gt; y) &lt;&lt; "This should be also OK";
+</pre>
+
+<p>
+However, you cannot
+use <code>INFO</code>, <code>WARNING</code>, <code>ERROR</code>,
+and <code>FATAL</code> anymore for functions defined
+in <code>glog/logging.h</code> .
+
+<pre>
+  #define GLOG_NO_ABBREVIATED_SEVERITIES
+  #include &lt;windows.h&gt;
+  #include &lt;glog/logging.h&gt;
+
+  // ...
+
+  // This won't work.
+  // google::FlushLogFiles(google::ERROR);
+
+  // Use this instead.
+  google::FlushLogFiles(google::GLOG_ERROR);
+</pre>
+
+<p>
+If you don't need <code>ERROR</code> defined
+by <code>windows.h</code>, there are a couple of more workarounds
+which sometimes don't work:
+
+<ul>
+  <li>#define <code>WIN32_LEAN_AND_MEAN</code> or <code>NOGDI</code>
+      <strong>before</strong> you #include <code>windows.h</code> .
+  <li>#undef <code>ERROR</code> <strong>after</strong> you #include
+      <code>windows.h</code> .
+</ul>
+
+<p>See <a href="http://code.google.com/p/google-glog/issues/detail?id=33">
+this issue</a> for more detail.
+
+<hr>
+<address>
+Shinichiro Hamaji<br>
+Gregor Hohpe<br>
+<script type=text/javascript>
+  var lm = new Date(document.lastModified);
+  document.write(lm.toDateString());
+</script>
+</address>
+
+</body>
+</html>

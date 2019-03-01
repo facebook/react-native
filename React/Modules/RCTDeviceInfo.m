@@ -10,11 +10,15 @@
 #import "RCTAccessibilityManager.h"
 #import "RCTAssert.h"
 #import "RCTEventDispatcher.h"
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 #import "RCTUIUtils.h"
+#endif // TODO(macOS ISS#2323203)
 #import "RCTUtils.h"
+#import "RCTUIKit.h" // TODO(macOS ISS#2323203)
+#import "UIView+React.h" // TODO(macOS ISS#2323203)
 
 @implementation RCTDeviceInfo {
-#if !TARGET_OS_TV
+#if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   UIInterfaceOrientation _currentInterfaceOrientation;
 #endif
 }
@@ -37,11 +41,14 @@ RCT_EXPORT_MODULE()
 {
   _bridge = bridge;
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(didReceiveNewContentSizeMultiplier)
                                                name:RCTAccessibilityManagerDidUpdateMultiplierNotification
                                              object:_bridge.accessibilityManager];
-#if !TARGET_OS_TV
+#endif // TODO(macOS ISS#2323203)
+  
+#if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   _currentInterfaceOrientation = [RCTSharedApplication() statusBarOrientation];
 
   [[NSNotificationCenter defaultCenter] addObserver:self
@@ -53,6 +60,7 @@ RCT_EXPORT_MODULE()
 
 static BOOL RCTIsIPhoneX() {
   static BOOL isIPhoneX = NO;
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   static dispatch_once_t onceToken;
 
   dispatch_once(&onceToken, ^{
@@ -63,14 +71,19 @@ static BOOL RCTIsIPhoneX() {
       CGSizeMake(1125, 2436)
     );
   });
-
+#endif // TODO(macOS ISS#2323203)
   return isIPhoneX;
 }
 
-static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
+#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
+#else
+NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView)
+#endif // ]TODO(macOS ISS#2323203)
 {
   RCTAssertMainQueue();
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   RCTDimensions dimensions = RCTGetDimensions(bridge.accessibilityManager.multiplier);
   typeof (dimensions.window) window = dimensions.window; // Window and Screen are considered equal for iOS.
   NSDictionary<NSString *, NSNumber *> *dims = @{
@@ -83,6 +96,32 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
       @"window": dims,
       @"screen": dims
   };
+#else // [TODO(macOS ISS#2323203)
+	if (rootView != nil) {
+		NSWindow *window = rootView.window;
+		if (window != nil) {
+			NSSize size = rootView.bounds.size;
+			return @{
+				@"window": @{
+					@"width": @(size.width),
+					@"height": @(size.height),
+					@"scale": @(window.backingScaleFactor),
+				},
+        @"rootTag" : rootView.reactTag,
+			};
+		}
+	}
+
+  // We don't have a root view or window yet so make something up
+  NSScreen *screen = [NSScreen screens].firstObject;
+  return @{
+      @"window": @{
+        @"width": @(screen.frame.size.width),
+        @"height": @(screen.frame.size.height),
+        @"scale": @(screen.backingScaleFactor),
+      },
+  };
+#endif // ]TODO(macOS ISS#2323203)
 }
 
 - (void)dealloc
@@ -101,7 +140,11 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
   return @{
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
     @"Dimensions": RCTExportedDimensions(_bridge),
+#else // [TODO(macOS ISS#2323203)
+    @"Dimensions": RCTExportedDimensions(nil),
+#endif // ]TODO(macOS ISS#2323203)
     // Note:
     // This prop is deprecated and will be removed in a future release.
     // Please use this only for a quick and temporary solution.
@@ -118,12 +161,16 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
     [bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateDimensions"
-                                        body:RCTExportedDimensions(bridge)];
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+    body:RCTExportedDimensions(bridge)];
+#else // [TODO(macOS ISS#2323203)
+    body:RCTExportedDimensions(nil)];
+#endif // ]TODO(macOS ISS#2323203)
 #pragma clang diagnostic pop
   });
 }
 
-#if !TARGET_OS_TV
+#if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 
 - (void)interfaceOrientationDidChange
 {

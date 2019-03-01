@@ -1,0 +1,38 @@
+LIBLET_ANDROID = 1
+
+!include ..\sources.inc
+
+TARGETNAME = jsi
+
+INCLUDES = $(INCLUDES); \
+    $(PKGJAVASCRIPTCORE_TEMP)\build\native\include; \
+
+SOURCES = $(SOURCES_ANDROID)
+
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -Wall -Werror -fexceptions -frtti
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -DLOG_TAG=\"ReactNative\" -Wno-c++11-compat
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -Wno-unused-function -Wno-unused-lambda-capture
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -Wno-header-hygiene -Wno-tautological-compare
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -Wno-unused-variable
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -Wunused-result
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -Wno-shadow $(CXX11_FLAGS)
+
+LOCAL_LDLIBS = \
+    $(LOCAL_LDLIBS) \
+    $(OPENSOURCE_REACTNATIVETARGETDIR)\libfolly_json.so \
+    $(OPENSOURCE_REACTNATIVETARGETDIR)\libglog.so \
+
+!if ($(V8_ENABLED) == 1)
+
+LOCAL_LDLIBS = \
+    $(LOCAL_LDLIBS) \
+    $(PKGOFFICE_GOOGLE_V8_ANDROID)\$(PLATFORM)\$(FLAVOR)\x-none\libv8.cr.so \
+    $(PKGOFFICE_GOOGLE_V8_ANDROID)\$(PLATFORM)\$(FLAVOR)\x-none\libv8_libbase.cr.so \
+    $(PKGOFFICE_GOOGLE_V8_ANDROID)\$(PLATFORM)\$(FLAVOR)\x-none\libv8_libplatform.cr.so \
+
+!else
+LOCAL_LDLIBS = \
+    $(LOCAL_LDLIBS);\
+    $(PKGREACTNATIVEANDROIDRIR_BIN)\x-none\libjsc.so \
+
+!endif

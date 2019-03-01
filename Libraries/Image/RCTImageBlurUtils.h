@@ -7,7 +7,7 @@
  */
 
 #import <Accelerate/Accelerate.h>
-#import <UIKit/UIKit.h>
+#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 
 #import <React/RCTDefines.h>
 

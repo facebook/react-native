@@ -11,8 +11,11 @@ import android.view.View;
 import android.view.ViewParent;
 import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
+
+import javax.annotation.Nullable;
 
 /**
  * Base class that should be suitable for the majority of subclasses of {@link ViewManager}.
@@ -26,6 +29,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final String PROP_ELEVATION = "elevation";
   private static final String PROP_Z_INDEX = "zIndex";
   private static final String PROP_RENDER_TO_HARDWARE_TEXTURE = "renderToHardwareTextureAndroid";
+  private static final String PROP_ACCESSIBLE = "accessible";
   private static final String PROP_ACCESSIBILITY_LABEL = "accessibilityLabel";
   private static final String PROP_ACCESSIBILITY_COMPONENT_TYPE = "accessibilityComponentType";
   private static final String PROP_ACCESSIBILITY_HINT = "accessibilityHint";
@@ -33,6 +37,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final String PROP_ACCESSIBILITY_ROLE = "accessibilityRole";
   private static final String PROP_ACCESSIBILITY_STATES = "accessibilityStates";
   private static final String PROP_IMPORTANT_FOR_ACCESSIBILITY = "importantForAccessibility";
+  private static final String PROP_ACCESSIBILITY_NODE_INFO = "accessibilityNodeInfo";
 
   // DEPRECATED
   private static final String PROP_ROTATION = "rotation";
@@ -110,6 +115,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     ReactFindViewUtil.notifyViewRendered(view);
   }
 
+  @ReactProp(name = PROP_ACCESSIBLE)
+  public void setAccessible(T view, boolean accessible) {
+    view.setImportantForAccessibility(accessible ? View.IMPORTANT_FOR_ACCESSIBILITY_YES : View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+  }
+
   @ReactProp(name = PROP_ACCESSIBILITY_LABEL)
   public void setAccessibilityLabel(T view, String accessibilityLabel) {
     view.setContentDescription(accessibilityLabel);
@@ -168,6 +178,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     } else if (importantForAccessibility.equals("no-hide-descendants")) {
       view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
     }
+  }
+
+  @ReactProp(name = PROP_ACCESSIBILITY_NODE_INFO)
+  public void setAccessibilityNodeInfo(T view, @Nullable ReadableMap map) {
+    AccessibilityHelper.updateAccessibilityNodeInfo(view, map);
   }
 
   @Deprecated

@@ -7,6 +7,7 @@
 
 #import "RCTBridge.h"
 #import "RCTBridge+Private.h"
+#import "RCTDevSettings.h" // TODO(OSS Candidate ISS#2710739)
 
 #import <objc/runtime.h>
 
@@ -305,10 +306,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   Class bridgeClass = self.bridgeClass;
 
-  #if RCT_DEV
-  RCTExecuteOnMainQueue(^{
-    RCTRegisterReloadCommandListener(self);
-  });
+  #if RCT_DEV && !TARGET_OS_OSX // [TODO(OSS Candidate ISS#2710739)
+  if ([[self devSettings] isDevModeEnabled]) {
+    RCTExecuteOnMainQueue(^{
+      RCTRegisterReloadCommandListener(self);
+    });
+  } // ]TODO(OSS Candidate ISS#2710739)
   #endif
 
   // Only update bundleURL from delegate if delegate bundleURL has changed

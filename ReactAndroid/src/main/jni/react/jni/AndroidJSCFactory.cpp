@@ -104,7 +104,7 @@ JSValueRef nativeLoggingHook(
 
 namespace detail {
 
-void injectJSCExecutorAndroidPlatform() {
+void injectJSExecutorAndroidPlatform() {
   // Inject some behavior into react/
   JReactMarker::setLogPerfMarkerIfNeeded();
   ExceptionHandling::platformErrorExtractor = extractJniError;

@@ -92,5 +92,18 @@ module.exports = [
     description:
       'Try to fetch transformed JS code from the global cache, if configured.',
     default: false,
+  }, {
+    command: '--manifest [boolean]',
+    description: 'Whether or not to generate a manifest file for bundle',
+    parse: (val) => val === 'false' ? false : true,
+    default: false,
+  }, {
+    command: '--bundle-name [string]',
+    description: 'Bundle name to be referred in require() calls',
+  }, {
+    command: '--prepend-module-system [boolean]',
+    description: 'Whether or not to prepend require() and define() definitions',
+    parse: (val) => val === 'false' ? false : true,
+    default: true,
   },
 ];

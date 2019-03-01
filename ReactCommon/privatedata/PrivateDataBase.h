@@ -27,7 +27,12 @@ class RN_EXPORT PrivateDataBase {
   // failure.
   template <typename T>
   static typename std::enable_if<std::is_base_of<PrivateDataBase, T>::value, T>::type* tryCast(void* ptr) {
+#ifdef _MSC_VER
+    #pragma warning(suppress: 4541)
     return dynamic_cast<T*>(reinterpret_cast<PrivateDataBase*>(ptr));
+#else
+    return dynamic_cast<T*>(reinterpret_cast<PrivateDataBase*>(ptr));
+#endif
   }
 
   // Like tryCast, but aborts on failure.

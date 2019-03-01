@@ -1,0 +1,12 @@
+autom4te.cache
+glog-*.tar.gz
+packages/rpm-unknown
+packages/debian-*
+CMakeCache.txt
+CMakeFiles/
+*.cmake
+config.h
+*.sln
+*.vcxproj
+*.filters
+bazel-*

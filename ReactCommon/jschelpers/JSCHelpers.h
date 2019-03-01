@@ -18,35 +18,6 @@
 
 namespace facebook {
 namespace react {
-
-class RN_EXPORT JSException : public std::exception {
-public:
-  explicit JSException(const char* msg)
-    : msg_(msg) {}
-
-  explicit JSException(JSContextRef ctx, JSValueRef exn, const char* msg) {
-    buildMessage(ctx, exn, nullptr, msg);
-  }
-
-  explicit JSException(JSContextRef ctx, JSValueRef exn, JSStringRef sourceURL) {
-    buildMessage(ctx, exn, sourceURL, nullptr);
-  }
-
-  const std::string& getStack() const {
-    return stack_;
-  }
-
-  virtual const char* what() const noexcept override {
-    return msg_.c_str();
-  }
-
-private:
-  std::string msg_;
-  std::string stack_;
-
-  void buildMessage(JSContextRef ctx, JSValueRef exn, JSStringRef sourceURL, const char* errorMsg);
-};
-
 namespace ExceptionHandling {
   struct ExtractedEror {
     std::string message;

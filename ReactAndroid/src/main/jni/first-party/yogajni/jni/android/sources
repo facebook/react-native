@@ -1,0 +1,25 @@
+LIBLET_ANDROID = 1
+LIBLET_DYNLINK = 1
+
+!include ..\sources.inc
+
+TARGETNAME = yoga
+
+INCLUDES = $(INCLUDES); \
+    $(OPENSOURCE_REACTNATIVEINCDIRS); \
+    $(OPENSOURCE_REACTNATIVE)\OfficeISS\ReactCommon\yoga; \
+    $(OPENSOURCE_REACTNATIVE)\OfficeISS\ReactAndroid\src\main\jni\first-party\fb\include; \
+
+SOURCES = $(SOURCES_ANDROID)
+
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -DLOG_TAG=\"ReactNative\" -Wno-c++11-compat
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -Wno-shadow -Wno-unused-local-typedef -Wno-header-hygiene
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) $(CXX11_FLAGS)
+
+LOCAL_LDLIBS = \
+    $(LOCAL_LDLIBS) \
+    $(OPENSOURCE_REACTNATIVETARGETDIR)\libfb.so \
+
+LOCAL_WHOLE_STATIC_LIBRARIES = \
+    $(LOCAL_WHOLE_STATIC_LIBRARIES) \
+    $(OPENSOURCE_REACTNATIVETARGETDIR)\lib\libyogacore.a \

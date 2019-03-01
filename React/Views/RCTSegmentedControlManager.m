@@ -15,14 +15,16 @@
 
 RCT_EXPORT_MODULE()
 
-- (UIView *)view
+- (RCTPlatformView *)view // TODO(macOS ISS#2323203)
 {
   return [RCTSegmentedControl new];
 }
 
 RCT_EXPORT_VIEW_PROPERTY(values, NSArray<NSString *>)
 RCT_EXPORT_VIEW_PROPERTY(selectedIndex, NSInteger)
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 RCT_EXPORT_VIEW_PROPERTY(tintColor, UIColor)
+#endif // TODO(macOS ISS#2323203)
 RCT_EXPORT_VIEW_PROPERTY(momentary, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(enabled, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)

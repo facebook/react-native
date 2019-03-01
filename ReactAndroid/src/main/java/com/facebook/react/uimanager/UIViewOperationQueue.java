@@ -583,6 +583,35 @@ public class UIViewOperationQueue {
     }
   }
 
+  private final class PerformAccessibilityAction extends ViewOperation {
+
+    private final int mAction;
+
+    private PerformAccessibilityAction(int tag, int action) {
+      super(tag);
+      mAction = action;
+    }
+
+    @Override
+    public void execute() {
+      mNativeViewHierarchyManager.performAccessibilityAction(mTag, mAction);
+    }
+  }
+  private final class AnnounceForAccessibility extends ViewOperation {
+
+    private final String mAnnouncement;
+
+    private AnnounceForAccessibility(int tag, String announcement) {
+      super(tag);
+      mAnnouncement = announcement;
+    }
+
+    @Override
+    public void execute() {
+      mNativeViewHierarchyManager.announceForAccessibility(mTag, mAnnouncement);
+    }
+  }
+
   private final NativeViewHierarchyManager mNativeViewHierarchyManager;
   private final AnimationRegistry mAnimationRegistry;
   private final Object mDispatchRunnablesLock = new Object();
@@ -827,6 +856,14 @@ public class UIViewOperationQueue {
 
   public void enqueueSendAccessibilityEvent(int tag, int eventType) {
     mOperations.add(new SendAccessibilityEvent(tag, eventType));
+  }
+
+  public void enqueuePerformAccessibilityAction(int tag, int action) {
+    mOperations.add(new PerformAccessibilityAction(tag, action));
+  }
+
+  public void enqueueAnnounceForAccessibility(int tag, String announcement) {
+    mOperations.add(new AnnounceForAccessibility(tag, announcement));
   }
 
   public void enqueueUIBlock(UIBlock block) {

@@ -1,0 +1,458 @@
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+// TODO(macOS ISS#2323203)
+
+#include <TargetConditionals.h>
+
+#include <React/RCTAssert.h>
+
+#if !TARGET_OS_OSX
+
+#import <UIKit/UIKit.h>
+
+//
+// functionally equivalent types
+//
+
+UIKIT_STATIC_INLINE CGFloat UIImageGetScale(UIImage *image)
+{
+  return image.scale;
+}
+
+UIKIT_STATIC_INLINE CGImageRef UIImageGetCGImageRef(UIImage *image)
+{
+	return image.CGImage;
+}
+
+UIKIT_STATIC_INLINE UIImage *UIImageWithContentsOfFile(NSString *filePath)
+{
+  return [UIImage imageWithContentsOfFile:filePath];
+}
+
+UIKIT_STATIC_INLINE UIImage *UIImageWithData(NSData *imageData)
+{
+  return [UIImage imageWithData:imageData];
+}
+
+UIKIT_STATIC_INLINE UIBezierPath *UIBezierPathWithRoundedRect(CGRect rect, CGFloat cornerRadius)
+{
+  return [UIBezierPath bezierPathWithRoundedRect:rect cornerRadius:cornerRadius];
+}
+
+UIKIT_STATIC_INLINE void UIBezierPathAppendPath(UIBezierPath *path, UIBezierPath *appendPath)
+{
+  [path appendPath:appendPath];
+}
+
+UIKIT_STATIC_INLINE CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path)
+{
+  return [path CGPath];
+}
+
+//
+// substantially different types
+//
+
+// UIView
+#define RCTPlatformView         UIView
+
+UIKIT_STATIC_INLINE RCTPlatformView *UIViewHitTestWithEvent(RCTPlatformView *view, CGPoint point, UIEvent *event)
+{
+  return [view hitTest:point withEvent:event];
+}
+
+UIKIT_STATIC_INLINE BOOL UIViewSetClipsToBounds(RCTPlatformView *view)
+{
+  return view.clipsToBounds;
+}
+
+UIKIT_STATIC_INLINE void UIViewSetContentModeRedraw(UIView *view)
+{
+  view.contentMode = UIViewContentModeRedraw;
+}
+
+UIKIT_STATIC_INLINE BOOL UIViewDrawViewHierarchyInRectAfterScreenUpdates(RCTPlatformView *view, CGRect rect, BOOL afterUpdates)
+{
+  return [view drawViewHierarchyInRect:rect afterScreenUpdates:afterUpdates];
+}
+
+UIKIT_STATIC_INLINE BOOL UIViewIsDescendantOfView(RCTPlatformView *view, RCTPlatformView *parent)
+{
+  return [view isDescendantOfView:parent];
+}
+
+UIKIT_STATIC_INLINE NSValue *NSValueWithCGRect(CGRect rect)
+{
+  return [NSValue valueWithCGRect:rect];
+}
+
+UIKIT_STATIC_INLINE NSValue *NSValueWithCGSize(CGSize size)
+{
+  return [NSValue valueWithCGSize:size];
+}
+
+UIKIT_STATIC_INLINE CGRect CGRectValue(NSValue *value)
+{
+  return [value CGRectValue];
+}
+
+//
+// semantically equivalent types
+//
+
+UIKIT_STATIC_INLINE UIFont *UIFontWithSize(UIFont *font, CGFloat pointSize)
+{
+  return [font fontWithSize:pointSize];
+}
+
+UIKIT_STATIC_INLINE CGFloat UIFontLineHeight(UIFont *font)
+{
+  return [font lineHeight];
+}
+
+#else // TARGET_OS_OSX [
+
+#import <AppKit/AppKit.h>
+
+//
+// semantically equivalent constants
+//
+
+// UIApplication.h/NSApplication.h
+#define UIApplicationDidBecomeActiveNotification      NSApplicationDidBecomeActiveNotification
+#define UIApplicationDidEnterBackgroundNotification   NSApplicationDidHideNotification
+#define UIApplicationDidFinishLaunchingNotification   NSApplicationDidFinishLaunchingNotification
+#define UIApplicationWillResignActiveNotification     NSApplicationWillResignActiveNotification
+#define UIApplicationWillEnterForegroundNotification  NSApplicationWillUnhideNotification  
+
+// UIFontDescriptor.h/NSFontDescriptor.h
+#define UIFontDescriptorFamilyAttribute          NSFontFamilyAttribute;
+#define UIFontDescriptorNameAttribute            NSFontNameAttribute;
+#define UIFontDescriptorFaceAttribute            NSFontFaceAttribute;
+#define UIFontDescriptorSizeAttribute            NSFontSizeAttribute
+
+#define UIFontDescriptorTraitsAttribute          NSFontTraitsAttribute
+#define UIFontDescriptorFeatureSettingsAttribute NSFontFeatureSettingsAttribute
+
+#define UIFontSymbolicTrait                      NSFontSymbolicTrait
+#define UIFontWeightTrait                        NSFontWeightTrait
+#define UIFontFeatureTypeIdentifierKey           NSFontFeatureTypeIdentifierKey
+#define UIFontFeatureSelectorIdentifierKey       NSFontFeatureSelectorIdentifierKey
+
+#define UIFontWeightUltraLight                   NSFontWeightUltraLight
+#define UIFontWeightThin                         NSFontWeightThin
+#define UIFontWeightLight                        NSFontWeightLight
+#define UIFontWeightRegular                      NSFontWeightRegular
+#define UIFontWeightMedium                       NSFontWeightMedium
+#define UIFontWeightSemibold                     NSFontWeightSemibold
+#define UIFontWeightBold                         NSFontWeightBold
+#define UIFontWeightHeavy                        NSFontWeightHeavy
+#define UIFontWeightBlack                        NSFontWeightBlack
+
+// RCTActivityIndicatorView.h
+#define UIActivityIndicatorView NSProgressIndicator
+
+
+// UIGeometry.h/NSGeometry.h
+#define UIEdgeInsetsZero NSEdgeInsetsZero
+
+// UIView.h/NSLayoutConstraint.h
+#define UIViewNoIntrinsicMetric -1
+// NSViewNoIntrinsicMetric is defined to -1 but is only available on macOS 10.11 and higher.  On previous versions it was NSViewNoInstrinsicMetric (misspelled) and also defined to -1.
+
+// UIInterface.h/NSUserInterfaceLayout.h
+#define UIUserInterfaceLayoutDirection NSUserInterfaceLayoutDirection
+
+//
+// semantically equivalent enums
+//
+
+// UIGestureRecognizer.h/NSGestureRecognizer.h
+enum
+{
+  UIGestureRecognizerStatePossible    = NSGestureRecognizerStatePossible,
+  UIGestureRecognizerStateBegan       = NSGestureRecognizerStateBegan,
+  UIGestureRecognizerStateChanged     = NSGestureRecognizerStateChanged,
+  UIGestureRecognizerStateEnded       = NSGestureRecognizerStateEnded,
+  UIGestureRecognizerStateCancelled   = NSGestureRecognizerStateCancelled,
+  UIGestureRecognizerStateFailed      = NSGestureRecognizerStateFailed,
+  UIGestureRecognizerStateRecognized  = NSGestureRecognizerStateRecognized,
+};
+
+// UIFontDescriptor.h/NSFontDescriptor.h
+enum
+{
+  UIFontDescriptorTraitItalic    = NSFontItalicTrait,
+  UIFontDescriptorTraitBold      = NSFontBoldTrait,
+  UIFontDescriptorTraitCondensed = NSFontCondensedTrait,
+};
+
+// UIView.h/NSView.h
+enum : NSUInteger
+{
+  UIViewAutoresizingNone                 = NSViewNotSizable,
+  UIViewAutoresizingFlexibleLeftMargin   = NSViewMinXMargin,
+  UIViewAutoresizingFlexibleWidth        = NSViewWidthSizable,
+  UIViewAutoresizingFlexibleRightMargin  = NSViewMaxXMargin,
+  UIViewAutoresizingFlexibleTopMargin    = NSViewMinYMargin,
+  UIViewAutoresizingFlexibleHeight       = NSViewHeightSizable,
+  UIViewAutoresizingFlexibleBottomMargin = NSViewMaxYMargin,
+};
+
+// UIView/NSView.h
+enum : NSInteger
+{
+  UIViewContentModeScaleAspectFill = NSViewLayerContentsPlacementScaleProportionallyToFill,
+  UIViewContentModeScaleAspectFit  = NSViewLayerContentsPlacementScaleProportionallyToFit,
+  UIViewContentModeScaleToFill     = NSViewLayerContentsPlacementScaleAxesIndependently,
+  UIViewContentModeCenter          = NSViewLayerContentsPlacementCenter,
+};
+
+// UIInterface.h/NSUserInterfaceLayout.h
+enum : NSInteger
+{
+	UIUserInterfaceLayoutDirectionLeftToRight = NSUserInterfaceLayoutDirectionLeftToRight,
+	UIUserInterfaceLayoutDirectionRightToLeft = NSUserInterfaceLayoutDirectionRightToLeft,
+};
+
+// RCTActivityIndicatorView.h
+typedef NS_ENUM(NSInteger, UIActivityIndicatorViewStyle) {
+  UIActivityIndicatorViewStyleWhiteLarge,
+  UIActivityIndicatorViewStyleWhite
+};
+
+
+//
+// semantically equivalent functions
+//
+
+// UIGeometry.h/NSGeometry.h
+NS_INLINE CGRect UIEdgeInsetsInsetRect(CGRect rect, NSEdgeInsets insets)
+{
+	rect.origin.x    += insets.left;
+	rect.origin.y    += insets.top;
+	rect.size.width  -= (insets.left + insets.right);
+	rect.size.height -= (insets.top  + insets.bottom);
+	return rect;
+}
+
+NS_INLINE BOOL UIEdgeInsetsEqualToEdgeInsets(NSEdgeInsets insets1, NSEdgeInsets insets2)
+{
+	return NSEdgeInsetsEqual(insets1, insets2);
+}
+
+NS_INLINE NSString *NSStringFromCGSize(CGSize size)
+{
+	return NSStringFromSize(NSSizeFromCGSize(size));
+}
+
+NS_INLINE NSString *NSStringFromCGRect(CGRect rect)
+{
+	return NSStringFromRect(NSRectFromCGRect(rect));
+}
+
+// UIGraphics.h
+CGContextRef UIGraphicsGetCurrentContext(void);
+void UIGraphicsBeginImageContextWithOptions(CGSize size, BOOL opaque, CGFloat scale);
+NSImage *UIGraphicsGetImageFromCurrentImageContext(void);
+void UIGraphicsEndImageContext(void);
+
+//
+// semantically equivalent types
+//
+
+// UIColor.h/NSColor.h
+@compatibility_alias UIColor NSColor;
+
+// UIFont.h/NSFont.h
+// Both NSFont and UIFont are toll-free bridged to CTFontRef so we'll assume they're semantically equivalent
+@compatibility_alias UIFont NSFont;
+
+// UIViewController.h/NSViewController.h
+@compatibility_alias UIViewController NSViewController;
+
+NS_INLINE NSFont *UIFontWithSize(NSFont *font, CGFloat pointSize)
+{
+  return [NSFont fontWithDescriptor:font.fontDescriptor size:pointSize];
+}
+
+NS_INLINE CGFloat UIFontLineHeight(NSFont *font)
+{
+  return ceilf(font.ascender + ABS(font.descender) + font.leading);
+}
+
+// UIFontDescriptor.h/NSFontDescriptor.h
+// Both NSFontDescriptor and UIFontDescriptor are toll-free bridged to CTFontDescriptorRef so we'll assume they're semantically equivalent
+@compatibility_alias UIFontDescriptor NSFontDescriptor;
+typedef NSFontSymbolicTraits UIFontDescriptorSymbolicTraits;
+typedef NSFontWeight UIFontWeight;
+
+// UIGeometry.h/NSGeometry.h
+typedef NSEdgeInsets UIEdgeInsets;
+
+NS_INLINE NSEdgeInsets UIEdgeInsetsMake(CGFloat top, CGFloat left, CGFloat bottom, CGFloat right)
+{
+  return NSEdgeInsetsMake(top, left, bottom, right);
+}
+
+//
+// functionally equivalent types
+//
+
+// These types have the same purpose but may differ semantically. Use with care!
+
+#define UIEvent NSEvent
+
+// UIGestureRecognizer
+#define UIGestureRecognizer NSGestureRecognizer
+#define UIGestureRecognizerDelegate NSGestureRecognizerDelegate
+
+// UIApplication
+#define UIApplication NSApplication
+
+// UIImage
+@compatibility_alias UIImage NSImage;
+
+CGFloat UIImageGetScale(NSImage *image);
+
+NSData *UIImagePNGRepresentation(NSImage *image);
+NSData *UIImageJPEGRepresentation(NSImage *image, CGFloat compressionQuality);
+
+CGImageRef UIImageGetCGImageRef(NSImage *image);
+
+NS_INLINE UIImage *UIImageWithContentsOfFile(NSString *filePath)
+{
+  return [[NSImage alloc] initWithContentsOfFile:filePath];
+}
+
+NS_INLINE UIImage *UIImageWithData(NSData *imageData)
+{
+  return [[NSImage alloc] initWithData:imageData];
+}
+
+CGImageRef UIImageGetCGImageRef(NSImage *image);
+
+// UIBezierPath
+@compatibility_alias UIBezierPath NSBezierPath;
+
+UIBezierPath *UIBezierPathWithRoundedRect(CGRect rect, CGFloat cornerRadius);
+
+void UIBezierPathAppendPath(UIBezierPath *path, UIBezierPath *appendPath);
+
+CGPathRef UIBezierPathCreateCGPathRef(UIBezierPath *path);
+
+//
+// substantially different types
+//
+
+// UIView
+#define RCTPlatformView NSView
+
+@interface UIView : NSView
+
+@property (nonatomic, readonly) BOOL canBecomeFirstResponder;
+- (BOOL)becomeFirstResponder;
+
+@property (nonatomic, getter=isUserInteractionEnabled) BOOL userInteractionEnabled;
+
+- (NSView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event;
+- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event;
+
+- (void)insertSubview:(NSView *)view atIndex:(NSInteger)index;
+
+- (void)didMoveToWindow;
+
+- (void)setNeedsLayout;
+
+- (void)layoutSubviews;
+
+- (void)setNeedsDisplay;
+
+// An override of an undocumented API that controls the layer's masksToBounds property
+@property (nonatomic) BOOL clipsToBounds;
+@property (nonatomic, copy) NSColor *backgroundColor;
+@property (nonatomic, readwrite, getter=isOpaque) BOOL opaque;
+@property (nonatomic) CGAffineTransform transform;
+
+/**
+ * Specifies whether the view participates in the key view loop as user tabs through different controls
+ * This is equivalent to acceptsFirstResponder on mac OS.
+ */
+@property (nonatomic, assign) BOOL acceptsKeyboardFocus;
+/**
+ * Specifies whether focus ring should be drawn when the view has the first responder status.
+ */
+@property (nonatomic, assign) BOOL enableFocusRing;
+
+
+@end
+
+// UIScrollView
+
+@interface UIScrollView : NSScrollView
+
+// UIScrollView properties missing in NSScrollView
+@property (nonatomic, assign) CGPoint contentOffset;
+@property (nonatomic, assign) UIEdgeInsets contentInset;
+@property (nonatomic, assign) CGSize contentSize;
+@property (nonatomic, assign) BOOL showsHorizontalScrollIndicator;
+@property (nonatomic, assign) BOOL showsVerticalScrollIndicator;
+@property (nonatomic, assign) UIEdgeInsets scrollIndicatorInsets;
+@property (nonatomic, assign) CGFloat zoomScale;
+@property (nonatomic, assign) BOOL alwaysBounceHorizontal;
+@property (nonatomic, assign) BOOL alwaysBounceVertical;
+
+@end
+
+NS_INLINE RCTPlatformView *UIViewHitTestWithEvent(RCTPlatformView *view, CGPoint point, __unused UIEvent *event)
+{
+  return [view hitTest:point];
+}
+
+BOOL UIViewSetClipsToBounds(RCTPlatformView *view);
+
+NS_INLINE void UIViewSetContentModeRedraw(UIView *view)
+{
+  view.layerContentsRedrawPolicy = NSViewLayerContentsRedrawDuringViewResize;
+}
+
+NS_INLINE BOOL UIViewDrawViewHierarchyInRectAfterScreenUpdates(RCTPlatformView *view, CGRect rect, __unused BOOL afterUpdates)
+{
+  RCTAssert(afterUpdates, @"We're redrawing the view so it will necessarily include the latest changes.");
+  (void) afterUpdates;
+  [view displayRectIgnoringOpacity:NSRectToCGRect(rect)];
+  return YES;
+}
+
+NS_INLINE BOOL UIViewIsDescendantOfView(RCTPlatformView *view, RCTPlatformView *parent)
+{
+  return [view isDescendantOf:parent];
+}
+
+NSArray *UIViewCalculateKeyViewLoop(RCTPlatformView *root);
+
+BOOL UIViewHasDescendantPassingPredicate(RCTPlatformView *root, BOOL (^predicate)(RCTPlatformView *view));
+
+NS_INLINE NSValue *NSValueWithCGRect(CGRect rect)
+{
+  return [NSValue valueWithBytes:&rect objCType:@encode(CGRect)];
+}
+
+NS_INLINE NSValue *NSValueWithCGSize(CGSize size)
+{
+  return [NSValue valueWithBytes:&size objCType:@encode(CGSize)];
+}
+
+NS_INLINE CGRect CGRectValue(NSValue *value)
+{
+  CGRect rect = CGRectZero;
+  [value getValue:&rect];
+  return rect;
+}
+
+#endif // ] TARGET_OS_OSX

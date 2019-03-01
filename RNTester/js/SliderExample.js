@@ -136,21 +136,21 @@ exports.examples = [
   },
   {
     title: 'Custom thumb image',
-    platform: 'ios',
+    platform: ['ios', 'macos'],
     render(): React.Element<any> {
       return <SliderExample thumbImage={require('./uie_thumb_big.png')} />;
     },
   },
   {
     title: 'Custom track image',
-    platform: 'ios',
+    platform: ['ios', 'macos'],
     render(): React.Element<any> {
       return <SliderExample trackImage={require('./slider.png')} />;
     },
   },
   {
     title: 'Custom min/max track image',
-    platform: 'ios',
+    platform: ['ios', 'macos'],
     render(): React.Element<any> {
       return (
         <SliderExample

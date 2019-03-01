@@ -1,0 +1,25 @@
+LIBLETNAME = fb
+LIBLET_ANDROID = 1
+LIBLET_DYNLINK = 1
+
+!include $(OPENSOURCE_REACTNATIVE)\OfficeISS\ReactCommon\make.inc
+
+TARGETNAME = fb
+
+INCLUDES = $(INCLUDES); \
+    $(OPENSOURCE_REACTNATIVETARGETDIR)\include; \
+    $(OPENSOURCE_REACTNATIVE)\OfficeISS\ReactAndroid\src\main\jni\first-party\fb\include; \
+
+SOURCES = \
+    ..\assert.cpp \
+    ..\CRTSafeAPIs.cpp \
+    ..\log.cpp \
+    ..\OnLoad.cpp \
+
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -Wno-c++11-compat -Wno-shadow -Wno-unused-local-typedef
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -DDISABLE_CPUCAP -DDISABLE_XPLAT -DHAVE_POSIX_CLOCKS $(CXX11_FLAGS)
+
+LOCAL_WHOLE_STATIC_LIBRARIES = \
+    $(LOCAL_WHOLE_STATIC_LIBRARIES) \
+    $(OPENSOURCE_REACTNATIVETARGETLIBDIR)\libfbjni.a \
+    $(OPENSOURCE_REACTNATIVETARGETLIBDIR)\libfblyra.a \

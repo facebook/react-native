@@ -1,0 +1,17 @@
+This project has been ported to Windows, including stack tracing, signal
+handling, and unit tests.
+
+A Visual Studio solution file is explicitly not provided because it is not
+maintainable. Instead, a CMake build system exists to generate the correct
+solution for your version of Visual Studio.
+
+In short,
+  (1) Install CMake from: https://cmake.org/download/
+  (2) With CMake on your PATH, run `cmake .` to generate the build files
+  (3) Either use `cmake --build`, or open the generated solution
+
+CMake provides different generators, and by default will pick the most relevant
+one to your environment. If you need a specific version of Visual Studio, use
+`cmake . -G <generator-name>`, and see `cmake --help` for the available
+generators. Also see `-T <toolset-name>`, which can used to request the native
+x64 toolchain with `-T host=x64`.

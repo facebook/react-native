@@ -179,7 +179,7 @@ namespace facebook {
 namespace react {
 
 template <typename T>
-bool isCustomJSCPtr(T *x) {
+bool isCustomJSCPtr(T*) {
   // Always use system JSC pointers
   return false;
 }

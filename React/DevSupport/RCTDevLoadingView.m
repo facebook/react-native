@@ -11,7 +11,7 @@
 
 #import "RCTBridge.h"
 #import "RCTDefines.h"
-#import "RCTModalHostViewController.h"
+#import "RCTDevSettings.h" // TODO(OSS Candidate ISS#2710739)
 #import "RCTUtils.h"
 
 #if RCT_DEV | RCT_ENABLE_LOADING_VIEW
@@ -20,8 +20,13 @@ static BOOL isEnabled = YES;
 
 @implementation RCTDevLoadingView
 {
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   UIWindow *_window;
   UILabel *_label;
+#else // [TODO(macOS ISS#2323203)
+  NSWindow *_window;
+  NSTextField *_label;
+#endif // ]TODO(macOS ISS#2323203)
   NSDate *_showDate;
 }
 
@@ -57,7 +62,7 @@ RCT_EXPORT_MODULE()
                                                name:RCTJavaScriptDidFailToLoadNotification
                                              object:nil];
 
-  if (bridge.loading) {
+  if ([[bridge devSettings] isDevModeEnabled] && bridge.loading) { // TODO(OSS Candidate ISS#2710739)
     [self showWithURL:bridge.bundleURL];
   }
 }
@@ -71,6 +76,7 @@ RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgro
   dispatch_async(dispatch_get_main_queue(), ^{
     self->_showDate = [NSDate date];
     if (!self->_window && !RCTRunningInTestEnvironment()) {
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
       CGSize screenSize = [UIScreen mainScreen].bounds.size;
 
       if (@available(iOS 11.0, *)) {
@@ -92,12 +98,35 @@ RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgro
 
       self->_label.font = [UIFont systemFontOfSize:12.0];
       self->_label.textAlignment = NSTextAlignmentCenter;
+#elif TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+      NSRect screenFrame = [NSScreen mainScreen].visibleFrame;
+      self->_window = [[NSPanel alloc] initWithContentRect:NSMakeRect(screenFrame.origin.x + round((screenFrame.size.width - 375) / 2), screenFrame.size.height - 22, 375, 22)
+                                                 styleMask:NSWindowStyleMaskBorderless
+                                                   backing:NSBackingStoreBuffered
+                                                     defer:YES];
+      self->_window.releasedWhenClosed = NO;
+
+      NSTextField *label = [[NSTextField alloc] initWithFrame:self->_window.contentView.bounds];
+      label.alignment = NSTextAlignmentCenter;
+      label.bezeled = NO;
+      label.editable = NO;
+      label.selectable = NO;
+      self->_label = label;
+      [[self->_window contentView] addSubview:label];
+#endif // ]TODO(macOS ISS#2323203)
     }
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
     self->_label.text = message;
     self->_label.textColor = color;
     self->_window.backgroundColor = backgroundColor;
     self->_window.hidden = NO;
+#else // [TODO(macOS ISS#2323203)
+    self->_label.stringValue = message;
+    self->_label.textColor = color;
+    self->_label.backgroundColor = backgroundColor;
+    [self->_window orderFront:nil];
+#endif // ]TODO(macOS ISS#2323203)
   });
 }
 
@@ -111,6 +140,7 @@ RCT_EXPORT_METHOD(hide)
     const NSTimeInterval MIN_PRESENTED_TIME = 0.6;
     NSTimeInterval presentedTime = [[NSDate date] timeIntervalSinceDate:self->_showDate];
     NSTimeInterval delay = MAX(0, MIN_PRESENTED_TIME - presentedTime);
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
     CGRect windowFrame = self->_window.frame;
     [UIView animateWithDuration:0.25
                           delay:delay
@@ -122,6 +152,16 @@ RCT_EXPORT_METHOD(hide)
                        self->_window.hidden = YES;
                        self->_window = nil;
                      }];
+#elif TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+      [NSAnimationContext runAnimationGroup:^(__unused NSAnimationContext *context) {
+        self->_window.animator.alphaValue = 0.0;
+      } completionHandler:^{
+        [self->_window orderFront:self];
+        self->_window = nil;
+      }];
+    });
+#endif // ]TODO(macOS ISS#2323203)
   });
 }
 
@@ -155,7 +195,11 @@ RCT_EXPORT_METHOD(hide)
     return;
   }
   dispatch_async(dispatch_get_main_queue(), ^{
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
     self->_label.text = [progress description];
+#else // [TODO(macOS ISS#2323203)
+    self->_label.stringValue = [progress description];
+#endif // ]TODO(macOS ISS#2323203)
   });
 }
 

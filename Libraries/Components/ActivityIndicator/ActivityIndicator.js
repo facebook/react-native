@@ -115,7 +115,7 @@ const ActivityIndicatorWithRef = React.forwardRef(ActivityIndicator);
 
 ActivityIndicatorWithRef.defaultProps = {
   animating: true,
-  color: Platform.OS === 'ios' ? GRAY : null,
+  color: (Platform.OS === 'ios' || Platform.OS === 'macos') ? GRAY : null, // TODO(macOS ISS#2323203)
   hidesWhenStopped: true,
   size: 'small',
 };

@@ -1,0 +1,4 @@
+usr/lib
+usr/lib/pkgconfig
+usr/include
+usr/include/glog

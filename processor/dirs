@@ -1,0 +1,3 @@
+DIRS = \
+    devmainJava{droidarm,droidx86} \
+

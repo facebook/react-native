@@ -1,0 +1,3 @@
+reviewerCountPolicy:
+  minimumApproverCount: 1
+  creatorVoteCounts: false

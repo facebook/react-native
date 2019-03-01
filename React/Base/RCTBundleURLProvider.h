@@ -19,6 +19,8 @@ extern const NSUInteger kRCTBundleURLProviderDefaultPort;
 }
 #endif
 
+extern NSString *const kRCTPlatformName; // TODO(macOS ISS#2323203)
+
 @interface RCTBundleURLProvider : NSObject
 
 /**

@@ -52,7 +52,10 @@ static NSString *const kPostMessageHost = @"postMessage";
     _webView.delegate = self;
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
     if ([_webView.scrollView respondsToSelector:@selector(setContentInsetAdjustmentBehavior:)]) {
+#pragma clang diagnostic push // TODO(OSS Candidate ISS#2710739)
+#pragma clang diagnostic ignored "-Wunguarded-availability" // TODO(OSS Candidate ISS#2710739)
       _webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+#pragma clang diagnostic pop // TODO(OSS Candidate ISS#2710739)
     }
 #endif
     [self addSubview:_webView];

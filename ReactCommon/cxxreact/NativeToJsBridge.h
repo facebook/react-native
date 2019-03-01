@@ -40,10 +40,12 @@ public:
    * This must be called on the main JS thread.
    */
   NativeToJsBridge(
-      JSExecutorFactory* jsExecutorFactory,
-      std::shared_ptr<ModuleRegistry> registry,
-      std::shared_ptr<MessageQueueThread> jsQueue,
-      std::shared_ptr<InstanceCallback> callback);
+    JSExecutorFactory* jsExecutorFactory,
+    std::shared_ptr<ExecutorDelegate> delegate,
+    std::shared_ptr<ModuleRegistry> registry,
+    std::shared_ptr<MessageQueueThread> jsQueue,
+    std::shared_ptr<InstanceCallback> callback,
+    std::shared_ptr<JSEConfigParams> jseConfigParams);
   virtual ~NativeToJsBridge();
 
   /**
@@ -64,12 +66,16 @@ public:
    */
   void loadApplication(
     std::unique_ptr<RAMBundleRegistry> bundleRegistry,
-    std::unique_ptr<const JSBigString> startupCode,
-    std::string sourceURL);
+    std::unique_ptr<const JSBigString> bundle,
+    uint64_t bundleVersion,
+    std::string bundleURL,
+    std::string&& bytecodeFileName);
   void loadApplicationSync(
     std::unique_ptr<RAMBundleRegistry> bundleRegistry,
-    std::unique_ptr<const JSBigString> startupCode,
-    std::string sourceURL);
+    std::unique_ptr<const JSBigString> bundle,
+    uint64_t bundleVersion,
+    std::string bundleURL,
+    std::string&& bytecodeFileName);
 
   void registerBundle(uint32_t bundleId, const std::string& bundlePath);
   void setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue);
@@ -77,6 +83,13 @@ public:
   bool isInspectable();
 
   void handleMemoryPressure(int pressureLevel);
+
+  /**
+   * Returns the current peak memory usage due to m_executor's JavaScript
+   * execution environment in bytes. If m_executor does not track this
+   * information, return -1.
+   */
+  int64_t getPeakJsMemoryUsage() const noexcept;
 
   /**
    * Synchronously tears down the bridge and the main executor.
@@ -90,7 +103,7 @@ private:
   // will try to run the task on m_callback which will have been destroyed
   // within ~NativeToJsBridge(), thus causing a SIGSEGV.
   std::shared_ptr<bool> m_destroyed;
-  std::shared_ptr<JsToNativeBridge> m_delegate;
+  std::shared_ptr<react::ExecutorDelegate> m_delegate;
   std::unique_ptr<JSExecutor> m_executor;
   std::shared_ptr<MessageQueueThread> m_executorMessageQueueThread;
 

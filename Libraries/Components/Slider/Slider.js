@@ -252,7 +252,7 @@ SliderWithRef.defaultProps = {
 };
 
 let styles;
-if (Platform.OS === 'ios') {
+if (Platform.OS === 'ios' || Platform.OS === 'macos') { // TODO(macOS ISS#2323203)
   styles = StyleSheet.create({
     slider: {
       height: 40,

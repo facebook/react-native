@@ -13,6 +13,9 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Button;
 import android.widget.RadioButton;
 
+import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 /**
  * Helper class containing logic for setting accessibility View properties.
  */
@@ -21,6 +24,7 @@ import android.widget.RadioButton;
   private static final String BUTTON = "button";
   private static final String RADIOBUTTON_CHECKED = "radiobutton_checked";
   private static final String RADIOBUTTON_UNCHECKED = "radiobutton_unchecked";
+  private static final String CLICKABLE = "clickable";
 
   private static final View.AccessibilityDelegate BUTTON_DELEGATE =
       new View.AccessibilityDelegate() {
@@ -98,4 +102,48 @@ import android.widget.RadioButton;
     view.sendAccessibilityEvent(eventType);
   }
 
+  public static void performAccessibilityAction(final View view, final int action) {
+    if (view == null) {
+      throw new JSApplicationIllegalArgumentException("View is null");
+    }
+    view.post(
+      new Runnable() {
+        @Override
+        public void run() {
+          view.performAccessibilityAction(action, null);
+        }
+      }
+    );
+  }
+
+  public static void announceForAccessibility(final View view, final String announcement) {
+    if (view == null) {
+      throw new JSApplicationIllegalArgumentException("View is null");
+    }
+    view.post(
+      new Runnable() {
+        @Override
+        public void run() {
+          view.announceForAccessibility(announcement);
+        }
+      }
+    );
+  }
+
+  public static void updateAccessibilityNodeInfo(View view, final ReadableMap map) {
+    if(map == null) {
+      return ;
+    }
+    view.setAccessibilityDelegate(new View.AccessibilityDelegate() {
+      @Override
+      public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfo info) {
+        super.onInitializeAccessibilityNodeInfo(host, info);
+        if(map.hasKey(CLICKABLE))
+        {
+          if(map.getType(CLICKABLE) == ReadableType.Boolean)
+          info.setClickable(map.getBoolean(CLICKABLE));
+        }
+      }
+    });
+  }
 }

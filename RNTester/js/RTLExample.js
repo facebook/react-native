@@ -404,8 +404,8 @@ class RTLExample extends React.Component<any, State> {
       <ScrollView
         style={[
           styles.container,
-          // `direction` property is supported only on iOS now.
-          Platform.OS === 'ios'
+          // `direction` property is supported only on iOS&macOS now.
+          (Platform.OS === 'ios' || Platform.OS === 'macos')
             ? {direction: this.state.isRTL ? 'rtl' : 'ltr'}
             : null,
         ]}
@@ -439,7 +439,7 @@ class RTLExample extends React.Component<any, State> {
           <TextAlignmentExample
             title={'Default Text Alignment'}
             description={
-              'In iOS, it depends on active language. ' +
+              'In iOS/macOS, it depends on active language. ' +
               'In Android, it depends on the text content.'
             }
             style={styles.fontSizeSmall}
@@ -447,7 +447,7 @@ class RTLExample extends React.Component<any, State> {
           <TextAlignmentExample
             title={"Using textAlign: 'left'"}
             description={
-              'In iOS/Android, text alignment flips regardless of ' +
+              'In iOS/macOS/Android, text alignment flips regardless of ' +
               'languages or text content.'
             }
             style={[styles.fontSizeSmall, styles.textAlignLeft]}
@@ -455,7 +455,7 @@ class RTLExample extends React.Component<any, State> {
           <TextAlignmentExample
             title={"Using textAlign: 'right'"}
             description={
-              'In iOS/Android, text alignment flips regardless of ' +
+              'In iOS/macOS/Android, text alignment flips regardless of ' +
               'languages or text content.'
             }
             style={[styles.fontSizeSmall, styles.textAlignRight]}
@@ -516,6 +516,7 @@ class RTLExample extends React.Component<any, State> {
   };
 
   _onDirectionChange = () => {
+    console.log('_onDirectionChange');
     I18nManager.forceRTL(!this.state.isRTL);
     this.setState({isRTL: !this.state.isRTL});
     Alert.alert(

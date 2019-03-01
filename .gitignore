@@ -1,3 +1,75 @@
+<<<<<<< HEAD
+# Xcode
+!**/*.xcodeproj
+!**/*.pbxproj
+!**/*.xcworkspacedata
+!**/*.xcsettings
+!**/*.xcscheme
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata
+*.xccheckout
+*.moved-aside
+DerivedData
+*.hmap
+*.ipa
+*.xcuserstate
+project.xcworkspace
+
+# Gradle
+/build/
+/RNTester/android/app/build/
+/RNTester/android/app/gradle/
+/RNTester/android/app/gradlew
+/RNTester/android/app/gradlew.bat
+/ReactAndroid/build/
+
+# Buck
+.buckd
+buck-out
+/ReactAndroid/src/main/jni/prebuilt/lib/armeabi-v7a/
+/ReactAndroid/src/main/jni/prebuilt/lib/x86/
+/ReactAndroid/src/main/gen
+
+# Watchman
+.watchmanconfig
+
+# Android
+.idea
+.gradle
+local.properties
+*.iml
+/android/
+/ReactAndroid/packages/
+
+# Node
+node_modules
+*.log
+.nvm
+/bots/node_modules/
+
+# TODO: Check in yarn.lock in open source. Right now we need to keep it out
+# from the GitHub repo as importing it might conflict with internal workspaces
+yarn.lock
+package-lock.json
+
+# OS X
+.DS_Store
+
+# Test generated files
+/ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
+*.js.meta
+
+/coverage
+/third-party
+/packages/
+=======
 # Xcode
 !**/*.xcodeproj
 !**/*.pbxproj
@@ -69,3 +141,4 @@ package-lock.json
 # ReactCommon subdir shouldn't have Xcode project
 /ReactCommon/**/*.xcodeproj
 RNTester/build
+>>>>>>> v0.57.0

@@ -5,6 +5,8 @@
  *  file in the root directory of this source tree.
  *
  */
+
+#include <fb/CRTSafeAPIs.h>
 #include <fb/fbjni.h>
 #include <yoga/YGNode.h>
 #include <yoga/Yoga.h>
@@ -260,9 +262,8 @@ static int YGJNILogFunc(
     YGLogLevel level,
     const char* format,
     va_list args) {
-  int result = vsnprintf(NULL, 0, format, args);
-  std::vector<char> buffer(1 + result);
-  vsnprintf(buffer.data(), buffer.size(), format, args);
+  char buffer[256] = {0};
+  int result = vsnprintf_safe(buffer, sizeof(buffer), format, args);
 
   static auto logFunc =
       findClassStatic("com/facebook/yoga/YogaLogger")
@@ -281,7 +282,7 @@ static int YGJNILogFunc(
         obj,
         logLevelFromInt(
             JYogaLogLevel::javaClassStatic(), static_cast<jint>(level)),
-        Environment::current()->NewStringUTF(buffer.data()));
+        Environment::current()->NewStringUTF(buffer));
   }
 
   return result;

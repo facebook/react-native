@@ -1,0 +1,4 @@
+DIRS = \
+    lyra{droidarm,droidx86} \
+    jni{droidarm,droidx86} \
+    android{droidarm,droidx86} \

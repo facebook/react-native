@@ -8,11 +8,13 @@
 #import <React/RCTConvert.h>
 #import <React/RCTViewManager.h>
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 @interface RCTConvert (UIScrollView)
 
 + (UIScrollViewKeyboardDismissMode)UIScrollViewKeyboardDismissMode:(id)json;
 
 @end
+#endif // TODO(macOS ISS#2323203)
 
 @interface RCTScrollViewManager : RCTViewManager
 

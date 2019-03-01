@@ -1,0 +1,17 @@
+LIBLET_ANDROID = 1
+LIBLETNAME=fblyra
+
+LIBLET_NO_PRECOMP = 1
+
+!include $(OPENSOURCE_REACTNATIVE)\OfficeISS\ReactCommon\make.inc
+
+TARGETNAME = fblyra
+
+INCLUDES = $(INCLUDES); \
+    $(OPENSOURCE_REACTNATIVE)\OfficeISS\ReactAndroid\src\main\jni\first-party\fb\include; \
+
+SOURCES = \
+    lyra.cpp \
+
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -DLOG_TAG=\"ReactNative\" -Wno-c++11-compat
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -Wno-shadow -Wno-unused-local-typedef $(CXX11_FLAGS)

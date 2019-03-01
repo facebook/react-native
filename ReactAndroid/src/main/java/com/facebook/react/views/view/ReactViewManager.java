@@ -10,8 +10,11 @@ package com.facebook.react.views.view;
 import android.annotation.TargetApi;
 import android.graphics.Rect;
 import android.os.Build;
+import android.view.FocusFinder;
 import android.view.View;
+import android.view.ViewGroup;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
@@ -21,14 +24,17 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
+import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.yoga.YogaConstants;
 import java.util.Locale;
 import java.util.Map;
 import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 
 /**
  * View manager for AndroidViews (plain React Views).
@@ -48,13 +54,6 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     Spacing.START,
     Spacing.END,
   };
-  private static final int CMD_HOTSPOT_UPDATE = 1;
-  private static final int CMD_SET_PRESSED = 2;
-
-  @ReactProp(name = "accessible")
-  public void setAccessible(ReactViewGroup view, boolean accessible) {
-    view.setFocusable(accessible);
-  }
 
   @ReactProp(name = "hasTVPreferredFocus")
   public void setTVPreferredFocus(ReactViewGroup view, boolean hasTVPreferredFocus) {
@@ -65,6 +64,14 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     }
   }
 
+  // Focus or blur call on native components (through NativeMethodsMixin) redirects to TextInputState.js
+  // which dispatches focusTextInput or blurTextInput commands. These commands are mapped to FOCUS_TEXT_INPUT=1
+  // and BLUR_TEXT_INPUT=2 in ReactTextInputManager, hence these constants value should be in sync with ReactTextInputManager.
+  private static final int FOCUS_TEXT_INPUT = 1;
+  private static final int BLUR_TEXT_INPUT = 2;
+  private static final int CMD_HOTSPOT_UPDATE = 3;
+  private static final int CMD_SET_PRESSED = 4;
+  
   @ReactPropGroup(names = {
       ViewProps.BORDER_RADIUS,
       ViewProps.BORDER_TOP_LEFT_RADIUS,
@@ -92,6 +99,35 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     } else {
       view.setBorderRadius(borderRadius, index - 1);
     }
+  }
+
+  @Nullable
+  @Override
+  public Map<String, Object> getExportedCustomBubblingEventTypeConstants() {
+    return MapBuilder.<String, Object>builder()
+      .put(
+        "topOnFocusChange",
+        MapBuilder.of(
+          "phasedRegistrationNames",
+          MapBuilder.of("bubbled", "onFocusChange")))
+      .build();
+  }
+
+  @Override
+  protected void addEventEmitters(
+    final ThemedReactContext reactContext,
+    final ReactViewGroup reactViewGroup) {
+    reactViewGroup.setOnFocusChangeListener(
+      new View.OnFocusChangeListener() {
+        @Override
+        public void onFocusChange(View v, boolean hasFocus) {
+          EventDispatcher eventDispatcher =
+            reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
+            eventDispatcher.dispatchEvent(
+              new ReactViewFocusEvent(reactViewGroup.getId(), hasFocus));
+        }
+      }
+    );
   }
 
   @ReactProp(name = "borderStyle")
@@ -198,6 +234,29 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     // handled in NativeViewHierarchyOptimizer
   }
 
+  @ReactProp(name = "clickable")
+  public void setClickable(final ReactViewGroup view, boolean clickable) {
+    if (clickable) {
+      view.setOnClickListener(
+        new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            final EventDispatcher mEventDispatcher = ((ReactContext)view.getContext()).getNativeModule(UIManagerModule.class)
+                                                                                      .getEventDispatcher();
+            mEventDispatcher.dispatchEvent(new ViewGroupClickEvent(view.getId()));
+          }});
+
+      // Clickable elements are focusable. On API 26, this is taken care by setClickable.
+      // Explicitly calling setFocusable here for backward compatibility.
+      view.setFocusable(true /*isFocusable*/);
+    }
+    else {
+      view.setOnClickListener(null);
+      view.setClickable(false);
+      view.setFocusable(false);
+    }
+  }
+
   @ReactProp(name = ViewProps.OVERFLOW)
   public void setOverflow(ReactViewGroup view, String overflow) {
     view.setOverflow(overflow);
@@ -215,7 +274,7 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
 
   @Override
   public Map<String, Integer> getCommandsMap() {
-    return MapBuilder.of("hotspotUpdate", CMD_HOTSPOT_UPDATE, "setPressed", CMD_SET_PRESSED);
+    return MapBuilder.of("focusTextInput", FOCUS_TEXT_INPUT, "blurTextInput", BLUR_TEXT_INPUT, "hotspotUpdate", CMD_HOTSPOT_UPDATE, "setPressed", CMD_SET_PRESSED);
   }
 
   @Override
@@ -239,6 +298,14 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
               "Illegal number of arguments for 'setPressed' command");
         }
         root.setPressed(args.getBoolean(0));
+        break;
+      }
+      case FOCUS_TEXT_INPUT: {
+        root.requestFocus();
+        break;
+      }
+      case BLUR_TEXT_INPUT: {
+        root.clearFocus();
         break;
       }
     }
@@ -284,7 +351,41 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
       }
       parent.removeViewWithSubviewClippingEnabled(child);
     } else {
+      // Prevent focus leaks due to removal of a focused View
+      if (parent.getChildAt(index).hasFocus()) {
+        giveFocusToAppropriateView(parent, parent.getChildAt(index));
+      }
       parent.removeViewAt(index);
+    }
+  }
+
+  private void giveFocusToAppropriateView(@Nonnull ViewGroup parent, @Nonnull View focusedView) {
+    // Search for appropriate sibling
+    View viewToTakeFocus = null;
+    while (parent != null) {
+      // Search DOWN
+      viewToTakeFocus = FocusFinder.getInstance().findNextFocus(parent, focusedView, View.FOCUS_DOWN);
+      if (viewToTakeFocus == null) {
+        // Search RIGHT
+        viewToTakeFocus = FocusFinder.getInstance().findNextFocus(parent, focusedView, View.FOCUS_RIGHT);
+        if (viewToTakeFocus == null) {
+          // Search UP
+          viewToTakeFocus = FocusFinder.getInstance().findNextFocus(parent, focusedView, View.FOCUS_UP);
+          if (viewToTakeFocus == null) {
+            // Search LEFT
+            viewToTakeFocus = FocusFinder.getInstance().findNextFocus(parent, focusedView, View.FOCUS_LEFT);
+          }
+        }
+      }
+      if (viewToTakeFocus != null || !(parent.getParent() instanceof ViewGroup)) {
+        break;
+      }
+      parent = (ViewGroup) parent.getParent();
+    }
+
+    // Give focus to View
+    if (viewToTakeFocus != null) {
+      viewToTakeFocus.requestFocus();
     }
   }
 

@@ -13,7 +13,7 @@
 #import "RCTLog.h"
 #import "RCTShadowView.h"
 
-@implementation UIView (React)
+@implementation RCTPlatformView (React) // TODO(macOS ISS#2323203)
 
 - (NSNumber *)reactTag
 {
@@ -61,24 +61,24 @@
 
 - (NSNumber *)reactTagAtPoint:(CGPoint)point
 {
-  UIView *view = [self hitTest:point withEvent:nil];
+  RCTPlatformView *view = UIViewHitTestWithEvent(self, point, nil); // TODO(macOS ISS#2323203)
   while (view && !view.reactTag) {
     view = view.superview;
   }
   return view.reactTag;
 }
 
-- (NSArray<UIView *> *)reactSubviews
+- (NSArray<RCTPlatformView *> *)reactSubviews // TODO(macOS ISS#2323203)
 {
   return objc_getAssociatedObject(self, _cmd);
 }
 
-- (UIView *)reactSuperview
+- (RCTPlatformView *)reactSuperview // TODO(macOS ISS#2323203)
 {
   return self.superview;
 }
 
-- (void)insertReactSubview:(UIView *)subview atIndex:(NSInteger)atIndex
+- (void)insertReactSubview:(RCTPlatformView *)subview atIndex:(NSInteger)atIndex // TODO(macOS ISS#2323203)
 {
   // We access the associated object directly here in case someone overrides
   // the `reactSubviews` getter method and returns an immutable array.
@@ -90,7 +90,7 @@
   [subviews insertObject:subview atIndex:atIndex];
 }
 
-- (void)removeReactSubview:(UIView *)subview
+- (void)removeReactSubview:(RCTPlatformView *)subview // TODO(macOS ISS#2323203)
 {
   // We access the associated object directly here in case someone overrides
   // the `reactSubviews` getter method and returns an immutable array.
@@ -115,23 +115,37 @@
 
 - (UIUserInterfaceLayoutDirection)reactLayoutDirection
 {
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   if ([self respondsToSelector:@selector(semanticContentAttribute)]) {
+#pragma clang diagnostic push // TODO(OSS Candidate ISS#2710739)
+#pragma clang diagnostic ignored "-Wunguarded-availability" // TODO(OSS Candidate ISS#2710739)
     return [UIView userInterfaceLayoutDirectionForSemanticContentAttribute:self.semanticContentAttribute];
+#pragma clang diagnostic pop // TODO(OSS Candidate ISS#2710739)
   } else {
     return [objc_getAssociatedObject(self, @selector(reactLayoutDirection)) integerValue];
   }
+#else // [TODO(macOS ISS#2323203)
+	return self.userInterfaceLayoutDirection;
+#endif // ]TODO(macOS ISS#2323203)
 }
 
 - (void)setReactLayoutDirection:(UIUserInterfaceLayoutDirection)layoutDirection
 {
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   if ([self respondsToSelector:@selector(setSemanticContentAttribute:)]) {
+#pragma clang diagnostic push // TODO(OSS Candidate ISS#2710739)
+#pragma clang diagnostic ignored "-Wunguarded-availability" // TODO(OSS Candidate ISS#2710739)
     self.semanticContentAttribute =
       layoutDirection == UIUserInterfaceLayoutDirectionLeftToRight ?
         UISemanticContentAttributeForceLeftToRight :
         UISemanticContentAttributeForceRightToLeft;
+#pragma clang diagnostic pop // TODO(OSS Candidate ISS#2710739)
   } else {
     objc_setAssociatedObject(self, @selector(reactLayoutDirection), @(layoutDirection), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
   }
+#else // [TODO(macOS ISS#2323203)
+	self.userInterfaceLayoutDirection	= layoutDirection;
+#endif // ]TODO(macOS ISS#2323203)
 }
 
 #pragma mark - zIndex
@@ -146,7 +160,7 @@
   self.layer.zPosition = reactZIndex;
 }
 
-- (NSArray<UIView *> *)reactZIndexSortedSubviews
+- (NSArray<RCTPlatformView *> *)reactZIndexSortedSubviews // TODO(macOS ISS#2323203)
 {
   // Check if sorting is required - in most cases it won't be.
   BOOL sortingRequired = NO;
@@ -169,7 +183,7 @@
 
 - (void)didUpdateReactSubviews
 {
-  for (UIView *subview in self.reactSubviews) {
+  for (RCTPlatformView *subview in self.reactSubviews) { // TODO(macOS ISS#2323203)
     [self addSubview:subview];
   }
 }
@@ -181,6 +195,7 @@
 
 - (void)reactSetFrame:(CGRect)frame
 {
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   // These frames are in terms of anchorPoint = topLeft, but internally the
   // views are anchorPoint = center for easier scale and rotation animations.
   // Convert the frame so it works with anchorPoint = center.
@@ -198,6 +213,17 @@
 
   self.center = position;
   self.bounds = bounds;
+#else // [TODO(macOS ISS#2323203)
+  // Avoid crashes due to nan coords
+  if (isnan(frame.origin.x) || isnan(frame.origin.y) ||
+      isnan(frame.size.width) || isnan(frame.size.height)) {
+    RCTLogError(@"Invalid layout for (%@)%@. frame: %@",
+                self.reactTag, self, NSStringFromCGRect(frame));
+    return;
+  }
+
+	self.frame = frame;
+#endif // ]TODO(macOS ISS#2323203)
 }
 
 - (UIViewController *)reactViewController
@@ -212,6 +238,7 @@
   return nil;
 }
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 - (void)reactAddControllerToClosestParent:(UIViewController *)controller
 {
   if (!controller.parentViewController) {
@@ -227,6 +254,7 @@
     return;
   }
 }
+#endif // TODO(macOS ISS#2323203)
 
 /**
  * Focus manipulation.
@@ -292,7 +320,7 @@
 
 #pragma mark - Accessiblity
 
-- (UIView *)reactAccessibilityElement
+- (RCTPlatformView *)reactAccessibilityElement // TODO(macOS ISS#2323203)
 {
   return self;
 }

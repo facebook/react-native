@@ -8,12 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		134814061AA4E45400B7C361 /* RCTLocationObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 134814051AA4E45400B7C361 /* RCTLocationObserver.m */; };
+		4633DB9A1F212DFE0080B326 /* RCTLocationObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 134814051AA4E45400B7C361 /* RCTLocationObserver.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		134814041AA4E45400B7C361 /* RCTLocationObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTLocationObserver.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		134814051AA4E45400B7C361 /* RCTLocationObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTLocationObserver.m; sourceTree = "<group>"; };
 		134814201AA4EA6300B7C361 /* libRCTGeolocation.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTGeolocation.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		4633DB9E1F212DFE0080B326 /* libRCTGeolocation-macOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libRCTGeolocation-macOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -31,6 +33,7 @@
 				134814041AA4E45400B7C361 /* RCTLocationObserver.h */,
 				134814051AA4E45400B7C361 /* RCTLocationObserver.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
+				4633DB9E1F212DFE0080B326 /* libRCTGeolocation-macOS.a */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -40,6 +43,21 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		4633DB981F212DFE0080B326 /* RCTGeolocation-macOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4633DB9B1F212DFE0080B326 /* Build configuration list for PBXNativeTarget "RCTGeolocation-macOS" */;
+			buildPhases = (
+				4633DB991F212DFE0080B326 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "RCTGeolocation-macOS";
+			productName = RCTDataManager;
+			productReference = 4633DB9E1F212DFE0080B326 /* libRCTGeolocation-macOS.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 		58B511DA1A9E6C8500147676 /* RCTGeolocation */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "RCTGeolocation" */;
@@ -82,11 +100,20 @@
 			projectRoot = "";
 			targets = (
 				58B511DA1A9E6C8500147676 /* RCTGeolocation */,
+				4633DB981F212DFE0080B326 /* RCTGeolocation-macOS */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
+		4633DB991F212DFE0080B326 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4633DB9A1F212DFE0080B326 /* RCTLocationObserver.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		58B511D71A9E6C8500147676 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -98,6 +125,29 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		4633DB9C1F212DFE0080B326 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_STATIC_ANALYZER_MODE = deep;
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				RUN_CLANG_STATIC_ANALYZER = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		4633DB9D1F212DFE0080B326 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_STATIC_ANALYZER_MODE = deep;
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
 		58B511ED1A9E6C8500147676 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -146,6 +196,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -198,6 +249,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -212,6 +264,10 @@
 		58B511F01A9E6C8500147676 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					arm64e,
+				);
 				CLANG_STATIC_ANALYZER_MODE = deep;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
@@ -223,6 +279,10 @@
 		58B511F11A9E6C8500147676 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					arm64e,
+				);
 				CLANG_STATIC_ANALYZER_MODE = deep;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
@@ -233,6 +293,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		4633DB9B1F212DFE0080B326 /* Build configuration list for PBXNativeTarget "RCTGeolocation-macOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4633DB9C1F212DFE0080B326 /* Debug */,
+				4633DB9D1F212DFE0080B326 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "RCTGeolocation" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

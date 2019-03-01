@@ -50,7 +50,12 @@ typedef NS_ENUM(unsigned int, meta_prop_t) {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     yogaConfig = YGConfigNew();
-    YGConfigSetPointScaleFactor(yogaConfig, RCTScreenScale());
+#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+    float pixelsInPoint = RCTScreenScale();
+#else
+    float pixelsInPoint = 0; // TODO(ISS#1656079): Turn off pixel rounding for macOS until we can get screen resolution passed here
+#endif // ]TODO(macOS ISS#2323203)
+    YGConfigSetPointScaleFactor(yogaConfig, pixelsInPoint);
     YGConfigSetUseLegacyStretchBehaviour(yogaConfig, true);
   });
   return yogaConfig;
@@ -199,6 +204,11 @@ static void RCTProcessMetaPropsBorder(const YGValue metaProps[META_PROP_COUNT], 
     _yogaNode = YGNodeNewWithConfig([[self class] yogaConfig]);
      YGNodeSetContext(_yogaNode, (__bridge void *)self);
      YGNodeSetPrintFunc(_yogaNode, RCTPrint);
+
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+    // RCTUIManager will fix the scale if we're on a Retina display
+    _scale = 1.0;
+#endif // ]TODO(macOS ISS#2323203)
   }
   return self;
 }

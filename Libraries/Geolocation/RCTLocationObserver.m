@@ -203,6 +203,7 @@ RCT_EXPORT_METHOD(requestAuthorization)
     _locationManager.delegate = self;
   }
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   // Request location access permission
   if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"] &&
     [_locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
@@ -219,6 +220,7 @@ RCT_EXPORT_METHOD(requestAuthorization)
     [_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
     [_locationManager requestWhenInUseAuthorization];
   }
+#endif // TODO(macOS ISS#2323203)
 }
 
 RCT_EXPORT_METHOD(startObserving:(RCTLocationOptions)options)

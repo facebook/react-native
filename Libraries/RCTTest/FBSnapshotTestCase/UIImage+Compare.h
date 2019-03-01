@@ -28,7 +28,7 @@
 //  OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#import <UIKit/UIKit.h>
+#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 
 @interface UIImage (Compare)
 

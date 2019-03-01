@@ -42,13 +42,15 @@ let RCTSinglelineTextInputView;
 
 if (Platform.OS === 'android') {
   AndroidTextInput = requireNativeComponent('AndroidTextInput');
-} else if (Platform.OS === 'ios') {
+} else if (Platform.OS === 'ios' || Platform.OS === 'macos') { // TODO(macOS ISS#2323203)
   RCTMultilineTextInputView = requireNativeComponent(
     'RCTMultilineTextInputView',
   );
   RCTSinglelineTextInputView = requireNativeComponent(
     'RCTSinglelineTextInputView',
   );
+} else if (Platform.OS === 'uwp' || Platform.OS === 'windesktop') { // TODO(windows ISS)
+  var RCTTextInput = requireNativeComponent('RCTTextInput'); // TODO(windows ISS)
 }
 
 const onlyMultiline = {
@@ -63,12 +65,24 @@ type Selection = {
 };
 
 const DataDetectorTypes = [
+  // iOS+macOS
   'phoneNumber',
   'link',
   'address',
   'calendarEvent',
+  // iOS-only
   'none',
   'all',
+  // macOS-only // [TODO(macOS ISS#2323203)
+  'ortography',
+  'spelling',
+  'grammar',
+  'quote',
+  'dash',
+  'replacement',
+  'correction',
+  'regularExpression',
+  'transitInformation', // ]TODO(macOS ISS#2323203)
 ];
 
 type DataDetectorTypesType =
@@ -662,6 +676,7 @@ const TextInput = createReactClass({
      * multiline fields. Note that for multiline fields, setting `blurOnSubmit`
      * to `true` means that pressing return will blur the field and trigger the
      * `onSubmitEditing` event instead of inserting a newline into the field.
+     * Ignored on Android, if Hardware Keyboard is connected. // TODO(android ISS)
      */
     blurOnSubmit: PropTypes.bool,
     /**
@@ -716,14 +731,34 @@ const TextInput = createReactClass({
      *
      * Possible values for `dataDetectorTypes` are:
      *
+     * *iOS + macOS*
+     *
      * - `'phoneNumber'`
      * - `'link'`
      * - `'address'`
      * - `'calendarEvent'`
+     *
+     * *iOS Only*
+     *
+     * The following values work on iOS only:
+     *
      * - `'none'`
      * - `'all'`
      *
-     * @platform ios
+     * *macOS Only*
+     *
+     * The following values work on macOS only:
+     *
+     * - `'ortography'`
+     * - `'spelling'`
+     * - `'grammar'`
+     * - `'quote'`
+     * - `'dash'`
+     * - `'replacement'`
+     * - `'correction'`
+     * - `'regularExpression'`
+     * - `'transitInformation'`
+     *
      */
     dataDetectorTypes: PropTypes.oneOfType([
       PropTypes.oneOf(DataDetectorTypes),
@@ -801,6 +836,13 @@ const TextInput = createReactClass({
     );
   },
 
+  /**
+   * Returns the native `TextView` node.
+   */
+  getTextViewHandle: function(): any { // [TODO(OSS Candidate ISS#2710739)
+    return ReactNative.findNodeHandle(this._inputRef);
+  }, // ]TODO(OSS Candidate ISS#2710739)
+
   _inputRef: (undefined: any),
   _focusSubscription: (undefined: ?Function),
   _lastNativeText: (undefined: ?string),
@@ -860,12 +902,14 @@ const TextInput = createReactClass({
 
   render: function() {
     let textInput;
-    if (Platform.OS === 'ios') {
+    if (Platform.OS === 'ios' || Platform.OS === 'macos') { // TODO(macOS ISS#2323203)
       textInput = UIManager.RCTVirtualText
         ? this._renderIOS()
         : this._renderIOSLegacy();
     } else if (Platform.OS === 'android') {
       textInput = this._renderAndroid();
+    } else if (Platform.OS === 'uwp' || Platform.OS === 'windesktop') { // TODO(windows ISS)
+      return this._renderWindows(); // TODO(windows ISS)
     }
     return (
       <TextAncestor.Provider value={true}>{textInput}</TextAncestor.Provider>
@@ -967,6 +1011,7 @@ const TextInput = createReactClass({
         rejectResponderTermination={true}
         accessible={props.accessible}
         accessibilityLabel={props.accessibilityLabel}
+        accessibilityHint={props.accessibilityHint} // TODO(OSS Candidate ISS#2710739)
         accessibilityRole={props.accessibilityRole}
         accessibilityStates={props.accessibilityStates}
         nativeID={this.props.nativeID}
@@ -1080,6 +1125,7 @@ const TextInput = createReactClass({
         onPress={this._onPress}
         accessible={this.props.accessible}
         accessibilityLabel={this.props.accessibilityLabel}
+        accessibilityHint={this.props.accessibilityHint} // TODO(OSS Candidate ISS#2710739)
         accessibilityRole={this.props.accessibilityRole}
         accessibilityStates={this.props.accessibilityStates}
         nativeID={this.props.nativeID}
@@ -1089,7 +1135,27 @@ const TextInput = createReactClass({
     );
   },
 
+  _renderWindows: function() { // [TODO(windows ISS)
+    var props = Object.assign({}, this.props);
+    props.style = [(styles: any).input, this.props.style];
+
+    return (
+      <RCTTextInput
+        ref={this._setNativeRef}
+        {...props}
+        text={this._getText()}
+      />
+    );
+  }, // ]TODO(windows ISS)
+
   _onFocus: function(event: Event) {
+    // [TODO(android ISS)
+    // Set the focused TextInput field info in TextInputState.
+    // Delaying this to onFocus native event ensures that -
+    // 1. The state is updated only after the native code completes setting focus on the view
+    // 2. In case the focus is moving from one TextInput(A) to another TextInput(B), the state of
+    //    A needs to be updated (blurred) before info about B is updated in TestInputState.
+    TextInputState.setFocusedTextInput(ReactNative.findNodeHandle(this._inputRef)); // ]TODO(android ISS)
     if (this.props.onFocus) {
       this.props.onFocus(event);
     }
@@ -1179,7 +1245,13 @@ const TextInput = createReactClass({
   },
 
   _onBlur: function(event: Event) {
-    this.blur();
+    // [TODO(android ISS) removed: this.blur();
+    // Set the focused TextInput field info in TextInputState.
+    // Delaying this to onBlur native event ensures that -
+    // 1. The state is updated only after the native code completes clearing focus on the view
+    // 2. In case the focus is moving from one TextInput(A) to another TextInput(B), the state of
+    //    A needs to be updated (blurred) before info about B is updated in TestInputState.
+    TextInputState.clearFocusedTextInput(ReactNative.findNodeHandle(this._inputRef)); // ]TODO(android ISS)
     if (this.props.onBlur) {
       this.props.onBlur(event);
     }

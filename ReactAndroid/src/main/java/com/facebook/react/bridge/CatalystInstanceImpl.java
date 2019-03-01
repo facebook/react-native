@@ -100,7 +100,8 @@ public class CatalystInstanceImpl implements CatalystInstance {
       final JavaScriptExecutor jsExecutor,
       final NativeModuleRegistry nativeModuleRegistry,
       final JSBundleLoader jsBundleLoader,
-      NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler) {
+      NativeModuleCallExceptionHandler nativeModuleCallExceptionHandler,
+      CatalystInstanceEventListener catalystInstanceEventListener) {
     Log.d(ReactConstants.TAG, "Initializing React Xplat Bridge.");
     mHybridData = initHybrid();
 
@@ -115,14 +116,22 @@ public class CatalystInstanceImpl implements CatalystInstance {
     mNativeModulesQueueThread = mReactQueueConfiguration.getNativeModulesQueueThread();
     mTraceListener = new JSProfilerTraceListener(this);
 
+    Log.d(ReactConstants.TAG, "Create module registry");
+
+    createModuleRegistry(mNativeModulesQueueThread,
+      mNativeModuleRegistry.getJavaModules(this),
+      mNativeModuleRegistry.getCxxModules());
+
+    if (catalystInstanceEventListener != null) {
+      Log.d(ReactConstants.TAG, "Invoking callback onModuleRegistryCreated");
+      catalystInstanceEventListener.onModuleRegistryCreated(this);
+    }
+
     Log.d(ReactConstants.TAG, "Initializing React Xplat Bridge before initializeBridge");
     initializeBridge(
       new BridgeCallback(this),
       jsExecutor,
-      mReactQueueConfiguration.getJSQueueThread(),
-      mNativeModulesQueueThread,
-      mNativeModuleRegistry.getJavaModules(this),
-      mNativeModuleRegistry.getCxxModules());
+      mReactQueueConfiguration.getJSQueueThread());
     Log.d(ReactConstants.TAG, "Initializing React Xplat Bridge after initializeBridge");
 
     mJavaScriptContextHolder = new JavaScriptContextHolder(getJavaScriptContext());
@@ -183,13 +192,15 @@ public class CatalystInstanceImpl implements CatalystInstance {
     Collection<JavaModuleWrapper> javaModules,
     Collection<ModuleHolder> cxxModules);
 
+  private native void createModuleRegistry(
+    MessageQueueThread moduleQueue,
+    Collection<JavaModuleWrapper> javaModules,
+    Collection<ModuleHolder> cxxModules);
+
   private native void initializeBridge(
-      ReactCallback callback,
-      JavaScriptExecutor jsExecutor,
-      MessageQueueThread jsQueue,
-      MessageQueueThread moduleQueue,
-      Collection<JavaModuleWrapper> javaModules,
-      Collection<ModuleHolder> cxxModules);
+    ReactCallback callback,
+    JavaScriptExecutor jsExecutor,
+    MessageQueueThread jsQueue);
 
   /**
    * This API is used in situations where the JS bundle is being executed not on
@@ -361,7 +372,6 @@ public class CatalystInstanceImpl implements CatalystInstance {
                     mJavaScriptContextHolder.clear();
 
                     mHybridData.resetNative();
-                    getReactQueueConfiguration().destroy();
                     Log.d(ReactConstants.TAG, "CatalystInstanceImpl.destroy() end");
                     ReactMarker.logMarker(ReactMarkerConstants.DESTROY_CATALYST_INSTANCE_END);
                   }
@@ -480,6 +490,9 @@ public class CatalystInstanceImpl implements CatalystInstance {
 
   private native long getJavaScriptContext();
 
+  @Override
+  public native long getPointerOfInstancePointer();
+
   private void incrementPendingJSCalls() {
     int oldPendingCalls = mPendingJSCalls.getAndIncrement();
     boolean wasIdle = oldPendingCalls == 0;
@@ -577,6 +590,7 @@ public class CatalystInstanceImpl implements CatalystInstance {
     private @Nullable NativeModuleRegistry mRegistry;
     private @Nullable JavaScriptExecutor mJSExecutor;
     private @Nullable NativeModuleCallExceptionHandler mNativeModuleCallExceptionHandler;
+    private @Nullable CatalystInstanceEventListener mCatalystInstanceEventListener;
 
 
     public Builder setReactQueueConfigurationSpec(
@@ -606,13 +620,20 @@ public class CatalystInstanceImpl implements CatalystInstance {
       return this;
     }
 
+    public Builder setCatalystInstanceEventListener(
+      CatalystInstanceEventListener catalystInstanceEventListener) {
+      mCatalystInstanceEventListener = catalystInstanceEventListener;
+      return this;
+    }
+
     public CatalystInstanceImpl build() {
       return new CatalystInstanceImpl(
-          Assertions.assertNotNull(mReactQueueConfigurationSpec),
-          Assertions.assertNotNull(mJSExecutor),
-          Assertions.assertNotNull(mRegistry),
-          Assertions.assertNotNull(mJSBundleLoader),
-          Assertions.assertNotNull(mNativeModuleCallExceptionHandler));
+        Assertions.assertNotNull(mReactQueueConfigurationSpec),
+        Assertions.assertNotNull(mJSExecutor),
+        Assertions.assertNotNull(mRegistry),
+        Assertions.assertNotNull(mJSBundleLoader),
+        Assertions.assertNotNull(mNativeModuleCallExceptionHandler),
+        mCatalystInstanceEventListener);
     }
   }
 }

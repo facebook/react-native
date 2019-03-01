@@ -503,13 +503,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
  */
 - (UIView *)reactSuperview
 {
-  RCTAssert(!_bridge.isValid || self.superview != nil, @"put reactNavSuperviewLink back");
   UIView *superview = [super reactSuperview];
   return superview ?: self.reactNavSuperviewLink;
 }
 
 - (void)uiManagerDidPerformMounting
 {
+  // TODO(OC#2710034): This file was removed in the facebook repo.
+  if (self.reactSubviews.count == 0) {
+    // subviews aren't hooked up yet
+    return;
+  }
+
   // we can't hook up the VC hierarchy in 'init' because the subviews aren't
   // hooked up yet, so we do it on demand here
   [self reactAddControllerToClosestParent:_navigationController];

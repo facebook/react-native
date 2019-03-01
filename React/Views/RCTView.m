@@ -11,11 +11,12 @@
 #import "RCTBorderDrawing.h"
 #import "RCTConvert.h"
 #import "RCTLog.h"
+#import "RCTRootContentView.h" // TODO(macOS ISS#2323203)
 #import "RCTUtils.h"
 #import "UIView+React.h"
 #import "RCTI18nUtil.h"
 
-@implementation UIView (RCTViewUnmounting)
+@implementation RCTPlatformView (RCTViewUnmounting) // TODO(macOS ISS#2323203)
 
 - (void)react_remountAllSubviews
 {
@@ -28,13 +29,13 @@
   }
 }
 
-- (void)react_updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(UIView *)clipView
+- (void)react_updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(RCTPlatformView *)clipView // TODO(macOS ISS#2323203)
 {
   // Even though we don't support subview unmounting
   // we do support clipsToBounds, so if that's enabled
   // we'll update the clipping
 
-  if (self.clipsToBounds && self.subviews.count > 0) {
+  if (UIViewSetClipsToBounds(self) && self.subviews.count > 0) { // TODO(macOS ISS#2323203)
     clipRect = [clipView convertRect:clipRect toView:self];
     clipRect = CGRectIntersection(clipRect, self.bounds);
     clipView = self;
@@ -49,14 +50,14 @@
   }
 }
 
-- (UIView *)react_findClipView
+- (RCTPlatformView *)react_findClipView // TODO(macOS ISS#2323203)
 {
-  UIView *testView = self;
-  UIView *clipView = nil;
+  RCTPlatformView *testView = self; // TODO(macOS ISS#2323203)
+  RCTPlatformView *clipView = nil; // TODO(macOS ISS#2323203)
   CGRect clipRect = self.bounds;
   // We will only look for a clipping view up the view hierarchy until we hit the root view.
   while (testView) {
-    if (testView.clipsToBounds) {
+    if (UIViewSetClipsToBounds(testView)) { // TODO(macOS ISS#2323203)
       if (clipView) {
         CGRect testRect = [clipView convertRect:clipRect toView:testView];
         if (!CGRectContainsRect(testView.bounds, testRect)) {
@@ -73,7 +74,11 @@
     }
     testView = testView.superview;
   }
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   return clipView ?: self.window;
+#else // [TODO(macOS ISS#2323203)
+  return clipView ?: self.window.contentView;
+#endif // ]TODO(macOS ISS#2323203)
 }
 
 @end
@@ -99,6 +104,10 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 @implementation RCTView
 {
   UIColor *_backgroundColor;
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+  NSTrackingArea *_trackingArea;
+  BOOL _hasMouseOver;
+#endif // ]TODO(macOS ISS#2323203)
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -137,12 +146,22 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
     [self.layer setNeedsDisplay];
   }
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   if ([self respondsToSelector:@selector(setSemanticContentAttribute:)]) {
+#pragma clang diagnostic push // TODO(OSS Candidate ISS#2710739)
+#pragma clang diagnostic ignored "-Wunguarded-availability" // TODO(OSS Candidate ISS#2710739)
     self.semanticContentAttribute =
       layoutDirection == UIUserInterfaceLayoutDirectionLeftToRight ?
         UISemanticContentAttributeForceLeftToRight :
         UISemanticContentAttributeForceRightToLeft;
+#pragma clang diagnostic pop // TODO(OSS Candidate ISS#2710739)
   }
+#else // [TODO(macOS ISS#2323203)
+  self.userInterfaceLayoutDirection =
+  layoutDirection == UIUserInterfaceLayoutDirectionLeftToRight ?
+  NSUserInterfaceLayoutDirectionLeftToRight :
+  NSUserInterfaceLayoutDirectionRightToLeft;
+#endif // ]TODO(macOS ISS#2323203)
 }
 
 - (NSString *)accessibilityLabel
@@ -154,6 +173,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   return RCTRecursiveAccessibilityLabel(self);
 }
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 - (NSArray <UIAccessibilityCustomAction *> *)accessibilityCustomActions
 {
   if (!_accessibilityActions.count) {
@@ -183,17 +203,20 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
   return YES;
 }
+#endif // TODO(macOS ISS#2323203)
 
 - (void)setPointerEvents:(RCTPointerEvents)pointerEvents
 {
   _pointerEvents = pointerEvents;
   self.userInteractionEnabled = (pointerEvents != RCTPointerEventsNone);
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   if (pointerEvents == RCTPointerEventsBoxNone) {
     self.accessibilityViewIsModal = NO;
   }
+#endif // TODO(macOS ISS#2323203)
 }
 
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+- (RCTPlatformView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event // TODO(macOS ISS#2323203)
 {
   BOOL canReceiveTouchEvents = ([self isUserInteractionEnabled] && ![self isHidden]);
   if(!canReceiveTouchEvents) {
@@ -202,7 +225,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
   // `hitSubview` is the topmost subview which was hit. The hit point can
   // be outside the bounds of `view` (e.g., if -clipsToBounds is NO).
-  UIView *hitSubview = nil;
+  RCTPlatformView *hitSubview = nil; // TODO(macOS ISS#2323203)
   BOOL isPointInside = [self pointInside:point withEvent:event];
   BOOL needsHitSubview = !(_pointerEvents == RCTPointerEventsNone || _pointerEvents == RCTPointerEventsBoxOnly);
   if (needsHitSubview && (![self clipsToBounds] || isPointInside)) {
@@ -216,15 +239,24 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
     // of the hit view will return YES from -pointInside:withEvent:). See:
     //  - https://developer.apple.com/library/ios/qa/qa2013/qa1812.html
     for (UIView *subview in [sortedSubviews reverseObjectEnumerator]) {
-      CGPoint convertedPoint = [subview convertPoint:point fromView:self];
-      hitSubview = [subview hitTest:convertedPoint withEvent:event];
+      CGPoint pointForHitTest = CGPointZero; // [TODO(macOS ISS#2323203)
+#if TARGET_OS_OSX
+      if ([subview isKindOfClass:[RCTView class]]) {
+        pointForHitTest = [subview convertPoint:point fromView:self];
+      } else {
+        pointForHitTest = point;
+      }
+#else
+      pointForHitTest = [subview convertPoint:point fromView:self];
+#endif
+      hitSubview = UIViewHitTestWithEvent(subview, pointForHitTest, event); // ]TODO(macOS ISS#2323203)
       if (hitSubview != nil) {
         break;
       }
     }
   }
 
-  UIView *hitView = (isPointInside ? self : nil);
+  RCTPlatformView *hitView = (isPointInside ? self : nil); // TODO(macOS ISS#2323203)
 
   switch (_pointerEvents) {
     case RCTPointerEventsNone:
@@ -250,7 +282,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   return CGRectContainsPoint(hitFrame, point);
 }
 
-- (UIView *)reactAccessibilityElement
+- (RCTPlatformView *)reactAccessibilityElement // TODO(macOS ISS#2323203)
 {
   return self;
 }
@@ -264,7 +296,21 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   return NO;
 }
 
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+- (BOOL)isAccessibilitySelectorAllowed:(SEL)selector
+{
+  if (selector == @selector(accessibilityPerformPress)) {
+    return _onAccessibilityTap ? YES : NO;
+  }
+  return [super isAccessibilitySelectorAllowed:selector];
+}
+#endif
+
+#if !TARGET_OS_OSX // ]TODO(macOS ISS#2323203)
 - (BOOL)accessibilityActivate
+#else // [TODO(macOS ISS#2323203)
+- (BOOL)accessibilityPerformPress
+#endif // ]TODO(macOS ISS#2323203)
 {
   if (_onAccessibilityTap) {
     _onAccessibilityTap(nil);
@@ -274,6 +320,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   }
 }
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 - (BOOL)accessibilityPerformMagicTap
 {
   if (_onMagicTap) {
@@ -283,14 +330,80 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
     return NO;
   }
 }
+#endif // TODO(macOS ISS#2323203)
 
 - (NSString *)description
 {
   NSString *superDescription = super.description;
   NSRange semicolonRange = [superDescription rangeOfString:@";"];
-  NSString *replacement = [NSString stringWithFormat:@"; reactTag: %@;", self.reactTag];
-  return [superDescription stringByReplacingCharactersInRange:semicolonRange withString:replacement];
+  if (semicolonRange.location == NSNotFound) { // [TODO(macOS ISS#2323203)
+    return [[superDescription substringToIndex:superDescription.length - 1] stringByAppendingFormat:@"; reactTag: %@; frame = %@; layer = %@>", self.reactTag, NSStringFromCGRect(self.frame), self.layer];
+  } else { // ]TODO(macOS ISS#2323203)
+    NSString *replacement = [NSString stringWithFormat:@"; reactTag: %@;", self.reactTag];
+    return [superDescription stringByReplacingCharactersInRange:semicolonRange withString:replacement];
+  } // TODO(macOS ISS#2323203)
 }
+
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+- (void)viewDidMoveToWindow
+{
+  // Subscribe to view bounds changed notification so that the view can be notified when a
+  // scroll event occurs either due to trackpad/gesture based scrolling or a scrollwheel event
+  // both of which would not cause the mouseExited to be invoked.
+
+  if ([self window] == nil) {
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:NSViewBoundsDidChangeNotification
+                                                  object:nil];
+  }
+  else if ([[self enclosingScrollView] contentView] != nil) {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(viewBoundsChanged:)
+                                                 name:NSViewBoundsDidChangeNotification
+                                               object:[[self enclosingScrollView] contentView]];
+  }
+  [super viewDidMoveToWindow];
+}
+
+- (void)viewBoundsChanged:(NSNotification*)__unused inNotif
+{
+  // When an enclosing scrollview is scrolled using the scrollWheel or trackpad,
+  // the mouseExited: event does not get called on the view where mouseEntered: was previously called.
+  // This creates an unnatural pairing of mouse enter and exit events and can cause problems.
+  // We therefore explicitly check for this here and handle them by calling the appropriate callbacks.
+  
+  if (!_hasMouseOver && self.onMouseEnter)
+  {
+    NSPoint locationInWindow = [[self window] mouseLocationOutsideOfEventStream];
+    NSPoint locationInView = [self convertPoint:locationInWindow fromView:nil];
+    
+    if (NSPointInRect(locationInView, [self bounds]))
+    {
+      _hasMouseOver = YES;
+      
+      [self sendMouseEventWithBlock:self.onMouseEnter
+                       locationInfo:[self locationInfoFromDraggingLocation:locationInWindow]
+                      modifierFlags:0
+                     additionalData:nil];
+    }
+  }
+  else if (_hasMouseOver && self.onMouseLeave)
+  {
+    NSPoint locationInWindow = [[self window] mouseLocationOutsideOfEventStream];
+    NSPoint locationInView = [self convertPoint:locationInWindow fromView:nil];
+    
+    if (!NSPointInRect(locationInView, [self bounds]))
+    {
+      _hasMouseOver = NO;
+      
+      [self sendMouseEventWithBlock:self.onMouseLeave
+                       locationInfo:[self locationInfoFromDraggingLocation:locationInWindow]
+                      modifierFlags:0
+                     additionalData:nil];
+    }
+  }
+}
+#endif // ]TODO(macOS ISS#2323203)
 
 #pragma mark - Statics for dealing with layoutGuides
 
@@ -302,6 +415,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   CGFloat previousInsetTop = scrollView.contentInset.top;
   CGPoint contentOffset = scrollView.contentOffset;
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   if (parentView.automaticallyAdjustContentInsets) {
     UIEdgeInsets autoInset = [self contentInsetsForView:parentView];
     baseInset.top += autoInset.top;
@@ -309,6 +423,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
     baseInset.left += autoInset.left;
     baseInset.right += autoInset.right;
   }
+#endif // TODO(macOS ISS#2323203)
   scrollView.contentInset = baseInset;
   scrollView.scrollIndicatorInsets = baseInset;
 
@@ -325,6 +440,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   }
 }
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 + (UIEdgeInsets)contentInsetsForView:(UIView *)view
 {
   while (view) {
@@ -339,6 +455,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   }
   return UIEdgeInsetsZero;
 }
+#endif // TODO(macOS ISS#2323203)
 
 #pragma mark - View unmounting
 
@@ -357,7 +474,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   }
 }
 
-- (void)react_updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(UIView *)clipView
+- (void)react_updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(RCTPlatformView *)clipView // TODO(macOS ISS#2323203)
 {
   // TODO (#5906496): for scrollviews (the primary use-case) we could
   // optimize this by only doing a range check along the scroll axis,
@@ -426,7 +543,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 - (void)updateClippedSubviews
 {
   // Find a suitable view to use for clipping
-  UIView *clipView = [self react_findClipView];
+  RCTPlatformView *clipView = [self react_findClipView]; // TODO(macOS ISS#2323203)
   if (clipView) {
     [self react_updateClippedSubviewsWithClipRect:clipView.bounds relativeToView:clipView];
   }
@@ -445,6 +562,33 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
     [self updateClippedSubviews];
   }
 }
+
+// [TODO(OSS Candidate ISS#2710739)
+- (BOOL)becomeFirstResponder
+{
+  if (![super becomeFirstResponder]) {
+    return NO;
+  }
+
+  // If we've gained focus, notify listeners
+  if (self.onFocus != nil ) {
+    self.onFocus(nil);
+  }
+  return YES;
+}
+- (BOOL)resignFirstResponder
+{
+  if (![super resignFirstResponder]) {
+    return NO;
+  }
+
+  // If we've gained focus, notify listeners
+  if (self.onBlur != nil ) {
+    self.onBlur(nil);
+  }
+  return YES;
+}
+// ]TODO(OSS Candidate ISS#2710739)
 
 #pragma mark - Borders
 
@@ -633,13 +777,27 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
     return;
   }
 
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+  CGFloat scaleFactor = self.window.backingScaleFactor;
+  if (scaleFactor == 0.0 && RCTRunningInTestEnvironment()) {
+    // When running in the test environment the view is not on screen.
+    // Use a scaleFactor of 1 so that the test results are machine independent.
+    scaleFactor = 1;
+  }
+  RCTAssert(scaleFactor != 0.0, @"displayLayer occurs before the view is in a window?");
+#else
+  // On iOS setting the scaleFactor to 0.0 will default to the device's native scale factor.
+  CGFloat scaleFactor = 0.0;
+#endif // ]TODO(macOS ISS#2323203)
+  
   UIImage *image = RCTGetBorderImage(_borderStyle,
                                      layer.bounds.size,
                                      cornerRadii,
                                      borderInsets,
                                      borderColors,
                                      _backgroundColor.CGColor,
-                                     self.clipsToBounds);
+                                     self.clipsToBounds,
+                                     scaleFactor); // TODO(OSS Candidate ISS#2710739)
 
   layer.backgroundColor = NULL;
 
@@ -660,17 +818,27 @@ static CGFloat RCTDefaultIfNegativeTo(CGFloat defaultValue, CGFloat x) {
     );
   });
 
+#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+  CGFloat scale = image.scale;
+#else // TODO(macOS ISS#2323203)
+  CGFloat scale = scaleFactor;
+#endif // ]TODO(macOS ISS#2323203)
   if (RCTRunningInTestEnvironment()) {
     const CGSize size = self.bounds.size;
-    UIGraphicsBeginImageContextWithOptions(size, NO, image.scale);
+    UIGraphicsBeginImageContextWithOptions(size, NO, scale); // TODO(macOS ISS#2323203)
     [image drawInRect:(CGRect){CGPointZero, size}];
     image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     contentsCenter = CGRectMake(0, 0, 1, 1);
   }
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   layer.contents = (id)image.CGImage;
   layer.contentsScale = image.scale;
+#else // [TODO(macOS ISS#2323203)
+  layer.contents = [image layerContentsForContentsScale:scale];
+  layer.contentsScale = scale;
+#endif // ]TODO(macOS ISS#2323203)
   layer.needsDisplayOnBoundsChange = YES;
   layer.magnificationFilter = kCAFilterNearest;
 
@@ -819,6 +987,9 @@ setBorderStyle()
 
 - (void)dealloc
 {
+#if TARGET_OS_OSX // TODO(macOS ISS#2323203)
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+#endif // TODO(macOS ISS#2323203)
   CGColorRelease(_borderColor);
   CGColorRelease(_borderTopColor);
   CGColorRelease(_borderRightColor);
@@ -827,5 +998,242 @@ setBorderStyle()
   CGColorRelease(_borderStartColor);
   CGColorRelease(_borderEndColor);
 }
+
+#pragma mark Focus ring // [TODO(macOS ISS#2323203)
+
+#if TARGET_OS_OSX
+- (CGRect)focusRingMaskBounds
+{
+  return self.bounds;
+}
+
+- (void)drawFocusRingMask
+{
+  if ([self enableFocusRing]) {
+    NSRectFill(self.bounds);
+  }
+}
+#endif
+
+#pragma mark - macOS Event Handler
+
+#if TARGET_OS_OSX
+- (void)setOnDoubleClick:(RCTDirectEventBlock)block
+{
+  if (_onDoubleClick != block) {
+    _onDoubleClick = [block copy];
+  }
+}
+
+- (void)mouseUp:(NSEvent *)event
+{
+  if (_onDoubleClick && event.clickCount == 2) {
+    _onDoubleClick(nil);
+  }
+  else {
+    [super mouseUp:event];
+  }
+}
+
+- (BOOL)acceptsFirstResponder
+{
+  return ([self acceptsKeyboardFocus] && [NSApp isFullKeyboardAccessEnabled]) || [super acceptsFirstResponder];
+}
+
+- (BOOL)performKeyEquivalent:(NSEvent *)theEvent
+{
+  if (self.onClick != nil &&
+      [self acceptsKeyboardFocus] &&
+      [[self window] firstResponder] == self) {
+    if ([[theEvent characters] isEqualToString:@" "] || [[theEvent characters] isEqualToString:@"\r"]) {
+      self.onClick(nil);
+      return YES;
+    }
+  }
+  return [super performKeyEquivalent:theEvent];
+}
+
+- (void)updateTrackingAreas
+{
+  if (_trackingArea) {
+    [self removeTrackingArea:_trackingArea];
+  }
+  
+  if (self.onMouseEnter || self.onMouseLeave) {
+    _trackingArea = [[NSTrackingArea alloc] initWithRect:self.bounds
+                                                 options:NSTrackingActiveAlways|NSTrackingMouseEnteredAndExited
+                                                   owner:self
+                                                userInfo:nil];
+    [self addTrackingArea:_trackingArea];
+  }
+  
+  [super updateTrackingAreas];
+}
+
+- (void)mouseEntered:(NSEvent *)event
+{
+  _hasMouseOver = YES;
+  [self sendMouseEventWithBlock:self.onMouseEnter
+                   locationInfo:[self locationInfoFromEvent:event]
+                  modifierFlags:event.modifierFlags
+                 additionalData:nil];
+}
+
+- (void)mouseExited:(NSEvent *)event
+{
+  _hasMouseOver = NO;
+  [self sendMouseEventWithBlock:self.onMouseLeave
+                   locationInfo:[self locationInfoFromEvent:event]
+                  modifierFlags:event.modifierFlags
+                 additionalData:nil];
+}
+
+- (NSDictionary*)locationInfoFromEvent:(NSEvent*)event
+{
+  NSPoint locationInWindow = event.locationInWindow;
+  NSPoint locationInView = [self convertPoint:locationInWindow fromView:nil];
+  
+  return @{@"screenX": @(locationInWindow.x),
+           @"screenY": @(locationInWindow.y),
+           @"clientX": @(locationInView.x),
+           @"clientY": @(locationInView.y)
+           };
+}
+
+- (void)sendMouseEventWithBlock:(RCTDirectEventBlock)block
+                   locationInfo:(NSDictionary*)locationInfo
+                  modifierFlags:(NSEventModifierFlags)modifierFlags
+                 additionalData:(NSDictionary*)additionalData
+{
+  if (block == nil) {
+    return;
+  }
+  
+  NSMutableDictionary *body = [[NSMutableDictionary alloc] init];
+  
+  if (modifierFlags & NSEventModifierFlagShift) {
+    body[@"shiftKey"] = @YES;
+  }
+  if (modifierFlags & NSEventModifierFlagControl) {
+    body[@"ctrlKey"] = @YES;
+  }
+  if (modifierFlags & NSEventModifierFlagOption) {
+    body[@"altKey"] = @YES;
+  }
+  if (modifierFlags & NSEventModifierFlagCommand) {
+    body[@"metaKey"] = @YES;
+  }
+  
+  if (locationInfo) {
+    [body addEntriesFromDictionary:locationInfo];
+  }
+  
+  if (additionalData) {
+    [body addEntriesFromDictionary:additionalData];
+  }
+  
+  block(body);
+}
+
+- (NSDictionary*)dataTransferInfoFromPastboard:(NSPasteboard*)pastboard
+{
+  if (![pastboard.types containsObject:NSFilenamesPboardType]) {
+    return @{};
+  }
+  
+  NSArray *fileNames = [pastboard propertyListForType:NSFilenamesPboardType];
+  NSMutableArray *files = [[NSMutableArray alloc] initWithCapacity:fileNames.count];
+  NSMutableArray *items = [[NSMutableArray alloc] initWithCapacity:fileNames.count];
+  NSMutableArray *types = [[NSMutableArray alloc] initWithCapacity:fileNames.count];
+  for (NSString *file in fileNames) {
+    NSURL *fileURL = [NSURL fileURLWithPath:file];
+    BOOL isDir = NO;
+    BOOL isValid = (![[NSFileManager defaultManager] fileExistsAtPath:fileURL.path isDirectory:&isDir] || isDir) ? NO : YES;
+    if (isValid) {
+      
+      NSString *MIMETypeString = nil;
+      if (fileURL.pathExtension) {
+        CFStringRef fileExtension = (__bridge CFStringRef)fileURL.pathExtension;
+        CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, NULL);
+        if (UTI != NULL) {
+          CFStringRef MIMEType = UTTypeCopyPreferredTagWithClass(UTI, kUTTagClassMIMEType);
+          CFRelease(UTI);
+          MIMETypeString = (__bridge_transfer NSString *)MIMEType;
+        }
+      }
+      
+      NSNumber *fileSizeValue = nil;
+      NSError *fileSizeError = nil;
+      BOOL success = [fileURL getResourceValue:&fileSizeValue
+                                        forKey:NSURLFileSizeKey
+                                         error:&fileSizeError];
+      
+      [files addObject:@{@"name": RCTNullIfNil(fileURL.lastPathComponent),
+                         @"type": RCTNullIfNil(MIMETypeString),
+                         @"uri": RCTNullIfNil(fileURL.absoluteString),
+                         @"size": success ? fileSizeValue : (id)kCFNull
+                         }];
+      
+      [items addObject:@{@"kind": @"file",
+                         @"type": RCTNullIfNil(MIMETypeString),
+                         }];
+      
+      [types addObject:RCTNullIfNil(MIMETypeString)];
+    }
+  }
+  
+  return @{@"dataTransfer": @{@"files": files,
+                              @"items": items,
+                              @"types": types}};
+}
+
+- (NSDictionary*)locationInfoFromDraggingLocation:(NSPoint)locationInWindow
+{
+  NSPoint locationInView = [self convertPoint:locationInWindow fromView:nil];
+  
+  return @{@"screenX": @(locationInWindow.x),
+           @"screenY": @(locationInWindow.y),
+           @"clientX": @(locationInView.x),
+           @"clientY": @(locationInView.y)
+           };
+}
+
+- (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
+{
+  NSPasteboard *pboard = sender.draggingPasteboard;
+  NSDragOperation sourceDragMask = sender.draggingSourceOperationMask;
+  
+  [self sendMouseEventWithBlock:self.onDragEnter
+                   locationInfo:[self locationInfoFromDraggingLocation:sender.draggingLocation]
+                  modifierFlags:0
+                 additionalData:[self dataTransferInfoFromPastboard:pboard]];
+  
+  if ([pboard.types containsObject:NSFilenamesPboardType]) {
+    if (sourceDragMask & NSDragOperationLink) {
+      return NSDragOperationLink;
+    } else if (sourceDragMask & NSDragOperationCopy) {
+      return NSDragOperationCopy;
+    }
+  }
+  return NSDragOperationNone;
+}
+
+- (void)draggingExited:(id<NSDraggingInfo>)sender
+{
+  [self sendMouseEventWithBlock:self.onDragLeave
+                   locationInfo:[self locationInfoFromDraggingLocation:sender.draggingLocation]
+                  modifierFlags:0
+                 additionalData:[self dataTransferInfoFromPastboard:sender.draggingPasteboard]];
+}
+
+- (BOOL)performDragOperation:(id <NSDraggingInfo>)sender
+{
+  [self sendMouseEventWithBlock:self.onDrop
+                   locationInfo:[self locationInfoFromDraggingLocation:sender.draggingLocation]
+                  modifierFlags:0
+                 additionalData:[self dataTransferInfoFromPastboard:[sender draggingPasteboard]]];
+  return YES;
+}
+#endif // ]TODO(macOS ISS#2323203)
 
 @end

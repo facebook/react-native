@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
+#import <React/RCTUIKit.h>
 #import <XCTest/XCTest.h>
 
 #import <RCTTest/RCTTestRunner.h>
@@ -72,10 +72,14 @@ RCT_TEST(SimpleSnapshotTest)
 RCT_TEST(SyncMethodTest)
 RCT_TEST(PromiseTest)
 RCT_TEST_ONLY_WITH_PACKAGER(WebSocketTest)
+#if !TARGET_OS_OSX // ios specific
 RCT_TEST(AccessibilityManagerTest)
+#endif
 
 #if !TARGET_OS_TV // tvOS does not fully support WebView
+#if !TARGET_OS_OSX // VSO#2332957: macOS WebViewTest fails
 RCT_TEST(WebViewTest)
+#endif
 #endif
 
 @end

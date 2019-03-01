@@ -12,7 +12,8 @@
 #include <folly/Memory.h>
 #include <fb/fbjni.h>
 
-#include <jschelpers/JSCHelpers.h>
+#include <jschelpers/JSException.h>
+#include <jsi/jsi.h>
 
 #include "JNativeRunnable.h"
 
@@ -32,15 +33,20 @@ struct JavaJSException : jni::JavaClass<JavaJSException, JThrowable> {
 };
 
 std::function<void()> wrapRunnable(std::function<void()>&& runnable) {
+  // JSException catch block is needed as JSException is thrown by Executors.
+  // We can get rid of it, once we will completely swith to JSI based runtime.
   return [runnable=std::move(runnable)] {
     try {
       runnable();
     } catch (const JSException& ex) {
       throwNewJavaException(JavaJSException::create(ex.what(), ex.getStack().c_str(), ex).get());
+    } catch (const jsi::JSError& ex) {
+      throwNewJavaException(
+          JavaJSException::create(ex.getMessage().c_str(), ex.getStack().c_str(), ex)
+          .get());
     }
   };
 }
-
 }
 
 JMessageQueueThread::JMessageQueueThread(alias_ref<JavaMessageQueueThread::javaobject> jobj) :

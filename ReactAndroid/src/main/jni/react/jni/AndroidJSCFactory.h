@@ -22,7 +22,7 @@ class JSExecutorFactory;
 namespace detail {
 
 // This is only exposed so instrumentation tests can call it.
-void injectJSCExecutorAndroidPlatform();
+void injectJSExecutorAndroidPlatform();
 
 }
 

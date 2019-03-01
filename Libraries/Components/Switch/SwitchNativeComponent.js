@@ -17,6 +17,7 @@ const requireNativeComponent = require('requireNativeComponent');
 
 import type {SwitchChangeEvent} from 'CoreEventTypes';
 import type {ViewProps} from 'ViewPropTypes';
+import type {SemanticOrDynamicColorType} from 'normalizeColor' // TODO(macOS ISS#2323203)
 
 // @see ReactSwitchManager.java
 export type NativeAndroidProps = $ReadOnly<{|
@@ -24,8 +25,8 @@ export type NativeAndroidProps = $ReadOnly<{|
   enabled?: ?boolean,
   on?: ?boolean,
   onChange?: ?(event: SwitchChangeEvent) => mixed,
-  thumbTintColor?: ?string,
-  trackTintColor?: ?string,
+  thumbTintColor?: ?(string | SemanticOrDynamicColorType),
+  trackTintColor?: ?(string | SemanticOrDynamicColorType),
 |}>;
 
 // @see RCTSwitchManager.m
@@ -33,9 +34,9 @@ export type NativeIOSProps = $ReadOnly<{|
   ...ViewProps,
   disabled?: ?boolean,
   onChange?: ?(event: SwitchChangeEvent) => mixed,
-  onTintColor?: ?string,
-  thumbTintColor?: ?string,
-  tintColor?: ?string,
+  onTintColor?: ?(string | SemanticOrDynamicColorType),
+  thumbTintColor?: ?(string | SemanticOrDynamicColorType),
+  tintColor?: ?(string | SemanticOrDynamicColorType),
   value?: ?boolean,
 |}>;
 

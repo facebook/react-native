@@ -33,6 +33,8 @@ function emptyFunction() {}
  *
  * iOS: Not applicable.
  *
+ * macOS: Not applicable.
+ *
  * The event subscriptions are called in reverse order (i.e. last registered subscription first),
  * and if one subscription returns true then subscriptions registered earlier will not be called.
  *

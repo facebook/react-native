@@ -93,6 +93,7 @@ void addJSCPerfStatsHooks(JSGlobalContextRef ctx) {
   installGlobalFunction(ctx, "nativeGetHeapStats", nativeGetHeapStats);
   installGlobalFunction(ctx, "nativeGetGCStats", nativeGetGCStats);
 #endif
+  (void)ctx;
 }
 
 } }

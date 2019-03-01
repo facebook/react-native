@@ -1,0 +1,8 @@
+DIRS = \
+    glog{droidarm,droidx86} \
+    folly\
+    double-conversion{droidarm,droidx86} \
+    reactcommon \
+    reactwindows{!droidarm,!droidx86} \
+    processor{droidarm,droidx86} \
+    reactAndroid{droidarm,droidx86} \

@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
+#import "RCTUIKit.h" // TODO(macOS ISS#2323203)
 
 #import <React/RCTBridgeModule.h>
 #import <React/RCTConvert.h>
@@ -19,7 +19,7 @@
 @class RCTSparseArray;
 @class RCTUIManager;
 
-typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry);
+typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNumber *, RCTPlatformView *> *viewRegistry); // TODO(macOS ISS#2323203)
 
 @interface RCTViewManager : NSObject <RCTBridgeModule>
 
@@ -37,7 +37,7 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNu
  * return a fresh instance each time. The view module MUST NOT cache the returned
  * view and return the same instance for subsequent calls.
  */
-- (UIView *)view;
+- (RCTPlatformView *)view; // TODO(macOS ISS#2323203)
 
 /**
  * This method instantiates a shadow view to be managed by the module. If omitted,
@@ -72,6 +72,25 @@ typedef void (^RCTViewManagerUIBlock)(RCTUIManager *uiManager, NSDictionary<NSNu
  */
 #define RCT_REMAP_VIEW_PROPERTY(name, keyPath, type) \
 + (NSArray<NSString *> *)propConfig_##name RCT_DYNAMIC { return @[@#type, @#keyPath]; }
+
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+/**
+ * These macros allow properties to only be mapped in OSX
+ */
+#define RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(name, type)
+#define RCT_EXPORT_OSX_VIEW_PROPERTY(name, type) \
+RCT_EXPORT_VIEW_PROPERTY(name, type)
+#define RCT_REMAP_NOT_OSX_VIEW_PROPERTY(name, keyPath, type)
+#define RCT_REMAP_OSX_VIEW_PROPERTY(name, keyPath, type) \
+RCT_REMAP_VIEW_PROPERTY(name, keyPath, type)
+#else
+#define RCT_EXPORT_NOT_OSX_VIEW_PROPERTY(name, type) \
+RCT_EXPORT_VIEW_PROPERTY(name, type)
+#define RCT_EXPORT_OSX_VIEW_PROPERTY(name, type)
+#define RCT_REMAP_NOT_OSX_VIEW_PROPERTY(name, keyPath, type) \
+RCT_REMAP_VIEW_PROPERTY(name, keyPath, type)
+#define RCT_REMAP_OSX_VIEW_PROPERTY(name, keyPath, type)
+#endif // ]TODO(macOS ISS#2323203)
 
 /**
  * This macro can be used when you need to provide custom logic for setting

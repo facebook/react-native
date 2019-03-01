@@ -103,6 +103,11 @@
                BlueprintName = "RNTesterIntegrationTests"
                ReferencedContainer = "container:RNTester.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "RNTesterSnapshotTests/testSliderExample">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
       <MacroExpansion>

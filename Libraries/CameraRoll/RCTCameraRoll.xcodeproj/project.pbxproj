@@ -256,6 +256,10 @@
 		58B511721A9E6B3D00147676 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					arm64e,
+				);
 				CLANG_STATIC_ANALYZER_MODE = deep;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
@@ -267,6 +271,10 @@
 		58B511731A9E6B3D00147676 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					arm64e,
+				);
 				CLANG_STATIC_ANALYZER_MODE = deep;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";

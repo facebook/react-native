@@ -5,12 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
+#import "RCTUIKit.h" // TODO(macOS ISS#2323203)
 
 #import <React/RCTBorderStyle.h>
 #import <React/RCTComponent.h>
 #import <React/RCTPointerEvents.h>
-#import <React/RCTView.h>
 
 @protocol RCTAutoInsetsProtocol;
 
@@ -18,12 +17,19 @@
 
 @interface RCTView : UIView
 
+// [TODO(OSS Candidate ISS#2710739)
+- (BOOL)becomeFirstResponder;
+- (BOOL)resignFirstResponder;
+// ]TODO(OSS Candidate ISS#2710739)
+
 /**
  * Accessibility event handlers
  */
 @property (nonatomic, copy) RCTDirectEventBlock onAccessibilityAction;
 @property (nonatomic, copy) RCTDirectEventBlock onAccessibilityTap;
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 @property (nonatomic, copy) RCTDirectEventBlock onMagicTap;
+#endif // TODO(macOS ISS#2323203)
 
 /**
  * Accessibility properties
@@ -39,10 +45,12 @@
                  withScrollView:(UIScrollView *)scrollView
                    updateOffset:(BOOL)updateOffset;
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 /**
  * Find the first view controller whose view, or any subview is the specified view.
  */
 + (UIEdgeInsets)contentInsetsForView:(UIView *)curView;
+#endif // TODO(macOS ISS#2323203)
 
 /**
  * Layout direction of the view.
@@ -112,5 +120,24 @@
  *  Insets used when hit testing inside this view.
  */
 @property (nonatomic, assign) UIEdgeInsets hitTestEdgeInsets;
+
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+/**
+ * macOS Properties
+ */
+@property (nonatomic, copy) RCTDirectEventBlock onDoubleClick;
+@property (nonatomic, copy) RCTDirectEventBlock onClick;
+@property (nonatomic, copy) RCTDirectEventBlock onMouseEnter;
+@property (nonatomic, copy) RCTDirectEventBlock onMouseLeave;
+@property (nonatomic, copy) RCTDirectEventBlock onDragEnter;
+@property (nonatomic, copy) RCTDirectEventBlock onDragLeave;
+@property (nonatomic, copy) RCTDirectEventBlock onDrop;
+#endif // ]TODO(macOS ISS#2323203)
+
+/**
+ * Common Focus Properties
+ */
+@property (nonatomic, copy) RCTBubblingEventBlock onFocus;
+@property (nonatomic, copy) RCTBubblingEventBlock onBlur;
 
 @end

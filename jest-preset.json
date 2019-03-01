@@ -1,7 +1,7 @@
 {
   "haste": {
     "defaultPlatform": "ios",
-    "platforms": ["android", "ios", "native"],
+    "platforms": ["android", "ios", "native", "macos", "windesktop", "uwp"],
     "hasteImplModulePath": "<rootDir>/node_modules/react-native/jest/hasteImpl.js",
     "providesModuleNodeModules": [
       "react-native"

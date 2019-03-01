@@ -133,6 +133,45 @@ exports.examples = [
       );
     },
   },
+  {
+    title: '<ScrollView> enable & disable\n',
+    description: 'ScrollView scrolling behaviour can be disabled and enabled',
+    render: function() {
+      class EnableDisableList extends React.Component<{}, *> {
+        state = {
+          scrollEnabled: true,
+        };
+        render() {
+          return (
+            <View>
+              <ScrollView
+                automaticallyAdjustContentInsets={false}
+                style={styles.scrollView}
+                scrollEnabled={this.state.scrollEnabled}>
+                {THUMB_URLS.map(createThumbRow)}
+              </ScrollView>
+              <Text>
+                {'Scrolling enabled = ' + this.state.scrollEnabled.toString()}
+              </Text>
+              <Button
+                label="Disable Scrolling"
+                onPress={() => {
+                  this.setState({scrollEnabled: false});
+                }}
+              />
+              <Button
+                label="Enable Scrolling"
+                onPress={() => {
+                  this.setState({scrollEnabled: true});
+                }}
+              />
+            </View>
+          );
+        }
+      }
+      return <EnableDisableList />;
+    },
+  },
 ];
 if (Platform.OS === 'ios') {
   exports.examples.push({

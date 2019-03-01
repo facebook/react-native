@@ -716,6 +716,16 @@ public class UIManagerModule extends ReactContextBaseJavaModule implements
     mUIImplementation.sendAccessibilityEvent(tag, eventType);
   }
 
+  @ReactMethod
+  public void performAccessibilityAction(int tag, int action) {
+    mUIImplementation.performAccessibilityAction(tag, action);
+  }
+
+  @ReactMethod
+  public void announceForAccessibility(int tag, String announcement) {
+    mUIImplementation.announceForAccessibility(tag, announcement);
+  }
+
   /**
    * Schedule a block to be executed on the UI thread. Useful if you need to execute
    * view logic after all currently queued view updates have completed.

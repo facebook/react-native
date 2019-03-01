@@ -1,11 +1,11 @@
 {
-  "name": "react-native",
-  "version": "0.57.0",
+  "name": "@microsoft/react-native",
+  "version": "0.3.5",
   "description": "A framework for building native apps using React",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git@github.com:facebook/react-native.git"
+    "url": "git@github.com:microsoft/react-native.git"
   },
   "engines": {
     "node": ">=8.3"
@@ -44,7 +44,10 @@
       ],
       "platforms": [
         "ios",
-        "android"
+        "macos",
+        "android",
+        "windesktop",
+        "uwp"
       ]
     },
     "modulePathIgnorePatterns": [
@@ -91,14 +94,16 @@
     ],
     "testEnvironment": "node"
   },
-  "main": "Libraries/react-native/react-native-implementation.js",
+  "main": "Libraries/react-native/react-native-implementation",
   "files": [
     ".flowconfig",
     "android",
     "cli.js",
     "flow",
     "flow-github",
+    "folly",
     "init.sh",
+    "IntegrationTests",
     "scripts/ios-configure-glog.sh",
     "scripts/ios-install-third-party.sh",
     "scripts/launchPackager.bat",
@@ -120,9 +125,12 @@
     "ReactAndroid",
     "ReactCommon",
     "README.md",
+    "RNTester/js",
+    "stubs/glog",
     "third-party-podspecs"
   ],
   "scripts": {
+    "build": "node -v",
     "start": "node ./local-cli/cli.js start",
     "test": "jest",
     "test-ci": "JEST_JUNIT_OUTPUT=\"reports/junit/js-test-results.xml\" jest --maxWorkers=2 --ci --testResultsProcessor=\"jest-junit\"",
@@ -149,6 +157,32 @@
     "react": "16.5.0"
   },
   "dependencies": {
+    "@babel/core": "^7.0.0",
+    "@babel/generator": "^7.0.0",
+    "@babel/plugin-proposal-class-properties": "^7.0.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
+    "@babel/plugin-transform-arrow-functions": "^7.0.0",
+    "@babel/plugin-transform-block-scoping": "^7.0.0",
+    "@babel/plugin-transform-classes": "^7.0.0",
+    "@babel/plugin-transform-computed-properties": "^7.0.0",
+    "@babel/plugin-transform-destructuring": "^7.0.0",
+    "@babel/plugin-transform-exponentiation-operator": "^7.0.0",
+    "@babel/plugin-transform-flow-strip-types": "^7.0.0",
+    "@babel/plugin-transform-for-of": "^7.0.0",
+    "@babel/plugin-transform-function-name": "^7.0.0",
+    "@babel/plugin-transform-literals": "^7.0.0",
+    "@babel/plugin-transform-modules-commonjs": "^7.0.0",
+    "@babel/plugin-transform-object-assign": "^7.0.0",
+    "@babel/plugin-transform-parameters": "^7.0.0",
+    "@babel/plugin-transform-react-display-name": "^7.0.0",
+    "@babel/plugin-transform-react-jsx-source": "^7.0.0",
+    "@babel/plugin-transform-react-jsx": "^7.0.0",
+    "@babel/plugin-transform-regenerator": "^7.0.0",
+    "@babel/plugin-transform-shorthand-properties": "^7.0.0",
+    "@babel/plugin-transform-spread": "^7.0.0",
+    "@babel/plugin-transform-sticky-regex": "^7.0.0",
+    "@babel/plugin-transform-template-literals": "^7.0.0",
+    "@babel/plugin-transform-unicode-regex": "^7.0.0",
     "absolute-path": "^0.0.0",
     "art": "^0.10.0",
     "base64-js": "^1.1.2",
@@ -172,6 +206,7 @@
     "lodash": "^4.17.5",
     "metro": "^0.45.0",
     "metro-babel-register": "^0.45.0",
+    "metro-config": "^0.45.0",
     "metro-core": "^0.45.0",
     "metro-memory-fs": "^0.45.0",
     "mime": "^1.3.4",
@@ -192,6 +227,7 @@
     "react-timer-mixin": "^0.13.2",
     "regenerator-runtime": "^0.11.0",
     "rimraf": "^2.5.4",
+    "schedule": "0.3.0",
     "semver": "^5.0.3",
     "serve-static": "^1.13.1",
     "shell-quote": "1.6.1",

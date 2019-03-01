@@ -9,6 +9,7 @@
 #include <folly/Conv.h>
 
 #include "JSCHelpers.h"
+#include "JSException.h"
 #include "JavaScriptCore.h"
 
 // See the comment under Value::fromDynamic()
@@ -29,7 +30,7 @@ Object Object::makeDate(JSContextRef ctx, Object::TimeType time) {
   JSValueRef arguments[1];
   arguments[0] = JSC_JSValueMakeNumber(
     ctx,
-    duration_cast<milliseconds>(time.time_since_epoch()).count());
+    static_cast<double>(duration_cast<milliseconds>(time.time_since_epoch()).count()));
 
   JSValueRef exn;
   auto result = JSC_JSObjectMakeDate(ctx, 1, arguments, &exn);
@@ -102,6 +103,7 @@ Value Value::fromDynamic(JSContextRef ctx, const folly::dynamic& value) {
 #endif
 }
 
+#if USE_FAST_FOLLY_DYNAMIC_CONVERSION
 JSValueRef Value::fromDynamicInner(JSContextRef ctx, const folly::dynamic& obj) {
   switch (obj.type()) {
     // For primitive types (and strings), just create and return an equivalent JSValue
@@ -152,6 +154,7 @@ JSValueRef Value::fromDynamicInner(JSContextRef ctx, const folly::dynamic& obj) 
       return JSC_JSValueMakeNull(ctx);
   }
 }
+#endif
 
 Object Value::asObject() const {
   JSValueRef exn;
@@ -208,11 +211,11 @@ Object::operator Value() const {
 }
 
 Value Object::callAsFunction(std::initializer_list<JSValueRef> args) const {
-  return callAsFunction(nullptr, args.size(), args.begin());
+  return callAsFunction(nullptr, static_cast<int>(args.size()), args.begin());
 }
 
 Value Object::callAsFunction(const Object& thisObj, std::initializer_list<JSValueRef> args) const {
-  return callAsFunction((JSObjectRef)thisObj, args.size(), args.begin());
+  return callAsFunction((JSObjectRef)thisObj, static_cast<int>(args.size()), args.begin());
 }
 
 Value Object::callAsFunction(int nArgs, const JSValueRef args[]) const {

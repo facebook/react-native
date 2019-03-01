@@ -1,0 +1,16 @@
+LIBLETNAME = PrivateData
+
+!include $(OPENSOURCE_REACTNATIVE)\OfficeISS\ReactCommon\make.inc
+
+INCLUDES = $(INCLUDES); \
+	$(PKGJAVASCRIPTCORE_TEMP)\build\native\include; \
+
+SOURCES_SHARED = \
+	$(SOURCES_SHARED) \
+	..\PrivateDataBase.cpp \
+
+SOURCES_WIN32 = $(SOURCES_SHARED) \
+
+SOURCES_ANDROID = $(SOURCES_SHARED) \
+
+SOURCES_WINRT = $(SOURCES_SHARED) \

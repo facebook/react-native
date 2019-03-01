@@ -19,7 +19,46 @@
 		2D3B5F2B1D9B0EB400451313 /* RCTNetworking.mm in Sources */ = {isa = PBXBuildFile; fileRef = 58B512071A9E6CE300147676 /* RCTNetworking.mm */; };
 		352DA0BA1B17855800AA15A8 /* RCTHTTPRequestHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 352DA0B81B17855800AA15A8 /* RCTHTTPRequestHandler.mm */; };
 		58B512081A9E6CE300147676 /* RCTNetworking.mm in Sources */ = {isa = PBXBuildFile; fileRef = 58B512071A9E6CE300147676 /* RCTNetworking.mm */; };
+		649BF6D820190E380068273E /* RCTHTTPRequestHandler.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 352DA0B71B17855800AA15A8 /* RCTHTTPRequestHandler.h */; };
+		649BF6D920190E3C0068273E /* RCTFileRequestHandler.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13EF800C1BCBE015003F47DD /* RCTFileRequestHandler.h */; };
+		649BF6DA20190E3E0068273E /* RCTDataRequestHandler.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 134E96981BCEB7F800AFFDA1 /* RCTDataRequestHandler.h */; };
+		649BF6DD20190E690068273E /* RCTHTTPRequestHandler.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 352DA0B71B17855800AA15A8 /* RCTHTTPRequestHandler.h */; };
+		649BF6DE20190E6C0068273E /* RCTFileRequestHandler.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13EF800C1BCBE015003F47DD /* RCTFileRequestHandler.h */; };
+		649BF6DF20190E6E0068273E /* RCTDataRequestHandler.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 134E96981BCEB7F800AFFDA1 /* RCTDataRequestHandler.h */; };
+		6BDE7A871ECB6E8400CC951F /* RCTNetworkTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 13D6D6691B5FCF8200883BE9 /* RCTNetworkTask.m */; };
+		6BDE7A881ECB6E8400CC951F /* RCTFileRequestHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 13EF800D1BCBE015003F47DD /* RCTFileRequestHandler.m */; };
+		6BDE7A891ECB6E8400CC951F /* RCTDataRequestHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 134E96991BCEB7F800AFFDA1 /* RCTDataRequestHandler.m */; };
+		6BDE7A8A1ECB6E8400CC951F /* RCTNetInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 1372B7361AB03E7B00659ED6 /* RCTNetInfo.m */; };
+		6BDE7A8B1ECB6E8400CC951F /* RCTNetworking.mm in Sources */ = {isa = PBXBuildFile; fileRef = 58B512071A9E6CE300147676 /* RCTNetworking.mm */; };
+		6BDE7A8C1ECB6E8400CC951F /* RCTHTTPRequestHandler.mm in Sources */ = {isa = PBXBuildFile; fileRef = 352DA0B81B17855800AA15A8 /* RCTHTTPRequestHandler.mm */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		649BF6D720190E260068273E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = include/RCTNetwork;
+			dstSubfolderSpec = 16;
+			files = (
+				649BF6D820190E380068273E /* RCTHTTPRequestHandler.h in CopyFiles */,
+				649BF6D920190E3C0068273E /* RCTFileRequestHandler.h in CopyFiles */,
+				649BF6DA20190E3E0068273E /* RCTDataRequestHandler.h in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		649BF6DC20190E4C0068273E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = include/RCTNetwork;
+			dstSubfolderSpec = 16;
+			files = (
+				649BF6DD20190E690068273E /* RCTHTTPRequestHandler.h in CopyFiles */,
+				649BF6DE20190E6C0068273E /* RCTFileRequestHandler.h in CopyFiles */,
+				649BF6DF20190E6E0068273E /* RCTDataRequestHandler.h in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		134E96981BCEB7F800AFFDA1 /* RCTDataRequestHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTDataRequestHandler.h; sourceTree = "<group>"; };
@@ -36,6 +75,7 @@
 		3D5FA63F1DE4B4790058FD77 /* RCTNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTNetworking.h; sourceTree = "<group>"; };
 		58B511DB1A9E6C8500147676 /* libRCTNetwork.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTNetwork.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		58B512071A9E6CE300147676 /* RCTNetworking.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTNetworking.mm; sourceTree = "<group>"; };
+		6BDE7A901ECB6E8400CC951F /* libRCTNetwork.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTNetwork.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -66,6 +106,7 @@
 			children = (
 				58B511DB1A9E6C8500147676 /* libRCTNetwork.a */,
 				2D2A28541D9B044C00D4039D /* libRCTNetwork-tvOS.a */,
+				6BDE7A901ECB6E8400CC951F /* libRCTNetwork.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -93,6 +134,7 @@
 			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "RCTNetwork" */;
 			buildPhases = (
 				58B511D71A9E6C8500147676 /* Sources */,
+				649BF6DC20190E4C0068273E /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -101,6 +143,22 @@
 			name = RCTNetwork;
 			productName = RCTDataManager;
 			productReference = 58B511DB1A9E6C8500147676 /* libRCTNetwork.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		6BDE7A851ECB6E8400CC951F /* RCTNetwork-macOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6BDE7A8D1ECB6E8400CC951F /* Build configuration list for PBXNativeTarget "RCTNetwork-macOS" */;
+			buildPhases = (
+				6BDE7A861ECB6E8400CC951F /* Sources */,
+				649BF6D720190E260068273E /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "RCTNetwork-macOS";
+			productName = RCTDataManager;
+			productReference = 6BDE7A901ECB6E8400CC951F /* libRCTNetwork.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -134,6 +192,7 @@
 			projectRoot = "";
 			targets = (
 				58B511DA1A9E6C8500147676 /* RCTNetwork */,
+				6BDE7A851ECB6E8400CC951F /* RCTNetwork-macOS */,
 				2D2A28531D9B044C00D4039D /* RCTNetwork-tvOS */,
 			);
 		};
@@ -163,6 +222,19 @@
 				1372B7371AB03E7B00659ED6 /* RCTNetInfo.m in Sources */,
 				58B512081A9E6CE300147676 /* RCTNetworking.mm in Sources */,
 				352DA0BA1B17855800AA15A8 /* RCTHTTPRequestHandler.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6BDE7A861ECB6E8400CC951F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6BDE7A871ECB6E8400CC951F /* RCTNetworkTask.m in Sources */,
+				6BDE7A881ECB6E8400CC951F /* RCTFileRequestHandler.m in Sources */,
+				6BDE7A891ECB6E8400CC951F /* RCTDataRequestHandler.m in Sources */,
+				6BDE7A8A1ECB6E8400CC951F /* RCTNetInfo.m in Sources */,
+				6BDE7A8B1ECB6E8400CC951F /* RCTNetworking.mm in Sources */,
+				6BDE7A8C1ECB6E8400CC951F /* RCTHTTPRequestHandler.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -251,6 +323,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -303,6 +376,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -317,6 +391,10 @@
 		58B511F01A9E6C8500147676 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					arm64e,
+				);
 				CLANG_STATIC_ANALYZER_MODE = deep;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
@@ -328,10 +406,37 @@
 		58B511F11A9E6C8500147676 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					arm64e,
+				);
 				CLANG_STATIC_ANALYZER_MODE = deep;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RCTNetwork;
+			};
+			name = Release;
+		};
+		6BDE7A8E1ECB6E8400CC951F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_STATIC_ANALYZER_MODE = deep;
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = RCTNetwork;
+				RUN_CLANG_STATIC_ANALYZER = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		6BDE7A8F1ECB6E8400CC951F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_STATIC_ANALYZER_MODE = deep;
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = RCTNetwork;
+				SDKROOT = macosx;
 			};
 			name = Release;
 		};
@@ -361,6 +466,15 @@
 			buildConfigurations = (
 				58B511F01A9E6C8500147676 /* Debug */,
 				58B511F11A9E6C8500147676 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6BDE7A8D1ECB6E8400CC951F /* Build configuration list for PBXNativeTarget "RCTNetwork-macOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6BDE7A8E1ECB6E8400CC951F /* Debug */,
+				6BDE7A8F1ECB6E8400CC951F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

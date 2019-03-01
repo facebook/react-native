@@ -1,0 +1,24 @@
+LIBLET_ANDROID = 1
+LIBLET_DYNLINK = 1
+
+!include ..\sources.inc
+
+TARGETNAME = folly_json
+
+INCLUDES = \
+    $(INCLUDES) \
+    $(OPENSOURCE_REACTNATIVE)\OfficeISS\glog\src\glog; \
+
+SOURCES = $(SOURCES_ANDROID) \
+
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -DLOG_TAG=\"ReactNative\" -Wno-c++11-compat
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -Wno-shadow -Wno-unused-local-typedef $(CXX11_FLAGS)
+
+LOCAL_LDLIBS = \
+    $(LOCAL_LDLIBS) \
+    $(OPENSOURCE_REACTNATIVETARGETDIR)\libglog.so \
+
+LOCAL_WHOLE_STATIC_LIBRARIES = \
+    $(LOCAL_WHOLE_STATIC_LIBRARIES) \
+    $(OPENSOURCE_REACTNATIVETARGETLIBDIR)\libfollydetail.a \
+    $(OPENSOURCE_REACTNATIVETARGETLIBDIR)\libdouble-conversion.a \
