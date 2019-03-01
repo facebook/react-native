@@ -340,9 +340,6 @@ module.exports = {
   get requireNativeComponent() {
     return require('requireNativeComponent');
   },
-  get takeSnapshot() {
-    return require('takeSnapshot');
-  },
 
   // Prop Types
   get ColorPropType() {
