@@ -155,7 +155,7 @@ let hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
 if (hairlineWidth === 0) {
   hairlineWidth = 1 / PixelRatio.get();
 }
-  
+
 const fill = {
   flex: 1,
 };
@@ -236,7 +236,7 @@ module.exports = {
    * A line with hairline width may not be visible if your simulator is downscaled.
    */
   hairlineWidth,
-  
+
   /**
    * A very common pattern is to create views that fills the parent remaining space,
    * so `fill` can be used for convenience and to reduce duplication of these repeated
