@@ -246,14 +246,10 @@ class JSCRuntime : public jsi::Runtime {
 // JSStringRef utilities
 namespace {
 std::string JSStringToSTLString(JSStringRef str) {
-  std::string result;
   size_t maxBytes = JSStringGetMaximumUTF8CStringSize(str);
-  result.resize(maxBytes);
-  size_t bytesWritten = JSStringGetUTF8CString(str, &result[0], maxBytes);
-  // JSStringGetUTF8CString writes the null terminator, so we want to resize
-  // to `bytesWritten - 1` so that `result` has the correct length.
-  result.resize(bytesWritten - 1);
-  return result;
+  std::vector<char> buffer(maxBytes);
+  JSStringGetUTF8CString(str, buffer.data(), maxBytes);
+  return std::string(buffer.data());
 }
 
 JSStringRef getLengthString() {
