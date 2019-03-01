@@ -9,8 +9,12 @@
 #include <fbsystrace.h>
 #endif
 
-#ifdef __OBJC__
-#define RCT_UNUSED ___unused
+#ifdef __unused
+#define RCT_UNUSED __unused
+#elif __cplusplus >= 201703L
+#define RCT_UNUSED [[maybe_unused]]
+#elif defined(__GNUC__)
+#define RCT_UNUSED __attribute__((unused))
 #else
 #define RCT_UNUSED
 #endif
