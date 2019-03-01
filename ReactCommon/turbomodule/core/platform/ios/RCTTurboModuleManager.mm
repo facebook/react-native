@@ -9,6 +9,7 @@
 
 #import <cassert>
 
+#import <React/RCTBridge+Private.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTCxxModule.h>
 #import <React/RCTLog.h>
@@ -230,6 +231,16 @@ static Class getFallbackClassFromName(const char *name) {
   }
 
   _rctTurboModuleCache.insert({moduleName, module});
+
+  /**
+   * Broadcast that this TurboModule was created.
+   *
+   * TODO(T41180176): Investigate whether we can get rid of this after all
+   * TurboModules are rolled out
+   */
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidInitializeModuleNotification
+                                                      object:_bridge.parentBridge
+                                                    userInfo:@{@"module": module, @"bridge": RCTNullIfNil(_bridge.parentBridge)}];
   return module;
 }
 
