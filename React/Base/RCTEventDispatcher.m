@@ -85,11 +85,15 @@ RCT_EXPORT_MODULE()
     RCTAssert([body[@"target"] isKindOfClass:[NSNumber class]],
       @"Event body dictionary must include a 'target' property containing a React tag");
   }
+  
+  if (!body[@"target"]) {
+    return;
+  }
 
   name = RCTNormalizeInputEventName(name);
   [_bridge enqueueJSCall:@"RCTEventEmitter"
                   method:@"receiveEvent"
-                    args:body ? @[body[@"target"], name, body] : @[body[@"target"], name]
+                    args:@[body[@"target"], name, body]
               completion:NULL];
 }
 
