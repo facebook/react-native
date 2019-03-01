@@ -94,18 +94,6 @@ public:
   }
 };
 
-struct YGConfigContext {
-  global_ref<jobject>* logger;
-  global_ref<jobject>* config;
-  YGConfigContext() : logger(nullptr), config(nullptr) {}
-  ~YGConfigContext() {
-    delete config;
-    config = nullptr;
-    delete logger;
-    logger = nullptr;
-  }
-};
-
 struct YGNodeContext {
   weak_ref<jobject>* ygNodeJObjectRef{nullptr};
   int edgeSetFlag = 0;
@@ -234,6 +222,7 @@ static void YGTransferLayoutOutputsRecursive(
     obj->setFieldValue(
         borderBottomField, YGNodeLayoutGetBorder(root, YGEdgeBottom));
   }
+
   obj->setFieldValue<jboolean>(hasNewLayoutField, true);
   YGTransferLayoutDirection(root, obj);
   root->setHasNewLayout(false);
@@ -342,15 +331,17 @@ static int YGJNILogFunc(
       JYogaLogLevel::javaClassStatic()
           ->getStaticMethod<JYogaLogLevel::javaobject(jint)>("fromInt");
 
-  if (auto obj = YGNodeJobject(node, layoutContext)) {
-    auto jlogger =
-        reinterpret_cast<global_ref<jobject>*>(YGConfigGetContext(config));
-    logFunc(
-        jlogger->get(),
-        obj,
-        logLevelFromInt(
-            JYogaLogLevel::javaClassStatic(), static_cast<jint>(level)),
-        Environment::current()->NewStringUTF(buffer.data()));
+  auto jloggerPtr =
+      static_cast<global_ref<jobject>*>(YGConfigGetContext(config));
+  if (jloggerPtr != nullptr) {
+    if (auto obj = YGNodeJobject(node, layoutContext)) {
+      logFunc(
+          *jloggerPtr,
+          obj,
+          logLevelFromInt(
+              JYogaLogLevel::javaClassStatic(), static_cast<jint>(level)),
+          Environment::current()->NewStringUTF(buffer.data()));
+    }
   }
 
   return result;
@@ -613,10 +604,9 @@ jlong jni_YGConfigNew(alias_ref<jobject>) {
 
 void jni_YGConfigFree(alias_ref<jobject>, jlong nativePointer) {
   const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
-  auto context = reinterpret_cast<YGConfigContext*>(YGConfigGetContext(config));
-  if (context) {
-    delete context;
-  }
+  // unique_ptr will destruct the underlying global_ref, if present.
+  auto context = std::unique_ptr<global_ref<jobject>>{
+      static_cast<global_ref<jobject>*>(YGConfigGetContext(config))};
   YGConfigFree(config);
 }
 
@@ -675,20 +665,21 @@ void jni_YGConfigSetLogger(
     jlong nativePointer,
     alias_ref<jobject> logger) {
   const YGConfigRef config = _jlong2YGConfigRef(nativePointer);
-  auto context = reinterpret_cast<YGConfigContext*>(YGConfigGetContext(config));
-  if (context && context->logger) {
-    delete context->logger;
-    context->logger = nullptr;
-  }
+  auto context =
+      reinterpret_cast<global_ref<jobject>*>(YGConfigGetContext(config));
 
   if (logger) {
-    if (!context) {
-      context = new YGConfigContext();
+    if (context == nullptr) {
+      context = new global_ref<jobject>{};
       YGConfigSetContext(config, context);
     }
-    context->logger = new global_ref<jobject>(make_global(logger));
+    *context = make_global(logger);
     config->setLogger(YGJNILogFunc);
   } else {
+    if (context != nullptr) {
+      delete context;
+      YGConfigSetContext(config, nullptr);
+    }
     config->setLogger(nullptr);
   }
 }
