@@ -31,7 +31,12 @@ UnsharedRootShadowNode RootShadowNode::clone(
   auto props = std::make_shared<const RootProps>(
       *getProps(), layoutConstraints, layoutContext);
   auto newRootShadowNode = std::make_shared<RootShadowNode>(
-      *this, ShadowNodeFragment{.props = props});
+      *this,
+      ShadowNodeFragment{
+          /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
+          /* .rootTag = */ ShadowNodeFragment::surfaceIdPlaceholder(),
+          /* .props = */ props,
+      });
   return newRootShadowNode;
 }
 
@@ -54,8 +59,13 @@ UnsharedRootShadowNode RootShadowNode::clone(
     std::replace(children.begin(), children.end(), oldChild, newChild);
 
     auto sharedChildren = std::make_shared<SharedShadowNodeList>(children);
-    auto newParent =
-        oldParent->clone(ShadowNodeFragment{.children = sharedChildren});
+    auto newParent = oldParent->clone({
+        /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
+        /* .rootTag = */ ShadowNodeFragment::surfaceIdPlaceholder(),
+        /* .props = */ ShadowNodeFragment::propsPlaceholder(),
+        /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
+        /* .children = */ sharedChildren,
+    });
 
     newParent->replaceChild(oldChild, newChild);
 
