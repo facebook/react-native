@@ -14,9 +14,7 @@ const Platform = require('Platform');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 
-const requireNativeComponent = require('requireNativeComponent');
-
-const RCTInputAccessoryView = requireNativeComponent('RCTInputAccessoryView');
+const RCTInputAccessoryViewNativeComponent = require('RCTInputAccessoryViewNativeComponent');
 
 import type {ViewStyleProp} from 'StyleSheet';
 
@@ -100,12 +98,12 @@ class InputAccessoryView extends React.Component<Props> {
     }
 
     return (
-      <RCTInputAccessoryView
+      <RCTInputAccessoryViewNativeComponent
         style={[this.props.style, styles.container]}
         nativeID={this.props.nativeID}
         backgroundColor={this.props.backgroundColor}>
         {this.props.children}
-      </RCTInputAccessoryView>
+      </RCTInputAccessoryViewNativeComponent>
     );
   }
 }

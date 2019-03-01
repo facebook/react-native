@@ -27,6 +27,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)textInputDidChangeSelection;
 
+@optional
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView;
+
 @end
 
 NS_ASSUME_NONNULL_END

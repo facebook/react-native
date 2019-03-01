@@ -53,18 +53,23 @@ esac
 
 # Path to react-native folder inside node_modules
 REACT_NATIVE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# The project should be located next to where react-native is installed
+# in node_modules.
+PROJECT_ROOT=${PROJECT_ROOT:-"$REACT_NATIVE_DIR/../.."}
 
-# Xcode project file for React Native apps is located in ios/ subfolder
-cd "${REACT_NATIVE_DIR}"/../..
+cd $PROJECT_ROOT
 
 # Define NVM_DIR and source the nvm.sh setup script
 [ -z "$NVM_DIR" ] && export NVM_DIR="$HOME/.nvm"
 
 # Define entry file
-if [[ -s "index.ios.js" ]]; then
-  ENTRY_FILE=${1:-index.ios.js}
-else
-  ENTRY_FILE=${1:-index.js}
+if [[ "$ENTRY_FILE" ]]; then
+  # Use ENTRY_FILE defined by user
+  :
+elif [[ -s "index.ios.js" ]]; then
+   ENTRY_FILE=${1:-index.ios.js}
+ else
+   ENTRY_FILE=${1:-index.js}
 fi
 
 if [[ -s "$HOME/.nvm/nvm.sh" ]]; then
@@ -80,6 +85,14 @@ elif [[ -x "$(command -v brew)" && -x "$(brew --prefix nodenv)/bin/nodenv" ]]; t
   eval "$("$(brew --prefix nodenv)/bin/nodenv" init -)"
 fi
 
+# Set up the ndenv of anyenv if preset
+if [[ ! -x node && -d ${HOME}/.anyenv/bin ]]; then
+  export PATH=${HOME}/.anyenv/bin:${PATH}
+  if [[ "$(anyenv envs | grep -c ndenv )" -eq 1 ]]; then
+    eval "$(anyenv init -)"
+  fi
+fi
+
 [ -z "$NODE_BINARY" ] && export NODE_BINARY="node"
 
 [ -z "$NODE_ARGS" ] && export NODE_ARGS=""
@@ -91,7 +104,7 @@ fi
 if [[ -z "$BUNDLE_CONFIG" ]]; then
   CONFIG_ARG=""
 else
-  CONFIG_ARG="--config $(pwd)/$BUNDLE_CONFIG"
+  CONFIG_ARG="--config $BUNDLE_CONFIG"
 fi
 
 nodejs_not_found()

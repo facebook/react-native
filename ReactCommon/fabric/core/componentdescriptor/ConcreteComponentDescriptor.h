@@ -11,10 +11,13 @@
 #include <memory>
 
 #include <react/core/ComponentDescriptor.h>
+#include <react/core/EventDispatcher.h>
 #include <react/core/Props.h>
 #include <react/core/ShadowNode.h>
 #include <react/core/ShadowNodeFragment.h>
-#include <react/events/EventDispatcher.h>
+#include <react/core/State.h>
+#include <react/core/StateCoordinator.h>
+#include <react/core/StateUpdate.h>
 
 namespace facebook {
 namespace react {
@@ -31,14 +34,18 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
       "ShadowNodeT must be a descendant of ShadowNode");
 
   using SharedShadowNodeT = std::shared_ptr<const ShadowNodeT>;
+
+ public:
+  using ConcreteShadowNode = ShadowNodeT;
   using ConcreteProps = typename ShadowNodeT::ConcreteProps;
   using SharedConcreteProps = typename ShadowNodeT::SharedConcreteProps;
   using ConcreteEventEmitter = typename ShadowNodeT::ConcreteEventEmitter;
   using SharedConcreteEventEmitter =
       typename ShadowNodeT::SharedConcreteEventEmitter;
+  using ConcreteState = typename ShadowNodeT::ConcreteState;
+  using ConcreteStateData = typename ShadowNodeT::ConcreteState::Data;
 
- public:
-  ConcreteComponentDescriptor(SharedEventDispatcher eventDispatcher)
+  ConcreteComponentDescriptor(EventDispatcher::Shared eventDispatcher)
       : eventDispatcher_(eventDispatcher) {}
 
   ComponentHandle getComponentHandle() const override {
@@ -95,6 +102,32 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
         std::move(eventTarget), tag, eventDispatcher_);
   }
 
+  virtual State::Shared createInitialState(
+      const SharedProps &props) const override {
+    if (std::is_same<ConcreteStateData, StateData>::value) {
+      // Default case: Returning `null` for nodes that don't use `State`.
+      return nullptr;
+    }
+
+    return std::make_shared<ConcreteState>(
+        ConcreteShadowNode::initialStateData(
+            std::static_pointer_cast<const ConcreteProps>(props)),
+        std::make_shared<StateCoordinator>(eventDispatcher_));
+  }
+
+  virtual State::Shared createState(
+      const State::Shared &previousState,
+      const StateData::Shared &data) const override {
+    if (std::is_same<ConcreteStateData, StateData>::value) {
+      // Default case: Returning `null` for nodes that don't use `State`.
+      return nullptr;
+    }
+
+    return std::make_shared<const ConcreteState>(
+        std::move(*std::static_pointer_cast<ConcreteStateData>(data)),
+        *std::static_pointer_cast<const ConcreteState>(previousState));
+  }
+
  protected:
   virtual void adopt(UnsharedShadowNode shadowNode) const {
     // Default implementation does nothing.
@@ -102,7 +135,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   }
 
  private:
-  mutable SharedEventDispatcher eventDispatcher_{nullptr};
+  mutable EventDispatcher::Shared eventDispatcher_{nullptr};
 
   mutable ShadowNodeCloneFunction cloneFunction_;
 

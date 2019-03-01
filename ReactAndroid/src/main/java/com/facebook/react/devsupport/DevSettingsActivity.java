@@ -23,6 +23,6 @@ public class DevSettingsActivity extends PreferenceActivity {
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setTitle(getApplication().getResources().getString(R.string.catalyst_settings_title));
-    addPreferencesFromResource(R.xml.preferences);
+    addPreferencesFromResource(R.xml.rn_dev_preferences);
   }
 }

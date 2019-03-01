@@ -106,6 +106,7 @@ public class ViewProps {
   public static final String VISIBLE = "visible";
 
   public static final String ALLOW_FONT_SCALING = "allowFontScaling";
+  public static final String MAX_FONT_SIZE_MULTIPLIER = "maxFontSizeMultiplier";
   public static final String INCLUDE_FONT_PADDING = "includeFontPadding";
 
   public static final String BORDER_WIDTH = "borderWidth";

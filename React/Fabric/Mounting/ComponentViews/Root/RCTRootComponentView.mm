@@ -7,8 +7,8 @@
 
 #import "RCTRootComponentView.h"
 
-#import <react/components/root/RootShadowNode.h>
 #import <react/components/root/RootProps.h>
+#import <react/components/root/RootShadowNode.h>
 
 using namespace facebook::react;
 

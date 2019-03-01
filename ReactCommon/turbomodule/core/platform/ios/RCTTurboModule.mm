@@ -281,31 +281,53 @@ SEL resolveMethodSelector(
 
   // PromiseKind expects 2 additional function args for resolve() and reject()
   size_t adjustedCount = valueKind == PromiseKind ? argCount + 2 : argCount;
-  NSString *baseMethodName = [NSString stringWithUTF8String:methodName.c_str()];
 
+  // Notes:
+  // - This may be expensive lookup. The codegen output should specify the exact selector name.
+  // - Some classes may have strictly typed arg that isn't compatible with plain NSDictionary/NSArray. For those, allow a helper method
+  //   with "__turbo__" prefix (hand-written) that can do the translation from plain NSDictionary/NSArray to the stricter type.
+  //   This is only for migration purpose.
   if (adjustedCount == 0) {
-    selector = NSSelectorFromString(baseMethodName);
-    if (![module respondsToSelector:selector]) {
-      throw std::runtime_error("Unable to find method: " + methodName + " for module: " + moduleName + ". Make sure the module is installed correctly.");
+    SEL turboSelector = NSSelectorFromString([NSString stringWithFormat:@"__turbo__%s", methodName.c_str()]);
+    if ([module respondsToSelector:turboSelector]) {
+      selector = turboSelector;
+    } else {
+      selector = NSSelectorFromString([NSString stringWithUTF8String:methodName.c_str()]);
+      if (![module respondsToSelector:selector]) {
+        throw std::runtime_error("Unable to find method: " + methodName + " for module: " + moduleName + ". Make sure the module is installed correctly.");
+      }
     }
   } else if (adjustedCount == 1) {
-    selector = NSSelectorFromString([NSString stringWithFormat:@"%@:", baseMethodName]);
-    if (![module respondsToSelector:selector]) {
-      throw std::runtime_error("Unable to find method: " + methodName + " for module: " + moduleName + ". Make sure the module is installed correctly.");
+    SEL turboSelector = NSSelectorFromString([NSString stringWithFormat:@"__turbo__%s:", methodName.c_str()]);
+    if ([module respondsToSelector:turboSelector]) {
+      selector = turboSelector;
+    } else {
+      selector = NSSelectorFromString([NSString stringWithFormat:@"%s:", methodName.c_str()]);
+      if (![module respondsToSelector:selector]) {
+        throw std::runtime_error("Unable to find method: " + methodName + " for module: " + moduleName + ". Make sure the module is installed correctly.");
+      }
     }
   } else {
-    // TODO: This may be expensive lookup. The codegen output should specify the exact selector name.
+    SEL turboSelector = nil;
     unsigned int numberOfMethods;
     Method *methods = class_copyMethodList([module class], &numberOfMethods);
     if (methods) {
+      NSString *methodPrefix = [NSString stringWithFormat:@"%s:", methodName.c_str()];
+      NSString *turboMethodPrefix = [NSString stringWithFormat:@"__turbo__%s:", methodName.c_str()];
       for (unsigned int i = 0; i < numberOfMethods; i++) {
         SEL s = method_getName(methods[i]);
-        if ([NSStringFromSelector(s) hasPrefix:[NSString stringWithFormat:@"%@:", baseMethodName]]) {
+        NSString *objcMethodName = NSStringFromSelector(s);
+        if ([objcMethodName hasPrefix:methodPrefix]) {
           selector = s;
+        } else if ([objcMethodName hasPrefix:turboMethodPrefix]) {
+          turboSelector = s;
           break;
         }
       }
       free(methods);
+    }
+    if (turboSelector) {
+      selector = turboSelector;
     }
     if (!selector) {
       throw std::runtime_error("Unable to find method: " + methodName + " for module: " + moduleName + ". Make sure the module is installed correctly.");
@@ -351,14 +373,14 @@ NSInvocation *getMethodInvocation(
  * - ObjC module methods will be always be called from JS thread.
  *   They may decide to dispatch to a different queue as needed.
  */
-void performMethodInvocation(
+jsi::Value performMethodInvocation(
     jsi::Runtime &runtime,
     NSInvocation *inv,
     TurboModuleMethodValueKind valueKind,
     const id<RCTTurboModule> module,
-    std::shared_ptr<JSCallInvoker> jsInvoker,
-    jsi::Value *result) {
-  *result = jsi::Value::undefined();
+    std::shared_ptr<JSCallInvoker> jsInvoker) {
+
+  __block void *rawResult = NULL;
   jsi::Runtime *rt = &runtime;
   void (^block)() = ^{
     [inv invokeWithTarget:module];
@@ -367,33 +389,7 @@ void performMethodInvocation(
       return;
     }
 
-    void *rawResult = NULL;
-    [inv getReturnValue:&rawResult];
-
-    // TODO: Re-use value conversion logic from existing impl, if possible.
-    switch (valueKind) {
-      case BooleanKind:
-        *result = convertNSNumberToJSIBoolean(*rt, (__bridge NSNumber *)rawResult);
-        break;
-      case NumberKind:
-        *result = convertNSNumberToJSINumber(*rt, (__bridge NSNumber *)rawResult);
-        break;
-      case StringKind:
-        *result = convertNSStringToJSIString(*rt, (__bridge NSString *)rawResult);
-        break;
-      case ObjectKind:
-        *result = convertNSDictionaryToJSIObject(*rt, (__bridge NSDictionary *)rawResult);
-        break;
-      case ArrayKind:
-        *result = convertNSArrayToJSIArray(*rt, (__bridge NSArray *)rawResult);
-        break;
-      case FunctionKind:
-        throw std::runtime_error("doInvokeTurboModuleMethod: FunctionKind is not supported yet.");
-      case PromiseKind:
-        throw std::runtime_error("doInvokeTurboModuleMethod: PromiseKind wasn't handled properly.");
-      case VoidKind:
-        throw std::runtime_error("doInvokeTurboModuleMethod: VoidKind wasn't handled properly.");
-    }
+    [inv getReturnValue:(void *)&rawResult];
   };
 
   // Backward-compatibility layer for calling module methods on specific queue.
@@ -421,6 +417,26 @@ void performMethodInvocation(
     } else {
       dispatch_sync(methodQueue, block);
     }
+  }
+
+  // TODO: Re-use value conversion logic from existing impl, if possible.
+  switch (valueKind) {
+    case VoidKind:
+      return jsi::Value::undefined();
+    case BooleanKind:
+      return convertNSNumberToJSIBoolean(*rt, (__bridge NSNumber *)rawResult);
+    case NumberKind:
+      return convertNSNumberToJSINumber(*rt, (__bridge NSNumber *)rawResult);
+    case StringKind:
+      return convertNSStringToJSIString(*rt, (__bridge NSString *)rawResult);
+    case ObjectKind:
+      return convertNSDictionaryToJSIObject(*rt, (__bridge NSDictionary *)rawResult);
+    case ArrayKind:
+      return convertNSArrayToJSIArray(*rt, (__bridge NSArray *)rawResult);
+    case FunctionKind:
+      throw std::runtime_error("convertInvocationResultToJSIValue: FunctionKind is not supported yet.");
+    case PromiseKind:
+      throw std::runtime_error("convertInvocationResultToJSIValue: PromiseKind wasn't handled properly.");
   }
 }
 
@@ -454,14 +470,11 @@ jsi::Value ObjCTurboModule::invokeMethod(
           [inv setArgument:(void *)&resolveBlock atIndex:count + 2];
           [inv setArgument:(void *)&rejectBlock atIndex:count + 3];
           // The return type becomes void in the ObjC side.
-          jsi::Value result;
-          performMethodInvocation(rt, inv, VoidKind, instance_, jsInvoker_, &result);
+          performMethodInvocation(rt, inv, VoidKind, instance_, jsInvoker_);
         });
   }
 
-  jsi::Value result;
-  performMethodInvocation(runtime, inv, valueKind, instance_, jsInvoker_, &result);
-  return result;
+  return performMethodInvocation(runtime, inv, valueKind, instance_, jsInvoker_);
 }
 
 } // namespace react

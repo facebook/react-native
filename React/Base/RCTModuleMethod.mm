@@ -550,7 +550,6 @@ RCT_EXTERN_C_END
   [_invocation invokeWithTarget:module];
 #endif
 
-  index = 2;
   [_retainedObjects removeAllObjects];
 
   if (_methodInfo->isSync) {

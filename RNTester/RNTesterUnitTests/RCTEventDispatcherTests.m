@@ -64,8 +64,8 @@
 @end
 
 @implementation RCTDummyBridge
-- (void)dispatchBlock:(__unused dispatch_block_t)block
-                queue:(__unused dispatch_queue_t)queue
+- (void)dispatchBlock:(dispatch_block_t __unused)block
+                queue:(dispatch_queue_t __unused)queue
 {}
 @end
 

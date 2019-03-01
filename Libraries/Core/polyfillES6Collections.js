@@ -18,8 +18,10 @@ const {polyfillGlobal} = require('PolyfillFunctions');
  */
 const _shouldPolyfillCollection = require('_shouldPolyfillES6Collection');
 if (_shouldPolyfillCollection('Map')) {
+  require('_wrapObjectFreezeAndFriends');
   polyfillGlobal('Map', () => require('Map'));
 }
 if (_shouldPolyfillCollection('Set')) {
+  require('_wrapObjectFreezeAndFriends');
   polyfillGlobal('Set', () => require('Set'));
 }

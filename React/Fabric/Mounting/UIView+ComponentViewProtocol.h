@@ -9,7 +9,6 @@
 
 #import <React/RCTComponentViewProtocol.h>
 
-
 NS_ASSUME_NONNULL_BEGIN
 
 /**
@@ -17,19 +16,18 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface UIView (ComponentViewProtocol)
 
-- (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView
-                          index:(NSInteger)index;
+- (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index;
 
-- (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView
-                            index:(NSInteger)index;
+- (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index;
 
-- (void)updateProps:(facebook::react::SharedProps)props
-           oldProps:(facebook::react::SharedProps)oldProps;
+- (void)updateProps:(facebook::react::SharedProps)props oldProps:(facebook::react::SharedProps)oldProps;
 
 - (void)updateEventEmitter:(facebook::react::SharedEventEmitter)eventEmitter;
 
 - (void)updateLocalData:(facebook::react::SharedLocalData)localData
            oldLocalData:(facebook::react::SharedLocalData)oldLocalData;
+
+- (void)updateState:(facebook::react::State::Shared)state oldState:(facebook::react::State::Shared)oldState;
 
 - (void)updateLayoutMetrics:(facebook::react::LayoutMetrics)layoutMetrics
            oldLayoutMetrics:(facebook::react::LayoutMetrics)oldLayoutMetrics;

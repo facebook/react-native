@@ -1045,7 +1045,7 @@ public class ReactInstanceManager {
 
     @Nullable Bundle initialProperties = rootView.getAppProperties();
     final int rootTag = uiManagerModule.addRootView(
-      rootView,
+      rootView.getView(),
       initialProperties == null ?
             new WritableNativeMap() : Arguments.fromBundle(initialProperties),
         rootView.getInitialUITemplate());
@@ -1075,10 +1075,10 @@ public class ReactInstanceManager {
     UiThreadUtil.assertOnUiThread();
     if (rootView.getUIManagerType() == FABRIC) {
       catalystInstance.getJSModule(ReactFabric.class)
-        .unmountComponentAtNode(rootView.getId());
+        .unmountComponentAtNode(rootView.getRootViewTag());
     } else {
       catalystInstance.getJSModule(AppRegistry.class)
-        .unmountApplicationComponentAtRootTag(rootView.getId());
+        .unmountApplicationComponentAtRootTag(rootView.getRootViewTag());
     }
 
   }
