@@ -219,9 +219,12 @@ RCT_EXPORT_MODULE()
 
   if (!devSettings.isRemoteDebuggingAvailable) {
     [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Remote JS Debugger Unavailable" handler:^{
+      NSString *message = RCTTurboModuleEnabled() ?
+          @"You cannot use remote JS debugging when TurboModule system is enabled" :
+      @"You need to include the RCTWebSocket library to enable remote JS debugging";
       UIAlertController *alertController = [UIAlertController
         alertControllerWithTitle:@"Remote JS Debugger Unavailable"
-        message:@"You need to include the RCTWebSocket library to enable remote JS debugging"
+        message:message
         preferredStyle:UIAlertControllerStyleAlert];
       __weak typeof(alertController) weakAlertController = alertController;
       [alertController addAction:
