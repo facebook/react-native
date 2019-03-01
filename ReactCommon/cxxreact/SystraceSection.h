@@ -9,6 +9,12 @@
 #include <fbsystrace.h>
 #endif
 
+#ifdef __OBJC__
+#define RCT_UNUSED ___unused
+#else
+#define RCT_UNUSED
+#endif
+
 namespace facebook {
 namespace react {
 
@@ -26,7 +32,7 @@ struct ConcreteSystraceSection {
 public:
   template<typename... ConvertsToStringPiece>
   explicit
-  ConcreteSystraceSection(__unused const char* name, __unused ConvertsToStringPiece&&... args)
+  ConcreteSystraceSection(RCT_UNUSED const char* name, RCT_UNUSED ConvertsToStringPiece&&... args)
     : m_section(TRACE_TAG_REACT_CXX_BRIDGE, name, args...)
   {}
 
@@ -39,7 +45,7 @@ struct DummySystraceSection {
 public:
   template<typename... ConvertsToStringPiece>
   explicit
-  DummySystraceSection(__unused const char* name, __unused ConvertsToStringPiece&&... args)
+  DummySystraceSection(RCT_UNUSED const char* name, RCT_UNUSED ConvertsToStringPiece&&... args)
     {}
 };
 using SystraceSection = DummySystraceSection;
