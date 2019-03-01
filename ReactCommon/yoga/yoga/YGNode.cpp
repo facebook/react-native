@@ -5,12 +5,38 @@
  * file in the root directory of this source tree.
  */
 #include "YGNode.h"
+#include <algorithm>
 #include <iostream>
 #include "CompactValue.h"
 #include "Utils.h"
 
 using namespace facebook;
 using facebook::yoga::detail::CompactValue;
+
+YGNode::YGNode(YGNode&& node) {
+  context_ = node.context_;
+  hasNewLayout_ = node.hasNewLayout_;
+  isReferenceBaseline_ = node.isReferenceBaseline_;
+  isDirty_ = node.isDirty_;
+  nodeType_ = node.nodeType_;
+  measureUsesContext_ = node.measureUsesContext_;
+  baselineUsesContext_ = node.baselineUsesContext_;
+  printUsesContext_ = node.printUsesContext_;
+  measure_ = node.measure_;
+  baseline_ = node.baseline_;
+  print_ = node.print_;
+  dirtied_ = node.dirtied_;
+  style_ = node.style_;
+  layout_ = node.layout_;
+  lineIndex_ = node.lineIndex_;
+  owner_ = node.owner_;
+  children_ = std::move(node.children_);
+  config_ = node.config_;
+  resolvedDimensions_ = node.resolvedDimensions_;
+  for (auto c : children_) {
+    c->setOwner(c);
+  }
+}
 
 void YGNode::print(void* printContext) {
   if (print_.noContext != nullptr) {
@@ -296,37 +322,6 @@ void YGNode::setPosition(
       (getTrailingMargin(crossAxis, ownerWidth) + relativePositionCross)
           .unwrap(),
       trailing[crossAxis]);
-}
-
-YGNode& YGNode::operator=(const YGNode& node) {
-  if (&node == this) {
-    return *this;
-  }
-
-  for (auto child : children_) {
-    delete child;
-  }
-
-  context_ = node.getContext();
-  hasNewLayout_ = node.getHasNewLayout();
-  nodeType_ = node.getNodeType();
-  measureUsesContext_ = node.measureUsesContext_;
-  baselineUsesContext_ = node.baselineUsesContext_;
-  printUsesContext_ = node.printUsesContext_;
-  measure_ = node.measure_;
-  baseline_ = node.baseline_;
-  print_ = node.print_;
-  dirtied_ = node.getDirtied();
-  style_ = node.style_;
-  layout_ = node.layout_;
-  lineIndex_ = node.getLineIndex();
-  owner_ = node.getOwner();
-  children_ = node.getChildren();
-  config_ = node.getConfig();
-  isDirty_ = node.isDirty();
-  resolvedDimensions_ = node.getResolvedDimensions();
-
-  return *this;
 }
 
 YGValue YGNode::marginLeadingValue(const YGFlexDirection axis) const {

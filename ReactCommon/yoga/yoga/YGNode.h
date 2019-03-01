@@ -55,6 +55,13 @@ private:
   void setMeasureFunc(decltype(measure_));
   void setBaselineFunc(decltype(baseline_));
 
+  // DANGER DANGER DANGER!
+  // If the the node assigned to has children, we'd either have to deallocate
+  // them (potentially incorrect) or ignore them (danger of leaks). Only ever
+  // use this after checking that there are no children.
+  // DO NOT CHANGE THE VISIBILITY OF THIS METHOD!
+  YGNode& operator=(YGNode&&) = default;
+
 public:
   YGNode()
       : hasNewLayout_{true},
@@ -66,8 +73,16 @@ public:
         printUsesContext_{false} {}
   ~YGNode() = default; // cleanup of owner/children relationships in YGNodeFree
   explicit YGNode(const YGConfigRef newConfig) : config_(newConfig){};
+
+  YGNode(YGNode&&);
+
+  // Does not expose true value semantics, as children are not cloned eagerly.
+  // Should we remove this?
   YGNode(const YGNode& node) = default;
-  YGNode& operator=(const YGNode& node);
+
+  // assignment means potential leaks of existing children, or alternatively
+  // freeing unowned memory, double free, or freeing stack memory.
+  YGNode& operator=(const YGNode&) = delete;
 
   // Getters
   void* getContext() const {
