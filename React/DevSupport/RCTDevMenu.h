@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
+#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeModule.h>
@@ -75,6 +75,13 @@ RCT_EXTERN NSString *const RCTShowDevMenuNotification;
  * when user selects the item.
  */
 - (void)addItem:(RCTDevMenuItem *)item;
+
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+/**
+ * Creates the NSMenu for macOS.
+ */
+- (NSMenu *)menu;
+#endif // ]TODO(macOS ISS#2323203)
 
 @end
 

@@ -120,6 +120,8 @@ class FlatListExample extends React.PureComponent<{}, $FlowFixMeState> {
             data={this.state.empty ? [] : filteredData}
             debug={this.state.debug}
             disableVirtualization={!this.state.virtualized}
+            enableSelectionOnKeyPress={true}
+            onSelectionEntered={this._handleSelectionEntered}
             getItemLayout={
               this.state.fixedHeight ? this._getItemLayout : undefined
             }
@@ -164,10 +166,11 @@ class FlatListExample extends React.PureComponent<{}, $FlowFixMeState> {
     }));
   };
   _onRefresh = () => Alert.alert('onRefresh: nothing to refresh :P');
-  _renderItemComponent = ({item, separators}) => {
+  _renderItemComponent = ({item, isSelected, separators}) => {
     return (
       <ItemComponent
         item={item}
+        isSelected={isSelected}
         horizontal={this.state.horizontal}
         fixedHeight={this.state.fixedHeight}
         onPress={this._pressItem}
@@ -199,6 +202,11 @@ class FlatListExample extends React.PureComponent<{}, $FlowFixMeState> {
     this._listRef.getNode().recordInteraction();
     pressItem(this, key);
   };
+  _handleSelectionEntered = (item) => {
+    const {key} = item;
+    this._listRef.getNode().recordInteraction();
+    pressItem(this, key);
+  }
   _listRef: Animated.FlatList;
 }
 

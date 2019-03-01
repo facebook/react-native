@@ -10,6 +10,7 @@
 #include <mutex>
 
 #include <cxxreact/JSCNativeModules.h>
+#include <jschelpers/JSException.h>
 #include <cxxreact/JSExecutor.h>
 #include <folly/Optional.h>
 #include <folly/json.h>
@@ -61,12 +62,14 @@ public:
    */
   explicit JSCExecutor(std::shared_ptr<ExecutorDelegate> delegate,
                        std::shared_ptr<MessageQueueThread> messageQueueThread,
-                       const folly::dynamic& jscConfig) throw(JSException);
+                       const folly::dynamic& jscConfig);
   ~JSCExecutor() override;
 
   virtual void loadApplicationScript(
     std::unique_ptr<const JSBigString> script,
-    std::string sourceURL) override;
+    uint64_t scriptVersion,
+    std::string sourceURL,
+    std::string&& bytecodeFileName) override;
 
   virtual void setBundleRegistry(std::unique_ptr<RAMBundleRegistry> bundleRegistry) override;
   virtual void registerBundle(uint32_t bundleId, const std::string& bundlePath) override;
@@ -111,10 +114,10 @@ private:
   folly::Optional<Object> m_flushedQueueJS;
   folly::Optional<Object> m_callFunctionReturnResultAndFlushedQueueJS;
 
-  void initOnJSVMThread() throw(JSException);
+  void initOnJSVMThread();
   static bool isNetworkInspected(const std::string &owner, const std::string &app, const std::string &device);
   void terminateOnJSVMThread();
-  void bindBridge() throw(JSException);
+  void bindBridge();
   void callNativeModules(Value&&);
   void flush();
   void flushQueueImmediate(Value&&);

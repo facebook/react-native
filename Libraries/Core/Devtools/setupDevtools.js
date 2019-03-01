@@ -39,7 +39,7 @@ if (__DEV__) {
     // Note: if you add any AppState subscriptions to this file,
     // you will also need to guard against `AppState.isAvailable`,
     // or the code will throw for bundles that don't have it.
-    const isAppActive = () => AppState.currentState !== 'background';
+    const isAppActive = () => (!AppState.isAvailable || AppState.currentState !== 'background'); // TODO(windows ISS)
 
     // Get hostname from development server (packager)
     const devServer = getDevServer();

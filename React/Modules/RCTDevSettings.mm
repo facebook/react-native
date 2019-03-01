@@ -21,6 +21,7 @@
 #import "RCTProfile.h"
 #import "RCTUtils.h"
 
+static NSString *const kRCTDevSettingDevModeEnabled = @"devModeEnabled"; // TODO(OSS Candidate ISS#2710739)
 static NSString *const kRCTDevSettingProfilingEnabled = @"profilingEnabled";
 static NSString *const kRCTDevSettingHotLoadingEnabled = @"hotLoadingEnabled";
 static NSString *const kRCTDevSettingLiveReloadEnabled = @"liveReloadEnabled";
@@ -117,7 +118,7 @@ static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 }
 
 @property (nonatomic, strong) Class executorClass;
-@property (nonatomic, readwrite, strong) id<RCTDevSettingsDataSource> dataSource;
+@property (atomic, readwrite, strong) id<RCTDevSettingsDataSource> dataSource; // TODO(OSS Candidate ISS#2710739): protect against race conditions where another thread changes the _dataSource
 
 @end
 
@@ -136,6 +137,9 @@ RCT_EXPORT_MODULE()
 {
   // default behavior is to use NSUserDefaults
   NSDictionary *defaultValues = @{
+#if DEBUG // [TODO(OSS Candidate ISS#2710739)
+    kRCTDevSettingDevModeEnabled: @YES,
+#endif // ]TODO(OSS Candidate ISS#2710739)
     kRCTDevSettingShakeToShowDevMenu: @YES,
   };
   RCTDevSettingsUserDefaultsDataSource *dataSource = [[RCTDevSettingsUserDefaultsDataSource alloc] initWithDefaultValues:defaultValues];
@@ -165,7 +169,7 @@ RCT_EXPORT_MODULE()
   RCTAssert(_bridge == nil, @"RCTDevSettings module should not be reused");
   _bridge = bridge;
 
-#if ENABLE_PACKAGER_CONNECTION
+#if DEBUG && ENABLE_PACKAGER_CONNECTION // TODO(OSS Candidate ISS#2710739)
   RCTBridge *__weak weakBridge = bridge;
   _reloadToken =
   [[RCTPackagerConnection sharedPackagerConnection]
@@ -187,7 +191,7 @@ RCT_EXPORT_MODULE()
    forMethod:@"pokeSamplingProfiler"];
 #endif
 
-#if RCT_ENABLE_INSPECTOR
+#if DEBUG && RCT_ENABLE_INSPECTOR // TODO(OSS Candidate ISS#2710739)
   // we need this dispatch back to the main thread because even though this
   // is executed on the main thread, at this point the bridge is not yet
   // finished with its initialisation. But it does finish by the time it
@@ -244,12 +248,12 @@ static void pokeSamplingProfiler(RCTBridge *const bridge, RCTPackagerClientRespo
 
 - (void)_updateSettingWithValue:(id)value forKey:(NSString *)key
 {
-  [_dataSource updateSettingWithValue:value forKey:key];
+  [[self dataSource] updateSettingWithValue:value forKey:key]; // TODO(OSS Candidate ISS#2710739): protect against race conditions where another thread changes the _dataSource
 }
 
 - (id)settingForKey:(NSString *)key
 {
-  return [_dataSource settingForKey:key];
+  return [[self dataSource] settingForKey:key]; // TODO(OSS Candidate ISS#2710739): protect against race conditions where another thread changes the _dataSource
 }
 
 - (BOOL)isNuclideDebuggingAvailable
@@ -260,6 +264,18 @@ static void pokeSamplingProfiler(RCTBridge *const bridge, RCTPackagerClientRespo
   return false;
 #endif // RCT_ENABLE_INSPECTOR
 }
+
+// [TODO(OSS Candidate ISS#2710739)
+RCT_EXPORT_METHOD(setDevModeEnabled:(BOOL)enabled)
+{
+  [self _updateSettingWithValue:@(enabled) forKey:kRCTDevSettingDevModeEnabled];
+}
+
+- (BOOL)isDevModeEnabled
+{
+  return [[self settingForKey:kRCTDevSettingDevModeEnabled] boolValue];
+}
+// ]TODO(OSS Candidate ISS#2710739)
 
 - (BOOL)isRemoteDebuggingAvailable
 {

@@ -14,6 +14,12 @@ NSString *const RCTBundleURLProviderUpdatedNotification = @"RCTBundleURLProvider
 
 const NSUInteger kRCTBundleURLProviderDefaultPort = RCT_METRO_PORT;
 
+#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+NSString *const kRCTPlatformName = @"ios";
+#else
+NSString *const kRCTPlatformName = @"macos";
+#endif // ]TODO(macOS ISS#2323203)
+
 static NSString *const kRCTJsLocationKey = @"RCT_jsLocation";
 static NSString *const kRCTEnableLiveReloadKey = @"RCT_enableLiveReload";
 static NSString *const kRCTEnableDevKey = @"RCT_enableDev";
@@ -157,7 +163,8 @@ static NSURL *serverRootWithHost(NSString *host)
 {
   NSString *path = [NSString stringWithFormat:@"/%@.bundle", bundleRoot];
   // When we support only iOS 8 and above, use queryItems for a better API.
-  NSString *query = [NSString stringWithFormat:@"platform=ios&dev=%@&minify=%@",
+  NSString *query = [NSString stringWithFormat:@"platform=%@&dev=%@&minify=%@",
+                      kRCTPlatformName, // TODO(macOS ISS#2323203)
                       enableDev ? @"true" : @"false",
                       enableMinification ? @"true": @"false"];
   return [[self class] resourceURLForResourcePath:path packagerHost:packagerHost query:query];

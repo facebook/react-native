@@ -53,6 +53,14 @@ void JReactMarker::logPerfMarker(const ReactMarker::ReactMarkerId markerId, cons
     case ReactMarker::NATIVE_MODULE_SETUP_STOP:
       JReactMarker::logMarker("NATIVE_MODULE_SETUP_END", tag);
       break;
+    case ReactMarker::BYTECODE_CREATION_FAILED:
+      JReactMarker::logMarker("BYTECODE_CREATION_FAILED");
+      break;
+    case ReactMarker::BYTECODE_READ_FAILED:
+      JReactMarker::logMarker("BYTECODE_READ_FAILED", tag);
+      break;
+    case ReactMarker::BYTECODE_WRITE_FAILED:
+      JReactMarker::logMarker("BYTECODE_WRITE_FAILED");
     case ReactMarker::REGISTER_JS_SEGMENT_START:
       JReactMarker::logMarker("REGISTER_JS_SEGMENT_START", tag);
       break;

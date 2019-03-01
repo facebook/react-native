@@ -3,7 +3,7 @@
 #if RCT_DEV
 
 #import <jschelpers/JSCWrapper.h>
-#import <UIKit/UIKit.h>
+#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 #import <React/RCTLog.h>
 
 #import "RCTDefines.h"
@@ -31,7 +31,11 @@ static NSString *getServerHost(NSURL *bundleURL, NSNumber *port)
 static NSURL *getInspectorDeviceUrl(NSURL *bundleURL)
 {
   NSNumber *inspectorProxyPort = @8082;
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   NSString *escapedDeviceName = [[[UIDevice currentDevice] name] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+#else // [TODO(macOS ISS#2323203)
+  NSString *escapedDeviceName = @"";
+#endif // ]TODO(macOS ISS#2323203)
   NSString *escapedAppName = [[[NSBundle mainBundle] bundleIdentifier] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
   return [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/inspector/device?name=%@&app=%@",
                                                         getServerHost(bundleURL, inspectorProxyPort),
@@ -42,7 +46,11 @@ static NSURL *getInspectorDeviceUrl(NSURL *bundleURL)
 static NSURL *getAttachDeviceUrl(NSURL *bundleURL, NSString *title)
 {
   NSNumber *metroBundlerPort = @8081;
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   NSString *escapedDeviceName = [[[UIDevice currentDevice] name] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+#else // [TODO(macOS ISS#2323203)
+  NSString *escapedDeviceName = @"";
+#endif // ]TODO(macOS ISS#2323203)
   NSString *escapedAppName = [[[NSBundle mainBundle] bundleIdentifier] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
   return [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/attach-debugger-nuclide?title=%@&device=%@&app=%@",
                                getServerHost(bundleURL, metroBundlerPort),
@@ -65,6 +73,7 @@ static void sendEventToAllConnections(NSString *event)
 }
 
 static void displayErrorAlert(UIViewController *view, NSString *message) {
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   UIAlertController *alert =
       [UIAlertController alertControllerWithTitle:nil
                                           message:message
@@ -76,6 +85,20 @@ static void displayErrorAlert(UIViewController *view, NSString *message) {
       ^{
         [alert dismissViewControllerAnimated:YES completion:nil];
       });
+#else // [TODO(macOS ISS#2323203)
+  NSAlert *alert = [[NSAlert alloc] init];
+  [alert setMessageText:message];
+  [alert addButtonWithTitle:@"OK"];
+  [alert setAlertStyle:NSWarningAlertStyle];
+  [alert beginSheetModalForWindow:[NSApp keyWindow] completionHandler:nil];
+  
+  dispatch_after(
+      dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * 2.5),
+      dispatch_get_main_queue(),
+      ^{
+        [[NSApp keyWindow] endSheet:[alert window]];
+      });
+#endif // ]TODO(macOS ISS#2323203)
 }
 
 + (void)attachDebugger:(NSString *)owner

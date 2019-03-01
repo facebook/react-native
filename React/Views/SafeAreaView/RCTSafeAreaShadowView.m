@@ -11,6 +11,7 @@
 #import <yoga/Yoga.h>
 
 #import "RCTSafeAreaViewLocalData.h"
+#import "RCTI18nUtil.h"
 
 @implementation RCTSafeAreaShadowView
 
@@ -21,12 +22,24 @@
 
   UIEdgeInsets insets = localData.insets;
 
-  super.paddingLeft = (YGValue){insets.left, YGUnitPoint};
-  super.paddingRight = (YGValue){insets.right, YGUnitPoint};
   super.paddingTop = (YGValue){insets.top, YGUnitPoint};
   super.paddingBottom = (YGValue){insets.bottom, YGUnitPoint};
-
-  [self didSetProps:@[@"paddingLeft", @"paddingRight", @"paddingTop", @"paddingBottom"]];
+  // [TODO(OSS OC#2726827)
+  if ([[RCTI18nUtil sharedInstance] doLeftAndRightSwapInRTL]) {
+    if ([[RCTI18nUtil sharedInstance] isRTL]) {
+      super.paddingStart = (YGValue){insets.right, YGUnitPoint};
+      super.paddingEnd = (YGValue){insets.left, YGUnitPoint};
+    } else {
+      super.paddingStart = (YGValue){insets.left, YGUnitPoint};
+      super.paddingEnd = (YGValue){insets.right, YGUnitPoint};
+    }
+    [self didSetProps:@[@"paddingStart", @"paddingEnd", @"paddingTop", @"paddingBottom"]];
+  } else {
+    super.paddingLeft = (YGValue){insets.left, YGUnitPoint};
+    super.paddingRight = (YGValue){insets.right, YGUnitPoint};
+    [self didSetProps:@[@"paddingLeft", @"paddingRight", @"paddingTop", @"paddingBottom"]];
+  }
+  // ]TODO(OSS OC#2726827)
 }
 
 /**

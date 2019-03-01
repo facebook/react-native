@@ -102,4 +102,14 @@ public interface CatalystInstance
   JavaScriptContextHolder getJavaScriptContextHolder();
 
   void addJSIModules(List<JSIModuleSpec> jsiModules);
+
+  /**
+   * Get the C pointer (as a long) of the underneath Instance.
+   */
+  long getPointerOfInstancePointer();
+
+  public interface CatalystInstanceEventListener {
+    void onModuleRegistryCreated(CatalystInstance catalystInstance);
+  }
+
 }

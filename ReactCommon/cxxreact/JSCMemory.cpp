@@ -45,6 +45,7 @@ void addJSCMemoryHooks(JSGlobalContextRef ctx) {
 #ifdef WITH_FB_MEMORY_PROFILING
   installGlobalFunction(ctx, "nativeCaptureHeap", nativeCaptureHeap);
 #endif // WITH_FB_MEMORY_PROFILING
+  (void)ctx;
 }
 
 } }

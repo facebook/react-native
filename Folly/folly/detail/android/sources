@@ -1,0 +1,13 @@
+LIBLET_ANDROID = 1
+
+!include ..\sources.inc
+
+TARGETNAME = FollyDetail
+
+USE_STL=1
+
+SOURCES = $(SOURCES_ANDROID)
+
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -Wall -Werror -fexceptions -frtti
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -DLOG_TAG=\"ReactNative\"
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -Wno-c++11-compat -Wno-shadow $(CXX11_FLAGS)

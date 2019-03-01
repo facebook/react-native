@@ -11,7 +11,11 @@
 #include <folly/Exception.h>
 
 #ifndef RN_EXPORT
-#define RN_EXPORT __attribute__((visibility("default")))
+# ifdef _MSC_VER
+#  define RN_EXPORT
+# else
+#  define RN_EXPORT __attribute__((visibility("default")))
+# endif
 #endif
 
 namespace facebook {
@@ -24,7 +28,7 @@ namespace react {
 // large string needs to be curried into a std::function<>, which must
 // by CopyConstructible.
 
-class JSBigString {
+class RN_EXPORT JSBigString {
 public:
   JSBigString() = default;
 
@@ -47,7 +51,7 @@ public:
 // instance.
 class JSBigStdString : public JSBigString {
 public:
-  JSBigStdString(std::string str, bool isAscii=false)
+  JSBigStdString(std::string str, bool isAscii = false)
   : m_isAscii(isAscii)
   , m_str(std::move(str)) {}
 
@@ -72,7 +76,7 @@ private:
 // buffer, and provides an accessor for writing to it.  This can be
 // used to construct a JSBigString in place, such as by reading from a
 // file.
-class JSBigBufferString : public JSBigString {
+class RN_EXPORT JSBigBufferString : public JSBigString {
 public:
   JSBigBufferString(size_t size)
   : m_data(new char[size + 1])
@@ -86,7 +90,8 @@ public:
     delete[] m_data;
   }
 
-  bool isAscii() const override {
+  bool isAscii() const override
+  {
     return true;
   }
 
@@ -110,72 +115,26 @@ private:
 // JSBigString interface implemented by a file-backed mmap region.
 class RN_EXPORT JSBigFileString : public JSBigString {
 public:
+  JSBigFileString(int fd, size_t size, off_t offset = 0);
+  ~JSBigFileString();
 
-  JSBigFileString(int fd, size_t size, off_t offset = 0)
-  : m_fd   {-1}
-  , m_data {nullptr}
+  bool isAscii() const override
   {
-    folly::checkUnixError(m_fd = dup(fd),
-      "Could not duplicate file descriptor");
-
-    // Offsets given to mmap must be page aligend. We abstract away that
-    // restriction by sending a page aligned offset to mmap, and keeping track
-    // of the offset within the page that we must alter the mmap pointer by to
-    // get the final desired offset.
-    if (offset != 0) {
-      const static auto ps = getpagesize();
-      auto d  = lldiv(offset, ps);
-
-      m_mapOff  = d.quot;
-      m_pageOff = d.rem;
-      m_size    = size + m_pageOff;
-    } else {
-      m_mapOff  = 0;
-      m_pageOff = 0;
-      m_size    = size;
-    }
-  }
-
-  ~JSBigFileString() {
-    if (m_data) {
-      munmap((void *)m_data, m_size);
-    }
-    close(m_fd);
-  }
-
-  bool isAscii() const override {
     return true;
   }
 
-  const char *c_str() const override {
-    if (!m_data) {
-      m_data =
-        (const char *)mmap(0, m_size, PROT_READ, MAP_PRIVATE, m_fd, m_mapOff);
-      CHECK(m_data != MAP_FAILED)
-      << " fd: " << m_fd
-      << " size: " << m_size
-      << " offset: " << m_mapOff
-      << " error: " << std::strerror(errno);
-    }
-    return m_data + m_pageOff;
-  }
-
-  size_t size() const override {
-    return m_size - m_pageOff;
-  }
-
-  int fd() const {
-    return m_fd;
-  }
+  const char* c_str() const override;
+  size_t size() const override;
+  int fd() const;
 
   static std::unique_ptr<const JSBigFileString> fromPath(const std::string& sourceURL);
 
-private:
+private :
   int m_fd;                     // The file descriptor being mmaped
   size_t m_size;                // The size of the mmaped region
   size_t m_pageOff;             // The offset in the mmaped region to the data.
   off_t m_mapOff;               // The offset in the file to the mmaped region.
-  mutable const char *m_data;   // Pointer to the mmaped region.
+  mutable const char* m_data;   // Pointer to the mmaped region.
 };
 
 } }

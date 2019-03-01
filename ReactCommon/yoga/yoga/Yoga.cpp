@@ -1722,6 +1722,10 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
       : YGFloatMax(
             0, availableHeight - marginAxisColumn - paddingAndBorderAxisColumn);
 
+  // Measure the text under the current constraints.
+  const YGSize measuredSize = node->getMeasure()(
+      node, innerWidth, widthMeasureMode, innerHeight, heightMeasureMode);
+
   if (widthMeasureMode == YGMeasureModeExactly &&
       heightMeasureMode == YGMeasureModeExactly) {
     // Don't bother sizing the text if both dimensions are already defined.
@@ -1742,10 +1746,6 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
             ownerWidth),
         YGDimensionHeight);
   } else {
-    // Measure the text under the current constraints.
-    const YGSize measuredSize = node->getMeasure()(
-        node, innerWidth, widthMeasureMode, innerHeight, heightMeasureMode);
-
     node->setLayoutMeasuredDimension(
         YGNodeBoundAxis(
             node,
@@ -3548,7 +3548,7 @@ static const char* YGMeasureModeName(
                                                       "LAY_AT_"
                                                       "MOST"};
 
-  if (mode >= YGMeasureModeCount) {
+  if (mode < YGMeasureModeUndefined || mode >= YGMeasureModeCount) {
     return "";
   }
 

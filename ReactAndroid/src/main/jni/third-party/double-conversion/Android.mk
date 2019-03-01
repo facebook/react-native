@@ -16,7 +16,8 @@ LOCAL_SRC_FILES := \
 
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 
-CXX11_FLAGS := -Wno-unused-variable -Wno-unused-local-typedefs
-LOCAL_CFLAGS += $(CXX11_FLAGS)
+CXX14_FLAGS := -std=c++14 -Wno-unused-variable -Wno-unused-local-typedefs
+LOCAL_CFLAGS += $(CXX14_FLAGS)
+LOCAL_EXPORT_CPPFLAGS := $(CXX14_FLAGS)
 
 include $(BUILD_STATIC_LIBRARY)

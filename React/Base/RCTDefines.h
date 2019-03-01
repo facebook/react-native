@@ -42,7 +42,8 @@
 #if DEBUG
 #define RCT_DEV 1
 #else
-#define RCT_DEV 0
+// Dev Mode is now enabled or disabled at runtime via the -[RCTDevSettings isDevModeEnabled] property
+#define RCT_DEV 1
 #endif
 #endif
 

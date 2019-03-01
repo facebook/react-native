@@ -1,0 +1,8 @@
+DIRS = \
+	cxxreact \
+	jschelpers \
+	jsi \
+	jsiexecutor \
+	privatedata \
+	Yoga \
+	v8helpers \

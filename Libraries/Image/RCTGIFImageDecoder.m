@@ -45,7 +45,11 @@ RCT_EXPORT_MODULE()
 
       CGImageRef imageRef = CGImageSourceCreateImageAtIndex(imageSource, i, NULL);
       if (!image) {
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
         image = [UIImage imageWithCGImage:imageRef scale:scale orientation:UIImageOrientationUp];
+#else // [TODO(macOS ISS#2323203)
+        image = [[NSImage alloc] initWithCGImage:imageRef size:size];
+#endif // ]TODO(macOS ISS#2323203)
       }
 
       NSDictionary<NSString *, id> *frameProperties = (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(imageSource, i, NULL);
@@ -96,7 +100,11 @@ RCT_EXPORT_MODULE()
     // Don't bother creating an animation
     CGImageRef imageRef = CGImageSourceCreateImageAtIndex(imageSource, 0, NULL);
     if (imageRef) {
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
       image = [UIImage imageWithCGImage:imageRef scale:scale orientation:UIImageOrientationUp];
+#else // [TODO(macOS ISS#2323203)
+      image = [[NSImage alloc] initWithCGImage:imageRef size:size];
+#endif // ]TODO(macOS ISS#2323203)
       CFRelease(imageRef);
     }
     CFRelease(imageSource);

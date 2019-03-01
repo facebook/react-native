@@ -13,9 +13,10 @@
 const Platform = require('Platform');
 
 const normalizeColor = require('normalizeColor');
+import type {SemanticOrDynamicColorType} from 'normalizeColor' // ]TODO(macOS ISS#2323203)
 
 /* eslint no-bitwise: 0 */
-function processColor(color?: ?(string | number)): ?number {
+function processColor(color?: ?(string | number | SemanticOrDynamicColorType)): ?(number | SemanticOrDynamicColorType) { // TODO(macOS ISS#2323203)
   if (color === undefined || color === null) {
     return color;
   }
@@ -24,6 +25,23 @@ function processColor(color?: ?(string | number)): ?number {
   if (int32Color === null || int32Color === undefined) {
     return undefined;
   }
+
+  if (typeof int32Color === 'object' && Platform.OS === 'macos') { // [TODO(macOS ISS#2323203)
+    if ('dynamic' in int32Color && int32Color.dynamic !== undefined) {
+      const dynamic = int32Color.dynamic;
+      const dynamicColor = {
+        dynamic: {
+          light: processColor(dynamic.light),
+          dark: processColor(dynamic.dark)
+        }
+      };
+      return dynamicColor;
+    }
+    return int32Color;
+  }
+  if (typeof int32Color !== 'number') {
+    return null;
+  } // ]TODO(macOS ISS#2323203)
 
   // Converts 0xrrggbbaa into 0xaarrggbb
   int32Color = ((int32Color << 24) | (int32Color >>> 8)) >>> 0;

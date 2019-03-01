@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <QuartzCore/CADisplayLink.h>
+#import "RCTPlatformDisplayLink.h" // TODO(macOS ISS#2323203)
 
 #import "RCTFrameUpdate.h"
 

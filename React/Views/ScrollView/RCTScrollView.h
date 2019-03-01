@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIScrollView.h>
+#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 
 #import <React/RCTAutoInsetsProtocol.h>
 #import <React/RCTEventDispatcher.h>
@@ -14,7 +14,12 @@
 
 @protocol UIScrollViewDelegate;
 
-@interface RCTScrollView : RCTView <UIScrollViewDelegate, RCTScrollableProtocol, RCTAutoInsetsProtocol>
+@interface RCTScrollView : RCTView <
+#if TARGET_OS_IPHONE // [TODO(macOS ISS#2323203)
+	UIScrollViewDelegate,
+#endif
+	RCTScrollableProtocol, RCTAutoInsetsProtocol
+> // ]TODO(macOS ISS#2323203)
 
 - (instancetype)initWithEventDispatcher:(RCTEventDispatcher *)eventDispatcher NS_DESIGNATED_INITIALIZER;
 
@@ -56,6 +61,9 @@
 @property (nonatomic, copy) RCTDirectEventBlock onScrollEndDrag;
 @property (nonatomic, copy) RCTDirectEventBlock onMomentumScrollBegin;
 @property (nonatomic, copy) RCTDirectEventBlock onMomentumScrollEnd;
+@property (nonatomic, copy) RCTDirectEventBlock onKeyDown; // TODO(macOS ISS#2323203)
+
+- (void)flashScrollIndicators; // TODO(macOS ISS#2323203)
 
 @end
 

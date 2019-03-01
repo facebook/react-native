@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h> // TODO(OSS Candidate ISS#2710739)
 
 #import <React/RCTDefines.h>
 

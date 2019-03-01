@@ -1,0 +1,8 @@
+LIBLET_WIN32 = 1
+LIBLET_LOB = 1
+!include ..\sources.inc
+
+# This is required for windows as Chakra don't yet support HostObject backed JS objects.
+C_DEFINES = $(C_DEFINES) -D CHAKRA_JSI
+
+SOURCES = $(SOURCES_WIN32)

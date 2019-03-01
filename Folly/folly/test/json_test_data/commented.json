@@ -1,0 +1,12 @@
+{
+  // comment
+  "test": "foo", // comment
+  "test2": "foo // bar", // more comments
+  /*
+  "test3": "baz"
+  */
+  "test4": "foo /* bar", /* comment */
+  "te//": "foo",
+  "te/*": "bar",
+  "\\\"": "\\" /* comment */
+}

@@ -1,0 +1,53 @@
+LIBLET_ANDROID = 1
+LIBLET_DYNLINK = 1
+
+!include $(OTOOLS)\inc\opensource\reactnative\officereactnative.inc
+
+LIBLETNAME = jscexecutor
+LIBLET_NO_PRECOMP = 1
+
+!include $(WAREHOUSEIMPORTDIR)\libletmake\x-none\nmake\make.inc
+
+INCLUDES = $(INCLUDES); \
+    $(PKGJAVASCRIPTCORE_TEMP)\build\native\include; \
+    $(OPENSOURCE_REACTNATIVE)\OfficeISS\Folly; \
+    $(OPENSOURCE_REACTNATIVE)\OfficeISS\ReactAndroid\src\main\jni; \
+    $(OPENSOURCE_REACTNATIVE)\OfficeISS\ReactAndroid\src\main\jni\first-party\fb\include; \
+    $(OPENSOURCE_REACTNATIVE)\OfficeISS\ReactAndroid\src\main\jni\first-party\fbgloginit; \
+    $(OPENSOURCE_REACTNATIVE)\OfficeISS\ReactCommon; \
+    $(OPENSOURCE_REACTNATIVE)\OfficeISS\ReactCommon\jsiexecutor; \
+    $(OPENSOURCE_REACTNATIVE)\OfficeISS\glog\src; \
+    $(OPENSOURCE_REACTNATIVE)\OfficeISS\double-conversion; \
+    $(OPENSOURCE_REACTNATIVETARGETDIR)\include\jschelpers; \
+
+C_DEFINES = $(C_DEFINES) -D FOLLY_NO_CONFIG
+
+TARGETNAME = jscexecutor
+
+SOURCES =
+
+!if ($(V8_ENABLED) == 0)
+
+SOURCES = \
+    $(SOURCES) \
+    OnLoad.cpp \
+
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -Wno-shadow
+
+LOCAL_LDLIBS = \
+    $(LOCAL_LDLIBS) \
+    $(OPENSOURCE_REACTNATIVETARGETDIR)\libfb.so \
+    $(OPENSOURCE_REACTNATIVETARGETDIR)\libfolly_json.so \
+    $(OPENSOURCE_REACTNATIVETARGETDIR)\libglog.so \
+    $(OPENSOURCE_REACTNATIVETARGETDIR)\libreactnativejni.so \
+
+LOCAL_WHOLE_STATIC_LIBRARIES = \
+    $(LOCAL_WHOLE_STATIC_LIBRARIES) \
+    $(OPENSOURCE_REACTNATIVETARGETDIR)\lib\libjsi.a \
+    $(OPENSOURCE_REACTNATIVETARGETDIR)\lib\libjsireact.a \
+
+LOCAL_LDLIBS = \
+    $(LOCAL_LDLIBS) \
+    $(PKGREACTNATIVEANDROIDRIR_BIN)\x-none\libjsc.so \
+
+!endif

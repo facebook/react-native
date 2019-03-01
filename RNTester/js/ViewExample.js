@@ -13,8 +13,68 @@
 /* eslint-disable react-native/no-inline-styles */
 
 const React = require('react');
-const {StyleSheet, Text, View} = require('react-native');
+const {Button, StyleSheet, Text, View} = require('react-native');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+
+// [TODO(windows ISS)
+const TouchableNativeFeedback = require('TouchableNativeFeedback');
+
+class ViewFocusEventsExample extends React.Component<{}, $FlowFixMeState> {
+  state = {
+    showSampleViews: false,
+    showTextView: false,
+  };
+
+  defaultFocusView: ?React.ElementRef<typeof View>;
+  view1: ?React.ElementRef<typeof View>;
+  view2: ?React.ElementRef<typeof View>;
+
+  render() {
+    const styles = StyleSheet.create({
+      focusView: {
+        backgroundColor: '#527FE4',
+        borderColor: '#000033',
+        borderWidth: 1,
+      },
+    });
+    return (
+      <View>
+        <Button onPress={() => this.setState({showSampleViews: !this.state.showSampleViews})} title={(this.state.showSampleViews) ? 'Hide Sample Focus event View' : 'Show Sample View'} />
+        <Button onPress={() => this.defaultFocusView ? this.defaultFocusView.focus() : null} title={'Give Focus to default View'} />
+        { (this.state.showSampleViews) ?
+        <View> 
+          <Text> Enter on any view will move focus within this view </Text>
+          <TouchableNativeFeedback onPress={() => this.defaultFocusView ? this.defaultFocusView.focus() : null}>
+            <View ref = {v => this.view1 = v} style={[ styles.focusView]} >
+              <Text> Test View</Text>
+            </View>
+          </TouchableNativeFeedback>
+
+          <TouchableNativeFeedback onPress={() => this.view2 ? this.view2.focus() : null}>
+            <View ref = {v => this.defaultFocusView = v} style={[ styles.focusView]} >
+              <Text> Default Focus View </Text>
+            </View>
+          </TouchableNativeFeedback>
+
+          <TouchableNativeFeedback onPress={() => this.view1 ? this.view1.focus() : null}>
+            <View ref = {v => this.view2 = v}
+              style={[ styles.focusView]}
+              onFocusChange = {(hasFocus) => {this.setState({showTextView: hasFocus})}}>
+              <Text> Show sample textview on focus </Text>
+            </View>
+          </TouchableNativeFeedback>
+          {
+            this.state.showTextView ? 
+            <Text> This is a sample Text</Text>
+            : null
+          }
+        </View> 
+        : null }
+      </View>
+    );
+  }
+}
+// ]TODO(windows ISS)
 
 exports.title = '<View>';
 exports.description =
@@ -213,6 +273,28 @@ exports.examples = [
       );
     },
   },
+  { // [TODO(macOS ISS#2323203)
+    title: 'ToolTip',
+    render() {
+      return (
+        <View tooltip='Parent View'>
+          <Text style={{ fontSize: 11 }}>
+            This Parent View has tooltip "Parent View"
+          </Text>
+          <View tooltip='Child View 1'>
+            <Text style={{ fontSize: 11 }}>
+              This view has tooltip "Child View 1"
+            </Text>
+          </View>
+          <View tooltip='Child View 2'>
+            <Text style={{ fontSize: 11 }}>
+              This view has tooltip "Child View 2"
+            </Text>
+          </View>
+        </View>
+      );
+    },
+  }, // ]TODO(macOS ISS#2323203)
   {
     title: 'ZIndex',
     render() {

@@ -37,7 +37,9 @@ public:
   virtual ~ProxyExecutor() override;
   virtual void loadApplicationScript(
     std::unique_ptr<const JSBigString> script,
-    std::string sourceURL) override;
+    uint64_t scriptVersion,
+    std::string sourceURL,
+    std::string&& bytecodeFileName) override;
   virtual void setBundleRegistry(
     std::unique_ptr<RAMBundleRegistry> bundle) override;
   virtual void registerBundle(

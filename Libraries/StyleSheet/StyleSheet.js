@@ -12,6 +12,7 @@
 const PixelRatio = require('PixelRatio');
 const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
 const StyleSheetValidation = require('StyleSheetValidation');
+const Platform = require('Platform'); // TODO(macOS ISS#2323203)
 
 const flatten = require('flattenStyle');
 
@@ -163,7 +164,7 @@ export type LayoutStyle = ____LayoutStyle_Internal;
 export type ShadowStyle = ____ShadowStyle_Internal;
 export type TransformStyle = ____TransformStyle_Internal;
 
-let hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
+let hairlineWidth = (Platform.OS === 'win32' || Platform.OS === 'windesktop') ? 0.5 : PixelRatio.roundToNearestPixel(0.4); // TODO(windows ISS)
 if (hairlineWidth === 0) {
   hairlineWidth = 1 / PixelRatio.get();
 }

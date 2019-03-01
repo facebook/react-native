@@ -5,10 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
-
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+
+#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+NSDictionary *RCTExportedDimensions(RCTBridge *bridge);
+#else
+NSDictionary *RCTExportedDimensions(RCTPlatformView *rootView);
+#endif // ]TODO(macOS ISS#2323203)
 
 @interface RCTDeviceInfo : NSObject <RCTBridgeModule, RCTInvalidating>
 

@@ -1,0 +1,21 @@
+LIBLET_ANDROID = 1
+
+!include ..\sources.inc
+
+TARGETNAME = jsireact
+
+INCLUDES = $(INCLUDES); \
+    $(PKGJAVASCRIPTCORE_TEMP)\build\native\include; \
+
+SOURCES = $(SOURCES_ANDROID)
+
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -fexceptions -frtti
+
+LOCAL_WHOLE_STATIC_LIBRARIES = \
+    $(LOCAL_WHOLE_STATIC_LIBRARIES) \
+    $(OPENSOURCE_REACTNATIVETARGETDIR)\lib\libReactNative.a \
+
+LOCAL_LDLIBS = \
+    $(LOCAL_LDLIBS) \
+    $(OPENSOURCE_REACTNATIVETARGETDIR)\libfolly_json.so \
+    $(OPENSOURCE_REACTNATIVETARGETDIR)\libglog.so \

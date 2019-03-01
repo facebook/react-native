@@ -22,7 +22,11 @@
 // - The compile-time #ifdef's can't be used because an app compiled for iOS8 can still run on iOS9
 
 static BOOL isStreamTaskSupported() {
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   return [[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:(NSOperatingSystemVersion){9,0,0}];
+#else // [TODO(macOS ISS#2323203)
+  return [[NSProcessInfo processInfo] isOperatingSystemAtLeastVersion:(NSOperatingSystemVersion){10,11,0}];
+#endif // ]TODO(macOS ISS#2323203)
 }
 
 @implementation RCTMultipartDataTask {
@@ -82,7 +86,9 @@ didReceiveResponse:(NSURLResponse *)response
     NSTextCheckingResult *match = [regex firstMatchInString:contentType options:0 range:NSMakeRange(0, contentType.length)];
     if (match) {
       _boundary = [contentType substringWithRange:[match rangeAtIndex:1]];
-      completionHandler(NSURLSessionResponseBecomeStream);
+      if (@available(macOS 10.11, iOS 9.0, *)) { // TODO(OSS Candidate ISS#2710739)
+        completionHandler(NSURLSessionResponseBecomeStream);
+      }
       return;
     }
   }
@@ -104,15 +110,21 @@ didReceiveResponse:(NSURLResponse *)response
   [_data appendData:data];
 }
 
+#pragma clang diagnostic push // TODO(OSS Candidate ISS#2710739)
+#pragma clang diagnostic ignored "-Wunguarded-availability"
 - (void)URLSession:(__unused NSURLSession *)session dataTask:(__unused NSURLSessionDataTask *)dataTask didBecomeStreamTask:(NSURLSessionStreamTask *)streamTask
+#pragma clang diagnostic pop
 {
   [streamTask captureStreams];
 }
 
+#pragma clang diagnostic push // TODO(OSS Candidate ISS#2710739)
+#pragma clang diagnostic ignored "-Wunguarded-availability"
 - (void)URLSession:(__unused NSURLSession *)session
         streamTask:(__unused NSURLSessionStreamTask *)streamTask
 didBecomeInputStream:(NSInputStream *)inputStream
       outputStream:(__unused NSOutputStream *)outputStream
+#pragma clang diagnostic pop
 {
   RCTMultipartStreamReader *reader = [[RCTMultipartStreamReader alloc] initWithInputStream:inputStream boundary:_boundary];
   RCTMultipartDataTaskCallback partHandler = _partHandler;

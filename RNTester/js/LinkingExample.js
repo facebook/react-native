@@ -12,6 +12,7 @@
 var React = require('react');
 var PropTypes = require('prop-types');
 var ReactNative = require('react-native');
+var Platform = require('Platform');
 var {Linking, StyleSheet, Text, TouchableOpacity, View} = ReactNative;
 var RNTesterBlock = require('./RNTesterBlock');
 
@@ -51,8 +52,8 @@ class IntentAndroidExample extends React.Component {
         <OpenURLButton url={'https://www.facebook.com'} />
         <OpenURLButton url={'http://www.facebook.com'} />
         <OpenURLButton url={'http://facebook.com'} />
-        <OpenURLButton url={'fb://notifications'} />
-        <OpenURLButton url={'geo:37.484847,-122.148386'} />
+        <OpenURLButton url={Platform.OS === 'macos' ? 'mailto:mark@facebook.com' : 'fb://notifications'} />
+        <OpenURLButton url={Platform.OS === 'macos' ? 'maps:ll=45.5200,-122.681' : 'geo:37.484847,-122.148386'} />
         <OpenURLButton url={'tel:9876543210'} />
       </RNTesterBlock>
     );

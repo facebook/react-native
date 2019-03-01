@@ -1,0 +1,13 @@
+LIBLET_ANDROID = 1
+
+!include ..\sources.inc
+
+TARGETNAME = double-conversion
+
+INCLUDES = $(INCLUDES); \
+    $(OPENSOURCE_REACTNATIVE)\OfficeISS\double-conversion; \
+
+SOURCES = $(SOURCES_ANDROID)
+
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -DLOG_TAG=\"ReactNative\" -Wno-c++11-compat -Wno-shadow -std=c++11
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -Wno-unused-variable -Wno-unused-local-typedefs -Wno-unneeded-internal-declaration $(CXX11_FLAGS)

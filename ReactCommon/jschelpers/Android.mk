@@ -6,16 +6,17 @@ LOCAL_MODULE := jschelpers
 
 LOCAL_SRC_FILES := \
   JSCHelpers.cpp \
+  JSCJSException.cpp \
   Unicode.cpp \
   Value.cpp \
-
+ 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/..
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
 
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"ReactNative\"
 
-LOCAL_CFLAGS += -fexceptions -frtti
+LOCAL_CXXFLAGS += -fexceptions -frtti
 
 LOCAL_SHARED_LIBRARIES := libfolly_json libjsc libglog
 

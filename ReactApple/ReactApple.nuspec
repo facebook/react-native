@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>OfficeReact.Apple</id>
+    <version>__BuildBuildNumber__</version>
+    <description>Contains Mac and iOS Implementations of React-Native</description>
+    <authors>Microsoft</authors>
+    <projectUrl>https://office.visualstudio.com/ISS/_git/react-native</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+  </metadata>
+  <files>
+    <!-- __OUTPUTDIR__ will be replaced by the VSTO Build Agent with a local path such as ~/myagent/_work/1/output -->
+
+    <!-- iOS device debug -->
+    <file src="__OUTPUTDIR__/iphoneos/Debug/build.sym/Debug-iphoneos/*.a" target="Debug-iphoneos"/>
+    <!-- iOS device ship -->
+    <file src="__OUTPUTDIR__/iphoneos/Release/build.sym/Release-iphoneos/*.a" target="Ship-iphoneos"/>
+    <!-- iOS simulator debug -->
+    <file src="__OUTPUTDIR__/iphonesimulator/Debug/build.sym/Debug-iphonesimulator/*.a" target="Debug-iphonesimulator"/>
+    <!-- iOS simulator ship -->
+    <file src="__OUTPUTDIR__/iphonesimulator/Release/build.sym/Release-iphonesimulator/*.a" target="Ship-iphonesimulator"/>
+    <!-- macOS debug -->
+    <file src="__OUTPUTDIR__/macosx/Debug/build.sym/Debug/*.a" target="Debug-macosx"/>
+    <!-- macOS ship -->
+    <file src="__OUTPUTDIR__/macosx/Release/build.sym/Release/*.a" target="Ship-macosx"/>
+
+    <!-- headers -->
+    <file src="__OUTPUTDIR__/iphonesimulator/Debug/build.sym/Debug-iphonesimulator/include/**" target="include"/>
+
+    <file src="../third-party/folly-2016.10.31.00/**/*.h" target="include"/>
+    <file src="../third-party/glog-0.3.5/src/glog/*.h" target="include/glog"/>
+  </files>
+</package>

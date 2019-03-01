@@ -20,6 +20,7 @@ const YellowBoxButton = require('YellowBoxButton');
 const YellowBoxInspector = require('YellowBoxInspector');
 const YellowBoxListRow = require('YellowBoxListRow');
 const YellowBoxStyle = require('YellowBoxStyle');
+const Platform = require('Platform'); // TODO(windows ISS)
 
 import type {Category} from 'YellowBoxCategory';
 import type {Registry} from 'YellowBoxRegistry';
@@ -35,7 +36,7 @@ type State = {|
 |};
 
 const VIEWPORT_RATIO = 0.5;
-const MAX_ITEMS = Math.floor(
+const MAX_ITEMS = (Platform.OS === 'win32' || Platform.OS === 'windesktop') ? 3 : Math.floor( // TODO(windows ISS)
   (Dimensions.get('window').height * VIEWPORT_RATIO) /
     (YellowBoxListRow.GUTTER + YellowBoxListRow.HEIGHT),
 );

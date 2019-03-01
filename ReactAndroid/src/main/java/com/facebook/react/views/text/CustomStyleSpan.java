@@ -34,26 +34,29 @@ public class CustomStyleSpan extends MetricAffectingSpan {
   private final int mStyle;
   private final int mWeight;
   private final @Nullable String mFontFamily;
+  private final @Nullable String mFontPath;
 
   public CustomStyleSpan(
       int fontStyle,
       int fontWeight,
       @Nullable String fontFamily,
+      @Nullable String fontPath,
       AssetManager assetManager) {
     mStyle = fontStyle;
     mWeight = fontWeight;
     mFontFamily = fontFamily;
+    mFontPath = fontPath;
     mAssetManager = assetManager;
   }
 
   @Override
   public void updateDrawState(TextPaint ds) {
-    apply(ds, mStyle, mWeight, mFontFamily, mAssetManager);
+    apply(ds, mStyle, mWeight, mFontFamily, mFontPath, mAssetManager);
   }
 
   @Override
   public void updateMeasureState(TextPaint paint) {
-    apply(paint, mStyle, mWeight, mFontFamily, mAssetManager);
+    apply(paint, mStyle, mWeight, mFontFamily,mFontPath, mAssetManager);
   }
 
   /**
@@ -77,11 +80,19 @@ public class CustomStyleSpan extends MetricAffectingSpan {
     return mFontFamily;
   }
 
+  /**
+   * Returns the font path set for this StyleSpan.
+   */
+  public @Nullable String getFontPath() {
+    return mFontPath;
+  }
+
   private static void apply(
       Paint paint,
       int style,
       int weight,
       @Nullable String family,
+      @Nullable String path,
       AssetManager assetManager) {
     int oldStyle;
     Typeface typeface = paint.getTypeface();
@@ -102,7 +113,9 @@ public class CustomStyleSpan extends MetricAffectingSpan {
       want |= Typeface.ITALIC;
     }
 
-    if (family != null) {
+    if (path != null && family != null) {
+      typeface = ReactFontManager.getInstance().getTypeface(path, family, want);
+    } else if (family != null) {
       typeface = ReactFontManager.getInstance().getTypeface(family, want, assetManager);
     } else if (typeface != null) {
       // TODO(t9055065): Fix custom fonts getting applied to text children with different style

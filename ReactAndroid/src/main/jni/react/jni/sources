@@ -1,0 +1,110 @@
+LIBLET_ANDROID = 1
+LIBLET_DYNLINK = 1
+
+!include $(OTOOLS)\inc\opensource\reactnative\officereactnative.inc
+!include ..\sources.inc
+
+TARGETNAME = reactnativejni
+
+!LISTFILES -recursive ReactNaTiveAndroidHeaders = $(OPENSOURCE_REACTNATIVETARGETDIR)\include *.h
+!LISTFILES -recursive V8_ANDROID_HEADERS = $(PKGOFFICE_GOOGLE_V8_ANDROID)\headers\include *.h
+
+HEADERS = $(HEADERS) \
+    $(ReactNaTiveAndroidHeaders) \
+    $(V8_ANDROID_HEADERS) \
+
+INCLUDES = $(INCLUDES); \
+    $(PKGJAVASCRIPTCORE_TEMP)\build\native\include; \
+    $(OPENSOURCE_REACTNATIVE)\OfficeISS\Folly; \
+    $(OPENSOURCE_REACTNATIVE)\OfficeISS\ReactAndroid\src\main\jni\first-party\fb\include; \
+    $(OPENSOURCE_REACTNATIVE)\OfficeISS\ReactAndroid\src\main\jni\first-party\fbgloginit; \
+    $(OPENSOURCE_REACTNATIVE)\OfficeISS\ReactCommon; \
+    $(OPENSOURCE_REACTNATIVE)\OfficeISS\glog\src; \
+    $(OPENSOURCE_REACTNATIVE)\OfficeISS\double-conversion; \
+    $(OPENSOURCE_REACTNATIVETARGETDIR)\include\jschelpers; \
+
+SOURCES = \
+    CatalystInstanceImpl.cpp \
+    CxxModuleWrapper.cpp \
+    InstanceManager.cpp \
+    JavaModuleWrapper.cpp \
+    JMessageQueueThread.cpp \
+    JniJSModulesUnbundle.cpp \
+    JReactMarker.cpp \
+    JSLoader.cpp \
+    JSLogging.cpp \
+    JniJSModulesUnbundle.cpp \
+    MethodInvoker.cpp \
+    ModuleRegistryBuilder.cpp \
+    NativeArray.cpp \
+    NativeCommon.cpp \
+    NativeDeltaClient.cpp \
+    NativeMap.cpp \
+    OnLoad.cpp \
+    ProxyExecutor.cpp \
+    ReadableNativeArray.cpp \
+    ReadableNativeMap.cpp \
+    WritableNativeArray.cpp \
+    WritableNativeMap.cpp \
+
+SOURCES_V8_FILES = \
+  AndroidV8Factory.cpp \
+
+SOURCES_JSC_FILES = \
+  AndroidJSCFactory.cpp \
+  JSCPerfLogging.cpp \
+
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -Wno-c++11-compat -Wno-shadow
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -Wno-unused-local-typedef
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -Wno-unused-function -Wno-unused-lambda-capture
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -Wno-header-hygiene
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -Wno-unused-const-variable -Wno-mismatched-tags
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) $(CXX11_FLAGS)
+
+LOCAL_LDLIBS = \
+    $(LOCAL_LDLIBS) \
+    $(OPENSOURCE_REACTNATIVETARGETDIR)\libfb.so \
+    $(OPENSOURCE_REACTNATIVETARGETDIR)\libfolly_json.so \
+    $(OPENSOURCE_REACTNATIVETARGETDIR)\libglog_init.so \
+    $(OPENSOURCE_REACTNATIVETARGETDIR)\libglog.so \
+    $(OPENSOURCE_REACTNATIVETARGETDIR)\libyoga.so \
+    $(OPENSOURCE_REACTNATIVETARGETDIR)\libprivatedata.so \
+
+LOCAL_WHOLE_STATIC_LIBRARIES = \
+    $(LOCAL_WHOLE_STATIC_LIBRARIES) \
+    $(OPENSOURCE_REACTNATIVETARGETDIR)\lib\libReactNative.a \
+
+!if ($(V8_ENABLED) == 1)
+SOURCES = $(SOURCES) \
+        $(SOURCES_V8_FILES) \
+
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -DV8_ENABLED=1
+
+LOCAL_LDLIBS = \
+    $(LOCAL_LDLIBS) \
+    $(PKGOFFICE_GOOGLE_V8_ANDROID)\$(PLATFORM)\$(FLAVOR)\x-none\libv8.cr.so \
+    $(PKGOFFICE_GOOGLE_V8_ANDROID)\$(PLATFORM)\$(FLAVOR)\x-none\libv8_libbase.cr.so \
+    $(PKGOFFICE_GOOGLE_V8_ANDROID)\$(PLATFORM)\$(FLAVOR)\x-none\libv8_libplatform.cr.so \
+
+LOCAL_WHOLE_STATIC_LIBRARIES = \
+    $(LOCAL_WHOLE_STATIC_LIBRARIES) \
+    $(OPENSOURCE_REACTNATIVETARGETDIR)\lib\libv8helpers.a \
+
+INCLUDES = $(INCLUDES); \
+    $(PKGOFFICE_GOOGLE_V8_ANDROID)\headers\include; \
+
+!else
+SOURCES = $(SOURCES);\
+    $(SOURCES_JSC_FILES); \   
+
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -DV8_ENABLED=0
+
+LOCAL_LDLIBS = \
+    $(LOCAL_LDLIBS) \
+    $(PKGREACTNATIVEANDROIDRIR_BIN)\x-none\libjsc.so \
+
+LOCAL_WHOLE_STATIC_LIBRARIES = \
+    $(LOCAL_WHOLE_STATIC_LIBRARIES) \
+    $(OPENSOURCE_REACTNATIVETARGETDIR)\lib\libjschelpers.a \
+
+!endif

@@ -251,6 +251,20 @@ type IOSProps = $ReadOnly<{|
     | 'always'
   ),
   /**
+   * Experimental: specifies how much to adjust the content view by when using
+   * the keyboard to scroll. This value adjusts the content's horizontal offset.
+   *
+   * @platform macos
+   */
+  horizontalLineScroll?: number, // TODO(macOS ISS#2323203)
+  /**
+   * Experimental: specifies how much to adjust the content view by when using
+   * the keyboard to scroll. This value adjusts the content's vertical offset.
+   *
+   * @platform macos
+   */
+  verticalLineScroll?: number, // TODO(macOS ISS#2323203)
+  /**
    * When true, ScrollView will emit updateChildFrames data in scroll events,
    * otherwise will not compute or emit child frame data.  This only exists
    * to support legacy issues, `onLayout` should be used instead to retrieve
@@ -713,12 +727,50 @@ const ScrollView = createReactClass({
     }
   },
 
+  _handleKeyDown: function(e: Object) { // [TODO(macOS ISS#2323203)
+    if (this.props.onKeyDown) {
+        this.props.onKeyDown(e);
+    }
+    else {
+        const event = e['nativeEvent'];
+        const key = event['key'];
+        const kMinScrollOffset = 10;
+        
+        if (Platform.OS === 'macos') {
+            if (key === 'PAGE_UP') {
+                this._handleScrollByKeyDown(event, {x: event.contentOffset.x, y: event.contentOffset.y + -event.layoutMeasurement.height})
+            }
+            else if (key === 'PAGE_DOWN') {
+                this._handleScrollByKeyDown(event, {x: event.contentOffset.x, y: event.contentOffset.y + event.layoutMeasurement.height})
+            }
+            else if (key === 'LEFT_ARROW') {
+                this._handleScrollByKeyDown(event, {x: event.contentOffset.x + -(this.props.horizontalLineScroll || kMinScrollOffset), y: event.contentOffset.y});
+            }
+            else if (key === 'RIGHT_ARROW') {
+                this._handleScrollByKeyDown(event, {x: event.contentOffset.x + (this.props.horizontalLineScroll || kMinScrollOffset), y: event.contentOffset.y});
+            }
+            else if (key === 'DOWN_ARROW') {
+                this._handleScrollByKeyDown(event, {x: event.contentOffset.x, y: event.contentOffset.y + (this.props.verticalLineScroll || kMinScrollOffset)});
+            }
+            else if (key === 'UP_ARROW') {
+                this._handleScrollByKeyDown(event, {x: event.contentOffset.x, y: event.contentOffset.y + -(this.props.verticalLineScroll || kMinScrollOffset)});
+            }
+        }
+    }
+  },
+  
+  _handleScrollByKeyDown: function(e: Object, newOffset) {
+    const maxX = e.contentSize.width - e.layoutMeasurement.width;
+    const maxY = e.contentSize.height - e.layoutMeasurement.height;
+    this.scrollTo({x: Math.max(0, Math.min(maxX, newOffset.x)), y: Math.max(0, Math.min(maxY, newOffset.y))});
+  }, // ]TODO(macOS ISS#2323203)
+
   _handleScroll: function(e: Object) {
     if (__DEV__) {
       if (
         this.props.onScroll &&
         this.props.scrollEventThrottle == null &&
-        Platform.OS === 'ios'
+        (Platform.OS === 'ios' || Platform.OS === 'macos') // TODO(macOS ISS#2323203)
       ) {
         console.log(
           'You specified `onScroll` on a <ScrollView> but not ' +
@@ -776,6 +828,9 @@ const ScrollView = createReactClass({
         ScrollViewClass = AndroidScrollView;
         ScrollContentContainerViewClass = View;
       }
+    } else if (Platform.OS === 'uwp' || Platform.OS === 'windesktop') { // [TODO(windows ISS)
+      ScrollViewClass = RCTScrollView;
+      ScrollContentContainerViewClass = View; // ]TODO(windows ISS)
     } else {
       ScrollViewClass = RCTScrollView;
       ScrollContentContainerViewClass = RCTScrollContentView;
@@ -890,6 +945,7 @@ const ScrollView = createReactClass({
       // Override the onContentSizeChange from props, since this event can
       // bubble up from TextInputs
       onContentSizeChange: null,
+      onKeyDown: this._handleKeyDown, // TODO(macOS ISS#2323203)
       onLayout: this._handleLayout,
       onMomentumScrollBegin: this.scrollResponderHandleMomentumScrollBegin,
       onMomentumScrollEnd: this.scrollResponderHandleMomentumScrollEnd,
@@ -929,6 +985,10 @@ const ScrollView = createReactClass({
           this.props.pagingEnabled &&
           this.props.snapToInterval == null &&
           this.props.snapToOffsets == null,
+        macos: // [TODO(macOS ISS#2323203)
+          this.props.pagingEnabled &&
+          this.props.snapToInterval == null &&
+          this.props.snapToOffsets == null, // ]TODO(macOS ISS#2323203)
         // on Android, pagingEnabled must be set to true to have snapToInterval / snapToOffsets work
         android:
           this.props.pagingEnabled ||

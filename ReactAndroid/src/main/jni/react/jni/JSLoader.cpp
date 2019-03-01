@@ -45,7 +45,7 @@ std::unique_ptr<const JSBigString> loadScriptFromAssets(
       manager,
       assetName.c_str(),
       AASSET_MODE_STREAMING); // Optimized for sequential read: see AssetManager.java for docs
-    if (asset) {
+    if (asset) { 
       auto buf = folly::make_unique<JSBigBufferString>(AAsset_getLength(asset));
       size_t offset = 0;
       int readbytes;

@@ -14,6 +14,7 @@
 #include "RAMBundleRegistry.h"
 #include "RecoverableError.h"
 #include "SystraceSection.h"
+#include "ModuleRegistry.h"
 
 #include <cxxreact/JSIndexedRAMBundle.h>
 #include <folly/Memory.h>
@@ -36,17 +37,27 @@ Instance::~Instance() {
   }
 }
 
+void Instance::setModuleRegistry(std::shared_ptr<ModuleRegistry> moduleRegistry) {
+  moduleRegistry_ = std::move(moduleRegistry);
+}
+
 void Instance::initializeBridge(
     std::unique_ptr<InstanceCallback> callback,
+    std::shared_ptr<ExecutorDelegateFactory> edf,
     std::shared_ptr<JSExecutorFactory> jsef,
     std::shared_ptr<MessageQueueThread> jsQueue,
     std::shared_ptr<ModuleRegistry> moduleRegistry) {
   callback_ = std::move(callback);
   moduleRegistry_ = std::move(moduleRegistry);
 
-  jsQueue->runOnQueueSync([this, &jsef, jsQueue]() mutable {
+  std::shared_ptr<ExecutorDelegate> delegate;
+  if (edf) {
+    delegate = edf->createExecutorDelegate(moduleRegistry_, callback_);
+  }
+
+  jsQueue->runOnQueueSync([this, delegate, &jsef, jsQueue]() mutable {
     nativeToJsBridge_ = folly::make_unique<NativeToJsBridge>(
-        jsef.get(), moduleRegistry_, jsQueue, callback_);
+      jsef.get(), delegate, moduleRegistry_, jsQueue, callback_, jseConfigParams_);
 
     std::lock_guard<std::mutex> lock(m_syncMutex);
     m_syncReady = true;
@@ -57,43 +68,49 @@ void Instance::initializeBridge(
 }
 
 void Instance::loadApplication(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
-                               std::unique_ptr<const JSBigString> string,
-                               std::string sourceURL) {
+                               std::unique_ptr<const JSBigString> bundle,
+                               uint64_t bundleVersion,
+                               std::string bundleURL,
+                               std::string&& bytecodeFileName) {
   callback_->incrementPendingJSCalls();
-  SystraceSection s("Instance::loadApplication", "sourceURL",
-                    sourceURL);
-  nativeToJsBridge_->loadApplication(std::move(bundleRegistry), std::move(string),
-                                     std::move(sourceURL));
+  SystraceSection s("Instance::loadApplication", "bundleURL",
+                    bundleURL);
+  nativeToJsBridge_->loadApplication(std::move(bundleRegistry), std::move(bundle), bundleVersion,
+                                     std::move(bundleURL), std::move(bytecodeFileName));
 }
 
 void Instance::loadApplicationSync(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
-                                   std::unique_ptr<const JSBigString> string,
-                                   std::string sourceURL) {
+                                   std::unique_ptr<const JSBigString> bundle,
+                                   uint64_t bundleVersion,
+                                   std::string bundleURL,
+                                   std::string&& bytecodeFileName) {
   std::unique_lock<std::mutex> lock(m_syncMutex);
   m_syncCV.wait(lock, [this] { return m_syncReady; });
 
-  SystraceSection s("Instance::loadApplicationSync", "sourceURL",
-                    sourceURL);
-  nativeToJsBridge_->loadApplicationSync(std::move(bundleRegistry), std::move(string),
-                                         std::move(sourceURL));
+  SystraceSection s("Instance::loadApplicationSync", "bundleURL",
+                    bundleURL);
+  nativeToJsBridge_->loadApplicationSync(std::move(bundleRegistry), std::move(bundle), bundleVersion,
+                                         std::move(bundleURL), std::move(bytecodeFileName));
 }
 
 void Instance::setSourceURL(std::string sourceURL) {
   callback_->incrementPendingJSCalls();
   SystraceSection s("Instance::setSourceURL", "sourceURL", sourceURL);
 
-  nativeToJsBridge_->loadApplication(nullptr, nullptr, std::move(sourceURL));
+  nativeToJsBridge_->loadApplication(nullptr, nullptr, 0, std::move(sourceURL), "" /*bytecodeFileName*/);
 }
 
-void Instance::loadScriptFromString(std::unique_ptr<const JSBigString> string,
-                                    std::string sourceURL,
-                                    bool loadSynchronously) {
-  SystraceSection s("Instance::loadScriptFromString", "sourceURL",
-                    sourceURL);
+void Instance::loadScriptFromString(std::unique_ptr<const JSBigString> bundleString,
+                                    uint64_t bundleVersion,
+                                    std::string bundleURL,
+                                    bool loadSynchronously,
+                                    std::string&& bytecodeFileName) {
+  SystraceSection s("Instance::loadScriptFromString", "bundleURL",
+                    bundleURL);
   if (loadSynchronously) {
-    loadApplicationSync(nullptr, std::move(string), std::move(sourceURL));
+    loadApplicationSync(nullptr, std::move(bundleString), bundleVersion, std::move(bundleURL), std::move(bytecodeFileName));
   } else {
-    loadApplication(nullptr, std::move(string), std::move(sourceURL));
+    loadApplication(nullptr, std::move(bundleString), bundleVersion, std::move(bundleURL), std::move(bytecodeFileName));
   }
 }
 
@@ -127,11 +144,11 @@ void Instance::loadRAMBundle(std::unique_ptr<RAMBundleRegistry> bundleRegistry,
                              std::string startupScriptSourceURL,
                              bool loadSynchronously) {
   if (loadSynchronously) {
-    loadApplicationSync(std::move(bundleRegistry), std::move(startupScript),
-                        std::move(startupScriptSourceURL));
+    loadApplicationSync(std::move(bundleRegistry), std::move(startupScript), 0 /*bundleVersion*/,
+                        std::move(startupScriptSourceURL), "" /*bytecodeFileName*/);
   } else {
-    loadApplication(std::move(bundleRegistry), std::move(startupScript),
-                    std::move(startupScriptSourceURL));
+    loadApplication(std::move(bundleRegistry), std::move(startupScript), 0 /*bundleVersion*/,
+                    std::move(startupScriptSourceURL), "" /*bytecodeFileName*/);
   }
 }
 
@@ -173,8 +190,20 @@ const ModuleRegistry &Instance::getModuleRegistry() const {
 
 ModuleRegistry &Instance::getModuleRegistry() { return *moduleRegistry_; }
 
+void Instance::registerModules(std::vector<std::unique_ptr<NativeModule>>&& modules) {
+  moduleRegistry_->registerModules(std::move(modules));
+}
+
+void Instance::setJSEConfigParams(std::shared_ptr<JSEConfigParams>&& jseConfigParams) {
+  jseConfigParams_ = std::move(jseConfigParams);
+}
+
 void Instance::handleMemoryPressure(int pressureLevel) {
   nativeToJsBridge_->handleMemoryPressure(pressureLevel);
+}
+
+int64_t Instance::getPeakJsMemoryUsage() const noexcept {
+  return nativeToJsBridge_->getPeakJsMemoryUsage();
 }
 
 } // namespace react

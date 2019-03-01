@@ -23,7 +23,7 @@ struct RecoverableError : public std::exception {
     : m_what { "facebook::react::Recoverable: " + what_ }
   {}
 
-  virtual const char* what() const throw() override { return m_what.c_str(); }
+  virtual const char* what() const noexcept override { return m_what.c_str(); }
 
   /**
    * runRethrowingAsRecoverable

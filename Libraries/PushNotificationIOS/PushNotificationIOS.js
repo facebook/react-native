@@ -11,6 +11,7 @@
 'use strict';
 
 const NativeEventEmitter = require('NativeEventEmitter');
+const Platform = require('Platform'); // TODO(macOS ISS#2323203)
 const RCTPushNotificationManager = require('NativeModules')
   .PushNotificationManager;
 const invariant = require('fbjs/lib/invariant');
@@ -368,7 +369,8 @@ class PushNotificationIOS {
     if (
       !this._isRemote ||
       !this._notificationId ||
-      this._remoteNotificationCompleteCallbackCalled
+      this._remoteNotificationCompleteCallbackCalled ||
+      Platform.OS === 'macos' // TODO(macOS ISS#2323203)
     ) {
       return;
     }

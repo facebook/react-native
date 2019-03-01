@@ -1,0 +1,9 @@
+.sconsign.dblite
+*.o
+*.obj
+msvc/Release/
+msvc/Debug/
+*.suo
+*.opensdf
+*.sdf
+*.user

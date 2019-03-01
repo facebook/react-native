@@ -11,6 +11,7 @@
 'use strict';
 
 const AlertIOS = require('AlertIOS');
+const AlertMacOS = require('AlertMacOS'); // TODO(macOS ISS#2323203)
 const NativeModules = require('NativeModules');
 const Platform = require('Platform');
 
@@ -54,6 +55,8 @@ class Alert {
         return;
       }
       AlertIOS.alert(title, message, buttons);
+    } else if (Platform.OS === 'macos') { // TODO(macOS ISS#2323203)
+      AlertMacOS.alert(title, message, buttons); // TODO(macOS ISS#2323203)
     } else if (Platform.OS === 'android') {
       AlertAndroid.alert(title, message, buttons, options);
     }

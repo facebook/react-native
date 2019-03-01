@@ -64,6 +64,7 @@ module.system.haste.paths.blacklist=<PROJECT_ROOT>/Libraries/Animated/src/polyfi
 munge_underscores=true
 
 module.name_mapper='^[./a-zA-Z0-9$_-]+\.\(bmp\|gif\|jpg\|jpeg\|png\|psd\|svg\|webp\|m4v\|mov\|mp4\|mpeg\|mpg\|webm\|aac\|aiff\|caf\|m4a\|mp3\|wav\|html\|pdf\)$' -> 'RelativeImageStub'
+module.name_mapper='react-native' -> '<PROJECT_ROOT>'
 
 suppress_type=$FlowIssue
 suppress_type=$FlowFixMe

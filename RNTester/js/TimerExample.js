@@ -13,7 +13,7 @@
 var React = require('react');
 var createReactClass = require('create-react-class');
 var ReactNative = require('react-native');
-var {AlertIOS, Platform, ToastAndroid, Text, View} = ReactNative;
+var {AlertIOS, AlertMacOS, Platform, ToastAndroid, Text, View} = ReactNative;
 /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
  * found when Flow v0.54 was deployed. To see the error delete this comment and
  * run Flow. */
@@ -181,6 +181,8 @@ var TimerTester = createReactClass({
       console.log(msg);
       if (Platform.OS === 'ios') {
         AlertIOS.alert(msg);
+      } else if (Platform.OS === 'macos') {
+        AlertMacOS.alert(msg);
       } else if (Platform.OS === 'android') {
         ToastAndroid.show(msg, ToastAndroid.SHORT);
       }

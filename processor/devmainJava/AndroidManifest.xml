@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.facebook.react.processor" android:versionCode="1" android:versionName="1.0">
+  <!--minSDKVersion and TargetSDKVersion is specified in common gradle files
+     and is not to be specified in AndroidManifest.xml -->
+  <application></application>
+</manifest>

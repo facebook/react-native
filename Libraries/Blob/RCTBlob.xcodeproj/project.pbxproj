@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		18B8F9E32143371700CE911A /* RCTFileReaderModule.m in Sources */ = {isa = PBXBuildFile; fileRef = ADDFBA6B1F33455F0064C998 /* RCTFileReaderModule.m */; };
+		18F3B9AD2142F00100AD247D /* RCTFileReaderModule.h in Headers */ = {isa = PBXBuildFile; fileRef = ADDFBA6A1F33455F0064C998 /* RCTFileReaderModule.h */; };
+		18F3B9AE2142F00400AD247D /* RCTBlobManager.h in Headers */ = {isa = PBXBuildFile; fileRef = AD9A43C11DFC7126008DC588 /* RCTBlobManager.h */; };
+		18F3BA222142F91100AD247D /* RCTBlobManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = AD9A43C21DFC7126008DC588 /* RCTBlobManager.mm */; };
 		19BA88FE1F84391700741C5A /* RCTFileReaderModule.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = ADDFBA6A1F33455F0064C998 /* RCTFileReaderModule.h */; };
 		19BA88FF1F84392900741C5A /* RCTFileReaderModule.h in Headers */ = {isa = PBXBuildFile; fileRef = ADDFBA6A1F33455F0064C998 /* RCTFileReaderModule.h */; };
 		19BA89001F84392F00741C5A /* RCTFileReaderModule.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = ADDFBA6A1F33455F0064C998 /* RCTFileReaderModule.h */; };
@@ -34,6 +38,16 @@
 			name = "Copy Headers";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		6484CE50201A74FA004275A4 /* Copy Headers */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = include/RCTBlob;
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			name = "Copy Headers";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AD0871121E215B16007D136D /* Copy Headers */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -50,6 +64,7 @@
 
 /* Begin PBXFileReference section */
 		358F4ED71D1E81A9004DF814 /* libRCTBlob.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTBlob.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		6484CE57201A74FA004275A4 /* libRCTBlob-macOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libRCTBlob-macOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD9A43C11DFC7126008DC588 /* RCTBlobManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTBlobManager.h; sourceTree = "<group>"; };
 		AD9A43C21DFC7126008DC588 /* RCTBlobManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTBlobManager.mm; sourceTree = "<group>"; };
 		ADD01A681E09402E00F6D226 /* libRCTBlob-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libRCTBlob-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -77,6 +92,7 @@
 			children = (
 				358F4ED71D1E81A9004DF814 /* libRCTBlob.a */,
 				ADD01A681E09402E00F6D226 /* libRCTBlob-tvOS.a */,
+				6484CE57201A74FA004275A4 /* libRCTBlob-macOS.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -84,6 +100,15 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		6484CE4E201A74FA004275A4 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				18F3B9AD2142F00100AD247D /* RCTFileReaderModule.h in Headers */,
+				18F3B9AE2142F00400AD247D /* RCTBlobManager.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AD0871151E215EB7007D136D /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -120,6 +145,23 @@
 			name = RCTBlob;
 			productName = SLKBlobs;
 			productReference = 358F4ED71D1E81A9004DF814 /* libRCTBlob.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		6484CE4D201A74FA004275A4 /* RCTBlob-macOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6484CE54201A74FA004275A4 /* Build configuration list for PBXNativeTarget "RCTBlob-macOS" */;
+			buildPhases = (
+				6484CE4E201A74FA004275A4 /* Headers */,
+				6484CE50201A74FA004275A4 /* Copy Headers */,
+				6484CE52201A74FA004275A4 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "RCTBlob-macOS";
+			productName = SLKBlobs;
+			productReference = 6484CE57201A74FA004275A4 /* libRCTBlob-macOS.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		ADD01A671E09402E00F6D226 /* RCTBlob-tvOS */ = {
@@ -171,6 +213,7 @@
 			targets = (
 				358F4ED61D1E81A9004DF814 /* RCTBlob */,
 				ADD01A671E09402E00F6D226 /* RCTBlob-tvOS */,
+				6484CE4D201A74FA004275A4 /* RCTBlob-macOS */,
 			);
 		};
 /* End PBXProject section */
@@ -182,6 +225,15 @@
 			files = (
 				ADDFBA6D1F33455F0064C998 /* RCTFileReaderModule.m in Sources */,
 				AD9A43C31DFC7126008DC588 /* RCTBlobManager.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6484CE52201A74FA004275A4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				18B8F9E32143371700CE911A /* RCTFileReaderModule.m in Sources */,
+				18F3BA222142F91100AD247D /* RCTBlobManager.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -245,6 +297,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -294,6 +347,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -304,6 +358,10 @@
 		358F4EE11D1E81A9004DF814 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					arm64e,
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -313,8 +371,32 @@
 		358F4EE21D1E81A9004DF814 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					arm64e,
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		6484CE55201A74FA004275A4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		6484CE56201A74FA004275A4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 			};
 			name = Release;
@@ -364,6 +446,15 @@
 			buildConfigurations = (
 				358F4EE11D1E81A9004DF814 /* Debug */,
 				358F4EE21D1E81A9004DF814 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6484CE54201A74FA004275A4 /* Build configuration list for PBXNativeTarget "RCTBlob-macOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6484CE55201A74FA004275A4 /* Debug */,
+				6484CE56201A74FA004275A4 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

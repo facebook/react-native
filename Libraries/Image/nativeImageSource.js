@@ -23,6 +23,7 @@ export type NativeImageSource = {|
 type NativeImageSourceSpec = {|
   +android?: string,
   +ios?: string,
+  +macos?: string, // TODO(macOS ISS#2323203)
 
   // For more details on width and height, see
   // http://facebook.github.io/react-native/docs/images.html#why-not-automatically-size-everything

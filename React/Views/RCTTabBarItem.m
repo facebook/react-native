@@ -115,7 +115,9 @@ RCT_ENUM_CONVERTER(UITabBarSystemItem, (@{
 {
   // badgeColor available since iOS 10
   if ([self.barItem respondsToSelector:@selector(badgeColor)]) {
-    self.barItem.badgeColor = badgeColor;
+    if (@available(iOS 10.0, tvOS 10.0, *)) { // TODO(OSS Candidate ISS#2710739)
+      self.barItem.badgeColor = badgeColor;
+    }
   }
 }
 

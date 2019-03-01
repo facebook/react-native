@@ -15,7 +15,7 @@
 
 RCT_EXPORT_MODULE()
 
-- (UIView *)view
+- (RCTPlatformView *)view // TODO(macOS ISS#2323203)
 {
   return [RCTPicker new];
 }

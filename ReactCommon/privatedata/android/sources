@@ -1,0 +1,14 @@
+LIBLET_ANDROID = 1
+LIBLET_DYNLINK = 1
+
+!include $(OTOOLS)\inc\opensource\reactnative\officereactnative.inc
+!include ..\sources.inc
+
+TARGETNAME = privatedata
+
+SOURCES = $(SOURCES_ANDROID)
+
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -Wall -Werror -fexceptions
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -frtti -DLOG_TAG=\"ReactNative\"
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -Wno-c++11-compat -Wno-shadow
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) $(CXX11_FLAGS)

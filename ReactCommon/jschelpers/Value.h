@@ -104,7 +104,9 @@ public:
     }
     const JSChar* utf16 = JSC_JSStringGetCharactersPtr(m_context, m_string);
     size_t stringLength = JSC_JSStringGetLength(m_context, m_string);
-    return unicode::utf16toUTF8(utf16, stringLength);
+
+    // TODOANAND
+    return unicode::utf16toUTF8((const uint16_t*)utf16, stringLength);
   }
 
   // Assumes that utf8 is nul-terminated
@@ -114,11 +116,13 @@ public:
 
   // This assumes ascii is nul-terminated.
   static String createExpectingAscii(JSContextRef context, const char* ascii, size_t len) {
-#if WITH_FBJSCEXTENSIONS
-    return String(context, JSC_JSStringCreateWithUTF8CStringExpectAscii(context, ascii, len), true);
-#else
-    return String(context, JSC_JSStringCreateWithUTF8CString(context, ascii), true);
-#endif
+
+    #if WITH_FBJSCEXTENSIONS
+      return String(context, JSC_JSStringCreateWithUTF8CStringExpectAscii(context, ascii, len), true);
+    #else
+    (void)len;
+      return String(context, JSC_JSStringCreateWithUTF8CString(context, ascii), true);
+    #endif
   }
 
   static String createExpectingAscii(JSContextRef context, std::string const &ascii) {

@@ -111,6 +111,7 @@ RCT_EXPORT_MODULE()
   _paused = YES;
   _timers = [NSMutableDictionary new];
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   for (NSString *name in @[UIApplicationWillResignActiveNotification,
                            UIApplicationDidEnterBackgroundNotification,
                            UIApplicationWillTerminateNotification]) {
@@ -127,6 +128,7 @@ RCT_EXPORT_MODULE()
                                                  name:name
                                                object:nil];
   }
+#endif // TODO(macOS ISS#2323203)
 
   _bridge = bridge;
 }

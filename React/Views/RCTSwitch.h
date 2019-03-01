@@ -5,13 +5,21 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
+#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 
 #import <React/RCTComponent.h>
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 @interface RCTSwitch : UISwitch
+#else // [TODO(macOS ISS#2323203)
+@interface RCTSwitch : NSButton
+#endif // ]TODO(macOS ISS#2323203)
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 @property (nonatomic, assign) BOOL wasOn;
+#else // [TODO(macOS ISS#2323203)
+@property (nonatomic, assign) BOOL on;
+#endif // ]TODO(macOS ISS#2323203)
 @property (nonatomic, copy) RCTBubblingEventBlock onChange;
 
 @end

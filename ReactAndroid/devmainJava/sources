@@ -1,0 +1,24 @@
+!include $(OPENSOURCE_REACTNATIVE)\OfficeISS\ReactAndroid\CopyHeaders.inc
+!include $(OTOOLS)\inc\opensource\reactnative\officereactnative.inc
+
+TARGETTYPE=PROGLIB
+TARGETNAME=ReactAndroid
+
+VERSION_NAME=1000.0.0-master
+GROUP_ID=com.facebook.react
+POM_ARTIFACT_ID=react-native
+
+!LISTFILES -recursive REACT_NATIVE_ANDROID_JARS = $(PKGREACTNATIVEANDROIDRIR)\cross\cross\x-none\maven *.jar
+!LISTFILES -recursive REACT_NATIVE_ANDROID_AARS = $(PKGREACTNATIVEANDROIDRIR)\cross\cross\x-none\maven *.aar
+!LISTFILES -recursive REACT_NATIVE_ANDROID_POMS = $(PKGREACTNATIVEANDROIDRIR)\cross\cross\x-none\maven *.pom
+!LISTFILES -recursive REACT_NATIVE_ANDROID_JAVA_SRC = $(OPENSOURCE_REACTNATIVE)\OfficeISS\ReactAndroid\src\main *
+
+ADDITIONAL_AAR_INPUTS=\
+	$(REACT_NATIVE_ANDROID_JARS) \
+	$(REACT_NATIVE_ANDROID_AARS) \
+	$(REACT_NATIVE_ANDROID_POMS) \
+	$(REACT_NATIVE_ANDROID_JAVA_SRC) \
+	$(OPENSOURCE_REACTNATIVETARGETDIR)\maven\com\facebook\react\processor\1.0\processor-1.0.aar \
+	$(OPENSOURCE_REACTNATIVETARGETDIR)\maven\com\facebook\react\processor\1.0\processor-1.0.pom \
+
+SOURCES=

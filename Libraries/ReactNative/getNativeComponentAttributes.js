@@ -21,6 +21,7 @@ const resolveAssetSource = require('resolveAssetSource');
 const sizesDiffer = require('sizesDiffer');
 const invariant = require('fbjs/lib/invariant');
 const warning = require('fbjs/lib/warning');
+import type {SemanticOrDynamicColorType} from 'normalizeColor' // ]TODO(macOS ISS#2323203)
 
 function getNativeComponentAttributes(uiViewClassName: string) {
   const viewConfig = UIManager[uiViewClassName];
@@ -181,7 +182,7 @@ function getProcessorForType(typeName: string): ?(nextProp: any) => any {
   return null;
 }
 
-function processColorArray(colors: ?Array<any>): ?Array<?number> {
+function processColorArray(colors: ?Array<any>): ?Array<?(number | SemanticOrDynamicColorType)> { // ]TODO(macOS ISS#2323203)
   return colors == null ? null : colors.map(processColor);
 }
 

@@ -1,0 +1,3 @@
+DIRS = \
+    java{droidarm,droidx86} \
+    jni{droidarm,droidx86} \

@@ -171,7 +171,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)setUnselectedItemTintColor:(UIColor *)unselectedItemTintColor {
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
   if ([_tabController.tabBar respondsToSelector:@selector(unselectedItemTintColor)]) {
+#pragma clang diagnostic push // TODO(OSS Candidate ISS#2710739)
+#pragma clang diagnostic ignored "-Wunguarded-availability" // TODO(OSS Candidate ISS#2710739)
     _tabController.tabBar.unselectedItemTintColor = unselectedItemTintColor;
+#pragma clang diagnostic pop // TODO(OSS Candidate ISS#2710739)
   }
 #endif
 }

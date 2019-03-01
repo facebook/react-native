@@ -1,0 +1,7 @@
+{
+    "test": "foo",   "test2": "foo // bar",   
+  "test4": "foo /* bar", 
+  "te//": "foo",
+  "te/*": "bar",
+  "\\\"": "\\" 
+}

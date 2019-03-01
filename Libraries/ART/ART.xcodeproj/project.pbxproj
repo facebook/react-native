@@ -43,25 +43,91 @@
 		325CF7BC1E5F2ABA00AC9606 /* ARTSurfaceView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68AE61AF0549300FF9E5C /* ARTSurfaceView.m */; };
 		325CF7BD1E5F2ABA00AC9606 /* ARTText.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68AE81AF0549300FF9E5C /* ARTText.m */; };
 		325CF7BE1E5F2ABA00AC9606 /* RCTConvert+ART.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68AF71AF0549300FF9E5C /* RCTConvert+ART.m */; };
+		6431E8A01F9A30AD00BA05C9 /* ARTTextFrame.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 0CF68AE91AF0549300FF9E5C /* ARTTextFrame.h */; };
+		6431E8A11F9A30AD00BA05C9 /* RCTConvert+ART.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 0CF68AF61AF0549300FF9E5C /* RCTConvert+ART.h */; };
+		6431E8A21F9A30B300BA05C9 /* ARTSurfaceView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 0CF68AE51AF0549300FF9E5C /* ARTSurfaceView.h */; };
+		6431E8A31F9A30B700BA05C9 /* ARTContainer.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 0CF68ADC1AF0549300FF9E5C /* ARTContainer.h */; };
+		6431E8A41F9A30BA00BA05C9 /* ARTCGFloatArray.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 0CF68ADB1AF0549300FF9E5C /* ARTCGFloatArray.h */; };
+		6431E8A51F9A30BD00BA05C9 /* ARTBrush.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 0CF68AEB1AF0549300FF9E5C /* ARTBrush.h */; };
+		6431E8A61F9A312000BA05C9 /* ARTBrush.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 0CF68AEB1AF0549300FF9E5C /* ARTBrush.h */; };
+		6431E8A71F9A312000BA05C9 /* ARTCGFloatArray.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 0CF68ADB1AF0549300FF9E5C /* ARTCGFloatArray.h */; };
+		6431E8A81F9A312000BA05C9 /* ARTContainer.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 0CF68ADC1AF0549300FF9E5C /* ARTContainer.h */; };
+		6431E8A91F9A312000BA05C9 /* ARTSurfaceView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 0CF68AE51AF0549300FF9E5C /* ARTSurfaceView.h */; };
+		6431E8AA1F9A312000BA05C9 /* ARTTextFrame.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 0CF68AE91AF0549300FF9E5C /* ARTTextFrame.h */; };
+		6431E8AB1F9A312000BA05C9 /* RCTConvert+ART.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 0CF68AF61AF0549300FF9E5C /* RCTConvert+ART.h */; };
+		6431E8AC1F9A316D00BA05C9 /* ARTBrush.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 0CF68AEB1AF0549300FF9E5C /* ARTBrush.h */; };
+		6431E8AD1F9A316D00BA05C9 /* ARTCGFloatArray.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 0CF68ADB1AF0549300FF9E5C /* ARTCGFloatArray.h */; };
+		6431E8AE1F9A316D00BA05C9 /* ARTContainer.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 0CF68ADC1AF0549300FF9E5C /* ARTContainer.h */; };
+		6431E8AF1F9A316D00BA05C9 /* ARTSurfaceView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 0CF68AE51AF0549300FF9E5C /* ARTSurfaceView.h */; };
+		6431E8B01F9A316E00BA05C9 /* ARTTextFrame.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 0CF68AE91AF0549300FF9E5C /* ARTTextFrame.h */; };
+		6431E8B11F9A316E00BA05C9 /* RCTConvert+ART.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 0CF68AF61AF0549300FF9E5C /* RCTConvert+ART.h */; };
+		647647631F0BC33500C2D89B /* ARTTextManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68B041AF0549300FF9E5C /* ARTTextManager.m */; };
+		647647641F0BC33500C2D89B /* ARTGroupManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68AFA1AF0549300FF9E5C /* ARTGroupManager.m */; };
+		647647651F0BC33500C2D89B /* ARTPattern.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68AF01AF0549300FF9E5C /* ARTPattern.m */; };
+		647647661F0BC33500C2D89B /* ARTText.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68AE81AF0549300FF9E5C /* ARTText.m */; };
+		647647671F0BC33500C2D89B /* ARTNodeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68AFC1AF0549300FF9E5C /* ARTNodeManager.m */; };
+		647647681F0BC33500C2D89B /* ARTGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68ADE1AF0549300FF9E5C /* ARTGroup.m */; };
+		647647691F0BC33500C2D89B /* ARTRenderableManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68AFE1AF0549300FF9E5C /* ARTRenderableManager.m */; };
+		6476476A1F0BC33500C2D89B /* ARTSurfaceView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68AE61AF0549300FF9E5C /* ARTSurfaceView.m */; };
+		6476476B1F0BC33500C2D89B /* ARTRadialGradient.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68AF21AF0549300FF9E5C /* ARTRadialGradient.m */; };
+		6476476C1F0BC33500C2D89B /* ARTSurfaceViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68B021AF0549300FF9E5C /* ARTSurfaceViewManager.m */; };
+		6476476D1F0BC33500C2D89B /* ARTShape.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68AE41AF0549300FF9E5C /* ARTShape.m */; };
+		6476476E1F0BC33500C2D89B /* ARTRenderable.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68AE21AF0549300FF9E5C /* ARTRenderable.m */; };
+		6476476F1F0BC33500C2D89B /* RCTConvert+ART.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68AF71AF0549300FF9E5C /* RCTConvert+ART.m */; };
+		647647701F0BC33500C2D89B /* ARTNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68AE01AF0549300FF9E5C /* ARTNode.m */; };
+		647647711F0BC33500C2D89B /* ARTSolidColor.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68AF41AF0549300FF9E5C /* ARTSolidColor.m */; };
+		647647721F0BC33500C2D89B /* ARTLinearGradient.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68AEE1AF0549300FF9E5C /* ARTLinearGradient.m */; };
+		647647731F0BC33500C2D89B /* ARTBrush.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68AEC1AF0549300FF9E5C /* ARTBrush.m */; };
+		647647741F0BC33500C2D89B /* ARTShapeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 0CF68B001AF0549300FF9E5C /* ARTShapeManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		0CF68ABF1AF0540F00FF9E5C /* CopyFiles */ = {
+		0CF68ABF1AF0540F00FF9E5C /* Copy Headers */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
+				6431E8AC1F9A316D00BA05C9 /* ARTBrush.h in Copy Headers */,
+				6431E8AD1F9A316D00BA05C9 /* ARTCGFloatArray.h in Copy Headers */,
+				6431E8AE1F9A316D00BA05C9 /* ARTContainer.h in Copy Headers */,
+				6431E8AF1F9A316D00BA05C9 /* ARTSurfaceView.h in Copy Headers */,
+				6431E8B01F9A316E00BA05C9 /* ARTTextFrame.h in Copy Headers */,
+				6431E8B11F9A316E00BA05C9 /* RCTConvert+ART.h in Copy Headers */,
 			);
+			name = "Copy Headers";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		323A12851E5F266B004975B8 /* CopyFiles */ = {
+		323A12851E5F266B004975B8 /* Copy Headers */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = "include/$(PRODUCT_NAME)";
+			dstPath = include/ART;
 			dstSubfolderSpec = 16;
 			files = (
+				6431E8A61F9A312000BA05C9 /* ARTBrush.h in Copy Headers */,
+				6431E8A71F9A312000BA05C9 /* ARTCGFloatArray.h in Copy Headers */,
+				6431E8A81F9A312000BA05C9 /* ARTContainer.h in Copy Headers */,
+				6431E8A91F9A312000BA05C9 /* ARTSurfaceView.h in Copy Headers */,
+				6431E8AA1F9A312000BA05C9 /* ARTTextFrame.h in Copy Headers */,
+				6431E8AB1F9A312000BA05C9 /* RCTConvert+ART.h in Copy Headers */,
 			);
+			name = "Copy Headers";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		647647761F0BC33500C2D89B /* Copy Headers */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = include/ART;
+			dstSubfolderSpec = 16;
+			files = (
+				6431E8A01F9A30AD00BA05C9 /* ARTTextFrame.h in Copy Headers */,
+				6431E8A11F9A30AD00BA05C9 /* RCTConvert+ART.h in Copy Headers */,
+				6431E8A21F9A30B300BA05C9 /* ARTSurfaceView.h in Copy Headers */,
+				6431E8A51F9A30BD00BA05C9 /* ARTBrush.h in Copy Headers */,
+				6431E8A41F9A30BA00BA05C9 /* ARTCGFloatArray.h in Copy Headers */,
+				6431E8A31F9A30B700BA05C9 /* ARTContainer.h in Copy Headers */,
+			);
+			name = "Copy Headers";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -108,6 +174,7 @@
 		0CF68B031AF0549300FF9E5C /* ARTTextManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ARTTextManager.h; sourceTree = "<group>"; };
 		0CF68B041AF0549300FF9E5C /* ARTTextManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARTTextManager.m; sourceTree = "<group>"; };
 		323A12871E5F266B004975B8 /* libART-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libART-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6476477A1F0BC33500C2D89B /* libART-macOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libART-macOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,6 +186,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		323A12841E5F266B004975B8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		647647751F0BC33500C2D89B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -162,6 +236,7 @@
 			children = (
 				0CF68AC11AF0540F00FF9E5C /* libART.a */,
 				323A12871E5F266B004975B8 /* libART-tvOS.a */,
+				6476477A1F0BC33500C2D89B /* libART-macOS.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -211,7 +286,7 @@
 			buildPhases = (
 				0CF68ABD1AF0540F00FF9E5C /* Sources */,
 				0CF68ABE1AF0540F00FF9E5C /* Frameworks */,
-				0CF68ABF1AF0540F00FF9E5C /* CopyFiles */,
+				0CF68ABF1AF0540F00FF9E5C /* Copy Headers */,
 			);
 			buildRules = (
 			);
@@ -228,7 +303,7 @@
 			buildPhases = (
 				323A12831E5F266B004975B8 /* Sources */,
 				323A12841E5F266B004975B8 /* Frameworks */,
-				323A12851E5F266B004975B8 /* CopyFiles */,
+				323A12851E5F266B004975B8 /* Copy Headers */,
 			);
 			buildRules = (
 			);
@@ -237,6 +312,23 @@
 			name = "ART-tvOS";
 			productName = "ART-tvOS";
 			productReference = 323A12871E5F266B004975B8 /* libART-tvOS.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		647647611F0BC33500C2D89B /* ART-macOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 647647771F0BC33500C2D89B /* Build configuration list for PBXNativeTarget "ART-macOS" */;
+			buildPhases = (
+				647647621F0BC33500C2D89B /* Sources */,
+				647647751F0BC33500C2D89B /* Frameworks */,
+				647647761F0BC33500C2D89B /* Copy Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "ART-macOS";
+			productName = ART;
+			productReference = 6476477A1F0BC33500C2D89B /* libART-macOS.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -270,6 +362,7 @@
 			targets = (
 				0CF68AC01AF0540F00FF9E5C /* ART */,
 				323A12861E5F266B004975B8 /* ART-tvOS */,
+				647647611F0BC33500C2D89B /* ART-macOS */,
 			);
 		};
 /* End PBXProject section */
@@ -325,6 +418,31 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		647647621F0BC33500C2D89B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				647647631F0BC33500C2D89B /* ARTTextManager.m in Sources */,
+				647647641F0BC33500C2D89B /* ARTGroupManager.m in Sources */,
+				647647651F0BC33500C2D89B /* ARTPattern.m in Sources */,
+				647647661F0BC33500C2D89B /* ARTText.m in Sources */,
+				647647671F0BC33500C2D89B /* ARTNodeManager.m in Sources */,
+				647647681F0BC33500C2D89B /* ARTGroup.m in Sources */,
+				647647691F0BC33500C2D89B /* ARTRenderableManager.m in Sources */,
+				6476476A1F0BC33500C2D89B /* ARTSurfaceView.m in Sources */,
+				6476476B1F0BC33500C2D89B /* ARTRadialGradient.m in Sources */,
+				6476476C1F0BC33500C2D89B /* ARTSurfaceViewManager.m in Sources */,
+				6476476D1F0BC33500C2D89B /* ARTShape.m in Sources */,
+				6476476E1F0BC33500C2D89B /* ARTRenderable.m in Sources */,
+				6476476F1F0BC33500C2D89B /* RCTConvert+ART.m in Sources */,
+				647647701F0BC33500C2D89B /* ARTNode.m in Sources */,
+				647647711F0BC33500C2D89B /* ARTSolidColor.m in Sources */,
+				647647721F0BC33500C2D89B /* ARTLinearGradient.m in Sources */,
+				647647731F0BC33500C2D89B /* ARTBrush.m in Sources */,
+				647647741F0BC33500C2D89B /* ARTShapeManager.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
@@ -374,6 +492,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -420,6 +539,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -430,6 +550,10 @@
 		0CF68AD61AF0540F00FF9E5C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					arm64e,
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -438,6 +562,10 @@
 		0CF68AD71AF0540F00FF9E5C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					arm64e,
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -478,6 +606,24 @@
 			};
 			name = Release;
 		};
+		647647781F0BC33500C2D89B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		647647791F0BC33500C2D89B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -504,6 +650,15 @@
 			buildConfigurations = (
 				323A128E1E5F266B004975B8 /* Debug */,
 				323A128F1E5F266B004975B8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		647647771F0BC33500C2D89B /* Build configuration list for PBXNativeTarget "ART-macOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				647647781F0BC33500C2D89B /* Debug */,
+				647647791F0BC33500C2D89B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

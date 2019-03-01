@@ -46,6 +46,7 @@ RUN npm install n -g
 RUN n $NODE_VERSION
 
 # download buck
+RUN rm -rf /opt/buck
 RUN git clone https://github.com/facebook/buck.git /opt/buck --branch $BUCK_VERSION --depth=1
 WORKDIR /opt/buck
 

@@ -318,6 +318,7 @@ void addNativeTracingHooks(JSGlobalContextRef ctx) {
   installGlobalFunction(ctx, "nativeTraceEndAsyncFlow", nativeTraceEndAsyncFlow);
   installGlobalFunction(ctx, "nativeTraceCounter", nativeTraceCounter);
 #endif
+  (void)ctx;
 }
 
 } }

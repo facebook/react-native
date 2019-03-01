@@ -45,7 +45,7 @@ const HMRClient = {
 Try the following to fix the issue:
 - Ensure that the packager server is running and available on the same network`;
 
-      if (Platform.OS === 'ios') {
+      if (Platform.OS === 'ios' || Platform.OS === 'macos') { // TODO(macOS ISS#2323203)
         error += `
 - Ensure that the Packager server URL is correctly set in AppDelegate`;
       } else {

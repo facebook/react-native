@@ -1,0 +1,3 @@
+DIRS = \
+    react{droidarm,droidx86} \
+    first-party{droidarm,droidx86} \

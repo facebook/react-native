@@ -7,17 +7,24 @@
 
 #import "RCTTextView.h"
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 #import <MobileCoreServices/UTCoreTypes.h>
+#endif // TODO(macOS ISS#2323203)
 
+#import <React/RCTAssert.h> // TODO(macOS ISS#2323203)
 #import <React/RCTUtils.h>
 #import <React/UIView+React.h>
 
 #import "RCTTextShadowView.h"
 
+#import <QuartzCore/QuartzCore.h> // TODO(macOS ISS#2323203)
+
 @implementation RCTTextView
 {
   CAShapeLayer *_highlightLayer;
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   UILongPressGestureRecognizer *_longPressGestureRecognizer;
+#endif // TODO(macOS ISS#2323203)
 
   NSArray<UIView *> *_Nullable _descendantViews;
   NSTextStorage *_Nullable _textStorage;
@@ -27,13 +34,40 @@
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
     self.isAccessibilityElement = YES;
     self.accessibilityTraits |= UIAccessibilityTraitStaticText;
+#else // [TODO(macOS ISS#2323203)
+    self.accessibilityRole = NSAccessibilityStaticTextRole;
+#endif // ]TODO(macOS ISS#2323203)
     self.opaque = NO;
-    self.contentMode = UIViewContentModeRedraw;
+    UIViewSetContentModeRedraw(self); // TODO(macOS ISS#2323203)
   }
   return self;
 }
+
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+- (BOOL)canBecomeKeyView
+{
+	// RCTText should not get any keyboard focus unless its `selectable` prop is true
+	return _selectable;
+}
+
+- (BOOL)enableFocusRing
+{
+  return _selectable;
+}
+
+- (void)drawFocusRingMask {
+  if ([self enableFocusRing]) {
+    NSRectFill([self bounds]);
+  }
+}
+
+- (NSRect)focusRingMaskBounds {
+  return [self bounds];
+}
+#endif // ]TODO(macOS ISS#2323203)
 
 - (NSString *)description
 {
@@ -51,14 +85,17 @@
 
   _selectable = selectable;
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   if (_selectable) {
     [self enableContextMenu];
   }
   else {
     [self disableContextMenu];
   }
+#endif // TODO(macOS ISS#2323203)
 }
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 - (void)reactSetFrame:(CGRect)frame
 {
   // Text looks super weird if its frame is animated.
@@ -67,6 +104,7 @@
     [super reactSetFrame:frame];
   }];
 }
+#endif // TODO(macOS ISS#2323203)
 
 - (void)didUpdateReactSubviews
 {
@@ -96,6 +134,9 @@
 
 - (void)drawRect:(CGRect)rect
 {
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+  [super drawRect:rect];
+#endif // ]TODO(macOS ISS#2323203)
   if (!_textStorage) {
     return;
   }
@@ -125,9 +166,9 @@
                                           inTextContainer:textContainer
                                                usingBlock:
         ^(CGRect enclosingRect, __unused BOOL *anotherStop) {
-          UIBezierPath *path = [UIBezierPath bezierPathWithRoundedRect:CGRectInset(enclosingRect, -2, -2) cornerRadius:2];
+          UIBezierPath *path = UIBezierPathWithRoundedRect(CGRectInset(enclosingRect, -2, -2), /*cornerRadius:*/2); // TODO(macOS ISS#2323203)
           if (highlightPath) {
-            [highlightPath appendPath:path];
+            UIBezierPathAppendPath(highlightPath, path); // TODO(macOS ISS#2323203)
           } else {
             highlightPath = path;
           }
@@ -142,7 +183,7 @@
       [self.layer addSublayer:_highlightLayer];
     }
     _highlightLayer.position = _contentFrame.origin;
-    _highlightLayer.path = highlightPath.CGPath;
+    _highlightLayer.path = UIBezierPathCreateCGPathRef(highlightPath); // TODO(macOS ISS#2323203)
   } else {
     [_highlightLayer removeFromSuperlayer];
     _highlightLayer = nil;
@@ -198,6 +239,7 @@
 
 #pragma mark - Context Menu
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 - (void)enableContextMenu
 {
   _longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
@@ -227,12 +269,48 @@
   [menuController setMenuVisible:YES animated:YES];
 #endif
 }
+#else // [TODO(macOS ISS#2323203)
+
+- (void)rightMouseDown:(NSEvent *)event
+{
+  if (_selectable == NO) {
+    [super rightMouseDown:event];
+    return;
+  }
+  NSText *fieldEditor = [self.window fieldEditor:YES forObject:self];
+  NSMenu *fieldEditorMenu = [fieldEditor menuForEvent:event];
+
+  RCTAssert(fieldEditorMenu, @"Unable to obtain fieldEditor's context menu");
+
+  if (fieldEditorMenu) {
+    NSMenu *menu = [[NSMenu alloc] initWithTitle:@""];
+
+    for (NSMenuItem *fieldEditorMenuItem in fieldEditorMenu.itemArray) {
+      if (fieldEditorMenuItem.action == @selector(copy:)) {
+        NSMenuItem *item = [fieldEditorMenuItem copy];
+
+        item.target = self;
+        [menu addItem:item];
+
+        break;
+      }
+    }
+
+    RCTAssert(menu.numberOfItems > 0, @"Unable to create context menu with \"Copy\" item");
+
+    if (menu.numberOfItems > 0) {
+      [NSMenu popUpContextMenu:menu withEvent:event forView:self];
+    }
+  }
+}
+#endif // ]TODO(macOS ISS#2323203)
 
 - (BOOL)canBecomeFirstResponder
 {
   return _selectable;
 }
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
 {
   if (_selectable && action == @selector(copy:)) {
@@ -241,17 +319,18 @@
 
   return [self.nextResponder canPerformAction:action withSender:sender];
 }
+#endif // TODO(macOS ISS#2323203)
 
 - (void)copy:(id)sender
 {
 #if !TARGET_OS_TV
   NSAttributedString *attributedText = _textStorage;
 
-  NSMutableDictionary *item = [NSMutableDictionary new];
-
   NSData *rtf = [attributedText dataFromRange:NSMakeRange(0, attributedText.length)
                            documentAttributes:@{NSDocumentTypeDocumentAttribute: NSRTFDTextDocumentType}
                                         error:nil];
+#if TARGET_OS_IPHONE // TODO(macOS ISS#2323203)
+  NSMutableDictionary *item = [NSMutableDictionary new]; // TODO(macOS ISS#2323203)
 
   if (rtf) {
     [item setObject:rtf forKey:(id)kUTTypeFlatRTFD];
@@ -261,6 +340,11 @@
 
   UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
   pasteboard.items = @[item];
+#elif TARGET_OS_OSX // TODO(macOS ISS#2323203)
+  NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
+  [pasteboard clearContents];
+  [pasteboard writeObjects:[NSArray arrayWithObjects:attributedText.string, rtf, nil]];
+#endif // TODO(macOS ISS#2323203)
 #endif
 }
 

@@ -32,10 +32,13 @@
 #define __jsc_ensure_bool(field) \
   static_assert(std::is_same<typename std::decay<decltype(field)>::type, bool>::value, "useCustomJSC must be bool");
 #define __jsc_bool_wrapper(method, useCustomJSC, ...)    \
+  _Pragma("clang diagnostic push") \
+  _Pragma("clang diagnostic ignored \"-Wunused-value\"") \
   ([]{ __jsc_ensure_bool(useCustomJSC) }, useCustomJSC ? \
     facebook::react::customJSCWrapper() :                \
     facebook::react::systemJSCWrapper()                  \
-  )->method(__VA_ARGS__)
+  )->method(__VA_ARGS__) \
+  _Pragma("clang diagnostic pop")
 
 // Used for wrapping properties
 #define __jsc_prop_wrapper(prop, ctx)     \
@@ -67,8 +70,11 @@
 
 #endif
 
+// work around for MSVC var args expansion
+#define msvc_vargs_expand(x) x
+
 // JSGlobalContext
-#define JSC_JSGlobalContextCreateInGroup(...) __jsc_bool_wrapper(JSGlobalContextCreateInGroup, __VA_ARGS__)
+#define JSC_JSGlobalContextCreateInGroup(...) msvc_vargs_expand(__jsc_bool_wrapper(JSGlobalContextCreateInGroup, __VA_ARGS__))
 #define JSC_JSGlobalContextRelease(...) __jsc_wrapper(JSGlobalContextRelease, __VA_ARGS__)
 #define JSC_JSGlobalContextSetName(...) __jsc_wrapper(JSGlobalContextSetName, __VA_ARGS__)
 
@@ -90,16 +96,16 @@ jsc_poison(JSContextGetGlobalContext JSContextGetGlobalObject JSContextGetGroup 
 jsc_poison(JSCheckScriptSyntax JSEvaluateScript JSEvaluateBytecodeBundle JSGarbageCollect)
 
 // JSString
-#define JSC_JSStringCreateWithCFString(...) __jsc_drop_ctx_wrapper(JSStringCreateWithCFString, __VA_ARGS__)
-#define JSC_JSStringCreateWithUTF8CString(...) __jsc_drop_ctx_wrapper(JSStringCreateWithUTF8CString, __VA_ARGS__)
-#define JSC_JSStringCreateWithUTF8CStringExpectAscii(...) __jsc_drop_ctx_wrapper(JSStringCreateWithUTF8CStringExpectAscii, __VA_ARGS__)
-#define JSC_JSStringCopyCFString(...) __jsc_drop_ctx_wrapper(JSStringCopyCFString, __VA_ARGS__)
-#define JSC_JSStringGetCharactersPtr(...) __jsc_drop_ctx_wrapper(JSStringGetCharactersPtr, __VA_ARGS__)
-#define JSC_JSStringGetLength(...) __jsc_drop_ctx_wrapper(JSStringGetLength, __VA_ARGS__)
-#define JSC_JSStringGetMaximumUTF8CStringSize(...) __jsc_drop_ctx_wrapper(JSStringGetMaximumUTF8CStringSize, __VA_ARGS__)
-#define JSC_JSStringIsEqualToUTF8CString(...) __jsc_drop_ctx_wrapper(JSStringIsEqualToUTF8CString, __VA_ARGS__)
-#define JSC_JSStringRelease(...) __jsc_drop_ctx_wrapper(JSStringRelease, __VA_ARGS__)
-#define JSC_JSStringRetain(...) __jsc_drop_ctx_wrapper(JSStringRetain, __VA_ARGS__)
+#define JSC_JSStringCreateWithCFString(...) msvc_vargs_expand(__jsc_drop_ctx_wrapper(JSStringCreateWithCFString, __VA_ARGS__))
+#define JSC_JSStringCreateWithUTF8CString(...) msvc_vargs_expand(__jsc_drop_ctx_wrapper(JSStringCreateWithUTF8CString, __VA_ARGS__))
+#define JSC_JSStringCreateWithUTF8CStringExpectAscii(...) msvc_vargs_expand(__jsc_drop_ctx_wrapper(JSStringCreateWithUTF8CStringExpectAscii, __VA_ARGS__))
+#define JSC_JSStringCopyCFString(...) msvc_vargs_expand(__jsc_drop_ctx_wrapper(JSStringCopyCFString, __VA_ARGS__))
+#define JSC_JSStringGetCharactersPtr(...) msvc_vargs_expand(__jsc_drop_ctx_wrapper(JSStringGetCharactersPtr, __VA_ARGS__))
+#define JSC_JSStringGetLength(...) msvc_vargs_expand(__jsc_drop_ctx_wrapper(JSStringGetLength, __VA_ARGS__))
+#define JSC_JSStringGetMaximumUTF8CStringSize(...) msvc_vargs_expand(__jsc_drop_ctx_wrapper(JSStringGetMaximumUTF8CStringSize, __VA_ARGS__))
+#define JSC_JSStringIsEqualToUTF8CString(...) msvc_vargs_expand(__jsc_drop_ctx_wrapper(JSStringIsEqualToUTF8CString, __VA_ARGS__))
+#define JSC_JSStringRelease(...) msvc_vargs_expand(__jsc_drop_ctx_wrapper(JSStringRelease, __VA_ARGS__))
+#define JSC_JSStringRetain(...) msvc_vargs_expand(__jsc_drop_ctx_wrapper(JSStringRetain, __VA_ARGS__))
 
 jsc_poison(JSStringCopyCFString JSStringCreateWithCharacters JSStringCreateWithCFString
            JSStringCreateWithUTF8CString JSStringCreateWithUTF8CStringExpectAscii
@@ -133,16 +139,16 @@ jsc_poison(JSValueCreateJSONString JSValueGetType JSValueGetTypedArrayType JSVal
            JSValueToNumber JSValueToObject JSValueToStringCopy JSValueUnprotect)
 
 // JSClass
-#define JSC_JSClassCreate(...) __jsc_bool_wrapper(JSClassCreate, __VA_ARGS__)
-#define JSC_JSClassRetain(...) __jsc_bool_wrapper(JSClassRetain, __VA_ARGS__)
-#define JSC_JSClassRelease(...) __jsc_bool_wrapper(JSClassRelease, __VA_ARGS__)
+#define JSC_JSClassCreate(...) msvc_vargs_expand(__jsc_bool_wrapper(JSClassCreate, __VA_ARGS__))
+#define JSC_JSClassRetain(...) msvc_vargs_expand(__jsc_bool_wrapper(JSClassRetain, __VA_ARGS__))
+#define JSC_JSClassRelease(...) msvc_vargs_expand(__jsc_bool_wrapper(JSClassRelease, __VA_ARGS__))
 
 jsc_poison(JSClassCreate JSClassRelease JSClassRetain)
 
 // JSObject
 #define JSC_JSObjectCallAsConstructor(...) __jsc_wrapper(JSObjectCallAsConstructor, __VA_ARGS__)
 #define JSC_JSObjectCallAsFunction(...) __jsc_wrapper(JSObjectCallAsFunction, __VA_ARGS__)
-#define JSC_JSObjectGetPrivate(...) __jsc_bool_wrapper(JSObjectGetPrivate, __VA_ARGS__)
+#define JSC_JSObjectGetPrivate(...) msvc_vargs_expand(__jsc_bool_wrapper(JSObjectGetPrivate, __VA_ARGS__))
 #define JSC_JSObjectGetProperty(...) __jsc_wrapper(JSObjectGetProperty, __VA_ARGS__)
 #define JSC_JSObjectGetPropertyAtIndex(...) __jsc_wrapper(JSObjectGetPropertyAtIndex, __VA_ARGS__)
 #define JSC_JSObjectIsConstructor(...) __jsc_wrapper(JSObjectIsConstructor, __VA_ARGS__)
@@ -152,7 +158,7 @@ jsc_poison(JSClassCreate JSClassRelease JSClassRetain)
 #define JSC_JSObjectMakeDate(...) __jsc_wrapper(JSObjectMakeDate, __VA_ARGS__)
 #define JSC_JSObjectMakeError(...) __jsc_wrapper(JSObjectMakeError, __VA_ARGS__)
 #define JSC_JSObjectMakeFunctionWithCallback(...) __jsc_wrapper(JSObjectMakeFunctionWithCallback, __VA_ARGS__)
-#define JSC_JSObjectSetPrivate(...) __jsc_bool_wrapper(JSObjectSetPrivate, __VA_ARGS__)
+#define JSC_JSObjectSetPrivate(...) msvc_vargs_expand(__jsc_bool_wrapper(JSObjectSetPrivate, __VA_ARGS__))
 #define JSC_JSObjectSetProperty(...) __jsc_wrapper(JSObjectSetProperty, __VA_ARGS__)
 #define JSC_JSObjectSetPropertyAtIndex(...) __jsc_wrapper(JSObjectSetPropertyAtIndex, __VA_ARGS__)
 
@@ -166,9 +172,9 @@ jsc_poison(JSObjectCallAsConstructor JSObjectCallAsFunction JSObjectDeleteProper
 
 // JSPropertyNameArray
 #define JSC_JSObjectCopyPropertyNames(...) __jsc_wrapper(JSObjectCopyPropertyNames, __VA_ARGS__)
-#define JSC_JSPropertyNameArrayGetCount(...) __jsc_drop_ctx_wrapper(JSPropertyNameArrayGetCount, __VA_ARGS__)
-#define JSC_JSPropertyNameArrayGetNameAtIndex(...) __jsc_drop_ctx_wrapper(JSPropertyNameArrayGetNameAtIndex, __VA_ARGS__)
-#define JSC_JSPropertyNameArrayRelease(...) __jsc_drop_ctx_wrapper(JSPropertyNameArrayRelease, __VA_ARGS__)
+#define JSC_JSPropertyNameArrayGetCount(...) msvc_vargs_expand(__jsc_drop_ctx_wrapper(JSPropertyNameArrayGetCount, __VA_ARGS__))
+#define JSC_JSPropertyNameArrayGetNameAtIndex(...) msvc_vargs_expand(__jsc_drop_ctx_wrapper(JSPropertyNameArrayGetNameAtIndex, __VA_ARGS__))
+#define JSC_JSPropertyNameArrayRelease(...) msvc_vargs_expand(__jsc_drop_ctx_wrapper(JSPropertyNameArrayRelease, __VA_ARGS__))
 
 jsc_poison(JSObjectCopyPropertyNames JSPropertyNameAccumulatorAddName
            JSPropertyNameArrayGetCount JSPropertyNameArrayGetNameAtIndex
@@ -184,7 +190,7 @@ jsc_poison(JSObjectMakeArrayBufferWithBytesNoCopy JSObjectMakeTypedArray
            JSObjectGetArrayBufferBytesPtr JSObjectGetArrayBufferByteLength)
 
 // Sampling profiler
-#define JSC_JSSamplingProfilerEnabled(...) __jsc_drop_ctx_wrapper(JSSamplingProfilerEnabled, __VA_ARGS__)
+#define JSC_JSSamplingProfilerEnabled(...) msvc_vargs_expand(__jsc_drop_ctx_wrapper(JSSamplingProfilerEnabled, __VA_ARGS__))
 #define JSC_JSPokeSamplingProfiler(...) __jsc_wrapper(JSPokeSamplingProfiler, __VA_ARGS__)
 #define JSC_JSStartSamplingProfilingOnMainJSCThread(...) __jsc_wrapper(JSStartSamplingProfilingOnMainJSCThread, __VA_ARGS__)
 
@@ -200,7 +206,7 @@ jsc_poison(JSSamplingProfilerEnabled JSPokeSamplingProfiler
 // jsc_poison(JSGlobalContextDisableDebugger)
 
 
-#define JSC_configureJSCForIOS(...) __jsc_bool_wrapper(configureJSCForIOS, __VA_ARGS__)
+#define JSC_configureJSCForIOS(...) msvc_vargs_expand(__jsc_bool_wrapper(configureJSCForIOS, __VA_ARGS__))
 
 jsc_poison(configureJSCForIOS)
 

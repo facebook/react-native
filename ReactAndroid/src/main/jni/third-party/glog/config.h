@@ -58,6 +58,10 @@
 /* Define to 1 if you have the <pwd.h> header file. */
 #define HAVE_PWD_H 1
 
+#define HAVE_PREAD 1
+
+#define HAVE_PWRITE 1
+
 /* define if the compiler implements pthread_rwlock_* */
 #define HAVE_RWLOCK 1
 

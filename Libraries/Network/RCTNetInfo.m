@@ -113,7 +113,7 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
     status = RCTReachabilityStateNone;
   }
   
-#if !TARGET_OS_TV
+#if !TARGET_OS_TV && !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   
   else if ((flags & kSCNetworkReachabilityFlagsIsWWAN) != 0) {
     connectionType = RCTConnectionTypeCellular;

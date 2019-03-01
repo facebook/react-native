@@ -13,7 +13,7 @@
 #import <objc/runtime.h>
 #import <stdatomic.h>
 
-#import <UIKit/UIKit.h>
+#import "RCTUIKit.h" // TODO(macOS ISS#2323203)
 
 #import "RCTAssert.h"
 #import "RCTBridge+Private.h"
@@ -47,9 +47,11 @@ static NSDictionary *RCTProfileInfo;
 static NSMutableDictionary *RCTProfileOngoingEvents;
 static NSTimeInterval RCTProfileStartTime;
 static NSUInteger RCTProfileEventID = 0;
-static CADisplayLink *RCTProfileDisplayLink;
 static __weak RCTBridge *_RCTProfilingBridge;
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+static CADisplayLink *RCTProfileDisplayLink; // TODO(macOS ISS#2323203)
 static UIWindow *RCTProfileControlsWindow;
+#endif // TODO(macOS ISS#2323203)
 
 #pragma mark - Macros
 
@@ -360,6 +362,7 @@ void RCTProfileUnhookModules(RCTBridge *bridge)
 
 #pragma mark - Private ObjC class only used for the vSYNC CADisplayLink target
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 @interface RCTProfile : NSObject
 @end
 
@@ -424,6 +427,7 @@ void RCTProfileUnhookModules(RCTBridge *bridge)
 }
 
 @end
+#endif // TODO(macOS ISS#2323203)
 
 #pragma mark - Public Functions
 
@@ -480,10 +484,12 @@ void RCTProfileInit(RCTBridge *bridge)
 
   RCTProfileHookModules(bridge);
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   RCTProfileDisplayLink = [CADisplayLink displayLinkWithTarget:[RCTProfile class]
                                                       selector:@selector(vsync:)];
   [RCTProfileDisplayLink addToRunLoop:[NSRunLoop mainRunLoop]
                               forMode:NSRunLoopCommonModes];
+#endif // TODO(macOS ISS#2323203)
 
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTProfileDidStartProfiling
                                                       object:bridge];
@@ -500,8 +506,10 @@ void RCTProfileEnd(RCTBridge *bridge, void (^callback)(NSString *))
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTProfileDidEndProfiling
                                                       object:bridge];
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   [RCTProfileDisplayLink invalidate];
   RCTProfileDisplayLink = nil;
+#endif // TODO(macOS ISS#2323203)
 
   RCTProfileUnhookModules(bridge);
 
@@ -768,7 +776,13 @@ void RCTProfileSendResult(RCTBridge *bridge, NSString *route, NSData *data)
                                                  encoding:NSUTF8StringEncoding];
 
        if (message.length) {
-#if !TARGET_OS_TV
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+         NSAlert *alert = [NSAlert new];
+         alert.messageText = @"Profile";
+         alert.informativeText = message;
+         [alert addButtonWithTitle:@"OK"];
+         [alert runModal];
+#elif !TARGET_OS_TV // ]TODO(macOS ISS#2323203)
          dispatch_async(dispatch_get_main_queue(), ^{
             UIAlertController *alertController = [UIAlertController
                 alertControllerWithTitle:@"Profile"
@@ -787,6 +801,7 @@ void RCTProfileSendResult(RCTBridge *bridge, NSString *route, NSData *data)
   [task resume];
 }
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 void RCTProfileShowControls(void)
 {
   static const CGFloat height = 30;
@@ -826,5 +841,6 @@ void RCTProfileHideControls(void)
   RCTProfileControlsWindow.hidden = YES;
   RCTProfileControlsWindow = nil;
 }
+#endif // TODO(macOS ISS#2323203)
 
 #endif

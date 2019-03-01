@@ -5,11 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
-
 #import <React/UIView+React.h>
+#import <React/RCTUIKit.h> // TODO(OSS Candidate ISS#2710739)
 
+#if !TARGET_OS_OSX // TODO(OSS Candidate ISS#2710739)
 @interface RCTPicker : UIPickerView
+#else // [TODO(OSS Candidate ISS#2710739)
+@interface RCTPicker : NSComboBox
+#endif // ]TODO(OSS Candidate ISS#2710739)
 
 @property (nonatomic, copy) NSArray<NSDictionary *> *items;
 @property (nonatomic, assign) NSInteger selectedIndex;

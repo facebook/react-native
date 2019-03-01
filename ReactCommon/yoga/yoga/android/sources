@@ -1,0 +1,11 @@
+LIBLET_ANDROID = 1
+
+!include ..\sources.inc
+
+TARGETNAME = yogacore
+
+SOURCES = $(SOURCES_ANDROID)
+
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -Wall -Werror -Wno-header-hygiene
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -fexceptions
+LOCAL_CFLAGS = $(LOCAL_CFLAGS) -frtti -O3

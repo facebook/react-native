@@ -5,13 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
+#import "RCTUIKit.h" // TODO(macOS ISS#2323203)
 
-@interface UIView (Private)
+@interface RCTPlatformView (Private) // TODO(macOS ISS#2323203)
 
 // remove clipped subviews implementation
 - (void)react_remountAllSubviews;
-- (void)react_updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(UIView *)clipView;
-- (UIView *)react_findClipView;
+- (void)react_updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(RCTPlatformView *)clipView; // TODO(macOS ISS#2323203)
+- (RCTPlatformView *)react_findClipView; // TODO(macOS ISS#2323203)
 
 @end

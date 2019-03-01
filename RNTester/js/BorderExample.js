@@ -202,7 +202,7 @@ exports.examples = [
   {
     title: 'Custom Borders',
     description: 'border*Width & border*Color',
-    platform: 'ios',
+    platform: ['ios', 'macos'],
     render() {
       return <View style={[styles.box, styles.border5]} />;
     },
@@ -210,7 +210,7 @@ exports.examples = [
   {
     title: 'Custom Borders',
     description: 'border*Width & border*Color',
-    platform: 'ios',
+    platform: ['ios', 'macos'],
     render() {
       return <View style={[styles.box, styles.border6]} />;
     },
@@ -218,7 +218,7 @@ exports.examples = [
   {
     title: 'Custom Borders',
     description: 'borderRadius & clipping',
-    platform: 'ios',
+    platform: ['ios', 'macos'],
     render() {
       return (
         <View style={[styles.box, styles.border7]}>

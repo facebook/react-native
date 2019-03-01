@@ -12,6 +12,7 @@
 
 var React = require('react');
 var ReactNative = require('react-native');
+var Platform = require('Platform');
 var {PickerIOS, Text, View} = ReactNative;
 
 var PickerItemIOS = PickerIOS.Item;
@@ -152,7 +153,7 @@ class PickerStyleExample extends React.Component<{}, $FlowFixMeState> {
     return (
       <PickerIOS
         itemStyle={{
-          fontSize: 25,
+          fontSize: Platform.OS === 'macos' ? 11 : 25,
           color: 'red',
           textAlign: 'left',
           fontWeight: 'bold',

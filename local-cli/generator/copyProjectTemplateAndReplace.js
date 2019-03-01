@@ -56,6 +56,12 @@ function copyProjectTemplateAndReplace(
       if (fileName === 'index.ios.js') {
         return;
       }
+      if (fileName === 'index.uwp.js') {
+        return;
+      }
+      if (fileName === 'index.windesktop.js') {
+        return;
+      }
       if (fileName === 'index.android.js') {
         return;
       }

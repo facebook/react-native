@@ -9,21 +9,35 @@
 /* Begin PBXBuildFile section */
 		1338BBE01B04ACC80064A9C9 /* RCTSRWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 1338BBDD1B04ACC80064A9C9 /* RCTSRWebSocket.m */; };
 		1338BBE11B04ACC80064A9C9 /* RCTWebSocketExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 1338BBDF1B04ACC80064A9C9 /* RCTWebSocketExecutor.m */; };
+		180B4A3E1FEC530900879A02 /* libfishhook-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 18C3A9BF1FE1D41600DEC48A /* libfishhook-macOS.a */; };
+		181B13CA216528F100D3B7D2 /* libfishhook-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DBE0D0D1F3B181C0099AA32 /* libfishhook-tvOS.a */; };
+		181B13CC21652C3600D3B7D2 /* fishhook.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3DBE0D131F3B185A0099AA32 /* fishhook.h */; };
+		181B13CD21652C4000D3B7D2 /* fishhook.c in Sources */ = {isa = PBXBuildFile; fileRef = 3DBE0D121F3B185A0099AA32 /* fishhook.c */; };
 		2D3ABDC220C7206E00DF56E9 /* libfishhook.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DBE0D001F3B181A0099AA32 /* libfishhook.a */; };
 		2D3B5F3D1D9B165B00451313 /* RCTSRWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 1338BBDD1B04ACC80064A9C9 /* RCTSRWebSocket.m */; };
 		2D3B5F3E1D9B165B00451313 /* RCTWebSocketExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 1338BBDF1B04ACC80064A9C9 /* RCTWebSocketExecutor.m */; };
 		2D3B5F401D9B165B00451313 /* RCTWebSocketModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C86DF7B1ADF695F0047B81A /* RCTWebSocketModule.m */; };
-		2DC5E5281F3A6CFD000EE84B /* libfishhook-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DC5E5271F3A6CFD000EE84B /* libfishhook-tvOS.a */; };
 		3C86DF7C1ADF695F0047B81A /* RCTWebSocketModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C86DF7B1ADF695F0047B81A /* RCTWebSocketModule.m */; };
 		3DBE0D141F3B185A0099AA32 /* fishhook.c in Sources */ = {isa = PBXBuildFile; fileRef = 3DBE0D121F3B185A0099AA32 /* fishhook.c */; };
 		3DBE0D151F3B185A0099AA32 /* fishhook.c in Sources */ = {isa = PBXBuildFile; fileRef = 3DBE0D121F3B185A0099AA32 /* fishhook.c */; };
 		3DBE0D801F3B1AF00099AA32 /* fishhook.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3DBE0D131F3B185A0099AA32 /* fishhook.h */; };
 		3DBE0D821F3B1B0C0099AA32 /* fishhook.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3DBE0D131F3B185A0099AA32 /* fishhook.h */; };
+		64BF1F341EF8457600B83E07 /* RCTReconnectingWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = A12E9E2D1E5DEC4E0029001B /* RCTReconnectingWebSocket.m */; };
+		64BF1F351EF8457900B83E07 /* RCTSRWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 1338BBDD1B04ACC80064A9C9 /* RCTSRWebSocket.m */; };
+		64BF1F361EF8457B00B83E07 /* RCTWebSocketExecutor.m in Sources */ = {isa = PBXBuildFile; fileRef = 1338BBDF1B04ACC80064A9C9 /* RCTWebSocketExecutor.m */; };
+		64BF1F381EF8458500B83E07 /* RCTWebSocketModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C86DF7B1ADF695F0047B81A /* RCTWebSocketModule.m */; };
 		A12E9E2E1E5DEC4E0029001B /* RCTReconnectingWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = A12E9E2D1E5DEC4E0029001B /* RCTReconnectingWebSocket.m */; };
 		A12E9E2F1E5DEC550029001B /* RCTReconnectingWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = A12E9E2D1E5DEC4E0029001B /* RCTReconnectingWebSocket.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		18C3A9C01FE1D44F00DEC48A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 3C86DF3E1ADF2C930047B81A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 18C3A9B71FE1D41600DEC48A;
+			remoteInfo = "fishhook-macOS";
+		};
 		3DBE0D0E1F3B18490099AA32 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 3C86DF3E1ADF2C930047B81A /* Project object */;
@@ -41,6 +55,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		18C3A9B81FE1D41600DEC48A /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = include/fishhook;
+			dstSubfolderSpec = 16;
+			files = (
+				181B13CC21652C3600D3B7D2 /* fishhook.h in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		3DBE0D7F1F3B1AEC0099AA32 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -69,15 +93,17 @@
 		1338BBDE1B04ACC80064A9C9 /* RCTWebSocketExecutor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTWebSocketExecutor.h; sourceTree = "<group>"; };
 		1338BBDF1B04ACC80064A9C9 /* RCTWebSocketExecutor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTWebSocketExecutor.m; sourceTree = "<group>"; };
 		13526A511F362F7F0008EF00 /* libfishhook.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libfishhook.a; sourceTree = "<group>"; };
+		18C3A9BF1FE1D41600DEC48A /* libfishhook-macOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libfishhook-macOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D2A28881D9B049200D4039D /* libRCTWebSocket-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libRCTWebSocket-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2DC5E5271F3A6CFD000EE84B /* libfishhook-tvOS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libfishhook-tvOS.a"; path = "../fishhook/build/Debug-appletvos/libfishhook-tvOS.a"; sourceTree = "<group>"; };
 		3C86DF461ADF2C930047B81A /* libRCTWebSocket.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTWebSocket.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3C86DF7A1ADF695F0047B81A /* RCTWebSocketModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTWebSocketModule.h; sourceTree = "<group>"; };
-		3C86DF7B1ADF695F0047B81A /* RCTWebSocketModule.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.objc; path = RCTWebSocketModule.m; sourceTree = "<group>"; tabWidth = 2; };
+		3C86DF7B1ADF695F0047B81A /* RCTWebSocketModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTWebSocketModule.m; sourceTree = "<group>"; };
 		3DBE0D001F3B181A0099AA32 /* libfishhook.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libfishhook.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		3DBE0D0D1F3B181C0099AA32 /* libfishhook-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libfishhook-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3DBE0D121F3B185A0099AA32 /* fishhook.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fishhook.c; path = ../fishhook/fishhook.c; sourceTree = "<group>"; };
 		3DBE0D131F3B185A0099AA32 /* fishhook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = fishhook.h; path = ../fishhook/fishhook.h; sourceTree = "<group>"; };
+		6BDE7A581ECB6B8200CC951F /* libRCTWebSocket.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRCTWebSocket.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A12E9E2C1E5DEC4E0029001B /* RCTReconnectingWebSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTReconnectingWebSocket.h; sourceTree = "<group>"; };
 		A12E9E2D1E5DEC4E0029001B /* RCTReconnectingWebSocket.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTReconnectingWebSocket.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -91,11 +117,19 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		180B4A3D1FEC52FE00879A02 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				180B4A3E1FEC530900879A02 /* libfishhook-macOS.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2DC5E5151F3A6C39000EE84B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2DC5E5281F3A6CFD000EE84B /* libfishhook-tvOS.a in Frameworks */,
+				181B13CA216528F100D3B7D2 /* libfishhook-tvOS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -137,8 +171,10 @@
 			children = (
 				3C86DF461ADF2C930047B81A /* libRCTWebSocket.a */,
 				2D2A28881D9B049200D4039D /* libRCTWebSocket-tvOS.a */,
+				6BDE7A581ECB6B8200CC951F /* libRCTWebSocket.a */,
 				3DBE0D001F3B181A0099AA32 /* libfishhook.a */,
 				3DBE0D0D1F3B181C0099AA32 /* libfishhook-tvOS.a */,
+				18C3A9BF1FE1D41600DEC48A /* libfishhook-macOS.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -146,6 +182,22 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		18C3A9B71FE1D41600DEC48A /* fishhook-macOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 18C3A9BC1FE1D41600DEC48A /* Build configuration list for PBXNativeTarget "fishhook-macOS" */;
+			buildPhases = (
+				18C3A9B81FE1D41600DEC48A /* CopyFiles */,
+				18C3A9BA1FE1D41600DEC48A /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "fishhook-macOS";
+			productName = WebSocket;
+			productReference = 18C3A9BF1FE1D41600DEC48A /* libfishhook-macOS.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 		2D2A28871D9B049200D4039D /* RCTWebSocket-tvOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2D2A28901D9B049200D4039D /* Build configuration list for PBXNativeTarget "RCTWebSocket-tvOS" */;
@@ -212,6 +264,23 @@
 			productReference = 3DBE0D0D1F3B181C0099AA32 /* libfishhook-tvOS.a */;
 			productType = "com.apple.product-type.library.static";
 		};
+		6BDE7A4F1ECB6B8200CC951F /* RCTWebSocket-macOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6BDE7A551ECB6B8200CC951F /* Build configuration list for PBXNativeTarget "RCTWebSocket-macOS" */;
+			buildPhases = (
+				64BF1F331EF8457300B83E07 /* Sources */,
+				180B4A3D1FEC52FE00879A02 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				18C3A9C11FE1D44F00DEC48A /* PBXTargetDependency */,
+			);
+			name = "RCTWebSocket-macOS";
+			productName = WebSocket;
+			productReference = 6BDE7A581ECB6B8200CC951F /* libRCTWebSocket.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -243,14 +312,24 @@
 			projectRoot = "";
 			targets = (
 				3C86DF451ADF2C930047B81A /* RCTWebSocket */,
+				6BDE7A4F1ECB6B8200CC951F /* RCTWebSocket-macOS */,
 				2D2A28871D9B049200D4039D /* RCTWebSocket-tvOS */,
 				3DBE0CF41F3B181A0099AA32 /* fishhook */,
 				3DBE0D011F3B181C0099AA32 /* fishhook-tvOS */,
+				18C3A9B71FE1D41600DEC48A /* fishhook-macOS */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
+		18C3A9BA1FE1D41600DEC48A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				181B13CD21652C4000D3B7D2 /* fishhook.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2D2A28841D9B049200D4039D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -289,9 +368,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		64BF1F331EF8457300B83E07 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				64BF1F381EF8458500B83E07 /* RCTWebSocketModule.m in Sources */,
+				64BF1F351EF8457900B83E07 /* RCTSRWebSocket.m in Sources */,
+				64BF1F341EF8457600B83E07 /* RCTReconnectingWebSocket.m in Sources */,
+				64BF1F361EF8457B00B83E07 /* RCTWebSocketExecutor.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		18C3A9C11FE1D44F00DEC48A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 18C3A9B71FE1D41600DEC48A /* fishhook-macOS */;
+			targetProxy = 18C3A9C01FE1D44F00DEC48A /* PBXContainerItemProxy */;
+		};
 		3DBE0D0F1F3B18490099AA32 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 3DBE0CF41F3B181A0099AA32 /* fishhook */;
@@ -305,6 +400,28 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		18C3A9BD1FE1D41600DEC48A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		18C3A9BE1FE1D41600DEC48A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
 		2D2A288E1D9B049200D4039D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -384,6 +501,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -451,6 +569,10 @@
 		3C86DF5B1ADF2C930047B81A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					arm64e,
+				);
 				EXECUTABLE_PREFIX = lib;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -466,6 +588,10 @@
 		3C86DF5C1ADF2C930047B81A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					arm64e,
+				);
 				EXECUTABLE_PREFIX = lib;
 				GCC_PREPROCESSOR_DEFINITIONS = "RCT_METRO_PORT=${RCT_METRO_PORT}";
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
@@ -477,6 +603,10 @@
 		3DBE0CFE1F3B181A0099AA32 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					arm64e,
+				);
 				EXECUTABLE_PREFIX = lib;
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				OTHER_LDFLAGS = "-ObjC";
@@ -487,6 +617,10 @@
 		3DBE0CFF1F3B181A0099AA32 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					arm64e,
+				);
 				EXECUTABLE_PREFIX = lib;
 				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
 				OTHER_LDFLAGS = "-ObjC";
@@ -524,9 +658,40 @@
 			};
 			name = Release;
 		};
+		6BDE7A561ECB6B8200CC951F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = RCTWebSocket;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		6BDE7A571ECB6B8200CC951F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				GCC_TREAT_WARNINGS_AS_ERRORS = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = RCTWebSocket;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		18C3A9BC1FE1D41600DEC48A /* Build configuration list for PBXNativeTarget "fishhook-macOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				18C3A9BD1FE1D41600DEC48A /* Debug */,
+				18C3A9BE1FE1D41600DEC48A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		2D2A28901D9B049200D4039D /* Build configuration list for PBXNativeTarget "RCTWebSocket-tvOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -568,6 +733,15 @@
 			buildConfigurations = (
 				3DBE0D0B1F3B181C0099AA32 /* Debug */,
 				3DBE0D0C1F3B181C0099AA32 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6BDE7A551ECB6B8200CC951F /* Build configuration list for PBXNativeTarget "RCTWebSocket-macOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6BDE7A561ECB6B8200CC951F /* Debug */,
+				6BDE7A571ECB6B8200CC951F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -5,12 +5,18 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
+#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 
 #import <React/RCTEventEmitter.h>
 
 @interface RCTLinkingManager : RCTEventEmitter
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnullability-completeness"
+
+#if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
++ (void)getUrlEventHandler:(NSAppleEventDescriptor *)event withReplyEvent:(NSAppleEventDescriptor *)replyEvent;
+#else // ]TODO(macOS ISS#2323203)
 + (BOOL)application:(UIApplication *)app
             openURL:(NSURL *)URL
             options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options;
@@ -22,6 +28,8 @@
 
 + (BOOL)application:(UIApplication *)application
 continueUserActivity:(NSUserActivity *)userActivity
-  restorationHandler:(void (^)(NSArray * __nullable))restorationHandler;
-
+  restorationHandler:(void (^ _Nullable)(NSArray * __nullable))restorationHandler;
+#endif // TODO(macOS ISS#2323203)
 @end
+
+#pragma clang diagnostic pop

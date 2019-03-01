@@ -62,7 +62,7 @@ folly::Optional<Object> JSCNativeModules::createModule(const std::string& name, 
 
   Value moduleInfo = m_genNativeModuleJS->callAsFunction({
     Value::fromDynamic(context, result->config),
-    Value::makeNumber(context, result->index)
+    Value::makeNumber(context, static_cast<double>(result->index))
   });
   CHECK(!moduleInfo.isNull()) << "Module returned from genNativeModule is null";
 

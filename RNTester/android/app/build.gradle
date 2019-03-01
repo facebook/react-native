@@ -84,13 +84,13 @@ def enableSeparateBuildPerCPUArchitecture = false
 def enableProguardInReleaseBuilds = true
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion "27.0.3"
+    compileSdkVersion 28
+    buildToolsVersion "28.0.1"
 
     defaultConfig {
         applicationId "com.facebook.react.uiapp"
-        minSdkVersion 16
-        targetSdkVersion 26
+        minSdkVersion 21
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         ndk {
@@ -141,8 +141,13 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:appcompat-v7:26.0.2'
 
     // Build React Native from source
-    implementation project(':ReactAndroid')
+    if (isSDXPlatform()) {
+        implementation project(':react-native:ReactAndroid')
+    }
+    else {
+        implementation project(':ReactAndroid')
+    }
 }

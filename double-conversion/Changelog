@@ -1,0 +1,64 @@
+2017-12-06:
+  Renamed `DISALLOW_COPY_AND_ASSIGN` and `DISALLOW_IMPLICIT_CONSTRUCTORS`
+  macros to `DC_DISALLOW_COPY_AND_ASSIGN` and
+  `DC_DISALLOW_IMPLICIT_CONSTRUCTORS` to make it easier to integrate the
+  library with other libraries that have similar macros.
+
+2017-08-05:
+  Tagged v3.0.0.
+  Due to the directory rename switching to a new version number.
+  The API for the library itself hasn't changed.
+
+2017-03-04:
+  Avoid negative shift. Fixes #41.
+
+2016-11-17:
+  Support RISC-V.
+
+
+2016-09-10:
+  Add fPIC flag on x86_64 if the compiler supports it. Fixes #34.
+
+2015 and 2016:
+  Lots of improvements to the build system.
+
+2015:
+  Warning fixes.
+
+2015-05-19:
+  Rename 'src' directory to 'double-conversion'.
+
+2014-03-08:
+  Update version number for cmake.
+  Support shared libraries with cmake.
+  Add build instructions to the README.
+
+2014-01-12:
+  Tagged v2.0.1.
+  Fix compilation for ARMv8 64bit (used wrong define).
+  Improved SConstruct file. Thanks to Milan Bouchet-Valat and Elan Ruusamäe.
+  Fixed lots of warnings (especially on Windows). Thanks to Greg Smith.
+
+2013-11-09:
+  Tagged v2.0.0.
+  String-to-Double|Float: ALLOW_LEADING_SPACES and similar flags now include
+  new-lines, tabs and all Unicode whitespace characters.
+
+2013-11-09:
+  Tagged v1.1.2.
+  Add support for ARM 64 and OsX ppc.
+  Rewrite tests so they pass under Visual Studio.
+  Add CMake build system support.
+  Fix warnings.
+
+2012-06-10:
+  Tagged v1.1.1.
+  Null terminate exponent buffer (only an issue when asserts are enabled).
+  Support more architectures.
+
+2012-02-05:
+  Merged in Single-branch with single-precision support.
+  Tagged v1.1 (based on b28450f33e1db493948a535d8f84e88fa211bd10).
+
+2012-02-05:
+  Tagged v1.0 (based on eda0196e9ac8fcdf59e92cb62885ee0af5391969).

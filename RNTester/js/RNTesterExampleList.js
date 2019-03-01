@@ -40,6 +40,7 @@ type Props = {
 
 class RowComponent extends React.PureComponent<{
   item: Object,
+  isSelected?: ?boolean,
   onNavigate: Function,
   onPress?: Function,
   onShowUnderlay?: Function,
@@ -54,12 +55,17 @@ class RowComponent extends React.PureComponent<{
   };
   render() {
     const {item} = this.props;
+    const rowStyle = this.props.isSelected ? styles.selectedRow : styles.row;
     return (
       <TouchableHighlight
         onShowUnderlay={this.props.onShowUnderlay}
         onHideUnderlay={this.props.onHideUnderlay}
+        accessibilityTraits={['group']}
+        accessibilityLabel={item.module.title}
+        onAccessibilityTap={this._onPress}
+        acceptsKeyboardFocus={false}
         onPress={this._onPress}>
-        <View style={styles.row}>
+        <View style={rowStyle}>
           <Text style={styles.rowTitleText}>{item.module.title}</Text>
           <Text style={styles.rowDetailText}>{item.module.description}</Text>
         </View>
@@ -102,29 +108,39 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
         {this._renderTextInput()}
         <SectionList
           ItemSeparatorComponent={ItemSeparator}
-          contentContainerStyle={{backgroundColor: 'white'}}
+          contentContainerStyle={Platform.select({macos: {backgroundColor: {semantic: 'separatorColor'}}, default: {backgroundColor: 'white'}})} // TODO(macOS ISS#2323203)
           style={styles.list}
           sections={sections}
           renderItem={this._renderItem}
           enableEmptySections={true}
+          enableSelectionOnKeyPress={true}
+          onSelectionEntered={this._handleOnSelectionEntered}
           itemShouldUpdate={this._itemShouldUpdate}
           keyboardShouldPersistTaps="handled"
           automaticallyAdjustContentInsets={false}
           keyboardDismissMode="on-drag"
           legacyImplementation={false}
           renderSectionHeader={renderSectionHeader}
+          accessibilityLabel="RNTester Components"
+          backgroundColor={Platform.select({macos: 'transparent', default: undefined})} // TODO(macOS ISS#2323203)
         />
       </View>
     );
+  }
+
+  _handleOnSelectionEntered = (item) => {
+    const {key} = item;
+    this.props.onNavigate(RNTesterActions.ExampleAction(key));
   }
 
   _itemShouldUpdate(curr, prev) {
     return curr.item !== prev.item;
   }
 
-  _renderItem = ({item, separators}) => (
+  _renderItem = ({item, isSelected, separators}) => (
     <RowComponent
       item={item}
+      isSelected={isSelected}
       onNavigate={this.props.onNavigate}
       onShowUnderlay={separators.highlight}
       onHideUnderlay={separators.unhighlight}
@@ -171,6 +187,7 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
             this.props.persister.setState(() => ({filter: text}));
           }}
           placeholder="Search..."
+          placeholderTextColor={Platform.select({macos: {semantic : 'placeholderTextColor'}, default: undefined})} // TODO(macOS ISS#2323203)
           underlineColorAndroid="transparent"
           style={[styles.searchTextInput, this.props.searchTextInputStyle]}
           testID="explorer_search"
@@ -202,23 +219,59 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   list: {
-    backgroundColor: '#eeeeee',
+    ...Platform.select({ // [TODO(macOS ISS#2323203)
+      macos: {
+        backgroundColor: {semantic: 'controlBackgroundColor'},
+      },
+      default: { // ]TODO(macOS ISS#2323203)
+        backgroundColor: '#eeeeee',
+      } // [TODO(macOS ISS#2323203)
+    }) // ]TODO(macOS ISS#2323203)
   },
   sectionHeader: {
-    backgroundColor: '#eeeeee',
+    ...Platform.select({ // [TODO(macOS ISS#2323203)
+      macos: {
+        backgroundColor: {semantic: 'unemphasizedSelectedContentBackgroundColor'},
+        color: {semantic: 'headerTextColor'}
+      },
+      default: { // ]TODO(macOS ISS#2323203)
+        backgroundColor: '#eeeeee',
+        color: 'black'
+      } // [TODO(macOS ISS#2323203)
+    }), // ]TODO(macOS ISS#2323203)
     padding: 5,
     fontWeight: '500',
     fontSize: 11,
   },
   row: {
-    backgroundColor: 'white',
+    ...Platform.select({ // [TODO(macOS ISS#2323203)
+      macos: {
+        backgroundColor: {semantic: 'controlBackgroundColor'},
+        },
+      default: { // ]TODO(macOS ISS#2323203)
+        backgroundColor: 'white',
+      } // [TODO(macOS ISS#2323203)
+    }), // ]TODO(macOS ISS#2323203)
+    justifyContent: 'center',
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+  },  
+  selectedRow: {
+    backgroundColor: '#DDECF8',
     justifyContent: 'center',
     paddingHorizontal: 15,
     paddingVertical: 8,
   },
   separator: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: '#bbbbbb',
+    ...Platform.select({ // [TODO(macOS ISS#2323203)
+      macos: {
+        backgroundColor: {semantic: 'separatorColor'},
+        },
+      default: { // ]TODO(macOS ISS#2323203)
+        backgroundColor: '#bbbbbb',
+      } // [TODO(macOS ISS#2323203)
+    }), // ]TODO(macOS ISS#2323203)
     marginLeft: 15,
   },
   separatorHighlighted: {
@@ -228,6 +281,14 @@ const styles = StyleSheet.create({
   rowTitleText: {
     fontSize: 17,
     fontWeight: '500',
+    ...Platform.select({ // [TODO(macOS ISS#2323203)
+      macos: {
+        color: {semantic: 'controlTextColor'},
+        },
+      default: { // ]TODO(macOS ISS#2323203)
+        color: 'black',
+      } // [TODO(macOS ISS#2323203)
+    }), // ]TODO(macOS ISS#2323203)
   },
   rowDetailText: {
     fontSize: 15,
@@ -235,12 +296,28 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   searchRow: {
-    backgroundColor: '#eeeeee',
+    ...Platform.select({ // [TODO(macOS ISS#2323203)
+      macos: {
+        backgroundColor: {semantic: 'unemphasizedSelectedContentBackgroundColor'},
+        },
+      default: { // ]TODO(macOS ISS#2323203)
+        backgroundColor: '#eeeeee',
+      } // [TODO(macOS ISS#2323203)
+    }), // ]TODO(macOS ISS#2323203)
     padding: 10,
   },
   searchTextInput: {
-    backgroundColor: 'white',
-    borderColor: '#cccccc',
+    ...Platform.select({ // [TODO(macOS ISS#2323203)
+      macos: {
+        color: {semantic: 'textColor'},
+        backgroundColor: {semantic: 'textBackgroundColor'},
+        borderColor: {semantic: 'gridColor'},
+        },
+      default: { // ]TODO(macOS ISS#2323203)
+        backgroundColor: 'white',
+        borderColor: '#cccccc',
+      } // [TODO(macOS ISS#2323203)
+    }), // ]TODO(macOS ISS#2323203)
     borderRadius: 3,
     borderWidth: 1,
     paddingLeft: 8,

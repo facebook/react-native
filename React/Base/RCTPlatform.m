@@ -18,10 +18,15 @@ static NSString *interfaceIdiom(UIUserInterfaceIdiom idiom) {
       return @"phone";
     case UIUserInterfaceIdiomPad:
       return @"pad";
+#pragma clang diagnostic push // TODO(OSS Candidate ISS#2710739)
+#pragma clang diagnostic ignored "-Wunguarded-availability"
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_9_0
     case UIUserInterfaceIdiomTV:
       return @"tv";
     case UIUserInterfaceIdiomCarPlay:
       return @"carplay";
+#endif
+#pragma clang diagnostic pop
     default:
       return @"unknown";
   }

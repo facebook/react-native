@@ -1,0 +1,10 @@
+usr/include/glog/*
+usr/lib/lib*.so
+usr/lib/lib*.a
+usr/lib/*.la
+usr/lib/pkgconfig/*
+debian/tmp/usr/include/glog/*
+debian/tmp/usr/lib/lib*.so
+debian/tmp/usr/lib/lib*.a
+debian/tmp/usr/lib/*.la
+debian/tmp/usr/lib/pkgconfig/*

@@ -76,7 +76,9 @@ public:
 
   void loadApplicationScript(
       std::unique_ptr<const JSBigString> script,
-      std::string sourceURL) override {
+      uint64_t /*scriptVersion*/, // TODO(OSS Candidate ISS#2710739)
+      std::string sourceURL,
+      std::string&& /*bytecodeFileName*/) override { // TODO(OSS Candidate ISS#2710739)
     RCTProfileBeginFlowEvent();
     [m_jse executeApplicationScript:[NSData dataWithBytes:script->c_str() length:script->size()]
            sourceURL:[[NSURL alloc]

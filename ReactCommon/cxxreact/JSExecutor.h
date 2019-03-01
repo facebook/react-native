@@ -7,7 +7,9 @@
 
 #include <memory>
 #include <string>
+#include <cassert>
 
+#include <cxxreact/ModuleRegistry.h>
 #include <cxxreact/NativeModule.h>
 #include <folly/dynamic.h>
 
@@ -19,11 +21,21 @@ namespace facebook {
 namespace react {
 
 class JSBigString;
+class ExecutorDelegate;
 class JSExecutor;
 class JSModulesUnbundle;
 class MessageQueueThread;
-class ModuleRegistry;
 class RAMBundleRegistry;
+struct InstanceCallback;
+struct JSEConfigParams;
+
+class ExecutorDelegateFactory {
+public:
+  virtual std::unique_ptr<ExecutorDelegate> createExecutorDelegate(
+    std::shared_ptr<ModuleRegistry> registry,
+    std::shared_ptr<InstanceCallback> callback) = 0;
+  virtual ~ExecutorDelegateFactory() {}
+};
 
 // This interface describes the delegate interface required by
 // Executor implementations to call from JS into native code.
@@ -46,6 +58,14 @@ public:
   virtual std::unique_ptr<JSExecutor> createJSExecutor(
     std::shared_ptr<ExecutorDelegate> delegate,
     std::shared_ptr<MessageQueueThread> jsQueue) = 0;
+
+  virtual std::unique_ptr<JSExecutor> createJSExecutor(
+    std::shared_ptr<ExecutorDelegate> delegate,
+    std::shared_ptr<MessageQueueThread> jsQueue,
+    std::shared_ptr<JSEConfigParams> /*jseConfigParams*/) {
+      return createJSExecutor(std::move(delegate),std::move(jsQueue));
+  }
+
   virtual ~JSExecutorFactory() {}
 };
 
@@ -55,7 +75,9 @@ public:
    * Execute an application script bundle in the JS context.
    */
   virtual void loadApplicationScript(std::unique_ptr<const JSBigString> script,
-                                     std::string sourceURL) = 0;
+                                     uint64_t scriptVersion,
+                                     std::string sourceURL,
+                                     std::string&& bytecodeFileName) = 0;
 
   /**
    * Add an application "RAM" bundle registry
@@ -104,7 +126,16 @@ public:
    */
   virtual std::string getDescription() = 0;
 
-  virtual void handleMemoryPressure(int pressureLevel) {}
+  virtual void handleMemoryPressure(int /* pressureLevel */) {}
+
+  /**
+   * Returns the current peak memory usage due to the JavaScript
+   * execution environment in bytes. If the JavaScript execution
+   * environment does not track this information, return -1.
+   */
+  virtual int64_t getPeakJsMemoryUsage() const noexcept {
+    return -1;
+  }
 
   virtual void destroy() {}
   virtual ~JSExecutor() {}

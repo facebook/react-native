@@ -5,8 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#import <UIKit/UIKit.h>
-
 #import "RCTBackedTextInputViewProtocol.h"
 #import "RCTBackedTextInputDelegate.h"
 
@@ -18,7 +16,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithTextField:(UITextField<RCTBackedTextInputViewProtocol> *)backedTextInputView;
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 - (void)skipNextTextInputDidChangeSelectionEventWithTextRange:(UITextRange *)textRange;
+#else // [TODO(macOS ISS#2323203)
+- (void)skipNextTextInputDidChangeSelectionEventWithTextRange:(NSRange)textRange;
+#endif // ]TODO(macOS ISS#2323203)
 - (void)selectedTextRangeWasSet;
 
 @end
@@ -29,7 +31,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithTextView:(UITextView<RCTBackedTextInputViewProtocol> *)backedTextInputView;
 
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 - (void)skipNextTextInputDidChangeSelectionEventWithTextRange:(UITextRange *)textRange;
+#else // [TODO(macOS ISS#2323203)
+- (void)skipNextTextInputDidChangeSelectionEventWithTextRange:(NSRange)textRange;
+#endif // ]TODO(macOS ISS#2323203)
 
 @end
 

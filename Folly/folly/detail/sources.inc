@@ -1,0 +1,12 @@
+LIBLETNAME = FollyDetail
+
+!include $(OPENSOURCE_REACTNATIVE)\OfficeISS\ReactCommon\make.inc
+
+SOURCES_SHARED = \
+	..\MallocImpl.cpp \
+
+SOURCES_WIN32 = $(SOURCES_SHARED) \
+
+SOURCES_ANDROID = $(SOURCES_SHARED) \
+
+SOURCES_WINRT = $(SOURCES_SHARED) \

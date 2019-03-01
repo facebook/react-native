@@ -1,0 +1,1 @@
+glog stubs until we use real glog (if ever)

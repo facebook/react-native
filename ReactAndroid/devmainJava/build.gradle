@@ -1,0 +1,90 @@
+// Copyright 2015-present Facebook. All Rights Reserved.
+
+apply plugin: 'com.android.library'
+apply plugin: 'maven'
+
+buildscript {
+    repositories {
+        maven {
+            url "$System.env.MAVEN_REPOSITORY"
+        }
+    }
+    dependencies {
+        classpath "$System.env._classpath"
+    }
+}
+
+repositories {
+    maven {
+        url "$System.env.NUGETREACTNATIVEDEPENDENCIESANDROID//cross//cross//x-none//maven"
+    }
+    maven {
+        url  "$System.env.TARGETDIR/maven"
+    }
+}
+
+apply from: "$System.env.GRADLE_PATH/common_library_build.gradle"
+
+// On Native side, V8_ENABLED flag is used
+def isV8Enabled() {
+    return true;
+}
+
+android {
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 22
+        versionCode 1
+        versionName "1.0"
+
+        buildConfigField 'boolean', 'IS_INTERNAL_BUILD', 'false'
+        buildConfigField 'int', 'EXOPACKAGE_FLAGS', '0'
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["library" : "true"]
+                includeCompileClasspath true
+            }
+        }
+    }
+
+    sourceSets.main {
+        manifest.srcFile '../src/main/AndroidManifest.xml'
+        res.srcDirs = ['../src/main/res/devsupport', '../src/main/res/shell', '../src/main/res/views/modal', '../src/main/res/views/uimanager']
+        java {
+            srcDirs = ['../src/main/java', '../src/main/libraries/soloader/java', '../src/main/jni/first-party/fb/jni/java']
+            exclude 'com/facebook/react/processing'
+            exclude 'com/facebook/react/module/processing'
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+    packagingOptions {
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+    }
+}
+
+final String annotationDir = "$System.env.NUGETREACTNATIVEDEPENDENCIESANDROID/cross/cross/x-none/maven/com/facebook/infer/annotation/infer-annotation/0.11.2/";
+
+dependencies {
+    annotationProcessor 'com.facebook.react:processor:1.0'
+    api 'javax.inject:javax.inject:1'
+    api fileTree(dir: "${annotationDir}", include: ['*.jar'])
+    api 'com.android.support:appcompat-v7:26.0.2'
+    api 'com.facebook.fbui.textlayoutbuilder:textlayoutbuilder:1.0.0'
+    api 'com.facebook.fresco:fresco:1.10.0'
+    api 'com.facebook.fresco:imagepipeline-okhttp3:1.10.0'
+    api 'com.facebook.soloader:soloader:0.5.1'
+    api 'com.google.code.findbugs:jsr305:3.0.2'
+    api 'com.squareup.okhttp3:okhttp:3.10.0'
+    api 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
+    api 'com.squareup.okio:okio:1.14.0'
+    api 'com.squareup:javapoet:1.9.0'
+    if (!isV8Enabled()) {
+        api 'org.webkit:android-jsc:r174650'
+    }
+}
+

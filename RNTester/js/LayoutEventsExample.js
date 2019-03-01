@@ -12,6 +12,7 @@
 
 var React = require('react');
 var ReactNative = require('react-native');
+var Platform = require('Platform');
 var {Image, LayoutAnimation, StyleSheet, Text, View} = ReactNative;
 
 import type {ViewLayout, ViewLayoutEvent} from 'ViewPropTypes';
@@ -33,7 +34,7 @@ class LayoutEventExample extends React.Component<{}, State> {
   };
 
   animateViewLayout = () => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.spring, () => {
+    LayoutAnimation.configureNext(Platform.OS === 'macos' ? LayoutAnimation.Presets.easeInEaseOut : LayoutAnimation.Presets.spring, () => {
       console.log('layout animation done.');
       this.addWrapText();
     });

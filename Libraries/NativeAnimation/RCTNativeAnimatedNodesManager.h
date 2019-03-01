@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTUIManager.h>
+#import <React/RCTPlatformDisplayLink.h> // TODO(macOS ISS#2323203)
 
 @protocol RCTValueAnimatedNodeObserver;
 

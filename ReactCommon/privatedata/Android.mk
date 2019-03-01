@@ -13,6 +13,6 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"ReactNative\"
 
-LOCAL_CFLAGS += -fexceptions -frtti
+LOCAL_CXXFLAGS += -fexceptions -frtti
 
 include $(BUILD_SHARED_LIBRARY)

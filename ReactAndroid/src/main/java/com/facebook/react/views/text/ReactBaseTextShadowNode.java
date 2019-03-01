@@ -131,7 +131,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       }
       if (textShadowNode.mFontStyle != UNSET
           || textShadowNode.mFontWeight != UNSET
-          || textShadowNode.mFontFamily != null) {
+          || textShadowNode.mFontFamily != null
+          || (textShadowNode.mFontPath != null && textShadowNode.mFontFamily != null)) {
         ops.add(
             new SetSpanOperation(
                 start,
@@ -140,6 +141,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
                     textShadowNode.mFontStyle,
                     textShadowNode.mFontWeight,
                     textShadowNode.mFontFamily,
+                    textShadowNode.mFontPath,
                     textShadowNode.getThemedContext().getAssets())));
       }
       if (textShadowNode.mIsUnderlineTextDecorationSet) {
@@ -286,6 +288,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
    *     <Text style={{fontFamily="serif}}>Bold Text</Text>
    */
   protected @Nullable String mFontFamily = null;
+  protected @Nullable String mFontPath = null;
 
   protected boolean mContainsImages = false;
   protected float mHeightOfTallestInlineImage = Float.NaN;
@@ -442,6 +445,12 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   @ReactProp(name = ViewProps.FONT_FAMILY)
   public void setFontFamily(@Nullable String fontFamily) {
     mFontFamily = fontFamily;
+    markUpdated();
+  }
+
+  @ReactProp(name = ViewProps.FONT_PATH)
+  public void setFontPath(@Nullable String fontPath) {
+    mFontPath = fontPath;
     markUpdated();
   }
 

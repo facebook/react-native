@@ -9,6 +9,7 @@ package com.facebook.react.views.text;
 
 import javax.annotation.Nullable;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,9 +38,11 @@ public class ReactFontManager {
   private static ReactFontManager sReactFontManagerInstance;
 
   private Map<String, FontFamily> mFontCache;
+  private Map<String, Typeface> mFontFileName_TypefaceCache;
 
   private ReactFontManager() {
     mFontCache = new HashMap<>();
+    mFontFileName_TypefaceCache = new HashMap<>();
   }
 
   public static ReactFontManager getInstance() {
@@ -68,6 +71,22 @@ public class ReactFontManager {
       }
     }
 
+    return typeface;
+  }
+
+  public
+  @Nullable Typeface getTypeface(
+    String fontPath,
+    String fontFamilyName,
+    int style) {
+    String fileName = fontPath.substring(fontPath.lastIndexOf(File.separator) + 1);
+    Typeface typeface = mFontFileName_TypefaceCache.get(fileName);
+    if (typeface == null) {
+      typeface = createTypeface(fontPath, fontFamilyName, style);
+      if (typeface != null) {
+        mFontFileName_TypefaceCache.put(fileName, typeface);
+      }
+    }
     return typeface;
   }
 
@@ -111,6 +130,20 @@ public class ReactFontManager {
       }
     }
 
+    return Typeface.create(fontFamilyName, style);
+  }
+
+  private static
+  @Nullable Typeface createTypeface(
+    String fontPath,
+    String fontFamilyName,
+    int style) {
+    try {
+      return Typeface.createFromFile(fontPath);
+    } catch (RuntimeException e) {
+      // unfortunately Typeface.createFromFile throws an exception instead of returning null
+      // if the typeface doesn't exist
+    }
     return Typeface.create(fontFamilyName, style);
   }
 

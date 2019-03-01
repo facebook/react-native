@@ -35,6 +35,7 @@ export type SectionBase<SectionItemT> = {
   renderItem?: ?(info: {
     item: SectionItemT,
     index: number,
+    isSelected?: boolean, // TODO(macOS ISS#2323203)
     section: SectionBase<SectionItemT>,
     separators: {
       highlight: () => void,
@@ -71,6 +72,7 @@ type OptionalProps<SectionT: SectionBase<any>> = {
   renderItem?: (info: {
     item: Item,
     index: number,
+    isSelected?: boolean, // TODO(macOS ISS#2323203)
     section: SectionT,
     separators: {
       highlight: () => void,

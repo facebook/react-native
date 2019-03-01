@@ -1,3 +1,15 @@
+# Working fork for Microsoft internal usage
+### **It is not our goal to have a long term fork of facebook/react-native/**
+
+The reasons for this fork to exist currently are 3 fold.
+
+1. Provide a staging ground for changes that Microsoft is submitting back to the main Facebook repo, such that our internal apps can share and validate these changes while the PRs go through the standard merge process with Facebook.
+1. A holding ground for our implementation of react-native for macOS. -- The eventual plan is to refactor a bunch of code within facebook/react-native to allow the macOS code to be implemented as an out of tree platform that works with the core react-native package.  But currently the implementation shares so much logic with the iOS platform that it would involve a lot of code duplication to move it out.  This process will take a while to work through but is the eventual goal.
+1. Hold various changes that we have made internally to support our apps, which we hope to revert as we update our internal code.  But we are putting it all out here since other projects require this changes exist for now.
+
+The eventual goal is for this fork to stop existing, or certainly have a much smaller delta between this fork and facebook/react-native.
+
+
 # [React Native](https://facebook.github.io/react-native/) &middot;  [![Circle CI Status](https://circleci.com/gh/facebook/react-native.svg?style=shield)](https://circleci.com/gh/facebook/react-native) [![Build status](https://ci.appveyor.com/api/projects/status/github/facebook/react-native?branch=master&svg=true)](https://ci.appveyor.com/project/facebok/react-native/branch/master) [![npm version](https://badge.fury.io/js/react-native.svg)](https://badge.fury.io/js/react-native) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md#pull-requests)
 
 Learn once, write anywhere: Build mobile apps with React.

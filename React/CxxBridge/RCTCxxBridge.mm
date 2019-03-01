@@ -200,6 +200,13 @@ struct RCTInstanceCallback : public InstanceCallback {
   return _reactInstance ? _reactInstance->isInspectable() : NO;
 }
 
+// [TODO(OSS Candidate ISS#2710739)
+- (std::shared_ptr<facebook::react::Instance>)reactInstance
+{
+  return _reactInstance;
+}
+// ]TODO(OSS Candidate ISS#2710739)
+
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge
 {
   RCTAssertParam(bridge);
@@ -332,7 +339,11 @@ struct RCTInstanceCallback : public InstanceCallback {
         [self.delegate respondsToSelector:@selector(shouldBridgeUseCustomJSC:)] &&
         [self.delegate shouldBridgeUseCustomJSC:self];
       // We use the name of the device and the app for debugging & metrics
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
       NSString *deviceName = [[UIDevice currentDevice] name];
+#else // [TODO(macOS ISS#2323203)
+      NSString *deviceName = nil;
+#endif // ]TODO(macOS ISS#2323203)
       NSString *appName = [[NSBundle mainBundle] bundleIdentifier];
       // The arg is a cache dir.  It's not used with standard JSC.
       executorFactory.reset(new JSCExecutorFactory(folly::dynamic::object
@@ -374,8 +385,10 @@ struct RCTInstanceCallback : public InstanceCallback {
     dispatch_group_leave(prepareBridge);
   } onProgress:^(RCTLoadingProgress *progressData) {
 #if RCT_DEV && __has_include("RCTDevLoadingView.h")
-    RCTDevLoadingView *loadingView = [weakSelf moduleForClass:[RCTDevLoadingView class]];
-    [loadingView updateProgress:progressData];
+    if ([[self devSettings] isDevModeEnabled]) { // TODO(OSS Candidate ISS#2710739)
+      RCTDevLoadingView *loadingView = [weakSelf moduleForClass:[RCTDevLoadingView class]];
+      [loadingView updateProgress:progressData];
+    } // TODO(OSS Candidate ISS#2710739)
 #endif
   }];
 
@@ -517,12 +530,15 @@ struct RCTInstanceCallback : public InstanceCallback {
   // This can only be false if the bridge was invalidated before startup completed
   if (_reactInstance) {
 #if RCT_DEV
-    executorFactory = std::make_shared<GetDescAdapter>(self, executorFactory);
+    if ([[self devSettings] isDevModeEnabled]) { // TODO(OSS Candidate ISS#2710739)
+      executorFactory = std::make_shared<GetDescAdapter>(self, executorFactory);
+    } // TODO(OSS Candidate ISS#2710739)
 #endif
 
     // This is async, but any calls into JS are blocked by the m_syncReady CV in Instance
     _reactInstance->initializeBridge(
       std::make_unique<RCTInstanceCallback>(self),
+      nullptr,  // use default executor delegate // TODO(OSS Candidate ISS#2710739)
       executorFactory,
       _jsMessageThread,
       [self _buildModuleRegistry]);
@@ -790,7 +806,10 @@ struct RCTInstanceCallback : public InstanceCallback {
   }
 
 #if RCT_DEV
-  if (self.devSettings.isHotLoadingAvailable && self.devSettings.isHotLoadingEnabled) {
+  RCTDevSettings *devSettings = [self devSettings]; // TODO(OSS Candidate ISS#2710739)
+  if (devSettings.isDevModeEnabled &&
+      devSettings.isHotLoadingAvailable &&
+      devSettings.isHotLoadingEnabled) {
     NSString *path = [self.bundleURL.path substringFromIndex:1]; // strip initial slash
     NSString *host = self.bundleURL.host;
     NSNumber *port = self.bundleURL.port;
@@ -1194,8 +1213,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
                                             sourceUrlStr.UTF8String, !async);
       }
     } else if (self->_reactInstance) {
-      self->_reactInstance->loadScriptFromString(std::make_unique<NSDataBigString>(script),
-                                                 sourceUrlStr.UTF8String, !async);
+      self->_reactInstance->loadScriptFromString(std::make_unique<NSDataBigString>(script), 0,
+                                                 sourceUrlStr.UTF8String, !async, ""); // TODO(OSS Candidate ISS#2710739)
     } else {
       std::string methodName = async ? "loadApplicationScript" : "loadApplicationScriptSync";
       throw std::logic_error("Attempt to call " + methodName + ": on uninitialized bridge");

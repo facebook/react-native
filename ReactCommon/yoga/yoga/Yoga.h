@@ -45,12 +45,6 @@ typedef struct YGValue {
 extern const YGValue YGValueUndefined;
 extern const YGValue YGValueAuto;
 
-#ifdef __cplusplus
-
-extern bool operator==(const YGValue& lhs, const YGValue& rhs);
-extern bool operator!=(const YGValue& lhs, const YGValue& rhs);
-
-#endif
 
 typedef struct YGConfig* YGConfigRef;
 
@@ -457,5 +451,10 @@ extern void YGTraversePreOrder(
 extern void YGNodeSetChildren(
     YGNodeRef const owner,
     const std::vector<YGNodeRef>& children);
+
+// Operator declarations moved down here, outside of the extern C block
+extern bool operator==(const YGValue& lhs, const YGValue& rhs);
+extern bool operator!=(const YGValue& lhs, const YGValue& rhs);
+// #endif
 
 #endif
