@@ -2,7 +2,7 @@
   "root": true,
 
   "extends": [
-    "./packages/eslint-config-react-native/index.js"
+    "./packages/eslint-config-react-native-community/index.js"
   ],
 
   "overrides": [
