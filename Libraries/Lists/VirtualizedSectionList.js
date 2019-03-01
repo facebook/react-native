@@ -221,7 +221,7 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
     trailingSection?: ?SectionT,
   } {
     let itemIndex = index;
-    const {sections} = this.props
+    const {sections} = this.props;
     for (let ii = 0; ii < sections.length; ii++) {
       const section = sections[ii];
       const key = section.key || String(ii);
@@ -252,7 +252,10 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
           index: itemIndex,
           leadingItem: section.data[itemIndex - 1],
           leadingSection: sections[ii - 1],
-          trailingItem: section.data.length > itemIndex + 1 ? section.data[itemIndex + 1] : undefined,
+          trailingItem:
+            section.data.length > itemIndex + 1
+              ? section.data[itemIndex + 1]
+              : undefined,
           trailingSection: sections[ii + 1],
         };
       }
