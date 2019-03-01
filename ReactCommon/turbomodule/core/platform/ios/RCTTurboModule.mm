@@ -373,14 +373,14 @@ NSInvocation *getMethodInvocation(
  * - ObjC module methods will be always be called from JS thread.
  *   They may decide to dispatch to a different queue as needed.
  */
-void performMethodInvocation(
+jsi::Value performMethodInvocation(
     jsi::Runtime &runtime,
     NSInvocation *inv,
     TurboModuleMethodValueKind valueKind,
     const id<RCTTurboModule> module,
-    std::shared_ptr<JSCallInvoker> jsInvoker,
-    jsi::Value *result) {
-  *result = jsi::Value::undefined();
+    std::shared_ptr<JSCallInvoker> jsInvoker) {
+
+  __block void *rawResult = NULL;
   jsi::Runtime *rt = &runtime;
   void (^block)() = ^{
     [inv invokeWithTarget:module];
@@ -389,33 +389,7 @@ void performMethodInvocation(
       return;
     }
 
-    void *rawResult = NULL;
-    [inv getReturnValue:&rawResult];
-
-    // TODO: Re-use value conversion logic from existing impl, if possible.
-    switch (valueKind) {
-      case BooleanKind:
-        *result = convertNSNumberToJSIBoolean(*rt, (__bridge NSNumber *)rawResult);
-        break;
-      case NumberKind:
-        *result = convertNSNumberToJSINumber(*rt, (__bridge NSNumber *)rawResult);
-        break;
-      case StringKind:
-        *result = convertNSStringToJSIString(*rt, (__bridge NSString *)rawResult);
-        break;
-      case ObjectKind:
-        *result = convertNSDictionaryToJSIObject(*rt, (__bridge NSDictionary *)rawResult);
-        break;
-      case ArrayKind:
-        *result = convertNSArrayToJSIArray(*rt, (__bridge NSArray *)rawResult);
-        break;
-      case FunctionKind:
-        throw std::runtime_error("doInvokeTurboModuleMethod: FunctionKind is not supported yet.");
-      case PromiseKind:
-        throw std::runtime_error("doInvokeTurboModuleMethod: PromiseKind wasn't handled properly.");
-      case VoidKind:
-        throw std::runtime_error("doInvokeTurboModuleMethod: VoidKind wasn't handled properly.");
-    }
+    [inv getReturnValue:(void *)&rawResult];
   };
 
   // Backward-compatibility layer for calling module methods on specific queue.
@@ -443,6 +417,26 @@ void performMethodInvocation(
     } else {
       dispatch_sync(methodQueue, block);
     }
+  }
+
+  // TODO: Re-use value conversion logic from existing impl, if possible.
+  switch (valueKind) {
+    case VoidKind:
+      return jsi::Value::undefined();
+    case BooleanKind:
+      return convertNSNumberToJSIBoolean(*rt, (__bridge NSNumber *)rawResult);
+    case NumberKind:
+      return convertNSNumberToJSINumber(*rt, (__bridge NSNumber *)rawResult);
+    case StringKind:
+      return convertNSStringToJSIString(*rt, (__bridge NSString *)rawResult);
+    case ObjectKind:
+      return convertNSDictionaryToJSIObject(*rt, (__bridge NSDictionary *)rawResult);
+    case ArrayKind:
+      return convertNSArrayToJSIArray(*rt, (__bridge NSArray *)rawResult);
+    case FunctionKind:
+      throw std::runtime_error("convertInvocationResultToJSIValue: FunctionKind is not supported yet.");
+    case PromiseKind:
+      throw std::runtime_error("convertInvocationResultToJSIValue: PromiseKind wasn't handled properly.");
   }
 }
 
@@ -476,14 +470,11 @@ jsi::Value ObjCTurboModule::invokeMethod(
           [inv setArgument:(void *)&resolveBlock atIndex:count + 2];
           [inv setArgument:(void *)&rejectBlock atIndex:count + 3];
           // The return type becomes void in the ObjC side.
-          jsi::Value result;
-          performMethodInvocation(rt, inv, VoidKind, instance_, jsInvoker_, &result);
+          performMethodInvocation(rt, inv, VoidKind, instance_, jsInvoker_);
         });
   }
 
-  jsi::Value result;
-  performMethodInvocation(runtime, inv, valueKind, instance_, jsInvoker_, &result);
-  return result;
+  return performMethodInvocation(runtime, inv, valueKind, instance_, jsInvoker_);
 }
 
 } // namespace react
