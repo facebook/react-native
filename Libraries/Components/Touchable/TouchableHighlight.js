@@ -161,12 +161,12 @@ type Props = $ReadOnly<{|
  *
  */
 class TouchableHighlight extends React.Component<Props> {
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
 
     Object.keys(Touchable.Mixin.withoutDefaultFocusAndBlur).forEach(name => {
-      if (this[name] && this[name].bind) {
-        this[name] = this[name].bind(this);
+      if ((this: any)[name] && (this: any)[name].bind) {
+        (this: any)[name] = (this: any)[name].bind(this);
       }
     });
 

@@ -19,6 +19,8 @@ const React = require('React');
 const Touchable = require('Touchable');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 
+const reactMixin = require('@ericlewis/react-mixin');
+
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type {ViewStyleProp} from 'StyleSheet';
 import type {Props as TouchableWithoutFeedbackProps} from 'TouchableWithoutFeedback';
@@ -50,15 +52,15 @@ type Props = $ReadOnly<{|
  * interesting interactions such as `handleTouchablePress`.
  */
 
-class TouchableBounce extends React.Component<Props> {
-  state: State
-  constructor(props) {
+class TouchableBounce extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props);
 
-    Object.assign(this, {
-      ...NativeMethodsMixin,
-      ...Touchable.Mixin.withoutDefaultFocusAndBlur,
-    })
+    Object.keys(Touchable.Mixin.withoutDefaultFocusAndBlur).forEach(name => {
+      if ((this: any)[name] && (this: any)[name].bind) {
+        (this: any)[name] = (this: any)[name].bind(this);
+      }
+    });
 
     this.state = {
       ...this.touchableGetInitialState(),
@@ -66,7 +68,7 @@ class TouchableBounce extends React.Component<Props> {
     };
   }
 
-    bounceTo = (
+  bounceTo = (
     value: number,
     velocity: number,
     bounciness: number,
@@ -78,7 +80,7 @@ class TouchableBounce extends React.Component<Props> {
       bounciness,
       useNativeDriver: true,
     }).start(callback);
-  }
+  };
 
   /**
    * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
@@ -87,26 +89,26 @@ class TouchableBounce extends React.Component<Props> {
   touchableHandleActivePressIn = (e: PressEvent) => {
     this.bounceTo(0.93, 0.1, 0);
     this.props.onPressIn && this.props.onPressIn(e);
-  }
+  };
 
   touchableHandleActivePressOut = (e: PressEvent) => {
     this.bounceTo(1, 0.4, 0);
     this.props.onPressOut && this.props.onPressOut(e);
-  }
+  };
 
   touchableHandleFocus = (e: Event) => {
     if (Platform.isTV) {
       this.bounceTo(0.93, 0.1, 0);
     }
     this.props.onFocus && this.props.onFocus(e);
-  }
+  };
 
   touchableHandleBlur = (e: Event) => {
     if (Platform.isTV) {
       this.bounceTo(1, 0.4, 0);
     }
     this.props.onBlur && this.props.onBlur(e);
-  }
+  };
 
   touchableHandlePress = (e: PressEvent) => {
     const onPressWithCompletion = this.props.onPressWithCompletion;
@@ -130,19 +132,19 @@ class TouchableBounce extends React.Component<Props> {
       this.props.onPressAnimationComplete,
     );
     this.props.onPress && this.props.onPress(e);
-  }
+  };
 
   touchableGetPressRectOffset = (): typeof PRESS_RETENTION_OFFSET => {
     return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
-  }
+  };
 
   touchableGetHitSlop = (): ?EdgeInsetsProp => {
     return this.props.hitSlop;
-  }
+  };
 
-  touchableGetHighlightDelayMS(): number {
+  touchableGetHighlightDelayMS = (): number => {
     return 0;
-  }
+  };
 
   render(): React.Element<any> {
     return (
@@ -171,6 +173,7 @@ class TouchableBounce extends React.Component<Props> {
         })}
       </Animated.View>
     );
+  }
 }
 
 TouchableBounce.displayName = 'TouchableBounce';
@@ -207,5 +210,8 @@ TouchableBounce.defaultProps = {
   releaseBounciness: 10,
   releaseVelocity: 10,
 };
+
+reactMixin.onClass(TouchableBounce, NativeMethodsMixin);
+reactMixin.onClass(TouchableBounce, Touchable.Mixin.withoutDefaultFocusAndBlur);
 
 module.exports = TouchableBounce;

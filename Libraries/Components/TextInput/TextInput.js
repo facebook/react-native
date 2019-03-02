@@ -410,7 +410,7 @@ const emptyFunctionThatReturnsTrue = () => true;
  *
  */
 
-class TextInput extends React.Component<Props, State> {
+class TextInput extends React.Component<Props> {
   static defaultProps = {
     allowFontScaling: true,
     rejectResponderTermination: true,

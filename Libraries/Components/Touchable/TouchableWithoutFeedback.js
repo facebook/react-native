@@ -82,12 +82,13 @@ export type Props = $ReadOnly<{|
  * If you wish to have several child components, wrap them in a View.
  */
 class TouchableWithoutFeedback extends React.Component<Props> {
-  constructor(props) {
+  touchableGetInitialState: any;
+  constructor(props: Props) {
     super(props);
 
     Object.keys(Touchable.Mixin).forEach(name => {
-      if (this[name] && this[name].bind) {
-        this[name] = this[name].bind(this);
+      if ((this: any)[name] && (this: any)[name].bind) {
+        (this: any)[name] = (this: any)[name].bind(this);
       }
     });
 
