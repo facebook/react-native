@@ -11,6 +11,8 @@
 #include <iostream>
 #include <map>
 
+#define YG_UNUSED(x) (void) (x);
+
 using namespace facebook::jni;
 using namespace std;
 using facebook::yoga::detail::Log;
@@ -791,6 +793,7 @@ static void YGNodeSetStyleInputs(
       case Margin: {
         float edge = *styleInputs++;
         float marginValue = *styleInputs++;
+        YG_UNUSED(edge);
         ygNodeRefToYGNodeContext(node)->edgeSetFlag |= MARGIN;
         YGNodeStyleSetMargin(node, static_cast<YGEdge>(edge), marginValue);
         break;
@@ -798,6 +801,7 @@ static void YGNodeSetStyleInputs(
       case MarginPercent: {
         float edge = *styleInputs++;
         float marginPercent = *styleInputs++;
+        YG_UNUSED(edge);
         ygNodeRefToYGNodeContext(node)->edgeSetFlag |= MARGIN;
         YGNodeStyleSetMarginPercent(
             node, static_cast<YGEdge>(edge), marginPercent);
@@ -811,6 +815,7 @@ static void YGNodeSetStyleInputs(
       case Padding: {
         float edge = *styleInputs++;
         float paddingValue = *styleInputs++;
+        YG_UNUSED(edge);
         ygNodeRefToYGNodeContext(node)->edgeSetFlag |= PADDING;
         YGNodeStyleSetPadding(node, static_cast<YGEdge>(edge), paddingValue);
         break;
@@ -818,6 +823,7 @@ static void YGNodeSetStyleInputs(
       case PaddingPercent: {
         float edge = *styleInputs++;
         float paddingPercent = *styleInputs++;
+        YG_UNUSED(edge);
         ygNodeRefToYGNodeContext(node)->edgeSetFlag |= PADDING;
         YGNodeStyleSetPaddingPercent(
             node, static_cast<YGEdge>(edge), paddingPercent);
@@ -826,6 +832,7 @@ static void YGNodeSetStyleInputs(
       case Border: {
         float edge = *styleInputs++;
         float borderValue = *styleInputs++;
+        YG_UNUSED(edge);
         ygNodeRefToYGNodeContext(node)->edgeSetFlag |= BORDER;
         YGNodeStyleSetBorder(node, static_cast<YGEdge>(edge), borderValue);
         break;
@@ -833,12 +840,14 @@ static void YGNodeSetStyleInputs(
       case Position: {
         float edge = *styleInputs++;
         float positionValue = *styleInputs++;
+        YG_UNUSED(edge);
         YGNodeStyleSetPosition(node, static_cast<YGEdge>(edge), positionValue);
         break;
       }
       case PositionPercent: {
         float edge = *styleInputs++;
         float positionPercent = *styleInputs++;
+        YG_UNUSED(edge);
         YGNodeStyleSetPositionPercent(
             node, static_cast<YGEdge>(edge), positionPercent);
         break;
