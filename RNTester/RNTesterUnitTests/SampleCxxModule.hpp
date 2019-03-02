@@ -13,10 +13,11 @@ class SampleCxxModule : public facebook::xplat::module::CxxModule
 public:
   SampleCxxModule();
   
-  std::string getName();
+  std::string getName() override;
+
+  std::map<std::string, folly::dynamic> getConstants() override;
   
-  std::map<std::string, folly::dynamic> getConstants();
-  std::vector<Method> getMethods();
+  std::vector<Method> getMethods() override;
 };
 
 #endif /* SampleCxxModule_hpp */
