@@ -24,11 +24,6 @@ namespace react {
  */
 class ImageRequest final {
  public:
-  /*
-   * The exception which is thrown when `ImageRequest` is being deallocated
-   * if the future is not ready yet.
-   */
-  class ImageNoLongerNeededException;
 
   /*
    * The default constructor
