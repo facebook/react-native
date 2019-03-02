@@ -62,7 +62,7 @@ const SwitchSchema: SchemaType = {
               optional: true,
               typeAnnotation: {
                 type: 'StringEnumTypeAnnotation',
-                default: 'Small',
+                default: 'small',
                 options: [
                   {
                     name: 'small',

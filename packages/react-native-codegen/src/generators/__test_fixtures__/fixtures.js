@@ -218,7 +218,7 @@ const SINGLE_COMPONENT_WITH_ENUM_PROP: SchemaType = {
               optional: true,
               typeAnnotation: {
                 type: 'StringEnumTypeAnnotation',
-                default: 'Center',
+                default: 'center',
                 options: [
                   {
                     name: 'top',

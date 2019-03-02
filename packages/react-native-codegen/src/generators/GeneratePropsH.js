@@ -141,9 +141,9 @@ function convertDefaultTypeToString(componentName: string, prop): string {
           throw new Error('Receieved unknown NativePrimitiveTypeAnnotation');
       }
     case 'StringEnumTypeAnnotation':
-      return `${getEnumName(componentName, prop.name)}::${
-        typeAnnotation.default
-      }`;
+      return `${getEnumName(componentName, prop.name)}::${upperCaseFirst(
+        typeAnnotation.default,
+      )}`;
     default:
       (typeAnnotation: empty);
       throw new Error('Receieved invalid typeAnnotation');
