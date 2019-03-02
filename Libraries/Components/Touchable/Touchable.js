@@ -928,7 +928,7 @@ const Touchable = {
     hitSlop,
   }: {
     color: string | number,
-    hitSlop: EdgeInsetsProp,
+    hitSlop?: ?EdgeInsetsProp,
   }) => {
     if (!Touchable.TOUCH_TARGET_DEBUG) {
       return null;

@@ -81,7 +81,7 @@ export type Props = $ReadOnly<{|
  * TouchableWithoutFeedback supports only one child.
  * If you wish to have several child components, wrap them in a View.
  */
-class TouchableWithoutFeedback extends React.Component<Props, any> {
+class TouchableWithoutFeedback extends React.Component<Props, $FlowFixMeState> {
   touchableHandleResponderGrant: ?(
     event: PressEvent,
     dispatchID: string,
@@ -132,7 +132,7 @@ class TouchableWithoutFeedback extends React.Component<Props, any> {
     this.props.onLongPress && this.props.onLongPress(e);
   };
 
-  touchableGetPressRectOffset = (): typeof PRESS_RETENTION_OFFSET => {
+  touchableGetPressRectOffset = () => {
     // $FlowFixMe Invalid prop usage
     return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
   };

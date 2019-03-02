@@ -600,7 +600,9 @@ class TextInput extends React.Component<Props> {
       if (props.inputView) {
         children = [children, props.inputView];
       }
-      props.style.unshift(styles.multilineInput);
+
+      (props.style: $FlowFixMe).unshift(styles.multilineInput);
+
       textContainer = (
         <RCTMultilineTextInputView
           ref={this._setNativeRef}

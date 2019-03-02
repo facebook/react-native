@@ -43,7 +43,7 @@ type TVProps = $ReadOnly<{|
 type Props = $ReadOnly<{|
   ...TouchableWithoutFeedbackProps,
   ...TVProps,
-  activeOpacity?: ?number,
+  activeOpacity: number,
   style?: ?ViewStyleProp,
 |}>;
 
@@ -135,7 +135,7 @@ type Props = $ReadOnly<{|
  * ```
  *
  */
-class TouchableOpacity extends React.Component<Props, any> {
+class TouchableOpacity extends React.Component<Props, $FlowFixMeState> {
   static defaultProps = {
     activeOpacity: 0.2,
   };
@@ -213,14 +213,14 @@ class TouchableOpacity extends React.Component<Props, any> {
     if (Platform.isTV) {
       this._opacityActive(150);
     }
-    this.props.onFocus && this.props.onFocus(e);
+    this.props.onFocus && this.props.onFocus((e: $FlowFixMe));
   };
 
   touchableHandleBlur = (e: Event) => {
     if (Platform.isTV) {
       this._opacityInactive(250);
     }
-    this.props.onBlur && this.props.onBlur(e);
+    this.props.onBlur && this.props.onBlur((e: $FlowFixMe));
   };
 
   touchableHandlePress = (e: PressEvent) => {
@@ -261,7 +261,7 @@ class TouchableOpacity extends React.Component<Props, any> {
     this.setOpacityTo(this._getChildStyleOpacityWithDefault(), duration);
   };
 
-  _getChildStyleOpacityWithDefault = () => {
+  _getChildStyleOpacityWithDefault = (): any => {
     const childStyle = flattenStyle(this.props.style) || {};
     return childStyle.opacity == null ? 1 : childStyle.opacity;
   };

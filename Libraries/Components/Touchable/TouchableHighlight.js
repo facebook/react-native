@@ -30,17 +30,11 @@ import type {ColorValue} from 'StyleSheetTypes';
 import type {Props as TouchableWithoutFeedbackProps} from 'TouchableWithoutFeedback';
 import type {TVParallaxPropertiesType} from 'TVViewPropTypes';
 
-const DEFAULT_PROPS = {
-  activeOpacity: 0.85,
-  delayPressOut: 100,
-  underlayColor: 'black',
-};
-
 const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 type IOSProps = $ReadOnly<{|
   hasTVPreferredFocus?: ?boolean,
-  tvParallaxProperties?: ?TVParallaxPropertiesType,
+  tvParallaxProperties?: TVParallaxPropertiesType,
 |}>;
 
 type AndroidProps = $ReadOnly<{|
@@ -57,7 +51,7 @@ type Props = $ReadOnly<{|
   ...AndroidProps,
 
   delayPressOut: number,
-  activeOpacity?: ?number,
+  activeOpacity: ?number,
   underlayColor?: ?ColorValue,
   style?: ?ViewStyleProp,
   onShowUnderlay?: ?() => void,
@@ -161,8 +155,20 @@ type Props = $ReadOnly<{|
  * ```
  *
  */
-class TouchableHighlight extends React.Component<Props, any> {
-  static defaultProps = DEFAULT_PROPS;
+class TouchableHighlight extends React.Component<Props, $FlowFixMeState> {
+  static defaultProps = {
+    activeOpacity: 0.85,
+    delayPressOut: 100,
+    underlayColor: 'black',
+  };
+
+  touchableHandleResponderGrant: ?(e: PressEvent) => void | boolean;
+  touchableHandleStartShouldSetResponder: () => boolean;
+  touchableHandleResponderMove: ?(event: PressEvent) => void;
+  touchableHandleResponderRelease: ?(event: PressEvent) => void;
+  touchableHandleResponderTerminate: ?(event: PressEvent) => void;
+  touchableHandleResponderTerminationRequest: ?() => boolean;
+
   _isMounted: boolean;
   _hideTimeout: any;
 
@@ -235,14 +241,14 @@ class TouchableHighlight extends React.Component<Props, any> {
     if (Platform.isTV) {
       this._showUnderlay();
     }
-    this.props.onFocus && this.props.onFocus(e);
+    this.props.onFocus && this.props.onFocus((e: $FlowFixMe));
   };
 
   touchableHandleBlur = (e: Event) => {
     if (Platform.isTV) {
       this._hideUnderlay();
     }
-    this.props.onBlur && this.props.onBlur(e);
+    this.props.onBlur && this.props.onBlur((e: $FlowFixMe));
   };
 
   touchableHandlePress = (e: PressEvent) => {
@@ -337,7 +343,7 @@ class TouchableHighlight extends React.Component<Props, any> {
         hitSlop={this.props.hitSlop}
         isTVSelectable={true}
         tvParallaxProperties={this.props.tvParallaxProperties}
-        hasTVPreferredFocus={this.props.hasTVPreferredFocus}
+        hasTVPreferredFocus={Boolean(this.props.hasTVPreferredFocus)}
         nextFocusDown={this.props.nextFocusDown}
         nextFocusForward={this.props.nextFocusForward}
         nextFocusLeft={this.props.nextFocusLeft}

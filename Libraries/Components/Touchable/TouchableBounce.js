@@ -27,7 +27,6 @@ import type {Props as TouchableWithoutFeedbackProps} from 'TouchableWithoutFeedb
 import type {PressEvent} from 'CoreEventTypes';
 
 type State = {
-  animationID: ?number,
   scale: Animated.Value,
 };
 
@@ -39,8 +38,8 @@ type Props = $ReadOnly<{|
   onPressWithCompletion?: ?(fn: () => void) => void,
   onPressAnimationComplete?: ?() => void,
   pressRetentionOffset?: ?EdgeInsetsProp,
-  releaseVelocity?: ?number,
-  releaseBounciness: ?number,
+  releaseVelocity: number,
+  releaseBounciness: number,
   style?: ?ViewStyleProp,
 |}>;
 
@@ -68,6 +67,11 @@ class TouchableBounce extends React.Component<Props, State> {
   touchableHandleResponderTerminate: ?(event: PressEvent) => void;
   touchableHandleResponderTerminationRequest: ?() => boolean;
 
+  state = {
+    ...Touchable.Mixin.touchableGetInitialState(),
+    scale: new Animated.Value(1),
+  };
+
   constructor(props: Props) {
     super(props);
 
@@ -76,11 +80,6 @@ class TouchableBounce extends React.Component<Props, State> {
         (this: any)[name] = (this: any)[name].bind(this);
       }
     });
-
-    this.state = {
-      ...Touchable.Mixin.touchableGetInitialState(),
-      scale: new Animated.Value(1),
-    };
   }
 
   bounceTo = (
@@ -115,14 +114,14 @@ class TouchableBounce extends React.Component<Props, State> {
     if (Platform.isTV) {
       this.bounceTo(0.93, 0.1, 0);
     }
-    this.props.onFocus && this.props.onFocus(e);
+    this.props.onFocus && this.props.onFocus((e: $FlowFixMe));
   };
 
   touchableHandleBlur = (e: Event) => {
     if (Platform.isTV) {
       this.bounceTo(1, 0.4, 0);
     }
-    this.props.onBlur && this.props.onBlur(e);
+    this.props.onBlur && this.props.onBlur((e: $FlowFixMe));
   };
 
   touchableHandlePress = (e: PressEvent) => {
@@ -149,7 +148,7 @@ class TouchableBounce extends React.Component<Props, State> {
     this.props.onPress && this.props.onPress(e);
   };
 
-  touchableGetPressRectOffset = (): typeof PRESS_RETENTION_OFFSET => {
+  touchableGetPressRectOffset = () => {
     return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
   };
 
