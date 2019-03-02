@@ -7,8 +7,9 @@
 
 #import "RCTActivityIndicatorViewComponentView.h"
 
-#import <react/components/activityindicator/ActivityIndicatorViewProps.h>
-#import <react/components/activityindicator/ActivityIndicatorViewShadowNode.h>
+#import <react/components/rncore/EventEmitters.h>
+#import <react/components/rncore/Props.h>
+#import <react/components/rncore/ShadowNodes.h>
 
 using namespace facebook::react;
 
