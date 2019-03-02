@@ -163,7 +163,7 @@ class TouchableOpacity extends React.Component<Props> {
     ensurePositiveDelayProps(nextProps);
   }
 
-  componentDidUpdate(prevProps, prevState: any) {
+  componentDidUpdate(prevProps: any, prevState: any) {
     if (this.props.disabled !== prevProps.disabled) {
       this._opacityInactive(250);
     }

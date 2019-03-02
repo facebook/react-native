@@ -417,6 +417,12 @@ class TextInput extends React.Component<Props> {
     underlineColorAndroid: 'transparent',
   };
 
+  static State = {
+    currentlyFocusedField: TextInputState.currentlyFocusedField,
+    focusTextInput: TextInputState.focusTextInput,
+    blurTextInput: TextInputState.blurTextInput,
+  };
+
   _inputRef: any;
   _focusSubscription: ?Function;
   _lastNativeText: ?string;
@@ -426,16 +432,6 @@ class TextInput extends React.Component<Props> {
   focus: () => void;
   blur: () => void;
   setNativeProps: any;
-
-  state: {
-    currentlyFocusedField: TextInputState.currentlyFocusedField,
-    focusTextInput: TextInputState.focusTextInput,
-    blurTextInput: TextInputState.blurTextInput,
-  } = {
-    currentlyFocusedField: undefined,
-    focusTextInput: undefined,
-    blurTextInput: undefined,
-  };
 
   componentDidMount() {
     this._lastNativeText = this.props.value;

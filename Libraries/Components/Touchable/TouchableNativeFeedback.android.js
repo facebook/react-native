@@ -192,13 +192,14 @@ class TouchableNativeFeedback extends React.Component {
     this.props.onPress && this.props.onPress(e);
   };
 
-  touchableHandleLongPress = ((e: PressEvent) => {
+  touchableHandleLongPress = (e: PressEvent) => {
     this.props.onLongPress && this.props.onLongPress(e);
-  },
-  (touchableGetPressRectOffset = () => {
+  };
+
+  touchableGetPressRectOffset = () => {
     // Always make sure to predeclare a constant!
     return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
-  }));
+  };
 
   touchableGetHitSlop = () => {
     return this.props.hitSlop;
