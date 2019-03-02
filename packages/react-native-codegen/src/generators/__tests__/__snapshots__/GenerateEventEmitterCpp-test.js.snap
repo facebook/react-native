@@ -172,6 +172,29 @@ namespace react {
 }
 `;
 
+exports[`GenerateEventEmitterCpp can generate fixture IMAGE_PROP 1`] = `
+Map {
+  "EventEmitters.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/IMAGE_PROP/EventEmitters.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GenerateEventEmitterCpp can generate fixture INTEGER_PROPS 1`] = `
 Map {
   "EventEmitters.cpp" => "
@@ -183,6 +206,29 @@ Map {
  */
 
 #include <react/components/INTEGER_PROPS/EventEmitters.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterCpp can generate fixture MULTI_NATIVE_PROP 1`] = `
+Map {
+  "EventEmitters.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/MULTI_NATIVE_PROP/EventEmitters.h>
 
 namespace facebook {
 namespace react {

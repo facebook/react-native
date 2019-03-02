@@ -106,6 +106,8 @@ function getNativeTypeFromAnnotation(componentName: string, prop): string {
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':
           return 'SharedColor';
+        case 'ImageSourcePrimitive':
+          return 'ImageSource';
         default:
           (typeAnnotation.name: empty);
           throw new Error('Receieved unknown NativePrimitiveTypeAnnotation');
@@ -135,6 +137,8 @@ function convertDefaultTypeToString(componentName: string, prop): string {
     case 'NativePrimitiveTypeAnnotation':
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':
+          return '';
+        case 'ImageSourcePrimitive':
           return '';
         default:
           (typeAnnotation.name: empty);
@@ -238,6 +242,9 @@ function getImports(component): Set<string> {
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':
           imports.add('#include <react/graphics/Color.h>');
+          return;
+        case 'ImageSourcePrimitive':
+          imports.add('#include <react/imagemanager/primitives.h>');
           return;
         default:
           (typeAnnotation.name: empty);

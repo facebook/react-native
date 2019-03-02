@@ -209,6 +209,38 @@ const Float blurRadius5{1.0};
 }
 `;
 
+exports[`GeneratePropsH can generate fixture IMAGE_PROP 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/view/ViewProps.h>
+#include <react/imagemanager/primitives.h>
+
+namespace facebook {
+namespace react {
+
+class ImagePropNativeComponentProps final : public ViewProps {
+ public:
+  ImagePropNativeComponentProps() = default;
+  ImagePropNativeComponentProps(const ImagePropNativeComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  const ImageSource thumbImage{};
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GeneratePropsH can generate fixture INTEGER_PROPS 1`] = `
 Map {
   "Props.h" => "
@@ -234,6 +266,41 @@ class IntegerPropNativeComponentProps final : public ViewProps {
   const int progress1{0};
 const int progress2{-1};
 const int progress3{10};
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsH can generate fixture MULTI_NATIVE_PROP 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/view/ViewProps.h>
+#include <react/graphics/Color.h>
+#include <react/imagemanager/primitives.h>
+
+namespace facebook {
+namespace react {
+
+class ImageColorPropNativeComponentProps final : public ViewProps {
+ public:
+  ImageColorPropNativeComponentProps() = default;
+  ImageColorPropNativeComponentProps(const ImageColorPropNativeComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  const ImageSource thumbImage{};
+const SharedColor color{};
+const SharedColor thumbTintColor{};
 };
 
 } // namespace react

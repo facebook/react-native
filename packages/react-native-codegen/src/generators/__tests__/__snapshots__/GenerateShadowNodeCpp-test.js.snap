@@ -138,6 +138,29 @@ extern const char FloatPropNativeComponentComponentName[] = \\"FloatPropNativeCo
 }
 `;
 
+exports[`GenerateShadowNodeCpp can generate fixture IMAGE_PROP 1`] = `
+Map {
+  "ShadowNodes.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/IMAGE_PROP/ShadowNodes.h>
+
+namespace facebook {
+namespace react {
+
+extern const char ImagePropNativeComponentComponentName[] = \\"ImagePropNativeComponent\\";
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GenerateShadowNodeCpp can generate fixture INTEGER_PROPS 1`] = `
 Map {
   "ShadowNodes.cpp" => "
@@ -154,6 +177,29 @@ namespace facebook {
 namespace react {
 
 extern const char IntegerPropNativeComponentComponentName[] = \\"IntegerPropNativeComponent\\";
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateShadowNodeCpp can generate fixture MULTI_NATIVE_PROP 1`] = `
+Map {
+  "ShadowNodes.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/MULTI_NATIVE_PROP/ShadowNodes.h>
+
+namespace facebook {
+namespace react {
+
+extern const char ImageColorPropNativeComponentComponentName[] = \\"ImageColorPropNativeComponent\\";
 
 } // namespace react
 } // namespace facebook

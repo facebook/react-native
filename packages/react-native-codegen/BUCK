@@ -64,6 +64,14 @@ rn_codegen_test(
 )
 
 rn_codegen_test(
+    fixture_name = "IMAGE_PROP",
+)
+
+rn_codegen_test(
+    fixture_name = "MULTI_NATIVE_PROP",
+)
+
+rn_codegen_test(
     fixture_name = "ENUM_PROP",
 )
 
@@ -105,7 +113,9 @@ fb_xplat_cxx_binary(
         ":generated_components-EVENT_NESTED_OBJECT_PROPS",
         ":generated_components-EVENT_PROPS",
         ":generated_components-FLOAT_PROPS",
+        ":generated_components-IMAGE_PROP",
         ":generated_components-INTEGER_PROPS",
+        ":generated_components-MULTI_NATIVE_PROP",
         ":generated_components-STRING_PROP",
         ":generated_components-TWO_COMPONENTS_DIFFERENT_FILES",
         ":generated_components-TWO_COMPONENTS_SAME_FILE",
@@ -137,7 +147,9 @@ rn_xplat_cxx_library(
         ":generated_components-EVENT_NESTED_OBJECT_PROPS",
         ":generated_components-EVENT_PROPS",
         ":generated_components-FLOAT_PROPS",
+        ":generated_components-IMAGE_PROP",
         ":generated_components-INTEGER_PROPS",
+        ":generated_components-MULTI_NATIVE_PROP",
         ":generated_components-STRING_PROP",
         ":generated_components-TWO_COMPONENTS_DIFFERENT_FILES",
         ":generated_components-TWO_COMPONENTS_SAME_FILE",

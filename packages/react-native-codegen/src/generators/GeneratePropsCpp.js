@@ -24,7 +24,7 @@ const template = `
  */
 
 #include <react/components/::_LIBRARY_::/Props.h>
-#include <react/core/propsConversions.h>
+::_IMPORTS_::
 
 namespace facebook {
 namespace react {
@@ -79,9 +79,36 @@ function getClassExtendString(component): string {
   return extendString;
 }
 
+function getImports(component): Set<string> {
+  const imports: Set<string> = new Set();
+  component.props.forEach(prop => {
+    const typeAnnotation = prop.typeAnnotation;
+
+    if (typeAnnotation.type === 'NativePrimitiveTypeAnnotation') {
+      switch (typeAnnotation.name) {
+        case 'ColorPrimitive':
+          return;
+        case 'ImageSourcePrimitive':
+          imports.add('#include <react/components/image/conversions.h>');
+          return;
+        default:
+          (typeAnnotation.name: empty);
+          throw new Error(
+            `Invalid NativePrimitiveTypeAnnotation name, got ${prop.name}`,
+          );
+      }
+    }
+  });
+
+  return imports;
+}
+
 module.exports = {
   generate(libraryName: string, schema: SchemaType): FilesOutput {
     const fileName = 'Props.cpp';
+    const allImports: Set<string> = new Set([
+      '#include <react/core/propsConversions.h>',
+    ]);
 
     const componentProps = Object.keys(schema.modules)
       .map(moduleName => {
@@ -99,6 +126,9 @@ module.exports = {
             const propsString = generatePropsString(component);
             const extendString = getClassExtendString(component);
 
+            const imports = getImports(component);
+            imports.forEach(allImports.add, allImports);
+
             const replacedTemplate = componentTemplate
               .replace(/::_CLASSNAME_::/g, newName)
               .replace('::_EXTEND_CLASSES_::', extendString)
@@ -113,7 +143,15 @@ module.exports = {
 
     const replacedTemplate = template
       .replace(/::_COMPONENT_CLASSES_::/g, componentProps)
-      .replace('::_LIBRARY_::', libraryName);
+      .replace('::_LIBRARY_::', libraryName)
+      .replace(
+        '::_IMPORTS_::',
+
+        Array.from(allImports)
+          .sort()
+          .join('\n')
+          .trim(),
+      );
 
     return new Map([[fileName, replacedTemplate]]);
   },

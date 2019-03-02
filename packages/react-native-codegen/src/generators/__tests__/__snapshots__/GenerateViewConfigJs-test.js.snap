@@ -238,6 +238,41 @@ ReactNativeViewConfigRegistry.register(
 }
 `;
 
+exports[`GenerateViewConfigJs can generate fixture IMAGE_PROP 1`] = `
+Map {
+  "ViewConfigs.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
+
+const ImagePropNativeComponentViewConfig = {
+  uiViewClassName: 'ImagePropNativeComponent',
+
+  validAttributes: {
+    thumbImage: require('react-native').__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.NativePrimitives.ImageSourcePrimitive,
+    style: ReactNativeStyleAttributes
+  }
+};
+
+ReactNativeViewConfigRegistry.register(
+  'ImagePropNativeComponent',
+  () => ImagePropNativeComponentViewConfig,
+);
+",
+}
+`;
+
 exports[`GenerateViewConfigJs can generate fixture INTEGER_PROPS 1`] = `
 Map {
   "ViewConfigs.js" => "
@@ -270,6 +305,43 @@ const IntegerPropNativeComponentViewConfig = {
 ReactNativeViewConfigRegistry.register(
   'IntegerPropNativeComponent',
   () => IntegerPropNativeComponentViewConfig,
+);
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture MULTI_NATIVE_PROP 1`] = `
+Map {
+  "ViewConfigs.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
+
+const ImageColorPropNativeComponentViewConfig = {
+  uiViewClassName: 'ImageColorPropNativeComponent',
+
+  validAttributes: {
+    thumbImage: require('react-native').__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.NativePrimitives.ImageSourcePrimitive,
+    color: require('react-native').__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.NativePrimitives.ColorPrimitive,
+    thumbTintColor: require('react-native').__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.NativePrimitives.ColorPrimitive,
+    style: ReactNativeStyleAttributes
+  }
+};
+
+ReactNativeViewConfigRegistry.register(
+  'ImageColorPropNativeComponent',
+  () => ImageColorPropNativeComponentViewConfig,
 );
 ",
 }

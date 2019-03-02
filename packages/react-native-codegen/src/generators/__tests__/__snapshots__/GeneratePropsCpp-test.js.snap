@@ -178,6 +178,36 @@ blurRadius5(convertRawProp(rawProps, \\"blurRadius5\\", sourceProps.blurRadius5,
 }
 `;
 
+exports[`GeneratePropsCpp can generate fixture IMAGE_PROP 1`] = `
+Map {
+  "Props.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/IMAGE_PROP/Props.h>
+#include <react/components/image/conversions.h>
+#include <react/core/propsConversions.h>
+
+namespace facebook {
+namespace react {
+
+ImagePropNativeComponentProps::ImagePropNativeComponentProps(
+    const ImagePropNativeComponentProps &sourceProps,
+    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
+
+    thumbImage(convertRawProp(rawProps, \\"thumbImage\\", sourceProps.thumbImage, thumbImage))
+      {}
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GeneratePropsCpp can generate fixture INTEGER_PROPS 1`] = `
 Map {
   "Props.cpp" => "
@@ -201,6 +231,38 @@ IntegerPropNativeComponentProps::IntegerPropNativeComponentProps(
     progress1(convertRawProp(rawProps, \\"progress1\\", sourceProps.progress1, progress1)),
 progress2(convertRawProp(rawProps, \\"progress2\\", sourceProps.progress2, progress2)),
 progress3(convertRawProp(rawProps, \\"progress3\\", sourceProps.progress3, progress3))
+      {}
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsCpp can generate fixture MULTI_NATIVE_PROP 1`] = `
+Map {
+  "Props.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/MULTI_NATIVE_PROP/Props.h>
+#include <react/components/image/conversions.h>
+#include <react/core/propsConversions.h>
+
+namespace facebook {
+namespace react {
+
+ImageColorPropNativeComponentProps::ImageColorPropNativeComponentProps(
+    const ImageColorPropNativeComponentProps &sourceProps,
+    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
+
+    thumbImage(convertRawProp(rawProps, \\"thumbImage\\", sourceProps.thumbImage, thumbImage)),
+color(convertRawProp(rawProps, \\"color\\", sourceProps.color, color)),
+thumbTintColor(convertRawProp(rawProps, \\"thumbTintColor\\", sourceProps.thumbTintColor, thumbTintColor))
       {}
 
 } // namespace react

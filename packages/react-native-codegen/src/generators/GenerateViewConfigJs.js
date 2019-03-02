@@ -51,6 +51,9 @@ function getReactDiffProcessValue(prop) {
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':
           return j.template.expression`${nativeTypesString}.ColorPrimitive`;
+        case 'ImageSourcePrimitive':
+          return j.template
+            .expression`${nativeTypesString}.ImageSourcePrimitive`;
         default:
           (typeAnnotation.name: empty);
           throw new Error('Receieved unknown NativePrimitiveTypeAnnotation');

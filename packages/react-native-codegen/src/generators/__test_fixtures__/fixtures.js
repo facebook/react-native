@@ -200,6 +200,78 @@ const COLOR_PROP: SchemaType = {
   },
 };
 
+const IMAGE_PROP: SchemaType = {
+  modules: {
+    Slider: {
+      components: {
+        ImagePropNativeComponent: {
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'thumbImage',
+              optional: true,
+              typeAnnotation: {
+                type: 'NativePrimitiveTypeAnnotation',
+                name: 'ImageSourcePrimitive',
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+};
+
+const MULTI_NATIVE_PROP: SchemaType = {
+  modules: {
+    Slider: {
+      components: {
+        ImageColorPropNativeComponent: {
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'thumbImage',
+              optional: true,
+              typeAnnotation: {
+                type: 'NativePrimitiveTypeAnnotation',
+                name: 'ImageSourcePrimitive',
+              },
+            },
+            {
+              name: 'color',
+              optional: true,
+              typeAnnotation: {
+                type: 'NativePrimitiveTypeAnnotation',
+                name: 'ColorPrimitive',
+              },
+            },
+            {
+              name: 'thumbTintColor',
+              optional: true,
+              typeAnnotation: {
+                type: 'NativePrimitiveTypeAnnotation',
+                name: 'ColorPrimitive',
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+};
+
 const ENUM_PROP: SchemaType = {
   modules: {
     Switch: {
@@ -513,6 +585,8 @@ module.exports = {
   INTEGER_PROPS,
   FLOAT_PROPS,
   COLOR_PROP,
+  IMAGE_PROP,
+  MULTI_NATIVE_PROP,
   ENUM_PROP,
   EVENT_PROPS,
   EVENT_NESTED_OBJECT_PROPS,

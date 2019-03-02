@@ -202,6 +202,39 @@ using FloatPropNativeComponentShadowNode = ConcreteViewShadowNode<
 }
 `;
 
+exports[`GenerateShadowNodeH can generate fixture IMAGE_PROP 1`] = `
+Map {
+  "ShadowNodes.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <react/components/IMAGE_PROP/Props.h>
+#include <react/components/view/ConcreteViewShadowNode.h>
+
+namespace facebook {
+namespace react {
+
+extern const char ImagePropNativeComponentComponentName[];
+
+/*
+ * \`ShadowNode\` for <ImagePropNativeComponent> component.
+ */
+using ImagePropNativeComponentShadowNode = ConcreteViewShadowNode<
+    ImagePropNativeComponentComponentName,
+    ImagePropNativeComponentProps>;
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GenerateShadowNodeH can generate fixture INTEGER_PROPS 1`] = `
 Map {
   "ShadowNodes.h" => "
@@ -228,6 +261,39 @@ extern const char IntegerPropNativeComponentComponentName[];
 using IntegerPropNativeComponentShadowNode = ConcreteViewShadowNode<
     IntegerPropNativeComponentComponentName,
     IntegerPropNativeComponentProps>;
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateShadowNodeH can generate fixture MULTI_NATIVE_PROP 1`] = `
+Map {
+  "ShadowNodes.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <react/components/MULTI_NATIVE_PROP/Props.h>
+#include <react/components/view/ConcreteViewShadowNode.h>
+
+namespace facebook {
+namespace react {
+
+extern const char ImageColorPropNativeComponentComponentName[];
+
+/*
+ * \`ShadowNode\` for <ImageColorPropNativeComponent> component.
+ */
+using ImageColorPropNativeComponentShadowNode = ConcreteViewShadowNode<
+    ImageColorPropNativeComponentComponentName,
+    ImageColorPropNativeComponentProps>;
 
 } // namespace react
 } // namespace facebook

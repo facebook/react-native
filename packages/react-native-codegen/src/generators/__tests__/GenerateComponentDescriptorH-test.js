@@ -19,6 +19,8 @@ const {
   INTEGER_PROPS,
   FLOAT_PROPS,
   COLOR_PROP,
+  IMAGE_PROP,
+  MULTI_NATIVE_PROP,
   ENUM_PROP,
   EVENT_PROPS,
   TWO_COMPONENTS_SAME_FILE,
@@ -46,6 +48,16 @@ describe('GenerateComponentDescriptorH', () => {
 
   it('can generate a single native primitive prop', () => {
     expect(generator.generate('COLOR_PROP', COLOR_PROP)).toMatchSnapshot();
+  });
+
+  it('can generate a native primitive image prop', () => {
+    expect(generator.generate('IMAGE_PROP', IMAGE_PROP)).toMatchSnapshot();
+  });
+
+  it('can generate multiple native props', () => {
+    expect(
+      generator.generate('MULTI_NATIVE_PROP', MULTI_NATIVE_PROP),
+    ).toMatchSnapshot();
   });
 
   it('can generate enum props', () => {

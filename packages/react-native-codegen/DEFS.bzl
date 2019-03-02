@@ -129,6 +129,8 @@ def rn_codegen(
             react_native_xplat_target("fabric/debug:debug"),
             react_native_xplat_target("fabric/core:core"),
             react_native_xplat_target("fabric/graphics:graphics"),
+            react_native_xplat_target("fabric/components/image:image"),
+            react_native_xplat_target("fabric/imagemanager:imagemanager"),
             react_native_xplat_target("fabric/components/view:view"),
         ],
     )
