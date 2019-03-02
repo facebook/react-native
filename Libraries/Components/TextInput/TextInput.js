@@ -411,20 +411,25 @@ const emptyFunctionThatReturnsTrue = () => true;
  */
 
 class TextInput extends React.Component<Props> {
+  static defaultProps = {
+    allowFontScaling: true,
+    rejectResponderTermination: true,
+    underlineColorAndroid: 'transparent',
+  };
+
   _inputRef: any;
   _focusSubscription: ?Function;
   _lastNativeText: ?string;
   _lastNativeSelection: ?Selection;
   _rafId: ?AnimationFrameID;
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      currentlyFocusedField: TextInputState.currentlyFocusedField,
-      focusTextInput: TextInputState.focusTextInput,
-      blurTextInput: TextInputState.blurTextInput,
-    };
-  }
+  setNativeProps: any;
+
+  state = {
+    currentlyFocusedField: TextInputState.currentlyFocusedField,
+    focusTextInput: TextInputState.focusTextInput,
+    blurTextInput: TextInputState.blurTextInput,
+  };
 
   componentDidMount() {
     this._lastNativeText = this.props.value;
@@ -1317,12 +1322,6 @@ TextInput.propTypes = {
     'newPassword',
     'oneTimeCode',
   ]),
-};
-
-TextInput.defaultProps = {
-  allowFontScaling: true,
-  rejectResponderTermination: true,
-  underlineColorAndroid: 'transparent',
 };
 
 reactMixin.onClass(TextInput, NativeMethodsMixin);
