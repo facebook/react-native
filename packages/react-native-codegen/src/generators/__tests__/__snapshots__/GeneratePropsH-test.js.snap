@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`GeneratePropsH can generate fixture SINGLE_COMPONENT_WITH_BOOLEAN_PROP 1`] = `
+exports[`GeneratePropsH can generate fixture BOOLEAN_PROP 1`] = `
 Map {
   "Props.h" => "
 /**
@@ -31,7 +31,7 @@ class BooleanPropNativeComponentProps final : public ViewProps {
 }
 `;
 
-exports[`GeneratePropsH can generate fixture SINGLE_COMPONENT_WITH_COLOR_PROP 1`] = `
+exports[`GeneratePropsH can generate fixture COLOR_PROP 1`] = `
 Map {
   "Props.h" => "
 /**
@@ -63,7 +63,7 @@ class ColorPropNativeComponentProps final : public ViewProps {
 }
 `;
 
-exports[`GeneratePropsH can generate fixture SINGLE_COMPONENT_WITH_ENUM_PROP 1`] = `
+exports[`GeneratePropsH can generate fixture ENUM_PROP 1`] = `
 Map {
   "Props.h" => "
 /**
@@ -112,7 +112,7 @@ class EnumPropsNativeComponentProps final : public ViewProps {
 }
 `;
 
-exports[`GeneratePropsH can generate fixture SINGLE_COMPONENT_WITH_EVENT_NESTED_OBJECT_PROPS 1`] = `
+exports[`GeneratePropsH can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
 Map {
   "Props.h" => "
 /**
@@ -143,7 +143,7 @@ class EventsNestedObjectNativeComponentProps final : public ViewProps {
 }
 `;
 
-exports[`GeneratePropsH can generate fixture SINGLE_COMPONENT_WITH_EVENT_PROPS 1`] = `
+exports[`GeneratePropsH can generate fixture EVENT_PROPS 1`] = `
 Map {
   "Props.h" => "
 /**
@@ -174,7 +174,7 @@ class EventsNativeComponentProps final : public ViewProps {
 }
 `;
 
-exports[`GeneratePropsH can generate fixture SINGLE_COMPONENT_WITH_FLOAT_PROPS 1`] = `
+exports[`GeneratePropsH can generate fixture FLOAT_PROPS 1`] = `
 Map {
   "Props.h" => "
 /**
@@ -209,7 +209,7 @@ const Float blurRadius5{1.0};
 }
 `;
 
-exports[`GeneratePropsH can generate fixture SINGLE_COMPONENT_WITH_INTEGER_PROPS 1`] = `
+exports[`GeneratePropsH can generate fixture INTEGER_PROPS 1`] = `
 Map {
   "Props.h" => "
 /**
@@ -242,7 +242,7 @@ const int progress3{10};
 }
 `;
 
-exports[`GeneratePropsH can generate fixture SINGLE_COMPONENT_WITH_STRING_PROP 1`] = `
+exports[`GeneratePropsH can generate fixture STRING_PROP 1`] = `
 Map {
   "Props.h" => "
 /**

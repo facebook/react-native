@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`GenerateShadowNodeH can generate fixture SINGLE_COMPONENT_WITH_BOOLEAN_PROP 1`] = `
+exports[`GenerateShadowNodeH can generate fixture BOOLEAN_PROP 1`] = `
 Map {
   "ShadowNodes.h" => "
 /**
@@ -12,7 +12,7 @@ Map {
 
 #pragma once
 
-#include <react/components/SINGLE_COMPONENT_WITH_BOOLEAN_PROP/Props.h>
+#include <react/components/BOOLEAN_PROP/Props.h>
 #include <react/components/view/ConcreteViewShadowNode.h>
 
 namespace facebook {
@@ -33,7 +33,7 @@ using BooleanPropNativeComponentShadowNode = ConcreteViewShadowNode<
 }
 `;
 
-exports[`GenerateShadowNodeH can generate fixture SINGLE_COMPONENT_WITH_COLOR_PROP 1`] = `
+exports[`GenerateShadowNodeH can generate fixture COLOR_PROP 1`] = `
 Map {
   "ShadowNodes.h" => "
 /**
@@ -45,7 +45,7 @@ Map {
 
 #pragma once
 
-#include <react/components/SINGLE_COMPONENT_WITH_COLOR_PROP/Props.h>
+#include <react/components/COLOR_PROP/Props.h>
 #include <react/components/view/ConcreteViewShadowNode.h>
 
 namespace facebook {
@@ -66,7 +66,7 @@ using ColorPropNativeComponentShadowNode = ConcreteViewShadowNode<
 }
 `;
 
-exports[`GenerateShadowNodeH can generate fixture SINGLE_COMPONENT_WITH_ENUM_PROP 1`] = `
+exports[`GenerateShadowNodeH can generate fixture ENUM_PROP 1`] = `
 Map {
   "ShadowNodes.h" => "
 /**
@@ -78,7 +78,7 @@ Map {
 
 #pragma once
 
-#include <react/components/SINGLE_COMPONENT_WITH_ENUM_PROP/Props.h>
+#include <react/components/ENUM_PROP/Props.h>
 #include <react/components/view/ConcreteViewShadowNode.h>
 
 namespace facebook {
@@ -99,7 +99,7 @@ using EnumPropsNativeComponentShadowNode = ConcreteViewShadowNode<
 }
 `;
 
-exports[`GenerateShadowNodeH can generate fixture SINGLE_COMPONENT_WITH_EVENT_NESTED_OBJECT_PROPS 1`] = `
+exports[`GenerateShadowNodeH can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
 Map {
   "ShadowNodes.h" => "
 /**
@@ -111,8 +111,8 @@ Map {
 
 #pragma once
 
-#include <react/components/SINGLE_COMPONENT_WITH_EVENT_NESTED_OBJECT_PROPS/EventEmitters.h>
-#include <react/components/SINGLE_COMPONENT_WITH_EVENT_NESTED_OBJECT_PROPS/Props.h>
+#include <react/components/EVENT_NESTED_OBJECT_PROPS/EventEmitters.h>
+#include <react/components/EVENT_NESTED_OBJECT_PROPS/Props.h>
 #include <react/components/view/ConcreteViewShadowNode.h>
 
 namespace facebook {
@@ -134,7 +134,7 @@ EventsNestedObjectNativeComponentEventEmitter>;
 }
 `;
 
-exports[`GenerateShadowNodeH can generate fixture SINGLE_COMPONENT_WITH_EVENT_PROPS 1`] = `
+exports[`GenerateShadowNodeH can generate fixture EVENT_PROPS 1`] = `
 Map {
   "ShadowNodes.h" => "
 /**
@@ -146,8 +146,8 @@ Map {
 
 #pragma once
 
-#include <react/components/SINGLE_COMPONENT_WITH_EVENT_PROPS/EventEmitters.h>
-#include <react/components/SINGLE_COMPONENT_WITH_EVENT_PROPS/Props.h>
+#include <react/components/EVENT_PROPS/EventEmitters.h>
+#include <react/components/EVENT_PROPS/Props.h>
 #include <react/components/view/ConcreteViewShadowNode.h>
 
 namespace facebook {
@@ -169,7 +169,7 @@ EventsNativeComponentEventEmitter>;
 }
 `;
 
-exports[`GenerateShadowNodeH can generate fixture SINGLE_COMPONENT_WITH_FLOAT_PROPS 1`] = `
+exports[`GenerateShadowNodeH can generate fixture FLOAT_PROPS 1`] = `
 Map {
   "ShadowNodes.h" => "
 /**
@@ -181,7 +181,7 @@ Map {
 
 #pragma once
 
-#include <react/components/SINGLE_COMPONENT_WITH_FLOAT_PROPS/Props.h>
+#include <react/components/FLOAT_PROPS/Props.h>
 #include <react/components/view/ConcreteViewShadowNode.h>
 
 namespace facebook {
@@ -202,7 +202,7 @@ using FloatPropNativeComponentShadowNode = ConcreteViewShadowNode<
 }
 `;
 
-exports[`GenerateShadowNodeH can generate fixture SINGLE_COMPONENT_WITH_INTEGER_PROPS 1`] = `
+exports[`GenerateShadowNodeH can generate fixture INTEGER_PROPS 1`] = `
 Map {
   "ShadowNodes.h" => "
 /**
@@ -214,7 +214,7 @@ Map {
 
 #pragma once
 
-#include <react/components/SINGLE_COMPONENT_WITH_INTEGER_PROPS/Props.h>
+#include <react/components/INTEGER_PROPS/Props.h>
 #include <react/components/view/ConcreteViewShadowNode.h>
 
 namespace facebook {
@@ -235,7 +235,7 @@ using IntegerPropNativeComponentShadowNode = ConcreteViewShadowNode<
 }
 `;
 
-exports[`GenerateShadowNodeH can generate fixture SINGLE_COMPONENT_WITH_STRING_PROP 1`] = `
+exports[`GenerateShadowNodeH can generate fixture STRING_PROP 1`] = `
 Map {
   "ShadowNodes.h" => "
 /**
@@ -247,7 +247,7 @@ Map {
 
 #pragma once
 
-#include <react/components/SINGLE_COMPONENT_WITH_STRING_PROP/Props.h>
+#include <react/components/STRING_PROP/Props.h>
 #include <react/components/view/ConcreteViewShadowNode.h>
 
 namespace facebook {

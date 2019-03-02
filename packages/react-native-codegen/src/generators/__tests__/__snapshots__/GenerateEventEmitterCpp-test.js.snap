@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`GenerateEventEmitterCpp can generate fixture SINGLE_COMPONENT_WITH_BOOLEAN_PROP 1`] = `
+exports[`GenerateEventEmitterCpp can generate fixture BOOLEAN_PROP 1`] = `
 Map {
   "EventEmitters.cpp" => "
 /**
@@ -10,7 +10,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/SINGLE_COMPONENT_WITH_BOOLEAN_PROP/EventEmitters.h>
+#include <react/components/BOOLEAN_PROP/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -23,7 +23,7 @@ namespace react {
 }
 `;
 
-exports[`GenerateEventEmitterCpp can generate fixture SINGLE_COMPONENT_WITH_COLOR_PROP 1`] = `
+exports[`GenerateEventEmitterCpp can generate fixture COLOR_PROP 1`] = `
 Map {
   "EventEmitters.cpp" => "
 /**
@@ -33,7 +33,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/SINGLE_COMPONENT_WITH_COLOR_PROP/EventEmitters.h>
+#include <react/components/COLOR_PROP/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -46,7 +46,7 @@ namespace react {
 }
 `;
 
-exports[`GenerateEventEmitterCpp can generate fixture SINGLE_COMPONENT_WITH_ENUM_PROP 1`] = `
+exports[`GenerateEventEmitterCpp can generate fixture ENUM_PROP 1`] = `
 Map {
   "EventEmitters.cpp" => "
 /**
@@ -56,7 +56,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/SINGLE_COMPONENT_WITH_ENUM_PROP/EventEmitters.h>
+#include <react/components/ENUM_PROP/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -69,7 +69,7 @@ namespace react {
 }
 `;
 
-exports[`GenerateEventEmitterCpp can generate fixture SINGLE_COMPONENT_WITH_EVENT_NESTED_OBJECT_PROPS 1`] = `
+exports[`GenerateEventEmitterCpp can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
 Map {
   "EventEmitters.cpp" => "
 /**
@@ -79,7 +79,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/SINGLE_COMPONENT_WITH_EVENT_NESTED_OBJECT_PROPS/EventEmitters.h>
+#include <react/components/EVENT_NESTED_OBJECT_PROPS/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -110,7 +110,7 @@ location.setProperty(runtime, \\"y\\", event.location.y);
 }
 `;
 
-exports[`GenerateEventEmitterCpp can generate fixture SINGLE_COMPONENT_WITH_EVENT_PROPS 1`] = `
+exports[`GenerateEventEmitterCpp can generate fixture EVENT_PROPS 1`] = `
 Map {
   "EventEmitters.cpp" => "
 /**
@@ -120,7 +120,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/SINGLE_COMPONENT_WITH_EVENT_PROPS/EventEmitters.h>
+#include <react/components/EVENT_PROPS/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -149,7 +149,7 @@ void EventsNativeComponentEventEmitter::onEventDirect(EventsNativeComponentOnEve
 }
 `;
 
-exports[`GenerateEventEmitterCpp can generate fixture SINGLE_COMPONENT_WITH_FLOAT_PROPS 1`] = `
+exports[`GenerateEventEmitterCpp can generate fixture FLOAT_PROPS 1`] = `
 Map {
   "EventEmitters.cpp" => "
 /**
@@ -159,7 +159,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/SINGLE_COMPONENT_WITH_FLOAT_PROPS/EventEmitters.h>
+#include <react/components/FLOAT_PROPS/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -172,7 +172,7 @@ namespace react {
 }
 `;
 
-exports[`GenerateEventEmitterCpp can generate fixture SINGLE_COMPONENT_WITH_INTEGER_PROPS 1`] = `
+exports[`GenerateEventEmitterCpp can generate fixture INTEGER_PROPS 1`] = `
 Map {
   "EventEmitters.cpp" => "
 /**
@@ -182,7 +182,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/SINGLE_COMPONENT_WITH_INTEGER_PROPS/EventEmitters.h>
+#include <react/components/INTEGER_PROPS/EventEmitters.h>
 
 namespace facebook {
 namespace react {
@@ -195,7 +195,7 @@ namespace react {
 }
 `;
 
-exports[`GenerateEventEmitterCpp can generate fixture SINGLE_COMPONENT_WITH_STRING_PROP 1`] = `
+exports[`GenerateEventEmitterCpp can generate fixture STRING_PROP 1`] = `
 Map {
   "EventEmitters.cpp" => "
 /**
@@ -205,7 +205,7 @@ Map {
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <react/components/SINGLE_COMPONENT_WITH_STRING_PROP/EventEmitters.h>
+#include <react/components/STRING_PROP/EventEmitters.h>
 
 namespace facebook {
 namespace react {

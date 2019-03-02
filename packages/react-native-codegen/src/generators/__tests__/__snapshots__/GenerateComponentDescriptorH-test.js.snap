@@ -12,7 +12,7 @@ Map {
 
 #pragma once
 
-#include <react/components/SINGLE_COMPONENT_WITH_BOOLEAN_PROP/ShadowNodes.h>
+#include <react/components/BOOLEAN_PROP/ShadowNodes.h>
 #include <react/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {
@@ -38,7 +38,7 @@ Map {
 
 #pragma once
 
-#include <react/components/SINGLE_COMPONENT_WITH_COLOR_PROP/ShadowNodes.h>
+#include <react/components/COLOR_PROP/ShadowNodes.h>
 #include <react/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {
@@ -64,7 +64,7 @@ Map {
 
 #pragma once
 
-#include <react/components/SINGLE_COMPONENT_WITH_STRING_PROPS/ShadowNodes.h>
+#include <react/components/STRING_PROPS/ShadowNodes.h>
 #include <react/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {
@@ -90,7 +90,7 @@ Map {
 
 #pragma once
 
-#include <react/components/SINGLE_COMPONENT_WITH_ENUM_PROP/ShadowNodes.h>
+#include <react/components/ENUM_PROP/ShadowNodes.h>
 #include <react/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {
@@ -116,7 +116,7 @@ Map {
 
 #pragma once
 
-#include <react/components/SINGLE_COMPONENT_WITH_EVENT_PROPS/ShadowNodes.h>
+#include <react/components/EVENT_PROPS/ShadowNodes.h>
 #include <react/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {
@@ -142,7 +142,7 @@ Map {
 
 #pragma once
 
-#include <react/components/SINGLE_COMPONENT_WITH_FLOAT_PROPS/ShadowNodes.h>
+#include <react/components/FLOAT_PROPS/ShadowNodes.h>
 #include <react/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {
@@ -168,7 +168,7 @@ Map {
 
 #pragma once
 
-#include <react/components/SINGLE_COMPONENT_WITH_INTEGER_PROPS/ShadowNodes.h>
+#include <react/components/INTEGER_PROPS/ShadowNodes.h>
 #include <react/core/ConcreteComponentDescriptor.h>
 
 namespace facebook {

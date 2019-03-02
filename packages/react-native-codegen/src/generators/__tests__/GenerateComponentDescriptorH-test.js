@@ -14,79 +14,46 @@
 const generator = require('../GenerateComponentDescriptorH.js');
 
 const {
-  SINGLE_COMPONENT_WITH_BOOLEAN_PROP,
-  SINGLE_COMPONENT_WITH_STRING_PROP,
-  SINGLE_COMPONENT_WITH_INTEGER_PROPS,
-  SINGLE_COMPONENT_WITH_FLOAT_PROPS,
-  SINGLE_COMPONENT_WITH_COLOR_PROP,
-  SINGLE_COMPONENT_WITH_ENUM_PROP,
-  SINGLE_COMPONENT_WITH_EVENT_PROPS,
+  BOOLEAN_PROP,
+  STRING_PROP,
+  INTEGER_PROPS,
+  FLOAT_PROPS,
+  COLOR_PROP,
+  ENUM_PROP,
+  EVENT_PROPS,
   TWO_COMPONENTS_SAME_FILE,
   TWO_COMPONENTS_DIFFERENT_FILES,
 } = require('../__test_fixtures__/fixtures.js');
 
 describe('GenerateComponentDescriptorH', () => {
   it('can generate a single boolean prop', () => {
-    expect(
-      generator.generate(
-        'SINGLE_COMPONENT_WITH_BOOLEAN_PROP',
-        SINGLE_COMPONENT_WITH_BOOLEAN_PROP,
-      ),
-    ).toMatchSnapshot();
+    expect(generator.generate('BOOLEAN_PROP', BOOLEAN_PROP)).toMatchSnapshot();
   });
 
   it('can generate a single string prop', () => {
-    expect(
-      generator.generate(
-        'SINGLE_COMPONENT_WITH_STRING_PROPS',
-        SINGLE_COMPONENT_WITH_STRING_PROP,
-      ),
-    ).toMatchSnapshot();
+    expect(generator.generate('STRING_PROPS', STRING_PROP)).toMatchSnapshot();
   });
 
   it('can generate integer props', () => {
     expect(
-      generator.generate(
-        'SINGLE_COMPONENT_WITH_INTEGER_PROPS',
-        SINGLE_COMPONENT_WITH_INTEGER_PROPS,
-      ),
+      generator.generate('INTEGER_PROPS', INTEGER_PROPS),
     ).toMatchSnapshot();
   });
 
   it('can generate float props', () => {
-    expect(
-      generator.generate(
-        'SINGLE_COMPONENT_WITH_FLOAT_PROPS',
-        SINGLE_COMPONENT_WITH_FLOAT_PROPS,
-      ),
-    ).toMatchSnapshot();
+    expect(generator.generate('FLOAT_PROPS', FLOAT_PROPS)).toMatchSnapshot();
   });
 
   it('can generate a single native primitive prop', () => {
-    expect(
-      generator.generate(
-        'SINGLE_COMPONENT_WITH_COLOR_PROP',
-        SINGLE_COMPONENT_WITH_COLOR_PROP,
-      ),
-    ).toMatchSnapshot();
+    expect(generator.generate('COLOR_PROP', COLOR_PROP)).toMatchSnapshot();
   });
 
   it('can generate enum props', () => {
-    expect(
-      generator.generate(
-        'SINGLE_COMPONENT_WITH_ENUM_PROP',
-        SINGLE_COMPONENT_WITH_ENUM_PROP,
-      ),
-    ).toMatchSnapshot();
+    expect(generator.generate('ENUM_PROP', ENUM_PROP)).toMatchSnapshot();
   });
 
   it('can generate events', () => {
-    expect(
-      generator.generate(
-        'SINGLE_COMPONENT_WITH_EVENT_PROPS',
-        SINGLE_COMPONENT_WITH_EVENT_PROPS,
-      ),
-    ).toMatchSnapshot();
+    expect(generator.generate('EVENT_PROPS', EVENT_PROPS)).toMatchSnapshot();
   });
 
   it('supports two components from same module', () => {

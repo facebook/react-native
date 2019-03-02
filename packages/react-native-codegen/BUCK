@@ -44,35 +44,35 @@ fb_native.sh_binary(
 )
 
 rn_codegen_test(
-    fixture_name = "SINGLE_COMPONENT_WITH_BOOLEAN_PROP",
+    fixture_name = "BOOLEAN_PROP",
 )
 
 rn_codegen_test(
-    fixture_name = "SINGLE_COMPONENT_WITH_STRING_PROP",
+    fixture_name = "STRING_PROP",
 )
 
 rn_codegen_test(
-    fixture_name = "SINGLE_COMPONENT_WITH_INTEGER_PROPS",
+    fixture_name = "INTEGER_PROPS",
 )
 
 rn_codegen_test(
-    fixture_name = "SINGLE_COMPONENT_WITH_FLOAT_PROPS",
+    fixture_name = "FLOAT_PROPS",
 )
 
 rn_codegen_test(
-    fixture_name = "SINGLE_COMPONENT_WITH_COLOR_PROP",
+    fixture_name = "COLOR_PROP",
 )
 
 rn_codegen_test(
-    fixture_name = "SINGLE_COMPONENT_WITH_ENUM_PROP",
+    fixture_name = "ENUM_PROP",
 )
 
 rn_codegen_test(
-    fixture_name = "SINGLE_COMPONENT_WITH_EVENT_PROPS",
+    fixture_name = "EVENT_PROPS",
 )
 
 rn_codegen_test(
-    fixture_name = "SINGLE_COMPONENT_WITH_EVENT_NESTED_OBJECT_PROPS",
+    fixture_name = "EVENT_NESTED_OBJECT_PROPS",
 )
 
 rn_codegen_test(
@@ -99,14 +99,14 @@ fb_xplat_cxx_binary(
     ],
     visibility = ["PUBLIC"],
     deps = [
-        ":generated_components-SINGLE_COMPONENT_WITH_BOOLEAN_PROP",
-        ":generated_components-SINGLE_COMPONENT_WITH_COLOR_PROP",
-        ":generated_components-SINGLE_COMPONENT_WITH_ENUM_PROP",
-        ":generated_components-SINGLE_COMPONENT_WITH_EVENT_NESTED_OBJECT_PROPS",
-        ":generated_components-SINGLE_COMPONENT_WITH_EVENT_PROPS",
-        ":generated_components-SINGLE_COMPONENT_WITH_FLOAT_PROPS",
-        ":generated_components-SINGLE_COMPONENT_WITH_INTEGER_PROPS",
-        ":generated_components-SINGLE_COMPONENT_WITH_STRING_PROP",
+        ":generated_components-BOOLEAN_PROP",
+        ":generated_components-COLOR_PROP",
+        ":generated_components-ENUM_PROP",
+        ":generated_components-EVENT_NESTED_OBJECT_PROPS",
+        ":generated_components-EVENT_PROPS",
+        ":generated_components-FLOAT_PROPS",
+        ":generated_components-INTEGER_PROPS",
+        ":generated_components-STRING_PROP",
         ":generated_components-TWO_COMPONENTS_DIFFERENT_FILES",
         ":generated_components-TWO_COMPONENTS_SAME_FILE",
     ],
@@ -131,14 +131,14 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
-        ":generated_components-SINGLE_COMPONENT_WITH_BOOLEAN_PROP",
-        ":generated_components-SINGLE_COMPONENT_WITH_COLOR_PROP",
-        ":generated_components-SINGLE_COMPONENT_WITH_ENUM_PROP",
-        ":generated_components-SINGLE_COMPONENT_WITH_EVENT_NESTED_OBJECT_PROPS",
-        ":generated_components-SINGLE_COMPONENT_WITH_EVENT_PROPS",
-        ":generated_components-SINGLE_COMPONENT_WITH_FLOAT_PROPS",
-        ":generated_components-SINGLE_COMPONENT_WITH_INTEGER_PROPS",
-        ":generated_components-SINGLE_COMPONENT_WITH_STRING_PROP",
+        ":generated_components-BOOLEAN_PROP",
+        ":generated_components-COLOR_PROP",
+        ":generated_components-ENUM_PROP",
+        ":generated_components-EVENT_NESTED_OBJECT_PROPS",
+        ":generated_components-EVENT_PROPS",
+        ":generated_components-FLOAT_PROPS",
+        ":generated_components-INTEGER_PROPS",
+        ":generated_components-STRING_PROP",
         ":generated_components-TWO_COMPONENTS_DIFFERENT_FILES",
         ":generated_components-TWO_COMPONENTS_SAME_FILE",
     ],

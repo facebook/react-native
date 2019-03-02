@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`GenerateEventEmitterH can generate fixture SINGLE_COMPONENT_WITH_BOOLEAN_PROP 1`] = `
+exports[`GenerateEventEmitterH can generate fixture BOOLEAN_PROP 1`] = `
 Map {
   "EventEmitters.h" => "
 /**
@@ -24,7 +24,7 @@ namespace react {
 }
 `;
 
-exports[`GenerateEventEmitterH can generate fixture SINGLE_COMPONENT_WITH_COLOR_PROP 1`] = `
+exports[`GenerateEventEmitterH can generate fixture COLOR_PROP 1`] = `
 Map {
   "EventEmitters.h" => "
 /**
@@ -48,7 +48,7 @@ namespace react {
 }
 `;
 
-exports[`GenerateEventEmitterH can generate fixture SINGLE_COMPONENT_WITH_ENUM_PROP 1`] = `
+exports[`GenerateEventEmitterH can generate fixture ENUM_PROP 1`] = `
 Map {
   "EventEmitters.h" => "
 /**
@@ -72,7 +72,7 @@ namespace react {
 }
 `;
 
-exports[`GenerateEventEmitterH can generate fixture SINGLE_COMPONENT_WITH_EVENT_NESTED_OBJECT_PROPS 1`] = `
+exports[`GenerateEventEmitterH can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
 Map {
   "EventEmitters.h" => "
 /**
@@ -115,7 +115,7 @@ class EventsNestedObjectNativeComponentEventEmitter : public ViewEventEmitter {
 }
 `;
 
-exports[`GenerateEventEmitterH can generate fixture SINGLE_COMPONENT_WITH_EVENT_PROPS 1`] = `
+exports[`GenerateEventEmitterH can generate fixture EVENT_PROPS 1`] = `
 Map {
   "EventEmitters.h" => "
 /**
@@ -157,7 +157,7 @@ void onEventDirect(EventsNativeComponentOnEventDirectStruct value) const;
 }
 `;
 
-exports[`GenerateEventEmitterH can generate fixture SINGLE_COMPONENT_WITH_FLOAT_PROPS 1`] = `
+exports[`GenerateEventEmitterH can generate fixture FLOAT_PROPS 1`] = `
 Map {
   "EventEmitters.h" => "
 /**
@@ -181,7 +181,7 @@ namespace react {
 }
 `;
 
-exports[`GenerateEventEmitterH can generate fixture SINGLE_COMPONENT_WITH_INTEGER_PROPS 1`] = `
+exports[`GenerateEventEmitterH can generate fixture INTEGER_PROPS 1`] = `
 Map {
   "EventEmitters.h" => "
 /**
@@ -205,7 +205,7 @@ namespace react {
 }
 `;
 
-exports[`GenerateEventEmitterH can generate fixture SINGLE_COMPONENT_WITH_STRING_PROP 1`] = `
+exports[`GenerateEventEmitterH can generate fixture STRING_PROP 1`] = `
 Map {
   "EventEmitters.h" => "
 /**
