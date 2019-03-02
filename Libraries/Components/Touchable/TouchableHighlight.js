@@ -161,6 +161,8 @@ type Props = $ReadOnly<{|
  *
  */
 class TouchableHighlight extends React.Component<Props> {
+  static defaultProps = DEFAULT_PROPS;
+
   constructor(props: Props) {
     super(props);
 
@@ -199,7 +201,7 @@ class TouchableHighlight extends React.Component<Props> {
     clearTimeout(this._hideTimeout);
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps: any) {
     ensurePositiveDelayProps(nextProps);
   }
 
@@ -448,8 +450,6 @@ TouchableHighlight.propTypes = {
    */
   testOnly_pressed: PropTypes.bool,
 };
-
-TouchableHighlight.defaultProps = DEFAULT_PROPS;
 
 reactMixin.onClass(TouchableHighlight, NativeMethodsMixin);
 reactMixin.onClass(

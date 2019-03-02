@@ -53,6 +53,11 @@ type Props = $ReadOnly<{|
  */
 
 class TouchableBounce extends React.Component<Props, State> {
+  static defaultProps = {
+    releaseBounciness: 10,
+    releaseVelocity: 10,
+  };
+
   constructor(props: Props) {
     super(props);
 
@@ -204,11 +209,6 @@ TouchableBounce.propTypes = {
    * rounded corners match the wrapped component.
    */
   style: DeprecatedViewPropTypes.style,
-};
-
-TouchableBounce.defaultProps = {
-  releaseBounciness: 10,
-  releaseVelocity: 10,
 };
 
 reactMixin.onClass(TouchableBounce, NativeMethodsMixin);

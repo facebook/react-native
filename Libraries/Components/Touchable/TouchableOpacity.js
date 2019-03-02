@@ -159,7 +159,7 @@ class TouchableOpacity extends React.Component<Props> {
     ensurePositiveDelayProps(this.props);
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps: any) {
     ensurePositiveDelayProps(nextProps);
   }
 

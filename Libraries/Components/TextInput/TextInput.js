@@ -432,9 +432,9 @@ class TextInput extends React.Component<Props> {
     focusTextInput: TextInputState.focusTextInput,
     blurTextInput: TextInputState.blurTextInput,
   } = {
-    currentlyFocusedField: TextInputState.currentlyFocusedField,
-    focusTextInput: TextInputState.focusTextInput,
-    blurTextInput: TextInputState.blurTextInput,
+    currentlyFocusedField: undefined,
+    focusTextInput: undefined,
+    blurTextInput: undefined,
   };
 
   componentDidMount() {
