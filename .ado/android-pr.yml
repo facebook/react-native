@@ -3,7 +3,8 @@ name: $(Date:yyyyMMdd).$(Rev:.r)
 
 trigger: none # will disable CI builds entirely
 
-pr: none # disable on PRs until stable
+pr:
+- master
 
 jobs:
   - job: AndroidRNPR
