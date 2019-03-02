@@ -25,6 +25,7 @@ const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 const UIManager = require('UIManager');
 
 const invariant = require('invariant');
+const reactMixin = require('react-mixin');
 const requireNativeComponent = require('requireNativeComponent');
 const warning = require('fbjs/lib/warning');
 
@@ -409,7 +410,7 @@ const emptyFunctionThatReturnsTrue = () => true;
  *
  */
 
-class TextInput extends React.Component {
+class TextInput extends React.Component<Props> {
   _inputRef: any;
   _focusSubscription: ?Function;
   _lastNativeText: ?string;
@@ -1324,11 +1325,7 @@ TextInput.defaultProps = {
   underlineColorAndroid: 'transparent',
 };
 
-/**
- * `NativeMethodsMixin` will look for this when invoking `setNativeProps`. We
- * make `this` look like an actual native component class.
- */
-TextInput.mixins = [NativeMethodsMixin];
+reactMixin.onClass(TextInput, NativeMethodsMixin);
 
 class InternalTextInputType extends ReactNative.NativeComponent<Props> {
   clear() {}
