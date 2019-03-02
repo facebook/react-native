@@ -17,7 +17,7 @@ const Touchable = require('Touchable');
 const View = require('View');
 
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
-const reactMixin = require('react-mixin');
+const reactMixin = require('@ericlewis/react-mixin');
 
 const {
   DeprecatedAccessibilityComponentTypes,
@@ -85,31 +85,11 @@ class TouchableWithoutFeedback extends React.Component<Props> {
   constructor(props) {
     super(props);
 
-    this.touchableHandleStartShouldSetResponder = this.touchableHandleStartShouldSetResponder.bind(
-      this,
-    );
-
-    this.touchableHandleResponderGrant = this.touchableHandleResponderGrant.bind(
-      this,
-    );
-
-    this.touchableHandleResponderMove = this.touchableHandleResponderMove.bind(
-      this,
-    );
-
-    this.touchableHandleResponderRelease = this.touchableHandleResponderRelease.bind(
-      this,
-    );
-
-    this.touchableHandleResponderTerminationRequest = this.touchableHandleResponderTerminationRequest.bind(
-      this,
-    );
-
-    this.touchableHandleResponderTerminate = this.touchableHandleResponderTerminate.bind(
-      this,
-    );
-
-    this._handleQueryLayout = this._handleQueryLayout.bind(this);
+    Object.keys(Touchable.Mixin).forEach(name => {
+      if (this[name] && this[name].bind) {
+        this[name] = this[name].bind(this);
+      }
+    });
 
     this.state = this.touchableGetInitialState();
   }

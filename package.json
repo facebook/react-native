@@ -81,10 +81,10 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0",
+    "@ericlewis/react-mixin": "6.0.1",
     "@react-native-community/cli": "^1.1.0",
     "art": "^0.10.0",
     "base64-js": "^1.1.2",
-    "connect": "^3.6.5",
     "escape-string-regexp": "^1.0.5",
     "event-target-shim": "^1.0.5",
     "fbjs": "^1.0.0",
@@ -99,7 +99,6 @@
     "prop-types": "^15.5.8",
     "react-clone-referenced-element": "^1.1.0",
     "react-devtools-core": "^3.6.0",
-    "react-mixin": "^5.0.0",
     "regenerator-runtime": "^0.11.0",
     "stacktrace-parser": "^0.1.3",
     "yargs": "^9.0.0"
@@ -111,6 +110,7 @@
     "async": "^2.4.0",
     "babel-eslint": "9.0.0",
     "clang-format": "^1.2.4",
+    "connect": "^3.6.5",
     "coveralls": "^3.0.2",
     "detox": "9.0.4",
     "eslint": "5.1.0",

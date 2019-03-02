@@ -22,7 +22,7 @@ const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 const View = require('View');
 
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
-const reactMixin = require('react-mixin');
+const reactMixin = require('@ericlewis/react-mixin');
 
 import type {PressEvent} from 'CoreEventTypes';
 import type {ViewStyleProp} from 'StyleSheet';
@@ -160,40 +160,19 @@ type Props = $ReadOnly<{|
  * ```
  *
  */
-
 class TouchableHighlight extends React.Component<Props> {
   constructor(props) {
     super(props);
 
-    this.touchableHandleStartShouldSetResponder = this.touchableHandleStartShouldSetResponder.bind(
-      this,
-    );
-
-    this.touchableHandleResponderGrant = this.touchableHandleResponderGrant.bind(
-      this,
-    );
-
-    this.touchableHandleResponderMove = this.touchableHandleResponderMove.bind(
-      this,
-    );
-
-    this.touchableHandleResponderRelease = this.touchableHandleResponderRelease.bind(
-      this,
-    );
-
-    this.touchableHandleResponderTerminationRequest = this.touchableHandleResponderTerminationRequest.bind(
-      this,
-    );
-
-    this.touchableHandleResponderTerminate = this.touchableHandleResponderTerminate.bind(
-      this,
-    );
-
-    this._handleQueryLayout = this._handleQueryLayout.bind(this);
+    Object.keys(Touchable.Mixin.withoutDefaultFocusAndBlur).forEach(name => {
+      if (this[name] && this[name].bind) {
+        this[name] = this[name].bind(this);
+      }
+    });
 
     if (this.props.testOnly_pressed) {
       this.state = {
-        ...Touchable.Mixin.touchableGetInitialState(),
+        ...this.touchableGetInitialState(),
         extraChildStyle: {
           opacity: this.props.activeOpacity,
         },
@@ -203,7 +182,7 @@ class TouchableHighlight extends React.Component<Props> {
       };
     } else {
       this.state = {
-        ...Touchable.Mixin.touchableGetInitialState(),
+        ...this.touchableGetInitialState(),
         extraChildStyle: null,
         extraUnderlayStyle: null,
       };

@@ -25,7 +25,7 @@ const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 const UIManager = require('UIManager');
 
 const invariant = require('invariant');
-const reactMixin = require('react-mixin');
+const reactMixin = require('@ericlewis/react-mixin');
 const requireNativeComponent = require('requireNativeComponent');
 const warning = require('fbjs/lib/warning');
 
@@ -410,7 +410,7 @@ const emptyFunctionThatReturnsTrue = () => true;
  *
  */
 
-class TextInput extends React.Component<Props> {
+class TextInput extends React.Component<Props, State> {
   static defaultProps = {
     allowFontScaling: true,
     rejectResponderTermination: true,
@@ -423,9 +423,15 @@ class TextInput extends React.Component<Props> {
   _lastNativeSelection: ?Selection;
   _rafId: ?AnimationFrameID;
 
+  focus: () => void;
+  blur: () => void;
   setNativeProps: any;
 
-  state = {
+  state: {
+    currentlyFocusedField: TextInputState.currentlyFocusedField,
+    focusTextInput: TextInputState.focusTextInput,
+    blurTextInput: TextInputState.blurTextInput,
+  } = {
     currentlyFocusedField: TextInputState.currentlyFocusedField,
     focusTextInput: TextInputState.focusTextInput,
     blurTextInput: TextInputState.blurTextInput,

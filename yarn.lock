@@ -870,6 +870,11 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
+"@ericlewis/react-mixin@6.0.1":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/@ericlewis/react-mixin/-/react-mixin-6.0.1.tgz#fd8a1f1c10d723dcf1c38e3a375e45ae928e7e9e"
+  integrity sha512-hkqkAYtNdN/ckd02T2/Il5QCNFiTpgwh8dOAydwKC6hkEEBxW3Od9Au4JD9h2/kse3Iwi/9IqOntKpA9Ws6oLA==
+
 "@react-native-community/cli@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-1.1.0.tgz#aa915a86d3242923a77f3035b02103488fc6f91a"
@@ -5696,14 +5701,6 @@ react-is@^16.8.3:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.8.3.tgz#4ad8b029c2a718fc0cfc746c8d4e1b7221e5387d"
   integrity sha512-Y4rC1ZJmsxxkkPuMLwvKvlL1Zfpbcu+Bf4ZigkHup3v9EfdYhAlWAaVyA19olXq2o2mGn0w+dFKvk3pVVlYcIA==
 
-react-mixin@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/react-mixin/-/react-mixin-5.0.0.tgz#6c24db9b7e33d7d319544a61bd83707cf228d596"
-  integrity sha512-bGSF0/jTLDb5yW2BHYfN6PQg7FYRaNLXcUWisedAipL9+avrmrGKXfbOTMjE/heXcbS/po7ESTiahdF7iOKnGw==
-  dependencies:
-    object-assign "^4.0.1"
-    smart-mixin "^2.0.0"
-
 react-native-dummy@0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/react-native-dummy/-/react-native-dummy-0.2.0.tgz#fbf0ff7607506882648f1b07f76e57951b7b8f8a"
@@ -6303,11 +6300,6 @@ slide@^1.1.5:
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/slide/-/slide-1.1.6.tgz#56eb027d65b4d2dce6cb2e2d32c4d4afc9e1d707"
   integrity sha1-VusCfWW00tzmyy4tMsTUr8nh1wc=
-
-smart-mixin@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/smart-mixin/-/smart-mixin-2.0.0.tgz#a34a1055e32a75b30d2b4e3ca323dc99cb53f437"
-  integrity sha1-o0oQVeMqdbMNK048oyPcmctT9Dc=
 
 snapdragon-node@^2.0.1:
   version "2.1.1"

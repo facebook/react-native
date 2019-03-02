@@ -21,7 +21,7 @@ const View = require('View');
 
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 const processColor = require('processColor');
-const reactMixin = require('react-mixin');
+const reactMixin = require('@ericlewis/react-mixin');
 
 import type {PressEvent} from 'CoreEventTypes';
 
