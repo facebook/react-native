@@ -81,8 +81,17 @@ export type Props = $ReadOnly<{|
  * TouchableWithoutFeedback supports only one child.
  * If you wish to have several child components, wrap them in a View.
  */
-class TouchableWithoutFeedback extends React.Component<Props> {
-  touchableGetInitialState: any;
+class TouchableWithoutFeedback extends React.Component<Props, any> {
+  touchableHandleResponderGrant: ?(
+    event: PressEvent,
+    dispatchID: string,
+  ) => void;
+  touchableHandleStartShouldSetResponder: () => boolean;
+  touchableHandleResponderMove: ?(event: PressEvent) => void;
+  touchableHandleResponderRelease: ?(event: PressEvent) => void;
+  touchableHandleResponderTerminate: ?(event: PressEvent) => void;
+  touchableHandleResponderTerminationRequest: ?() => boolean;
+
   constructor(props: Props) {
     super(props);
 
@@ -92,7 +101,7 @@ class TouchableWithoutFeedback extends React.Component<Props> {
       }
     });
 
-    this.state = this.touchableGetInitialState();
+    this.state = Touchable.Mixin.touchableGetInitialState();
   }
 
   componentDidMount() {

@@ -56,6 +56,7 @@ type Props = $ReadOnly<{|
   ...IOSProps,
   ...AndroidProps,
 
+  delayPressOut: number,
   activeOpacity?: ?number,
   underlayColor?: ?ColorValue,
   style?: ?ViewStyleProp,
@@ -160,8 +161,10 @@ type Props = $ReadOnly<{|
  * ```
  *
  */
-class TouchableHighlight extends React.Component<Props> {
+class TouchableHighlight extends React.Component<Props, any> {
   static defaultProps = DEFAULT_PROPS;
+  _isMounted: boolean;
+  _hideTimeout: any;
 
   constructor(props: Props) {
     super(props);
@@ -174,7 +177,7 @@ class TouchableHighlight extends React.Component<Props> {
 
     if (this.props.testOnly_pressed) {
       this.state = {
-        ...this.touchableGetInitialState(),
+        ...Touchable.Mixin.touchableGetInitialState(),
         extraChildStyle: {
           opacity: this.props.activeOpacity,
         },
@@ -184,7 +187,7 @@ class TouchableHighlight extends React.Component<Props> {
       };
     } else {
       this.state = {
-        ...this.touchableGetInitialState(),
+        ...Touchable.Mixin.touchableGetInitialState(),
         extraChildStyle: null,
         extraUnderlayStyle: null,
       };
@@ -205,7 +208,7 @@ class TouchableHighlight extends React.Component<Props> {
     ensurePositiveDelayProps(nextProps);
   }
 
-  viewConfig: {
+  static viewConfig = {
     uiViewClassName: 'RCTView',
     validAttributes: ReactNativeViewAttributes.RCTView,
   };

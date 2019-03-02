@@ -135,10 +135,20 @@ type Props = $ReadOnly<{|
  * ```
  *
  */
-class TouchableOpacity extends React.Component<Props> {
+class TouchableOpacity extends React.Component<Props, any> {
   static defaultProps = {
     activeOpacity: 0.2,
   };
+
+  touchableHandleResponderGrant: ?(
+    event: PressEvent,
+    dispatchID: string,
+  ) => void;
+  touchableHandleStartShouldSetResponder: () => boolean;
+  touchableHandleResponderMove: ?(event: PressEvent) => void;
+  touchableHandleResponderRelease: ?(event: PressEvent) => void;
+  touchableHandleResponderTerminate: ?(event: PressEvent) => void;
+  touchableHandleResponderTerminationRequest: ?() => boolean;
 
   constructor(props: Props) {
     super(props);
@@ -150,7 +160,7 @@ class TouchableOpacity extends React.Component<Props> {
     });
 
     this.state = {
-      ...this.touchableGetInitialState(),
+      ...Touchable.Mixin.touchableGetInitialState(),
       anim: new Animated.Value(this._getChildStyleOpacityWithDefault()),
     };
   }

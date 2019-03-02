@@ -40,7 +40,7 @@ type Props = $ReadOnly<{|
   onPressAnimationComplete?: ?() => void,
   pressRetentionOffset?: ?EdgeInsetsProp,
   releaseVelocity?: ?number,
-  releaseBounciness?: ?number,
+  releaseBounciness: ?number,
   style?: ?ViewStyleProp,
 |}>;
 
@@ -58,6 +58,16 @@ class TouchableBounce extends React.Component<Props, State> {
     releaseVelocity: 10,
   };
 
+  touchableHandleResponderGrant: ?(
+    event: PressEvent,
+    dispatchID: string,
+  ) => void;
+  touchableHandleStartShouldSetResponder: () => boolean;
+  touchableHandleResponderMove: ?(event: PressEvent) => void;
+  touchableHandleResponderRelease: ?(event: PressEvent) => void;
+  touchableHandleResponderTerminate: ?(event: PressEvent) => void;
+  touchableHandleResponderTerminationRequest: ?() => boolean;
+
   constructor(props: Props) {
     super(props);
 
@@ -68,7 +78,7 @@ class TouchableBounce extends React.Component<Props, State> {
     });
 
     this.state = {
-      ...this.touchableGetInitialState(),
+      ...Touchable.Mixin.touchableGetInitialState(),
       scale: new Animated.Value(1),
     };
   }

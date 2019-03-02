@@ -148,7 +148,7 @@ class TouchableNativeFeedback extends React.Component {
     );
     this._handleQueryLayout = this._handleQueryLayout.bind(this);
 
-    this.state = this.touchableGetInitialState();
+    this.state = Touchable.Mixin.touchableGetInitialState();
   }
 
   componentDidMount() {
