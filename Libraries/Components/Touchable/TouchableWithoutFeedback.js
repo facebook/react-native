@@ -16,8 +16,8 @@ const PropTypes = require('prop-types');
 const Touchable = require('Touchable');
 const View = require('View');
 
-const createReactClass = require('create-react-class');
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
+const reactMixin = require('react-mixin');
 
 const {
   DeprecatedAccessibilityComponentTypes,
@@ -81,154 +81,91 @@ export type Props = $ReadOnly<{|
  * TouchableWithoutFeedback supports only one child.
  * If you wish to have several child components, wrap them in a View.
  */
-const TouchableWithoutFeedback = ((createReactClass({
-  displayName: 'TouchableWithoutFeedback',
-  mixins: [Touchable.Mixin],
+class TouchableWithoutFeedback extends React.Component<Props> {
+  constructor(props) {
+    super(props);
 
-  propTypes: {
-    accessible: PropTypes.bool,
-    accessibilityLabel: PropTypes.node,
-    accessibilityHint: PropTypes.string,
-    accessibilityComponentType: PropTypes.oneOf(
-      DeprecatedAccessibilityComponentTypes,
-    ),
-    accessibilityRole: PropTypes.oneOf(DeprecatedAccessibilityRoles),
-    accessibilityStates: PropTypes.arrayOf(
-      PropTypes.oneOf(DeprecatedAccessibilityStates),
-    ),
-    accessibilityTraits: PropTypes.oneOfType([
-      PropTypes.oneOf(DeprecatedAccessibilityTraits),
-      PropTypes.arrayOf(PropTypes.oneOf(DeprecatedAccessibilityTraits)),
-    ]),
-    /**
-     * When `accessible` is true (which is the default) this may be called when
-     * the OS-specific concept of "focus" occurs. Some platforms may not have
-     * the concept of focus.
-     */
-    onFocus: PropTypes.func,
-    /**
-     * When `accessible` is true (which is the default) this may be called when
-     * the OS-specific concept of "blur" occurs, meaning the element lost focus.
-     * Some platforms may not have the concept of blur.
-     */
-    onBlur: PropTypes.func,
-    /**
-     * If true, disable all interactions for this component.
-     */
-    disabled: PropTypes.bool,
-    /**
-     * Called when the touch is released, but not if cancelled (e.g. by a scroll
-     * that steals the responder lock).
-     */
-    onPress: PropTypes.func,
-    /**
-     * Called as soon as the touchable element is pressed and invoked even before onPress.
-     * This can be useful when making network requests.
-     */
-    onPressIn: PropTypes.func,
-    /**
-     * Called as soon as the touch is released even before onPress.
-     */
-    onPressOut: PropTypes.func,
-    /**
-     * Invoked on mount and layout changes with
-     *
-     *   `{nativeEvent: {layout: {x, y, width, height}}}`
-     */
-    onLayout: PropTypes.func,
+    this.touchableHandleStartShouldSetResponder = this.touchableHandleStartShouldSetResponder.bind(
+      this,
+    );
 
-    onLongPress: PropTypes.func,
+    this.touchableHandleResponderGrant = this.touchableHandleResponderGrant.bind(
+      this,
+    );
 
-    nativeID: PropTypes.string,
-    testID: PropTypes.string,
+    this.touchableHandleResponderMove = this.touchableHandleResponderMove.bind(
+      this,
+    );
 
-    /**
-     * Delay in ms, from the start of the touch, before onPressIn is called.
-     */
-    delayPressIn: PropTypes.number,
-    /**
-     * Delay in ms, from the release of the touch, before onPressOut is called.
-     */
-    delayPressOut: PropTypes.number,
-    /**
-     * Delay in ms, from onPressIn, before onLongPress is called.
-     */
-    delayLongPress: PropTypes.number,
-    /**
-     * When the scroll view is disabled, this defines how far your touch may
-     * move off of the button, before deactivating the button. Once deactivated,
-     * try moving it back and you'll see that the button is once again
-     * reactivated! Move it back and forth several times while the scroll view
-     * is disabled. Ensure you pass in a constant to reduce memory allocations.
-     */
-    pressRetentionOffset: DeprecatedEdgeInsetsPropType,
-    /**
-     * This defines how far your touch can start away from the button. This is
-     * added to `pressRetentionOffset` when moving off of the button.
-     * ** NOTE **
-     * The touch area never extends past the parent view bounds and the Z-index
-     * of sibling views always takes precedence if a touch hits two overlapping
-     * views.
-     */
-    hitSlop: DeprecatedEdgeInsetsPropType,
-  },
+    this.touchableHandleResponderRelease = this.touchableHandleResponderRelease.bind(
+      this,
+    );
 
-  getInitialState: function() {
-    return this.touchableGetInitialState();
-  },
+    this.touchableHandleResponderTerminationRequest = this.touchableHandleResponderTerminationRequest.bind(
+      this,
+    );
 
-  componentDidMount: function() {
+    this.touchableHandleResponderTerminate = this.touchableHandleResponderTerminate.bind(
+      this,
+    );
+
+    this._handleQueryLayout = this._handleQueryLayout.bind(this);
+
+    this.state = this.touchableGetInitialState();
+  }
+
+  componentDidMount() {
     ensurePositiveDelayProps(this.props);
-  },
+  }
 
-  UNSAFE_componentWillReceiveProps: function(nextProps: Object) {
+  UNSAFE_componentWillReceiveProps(nextProps: Object) {
     ensurePositiveDelayProps(nextProps);
-  },
+  }
 
   /**
    * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
    * defined on your component.
    */
-  touchableHandlePress: function(e: PressEvent) {
+  touchableHandlePress = (e: PressEvent) => {
     this.props.onPress && this.props.onPress(e);
-  },
+  };
 
-  touchableHandleActivePressIn: function(e: PressEvent) {
+  touchableHandleActivePressIn = (e: PressEvent) => {
     this.props.onPressIn && this.props.onPressIn(e);
-  },
+  };
 
-  touchableHandleActivePressOut: function(e: PressEvent) {
+  touchableHandleActivePressOut = (e: PressEvent) => {
     this.props.onPressOut && this.props.onPressOut(e);
-  },
+  };
 
-  touchableHandleLongPress: function(e: PressEvent) {
+  touchableHandleLongPress = (e: PressEvent) => {
     this.props.onLongPress && this.props.onLongPress(e);
-  },
+  };
 
-  touchableGetPressRectOffset: function(): typeof PRESS_RETENTION_OFFSET {
+  touchableGetPressRectOffset = (): typeof PRESS_RETENTION_OFFSET => {
     // $FlowFixMe Invalid prop usage
     return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
-  },
+  };
 
-  touchableGetHitSlop: function(): ?Object {
+  touchableGetHitSlop = (): ?Object => {
     return this.props.hitSlop;
-  },
+  };
 
-  touchableGetHighlightDelayMS: function(): number {
+  touchableGetHighlightDelayMS = (): number => {
     return this.props.delayPressIn || 0;
-  },
+  };
 
-  touchableGetLongPressDelayMS: function(): number {
+  touchableGetLongPressDelayMS = (): number => {
     return this.props.delayLongPress === 0
       ? 0
       : this.props.delayLongPress || 500;
-  },
+  };
 
-  touchableGetPressOutDelayMS: function(): number {
+  touchableGetPressOutDelayMS = (): number => {
     return this.props.delayPressOut || 0;
-  },
+  };
 
-  render: function(): React.Element<any> {
+  render(): React.Element<any> {
     // Note(avik): remove dynamic typecast once Flow has been upgraded
     // $FlowFixMe(>=0.41.0)
     const child = React.Children.only(this.props.children);
@@ -260,7 +197,98 @@ const TouchableWithoutFeedback = ((createReactClass({
       onResponderTerminate: this.touchableHandleResponderTerminate,
       children,
     });
-  },
-}): any): React.ComponentType<Props>);
+  }
+}
+
+TouchableWithoutFeedback.displayName = 'TouchableWithoutFeedback';
+TouchableWithoutFeedback.propTypes = {
+  accessible: PropTypes.bool,
+  accessibilityLabel: PropTypes.node,
+  accessibilityHint: PropTypes.string,
+  accessibilityComponentType: PropTypes.oneOf(
+    DeprecatedAccessibilityComponentTypes,
+  ),
+  accessibilityRole: PropTypes.oneOf(DeprecatedAccessibilityRoles),
+  accessibilityStates: PropTypes.arrayOf(
+    PropTypes.oneOf(DeprecatedAccessibilityStates),
+  ),
+  accessibilityTraits: PropTypes.oneOfType([
+    PropTypes.oneOf(DeprecatedAccessibilityTraits),
+    PropTypes.arrayOf(PropTypes.oneOf(DeprecatedAccessibilityTraits)),
+  ]),
+  /**
+   * When `accessible` is true (which is the default) this may be called when
+   * the OS-specific concept of "focus" occurs. Some platforms may not have
+   * the concept of focus.
+   */
+  onFocus: PropTypes.func,
+  /**
+   * When `accessible` is true (which is the default) this may be called when
+   * the OS-specific concept of "blur" occurs, meaning the element lost focus.
+   * Some platforms may not have the concept of blur.
+   */
+  onBlur: PropTypes.func,
+  /**
+   * If true, disable all interactions for this component.
+   */
+  disabled: PropTypes.bool,
+  /**
+   * Called when the touch is released, but not if cancelled (e.g. by a scroll
+   * that steals the responder lock).
+   */
+  onPress: PropTypes.func,
+  /**
+   * Called as soon as the touchable element is pressed and invoked even before onPress.
+   * This can be useful when making network requests.
+   */
+  onPressIn: PropTypes.func,
+  /**
+   * Called as soon as the touch is released even before onPress.
+   */
+  onPressOut: PropTypes.func,
+  /**
+   * Invoked on mount and layout changes with
+   *
+   *   `{nativeEvent: {layout: {x, y, width, height}}}`
+   */
+  onLayout: PropTypes.func,
+
+  onLongPress: PropTypes.func,
+
+  nativeID: PropTypes.string,
+  testID: PropTypes.string,
+
+  /**
+   * Delay in ms, from the start of the touch, before onPressIn is called.
+   */
+  delayPressIn: PropTypes.number,
+  /**
+   * Delay in ms, from the release of the touch, before onPressOut is called.
+   */
+  delayPressOut: PropTypes.number,
+  /**
+   * Delay in ms, from onPressIn, before onLongPress is called.
+   */
+  delayLongPress: PropTypes.number,
+  /**
+   * When the scroll view is disabled, this defines how far your touch may
+   * move off of the button, before deactivating the button. Once deactivated,
+   * try moving it back and you'll see that the button is once again
+   * reactivated! Move it back and forth several times while the scroll view
+   * is disabled. Ensure you pass in a constant to reduce memory allocations.
+   */
+  pressRetentionOffset: DeprecatedEdgeInsetsPropType,
+  /**
+   * This defines how far your touch can start away from the button. This is
+   * added to `pressRetentionOffset` when moving off of the button.
+   * ** NOTE **
+   * The touch area never extends past the parent view bounds and the Z-index
+   * of sibling views always takes precedence if a touch hits two overlapping
+   * views.
+   */
+  hitSlop: DeprecatedEdgeInsetsPropType,
+};
+
+reactMixin.onClass(TouchableWithoutFeedback, Touchable.Mixin);
 
 module.exports = TouchableWithoutFeedback;

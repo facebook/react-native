@@ -21,8 +21,8 @@ const Touchable = require('Touchable');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 const View = require('View');
 
-const createReactClass = require('create-react-class');
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
+const reactMixin = require('react-mixin');
 
 import type {PressEvent} from 'CoreEventTypes';
 import type {ViewStyleProp} from 'StyleSheet';
@@ -161,102 +161,39 @@ type Props = $ReadOnly<{|
  *
  */
 
-const TouchableHighlight = ((createReactClass({
-  displayName: 'TouchableHighlight',
-  propTypes: {
-    /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.89 was deployed. To see the error, delete this
-     * comment and run Flow. */
-    ...TouchableWithoutFeedback.propTypes,
-    /**
-     * Determines what the opacity of the wrapped view should be when touch is
-     * active.
-     */
-    activeOpacity: PropTypes.number,
-    /**
-     * The color of the underlay that will show through when the touch is
-     * active.
-     */
-    underlayColor: DeprecatedColorPropType,
-    /**
-     * Style to apply to the container/underlay. Most commonly used to make sure
-     * rounded corners match the wrapped component.
-     */
-    style: DeprecatedViewPropTypes.style,
-    /**
-     * Called immediately after the underlay is shown
-     */
-    onShowUnderlay: PropTypes.func,
-    /**
-     * Called immediately after the underlay is hidden
-     */
-    onHideUnderlay: PropTypes.func,
-    /**
-     * *(Apple TV only)* TV preferred focus (see documentation for the View component).
-     *
-     * @platform ios
-     */
-    hasTVPreferredFocus: PropTypes.bool,
-    /**
-     * TV next focus down (see documentation for the View component).
-     *
-     * @platform android
-     */
-    nextFocusDown: PropTypes.number,
-    /**
-     * TV next focus forward (see documentation for the View component).
-     *
-     * @platform android
-     */
-    nextFocusForward: PropTypes.number,
-    /**
-     * TV next focus left (see documentation for the View component).
-     *
-     * @platform android
-     */
-    nextFocusLeft: PropTypes.number,
-    /**
-     * TV next focus right (see documentation for the View component).
-     *
-     * @platform android
-     */
-    nextFocusRight: PropTypes.number,
-    /**
-     * TV next focus up (see documentation for the View component).
-     *
-     * @platform android
-     */
-    nextFocusUp: PropTypes.number,
-    /**
-     * *(Apple TV only)* Object with properties to control Apple TV parallax effects.
-     *
-     * enabled: If true, parallax effects are enabled.  Defaults to true.
-     * shiftDistanceX: Defaults to 2.0.
-     * shiftDistanceY: Defaults to 2.0.
-     * tiltAngle: Defaults to 0.05.
-     * magnification: Defaults to 1.0.
-     * pressMagnification: Defaults to 1.0.
-     * pressDuration: Defaults to 0.3.
-     * pressDelay: Defaults to 0.0.
-     *
-     * @platform ios
-     */
-    tvParallaxProperties: PropTypes.object,
-    /**
-     * Handy for snapshot tests.
-     */
-    testOnly_pressed: PropTypes.bool,
-  },
+class TouchableHighlight extends React.Component<Props> {
+  constructor(props) {
+    super(props);
 
-  mixins: [NativeMethodsMixin, Touchable.Mixin.withoutDefaultFocusAndBlur],
+    this.touchableHandleStartShouldSetResponder = this.touchableHandleStartShouldSetResponder.bind(
+      this,
+    );
 
-  getDefaultProps: () => DEFAULT_PROPS,
+    this.touchableHandleResponderGrant = this.touchableHandleResponderGrant.bind(
+      this,
+    );
 
-  getInitialState: function() {
-    this._isMounted = false;
+    this.touchableHandleResponderMove = this.touchableHandleResponderMove.bind(
+      this,
+    );
+
+    this.touchableHandleResponderRelease = this.touchableHandleResponderRelease.bind(
+      this,
+    );
+
+    this.touchableHandleResponderTerminationRequest = this.touchableHandleResponderTerminationRequest.bind(
+      this,
+    );
+
+    this.touchableHandleResponderTerminate = this.touchableHandleResponderTerminate.bind(
+      this,
+    );
+
+    this._handleQueryLayout = this._handleQueryLayout.bind(this);
+
     if (this.props.testOnly_pressed) {
-      return {
-        ...this.touchableGetInitialState(),
+      this.state = {
+        ...Touchable.Mixin.touchableGetInitialState(),
         extraChildStyle: {
           opacity: this.props.activeOpacity,
         },
@@ -265,66 +202,66 @@ const TouchableHighlight = ((createReactClass({
         },
       };
     } else {
-      return {
-        ...this.touchableGetInitialState(),
+      this.state = {
+        ...Touchable.Mixin.touchableGetInitialState(),
         extraChildStyle: null,
         extraUnderlayStyle: null,
       };
     }
-  },
+  }
 
-  componentDidMount: function() {
+  componentDidMount() {
     this._isMounted = true;
     ensurePositiveDelayProps(this.props);
-  },
+  }
 
-  componentWillUnmount: function() {
+  componentWillUnmount() {
     this._isMounted = false;
     clearTimeout(this._hideTimeout);
-  },
+  }
 
-  UNSAFE_componentWillReceiveProps: function(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     ensurePositiveDelayProps(nextProps);
-  },
+  }
 
   viewConfig: {
     uiViewClassName: 'RCTView',
     validAttributes: ReactNativeViewAttributes.RCTView,
-  },
+  };
 
   /**
    * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
    * defined on your component.
    */
-  touchableHandleActivePressIn: function(e: PressEvent) {
+  touchableHandleActivePressIn = (e: PressEvent) => {
     clearTimeout(this._hideTimeout);
     this._hideTimeout = null;
     this._showUnderlay();
     this.props.onPressIn && this.props.onPressIn(e);
-  },
+  };
 
-  touchableHandleActivePressOut: function(e: PressEvent) {
+  touchableHandleActivePressOut = (e: PressEvent) => {
     if (!this._hideTimeout) {
       this._hideUnderlay();
     }
     this.props.onPressOut && this.props.onPressOut(e);
-  },
+  };
 
-  touchableHandleFocus: function(e: Event) {
+  touchableHandleFocus = (e: Event) => {
     if (Platform.isTV) {
       this._showUnderlay();
     }
     this.props.onFocus && this.props.onFocus(e);
-  },
+  };
 
-  touchableHandleBlur: function(e: Event) {
+  touchableHandleBlur = (e: Event) => {
     if (Platform.isTV) {
       this._hideUnderlay();
     }
     this.props.onBlur && this.props.onBlur(e);
-  },
+  };
 
-  touchableHandlePress: function(e: PressEvent) {
+  touchableHandlePress = (e: PressEvent) => {
     clearTimeout(this._hideTimeout);
     if (!Platform.isTV) {
       this._showUnderlay();
@@ -334,33 +271,33 @@ const TouchableHighlight = ((createReactClass({
       );
     }
     this.props.onPress && this.props.onPress(e);
-  },
+  };
 
-  touchableHandleLongPress: function(e: PressEvent) {
+  touchableHandleLongPress = (e: PressEvent) => {
     this.props.onLongPress && this.props.onLongPress(e);
-  },
+  };
 
-  touchableGetPressRectOffset: function() {
+  touchableGetPressRectOffset = () => {
     return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
-  },
+  };
 
-  touchableGetHitSlop: function() {
+  touchableGetHitSlop = () => {
     return this.props.hitSlop;
-  },
+  };
 
-  touchableGetHighlightDelayMS: function() {
+  touchableGetHighlightDelayMS = () => {
     return this.props.delayPressIn;
-  },
+  };
 
-  touchableGetLongPressDelayMS: function() {
+  touchableGetLongPressDelayMS = () => {
     return this.props.delayLongPress;
-  },
+  };
 
-  touchableGetPressOutDelayMS: function() {
+  touchableGetPressOutDelayMS = () => {
     return this.props.delayPressOut;
-  },
+  };
 
-  _showUnderlay: function() {
+  _showUnderlay = () => {
     if (!this._isMounted || !this._hasPressHandler()) {
       return;
     }
@@ -373,9 +310,9 @@ const TouchableHighlight = ((createReactClass({
       },
     });
     this.props.onShowUnderlay && this.props.onShowUnderlay();
-  },
+  };
 
-  _hideUnderlay: function() {
+  _hideUnderlay = () => {
     clearTimeout(this._hideTimeout);
     this._hideTimeout = null;
     if (this.props.testOnly_pressed) {
@@ -388,18 +325,18 @@ const TouchableHighlight = ((createReactClass({
       });
       this.props.onHideUnderlay && this.props.onHideUnderlay();
     }
-  },
+  };
 
-  _hasPressHandler: function() {
+  _hasPressHandler = () => {
     return !!(
       this.props.onPress ||
       this.props.onPressIn ||
       this.props.onPressOut ||
       this.props.onLongPress
     );
-  },
+  };
 
-  render: function() {
+  render() {
     const child = React.Children.only(this.props.children);
     return (
       <View
@@ -444,7 +381,101 @@ const TouchableHighlight = ((createReactClass({
         })}
       </View>
     );
-  },
-}): any): React.ComponentType<Props>);
+  }
+}
+
+TouchableHighlight.displayName = 'TouchableHighlight';
+TouchableHighlight.propTypes = {
+  /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.89 was deployed. To see the error, delete this
+     * comment and run Flow. */
+  ...TouchableWithoutFeedback.propTypes,
+  /**
+   * Determines what the opacity of the wrapped view should be when touch is
+   * active.
+   */
+  activeOpacity: PropTypes.number,
+  /**
+   * The color of the underlay that will show through when the touch is
+   * active.
+   */
+  underlayColor: DeprecatedColorPropType,
+  /**
+   * Style to apply to the container/underlay. Most commonly used to make sure
+   * rounded corners match the wrapped component.
+   */
+  style: DeprecatedViewPropTypes.style,
+  /**
+   * Called immediately after the underlay is shown
+   */
+  onShowUnderlay: PropTypes.func,
+  /**
+   * Called immediately after the underlay is hidden
+   */
+  onHideUnderlay: PropTypes.func,
+  /**
+   * *(Apple TV only)* TV preferred focus (see documentation for the View component).
+   *
+   * @platform ios
+   */
+  hasTVPreferredFocus: PropTypes.bool,
+  /**
+   * TV next focus down (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusDown: PropTypes.number,
+  /**
+   * TV next focus forward (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusForward: PropTypes.number,
+  /**
+   * TV next focus left (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusLeft: PropTypes.number,
+  /**
+   * TV next focus right (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusRight: PropTypes.number,
+  /**
+   * TV next focus up (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusUp: PropTypes.number,
+  /**
+   * *(Apple TV only)* Object with properties to control Apple TV parallax effects.
+   *
+   * enabled: If true, parallax effects are enabled.  Defaults to true.
+   * shiftDistanceX: Defaults to 2.0.
+   * shiftDistanceY: Defaults to 2.0.
+   * tiltAngle: Defaults to 0.05.
+   * magnification: Defaults to 1.0.
+   * pressMagnification: Defaults to 1.0.
+   * pressDuration: Defaults to 0.3.
+   * pressDelay: Defaults to 0.0.
+   *
+   * @platform ios
+   */
+  tvParallaxProperties: PropTypes.object,
+  /**
+   * Handy for snapshot tests.
+   */
+  testOnly_pressed: PropTypes.bool,
+};
+
+TouchableHighlight.defaultProps = DEFAULT_PROPS;
+
+reactMixin.onClass(TouchableHighlight, NativeMethodsMixin);
+reactMixin.onClass(
+  TouchableHighlight,
+  Touchable.Mixin.withoutDefaultFocusAndBlur,
+);
 
 module.exports = TouchableHighlight;

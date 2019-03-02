@@ -19,9 +19,9 @@ const PropTypes = require('prop-types');
 const Touchable = require('Touchable');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 
-const createReactClass = require('create-react-class');
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 const flattenStyle = require('flattenStyle');
+const reactMixin = require('react-mixin');
 
 import type {Props as TouchableWithoutFeedbackProps} from 'TouchableWithoutFeedback';
 import type {ViewStyleProp} from 'StyleSheet';
@@ -135,175 +135,141 @@ type Props = $ReadOnly<{|
  * ```
  *
  */
-const TouchableOpacity = ((createReactClass({
-  displayName: 'TouchableOpacity',
-  mixins: [Touchable.Mixin.withoutDefaultFocusAndBlur, NativeMethodsMixin],
+class TouchableOpacity extends React.Component<Props> {
+  static defaultProps = {
+    activeOpacity: 0.2,
+  };
 
-  propTypes: {
-    /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.89 was deployed. To see the error, delete this
-     * comment and run Flow. */
-    ...TouchableWithoutFeedback.propTypes,
-    /**
-     * Determines what the opacity of the wrapped view should be when touch is
-     * active. Defaults to 0.2.
-     */
-    activeOpacity: PropTypes.number,
-    /**
-     * TV preferred focus (see documentation for the View component).
-     */
-    hasTVPreferredFocus: PropTypes.bool,
-    /**
-     * TV next focus down (see documentation for the View component).
-     *
-     * @platform android
-     */
-    nextFocusDown: PropTypes.number,
-    /**
-     * TV next focus forward (see documentation for the View component).
-     *
-     * @platform android
-     */
-    nextFocusForward: PropTypes.number,
-    /**
-     * TV next focus left (see documentation for the View component).
-     *
-     * @platform android
-     */
-    nextFocusLeft: PropTypes.number,
-    /**
-     * TV next focus right (see documentation for the View component).
-     *
-     * @platform android
-     */
-    nextFocusRight: PropTypes.number,
-    /**
-     * TV next focus up (see documentation for the View component).
-     *
-     * @platform android
-     */
-    nextFocusUp: PropTypes.number,
-    /**
-     * Apple TV parallax effects
-     */
-    tvParallaxProperties: PropTypes.object,
-  },
+  constructor(props) {
+    super(props);
+    this.touchableHandleStartShouldSetResponder = this.touchableHandleStartShouldSetResponder.bind(
+      this,
+    );
+    this.touchableHandleResponderGrant = this.touchableHandleResponderGrant.bind(
+      this,
+    );
+    this.touchableHandleResponderMove = this.touchableHandleResponderMove.bind(
+      this,
+    );
+    this.touchableHandleResponderRelease = this.touchableHandleResponderRelease.bind(
+      this,
+    );
+    this.touchableHandleResponderTerminationRequest = this.touchableHandleResponderTerminationRequest.bind(
+      this,
+    );
+    this.touchableHandleResponderTerminate = this.touchableHandleResponderTerminate.bind(
+      this,
+    );
+    this._handleQueryLayout = this._handleQueryLayout.bind(this);
 
-  getDefaultProps: function() {
-    return {
-      activeOpacity: 0.2,
-    };
-  },
-
-  getInitialState: function() {
-    return {
+    this.state = {
       ...this.touchableGetInitialState(),
       anim: new Animated.Value(this._getChildStyleOpacityWithDefault()),
     };
-  },
+  }
 
-  componentDidMount: function() {
+  componentDidMount() {
     ensurePositiveDelayProps(this.props);
-  },
+  }
 
-  UNSAFE_componentWillReceiveProps: function(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     ensurePositiveDelayProps(nextProps);
-  },
+  }
 
-  componentDidUpdate: function(prevProps, prevState) {
+  componentDidUpdate(prevProps, prevState) {
     if (this.props.disabled !== prevProps.disabled) {
       this._opacityInactive(250);
     }
-  },
+  }
 
   /**
    * Animate the touchable to a new opacity.
    */
-  setOpacityTo: function(value: number, duration: number) {
+  setOpacityTo = (value: number, duration: number) => {
     Animated.timing(this.state.anim, {
       toValue: value,
       duration: duration,
       easing: Easing.inOut(Easing.quad),
       useNativeDriver: true,
     }).start();
-  },
+  };
 
   /**
    * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
    * defined on your component.
    */
-  touchableHandleActivePressIn: function(e: PressEvent) {
+  touchableHandleActivePressIn = (e: PressEvent) => {
     if (e.dispatchConfig.registrationName === 'onResponderGrant') {
       this._opacityActive(0);
     } else {
       this._opacityActive(150);
     }
     this.props.onPressIn && this.props.onPressIn(e);
-  },
+  };
 
-  touchableHandleActivePressOut: function(e: PressEvent) {
+  touchableHandleActivePressOut = (e: PressEvent) => {
     this._opacityInactive(250);
     this.props.onPressOut && this.props.onPressOut(e);
-  },
+  };
 
-  touchableHandleFocus: function(e: Event) {
+  touchableHandleFocus = (e: Event) => {
     if (Platform.isTV) {
       this._opacityActive(150);
     }
     this.props.onFocus && this.props.onFocus(e);
-  },
+  };
 
-  touchableHandleBlur: function(e: Event) {
+  touchableHandleBlur = (e: Event) => {
     if (Platform.isTV) {
       this._opacityInactive(250);
     }
     this.props.onBlur && this.props.onBlur(e);
-  },
+  };
 
-  touchableHandlePress: function(e: PressEvent) {
+  touchableHandlePress = (e: PressEvent) => {
     this.props.onPress && this.props.onPress(e);
-  },
+  };
 
-  touchableHandleLongPress: function(e: PressEvent) {
+  touchableHandleLongPress = (e: PressEvent) => {
     this.props.onLongPress && this.props.onLongPress(e);
-  },
+  };
 
-  touchableGetPressRectOffset: function() {
+  touchableGetPressRectOffset = () => {
     return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
-  },
+  };
 
-  touchableGetHitSlop: function() {
+  touchableGetHitSlop = () => {
     return this.props.hitSlop;
-  },
+  };
 
-  touchableGetHighlightDelayMS: function() {
+  touchableGetHighlightDelayMS = () => {
     return this.props.delayPressIn || 0;
-  },
+  };
 
-  touchableGetLongPressDelayMS: function() {
+  touchableGetLongPressDelayMS = () => {
     return this.props.delayLongPress === 0
       ? 0
       : this.props.delayLongPress || 500;
-  },
+  };
 
-  touchableGetPressOutDelayMS: function() {
+  touchableGetPressOutDelayMS = () => {
     return this.props.delayPressOut;
-  },
+  };
 
-  _opacityActive: function(duration: number) {
+  _opacityActive = (duration: number) => {
     this.setOpacityTo(this.props.activeOpacity, duration);
-  },
+  };
 
-  _opacityInactive: function(duration: number) {
+  _opacityInactive = (duration: number) => {
     this.setOpacityTo(this._getChildStyleOpacityWithDefault(), duration);
-  },
+  };
 
-  _getChildStyleOpacityWithDefault: function() {
+  _getChildStyleOpacityWithDefault = () => {
     const childStyle = flattenStyle(this.props.style) || {};
     return childStyle.opacity == null ? 1 : childStyle.opacity;
-  },
+  };
 
-  render: function() {
+  render() {
     return (
       <Animated.View
         accessible={this.props.accessible !== false}
@@ -339,7 +305,64 @@ const TouchableOpacity = ((createReactClass({
         })}
       </Animated.View>
     );
-  },
-}): any): React.ComponentType<Props>);
+  }
+}
+
+TouchableOpacity.displayName = 'TouchableOpacity';
+TouchableOpacity.propTypes = {
+  /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
+   * error found when Flow v0.89 was deployed. To see the error, delete this
+   * comment and run Flow. */
+  ...TouchableWithoutFeedback.propTypes,
+  /**
+   * Determines what the opacity of the wrapped view should be when touch is
+   * active. Defaults to 0.2.
+   */
+  activeOpacity: PropTypes.number,
+  /**
+   * TV preferred focus (see documentation for the View component).
+   */
+  hasTVPreferredFocus: PropTypes.bool,
+  /**
+   * TV next focus down (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusDown: PropTypes.number,
+  /**
+   * TV next focus forward (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusForward: PropTypes.number,
+  /**
+   * TV next focus left (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusLeft: PropTypes.number,
+  /**
+   * TV next focus right (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusRight: PropTypes.number,
+  /**
+   * TV next focus up (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusUp: PropTypes.number,
+  /**
+   * Apple TV parallax effects
+   */
+  tvParallaxProperties: PropTypes.object,
+};
+
+reactMixin.onClass(
+  TouchableOpacity,
+  Touchable.Mixin.withoutDefaultFocusAndBlur,
+);
+reactMixin.onClass(TouchableOpacity, NativeMethodsMixin);
 
 module.exports = TouchableOpacity;
