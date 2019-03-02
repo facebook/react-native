@@ -72,10 +72,20 @@ const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  * ```
  */
 
-class TouchableNativeFeedback extends React.Component {
+class TouchableNativeFeedback extends React.Component<
+  $FlowFixMeProps,
+  $FlowFixMeState,
+> {
   static defaultProps = {
     background: TouchableNativeFeedback.SelectableBackground,
   };
+
+  touchableHandleResponderGrant: ?(e: PressEvent) => void | boolean;
+  touchableHandleStartShouldSetResponder: () => boolean;
+  touchableHandleResponderMove: (event: PressEvent) => void;
+  touchableHandleResponderRelease: ?(event: PressEvent) => void;
+  touchableHandleResponderTerminate: ?(event: PressEvent) => void;
+  touchableHandleResponderTerminationRequest: ?() => boolean;
 
   /**
    * Creates an object that represents android theme's default background for
@@ -125,37 +135,22 @@ class TouchableNativeFeedback extends React.Component {
     return Platform.OS === 'android' && Platform.Version >= 23;
   };
 
-  constructor(props) {
+  state = Touchable.Mixin.touchableGetInitialState();
+
+  constructor(props: $FlowFixMeProps) {
     super(props);
-
-    this.touchableHandleStartShouldSetResponder = this.touchableHandleStartShouldSetResponder.bind(
-      this,
-    );
-    this.touchableHandleResponderGrant = this.touchableHandleResponderGrant.bind(
-      this,
-    );
-    this.touchableHandleResponderMove = this.touchableHandleResponderMove.bind(
-      this,
-    );
-    this.touchableHandleResponderRelease = this.touchableHandleResponderRelease.bind(
-      this,
-    );
-    this.touchableHandleResponderTerminationRequest = this.touchableHandleResponderTerminationRequest.bind(
-      this,
-    );
-    this.touchableHandleResponderTerminate = this.touchableHandleResponderTerminate.bind(
-      this,
-    );
-    this._handleQueryLayout = this._handleQueryLayout.bind(this);
-
-    this.state = Touchable.Mixin.touchableGetInitialState();
+    Object.keys(Touchable.Mixin).forEach(name => {
+      if ((this: $FlowFixMe)[name] && (this: $FlowFixMe)[name].bind) {
+        (this: $FlowFixMe)[name] = (this: $FlowFixMe)[name].bind(this);
+      }
+    });
   }
 
   componentDidMount() {
     ensurePositiveDelayProps(this.props);
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps: $FlowFixMe) {
     ensurePositiveDelayProps(nextProps);
   }
 

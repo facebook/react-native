@@ -14,7 +14,7 @@ const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const View = require('View');
 
-class DummyTouchableNativeFeedback extends React.Component {
+class DummyTouchableNativeFeedback extends React.Component<$FlowFixMe> {
   static SelectableBackground = () => ({});
   static SelectableBackgroundBorderless = () => ({});
   static Ripple = () => ({});

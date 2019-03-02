@@ -81,7 +81,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0",
-    "@ericlewis/react-mixin": "6.0.1",
+    "@ericlewis/react-mixin": "6.0.2",
     "@react-native-community/cli": "^1.1.0",
     "art": "^0.10.0",
     "base64-js": "^1.1.2",

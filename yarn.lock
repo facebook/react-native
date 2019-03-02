@@ -870,10 +870,10 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
-"@ericlewis/react-mixin@6.0.1":
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/@ericlewis/react-mixin/-/react-mixin-6.0.1.tgz#fd8a1f1c10d723dcf1c38e3a375e45ae928e7e9e"
-  integrity sha512-hkqkAYtNdN/ckd02T2/Il5QCNFiTpgwh8dOAydwKC6hkEEBxW3Od9Au4JD9h2/kse3Iwi/9IqOntKpA9Ws6oLA==
+"@ericlewis/react-mixin@6.0.2":
+  version "6.0.2"
+  resolved "https://registry.yarnpkg.com/@ericlewis/react-mixin/-/react-mixin-6.0.2.tgz#bfc012f9addf4a3a1965e48ebd84634267f6c86f"
+  integrity sha512-67oxKeGGzczoWqUGYN5+Y34THhthfkL8Ct5AkK7DQ2psNprA9y6Lb1SUmi4lFfxrGywPZe+vMXOTsbo89W/oaQ==
 
 "@react-native-community/cli@^1.1.0":
   version "1.1.0"
