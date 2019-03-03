@@ -261,9 +261,7 @@ void Scheduler::uiManagerDidCreateShadowNode(
 
     auto shadowView = ShadowView(*shadowNode);
     delegate_->schedulerDidRequestPreliminaryViewAllocation(
-        shadowNode->getRootTag(),
-        isLayoutable,
-        shadowView);
+        shadowNode->getRootTag(), isLayoutable, shadowView);
   }
 }
 

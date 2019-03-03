@@ -173,7 +173,7 @@ local_ref<JMountItem::javaobject> createCreateMountItem(
     const Tag rootTag) {
   static auto createJavaInstruction =
       jni::findClassStatic(UIManagerJavaDescriptor)
-          ->getMethod<alias_ref<JMountItem>(jstring, jint, jint, jboolean)>(
+          ->getMethod<alias_ref<JMountItem>(jstring, jint, jint, jboolean, ReadableMap::javaobject)>(
               "createMountItem");
 
   auto newChildShadowView = mutation.newChildShadowView;
@@ -183,12 +183,16 @@ local_ref<JMountItem::javaobject> createCreateMountItem(
 
   jboolean isVirtual = newChildShadowView.layoutMetrics == EmptyLayoutMetrics;
 
+  local_ref<ReadableMap::javaobject> props = isVirtual ? nullptr :
+        castReadableMap(ReadableNativeMap::newObjectCxxArgs(newChildShadowView.props->rawProps));
+
   return createJavaInstruction(
       javaUIManager,
       componentName.get(),
       rootTag,
       newChildShadowView.tag,
-      isVirtual);
+      isVirtual,
+      props != nullptr ? props.get() : nullptr);
 }
 
 local_ref<JMountItem::javaobject> createUpdateEventEmitterMountItem(
@@ -402,7 +406,7 @@ void Binding::schedulerDidFinishTransaction(
           mountItems[position++] =
               createInsertMountItem(javaUIManager_, mutation);
 
-          if (mutation.newChildShadowView.props->revision != 0) {
+          if (mutation.newChildShadowView.props->revision > 1) {
             mountItems[position++] =
                 createUpdatePropsMountItem(javaUIManager_, mutation);
           }
@@ -465,20 +469,16 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
     const SurfaceId surfaceId,
     bool isLayoutable,
     const ShadowView &shadowView) {
+
   if (isLayoutable) {
     static auto preallocateView =
         jni::findClassStatic(UIManagerJavaDescriptor)
             ->getMethod<void(jint, jint, jstring, ReadableMap::javaobject)>("preallocateView");
 
-    if (shadowView.props->rawProps.isNull()) {
-      local_ref<ReadableMap::javaobject> readableMap =
-          castReadableMap(ReadableNativeMap::newObjectCxxArgs(shadowView.props->rawProps));
-      preallocateView(
-          javaUIManager_, surfaceId, shadowView.tag, make_jstring(shadowView.componentName).get(), readableMap.get());
-    } else {
-      preallocateView(
-          javaUIManager_, surfaceId, shadowView.tag, make_jstring(shadowView.componentName).get(), nullptr);
-    }
+    local_ref<ReadableMap::javaobject> readableMap =
+        castReadableMap(ReadableNativeMap::newObjectCxxArgs(shadowView.props->rawProps));
+    preallocateView(
+        javaUIManager_, surfaceId, shadowView.tag, make_jstring(shadowView.componentName).get(), readableMap.get());
   }
 }
 

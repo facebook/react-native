@@ -168,8 +168,8 @@ public class MountingManager {
       ThemedReactContext themedReactContext,
       String componentName,
       int reactTag,
+
       boolean isVirtual) {
-    UiThreadUtil.assertOnUiThread();
     View view = null;
     ViewManager viewManager = null;
 
@@ -280,10 +280,11 @@ public class MountingManager {
     String componentName,
     int reactTag,
     ReadableMap props) {
+
+    if (mTagToViewState.get(reactTag) != null) return;
+
     createView(reactContext, componentName, reactTag, false);
-    if (props != null) {
-      updateProps(reactTag, props);
-    }
+    updateProps(reactTag, props);
   }
 
   @UiThread

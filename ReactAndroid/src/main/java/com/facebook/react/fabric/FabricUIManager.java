@@ -21,7 +21,6 @@ import android.support.annotation.UiThread;
 import android.util.Log;
 import android.view.View;
 import com.facebook.common.logging.FLog;
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -73,6 +72,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   private static final Map<String, String> sComponentNames = new HashMap<>();
   private static final int FRAME_TIME_MS = 16;
   private static final int MAX_TIME_IN_FRAME_FOR_NON_BATCHED_OPERATIONS_MS = 8;
+  private static final int PRE_MOUNT_ITEMS_INITIAL_SIZE_ARRAY = 250;
 
   static {
     FabricSoLoader.staticInit();
@@ -105,7 +105,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   private List<MountItem> mMountItems = new ArrayList<>();
 
   @GuardedBy("mPreMountItemsLock")
-  private ArrayDeque<MountItem> mPreMountItems = new ArrayDeque<>();
+  private ArrayDeque<MountItem> mPreMountItems = new ArrayDeque<>(
+    PRE_MOUNT_ITEMS_INITIAL_SIZE_ARRAY);
 
   @ThreadConfined(UI)
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
@@ -165,7 +166,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @DoNotStrip
   @SuppressWarnings("unused")
   private MountItem createMountItem(
-      String componentName, int reactRootTag, int reactTag, boolean isVirtual) {
+      String componentName, int reactRootTag, int reactTag, boolean isVirtual, ReadableMap props) {
     String component = sComponentNames.get(componentName);
     if (component == null) {
       throw new IllegalArgumentException("Unable to find component with name " + componentName);
@@ -174,7 +175,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     if (reactContext == null) {
       throw new IllegalArgumentException("Unable to find ReactContext for root: " + reactRootTag);
     }
-    return new CreateMountItem(reactContext, component, reactTag, isVirtual);
+    return new CreateMountItem(reactContext, component, reactTag, isVirtual, props);
   }
 
   @Override
@@ -197,11 +198,10 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       // There is no reason to allocate views ahead of time on the main thread.
       return;
     }
+
+    ThemedReactContext context = mReactContextForRootTag.get(rootTag);
+    String component = sComponentNames.get(componentName);
     synchronized (mPreMountItemsLock) {
-      ThemedReactContext context =
-        Assertions.assertNotNull(mReactContextForRootTag.get(rootTag));
-      String component = sComponentNames.get(componentName);
-      Assertions.assertNotNull(component);
       mPreMountItems.add(new PreAllocateViewMountItem(context, rootTag, reactTag, component, props));
     }
   }
@@ -315,6 +315,9 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mRunStartTime = SystemClock.uptimeMillis();
     List<MountItem> mountItemsToDispatch;
     synchronized (mMountItemsLock) {
+      if (mMountItems.isEmpty()) {
+        return;
+      }
       mountItemsToDispatch = mMountItems;
       mMountItems = new ArrayList<>();
     }

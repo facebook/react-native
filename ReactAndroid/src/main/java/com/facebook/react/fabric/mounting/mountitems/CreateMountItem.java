@@ -6,6 +6,7 @@
  */
 package com.facebook.react.fabric.mounting.mountitems;
 
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 
@@ -15,21 +16,27 @@ public class CreateMountItem implements MountItem {
   private final int mReactTag;
   private final ThemedReactContext mThemedReactContext;
   private final boolean mIsVirtual;
+  private final ReadableMap mProps;
 
   public CreateMountItem(
       ThemedReactContext themedReactContext,
       String componentName,
       int reactTag,
-      boolean isVirtual) {
+      boolean isVirtual,
+      ReadableMap props) {
     mReactTag = reactTag;
     mThemedReactContext = themedReactContext;
     mComponentName = componentName;
     mIsVirtual = isVirtual;
+    mProps = props;
   }
 
   @Override
   public void execute(MountingManager mountingManager) {
     mountingManager.createView(mThemedReactContext, mComponentName, mReactTag, mIsVirtual);
+    if (mProps != null && !mIsVirtual) {
+      mountingManager.updateProps(mReactTag, mProps);
+    }
   }
 
   public String getComponentName() {

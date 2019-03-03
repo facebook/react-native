@@ -19,31 +19,34 @@
 
 using namespace facebook::react;
 
-class SchedulerDelegateProxy: public SchedulerDelegate {
-public:
-  SchedulerDelegateProxy(void *scheduler):
-    scheduler_(scheduler) {}
+class SchedulerDelegateProxy : public SchedulerDelegate {
+ public:
+  SchedulerDelegateProxy(void *scheduler) : scheduler_(scheduler) {}
 
-  void schedulerDidFinishTransaction(Tag rootTag, const ShadowViewMutationList &mutations, const long commitStartTime, const long layoutTime) override {
+  void schedulerDidFinishTransaction(
+      Tag rootTag,
+      const ShadowViewMutationList &mutations,
+      const long commitStartTime,
+      const long layoutTime) override
+  {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
     [scheduler.delegate schedulerDidFinishTransaction:mutations rootTag:rootTag];
   }
 
   void schedulerDidRequestPreliminaryViewAllocation(
       SurfaceId surfaceId,
-      ComponentName componentName,
       bool isLayoutable,
-      ComponentHandle componentHandle) override
+      const ShadowView &shadowView) override
   {
     if (!isLayoutable) {
       return;
     }
 
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
-    [scheduler.delegate schedulerOptimisticallyCreateComponentViewWithComponentHandle:componentHandle];
+    [scheduler.delegate schedulerOptimisticallyCreateComponentViewWithComponentHandle:shadowView.componentHandle];
   }
 
-private:
+ private:
   void *scheduler_;
 };
 
@@ -56,7 +59,8 @@ private:
 {
   if (self = [super init]) {
     _delegateProxy = std::make_shared<SchedulerDelegateProxy>((__bridge void *)self);
-    _scheduler = std::make_shared<Scheduler>(std::static_pointer_cast<ContextContainer>(contextContainer), getDefaultComponentRegistryFactory());
+    _scheduler = std::make_shared<Scheduler>(
+        std::static_pointer_cast<ContextContainer>(contextContainer), getDefaultComponentRegistryFactory());
     _scheduler->setDelegate(_delegateProxy.get());
   }
 
@@ -77,17 +81,9 @@ private:
   SystraceSection s("-[RCTScheduler startSurfaceWithSurfaceId:...]");
 
   auto props = convertIdToFollyDynamic(initialProps);
-  _scheduler->startSurface(
-      surfaceId,
-      RCTStringFromNSString(moduleName),
-      props,
-      layoutConstraints,
-      layoutContext);
+  _scheduler->startSurface(surfaceId, RCTStringFromNSString(moduleName), props, layoutConstraints, layoutContext);
   _scheduler->renderTemplateToSurface(
-      surfaceId,
-      props.getDefault("navigationConfig")
-          .getDefault("initialUITemplate", "")
-          .getString());
+      surfaceId, props.getDefault("navigationConfig").getDefault("initialUITemplate", "").getString());
 }
 
 - (void)stopSurfaceWithSurfaceId:(SurfaceId)surfaceId
