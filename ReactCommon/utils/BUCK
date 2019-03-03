@@ -26,6 +26,10 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
+        "fbsource//xplat/folly:evicting_cache_map",
+        "fbsource//xplat/folly:headers_only",
+        "fbsource//xplat/folly:memory",
+        "fbsource//xplat/folly:molly",
         react_native_xplat_target("better:better"),
     ],
 )
