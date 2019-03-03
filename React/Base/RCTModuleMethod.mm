@@ -106,9 +106,11 @@ static RCTNullability RCTParseNullability(const char **input)
 
 static RCTNullability RCTParseNullabilityPostfix(const char **input)
 {
-  if (RCTReadString(input, "_Nullable")) {
+  if (RCTReadString(input, "_Nullable") ||
+      RCTReadString(input, "__nullable")) {
     return RCTNullable;
-  } else if (RCTReadString(input, "_Nonnull")) {
+  } else if (RCTReadString(input, "_Nonnull") ||
+             RCTReadString(input, "__nonnull")) {
     return RCTNonnullable;
   }
   return RCTNullabilityUnspecified;
