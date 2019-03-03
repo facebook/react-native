@@ -18,19 +18,21 @@ public class PreAllocateViewMountItem implements MountItem {
   private final int mReactTag;
   private final ReadableMap mProps;
   private final ThemedReactContext mContext;
+  private final boolean mIsLayoutable;
 
   public PreAllocateViewMountItem(
-      ThemedReactContext context, int rootTag, int reactTag, String component, ReadableMap props) {
+      ThemedReactContext context, int rootTag, int reactTag, String component, ReadableMap props, boolean isLayoutable) {
     mContext = context;
     mComponent = component;
     mRootTag = rootTag;
     mProps = props;
     mReactTag = reactTag;
+    mIsLayoutable = isLayoutable;
   }
 
   @Override
   public void execute(MountingManager mountingManager) {
-    mountingManager.preallocateView(mContext, mComponent, mReactTag, mProps);
+    mountingManager.preallocateView(mContext, mComponent, mReactTag, mProps, mIsLayoutable);
   }
 
   @Override

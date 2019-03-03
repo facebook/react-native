@@ -193,7 +193,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   }
 
   @DoNotStrip
-  private void preallocateView(int rootTag, int reactTag, final String componentName, ReadableMap props) {
+  private void preallocateView(int rootTag, int reactTag, final String componentName, ReadableMap props, boolean isLayoutable) {
     if (UiThreadUtil.isOnUiThread()) {
       // There is no reason to allocate views ahead of time on the main thread.
       return;
@@ -202,7 +202,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     ThemedReactContext context = mReactContextForRootTag.get(rootTag);
     String component = sComponentNames.get(componentName);
     synchronized (mPreMountItemsLock) {
-      mPreMountItems.add(new PreAllocateViewMountItem(context, rootTag, reactTag, component, props));
+      mPreMountItems.add(new PreAllocateViewMountItem(context, rootTag, reactTag, component, props, isLayoutable));
     }
   }
 
@@ -313,6 +313,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @UiThread
   private void dispatchMountItems() {
     mRunStartTime = SystemClock.uptimeMillis();
+
     List<MountItem> mountItemsToDispatch;
     synchronized (mMountItemsLock) {
       if (mMountItems.isEmpty()) {
@@ -321,6 +322,21 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       mountItemsToDispatch = mMountItems;
       mMountItems = new ArrayList<>();
     }
+
+
+    // If there are MountItems to dispatch, we make sure all the "pre mount items" are executed
+    ArrayDeque<MountItem> mPreMountItemsToDispatch = null;
+    synchronized (mPreMountItemsLock) {
+      if (!mPreMountItems.isEmpty()) {
+        mPreMountItemsToDispatch = mPreMountItems;
+        mPreMountItems = new ArrayDeque<>(PRE_MOUNT_ITEMS_INITIAL_SIZE_ARRAY);
+      }
+    }
+
+    while (mPreMountItemsToDispatch != null && !mPreMountItemsToDispatch.isEmpty()) {
+      mPreMountItemsToDispatch.pollFirst().execute(mMountingManager);
+    }
+
 
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,

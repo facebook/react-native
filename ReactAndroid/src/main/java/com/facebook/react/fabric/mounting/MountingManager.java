@@ -168,15 +168,11 @@ public class MountingManager {
       ThemedReactContext themedReactContext,
       String componentName,
       int reactTag,
-
-      boolean isVirtual) {
+      boolean isLayoutable) {
     View view = null;
     ViewManager viewManager = null;
 
-    // This can be possible if the view was already pre-allocated
-    if (mTagToViewState.get(reactTag) != null) return;
-
-    if (!isVirtual) {
+    if (isLayoutable) {
       viewManager = mViewManagerRegistry.get(componentName);
       view = mViewPool.getOrCreateView(componentName, themedReactContext);
       view.setId(reactTag);
@@ -279,12 +275,15 @@ public class MountingManager {
     ThemedReactContext reactContext,
     String componentName,
     int reactTag,
-    ReadableMap props) {
+    ReadableMap props,
+    boolean isLayoutable) {
 
     if (mTagToViewState.get(reactTag) != null) return;
 
-    createView(reactContext, componentName, reactTag, false);
-    updateProps(reactTag, props);
+    createView(reactContext, componentName, reactTag, isLayoutable);
+    if (isLayoutable) {
+      updateProps(reactTag, props);
+    }
   }
 
   @UiThread
