@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <better/map.h>
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
@@ -46,7 +47,7 @@ class RawProps {
 #ifdef ANDROID
         dynamic_(dynamic),
 #endif
-        map_((std::unordered_map<std::string, RawValue>)RawValue(dynamic)) {
+        map_((better::map<std::string, RawValue>)RawValue(dynamic)) {
   }
 
   /*
@@ -90,7 +91,7 @@ class RawProps {
   const folly::dynamic dynamic_;
 #endif
 
-  const std::unordered_map<std::string, RawValue> map_;
+  const better::map<std::string, RawValue> map_;
 };
 
 } // namespace react

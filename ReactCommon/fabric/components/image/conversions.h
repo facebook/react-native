@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <better/map.h>
 #include <folly/dynamic.h>
 #include <react/graphics/conversions.h>
 #include <react/imagemanager/primitives.h>
@@ -20,8 +21,8 @@ inline void fromRawValue(const RawValue &value, ImageSource &result) {
     return;
   }
 
-  if (value.hasType<std::unordered_map<std::string, RawValue>>()) {
-    auto items = (std::unordered_map<std::string, RawValue>)value;
+  if (value.hasType<better::map<std::string, RawValue>>()) {
+    auto items = (better::map<std::string, RawValue>)value;
     result = {};
 
     result.type = ImageSource::Type::Remote;

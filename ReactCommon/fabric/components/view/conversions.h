@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <better/map.h>
 #include <folly/Conv.h>
 #include <folly/dynamic.h>
 #include <react/components/view/primitives.h>
@@ -361,8 +362,7 @@ inline void fromRawValue(const RawValue &value, Transform &result) {
   auto configurations = (std::vector<RawValue>)value;
 
   for (const auto &configuration : configurations) {
-    auto configurationPair =
-        (std::unordered_map<std::string, RawValue>)configuration;
+    auto configurationPair = (better::map<std::string, RawValue>)configuration;
     auto pair = configurationPair.begin();
     auto operation = pair->first;
     auto &parameters = pair->second;
