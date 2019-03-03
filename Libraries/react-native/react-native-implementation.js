@@ -213,6 +213,12 @@ module.exports = {
     return require('BackHandler');
   },
   get CameraRoll() {
+    warnOnce(
+      'cameraroll-moved',
+      'CameraRoll has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/cameraroll' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-cameraroll',
+    );
     return require('CameraRoll');
   },
   get Clipboard() {
