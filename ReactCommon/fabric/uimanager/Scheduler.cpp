@@ -62,6 +62,9 @@ Scheduler::Scheduler(
   componentDescriptorRegistry_ =
       buildRegistryFunction(eventDispatcher, contextContainer);
 
+  rootComponentDescriptor_ =
+      std::make_unique<const RootComponentDescriptor>(eventDispatcher);
+
   uiManagerRef.setDelegate(this);
   uiManagerRef.setShadowTreeRegistry(&shadowTreeRegistry_);
   uiManagerRef.setComponentDescriptorRegistry(componentDescriptorRegistry_);
@@ -83,8 +86,8 @@ void Scheduler::startSurface(
     const LayoutContext &layoutContext) const {
   SystraceSection s("Scheduler::startSurface");
 
-  auto shadowTree =
-      std::make_unique<ShadowTree>(surfaceId, layoutConstraints, layoutContext);
+  auto shadowTree = std::make_unique<ShadowTree>(
+      surfaceId, layoutConstraints, layoutContext, *rootComponentDescriptor_);
   shadowTree->setDelegate(this);
 
   shadowTreeRegistry_.add(std::move(shadowTree));

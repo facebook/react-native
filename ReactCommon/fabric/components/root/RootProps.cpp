@@ -32,6 +32,11 @@ static YGStyle yogaStyleFromLayoutConstraints(
   return yogaStyle;
 }
 
+RootProps::RootProps(const RootProps &sourceProps, const RawProps &rawProps) {
+  // `RootProps` cannot be constructed from `RawProps`.
+  assert(false);
+}
+
 RootProps::RootProps(
     const RootProps &sourceProps,
     const LayoutConstraints &layoutConstraints,

@@ -5,6 +5,7 @@
 
 #include "ShadowTree.h"
 
+#include <react/components/root/RootComponentDescriptor.h>
 #include <react/core/LayoutContext.h>
 #include <react/core/LayoutPrimitives.h>
 #include <react/debug/SystraceSection.h>
@@ -79,7 +80,8 @@ static void updateMountedFlag(
 ShadowTree::ShadowTree(
     SurfaceId surfaceId,
     const LayoutConstraints &layoutConstraints,
-    const LayoutContext &layoutContext)
+    const LayoutContext &layoutContext,
+    const RootComponentDescriptor &rootComponentDescriptor)
     : surfaceId_(surfaceId) {
   const auto noopEventEmitter = std::make_shared<const ViewEventEmitter>(
       nullptr, -1, std::shared_ptr<const EventDispatcher>());
@@ -87,16 +89,13 @@ ShadowTree::ShadowTree(
   const auto props = std::make_shared<const RootProps>(
       *RootShadowNode::defaultSharedProps(), layoutConstraints, layoutContext);
 
-  rootShadowNode_ = std::make_shared<RootShadowNode>(
-      ShadowNodeFragment{
+  rootShadowNode_ = std::static_pointer_cast<const RootShadowNode>(
+      rootComponentDescriptor.createShadowNode(ShadowNodeFragment{
           .tag = surfaceId,
           .rootTag = surfaceId,
           .props = props,
           .eventEmitter = noopEventEmitter,
-      },
-      [](const ShadowNode &shadowNode, const ShadowNodeFragment &fragment) {
-        return std::make_shared<RootShadowNode>(shadowNode, fragment);
-      });
+      }));
 }
 
 ShadowTree::~ShadowTree() {

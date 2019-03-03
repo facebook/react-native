@@ -8,6 +8,7 @@
 #include <memory>
 #include <mutex>
 
+#include <react/components/root/RootComponentDescriptor.h>
 #include <react/config/ReactNativeConfig.h>
 #include <react/core/ComponentDescriptor.h>
 #include <react/core/LayoutConstraints.h>
@@ -99,6 +100,7 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
  private:
   SchedulerDelegate *delegate_;
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
+  std::unique_ptr<const RootComponentDescriptor> rootComponentDescriptor_;
   ShadowTreeRegistry shadowTreeRegistry_;
   RuntimeExecutor runtimeExecutor_;
   std::shared_ptr<UIManagerBinding> uiManagerBinding_;
