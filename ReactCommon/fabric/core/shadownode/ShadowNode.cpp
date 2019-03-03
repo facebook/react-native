@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include <react/core/ComponentDescriptor.h>
 #include <react/core/ShadowNodeFragment.h>
 #include <react/debug/DebugStringConvertible.h>
 #include <react/debug/debugStringConvertibleUtils.h>
@@ -26,14 +27,14 @@ SharedShadowNodeSharedList ShadowNode::emptySharedShadowNodeSharedList() {
 
 ShadowNode::ShadowNode(
     const ShadowNodeFragment &fragment,
-    const ShadowNodeCloneFunction &cloneFunction)
+    const ComponentDescriptor &componentDescriptor)
     : tag_(fragment.tag),
       rootTag_(fragment.rootTag),
       props_(fragment.props),
       eventEmitter_(fragment.eventEmitter),
       children_(fragment.children ?: emptySharedShadowNodeSharedList()),
       state_(fragment.state),
-      cloneFunction_(cloneFunction),
+      componentDescriptor_(componentDescriptor),
       childrenAreShared_(true),
       revision_(1) {
   assert(props_);
@@ -50,7 +51,7 @@ ShadowNode::ShadowNode(
       children_(fragment.children ?: sourceShadowNode.children_),
       localData_(fragment.localData ?: sourceShadowNode.localData_),
       state_(fragment.state ?: sourceShadowNode.getCommitedState()),
-      cloneFunction_(sourceShadowNode.cloneFunction_),
+      componentDescriptor_(sourceShadowNode.componentDescriptor_),
       childrenAreShared_(true),
       revision_(sourceShadowNode.revision_ + 1) {
   assert(props_);
@@ -58,8 +59,7 @@ ShadowNode::ShadowNode(
 }
 
 UnsharedShadowNode ShadowNode::clone(const ShadowNodeFragment &fragment) const {
-  assert(cloneFunction_);
-  return cloneFunction_(*this, fragment);
+  return componentDescriptor_.cloneShadowNode(*this, fragment);
 }
 
 #pragma mark - Getters

@@ -62,8 +62,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     assert(std::dynamic_pointer_cast<const ConcreteEventEmitter>(
         fragment.eventEmitter));
 
-    auto shadowNode =
-        std::make_shared<ShadowNodeT>(fragment, getCloneFunction());
+    auto shadowNode = std::make_shared<ShadowNodeT>(fragment, *this);
 
     adopt(shadowNode);
 
@@ -136,20 +135,6 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
 
  private:
   mutable EventDispatcher::Shared eventDispatcher_{nullptr};
-
-  mutable ShadowNodeCloneFunction cloneFunction_;
-
-  ShadowNodeCloneFunction getCloneFunction() const {
-    if (!cloneFunction_) {
-      cloneFunction_ = [this](
-                           const ShadowNode &shadowNode,
-                           const ShadowNodeFragment &fragment) {
-        return this->cloneShadowNode(shadowNode, fragment);
-      };
-    }
-
-    return cloneFunction_;
-  }
 };
 
 } // namespace react

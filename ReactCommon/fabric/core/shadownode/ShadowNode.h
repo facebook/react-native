@@ -22,6 +22,7 @@
 namespace facebook {
 namespace react {
 
+class ComponentDescriptor;
 struct ShadowNodeFragment;
 
 class ShadowNode;
@@ -32,10 +33,6 @@ using UnsharedShadowNode = std::shared_ptr<ShadowNode>;
 using SharedShadowNodeList = std::vector<SharedShadowNode>;
 using SharedShadowNodeSharedList = std::shared_ptr<const SharedShadowNodeList>;
 using SharedShadowNodeUnsharedList = std::shared_ptr<SharedShadowNodeList>;
-
-using ShadowNodeCloneFunction = std::function<UnsharedShadowNode(
-    const ShadowNode &sourceShadowNode,
-    const ShadowNodeFragment &fragment)>;
 
 class ShadowNode : public virtual Sealable,
                    public virtual DebugStringConvertible,
@@ -53,7 +50,7 @@ class ShadowNode : public virtual Sealable,
    */
   ShadowNode(
       const ShadowNodeFragment &fragment,
-      const ShadowNodeCloneFunction &cloneFunction);
+      const ComponentDescriptor &componentDescriptor);
 
   /*
    * Creates a Shadow Node via cloning given `sourceShadowNode` and
@@ -165,10 +162,10 @@ class ShadowNode : public virtual Sealable,
   void cloneChildrenIfShared();
 
   /*
-   * A reference to a cloning function that understands how to clone
-   * the specific type of ShadowNode.
+   * A reference to a concrete `ComponentDescriptor` that manages nodes of this
+   * type.
    */
-  ShadowNodeCloneFunction cloneFunction_;
+  const ComponentDescriptor &componentDescriptor_;
 
   /*
    * Indicates that `children` list is shared between nodes and need
