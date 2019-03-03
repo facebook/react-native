@@ -467,10 +467,11 @@ void Binding::setPixelDensity(float pointScaleFactor) {
 
 void Binding::schedulerDidRequestPreliminaryViewAllocation(
     const SurfaceId surfaceId,
-    bool isLayoutable,
     const ShadowView &shadowView) {
 
-  if (isLayoutable) {
+  bool isLayoutableShadowNode = shadowView.layoutMetrics != EmptyLayoutMetrics;
+
+  if (isLayoutableShadowNode) {
     static auto preallocateView =
         jni::findClassStatic(UIManagerJavaDescriptor)
             ->getMethod<void(jint, jint, jstring, ReadableMap::javaobject)>("preallocateView");

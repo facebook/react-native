@@ -33,12 +33,10 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
     [scheduler.delegate schedulerDidFinishTransaction:mutations rootTag:rootTag];
   }
 
-  void schedulerDidRequestPreliminaryViewAllocation(
-      SurfaceId surfaceId,
-      bool isLayoutable,
-      const ShadowView &shadowView) override
+  void schedulerDidRequestPreliminaryViewAllocation(SurfaceId surfaceId, const ShadowView &shadowView) override
   {
-    if (!isLayoutable) {
+    bool isLayoutableShadowNode = shadowView.layoutMetrics != EmptyLayoutMetrics;
+    if (!isLayoutableShadowNode) {
       return;
     }
 

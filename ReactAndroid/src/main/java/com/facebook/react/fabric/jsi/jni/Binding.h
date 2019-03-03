@@ -64,7 +64,6 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
 
   void schedulerDidRequestPreliminaryViewAllocation(
       const SurfaceId surfaceId,
-      bool isLayoutable,
       const ShadowView &shadowView);
 
   void setPixelDensity(float pointScaleFactor);
