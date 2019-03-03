@@ -59,29 +59,22 @@ void ParagraphShadowNode::updateLocalDataIfNeeded() {
 
 Size ParagraphShadowNode::measure(LayoutConstraints layoutConstraints) const {
   AttributedString attributedString = getAttributedString();
-  const ParagraphAttributes attributes = getProps()->paragraphAttributes;
-
-  auto makeMeasurements = [&] {
-    return textLayoutManager_->measure(
-        attributedString, getProps()->paragraphAttributes, layoutConstraints);
-  };
+  const ParagraphAttributes paragraphAttributes =
+      getProps()->paragraphAttributes;
 
   // Cache results of this function so we don't need to call measure()
-  // repeatedly
-  if (measureCache_ != nullptr) {
-    ParagraphMeasurementCacheKey cacheKey =
-        std::make_tuple(attributedString, attributes, layoutConstraints);
-    if (measureCache_->exists(cacheKey)) {
-      return measureCache_->get(cacheKey);
-    }
-
-    auto measuredSize = makeMeasurements();
-    measureCache_->set(cacheKey, measuredSize);
-
-    return measuredSize;
+  // repeatedly.
+  if (measureCache_) {
+    return measureCache_->get(
+        ParagraphMeasurementCacheKey{attributedString, paragraphAttributes, layoutConstraints},
+        [&](const ParagraphMeasurementCacheKey &key) {
+          return textLayoutManager_->measure(
+              attributedString, paragraphAttributes, layoutConstraints);
+        });
   }
 
-  return makeMeasurements();
+  return textLayoutManager_->measure(
+      attributedString, paragraphAttributes, layoutConstraints);
 }
 
 void ParagraphShadowNode::layout(LayoutContext layoutContext) {
