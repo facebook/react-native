@@ -461,16 +461,24 @@ void Binding::setPixelDensity(float pointScaleFactor) {
 
 void Binding::schedulerDidRequestPreliminaryViewAllocation(
     const SurfaceId surfaceId,
-    const ComponentName componentName,
     bool isLayoutable,
-    const ComponentHandle componentHandle) {
+    const ShadowView &shadowView) {
   if (isLayoutable) {
     static auto preallocateView =
         jni::findClassStatic(UIManagerJavaDescriptor)
-            ->getMethod<void(jint, jstring)>("preallocateView");
+            ->getMethod<void(jint, jint, jstring, ReadableMap::javaobject)>("preallocateView");
 
-    preallocateView(
-        javaUIManager_, surfaceId, make_jstring(componentName).get());
+    // TODO: T31905686 Experiment to check what is the impact on TTI of pre loading of Images during
+    // pre-allocation of views
+    if (shadowView.componentName == "Image") {
+      local_ref<ReadableMap::javaobject> readableMap =
+          castReadableMap(ReadableNativeMap::newObjectCxxArgs(shadowView.props->rawProps));
+      preallocateView(
+          javaUIManager_, surfaceId, shadowView.tag, make_jstring(shadowView.componentName).get(), readableMap.get());
+    } else {
+      preallocateView(
+          javaUIManager_, surfaceId, shadowView.tag, make_jstring(shadowView.componentName).get(), nullptr);
+    }
   }
 }
 

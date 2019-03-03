@@ -172,6 +172,10 @@ public class MountingManager {
     UiThreadUtil.assertOnUiThread();
     View view = null;
     ViewManager viewManager = null;
+
+    // This can be possible if the view was already pre-allocated
+    if (mTagToViewState.get(reactTag) != null) return;
+
     if (!isVirtual) {
       viewManager = mViewManagerRegistry.get(componentName);
       view = mViewPool.getOrCreateView(componentName, themedReactContext);
@@ -271,8 +275,15 @@ public class MountingManager {
   }
 
   @UiThread
-  public void preallocateView(ThemedReactContext reactContext, String componentName) {
-    mViewPool.createView(reactContext, componentName);
+  public void preallocateView(
+    ThemedReactContext reactContext,
+    String componentName,
+    int reactTag,
+    ReadableMap props) {
+    createView(reactContext, componentName, reactTag, false);
+    if (props != null) {
+      updateProps(reactTag, props);
+    }
   }
 
   @UiThread

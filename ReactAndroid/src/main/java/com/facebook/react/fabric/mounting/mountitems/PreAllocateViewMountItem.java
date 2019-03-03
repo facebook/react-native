@@ -6,6 +6,7 @@
  */
 package com.facebook.react.fabric.mounting.mountitems;
 
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 
@@ -16,17 +17,21 @@ public class PreAllocateViewMountItem implements MountItem {
 
   private final String mComponent;
   private final int mRootTag;
+  private final int mReactTag;
+  private final ReadableMap mProps;
   private final ThemedReactContext mContext;
 
-  public PreAllocateViewMountItem(ThemedReactContext context, int rootTag, String component){
+  public PreAllocateViewMountItem(ThemedReactContext context, int rootTag, int reactTag, String component, ReadableMap props){
     mContext = context;
     mComponent = component;
     mRootTag = rootTag;
+    mProps = props;
+    mReactTag = reactTag;
   }
 
   @Override
   public void execute(MountingManager mountingManager) {
-    mountingManager.preallocateView(mContext, mComponent);
+    mountingManager.preallocateView(mContext, mComponent, mReactTag, mProps);
   }
 
   @Override
