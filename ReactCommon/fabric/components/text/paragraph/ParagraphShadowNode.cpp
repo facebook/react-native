@@ -59,6 +59,11 @@ void ParagraphShadowNode::updateLocalDataIfNeeded() {
 
 Size ParagraphShadowNode::measure(LayoutConstraints layoutConstraints) const {
   AttributedString attributedString = getAttributedString();
+
+  if (attributedString.isEmpty()) {
+    return {0, 0};
+  }
+
   const ParagraphAttributes paragraphAttributes =
       getProps()->paragraphAttributes;
 
