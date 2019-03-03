@@ -7,7 +7,6 @@
 #include "EventEmitterWrapper.h"
 #include "ReactNativeConfigHolder.h"
 
-#include <android/log.h>
 #include <fb/fbjni.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
