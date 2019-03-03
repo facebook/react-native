@@ -116,7 +116,7 @@ static void calculateShadowViewMutations(
     const auto &newChildPair = newChildPairs[index];
 
     insertMutations.push_back(ShadowViewMutation::InsertMutation(
-        parentShadowView, newChildPair.shadowView, index));
+          parentShadowView, newChildPair.shadowView, index));
 
     insertedPairs.insert({newChildPair.shadowView.tag, newChildPair});
   }

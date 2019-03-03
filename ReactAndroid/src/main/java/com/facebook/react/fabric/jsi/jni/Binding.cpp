@@ -402,8 +402,10 @@ void Binding::schedulerDidFinishTransaction(
           mountItems[position++] =
               createInsertMountItem(javaUIManager_, mutation);
 
-          mountItems[position++] =
-              createUpdatePropsMountItem(javaUIManager_, mutation);
+          if (mutation.newChildShadowView.props->revision != 0) {
+            mountItems[position++] =
+                createUpdatePropsMountItem(javaUIManager_, mutation);
+          }
 
           auto updateLayoutMountItem =
               createUpdateLayoutMountItem(javaUIManager_, mutation);
