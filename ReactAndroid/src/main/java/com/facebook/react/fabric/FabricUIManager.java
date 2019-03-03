@@ -38,7 +38,6 @@ import com.facebook.react.fabric.jsi.EventEmitterWrapper;
 import com.facebook.react.fabric.jsi.FabricSoLoader;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.mountitems.BatchMountItem;
-import com.facebook.react.fabric.mounting.mountitems.CreateMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DeleteMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.InsertMountItem;
@@ -162,22 +161,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mMountingManager.removeRootView(reactRootTag);
     mReactContextForRootTag.remove(reactRootTag);
   }
-
-  @DoNotStrip
-  @SuppressWarnings("unused")
-  private MountItem createMountItem(
-      String componentName, int reactRootTag, int reactTag, boolean isVirtual, ReadableMap props) {
-    String component = sComponentNames.get(componentName);
-    if (component == null) {
-      throw new IllegalArgumentException("Unable to find component with name " + componentName);
-    }
-    ThemedReactContext reactContext = mReactContextForRootTag.get(reactRootTag);
-    if (reactContext == null) {
-      throw new IllegalArgumentException("Unable to find ReactContext for root: " + reactRootTag);
-    }
-    return new CreateMountItem(reactContext, component, reactTag, isVirtual, props);
-  }
-
+  
   @Override
   public void initialize() {
     mEventDispatcher.registerEventEmitter(FABRIC, new FabricEventEmitter(this));

@@ -17,7 +17,6 @@ import com.facebook.react.fabric.mounting.LayoutMetricsConversions;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.ViewPool;
 import com.facebook.react.fabric.mounting.mountitems.BatchMountItem;
-import com.facebook.react.fabric.mounting.mountitems.CreateMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DeleteMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.InsertMountItem;
@@ -94,7 +93,6 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
     FabricUIManager.class.getClass();
     GuardedFrameCallback.class.getClass();
     BatchMountItem.class.getClass();
-    CreateMountItem.class.getClass();
     DeleteMountItem.class.getClass();
     DispatchCommandMountItem.class.getClass();
     InsertMountItem.class.getClass();
