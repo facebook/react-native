@@ -468,9 +468,7 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
         jni::findClassStatic(UIManagerJavaDescriptor)
             ->getMethod<void(jint, jint, jstring, ReadableMap::javaobject)>("preallocateView");
 
-    // TODO: T31905686 Experiment to check what is the impact on TTI of pre loading of Images during
-    // pre-allocation of views
-    if (shadowView.componentName == "Image") {
+    if (shadowView.props->rawProps.isNull()) {
       local_ref<ReadableMap::javaobject> readableMap =
           castReadableMap(ReadableNativeMap::newObjectCxxArgs(shadowView.props->rawProps));
       preallocateView(
