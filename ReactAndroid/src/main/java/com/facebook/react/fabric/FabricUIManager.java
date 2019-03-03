@@ -18,6 +18,7 @@ import android.os.SystemClock;
 import android.support.annotation.GuardedBy;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
+import android.util.Log;
 import android.view.View;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
@@ -57,6 +58,7 @@ import com.facebook.react.uimanager.ViewManagerPropertyUpdater;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -69,6 +71,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   private static final String TAG = FabricUIManager.class.getSimpleName();
 
   private static final Map<String, String> sComponentNames = new HashMap<>();
+  private static final int FRAME_TIME_MS = 16;
+  private static final int MAX_TIME_IN_FRAME_FOR_NON_BATCHED_OPERATIONS_MS = 8;
 
   static {
     FabricSoLoader.staticInit();
@@ -101,7 +105,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   private List<MountItem> mMountItems = new ArrayList<>();
 
   @GuardedBy("mPreMountItemsLock")
-  private List<MountItem> mPreMountItems = new ArrayList<>();
+  private ArrayDeque<MountItem> mPreMountItems = new ArrayDeque<>();
 
   @ThreadConfined(UI)
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
@@ -302,58 +306,56 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     }
 
     if (UiThreadUtil.isOnUiThread()) {
-      flushMountItems();
+      dispatchMountItems();
     }
   }
 
   @UiThread
-  private void flushMountItems() {
-    if (!mIsMountingEnabled) {
-      FLog.w(
-          ReactConstants.TAG,
-          "Not flushing pending UI operations because of previously thrown Exception");
-      return;
+  private void dispatchMountItems() {
+    mRunStartTime = SystemClock.uptimeMillis();
+    List<MountItem> mountItemsToDispatch;
+    synchronized (mMountItemsLock) {
+      mountItemsToDispatch = mMountItems;
+      mMountItems = new ArrayList<>();
     }
 
-    try {
-      List<MountItem> preMountItemsToDispatch;
-      synchronized (mPreMountItemsLock) {
-        preMountItemsToDispatch = mPreMountItems;
-        mPreMountItems = new ArrayList<>();
-      }
-
-      mRunStartTime = SystemClock.uptimeMillis();
-      List<MountItem> mountItemsToDispatch;
-      synchronized (mMountItemsLock) {
-        mountItemsToDispatch = mMountItems;
-        mMountItems = new ArrayList<>();
-      }
-
-      long nonBatchedExecutionStartTime = SystemClock.uptimeMillis();
-      Systrace.beginSection(
+    Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-        "FabricUIManager::premountViews (" + preMountItemsToDispatch.size() + " batches)");
-      for (MountItem mountItem : preMountItemsToDispatch) {
-        mountItem.execute(mMountingManager);
-      }
-      mNonBatchedExecutionTime = SystemClock.uptimeMillis() - nonBatchedExecutionStartTime;
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+        "FabricUIManager::mountViews (" + mountItemsToDispatch.size() + " batches)");
 
-      Systrace.beginSection(
-          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-          "FabricUIManager::mountViews (" + mountItemsToDispatch.size() + " batches)");
-
-      long batchedExecutionStartTime = SystemClock.uptimeMillis();
-      for (MountItem mountItem : mountItemsToDispatch) {
-        mountItem.execute(mMountingManager);
-      }
-      mBatchedExecutionTime = SystemClock.uptimeMillis() - batchedExecutionStartTime;
-      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
-    } catch (Exception ex) {
-      FLog.e(ReactConstants.TAG, "Exception thrown when executing UIFrameGuarded", ex);
-      mIsMountingEnabled = false;
-      throw ex;
+    long batchedExecutionStartTime = SystemClock.uptimeMillis();
+    for (MountItem mountItem : mountItemsToDispatch) {
+      mountItem.execute(mMountingManager);
     }
+    mBatchedExecutionTime = SystemClock.uptimeMillis() - batchedExecutionStartTime;
+    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
+  }
+
+  @UiThread
+  private void dispatchPreMountItems(long frameTimeNanos) {
+    long nonBatchedExecutionStartTime = SystemClock.uptimeMillis();
+    Systrace.beginSection(
+      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+      "FabricUIManager::premountViews");
+
+    while (true) {
+      long timeLeftInFrame = FRAME_TIME_MS - ((System.nanoTime() - frameTimeNanos) / 1000000);
+      if (timeLeftInFrame < MAX_TIME_IN_FRAME_FOR_NON_BATCHED_OPERATIONS_MS) {
+        break;
+      }
+
+      MountItem preMountItemsToDispatch;
+      synchronized (mPreMountItemsLock) {
+        if (mPreMountItems.isEmpty()) {
+          break;
+        }
+        preMountItemsToDispatch = mPreMountItems.pollFirst();
+      }
+
+      preMountItemsToDispatch.execute(mMountingManager);
+    }
+    mNonBatchedExecutionTime = SystemClock.uptimeMillis() - nonBatchedExecutionStartTime;
+    Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
   }
 
   public void setBinding(Binding binding) {
@@ -454,7 +456,11 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       }
 
       try {
-        flushMountItems();
+
+        dispatchPreMountItems(frameTimeNanos);
+
+        dispatchMountItems();
+
       } catch (Exception ex) {
         FLog.i(ReactConstants.TAG, "Exception thrown when executing UIFrameGuarded", ex);
         mIsMountingEnabled = false;
