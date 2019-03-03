@@ -18,7 +18,6 @@ import android.os.SystemClock;
 import android.support.annotation.GuardedBy;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
-import android.util.Log;
 import android.view.View;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.ThreadConfined;
@@ -105,14 +104,15 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   private List<MountItem> mMountItems = new ArrayList<>();
 
   @GuardedBy("mPreMountItemsLock")
-  private ArrayDeque<MountItem> mPreMountItems = new ArrayDeque<>(
-    PRE_MOUNT_ITEMS_INITIAL_SIZE_ARRAY);
+  private ArrayDeque<MountItem> mPreMountItems =
+      new ArrayDeque<>(PRE_MOUNT_ITEMS_INITIAL_SIZE_ARRAY);
 
   @ThreadConfined(UI)
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
 
   @ThreadConfined(UI)
   private boolean mIsMountingEnabled = true;
+
   private long mRunStartTime = 0l;
   private long mBatchedExecutionTime = 0l;
   private long mNonBatchedExecutionTime = 0l;
@@ -193,7 +193,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   }
 
   @DoNotStrip
-  private void preallocateView(int rootTag, int reactTag, final String componentName, ReadableMap props, boolean isLayoutable) {
+  private void preallocateView(
+      int rootTag,
+      int reactTag,
+      final String componentName,
+      ReadableMap props,
+      boolean isLayoutable) {
     if (UiThreadUtil.isOnUiThread()) {
       // There is no reason to allocate views ahead of time on the main thread.
       return;
@@ -202,7 +207,8 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     ThemedReactContext context = mReactContextForRootTag.get(rootTag);
     String component = sComponentNames.get(componentName);
     synchronized (mPreMountItemsLock) {
-      mPreMountItems.add(new PreAllocateViewMountItem(context, rootTag, reactTag, component, props, isLayoutable));
+      mPreMountItems.add(
+          new PreAllocateViewMountItem(context, rootTag, reactTag, component, props, isLayoutable));
     }
   }
 
@@ -323,7 +329,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       mMountItems = new ArrayList<>();
     }
 
-
     // If there are MountItems to dispatch, we make sure all the "pre mount items" are executed
     ArrayDeque<MountItem> mPreMountItemsToDispatch = null;
     synchronized (mPreMountItemsLock) {
@@ -332,15 +337,22 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         mPreMountItems = new ArrayDeque<>(PRE_MOUNT_ITEMS_INITIAL_SIZE_ARRAY);
       }
     }
+    if (mPreMountItemsToDispatch != null) {
+      Systrace.beginSection(
+          Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
+          "FabricUIManager::mountViews preMountItems to execute: "
+              + mPreMountItemsToDispatch.size());
 
-    while (mPreMountItemsToDispatch != null && !mPreMountItemsToDispatch.isEmpty()) {
-      mPreMountItemsToDispatch.pollFirst().execute(mMountingManager);
+      while (!mPreMountItemsToDispatch.isEmpty()) {
+        mPreMountItemsToDispatch.pollFirst().execute(mMountingManager);
+      }
+
+      Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
-
 
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-        "FabricUIManager::mountViews (" + mountItemsToDispatch.size() + " batches)");
+        "FabricUIManager::mountViews mountItems to execute: " + mountItemsToDispatch.size());
 
     long batchedExecutionStartTime = SystemClock.uptimeMillis();
     for (MountItem mountItem : mountItemsToDispatch) {
@@ -353,9 +365,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @UiThread
   private void dispatchPreMountItems(long frameTimeNanos) {
     long nonBatchedExecutionStartTime = SystemClock.uptimeMillis();
-    Systrace.beginSection(
-      Systrace.TRACE_TAG_REACT_JAVA_BRIDGE,
-      "FabricUIManager::premountViews");
+    Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManager::premountViews");
 
     while (true) {
       long timeLeftInFrame = FRAME_TIME_MS - ((System.nanoTime() - frameTimeNanos) / 1000000);
