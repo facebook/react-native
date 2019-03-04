@@ -48,7 +48,9 @@ ImageSource ImageShadowNode::getImageSource() const {
   auto sources = getProps()->sources;
 
   if (sources.size() == 0) {
-    return {.type = ImageSource::Type::Invalid};
+    return {
+        /* .type = */ ImageSource::Type::Invalid,
+    };
   }
 
   if (sources.size() == 1) {
