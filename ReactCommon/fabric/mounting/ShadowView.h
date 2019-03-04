@@ -23,6 +23,8 @@ struct ShadowView final {
   ShadowView() = default;
   ShadowView(const ShadowView &shadowView) = default;
 
+  ~ShadowView(){};
+
   /*
    * Constructs a `ShadowView` from given `ShadowNode`.
    */
