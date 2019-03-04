@@ -184,6 +184,54 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   return YES;
 }
 
+- (NSString *)accessibilityValue
+{
+  NSMutableString *value = [NSMutableString stringWithString:@""];
+  NSDictionary *roleDescriptions = @{
+                                     @"alert" : @"alert",
+                                     @"checkbox" : @"checkbox",
+                                     @"combobox" : @"combo box",
+                                     @"editabletext" : @"edit",
+                                     @"menu" : @"menu",
+                                     @"menubar" : @"menu bar",
+                                     @"menuitem" : @"menu item",
+                                     @"progressbar" : @"progress bar",
+                                     @"radiobutton" : @"radio button",
+                                     @"radiogroup" : @"radio group",
+                                     @"scrollbar" : @"scroll bar",
+                                     @"spinbutton" : @"spin button",
+                                     @"switch" : @"switch",
+                                     @"tab" : @"tab",
+                                     @"tablist" : @"tab list",
+                                     @"timer" : @"timer",
+                                     @"toolbar" : @"tool bar",
+                                     };
+  NSDictionary *stateDescriptions = @{
+                                      @"on" : @"on",
+                                      @"off" : @"off",
+                                      @"checked" : @"checked",
+                                      @"unchecked" : @"not checked",
+                                      @"busy" : @"busy",
+                                      @"expanded" : @"expanded",
+                                      @"collapsed" : @"collapsed",
+                                      };
+  NSString *roleDescription = _accessibilityRole ? roleDescriptions[_accessibilityRole]: nil;
+  if (roleDescription) {
+    [value appendString:roleDescription];
+  }
+  for (NSString *state in _accessibilityStates) {
+    NSString *stateDescription =state ? stateDescriptions[state] : nil;
+    if (stateDescription) {
+        [value appendString:@" "];
+    [value appendString:stateDescription];
+    }
+  }
+  if (value.length > 0) {
+    return value;
+  }
+  return nil;
+}
+
 - (void)setPointerEvents:(RCTPointerEvents)pointerEvents
 {
   _pointerEvents = pointerEvents;
