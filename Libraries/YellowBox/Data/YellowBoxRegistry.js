@@ -18,7 +18,7 @@ export type Registry = Map<Category, $ReadOnlyArray<YellowBoxWarning>>;
 
 export type Observer = (registry: Registry) => void;
 
-type IgnorePattern = string | RegExp;
+export type IgnorePattern = string | RegExp;
 
 export type Subscription = $ReadOnly<{|
   unsubscribe: () => void,
