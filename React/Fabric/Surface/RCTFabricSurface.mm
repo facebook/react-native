@@ -12,9 +12,9 @@
 #import <React/RCTAssert.h>
 #import <React/RCTSurfaceDelegate.h>
 #import <React/RCTSurfaceRootView.h>
-#import <React/RCTSurfaceView.h>
-#import <React/RCTSurfaceView+Internal.h>
 #import <React/RCTSurfaceTouchHandler.h>
+#import <React/RCTSurfaceView+Internal.h>
+#import <React/RCTSurfaceView.h>
 #import <React/RCTUIManagerUtils.h>
 #import <React/RCTUtils.h>
 
@@ -189,12 +189,9 @@
 
 #pragma mark - Layout
 
-- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize
-                      maximumSize:(CGSize)maximumSize
+- (CGSize)sizeThatFitsMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize
 {
-  return [_surfacePresenter sizeThatFitsMinimumSize:minimumSize
-                                        maximumSize:maximumSize
-                                            surface:self];
+  return [_surfacePresenter sizeThatFitsMinimumSize:minimumSize maximumSize:maximumSize surface:self];
 }
 
 #pragma mark - Size Constraints
@@ -204,13 +201,11 @@
   [self setMinimumSize:size maximumSize:size];
 }
 
-- (void)setMinimumSize:(CGSize)minimumSize
-           maximumSize:(CGSize)maximumSize
+- (void)setMinimumSize:(CGSize)minimumSize maximumSize:(CGSize)maximumSize
 {
   {
     std::lock_guard<std::mutex> lock(_mutex);
-    if (CGSizeEqualToSize(minimumSize, _minimumSize) &&
-        CGSizeEqualToSize(maximumSize, _maximumSize)) {
+    if (CGSizeEqualToSize(minimumSize, _minimumSize) && CGSizeEqualToSize(maximumSize, _maximumSize)) {
       return;
     }
 
@@ -218,9 +213,7 @@
     _minimumSize = minimumSize;
   }
 
-  [_surfacePresenter setMinimumSize:minimumSize
-                        maximumSize:maximumSize
-                            surface:self];
+  [_surfacePresenter setMinimumSize:minimumSize maximumSize:maximumSize surface:self];
 }
 
 - (CGSize)minimumSize

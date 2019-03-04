@@ -13,7 +13,7 @@
 const React = require('react');
 const ReactNative = require('react-native');
 const {
-  AlertIOS,
+  Alert,
   PushNotificationIOS,
   StyleSheet,
   Text,
@@ -110,20 +110,16 @@ class NotificationExample extends React.Component<{}> {
   }
 
   _onRegistered(deviceToken) {
-    AlertIOS.alert(
-      'Registered For Remote Push',
-      `Device Token: ${deviceToken}`,
-      [
-        {
-          text: 'Dismiss',
-          onPress: null,
-        },
-      ],
-    );
+    Alert.alert('Registered For Remote Push', `Device Token: ${deviceToken}`, [
+      {
+        text: 'Dismiss',
+        onPress: null,
+      },
+    ]);
   }
 
   _onRegistrationError(error) {
-    AlertIOS.alert(
+    Alert.alert(
       'Failed To Register For Remote Push',
       `Error (${error.code}): ${error.message}`,
       [
@@ -142,7 +138,7 @@ class NotificationExample extends React.Component<{}> {
       category: ${notification.getCategory()};\n
       content-available: ${notification.getContentAvailable()}.`;
 
-    AlertIOS.alert('Push Notification Received', result, [
+    Alert.alert('Push Notification Received', result, [
       {
         text: 'Dismiss',
         onPress: null,
@@ -151,7 +147,7 @@ class NotificationExample extends React.Component<{}> {
   }
 
   _onLocalNotification(notification) {
-    AlertIOS.alert(
+    Alert.alert(
       'Local Notification Received',
       'Alert message: ' + notification.getMessage(),
       [

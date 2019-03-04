@@ -6,31 +6,29 @@ target 'RNTester' do
 
   project 'RNTesterPods.xcodeproj'
 
-  pod 'React', :path => '../', :subspecs => [
-    'ART',
-    'Core',
-    'CxxBridge',
-    'DevSupport',
-    'RCTActionSheet',
-    'RCTAnimation',
-    'RCTBlob',
-    'RCTCameraRoll',
-    'RCTGeolocation',
-    'RCTImage',
-    'RCTLinkingIOS',
-    'RCTNetwork',
-    'RCTPushNotification',
-    'RCTSettings',
-    'RCTText',
-    'RCTVibration',
-    'RCTWebSocket',
+  pod 'React', :path => '../'
+  pod 'React-ART', :path => '../Libraries/ART'
+  pod 'React-Core', :path => '../React'
+  pod 'React-DevSupport', :path => '../React'
+  pod 'React-fishhook', :path => '../Libraries/fishhook'
+  pod 'React-RCTActionSheet', :path => '../Libraries/ActionSheetIOS'
+  pod 'React-RCTAnimation', :path => '../Libraries/NativeAnimation'
+  pod 'React-RCTBlob', :path => '../Libraries/Blob'
+  pod 'React-RCTCameraRoll', :path => '../Libraries/CameraRoll'
+  pod 'React-RCTGeolocation', :path => '../Libraries/Geolocation'
+  pod 'React-RCTImage', :path => '../Libraries/Image'
+  pod 'React-RCTLinking', :path => '../Libraries/LinkingIOS'
+  pod 'React-RCTNetwork', :path => '../Libraries/Network'
+  pod 'React-RCTPushNotification', :path => '../Libraries/PushNotificationIOS'
+  pod 'React-RCTSettings', :path => '../Libraries/Settings'
+  pod 'React-RCTText', :path => '../Libraries/Text'
+  pod 'React-RCTVibration', :path => '../Libraries/Vibration'
+  pod 'React-RCTWebSocket', :path => '../Libraries/WebSocket'
 
-    # Below this line is Fabric (experimental) specific.
-    # Currently they are disabled due to missing pre-reqs, e.g. upgrading Folly.
-    # 'RCTFabric',
-    # 'RCTFabricSample', # This is RNTesterPods specific sample.
-  ]
-
+  pod 'React-cxxreact', :path => '../ReactCommon/cxxreact'
+  pod 'React-jsi', :path => '../ReactCommon/jsi'
+  pod 'React-jsiexecutor', :path => '../ReactCommon/jsiexecutor'
+  pod 'React-jsinspector', :path => '../ReactCommon/jsinspector'
   pod 'yoga', :path => '../ReactCommon/yoga'
 
   # Third party deps podspec link

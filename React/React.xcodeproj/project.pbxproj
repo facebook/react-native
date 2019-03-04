@@ -794,6 +794,9 @@
 		3DFE0D1B1DF8575800459392 /* YGMacros.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 130A77041DF767AF001F9587 /* YGMacros.h */; };
 		3DFE0D1C1DF8575800459392 /* Yoga.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 130A77081DF767AF001F9587 /* Yoga.h */; };
 		3EDCA8A51D3591E700450C31 /* RCTErrorInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 3EDCA8A41D3591E700450C31 /* RCTErrorInfo.m */; };
+		4F56C93822167A4800DB9F3F /* jsilib.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F56C93722167A4800DB9F3F /* jsilib.h */; };
+		4F56C93922167A4D00DB9F3F /* jsilib.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 4F56C93722167A4800DB9F3F /* jsilib.h */; };
+		4F56C93A2216A3B700DB9F3F /* jsilib.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 4F56C93722167A4800DB9F3F /* jsilib.h */; };
 		50E98FEA21460B0D00CD9289 /* RCTWKWebViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 50E98FE621460B0D00CD9289 /* RCTWKWebViewManager.m */; };
 		50E98FEB21460B0D00CD9289 /* RCTWKWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 50E98FE721460B0D00CD9289 /* RCTWKWebView.h */; };
 		50E98FEC21460B0D00CD9289 /* RCTWKWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 50E98FE821460B0D00CD9289 /* RCTWKWebView.m */; };
@@ -1074,6 +1077,12 @@
 		AC90463F21C91D02005B24B3 /* CompactValue.h in Headers */ = {isa = PBXBuildFile; fileRef = AC90463D21C91CC2005B24B3 /* CompactValue.h */; };
 		AC90464021C91D14005B24B3 /* CompactValue.h in Headers */ = {isa = PBXBuildFile; fileRef = AC90463D21C91CC2005B24B3 /* CompactValue.h */; };
 		AC90464121C91DB8005B24B3 /* YGConfig.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5CE2080120772F7C009A43B3 /* YGConfig.h */; };
+		ACC75C54221AA188002F24E8 /* log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACC75C53221AA188002F24E8 /* log.cpp */; };
+		ACC75C56221AA194002F24E8 /* log.h in Headers */ = {isa = PBXBuildFile; fileRef = ACC75C55221AA194002F24E8 /* log.h */; };
+		ACC75C57221AA1BD002F24E8 /* log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACC75C53221AA188002F24E8 /* log.cpp */; };
+		ACC75C58221AA1CF002F24E8 /* log.h in Headers */ = {isa = PBXBuildFile; fileRef = ACC75C55221AA194002F24E8 /* log.h */; };
+		ACC75C59221AA1E1002F24E8 /* log.h in Headers */ = {isa = PBXBuildFile; fileRef = ACC75C55221AA194002F24E8 /* log.h */; };
+		ACC75C5A221AA1EA002F24E8 /* log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACC75C53221AA188002F24E8 /* log.cpp */; };
 		B233E6EA1D2D845D00BC68BA /* RCTI18nManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B233E6E91D2D845D00BC68BA /* RCTI18nManager.m */; };
 		B95154321D1B34B200FE7B80 /* RCTActivityIndicatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = B95154311D1B34B200FE7B80 /* RCTActivityIndicatorView.m */; };
 		BA0501AD2109DCF200A6BBC4 /* ReactMarker.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 13DA8A2F2097A90A00276ED4 /* ReactMarker.h */; };
@@ -1101,13 +1110,11 @@
 		E223624420875A8000108244 /* JSExecutor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E223624320875A8000108244 /* JSExecutor.cpp */; };
 		E9B20B7B1B500126007A2DA7 /* RCTAccessibilityManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E9B20B7A1B500126007A2DA7 /* RCTAccessibilityManager.m */; };
 		EBF21BBC1FC498270052F4D5 /* InspectorInterfaces.h in Headers */ = {isa = PBXBuildFile; fileRef = EBF21BBA1FC498270052F4D5 /* InspectorInterfaces.h */; };
-		EBF21BBD1FC498270052F4D5 /* InspectorInterfaces.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBF21BBB1FC498270052F4D5 /* InspectorInterfaces.cpp */; };
 		EBF21BBE1FC498630052F4D5 /* InspectorInterfaces.h in Headers */ = {isa = PBXBuildFile; fileRef = EBF21BBA1FC498270052F4D5 /* InspectorInterfaces.h */; };
 		EBF21BFB1FC498FC0052F4D5 /* InspectorInterfaces.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = EBF21BBA1FC498270052F4D5 /* InspectorInterfaces.h */; };
 		EBF21BFC1FC4990B0052F4D5 /* InspectorInterfaces.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBF21BBB1FC498270052F4D5 /* InspectorInterfaces.cpp */; };
 		EBF21BFE1FC499840052F4D5 /* InspectorInterfaces.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = EBF21BBA1FC498270052F4D5 /* InspectorInterfaces.h */; };
 		EBF21BFF1FC4998E0052F4D5 /* InspectorInterfaces.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBF21BBB1FC498270052F4D5 /* InspectorInterfaces.cpp */; };
-		EBF21C001FC499A80052F4D5 /* InspectorInterfaces.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBF21BBB1FC498270052F4D5 /* InspectorInterfaces.cpp */; };
 		ED296F82214C973700B7C4FE /* libjsinspector-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EBF21BFA1FC4989A0052F4D5 /* libjsinspector-tvOS.a */; };
 		ED296F83214C974A00B7C4FE /* libyoga.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D3C06751DE3340C00C268FA /* libyoga.a */; };
 		ED296FB7214C9A9A00B7C4FE /* JSIDynamic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDEBC6DA214B3F6800DD5AC8 /* JSIDynamic.cpp */; };
@@ -1755,6 +1762,7 @@
 				ED296FC7214C9B4B00B7C4FE /* instrumentation.h in Copy Headers */,
 				ED296FC6214C9B4400B7C4FE /* JSIDynamic.h in Copy Headers */,
 				ED296FC5214C9B3E00B7C4FE /* jsi-inl.h in Copy Headers */,
+				4F56C93A2216A3B700DB9F3F /* jsilib.h in Copy Headers */,
 			);
 			name = "Copy Headers";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1782,6 +1790,7 @@
 				EDEBC71D214B40F900DD5AC8 /* JSIDynamic.h in Copy Headers */,
 				EDEBC71E214B40F900DD5AC8 /* JSCRuntime.h in Copy Headers */,
 				EDEBC71F214B40F900DD5AC8 /* jsi.h in Copy Headers */,
+				4F56C93922167A4D00DB9F3F /* jsilib.h in Copy Headers */,
 			);
 			name = "Copy Headers";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2060,6 +2069,7 @@
 		3EDCA8A21D3591E700450C31 /* RCTErrorCustomizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTErrorCustomizer.h; sourceTree = "<group>"; };
 		3EDCA8A31D3591E700450C31 /* RCTErrorInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTErrorInfo.h; sourceTree = "<group>"; };
 		3EDCA8A41D3591E700450C31 /* RCTErrorInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTErrorInfo.m; sourceTree = "<group>"; };
+		4F56C93722167A4800DB9F3F /* jsilib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jsilib.h; sourceTree = "<group>"; };
 		50E98FE621460B0D00CD9289 /* RCTWKWebViewManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTWKWebViewManager.m; sourceTree = "<group>"; };
 		50E98FE721460B0D00CD9289 /* RCTWKWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTWKWebView.h; sourceTree = "<group>"; };
 		50E98FE821460B0D00CD9289 /* RCTWKWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTWKWebView.m; sourceTree = "<group>"; };
@@ -2206,6 +2216,8 @@
 		AC70D2EB1DE48A22002E6351 /* JSBundleType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JSBundleType.cpp; sourceTree = "<group>"; };
 		AC8360CC21B0256A00FC46B9 /* YGMarker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YGMarker.h; sourceTree = "<group>"; };
 		AC90463D21C91CC2005B24B3 /* CompactValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CompactValue.h; sourceTree = "<group>"; };
+		ACC75C53221AA188002F24E8 /* log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = log.cpp; sourceTree = "<group>"; };
+		ACC75C55221AA194002F24E8 /* log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = log.h; sourceTree = "<group>"; };
 		ACDD3FDA1BC7430D00E7DE33 /* RCTBorderStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTBorderStyle.h; sourceTree = "<group>"; };
 		B233E6E81D2D843200BC68BA /* RCTI18nManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = RCTI18nManager.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		B233E6E91D2D845D00BC68BA /* RCTI18nManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTI18nManager.m; sourceTree = "<group>"; };
@@ -2328,6 +2340,8 @@
 		130A77021DF767AF001F9587 /* yoga */ = {
 			isa = PBXGroup;
 			children = (
+				ACC75C55221AA194002F24E8 /* log.h */,
+				ACC75C53221AA188002F24E8 /* log.cpp */,
 				AC4A6AF821FB4EA900FBEC39 /* YGMarker.cpp */,
 				AC52CEDD21FB3FF9003C6BEC /* instrumentation.h */,
 				AC90463D21C91CC2005B24B3 /* CompactValue.h */,
@@ -3042,6 +3056,7 @@
 				EDEBC6DF214B3F6800DD5AC8 /* BUCK */,
 				EDEBC6E0214B3F6800DD5AC8 /* instrumentation.h */,
 				EDEBC6E1214B3F6800DD5AC8 /* jsi.h */,
+				4F56C93722167A4800DB9F3F /* jsilib.h */,
 			);
 			path = jsi;
 			sourceTree = "<group>";
@@ -3250,6 +3265,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ACC75C58221AA1CF002F24E8 /* log.h in Headers */,
 				AC52CEE021FB403B003C6BEC /* instrumentation.h in Headers */,
 				AC90463F21C91D02005B24B3 /* CompactValue.h in Headers */,
 				AC6B69E821B146C500B2B68A /* YGValue.h in Headers */,
@@ -3316,6 +3332,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ACC75C59221AA1E1002F24E8 /* log.h in Headers */,
 				AC52CEDF21FB401D003C6BEC /* instrumentation.h in Headers */,
 				AC90464021C91D14005B24B3 /* CompactValue.h in Headers */,
 				AC6B69E521B1469A00B2B68A /* YGValue.h in Headers */,
@@ -3506,6 +3523,7 @@
 				3D80DA7C1DF820620028D040 /* RCTRefreshControlManager.h in Headers */,
 				59D031ED1F8353D3008361F0 /* RCTSafeAreaShadowView.h in Headers */,
 				3D80DA7D1DF820620028D040 /* RCTRootShadowView.h in Headers */,
+				ACC75C56221AA194002F24E8 /* log.h in Headers */,
 				134D63C31F1FEC4B008872B5 /* RCTCxxBridgeDelegate.h in Headers */,
 				657734901EE8354A00A0E9EA /* RCTInspectorPackagerConnection.h in Headers */,
 				3D7BFD1D1EA8E351008DFB7A /* RCTPackagerConnection.h in Headers */,
@@ -3592,6 +3610,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EDEBC6E9214B3F6800DD5AC8 /* jsi.h in Headers */,
+				4F56C93822167A4800DB9F3F /* jsilib.h in Headers */,
 				EDEBC6E7214B3F6800DD5AC8 /* JSCRuntime.h in Headers */,
 				EDEBC6E5214B3F6800DD5AC8 /* JSIDynamic.h in Headers */,
 				EDEBC6E2214B3F6800DD5AC8 /* jsi-inl.h in Headers */,
@@ -4231,7 +4250,6 @@
 				13134C871E296B2A00B9F3CB /* RCTCxxBridge.mm in Sources */,
 				CF2731C31E7B8DF30044CA4F /* RCTDeviceInfo.m in Sources */,
 				599FAA3F1FB274980058CCF6 /* RCTSurfaceRootShadowView.m in Sources */,
-				EBF21C001FC499A80052F4D5 /* InspectorInterfaces.cpp in Sources */,
 				597633371F4E021D005BE8A4 /* RCTShadowView+Internal.m in Sources */,
 				2D3B5EB11D9B090100451313 /* RCTAppState.m in Sources */,
 				59E604A31FE9CCE300BD90C5 /* RCTScrollContentViewManager.m in Sources */,
@@ -4344,6 +4362,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ACC75C5A221AA1EA002F24E8 /* log.cpp in Sources */,
 				AC4A6AFA21FB4EBF00FBEC39 /* YGMarker.cpp in Sources */,
 				AC6B69E721B146B400B2B68A /* YGValue.cpp in Sources */,
 				AC8360D121B025BC00FC46B9 /* YGConfig.cpp in Sources */,
@@ -4361,6 +4380,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ACC75C57221AA1BD002F24E8 /* log.cpp in Sources */,
 				AC4A6AFB21FB4ECA00FBEC39 /* YGMarker.cpp in Sources */,
 				AC6B69EA21B146E700B2B68A /* YGValue.cpp in Sources */,
 				BA0501B02109DD1800A6BBC4 /* YGConfig.cpp in Sources */,
@@ -4487,6 +4507,7 @@
 				59EDBCBB1FDF4E0C003573DE /* RCTScrollViewManager.m in Sources */,
 				599FAA441FB274980058CCF6 /* RCTSurfaceRootView.mm in Sources */,
 				C60669361F3CCF1B00E67165 /* RCTManagedPointer.mm in Sources */,
+				ACC75C54221AA188002F24E8 /* log.cpp in Sources */,
 				13B080261A694A8400A75B9A /* RCTWrapperViewController.m in Sources */,
 				A2440AA31DF8D854006E7BFC /* RCTReloadCommand.m in Sources */,
 				6577348F1EE8354A00A0E9EA /* RCTInspector.mm in Sources */,
@@ -4511,7 +4532,6 @@
 				59D031F71F8353D3008361F0 /* RCTSafeAreaViewLocalData.m in Sources */,
 				13E067571A70F44B002CDEE1 /* RCTView.m in Sources */,
 				3D7749441DC1065C007EC8D8 /* RCTPlatform.m in Sources */,
-				EBF21BBD1FC498270052F4D5 /* InspectorInterfaces.cpp in Sources */,
 				59EDBCAF1FDF4E0C003573DE /* RCTScrollContentView.m in Sources */,
 				13D9FEEE1CDCD93000158BD7 /* RCTKeyboardObserver.m in Sources */,
 				B233E6EA1D2D845D00BC68BA /* RCTI18nManager.m in Sources */,
@@ -4731,9 +4751,11 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_COMMA = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_WARN_SHADOW = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRIVATE_HEADERS_FOLDER_PATH = "/usr/local/include/double-conversion";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -4746,10 +4768,12 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_COMMA = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_WARN_SHADOW = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRIVATE_HEADERS_FOLDER_PATH = "/usr/local/include/double-conversion";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -4764,7 +4788,8 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_COMMA = NO;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				HEADER_SEARCH_PATHS = (
@@ -4787,7 +4812,8 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_COMMA = NO;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -4810,6 +4836,7 @@
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_WARN_COMMA = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
@@ -4829,6 +4856,7 @@
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_WARN_COMMA = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
@@ -4849,7 +4877,8 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_COMMA = NO;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				HEADER_SEARCH_PATHS = (
@@ -4873,7 +4902,8 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_COMMA = NO;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -4896,9 +4926,11 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_COMMA = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_WARN_SHADOW = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRIVATE_HEADERS_FOLDER_PATH = "/usr/local/include/double-conversion";
 				PRODUCT_NAME = "double-conversion";
@@ -4912,10 +4944,12 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_WARN_COMMA = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_WARN_SHADOW = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRIVATE_HEADERS_FOLDER_PATH = "/usr/local/include/double-conversion";
 				PRODUCT_NAME = "double-conversion";
@@ -4929,6 +4963,7 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_STATIC_ANALYZER_MODE = deep;
+				CLANG_WARN_COMMA = NO;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -4942,6 +4977,7 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_STATIC_ANALYZER_MODE = deep;
+				CLANG_WARN_COMMA = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				OTHER_LDFLAGS = "-ObjC";
@@ -4956,6 +4992,7 @@
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_WARN_COMMA = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
@@ -4974,6 +5011,7 @@
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_WARN_COMMA = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
@@ -4993,6 +5031,7 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_STATIC_ANALYZER_MODE = deep;
+				CLANG_WARN_COMMA = NO;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5007,6 +5046,7 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_STATIC_ANALYZER_MODE = deep;
+				CLANG_WARN_COMMA = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				OTHER_LDFLAGS = "-ObjC";
@@ -5022,6 +5062,7 @@
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_WARN_COMMA = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
@@ -5041,6 +5082,7 @@
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_WARN_COMMA = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
@@ -5180,6 +5222,7 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_STATIC_ANALYZER_MODE = deep;
+				CLANG_WARN_COMMA = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"RCT_DEBUG=1",
@@ -5205,6 +5248,7 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_STATIC_ANALYZER_MODE = deep;
+				CLANG_WARN_COMMA = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					"RCT_METRO_PORT=${RCT_METRO_PORT}",
@@ -5227,6 +5271,7 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_STATIC_ANALYZER_MODE = deep;
+				CLANG_WARN_COMMA = NO;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5241,6 +5286,7 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_STATIC_ANALYZER_MODE = deep;
+				CLANG_WARN_COMMA = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				OTHER_LDFLAGS = "-ObjC";
@@ -5256,6 +5302,7 @@
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_WARN_COMMA = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
@@ -5275,6 +5322,7 @@
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_WARN_COMMA = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
@@ -5293,6 +5341,7 @@
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_WARN_COMMA = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
@@ -5321,6 +5370,7 @@
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_WARN_COMMA = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
@@ -5349,6 +5399,7 @@
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_WARN_COMMA = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
@@ -5377,6 +5428,7 @@
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_WARN_COMMA = NO;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVES = YES;
@@ -5406,6 +5458,7 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_STATIC_ANALYZER_MODE = deep;
+				CLANG_WARN_COMMA = NO;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5420,6 +5473,7 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_STATIC_ANALYZER_MODE = deep;
+				CLANG_WARN_COMMA = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				OTHER_LDFLAGS = "-ObjC";
@@ -5435,6 +5489,7 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_STATIC_ANALYZER_MODE = deep;
+				CLANG_WARN_COMMA = NO;
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -5449,6 +5504,7 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_STATIC_ANALYZER_MODE = deep;
+				CLANG_WARN_COMMA = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
 				OTHER_LDFLAGS = "-ObjC";

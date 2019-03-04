@@ -15,6 +15,8 @@ typedef struct YGConfig* YGConfigRef;
 
 typedef YG_ENUM_BEGIN(YGMarker){
     YGMarkerLayout,
+    YGMarkerMeasure,
+    YGMarkerBaselineFn,
 } YG_ENUM_END(YGMarker);
 
 typedef struct {
@@ -25,8 +27,13 @@ typedef struct {
   int cachedMeasures;
 } YGMarkerLayoutData;
 
+typedef struct {
+  bool _unused;
+} YGMarkerNoData;
+
 typedef union {
   YGMarkerLayoutData* layout;
+  YGMarkerNoData* noData;
 } YGMarkerData;
 
 typedef struct {
@@ -55,16 +62,29 @@ struct MarkerData;
 template <>
 struct MarkerData<YGMarkerLayout> {
   using type = YGMarkerLayoutData;
+  static type*& get(YGMarkerData& d) {
+    return d.layout;
+  }
 };
+
+struct NoMarkerData {
+  using type = YGMarkerNoData;
+  static type*& get(YGMarkerData& d) {
+    return d.noData;
+  }
+};
+
+template <>
+struct MarkerData<YGMarkerMeasure> : NoMarkerData {};
+
+template <>
+struct MarkerData<YGMarkerBaselineFn> : NoMarkerData {};
 
 } // namespace detail
 
 template <YGMarker M>
-typename detail::MarkerData<M>::type* data(YGMarkerData) = delete;
-
-template <>
-inline YGMarkerLayoutData* data<YGMarkerLayout>(YGMarkerData d) {
-  return d.layout;
+typename detail::MarkerData<M>::type* data(YGMarkerData d) {
+  return detail::MarkerData<M>::get(d);
 }
 
 } // namespace marker

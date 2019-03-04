@@ -153,7 +153,7 @@ void CatalystInstanceImpl::initializeBridge(
        moduleMessageQueue_));
 
   instance_->initializeBridge(
-    folly::make_unique<JInstanceCallback>(
+    std::make_unique<JInstanceCallback>(
     callback,
     moduleMessageQueue_),
     jseh->getExecutorFactory(),

@@ -8,6 +8,7 @@
 package com.facebook.react.views.picker;
 
 import android.content.Context;
+import android.support.v7.widget.AppCompatSpinner;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.AdapterView;
@@ -17,9 +18,9 @@ import com.facebook.react.common.annotations.VisibleForTesting;
 
 import javax.annotation.Nullable;
 
-public class ReactPicker extends Spinner {
+public class ReactPicker extends AppCompatSpinner {
 
-  private int mMode = MODE_DIALOG;
+  private int mMode = Spinner.MODE_DIALOG;
   private @Nullable Integer mPrimaryColor;
   private @Nullable OnSelectListener mOnSelectListener;
   private @Nullable Integer mStagedSelection;

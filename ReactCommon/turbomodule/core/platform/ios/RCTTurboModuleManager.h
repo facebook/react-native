@@ -34,7 +34,7 @@
 
 @end
 
-@interface RCTTurboModuleManager : NSObject
+@interface RCTTurboModuleManager : NSObject<RCTTurboModuleLookupDelegate>
 
 - (instancetype)initWithRuntime:(facebook::jsi::Runtime *)runtime
                          bridge:(RCTBridge *)bridge

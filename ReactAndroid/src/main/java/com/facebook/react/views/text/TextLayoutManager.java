@@ -22,7 +22,6 @@ import android.util.LruCache;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.yoga.YogaConstants;
@@ -208,8 +207,8 @@ public class TextLayoutManager {
 
   public static long measureText(
       ReactContext context,
-      ReadableNativeMap attributedString,
-      ReadableNativeMap paragraphAttributes,
+      ReadableMap attributedString,
+      ReadableMap paragraphAttributes,
       float width,
       YogaMeasureMode widthYogaMeasureMode,
       float height,

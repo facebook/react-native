@@ -7,7 +7,6 @@
 
 package com.facebook.react.devsupport;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
@@ -95,7 +94,6 @@ import okhttp3.RequestBody;
  * {@code <activity android:name="com.facebook.react.devsupport.DevSettingsActivity"/>}
  * {@code <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>}
  */
-@TargetApi(11)
 public class DevSupportManagerImpl implements
     DevSupportManager,
     PackagerCommandListener,

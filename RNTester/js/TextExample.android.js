@@ -615,11 +615,13 @@ class TextExample extends React.Component<{}> {
             Works with other text styles
           </Text>
         </RNTesterBlock>
+        <RNTesterBlock title="Substring Emoji (should only see 'test')">
+          <Text>{'test🙃'.substring(0, 5)}</Text>
+        </RNTesterBlock>
       </RNTesterPage>
     );
   }
 }
-
 const styles = StyleSheet.create({
   backgroundColorText: {
     left: 5,

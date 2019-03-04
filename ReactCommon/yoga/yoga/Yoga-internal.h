@@ -22,6 +22,13 @@ WIN_EXPORT float YGRoundValueToPixelGrid(
     const bool forceCeil,
     const bool forceFloor);
 
+void YGNodeCalculateLayoutWithContext(
+    YGNodeRef node,
+    float availableWidth,
+    float availableHeight,
+    YGDirection ownerDirection,
+    void* layoutContext);
+
 YG_EXTERN_C_END
 
 namespace facebook {

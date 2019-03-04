@@ -7,6 +7,7 @@
 #include <jsi/jsi.h>
 
 #include <react/core/ShadowNode.h>
+#include <react/core/StateData.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
 #include <react/uimanager/ShadowTreeRegistry.h>
 #include <react/uimanager/UIManagerDelegate.h>
@@ -31,6 +32,7 @@ class UIManager {
 
  private:
   friend class UIManagerBinding;
+  friend class Scheduler;
 
   SharedShadowNode createNode(
       Tag tag,
@@ -42,7 +44,7 @@ class UIManager {
   SharedShadowNode cloneNode(
       const SharedShadowNode &shadowNode,
       const SharedShadowNodeSharedList &children = nullptr,
-      const folly::Optional<RawProps> &rawProps = {}) const;
+      const RawProps *rawProps = nullptr) const;
 
   void appendChild(
       const SharedShadowNode &parentShadowNode,
@@ -64,6 +66,14 @@ class UIManager {
   LayoutMetrics getRelativeLayoutMetrics(
       const ShadowNode &shadowNode,
       const ShadowNode *ancestorShadowNode) const;
+
+  /*
+   * Creates a new shadow node with given state data, clones what's necessary
+   * and performs a commit.
+   */
+  void updateState(
+      const SharedShadowNode &shadowNode,
+      const StateData::Shared &rawStateData) const;
 
   ShadowTreeRegistry *shadowTreeRegistry_;
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;

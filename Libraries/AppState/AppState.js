@@ -38,9 +38,7 @@ class AppState extends NativeEventEmitter {
       memoryWarning: new Map(),
     };
 
-    // TODO: Remove the 'active' fallback after `initialAppState` is exported by
-    // the Android implementation.
-    this.currentState = RCTAppState.initialAppState || 'active';
+    this.currentState = RCTAppState.initialAppState;
 
     let eventUpdated = false;
 

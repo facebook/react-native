@@ -26,7 +26,6 @@ public class DispatchCommandMountItem implements MountItem {
 
   @Override
   public void execute(MountingManager mountingManager) {
-    UiThreadUtil.assertOnUiThread();
     mountingManager.receiveCommand(mReactTag, mCommandId, mCommandArgs);
   }
 

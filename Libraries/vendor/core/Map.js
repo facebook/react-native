@@ -546,8 +546,10 @@ module.exports = (function(global, undefined) {
       }
 
       if (!isES5) {
-        if (hasOwn.call(o, "propertyIsEnumerable") &&
-            hasOwn.call(o.propertyIsEnumerable, hashProperty)) {
+        if (
+          hasOwn.call(o, 'propertyIsEnumerable') &&
+          hasOwn.call(o.propertyIsEnumerable, hashProperty)
+        ) {
           return o.propertyIsEnumerable[hashProperty];
         }
       }
@@ -571,7 +573,7 @@ module.exports = (function(global, undefined) {
           o.propertyIsEnumerable = function() {
             return propIsEnumerable.apply(this, arguments);
           };
-          return o.propertyIsEnumerable[hashProperty] = ++hashCounter;
+          return (o.propertyIsEnumerable[hashProperty] = ++hashCounter);
         }
       }
 

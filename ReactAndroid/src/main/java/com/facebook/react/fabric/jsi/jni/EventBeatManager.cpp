@@ -9,20 +9,24 @@ using namespace facebook::jni;
 namespace facebook {
 namespace react {
 
-EventBeatManager::EventBeatManager(Runtime* runtime, jni::alias_ref<EventBeatManager::jhybriddata> jhybridobject) : runtime_(runtime), jhybridobject_(jhybridobject) { }
+EventBeatManager::EventBeatManager(
+    Runtime* runtime,
+    jni::alias_ref<EventBeatManager::jhybriddata> jhybridobject)
+    : runtime_(runtime), jhybridobject_(jhybridobject) {}
 
 jni::local_ref<EventBeatManager::jhybriddata> EventBeatManager::initHybrid(
-    jni::alias_ref<EventBeatManager::jhybriddata> jhybridobject, jlong jsContext) {
-  return makeCxxInstance((Runtime *) jsContext, jhybridobject);
+    jni::alias_ref<EventBeatManager::jhybriddata> jhybridobject,
+    jlong jsContext) {
+  return makeCxxInstance((Runtime*)jsContext, jhybridobject);
 }
 
-void EventBeatManager::registerEventBeat(EventBeat *eventBeat) const {
+void EventBeatManager::registerEventBeat(EventBeat* eventBeat) const {
   std::lock_guard<std::mutex> lock(mutex_);
 
   registeredEventBeats_.insert(eventBeat);
 }
 
-void EventBeatManager::unregisterEventBeat(EventBeat *eventBeat) const {
+void EventBeatManager::unregisterEventBeat(EventBeat* eventBeat) const {
   std::lock_guard<std::mutex> lock(mutex_);
 
   registeredEventBeats_.erase(eventBeat);
@@ -38,10 +42,10 @@ void EventBeatManager::beat() {
 
 void EventBeatManager::registerNatives() {
   registerHybrid({
-    makeNativeMethod("initHybrid", EventBeatManager::initHybrid),
-    makeNativeMethod("beat", EventBeatManager::beat),
+      makeNativeMethod("initHybrid", EventBeatManager::initHybrid),
+      makeNativeMethod("beat", EventBeatManager::beat),
   });
 }
 
-}
-}
+} // namespace react
+} // namespace facebook

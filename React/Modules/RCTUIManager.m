@@ -133,7 +133,7 @@ RCT_EXPORT_MODULE()
 
 - (void)setBridge:(RCTBridge *)bridge
 {
-  RCTAssert(_bridge == nil, @"Should not re-use same UIIManager instance");
+  RCTAssert(_bridge == nil, @"Should not re-use same UIManager instance");
   _bridge = bridge;
 
   _shadowViewRegistry = [NSMutableDictionary new];
@@ -584,7 +584,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
       if (view.reactLayoutDirection != layoutDirection) {
         view.reactLayoutDirection = layoutDirection;
       }
-      
+
       if (view.isHidden != isHidden) {
         view.hidden = isHidden;
       }
@@ -1179,7 +1179,7 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
     [tags addObject:shadowView.reactTag];
   }
 
-  [self addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+  [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     for (NSNumber *tag in tags) {
       UIView<RCTComponent> *view = viewRegistry[tag];
       [view didUpdateReactSubviews];
@@ -1204,7 +1204,7 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
     [tags setObject:props forKey:shadowView.reactTag];
   }
 
-  [self addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+  [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     for (NSNumber *tag in tags) {
       UIView<RCTComponent> *view = viewRegistry[tag];
       [view didSetProps:[tags objectForKey:tag]];
@@ -1495,6 +1495,11 @@ static NSMutableDictionary<NSString *, id> *moduleConstantsForComponent(
 
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
+  return [self getConstants];
+}
+
+- (NSDictionary<NSString *, id> *)getConstants
+{
   NSMutableDictionary<NSString *, NSDictionary *> *constants = [NSMutableDictionary new];
   NSMutableDictionary<NSString *, NSDictionary *> *directEvents = [NSMutableDictionary new];
   NSMutableDictionary<NSString *, NSDictionary *> *bubblingEvents = [NSMutableDictionary new];
@@ -1529,15 +1534,15 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(lazilyLoadView:(NSString *)name)
     return @{};
   }
 
-  id module = [self.bridge moduleForName:moduleName];
+  id module = [self.bridge moduleForName:moduleName lazilyLoadIfNecessary:RCTTurboModuleEnabled()];
   if (module == nil) {
     // There is all sorts of code in this codebase that drops prefixes.
     //
     // If we didn't find a module, it's possible because it's stored under a key
     // which had RCT Prefixes stripped. Lets check one more time...
-    module = [self.bridge moduleForName:RCTDropReactPrefixes(moduleName)];
+    module = [self.bridge moduleForName:RCTDropReactPrefixes(moduleName) lazilyLoadIfNecessary:RCTTurboModuleEnabled()];
   }
-  
+
   if (!module) {
     return @{};
   }

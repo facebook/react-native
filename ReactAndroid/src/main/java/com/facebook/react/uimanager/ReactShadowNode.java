@@ -148,6 +148,8 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
 
   void calculateLayout();
 
+  void calculateLayout(float width, float height);
+
   boolean hasNewLayout();
 
   void markLayoutSeen();
@@ -346,4 +348,10 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   boolean isMeasureDefined();
 
   void dispose();
+
+  void setMeasureSpecs(int widthMeasureSpec, int heightMeasureSpec);
+
+  Integer getWidthMeasureSpec();
+
+  Integer getHeightMeasureSpec();
 }

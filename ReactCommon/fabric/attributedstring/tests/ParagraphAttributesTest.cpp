@@ -16,6 +16,8 @@
 namespace facebook {
 namespace react {
 
+#ifdef ANDROID
+
 TEST(ParagraphAttributesTest, testToDynamic) {
   auto paragraphAttributes = ParagraphAttributes();
   paragraphAttributes.maximumNumberOfLines = 2;
@@ -32,6 +34,8 @@ TEST(ParagraphAttributesTest, testToDynamic) {
   assert(
       result["ellipsizeMode"] == toString(paragraphAttributes.ellipsizeMode));
 }
+
+#endif
 
 } // namespace react
 } // namespace facebook

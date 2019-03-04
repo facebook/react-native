@@ -33,10 +33,12 @@ class BasicCheckBoxExample extends React.Component<BasicProps, BasicState> {
           onValueChange={value => this.setState({falseCheckBoxIsOn: value})}
           style={styles.checkbox}
           value={this.state.falseCheckBoxIsOn}
+          tintColors={{false: 'red'}}
         />
         <CheckBox
           onValueChange={value => this.setState({trueCheckBoxIsOn: value})}
           value={this.state.trueCheckBoxIsOn}
+          tintColors={{true: 'green'}}
         />
       </View>
     );
@@ -120,7 +122,8 @@ exports.displayName = 'CheckBoxExample';
 exports.description = 'Native boolean input';
 exports.examples = [
   {
-    title: 'CheckBoxes can be set to true or false',
+    title:
+      'CheckBoxes can be set to true or false, and the color of both states can be specified.',
     render(): React.Element<any> {
       return <BasicCheckBoxExample />;
     },

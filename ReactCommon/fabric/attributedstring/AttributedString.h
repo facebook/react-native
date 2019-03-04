@@ -69,6 +69,11 @@ class AttributedString : public Sealable, public DebugStringConvertible {
    */
   std::string getString() const;
 
+  /*
+   * Returns `true` if the string is empty (has no any fragments).
+   */
+  bool isEmpty() const;
+
   bool operator==(const AttributedString &rhs) const;
   bool operator!=(const AttributedString &rhs) const;
 

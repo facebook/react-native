@@ -29,6 +29,7 @@ Pod::Spec.new do |spec|
                         'src/base/*.h'
   spec.exclude_files       = "src/windows/**/*"
   spec.libraries           = "stdc++"
+  spec.compiler_flags      = '-Wno-shorten-64-to-32'
   spec.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                "HEADER_SEARCH_PATHS" => "$(PODS_TARGET_SRCROOT)/src" }
 

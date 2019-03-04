@@ -43,7 +43,7 @@ public:
   }
 
   void callNativeModules(
-      JSExecutor& executor, folly::dynamic&& calls, bool isEndOfBatch) override {
+      __unused JSExecutor& executor, folly::dynamic&& calls, bool isEndOfBatch) override {
 
     CHECK(m_registry || calls.empty()) <<
       "native module calls cannot be completed with no native modules";
@@ -68,7 +68,7 @@ public:
   }
 
   MethodCallResult callSerializableNativeHook(
-      JSExecutor& executor, unsigned int moduleId, unsigned int methodId,
+      __unused JSExecutor& executor, unsigned int moduleId, unsigned int methodId,
       folly::dynamic&& args) override {
     return m_registry->callSerializableNativeHook(moduleId, methodId, std::move(args));
   }
@@ -103,6 +103,7 @@ void NativeToJsBridge::loadApplication(
     std::unique_ptr<RAMBundleRegistry> bundleRegistry,
     std::unique_ptr<const JSBigString> startupScript,
     std::string startupScriptSourceURL) {
+
   runOnExecutorQueue(
       [this,
        bundleRegistryWrap=folly::makeMoveWrapper(std::move(bundleRegistry)),

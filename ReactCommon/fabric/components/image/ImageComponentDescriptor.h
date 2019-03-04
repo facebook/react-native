@@ -22,14 +22,22 @@ class ImageComponentDescriptor final
     : public ConcreteComponentDescriptor<ImageShadowNode> {
  public:
   ImageComponentDescriptor(
-      SharedEventDispatcher eventDispatcher,
+      EventDispatcher::Shared eventDispatcher,
       const SharedContextContainer &contextContainer)
       : ConcreteComponentDescriptor(eventDispatcher),
+  // TODO (39486757): implement image manager on Android, currently Android does
+  // not have an ImageManager so this will crash
+#ifndef ANDROID
         imageManager_(
             contextContainer
                 ? contextContainer->getInstance<SharedImageManager>(
                       "ImageManager")
-                : nullptr) {}
+                : nullptr) {
+  }
+#else
+        imageManager_(nullptr) {
+  }
+#endif
 
   void adopt(UnsharedShadowNode shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);

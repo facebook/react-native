@@ -330,12 +330,15 @@ NSDictionary<NSString *, id> *__nullable RCTGetImageMetadata(NSData *data)
 
 NSData *__nullable RCTGetImageData(UIImage *image, float quality)
 {
+  CGImageRef cgImage = image.CGImage;
+  if (!cgImage) {
+    return NULL;
+  }
   NSMutableDictionary *properties = [[NSMutableDictionary alloc] initWithDictionary:@{
     (id)kCGImagePropertyOrientation : @(CGImagePropertyOrientationFromUIImageOrientation(image.imageOrientation))
   }];
   CGImageDestinationRef destination;
   CFMutableDataRef imageData = CFDataCreateMutable(NULL, 0);
-  CGImageRef cgImage = image.CGImage;
   if (RCTImageHasAlpha(cgImage)) {
     // get png data
     destination = CGImageDestinationCreateWithData(imageData, kUTTypePNG, 1, NULL);
@@ -344,9 +347,12 @@ NSData *__nullable RCTGetImageData(UIImage *image, float quality)
     destination = CGImageDestinationCreateWithData(imageData, kUTTypeJPEG, 1, NULL);
     [properties setValue:@(quality) forKey:(id)kCGImageDestinationLossyCompressionQuality];
   }
+  if (!destination) {
+    CFRelease(imageData);
+    return NULL;
+  }
   CGImageDestinationAddImage(destination, cgImage, (__bridge CFDictionaryRef)properties);
-  if (!CGImageDestinationFinalize(destination))
-  {
+  if (!CGImageDestinationFinalize(destination)) {
     CFRelease(imageData);
     imageData = NULL;
   }

@@ -46,7 +46,7 @@ type NativeProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/activityindicator.html#size
    */
-  size?: ?(number | 'small' | 'large'),
+  size?: ?('small' | 'large'),
 
   style?: ?ViewStyleProp,
   styleAttr?: ?string,
