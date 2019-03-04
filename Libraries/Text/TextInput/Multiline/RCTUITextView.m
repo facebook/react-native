@@ -82,7 +82,7 @@ static UIColor *defaultPlaceholderColor()
 - (void)setPlaceholder:(NSString *)placeholder
 {
   _placeholder = placeholder;
-  _placeholderView.text = _placeholder;
+  _placeholderView.attributedText = [[NSAttributedString alloc] initWithString:_placeholder ?: @"" attributes:[self placeholderEffectiveTextAttributes]];
 }
 
 - (void)setPlaceholderColor:(UIColor *)placeholderColor
@@ -98,7 +98,8 @@ static UIColor *defaultPlaceholderColor()
   }
   self.typingAttributes = reactTextAttributes.effectiveTextAttributes;
   _reactTextAttributes = reactTextAttributes;
-  _placeholderView.font = self.font ?: defaultPlaceholderFont();
+  // Update placeholder text attributes
+  [self setPlaceholder:_placeholder];
 }
 
 - (RCTTextAttributes *)reactTextAttributes
@@ -247,6 +248,17 @@ static UIColor *defaultPlaceholderColor()
 {
   BOOL isVisible = _placeholder.length != 0 && self.attributedText.length == 0;
   _placeholderView.hidden = !isVisible;
+}
+
+- (NSDictionary<NSAttributedStringKey, id> *)placeholderEffectiveTextAttributes
+{
+  NSDictionary<NSAttributedStringKey, id> *effectiveTextAttributes = @{
+                                                                       NSFontAttributeName: _reactTextAttributes.effectiveFont ?: defaultPlaceholderFont(),
+                                                                       NSForegroundColorAttributeName: self.placeholderColor ?: defaultPlaceholderColor(),
+                                                                       NSKernAttributeName:isnan(_reactTextAttributes.letterSpacing) ? @0 : @(_reactTextAttributes.letterSpacing)
+                                                                       };
+  
+  return effectiveTextAttributes;
 }
 
 #pragma mark - Utility Methods

@@ -70,6 +70,7 @@
   }
   self.defaultTextAttributes = reactTextAttributes.effectiveTextAttributes;
   _reactTextAttributes = reactTextAttributes;
+  [self _updatePlaceholder];
 }
 
 - (RCTTextAttributes *)reactTextAttributes
@@ -86,6 +87,10 @@
   NSMutableDictionary *attributes = [NSMutableDictionary new];
   if (_placeholderColor) {
     [attributes setObject:_placeholderColor forKey:NSForegroundColorAttributeName];
+  }
+  // Kerning
+  if (!isnan(_reactTextAttributes.letterSpacing)) {
+    attributes[NSKernAttributeName] = @(_reactTextAttributes.letterSpacing);
   }
 
   self.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.placeholder
