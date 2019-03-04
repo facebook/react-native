@@ -84,17 +84,8 @@
     return;
   }
 
-  NSMutableDictionary *attributes = [NSMutableDictionary new];
-  if (_placeholderColor) {
-    [attributes setObject:_placeholderColor forKey:NSForegroundColorAttributeName];
-  }
-  // Kerning
-  if (!isnan(_reactTextAttributes.letterSpacing)) {
-    attributes[NSKernAttributeName] = @(_reactTextAttributes.letterSpacing);
-  }
-
   self.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.placeholder
-                                                               attributes:attributes];
+                                                               attributes:[self placeholderEffectiveTextAttributes]];
 }
 
 - (BOOL)isEditable
@@ -115,6 +106,23 @@
 - (BOOL)scrollEnabled
 {
   return NO;
+}
+
+#pragma mark - Placeholder
+
+- (NSDictionary<NSAttributedStringKey, id> *)placeholderEffectiveTextAttributes
+{
+  NSMutableDictionary<NSAttributedStringKey, id> *effectiveTextAttributes = [NSMutableDictionary dictionary];
+  
+  if (_placeholderColor) {
+    effectiveTextAttributes[NSForegroundColorAttributeName] = _placeholderColor;
+  }
+  // Kerning
+  if (!isnan(_reactTextAttributes.letterSpacing)) {
+    effectiveTextAttributes[NSKernAttributeName] = @(_reactTextAttributes.letterSpacing);
+  }
+  
+  return [effectiveTextAttributes copy];
 }
 
 #pragma mark - Context Menu
@@ -183,7 +191,7 @@
 {
   // Note: `placeholder` defines intrinsic size for `<TextInput>`.
   NSString *text = self.placeholder ?: @"";
-  CGSize size = [text sizeWithAttributes:@{NSFontAttributeName: self.font}];
+  CGSize size = [text sizeWithAttributes:[self placeholderEffectiveTextAttributes]];
   size = CGSizeMake(RCTCeilPixelValue(size.width), RCTCeilPixelValue(size.height));
   size.width += _textContainerInset.left + _textContainerInset.right;
   size.height += _textContainerInset.top + _textContainerInset.bottom;
