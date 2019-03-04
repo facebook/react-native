@@ -32,7 +32,9 @@ ShadowNode::ShadowNode(
       rootTag_(fragment.rootTag),
       props_(fragment.props),
       eventEmitter_(fragment.eventEmitter),
-      children_(fragment.children ?: emptySharedShadowNodeSharedList()),
+      children_(
+          fragment.children ? fragment.children
+                            : emptySharedShadowNodeSharedList()),
       state_(fragment.state),
       componentDescriptor_(componentDescriptor),
       childrenAreShared_(true),
@@ -44,13 +46,20 @@ ShadowNode::ShadowNode(
 ShadowNode::ShadowNode(
     const ShadowNode &sourceShadowNode,
     const ShadowNodeFragment &fragment)
-    : tag_(fragment.tag ?: sourceShadowNode.tag_),
-      rootTag_(fragment.rootTag ?: sourceShadowNode.rootTag_),
-      props_(fragment.props ?: sourceShadowNode.props_),
-      eventEmitter_(fragment.eventEmitter ?: sourceShadowNode.eventEmitter_),
-      children_(fragment.children ?: sourceShadowNode.children_),
-      localData_(fragment.localData ?: sourceShadowNode.localData_),
-      state_(fragment.state ?: sourceShadowNode.getCommitedState()),
+    : tag_(fragment.tag ? fragment.tag : sourceShadowNode.tag_),
+      rootTag_(fragment.rootTag ? fragment.rootTag : sourceShadowNode.rootTag_),
+      props_(fragment.props ? fragment.props : sourceShadowNode.props_),
+      eventEmitter_(
+          fragment.eventEmitter ? fragment.eventEmitter
+                                : sourceShadowNode.eventEmitter_),
+      children_(
+          fragment.children ? fragment.children : sourceShadowNode.children_),
+      localData_(
+          fragment.localData ? fragment.localData
+                             : sourceShadowNode.localData_),
+      state_(
+          fragment.state ? fragment.state
+                         : sourceShadowNode.getCommitedState()),
       componentDescriptor_(sourceShadowNode.componentDescriptor_),
       childrenAreShared_(true),
       revision_(sourceShadowNode.revision_ + 1) {
