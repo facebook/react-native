@@ -93,7 +93,7 @@ class NetworkImageCallbackExample extends React.Component<
                     `✔ Prefetch OK (+${new Date() - mountTime}ms)`,
                   );
                   Image.queryCache([IMAGE_PREFETCH_URL]).then(map => {
-                    const result = map.get(IMAGE_PREFETCH_URL);
+                    const result = map[IMAGE_PREFETCH_URL];
                     if (result) {
                       this._loadEventFired(
                         `✔ queryCache "${result}" (+${new Date() -
@@ -836,10 +836,7 @@ exports.examples = [
       return (
         <Image
           style={styles.gif}
-          source={{
-            uri:
-              'https://38.media.tumblr.com/9e9bd08c6e2d10561dd1fb4197df4c4e/tumblr_mfqekpMktw1rn90umo1_500.gif',
-          }}
+          source={require('./tumblr_mfqekpMktw1rn90umo1_500.gif')}
         />
       );
     },

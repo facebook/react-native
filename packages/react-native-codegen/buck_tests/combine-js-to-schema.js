@@ -9,28 +9,26 @@
  */
 
 'use strict';
+import type {SchemaType} from '../src/CodegenSchema.js';
 
-const fs = require('fs');
+function parse(filename: string): SchemaType {
+  try {
+    // $FlowFixMe Can't require dynamic variables
+    return require(filename);
+  } catch (err) {
+    throw new Error(`Can't require file at ${filename} ${err}`);
+  }
+}
 
-const args = process.argv.slice(2);
-if (args.length !== 2) {
-  throw new Error(
-    'Expected to receive the input path and output path as arguments',
+function combineSchemas(files: Array<string>): SchemaType {
+  return files.reduce(
+    (merged, filename) => {
+      const schema = parse(filename);
+      merged.modules = {...merged.modules, ...schema.modules};
+      return merged;
+    },
+    {modules: {}},
   );
 }
 
-const src = args[0];
-const outputPath = args[1];
-
-let file;
-
-try {
-  // Eventually this will be replaced with a script that reads and parses
-  // the file via ast
-  // $FlowFixMe Can't require dynamic variables
-  file = require(src);
-} catch (err) {
-  throw new Error(`Can't require file at ${src}`);
-}
-
-fs.writeFileSync(outputPath, JSON.stringify(file, null, 2));
+module.exports = combineSchemas;

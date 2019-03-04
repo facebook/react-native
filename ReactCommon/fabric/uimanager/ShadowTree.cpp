@@ -5,8 +5,10 @@
 
 #include "ShadowTree.h"
 
+#include <react/components/root/RootComponentDescriptor.h>
 #include <react/core/LayoutContext.h>
 #include <react/core/LayoutPrimitives.h>
+#include <react/debug/SystraceSection.h>
 #include <react/mounting/Differentiator.h>
 #include <react/mounting/ShadowViewMutation.h>
 #include <react/uimanager/TimeUtils.h>
@@ -78,7 +80,8 @@ static void updateMountedFlag(
 ShadowTree::ShadowTree(
     SurfaceId surfaceId,
     const LayoutConstraints &layoutConstraints,
-    const LayoutContext &layoutContext)
+    const LayoutContext &layoutContext,
+    const RootComponentDescriptor &rootComponentDescriptor)
     : surfaceId_(surfaceId) {
   const auto noopEventEmitter = std::make_shared<const ViewEventEmitter>(
       nullptr, -1, std::shared_ptr<const EventDispatcher>());
@@ -86,14 +89,13 @@ ShadowTree::ShadowTree(
   const auto props = std::make_shared<const RootProps>(
       *RootShadowNode::defaultSharedProps(), layoutConstraints, layoutContext);
 
-  rootShadowNode_ = std::make_shared<RootShadowNode>(
-      ShadowNodeFragment{
+  rootShadowNode_ = std::static_pointer_cast<const RootShadowNode>(
+      rootComponentDescriptor.createShadowNode(ShadowNodeFragment{
           .tag = surfaceId,
           .rootTag = surfaceId,
           .props = props,
           .eventEmitter = noopEventEmitter,
-      },
-      nullptr);
+      }));
 }
 
 ShadowTree::~ShadowTree() {
@@ -115,6 +117,8 @@ void ShadowTree::commit(
     ShadowTreeCommitTransaction transaction,
     long commitStartTime,
     int *revision) const {
+  SystraceSection s("ShadowTree::commit");
+
   int attempts = 0;
 
   while (true) {
@@ -133,6 +137,8 @@ bool ShadowTree::tryCommit(
     ShadowTreeCommitTransaction transaction,
     long commitStartTime,
     int *revision) const {
+  SystraceSection s("ShadowTree::tryCommit");
+
   SharedRootShadowNode oldRootShadowNode;
 
   {
@@ -192,6 +198,8 @@ bool ShadowTree::tryCommit(
 
 void ShadowTree::emitLayoutEvents(
     const ShadowViewMutationList &mutations) const {
+  SystraceSection s("ShadowTree::emitLayoutEvents");
+
   for (const auto &mutation : mutations) {
     // Only `Insert` and `Update` mutations can affect layout metrics.
     if (mutation.type != ShadowViewMutation::Insert &&

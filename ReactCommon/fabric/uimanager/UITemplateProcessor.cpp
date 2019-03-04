@@ -12,9 +12,9 @@
 #include <react/components/view/ViewComponentDescriptor.h>
 #include <react/components/view/ViewProps.h>
 #include <react/components/view/ViewShadowNode.h>
+#include <react/core/ComponentDescriptor.h>
 #include <react/core/LayoutContext.h>
 #include <react/core/ShadowNodeFragment.h>
-#include <react/core/ComponentDescriptor.h>
 #include <react/debug/DebugStringConvertible.h>
 #include <react/debug/DebugStringConvertibleItem.h>
 
@@ -57,8 +57,10 @@ SharedShadowNode UITemplateProcessor::runCommand(
       componentDescriptor->appendChild(parentShadowNode, nodes[tag]);
     }
   } else if (opcode == "returnRoot") {
-    LOG(INFO)
-        << "(stop) UITemplateProcessor inject serialized 'server rendered' view tree";
+    if (DEBUG_FLY) {
+      LOG(INFO)
+          << "(stop) UITemplateProcessor inject serialized 'server rendered' view tree";
+    }
     return nodes[command[1].asInt()];
   } else if (opcode == "loadNativeBool") {
     int registerNumber = command[1].asInt();
@@ -105,8 +107,10 @@ SharedShadowNode UITemplateProcessor::buildShadowTree(
     const ComponentDescriptorRegistry &componentDescriptorRegistry,
     const NativeModuleRegistry &nativeModuleRegistry,
     const std::shared_ptr<const ReactNativeConfig> reactNativeConfig) {
-  LOG(INFO)
-      << "(strt) UITemplateProcessor inject hardcoded 'server rendered' view tree";
+  if (DEBUG_FLY) {
+    LOG(INFO)
+        << "(strt) UITemplateProcessor inject hardcoded 'server rendered' view tree";
+  }
 
   std::string content = jsonStr;
   for (const auto &param : params.items()) {

@@ -94,7 +94,13 @@ export type ImageProps = {|
    *
    * See https://facebook.github.io/react-native/docs/image.html#onerror
    */
-  onError?: ?(event: SyntheticEvent<$ReadOnly<{||}>>) => void,
+  onError?: ?(
+    event: SyntheticEvent<
+      $ReadOnly<{|
+        error: string,
+      |}>,
+    >,
+  ) => void,
 
   /**
    * Invoked on mount and layout changes with

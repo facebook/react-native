@@ -7,7 +7,9 @@
 
 package com.facebook.react.views.textinput;
 
+import android.annotation.TargetApi;
 import android.os.Build;
+import android.support.v4.view.ViewCompat;
 import android.text.Layout;
 import android.util.TypedValue;
 import android.view.ViewGroup;
@@ -33,6 +35,7 @@ import com.facebook.yoga.YogaNode;
 import javax.annotation.Nullable;
 
 @VisibleForTesting
+@TargetApi(Build.VERSION_CODES.M)
 public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
     implements YogaMeasureFunction {
 
@@ -49,7 +52,7 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
 
   public ReactTextInputShadowNode() {
     mTextBreakStrategy = (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ?
-        0 : Layout.BREAK_STRATEGY_SIMPLE;
+      Layout.BREAK_STRATEGY_SIMPLE : Layout.BREAK_STRATEGY_HIGH_QUALITY;
 
     initMeasureFunction();
   }
@@ -71,9 +74,9 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
     // So, we have to enforce it as a default padding.
     // TODO #7120264: Cache this stuff better.
     EditText editText = new EditText(getThemedContext());
-    setDefaultPadding(Spacing.START, editText.getPaddingStart());
+    setDefaultPadding(Spacing.START, ViewCompat.getPaddingStart(editText));
     setDefaultPadding(Spacing.TOP, editText.getPaddingTop());
-    setDefaultPadding(Spacing.END, editText.getPaddingEnd());
+    setDefaultPadding(Spacing.END, ViewCompat.getPaddingEnd(editText));
     setDefaultPadding(Spacing.BOTTOM, editText.getPaddingBottom());
 
     mDummyEditText = editText;

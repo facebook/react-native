@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include <better/map.h>
 #include <react/core/ComponentDescriptor.h>
 
 namespace facebook {
@@ -40,9 +41,8 @@ class ComponentDescriptorRegistry {
       const SharedEventTarget &eventTarget) const;
 
  private:
-  std::unordered_map<ComponentHandle, SharedComponentDescriptor>
-      _registryByHandle;
-  std::unordered_map<ComponentName, SharedComponentDescriptor> _registryByName;
+  better::map<ComponentHandle, SharedComponentDescriptor> _registryByHandle;
+  better::map<ComponentName, SharedComponentDescriptor> _registryByName;
 };
 
 } // namespace react

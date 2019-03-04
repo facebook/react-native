@@ -252,6 +252,9 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
 
 - (BOOL)isEqual:(RCTTextAttributes *)textAttributes
 {
+  if (!textAttributes) {
+    return NO;
+  }
   if (self == textAttributes) {
     return YES;
   }

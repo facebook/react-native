@@ -182,7 +182,7 @@
 
 #pragma mark - Bridge Events
 
-- (void)handleBridgeWillLoadJavaScriptNotification:(NSNotification *)notification
+- (void)handleBridgeWillLoadJavaScriptNotification:(__unused NSNotification *)notification
 {
   RCTAssertMainQueue();
 
@@ -505,19 +505,19 @@
 
 #pragma mark - RCTSurfaceRootShadowViewDelegate
 
-- (void)rootShadowView:(RCTRootShadowView *)rootShadowView didChangeIntrinsicSize:(CGSize)intrinsicSize
+- (void)rootShadowView:(__unused RCTRootShadowView *)rootShadowView didChangeIntrinsicSize:(CGSize)intrinsicSize
 {
   self.intrinsicSize = intrinsicSize;
 }
 
-- (void)rootShadowViewDidStartRendering:(RCTSurfaceRootShadowView *)rootShadowView
+- (void)rootShadowViewDidStartRendering:(__unused RCTSurfaceRootShadowView *)rootShadowView
 {
   [self _setStage:RCTSurfaceStageSurfaceDidInitialRendering];
 
   dispatch_semaphore_signal(_rootShadowViewDidStartRenderingSemaphore);
 }
 
-- (void)rootShadowViewDidStartLayingOut:(RCTSurfaceRootShadowView *)rootShadowView
+- (void)rootShadowViewDidStartLayingOut:(__unused RCTSurfaceRootShadowView *)rootShadowView
 {
   [self _setStage:RCTSurfaceStageSurfaceDidInitialLayout];
 
@@ -531,7 +531,7 @@
 
 #pragma mark - RCTUIManagerObserver
 
-- (BOOL)uiManager:(RCTUIManager *)manager performMountingWithBlock:(RCTUIManagerMountingBlock)block
+- (BOOL)uiManager:(__unused RCTUIManager *) manager performMountingWithBlock:(RCTUIManagerMountingBlock)block
 {
   if (atomic_load(&_waitingForMountingStageOnMainQueue) && (self.stage & RCTSurfaceStageSurfaceDidInitialLayout)) {
     // Atomic equivalent of `_waitingForMountingStageOnMainQueue = NO;`.
@@ -547,7 +547,7 @@
   return NO;
 }
 
-- (void)uiManagerDidPerformMounting:(RCTUIManager *)manager
+- (void)uiManagerDidPerformMounting:(__unused RCTUIManager *)manager
 {
   if (self.stage & RCTSurfaceStageSurfaceDidInitialLayout) {
     [self _setStage:RCTSurfaceStageSurfaceDidInitialMounting];

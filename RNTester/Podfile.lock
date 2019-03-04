@@ -6,83 +6,108 @@ PODS:
     - DoubleConversion
     - glog
   - glog (0.3.5)
-  - React/ART (1000.0.0):
-    - React/Core
-  - React/Core (1000.0.0):
+  - React (1000.0.0):
+    - React-Core (= 1000.0.0)
+    - React-DevSupport (= 1000.0.0)
+    - React-RCTActionSheet (= 1000.0.0)
+    - React-RCTAnimation (= 1000.0.0)
+    - React-RCTBlob (= 1000.0.0)
+    - React-RCTGeolocation (= 1000.0.0)
+    - React-RCTImage (= 1000.0.0)
+    - React-RCTLinking (= 1000.0.0)
+    - React-RCTNetwork (= 1000.0.0)
+    - React-RCTSettings (= 1000.0.0)
+    - React-RCTText (= 1000.0.0)
+    - React-RCTVibration (= 1000.0.0)
+    - React-RCTWebSocket (= 1000.0.0)
+  - React-ART (1000.0.0):
+    - React-Core (= 1000.0.0)
+  - React-Core (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - React-cxxreact (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
     - yoga (= 1000.0.0.React)
-  - React/CxxBridge (1000.0.0):
-    - Folly (= 2018.10.22.00)
-    - React/Core
-    - React/cxxreact
-    - React/jsiexecutor
-  - React/cxxreact (1000.0.0):
+  - React-cxxreact (1000.0.0):
     - boost-for-react-native (= 1.63.0)
+    - DoubleConversion
     - Folly (= 2018.10.22.00)
-    - React/jsinspector
-  - React/DevSupport (1000.0.0):
-    - React/Core
-    - React/RCTWebSocket
-  - React/fishhook (1000.0.0)
-  - React/jsi (1000.0.0):
+    - glog
+    - React-jsinspector (= 1000.0.0)
+  - React-DevSupport (1000.0.0):
+    - React-Core (= 1000.0.0)
+    - React-RCTWebSocket (= 1000.0.0)
+  - React-fishhook (1000.0.0)
+  - React-jsi (1000.0.0):
+    - boost-for-react-native (= 1.63.0)
+    - DoubleConversion
     - Folly (= 2018.10.22.00)
-  - React/jsiexecutor (1000.0.0):
+    - glog
+  - React-jsiexecutor (1000.0.0):
+    - DoubleConversion
     - Folly (= 2018.10.22.00)
-    - React/cxxreact
-    - React/jsi
-  - React/jsinspector (1000.0.0)
-  - React/RCTActionSheet (1000.0.0):
-    - React/Core
-  - React/RCTAnimation (1000.0.0):
-    - React/Core
-  - React/RCTBlob (1000.0.0):
-    - React/Core
-  - React/RCTCameraRoll (1000.0.0):
-    - React/Core
-    - React/RCTImage
-  - React/RCTGeolocation (1000.0.0):
-    - React/Core
-  - React/RCTImage (1000.0.0):
-    - React/Core
-    - React/RCTNetwork
-  - React/RCTLinkingIOS (1000.0.0):
-    - React/Core
-  - React/RCTNetwork (1000.0.0):
-    - React/Core
-  - React/RCTPushNotification (1000.0.0):
-    - React/Core
-  - React/RCTSettings (1000.0.0):
-    - React/Core
-  - React/RCTText (1000.0.0):
-    - React/Core
-  - React/RCTVibration (1000.0.0):
-    - React/Core
-  - React/RCTWebSocket (1000.0.0):
-    - React/Core
-    - React/fishhook
-    - React/RCTBlob
+    - glog
+    - React-cxxreact (= 1000.0.0)
+    - React-jsi (= 1000.0.0)
+  - React-jsinspector (1000.0.0)
+  - React-RCTActionSheet (1000.0.0):
+    - React-Core (= 1000.0.0)
+  - React-RCTAnimation (1000.0.0):
+    - React-Core (= 1000.0.0)
+  - React-RCTBlob (1000.0.0):
+    - React-Core (= 1000.0.0)
+    - React-RCTNetwork (= 1000.0.0)
+    - React-RCTWebSocket (= 1000.0.0)
+  - React-RCTCameraRoll (1000.0.0):
+    - React-Core (= 1000.0.0)
+    - React-RCTImage (= 1000.0.0)
+  - React-RCTGeolocation (1000.0.0):
+    - React-Core (= 1000.0.0)
+  - React-RCTImage (1000.0.0):
+    - React-Core (= 1000.0.0)
+    - React-RCTNetwork (= 1000.0.0)
+  - React-RCTLinking (1000.0.0):
+    - React-Core (= 1000.0.0)
+  - React-RCTNetwork (1000.0.0):
+    - React-Core (= 1000.0.0)
+  - React-RCTPushNotification (1000.0.0):
+    - React-Core (= 1000.0.0)
+  - React-RCTSettings (1000.0.0):
+    - React-Core (= 1000.0.0)
+  - React-RCTText (1000.0.0):
+    - React-Core (= 1000.0.0)
+  - React-RCTVibration (1000.0.0):
+    - React-Core (= 1000.0.0)
+  - React-RCTWebSocket (1000.0.0):
+    - React-Core (= 1000.0.0)
+    - React-fishhook (= 1000.0.0)
   - yoga (1000.0.0.React)
 
 DEPENDENCIES:
   - DoubleConversion (from `../third-party-podspecs/DoubleConversion.podspec`)
   - Folly (from `../third-party-podspecs/Folly.podspec`)
   - glog (from `../third-party-podspecs/glog.podspec`)
-  - React/ART (from `../`)
-  - React/Core (from `../`)
-  - React/CxxBridge (from `../`)
-  - React/DevSupport (from `../`)
-  - React/RCTActionSheet (from `../`)
-  - React/RCTAnimation (from `../`)
-  - React/RCTBlob (from `../`)
-  - React/RCTCameraRoll (from `../`)
-  - React/RCTGeolocation (from `../`)
-  - React/RCTImage (from `../`)
-  - React/RCTLinkingIOS (from `../`)
-  - React/RCTNetwork (from `../`)
-  - React/RCTPushNotification (from `../`)
-  - React/RCTSettings (from `../`)
-  - React/RCTText (from `../`)
-  - React/RCTVibration (from `../`)
-  - React/RCTWebSocket (from `../`)
+  - React (from `../`)
+  - React-ART (from `../Libraries/ART`)
+  - React-Core (from `../React`)
+  - React-cxxreact (from `../ReactCommon/cxxreact`)
+  - React-DevSupport (from `../React`)
+  - React-fishhook (from `../Libraries/fishhook`)
+  - React-jsi (from `../ReactCommon/jsi`)
+  - React-jsiexecutor (from `../ReactCommon/jsiexecutor`)
+  - React-jsinspector (from `../ReactCommon/jsinspector`)
+  - React-RCTActionSheet (from `../Libraries/ActionSheetIOS`)
+  - React-RCTAnimation (from `../Libraries/NativeAnimation`)
+  - React-RCTBlob (from `../Libraries/Blob`)
+  - React-RCTCameraRoll (from `../Libraries/CameraRoll`)
+  - React-RCTGeolocation (from `../Libraries/Geolocation`)
+  - React-RCTImage (from `../Libraries/Image`)
+  - React-RCTLinking (from `../Libraries/LinkingIOS`)
+  - React-RCTNetwork (from `../Libraries/Network`)
+  - React-RCTPushNotification (from `../Libraries/PushNotificationIOS`)
+  - React-RCTSettings (from `../Libraries/Settings`)
+  - React-RCTText (from `../Libraries/Text`)
+  - React-RCTVibration (from `../Libraries/Vibration`)
+  - React-RCTWebSocket (from `../Libraries/WebSocket`)
   - yoga (from `../ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -98,17 +123,80 @@ EXTERNAL SOURCES:
     :podspec: "../third-party-podspecs/glog.podspec"
   React:
     :path: "../"
+  React-ART:
+    :path: "../Libraries/ART"
+  React-Core:
+    :path: "../React"
+  React-cxxreact:
+    :path: "../ReactCommon/cxxreact"
+  React-DevSupport:
+    :path: "../React"
+  React-fishhook:
+    :path: "../Libraries/fishhook"
+  React-jsi:
+    :path: "../ReactCommon/jsi"
+  React-jsiexecutor:
+    :path: "../ReactCommon/jsiexecutor"
+  React-jsinspector:
+    :path: "../ReactCommon/jsinspector"
+  React-RCTActionSheet:
+    :path: "../Libraries/ActionSheetIOS"
+  React-RCTAnimation:
+    :path: "../Libraries/NativeAnimation"
+  React-RCTBlob:
+    :path: "../Libraries/Blob"
+  React-RCTCameraRoll:
+    :path: "../Libraries/CameraRoll"
+  React-RCTGeolocation:
+    :path: "../Libraries/Geolocation"
+  React-RCTImage:
+    :path: "../Libraries/Image"
+  React-RCTLinking:
+    :path: "../Libraries/LinkingIOS"
+  React-RCTNetwork:
+    :path: "../Libraries/Network"
+  React-RCTPushNotification:
+    :path: "../Libraries/PushNotificationIOS"
+  React-RCTSettings:
+    :path: "../Libraries/Settings"
+  React-RCTText:
+    :path: "../Libraries/Text"
+  React-RCTVibration:
+    :path: "../Libraries/Vibration"
+  React-RCTWebSocket:
+    :path: "../Libraries/WebSocket"
   yoga:
     :path: "../ReactCommon/yoga"
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
-  DoubleConversion: bb338842f62ab1d708ceb63ec3d999f0f3d98ecd
+  DoubleConversion: 3eb87e5bfd9737e9a8cc698f74ee064d00c8dafc
   Folly: de497beb10f102453a1afa9edbf8cf8a251890de
   glog: aefd1eb5dda2ab95ba0938556f34b98e2da3a60d
-  React: 9b873b38b92ed8012d7cdf3b965477095ed364c4
-  yoga: 0885622311729a02c2bc02dca97167787a51488b
+  React: 4d01f91757abcfd2adccf80248285957ac1a2de2
+  React-ART: f03123e0f0b9850db4733ad94ded11d29c719dc6
+  React-Core: fcb8a6f34de5a43426efcb9dfda6a434c1b1275d
+  React-cxxreact: 2a2acf4466abf5b794da53bf69e757a885259452
+  React-DevSupport: 140c1ccfa9ccba495977225c117dc78c8858224f
+  React-fishhook: aefe3414f44d4deaa880f0e39dc76644f1072bf7
+  React-jsi: 425cd468e0be54cdc9009a2b4d2c1a4eada83805
+  React-jsiexecutor: 520560a0b08226e4e758645940253e270b4d7d76
+  React-jsinspector: c9020e3a37b7b27125d824b1d02b9be0d1c737ac
+  React-RCTActionSheet: 78b940169b3c12d199dbbd382c5a3d22ec2197e2
+  React-RCTAnimation: da0026d00ed99669b6175a941189539d8f9d52a4
+  React-RCTBlob: c5a2104bd8b8e0462fc35eefa9133dc04ced56dd
+  React-RCTCameraRoll: effa220c8e244af93b44011ab85cab814c469e08
+  React-RCTGeolocation: 3517483e877750bae5a03d9f52e7b0e48c49651e
+  React-RCTImage: ed045a58ebc9c97870a4fe5d066fdf04f247023b
+  React-RCTLinking: e5f174d3f9e6ffe30087b9edc8c9860d62c1413c
+  React-RCTNetwork: 9fbf72be6083a4b5fffe3dc1afad9fa2b70c4f19
+  React-RCTPushNotification: 106e9846882a8dcce372fc90531be996ce0bb29b
+  React-RCTSettings: afd7ae33bacd09b12c8a0d3151069d465344ce24
+  React-RCTText: 03945b44521b34f89f9a728e1c265fa096af9f94
+  React-RCTVibration: ef9e4e077360a599a1b59cee7d18398871d37759
+  React-RCTWebSocket: 510a4eef2c064ef30508aba41628e6d69f4df4c5
+  yoga: c63f2cb4fd93594d29e792c198a8050d5daf9fdf
 
-PODFILE CHECKSUM: 7af77fbc34af9646e8c6389e7e2c0b4663bb16d9
+PODFILE CHECKSUM: c144025e9b0ade3d8b536a343fee89da69391cdc
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.6.0

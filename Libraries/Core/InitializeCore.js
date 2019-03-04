@@ -44,7 +44,7 @@ if (__DEV__) {
   require('setUpDeveloperTools');
 }
 
-const PerformanceLogger = require('PerformanceLogger');
+const PerformanceLogger = require('GlobalPerformanceLogger');
 // We could just call PerformanceLogger.markPoint at the top of the file,
 // but then we'd be excluding the time it took to require PerformanceLogger.
 // Instead, we just use Date.now and backdate the timestamp.

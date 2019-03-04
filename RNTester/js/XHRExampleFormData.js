@@ -48,7 +48,11 @@ class XHRExampleFormData extends React.Component<Object, Object> {
   }
 
   _fetchRandomPhoto = () => {
-    CameraRoll.getPhotos({first: PAGE_SIZE}).then(data => {
+    CameraRoll.getPhotos({
+      first: PAGE_SIZE,
+      groupTypes: 'All',
+      assetType: 'All',
+    }).then(data => {
       if (!this._isMounted) {
         return;
       }

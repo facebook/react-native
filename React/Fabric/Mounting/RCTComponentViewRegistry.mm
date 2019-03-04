@@ -16,8 +16,8 @@ using namespace facebook::react;
 
 #ifdef LEGACY_UIMANAGER_INTEGRATION_ENABLED
 
-#import <React/RCTUIManager.h>
 #import <React/RCTBridge+Private.h>
+#import <React/RCTUIManager.h>
 
 /**
  * Warning: This is a total hack and temporary solution.
@@ -78,10 +78,10 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
   if (self = [super init]) {
     _registry = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsIntegerPersonality | NSPointerFunctionsOpaqueMemory
                                       valueOptions:NSPointerFunctionsObjectPersonality];
-    _recyclePool = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsOpaquePersonality | NSPointerFunctionsOpaqueMemory
-                                         valueOptions:NSPointerFunctionsObjectPersonality];
+    _recyclePool =
+        [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsOpaquePersonality | NSPointerFunctionsOpaqueMemory
+                              valueOptions:NSPointerFunctionsObjectPersonality];
     _componentViewFactory = [RCTComponentViewFactory standardComponentViewFactory];
-
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleApplicationDidReceiveMemoryWarningNotification)
@@ -102,11 +102,11 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
 {
   RCTAssertMainQueue();
 
-  RCTAssert(![_registry objectForKey:(__bridge id)(void *)tag],
-    @"RCTComponentViewRegistry: Attempt to dequeue already registered component.");
+  RCTAssert(
+      ![_registry objectForKey:(__bridge id)(void *)tag],
+      @"RCTComponentViewRegistry: Attempt to dequeue already registered component.");
 
-  UIView<RCTComponentViewProtocol> *componentView =
-    [self _dequeueComponentViewWithComponentHandle:componentHandle];
+  UIView<RCTComponentViewProtocol> *componentView = [self _dequeueComponentViewWithComponentHandle:componentHandle];
   componentView.tag = tag;
   [_registry setObject:componentView forKey:(__bridge id)(void *)tag];
 
@@ -123,8 +123,9 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
 {
   RCTAssertMainQueue();
 
-  RCTAssert([_registry objectForKey:(__bridge id)(void *)tag],
-    @"RCTComponentViewRegistry: Attempt to enqueue unregistered component.");
+  RCTAssert(
+      [_registry objectForKey:(__bridge id)(void *)tag],
+      @"RCTComponentViewRegistry: Attempt to enqueue unregistered component.");
 
 #ifdef LEGACY_UIMANAGER_INTEGRATION_ENABLED
   [RCTUIManager unregisterView:componentView];
@@ -139,7 +140,8 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
 {
   RCTAssertMainQueue();
   [self _enqueueComponentViewWithComponentHandle:componentHandle
-                                   componentView:[self.componentViewFactory createComponentViewWithComponentHandle:componentHandle]];
+                                   componentView:[self.componentViewFactory
+                                                     createComponentViewWithComponentHandle:componentHandle]];
 }
 
 - (UIView<RCTComponentViewProtocol> *)componentViewByTag:(ReactTag)tag
@@ -158,7 +160,7 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
 {
   RCTAssertMainQueue();
   NSHashTable<UIView<RCTComponentViewProtocol> *> *componentViews =
-    [_recyclePool objectForKey:(__bridge id)(void *)componentHandle];
+      [_recyclePool objectForKey:(__bridge id)(void *)componentHandle];
   if (!componentViews || componentViews.count == 0) {
     return [self.componentViewFactory createComponentViewWithComponentHandle:componentHandle];
   }
@@ -175,7 +177,7 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
   [componentView prepareForRecycle];
 
   NSHashTable<UIView<RCTComponentViewProtocol> *> *componentViews =
-    [_recyclePool objectForKey:(__bridge id)(void *)componentHandle];
+      [_recyclePool objectForKey:(__bridge id)(void *)componentHandle];
   if (!componentViews) {
     componentViews = [NSHashTable hashTableWithOptions:NSPointerFunctionsObjectPersonality];
     [_recyclePool setObject:componentViews forKey:(__bridge id)(void *)componentHandle];

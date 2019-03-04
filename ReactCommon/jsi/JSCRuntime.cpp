@@ -9,6 +9,7 @@
 #include <atomic>
 #include <condition_variable>
 #include <cstdlib>
+#include <jsi/jsilib.h>
 #include <mutex>
 #include <queue>
 #include <sstream>
@@ -36,8 +37,15 @@ class JSCRuntime : public jsi::Runtime {
   JSCRuntime(JSGlobalContextRef ctx);
   ~JSCRuntime();
 
+  std::shared_ptr<const jsi::PreparedJavaScript> prepareJavaScript(
+      const std::shared_ptr<const jsi::Buffer> &buffer,
+      std::string sourceURL) override;
+
+  void evaluatePreparedJavaScript(
+    const std::shared_ptr<const jsi::PreparedJavaScript>& js) override;
+
   void evaluateJavaScript(
-      std::unique_ptr<const jsi::Buffer> buffer,
+      const std::shared_ptr<const jsi::Buffer> &buffer,
       const std::string& sourceURL) override;
   jsi::Object global() override;
 
@@ -238,14 +246,10 @@ class JSCRuntime : public jsi::Runtime {
 // JSStringRef utilities
 namespace {
 std::string JSStringToSTLString(JSStringRef str) {
-  std::string result;
   size_t maxBytes = JSStringGetMaximumUTF8CStringSize(str);
-  result.resize(maxBytes);
-  size_t bytesWritten = JSStringGetUTF8CString(str, &result[0], maxBytes);
-  // JSStringGetUTF8CString writes the null terminator, so we want to resize
-  // to `bytesWritten - 1` so that `result` has the correct length.
-  result.resize(bytesWritten - 1);
-  return result;
+  std::vector<char> buffer(maxBytes);
+  JSStringGetUTF8CString(str, buffer.data(), maxBytes);
+  return std::string(buffer.data());
 }
 
 JSStringRef getLengthString() {
@@ -318,8 +322,25 @@ JSCRuntime::~JSCRuntime() {
 #endif
 }
 
+std::shared_ptr<const jsi::PreparedJavaScript> JSCRuntime::prepareJavaScript(
+    const std::shared_ptr<const jsi::Buffer> &buffer,
+    std::string sourceURL) {
+  return std::make_shared<jsi::SourceJavaScriptPreparation>(
+      buffer, std::move(sourceURL));
+}
+
+void JSCRuntime::evaluatePreparedJavaScript(
+  const std::shared_ptr<const jsi::PreparedJavaScript>& js) {
+  assert(
+      dynamic_cast<const jsi::SourceJavaScriptPreparation*>(js.get()) &&
+      "preparedJavaScript must be a SourceJavaScriptPreparation");
+  auto sourceJs =
+      std::static_pointer_cast<const jsi::SourceJavaScriptPreparation>(js);
+  evaluateJavaScript(sourceJs, sourceJs->sourceURL());
+}
+
 void JSCRuntime::evaluateJavaScript(
-    std::unique_ptr<const jsi::Buffer> buffer,
+    const std::shared_ptr<const jsi::Buffer> &buffer,
     const std::string& sourceURL) {
   std::string tmp(
       reinterpret_cast<const char*>(buffer->data()), buffer->size());
@@ -574,7 +595,7 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
       }
       return rt.valueRef(ret);
     }
-    
+
     #define JSC_UNUSED(x) (void) (x);
 
     static bool setProperty(
@@ -627,7 +648,7 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
         JSPropertyNameAccumulatorAddName(propertyNames, stringRef(name));
       }
     }
-    
+
     #undef JSC_UNUSED
 
     static void finalize(JSObjectRef obj) {

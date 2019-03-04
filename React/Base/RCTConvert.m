@@ -355,6 +355,7 @@ RCT_ENUM_CONVERTER(UIKeyboardType, (@{
   @"decimal-pad": @(UIKeyboardTypeDecimalPad),
   @"twitter": @(UIKeyboardTypeTwitter),
   @"web-search": @(UIKeyboardTypeWebSearch),
+  @"ascii-capable-number-pad": @(UIKeyboardTypeASCIICapableNumberPad),
   // Added for Android compatibility
   @"numeric": @(UIKeyboardTypeDecimalPad),
 }), UIKeyboardTypeDefault, integerValue)
