@@ -1,0 +1,18 @@
+# 
+# Task Group: ISS Install Apple certs and provisioning profiles
+#
+steps:
+  - task: InstallAppleCertificate@2
+    displayName: 'Install an Apple certificate BudiOSDevCert.p12'
+    inputs:
+      certSecureFile: '18ab5b38-0542-459f-a6d4-295fbdbbd08f'
+
+  - task: InstallAppleCertificate@2
+    displayName: 'Install an Apple certificate BudMacDevCert.p12'
+    inputs:
+      certSecureFile: '321fd796-a04d-461d-a674-f00fda7f2295'
+
+  - task: InstallAppleProvisioningProfile@1
+    displayName: 'Install an Apple provisioning profile iOS_Team_Provisioning_Profile.mobileprovision'
+    inputs:
+      provProfileSecureFile: '7dd1fc59-ccab-4c54-a8ac-f792efc4a855'

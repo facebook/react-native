@@ -1,0 +1,41 @@
+# This file defines the Apple PR build steps used during the CI loop
+name: $(Date:yyyyMMdd).$(Rev:.r)
+
+trigger: none # will disable CI builds entirely
+
+pr:
+- master
+
+jobs:
+  - job: AppleRNPR
+    displayName: Apple React Native PR
+    strategy:
+      matrix:
+        ios:
+          packager_platform: 'ios'
+          xcode_sdk: iphonesimulator
+          xcode_scheme: 'RNTester'
+          xcode_destination: 'platform=iOS Simulator,OS=latest,name=iPhone 5s'
+        tvos:
+          packager_platform: 'ios'
+          xcode_sdk: appletvsimulator
+          xcode_scheme: 'RNTester-tvOS'
+          xcode_destination: 'platform=tvOS Simulator,OS=latest,name=Apple TV'
+        macos:
+          packager_platform: 'macos'
+          xcode_sdk: macosx
+          xcode_scheme: 'RNTester-macOS'
+          xcode_destination: 'platform=macOS,arch=x86_64'
+    pool:
+      demands: ['xcode', 'sh', 'npm']
+    timeoutInMinutes: 60 # how long to run the job before automatically cancelling
+    cancelTimeoutInMinutes: 5 # how much time to give 'run always even if cancelled tasks' before killing them
+    steps:
+      - template: templates/apple-job-react-native.yml
+        parameters:
+          packager_platform: $(packager_platform)
+          xcode_sdk: $(xcode_sdk)
+          xcode_configuration: $(xcode_configuration)
+          xcode_scheme: $(xcode_scheme)
+          xcode_actions: $(xcode_actions)
+          xcode_destination: $(xcode_destination)

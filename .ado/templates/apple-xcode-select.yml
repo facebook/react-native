@@ -1,0 +1,38 @@
+#
+# Task Group: XCode select proper version
+#
+steps:
+  # The XCODE_10_DEVELOPER_DIR variable is defined in the Hosted Agents and is used by the Xcode@5 tasks.
+  # The 'OE Mac Pool' agents do not define this variable, so manually set it here if it is not defined.
+  - script: |
+      if [ -z $XCODE_10_DEVELOPER_DIR ]; then 
+        DIR='/Applications/Xcode_10.1.app/Contents/Developer/'
+        if [ ! -d $DIR ]; then
+          DIR='/Applications/Xcode.app/Contents/Developer/'
+        fi
+        if [ -d $DIR ]; then
+          echo "##vso[task.setvariable variable=XCODE_10_DEVELOPER_DIR;]$DIR"
+        else
+          (>&2 echo "No Xcode found.")
+        fi
+      fi
+    displayName: 'Ensure XCODE_10_DEVELOPER_DIR'
+    failOnStderr: true
+
+  # The DEVELOPER_DIR variable is used by xcodebuild to specify the version of Xcode to use.
+  # Set the variable here so that npm components and CMake build steps get the latest XCode version
+  # instead of whatever version is the default on the build agent.
+  - script: |
+      echo "##vso[task.setvariable variable=DEVELOPER_DIR;]$XCODE_10_DEVELOPER_DIR"
+    displayName: 'Set DEVELOPER_DIR'
+
+  - script: |
+      REQUIRED=10.1
+      VER=`xcodebuild -version | head -n1 | cut -d' ' -f2`
+      if (( $(echo "$VER >= $REQUIRED" | bc -l) )); then
+        echo "XCode version $VER is active."
+      else
+        (>&2 echo "Must have XCode $REQUIRED or later.")
+      fi
+    displayName: 'Check XCode version'
+    failOnStderr: true
