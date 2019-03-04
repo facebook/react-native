@@ -1,0 +1,70 @@
+parameters:
+  packager_platform: ''
+  xcode_sdk: ''
+  xcode_configuration: ''
+  xcode_scheme: ''
+  xcode_actions: ''
+  xcode_destination: ''
+
+steps:
+  # Clean DerivedData
+  - script: |
+      rm -rf $(Build.Repository.LocalPath)/DerivedData
+    displayName: 'Clean DerivedData'
+
+  # Install the required components specified in the Brewfile file.
+  - script: 'brew bundle'
+    displayName: 'brew bundle'
+
+  # Task Group: XCode select proper version
+  - template: apple-xcode-select.yml
+
+  # Task Group: ISS Install Apple certs and provisioning profiles
+  - template: apple-install-certs.yml
+
+  - task: CmdLine@2
+    displayName: npm install
+    inputs:
+      script: npm install
+
+  - task: ShellScript@2
+    displayName: 'Setup packager and WebSocket test server'
+    inputs:
+      scriptPath: '.ado/ado-test-setup.sh'
+      disableAutoCwd: true
+      cwd: ''
+
+  - bash: |
+      echo Preparing the packager for platform $PLATFORM
+      curl --retry-connrefused --connect-timeout 5 --max-time 10 --retry 10 --retry-delay 5 --retry-max-time 120 "http://localhost:8081/IntegrationTests/IntegrationTestsApp.bundle?platform=${PLATFORM}&dev=true" -o /dev/null
+    env:
+      PLATFORM: ${{ parameters.packager_platform }}
+    displayName: 'curl the packager'
+
+  - template: apple-xcode-build.yml
+    parameters:
+      xcode_sdk: ${{ parameters.xcode_sdk }}
+      xcode_configuration: Debug
+      xcode_workspacePath: RNTester/RNTester.xcodeproj
+      xcode_scheme: ${{ parameters.xcode_scheme }}
+      xcode_actions: 'build test'
+      xcode_useXcpretty: true
+      xcode_destination: ${{ parameters.xcode_destination }}
+
+  - template: apple-xcode-build.yml
+    parameters:
+      xcode_sdk: ${{ parameters.xcode_sdk }}
+      xcode_configuration: Release
+      xcode_workspacePath: RNTester/RNTester.xcodeproj
+      xcode_scheme: ${{ parameters.xcode_scheme }}
+      xcode_actions: 'build'
+      xcode_useXcpretty: false
+      xcode_destination: ${{ parameters.xcode_destination }}
+
+  - task: ShellScript@2
+    displayName: 'Cleanup packager and WebSocket test server'
+    inputs:
+      scriptPath: '.ado/ado-test-cleanup.sh'
+      disableAutoCwd: true
+      cwd: ''
+    condition: always()
