@@ -49,8 +49,8 @@ struct ShadowView final {
  * Describes pair of a `ShadowView` and a `ShadowNode`.
  */
 struct ShadowViewNodePair final {
-  const ShadowView shadowView;
-  const ShadowNode &shadowNode;
+  ShadowView shadowView;
+  ShadowNode const *shadowNode;
 
   /*
    * The stored pointer to `ShadowNode` represents an indentity of the pair.
