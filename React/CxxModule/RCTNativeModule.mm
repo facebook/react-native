@@ -71,17 +71,19 @@ void RCTNativeModule::invoke(unsigned int methodId, folly::dynamic &&params, int
     invokeInner(weakBridge, weakModuleData, methodId, std::move(params));
   };
 
-  if (m_bridge.valid) {
-    dispatch_queue_t queue = m_moduleData.methodQueue;
-    if (queue == RCTJSThread) {
-      block();
-    } else if (queue) {
-      dispatch_async(queue, block);
-    }
-  } else {
-    RCTLog(@"Attempted to invoke `%u` (method ID) on `%@` (NativeModule name) with an invalid bridge.",
-               methodId, m_moduleData.name);
+  dispatch_queue_t queue = m_moduleData.methodQueue;
+  if (queue == RCTJSThread) {
+    block();
+  } else if (queue) {
+    dispatch_async(queue, block);
   }
+
+  #ifdef RCT_DEV
+  if (!queue) {
+    RCTLog(@"Attempted to invoke `%u` (method ID) on `%@` (NativeModule name) without a method queue.",
+           methodId, m_moduleData.name);
+  }
+  #endif
 }
 
 MethodCallResult RCTNativeModule::callSerializableNativeHook(unsigned int reactMethodId, folly::dynamic &&params) {
