@@ -122,6 +122,11 @@
     effectiveTextAttributes[NSKernAttributeName] = @(_reactTextAttributes.letterSpacing);
   }
   
+  NSParagraphStyle *paragraphStyle = [_reactTextAttributes effectiveParagraphStyle];
+  if (paragraphStyle) {
+    effectiveTextAttributes[NSParagraphStyleAttributeName] = paragraphStyle;
+  }
+  
   return [effectiveTextAttributes copy];
 }
 
