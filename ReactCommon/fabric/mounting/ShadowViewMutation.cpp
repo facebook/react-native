@@ -14,8 +14,8 @@ ShadowViewMutation ShadowViewMutation::CreateMutation(ShadowView shadowView) {
   return {
       /* .type = */ Create,
       /* .parentShadowView = */ {},
-      /* .newChildShadowView = */ shadowView,
       /* .oldChildShadowView = */ {},
+      /* .newChildShadowView = */ shadowView,
       /* .index = */ -1,
   };
 }
