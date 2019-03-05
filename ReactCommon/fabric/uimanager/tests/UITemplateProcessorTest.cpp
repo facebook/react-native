@@ -13,8 +13,8 @@
 
 using namespace facebook::react;
 
-#include <react/components/activityindicator/ActivityIndicatorViewComponentDescriptor.h>
 #include <react/components/image/ImageComponentDescriptor.h>
+#include <react/components/rncore/ComponentDescriptors.h>
 #include <react/components/scrollview/ScrollViewComponentDescriptor.h>
 #include <react/components/text/ParagraphComponentDescriptor.h>
 #include <react/components/text/RawTextComponentDescriptor.h>
