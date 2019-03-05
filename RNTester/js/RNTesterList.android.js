@@ -119,6 +119,10 @@ const ComponentExamples: Array<RNTesterExample> = [
 
 const APIExamples: Array<RNTesterExample> = [
   {
+    key: 'AccessibilityExample',
+    module: require('./AccessibilityExample'),
+  },
+  {
     key: 'AccessibilityAndroidExample',
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
      * when making Flow check .android.js files. */
