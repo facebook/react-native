@@ -9,17 +9,17 @@
 #include <cxxreact/CxxModule.h>
 #include <cxxreact/NativeModule.h>
 
-class SampleCxxModule : public facebook::xplat::module::CxxModule
-{
-public:
-  SampleCxxModule();
-  
-  std::string getName() override;
-
-  std::map<std::string, folly::dynamic> getConstants() override;
-  
-  std::vector<Method> getMethods() override;
-};
+//class SampleCxxModule : public facebook::xplat::module::CxxModule
+//{
+//public:
+//  SampleCxxModule();
+//
+//  std::string getName() override;
+//
+//  std::map<std::string, folly::dynamic> getConstants() override;
+//
+//  std::vector<Method> getMethods() override;
+//};
 
 class SampleNativeModule : public facebook::react::NativeModule
 {
