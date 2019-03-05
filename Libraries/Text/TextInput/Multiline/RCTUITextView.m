@@ -257,11 +257,8 @@ static UIColor *defaultPlaceholderColor()
                                                                                                                             NSForegroundColorAttributeName: self.placeholderColor ?: defaultPlaceholderColor(),
                                                                                                                             NSKernAttributeName:isnan(_reactTextAttributes.letterSpacing) ? @0 : @(_reactTextAttributes.letterSpacing)
                                                                                                                             }];
-  if (!isnan(_reactTextAttributes.lineHeight)) {
-    NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
-    CGFloat lineHeight = _reactTextAttributes.lineHeight * _reactTextAttributes.effectiveFontSizeMultiplier;
-    paragraphStyle.minimumLineHeight = lineHeight;
-    paragraphStyle.maximumLineHeight = lineHeight;
+  NSParagraphStyle *paragraphStyle = [_reactTextAttributes effectiveParagraphStyle];
+  if (paragraphStyle) {
     effectiveTextAttributes[NSParagraphStyleAttributeName] = paragraphStyle;
   }
   
