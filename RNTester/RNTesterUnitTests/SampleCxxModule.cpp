@@ -16,66 +16,32 @@ using std::map;
 using std::string;
 using std::vector;
 
-//SampleCxxModule::SampleCxxModule()
-//{
-//}
-//
-//string SampleCxxModule::getName()
-//{
-//  return "SampleCxxModule";
-//}
-//
-//map<string, dynamic> SampleCxxModule::getConstants()
-//{
-//  return {};
-//}
-//
-//vector<SampleCxxModule::Method> SampleCxxModule::getMethods()
-//{
-//  return
-//  {
-//    Method("sum", [instance = this->getInstance().lock()](dynamic args)
-//    {
-//      int64_t sum = 0;
-//      for(auto& val : args)
-//        sum += val.getInt();
-//
-//      if (instance)
-//        instance->callJSFunction("MockedModule", "mockedMethod", dynamic::array(sum));
-//    })
-//  };
-//}
-
-SampleNativeModule::SampleNativeModule(std::shared_ptr<facebook::react::Instance> instance)
-  : m_wkInstance { instance }
+SampleCxxModule::SampleCxxModule()
 {
 }
 
-string SampleNativeModule::getName()
+string SampleCxxModule::getName()
 {
-  return "SampleNativeModule";
+  return "SampleCxxModule";
 }
 
-vector<MethodDescriptor> SampleNativeModule::getMethods()
+map<string, dynamic> SampleCxxModule::getConstants()
+{
+  return {};
+}
+
+vector<SampleCxxModule::Method> SampleCxxModule::getMethods()
 {
   return
   {
-    { "sum", "sync" }
+    Method("sum", [instance = this->getInstance().lock()](dynamic args)
+    {
+      int64_t sum = 0;
+      for(auto& val : args)
+        sum += val.getInt();
+
+      if (instance)
+        instance->callJSFunction("MockedModule", "mockedMethod", dynamic::array(sum));
+    })
   };
-}
-
-dynamic SampleNativeModule::getConstants()
-{
-  return {};
-}
-
-void SampleNativeModule::invoke(unsigned int reactMethodId, dynamic&& params, int callId)
-{
-//  if (auto instance = m_wkInstance.lock())
-//    instance->callJSFunction(getName(), "sum", std::move(params));
-}
-
-MethodCallResult SampleNativeModule::callSerializableNativeHook(unsigned int reactMethodId, dynamic&& args)
-{
-  return {};
 }
