@@ -249,7 +249,7 @@ public class ReactInstanceManagerBuilder {
     if (mInitialLifecycleState == LifecycleState.RESUMED) {
       Assertions.assertNotNull(
         mCurrentActivity,
-        "activity needs to be set if initial lifecycle state is resumed");
+        "Activity needs to be set if initial lifecycle state is resumed");
     }
 
     Assertions.assertCondition(
