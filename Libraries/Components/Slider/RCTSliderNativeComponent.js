@@ -17,7 +17,6 @@ import type {ImageSource} from 'ImageSource';
 import type {NativeComponent} from 'ReactNative';
 import type {SyntheticEvent} from 'CoreEventTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {ViewStyleProp} from 'StyleSheet';
 
 type Event = SyntheticEvent<
   $ReadOnly<{|

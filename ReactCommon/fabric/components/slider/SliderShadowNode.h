@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include <react/components/slider/SliderEventEmitter.h>
+#import <react/components/rncore/EventEmitters.h>
+#import <react/components/rncore/Props.h>
 #include <react/components/slider/SliderMeasurementsManager.h>
-#include <react/components/slider/SliderProps.h>
 #include <react/components/view/ConcreteViewShadowNode.h>
 #include <react/imagemanager/ImageManager.h>
 #include <react/imagemanager/primitives.h>
