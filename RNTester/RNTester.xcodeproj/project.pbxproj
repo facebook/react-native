@@ -1854,6 +1854,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					FOLLY_NO_CONFIG,
+					"FOLLY_MOBILE=1",
 					"FOLLY_USE_LIBCPP=1",
 				);
 				HEADER_SEARCH_PATHS = (
@@ -1882,6 +1883,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					FOLLY_NO_CONFIG,
+					"FOLLY_MOBILE=1",
 					"FOLLY_USE_LIBCPP=1",
 				);
 				HEADER_SEARCH_PATHS = (
