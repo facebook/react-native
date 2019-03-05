@@ -12,6 +12,54 @@
 
 import type {SchemaType} from '../../CodegenSchema.js';
 
+const INTERFACE_ONLY: SchemaType = {
+  modules: {
+    Switch: {
+      components: {
+        InterfaceOnlyComponent: {
+          interfaceOnly: true,
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [
+            {
+              name: 'onChange',
+              optional: true,
+              bubblingType: 'bubble',
+              typeAnnotation: {
+                type: 'EventTypeAnnotation',
+                argument: {
+                  type: 'ObjectTypeAnnotation',
+                  properties: [
+                    {
+                      type: 'BooleanTypeAnnotation',
+                      name: 'value',
+                      optional: false,
+                    },
+                  ],
+                },
+              },
+            },
+          ],
+          props: [
+            {
+              name: 'accessibilityHint',
+              optional: true,
+              typeAnnotation: {
+                type: 'StringTypeAnnotation',
+                default: '',
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+};
+
 const BOOLEAN_PROP: SchemaType = {
   modules: {
     Switch: {
@@ -580,6 +628,7 @@ const TWO_COMPONENTS_DIFFERENT_FILES: SchemaType = {
 };
 
 module.exports = {
+  INTERFACE_ONLY,
   BOOLEAN_PROP,
   STRING_PROP,
   INTEGER_PROPS,

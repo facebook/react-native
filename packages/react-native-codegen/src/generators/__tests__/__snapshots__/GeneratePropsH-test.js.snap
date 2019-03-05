@@ -274,6 +274,37 @@ const int progress3{10};
 }
 `;
 
+exports[`GeneratePropsH can generate fixture INTERFACE_ONLY 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/view/ViewProps.h>
+
+namespace facebook {
+namespace react {
+
+class InterfaceOnlyComponentProps final : public ViewProps {
+ public:
+  InterfaceOnlyComponentProps() = default;
+  InterfaceOnlyComponentProps(const InterfaceOnlyComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  const std::string accessibilityHint{\\"\\"};
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GeneratePropsH can generate fixture MULTI_NATIVE_PROP 1`] = `
 Map {
   "Props.h" => "
