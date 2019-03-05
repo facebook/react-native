@@ -45,3 +45,32 @@ vector<SampleCxxModule::Method> SampleCxxModule::getMethods()
     })
   };
 }
+
+SampleNativeModule::SampleNativeModule(std::shared_ptr<facebook::react::Instance> instance)
+  : m_wkInstance { instance }
+{
+}
+
+string SampleNativeModule::getName()
+{
+  return "SampleNativeModule";
+}
+
+vector<MethodDescriptor> SampleNativeModule::getMethods()
+{
+  return {};
+}
+
+dynamic SampleNativeModule::getConstants()
+{
+  return {};
+}
+
+void SampleNativeModule::invoke(unsigned int reactMethodId, dynamic&& params, int callId)
+{
+}
+
+MethodCallResult SampleNativeModule::callSerializableNativeHook(unsigned int reactMethodId, dynamic&& args)
+{
+  return {};
+}
