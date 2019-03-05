@@ -252,13 +252,20 @@ static UIColor *defaultPlaceholderColor()
 
 - (NSDictionary<NSAttributedStringKey, id> *)placeholderEffectiveTextAttributes
 {
-  NSDictionary<NSAttributedStringKey, id> *effectiveTextAttributes = @{
-                                                                       NSFontAttributeName: _reactTextAttributes.effectiveFont ?: defaultPlaceholderFont(),
-                                                                       NSForegroundColorAttributeName: self.placeholderColor ?: defaultPlaceholderColor(),
-                                                                       NSKernAttributeName:isnan(_reactTextAttributes.letterSpacing) ? @0 : @(_reactTextAttributes.letterSpacing)
-                                                                       };
+  NSMutableDictionary<NSAttributedStringKey, id> *effectiveTextAttributes = [NSMutableDictionary dictionaryWithDictionary:@{
+                                                                                                                            NSFontAttributeName: _reactTextAttributes.effectiveFont ?: defaultPlaceholderFont(),
+                                                                                                                            NSForegroundColorAttributeName: self.placeholderColor ?: defaultPlaceholderColor(),
+                                                                                                                            NSKernAttributeName:isnan(_reactTextAttributes.letterSpacing) ? @0 : @(_reactTextAttributes.letterSpacing)
+                                                                                                                            }];
+  if (!isnan(_reactTextAttributes.lineHeight)) {
+    NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
+    CGFloat lineHeight = _reactTextAttributes.lineHeight * _reactTextAttributes.effectiveFontSizeMultiplier;
+    paragraphStyle.minimumLineHeight = lineHeight;
+    paragraphStyle.maximumLineHeight = lineHeight;
+    effectiveTextAttributes[NSParagraphStyleAttributeName] = paragraphStyle;
+  }
   
-  return effectiveTextAttributes;
+  return [effectiveTextAttributes copy];
 }
 
 #pragma mark - Utility Methods
