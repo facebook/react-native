@@ -50,7 +50,7 @@ static void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComp
   }
 }
 
-static NSString *_nativeIDRegistryKey(NSString *nativeID, NSNumber *rootTag)
+static NSString *RCTNativeIDRegistryKey(NSString *nativeID, NSNumber *rootTag)
 {
   if (!nativeID || !rootTag) {
     return @"";
@@ -392,7 +392,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
   if (!nativeID || !rootTag) {
     return nil;
   }
-  return [_nativeIDRegistry objectForKey:_nativeIDRegistryKey(nativeID, rootTag)];
+  return [_nativeIDRegistry objectForKey:RCTNativeIDRegistryKey(nativeID, rootTag)];
 }
 
 - (void)setNativeID:(NSString *)nativeID forView:(UIView *)view
@@ -404,7 +404,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
   __weak RCTUIManager *weakSelf = self;
   [self rootViewForReactTag:view.reactTag withCompletion:^(UIView *rootView) {
     if (rootView) {
-      [weakSelf.nativeIDRegistry setObject:view forKey:_nativeIDRegistryKey(nativeID, rootView.reactTag)];
+      [weakSelf.nativeIDRegistry setObject:view forKey:RCTNativeIDRegistryKey(nativeID, rootView.reactTag)];
     }
   }];
 }
