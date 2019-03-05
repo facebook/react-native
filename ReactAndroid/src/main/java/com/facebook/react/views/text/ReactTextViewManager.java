@@ -79,6 +79,9 @@ public class ReactTextViewManager
     // TODO add textBreakStrategy prop into local Data
     int textBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
 
+    // TODO add justificationMode prop into local Data
+    int justificationMode = Layout.JUSTIFICATION_MODE_NONE;
+
     return new ReactTextUpdate(
         spanned,
         -1, // TODO add this into local Data?
@@ -88,7 +91,9 @@ public class ReactTextViewManager
         textViewProps.getEndPadding(),
         textViewProps.getBottomPadding(),
         textViewProps.getTextAlign(),
-        textBreakStrategy);
+        textBreakStrategy,
+        justificationMode
+      );
   }
 
   @Override
