@@ -9,6 +9,7 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+#pragma once
 
 #include <react/components/view/ViewProps.h>
 
@@ -40,6 +41,7 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+#pragma once
 
 #include <react/components/view/ViewProps.h>
 #include <react/graphics/Color.h>
@@ -72,6 +74,7 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+#pragma once
 
 #include <react/components/view/ViewProps.h>
 
@@ -121,6 +124,7 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+#pragma once
 
 #include <react/components/view/ViewProps.h>
 
@@ -152,6 +156,7 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+#pragma once
 
 #include <react/components/view/ViewProps.h>
 
@@ -183,6 +188,7 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+#pragma once
 
 #include <react/components/view/ViewProps.h>
 
@@ -218,6 +224,7 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+#pragma once
 
 #include <react/components/view/ViewProps.h>
 #include <react/imagemanager/primitives.h>
@@ -250,6 +257,7 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+#pragma once
 
 #include <react/components/view/ViewProps.h>
 
@@ -283,6 +291,7 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+#pragma once
 
 #include <react/components/view/ViewProps.h>
 
@@ -314,6 +323,7 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+#pragma once
 
 #include <react/components/view/ViewProps.h>
 #include <react/graphics/Color.h>
@@ -349,6 +359,7 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+#pragma once
 
 #include <react/components/view/ViewProps.h>
 
@@ -380,6 +391,7 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+#pragma once
 
 #include <react/components/view/ViewProps.h>
 
@@ -421,6 +433,7 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+#pragma once
 
 #include <react/components/view/ViewProps.h>
 
