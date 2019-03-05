@@ -79,6 +79,44 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   _textTransform = textAttributes->_textTransform != RCTTextTransformUndefined ? textAttributes->_textTransform : _textTransform;
 }
 
+- (NSParagraphStyle *)effectiveParagraphStyle
+{
+  // Paragraph Style
+  NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
+  BOOL isParagraphStyleUsed = NO;
+  if (_alignment != NSTextAlignmentNatural) {
+    NSTextAlignment alignment = _alignment;
+    if (_layoutDirection == UIUserInterfaceLayoutDirectionRightToLeft) {
+      if (alignment == NSTextAlignmentRight) {
+        alignment = NSTextAlignmentLeft;
+      } else if (alignment == NSTextAlignmentLeft) {
+        alignment = NSTextAlignmentRight;
+      }
+    }
+    
+    paragraphStyle.alignment = alignment;
+    isParagraphStyleUsed = YES;
+  }
+  
+  if (_baseWritingDirection != NSWritingDirectionNatural) {
+    paragraphStyle.baseWritingDirection = _baseWritingDirection;
+    isParagraphStyleUsed = YES;
+  }
+  
+  if (!isnan(_lineHeight)) {
+    CGFloat lineHeight = _lineHeight * self.effectiveFontSizeMultiplier;
+    paragraphStyle.minimumLineHeight = lineHeight;
+    paragraphStyle.maximumLineHeight = lineHeight;
+    isParagraphStyleUsed = YES;
+  }
+  
+  if (isParagraphStyleUsed) {
+    return [paragraphStyle copy];
+  }
+  
+  return nil;
+}
+
 - (NSDictionary<NSAttributedStringKey, id> *)effectiveTextAttributes
 {
   NSMutableDictionary<NSAttributedStringKey, id> *attributes =
@@ -107,35 +145,8 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   }
 
   // Paragraph Style
-  NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
-  BOOL isParagraphStyleUsed = NO;
-  if (_alignment != NSTextAlignmentNatural) {
-    NSTextAlignment alignment = _alignment;
-    if (_layoutDirection == UIUserInterfaceLayoutDirectionRightToLeft) {
-      if (alignment == NSTextAlignmentRight) {
-        alignment = NSTextAlignmentLeft;
-      } else if (alignment == NSTextAlignmentLeft) {
-        alignment = NSTextAlignmentRight;
-      }
-    }
-
-    paragraphStyle.alignment = alignment;
-    isParagraphStyleUsed = YES;
-  }
-
-  if (_baseWritingDirection != NSWritingDirectionNatural) {
-    paragraphStyle.baseWritingDirection = _baseWritingDirection;
-    isParagraphStyleUsed = YES;
-  }
-
-  if (!isnan(_lineHeight)) {
-    CGFloat lineHeight = _lineHeight * self.effectiveFontSizeMultiplier;
-    paragraphStyle.minimumLineHeight = lineHeight;
-    paragraphStyle.maximumLineHeight = lineHeight;
-    isParagraphStyleUsed = YES;
-  }
-
-  if (isParagraphStyleUsed) {
+  NSParagraphStyle *paragraphStyle = [self effectiveParagraphStyle];
+  if (paragraphStyle) {
     attributes[NSParagraphStyleAttributeName] = paragraphStyle;
   }
 
