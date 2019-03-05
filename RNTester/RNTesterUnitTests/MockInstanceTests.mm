@@ -5,11 +5,44 @@
 
 #import <XCTest/XCTest.h>
 
+#import <React/RCTBridgeModule.h>
+
 #import "MockInstance.hpp"
 #import "SampleCxxModule.hpp"
 
 using folly::dynamic;
 using std::vector;
+
+@interface MyModule : NSObject <RCTBridgeModule>
+
+@property facebook::react::Instance* instance;
+
+- (instancetype) initWithInstance:(facebook::react::Instance*) instance;
+
+@end
+
+@implementation MyModule
+
+// To export a module named CalendarManager
+RCT_EXPORT_MODULE();
+
+- (instancetype) initWithInstance:(facebook::react::Instance *)instance
+{
+  self = [super init];
+  if (self)
+  {
+    _instance = instance;
+  }
+  
+  return self;
+}
+
+RCT_EXPORT_METHOD(sum:(NSInteger)a b:(NSInteger)b)
+{
+  //_instance->callJSFunction("Calculator", "sum", dynamic::array(a, b));
+}
+
+@end
 
 @interface MockInstanceTests : XCTestCase
 
@@ -40,8 +73,14 @@ using std::vector;
 //  int64_t result = cache->front();
 //  XCTAssert(result == 5); // 2 + 3
   
-  auto module = std::make_unique<SampleNativeModule>(instance);
-  module->invoke(0, dynamic::array(2, 3), 0);
+//  auto module = std::make_unique<SampleNativeModule>(instance);
+//  module->invoke(0, dynamic::array(2, 3), 0);
+  
+  //auto module = [[MyModule alloc] initWithInstance:instance.get()];
+  
+  //instance->callJSFunction("mod", "meth", dynamic::array(2,3));
+
+  auto x = folly::dynamic::array(2, 3);
 
   XCTAssert(true);
 }
