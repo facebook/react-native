@@ -14,11 +14,6 @@ const Dimensions = require('Dimensions');
 
 /**
  * Resolves relative sizes (percentages and auto) in a style object.
- *
- * For example:
- *
- *   > resolveProperties('margin', {margin: 5, marginBottom: 10})
- *   {top: 5, left: 5, right: 5, bottom: 10}
  */
 function resolveRelativeSizes(
   style: Object,
