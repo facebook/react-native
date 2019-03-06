@@ -17,6 +17,7 @@ const View = require('View');
 
 const flattenStyle = require('flattenStyle');
 const resolveBoxStyle = require('resolveBoxStyle');
+const resolveRelativeSizes = require('resolveRelativeSizes');
 
 class ElementBox extends React.Component<$FlowFixMeProps> {
   render() {
@@ -31,6 +32,8 @@ class ElementBox extends React.Component<$FlowFixMeProps> {
     };
 
     if (margin != null) {
+      resolveRelativeSizes(margin);
+
       frameStyle.top -= margin.top;
       frameStyle.left -= margin.left;
       frameStyle.height += margin.top + margin.bottom;
@@ -51,6 +54,8 @@ class ElementBox extends React.Component<$FlowFixMeProps> {
     }
 
     if (padding != null) {
+      resolveRelativeSizes(padding);
+
       contentStyle.width -= padding.left + padding.right;
       contentStyle.height -= padding.top + padding.bottom;
     }
