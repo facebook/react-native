@@ -10,8 +10,6 @@
 #include "v8.h"
 #include "libplatform/libplatform.h"
 
-#include <cxxreact/ReactMarker.h>
-
 #include "V8Platform.h"
 
 #include <cstdlib>
@@ -126,7 +124,7 @@ namespace facebook { namespace v8runtime {
 
       static void Set(v8::Local<v8::Name> v8PropName, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<v8::Value>& info)
       {
-        v8::Local<v8::External> data = v8::Local<v8::External>::Cast(info.Data());
+        v8::Local<v8::External> data = v8::Local<v8::External>::Cast(info.This()->GetInternalField(0));
         HostObjectProxy* hostObjectProxy = reinterpret_cast<HostObjectProxy*>(data->Value());
 
         if (hostObjectProxy == nullptr)

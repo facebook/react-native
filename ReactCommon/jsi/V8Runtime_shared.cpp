@@ -9,8 +9,6 @@
 #include "v8.h"
 #include "libplatform/libplatform.h"
 
-#include <cxxreact/ReactMarker.h>
-
 #include "V8Platform.h"
 
 #include <cstdlib>

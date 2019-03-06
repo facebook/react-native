@@ -1,5 +1,5 @@
 LIBLETNAME = FollyDetail
-
+LIBLET_DEF_USEGENERATED = 0
 !include $(OPENSOURCE_REACTNATIVE)\OfficeISS\ReactCommon\make.inc
 
 SOURCES_SHARED = \

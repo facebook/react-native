@@ -25,7 +25,7 @@ if (
 
   let config = sdxHelpers.createConfig({
     extraNodeModules: {
-      '@microsoft/react-native': __dirname,
+      'react-native': __dirname,
     },
 
     roots: [path.resolve(__dirname)],

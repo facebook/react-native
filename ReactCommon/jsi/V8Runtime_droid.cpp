@@ -48,47 +48,6 @@ namespace facebook { namespace v8runtime {
     bool ShouldSetNoLazyFlag(const folly::dynamic& v8Config) {
       return !v8Config.isNull() && !v8Config.getDefault("UseLazyScriptCompilation", false).getBool();
     }
-
-    // Extracts a C string from a V8 Utf8Value.
-    const char* ToCString(const v8::String::Utf8Value& value) {
-      return *value ? *value : "<string conversion failed>";
-    }
-  }
-
-  V8Runtime::V8Runtime() {
-    // NewDefaultPlatform is causing linking error on droid.
-    // The issue is similar to what is mentioned here https://groups.google.com/forum/#!topic/v8-users/Jb1VSouy2Z0
-    // We are trying to figure out solution but using it's deprecated cousin CreateDefaultPlatform for now.
-
-    // platform_ = v8::platform::NewDefaultPlatform();
-    // v8::V8::InitializePlatform(platform_.get());
-    {
-      std::lock_guard<std::mutex> lock(sMutex_);
-      if (!sIsPlatformCreated_) {
-        v8::Platform *platform = v8::platform::CreateDefaultPlatform();
-        v8::V8::InitializePlatform(platform);
-        v8::V8::Initialize();
-        sIsPlatformCreated_ = true;
-      }
-
-      create_params_.array_buffer_allocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
-      isolate_ = v8::Isolate::New(create_params_);
-      ++sCurrentIsolateCount_;
-    }
-
-    isolate_->Enter();
-
-    v8::HandleScope handleScope(isolate_);
-    context_.Reset(GetIsolate(), CreateContext(isolate_));
-
-    v8::Context::Scope context_scope(context_.Get(GetIsolate()));
-
-    // Create and keep the constuctor for creating Host objects.
-    v8::Local<v8::FunctionTemplate> constructorForHostObjectTemplate = v8::FunctionTemplate::New(isolate_);
-    v8::Local<v8::ObjectTemplate> hostObjectTemplate = constructorForHostObjectTemplate->InstanceTemplate();
-    hostObjectTemplate->SetHandler(v8::NamedPropertyHandlerConfiguration(HostObjectProxy::Get, HostObjectProxy::Set, nullptr, nullptr, HostObjectProxy::Enumerator));
-    hostObjectTemplate->SetInternalFieldCount(1);
-    hostObjectConstructor_.Reset(isolate_, constructorForHostObjectTemplate->GetFunction());
   }
 
   V8Runtime::V8Runtime(const folly::dynamic& v8Config) : V8Runtime() {
@@ -189,50 +148,5 @@ namespace facebook { namespace v8runtime {
     }
 
     return script;
-  }
-
-  v8::Local<v8::Script> V8Runtime::GetCompiledScript(const v8::Local<v8::String> &source, const std::string& sourceURL) {
-    v8::Isolate *isolate = GetIsolate();
-    v8::TryCatch try_catch(isolate);
-    v8::MaybeLocal<v8::String> name = v8::String::NewFromUtf8(isolate, reinterpret_cast<const char*>(sourceURL.c_str()));
-    v8::ScriptOrigin origin(name.ToLocalChecked());
-    v8::Local<v8::Context> context(isolate->GetCurrentContext());
-
-    if (!isCacheEnabled_) {
-      v8::Local<v8::Script> script;
-      if (!v8::Script::Compile(context, source, &origin).ToLocal(&script)) {
-        ReportException(&try_catch);
-      }
-      return script;
-    }
-
-    return GetCompiledScriptFromCache(source, sourceURL);
-  }
-
-
-  bool V8Runtime::ExecuteString(const v8::Local<v8::String>& source, const std::string& sourceURL) {
-    _ISOLATE_CONTEXT_ENTER
-    v8::TryCatch try_catch(isolate);
-    v8::Local<v8::Context> context(isolate->GetCurrentContext());
-    v8::Local<v8::Script> script = GetCompiledScript(source, sourceURL);
-
-    v8::Local<v8::Value> result;
-    if (!script->Run(context).ToLocal(&result)) {
-      assert(try_catch.HasCaught());
-      // Print errors that happened during execution.
-      ReportException(&try_catch);
-      return false;
-    }
-    else {
-      assert(!try_catch.HasCaught());
-      if (printResult_ && !result->IsUndefined()) {
-        // If all went well and the result wasn't undefined then print
-        // the returned value.
-        v8::String::Utf8Value str(isolate, result);
-        const char* cstr = ToCString(str);
-        printf("%s\n", cstr);
-      }
-      return true;
-    }
   }
 }} // namespace facebook::v8runtime

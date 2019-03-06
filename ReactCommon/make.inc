@@ -5,7 +5,7 @@
 ###########################################################
 
 LIBLET_NO_PRECOMP = 1
-
+LIBLET_DEF_USEGENERATED = 0
 !include $(WAREHOUSEIMPORTDIR)\libletmake\x-none\nmake\make.inc
 
 INCLUDES = $(INCLUDES); \

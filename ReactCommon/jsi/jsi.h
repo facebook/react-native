@@ -290,9 +290,10 @@ class Pointer {
   friend class Runtime;
   friend class Value;
 
-  explicit Pointer(Runtime::PointerValue* ptr) : ptr_(ptr) {}
-
   typename Runtime::PointerValue* ptr_;
+
+ public:
+  explicit Pointer(Runtime::PointerValue* ptr) : ptr_(ptr) {}
 };
 
 /// Represents something that can be a JS property key.  Movable, not copyable.
