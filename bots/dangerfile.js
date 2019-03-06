@@ -64,7 +64,7 @@ const correctlyFormattedChangelog = changelogRegex.test(danger.github.pr.body);
 
 // Provides advice if a changelog is missing
 const changelogInstructions =
-  'A changelog entry has the following format: [`[CATEGORY] [TYPE] - Message`](http://facebook.github.io/react-native/docs/contributing#changelog).';
+  'A changelog entry has the following format: `[CATEGORY] [TYPE] - Message`.\n\n<details>CATEGORY may be:\n\n- General\n- iOS\n- Android\n\nTYPE may be:\n\n- Added, for new features.\n- Changed, for changes in existing functionality.\n- Deprecated, for soon-to-be removed features.\n- Removed, for now removed features.\n- Fixed, for any bug fixes.\n- Security, in case of vulnerabilities.\n\nMESSAGE may answer "what and why" on a feature level.   Use this to briefly tell React Native users about notable changes.</details>';
 if (!includesChangelog) {
   const title = ':clipboard: Missing Changelog';
   const idea =
