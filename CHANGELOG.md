@@ -1,6 +1,32 @@
 # Change Log - @microsoft/react-native
 
-This log was last generated on Tue, 26 Feb 2019 20:40:41 GMT and should not be manually modified.
+This log was last generated on Tue, 05 Mar 2019 20:54:55 GMT and should not be manually modified.
+
+## 0.3.9
+Tue, 05 Mar 2019 20:54:55 GMT
+
+### Patches
+
+- Auto sync from tenantreactnativewin
+
+## 0.3.8
+Tue, 05 Mar 2019 07:11:25 GMT
+
+### Patches
+
+- Synchronized github.com/Microsoft/react-native/.ado to ISS/sdx-platform/src/react-native/.ado
+
+## 0.3.7
+Tue, 05 Mar 2019 02:31:33 GMT
+
+### Patches
+
+- Introduce CalendarView for UWP only (no Android, no JS, no Apple updates)
+- Auto sync from tenantreactnativewin
+- Android ScrollView fix for pagingEnabled
+- added code review feedback
+- Catching jsi::JSError and throwing JavaJSException which will be handle by DevSupportManager to show RedBox
+- JSICore (react-free) libraries
 
 ## 0.3.5
 Tue, 26 Feb 2019 20:40:41 GMT

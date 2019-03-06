@@ -10,8 +10,9 @@ SOURCES_SHARED = \
 SOURCES_V8_FILES = \
   ..\FileUtils.cpp \
   ..\V8Platform.cpp \
-  ..\V8Runtime_shared.cpp \
+  ..\V8Runtime_basic.cpp \
   ..\V8Runtime_droid.cpp \
+  ..\V8Runtime_shared.cpp \
 
 SOURCES_JSC_FILES = \
   ..\JSCRuntime.cpp \
@@ -37,3 +38,9 @@ SOURCES_WIN32 = \
 
 SOURCES_WINRT = \
   $(SOURCES_SHARED) \
+
+SOURCES_JSICORE = \
+  ..\jsi.cpp \
+  ..\V8Platform.cpp \
+  ..\V8Runtime_basic.cpp \
+  ..\V8Runtime_shared.cpp \

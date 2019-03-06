@@ -613,9 +613,6 @@ module.exports = {
   onFocusChange: PropTypes.func, // TODO(android ISS)
 
   /**
-<<<<<<< HEAD
-   * Enables Drag'n'Drop Support for certain types of dragged types
-=======
    * Fired when an element is focused
    *
    * @platform macos
@@ -633,7 +630,6 @@ module.exports = {
 
   /**
    * Enables Dran'n'Drop Support for certain types of dragged types
->>>>>>> origin/master
    *
    * Possible values for `draggedTypes` are:
    * 

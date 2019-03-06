@@ -1,5 +1,5 @@
 LIBLET_ANDROID = 1
-
+LIBLET_DEF_USEGENERATED = 0
 !include ..\sources.inc
 
 TARGETNAME = yogacore

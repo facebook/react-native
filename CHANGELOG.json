@@ -2,6 +2,73 @@
   "name": "@microsoft/react-native",
   "entries": [
     {
+      "version": "0.3.9",
+      "tag": "@microsoft/react-native_v0.3.9",
+      "date": "Tue, 05 Mar 2019 20:54:55 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Auto sync from tenantreactnativewin",
+            "author": "Tudor Mihai <tudorm@microsoft.com>",
+            "commit": "1aab97d280d884c4eeb97005870bd591dd3a0725"
+          }
+        ]
+      }
+    },
+    {
+      "version": "0.3.8",
+      "tag": "@microsoft/react-native_v0.3.8",
+      "date": "Tue, 05 Mar 2019 07:11:25 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Synchronized github.com/Microsoft/react-native/.ado to ISS/sdx-platform/src/react-native/.ado",
+            "author": "Tom Underhill <tomun@microsoft.com>",
+            "commit": "28ada9228417ac4fad240874de07329dbada73c7"
+          }
+        ]
+      }
+    },
+    {
+      "version": "0.3.7",
+      "tag": "@microsoft/react-native_v0.3.7",
+      "date": "Tue, 05 Mar 2019 02:31:33 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Introduce CalendarView for UWP only (no Android, no JS, no Apple updates)",
+            "author": "Sasha Gil <alexgil@microsoft.com>",
+            "commit": "c200088828a6b8318fe74cd56694c4051acdb7d9"
+          },
+          {
+            "comment": "Auto sync from tenantreactnativewin",
+            "author": "Tudor Mihai <tudorm@microsoft.com>",
+            "commit": "a835f0ac9a307d84dee1e706d917ac358a307887"
+          },
+          {
+            "comment": "Android ScrollView fix for pagingEnabled",
+            "author": "Christopher Hogan <chrishog@microsoft.com>",
+            "commit": "d5491cb2e5893cd4111845ff53a18b7a04d6dd53"
+          },
+          {
+            "comment": "added code review feedback",
+            "author": "Kshitij Jain <ksjain@microsoft.com>",
+            "commit": "a0bee9866186b7d9c1690c3aef715499ed21584a"
+          },
+          {
+            "comment": "Catching jsi::JSError and throwing JavaJSException which will be handle by DevSupportManager to show RedBox",
+            "author": "Rohit Jain (MOD) <rojain@microsoft.com>",
+            "commit": "30e8d48b4d4bbe3fcbc4609eee3773bf39fcb49d"
+          },
+          {
+            "comment": "JSICore (react-free) libraries",
+            "author": "Tudor Mihai <tudorm@microsoft.com>",
+            "commit": "7692fb3852df570233ec890e21861ac0e804880b"
+          }
+        ]
+      }
+    },
+    {
       "version": "0.3.5",
       "tag": "@microsoft/react-native_v0.3.5",
       "date": "Tue, 26 Feb 2019 20:40:41 GMT",

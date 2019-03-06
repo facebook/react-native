@@ -19,6 +19,7 @@ LOCAL_SRC_FILES := \
 LOCAL_V8_FILES := \
     FileUtils.cpp \
     V8Runtime_shared.cpp \
+    V8Runtime_basic.cpp \
     V8Runtime_droid.cpp \
     V8Platform.cpp \
 

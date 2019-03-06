@@ -42,7 +42,10 @@ if(WIN32 AND NOT WINRT)
 endif(WIN32 AND NOT WINRT)
 
 add_subdirectory(folly)
-add_subdirectory(ReactCommon)
+
+if(NOT ANDROID)
+    add_subdirectory(ReactCommon)
+endif(NOT ANDROID)
 
 if(IOS OR APPLE OR ANDROID)
 	add_subdirectory(glog)
