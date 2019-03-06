@@ -40,11 +40,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
   if (self.isSupportedByOS) {
     if (@available(iOS 11.0, *)) {
-      return self.safeAreaInsets;
+      return [self totalSafeAreaInsetsWithInsets:self.safeAreaInsets];
     }
   }
 #endif
-  return self.emulateUnlessSupported ? self.emulatedSafeAreaInsets : UIEdgeInsetsZero;
+  return self.emulateUnlessSupported ? [self totalSafeAreaInsetsWithInsets:self.emulatedSafeAreaInsets] : [self totalSafeAreaInsetsWithInsets:UIEdgeInsetsZero];
 }
 
 - (UIEdgeInsets)emulatedSafeAreaInsets
@@ -99,15 +99,28 @@ static BOOL UIEdgeInsetsEqualToEdgeInsetsWithThreshold(UIEdgeInsets insets1, UIE
   }
 }
 
+- (UIEdgeInsets)totalSafeAreaInsetsWithInsets:(UIEdgeInsets)insets
+{
+  UIEdgeInsets additionalSafeAreaInsets = self.reactAdditionalSafeAreaInsets;
+  if (UIEdgeInsetsEqualToEdgeInsets(additionalSafeAreaInsets, UIEdgeInsetsZero)) {
+    return insets;
+  }
+  return UIEdgeInsetsMake(additionalSafeAreaInsets.top + insets.top,
+                          additionalSafeAreaInsets.left + insets.left,
+                          additionalSafeAreaInsets.bottom + insets.bottom,
+                          additionalSafeAreaInsets.right + insets.right);
+}
+
 - (void)setSafeAreaInsets:(UIEdgeInsets)safeAreaInsets
 {
-  if (UIEdgeInsetsEqualToEdgeInsetsWithThreshold(safeAreaInsets, _currentSafeAreaInsets, 1.0 / RCTScreenScale())) {
+  UIEdgeInsets totalSafeAreaInsets = [self totalSafeAreaInsetsWithInsets:safeAreaInsets];
+  if (UIEdgeInsetsEqualToEdgeInsetsWithThreshold(totalSafeAreaInsets, _currentSafeAreaInsets, 1.0 / RCTScreenScale())) {
     return;
   }
 
-  _currentSafeAreaInsets = safeAreaInsets;
+  _currentSafeAreaInsets = totalSafeAreaInsets;
 
-  RCTSafeAreaViewLocalData *localData = [[RCTSafeAreaViewLocalData alloc] initWithInsets:safeAreaInsets];
+  RCTSafeAreaViewLocalData *localData = [[RCTSafeAreaViewLocalData alloc] initWithInsets:totalSafeAreaInsets];
   [_bridge.uiManager setLocalData:localData forView:self];
 }
 

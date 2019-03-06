@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithBridge:(RCTBridge *)bridge;
 
 @property (nonatomic, assign) BOOL emulateUnlessSupported;
+@property (nonatomic, assign) UIEdgeInsets reactAdditionalSafeAreaInsets;
 
 @end
 

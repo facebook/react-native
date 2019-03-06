@@ -12,10 +12,12 @@ const requireNativeComponent = require('requireNativeComponent');
 
 import type {ViewProps} from 'ViewPropTypes';
 import type {NativeComponent} from 'ReactNative';
+import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 
 type NativeProps = $ReadOnly<{|
   ...ViewProps,
   emulateUnlessSupported?: boolean,
+  additionalSafeAreaInsets?: ?EdgeInsetsProp,
 |}>;
 
 type RCTSafeAreaViewNativeType = Class<NativeComponent<NativeProps>>;

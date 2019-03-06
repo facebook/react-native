@@ -13,10 +13,21 @@ const React = require('React');
 const View = require('View');
 
 import type {ViewProps} from 'ViewPropTypes';
+import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 
 type Props = $ReadOnly<{|
   ...ViewProps,
   emulateUnlessSupported?: boolean,
+|}>;
+
+type IOSProps = $ReadOnly<{|
+  ...Props,
+  /**
+   * Custom insets that you specify to modify safe area.
+   *
+   * @platform ios
+   */
+  additionalSafeAreaInsets?: ?EdgeInsetsProp,
 |}>;
 
 let exported;
@@ -39,7 +50,7 @@ if (Platform.OS === 'android') {
   };
 } else {
   const RCTSafeAreaViewNativeComponent = require('RCTSafeAreaViewNativeComponent');
-  exported = class SafeAreaView extends React.Component<Props> {
+  exported = class SafeAreaView extends React.Component<IOSProps> {
     render(): React.Node {
       return (
         <RCTSafeAreaViewNativeComponent
