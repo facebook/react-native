@@ -91,7 +91,7 @@ The source for the React Native documentation and website is hosted on a separat
 
 [docs]: https://facebook.github.io/react-native/docs/getting-started.html
 [r-docs]: https://reactjs.org/docs/getting-started.html
-[repo-website]: (https://github.com/facebook/react-native-website)
+[repo-website]: https://github.com/facebook/react-native-website
 
 ## 🚀 Upgrading
 
