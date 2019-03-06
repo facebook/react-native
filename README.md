@@ -90,8 +90,7 @@ React Native releases are discussed in the React Native Community, [**@react-nat
 
 ## 👏 How to Contribute
 
-The main purpose of this repository is to continue to evolve React Native core. We want to make contributing to this project as easy and transparent as possible, and we are grateful to the community for contributing bugfixes and improvements. Read below to learn how you can take part in improving React.
-
+The main purpose of this repository is to continue to evolve React Native core. We want to make contributing to this project as easy and transparent as possible, and we are grateful to the community for contributing bugfixes and improvements. Read below to learn how you can take part in improving React Native.
 
 ### [Code of Conduct](https://code.fb.com/codeofconduct/)
 
@@ -101,6 +100,10 @@ Please read the [full text](https://code.fb.com/codeofconduct/) so that you can 
 ### [Contributing Guide](https://facebook.github.io/react-native/docs/contributing)
 
 Read our [**Contributing Guide**](https://facebook.github.io/react-native/docs/contributing) to learn about our development process, how to propose bugfixes and improvements, and how to build and test your changes to React Native.
+
+### [Open Source Roadmap](https://github.com/facebook/react-native/wiki/Roadmap)
+
+You can learn more about our vision for React Native in the [**Roadmap**](https://github.com/facebook/react-native/wiki/Roadmap).
 
 ### Good First Issues
 
