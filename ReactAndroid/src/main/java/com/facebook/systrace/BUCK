@@ -1,4 +1,4 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "rn_android_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "rn_android_library")
 
 rn_android_library(
     name = "systrace",
@@ -6,4 +6,7 @@ rn_android_library(
     visibility = [
         "PUBLIC",
     ],
+    provided_deps = [
+        react_native_dep("third-party/android/support/v4:lib-support-v4"),
+    ]
 )
