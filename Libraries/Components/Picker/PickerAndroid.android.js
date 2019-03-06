@@ -64,6 +64,9 @@ class PickerAndroid extends React.Component<
   ): PickerAndroidState {
     let selectedIndex = 0;
     const items = React.Children.map(props.children, (child, index) => {
+      if (child === 0){
+        return 0;
+      }
       if (child.props.value === props.selectedValue) {
         selectedIndex = index;
       }
@@ -110,7 +113,7 @@ class PickerAndroid extends React.Component<
     if (this.props.onValueChange) {
       const position = event.nativeEvent.position;
       if (position >= 0) {
-        const children = React.Children.toArray(this.props.children);
+        const children = React.Children.toArray(this.props.children).filter(item => item !== 0);
         const value = children[position].props.value;
         /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
          * found when making Flow check .android.js files. */

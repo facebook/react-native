@@ -143,7 +143,7 @@ class Picker extends React.Component<PickerProps> {
       return (
         /* $FlowFixMe(>=0.81.0 site=react_native_android_fb) This suppression
          * was added when renaming suppression sites. */
-        <PickerAndroid {...this.props}>{this.props.children.filter(item => item !== 0)}</PickerAndroid>
+        <PickerAndroid {...this.props}>{this.props.children}</PickerAndroid>
       );
     } else {
       return <UnimplementedView />;
