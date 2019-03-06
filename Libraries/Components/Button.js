@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,10 +10,8 @@
 
 'use strict';
 
-const ColorPropType = require('ColorPropType');
 const Platform = require('Platform');
 const React = require('React');
-const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const TouchableHighlight = require('TouchableHighlight'); // [TODO(windows ISS)
@@ -22,6 +20,45 @@ const TouchableOpacity = require('TouchableOpacity');
 const View = require('View');
 
 const invariant = require('fbjs/lib/invariant');
+
+import type {PressEvent} from 'CoreEventTypes';
+
+type ButtonProps = $ReadOnly<{|
+  /**
+   * Text to display inside the button
+   */
+  title: string,
+
+  /**
+   * Handler to be called when the user taps the button
+   */
+  onPress: (event?: PressEvent) => mixed,
+
+  /**
+   * Color of the text (iOS), or background color of the button (Android)
+   */
+  color?: ?string,
+
+  /**
+   * TV preferred focus (see documentation for the View component).
+   */
+  hasTVPreferredFocus?: ?boolean,
+
+  /**
+   * Text to display for blindness accessibility features
+   */
+  accessibilityLabel?: ?string,
+
+  /**
+   * If true, disable all interactions for this component.
+   */
+  disabled?: ?boolean,
+
+  /**
+   * Used to locate this view in end-to-end tests.
+   */
+  testID?: ?string,
+|}>;
 
 /**
  * A basic button component that should render nicely on any platform. Supports
@@ -51,6 +88,7 @@ const invariant = require('fbjs/lib/invariant');
  *
  */
 
+<<<<<<< HEAD
 class Button extends React.Component<{
   title: string,
   onPress: () => any,
@@ -96,6 +134,9 @@ class Button extends React.Component<{
     testID: PropTypes.string,
   };
 
+=======
+class Button extends React.Component<ButtonProps> {
+>>>>>>> v0.58.6
   render() {
     const {
       accessibilityLabel,
@@ -170,6 +211,7 @@ const styles = StyleSheet.create({
     },
     windesktop: {},  // ]TODO(windows ISS)
   }),
+<<<<<<< HEAD
   text: Platform.select({
     ios: {
       // iOS blue from https://developer.apple.com/ios/human-interface-guidelines/visual-design/color/
@@ -198,6 +240,23 @@ const styles = StyleSheet.create({
     },
     windesktop: {}, // ]TODO(windows ISS)
   }),
+=======
+  text: {
+    textAlign: 'center',
+    padding: 8,
+    ...Platform.select({
+      ios: {
+        // iOS blue from https://developer.apple.com/ios/human-interface-guidelines/visual-design/color/
+        color: '#007AFF',
+        fontSize: 18,
+      },
+      android: {
+        color: 'white',
+        fontWeight: '500',
+      },
+    }),
+  },
+>>>>>>> v0.58.6
   buttonDisabled: Platform.select({
     ios: {},
     android: {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,14 +7,25 @@
 
 package com.facebook.react.bridge;
 
+<<<<<<< HEAD
 import android.util.Log;
 
 import com.facebook.react.common.ReactConstants;
+=======
+import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
+
+import android.os.SystemClock;
+>>>>>>> v0.58.6
 import com.facebook.soloader.SoLoader;
+import com.facebook.systrace.Systrace;
 
 public class ReactBridge {
+  private static volatile long sLoadStartTime = 0;
+  private static volatile long sLoadEndTime = 0;
+
   private static boolean sDidInit = false;
 
+<<<<<<< HEAD
   // Office implementation of RN can work with two JS Engines: V8 and JSC.
   // There is a compile time flag to decide which one will be used and V8 is the default one.
   // We are exposing an API from ReactBridge so that consumer can choose JSC if required.
@@ -40,7 +51,27 @@ public class ReactBridge {
       SoLoader.loadLibrary("yoga");
       SoLoader.loadLibrary("reactnativejni");
       sDidInit = true;
+=======
+  public synchronized static void staticInit() {
+    if (sDidInit) {
+      return;
+>>>>>>> v0.58.6
     }
+    sDidInit = true;
+
+    sLoadStartTime = SystemClock.uptimeMillis();
+    Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactBridge.staticInit::load:reactnativejni");
+    SoLoader.loadLibrary("reactnativejni");
+    Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
+    sLoadEndTime = SystemClock.uptimeMillis();
+  }
+
+  public static long getLoadStartTime() {
+    return sLoadStartTime;
+  }
+
+  public static long getLoadEndTime() {
+    return sLoadEndTime;
   }
 
   public static void useJSC() {

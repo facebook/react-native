@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -35,7 +35,7 @@ import com.facebook.react.module.annotations.ReactModule;
 public final class Timing extends ReactContextBaseJavaModule implements LifecycleEventListener,
   HeadlessJsTaskEventListener {
 
-  protected static final String NAME = "Timing";
+  public static final String NAME = "Timing";
 
   // These timing contants should be kept in sync with the ones in `JSTimers.js`.
   // The minimum time in milliseconds left in the frame to call idle callbacks.

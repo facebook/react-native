@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,11 +8,11 @@
 #import "RCTSurfaceTouchHandler.h"
 
 #import <UIKit/UIGestureRecognizerSubclass.h>
-#import <fabric/components/view/ViewEventEmitter.h>
 #import <React/RCTUtils.h>
 #import <React/RCTViewComponentView.h>
 
 #import "RCTConversions.h"
+#import "RCTTouchableComponentViewProtocol.h"
 
 using namespace facebook::react;
 
@@ -46,10 +46,6 @@ private:
   int lastIndex;
 };
 
-@protocol RCTTouchableComponentViewProtocol <NSObject>
-  - (SharedViewEventEmitter)touchEventEmitter;
-@end
-
 typedef NS_ENUM(NSInteger, RCTTouchEventType) {
   RCTTouchEventTypeTouchStart,
   RCTTouchEventTypeTouchMove,
@@ -59,7 +55,7 @@ typedef NS_ENUM(NSInteger, RCTTouchEventType) {
 
 struct ActiveTouch {
   Touch touch;
-  SharedViewEventEmitter eventEmitter;
+  SharedTouchEventEmitter eventEmitter;
 
   struct Hasher {
     size_t operator()(const ActiveTouch &activeTouch) const {
@@ -95,8 +91,8 @@ static ActiveTouch CreateTouchWithUITouch(UITouch *uiTouch, UIView *rootComponen
 
   ActiveTouch activeTouch = {};
 
-  if ([componentView respondsToSelector:@selector(touchEventEmitter)]) {
-    activeTouch.eventEmitter = [(id<RCTTouchableComponentViewProtocol>)componentView touchEventEmitter];
+  if ([componentView respondsToSelector:@selector(touchEventEmitterAtPoint:)]) {
+    activeTouch.eventEmitter = [(id<RCTTouchableComponentViewProtocol>)componentView touchEventEmitterAtPoint:[uiTouch locationInView:componentView]];
     activeTouch.touch.target = (Tag)componentView.tag;
   }
 
@@ -134,7 +130,7 @@ static BOOL AnyTouchesChanged(NSSet<UITouch *> *touches) {
 template<typename PointerT>
 struct PointerHasher {
   constexpr std::size_t operator()(const PointerT &value) const {
-    return reinterpret_cast<size_t>(&value);
+    return reinterpret_cast<size_t>(value);
   }
 };
 
@@ -200,29 +196,39 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
 - (void)_updateTouches:(NSSet<UITouch *> *)touches
 {
   for (UITouch *touch in touches) {
-    UpdateActiveTouchWithUITouch(_activeTouches[touch], touch, _rootComponentView);
+    UpdateActiveTouchWithUITouch(_activeTouches.at(touch), touch, _rootComponentView);
   }
 }
 
 - (void)_unregisterTouches:(NSSet<UITouch *> *)touches
 {
   for (UITouch *touch in touches) {
-    const auto &activeTouch = _activeTouches[touch];
+    const auto &activeTouch = _activeTouches.at(touch);
     _identifierPool.enqueue(activeTouch.touch.identifier);
     _activeTouches.erase(touch);
   }
 }
 
-- (void)_dispatchTouches:(NSSet<UITouch *> *)touches eventType:(RCTTouchEventType)eventType
+- (std::vector<ActiveTouch>)_activeTouchesFromTouches:(NSSet<UITouch *> *)touches
+{
+  std::vector<ActiveTouch> activeTouches;
+  activeTouches.reserve(touches.count);
+
+  for (UITouch *touch in touches) {
+    activeTouches.push_back(_activeTouches.at(touch));
+  }
+
+  return activeTouches;
+}
+
+- (void)_dispatchActiveTouches:(std::vector<ActiveTouch>)activeTouches eventType:(RCTTouchEventType)eventType
 {
   TouchEvent event = {};
   std::unordered_set<ActiveTouch, ActiveTouch::Hasher, ActiveTouch::Comparator> changedActiveTouches = {};
-  std::unordered_set<SharedViewEventEmitter> uniqueEventEmitter = {};
+  std::unordered_set<SharedTouchEventEmitter> uniqueEventEmitter = {};
   BOOL isEndishEventType = eventType == RCTTouchEventTypeTouchEnd || eventType == RCTTouchEventTypeTouchCancel;
 
-  for (UITouch *touch in touches) {
-    const auto &activeTouch = _activeTouches[touch];
-
+  for (const auto &activeTouch : activeTouches) {
     if (!activeTouch.eventEmitter) {
       continue;
     }
@@ -280,7 +286,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
   [super touchesBegan:touches withEvent:event];
 
   [self _registerTouches:touches];
-  [self _dispatchTouches:touches eventType:RCTTouchEventTypeTouchStart];
+  [self _dispatchActiveTouches:[self _activeTouchesFromTouches:touches]
+                     eventType:RCTTouchEventTypeTouchStart];
 
   if (self.state == UIGestureRecognizerStatePossible) {
     self.state = UIGestureRecognizerStateBegan;
@@ -294,7 +301,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
   [super touchesMoved:touches withEvent:event];
 
   [self _updateTouches:touches];
-  [self _dispatchTouches:touches eventType:RCTTouchEventTypeTouchMove];
+  [self _dispatchActiveTouches:[self _activeTouchesFromTouches:touches]
+                     eventType:RCTTouchEventTypeTouchMove];
 
   self.state = UIGestureRecognizerStateChanged;
 }
@@ -304,7 +312,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
   [super touchesEnded:touches withEvent:event];
 
   [self _updateTouches:touches];
-  [self _dispatchTouches:touches eventType:RCTTouchEventTypeTouchEnd];
+  [self _dispatchActiveTouches:[self _activeTouchesFromTouches:touches]
+                     eventType:RCTTouchEventTypeTouchEnd];
   [self _unregisterTouches:touches];
 
   if (AllTouchesAreCancelledOrEnded(event.allTouches)) {
@@ -319,7 +328,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
   [super touchesCancelled:touches withEvent:event];
 
   [self _updateTouches:touches];
-  [self _dispatchTouches:touches eventType:RCTTouchEventTypeTouchCancel];
+  [self _dispatchActiveTouches:[self _activeTouchesFromTouches:touches]
+                     eventType:RCTTouchEventTypeTouchCancel];
   [self _unregisterTouches:touches];
 
   if (AllTouchesAreCancelledOrEnded(event.allTouches)) {
@@ -331,10 +341,23 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithTarget:(id)target action:(SEL)action
 
 - (void)reset
 {
-  // Technically, `_activeTouches` must be already empty at this point,
-  // but just to be sure, we clear it explicitly.
-  _activeTouches.clear();
-  _identifierPool.reset();
+  [super reset];
+
+  if (_activeTouches.size() != 0) {
+    std::vector<ActiveTouch> activeTouches;
+    activeTouches.reserve(_activeTouches.size());
+
+    for (auto const &pair : _activeTouches) {
+      activeTouches.push_back(pair.second);
+    }
+
+    [self _dispatchActiveTouches:activeTouches
+                       eventType:RCTTouchEventTypeTouchCancel];
+
+    // Force-unregistering all the touches.
+    _activeTouches.clear();
+    _identifierPool.reset();
+  }
 }
 
 - (BOOL)canPreventGestureRecognizer:(__unused UIGestureRecognizer *)preventedGestureRecognizer

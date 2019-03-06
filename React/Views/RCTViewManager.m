@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -189,6 +189,7 @@ RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, RCTView)
 
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
 {
+<<<<<<< HEAD
 #if !TARGET_OS_OSX
   view.reactAccessibilityElement.accessibilityTraits |= json ? [RCTConvert UIAccessibilityTraits:json] : defaultView.accessibilityTraits;
 #else
@@ -198,14 +199,31 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
     view.reactAccessibilityElement.accessibilityRole = defaultView.accessibilityRole;
   }
 #endif
+=======
+  // This mask must be kept in sync with the AccessibilityRoles enum defined in ViewAccessibility.js and DeprecatedViewAccessibility.js
+  const UIAccessibilityTraits AccessibilityRolesMask = UIAccessibilityTraitNone | UIAccessibilityTraitButton | UIAccessibilityTraitLink | UIAccessibilityTraitSearchField | UIAccessibilityTraitImage | UIAccessibilityTraitKeyboardKey | UIAccessibilityTraitStaticText | UIAccessibilityTraitAdjustable | UIAccessibilityTraitHeader | UIAccessibilityTraitSummaryElement;
+
+  UIAccessibilityTraits newTraits = json ? [RCTConvert UIAccessibilityTraits:json] : defaultView.accessibilityTraits;
+  UIAccessibilityTraits maskedTraits = newTraits & AccessibilityRolesMask;
+  view.reactAccessibilityElement.accessibilityTraits = (view.reactAccessibilityElement.accessibilityTraits & ~AccessibilityRolesMask) | maskedTraits;
+>>>>>>> v0.58.6
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityStates, UIAccessibilityTraits, RCTView)
 {
+<<<<<<< HEAD
 #if !TARGET_OS_OSX
     view.reactAccessibilityElement.accessibilityTraits |= json ? [RCTConvert UIAccessibilityTraits:json] : defaultView.accessibilityTraits;
 #else
 #endif
+=======
+  // This mask must be kept in sync with the AccessibilityStates enum defined in ViewAccessibility.js and DeprecatedViewAccessibility.js
+  const UIAccessibilityTraits AccessibilityStatesMask = UIAccessibilityTraitNotEnabled | UIAccessibilityTraitSelected;
+
+  UIAccessibilityTraits newTraits = json ? [RCTConvert UIAccessibilityTraits:json] : defaultView.accessibilityTraits;
+  UIAccessibilityTraits maskedTraits = newTraits & AccessibilityStatesMask;
+  view.reactAccessibilityElement.accessibilityTraits = (view.reactAccessibilityElement.accessibilityTraits & ~AccessibilityStatesMask) | maskedTraits;
+>>>>>>> v0.58.6
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTPointerEvents, RCTView)

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -48,22 +48,6 @@ public class FrescoBasedReactTextInlineImageShadowNode extends ReactTextInlineIm
     @Nullable Object callerContext) {
     mDraweeControllerBuilder = draweeControllerBuilder;
     mCallerContext = callerContext;
-  }
-
-  private FrescoBasedReactTextInlineImageShadowNode(FrescoBasedReactTextInlineImageShadowNode node) {
-    super(node);
-    mHeaders = node.mHeaders; // mHeaders is immutable
-    mWidth = node.mWidth;
-    mHeight = node.mHeight;
-    mTintColor = node.mTintColor;
-    mDraweeControllerBuilder = node.mDraweeControllerBuilder;
-    mCallerContext = node.mCallerContext;
-    mUri = node.mUri;
-  }
-
-  @Override
-  protected FrescoBasedReactTextInlineImageShadowNode copy() {
-    return new FrescoBasedReactTextInlineImageShadowNode(this);
   }
 
   @ReactProp(name = "src")

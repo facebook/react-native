@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2014-present, Facebook, Inc.
+ *  Copyright (c) Facebook, Inc. and its affiliates.
  *
  *  This source code is licensed under the MIT license found in the LICENSE
  *  file in the root directory of this source tree.
@@ -52,7 +52,7 @@ bool YGFloatsEqual(const float a, const float b) {
   return yoga::isUndefined(a) && yoga::isUndefined(b);
 }
 
-float YGFloatSanitize(const float& val) {
+float YGFloatSanitize(const float val) {
   return yoga::isUndefined(val) ? 0 : val;
 }
 

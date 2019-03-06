@@ -89,22 +89,32 @@ JSIExecutor::JSIExecutor(
 
 void JSIExecutor::loadApplicationScript(
     std::unique_ptr<const JSBigString> script,
+<<<<<<< HEAD
     uint64_t scriptVersion,
     std::string sourceURL,
     std::string&& bytecodeFileName) {
+=======
+    std::string sourceURL) {
+>>>>>>> v0.58.6
   SystraceSection s("JSIExecutor::loadApplicationScript");
 
   // TODO: check for and use precompiled HBC
 
+<<<<<<< HEAD
 // ChakraCore implementation of JSI don't yet support HostObjects.
 // https://office.visualstudio.com/OC/_workitems/edit/2801906
 #if !defined(CHAKRA_JSI)
+=======
+>>>>>>> v0.58.6
   runtime_->global().setProperty(
       *runtime_,
       "nativeModuleProxy",
       Object::createFromHostObject(
           *runtime_, std::make_shared<NativeModuleProxy>(*this)));
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> v0.58.6
 
   runtime_->global().setProperty(
       *runtime_,
@@ -262,7 +272,11 @@ void JSIExecutor::callFunction(
 void JSIExecutor::invokeCallback(
     const double callbackId,
     const folly::dynamic& arguments) {
+<<<<<<< HEAD
   // SystraceSection s("JSIExecutor::invokeCallback", "callbackId", callbackId);
+=======
+  SystraceSection s("JSIExecutor::invokeCallback", "callbackId", callbackId);
+>>>>>>> v0.58.6
   if (!invokeCallbackAndReturnFlushedQueue_) {
     bindBridge();
   }

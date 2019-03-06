@@ -1,4 +1,4 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -53,6 +53,7 @@ void JReactMarker::logPerfMarker(const ReactMarker::ReactMarkerId markerId, cons
     case ReactMarker::NATIVE_MODULE_SETUP_STOP:
       JReactMarker::logMarker("NATIVE_MODULE_SETUP_END", tag);
       break;
+<<<<<<< HEAD
     case ReactMarker::BYTECODE_CREATION_FAILED:
       JReactMarker::logMarker("BYTECODE_CREATION_FAILED");
       break;
@@ -61,6 +62,8 @@ void JReactMarker::logPerfMarker(const ReactMarker::ReactMarkerId markerId, cons
       break;
     case ReactMarker::BYTECODE_WRITE_FAILED:
       JReactMarker::logMarker("BYTECODE_WRITE_FAILED");
+=======
+>>>>>>> v0.58.6
     case ReactMarker::REGISTER_JS_SEGMENT_START:
       JReactMarker::logMarker("REGISTER_JS_SEGMENT_START", tag);
       break;

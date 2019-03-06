@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,12 +9,12 @@
 
 #include <array>
 #include <cmath>
-#include <vector>
 #include <memory>
+#include <vector>
 
-#include <fabric/core/LayoutMetrics.h>
-#include <fabric/core/Sealable.h>
-#include <fabric/debug/DebugStringConvertible.h>
+#include <react/core/LayoutMetrics.h>
+#include <react/core/Sealable.h>
+#include <react/debug/DebugStringConvertible.h>
 
 namespace facebook {
 namespace react {
@@ -26,10 +26,9 @@ struct LayoutContext;
  * Describes all sufficient layout API (in approach-agnostic way)
  * which makes a concurrent layout possible.
  */
-class LayoutableShadowNode:
-  public virtual Sealable {
-
-public:
+class LayoutableShadowNode : public virtual Sealable {
+ public:
+  virtual ~LayoutableShadowNode() noexcept = default;
 
   /*
    * Measures the node (and node content, propbably recursivly) with
@@ -42,8 +41,9 @@ public:
    * Computes layout recusively.
    * Additional environmental constraints might be provided via `layoutContext`
    * argument.
-   * Default implementation basically calls `layoutChildren()` and then `layout()`
-   * (recursively), and provides some obvious performance optimization.
+   * Default implementation basically calls `layoutChildren()` and then
+   * `layout()` (recursively), and provides some obvious performance
+   * optimization.
    */
   virtual void layout(LayoutContext layoutContext);
 
@@ -52,8 +52,20 @@ public:
    */
   virtual LayoutMetrics getLayoutMetrics() const;
 
-protected:
+  /*
+   * Returns `true` if the node represents only information necessary for
+   * layout computation and can be safely removed from view hierarchy.
+   * Default implementation returns `false`.
+   */
+  virtual bool isLayoutOnly() const;
 
+  /*
+   * Returns layout metrics relatively to the given ancestor node.
+   */
+  LayoutMetrics getRelativeLayoutMetrics(
+      const LayoutableShadowNode &ancestorLayoutableShadowNode) const;
+
+ protected:
   /*
    * Clean or Dirty layout state:
    * Indicates whether all nodes (and possibly their subtrees) along the path
@@ -85,13 +97,16 @@ protected:
   /*
    * Returns layoutable children to interate on.
    */
-  virtual std::vector<LayoutableShadowNode *> getLayoutableChildNodes() const = 0;
+  virtual std::vector<LayoutableShadowNode *> getLayoutableChildNodes()
+      const = 0;
 
   /*
    * In case layout algorithm needs to mutate this (probably sealed) node,
    * it has to clone and replace it in the hierarchy before to do so.
    */
-  virtual LayoutableShadowNode *cloneAndReplaceChild(LayoutableShadowNode *child, int suggestedIndex = -1) = 0;
+  virtual LayoutableShadowNode *cloneAndReplaceChild(
+      LayoutableShadowNode *child,
+      int suggestedIndex = -1) = 0;
 
   /*
    * Sets layout metrics for the shadow node.
@@ -101,12 +116,14 @@ protected:
 
 #pragma mark - DebugStringConvertible
 
+#if RN_DEBUG_STRING_CONVERTIBLE
   SharedDebugStringConvertibleList getDebugProps() const;
+#endif
 
-private:
-  LayoutMetrics layoutMetrics_ {};
-  bool hasNewLayout_ {false};
-  bool isLayoutClean_ {false};
+ private:
+  LayoutMetrics layoutMetrics_{};
+  bool hasNewLayout_{false};
+  bool isLayoutClean_{false};
 };
 
 } // namespace react

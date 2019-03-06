@@ -22,9 +22,12 @@
 ; Ignore polyfills
 .*/Libraries/polyfills/.*
 
+<<<<<<< HEAD
 ; Ignore metro
 ; .*/node_modules/metro/.*
 
+=======
+>>>>>>> v0.58.6
 ; These should not be required directly
 ; require from fbjs/lib instead: require('fbjs/lib/invariant')
 .*/node_modules/invariant/.*
@@ -59,6 +62,7 @@ module.system.haste.paths.blacklist=.*/__mocks__/.*
 module.system.haste.paths.whitelist=<PROJECT_ROOT>/Libraries/.*
 module.system.haste.paths.whitelist=<PROJECT_ROOT>/RNTester/.*
 module.system.haste.paths.whitelist=<PROJECT_ROOT>/IntegrationTests/.*
+module.system.haste.paths.blacklist=<PROJECT_ROOT>/Libraries/react-native/react-native-implementation.js
 module.system.haste.paths.blacklist=<PROJECT_ROOT>/Libraries/Animated/src/polyfills/.*
 
 munge_underscores=true
@@ -71,8 +75,13 @@ suppress_type=$FlowFixMe
 suppress_type=$FlowFixMeProps
 suppress_type=$FlowFixMeState
 
+<<<<<<< HEAD
 suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(<VERSION>\\)? *\\(site=[a-z,_]*[react_native\\(_ios\\)?_oss|react_native\\(_ios\\)?_fb][a-z,_]*\\)?)\\)
 suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(<VERSION>\\)? *\\(site=[a-z,_]*[react_native\\(_ios\\)?_oss|react_native\\(_ios\\)?_fb][a-z,_]*\\)?)\\)?:? #[0-9]+
+=======
+suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(<VERSION>\\)? *\\(site=[a-z,_]*react_native\\(_ios\\)?_\\(oss\\|fb\\)[a-z,_]*\\)?)\\)
+suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(<VERSION>\\)? *\\(site=[a-z,_]*react_native\\(_ios\\)?_\\(oss\\|fb\\)[a-z,_]*\\)?)\\)?:? #[0-9]+
+>>>>>>> v0.58.6
 suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
 suppress_comment=\\(.\\|\n\\)*\\$FlowExpectedError
 
@@ -101,4 +110,11 @@ untyped-import
 untyped-type-import
 
 [version]
+<<<<<<< HEAD
 ^0.78.0
+=======
+^0.86.0
+
+[untyped]
+.*/node_modules/metro/.*
+>>>>>>> v0.58.6
