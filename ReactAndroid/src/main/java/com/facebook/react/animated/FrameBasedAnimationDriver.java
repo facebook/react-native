@@ -9,6 +9,7 @@ package com.facebook.react.animated;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 
 /**
  * Implementation of {@link AnimationDriver} which provides a support for simple time-based
@@ -50,7 +51,7 @@ class FrameBasedAnimationDriver extends AnimationDriver {
       mIterations = config.getType("iterations") == ReadableType.Number ?
                                                     config.getInt("iterations") : 1;
     } else {
-      mIterations = 1; 
+      mIterations = 1;
     }
     mCurrentLoop = 1;
     mHasFinished = mIterations == 0;
