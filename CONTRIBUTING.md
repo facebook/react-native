@@ -12,6 +12,7 @@ We want to make contributing to this project as easy and transparent as possible
 - [Running and Writing Tests](#running-and-writing-tests)
 - [Helping with Documentation](#helping-with-documentation)
 - [Core Contributors](#core-contributors)
+- [Appendix](#appendix)
 
 ## Getting Started
 
@@ -234,7 +235,9 @@ This section is about testing your changes to React Native as a contributor. If 
 [env-setup]: http://facebook.github.io/react-native/docs/getting-started
 [jest-tutorial]: https://jestjs.io/docs/en/tutorial-react-native
 
-### Running JavaScript Tests
+### Running Tests
+
+#### JavaScript Tests
 
 The simplest way to run the JavaScript test suite is by using the following command at the root of your React Native checkout:
 
@@ -250,7 +253,7 @@ You should also make sure your code passes [Flow](https://flowtype.org/) tests:
 npm run flow
 ```
 
-### Running iOS Tests
+#### iOS Tests
 
 To run the iOS tests, invoke the following script from the root of your React Native checkout:
 
@@ -260,7 +263,7 @@ To run the iOS tests, invoke the following script from the root of your React Na
 
 You can also open the Xcode project at `RNTester/RNTester.xcodeproj` and run tests locally by pressing Command + U.
 
-### Running Android Tests
+#### Android Tests
 
 The Android unit tests do not run in an emulator. They just use a normal Java installation. The test suite is built using the [Buck build tool][buck-install].
 
@@ -286,14 +289,81 @@ Then, run the Android integration tests:
 ./scripts/run-android-local-integration-tests.sh
 ```
 
-### Continuous Integration Tests
+#### End-to-end Tests
+
+Finally, make sure end-to-end tests run successfully by executing the following script:
+
+```bash
+./scripts/test-manual-e2e.sh
+```
+
+End-to-end tests written in [Detox](https://github.com/wix/Detox) confirm that React Native components and APIs function correctly in the context of a running app. They run the RNTester app in the simulator and simulate a user interacting with the app.
+
+You can run Detox end-to-end tests locally by [installing the Detox CLI](https://github.com/wix/Detox/blob/master/docs/Introduction.GettingStarted.md#step-1-install-dependencies) on macOS, then running the following in the command line:
+
+```bash
+npm run build-ios-e2e
+npm run test-ios-e2e
+```
+
+If you work on a component or API that isn't convered by a Detox test, please consider adding one. Detox tests are stored under [`RNTester/e2e/__tests__`](https://github.com/facebook/react-native/tree/master/RNTester/e2e/__tests__).
+
+
+
+#### Continuous Integration Tests
 
 TODO: Talk about Circle CI, Appveyor.
 
+### Writing Tests
+
+Whenever you are fixing a bug or adding new functionality to React Native, it is a good idea to add a test that covers it. Depending on the change you're making, there are different types of tests that may be appropriate.
+
+#### JavaScript Jest Tests
+
+The JavaScript tests can be found inside `__test__` directories, colocated next to the files that are being tested. See [`TouchableHighlight-test.js`][js-jest-test] for a basic example.
+
+[js-jest-test]: https://github.com/facebook/react-native/blob/master/Libraries/Components/Touchable/__tests__/TouchableHighlight-test.js
+
+#### iOS Integration Tests
+
+React Native provides facilities to make it easier to test integrated components that require both native and JS components to communicate across the bridge. The two main components are `RCTTestRunner` and `RCTTestModule`. `RCTTestRunner` sets up the React Native environment and provides facilities to run the tests as `XCTestCase`s in Xcode (`runTest:module` is the simplest method). `RCTTestModule` is exported to JavaScript as `NativeModules.TestModule`.
+
+The tests themselves are written in JS, and must call `TestModule.markTestCompleted()` when they are done, otherwise the test will timeout and fail. Test failures are primarily indicated by throwing a JS exception. It is also possible to test error conditions with `runTest:module:initialProps:expectErrorRegex:` or `runTest:module:initialProps:expectErrorBlock:` which will expect an error to be thrown and verify the error matches the provided criteria.
+
+See the following for example usage and integration points:
+
+- [`IntegrationTestHarnessTest.js`][f-ios-test-harness]
+- [`RNTesterIntegrationTests.m`][f-ios-integration-tests]
+- [`IntegrationTestsApp.js`][f-ios-integration-test-app]
+
+[f-ios-test-harness]: https://github.com/facebook/react-native/blob/master/IntegrationTests/IntegrationTestHarnessTest.js
+[f-ios-integration-tests]: https://github.com/facebook/react-native/blob/master/RNTester/RNTesterIntegrationTests/RNTesterIntegrationTests.m
+[f-ios-integration-test-app]: https://github.com/facebook/react-native/blob/master/IntegrationTests/IntegrationTestsApp.js
+
+#### iOS Snapshot Tests
+
+A common type of integration test is the snapshot test. These tests render a component, and verify snapshots of the screen against reference images using `TestModule.verifySnapshot()`, using the [`FBSnapshotTestCase`](https://github.com/facebook/ios-snapshot-test-case) library behind the scenes. Reference images are recorded by setting `recordMode = YES` on the `RCTTestRunner`, then running the tests.
+
+Snapshots will differ slightly between 32 and 64 bit, and various OS versions, so it's recommended that you enforce tests are run with the [correct configuration](https://github.com/facebook/react-native/blob/master/scripts/.tests.env). It's also highly recommended that all network data be mocked out, along with other potentially troublesome dependencies. See [`SimpleSnapshotTest`](https://github.com/facebook/react-native/blob/master/IntegrationTests/SimpleSnapshotTest.js) for a basic example.
+
+If you make a change that affects a snapshot test in a pull request, such as adding a new example case to one of the examples that is snapshotted, you'll need to re-record the snapshot reference image. To do this, simply change to `_runner.recordMode = YES;` in [RNTester/RNTesterSnapshotTests.m](https://github.com/facebook/react-native/blob/136666e2e7d2bb8d3d51d599fc1384a2f68c43d3/RNTester/RNTesterIntegrationTests/RNTesterSnapshotTests.m#L29), re-run the failing tests, then flip record back to `NO` and submit/update your pull request and wait to see if the Circle build passes.
+
+#### Android Unit Tests
+
+It's a good idea to add an Android unit test whenever you are working on code that can be tested by Java code alone. The Android unit tests are located in `ReactAndroid/src/tests`. We recommend browsing through these to get an idea of what a good unit test might look like.
+
+#### Android Integration Tests
+
+It's a good idea to add an Android integration test whenever you are working on code that needs both JavaScript and Java to be tested in conjunction. The Android integration tests can be found in `ReactAndroid/src/androidTest`. We recommend browsing through these to get an idea of what a good integration test might look like.
 
 ## Helping with Documentation
 
-TODO: Link to docs repo.
+TODO: Flesh this out a bit more.
+
+If you are adding new functionality or introducing a change in behavior, we will ask you to update the documentation to reflect your changes. The docs are hosted as part of the React Native website. The website itself is hosted on GitHub Pages and is automatically generated [from the Markdown sources](https://github.com/facebook/react-native-website/tree/master/docs).
+
+To update the documentation, you will need to clone the [`facebook/react-native-website`](https://github.com/facebook/react-native-website) repository, make your changes in the `docs/` directory, and then send a pull request. For lightweight changes to a single file, you may also click on "Edit" at the top of any doc right here on the website.
+
 
 ## Core Contributors
 
