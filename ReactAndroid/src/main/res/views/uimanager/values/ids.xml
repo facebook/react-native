@@ -21,4 +21,7 @@
   <!--tag is used to store accessibilityLabel tag-->
   <item type="id" name="accessibility_label"/>
 
+  <!--tag is used to store accessibilityActions tag-->
+  <item type="id" name="accessibility_actions"/>
+
 </resources>

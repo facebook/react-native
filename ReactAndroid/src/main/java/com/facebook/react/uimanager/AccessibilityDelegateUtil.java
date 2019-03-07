@@ -5,10 +5,12 @@
 
 package com.facebook.react.uimanager;
 
+import android.os.Bundle;
 import android.content.Context;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.CollectionItemInfoCompat;
 import android.text.SpannableString;
 import android.text.style.URLSpan;
@@ -17,8 +19,16 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.CollectionItemInfoCompat;
 import android.view.View;
+
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.R;
+
+import java.util.HashMap;
 import java.util.Locale;
 import javax.annotation.Nullable;
 
@@ -28,6 +38,17 @@ import javax.annotation.Nullable;
  */
 
 public class AccessibilityDelegateUtil {
+
+  private static int sCounter = 0x3f000000;
+
+  public static final HashMap<String, Integer> sActionIdMap= new HashMap<>();
+  static {
+      sActionIdMap.put("activate", AccessibilityActionCompat.ACTION_CLICK.getId());
+      sActionIdMap.put("increment", AccessibilityActionCompat.ACTION_SCROLL_FORWARD.getId());
+      sActionIdMap.put("decrement", AccessibilityActionCompat.ACTION_SCROLL_BACKWARD.getId());      
+  }
+
+  public static HashMap<Integer, String> mAccessibilityActionsMap = new HashMap<>();
 
   /**
    * These roles are defined by Google's TalkBack screen reader, and this list
@@ -105,11 +126,13 @@ public class AccessibilityDelegateUtil {
 
   public static void setDelegate(final View view) {
     final AccessibilityRole accessibilityRole = (AccessibilityRole) view.getTag(R.id.accessibility_role);
+    final ReadableArray accessibilityActions = (ReadableArray) view.getTag(R.id.accessibility_actions);
+
     // if a view already has an accessibility delegate, replacing it could cause
     // problems,
     // so leave it alone.
     if (!ViewCompat.hasAccessibilityDelegate(view)
-        && (accessibilityRole != null || view.getTag(R.id.accessibility_states) != null)) {
+        && (accessibilityRole != null || view.getTag(R.id.accessibility_states) != null || accessibilityActions != null)) {
       ViewCompat.setAccessibilityDelegate(view, new AccessibilityDelegateCompat() {
         @Override
         public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
@@ -120,6 +143,39 @@ public class AccessibilityDelegateUtil {
           if (accessibilityStates != null) {
             setState(info, accessibilityStates, view.getContext());
           }
+          if (accessibilityActions != null) {
+            for (int i = 0; i < accessibilityActions.size(); i++) {
+              ReadableMap action = accessibilityActions.getMap(i);
+              if (!action.hasKey("name")) {
+                throw new IllegalArgumentException("Unknown accessibility action.");
+              }
+              int actionId = sCounter;
+              String actionLabel = action.hasKey("label") ? action.getString("label") : null;
+              if (sActionIdMap.containsKey(action.getString("name"))) {
+                actionId = sActionIdMap.get(action.getString("name"));
+              } else {
+                sCounter++;
+              }
+              mAccessibilityActionsMap.put(actionId, action.getString("name"));
+              AccessibilityActionCompat accessibilityAction = new AccessibilityActionCompat(actionId, actionLabel);
+              info.addAction(accessibilityAction);
+            }
+          }
+        }
+
+        @Override
+        public boolean performAccessibilityAction(View host, int action, Bundle args) {
+          if (mAccessibilityActionsMap.containsKey(action)) {
+            WritableMap event = Arguments.createMap();
+            event.putString("actionName", mAccessibilityActionsMap.get(action));
+            ReactContext reactContext = (ReactContext)host.getContext();
+            reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
+                    host.getId(),
+                    "performAction",
+                    event);
+            return true;
+          }
+          return super.performAccessibilityAction(host, action, args);
         }
       });
     }
