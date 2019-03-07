@@ -41,8 +41,17 @@ class FrameBasedAnimationDriver extends AnimationDriver {
     for (int i = 0; i < numberOfFrames; i++) {
       mFrames[i] = frames.getDouble(i);
     }
-    mToValue = config.hasKey("toValue") ? config.getDouble("toValue") : 0;
-    mIterations = config.hasKey("iterations") ? config.getInt("iterations") : 1;
+    if(config.hasKey("toValue")) {
+      mToValue = config.getType("toValue") == ReadableType.Number ? config.getDouble("toValue") : 0;
+    } else {
+      mToValue = 0;
+    }
+    if(config.hasKey("iterations")) {
+      mIterations = config.getType("iterations") == ReadableType.Number ?
+                                                    config.getInt("iterations") : 1;
+    } else {
+      mIterations = 1;
+    }
     mCurrentLoop = 1;
     mHasFinished = mIterations == 0;
     mStartFrameTimeNanos = -1;
