@@ -610,8 +610,8 @@ export type ____TextStyle_Internal = $ReadOnly<{|
   textDecorationLine?:
     | 'none'
     | 'underline'
-    | 'line-through'
-    | 'underline line-through',
+    | 'strikethrough'
+    | 'underline strikethrough',
   textDecorationStyle?: 'solid' | 'double' | 'dotted' | 'dashed',
   textDecorationColor?: ColorValue,
   textTransform?: 'none' | 'capitalize' | 'uppercase' | 'lowercase',
