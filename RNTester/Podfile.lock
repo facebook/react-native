@@ -63,14 +63,25 @@ PODS:
     - React-jsiexecutor (= 1000.0.0)
   - React-Fabric/components (1000.0.0):
     - Folly (= 2018.10.22.00)
+    - React-Fabric/components/activityindicator (= 1000.0.0)
     - React-Fabric/components/image (= 1000.0.0)
+    - React-Fabric/components/rncore (= 1000.0.0)
     - React-Fabric/components/root (= 1000.0.0)
     - React-Fabric/components/scrollview (= 1000.0.0)
+    - React-Fabric/components/slider (= 1000.0.0)
     - React-Fabric/components/text (= 1000.0.0)
     - React-Fabric/components/view (= 1000.0.0)
     - React-graphics (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
+  - React-Fabric/components/activityindicator (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
   - React-Fabric/components/image (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+  - React-Fabric/components/rncore (1000.0.0):
     - Folly (= 2018.10.22.00)
     - React-graphics (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
@@ -79,6 +90,10 @@ PODS:
     - React-graphics (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
   - React-Fabric/components/scrollview (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+  - React-Fabric/components/slider (1000.0.0):
     - Folly (= 2018.10.22.00)
     - React-graphics (= 1000.0.0)
     - React-jsiexecutor (= 1000.0.0)
@@ -281,32 +296,32 @@ SPEC CHECKSUMS:
   Folly: 1810b36f7389fde0f247be105670b9a54f3f9c24
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
   libevent: abe4052ea9d7366cd7db9f00ed36101e27900f4b
-  React: 61123953768ba8164e6e659bfbdbdbad4bdd9492
-  React-ART: b9dd39e341f983eb7086f21fa85682c88e4c9019
-  React-Core: a2c6aadb8e09d11b5ff84cccb73aff5ef8496b3f
-  React-cxxreact: 2ce665cb36999054a4909f2443158dea1762f289
-  React-DevSupport: 1b2209986400b96b557932d361dadbab59bec1d1
-  React-Fabric: 1c808fccefdce5231f9cf356b99b24321fae1a55
-  React-fishhook: 7b10794439128b1f4b22dfcbcb8a249a31034bb7
-  React-graphics: 079ce73544be8e66d23aaf416a18de181761c4b6
-  React-jsi: 661fd77132c8d5cbfa5ca48d0ef2cdaef95187d7
-  React-jsiexecutor: 30b0c799c753d1eb836defd5553da13a5406e25b
-  React-jsinspector: 1b02bbdbb87137b901ea94c753098bce8172f8c0
-  React-RCTActionSheet: d7506f2716636aa7eed64b67313558f560ddef5e
-  React-RCTAnimation: 0c757b378b6d91bd71c045a9baf6267bc0bc693d
-  React-RCTBlob: 3c5b4bcab30f270755a5abc1817b6104a58cf03a
-  React-RCTCameraRoll: 81b7db97f34bdc79ce552badb0efd4e4e149e506
-  React-RCTFabric: ba92c66db0d5713a3d5619bf6e7691ab67a1ffe9
-  React-RCTGeolocation: 98fa4e5bf3dc04c0f7147b0f7f8fc0247ac6b604
-  React-RCTImage: c3f990bae6ef90e852ef2931b12fe755570ddf66
-  React-RCTLinking: 5fe720dedc6b06a91ee3cb814fe50f52be2bfa85
-  React-RCTNetwork: 902e90b91377302de2109e0b5c3a76facdaabe0f
-  React-RCTPushNotification: 3c8be79f5c28d0c338f87bf61f22423b0eb1a1e5
-  React-RCTSettings: bd2ebaaee11b7676a5476a16cc760e0524785758
-  React-RCTText: 737c5c6c185c8ab7fe0673be9325763c602531da
-  React-RCTVibration: f0770f0b11fee483e7b9037d548480ec29f0f59b
-  React-RCTWebSocket: ba69ab83abd96f9a6ec7838e9303082179b10642
-  yoga: a38538811927bffcfa429956a3ff27bbee956228
+  React: fd26cf4ed568d4d877f2005cb031f6f9cf331ab4
+  React-ART: 586720b60ad83fc5a0a8da58bf8c4fdb251bdfe9
+  React-Core: e0ab63f13f566aaac589117075e27c3558afdca2
+  React-cxxreact: e4ebb350f95fea50c01449dc78530cf8e85adbcf
+  React-DevSupport: 53b8edc746cb06298492773ba2087c183292deef
+  React-Fabric: 7790a4fe04a8b638df698c3aefddcdb2f3bb4589
+  React-fishhook: 7bb699dfa65a8eeb053f9f07abae5778f68daf89
+  React-graphics: 04e8ea942ef570d74b46b2a41eae235cf3b45f0d
+  React-jsi: d2935bf72001cd96fc9971032a5439c24e5577b5
+  React-jsiexecutor: 7889150614380ca6c1ffe7d03909a8f21c2269c7
+  React-jsinspector: 4f29700f95238a3aa73605f36e67066c9e6bf1d0
+  React-RCTActionSheet: b1ebc777adcf105378fc408baa5eceeaad5e7973
+  React-RCTAnimation: 7d711bb3d8c4d26ac75cb1151af1ee460b316279
+  React-RCTBlob: 936bb07d659235704f2db4dd74362b348bf5f34b
+  React-RCTCameraRoll: 4f6b5ca56b4cefe0860b78cec58012408f64182d
+  React-RCTFabric: c5bbf28a6b3bbda36c4a7b958c3c6667d3b631d5
+  React-RCTGeolocation: d20e45aa5fce2cdfcc05086f90d7123e24341973
+  React-RCTImage: 7f4efff7a9a566c3dfc671b122122c9251c484cf
+  React-RCTLinking: e78b1cd947df2135ee14db13723c836382ee3f11
+  React-RCTNetwork: 8bf5be34b8b6c51d1fd23d8df26e36d14f80d9af
+  React-RCTPushNotification: 03e1b223b0057f8c892da0061c821971329d3705
+  React-RCTSettings: a6916327c91b812d3c81e56940e4cf2e671c0cb5
+  React-RCTText: 8cd5ef7074e8dce271c0c3554c631dbbb6e4cb65
+  React-RCTVibration: 8457f22a9c535d8327c4076ef3fa4dbf595dc5df
+  React-RCTWebSocket: 8a98336a4ab10c5833cdb8e9dce578b09a02f519
+  yoga: f4be0589ef1f586b4ce13f29a785419d095952b4
 
 PODFILE CHECKSUM: 0dead4310cf970f1f85099651665c26f1c129cb8
 
