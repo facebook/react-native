@@ -384,6 +384,8 @@ using namespace facebook::react;
     _batchedBridge = bridge;
 
     [self _startAllSurfaces];
+  } else {
+    [self _startAllSurfaces];
   }
 }
 

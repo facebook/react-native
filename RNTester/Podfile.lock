@@ -5,7 +5,9 @@ PODS:
     - boost-for-react-native
     - DoubleConversion
     - glog
+    - libevent
   - glog (0.3.5)
+  - libevent (2.1.5-beta)
   - React (1000.0.0):
     - React-Core (= 1000.0.0)
     - React-DevSupport (= 1000.0.0)
@@ -36,7 +38,95 @@ PODS:
   - React-DevSupport (1000.0.0):
     - React-Core (= 1000.0.0)
     - React-RCTWebSocket (= 1000.0.0)
+  - React-Fabric (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - React-Fabric/attributedstring (= 1000.0.0)
+    - React-Fabric/better (= 1000.0.0)
+    - React-Fabric/components (= 1000.0.0)
+    - React-Fabric/config (= 1000.0.0)
+    - React-Fabric/core (= 1000.0.0)
+    - React-Fabric/debug (= 1000.0.0)
+    - React-Fabric/imagemanager (= 1000.0.0)
+    - React-Fabric/mounting (= 1000.0.0)
+    - React-Fabric/textlayoutmanager (= 1000.0.0)
+    - React-Fabric/uimanager (= 1000.0.0)
+    - React-Fabric/utils (= 1000.0.0)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+  - React-Fabric/attributedstring (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+  - React-Fabric/better (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+  - React-Fabric/components (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - React-Fabric/components/image (= 1000.0.0)
+    - React-Fabric/components/root (= 1000.0.0)
+    - React-Fabric/components/scrollview (= 1000.0.0)
+    - React-Fabric/components/text (= 1000.0.0)
+    - React-Fabric/components/view (= 1000.0.0)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+  - React-Fabric/components/image (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+  - React-Fabric/components/root (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+  - React-Fabric/components/scrollview (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+  - React-Fabric/components/text (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+  - React-Fabric/components/view (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - yoga (= 1000.0.0.React)
+  - React-Fabric/config (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+  - React-Fabric/core (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+  - React-Fabric/debug (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+  - React-Fabric/imagemanager (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+    - React-RCTImage (= 1000.0.0)
+  - React-Fabric/mounting (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+  - React-Fabric/textlayoutmanager (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+  - React-Fabric/uimanager (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
+  - React-Fabric/utils (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - React-graphics (= 1000.0.0)
+    - React-jsiexecutor (= 1000.0.0)
   - React-fishhook (1000.0.0)
+  - React-graphics (1000.0.0):
+    - Folly (= 2018.10.22.00)
   - React-jsi (1000.0.0):
     - boost-for-react-native (= 1.63.0)
     - DoubleConversion
@@ -59,6 +149,11 @@ PODS:
     - React-RCTWebSocket (= 1000.0.0)
   - React-RCTCameraRoll (1000.0.0):
     - React-Core (= 1000.0.0)
+    - React-RCTImage (= 1000.0.0)
+  - React-RCTFabric (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - React-Core (= 1000.0.0)
+    - React-Fabric (= 1000.0.0)
     - React-RCTImage (= 1000.0.0)
   - React-RCTGeolocation (1000.0.0):
     - React-Core (= 1000.0.0)
@@ -84,14 +179,17 @@ PODS:
 
 DEPENDENCIES:
   - DoubleConversion (from `../third-party-podspecs/DoubleConversion.podspec`)
-  - Folly (from `../third-party-podspecs/Folly.podspec`)
+  - Folly (from `../third-party-podspecs/folly.podspec`)
   - glog (from `../third-party-podspecs/glog.podspec`)
+  - libevent (from `../third-party-podspecs/libevent.podspec`)
   - React (from `../`)
   - React-ART (from `../Libraries/ART`)
   - React-Core (from `../React`)
   - React-cxxreact (from `../ReactCommon/cxxreact`)
   - React-DevSupport (from `../React`)
+  - React-Fabric (from `../ReactCommon`)
   - React-fishhook (from `../Libraries/fishhook`)
+  - React-graphics (from `../ReactCommon/fabric/graphics`)
   - React-jsi (from `../ReactCommon/jsi`)
   - React-jsiexecutor (from `../ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../ReactCommon/jsinspector`)
@@ -99,6 +197,7 @@ DEPENDENCIES:
   - React-RCTAnimation (from `../Libraries/NativeAnimation`)
   - React-RCTBlob (from `../Libraries/Blob`)
   - React-RCTCameraRoll (from `../Libraries/CameraRoll`)
+  - React-RCTFabric (from `../React`)
   - React-RCTGeolocation (from `../Libraries/Geolocation`)
   - React-RCTImage (from `../Libraries/Image`)
   - React-RCTLinking (from `../Libraries/LinkingIOS`)
@@ -118,9 +217,11 @@ EXTERNAL SOURCES:
   DoubleConversion:
     :podspec: "../third-party-podspecs/DoubleConversion.podspec"
   Folly:
-    :podspec: "../third-party-podspecs/Folly.podspec"
+    :podspec: "../third-party-podspecs/folly.podspec"
   glog:
     :podspec: "../third-party-podspecs/glog.podspec"
+  libevent:
+    :podspec: "../third-party-podspecs/libevent.podspec"
   React:
     :path: "../"
   React-ART:
@@ -131,8 +232,12 @@ EXTERNAL SOURCES:
     :path: "../ReactCommon/cxxreact"
   React-DevSupport:
     :path: "../React"
+  React-Fabric:
+    :path: "../ReactCommon"
   React-fishhook:
     :path: "../Libraries/fishhook"
+  React-graphics:
+    :path: "../ReactCommon/fabric/graphics"
   React-jsi:
     :path: "../ReactCommon/jsi"
   React-jsiexecutor:
@@ -147,6 +252,8 @@ EXTERNAL SOURCES:
     :path: "../Libraries/Blob"
   React-RCTCameraRoll:
     :path: "../Libraries/CameraRoll"
+  React-RCTFabric:
+    :path: "../React"
   React-RCTGeolocation:
     :path: "../Libraries/Geolocation"
   React-RCTImage:
@@ -170,33 +277,37 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
-  DoubleConversion: 3eb87e5bfd9737e9a8cc698f74ee064d00c8dafc
-  Folly: de497beb10f102453a1afa9edbf8cf8a251890de
-  glog: aefd1eb5dda2ab95ba0938556f34b98e2da3a60d
-  React: 4d01f91757abcfd2adccf80248285957ac1a2de2
-  React-ART: f03123e0f0b9850db4733ad94ded11d29c719dc6
-  React-Core: fcb8a6f34de5a43426efcb9dfda6a434c1b1275d
-  React-cxxreact: 2a2acf4466abf5b794da53bf69e757a885259452
-  React-DevSupport: 140c1ccfa9ccba495977225c117dc78c8858224f
-  React-fishhook: aefe3414f44d4deaa880f0e39dc76644f1072bf7
-  React-jsi: 425cd468e0be54cdc9009a2b4d2c1a4eada83805
-  React-jsiexecutor: 520560a0b08226e4e758645940253e270b4d7d76
-  React-jsinspector: c9020e3a37b7b27125d824b1d02b9be0d1c737ac
-  React-RCTActionSheet: 78b940169b3c12d199dbbd382c5a3d22ec2197e2
-  React-RCTAnimation: da0026d00ed99669b6175a941189539d8f9d52a4
-  React-RCTBlob: c5a2104bd8b8e0462fc35eefa9133dc04ced56dd
-  React-RCTCameraRoll: effa220c8e244af93b44011ab85cab814c469e08
-  React-RCTGeolocation: 3517483e877750bae5a03d9f52e7b0e48c49651e
-  React-RCTImage: ed045a58ebc9c97870a4fe5d066fdf04f247023b
-  React-RCTLinking: e5f174d3f9e6ffe30087b9edc8c9860d62c1413c
-  React-RCTNetwork: 9fbf72be6083a4b5fffe3dc1afad9fa2b70c4f19
-  React-RCTPushNotification: 106e9846882a8dcce372fc90531be996ce0bb29b
-  React-RCTSettings: afd7ae33bacd09b12c8a0d3151069d465344ce24
-  React-RCTText: 03945b44521b34f89f9a728e1c265fa096af9f94
-  React-RCTVibration: ef9e4e077360a599a1b59cee7d18398871d37759
-  React-RCTWebSocket: 510a4eef2c064ef30508aba41628e6d69f4df4c5
-  yoga: c63f2cb4fd93594d29e792c198a8050d5daf9fdf
+  DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
+  Folly: 1810b36f7389fde0f247be105670b9a54f3f9c24
+  glog: 1f3da668190260b06b429bb211bfbee5cd790c28
+  libevent: abe4052ea9d7366cd7db9f00ed36101e27900f4b
+  React: 61123953768ba8164e6e659bfbdbdbad4bdd9492
+  React-ART: b9dd39e341f983eb7086f21fa85682c88e4c9019
+  React-Core: a2c6aadb8e09d11b5ff84cccb73aff5ef8496b3f
+  React-cxxreact: 2ce665cb36999054a4909f2443158dea1762f289
+  React-DevSupport: 1b2209986400b96b557932d361dadbab59bec1d1
+  React-Fabric: 1c808fccefdce5231f9cf356b99b24321fae1a55
+  React-fishhook: 7b10794439128b1f4b22dfcbcb8a249a31034bb7
+  React-graphics: 079ce73544be8e66d23aaf416a18de181761c4b6
+  React-jsi: 661fd77132c8d5cbfa5ca48d0ef2cdaef95187d7
+  React-jsiexecutor: 30b0c799c753d1eb836defd5553da13a5406e25b
+  React-jsinspector: 1b02bbdbb87137b901ea94c753098bce8172f8c0
+  React-RCTActionSheet: d7506f2716636aa7eed64b67313558f560ddef5e
+  React-RCTAnimation: 0c757b378b6d91bd71c045a9baf6267bc0bc693d
+  React-RCTBlob: 3c5b4bcab30f270755a5abc1817b6104a58cf03a
+  React-RCTCameraRoll: 81b7db97f34bdc79ce552badb0efd4e4e149e506
+  React-RCTFabric: ba92c66db0d5713a3d5619bf6e7691ab67a1ffe9
+  React-RCTGeolocation: 98fa4e5bf3dc04c0f7147b0f7f8fc0247ac6b604
+  React-RCTImage: c3f990bae6ef90e852ef2931b12fe755570ddf66
+  React-RCTLinking: 5fe720dedc6b06a91ee3cb814fe50f52be2bfa85
+  React-RCTNetwork: 902e90b91377302de2109e0b5c3a76facdaabe0f
+  React-RCTPushNotification: 3c8be79f5c28d0c338f87bf61f22423b0eb1a1e5
+  React-RCTSettings: bd2ebaaee11b7676a5476a16cc760e0524785758
+  React-RCTText: 737c5c6c185c8ab7fe0673be9325763c602531da
+  React-RCTVibration: f0770f0b11fee483e7b9037d548480ec29f0f59b
+  React-RCTWebSocket: ba69ab83abd96f9a6ec7838e9303082179b10642
+  yoga: a38538811927bffcfa429956a3ff27bbee956228
 
-PODFILE CHECKSUM: c144025e9b0ade3d8b536a343fee89da69391cdc
+PODFILE CHECKSUM: 0dead4310cf970f1f85099651665c26f1c129cb8
 
-COCOAPODS: 1.6.0
+COCOAPODS: 1.6.1

@@ -10,11 +10,14 @@ target 'RNTester' do
   pod 'React-ART', :path => '../Libraries/ART'
   pod 'React-Core', :path => '../React'
   pod 'React-DevSupport', :path => '../React'
+  pod 'React-Fabric', :path => '../ReactCommon'
   pod 'React-fishhook', :path => '../Libraries/fishhook'
+  pod 'React-graphics', :path => '../ReactCommon/fabric/graphics'
   pod 'React-RCTActionSheet', :path => '../Libraries/ActionSheetIOS'
   pod 'React-RCTAnimation', :path => '../Libraries/NativeAnimation'
   pod 'React-RCTBlob', :path => '../Libraries/Blob'
   pod 'React-RCTCameraRoll', :path => '../Libraries/CameraRoll'
+  pod 'React-RCTFabric', :path => '../React'
   pod 'React-RCTGeolocation', :path => '../Libraries/Geolocation'
   pod 'React-RCTImage', :path => '../Libraries/Image'
   pod 'React-RCTLinking', :path => '../Libraries/LinkingIOS'
@@ -34,6 +37,7 @@ target 'RNTester' do
   # Third party deps podspec link
   pod 'DoubleConversion', :podspec => '../third-party-podspecs/DoubleConversion.podspec'
   pod 'glog', :podspec => '../third-party-podspecs/glog.podspec'
-  pod 'Folly', :podspec => '../third-party-podspecs/Folly.podspec'
+  pod 'Folly', :podspec => '../third-party-podspecs/folly.podspec'
+  pod 'libevent', :podspec => '../third-party-podspecs/libevent.podspec'
 
 end
