@@ -33,10 +33,6 @@ Pod::Spec.new do |s|
   s.source_files           = "Fabric/**/*.{c,h,m,mm,S,cpp}"
   s.exclude_files          = "**/tests/*",
                              "**/android/*",
-                             # FIXME: these can be renabled after codegen
-                             "**/ActivityIndicator/*",
-                             "**/Switch/*", 
-                             "**/Slider/*"
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.header_dir             = "React"
   s.framework              = "JavaScriptCore"
