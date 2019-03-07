@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include <better/small_vector.h>
 #include <react/core/EventEmitter.h>
 #include <react/core/LocalData.h>
 #include <react/core/Props.h>
@@ -22,6 +23,8 @@
 namespace facebook {
 namespace react {
 
+static constexpr const int kShadowNodeChildrenSmallVectorSize = 8;
+
 class ComponentDescriptor;
 struct ShadowNodeFragment;
 
@@ -30,7 +33,8 @@ class ShadowNode;
 using SharedShadowNode = std::shared_ptr<const ShadowNode>;
 using WeakShadowNode = std::weak_ptr<const ShadowNode>;
 using UnsharedShadowNode = std::shared_ptr<ShadowNode>;
-using SharedShadowNodeList = std::vector<SharedShadowNode>;
+using SharedShadowNodeList =
+    better::small_vector<SharedShadowNode, kShadowNodeChildrenSmallVectorSize>;
 using SharedShadowNodeSharedList = std::shared_ptr<const SharedShadowNodeList>;
 using SharedShadowNodeUnsharedList = std::shared_ptr<SharedShadowNodeList>;
 
