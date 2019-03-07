@@ -42,7 +42,6 @@ export type IPerformanceLogger = {
   markPoint(string, number | void): void,
   getPoints(): {[key: string]: number},
   logPoints(): void,
-  logEverything(): void,
 };
 
 const _cookies: {[key: string]: number} = {};
@@ -242,12 +241,6 @@ function createPerformanceLogger(): IPerformanceLogger {
       for (const key in this._points) {
         infoLog(key + ': ' + this._points[key] + 'ms');
       }
-    },
-
-    logEverything() {
-      this.logTimespans();
-      this.logExtras();
-      this.logPoints();
     },
   };
   return result;

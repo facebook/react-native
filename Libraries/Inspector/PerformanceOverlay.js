@@ -10,21 +10,15 @@
 
 'use strict';
 
-const PerformanceLoggerContext = require('PerformanceLoggerContext');
-const GlobalPerformanceLogger = require('GlobalPerformanceLogger');
+const PerformanceLogger = require('GlobalPerformanceLogger');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const View = require('View');
 
 class PerformanceOverlay extends React.Component<{}> {
-  static contextType = PerformanceLoggerContext;
   render() {
-    const scopedPerformanceLogger = this.context;
-    const perfLogs = {
-      ...scopedPerformanceLogger.getTimespans(),
-      ...GlobalPerformanceLogger.getTimespans(),
-    };
+    const perfLogs = PerformanceLogger.getTimespans();
     const items = [];
 
     for (const key in perfLogs) {
