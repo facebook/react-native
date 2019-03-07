@@ -129,12 +129,11 @@ While you can browse the source code for React Native on [GitHub][facebook/react
 You will now have a fork of React Native on GitHub at <https://github.com/your_username/react-native>. Next, you will grab a copy of the source code for your local machine. Open a shell and type the following commands:
 
 ```bash
-$ git clone https://github.com/facebook/react-native.git
-$ git remote add fork https://github.com/your_username/react-native.git
+git clone https://github.com/facebook/react-native.git
+git remote add fork https://github.com/your_username/react-native.git
 ```
 
 > If the above seems new to you, do not be scared. You can access a shell through the Terminal application on macOS and linux, or PowerShell on Windows.
-> Throughout this document, we will use the above convention (`$` followed by some text) to denote commands that need to be entered into a shell.
 
 A new `react-native/` directory will be created with the contents of the core React Native repository. This directory is actually a clone of the React Native git repository. It is set up with two remotes: `origin` for the upstream @facebook/react-native repository, and `fork` for the fork of React Native on your own GitHub account.
 
@@ -147,7 +146,7 @@ There's a few additional tools you will need in order to build and develop for R
 We recommend creating a new branch in your fork to keep track of your changes:
 
 ```bash
-$ git checkout --branch my_feature_branch --track origin/master
+git checkout --branch my_feature_branch --track origin/master
 ```
 
 
@@ -172,8 +171,8 @@ To learn more about coding conventions, refer to the [Coding Style](#coding-styl
 Once you're satisfied, make sure to add your changes to version control using `git`:
 
 ```bash
-$ git add <filename>
-$ git commit -m <message>
+git add <filename>
+git commit -m <message>
 ```
 
 You can use a short descriptive sentence as your commit message.
@@ -196,7 +195,7 @@ Complete your CLA here: <https://code.facebook.com/cla>
 Once your changes have been commited to version control, you can push them to GitHub.
 
 ```bash
-$ git push fork <my_feature_branch>
+git push fork <my_feature_branch>
 ```
 
 If all goes well, you will see a message encouraging you to open a pull request:
@@ -230,8 +229,67 @@ TODO: Review process, how a PR gets merged, congratulations on your first contri
 
 ## Running and Writing Tests
 
+This section is about testing your changes to React Native as a contributor. If you haven't yet, go through the steps to set up your development environment for [building projects with native code][env-setup]. If you are intested in writing tests for a React Native app, you can follow Jest's [Testing React Native Apps][jest-tutorial] tutorial.
 
-TODO: Link to existing tests documentation.
+[env-setup]: http://facebook.github.io/react-native/docs/getting-started
+[jest-tutorial]: https://jestjs.io/docs/en/tutorial-react-native
+
+### Running JavaScript Tests
+
+The simplest way to run the JavaScript test suite is by using the following command at the root of your React Native checkout:
+
+```bash
+npm test
+```
+
+This will run tests using [Jest](https://jestjs.io).
+
+You should also make sure your code passes [Flow](https://flowtype.org/) tests:
+
+```bash
+npm run flow
+```
+
+### Running iOS Tests
+
+To run the iOS tests, invoke the following script from the root of your React Native checkout:
+
+```bash
+./scripts/objc-test-ios.sh
+```
+
+You can also open the Xcode project at `RNTester/RNTester.xcodeproj` and run tests locally by pressing Command + U.
+
+### Running Android Tests
+
+The Android unit tests do not run in an emulator. They just use a normal Java installation. The test suite is built using the [Buck build tool][buck-install].
+
+[buck-install]: https://buckbuild.com/setup/install.html
+
+To run the Android unit tests, invoke the following script from the root of your React Native checkout:
+
+```bash
+./scripts/run-android-local-unit-tests.sh
+```
+
+The Android integration tests, on the other hand, need additional setup. We recommend going through the instructions to [set up your environment for building React Native from source](http://facebook.github.io/react-native/docs/building-from-source#prerequisites).
+
+Once you've done that, you can start the Android emulator using:
+
+```bash
+./scripts/run-android-emulator.sh
+```
+
+Then, run the Android integration tests:
+
+```bash
+./scripts/run-android-local-integration-tests.sh
+```
+
+### Continuous Integration Tests
+
+TODO: Talk about Circle CI, Appveyor.
+
 
 ## Helping with Documentation
 
