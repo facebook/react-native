@@ -1,6 +1,20 @@
 {
-  "name": "@microsoft/react-native",
+  "name": "react-native",
   "entries": [
+    {
+      "version": "0.0.2",
+      "tag": "react-native_v0.0.2",
+      "date": "Wed, 06 Mar 2019 05:43:46 GMT",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Rename microsoft react-native",
+            "author": "Andrew Coates (REDMOND) <acoates@microsoft.com>",
+            "commit": "0c0c2e0fa8762dda21b96ec3031a90450a45607f"
+          }
+        ]
+      }
+    },
     {
       "version": "0.3.9",
       "tag": "@microsoft/react-native_v0.3.9",

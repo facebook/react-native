@@ -45,6 +45,12 @@ function focusTextInput(textFieldID: ?number) {
         UIManager.AndroidTextInput.Commands.focusTextInput,
         null,
       );
+    } else if (Platform.OS === 'win32') {
+      UIManager.dispatchViewManagerCommand(
+        textFieldID,
+        UIManager.RCTView.Commands.focus,
+        null,
+      );
     }
   }
 }
@@ -63,6 +69,12 @@ function blurTextInput(textFieldID: ?number) {
       UIManager.dispatchViewManagerCommand(
         textFieldID,
         UIManager.AndroidTextInput.Commands.blurTextInput,
+        null,
+      );
+    } else if (Platform.OS === 'win32') {
+      UIManager.dispatchViewManagerCommand(
+        textFieldID,
+        UIManager.RCTView.Commands.blur,
         null,
       );
     }

@@ -262,6 +262,7 @@ const TouchableOpacity = ((createReactClass({
         onAccessibilityTap={this.props.onAccessibilityTap} // TODO(OSS Candidate ISS#2710739)
         acceptsKeyboardFocus={(this.props.acceptsKeyboardFocus === undefined || this.props.acceptsKeyboardFocus) && !this.props.disabled} // TODO(macOS ISS#2323203)
         enableFocusRing={(this.props.enableFocusRing === undefined || this.props.enableFocusRing) && !this.props.disabled} // TODO(macOS ISS#2323203)
+        tabIndex={this.props.tabIndex} // TODO(win ISS#2323203)
         style={[this.props.style, {opacity: this.state.anim}]}
         nativeID={this.props.nativeID}
         testID={this.props.testID}
@@ -278,6 +279,7 @@ const TouchableOpacity = ((createReactClass({
         onResponderMove={this.touchableHandleResponderMove}
         onResponderRelease={this.touchableHandleResponderRelease}
         onResponderTerminate={this.touchableHandleResponderTerminate}
+        tooltip={this.props.tooltip}  // TODO(macOS/win ISS#2323203)
         clickable={this.props.clickable !== false && this.props.onPress !== undefined} // TODO(android ISS)
         onClick={this.touchableHandlePress} // TODO(android ISS)
         onMouseEnter={this.props.onMouseEnter} // [TODO(macOS ISS#2323203)
