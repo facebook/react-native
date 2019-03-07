@@ -31,9 +31,10 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 /**
  * Accessibility properties
  */
-@property (nonatomic, copy) NSArray <NSString *> *accessibilityActions;
 @property (nonatomic, copy) NSString *accessibilityRole;
 @property (nonatomic, copy) NSArray <NSString *> *accessibilityStates;
+@property (nonatomic, copy) NSArray <NSDictionary *> *accessibilityActions;
+@property (nonatomic, copy) NSDictionary *accessibilityActionsMap;
 
 /**
  * Used to control how touch events are processed.
