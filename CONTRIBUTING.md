@@ -1,17 +1,6 @@
 # Contributing to React Native
 
-We want to make contributing to this project as easy and transparent as possible. From commenting on and triaging issues, to triaging, reviewing, and sending PRs, we are here to help you every step of the way. Read on to learn more about our development process and how to propose bug fixes and improvements.
-
-[Open Source Guides][gh-oss-guide] are a collection of resources for individuals, communities, and companies who want to learn how to run and contribute to an open source project.
-
-Core contributors and collaborators alike will find the following guides useful:
-
-- [How to Contribute to Open Source][gh-how-to-contribute]
-- [Building Welcoming Communities][gh-building-community]
-
-[gh-oss-guide]: https://opensource.guide/
-[gh-how-to-contribute]: https://opensource.guide/how-to-contribute/
-[gh-building-community]: https://opensource.guide/building-community/
+We want to make contributing to this project as easy and transparent as possible. Read on to learn more about our development process and how to propose bug fixes and improvements.
 
 ## What’s in this document?
 
@@ -26,23 +15,66 @@ Core contributors and collaborators alike will find the following guides useful:
 
 ## Getting Started
 
-TODO: Incoming.
+Thanks for your interest in contributing to React Native! From commenting on and triaging issues, to reviewing and sending PRs, we are here to help you every step of the way.
+
+[Open Source Guides][gh-oss-guide] are a collection of resources for individuals, communities, and companies who want to learn how to run and contribute to an open source project. Contributors and people new to open source alike will find the following guides useful:
+
+- [How to Contribute to Open Source][gh-how-to-contribute]
+- [Building Welcoming Communities][gh-building-community]
+
+[gh-oss-guide]: https://opensource.guide/
+[gh-how-to-contribute]: https://opensource.guide/how-to-contribute/
+[gh-building-community]: https://opensource.guide/building-community/
+
+The main repository, <https://github.com/facebook/react-native>, contains the core React Native framework, and it is where we keep track of bug reports and manage pull requests.
+
+There's a handful of additional repositories that you should know of:
+
+- The source code for the **React Native website**, including the documentation, is located at <https://github.com/facebook/react-native-website>
+- **Releases** are coordinated through the <https://github.com/react-native-community/react-native-releases> repository. This includes important documents such as the Changelog.
+- **Discussions** about the future of React Native take place in the <https://github.com/react-native-community/discussions-and-proposals> repository.
+
+Browsing through these repositories might provide some insight into how the React Native open source project is managed. You may want to start by sending a pull request to fix a typo in the release notes, or by participating in discussions with other collaborators.
+
+If you are eager to start contributing code right away, we have a list of [good first issues][gfi] that contain bugs which have a relatively limited scope. As you gain more experience and demonstrate a commitment to evolving React Native, you may be granted issue management permissions in the main repository.
+
+There are other ways you can contribute without writing a single line of code. Here's a sample of things you can do to help out:
+
+1. **Replying and handling open issues.** We get a lot of issues every day, and some of them may lack necessary information. You can help out by guiding people through the process of filling out the issue template, asking for clarifying information, or pointing them to existing issues that match their description of the problem. We'll cover more about this process later, in [**Triaging Issues**](#triaging-issues).
+
+2. **Reviewing pull requests for the docs.** Reviewing [documentation updates][docs-prs] can be as simple as checking for spelling and grammar. If you encounter sitations that can be explained better in the docs, click **Edit** at the top of most docs pages to get started with your own contribution.
+
+3. **Help people write test plans.** Some pull requests sent to the main repository [may lack a proper test plan][pr-no-test-plan]. These help reviewers understand how the change was tested, and can speed up the time it takes for a contribution to be accepted.
+
+Each of these tasks is highly impactful, and maintainers will appreciate your help.
+
+[gfi]: https://github.com/facebook/react-native/labels/good%20first%20issue
+[docs-prs]: https://github.com/facebook/react-native-website/pulls
+[pr-no-test-plan]: https://github.com/facebook/react-native/pulls?utf8=%E2%9C%93&q=is%3Aopen+is%3Apr+-label%3A%22PR%3A+Includes+Test+Plan%22+
+
+
+### Our Development Process
+
+Most changes from engineers at Facebook will sync to [GitHub][facebook/react-native] through a bridge with Facebook's internal source control. Changes from the community are handled through GitHub pull requests. Once a change made on GitHub is approved, it will first be imported into Facebook's internal source control. The change will eventually sync back to GitHub as a single commit once it has passed Facebook's internal tests.
+
+[facebook/react-native]: https://github.com/facebook/react-native
+
 
 ## Where to Get Help
 
-TODO: As you work on React Native, it is natural that sooner or later you may require help. In addition to the resources listed in SUPPORT, people interested in contributing may take advantage of the following:
+As you work on React Native, it is natural that sooner or later you may require help. In addition to the resources listed in [SUPPORT][support], people interested in contributing may take advantage of the following:
 
-### React Native Contributors Discord
+* **Twitter**. The React Native team at Facebook has its own account at [**@reactnative**][at-reactnative], and the React Native Community uses [**@reactnativecomm**][at-reactnativecomm]. If you are stuck, or need help contributing, please do not hesitate to reach out.
 
-TODO: As you get more involved, you may be eventually be invited to the React Native Contributors Discord.
+* **Proposals Repository**. If you are considering working on a feature large in scope, consider [creating a proposal first][meta]. The community is highly willing to help you figure out the right approach, and we'd be happy to help.
 
-### Discussions and Proposals
+* **React Native Community Discord**. While we try to hold most discussions in public, sometimes it can be beneficial to have conversations in real time with other contributors. People who have demonstrated a commitment to moving React Native forward through sustained contributions to the project may eventually be invited to join the React Native Community Discord.
 
-TODO: Section that describes the [meta repository](https://github.com/react-native-community/discussions-and-proposals), with the goal of encouraging advance discussion before working on larger changes. _Before working on a feature with larger scope, consider creating a proposal._
+[at-reactnative]: https://twitter.com/reactnative
+[at-reactnativecomm]: https://twitter.com/reactnativecomm
+[support]: http://github.com/facebook/react-native/blob/master/.github/SUPPORT.md
+[meta]: https://github.com/react-native-community/discussions-and-proposals
 
-### Additional Resources
-
-TODO: List other resources, such as any office hours held by the RN community org.
 
 ## Issues
 
@@ -53,12 +85,6 @@ Facebook has a [bounty program](https://www.facebook.com/whitehat/) for the safe
 ### Triaging Issues
 
 TODO: Incoming.
-
-## Our Development Process
-
-Most changes from engineers at Facebook will sync to [GitHub][facebook/react-native] through a bridge with Facebook's internal source control. Changes from the community are handled through GitHub pull requests. Once a change made on GitHub is approved, it will first be imported into Facebook's internal source control. The change will eventually sync back to GitHub as a single commit once it has passed Facebook's internal tests.
-
-[facebook/react-native]: https://github.com/facebook/react-native
 
 ## Pull Requests
 
@@ -82,7 +108,7 @@ Up next, we'll go deeper into each of these steps.
 
 [pr]: https://help.github.com/en/articles/about-pull-requests
 
-### Getting Started
+### Step-by-Step Guide
 
 These instructions provide the step-by-step process to set up your machine to make contributions to the core React Native repository, and create your first pull request.
 
@@ -203,6 +229,7 @@ Keep an eye on any comments and review feedback left on your pull request on Git
 TODO: Review process, how a PR gets merged, congratulations on your first contribution, next steps, etc.
 
 ## Running and Writing Tests
+
 
 TODO: Link to existing tests documentation.
 
