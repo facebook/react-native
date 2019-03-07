@@ -75,8 +75,8 @@ export type Props = $ReadOnly<{|
   onPressOut?: ?Function,
   onAccessibilityTap?: ?Function, // TODO(OSS Candidate ISS#2710739)
   acceptsKeyboardFocus?: ?boolean, // [TODO(macOS ISS#2323203)
-  onMouseEnter?: ?Function, 
-  onMouseLeave?: ?Function, 
+  onMouseEnter?: ?Function,
+  onMouseLeave?: ?Function,
   onDragEnter?: ?Function,
   onMouseLeave?: ?Function,
   onDragEnter?: ?Function,
@@ -154,9 +154,9 @@ const TouchableWithoutFeedback = ((createReactClass({
      * Enables Drag'n'Drop Support for certain types of dragged types
      *
      * Possible values for `draggedTypes` are:
-     * 
+     *
      * - `'fileUrl'`
-     * 
+     *
      * @platform macos
      */
     draggedTypes: PropTypes.oneOfType([ // TODO(macOS ISS#2323203)
@@ -297,6 +297,7 @@ const TouchableWithoutFeedback = ((createReactClass({
       onAccessibilityTap: this.props.onAccessibilityTap, // TODO(OSS Candidate ISS#2710739)
       acceptsKeyboardFocus: (this.props.acceptsKeyboardFocus === undefined || this.props.acceptsKeyboardFocus) && !this.props.disabled, // TODO(macOS ISS#2323203)
       enableFocusRing: (this.props.enableFocusRing === true && !this.props.disabled), // TODO(macOS ISS#2323203)
+      tabIndex: this.props.tabIndex, // TODO(win ISS#2323203)
       nativeID: this.props.nativeID,
       testID: this.props.testID,
       onLayout: this.props.onLayout,
@@ -308,6 +309,7 @@ const TouchableWithoutFeedback = ((createReactClass({
       onResponderMove: this.touchableHandleResponderMove,
       onResponderRelease: this.touchableHandleResponderRelease,
       onResponderTerminate: this.touchableHandleResponderTerminate,
+      tooltip: this.props.tooltip,  // TODO(macOS/win ISS#2323203)
       clickable: this.props.clickable !== false && this.props.onPress !== undefined, // TODO(android ISS)
       onClick: this.touchableHandlePress, // TODO(android ISS)
       onMouseEnter: this.props.onMouseEnter, // [TODO(macOS ISS#2323203)
