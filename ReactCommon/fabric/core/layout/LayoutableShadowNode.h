@@ -12,8 +12,10 @@
 #include <memory>
 #include <vector>
 
+#include <better/small_vector.h>
 #include <react/core/LayoutMetrics.h>
 #include <react/core/Sealable.h>
+#include <react/core/ShadowNode.h>
 #include <react/debug/DebugStringConvertible.h>
 
 namespace facebook {
@@ -28,6 +30,9 @@ struct LayoutContext;
  */
 class LayoutableShadowNode : public virtual Sealable {
  public:
+  using UnsharedList = better::
+      small_vector<LayoutableShadowNode *, kShadowNodeChildrenSmallVectorSize>;
+
   virtual ~LayoutableShadowNode() noexcept = default;
 
   /*
@@ -97,7 +102,7 @@ class LayoutableShadowNode : public virtual Sealable {
   /*
    * Returns layoutable children to interate on.
    */
-  virtual std::vector<LayoutableShadowNode *> getLayoutableChildNodes()
+  virtual LayoutableShadowNode::UnsharedList getLayoutableChildNodes()
       const = 0;
 
   /*

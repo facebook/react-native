@@ -44,7 +44,7 @@ class AttributedString : public Sealable, public DebugStringConvertible {
     bool operator!=(const Fragment &rhs) const;
   };
 
-  using Fragments = std::vector<Fragment>;
+  using Fragments = better::small_vector<Fragment, 1>;
 
   /*
    * Appends and prepends a `fragment` to the string.

@@ -15,6 +15,7 @@
 #include <react/components/view/YogaStylableProps.h>
 #include <react/core/LayoutableShadowNode.h>
 #include <react/core/Sealable.h>
+#include <react/core/ShadowNode.h>
 #include <react/debug/DebugStringConvertible.h>
 
 namespace facebook {
@@ -24,6 +25,10 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode,
                                  public virtual DebugStringConvertible,
                                  public virtual Sealable {
  public:
+  using UnsharedList = better::small_vector<
+      YogaLayoutableShadowNode *,
+      kShadowNodeChildrenSmallVectorSize>;
+
 #pragma mark - Constructors
 
   YogaLayoutableShadowNode();
@@ -51,7 +56,7 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode,
    * instances. Complements `ShadowNode::setChildren(...)` functionality from
    * Yoga perspective.
    */
-  void setChildren(std::vector<YogaLayoutableShadowNode *> children);
+  void setChildren(YogaLayoutableShadowNode::UnsharedList children);
 
   /*
    * Sets Yoga styles based on given `YogaStylableProps`.
@@ -75,7 +80,7 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode,
 
   void layoutChildren(LayoutContext layoutContext) override;
 
-  std::vector<LayoutableShadowNode *> getLayoutableChildNodes() const override;
+  LayoutableShadowNode::UnsharedList getLayoutableChildNodes() const override;
 
  protected:
   /*
