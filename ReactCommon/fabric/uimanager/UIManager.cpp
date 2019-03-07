@@ -45,9 +45,7 @@ SharedShadowNode UIManager::cloneNode(
     const RawProps *rawProps) const {
   SystraceSection s("UIManager::cloneNode");
 
-  auto &componentDescriptor =
-      componentDescriptorRegistry_->at(shadowNode->getComponentHandle());
-
+  auto &componentDescriptor = shadowNode->getComponentDescriptor();
   auto clonedShadowNode = componentDescriptor.cloneShadowNode(
       *shadowNode,
       {
@@ -69,8 +67,7 @@ void UIManager::appendChild(
     const SharedShadowNode &childShadowNode) const {
   SystraceSection s("UIManager::appendChild");
 
-  auto &componentDescriptor =
-      componentDescriptorRegistry_->at(parentShadowNode->getComponentHandle());
+  auto &componentDescriptor = parentShadowNode->getComponentDescriptor();
   componentDescriptor.appendChild(parentShadowNode, childShadowNode);
 }
 
@@ -92,8 +89,7 @@ void UIManager::setNativeProps(
 
   long startCommitTime = getTime();
 
-  auto &componentDescriptor =
-      componentDescriptorRegistry_->at(shadowNode->getComponentHandle());
+  auto &componentDescriptor = shadowNode->getComponentDescriptor();
   auto props = componentDescriptor.cloneProps(shadowNode->getProps(), rawProps);
   auto newShadowNode = shadowNode->clone({
       /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
@@ -148,8 +144,7 @@ void UIManager::updateState(
     const StateData::Shared &rawStateData) const {
   long startCommitTime = getTime();
 
-  auto &componentDescriptor =
-      componentDescriptorRegistry_->at(shadowNode->getComponentHandle());
+  auto &componentDescriptor = shadowNode->getComponentDescriptor();
   auto state =
       componentDescriptor.createState(shadowNode->getState(), rawStateData);
   auto newShadowNode = shadowNode->clone({

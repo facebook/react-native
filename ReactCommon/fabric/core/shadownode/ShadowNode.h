@@ -79,6 +79,11 @@ class ShadowNode : public virtual Sealable,
   Tag getRootTag() const;
 
   /*
+   * Returns a concrete `ComponentDescriptor` that manages nodes of this type.
+   */
+  const ComponentDescriptor &getComponentDescriptor() const;
+
+  /*
    * Returns a state associated with the particular node.
    */
   const State::Shared &getState() const;
