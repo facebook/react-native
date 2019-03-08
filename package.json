@@ -128,6 +128,7 @@
     "eslint-plugin-react-native": "3.5.0",
     "eslint-plugin-relay": "0.0.28",
     "flow-bin": "^0.94.0",
+    "flow-remove-types": "^1.2.3",
     "jest": "24.5.0",
     "jest-junit": "6.3.0",
     "jscodeshift": "^0.6.2",

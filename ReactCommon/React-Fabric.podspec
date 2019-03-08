@@ -30,6 +30,7 @@ Pod::Spec.new do |s|
   s.author                 = "Facebook, Inc. and its affiliates"
   s.platforms              = { :ios => "9.0", :tvos => "9.2" }
   s.source                 = source
+  s.prepare_command        = File.read("../scripts/generate-rncore.sh")
   s.source_files           = "dummyFile.cpp"
   s.library                = "stdc++"
   s.pod_target_xcconfig = { "USE_HEADERMAP" => "YES",
@@ -95,7 +96,7 @@ Pod::Spec.new do |s|
     ss.subspec "rncore" do |sss|
       sss.dependency             "Folly", folly_version
       sss.compiler_flags       = folly_compiler_flags
-      sss.source_files         = "fabric/components/rncore/**/*.{m,mm,cpp,h}"
+      sss.source_files         = "fabric/components/rncore/*.{m,mm,cpp,h}"
       sss.exclude_files        = "**/tests/*"
       sss.header_dir           = "react/components/rncore"
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
