@@ -7,33 +7,14 @@
 
 #import "RCTPropsAnimatedNode.h"
 
-#import <objc/runtime.h>
-
 #import <React/RCTLog.h>
+#import <React/RCTSurfacePresenterStub.h>
 #import <React/RCTUIManager.h>
 
 #import "RCTAnimationUtils.h"
 #import "RCTStyleAnimatedNode.h"
 #import "RCTValueAnimatedNode.h"
 
-// TODO: Eventually we should just include RCTSurfacePresenter.h, but that pulls in all of fabric
-// which doesn't compile in open source yet, so we mirror the protocol and duplicate the category
-// here for now.
-
-@protocol SyncViewUpdater <NSObject>
-
-- (BOOL)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag props:(NSDictionary *)props;
-
-@end
-
-@implementation RCTBridge (SurfacePresenterShadow)
-
-- (id<SyncViewUpdater>)surfacePresenter
-{
-  return objc_getAssociatedObject(self, @selector(surfacePresenter));
-}
-
-@end
 
 
 @implementation RCTPropsAnimatedNode

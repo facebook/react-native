@@ -28,6 +28,7 @@ RCT_EXPORT_MODULE();
   [_nodesManager stopAnimationLoop];
   [self.bridge.eventDispatcher removeDispatchObserver:self];
   [self.bridge.uiManager.observerCoordinator removeObserver:self];
+  [self.bridge.surfacePresenter removeObserver:self];
 }
 
 - (dispatch_queue_t)methodQueue
@@ -48,7 +49,8 @@ RCT_EXPORT_MODULE();
   _animIdIsManagedByFabric = [NSMutableDictionary new];
 
   [bridge.eventDispatcher addDispatchObserver:self];
-  [bridge.uiManager.observerCoordinator addObserver:self]; // TODO: add fabric equivalent?
+  [bridge.uiManager.observerCoordinator addObserver:self];
+  [bridge.surfacePresenter addObserver:self];
 }
 
 #pragma mark -- API
@@ -225,9 +227,29 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
   });
 }
 
+#pragma mark - RCTSurfacePresenterObserver
+
+- (void)willMountComponentsWithRootTag:(NSInteger)rootTag
+{
+  RCTAssertMainQueue();
+  for (AnimatedOperation operation in _preOperations) {
+    operation(self->_nodesManager);
+  }
+  _preOperations = [NSMutableArray new];
+}
+
+- (void)didMountComponentsWithRootTag:(NSInteger)rootTag
+{
+  RCTAssertMainQueue();
+  for (AnimatedOperation operation in _operations) {
+    operation(self->_nodesManager);
+  }
+  _operations = [NSMutableArray new];
+}
+
 #pragma mark - RCTUIManagerObserver
 
-- (void)uiManagerWillPerformMounting:(RCTUIManager *)uiManager // TODO: need fabric equivalent
+- (void)uiManagerWillPerformMounting:(RCTUIManager *)uiManager
 {
   if (_preOperations.count == 0 && _operations.count == 0) {
     return;

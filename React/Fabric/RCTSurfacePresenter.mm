@@ -53,6 +53,8 @@ using namespace facebook::react;
   RCTBridge *_bridge; // Unsafe. We are moving away from Bridge.
   RCTBridge *_batchedBridge;
   std::shared_ptr<const ReactNativeConfig> _reactNativeConfig;
+  std::mutex _observerListMutex;
+  NSMutableArray<id<RCTSurfacePresenterObserver>> *_observers;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge config:(std::shared_ptr<const ReactNativeConfig>)config
@@ -309,13 +311,29 @@ using namespace facebook::react;
   [_mountingManager optimisticallyCreateComponentViewWithComponentHandle:componentHandle];
 }
 
+- (void)addObserver:(id<RCTSurfacePresenterObserver>)observer
+{
+  std::lock_guard<std::mutex> lock(_observerListMutex);
+  [self->_observers addObject:observer];
+}
+
+- (void)removeObserver:(id<RCTSurfacePresenterObserver>)observer
+{
+  std::lock_guard<std::mutex> lock(_observerListMutex);
+  [self->_observers removeObject:observer];
+}
+
 #pragma mark - RCTMountingManagerDelegate
 
 - (void)mountingManager:(RCTMountingManager *)mountingManager willMountComponentsWithRootTag:(ReactTag)rootTag
 {
   RCTAssertMainQueue();
 
-  // Does nothing.
+  for (id<RCTSurfacePresenterObserver> observer in _observers) {
+    if ([observer respondsToSelector:@selector(willMountComponentsWithRootTag:)]) {
+      [observer willMountComponentsWithRootTag:rootTag];
+    }
+  }
 }
 
 - (void)mountingManager:(RCTMountingManager *)mountingManager didMountComponentsWithRootTag:(ReactTag)rootTag
@@ -329,6 +347,11 @@ using namespace facebook::react;
     if ([surface _setStage:RCTSurfaceStageMounted]) {
       UIView *rootComponentView = [_mountingManager.componentViewRegistry componentViewByTag:rootTag];
       surface.view.rootView = (RCTSurfaceRootView *)rootComponentView;
+    }
+  }
+  for (id<RCTSurfacePresenterObserver> observer in _observers) {
+    if ([observer respondsToSelector:@selector(didMountComponentsWithRootTag:)]) {
+      [observer didMountComponentsWithRootTag:rootTag];
     }
   }
 }
