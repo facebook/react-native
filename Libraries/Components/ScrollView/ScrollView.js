@@ -58,6 +58,11 @@ if (Platform.OS === 'android') {
   RCTScrollContentView = requireNativeComponent('RCTScrollContentView');
 }
 
+export type ScrollResponderType = {
+  ...ScrollView,
+  ...typeof ScrollResponder.Mixin,
+};
+
 type TouchableProps = $ReadOnly<{|
   onTouchStart?: (event: PressEvent) => void,
   onTouchMove?: (event: PressEvent) => void,
@@ -409,7 +414,7 @@ export type Props = $ReadOnly<{|
    *   - `false`, deprecated, use 'never' instead
    *   - `true`, deprecated, use 'always' instead
    */
-  keyboardShouldPersistTaps?: ?('always' | 'never' | 'handled' | false | true),
+  keyboardShouldPersistTaps?: ?('always' | 'never' | 'handled' | true | false),
   /**
    * Called when the momentum scroll starts (scroll which occurs as the ScrollView glides to a stop).
    */
@@ -694,15 +699,9 @@ class ScrollView extends React.Component<Props, State> {
    * implement this method so that they can be composed while providing access
    * to the underlying scroll responder's methods.
    */
-  getScrollResponder(): {
-    ...typeof ScrollView,
-    ...typeof ScrollResponder.Mixin,
-  } {
+  getScrollResponder(): ScrollResponderType {
     // $FlowFixMe - overriding type to include ScrollResponder.Mixin
-    return ((this: any): {
-      ...typeof ScrollView,
-      ...typeof ScrollResponder.Mixin,
-    });
+    return ((this: any): ScrollResponderType);
   }
 
   getScrollableNode(): ?number {
@@ -758,7 +757,7 @@ class ScrollView extends React.Component<Props, State> {
    * `scrollToEnd({animated: false})` for immediate scrolling.
    * If no options are passed, `animated` defaults to true.
    */
-  scrollToEnd(options?: {animated?: boolean}) {
+  scrollToEnd(options?: ?{animated?: boolean}) {
     // Default to true
     const animated = (options && options.animated) !== false;
     this._scrollResponder.scrollResponderScrollToEnd({
