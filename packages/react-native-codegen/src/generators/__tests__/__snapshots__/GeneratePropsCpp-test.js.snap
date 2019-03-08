@@ -169,7 +169,8 @@ FloatPropNativeComponentProps::FloatPropNativeComponentProps(
 blurRadius2(convertRawProp(rawProps, \\"blurRadius2\\", sourceProps.blurRadius2, blurRadius2)),
 blurRadius3(convertRawProp(rawProps, \\"blurRadius3\\", sourceProps.blurRadius3, blurRadius3)),
 blurRadius4(convertRawProp(rawProps, \\"blurRadius4\\", sourceProps.blurRadius4, blurRadius4)),
-blurRadius5(convertRawProp(rawProps, \\"blurRadius5\\", sourceProps.blurRadius5, blurRadius5))
+blurRadius5(convertRawProp(rawProps, \\"blurRadius5\\", sourceProps.blurRadius5, blurRadius5)),
+blurRadius6(convertRawProp(rawProps, \\"blurRadius6\\", sourceProps.blurRadius6, blurRadius6))
       {}
 
 } // namespace react
