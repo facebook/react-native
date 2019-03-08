@@ -43,6 +43,7 @@
   NSString *_connectedViewName;
   __weak RCTBridge *_bridge;
   NSMutableDictionary<NSString *, NSObject *> *_propsDictionary; // TODO: use RawProps or folly::dynamic directly
+  BOOL _managedByFabric;
 }
 
 - (instancetype)initWithTag:(NSNumber *)tag
@@ -58,30 +59,32 @@
              viewName:(NSString *)viewName
                bridge:(RCTBridge *)bridge
 {
+  _bridge = bridge;
   _connectedViewTag = viewTag;
   _connectedViewName = viewName;
-  _bridge = bridge;
+  _managedByFabric = RCTUIManagerTypeForTagIsFabric(viewTag);
   _rootTag = nil;
 }
 
 - (void)disconnectFromView:(NSNumber *)viewTag
 {
+  _bridge = nil;
   _connectedViewTag = nil;
   _connectedViewName = nil;
-  _bridge = nil;
+  _managedByFabric = NO;
   _rootTag = nil;
 }
 
 - (void)updateView
 {
-  BOOL fabricUpdateSuccess = [_bridge.surfacePresenter synchronouslyUpdateViewOnUIThread:_connectedViewTag
-                                                                                   props:_propsDictionary];
-  if (fabricUpdateSuccess) {
-    return;
+  if (_managedByFabric) {
+    [_bridge.surfacePresenter synchronouslyUpdateViewOnUIThread:_connectedViewTag
+                                                          props:_propsDictionary];
+  } else {
+    [_bridge.uiManager synchronouslyUpdateViewOnUIThread:_connectedViewTag
+                                                viewName:_connectedViewName
+                                                   props:_propsDictionary];
   }
-  [_bridge.uiManager synchronouslyUpdateViewOnUIThread:_connectedViewTag
-                                              viewName:_connectedViewName
-                                                 props:_propsDictionary];
 }
 
 - (void)restoreDefaultValues

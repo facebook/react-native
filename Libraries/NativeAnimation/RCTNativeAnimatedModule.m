@@ -18,6 +18,7 @@ typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
   NSMutableArray<AnimatedOperation> *_operations;
   // Operations called before views have been updated.
   NSMutableArray<AnimatedOperation> *_preOperations;
+  NSMutableDictionary<NSNumber *, NSNumber *> *_animIdIsManagedByFabric;
 }
 
 RCT_EXPORT_MODULE();
@@ -44,6 +45,7 @@ RCT_EXPORT_MODULE();
   _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:self.bridge];
   _operations = [NSMutableArray new];
   _preOperations = [NSMutableArray new];
+  _animIdIsManagedByFabric = [NSMutableDictionary new];
 
   [bridge.eventDispatcher addDispatchObserver:self];
   [bridge.uiManager.observerCoordinator addObserver:self]; // TODO: add fabric equivalent?
@@ -83,6 +85,10 @@ RCT_EXPORT_METHOD(startAnimatingNode:(nonnull NSNumber *)animationId
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
     [nodesManager startAnimatingNode:animationId nodeTag:nodeTag config:config endCallback:callBack];
   }];
+  if (RCTUIManagerTypeForTagIsFabric(nodeTag)) {
+    _animIdIsManagedByFabric[animationId] = @YES;
+    [self flushOperationQueues];
+  }
 }
 
 RCT_EXPORT_METHOD(stopAnimation:(nonnull NSNumber *)animationId)
@@ -90,6 +96,9 @@ RCT_EXPORT_METHOD(stopAnimation:(nonnull NSNumber *)animationId)
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
     [nodesManager stopAnimation:animationId];
   }];
+  if ([_animIdIsManagedByFabric[animationId] boolValue]) {
+    [self flushOperationQueues];
+  }
 }
 
 RCT_EXPORT_METHOD(setAnimatedNodeValue:(nonnull NSNumber *)nodeTag
@@ -192,6 +201,28 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
 - (void)addPreOperationBlock:(AnimatedOperation)operation
 {
   [_preOperations addObject:operation];
+}
+
+- (void)flushOperationQueues
+{
+  if (_preOperations.count == 0 && _operations.count == 0) {
+    return;
+  }
+  NSArray<AnimatedOperation> *preOperations = _preOperations;
+  NSArray<AnimatedOperation> *operations = _operations;
+  _preOperations = [NSMutableArray new];
+  _operations = [NSMutableArray new];
+
+
+  RCTExecuteOnMainQueue(^{
+    for (AnimatedOperation operation in preOperations) {
+      operation(self->_nodesManager);
+    }
+    for (AnimatedOperation operation in operations) {
+      operation(self->_nodesManager);
+    }
+    [self->_nodesManager updateAnimations];
+  });
 }
 
 #pragma mark - RCTUIManagerObserver
