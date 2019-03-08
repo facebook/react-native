@@ -35,13 +35,8 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
 
   void schedulerDidRequestPreliminaryViewAllocation(SurfaceId surfaceId, const ShadowView &shadowView) override
   {
-    bool isLayoutableShadowNode = shadowView.layoutMetrics != EmptyLayoutMetrics;
-    if (!isLayoutableShadowNode) {
-      return;
-    }
-
-    RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
-    [scheduler.delegate schedulerOptimisticallyCreateComponentViewWithComponentHandle:shadowView.componentHandle];
+    // Does nothing.
+    // Preemptive allocation of native views on iOS does not require this call.
   }
 
  private:
