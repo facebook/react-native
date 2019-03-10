@@ -80,8 +80,9 @@ const AccessibilityInfo = {
    * Add an event handler. Supported events:
    *
    * - `reduceMotionChanged`: Fires when the state of the reduce motion toggle changes.
-   *   The argument to the event handler is a boolean. The boolean is `true` when a screen
-   *   reader is enabled and `false` otherwise.
+   *   The argument to the event handler is a boolean. The boolean is `true` when a reduce
+   *   motion is enabled (or when "Transition Animation Scale" in "Developer options" is
+   *   "Animation off") and `false` otherwise.
    * - `screenReaderChanged`: Fires when the state of the screen reader changes. The argument
    *   to the event handler is a boolean. The boolean is `true` when a screen
    *   reader is enabled and `false` otherwise.
