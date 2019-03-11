@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,6 +21,10 @@ export type Stack = Array<StackFrame>;
 const cache: Map<CacheKey, Promise<Stack>> = new Map();
 
 const YellowBoxSymbolication = {
+  delete(stack: Stack): void {
+    cache.delete(getCacheKey(stack));
+  },
+
   symbolicate(stack: Stack): Promise<Stack> {
     const key = getCacheKey(stack);
 

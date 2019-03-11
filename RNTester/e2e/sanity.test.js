@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,7 +10,7 @@
 describe('Sanity', () => {
   beforeEach(async () => {
     await device.reloadReactNative();
-    await element(by.label(`<Button> Simple React Native button component.`)).tap();
+    await element(by.label('<Button> Simple React Native button component.')).tap();
   });
 
   afterEach(async () => {
@@ -30,7 +30,7 @@ describe('Sanity', () => {
     await element(by.text('OK')).tap();
   });
 
-  it(`Two buttons with JustifyContent:'space-between' should be tappable`, async () => {
+  it("Two buttons with JustifyContent:'space-between' should be tappable", async () => {
     await element(by.label('This looks great!')).tap();
     await expect(element(by.text('Left has been pressed!'))).toBeVisible();
     await element(by.text('OK')).tap();

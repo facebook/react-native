@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,7 +10,6 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTPrimitives.h>
-#import <fabric/uimanager/FabricUIManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -37,6 +36,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)registerSurface:(RCTFabricSurface *)surface;
 - (void)unregisterSurface:(RCTFabricSurface *)surface;
+- (void)setProps:(NSDictionary *)props
+         surface:(RCTFabricSurface *)surface;
+
 - (nullable RCTFabricSurface *)surfaceForRootTag:(ReactTag)rootTag;
 
 /**
@@ -58,21 +60,15 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RCTSurfacePresenter (Deprecated)
 
 /**
- * We need to expose `uiManager` for registration
- * purposes. Eventually, we will move this down to C++ side.
- */
-- (std::shared_ptr<facebook::react::FabricUIManager>)uiManager_DO_NOT_USE;
-
-/**
  * Returns a underlying bridge.
  */
 - (RCTBridge *)bridge_DO_NOT_USE;
 
 @end
 
-@interface RCTBridge (RCTSurfacePresenter)
+@interface RCTBridge (Deprecated)
 
-- (RCTSurfacePresenter *)surfacePresenter;
+@property (nonatomic) RCTSurfacePresenter *surfacePresenter;
 
 @end
 

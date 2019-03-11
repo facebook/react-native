@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#E80000"
+    android:background="#1A1A1A"
     >
     <ListView
         android:id="@+id/rn_redbox_stack"
@@ -53,6 +53,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:background="@drawable/redbox_top_border_background"
         >
         <Button
             android:id="@+id/rn_redbox_dismiss_button"

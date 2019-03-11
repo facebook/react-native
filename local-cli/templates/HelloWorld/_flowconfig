@@ -67,4 +67,8 @@ suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
 suppress_comment=\\(.\\|\n\\)*\\$FlowExpectedError
 
 [version]
+<<<<<<< HEAD
 ^0.78.0
+=======
+^0.86.0
+>>>>>>> v0.58.6

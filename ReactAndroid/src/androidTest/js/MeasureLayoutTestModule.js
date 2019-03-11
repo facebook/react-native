@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,16 +9,16 @@
 
 'use strict';
 
-var BatchedBridge = require('BatchedBridge');
-var React = require('React');
-var ReactNative = require('ReactNative');
-var View = require('View');
-var StyleSheet = require('StyleSheet');
-var UIManager = require('UIManager');
+const BatchedBridge = require('BatchedBridge');
+const React = require('React');
+const ReactNative = require('ReactNative');
+const View = require('View');
+const StyleSheet = require('StyleSheet');
+const UIManager = require('UIManager');
 
-var assertEquals = require('Asserts').assertEquals;
+const assertEquals = require('Asserts').assertEquals;
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   A: {
     width: 500,
     height: 500,
@@ -46,7 +46,7 @@ var styles = StyleSheet.create({
   },
 });
 
-var A, B, C, D;
+let A, B, C, D;
 
 class MeasureLayoutTestApp extends React.Component {
   componentDidMount() {
@@ -72,7 +72,7 @@ function shouldNotCallThisCallback() {
   assertEquals(false, true);
 }
 
-var MeasureLayoutTestModule = {
+const MeasureLayoutTestModule = {
   MeasureLayoutTestApp: MeasureLayoutTestApp,
   verifyMeasureOnViewA: function() {
     UIManager.measure(A, function(a, b, width, height, x, y) {

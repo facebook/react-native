@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -34,10 +34,11 @@ import javax.annotation.Nullable;
 /**
  * {@link NativeModule} that allows changing the appearance of the status bar.
  */
-@ReactModule(name = "StatusBarManager")
+@ReactModule(name = StatusBarModule.NAME)
 public class StatusBarModule extends ReactContextBaseJavaModule {
 
   private static final String HEIGHT_KEY = "HEIGHT";
+  public static final String NAME = "StatusBarManager";
 
   public StatusBarModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -45,7 +46,7 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "StatusBarManager";
+    return NAME;
   }
 
   @Override
@@ -165,7 +166,7 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setStyle(final String style) {
+  public void setStyle(@Nullable final String style) {
     final Activity activity = getCurrentActivity();
     if (activity == null) {
       FLog.w(ReactConstants.TAG, "StatusBarModule: Ignored status bar change, current activity is null.");
@@ -180,7 +181,7 @@ public class StatusBarModule extends ReactContextBaseJavaModule {
           public void run() {
             View decorView = activity.getWindow().getDecorView();
             decorView.setSystemUiVisibility(
-              style.equals("dark-content") ? View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR : 0);
+              "dark-content".equals(style) ? View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR : 0);
           }
         }
       );

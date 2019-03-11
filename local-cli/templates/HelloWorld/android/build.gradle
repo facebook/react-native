@@ -2,18 +2,33 @@
 
 buildscript {
     ext {
+<<<<<<< HEAD
         buildToolsVersion = "27.0.3"
         minSdkVersion = 16
         compileSdkVersion = 27
         targetSdkVersion = 26
         supportLibVersion = "27.1.1"
+=======
+        buildToolsVersion = "28.0.2"
+        minSdkVersion = 16
+        compileSdkVersion = 28
+        targetSdkVersion = 27
+        supportLibVersion = "28.0.0"
+>>>>>>> v0.58.6
     }
     repositories {
+        google()
         jcenter()
+<<<<<<< HEAD
         google()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.1.4'
+=======
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.2.1'
+>>>>>>> v0.58.6
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -23,17 +38,25 @@ buildscript {
 allprojects {
     repositories {
         mavenLocal()
+        google()
         jcenter()
         maven {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
             url "$rootDir/../node_modules/react-native/android"
         }
+<<<<<<< HEAD
         google()
+=======
+>>>>>>> v0.58.6
     }
 }
 
 
 task wrapper(type: Wrapper) {
+<<<<<<< HEAD
     gradleVersion = '4.4'
+=======
+    gradleVersion = '4.7'
+>>>>>>> v0.58.6
     distributionUrl = distributionUrl.replace("bin", "all")
 }

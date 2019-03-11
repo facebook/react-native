@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -24,10 +24,11 @@ import android.widget.ScrollView;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.uimanager.events.NativeGestureUtil;
 import com.facebook.react.uimanager.MeasureSpecAssertions;
 import com.facebook.react.uimanager.ReactClippingViewGroup;
 import com.facebook.react.uimanager.ReactClippingViewGroupHelper;
-import com.facebook.react.uimanager.events.NativeGestureUtil;
+import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 
 import java.lang.reflect.Field;
@@ -54,6 +55,10 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
   private boolean mActivelyScrolling;
   private @Nullable Rect mClippingRect;
+<<<<<<< HEAD
+=======
+  private @Nullable String mOverflow = ViewProps.HIDDEN;
+>>>>>>> v0.58.6
   private boolean mDragging;
   private boolean mPagingEnabled = false;
   private @Nullable Runnable mPostTouchRunnable;
@@ -67,6 +72,11 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   private int mSnapInterval = 0;
   private float mDecelerationRate = 0.985f;
   private @Nullable List<Integer> mSnapOffsets;
+<<<<<<< HEAD
+=======
+  private boolean mSnapToStart = true;
+  private boolean mSnapToEnd = true;
+>>>>>>> v0.58.6
   private View mContentView;
   private ReactViewBackgroundManager mReactBackgroundManager;
 
@@ -155,8 +165,24 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
     mSnapOffsets = snapOffsets;
   }
 
+<<<<<<< HEAD
+=======
+  public void setSnapToStart(boolean snapToStart) {
+    mSnapToStart = snapToStart;
+  }
+
+  public void setSnapToEnd(boolean snapToEnd) {
+    mSnapToEnd = snapToEnd;
+  }
+
+>>>>>>> v0.58.6
   public void flashScrollIndicators() {
     awakenScrollBars();
+  }
+
+  public void setOverflow(String overflow) {
+    mOverflow = overflow;
+    invalidate();
   }
 
   @Override
@@ -321,8 +347,23 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
   @Override
   public void fling(int velocityY) {
+<<<<<<< HEAD
     if (mPagingEnabled) {
       flingAndSnap(velocityY);
+=======
+    // Workaround.
+    // On Android P if a ScrollView is inverted, we will get a wrong sign for
+    // velocityY (see https://issuetracker.google.com/issues/112385925). 
+    // At the same time, mOnScrollDispatchHelper tracks the correct velocity direction. 
+    //
+    // Hence, we can use the absolute value from whatever the OS gives
+    // us and use the sign of what mOnScrollDispatchHelper has tracked.
+    final int correctedVelocityY = (int)(Math.abs(velocityY) * Math.signum(mOnScrollDispatchHelper.getYFlingVelocity()));
+
+
+    if (mPagingEnabled) {
+      flingAndSnap(correctedVelocityY);
+>>>>>>> v0.58.6
     } else if (mScroller != null) {
       // FB SCROLLVIEW CHANGE
 
@@ -338,7 +379,11 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
         getScrollX(), // startX
         getScrollY(), // startY
         0, // velocityX
+<<<<<<< HEAD
         velocityY, // velocityY
+=======
+        correctedVelocityY, // velocityY
+>>>>>>> v0.58.6
         0, // minX
         0, // maxX
         0, // minY
@@ -351,9 +396,15 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
       // END FB SCROLLVIEW CHANGE
     } else {
+<<<<<<< HEAD
       super.fling(velocityY);
     }
     handlePostTouchScrolling(0, velocityY);
+=======
+      super.fling(correctedVelocityY);
+    }
+    handlePostTouchScrolling(0, correctedVelocityY);
+>>>>>>> v0.58.6
   }
 
   private void enableFpsListener() {
@@ -392,7 +443,15 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
       }
     }
     getDrawingRect(mRect);
-    canvas.clipRect(mRect);
+
+    switch (mOverflow) {
+      case ViewProps.VISIBLE:
+        break;
+      default:
+        canvas.clipRect(mRect);
+        break;
+    }
+
     super.draw(canvas);
   }
 
@@ -551,6 +610,12 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
 
     // get the nearest snap points to the target offset
     if (mSnapOffsets != null) {
+<<<<<<< HEAD
+=======
+      firstOffset = mSnapOffsets.get(0);
+      lastOffset = mSnapOffsets.get(mSnapOffsets.size() - 1);
+
+>>>>>>> v0.58.6
       for (int i = 0; i < mSnapOffsets.size(); i ++) {
         int offset = mSnapOffsets.get(i);
 
@@ -570,7 +635,11 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
       double interval = (double) getSnapInterval();
       double ratio = (double) targetOffset / interval;
       smallerOffset = (int) (Math.floor(ratio) * interval);
+<<<<<<< HEAD
       largerOffset = (int) (Math.ceil(ratio) * interval);
+=======
+      largerOffset = Math.min((int) (Math.ceil(ratio) * interval), maximumOffset);
+>>>>>>> v0.58.6
     }
 
     // Calculate the nearest offset
@@ -578,10 +647,38 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
       ? smallerOffset
       : largerOffset;
 
+<<<<<<< HEAD
     // Chose the correct snap offset based on velocity
     if (velocityY > 0) {
       targetOffset = largerOffset;
     } else if (velocityY < 0) {
+=======
+    // if scrolling after the last snap offset and snapping to the
+    // end of the list is disabled, then we allow free scrolling
+    if (!mSnapToEnd && targetOffset >= lastOffset) {
+      if (getScrollY() >= lastOffset) {
+        // free scrolling
+      } else {
+        // snap to end
+        targetOffset = lastOffset;
+      }
+    } else if (!mSnapToStart && targetOffset <= firstOffset) {
+      if (getScrollY() <= firstOffset) {
+        // free scrolling
+      } else {
+        // snap to beginning
+        targetOffset = firstOffset;
+      }
+    } else if (velocityY > 0) {
+      // when snapping velocity can feel sluggish for slow swipes
+      velocityY += (int) ((largerOffset - targetOffset) * 10.0);
+
+      targetOffset = largerOffset;
+    } else if (velocityY < 0) {
+      // when snapping velocity can feel sluggish for slow swipes
+      velocityY -= (int) ((targetOffset - smallerOffset) * 10.0);
+
+>>>>>>> v0.58.6
       targetOffset = smallerOffset;
     } else {
       targetOffset = nearestOffset;
