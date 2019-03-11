@@ -38,17 +38,13 @@ const _subscriptions = new Map();
  */
 
 const AccessibilityInfo = {
-  /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-   * when making Flow check .android.js files. */
-  isReduceMotionEnabled: function(): Promise {
+  isReduceMotionEnabled: function(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       RCTAccessibilityInfo.isReduceMotionEnabled(resolve);
     });
   },
 
-  /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-   * when making Flow check .android.js files. */
-  isScreenReaderEnabled: function(): Promise {
+  isScreenReaderEnabled: function(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       RCTAccessibilityInfo.isTouchExplorationEnabled(resolve);
     });
