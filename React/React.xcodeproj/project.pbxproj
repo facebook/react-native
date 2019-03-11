@@ -990,7 +990,6 @@
 		59EDBCC61FDF4E55003573DE /* (null) in Copy Headers */ = {isa = PBXBuildFile; };
 		59EDBCC71FDF4E55003573DE /* RCTScrollView.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 59EDBCA31FDF4E0C003573DE /* RCTScrollView.h */; };
 		59EDBCC81FDF4E55003573DE /* RCTScrollViewManager.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 59EDBCA51FDF4E0C003573DE /* RCTScrollViewManager.h */; };
-		5CE2080220772F7D009A43B3 /* YGConfig.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5CE2080020772F7C009A43B3 /* YGConfig.cpp */; };
 		5CE2080320772F7D009A43B3 /* YGConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 5CE2080120772F7C009A43B3 /* YGConfig.h */; };
 		657734841EE834C900A0E9EA /* RCTInspectorDevServerHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 657734821EE834C900A0E9EA /* RCTInspectorDevServerHelper.h */; };
 		657734851EE834C900A0E9EA /* RCTInspectorDevServerHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 657734831EE834C900A0E9EA /* RCTInspectorDevServerHelper.mm */; };
@@ -1052,13 +1051,11 @@
 		A2440AA21DF8D854006E7BFC /* RCTReloadCommand.h in Headers */ = {isa = PBXBuildFile; fileRef = A2440AA01DF8D854006E7BFC /* RCTReloadCommand.h */; };
 		A2440AA31DF8D854006E7BFC /* RCTReloadCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = A2440AA11DF8D854006E7BFC /* RCTReloadCommand.m */; };
 		A2440AA41DF8D865006E7BFC /* RCTReloadCommand.h in Headers */ = {isa = PBXBuildFile; fileRef = A2440AA01DF8D854006E7BFC /* RCTReloadCommand.h */; };
-		AC4A6AF921FB4EA900FBEC39 /* YGMarker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC4A6AF821FB4EA900FBEC39 /* YGMarker.cpp */; };
 		AC4A6AFA21FB4EBF00FBEC39 /* YGMarker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC4A6AF821FB4EA900FBEC39 /* YGMarker.cpp */; };
 		AC4A6AFB21FB4ECA00FBEC39 /* YGMarker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC4A6AF821FB4EA900FBEC39 /* YGMarker.cpp */; };
 		AC52CEDE21FB3FF9003C6BEC /* instrumentation.h in Headers */ = {isa = PBXBuildFile; fileRef = AC52CEDD21FB3FF9003C6BEC /* instrumentation.h */; };
 		AC52CEDF21FB401D003C6BEC /* instrumentation.h in Headers */ = {isa = PBXBuildFile; fileRef = AC52CEDD21FB3FF9003C6BEC /* instrumentation.h */; };
 		AC52CEE021FB403B003C6BEC /* instrumentation.h in Headers */ = {isa = PBXBuildFile; fileRef = AC52CEDD21FB3FF9003C6BEC /* instrumentation.h */; };
-		AC6B69E321B1467C00B2B68A /* YGValue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC6B69E121B1467C00B2B68A /* YGValue.cpp */; };
 		AC6B69E421B1467C00B2B68A /* YGValue.h in Headers */ = {isa = PBXBuildFile; fileRef = AC6B69E221B1467C00B2B68A /* YGValue.h */; };
 		AC6B69E521B1469A00B2B68A /* YGValue.h in Headers */ = {isa = PBXBuildFile; fileRef = AC6B69E221B1467C00B2B68A /* YGValue.h */; };
 		AC6B69E621B146A500B2B68A /* YGValue.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = AC6B69E221B1467C00B2B68A /* YGValue.h */; };
@@ -1079,7 +1076,6 @@
 		AC90463F21C91D02005B24B3 /* CompactValue.h in Headers */ = {isa = PBXBuildFile; fileRef = AC90463D21C91CC2005B24B3 /* CompactValue.h */; };
 		AC90464021C91D14005B24B3 /* CompactValue.h in Headers */ = {isa = PBXBuildFile; fileRef = AC90463D21C91CC2005B24B3 /* CompactValue.h */; };
 		AC90464121C91DB8005B24B3 /* YGConfig.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 5CE2080120772F7C009A43B3 /* YGConfig.h */; };
-		ACC75C54221AA188002F24E8 /* log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACC75C53221AA188002F24E8 /* log.cpp */; };
 		ACC75C56221AA194002F24E8 /* log.h in Headers */ = {isa = PBXBuildFile; fileRef = ACC75C55221AA194002F24E8 /* log.h */; };
 		ACC75C57221AA1BD002F24E8 /* log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACC75C53221AA188002F24E8 /* log.cpp */; };
 		ACC75C58221AA1CF002F24E8 /* log.h in Headers */ = {isa = PBXBuildFile; fileRef = ACC75C55221AA194002F24E8 /* log.h */; };
@@ -4456,7 +4452,6 @@
 				352DCFF01D19F4C20056D623 /* RCTI18nUtil.m in Sources */,
 				66CD94B71F1045E700CB3C7C /* RCTMaskedViewManager.m in Sources */,
 				008341F61D1DB34400876D9A /* RCTJSStackFrame.m in Sources */,
-				AC4A6AF921FB4EA900FBEC39 /* YGMarker.cpp in Sources */,
 				13134C961E296B2A00B9F3CB /* RCTObjcExecutor.mm in Sources */,
 				59D031FB1F8353D3008361F0 /* RCTSafeAreaViewManager.m in Sources */,
 				83CBBACC1A6023D300E9B192 /* RCTConvert.m in Sources */,
@@ -4488,7 +4483,6 @@
 				13134C8E1E296B2A00B9F3CB /* RCTMessageThread.mm in Sources */,
 				599FAA381FB274980058CCF6 /* RCTSurface.mm in Sources */,
 				59D031EF1F8353D3008361F0 /* RCTSafeAreaShadowView.m in Sources */,
-				AC6B69E321B1467C00B2B68A /* YGValue.cpp in Sources */,
 				3D1E68DB1CABD13900DD7465 /* RCTDisplayLink.m in Sources */,
 				14F3620E1AABD06A001CE568 /* RCTSwitchManager.m in Sources */,
 				13B080201A69489C00A75B9A /* RCTActivityIndicatorViewManager.m in Sources */,
@@ -4513,7 +4507,6 @@
 				59EDBCBB1FDF4E0C003573DE /* RCTScrollViewManager.m in Sources */,
 				599FAA441FB274980058CCF6 /* RCTSurfaceRootView.mm in Sources */,
 				C60669361F3CCF1B00E67165 /* RCTManagedPointer.mm in Sources */,
-				ACC75C54221AA188002F24E8 /* log.cpp in Sources */,
 				13B080261A694A8400A75B9A /* RCTWrapperViewController.m in Sources */,
 				A2440AA31DF8D854006E7BFC /* RCTReloadCommand.m in Sources */,
 				6577348F1EE8354A00A0E9EA /* RCTInspector.mm in Sources */,
@@ -4546,7 +4539,6 @@
 				13A1F71E1A75392D00D3D453 /* RCTKeyCommands.m in Sources */,
 				83CBBA531A601E3B00E9B192 /* RCTUtils.m in Sources */,
 				130443C61E401A8C00D93A67 /* RCTConvert+Transform.m in Sources */,
-				5CE2080220772F7D009A43B3 /* YGConfig.cpp in Sources */,
 				191E3EC11C29DC3800C180A6 /* RCTRefreshControl.m in Sources */,
 				3DCE532B1FEAB23100613583 /* RCTDatePickerManager.m in Sources */,
 				13C156051AB1A2840079392D /* RCTWebView.m in Sources */,
