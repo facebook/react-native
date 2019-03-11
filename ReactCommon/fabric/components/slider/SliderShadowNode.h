@@ -7,8 +7,8 @@
 
 #pragma once
 
-#import <react/components/rncore/EventEmitters.h>
-#import <react/components/rncore/Props.h>
+#include <react/components/rncore/EventEmitters.h>
+#include <react/components/rncore/Props.h>
 #include <react/components/slider/SliderMeasurementsManager.h>
 #include <react/components/view/ConcreteViewShadowNode.h>
 #include <react/imagemanager/ImageManager.h>
