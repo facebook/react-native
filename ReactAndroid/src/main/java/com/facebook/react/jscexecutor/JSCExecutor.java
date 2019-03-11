@@ -30,4 +30,7 @@ import com.facebook.soloader.SoLoader;
 
   private static native HybridData initHybrid(ReadableNativeMap jscConfig);
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> v0.58.6

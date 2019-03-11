@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,14 +9,9 @@
 
 #import <objc/runtime.h>
 
-#import <JavaScriptCore/JavaScriptCore.h>
-
-#import <jschelpers/JavaScriptCore.h>
-
 #import "RCTBridge+Private.h"
 #import "RCTBridgeModule.h"
 #import "RCTEventDispatcher.h"
-#import "RCTJSCSamplingProfiler.h"
 #import "RCTLog.h"
 #import "RCTProfile.h"
 #import "RCTUtils.h"
@@ -30,7 +25,6 @@ static NSString *const kRCTDevSettingIsDebuggingRemotely = @"isDebuggingRemotely
 static NSString *const kRCTDevSettingExecutorOverrideClass = @"executor-override";
 static NSString *const kRCTDevSettingShakeToShowDevMenu = @"shakeToShow";
 static NSString *const kRCTDevSettingIsPerfMonitorShown = @"RCTPerfMonitorKey";
-static NSString *const kRCTDevSettingStartSamplingProfilerOnLaunch = @"startSamplingProfilerOnLaunch";
 
 static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 
@@ -41,7 +35,6 @@ static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
 
 #if RCT_ENABLE_INSPECTOR
 #import "RCTInspectorDevServerHelper.h"
-#import <jschelpers/JSCWrapper.h>
 #endif
 
 #if RCT_DEV
@@ -113,7 +106,6 @@ static NSString *const kRCTDevSettingsUserDefaultsKey = @"RCTDevMenu";
   BOOL _isJSLoaded;
 #if ENABLE_PACKAGER_CONNECTION
   RCTHandlerToken _reloadToken;
-  RCTHandlerToken _pokeSamplingProfilerToken;
 #endif
 }
 
@@ -181,14 +173,6 @@ RCT_EXPORT_MODULE()
    }
    queue:dispatch_get_main_queue()
    forMethod:@"reload"];
-
-  _pokeSamplingProfilerToken =
-  [[RCTPackagerConnection sharedPackagerConnection]
-   addRequestHandler:^(NSDictionary<NSString *, id> *params, RCTPackagerClientResponder *responder) {
-     pokeSamplingProfiler(weakBridge, responder);
-   }
-   queue:dispatch_get_main_queue()
-   forMethod:@"pokeSamplingProfiler"];
 #endif
 
 #if DEBUG && RCT_ENABLE_INSPECTOR // TODO(OSS Candidate ISS#2710739)
@@ -205,32 +189,6 @@ RCT_EXPORT_MODULE()
 #endif
 }
 
-#if ENABLE_PACKAGER_CONNECTION
-static void pokeSamplingProfiler(RCTBridge *const bridge, RCTPackagerClientResponder *const responder)
-{
-  if (!bridge) {
-    [responder respondWithError:@"The bridge is nil. Try again."];
-    return;
-  }
-
-  JSGlobalContextRef globalContext = bridge.jsContextRef;
-  if (!JSC_JSSamplingProfilerEnabled(globalContext)) {
-    [responder respondWithError:@"The JSSamplingProfiler is disabled. See 'iOS specific setup' section here https://fburl.com/u4lw7xeq for some help"];
-    return;
-  }
-
-  // JSPokeSamplingProfiler() toggles the profiling process
-  JSValueRef jsResult = JSC_JSPokeSamplingProfiler(globalContext);
-  if (JSC_JSValueGetType(globalContext, jsResult) == kJSTypeNull) {
-    [responder respondWithResult:@"started"];
-  } else {
-    JSContext *context = [JSC_JSContext(globalContext) contextWithJSGlobalContextRef:globalContext];
-    NSString *results = [[JSC_JSValue(globalContext) valueWithJSValueRef:jsResult inContext:context] toObject];
-    [responder respondWithResult:results];
-  }
-}
-#endif
-
 - (dispatch_queue_t)methodQueue
 {
   return dispatch_get_main_queue();
@@ -241,7 +199,6 @@ static void pokeSamplingProfiler(RCTBridge *const bridge, RCTPackagerClientRespo
   [_liveReloadUpdateTask cancel];
 #if ENABLE_PACKAGER_CONNECTION
   [[RCTPackagerConnection sharedPackagerConnection] removeHandler:_reloadToken];
-  [[RCTPackagerConnection sharedPackagerConnection] removeHandler:_pokeSamplingProfilerToken];
 #endif
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -291,11 +248,6 @@ RCT_EXPORT_METHOD(setDevModeEnabled:(BOOL)enabled)
 - (BOOL)isLiveReloadAvailable
 {
   return (_liveReloadURL != nil);
-}
-
-- (BOOL)isJSCSamplingProfilerAvailable
-{
-  return JSC_JSSamplingProfilerEnabled(_bridge.jsContextRef);
 }
 
 RCT_EXPORT_METHOD(reload)
@@ -410,20 +362,6 @@ RCT_EXPORT_METHOD(toggleElementInspector)
   }
 }
 
-- (void)toggleJSCSamplingProfiler
-{
-  JSGlobalContextRef globalContext = _bridge.jsContextRef;
-  // JSPokeSamplingProfiler() toggles the profiling process
-  JSValueRef jsResult = JSC_JSPokeSamplingProfiler(globalContext);
-
-  if (JSC_JSValueGetType(globalContext, jsResult) != kJSTypeNull) {
-    JSContext *context = [JSC_JSContext(globalContext) contextWithJSGlobalContextRef:globalContext];
-    NSString *results = [[JSC_JSValue(globalContext) valueWithJSValueRef:jsResult inContext:context] toObject];
-    RCTJSCSamplingProfiler *profilerModule = [_bridge moduleForClass:[RCTJSCSamplingProfiler class]];
-    [profilerModule operationCompletedWithResults:results];
-  }
-}
-
 - (BOOL)isElementInspectorShown
 {
   return [[self settingForKey:kRCTDevSettingIsInspectorShown] boolValue];
@@ -437,16 +375,6 @@ RCT_EXPORT_METHOD(toggleElementInspector)
 - (BOOL)isPerfMonitorShown
 {
   return [[self settingForKey:kRCTDevSettingIsPerfMonitorShown] boolValue];
-}
-
-- (void)setStartSamplingProfilerOnLaunch:(BOOL)startSamplingProfilerOnLaunch
-{
-  [self _updateSettingWithValue:@(startSamplingProfilerOnLaunch) forKey:kRCTDevSettingStartSamplingProfilerOnLaunch];
-}
-
-- (BOOL)startSamplingProfilerOnLaunch
-{
-  return [[self settingForKey:kRCTDevSettingStartSamplingProfilerOnLaunch] boolValue];
 }
 
 - (void)setExecutorClass:(Class)executorClass
@@ -570,7 +498,6 @@ RCT_EXPORT_METHOD(toggleElementInspector)
 - (id)settingForKey:(NSString *)key { return nil; }
 - (void)reload {}
 - (void)toggleElementInspector {}
-- (void)toggleJSCSamplingProfiler {}
 
 @end
 

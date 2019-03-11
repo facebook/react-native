@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -39,7 +39,7 @@ public class ReactHorizontalScrollViewManager
     extends ViewGroupManager<ReactHorizontalScrollView>
     implements ReactScrollViewCommandHelper.ScrollCommandHandler<ReactHorizontalScrollView> {
 
-  protected static final String REACT_CLASS = "AndroidHorizontalScrollView";
+  public static final String REACT_CLASS = "AndroidHorizontalScrollView";
 
   private static final int[] SPACING_TYPES = {
       Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
@@ -97,6 +97,19 @@ public class ReactHorizontalScrollViewManager
     view.setSnapOffsets(offsets);
   }
 
+<<<<<<< HEAD
+=======
+  @ReactProp(name = "snapToStart")
+  public void setSnapToStart(ReactHorizontalScrollView view, boolean snapToStart) {
+    view.setSnapToStart(snapToStart);
+  }
+
+  @ReactProp(name = "snapToEnd")
+  public void setSnapToEnd(ReactHorizontalScrollView view, boolean snapToEnd) {
+    view.setSnapToEnd(snapToEnd);
+  }
+
+>>>>>>> v0.58.6
   @ReactProp(name = ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)
   public void setRemoveClippedSubviews(ReactHorizontalScrollView view, boolean removeClippedSubviews) {
     view.setRemoveClippedSubviews(removeClippedSubviews);
@@ -239,5 +252,10 @@ public class ReactHorizontalScrollViewManager
         color == null ? YogaConstants.UNDEFINED : (float) ((int)color & 0x00FFFFFF);
     float alphaComponent = color == null ? YogaConstants.UNDEFINED : (float) ((int)color >>> 24);
     view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
+  }
+
+  @ReactProp(name = "overflow")
+  public void setOverflow(ReactHorizontalScrollView view, @Nullable String overflow) {
+    view.setOverflow(overflow);
   }
 }

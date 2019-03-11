@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -59,22 +59,6 @@ public class ARTShapeShadowNode extends ARTVirtualNode {
   private int mStrokeJoin = JOIN_ROUND;
 
   public ARTShapeShadowNode() { }
-
-  public ARTShapeShadowNode(ARTShapeShadowNode node) {
-    super(node);
-    mPath = new Path(node.mPath);
-    mStrokeColor = copyArray(node.mStrokeColor);
-    mBrushData = copyArray(node.mBrushData);
-    mStrokeDash = copyArray(node.mStrokeDash);
-    mStrokeWidth = node.mStrokeWidth;
-    mStrokeCap = node.mStrokeCap;
-    mStrokeJoin = node.mStrokeJoin;
-  }
-
-  @Override
-  protected ARTShapeShadowNode copy() {
-    return new ARTShapeShadowNode(this);
-  }
 
   @ReactProp(name = "d")
   public void setShapePath(@Nullable ReadableArray shapePath) {

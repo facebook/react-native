@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -65,5 +65,20 @@ describe('findPlugins', () => {
       devDependencies: {'rnpm-plugin-test': '*'},
     }));
     expect(findPlugins([ROOT]).commands).toHaveLength(1);
+  });
+
+  it('returns plugins in scoped modules', () => {
+    jest.mock(pjsonPath, () => ({
+      dependencies: {
+        '@org/rnpm-plugin-test': '*',
+        '@org/react-native-test': '*',
+        '@react-native/test': '*',
+        '@react-native-org/test': '*',
+      },
+    }));
+
+    expect(findPlugins([ROOT])).toHaveProperty('commands');
+    expect(findPlugins([ROOT])).toHaveProperty('platforms');
+    expect(findPlugins([ROOT]).commands[0]).toBe('@org/rnpm-plugin-test');
   });
 });

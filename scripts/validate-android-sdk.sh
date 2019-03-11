@@ -1,5 +1,9 @@
 #!/bin/bash
-
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+#
 # This script validates that the Android SDK is installed correctly.
 # This means setting ANDROID_HOME and adding its subdirectories to PATH.
 # If the Android SDK is not installed correctly, this script exits
@@ -48,4 +52,4 @@ if [ -z `which adb` ]; then
   echo "See https://facebook.github.io/react-native/docs/getting-started.html for instructions."
   exit 1
 fi
-  
+

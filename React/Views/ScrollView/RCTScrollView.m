@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -356,6 +356,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       contentOffset.y = -(scrollViewSize.height - subviewSize.height) / 2.0;
     }
   }
+<<<<<<< HEAD
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
   if (!NSEqualPoints(contentOffset, self.documentVisibleRect.origin))
   {
@@ -364,6 +365,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 #else // ]TODO(macOS ISS#2323203)
   super.contentOffset = contentOffset;
 #endif // TODO(macOS ISS#2323203)
+=======
+
+  super.contentOffset = CGPointMake(
+    RCTSanitizeNaNValue(contentOffset.x, @"scrollView.contentOffset.x"),
+    RCTSanitizeNaNValue(contentOffset.y, @"scrollView.contentOffset.y"));
+>>>>>>> v0.58.6
 }
 
 - (void)setFrame:(CGRect)frame
@@ -882,6 +889,7 @@ for (NSObject<UIScrollViewDelegate> *scrollViewListener in _scrollListeners) { \
 
 RCT_SCROLL_EVENT_HANDLER(scrollViewWillBeginDecelerating, onMomentumScrollBegin)
 RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
+RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
 
 - (void)addScrollListener:(NSObject<UIScrollViewDelegate> *)scrollListener
 {
@@ -978,6 +986,11 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
 
     // Find which axis to snap
     BOOL isHorizontal = [self isHorizontal:scrollView];
+<<<<<<< HEAD
+=======
+    CGFloat velocityAlongAxis = isHorizontal ? velocity.x : velocity.y;
+    CGFloat offsetAlongAxis = isHorizontal ? _scrollView.contentOffset.x : _scrollView.contentOffset.y;
+>>>>>>> v0.58.6
 
     // Calculate maximum content offset
     CGSize viewportSize = [self _calculateViewportSize];
@@ -1011,9 +1024,32 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidZoom, onScroll)
       ? smallerOffset
       : largerOffset;
 
+<<<<<<< HEAD
     // Chose the correct snap offset based on velocity
     CGFloat velocityAlongAxis = isHorizontal ? velocity.x : velocity.y;
     if (velocityAlongAxis > 0.0) {
+=======
+    CGFloat firstOffset = [[self.snapToOffsets firstObject] floatValue];
+    CGFloat lastOffset = [[self.snapToOffsets lastObject] floatValue];
+
+    // if scrolling after the last snap offset and snapping to the
+    // end of the list is disabled, then we allow free scrolling
+    if (!self.snapToEnd && targetOffset >= lastOffset) {
+      if (offsetAlongAxis >= lastOffset) {
+        // free scrolling
+      } else {
+        // snap to end
+        targetOffset = lastOffset;
+      }
+    } else if (!self.snapToStart && targetOffset <= firstOffset) {
+      if (offsetAlongAxis <= firstOffset) {
+        // free scrolling
+      } else {
+        // snap to beginning
+        targetOffset = firstOffset;
+      }
+    } else if (velocityAlongAxis > 0.0) {
+>>>>>>> v0.58.6
       targetOffset = largerOffset;
     } else if (velocityAlongAxis < 0.0) {
       targetOffset = smallerOffset;

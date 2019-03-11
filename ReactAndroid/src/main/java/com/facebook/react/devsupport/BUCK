@@ -1,9 +1,12 @@
-load("//ReactNative:DEFS.bzl", "react_native_dep", "react_native_target", "rn_android_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_target", "rn_android_library")
 
 rn_android_library(
     name = "devsupport",
     srcs = glob(["*.java"]),
     manifest = "AndroidManifest.xml",
+    provided_deps = [
+        react_native_dep("third-party/android/support/v4:lib-support-v4"),
+    ],
     visibility = [
         "PUBLIC",
     ],

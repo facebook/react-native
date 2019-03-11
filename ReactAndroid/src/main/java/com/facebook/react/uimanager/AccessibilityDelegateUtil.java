@@ -1,20 +1,16 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
 
 package com.facebook.react.uimanager;
 
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.os.Build;
 import android.support.v4.view.AccessibilityDelegateCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.view.View;
-import android.view.accessibility.AccessibilityNodeInfo;
 import com.facebook.react.R;
-import com.facebook.react.bridge.ReadableArray;
 import java.util.Locale;
 import javax.annotation.Nullable;
 
@@ -33,6 +29,7 @@ public class AccessibilityDelegateUtil {
    */
 
   public enum AccessibilityRole {
+<<<<<<< HEAD:ReactAndroid/src/main/java/com/facebook/react/uimanager/AccessibilityDelegateUtil.java
     NONE(null),
     BUTTON("android.widget.Button"),
     LINK("android.widget.ViewGroup"),
@@ -54,15 +51,56 @@ public class AccessibilityDelegateUtil {
     @Nullable
     public String getValue() {
       return mValue;
+=======
+    NONE,
+    BUTTON,
+    LINK,
+    SEARCH,
+    IMAGE,
+    IMAGEBUTTON,
+    KEYBOARDKEY,
+    TEXT,
+    ADJUSTABLE,
+    SUMMARY,
+    HEADER;
+
+    public static String getValue(AccessibilityRole role) {
+      switch (role) {
+        case NONE:
+          return null;
+        case BUTTON:
+          return "android.widget.Button";
+        case LINK:
+          return "android.widget.ViewGroup";
+        case SEARCH:
+          return "android.widget.EditText";
+        case IMAGE:
+          return "android.widget.ImageView";
+        case IMAGEBUTTON:
+          return "android.widget.ImageView";
+        case KEYBOARDKEY:
+          return "android.inputmethodservice.Keyboard$Key";
+        case TEXT:
+          return "android.widget.ViewGroup";
+        case ADJUSTABLE:
+          return "android.widget.SeekBar";
+        case SUMMARY:
+          return "android.widget.ViewGroup";
+        case HEADER:
+          return "android.widget.ViewGroup";
+        default:
+          throw new IllegalArgumentException("Invalid accessibility role value: " + role);
+      }
+>>>>>>> v0.58.6:ReactAndroid/src/main/java/com/facebook/react/uimanager/AccessibilityDelegateUtil.java
     }
 
-    public static AccessibilityRole fromValue(String value) {
+    public static AccessibilityRole fromValue(@Nullable String value) {
       for (AccessibilityRole role : AccessibilityRole.values()) {
-        if (role.getValue() != null && role.getValue().equals(value)) {
+        if (role.name().equalsIgnoreCase(value)) {
           return role;
         }
       }
-      return AccessibilityRole.NONE;
+      throw new IllegalArgumentException("Invalid accessibility role value: " + value);
     }
   }
 
@@ -71,9 +109,15 @@ public class AccessibilityDelegateUtil {
   }
 
   public static void setDelegate(final View view) {
+<<<<<<< HEAD:ReactAndroid/src/main/java/com/facebook/react/uimanager/AccessibilityDelegateUtil.java
+=======
+    final String accessibilityHint = (String) view.getTag(R.id.accessibility_hint);
+    final AccessibilityRole accessibilityRole = (AccessibilityRole) view.getTag(R.id.accessibility_role);
+>>>>>>> v0.58.6:ReactAndroid/src/main/java/com/facebook/react/uimanager/AccessibilityDelegateUtil.java
     // if a view already has an accessibility delegate, replacing it could cause problems,
     // so leave it alone.
-    if (!ViewCompat.hasAccessibilityDelegate(view)) {
+    if (!ViewCompat.hasAccessibilityDelegate(view) &&
+      (accessibilityHint != null || accessibilityRole != null)) {
       ViewCompat.setAccessibilityDelegate(
         view,
         new AccessibilityDelegateCompat() {
@@ -81,8 +125,11 @@ public class AccessibilityDelegateUtil {
           public void onInitializeAccessibilityNodeInfo(
             View host, AccessibilityNodeInfoCompat info) {
             super.onInitializeAccessibilityNodeInfo(host, info);
+<<<<<<< HEAD:ReactAndroid/src/main/java/com/facebook/react/uimanager/AccessibilityDelegateUtil.java
             String accessibilityHint = (String) view.getTag(R.id.accessibility_hint);
             AccessibilityRole accessibilityRole = getAccessibilityRole((String) view.getTag(R.id.accessibility_role));
+=======
+>>>>>>> v0.58.6:ReactAndroid/src/main/java/com/facebook/react/uimanager/AccessibilityDelegateUtil.java
             setRole(info, accessibilityRole, view.getContext());
             if (!(accessibilityHint == null)) {
               String contentDescription=(String)info.getContentDescription();
@@ -104,8 +151,11 @@ public class AccessibilityDelegateUtil {
 
   //TODO: Eventually support for other languages on talkback
 
-  public static void setRole(AccessibilityNodeInfoCompat nodeInfo, final AccessibilityRole role, final Context context) {
-    nodeInfo.setClassName(role.getValue());
+  public static void setRole(AccessibilityNodeInfoCompat nodeInfo, AccessibilityRole role, final Context context) {
+    if (role == null) {
+      role = AccessibilityRole.NONE;
+    }
+    nodeInfo.setClassName(AccessibilityRole.getValue(role));
     if (Locale.getDefault().getLanguage().equals(new Locale("en").getLanguage())) {
       if (role.equals(AccessibilityRole.LINK)) {
         nodeInfo.setRoleDescription(context.getString(R.string.link_description));
@@ -127,6 +177,7 @@ public class AccessibilityDelegateUtil {
       nodeInfo.setClickable(true);
     }
   }
+<<<<<<< HEAD:ReactAndroid/src/main/java/com/facebook/react/uimanager/AccessibilityDelegateUtil.java
 
   /**
    * Method for setting accessibilityRole on view properties.
@@ -137,4 +188,6 @@ public class AccessibilityDelegateUtil {
     }
     return AccessibilityRole.valueOf(role.toUpperCase());
   }
+=======
+>>>>>>> v0.58.6:ReactAndroid/src/main/java/com/facebook/react/uimanager/AccessibilityDelegateUtil.java
 }
