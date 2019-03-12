@@ -12,9 +12,13 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Typeface;
+import android.support.v4.content.res.ResourcesCompat;
 import android.util.SparseArray;
+
+import com.facebook.react.uimanager.ThemedReactContext;
 
 /**
  * Class responsible to load and cache Typeface objects. It will first try to load typefaces inside
@@ -49,8 +53,8 @@ public class ReactFontManager {
     return sReactFontManagerInstance;
   }
 
-  public
-  @Nullable Typeface getTypeface(
+  @Deprecated
+  public @Nullable Typeface getTypeface(
       String fontFamilyName,
       int style,
       AssetManager assetManager) {
@@ -69,6 +73,20 @@ public class ReactFontManager {
     }
 
     return typeface;
+  }
+
+  public @Nullable Typeface getTypeface(
+    String fontFamilyName,
+    int style,
+    Context context) {
+    int fontId = context.getResources().getIdentifier(fontFamilyName, "font", context.getPackageName());
+    if (fontId != 0) {
+      return Typeface.create(
+        ResourcesCompat.getFont(context, fontId),
+        style
+      );
+    }
+    return getTypeface(fontFamilyName, style, context.getAssets());
   }
 
   /**
