@@ -30,6 +30,12 @@ inline UIColor *_Nullable RCTUIColorFromSharedColor(const facebook::react::Share
   return sharedColor ? [UIColor colorWithCGColor:sharedColor.get()] : nil;
 }
 
+CF_RETURNS_NOT_RETAINED
+inline CGColorRef RCTCGColorRefUnretainedFromSharedColor(const facebook::react::SharedColor &sharedColor) {
+  return sharedColor ? sharedColor.get() : nil;
+}
+
+CF_RETURNS_RETAINED
 inline CGColorRef RCTCGColorRefFromSharedColor(const facebook::react::SharedColor &sharedColor) {
   return sharedColor ? CGColorCreateCopy(sharedColor.get()) : nil;
 }

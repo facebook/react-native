@@ -326,24 +326,12 @@ static RCTCornerRadii RCTCornerRadiiFromBorderRadii(BorderRadii borderRadii)
 
 static RCTBorderColors RCTBorderColorsFromBorderColors(BorderColors borderColors)
 {
-  CGColorRef leftColor = RCTCGColorRefFromSharedColor(borderColors.left);
-  CGColorRef topColor = RCTCGColorRefFromSharedColor(borderColors.top);
-  CGColorRef bottomColor = RCTCGColorRefFromSharedColor(borderColors.bottom);
-  CGColorRef rightColor = RCTCGColorRefFromSharedColor(borderColors.right);
-  
-  RCTBorderColors colors = RCTBorderColors{
-    .left = leftColor,
-    .top = topColor,
-    .bottom = bottomColor,
-    .right = rightColor
-  }
-
-  CGColorRelease(leftColor);
-  CGColorRelease(topColor);
-  CGColorRelease(bottomColor);
-  CGColorRelease(rightColor);
-
-  return colors;
+  return RCTBorderColors{
+    .left = RCTCGColorRefUnretainedFromSharedColor(borderColors.left),
+    .top =  RCTCGColorRefUnretainedFromSharedColor(borderColors.top),
+    .bottom =  RCTCGColorRefUnretainedFromSharedColor(borderColors.bottom),
+    .right = RCTCGColorRefUnretainedFromSharedColor(borderColors.right)
+  };
 }
 
 static UIEdgeInsets UIEdgeInsetsFromBorderInsets(EdgeInsets edgeInsets)
