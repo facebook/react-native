@@ -305,15 +305,6 @@ static UIColor *defaultPlaceholderTextColor()
   
 #pragma mark - NSTextViewDelegate methods
 
-- (void)textDidBeginEditing:(NSNotification *)notification
-{
-  [super textDidBeginEditing:notification];
-  id<RCTUITextFieldDelegate> delegate = self.delegate;
-  if ([delegate respondsToSelector:@selector(textFieldBeginEditing:)]) {
-    [delegate textFieldBeginEditing:self];
-  }
-}
-  
 - (void)textDidChange:(NSNotification *)notification
 {
   [super textDidChange:notification];
@@ -358,6 +349,15 @@ static UIColor *defaultPlaceholderTextColor()
 {
   BOOL isFirstResponder = [super becomeFirstResponder];
   if (isFirstResponder) {
+    id<RCTUITextFieldDelegate> delegate = self.delegate;
+    if ([delegate respondsToSelector:@selector(textFieldBeginEditing:)]) {
+      // The AppKit -[NSTextField textDidBeginEditing:] notification is only called when the user
+      // makes the first change to the text in the text field.
+      // The react-native -[RCTUITextFieldDelegate textFieldBeginEditing:] is intended to be
+      // called when the text field is focused so call it here in becomeFirstResponder.
+      [delegate textFieldBeginEditing:self];
+    }
+
     NSScrollView *scrollView = [self enclosingScrollView];
     if (scrollView != nil) {
       NSRect visibleRect = [[scrollView documentView] convertRect:self.frame fromView:self];
