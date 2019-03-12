@@ -39,7 +39,6 @@ Pod::Spec.new do |s|
   s.dependency "React-graphics", version
   s.dependency "Folly", folly_version
   s.dependency "React-jsiexecutor", version
-  #   s.dependency "React-cxxreact", version
 
   s.subspec "attributedstring" do |ss|
     ss.dependency             "Folly", folly_version
@@ -174,11 +173,7 @@ Pod::Spec.new do |s|
     ss.dependency             "Folly", folly_version
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "fabric/mounting/**/*.{m,mm,cpp,h}"
-    ss.exclude_files        = "**/tests/*",
-                              # FIXME: these can be renabled after codegen
-                              "**/ActivityIndicator/*",
-                              "**/Switch/*", 
-                              "**/Slider/*"
+    ss.exclude_files        = "**/tests/*"
     ss.header_dir           = "react/mounting"
     ss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
   end
