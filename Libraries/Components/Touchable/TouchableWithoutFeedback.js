@@ -249,14 +249,14 @@ const TouchableWithoutFeedback = ((createReactClass({
         onResponderGrant={this.touchableHandleResponderGrant}
         onResponderMove={this.touchableHandleResponderMove}
         onResponderRelease={this.touchableHandleResponderRelease}
-        onResponderTerminate={this.touchableHandleResponderTerminate}
-        style={style}>
+        onResponderTerminate={this.touchableHandleResponderTerminate}>
         {this.props.children}
         <Optional {Touchable.TOUCH_TARGET_DEBUG && child.type === View}>
           {Touchable.renderDebugView({color: 'red', hitSlop: this.props.hitSlop})}
         </Optional>
       </View>
     );
-  }): any): React.ComponentType<Props>);
+  },
+}): any): React.ComponentType<Props>);
 
 module.exports = TouchableWithoutFeedback;
