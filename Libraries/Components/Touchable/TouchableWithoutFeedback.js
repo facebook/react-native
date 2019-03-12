@@ -243,18 +243,17 @@ const TouchableWithoutFeedback = ((createReactClass({
         nativeID={this.props.nativeID}
         testID={this.props.testID}
         onLayout={this.props.onLayout}
-        hitSlop={this.props.hitStop}
+        hitSlop={this.props.hitSlop}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
-        onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}
+        onResponderTerminationRequest={
+          this.touchableHandleResponderTerminationRequest
+        }
         onResponderGrant={this.touchableHandleResponderGrant}
         onResponderMove={this.touchableHandleResponderMove}
         onResponderRelease={this.touchableHandleResponderRelease}
         onResponderTerminate={this.touchableHandleResponderTerminate}>
         {this.props.children}
-        {Touchable.renderDebugView({
-          color: 'red',
-          hitSlop: this.props.hitSlop
-        })}
+        {Touchable.renderDebugView({color: 'red', hitSlop: this.props.hitSlop})}
       </View>
     );
   },
