@@ -14,6 +14,7 @@ def bundleCommand = config.bundleCommand ?: "bundle"
 def reactRoot = file(config.root ?: "../../")
 def inputExcludes = config.inputExcludes ?: ["android/**", "ios/**"]
 def bundleConfig = config.bundleConfig ? "${reactRoot}/${config.bundleConfig}" : null ;
+def fontsDir = file(config.fontsDir ?: "${reactRoot}/js/assets/fonts")
 
 
 afterEvaluate {
@@ -159,6 +160,29 @@ afterEvaluate {
         packageTask.dependsOn(currentAssetsCopyTask)
         if (buildPreBundleTask != null) {
             buildPreBundleTask.dependsOn(currentAssetsCopyTask)
+        }
+        
+        def currentFontsCopyTask = tasks.create(
+                name: "copy${targetName}Fonts",
+                type: Copy) {
+            group = "react"
+            description = "Copy fonts into ${targetName}."
+
+            enabled(fontsDir.exists() && fontsDir.isDirectory())
+
+            from (fontsDir)
+            into ("$buildDir/intermediates/assets/fonts")
+
+            // Workaround for Android Gradle Plugin 3.2+ new asset directory
+            into("$buildDir/intermediates/merged_assets/${variant.name}/merge${targetName}Assets/out/fonts")
+
+            // mergeAssets must run first, as it clears the intermediates directory
+            dependsOn(variant.mergeAssetsProvider.get())
+        }
+
+        packageTask.dependsOn(currentFontsCopyTask)
+        if (buildPreBundleTask != null) {
+            buildPreBundleTask.dependsOn(currentFontsCopyTask)
         }
     }
 }
