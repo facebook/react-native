@@ -624,6 +624,36 @@ NSString *__nullable RCTLibraryPath(void)
     return libraryPath;
 }
 
+NSString *__nullable RCTTmpPath(void)
+{
+  static NSString *tmpPath = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    tmpPath = NSTemporaryDirectory();
+  });
+  return tmpPath;
+}
+
+NSString *__nullable RCTDocumentsPath(void)
+{
+  static NSString *documentsPath = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+  });
+  return documentsPath;
+}
+
+NSString *__nullable RCTHomePath(void)
+{
+  static NSString *homePath = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    homePath = NSHomeDirectory();
+  });
+  return homePath;
+}
+
 NSString *__nullable RCTBundlePathForURL(NSURL *__nullable URL)
 {
   return RCTRelativePathForURL([[NSBundle mainBundle] resourcePath], URL);
@@ -633,6 +663,21 @@ NSString *__nullable RCTBundlePathForURL(NSURL *__nullable URL)
 NSString *__nullable RCTLibraryPathForURL(NSURL *__nullable URL)
 {
   return RCTRelativePathForURL(RCTLibraryPath(), URL);
+}
+
+NSString *__nullable RCTTmpPathForURL(NSURL *__nullable URL)
+{
+  return RCTRelativePathForURL(RCTTmpPath(), URL);
+}
+
+NSString *__nullable RCTDocumentsPathForURL(NSURL *__nullable URL)
+{
+  return RCTRelativePathForURL(RCTDocumentsPath(), URL);
+}
+
+NSString *__nullable RCTHomePathForURL(NSURL *__nullable URL)
+{
+  return RCTRelativePathForURL(RCTHomePath(), URL);
 }
 
 static BOOL RCTIsImageAssetsPath(NSString *path)
@@ -651,9 +696,24 @@ BOOL RCTIsLibraryAssetURL(NSURL *__nullable imageURL)
   return RCTIsImageAssetsPath(RCTLibraryPathForURL(imageURL));
 }
 
+BOOL RCTIsTmpAssetURL(NSURL *__nullable imageURL)
+{
+  return RCTIsImageAssetsPath(RCTTmpPathForURL(imageURL));
+}
+
+BOOL RCTIsDocumentsAssetURL(NSURL *__nullable imageURL)
+{
+  return RCTIsImageAssetsPath(RCTDocumentsPathForURL(imageURL));
+}
+
+BOOL RCTIsHomeAssetURL(NSURL *__nullable imageURL)
+{
+  return RCTIsImageAssetsPath(RCTHomePathForURL(imageURL));
+}
+
 BOOL RCTIsLocalAssetURL(NSURL *__nullable imageURL)
 {
-  return RCTIsBundleAssetURL(imageURL) || RCTIsLibraryAssetURL(imageURL);
+  return RCTIsBundleAssetURL(imageURL) || RCTIsHomeAssetURL(imageURL);
 }
 
 static NSString *bundleName(NSBundle *bundle)
