@@ -14,7 +14,9 @@ const React = require('React');
 const PropTypes = require('prop-types');
 const Touchable = require('Touchable');
 const View = require('View');
-const EdgeInsetsPropType = require('EdgeInsetsPropType');
+
+var EdgeInsetsPropType = require('EdgeInsetsPropType');
+var Animated = require('Animated');
 
 const createReactClass = require('create-react-class');
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
