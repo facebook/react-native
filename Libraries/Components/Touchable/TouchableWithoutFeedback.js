@@ -231,10 +231,6 @@ const TouchableWithoutFeedback = ((createReactClass({
   render: function(): React.Element<any> {
     // Note(avik): remove dynamic typecast once Flow has been upgraded
     // $FlowFixMe(>=0.41.0)
-    const child = React.Children.only(this.props.children);
-    const style = (Touchable.TOUCH_TARGET_DEBUG && child.type && child.type.displayName === 'Text') ?
-      [child.props.style, {color: 'red'}] :
-      child.props.style;
     return (
       <View
         accessible={this.props.accessible !== false}
@@ -255,14 +251,12 @@ const TouchableWithoutFeedback = ((createReactClass({
         onResponderRelease={this.touchableHandleResponderRelease}
         onResponderTerminate={this.touchableHandleResponderTerminate}
         style={style}>
-        {React.cloneElement(
-          /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
-           * comment suppresses an error when upgrading Flow's support for
-           * React. To see the error delete this comment and run Flow. */
-          child
-        )}
+        {this.props.children}
+        <Optional {Touchable.TOUCH_TARGET_DEBUG && child.type === View}>
+          {Touchable.renderDebugView({color: 'red', hitSlop: this.props.hitSlop})}
+        </Optional>
       </View>
     );
-  }
+  }): any): React.ComponentType<Props>);
 
 module.exports = TouchableWithoutFeedback;
