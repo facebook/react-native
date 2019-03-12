@@ -4,7 +4,7 @@
         <title>React Native Blog</title>
         <link>https://facebook.github.io/react-native/blog</link>
         <description>The best place to stay up-to-date with the latest React Native news and events.</description>
-        <lastBuildDate>Fri, 01 Mar 2019 06:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Tue, 12 Mar 2019 06:00:00 GMT</lastBuildDate>
         <docs>http://blogs.law.harvard.edu/tech/rss</docs>
         <generator>Feed for Node.js</generator>
         <image>
@@ -12,6 +12,13 @@
             <url>https://facebook.github.io/react-native/img/header_logo.png</url>
             <link>https://facebook.github.io/react-native/blog</link>
         </image>
+        <item>
+            <title><![CDATA[Releasing React Native 0.59]]></title>
+            <link>https://facebook.github.io/react-native/blog/2019/03/12/releasing-react-native-059.html</link>
+            <guid>https://facebook.github.io/react-native/blog/2019/03/12/releasing-react-native-059.html</guid>
+            <pubDate>Tue, 12 Mar 2019 06:00:00 GMT</pubDate>
+            <description><![CDATA[<p>Welcome to the 0.59 release of React Native! This is another big release with 644 commits by 88 contributors. Contributions also come in other forms, so <em>thank you</em> for maintaining issues, fostering communities, and teaching people about React Native. ...</p>]]></description>
+        </item>
         <item>
             <title><![CDATA[React Native Open Source Update March 2019]]></title>
             <link>https://facebook.github.io/react-native/blog/2019/03/01/react-native-open-source-update.html</link>
