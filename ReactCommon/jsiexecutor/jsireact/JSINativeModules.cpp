@@ -3,11 +3,7 @@
 // This source code is licensed under the MIT license found in the
  // LICENSE file in the root directory of this source tree.
 
-<<<<<<< HEAD
-#include "jsiexecutor/jsireact/JSINativeModules.h"
-=======
 #include "jsireact/JSINativeModules.h"
->>>>>>> v0.58.6
 
 #include <cxxreact/ReactMarker.h>
 

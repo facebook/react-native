@@ -7,15 +7,15 @@ LOCAL_SRC_FILES:= \
   folly/Conv.cpp \
   folly/Demangle.cpp \
   folly/detail/MallocImpl.cpp \
-  folly/String.cpp \
+  folly/StringBase.cpp \
   folly/dynamic.cpp \
-  folly/Format.cpp \
-#  folly/json_pointer.cpp \
-  folly/lang/ColdClass.cpp \
-  folly/detail/Demangle.cpp \
-  folly/hash/SpookyHashV2.cpp \
-  folly/container/detail/F14Table.cpp \
   folly/ScopeGuard.cpp \
+#  folly/Format.cpp \
+#  folly/json_pointer.cpp \
+#  folly/lang/ColdClass.cpp \
+#  folly/detail/Demangle.cpp \
+#  folly/hash/SpookyHashV2.cpp \
+#  folly/container/detail/F14Table.cpp \
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)

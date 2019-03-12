@@ -1,3 +1,4 @@
+
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -46,6 +47,18 @@ public class CustomStyleSpan extends MetricAffectingSpan {
     mWeight = fontWeight;
     mFontFamily = fontFamily;
     mFontPath = fontPath;
+    mAssetManager = assetManager;
+  }
+
+  public CustomStyleSpan(
+      int fontStyle,
+      int fontWeight,
+      @Nullable String fontFamily,
+      AssetManager assetManager) {
+    mStyle = fontStyle;
+    mWeight = fontWeight;
+    mFontFamily = fontFamily;
+    mFontPath = null;
     mAssetManager = assetManager;
   }
 

@@ -822,6 +822,29 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     }
   }
 
+  private void smoothScrollToNextPage(int direction) {
+    int width = getWidth();
+    int currentX = getScrollX();
+
+    int page = currentX / width;
+    if (currentX % width != 0) {
+      page++;
+    }
+
+    if (direction == View.FOCUS_LEFT) {
+      page = page - 1;
+    } else {
+      page = page + 1;
+    }
+
+    if (page < 0) {
+      page = 0;
+    }
+
+    smoothScrollTo(page * width, getScrollY());
+    handlePostTouchScrolling(0, 0);
+  }
+
   @Override
   public void setBackgroundColor(int color) {
     mReactBackgroundManager.setBackgroundColor(color);
