@@ -14,7 +14,7 @@ def bundleCommand = config.bundleCommand ?: "bundle"
 def reactRoot = file(config.root ?: "../../")
 def inputExcludes = config.inputExcludes ?: ["android/**", "ios/**"]
 def bundleConfig = config.bundleConfig ? "${reactRoot}/${config.bundleConfig}" : null ;
-def fontsDir = file(config.fontsDir ?: "${reactRoot}/js/assets/fonts")
+def fontsDir = file(config.fontsDir ?: "${reactRoot}/assets/fonts")
 
 
 afterEvaluate {
