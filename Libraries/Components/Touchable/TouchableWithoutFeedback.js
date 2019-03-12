@@ -231,29 +231,30 @@ const TouchableWithoutFeedback = ((createReactClass({
   render: function(): React.Element<any> {
     // Note(avik): remove dynamic typecast once Flow has been upgraded
     // $FlowFixMe(>=0.41.0)
+    const that = this;
     return (
       <View
-        accessible={this.props.accessible !== false}
-        accessibilityLabel={this.props.accessibilityLabel}
-        accessibilityHint={this.props.accessibilityHint}
-        accessibilityComponentType={this.props.accessibilityComponentType}
-        accessibilityRole={this.props.accessibilityRole}
-        accessibilityStates={this.props.accessibilityStates}
-        accessibilityTraits={this.props.accessibilityTraits}
-        nativeID={this.props.nativeID}
-        testID={this.props.testID}
-        onLayout={this.props.onLayout}
-        hitSlop={this.props.hitSlop}
-        onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
+        accessible={that.props.accessible !== false}
+        accessibilityLabel={that.props.accessibilityLabel}
+        accessibilityHint={that.props.accessibilityHint}
+        accessibilityComponentType={that.props.accessibilityComponentType}
+        accessibilityRole={that.props.accessibilityRole}
+        accessibilityStates={that.props.accessibilityStates}
+        accessibilityTraits={that.props.accessibilityTraits}
+        nativeID={that.props.nativeID}
+        testID={that.props.testID}
+        onLayout={that.props.onLayout}
+        hitSlop={ththatis.props.hitSlop}
+        onStartShouldSetResponder={that.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={
-          this.touchableHandleResponderTerminationRequest
+          that.touchableHandleResponderTerminationRequest
         }
-        onResponderGrant={this.touchableHandleResponderGrant}
-        onResponderMove={this.touchableHandleResponderMove}
-        onResponderRelease={this.touchableHandleResponderRelease}
-        onResponderTerminate={this.touchableHandleResponderTerminate}>
-        {this.props.children}
-        {Touchable.renderDebugView({color: 'red', hitSlop: this.props.hitSlop})}
+        onResponderGrant={that.touchableHandleResponderGrant}
+        onResponderMove={that.touchableHandleResponderMove}
+        onResponderRelease={that.touchableHandleResponderRelease}
+        onResponderTerminate={that.touchableHandleResponderTerminate}>
+        {that.props.children}
+        {Touchable.renderDebugView({color: 'red', hitSlop: that.props.hitSlop})}
       </View>
     );
   },
