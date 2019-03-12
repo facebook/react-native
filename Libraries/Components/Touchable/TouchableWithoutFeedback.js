@@ -244,7 +244,7 @@ const TouchableWithoutFeedback = ((createReactClass({
         nativeID={that.props.nativeID}
         testID={that.props.testID}
         onLayout={that.props.onLayout}
-        hitSlop={ththatis.props.hitSlop}
+        hitSlop={that.props.hitSlop}
         onStartShouldSetResponder={that.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={
           that.touchableHandleResponderTerminationRequest
