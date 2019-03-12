@@ -7,7 +7,6 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-<<<<<<< HEAD
 # Flag to enable V8 in react-native code
 V8_ENABLED := 1
 
@@ -36,9 +35,6 @@ LOCAL_SRC_FILES := \
   WritableNativeArray.cpp \
   WritableNativeMap.cpp \
 
-=======
-# Include . in the header search path for all source files in this module.
->>>>>>> v0.58.6
 LOCAL_C_INCLUDES := $(LOCAL_PATH)
 
 # Include ./../../ in the header search path for modules that depend on
@@ -48,20 +44,12 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)
 #   ./../ == react
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../..
 
-<<<<<<< HEAD
-LOCAL_CFLAGS += -fvisibility=hidden
-LOCAL_CXXFLAGS := -fexceptions -frtti
-
-LOCAL_LDLIBS += -landroid
-LOCAL_SHARED_LIBRARIES := libfolly_json libfb libglog_init libyoga libprivatedata
-
 LOCAL_V8_FILES := \
   AndroidV8Factory.cpp
 
 LOCAL_JSC_FILES := \
   AndroidJSCFactory.cpp \
   JSCPerfLogging.cpp \
-  JSLogging.cpp
 
 ifeq ($(V8_ENABLED), 1)
   LOCAL_SRC_FILES += $(LOCAL_V8_FILES)
@@ -72,18 +60,16 @@ else
   LOCAL_SHARED_LIBRARIES += libjsc
 endif
 
-=======
+LOCAL_CFLAGS += -fvisibility=hidden
 LOCAL_CFLAGS += -fexceptions -frtti
 
 LOCAL_LDLIBS += -landroid
 
 # The dynamic libraries (.so files) that this module depends on.
-LOCAL_SHARED_LIBRARIES := libfolly_json libfb libjsc libglog_init libyoga
+LOCAL_SHARED_LIBRARIES := libfolly_json libfb libglog_init libyoga
 
 # The static libraries (.a files) that this module depends on.
->>>>>>> v0.58.6
 LOCAL_STATIC_LIBRARIES := libreactnative
-APP_ALLOW_MISSING_DEPS :=true
 
 # Name of this module.
 #
@@ -91,8 +77,7 @@ APP_ALLOW_MISSING_DEPS :=true
 # LOCAL_SHARED_LIBRARIES variable.
 LOCAL_MODULE := reactnativejni
 
-# Compile all local c++ files.
-LOCAL_SRC_FILES := $(wildcard *.cpp)
+APP_ALLOW_MISSING_DEPS :=true
 
 # Build the files in this directory as a shared library
 include $(BUILD_SHARED_LIBRARY)
@@ -110,19 +95,14 @@ include $(BUILD_SHARED_LIBRARY)
 #   tell andorid-ndk to compile the module in <dir>/<module-dir> according
 #   to the specification inside <dir>/<module-dir>/Android.mk.
 $(call import-module,folly)
-<<<<<<< HEAD
 ifeq ($(V8_ENABLED), 0)
   $(call import-module,jsc)
 endif
 $(call import-module,yogajni)
-=======
 $(call import-module,fb)
-$(call import-module,jsc)
 $(call import-module,fbgloginit)
 $(call import-module,yogajni)
 $(call import-module,cxxreact)
->>>>>>> v0.58.6
-$(call import-module,jsi)
 $(call import-module,jsiexecutor)
 
 # TODO(ramanpreet):
@@ -130,7 +110,4 @@ $(call import-module,jsiexecutor)
 # $(call import-module,jscexecutor)
 
 include $(REACT_SRC_DIR)/jscexecutor/Android.mk
-<<<<<<< HEAD
 include $(REACT_SRC_DIR)/v8executor/Android.mk
-=======
->>>>>>> v0.58.6

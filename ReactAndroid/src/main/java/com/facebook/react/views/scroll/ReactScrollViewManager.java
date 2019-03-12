@@ -105,8 +105,6 @@ public class ReactScrollViewManager
     view.setSnapOffsets(offsets);
   }
 
-<<<<<<< HEAD
-=======
   @ReactProp(name = "snapToStart")
   public void setSnapToStart(ReactScrollView view, boolean snapToStart) {
     view.setSnapToStart(snapToStart);
@@ -117,7 +115,6 @@ public class ReactScrollViewManager
     view.setSnapToEnd(snapToEnd);
   }
 
->>>>>>> v0.58.6
   @ReactProp(name = ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)
   public void setRemoveClippedSubviews(ReactScrollView view, boolean removeClippedSubviews) {
     view.setRemoveClippedSubviews(removeClippedSubviews);

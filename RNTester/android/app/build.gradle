@@ -92,21 +92,12 @@ def enableProguardInReleaseBuilds = true
 
 android {
     compileSdkVersion 28
-<<<<<<< HEAD
     buildToolsVersion "28.0.1"
 
     defaultConfig {
         applicationId "com.facebook.react.uiapp"
         minSdkVersion 21
         targetSdkVersion 28
-=======
-    buildToolsVersion "28.0.2"
-
-    defaultConfig {
-        applicationId "com.facebook.react.uiapp"
-        minSdkVersion 16
-        targetSdkVersion 27
->>>>>>> v0.58.6
         versionCode 1
         versionName "1.0"
     }
@@ -140,8 +131,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-<<<<<<< HEAD
-    implementation 'com.android.support:appcompat-v7:26.0.2'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
 
     // Build React Native from source
     if (isSDXPlatform()) {
@@ -150,10 +140,4 @@ dependencies {
     else {
         implementation project(':ReactAndroid')
     }
-=======
-    implementation 'com.android.support:appcompat-v7:28.0.0'
-
-    // Build React Native from source
-    implementation project(':ReactAndroid')
->>>>>>> v0.58.6
 }

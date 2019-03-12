@@ -45,8 +45,6 @@ typedef struct YGValue {
 extern const YGValue YGValueUndefined;
 extern const YGValue YGValueAuto;
 
-<<<<<<< HEAD
-=======
 #ifdef __cplusplus
 
 YG_EXTERN_C_END
@@ -57,7 +55,6 @@ extern bool operator!=(const YGValue& lhs, const YGValue& rhs);
 YG_EXTERN_C_BEGIN
 
 #endif
->>>>>>> v0.58.6
 
 typedef struct YGConfig* YGConfigRef;
 
