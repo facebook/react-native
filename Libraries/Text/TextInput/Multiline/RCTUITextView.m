@@ -145,7 +145,16 @@ static UIColor *defaultPlaceholderColor()
 
 - (BOOL)becomeFirstResponder
 {
-  return [self.window makeFirstResponder:self];
+  BOOL success =  [[self window] makeFirstResponder:self];
+
+  if (success) {
+    id<RCTBackedTextInputDelegate> textInputDelegate = [self textInputDelegate];
+    if ([textInputDelegate respondsToSelector:@selector(textInputDidBeginEditing)]) {
+      [textInputDelegate textInputDidBeginEditing];
+    }
+  }
+
+  return success;
 }
 
 #endif // ]TODO(macOS ISS#2323203)
