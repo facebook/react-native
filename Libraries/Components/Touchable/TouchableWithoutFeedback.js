@@ -232,35 +232,37 @@ const TouchableWithoutFeedback = ((createReactClass({
     // Note(avik): remove dynamic typecast once Flow has been upgraded
     // $FlowFixMe(>=0.41.0)
     const child = React.Children.only(this.props.children);
-    let children = child.props.children;
-    if (Touchable.TOUCH_TARGET_DEBUG && child.type === View) {
-      children = React.Children.toArray(children);
-      children.push(
-        Touchable.renderDebugView({color: 'red', hitSlop: this.props.hitSlop}),
-      );
-    }
-    return (React: any).cloneElement(child, {
-      accessible: this.props.accessible !== false,
-      accessibilityLabel: this.props.accessibilityLabel,
-      accessibilityHint: this.props.accessibilityHint,
-      accessibilityComponentType: this.props.accessibilityComponentType,
-      accessibilityRole: this.props.accessibilityRole,
-      accessibilityStates: this.props.accessibilityStates,
-      accessibilityTraits: this.props.accessibilityTraits,
-      nativeID: this.props.nativeID,
-      testID: this.props.testID,
-      onLayout: this.props.onLayout,
-      hitSlop: this.props.hitSlop,
-      onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
-      onResponderTerminationRequest: this
-        .touchableHandleResponderTerminationRequest,
-      onResponderGrant: this.touchableHandleResponderGrant,
-      onResponderMove: this.touchableHandleResponderMove,
-      onResponderRelease: this.touchableHandleResponderRelease,
-      onResponderTerminate: this.touchableHandleResponderTerminate,
-      children,
-    });
-  },
-}): any): React.ComponentType<Props>);
+    const style = (Touchable.TOUCH_TARGET_DEBUG && child.type && child.type.displayName === 'Text') ?
+      [child.props.style, {color: 'red'}] :
+      child.props.style;
+    return (
+      <View
+        accessible={this.props.accessible !== false}
+        accessibilityLabel={this.props.accessibilityLabel}
+        accessibilityHint={this.props.accessibilityHint}
+        accessibilityComponentType={this.props.accessibilityComponentType}
+        accessibilityRole={this.props.accessibilityRole}
+        accessibilityStates={this.props.accessibilityStates}
+        accessibilityTraits={this.props.accessibilityTraits}
+        nativeID={this.props.nativeID}
+        testID={this.props.testID}
+        onLayout={this.props.onLayout}
+        hitSlop={this.props.hitStop}
+        onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
+        onResponderTerminationRequest={this.touchableHandleResponderTerminationRequest}
+        onResponderGrant={this.touchableHandleResponderGrant}
+        onResponderMove={this.touchableHandleResponderMove}
+        onResponderRelease={this.touchableHandleResponderRelease}
+        onResponderTerminate={this.touchableHandleResponderTerminate}
+        style={style}>
+        {React.cloneElement(
+          /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+           * comment suppresses an error when upgrading Flow's support for
+           * React. To see the error delete this comment and run Flow. */
+          child
+        )}
+      </View>
+    );
+  }
 
 module.exports = TouchableWithoutFeedback;
