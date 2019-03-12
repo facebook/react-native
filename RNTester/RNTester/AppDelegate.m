@@ -26,12 +26,24 @@
 }
 @end
 
+// FIXME: this is a hack, remove when surfaces start correctly
+@interface RCTSurfacePresenter ()
+-(void)_startAllSurfaces;
+@end
+
 @implementation AppDelegate
 
 - (BOOL)application:(__unused UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   _bridge = [[RCTBridge alloc] initWithDelegate:self
                                   launchOptions:launchOptions];
+  
+  // FIXME: this is a hack, remove when surfaces start correctly
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(handleJavaScriptDidLoadNotification:)
+                                               name:RCTJavaScriptDidLoadNotification
+                                             object:_bridge];
+  
   _surfacePresenter = [[RCTSurfacePresenter alloc] initWithBridge:_bridge config:nil];
   _bridge.surfacePresenter = _surfacePresenter;
 
@@ -50,6 +62,13 @@
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
   return YES;
+}
+
+// FIXME: this is a hack, remove when surfaces start correctly
+- (void)handleJavaScriptDidLoadNotification:(__unused NSNotification*)notification {
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self->_surfacePresenter _startAllSurfaces];
+  });
 }
 
 - (NSURL *)sourceURLForBridge:(__unused RCTBridge *)bridge
