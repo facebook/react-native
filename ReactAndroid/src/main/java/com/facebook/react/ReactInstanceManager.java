@@ -1099,7 +1099,7 @@ public class ReactInstanceManager {
       ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_START);
       synchronized (mAttachedRootViews) {
         for (ReactRootView rootView : mAttachedRootViews) {
-          attachRootViewToInstance(rootView, catalystInstance);
+          attachRootViewToInstance(rootView);
         }
       }
       ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_END);

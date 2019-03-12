@@ -44,6 +44,14 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)
 #   ./../ == react
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../..
 
+LOCAL_CFLAGS += -fvisibility=hidden
+LOCAL_CFLAGS += -fexceptions -frtti
+
+LOCAL_LDLIBS += -landroid
+
+# The dynamic libraries (.so files) that this module depends on.
+LOCAL_SHARED_LIBRARIES := libfolly_json libfb libglog_init libyoga libprivatedata
+
 LOCAL_V8_FILES := \
   AndroidV8Factory.cpp
 
@@ -60,13 +68,6 @@ else
   LOCAL_SHARED_LIBRARIES += libjsc
 endif
 
-LOCAL_CFLAGS += -fvisibility=hidden
-LOCAL_CFLAGS += -fexceptions -frtti
-
-LOCAL_LDLIBS += -landroid
-
-# The dynamic libraries (.so files) that this module depends on.
-LOCAL_SHARED_LIBRARIES := libfolly_json libfb libglog_init libyoga
 
 # The static libraries (.a files) that this module depends on.
 LOCAL_STATIC_LIBRARIES := libreactnative
@@ -94,15 +95,17 @@ include $(BUILD_SHARED_LIBRARY)
 #   Whenever you encounter an include <dir>/<module-dir>/Android.mk, you
 #   tell andorid-ndk to compile the module in <dir>/<module-dir> according
 #   to the specification inside <dir>/<module-dir>/Android.mk.
+
+$(call import-module,cxxreact)
+$(call import-module,privatedata)
+$(call import-module,fb)
+$(call import-module,fbgloginit)
 $(call import-module,folly)
 ifeq ($(V8_ENABLED), 0)
   $(call import-module,jsc)
 endif
 $(call import-module,yogajni)
-$(call import-module,fb)
-$(call import-module,fbgloginit)
-$(call import-module,yogajni)
-$(call import-module,cxxreact)
+$(call import-module,jsi)
 $(call import-module,jsiexecutor)
 
 # TODO(ramanpreet):

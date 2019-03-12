@@ -81,13 +81,10 @@ class JSIExecutor : public JSExecutor {
       RuntimeInstaller runtimeInstaller);
   void loadApplicationScript(
       std::unique_ptr<const JSBigString> script,
-<<<<<<< HEAD
       uint64_t scriptVersion,
       std::string sourceURL,
       std::string&& bytecodeFileName) override;
-=======
-      std::string sourceURL) override;
->>>>>>> v0.58.6
+
   void setBundleRegistry(std::unique_ptr<RAMBundleRegistry>) override;
   void registerBundle(uint32_t bundleId, const std::string& bundlePath)
       override;
