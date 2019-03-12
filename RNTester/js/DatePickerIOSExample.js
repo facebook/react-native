@@ -16,7 +16,6 @@ const {DatePickerIOS, StyleSheet, Text, View} = ReactNative;
 
 type State = {|
   date: Date,
-  timeZoneOffsetInHours: number,
 |};
 
 type Props = {|
