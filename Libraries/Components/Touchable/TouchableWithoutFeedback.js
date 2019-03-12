@@ -10,7 +10,6 @@
 
 'use strict';
 
-const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
 const React = require('React');
 const PropTypes = require('prop-types');
 const Touchable = require('Touchable');
@@ -100,6 +99,7 @@ const TouchableWithoutFeedback = ((createReactClass({
       PropTypes.oneOf(DeprecatedAccessibilityTraits),
       PropTypes.arrayOf(PropTypes.oneOf(DeprecatedAccessibilityTraits)),
     ]),
+    children: React.Node,
     /**
      * When `accessible` is true (which is the default) this may be called when
      * the OS-specific concept of "focus" occurs. Some platforms may not have
