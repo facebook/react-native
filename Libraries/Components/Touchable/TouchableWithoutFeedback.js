@@ -99,7 +99,6 @@ const TouchableWithoutFeedback = ((createReactClass({
       PropTypes.oneOf(DeprecatedAccessibilityTraits),
       PropTypes.arrayOf(PropTypes.oneOf(DeprecatedAccessibilityTraits)),
     ]),
-    children: React.Node,
     /**
      * When `accessible` is true (which is the default) this may be called when
      * the OS-specific concept of "focus" occurs. Some platforms may not have
@@ -232,7 +231,7 @@ const TouchableWithoutFeedback = ((createReactClass({
     // Note(avik): remove dynamic typecast once Flow has been upgraded
     // $FlowFixMe(>=0.41.0)
     return (
-      <View
+      <Animated.View
         accessible={this.props.accessible !== false}
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityHint={this.props.accessibilityHint}
@@ -257,7 +256,7 @@ const TouchableWithoutFeedback = ((createReactClass({
           color: 'red',
           hitSlop: this.props.hitSlop,
         })}
-      </View>
+      </Animated.View>
     );
   },
 }): any): React.ComponentType<Props>);
