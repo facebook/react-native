@@ -27,11 +27,7 @@ struct MethodCall {
     , callId(cid) {}
 };
 
-<<<<<<< HEAD
-std::vector<MethodCall> parseMethodCalls(folly::dynamic&& calls) /* throw(std::invalid_argument) */;
-=======
 /// \throws std::invalid_argument
 std::vector<MethodCall> parseMethodCalls(folly::dynamic&& calls);
->>>>>>> v0.58.6
 
 } }

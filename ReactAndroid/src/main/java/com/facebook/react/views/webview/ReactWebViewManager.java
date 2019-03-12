@@ -8,23 +8,6 @@
 package com.facebook.react.views.webview;
 
 import android.annotation.TargetApi;
-<<<<<<< HEAD
-import android.content.Context;
-import com.facebook.react.uimanager.UIManagerModule;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.regex.Pattern;
-import javax.annotation.Nullable;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-
-=======
->>>>>>> v0.58.6
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -351,13 +334,8 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
     public void callInjectedJavaScript() {
       if (getSettings().getJavaScriptEnabled() &&
-<<<<<<< HEAD
-          injectedJS != null &&
-          !TextUtils.isEmpty(injectedJS)) {
-=======
         injectedJS != null &&
         !TextUtils.isEmpty(injectedJS)) {
->>>>>>> v0.58.6
         evaluateJavascriptWithFallback("(function() {\n" + injectedJS + ";\n})();");
       }
     }

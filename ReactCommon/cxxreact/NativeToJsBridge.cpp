@@ -172,12 +172,9 @@ void NativeToJsBridge::callFunction(
           TRACE_TAG_REACT_CXX_BRIDGE,
           "JSCall",
           systraceCookie);
-<<<<<<< HEAD
-=======
       SystraceSection s("NativeToJsBridge::callFunction", "module", module, "method", method);
       #else
       (void)(systraceCookie);
->>>>>>> v0.58.6
       #endif
       SystraceSection s("NativeToJsBridge::callFunction", "module", module, "method", method);
       // This is safe because we are running on the executor's thread: it won't

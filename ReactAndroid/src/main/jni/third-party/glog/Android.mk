@@ -13,11 +13,7 @@ LOCAL_SRC_FILES := \
 
 LOCAL_C_INCLUDES += $(LOCAL_PATH) $(LOCAL_PATH)/.. $(LOCAL_PATH)/glog/src/
 
-<<<<<<< HEAD
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/.. $(LOCAL_PATH)/glog/src/
-=======
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/exported
->>>>>>> v0.58.6
 
 LOCAL_CFLAGS += \
   -Wno-unused-variable \
