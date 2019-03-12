@@ -251,9 +251,10 @@ const TouchableWithoutFeedback = ((createReactClass({
         onResponderRelease={this.touchableHandleResponderRelease}
         onResponderTerminate={this.touchableHandleResponderTerminate}>
         {this.props.children}
-        <Optional {Touchable.TOUCH_TARGET_DEBUG && child.type === View}>
-          {Touchable.renderDebugView({color: 'red', hitSlop: this.props.hitSlop})}
-        </Optional>
+        {Touchable.renderDebugView({
+          color: 'red',
+          hitSlop: this.props.hitSlop
+        })}
       </View>
     );
   },
