@@ -39,6 +39,7 @@ class WithDatePickerData extends React.Component<Props, State> {
           <Text testID="date-indicator">
             {this.state.date.toLocaleDateString()}
           </Text>
+          <Text>&nbsp;</Text>
           <Text testID="time-indicator">
             {this.state.date.toLocaleTimeString([], {
               hour: '2-digit',
