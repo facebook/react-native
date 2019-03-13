@@ -14,33 +14,23 @@ describe('stringifySafe', () => {
   const stringifySafe = require('stringifySafe');
 
   it('stringifySafe stringifies undefined values', () => {
-    const arg = undefined;
-    const result = stringifySafe(arg);
-    expect(result).toEqual('undefined');
+    expect(stringifySafe(undefined)).toEqual('undefined');
   });
 
   it('stringifySafe stringifies null values', () => {
-    const arg = null;
-    const result = stringifySafe(arg);
-    expect(result).toEqual('null');
+    expect(stringifySafe(null)).toEqual('null');
   });
 
   it('stringifySafe stringifies string values', () => {
-    const arg = 'abc';
-    const result = stringifySafe(arg);
-    expect(result).toEqual('"abc"');
+    expect(stringifySafe('abc')).toEqual('"abc"');
   });
 
   it('stringifySafe stringifies function values', () => {
-    const arg = function() {};
-    const result = stringifySafe(arg);
-    expect(result).toEqual('function arg() {}');
+    expect(stringifySafe(function() {})).toEqual('function () {}');
   });
 
   it('stringifySafe stringifies non-circular objects', () => {
-    const arg = {a: 1};
-    const result = stringifySafe(arg);
-    expect(result).toEqual('{"a":1}');
+    expect(stringifySafe({a: 1})).toEqual('{"a":1}');
   });
 
   it('stringifySafe stringifies circular objects with toString', () => {

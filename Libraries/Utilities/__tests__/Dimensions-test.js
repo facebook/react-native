@@ -17,15 +17,15 @@ describe('Dimensions', () => {
   it('should set window dimensions', () => {
     Dimensions.set({
       windowPhysicalPixels: {
-        width: 2,
-        height: 2,
+        width: 400,
+        height: 800,
         scale: 2,
         fontScale: 3,
       },
     });
 
-    expect(Dimensions.get('window').width).toEqual(1);
-    expect(Dimensions.get('window').height).toEqual(1);
+    expect(Dimensions.get('window').width).toEqual(200);
+    expect(Dimensions.get('window').height).toEqual(400);
     expect(Dimensions.get('window').scale).toEqual(2);
     expect(Dimensions.get('window').fontScale).toEqual(3);
   });
@@ -33,8 +33,8 @@ describe('Dimensions', () => {
   it('should set screen dimensions on Android', () => {
     Platform.OS = 'android';
     const dimensions = {
-      width: 2,
-      height: 2,
+      width: 400,
+      height: 800,
       scale: 2,
       fontScale: 3,
     };
@@ -43,8 +43,8 @@ describe('Dimensions', () => {
       screenPhysicalPixels: dimensions,
     });
 
-    expect(Dimensions.get('screen').width).toEqual(1);
-    expect(Dimensions.get('screen').height).toEqual(1);
+    expect(Dimensions.get('screen').width).toEqual(200);
+    expect(Dimensions.get('screen').height).toEqual(400);
     expect(Dimensions.get('screen').scale).toEqual(2);
     expect(Dimensions.get('screen').fontScale).toEqual(3);
   });
@@ -52,8 +52,8 @@ describe('Dimensions', () => {
   it('should set screen dimensions on iOS', () => {
     Platform.OS = 'ios';
     const dimensions = {
-      width: 2,
-      height: 2,
+      width: 400,
+      height: 800,
       scale: 2,
       fontScale: 3,
     };
