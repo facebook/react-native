@@ -7,6 +7,7 @@
 
 #import <React/RCTEventEmitter.h>
 #import <React/RCTNetworkTask.h>
+#import <React/RCTURLRequestHandler.h>
 
 @protocol RCTNetworkingRequestHandler <NSObject>
 
@@ -25,6 +26,12 @@
 @end
 
 @interface RCTNetworking : RCTEventEmitter
+
+/**
+ * Allows RCTNetworking instances to be initialized with handlers.
+ * The handlers will be requested via the bridge's moduleForName method when required.
+ */
+- (instancetype)initWithHandlersProvider:(NSArray<id<RCTURLRequestHandler>> * (^)(void))getHandlers;
 
 /**
  * Does a handler exist for the specified request?
