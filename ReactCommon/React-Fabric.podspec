@@ -37,7 +37,7 @@ Pod::Spec.new do |s|
                             "CLANG_CXX_LANGUAGE_STANDARD" => "c++14" }
 
   s.dependency "React-graphics", version
-  s.dependency "Folly", folly_version
+  s.dependency "Folly/Fabric", folly_version
   s.dependency "React-jsiexecutor", version
 
   s.subspec "attributedstring" do |ss|

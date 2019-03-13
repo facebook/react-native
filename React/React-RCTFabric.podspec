@@ -17,7 +17,8 @@ else
   source[:tag] = "v#{version}"
 end
 
-folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
+folly_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1'
+folly_compiler_flags = folly_flags + ' ' + '-Wno-comma -Wno-shorten-64-to-32'
 folly_version = '2018.10.22.00'
 boost_compiler_flags = '-Wno-documentation'
 
@@ -38,9 +39,11 @@ Pod::Spec.new do |s|
   s.framework              = "JavaScriptCore"
   s.library                = "stdc++"
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Folly\"" }
+  s.xcconfig               = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/glog\" \"$(PODS_ROOT)/Folly\"", 
+                               "OTHER_CFLAGS" => "$(inherited) -DFABRIC_ENABLED" + " " + folly_flags  }
 
   s.dependency "React-Core", version
   s.dependency "React-Fabric", version
   s.dependency "React-RCTImage", version
-  s.dependency "Folly", folly_version
+  s.dependency "Folly/Fabric", folly_version
 end

@@ -64,6 +64,26 @@ Pod::Spec.new do |spec|
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",
                                "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\"" }
 
+  spec.default_subspec = 'Default'
+
+  spec.subspec 'Default' do |default|
+  # no-op
+  end
+
+  spec.subspec 'Fabric' do |fabric|
+    fabric.source_files = 'folly/portability/SysUio.cpp',
+                          'folly/FileUtil.cpp',
+                          'folly/SharedMutex.cpp',
+                          'folly/concurrency/CacheLocality.cpp',
+                          'folly/detail/Futex.cpp',
+                          'folly/lang/SafeAssert.cpp',
+                          'folly/synchronization/ParkingLot.cpp'
+    fabric.preserve_paths = 'folly/concurrency/CacheLocality.h',
+                            'folly/synchronization/ParkingLot.h',
+                            'folly/synchronization/SanitizeThread.h',
+                            'folly/system/ThreadId.h'
+  end
+
   # Pinning to the same version as React.podspec.
   spec.platforms = { :ios => "9.0", :tvos => "9.2" }
 end
