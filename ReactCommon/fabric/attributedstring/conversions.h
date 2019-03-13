@@ -284,7 +284,7 @@ inline void fromRawValue(
   }
     
   // TODO: remove "underline line-through" after "line-through" deprecation
-  if (string == "underline-strikethrough"  || string == "underline line-through") {
+  if (string == "underline-strikethrough" || string == "underline line-through") {
     result = TextDecorationLineType::UnderlineStrikethrough;
     return;
   }
