@@ -94,7 +94,7 @@ struct YGNodeContext {
 
 const int MARGIN = 1;
 const int PADDING = 2;
-const int BORDER = 3;
+const int BORDER = 4;
 
 static inline YGNodeContext* ygNodeRefToYGNodeContext(YGNodeRef node) {
   return reinterpret_cast<YGNodeContext*>(node->getContext());
