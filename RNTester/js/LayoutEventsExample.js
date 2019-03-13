@@ -10,16 +10,10 @@
 
 'use strict';
 
-<<<<<<< HEAD
 var React = require('react');
 var ReactNative = require('react-native');
 var Platform = require('Platform');
 var {Image, LayoutAnimation, StyleSheet, Text, View} = ReactNative;
-=======
-const React = require('react');
-const ReactNative = require('react-native');
-const {Image, LayoutAnimation, StyleSheet, Text, View} = ReactNative;
->>>>>>> v0.58.6
 
 import type {ViewLayout, ViewLayoutEvent} from 'ViewPropTypes';
 

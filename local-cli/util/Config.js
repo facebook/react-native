@@ -76,12 +76,9 @@ const Config = {
       ],
       getPolyfills,
     },
-<<<<<<< HEAD
-=======
     server: {
       port: process.env.RCT_METRO_PORT || 8081,
     },
->>>>>>> v0.58.6
     transformer: {
       babelTransformerPath: require.resolve('metro/src/reactNativeTransformer'),
     },

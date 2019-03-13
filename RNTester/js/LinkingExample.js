@@ -9,15 +9,9 @@
 
 'use strict';
 
-<<<<<<< HEAD
 var React = require('react');
-var PropTypes = require('prop-types');
-var ReactNative = require('react-native');
 var Platform = require('Platform');
-var {Linking, StyleSheet, Text, TouchableOpacity, View} = ReactNative;
-var RNTesterBlock = require('./RNTesterBlock');
-=======
-const React = require('react');
+
 const {
   Linking,
   StyleSheet,
@@ -25,7 +19,6 @@ const {
   TouchableOpacity,
   View,
 } = require('react-native');
->>>>>>> v0.58.6
 
 const RNTesterBlock = require('./RNTesterBlock');
 
