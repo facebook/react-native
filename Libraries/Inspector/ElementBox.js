@@ -100,7 +100,7 @@ type Style = {
  * @param style the style to resolve
  * @return a modified copy
  */
-function resolveRelativeSizes(style: Style): $ReadOnly<Style> {
+function resolveRelativeSizes(style: $ReadOnly<Style>): Style {
   let resolvedStyle = Object.assign({}, style);
   resolveSizeInPlace(resolvedStyle, 'top', 'height');
   resolveSizeInPlace(resolvedStyle, 'right', 'width');
