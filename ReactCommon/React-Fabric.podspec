@@ -19,6 +19,7 @@ end
 
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
 folly_version = '2018.10.22.00'
+folly_dep_name = 'Folly/Fabric'
 boost_compiler_flags = '-Wno-documentation'
 
 Pod::Spec.new do |s|
@@ -36,12 +37,12 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig = { "USE_HEADERMAP" => "YES",
                             "CLANG_CXX_LANGUAGE_STANDARD" => "c++14" }
 
+  s.dependency folly_dep_name, folly_version
   s.dependency "React-graphics", version
-  s.dependency "Folly/Fabric", folly_version
   s.dependency "React-jsiexecutor", version
 
   s.subspec "attributedstring" do |ss|
-    ss.dependency             "Folly", folly_version
+    ss.dependency             folly_dep_name, folly_version
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "fabric/attributedstring/**/*.{m,mm,cpp,h}"
     ss.exclude_files        = "**/tests/*"
@@ -50,7 +51,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "better" do |ss|
-    ss.dependency             "Folly", folly_version
+    ss.dependency             folly_dep_name, folly_version
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "better/**/*.{m,mm,cpp,h}"
     ss.exclude_files        = "**/tests/*"
@@ -65,7 +66,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "core" do |ss|
-    ss.dependency             "Folly", folly_version
+    ss.dependency             folly_dep_name, folly_version
     ss.compiler_flags       = folly_compiler_flags + ' ' + boost_compiler_flags
     ss.source_files         = "fabric/core/**/*.{m,mm,cpp,h}"
     ss.exclude_files        = "**/tests/*"
@@ -75,7 +76,7 @@ Pod::Spec.new do |s|
 
   s.subspec "components" do |ss|
     ss.subspec "activityindicator" do |sss|
-      sss.dependency             "Folly", folly_version
+      sss.dependency             folly_dep_name, folly_version
       sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "fabric/components/activityindicator/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "**/tests/*"
@@ -84,7 +85,7 @@ Pod::Spec.new do |s|
     end
 
     ss.subspec "image" do |sss|
-      sss.dependency             "Folly", folly_version
+      sss.dependency             folly_dep_name, folly_version
       sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "fabric/components/image/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "**/tests/*"
@@ -93,7 +94,7 @@ Pod::Spec.new do |s|
     end
 
     ss.subspec "rncore" do |sss|
-      sss.dependency             "Folly", folly_version
+      sss.dependency             folly_dep_name, folly_version
       sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "fabric/components/rncore/*.{m,mm,cpp,h}"
       sss.exclude_files        = "**/tests/*"
@@ -102,7 +103,7 @@ Pod::Spec.new do |s|
     end
 
     ss.subspec "root" do |sss|
-      sss.dependency             "Folly", folly_version
+      sss.dependency             folly_dep_name, folly_version
       sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "fabric/components/root/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "**/tests/*"
@@ -111,7 +112,7 @@ Pod::Spec.new do |s|
     end
 
     ss.subspec "scrollview" do |sss|
-      sss.dependency             "Folly", folly_version
+      sss.dependency             folly_dep_name, folly_version
       sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "fabric/components/scrollview/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "**/tests/*"
@@ -120,7 +121,7 @@ Pod::Spec.new do |s|
     end
 
     ss.subspec "slider" do |sss|
-      sss.dependency             "Folly", folly_version
+      sss.dependency             folly_dep_name, folly_version
       sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "fabric/components/slider/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "**/tests/*",
@@ -130,7 +131,7 @@ Pod::Spec.new do |s|
     end
 
     ss.subspec "text" do |sss|
-      sss.dependency             "Folly", folly_version
+      sss.dependency             folly_dep_name, folly_version
       sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "fabric/components/text/**/*.{m,mm,cpp,h}"
       sss.exclude_files        = "**/tests/*"
@@ -139,7 +140,7 @@ Pod::Spec.new do |s|
     end
 
     ss.subspec "view" do |sss|
-      sss.dependency             "Folly", folly_version
+      sss.dependency             folly_dep_name, folly_version
       sss.dependency             "yoga",  "#{version}.React"
       sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "fabric/components/view/**/*.{m,mm,cpp,h}"
@@ -150,7 +151,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "debug" do |ss|
-    ss.dependency             "Folly", folly_version
+    ss.dependency             folly_dep_name, folly_version
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "fabric/debug/**/*.{m,mm,cpp,h}"
     ss.exclude_files        = "**/tests/*"
@@ -159,8 +160,8 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "imagemanager" do |ss|
-    ss.dependency "React-RCTImage", version
-    ss.dependency             "Folly", folly_version
+    ss.dependency             "React-RCTImage", version
+    ss.dependency             folly_dep_name, folly_version
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "fabric/imagemanager/**/*.{m,mm,cpp,h}"
     ss.exclude_files        = "**/tests/*",
@@ -170,7 +171,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "mounting" do |ss|
-    ss.dependency             "Folly", folly_version
+    ss.dependency             folly_dep_name, folly_version
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "fabric/mounting/**/*.{m,mm,cpp,h}"
     ss.exclude_files        = "**/tests/*"
@@ -179,7 +180,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "textlayoutmanager" do |ss|
-    ss.dependency             "Folly", folly_version
+    ss.dependency             folly_dep_name, folly_version
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "fabric/textlayoutmanager/**/*.{m,mm,cpp,h}"
     ss.exclude_files        = "**/tests/*",
@@ -189,7 +190,7 @@ Pod::Spec.new do |s|
   end
 
   s.subspec "uimanager" do |ss|
-    ss.dependency             "Folly", folly_version
+    ss.dependency             folly_dep_name, folly_version
     ss.compiler_flags       = folly_compiler_flags
     ss.source_files         = "fabric/uimanager/**/*.{m,mm,cpp,h}"
     ss.exclude_files        = "**/tests/*",
