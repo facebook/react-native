@@ -64,7 +64,7 @@ class PickerAndroid extends React.Component<
   ): PickerAndroidState {
     let selectedIndex = 0;
     const items = React.Children.map(props.children, (child, index) => {
-      if (child === 0) {
+      if (child === null) {
         return;
       }
       if (child.props.value === props.selectedValue) {
@@ -114,7 +114,7 @@ class PickerAndroid extends React.Component<
       const position = event.nativeEvent.position;
       if (position >= 0) {
         const children = React.Children.toArray(this.props.children).filter(
-          item => item !== 0
+          item => item !== null
         );
         const value = children[position].props.value;
         /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
