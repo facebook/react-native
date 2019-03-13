@@ -1,18 +1,14 @@
 {
   "name": "@react-native-community/eslint-config",
-  "version": "0.0.0",
+  "version": "0.0.2",
   "description": "ESLint config for React Native",
   "main": "index.js",
   "repository": {
     "type": "git",
     "url": "git@github.com:facebook/react-native.git"
   },
-  "peerDependencies": {
-    "eslint": ">=5"
-  },
-  "devDependencies": {
+  "dependencies": {
     "babel-eslint": "9.0.0",
-    "eslint": "5.1.0",
     "eslint-plugin-eslint-comments": "^3.0.1",
     "eslint-plugin-flowtype": "2.43.0",
     "eslint-plugin-jest": "21.8.0",
@@ -21,5 +17,11 @@
     "eslint-plugin-react-hooks": "^1.0.1",
     "eslint-plugin-react-native": "3.5.0",
     "prettier": "1.13.6"
+  },
+  "peerDependencies": {
+    "eslint": ">=5"
+  },
+  "devDependencies": {
+    "eslint": "^5.1.0"
   }
 }
