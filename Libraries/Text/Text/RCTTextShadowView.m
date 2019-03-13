@@ -35,17 +35,16 @@
   return self;
 }
 
-/**
- * Fix for https://github.com/facebook/react-native/issues/23849
- * When applying a semi-transparent background color to Text component
- * We must set the root text nodes text attribute background color to nil
- * because the background color is drawn on the RCTTextView itself, as well
- * as on the glphy background draw step. By setting this to nil, we allow the
- * RCTTextView backgroundColor to be used, without affecting nested Text components.
- */
 - (void)didSetProps:(NSArray<NSString *> *)changedProps
 {
   [super didSetProps:changedProps];
+
+  // When applying a semi-transparent background color to Text component
+  // we must set the root text nodes text attribute background color to nil
+  // because the background color is drawn on the RCTTextView itself, as well
+  // as on the glphy background draw step. By setting this to nil, we allow
+  // the RCTTextView backgroundColor to be used, without affecting nested Text
+  // components.
   self.textAttributes.backgroundColor = nil;
 }
 
