@@ -232,6 +232,11 @@ const APIExamples: Array<RNTesterExample> = [
     supportsTVOS: false,
   },
   {
+    key: 'CrashExample',
+    module: require('./CrashExample'),
+    supportsTVOS: false,
+  },
+  {
     key: 'Dimensions',
     module: require('./DimensionsExample'),
     supportsTVOS: true,
