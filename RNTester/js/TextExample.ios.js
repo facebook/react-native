@@ -617,37 +617,37 @@ exports.examples = [
           <Text style={{textDecorationLine: 'none'}}>None textDecoration</Text>
           <Text
             style={{
-              textDecorationLine: 'strikethrough',
+              textDecorationLine: 'line-through',
               textDecorationStyle: 'solid',
             }}>
-            Solid strikethrough
+            Solid line-through
           </Text>
           <Text
             style={{
-              textDecorationLine: 'strikethrough',
+              textDecorationLine: 'line-through',
               textDecorationStyle: 'double',
               textDecorationColor: '#ff0000',
             }}>
-            Double strikethrough with custom color
+            Double line-through with custom color
           </Text>
           <Text
             style={{
-              textDecorationLine: 'strikethrough',
+              textDecorationLine: 'line-through',
               textDecorationStyle: 'dashed',
               textDecorationColor: '#9CDC40',
             }}>
-            Dashed strikethrough with custom color
+            Dashed line-through with custom color
           </Text>
           <Text
             style={{
-              textDecorationLine: 'strikethrough',
+              textDecorationLine: 'line-through',
               textDecorationStyle: 'dotted',
               textDecorationColor: 'blue',
             }}>
-            Dotted strikethrough with custom color
+            Dotted line-through with custom color
           </Text>
-          <Text style={{textDecorationLine: 'underline strikethrough'}}>
-            Both underline and strikethrough
+          <Text style={{textDecorationLine: 'underline line-through'}}>
+            Both underline and line-through
           </Text>
         </View>
       );

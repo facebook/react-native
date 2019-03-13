@@ -213,19 +213,19 @@ class TextExample extends React.Component<{}> {
           <Text style={{textDecorationLine: 'none'}}>None textDecoration</Text>
           <Text
             style={{
-              textDecorationLine: 'strikethrough',
+              textDecorationLine: 'line-through',
               textDecorationStyle: 'solid',
             }}>
-            Solid strikethrough
+            Solid line-through
           </Text>
-          <Text style={{textDecorationLine: 'underline strikethrough'}}>
-            Both underline and strikethrough
+          <Text style={{textDecorationLine: 'underline line-through'}}>
+            Both underline and line-through
           </Text>
           <Text>
             Mixed text with{' '}
             <Text style={{textDecorationLine: 'underline'}}>underline</Text> and{' '}
-            <Text style={{textDecorationLine: 'strikethrough'}}>
-              strikethrough
+            <Text style={{textDecorationLine: 'line-through'}}>
+              line-through
             </Text>{' '}
             text nodes
           </Text>

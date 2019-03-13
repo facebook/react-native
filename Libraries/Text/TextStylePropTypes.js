@@ -92,8 +92,8 @@ const TextStylePropTypes = {
   textDecorationLine: ReactPropTypes.oneOf([
     'none' /*default*/,
     'underline',
-    'strikethrough',
-    'underline strikethrough',
+    'line-through',
+    'underline line-through',
   ]),
   /**
    * @platform ios
