@@ -67,6 +67,8 @@ void RCTNativeModule::invoke(unsigned int methodId, folly::dynamic &&params, int
     if (callId != -1) {
       fbsystrace_end_async_flow(TRACE_TAG_REACT_APPS, "native", callId);
     }
+    #else
+    (void)(callId);
     #endif
     invokeInner(weakBridge, weakModuleData, methodId, std::move(params));
   };
