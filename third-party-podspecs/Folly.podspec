@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   spec.dependency 'boost-for-react-native'
   spec.dependency 'DoubleConversion'
   spec.dependency 'glog'
-  spec.compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation'
+  spec.compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_HAVE_PTHREAD=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation'
   spec.source_files = 'folly/String.cpp',
                       'folly/Conv.cpp',
                       'folly/Demangle.cpp',
@@ -31,7 +31,17 @@ Pod::Spec.new do |spec|
                       'folly/hash/SpookyHashV2.cpp',
                       'folly/lang/Assume.cpp',
                       'folly/lang/ColdClass.cpp',
-                      'folly/memory/detail/MallocImpl.cpp'
+                      'folly/memory/detail/MallocImpl.cpp',
+                        # --- Start Fabric Specific --- #
+                      'folly/portability/SysUio.cpp',
+                      'folly/FileUtil.cpp',
+                      'folly/SharedMutex.cpp',
+                      'folly/concurrency/CacheLocality.cpp',
+                      'folly/detail/Futex.cpp',
+                      'folly/lang/SafeAssert.cpp',
+                      'folly/synchronization/ParkingLot.cpp'
+                       # --- End Fabric Specific --- #
+
   # workaround for https://github.com/facebook/react-native/issues/14326
   spec.preserve_paths = 'folly/*.h',
                         'folly/container/*.h',
@@ -42,7 +52,13 @@ Pod::Spec.new do |spec|
                         'folly/lang/*.h',
                         'folly/memory/*.h',
                         'folly/memory/detail/*.h',
-                        'folly/portability/*.h'
+                        'folly/portability/*.h',
+                        # --- Start Fabric Specific --- #
+                        'folly/concurrency/CacheLocality.h',
+                        'folly/synchronization/ParkingLot.h',
+                        'folly/synchronization/SanitizeThread.h',
+                        'folly/system/ThreadId.h'
+                        # --- End Fabric Specific --- #
   spec.libraries           = "stdc++"
   spec.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",

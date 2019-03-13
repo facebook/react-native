@@ -37,7 +37,6 @@ target 'RNTester' do
   # Third party deps podspec link
   pod 'DoubleConversion', :podspec => '../third-party-podspecs/DoubleConversion.podspec'
   pod 'glog', :podspec => '../third-party-podspecs/glog.podspec'
-  pod 'Folly', :podspec => '../third-party-podspecs/Folly-Fabric.podspec'
-  pod 'libevent', :podspec => '../third-party-podspecs/libevent.podspec'
+  pod 'Folly', :podspec => '../third-party-podspecs/Folly.podspec'
 
 end
