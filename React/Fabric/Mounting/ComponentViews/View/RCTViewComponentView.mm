@@ -398,7 +398,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     }
 
     layer.borderWidth = (CGFloat)borderMetrics.borderWidths.left;
-    CGColorRef borderColor = RCTCGColorRefFromSharedColor(borderMetrics.borderColors.left)
+    CGColorRef borderColor = RCTCGColorRefFromSharedColor(borderMetrics.borderColors.left);
     layer.borderColor = borderColor;
     CGColorRelease(borderColor);
     layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft;
