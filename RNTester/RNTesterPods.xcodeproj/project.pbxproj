@@ -392,10 +392,8 @@
 					"\"${PODS_ROOT}/Headers/Public/React-jsinspector\"",
 					"\"${PODS_ROOT}/Headers/Public/glog\"",
 					"\"${PODS_ROOT}/Headers/Public/libevent\"",
-					"\"${PODS_ROOT}/Headers/Public/yoga\"",
-					"$(SRCROOT)/../third-party/folly-2018.10.22.00",
-					"$(SRCROOT)/../third-party/glog-0.3.5/src",
-					"$(SRCROOT)/../third-party/boost_1_63_0",
+					"\"$(PODS_ROOT)/boost-for-react-native\"",
+					"\"$(PODS_ROOT)/Folly\"",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/RNTester/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
@@ -447,10 +445,8 @@
 					"\"${PODS_ROOT}/Headers/Public/React-jsinspector\"",
 					"\"${PODS_ROOT}/Headers/Public/glog\"",
 					"\"${PODS_ROOT}/Headers/Public/libevent\"",
-					"\"${PODS_ROOT}/Headers/Public/yoga\"",
-					"$(SRCROOT)/../third-party/folly-2018.10.22.00",
-					"$(SRCROOT)/../third-party/glog-0.3.5/src",
-					"$(SRCROOT)/../third-party/boost_1_63_0",
+					"\"$(PODS_ROOT)/boost-for-react-native\"",
+					"\"$(PODS_ROOT)/Folly\"",
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/RNTester/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
