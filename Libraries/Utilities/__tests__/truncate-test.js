@@ -31,6 +31,11 @@ describe('truncate', () => {
       truncate('Hello, world.\nHow are you?', 18, {breakOnWords: false}),
     ).toBe('Hello, world.\nHo...');
   });
+  it('should add another character if the truncations happens in the middle of a wide char', () => {
+    expect(
+      truncate('Hello, world.  āA weird character', 18, {breakOnWords: false}),
+    ).toBe('Hello, world.  āA...');
+  });
   it('should break at word boundaries', () => {
     expect(
       truncate('Hello, world.  How are you?', 18, {breakOnWords: true}),
