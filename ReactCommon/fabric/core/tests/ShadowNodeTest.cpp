@@ -267,8 +267,8 @@ TEST(ShadowNodeTest, handleBacktracking) {
       },
       componentDescriptor);
 
-  auto nodeABChildren = std::make_shared<std::vector<SharedShadowNode>>(
-      std::vector<SharedShadowNode>{nodeABA, nodeABB, nodeABC});
+  auto nodeABChildren = std::make_shared<SharedShadowNodeList>(
+      SharedShadowNodeList{nodeABA, nodeABB, nodeABC});
   auto nodeAB = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
           /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
@@ -289,8 +289,8 @@ TEST(ShadowNodeTest, handleBacktracking) {
       },
       componentDescriptor);
 
-  auto nodeAChildren = std::make_shared<std::vector<SharedShadowNode>>(
-      std::vector<SharedShadowNode>{nodeAA, nodeAB, nodeAC});
+  auto nodeAChildren = std::make_shared<SharedShadowNodeList>(
+      SharedShadowNodeList{nodeAA, nodeAB, nodeAC});
   auto nodeA = std::make_shared<TestShadowNode>(
       ShadowNodeFragment{
           /* .tag = */ ShadowNodeFragment::tagPlaceholder(),

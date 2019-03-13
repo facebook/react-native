@@ -226,6 +226,7 @@ const FloatPropNativeComponentViewConfig = {
     blurRadius3: true,
     blurRadius4: true,
     blurRadius5: true,
+    blurRadius6: true,
     style: ReactNativeStyleAttributes
   }
 };

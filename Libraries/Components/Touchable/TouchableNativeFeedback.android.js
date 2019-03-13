@@ -212,18 +212,9 @@ const TouchableNativeFeedback = createReactClass({
   touchableHandleActivePressIn: function(e: PressEvent) {
     this.props.onPressIn && this.props.onPressIn(e);
     this._dispatchPressedStateChange(true);
-    /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment
-     * suppresses an error found when Flow v0.89 was deployed. To see the
-     * error, delete this comment and run Flow. */
     if (this.pressInLocation) {
       this._dispatchHotspotUpdate(
-        /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment
-         * suppresses an error found when Flow v0.89 was deployed. To see the
-         * error, delete this comment and run Flow. */
         this.pressInLocation.locationX,
-        /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment
-         * suppresses an error found when Flow v0.89 was deployed. To see the
-         * error, delete this comment and run Flow. */
         this.pressInLocation.locationY,
       );
     }

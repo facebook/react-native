@@ -283,9 +283,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = "importantForAutofill")
   public void setImportantForAutofill(ReactEditText view, @Nullable String value) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-      return;
-    }
     int mode = View.IMPORTANT_FOR_AUTOFILL_AUTO;
     if ("no".equals(value)) {
       mode = View.IMPORTANT_FOR_AUTOFILL_NO;
@@ -295,6 +292,13 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       mode = View.IMPORTANT_FOR_AUTOFILL_YES;
     } else if ("yesExcludeDescendants".equals(value)) {
       mode = View.IMPORTANT_FOR_AUTOFILL_YES_EXCLUDE_DESCENDANTS;
+    }
+    setImportantForAutofill(view, mode);
+  }
+
+  private void setImportantForAutofill(ReactEditText view, int mode) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+      return;
     }
     view.setImportantForAutofill(mode);
   }
@@ -566,7 +570,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = "autoComplete")
   public void setTextContentType(ReactEditText view, @Nullable String autocomplete) {
     if (autocomplete == null) {
-      view.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO);
+      setImportantForAutofill(view, View.IMPORTANT_FOR_AUTOFILL_NO);
     } else if ("username".equals(autocomplete)) {
       view.setAutofillHints(View.AUTOFILL_HINT_USERNAME);
     } else if ("password".equals(autocomplete)) {
@@ -592,7 +596,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     } else if ("cc-exp-year".equals(autocomplete)) {
       view.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_YEAR);
     } else if ("off".equals(autocomplete)) {
-      view.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO);
+      setImportantForAutofill(view, View.IMPORTANT_FOR_AUTOFILL_NO);
     } else {
       throw new JSApplicationIllegalArgumentException("Invalid autocomplete option: " + autocomplete);
     }

@@ -207,6 +207,7 @@ const Float blurRadius2{0.001};
 const Float blurRadius3{2.1};
 const Float blurRadius4{0.0};
 const Float blurRadius5{1.0};
+const Float blurRadius6{0.0};
 };
 
 } // namespace react

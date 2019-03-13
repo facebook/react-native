@@ -26,9 +26,6 @@ type TaskProvider = () => Task;
 type TaskCanceller = () => void;
 type TaskCancelProvider = () => TaskCanceller;
 
-/* $FlowFixMe(>=0.90.0 site=react_native_fb) This comment suppresses an
- * error found when Flow v0.90 was deployed. To see the error, delete this
- * comment and run Flow. */
 export type ComponentProvider = () => React$ComponentType<any>;
 export type ComponentProviderInstrumentationHook = (
   component: ComponentProvider,

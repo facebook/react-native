@@ -90,8 +90,12 @@ class ConcreteShadowNode : public ShadowNode {
    * Returns subset of children that are inherited from `SpecificShadowNodeT`.
    */
   template <typename SpecificShadowNodeT>
-  std::vector<SpecificShadowNodeT *> getChildrenSlice() const {
-    std::vector<SpecificShadowNodeT *> children;
+  better::
+      small_vector<SpecificShadowNodeT *, kShadowNodeChildrenSmallVectorSize>
+      getChildrenSlice() const {
+    better::
+        small_vector<SpecificShadowNodeT *, kShadowNodeChildrenSmallVectorSize>
+            children;
     for (const auto &childShadowNode : getChildren()) {
       auto specificChildShadowNode =
           dynamic_cast<const SpecificShadowNodeT *>(childShadowNode.get());

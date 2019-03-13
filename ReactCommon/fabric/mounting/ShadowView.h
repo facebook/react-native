@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <better/small_vector.h>
 #include <folly/Hash.h>
 #include <react/core/EventEmitter.h>
 #include <react/core/LayoutMetrics.h>
@@ -59,7 +60,8 @@ struct ShadowViewNodePair final {
   bool operator!=(const ShadowViewNodePair &rhs) const;
 };
 
-using ShadowViewNodePairList = std::vector<ShadowViewNodePair>;
+using ShadowViewNodePairList = better::
+    small_vector<ShadowViewNodePair, kShadowNodeChildrenSmallVectorSize>;
 
 } // namespace react
 } // namespace facebook

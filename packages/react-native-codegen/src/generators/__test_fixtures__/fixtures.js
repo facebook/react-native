@@ -213,6 +213,14 @@ const FLOAT_PROPS: SchemaType = {
                 default: 1,
               },
             },
+            {
+              name: 'blurRadius6',
+              optional: true,
+              typeAnnotation: {
+                type: 'FloatTypeAnnotation',
+                default: -0.0,
+              },
+            },
           ],
         },
       },

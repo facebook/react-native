@@ -36,8 +36,6 @@ public class YogaNodeJNI extends YogaNode {
   private static final int PADDING = 2;
   private static final int BORDER = 4;
 
-  private final boolean mAvoidGlobalJNIRefs;
-
   @DoNotStrip
   private float mWidth = YogaConstants.UNDEFINED;
   @DoNotStrip
@@ -78,17 +76,15 @@ public class YogaNodeJNI extends YogaNode {
 
   private native long jni_YGNodeNew();
   public YogaNodeJNI() {
-    mAvoidGlobalJNIRefs = false;
     mNativePointer = jni_YGNodeNew();
     if (mNativePointer == 0) {
       throw new IllegalStateException("Failed to allocate native memory");
     }
   }
 
-  private native long jni_YGNodeNewWithConfig(long configPointer, boolean avoidGlobalJNIRefs);
+  private native long jni_YGNodeNewWithConfig(long configPointer);
   public YogaNodeJNI(YogaConfig config) {
-    mAvoidGlobalJNIRefs = config.avoidGlobalJNIRefs;
-    mNativePointer = jni_YGNodeNewWithConfig(config.mNativePointer, mAvoidGlobalJNIRefs);
+    mNativePointer = jni_YGNodeNewWithConfig(config.mNativePointer);
     if (mNativePointer == 0) {
       throw new IllegalStateException("Failed to allocate native memory");
     }
@@ -231,21 +227,19 @@ public class YogaNodeJNI extends YogaNode {
     long[] nativePointers = null;
     YogaNodeJNI[] nodes = null;
 
-    if (mAvoidGlobalJNIRefs) {
-      ArrayList<YogaNodeJNI> n = new ArrayList<>();
-      n.add(this);
-      for (int i = 0; i < n.size(); ++i) {
-        List<YogaNodeJNI> children  = n.get(i).mChildren;
-        if (children != null) {
-          n.addAll(children);
-        }
+    ArrayList<YogaNodeJNI> n = new ArrayList<>();
+    n.add(this);
+    for (int i = 0; i < n.size(); ++i) {
+      List<YogaNodeJNI> children  = n.get(i).mChildren;
+      if (children != null) {
+        n.addAll(children);
       }
+    }
 
-      nodes = n.toArray(new YogaNodeJNI[n.size()]);
-      nativePointers = new long[nodes.length];
-      for (int i = 0; i < nodes.length; ++i) {
-        nativePointers[i] = nodes[i].mNativePointer;
-      }
+    nodes = n.toArray(new YogaNodeJNI[n.size()]);
+    nativePointers = new long[nodes.length];
+    for (int i = 0; i < nodes.length; ++i) {
+      nativePointers[i] = nodes[i].mNativePointer;
     }
 
     jni_YGNodeCalculateLayout(mNativePointer, width, height, nativePointers, nodes);

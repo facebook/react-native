@@ -93,6 +93,10 @@ Tag ShadowNode::getRootTag() const {
   return rootTag_;
 }
 
+const ComponentDescriptor &ShadowNode::getComponentDescriptor() const {
+  return componentDescriptor_;
+}
+
 const State::Shared &ShadowNode::getState() const {
   return state_;
 }
