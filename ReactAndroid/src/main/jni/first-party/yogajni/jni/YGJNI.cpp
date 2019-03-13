@@ -352,11 +352,13 @@ void jni_YGNodeReset(jlong nativePointer) {
 }
 
 void jni_YGNodePrint(jlong nativePointer) {
+#ifdef DEBUG
   const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
   YGNodePrint(
       node,
       (YGPrintOptions)(
           YGPrintOptionsStyle | YGPrintOptionsLayout | YGPrintOptionsChildren));
+#endif
 }
 
 void jni_YGNodeInsertChild(

@@ -979,6 +979,7 @@ bool YGLayoutNodeInternal(
     YGMarkerLayoutData& layoutMarkerData,
     void* const layoutContext);
 
+#ifdef DEBUG
 static void YGNodePrintInternal(
     const YGNodeRef node,
     const YGPrintOptions options) {
@@ -990,6 +991,7 @@ static void YGNodePrintInternal(
 void YGNodePrint(const YGNodeRef node, const YGPrintOptions options) {
   YGNodePrintInternal(node, options);
 }
+#endif
 
 const std::array<YGEdge, 4> leading = {
     {YGEdgeTop, YGEdgeBottom, YGEdgeLeft, YGEdgeRight}};
@@ -4091,6 +4093,7 @@ void YGNodeCalculateLayoutWithContext(
         node->getLayout().direction, ownerWidth, ownerHeight, ownerWidth);
     YGRoundToPixelGrid(node, node->getConfig()->pointScaleFactor, 0.0f, 0.0f);
 
+#ifdef DEBUG
     if (node->getConfig()->printTree) {
       YGNodePrint(
           node,
@@ -4098,6 +4101,7 @@ void YGNodeCalculateLayoutWithContext(
               YGPrintOptionsLayout | YGPrintOptionsChildren |
               YGPrintOptionsStyle));
     }
+#endif
   }
 
   // We want to get rid off `useLegacyStretchBehaviour` from YGConfig. But we
@@ -4147,6 +4151,7 @@ void YGNodeCalculateLayoutWithContext(
           !originalNode->isLayoutTreeEqualToNode(*node);
       node->setLayoutDoesLegacyFlagAffectsLayout(neededLegacyStretchBehaviour);
 
+#ifdef DEBUG
       if (originalNode->getConfig()->printTree) {
         YGNodePrint(
             originalNode,
@@ -4154,6 +4159,7 @@ void YGNodeCalculateLayoutWithContext(
                 YGPrintOptionsLayout | YGPrintOptionsChildren |
                 YGPrintOptionsStyle));
       }
+#endif
     }
     YGConfigFreeRecursive(originalNode);
     YGNodeFreeRecursive(originalNode);
