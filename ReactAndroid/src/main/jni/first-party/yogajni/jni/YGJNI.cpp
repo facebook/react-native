@@ -175,6 +175,8 @@ static void YGTransferLayoutOutputsRecursive(
   obj->setFieldValue<jboolean>(
       doesLegacyStretchBehaviour,
       YGNodeLayoutGetDidLegacyStretchFlagAffectLayout(root));
+  obj->setFieldValue<jboolean>(hasNewLayoutField, true);
+  YGTransferLayoutDirection(root, obj);
 
   if ((edgeSetFlag & MARGIN) == MARGIN) {
     obj->setFieldValue(
@@ -207,8 +209,6 @@ static void YGTransferLayoutOutputsRecursive(
         borderBottomField, YGNodeLayoutGetBorder(root, YGEdgeBottom));
   }
 
-  obj->setFieldValue<jboolean>(hasNewLayoutField, true);
-  YGTransferLayoutDirection(root, obj);
   root->setHasNewLayout(false);
 
   for (uint32_t i = 0; i < YGNodeGetChildCount(root); i++) {
