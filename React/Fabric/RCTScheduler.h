@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)startSurfaceWithSurfaceId:(facebook::react::SurfaceId)surfaceId
                        moduleName:(NSString *)moduleName
-                     initailProps:(NSDictionary *)initialProps
+                     initialProps:(NSDictionary *)initialProps
                 layoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints
                     layoutContext:(facebook::react::LayoutContext)layoutContext;
 

@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <better/small_vector.h>
 #include <folly/Hash.h>
 #include <react/core/EventEmitter.h>
 #include <react/core/LayoutMetrics.h>
@@ -22,6 +23,8 @@ namespace react {
 struct ShadowView final {
   ShadowView() = default;
   ShadowView(const ShadowView &shadowView) = default;
+
+  ~ShadowView(){};
 
   /*
    * Constructs a `ShadowView` from given `ShadowNode`.
@@ -47,8 +50,8 @@ struct ShadowView final {
  * Describes pair of a `ShadowView` and a `ShadowNode`.
  */
 struct ShadowViewNodePair final {
-  const ShadowView shadowView;
-  const ShadowNode &shadowNode;
+  ShadowView shadowView;
+  ShadowNode const *shadowNode;
 
   /*
    * The stored pointer to `ShadowNode` represents an indentity of the pair.
@@ -57,7 +60,8 @@ struct ShadowViewNodePair final {
   bool operator!=(const ShadowViewNodePair &rhs) const;
 };
 
-using ShadowViewNodePairList = std::vector<ShadowViewNodePair>;
+using ShadowViewNodePairList = better::
+    small_vector<ShadowViewNodePair, kShadowNodeChildrenSmallVectorSize>;
 
 } // namespace react
 } // namespace facebook

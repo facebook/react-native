@@ -105,8 +105,6 @@ RCT_EXPORT_VIEW_PROPERTY(hasTVPreferredFocus, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(tvParallaxProperties, NSDictionary)
 #endif
 
-RCT_EXPORT_VIEW_PROPERTY(nativeID, NSString)
-
 // Acessibility related properties
 RCT_REMAP_VIEW_PROPERTY(accessible, reactAccessibilityElement.isAccessibilityElement, BOOL)
 RCT_REMAP_VIEW_PROPERTY(accessibilityActions, reactAccessibilityElement.accessibilityActions, NSArray<NSString *>)
@@ -169,6 +167,12 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityStates, UIAccessibilityTraits, RCTView)
   UIAccessibilityTraits newTraits = json ? [RCTConvert UIAccessibilityTraits:json] : defaultView.accessibilityTraits;
   UIAccessibilityTraits maskedTraits = newTraits & AccessibilityStatesMask;
   view.reactAccessibilityElement.accessibilityTraits = (view.reactAccessibilityElement.accessibilityTraits & ~AccessibilityStatesMask) | maskedTraits;
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(nativeID, NSString *, RCTView)
+{
+  view.nativeID = json ? [RCTConvert NSString:json] : defaultView.nativeID;
+  [_bridge.uiManager setNativeID:view.nativeID forView:view];
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(pointerEvents, RCTPointerEvents, RCTView)

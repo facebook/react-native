@@ -63,24 +63,7 @@ public class TextLayoutManager {
           fragment.getString("string"),
           textAttributes.mTextTransform));
 
-// TODO: add support for TextInlineImage and BaseText
-//      if (child instanceof ReactRawTextShadowNode) {
-//        sb.append(((ReactRawTextShadowNode) child).getText());
-//      } else if (child instanceof ReactBaseTextShadowNode) {
-//        buildSpannableFromFragment((ReactBaseTextShadowNode) child, sb, ops);
-//      } else if (child instanceof ReactTextInlineImageShadowNode) {
-//        // We make the image take up 1 character in the span and put a corresponding character into
-//        // the text so that the image doesn't run over any following text.
-//        sb.append(INLINE_IMAGE_PLACEHOLDER);
-//        ops.add(
-//          new SetSpanOperation(
-//            sb.length() - INLINE_IMAGE_PLACEHOLDER.length(),
-//            sb.length(),
-//            ((ReactTextInlineImageShadowNode) child).buildInlineImageSpan()));
-//      } else {
-//        throw new IllegalViewOperationException(
-//          "Unexpected view type nested under text node: " + child.getClass());
-//      }
+      // TODO: add support for TextInlineImage and BaseText
 
       int end = sb.length();
       if (end >= start) {
@@ -179,23 +162,10 @@ public class TextLayoutManager {
 
     buildSpannableFromFragment(context, attributedString.getArray("fragments"), sb, ops);
 
-// TODO T31905686: add support for inline Images
-//    textShadowNode.mContainsImages = false;
-//    textShadowNode.mHeightOfTallestInlineImage = Float.NaN;
-
+    // TODO T31905686: add support for inline Images
     // While setting the Spans on the final text, we also check whether any of them are images.
     int priority = 0;
     for (SetSpanOperation op : ops) {
-// TODO T31905686: add support for TextInlineImage in C++
-//      if (op.what instanceof TextInlineImageSpan) {
-//        int height = ((TextInlineImageSpan) op.what).getHeight();
-//        textShadowNode.mContainsImages = true;
-//        if (Float.isNaN(textShadowNode.mHeightOfTallestInlineImage)
-//          || height > textShadowNode.mHeightOfTallestInlineImage) {
-//          textShadowNode.mHeightOfTallestInlineImage = height;
-//        }
-//      }
-
       // Actual order of calling {@code execute} does NOT matter,
       // but the {@code priority} DOES matter.
       op.execute(sb, priority);

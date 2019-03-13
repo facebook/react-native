@@ -7,6 +7,7 @@
 #include <fb/fbjni.h>
 #include <jsi/jsi.h>
 #include <react/core/EventBeat.h>
+#include <react/uimanager/primitives.h>
 #include <mutex>
 #include <unordered_set>
 
@@ -24,18 +25,18 @@ class EventBeatManager : public jni::HybridClass<EventBeatManager> {
 
   static void registerNatives();
 
+  void setRuntimeExecutor(RuntimeExecutor runtimeExecutor);
+
   void registerEventBeat(EventBeat* eventBeat) const;
 
   void unregisterEventBeat(EventBeat* eventBeat) const;
 
   void beat();
 
-  EventBeatManager(
-      Runtime* runtime,
-      jni::alias_ref<EventBeatManager::jhybriddata> jhybridobject);
+  EventBeatManager(jni::alias_ref<EventBeatManager::jhybriddata> jhybridobject);
 
  private:
-  Runtime* runtime_;
+  RuntimeExecutor runtimeExecutor_;
 
   jni::alias_ref<EventBeatManager::jhybriddata> jhybridobject_;
 
@@ -45,8 +46,7 @@ class EventBeatManager : public jni::HybridClass<EventBeatManager> {
   mutable std::mutex mutex_;
 
   static jni::local_ref<EventBeatManager::jhybriddata> initHybrid(
-      jni::alias_ref<EventBeatManager::jhybriddata> jhybridobject,
-      jlong jsContext);
+      jni::alias_ref<EventBeatManager::jhybriddata> jhybridobject);
 };
 
 } // namespace react

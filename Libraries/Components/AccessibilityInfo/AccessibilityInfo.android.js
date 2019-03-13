@@ -16,10 +16,13 @@ const UIManager = require('UIManager');
 
 const RCTAccessibilityInfo = NativeModules.AccessibilityInfo;
 
+const REDUCE_MOTION_EVENT = 'reduceMotionDidChange';
 const TOUCH_EXPLORATION_EVENT = 'touchExplorationDidChange';
 
 type ChangeEventName = $Enum<{
   change: string,
+  reduceMotionChanged: string,
+  screenReaderChanged: string,
 }>;
 
 const _subscriptions = new Map();
@@ -35,26 +38,49 @@ const _subscriptions = new Map();
  */
 
 const AccessibilityInfo = {
-  /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
-   * when making Flow check .android.js files. */
-  fetch: function(): Promise {
+  isReduceMotionEnabled: function(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      RCTAccessibilityInfo.isTouchExplorationEnabled(function(resp) {
-        resolve(resp);
-      });
+      RCTAccessibilityInfo.isReduceMotionEnabled(resolve);
     });
+  },
+
+  isScreenReaderEnabled: function(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      RCTAccessibilityInfo.isTouchExplorationEnabled(resolve);
+    });
+  },
+
+  /**
+   * Deprecated
+   *
+   * Same as `isScreenReaderEnabled`
+   */
+  get fetch() {
+    return this.isScreenReaderEnabled;
   },
 
   addEventListener: function(
     eventName: ChangeEventName,
     handler: Function,
   ): void {
-    const listener = RCTDeviceEventEmitter.addListener(
-      TOUCH_EXPLORATION_EVENT,
-      enabled => {
-        handler(enabled);
-      },
-    );
+    let listener;
+
+    if (eventName === 'change' || eventName === 'screenReaderChanged') {
+      listener = RCTDeviceEventEmitter.addListener(
+        TOUCH_EXPLORATION_EVENT,
+        enabled => {
+          handler(enabled);
+        },
+      );
+    } else if (eventName === 'reduceMotionChanged') {
+      listener = RCTDeviceEventEmitter.addListener(
+        REDUCE_MOTION_EVENT,
+        enabled => {
+          handler(enabled);
+        },
+      );
+    }
+
     _subscriptions.set(handler, listener);
   },
 

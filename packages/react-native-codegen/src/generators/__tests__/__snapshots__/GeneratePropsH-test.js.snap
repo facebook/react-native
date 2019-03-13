@@ -9,6 +9,7 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+#pragma once
 
 #include <react/components/view/ViewProps.h>
 
@@ -40,6 +41,7 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+#pragma once
 
 #include <react/components/view/ViewProps.h>
 #include <react/graphics/Color.h>
@@ -72,6 +74,7 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+#pragma once
 
 #include <react/components/view/ViewProps.h>
 
@@ -121,6 +124,7 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+#pragma once
 
 #include <react/components/view/ViewProps.h>
 
@@ -152,6 +156,7 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+#pragma once
 
 #include <react/components/view/ViewProps.h>
 
@@ -183,6 +188,7 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+#pragma once
 
 #include <react/components/view/ViewProps.h>
 
@@ -201,6 +207,7 @@ const Float blurRadius2{0.001};
 const Float blurRadius3{2.1};
 const Float blurRadius4{0.0};
 const Float blurRadius5{1.0};
+const Float blurRadius6{0.0};
 };
 
 } // namespace react
@@ -218,6 +225,7 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+#pragma once
 
 #include <react/components/view/ViewProps.h>
 #include <react/imagemanager/primitives.h>
@@ -250,6 +258,7 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+#pragma once
 
 #include <react/components/view/ViewProps.h>
 
@@ -274,6 +283,38 @@ const int progress3{10};
 }
 `;
 
+exports[`GeneratePropsH can generate fixture INTERFACE_ONLY 1`] = `
+Map {
+  "Props.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#pragma once
+
+#include <react/components/view/ViewProps.h>
+
+namespace facebook {
+namespace react {
+
+class InterfaceOnlyComponentProps final : public ViewProps {
+ public:
+  InterfaceOnlyComponentProps() = default;
+  InterfaceOnlyComponentProps(const InterfaceOnlyComponentProps &sourceProps, const RawProps &rawProps);
+
+#pragma mark - Props
+
+  const std::string accessibilityHint{\\"\\"};
+};
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GeneratePropsH can generate fixture MULTI_NATIVE_PROP 1`] = `
 Map {
   "Props.h" => "
@@ -283,6 +324,7 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+#pragma once
 
 #include <react/components/view/ViewProps.h>
 #include <react/graphics/Color.h>
@@ -318,6 +360,7 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+#pragma once
 
 #include <react/components/view/ViewProps.h>
 
@@ -349,6 +392,7 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+#pragma once
 
 #include <react/components/view/ViewProps.h>
 
@@ -390,6 +434,7 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+#pragma once
 
 #include <react/components/view/ViewProps.h>
 

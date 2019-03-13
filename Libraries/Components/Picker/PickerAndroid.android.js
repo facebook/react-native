@@ -64,6 +64,9 @@ class PickerAndroid extends React.Component<
   ): PickerAndroidState {
     let selectedIndex = 0;
     const items = React.Children.map(props.children, (child, index) => {
+      if (child === null) {
+        return;
+      }
       if (child.props.value === props.selectedValue) {
         selectedIndex = index;
       }

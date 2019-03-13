@@ -1,3 +1,4 @@
+#import <react/components/INTERFACE_ONLY/ComponentDescriptors.h>
 #import <react/components/BOOLEAN_PROP/ComponentDescriptors.h>
 #import <react/components/STRING_PROP/ComponentDescriptors.h>
 #import <react/components/INTEGER_PROPS/ComponentDescriptors.h>

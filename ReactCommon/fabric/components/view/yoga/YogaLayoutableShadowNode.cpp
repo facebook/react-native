@@ -90,7 +90,7 @@ void YogaLayoutableShadowNode::appendChild(YogaLayoutableShadowNode *child) {
 }
 
 void YogaLayoutableShadowNode::setChildren(
-    std::vector<YogaLayoutableShadowNode *> children) {
+    YogaLayoutableShadowNode::UnsharedList children) {
   yogaNode_.setChildren({});
   for (const auto &child : children) {
     appendChild(child);
@@ -139,9 +139,9 @@ void YogaLayoutableShadowNode::layoutChildren(LayoutContext layoutContext) {
   }
 }
 
-std::vector<LayoutableShadowNode *>
+LayoutableShadowNode::UnsharedList
 YogaLayoutableShadowNode::getLayoutableChildNodes() const {
-  std::vector<LayoutableShadowNode *> yogaLayoutableChildNodes;
+  LayoutableShadowNode::UnsharedList yogaLayoutableChildNodes;
   yogaLayoutableChildNodes.reserve(yogaNode_.getChildren().size());
 
   for (const auto &childYogaNode : yogaNode_.getChildren()) {

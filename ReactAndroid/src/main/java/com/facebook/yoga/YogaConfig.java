@@ -22,7 +22,6 @@ public class YogaConfig {
   long mNativePointer;
   private YogaLogger mLogger;
   private YogaNodeCloneFunction mYogaNodeCloneFunction;
-  public boolean avoidGlobalJNIRefs = false;
 
   private native long jni_YGConfigNew();
   public YogaConfig() {

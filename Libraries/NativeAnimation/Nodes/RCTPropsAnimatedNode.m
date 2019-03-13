@@ -7,33 +7,14 @@
 
 #import "RCTPropsAnimatedNode.h"
 
-#import <objc/runtime.h>
-
 #import <React/RCTLog.h>
+#import <React/RCTSurfacePresenterStub.h>
 #import <React/RCTUIManager.h>
 
 #import "RCTAnimationUtils.h"
 #import "RCTStyleAnimatedNode.h"
 #import "RCTValueAnimatedNode.h"
 
-// TODO: Eventually we should just include RCTSurfacePresenter.h, but that pulls in all of fabric
-// which doesn't compile in open source yet, so we mirror the protocol and duplicate the category
-// here for now.
-
-@protocol SyncViewUpdater <NSObject>
-
-- (BOOL)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag props:(NSDictionary *)props;
-
-@end
-
-@implementation RCTBridge (SurfacePresenterShadow)
-
-- (id<SyncViewUpdater>)surfacePresenter
-{
-  return objc_getAssociatedObject(self, @selector(surfacePresenter));
-}
-
-@end
 
 
 @implementation RCTPropsAnimatedNode
@@ -43,6 +24,7 @@
   NSString *_connectedViewName;
   __weak RCTBridge *_bridge;
   NSMutableDictionary<NSString *, NSObject *> *_propsDictionary; // TODO: use RawProps or folly::dynamic directly
+  BOOL _managedByFabric;
 }
 
 - (instancetype)initWithTag:(NSNumber *)tag
@@ -58,30 +40,32 @@
              viewName:(NSString *)viewName
                bridge:(RCTBridge *)bridge
 {
+  _bridge = bridge;
   _connectedViewTag = viewTag;
   _connectedViewName = viewName;
-  _bridge = bridge;
+  _managedByFabric = RCTUIManagerTypeForTagIsFabric(viewTag);
   _rootTag = nil;
 }
 
 - (void)disconnectFromView:(NSNumber *)viewTag
 {
+  _bridge = nil;
   _connectedViewTag = nil;
   _connectedViewName = nil;
-  _bridge = nil;
+  _managedByFabric = NO;
   _rootTag = nil;
 }
 
 - (void)updateView
 {
-  BOOL fabricUpdateSuccess = [_bridge.surfacePresenter synchronouslyUpdateViewOnUIThread:_connectedViewTag
-                                                                                   props:_propsDictionary];
-  if (fabricUpdateSuccess) {
-    return;
+  if (_managedByFabric) {
+    [_bridge.surfacePresenter synchronouslyUpdateViewOnUIThread:_connectedViewTag
+                                                          props:_propsDictionary];
+  } else {
+    [_bridge.uiManager synchronouslyUpdateViewOnUIThread:_connectedViewTag
+                                                viewName:_connectedViewName
+                                                   props:_propsDictionary];
   }
-  [_bridge.uiManager synchronouslyUpdateViewOnUIThread:_connectedViewTag
-                                              viewName:_connectedViewName
-                                                 props:_propsDictionary];
 }
 
 - (void)restoreDefaultValues

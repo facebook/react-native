@@ -70,7 +70,7 @@ void AttributedString::prependAttributedString(
       attributedString.fragments_.end());
 }
 
-const std::vector<Fragment> &AttributedString::getFragments() const {
+const Fragments &AttributedString::getFragments() const {
   return fragments_;
 }
 

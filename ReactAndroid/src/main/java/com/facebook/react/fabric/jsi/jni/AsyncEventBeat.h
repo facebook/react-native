@@ -6,6 +6,8 @@
 
 #include <jsi/jsi.h>
 #include <react/core/EventBeat.h>
+#include <react/uimanager/primitives.h>
+
 #include "EventBeatManager.h"
 
 namespace facebook {
@@ -16,7 +18,7 @@ namespace {
 class AsyncEventBeat : public EventBeat {
  private:
   EventBeatManager* eventBeatManager_;
-  jsi::Runtime* runtime_;
+  RuntimeExecutor runtimeExecutor_;
   jni::global_ref<jobject> javaUIManager_;
 
  public:
@@ -24,11 +26,11 @@ class AsyncEventBeat : public EventBeat {
 
   AsyncEventBeat(
       EventBeatManager* eventBeatManager,
-      jsi::Runtime* runtime,
-      jni::global_ref<jobject> javaUIManager) {
-    eventBeatManager_ = eventBeatManager;
-    runtime_ = runtime;
-    javaUIManager_ = javaUIManager;
+      RuntimeExecutor runtimeExecutor,
+      jni::global_ref<jobject> javaUIManager) :
+      eventBeatManager_(eventBeatManager),
+      runtimeExecutor_(std::move(runtimeExecutor)),
+      javaUIManager_(javaUIManager) {
     eventBeatManager->registerEventBeat(this);
   }
 
@@ -37,7 +39,9 @@ class AsyncEventBeat : public EventBeat {
   }
 
   void induce() const override {
-    beat(*runtime_);
+    runtimeExecutor_([=](jsi::Runtime &runtime) {
+      this->beat(runtime);
+    });
   }
 
   void request() const override {

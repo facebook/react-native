@@ -326,10 +326,12 @@ static RCTCornerRadii RCTCornerRadiiFromBorderRadii(BorderRadii borderRadii)
 
 static RCTBorderColors RCTBorderColorsFromBorderColors(BorderColors borderColors)
 {
-  return RCTBorderColors{.left = RCTCGColorRefFromSharedColor(borderColors.left),
-                         .top = RCTCGColorRefFromSharedColor(borderColors.top),
-                         .bottom = RCTCGColorRefFromSharedColor(borderColors.bottom),
-                         .right = RCTCGColorRefFromSharedColor(borderColors.right)};
+  return RCTBorderColors{
+    .left = RCTCGColorRefUnretainedFromSharedColor(borderColors.left),
+    .top =  RCTCGColorRefUnretainedFromSharedColor(borderColors.top),
+    .bottom =  RCTCGColorRefUnretainedFromSharedColor(borderColors.bottom),
+    .right = RCTCGColorRefUnretainedFromSharedColor(borderColors.right)
+  };
 }
 
 static UIEdgeInsets UIEdgeInsetsFromBorderInsets(EdgeInsets edgeInsets)
@@ -396,7 +398,9 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     }
 
     layer.borderWidth = (CGFloat)borderMetrics.borderWidths.left;
-    layer.borderColor = RCTCGColorRefFromSharedColor(borderMetrics.borderColors.left);
+    CGColorRef borderColor = RCTCGColorRefFromSharedColor(borderMetrics.borderColors.left);
+    layer.borderColor = borderColor;
+    CGColorRelease(borderColor);
     layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft;
     layer.backgroundColor = _backgroundColor.CGColor;
     _contentView.layer.cornerRadius = (CGFloat)borderMetrics.borderRadii.topLeft;

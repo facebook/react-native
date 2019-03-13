@@ -126,6 +126,7 @@
 		83636F8F1B53F22C009F943E /* RCTUIManagerScenarioTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 83636F8E1B53F22C009F943E /* RCTUIManagerScenarioTests.m */; };
 		8385CEF51B873B5C00C6273E /* RCTImageLoaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8385CEF41B873B5C00C6273E /* RCTImageLoaderTests.m */; };
 		8385CF041B87479200C6273E /* RCTImageLoaderHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 8385CF031B87479200C6273E /* RCTImageLoaderHelpers.m */; };
+		AFEACA842223EB05004E5198 /* CrashyCrash.m in Sources */ = {isa = PBXBuildFile; fileRef = AFEACA832223EB05004E5198 /* CrashyCrash.m */; };
 		BC9C03401DC9F1D600B1C635 /* RCTDevMenuTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BC9C033F1DC9F1D600B1C635 /* RCTDevMenuTests.m */; };
 		C60A228221C9726800B820FE /* RCTFormatErrorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C60A228121C9726800B820FE /* RCTFormatErrorTests.m */; };
 		C60A228321C9726800B820FE /* RCTFormatErrorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C60A228121C9726800B820FE /* RCTFormatErrorTests.m */; };
@@ -563,6 +564,8 @@
 		8385CEF41B873B5C00C6273E /* RCTImageLoaderTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageLoaderTests.m; sourceTree = "<group>"; };
 		8385CF031B87479200C6273E /* RCTImageLoaderHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageLoaderHelpers.m; sourceTree = "<group>"; };
 		8385CF051B8747A000C6273E /* RCTImageLoaderHelpers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTImageLoaderHelpers.h; sourceTree = "<group>"; };
+		AFEACA822223EB05004E5198 /* CrashyCrash.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CrashyCrash.h; sourceTree = "<group>"; };
+		AFEACA832223EB05004E5198 /* CrashyCrash.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CrashyCrash.m; sourceTree = "<group>"; };
 		BC9C033F1DC9F1D600B1C635 /* RCTDevMenuTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDevMenuTests.m; sourceTree = "<group>"; };
 		C60A228121C9726800B820FE /* RCTFormatErrorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTFormatErrorTests.m; sourceTree = "<group>"; };
 		C654F0B21EB34A73000B7A9A /* RNTesterTestModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNTesterTestModule.m; sourceTree = "<group>"; };
@@ -774,6 +777,7 @@
 				272E6B3A1BEA846C001FCF37 /* NativeExampleViews */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
+				AFEACAB12223EB2C004E5198 /* NativeExampleModules */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				1323F18D1C04ABAC0091BED0 /* Supporting Files */,
@@ -1019,6 +1023,16 @@
 				2D4624E01DA2EA6900C74D09 /* RNTester-tvOSIntegrationTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		AFEACAB12223EB2C004E5198 /* NativeExampleModules */ = {
+			isa = PBXGroup;
+			children = (
+				AFEACA822223EB05004E5198 /* CrashyCrash.h */,
+				AFEACA832223EB05004E5198 /* CrashyCrash.m */,
+			);
+			name = NativeExampleModules;
+			path = RNTester/NativeExampleModules;
 			sourceTree = "<group>";
 		};
 		D85B82921AB6D5CE003F4FE2 /* Products */ = {
@@ -1724,6 +1738,7 @@
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				27F441EC1BEBE5030039B79C /* FlexibleSizeExampleView.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				AFEACA842223EB05004E5198 /* CrashyCrash.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
