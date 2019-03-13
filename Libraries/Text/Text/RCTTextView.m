@@ -43,6 +43,10 @@
   return [superDescription stringByReplacingCharactersInRange:semicolonRange withString:replacement];
 }
 
+-(void)setBackgroundColor:(UIColor *)backgroundColor {
+  // no-op, backgroundColor is handled by drawBackgroundForGlyphRange.
+}
+
 - (void)setSelectable:(BOOL)selectable
 {
   if (_selectable == selectable) {
@@ -105,6 +109,7 @@
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
 
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
+  [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:_contentFrame.origin];
   [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:_contentFrame.origin];
 
   __block UIBezierPath *highlightPath = nil;
