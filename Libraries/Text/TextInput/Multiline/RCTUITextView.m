@@ -186,7 +186,7 @@ static UIColor *defaultPlaceholderColor()
   UIEdgeInsets textContainerInset = self.textContainerInset;
   NSString *placeholder = self.placeholder ?: @"";
   CGSize maxPlaceholderSize = CGSizeMake(UIEdgeInsetsInsetRect(self.bounds, textContainerInset).size.width, CGFLOAT_MAX);
-  CGSize placeholderSize = [placeholder boundingRectWithSize:maxPlaceholderSize options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName: self.font ?: defaultPlaceholderFont()} context:nil].size;
+  CGSize placeholderSize = [placeholder boundingRectWithSize:maxPlaceholderSize options:NSStringDrawingUsesLineFragmentOrigin attributes:[self placeholderEffectiveTextAttributes] context:nil].size;
   placeholderSize = CGSizeMake(RCTCeilPixelValue(placeholderSize.width), RCTCeilPixelValue(placeholderSize.height));
   placeholderSize.width += textContainerInset.left + textContainerInset.right;
   placeholderSize.height += textContainerInset.top + textContainerInset.bottom;
@@ -252,13 +252,17 @@ static UIColor *defaultPlaceholderColor()
 
 - (NSDictionary<NSAttributedStringKey, id> *)placeholderEffectiveTextAttributes
 {
-  NSDictionary<NSAttributedStringKey, id> *effectiveTextAttributes = @{
-                                                                       NSFontAttributeName: _reactTextAttributes.effectiveFont ?: defaultPlaceholderFont(),
-                                                                       NSForegroundColorAttributeName: self.placeholderColor ?: defaultPlaceholderColor(),
-                                                                       NSKernAttributeName:isnan(_reactTextAttributes.letterSpacing) ? @0 : @(_reactTextAttributes.letterSpacing)
-                                                                       };
+  NSMutableDictionary<NSAttributedStringKey, id> *effectiveTextAttributes = [NSMutableDictionary dictionaryWithDictionary:@{
+                                                                                                                            NSFontAttributeName: _reactTextAttributes.effectiveFont ?: defaultPlaceholderFont(),
+                                                                                                                            NSForegroundColorAttributeName: self.placeholderColor ?: defaultPlaceholderColor(),
+                                                                                                                            NSKernAttributeName:isnan(_reactTextAttributes.letterSpacing) ? @0 : @(_reactTextAttributes.letterSpacing)
+                                                                                                                            }];
+  NSParagraphStyle *paragraphStyle = [_reactTextAttributes effectiveParagraphStyle];
+  if (paragraphStyle) {
+    effectiveTextAttributes[NSParagraphStyleAttributeName] = paragraphStyle;
+  }
   
-  return effectiveTextAttributes;
+  return [effectiveTextAttributes copy];
 }
 
 #pragma mark - Utility Methods

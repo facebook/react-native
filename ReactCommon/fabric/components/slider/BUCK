@@ -91,6 +91,7 @@ rn_xplat_cxx_library(
         react_native_xplat_target("fabric/graphics:graphics"),
         react_native_xplat_target("fabric/imagemanager:imagemanager"),
         react_native_xplat_target("fabric/uimanager:uimanager"),
+        "fbsource//xplat/js:generated_components-rncore",
     ],
 )
 

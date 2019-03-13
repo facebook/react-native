@@ -16,12 +16,15 @@ const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
 const AccessibilityManager = NativeModules.AccessibilityManager;
 
-const VOICE_OVER_EVENT = 'voiceOverDidChange';
 const ANNOUNCEMENT_DID_FINISH_EVENT = 'announcementDidFinish';
+const REDUCE_MOTION_EVENT = 'reduceMotionDidChange';
+const VOICE_OVER_EVENT = 'voiceOverDidChange';
 
 type ChangeEventName = $Enum<{
-  change: string,
   announcementFinished: string,
+  change: string,
+  reduceMotionChanged: string,
+  screenReaderChanged: string,
 }>;
 
 const _subscriptions = new Map();
@@ -37,23 +40,50 @@ const _subscriptions = new Map();
  */
 const AccessibilityInfo = {
   /**
-   * Query whether a screen reader is currently enabled.
+   * Query whether a reduce motion is currently enabled.
    *
    * Returns a promise which resolves to a boolean.
    * The result is `true` when a screen reader is enabledand `false` otherwise.
    *
-   * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#fetch
+   * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#isReduceMotionEnabled
    */
-  fetch: function(): Promise {
+  isReduceMotionEnabled: function(): Promise {
+    return new Promise((resolve, reject) => {
+      AccessibilityManager.getReduceMotionState(resolve, reject);
+    });
+  },
+
+  /**
+   * Query whether a screen reader is currently enabled.
+   *
+   * Returns a promise which resolves to a boolean.
+   * The result is `true` when a screen reader is enabled and `false` otherwise.
+   *
+   * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#isScreenReaderEnabled
+   */
+  isScreenReaderEnabled: function(): Promise {
     return new Promise((resolve, reject) => {
       AccessibilityManager.getCurrentVoiceOverState(resolve, reject);
     });
   },
 
   /**
+   * Deprecated
+   *
+   * Same as `isScreenReaderEnabled`
+   */
+  get fetch() {
+    return this.isScreenReaderEnabled;
+  },
+
+  /**
    * Add an event handler. Supported events:
    *
-   * - `change`: Fires when the state of the screen reader changes. The argument
+   * - `reduceMotionChanged`: Fires when the state of the reduce motion toggle changes.
+   *   The argument to the event handler is a boolean. The boolean is `true` when a reduce
+   *   motion is enabled (or when "Transition Animation Scale" in "Developer options" is
+   *   "Animation off") and `false` otherwise.
+   * - `screenReaderChanged`: Fires when the state of the screen reader changes. The argument
    *   to the event handler is a boolean. The boolean is `true` when a screen
    *   reader is enabled and `false` otherwise.
    * - `announcementFinished`: iOS-only event. Fires when the screen reader has
@@ -71,8 +101,13 @@ const AccessibilityInfo = {
   ): Object {
     let listener;
 
-    if (eventName === 'change') {
+    if (eventName === 'change' || eventName === 'screenReaderChanged') {
       listener = RCTDeviceEventEmitter.addListener(VOICE_OVER_EVENT, handler);
+    } else if (eventName === 'reduceMotionChanged') {
+      listener = RCTDeviceEventEmitter.addListener(
+        REDUCE_MOTION_EVENT,
+        handler,
+      );
     } else if (eventName === 'announcementFinished') {
       listener = RCTDeviceEventEmitter.addListener(
         ANNOUNCEMENT_DID_FINISH_EVENT,

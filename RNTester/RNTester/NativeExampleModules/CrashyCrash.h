@@ -3,12 +3,16 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
+ *
  */
 
-#include <memory>
+#import <Foundation/Foundation.h>
+#import <React/RCTBridgeModule.h>
 
-#include <gtest/gtest.h>
 
-TEST(ActivityIndicatorViewTest, testSomething) {
-  // TODO
-}
+NS_ASSUME_NONNULL_BEGIN
+
+@interface CrashyCrash : NSObject <RCTBridgeModule>
+@end
+
+NS_ASSUME_NONNULL_END

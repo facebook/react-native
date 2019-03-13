@@ -169,7 +169,8 @@ FloatPropNativeComponentProps::FloatPropNativeComponentProps(
 blurRadius2(convertRawProp(rawProps, \\"blurRadius2\\", sourceProps.blurRadius2, blurRadius2)),
 blurRadius3(convertRawProp(rawProps, \\"blurRadius3\\", sourceProps.blurRadius3, blurRadius3)),
 blurRadius4(convertRawProp(rawProps, \\"blurRadius4\\", sourceProps.blurRadius4, blurRadius4)),
-blurRadius5(convertRawProp(rawProps, \\"blurRadius5\\", sourceProps.blurRadius5, blurRadius5))
+blurRadius5(convertRawProp(rawProps, \\"blurRadius5\\", sourceProps.blurRadius5, blurRadius5)),
+blurRadius6(convertRawProp(rawProps, \\"blurRadius6\\", sourceProps.blurRadius6, blurRadius6))
       {}
 
 } // namespace react
@@ -231,6 +232,35 @@ IntegerPropNativeComponentProps::IntegerPropNativeComponentProps(
     progress1(convertRawProp(rawProps, \\"progress1\\", sourceProps.progress1, progress1)),
 progress2(convertRawProp(rawProps, \\"progress2\\", sourceProps.progress2, progress2)),
 progress3(convertRawProp(rawProps, \\"progress3\\", sourceProps.progress3, progress3))
+      {}
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsCpp can generate fixture INTERFACE_ONLY 1`] = `
+Map {
+  "Props.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/INTERFACE_ONLY/Props.h>
+#include <react/core/propsConversions.h>
+
+namespace facebook {
+namespace react {
+
+InterfaceOnlyComponentProps::InterfaceOnlyComponentProps(
+    const InterfaceOnlyComponentProps &sourceProps,
+    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
+
+    accessibilityHint(convertRawProp(rawProps, \\"accessibilityHint\\", sourceProps.accessibilityHint, accessibilityHint))
       {}
 
 } // namespace react

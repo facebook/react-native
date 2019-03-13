@@ -19,6 +19,7 @@ extern NSString *const RCTAccessibilityManagerDidUpdateMultiplierNotification; /
 /// map from UIKit categories to multipliers
 @property (nonatomic, copy) NSDictionary<NSString *, NSNumber *> *multipliers;
 
+@property (nonatomic, assign) BOOL isReduceMotionEnabled;
 @property (nonatomic, assign) BOOL isVoiceOverEnabled;
 
 @end

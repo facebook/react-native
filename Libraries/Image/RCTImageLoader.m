@@ -61,6 +61,8 @@ static NSInteger RCTImageBytesForImage(UIImage *image)
 
 @implementation RCTImageLoader
 {
+  NSArray<id<RCTImageURLLoader>> * (^_loadersProvider)(void);
+  NSArray<id<RCTImageDataDecoder>> * (^_decodersProvider)(void);
   NSArray<id<RCTImageURLLoader>> *_loaders;
   NSArray<id<RCTImageDataDecoder>> *_decoders;
   NSOperationQueue *_imageDecodeQueue;
@@ -96,13 +98,24 @@ RCT_EXPORT_MODULE()
   return self;
 }
 
+- (instancetype)initWithRedirectDelegate:(id<RCTImageRedirectProtocol>)redirectDelegate
+                         loadersProvider:(NSArray<id<RCTImageURLLoader>> * (^)(void))getLoaders
+                        decodersProvider:(NSArray<id<RCTImageDataDecoder>> * (^)(void))getHandlers
+{
+  if (self = [self initWithRedirectDelegate:redirectDelegate]) {
+    _loadersProvider = getLoaders;
+    _decodersProvider = getHandlers;
+  }
+  return self;
+}
+
 - (void)setUp
 {
   // Set defaults
   _maxConcurrentLoadingTasks = _maxConcurrentLoadingTasks ?: 4;
   _maxConcurrentDecodingTasks = _maxConcurrentDecodingTasks ?: 2;
   _maxConcurrentDecodingBytes = _maxConcurrentDecodingBytes ?: 30 * 1024 * 1024; // 30MB
-  
+
   _URLRequestQueue = dispatch_queue_create("com.facebook.react.ImageLoaderURLRequestQueue", DISPATCH_QUEUE_SERIAL);
 }
 
@@ -133,11 +146,18 @@ RCT_EXPORT_MODULE()
   if (!_maxConcurrentLoadingTasks) {
     [self setUp];
   }
-  
+
   if (!_loaders) {
     // Get loaders, sorted in reverse priority order (highest priority first)
     RCTAssert(_bridge, @"Bridge not set");
-    _loaders = [[_bridge modulesConformingToProtocol:@protocol(RCTImageURLLoader)] sortedArrayUsingComparator:^NSComparisonResult(id<RCTImageURLLoader> a, id<RCTImageURLLoader> b) {
+
+    if (_loadersProvider) {
+      _loaders = _loadersProvider();
+    } else {
+      _loaders = [_bridge modulesConformingToProtocol:@protocol(RCTImageURLLoader)];
+    }
+
+    _loaders = [_loaders sortedArrayUsingComparator:^NSComparisonResult(id<RCTImageURLLoader> a, id<RCTImageURLLoader> b) {
       float priorityA = [a respondsToSelector:@selector(loaderPriority)] ? [a loaderPriority] : 0;
       float priorityB = [b respondsToSelector:@selector(loaderPriority)] ? [b loaderPriority] : 0;
       if (priorityA > priorityB) {
@@ -149,7 +169,7 @@ RCT_EXPORT_MODULE()
       }
     }];
   }
-  
+
   if (RCT_DEBUG) {
     // Check for handler conflicts
     float previousPriority = 0;
@@ -175,7 +195,7 @@ RCT_EXPORT_MODULE()
     }
     return previousLoader;
   }
-  
+
   // Normal code path
   for (id<RCTImageURLLoader> loader in _loaders) {
     if ([loader canLoadImageURL:URL]) {
@@ -190,10 +210,17 @@ RCT_EXPORT_MODULE()
   if (!_maxConcurrentLoadingTasks) {
     [self setUp];
   }
-  
+
   if (!_decoders) {
     // Get decoders, sorted in reverse priority order (highest priority first)
     RCTAssert(_bridge, @"Bridge not set");
+
+    if (_decodersProvider) {
+      _decoders = _decodersProvider();
+    } else {
+      _decoders = [_bridge modulesConformingToProtocol:@protocol(RCTImageDataDecoder)];
+    }
+
     _decoders = [[_bridge modulesConformingToProtocol:@protocol(RCTImageDataDecoder)] sortedArrayUsingComparator:^NSComparisonResult(id<RCTImageDataDecoder> a, id<RCTImageDataDecoder> b) {
       float priorityA = [a respondsToSelector:@selector(decoderPriority)] ? [a decoderPriority] : 0;
       float priorityB = [b respondsToSelector:@selector(decoderPriority)] ? [b decoderPriority] : 0;
@@ -206,7 +233,7 @@ RCT_EXPORT_MODULE()
       }
     }];
   }
-  
+
   if (RCT_DEBUG) {
     // Check for handler conflicts
     float previousPriority = 0;
@@ -233,7 +260,7 @@ RCT_EXPORT_MODULE()
     }
     return previousDecoder;
   }
-  
+
   // Normal code path
   for (id<RCTImageDataDecoder> decoder in _decoders) {
     if ([decoder canDecodeImageData:data]) {
@@ -304,11 +331,11 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
           break;
       }
     }
-    
+
     if (tasksToRemove) {
       [self->_pendingTasks removeObjectsInArray:tasksToRemove];
     }
-    
+
     // Start queued decode
     NSInteger activeDecodes = self->_scheduledDecodes - self->_pendingDecodes.count;
     while (activeDecodes == 0 || (self->_activeBytes <= self->_maxConcurrentDecodingBytes &&
@@ -321,7 +348,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
         break;
       }
     }
-    
+
     // Start queued tasks
     for (RCTNetworkTask *task in self->_pendingTasks) {
       if (MAX(self->_activeTasks, self->_scheduledDecodes) >= self->_maxConcurrentLoadingTasks) {
@@ -353,7 +380,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     [NSURLProtocol setProperty:@"RCTImageLoader"
                         forKey:@"trackingName"
                      inRequest:mutableRequest];
-    
+
     // Add missing png extension
     if (request.URL.fileURL && request.URL.pathExtension.length == 0) {
       mutableRequest.URL = [request.URL URLByAppendingPathExtension:@"png"];
@@ -363,15 +390,15 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     }
     request = mutableRequest;
   }
-  
+
   // Find suitable image URL loader
   id<RCTImageURLLoader> loadHandler = [self imageURLLoaderForURL:request.URL];
   BOOL requiresScheduling = [loadHandler respondsToSelector:@selector(requiresScheduling)] ?
   [loadHandler requiresScheduling] : YES;
-  
+
   BOOL cacheResult = [loadHandler respondsToSelector:@selector(shouldCacheLoadedImages)] ?
   [loadHandler shouldCacheLoadedImages] : YES;
-  
+
   __block atomic_bool cancelled = ATOMIC_VAR_INIT(NO);
   __block dispatch_block_t cancelLoad = nil;
   __block NSLock *cancelLoadLock = [NSLock new];
@@ -379,7 +406,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     [cancelLoadLock lock];
     cancelLoad = nil;
     [cancelLoadLock unlock];
-    
+
     // If we've received an image, we should try to set it synchronously,
     // if it's data, do decoding on a background thread.
     if (RCTIsMainQueue() && ![imageOrData isKindOfClass:[UIImage class]]) {
@@ -394,7 +421,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
       completionBlock(error, imageOrData, cacheResult, response);
     }
   };
-  
+
   // If the loader doesn't require scheduling we call it directly on
   // the main queue.
   if (loadHandler && !requiresScheduling) {
@@ -408,19 +435,19 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                         completionHandler(error, image, nil);
                       }];
   }
-  
+
   // All access to URL cache must be serialized
   if (!_URLRequestQueue) {
     [self setUp];
   }
-  
+
   __weak RCTImageLoader *weakSelf = self;
   dispatch_async(_URLRequestQueue, ^{
     __typeof(self) strongSelf = weakSelf;
     if (atomic_load(&cancelled) || !strongSelf) {
       return;
     }
-    
+
     if (loadHandler) {
       dispatch_block_t cancelLoadLocal = [loadHandler loadImageForURL:request.URL
                                                                  size:size
@@ -442,7 +469,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                                                scale:scale
                                           resizeMode:resizeMode];
       }
-      
+
       if (image) {
         completionHandler(nil, image, nil);
       } else {
@@ -456,7 +483,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
       }
     }
   });
-  
+
   return ^{
     BOOL alreadyCancelled = atomic_fetch_or(&cancelled, 1);
     if (alreadyCancelled) {
@@ -483,15 +510,15 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                 request.URL.absoluteString);
     return NULL;
   }
-  
+
   RCTNetworking *networking = [_bridge networking];
-  
+
   // Check if networking module can load image
   if (RCT_DEBUG && ![networking canHandleRequest:request]) {
     RCTLogError(@"No suitable image URL loader found for %@", request.URL.absoluteString);
     return NULL;
   }
-  
+
   // Use networking module to load image
   RCTURLRequestCompletionBlock processResponse = ^(NSURLResponse *response, NSData *data, NSError *error) {
     // Check for system errors
@@ -505,7 +532,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
       completionHandler(RCTErrorWithMessage(@"Unknown image download error"), nil, response);
       return;
     }
-    
+
     // Check for http errors
     if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
       NSInteger statusCode = ((NSHTTPURLResponse *)response).statusCode;
@@ -518,11 +545,11 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
         return;
       }
     }
-    
+
     // Call handler
     completionHandler(nil, data, response);
   };
-  
+
   // Download image
   __weak __typeof(self) weakSelf = self;
   __block RCTNetworkTask *task =
@@ -532,7 +559,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                        if (!strongSelf) {
                          return;
                        }
-                       
+
                        if (error || !response || !data) {
                          NSError *someError = nil;
                          if (error) {
@@ -546,22 +573,22 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                          [strongSelf dequeueTasks];
                          return;
                        }
-                       
+
                        dispatch_async(strongSelf->_URLRequestQueue, ^{
                          // Process image data
                          processResponse(response, data, nil);
-                         
+
                          // Prepare for next task
                          [strongSelf dequeueTasks];
                        });
                      }];
-  
+
   task.downloadProgressBlock = ^(int64_t progress, int64_t total) {
     if (progressHandler) {
       progressHandler(progress, total);
     }
   };
-  
+
   if (task) {
     if (!_pendingTasks) {
       _pendingTasks = [NSMutableArray new];
@@ -569,7 +596,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     [_pendingTasks addObject:task];
     [self dequeueTasks];
   }
-  
+
   return ^{
     __typeof(self) strongSelf = weakSelf;
     if (!strongSelf || !task) {
@@ -608,14 +635,14 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
       cancelLoadLocal();
     }
   };
-  
+
   __weak RCTImageLoader *weakSelf = self;
   void (^completionHandler)(NSError *, id, BOOL, NSURLResponse *) = ^(NSError *error, id imageOrData, BOOL cacheResult, NSURLResponse *response) {
     __typeof(self) strongSelf = weakSelf;
     if (atomic_load(&cancelled) || !strongSelf) {
       return;
     }
-    
+
     if (!imageOrData || [imageOrData isKindOfClass:[UIImage class]]) {
       [cancelLoadLock lock];
       cancelLoad = nil;
@@ -623,7 +650,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
       completionBlock(error, imageOrData);
       return;
     }
-    
+
     RCTImageLoaderCompletionBlock decodeCompletionHandler = ^(NSError *error_, UIImage *image) {
       if (cacheResult && image) {
         // Store decoded image in cache
@@ -649,7 +676,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     cancelLoad = cancelLoadLocal;
     [cancelLoadLock unlock];
   };
-  
+
   cancelLoad = [self _loadImageOrDataWithURLRequest:imageURLRequest
                                                size:size
                                               scale:scale
@@ -671,7 +698,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     completionBlock(RCTErrorWithMessage(@"No image data"), nil);
     return ^{};
   }
-  
+
   __block atomic_bool cancelled = ATOMIC_VAR_INIT(NO);
   void (^completionHandler)(NSError *, UIImage *) = ^(NSError *error, UIImage *image) {
     if (RCTIsMainQueue()) {
@@ -686,7 +713,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
       completionBlock(error, clipped ? RCTResizeImageIfNeeded(image, size, scale, resizeMode) : image);
     }
   };
-  
+
   id<RCTImageDataDecoder> imageDecoder = [self imageDataDecoderForData:data];
   if (imageDecoder) {
     return [imageDecoder decodeImageData:data
@@ -698,17 +725,17 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     dispatch_block_t decodeBlock = ^{
       // Calculate the size, in bytes, that the decompressed image will require
       NSInteger decodedImageBytes = (size.width * scale) * (size.height * scale) * 4;
-      
+
       // Mark these bytes as in-use
       self->_activeBytes += decodedImageBytes;
-      
+
       // Do actual decompression on a concurrent background queue
       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         if (!atomic_load(&cancelled)) {
-          
+
           // Decompress the image data (this may be CPU and memory intensive)
           UIImage *image = RCTDecodeImageWithData(data, size, scale, resizeMode);
-          
+
 #if RCT_DEV
           CGSize imagePixelSize = RCTSizeInPixels(image.size, image.scale);
           CGSize screenPixelSize = RCTSizeInPixels(RCTScreenSize(), RCTScreenScale());
@@ -719,7 +746,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
                        NSStringFromCGSize(screenPixelSize));
           }
 #endif
-          
+
           if (image) {
             completionHandler(nil, image);
           } else {
@@ -728,7 +755,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
             completionHandler(finalError, nil);
           }
         }
-        
+
         // We're no longer retaining the uncompressed data, so now we'll mark
         // the decoding as complete so that the loading task queue can resume.
         dispatch_async(self->_URLRequestQueue, ^{
@@ -738,7 +765,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
         });
       });
     };
-    
+
     if (!_URLRequestQueue) {
       [self setUp];
     }
@@ -747,7 +774,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
       // complete, so we'll mark it as having started, in order to block
       // further image loads from happening until we're done with the data.
       self->_scheduledDecodes++;
-      
+
       if (!self->_pendingDecodes) {
         self->_pendingDecodes = [NSMutableArray new];
       }
@@ -759,7 +786,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
         [self->_pendingDecodes addObject:decodeBlock];
       }
     });
-    
+
     return ^{
       atomic_store(&cancelled, YES);
     };
@@ -773,7 +800,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     CGSize size;
     if ([imageOrData isKindOfClass:[NSData class]]) {
       NSDictionary *meta = RCTGetImageMetadata(imageOrData);
-      
+
       NSInteger imageOrientation = [meta[(id)kCGImagePropertyOrientation] integerValue];
       switch (imageOrientation) {
         case kCGImagePropertyOrientationLeft:
@@ -806,7 +833,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     }
     callback(error, size);
   };
-  
+
   return [self _loadImageOrDataWithURLRequest:imageURLRequest
                                          size:CGSizeZero
                                         scale:1
@@ -844,7 +871,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
 - (BOOL)canHandleRequest:(NSURLRequest *)request
 {
   NSURL *requestURL = request.URL;
-  
+
   // If the data being loaded is a video, return NO
   // Even better may be to implement this on the RCTImageURLLoader that would try to load it,
   // but we'd have to run the logic both in RCTPhotoLibraryImageLoader and
@@ -861,7 +888,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
       RCTLogError(@"%@", error);
     }
   });
-  
+
   NSString *query = requestURL.query;
   if (
       query != nil &&
@@ -871,7 +898,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
       ) {
     return NO;
   }
-  
+
   for (id<RCTImageURLLoader> loader in _loaders) {
     // Don't use RCTImageURLLoader protocol for modules that already conform to
     // RCTURLRequestHandler as it's inefficient to decode an image and then
@@ -881,7 +908,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
       return YES;
     }
   }
-  
+
   return NO;
 }
 
@@ -893,7 +920,7 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
       [delegate URLRequest:requestToken didCompleteWithError:error];
       return;
     }
-    
+
     NSString *mimeType = nil;
     NSData *imageData = nil;
     if (RCTImageHasAlpha(image.CGImage)) {
@@ -903,17 +930,17 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
       mimeType = @"image/jpeg";
       imageData = UIImageJPEGRepresentation(image, 1.0);
     }
-    
+
     NSURLResponse *response = [[NSURLResponse alloc] initWithURL:request.URL
                                                         MIMEType:mimeType
                                            expectedContentLength:imageData.length
                                                 textEncodingName:nil];
-    
+
     [delegate URLRequest:requestToken didReceiveResponse:response];
     [delegate URLRequest:requestToken didReceiveData:imageData];
     [delegate URLRequest:requestToken didCompleteWithError:nil];
   }];
-  
+
   return requestToken;
 }
 

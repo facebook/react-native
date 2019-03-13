@@ -91,10 +91,10 @@ ShadowTree::ShadowTree(
 
   rootShadowNode_ = std::static_pointer_cast<const RootShadowNode>(
       rootComponentDescriptor.createShadowNode(ShadowNodeFragment{
-          .tag = surfaceId,
-          .rootTag = surfaceId,
-          .props = props,
-          .eventEmitter = noopEventEmitter,
+          /* .tag = */ surfaceId,
+          /* .rootTag = */ surfaceId,
+          /* .props = */ props,
+          /* .eventEmitter = */ noopEventEmitter,
       }));
 }
 
@@ -104,7 +104,13 @@ ShadowTree::~ShadowTree() {
         return std::make_shared<RootShadowNode>(
             *oldRootShadowNode,
             ShadowNodeFragment{
-                .children = ShadowNode::emptySharedShadowNodeSharedList()});
+                /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
+                /* .rootTag = */ ShadowNodeFragment::surfaceIdPlaceholder(),
+                /* .props = */ ShadowNodeFragment::propsPlaceholder(),
+                /* .eventEmitter = */
+                ShadowNodeFragment::eventEmitterPlaceholder(),
+                /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
+            });
       },
       getTime());
 }

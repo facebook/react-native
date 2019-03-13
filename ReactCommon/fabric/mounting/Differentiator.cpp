@@ -39,7 +39,7 @@ static void sliceChildShadowNodeViewPairsRecursively(
           *childShadowNode);
     } else {
       shadowView.layoutMetrics.frame.origin += layoutOffset;
-      pairList.push_back({shadowView, *childShadowNode});
+      pairList.push_back({shadowView, childShadowNode.get()});
     }
   }
 }
@@ -98,9 +98,9 @@ static void calculateShadowViewMutations(
     }
 
     const auto oldGrandChildPairs =
-        sliceChildShadowNodeViewPairs(oldChildPair.shadowNode);
+        sliceChildShadowNodeViewPairs(*oldChildPair.shadowNode);
     const auto newGrandChildPairs =
-        sliceChildShadowNodeViewPairs(newChildPair.shadowNode);
+        sliceChildShadowNodeViewPairs(*newChildPair.shadowNode);
     calculateShadowViewMutations(
         *(newGrandChildPairs.size() ? &downwardMutations
                                     : &destructiveDownwardMutations),
@@ -145,7 +145,7 @@ static void calculateShadowViewMutations(
       calculateShadowViewMutations(
           destructiveDownwardMutations,
           oldChildPair.shadowView,
-          sliceChildShadowNodeViewPairs(oldChildPair.shadowNode),
+          sliceChildShadowNodeViewPairs(*oldChildPair.shadowNode),
           {});
     } else {
       // The old view *was* (re)inserted.
@@ -154,9 +154,9 @@ static void calculateShadowViewMutations(
       const auto &newChildPair = it->second;
       if (newChildPair.shadowView != oldChildPair.shadowView) {
         const auto oldGrandChildPairs =
-            sliceChildShadowNodeViewPairs(oldChildPair.shadowNode);
+            sliceChildShadowNodeViewPairs(*oldChildPair.shadowNode);
         const auto newGrandChildPairs =
-            sliceChildShadowNodeViewPairs(newChildPair.shadowNode);
+            sliceChildShadowNodeViewPairs(*newChildPair.shadowNode);
         calculateShadowViewMutations(
             *(newGrandChildPairs.size() ? &downwardMutations
                                         : &destructiveDownwardMutations),
@@ -191,7 +191,7 @@ static void calculateShadowViewMutations(
         downwardMutations,
         newChildPair.shadowView,
         {},
-        sliceChildShadowNodeViewPairs(newChildPair.shadowNode));
+        sliceChildShadowNodeViewPairs(*newChildPair.shadowNode));
   }
 
   // All mutations in an optimal order:

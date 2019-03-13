@@ -34,7 +34,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class CompositeReactPackageTest {
 
   @Rule

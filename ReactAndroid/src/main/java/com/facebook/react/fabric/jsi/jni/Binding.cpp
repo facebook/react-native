@@ -94,8 +94,6 @@ void Binding::installFabricUIManager(
     jni::alias_ref<JavaMessageQueueThread::javaobject> jsMessageQueueThread,
     ComponentFactoryDelegate* componentsRegistry,
     jni::alias_ref<jobject> reactNativeConfig) {
-  Runtime* runtime = (Runtime*)jsContextNativePointer;
-
   javaUIManager_ = make_global(javaUIManager);
 
   SharedContextContainer contextContainer =
@@ -103,6 +101,8 @@ void Binding::installFabricUIManager(
 
   auto sharedJSMessageQueueThread =
       std::make_shared<JMessageQueueThread>(jsMessageQueueThread);
+
+  Runtime* runtime = (Runtime*)jsContextNativePointer;
   RuntimeExecutor runtimeExecutor =
       [runtime, sharedJSMessageQueueThread](
           std::function<void(facebook::jsi::Runtime & runtime)>&& callback) {
@@ -112,18 +112,20 @@ void Binding::installFabricUIManager(
             });
       };
 
+  eventBeatManager->setRuntimeExecutor(runtimeExecutor);
+
   // TODO: T31905686 Create synchronous Event Beat
   jni::global_ref<jobject> localJavaUIManager = javaUIManager_;
   EventBeatFactory synchronousBeatFactory =
-      [eventBeatManager, runtime, localJavaUIManager]() mutable {
+      [eventBeatManager, runtimeExecutor, localJavaUIManager]() {
         return std::make_unique<AsyncEventBeat>(
-            eventBeatManager, runtime, localJavaUIManager);
+            eventBeatManager, runtimeExecutor, localJavaUIManager);
       };
 
   EventBeatFactory asynchronousBeatFactory =
-      [eventBeatManager, runtime, localJavaUIManager]() mutable {
+      [eventBeatManager, runtimeExecutor, localJavaUIManager]() {
         return std::make_unique<AsyncEventBeat>(
-            eventBeatManager, runtime, localJavaUIManager);
+            eventBeatManager, runtimeExecutor, localJavaUIManager);
       };
 
   std::shared_ptr<const ReactNativeConfig> config = std::make_shared<const ReactNativeConfigHolder>(reactNativeConfig);

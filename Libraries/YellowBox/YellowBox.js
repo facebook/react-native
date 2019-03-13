@@ -13,7 +13,7 @@
 const React = require('React');
 
 import type {Category} from 'YellowBoxCategory';
-import type {Registry, Subscription} from 'YellowBoxRegistry';
+import type {Registry, Subscription, IgnorePattern} from 'YellowBoxRegistry';
 
 type Props = $ReadOnly<{||}>;
 type State = {|
@@ -50,7 +50,7 @@ if (__DEV__) {
 
   // eslint-disable-next-line no-shadow
   YellowBox = class YellowBox extends React.Component<Props, State> {
-    static ignoreWarnings(patterns: $ReadOnlyArray<string>): void {
+    static ignoreWarnings(patterns: $ReadOnlyArray<IgnorePattern>): void {
       YellowBoxRegistry.addIgnorePatterns(patterns);
     }
 
@@ -135,7 +135,7 @@ if (__DEV__) {
   };
 } else {
   YellowBox = class extends React.Component<Props> {
-    static ignoreWarnings(patterns: $ReadOnlyArray<string>): void {
+    static ignoreWarnings(patterns: $ReadOnlyArray<IgnorePattern>): void {
       // Do nothing.
     }
 

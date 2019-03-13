@@ -76,7 +76,13 @@ RCT_EXPORT_MODULE()
                                                  name:UIAccessibilityAnnouncementDidFinishNotification
                                                object:nil];
 
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reduceMotionStatusDidChange:)
+                                                 name:UIAccessibilityReduceMotionStatusDidChangeNotification
+                                               object:nil];
+
     self.contentSizeCategory = RCTSharedApplication().preferredContentSizeCategory;
+    _isReduceMotionEnabled = UIAccessibilityIsReduceMotionEnabled();
     _isVoiceOverEnabled = UIAccessibilityIsVoiceOverRunning();
   }
   return self;
@@ -117,6 +123,19 @@ RCT_EXPORT_MODULE()
   [_bridge.eventDispatcher sendDeviceEventWithName:@"announcementDidFinish"
                                               body:response];
 #pragma clang diagnostic pop
+}
+
+- (void)reduceMotionStatusDidChange:(__unused NSNotification *)notification
+{
+  BOOL newReduceMotionEnabled = UIAccessibilityIsReduceMotionEnabled();
+  if (_isReduceMotionEnabled != newReduceMotionEnabled) {
+    _isReduceMotionEnabled = newReduceMotionEnabled;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    [_bridge.eventDispatcher sendDeviceEventWithName:@"reduceMotionDidChange"
+                                                body:@(_isReduceMotionEnabled)];
+#pragma clang diagnostic pop
+  }
 }
 
 - (void)setContentSizeCategory:(NSString *)contentSizeCategory
@@ -205,6 +224,12 @@ RCT_EXPORT_METHOD(getCurrentVoiceOverState:(RCTResponseSenderBlock)callback
                   error:(__unused RCTResponseSenderBlock)error)
 {
   callback(@[@(_isVoiceOverEnabled)]);
+}
+
+RCT_EXPORT_METHOD(getReduceMotionState:(RCTResponseSenderBlock)callback
+                  error:(__unused RCTResponseSenderBlock)error)
+{
+  callback(@[@(_isReduceMotionEnabled)]);
 }
 
 @end

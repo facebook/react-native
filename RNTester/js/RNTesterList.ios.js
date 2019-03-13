@@ -172,6 +172,11 @@ const ComponentExamples: Array<RNTesterExample> = [
 
 const APIExamples: Array<RNTesterExample> = [
   {
+    key: 'AccessibilityExample',
+    module: require('./AccessibilityExample'),
+    supportsTVOS: false,
+  },
+  {
     key: 'AccessibilityIOSExample',
     module: require('./AccessibilityIOSExample'),
     supportsTVOS: false,
@@ -224,6 +229,11 @@ const APIExamples: Array<RNTesterExample> = [
   {
     key: 'ClipboardExample',
     module: require('./ClipboardExample'),
+    supportsTVOS: false,
+  },
+  {
+    key: 'CrashExample',
+    module: require('./CrashExample'),
     supportsTVOS: false,
   },
   {

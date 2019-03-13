@@ -15,6 +15,7 @@ import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
+import android.text.Layout;
 import android.text.Spannable;
 import android.text.TextWatcher;
 import android.util.TypedValue;
@@ -282,9 +283,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = "importantForAutofill")
   public void setImportantForAutofill(ReactEditText view, @Nullable String value) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-      return;
-    }
     int mode = View.IMPORTANT_FOR_AUTOFILL_AUTO;
     if ("no".equals(value)) {
       mode = View.IMPORTANT_FOR_AUTOFILL_NO;
@@ -294,6 +292,13 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       mode = View.IMPORTANT_FOR_AUTOFILL_YES;
     } else if ("yesExcludeDescendants".equals(value)) {
       mode = View.IMPORTANT_FOR_AUTOFILL_YES_EXCLUDE_DESCENDANTS;
+    }
+    setImportantForAutofill(view, mode);
+  }
+
+  private void setImportantForAutofill(ReactEditText view, int mode) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+      return;
     }
     view.setImportantForAutofill(mode);
   }
@@ -460,19 +465,28 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = ViewProps.TEXT_ALIGN)
   public void setTextAlign(ReactEditText view, @Nullable String textAlign) {
-    if (textAlign == null || "auto".equals(textAlign)) {
-      view.setGravityHorizontal(Gravity.NO_GRAVITY);
-    } else if ("left".equals(textAlign)) {
-      view.setGravityHorizontal(Gravity.LEFT);
-    } else if ("right".equals(textAlign)) {
-      view.setGravityHorizontal(Gravity.RIGHT);
-    } else if ("center".equals(textAlign)) {
-      view.setGravityHorizontal(Gravity.CENTER_HORIZONTAL);
-    } else if ("justify".equals(textAlign)) {
-      // Fallback gracefully for cross-platform compat instead of error
+    if ("justify".equals(textAlign)) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        view.setJustificationMode(Layout.JUSTIFICATION_MODE_INTER_WORD);
+      }
       view.setGravityHorizontal(Gravity.LEFT);
     } else {
-      throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlign);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        view.setJustificationMode(Layout.JUSTIFICATION_MODE_NONE);
+      }
+
+      if (textAlign == null || "auto".equals(textAlign)) {
+        view.setGravityHorizontal(Gravity.NO_GRAVITY);
+      } else if ("left".equals(textAlign)) {
+        view.setGravityHorizontal(Gravity.LEFT);
+      } else if ("right".equals(textAlign)) {
+        view.setGravityHorizontal(Gravity.RIGHT);
+      } else if ("center".equals(textAlign)) {
+        view.setGravityHorizontal(Gravity.CENTER_HORIZONTAL);
+      } else {
+        throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlign);
+      }
+
     }
   }
 
@@ -556,7 +570,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   @ReactProp(name = "autoComplete")
   public void setTextContentType(ReactEditText view, @Nullable String autocomplete) {
     if (autocomplete == null) {
-      view.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO);
+      setImportantForAutofill(view, View.IMPORTANT_FOR_AUTOFILL_NO);
     } else if ("username".equals(autocomplete)) {
       view.setAutofillHints(View.AUTOFILL_HINT_USERNAME);
     } else if ("password".equals(autocomplete)) {
@@ -582,7 +596,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     } else if ("cc-exp-year".equals(autocomplete)) {
       view.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_YEAR);
     } else if ("off".equals(autocomplete)) {
-      view.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO);
+      setImportantForAutofill(view, View.IMPORTANT_FOR_AUTOFILL_NO);
     } else {
       throw new JSApplicationIllegalArgumentException("Invalid autocomplete option: " + autocomplete);
     }

@@ -124,9 +124,16 @@ void Scheduler::renderTemplateToSurface(
           [&](const SharedRootShadowNode &oldRootShadowNode) {
             return std::make_shared<RootShadowNode>(
                 *oldRootShadowNode,
-                ShadowNodeFragment{.children =
-                                       std::make_shared<SharedShadowNodeList>(
-                                           SharedShadowNodeList{tree})});
+                ShadowNodeFragment{
+                    /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
+                    /* .rootTag = */ ShadowNodeFragment::surfaceIdPlaceholder(),
+                    /* .props = */ ShadowNodeFragment::propsPlaceholder(),
+                    /* .eventEmitter = */
+                    ShadowNodeFragment::eventEmitterPlaceholder(),
+                    /* .children = */
+                    std::make_shared<SharedShadowNodeList>(
+                        SharedShadowNodeList{tree}),
+                });
           },
           commitStartTime);
     });
@@ -148,8 +155,15 @@ void Scheduler::stopSurface(SurfaceId surfaceId) const {
               return std::make_shared<RootShadowNode>(
                   *oldRootShadowNode,
                   ShadowNodeFragment{
-                      .children =
-                          ShadowNode::emptySharedShadowNodeSharedList()});
+                      /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
+                      /* .rootTag = */
+                      ShadowNodeFragment::surfaceIdPlaceholder(),
+                      /* .props = */ ShadowNodeFragment::propsPlaceholder(),
+                      /* .eventEmitter = */
+                      ShadowNodeFragment::eventEmitterPlaceholder(),
+                      /* .children = */
+                      ShadowNode::emptySharedShadowNodeSharedList(),
+                  });
             },
             commitStartTime);
       });
@@ -247,7 +261,14 @@ void Scheduler::uiManagerDidFinishTransaction(
         [&](const SharedRootShadowNode &oldRootShadowNode) {
           return std::make_shared<RootShadowNode>(
               *oldRootShadowNode,
-              ShadowNodeFragment{.children = rootChildNodes});
+              ShadowNodeFragment{
+                  /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
+                  /* .rootTag = */ ShadowNodeFragment::surfaceIdPlaceholder(),
+                  /* .props = */ ShadowNodeFragment::propsPlaceholder(),
+                  /* .eventEmitter = */
+                  ShadowNodeFragment::eventEmitterPlaceholder(),
+                  /* .children = */ rootChildNodes,
+              });
         },
         startCommitTime);
   });

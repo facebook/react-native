@@ -51,7 +51,7 @@ bool ShadowView::operator!=(const ShadowView &rhs) const {
 }
 
 bool ShadowViewNodePair::operator==(const ShadowViewNodePair &rhs) const {
-  return &this->shadowNode == &rhs.shadowNode;
+  return this->shadowNode == rhs.shadowNode;
 }
 
 bool ShadowViewNodePair::operator!=(const ShadowViewNodePair &rhs) const {
