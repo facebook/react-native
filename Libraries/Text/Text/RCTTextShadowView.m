@@ -35,6 +35,11 @@
   return self;
 }
 
+-(void)didSetProps:(NSArray<NSString*>*)changedProps {
+  [super didSetProps:changedProps];
+  self.textAttributes.backgroundColor = nil;
+}
+
 - (BOOL)isYogaLeafNode
 {
   return YES;

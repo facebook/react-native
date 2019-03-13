@@ -105,25 +105,11 @@
   NSTextContainer *textContainer = layoutManager.textContainers.firstObject;
 
   NSRange glyphRange = [layoutManager glyphRangeForTextContainer:textContainer];
+  [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:_contentFrame.origin];
+  [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:_contentFrame.origin];
 
   NSRange characterRange = [layoutManager characterRangeForGlyphRange:glyphRange
                                                      actualGlyphRange:NULL];
-  
-  [_textStorage enumerateAttribute:NSBackgroundColorAttributeName
-                           inRange:characterRange
-                           options:0
-                        usingBlock:
-   ^(UIColor *value, NSRange range, __unused BOOL *stop) {
-     if (value == nil) {
-       return;
-     }
-     if ([value isEqual:self.backgroundColor]) {
-       [self->_textStorage removeAttribute:NSBackgroundColorAttributeName range:range];
-     }
-   }];
-
-  [layoutManager drawBackgroundForGlyphRange:glyphRange atPoint:_contentFrame.origin];
-  [layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:_contentFrame.origin];
   
   __block UIBezierPath *highlightPath = nil;
   [_textStorage enumerateAttribute:RCTTextAttributesIsHighlightedAttributeName
