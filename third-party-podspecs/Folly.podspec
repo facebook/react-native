@@ -31,16 +31,7 @@ Pod::Spec.new do |spec|
                       'folly/hash/SpookyHashV2.cpp',
                       'folly/lang/Assume.cpp',
                       'folly/lang/ColdClass.cpp',
-                      'folly/memory/detail/MallocImpl.cpp',
-                        # --- Start Fabric Specific --- #
-                      'folly/portability/SysUio.cpp',
-                      'folly/FileUtil.cpp',
-                      'folly/SharedMutex.cpp',
-                      'folly/concurrency/CacheLocality.cpp',
-                      'folly/detail/Futex.cpp',
-                      'folly/lang/SafeAssert.cpp',
-                      'folly/synchronization/ParkingLot.cpp'
-                       # --- End Fabric Specific --- #
+                      'folly/memory/detail/MallocImpl.cpp'
 
   # workaround for https://github.com/facebook/react-native/issues/14326
   spec.preserve_paths = 'folly/*.h',
@@ -52,13 +43,7 @@ Pod::Spec.new do |spec|
                         'folly/lang/*.h',
                         'folly/memory/*.h',
                         'folly/memory/detail/*.h',
-                        'folly/portability/*.h',
-                        # --- Start Fabric Specific --- #
-                        'folly/concurrency/CacheLocality.h',
-                        'folly/synchronization/ParkingLot.h',
-                        'folly/synchronization/SanitizeThread.h',
-                        'folly/system/ThreadId.h'
-                        # --- End Fabric Specific --- #
+                        'folly/portability/*.h'
   spec.libraries           = "stdc++"
   spec.pod_target_xcconfig = { "USE_HEADERMAP" => "NO",
                                "CLANG_CXX_LANGUAGE_STANDARD" => "c++14",
@@ -77,7 +62,8 @@ Pod::Spec.new do |spec|
                           'folly/concurrency/CacheLocality.cpp',
                           'folly/detail/Futex.cpp',
                           'folly/lang/SafeAssert.cpp',
-                          'folly/synchronization/ParkingLot.cpp'
+                          'folly/synchronization/ParkingLot.cpp',
+                          'folly/portability/Malloc.cpp'
     fabric.preserve_paths = 'folly/concurrency/CacheLocality.h',
                             'folly/synchronization/ParkingLot.h',
                             'folly/synchronization/SanitizeThread.h',
