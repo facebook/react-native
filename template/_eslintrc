@@ -1,0 +1,6 @@
+{
+  "env": {
+    "jest": true
+  },
+  "extends": "@react-native-community"
+}
