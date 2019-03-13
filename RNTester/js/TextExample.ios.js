@@ -440,6 +440,7 @@ exports.examples = [
       return (
         <Text style={{backgroundColor: '#00000020', padding: 10}}>
           Text in a gray box!
+          <Text style={{backgroundColor: 'red'}}> another text in red box</Text>
         </Text>
       );
     },
