@@ -129,9 +129,6 @@ static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogg
         [weakPerformanceLogger appendStopForTag:RCTPLRAMNativeRequires];
         [weakPerformanceLogger addValue:1 forTag:RCTPLRAMNativeRequiresCount];
         break;
-      case ReactMarker::CREATE_REACT_CONTEXT_STOP:
-      case ReactMarker::JS_BUNDLE_STRING_CONVERT_START:
-      case ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP:
       case ReactMarker::NATIVE_MODULE_SETUP_START:
         [weakPerformanceLogger markStartForTag:RCTPLNativeModuleSetup];
         break;
@@ -139,6 +136,9 @@ static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogg
         [weakPerformanceLogger markStopForTag:RCTPLNativeModuleSetup];
         notifyAboutModuleSetup(weakPerformanceLogger, tag);
         break;
+      case ReactMarker::CREATE_REACT_CONTEXT_STOP:
+      case ReactMarker::JS_BUNDLE_STRING_CONVERT_START:
+      case ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP:
       case ReactMarker::REGISTER_JS_SEGMENT_START:
       case ReactMarker::REGISTER_JS_SEGMENT_STOP:
         // These are not used on iOS.
