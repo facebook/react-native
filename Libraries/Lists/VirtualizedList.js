@@ -1743,12 +1743,7 @@ class CellRenderer extends React.Component<
     fillRateHelper: FillRateHelper,
     horizontal: ?boolean,
     index: number,
-<<<<<<< HEAD
-    inversionStyle: ?DangerouslyImpreciseStyleProp,
     isSelected: ?boolean, // TODO(macOS ISS#2323203)
-=======
-    inversionStyle: ViewStyleProp,
->>>>>>> v0.58.6
     item: Item,
     onLayout: (event: Object) => void, // This is extracted by ScrollViewStickyHeader
     onUnmount: (cellKey: string) => void,

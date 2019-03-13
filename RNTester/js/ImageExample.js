@@ -516,25 +516,6 @@ exports.examples = [
             source={fullImage}
           />
           <Image
-<<<<<<< HEAD
-            style={[styles.base, styles.leftMargin, {
-              borderWidth: 10,
-              borderTopLeftRadius: 10,
-              borderBottomRightRadius: 20,
-              borderColor: 'green',
-            }]}
-            source={fullImage}
-          />
-          <Image
-            style={[styles.base, styles.leftMargin, {
-              borderWidth: 5,
-              borderTopLeftRadius: 10,
-              borderTopRightRadius: 20,
-              borderBottomRightRadius: 30,
-              borderBottomLeftRadius: 40,
-              borderColor: 'red',
-            }]}
-=======
             style={[
               styles.base,
               styles.leftMargin,
@@ -560,7 +541,6 @@ exports.examples = [
                 borderColor: 'red',
               },
             ]}
->>>>>>> v0.58.6
             source={fullImage}
           />
         </View>

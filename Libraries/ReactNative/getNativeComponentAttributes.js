@@ -25,16 +25,10 @@ const resolveAssetSource = require('resolveAssetSource');
 const sizesDiffer = require('sizesDiffer');
 const invariant = require('fbjs/lib/invariant');
 const warning = require('fbjs/lib/warning');
-<<<<<<< HEAD
 import type {SemanticOrDynamicColorType} from 'normalizeColor' // ]TODO(macOS ISS#2323203)
 
 function getNativeComponentAttributes(uiViewClassName: string) {
-  const viewConfig = UIManager[uiViewClassName];
-=======
-
-function getNativeComponentAttributes(uiViewClassName: string) {
   const viewConfig = UIManager.getViewManagerConfig(uiViewClassName);
->>>>>>> v0.58.6
 
   invariant(
     viewConfig != null && viewConfig.NativeProps != null,
@@ -47,11 +41,7 @@ function getNativeComponentAttributes(uiViewClassName: string) {
   let {baseModuleName, bubblingEventTypes, directEventTypes} = viewConfig;
   let nativeProps = viewConfig.NativeProps;
   while (baseModuleName) {
-<<<<<<< HEAD
-    const baseModule = UIManager[baseModuleName];
-=======
     const baseModule = UIManager.getViewManagerConfig(baseModuleName);
->>>>>>> v0.58.6
     if (!baseModule) {
       warning(false, 'Base module "%s" does not exist', baseModuleName);
       baseModuleName = null;
@@ -111,11 +101,7 @@ function attachDefaultEventTypes(viewConfig: any) {
   // This is supported on UIManager platforms (ex: Android),
   // as lazy view managers are not implemented for all platforms.
   // See [UIManager] for details on constants and implementations.
-<<<<<<< HEAD
-  if (UIManager.ViewManagerNames) {
-=======
   if (UIManager.ViewManagerNames || UIManager.LazyViewManagersEnabled) {
->>>>>>> v0.58.6
     // Lazy view managers enabled.
     viewConfig = merge(viewConfig, UIManager.getDefaultEventTypes());
   } else {
@@ -200,11 +186,7 @@ function getProcessorForType(typeName: string): ?(nextProp: any) => any {
   return null;
 }
 
-<<<<<<< HEAD
 function processColorArray(colors: ?Array<any>): ?Array<?(number | SemanticOrDynamicColorType)> { // ]TODO(macOS ISS#2323203)
-=======
-function processColorArray(colors: ?Array<any>): ?Array<?number> {
->>>>>>> v0.58.6
   return colors == null ? null : colors.map(processColor);
 }
 

@@ -10,27 +10,11 @@
 
 'use strict';
 
-<<<<<<< HEAD
-var React = require('react');
-var createReactClass = require('create-react-class');
-var ReactNative = require('react-native');
-var {AlertIOS, AlertMacOS, Platform, ToastAndroid, Text, View} = ReactNative;
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
-var TimerMixin = require('react-timer-mixin');
-var RNTesterButton = require('./RNTesterButton');
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
-var performanceNow = require('fbjs/lib/performanceNow');
-=======
 const React = require('react');
 const ReactNative = require('react-native');
-const {AlertIOS, Platform, ToastAndroid, Text, View} = ReactNative;
+var {AlertIOS, AlertMacOS, Platform, ToastAndroid, Text, View} = ReactNative;
 const RNTesterButton = require('./RNTesterButton');
 const performanceNow = require('fbjs/lib/performanceNow');
->>>>>>> v0.58.6
 
 function burnCPU(milliseconds) {
   const start = performanceNow();
