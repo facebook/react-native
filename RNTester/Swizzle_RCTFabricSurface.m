@@ -1,3 +1,4 @@
+#ifdef FABRIC_ENABLED
 #import <objc/runtime.h>
 #import <React/RCTFabricSurface.h>
 
@@ -39,3 +40,4 @@
 }
 
 @end
+#endif

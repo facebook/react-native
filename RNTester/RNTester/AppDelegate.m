@@ -18,6 +18,7 @@
 #import <React/RCTPushNotificationManager.h>
 #endif
 
+#ifdef FABRIC_ENABLED
 #import <React/RCTSurfacePresenter.h>
 #import <React/RCTFabricSurfaceHostingProxyRootView.h>
 
@@ -31,6 +32,11 @@
 -(void)_startAllSurfaces;
 @end
 
+#else
+@interface AppDelegate() <RCTBridgeDelegate>
+@end
+#endif
+
 @implementation AppDelegate
 
 - (BOOL)application:(__unused UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -38,6 +44,14 @@
   _bridge = [[RCTBridge alloc] initWithDelegate:self
                                   launchOptions:launchOptions];
   
+  // Appetizer.io params check
+  NSDictionary *initProps = @{};
+  NSString *_routeUri = [[NSUserDefaults standardUserDefaults] stringForKey:@"route"];
+  if (_routeUri) {
+    initProps = @{@"exampleFromAppetizeParams": [NSString stringWithFormat:@"rntester://example/%@Example", _routeUri]};
+  }
+  
+#ifdef FABRIC_ENABLED
   // FIXME: this is a hack, remove when surfaces start correctly
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(handleJavaScriptDidLoadNotification:)
@@ -47,15 +61,11 @@
   _surfacePresenter = [[RCTSurfacePresenter alloc] initWithBridge:_bridge config:nil];
   _bridge.surfacePresenter = _surfacePresenter;
 
-  // Appetizer.io params check
-  NSDictionary *initProps = @{};
-  NSString *_routeUri = [[NSUserDefaults standardUserDefaults] stringForKey:@"route"];
-  if (_routeUri) {
-    initProps = @{@"exampleFromAppetizeParams": [NSString stringWithFormat:@"rntester://example/%@Example", _routeUri]};
-  }
-
   UIView *rootView = [[RCTFabricSurfaceHostingProxyRootView alloc] initWithBridge:_bridge moduleName:@"RNTesterApp" initialProperties:initProps];
-
+#else
+  UIView *rootView = [[RCTRootView alloc] initWithBridge:_bridge moduleName:@"RNTesterApp" initialProperties:initProps];
+#endif
+  
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [UIViewController new];
   rootViewController.view = rootView;
@@ -64,12 +74,14 @@
   return YES;
 }
 
+#ifdef FABRIC_ENABLED
 // FIXME: this is a hack, remove when surfaces start correctly
 - (void)handleJavaScriptDidLoadNotification:(__unused NSNotification*)notification {
   dispatch_async(dispatch_get_main_queue(), ^{
     [self->_surfacePresenter _startAllSurfaces];
   });
 }
+#endif
 
 - (NSURL *)sourceURLForBridge:(__unused RCTBridge *)bridge
 {

@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+#ifdef FABRIC_ENABLED
 #include <react/uimanager/ComponentDescriptorFactory.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
 #include <react/uimanager/ContextContainer.h>
@@ -44,3 +45,4 @@ namespace facebook {
     
   } // namespace react
 } // namespace facebook
+#endif

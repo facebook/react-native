@@ -87,14 +87,13 @@
 		13B07FAE1A68108700A75B9A /* RNTester */ = {
 			isa = PBXGroup;
 			children = (
-				2DDEF00F1F84BF7B00DBDF73 /* Images.xcassets */,
-				272E6B3A1BEA846C001FCF37 /* NativeExampleViews */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
-				68D134432238528800D0B233 /* Swizzle_RCTFabricSurface.m */,
-				68E1E4BB2230DF2F00570185 /* ComponentRegistry.cpp */,
-				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				2DDEF00F1F84BF7B00DBDF73 /* Images.xcassets */,
+				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
+				680759612239798500290469 /* Fabric */,
+				272E6B3A1BEA846C001FCF37 /* NativeExampleViews */,
 				1323F18D1C04ABAC0091BED0 /* Supporting Files */,
 			);
 			name = RNTester;
@@ -137,6 +136,15 @@
 				5BEC8567F3741044B6A5EFC5 /* Pods-RNTester.release.xcconfig */,
 			);
 			name = Pods;
+			sourceTree = "<group>";
+		};
+		680759612239798500290469 /* Fabric */ = {
+			isa = PBXGroup;
+			children = (
+				68E1E4BB2230DF2F00570185 /* ComponentRegistry.cpp */,
+				68D134432238528800D0B233 /* Swizzle_RCTFabricSurface.m */,
+			);
+			name = Fabric;
 			sourceTree = "<group>";
 		};
 		83CBB9F61A601CBA00E9B192 = {
