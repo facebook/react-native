@@ -60,6 +60,7 @@ const BLACKLISTED_PATTERNS /*: Array<RegExp> */ = [
   /.*[\\\/]__(mocks|tests)__[\\\/].*/,
   /^Libraries[\\\/]Animated[\\\/]src[\\\/]polyfills[\\\/].*/,
   /^Libraries[\\\/]Renderer[\\\/]fb[\\\/].*/,
+  /DerivedData[\\\/].*/,
 ];
 
 const WHITELISTED_PREFIXES /*: Array<string> */ = [
