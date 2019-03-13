@@ -440,7 +440,9 @@ exports.examples = [
       return (
         <Text style={{backgroundColor: '#00000020', padding: 10}}>
           Text in a gray box!
-          <Text style={{backgroundColor: 'red'}}> another text in red box</Text>
+          <Text style={{backgroundColor: 'red'}}>
+            Another text in a (inline) red box (which is inside the gray box).
+          </Text>
         </Text>
       );
     },
