@@ -194,7 +194,7 @@ PODS:
 
 DEPENDENCIES:
   - DoubleConversion (from `../third-party-podspecs/DoubleConversion.podspec`)
-  - Folly (from `../third-party-podspecs/folly.podspec`)
+  - Folly (from `../third-party-podspecs/Folly-Fabric.podspec`)
   - glog (from `../third-party-podspecs/glog.podspec`)
   - libevent (from `../third-party-podspecs/libevent.podspec`)
   - React (from `../`)
@@ -232,7 +232,7 @@ EXTERNAL SOURCES:
   DoubleConversion:
     :podspec: "../third-party-podspecs/DoubleConversion.podspec"
   Folly:
-    :podspec: "../third-party-podspecs/folly.podspec"
+    :podspec: "../third-party-podspecs/Folly-Fabric.podspec"
   glog:
     :podspec: "../third-party-podspecs/glog.podspec"
   libevent:
@@ -296,33 +296,33 @@ SPEC CHECKSUMS:
   Folly: 1810b36f7389fde0f247be105670b9a54f3f9c24
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
   libevent: abe4052ea9d7366cd7db9f00ed36101e27900f4b
-  React: 1fbb1e8ae47da22b0ce798cf5debf9ce10af0523
-  React-ART: d428811639740b3f51c8008122cba0595e0d8f7b
-  React-Core: 16646ecda373a7c7663ab4df4d7d805d6a506d33
-  React-cxxreact: a57fbc7978a2fdadc01eb8e52c5dda67ebc61787
-  React-DevSupport: d3a99bf88afffbdf7b93e6f862ed88369c41dd33
-  React-Fabric: 430161d7582ed92e5332a77f6865b6a9a4bc180b
-  React-fishhook: 64402951a9ce99931ee60cb41801464e68936e1b
-  React-graphics: eb7655f14166c1bdb6bcb856ee3eef526b343bec
-  React-jsi: 2f80ff051bbced6204fe65bf81e21668b4ba90d2
-  React-jsiexecutor: 94cba07f2bd1a734b193f32db89c72008bba68cd
-  React-jsinspector: 3f4d03d344d5032bb222df6fdd5c16fb032e5d36
-  React-RCTActionSheet: ff3d9cb5a4804a854f2e4a6bb6cff6552fb59364
-  React-RCTAnimation: 7a99439668c82e7b620285381f51636fe494da90
-  React-RCTBlob: a86c30123504bbe47d35f9ce44fd552a4eb8e671
-  React-RCTCameraRoll: f5c30a08af9d0f5d5bfd80832fb95059cbfd532b
-  React-RCTFabric: 75b0286eb2d9cd25b2472c167ac3b816c67f3d6c
-  React-RCTGeolocation: 3c7f52eccfe245b96f0fcc68e92c4f1bea5b16b0
-  React-RCTImage: e73fb2797553810097e05bee665a65300654c223
-  React-RCTLinking: 698a26d7c47c7b352c13e16c64c25a5a414fc4f4
-  React-RCTNetwork: 576a273e68d501c9514a34e70a1426b2b9bc9c10
-  React-RCTPushNotification: 730e70b56dfdb95bb8d9898d165723d743e6f6c4
-  React-RCTSettings: 4e5653b0ff9919d00c4f555b622b598b28498d38
-  React-RCTText: 133d8e625e26776eaf1fe080d203756b681439c8
-  React-RCTVibration: 0b3e23bcb334d29eaa5acc277a4ebc27a46e51cb
-  React-RCTWebSocket: 8913cfaca3b17ff6bd98bc442bc4fde342e16a3d
-  yoga: 09de5b7cddae57942ae5db89852eb7633e904f0e
+  React: 7c26c23712019a078d03509512d1500acbdb8dfa
+  React-ART: c669a4081b4cd4bc7ca9e9705fb3ea262a2603ea
+  React-Core: d197af1ea95ca1d92813bebe7d70a83ec5afeebf
+  React-cxxreact: 002dd00c2bb1867f5a864278fa727240336ccf8d
+  React-DevSupport: e0ff662fc31affdc93e94f7ac942eb38402f1347
+  React-Fabric: 7de8ae24e865f5a911dd85db2258a35b0146fbe2
+  React-fishhook: 3c1c7a84c92d5f0353985023d285ae486c53f691
+  React-graphics: 4b604eb21e712c8dbd6d293f586ba22b38f04345
+  React-jsi: 0754ea21915bae3607a4692c06f21616e753b907
+  React-jsiexecutor: d7dcb8e6c9f139cc1cf48413757ef2b3cf6aa0ed
+  React-jsinspector: 1aab06171c49fc89fffaf8d682e3dc40464946d1
+  React-RCTActionSheet: 8d6e915afbb1e7eaa9a474ed58f5d0798bc25c5a
+  React-RCTAnimation: 06df41aeef26e039d28daf9ca53747fc5ba1c442
+  React-RCTBlob: 52a9b8fc022daf72bf24e0ef34addaefa949a207
+  React-RCTCameraRoll: b1fb6dd6ad85c006dde6c92d60edf32e8e35d1ea
+  React-RCTFabric: f8e90a5403b74b8bca99379c91f00c4043cb2b38
+  React-RCTGeolocation: cd3edc7ba9622bd308a647b096d5ee0798bc0b3d
+  React-RCTImage: 7a1eb279141512923e9377ad0abac9c727adc878
+  React-RCTLinking: 8b939065919e360bb3557671a7b9ac44293e9479
+  React-RCTNetwork: ab82cb9e10fcb559173fe32f244b04ee0d704c42
+  React-RCTPushNotification: de82bec4ae79e613d7f8afed288d41b3bc6332f9
+  React-RCTSettings: 48c543741faafdc1d0e308228b920900ee95e707
+  React-RCTText: 76c0b933d594edac8cb4eb1eb65444bccf5baaa8
+  React-RCTVibration: 69edd3fd7101dc890c8ca59d32f980b4f8624189
+  React-RCTWebSocket: 6746617e108d25123a623157cee416dd603ef194
+  yoga: fca9cc9a5b6574b48e42fdb67d5c5f9d7f6ea5b0
 
-PODFILE CHECKSUM: 0dead4310cf970f1f85099651665c26f1c129cb8
+PODFILE CHECKSUM: d57af6d4858ebf53fcd32924086d008d338a32dc
 
 COCOAPODS: 1.6.1
