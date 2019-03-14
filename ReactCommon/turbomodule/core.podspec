@@ -22,7 +22,7 @@ folly_version = '2018.10.22.00'
 boost_compiler_flags = '-Wno-documentation'
 
 Pod::Spec.new do |s|
-  s.name                   = "React-turbomodule"
+  s.name                   = "React-turbomodule-core"
   s.version                = version
   s.summary                = "-"  # TODO
   s.homepage               = "http://facebook.github.io/react-native/"
@@ -31,7 +31,6 @@ Pod::Spec.new do |s|
   s.platforms              = { :ios => "9.0", :tvos => "9.2" }
   s.source                 = source
   s.source_files           = "core/*.{cpp,h}"
-  s.exclude_files          = "**/android/*"
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Folly\"" }
   s.header_dir             = "jsireact"
@@ -41,9 +40,9 @@ Pod::Spec.new do |s|
   s.dependency "React-jsi", version
   s.dependency "Folly", folly_version
 
-  s.subspec "RCTTurboModule" do |ss|
+  s.subspec "core-ios" do |ss|
     ss.source_files   = "core/platform/ios/*.{mm,cpp,h}"
-    ss.exclude_files  = "**/android/*"
+    ss.exclude_files  = "**/platform/android/*"
     ss.header_dir     = "React"
   end
 end
