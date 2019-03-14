@@ -27,7 +27,6 @@ function getPlugins() {
     const {findPlugins} = require('@react-native-community/cli');
     return findPlugins(path.resolve(__dirname, pluginsPath));
   } catch (e) {
-    console.log(e);
     return {
       haste: {
         providesModuleNodeModules: [],
