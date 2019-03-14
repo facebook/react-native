@@ -435,6 +435,19 @@ exports.examples = [
     },
   },
   {
+    title: 'Transparent Background Color',
+    render: function() {
+      return (
+        <Text style={{backgroundColor: '#00000020', padding: 10}}>
+          Text in a gray box!
+          <Text style={{backgroundColor: 'red'}}>
+            Another text in a (inline) red box (which is inside the gray box).
+          </Text>
+        </Text>
+      );
+    },
+  },
+  {
     title: 'Text metrics',
     render: function() {
       return <TextRenderInfoExample />;
