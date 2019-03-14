@@ -27,7 +27,7 @@
 }
 @end
 
-// FIXME: this is a hack, remove when surfaces start correctly
+// FIXME: remove when resolved https://github.com/facebook/react-native/issues/23910
 @interface RCTSurfacePresenter ()
 -(void)_startAllSurfaces;
 @end
@@ -52,7 +52,7 @@
   }
   
 #ifdef FABRIC_ENABLED
-  // FIXME: this is a hack, remove when surfaces start correctly
+  // FIXME: remove when resolved https://github.com/facebook/react-native/issues/23910
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(handleJavaScriptDidLoadNotification:)
                                                name:RCTJavaScriptDidLoadNotification
@@ -75,7 +75,7 @@
 }
 
 #ifdef FABRIC_ENABLED
-// FIXME: this is a hack, remove when surfaces start correctly
+// FIXME: remove when resolved https://github.com/facebook/react-native/issues/23910
 - (void)handleJavaScriptDidLoadNotification:(__unused NSNotification*)notification {
   dispatch_async(dispatch_get_main_queue(), ^{
     [self->_surfacePresenter _startAllSurfaces];

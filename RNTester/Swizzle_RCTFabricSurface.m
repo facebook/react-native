@@ -9,7 +9,7 @@
 #import <objc/runtime.h>
 #import <React/RCTFabricSurface.h>
 
-// FIXME: this is a hack, remove when surfaces start correctly
+// FIXME: remove when resolved https://github.com/facebook/react-native/issues/23910
 @implementation RCTFabricSurface (SwizzleMeTimbers)
 
 + (void)load {
