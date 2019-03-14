@@ -30,19 +30,19 @@ Pod::Spec.new do |s|
   s.author                 = "Facebook, Inc. and its affiliates"
   s.platforms              = { :ios => "9.0", :tvos => "9.2" }
   s.source                 = source
-  s.source_files           = "**/*.{cpp,h}"
+  s.source_files           = "core/*.{cpp,h}"
   s.exclude_files          = "**/android/*"
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Folly\"" }
   s.header_dir             = "jsireact"
-
+  
   s.dependency "React-Core", version
   s.dependency "React-cxxreact", version
   s.dependency "React-jsi", version
   s.dependency "Folly", folly_version
 
   s.subspec "RCTTurboModule" do |ss|
-    ss.source_files   = "**/*.{mm,h}"
+    ss.source_files   = "core/platform/ios/*.{mm,cpp,h}"
     ss.exclude_files  = "**/android/*"
     ss.header_dir     = "React"
   end
