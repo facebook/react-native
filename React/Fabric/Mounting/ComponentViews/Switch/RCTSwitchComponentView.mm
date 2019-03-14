@@ -77,6 +77,11 @@ using namespace facebook::react;
   }
 }
 
+- (void)setOn:(BOOL)on
+{
+    _wasOn = on;
+}
+
 - (void)onChange:(UISwitch *)sender
 {
   if (_wasOn == sender.on) {

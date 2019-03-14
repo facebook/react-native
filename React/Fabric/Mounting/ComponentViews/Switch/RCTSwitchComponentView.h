@@ -16,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface RCTSwitchComponentView : RCTViewComponentView
 
+- (void)setOn:(BOOL)on;
+
 @end
 
 NS_ASSUME_NONNULL_END
