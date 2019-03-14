@@ -93,19 +93,20 @@ var SegmentedControlIOS = createReactClass({
      * If true, then selecting a segment won't persist visually.
      * The `onValueChange` callback will still work as expected.
      */
-    momentary: PropTypes.bool
+    momentary: PropTypes.bool,
   },
 
   getDefaultProps: function(): DefaultProps {
     return {
       values: [],
-      enabled: true
+      enabled: true,
     };
   },
 
   _onChange: function(event: Event) {
     this.props.onChange && this.props.onChange(event);
-    this.props.onValueChange && this.props.onValueChange(event.nativeEvent.value);
+    this.props.onValueChange &&
+      this.props.onValueChange(event.nativeEvent.value);
   },
 
   render: function() {
@@ -117,7 +118,7 @@ var SegmentedControlIOS = createReactClass({
         onChange={this._onChange}
       />
     );
-  }
+  },
 });
 
 var styles = StyleSheet.create({
@@ -127,8 +128,8 @@ var styles = StyleSheet.create({
 });
 
 var RCTSegmentedControl = requireNativeComponent(
-  'RCTSegmentedControl'/* TODO refactor to a class that extends React.Component<Props>,
-  SegmentedControlIOS*/
+  'RCTSegmentedControl' /* TODO refactor to a class that extends React.Component<Props>,
+  SegmentedControlIOS*/,
 );
 
 module.exports = SegmentedControlIOS;

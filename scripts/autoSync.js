@@ -5,8 +5,8 @@ class AutoSync  {
         this.vsoRepoID = vsoRepoID;
         this.vsoApiUrl = vsoApiUrl;
         this.myHeaders = {
-            'Authorization': 'Basic ' + new Buffer("" + ":" + myToken).toString('base64'),
-            'Content-Type': 'application/json'
+            'Authorization': 'Basic ' + new Buffer('' + ':' + myToken).toString('base64'), // eslint-disable-line no-undef
+            'Content-Type': 'application/json',
         };
     }
 
@@ -18,11 +18,11 @@ class AutoSync  {
             json: true,
             headers: this.myHeaders,
             body: {
-                "sourceRefName": "refs/heads/" + branchName,
-                "targetRefName": "refs/heads/master",
-                "title": pullRequestTitle,
-                "description": pullRequestDescription,
-            }
+                'sourceRefName': 'refs/heads/' + branchName,
+                'targetRefName': 'refs/heads/master',
+                'title': pullRequestTitle,
+                'description': pullRequestDescription,
+            },
         }, function (err, httpResponse, body) {
             if (err || body.errorCode) {
                 throw new Error(err || body.errorCode);
@@ -38,19 +38,19 @@ class AutoSync  {
             json: true,
             headers: this.myHeaders,
             body: {
-                "status": "completed",
-                "lastMergeSourceCommit": {
-                    "commitId": commitId,
+                'status': 'completed',
+                'lastMergeSourceCommit': {
+                    'commitId': commitId,
                 },
-                "completionOptions": {
-                    "bypassPolicy": true,
-                    "bypassReason": "auto-sync can bypass when all builds succeed",
-                    "deleteSourceBranch": true,
-                    "mergeCommitMessage": prId.title,
-                    "squashMerge": false,
-                    "triggeredByAutoComplete": false,
+                'completionOptions': {
+                    'bypassPolicy': true,
+                    'bypassReason': 'auto-sync can bypass when all builds succeed',
+                    'deleteSourceBranch': true,
+                    'mergeCommitMessage': prId.title,
+                    'squashMerge': false,
+                    'triggeredByAutoComplete': false,
                 },
-            }
+            },
         }, function (err, httpResponse, body) {
             if (err || body.errorCode) {
                 throw new Error(err || body.errorCode);
@@ -63,7 +63,7 @@ class AutoSync  {
         request.get({
             url: url,
             json: true,
-            headers: this.myHeaders
+            headers: this.myHeaders,
         }, function (err, httpResponse, body) {
             if (err || body.errorCode) {
                 throw new Error(err || body.errorCode);
@@ -76,22 +76,22 @@ class AutoSync  {
                 }
             }
 
-            if(succeededBuilds.size === 3) {
-                console.log("All builds succeed, complete the pull request");
+            if (succeededBuilds.size === 3) {
+                console.log('All builds succeed, complete the pull request');
                 this.completePr(prId, commitId);
             }
             else {
-                console.log("some builds still running or failed, could not complete pull request now");
+                console.log('some builds still running or failed, could not complete pull request now');
             }
         }.bind(this));
     }
 
     completePrWhenAllBuildsSuccess(pullRequestTitle) {
-        const url = this.vsoApiUrl + '/git/repositories/' + this.vsoRepoID + '/pullRequests?status=Active&api-version=3.0';        
+        const url = this.vsoApiUrl + '/git/repositories/' + this.vsoRepoID + '/pullRequests?status=Active&api-version=3.0';
         request.get({
             url: url,
             json: true,
-            headers: this.myHeaders
+            headers: this.myHeaders,
         }, function (err, httpResponse, body) {
             if (err || body.errorCode) {
                 throw new Error(err || body.errorCode);

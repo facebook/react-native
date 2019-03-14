@@ -14,7 +14,10 @@ const Platform = require('Platform');
 let requestId = 1;
 
 function setRequestId(id) {
-  if (Platform.OS === 'ios' || Platform.OS === 'macos') { // TODO(macOS ISS#2323203)
+  if (
+    Platform.OS === 'ios' ||
+    Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */
+  ) {
     return;
   }
   requestId = id;

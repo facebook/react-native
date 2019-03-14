@@ -203,7 +203,7 @@ const APIExamples: Array<RNTesterExample> = [
   {
     key: 'GeolocationExample',
     module: require('./GeolocationExample'),
-    supportsTVOS:false,
+    supportsTVOS: false,
   },
   {
     key: 'LayoutAnimationExample',

@@ -147,7 +147,7 @@ function testMerge() {
           expectEqual(JSON.parse(result), VAL_MERGE_EXPECT, 'testMerge');
           updateMessage('objects deeply merged\nDone!');
           runTestCase('multi set and get', testOptimizedMultiGet);
-          });
+        });
       });
     });
   } else {

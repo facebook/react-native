@@ -69,7 +69,7 @@ var ProgressViewIOS = createReactClass({
         style={[styles.progressView, this.props.style]}
       />
     );
-  }
+  },
 });
 
 var styles = StyleSheet.create({
@@ -80,7 +80,7 @@ var styles = StyleSheet.create({
 
 var RCTProgressView = requireNativeComponent(
   'RCTProgressView' /* TODO refactor to a class that extends React.Component<Props>,
-  ProgressViewIOS*/
+  ProgressViewIOS*/,
 );
 
 module.exports = ProgressViewIOS;

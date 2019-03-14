@@ -56,7 +56,7 @@ var PickerIOS = createReactClass({
   _stateFromProps: function(props) {
     var selectedIndex = 0;
     var items = [];
-    React.Children.toArray(props.children).forEach(function (child, index) {
+    React.Children.toArray(props.children).forEach(function(child, index) {
       if (child.props.value === props.selectedValue) {
         selectedIndex = index;
       }
@@ -73,8 +73,10 @@ var PickerIOS = createReactClass({
     return (
       <View style={this.props.style}>
         <RCTPickerIOS
-          ref={/* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) */
-picker => this._picker = picker}
+          ref={
+            /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) */
+            picker => (this._picker = picker)
+          }
           style={[styles.pickerIOS, this.props.itemStyle]}
           items={this.state.items}
           selectedIndex={this.state.selectedIndex}
@@ -91,7 +93,10 @@ picker => this._picker = picker}
       this.props.onChange(event);
     }
     if (this.props.onValueChange) {
-      this.props.onValueChange(event.nativeEvent.newValue, event.nativeEvent.newIndex);
+      this.props.onValueChange(
+        event.nativeEvent.newValue,
+        event.nativeEvent.newIndex,
+      );
     }
 
     // The picker is a controlled component. This means we expect the
@@ -100,9 +105,12 @@ picker => this._picker = picker}
     // disallow/undo/mutate the selection of certain values. In other
     // words, the embedder of this component should be the source of
     // truth, not the native component.
-    if (this._picker && this.state.selectedIndex !== event.nativeEvent.newIndex) {
+    if (
+      this._picker &&
+      this.state.selectedIndex !== event.nativeEvent.newIndex
+    ) {
       this._picker.setNativeProps({
-        selectedIndex: this.state.selectedIndex
+        selectedIndex: this.state.selectedIndex,
       });
     }
   },
@@ -111,7 +119,7 @@ picker => this._picker = picker}
 type Props = {
   value: any,
   label: string,
-  color: string
+  color: string,
 };
 
 PickerIOS.Item = class extends React.Component<Props> {
@@ -136,7 +144,8 @@ var styles = StyleSheet.create({
   },
 });
 
-var RCTPickerIOS = requireNativeComponent('RCTPicker', /* TODO refactor to a class that extends React.Component {
+var RCTPickerIOS = requireNativeComponent(
+  'RCTPicker' /* TODO refactor to a class that extends React.Component {
   propTypes: {
     style: itemStylePropType,
   },
@@ -146,6 +155,7 @@ var RCTPickerIOS = requireNativeComponent('RCTPicker', /* TODO refactor to a cla
     onChange: true,
     selectedIndex: true,
   },
-}*/);
+}*/,
+);
 
 module.exports = PickerIOS;

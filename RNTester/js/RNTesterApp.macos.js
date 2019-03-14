@@ -31,7 +31,7 @@ const {
   StyleSheet,
   Text,
   View,
-  SafeAreaView
+  SafeAreaView,
 } = ReactNative;
 
 import type {RNTesterExample} from './RNTesterList.macos';

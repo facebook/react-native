@@ -258,12 +258,20 @@ try {
       exitCode = 1;
       throw Error(exitCode);
     }
-    if (exec('REACT_NATIVE_MAX_WORKERS=1 react-native bundle --platform uwp --dev true --entry-file index.uwp.js --bundle-output uwp-bundle.js').code) {
-        echo('Could not build Windows Universal bundle');
-        exitCode = 1;
-        throw Error(exitCode);
+    if (
+      exec(
+        'REACT_NATIVE_MAX_WORKERS=1 react-native bundle --platform uwp --dev true --entry-file index.uwp.js --bundle-output uwp-bundle.js',
+      ).code
+    ) {
+      echo('Could not build Windows Universal bundle');
+      exitCode = 1;
+      throw Error(exitCode);
     }
-    if (exec('REACT_NATIVE_MAX_WORKERS=1 react-native bundle --platform windesktop --dev true --entry-file index.windesktop.js --bundle-output windesktop-bundle.js').code) {
+    if (
+      exec(
+        'REACT_NATIVE_MAX_WORKERS=1 react-native bundle --platform windesktop --dev true --entry-file index.windesktop.js --bundle-output windesktop-bundle.js',
+      ).code
+    ) {
       echo('Could not build Windows Desktop bundle');
       exitCode = 1;
       throw Error(exitCode);

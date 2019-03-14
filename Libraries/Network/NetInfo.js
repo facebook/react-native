@@ -58,7 +58,10 @@ type ConnectivityStateAndroid = $Enum<{
 const _subscriptions = new Map();
 
 let _isConnectedDeprecated;
-if (Platform.OS === 'ios' || Platform.OS === 'macos') { // TODO(macOS ISS#2323203)
+if (
+  Platform.OS === 'ios' ||
+  Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */
+) {
   _isConnectedDeprecated = function(
     reachability: ReachabilityStateIOS,
   ): boolean {

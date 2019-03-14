@@ -60,7 +60,7 @@ class ActionSheetExample extends React.Component<{}, $FlowFixMeState> {
 
 class ShareActionSheetExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   state = {
-    text: ''
+    text: '',
   };
 
   render() {
@@ -82,8 +82,8 @@ class ShareActionSheetExample extends React.Component<$FlowFixMeProps, $FlowFixM
       message: 'message to go with the shared url',
       subject: 'a subject to go in the email heading',
       excludedActivityTypes: [
-        'com.apple.share.Twitter.post'
-      ]
+        'com.apple.share.Twitter.post',
+      ],
     },
     (error) => alert(error),
     (completed, method) => {
@@ -102,7 +102,7 @@ var style = StyleSheet.create({
   button: {
     marginBottom: 10,
     fontWeight: '500',
-  }
+  },
 });
 
 exports.title = 'ActionSheetIOS';
@@ -110,18 +110,18 @@ exports.description = 'Interface to show iOS\' action sheets';
 exports.examples = [
   {
     title: 'Show Action Sheet',
-    render(): React.Element<any> { return <ActionSheetExample />; }
+    render(): React.Element<any> { return <ActionSheetExample />; },
   },
   {
     title: 'Show Share Action Sheet',
     render(): React.Element<any> {
       return <ShareActionSheetExample url="https://code.facebook.com" />;
-    }
+    },
   },
   {
     title: 'Share Local Image',
     render(): React.Element<any> {
       return <ShareActionSheetExample url="bunny.png" />;
-    }
-  }
+    },
+  },
 ];

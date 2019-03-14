@@ -202,11 +202,11 @@ class FlatListExample extends React.PureComponent<{}, $FlowFixMeState> {
     this._listRef.getNode().recordInteraction();
     pressItem(this, key);
   };
-  _handleSelectionEntered = (item) => {
+  _handleSelectionEntered = item => {
     const {key} = item;
     this._listRef.getNode().recordInteraction();
     pressItem(this, key);
-  }
+  };
   _listRef: Animated.FlatList;
 }
 

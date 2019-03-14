@@ -164,7 +164,10 @@ export type LayoutStyle = ____LayoutStyle_Internal;
 export type ShadowStyle = ____ShadowStyle_Internal;
 export type TransformStyle = ____TransformStyle_Internal;
 
-let hairlineWidth = (Platform.OS === 'win32' || Platform.OS === 'windesktop') ? 0.5 : PixelRatio.roundToNearestPixel(0.4); // TODO(windows ISS)
+let hairlineWidth =
+  Platform.OS === 'win32' || Platform.OS === 'windesktop'
+    ? 0.5
+    : PixelRatio.roundToNearestPixel(0.4); // TODO(windows ISS)
 if (hairlineWidth === 0) {
   hairlineWidth = 1 / PixelRatio.get();
 }

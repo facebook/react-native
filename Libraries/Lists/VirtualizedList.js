@@ -51,9 +51,10 @@ type ViewabilityHelperCallbackTuple = {
   }) => void,
 };
 
-export type SelectedRowIndexPathType = { // [TODO(macOS ISS#2323203)
+// [TODO(macOS ISS#2323203)
+export type SelectedRowIndexPathType = {
   sectionIndex: number,
-  rowIndex: number
+  rowIndex: number,
 }; // ]TODO(macOS ISS#2323203)
 
 type RequiredProps = {
@@ -180,7 +181,7 @@ type OptionalProps = {
     averageItemLength: number,
   }) => void,
   /**
-   * If provided, will be invoked whenever the selection on the list changes. Make sure to set 
+   * If provided, will be invoked whenever the selection on the list changes. Make sure to set
    * the property enableSelectionOnKeyPress to true to change selection via keyboard (macOS).
    *
    * @platform macos
@@ -268,7 +269,7 @@ type ChildListState = {
 type State = {
   first: number,
   last: number,
-  selectedRowIndex: number // TODO(macOS ISS#2323203)
+  selectedRowIndex: number, // TODO(macOS ISS#2323203)
 };
 
 /**
@@ -419,21 +420,21 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   // [TODO(macOS ISS#2323203)
   ensureItemAtIndexIsVisible = (rowIndex: number) => {
-   const frame = this._getFrameMetricsApprox(rowIndex);
-   const visTop = this._scrollMetrics.offset;
-   const visLen = this._scrollMetrics.visibleLength;
-   const visEnd = visTop + visLen;
-   const contentLength = this._scrollMetrics.contentLength;
-   const frameEnd = frame.offset + frame.length;
-   
+    const frame = this._getFrameMetricsApprox(rowIndex);
+    const visTop = this._scrollMetrics.offset;
+    const visLen = this._scrollMetrics.visibleLength;
+    const visEnd = visTop + visLen;
+    const contentLength = this._scrollMetrics.contentLength;
+    const frameEnd = frame.offset + frame.length;
+
     if (frameEnd > visEnd) {
       const newOffset = Math.min(contentLength, visTop + (frameEnd - visEnd));
-      this.scrollToOffset({offset : newOffset});
+      this.scrollToOffset({offset: newOffset});
     } else if (frame.offset < visTop) {
       const newOffset = Math.max(0, visTop - frame.length);
-      this.scrollToOffset({offset : newOffset });
+      this.scrollToOffset({offset: newOffset});
     }
-  }
+  };
   // ]TODO(macOS ISS#2323203)
 
   recordInteraction() {
@@ -645,7 +646,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           this.props.getItemCount(this.props.data),
           (this.props.initialScrollIndex || 0) + this.props.initialNumToRender,
         ) - 1,
-      selectedRowIndex: 0 // TODO(macOS ISS#2323203)
+      selectedRowIndex: 0, // TODO(macOS ISS#2323203)
     };
 
     if (this._isNestedWithSameOrientation()) {
@@ -742,7 +743,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           index={ii}
           inversionStyle={inversionStyle}
           item={item}
-          isSelected={ this.state.selectedRowIndex == ii ? true : false } // TODO(macOS ISS#2323203)
+          isSelected={this.state.selectedRowIndex == ii ? true : false} // TODO(macOS ISS#2323203)
           key={key}
           prevCellKey={prevCellKey}
           onUpdateSeparators={this._onUpdateSeparators}
@@ -1081,7 +1082,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _defaultRenderScrollComponent = props => {
     let keyEventHandler = this.props.onKeyDown; // [TODO(macOS ISS#2323203)
     if (!keyEventHandler) {
-      keyEventHandler = this.props.enableSelectionOnKeyPress ? this._handleKeyDown : null; 
+      keyEventHandler = this.props.enableSelectionOnKeyPress
+        ? this._handleKeyDown
+        : null;
     } // ]TODO(macOS ISS#2323203)
     const onRefresh = props.onRefresh;
     if (this._isNestedWithSameOrientation()) {
@@ -1093,7 +1096,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         '`refreshing` prop must be set as a boolean in order to use `onRefresh`, but got `' +
           JSON.stringify(props.refreshing) +
           '`',
-      ); 
+      );
       return (
         // $FlowFixMe Invalid prop usage
         <ScrollView
@@ -1220,67 +1223,76 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   };
 
   // [TODO(macOS ISS#2323203)
-  _selectRowAboveIndex = (rowIndex) => {
+  _selectRowAboveIndex = rowIndex => {
     const rowAbove = rowIndex > 0 ? rowIndex - 1 : rowIndex;
-    this.setState( state => { return {selectedRowIndex: rowAbove}; });
+    this.setState(state => {
+      return {selectedRowIndex: rowAbove};
+    });
     return rowAbove;
-  }
-  
-  _selectRowBelowIndex = (rowIndex) => {   
+  };
+
+  _selectRowBelowIndex = rowIndex => {
     if (this.props.getItemCount) {
       const {data} = this.props;
       const itemCount = this.props.getItemCount(data);
-      const rowBelow = rowIndex < (itemCount - 1) ? rowIndex + 1 : rowIndex;
-      this.setState( state => { return {selectedRowIndex: rowBelow}; });
+      const rowBelow = rowIndex < itemCount - 1 ? rowIndex + 1 : rowIndex;
+      this.setState(state => {
+        return {selectedRowIndex: rowBelow};
+      });
       return rowBelow;
     } else {
       return rowIndex;
     }
-  }
- 
-  _handleKeyDown = (e) => {
+  };
+
+  _handleKeyDown = e => {
     if (this.props.onKeyDown) {
       this.props.onKeyDown(e);
-    }
-    else {
+    } else {
       if (Platform.OS === 'macos') {
-        const event = e['nativeEvent'];
-        const key = event['key'];
-        
+        const event = e.nativeEvent;
+        const key = event.key;
+
         let prevIndex = -1;
         let newIndex = -1;
-        if ("selectedRowIndex" in this.state) {
-            prevIndex = this.state.selectedRowIndex;
+        if ('selectedRowIndex' in this.state) {
+          prevIndex = this.state.selectedRowIndex;
         }
 
         const {data, getItem} = this.props;
         if (key === 'DOWN_ARROW') {
-            newIndex = this._selectRowBelowIndex(prevIndex);
-            this.ensureItemAtIndexIsVisible(newIndex);
-            
-            if (this.props.onSelectionChanged && prevIndex != newIndex) {
-              const item = getItem(data, newIndex);
-              this.props.onSelectionChanged( {previousSelection: prevIndex, newSelection: newIndex, item: item});
-            }
-        }
-        else if (key === 'UP_ARROW') {
-            newIndex = this._selectRowAboveIndex(prevIndex);
-            this.ensureItemAtIndexIsVisible(newIndex);
-            
-            if (this.props.onSelectionChanged && prevIndex != newIndex) {
-              const item = getItem(data, newIndex);
-              this.props.onSelectionChanged( {previousSelection: prevIndex, newSelection: newIndex, item: item});
-            }
-        }
-        else if (key === 'ENTER') {
-            if (this.props.onSelectionEntered) {
-              const item = getItem(data, prevIndex);
-              this.props.onSelectionEntered(item);
-            }
+          newIndex = this._selectRowBelowIndex(prevIndex);
+          this.ensureItemAtIndexIsVisible(newIndex);
+
+          if (this.props.onSelectionChanged && prevIndex != newIndex) {
+            const item = getItem(data, newIndex);
+            this.props.onSelectionChanged({
+              previousSelection: prevIndex,
+              newSelection: newIndex,
+              item: item,
+            });
+          }
+        } else if (key === 'UP_ARROW') {
+          newIndex = this._selectRowAboveIndex(prevIndex);
+          this.ensureItemAtIndexIsVisible(newIndex);
+
+          if (this.props.onSelectionChanged && prevIndex != newIndex) {
+            const item = getItem(data, newIndex);
+            this.props.onSelectionChanged({
+              previousSelection: prevIndex,
+              newSelection: newIndex,
+              item: item,
+            });
+          }
+        } else if (key === 'ENTER') {
+          if (this.props.onSelectionEntered) {
+            const item = getItem(data, prevIndex);
+            this.props.onSelectionEntered(item);
+          }
         }
       }
     }
-  }
+  };
   // ]TODO(macOS ISS#2323203)
 
   _renderDebugOverlay() {

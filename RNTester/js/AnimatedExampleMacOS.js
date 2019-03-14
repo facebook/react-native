@@ -128,7 +128,7 @@ exports.examples = [
               Animated.parallel([
                 Easing.inOut(Easing.quad), // Symmetric
                 Easing.back(1.5),  // Goes backwards first
-                Easing.ease        // Default bezier
+                Easing.ease,        // Default bezier
               ].map((easing, ii) => (
                 timing(this.anims[ii], {
                   toValue: 320, easing, duration: 3000,
@@ -150,7 +150,7 @@ exports.examples = [
               <Animated.View
                 key={text}
                 style={[styles.content, {
-                  left: this.anims[ii]
+                  left: this.anims[ii],
                 }]}>
                 <Text>{text}</Text>
               </Animated.View>
@@ -168,7 +168,7 @@ exports.examples = [
     render: () => (
       <Text>Checkout the Gratuitous Animation App!</Text>
     ),
-  }
+  },
 ];
 
 var styles = StyleSheet.create({

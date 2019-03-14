@@ -148,23 +148,27 @@ exports.examples = [
       return <TouchableDisabled />;
     },
   },
-  { // [TODO(macOS ISS#2323203)
+  {
+    // [TODO(macOS ISS#2323203)
     title: 'Touchable Hover',
-    description: '<Touchable*> components reacts to mouse enter ' +
+    description:
+      '<Touchable*> components reacts to mouse enter ' +
       'and mouse exit events',
     render: function(): React.Element<any> {
       return <TouchableHover />;
     },
     platform: 'macos',
-   }, {
+  },
+  {
     title: 'Touchable feedback mouse events',
-    description: '<Touchable*> components reacts to mouse events ' +
+    description:
+      '<Touchable*> components reacts to mouse events ' +
       'and mouse exit events',
     render: function(): React.Element<any> {
       return <TouchableMouseEvents />;
     },
     platform: 'macos',
-   } // ]TODO(macOS ISS#2323203)
+  }, // ]TODO(macOS ISS#2323203)
 ];
 
 class TextOnPressBox extends React.Component<{}, $FlowFixMeState> {
@@ -412,13 +416,18 @@ class TouchableDisabled extends React.Component<{}> {
 // [TODO(macOS ISS#2323203)
 class TouchableHover extends React.Component<{}, $FlowFixMeState> {
   state = {
-    hoverOver: false
+    hoverOver: false,
   };
   render() {
     return (
       <View>
-        <TouchableOpacity onMouseEnter={this._handlePress} onMouseLeave={this._handlePress} style={[styles.row, styles.block]}>
-          <Text style={this.state.hoverOver ? {color:'red'} : {color:'blue'}}>Touchable Opacity with mouse enter/exit events</Text>
+        <TouchableOpacity
+          onMouseEnter={this._handlePress}
+          onMouseLeave={this._handlePress}
+          style={[styles.row, styles.block]}>
+          <Text style={this.state.hoverOver ? {color: 'red'} : {color: 'blue'}}>
+            Touchable Opacity with mouse enter/exit events
+          </Text>
         </TouchableOpacity>
 
         <TouchableHighlight
@@ -456,14 +465,14 @@ class TouchableMouseEvents extends React.Component<{}, $FlowFixMeState> {
             accessibilityLabel="touchable feedback mouse events"
             accessibilityTraits="button"
             accessibilityComponentType="button"
-            onPressIn={(e) => this._appendEvent('MouseIn', e.nativeEvent)}
-            onPressOut={(e) => this._appendEvent('MouseOut', e.nativeEvent)}>
-            <Text style={styles.button}>
-              Click Me
-            </Text>
+            onPressIn={e => this._appendEvent('MouseIn', e.nativeEvent)}
+            onPressOut={e => this._appendEvent('MouseOut', e.nativeEvent)}>
+            <Text style={styles.button}>Click Me</Text>
           </TouchableOpacity>
         </View>
-        <View testID="touchable_feedback_mouse_events_console" style={styles.eventLogBox}>
+        <View
+          testID="touchable_feedback_mouse_events_console"
+          style={styles.eventLogBox}>
           {this.state.eventLog.map((e, ii) => <Text key={ii}>{e}</Text>)}
         </View>
       </View>
@@ -495,8 +504,8 @@ class TouchableMouseEvents extends React.Component<{}, $FlowFixMeState> {
     }
     if (modifier.length > 0) {
       modifier = ' - ' + modifier.slice(0, -2) + ' pressed';
-    } 
-    
+    }
+
     eventLog.unshift(eventType + eventName + modifier);
     this.setState({eventLog});
   };

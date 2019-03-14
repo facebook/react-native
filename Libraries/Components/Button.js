@@ -71,8 +71,8 @@ class Button extends React.Component<{
      */
     accessibilityLabel: PropTypes.string,
     /**
-    * Hint text to display blindness accessibility features
-    */
+     * Hint text to display blindness accessibility features
+     */
     accessibilityHint: PropTypes.string, // TODO(OSS Candidate ISS#2710739)
     /**
      * Color of the text (iOS, macOS), or background color of the button (Android)
@@ -110,7 +110,10 @@ class Button extends React.Component<{
     const buttonStyles = [styles.button];
     const textStyles = [styles.text];
     if (color) {
-      if (Platform.OS === 'ios' || Platform.OS === 'macos') { // TODO(macOS ISS#2323203)
+      if (
+        Platform.OS === 'ios' ||
+        Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */
+      ) {
         textStyles.push({color: color});
       } else {
         buttonStyles.push({backgroundColor: color});
@@ -129,11 +132,11 @@ class Button extends React.Component<{
     const formattedTitle =
       Platform.OS === 'android' ? title.toUpperCase() : title;
     const Touchable =
-       (Platform.OS === 'android') // [TODO(windows ISS)
-         ? TouchableNativeFeedback
-         : (Platform.OS === 'uwp' || Platform.OS === 'windesktop')
-           ? TouchableHighlight
-           : TouchableOpacity; // ]TODO(windows ISS)
+      Platform.OS === 'android' // [TODO(windows ISS)
+        ? TouchableNativeFeedback
+        : Platform.OS === 'uwp' || Platform.OS === 'windesktop'
+          ? TouchableHighlight
+          : TouchableOpacity; // ]TODO(windows ISS)
     return (
       <Touchable
         accessibilityLabel={accessibilityLabel}
@@ -164,11 +167,12 @@ const styles = StyleSheet.create({
       borderRadius: 2,
     },
     macos: {}, // TODO(macOS ISS#2323203)
-    uwp: {  // [TODO(windows ISS)
+    uwp: {
+      // [TODO(windows ISS)
       backgroundColor: '#2196F3',
       borderRadius: 2,
     },
-    windesktop: {},  // ]TODO(windows ISS)
+    windesktop: {}, // ]TODO(windows ISS)
   }),
   text: Platform.select({
     ios: {
@@ -184,13 +188,15 @@ const styles = StyleSheet.create({
       padding: 8,
       fontWeight: '500',
     },
-    macos: { // [TODO(macOS ISS#2323203)
+    macos: {
+      // [TODO(macOS ISS#2323203)
       color: '#007AFF',
       textAlign: 'center',
       padding: 8,
       fontSize: 18,
     }, // ]TODO(macOS ISS#2323203)
-    uwp: { // [TODO(windows ISS)
+    uwp: {
+      // [TODO(windows ISS)
       textAlign: 'center',
       color: 'white',
       padding: 8,
@@ -205,7 +211,8 @@ const styles = StyleSheet.create({
       backgroundColor: '#dfdfdf',
     },
     macos: {}, // TODO(macOS ISS#2323203)
-    uwp: { // [TODO(windows ISS)
+    uwp: {
+      // [TODO(windows ISS)
       backgroundColor: '#dfdfdf',
     },
     windesktop: {}, // ]TODO(windows ISS)
@@ -214,13 +221,15 @@ const styles = StyleSheet.create({
     ios: {
       color: '#cdcdcd',
     },
-    macos: { // [TODO(macOS ISS#2323203)
+    macos: {
+      // [TODO(macOS ISS#2323203)
       color: '#cdcdcd',
     }, // ]TODO(macOS ISS#2323203)
     android: {
       color: '#a1a1a1',
     },
-    uwp: { // [TODO(windows ISS)
+    uwp: {
+      // [TODO(windows ISS)
       color: '#a1a1a1',
     },
     windesktop: {

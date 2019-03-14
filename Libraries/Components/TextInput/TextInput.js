@@ -42,15 +42,21 @@ let RCTSinglelineTextInputView;
 
 if (Platform.OS === 'android') {
   AndroidTextInput = requireNativeComponent('AndroidTextInput');
-} else if (Platform.OS === 'ios' || Platform.OS === 'macos') { // TODO(macOS ISS#2323203)
+} else if (
+  Platform.OS === 'ios' ||
+  Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */
+) {
   RCTMultilineTextInputView = requireNativeComponent(
     'RCTMultilineTextInputView',
   );
   RCTSinglelineTextInputView = requireNativeComponent(
     'RCTSinglelineTextInputView',
   );
-} else if (Platform.OS === 'uwp' || Platform.OS === 'windesktop') { // TODO(windows ISS)
-  var RCTTextInput = requireNativeComponent('RCTTextInput'); // TODO(windows ISS)
+} /* TODO[(windows ISS) */ else if (
+  Platform.OS === 'uwp' ||
+  Platform.OS === 'windesktop'
+) {
+  var RCTTextInput = requireNativeComponent('RCTTextInput'); // TODO](windows ISS)
 }
 
 const onlyMultiline = {
@@ -839,7 +845,8 @@ const TextInput = createReactClass({
   /**
    * Returns the native `TextView` node.
    */
-  getTextViewHandle: function(): any { // [TODO(OSS Candidate ISS#2710739)
+  getTextViewHandle: function(): any {
+    // [TODO(OSS Candidate ISS#2710739)
     return ReactNative.findNodeHandle(this._inputRef);
   }, // ]TODO(OSS Candidate ISS#2710739)
 
@@ -902,13 +909,15 @@ const TextInput = createReactClass({
 
   render: function() {
     let textInput;
-    if (Platform.OS === 'ios' || Platform.OS === 'macos') { // TODO(macOS ISS#2323203)
+    if (Platform.OS === 'ios' || Platform.OS === 'macos') {
+      // TODO(macOS ISS#2323203)
       textInput = UIManager.RCTVirtualText
         ? this._renderIOS()
         : this._renderIOSLegacy();
     } else if (Platform.OS === 'android') {
       textInput = this._renderAndroid();
-    } else if (Platform.OS === 'uwp' || Platform.OS === 'windesktop') { // TODO(windows ISS)
+    } else if (Platform.OS === 'uwp' || Platform.OS === 'windesktop') {
+      // TODO(windows ISS)
       return this._renderWindows(); // TODO(windows ISS)
     }
     return (
@@ -1135,7 +1144,8 @@ const TextInput = createReactClass({
     );
   },
 
-  _renderWindows: function() { // [TODO(windows ISS)
+  _renderWindows: function() {
+    // [TODO(windows ISS)
     var props = Object.assign({}, this.props);
     props.style = [(styles: any).input, this.props.style];
 
@@ -1155,7 +1165,9 @@ const TextInput = createReactClass({
     // 1. The state is updated only after the native code completes setting focus on the view
     // 2. In case the focus is moving from one TextInput(A) to another TextInput(B), the state of
     //    A needs to be updated (blurred) before info about B is updated in TestInputState.
-    TextInputState.setFocusedTextInput(ReactNative.findNodeHandle(this._inputRef)); // ]TODO(android ISS)
+    TextInputState.setFocusedTextInput(
+      ReactNative.findNodeHandle(this._inputRef),
+    ); // ]TODO(android ISS)
     if (this.props.onFocus) {
       this.props.onFocus(event);
     }
@@ -1251,7 +1263,9 @@ const TextInput = createReactClass({
     // 1. The state is updated only after the native code completes clearing focus on the view
     // 2. In case the focus is moving from one TextInput(A) to another TextInput(B), the state of
     //    A needs to be updated (blurred) before info about B is updated in TestInputState.
-    TextInputState.clearFocusedTextInput(ReactNative.findNodeHandle(this._inputRef)); // ]TODO(android ISS)
+    TextInputState.clearFocusedTextInput(
+      ReactNative.findNodeHandle(this._inputRef),
+    ); // ]TODO(android ISS)
     if (this.props.onBlur) {
       this.props.onBlur(event);
     }
