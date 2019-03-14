@@ -150,6 +150,7 @@ class JSCRuntime : public jsi::Runtime {
   bool isHostFunction(const jsi::Function&) const override;
   jsi::Array getPropertyNames(const jsi::Object&) override;
 
+  // TODO: revisit this implementation
   jsi::WeakObject createWeakObject(const jsi::Object&) override;
   jsi::Value lockWeakObject(const jsi::WeakObject&) override;
 
@@ -821,11 +822,13 @@ jsi::Array JSCRuntime::getPropertyNames(const jsi::Object& obj) {
 }
 
 jsi::WeakObject JSCRuntime::createWeakObject(const jsi::Object& obj) {
+  // TODO: revisit this implementation
   JSObjectRef objRef = objectRef(obj);
   return make<jsi::WeakObject>(makeObjectValue(objRef));
 }
 
 jsi::Value JSCRuntime::lockWeakObject(const jsi::WeakObject& obj) {
+  // TODO: revisit this implementation
   JSObjectRef objRef = objectRef(obj);
   return jsi::Value(createObject(objRef));
 }
@@ -1224,6 +1227,7 @@ JSObjectRef JSCRuntime::objectRef(const jsi::Object& obj) {
 }
       
 JSObjectRef JSCRuntime::objectRef(const jsi::WeakObject& obj) {
+  // TODO: revisit this implementation
   return static_cast<const JSCObjectValue*>(getPointerValue(obj))->obj_;
 }
 
