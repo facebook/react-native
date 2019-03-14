@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifdef FABRIC_ENABLED
+#ifdef RN_FABRIC_ENABLED
 #import <objc/runtime.h>
 #import <React/RCTFabricSurface.h>
 

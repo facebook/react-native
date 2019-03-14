@@ -40,7 +40,7 @@ Pod::Spec.new do |s|
   s.library                = "stdc++"
   s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Folly\"" }
   s.xcconfig               = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/glog\" \"$(PODS_ROOT)/Folly\"", 
-                               "OTHER_CFLAGS" => "$(inherited) -DFABRIC_ENABLED" + " " + folly_flags  }
+                               "OTHER_CFLAGS" => "$(inherited) -DRN_FABRIC_ENABLED" + " " + folly_flags  }
 
   s.dependency "React-Core", version
   s.dependency "React-Fabric", version

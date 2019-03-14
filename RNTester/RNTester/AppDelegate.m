@@ -18,7 +18,7 @@
 #import <React/RCTPushNotificationManager.h>
 #endif
 
-#ifdef FABRIC_ENABLED
+#ifdef RN_FABRIC_ENABLED
 #import <React/RCTSurfacePresenter.h>
 #import <React/RCTFabricSurfaceHostingProxyRootView.h>
 
@@ -51,7 +51,7 @@
     initProps = @{@"exampleFromAppetizeParams": [NSString stringWithFormat:@"rntester://example/%@Example", _routeUri]};
   }
   
-#ifdef FABRIC_ENABLED
+#ifdef RN_FABRIC_ENABLED
   // FIXME: remove when resolved https://github.com/facebook/react-native/issues/23910
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(handleJavaScriptDidLoadNotification:)
@@ -74,7 +74,7 @@
   return YES;
 }
 
-#ifdef FABRIC_ENABLED
+#ifdef RN_FABRIC_ENABLED
 // FIXME: remove when resolved https://github.com/facebook/react-native/issues/23910
 - (void)handleJavaScriptDidLoadNotification:(__unused NSNotification*)notification {
   dispatch_async(dispatch_get_main_queue(), ^{
