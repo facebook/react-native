@@ -10,6 +10,8 @@
 #import <react/components/rncore/Props.h>
 #import <react/components/rncore/ShadowNodes.h>
 
+#import "RCTConversions.h"
+
 using namespace facebook::react;
 
 @implementation RCTProgressViewComponentView {
@@ -52,12 +54,12 @@ using namespace facebook::react;
 
   // `trackTintColor`
   if (oldProgressViewProps.trackTintColor != newProgressViewProps.trackTintColor) {
-    _progressView.trackTintColor = [UIColor colorWithCGColor:newProgressViewProps.trackTintColor.get()];
+    _progressView.trackTintColor = RCTUIColorFromSharedColor(newProgressViewProps.trackTintColor);
   }
 
   // `progressTintColor`
   if (oldProgressViewProps.progressTintColor != newProgressViewProps.progressTintColor) {
-    _progressView.progressTintColor = [UIColor colorWithCGColor:newProgressViewProps.progressTintColor.get()];
+    _progressView.progressTintColor = RCTUIColorFromSharedColor(newProgressViewProps.progressTintColor);
   }
 }
 
