@@ -21,28 +21,28 @@
 #include <react/components/slider/SliderComponentDescriptor.h>
 
 namespace facebook {
-  namespace react {
-    
-    /**
-     * This is a sample implementation. Each app should provide its own.
-     */
-    ComponentRegistryFactory getDefaultComponentRegistryFactory() {
-      return [](const EventDispatcher::Shared &eventDispatcher,
-                const SharedContextContainer &contextContainer) {
-        auto registry = std::make_shared<ComponentDescriptorRegistry>();
-        registry->registerComponentDescriptor(std::make_shared<ViewComponentDescriptor>(eventDispatcher));
-        registry->registerComponentDescriptor(std::make_shared<ImageComponentDescriptor>(eventDispatcher, contextContainer));
-        registry->registerComponentDescriptor(std::make_shared<ScrollViewComponentDescriptor>(eventDispatcher));
-        registry->registerComponentDescriptor(std::make_shared<ParagraphComponentDescriptor>(eventDispatcher, contextContainer));
-        registry->registerComponentDescriptor(std::make_shared<TextComponentDescriptor>(eventDispatcher));
-        registry->registerComponentDescriptor(std::make_shared<RawTextComponentDescriptor>(eventDispatcher));
-        registry->registerComponentDescriptor(std::make_shared<ActivityIndicatorViewComponentDescriptor>(eventDispatcher));
-        registry->registerComponentDescriptor(std::make_shared<SwitchComponentDescriptor>(eventDispatcher));
-        registry->registerComponentDescriptor(std::make_shared<SliderComponentDescriptor>(eventDispatcher, contextContainer));
-        return registry;
-      };
-    }
-    
-  } // namespace react
+namespace react {
+  
+/**
+ * This is a sample implementation. Each app should provide its own.
+ */
+ComponentRegistryFactory getDefaultComponentRegistryFactory() {
+  return [](const EventDispatcher::Shared &eventDispatcher,
+            const SharedContextContainer &contextContainer) {
+    auto registry = std::make_shared<ComponentDescriptorRegistry>();
+    registry->registerComponentDescriptor(std::make_shared<ViewComponentDescriptor>(eventDispatcher));
+    registry->registerComponentDescriptor(std::make_shared<ImageComponentDescriptor>(eventDispatcher, contextContainer));
+    registry->registerComponentDescriptor(std::make_shared<ScrollViewComponentDescriptor>(eventDispatcher));
+    registry->registerComponentDescriptor(std::make_shared<ParagraphComponentDescriptor>(eventDispatcher, contextContainer));
+    registry->registerComponentDescriptor(std::make_shared<TextComponentDescriptor>(eventDispatcher));
+    registry->registerComponentDescriptor(std::make_shared<RawTextComponentDescriptor>(eventDispatcher));
+    registry->registerComponentDescriptor(std::make_shared<ActivityIndicatorViewComponentDescriptor>(eventDispatcher));
+    registry->registerComponentDescriptor(std::make_shared<SwitchComponentDescriptor>(eventDispatcher));
+    registry->registerComponentDescriptor(std::make_shared<SliderComponentDescriptor>(eventDispatcher, contextContainer));
+    return registry;
+  };
+}
+  
+} // namespace react
 } // namespace facebook
 #endif
