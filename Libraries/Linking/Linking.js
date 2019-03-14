@@ -82,12 +82,12 @@ class Linking extends NativeEventEmitter {
   }
 
   /*
-  * Launch an Android intent with extras (optional)
-  *
-  * @platform android
-  *
-  * See https://facebook.github.io/react-native/docs/linking.html#sendintent
-  */
+   * Launch an Android intent with extras (optional)
+   *
+   * @platform android
+   *
+   * See https://facebook.github.io/react-native/docs/linking.html#sendintent
+   */
   sendIntent(
     action: String,
     extras?: [{key: string, value: string | number | boolean}],

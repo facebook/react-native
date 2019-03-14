@@ -61,7 +61,9 @@ class BasicStorageExample extends React.Component<{}, $FlowFixMeState> {
         </Text>
         <Text />
         <Text>Messages:</Text>
-        {this.state.messages.map(m => <Text key={m}>{m}</Text>)}
+        {this.state.messages.map(m => (
+          <Text key={m}>{m}</Text>
+        ))}
       </View>
     );
   }

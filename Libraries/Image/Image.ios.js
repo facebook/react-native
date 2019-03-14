@@ -70,9 +70,7 @@ async function queryCache(
   return await ImageViewManager.queryCache(urls);
 }
 
-declare class ImageComponentType extends ReactNative.NativeComponent<
-  ImagePropsType,
-> {
+declare class ImageComponentType extends ReactNative.NativeComponent<ImagePropsType> {
   static getSize: typeof getSize;
   static getSizeWithHeaders: typeof getSizeWithHeaders;
   static prefetch: typeof prefetch;

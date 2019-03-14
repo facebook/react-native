@@ -41,9 +41,7 @@ function getPlugins() {
 const plugins = getPlugins();
 
 // Detect out-of-tree platforms and add them to the whitelists
-const pluginRoots /*: Array<
-  string,
-> */ = plugins.haste.providesModuleNodeModules.map(
+const pluginRoots /*: Array<string> */ = plugins.haste.providesModuleNodeModules.map(
   name => path.resolve(__dirname, '../../', name) + path.sep,
 );
 

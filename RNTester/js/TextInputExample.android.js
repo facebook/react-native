@@ -104,7 +104,7 @@ class RewriteExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
           value={this.state.text}
         />
         {/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-          * found when making Flow check .android.js files. */}
+         * found when making Flow check .android.js files. */}
         <Text style={[styles.remainder, {color: remainderColor}]}>
           {remainder}
         </Text>
@@ -408,10 +408,10 @@ class AutogrowingTextInputExample extends React.Component<{}> {
         />
         <Text>Plain text value representation:</Text>
         {/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-          * found when making Flow check .android.js files. */}
+         * found when making Flow check .android.js files. */}
         <Text>{this.state.text}</Text>
         {/* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-          * found when making Flow check .android.js files. */}
+         * found when making Flow check .android.js files. */}
         <Text>Content Size: {JSON.stringify(this.state.contentSize)}</Text>
       </View>
     );

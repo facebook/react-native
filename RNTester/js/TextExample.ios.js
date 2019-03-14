@@ -882,9 +882,8 @@ exports.examples = [
             </Text>
           </Text>
           <Text style={{marginTop: 10}}>
-            You can disable scaling for your Text component by passing {'"'}allowFontScaling={
-              '{'
-            }false{'}"'} prop.
+            You can disable scaling for your Text component by passing {'"'}
+            allowFontScaling={'{'}false{'}"'} prop.
           </Text>
           <Text allowFontScaling={false} style={{marginTop: 20, fontSize: 15}}>
             This text will not scale.{' '}

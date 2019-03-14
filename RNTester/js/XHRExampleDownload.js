@@ -165,8 +165,8 @@ class XHRExampleDownload extends React.Component<{}, Object> {
       readystate = (
         <View>
           <Text style={styles.progressBarLabel}>
-            responseText: {roundKilo(responseLength)}/{roundKilo(contentLength)}k
-            chars
+            responseText: {roundKilo(responseLength)}/{roundKilo(contentLength)}
+            k chars
           </Text>
           <ProgressBar progress={responseLength / contentLength} />
         </View>

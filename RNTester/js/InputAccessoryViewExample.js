@@ -70,7 +70,9 @@ class InputAccessoryViewExample extends React.Component<InputAccessoryProps> {
         <ScrollView style={styles.fill} keyboardDismissMode="interactive">
           {Array(15)
             .fill()
-            .map((_, i) => <Message key={i} />)}
+            .map((_, i) => (
+              <Message key={i} />
+            ))}
         </ScrollView>
         <InputAccessoryView backgroundColor="#fffffff7">
           <TextInputBar />

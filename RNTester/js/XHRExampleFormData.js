@@ -52,25 +52,28 @@ class XHRExampleFormData extends React.Component<Object, Object> {
       first: PAGE_SIZE,
       groupTypes: 'All',
       assetType: 'All',
-    }).then(data => {
-      if (!this._isMounted) {
-        return;
-      }
-      const edges = data.edges;
-      const edge = edges[Math.floor(Math.random() * edges.length)];
-      const randomPhoto = edge && edge.node && edge.node.image;
-      if (randomPhoto) {
-        let {width, height} = randomPhoto;
-        width *= 0.25;
-        height *= 0.25;
-        ImageEditor.cropImage(
-          randomPhoto.uri,
-          {offset: {x: 0, y: 0}, size: {width, height}},
-          uri => this.setState({randomPhoto: {uri}}),
-          error => undefined,
-        );
-      }
-    }, error => undefined);
+    }).then(
+      data => {
+        if (!this._isMounted) {
+          return;
+        }
+        const edges = data.edges;
+        const edge = edges[Math.floor(Math.random() * edges.length)];
+        const randomPhoto = edge && edge.node && edge.node.image;
+        if (randomPhoto) {
+          let {width, height} = randomPhoto;
+          width *= 0.25;
+          height *= 0.25;
+          ImageEditor.cropImage(
+            randomPhoto.uri,
+            {offset: {x: 0, y: 0}, size: {width, height}},
+            uri => this.setState({randomPhoto: {uri}}),
+            error => undefined,
+          );
+        }
+      },
+      error => undefined,
+    );
   };
 
   _addTextParam = () => {
@@ -166,11 +169,11 @@ class XHRExampleFormData extends React.Component<Object, Object> {
       <View>
         <View style={styles.paramRow}>
           <Text style={styles.photoLabel}>
-            Random photo from your library (<Text
-              style={styles.textButton}
-              onPress={this._fetchRandomPhoto}>
+            Random photo from your library (
+            <Text style={styles.textButton} onPress={this._fetchRandomPhoto}>
               update
-            </Text>)
+            </Text>
+            )
           </Text>
           {image}
         </View>

@@ -90,9 +90,7 @@ const FlexWithTextStyles = StyleSheet.create({
 });
 
 type AbsolutePositionTestAppProps = $ReadOnly<{||}>;
-class AbsolutePositionTestApp extends React.Component<
-  AbsolutePositionTestAppProps,
-> {
+class AbsolutePositionTestApp extends React.Component<AbsolutePositionTestAppProps> {
   render() {
     return (
       <View
@@ -115,9 +113,7 @@ const AbsolutePositionTestAppStyles = StyleSheet.create({
 });
 
 type AbsolutePositionBottomRightTestAppProps = $ReadOnly<{||}>;
-class AbsolutePositionBottomRightTestApp extends React.Component<
-  AbsolutePositionBottomRightTestAppProps,
-> {
+class AbsolutePositionBottomRightTestApp extends React.Component<AbsolutePositionBottomRightTestAppProps> {
   render() {
     return (
       <View
