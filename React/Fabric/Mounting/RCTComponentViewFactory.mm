@@ -13,6 +13,7 @@
 #import "RCTActivityIndicatorViewComponentView.h"
 #import "RCTImageComponentView.h"
 #import "RCTParagraphComponentView.h"
+#import "RCTProgressViewComponentView.h"
 #import "RCTRootComponentView.h"
 #import "RCTScrollViewComponentView.h"
 #import "RCTSliderComponentView.h"
@@ -39,6 +40,7 @@ using namespace facebook::react;
   [componentViewFactory registerComponentViewClass:[RCTActivityIndicatorViewComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTSliderComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTSwitchComponentView class]];
+  [componentViewFactory registerComponentViewClass:[RCTProgressViewComponentView class]];
 
   return componentViewFactory;
 }
