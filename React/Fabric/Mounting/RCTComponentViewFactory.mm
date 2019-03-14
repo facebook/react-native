@@ -18,6 +18,7 @@
 #import "RCTSliderComponentView.h"
 #import "RCTSwitchComponentView.h"
 #import "RCTViewComponentView.h"
+#import "RCTDatePickerComponentView.h"
 
 using namespace facebook::react;
 
@@ -39,6 +40,7 @@ using namespace facebook::react;
   [componentViewFactory registerComponentViewClass:[RCTActivityIndicatorViewComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTSliderComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTSwitchComponentView class]];
+  [componentViewFactory registerComponentViewClass:[RCTDatePickerComponentView class]];
 
   return componentViewFactory;
 }
