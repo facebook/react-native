@@ -38,10 +38,38 @@ const _subscriptions = new Map();
  */
 
 const AccessibilityInfo = {
+  /**
+   * iOS only
+   */
+  isBoldTextEnabled: function(): Promise<boolean> {
+    return Promise.resolve(false);
+  },
+
+  /**
+   * iOS only
+   */
+  isGrayscaleEnabled: function(): Promise<boolean> {
+    return Promise.resolve(false);
+  },
+
+  /**
+   * iOS only
+   */
+  isInvertColorsEnabled: function(): Promise<boolean> {
+    return Promise.resolve(false);
+  },
+
   isReduceMotionEnabled: function(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       RCTAccessibilityInfo.isReduceMotionEnabled(resolve);
     });
+  },
+
+  /**
+   * iOS only
+   */
+  isReduceTransparencyEnabled: function(): Promise<boolean> {
+    return Promise.resolve(false);
   },
 
   isScreenReaderEnabled: function(): Promise<boolean> {
