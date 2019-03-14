@@ -10,7 +10,6 @@
 
 'use strict';
 
-
 export type AccessibilityTrait =
   | 'none'
   | 'button'
@@ -32,7 +31,6 @@ export type AccessibilityTrait =
   | 'group'
   | 'list'; // ]TODO(macOS ISS#2323203)
 
-
 export type AccessibilityTraits =
   | AccessibilityTrait
   | $ReadOnlyArray<AccessibilityTrait>;
@@ -43,8 +41,9 @@ export type AccessibilityComponentType =
   | 'radiobutton_checked'
   | 'radiobutton_unchecked';
 
-export type AccessibilityNodeInfoProp = { // [TODO(android ISS)
-  clickable: bool,
+// [TODO(android ISS)
+export type AccessibilityNodeInfoProp = {
+  clickable: boolean,
 }; // ]TODO(android ISS)
 
 export type AccessibilityRole =

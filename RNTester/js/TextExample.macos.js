@@ -824,7 +824,7 @@ exports.examples = [
       return <TextBaseLineLayoutExample />;
     },
   },
-/* Text textTransform not supported on macOS 
+  /* Text textTransform not supported on macOS
   {
     title: 'Transform',
     render: function() {

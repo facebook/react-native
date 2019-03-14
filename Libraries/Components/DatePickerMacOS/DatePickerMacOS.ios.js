@@ -38,7 +38,7 @@ var styles = StyleSheet.create({
   datePickerText: {
     color: '#333333',
     margin: 20,
-  }
+  },
 });
 
 module.exports = DummyDatePickerMacOS;

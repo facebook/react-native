@@ -52,10 +52,15 @@ const LayoutEventsTest = createReactClass({
   },
   animateViewLayout: function() {
     debug('animateViewLayout invoked');
-    LayoutAnimation.configureNext(Platform.OS === 'macos' ? LayoutAnimation.Presets.easeInEaseOut : LayoutAnimation.Presets.spring, () => {
-      debug('animateViewLayout done');
-      this.checkLayout(this.addWrapText);
-    });
+    LayoutAnimation.configureNext(
+      Platform.OS === 'macos'
+        ? LayoutAnimation.Presets.easeInEaseOut
+        : LayoutAnimation.Presets.spring,
+      () => {
+        debug('animateViewLayout done');
+        this.checkLayout(this.addWrapText);
+      },
+    );
     this.setState({viewStyle: {margin: 60}});
   },
   addWrapText: function() {

@@ -287,8 +287,11 @@ const TouchableNativeFeedback = createReactClass({
       onResponderMove: this._handleResponderMove,
       onResponderRelease: this.touchableHandleResponderRelease,
       onResponderTerminate: this.touchableHandleResponderTerminate,
-      clickable: this.props.clickable !== false && this.props.onPress !== undefined && !this.props.disabled,  // TODO(android ISS)
-      onClick: this.touchableHandlePress,  // TODO(android ISS)
+      clickable:
+        this.props.clickable !== false &&
+        this.props.onPress !== undefined &&
+        !this.props.disabled, // TODO(android ISS)
+      onClick: this.touchableHandlePress, // TODO(android ISS)
     };
 
     // We need to clone the actual element so that the ripple background drawable

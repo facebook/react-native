@@ -15,7 +15,7 @@
 const DatePickerAndroid = {
   async open(options: Object): Promise<Object> {
     return Promise.reject({
-      message: 'DatePickerAndroid is not supported on this platform.'
+      message: 'DatePickerAndroid is not supported on this platform.',
     });
   },
 };

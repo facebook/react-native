@@ -19,20 +19,19 @@ var {Image, StyleSheet, Text, View} = ReactNative;
 
 class ImageCapInsetsExample extends React.Component<{}> {
   render() {
-
     let nativeImage;
     if (Platform.OS === 'macos') {
       nativeImage = nativeImageSource({
-              macos: 'story-background',
-              width: 60,
-              height: 60
-            });
+        macos: 'story-background',
+        width: 60,
+        height: 60,
+      });
     } else {
       nativeImage = nativeImageSource({
-              ios: 'story-background',
-              width: 60,
-              height: 60
-            })
+        ios: 'story-background',
+        width: 60,
+        height: 60,
+      });
     }
 
     return (

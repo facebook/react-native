@@ -147,7 +147,7 @@ const DatePickerMacOS = createReactClass({
         />
       </View>
     );
-  }
+  },
 });
 
 const RCTDatePickerMacOS = requireNativeComponent('RCTDatePicker' /* TODO refactor as class that extends React.Component<Props>, {

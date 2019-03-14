@@ -108,7 +108,10 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
         {this._renderTextInput()}
         <SectionList
           ItemSeparatorComponent={ItemSeparator}
-          contentContainerStyle={Platform.select({macos: {backgroundColor: {semantic: 'separatorColor'}}, default: {backgroundColor: 'white'}})} // TODO(macOS ISS#2323203)
+          contentContainerStyle={Platform.select({
+            macos: {backgroundColor: {semantic: 'separatorColor'}},
+            default: {backgroundColor: 'white'},
+          })} // TODO(macOS ISS#2323203)
           style={styles.list}
           sections={sections}
           renderItem={this._renderItem}
@@ -122,16 +125,19 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
           legacyImplementation={false}
           renderSectionHeader={renderSectionHeader}
           accessibilityLabel="RNTester Components"
-          backgroundColor={Platform.select({macos: 'transparent', default: undefined})} // TODO(macOS ISS#2323203)
+          backgroundColor={Platform.select({
+            macos: 'transparent',
+            default: undefined,
+          })} // TODO(macOS ISS#2323203)
         />
       </View>
     );
   }
 
-  _handleOnSelectionEntered = (item) => {
+  _handleOnSelectionEntered = item => {
     const {key} = item;
     this.props.onNavigate(RNTesterActions.ExampleAction(key));
-  }
+  };
 
   _itemShouldUpdate(curr, prev) {
     return curr.item !== prev.item;
@@ -187,7 +193,10 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
             this.props.persister.setState(() => ({filter: text}));
           }}
           placeholder="Search..."
-          placeholderTextColor={Platform.select({macos: {semantic : 'placeholderTextColor'}, default: undefined})} // TODO(macOS ISS#2323203)
+          placeholderTextColor={Platform.select({
+            macos: {semantic: 'placeholderTextColor'},
+            default: undefined,
+          })} // TODO(macOS ISS#2323203)
           underlineColorAndroid="transparent"
           style={[styles.searchTextInput, this.props.searchTextInputStyle]}
           testID="explorer_search"
@@ -219,43 +228,51 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   list: {
-    ...Platform.select({ // [TODO(macOS ISS#2323203)
+    ...Platform.select({
+      // [TODO(macOS ISS#2323203)
       macos: {
         backgroundColor: {semantic: 'controlBackgroundColor'},
       },
-      default: { // ]TODO(macOS ISS#2323203)
+      default: {
+        // ]TODO(macOS ISS#2323203)
         backgroundColor: '#eeeeee',
-      } // [TODO(macOS ISS#2323203)
-    }) // ]TODO(macOS ISS#2323203)
+      }, // [TODO(macOS ISS#2323203)
+    }), // ]TODO(macOS ISS#2323203)
   },
   sectionHeader: {
-    ...Platform.select({ // [TODO(macOS ISS#2323203)
+    ...Platform.select({
+      // [TODO(macOS ISS#2323203)
       macos: {
-        backgroundColor: {semantic: 'unemphasizedSelectedContentBackgroundColor'},
-        color: {semantic: 'headerTextColor'}
+        backgroundColor: {
+          semantic: 'unemphasizedSelectedContentBackgroundColor',
+        },
+        color: {semantic: 'headerTextColor'},
       },
-      default: { // ]TODO(macOS ISS#2323203)
+      default: {
+        // ]TODO(macOS ISS#2323203)
         backgroundColor: '#eeeeee',
-        color: 'black'
-      } // [TODO(macOS ISS#2323203)
+        color: 'black',
+      }, // [TODO(macOS ISS#2323203)
     }), // ]TODO(macOS ISS#2323203)
     padding: 5,
     fontWeight: '500',
     fontSize: 11,
   },
   row: {
-    ...Platform.select({ // [TODO(macOS ISS#2323203)
+    ...Platform.select({
+      // [TODO(macOS ISS#2323203)
       macos: {
         backgroundColor: {semantic: 'controlBackgroundColor'},
-        },
-      default: { // ]TODO(macOS ISS#2323203)
+      },
+      default: {
+        // ]TODO(macOS ISS#2323203)
         backgroundColor: 'white',
-      } // [TODO(macOS ISS#2323203)
+      }, // [TODO(macOS ISS#2323203)
     }), // ]TODO(macOS ISS#2323203)
     justifyContent: 'center',
     paddingHorizontal: 15,
     paddingVertical: 8,
-  },  
+  },
   selectedRow: {
     backgroundColor: '#DDECF8',
     justifyContent: 'center',
@@ -264,13 +281,15 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: StyleSheet.hairlineWidth,
-    ...Platform.select({ // [TODO(macOS ISS#2323203)
+    ...Platform.select({
+      // [TODO(macOS ISS#2323203)
       macos: {
         backgroundColor: {semantic: 'separatorColor'},
-        },
-      default: { // ]TODO(macOS ISS#2323203)
+      },
+      default: {
+        // ]TODO(macOS ISS#2323203)
         backgroundColor: '#bbbbbb',
-      } // [TODO(macOS ISS#2323203)
+      }, // [TODO(macOS ISS#2323203)
     }), // ]TODO(macOS ISS#2323203)
     marginLeft: 15,
   },
@@ -281,13 +300,15 @@ const styles = StyleSheet.create({
   rowTitleText: {
     fontSize: 17,
     fontWeight: '500',
-    ...Platform.select({ // [TODO(macOS ISS#2323203)
+    ...Platform.select({
+      // [TODO(macOS ISS#2323203)
       macos: {
         color: {semantic: 'controlTextColor'},
-        },
-      default: { // ]TODO(macOS ISS#2323203)
+      },
+      default: {
+        // ]TODO(macOS ISS#2323203)
         color: 'black',
-      } // [TODO(macOS ISS#2323203)
+      }, // [TODO(macOS ISS#2323203)
     }), // ]TODO(macOS ISS#2323203)
   },
   rowDetailText: {
@@ -296,27 +317,33 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   searchRow: {
-    ...Platform.select({ // [TODO(macOS ISS#2323203)
+    ...Platform.select({
+      // [TODO(macOS ISS#2323203)
       macos: {
-        backgroundColor: {semantic: 'unemphasizedSelectedContentBackgroundColor'},
+        backgroundColor: {
+          semantic: 'unemphasizedSelectedContentBackgroundColor',
         },
-      default: { // ]TODO(macOS ISS#2323203)
+      },
+      default: {
+        // ]TODO(macOS ISS#2323203)
         backgroundColor: '#eeeeee',
-      } // [TODO(macOS ISS#2323203)
+      }, // [TODO(macOS ISS#2323203)
     }), // ]TODO(macOS ISS#2323203)
     padding: 10,
   },
   searchTextInput: {
-    ...Platform.select({ // [TODO(macOS ISS#2323203)
+    ...Platform.select({
+      // [TODO(macOS ISS#2323203)
       macos: {
         color: {semantic: 'textColor'},
         backgroundColor: {semantic: 'textBackgroundColor'},
         borderColor: {semantic: 'gridColor'},
-        },
-      default: { // ]TODO(macOS ISS#2323203)
+      },
+      default: {
+        // ]TODO(macOS ISS#2323203)
         backgroundColor: 'white',
         borderColor: '#cccccc',
-      } // [TODO(macOS ISS#2323203)
+      }, // [TODO(macOS ISS#2323203)
     }), // ]TODO(macOS ISS#2323203)
     borderRadius: 3,
     borderWidth: 1,

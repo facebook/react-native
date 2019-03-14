@@ -27,13 +27,13 @@ exports.examples = [{
   title: 'Alerts',
   render() {
     return <SimpleAlertExampleBlock />;
-  }
+  },
 },
 {
   title: 'Prompt Options',
   render(): React.Element<any> {
     return <PromptOptions />;
-  }
+  },
 },
 {
   title: 'Prompt Types',
@@ -84,7 +84,7 @@ exports.examples = [{
         </TouchableHighlight>
       </View>
     );
-  }
+  },
 },
 {
   title: 'Prompt Presentation',
@@ -133,7 +133,7 @@ exports.examples = [{
         </TouchableHighlight>
       </View>
     );
-  }
+  },
 },
 {
   title: 'Prompt Style',
@@ -179,7 +179,7 @@ exports.examples = [{
         </TouchableHighlight>
       </View>
     );
-  }
+  },
 },
 ];
 
@@ -195,7 +195,7 @@ class PromptOptions extends React.Component<$FlowFixMeProps, any> {
 
     this.customButtons = [{
       text: 'Custom OK',
-      onPress: this.saveResponse
+      onPress: this.saveResponse,
     }, {
       text: 'Custom Cancel',
       style: 'cancel',

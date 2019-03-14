@@ -23,7 +23,11 @@
 .*/Libraries/polyfills/.*
 
 ; Ignore metro
-; .*/node_modules/metro/.*
+.*/node_modules/metro/.*
+.*/node_modules/metro-config/src/configTypes.flow.js.flow
+
+; Ignore rn-cli.config.js
+<PROJECT_ROOT>/rn-cli.config.js
 
 ; These should not be required directly
 ; require from fbjs/lib instead: require('fbjs/lib/invariant')

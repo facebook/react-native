@@ -727,42 +727,66 @@ const ScrollView = createReactClass({
     }
   },
 
-  _handleKeyDown: function(e: Object) { // [TODO(macOS ISS#2323203)
+  // [TODO(macOS ISS#2323203)
+  _handleKeyDown: function(e: Object) {
     if (this.props.onKeyDown) {
-        this.props.onKeyDown(e);
-    }
-    else {
-        const event = e['nativeEvent'];
-        const key = event['key'];
-        const kMinScrollOffset = 10;
-        
-        if (Platform.OS === 'macos') {
-            if (key === 'PAGE_UP') {
-                this._handleScrollByKeyDown(event, {x: event.contentOffset.x, y: event.contentOffset.y + -event.layoutMeasurement.height})
-            }
-            else if (key === 'PAGE_DOWN') {
-                this._handleScrollByKeyDown(event, {x: event.contentOffset.x, y: event.contentOffset.y + event.layoutMeasurement.height})
-            }
-            else if (key === 'LEFT_ARROW') {
-                this._handleScrollByKeyDown(event, {x: event.contentOffset.x + -(this.props.horizontalLineScroll || kMinScrollOffset), y: event.contentOffset.y});
-            }
-            else if (key === 'RIGHT_ARROW') {
-                this._handleScrollByKeyDown(event, {x: event.contentOffset.x + (this.props.horizontalLineScroll || kMinScrollOffset), y: event.contentOffset.y});
-            }
-            else if (key === 'DOWN_ARROW') {
-                this._handleScrollByKeyDown(event, {x: event.contentOffset.x, y: event.contentOffset.y + (this.props.verticalLineScroll || kMinScrollOffset)});
-            }
-            else if (key === 'UP_ARROW') {
-                this._handleScrollByKeyDown(event, {x: event.contentOffset.x, y: event.contentOffset.y + -(this.props.verticalLineScroll || kMinScrollOffset)});
-            }
+      this.props.onKeyDown(e);
+    } else {
+      const event = e.nativeEvent;
+      const key = event.key;
+      const kMinScrollOffset = 10;
+
+      if (Platform.OS === 'macos') {
+        if (key === 'PAGE_UP') {
+          this._handleScrollByKeyDown(event, {
+            x: event.contentOffset.x,
+            y: event.contentOffset.y + -event.layoutMeasurement.height,
+          });
+        } else if (key === 'PAGE_DOWN') {
+          this._handleScrollByKeyDown(event, {
+            x: event.contentOffset.x,
+            y: event.contentOffset.y + event.layoutMeasurement.height,
+          });
+        } else if (key === 'LEFT_ARROW') {
+          this._handleScrollByKeyDown(event, {
+            x:
+              event.contentOffset.x +
+              -(this.props.horizontalLineScroll || kMinScrollOffset),
+            y: event.contentOffset.y,
+          });
+        } else if (key === 'RIGHT_ARROW') {
+          this._handleScrollByKeyDown(event, {
+            x:
+              event.contentOffset.x +
+              (this.props.horizontalLineScroll || kMinScrollOffset),
+            y: event.contentOffset.y,
+          });
+        } else if (key === 'DOWN_ARROW') {
+          this._handleScrollByKeyDown(event, {
+            x: event.contentOffset.x,
+            y:
+              event.contentOffset.y +
+              (this.props.verticalLineScroll || kMinScrollOffset),
+          });
+        } else if (key === 'UP_ARROW') {
+          this._handleScrollByKeyDown(event, {
+            x: event.contentOffset.x,
+            y:
+              event.contentOffset.y +
+              -(this.props.verticalLineScroll || kMinScrollOffset),
+          });
         }
+      }
     }
   },
-  
+
   _handleScrollByKeyDown: function(e: Object, newOffset) {
     const maxX = e.contentSize.width - e.layoutMeasurement.width;
     const maxY = e.contentSize.height - e.layoutMeasurement.height;
-    this.scrollTo({x: Math.max(0, Math.min(maxX, newOffset.x)), y: Math.max(0, Math.min(maxY, newOffset.y))});
+    this.scrollTo({
+      x: Math.max(0, Math.min(maxX, newOffset.x)),
+      y: Math.max(0, Math.min(maxY, newOffset.y)),
+    });
   }, // ]TODO(macOS ISS#2323203)
 
   _handleScroll: function(e: Object) {
@@ -828,7 +852,10 @@ const ScrollView = createReactClass({
         ScrollViewClass = AndroidScrollView;
         ScrollContentContainerViewClass = View;
       }
-    } else if (Platform.OS === 'uwp' || Platform.OS === 'windesktop') { // [TODO(windows ISS)
+    } /* [TODO(windows ISS) */ else if (
+      Platform.OS === 'uwp' ||
+      Platform.OS === 'windesktop'
+    ) {
       ScrollViewClass = RCTScrollView;
       ScrollContentContainerViewClass = View; // ]TODO(windows ISS)
     } else {
@@ -985,7 +1012,8 @@ const ScrollView = createReactClass({
           this.props.pagingEnabled &&
           this.props.snapToInterval == null &&
           this.props.snapToOffsets == null,
-        macos: // [TODO(macOS ISS#2323203)
+        // [TODO(macOS ISS#2323203)
+        macos:
           this.props.pagingEnabled &&
           this.props.snapToInterval == null &&
           this.props.snapToOffsets == null, // ]TODO(macOS ISS#2323203)

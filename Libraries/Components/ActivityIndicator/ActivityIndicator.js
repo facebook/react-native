@@ -19,6 +19,7 @@ const requireNativeComponent = require('requireNativeComponent');
 
 import type {NativeComponent} from 'ReactNative';
 import type {ViewProps} from 'ViewPropTypes';
+import type {SemanticOrDynamicColorType} from 'normalizeColor'; // ]TODO(macOS ISS#2323203)
 
 const RCTActivityIndicator =
   Platform.OS === 'android'
@@ -53,7 +54,7 @@ type Props = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/activityindicator.html#color
    */
-  color?: ?string,
+  color?: ?(string | SemanticOrDynamicColorType), // ]TODO(macOS ISS#2323203)
 
   /**
    * Size of the indicator (default is 'small').
@@ -115,7 +116,7 @@ const ActivityIndicatorWithRef = React.forwardRef(ActivityIndicator);
 
 ActivityIndicatorWithRef.defaultProps = {
   animating: true,
-  color: (Platform.OS === 'ios' || Platform.OS === 'macos') ? GRAY : null, // TODO(macOS ISS#2323203)
+  color: Platform.OS === 'ios' || Platform.OS === 'macos' ? GRAY : null, // TODO(macOS ISS#2323203)
   hidesWhenStopped: true,
   size: 'small',
 };

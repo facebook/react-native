@@ -39,37 +39,59 @@ class ViewFocusEventsExample extends React.Component<{}, $FlowFixMeState> {
     });
     return (
       <View>
-        <Button onPress={() => this.setState({showSampleViews: !this.state.showSampleViews})} title={(this.state.showSampleViews) ? 'Hide Sample Focus event View' : 'Show Sample View'} />
-        <Button onPress={() => this.defaultFocusView ? this.defaultFocusView.focus() : null} title={'Give Focus to default View'} />
-        { (this.state.showSampleViews) ?
-        <View> 
-          <Text> Enter on any view will move focus within this view </Text>
-          <TouchableNativeFeedback onPress={() => this.defaultFocusView ? this.defaultFocusView.focus() : null}>
-            <View ref = {v => this.view1 = v} style={[ styles.focusView]} >
-              <Text> Test View</Text>
-            </View>
-          </TouchableNativeFeedback>
-
-          <TouchableNativeFeedback onPress={() => this.view2 ? this.view2.focus() : null}>
-            <View ref = {v => this.defaultFocusView = v} style={[ styles.focusView]} >
-              <Text> Default Focus View </Text>
-            </View>
-          </TouchableNativeFeedback>
-
-          <TouchableNativeFeedback onPress={() => this.view1 ? this.view1.focus() : null}>
-            <View ref = {v => this.view2 = v}
-              style={[ styles.focusView]}
-              onFocusChange = {(hasFocus) => {this.setState({showTextView: hasFocus})}}>
-              <Text> Show sample textview on focus </Text>
-            </View>
-          </TouchableNativeFeedback>
-          {
-            this.state.showTextView ? 
-            <Text> This is a sample Text</Text>
-            : null
+        <Button
+          onPress={() =>
+            this.setState({showSampleViews: !this.state.showSampleViews})
           }
-        </View> 
-        : null }
+          title={
+            this.state.showSampleViews
+              ? 'Hide Sample Focus event View'
+              : 'Show Sample View'
+          }
+        />
+        <Button
+          onPress={() =>
+            this.defaultFocusView ? this.defaultFocusView.focus() : null
+          }
+          title={'Give Focus to default View'}
+        />
+        {this.state.showSampleViews ? (
+          <View>
+            <Text> Enter on any view will move focus within this view </Text>
+            <TouchableNativeFeedback
+              onPress={() =>
+                this.defaultFocusView ? this.defaultFocusView.focus() : null
+              }>
+              <View ref={v => (this.view1 = v)} style={[styles.focusView]}>
+                <Text> Test View</Text>
+              </View>
+            </TouchableNativeFeedback>
+
+            <TouchableNativeFeedback
+              onPress={() => (this.view2 ? this.view2.focus() : null)}>
+              <View
+                ref={v => (this.defaultFocusView = v)}
+                style={[styles.focusView]}>
+                <Text> Default Focus View </Text>
+              </View>
+            </TouchableNativeFeedback>
+
+            <TouchableNativeFeedback
+              onPress={() => (this.view1 ? this.view1.focus() : null)}>
+              <View
+                ref={v => (this.view2 = v)}
+                style={[styles.focusView]}
+                onFocusChange={hasFocus => {
+                  this.setState({showTextView: hasFocus});
+                }}>
+                <Text> Show sample textview on focus </Text>
+              </View>
+            </TouchableNativeFeedback>
+            {this.state.showTextView ? (
+              <Text> This is a sample Text</Text>
+            ) : null}
+          </View>
+        ) : null}
       </View>
     );
   }
@@ -273,21 +295,22 @@ exports.examples = [
       );
     },
   },
-  { // [TODO(macOS ISS#2323203)
+  {
+    // [TODO(macOS ISS#2323203)
     title: 'ToolTip',
     render() {
       return (
-        <View tooltip='Parent View'>
-          <Text style={{ fontSize: 11 }}>
+        <View tooltip="Parent View">
+          <Text style={{fontSize: 11}}>
             This Parent View has tooltip "Parent View"
           </Text>
-          <View tooltip='Child View 1'>
-            <Text style={{ fontSize: 11 }}>
+          <View tooltip="Child View 1">
+            <Text style={{fontSize: 11}}>
               This view has tooltip "Child View 1"
             </Text>
           </View>
-          <View tooltip='Child View 2'>
-            <Text style={{ fontSize: 11 }}>
+          <View tooltip="Child View 2">
+            <Text style={{fontSize: 11}}>
               This view has tooltip "Child View 2"
             </Text>
           </View>
