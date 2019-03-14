@@ -28,6 +28,7 @@ target 'RNTester' do
   # Fabric Pods, uncomment these to enable in RNTester
   # pod 'React-Fabric', :path => '../ReactCommon'
   # pod 'React-graphics', :path => '../ReactCommon/fabric/graphics'
+  # pod 'React-jsi/Fabric', :path => '../ReactCommon/jsi'
   # pod 'React-RCTFabric', :path => '../React'
   # pod 'Folly/Fabric', :podspec => '../third-party-podspecs/Folly.podspec'
 

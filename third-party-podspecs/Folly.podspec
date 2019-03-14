@@ -51,8 +51,8 @@ Pod::Spec.new do |spec|
 
   spec.default_subspec = 'Default'
 
-  spec.subspec 'Default' do |default|
-  # no-op
+  spec.subspec 'Default' do
+    # no-op
   end
 
   spec.subspec 'Fabric' do |fabric|
