@@ -131,16 +131,16 @@ exports.examples = [
     },
   },
   {
-    title: 'Picker with 20-minute interval',
+    title: 'Time only picker, 20-minute interval',
     render: function(): React.Element<any> {
       return (
         <WithDatePickerData>
           {(state, onDateChange) => (
             <DatePickerIOS
-              testID="date-and-time-with-interval"
+              testID="time-with-interval"
               date={state.date}
               minuteInterval={20}
-              mode="datetime"
+              mode="time"
               onDateChange={onDateChange}
             />
           )}
