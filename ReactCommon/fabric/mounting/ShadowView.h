@@ -71,15 +71,13 @@ namespace std {
 template <>
 struct hash<facebook::react::ShadowView> {
   size_t operator()(const facebook::react::ShadowView &shadowView) const {
-    auto seed = size_t{0};
-    folly::hash::hash_combine(
-        seed,
+    return folly::hash::hash_combine(
+        0,
         shadowView.componentHandle,
         shadowView.tag,
         shadowView.props,
         shadowView.eventEmitter,
         shadowView.localData);
-    return seed;
   }
 };
 

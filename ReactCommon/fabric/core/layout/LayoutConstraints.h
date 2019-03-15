@@ -44,13 +44,11 @@ template <>
 struct hash<facebook::react::LayoutConstraints> {
   size_t operator()(
       const facebook::react::LayoutConstraints &constraints) const {
-    auto seed = size_t{0};
-    folly::hash::hash_combine(
-        seed,
+    return folly::hash::hash_combine(
+        0,
         constraints.minimumSize,
         constraints.maximumSize,
         constraints.layoutDirection);
-    return seed;
   }
 };
 } // namespace std
