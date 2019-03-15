@@ -46,6 +46,19 @@ type FocusEvent = TargetEvent;
 
 const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
+const OVERRIDE_PROPS = [
+  'accessibilityComponentType',
+  'accessibilityLabel',
+  'accessibilityHint',
+  'accessibilityRole',
+  'accessibilityStates',
+  'accessibilityTraits',
+  'hitSlop',
+  'nativeID',
+  'onLayout',
+  'testID',
+];
+
 export type Props = $ReadOnly<{|
   accessible?: ?boolean,
   accessibilityComponentType?: ?AccessibilityComponentType,
@@ -239,18 +252,16 @@ const TouchableWithoutFeedback = ((createReactClass({
         Touchable.renderDebugView({color: 'red', hitSlop: this.props.hitSlop}),
       );
     }
+
+    const overrides = {};
+    for (const prop of OVERRIDE_PROPS) {
+      if (this.props[prop] !== undefined) {
+        overrides[prop] = this.props[prop];
+      }
+    }
+
     return (React: any).cloneElement(child, {
-      accessible: this.props.accessible !== false,
-      accessibilityLabel: this.props.accessibilityLabel,
-      accessibilityHint: this.props.accessibilityHint,
-      accessibilityComponentType: this.props.accessibilityComponentType,
-      accessibilityRole: this.props.accessibilityRole,
-      accessibilityStates: this.props.accessibilityStates,
-      accessibilityTraits: this.props.accessibilityTraits,
-      nativeID: this.props.nativeID,
-      testID: this.props.testID,
-      onLayout: this.props.onLayout,
-      hitSlop: this.props.hitSlop,
+      ...overrides,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
       onResponderTerminationRequest: this
         .touchableHandleResponderTerminationRequest,
