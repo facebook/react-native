@@ -69,8 +69,7 @@ project.ext.react = [
     bundleAssetName: "RNTesterApp.android.bundle",
     entryFile: file("../../js/RNTesterApp.android.js"),
     root: "$rootDir",
-    inputExcludes: ["android/**", "./**", ".gradle/**"],
-    extraPackagerArgs: ["--reactNativePath", "$rootDir"]
+    inputExcludes: ["android/**", "./**", ".gradle/**"]
 ]
 
 apply from: "../../../react.gradle"
