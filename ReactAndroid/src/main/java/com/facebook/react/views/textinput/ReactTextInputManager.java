@@ -71,7 +71,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   private static final int FOCUS_TEXT_INPUT = 1;
   private static final int BLUR_TEXT_INPUT = 2;
 
-  private static final int INPUT_TYPE_KEYBOARD_NUMBER_PAD = InputType.TYPE_CLASS_NUMBER; 
+  private static final int INPUT_TYPE_KEYBOARD_NUMBER_PAD = InputType.TYPE_CLASS_NUMBER;
   private static final int INPUT_TYPE_KEYBOARD_DECIMAL_PAD = INPUT_TYPE_KEYBOARD_NUMBER_PAD |
           InputType.TYPE_NUMBER_FLAG_DECIMAL;
   private static final int INPUT_TYPE_KEYBOARD_NUMBERED = INPUT_TYPE_KEYBOARD_DECIMAL_PAD |
@@ -559,6 +559,11 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = "autoComplete")
   public void setTextContentType(ReactEditText view, @Nullable String autocomplete) {
+    // Autofill hints were added in Android API 26.
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+      return;
+    }
+
     if (autocomplete == null) {
       view.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO);
     } else if ("username".equals(autocomplete)) {
