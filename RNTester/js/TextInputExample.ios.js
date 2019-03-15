@@ -822,9 +822,8 @@ exports.examples = [
       ];
       const examples = clearButtonModes.map(mode => {
         return (
-          <WithLabel label={mode}>
+          <WithLabel key={mode} label={mode}>
             <TextInput
-              key={mode}
               style={styles.default}
               clearButtonMode={mode}
               defaultValue={mode}
