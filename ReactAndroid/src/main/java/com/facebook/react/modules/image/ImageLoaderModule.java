@@ -34,7 +34,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.views.iamgehelper.ImageSource;
+import com.facebook.react.views.imagehelper.ImageSource;
 
 @ReactModule(name = ImageLoaderModule.NAME)
 public class ImageLoaderModule extends ReactContextBaseJavaModule implements
