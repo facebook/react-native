@@ -71,7 +71,7 @@ NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotif
 
   NSMutableDictionary<NSNumber *, RCTShadowView *> *_shadowViewRegistry; // RCT thread only
   NSMutableDictionary<NSNumber *, UIView *> *_viewRegistry; // Main thread only
-  NSMapTable<NSString *, UIView *> *_nativeIDRegistry;  // Main thread only
+  NSMapTable<NSString *, UIView *> *_nativeIDRegistry;
 
   NSMapTable<RCTShadowView *, NSArray<NSString *> *> *_shadowViewsWithUpdatedProps; // UIManager queue only.
   NSHashTable<RCTShadowView *> *_shadowViewsWithUpdatedChildren; // UIManager queue only.
@@ -143,7 +143,6 @@ RCT_EXPORT_MODULE()
 
 - (NSMapTable *)nativeIDRegistry
 {
-  // Should be called on main queue
   if (!_nativeIDRegistry) {
     _nativeIDRegistry = [NSMapTable strongToWeakObjectsMapTable];
   }
@@ -388,25 +387,28 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
 
 - (UIView *)viewForNativeID:(NSString *)nativeID withRootTag:(NSNumber *)rootTag
 {
-  RCTAssertMainQueue();
   if (!nativeID || !rootTag) {
     return nil;
   }
-  return [_nativeIDRegistry objectForKey:RCTNativeIDRegistryKey(nativeID, rootTag)];
+  UIView *view;
+  @synchronized(self) {
+    view = [_nativeIDRegistry objectForKey:RCTNativeIDRegistryKey(nativeID, rootTag)];
+  }
+  return view;
 }
 
 - (void)setNativeID:(NSString *)nativeID forView:(UIView *)view
 {
-  RCTAssertMainQueue();
-  if (!nativeID) {
+  if (!nativeID || !view) {
     return;
   }
   __weak RCTUIManager *weakSelf = self;
-  [self rootViewForReactTag:view.reactTag withCompletion:^(UIView *rootView) {
-    if (rootView) {
-      [weakSelf.nativeIDRegistry setObject:view forKey:RCTNativeIDRegistryKey(nativeID, rootView.reactTag)];
+  RCTExecuteOnUIManagerQueue(^{
+    NSNumber *rootTag = [weakSelf shadowViewForReactTag:view.reactTag].rootView.reactTag;
+    @synchronized(weakSelf) {
+      [weakSelf.nativeIDRegistry setObject:view forKey:RCTNativeIDRegistryKey(nativeID, rootTag)];
     }
-  }];
+  });
 }
 
 - (void)setSize:(CGSize)size forView:(UIView *)view
