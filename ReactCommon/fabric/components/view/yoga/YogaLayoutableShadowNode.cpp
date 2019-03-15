@@ -101,6 +101,20 @@ void YogaLayoutableShadowNode::setProps(const YogaStylableProps &props) {
   yogaNode_.setStyle(props.yogaStyle);
 }
 
+void YogaLayoutableShadowNode::setSize(Size size) const {
+  auto style = yogaNode_.getStyle();
+  style.dimensions[YGDimensionWidth] = yogaStyleValueFromFloat(size.width);
+  style.dimensions[YGDimensionHeight] = yogaStyleValueFromFloat(size.height);
+  yogaNode_.setStyle(style);
+}
+
+void YogaLayoutableShadowNode::setPositionType(
+    YGPositionType positionType) const {
+  auto style = yogaNode_.getStyle();
+  style.positionType = positionType;
+  yogaNode_.setStyle(style);
+}
+
 void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
   if (!getIsLayoutClean()) {
     ensureUnsealed();
