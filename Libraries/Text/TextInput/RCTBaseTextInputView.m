@@ -392,16 +392,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
                                    notifyDelegate:YES];
 
         [self textInputDidChange];
-        
-        _nativeEventCount++;
-        
-        if (_onChange) {
-          _onChange(@{
-                      @"text": _predictedText,
-                      @"target": self.reactTag,
-                      @"eventCount": @(_nativeEventCount),
-                      });
-        }
       }
 
       return NO;
@@ -434,21 +424,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     });
   }
   
-  _nativeEventCount++;
-  
-  if (_onChange) {
-    _onChange(@{
-                @"text": _predictedText,
-                @"target": self.reactTag,
-                @"eventCount": @(_nativeEventCount),
-                });
-  }
+  // Sometimes, even we return YES, UIKit may not call textInputDidChange delegate, like click keyboard predictive text. So we have trick here, perform textInputDidChange by ourself.
+  [self performSelector:@selector(textInputDidChange) withObject:nil afterDelay:0.1];
 
   return YES;
 }
 
 - (void)textInputDidChange
 {
+  // If textInputDidChange be called by UIKit delegate, we cancel our own perform operation
+  [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(textInputDidChange) object:nil];
+  
   [self updateLocalData];
 
   id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
@@ -465,6 +451,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     // JS will assume the selection changed based on the location of our shouldChangeTextInRange, so reset it.
     [self textInputDidChangeSelection];
     _predictedText = backedTextInputView.attributedText.string;
+  }
+  
+  _nativeEventCount++;
+  
+  if (_onChange) {
+    _onChange(@{
+                @"text": self.attributedText.string,
+                @"target": self.reactTag,
+                @"eventCount": @(_nativeEventCount),
+                });
   }
 }
 
