@@ -16,14 +16,24 @@ const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
 const AccessibilityManager = NativeModules.AccessibilityManager;
 
-const ANNOUNCEMENT_DID_FINISH_EVENT = 'announcementDidFinish';
-const REDUCE_MOTION_EVENT = 'reduceMotionDidChange';
-const VOICE_OVER_EVENT = 'voiceOverDidChange';
+const CHANGE_EVENT_NAME = {
+  announcementFinished: 'announcementFinished',
+  boldTextChanged: 'boldTextChanged',
+  grayscaleChanged: 'grayscaleChanged',
+  invertColorsChanged: 'invertColorsChanged',
+  reduceMotionChanged: 'reduceMotionChanged',
+  reduceTransparencyChanged: 'reduceTransparencyChanged',
+  screenReaderChanged: 'screenReaderChanged',
+};
 
 type ChangeEventName = $Enum<{
   announcementFinished: string,
+  boldTextChanged: string,
   change: string,
+  grayscaleChanged: string,
+  invertColorsChanged: string,
   reduceMotionChanged: string,
+  reduceTransparencyChanged: string,
   screenReaderChanged: string,
 }>;
 
@@ -40,16 +50,72 @@ const _subscriptions = new Map();
  */
 const AccessibilityInfo = {
   /**
-   * Query whether a reduce motion is currently enabled.
+   * Query whether bold text is currently enabled.
    *
    * Returns a promise which resolves to a boolean.
-   * The result is `true` when a screen reader is enabledand `false` otherwise.
+   * The result is `true` when bold text is enabled and `false` otherwise.
+   *
+   * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#isBoldTextEnabled
+   */
+  isBoldTextEnabled: function(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      AccessibilityManager.getCurrentBoldTextState(resolve, reject);
+    });
+  },
+
+  /**
+   * Query whether grayscale is currently enabled.
+   *
+   * Returns a promise which resolves to a boolean.
+   * The result is `true` when grayscale is enabled and `false` otherwise.
+   *
+   * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#isGrayscaleEnabled
+   */
+  isGrayscaleEnabled: function(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      AccessibilityManager.getCurrentGrayscaleState(resolve, reject);
+    });
+  },
+
+  /**
+   * Query whether inverted colors are currently enabled.
+   *
+   * Returns a promise which resolves to a boolean.
+   * The result is `true` when invert color is enabled and `false` otherwise.
+   *
+   * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#isInvertColorsEnabled
+   */
+  isInvertColorsEnabled: function(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      AccessibilityManager.getCurrentInvertColorsState(resolve, reject);
+    });
+  },
+
+  /**
+   * Query whether reduced motion is currently enabled.
+   *
+   * Returns a promise which resolves to a boolean.
+   * The result is `true` when a reduce motion is enabled and `false` otherwise.
    *
    * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#isReduceMotionEnabled
    */
-  isReduceMotionEnabled: function(): Promise {
+  isReduceMotionEnabled: function(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      AccessibilityManager.getReduceMotionState(resolve, reject);
+      AccessibilityManager.getCurrentReduceMotionState(resolve, reject);
+    });
+  },
+
+  /**
+   * Query whether reduced transparency is currently enabled.
+   *
+   * Returns a promise which resolves to a boolean.
+   * The result is `true` when a reduce transparency is enabled and `false` otherwise.
+   *
+   * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#isReduceTransparencyEnabled
+   */
+  isReduceTransparencyEnabled: function(): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      AccessibilityManager.getCurrentReduceTransparencyState(resolve, reject);
     });
   },
 
@@ -61,7 +127,7 @@ const AccessibilityInfo = {
    *
    * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#isScreenReaderEnabled
    */
-  isScreenReaderEnabled: function(): Promise {
+  isScreenReaderEnabled: function(): Promise<boolean> {
     return new Promise((resolve, reject) => {
       AccessibilityManager.getCurrentVoiceOverState(resolve, reject);
     });
@@ -79,10 +145,22 @@ const AccessibilityInfo = {
   /**
    * Add an event handler. Supported events:
    *
+   * - `boldTextChanged`: iOS-only event. Fires when the state of the bold text toggle changes.
+   *   The argument to the event handler is a boolean. The boolean is `true` when a bold text
+   *   is enabled and `false` otherwise.
+   * - `grayscaleChanged`: iOS-only event. Fires when the state of the gray scale toggle changes.
+   *   The argument to the event handler is a boolean. The boolean is `true` when a gray scale
+   *   is enabled and `false` otherwise.
+   * - `invertColorsChanged`: iOS-only event. Fires when the state of the invert colors toggle
+   *   changes. The argument to the event handler is a boolean. The boolean is `true` when a invert
+   *   colors is enabled and `false` otherwise.
    * - `reduceMotionChanged`: Fires when the state of the reduce motion toggle changes.
    *   The argument to the event handler is a boolean. The boolean is `true` when a reduce
    *   motion is enabled (or when "Transition Animation Scale" in "Developer options" is
    *   "Animation off") and `false` otherwise.
+   * - `reduceTransparencyChanged`: iOS-only event. Fires when the state of the reduce transparency
+   *   toggle changes.  The argument to the event handler is a boolean. The boolean is `true`
+   *   when a reduce transparency is enabled and `false` otherwise.
    * - `screenReaderChanged`: Fires when the state of the screen reader changes. The argument
    *   to the event handler is a boolean. The boolean is `true` when a screen
    *   reader is enabled and `false` otherwise.
@@ -101,18 +179,13 @@ const AccessibilityInfo = {
   ): Object {
     let listener;
 
-    if (eventName === 'change' || eventName === 'screenReaderChanged') {
-      listener = RCTDeviceEventEmitter.addListener(VOICE_OVER_EVENT, handler);
-    } else if (eventName === 'reduceMotionChanged') {
+    if (eventName === 'change') {
       listener = RCTDeviceEventEmitter.addListener(
-        REDUCE_MOTION_EVENT,
+        CHANGE_EVENT_NAME.screenReaderChanged,
         handler,
       );
-    } else if (eventName === 'announcementFinished') {
-      listener = RCTDeviceEventEmitter.addListener(
-        ANNOUNCEMENT_DID_FINISH_EVENT,
-        handler,
-      );
+    } else if (CHANGE_EVENT_NAME[eventName]) {
+      listener = RCTDeviceEventEmitter.addListener(eventName, handler);
     }
 
     _subscriptions.set(handler, listener);
