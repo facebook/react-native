@@ -141,7 +141,7 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule implements
     }
 
     ImageSource source = new ImageSource(getReactApplicationContext(), uriString);
-    ImageRequest imageRequestBuilder = ImageRequestBuilder.newBuilderWithSource(source.getUri());
+    ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder.newBuilderWithSource(source.getUri());
     ImageRequest request = ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, headers);
 
     DataSource<CloseableReference<CloseableImage>> dataSource =
