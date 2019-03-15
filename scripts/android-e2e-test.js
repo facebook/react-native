@@ -84,7 +84,7 @@ describe('Android Test App', function() {
     // This is fixed by clicking Reload JS which will trigger a request to packager server
     return driver
       .init(desired)
-      .setImplicitWaitTimeout(5000, (a, b) => console.log(a, b))
+      .setImplicitWaitTimeout(5000)
       .waitForElementByXPath('//android.widget.Button[@text="Reload JS"]')
       .then(
         elem => {
