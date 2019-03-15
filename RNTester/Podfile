@@ -31,6 +31,9 @@ target 'RNTester' do
   pod 'React-jsinspector', :path => '../ReactCommon/jsinspector'
   pod 'yoga', :path => '../ReactCommon/yoga'
 
+  # Uncomment to enable TurboModule
+  # pod 'React-turbomodule-core', :path => '../ReactCommon/turbomodule/core'
+
   # Third party deps podspec link
   pod 'DoubleConversion', :podspec => '../third-party-podspecs/DoubleConversion.podspec'
   pod 'glog', :podspec => '../third-party-podspecs/glog.podspec'
