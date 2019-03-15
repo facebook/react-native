@@ -50,7 +50,7 @@ const _subscriptions = new Map();
  */
 const AccessibilityInfo = {
   /**
-   * Query whether a bold text is currently enabled.
+   * Query whether bold text is currently enabled.
    *
    * Returns a promise which resolves to a boolean.
    * The result is `true` when bold text is enabled and `false` otherwise.
@@ -64,7 +64,7 @@ const AccessibilityInfo = {
   },
 
   /**
-   * Query whether a grayscale is currently enabled.
+   * Query whether grayscale is currently enabled.
    *
    * Returns a promise which resolves to a boolean.
    * The result is `true` when grayscale is enabled and `false` otherwise.
@@ -78,7 +78,7 @@ const AccessibilityInfo = {
   },
 
   /**
-   * Query whether a invert colors is currently enabled.
+   * Query whether inverted colors are currently enabled.
    *
    * Returns a promise which resolves to a boolean.
    * The result is `true` when invert color is enabled and `false` otherwise.
@@ -92,7 +92,7 @@ const AccessibilityInfo = {
   },
 
   /**
-   * Query whether a reduce motion is currently enabled.
+   * Query whether reduced motion is currently enabled.
    *
    * Returns a promise which resolves to a boolean.
    * The result is `true` when a reduce motion is enabled and `false` otherwise.
@@ -106,7 +106,7 @@ const AccessibilityInfo = {
   },
 
   /**
-   * Query whether a reduce transparency is currently enabled.
+   * Query whether reduced transparency is currently enabled.
    *
    * Returns a promise which resolves to a boolean.
    * The result is `true` when a reduce transparency is enabled and `false` otherwise.
