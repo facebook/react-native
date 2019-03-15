@@ -139,9 +139,6 @@ try {
     const appiumProcess = spawn('node', ['./node_modules/.bin/appium']);
     APPIUM_PID = appiumProcess.pid;
 
-    echo('Installing dependencies');
-    exec('yarn install');
-
     echo('Building the app');
     if (exec('react-native run-android').code) {
       echo('could not execute react-native run-android');
