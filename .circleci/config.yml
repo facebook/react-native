@@ -471,7 +471,7 @@ jobs:
       # Build JavaScript Bundle for instrumentation tests
       - run:
           name: Build JavaScript Bundle
-          command: node cli.js bundle --max-workers 2 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
+          command: node cli.js bundle --max-workers 2 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js --reactNativePath .
       
 
       # Wait for AVD to finish booting before running tests

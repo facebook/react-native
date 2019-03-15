@@ -19,22 +19,5 @@ module.exports = {
   extraNodeModules: {
     'react-native': __dirname,
   },
-  serializer: {
-    getModulesRunBeforeMainModule: () => [
-      require.resolve('./Libraries/Core/InitializeCore'),
-    ],
-    getPolyfills,
-  },
-  resolver: {
-    hasteImplModulePath: require.resolve('./jest/hasteImpl'),
-  },
-  transformer: {
-    getTransformOptions: () => ({
-      transform: {
-        experimentalImportSupport: true,
-        inlineRequires: true,
-      },
-    }),
-    assetRegistryPath: require.resolve('./Libraries/Image/AssetRegistry'),
-  },
+  getPolyfills,
 };
