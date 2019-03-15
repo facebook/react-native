@@ -41,7 +41,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)setDatePickerMode:(UIDatePickerMode)datePickerMode
 {
   [super setDatePickerMode:datePickerMode];
-  // We need to ensure set minuteInterval after set datePickerMode, otherwise minuteInterval invalid in time mode.
+  // We need to set minuteInterval after setting datePickerMode, otherwise minuteInterval is invalid in time mode.
   self.minuteInterval = _reactMinuteInterval;
 }
 
