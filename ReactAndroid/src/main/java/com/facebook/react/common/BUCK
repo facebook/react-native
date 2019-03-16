@@ -10,6 +10,7 @@ rn_android_library(
         ["**/*.java"],
         exclude = SUB_PROJECTS,
     ),
+    is_androidx = True,
     provided_deps = [
         react_native_dep("third-party/android/support/v4:lib-support-v4"),
     ],
