@@ -109,10 +109,7 @@ const AppRegistry = {
       componentProvider,
       run: appParameters => {
         renderApplication(
-          componentProviderInstrumentationHook(
-            componentProvider,
-            scopedPerformanceLogger,
-          ),
+          componentProviderInstrumentationHook(componentProvider),
           appParameters.initialProps,
           appParameters.rootTag,
           wrapperComponentProvider && wrapperComponentProvider(appParameters),
