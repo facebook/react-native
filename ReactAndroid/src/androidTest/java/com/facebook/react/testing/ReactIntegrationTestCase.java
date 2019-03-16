@@ -15,7 +15,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import android.app.Application;
-import android.support.test.InstrumentationRegistry;
+import androidx.test.InstrumentationRegistry;
 import android.test.AndroidTestCase;
 import android.view.View;
 import android.view.ViewGroup;
