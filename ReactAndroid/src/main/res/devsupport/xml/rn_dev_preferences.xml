@@ -23,7 +23,7 @@
       android:key="js_bundle_deltas"
       android:title="Use JS Deltas"
       android:summary="Request delta bundles from metro to get faster reloads (Experimental)"
-      android:defaultValue="true"
+      android:defaultValue="false"
       />
     <CheckBoxPreference
       android:key="js_bundle_deltas_cpp"
