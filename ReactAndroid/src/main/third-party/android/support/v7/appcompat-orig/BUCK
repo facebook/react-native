@@ -3,7 +3,7 @@ load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "rn_android_libra
 
 # This is a bit messy and hopefully a temporary thing
 # The problem is that Gradle extracts appcompat resources into app namespace, com.facebook.react
-# While BUCK behaves properly and extracts them into android.support.v7.appcompat package.
+# While BUCK behaves properly and extracts them into androidx.appcompat package.
 # We want to support both Gradle and BUCK builds so we hack a bit how BUCK extracts resources.
 # Besides that we still need JAVA classes from appcompat-v7.aar, that is why rn_android_library
 # extracts classes.jar but the trick is that we can't take full appcompat.aar because resources
@@ -26,7 +26,7 @@ rn_android_library(
 # still used by appcompat library internally, so we need both during the build
 rn_android_resource(
     name = "res-for-appcompat",
-    package = "android.support.v7.appcompat",
+    package = "androidx.appcompat",
     res = ":res-unpacker-cmd",
     visibility = ["//ReactAndroid/..."],
 )
