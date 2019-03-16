@@ -1,41 +1,5 @@
 load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
 
-fb_native.android_library(
-    name = "lib-support-v4",
-    visibility = ["PUBLIC"],
-    exported_deps = [
-        ":appcompat",
-        ":asynclayoutinflater",
-        ":collection",
-        ":coordinatorlayout",
-        ":core",
-        ":core-common",
-        ":core-runtime",
-        ":cursoradapter",
-        ":customview",
-        ":documentfile",
-        ":drawerlayout",
-        ":fragment",
-        ":interpolator",
-        ":legacy-support-core-ui",
-        ":legacy-support-core-utils",
-        ":lifecycle-common",
-        ":lifecycle-livedata",
-        ":lifecycle-livedata-core",
-        ":lifecycle-runtime",
-        ":lifecycle-viewmodel",
-        ":loader",
-        ":localbroadcastmanager",
-        ":print",
-        ":slidingpanelayout",
-        ":swiperefreshlayout",
-        ":vectordrawable",
-        ":vectordrawable-animated",
-        ":versionedparcelable",
-        ":viewpager",
-    ],
-)
-
 fb_native.prebuilt_jar(
     name = "annotation",
     binary_jar = ":annotation.jar",
@@ -47,6 +11,7 @@ fb_native.android_library(
     visibility = ["PUBLIC"],
     exported_deps = [
         ":annotation",
+        ":appcompat-binary",
         ":collection",
         ":core",
         ":cursoradapter",

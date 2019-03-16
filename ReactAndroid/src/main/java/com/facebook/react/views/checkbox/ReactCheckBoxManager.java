@@ -8,8 +8,8 @@ package com.facebook.react.views.checkbox;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.support.v4.widget.CompoundButtonCompat;
-import android.support.v7.widget.TintContextWrapper;
+import androidx.core.widget.CompoundButtonCompat;
+import androidx.appcompat.widget.TintContextWrapper;
 import android.util.TypedValue;
 import android.widget.CompoundButton;
 

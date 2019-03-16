@@ -9,7 +9,7 @@ package com.facebook.react.views.textinput;
 
 import android.annotation.TargetApi;
 import android.os.Build;
-import android.support.v4.view.ViewCompat;
+import androidx.core.view.ViewCompat;
 import android.text.Layout;
 import android.util.TypedValue;
 import android.view.ViewGroup;

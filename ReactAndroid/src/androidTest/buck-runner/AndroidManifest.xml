@@ -20,7 +20,7 @@
   </application>
 
   <instrumentation
-    android:name="android.support.test.runner.AndroidJUnitRunner"
+    android:name="androidx.test.runner.AndroidJUnitRunner"
     android:targetPackage="com.facebook.react.tests"
     android:label="Buck runs instrumentation tests"/>
 

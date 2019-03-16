@@ -1,9 +1,12 @@
 #!/bin/bash
+#
 # Copyright (c) Facebook, Inc. and its affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 #
+
+# shellcheck disable=SC1117
 # Python script to run instrumentation tests, copied from https://github.com/circleci/circle-dummy-android
 # Example: ./scripts/run-android-instrumentation-tests.sh com.facebook.react.tests com.facebook.react.tests.ReactPickerTestCase
 #
@@ -13,7 +16,7 @@ export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$PATH"
 adb logcat -c
 
 # run tests and check output
-python - $1 $2 << END
+python - "$1" "$2" << END
 
 import re
 import subprocess as sp

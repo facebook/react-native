@@ -287,7 +287,7 @@ android {
         buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
         buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
         testApplicationId("com.facebook.react.tests.gradle")
-        testInstrumentationRunner("android.support.test.runner.AndroidJUnitRunner")
+        testInstrumentationRunner("androidx.test.runner.AndroidJUnitRunner")
     }
 
     sourceSets.main {
@@ -337,8 +337,9 @@ dependencies {
     testImplementation("org.robolectric:robolectric:${ROBOLECTRIC_VERSION}")
 
     androidTestImplementation(fileTree(dir: "src/main/third-party/java/buck-android-support/", include: ["*.jar"]))
-    androidTestImplementation("com.android.support.test:runner:${ANDROID_SUPPORT_TEST_VERSION}")
-    androidTestImplementation("com.android.support.test:rules:${ANDROID_SUPPORT_TEST_VERSION}")
+    //TODO: Refactor to extract versions of androidx dependencies
+    androidTestImplementation("androidx.test:runner:1.1.0")
+    androidTestImplementation("androidx.test:rules:1.1.0")
     androidTestImplementation("org.mockito:mockito-core:${MOCKITO_CORE_VERSION}")
 }
 
