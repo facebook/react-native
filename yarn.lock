@@ -2594,13 +2594,6 @@ eslint-plugin-react@7.8.2:
     jsx-ast-utils "^2.0.1"
     prop-types "^15.6.0"
 
-eslint-plugin-relay@0.0.28:
-  version "0.0.28"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-relay/-/eslint-plugin-relay-0.0.28.tgz#dd9ba7dc03fd21f3a30e053d21d90e5bf2ecff34"
-  integrity sha512-CvyT/WxEQmcUKE4lVqjxgioTj3zSvHnT9bvR4cISgs9j2z4J5Ojsurjcv/kWe4I6gf6L+lV6zcVuZ2LkiRIO6g==
-  dependencies:
-    graphql "^14.0.0"
-
 eslint-rule-composer@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/eslint-rule-composer/-/eslint-rule-composer-0.3.0.tgz#79320c927b0c5c0d3d3d2b76c8b4a488f25bbaf9"
@@ -3082,10 +3075,10 @@ flat-cache@^1.2.1:
     graceful-fs "^4.1.2"
     write "^0.2.1"
 
-flow-bin@^0.94.0:
-  version "0.94.0"
-  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.94.0.tgz#b5d58fe7559705b73a18229f97edfc3ab6ffffcb"
-  integrity sha512-DYF7r9CJ/AksfmmB4+q+TyLMoeQPRnqtF1Pk7KY3zgfkB/nVuA3nXyzqgsIPIvnMSiFEXQcFK4z+iPxSLckZhQ==
+flow-bin@^0.95.0:
+  version "0.95.1"
+  resolved "https://registry.yarnpkg.com/flow-bin/-/flow-bin-0.95.1.tgz#633113831ccff4b7ee70a2730f63fc43b69ba85f"
+  integrity sha512-06IOC/pqPMNRYtC6AMZEWYR9Fi6UdBC7gImGinPuNUpPZFnP5E9/0cBCl3DWrH4zz/gSM2HdDilU7vPGpYIr2w==
 
 flow-parser@0.*:
   version "0.89.0"
@@ -3319,13 +3312,6 @@ graceful-fs@^4.1.15:
   version "4.1.15"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.1.15.tgz#ffb703e1066e8a0eeaa4c8b80ba9253eeefbfb00"
   integrity sha512-6uHUhOPEBgQ24HM+r6b/QwWfZq+yiFcipKFrOFiBEnWdy5sdzYoi+pJeQaPI5qOLRFqWmAXUPQNsielzdLoecA==
-
-graphql@^14.0.0:
-  version "14.1.1"
-  resolved "https://registry.yarnpkg.com/graphql/-/graphql-14.1.1.tgz#d5d77df4b19ef41538d7215d1e7a28834619fac0"
-  integrity sha512-C5zDzLqvfPAgTtP8AUPIt9keDabrdRAqSWjj2OPRKrKxI9Fb65I36s1uCs1UUBFnSWTdO7hyHi7z1ZbwKMKF6Q==
-  dependencies:
-    iterall "^1.2.2"
 
 "growl@~> 1.10.0":
   version "1.10.5"
@@ -3910,11 +3896,6 @@ istanbul-reports@^2.1.1:
   integrity sha512-FzNahnidyEPBCI0HcufJoSEoKykesRlFcSzQqjH9x0+LC8tnnE/p/90PBLu8iZTxr8yYZNyTtiAujUqyN+CIxw==
   dependencies:
     handlebars "^4.1.0"
-
-iterall@^1.2.2:
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/iterall/-/iterall-1.2.2.tgz#92d70deb8028e0c39ff3164fdbf4d8b088130cd7"
-  integrity sha512-yynBb1g+RFUPY64fTrFv7nsjRrENBQJaX2UL+2Szc9REFrSNm1rpSXHGzhmAy7a9uv3vlvgBlXnf9RqmPH1/DA==
 
 jest-changed-files@^24.5.0:
   version "24.5.0"
