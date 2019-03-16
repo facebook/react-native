@@ -119,8 +119,8 @@ def rn_android_library(name, deps = [], plugins = [], *args, **kwargs):
 
         plugins = list(set(plugins + react_module_plugins))
 
-    is_androidx = kwargs.pop('is_androidx', False)
-    provided_deps = kwargs.pop('provided_deps', [])
+    is_androidx = kwargs.pop("is_androidx", False)
+    provided_deps = kwargs.pop("provided_deps", [])
     appcompat = react_native_dep("third-party/android/support/v7/appcompat-orig:appcompat")
     support_v4 = react_native_dep("third-party/android/support/v4:lib-support-v4")
 
@@ -173,6 +173,8 @@ def rn_genrule(*args, **kwargs):
 
 def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
     vm_args = vm_args or []
+
+    is_androidx = kwargs.pop("is_androidx", False)
 
     extra_vm_args = [
         "-XX:+UseConcMarkSweepGC",  # required by -XX:+CMSClassUnloadingEnabled

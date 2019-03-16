@@ -6,6 +6,10 @@
 package com.facebook.react.uimanager;
 
 import android.content.Context;
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.CollectionItemInfoCompat;
 import android.text.SpannableString;
 import android.text.style.URLSpan;
 import androidx.core.view.AccessibilityDelegateCompat;
