@@ -44,6 +44,7 @@ void UIManagerBinding::startSurface(
   folly::dynamic parameters = folly::dynamic::object();
   parameters["rootTag"] = surfaceId;
   parameters["initialProps"] = initalProps;
+  parameters["fabric"] = true;
 
   auto module = getModule(runtime, "AppRegistry");
   auto method = module.getPropertyAsFunction(runtime, "runApplication");
