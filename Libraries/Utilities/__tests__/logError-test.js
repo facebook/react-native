@@ -13,11 +13,36 @@
 describe('logError', () => {
   const logError = require('logError');
 
-  it('logs messages to the console', () => {
-    console.log = jest.fn();
+  it('logs error messages to the console', () => {
+    console.error.apply = jest.fn();
 
     logError('This is a log message');
 
-    expect(console.log).toHaveBeenCalledWith('This is a log message');
+    expect(console.error.apply).toHaveBeenCalledWith(console, [
+      'This is a log message',
+    ]);
+  });
+
+  it('logs error messages with multiple arguments to the console', () => {
+    console.error.apply = jest.fn();
+
+    const data = 'log';
+    logError('This is a', data, 'message');
+
+    expect(console.error.apply).toHaveBeenCalledWith(console, [
+      'This is a',
+      'log',
+      'message',
+    ]);
+  });
+
+  it('logs errors to the console', () => {
+    console.error = jest.fn();
+
+    logError(new Error('The error message'));
+
+    expect(console.error.mock.calls[0][0]).toContain(
+      'Error: "The error message".  Stack:',
+    );
   });
 });
