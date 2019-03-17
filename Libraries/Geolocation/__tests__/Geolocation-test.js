@@ -58,7 +58,7 @@ describe('Geolocation', () => {
     expect(NativeModules.LocationObserver.stopObserving.mock.calls.length).toBe(1);
   });
 
-  it('should correctly identify if all listeners have been cleared', () => {
+  it('should correctly assess if all listeners have been cleared', () => {
     const watchID = Geolocation.watchPosition(() => {}, () => {});
     Geolocation.watchPosition(() => {}, () => {});
     Geolocation.clearWatch(watchID);
