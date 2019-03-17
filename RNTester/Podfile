@@ -25,6 +25,13 @@ target 'RNTester' do
   pod 'React-RCTVibration', :path => '../Libraries/Vibration'
   pod 'React-RCTWebSocket', :path => '../Libraries/WebSocket'
 
+  # Fabric Pods, uncomment these to enable in RNTester
+  # pod 'React-Fabric', :path => '../ReactCommon'
+  # pod 'React-graphics', :path => '../ReactCommon/fabric/graphics'
+  # pod 'React-jsi/Fabric', :path => '../ReactCommon/jsi'
+  # pod 'React-RCTFabric', :path => '../React'
+  # pod 'Folly/Fabric', :podspec => '../third-party-podspecs/Folly.podspec'
+
   pod 'React-cxxreact', :path => '../ReactCommon/cxxreact'
   pod 'React-jsi', :path => '../ReactCommon/jsi'
   pod 'React-jsiexecutor', :path => '../ReactCommon/jsiexecutor'

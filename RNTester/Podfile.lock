@@ -4,6 +4,11 @@ PODS:
   - Folly (2018.10.22.00):
     - boost-for-react-native
     - DoubleConversion
+    - Folly/Default (= 2018.10.22.00)
+    - glog
+  - Folly/Default (2018.10.22.00):
+    - boost-for-react-native
+    - DoubleConversion
     - glog
   - glog (0.3.5)
   - React (1000.0.0):
@@ -38,6 +43,12 @@ PODS:
     - React-RCTWebSocket (= 1000.0.0)
   - React-fishhook (1000.0.0)
   - React-jsi (1000.0.0):
+    - boost-for-react-native (= 1.63.0)
+    - DoubleConversion
+    - Folly (= 2018.10.22.00)
+    - glog
+    - React-jsi/Default (= 1000.0.0)
+  - React-jsi/Default (1000.0.0):
     - boost-for-react-native (= 1.63.0)
     - DoubleConversion
     - Folly (= 2018.10.22.00)
@@ -170,33 +181,33 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
-  DoubleConversion: 3eb87e5bfd9737e9a8cc698f74ee064d00c8dafc
-  Folly: de497beb10f102453a1afa9edbf8cf8a251890de
-  glog: aefd1eb5dda2ab95ba0938556f34b98e2da3a60d
-  React: 4d01f91757abcfd2adccf80248285957ac1a2de2
-  React-ART: f03123e0f0b9850db4733ad94ded11d29c719dc6
-  React-Core: fcb8a6f34de5a43426efcb9dfda6a434c1b1275d
-  React-cxxreact: 2a2acf4466abf5b794da53bf69e757a885259452
-  React-DevSupport: 140c1ccfa9ccba495977225c117dc78c8858224f
-  React-fishhook: aefe3414f44d4deaa880f0e39dc76644f1072bf7
-  React-jsi: 425cd468e0be54cdc9009a2b4d2c1a4eada83805
-  React-jsiexecutor: 520560a0b08226e4e758645940253e270b4d7d76
-  React-jsinspector: c9020e3a37b7b27125d824b1d02b9be0d1c737ac
-  React-RCTActionSheet: 78b940169b3c12d199dbbd382c5a3d22ec2197e2
-  React-RCTAnimation: da0026d00ed99669b6175a941189539d8f9d52a4
-  React-RCTBlob: c5a2104bd8b8e0462fc35eefa9133dc04ced56dd
-  React-RCTCameraRoll: effa220c8e244af93b44011ab85cab814c469e08
-  React-RCTGeolocation: 3517483e877750bae5a03d9f52e7b0e48c49651e
-  React-RCTImage: ed045a58ebc9c97870a4fe5d066fdf04f247023b
-  React-RCTLinking: e5f174d3f9e6ffe30087b9edc8c9860d62c1413c
-  React-RCTNetwork: 9fbf72be6083a4b5fffe3dc1afad9fa2b70c4f19
-  React-RCTPushNotification: 106e9846882a8dcce372fc90531be996ce0bb29b
-  React-RCTSettings: afd7ae33bacd09b12c8a0d3151069d465344ce24
-  React-RCTText: 03945b44521b34f89f9a728e1c265fa096af9f94
-  React-RCTVibration: ef9e4e077360a599a1b59cee7d18398871d37759
-  React-RCTWebSocket: 510a4eef2c064ef30508aba41628e6d69f4df4c5
-  yoga: c63f2cb4fd93594d29e792c198a8050d5daf9fdf
+  DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
+  Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
+  glog: 1f3da668190260b06b429bb211bfbee5cd790c28
+  React: 113a88ebe41487ae78bde6494495d0e25f9fe2ff
+  React-ART: 28f8815acbbc4816cec14866b59911a83eb780ed
+  React-Core: 9da7fd6dc9e1e773f578cae2a00621a7c4422816
+  React-cxxreact: 7e670bad16eb78fa889573d931c12bb1003a3598
+  React-DevSupport: f34768e3aad3e59ee9800c752a78bc6cb24d0f75
+  React-fishhook: d2a67f0eaeef9fe0dca0526812ca8fcff4b6f17b
+  React-jsi: 74e5e06d56f71aff1cd75c7ca56cf0f27940e792
+  React-jsiexecutor: ee776181a1ba315dbae9500c4dba5cb94ea3c5d2
+  React-jsinspector: ea0a218071a11c3687cef2480580180caa6a64c0
+  React-RCTActionSheet: caf6532394bdbbe0fc0ec2363c84f26bcfcdd36a
+  React-RCTAnimation: b324c6eb699637c735650c6180e13d003eeb0e56
+  React-RCTBlob: 069290c8db758bb1d77523a06d117dd668b6cef3
+  React-RCTCameraRoll: 353af870a0acd5ebb0bcf6a8187ed78d94c4c65e
+  React-RCTGeolocation: 4bbdba9893dc3f22b22553904e54ae46dcedf48b
+  React-RCTImage: 012d845d919177e2726743ad06052dda66592760
+  React-RCTLinking: c6fe7b82bed97ce72203b2ce2f4aac87b1e2647f
+  React-RCTNetwork: 2a2b22a17cd965de53ba21c5ca392d0da84ef322
+  React-RCTPushNotification: 13729b4a2b63b191f42ba7230a69f462f3b5a7f9
+  React-RCTSettings: e36d7f7d566b80d4363176c2f76cc5eccfdd0ae1
+  React-RCTText: 469ec754592c92fc639825e558908c2f0e783e2c
+  React-RCTVibration: ade3c169b54f3bc16c9a9918e17e48ef66aee6ba
+  React-RCTWebSocket: 90b78ed51d53d17db417d3956decba3f7ace58e4
+  yoga: 542cb34fe3bca476487e08eb516dd640ea996a65
 
-PODFILE CHECKSUM: c144025e9b0ade3d8b536a343fee89da69391cdc
+PODFILE CHECKSUM: 74d947ec52f59c3db4f273853e36d504be6e9414
 
-COCOAPODS: 1.6.0
+COCOAPODS: 1.6.1

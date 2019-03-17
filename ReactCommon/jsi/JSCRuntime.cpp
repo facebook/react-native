@@ -150,6 +150,7 @@ class JSCRuntime : public jsi::Runtime {
   bool isHostFunction(const jsi::Function&) const override;
   jsi::Array getPropertyNames(const jsi::Object&) override;
 
+  // TODO: revisit this implementation
   jsi::WeakObject createWeakObject(const jsi::Object&) override;
   jsi::Value lockWeakObject(const jsi::WeakObject&) override;
 
@@ -184,7 +185,11 @@ class JSCRuntime : public jsi::Runtime {
   static JSStringRef stringRef(const jsi::String& str);
   static JSStringRef stringRef(const jsi::PropNameID& sym);
   static JSObjectRef objectRef(const jsi::Object& obj);
-
+    
+#ifdef RN_FABRIC_ENABLED
+  static JSObjectRef objectRef(const jsi::WeakObject& obj);
+#endif
+    
   // Factory methods for creating String/Object
   jsi::String createString(JSStringRef stringRef) const;
   jsi::PropNameID createPropNameID(JSStringRef stringRef);
@@ -819,12 +824,24 @@ jsi::Array JSCRuntime::getPropertyNames(const jsi::Object& obj) {
   return result;
 }
 
-jsi::WeakObject JSCRuntime::createWeakObject(const jsi::Object&) {
+jsi::WeakObject JSCRuntime::createWeakObject(const jsi::Object& obj) {
+#ifdef RN_FABRIC_ENABLED
+  // TODO: revisit this implementation
+  JSObjectRef objRef = objectRef(obj);
+  return make<jsi::WeakObject>(makeObjectValue(objRef));
+#else
   throw std::logic_error("Not implemented");
+#endif
 }
 
-jsi::Value JSCRuntime::lockWeakObject(const jsi::WeakObject&) {
+jsi::Value JSCRuntime::lockWeakObject(const jsi::WeakObject& obj) {
+#ifdef RN_FABRIC_ENABLED
+  // TODO: revisit this implementation
+  JSObjectRef objRef = objectRef(obj);
+  return jsi::Value(createObject(objRef));
+#else
   throw std::logic_error("Not implemented");
+#endif
 }
 
 jsi::Array JSCRuntime::createArray(size_t length) {
@@ -1219,7 +1236,14 @@ JSStringRef JSCRuntime::stringRef(const jsi::PropNameID& sym) {
 JSObjectRef JSCRuntime::objectRef(const jsi::Object& obj) {
   return static_cast<const JSCObjectValue*>(getPointerValue(obj))->obj_;
 }
-
+      
+#ifdef RN_FABRIC_ENABLED
+JSObjectRef JSCRuntime::objectRef(const jsi::WeakObject& obj) {
+  // TODO: revisit this implementation
+  return static_cast<const JSCObjectValue*>(getPointerValue(obj))->obj_;
+}
+#endif
+      
 void JSCRuntime::checkException(JSValueRef exc) {
   if (JSC_UNLIKELY(exc)) {
     throw jsi::JSError(*this, createValue(exc));
