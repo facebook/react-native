@@ -12,7 +12,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.webkit.MimeTypeMap;
 
 import com.facebook.react.bridge.Arguments;
