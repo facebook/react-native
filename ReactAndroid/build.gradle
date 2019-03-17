@@ -324,6 +324,7 @@ dependencies {
     api("com.facebook.fresco:imagepipeline-okhttp3:${FRESCO_VERSION}")
     api("com.facebook.soloader:soloader:${SO_LOADER_VERSION}")
     api("com.google.code.findbugs:jsr305:3.0.2")
+    implementation('org.conscrypt:conscrypt-android:2.0.0')
     api("com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}")
     api("com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}")
     api("com.squareup.okio:okio:1.15.0")
