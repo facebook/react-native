@@ -67,6 +67,19 @@ jest
   .mock('ensureComponentIsNative', () => () => true);
 
 const mockNativeModules = {
+  AccessibilityInfo: {
+    addEventListener: jest.fn(),
+    announceForAccessibility: jest.fn(),
+    fetch: jest.fn(),
+    isBoldTextEnabled: jest.fn(),
+    isGrayscaleEnabled: jest.fn(),
+    isInvertColorsEnabled: jest.fn(),
+    isReduceMotionEnabled: jest.fn(),
+    isReduceTransparencyEnabled: jest.fn(),
+    isScreenReaderEnabled: jest.fn(),
+    removeEventListener: jest.fn(),
+    setAccessibilityFocus: jest.fn(),
+  },
   AlertManager: {
     alertWithArgs: jest.fn(),
   },
