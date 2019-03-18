@@ -176,14 +176,17 @@ public class ReactContext extends ContextWrapper {
               new Runnable() {
                 @Override
                 public void run() {
-                  if (!mLifecycleEventListeners.contains(listener)) {
-                    return;
-                  }
-                  try {
-                    listener.onHostResume();
-                  } catch (RuntimeException e) {
-                    handleException(e);
-                  }
+
+                  mLifecycleEventListeners.doIfContains(listener, new Runnable() {
+                    @Override
+                    public void run() {
+                      try {
+                        listener.onHostResume();
+                      } catch (RuntimeException e) {
+                        handleException(e);
+                      }
+                    }
+                  });
                 }
               });
           break;
