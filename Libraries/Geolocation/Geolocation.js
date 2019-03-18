@@ -57,7 +57,7 @@ const Geolocation = {
   },
 
   /*
-   * Requests suitable Location permission based on the key configured on pList.
+   * Requests Location permissions based on the key configured on pList.
    *
    * See https://facebook.github.io/react-native/docs/geolocation.html#requestauthorization
    */
