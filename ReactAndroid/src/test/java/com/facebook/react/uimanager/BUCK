@@ -11,14 +11,15 @@ rn_robolectric_test(
     ],
     # Please change the contact to the oncall of your team
     contacts = ["oncall+fbandroid_sheriff@xmail.facebook.com"],
-    is_androidx = True,
     visibility = [
         "PUBLIC",
+    ],
+    provided_deps = [
+        react_native_dep("third-party/android/androidx:support-v4"),
     ],
     deps = [
         YOGA_TARGET,
         react_native_dep("libraries/fbcore/src/test/java/com/facebook/powermock:powermock"),
-        react_native_dep("third-party/android/support/v4:lib-support-v4"),
         react_native_dep("third-party/java/fest:fest"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_dep("third-party/java/junit:junit"),

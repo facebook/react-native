@@ -252,6 +252,17 @@ fb_native.android_library(
 )
 
 fb_native.android_library(
+    name = "media",
+    visibility = ["PUBLIC"],
+    exported_deps = [
+        ":media-binary",
+        ":annotation",
+        ":core",
+        ":versionedparcelable",
+    ]
+)
+
+fb_native.android_library(
     name = "print",
     visibility = ["PUBLIC"],
     exported_deps = [
@@ -268,6 +279,19 @@ fb_native.android_library(
         ":annotation",
         ":core",
         ":customview",
+    ]
+)
+
+fb_native.android_library(
+    name = "support-v4",
+    visibility = ["PUBLIC"],
+    exported_deps = [
+        ":annotation",
+        ":core",
+        ":fragment",
+        ":legacy-support-core-ui",
+        ":legacy-support-core-utils",
+        ":media",
     ]
 )
 
@@ -432,6 +456,11 @@ fb_native.android_prebuilt_aar(
 fb_native.android_prebuilt_aar(
     name = "localbroadcastmanager-binary",
     aar = ":localbroadcastmanager-binary-aar",
+)
+
+fb_native.android_prebuilt_aar(
+    name = "media-binary",
+    aar = ":media-binary-aar",
 )
 
 fb_native.android_prebuilt_aar(
@@ -608,6 +637,12 @@ fb_native.remote_file(
     name = "localbroadcastmanager-binary-aar",
     sha1 = "2734f31c8321e83ce6b60570d14777fc33cc2ece",
     url = "mvn:androidx.localbroadcastmanager:localbroadcastmanager:aar:1.0.0",
+)
+
+fb_native.remote_file(
+    name = "media-binary-aar",
+    sha1 = "bd9a10584f1e47a78fb269f1c29763c8f4ec891b",
+    url = "mvn:androidx.media:media:aar:1.0.1",
 )
 
 fb_native.remote_file(
