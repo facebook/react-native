@@ -67,30 +67,11 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
   }
 
   private class FragmentManagerHelper {
-<<<<<<< HEAD
     private final @Nonnull FragmentManager mFragmentManager;
 
     private @Nullable Object mFragmentToShow;
 
     public FragmentManagerHelper(@Nonnull FragmentManager fragmentManager) {
-=======
-
-    // Exactly one of the two is null
-    private final @Nullable android.app.FragmentManager mFragmentManager;
-    private final @Nullable androidx.fragment.app.FragmentManager mSupportFragmentManager;
-
-    private @Nullable Object mFragmentToShow;
-
-    private boolean isUsingSupportLibrary() {
-      return mSupportFragmentManager != null;
-    }
-
-    public FragmentManagerHelper(androidx.fragment.app.FragmentManager supportFragmentManager) {
-      mFragmentManager = null;
-      mSupportFragmentManager = supportFragmentManager;
-    }
-    public FragmentManagerHelper(android.app.FragmentManager fragmentManager) {
->>>>>>> master
       mFragmentManager = fragmentManager;
     }
 
