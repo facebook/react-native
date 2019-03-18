@@ -19,6 +19,7 @@ typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
   // Operations called before views have been updated.
   NSMutableArray<AnimatedOperation> *_preOperations;
   NSMutableDictionary<NSNumber *, NSNumber *> *_animIdIsManagedByFabric;
+  NSMutableDictionary<NSNumber *, NSNumber *> *_animatedNodeIsManagedByFabric;
 }
 
 RCT_EXPORT_MODULE();
@@ -87,7 +88,7 @@ RCT_EXPORT_METHOD(startAnimatingNode:(nonnull NSNumber *)animationId
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
     [nodesManager startAnimatingNode:animationId nodeTag:nodeTag config:config endCallback:callBack];
   }];
-  if (RCTUIManagerTypeForTagIsFabric(nodeTag)) {
+  if ([_animatedNodeIsManagedByFabric[nodeTag] boolValue]) {
     _animIdIsManagedByFabric[animationId] = @YES;
     [self flushOperationQueues];
   }
@@ -137,6 +138,9 @@ RCT_EXPORT_METHOD(connectAnimatedNodeToView:(nonnull NSNumber *)nodeTag
                   viewTag:(nonnull NSNumber *)viewTag)
 {
   NSString *viewName = [self.bridge.uiManager viewNameForReactTag:viewTag];
+  if (RCTUIManagerTypeForTagIsFabric(nodeTag)) {
+    _animatedNodeIsManagedByFabric[nodeTag] = @YES;
+  }
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
     [nodesManager connectAnimatedNodeToView:nodeTag viewTag:viewTag viewName:viewName];
   }];
