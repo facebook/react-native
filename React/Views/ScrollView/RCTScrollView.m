@@ -868,6 +868,11 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
 
     // Pick snap point based on direction and proximity
     CGFloat fractionalIndex = (targetContentOffsetAlongAxis + alignmentOffset) / snapToIntervalF;
+    if (self.disableIntervalMomentum) {
+      // Use current scroll offset to determine the next index to snap to
+      fractionalIndex = (scrollView.contentOffset.x + alignmentOffset) / snapToIntervalF;
+    }
+
     NSInteger snapIndex =
       velocityAlongAxis > 0.0 ?
         ceil(fractionalIndex) :
