@@ -2,7 +2,7 @@ package com.facebook.react.tests.core;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.runner.AndroidJUnit4;
 import com.facebook.react.bridge.UnexpectedNativeTypeException;
 import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;

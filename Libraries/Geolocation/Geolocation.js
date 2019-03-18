@@ -57,7 +57,7 @@ const Geolocation = {
   },
 
   /*
-   * Request suitable Location permission based on the key configured on pList.
+   * Requests Location permissions based on the key configured on pList.
    *
    * See https://facebook.github.io/react-native/docs/geolocation.html#requestauthorization
    */
@@ -126,6 +126,11 @@ const Geolocation = {
     return watchID;
   },
 
+  /*
+   * Unsubscribes the watcher with the given watchID.
+   *
+   * See https://facebook.github.io/react-native/docs/geolocation.html#clearwatch
+   */
   clearWatch: function(watchID: number) {
     const sub = subscriptions[watchID];
     if (!sub) {
@@ -150,6 +155,11 @@ const Geolocation = {
     }
   },
 
+  /*
+   * Stops observing for device location changes and removes all registered listeners.
+   *
+   * See https://facebook.github.io/react-native/docs/geolocation.html#stopobserving
+   */
   stopObserving: function() {
     if (updatesEnabled) {
       RCTLocationObserver.stopObserving();

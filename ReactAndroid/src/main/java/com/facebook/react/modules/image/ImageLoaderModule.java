@@ -34,6 +34,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.views.imagehelper.ImageSource;
 
 @ReactModule(name = ImageLoaderModule.NAME)
 public class ImageLoaderModule extends ReactContextBaseJavaModule implements
@@ -79,8 +80,8 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule implements
       return;
     }
 
-    Uri uri = Uri.parse(uriString);
-    ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri).build();
+    ImageSource source = new ImageSource(getReactApplicationContext(), uriString);
+    ImageRequest request = ImageRequestBuilder.newBuilderWithSource(source.getUri()).build();
 
     DataSource<CloseableReference<CloseableImage>> dataSource =
       Fresco.getImagePipeline().fetchDecodedImage(request, mCallerContext);
@@ -139,8 +140,8 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule implements
       return;
     }
 
-    Uri uri = Uri.parse(uriString);
-    ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder.newBuilderWithSource(uri);
+    ImageSource source = new ImageSource(getReactApplicationContext(), uriString);
+    ImageRequestBuilder imageRequestBuilder = ImageRequestBuilder.newBuilderWithSource(source.getUri());
     ImageRequest request = ReactNetworkImageRequest.fromBuilderWithHeaders(imageRequestBuilder, headers);
 
     DataSource<CloseableReference<CloseableImage>> dataSource =

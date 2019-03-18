@@ -72,6 +72,15 @@ class Linking extends NativeEventEmitter {
   }
 
   /**
+   * Open app settings.
+   *
+   * See https://facebook.github.io/react-native/docs/linking.html#opensettings
+   */
+  openSettings(): Promise<any> {
+    return LinkingManager.openSettings();
+  }
+
+  /**
    * If the app launch was triggered by an app link,
    * it will give the link url, otherwise it will give `null`
    *

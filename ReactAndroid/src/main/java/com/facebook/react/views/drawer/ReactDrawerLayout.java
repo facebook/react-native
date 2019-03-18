@@ -7,7 +7,7 @@
 
 package com.facebook.react.views.drawer;
 
-import android.support.v4.widget.DrawerLayout;
+import androidx.drawerlayout.widget.DrawerLayout;
 import android.view.Gravity;
 import android.util.Log;
 import android.view.MotionEvent;

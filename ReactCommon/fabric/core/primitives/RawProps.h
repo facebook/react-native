@@ -75,7 +75,7 @@ class RawProps {
 
   /*
    * Returns a const unowning pointer to `RawValue` of a prop with a given name.
-   * Returns `nullptr`, it a prop with the given name does not exist.
+   * Returns `nullptr` if a prop with the given name does not exist.
    */
   const RawValue *at(const std::string &name) const noexcept {
     auto iterator = map_.find(name);

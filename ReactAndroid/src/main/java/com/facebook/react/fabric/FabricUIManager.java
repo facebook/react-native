@@ -15,9 +15,9 @@ import static com.facebook.react.uimanager.common.UIManagerType.FABRIC;
 
 import android.annotation.SuppressLint;
 import android.os.SystemClock;
-import android.support.annotation.GuardedBy;
-import android.support.annotation.Nullable;
-import android.support.annotation.UiThread;
+import androidx.annotation.GuardedBy;
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import android.view.View;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.ThreadConfined;

@@ -18,9 +18,24 @@
 #import <React/RCTPushNotificationManager.h>
 #endif
 
-@interface AppDelegate() <RCTBridgeDelegate>
+#ifdef RN_FABRIC_ENABLED
+#import <React/RCTSurfacePresenter.h>
+#import <React/RCTFabricSurfaceHostingProxyRootView.h>
 
+@interface AppDelegate() <RCTBridgeDelegate>{
+  RCTSurfacePresenter *_surfacePresenter;
+}
 @end
+
+// FIXME: remove when resolved https://github.com/facebook/react-native/issues/23910
+@interface RCTSurfacePresenter ()
+-(void)_startAllSurfaces;
+@end
+
+#else
+@interface AppDelegate() <RCTBridgeDelegate>
+@end
+#endif
 
 @implementation AppDelegate
 
@@ -28,18 +43,29 @@
 {
   _bridge = [[RCTBridge alloc] initWithDelegate:self
                                   launchOptions:launchOptions];
-
+  
   // Appetizer.io params check
-  NSDictionary *initProps = nil;
+  NSDictionary *initProps = @{};
   NSString *_routeUri = [[NSUserDefaults standardUserDefaults] stringForKey:@"route"];
   if (_routeUri) {
     initProps = @{@"exampleFromAppetizeParams": [NSString stringWithFormat:@"rntester://example/%@Example", _routeUri]};
   }
+  
+#ifdef RN_FABRIC_ENABLED
+  // FIXME: remove when resolved https://github.com/facebook/react-native/issues/23910
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(handleJavaScriptDidLoadNotification:)
+                                               name:RCTJavaScriptDidLoadNotification
+                                             object:_bridge];
+  
+  _surfacePresenter = [[RCTSurfacePresenter alloc] initWithBridge:_bridge config:nil];
+  _bridge.surfacePresenter = _surfacePresenter;
 
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:_bridge
-                                                   moduleName:@"RNTesterApp"
-                                            initialProperties:initProps];
-
+  UIView *rootView = [[RCTFabricSurfaceHostingProxyRootView alloc] initWithBridge:_bridge moduleName:@"RNTesterApp" initialProperties:initProps];
+#else
+  UIView *rootView = [[RCTRootView alloc] initWithBridge:_bridge moduleName:@"RNTesterApp" initialProperties:initProps];
+#endif
+  
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [UIViewController new];
   rootViewController.view = rootView;
@@ -47,6 +73,15 @@
   [self.window makeKeyAndVisible];
   return YES;
 }
+
+#ifdef RN_FABRIC_ENABLED
+// FIXME: remove when resolved https://github.com/facebook/react-native/issues/23910
+- (void)handleJavaScriptDidLoadNotification:(__unused NSNotification*)notification {
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self->_surfacePresenter _startAllSurfaces];
+  });
+}
+#endif
 
 - (NSURL *)sourceURLForBridge:(__unused RCTBridge *)bridge
 {

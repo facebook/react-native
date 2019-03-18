@@ -17,6 +17,7 @@
 #include <react/core/Sealable.h>
 #include <react/core/ShadowNode.h>
 #include <react/debug/DebugStringConvertible.h>
+#include <react/graphics/Geometry.h>
 
 namespace facebook {
 namespace react {
@@ -62,6 +63,16 @@ class YogaLayoutableShadowNode : public LayoutableShadowNode,
    * Sets Yoga styles based on given `YogaStylableProps`.
    */
   void setProps(const YogaStylableProps &props);
+
+  /**
+   * Sets layoutable size of node.
+   */
+  void setSize(Size size) const;
+
+  /**
+   * Sets position type of Yoga node (relative, absolute).
+   */
+  void setPositionType(YGPositionType positionType) const;
 
 #pragma mark - LayoutableShadowNode
 
