@@ -107,7 +107,7 @@ try {
       tryExecNTimes(
         () =>
           exec(
-            'yarn add --dev appium@1.5.1 mocha@2.4.5 wd@0.3.11 colors@1.0.3 pretty-data2@0.40.1',
+            'yarn add --dev appium@1.11.1 mocha@2.4.5 wd@1.11.1 colors@1.0.3 pretty-data2@0.40.1',
             {silent: true},
           ).code,
         numberOfRetries,
@@ -123,17 +123,25 @@ try {
     echo('Downloading Maven deps');
     exec('./gradlew :app:copyDownloadableDepsToLibs');
     cd('..');
-    exec(
-      'keytool -genkey -v -keystore android/keystores/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"',
-    );
+
+    exec('rm android/app/debug.keystore');
+    if (
+      exec(
+        'keytool -genkey -v -keystore android/app/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"',
+      ).code
+    ) {
+      echo('Key could not be generated');
+      exitCode = 1;
+      throw Error(exitCode);
+    }
 
     echo(`Starting appium server, ${APPIUM_PID}`);
     const appiumProcess = spawn('node', ['./node_modules/.bin/appium']);
     APPIUM_PID = appiumProcess.pid;
 
     echo('Building the app');
-    if (exec('buck build android/app').code) {
-      echo('could not execute Buck build, is it installed and in PATH?');
+    if (exec('react-native run-android').code) {
+      echo('could not execute react-native run-android');
       exitCode = 1;
       throw Error(exitCode);
     }
