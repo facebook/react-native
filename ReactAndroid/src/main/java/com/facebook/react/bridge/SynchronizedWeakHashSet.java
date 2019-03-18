@@ -24,9 +24,15 @@ public class SynchronizedWeakHashSet<T> {
   private Queue<Pair<T, Command>> mPendingOperations = new ArrayDeque<>();
   private boolean mIterating;
 
-  public boolean contains(T item) {
+  public void doIfContains(T item, Runnable runnable) {
     synchronized (mMap) {
-      return mMap.containsKey(item);
+      if (mIterating) {
+        mPendingOperations.add(new Pair<>(item, Command.newDoIfContains(runnable)));
+      } else {
+        if (mMap.containsKey(item)) {
+          runnable.run();
+        }
+      }
     }
   }
 
@@ -61,12 +67,18 @@ public class SynchronizedWeakHashSet<T> {
 
       while (!mPendingOperations.isEmpty()) {
         Pair<T, Command> pair = mPendingOperations.poll();
-        switch (pair.second) {
+        Command command = pair.second;
+        switch (command.getType()) {
           case ADD:
             mMap.put(pair.first, null);
             break;
           case REMOVE:
             mMap.remove(pair.first);
+            break;
+          case DO_IF_CONTAINS:
+            if (mMap.containsKey(pair.first)) {
+              command.execute();
+            }
             break;
             default:
               throw new AssertionException("Unsupported command" + pair.second);
@@ -79,8 +91,40 @@ public class SynchronizedWeakHashSet<T> {
     void iterate(T item);
   }
 
-  private enum Command {
+  private enum CommandType {
     ADD,
-    REMOVE
+    REMOVE,
+    DO_IF_CONTAINS
+  }
+
+  private static class Command {
+    public static final Command ADD = new Command(CommandType.ADD);
+    public static final Command REMOVE = new Command(CommandType.REMOVE);
+
+    private CommandType mType;
+    private Runnable mRunnable;
+
+    public static Command newDoIfContains(Runnable runnable) {
+      return new Command(CommandType.DO_IF_CONTAINS, runnable);
+    }
+
+    private Command(CommandType type) {
+      this(type, null);
+    }
+
+    private Command(CommandType type, Runnable runnable) {
+      mType = type;
+      mRunnable = runnable;
+    }
+
+    public CommandType getType() {
+      return mType;
+    }
+
+    public void execute() {
+      if (mRunnable != null) {
+        mRunnable.run();
+      }
+    }
   }
 }
