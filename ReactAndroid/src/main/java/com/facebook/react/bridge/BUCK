@@ -19,6 +19,7 @@ rn_android_library(
         ["**/*.java"],
         exclude = INTERFACES,
     ),
+    is_androidx = True,
     proguard_config = "reactnative.pro",
     provided_deps = [
         react_native_dep("third-party/android/support/v4:lib-support-v4"),
@@ -54,6 +55,7 @@ rn_android_library(
 rn_android_library(
     name = "interfaces",
     srcs = glob(INTERFACES),
+    is_androidx = True,
     proguard_config = "reactnative.pro",
     provided_deps = [
         react_native_dep("third-party/android/support/v4:lib-support-v4"),

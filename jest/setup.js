@@ -67,6 +67,19 @@ jest
   .mock('ensureComponentIsNative', () => () => true);
 
 const mockNativeModules = {
+  AccessibilityInfo: {
+    addEventListener: jest.fn(),
+    announceForAccessibility: jest.fn(),
+    fetch: jest.fn(),
+    isBoldTextEnabled: jest.fn(),
+    isGrayscaleEnabled: jest.fn(),
+    isInvertColorsEnabled: jest.fn(),
+    isReduceMotionEnabled: jest.fn(),
+    isReduceTransparencyEnabled: jest.fn(),
+    isScreenReaderEnabled: jest.fn(),
+    removeEventListener: jest.fn(),
+    setAccessibilityFocus: jest.fn(),
+  },
   AlertManager: {
     alertWithArgs: jest.fn(),
   },
@@ -152,13 +165,18 @@ const mockNativeModules = {
   Linking: {
     openURL: jest.fn(),
     canOpenURL: jest.fn(() => Promise.resolve(true)),
+    openSettings: jest.fn(),
     addEventListener: jest.fn(),
     getInitialURL: jest.fn(() => Promise.resolve()),
     removeEventListener: jest.fn(),
     sendIntent: jest.fn(),
   },
   LocationObserver: {
+    addListener: jest.fn(),
     getCurrentPosition: jest.fn(),
+    removeListeners: jest.fn(),
+    requestAuthorization: jest.fn(),
+    setConfiguration: jest.fn(),
     startObserving: jest.fn(),
     stopObserving: jest.fn(),
   },

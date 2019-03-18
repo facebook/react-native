@@ -8,7 +8,7 @@
 package com.facebook.react.devsupport;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.text.SpannedString;
 
 import com.facebook.react.devsupport.interfaces.StackFrame;
