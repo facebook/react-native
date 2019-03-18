@@ -22,7 +22,7 @@ describe('mergeIntoFast', () => {
     expect(a).toEqual({fontScale: 2, height: 1334, scale: 2, width: 750});
   });
 
-  it('should give the second object predence if there are duplicate keys', () => {
+  it('should use the values of the second object if there are duplicate keys', () => {
     const a = {fontScale: 2};
     const b = {fontScale: 3};
 
