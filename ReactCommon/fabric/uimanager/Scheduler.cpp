@@ -5,6 +5,7 @@
 
 #include "Scheduler.h"
 
+#include <glog/logging.h>
 #include <jsi/jsi.h>
 
 #include <react/core/LayoutContext.h>
@@ -45,11 +46,24 @@ Scheduler::Scheduler(
     uiManagerBinding->dispatchEvent(runtime, eventTarget, type, payloadFactory);
   };
 
+  auto statePipe = [uiManager = &uiManagerRef](
+                       const StateData::Shared &data,
+                       const StateTarget &stateTarget) {
+    uiManager->updateState(
+        stateTarget.getShadowNode().shared_from_this(), data);
+  };
+
   auto eventDispatcher = std::make_shared<EventDispatcher>(
-      eventPipe, synchronousEventBeatFactory, asynchronousEventBeatFactory);
+      eventPipe,
+      statePipe,
+      synchronousEventBeatFactory,
+      asynchronousEventBeatFactory);
 
   componentDescriptorRegistry_ =
       buildRegistryFunction(eventDispatcher, contextContainer);
+
+  rootComponentDescriptor_ =
+      std::make_unique<const RootComponentDescriptor>(eventDispatcher);
 
   uiManagerRef.setDelegate(this);
   uiManagerRef.setShadowTreeRegistry(&shadowTreeRegistry_);
@@ -72,8 +86,8 @@ void Scheduler::startSurface(
     const LayoutContext &layoutContext) const {
   SystraceSection s("Scheduler::startSurface");
 
-  auto shadowTree =
-      std::make_unique<ShadowTree>(surfaceId, layoutConstraints, layoutContext);
+  auto shadowTree = std::make_unique<ShadowTree>(
+      surfaceId, layoutConstraints, layoutContext, *rootComponentDescriptor_);
   shadowTree->setDelegate(this);
 
   shadowTreeRegistry_.add(std::move(shadowTree));
@@ -110,9 +124,16 @@ void Scheduler::renderTemplateToSurface(
           [&](const SharedRootShadowNode &oldRootShadowNode) {
             return std::make_shared<RootShadowNode>(
                 *oldRootShadowNode,
-                ShadowNodeFragment{.children =
-                                       std::make_shared<SharedShadowNodeList>(
-                                           SharedShadowNodeList{tree})});
+                ShadowNodeFragment{
+                    /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
+                    /* .rootTag = */ ShadowNodeFragment::surfaceIdPlaceholder(),
+                    /* .props = */ ShadowNodeFragment::propsPlaceholder(),
+                    /* .eventEmitter = */
+                    ShadowNodeFragment::eventEmitterPlaceholder(),
+                    /* .children = */
+                    std::make_shared<SharedShadowNodeList>(
+                        SharedShadowNodeList{tree}),
+                });
           },
           commitStartTime);
     });
@@ -134,8 +155,15 @@ void Scheduler::stopSurface(SurfaceId surfaceId) const {
               return std::make_shared<RootShadowNode>(
                   *oldRootShadowNode,
                   ShadowNodeFragment{
-                      .children =
-                          ShadowNode::emptySharedShadowNodeSharedList()});
+                      /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
+                      /* .rootTag = */
+                      ShadowNodeFragment::surfaceIdPlaceholder(),
+                      /* .props = */ ShadowNodeFragment::propsPlaceholder(),
+                      /* .eventEmitter = */
+                      ShadowNodeFragment::eventEmitterPlaceholder(),
+                      /* .children = */
+                      ShadowNode::emptySharedShadowNodeSharedList(),
+                  });
             },
             commitStartTime);
       });
@@ -190,6 +218,11 @@ void Scheduler::constraintSurfaceLayout(
   });
 }
 
+const ComponentDescriptor &Scheduler::getComponentDescriptor(
+    ComponentHandle handle) {
+  return componentDescriptorRegistry_->at(handle);
+}
+
 #pragma mark - Delegate
 
 void Scheduler::setDelegate(SchedulerDelegate *delegate) {
@@ -228,7 +261,14 @@ void Scheduler::uiManagerDidFinishTransaction(
         [&](const SharedRootShadowNode &oldRootShadowNode) {
           return std::make_shared<RootShadowNode>(
               *oldRootShadowNode,
-              ShadowNodeFragment{.children = rootChildNodes});
+              ShadowNodeFragment{
+                  /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
+                  /* .rootTag = */ ShadowNodeFragment::surfaceIdPlaceholder(),
+                  /* .props = */ ShadowNodeFragment::propsPlaceholder(),
+                  /* .eventEmitter = */
+                  ShadowNodeFragment::eventEmitterPlaceholder(),
+                  /* .children = */ rootChildNodes,
+              });
         },
         startCommitTime);
   });
@@ -239,15 +279,9 @@ void Scheduler::uiManagerDidCreateShadowNode(
   SystraceSection s("Scheduler::uiManagerDidCreateShadowNode");
 
   if (delegate_) {
-    auto layoutableShadowNode =
-        dynamic_cast<const LayoutableShadowNode *>(shadowNode.get());
-    auto isLayoutable = layoutableShadowNode != nullptr;
-
+    auto shadowView = ShadowView(*shadowNode);
     delegate_->schedulerDidRequestPreliminaryViewAllocation(
-        shadowNode->getRootTag(),
-        shadowNode->getComponentName(),
-        isLayoutable,
-        shadowNode->getComponentHandle());
+        shadowNode->getRootTag(), shadowView);
   }
 }
 

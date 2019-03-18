@@ -34,10 +34,12 @@ public interface ReactPackage {
    * @param reactContext react application context that can be used to create modules
    * @return list of native modules to register with the newly created catalyst instance
    */
+  @Nonnull
   List<NativeModule> createNativeModules(@Nonnull ReactApplicationContext reactContext);
 
   /**
    * @return a list of view managers that should be registered with {@link UIManagerModule}
    */
+  @Nonnull
   List<ViewManager> createViewManagers(@Nonnull ReactApplicationContext reactContext);
 }

@@ -64,7 +64,7 @@ type PropTypeTypeAnnotation =
     |}>
   | $ReadOnly<{|
       type: 'NativePrimitiveTypeAnnotation',
-      name: 'ColorPrimitive',
+      name: 'ColorPrimitive' | 'ImageSourcePrimitive',
     |}>;
 
 export type PropTypeShape = $ReadOnly<{|
@@ -87,6 +87,7 @@ export type EventTypeShape = $ReadOnly<{|
 |}>;
 
 export type ComponentShape = $ReadOnly<{|
+  interfaceOnly?: boolean,
   extendsProps: $ReadOnlyArray<{|
     type: 'ReactNativeBuiltInType',
     knownTypeName: 'ReactNativeCoreViewProps',

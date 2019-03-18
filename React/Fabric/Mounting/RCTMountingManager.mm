@@ -25,6 +25,7 @@
 #import "RCTUpdateLayoutMetricsMountItem.h"
 #import "RCTUpdateLocalDataMountItem.h"
 #import "RCTUpdatePropsMountItem.h"
+#import "RCTUpdateStateMountItem.h"
 
 using namespace facebook::react;
 
@@ -87,6 +88,13 @@ using namespace facebook::react;
                                                               newLocalData:mutation.newChildShadowView.localData]];
           }
 
+          // State
+          if (mutation.newChildShadowView.state) {
+            [mountItems addObject:[[RCTUpdateStateMountItem alloc] initWithTag:mutation.newChildShadowView.tag
+                                                                      oldState:nullptr
+                                                                      newState:mutation.newChildShadowView.state]];
+          }
+
           // Layout
           if (mutation.newChildShadowView.layoutMetrics != EmptyLayoutMetrics) {
             [mountItems addObject:[[RCTUpdateLayoutMetricsMountItem alloc]
@@ -142,6 +150,14 @@ using namespace facebook::react;
             [mountItems addObject:mountItem];
           }
 
+          // State
+          if (oldChildShadowView.state != newChildShadowView.state) {
+            RCTUpdateStateMountItem *mountItem = [[RCTUpdateStateMountItem alloc] initWithTag:newChildShadowView.tag
+                                                                                     oldState:oldChildShadowView.state
+                                                                                     newState:newChildShadowView.state];
+            [mountItems addObject:mountItem];
+          }
+
           // Layout
           if (oldChildShadowView.layoutMetrics != newChildShadowView.layoutMetrics) {
             RCTUpdateLayoutMetricsMountItem *mountItem =
@@ -174,6 +190,17 @@ using namespace facebook::react;
   }
 
   [self.delegate mountingManager:self didMountComponentsWithRootTag:rootTag];
+}
+
+- (void)synchronouslyUpdateViewOnUIThread:(ReactTag)reactTag
+                                 oldProps:(SharedProps)oldProps
+                                 newProps:(SharedProps)newProps
+{
+  RCTUpdatePropsMountItem *mountItem = [[RCTUpdatePropsMountItem alloc] initWithTag:reactTag
+                                                                           oldProps:oldProps
+                                                                           newProps:newProps];
+  RCTAssertMainQueue();
+  [mountItem executeWithRegistry:self->_componentViewRegistry];
 }
 
 - (void)optimisticallyCreateComponentViewWithComponentHandle:(ComponentHandle)componentHandle

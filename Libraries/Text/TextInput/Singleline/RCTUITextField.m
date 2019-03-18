@@ -11,11 +11,13 @@
 #import <React/UIView+React.h>
 
 #import "RCTBackedTextInputDelegateAdapter.h"
+#import "RCTTextAttributes.h"
 
 @implementation RCTUITextField {
   RCTBackedTextFieldDelegateAdapter *_textInputDelegateAdapter;
-  NSMutableAttributedString *_attributesHolder;
 }
+
+@synthesize reactTextAttributes = _reactTextAttributes;
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -26,7 +28,6 @@
                                                object:self];
 
     _textInputDelegateAdapter = [[RCTBackedTextFieldDelegateAdapter alloc] initWithTextField:self];
-    _attributesHolder = [[NSMutableAttributedString alloc] init];
   }
 
   return self;
@@ -62,19 +63,29 @@
   [self _updatePlaceholder];
 }
 
+- (void)setReactTextAttributes:(RCTTextAttributes *)reactTextAttributes
+{
+  if ([reactTextAttributes isEqual:_reactTextAttributes]) {
+    return;
+  }
+  self.defaultTextAttributes = reactTextAttributes.effectiveTextAttributes;
+  _reactTextAttributes = reactTextAttributes;
+  [self _updatePlaceholder];
+}
+
+- (RCTTextAttributes *)reactTextAttributes
+{
+  return _reactTextAttributes;
+}
+
 - (void)_updatePlaceholder
 {
   if (self.placeholder == nil) {
     return;
   }
 
-  NSMutableDictionary *attributes = [NSMutableDictionary new];
-  if (_placeholderColor) {
-    [attributes setObject:_placeholderColor forKey:NSForegroundColorAttributeName];
-  }
-
   self.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.placeholder
-                                                               attributes:attributes];
+                                                               attributes:[self placeholderEffectiveTextAttributes]];
 }
 
 - (BOOL)isEditable
@@ -95,6 +106,28 @@
 - (BOOL)scrollEnabled
 {
   return NO;
+}
+
+#pragma mark - Placeholder
+
+- (NSDictionary<NSAttributedStringKey, id> *)placeholderEffectiveTextAttributes
+{
+  NSMutableDictionary<NSAttributedStringKey, id> *effectiveTextAttributes = [NSMutableDictionary dictionary];
+  
+  if (_placeholderColor) {
+    effectiveTextAttributes[NSForegroundColorAttributeName] = _placeholderColor;
+  }
+  // Kerning
+  if (!isnan(_reactTextAttributes.letterSpacing)) {
+    effectiveTextAttributes[NSKernAttributeName] = @(_reactTextAttributes.letterSpacing);
+  }
+  
+  NSParagraphStyle *paragraphStyle = [_reactTextAttributes effectiveParagraphStyle];
+  if (paragraphStyle) {
+    effectiveTextAttributes[NSParagraphStyleAttributeName] = paragraphStyle;
+  }
+  
+  return [effectiveTextAttributes copy];
 }
 
 #pragma mark - Context Menu
@@ -119,48 +152,6 @@
   return [super caretRectForPosition:position];
 }
 
-#pragma mark - Fix for CJK Languages
-
-/* 
- * The workaround to fix inputting complex locales (like CJK languages).
- * When we use `setAttrbutedText:` while user is inputting text in a complex
- * locale (like Chinese, Japanese or Korean), some internal state breaks and
- * input stops working.
- *
- * To workaround that, we don't skip underlying attributedString in the text
- * field if only attributes were changed. We keep track of these attributes in
- * a local variable.
- *
- * There are two methods that are altered by this workaround:
- *
- * (1) `-setAttributedText:` 
- *     Applies the attributed string change to a local variable `_attributesHolder` instead of calling `-[super setAttributedText:]`.
- *     If new attributed text differs from the existing one only in attributes,
- *     skips `-[super setAttributedText:`] completely.
- *
- * (2) `-attributedText` 
- *     Return `_attributesHolder` context.
- *     Updates `_atributesHolder` before returning if the underlying `super.attributedText.string` was changed.
- *
- */
-- (void)setAttributedText:(NSAttributedString *)attributedText
-{
-  BOOL textWasChanged = ![_attributesHolder.string isEqualToString:attributedText.string];
-  [_attributesHolder setAttributedString:attributedText];
-
-  if (textWasChanged) {
-    [super setAttributedText:attributedText];
-  }
-}
-
-- (NSAttributedString *)attributedText
-{
-  if (![super.attributedText.string isEqualToString:_attributesHolder.string]) {
-    [_attributesHolder setAttributedString:super.attributedText];
-  }
-
-  return _attributesHolder;
-}
 
 #pragma mark - Positioning Overrides
 
@@ -205,7 +196,7 @@
 {
   // Note: `placeholder` defines intrinsic size for `<TextInput>`.
   NSString *text = self.placeholder ?: @"";
-  CGSize size = [text sizeWithAttributes:@{NSFontAttributeName: self.font}];
+  CGSize size = [text sizeWithAttributes:[self placeholderEffectiveTextAttributes]];
   size = CGSizeMake(RCTCeilPixelValue(size.width), RCTCeilPixelValue(size.height));
   size.width += _textContainerInset.left + _textContainerInset.right;
   size.height += _textContainerInset.top + _textContainerInset.bottom;

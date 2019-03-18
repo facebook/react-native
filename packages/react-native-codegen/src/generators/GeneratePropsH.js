@@ -27,6 +27,7 @@ const template = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+#pragma once
 
 ::_IMPORTS_::
 
@@ -106,6 +107,8 @@ function getNativeTypeFromAnnotation(componentName: string, prop): string {
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':
           return 'SharedColor';
+        case 'ImageSourcePrimitive':
+          return 'ImageSource';
         default:
           (typeAnnotation.name: empty);
           throw new Error('Receieved unknown NativePrimitiveTypeAnnotation');
@@ -136,14 +139,16 @@ function convertDefaultTypeToString(componentName: string, prop): string {
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':
           return '';
+        case 'ImageSourcePrimitive':
+          return '';
         default:
           (typeAnnotation.name: empty);
           throw new Error('Receieved unknown NativePrimitiveTypeAnnotation');
       }
     case 'StringEnumTypeAnnotation':
-      return `${getEnumName(componentName, prop.name)}::${
-        typeAnnotation.default
-      }`;
+      return `${getEnumName(componentName, prop.name)}::${upperCaseFirst(
+        typeAnnotation.default,
+      )}`;
     default:
       (typeAnnotation: empty);
       throw new Error('Receieved invalid typeAnnotation');
@@ -238,6 +243,9 @@ function getImports(component): Set<string> {
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':
           imports.add('#include <react/graphics/Color.h>');
+          return;
+        case 'ImageSourcePrimitive':
+          imports.add('#include <react/imagemanager/primitives.h>');
           return;
         default:
           (typeAnnotation.name: empty);

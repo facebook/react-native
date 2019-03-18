@@ -47,6 +47,12 @@ module.exports = {
     return require('ImageBackground');
   },
   get ImageEditor() {
+    warnOnce(
+      'image-editor-moved',
+      'Image Editor has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/image-editor' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-image-editor',
+    );
     return require('ImageEditor');
   },
   get ImageStore() {
@@ -64,14 +70,6 @@ module.exports = {
   },
   get KeyboardAvoidingView() {
     return require('KeyboardAvoidingView');
-  },
-  get ListView() {
-    warnOnce(
-      'listview-deprecation',
-      'ListView is deprecated and will be removed in a future release. ' +
-        'See https://fb.me/nolistview for more information',
-    );
-    return require('ListView');
   },
   get MaskedViewIOS() {
     warnOnce(
@@ -118,9 +116,6 @@ module.exports = {
     );
     return require('Slider');
   },
-  get SnapshotViewIOS() {
-    return require('SnapshotViewIOS');
-  },
   get Switch() {
     return require('Switch');
   },
@@ -128,18 +123,16 @@ module.exports = {
     return require('RefreshControl');
   },
   get StatusBar() {
+    warnOnce(
+      'statusbar-moved',
+      'StatusBar has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/status-bar' instead of 'react-native'. " +
+        'https://github.com/react-native-community/react-native-statusbar',
+    );
     return require('StatusBar');
   },
   get SwipeableFlatList() {
     return require('SwipeableFlatList');
-  },
-  get SwipeableListView() {
-    warnOnce(
-      'swipablelistview-deprecation',
-      'ListView and SwipeableListView are deprecated and will be removed in a future release. ' +
-        'See https://fb.me/nolistview for more information',
-    );
-    return require('SwipeableListView');
   },
   get Text() {
     return require('Text');
@@ -226,6 +219,12 @@ module.exports = {
     return require('BackHandler');
   },
   get CameraRoll() {
+    warnOnce(
+      'cameraroll-moved',
+      'CameraRoll has been extracted from react-native core and will be removed in a future release. ' +
+        "It can now be installed and imported from '@react-native-community/cameraroll' instead of 'react-native'. " +
+        'See https://github.com/react-native-community/react-native-cameraroll',
+    );
     return require('CameraRoll');
   },
   get Clipboard() {
@@ -330,9 +329,6 @@ module.exports = {
   get Vibration() {
     return require('Vibration');
   },
-  get VibrationIOS() {
-    return require('VibrationIOS');
-  },
   get YellowBox() {
     return require('YellowBox');
   },
@@ -356,9 +352,6 @@ module.exports = {
   get requireNativeComponent() {
     return require('requireNativeComponent');
   },
-  get takeSnapshot() {
-    return require('takeSnapshot');
-  },
 
   // Prop Types
   get ColorPropType() {
@@ -373,29 +366,32 @@ module.exports = {
   get ViewPropTypes() {
     return require('DeprecatedViewPropTypes');
   },
-
-  // Deprecated
-  get BackAndroid() {
-    invariant(
-      false,
-      'BackAndroid is deprecated and has been removed from this package. ' +
-        'Use BackHandler instead',
-    );
-  },
-
-  get Navigator() {
-    invariant(
-      false,
-      'Navigator is deprecated and has been removed from this package. It can now be installed ' +
-        'and imported from `react-native-deprecated-custom-components` instead of `react-native`. ' +
-        'Learn about alternative navigation solutions at http://facebook.github.io/react-native/docs/navigation.html',
-    );
-  },
-  get NavigatorIOS() {
-    invariant(
-      false,
-      'NavigatorIOS is deprecated and has been removed from this package. ' +
-        'Learn about alternative navigation solutions at http://facebook.github.io/react-native/docs/navigation.html',
-    );
-  },
 };
+
+if (__DEV__) {
+  // $FlowFixMe This is intentional: Flow will error when attempting to access ListView.
+  Object.defineProperty(module.exports, 'ListView', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'ListView has been removed from React Native. ' +
+          'See https://fb.me/nolistview for more information or use ' +
+          '`deprecated-react-native-listview`.',
+      );
+    },
+  });
+
+  // $FlowFixMe This is intentional: Flow will error when attempting to access SwipeableListView.
+  Object.defineProperty(module.exports, 'SwipeableListView', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'SwipeableListView has been removed from React Native. ' +
+          'See https://fb.me/nolistview for more information or use ' +
+          '`deprecated-react-native-swipeable-listview`.',
+      );
+    },
+  });
+}

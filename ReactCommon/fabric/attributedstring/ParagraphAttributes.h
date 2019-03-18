@@ -73,15 +73,13 @@ template <>
 struct hash<facebook::react::ParagraphAttributes> {
   size_t operator()(
       const facebook::react::ParagraphAttributes &attributes) const {
-    auto seed = size_t{0};
-    folly::hash::hash_combine(
-        seed,
+    return folly::hash::hash_combine(
+        0,
         attributes.maximumNumberOfLines,
         attributes.ellipsizeMode,
         attributes.adjustsFontSizeToFit,
         attributes.minimumFontSize,
         attributes.maximumFontSize);
-    return seed;
   }
 };
 } // namespace std

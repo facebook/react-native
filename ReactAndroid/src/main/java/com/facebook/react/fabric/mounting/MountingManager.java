@@ -7,22 +7,21 @@
 package com.facebook.react.fabric.mounting;
 
 import android.content.Context;
-import android.support.annotation.AnyThread;
-import android.support.annotation.Nullable;
-import android.support.annotation.UiThread;
+import androidx.annotation.AnyThread;
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import com.facebook.react.fabric.FabricUIManager;
-import com.facebook.react.fabric.jsi.EventEmitterWrapper;
-import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.fabric.FabricUIManager;
+import com.facebook.react.fabric.jsi.EventEmitterWrapper;
+import com.facebook.react.fabric.mounting.mountitems.MountItem;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.RootView;
@@ -169,11 +168,11 @@ public class MountingManager {
       ThemedReactContext themedReactContext,
       String componentName,
       int reactTag,
-      boolean isVirtual) {
-    UiThreadUtil.assertOnUiThread();
+      boolean isLayoutable) {
     View view = null;
     ViewManager viewManager = null;
-    if (!isVirtual) {
+
+    if (isLayoutable) {
       viewManager = mViewManagerRegistry.get(componentName);
       view = mViewPool.getOrCreateView(componentName, themedReactContext);
       view.setId(reactTag);
@@ -251,8 +250,7 @@ public class MountingManager {
     if (viewState.mCurrentLocalData != null
         && newLocalData.hasKey("hash")
         && viewState.mCurrentLocalData.getDouble("hash") == newLocalData.getDouble("hash")
-        && viewState.mCurrentLocalData.toString().equals(newLocalData.toString())) {
-      // TODO: T31905686 implement a proper equality method
+        && viewState.mCurrentLocalData.equals(newLocalData)) {
       return;
     }
     viewState.mCurrentLocalData = newLocalData;
@@ -273,8 +271,19 @@ public class MountingManager {
   }
 
   @UiThread
-  public void preallocateView(ThemedReactContext reactContext, String componentName) {
-    mViewPool.createView(reactContext, componentName);
+  public void preallocateView(
+    ThemedReactContext reactContext,
+    String componentName,
+    int reactTag,
+    ReadableMap props,
+    boolean isLayoutable) {
+
+    if (mTagToViewState.get(reactTag) != null) return;
+
+    createView(reactContext, componentName, reactTag, isLayoutable);
+    if (isLayoutable) {
+      updateProps(reactTag, props);
+    }
   }
 
   @UiThread
@@ -288,8 +297,8 @@ public class MountingManager {
   public long measure(
       ReactContext context,
       String componentName,
-      ReadableNativeMap localData,
-      ReadableNativeMap props,
+      ReadableMap localData,
+      ReadableMap props,
       float width,
       YogaMeasureMode widthMode,
       float height,

@@ -90,7 +90,7 @@ void YogaLayoutableShadowNode::appendChild(YogaLayoutableShadowNode *child) {
 }
 
 void YogaLayoutableShadowNode::setChildren(
-    std::vector<YogaLayoutableShadowNode *> children) {
+    YogaLayoutableShadowNode::UnsharedList children) {
   yogaNode_.setChildren({});
   for (const auto &child : children) {
     appendChild(child);
@@ -99,6 +99,20 @@ void YogaLayoutableShadowNode::setChildren(
 
 void YogaLayoutableShadowNode::setProps(const YogaStylableProps &props) {
   yogaNode_.setStyle(props.yogaStyle);
+}
+
+void YogaLayoutableShadowNode::setSize(Size size) const {
+  auto style = yogaNode_.getStyle();
+  style.dimensions[YGDimensionWidth] = yogaStyleValueFromFloat(size.width);
+  style.dimensions[YGDimensionHeight] = yogaStyleValueFromFloat(size.height);
+  yogaNode_.setStyle(style);
+}
+
+void YogaLayoutableShadowNode::setPositionType(
+    YGPositionType positionType) const {
+  auto style = yogaNode_.getStyle();
+  style.positionType = positionType;
+  yogaNode_.setStyle(style);
 }
 
 void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
@@ -139,9 +153,9 @@ void YogaLayoutableShadowNode::layoutChildren(LayoutContext layoutContext) {
   }
 }
 
-std::vector<LayoutableShadowNode *>
+LayoutableShadowNode::UnsharedList
 YogaLayoutableShadowNode::getLayoutableChildNodes() const {
-  std::vector<LayoutableShadowNode *> yogaLayoutableChildNodes;
+  LayoutableShadowNode::UnsharedList yogaLayoutableChildNodes;
   yogaLayoutableChildNodes.reserve(yogaNode_.getChildren().size());
 
   for (const auto &childYogaNode : yogaNode_.getChildren()) {
@@ -218,8 +232,8 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
 }
 
 void YogaLayoutableShadowNode::initializeYogaConfig(YGConfig &config) {
-  config.cloneNodeCallback =
-      YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector;
+  config.setCloneNodeCallback(
+      YogaLayoutableShadowNode::yogaNodeCloneCallbackConnector);
 }
 
 } // namespace react

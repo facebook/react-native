@@ -141,6 +141,10 @@ const ScrollResponderMixin = {
    * Invoke this from an `onScroll` event.
    */
   scrollResponderHandleScrollShouldSetResponder: function(): boolean {
+    // Allow any event touch pass through if the default pan responder is disabled
+    if (this.props.disableScrollViewPanResponder === true) {
+      return false;
+    }
     return this.state.isTouching;
   },
 
@@ -172,6 +176,11 @@ const ScrollResponderMixin = {
   scrollResponderHandleStartShouldSetResponder: function(
     e: PressEvent,
   ): boolean {
+    // Allow any event touch pass through if the default pan responder is disabled
+    if (this.props.disableScrollViewPanResponder === true) {
+      return false;
+    }
+
     const currentlyFocusedTextInput = TextInputState.currentlyFocusedField();
 
     if (
@@ -202,6 +211,11 @@ const ScrollResponderMixin = {
     // * it is already animating/decelerating
     if (this.scrollResponderIsAnimating()) {
       return true;
+    }
+
+    // Allow any event touch pass through if the default pan responder is disabled
+    if (this.props.disableScrollViewPanResponder === true) {
+      return false;
     }
 
     // * the keyboard is up, keyboardShouldPersistTaps is 'never' (the default),

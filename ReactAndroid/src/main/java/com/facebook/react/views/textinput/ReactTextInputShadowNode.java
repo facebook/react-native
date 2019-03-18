@@ -9,7 +9,7 @@ package com.facebook.react.views.textinput;
 
 import android.annotation.TargetApi;
 import android.os.Build;
-import android.support.v4.view.ViewCompat;
+import androidx.core.view.ViewCompat;
 import android.text.Layout;
 import android.util.TypedValue;
 import android.view.ViewGroup;
@@ -204,7 +204,8 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
               getPadding(Spacing.RIGHT),
               getPadding(Spacing.BOTTOM),
               mTextAlign,
-              mTextBreakStrategy);
+              mTextBreakStrategy,
+              mJustificationMode);
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
     }
   }

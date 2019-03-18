@@ -6,6 +6,7 @@ load(
     "fb_xplat_cxx_test",
     "get_apple_compiler_flags",
     "get_apple_inspector_flags",
+    "react_native_target",
     "react_native_xplat_target",
     "rn_xplat_cxx_library",
     "subdir_glob",
@@ -17,7 +18,10 @@ rn_xplat_cxx_library(
     name = "slider",
     srcs = glob(
         ["**/*.cpp"],
-        exclude = glob(["tests/**/*.cpp"]),
+        exclude = glob([
+            "tests/**/*.cpp",
+            "platform/**/*.cpp",
+        ]),
     ),
     headers = [],
     header_namespace = "",
@@ -33,8 +37,38 @@ rn_xplat_cxx_library(
         "-std=c++14",
         "-Wall",
     ],
+    fbandroid_deps = [
+        react_native_target("jni/react/jni:jni"),
+    ],
+    fbandroid_exported_headers = subdir_glob(
+        [
+            ("", "*.h"),
+            ("platform/android", "*.h"),
+        ],
+        prefix = "react/components/slider",
+    ),
+    fbandroid_headers = glob(
+        ["platform/android/*.h"],
+    ),
+    fbandroid_srcs = glob(
+        ["platform/android/*.cpp"],
+    ),
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
+    force_static = True,
+    ios_exported_headers = subdir_glob(
+        [
+            ("", "*.h"),
+            ("platform/ios", "*.h"),
+        ],
+        prefix = "react/components/slider",
+    ),
+    ios_headers = glob(
+        ["platform/ios/*.h"],
+    ),
+    ios_srcs = glob(
+        ["platform/ios/*.cpp"],
+    ),
     macosx_tests_override = [],
     platforms = (ANDROID, APPLE),
     preprocessor_flags = [
@@ -44,18 +78,20 @@ rn_xplat_cxx_library(
     tests = [":tests"],
     visibility = ["PUBLIC"],
     deps = [
-        "xplat//fbsystrace:fbsystrace",
-        "xplat//folly:headers_only",
-        "xplat//folly:memory",
-        "xplat//folly:molly",
-        "xplat//third-party/glog:glog",
-        "xplat//yoga:yoga",
+        "fbsource//xplat/fbsystrace:fbsystrace",
+        "fbsource//xplat/folly:headers_only",
+        "fbsource//xplat/folly:memory",
+        "fbsource//xplat/folly:molly",
+        "fbsource//xplat/third-party/glog:glog",
+        "fbsource//xplat/yoga:yoga",
         react_native_xplat_target("fabric/debug:debug"),
         react_native_xplat_target("fabric/core:core"),
         react_native_xplat_target("fabric/components/image:image"),
         react_native_xplat_target("fabric/components/view:view"),
         react_native_xplat_target("fabric/graphics:graphics"),
         react_native_xplat_target("fabric/imagemanager:imagemanager"),
+        react_native_xplat_target("fabric/uimanager:uimanager"),
+        "fbsource//xplat/js/react-native-github:generated_components-rncore",
     ],
 )
 
@@ -72,8 +108,8 @@ fb_xplat_cxx_test(
     contacts = ["oncall+react_native@xmail.facebook.com"],
     platforms = (ANDROID, APPLE),
     deps = [
-        "xplat//folly:molly",
-        "xplat//third-party/gmock:gtest",
+        "fbsource//xplat/folly:molly",
+        "fbsource//xplat/third-party/gmock:gtest",
         ":slider",
     ],
 )

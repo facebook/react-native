@@ -1,7 +1,9 @@
 ---
-name: 🚀 Discussion
+name: "🚀 Discussion"
 about: You have an idea that could make React Native better, or you want to discuss some aspect of the framework.
-labels: "Type: Discussion"
+title: 'Discussion: '
+labels: 'Type: Discussion'
+
 ---
 
 If you want to participate in casual discussions about the use of React Native, consider participating in one of the following forums:

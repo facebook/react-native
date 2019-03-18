@@ -12,9 +12,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-
+import androidx.fragment.app.FragmentActivity;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -69,11 +67,30 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
   }
 
   private class FragmentManagerHelper {
+<<<<<<< HEAD
     private final @Nonnull FragmentManager mFragmentManager;
 
     private @Nullable Object mFragmentToShow;
 
     public FragmentManagerHelper(@Nonnull FragmentManager fragmentManager) {
+=======
+
+    // Exactly one of the two is null
+    private final @Nullable android.app.FragmentManager mFragmentManager;
+    private final @Nullable androidx.fragment.app.FragmentManager mSupportFragmentManager;
+
+    private @Nullable Object mFragmentToShow;
+
+    private boolean isUsingSupportLibrary() {
+      return mSupportFragmentManager != null;
+    }
+
+    public FragmentManagerHelper(androidx.fragment.app.FragmentManager supportFragmentManager) {
+      mFragmentManager = null;
+      mSupportFragmentManager = supportFragmentManager;
+    }
+    public FragmentManagerHelper(android.app.FragmentManager fragmentManager) {
+>>>>>>> master
       mFragmentManager = fragmentManager;
     }
 

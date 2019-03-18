@@ -21,12 +21,12 @@ const RNTesterExampleContainer = require('./RNTesterExampleContainer');
 const RNTesterExampleList = require('./RNTesterExampleList');
 const RNTesterList = require('./RNTesterList.ios');
 const RNTesterNavigationReducer = require('./RNTesterNavigationReducer');
+const SnapshotViewIOS = require('./SnapshotViewIOS.ios');
 const URIActionMap = require('./URIActionMap');
 
 const {
   Button,
   AppRegistry,
-  SnapshotViewIOS,
   StyleSheet,
   Text,
   View,
@@ -43,8 +43,6 @@ type Props = {
 };
 
 YellowBox.ignoreWarnings([
-  'ListView and SwipeableListView are deprecated',
-  'ListView is deprecated',
   'Module RCTImagePickerManager requires main queue setup',
 ]);
 
@@ -150,6 +148,7 @@ const styles = StyleSheet.create({
     top: 7,
     left: 0,
     right: 0,
+    alignItems: 'center',
   },
   title: {
     fontSize: 19,

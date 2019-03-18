@@ -48,7 +48,6 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.UIManagerModule;
-import com.facebook.react.uimanager.common.MeasureSpecProvider;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
@@ -66,7 +65,7 @@ import javax.annotation.Nullable;
  * subsequent touch events related to that gesture (in case when JS code wants to handle that
  * gesture).
  */
-public class ReactRootView extends FrameLayout implements RootView, MeasureSpecProvider {
+public class ReactRootView extends FrameLayout implements RootView {
 
   /**
    * Listener interface for react root view events
@@ -92,20 +91,32 @@ public class ReactRootView extends FrameLayout implements RootView, MeasureSpecP
   private boolean mWasMeasured = false;
   private int mWidthMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
   private int mHeightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+  private int mLastWidth = 0;
+  private int mLastHeight = 0;
   private @UIManagerType int mUIManagerType = DEFAULT;
+  private final boolean mUseSurface;
 
   public ReactRootView(Context context) {
     super(context);
+    mUseSurface = false;
+    init();
+  }
+
+  public ReactRootView(Context context, boolean useSurface) {
+    super(context);
+    mUseSurface = useSurface;
     init();
   }
 
   public ReactRootView(Context context, AttributeSet attrs) {
     super(context, attrs);
+    mUseSurface = false;
     init();
   }
 
   public ReactRootView(Context context, AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
+    mUseSurface = false;
     init();
   }
 
@@ -113,10 +124,22 @@ public class ReactRootView extends FrameLayout implements RootView, MeasureSpecP
     setClipChildren(false);
   }
 
+  public View getView() {
+    // TODO add mUseSurface to return surface here
+    return this;
+  }
+
   @Override
   protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+    if (mUseSurface) {
+      super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+      return;
+    }
+
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactRootView.onMeasure");
     try {
+      boolean measureSpecsUpdated = widthMeasureSpec != mWidthMeasureSpec ||
+        heightMeasureSpec != mHeightMeasureSpec;
       mWidthMeasureSpec = widthMeasureSpec;
       mHeightMeasureSpec = heightMeasureSpec;
 
@@ -156,31 +179,15 @@ public class ReactRootView extends FrameLayout implements RootView, MeasureSpecP
       // Check if we were waiting for onMeasure to attach the root view.
       if (mReactInstanceManager != null && !mIsAttachedToInstance) {
         attachToReactInstanceManager();
-        enableLayoutCalculation();
-      } else {
-        enableLayoutCalculation();
+      } else if (measureSpecsUpdated || mLastWidth != width || mLastHeight != height) {
         updateRootLayoutSpecs(mWidthMeasureSpec, mHeightMeasureSpec);
       }
+      mLastWidth = width;
+      mLastHeight = height;
 
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     }
-  }
-
-  @Override
-  public int getWidthMeasureSpec() {
-    if (!mWasMeasured && getLayoutParams() != null && getLayoutParams().width > 0) {
-      return MeasureSpec.makeMeasureSpec(getLayoutParams().width, MeasureSpec.EXACTLY);
-    }
-    return mWidthMeasureSpec;
-  }
-
-  @Override
-  public int getHeightMeasureSpec() {
-    if (!mWasMeasured && getLayoutParams() != null && getLayoutParams().height > 0) {
-      return MeasureSpec.makeMeasureSpec(getLayoutParams().height, MeasureSpec.EXACTLY);
-    }
-    return mHeightMeasureSpec;
   }
 
   @Override
@@ -300,6 +307,9 @@ public class ReactRootView extends FrameLayout implements RootView, MeasureSpecP
 
   @Override
   protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+    if (mUseSurface) {
+      super.onLayout(changed, left, top, right, bottom);
+    }
     // No-op since UIManagerModule handles actually laying out children.
   }
 
@@ -378,6 +388,10 @@ public class ReactRootView extends FrameLayout implements RootView, MeasureSpecP
       mAppProperties = initialProperties;
       mInitialUITemplate = initialUITemplate;
 
+      if (mUseSurface) {
+        // TODO initialize surface here
+      }
+
       if (!mReactInstanceManager.hasStartedCreatingInitialContext()) {
         mReactInstanceManager.createReactContextInBackground();
       }
@@ -386,23 +400,6 @@ public class ReactRootView extends FrameLayout implements RootView, MeasureSpecP
 
     } finally {
       Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
-    }
-  }
-
-  private void enableLayoutCalculation() {
-    if (mReactInstanceManager == null) {
-      FLog.w(
-          ReactConstants.TAG,
-          "Unable to enable layout calculation for uninitialized ReactInstanceManager");
-      return;
-    }
-    final ReactContext reactApplicationContext = mReactInstanceManager.getCurrentReactContext();
-    if (reactApplicationContext != null) {
-      reactApplicationContext
-          .getCatalystInstance()
-          .getNativeModule(UIManagerModule.class)
-          .getUIImplementation()
-          .enableLayoutCalculationForRootNode(getRootViewTag());
     }
   }
 
@@ -488,21 +485,30 @@ public class ReactRootView extends FrameLayout implements RootView, MeasureSpecP
         }
 
         CatalystInstance catalystInstance = reactContext.getCatalystInstance();
-
-        WritableNativeMap appParams = new WritableNativeMap();
-        appParams.putDouble("rootTag", getRootViewTag());
-        @Nullable Bundle appProperties = getAppProperties();
-        if (appProperties != null) {
-          appParams.putMap("initialProps", Arguments.fromBundle(appProperties));
-        }
-        if (getUIManagerType() == FABRIC) {
-          appParams.putBoolean("fabric", true);
-        }
-
-        mShouldLogContentAppeared = true;
-
         String jsAppModuleName = getJSModuleName();
-        catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);
+
+        if (mUseSurface) {
+          // TODO call surface's runApplication
+        } else {
+
+          if (mWasMeasured) {
+            updateRootLayoutSpecs(mWidthMeasureSpec, mHeightMeasureSpec);
+          }
+
+          WritableNativeMap appParams = new WritableNativeMap();
+          appParams.putDouble("rootTag", getRootViewTag());
+          @Nullable Bundle appProperties = getAppProperties();
+          if (appProperties != null) {
+            appParams.putMap("initialProps", Arguments.fromBundle(appProperties));
+          }
+          if (getUIManagerType() == FABRIC) {
+            appParams.putBoolean("fabric", true);
+          }
+
+          mShouldLogContentAppeared = true;
+
+          catalystInstance.getJSModule(AppRegistry.class).runApplication(jsAppModuleName, appParams);
+        }
       } finally {
         Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
       }

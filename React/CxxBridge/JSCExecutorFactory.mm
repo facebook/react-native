@@ -15,7 +15,7 @@ namespace react {
 
 std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(
   std::shared_ptr<ExecutorDelegate> delegate,
-  std::shared_ptr<MessageQueueThread> jsQueue) {
+  std::shared_ptr<MessageQueueThread> __unused jsQueue) {
   return folly::make_unique<JSIExecutor>(
     facebook::jsc::makeJSCRuntime(),
     delegate,

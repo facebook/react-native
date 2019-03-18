@@ -9,6 +9,7 @@
 #include <memory>
 #include <shared_mutex>
 
+#include <react/components/root/RootComponentDescriptor.h>
 #include <react/components/root/RootShadowNode.h>
 #include <react/core/LayoutConstraints.h>
 #include <react/core/ReactPrimitives.h>
@@ -33,7 +34,8 @@ class ShadowTree final {
   ShadowTree(
       SurfaceId surfaceId,
       const LayoutConstraints &layoutConstraints,
-      const LayoutContext &layoutContext);
+      const LayoutContext &layoutContext,
+      const RootComponentDescriptor &rootComponentDescriptor);
 
   ~ShadowTree();
 

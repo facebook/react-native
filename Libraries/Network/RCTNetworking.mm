@@ -14,7 +14,6 @@
 #import <React/RCTLog.h>
 #import <React/RCTNetworkTask.h>
 #import <React/RCTNetworking.h>
-#import <React/RCTURLRequestHandler.h>
 #import <React/RCTUtils.h>
 
 #import "RCTHTTPRequestHandler.h"
@@ -135,6 +134,7 @@ static NSString *RCTGenerateFormBoundary()
   NSMutableDictionary<NSNumber *, RCTNetworkTask *> *_tasksByRequestID;
   std::mutex _handlersLock;
   NSArray<id<RCTURLRequestHandler>> *_handlers;
+  NSArray<id<RCTURLRequestHandler>> * (^_handlersProvider)(void);
   NSMutableArray<id<RCTNetworkingRequestHandler>> *_requestHandlers;
   NSMutableArray<id<RCTNetworkingResponseHandler>> *_responseHandlers;
 }
@@ -142,6 +142,14 @@ static NSString *RCTGenerateFormBoundary()
 @synthesize methodQueue = _methodQueue;
 
 RCT_EXPORT_MODULE()
+
+- (instancetype)initWithHandlersProvider:(NSArray<id<RCTURLRequestHandler>> * (^)(void))getHandlers
+{
+  if (self = [super init]) {
+    _handlersProvider = getHandlers;
+  }
+  return self;
+}
 
 - (void)invalidate
 {
@@ -174,8 +182,14 @@ RCT_EXPORT_MODULE()
     std::lock_guard<std::mutex> lock(_handlersLock);
 
     if (!_handlers) {
+      if (_handlersProvider) {
+        _handlers = _handlersProvider();
+      } else {
+        _handlers = [self.bridge modulesConformingToProtocol:@protocol(RCTURLRequestHandler)];
+      }
+
       // Get handlers, sorted in reverse priority order (highest priority first)
-      _handlers = [[self.bridge modulesConformingToProtocol:@protocol(RCTURLRequestHandler)] sortedArrayUsingComparator:^NSComparisonResult(id<RCTURLRequestHandler> a, id<RCTURLRequestHandler> b) {
+      _handlers = [_handlers sortedArrayUsingComparator:^NSComparisonResult(id<RCTURLRequestHandler> a, id<RCTURLRequestHandler> b) {
         float priorityA = [a respondsToSelector:@selector(handlerPriority)] ? [a handlerPriority] : 0;
         float priorityB = [b respondsToSelector:@selector(handlerPriority)] ? [b handlerPriority] : 0;
         if (priorityA > priorityB) {

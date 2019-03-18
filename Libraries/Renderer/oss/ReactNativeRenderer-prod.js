@@ -3224,6 +3224,8 @@ function updateReducer(reducer) {
         is(newState, hook.memoizedState) || (didReceiveUpdate = !0);
         hook.memoizedState = newState;
         hook.baseUpdate === queue.last && (hook.baseState = newState);
+        queue.eagerReducer = reducer;
+        queue.eagerState = newState;
         return [newState, _dispatch];
       }
     }
@@ -3544,6 +3546,8 @@ function tryHydrate(fiber, nextInstance) {
         (nextInstance = shim$1(nextInstance, fiber.pendingProps)),
         null !== nextInstance ? ((fiber.stateNode = nextInstance), !0) : !1
       );
+    case 13:
+      return !1;
     default:
       return !1;
   }
@@ -4607,19 +4611,19 @@ function beginWork(current$$1, workInProgress, renderExpirationTime) {
                     null !== dependency &&
                       dependency.expirationTime < renderExpirationTime &&
                       (dependency.expirationTime = renderExpirationTime);
+                    dependency = renderExpirationTime;
                     for (var node = oldValue.return; null !== node; ) {
-                      dependency = node.alternate;
-                      if (node.childExpirationTime < renderExpirationTime)
-                        (node.childExpirationTime = renderExpirationTime),
-                          null !== dependency &&
-                            dependency.childExpirationTime <
-                              renderExpirationTime &&
-                            (dependency.childExpirationTime = renderExpirationTime);
+                      var alternate = node.alternate;
+                      if (node.childExpirationTime < dependency)
+                        (node.childExpirationTime = dependency),
+                          null !== alternate &&
+                            alternate.childExpirationTime < dependency &&
+                            (alternate.childExpirationTime = dependency);
                       else if (
-                        null !== dependency &&
-                        dependency.childExpirationTime < renderExpirationTime
+                        null !== alternate &&
+                        alternate.childExpirationTime < dependency
                       )
-                        dependency.childExpirationTime = renderExpirationTime;
+                        alternate.childExpirationTime = dependency;
                       else break;
                       node = node.return;
                     }
@@ -4749,12 +4753,11 @@ function beginWork(current$$1, workInProgress, renderExpirationTime) {
           renderExpirationTime
         )
       );
-    default:
-      invariant(
-        !1,
-        "Unknown unit of work tag. This error is likely caused by a bug in React. Please file an issue."
-      );
   }
+  invariant(
+    !1,
+    "Unknown unit of work tag. This error is likely caused by a bug in React. Please file an issue."
+  );
 }
 var valueCursor = { current: null },
   currentlyRenderingFiber = null,
@@ -5091,7 +5094,7 @@ function logCapturedError(capturedError) {
         : Error("Unspecified error at:" + componentStack);
   ExceptionsManager.handleException(error, !1);
 }
-var PossiblyWeakSet = "function" === typeof WeakSet ? WeakSet : Set;
+var PossiblyWeakSet$1 = "function" === typeof WeakSet ? WeakSet : Set;
 function logError(boundary, errorInfo) {
   var source = errorInfo.source,
     stack = errorInfo.stack;
@@ -5304,7 +5307,7 @@ function commitPlacement(finishedWork) {
     parentFiber.sibling.return = parentFiber.return;
     for (
       parentFiber = parentFiber.sibling;
-      5 !== parentFiber.tag && 6 !== parentFiber.tag;
+      5 !== parentFiber.tag && 6 !== parentFiber.tag && 18 !== parentFiber.tag;
 
     ) {
       if (parentFiber.effectTag & 2) continue b;
@@ -5548,9 +5551,9 @@ function commitWork(current$$1, finishedWork) {
         finishedWork.updateQueue = null;
         var retryCache = finishedWork.stateNode;
         null === retryCache &&
-          (retryCache = finishedWork.stateNode = new PossiblyWeakSet());
+          (retryCache = finishedWork.stateNode = new PossiblyWeakSet$1());
         instance.forEach(function(thenable) {
-          var retry = retryTimedOutBoundary.bind(null, finishedWork, thenable);
+          var retry = resolveRetryThenable.bind(null, finishedWork, thenable);
           retryCache.has(thenable) ||
             (retryCache.add(thenable), thenable.then(retry, retry));
         });
@@ -5635,6 +5638,8 @@ function unwindWork(workInProgress) {
             workInProgress)
           : null
       );
+    case 18:
+      return null;
     case 4:
       return popHostContainer(workInProgress), null;
     case 10:
@@ -5890,6 +5895,7 @@ function commitPassiveEffects(root, firstEffect) {
   isRendering = previousIsRendering;
   previousIsRendering = root.expirationTime;
   0 !== previousIsRendering && requestWork(root, previousIsRendering);
+  isBatchingUpdates || isRendering || performWork(1073741823, !1);
 }
 function flushPassiveEffects() {
   if (null !== passiveEffectCallbackHandle) {
@@ -6167,6 +6173,8 @@ function completeUnitOfWork(workInProgress) {
           case 17:
             isContextProvider(current$$1.type) && popContext(current$$1);
             break;
+          case 18:
+            break;
           default:
             invariant(
               !1,
@@ -6260,7 +6268,7 @@ function renderRoot(root$jscomp$0, isYieldy) {
   do {
     try {
       if (isYieldy)
-        for (; null !== nextUnitOfWork && !shouldYieldToRenderer(); )
+        for (; null !== nextUnitOfWork && !(frameDeadline <= now$1()); )
           nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
       else
         for (; null !== nextUnitOfWork; )
@@ -6346,27 +6354,24 @@ function renderRoot(root$jscomp$0, isYieldy) {
                     sourceFiber$jscomp$0.expirationTime = 1073741823;
                     break a;
                   }
-                  sourceFiber$jscomp$0 = root.pingCache;
-                  null === sourceFiber$jscomp$0
-                    ? ((sourceFiber$jscomp$0 = root.pingCache = new PossiblyWeakMap()),
-                      (returnFiber$jscomp$0 = new Set()),
-                      sourceFiber$jscomp$0.set(thenable, returnFiber$jscomp$0))
-                    : ((returnFiber$jscomp$0 = sourceFiber$jscomp$0.get(
-                        thenable
-                      )),
-                      void 0 === returnFiber$jscomp$0 &&
-                        ((returnFiber$jscomp$0 = new Set()),
-                        sourceFiber$jscomp$0.set(
-                          thenable,
-                          returnFiber$jscomp$0
-                        )));
-                  returnFiber$jscomp$0.has(returnFiber) ||
-                    (returnFiber$jscomp$0.add(returnFiber),
+                  sourceFiber$jscomp$0 = root;
+                  returnFiber$jscomp$0 = returnFiber;
+                  var pingCache = sourceFiber$jscomp$0.pingCache;
+                  null === pingCache
+                    ? ((pingCache = sourceFiber$jscomp$0.pingCache = new PossiblyWeakMap()),
+                      (current$$1 = new Set()),
+                      pingCache.set(thenable, current$$1))
+                    : ((current$$1 = pingCache.get(thenable)),
+                      void 0 === current$$1 &&
+                        ((current$$1 = new Set()),
+                        pingCache.set(thenable, current$$1)));
+                  current$$1.has(returnFiber$jscomp$0) ||
+                    (current$$1.add(returnFiber$jscomp$0),
                     (sourceFiber$jscomp$0 = pingSuspendedRoot.bind(
                       null,
-                      root,
+                      sourceFiber$jscomp$0,
                       thenable,
-                      returnFiber
+                      returnFiber$jscomp$0
                     )),
                     thenable.then(sourceFiber$jscomp$0, sourceFiber$jscomp$0));
                   -1 === earliestTimeoutMs
@@ -6410,24 +6415,25 @@ function renderRoot(root$jscomp$0, isYieldy) {
                   break a;
                 case 1:
                   if (
-                    ((thenable = value),
-                    (earliestTimeoutMs = root.type),
-                    (startTimeMs = root.stateNode),
+                    ((earliestTimeoutMs = value),
+                    (startTimeMs = root.type),
+                    (sourceFiber$jscomp$0 = root.stateNode),
                     0 === (root.effectTag & 64) &&
                       ("function" ===
-                        typeof earliestTimeoutMs.getDerivedStateFromError ||
-                        (null !== startTimeMs &&
-                          "function" === typeof startTimeMs.componentDidCatch &&
+                        typeof startTimeMs.getDerivedStateFromError ||
+                        (null !== sourceFiber$jscomp$0 &&
+                          "function" ===
+                            typeof sourceFiber$jscomp$0.componentDidCatch &&
                           (null === legacyErrorBoundariesThatAlreadyFailed ||
                             !legacyErrorBoundariesThatAlreadyFailed.has(
-                              startTimeMs
+                              sourceFiber$jscomp$0
                             )))))
                   ) {
                     root.effectTag |= 2048;
                     root.expirationTime = returnFiber;
                     returnFiber = createClassErrorUpdate(
                       root,
-                      thenable,
+                      earliestTimeoutMs,
                       returnFiber
                     );
                     enqueueCapturedUpdate(root, returnFiber);
@@ -6604,7 +6610,7 @@ function pingSuspendedRoot(root, thenable, pingTime) {
     0 !== pingTime && requestWork(root, pingTime);
   }
 }
-function retryTimedOutBoundary(boundaryFiber, thenable) {
+function resolveRetryThenable(boundaryFiber, thenable) {
   var retryCache = boundaryFiber.stateNode;
   null !== retryCache && retryCache.delete(thenable);
   thenable = requestCurrentTime();
@@ -6701,7 +6707,7 @@ function onSuspend(
   msUntilTimeout
 ) {
   root.expirationTime = rootExpirationTime;
-  0 !== msUntilTimeout || shouldYieldToRenderer()
+  0 !== msUntilTimeout || frameDeadline <= now$1()
     ? 0 < msUntilTimeout &&
       (root.timeoutHandle = scheduleTimeout(
         onTimeout.bind(null, root, finishedWork, suspendedExpirationTime),
@@ -6801,27 +6807,19 @@ function findHighestPriorityRoot() {
   nextFlushedRoot = highestPriorityRoot;
   nextFlushedExpirationTime = highestPriorityWork;
 }
-var didYield = !1;
-function shouldYieldToRenderer() {
-  return didYield ? !0 : frameDeadline <= now$1() ? (didYield = !0) : !1;
-}
-function performAsyncWork() {
-  try {
-    if (!shouldYieldToRenderer() && null !== firstScheduledRoot) {
-      recomputeCurrentRendererTime();
-      var root = firstScheduledRoot;
-      do {
-        var expirationTime = root.expirationTime;
-        0 !== expirationTime &&
-          currentRendererTime <= expirationTime &&
-          (root.nextExpirationTimeToWorkOn = currentRendererTime);
-        root = root.nextScheduledRoot;
-      } while (root !== firstScheduledRoot);
-    }
-    performWork(0, !0);
-  } finally {
-    didYield = !1;
+function performAsyncWork(didTimeout) {
+  if (didTimeout && null !== firstScheduledRoot) {
+    recomputeCurrentRendererTime();
+    didTimeout = firstScheduledRoot;
+    do {
+      var expirationTime = didTimeout.expirationTime;
+      0 !== expirationTime &&
+        currentRendererTime <= expirationTime &&
+        (didTimeout.nextExpirationTimeToWorkOn = currentRendererTime);
+      didTimeout = didTimeout.nextScheduledRoot;
+    } while (didTimeout !== firstScheduledRoot);
   }
+  performWork(0, !0);
 }
 function performWork(minExpirationTime, isYieldy) {
   findHighestPriorityRoot();
@@ -6832,7 +6830,10 @@ function performWork(minExpirationTime, isYieldy) {
       null !== nextFlushedRoot &&
       0 !== nextFlushedExpirationTime &&
       minExpirationTime <= nextFlushedExpirationTime &&
-      !(didYield && currentRendererTime > nextFlushedExpirationTime);
+      !(
+        frameDeadline <= now$1() &&
+        currentRendererTime > nextFlushedExpirationTime
+      );
 
     )
       performWorkOnRoot(
@@ -6900,7 +6901,7 @@ function performWorkOnRoot(root, expirationTime, isYieldy) {
         renderRoot(root, isYieldy),
         (_finishedWork = root.finishedWork),
         null !== _finishedWork &&
-          (shouldYieldToRenderer()
+          (frameDeadline <= now$1()
             ? (root.finishedWork = _finishedWork)
             : completeRoot(root, _finishedWork, expirationTime)));
   } else
@@ -7141,18 +7142,20 @@ var roots = new Map(),
             maybeInstance = findHostInstance(this);
           } catch (error) {}
           if (null != maybeInstance) {
-            var viewConfig =
+            var nativeTag =
+              maybeInstance._nativeTag || maybeInstance.canonical._nativeTag;
+            maybeInstance =
               maybeInstance.viewConfig || maybeInstance.canonical.viewConfig;
             nativeProps = diffProperties(
               null,
               emptyObject,
               nativeProps,
-              viewConfig.validAttributes
+              maybeInstance.validAttributes
             );
             null != nativeProps &&
               UIManager.updateView(
-                maybeInstance._nativeTag,
-                viewConfig.uiViewClassName,
+                nativeTag,
+                maybeInstance.uiViewClassName,
                 nativeProps
               );
           }
@@ -7161,6 +7164,21 @@ var roots = new Map(),
       })(React.Component);
     })(findNodeHandle, findHostInstance),
     findNodeHandle: findNodeHandle,
+    setNativeProps: function(handle, nativeProps) {
+      null != handle._nativeTag &&
+        ((nativeProps = diffProperties(
+          null,
+          emptyObject,
+          nativeProps,
+          handle.viewConfig.validAttributes
+        )),
+        null != nativeProps &&
+          UIManager.updateView(
+            handle._nativeTag,
+            handle.viewConfig.uiViewClassName,
+            nativeProps
+          ));
+    },
     render: function(element, containerTag, callback) {
       var root = roots.get(containerTag);
       if (!root) {
@@ -7251,17 +7269,20 @@ var roots = new Map(),
               maybeInstance = findHostInstance(this);
             } catch (error) {}
             if (null != maybeInstance) {
-              var viewConfig = maybeInstance.viewConfig;
+              var nativeTag =
+                maybeInstance._nativeTag || maybeInstance.canonical._nativeTag;
+              maybeInstance =
+                maybeInstance.viewConfig || maybeInstance.canonical.viewConfig;
               nativeProps = diffProperties(
                 null,
                 emptyObject,
                 nativeProps,
-                viewConfig.validAttributes
+                maybeInstance.validAttributes
               );
               null != nativeProps &&
                 UIManager.updateView(
-                  maybeInstance._nativeTag,
-                  viewConfig.uiViewClassName,
+                  nativeTag,
+                  maybeInstance.uiViewClassName,
                   nativeProps
                 );
             }
@@ -7302,7 +7323,7 @@ var roots = new Map(),
   findFiberByHostInstance: getInstanceFromTag,
   getInspectorDataForViewTag: getInspectorDataForViewTag,
   bundleType: 0,
-  version: "16.8.1",
+  version: "16.8.3",
   rendererPackageName: "react-native-renderer"
 });
 var ReactNativeRenderer$2 = { default: ReactNativeRenderer },

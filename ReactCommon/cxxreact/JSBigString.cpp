@@ -8,6 +8,8 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
+#include <glog/logging.h>
+
 #include <folly/Memory.h>
 #include <folly/portability/SysMman.h>
 #include <folly/ScopeGuard.h>

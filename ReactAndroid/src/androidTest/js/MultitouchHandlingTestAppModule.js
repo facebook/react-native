@@ -23,8 +23,8 @@ const extractSingleTouch = nativeEvent => {
   return !hasTouches && hasChangedTouches
     ? changedTouches[0]
     : hasTouches
-      ? touches[0]
-      : nativeEvent;
+    ? touches[0]
+    : nativeEvent;
 };
 
 class TouchTestApp extends React.Component {

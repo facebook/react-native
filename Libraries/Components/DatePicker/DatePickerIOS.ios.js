@@ -155,8 +155,8 @@ class DatePickerIOS extends React.Component<Props> {
             props.date
               ? props.date.getTime()
               : props.initialDate
-                ? props.initialDate.getTime()
-                : undefined
+              ? props.initialDate.getTime()
+              : undefined
           }
           locale={
             props.locale != null && props.locale !== ''

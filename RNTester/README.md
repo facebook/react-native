@@ -12,7 +12,7 @@ Before running the app, make sure you ran:
 
 ### Running on iOS
 
-Mac OS and Xcode are required.
+Both macOS and Xcode are required.
 
 - Open `RNTester/RNTester.xcodeproj` in Xcode
 - Hit the Run button

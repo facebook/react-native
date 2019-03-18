@@ -65,6 +65,31 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     }
   }
 
+  @ReactProp(name = "nextFocusDown", defaultInt = View.NO_ID)
+  public void nextFocusDown(ReactViewGroup view, int viewId) {
+    view.setNextFocusDownId(viewId);
+  }
+
+  @ReactProp(name = "nextFocusForward", defaultInt = View.NO_ID)
+  public void nextFocusForward(ReactViewGroup view, int viewId) {
+    view.setNextFocusForwardId(viewId);
+  }
+
+  @ReactProp(name = "nextFocusLeft", defaultInt = View.NO_ID)
+  public void nextFocusLeft(ReactViewGroup view, int viewId) {
+    view.setNextFocusLeftId(viewId);
+  }
+
+  @ReactProp(name = "nextFocusRight", defaultInt = View.NO_ID)
+  public void nextFocusRight(ReactViewGroup view, int viewId) {
+    view.setNextFocusRightId(viewId);
+  }
+
+  @ReactProp(name = "nextFocusUp", defaultInt = View.NO_ID)
+  public void nextFocusUp(ReactViewGroup view, int viewId) {
+    view.setNextFocusUpId(viewId);
+  }
+
   @ReactPropGroup(names = {
       ViewProps.BORDER_RADIUS,
       ViewProps.BORDER_TOP_LEFT_RADIUS,

@@ -47,11 +47,14 @@ rn_xplat_cxx_library(
         ],
     ),
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
-    fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
+    fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags() + [
+        "-DLOG_TAG=\"ReactNative\"",
+        "-DWITH_FBSYSTRACE=1",
+    ],
     force_static = True,
     ios_deps = [
-        "xplat//js:RCTImage",
-        "xplat//js/react-native-github:RCTCxxBridge",
+        "fbsource//xplat/js:RCTImage",
+        "fbsource//xplat/js/react-native-github:RCTCxxBridge",
     ],
     ios_exported_headers = subdir_glob(
         [
@@ -87,13 +90,12 @@ rn_xplat_cxx_library(
     tests = [":tests"],
     visibility = ["PUBLIC"],
     deps = [
-        "xplat//fbsystrace:fbsystrace",
-        "xplat//folly:futures",
-        "xplat//folly:headers_only",
-        "xplat//folly:memory",
-        "xplat//folly:molly",
-        "xplat//third-party/glog:glog",
-        "xplat//yoga:yoga",
+        "fbsource//xplat/fbsystrace:fbsystrace",
+        "fbsource//xplat/folly:headers_only",
+        "fbsource//xplat/folly:memory",
+        "fbsource//xplat/folly:molly",
+        "fbsource//xplat/third-party/glog:glog",
+        "fbsource//xplat/yoga:yoga",
         react_native_xplat_target("fabric/core:core"),
         react_native_xplat_target("fabric/mounting:mounting"),
         react_native_xplat_target("fabric/debug:debug"),
@@ -114,8 +116,8 @@ fb_xplat_cxx_test(
     contacts = ["oncall+react_native@xmail.facebook.com"],
     platforms = (ANDROID, APPLE),
     deps = [
-        "xplat//folly:molly",
-        "xplat//third-party/gmock:gtest",
+        "fbsource//xplat/folly:molly",
+        "fbsource//xplat/third-party/gmock:gtest",
         ":imagemanager",
     ],
 )

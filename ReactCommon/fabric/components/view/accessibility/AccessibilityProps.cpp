@@ -7,6 +7,8 @@
 
 #include "AccessibilityProps.h"
 
+#include <glog/logging.h>
+
 #include <react/components/view/accessibilityPropsConversions.h>
 #include <react/components/view/propsConversions.h>
 #include <react/core/propsConversions.h>

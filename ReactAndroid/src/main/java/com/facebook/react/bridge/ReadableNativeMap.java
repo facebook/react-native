@@ -47,7 +47,7 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
     if (mLocalMap != null) {
       return mLocalMap;
     }
-    // Check and when necessary get keys atomicaly
+    // Check and when necessary get keys atomically
     synchronized (this) {
       if (mKeys == null) {
         mKeys = Assertions.assertNotNull(importKeys());
@@ -234,6 +234,20 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
   @Override
   public @Nonnull ReadableMapKeySetIterator keySetIterator() {
     return new ReadableNativeMapKeySetIterator(this);
+  }
+
+  @Override
+  public int hashCode() {
+    return getLocalMap().hashCode();
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (!(obj instanceof ReadableNativeMap)) {
+      return false;
+    }
+    ReadableNativeMap other = (ReadableNativeMap) obj;
+    return getLocalMap().equals(other.getLocalMap());
   }
 
   @Override

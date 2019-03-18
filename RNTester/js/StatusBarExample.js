@@ -87,10 +87,8 @@ class StatusBarHiddenExample extends React.Component<{}, $FlowFixMeState> {
           onPress={this._onChangeTransition}>
           <View style={styles.button}>
             <Text>
-              showHideTransition (ios only): '{getValue(
-                showHideTransitions,
-                this._showHideTransitionIndex,
-              )}'
+              showHideTransition (ios only): '
+              {getValue(showHideTransitions, this._showHideTransitionIndex)}'
             </Text>
           </View>
         </TouchableHighlight>

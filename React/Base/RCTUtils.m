@@ -700,21 +700,21 @@ UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
   }
 
   UIImage *image = nil;
-  if (bundle) {
-    image = [UIImage imageNamed:imageName inBundle:bundle compatibleWithTraitCollection:nil];
-  } else {
-    image = [UIImage imageNamed:imageName];
+  if (imageName) {
+    if (bundle) {
+      image = [UIImage imageNamed:imageName inBundle:bundle compatibleWithTraitCollection:nil];
+    } else {
+      image = [UIImage imageNamed:imageName];
+    }
   }
 
   if (!image) {
     // Attempt to load from the file system
-    NSData *fileData;
-    if (imageURL.pathExtension.length == 0) {
-      fileData = [NSData dataWithContentsOfURL:[imageURL URLByAppendingPathExtension:@"png"]];
-    } else {
-      fileData = [NSData dataWithContentsOfURL:imageURL];
+    NSString *filePath = [NSString stringWithUTF8String:[imageURL fileSystemRepresentation]];
+    if (filePath.pathExtension.length == 0) {
+      filePath = [filePath stringByAppendingPathExtension:@"png"];
     }
-    image = [UIImage imageWithData:fileData];
+    image = [UIImage imageWithContentsOfFile:filePath];
   }
 
   if (!image && !bundle) {
@@ -912,4 +912,10 @@ RCT_EXTERN NSString *RCTDropReactPrefixes(NSString *s)
   }
 
   return s;
+}
+
+RCT_EXTERN BOOL RCTUIManagerTypeForTagIsFabric(NSNumber *reactTag)
+{
+  // See https://github.com/facebook/react/pull/12587
+  return [reactTag integerValue] % 2 == 0;
 }

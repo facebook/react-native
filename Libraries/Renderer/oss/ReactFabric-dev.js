@@ -1090,6 +1090,7 @@ var MemoComponent = 14;
 var SimpleMemoComponent = 15;
 var LazyComponent = 16;
 var IncompleteClassComponent = 17;
+var DehydratedSuspenseComponent = 18;
 
 function getParent(inst) {
   do {
@@ -3503,6 +3504,19 @@ function shouldYield$1() {
   return frameDeadline <= now$1();
 }
 
+var debugRenderPhaseSideEffects = false;
+var debugRenderPhaseSideEffectsForStrictMode = false;
+var enableUserTimingAPI = true;
+var replayFailedUnitOfWorkWithInvokeGuardedCallback = true;
+var warnAboutDeprecatedLifecycles = false;
+var enableProfilerTimer = true;
+var enableSchedulerTracing = true;
+var enableSuspenseServerRenderer = false;
+
+var warnAboutDeprecatedSetNativeProps = false;
+
+// Only used in www builds.
+
 // Use to restore controlled state after a change event has fired.
 
 var restoreImpl = null;
@@ -3651,21 +3665,31 @@ function shim$1() {
 }
 
 // Hydration (when unsupported)
+
 var supportsHydration = false;
 var canHydrateInstance = shim$1;
 var canHydrateTextInstance = shim$1;
+var canHydrateSuspenseInstance = shim$1;
+var isSuspenseInstancePending = shim$1;
+var isSuspenseInstanceFallback = shim$1;
+var registerSuspenseInstanceRetry = shim$1;
 var getNextHydratableSibling = shim$1;
 var getFirstHydratableChild = shim$1;
 var hydrateInstance = shim$1;
 var hydrateTextInstance = shim$1;
+var getNextHydratableInstanceAfterSuspenseInstance = shim$1;
+var clearSuspenseBoundary = shim$1;
+var clearSuspenseBoundaryFromContainer = shim$1;
 var didNotMatchHydratedContainerTextInstance = shim$1;
 var didNotMatchHydratedTextInstance = shim$1;
 var didNotHydrateContainerInstance = shim$1;
 var didNotHydrateInstance = shim$1;
 var didNotFindHydratableContainerInstance = shim$1;
 var didNotFindHydratableContainerTextInstance = shim$1;
+var didNotFindHydratableContainerSuspenseInstance = shim$1;
 var didNotFindHydratableInstance = shim$1;
 var didNotFindHydratableTextInstance = shim$1;
+var didNotFindHydratableSuspenseInstance = shim$1;
 
 function _classCallCheck(instance, Constructor) {
   if (!(instance instanceof Constructor)) {
@@ -3742,6 +3766,15 @@ var ReactFabricHostComponent = (function() {
     nativeProps
   ) {
     {
+      if (warnAboutDeprecatedSetNativeProps) {
+        warningWithoutStack$1(
+          false,
+          "Warning: Calling ref.setNativeProps(nativeProps) " +
+            "is deprecated and will be removed in a future release. " +
+            "Use the setNativeProps export from the react-native package instead." +
+            "\n\timport {setNativeProps} from 'react-native';\n\tsetNativeProps(ref, nativeProps);\n"
+        );
+      }
       warnForStyleProps(nativeProps, this.viewConfig.validAttributes);
     }
 
@@ -4121,16 +4154,6 @@ function setCurrentPhase(lifeCyclePhase) {
   }
 }
 
-var debugRenderPhaseSideEffects = false;
-var debugRenderPhaseSideEffectsForStrictMode = false;
-var enableUserTimingAPI = true;
-var replayFailedUnitOfWorkWithInvokeGuardedCallback = true;
-var warnAboutDeprecatedLifecycles = false;
-var enableProfilerTimer = true;
-var enableSchedulerTracing = true;
-
-// Only used in www builds.
-
 // Prefix measurements so that it's possible to filter them.
 // Longer prefixes are hard to read in DevTools.
 var reactEmoji = "\u269B";
@@ -4402,7 +4425,8 @@ function stopFailedWorkTimer(fiber) {
     }
     fiber._debugIsCurrentlyTiming = false;
     var warning =
-      fiber.tag === SuspenseComponent
+      fiber.tag === SuspenseComponent ||
+      fiber.tag === DehydratedSuspenseComponent
         ? "Rendering was suspended"
         : "An error was thrown inside this error boundary";
     endFiberMark(fiber, null, warning);
@@ -9277,17 +9301,6 @@ function mountWorkInProgressHook() {
 
   {
     hook._debugType = currentHookNameInDev;
-    if (
-      currentlyRenderingFiber$1 !== null &&
-      currentlyRenderingFiber$1.alternate !== null
-    ) {
-      warning$1(
-        false,
-        "%s: Rendered more hooks than during the previous render. This is " +
-          "not currently supported and may lead to unexpected behavior.",
-        getComponentName(currentlyRenderingFiber$1.type)
-      );
-    }
   }
   if (workInProgressHook === null) {
     // This is the first hook in the list
@@ -9431,7 +9444,6 @@ function updateReducer(reducer, initialArg, init) {
         }
 
         hook.memoizedState = newState;
-
         // Don't persist the state accumlated from the render phase updates to
         // the base state unless the queue is empty.
         // TODO: Not sure if this is the desired semantics, but it's what we
@@ -9439,6 +9451,9 @@ function updateReducer(reducer, initialArg, init) {
         if (hook.baseUpdate === queue.last) {
           hook.baseState = newState;
         }
+
+        queue.eagerReducer = reducer;
+        queue.eagerState = newState;
 
         return [newState, _dispatch];
       }
@@ -10302,6 +10317,18 @@ function enterHydrationState(fiber) {
   return true;
 }
 
+function reenterHydrationStateFromDehydratedSuspenseInstance(fiber) {
+  if (!supportsHydration) {
+    return false;
+  }
+
+  var suspenseInstance = fiber.stateNode;
+  nextHydratableInstance = getNextHydratableSibling(suspenseInstance);
+  popToNextHostParent(fiber);
+  isHydrating = true;
+  return true;
+}
+
 function deleteHydratableInstance(returnFiber, instance) {
   {
     switch (returnFiber.tag) {
@@ -10356,6 +10383,9 @@ function insertNonHydratedInstance(returnFiber, fiber) {
             var text = fiber.pendingProps;
             didNotFindHydratableContainerTextInstance(parentContainer, text);
             break;
+          case SuspenseComponent:
+            didNotFindHydratableContainerSuspenseInstance(parentContainer);
+            break;
         }
         break;
       }
@@ -10382,6 +10412,13 @@ function insertNonHydratedInstance(returnFiber, fiber) {
               parentProps,
               parentInstance,
               _text
+            );
+            break;
+          case SuspenseComponent:
+            didNotFindHydratableSuspenseInstance(
+              parentType,
+              parentProps,
+              parentInstance
             );
             break;
         }
@@ -10411,6 +10448,18 @@ function tryHydrate(fiber, nextInstance) {
       if (textInstance !== null) {
         fiber.stateNode = textInstance;
         return true;
+      }
+      return false;
+    }
+    case SuspenseComponent: {
+      if (enableSuspenseServerRenderer) {
+        var suspenseInstance = canHydrateSuspenseInstance(nextInstance);
+        if (suspenseInstance !== null) {
+          // Downgrade the tag to a dehydrated component until we've hydrated it.
+          fiber.tag = DehydratedSuspenseComponent;
+          fiber.stateNode = suspenseInstance;
+          return true;
+        }
       }
       return false;
     }
@@ -10534,12 +10583,32 @@ function prepareToHydrateHostTextInstance(fiber) {
   return shouldUpdate;
 }
 
+function skipPastDehydratedSuspenseInstance(fiber) {
+  if (!supportsHydration) {
+    invariant(
+      false,
+      "Expected skipPastDehydratedSuspenseInstance() to never be called. " +
+        "This error is likely caused by a bug in React. Please file an issue."
+    );
+  }
+  var suspenseInstance = fiber.stateNode;
+  invariant(
+    suspenseInstance,
+    "Expected to have a hydrated suspense instance. " +
+      "This error is likely caused by a bug in React. Please file an issue."
+  );
+  nextHydratableInstance = getNextHydratableInstanceAfterSuspenseInstance(
+    suspenseInstance
+  );
+}
+
 function popToNextHostParent(fiber) {
   var parent = fiber.return;
   while (
     parent !== null &&
     parent.tag !== HostComponent &&
-    parent.tag !== HostRoot
+    parent.tag !== HostRoot &&
+    parent.tag !== DehydratedSuspenseComponent
   ) {
     parent = parent.return;
   }
@@ -10691,6 +10760,10 @@ function updateForwardRef(
   nextProps,
   renderExpirationTime
 ) {
+  // TODO: current can be non-null here even if the component
+  // hasn't yet mounted. This happens after the first render suspends.
+  // We'll need to figure out if this is fine or can cause issues.
+
   {
     if (workInProgress.type !== workInProgress.elementType) {
       // Lazy component props can't be validated in createElement
@@ -10880,6 +10953,10 @@ function updateSimpleMemoComponent(
   updateExpirationTime,
   renderExpirationTime
 ) {
+  // TODO: current can be non-null here even if the component
+  // hasn't yet mounted. This happens when the inner render suspends.
+  // We'll need to figure out if this is fine or can cause issues.
+
   {
     if (workInProgress.type !== workInProgress.elementType) {
       // Lazy component props can't be validated in createElement
@@ -11833,6 +11910,22 @@ function updateSuspenseComponent(
   // children -- we skip over the primary children entirely.
   var next = void 0;
   if (current$$1 === null) {
+    if (enableSuspenseServerRenderer) {
+      // If we're currently hydrating, try to hydrate this boundary.
+      // But only if this has a fallback.
+      if (nextProps.fallback !== undefined) {
+        tryToClaimNextHydratableInstance(workInProgress);
+        // This could've changed the tag if this was a dehydrated suspense component.
+        if (workInProgress.tag === DehydratedSuspenseComponent) {
+          return updateDehydratedSuspenseComponent(
+            null,
+            workInProgress,
+            renderExpirationTime
+          );
+        }
+      }
+    }
+
     // This is the initial mount. This branch is pretty simple because there's
     // no previous state that needs to be preserved.
     if (nextDidTimeout) {
@@ -12033,6 +12126,107 @@ function updateSuspenseComponent(
   workInProgress.memoizedState = nextState;
   workInProgress.child = child;
   return next;
+}
+
+function updateDehydratedSuspenseComponent(
+  current$$1,
+  workInProgress,
+  renderExpirationTime
+) {
+  if (current$$1 === null) {
+    // During the first pass, we'll bail out and not drill into the children.
+    // Instead, we'll leave the content in place and try to hydrate it later.
+    workInProgress.expirationTime = Never;
+    return null;
+  }
+  if ((workInProgress.effectTag & DidCapture) !== NoEffect) {
+    // Something suspended. Leave the existing children in place.
+    // TODO: In non-concurrent mode, should we commit the nodes we have hydrated so far?
+    workInProgress.child = null;
+    return null;
+  }
+  // We use childExpirationTime to indicate that a child might depend on context, so if
+  // any context has changed, we need to treat is as if the input might have changed.
+  var hasContextChanged$$1 =
+    current$$1.childExpirationTime >= renderExpirationTime;
+  var suspenseInstance = current$$1.stateNode;
+  if (
+    didReceiveUpdate ||
+    hasContextChanged$$1 ||
+    isSuspenseInstanceFallback(suspenseInstance)
+  ) {
+    // This boundary has changed since the first render. This means that we are now unable to
+    // hydrate it. We might still be able to hydrate it using an earlier expiration time but
+    // during this render we can't. Instead, we're going to delete the whole subtree and
+    // instead inject a new real Suspense boundary to take its place, which may render content
+    // or fallback. The real Suspense boundary will suspend for a while so we have some time
+    // to ensure it can produce real content, but all state and pending events will be lost.
+
+    // Alternatively, this boundary is in a permanent fallback state. In this case, we'll never
+    // get an update and we'll never be able to hydrate the final content. Let's just try the
+    // client side render instead.
+
+    // Detach from the current dehydrated boundary.
+    current$$1.alternate = null;
+    workInProgress.alternate = null;
+
+    // Insert a deletion in the effect list.
+    var returnFiber = workInProgress.return;
+    invariant(
+      returnFiber !== null,
+      "Suspense boundaries are never on the root. " +
+        "This is probably a bug in React."
+    );
+    var last = returnFiber.lastEffect;
+    if (last !== null) {
+      last.nextEffect = current$$1;
+      returnFiber.lastEffect = current$$1;
+    } else {
+      returnFiber.firstEffect = returnFiber.lastEffect = current$$1;
+    }
+    current$$1.nextEffect = null;
+    current$$1.effectTag = Deletion;
+
+    // Upgrade this work in progress to a real Suspense component.
+    workInProgress.tag = SuspenseComponent;
+    workInProgress.stateNode = null;
+    workInProgress.memoizedState = null;
+    // This is now an insertion.
+    workInProgress.effectTag |= Placement;
+    // Retry as a real Suspense component.
+    return updateSuspenseComponent(null, workInProgress, renderExpirationTime);
+  } else if (isSuspenseInstancePending(suspenseInstance)) {
+    // This component is still pending more data from the server, so we can't hydrate its
+    // content. We treat it as if this component suspended itself. It might seem as if
+    // we could just try to render it client-side instead. However, this will perform a
+    // lot of unnecessary work and is unlikely to complete since it often will suspend
+    // on missing data anyway. Additionally, the server might be able to render more
+    // than we can on the client yet. In that case we'd end up with more fallback states
+    // on the client than if we just leave it alone. If the server times out or errors
+    // these should update this boundary to the permanent Fallback state instead.
+    // Mark it as having captured (i.e. suspended).
+    workInProgress.effectTag |= DidCapture;
+    // Leave the children in place. I.e. empty.
+    workInProgress.child = null;
+    // Register a callback to retry this boundary once the server has sent the result.
+    registerSuspenseInstanceRetry(
+      suspenseInstance,
+      retryTimedOutBoundary.bind(null, current$$1)
+    );
+    return null;
+  } else {
+    // This is the first attempt.
+    reenterHydrationStateFromDehydratedSuspenseInstance(workInProgress);
+    var nextProps = workInProgress.pendingProps;
+    var nextChildren = nextProps.children;
+    workInProgress.child = mountChildFibers(
+      workInProgress,
+      null,
+      nextChildren,
+      renderExpirationTime
+    );
+    return workInProgress.child;
+  }
 }
 
 function updatePortalComponent(
@@ -12321,6 +12515,15 @@ function beginWork(current$$1, workInProgress, renderExpirationTime) {
           }
           break;
         }
+        case DehydratedSuspenseComponent: {
+          if (enableSuspenseServerRenderer) {
+            // We know that this component will suspend again because if it has
+            // been unsuspended it has committed as a regular Suspense component.
+            // If it needs to be retried, it should have work scheduled on it.
+            workInProgress.effectTag |= DidCapture;
+            break;
+          }
+        }
       }
       return bailoutOnAlreadyFinishedWork(
         current$$1,
@@ -12494,13 +12697,22 @@ function beginWork(current$$1, workInProgress, renderExpirationTime) {
         renderExpirationTime
       );
     }
-    default:
-      invariant(
-        false,
-        "Unknown unit of work tag. This error is likely caused by a bug in " +
-          "React. Please file an issue."
-      );
+    case DehydratedSuspenseComponent: {
+      if (enableSuspenseServerRenderer) {
+        return updateDehydratedSuspenseComponent(
+          current$$1,
+          workInProgress,
+          renderExpirationTime
+        );
+      }
+      break;
+    }
   }
+  invariant(
+    false,
+    "Unknown unit of work tag. This error is likely caused by a bug in " +
+      "React. Please file an issue."
+  );
 }
 
 var valueCursor = createCursor(null);
@@ -12619,6 +12831,34 @@ function calculateChangedBits(context, newValue, oldValue) {
   }
 }
 
+function scheduleWorkOnParentPath(parent, renderExpirationTime) {
+  // Update the child expiration time of all the ancestors, including
+  // the alternates.
+  var node = parent;
+  while (node !== null) {
+    var alternate = node.alternate;
+    if (node.childExpirationTime < renderExpirationTime) {
+      node.childExpirationTime = renderExpirationTime;
+      if (
+        alternate !== null &&
+        alternate.childExpirationTime < renderExpirationTime
+      ) {
+        alternate.childExpirationTime = renderExpirationTime;
+      }
+    } else if (
+      alternate !== null &&
+      alternate.childExpirationTime < renderExpirationTime
+    ) {
+      alternate.childExpirationTime = renderExpirationTime;
+    } else {
+      // Neither alternate was updated, which means the rest of the
+      // ancestor path already has sufficient priority.
+      break;
+    }
+    node = node.return;
+  }
+}
+
 function propagateContextChange(
   workInProgress,
   context,
@@ -12668,31 +12908,8 @@ function propagateContextChange(
           ) {
             alternate.expirationTime = renderExpirationTime;
           }
-          // Update the child expiration time of all the ancestors, including
-          // the alternates.
-          var node = fiber.return;
-          while (node !== null) {
-            alternate = node.alternate;
-            if (node.childExpirationTime < renderExpirationTime) {
-              node.childExpirationTime = renderExpirationTime;
-              if (
-                alternate !== null &&
-                alternate.childExpirationTime < renderExpirationTime
-              ) {
-                alternate.childExpirationTime = renderExpirationTime;
-              }
-            } else if (
-              alternate !== null &&
-              alternate.childExpirationTime < renderExpirationTime
-            ) {
-              alternate.childExpirationTime = renderExpirationTime;
-            } else {
-              // Neither alternate was updated, which means the rest of the
-              // ancestor path already has sufficient priority.
-              break;
-            }
-            node = node.return;
-          }
+
+          scheduleWorkOnParentPath(fiber.return, renderExpirationTime);
 
           // Mark the expiration time on the list, too.
           if (list.expirationTime < renderExpirationTime) {
@@ -12708,6 +12925,29 @@ function propagateContextChange(
     } else if (fiber.tag === ContextProvider) {
       // Don't scan deeper if this is a matching provider
       nextFiber = fiber.type === workInProgress.type ? null : fiber.child;
+    } else if (
+      enableSuspenseServerRenderer &&
+      fiber.tag === DehydratedSuspenseComponent
+    ) {
+      // If a dehydrated suspense component is in this subtree, we don't know
+      // if it will have any context consumers in it. The best we can do is
+      // mark it as having updates on its children.
+      if (fiber.expirationTime < renderExpirationTime) {
+        fiber.expirationTime = renderExpirationTime;
+      }
+      var _alternate = fiber.alternate;
+      if (
+        _alternate !== null &&
+        _alternate.expirationTime < renderExpirationTime
+      ) {
+        _alternate.expirationTime = renderExpirationTime;
+      }
+      // This is intentionally passing this fiber as the parent
+      // because we want to schedule this fiber as having work
+      // on its children. We'll use the childExpirationTime on
+      // this fiber to indicate that a context has changed.
+      scheduleWorkOnParentPath(fiber, renderExpirationTime);
+      nextFiber = fiber.sibling;
     } else {
       // Traverse down.
       nextFiber = fiber.child;
@@ -13984,7 +14224,12 @@ function completeWork(current, workInProgress, renderExpirationTime) {
       var nextDidTimeout = nextState !== null;
       var prevDidTimeout = current !== null && current.memoizedState !== null;
 
-      if (current !== null && !nextDidTimeout && prevDidTimeout) {
+      if (current === null) {
+        // In cases where we didn't find a suitable hydration boundary we never
+        // downgraded this to a DehydratedSuspenseComponent, but we still need to
+        // pop the hydration state since we might be inside the insertion tree.
+        popHydrationState(workInProgress);
+      } else if (!nextDidTimeout && prevDidTimeout) {
         // We just switched from the fallback to the normal children. Delete
         // the fallback.
         // TODO: Would it be better to store the fallback fragment on
@@ -14035,6 +14280,29 @@ function completeWork(current, workInProgress, renderExpirationTime) {
       var _Component = workInProgress.type;
       if (isContextProvider(_Component)) {
         popContext(workInProgress);
+      }
+      break;
+    }
+    case DehydratedSuspenseComponent: {
+      if (enableSuspenseServerRenderer) {
+        if (current === null) {
+          var _wasHydrated2 = popHydrationState(workInProgress);
+          invariant(
+            _wasHydrated2,
+            "A dehydrated suspense component was completed without a hydrated node. " +
+              "This is probably a bug in React."
+          );
+          skipPastDehydratedSuspenseInstance(workInProgress);
+        } else if ((workInProgress.effectTag & DidCapture) === NoEffect) {
+          // This boundary did not suspend so it's now hydrated.
+          // To handle any future suspense cases, we're going to now upgrade it
+          // to a Suspense component. We detach it from the existing current fiber.
+          current.alternate = null;
+          workInProgress.alternate = null;
+          workInProgress.tag = SuspenseComponent;
+          workInProgress.memoizedState = null;
+          workInProgress.stateNode = null;
+        }
       }
       break;
     }
@@ -14181,7 +14449,7 @@ var didWarnAboutUndefinedSnapshotBeforeUpdate = null;
   didWarnAboutUndefinedSnapshotBeforeUpdate = new Set();
 }
 
-var PossiblyWeakSet = typeof WeakSet === "function" ? WeakSet : Set;
+var PossiblyWeakSet$1 = typeof WeakSet === "function" ? WeakSet : Set;
 
 function logError(boundary, errorInfo) {
   var source = errorInfo.source;
@@ -14938,7 +15206,11 @@ function getHostSibling(fiber) {
     }
     node.sibling.return = node.return;
     node = node.sibling;
-    while (node.tag !== HostComponent && node.tag !== HostText) {
+    while (
+      node.tag !== HostComponent &&
+      node.tag !== HostText &&
+      node.tag !== DehydratedSuspenseComponent
+    ) {
       // If it is not host node and, we might have a host node inside it.
       // Try to search down until we find one.
       if (node.effectTag & Placement) {
@@ -15093,6 +15365,16 @@ function unmountHostComponents(current$$1) {
         removeChild(currentParent, node.stateNode);
       }
       // Don't visit children because we already visited them.
+    } else if (
+      enableSuspenseServerRenderer &&
+      node.tag === DehydratedSuspenseComponent
+    ) {
+      // Delete the dehydrated suspense boundary and all of its content.
+      if (currentParentIsContainer) {
+        clearSuspenseBoundaryFromContainer(currentParent, node.stateNode);
+      } else {
+        clearSuspenseBoundary(currentParent, node.stateNode);
+      }
     } else if (node.tag === HostPortal) {
       if (node.child !== null) {
         // When we go into a portal, it becomes the parent to remove from.
@@ -15253,11 +15535,11 @@ function commitWork(current$$1, finishedWork) {
         finishedWork.updateQueue = null;
         var retryCache = finishedWork.stateNode;
         if (retryCache === null) {
-          retryCache = finishedWork.stateNode = new PossiblyWeakSet();
+          retryCache = finishedWork.stateNode = new PossiblyWeakSet$1();
         }
         thenables.forEach(function(thenable) {
           // Memoize using the boundary fiber to prevent redundant listeners.
-          var retry = retryTimedOutBoundary.bind(null, finishedWork, thenable);
+          var retry = resolveRetryThenable.bind(null, finishedWork, thenable);
           if (enableSchedulerTracing) {
             retry = tracing.unstable_wrap(retry);
           }
@@ -15290,6 +15572,7 @@ function commitResetTextContent(current$$1) {
   resetTextContent(current$$1.stateNode);
 }
 
+var PossiblyWeakSet = typeof WeakSet === "function" ? WeakSet : Set;
 var PossiblyWeakMap = typeof WeakMap === "function" ? WeakMap : Map;
 
 function createRootErrorUpdate(fiber, errorInfo, expirationTime) {
@@ -15355,6 +15638,39 @@ function createClassErrorUpdate(fiber, errorInfo, expirationTime) {
   return update;
 }
 
+function attachPingListener(root, renderExpirationTime, thenable) {
+  // Attach a listener to the promise to "ping" the root and retry. But
+  // only if one does not already exist for the current render expiration
+  // time (which acts like a "thread ID" here).
+  var pingCache = root.pingCache;
+  var threadIDs = void 0;
+  if (pingCache === null) {
+    pingCache = root.pingCache = new PossiblyWeakMap();
+    threadIDs = new Set();
+    pingCache.set(thenable, threadIDs);
+  } else {
+    threadIDs = pingCache.get(thenable);
+    if (threadIDs === undefined) {
+      threadIDs = new Set();
+      pingCache.set(thenable, threadIDs);
+    }
+  }
+  if (!threadIDs.has(renderExpirationTime)) {
+    // Memoize using the thread ID to prevent redundant listeners.
+    threadIDs.add(renderExpirationTime);
+    var ping = pingSuspendedRoot.bind(
+      null,
+      root,
+      thenable,
+      renderExpirationTime
+    );
+    if (enableSchedulerTracing) {
+      ping = tracing.unstable_wrap(ping);
+    }
+    thenable.then(ping, ping);
+  }
+}
+
 function throwException(
   root,
   returnFiber,
@@ -15409,6 +15725,9 @@ function throwException(
           }
         }
       }
+      // If there is a DehydratedSuspenseComponent we don't have to do anything because
+      // if something suspends inside it, we will simply leave that as dehydrated. It
+      // will never timeout.
       _workInProgress = _workInProgress.return;
     } while (_workInProgress !== null);
 
@@ -15475,36 +15794,7 @@ function throwException(
         // Confirmed that the boundary is in a concurrent mode tree. Continue
         // with the normal suspend path.
 
-        // Attach a listener to the promise to "ping" the root and retry. But
-        // only if one does not already exist for the current render expiration
-        // time (which acts like a "thread ID" here).
-        var pingCache = root.pingCache;
-        var threadIDs = void 0;
-        if (pingCache === null) {
-          pingCache = root.pingCache = new PossiblyWeakMap();
-          threadIDs = new Set();
-          pingCache.set(thenable, threadIDs);
-        } else {
-          threadIDs = pingCache.get(thenable);
-          if (threadIDs === undefined) {
-            threadIDs = new Set();
-            pingCache.set(thenable, threadIDs);
-          }
-        }
-        if (!threadIDs.has(renderExpirationTime)) {
-          // Memoize using the thread ID to prevent redundant listeners.
-          threadIDs.add(renderExpirationTime);
-          var ping = pingSuspendedRoot.bind(
-            null,
-            root,
-            thenable,
-            renderExpirationTime
-          );
-          if (enableSchedulerTracing) {
-            ping = tracing.unstable_wrap(ping);
-          }
-          thenable.then(ping, ping);
-        }
+        attachPingListener(root, renderExpirationTime, thenable);
 
         var absoluteTimeoutMs = void 0;
         if (earliestTimeoutMs === -1) {
@@ -15541,6 +15831,40 @@ function throwException(
         // whole tree.
         renderDidSuspend(root, absoluteTimeoutMs, renderExpirationTime);
 
+        _workInProgress.effectTag |= ShouldCapture;
+        _workInProgress.expirationTime = renderExpirationTime;
+        return;
+      } else if (
+        enableSuspenseServerRenderer &&
+        _workInProgress.tag === DehydratedSuspenseComponent
+      ) {
+        attachPingListener(root, renderExpirationTime, thenable);
+
+        // Since we already have a current fiber, we can eagerly add a retry listener.
+        var retryCache = _workInProgress.memoizedState;
+        if (retryCache === null) {
+          retryCache = _workInProgress.memoizedState = new PossiblyWeakSet();
+          var _current = _workInProgress.alternate;
+          invariant(
+            _current,
+            "A dehydrated suspense boundary must commit before trying to render. " +
+              "This is probably a bug in React."
+          );
+          _current.memoizedState = retryCache;
+        }
+        // Memoize using the boundary fiber to prevent redundant listeners.
+        if (!retryCache.has(thenable)) {
+          retryCache.add(thenable);
+          var retry = resolveRetryThenable.bind(
+            null,
+            _workInProgress,
+            thenable
+          );
+          if (enableSchedulerTracing) {
+            retry = tracing.unstable_wrap(retry);
+          }
+          thenable.then(retry, retry);
+        }
         _workInProgress.effectTag |= ShouldCapture;
         _workInProgress.expirationTime = renderExpirationTime;
         return;
@@ -15639,6 +15963,7 @@ function unwindWork(workInProgress, renderExpirationTime) {
       return workInProgress;
     }
     case HostComponent: {
+      // TODO: popHydrationState
       popHostContext(workInProgress);
       return null;
     }
@@ -15648,6 +15973,19 @@ function unwindWork(workInProgress, renderExpirationTime) {
         workInProgress.effectTag = (_effectTag2 & ~ShouldCapture) | DidCapture;
         // Captured a suspense effect. Re-render the boundary.
         return workInProgress;
+      }
+      return null;
+    }
+    case DehydratedSuspenseComponent: {
+      if (enableSuspenseServerRenderer) {
+        // TODO: popHydrationState
+        var _effectTag3 = workInProgress.effectTag;
+        if (_effectTag3 & ShouldCapture) {
+          workInProgress.effectTag =
+            (_effectTag3 & ~ShouldCapture) | DidCapture;
+          // Captured a suspense effect. Re-render the boundary.
+          return workInProgress;
+        }
       }
       return null;
     }
@@ -16069,6 +16407,10 @@ function commitPassiveEffects(root, firstEffect) {
   var rootExpirationTime = root.expirationTime;
   if (rootExpirationTime !== NoWork) {
     requestWork(root, rootExpirationTime);
+  }
+  // Flush any sync work that was scheduled by effects
+  if (!isBatchingUpdates && !isRendering) {
+    performSyncWork();
   }
 }
 
@@ -16685,7 +17027,7 @@ function workLoop(isYieldy) {
     }
   } else {
     // Flush asynchronous work until there's a higher priority event
-    while (nextUnitOfWork !== null && !shouldYieldToRenderer()) {
+    while (nextUnitOfWork !== null && !shouldYield$$1()) {
       nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
     }
   }
@@ -17144,17 +17486,7 @@ function pingSuspendedRoot(root, thenable, pingTime) {
   }
 }
 
-function retryTimedOutBoundary(boundaryFiber, thenable) {
-  // The boundary fiber (a Suspense component) previously timed out and was
-  // rendered in its fallback state. One of the promises that suspended it has
-  // resolved, which means at least part of the tree was likely unblocked. Try
-  var retryCache = boundaryFiber.stateNode;
-  if (retryCache !== null) {
-    // The thenable resolved, so we no longer need to memoize, because it will
-    // never be thrown again.
-    retryCache.delete(thenable);
-  }
-
+function retryTimedOutBoundary(boundaryFiber) {
   var currentTime = requestCurrentTime();
   var retryTime = computeExpirationForFiber(currentTime, boundaryFiber);
   var root = scheduleWorkToRoot(boundaryFiber, retryTime);
@@ -17165,6 +17497,38 @@ function retryTimedOutBoundary(boundaryFiber, thenable) {
       requestWork(root, rootExpirationTime);
     }
   }
+}
+
+function resolveRetryThenable(boundaryFiber, thenable) {
+  // The boundary fiber (a Suspense component) previously timed out and was
+  // rendered in its fallback state. One of the promises that suspended it has
+  // resolved, which means at least part of the tree was likely unblocked. Try
+  var retryCache = void 0;
+  if (enableSuspenseServerRenderer) {
+    switch (boundaryFiber.tag) {
+      case SuspenseComponent:
+        retryCache = boundaryFiber.stateNode;
+        break;
+      case DehydratedSuspenseComponent:
+        retryCache = boundaryFiber.memoizedState;
+        break;
+      default:
+        invariant(
+          false,
+          "Pinged unknown suspense boundary type. " +
+            "This is probably a bug in React."
+        );
+    }
+  } else {
+    retryCache = boundaryFiber.stateNode;
+  }
+  if (retryCache !== null) {
+    // The thenable resolved, so we no longer need to memoize, because it will
+    // never be thrown again.
+    retryCache.delete(thenable);
+  }
+
+  retryTimedOutBoundary(boundaryFiber);
 }
 
 function scheduleWorkToRoot(fiber, expirationTime) {
@@ -17265,8 +17629,10 @@ function warnIfNotCurrentlyBatchingInDev(fiber) {
           "});\n" +
           "/* assert on the output */\n\n" +
           "This ensures that you're testing the behavior the user would see in the browser." +
-          " Learn more at https://fb.me/react-wrap-tests-with-act",
-        getComponentName(fiber.type)
+          " Learn more at https://fb.me/react-wrap-tests-with-act" +
+          "%s",
+        getComponentName(fiber.type),
+        getStackByFiberInDevAndProd(fiber)
       );
     }
   }
@@ -17408,7 +17774,7 @@ function onSuspend(
   msUntilTimeout
 ) {
   root.expirationTime = rootExpirationTime;
-  if (msUntilTimeout === 0 && !shouldYieldToRenderer()) {
+  if (msUntilTimeout === 0 && !shouldYield$$1()) {
     // Don't wait an additional tick. Commit the tree immediately.
     root.pendingCommitExpirationTime = suspendedExpirationTime;
     root.finishedWork = finishedWork;
@@ -17605,43 +17971,24 @@ function findHighestPriorityRoot() {
   nextFlushedExpirationTime = highestPriorityWork;
 }
 
-// TODO: This wrapper exists because many of the older tests (the ones that use
-// flushDeferredPri) rely on the number of times `shouldYield` is called. We
-// should get rid of it.
-var didYield = false;
-function shouldYieldToRenderer() {
-  if (didYield) {
-    return true;
-  }
-  if (shouldYield$$1()) {
-    didYield = true;
-    return true;
-  }
-  return false;
-}
-
-function performAsyncWork() {
-  try {
-    if (!shouldYieldToRenderer()) {
-      // The callback timed out. That means at least one update has expired.
-      // Iterate through the root schedule. If they contain expired work, set
-      // the next render expiration time to the current time. This has the effect
-      // of flushing all expired work in a single batch, instead of flushing each
-      // level one at a time.
-      if (firstScheduledRoot !== null) {
-        recomputeCurrentRendererTime();
-        var root = firstScheduledRoot;
-        do {
-          didExpireAtExpirationTime(root, currentRendererTime);
-          // The root schedule is circular, so this is never null.
-          root = root.nextScheduledRoot;
-        } while (root !== firstScheduledRoot);
-      }
+function performAsyncWork(didTimeout) {
+  if (didTimeout) {
+    // The callback timed out. That means at least one update has expired.
+    // Iterate through the root schedule. If they contain expired work, set
+    // the next render expiration time to the current time. This has the effect
+    // of flushing all expired work in a single batch, instead of flushing each
+    // level one at a time.
+    if (firstScheduledRoot !== null) {
+      recomputeCurrentRendererTime();
+      var root = firstScheduledRoot;
+      do {
+        didExpireAtExpirationTime(root, currentRendererTime);
+        // The root schedule is circular, so this is never null.
+        root = root.nextScheduledRoot;
+      } while (root !== firstScheduledRoot);
     }
-    performWork(NoWork, true);
-  } finally {
-    didYield = false;
   }
+  performWork(NoWork, true);
 }
 
 function performSyncWork() {
@@ -17667,7 +18014,7 @@ function performWork(minExpirationTime, isYieldy) {
       nextFlushedRoot !== null &&
       nextFlushedExpirationTime !== NoWork &&
       minExpirationTime <= nextFlushedExpirationTime &&
-      !(didYield && currentRendererTime > nextFlushedExpirationTime)
+      !(shouldYield$$1() && currentRendererTime > nextFlushedExpirationTime)
     ) {
       performWorkOnRoot(
         nextFlushedRoot,
@@ -17811,7 +18158,7 @@ function performWorkOnRoot(root, expirationTime, isYieldy) {
       if (_finishedWork !== null) {
         // We've completed the root. Check the if we should yield one more time
         // before committing.
-        if (!shouldYieldToRenderer()) {
+        if (!shouldYield$$1()) {
           // Still time left. Commit the root.
           completeRoot$1(root, _finishedWork, expirationTime);
         } else {
@@ -18226,7 +18573,7 @@ function createPortal(
 
 // TODO: this is special because it gets imported during build.
 
-var ReactVersion = "16.8.1";
+var ReactVersion = "16.8.3";
 
 // Modules provided by RN:
 var NativeMethodsMixin = function(findNodeHandle, findHostInstance) {
@@ -18320,6 +18667,17 @@ var NativeMethodsMixin = function(findNodeHandle, findHostInstance) {
      * Manipulation](docs/direct-manipulation.html)).
      */
     setNativeProps: function(nativeProps) {
+      {
+        if (warnAboutDeprecatedSetNativeProps) {
+          warningWithoutStack$1(
+            false,
+            "Warning: Calling ref.setNativeProps(nativeProps) " +
+              "is deprecated and will be removed in a future release. " +
+              "Use the setNativeProps export from the react-native package instead." +
+              "\n\timport {setNativeProps} from 'react-native';\n\tsetNativeProps(ref, nativeProps);\n"
+          );
+        }
+      }
       // Class components don't have viewConfig -> validateAttributes.
       // Nor does it make sense to set native props on a non-native component.
       // Instead, find the nearest host component and set props on it.
@@ -18341,7 +18699,10 @@ var NativeMethodsMixin = function(findNodeHandle, findHostInstance) {
         return;
       }
 
-      var viewConfig = maybeInstance.viewConfig;
+      var nativeTag =
+        maybeInstance._nativeTag || maybeInstance.canonical._nativeTag;
+      var viewConfig =
+        maybeInstance.viewConfig || maybeInstance.canonical.viewConfig;
 
       {
         warnForStyleProps(nativeProps, viewConfig.validAttributes);
@@ -18354,7 +18715,7 @@ var NativeMethodsMixin = function(findNodeHandle, findHostInstance) {
       // view invalidation for certain components (eg RCTTextInput) on iOS.
       if (updatePayload != null) {
         UIManager.updateView(
-          maybeInstance._nativeTag,
+          nativeTag,
           viewConfig.uiViewClassName,
           updatePayload
         );
@@ -18575,6 +18936,18 @@ var ReactNativeComponent = function(findNodeHandle, findHostInstance) {
     ReactNativeComponent.prototype.setNativeProps = function setNativeProps(
       nativeProps
     ) {
+      {
+        if (warnAboutDeprecatedSetNativeProps) {
+          warningWithoutStack$1(
+            false,
+            "Warning: Calling ref.setNativeProps(nativeProps) " +
+              "is deprecated and will be removed in a future release. " +
+              "Use the setNativeProps export from the react-native package instead." +
+              "\n\timport {setNativeProps} from 'react-native';\n\tsetNativeProps(ref, nativeProps);\n"
+          );
+        }
+      }
+
       // Class components don't have viewConfig -> validateAttributes.
       // Nor does it make sense to set native props on a non-native component.
       // Instead, find the nearest host component and set props on it.
@@ -18596,6 +18969,8 @@ var ReactNativeComponent = function(findNodeHandle, findHostInstance) {
         return;
       }
 
+      var nativeTag =
+        maybeInstance._nativeTag || maybeInstance.canonical._nativeTag;
       var viewConfig =
         maybeInstance.viewConfig || maybeInstance.canonical.viewConfig;
 
@@ -18606,7 +18981,7 @@ var ReactNativeComponent = function(findNodeHandle, findHostInstance) {
       // view invalidation for certain components (eg RCTTextInput) on iOS.
       if (updatePayload != null) {
         UIManager.updateView(
-          maybeInstance._nativeTag,
+          nativeTag,
           viewConfig.uiViewClassName,
           updatePayload
         );
@@ -18734,6 +19109,36 @@ var getInspectorDataForViewTag = void 0;
   };
 }
 
+// Module provided by RN:
+function setNativeProps(handle, nativeProps) {
+  if (handle._nativeTag == null) {
+    !(handle._nativeTag != null)
+      ? warningWithoutStack$1(
+          false,
+          "setNativeProps was called with a ref that isn't a " +
+            "native component. Use React.forwardRef to get access to the underlying native component"
+        )
+      : void 0;
+    return;
+  }
+
+  {
+    warnForStyleProps(nativeProps, handle.viewConfig.validAttributes);
+  }
+
+  var updatePayload = create(nativeProps, handle.viewConfig.validAttributes);
+  // Avoid the overhead of bridge calls if there's no update.
+  // This is an expensive no-op for Android, and causes an unnecessary
+  // view invalidation for certain components (eg RCTTextInput) on iOS.
+  if (updatePayload != null) {
+    UIManager.updateView(
+      handle._nativeTag,
+      handle.viewConfig.uiViewClassName,
+      updatePayload
+    );
+  }
+}
+
 var ReactCurrentOwner = ReactSharedInternals.ReactCurrentOwner;
 
 function findNodeHandle(componentOrHandle) {
@@ -18800,6 +19205,8 @@ var ReactFabric = {
   NativeComponent: ReactNativeComponent(findNodeHandle, findHostInstance),
 
   findNodeHandle: findNodeHandle,
+
+  setNativeProps: setNativeProps,
 
   render: function(element, containerTag, callback) {
     var root = roots.get(containerTag);

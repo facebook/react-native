@@ -11,34 +11,40 @@
 #include <string>
 #include <vector>
 
+#include <better/small_vector.h>
+#include <react/core/EventEmitter.h>
 #include <react/core/LocalData.h>
 #include <react/core/Props.h>
 #include <react/core/ReactPrimitives.h>
 #include <react/core/Sealable.h>
+#include <react/core/State.h>
 #include <react/debug/DebugStringConvertible.h>
-#include <react/events/EventEmitter.h>
 
 namespace facebook {
 namespace react {
 
+static constexpr const int kShadowNodeChildrenSmallVectorSize = 8;
+
+class ComponentDescriptor;
 struct ShadowNodeFragment;
 
 class ShadowNode;
 
 using SharedShadowNode = std::shared_ptr<const ShadowNode>;
+using WeakShadowNode = std::weak_ptr<const ShadowNode>;
 using UnsharedShadowNode = std::shared_ptr<ShadowNode>;
-using SharedShadowNodeList = std::vector<SharedShadowNode>;
+using SharedShadowNodeList =
+    better::small_vector<SharedShadowNode, kShadowNodeChildrenSmallVectorSize>;
 using SharedShadowNodeSharedList = std::shared_ptr<const SharedShadowNodeList>;
 using SharedShadowNodeUnsharedList = std::shared_ptr<SharedShadowNodeList>;
-
-using ShadowNodeCloneFunction = std::function<UnsharedShadowNode(
-    const ShadowNode &sourceShadowNode,
-    const ShadowNodeFragment &fragment)>;
 
 class ShadowNode : public virtual Sealable,
                    public virtual DebugStringConvertible,
                    public std::enable_shared_from_this<ShadowNode> {
  public:
+  using Shared = std::shared_ptr<const ShadowNode>;
+  using Weak = std::weak_ptr<const ShadowNode>;
+
   static SharedShadowNodeSharedList emptySharedShadowNodeSharedList();
 
 #pragma mark - Constructors
@@ -48,7 +54,7 @@ class ShadowNode : public virtual Sealable,
    */
   ShadowNode(
       const ShadowNodeFragment &fragment,
-      const ShadowNodeCloneFunction &cloneFunction);
+      const ComponentDescriptor &componentDescriptor);
 
   /*
    * Creates a Shadow Node via cloning given `sourceShadowNode` and
@@ -75,6 +81,22 @@ class ShadowNode : public virtual Sealable,
   SharedEventEmitter getEventEmitter() const;
   Tag getTag() const;
   Tag getRootTag() const;
+
+  /*
+   * Returns a concrete `ComponentDescriptor` that manages nodes of this type.
+   */
+  const ComponentDescriptor &getComponentDescriptor() const;
+
+  /*
+   * Returns a state associated with the particular node.
+   */
+  const State::Shared &getState() const;
+
+  /*
+   * Returns a momentary value of currently committed state associated with a
+   * family of nodes which this node belongs to.
+   */
+  const State::Shared &getCommitedState() const;
 
   /*
    * Returns a local data associated with the node.
@@ -139,6 +161,7 @@ class ShadowNode : public virtual Sealable,
   SharedEventEmitter eventEmitter_;
   SharedShadowNodeSharedList children_;
   SharedLocalData localData_;
+  State::Shared state_;
 
  private:
   /*
@@ -148,10 +171,10 @@ class ShadowNode : public virtual Sealable,
   void cloneChildrenIfShared();
 
   /*
-   * A reference to a cloning function that understands how to clone
-   * the specific type of ShadowNode.
+   * A reference to a concrete `ComponentDescriptor` that manages nodes of this
+   * type.
    */
-  ShadowNodeCloneFunction cloneFunction_;
+  const ComponentDescriptor &componentDescriptor_;
 
   /*
    * Indicates that `children` list is shared between nodes and need

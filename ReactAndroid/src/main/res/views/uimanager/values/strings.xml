@@ -20,4 +20,8 @@
     name="adjustable_description"
     translatable="false"
     >Adjustable</string>
+  <string
+    name="header_description"
+    translatable="false"
+    >Heading</string>
 </resources>

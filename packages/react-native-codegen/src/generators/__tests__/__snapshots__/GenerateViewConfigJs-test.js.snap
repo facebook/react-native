@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`GenerateViewConfigJs can generate fixture SINGLE_COMPONENT_WITH_BOOLEAN_PROP 1`] = `
+exports[`GenerateViewConfigJs can generate fixture BOOLEAN_PROP 1`] = `
 Map {
   "ViewConfigs.js" => "
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -35,11 +35,11 @@ ReactNativeViewConfigRegistry.register(
 }
 `;
 
-exports[`GenerateViewConfigJs can generate fixture SINGLE_COMPONENT_WITH_COLOR_PROP 1`] = `
+exports[`GenerateViewConfigJs can generate fixture COLOR_PROP 1`] = `
 Map {
   "ViewConfigs.js" => "
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -70,11 +70,11 @@ ReactNativeViewConfigRegistry.register(
 }
 `;
 
-exports[`GenerateViewConfigJs can generate fixture SINGLE_COMPONENT_WITH_ENUM_PROP 1`] = `
+exports[`GenerateViewConfigJs can generate fixture ENUM_PROP 1`] = `
 Map {
   "ViewConfigs.js" => "
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -105,11 +105,11 @@ ReactNativeViewConfigRegistry.register(
 }
 `;
 
-exports[`GenerateViewConfigJs can generate fixture SINGLE_COMPONENT_WITH_EVENT_NESTED_OBJECT_PROPS 1`] = `
+exports[`GenerateViewConfigJs can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
 Map {
   "ViewConfigs.js" => "
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -149,11 +149,11 @@ ReactNativeViewConfigRegistry.register(
 }
 `;
 
-exports[`GenerateViewConfigJs can generate fixture SINGLE_COMPONENT_WITH_EVENT_PROPS 1`] = `
+exports[`GenerateViewConfigJs can generate fixture EVENT_PROPS 1`] = `
 Map {
   "ViewConfigs.js" => "
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -199,11 +199,11 @@ ReactNativeViewConfigRegistry.register(
 }
 `;
 
-exports[`GenerateViewConfigJs can generate fixture SINGLE_COMPONENT_WITH_FLOAT_PROPS 1`] = `
+exports[`GenerateViewConfigJs can generate fixture FLOAT_PROPS 1`] = `
 Map {
   "ViewConfigs.js" => "
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -226,6 +226,7 @@ const FloatPropNativeComponentViewConfig = {
     blurRadius3: true,
     blurRadius4: true,
     blurRadius5: true,
+    blurRadius6: true,
     style: ReactNativeStyleAttributes
   }
 };
@@ -238,11 +239,46 @@ ReactNativeViewConfigRegistry.register(
 }
 `;
 
-exports[`GenerateViewConfigJs can generate fixture SINGLE_COMPONENT_WITH_INTEGER_PROPS 1`] = `
+exports[`GenerateViewConfigJs can generate fixture IMAGE_PROP 1`] = `
 Map {
   "ViewConfigs.js" => "
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
+
+const ImagePropNativeComponentViewConfig = {
+  uiViewClassName: 'ImagePropNativeComponent',
+
+  validAttributes: {
+    thumbImage: require('react-native').__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.NativePrimitives.ImageSourcePrimitive,
+    style: ReactNativeStyleAttributes
+  }
+};
+
+ReactNativeViewConfigRegistry.register(
+  'ImagePropNativeComponent',
+  () => ImagePropNativeComponentViewConfig,
+);
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture INTEGER_PROPS 1`] = `
+Map {
+  "ViewConfigs.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -275,11 +311,92 @@ ReactNativeViewConfigRegistry.register(
 }
 `;
 
-exports[`GenerateViewConfigJs can generate fixture SINGLE_COMPONENT_WITH_STRING_PROP 1`] = `
+exports[`GenerateViewConfigJs can generate fixture INTERFACE_ONLY 1`] = `
 Map {
   "ViewConfigs.js" => "
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
+
+const InterfaceOnlyComponentViewConfig = {
+  uiViewClassName: 'InterfaceOnlyComponent',
+
+  bubblingEventTypes: {
+    onChange: {
+      phasedRegistrationNames: {
+        captured: 'onChangeCapture',
+        bubbled: 'onChange'
+      }
+    }
+  },
+
+  validAttributes: {
+    accessibilityHint: true,
+    style: ReactNativeStyleAttributes
+  }
+};
+
+ReactNativeViewConfigRegistry.register(
+  'InterfaceOnlyComponent',
+  () => InterfaceOnlyComponentViewConfig,
+);
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture MULTI_NATIVE_PROP 1`] = `
+Map {
+  "ViewConfigs.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
+
+const ImageColorPropNativeComponentViewConfig = {
+  uiViewClassName: 'ImageColorPropNativeComponent',
+
+  validAttributes: {
+    thumbImage: require('react-native').__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.NativePrimitives.ImageSourcePrimitive,
+    color: require('react-native').__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.NativePrimitives.ColorPrimitive,
+    thumbTintColor: require('react-native').__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.NativePrimitives.ColorPrimitive,
+    style: ReactNativeStyleAttributes
+  }
+};
+
+ReactNativeViewConfigRegistry.register(
+  'ImageColorPropNativeComponent',
+  () => ImageColorPropNativeComponentViewConfig,
+);
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture STRING_PROP 1`] = `
+Map {
+  "ViewConfigs.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -314,7 +431,7 @@ exports[`GenerateViewConfigJs can generate fixture TWO_COMPONENTS_DIFFERENT_FILE
 Map {
   "ViewConfigs.js" => "
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -363,7 +480,7 @@ exports[`GenerateViewConfigJs can generate fixture TWO_COMPONENTS_SAME_FILE 1`] 
 Map {
   "ViewConfigs.js" => "
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.

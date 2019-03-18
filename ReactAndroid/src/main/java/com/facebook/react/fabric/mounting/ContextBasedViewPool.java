@@ -6,7 +6,7 @@
  */
 package com.facebook.react.fabric.mounting;
 
-import android.support.annotation.UiThread;
+import androidx.annotation.UiThread;
 import android.view.View;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.uimanager.ThemedReactContext;

@@ -7,8 +7,9 @@
 
 #pragma once
 
-#include <react/components/slider/SliderEventEmitter.h>
-#include <react/components/slider/SliderProps.h>
+#include <react/components/rncore/EventEmitters.h>
+#include <react/components/rncore/Props.h>
+#include <react/components/slider/SliderMeasurementsManager.h>
 #include <react/components/view/ConcreteViewShadowNode.h>
 #include <react/imagemanager/ImageManager.h>
 #include <react/imagemanager/primitives.h>
@@ -31,8 +32,13 @@ class SliderShadowNode final : public ConcreteViewShadowNode<
   // Associates a shared `ImageManager` with the node.
   void setImageManager(const SharedImageManager &imageManager);
 
+  // Associates a shared `SliderMeasurementsManager` with the node.
+  void setSliderMeasurementsManager(
+      const std::shared_ptr<SliderMeasurementsManager> &measurementsManager);
+
 #pragma mark - LayoutableShadowNode
 
+  Size measure(LayoutConstraints layoutConstraints) const override;
   void layout(LayoutContext layoutContext) override;
 
  private:
@@ -45,6 +51,7 @@ class SliderShadowNode final : public ConcreteViewShadowNode<
   ImageSource getThumbImageSource() const;
 
   SharedImageManager imageManager_;
+  std::shared_ptr<SliderMeasurementsManager> measurementsManager_;
 };
 
 } // namespace react

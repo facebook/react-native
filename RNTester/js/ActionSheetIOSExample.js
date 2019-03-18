@@ -15,11 +15,12 @@ const ReactNative = require('react-native');
 const {
   ActionSheetIOS,
   StyleSheet,
-  takeSnapshot,
   Text,
   View,
   Alert,
+  NativeModules,
 } = ReactNative;
+const ScreenshotManager = NativeModules.ScreenshotManager;
 
 const BUTTONS = ['Option 0', 'Option 1', 'Option 2', 'Delete', 'Cancel'];
 const DESTRUCTIVE_INDEX = 3;
@@ -199,7 +200,7 @@ class ShareScreenshotExample extends React.Component<
 
   showShareActionSheet = () => {
     // Take the snapshot (returns a temp file uri)
-    takeSnapshot('window')
+    ScreenshotManager.takeScreenshot('window')
       .then(uri => {
         // Share image data
         ActionSheetIOS.showShareActionSheetWithOptions(
@@ -254,7 +255,7 @@ class ShareScreenshotAnchorExample extends React.Component<
 
   showShareActionSheet = () => {
     // Take the snapshot (returns a temp file uri)
-    takeSnapshot('window')
+    ScreenshotManager.takeScreenshot('window')
       .then(uri => {
         // Share image data
         ActionSheetIOS.showShareActionSheetWithOptions(

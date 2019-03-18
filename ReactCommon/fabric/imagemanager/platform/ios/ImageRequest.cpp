@@ -10,12 +10,6 @@
 namespace facebook {
 namespace react {
 
-class ImageRequest::ImageNoLongerNeededException : public std::logic_error {
- public:
-  ImageNoLongerNeededException()
-      : std::logic_error("Image no longer needed.") {}
-};
-
 ImageRequest::ImageRequest(const ImageSource &imageSource)
     : imageSource_(imageSource) {
   coordinator_ = std::make_shared<ImageResponseObserverCoordinator>();
@@ -40,9 +34,14 @@ void ImageRequest::setCancelationFunction(
   cancelRequest_ = cancelationFunction;
 }
 
-const ImageResponseObserverCoordinator *ImageRequest::getObserverCoordinator()
+const ImageResponseObserverCoordinator &ImageRequest::getObserverCoordinator()
     const {
-  return coordinator_.get();
+  return *coordinator_;
+}
+
+const std::shared_ptr<const ImageResponseObserverCoordinator>
+    &ImageRequest::getSharedObserverCoordinator() const {
+  return coordinator_;
 }
 
 } // namespace react

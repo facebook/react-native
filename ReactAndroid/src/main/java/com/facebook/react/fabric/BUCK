@@ -7,6 +7,7 @@ rn_android_library(
         "jsi/*.java",
         "mounting/**/*.java",
     ]),
+    is_androidx = True,
     provided_deps = [
         react_native_dep("third-party/android/support/v4:lib-support-v4"),
     ],

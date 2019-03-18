@@ -17,7 +17,6 @@ import com.facebook.react.fabric.mounting.LayoutMetricsConversions;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.ViewPool;
 import com.facebook.react.fabric.mounting.mountitems.BatchMountItem;
-import com.facebook.react.fabric.mounting.mountitems.CreateMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DeleteMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DispatchCommandMountItem;
 import com.facebook.react.fabric.mounting.mountitems.InsertMountItem;
@@ -53,7 +52,7 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
   @Override
   public UIManager get() {
     final EventBeatManager eventBeatManager =
-        new EventBeatManager(mJSContext, mReactApplicationContext);
+        new EventBeatManager(mReactApplicationContext);
     final FabricUIManager uiManager = createUIManager(eventBeatManager);
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricJSIModuleProvider.registerBinding");
@@ -94,7 +93,6 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
     FabricUIManager.class.getClass();
     GuardedFrameCallback.class.getClass();
     BatchMountItem.class.getClass();
-    CreateMountItem.class.getClass();
     DeleteMountItem.class.getClass();
     DispatchCommandMountItem.class.getClass();
     InsertMountItem.class.getClass();

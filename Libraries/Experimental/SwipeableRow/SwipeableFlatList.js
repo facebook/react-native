@@ -46,12 +46,10 @@ type State = {|
  * A container component that renders multiple SwipeableRow's in a FlatList
  * implementation. This is designed to be a drop-in replacement for the
  * standard React Native `FlatList`, so use it as if it were a FlatList, but
- * with extra props, i.e.
- *
- * <SwipeableListView renderRow={..} renderQuickActions={..} {..FlatList props} />
+ * with extra props.
  *
  * SwipeableRow can be used independently of this component, but the main
- * benefit of using this component is
+ * benefits of using this component are:
  *
  * - It ensures that at most 1 row is swiped open (auto closes others)
  * - It can bounce the 1st row of the list so users know it's swipeable

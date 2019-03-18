@@ -13,8 +13,8 @@
 
 using namespace facebook::react;
 
-#include <react/components/activityindicator/ActivityIndicatorViewComponentDescriptor.h>
 #include <react/components/image/ImageComponentDescriptor.h>
+#include <react/components/rncore/ComponentDescriptors.h>
 #include <react/components/scrollview/ScrollViewComponentDescriptor.h>
 #include <react/components/text/ParagraphComponentDescriptor.h>
 #include <react/components/text/RawTextComponentDescriptor.h>
@@ -30,7 +30,7 @@ namespace react {
 
 // TODO (T29441913): Codegen this app-specific implementation.
 ComponentRegistryFactory getDefaultComponentRegistryFactory() {
-  return [](const SharedEventDispatcher &eventDispatcher,
+  return [](const EventDispatcher::Shared &eventDispatcher,
             const SharedContextContainer &contextContainer) {
     auto registry = std::make_shared<ComponentDescriptorRegistry>();
     registry->registerComponentDescriptor(

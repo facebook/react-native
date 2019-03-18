@@ -178,7 +178,9 @@ class TouchableFeedbackEvents extends React.Component<{}, $FlowFixMeState> {
         <View
           testID="touchable_feedback_events_console"
           style={styles.eventLogBox}>
-          {this.state.eventLog.map((e, ii) => <Text key={ii}>{e}</Text>)}
+          {this.state.eventLog.map((e, ii) => (
+            <Text key={ii}>{e}</Text>
+          ))}
         </View>
       </View>
     );
@@ -217,7 +219,9 @@ class TouchableDelayEvents extends React.Component<{}, $FlowFixMeState> {
         <View
           style={styles.eventLogBox}
           testID="touchable_delay_events_console">
-          {this.state.eventLog.map((e, ii) => <Text key={ii}>{e}</Text>)}
+          {this.state.eventLog.map((e, ii) => (
+            <Text key={ii}>{e}</Text>
+          ))}
         </View>
       </View>
     );

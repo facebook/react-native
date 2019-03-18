@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <better/map.h>
 #include <folly/dynamic.h>
 #include <react/core/RawProps.h>
 #include <react/graphics/Color.h>
@@ -70,8 +71,8 @@ inline std::string toString(const SharedColor &value) {
 #pragma mark - Geometry
 
 inline void fromRawValue(const RawValue &value, Point &result) {
-  if (value.hasType<std::unordered_map<std::string, Float>>()) {
-    auto map = (std::unordered_map<std::string, Float>)value;
+  if (value.hasType<better::map<std::string, Float>>()) {
+    auto map = (better::map<std::string, Float>)value;
     result = {map.at("x"), map.at("y")};
     return;
   }
@@ -87,8 +88,8 @@ inline void fromRawValue(const RawValue &value, Point &result) {
 }
 
 inline void fromRawValue(const RawValue &value, Size &result) {
-  if (value.hasType<std::unordered_map<std::string, Float>>()) {
-    auto map = (std::unordered_map<std::string, Float>)value;
+  if (value.hasType<better::map<std::string, Float>>()) {
+    auto map = (better::map<std::string, Float>)value;
     result = {map.at("width"), map.at("height")};
     return;
   }
@@ -109,8 +110,8 @@ inline void fromRawValue(const RawValue &value, EdgeInsets &result) {
     result = {number, number, number, number};
   }
 
-  if (value.hasType<std::unordered_map<std::string, Float>>()) {
-    auto map = (std::unordered_map<std::string, Float>)value;
+  if (value.hasType<better::map<std::string, Float>>()) {
+    auto map = (better::map<std::string, Float>)value;
     result = {map.at("top"), map.at("left"), map.at("bottom"), map.at("right")};
     return;
   }
@@ -131,8 +132,8 @@ inline void fromRawValue(const RawValue &value, CornerInsets &result) {
     result = {number, number, number, number};
   }
 
-  if (value.hasType<std::unordered_map<std::string, Float>>()) {
-    auto map = (std::unordered_map<std::string, Float>)value;
+  if (value.hasType<better::map<std::string, Float>>()) {
+    auto map = (better::map<std::string, Float>)value;
     result = {map.at("topLeft"),
               map.at("topRight"),
               map.at("bottomLeft"),

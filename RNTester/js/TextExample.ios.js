@@ -429,6 +429,25 @@ exports.examples = [
     },
   },
   {
+    title: "Substring Emoji (should only see 'test')",
+    render: function() {
+      return <Text>{'test🙃'.substring(0, 5)}</Text>;
+    },
+  },
+  {
+    title: 'Transparent Background Color',
+    render: function() {
+      return (
+        <Text style={{backgroundColor: '#00000020', padding: 10}}>
+          Text in a gray box!
+          <Text style={{backgroundColor: 'red'}}>
+            Another text in a (inline) red box (which is inside the gray box).
+          </Text>
+        </Text>
+      );
+    },
+  },
+  {
     title: 'Text metrics',
     render: function() {
       return <TextRenderInfoExample />;
@@ -876,9 +895,8 @@ exports.examples = [
             </Text>
           </Text>
           <Text style={{marginTop: 10}}>
-            You can disable scaling for your Text component by passing {'"'}allowFontScaling={
-              '{'
-            }false{'}"'} prop.
+            You can disable scaling for your Text component by passing {'"'}
+            allowFontScaling={'{'}false{'}"'} prop.
           </Text>
           <Text allowFontScaling={false} style={{marginTop: 20, fontSize: 15}}>
             This text will not scale.{' '}
