@@ -96,7 +96,7 @@
     "metro-react-native-babel-transformer": "0.52.0",
     "mkdirp": "^0.5.1",
     "nullthrows": "^1.1.0",
-    "pretty-format": "24.0.0-alpha.6",
+    "pretty-format": "24.5.0",
     "promise": "^7.1.1",
     "prop-types": "^15.5.8",
     "react-devtools-core": "^3.6.0",
