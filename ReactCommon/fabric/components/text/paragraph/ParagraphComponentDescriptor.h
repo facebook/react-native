@@ -71,6 +71,8 @@ class ParagraphComponentDescriptor final
     paragraphShadowNode->setMeasureCache(
         measureCache_ ? measureCache_.get() : nullptr);
 
+    paragraphShadowNode->dirtyLayout();
+
     // All `ParagraphShadowNode`s must have leaf Yoga nodes with properly
     // setup measure function.
     paragraphShadowNode->enableMeasurement();

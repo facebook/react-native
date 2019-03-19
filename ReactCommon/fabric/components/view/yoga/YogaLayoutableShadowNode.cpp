@@ -141,6 +141,7 @@ void YogaLayoutableShadowNode::setSize(Size size) const {
   style.dimensions[YGDimensionWidth] = yogaStyleValueFromFloat(size.width);
   style.dimensions[YGDimensionHeight] = yogaStyleValueFromFloat(size.height);
   yogaNode_.setStyle(style);
+  yogaNode_.setDirty(true);
 }
 
 void YogaLayoutableShadowNode::setPositionType(
@@ -150,6 +151,7 @@ void YogaLayoutableShadowNode::setPositionType(
   auto style = yogaNode_.getStyle();
   style.positionType = positionType;
   yogaNode_.setStyle(style);
+  yogaNode_.setDirty(true);
 }
 
 void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
