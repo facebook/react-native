@@ -187,43 +187,45 @@ class PushNotificationIOS {
   static addEventListener(
     type: PushNotificationEventName,
     handler: Function,
-  ): {remove: () => void} {
-    invariant(
-      type === 'notification' ||
-        type === 'register' ||
-        type === 'registrationError' ||
-        type === 'localNotification',
-      'PushNotificationIOS only supports `notification`, `register`, `registrationError`, and `localNotification` events',
-    );
+  ): {+remove: () => void} {
     let listener;
-    if (type === 'notification') {
-      listener = PushNotificationEmitter.addListener(
-        DEVICE_NOTIF_EVENT,
-        notifData => {
-          handler(new PushNotificationIOS(notifData));
-        },
-      );
-    } else if (type === 'localNotification') {
-      listener = PushNotificationEmitter.addListener(
-        DEVICE_LOCAL_NOTIF_EVENT,
-        notifData => {
-          handler(new PushNotificationIOS(notifData));
-        },
-      );
-    } else if (type === 'register') {
-      listener = PushNotificationEmitter.addListener(
-        NOTIF_REGISTER_EVENT,
-        registrationInfo => {
-          handler(registrationInfo.deviceToken);
-        },
-      );
-    } else if (type === 'registrationError') {
-      listener = PushNotificationEmitter.addListener(
-        NOTIF_REGISTRATION_ERROR_EVENT,
-        errorInfo => {
-          handler(errorInfo);
-        },
-      );
+    switch (type) {
+      case 'notification':
+        listener = PushNotificationEmitter.addListener(
+          DEVICE_NOTIF_EVENT,
+          notifData => {
+            handler(new PushNotificationIOS(notifData));
+          },
+        );
+        break;
+      case 'register':
+        listener = PushNotificationEmitter.addListener(
+          DEVICE_LOCAL_NOTIF_EVENT,
+          notifData => {
+            handler(new PushNotificationIOS(notifData));
+          },
+        );
+        break;
+      case 'register':
+        listener = PushNotificationEmitter.addListener(
+          NOTIF_REGISTER_EVENT,
+          registrationInfo => {
+            handler(registrationInfo.deviceToken);
+          },
+        );
+        break;
+      case 'registrationError':
+        listener = PushNotificationEmitter.addListener(
+          NOTIF_REGISTRATION_ERROR_EVENT,
+          errorInfo => {
+            handler(errorInfo);
+          },
+        );
+        break;
+      default:
+        throw new Error(
+          'PushNotificationIOS only supports `notification`, `register`, `registrationError`, and `localNotification` events',
+        );
     }
     _notifHandlers.set(handler, listener);
     return listener;

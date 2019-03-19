@@ -16,7 +16,7 @@ const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
 const invariant = require('invariant');
 
-import type EmitterSubscription from 'EmitterSubscription';
+import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
 
 type NativeModule = {
   +addListener: (eventType: string) => void,
