@@ -15,10 +15,10 @@ import java.util.Map;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Typeface;
-import android.support.v4.content.res.ResourcesCompat;
 import android.util.SparseArray;
 
-import com.facebook.react.uimanager.ThemedReactContext;
+import androidx.core.content.res.ResourcesCompat;
+
 
 /**
  * Class responsible to load and cache Typeface objects. It will first try to load typefaces inside
@@ -41,9 +41,11 @@ public class ReactFontManager {
   private static ReactFontManager sReactFontManagerInstance;
 
   private Map<String, FontFamily> mFontCache;
+  private Map<String, Typeface> mTypeCache;
 
   private ReactFontManager() {
     mFontCache = new HashMap<>();
+    mTypeCache = new HashMap<>();
   }
 
   public static ReactFontManager getInstance() {
@@ -53,8 +55,7 @@ public class ReactFontManager {
     return sReactFontManagerInstance;
   }
 
-  @Deprecated
-  public @Nullable Typeface getTypeface(
+  private @Nullable Typeface getTypeface(
       String fontFamilyName,
       int style,
       AssetManager assetManager) {
@@ -79,12 +80,25 @@ public class ReactFontManager {
     String fontFamilyName,
     int style,
     Context context) {
-    int fontId = context.getResources().getIdentifier(fontFamilyName, "font", context.getPackageName());
-    if (fontId != 0) {
+    Typeface font = mTypeCache.get(fontFamilyName);
+
+    if (font != null) {
       return Typeface.create(
-        ResourcesCompat.getFont(context, fontId),
+        font,
         style
       );
+    }
+
+    int fontId = context.getResources().getIdentifier(fontFamilyName, "font", context.getPackageName());
+    if (fontId != 0) {
+      font = ResourcesCompat.getFont(context, fontId);
+      if (font != null) {
+        mTypeCache.put(fontFamilyName, font);
+        return Typeface.create(
+          font,
+          style
+        );
+      }
     }
     return getTypeface(fontFamilyName, style, context.getAssets());
   }

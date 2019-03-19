@@ -7,6 +7,7 @@
 
 package com.facebook.react.views.text;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import android.content.Context;
@@ -30,54 +31,30 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
    * Fonts are retrieved and cached using the {@link ReactFontManager}
    */
 
-  private final AssetManager mAssetManager;
-
   private final int mStyle;
   private final int mWeight;
   private final @Nullable String mFontFamily;
-  private final @Nullable Context mContext;
-
-  @Deprecated
-  public CustomStyleSpan(
-      int fontStyle,
-      int fontWeight,
-      @Nullable String fontFamily,
-      AssetManager assetManager) {
-    mStyle = fontStyle;
-    mWeight = fontWeight;
-    mFontFamily = fontFamily;
-    mAssetManager = assetManager;
-    mContext = null;
-  }
+  private final Context mContext;
 
   public CustomStyleSpan(
     int fontStyle,
     int fontWeight,
     @Nullable String fontFamily,
-    Context context) {
+    @Nonnull Context context) {
     mStyle = fontStyle;
     mWeight = fontWeight;
     mFontFamily = fontFamily;
     mContext = context;
-    mAssetManager = context.getAssets();
   }
 
   @Override
   public void updateDrawState(TextPaint ds) {
-    if (mContext != null) {
-      apply(ds, mStyle, mWeight, mFontFamily, mContext);
-    } else {
-      apply(ds, mStyle, mWeight, mFontFamily, mAssetManager);
-    }
+    apply(ds, mStyle, mWeight, mFontFamily, mContext);
   }
 
   @Override
-  public void updateMeasureState(TextPaint paint) {
-    if (mContext != null) {
-      apply(paint, mStyle, mWeight, mFontFamily, mContext);
-    } else {
-      apply(paint, mStyle, mWeight, mFontFamily, mAssetManager);
-    }
+  public void updateMeasureState(@Nonnull TextPaint paint) {
+    apply(paint, mStyle, mWeight, mFontFamily, mContext);
   }
 
   /**
@@ -99,47 +76,6 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
    */
   public @Nullable String getFontFamily() {
     return mFontFamily;
-  }
-
-  @Deprecated
-  private static void apply(
-      Paint paint,
-      int style,
-      int weight,
-      @Nullable String family,
-      AssetManager assetManager) {
-    int oldStyle;
-    Typeface typeface = paint.getTypeface();
-    if (typeface == null) {
-      oldStyle = 0;
-    } else {
-      oldStyle = typeface.getStyle();
-    }
-
-    int want = 0;
-    if ((weight == Typeface.BOLD) ||
-        ((oldStyle & Typeface.BOLD) != 0 && weight == ReactTextShadowNode.UNSET)) {
-      want |= Typeface.BOLD;
-    }
-
-    if ((style == Typeface.ITALIC) ||
-        ((oldStyle & Typeface.ITALIC) != 0 && style == ReactTextShadowNode.UNSET)) {
-      want |= Typeface.ITALIC;
-    }
-
-    if (family != null) {
-      typeface = ReactFontManager.getInstance().getTypeface(family, want, assetManager);
-    } else if (typeface != null) {
-      // TODO(t9055065): Fix custom fonts getting applied to text children with different style
-      typeface = Typeface.create(typeface, want);
-    }
-
-    if (typeface != null) {
-      paint.setTypeface(typeface);
-    } else {
-      paint.setTypeface(Typeface.defaultFromStyle(want));
-    }
-    paint.setSubpixelText(true);
   }
 
   private static void apply(
