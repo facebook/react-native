@@ -60,9 +60,6 @@ async function runServer(args: Args, config: ConfigT) {
   config.server.port = args.port;
   // $FlowFixMe Metro configuration is immutable.
   config.reporter = reporter;
-<<<<<<< HEAD
-  config.resetCache = args.resetCache;
-=======
   // $FlowFixMe Metro configuration is immutable.
   config.resetCache = args.resetCache;
   // $FlowFixMe Metro configuration is immutable.
@@ -70,7 +67,6 @@ async function runServer(args: Args, config: ConfigT) {
   // $FlowFixMe Metro configuration is immutable.
   config.watchFolders = args.watchFolders.slice(0);
   // $FlowFixMe Metro configuration is immutable.
->>>>>>> v0.58.6
   config.server.enhanceMiddleware = middleware =>
     middlewareManager.getConnectInstance().use(middleware);
 

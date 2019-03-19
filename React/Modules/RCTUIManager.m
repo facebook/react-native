@@ -168,12 +168,7 @@ RCT_EXPORT_MODULE()
     }
   }
 
-<<<<<<< HEAD
-  _componentDataByName = [componentDataByName copy];
-
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-=======
->>>>>>> v0.58.6
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(didReceiveNewContentSizeMultiplier)
                                                name:RCTAccessibilityManagerDidUpdateMultiplierNotification

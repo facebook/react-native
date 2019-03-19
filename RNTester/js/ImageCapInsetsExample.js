@@ -10,14 +10,9 @@
 
 'use strict';
 
-<<<<<<< HEAD
-var React = require('react');
-var ReactNative = require('react-native');
-var Platform = require('Platform');
-=======
 const React = require('react');
 const ReactNative = require('react-native');
->>>>>>> v0.58.6
+const Platform = require('Platform');
 
 const nativeImageSource = require('nativeImageSource');
 const {Image, StyleSheet, Text, View} = ReactNative;

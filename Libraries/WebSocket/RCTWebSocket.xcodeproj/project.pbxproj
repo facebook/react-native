@@ -130,11 +130,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-<<<<<<< HEAD
-				181B13CA216528F100D3B7D2 /* libfishhook-tvOS.a in Frameworks */,
-=======
 				ED297176215062BA00B7C4FE /* libfishhook-tvOS.a in Frameworks */,
->>>>>>> v0.58.6
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

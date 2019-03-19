@@ -13,13 +13,7 @@
 #include <string>
 #include <vector>
 
-<<<<<<< HEAD
-#ifndef JSI_EXPORT
 #define JSI_EXPORT __attribute__((visibility("default")))
-#endif
-=======
-#define JSI_EXPORT __attribute__((visibility("default")))
->>>>>>> v0.58.6
 
 class FBJSRuntime;
 namespace facebook {
@@ -294,16 +288,9 @@ class Pointer {
   friend class Runtime;
   friend class Value;
 
-<<<<<<< HEAD
-  typename Runtime::PointerValue* ptr_;
-
- public:
-  explicit Pointer(Runtime::PointerValue* ptr) : ptr_(ptr) {}
-=======
   explicit Pointer(Runtime::PointerValue* ptr) : ptr_(ptr) {}
 
   typename Runtime::PointerValue* ptr_;
->>>>>>> v0.58.6
 };
 
 /// Represents something that can be a JS property key.  Movable, not copyable.
@@ -311,14 +298,9 @@ class PropNameID : public Pointer {
  public:
   using Pointer::Pointer;
 
-<<<<<<< HEAD
   // TODO :: Temporary hack/divergence from Github copy due to a bug in MSVC compiler which is fixed in VS2019.
   PropNameID(Runtime& runtime, const PropNameID& other)
       : Pointer(runtime.clonePropNameID(other.ptr_)) {}
-=======
-  PropNameID(Runtime& runtime, const PropNameID& other)
-      : PropNameID(runtime.clonePropNameID(other.ptr_)) {}
->>>>>>> v0.58.6
 
   PropNameID(PropNameID&& other) = default;
   PropNameID& operator=(PropNameID&& other) = default;

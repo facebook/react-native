@@ -72,12 +72,8 @@ RCT_TEST(ImageSnapshotTest)
 RCT_TEST(SimpleSnapshotTest)
 RCT_TEST(SyncMethodTest)
 RCT_TEST(PromiseTest)
-<<<<<<< HEAD
-RCT_TEST_ONLY_WITH_PACKAGER(WebSocketTest)
-#if !TARGET_OS_OSX // ios specific
-=======
 RCT_TEST_ONLY_WITH_PACKAGER(WebSocketTest) // Requires a WebSocket test server, see scripts/objc-test.sh
->>>>>>> v0.58.6
+#if !TARGET_OS_OSX // ios specific
 RCT_TEST(AccessibilityManagerTest)
 #endif
 

@@ -13,9 +13,6 @@
 const path = require('path');
 const findPlugins = require('../local-cli/core/findPlugins');
 
-<<<<<<< HEAD
-const plugins = findPlugins([path.resolve(__dirname, '../../../')]);
-=======
 const REACT_NATIVE_CI = process.cwd() === path.resolve(__dirname, '..');
 
 let pluginsPath;
@@ -27,7 +24,6 @@ if (REACT_NATIVE_CI) {
 }
 
 const plugins = findPlugins([path.resolve(__dirname, pluginsPath)]);
->>>>>>> v0.58.6
 
 // Detect out-of-tree platforms and add them to the whitelists
 const pluginRoots /*: Array<
@@ -64,11 +60,7 @@ const NAME_REDUCERS /*: Array<[RegExp, string]> */ = [
   // strip .js/.js.flow suffix
   [/^(.*)\.js(\.flow)?$/, '$1'],
   // strip platform suffix
-<<<<<<< HEAD
   [/^(.*)\.(android|ios|native|windesktop|uwp|macos)$/, '$1'],
-=======
-  [/^(.*)\.(android|ios|native)$/, '$1'],
->>>>>>> v0.58.6
   // strip plugin platform suffixes
   ...pluginNameReducers,
 ];

@@ -7,12 +7,7 @@
 
 #if RCT_DEV
 
-<<<<<<< HEAD
-#import <jschelpers/JSCWrapper.h>
 #import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
-=======
-#import <UIKit/UIKit.h>
->>>>>>> v0.58.6
 #import <React/RCTLog.h>
 
 #import "RCTDefines.h"
