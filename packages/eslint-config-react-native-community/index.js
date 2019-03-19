@@ -12,6 +12,8 @@ module.exports = {
 
   env: {
     es6: true,
+    jest: true,
+    'jest/globals': true,
   },
 
   plugins: [
