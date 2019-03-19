@@ -24,6 +24,12 @@ module.exports = {
     'jest',
   ],
 
+  settings: {
+    react: {
+      version: 'detect',
+    },
+  },
+
   // Map from global var to bool specifying if it can be redefined
   globals: {
     __DEV__: true,
