@@ -297,10 +297,19 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   }
 
   private void setImportantForAutofill(ReactEditText view, int mode) {
+    // Autofill hints were added in Android API 26.
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
       return;
     }
     view.setImportantForAutofill(mode);
+  }
+
+  private void setAutofillHints(ReactEditText view, String... hints) {
+    // Autofill hints were added in Android API 26.
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+      return;
+    }
+    view.setAutofillHints(hints);
   }
 
   @ReactProp(name = "onSelectionChange", defaultBoolean = false)
@@ -569,37 +578,32 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
   @ReactProp(name = "autoComplete")
   public void setTextContentType(ReactEditText view, @Nullable String autocomplete) {
-    // Autofill hints were added in Android API 26.
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-      return;
-    }
-
     if (autocomplete == null) {
       setImportantForAutofill(view, View.IMPORTANT_FOR_AUTOFILL_NO);
     } else if ("username".equals(autocomplete)) {
-      view.setAutofillHints(View.AUTOFILL_HINT_USERNAME);
+      setAutofillHints(view, View.AUTOFILL_HINT_USERNAME);
     } else if ("password".equals(autocomplete)) {
-      view.setAutofillHints(View.AUTOFILL_HINT_PASSWORD);
+      setAutofillHints(view, View.AUTOFILL_HINT_PASSWORD);
     } else if ("email".equals(autocomplete)) {
-      view.setAutofillHints(View.AUTOFILL_HINT_EMAIL_ADDRESS);
+      setAutofillHints(view, View.AUTOFILL_HINT_EMAIL_ADDRESS);
     } else if ("name".equals(autocomplete)) {
-      view.setAutofillHints(View.AUTOFILL_HINT_NAME);
+      setAutofillHints(view, View.AUTOFILL_HINT_NAME);
     } else if ("tel".equals(autocomplete)) {
-      view.setAutofillHints(View.AUTOFILL_HINT_PHONE);
+      setAutofillHints(view, View.AUTOFILL_HINT_PHONE);
     } else if ("street-address".equals(autocomplete)) {
-      view.setAutofillHints(View.AUTOFILL_HINT_POSTAL_ADDRESS);
+      setAutofillHints(view, View.AUTOFILL_HINT_POSTAL_ADDRESS);
     } else if ("postal-code".equals(autocomplete)) {
-      view.setAutofillHints(View.AUTOFILL_HINT_POSTAL_CODE);
+      setAutofillHints(view, View.AUTOFILL_HINT_POSTAL_CODE);
     } else if ("cc-number".equals(autocomplete)) {
-      view.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_NUMBER);
+      setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_NUMBER);
     } else if ("cc-csc".equals(autocomplete)) {
-      view.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_SECURITY_CODE);
+      setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_SECURITY_CODE);
     } else if ("cc-exp".equals(autocomplete)) {
-      view.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DATE);
+      setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DATE);
     } else if ("cc-exp-month".equals(autocomplete)) {
-      view.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_MONTH);
+      setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_MONTH);
     } else if ("cc-exp-year".equals(autocomplete)) {
-      view.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_YEAR);
+      setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_YEAR);
     } else if ("off".equals(autocomplete)) {
       setImportantForAutofill(view, View.IMPORTANT_FOR_AUTOFILL_NO);
     } else {
