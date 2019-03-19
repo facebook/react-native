@@ -95,12 +95,25 @@ void YogaLayoutableShadowNode::appendChild(YogaLayoutableShadowNode *child) {
 void YogaLayoutableShadowNode::setChildren(
     YogaLayoutableShadowNode::UnsharedList children) {
   ensureUnsealed();
-  yogaNode_.setDirty(true);
+
+  // Optimization:
+  // If the new list of child nodes consists of clean nodes, and if their styles
+  // are identical to styles of old children, we don't dirty the node.
+  bool isClean = !yogaNode_.getDirtied() &&
+      children.size() == yogaNode_.getChildren().size();
+  auto oldChildren = isClean ? yogaNode_.getChildren() : YGVector{};
 
   yogaNode_.setChildren({});
-  for (const auto &child : children) {
+
+  auto i = int{0};
+  for (auto const &child : children) {
     appendChild(child);
+
+    isClean = isClean && !child->yogaNode_.isDirty() &&
+        child->yogaNode_.getStyle() == oldChildren[i++]->getStyle();
   }
+
+  yogaNode_.setDirty(!isClean);
 }
 
 void YogaLayoutableShadowNode::setProps(const YogaStylableProps &props) {
