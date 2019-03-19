@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTConvert.h>
+#import <React/RCTImageSource.h>
 
 #import "RCTImageLoader.h"
 #import "RCTImageShadowView.h"
@@ -61,6 +62,20 @@ RCT_EXPORT_METHOD(getSize:(NSURLRequest *)request
                                                    successBlock(@[@(size.width), @(size.height)]);
                                                  }
                                                }];
+}
+
+RCT_EXPORT_METHOD(getSizeWithHeaders:(RCTImageSource *)source
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
+  [self.bridge.imageLoader getImageSizeForURLRequest:source.request
+                                              block:^(NSError *error, CGSize size) {
+                                                if (error) {
+                                                  reject(@"E_GET_SIZE_FAILURE", nil, error);
+                                                  return;
+                                                }
+                                                resolve(@{@"width":@(size.width),@"height":@(size.height)});
+                                              }];
 }
 
 RCT_EXPORT_METHOD(prefetchImage:(NSURLRequest *)request

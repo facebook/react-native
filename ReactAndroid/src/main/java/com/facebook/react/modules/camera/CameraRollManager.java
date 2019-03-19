@@ -43,11 +43,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 import java.net.URLConnection;
+import java.net.URL;
 
 // TODO #6015104: rename to something less iOSish
 /**
@@ -97,7 +100,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
    * from wherever it may be to the external storage pictures directory, so that it can be scanned
    * by the MediaScanner.
    *
-   * @param uri the file:// URI of the image to save
+   * @param uri the file://, http:// or https:// URI of the image to save
    * @param promise to be resolved or rejected
    */
   @ReactMethod
@@ -121,9 +124,16 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
 
     @Override
     protected void doInBackgroundGuarded(Void... params) {
+      ReadableByteChannel input = null;
+      FileChannel output = null;
       File source = new File(mUri.getPath());
-      FileChannel input = null, output = null;
       try {
+        String scheme = mUri.getScheme();
+        if (scheme.equals("http") || scheme.equals("https")){
+          input = Channels.newChannel(new URL(mUri.toString()).openStream());
+        } else {
+          input = new FileInputStream(source).getChannel();
+        }
         File exportDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
         exportDir.mkdirs();
         if (!exportDir.isDirectory()) {
@@ -144,9 +154,8 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
         while (!dest.createNewFile()) {
           dest = new File(exportDir, sourceName + "_" + (n++) + sourceExt);
         }
-        input = new FileInputStream(source).getChannel();
         output = new FileOutputStream(dest).getChannel();
-        output.transferFrom(input, 0, input.size());
+        output.transferFrom(input, 0, Long.MAX_VALUE);
         input.close();
         output.close();
 

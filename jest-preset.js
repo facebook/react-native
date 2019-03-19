@@ -29,9 +29,7 @@ module.exports = {
       './jest/assetFileTransformer.js',
     ),
   },
-  transformIgnorePatterns: [
-    'node_modules/(?!(jest-)?react-native|react-clone-referenced-element)',
-  ],
+  transformIgnorePatterns: ['node_modules/(?!(jest-)?react-native)'],
   testMatch: [
     '**/__tests__/**/*.(js|ts|tsx)',
     '**/?(*.)+(spec|test).(js|ts|tsx)',

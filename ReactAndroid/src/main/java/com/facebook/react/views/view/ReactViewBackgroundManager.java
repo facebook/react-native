@@ -8,7 +8,7 @@ package com.facebook.react.views.view;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
-import android.support.v4.view.ViewCompat;
+import androidx.core.view.ViewCompat;
 import android.view.View;
 import javax.annotation.Nullable;
 

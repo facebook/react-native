@@ -281,7 +281,7 @@ void Scheduler::uiManagerDidCreateShadowNode(
   if (delegate_) {
     auto shadowView = ShadowView(*shadowNode);
     delegate_->schedulerDidRequestPreliminaryViewAllocation(
-        shadowNode->getRootTag(), shadowView);
+        shadowNode->getSurfaceId(), shadowView);
   }
 }
 

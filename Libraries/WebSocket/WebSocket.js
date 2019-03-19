@@ -142,12 +142,7 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
     this._eventEmitter = new NativeEventEmitter(WebSocketModule);
     this._socketId = nextWebSocketId++;
     this._registerEvents();
-    WebSocketModule.connect(
-      url,
-      protocols,
-      {headers},
-      this._socketId,
-    );
+    WebSocketModule.connect(url, protocols, {headers}, this._socketId);
   }
 
   get binaryType(): ?BinaryType {

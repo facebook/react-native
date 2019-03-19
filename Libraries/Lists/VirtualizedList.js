@@ -1719,8 +1719,8 @@ class CellRenderer extends React.Component<
         ? [{flexDirection: 'row-reverse'}, inversionStyle]
         : [{flexDirection: 'column-reverse'}, inversionStyle]
       : horizontal
-        ? [{flexDirection: 'row'}, inversionStyle]
-        : inversionStyle;
+      ? [{flexDirection: 'row'}, inversionStyle]
+      : inversionStyle;
     if (!CellRendererComponent) {
       return (
         /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an

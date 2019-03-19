@@ -18,6 +18,7 @@ static NSString *const RCTAssertFunctionStack = @"RCTAssertFunctionStack";
 
 RCTAssertFunction RCTCurrentAssertFunction = nil;
 RCTFatalHandler RCTCurrentFatalHandler = nil;
+RCTFatalExceptionHandler RCTCurrentFatalExceptionHandler = nil;
 
 NSException *_RCTNotImplementedException(SEL, Class);
 NSException *_RCTNotImplementedException(SEL cmd, Class cls)
@@ -149,9 +150,9 @@ void RCTFatal(NSError *error)
   }
 }
 
-void RCTSetFatalHandler(RCTFatalHandler fatalhandler)
+void RCTSetFatalHandler(RCTFatalHandler fatalHandler)
 {
-  RCTCurrentFatalHandler = fatalhandler;
+  RCTCurrentFatalHandler = fatalHandler;
 }
 
 RCTFatalHandler RCTGetFatalHandler(void)
@@ -187,3 +188,32 @@ NSString *RCTFormatError(NSString *message, NSArray<NSDictionary<NSString *, id>
 
   return [NSString stringWithFormat:@"%@%@", message, prettyStack];
 }
+
+void RCTFatalException(NSException *exception)
+{
+  _RCTLogNativeInternal(RCTLogLevelFatal, NULL, 0, @"%@: %@", exception.name, exception.reason);
+
+  RCTFatalExceptionHandler fatalExceptionHandler = RCTGetFatalExceptionHandler();
+  if (fatalExceptionHandler) {
+    fatalExceptionHandler(exception);
+  } else {
+#if DEBUG
+    @try {
+#endif
+      @throw exception;
+#if DEBUG
+    } @catch (NSException *e) {}
+#endif
+  }
+}
+
+void RCTSetFatalExceptionHandler(RCTFatalExceptionHandler fatalExceptionHandler)
+{
+  RCTCurrentFatalExceptionHandler = fatalExceptionHandler;
+}
+
+RCTFatalExceptionHandler RCTGetFatalExceptionHandler(void)
+{
+  return RCTCurrentFatalExceptionHandler;
+}
+

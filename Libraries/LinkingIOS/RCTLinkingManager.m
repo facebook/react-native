@@ -153,4 +153,26 @@ RCT_EXPORT_METHOD(getInitialURL:(RCTPromiseResolveBlock)resolve
   resolve(RCTNullIfNil(initialURL.absoluteString));
 }
 
+RCT_EXPORT_METHOD(openSettings:(RCTPromiseResolveBlock)resolve
+                  reject:(__unused RCTPromiseRejectBlock)reject)
+{
+  NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+  if (@available(iOS 10.0, *)) {
+    [RCTSharedApplication() openURL:url options:@{} completionHandler:^(BOOL success) {
+      if (success) {
+        resolve(nil);
+      } else {
+        reject(RCTErrorUnspecified, @"Unable to open app settings", nil);
+      }
+    }];
+  } else {
+   BOOL opened = [RCTSharedApplication() openURL:url];
+   if (opened) {
+     resolve(nil);
+   } else {
+     reject(RCTErrorUnspecified, @"Unable to open app settings", nil);
+   }
+  }
+}
+
 @end

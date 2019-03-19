@@ -218,8 +218,8 @@ ShadowViewMutationList calculateShadowViewMutations(
     const ShadowNode &newRootShadowNode) {
   SystraceSection s("calculateShadowViewMutations");
 
-  // Root shadow nodes must have same tag.
-  assert(oldRootShadowNode.getTag() == newRootShadowNode.getTag());
+  // Root shadow nodes must be belong the same family.
+  assert(ShadowNode::sameFamily(oldRootShadowNode, newRootShadowNode));
 
   ShadowViewMutationList mutations;
 

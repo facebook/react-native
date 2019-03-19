@@ -33,14 +33,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@implementation RCTBridge (RCTSurfacePresenterStub)
+@interface RCTBridge (RCTSurfacePresenterStub)
 
-- (id<RCTSurfacePresenterStub>)surfacePresenter
-{
-  return objc_getAssociatedObject(self, @selector(surfacePresenter));
-}
+- (id<RCTSurfacePresenterStub>)surfacePresenter;
 
 @end
-
 
 NS_ASSUME_NONNULL_END

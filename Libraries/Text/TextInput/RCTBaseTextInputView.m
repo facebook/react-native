@@ -398,18 +398,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     }
   }
 
-  if (range.location + range.length > _predictedText.length) {
-    // _predictedText got out of sync in a bad way, so let's just force sync it.  Haven't been able to repro this, but
-    // it's causing a real crash here: #6523822
+  NSString *previousText = backedTextInputView.attributedText.string ?: @"";
+  
+  if (range.location + range.length > backedTextInputView.attributedText.string.length) {
     _predictedText = backedTextInputView.attributedText.string;
-  }
-
-  NSString *previousText = [_predictedText substringWithRange:range] ?: @"";
-
-  if (!_predictedText || backedTextInputView.attributedText.string.length == 0) {
-    _predictedText = text;
   } else {
-    _predictedText = [_predictedText stringByReplacingCharactersInRange:range withString:text];
+    _predictedText = [backedTextInputView.attributedText.string stringByReplacingCharactersInRange:range withString:text];
   }
 
   if (_onTextInput) {
@@ -444,7 +438,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     [self textInputShouldChangeTextInRange:predictionRange replacementText:replacement];
     // JS will assume the selection changed based on the location of our shouldChangeTextInRange, so reset it.
     [self textInputDidChangeSelection];
-    _predictedText = backedTextInputView.attributedText.string;
   }
 
   _nativeEventCount++;

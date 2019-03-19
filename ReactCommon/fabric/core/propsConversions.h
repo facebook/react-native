@@ -57,8 +57,8 @@ T convertRawProp(
     return sourceValue;
   }
 
-  // Special case: `null` always means `the prop was removed, use default
-  // value`.
+  // Special case: `null` always means "the prop was removed, use default
+  // value".
   if (!rawValue->hasValue()) {
     return defaultValue;
   }

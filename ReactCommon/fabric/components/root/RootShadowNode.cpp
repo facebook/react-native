@@ -22,7 +22,10 @@ void RootShadowNode::layout() {
 
   // This is the rare place where shadow node must layout (set `layoutMetrics`)
   // itself because there is no a parent node which usually should do it.
-  setLayoutMetrics(layoutMetricsFromYogaNode(yogaNode_));
+  if (getHasNewLayout()) {
+    setLayoutMetrics(layoutMetricsFromYogaNode(yogaNode_));
+    setHasNewLayout(false);
+  }
 }
 
 UnsharedRootShadowNode RootShadowNode::clone(
@@ -41,40 +44,35 @@ UnsharedRootShadowNode RootShadowNode::clone(
 }
 
 UnsharedRootShadowNode RootShadowNode::clone(
-    const SharedShadowNode &oldShadowNode,
-    const SharedShadowNode &newShadowNode) const {
-  std::vector<std::reference_wrapper<const ShadowNode>> ancestors;
+    SharedShadowNode const &oldShadowNode,
+    SharedShadowNode const &newShadowNode) const {
+  auto ancestors = oldShadowNode->getAncestors(*this);
 
-  if (!oldShadowNode->constructAncestorPath(*this, ancestors)) {
+  if (ancestors.size() == 0) {
     return UnsharedRootShadowNode{nullptr};
   }
 
-  auto oldChild = oldShadowNode;
-  auto newChild = newShadowNode;
+  auto childNode = newShadowNode;
 
-  for (const auto &ancestor : ancestors) {
-    auto oldParent = ancestor.get().shared_from_this();
+  for (auto it = ancestors.rbegin(); it != ancestors.rend(); ++it) {
+    auto &parentNode = it->first.get();
+    auto childIndex = it->second;
 
-    auto children = oldParent->getChildren();
-    std::replace(children.begin(), children.end(), oldChild, newChild);
+    auto children = parentNode.getChildren();
+    assert(ShadowNode::sameFamily(*children.at(childIndex), *childNode));
+    children[childIndex] = childNode;
 
-    auto sharedChildren = std::make_shared<SharedShadowNodeList>(children);
-    auto newParent = oldParent->clone({
-        /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-        /* .rootTag = */ ShadowNodeFragment::surfaceIdPlaceholder(),
-        /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-        /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
-        /* .children = */ sharedChildren,
+    childNode = parentNode.clone({
+        ShadowNodeFragment::tagPlaceholder(),
+        ShadowNodeFragment::surfaceIdPlaceholder(),
+        ShadowNodeFragment::propsPlaceholder(),
+        ShadowNodeFragment::eventEmitterPlaceholder(),
+        std::make_shared<SharedShadowNodeList>(children),
     });
-
-    newParent->replaceChild(oldChild, newChild);
-
-    oldChild = oldParent;
-    newChild = newParent;
   }
 
   return std::const_pointer_cast<RootShadowNode>(
-      std::static_pointer_cast<const RootShadowNode>(newChild));
+      std::static_pointer_cast<RootShadowNode const>(childNode));
 }
 
 } // namespace react

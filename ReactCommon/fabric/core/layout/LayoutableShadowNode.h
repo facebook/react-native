@@ -76,16 +76,16 @@ class LayoutableShadowNode : public virtual Sealable {
    * Indicates whether all nodes (and possibly their subtrees) along the path
    * to the root node should be re-layouted.
    */
-  virtual void cleanLayout();
-  virtual void dirtyLayout();
-  virtual bool getIsLayoutClean() const;
+  virtual void cleanLayout() = 0;
+  virtual void dirtyLayout() = 0;
+  virtual bool getIsLayoutClean() const = 0;
 
   /*
    * Indicates does the shadow node (or any descendand node of the node)
    * get a new layout metrics during a previous layout pass.
    */
-  virtual void setHasNewLayout(bool hasNewLayout);
-  virtual bool getHasNewLayout() const;
+  virtual void setHasNewLayout(bool hasNewLayout) = 0;
+  virtual bool getHasNewLayout() const = 0;
 
   /*
    * Applies layout for all children;
@@ -127,8 +127,6 @@ class LayoutableShadowNode : public virtual Sealable {
 
  private:
   LayoutMetrics layoutMetrics_{};
-  bool hasNewLayout_{false};
-  bool isLayoutClean_{false};
 };
 
 } // namespace react

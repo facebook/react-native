@@ -261,7 +261,7 @@ using namespace facebook::react;
 
   [self._scheduler startSurfaceWithSurfaceId:surface.rootTag
                                   moduleName:surface.moduleName
-                                initailProps:surface.properties
+                                initialProps:surface.properties
                            layoutConstraints:layoutConstraints
                                layoutContext:layoutContext];
 }

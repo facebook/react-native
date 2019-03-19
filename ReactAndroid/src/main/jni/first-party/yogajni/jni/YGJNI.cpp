@@ -89,16 +89,12 @@ public:
 };
 
 struct YGNodeContext {
-  weak_ref<jobject>* ygNodeJObjectRef{nullptr};
   int edgeSetFlag = 0;
-  ~YGNodeContext() {
-    delete ygNodeJObjectRef;
-  }
 };
 
 const int MARGIN = 1;
 const int PADDING = 2;
-const int BORDER = 3;
+const int BORDER = 4;
 
 static inline YGNodeContext* ygNodeRefToYGNodeContext(YGNodeRef node) {
   return reinterpret_cast<YGNodeContext*>(node->getContext());
@@ -107,13 +103,7 @@ static inline YGNodeContext* ygNodeRefToYGNodeContext(YGNodeRef node) {
 static inline local_ref<JYogaNode> YGNodeJobject(
     YGNodeRef node,
     void* layoutContext) {
-  if (layoutContext == nullptr) {
-    return (reinterpret_cast<weak_ref<JYogaNode>*>(
-                ygNodeRefToYGNodeContext(node)->ygNodeJObjectRef))
-        ->lockLocal();
-  } else {
-    return reinterpret_cast<PtrJNodeMap*>(layoutContext)->ref(node);
-  }
+  return reinterpret_cast<PtrJNodeMap*>(layoutContext)->ref(node);
 }
 
 static void YGTransferLayoutDirection(
@@ -185,6 +175,8 @@ static void YGTransferLayoutOutputsRecursive(
   obj->setFieldValue<jboolean>(
       doesLegacyStretchBehaviour,
       YGNodeLayoutGetDidLegacyStretchFlagAffectLayout(root));
+  obj->setFieldValue<jboolean>(hasNewLayoutField, true);
+  YGTransferLayoutDirection(root, obj);
 
   if ((edgeSetFlag & MARGIN) == MARGIN) {
     obj->setFieldValue(
@@ -217,8 +209,6 @@ static void YGTransferLayoutOutputsRecursive(
         borderBottomField, YGNodeLayoutGetBorder(root, YGEdgeBottom));
   }
 
-  obj->setFieldValue<jboolean>(hasNewLayoutField, true);
-  YGTransferLayoutDirection(root, obj);
   root->setHasNewLayout(false);
 
   for (uint32_t i = 0; i < YGNodeGetChildCount(root); i++) {
@@ -320,25 +310,20 @@ static int YGJNILogFunc(
   return result;
 }
 
-YGNodeContext* createYGNodeContext(alias_ref<jobject> thiz) {
-  YGNodeContext* ygNodeContext = new YGNodeContext();
-  ygNodeContext->ygNodeJObjectRef = new weak_ref<jobject>(make_weak(thiz));
-  return ygNodeContext;
+YGNodeContext* createYGNodeContext() {
+  return new YGNodeContext();
 }
 
-jlong jni_YGNodeNew(alias_ref<jobject> thiz) {
+jlong jni_YGNodeNew(alias_ref<jobject>) {
   const YGNodeRef node = YGNodeNew();
-  node->setContext(createYGNodeContext(thiz));
+  node->setContext(createYGNodeContext());
   node->setPrintFunc(YGPrint);
   return reinterpret_cast<jlong>(node);
 }
 
-jlong jni_YGNodeNewWithConfig(
-    alias_ref<jobject> thiz,
-    jlong configPointer,
-    jboolean avoidGlobalJNIRefs) {
+jlong jni_YGNodeNewWithConfig(alias_ref<jobject>, jlong configPointer) {
   const YGNodeRef node = YGNodeNewWithConfig(_jlong2YGConfigRef(configPointer));
-  node->setContext(createYGNodeContext(avoidGlobalJNIRefs ? nullptr : thiz));
+  node->setContext(createYGNodeContext());
   return reinterpret_cast<jlong>(node);
 }
 
@@ -367,11 +352,13 @@ void jni_YGNodeReset(jlong nativePointer) {
 }
 
 void jni_YGNodePrint(jlong nativePointer) {
+#ifdef DEBUG
   const YGNodeRef node = _jlong2YGNodeRef(nativePointer);
   YGNodePrint(
       node,
       (YGPrintOptions)(
           YGPrintOptionsStyle | YGPrintOptionsLayout | YGPrintOptionsChildren));
+#endif
 }
 
 void jni_YGNodeInsertChild(
@@ -817,7 +804,7 @@ static void YGNodeSetStyleInputs(
 }
 
 void jni_YGNodeSetStyleInputs(
-    alias_ref<jobject> thiz,
+    alias_ref<jobject>,
     jlong nativePointer,
     alias_ref<JArrayFloat> styleInputs,
     jint size) {

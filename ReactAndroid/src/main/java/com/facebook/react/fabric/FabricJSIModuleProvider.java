@@ -52,7 +52,7 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
   @Override
   public UIManager get() {
     final EventBeatManager eventBeatManager =
-        new EventBeatManager(mJSContext, mReactApplicationContext);
+        new EventBeatManager(mReactApplicationContext);
     final FabricUIManager uiManager = createUIManager(eventBeatManager);
     Systrace.beginSection(
         Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricJSIModuleProvider.registerBinding");

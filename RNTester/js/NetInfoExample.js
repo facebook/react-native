@@ -133,8 +133,8 @@ class IsConnectionExpensive extends React.Component<{}, $FlowFixMeState> {
               {this.state.isConnectionExpensive === true
                 ? 'Expensive'
                 : this.state.isConnectionExpensive === false
-                  ? 'Not expensive'
-                  : 'Unknown'}
+                ? 'Not expensive'
+                : 'Unknown'}
             </Text>
           </View>
         </TouchableWithoutFeedback>

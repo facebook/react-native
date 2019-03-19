@@ -11,7 +11,7 @@ import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -71,7 +71,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   private static final int FOCUS_TEXT_INPUT = 1;
   private static final int BLUR_TEXT_INPUT = 2;
 
-  private static final int INPUT_TYPE_KEYBOARD_NUMBER_PAD = InputType.TYPE_CLASS_NUMBER; 
+  private static final int INPUT_TYPE_KEYBOARD_NUMBER_PAD = InputType.TYPE_CLASS_NUMBER;
   private static final int INPUT_TYPE_KEYBOARD_DECIMAL_PAD = INPUT_TYPE_KEYBOARD_NUMBER_PAD |
           InputType.TYPE_NUMBER_FLAG_DECIMAL;
   private static final int INPUT_TYPE_KEYBOARD_NUMBERED = INPUT_TYPE_KEYBOARD_DECIMAL_PAD |
@@ -297,10 +297,19 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
   }
 
   private void setImportantForAutofill(ReactEditText view, int mode) {
+    // Autofill hints were added in Android API 26.
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
       return;
     }
     view.setImportantForAutofill(mode);
+  }
+
+  private void setAutofillHints(ReactEditText view, String... hints) {
+    // Autofill hints were added in Android API 26.
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+      return;
+    }
+    view.setAutofillHints(hints);
   }
 
   @ReactProp(name = "onSelectionChange", defaultBoolean = false)
@@ -572,29 +581,29 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     if (autocomplete == null) {
       setImportantForAutofill(view, View.IMPORTANT_FOR_AUTOFILL_NO);
     } else if ("username".equals(autocomplete)) {
-      view.setAutofillHints(View.AUTOFILL_HINT_USERNAME);
+      setAutofillHints(view, View.AUTOFILL_HINT_USERNAME);
     } else if ("password".equals(autocomplete)) {
-      view.setAutofillHints(View.AUTOFILL_HINT_PASSWORD);
+      setAutofillHints(view, View.AUTOFILL_HINT_PASSWORD);
     } else if ("email".equals(autocomplete)) {
-      view.setAutofillHints(View.AUTOFILL_HINT_EMAIL_ADDRESS);
+      setAutofillHints(view, View.AUTOFILL_HINT_EMAIL_ADDRESS);
     } else if ("name".equals(autocomplete)) {
-      view.setAutofillHints(View.AUTOFILL_HINT_NAME);
+      setAutofillHints(view, View.AUTOFILL_HINT_NAME);
     } else if ("tel".equals(autocomplete)) {
-      view.setAutofillHints(View.AUTOFILL_HINT_PHONE);
+      setAutofillHints(view, View.AUTOFILL_HINT_PHONE);
     } else if ("street-address".equals(autocomplete)) {
-      view.setAutofillHints(View.AUTOFILL_HINT_POSTAL_ADDRESS);
+      setAutofillHints(view, View.AUTOFILL_HINT_POSTAL_ADDRESS);
     } else if ("postal-code".equals(autocomplete)) {
-      view.setAutofillHints(View.AUTOFILL_HINT_POSTAL_CODE);
+      setAutofillHints(view, View.AUTOFILL_HINT_POSTAL_CODE);
     } else if ("cc-number".equals(autocomplete)) {
-      view.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_NUMBER);
+      setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_NUMBER);
     } else if ("cc-csc".equals(autocomplete)) {
-      view.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_SECURITY_CODE);
+      setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_SECURITY_CODE);
     } else if ("cc-exp".equals(autocomplete)) {
-      view.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DATE);
+      setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_DATE);
     } else if ("cc-exp-month".equals(autocomplete)) {
-      view.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_MONTH);
+      setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_MONTH);
     } else if ("cc-exp-year".equals(autocomplete)) {
-      view.setAutofillHints(View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_YEAR);
+      setAutofillHints(view, View.AUTOFILL_HINT_CREDIT_CARD_EXPIRATION_YEAR);
     } else if ("off".equals(autocomplete)) {
       setImportantForAutofill(view, View.IMPORTANT_FOR_AUTOFILL_NO);
     } else {

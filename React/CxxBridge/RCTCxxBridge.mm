@@ -983,7 +983,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 - (void)reload
 {
   if (!_valid) {
-    RCTLogError(@"Attempting to reload bridge before it's valid: %@. Try restarting the development server if connected.", self);
+    RCTLogWarn(@"Attempting to reload bridge before it's valid: %@. Try restarting the development server if connected.", self);
   }
   [_parentBridge reload];
 }

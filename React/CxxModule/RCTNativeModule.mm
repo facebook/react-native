@@ -67,6 +67,8 @@ void RCTNativeModule::invoke(unsigned int methodId, folly::dynamic &&params, int
     if (callId != -1) {
       fbsystrace_end_async_flow(TRACE_TAG_REACT_APPS, "native", callId);
     }
+    #else
+    (void)(callId);
     #endif
     invokeInner(weakBridge, weakModuleData, methodId, std::move(params));
   };
@@ -112,10 +114,14 @@ static MethodCallResult invokeInner(RCTBridge *bridge, RCTModuleData *moduleData
       @throw exception;
     }
 
+#if RCT_DEBUG
     NSString *message = [NSString stringWithFormat:
                          @"Exception '%@' was thrown while invoking %s on target %@ with params %@\ncallstack: %@",
                          exception, method.JSMethodName, moduleData.name, objcParams, exception.callStackSymbols];
     RCTFatal(RCTErrorWithMessage(message));
+#else
+    RCTFatalException(exception);
+#endif
   }
 
   return folly::none;

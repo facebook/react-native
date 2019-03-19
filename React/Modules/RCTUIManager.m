@@ -71,7 +71,7 @@ NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotif
 
   NSMutableDictionary<NSNumber *, RCTShadowView *> *_shadowViewRegistry; // RCT thread only
   NSMutableDictionary<NSNumber *, UIView *> *_viewRegistry; // Main thread only
-  NSMapTable<NSString *, UIView *> *_nativeIDRegistry;  // Main thread only
+  NSMapTable<NSString *, UIView *> *_nativeIDRegistry;
 
   NSMapTable<RCTShadowView *, NSArray<NSString *> *> *_shadowViewsWithUpdatedProps; // UIManager queue only.
   NSHashTable<RCTShadowView *> *_shadowViewsWithUpdatedChildren; // UIManager queue only.
@@ -143,7 +143,6 @@ RCT_EXPORT_MODULE()
 
 - (NSMapTable *)nativeIDRegistry
 {
-  // Should be called on main queue
   if (!_nativeIDRegistry) {
     _nativeIDRegistry = [NSMapTable strongToWeakObjectsMapTable];
   }
@@ -388,25 +387,28 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
 
 - (UIView *)viewForNativeID:(NSString *)nativeID withRootTag:(NSNumber *)rootTag
 {
-  RCTAssertMainQueue();
   if (!nativeID || !rootTag) {
     return nil;
   }
-  return [_nativeIDRegistry objectForKey:RCTNativeIDRegistryKey(nativeID, rootTag)];
+  UIView *view;
+  @synchronized(self) {
+    view = [_nativeIDRegistry objectForKey:RCTNativeIDRegistryKey(nativeID, rootTag)];
+  }
+  return view;
 }
 
 - (void)setNativeID:(NSString *)nativeID forView:(UIView *)view
 {
-  RCTAssertMainQueue();
-  if (!nativeID) {
+  if (!nativeID || !view) {
     return;
   }
   __weak RCTUIManager *weakSelf = self;
-  [self rootViewForReactTag:view.reactTag withCompletion:^(UIView *rootView) {
-    if (rootView) {
-      [weakSelf.nativeIDRegistry setObject:view forKey:RCTNativeIDRegistryKey(nativeID, rootView.reactTag)];
+  RCTExecuteOnUIManagerQueue(^{
+    NSNumber *rootTag = [weakSelf shadowViewForReactTag:view.reactTag].rootView.reactTag;
+    @synchronized(weakSelf) {
+      [weakSelf.nativeIDRegistry setObject:view forKey:RCTNativeIDRegistryKey(nativeID, rootTag)];
     }
-  }];
+  });
 }
 
 - (void)setSize:(CGSize)size forView:(UIView *)view
@@ -1362,73 +1364,6 @@ RCT_EXPORT_METHOD(measureLayoutRelativeToParent:(nonnull NSNumber *)reactTag
 {
   RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
   RCTMeasureLayout(shadowView, shadowView.reactSuperview, callback);
-}
-
-RCT_EXPORT_METHOD(takeSnapshot:(id /* NSString or NSNumber */)target
-                  withOptions:(NSDictionary *)options
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
-{
-  [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-
-    // Get view
-    UIView *view;
-    if (target == nil || [target isEqual:@"window"]) {
-      view = RCTKeyWindow();
-    } else if ([target isKindOfClass:[NSNumber class]]) {
-      view = viewRegistry[target];
-      if (!view) {
-        RCTLogError(@"No view found with reactTag: %@", target);
-        return;
-      }
-    }
-
-    // Get options
-    CGSize size = [RCTConvert CGSize:options];
-    NSString *format = [RCTConvert NSString:options[@"format"] ?: @"png"];
-
-    // Capture image
-    if (size.width < 0.1 || size.height < 0.1) {
-      size = view.bounds.size;
-    }
-    UIGraphicsBeginImageContextWithOptions(size, NO, 0);
-    BOOL success = [view drawViewHierarchyInRect:(CGRect){CGPointZero, size} afterScreenUpdates:YES];
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-
-    if (!success || !image) {
-      reject(RCTErrorUnspecified, @"Failed to capture view snapshot.", nil);
-      return;
-    }
-
-    // Convert image to data (on a background thread)
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-
-      NSData *data;
-      if ([format isEqualToString:@"png"]) {
-        data = UIImagePNGRepresentation(image);
-      } else if ([format isEqualToString:@"jpeg"]) {
-        CGFloat quality = [RCTConvert CGFloat:options[@"quality"] ?: @1];
-        data = UIImageJPEGRepresentation(image, quality);
-      } else {
-        RCTLogError(@"Unsupported image format: %@", format);
-        return;
-      }
-
-      // Save to a temp file
-      NSError *error = nil;
-      NSString *tempFilePath = RCTTempFilePath(format, &error);
-      if (tempFilePath) {
-        if ([data writeToFile:tempFilePath options:(NSDataWritingOptions)0 error:&error]) {
-          resolve(tempFilePath);
-          return;
-        }
-      }
-
-      // If we reached here, something went wrong
-      reject(RCTErrorUnspecified, error.localizedDescription, error);
-    });
-  }];
 }
 
 /**
