@@ -206,6 +206,8 @@ try {
         return exec(
           [
             'xcodebuild',
+            '-workspace',
+            `"EndToEndTest.xcworkspace"`,
             '-destination',
             `"${destination}"`,
             '-scheme',
