@@ -17,6 +17,7 @@
 #include <react/core/Props.h>
 #include <react/core/ReactPrimitives.h>
 #include <react/core/Sealable.h>
+#include <react/core/ShadowNodeFamily.h>
 #include <react/core/State.h>
 #include <react/debug/DebugStringConvertible.h>
 
@@ -46,6 +47,12 @@ class ShadowNode : public virtual Sealable,
   using Weak = std::weak_ptr<const ShadowNode>;
 
   static SharedShadowNodeSharedList emptySharedShadowNodeSharedList();
+
+  /*
+   * Returns `true` if nodes belong to the same family (they were cloned one
+   * from each other or from the same source node).
+   */
+  static bool sameFamily(const ShadowNode &first, const ShadowNode &second);
 
 #pragma mark - Constructors
 
@@ -77,11 +84,11 @@ class ShadowNode : public virtual Sealable,
   virtual ComponentHandle getComponentHandle() const = 0;
   virtual ComponentName getComponentName() const = 0;
 
-  const SharedShadowNodeList &getChildren() const;
-  SharedProps getProps() const;
-  SharedEventEmitter getEventEmitter() const;
+  SharedProps const &getProps() const;
+  SharedShadowNodeList const &getChildren() const;
+  SharedEventEmitter const &getEventEmitter() const;
   Tag getTag() const;
-  Tag getRootTag() const;
+  SurfaceId getSurfaceId() const;
 
   /*
    * Returns a concrete `ComponentDescriptor` that manages nodes of this type.
@@ -155,10 +162,7 @@ class ShadowNode : public virtual Sealable,
 #endif
 
  protected:
-  Tag tag_;
-  Tag rootTag_;
   SharedProps props_;
-  SharedEventEmitter eventEmitter_;
   SharedShadowNodeSharedList children_;
   SharedLocalData localData_;
   State::Shared state_;
@@ -171,10 +175,9 @@ class ShadowNode : public virtual Sealable,
   void cloneChildrenIfShared();
 
   /*
-   * A reference to a concrete `ComponentDescriptor` that manages nodes of this
-   * type.
+   * Pointer to a family object that this shadow node belongs to.
    */
-  const ComponentDescriptor &componentDescriptor_;
+  ShadowNodeFamily::Shared family_;
 
   /*
    * Indicates that `children` list is shared between nodes and need

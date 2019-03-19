@@ -23,20 +23,25 @@ SharedShadowNodeSharedList ShadowNode::emptySharedShadowNodeSharedList() {
   return emptySharedShadowNodeSharedList;
 }
 
+bool ShadowNode::sameFamily(const ShadowNode &first, const ShadowNode &second) {
+  return first.family_ == second.family_;
+}
+
 #pragma mark - Constructors
 
 ShadowNode::ShadowNode(
     const ShadowNodeFragment &fragment,
     const ComponentDescriptor &componentDescriptor)
-    : tag_(fragment.tag),
-      rootTag_(fragment.rootTag),
-      props_(fragment.props),
-      eventEmitter_(fragment.eventEmitter),
+    : props_(fragment.props),
       children_(
           fragment.children ? fragment.children
                             : emptySharedShadowNodeSharedList()),
       state_(fragment.state),
-      componentDescriptor_(componentDescriptor),
+      family_(std::make_shared<ShadowNodeFamily const>(
+          fragment.tag,
+          fragment.rootTag,
+          fragment.eventEmitter,
+          componentDescriptor)),
       childrenAreShared_(true),
       revision_(1) {
   assert(props_);
@@ -46,10 +51,7 @@ ShadowNode::ShadowNode(
 ShadowNode::ShadowNode(
     const ShadowNode &sourceShadowNode,
     const ShadowNodeFragment &fragment)
-    : tag_(sourceShadowNode.tag_),
-      rootTag_(sourceShadowNode.rootTag_),
-      props_(fragment.props ? fragment.props : sourceShadowNode.props_),
-      eventEmitter_(fragment.eventEmitter),
+    : props_(fragment.props ? fragment.props : sourceShadowNode.props_),
       children_(
           fragment.children ? fragment.children : sourceShadowNode.children_),
       localData_(
@@ -58,7 +60,7 @@ ShadowNode::ShadowNode(
       state_(
           fragment.state ? fragment.state
                          : sourceShadowNode.getCommitedState()),
-      componentDescriptor_(sourceShadowNode.componentDescriptor_),
+      family_(sourceShadowNode.family_),
       childrenAreShared_(true),
       revision_(sourceShadowNode.revision_ + 1) {
   // `tag`, `surfaceId`, and `eventEmitter` cannot be changed with cloning.
@@ -72,7 +74,7 @@ ShadowNode::ShadowNode(
 }
 
 UnsharedShadowNode ShadowNode::clone(const ShadowNodeFragment &fragment) const {
-  return componentDescriptor_.cloneShadowNode(*this, fragment);
+  return family_->componentDescriptor_.cloneShadowNode(*this, fragment);
 }
 
 #pragma mark - Getters
@@ -81,24 +83,24 @@ const SharedShadowNodeList &ShadowNode::getChildren() const {
   return *children_;
 }
 
-SharedProps ShadowNode::getProps() const {
+const SharedProps &ShadowNode::getProps() const {
   return props_;
 }
 
-SharedEventEmitter ShadowNode::getEventEmitter() const {
-  return eventEmitter_;
+const SharedEventEmitter &ShadowNode::getEventEmitter() const {
+  return family_->eventEmitter_;
 }
 
 Tag ShadowNode::getTag() const {
-  return tag_;
+  return family_->tag_;
 }
 
-Tag ShadowNode::getRootTag() const {
-  return rootTag_;
+SurfaceId ShadowNode::getSurfaceId() const {
+  return family_->surfaceId_;
 }
 
 const ComponentDescriptor &ShadowNode::getComponentDescriptor() const {
-  return componentDescriptor_;
+  return family_->componentDescriptor_;
 }
 
 const State::Shared &ShadowNode::getState() const {
@@ -175,7 +177,7 @@ void ShadowNode::cloneChildrenIfShared() {
 }
 
 void ShadowNode::setMounted(bool mounted) const {
-  eventEmitter_->setEnabled(mounted);
+  family_->eventEmitter_->setEnabled(mounted);
   if (mounted && state_) {
     state_->commit(*this);
   }
@@ -229,7 +231,7 @@ SharedDebugStringConvertibleList ShadowNode::getDebugChildren() const {
 SharedDebugStringConvertibleList ShadowNode::getDebugProps() const {
   return props_->getDebugProps() +
       SharedDebugStringConvertibleList{
-          debugStringConvertibleItem("tag", folly::to<std::string>(tag_))};
+          debugStringConvertibleItem("tag", folly::to<std::string>(getTag()))};
 }
 #endif
 

@@ -98,7 +98,7 @@ void UIManager::setNativeProps(
   });
 
   shadowTreeRegistry_->visit(
-      shadowNode->getRootTag(), [&](const ShadowTree &shadowTree) {
+      shadowNode->getSurfaceId(), [&](const ShadowTree &shadowTree) {
         shadowTree.tryCommit(
             [&](const SharedRootShadowNode &oldRootShadowNode) {
               return oldRootShadowNode->clone(shadowNode, newShadowNode);
@@ -116,7 +116,7 @@ LayoutMetrics UIManager::getRelativeLayoutMetrics(
 
   if (!ancestorShadowNode) {
     shadowTreeRegistry_->visit(
-        shadowNode.getRootTag(), [&](const ShadowTree &shadowTree) {
+        shadowNode.getSurfaceId(), [&](const ShadowTree &shadowTree) {
           shadowTree.tryCommit(
               [&](const SharedRootShadowNode &oldRootShadowNode) {
                 ancestorShadowNode = oldRootShadowNode.get();
@@ -158,7 +158,7 @@ void UIManager::updateState(
   });
 
   shadowTreeRegistry_->visit(
-      shadowNode->getRootTag(), [&](const ShadowTree &shadowTree) {
+      shadowNode->getSurfaceId(), [&](const ShadowTree &shadowTree) {
         shadowTree.tryCommit(
             [&](const SharedRootShadowNode &oldRootShadowNode) {
               return oldRootShadowNode->clone(shadowNode, newShadowNode);

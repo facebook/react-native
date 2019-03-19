@@ -41,7 +41,7 @@ TEST(ShadowNodeTest, handleShadowNodeCreation) {
   ASSERT_FALSE(node->getSealed());
   ASSERT_STREQ(node->getComponentName().c_str(), "Test");
   ASSERT_EQ(node->getTag(), 9);
-  ASSERT_EQ(node->getRootTag(), 1);
+  ASSERT_EQ(node->getSurfaceId(), 1);
   ASSERT_EQ(node->getEventEmitter(), nullptr);
   ASSERT_EQ(node->getChildren().size(), 0);
 
@@ -67,7 +67,7 @@ TEST(ShadowNodeTest, handleShadowNodeSimpleCloning) {
 
   ASSERT_STREQ(node->getComponentName().c_str(), "Test");
   ASSERT_EQ(node->getTag(), 9);
-  ASSERT_EQ(node->getRootTag(), 1);
+  ASSERT_EQ(node->getSurfaceId(), 1);
   ASSERT_EQ(node->getEventEmitter(), nullptr);
 }
 
@@ -154,7 +154,7 @@ TEST(ShadowNodeTest, handleCloneFunction) {
 
   // Both nodes have same content.
   ASSERT_EQ(firstNode->getTag(), firstNodeClone->getTag());
-  ASSERT_EQ(firstNode->getRootTag(), firstNodeClone->getRootTag());
+  ASSERT_EQ(firstNode->getSurfaceId(), firstNodeClone->getSurfaceId());
   ASSERT_EQ(firstNode->getProps(), firstNodeClone->getProps());
 }
 
