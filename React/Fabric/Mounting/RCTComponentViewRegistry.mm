@@ -205,8 +205,6 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
                                    componentView:(UIView<RCTComponentViewProtocol> *)componentView
 {
   RCTAssertMainQueue();
-  [componentView prepareForRecycle];
-
   NSHashTable<UIView<RCTComponentViewProtocol> *> *componentViews =
       [_recyclePool objectForKey:(__bridge id)(void *)componentHandle];
   if (!componentViews) {
@@ -218,6 +216,7 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
     return;
   }
 
+  [componentView prepareForRecycle];
   [componentViews addObject:componentView];
 }
 
