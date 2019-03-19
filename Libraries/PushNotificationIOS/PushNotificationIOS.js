@@ -222,7 +222,7 @@ class PushNotificationIOS {
         },
       );
     }
-    _notifHandlers.set(type, listener);
+    _notifHandlers.set(handler, listener);
   }
 
   /**
@@ -242,7 +242,7 @@ class PushNotificationIOS {
         type === 'localNotification',
       'PushNotificationIOS only supports `notification`, `register`, `registrationError`, and `localNotification` events',
     );
-    const listener = _notifHandlers.get(type);
+    const listener = _notifHandlers.get(handler);
     if (!listener) {
       return;
     }
