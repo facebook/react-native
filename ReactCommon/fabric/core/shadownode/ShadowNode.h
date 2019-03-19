@@ -45,6 +45,11 @@ class ShadowNode : public virtual Sealable,
  public:
   using Shared = std::shared_ptr<const ShadowNode>;
   using Weak = std::weak_ptr<const ShadowNode>;
+  using AncestorList = better::small_vector<
+      std::pair<
+          std::reference_wrapper<ShadowNode const> /* parentNode */,
+          int /* childIndex */>,
+      64>;
 
   static SharedShadowNodeSharedList emptySharedShadowNodeSharedList();
 
@@ -138,6 +143,7 @@ class ShadowNode : public virtual Sealable,
   void setMounted(bool mounted) const;
 
   /*
+   * Deprecated. Use `getAncestors` instead.
    * Forms a list of all ancestors of the node relative to the given ancestor.
    * The list starts from the parent node and ends with the given ancestor node.
    * Returns `true` if successful, `false` otherwise.
@@ -149,8 +155,18 @@ class ShadowNode : public virtual Sealable,
    * `childIndex` and `nodeId` tracking.
    */
   bool constructAncestorPath(
-      const ShadowNode &rootShadowNode,
+      const ShadowNode &ancestorShadowNode,
       std::vector<std::reference_wrapper<const ShadowNode>> &ancestors) const;
+
+  /*
+   * Returns a list of all ancestors of the node relative to the given ancestor.
+   * The list starts from the given ancestor node and ends with the parent node
+   * of `this` node. The elements of the list have a reference to some parent
+   * node and an index of the child of the parent node.
+   * Can be called from any thread.
+   * The theoretical complexity of the algorithm is `O(ln(n))`. Use it wisely.
+   */
+  AncestorList getAncestors(ShadowNode const &ancestorShadowNode) const;
 
 #pragma mark - DebugStringConvertible
 

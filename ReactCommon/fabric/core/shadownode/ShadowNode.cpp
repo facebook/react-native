@@ -7,6 +7,7 @@
 
 #include "ShadowNode.h"
 
+#include <better/small_vector.h>
 #include <string>
 
 #include <react/core/ComponentDescriptor.h>
@@ -16,6 +17,8 @@
 
 namespace facebook {
 namespace react {
+
+using AncestorList = ShadowNode::AncestorList;
 
 SharedShadowNodeSharedList ShadowNode::emptySharedShadowNodeSharedList() {
   static const auto emptySharedShadowNodeSharedList =
@@ -195,6 +198,48 @@ void ShadowNode::setMounted(bool mounted) const {
   if (mounted && state_) {
     state_->commit(*this);
   }
+}
+
+AncestorList ShadowNode::getAncestors(
+    ShadowNode const &ancestorShadowNode) const {
+  auto ancestors = AncestorList{};
+  auto families = better::small_vector<ShadowNodeFamily const *, 64>{};
+  auto ancestorFamily = ancestorShadowNode.family_.get();
+  auto descendantFamily = family_.get();
+
+  auto family = descendantFamily;
+  while (family && family != ancestorFamily) {
+    families.push_back(family);
+    family = family->parent_.lock().get();
+  }
+
+  if (family != ancestorFamily) {
+    ancestors.clear();
+    return ancestors;
+  }
+
+  auto parentNode = &ancestorShadowNode;
+  for (auto it = families.rbegin(); it != families.rend(); it++) {
+    auto childFamily = *it;
+    auto found = bool{false};
+    auto childIndex = int{0};
+    for (const auto &childNode : *parentNode->children_) {
+      if (childNode->family_.get() == childFamily) {
+        ancestors.push_back({*parentNode, childIndex});
+        parentNode = childNode.get();
+        found = true;
+        break;
+      }
+      childIndex++;
+    }
+
+    if (!found) {
+      ancestors.clear();
+      return ancestors;
+    }
+  }
+
+  return ancestors;
 }
 
 bool ShadowNode::constructAncestorPath(
