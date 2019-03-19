@@ -380,11 +380,6 @@ static UIImage *RCTResizeImageIfNeeded(UIImage *image,
     [NSURLProtocol setProperty:@"RCTImageLoader"
                         forKey:@"trackingName"
                      inRequest:mutableRequest];
-
-    // Add missing png extension
-    if (request.URL.fileURL && request.URL.pathExtension.length == 0) {
-      mutableRequest.URL = [request.URL URLByAppendingPathExtension:@"png"];
-    }
     if (_redirectDelegate != nil) {
       mutableRequest.URL = [_redirectDelegate redirectAssetsURL:mutableRequest.URL];
     }
