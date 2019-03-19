@@ -65,26 +65,6 @@ LayoutMetrics LayoutableShadowNode::getRelativeLayoutMetrics(
   return layoutMetrics;
 }
 
-void LayoutableShadowNode::cleanLayout() {
-  isLayoutClean_ = true;
-}
-
-void LayoutableShadowNode::dirtyLayout() {
-  isLayoutClean_ = false;
-}
-
-bool LayoutableShadowNode::getIsLayoutClean() const {
-  return isLayoutClean_;
-}
-
-bool LayoutableShadowNode::getHasNewLayout() const {
-  return hasNewLayout_;
-};
-
-void LayoutableShadowNode::setHasNewLayout(bool hasNewLayout) {
-  hasNewLayout_ = hasNewLayout;
-}
-
 Size LayoutableShadowNode::measure(LayoutConstraints layoutConstraints) const {
   return Size();
 }

@@ -26,7 +26,6 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode()
 
   yogaNode_.setConfig(&yogaConfig_);
   yogaNode_.setContext(this);
-  yogaNode_.setDirty(true);
 }
 
 YogaLayoutableShadowNode::YogaLayoutableShadowNode(
@@ -48,7 +47,7 @@ void YogaLayoutableShadowNode::cleanLayout() {
 }
 
 void YogaLayoutableShadowNode::dirtyLayout() {
-  yogaNode_.markDirtyAndPropogate();
+  yogaNode_.setDirty(true);
 }
 
 bool YogaLayoutableShadowNode::getIsLayoutClean() const {
