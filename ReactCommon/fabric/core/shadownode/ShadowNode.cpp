@@ -46,12 +46,10 @@ ShadowNode::ShadowNode(
 ShadowNode::ShadowNode(
     const ShadowNode &sourceShadowNode,
     const ShadowNodeFragment &fragment)
-    : tag_(fragment.tag ? fragment.tag : sourceShadowNode.tag_),
-      rootTag_(fragment.rootTag ? fragment.rootTag : sourceShadowNode.rootTag_),
+    : tag_(sourceShadowNode.tag_),
+      rootTag_(sourceShadowNode.rootTag_),
       props_(fragment.props ? fragment.props : sourceShadowNode.props_),
-      eventEmitter_(
-          fragment.eventEmitter ? fragment.eventEmitter
-                                : sourceShadowNode.eventEmitter_),
+      eventEmitter_(fragment.eventEmitter),
       children_(
           fragment.children ? fragment.children : sourceShadowNode.children_),
       localData_(
@@ -63,6 +61,12 @@ ShadowNode::ShadowNode(
       componentDescriptor_(sourceShadowNode.componentDescriptor_),
       childrenAreShared_(true),
       revision_(sourceShadowNode.revision_ + 1) {
+  // `tag`, `surfaceId`, and `eventEmitter` cannot be changed with cloning.
+  assert(fragment.tag == ShadowNodeFragment::tagPlaceholder());
+  assert(fragment.rootTag == ShadowNodeFragment::surfaceIdPlaceholder());
+  assert(
+      fragment.eventEmitter == ShadowNodeFragment::eventEmitterPlaceholder());
+
   assert(props_);
   assert(children_);
 }

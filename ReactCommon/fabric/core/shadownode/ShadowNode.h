@@ -59,6 +59,7 @@ class ShadowNode : public virtual Sealable,
   /*
    * Creates a Shadow Node via cloning given `sourceShadowNode` and
    * applying fields from given `fragment`.
+   * Note: `tag`, `surfaceId`, and `eventEmitter` cannot be changed.
    */
   ShadowNode(
       const ShadowNode &sourceShadowNode,
