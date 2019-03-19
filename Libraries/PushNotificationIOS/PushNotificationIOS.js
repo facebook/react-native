@@ -247,7 +247,7 @@ class PushNotificationIOS {
       return;
     }
     listener.remove();
-    _notifHandlers.delete(type);
+    _notifHandlers.delete(handler);
   }
 
   /**
