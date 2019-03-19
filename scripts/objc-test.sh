@@ -90,12 +90,13 @@ xcodebuild \
 
 else
 
-# Don't run tests. No need to pass -destination to xcodebuild.
+# Don't run tests. Fails on warnings.
 xcodebuild \
   -project "RNTester/RNTester.xcodeproj" \
   -scheme "$SCHEME" \
   -sdk "$SDK" \
   -UseModernBuildSystem=NO \
+  GCC_TREAT_WARNINGS_AS_ERRORS=YES \
   build
 
 fi
