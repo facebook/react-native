@@ -170,6 +170,10 @@ void YogaLayoutableShadowNode::layout(LayoutContext layoutContext) {
 
 void YogaLayoutableShadowNode::layoutChildren(LayoutContext layoutContext) {
   for (const auto &childYogaNode : yogaNode_.getChildren()) {
+    if (!childYogaNode->getHasNewLayout()) {
+      continue;
+    }
+
     auto childNode =
         static_cast<YogaLayoutableShadowNode *>(childYogaNode->getContext());
 

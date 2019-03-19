@@ -22,11 +22,11 @@ LayoutMetrics LayoutableShadowNode::getLayoutMetrics() const {
 }
 
 bool LayoutableShadowNode::setLayoutMetrics(LayoutMetrics layoutMetrics) {
+  ensureUnsealed();
+
   if (layoutMetrics_ == layoutMetrics) {
     return false;
   }
-
-  ensureUnsealed();
 
   layoutMetrics_ = layoutMetrics;
   return true;
