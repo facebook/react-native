@@ -187,6 +187,8 @@ try {
       'response=$(curl --write-out %{http_code} --silent --output /dev/null localhost:8081/index.bundle?platform=ios&dev=true)',
     );
     echo(`Starting packager server, ${SERVER_PID}`);
+    echo('Running pod install');
+    exec('pod install');
     echo('Executing ' + iosTestType + ' end-to-end test');
     if (
       tryExecNTimes(() => {
