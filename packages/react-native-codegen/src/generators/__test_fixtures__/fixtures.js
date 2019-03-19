@@ -284,6 +284,34 @@ const IMAGE_PROP: SchemaType = {
   },
 };
 
+const POINT_PROP: SchemaType = {
+  modules: {
+    Switch: {
+      components: {
+        PointPropNativeComponent: {
+          extendsProps: [
+            {
+              type: 'ReactNativeBuiltInType',
+              knownTypeName: 'ReactNativeCoreViewProps',
+            },
+          ],
+          events: [],
+          props: [
+            {
+              name: 'startPoint',
+              optional: true,
+              typeAnnotation: {
+                type: 'NativePrimitiveTypeAnnotation',
+                name: 'PointPrimitive',
+              },
+            },
+          ],
+        },
+      },
+    },
+  },
+};
+
 const ARRAY_PROPS: SchemaType = {
   modules: {
     Slider: {
@@ -359,6 +387,17 @@ const ARRAY_PROPS: SchemaType = {
                 },
               },
             },
+            {
+              name: 'points',
+              optional: true,
+              typeAnnotation: {
+                type: 'ArrayTypeAnnotation',
+                elementType: {
+                  type: 'NativePrimitiveTypeAnnotation',
+                  name: 'PointPrimitive',
+                },
+              },
+            },
           ],
         },
       },
@@ -401,6 +440,14 @@ const MULTI_NATIVE_PROP: SchemaType = {
               typeAnnotation: {
                 type: 'NativePrimitiveTypeAnnotation',
                 name: 'ColorPrimitive',
+              },
+            },
+            {
+              name: 'point',
+              optional: true,
+              typeAnnotation: {
+                type: 'NativePrimitiveTypeAnnotation',
+                name: 'PointPrimitive',
               },
             },
           ],
@@ -490,23 +537,6 @@ const EVENT_PROPS: SchemaType = {
                       name: 'scale',
                       optional: true,
                     },
-                    // {
-                    //   type: 'ObjectTypeAnnotation',
-                    //   name: 'location',
-                    //   optional: false,
-                    //   properties: [
-                    //     {
-                    //       type: 'IntegerTypeAnnotation',
-                    //       name: 'x',
-                    //       optional: false,
-                    //     },
-                    //     {
-                    //       type: 'IntegerTypeAnnotation',
-                    //       name: 'y',
-                    //       optional: false,
-                    //     },
-                    //   ],
-                    // },
                   ],
                 },
               },
@@ -725,6 +755,7 @@ module.exports = {
   FLOAT_PROPS,
   COLOR_PROP,
   IMAGE_PROP,
+  POINT_PROP,
   ARRAY_PROPS,
   MULTI_NATIVE_PROP,
   ENUM_PROP,

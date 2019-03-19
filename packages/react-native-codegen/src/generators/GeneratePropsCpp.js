@@ -86,6 +86,8 @@ function getImports(component): Set<string> {
     switch (name) {
       case 'ColorPrimitive':
         return;
+      case 'PointPrimitive':
+        return;
       case 'ImageSourcePrimitive':
         imports.add('#include <react/components/image/conversions.h>');
         return;

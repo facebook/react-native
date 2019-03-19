@@ -109,6 +109,8 @@ function getNativeTypeFromAnnotation(componentName: string, prop): string {
           return 'SharedColor';
         case 'ImageSourcePrimitive':
           return 'ImageSource';
+        case 'PointPrimitive':
+          return 'Point';
         default:
           (typeAnnotation.name: empty);
           throw new Error('Receieved unknown NativePrimitiveTypeAnnotation');
@@ -152,6 +154,8 @@ function convertDefaultTypeToString(componentName: string, prop): string {
         case 'ColorPrimitive':
           return '';
         case 'ImageSourcePrimitive':
+          return '';
+        case 'PointPrimitive':
           return '';
         default:
           (typeAnnotation.name: empty);
@@ -258,6 +262,9 @@ function getImports(component): Set<string> {
         return;
       case 'ImageSourcePrimitive':
         imports.add('#include <react/imagemanager/primitives.h>');
+        return;
+      case 'PointPrimitive':
+        imports.add('#include <react/graphics/Geometry.h>');
         return;
       default:
         (name: empty);

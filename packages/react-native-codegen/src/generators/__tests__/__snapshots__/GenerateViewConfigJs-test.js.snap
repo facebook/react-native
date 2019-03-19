@@ -28,6 +28,7 @@ const ArrayPropsNativeComponentViewConfig = {
     radii: true,
     colors: true,
     srcs: true,
+    points: true,
     style: ReactNativeStyleAttributes
   }
 };
@@ -420,6 +421,7 @@ const ImageColorPropNativeComponentViewConfig = {
     thumbImage: require('react-native').__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.NativePrimitives.ImageSourcePrimitive,
     color: require('react-native').__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.NativePrimitives.ColorPrimitive,
     thumbTintColor: require('react-native').__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.NativePrimitives.ColorPrimitive,
+    point: require('react-native').__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.NativePrimitives.PointPrimitive,
     style: ReactNativeStyleAttributes
   }
 };
@@ -427,6 +429,41 @@ const ImageColorPropNativeComponentViewConfig = {
 ReactNativeViewConfigRegistry.register(
   'ImageColorPropNativeComponent',
   () => ImageColorPropNativeComponentViewConfig,
+);
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture POINT_PROP 1`] = `
+Map {
+  "ViewConfigs.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
+
+const PointPropNativeComponentViewConfig = {
+  uiViewClassName: 'PointPropNativeComponent',
+
+  validAttributes: {
+    startPoint: require('react-native').__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.NativePrimitives.PointPrimitive,
+    style: ReactNativeStyleAttributes
+  }
+};
+
+ReactNativeViewConfigRegistry.register(
+  'PointPropNativeComponent',
+  () => PointPropNativeComponentViewConfig,
 );
 ",
 }

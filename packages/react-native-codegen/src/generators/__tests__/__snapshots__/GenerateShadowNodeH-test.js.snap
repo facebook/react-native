@@ -360,6 +360,39 @@ using ImageColorPropNativeComponentShadowNode = ConcreteViewShadowNode<
 }
 `;
 
+exports[`GenerateShadowNodeH can generate fixture POINT_PROP 1`] = `
+Map {
+  "ShadowNodes.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <react/components/POINT_PROP/Props.h>
+#include <react/components/view/ConcreteViewShadowNode.h>
+
+namespace facebook {
+namespace react {
+
+extern const char PointPropNativeComponentComponentName[];
+
+/*
+ * \`ShadowNode\` for <PointPropNativeComponent> component.
+ */
+using PointPropNativeComponentShadowNode = ConcreteViewShadowNode<
+    PointPropNativeComponentComponentName,
+    PointPropNativeComponentProps>;
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GenerateShadowNodeH can generate fixture STRING_PROP 1`] = `
 Map {
   "ShadowNodes.h" => "

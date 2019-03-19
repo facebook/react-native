@@ -26,7 +26,8 @@ disableds(convertRawProp(rawProps, \\"disableds\\", sourceProps.disableds, disab
 progress(convertRawProp(rawProps, \\"progress\\", sourceProps.progress, progress)),
 radii(convertRawProp(rawProps, \\"radii\\", sourceProps.radii, radii)),
 colors(convertRawProp(rawProps, \\"colors\\", sourceProps.colors, colors)),
-srcs(convertRawProp(rawProps, \\"srcs\\", sourceProps.srcs, srcs))
+srcs(convertRawProp(rawProps, \\"srcs\\", sourceProps.srcs, srcs)),
+points(convertRawProp(rawProps, \\"points\\", sourceProps.points, points))
       {}
 
 } // namespace react
@@ -327,7 +328,37 @@ ImageColorPropNativeComponentProps::ImageColorPropNativeComponentProps(
 
     thumbImage(convertRawProp(rawProps, \\"thumbImage\\", sourceProps.thumbImage, thumbImage)),
 color(convertRawProp(rawProps, \\"color\\", sourceProps.color, color)),
-thumbTintColor(convertRawProp(rawProps, \\"thumbTintColor\\", sourceProps.thumbTintColor, thumbTintColor))
+thumbTintColor(convertRawProp(rawProps, \\"thumbTintColor\\", sourceProps.thumbTintColor, thumbTintColor)),
+point(convertRawProp(rawProps, \\"point\\", sourceProps.point, point))
+      {}
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GeneratePropsCpp can generate fixture POINT_PROP 1`] = `
+Map {
+  "Props.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/POINT_PROP/Props.h>
+#include <react/core/propsConversions.h>
+
+namespace facebook {
+namespace react {
+
+PointPropNativeComponentProps::PointPropNativeComponentProps(
+    const PointPropNativeComponentProps &sourceProps,
+    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
+
+    startPoint(convertRawProp(rawProps, \\"startPoint\\", sourceProps.startPoint, startPoint))
       {}
 
 } // namespace react

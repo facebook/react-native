@@ -21,6 +21,7 @@ const {
   FLOAT_PROPS,
   COLOR_PROP,
   IMAGE_PROP,
+  POINT_PROP,
   MULTI_NATIVE_PROP,
   ENUM_PROP,
   EVENT_PROPS,
@@ -57,6 +58,10 @@ describe('GenerateComponentDescriptorH', () => {
 
   it('can generate a native primitive image prop', () => {
     expect(generator.generate('IMAGE_PROP', IMAGE_PROP)).toMatchSnapshot();
+  });
+
+  it('can generate a native primitive point prop', () => {
+    expect(generator.generate('IMAGE_PROP', POINT_PROP)).toMatchSnapshot();
   });
 
   it('can generate multiple native props', () => {
