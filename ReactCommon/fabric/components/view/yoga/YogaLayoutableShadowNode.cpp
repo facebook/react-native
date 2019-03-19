@@ -38,6 +38,7 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode(
   yogaNode_.setConfig(&yogaConfig_);
   yogaNode_.setContext(this);
   yogaNode_.setOwner(nullptr);
+
   // Yoga node must inherit dirty flag.
   assert(layoutableShadowNode.yogaNode_.isDirty() == yogaNode_.isDirty());
 }
@@ -79,12 +80,17 @@ void YogaLayoutableShadowNode::appendChild(YogaLayoutableShadowNode *child) {
   auto yogaNodeRawPtr = &yogaNode_;
   auto childYogaNodeRawPtr = &child->yogaNode_;
 
+  // Cloned node must not be reinserted to the same parent.
+  assert(childYogaNodeRawPtr->getOwner() != yogaNodeRawPtr);
+
   if (childYogaNodeRawPtr->getOwner() != nullptr) {
     child = static_cast<YogaLayoutableShadowNode *>(
         cloneAndReplaceChild(child, yogaNode_.getChildren().size()));
     childYogaNodeRawPtr = &child->yogaNode_;
-    assert(childYogaNodeRawPtr->getOwner() == nullptr);
   }
+
+  // Inserted node must have a clear owner (must not be shared).
+  assert(childYogaNodeRawPtr->getOwner() == nullptr);
 
   child->ensureUnsealed();
   childYogaNodeRawPtr->setOwner(yogaNodeRawPtr);
@@ -129,6 +135,8 @@ void YogaLayoutableShadowNode::setProps(const YogaStylableProps &props) {
 }
 
 void YogaLayoutableShadowNode::setSize(Size size) const {
+  ensureUnsealed();
+
   auto style = yogaNode_.getStyle();
   style.dimensions[YGDimensionWidth] = yogaStyleValueFromFloat(size.width);
   style.dimensions[YGDimensionHeight] = yogaStyleValueFromFloat(size.height);
@@ -137,6 +145,8 @@ void YogaLayoutableShadowNode::setSize(Size size) const {
 
 void YogaLayoutableShadowNode::setPositionType(
     YGPositionType positionType) const {
+  ensureUnsealed();
+
   auto style = yogaNode_.getStyle();
   style.positionType = positionType;
   yogaNode_.setStyle(style);
@@ -177,9 +187,18 @@ void YogaLayoutableShadowNode::layoutChildren(LayoutContext layoutContext) {
     auto childNode =
         static_cast<YogaLayoutableShadowNode *>(childYogaNode->getContext());
 
+    // Verifying that the Yoga node belongs to the ShadowNode.
+    assert(&childNode->yogaNode_ == childYogaNode);
+
     LayoutMetrics childLayoutMetrics =
         layoutMetricsFromYogaNode(childNode->yogaNode_);
     childLayoutMetrics.pointScaleFactor = layoutContext.pointScaleFactor;
+
+    // We must copy layout metrics from Yoga node only once (when the parent
+    // node exclusively ownes the child node).
+    assert(childYogaNode->getOwner() == &yogaNode_);
+
+    childNode->ensureUnsealed();
     childNode->setLayoutMetrics(childLayoutMetrics);
   }
 }
