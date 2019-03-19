@@ -60,21 +60,11 @@ RCT_EXTERN CGPathRef RCTPathCreateWithRoundedRect(CGRect bounds,
  * `borderInsets` defines the border widths for each edge.
  * `scaleFactor` defines the backing scale factor of the device for supporting high-resolution drawing.
  */
-<<<<<<< HEAD
-UIImage *RCTGetBorderImage(RCTBorderStyle borderStyle,
-                           CGSize viewSize,
-                           RCTCornerRadii cornerRadii,
-                           UIEdgeInsets borderInsets,
-                           RCTBorderColors borderColors,
-                           CGColorRef backgroundColor,
-                           BOOL drawToEdge,
-                           CGFloat scaleFactor); // TODO(macOS ISS#2323203)
-=======
 RCT_EXTERN UIImage *RCTGetBorderImage(RCTBorderStyle borderStyle,
                                       CGSize viewSize,
                                       RCTCornerRadii cornerRadii,
                                       UIEdgeInsets borderInsets,
                                       RCTBorderColors borderColors,
                                       CGColorRef backgroundColor,
-                                      BOOL drawToEdge);
->>>>>>> v0.58.6
+                                      BOOL drawToEdge,
+                                      CGFloat scaleFactor); // TODO(macOS ISS#2323203)

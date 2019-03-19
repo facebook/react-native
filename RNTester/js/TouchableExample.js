@@ -508,7 +508,6 @@ class TouchableDisabled extends React.Component<{}> {
   }
 }
 
-<<<<<<< HEAD
 // [TODO(macOS ISS#2323203)
 class TouchableHover extends React.Component<{}, $FlowFixMeState> {
   state = {
@@ -603,12 +602,9 @@ class TouchableMouseEvents extends React.Component<{}, $FlowFixMeState> {
 }
 // ]TODO(macOS ISS#2323203)
 
-var heartImage = {uri: 'https://pbs.twimg.com/media/BlXBfT3CQAA6cVZ.png:small'};
-=======
 const heartImage = {
   uri: 'https://pbs.twimg.com/media/BlXBfT3CQAA6cVZ.png:small',
 };
->>>>>>> v0.58.6
 
 const styles = StyleSheet.create({
   row: {

@@ -3,7 +3,7 @@
 // This source code is licensed under the MIT license found in the
  // LICENSE file in the root directory of this source tree.
 
-#include "jsireact/JSIExecutor.h"
+#include "JSIExecutor.h"
 
 #include <cxxreact/JSBigString.h>
 #include <cxxreact/ModuleRegistry.h>
@@ -14,6 +14,7 @@
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
 
+#include <sstream>
 #include <stdexcept>
 
 using namespace facebook::jsi;
@@ -88,33 +89,23 @@ JSIExecutor::JSIExecutor(
 }
 
 void JSIExecutor::loadApplicationScript(
-    std::unique_ptr<const JSBigString> script,
-<<<<<<< HEAD
-    uint64_t scriptVersion,
-    std::string sourceURL,
-    std::string&& bytecodeFileName) {
-=======
-    std::string sourceURL) {
->>>>>>> v0.58.6
+      std::unique_ptr<const JSBigString> script,
+      uint64_t /*scriptVersion*/, // TODO(OSS Candidate ISS#2710739)
+      std::string sourceURL,
+      std::string&& /*bytecodeFileName*/) { // TODO(OSS Candidate ISS#2710739)
   SystraceSection s("JSIExecutor::loadApplicationScript");
 
   // TODO: check for and use precompiled HBC
 
-<<<<<<< HEAD
 // ChakraCore implementation of JSI don't yet support HostObjects.
 // https://office.visualstudio.com/OC/_workitems/edit/2801906
 #if !defined(CHAKRA_JSI)
-=======
->>>>>>> v0.58.6
   runtime_->global().setProperty(
       *runtime_,
       "nativeModuleProxy",
       Object::createFromHostObject(
           *runtime_, std::make_shared<NativeModuleProxy>(*this)));
-<<<<<<< HEAD
 #endif
-=======
->>>>>>> v0.58.6
 
   runtime_->global().setProperty(
       *runtime_,
@@ -272,11 +263,7 @@ void JSIExecutor::callFunction(
 void JSIExecutor::invokeCallback(
     const double callbackId,
     const folly::dynamic& arguments) {
-<<<<<<< HEAD
   // SystraceSection s("JSIExecutor::invokeCallback", "callbackId", callbackId);
-=======
-  SystraceSection s("JSIExecutor::invokeCallback", "callbackId", callbackId);
->>>>>>> v0.58.6
   if (!invokeCallbackAndReturnFlushedQueue_) {
     bindBridge();
   }

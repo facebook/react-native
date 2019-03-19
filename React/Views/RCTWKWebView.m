@@ -1,9 +1,5 @@
 /**
-<<<<<<< HEAD
- * Copyright (c) 2015-present, Facebook, Inc.
-=======
  * Copyright (c) Facebook, Inc. and its affiliates.
->>>>>>> v0.58.6
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,11 +10,8 @@
 #import "RCTAutoInsetsProtocol.h"
 
 static NSString *const MessageHanderName = @"ReactNative";
-<<<<<<< HEAD
-=======
 static NSURLCredential* clientAuthenticationCredential;
 
->>>>>>> v0.58.6
 
 @interface RCTWKWebView () <WKUIDelegate, WKNavigationDelegate, WKScriptMessageHandler, UIScrollViewDelegate, RCTAutoInsetsProtocol>
 @property (nonatomic, copy) RCTDirectEventBlock onLoadingStart;
@@ -319,8 +312,6 @@ static NSURLCredential* clientAuthenticationCredential;
   [self setBackgroundColor: _savedBackgroundColor];
 }
 
-<<<<<<< HEAD
-=======
 + (void)setClientAuthenticationCredential:(nullable NSURLCredential*)credential {
   clientAuthenticationCredential = credential;
 }
@@ -340,7 +331,6 @@ static NSURLCredential* clientAuthenticationCredential;
 }
 }
 
->>>>>>> v0.58.6
 - (void)evaluateJS:(NSString *)js
           thenCall: (void (^)(NSString*)) callback
 {

@@ -560,17 +560,10 @@ class WebView extends React.Component {
 
   _getCommands() {
     if (!this.props.useWebKit) {
-<<<<<<< HEAD
-      return UIManager.RCTWebView.Commands;
-    }
-
-    return UIManager.RCTWKWebView.Commands;
-=======
       return UIManager.getViewManagerConfig('RCTWebView').Commands;
     }
 
     return UIManager.getViewManagerConfig('RCTWKWebView').Commands;
->>>>>>> v0.58.6
   }
 
   /**

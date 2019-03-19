@@ -327,28 +327,6 @@ struct RCTInstanceCallback : public InstanceCallback {
       executorFactory = [cxxDelegate jsExecutorFactoryForBridge:self];
     }
     if (!executorFactory) {
-<<<<<<< HEAD
-      BOOL useCustomJSC =
-        [self.delegate respondsToSelector:@selector(shouldBridgeUseCustomJSC:)] &&
-        [self.delegate shouldBridgeUseCustomJSC:self];
-      // We use the name of the device and the app for debugging & metrics
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-      NSString *deviceName = [[UIDevice currentDevice] name];
-#else // [TODO(macOS ISS#2323203)
-      NSString *deviceName = nil;
-#endif // ]TODO(macOS ISS#2323203)
-      NSString *appName = [[NSBundle mainBundle] bundleIdentifier];
-      // The arg is a cache dir.  It's not used with standard JSC.
-      executorFactory.reset(new JSCExecutorFactory(folly::dynamic::object
-        ("OwnerIdentity", "ReactNative")
-        ("AppIdentity", [(appName ?: @"unknown") UTF8String])
-        ("DeviceIdentity", [(deviceName ?: @"unknown") UTF8String])
-        ("UseCustomJSC", (bool)useCustomJSC)
-  #if RCT_PROFILE
-        ("StartSamplingProfilerOnInit", (bool)self.devSettings.startSamplingProfilerOnLaunch)
-  #endif
-      ));
-=======
       executorFactory = std::make_shared<JSIExecutorFactory>(
           makeJSCRuntime(),
           [](const std::string &message, unsigned int logLevel) {
@@ -356,7 +334,6 @@ struct RCTInstanceCallback : public InstanceCallback {
                   static_cast<RCTLogLevel>(logLevel),
                   [NSString stringWithUTF8String:message.c_str()]);
           }, nullptr);
->>>>>>> v0.58.6
     }
   } else {
     id<RCTJavaScriptExecutor> objcExecutor = [self moduleForClass:self.executorClass];
@@ -387,17 +364,12 @@ struct RCTInstanceCallback : public InstanceCallback {
     dispatch_group_leave(prepareBridge);
   } onProgress:^(RCTLoadingProgress *progressData) {
 #if RCT_DEV && __has_include("RCTDevLoadingView.h")
-<<<<<<< HEAD
     if ([[self devSettings] isDevModeEnabled]) { // TODO(OSS Candidate ISS#2710739)
-      RCTDevLoadingView *loadingView = [weakSelf moduleForClass:[RCTDevLoadingView class]];
+      // Note: RCTDevLoadingView should have been loaded at this point, so no need to allow lazy loading.
+      RCTDevLoadingView *loadingView = [weakSelf moduleForName:RCTBridgeModuleNameForClass([RCTDevLoadingView class])
+                                        lazilyLoadIfNecessary:NO];
       [loadingView updateProgress:progressData];
     } // TODO(OSS Candidate ISS#2710739)
-=======
-    // Note: RCTDevLoadingView should have been loaded at this point, so no need to allow lazy loading.
-    RCTDevLoadingView *loadingView = [weakSelf moduleForName:RCTBridgeModuleNameForClass([RCTDevLoadingView class])
-                                       lazilyLoadIfNecessary:NO];
-    [loadingView updateProgress:progressData];
->>>>>>> v0.58.6
 #endif
   }];
 
@@ -561,17 +533,7 @@ struct RCTInstanceCallback : public InstanceCallback {
     } // TODO(OSS Candidate ISS#2710739)
 #endif
 
-<<<<<<< HEAD
-    // This is async, but any calls into JS are blocked by the m_syncReady CV in Instance
-    _reactInstance->initializeBridge(
-      std::make_unique<RCTInstanceCallback>(self),
-      nullptr,  // use default executor delegate // TODO(OSS Candidate ISS#2710739)
-      executorFactory,
-      _jsMessageThread,
-      [self _buildModuleRegistry]);
-=======
     [self _initializeBridgeLocked:executorFactory];
->>>>>>> v0.58.6
 
 #if RCT_PROFILE
     if (RCTProfileIsProfiling()) {
@@ -589,13 +551,15 @@ struct RCTInstanceCallback : public InstanceCallback {
 {
   std::lock_guard<std::mutex> guard(_moduleRegistryLock);
 
-  // This is async, but any calls into JS are blocked by the m_syncReady CV in Instance
+    // This is async, but any calls into JS are blocked by the m_syncReady CV in Instance
   _reactInstance->initializeBridge(
-                                   std::make_unique<RCTInstanceCallback>(self),
-                                   executorFactory,
-                                   _jsMessageThread,
-                                   [self _buildModuleRegistryUnlocked]);
-  _moduleRegistryCreated = YES;
+      std::make_unique<RCTInstanceCallback>(self),
+      nullptr,  // use default executor delegate // TODO(OSS Candidate ISS#2710739)
+      executorFactory,
+      _jsMessageThread,
+      [self _buildModuleRegistryUnlocked]);
+
+   _moduleRegistryCreated = YES;
 }
 
 - (NSArray<RCTModuleData *> *)registerModulesForClasses:(NSArray<Class> *)moduleClasses

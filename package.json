@@ -154,42 +154,10 @@
     "react-native": "local-cli/wrong-react-native.js"
   },
   "peerDependencies": {
-<<<<<<< HEAD
-    "react": "16.5.0"
-  },
-  "dependencies": {
-    "@babel/core": "^7.0.0",
-    "@babel/generator": "^7.0.0",
-    "@babel/plugin-proposal-class-properties": "^7.0.0",
-    "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
-    "@babel/plugin-transform-arrow-functions": "^7.0.0",
-    "@babel/plugin-transform-block-scoping": "^7.0.0",
-    "@babel/plugin-transform-classes": "^7.0.0",
-    "@babel/plugin-transform-computed-properties": "^7.0.0",
-    "@babel/plugin-transform-destructuring": "^7.0.0",
-    "@babel/plugin-transform-exponentiation-operator": "^7.0.0",
-    "@babel/plugin-transform-flow-strip-types": "^7.0.0",
-    "@babel/plugin-transform-for-of": "^7.0.0",
-    "@babel/plugin-transform-function-name": "^7.0.0",
-    "@babel/plugin-transform-literals": "^7.0.0",
-    "@babel/plugin-transform-modules-commonjs": "^7.0.0",
-    "@babel/plugin-transform-object-assign": "^7.0.0",
-    "@babel/plugin-transform-parameters": "^7.0.0",
-    "@babel/plugin-transform-react-display-name": "^7.0.0",
-    "@babel/plugin-transform-react-jsx-source": "^7.0.0",
-    "@babel/plugin-transform-react-jsx": "^7.0.0",
-    "@babel/plugin-transform-regenerator": "^7.0.0",
-    "@babel/plugin-transform-shorthand-properties": "^7.0.0",
-    "@babel/plugin-transform-spread": "^7.0.0",
-    "@babel/plugin-transform-sticky-regex": "^7.0.0",
-    "@babel/plugin-transform-template-literals": "^7.0.0",
-    "@babel/plugin-transform-unicode-regex": "^7.0.0",
-=======
     "react": "16.6.3"
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0",
->>>>>>> v0.58.6
     "absolute-path": "^0.0.0",
     "art": "^0.10.0",
     "base64-js": "^1.1.2",

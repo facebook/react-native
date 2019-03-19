@@ -1,9 +1,5 @@
 /**
-<<<<<<< HEAD
- * Copyright (c) 2015-present, Facebook, Inc.
-=======
  * Copyright (c) Facebook, Inc. and its affiliates.
->>>>>>> v0.58.6
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -40,10 +36,7 @@ shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
 @property (nonatomic, assign) UIEdgeInsets contentInset;
 @property (nonatomic, assign) BOOL automaticallyAdjustContentInsets;
 
-<<<<<<< HEAD
-=======
 + (void)setClientAuthenticationCredential:(nullable NSURLCredential*)credential;
->>>>>>> v0.58.6
 - (void)postMessage:(NSString *)message;
 - (void)injectJavaScript:(NSString *)script;
 - (void)goForward;
