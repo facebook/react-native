@@ -77,7 +77,8 @@ struct hash<facebook::react::ShadowView> {
         shadowView.tag,
         shadowView.props,
         shadowView.eventEmitter,
-        shadowView.localData);
+        shadowView.localData,
+        shadowView.state);
   }
 };
 
