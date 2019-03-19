@@ -70,8 +70,6 @@ UnsharedRootShadowNode RootShadowNode::clone(
         /* .children = */ sharedChildren,
     });
 
-    newParent->replaceChild(oldChild, newChild);
-
     oldChild = oldParent;
     newChild = newParent;
   }
