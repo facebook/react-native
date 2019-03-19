@@ -14,6 +14,7 @@
 const generator = require('../GenerateComponentDescriptorH.js');
 
 const {
+  ARRAY_PROPS,
   BOOLEAN_PROP,
   STRING_PROP,
   INTEGER_PROPS,
@@ -28,6 +29,10 @@ const {
 } = require('../__test_fixtures__/fixtures.js');
 
 describe('GenerateComponentDescriptorH', () => {
+  it('can generate a array props', () => {
+    expect(generator.generate('ARRAY_PROPS', ARRAY_PROPS)).toMatchSnapshot();
+  });
+
   it('can generate a single boolean prop', () => {
     expect(generator.generate('BOOLEAN_PROP', BOOLEAN_PROP)).toMatchSnapshot();
   });

@@ -113,6 +113,18 @@ function getNativeTypeFromAnnotation(componentName: string, prop): string {
           (typeAnnotation.name: empty);
           throw new Error('Receieved unknown NativePrimitiveTypeAnnotation');
       }
+    case 'ArrayTypeAnnotation': {
+      if (typeAnnotation.elementType.type === 'ArrayTypeAnnotation') {
+        throw new Error(
+          'ArrayTypeAnnotation of type ArrayTypeAnnotation not supported',
+        );
+      }
+      const itemAnnotation = getNativeTypeFromAnnotation(componentName, {
+        typeAnnotation: typeAnnotation.elementType,
+        name: componentName,
+      });
+      return `std::vector<${itemAnnotation}>`;
+    }
     case 'StringEnumTypeAnnotation':
       return getEnumName(componentName, prop.name);
     default:
@@ -145,6 +157,9 @@ function convertDefaultTypeToString(componentName: string, prop): string {
           (typeAnnotation.name: empty);
           throw new Error('Receieved unknown NativePrimitiveTypeAnnotation');
       }
+    case 'ArrayTypeAnnotation': {
+      return '';
+    }
     case 'StringEnumTypeAnnotation':
       return `${getEnumName(componentName, prop.name)}::${upperCaseFirst(
         typeAnnotation.default,
@@ -236,23 +251,38 @@ function getImports(component): Set<string> {
     }
   });
 
+  function addImportsForNativeName(name) {
+    switch (name) {
+      case 'ColorPrimitive':
+        imports.add('#include <react/graphics/Color.h>');
+        return;
+      case 'ImageSourcePrimitive':
+        imports.add('#include <react/imagemanager/primitives.h>');
+        return;
+      default:
+        (name: empty);
+        throw new Error(
+          `Invalid NativePrimitiveTypeAnnotation name, got ${name}`,
+        );
+    }
+  }
+
   component.props.forEach(prop => {
     const typeAnnotation = prop.typeAnnotation;
 
     if (typeAnnotation.type === 'NativePrimitiveTypeAnnotation') {
-      switch (typeAnnotation.name) {
-        case 'ColorPrimitive':
-          imports.add('#include <react/graphics/Color.h>');
-          return;
-        case 'ImageSourcePrimitive':
-          imports.add('#include <react/imagemanager/primitives.h>');
-          return;
-        default:
-          (typeAnnotation.name: empty);
-          throw new Error(
-            `Invalid NativePrimitiveTypeAnnotation name, got ${prop.name}`,
-          );
-      }
+      addImportsForNativeName(typeAnnotation.name);
+    }
+
+    if (typeAnnotation.type === 'ArrayTypeAnnotation') {
+      imports.add('#include <vector>');
+    }
+
+    if (
+      typeAnnotation.type === 'ArrayTypeAnnotation' &&
+      typeAnnotation.elementType.type === 'NativePrimitiveTypeAnnotation'
+    ) {
+      addImportsForNativeName(typeAnnotation.elementType.name);
     }
   });
 

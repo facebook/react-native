@@ -1,5 +1,31 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`GenerateComponentDescriptorH can generate a array props 1`] = `
+Map {
+  "ComponentDescriptors.h" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#pragma once
+
+#include <react/components/ARRAY_PROPS/ShadowNodes.h>
+#include <react/core/ConcreteComponentDescriptor.h>
+
+namespace facebook {
+namespace react {
+
+using ArrayPropsNativeComponentComponentDescriptor = ConcreteComponentDescriptor<ArrayPropsNativeComponentShadowNode>;
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GenerateComponentDescriptorH can generate a native primitive image prop 1`] = `
 Map {
   "ComponentDescriptors.h" => "

@@ -1,5 +1,45 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`GenerateViewConfigJs can generate fixture ARRAY_PROPS 1`] = `
+Map {
+  "ViewConfigs.js" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
+
+const ArrayPropsNativeComponentViewConfig = {
+  uiViewClassName: 'ArrayPropsNativeComponent',
+
+  validAttributes: {
+    names: true,
+    disableds: true,
+    progress: true,
+    radii: true,
+    colors: true,
+    srcs: true,
+    style: ReactNativeStyleAttributes
+  }
+};
+
+ReactNativeViewConfigRegistry.register(
+  'ArrayPropsNativeComponent',
+  () => ArrayPropsNativeComponentViewConfig,
+);
+",
+}
+`;
+
 exports[`GenerateViewConfigJs can generate fixture BOOLEAN_PROP 1`] = `
 Map {
   "ViewConfigs.js" => "

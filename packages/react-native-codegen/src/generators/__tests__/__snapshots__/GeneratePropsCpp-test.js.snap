@@ -1,5 +1,40 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`GeneratePropsCpp can generate fixture ARRAY_PROPS 1`] = `
+Map {
+  "Props.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/ARRAY_PROPS/Props.h>
+#include <react/components/image/conversions.h>
+#include <react/core/propsConversions.h>
+
+namespace facebook {
+namespace react {
+
+ArrayPropsNativeComponentProps::ArrayPropsNativeComponentProps(
+    const ArrayPropsNativeComponentProps &sourceProps,
+    const RawProps &rawProps): ViewProps(sourceProps, rawProps),
+
+    names(convertRawProp(rawProps, \\"names\\", sourceProps.names, names)),
+disableds(convertRawProp(rawProps, \\"disableds\\", sourceProps.disableds, disableds)),
+progress(convertRawProp(rawProps, \\"progress\\", sourceProps.progress, progress)),
+radii(convertRawProp(rawProps, \\"radii\\", sourceProps.radii, radii)),
+colors(convertRawProp(rawProps, \\"colors\\", sourceProps.colors, colors)),
+srcs(convertRawProp(rawProps, \\"srcs\\", sourceProps.srcs, srcs))
+      {}
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
 exports[`GeneratePropsCpp can generate fixture BOOLEAN_PROP 1`] = `
 Map {
   "Props.cpp" => "

@@ -72,6 +72,10 @@ rn_codegen_test(
 )
 
 rn_codegen_test(
+    fixture_name = "ARRAY_PROPS",
+)
+
+rn_codegen_test(
     fixture_name = "MULTI_NATIVE_PROP",
 )
 
@@ -111,6 +115,7 @@ fb_xplat_cxx_binary(
     ],
     visibility = ["PUBLIC"],
     deps = [
+        ":generated_components-ARRAY_PROPS",
         ":generated_components-BOOLEAN_PROP",
         ":generated_components-COLOR_PROP",
         ":generated_components-ENUM_PROP",
@@ -146,6 +151,7 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
+        ":generated_components-ARRAY_PROPS",
         ":generated_components-BOOLEAN_PROP",
         ":generated_components-COLOR_PROP",
         ":generated_components-ENUM_PROP",
