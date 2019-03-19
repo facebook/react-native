@@ -146,7 +146,7 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
     sectionIndex: number,
     viewPosition?: number,
   }) {
-    let index = Platform.OS === 'ios' ? params.itemIndex : params.itemIndex - 1;
+    let index = Platform.OS === 'ios' ? params.itemIndex : params.itemIndex + 1;
     for (let ii = 0; ii < params.sectionIndex; ii++) {
       index += this.props.sections[ii].data.length + 2;
     }
