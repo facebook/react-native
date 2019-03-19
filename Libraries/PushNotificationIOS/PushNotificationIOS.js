@@ -184,7 +184,10 @@ class PushNotificationIOS {
    *
    * See https://facebook.github.io/react-native/docs/pushnotificationios.html#addeventlistener
    */
-  static addEventListener(type: PushNotificationEventName, handler: Function) {
+  static addEventListener(
+    type: PushNotificationEventName,
+    handler: Function,
+  ): {remove: () => void} {
     invariant(
       type === 'notification' ||
         type === 'register' ||
@@ -223,6 +226,7 @@ class PushNotificationIOS {
       );
     }
     _notifHandlers.set(handler, listener);
+    return listener;
   }
 
   /**
