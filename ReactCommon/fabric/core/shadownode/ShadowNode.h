@@ -116,7 +116,6 @@ class ShadowNode : public virtual Sealable,
       const SharedShadowNode &oldChild,
       const SharedShadowNode &newChild,
       int suggestedIndex = -1);
-  void clearSourceNode();
 
   /*
    * Sets local data assosiated with the node.
