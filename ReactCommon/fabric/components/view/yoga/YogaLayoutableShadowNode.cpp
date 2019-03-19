@@ -31,7 +31,9 @@ YogaLayoutableShadowNode::YogaLayoutableShadowNode()
 
 YogaLayoutableShadowNode::YogaLayoutableShadowNode(
     const YogaLayoutableShadowNode &layoutableShadowNode)
-    : yogaNode_(layoutableShadowNode.yogaNode_), yogaConfig_(nullptr) {
+    : LayoutableShadowNode(layoutableShadowNode),
+      yogaNode_(layoutableShadowNode.yogaNode_),
+      yogaConfig_(nullptr) {
   initializeYogaConfig(yogaConfig_);
 
   yogaNode_.setConfig(&yogaConfig_);
