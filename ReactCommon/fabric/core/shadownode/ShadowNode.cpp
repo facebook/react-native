@@ -46,6 +46,10 @@ ShadowNode::ShadowNode(
       revision_(1) {
   assert(props_);
   assert(children_);
+
+  for (const auto &child : *children_) {
+    child->family_->setParent(family_);
+  }
 }
 
 ShadowNode::ShadowNode(
@@ -71,6 +75,12 @@ ShadowNode::ShadowNode(
 
   assert(props_);
   assert(children_);
+
+  if (fragment.children) {
+    for (const auto &child : *children_) {
+      child->family_->setParent(family_);
+    }
+  }
 }
 
 UnsharedShadowNode ShadowNode::clone(const ShadowNodeFragment &fragment) const {
@@ -139,6 +149,8 @@ void ShadowNode::appendChild(const SharedShadowNode &child) {
   auto nonConstChildren =
       std::const_pointer_cast<SharedShadowNodeList>(children_);
   nonConstChildren->push_back(child);
+
+  child->family_->setParent(family_);
 }
 
 void ShadowNode::replaceChild(
@@ -161,6 +173,8 @@ void ShadowNode::replaceChild(
 
   std::replace(
       nonConstChildren->begin(), nonConstChildren->end(), oldChild, newChild);
+
+  newChild->family_->setParent(family_);
 }
 
 void ShadowNode::setLocalData(const SharedLocalData &localData) {

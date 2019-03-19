@@ -32,6 +32,13 @@ class ShadowNodeFamily {
       SharedEventEmitter const &eventEmitter,
       ComponentDescriptor const &componentDescriptor);
 
+  /*
+   * Sets the parent.
+   * This is not techically thread-safe, but practically it mutates the object
+   * only once (and the model enforces that this first call is not concurent).
+   */
+  void setParent(ShadowNodeFamily::Shared const &parent) const;
+
  private:
   friend ShadowNode;
 
@@ -55,6 +62,17 @@ class ShadowNodeFamily {
    * type.
    */
   ComponentDescriptor const &componentDescriptor_;
+
+  /*
+   * Points to a family of all parent nodes of all nodes of the family.
+   */
+  mutable ShadowNodeFamily::Weak parent_{};
+
+  /*
+   * Represents a case where `parent_` is `nullptr`.
+   * For optimization purposes only.
+   */
+  mutable bool hasParent_{false};
 };
 
 } // namespace react

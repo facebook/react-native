@@ -20,5 +20,15 @@ ShadowNodeFamily::ShadowNodeFamily(
       eventEmitter_(eventEmitter),
       componentDescriptor_(componentDescriptor) {}
 
+void ShadowNodeFamily::setParent(ShadowNodeFamily::Shared const &parent) const {
+  assert(parent_.lock() == nullptr || parent_.lock() == parent);
+  if (hasParent_) {
+    return;
+  }
+
+  parent_ = parent;
+  hasParent_ = true;
+}
+
 } // namespace react
 } // namespace facebook
