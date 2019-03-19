@@ -22,7 +22,10 @@ void RootShadowNode::layout() {
 
   // This is the rare place where shadow node must layout (set `layoutMetrics`)
   // itself because there is no a parent node which usually should do it.
-  setLayoutMetrics(layoutMetricsFromYogaNode(yogaNode_));
+  if (getHasNewLayout()) {
+    setLayoutMetrics(layoutMetricsFromYogaNode(yogaNode_));
+    setHasNewLayout(false);
+  }
 }
 
 UnsharedRootShadowNode RootShadowNode::clone(
