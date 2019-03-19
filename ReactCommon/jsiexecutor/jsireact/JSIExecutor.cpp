@@ -262,7 +262,7 @@ void JSIExecutor::callFunction(
 void JSIExecutor::invokeCallback(
     const double callbackId,
     const folly::dynamic& arguments) {
-  SystraceSection s("JSIExecutor::invokeCallback", "callbackId", callbackId);
+  // SystraceSection s("JSIExecutor::invokeCallback", "callbackId", callbackId);
   if (!invokeCallbackAndReturnFlushedQueue_) {
     bindBridge();
   }
