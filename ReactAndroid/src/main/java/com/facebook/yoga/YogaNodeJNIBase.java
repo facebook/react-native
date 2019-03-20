@@ -13,7 +13,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 @DoNotStrip
-public class YogaNodeJNIBase extends YogaNode {
+public abstract class YogaNodeJNIBase extends YogaNode {
 
   static {
     SoLoader.loadLibrary("yoga");
