@@ -152,9 +152,12 @@ public class ReactActivityDelegate {
     final int requestCode,
     final String[] permissions,
     final int[] grantResults) {
-    mPermissionsCallback = args -> {
-      if (mPermissionListener != null && mPermissionListener.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
-        mPermissionListener = null;
+    mPermissionsCallback = new Callback() {
+      @Override
+      public void invoke(Object... args) {
+        if (mPermissionListener != null && mPermissionListener.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
+          mPermissionListener = null;
+        }
       }
     };
   }
