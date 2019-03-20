@@ -37,10 +37,10 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
   private final Context mContext;
 
   public CustomStyleSpan(
-    int fontStyle,
-    int fontWeight,
-    @Nullable String fontFamily,
-    @Nonnull Context context) {
+      int fontStyle,
+      int fontWeight,
+      @Nullable String fontFamily,
+      @Nonnull Context context) {
     mStyle = fontStyle;
     mWeight = fontWeight;
     mFontFamily = fontFamily;
@@ -79,11 +79,11 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
   }
 
   private static void apply(
-    Paint paint,
-    int style,
-    int weight,
-    @Nullable String family,
-    Context context) {
+      Paint paint,
+      int style,
+      int weight,
+      @Nullable String family,
+      Context context) {
     int oldStyle;
     Typeface typeface = paint.getTypeface();
     if (typeface == null) {
@@ -94,12 +94,12 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
 
     int want = 0;
     if ((weight == Typeface.BOLD) ||
-      ((oldStyle & Typeface.BOLD) != 0 && weight == ReactTextShadowNode.UNSET)) {
+        ((oldStyle & Typeface.BOLD) != 0 && weight == ReactTextShadowNode.UNSET)) {
       want |= Typeface.BOLD;
     }
 
     if ((style == Typeface.ITALIC) ||
-      ((oldStyle & Typeface.ITALIC) != 0 && style == ReactTextShadowNode.UNSET)) {
+        ((oldStyle & Typeface.ITALIC) != 0 && style == ReactTextShadowNode.UNSET)) {
       want |= Typeface.ITALIC;
     }
 
