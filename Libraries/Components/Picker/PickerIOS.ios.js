@@ -92,17 +92,17 @@ class PickerIOS extends React.Component<Props, State> {
     let selectedIndex = 0;
     const items = [];
     React.Children.toArray(props.children)
-      .filter(child => child != null)
+      .filter(child => child !== null)
       .forEach(function(child, index) {
-      if (child.props.value === props.selectedValue) {
-        selectedIndex = index;
-      }
-      items.push({
-        value: child.props.value,
-        label: child.props.label,
-        textColor: processColor(child.props.color),
+        if (child.props.value === props.selectedValue) {
+          selectedIndex = index;
+        }
+        items.push({
+          value: child.props.value,
+          label: child.props.label,
+          textColor: processColor(child.props.color),
+        });
       });
-    });
     return {selectedIndex, items};
   }
 
