@@ -35,39 +35,57 @@
             });
         </script></nav></div><div class="container mainContainer"><div class="wrapper"><div class="post"><header class="postHeader"><a class="edit-page-link button" href="https://github.com/facebook/react-native-website/blob/master/docs/accessibilityinfo.md" target="_blank" rel="noreferrer noopener">Edit</a><h1 class="postHeaderTitle">AccessibilityInfo</h1></header><article><div><span><p>Sometimes it's useful to know whether or not the device has a screen reader that is currently active. The <code>AccessibilityInfo</code> API is designed for this purpose. You can use it to query the current state of the screen reader as well as to register to be notified when the state of the screen reader changes.</p>
 <p>Here's a small example illustrating how to use <code>AccessibilityInfo</code>:</p>
-<pre><code class="hljs css language-javascript"><span class="token keyword">class</span> <span class="token class-name">ScreenReaderStatusExample</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
+<pre><code class="hljs css language-javascript"><span class="token keyword">class</span> <span class="token class-name">AccessibilityStatusExample</span> <span class="token keyword">extends</span> <span class="token class-name">React<span class="token punctuation">.</span>Component</span> <span class="token punctuation">{</span>
   state <span class="token operator">=</span> <span class="token punctuation">{</span>
+    reduceMotionEnabled<span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
     screenReaderEnabled<span class="token punctuation">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
   <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
   <span class="token function">componentDidMount</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     AccessibilityInfo<span class="token punctuation">.</span><span class="token function">addEventListener</span><span class="token punctuation">(</span>
-      <span class="token string">'change'</span><span class="token punctuation">,</span>
+      <span class="token string">'reduceMotionChanged'</span><span class="token punctuation">,</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span>_handleReduceMotionToggled<span class="token punctuation">,</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    AccessibilityInfo<span class="token punctuation">.</span><span class="token function">addEventListener</span><span class="token punctuation">(</span>
+      <span class="token string">'screenReaderChanged'</span><span class="token punctuation">,</span>
       <span class="token keyword">this</span><span class="token punctuation">.</span>_handleScreenReaderToggled<span class="token punctuation">,</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
-    AccessibilityInfo<span class="token punctuation">.</span><span class="token function">fetch</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span>isEnabled<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
-      <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
-        screenReaderEnabled<span class="token punctuation">:</span> isEnabled<span class="token punctuation">,</span>
-      <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    AccessibilityInfo<span class="token punctuation">.</span><span class="token function">isReduceMotionEnabled</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span>reduceMotionEnabled<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">{</span>reduceMotionEnabled<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    AccessibilityInfo<span class="token punctuation">.</span><span class="token function">isScreenReaderEnabled</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span>screenReaderEnabled<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">{</span>screenReaderEnabled<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
 
   <span class="token function">componentWillUnmount</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     AccessibilityInfo<span class="token punctuation">.</span><span class="token function">removeEventListener</span><span class="token punctuation">(</span>
-      <span class="token string">'change'</span><span class="token punctuation">,</span>
+      <span class="token string">'reduceMotionChanged'</span><span class="token punctuation">,</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span>_handleReduceMotionToggled<span class="token punctuation">,</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    AccessibilityInfo<span class="token punctuation">.</span><span class="token function">removeEventListener</span><span class="token punctuation">(</span>
+      <span class="token string">'screenReaderChanged'</span><span class="token punctuation">,</span>
       <span class="token keyword">this</span><span class="token punctuation">.</span>_handleScreenReaderToggled<span class="token punctuation">,</span>
     <span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span>
 
-  <span class="token function-variable function">_handleScreenReaderToggled</span> <span class="token operator">=</span> <span class="token punctuation">(</span>isEnabled<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
-    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
-      screenReaderEnabled<span class="token punctuation">:</span> isEnabled<span class="token punctuation">,</span>
-    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token function-variable function">_handleReduceMotionToggled</span> <span class="token operator">=</span> <span class="token punctuation">(</span>reduceMotionEnabled<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">{</span>reduceMotionEnabled<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+  <span class="token function-variable function">_handleScreenReaderToggled</span> <span class="token operator">=</span> <span class="token punctuation">(</span>screenReaderEnabled<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">setState</span><span class="token punctuation">(</span><span class="token punctuation">{</span>screenReaderEnabled<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
   <span class="token punctuation">}</span><span class="token punctuation">;</span>
 
   <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token punctuation">(</span>
       <span class="token operator">&lt;</span>View<span class="token operator">></span>
+        <span class="token operator">&lt;</span>Text<span class="token operator">></span>
+          The reduce motion is<span class="token punctuation">{</span><span class="token string">' '</span><span class="token punctuation">}</span>
+          <span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>reduceMotionEnabled <span class="token operator">?</span> <span class="token string">'enabled'</span> <span class="token punctuation">:</span> <span class="token string">'disabled'</span><span class="token punctuation">}</span><span class="token punctuation">.</span>
+        <span class="token operator">&lt;</span><span class="token operator">/</span>Text<span class="token operator">></span>
         <span class="token operator">&lt;</span>Text<span class="token operator">></span>
           The screen reader is<span class="token punctuation">{</span><span class="token string">' '</span><span class="token punctuation">}</span>
           <span class="token punctuation">{</span><span class="token keyword">this</span><span class="token punctuation">.</span>state<span class="token punctuation">.</span>screenReaderEnabled <span class="token operator">?</span> <span class="token string">'enabled'</span> <span class="token punctuation">:</span> <span class="token string">'disabled'</span><span class="token punctuation">}</span><span class="token punctuation">.</span>
@@ -79,7 +97,12 @@
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" id="methods"></a><a href="#methods" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h3>
 <ul>
-<li><a href="/react-native/docs/next/accessibilityinfo#fetch"><code>fetch</code></a></li>
+<li><a href="/react-native/docs/next/accessibilityinfo#isBoldTextEnabled"><code>isBoldTextEnabled</code></a></li>
+<li><a href="/react-native/docs/next/accessibilityinfo#isGrayscaleEnabled"><code>isGrayscaleEnabled</code></a></li>
+<li><a href="/react-native/docs/next/accessibilityinfo#isInvertColorsEnabled"><code>isInvertColorsEnabled</code></a></li>
+<li><a href="/react-native/docs/next/accessibilityinfo#isReduceMotionEnabled"><code>isReduceMotionEnabled</code></a></li>
+<li><a href="/react-native/docs/next/accessibilityinfo#isReduceTransparencyEnabled"><code>isReduceTransparencyEnabled</code></a></li>
+<li><a href="/react-native/docs/next/accessibilityinfo#isScreenReaderEnabled"><code>isScreenReaderEnabled</code></a></li>
 <li><a href="/react-native/docs/next/accessibilityinfo#addeventlistener"><code>addEventListener</code></a></li>
 <li><a href="/react-native/docs/next/accessibilityinfo#setaccessibilityfocus"><code>setAccessibilityFocus</code></a></li>
 <li><a href="/react-native/docs/next/accessibilityinfo#announceforaccessibility"><code>announceForAccessibility</code></a></li>
@@ -88,8 +111,28 @@
 <hr>
 <h1><a class="anchor" aria-hidden="true" id="reference"></a><a href="#reference" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Reference</h1>
 <h2><a class="anchor" aria-hidden="true" id="methods-1"></a><a href="#methods-1" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Methods</h2>
-<h3><a class="anchor" aria-hidden="true" id="fetch"></a><a href="#fetch" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>fetch()</code></h3>
-<pre><code class="hljs css language-javascript"><span class="token keyword">static</span> <span class="token function">fetch</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<h3><a class="anchor" aria-hidden="true" id="isboldtextenabled"></a><a href="#isboldtextenabled" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>isBoldTextEnabled()</code></h3>
+<pre><code class="hljs css language-javascript"><span class="token keyword">static</span> <span class="token function">isBoldTextEnabled</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+<p>iOS-Only. Query whether a bold text is currently enabled. Returns a promise which resolves to a boolean. The result is <code>true</code> when bold text is enabled and <code>false</code> otherwise.</p>
+<h3><a class="anchor" aria-hidden="true" id="isgrayscaleenabled"></a><a href="#isgrayscaleenabled" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>isGrayscaleEnabled()</code></h3>
+<pre><code class="hljs css language-javascript"><span class="token keyword">static</span> <span class="token function">isGrayscaleEnabled</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+<p>Query whether grayscale is currently enabled. Returns a promise which resolves to a boolean. The result is <code>true</code> when grayscale is enabled and <code>false</code> otherwise.</p>
+<h3><a class="anchor" aria-hidden="true" id="isinvertcolorsenabled"></a><a href="#isinvertcolorsenabled" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>isInvertColorsEnabled()</code></h3>
+<pre><code class="hljs css language-javascript"><span class="token keyword">static</span> <span class="token function">isInvertColorsEnabled</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+<p>Query whether invert colors is currently enabled. Returns a promise which resolves to a boolean. The result is <code>true</code> when invert colors is enabled and <code>false</code> otherwise.</p>
+<h3><a class="anchor" aria-hidden="true" id="isreducemotionenabled"></a><a href="#isreducemotionenabled" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>isReduceMotionEnabled()</code></h3>
+<pre><code class="hljs css language-javascript"><span class="token keyword">static</span> <span class="token function">isReduceMotionEnabled</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+<p>Query whether reduce motion is currently enabled. Returns a promise which resolves to a boolean. The result is <code>true</code> when reduce motion is enabled and <code>false</code> otherwise.</p>
+<h3><a class="anchor" aria-hidden="true" id="isreducetransparencyenabled"></a><a href="#isreducetransparencyenabled" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>isReduceTransparencyEnabled()</code></h3>
+<pre><code class="hljs css language-javascript"><span class="token keyword">static</span> <span class="token function">isReduceTransparencyEnabled</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+<p>Query whether reduce transparency is currently enabled. Returns a promise which resolves to a boolean. The result is <code>true</code> when a reduce transparency is enabled and <code>false</code> otherwise.</p>
+<h3><a class="anchor" aria-hidden="true" id="isscreenreaderenabled"></a><a href="#isscreenreaderenabled" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>isScreenReaderEnabled()</code></h3>
+<pre><code class="hljs css language-javascript"><span class="token keyword">static</span> <span class="token function">isScreenReaderEnabled</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 </code></pre>
 <p>Query whether a screen reader is currently enabled. Returns a promise which resolves to a boolean. The result is <code>true</code> when a screen reader is enabled and <code>false</code> otherwise.</p>
 <hr>
@@ -98,7 +141,12 @@
 </code></pre>
 <p>Add an event handler. Supported events:</p>
 <ul>
-<li><code>change</code>: Fires when the state of the screen reader changes. The argument to the event handler is a boolean. The boolean is <code>true</code> when a screen reader is enabled and <code>false</code> otherwise.</li>
+<li><code>boldTextChanged</code>: iOS-only event. Fires when the state of the bold text toggle changes. The argument to the event handler is a boolean. The boolean is <code>true</code> when bold text is enabled and <code>false</code> otherwise.</li>
+<li><code>grayscaleChanged</code>: iOS-only event. Fires when the state of the gray scale toggle changes. The argument to the event handler is a boolean. The boolean is <code>true</code> when a gray scale is enabled and <code>false</code> otherwise.</li>
+<li><code>invertColorsChanged</code>: iOS-only event. Fires when the state of the invert colors toggle changes. The argument to the event handler is a boolean. The boolean is <code>true</code> when invert colors is enabled and <code>false</code> otherwise.</li>
+<li><code>reduceMotionChanged</code>: Fires when the state of the reduce motion toggle changes. The argument to the event handler is a boolean. The boolean is <code>true</code> when a reduce motion is enabled (or when &quot;Transition Animation Scale&quot; in &quot;Developer options&quot; is &quot;Animation off&quot;) and <code>false</code> otherwise.</li>
+<li><code>screenReaderChanged</code>: Fires when the state of the screen reader changes. The argument to the event handler is a boolean. The boolean is <code>true</code> when a screen reader is enabled and <code>false</code> otherwise.</li>
+<li><code>reduceTransparencyChanged</code>: iOS-only event. Fires when the state of the reduce transparency toggle changes. The argument to the event handler is a boolean. The boolean is <code>true</code> when reduce transparency is enabled and <code>false</code> otherwise.</li>
 <li><code>announcementFinished</code>: iOS-only event. Fires when the screen reader has finished making an announcement. The argument to the event handler is a dictionary with these keys:
 <ul>
 <li><code>announcement</code>: The string announced by the screen reader.</li>
