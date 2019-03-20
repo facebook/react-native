@@ -30,7 +30,7 @@
 {
   std::lock_guard<std::mutex> lock(_mutex);
 
-  return [_registry objectEnumerator];
+  return [[_registry copy] objectEnumerator];
 }
 
 - (void)registerSurface:(RCTFabricSurface *)surface
