@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTUITextField.h"
@@ -13,10 +11,13 @@
 #import <React/UIView+React.h>
 
 #import "RCTBackedTextInputDelegateAdapter.h"
+#import "RCTTextAttributes.h"
 
 @implementation RCTUITextField {
   RCTBackedTextFieldDelegateAdapter *_textInputDelegateAdapter;
 }
+
+@synthesize reactTextAttributes = _reactTextAttributes;
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -62,19 +63,29 @@
   [self _updatePlaceholder];
 }
 
+- (void)setReactTextAttributes:(RCTTextAttributes *)reactTextAttributes
+{
+  if ([reactTextAttributes isEqual:_reactTextAttributes]) {
+    return;
+  }
+  self.defaultTextAttributes = reactTextAttributes.effectiveTextAttributes;
+  _reactTextAttributes = reactTextAttributes;
+  [self _updatePlaceholder];
+}
+
+- (RCTTextAttributes *)reactTextAttributes
+{
+  return _reactTextAttributes;
+}
+
 - (void)_updatePlaceholder
 {
   if (self.placeholder == nil) {
     return;
   }
 
-  NSMutableDictionary *attributes = [NSMutableDictionary new];
-  if (_placeholderColor) {
-    [attributes setObject:_placeholderColor forKey:NSForegroundColorAttributeName];
-  }
-
   self.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.placeholder
-                                                               attributes:attributes];
+                                                               attributes:[self placeholderEffectiveTextAttributes]];
 }
 
 - (BOOL)isEditable
@@ -87,6 +98,49 @@
   self.enabled = editable;
 }
 
+- (void)setScrollEnabled:(BOOL)enabled
+{
+  // Do noting, compatible with multiline textinput
+}
+
+- (BOOL)scrollEnabled
+{
+  return NO;
+}
+
+#pragma mark - Placeholder
+
+- (NSDictionary<NSAttributedStringKey, id> *)placeholderEffectiveTextAttributes
+{
+  NSMutableDictionary<NSAttributedStringKey, id> *effectiveTextAttributes = [NSMutableDictionary dictionary];
+  
+  if (_placeholderColor) {
+    effectiveTextAttributes[NSForegroundColorAttributeName] = _placeholderColor;
+  }
+  // Kerning
+  if (!isnan(_reactTextAttributes.letterSpacing)) {
+    effectiveTextAttributes[NSKernAttributeName] = @(_reactTextAttributes.letterSpacing);
+  }
+  
+  NSParagraphStyle *paragraphStyle = [_reactTextAttributes effectiveParagraphStyle];
+  if (paragraphStyle) {
+    effectiveTextAttributes[NSParagraphStyleAttributeName] = paragraphStyle;
+  }
+  
+  return [effectiveTextAttributes copy];
+}
+
+#pragma mark - Context Menu
+
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender
+{
+  if (_contextMenuHidden) {
+    return NO;
+  }
+
+  return [super canPerformAction:action withSender:sender];
+}
+
 #pragma mark - Caret Manipulation
 
 - (CGRect)caretRectForPosition:(UITextPosition *)position
@@ -97,6 +151,7 @@
 
   return [super caretRectForPosition:position];
 }
+
 
 #pragma mark - Positioning Overrides
 
@@ -111,12 +166,6 @@
 }
 
 #pragma mark - Overrides
-
-- (void)setSelectedTextRange:(UITextRange *)selectedTextRange
-{
-  [super setSelectedTextRange:selectedTextRange];
-  [_textInputDelegateAdapter selectedTextRangeWasSet];
-}
 
 - (void)setSelectedTextRange:(UITextRange *)selectedTextRange notifyDelegate:(BOOL)notifyDelegate
 {
@@ -147,7 +196,7 @@
 {
   // Note: `placeholder` defines intrinsic size for `<TextInput>`.
   NSString *text = self.placeholder ?: @"";
-  CGSize size = [text sizeWithAttributes:@{NSFontAttributeName: self.font}];
+  CGSize size = [text sizeWithAttributes:[self placeholderEffectiveTextAttributes]];
   size = CGSizeMake(RCTCeilPixelValue(size.width), RCTCeilPixelValue(size.height));
   size.width += _textContainerInset.left + _textContainerInset.right;
   size.height += _textContainerInset.top + _textContainerInset.bottom;

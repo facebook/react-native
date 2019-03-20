@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  */
 
@@ -66,8 +64,8 @@
 @end
 
 @implementation RCTDummyBridge
-- (void)dispatchBlock:(dispatch_block_t)block
-                queue:(dispatch_queue_t)queue
+- (void)dispatchBlock:(dispatch_block_t __unused)block
+                queue:(dispatch_queue_t __unused)queue
 {}
 @end
 

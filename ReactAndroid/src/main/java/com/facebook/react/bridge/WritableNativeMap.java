@@ -1,17 +1,20 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.bridge;
 
+import androidx.annotation.NonNull;
+
 import com.facebook.jni.HybridData;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.proguard.annotations.DoNotStrip;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Implementation of a write-only map stored in native memory. Use
@@ -25,19 +28,19 @@ public class WritableNativeMap extends ReadableNativeMap implements WritableMap 
   }
 
   @Override
-  public native void putBoolean(String key, boolean value);
+  public native void putBoolean(@Nonnull String key, boolean value);
   @Override
-  public native void putDouble(String key, double value);
+  public native void putDouble(@Nonnull String key, double value);
   @Override
-  public native void putInt(String key, int value);
+  public native void putInt(@Nonnull String key, int value);
   @Override
-  public native void putString(String key, String value);
+  public native void putString(@Nonnull String key, @Nullable String value);
   @Override
-  public native void putNull(String key);
+  public native void putNull(@NonNull String key);
 
   // Note: this consumes the map so do not reuse it.
   @Override
-  public void putMap(String key, WritableMap value) {
+  public void putMap(@Nonnull String key, @Nullable WritableMap value) {
     Assertions.assertCondition(
         value == null || value instanceof WritableNativeMap, "Illegal type provided");
     putNativeMap(key, (WritableNativeMap) value);
@@ -45,7 +48,7 @@ public class WritableNativeMap extends ReadableNativeMap implements WritableMap 
 
   // Note: this consumes the map so do not reuse it.
   @Override
-  public void putArray(String key, WritableArray value) {
+  public void putArray(@Nonnull String key, @Nullable WritableArray value) {
     Assertions.assertCondition(
         value == null || value instanceof WritableNativeArray, "Illegal type provided");
     putNativeArray(key, (WritableNativeArray) value);
@@ -53,7 +56,7 @@ public class WritableNativeMap extends ReadableNativeMap implements WritableMap 
 
   // Note: this **DOES NOT** consume the source map
   @Override
-  public void merge(ReadableMap source) {
+  public void merge(@Nonnull ReadableMap source) {
     Assertions.assertCondition(source instanceof ReadableNativeMap, "Illegal type provided");
     mergeNativeMap((ReadableNativeMap) source);
   }

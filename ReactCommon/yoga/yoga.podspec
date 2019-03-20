@@ -1,3 +1,8 @@
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
 package = JSON.parse(File.read(File.expand_path('../../package.json', __dir__)))
 version = package['version']
 
@@ -12,9 +17,9 @@ end
 Pod::Spec.new do |spec|
   spec.name = 'yoga'
   spec.version = "#{version}.React"
-  spec.license =  { :type => 'BSD' }
-  spec.homepage = 'https://facebook.github.io/yoga/'
-  spec.documentation_url = 'https://facebook.github.io/yoga/docs/api/c/'
+  spec.license =  { :type => 'MIT' }
+  spec.homepage = 'https://yogalayout.com'
+  spec.documentation_url = 'https://yogalayout.com/docs/'
 
   spec.summary = 'Yoga is a cross-platform layout engine which implements Flexbox.'
   spec.description = 'Yoga is a cross-platform layout engine enabling maximum collaboration within your team by implementing an API many designers are familiar with, and opening it up to developers across different platforms.'
@@ -34,11 +39,15 @@ Pod::Spec.new do |spec|
   ]
 
   # Pinning to the same version as React.podspec.
-  spec.platforms = { :ios => "8.0", :tvos => "9.2" }
+  spec.platforms = { :ios => "9.0", :tvos => "9.2" }
 
-  # Set this environment variable when not using the `:path` option to install the pod.
+  # Set this environment variable when *not* using the `:path` option to install the pod.
   # E.g. when publishing this spec to a spec repo.
   source_files = 'yoga/**/*.{cpp,h}'
   source_files = File.join('ReactCommon/yoga', source_files) if ENV['INSTALL_YOGA_WITHOUT_PATH_OPTION']
   spec.source_files = source_files
+
+  header_files = 'yoga/{Yoga,YGEnums,YGMacros,YGValue,YGStyle,CompactValue,YGFloatOptional,Yoga-internal,YGNode,YGConfig,YGLayout,YGMarker}.h'
+  header_files = File.join('ReactCommon/yoga', header_files) if ENV['INSTALL_YOGA_WITHOUT_PATH_OPTION']
+  spec.public_header_files = header_files
 end

@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTAppState.h"
@@ -14,7 +12,7 @@
 #import "RCTEventDispatcher.h"
 #import "RCTUtils.h"
 
-static NSString *RCTCurrentAppBackgroundState()
+static NSString *RCTCurrentAppState()
 {
   static NSDictionary *states;
   static dispatch_once_t onceToken;
@@ -51,7 +49,12 @@ RCT_EXPORT_MODULE()
 
 - (NSDictionary *)constantsToExport
 {
-  return @{@"initialAppState": RCTCurrentAppBackgroundState()};
+  return [self getConstants];
+}
+
+- (NSDictionary *)getConstants
+{
+  return @{@"initialAppState": RCTCurrentAppState()};
 }
 
 #pragma mark - Lifecycle
@@ -102,7 +105,7 @@ RCT_EXPORT_MODULE()
   } else if ([notification.name isEqualToString:UIApplicationWillEnterForegroundNotification]) {
     newState = @"background";
   } else {
-    newState = RCTCurrentAppBackgroundState();
+    newState = RCTCurrentAppState();
   }
 
   if (![newState isEqualToString:_lastKnownState]) {
@@ -120,7 +123,7 @@ RCT_EXPORT_MODULE()
 RCT_EXPORT_METHOD(getCurrentAppState:(RCTResponseSenderBlock)callback
                   error:(__unused RCTResponseSenderBlock)error)
 {
-  callback(@[@{@"app_state": RCTCurrentAppBackgroundState()}]);
+  callback(@[@{@"app_state": RCTCurrentAppState()}]);
 }
 
 @end

@@ -1,20 +1,18 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
  * @flow
- * @providesModule SnapshotExample
  * @format
  */
 'use strict';
 
 const React = require('react');
 const ReactNative = require('react-native');
-const {Alert, Image, StyleSheet, Text, View} = ReactNative;
+const {Alert, Image, NativeModules, StyleSheet, Text, View} = ReactNative;
+const ScreenshotManager = NativeModules.ScreenshotManager;
 
 class ScreenshotExample extends React.Component<{}, $FlowFixMeState> {
   state = {
@@ -33,7 +31,7 @@ class ScreenshotExample extends React.Component<{}, $FlowFixMeState> {
   }
 
   takeScreenshot = () => {
-    ReactNative.takeSnapshot('window', {format: 'jpeg', quality: 0.8}) // See UIManager.js for options
+    ScreenshotManager.takeScreenshot('window', {format: 'jpeg', quality: 0.8}) // See UIManager.js for options
       .then(uri => this.setState({uri}))
       .catch(error => Alert.alert(error));
   };

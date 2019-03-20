@@ -1,12 +1,9 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule AnimatedImplementation
  * @flow
  * @format
  * @preventMunge
@@ -22,6 +19,7 @@ const AnimatedModulo = require('./nodes/AnimatedModulo');
 const AnimatedMultiplication = require('./nodes/AnimatedMultiplication');
 const AnimatedNode = require('./nodes/AnimatedNode');
 const AnimatedProps = require('./nodes/AnimatedProps');
+const AnimatedSubtraction = require('./nodes/AnimatedSubtraction');
 const AnimatedTracking = require('./nodes/AnimatedTracking');
 const AnimatedValue = require('./nodes/AnimatedValue');
 const AnimatedValueXY = require('./nodes/AnimatedValueXY');
@@ -41,7 +39,7 @@ import type {DecayAnimationConfig} from './animations/DecayAnimation';
 import type {SpringAnimationConfig} from './animations/SpringAnimation';
 import type {Mapping, EventConfig} from './AnimatedEvent';
 
-type CompositeAnimation = {
+export type CompositeAnimation = {
   start: (callback?: ?EndCallback) => void,
   stop: () => void,
   reset: () => void,
@@ -54,6 +52,13 @@ const add = function(
   b: AnimatedNode | number,
 ): AnimatedAddition {
   return new AnimatedAddition(a, b);
+};
+
+const subtract = function(
+  a: AnimatedNode | number,
+  b: AnimatedNode | number,
+): AnimatedSubtraction {
+  return new AnimatedSubtraction(a, b);
 };
 
 const divide = function(
@@ -412,11 +417,14 @@ const stagger = function(
   );
 };
 
-type LoopAnimationConfig = {iterations: number};
+type LoopAnimationConfig = {
+  iterations: number,
+  resetBeforeIteration?: boolean,
+};
 
 const loop = function(
   animation: CompositeAnimation,
-  {iterations = -1}: LoopAnimationConfig = {},
+  {iterations = -1, resetBeforeIteration = true}: LoopAnimationConfig = {},
 ): CompositeAnimation {
   let isFinished = false;
   let iterationsSoFar = 0;
@@ -431,7 +439,7 @@ const loop = function(
           callback && callback(result);
         } else {
           iterationsSoFar++;
-          animation.reset();
+          resetBeforeIteration && animation.reset();
           animation.start(restart);
         }
       };
@@ -509,6 +517,8 @@ const event = function(argMapping: Array<?Mapping>, config?: EventConfig): any {
  * easy to build and maintain. `Animated` focuses on declarative relationships
  * between inputs and outputs, with configurable transforms in between, and
  * simple `start`/`stop` methods to control time-based animation execution.
+ * If additional transforms are added, be sure to include them in
+ * AnimatedMock.js as well.
  *
  * See http://facebook.github.io/react-native/docs/animated.html
  */
@@ -523,7 +533,7 @@ module.exports = {
   /**
    * 2D value class for driving 2D animations, such as pan gestures.
    *
-   * See https://facebook.github.io/react-native/releases/next/docs/animatedvaluexy.html
+   * See https://facebook.github.io/react-native/docs/animatedvaluexy.html
    */
   ValueXY: AnimatedValueXY,
   /**
@@ -569,6 +579,14 @@ module.exports = {
    * See http://facebook.github.io/react-native/docs/animated.html#add
    */
   add,
+
+  /**
+   * Creates a new Animated value composed by subtracting the second Animated
+   * value from the first Animated value.
+   *
+   * See http://facebook.github.io/react-native/docs/animated.html#subtract
+   */
+  subtract,
 
   /**
    * Creates a new Animated value composed by dividing the first Animated value
@@ -671,6 +689,11 @@ module.exports = {
    */
   forkEvent,
   unforkEvent,
+
+  /**
+   * Expose Event class, so it can be used as a type for type checkers.
+   */
+  Event: AnimatedEvent,
 
   __PropsOnlyForTests: AnimatedProps,
 };

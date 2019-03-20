@@ -10,21 +10,20 @@
 package com.facebook.react;
 
 import android.annotation.TargetApi;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionAwareActivity;
 import com.facebook.react.modules.core.PermissionListener;
 
 import javax.annotation.Nullable;
+
+import androidx.fragment.app.Fragment;
 
 /**
  * Fragment for creating a React View. This allows the developer to "embed" a React Application
@@ -77,11 +76,7 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
                            Bundle savedInstanceState) {
-    boolean needToEnableRedboxPermission = mReactDelegate.askForRedboxPermission();
-
-    if (!needToEnableRedboxPermission) {
-      mReactDelegate.loadApp();
-    }
+    mReactDelegate.loadApp();
     return mReactDelegate.getReactRootView();
   }
 
@@ -100,7 +95,7 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
   @Override
   public void onDestroy() {
     super.onDestroy();
-    mReactDelegate.onHostDetroy();
+    mReactDelegate.onHostDestroy();
   }
   // endregion
 

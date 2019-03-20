@@ -1,19 +1,18 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @flow
- * @providesModule VibrationExample
+ * @format
+ * @flow strict-local
  */
+
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   StyleSheet,
   View,
   Text,
@@ -26,7 +25,7 @@ exports.framework = 'React';
 exports.title = 'Vibration';
 exports.description = 'Vibration API';
 
-var pattern, patternLiteral, patternDescription;
+let pattern, patternLiteral, patternDescription;
 if (Platform.OS === 'android') {
   pattern = [0, 500, 200, 500];
   patternLiteral = '[0, 500, 200, 500]';
@@ -116,7 +115,7 @@ exports.examples = [
   },
 ];
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   wrapper: {
     borderRadius: 5,
     marginBottom: 5,

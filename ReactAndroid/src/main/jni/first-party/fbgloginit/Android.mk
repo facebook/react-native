@@ -1,3 +1,8 @@
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
 LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
 
@@ -8,12 +13,6 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 
 LOCAL_CFLAGS := -fexceptions -fno-omit-frame-pointer
-LOCAL_CFLAGS += -Wall -Werror
-
-CXX11_FLAGS := -std=gnu++11
-LOCAL_CFLAGS += $(CXX11_FLAGS)
-
-LOCAL_EXPORT_CPPFLAGS := $(CXX11_FLAGS)
 
 LOCAL_LDLIBS := -llog
 

@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.animated;
@@ -15,7 +13,6 @@ import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.JavaOnlyMap;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.UIImplementation;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.Event;
@@ -53,7 +50,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  */
 @PrepareForTest({Arguments.class})
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class NativeAnimatedNodeTraversalTest {
 
   private static long FRAME_LEN_NANOS = 1000000000L / 60L;
@@ -64,7 +61,6 @@ public class NativeAnimatedNodeTraversalTest {
 
   private long mFrameTimeNanos;
   private UIManagerModule mUIManagerMock;
-  private UIImplementation mUIImplementationMock;
   private EventDispatcher mEventDispatcherMock;
   private NativeAnimatedNodesManager mNativeAnimatedNodesManager;
 
@@ -90,14 +86,7 @@ public class NativeAnimatedNodeTraversalTest {
 
     mFrameTimeNanos = INITIAL_FRAME_TIME_NANOS;
     mUIManagerMock = mock(UIManagerModule.class);
-    mUIImplementationMock = mock(UIImplementation.class);
     mEventDispatcherMock = mock(EventDispatcher.class);
-    PowerMockito.when(mUIManagerMock.getUIImplementation()).thenAnswer(new Answer<UIImplementation>() {
-      @Override
-      public UIImplementation answer(InvocationOnMock invocation) throws Throwable {
-        return mUIImplementationMock;
-      }
-    });
     PowerMockito.when(mUIManagerMock.getEventDispatcher()).thenAnswer(new Answer<EventDispatcher>() {
       @Override
       public EventDispatcher answer(InvocationOnMock invocation) throws Throwable {
@@ -168,26 +157,21 @@ public class NativeAnimatedNodeTraversalTest {
       JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 1d),
       animationCallback);
 
-    ArgumentCaptor<ReactStylesDiffMap> stylesCaptor =
-        ArgumentCaptor.forClass(ReactStylesDiffMap.class);
-
-    reset(mUIImplementationMock);
-    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verify(mUIImplementationMock).synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture());
-    assertThat(stylesCaptor.getValue().getDouble("opacity", Double.NaN)).isEqualTo(0);
+    ArgumentCaptor<ReadableMap> stylesCaptor =
+        ArgumentCaptor.forClass(ReadableMap.class);
 
     for (int i = 0; i < frames.size(); i++) {
-      reset(mUIImplementationMock);
+      reset(mUIManagerMock);
       mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-      verify(mUIImplementationMock)
+      verify(mUIManagerMock)
           .synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture());
-      assertThat(stylesCaptor.getValue().getDouble("opacity", Double.NaN))
+      assertThat(stylesCaptor.getValue().getDouble("opacity"))
           .isEqualTo(frames.getDouble(i));
     }
 
-    reset(mUIImplementationMock);
+    reset(mUIManagerMock);
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verifyNoMoreInteractions(mUIImplementationMock);
+    verifyNoMoreInteractions(mUIManagerMock);
   }
 
   @Test
@@ -202,28 +186,23 @@ public class NativeAnimatedNodeTraversalTest {
       JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 1d, "iterations", 5),
       animationCallback);
 
-    ArgumentCaptor<ReactStylesDiffMap> stylesCaptor =
-        ArgumentCaptor.forClass(ReactStylesDiffMap.class);
-
-    reset(mUIImplementationMock);
-    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verify(mUIImplementationMock).synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture());
-    assertThat(stylesCaptor.getValue().getDouble("opacity", Double.NaN)).isEqualTo(0);
+    ArgumentCaptor<ReadableMap> stylesCaptor =
+        ArgumentCaptor.forClass(ReadableMap.class);
 
     for (int iteration = 0; iteration < 5; iteration++) {
       for (int i = 0; i < frames.size(); i++) {
-        reset(mUIImplementationMock);
+        reset(mUIManagerMock);
         mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-        verify(mUIImplementationMock)
+        verify(mUIManagerMock)
             .synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture());
-        assertThat(stylesCaptor.getValue().getDouble("opacity", Double.NaN))
+        assertThat(stylesCaptor.getValue().getDouble("opacity"))
             .isEqualTo(frames.getDouble(i));
       }
     }
 
-    reset(mUIImplementationMock);
+    reset(mUIManagerMock);
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verifyNoMoreInteractions(mUIImplementationMock);
+    verifyNoMoreInteractions(mUIManagerMock);
   }
 
   @Test
@@ -270,9 +249,6 @@ public class NativeAnimatedNodeTraversalTest {
       JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 1d),
       animationCallback);
 
-    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verify(valueListener).onValueUpdate(eq(0d));
-
     for (int i = 0; i < frames.size(); i++) {
       reset(valueListener);
       mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
@@ -294,23 +270,23 @@ public class NativeAnimatedNodeTraversalTest {
       config,
       animationCallback);
 
-    ArgumentCaptor<ReactStylesDiffMap> stylesCaptor =
-      ArgumentCaptor.forClass(ReactStylesDiffMap.class);
+    ArgumentCaptor<ReadableMap> stylesCaptor =
+      ArgumentCaptor.forClass(ReadableMap.class);
 
-    reset(mUIImplementationMock);
+    reset(mUIManagerMock);
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verify(mUIImplementationMock).synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture());
-    assertThat(stylesCaptor.getValue().getDouble("opacity", Double.NaN)).isEqualTo(0);
+    verify(mUIManagerMock).synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture());
+    assertThat(stylesCaptor.getValue().getDouble("opacity")).isEqualTo(0);
 
     double previousValue = 0d;
     boolean wasGreaterThanOne = false;
     /* run 3 secs of animation */
     for (int i = 0; i < 3 * 60; i++) {
-      reset(mUIImplementationMock);
+      reset(mUIManagerMock);
       mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-      verify(mUIImplementationMock, atMost(1))
+      verify(mUIManagerMock, atMost(1))
         .synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture());
-      double currentValue = stylesCaptor.getValue().getDouble("opacity", Double.NaN);
+      double currentValue = stylesCaptor.getValue().getDouble("opacity");
       if (currentValue > 1d) {
         wasGreaterThanOne = true;
       }
@@ -326,9 +302,9 @@ public class NativeAnimatedNodeTraversalTest {
     } else {
       assertThat(wasGreaterThanOne);
     }
-    reset(mUIImplementationMock);
+    reset(mUIManagerMock);
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verifyNoMoreInteractions(mUIImplementationMock);
+    verifyNoMoreInteractions(mUIManagerMock);
   }
 
   @Test
@@ -417,13 +393,13 @@ public class NativeAnimatedNodeTraversalTest {
       ),
       animationCallback);
 
-    ArgumentCaptor<ReactStylesDiffMap> stylesCaptor =
-      ArgumentCaptor.forClass(ReactStylesDiffMap.class);
+    ArgumentCaptor<ReadableMap> stylesCaptor =
+      ArgumentCaptor.forClass(ReadableMap.class);
 
-    reset(mUIImplementationMock);
+    reset(mUIManagerMock);
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verify(mUIImplementationMock).synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture());
-    assertThat(stylesCaptor.getValue().getDouble("opacity", Double.NaN)).isEqualTo(0);
+    verify(mUIManagerMock).synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture());
+    assertThat(stylesCaptor.getValue().getDouble("opacity")).isEqualTo(0);
 
     double previousValue = 0d;
     boolean wasGreaterThanOne = false;
@@ -431,11 +407,11 @@ public class NativeAnimatedNodeTraversalTest {
     int numberOfResets = 0;
     /* run 3 secs of animation, five times */
     for (int i = 0; i < 3 * 60 * 5; i++) {
-      reset(mUIImplementationMock);
+      reset(mUIManagerMock);
       mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-      verify(mUIImplementationMock, atMost(1))
+      verify(mUIManagerMock, atMost(1))
         .synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture());
-      double currentValue = stylesCaptor.getValue().getDouble("opacity", Double.NaN);
+      double currentValue = stylesCaptor.getValue().getDouble("opacity");
       if (currentValue > 1d) {
         wasGreaterThanOne = true;
       }
@@ -461,9 +437,9 @@ public class NativeAnimatedNodeTraversalTest {
     assertThat(wasGreaterThanOne);
     // verify that value reset 4 times after finishing a full animation
     assertThat(numberOfResets).isEqualTo(4);
-    reset(mUIImplementationMock);
+    reset(mUIManagerMock);
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verifyNoMoreInteractions(mUIImplementationMock);
+    verifyNoMoreInteractions(mUIManagerMock);
   }
 
   @Test
@@ -483,22 +459,22 @@ public class NativeAnimatedNodeTraversalTest {
         0.998d),
       animationCallback);
 
-    ArgumentCaptor<ReactStylesDiffMap> stylesCaptor =
-      ArgumentCaptor.forClass(ReactStylesDiffMap.class);
+    ArgumentCaptor<ReadableMap> stylesCaptor =
+      ArgumentCaptor.forClass(ReadableMap.class);
 
-    reset(mUIImplementationMock);
+    reset(mUIManagerMock);
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verify(mUIImplementationMock, atMost(1))
+    verify(mUIManagerMock, atMost(1))
       .synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture());
-    double previousValue = stylesCaptor.getValue().getDouble("opacity", Double.NaN);
+    double previousValue = stylesCaptor.getValue().getDouble("opacity");
     double previousDiff = Double.POSITIVE_INFINITY;
     /* run 3 secs of animation */
     for (int i = 0; i < 3 * 60; i++) {
-      reset(mUIImplementationMock);
+      reset(mUIManagerMock);
       mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-      verify(mUIImplementationMock, atMost(1))
+      verify(mUIManagerMock, atMost(1))
         .synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture());
-      double currentValue = stylesCaptor.getValue().getDouble("opacity", Double.NaN);
+      double currentValue = stylesCaptor.getValue().getDouble("opacity");
       double currentDiff = currentValue - previousValue;
       // verify monotonicity
       // greater *or equal* because the animation stops during these 3 seconds
@@ -518,9 +494,9 @@ public class NativeAnimatedNodeTraversalTest {
       previousDiff = currentDiff;
     }
     // should be done in 3s
-    reset(mUIImplementationMock);
+    reset(mUIManagerMock);
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verifyNoMoreInteractions(mUIImplementationMock);
+    verifyNoMoreInteractions(mUIManagerMock);
   }
 
   @Test
@@ -542,25 +518,25 @@ public class NativeAnimatedNodeTraversalTest {
         5),
       animationCallback);
 
-    ArgumentCaptor<ReactStylesDiffMap> stylesCaptor =
-      ArgumentCaptor.forClass(ReactStylesDiffMap.class);
+    ArgumentCaptor<ReadableMap> stylesCaptor =
+      ArgumentCaptor.forClass(ReadableMap.class);
 
-    reset(mUIImplementationMock);
+    reset(mUIManagerMock);
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verify(mUIImplementationMock, atMost(1))
+    verify(mUIManagerMock, atMost(1))
       .synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture());
-    double previousValue = stylesCaptor.getValue().getDouble("opacity", Double.NaN);
+    double previousValue = stylesCaptor.getValue().getDouble("opacity");
     double previousDiff = Double.POSITIVE_INFINITY;
-    double initialValue = stylesCaptor.getValue().getDouble("opacity", Double.NaN);
+    double initialValue = stylesCaptor.getValue().getDouble("opacity");
     boolean didComeToRest = false;
     int numberOfResets = 0;
     /* run 3 secs of animation, five times */
     for (int i = 0; i < 3 * 60 * 5; i++) {
-      reset(mUIImplementationMock);
+      reset(mUIManagerMock);
       mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-      verify(mUIImplementationMock, atMost(1))
+      verify(mUIManagerMock, atMost(1))
         .synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture());
-      double currentValue = stylesCaptor.getValue().getDouble("opacity", Double.NaN);
+      double currentValue = stylesCaptor.getValue().getDouble("opacity");
       double currentDiff = currentValue - previousValue;
       // Test to see if it reset after coming to rest (i.e. dropped back to )
       if (didComeToRest && currentValue == initialValue) {
@@ -579,9 +555,9 @@ public class NativeAnimatedNodeTraversalTest {
 
     // verify that value reset (looped) 4 times after finishing a full animation
     assertThat(numberOfResets).isEqualTo(4);
-    reset(mUIImplementationMock);
+    reset(mUIManagerMock);
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verifyNoMoreInteractions(mUIImplementationMock);
+    verifyNoMoreInteractions(mUIManagerMock);
   }
 
   @Test
@@ -599,7 +575,6 @@ public class NativeAnimatedNodeTraversalTest {
     ArgumentCaptor<ReadableMap> callbackResponseCaptor = ArgumentCaptor.forClass(ReadableMap.class);
 
     reset(animationCallback);
-    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
     verifyNoMoreInteractions(animationCallback);
 
@@ -629,10 +604,10 @@ public class NativeAnimatedNodeTraversalTest {
       double secondValue) {
     mNativeAnimatedNodesManager.createAnimatedNode(
       1,
-      JavaOnlyMap.of("type", "value", "value", 100d, "offset", 0d));
+      JavaOnlyMap.of("type", "value", "value", firstValue, "offset", 0d));
     mNativeAnimatedNodesManager.createAnimatedNode(
       2,
-      JavaOnlyMap.of("type", "value", "value", 1000d, "offset", 0d));
+      JavaOnlyMap.of("type", "value", "value", secondValue, "offset", 0d));
 
     mNativeAnimatedNodesManager.createAnimatedNode(
       3,
@@ -648,7 +623,7 @@ public class NativeAnimatedNodeTraversalTest {
     mNativeAnimatedNodesManager.connectAnimatedNodes(2, 3);
     mNativeAnimatedNodesManager.connectAnimatedNodes(3, 4);
     mNativeAnimatedNodesManager.connectAnimatedNodes(4, 5);
-    mNativeAnimatedNodesManager.connectAnimatedNodeToView(5, 50);
+    mNativeAnimatedNodesManager.connectAnimatedNodeToView(5, viewTag);
   }
 
   @Test
@@ -669,29 +644,23 @@ public class NativeAnimatedNodeTraversalTest {
       JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 1010d),
       animationCallback);
 
-    ArgumentCaptor<ReactStylesDiffMap> stylesCaptor =
-      ArgumentCaptor.forClass(ReactStylesDiffMap.class);
+    ArgumentCaptor<ReadableMap> stylesCaptor =
+      ArgumentCaptor.forClass(ReadableMap.class);
 
-    reset(mUIImplementationMock);
+    reset(mUIManagerMock);
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verify(mUIImplementationMock).synchronouslyUpdateViewOnUIThread(eq(50), stylesCaptor.capture());
-    assertThat(stylesCaptor.getValue().getDouble("translateX", Double.NaN)).isEqualTo(1100d);
+    verify(mUIManagerMock).synchronouslyUpdateViewOnUIThread(eq(50), stylesCaptor.capture());
+    assertThat(stylesCaptor.getValue().getDouble("translateX")).isEqualTo(1100d);
 
-    reset(mUIImplementationMock);
+    reset(mUIManagerMock);
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verify(mUIImplementationMock)
+    verify(mUIManagerMock)
       .synchronouslyUpdateViewOnUIThread(eq(50), stylesCaptor.capture());
-    assertThat(stylesCaptor.getValue().getDouble("translateX", Double.NaN)).isEqualTo(1100d);
+    assertThat(stylesCaptor.getValue().getDouble("translateX")).isEqualTo(1111d);
 
-    reset(mUIImplementationMock);
+    reset(mUIManagerMock);
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verify(mUIImplementationMock)
-      .synchronouslyUpdateViewOnUIThread(eq(50), stylesCaptor.capture());
-    assertThat(stylesCaptor.getValue().getDouble("translateX", Double.NaN)).isEqualTo(1111d);
-
-    reset(mUIImplementationMock);
-    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verifyNoMoreInteractions(mUIImplementationMock);
+    verifyNoMoreInteractions(mUIManagerMock);
   }
 
   /**
@@ -714,29 +683,23 @@ public class NativeAnimatedNodeTraversalTest {
       JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 101d),
       animationCallback);
 
-    ArgumentCaptor<ReactStylesDiffMap> stylesCaptor =
-      ArgumentCaptor.forClass(ReactStylesDiffMap.class);
+    ArgumentCaptor<ReadableMap> stylesCaptor =
+      ArgumentCaptor.forClass(ReadableMap.class);
 
-    reset(mUIImplementationMock);
+    reset(mUIManagerMock);
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verify(mUIImplementationMock).synchronouslyUpdateViewOnUIThread(eq(50), stylesCaptor.capture());
-    assertThat(stylesCaptor.getValue().getDouble("translateX", Double.NaN)).isEqualTo(1100d);
+    verify(mUIManagerMock).synchronouslyUpdateViewOnUIThread(eq(50), stylesCaptor.capture());
+    assertThat(stylesCaptor.getValue().getDouble("translateX")).isEqualTo(1100d);
 
-    reset(mUIImplementationMock);
+    reset(mUIManagerMock);
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verify(mUIImplementationMock)
+    verify(mUIManagerMock)
       .synchronouslyUpdateViewOnUIThread(eq(50), stylesCaptor.capture());
-    assertThat(stylesCaptor.getValue().getDouble("translateX", Double.NaN)).isEqualTo(1100d);
+    assertThat(stylesCaptor.getValue().getDouble("translateX")).isEqualTo(1101d);
 
-    reset(mUIImplementationMock);
+    reset(mUIManagerMock);
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verify(mUIImplementationMock)
-      .synchronouslyUpdateViewOnUIThread(eq(50), stylesCaptor.capture());
-    assertThat(stylesCaptor.getValue().getDouble("translateX", Double.NaN)).isEqualTo(1101d);
-
-    reset(mUIImplementationMock);
-    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verifyNoMoreInteractions(mUIImplementationMock);
+    verifyNoMoreInteractions(mUIManagerMock);
   }
 
   /**
@@ -769,31 +732,26 @@ public class NativeAnimatedNodeTraversalTest {
       JavaOnlyMap.of("type", "frames", "frames", secondFrames, "toValue", 1010d),
       animationCallback);
 
-    ArgumentCaptor<ReactStylesDiffMap> stylesCaptor =
-      ArgumentCaptor.forClass(ReactStylesDiffMap.class);
+    ArgumentCaptor<ReadableMap> stylesCaptor =
+      ArgumentCaptor.forClass(ReadableMap.class);
 
-    reset(mUIImplementationMock);
+    reset(mUIManagerMock);
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verify(mUIImplementationMock).synchronouslyUpdateViewOnUIThread(eq(50), stylesCaptor.capture());
-    assertThat(stylesCaptor.getValue().getDouble("translateX", Double.NaN)).isEqualTo(1100d);
-
-    reset(mUIImplementationMock);
-    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verify(mUIImplementationMock).synchronouslyUpdateViewOnUIThread(eq(50), stylesCaptor.capture());
-    assertThat(stylesCaptor.getValue().getDouble("translateX", Double.NaN)).isEqualTo(1100d);
+    verify(mUIManagerMock).synchronouslyUpdateViewOnUIThread(eq(50), stylesCaptor.capture());
+    assertThat(stylesCaptor.getValue().getDouble("translateX")).isEqualTo(1100d);
 
     for (int i = 1; i < secondFrames.size(); i++) {
-      reset(mUIImplementationMock);
+      reset(mUIManagerMock);
       mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-      verify(mUIImplementationMock)
+      verify(mUIManagerMock)
         .synchronouslyUpdateViewOnUIThread(eq(50), stylesCaptor.capture());
-      assertThat(stylesCaptor.getValue().getDouble("translateX", Double.NaN))
+      assertThat(stylesCaptor.getValue().getDouble("translateX"))
         .isEqualTo(1200d + secondFrames.getDouble(i) * 10d);
     }
 
-    reset(mUIImplementationMock);
+    reset(mUIManagerMock);
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verifyNoMoreInteractions(mUIImplementationMock);
+    verifyNoMoreInteractions(mUIManagerMock);
   }
 
   @Test
@@ -835,27 +793,22 @@ public class NativeAnimatedNodeTraversalTest {
       JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 10d),
       animationCallback);
 
-    ArgumentCaptor<ReactStylesDiffMap> stylesCaptor =
-      ArgumentCaptor.forClass(ReactStylesDiffMap.class);
+    ArgumentCaptor<ReadableMap> stylesCaptor =
+      ArgumentCaptor.forClass(ReadableMap.class);
 
-    reset(mUIImplementationMock);
+    reset(mUIManagerMock);
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verify(mUIImplementationMock).synchronouslyUpdateViewOnUIThread(eq(50), stylesCaptor.capture());
-    assertThat(stylesCaptor.getValue().getDouble("translateX", Double.NaN)).isEqualTo(5d);
+    verify(mUIManagerMock).synchronouslyUpdateViewOnUIThread(eq(50), stylesCaptor.capture());
+    assertThat(stylesCaptor.getValue().getDouble("translateX")).isEqualTo(5d);
 
-    reset(mUIImplementationMock);
+    reset(mUIManagerMock);
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verify(mUIImplementationMock).synchronouslyUpdateViewOnUIThread(eq(50), stylesCaptor.capture());
-    assertThat(stylesCaptor.getValue().getDouble("translateX", Double.NaN)).isEqualTo(5d);
+    verify(mUIManagerMock).synchronouslyUpdateViewOnUIThread(eq(50), stylesCaptor.capture());
+    assertThat(stylesCaptor.getValue().getDouble("translateX")).isEqualTo(20d);
 
-    reset(mUIImplementationMock);
+    reset(mUIManagerMock);
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verify(mUIImplementationMock).synchronouslyUpdateViewOnUIThread(eq(50), stylesCaptor.capture());
-    assertThat(stylesCaptor.getValue().getDouble("translateX", Double.NaN)).isEqualTo(20d);
-
-    reset(mUIImplementationMock);
-    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verifyNoMoreInteractions(mUIImplementationMock);
+    verifyNoMoreInteractions(mUIManagerMock);
   }
 
   /**
@@ -878,32 +831,32 @@ public class NativeAnimatedNodeTraversalTest {
     ArgumentCaptor<ReadableMap> callbackResponseCaptor = ArgumentCaptor.forClass(ReadableMap.class);
 
     reset(animationCallback);
-    reset(mUIImplementationMock);
+    reset(mUIManagerMock);
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verify(mUIImplementationMock, times(2))
-      .synchronouslyUpdateViewOnUIThread(anyInt(), any(ReactStylesDiffMap.class));
+    verify(mUIManagerMock, times(2))
+      .synchronouslyUpdateViewOnUIThread(anyInt(), any(ReadableMap.class));
     verifyNoMoreInteractions(animationCallback);
 
     reset(animationCallback);
-    reset(mUIImplementationMock);
+    reset(mUIManagerMock);
     mNativeAnimatedNodesManager.stopAnimation(404);
     verify(animationCallback).invoke(callbackResponseCaptor.capture());
     verifyNoMoreInteractions(animationCallback);
-    verifyNoMoreInteractions(mUIImplementationMock);
+    verifyNoMoreInteractions(mUIManagerMock);
 
     assertThat(callbackResponseCaptor.getValue().hasKey("finished")).isTrue();
     assertThat(callbackResponseCaptor.getValue().getBoolean("finished")).isFalse();
 
     reset(animationCallback);
-    reset(mUIImplementationMock);
+    reset(mUIManagerMock);
     // Run "update" loop a few more times -> we expect no further updates nor callback calls to be
     // triggered
     for (int i = 0; i < 5; i++) {
       mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
     }
 
-    verifyNoMoreInteractions(mUIImplementationMock);
+    verifyNoMoreInteractions(mUIManagerMock);
     verifyNoMoreInteractions(animationCallback);
   }
 
@@ -946,26 +899,21 @@ public class NativeAnimatedNodeTraversalTest {
       JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 20d),
       animationCallback);
 
-    ArgumentCaptor<ReactStylesDiffMap> stylesCaptor =
-      ArgumentCaptor.forClass(ReactStylesDiffMap.class);
-
-    reset(mUIImplementationMock);
-    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verify(mUIImplementationMock).synchronouslyUpdateViewOnUIThread(eq(50), stylesCaptor.capture());
-    assertThat(stylesCaptor.getValue().getDouble("opacity", Double.NaN)).isEqualTo(0d);
+    ArgumentCaptor<ReadableMap> stylesCaptor =
+      ArgumentCaptor.forClass(ReadableMap.class);
 
     for (int i = 0; i < frames.size(); i++) {
-      reset(mUIImplementationMock);
+      reset(mUIManagerMock);
       mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-      verify(mUIImplementationMock)
+      verify(mUIManagerMock)
         .synchronouslyUpdateViewOnUIThread(eq(50), stylesCaptor.capture());
-      assertThat(stylesCaptor.getValue().getDouble("opacity", Double.NaN))
+      assertThat(stylesCaptor.getValue().getDouble("opacity"))
         .isEqualTo(frames.getDouble(i));
     }
 
-    reset(mUIImplementationMock);
+    reset(mUIManagerMock);
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verifyNoMoreInteractions(mUIImplementationMock);
+    verifyNoMoreInteractions(mUIManagerMock);
   }
 
   private Event createScrollEvent(final int tag, final double value) {
@@ -995,13 +943,13 @@ public class NativeAnimatedNodeTraversalTest {
 
     mNativeAnimatedNodesManager.onEventDispatch(createScrollEvent(viewTag, 10));
 
-    ArgumentCaptor<ReactStylesDiffMap> stylesCaptor =
-      ArgumentCaptor.forClass(ReactStylesDiffMap.class);
+    ArgumentCaptor<ReadableMap> stylesCaptor =
+      ArgumentCaptor.forClass(ReadableMap.class);
 
-    reset(mUIImplementationMock);
+    reset(mUIManagerMock);
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verify(mUIImplementationMock).synchronouslyUpdateViewOnUIThread(eq(viewTag), stylesCaptor.capture());
-    assertThat(stylesCaptor.getValue().getDouble("opacity", Double.NaN)).isEqualTo(10);
+    verify(mUIManagerMock).synchronouslyUpdateViewOnUIThread(eq(viewTag), stylesCaptor.capture());
+    assertThat(stylesCaptor.getValue().getDouble("opacity")).isEqualTo(10);
   }
 
   @Test
@@ -1020,13 +968,13 @@ public class NativeAnimatedNodeTraversalTest {
 
     mNativeAnimatedNodesManager.onEventDispatch(createScrollEvent(viewTag, 10));
 
-    ArgumentCaptor<ReactStylesDiffMap> stylesCaptor =
-      ArgumentCaptor.forClass(ReactStylesDiffMap.class);
+    ArgumentCaptor<ReadableMap> stylesCaptor =
+      ArgumentCaptor.forClass(ReadableMap.class);
 
-    reset(mUIImplementationMock);
+    reset(mUIManagerMock);
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verify(mUIImplementationMock).synchronouslyUpdateViewOnUIThread(eq(viewTag), stylesCaptor.capture());
-    assertThat(stylesCaptor.getValue().getDouble("opacity", Double.NaN)).isEqualTo(0);
+    verify(mUIManagerMock).synchronouslyUpdateViewOnUIThread(eq(viewTag), stylesCaptor.capture());
+    assertThat(stylesCaptor.getValue().getDouble("opacity")).isEqualTo(0);
   }
 
   @Test
@@ -1051,13 +999,13 @@ public class NativeAnimatedNodeTraversalTest {
 
     mNativeAnimatedNodesManager.onEventDispatch(createScrollEvent(viewTag, 10));
 
-    ArgumentCaptor<ReactStylesDiffMap> stylesCaptor =
-      ArgumentCaptor.forClass(ReactStylesDiffMap.class);
+    ArgumentCaptor<ReadableMap> stylesCaptor =
+      ArgumentCaptor.forClass(ReadableMap.class);
 
-    reset(mUIImplementationMock);
+    reset(mUIManagerMock);
     mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verify(mUIImplementationMock).synchronouslyUpdateViewOnUIThread(eq(viewTag), stylesCaptor.capture());
-    assertThat(stylesCaptor.getValue().getDouble("opacity", Double.NaN)).isEqualTo(10);
+    verify(mUIManagerMock).synchronouslyUpdateViewOnUIThread(eq(viewTag), stylesCaptor.capture());
+    assertThat(stylesCaptor.getValue().getDouble("opacity")).isEqualTo(10);
   }
 
   @Test
@@ -1085,25 +1033,244 @@ public class NativeAnimatedNodeTraversalTest {
       JavaOnlyMap.of("type", "frames", "frames", frames, "toValue", 0d),
       animationCallback);
 
-    ArgumentCaptor<ReactStylesDiffMap> stylesCaptor =
-      ArgumentCaptor.forClass(ReactStylesDiffMap.class);
-
-    reset(mUIImplementationMock);
-    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
-    verify(mUIImplementationMock).synchronouslyUpdateViewOnUIThread(eq(viewTag), stylesCaptor.capture());
-    assertThat(stylesCaptor.getValue().getDouble("opacity", Double.NaN)).isEqualTo(1);
+    ArgumentCaptor<ReadableMap> stylesCaptor =
+      ArgumentCaptor.forClass(ReadableMap.class);
 
     for (int i = 0; i < frames.size(); i++) {
-      reset(mUIImplementationMock);
+      reset(mUIManagerMock);
       mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
     }
 
-    verify(mUIImplementationMock).synchronouslyUpdateViewOnUIThread(eq(viewTag), stylesCaptor.capture());
-    assertThat(stylesCaptor.getValue().getDouble("opacity", Double.NaN)).isEqualTo(0);
+    verify(mUIManagerMock).synchronouslyUpdateViewOnUIThread(eq(viewTag), stylesCaptor.capture());
+    assertThat(stylesCaptor.getValue().getDouble("opacity")).isEqualTo(0);
 
-    reset(mUIImplementationMock);
+    reset(mUIManagerMock);
     mNativeAnimatedNodesManager.restoreDefaultValues(propsNodeTag, viewTag);
-    verify(mUIImplementationMock).synchronouslyUpdateViewOnUIThread(eq(viewTag), stylesCaptor.capture());
+    verify(mUIManagerMock).synchronouslyUpdateViewOnUIThread(eq(viewTag), stylesCaptor.capture());
     assertThat(stylesCaptor.getValue().isNull("opacity"));
+  }
+
+
+  /**
+   * Creates a following graph of nodes:
+   * Value(3, initialValue) ----> Style(4) ---> Props(5) ---> View(viewTag)
+   *
+   * Value(3) is set to track Value(1) via Tracking(2) node with the provided animation config
+   */
+  private void createAnimatedGraphWithTrackingNode(
+          int viewTag,
+          double initialValue,
+          JavaOnlyMap animationConfig) {
+    mNativeAnimatedNodesManager.createAnimatedNode(
+            1,
+            JavaOnlyMap.of("type", "value", "value", initialValue, "offset", 0d));
+    mNativeAnimatedNodesManager.createAnimatedNode(
+            3,
+            JavaOnlyMap.of("type", "value", "value", initialValue, "offset", 0d));
+
+    mNativeAnimatedNodesManager.createAnimatedNode(
+            2,
+            JavaOnlyMap.of("type", "tracking", "animationId", 70, "value", 3, "toValue", 1, "animationConfig", animationConfig));
+
+    mNativeAnimatedNodesManager.createAnimatedNode(
+            4,
+            JavaOnlyMap.of("type", "style", "style", JavaOnlyMap.of("translateX", 3)));
+    mNativeAnimatedNodesManager.createAnimatedNode(
+            5,
+            JavaOnlyMap.of("type", "props", "props", JavaOnlyMap.of("style", 4)));
+    mNativeAnimatedNodesManager.connectAnimatedNodes(1, 2);
+    mNativeAnimatedNodesManager.connectAnimatedNodes(3, 4);
+    mNativeAnimatedNodesManager.connectAnimatedNodes(4, 5);
+    mNativeAnimatedNodesManager.connectAnimatedNodeToView(5, viewTag);
+  }
+
+  /**
+   * In this test we verify that when value is being tracked we can update destination value in the
+   * middle of ongoing animation and the animation will update and animate to the new spot. This is
+   * tested using simple 5 frame backed timing animation.
+   */
+  @Test
+  public void testTracking() {
+    JavaOnlyArray frames = JavaOnlyArray.of(0d, 0.25d, 0.5d, 0.75d, 1d);
+    JavaOnlyMap animationConfig = JavaOnlyMap.of("type", "frames", "frames", frames);
+
+    createAnimatedGraphWithTrackingNode(1000, 0d, animationConfig);
+
+    ArgumentCaptor<ReadableMap> stylesCaptor =
+            ArgumentCaptor.forClass(ReadableMap.class);
+
+    reset(mUIManagerMock);
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    verify(mUIManagerMock).synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture());
+    assertThat(stylesCaptor.getValue().getDouble("translateX")).isEqualTo(0d);
+
+    // update "toValue" to 100, we expect tracking animation to animate now from 0 to 100 in 5 steps
+    mNativeAnimatedNodesManager.setAnimatedNodeValue(1, 100d);
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime()); // kick off the animation
+
+    for (int i = 0; i < frames.size(); i++) {
+      reset(mUIManagerMock);
+      mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+      verify(mUIManagerMock)
+              .synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture());
+      assertThat(stylesCaptor.getValue().getDouble("translateX"))
+              .isEqualTo(frames.getDouble(i) * 100d);
+    }
+
+    // update "toValue" to 0 but run only two frames from the animation,
+    // we expect tracking animation to animate now from 100 to 75
+    mNativeAnimatedNodesManager.setAnimatedNodeValue(1, 0d);
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime()); // kick off the animation
+
+    for (int i = 0; i < 2; i++) {
+      reset(mUIManagerMock);
+      mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+      verify(mUIManagerMock)
+              .synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture());
+      assertThat(stylesCaptor.getValue().getDouble("translateX"))
+              .isEqualTo(100d * (1d - frames.getDouble(i)));
+    }
+
+    // at this point we expect tracking value to be at 75
+    assertThat(((ValueAnimatedNode) mNativeAnimatedNodesManager.getNodeById(3)).getValue())
+            .isEqualTo(75d);
+
+    // we update "toValue" again to 100 and expect the animation to restart from the current place
+    mNativeAnimatedNodesManager.setAnimatedNodeValue(1, 100d);
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime()); // kick off the animation
+
+    for (int i = 0; i < frames.size(); i++) {
+      reset(mUIManagerMock);
+      mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+      verify(mUIManagerMock)
+              .synchronouslyUpdateViewOnUIThread(eq(1000), stylesCaptor.capture());
+      assertThat(stylesCaptor.getValue().getDouble("translateX"))
+              .isEqualTo(50d + 50d * frames.getDouble(i));
+    }
+  }
+
+  /**
+   * In this test we verify that when tracking is set up for a given animated node and when the
+   * animation settles it will not be registered as an active animation and therefore will not
+   * consume resources on running the animation that has already completed. Then we verify that when
+   * the value updates the animation will resume as expected and the complete again when reaches the
+   * end.
+   */
+  @Test
+  public void testTrackingPausesWhenEndValueIsReached() {
+    JavaOnlyArray frames = JavaOnlyArray.of(0d, 0.5d, 1d);
+    JavaOnlyMap animationConfig = JavaOnlyMap.of("type", "frames", "frames", frames);
+
+    createAnimatedGraphWithTrackingNode(1000, 0d, animationConfig);
+    mNativeAnimatedNodesManager.setAnimatedNodeValue(1, 100d);
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime()); // make sure animation starts
+
+    reset(mUIManagerMock);
+    for (int i = 0; i < frames.size(); i++) {
+      assertThat(mNativeAnimatedNodesManager.hasActiveAnimations()).isTrue();
+      mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    }
+    verify(mUIManagerMock, times(frames.size()))
+            .synchronouslyUpdateViewOnUIThread(eq(1000), any(ReadableMap.class));
+
+    // the animation has completed, we expect no updates to be done
+    reset(mUIManagerMock);
+    assertThat(mNativeAnimatedNodesManager.hasActiveAnimations()).isFalse();
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    verifyNoMoreInteractions(mUIManagerMock);
+
+
+    // we update end value and expect the animation to restart
+    mNativeAnimatedNodesManager.setAnimatedNodeValue(1, 200d);
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime()); // make sure animation starts
+
+    reset(mUIManagerMock);
+    for (int i = 0; i < frames.size(); i++) {
+      assertThat(mNativeAnimatedNodesManager.hasActiveAnimations()).isTrue();
+      mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    }
+    verify(mUIManagerMock, times(frames.size()))
+            .synchronouslyUpdateViewOnUIThread(eq(1000), any(ReadableMap.class));
+
+    // the animation has completed, we expect no updates to be done
+    reset(mUIManagerMock);
+    assertThat(mNativeAnimatedNodesManager.hasActiveAnimations()).isFalse();
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    verifyNoMoreInteractions(mUIManagerMock);
+  }
+
+  /**
+   * In this test we verify that when tracking is configured to use spring animation and when the
+   * destination value updates the current speed of the animated value will be taken into account
+   * while updating the spring animation and it will smoothly transition to the new end value.
+   */
+  @Test
+  public void testSpringTrackingRetainsSpeed() {
+    // this spring config correspomds to tension 20 and friction 0.5 which makes the spring settle
+    // very slowly
+    JavaOnlyMap springConfig = JavaOnlyMap.of(
+            "type",
+            "spring",
+            "restSpeedThreshold",
+            0.001,
+            "mass",
+            1d,
+            "restDisplacementThreshold",
+            0.001,
+            "initialVelocity",
+            0.5d,
+            "damping",
+            2.5,
+            "stiffness",
+            157.8,
+            "overshootClamping",
+            false);
+
+    createAnimatedGraphWithTrackingNode(1000, 0d, springConfig);
+
+    // update "toValue" to 1, we expect tracking animation to animate now from 0 to 1
+    mNativeAnimatedNodesManager.setAnimatedNodeValue(1, 1d);
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+
+    // we run several steps of animation until the value starts bouncing, has negative speed and
+    // passes the final point (that is 1) while going backwards
+    boolean isBoucingBack = false;
+    double previousValue = ((ValueAnimatedNode) mNativeAnimatedNodesManager.getNodeById(3)).getValue();
+    for (int maxFrames = 500; maxFrames > 0; maxFrames--) {
+      mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+      double currentValue = ((ValueAnimatedNode) mNativeAnimatedNodesManager.getNodeById(3)).getValue();
+      if (previousValue >= 1d && currentValue < 1d) {
+        isBoucingBack = true;
+        break;
+      }
+      previousValue = currentValue;
+    }
+    assertThat(isBoucingBack).isTrue();
+
+    // we now update "toValue" to 1.5 but since the value have negative speed and has also pretty
+    // low friction we expect it to keep going in the opposite direction for a few more frames
+    mNativeAnimatedNodesManager.setAnimatedNodeValue(1, 1.5d);
+    mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+    int bounceBackInitialFrames = 0;
+    boolean hasTurnedForward = false;
+
+    // we run 8 seconds of animation
+    for (int i = 0; i < 8 * 60; i++) {
+      mNativeAnimatedNodesManager.runUpdates(nextFrameTime());
+      double currentValue = ((ValueAnimatedNode) mNativeAnimatedNodesManager.getNodeById(3)).getValue();
+      if (!hasTurnedForward) {
+        if (currentValue <= previousValue) {
+          bounceBackInitialFrames++;
+        } else {
+          hasTurnedForward = true;
+        }
+      }
+      previousValue = currentValue;
+    }
+    assertThat(hasTurnedForward).isEqualTo(true);
+    assertThat(bounceBackInitialFrames).isGreaterThan(3);
+
+    // we verify that the value settled at 2
+    assertThat(previousValue).isEqualTo(1.5d);
   }
 }

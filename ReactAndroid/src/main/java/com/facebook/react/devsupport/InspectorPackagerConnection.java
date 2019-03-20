@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 package com.facebook.react.devsupport;
 
@@ -154,6 +157,7 @@ public class InspectorPackagerConnection {
       jsonPage.put("id", String.valueOf(page.getId()));
       jsonPage.put("title", page.getTitle());
       jsonPage.put("app", mPackageName);
+      jsonPage.put("vm", page.getVM());
       jsonPage.put("isLastBundleDownloadSuccess", bundleStatus.isLastDownloadSucess);
       jsonPage.put("bundleUpdateTimestamp", bundleStatus.updateTimestamp);
       array.put(jsonPage);

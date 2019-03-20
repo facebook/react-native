@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTSafeAreaShadowView.h"
@@ -35,10 +33,10 @@
  * Removing support for setting padding from any outside code
  * to prevent interferring this with local data.
  */
-- (void)setPadding:(YGValue)value {}
-- (void)setPaddingLeft:(YGValue)value {}
-- (void)setPaddingRight:(YGValue)value {}
-- (void)setPaddingTop:(YGValue)value {}
-- (void)setPaddingBottom:(YGValue)value {}
+- (void)setPadding:(__unused YGValue)value {}
+- (void)setPaddingLeft:(__unused YGValue)value {}
+- (void)setPaddingRight:(__unused YGValue)value {}
+- (void)setPaddingTop:(__unused YGValue)value {}
+- (void)setPaddingBottom:(__unused YGValue)value {}
 
 @end

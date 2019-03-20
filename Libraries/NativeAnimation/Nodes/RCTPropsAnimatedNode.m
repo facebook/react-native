@@ -1,27 +1,30 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTPropsAnimatedNode.h"
 
 #import <React/RCTLog.h>
+#import <React/RCTSurfacePresenterStub.h>
 #import <React/RCTUIManager.h>
 
 #import "RCTAnimationUtils.h"
 #import "RCTStyleAnimatedNode.h"
 #import "RCTValueAnimatedNode.h"
 
+
+
 @implementation RCTPropsAnimatedNode
 {
   NSNumber *_connectedViewTag;
+  NSNumber *_rootTag;
   NSString *_connectedViewName;
-  __weak RCTUIManager *_uiManager;
-  NSMutableDictionary<NSString *, NSObject *> *_propsDictionary;
+  __weak RCTBridge *_bridge;
+  NSMutableDictionary<NSString *, NSObject *> *_propsDictionary; // TODO: use RawProps or folly::dynamic directly
+  BOOL _managedByFabric;
 }
 
 - (instancetype)initWithTag:(NSNumber *)tag
@@ -35,18 +38,34 @@
 
 - (void)connectToView:(NSNumber *)viewTag
              viewName:(NSString *)viewName
-            uiManager:(RCTUIManager *)uiManager
+               bridge:(RCTBridge *)bridge
 {
+  _bridge = bridge;
   _connectedViewTag = viewTag;
   _connectedViewName = viewName;
-  _uiManager = uiManager;
+  _managedByFabric = RCTUIManagerTypeForTagIsFabric(viewTag);
+  _rootTag = nil;
 }
 
 - (void)disconnectFromView:(NSNumber *)viewTag
 {
+  _bridge = nil;
   _connectedViewTag = nil;
   _connectedViewName = nil;
-  _uiManager = nil;
+  _managedByFabric = NO;
+  _rootTag = nil;
+}
+
+- (void)updateView
+{
+  if (_managedByFabric) {
+    [_bridge.surfacePresenter synchronouslyUpdateViewOnUIThread:_connectedViewTag
+                                                          props:_propsDictionary];
+  } else {
+    [_bridge.uiManager synchronouslyUpdateViewOnUIThread:_connectedViewTag
+                                                viewName:_connectedViewName
+                                                   props:_propsDictionary];
+  }
 }
 
 - (void)restoreDefaultValues
@@ -57,9 +76,7 @@
   }
 
   if (_propsDictionary.count) {
-    [_uiManager synchronouslyUpdateViewOnUIThread:_connectedViewTag
-                                         viewName:_connectedViewName
-                                            props:_propsDictionary];
+    [self updateView];
   }
 }
 
@@ -85,12 +102,12 @@
   if (!_connectedViewTag) {
     return;
   }
-  
+
   for (NSNumber *parentTag in self.parentNodes.keyEnumerator) {
     RCTAnimatedNode *parentNode = [self.parentNodes objectForKey:parentTag];
     if ([parentNode isKindOfClass:[RCTStyleAnimatedNode class]]) {
       [self->_propsDictionary addEntriesFromDictionary:[(RCTStyleAnimatedNode *)parentNode propsDictionary]];
-      
+
     } else if ([parentNode isKindOfClass:[RCTValueAnimatedNode class]]) {
       NSString *property = [self propertyNameForParentTag:parentTag];
       CGFloat value = [(RCTValueAnimatedNode *)parentNode value];
@@ -99,9 +116,7 @@
   }
 
   if (_propsDictionary.count) {
-    [_uiManager synchronouslyUpdateViewOnUIThread:_connectedViewTag
-                                         viewName:_connectedViewName
-                                            props:_propsDictionary];
+    [self updateView];
   }
 }
 

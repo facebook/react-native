@@ -1,3 +1,8 @@
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
 -keepnames class * extends com.facebook.react.bridge.JavaScriptModule { *; }
 -keepnames class * extends com.facebook.react.bridge.CxxModuleWrapper {*; }
 -keepclassmembers class * extends com.facebook.react.bridge.NativeModule {

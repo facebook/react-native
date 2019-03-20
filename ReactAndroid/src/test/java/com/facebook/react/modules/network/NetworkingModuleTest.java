@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.modules.network;
@@ -20,6 +18,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.common.StandardCharsets;
 import com.facebook.react.common.network.OkHttpCallUtil;
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter;
 
@@ -68,7 +67,7 @@ import static org.mockito.Mockito.when;
     OkHttpClient.Builder.class,
     OkHttpCallUtil.class})
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class NetworkingModuleTest {
 
   @Rule
@@ -170,6 +169,34 @@ public class NetworkingModuleTest {
     verifyErrorEmit(emitter, 0);
   }
 
+  @Test
+  public void testFailInvalidUrl() throws Exception {
+    RCTDeviceEventEmitter emitter = mock(RCTDeviceEventEmitter.class);
+    ReactApplicationContext context = mock(ReactApplicationContext.class);
+    when(context.getJSModule(any(Class.class))).thenReturn(emitter);
+
+    OkHttpClient httpClient = mock(OkHttpClient.class);
+    OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
+    when(clientBuilder.build()).thenReturn(httpClient);
+    when(httpClient.newBuilder()).thenReturn(clientBuilder);
+    NetworkingModule networkingModule = new NetworkingModule(context, "", httpClient);
+
+    mockEvents();
+
+    networkingModule.sendRequest(
+      "GET",
+      "aaa",
+      /* requestId */ 0,
+      /* headers */ JavaOnlyArray.of(),
+      /* body */ null,
+      /* responseType */ "text",
+      /* useIncrementalUpdates*/ true,
+      /* timeout */ 0,
+      /* withCredentials */ false);
+
+    verifyErrorEmit(emitter, 0);
+  }
+
   private static void verifyErrorEmit(RCTDeviceEventEmitter emitter, int requestId) {
     ArgumentCaptor<WritableArray> captor = ArgumentCaptor.forClass(WritableArray.class);
     verify(emitter).emit(eq("didCompleteNetworkResponse"), captor.capture());
@@ -200,6 +227,10 @@ public class NetworkingModuleTest {
 
   @Test
   public void testSuccessfulPostRequest() throws Exception {
+    RCTDeviceEventEmitter emitter = mock(RCTDeviceEventEmitter.class);
+    ReactApplicationContext context = mock(ReactApplicationContext.class);
+    when(context.getJSModule(any(Class.class))).thenReturn(emitter);
+
     OkHttpClient httpClient = mock(OkHttpClient.class);
     when(httpClient.newCall(any(Request.class))).thenAnswer(new Answer<Object>() {
           @Override
@@ -211,11 +242,12 @@ public class NetworkingModuleTest {
     OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
     when(clientBuilder.build()).thenReturn(httpClient);
     when(httpClient.newBuilder()).thenReturn(clientBuilder);
-    NetworkingModule networkingModule =
-      new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
+    NetworkingModule networkingModule = new NetworkingModule(context, "", httpClient);
 
     JavaOnlyMap body = new JavaOnlyMap();
     body.putString("string", "This is request body");
+
+    mockEvents();
 
     networkingModule.sendRequest(
       "POST",
@@ -276,6 +308,131 @@ public class NetworkingModuleTest {
     assertThat(requestHeaders.size()).isEqualTo(2);
     assertThat(requestHeaders.get("Accept")).isEqualTo("text/plain");
     assertThat(requestHeaders.get("User-Agent")).isEqualTo("React test agent/1.0");
+  }
+
+  @Test
+  public void testPostJsonContentTypeHeader() throws Exception {
+    OkHttpClient httpClient = mock(OkHttpClient.class);
+    when(httpClient.newCall(any(Request.class))).thenAnswer(new Answer<Object>() {
+      @Override
+      public Object answer(InvocationOnMock invocation) throws Throwable {
+        Call callMock = mock(Call.class);
+        return callMock;
+      }
+    });
+    OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
+    when(clientBuilder.build()).thenReturn(httpClient);
+    when(httpClient.newBuilder()).thenReturn(clientBuilder);
+    NetworkingModule networkingModule =
+      new NetworkingModule(mock(ReactApplicationContext.class), "", httpClient);
+
+    JavaOnlyMap body = new JavaOnlyMap();
+    body.putString("string", "{ \"key\": \"value\" }");
+
+    networkingModule.sendRequest(
+      "POST",
+      "http://somedomain/bar",
+      0,
+      JavaOnlyArray.of(JavaOnlyArray.of("Content-Type", "application/json")),
+      body,
+      /* responseType */ "text",
+      /* useIncrementalUpdates*/ true,
+      /* timeout */ 0,
+      /* withCredentials */ false);
+
+    ArgumentCaptor<Request> argumentCaptor = ArgumentCaptor.forClass(Request.class);
+    verify(httpClient).newCall(argumentCaptor.capture());
+
+    // Verify okhttp does not append "charset=utf-8"
+    assertThat(argumentCaptor.getValue().body().contentType().toString()).isEqualTo("application/json");
+  }
+
+  @Test
+  public void testRespectsExistingCharacterSet() throws Exception {
+    RCTDeviceEventEmitter emitter = mock(RCTDeviceEventEmitter.class);
+    ReactApplicationContext context = mock(ReactApplicationContext.class);
+    when(context.getJSModule(any(Class.class))).thenReturn(emitter);
+
+    OkHttpClient httpClient = mock(OkHttpClient.class);
+    when(httpClient.newCall(any(Request.class))).thenAnswer(new Answer<Object>() {
+      @Override
+      public Object answer(InvocationOnMock invocation) throws Throwable {
+        Call callMock = mock(Call.class);
+        return callMock;
+      }
+    });
+    OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
+    when(clientBuilder.build()).thenReturn(httpClient);
+    when(httpClient.newBuilder()).thenReturn(clientBuilder);
+    NetworkingModule networkingModule = new NetworkingModule(context, "", httpClient);
+
+    JavaOnlyMap body = new JavaOnlyMap();
+    body.putString("string", "Friðjónsson");
+
+    mockEvents();
+
+    networkingModule.sendRequest(
+      "POST",
+      "http://somedomain/bar",
+      0,
+      JavaOnlyArray.of(JavaOnlyArray.of("Content-Type", "text/plain; charset=utf-16")),
+      body,
+      /* responseType */ "text",
+      /* useIncrementalUpdates*/ true,
+      /* timeout */ 0,
+      /* withCredentials */ false);
+
+    ArgumentCaptor<Request> argumentCaptor = ArgumentCaptor.forClass(Request.class);
+    verify(httpClient).newCall(argumentCaptor.capture());
+
+    Buffer contentBuffer = new Buffer();
+    argumentCaptor.getValue().body().writeTo(contentBuffer);
+    assertThat(contentBuffer.readString(StandardCharsets.UTF_16)).isEqualTo("Friðjónsson");
+  }
+
+  @Test
+  public void testGracefullyRecoversFromInvalidContentType() throws Exception {
+    RCTDeviceEventEmitter emitter = mock(RCTDeviceEventEmitter.class);
+    ReactApplicationContext context = mock(ReactApplicationContext.class);
+    when(context.getJSModule(any(Class.class))).thenReturn(emitter);
+
+    OkHttpClient httpClient = mock(OkHttpClient.class);
+    when(httpClient.newCall(any(Request.class))).thenAnswer(new Answer<Object>() {
+      @Override
+      public Object answer(InvocationOnMock invocation) throws Throwable {
+        Call callMock = mock(Call.class);
+        return callMock;
+      }
+    });
+    OkHttpClient.Builder clientBuilder = mock(OkHttpClient.Builder.class);
+    when(clientBuilder.build()).thenReturn(httpClient);
+    when(httpClient.newBuilder()).thenReturn(clientBuilder);
+    NetworkingModule networkingModule = new NetworkingModule(context, "", httpClient);
+
+    JavaOnlyMap body = new JavaOnlyMap();
+    body.putString("string", "test");
+
+    mockEvents();
+
+    networkingModule.sendRequest(
+      "POST",
+      "http://somedomain/bar",
+      0,
+      JavaOnlyArray.of(JavaOnlyArray.of("Content-Type", "invalid")),
+      body,
+      /* responseType */ "text",
+      /* useIncrementalUpdates*/ true,
+      /* timeout */ 0,
+      /* withCredentials */ false);
+
+    ArgumentCaptor<Request> argumentCaptor = ArgumentCaptor.forClass(Request.class);
+    verify(httpClient).newCall(argumentCaptor.capture());
+
+    Buffer contentBuffer = new Buffer();
+    argumentCaptor.getValue().body().writeTo(contentBuffer);
+
+    assertThat(contentBuffer.readString(StandardCharsets.UTF_8)).isEqualTo("test");
+    assertThat(argumentCaptor.getValue().header("Content-Type")).isEqualTo("invalid");
   }
 
   @Test

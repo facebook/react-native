@@ -1,12 +1,9 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule WebSocketExample
  * @format
  */
 'use strict';
@@ -128,9 +125,6 @@ type State = {
 };
 
 class WebSocketExample extends React.Component<any, any, State> {
-  static title = 'WebSocket';
-  static description = 'WebSocket API';
-
   state: State = {
     url: DEFAULT_WS_URL,
     httpUrl: DEFAULT_HTTP_URL,
@@ -350,4 +344,13 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = WebSocketExample;
+exports.title = 'WebSocket';
+exports.description = 'WebSocket API';
+exports.examples = [
+  {
+    title: 'Basic websocket',
+    render(): React.Element<typeof WebSocketExample> {
+      return <WebSocketExample />;
+    },
+  },
+];

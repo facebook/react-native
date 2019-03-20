@@ -1,27 +1,29 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule PermissionsAndroid
+ * @format
  * @flow
  */
+
 'use strict';
 
 const NativeModules = require('NativeModules');
 
-type Rationale = {
+export type Rationale = {
   title: string,
   message: string,
-}
+  buttonPositive?: string,
+  buttonNegative?: string,
+  buttonNeutral?: string,
+};
 
 type PermissionStatus = 'granted' | 'denied' | 'never_ask_again';
 /**
  * `PermissionsAndroid` provides access to Android M's new permissions model.
- * 
+ *
  * See https://facebook.github.io/react-native/docs/permissionsandroid.html
  */
 
@@ -39,7 +41,7 @@ class PermissionsAndroid {
       CAMERA: 'android.permission.CAMERA',
       READ_CONTACTS: 'android.permission.READ_CONTACTS',
       WRITE_CONTACTS: 'android.permission.WRITE_CONTACTS',
-      GET_ACCOUNTS:  'android.permission.GET_ACCOUNTS',
+      GET_ACCOUNTS: 'android.permission.GET_ACCOUNTS',
       ACCESS_FINE_LOCATION: 'android.permission.ACCESS_FINE_LOCATION',
       ACCESS_COARSE_LOCATION: 'android.permission.ACCESS_COARSE_LOCATION',
       RECORD_AUDIO: 'android.permission.RECORD_AUDIO',
@@ -50,7 +52,7 @@ class PermissionsAndroid {
       ADD_VOICEMAIL: 'com.android.voicemail.permission.ADD_VOICEMAIL',
       USE_SIP: 'android.permission.USE_SIP',
       PROCESS_OUTGOING_CALLS: 'android.permission.PROCESS_OUTGOING_CALLS',
-      BODY_SENSORS:  'android.permission.BODY_SENSORS',
+      BODY_SENSORS: 'android.permission.BODY_SENSORS',
       SEND_SMS: 'android.permission.SEND_SMS',
       RECEIVE_SMS: 'android.permission.RECEIVE_SMS',
       READ_SMS: 'android.permission.READ_SMS',
@@ -75,18 +77,20 @@ class PermissionsAndroid {
    *
    * @deprecated
    */
-  checkPermission(permission: string) : Promise<boolean> {
-    console.warn('"PermissionsAndroid.checkPermission" is deprecated. Use "PermissionsAndroid.check" instead');
+  checkPermission(permission: string): Promise<boolean> {
+    console.warn(
+      '"PermissionsAndroid.checkPermission" is deprecated. Use "PermissionsAndroid.check" instead',
+    );
     return NativeModules.PermissionsAndroid.checkPermission(permission);
   }
 
   /**
    * Returns a promise resolving to a boolean value as to whether the specified
    * permissions has been granted
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/permissionsandroid.html#check
    */
-  check(permission: string) : Promise<boolean> {
+  check(permission: string): Promise<boolean> {
     return NativeModules.PermissionsAndroid.checkPermission(permission);
   }
 
@@ -104,10 +108,15 @@ class PermissionsAndroid {
    *
    * @deprecated
    */
-  async requestPermission(permission: string, rationale?: Rationale) : Promise<boolean> {
-    console.warn('"PermissionsAndroid.requestPermission" is deprecated. Use "PermissionsAndroid.request" instead');
+  async requestPermission(
+    permission: string,
+    rationale?: Rationale,
+  ): Promise<boolean> {
+    console.warn(
+      '"PermissionsAndroid.requestPermission" is deprecated. Use "PermissionsAndroid.request" instead',
+    );
     const response = await this.request(permission, rationale);
-    return (response === this.RESULTS.GRANTED);
+    return response === this.RESULTS.GRANTED;
   }
 
   /**
@@ -116,16 +125,24 @@ class PermissionsAndroid {
    *
    * See https://facebook.github.io/react-native/docs/permissionsandroid.html#request
    */
-  async request(permission: string, rationale?: Rationale) : Promise<PermissionStatus> {
+  async request(
+    permission: string,
+    rationale?: Rationale,
+  ): Promise<PermissionStatus> {
     if (rationale) {
-      const shouldShowRationale = await NativeModules.PermissionsAndroid.shouldShowRequestPermissionRationale(permission);
+      const shouldShowRationale = await NativeModules.PermissionsAndroid.shouldShowRequestPermissionRationale(
+        permission,
+      );
 
       if (shouldShowRationale) {
         return new Promise((resolve, reject) => {
           NativeModules.DialogManagerAndroid.showAlert(
             rationale,
             () => reject(new Error('Error showing rationale')),
-            () => resolve(NativeModules.PermissionsAndroid.requestPermission(permission))
+            () =>
+              resolve(
+                NativeModules.PermissionsAndroid.requestPermission(permission),
+              ),
           );
         });
       }
@@ -137,11 +154,15 @@ class PermissionsAndroid {
    * Prompts the user to enable multiple permissions in the same dialog and
    * returns an object with the permissions as keys and strings as values
    * indicating whether the user allowed or denied the request
-   * 
+   *
    * See https://facebook.github.io/react-native/docs/permissionsandroid.html#requestmultiple
    */
-  requestMultiple(permissions: Array<string>) : Promise<{[permission: string]: PermissionStatus}> {
-    return NativeModules.PermissionsAndroid.requestMultiplePermissions(permissions);
+  requestMultiple(
+    permissions: Array<string>,
+  ): Promise<{[permission: string]: PermissionStatus}> {
+    return NativeModules.PermissionsAndroid.requestMultiplePermissions(
+      permissions,
+    );
   }
 }
 

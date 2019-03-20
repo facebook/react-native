@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <React/RCTJavaScriptLoader.h>
@@ -50,20 +48,6 @@
 - (BOOL)shouldBridgeUseCustomJSC:(RCTBridge *)bridge;
 
 /**
- * Configure whether the legacy RCTBatchedBridge or new RCTCxxBridge
- * should be used.  If this method is implemented and the specified
- * bridge is not linked in, startup will fail.  If this method is not
- * implemented, the implementation will default to RCTBatchedBridge,
- * but if it is not linked in, will try RCTCxxBridge instead.  If
- * neither bridge is linked in, startup will fail.  This order will be
- * reversed in the near future, as the legacy bridge is closer to
- * being removed.
- *
- * @experimental
- */
-- (BOOL)shouldBridgeUseCxxBridge:(RCTBridge *)bridge;
-
-/**
 * The bridge will call this method when a module been called from JS
 * cannot be found among registered modules.
 * It should return YES if the module with name 'moduleName' was registered
@@ -87,5 +71,10 @@
  */
 - (void)loadSourceForBridge:(RCTBridge *)bridge
                   withBlock:(RCTSourceLoadBlock)loadCallback;
+
+/**
+ * Retrieve the list of lazy-native-modules names for the given bridge.
+ */
+- (NSDictionary<NSString *, Class> *)extraLazyModuleClassesForBridge:(RCTBridge *)bridge;
 
 @end

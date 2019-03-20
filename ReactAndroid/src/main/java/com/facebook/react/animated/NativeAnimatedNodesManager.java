@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.animated;
@@ -21,7 +19,6 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.uimanager.IllegalViewOperationException;
-import com.facebook.react.uimanager.UIImplementation;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcherListener;
@@ -59,13 +56,13 @@ import javax.annotation.Nullable;
   // there will be only one driver per mapping so all code code should be optimized around that.
   private final Map<String, List<EventAnimationDriver>> mEventDrivers = new HashMap<>();
   private final UIManagerModule.CustomEventNamesResolver mCustomEventNamesResolver;
-  private final UIImplementation mUIImplementation;
+  private final UIManagerModule mUIManagerModule;
   private int mAnimatedGraphBFSColor = 0;
   // Used to avoid allocating a new array on every frame in `runUpdates` and `onEventDispatch`.
   private final List<AnimatedNode> mRunUpdateNodeList = new LinkedList<>();
 
   public NativeAnimatedNodesManager(UIManagerModule uiManager) {
-    mUIImplementation = uiManager.getUIImplementation();
+    mUIManagerModule = uiManager;
     uiManager.getEventDispatcher().addListener(this);
     mCustomEventNamesResolver = uiManager.getDirectEventNamesResolver();
   }
@@ -90,11 +87,13 @@ import javax.annotation.Nullable;
     } else if ("value".equals(type)) {
       node = new ValueAnimatedNode(config);
     } else if ("props".equals(type)) {
-      node = new PropsAnimatedNode(config, this, mUIImplementation);
+      node = new PropsAnimatedNode(config, this, mUIManagerModule);
     } else if ("interpolation".equals(type)) {
       node = new InterpolationAnimatedNode(config);
     } else if ("addition".equals(type)) {
       node = new AdditionAnimatedNode(config, this);
+    } else if ("subtraction".equals(type)) {
+      node = new SubtractionAnimatedNode(config, this);
     } else if ("division".equals(type)) {
       node = new DivisionAnimatedNode(config, this);
     } else if ("multiplication".equals(type)) {
@@ -105,6 +104,8 @@ import javax.annotation.Nullable;
       node = new DiffClampAnimatedNode(config, this);
     } else if ("transform".equals(type)) {
       node = new TransformAnimatedNode(config, this);
+    } else if ("tracking".equals(type)) {
+      node = new TrackingAnimatedNode(config, this);
     } else {
       throw new JSApplicationIllegalArgumentException("Unsupported node type: " + type);
     }
@@ -189,6 +190,15 @@ import javax.annotation.Nullable;
       throw new JSApplicationIllegalArgumentException("Animated node should be of type " +
         ValueAnimatedNode.class.getName());
     }
+
+    final AnimationDriver existingDriver = mActiveAnimations.get(animationId);
+    if (existingDriver != null) {
+      // animation with the given ID is already running, we need to update its configuration instead
+      // of spawning a new one
+      existingDriver.resetConfig(animationConfig);
+      return;
+    }
+
     String type = animationConfig.getString("type");
     final AnimationDriver animation;
     if ("frames".equals(type)) {
@@ -214,10 +224,12 @@ import javax.annotation.Nullable;
     for (int i = 0; i < mActiveAnimations.size(); i++) {
       AnimationDriver animation = mActiveAnimations.valueAt(i);
       if (animatedNode.equals(animation.mAnimatedValue)) {
-        // Invoke animation end callback with {finished: false}
-        WritableMap endCallbackResponse = Arguments.createMap();
-        endCallbackResponse.putBoolean("finished", false);
-        animation.mEndCallback.invoke(endCallbackResponse);
+        if (animation.mEndCallback != null) {
+          // Invoke animation end callback with {finished: false}
+          WritableMap endCallbackResponse = Arguments.createMap();
+          endCallbackResponse.putBoolean("finished", false);
+          animation.mEndCallback.invoke(endCallbackResponse);
+        }
         mActiveAnimations.removeAt(i);
         i--;
       }
@@ -232,10 +244,12 @@ import javax.annotation.Nullable;
     for (int i = 0; i < mActiveAnimations.size(); i++) {
       AnimationDriver animation = mActiveAnimations.valueAt(i);
       if (animation.mId == animationId) {
-        // Invoke animation end callback with {finished: false}
-        WritableMap endCallbackResponse = Arguments.createMap();
-        endCallbackResponse.putBoolean("finished", false);
-        animation.mEndCallback.invoke(endCallbackResponse);
+        if (animation.mEndCallback != null) {
+          // Invoke animation end callback with {finished: false}
+          WritableMap endCallbackResponse = Arguments.createMap();
+          endCallbackResponse.putBoolean("finished", false);
+          animation.mEndCallback.invoke(endCallbackResponse);
+        }
         mActiveAnimations.removeAt(i);
         return;
       }
@@ -445,9 +459,11 @@ import javax.annotation.Nullable;
       for (int i = mActiveAnimations.size() - 1; i >= 0; i--) {
         AnimationDriver animation = mActiveAnimations.valueAt(i);
         if (animation.mHasFinished) {
-          WritableMap endCallbackResponse = Arguments.createMap();
-          endCallbackResponse.putBoolean("finished", true);
-          animation.mEndCallback.invoke(endCallbackResponse);
+          if (animation.mEndCallback != null) {
+            WritableMap endCallbackResponse = Arguments.createMap();
+            endCallbackResponse.putBoolean("finished", true);
+            animation.mEndCallback.invoke(endCallbackResponse);
+          }
           mActiveAnimations.removeAt(i);
         }
       }

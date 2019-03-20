@@ -1,12 +1,9 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule AppRegistry
  * @flow
  * @format
  */
@@ -19,14 +16,20 @@ const ReactNative = require('ReactNative');
 const SceneTracker = require('SceneTracker');
 
 const infoLog = require('infoLog');
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 const renderApplication = require('renderApplication');
+const createPerformanceLogger = require('createPerformanceLogger');
+import type {IPerformanceLogger} from 'createPerformanceLogger';
 
 type Task = (taskData: any) => Promise<void>;
 type TaskProvider = () => Task;
+type TaskCanceller = () => void;
+type TaskCancelProvider = () => TaskCanceller;
+
 export type ComponentProvider = () => React$ComponentType<any>;
 export type ComponentProviderInstrumentationHook = (
   component: ComponentProvider,
+  scopedPerformanceLogger: IPerformanceLogger,
 ) => React$ComponentType<any>;
 export type AppConfig = {
   appKey: string,
@@ -50,7 +53,8 @@ export type WrapperComponentProvider = any => React$ComponentType<*>;
 const runnables: Runnables = {};
 let runCount = 1;
 const sections: Runnables = {};
-const tasks: Map<string, TaskProvider> = new Map();
+const taskProviders: Map<string, TaskProvider> = new Map();
+const taskCancelProviders: Map<string, TaskCancelProvider> = new Map();
 let componentProviderInstrumentationHook: ComponentProviderInstrumentationHook = (
   component: ComponentProvider,
 ) => component();
@@ -97,15 +101,23 @@ const AppRegistry = {
     componentProvider: ComponentProvider,
     section?: boolean,
   ): string {
+    let scopedPerformanceLogger = createPerformanceLogger();
     runnables[appKey] = {
       componentProvider,
-      run: appParameters =>
+      run: appParameters => {
         renderApplication(
-          componentProviderInstrumentationHook(componentProvider),
+          componentProviderInstrumentationHook(
+            componentProvider,
+            scopedPerformanceLogger,
+          ),
           appParameters.initialProps,
           appParameters.rootTag,
           wrapperComponentProvider && wrapperComponentProvider(appParameters),
-        ),
+          appParameters.fabric,
+          false,
+          scopedPerformanceLogger,
+        );
+      },
     };
     if (section) {
       sections[appKey] = runnables[appKey];
@@ -210,13 +222,29 @@ const AppRegistry = {
    *
    * See http://facebook.github.io/react-native/docs/appregistry.html#registerheadlesstask
    */
-  registerHeadlessTask(taskKey: string, task: TaskProvider): void {
-    if (tasks.has(taskKey)) {
+  registerHeadlessTask(taskKey: string, taskProvider: TaskProvider): void {
+    this.registerCancellableHeadlessTask(taskKey, taskProvider, () => () => {
+      /* Cancel is no-op */
+    });
+  },
+
+  /**
+   * Register a cancellable headless task. A headless task is a bit of code that runs without a UI.
+   *
+   * See http://facebook.github.io/react-native/docs/appregistry.html#registercancellableheadlesstask
+   */
+  registerCancellableHeadlessTask(
+    taskKey: string,
+    taskProvider: TaskProvider,
+    taskCancelProvider: TaskCancelProvider,
+  ): void {
+    if (taskProviders.has(taskKey)) {
       console.warn(
-        `registerHeadlessTask called multiple times for same key '${taskKey}'`,
+        `registerHeadlessTask or registerCancellableHeadlessTask called multiple times for same key '${taskKey}'`,
       );
     }
-    tasks.set(taskKey, task);
+    taskProviders.set(taskKey, taskProvider);
+    taskCancelProviders.set(taskKey, taskCancelProvider);
   },
 
   /**
@@ -225,7 +253,7 @@ const AppRegistry = {
    * See http://facebook.github.io/react-native/docs/appregistry.html#startheadlesstask
    */
   startHeadlessTask(taskId: number, taskKey: string, data: any): void {
-    const taskProvider = tasks.get(taskKey);
+    const taskProvider = taskProviders.get(taskKey);
     if (!taskProvider) {
       throw new Error(`No task registered for key ${taskKey}`);
     }
@@ -237,6 +265,19 @@ const AppRegistry = {
         console.error(reason);
         NativeModules.HeadlessJsTaskSupport.notifyTaskFinished(taskId);
       });
+  },
+
+  /**
+   * Only called from native code. Cancels a headless task.
+   *
+   * See http://facebook.github.io/react-native/docs/appregistry.html#cancelheadlesstask
+   */
+  cancelHeadlessTask(taskId: number, taskKey: string): void {
+    const taskCancelProvider = taskCancelProviders.get(taskKey);
+    if (!taskCancelProvider) {
+      throw new Error(`No task canceller registered for key '${taskKey}'`);
+    }
+    taskCancelProvider()();
   },
 };
 

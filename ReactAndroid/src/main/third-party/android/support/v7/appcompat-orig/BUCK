@@ -1,8 +1,9 @@
-load("//ReactNative:DEFS", "rn_android_library", "rn_android_resource", "rn_prebuilt_jar")
+load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+load("//tools/build_defs/oss:rn_defs.bzl", "rn_android_library", "rn_android_resource", "rn_genrule", "rn_prebuilt_jar")
 
 # This is a bit messy and hopefully a temporary thing
 # The problem is that Gradle extracts appcompat resources into app namespace, com.facebook.react
-# While BUCK behaves properly and extracts them into android.support.v7.appcompat package.
+# While BUCK behaves properly and extracts them into androidx.appcompat package.
 # We want to support both Gradle and BUCK builds so we hack a bit how BUCK extracts resources.
 # Besides that we still need JAVA classes from appcompat-v7.aar, that is why rn_android_library
 # extracts classes.jar but the trick is that we can't take full appcompat.aar because resources
@@ -11,21 +12,21 @@ load("//ReactNative:DEFS", "rn_android_library", "rn_android_resource", "rn_preb
 
 rn_android_library(
     name = "appcompat",
-    exported_deps = [
-        ":classes-for-react-native",
-    ],
     visibility = [
         "PUBLIC",
     ],
     deps = [
         ":res-for-appcompat",
     ],
+    exported_deps = [
+        ":classes-for-react-native",
+    ],
 )
 
 # still used by appcompat library internally, so we need both during the build
 rn_android_resource(
     name = "res-for-appcompat",
-    package = "android.support.v7.appcompat",
+    package = "androidx.appcompat",
     res = ":res-unpacker-cmd",
     visibility = ["//ReactAndroid/..."],
 )
@@ -36,26 +37,26 @@ rn_prebuilt_jar(
     visibility = ["//ReactAndroid/..."],
 )
 
-genrule(
+rn_genrule(
     name = "classes-unpacker-cmd",
     out = "classes.jar",
     cmd = "$(exe :aar-unpacker) $(location :appcompat-binary-aar) classes.jar $OUT",
 )
 
-genrule(
+rn_genrule(
     name = "res-unpacker-cmd",
     out = "res",
     cmd = "$(exe :aar-unpacker) $(location :appcompat-binary-aar) res/ $OUT",
     visibility = ["//ReactAndroid/..."],
 )
 
-python_binary(
+fb_native.python_binary(
     name = "aar-unpacker",
     main = "aar-unpacker.py",
 )
 
-remote_file(
+fb_native.remote_file(
     name = "appcompat-binary-aar",
-    sha1 = "7d659f671541394a8bc2b9f909950aa2a5ec87ff",
-    url = "mvn:com.android.support:appcompat-v7:aar:23.0.1",
+    sha1 = "002533a36c928bb27a3cc6843a25f83754b3c3ae",
+    url = "mvn:androidx.appcompat:appcompat:aar:1.0.2",
 )

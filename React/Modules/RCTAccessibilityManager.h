@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <Foundation/Foundation.h>
@@ -21,6 +19,11 @@ extern NSString *const RCTAccessibilityManagerDidUpdateMultiplierNotification; /
 /// map from UIKit categories to multipliers
 @property (nonatomic, copy) NSDictionary<NSString *, NSNumber *> *multipliers;
 
+@property (nonatomic, assign) BOOL isBoldTextEnabled;
+@property (nonatomic, assign) BOOL isGrayscaleEnabled;
+@property (nonatomic, assign) BOOL isInvertColorsEnabled;
+@property (nonatomic, assign) BOOL isReduceMotionEnabled;
+@property (nonatomic, assign) BOOL isReduceTransparencyEnabled;
 @property (nonatomic, assign) BOOL isVoiceOverEnabled;
 
 @end

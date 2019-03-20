@@ -1,14 +1,13 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.modules.core;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import android.net.Uri;
@@ -25,11 +24,11 @@ import com.facebook.react.module.annotations.ReactModule;
 /**
  * Native module that handles device hardware events like hardware back presses.
  */
-@ReactModule(name = "DeviceEventManager")
+@ReactModule(name = DeviceEventManagerModule.NAME)
 public class DeviceEventManagerModule extends ReactContextBaseJavaModule {
-
+  public static final String NAME = "DeviceEventManager";
   public interface RCTDeviceEventEmitter extends JavaScriptModule {
-    void emit(String eventName, @Nullable Object data);
+    void emit(@Nonnull String eventName, @Nullable Object data);
   }
 
   private final Runnable mInvokeDefaultBackPressRunnable;

@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <React/RCTBridgeModule.h>
@@ -32,5 +30,12 @@
 
 // For clearing data when the bridge may not exist, e.g. when logging out.
 + (void)clearAllData;
+
+// Grab data from the cache. ResponseBlock result array will have an error at position 0, and an array of arrays at position 1.
+- (void)multiGet:(NSArray<NSString *> *)keys callback:(RCTResponseSenderBlock)callback;
+
+// Add multiple key value pairs to the cache.
+- (void)multiSet:(NSArray<NSArray<NSString *> *> *)kvPairs callback:(RCTResponseSenderBlock)callback;
+
 
 @end

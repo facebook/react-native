@@ -1,0 +1,41 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "cxx_library", "react_native_xplat_dep", "react_native_xplat_target")
+
+cxx_library(
+    name = "jsiexecutor",
+    srcs = [
+        "jsireact/JSIExecutor.cpp",
+        "jsireact/JSINativeModules.cpp",
+    ],
+    header_namespace = "",
+    exported_headers = {
+        "jsireact/JSIExecutor.h": "jsireact/JSIExecutor.h",
+        "jsireact/JSINativeModules.h": "jsireact/JSINativeModules.h",
+    },
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+    ],
+    fbandroid_deps = [
+        "fbsource//xplat/folly:molly",
+        "fbsource//xplat/third-party/glog:glog",
+        "fbsource//xplat/third-party/linker_lib:atomic",
+    ],
+    fbobjc_force_static = True,
+    fbobjc_header_path_prefix = "",
+    platforms = (ANDROID, APPLE),
+    preprocessor_flags = [
+        "-DLOG_TAG=\"ReactNative\"",
+        "-DWITH_FBSYSTRACE=1",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    xcode_public_headers_symlinks = True,
+    deps = [
+        "fbsource//xplat/fbsystrace:fbsystrace",
+        react_native_xplat_dep("jsi:jsi"),
+        react_native_xplat_dep("jsi:JSIDynamic"),
+        react_native_xplat_target("cxxreact:bridge"),
+        react_native_xplat_target("cxxreact:jsbigstring"),
+    ],
+)

@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTUtils.h"
@@ -460,8 +458,10 @@ BOOL RCTRunningInTestEnvironment(void)
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     NSDictionary *environment = [[NSProcessInfo processInfo] environment];
-    isTestEnvironment = objc_lookUpClass("SenTestCase") || objc_lookUpClass("XCTest") ||
-      [environment[@"IS_TESTING"] boolValue];
+    isTestEnvironment = objc_lookUpClass("SenTestCase") ||
+    objc_lookUpClass("XCTest") ||
+    objc_lookUpClass("SnapshotTestAppDelegate") ||
+    [environment[@"IS_TESTING"] boolValue];
   });
   return isTestEnvironment;
 }
@@ -700,21 +700,18 @@ UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
   }
 
   UIImage *image = nil;
-  if (bundle) {
-    image = [UIImage imageNamed:imageName inBundle:bundle compatibleWithTraitCollection:nil];
-  } else {
-    image = [UIImage imageNamed:imageName];
+  if (imageName) {
+    if (bundle) {
+      image = [UIImage imageNamed:imageName inBundle:bundle compatibleWithTraitCollection:nil];
+    } else {
+      image = [UIImage imageNamed:imageName];
+    }
   }
 
   if (!image) {
     // Attempt to load from the file system
-    NSData *fileData;
-    if (imageURL.pathExtension.length == 0) {
-      fileData = [NSData dataWithContentsOfURL:[imageURL URLByAppendingPathExtension:@"png"]];
-    } else {
-      fileData = [NSData dataWithContentsOfURL:imageURL];
-    }
-    image = [UIImage imageWithData:fileData];
+    NSString *filePath = [NSString stringWithUTF8String:[imageURL fileSystemRepresentation]];
+    image = [UIImage imageWithContentsOfFile:filePath];
   }
 
   if (!image && !bundle) {
@@ -808,9 +805,11 @@ static void RCTGetRGBAColorComponents(CGColorRef color, CGFloat rgba[4])
     case kCGColorSpaceModelLab:
     case kCGColorSpaceModelPattern:
     case kCGColorSpaceModelUnknown:
+    // TODO: kCGColorSpaceModelXYZ should be added sometime after Xcode 10 release.
+    default:
     {
 
-#ifdef RCT_DEBUG
+#if RCT_DEBUG
       //unsupported format
       RCTLogError(@"Unsupported color model: %i", model);
 #endif
@@ -899,4 +898,21 @@ NSURL *__nullable RCTURLByReplacingQueryParam(NSURL *__nullable URL, NSString *p
   }
   components.queryItems = queryItems;
   return components.URL;
+}
+
+RCT_EXTERN NSString *RCTDropReactPrefixes(NSString *s)
+{
+  if ([s hasPrefix:@"RK"]) {
+    return [s substringFromIndex:2];
+  } else if ([s hasPrefix:@"RCT"]) {
+    return [s substringFromIndex:3];
+  }
+
+  return s;
+}
+
+RCT_EXTERN BOOL RCTUIManagerTypeForTagIsFabric(NSNumber *reactTag)
+{
+  // See https://github.com/facebook/react/pull/12587
+  return [reactTag integerValue] % 2 == 0;
 }

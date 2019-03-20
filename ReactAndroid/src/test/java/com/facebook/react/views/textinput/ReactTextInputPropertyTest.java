@@ -1,18 +1,18 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.textinput;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.os.Build;
 import android.text.InputType;
 import android.text.InputFilter;
+import android.text.Layout;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.inputmethod.EditorInfo;
@@ -44,7 +44,7 @@ import static org.fest.assertions.api.Assertions.assertThat;
  * Verify {@link EditText} view property being applied properly by {@link ReactTextInputManager}
  */
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class ReactTextInputPropertyTest {
 
   @Rule
@@ -233,6 +233,8 @@ public class ReactTextInputPropertyTest {
   @Test
   public void testKeyboardType() {
     ReactEditText view = mManager.createViewInstance(mThemedContext);
+    int numberPadTypeFlags = InputType.TYPE_CLASS_NUMBER;
+    int decimalPadTypeFlags = InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL;
     int numericTypeFlags =
         InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL |
         InputType.TYPE_NUMBER_FLAG_SIGNED;
@@ -250,6 +252,12 @@ public class ReactTextInputPropertyTest {
 
     mManager.updateProperties(view, buildStyles("keyboardType", "text"));
     assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(InputType.TYPE_CLASS_TEXT);
+
+    mManager.updateProperties(view, buildStyles("keyboardType", "number-pad"));
+    assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(numberPadTypeFlags);
+
+    mManager.updateProperties(view, buildStyles("keyboardType", "decimal-pad"));
+    assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(decimalPadTypeFlags);
 
     mManager.updateProperties(view, buildStyles("keyboardType", "numeric"));
     assertThat(view.getInputType() & generalKeyboardTypeFlags).isEqualTo(numericTypeFlags);
@@ -338,6 +346,10 @@ public class ReactTextInputPropertyTest {
     assertThat(view.getGravity() & Gravity.HORIZONTAL_GRAVITY_MASK).isEqualTo(Gravity.CENTER_HORIZONTAL);
     mManager.updateProperties(view, buildStyles("textAlign", null));
     assertThat(view.getGravity() & Gravity.HORIZONTAL_GRAVITY_MASK).isEqualTo(defaultHorizontalGravity);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      mManager.updateProperties(view, buildStyles("textAlign", "justify"));
+      assertThat(view.getJustificationMode()).isEqualTo(Layout.JUSTIFICATION_MODE_INTER_WORD);
+    }
 
     // TextAlignVertical
     mManager.updateProperties(view, buildStyles("textAlignVertical", "top"));

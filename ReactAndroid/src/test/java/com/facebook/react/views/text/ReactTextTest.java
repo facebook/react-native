@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.text;
@@ -14,11 +12,10 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 
-import android.annotation.TargetApi;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
+import android.text.Layout;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
@@ -33,12 +30,12 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactTestHelper;
 import com.facebook.react.modules.core.ChoreographerCompat;
 import com.facebook.react.modules.core.ReactChoreographer;
-import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.views.text.ReactRawTextShadowNode;
 import com.facebook.react.views.view.ReactViewBackgroundDrawable;
+import com.facebook.react.views.text.CustomTextTransformSpan;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -60,7 +57,7 @@ import org.robolectric.RuntimeEnvironment;
  */
 @PrepareForTest({Arguments.class, ReactChoreographer.class})
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class ReactTextTest {
 
   @Rule
@@ -344,9 +341,70 @@ public class ReactTextTest {
     assertThat(((ReactViewBackgroundDrawable) backgroundDrawable).getColor()).isEqualTo(Color.BLUE);
   }
 
-  // JELLY_BEAN is needed for TextView#getMaxLines(), which is OK, because in the actual code we
-  // only use TextView#setMaxLines() which exists since API Level 1.
-  @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+  @Test
+  public void testTextTransformNoneApplied() {
+    UIManagerModule uiManager = getUIManagerModule();
+
+    String testTextEntered = ".aa\tbb\t\tcc  dd EE \r\nZZ I like to eat apples. \n中文éé 我喜欢吃苹果。awdawd   ";
+    String testTextTransformed = testTextEntered;
+
+    ReactRootView rootView = createText(
+        uiManager,
+        JavaOnlyMap.of("textTransform", "none"),
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, testTextEntered));
+
+    TextView textView = (TextView) rootView.getChildAt(0);
+    assertThat(textView.getText().toString()).isEqualTo(testTextTransformed);
+  }
+
+  @Test
+  public void testTextTransformUppercaseApplied() {
+    UIManagerModule uiManager = getUIManagerModule();
+
+    String testTextEntered = ".aa\tbb\t\tcc  dd EE \r\nZZ I like to eat apples. \n中文éé 我喜欢吃苹果。awdawd   ";
+    String testTextTransformed = ".AA\tBB\t\tCC  DD EE \r\nZZ I LIKE TO EAT APPLES. \n中文ÉÉ 我喜欢吃苹果。AWDAWD   ";
+
+    ReactRootView rootView = createText(
+        uiManager,
+        JavaOnlyMap.of("textTransform", "uppercase"),
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, testTextEntered));
+
+    TextView textView = (TextView) rootView.getChildAt(0);
+    assertThat(textView.getText().toString()).isEqualTo(testTextTransformed);
+  }
+
+  @Test
+  public void testTextTransformLowercaseApplied() {
+    UIManagerModule uiManager = getUIManagerModule();
+
+    String testTextEntered = ".aa\tbb\t\tcc  dd EE \r\nZZ I like to eat apples. \n中文éé 我喜欢吃苹果。awdawd   ";
+    String testTextTransformed = ".aa\tbb\t\tcc  dd ee \r\nzz i like to eat apples. \n中文éé 我喜欢吃苹果。awdawd   ";
+
+    ReactRootView rootView = createText(
+        uiManager,
+        JavaOnlyMap.of("textTransform", "lowercase"),
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, testTextEntered));
+
+    TextView textView = (TextView) rootView.getChildAt(0);
+    assertThat(textView.getText().toString()).isEqualTo(testTextTransformed);
+  }
+
+  @Test
+  public void testTextTransformCapitalizeApplied() {
+    UIManagerModule uiManager = getUIManagerModule();
+
+    String testTextEntered = ".aa\tbb\t\tcc  dd EE \r\nZZ I like to eat apples. \n中文éé 我喜欢吃苹果。awdawd   ";
+    String testTextTransformed = ".Aa\tBb\t\tCc  Dd Ee \r\nZz I Like To Eat Apples. \n中文Éé 我喜欢吃苹果。Awdawd   ";
+
+    ReactRootView rootView = createText(
+        uiManager,
+        JavaOnlyMap.of("textTransform", "capitalize"),
+        JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, testTextEntered));
+
+    TextView textView = (TextView) rootView.getChildAt(0);
+    assertThat(textView.getText().toString()).isEqualTo(testTextTransformed);
+  }
+
   @Test
   public void testMaxLinesApplied() {
     UIManagerModule uiManager = getUIManagerModule();
@@ -360,6 +418,21 @@ public class ReactTextTest {
     assertThat(textView.getText().toString()).isEqualTo("test text");
     assertThat(textView.getMaxLines()).isEqualTo(2);
     assertThat(textView.getEllipsize()).isEqualTo(TextUtils.TruncateAt.END);
+  }
+
+  @TargetApi(Build.VERSION_CODES.O)
+  @Test
+  public void testTextAlignJustifyApplied() {
+    UIManagerModule uiManager = getUIManagerModule();
+
+    ReactRootView rootView = createText(
+            uiManager,
+            JavaOnlyMap.of("textAlign", "justify"),
+            JavaOnlyMap.of(ReactRawTextShadowNode.PROP_TEXT, "test text"));
+
+    TextView textView = (TextView) rootView.getChildAt(0);
+    assertThat(textView.getText().toString()).isEqualTo("test text");
+    assertThat(textView.getJustificationMode()).isEqualTo(Layout.JUSTIFICATION_MODE_INTER_WORD);
   }
 
   /**
@@ -430,7 +503,7 @@ public class ReactTextTest {
             new ReactRawTextManager(),
         });
     UIManagerModule uiManagerModule =
-        new UIManagerModule(reactContext, viewManagers, new UIImplementationProvider(), 0);
+        new UIManagerModule(reactContext, viewManagers, 0);
     uiManagerModule.onHostResume();
     return uiManagerModule;
   }

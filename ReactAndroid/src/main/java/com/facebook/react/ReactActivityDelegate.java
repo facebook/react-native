@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 package com.facebook.react;
 
@@ -8,13 +11,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.view.KeyEvent;
 
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Callback;
-import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
-import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionListener;
 
 import javax.annotation.Nullable;
@@ -27,11 +27,7 @@ import javax.annotation.Nullable;
 public class ReactActivityDelegate {
 
   private final @Nullable Activity mActivity;
-  private final @Nullable FragmentActivity mFragmentActivity;
   private final @Nullable String mMainComponentName;
-
-  @Nullable
-  private final String mMainComponentName;
 
   private ReactDelegate mReactDelegate;
 
@@ -41,18 +37,15 @@ public class ReactActivityDelegate {
   @Nullable
   private Callback mPermissionsCallback;
 
+  @Deprecated
   public ReactActivityDelegate(Activity activity, @Nullable String mainComponentName) {
     mActivity = activity;
     mMainComponentName = mainComponentName;
-    mFragmentActivity = null;
   }
 
-  public ReactActivityDelegate(
-    FragmentActivity fragmentActivity,
-    @Nullable String mainComponentName) {
-    mFragmentActivity = fragmentActivity;
+  public ReactActivityDelegate(ReactActivity activity, @Nullable String mainComponentName) {
+    mActivity = activity;
     mMainComponentName = mainComponentName;
-    mActivity = null;
   }
 
   protected
@@ -76,11 +69,14 @@ public class ReactActivityDelegate {
     return mReactDelegate.getReactInstanceManager();
   }
 
-  protected void onCreate(Bundle savedInstanceState) {
-    mReactDelegate = new ReactDelegate(getPlainActivity(), mMainComponentName, getLaunchOptions());
-    boolean needToEnableRedboxPermission = mReactDelegate.askForRedboxPermission();
+  public String getMainComponentName() {
+    return mMainComponentName;
+  }
 
-    if (mMainComponentName != null && !needToEnableRedboxPermission) {
+  protected void onCreate(Bundle savedInstanceState) {
+    String mainComponentName = getMainComponentName();
+    mReactDelegate = new ReactDelegate(getPlainActivity(), mainComponentName, getLaunchOptions());
+    if (mMainComponentName != null) {
       mReactDelegate.loadApp();
       getPlainActivity().setContentView(mReactDelegate.getReactRootView());
     }
@@ -112,8 +108,28 @@ public class ReactActivityDelegate {
     mReactDelegate.onActivityResult(requestCode, resultCode, data, true);
   }
 
+  public boolean onKeyDown(int keyCode, KeyEvent event) {
+    if (getReactNativeHost().hasInstance()
+      && getReactNativeHost().getUseDeveloperSupport()
+      && keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
+      event.startTracking();
+      return true;
+    }
+    return false;
+  }
+
   public boolean onKeyUp(int keyCode, KeyEvent event) {
     return mReactDelegate.shouldShowDevMenuOrReload(keyCode, event);
+  }
+
+  public boolean onKeyLongPress(int keyCode, KeyEvent event) {
+    if (getReactNativeHost().hasInstance()
+        && getReactNativeHost().getUseDeveloperSupport()
+        && keyCode == KeyEvent.KEYCODE_MEDIA_FAST_FORWARD) {
+      getReactNativeHost().getReactInstanceManager().showDevOptionsDialog();
+      return true;
+    }
+    return false;
   }
 
   public boolean onBackPressed() {
@@ -141,24 +157,18 @@ public class ReactActivityDelegate {
     final int requestCode,
     final String[] permissions,
     final int[] grantResults) {
-    mPermissionsCallback = new Callback() {
-      @Override
-      public void invoke(Object... args) {
-        if (mPermissionListener != null && mPermissionListener.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
-          mPermissionListener = null;
-        }
+    mPermissionsCallback = args -> {
+      if (mPermissionListener != null && mPermissionListener.onRequestPermissionsResult(requestCode, permissions, grantResults)) {
+        mPermissionListener = null;
       }
     };
   }
 
-  private Context getContext() {
-    if (mActivity != null) {
-      return mActivity;
-    }
-    return Assertions.assertNotNull(mFragmentActivity);
+  protected Context getContext() {
+    return Assertions.assertNotNull(mActivity);
   }
 
-  private Activity getPlainActivity() {
+  protected Activity getPlainActivity() {
     return ((Activity) getContext());
   }
 }

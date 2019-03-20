@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 #include "SampleCxxModule.h"
 #include <cxxreact/JsArgumentHelpers.h>
@@ -91,13 +94,13 @@ auto SampleCxxModule::getMethods() -> std::vector<Method> {
                             jsArgAsString(args, 1))});
       }),
     Method("repeat", [this](dynamic args, Callback cb) {
-        cb({sample_->repeat(jsArgAsInt(args, 0),
+        cb({sample_->repeat((int)jsArgAsInt(args, 0),
                             jsArgAsString(args, 1))});
       }),
     Method("save", this, &SampleCxxModule::save),
     Method("load", this, &SampleCxxModule::load),
     Method("call_later", [this](dynamic args, Callback cb) {
-        sample_->call_later(jsArgAsInt(args, 0), [cb] {
+        sample_->call_later((int)jsArgAsInt(args, 0), [cb] {
             cb({});
           });
       }),
@@ -111,6 +114,25 @@ auto SampleCxxModule::getMethods() -> std::vector<Method> {
         sample_->hello();
         return nullptr;
       }, SyncTag),
+    Method("addIfPositiveAsPromise", [](dynamic args, Callback cb, Callback cbError) {
+        auto a = jsArgAsDouble(args, 0);
+        auto b = jsArgAsDouble(args, 1);
+        if (a < 0 || b < 0) {
+          cbError({"Negative number!"});
+        } else {
+          cb({a + b});
+        }
+      }),
+    Method("addIfPositiveAsAsync", [](dynamic args, Callback cb, Callback cbError) {
+        auto a = jsArgAsDouble(args, 0);
+        auto b = jsArgAsDouble(args, 1);
+        if (a < 0 || b < 0) {
+          cbError({"Negative number!"});
+        } else {
+          cb({a + b});
+        }
+      }, AsyncTag),
+
   };
 }
 
@@ -123,7 +145,7 @@ void SampleCxxModule::save(folly::dynamic args) {
   sample_->save(std::move(m));
 }
 
-void SampleCxxModule::load(folly::dynamic args, Callback cb) {
+void SampleCxxModule::load(__unused folly::dynamic args, Callback cb) {
   dynamic d = dynamic::object;
   for (const auto& p : sample_->load()) {
     d.insert(p.first, p.second);

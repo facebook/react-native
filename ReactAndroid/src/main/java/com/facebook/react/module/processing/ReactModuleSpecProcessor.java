@@ -1,7 +1,34 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 package com.facebook.react.module.processing;
 
+import static javax.lang.model.element.Modifier.PUBLIC;
+import static javax.tools.Diagnostic.Kind.ERROR;
+
+import com.facebook.infer.annotation.SuppressFieldNotInitialized;
+import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.module.annotations.ReactModuleList;
+import com.facebook.react.module.model.ReactModuleInfo;
+import com.facebook.react.module.model.ReactModuleInfoProvider;
+import com.facebook.react.turbomodule.core.interfaces.TurboModule;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.CodeBlock;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
@@ -10,7 +37,6 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.Modifier;
@@ -18,32 +44,8 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.MirroredTypesException;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.stream.Stream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import com.facebook.infer.annotation.SuppressFieldNotInitialized;
-import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.module.annotations.ReactModuleList;
-import com.facebook.react.module.model.ReactModuleInfo;
-import com.facebook.react.module.model.ReactModuleInfoProvider;
-
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.CodeBlock;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
-
-import static javax.lang.model.element.Modifier.PUBLIC;
-import static javax.tools.Diagnostic.Kind.ERROR;
 
 /**
  * Generates a list of ReactModuleInfo for modules annotated with {@link ReactModule} in
@@ -59,7 +61,7 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
   private static final TypeName COLLECTIONS_TYPE = ParameterizedTypeName.get(Collections.class);
   private static final TypeName MAP_TYPE = ParameterizedTypeName.get(
     Map.class,
-    Class.class,
+    String.class,
     ReactModuleInfo.class);
   private static final TypeName INSTANTIATED_MAP_TYPE = ParameterizedTypeName.get(HashMap.class);
 
@@ -69,6 +71,7 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
   private Elements mElements;
   @SuppressFieldNotInitialized
   private Messager mMessager;
+  private Types mTypes;
 
   @Override
   public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -77,6 +80,7 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
     mFiler = processingEnv.getFiler();
     mElements = processingEnv.getElementUtils();
     mMessager = processingEnv.getMessager();
+    mTypes = processingEnv.getTypeUtils();
   }
 
   @Override
@@ -145,14 +149,14 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
 
   private CodeBlock getCodeBlockForReactModuleInfos(List<String> nativeModules)
     throws ReactModuleSpecException {
-    CodeBlock.Builder builder = CodeBlock.builder();
+    final CodeBlock.Builder builder = CodeBlock.builder();
     if (nativeModules == null || nativeModules.isEmpty()) {
       builder.addStatement("return $T.emptyMap()", COLLECTIONS_TYPE);
     } else {
       builder.addStatement("$T map = new $T()", MAP_TYPE, INSTANTIATED_MAP_TYPE);
 
       for (String nativeModule : nativeModules) {
-        String keyString = nativeModule + ".class";
+        String keyString = nativeModule;
 
         TypeElement typeElement = mElements.getTypeElement(nativeModule);
         if (typeElement == null) {
@@ -160,11 +164,18 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
             keyString + " not found by ReactModuleSpecProcessor. " +
             "Did you misspell the module?");
         }
+
         ReactModule reactModule = typeElement.getAnnotation(ReactModule.class);
         if (reactModule == null) {
           throw new ReactModuleSpecException(
             keyString + " not found by ReactModuleSpecProcessor. " +
             "Did you forget to add the @ReactModule annotation to the native module?");
+        }
+
+        boolean isTurboModule = isTurboModuleTypeElement(typeElement);
+        if (!isTurboModule) {
+          TypeMirror nativeModuleSpecTypeMirror = typeElement.getSuperclass();
+            isTurboModule = isTurboModuleTypeElement(mElements.getTypeElement(nativeModuleSpecTypeMirror.toString()));
         }
 
         List<? extends Element> elements = typeElement.getEnclosedElements();
@@ -182,17 +193,31 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
         String valueString = new StringBuilder()
           .append("new ReactModuleInfo(")
           .append("\"").append(reactModule.name()).append("\"").append(", ")
-          .append(reactModule.canOverrideExistingModule()).append(", ")
+            .append("\"").append(keyString).append("\"").append(", ")
+           .append(reactModule.canOverrideExistingModule()).append(", ")
           .append(reactModule.needsEagerInit()).append(", ")
-          .append(hasConstants)
+          .append(hasConstants).append(", ")
+          .append(reactModule.isCxxModule()).append(", ")
+          .append(isTurboModule)
           .append(")")
           .toString();
 
-        builder.addStatement("map.put(" + keyString + ", " + valueString + ")");
+        builder.addStatement("map.put(\"" + reactModule.name() + "\", " + valueString + ")");
       }
       builder.addStatement("return map");
     }
     return builder.build();
+  }
+
+  /**
+   * A Module is a Turbo Module if it either implements TurboModule or its super class,
+   * typically NativeModuleSpec implements TurboMobile
+   */
+  private boolean isTurboModuleTypeElement(TypeElement typeElement) {
+    if (typeElement == null) {
+      return false;
+    }
+    return typeElement.getInterfaces().stream().anyMatch(el -> el.toString().equals(TurboModule.class.getName()));
   }
 
   private static class ReactModuleSpecException extends Exception {

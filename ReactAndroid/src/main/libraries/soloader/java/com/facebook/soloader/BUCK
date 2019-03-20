@@ -1,11 +1,13 @@
-android_prebuilt_aar(
+load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+
+fb_native.android_prebuilt_aar(
     name = "soloader",
     aar = ":soloader-binary-aar",
     visibility = ["PUBLIC"],
 )
 
-remote_file(
+fb_native.remote_file(
     name = "soloader-binary-aar",
-    sha1 = "918573465c94c6bc9bad48ef259f1e0cd6543c1b",
-    url = "mvn:com.facebook.soloader:soloader:aar:0.1.0",
+    sha1 = "4de8f64830aff60beb52fb27dffb2fcbe54c39df",
+    url = "mvn:com.facebook.soloader:soloader:aar:0.6.0",
 )

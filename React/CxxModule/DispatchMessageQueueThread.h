@@ -1,11 +1,11 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
+#include <glog/logging.h>
 
 #include <React/RCTLog.h>
 #include <cxxreact/MessageQueueThread.h>
@@ -30,7 +30,7 @@ public:
       dispatch_async(queue, block);
     }
   }
-  void runOnQueueSync(std::function<void()>&& func) override {
+  void runOnQueueSync(std::function<void()>&& __unused func) override {
     LOG(FATAL) << "Unsupported operation";
   }
   void quitSynchronous() override {

@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <UIKit/UIKit.h>
@@ -13,17 +11,17 @@
 
 @interface RCTLinkingManager : RCTEventEmitter
 
-+ (BOOL)application:(UIApplication *)app
-            openURL:(NSURL *)URL
-            options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options;
++ (BOOL)application:(nonnull UIApplication *)app
+            openURL:(nonnull NSURL *)URL
+            options:(nonnull NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options;
 
-+ (BOOL)application:(UIApplication *)application
-            openURL:(NSURL *)URL
-  sourceApplication:(NSString *)sourceApplication
-         annotation:(id)annotation;
++ (BOOL)application:(nonnull UIApplication *)application
+              openURL:(nonnull NSURL *)URL
+    sourceApplication:(nullable NSString *)sourceApplication
+           annotation:(nonnull id)annotation;
 
-+ (BOOL)application:(UIApplication *)application
-continueUserActivity:(NSUserActivity *)userActivity
-  restorationHandler:(void (^)(NSArray *))restorationHandler;
++ (BOOL)application:(nonnull UIApplication *)application
+    continueUserActivity:(nonnull NSUserActivity *)userActivity
+      restorationHandler:(nonnull void (^)(NSArray *__nullable))restorationHandler;
 
 @end

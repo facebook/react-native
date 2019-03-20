@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <UIKit/UIKit.h>
@@ -18,6 +16,9 @@ typedef void (^RCTImageLoaderPartialLoadBlock)(UIImage *image);
 typedef void (^RCTImageLoaderCompletionBlock)(NSError *error, UIImage *image);
 typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 
+@protocol RCTImageURLLoader;
+@protocol RCTImageDataDecoder;
+
 /**
  * Provides an interface to use for providing a image caching strategy.
  */
@@ -26,15 +27,14 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 - (UIImage *)imageForUrl:(NSString *)url
                     size:(CGSize)size
                    scale:(CGFloat)scale
-              resizeMode:(RCTResizeMode)resizeMode
-            responseDate:(NSString *)responseDate;
+              resizeMode:(RCTResizeMode)resizeMode;
 
 - (void)addImageToCache:(UIImage *)image
                     URL:(NSString *)url
                    size:(CGSize)size
                   scale:(CGFloat)scale
              resizeMode:(RCTResizeMode)resizeMode
-           responseDate:(NSString *)responseDate;
+               response:(NSURLResponse *)response;
 
 @end
 
@@ -53,6 +53,11 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 @interface UIImage (React)
 
 @property (nonatomic, copy) CAKeyframeAnimation *reactKeyframeAnimation;
+
+/**
+ * Memory bytes of the image with the default calculation of static image or GIF. Custom calculations of decoded bytes can be assigned manually.
+ */
+@property (nonatomic, assign) NSInteger reactDecodedImageBytes;
 
 @end
 
@@ -85,6 +90,9 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 
 - (instancetype)init;
 - (instancetype)initWithRedirectDelegate:(id<RCTImageRedirectProtocol>)redirectDelegate NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithRedirectDelegate:(id<RCTImageRedirectProtocol>)redirectDelegate
+                              loadersProvider:(NSArray<id<RCTImageURLLoader>> * (^)(void))getLoaders
+                             decodersProvider:(NSArray<id<RCTImageDataDecoder>> * (^)(void))getDecoders;
 
 /**
  * Loads the specified image at the highest available resolution.
@@ -131,10 +139,18 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
  */
 - (RCTImageLoaderCancellationBlock)getImageSizeForURLRequest:(NSURLRequest *)imageURLRequest
                                                        block:(void(^)(NSError *error, CGSize size))completionBlock;
+/**
+ * Determines whether given image URLs are cached locally. The `requests` array is expected
+ * to contain objects convertible to NSURLRequest. The return value maps URLs to strings:
+ * "disk" for images known to be cached in non-volatile storage, "memory" for images known
+ * to be cached in memory. Dictionary items corresponding to images that are not known to be
+ * cached are simply missing.
+ */
+- (NSDictionary *)getImageCacheStatus:(NSArray *)requests;
 
 /**
  * Allows developers to set their own caching implementation for
- * decoded images as long as it conforms to the RCTImageCacheDelegate
+ * decoded images as long as it conforms to the RCTImageCache
  * protocol. This method should be called in bridgeDidInitializeModule.
  */
 - (void)setImageCache:(id<RCTImageCache>)cache;

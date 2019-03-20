@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 #import "RCTNativeAnimatedModule.h"
 
@@ -20,6 +18,8 @@ typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
   NSMutableArray<AnimatedOperation> *_operations;
   // Operations called before views have been updated.
   NSMutableArray<AnimatedOperation> *_preOperations;
+  NSMutableDictionary<NSNumber *, NSNumber *> *_animIdIsManagedByFabric;
+  NSMutableDictionary<NSNumber *, NSNumber *> *_animatedNodeIsManagedByFabric;
 }
 
 RCT_EXPORT_MODULE();
@@ -29,6 +29,7 @@ RCT_EXPORT_MODULE();
   [_nodesManager stopAnimationLoop];
   [self.bridge.eventDispatcher removeDispatchObserver:self];
   [self.bridge.uiManager.observerCoordinator removeObserver:self];
+  [self.bridge.surfacePresenter removeObserver:self];
 }
 
 - (dispatch_queue_t)methodQueue
@@ -43,12 +44,14 @@ RCT_EXPORT_MODULE();
 {
   [super setBridge:bridge];
 
-  _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithUIManager:self.bridge.uiManager];
+  _nodesManager = [[RCTNativeAnimatedNodesManager alloc] initWithBridge:self.bridge];
   _operations = [NSMutableArray new];
   _preOperations = [NSMutableArray new];
+  _animIdIsManagedByFabric = [NSMutableDictionary new];
 
   [bridge.eventDispatcher addDispatchObserver:self];
   [bridge.uiManager.observerCoordinator addObserver:self];
+  [bridge.surfacePresenter addObserver:self];
 }
 
 #pragma mark -- API
@@ -85,6 +88,10 @@ RCT_EXPORT_METHOD(startAnimatingNode:(nonnull NSNumber *)animationId
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
     [nodesManager startAnimatingNode:animationId nodeTag:nodeTag config:config endCallback:callBack];
   }];
+  if ([_animatedNodeIsManagedByFabric[nodeTag] boolValue]) {
+    _animIdIsManagedByFabric[animationId] = @YES;
+    [self flushOperationQueues];
+  }
 }
 
 RCT_EXPORT_METHOD(stopAnimation:(nonnull NSNumber *)animationId)
@@ -92,6 +99,9 @@ RCT_EXPORT_METHOD(stopAnimation:(nonnull NSNumber *)animationId)
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
     [nodesManager stopAnimation:animationId];
   }];
+  if ([_animIdIsManagedByFabric[animationId] boolValue]) {
+    [self flushOperationQueues];
+  }
 }
 
 RCT_EXPORT_METHOD(setAnimatedNodeValue:(nonnull NSNumber *)nodeTag
@@ -128,6 +138,9 @@ RCT_EXPORT_METHOD(connectAnimatedNodeToView:(nonnull NSNumber *)nodeTag
                   viewTag:(nonnull NSNumber *)viewTag)
 {
   NSString *viewName = [self.bridge.uiManager viewNameForReactTag:viewTag];
+  if (RCTUIManagerTypeForTagIsFabric(nodeTag)) {
+    _animatedNodeIsManagedByFabric[nodeTag] = @YES;
+  }
   [self addOperationBlock:^(RCTNativeAnimatedNodesManager *nodesManager) {
     [nodesManager connectAnimatedNodeToView:nodeTag viewTag:viewTag viewName:viewName];
   }];
@@ -194,6 +207,48 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
 - (void)addPreOperationBlock:(AnimatedOperation)operation
 {
   [_preOperations addObject:operation];
+}
+
+- (void)flushOperationQueues
+{
+  if (_preOperations.count == 0 && _operations.count == 0) {
+    return;
+  }
+  NSArray<AnimatedOperation> *preOperations = _preOperations;
+  NSArray<AnimatedOperation> *operations = _operations;
+  _preOperations = [NSMutableArray new];
+  _operations = [NSMutableArray new];
+
+
+  RCTExecuteOnMainQueue(^{
+    for (AnimatedOperation operation in preOperations) {
+      operation(self->_nodesManager);
+    }
+    for (AnimatedOperation operation in operations) {
+      operation(self->_nodesManager);
+    }
+    [self->_nodesManager updateAnimations];
+  });
+}
+
+#pragma mark - RCTSurfacePresenterObserver
+
+- (void)willMountComponentsWithRootTag:(NSInteger)rootTag
+{
+  RCTAssertMainQueue();
+  for (AnimatedOperation operation in _preOperations) {
+    operation(self->_nodesManager);
+  }
+  _preOperations = [NSMutableArray new];
+}
+
+- (void)didMountComponentsWithRootTag:(NSInteger)rootTag
+{
+  RCTAssertMainQueue();
+  for (AnimatedOperation operation in _operations) {
+    operation(self->_nodesManager);
+  }
+  _operations = [NSMutableArray new];
 }
 
 #pragma mark - RCTUIManagerObserver

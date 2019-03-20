@@ -1,0 +1,132 @@
+load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "get_debug_preprocessor_flags")
+load(
+    "//tools/build_defs/oss:rn_defs.bzl",
+    "ANDROID",
+    "APPLE",
+    "fb_xplat_cxx_test",
+    "get_apple_compiler_flags",
+    "get_apple_inspector_flags",
+    "react_native_target",
+    "react_native_xplat_target",
+    "rn_xplat_cxx_library",
+    "subdir_glob",
+)
+
+APPLE_COMPILER_FLAGS = get_apple_compiler_flags()
+
+rn_xplat_cxx_library(
+    name = "textlayoutmanager",
+    srcs = glob(
+        [
+            "*.cpp",
+        ],
+    ),
+    headers = subdir_glob(
+        [
+            ("", "*.h"),
+        ],
+        prefix = "",
+    ),
+    header_namespace = "",
+    exported_headers = subdir_glob(
+        [
+            ("", "*.h"),
+        ],
+        prefix = "react/textlayoutmanager",
+    ),
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-std=c++14",
+        "-Wall",
+    ],
+    fbandroid_deps = [
+        react_native_target("jni/react/jni:jni"),
+    ],
+    fbandroid_exported_headers = subdir_glob(
+        [
+            ("", "*.h"),
+            ("platform/android", "*.h"),
+        ],
+        prefix = "react/textlayoutmanager",
+    ),
+    fbandroid_headers = subdir_glob(
+        [
+            ("platform/android", "**/*.h"),
+        ],
+        prefix = "",
+    ),
+    fbandroid_srcs = glob(
+        [
+            "platform/android/**/*.cpp",
+        ],
+    ),
+    fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
+    fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
+    force_static = True,
+    ios_deps = [
+    ],
+    ios_exported_headers = subdir_glob(
+        [
+            ("platform/ios", "*.h"),
+        ],
+        prefix = "react/textlayoutmanager",
+    ),
+    ios_frameworks = [
+        "$SDKROOT/System/Library/Frameworks/CoreGraphics.framework",
+        "$SDKROOT/System/Library/Frameworks/Foundation.framework",
+        "$SDKROOT/System/Library/Frameworks/UIKit.framework",
+    ],
+    ios_headers = subdir_glob(
+        [
+            ("platform/ios", "**/*.h"),
+        ],
+        prefix = "",
+    ),
+    ios_srcs = glob(
+        [
+            "platform/ios/**/*.cpp",
+            "platform/ios/**/*.mm",
+        ],
+    ),
+    macosx_tests_override = [],
+    platforms = (ANDROID, APPLE),
+    preprocessor_flags = [
+        "-DLOG_TAG=\"ReactNative\"",
+        "-DWITH_FBSYSTRACE=1",
+    ],
+    tests = [":tests"],
+    visibility = ["PUBLIC"],
+    deps = [
+        "fbsource//xplat/fbsystrace:fbsystrace",
+        "fbsource//xplat/folly:headers_only",
+        "fbsource//xplat/folly:memory",
+        "fbsource//xplat/folly:molly",
+        "fbsource//xplat/third-party/glog:glog",
+        "fbsource//xplat/yoga:yoga",
+        react_native_xplat_target("fabric/attributedstring:attributedstring"),
+        react_native_xplat_target("fabric/core:core"),
+        react_native_xplat_target("fabric/debug:debug"),
+        react_native_xplat_target("fabric/graphics:graphics"),
+        react_native_xplat_target("fabric/uimanager:uimanager"),
+    ],
+)
+
+fb_xplat_cxx_test(
+    name = "tests",
+    srcs = glob(["tests/**/*.cpp"]),
+    headers = glob(["tests/**/*.h"]),
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-std=c++14",
+        "-Wall",
+    ],
+    contacts = ["oncall+react_native@xmail.facebook.com"],
+    platforms = (ANDROID, APPLE),
+    deps = [
+        "fbsource//xplat/folly:molly",
+        "fbsource//xplat/third-party/gmock:gtest",
+        ":textlayoutmanager",
+    ],
+)

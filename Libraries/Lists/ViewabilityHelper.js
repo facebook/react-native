@@ -1,18 +1,15 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule ViewabilityHelper
  * @flow
  * @format
  */
 'use strict';
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 export type ViewToken = {
   item: any,
@@ -124,10 +121,13 @@ class ViewabilityHelper {
     }
     let firstVisible = -1;
     const {first, last} = renderRange || {first: 0, last: itemCount - 1};
-    invariant(
-      last < itemCount,
-      'Invalid render range ' + JSON.stringify({renderRange, itemCount}),
-    );
+    if (last >= itemCount) {
+      console.warn(
+        'Invalid render range computing viewability ' +
+          JSON.stringify({renderRange, itemCount}),
+      );
+      return [];
+    }
     for (let idx = first; idx <= last; idx++) {
       const metrics = getFrameMetrics(idx);
       if (!metrics) {

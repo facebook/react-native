@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.uimanager;
@@ -37,7 +35,7 @@ import java.util.Map;
                 "phasedRegistrationNames",
                 MapBuilder.of("bubbled", "onSelect", "captured", "onSelectCapture")))
         .put(
-            TouchEventType.START.getJSEventName(),
+            TouchEventType.getJSEventName(TouchEventType.START),
             MapBuilder.of(
                 "phasedRegistrationNames",
                 MapBuilder.of(
@@ -46,7 +44,7 @@ import java.util.Map;
                     "captured",
                     "onTouchStartCapture")))
         .put(
-            TouchEventType.MOVE.getJSEventName(),
+            TouchEventType.getJSEventName(TouchEventType.MOVE),
             MapBuilder.of(
                 "phasedRegistrationNames",
                 MapBuilder.of(
@@ -55,7 +53,7 @@ import java.util.Map;
                     "captured",
                     "onTouchMoveCapture")))
         .put(
-            TouchEventType.END.getJSEventName(),
+            TouchEventType.getJSEventName(TouchEventType.END),
             MapBuilder.of(
                 "phasedRegistrationNames",
                 MapBuilder.of(
@@ -64,7 +62,7 @@ import java.util.Map;
                     "captured",
                     "onTouchEndCapture")))
         .put(
-            TouchEventType.CANCEL.getJSEventName(),
+            TouchEventType.getJSEventName(TouchEventType.CANCEL),
             MapBuilder.of(
                 "phasedRegistrationNames",
                 MapBuilder.of(
@@ -136,6 +134,8 @@ import java.util.Map;
       MapBuilder.of(
           "typeWindowStateChanged",
           AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
+          "typeViewFocused",
+          AccessibilityEvent.TYPE_VIEW_FOCUSED,
           "typeViewClicked",
           AccessibilityEvent.TYPE_VIEW_CLICKED));
 

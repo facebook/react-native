@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTAssert.h"
@@ -14,25 +12,6 @@
 #import <CoreText/CoreText.h>
 
 #import <mutex>
-
-#if !defined(__IPHONE_8_2) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_8_2
-
-// These constants are defined in iPhone SDK 8.2, but the app cannot run on
-// iOS < 8.2 unless we redefine them here. If you target iOS 8.2 or above
-// as a base target, the standard constants will be used instead.
-// These constants can only be removed when React Native drops iOS8 support.
-
-#define UIFontWeightUltraLight -0.8
-#define UIFontWeightThin -0.6
-#define UIFontWeightLight -0.4
-#define UIFontWeightRegular 0
-#define UIFontWeightMedium 0.23
-#define UIFontWeightSemibold 0.3
-#define UIFontWeightBold 0.4
-#define UIFontWeightHeavy 0.56
-#define UIFontWeightBlack 0.62
-
-#endif
 
 typedef CGFloat RCTFontWeight;
 static RCTFontWeight weightOfFont(UIFont *font)
@@ -73,7 +52,7 @@ static RCTFontWeight weightOfFont(UIFont *font)
     ];
   });
 
-  for (NSInteger i = 0; i < fontNames.count; i++) {
+  for (NSInteger i = 0; i < 0 || i < (unsigned)fontNames.count; i++) {
     if ([font.fontName.lowercaseString hasSuffix:fontNames[i]]) {
       return (RCTFontWeight)[fontWeights[i] doubleValue];
     }
@@ -101,6 +80,10 @@ static RCTFontHandler defaultFontHandler;
 
 void RCTSetDefaultFontHandler(RCTFontHandler handler) {
   defaultFontHandler = handler;
+}
+
+BOOL RCTHasFontHandlerSet() {
+  return defaultFontHandler != nil;
 }
 
 // We pass a string description of the font weight to the defaultFontHandler because UIFontWeight
@@ -143,12 +126,12 @@ static NSString *FontWeightDescriptionFromUIFontWeight(UIFontWeight fontWeight)
 static UIFont *cachedSystemFont(CGFloat size, RCTFontWeight weight)
 {
   static NSCache *fontCache;
-  static std::mutex fontCacheMutex;
+  static std::mutex *fontCacheMutex = new std::mutex;
 
   NSString *cacheKey = [NSString stringWithFormat:@"%.1f/%.2f", size, weight];
   UIFont *font;
   {
-    std::lock_guard<std::mutex> lock(fontCacheMutex);
+    std::lock_guard<std::mutex> lock(*fontCacheMutex);
     if (!fontCache) {
       fontCache = [NSCache new];
     }
@@ -159,23 +142,12 @@ static UIFont *cachedSystemFont(CGFloat size, RCTFontWeight weight)
     if (defaultFontHandler) {
       NSString *fontWeightDescription = FontWeightDescriptionFromUIFontWeight(weight);
       font = defaultFontHandler(size, fontWeightDescription);
-    } else if ([UIFont respondsToSelector:@selector(systemFontOfSize:weight:)]) {
-      // Only supported on iOS8.2 and above
-      font = [UIFont systemFontOfSize:size weight:weight];
     } else {
-      if (weight >= UIFontWeightBold) {
-        font = [UIFont boldSystemFontOfSize:size];
-      } else if (weight >= UIFontWeightMedium) {
-        font = [UIFont fontWithName:@"HelveticaNeue-Medium" size:size];
-      } else if (weight <= UIFontWeightLight) {
-        font = [UIFont fontWithName:@"HelveticaNeue-Light" size:size];
-      } else {
-        font = [UIFont systemFontOfSize:size];
-      }
+      font = [UIFont systemFontOfSize:size weight:weight];
     }
 
     {
-      std::lock_guard<std::mutex> lock(fontCacheMutex);
+      std::lock_guard<std::mutex> lock(*fontCacheMutex);
       [fontCache setObject:font forKey:cacheKey];
     }
   }

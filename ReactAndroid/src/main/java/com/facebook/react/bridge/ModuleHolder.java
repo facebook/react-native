@@ -1,4 +1,7 @@
-// Copyright 2004-present Facebook. All Rights Reserved.
+// Copyright (c) Facebook, Inc. and its affiliates.
+
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
 
 package com.facebook.react.bridge;
 
@@ -12,6 +15,7 @@ import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.module.model.ReactModuleInfo;
+import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.systrace.SystraceMessage;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
@@ -21,11 +25,12 @@ import javax.inject.Provider;
 /**
  * Holder to enable us to lazy create native modules.
  *
- * This works by taking a provider instead of an instance, when it is first required we'll create
+ * <p>This works by taking a provider instead of an instance, when it is first required we'll create
  * and initialize it. Initialization currently always happens on the UI thread but this is due to
  * change for performance reasons.
  *
- * Lifecycle events via a {@link LifecycleEventListener} will still always happen on the UI thread.
+ * <p>Lifecycle events via a {@link LifecycleEventListener} will still always happen on the UI
+ * thread.
  */
 @DoNotStrip
 public class ModuleHolder {
@@ -35,8 +40,7 @@ public class ModuleHolder {
   private final int mInstanceKey = sInstanceKeyCounter.getAndIncrement();
 
   private final String mName;
-  private final boolean mCanOverrideExistingModule;
-  private final boolean mHasConstants;
+  private final ReactModuleInfo mReactModuleInfo;
 
   private @Nullable Provider<? extends NativeModule> mProvider;
   // Outside of the constructur, these should only be checked or set when synchronized on this
@@ -49,9 +53,8 @@ public class ModuleHolder {
 
   public ModuleHolder(ReactModuleInfo moduleInfo, Provider<? extends NativeModule> provider) {
     mName = moduleInfo.name();
-    mCanOverrideExistingModule = moduleInfo.canOverrideExistingModule();
-    mHasConstants = moduleInfo.hasConstants();
     mProvider = provider;
+    mReactModuleInfo = moduleInfo;
     if (moduleInfo.needsEagerInit()) {
       mModule = create();
     }
@@ -59,18 +62,27 @@ public class ModuleHolder {
 
   public ModuleHolder(NativeModule nativeModule) {
     mName = nativeModule.getName();
-    mCanOverrideExistingModule = nativeModule.canOverrideExistingModule();
-    mHasConstants = true;
+    mReactModuleInfo =
+        new ReactModuleInfo(
+            nativeModule.getName(),
+            nativeModule.getClass().getSimpleName(),
+            nativeModule.canOverrideExistingModule(),
+            true,
+            true,
+            CxxModuleWrapper.class.isAssignableFrom(nativeModule.getClass()),
+            TurboModule.class.isAssignableFrom(nativeModule.getClass())
+          );
+
     mModule = nativeModule;
     PrinterHolder.getPrinter()
         .logMessage(ReactDebugOverlayTags.NATIVE_MODULE, "NativeModule init: %s", mName);
   }
 
   /*
-  * Checks if mModule has been created, and if so tries to initialize the module unless another
-  * thread is already doing the initialization.
-  * If mModule has not been created, records that initialization is needed
-  */
+   * Checks if mModule has been created, and if so tries to initialize the module unless another
+   * thread is already doing the initialization.
+   * If mModule has not been created, records that initialization is needed
+   */
   /* package */ void markInitializable() {
     boolean shouldInitializeNow = false;
     NativeModule module = null;
@@ -103,11 +115,23 @@ public class ModuleHolder {
   }
 
   public boolean getCanOverrideExistingModule() {
-    return mCanOverrideExistingModule;
+    return mReactModuleInfo.canOverrideExistingModule();
   }
 
   public boolean getHasConstants() {
-    return mHasConstants;
+    return mReactModuleInfo.hasConstants();
+  }
+
+  public boolean isTurboModule() {
+    return mReactModuleInfo.isTurboModule();
+  }
+
+  public boolean isCxxModule() {
+    return mReactModuleInfo.isCxxModule();
+  }
+
+  public String getClassName() {
+    return mReactModuleInfo.className();
   }
 
   @DoNotStrip
@@ -117,11 +141,12 @@ public class ModuleHolder {
     synchronized (this) {
       if (mModule != null) {
         return mModule;
-      // if mModule has not been set, and no one is creating it. Then this thread should call create
+        // if mModule has not been set, and no one is creating it. Then this thread should call
+        // create
       } else if (!mIsCreating) {
         shouldCreate = true;
         mIsCreating = true;
-      } else  {
+      } else {
         // Wait for mModule to be created by another thread
       }
     }
@@ -155,8 +180,8 @@ public class ModuleHolder {
     SoftAssertions.assertCondition(mModule == null, "Creating an already created module.");
     ReactMarker.logMarker(CREATE_MODULE_START, mName, mInstanceKey);
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ModuleHolder.createModule")
-      .arg("name", mName)
-      .flush();
+        .arg("name", mName)
+        .flush();
     PrinterHolder.getPrinter()
         .logMessage(ReactDebugOverlayTags.NATIVE_MODULE, "NativeModule init: %s", mName);
     NativeModule module;
@@ -164,7 +189,7 @@ public class ModuleHolder {
       module = assertNotNull(mProvider).get();
       mProvider = null;
       boolean shouldInitializeNow = false;
-      synchronized(this) {
+      synchronized (this) {
         mModule = module;
         if (mInitializable && !mIsInitializing) {
           shouldInitializeNow = true;
@@ -174,7 +199,7 @@ public class ModuleHolder {
         doInitialize(module);
       }
     } finally {
-      ReactMarker.logMarker(CREATE_MODULE_END, mInstanceKey);
+      ReactMarker.logMarker(CREATE_MODULE_END, mName ,mInstanceKey);
       SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
     }
     return module;
@@ -182,8 +207,8 @@ public class ModuleHolder {
 
   private void doInitialize(NativeModule module) {
     SystraceMessage.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ModuleHolder.initialize")
-      .arg("name", mName)
-      .flush();
+        .arg("name", mName)
+        .flush();
     ReactMarker.logMarker(ReactMarkerConstants.INITIALIZE_MODULE_START, mName, mInstanceKey);
     try {
       boolean shouldInitialize = false;
@@ -196,14 +221,15 @@ public class ModuleHolder {
       }
       if (shouldInitialize) {
         module.initialize();
-        // Once finished, set flags accordingly, but we don't expect anyone to wait for this to finish
+        // Once finished, set flags accordingly, but we don't expect anyone to wait for this to
+        // finish
         // So no need to notify other threads
         synchronized (this) {
           mIsInitializing = false;
         }
       }
     } finally {
-      ReactMarker.logMarker(ReactMarkerConstants.INITIALIZE_MODULE_END, mInstanceKey);
+      ReactMarker.logMarker(ReactMarkerConstants.INITIALIZE_MODULE_END, mName, mInstanceKey);
       SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
     }
   }

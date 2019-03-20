@@ -1,0 +1,45 @@
+load("@fbsource//tools/build_defs:default_platform_defs.bzl", "ANDROID", "APPLE")
+load("@fbsource//tools/build_defs:glob_defs.bzl", "subdir_glob")
+load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "flags", "get_debug_preprocessor_flags", "get_static_library_ios_flags")
+load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "get_apple_inspector_flags", "rn_xplat_cxx_library")
+
+APPLE_COMPILER_FLAGS = flags.get_flag_value(
+    get_static_library_ios_flags(),
+    "compiler_flags",
+)
+
+rn_xplat_cxx_library(
+    name = "config",
+    srcs = glob(["**/*.cpp"]),
+    header_namespace = "",
+    exported_headers = subdir_glob(
+        [
+            ("", "**/*.h"),
+        ],
+        prefix = "react/config",
+    ),
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-std=c++14",
+        "-Wall",
+    ],
+    fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
+    fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
+    force_static = True,
+    platforms = (ANDROID, APPLE),
+    preprocessor_flags = [
+        "-DLOG_TAG=\"ReactNative\"",
+        "-DWITH_FBSYSTRACE=1",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        "fbsource//xplat/fbsystrace:fbsystrace",
+        "fbsource//xplat/folly:headers_only",
+        "fbsource//xplat/folly:memory",
+        "fbsource//xplat/folly:molly",
+        "fbsource//xplat/third-party/glog:glog",
+    ],
+)

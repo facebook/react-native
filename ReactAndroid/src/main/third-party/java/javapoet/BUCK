@@ -1,11 +1,14 @@
-prebuilt_jar(
+load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+load("//tools/build_defs/oss:rn_defs.bzl", "rn_prebuilt_jar")
+
+rn_prebuilt_jar(
     name = "javapoet",
-    binary_jar = ":jsr305-binary-jar",
+    binary_jar = ":jsr305-binary.jar",
     visibility = ["//ReactAndroid/..."],
 )
 
-remote_file(
-    name = "jsr305-binary-jar",
+fb_native.remote_file(
+    name = "jsr305-binary.jar",
     sha1 = "ad3ba65c1788f4d814a4da056323e2b84412fb3c",
     url = "mvn:com.squareup:javapoet:jar:1.2.0",
 )

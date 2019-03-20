@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTDeviceInfo.h"
@@ -60,10 +58,15 @@ static BOOL RCTIsIPhoneX() {
   dispatch_once(&onceToken, ^{
     RCTAssertMainQueue();
 
-    isIPhoneX = CGSizeEqualToSize(
-      [UIScreen mainScreen].nativeBounds.size,
-      CGSizeMake(1125, 2436)
-    );
+    CGSize screenSize = [UIScreen mainScreen].nativeBounds.size;
+    CGSize iPhoneXScreenSize = CGSizeMake(1125, 2436);
+    CGSize iPhoneXMaxScreenSize = CGSizeMake(1242, 2688);
+    CGSize iPhoneXRScreenSize = CGSizeMake(828, 1792);
+
+    isIPhoneX =
+      CGSizeEqualToSize(screenSize, iPhoneXScreenSize) ||
+      CGSizeEqualToSize(screenSize, iPhoneXMaxScreenSize) ||
+      CGSizeEqualToSize(screenSize, iPhoneXRScreenSize);
   });
 
   return isIPhoneX;
@@ -102,10 +105,15 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
+  return [self getConstants];
+}
+
+- (NSDictionary<NSString *, id> *)getConstants
+{
   return @{
     @"Dimensions": RCTExportedDimensions(_bridge),
     // Note:
-    // This prop is deprecated and will be removed right after June 01, 2018.
+    // This prop is deprecated and will be removed in a future release.
     // Please use this only for a quick and temporary solution.
     // Use <SafeAreaView> instead.
     @"isIPhoneX_deprecated": @(RCTIsIPhoneX()),

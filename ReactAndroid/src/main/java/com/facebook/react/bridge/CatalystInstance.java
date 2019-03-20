@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.bridge;
@@ -13,6 +11,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import java.util.Collection;
+import java.util.List;
 import javax.annotation.Nullable;
 
 /**
@@ -22,7 +21,7 @@ import javax.annotation.Nullable;
  */
 @DoNotStrip
 public interface CatalystInstance
-    extends MemoryPressureListener, JSInstance {
+    extends MemoryPressureListener, JSInstance, JSBundleLoaderDelegate {
   void runJSBundle();
 
   // Returns the status of running the JS bundle; waits for an answer if runJSBundle is running
@@ -39,7 +38,7 @@ public interface CatalystInstance
   @Override @DoNotStrip
   void invokeCallback(
       int callbackID,
-      NativeArray arguments);
+      NativeArrayInterface arguments);
   @DoNotStrip
   void callFunction(
       String module,
@@ -64,6 +63,8 @@ public interface CatalystInstance
   <T extends JavaScriptModule> T getJSModule(Class<T> jsInterface);
   <T extends NativeModule> boolean hasNativeModule(Class<T> nativeModuleInterface);
   <T extends NativeModule> T getNativeModule(Class<T> nativeModuleInterface);
+  NativeModule getNativeModule(String moduleName);
+  <T extends JSIModule> T getJSIModule(Class<T> jsiModuleInterface);
   Collection<NativeModule> getNativeModules();
 
   /**
@@ -100,4 +101,6 @@ public interface CatalystInstance
    * synchronized(jsContext) { nativeThingNeedingJsContext(jsContext.get()); }
    */
   JavaScriptContextHolder getJavaScriptContextHolder();
+
+  void addJSIModules(List<JSIModuleSpec> jsiModules);
 }

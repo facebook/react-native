@@ -2,16 +2,10 @@ package com.facebook.react;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.view.KeyEvent;
-import android.widget.Toast;
 
-import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.common.ReactConstants;
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 
@@ -22,13 +16,6 @@ import javax.annotation.Nullable;
  * an {@link Activity} or a {@link android.app.Fragment}.
  */
 public class ReactDelegate {
-
-  public final int REQUEST_OVERLAY_PERMISSION_CODE = 1111;
-  private static final String REDBOX_PERMISSION_MESSAGE =
-    "Overlay permissions need to be granted in order for react native apps to run in dev mode.";
-  private static final String REDBOX_PERMISSION_GRANTED_MESSAGE =
-    "Overlay permissions have been granted.";
-
 
   private final Activity mActivity;
   private ReactRootView mReactRootView;
@@ -67,7 +54,7 @@ public class ReactDelegate {
     }
   }
 
-  public void onHostDetroy() {
+  public void onHostDestroy() {
     if (mReactRootView != null) {
       mReactRootView.unmountReactApplication();
       mReactRootView = null;
@@ -88,9 +75,6 @@ public class ReactDelegate {
   public void onActivityResult(int requestCode, int resultCode, Intent data, boolean shouldForwardToReactInstance) {
     if (getReactNativeHost().hasInstance() && shouldForwardToReactInstance) {
       getReactNativeHost().getReactInstanceManager().onActivityResult(mActivity, requestCode, resultCode, data);
-    } else {
-      // Did we request overlay permissions?
-      redboxPermissionGranted(requestCode, resultCode, data);
     }
   }
 
@@ -112,44 +96,6 @@ public class ReactDelegate {
 
   public ReactRootView getReactRootView() {
     return mReactRootView;
-  }
-
-  /**
-   * If the build is a debug build and the OS is greater then or equal to Marshmallow, ask the user
-   * for the overlay permission that allows us to show the Redbox overlay.
-   *
-   * @return True if the permission needs to be granted.
-   */
-  public boolean askForRedboxPermission() {
-    boolean needsOverlayPermission = false;
-    if (getReactNativeHost().getUseDeveloperSupport() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      // Get permission to show redbox in dev builds.
-      if (!Settings.canDrawOverlays(mActivity)) {
-        needsOverlayPermission = true;
-        Intent serviceIntent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + mActivity.getPackageName()));
-        FLog.w(ReactConstants.TAG, REDBOX_PERMISSION_MESSAGE);
-        Toast.makeText(mActivity, REDBOX_PERMISSION_MESSAGE, Toast.LENGTH_LONG).show();
-        mActivity.startActivityForResult(serviceIntent, REQUEST_OVERLAY_PERMISSION_CODE);
-      }
-    }
-    return needsOverlayPermission;
-  }
-
-  /**
-   * Determines if the RedboxPermission was just granted. If it was we can now safely load our
-   * React Native application.
-   *
-   * @param requestCode {@link Activity#onActivityResult(int, int, Intent)}'s requestCode
-   * @param resultCode  {@link Activity#onActivityResult(int, int, Intent)}'s resultCode
-   * @param data        {@link Activity#onActivityResult(int, int, Intent)}'s intent data
-   */
-  public void redboxPermissionGranted(int requestCode, int resultCode, Intent data) {
-    if (requestCode == REQUEST_OVERLAY_PERMISSION_CODE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      if (Settings.canDrawOverlays(mActivity)) {
-        loadApp();
-        Toast.makeText(mActivity, REDBOX_PERMISSION_GRANTED_MESSAGE, Toast.LENGTH_LONG).show();
-      }
-    }
   }
 
   /**

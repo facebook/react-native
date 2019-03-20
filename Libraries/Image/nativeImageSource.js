@@ -1,12 +1,9 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule nativeImageSource
  * @flow
  * @format
  */
@@ -26,6 +23,7 @@ export type NativeImageSource = {|
 type NativeImageSourceSpec = {|
   +android?: string,
   +ios?: string,
+  +default?: string,
 
   // For more details on width and height, see
   // http://facebook.github.io/react-native/docs/images.html#why-not-automatically-size-everything
@@ -50,7 +48,11 @@ type NativeImageSourceSpec = {|
  *
  */
 function nativeImageSource(spec: NativeImageSourceSpec): Object {
-  let uri = Platform.select(spec);
+  let uri = Platform.select({
+    android: spec.android,
+    default: spec.default,
+    ios: spec.ios,
+  });
   if (uri == null) {
     console.warn(
       'nativeImageSource(...): No image name supplied for `%s`:\n%s',

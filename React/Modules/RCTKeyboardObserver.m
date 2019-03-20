@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTKeyboardObserver.h"
@@ -112,12 +110,14 @@ static NSDictionary *RCTParseKeyboardNotification(NSNotification *notification)
   CGRect endFrame = [userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
   NSTimeInterval duration = [userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
   UIViewAnimationCurve curve = [userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue];
+  NSInteger isLocalUserInfoKey = [userInfo[UIKeyboardIsLocalUserInfoKey] integerValue];
 
   return @{
     @"startCoordinates": RCTRectDictionaryValue(beginFrame),
     @"endCoordinates": RCTRectDictionaryValue(endFrame),
     @"duration": @(duration * 1000.0), // ms
     @"easing": RCTAnimationNameForCurve(curve),
+    @"isEventFromThisApp": isLocalUserInfoKey == 1 ? @YES : @NO,
   };
 #endif
 }

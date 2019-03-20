@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTBlobManager.h"
@@ -13,6 +11,7 @@
 
 #import <React/RCTConvert.h>
 #import <React/RCTNetworking.h>
+#import <React/RCTUtils.h>
 #import <React/RCTWebSocketModule.h>
 
 static NSString *const kBlobURIScheme = @"blob";
@@ -49,6 +48,11 @@ RCT_EXPORT_MODULE(BlobModule)
 }
 
 - (NSDictionary<NSString *, id> *)constantsToExport
+{
+  return [self getConstants];
+}
+
+- (NSDictionary<NSString *, id> *)getConstants
 {
   return @{
     @"BLOB_URI_SCHEME": kBlobURIScheme,
@@ -259,12 +263,15 @@ RCT_EXPORT_METHOD(release:(NSString *)blobId)
 
 - (id)handleNetworkingResponse:(NSURLResponse *)response data:(NSData *)data
 {
+  // An empty body will have nil for data, in this case we need to return
+  // an empty blob as per the XMLHttpRequest spec.
+  data = data ?: [NSData new];
   return @{
     @"blobId": [self store:data],
     @"offset": @0,
     @"size": @(data.length),
-    @"name": [response suggestedFilename],
-    @"type": [response MIMEType],
+    @"name": RCTNullIfNil([response suggestedFilename]),
+    @"type": RCTNullIfNil([response MIMEType]),
   };
 }
 

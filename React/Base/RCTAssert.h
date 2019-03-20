@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import <Foundation/Foundation.h>
@@ -26,8 +24,8 @@ RCT_EXTERN BOOL RCTIsMainQueue(void);
   if ((condition) == 0) { \
     _RCTAssertFormat(#condition, __FILE__, __LINE__, __func__, __VA_ARGS__); \
     if (RCT_NSASSERT) { \
-      [[NSAssertionHandler currentHandler] handleFailureInFunction:@(__func__) \
-        file:@(__FILE__) lineNumber:__LINE__ description:__VA_ARGS__]; \
+      [[NSAssertionHandler currentHandler] handleFailureInFunction:(NSString * _Nonnull)@(__func__) \
+        file:(NSString * _Nonnull)@(__FILE__) lineNumber:__LINE__ description:__VA_ARGS__]; \
     } \
   } \
 } while (false)
@@ -41,9 +39,11 @@ RCT_EXTERN void _RCTAssertFormat(
 /**
  * Report a fatal condition when executing. These calls will _NOT_ be compiled out
  * in production, and crash the app by default. You can customize the fatal behaviour
- * by setting a custom fatal handler through `RCTSetFatalHandler`.
+ * by setting a custom fatal handler through `RCTSetFatalHandler` and
+ * `RCTSetFatalExceptionHandler`.
  */
 RCT_EXTERN void RCTFatal(NSError *error);
+RCT_EXTERN void RCTFatalException(NSException *exception);
 
 /**
  * The default error domain to be used for React errors.
@@ -75,6 +75,7 @@ typedef void (^RCTAssertFunction)(NSString *condition,
                                   NSString *message);
 
 typedef void (^RCTFatalHandler)(NSError *error);
+typedef void (^RCTFatalExceptionHandler)(NSException *exception);
 
 /**
  * Convenience macro for asserting that a parameter is non-nil/non-zero.
@@ -116,10 +117,13 @@ RCT_EXTERN void RCTAddAssertFunction(RCTAssertFunction assertFunction);
 RCT_EXTERN void RCTPerformBlockWithAssertFunction(void (^block)(void), RCTAssertFunction assertFunction);
 
 /**
- These methods get and set the current fatal handler called by the RCTFatal method.
+ * These methods get and set the current fatal handler called by the `RCTFatal`
+ * and `RCTFatalException` methods.
  */
 RCT_EXTERN void RCTSetFatalHandler(RCTFatalHandler fatalHandler);
 RCT_EXTERN RCTFatalHandler RCTGetFatalHandler(void);
+RCT_EXTERN void RCTSetFatalExceptionHandler(RCTFatalExceptionHandler fatalExceptionHandler);
+RCT_EXTERN RCTFatalExceptionHandler RCTGetFatalExceptionHandler(void);
 
 /**
  * Get the current thread's name (or the current queue, if in debug mode)

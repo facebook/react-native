@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTModuleMethod.h"
@@ -92,8 +90,8 @@ static BOOL RCTParseSelectorPart(const char **input, NSMutableString *selector)
 
 static BOOL RCTParseUnused(const char **input)
 {
-  return RCTReadString(input, "__unused") ||
-         RCTReadString(input, "__attribute__((unused))");
+  return RCTReadString(input, "__attribute__((unused))") ||
+         RCTReadString(input, "__unused");
 }
 
 static RCTNullability RCTParseNullability(const char **input)
@@ -108,9 +106,11 @@ static RCTNullability RCTParseNullability(const char **input)
 
 static RCTNullability RCTParseNullabilityPostfix(const char **input)
 {
-  if (RCTReadString(input, "_Nullable")) {
+  if (RCTReadString(input, "_Nullable") ||
+      RCTReadString(input, "__nullable")) {
     return RCTNullable;
-  } else if (RCTReadString(input, "_Nonnull")) {
+  } else if (RCTReadString(input, "_Nonnull") ||
+             RCTReadString(input, "__nonnull")) {
     return RCTNonnullable;
   }
   return RCTNullabilityUnspecified;
@@ -144,17 +144,34 @@ NSString *RCTParseMethodSignature(const char *input, NSArray<RCTMethodArgument *
     // Parse type
     if (RCTReadChar(&input, '(')) {
       RCTSkipWhitespace(&input);
-
-      BOOL unused = RCTParseUnused(&input);
-      RCTSkipWhitespace(&input);
-
+      
+      // 5 cases that both nullable and __unused exist
+      // 1: foo:(nullable __unused id)foo 2: foo:(nullable id __unused)foo
+      // 3: foo:(__unused id _Nullable)foo 4: foo:(id __unused _Nullable)foo
+      // 5: foo:(id _Nullable __unused)foo
       RCTNullability nullability = RCTParseNullability(&input);
+      RCTSkipWhitespace(&input);
+      
+      BOOL unused = RCTParseUnused(&input);
       RCTSkipWhitespace(&input);
 
       NSString *type = RCTParseType(&input);
       RCTSkipWhitespace(&input);
+      
       if (nullability == RCTNullabilityUnspecified) {
         nullability = RCTParseNullabilityPostfix(&input);
+        RCTSkipWhitespace(&input);
+        if (!unused) {
+          unused = RCTParseUnused(&input);
+          RCTSkipWhitespace(&input);
+          if (unused && nullability == RCTNullabilityUnspecified) {
+            nullability = RCTParseNullabilityPostfix(&input);
+            RCTSkipWhitespace(&input);
+          }
+        }
+      } else if (!unused) {
+        unused = RCTParseUnused(&input);
+        RCTSkipWhitespace(&input);
       }
       [args addObject:[[RCTMethodArgument alloc] initWithType:type
                                                   nullability:nullability
@@ -215,7 +232,7 @@ RCT_EXTERN_C_END
 #endif
 
 #define RCT_RETAINED_ARG_BLOCK(_logic) \
-[argumentBlocks addObject:^(__unused RCTBridge *bridge, NSUInteger index, id json) { \
+[argumentBlocks addObject:^(__unused __weak RCTBridge *bridge, NSUInteger index, id json) { \
   _logic                                                                             \
   [invocation setArgument:&value atIndex:(index) + 2];                               \
   if (value) {                                                                       \
@@ -304,6 +321,12 @@ RCT_EXTERN_C_END
 
           [argumentBlocks addObject:^(__unused RCTBridge *bridge, NSUInteger index, id json) {
             void *returnValue = malloc(typeSignature.methodReturnLength);
+            if (!returnValue) {
+              // CWE - 391 : Unchecked error condition
+              // https://www.cvedetails.com/cwe-details/391/Unchecked-Error-Condition.html
+              // https://eli.thegreenplace.net/2009/10/30/handling-out-of-memory-conditions-in-c
+              abort();
+            }
             [typeInvocation setArgument:&json atIndex:2];
             [typeInvocation invoke];
             [typeInvocation getReturnValue:returnValue];
@@ -546,7 +569,6 @@ RCT_EXTERN_C_END
   [_invocation invokeWithTarget:module];
 #endif
 
-  index = 2;
   [_retainedObjects removeAllObjects];
 
   if (_methodInfo->isSync) {

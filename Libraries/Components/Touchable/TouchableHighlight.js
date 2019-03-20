@@ -1,19 +1,18 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule TouchableHighlight
  * @flow
  * @format
  */
 'use strict';
 
-const ColorPropType = require('ColorPropType');
+const DeprecatedColorPropType = require('DeprecatedColorPropType');
+const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
 const NativeMethodsMixin = require('NativeMethodsMixin');
+const Platform = require('Platform');
 const PropTypes = require('prop-types');
 const React = require('React');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
@@ -21,12 +20,15 @@ const StyleSheet = require('StyleSheet');
 const Touchable = require('Touchable');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 const View = require('View');
-const ViewPropTypes = require('ViewPropTypes');
 
 const createReactClass = require('create-react-class');
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 
 import type {PressEvent} from 'CoreEventTypes';
+import type {ViewStyleProp} from 'StyleSheet';
+import type {ColorValue} from 'StyleSheetTypes';
+import type {Props as TouchableWithoutFeedbackProps} from 'TouchableWithoutFeedback';
+import type {TVParallaxPropertiesType} from 'TVViewPropTypes';
 
 const DEFAULT_PROPS = {
   activeOpacity: 0.85,
@@ -35,6 +37,32 @@ const DEFAULT_PROPS = {
 };
 
 const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
+
+type IOSProps = $ReadOnly<{|
+  hasTVPreferredFocus?: ?boolean,
+  tvParallaxProperties?: ?TVParallaxPropertiesType,
+|}>;
+
+type AndroidProps = $ReadOnly<{|
+  nextFocusDown?: ?number,
+  nextFocusForward?: ?number,
+  nextFocusLeft?: ?number,
+  nextFocusRight?: ?number,
+  nextFocusUp?: ?number,
+|}>;
+
+type Props = $ReadOnly<{|
+  ...TouchableWithoutFeedbackProps,
+  ...IOSProps,
+  ...AndroidProps,
+
+  activeOpacity?: ?number,
+  underlayColor?: ?ColorValue,
+  style?: ?ViewStyleProp,
+  onShowUnderlay?: ?() => void,
+  onHideUnderlay?: ?() => void,
+  testOnly_pressed?: ?boolean,
+|}>;
 
 /**
  * A wrapper for making views respond properly to touches.
@@ -133,9 +161,12 @@ const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
  *
  */
 
-const TouchableHighlight = createReactClass({
+const TouchableHighlight = ((createReactClass({
   displayName: 'TouchableHighlight',
   propTypes: {
+    /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
+     * error found when Flow v0.89 was deployed. To see the error, delete this
+     * comment and run Flow. */
     ...TouchableWithoutFeedback.propTypes,
     /**
      * Determines what the opacity of the wrapped view should be when touch is
@@ -146,12 +177,12 @@ const TouchableHighlight = createReactClass({
      * The color of the underlay that will show through when the touch is
      * active.
      */
-    underlayColor: ColorPropType,
+    underlayColor: DeprecatedColorPropType,
     /**
      * Style to apply to the container/underlay. Most commonly used to make sure
      * rounded corners match the wrapped component.
      */
-    style: ViewPropTypes.style,
+    style: DeprecatedViewPropTypes.style,
     /**
      * Called immediately after the underlay is shown
      */
@@ -167,6 +198,36 @@ const TouchableHighlight = createReactClass({
      */
     hasTVPreferredFocus: PropTypes.bool,
     /**
+     * TV next focus down (see documentation for the View component).
+     *
+     * @platform android
+     */
+    nextFocusDown: PropTypes.number,
+    /**
+     * TV next focus forward (see documentation for the View component).
+     *
+     * @platform android
+     */
+    nextFocusForward: PropTypes.number,
+    /**
+     * TV next focus left (see documentation for the View component).
+     *
+     * @platform android
+     */
+    nextFocusLeft: PropTypes.number,
+    /**
+     * TV next focus right (see documentation for the View component).
+     *
+     * @platform android
+     */
+    nextFocusRight: PropTypes.number,
+    /**
+     * TV next focus up (see documentation for the View component).
+     *
+     * @platform android
+     */
+    nextFocusUp: PropTypes.number,
+    /**
      * *(Apple TV only)* Object with properties to control Apple TV parallax effects.
      *
      * enabled: If true, parallax effects are enabled.  Defaults to true.
@@ -174,23 +235,42 @@ const TouchableHighlight = createReactClass({
      * shiftDistanceY: Defaults to 2.0.
      * tiltAngle: Defaults to 0.05.
      * magnification: Defaults to 1.0.
+     * pressMagnification: Defaults to 1.0.
+     * pressDuration: Defaults to 0.3.
+     * pressDelay: Defaults to 0.0.
      *
      * @platform ios
      */
     tvParallaxProperties: PropTypes.object,
+    /**
+     * Handy for snapshot tests.
+     */
+    testOnly_pressed: PropTypes.bool,
   },
 
-  mixins: [NativeMethodsMixin, Touchable.Mixin],
+  mixins: [NativeMethodsMixin, Touchable.Mixin.withoutDefaultFocusAndBlur],
 
   getDefaultProps: () => DEFAULT_PROPS,
 
   getInitialState: function() {
     this._isMounted = false;
-    return {
-      ...this.touchableGetInitialState(),
-      extraChildStyle: null,
-      extraUnderlayStyle: null,
-    };
+    if (this.props.testOnly_pressed) {
+      return {
+        ...this.touchableGetInitialState(),
+        extraChildStyle: {
+          opacity: this.props.activeOpacity,
+        },
+        extraUnderlayStyle: {
+          backgroundColor: this.props.underlayColor,
+        },
+      };
+    } else {
+      return {
+        ...this.touchableGetInitialState(),
+        extraChildStyle: null,
+        extraUnderlayStyle: null,
+      };
+    }
   },
 
   componentDidMount: function() {
@@ -203,7 +283,7 @@ const TouchableHighlight = createReactClass({
     clearTimeout(this._hideTimeout);
   },
 
-  componentWillReceiveProps: function(nextProps) {
+  UNSAFE_componentWillReceiveProps: function(nextProps) {
     ensurePositiveDelayProps(nextProps);
   },
 
@@ -230,13 +310,29 @@ const TouchableHighlight = createReactClass({
     this.props.onPressOut && this.props.onPressOut(e);
   },
 
+  touchableHandleFocus: function(e: Event) {
+    if (Platform.isTV) {
+      this._showUnderlay();
+    }
+    this.props.onFocus && this.props.onFocus(e);
+  },
+
+  touchableHandleBlur: function(e: Event) {
+    if (Platform.isTV) {
+      this._hideUnderlay();
+    }
+    this.props.onBlur && this.props.onBlur(e);
+  },
+
   touchableHandlePress: function(e: PressEvent) {
     clearTimeout(this._hideTimeout);
-    this._showUnderlay();
-    this._hideTimeout = setTimeout(
-      this._hideUnderlay,
-      this.props.delayPressOut,
-    );
+    if (!Platform.isTV) {
+      this._showUnderlay();
+      this._hideTimeout = setTimeout(
+        this._hideUnderlay,
+        this.props.delayPressOut,
+      );
+    }
     this.props.onPress && this.props.onPress(e);
   },
 
@@ -282,6 +378,9 @@ const TouchableHighlight = createReactClass({
   _hideUnderlay: function() {
     clearTimeout(this._hideTimeout);
     this._hideTimeout = null;
+    if (this.props.testOnly_pressed) {
+      return;
+    }
     if (this._hasPressHandler()) {
       this.setState({
         extraChildStyle: null,
@@ -306,8 +405,9 @@ const TouchableHighlight = createReactClass({
       <View
         accessible={this.props.accessible !== false}
         accessibilityLabel={this.props.accessibilityLabel}
-        accessibilityComponentType={this.props.accessibilityComponentType}
-        accessibilityTraits={this.props.accessibilityTraits}
+        accessibilityHint={this.props.accessibilityHint}
+        accessibilityRole={this.props.accessibilityRole}
+        accessibilityStates={this.props.accessibilityStates}
         style={StyleSheet.compose(
           this.props.style,
           this.state.extraUnderlayStyle,
@@ -317,6 +417,11 @@ const TouchableHighlight = createReactClass({
         isTVSelectable={true}
         tvParallaxProperties={this.props.tvParallaxProperties}
         hasTVPreferredFocus={this.props.hasTVPreferredFocus}
+        nextFocusDown={this.props.nextFocusDown}
+        nextFocusForward={this.props.nextFocusForward}
+        nextFocusLeft={this.props.nextFocusLeft}
+        nextFocusRight={this.props.nextFocusRight}
+        nextFocusUp={this.props.nextFocusUp}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={
           this.touchableHandleResponderTerminationRequest
@@ -340,6 +445,6 @@ const TouchableHighlight = createReactClass({
       </View>
     );
   },
-});
+}): any): React.ComponentType<Props>);
 
 module.exports = TouchableHighlight;

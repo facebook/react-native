@@ -1,73 +1,35 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Dimensions
+ * @format
  * @flow
  */
+
 'use strict';
 
-var EventEmitter = require('EventEmitter');
-var Platform = require('Platform');
-var RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+const EventEmitter = require('EventEmitter');
+const Platform = require('Platform');
+const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
-var invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
-var eventEmitter = new EventEmitter();
-var dimensionsInitialized = false;
-var dimensions = {};
-
-var dimensionsProvider: ?(() => {[key:string]: Object});
-
+const eventEmitter = new EventEmitter();
+let dimensionsInitialized = false;
+const dimensions = {};
 class Dimensions {
-  static setProvider(value: () => {[key:string]: Object}): void {
-    dimensionsProvider = value;
-    dimensionsInitialized = false;
-    dimensions = {};
-  }
-
-  static getDimensions(): {[key:string]: Object} {
-    if (dimensionsInitialized) {
-      return dimensions;
-    }
-
+  /**
+   * This should only be called from native code by sending the
+   * didUpdateDimensions event.
+   *
+   * @param {object} dims Simple string-keyed object of dimensions to set
+   */
+  static set(dims: {[key: string]: any}): void {
     // We calculate the window dimensions in JS so that we don't encounter loss of
     // precision in transferring the dimensions (which could be non-integers) over
     // the bridge.
-    const dims = (dimensionsProvider || defaultDimProvider)();
-    const result = Dimensions.updateDimensions(dims);
-    RCTDeviceEventEmitter.addListener('didUpdateDimensions', function(update) {
-      Dimensions.updateDimensions(update);
-    });
-    return result;
-  }
-
-  /**
-   * Initial dimensions are set before `runApplication` is called so they should
-   * be available before any other require's are run, but may be updated later.
-   *
-   * Note: Although dimensions are available immediately, they may change (e.g
-   * due to device rotation) so any rendering logic or styles that depend on
-   * these constants should try to call this function on every render, rather
-   * than caching the value (for example, using inline styles rather than
-   * setting a value in a `StyleSheet`).
-   *
-   * Example: `var {height, width} = Dimensions.get('window');`
-   *
-   * @param {string} dim Name of dimension as defined when calling `set`.
-   * @returns {Object?} Value for the dimension.
-   */
-  static get(dim: string): Object {
-    const dims = Dimensions.getDimensions();
-    invariant(dims[dim], 'No dimension set for key ' + dim);
-    return dims[dim];
-  }
-
-  static updateDimensions(dims: ?{[key:string]: Object}): {[key:string]: Object} {
     if (dims && dims.windowPhysicalPixels) {
       // parse/stringify => Clone hack
       dims = JSON.parse(JSON.stringify(dims));
@@ -103,12 +65,31 @@ class Dimensions {
       // Don't fire 'change' the first time the dimensions are set.
       eventEmitter.emit('change', {
         window: dimensions.window,
-        screen: dimensions.screen
+        screen: dimensions.screen,
       });
     } else {
       dimensionsInitialized = true;
     }
-    return dimensions;
+  }
+
+  /**
+   * Initial dimensions are set before `runApplication` is called so they should
+   * be available before any other require's are run, but may be updated later.
+   *
+   * Note: Although dimensions are available immediately, they may change (e.g
+   * due to device rotation) so any rendering logic or styles that depend on
+   * these constants should try to call this function on every render, rather
+   * than caching the value (for example, using inline styles rather than
+   * setting a value in a `StyleSheet`).
+   *
+   * Example: `var {height, width} = Dimensions.get('window');`
+   *
+   * @param {string} dim Name of dimension as defined when calling `set`.
+   * @returns {Object?} Value for the dimension.
+   */
+  static get(dim: string): Object {
+    invariant(dimensions[dim], 'No dimension set for key ' + dim);
+    return dimensions[dim];
   }
 
   /**
@@ -119,13 +100,11 @@ class Dimensions {
    *   are the same as the return values of `Dimensions.get('window')` and
    *   `Dimensions.get('screen')`, respectively.
    */
-  static addEventListener(
-    type: string,
-    handler: Function
-  ) {
+  static addEventListener(type: string, handler: Function) {
     invariant(
       type === 'change',
-      'Trying to subscribe to unknown event: "%s"', type
+      'Trying to subscribe to unknown event: "%s"',
+      type,
     );
     eventEmitter.addListener(type, handler);
   }
@@ -133,20 +112,36 @@ class Dimensions {
   /**
    * Remove an event handler.
    */
-  static removeEventListener(
-    type: string,
-    handler: Function
-  ) {
+  static removeEventListener(type: string, handler: Function) {
     invariant(
       type === 'change',
-      'Trying to remove listener for unknown event: "%s"', type
+      'Trying to remove listener for unknown event: "%s"',
+      type,
     );
     eventEmitter.removeListener(type, handler);
   }
 }
 
-function defaultDimProvider(): {[key:string]: Object} {
-  return require('DeviceInfo').Dimensions;
+let dims: ?{[key: string]: any} =
+  global.nativeExtensions &&
+  global.nativeExtensions.DeviceInfo &&
+  global.nativeExtensions.DeviceInfo.Dimensions;
+let nativeExtensionsEnabled = true;
+if (!dims) {
+  const DeviceInfo = require('DeviceInfo');
+  dims = DeviceInfo.Dimensions;
+  nativeExtensionsEnabled = false;
+}
+
+invariant(
+  dims,
+  'Either DeviceInfo native extension or DeviceInfo Native Module must be registered',
+);
+Dimensions.set(dims);
+if (!nativeExtensionsEnabled) {
+  RCTDeviceEventEmitter.addListener('didUpdateDimensions', function(update) {
+    Dimensions.set(update);
+  });
 }
 
 module.exports = Dimensions;

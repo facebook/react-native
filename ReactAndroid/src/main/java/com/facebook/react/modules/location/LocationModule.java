@@ -1,21 +1,23 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.modules.location;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import androidx.core.content.ContextCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -33,9 +35,11 @@ import javax.annotation.Nullable;
 /**
  * Native module that exposes Geolocation to JS.
  */
-@ReactModule(name = "LocationObserver")
+@SuppressLint("MissingPermission")
+@ReactModule(name = LocationModule.NAME)
 public class LocationModule extends ReactContextBaseJavaModule {
 
+  public static final String NAME = "LocationObserver";
   private @Nullable String mWatchedProvider;
   private static final float RCT_DEFAULT_LOCATION_ACCURACY = 100;
 
@@ -68,7 +72,7 @@ public class LocationModule extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "LocationObserver";
+    return NAME;
   }
 
   private static class LocationOptions {
@@ -191,7 +195,7 @@ public class LocationModule extends ReactContextBaseJavaModule {
   }
 
   @Nullable
-  private static String getValidProvider(LocationManager locationManager, boolean highAccuracy) {
+  private String getValidProvider(LocationManager locationManager, boolean highAccuracy) {
     String provider =
         highAccuracy ? LocationManager.GPS_PROVIDER : LocationManager.NETWORK_PROVIDER;
     if (!locationManager.isProviderEnabled(provider)) {
@@ -201,6 +205,11 @@ public class LocationModule extends ReactContextBaseJavaModule {
       if (!locationManager.isProviderEnabled(provider)) {
         return null;
       }
+    }
+    // If it's an enabled provider, but we don't have permissions, ignore it
+    int finePermission = ContextCompat.checkSelfPermission(getReactApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION);
+    if (provider.equals(LocationManager.GPS_PROVIDER) && finePermission != PackageManager.PERMISSION_GRANTED) {
+      return null;
     }
     return provider;
   }
@@ -217,7 +226,7 @@ public class LocationModule extends ReactContextBaseJavaModule {
     map.putMap("coords", coords);
     map.putDouble("timestamp", location.getTime());
 
-    if (android.os.Build.VERSION.SDK_INT >= 18) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
       map.putBoolean("mocked", location.isFromMockProvider());
     }
 

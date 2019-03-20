@@ -1,15 +1,11 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react.views.textinput;
-
-import javax.annotation.Nullable;
 
 import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
@@ -18,6 +14,7 @@ import android.view.inputmethod.InputConnectionWrapper;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
+import javax.annotation.Nullable;
 
 /**
  * A class to implement the TextInput 'onKeyPress' API on android for soft keyboards.
@@ -94,14 +91,15 @@ class ReactEditTextInputConnectionWrapper extends InputConnectionWrapper {
     int previousSelectionEnd = mEditText.getSelectionEnd();
     String key;
     boolean consumed = super.setComposingText(text, newCursorPosition);
+    int currentSelectionStart = mEditText.getSelectionStart();
     boolean noPreviousSelection = previousSelectionStart == previousSelectionEnd;
-    boolean cursorDidNotMove = mEditText.getSelectionStart() == previousSelectionStart;
-    boolean cursorMovedBackwards = mEditText.getSelectionStart() < previousSelectionStart;
-    if ((noPreviousSelection && cursorMovedBackwards)
-            || !noPreviousSelection && cursorDidNotMove) {
+    boolean cursorDidNotMove = currentSelectionStart == previousSelectionStart;
+    boolean cursorMovedBackwardsOrAtBeginningOfInput =
+        (currentSelectionStart < previousSelectionStart) || currentSelectionStart <= 0;
+    if (cursorMovedBackwardsOrAtBeginningOfInput || (!noPreviousSelection && cursorDidNotMove)) {
       key = BACKSPACE_KEY_VALUE;
     } else {
-      key = String.valueOf(mEditText.getText().charAt(mEditText.getSelectionStart() - 1));
+      key = String.valueOf(mEditText.getText().charAt(currentSelectionStart - 1));
     }
     dispatchKeyEventOrEnqueue(key);
     return consumed;

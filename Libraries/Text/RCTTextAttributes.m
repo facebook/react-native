@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTTextAttributes.h"
@@ -23,12 +21,15 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   if (self = [super init]) {
     _fontSize = NAN;
     _letterSpacing = NAN;
+    _lineHeight = NAN;
     _textDecorationStyle = NSUnderlineStyleSingle;
     _fontSizeMultiplier = NAN;
+    _maxFontSizeMultiplier = NAN;
     _alignment = NSTextAlignmentNatural;
     _baseWritingDirection = NSWritingDirectionNatural;
     _textShadowRadius = NAN;
     _opacity = NAN;
+    _textTransform = RCTTextTransformUndefined;
   }
 
   return self;
@@ -49,6 +50,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   _fontFamily = textAttributes->_fontFamily ?: _fontFamily;
   _fontSize = !isnan(textAttributes->_fontSize) ? textAttributes->_fontSize : _fontSize;
   _fontSizeMultiplier = !isnan(textAttributes->_fontSizeMultiplier) ? textAttributes->_fontSizeMultiplier : _fontSizeMultiplier;
+  _maxFontSizeMultiplier = !isnan(textAttributes->_maxFontSizeMultiplier) ? textAttributes->_maxFontSizeMultiplier : _maxFontSizeMultiplier;
   _fontWeight = textAttributes->_fontWeight ?: _fontWeight;
   _fontStyle = textAttributes->_fontStyle ?: _fontStyle;
   _fontVariant = textAttributes->_fontVariant ?: _fontVariant;
@@ -74,6 +76,45 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   _isHighlighted = textAttributes->_isHighlighted || _isHighlighted;  // *
   _tag = textAttributes->_tag ?: _tag;
   _layoutDirection = textAttributes->_layoutDirection != UIUserInterfaceLayoutDirectionLeftToRight ? textAttributes->_layoutDirection : _layoutDirection;
+  _textTransform = textAttributes->_textTransform != RCTTextTransformUndefined ? textAttributes->_textTransform : _textTransform;
+}
+
+- (NSParagraphStyle *)effectiveParagraphStyle
+{
+  // Paragraph Style
+  NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
+  BOOL isParagraphStyleUsed = NO;
+  if (_alignment != NSTextAlignmentNatural) {
+    NSTextAlignment alignment = _alignment;
+    if (_layoutDirection == UIUserInterfaceLayoutDirectionRightToLeft) {
+      if (alignment == NSTextAlignmentRight) {
+        alignment = NSTextAlignmentLeft;
+      } else if (alignment == NSTextAlignmentLeft) {
+        alignment = NSTextAlignmentRight;
+      }
+    }
+    
+    paragraphStyle.alignment = alignment;
+    isParagraphStyleUsed = YES;
+  }
+  
+  if (_baseWritingDirection != NSWritingDirectionNatural) {
+    paragraphStyle.baseWritingDirection = _baseWritingDirection;
+    isParagraphStyleUsed = YES;
+  }
+  
+  if (!isnan(_lineHeight)) {
+    CGFloat lineHeight = _lineHeight * self.effectiveFontSizeMultiplier;
+    paragraphStyle.minimumLineHeight = lineHeight;
+    paragraphStyle.maximumLineHeight = lineHeight;
+    isParagraphStyleUsed = YES;
+  }
+  
+  if (isParagraphStyleUsed) {
+    return [paragraphStyle copy];
+  }
+  
+  return nil;
 }
 
 - (NSDictionary<NSAttributedStringKey, id> *)effectiveTextAttributes
@@ -104,35 +145,8 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   }
 
   // Paragraph Style
-  NSMutableParagraphStyle *paragraphStyle = [NSMutableParagraphStyle new];
-  BOOL isParagraphStyleUsed = NO;
-  if (_alignment != NSTextAlignmentNatural) {
-    NSTextAlignment alignment = _alignment;
-    if (_layoutDirection == UIUserInterfaceLayoutDirectionRightToLeft) {
-      if (alignment == NSTextAlignmentRight) {
-        alignment = NSTextAlignmentLeft;
-      } else if (alignment == NSTextAlignmentLeft) {
-        alignment = NSTextAlignmentRight;
-      }
-    }
-
-    paragraphStyle.alignment = alignment;
-    isParagraphStyleUsed = YES;
-  }
-
-  if (_baseWritingDirection != NSWritingDirectionNatural) {
-    paragraphStyle.baseWritingDirection = _baseWritingDirection;
-    isParagraphStyleUsed = YES;
-  }
-
-  if (!isnan(_lineHeight)) {
-    CGFloat lineHeight = _lineHeight * self.effectiveFontSizeMultiplier;
-    paragraphStyle.minimumLineHeight = lineHeight;
-    paragraphStyle.maximumLineHeight = lineHeight;
-    isParagraphStyleUsed = YES;
-  }
-
-  if (isParagraphStyleUsed) {
+  NSParagraphStyle *paragraphStyle = [self effectiveParagraphStyle];
+  if (paragraphStyle) {
     attributes[NSParagraphStyleAttributeName] = paragraphStyle;
   }
 
@@ -190,7 +204,15 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
 
 - (CGFloat)effectiveFontSizeMultiplier
 {
-  return _allowFontScaling && !isnan(_fontSizeMultiplier) ? _fontSizeMultiplier : 1.0;
+  bool fontScalingEnabled = !RCTHasFontHandlerSet() && _allowFontScaling;
+
+  if (fontScalingEnabled) {
+    CGFloat fontSizeMultiplier = !isnan(_fontSizeMultiplier) ? _fontSizeMultiplier : 1.0;
+    CGFloat maxFontSizeMultiplier = !isnan(_maxFontSizeMultiplier) ? _maxFontSizeMultiplier : 0.0;
+    return maxFontSizeMultiplier >= 1.0 ? fminf(maxFontSizeMultiplier, fontSizeMultiplier) : fontSizeMultiplier;
+  } else {
+    return 1.0;
+  }
 }
 
 - (UIColor *)effectiveForegroundColor
@@ -215,6 +237,21 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
   return effectiveBackgroundColor ?: [UIColor clearColor];
 }
 
+- (NSString *)applyTextAttributesToText:(NSString *)text
+{
+  switch (_textTransform) {
+    case RCTTextTransformUndefined:
+    case RCTTextTransformNone:
+      return text;
+    case RCTTextTransformLowercase:
+      return [text lowercaseString];
+    case RCTTextTransformUppercase:
+      return [text uppercaseString];
+    case RCTTextTransformCapitalize:
+      return [text capitalizedString];
+  }
+}
+
 - (RCTTextAttributes *)copyWithZone:(NSZone *)zone
 {
   RCTTextAttributes *textAttributes = [RCTTextAttributes new];
@@ -226,6 +263,9 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
 
 - (BOOL)isEqual:(RCTTextAttributes *)textAttributes
 {
+  if (!textAttributes) {
+    return NO;
+  }
   if (self == textAttributes) {
     return YES;
   }
@@ -244,6 +284,7 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     RCTTextAttributesCompareObjects(_fontFamily) &&
     RCTTextAttributesCompareFloats(_fontSize) &&
     RCTTextAttributesCompareFloats(_fontSizeMultiplier) &&
+    RCTTextAttributesCompareFloats(_maxFontSizeMultiplier) &&
     RCTTextAttributesCompareStrings(_fontWeight) &&
     RCTTextAttributesCompareObjects(_fontStyle) &&
     RCTTextAttributesCompareObjects(_fontVariant) &&
@@ -264,7 +305,8 @@ NSString *const RCTTextAttributesTagAttributeName = @"RCTTextAttributesTagAttrib
     // Special
     RCTTextAttributesCompareOthers(_isHighlighted) &&
     RCTTextAttributesCompareObjects(_tag) &&
-    RCTTextAttributesCompareOthers(_layoutDirection);
+    RCTTextAttributesCompareOthers(_layoutDirection) &&
+    RCTTextAttributesCompareOthers(_textTransform);
 }
 
 @end

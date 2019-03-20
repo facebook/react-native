@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTBundleURLProvider.h"
@@ -60,20 +58,39 @@ static NSString *const kRCTEnableMinificationKey = @"RCT_enableMinification";
   [self settingsUpdated];
 }
 
-static NSURL *serverRootWithHost(NSString *host)
+static NSURL *serverRootWithHostPort(NSString *hostPort)
 {
+  if([hostPort rangeOfString:@":"].location != NSNotFound){
+    return [NSURL URLWithString:
+            [NSString stringWithFormat:@"http://%@/",
+             hostPort]];
+  }
   return [NSURL URLWithString:
           [NSString stringWithFormat:@"http://%@:%lu/",
-           host, (unsigned long)kRCTBundleURLProviderDefaultPort]];
+           hostPort, (unsigned long)kRCTBundleURLProviderDefaultPort]];
 }
 
 #if RCT_DEV
 - (BOOL)isPackagerRunning:(NSString *)host
 {
-  NSURL *url = [serverRootWithHost(host) URLByAppendingPathComponent:@"status"];
+  NSURL *url = [serverRootWithHostPort(host) URLByAppendingPathComponent:@"status"];
+  
+  NSURLSession *session = [NSURLSession sharedSession];
   NSURLRequest *request = [NSURLRequest requestWithURL:url];
-  NSURLResponse *response;
-  NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:NULL];
+  __block NSURLResponse *response;
+  __block NSData *data;
+  
+  dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+  [[session dataTaskWithRequest:request
+            completionHandler:^(NSData *d,
+                                NSURLResponse *res,
+                                __unused NSError *err) {
+              data = d;
+              response = res;
+              dispatch_semaphore_signal(semaphore);
+            }] resume];
+  dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+  
   NSString *status = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
   return [status isEqualToString:@"packager-status:running"];
 }
@@ -169,7 +186,7 @@ static NSURL *serverRootWithHost(NSString *host)
                          packagerHost:(NSString *)packagerHost
                                 query:(NSString *)query
 {
-  NSURLComponents *components = [NSURLComponents componentsWithURL:serverRootWithHost(packagerHost) resolvingAgainstBaseURL:NO];
+  NSURLComponents *components = [NSURLComponents componentsWithURL:serverRootWithHostPort(packagerHost) resolvingAgainstBaseURL:NO];
   components.path = path;
   if (query != nil) {
     components.query = query;

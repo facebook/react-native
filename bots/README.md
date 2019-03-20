@@ -9,10 +9,10 @@ If you'd like to make changes to the Dangerfile, find an existing PR on the Reac
 Then, run from the React Native root directory:
 
 ```
-cd .circleci
+cd bots
 npm install
 ..
-node .circleci/node_modules/.bin/danger pr https://github.com/facebook/react-native/pull/1		
+node bots/node_modules/.bin/danger pr https://github.com/facebook/react-native/pull/1		
 ```
 
 And you will get the responses from parsing the Dangerfile.

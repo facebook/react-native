@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 #import "RCTTextShadowView.h"
@@ -31,9 +29,23 @@
     _cachedTextStorages = [NSMapTable strongToStrongObjectsMapTable];
     _needsUpdateView = YES;
     YGNodeSetMeasureFunc(self.yogaNode, RCTTextShadowViewMeasure);
+    YGNodeSetBaselineFunc(self.yogaNode, RCTTextShadowViewBaseline);
   }
 
   return self;
+}
+
+- (void)didSetProps:(NSArray<NSString *> *)changedProps
+{
+  [super didSetProps:changedProps];
+
+  // When applying a semi-transparent background color to Text component
+  // we must set the root text nodes text attribute background color to nil
+  // because the background color is drawn on the RCTTextView itself, as well
+  // as on the glphy background draw step. By setting this to nil, we allow
+  // the RCTTextView backgroundColor to be used, without affecting nested Text
+  // components.
+  self.textAttributes.backgroundColor = nil;
 }
 
 - (BOOL)isYogaLeafNode
@@ -134,7 +146,7 @@
     return;
   }
 
-  [attributedText beginEditing];
+  __block CGFloat maximumFontLineHeight = 0;
 
   [attributedText enumerateAttribute:NSFontAttributeName
                              inRange:NSMakeRange(0, attributedText.length)
@@ -145,19 +157,21 @@
         return;
       }
 
-      if (maximumLineHeight <= font.lineHeight) {
-        return;
+      if (maximumFontLineHeight <= font.lineHeight) {
+        maximumFontLineHeight = font.lineHeight;
       }
+    }
+  ];
 
-      CGFloat baseLineOffset = maximumLineHeight / 2.0 - font.lineHeight / 2.0;
+  if (maximumLineHeight < maximumFontLineHeight) {
+    return;
+  }
 
-      [attributedText addAttribute:NSBaselineOffsetAttributeName
-                             value:@(baseLineOffset)
-                             range:range];
-     }
-   ];
+  CGFloat baseLineOffset = maximumLineHeight / 2.0 - maximumFontLineHeight / 2.0;
 
-   [attributedText endEditing];
+  [attributedText addAttribute:NSBaselineOffsetAttributeName
+                         value:@(baseLineOffset)
+                         range:NSMakeRange(0, attributedText.length)];
 }
 
 - (NSAttributedString *)attributedTextWithMeasuredAttachmentsThatFitSize:(CGSize)size
@@ -225,7 +239,7 @@
       MAX(_minimumFontScale * (self.textAttributes.effectiveFont.pointSize), 4.0);
     [textStorage scaleFontSizeToFitSize:size
                         minimumFontSize:minimumFontSize
-                        maximumFontSize:72.0];
+                        maximumFontSize:self.textAttributes.effectiveFont.pointSize];
   }
 
   if (!exclusiveOwnership) {
@@ -235,40 +249,24 @@
   return textStorage;
 }
 
-- (void)applyLayoutNode:(YGNodeRef)node
-      viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
-       absolutePosition:(CGPoint)absolutePosition
+- (void)layoutWithMetrics:(RCTLayoutMetrics)layoutMetrics
+            layoutContext:(RCTLayoutContext)layoutContext
 {
-  if (YGNodeGetHasNewLayout(self.yogaNode)) {
-    // If the view got new layout, we have to redraw it because `contentFrame`
-    // and sizes of embedded views may change.
+  // If the view got new `contentFrame`, we have to redraw it because
+  // and sizes of embedded views may change.
+  if (!CGRectEqualToRect(self.layoutMetrics.contentFrame, layoutMetrics.contentFrame)) {
     _needsUpdateView = YES;
   }
 
-  [super applyLayoutNode:node
-       viewsWithNewFrame:viewsWithNewFrame
-        absolutePosition:absolutePosition];
-}
-
-- (void)applyLayoutWithFrame:(CGRect)frame
-             layoutDirection:(UIUserInterfaceLayoutDirection)layoutDirection
-      viewsWithUpdatedLayout:(NSMutableSet<RCTShadowView *> *)viewsWithUpdatedLayout
-            absolutePosition:(CGPoint)absolutePosition
-{
-  if (self.textAttributes.layoutDirection != layoutDirection) {
-    self.textAttributes.layoutDirection = layoutDirection;
+  if (self.textAttributes.layoutDirection != layoutMetrics.layoutDirection) {
+    self.textAttributes.layoutDirection = layoutMetrics.layoutDirection;
     [self invalidateCache];
   }
 
-  [super applyLayoutWithFrame:frame
-              layoutDirection:layoutDirection
-       viewsWithUpdatedLayout:viewsWithUpdatedLayout
-             absolutePosition:absolutePosition];
+  [super layoutWithMetrics:layoutMetrics layoutContext:layoutContext];
 }
 
-- (void)applyLayoutToChildren:(YGNodeRef)node
-            viewsWithNewFrame:(NSMutableSet<RCTShadowView *> *)viewsWithNewFrame
-             absolutePosition:(CGPoint)absolutePosition
+- (void)layoutSubviewsWithContext:(RCTLayoutContext)layoutContext
 {
   NSTextStorage *textStorage =
     [self textStorageAndLayoutManagerThatFitsSize:self.availableSize
@@ -280,9 +278,9 @@
                                                      actualGlyphRange:NULL];
 
   [textStorage enumerateAttribute:RCTBaseTextShadowViewEmbeddedShadowViewAttributeName
-                                        inRange:characterRange
-                                        options:0
-                                     usingBlock:
+                          inRange:characterRange
+                          options:0
+                       usingBlock:
     ^(RCTShadowView *shadowView, NSRange range, BOOL *stop) {
       if (!shadowView) {
         return;
@@ -305,21 +303,77 @@
         RCTRoundPixelValue(attachmentSize.width),
         RCTRoundPixelValue(attachmentSize.height)
       }};
+      
+      NSRange truncatedGlyphRange = [layoutManager truncatedGlyphRangeInLineFragmentForGlyphAtIndex:range.location];
+      BOOL viewIsTruncated = NSIntersectionRange(range, truncatedGlyphRange).length != 0;
 
-      UIUserInterfaceLayoutDirection layoutDirection = self.textAttributes.layoutDirection;
+      RCTLayoutContext localLayoutContext = layoutContext;
+      localLayoutContext.absolutePosition.x += frame.origin.x;
+      localLayoutContext.absolutePosition.y += frame.origin.y;
 
-      YGNodeCalculateLayout(
-        shadowView.yogaNode,
-        frame.size.width,
-        frame.size.height,
-        layoutDirection == UIUserInterfaceLayoutDirectionLeftToRight ? YGDirectionLTR : YGDirectionRTL);
+      [shadowView layoutWithMinimumSize:frame.size
+                            maximumSize:frame.size
+                        layoutDirection:self.layoutMetrics.layoutDirection
+                          layoutContext:localLayoutContext];
 
-      [shadowView applyLayoutWithFrame:frame
-                       layoutDirection:layoutDirection
-                viewsWithUpdatedLayout:viewsWithNewFrame
-                      absolutePosition:absolutePosition];
+      RCTLayoutMetrics localLayoutMetrics = shadowView.layoutMetrics;
+      localLayoutMetrics.frame.origin = frame.origin; // Reinforcing a proper frame origin for the Shadow View.
+      if (viewIsTruncated) {
+        localLayoutMetrics.displayType = RCTDisplayTypeNone;
+      }
+      [shadowView layoutWithMetrics:localLayoutMetrics layoutContext:localLayoutContext];
     }
   ];
+
+
+  if (_onTextLayout) {
+    NSMutableArray *lineData = [NSMutableArray new];
+    [layoutManager
+     enumerateLineFragmentsForGlyphRange:glyphRange
+     usingBlock:^(CGRect overallRect, CGRect usedRect, NSTextContainer * _Nonnull usedTextContainer, NSRange lineGlyphRange, BOOL * _Nonnull stop) {
+       NSRange range = [layoutManager characterRangeForGlyphRange:lineGlyphRange actualGlyphRange:nil];
+       NSString *renderedString = [textStorage.string substringWithRange:range];
+       UIFont *font = [[textStorage attributedSubstringFromRange:range] attribute:NSFontAttributeName atIndex:0 effectiveRange:nil];
+       [lineData addObject:
+        @{
+          @"text": renderedString,
+          @"x": @(usedRect.origin.x),
+          @"y": @(usedRect.origin.y),
+          @"width": @(usedRect.size.width),
+          @"height": @(usedRect.size.height),
+          @"descender": @(-font.descender),
+          @"capHeight": @(font.capHeight),
+          @"ascender": @(font.ascender),
+          @"xHeight": @(font.xHeight),
+          }];
+     }];
+    NSDictionary *payload =
+    @{
+      @"lines": lineData,
+      };
+    _onTextLayout(payload);
+  }
+}
+
+- (CGFloat)lastBaselineForSize:(CGSize)size
+{
+  NSAttributedString *attributedText =
+    [self textStorageAndLayoutManagerThatFitsSize:size exclusiveOwnership:NO];
+
+  __block CGFloat maximumDescender = 0.0;
+
+  [attributedText enumerateAttribute:NSFontAttributeName
+                             inRange:NSMakeRange(0, attributedText.length)
+                             options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
+                          usingBlock:
+    ^(UIFont *font, NSRange range, __unused BOOL *stop) {
+      if (maximumDescender > font.descender) {
+        maximumDescender = font.descender;
+      }
+    }
+  ];
+
+  return size.height + maximumDescender;
 }
 
 static YGSize RCTTextShadowViewMeasure(YGNodeRef node, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode)
@@ -350,10 +404,27 @@ static YGSize RCTTextShadowViewMeasure(YGNodeRef node, float width, YGMeasureMod
     MIN(RCTCeilPixelValue(size.height), maximumSize.height)
   };
 
+  // Adding epsilon value illuminates problems with converting values from
+  // `double` to `float`, and then rounding them to pixel grid in Yoga.
+  CGFloat epsilon = 0.001;
   return (YGSize){
-    RCTYogaFloatFromCoreGraphicsFloat(size.width),
-    RCTYogaFloatFromCoreGraphicsFloat(size.height)
+    RCTYogaFloatFromCoreGraphicsFloat(size.width + epsilon),
+    RCTYogaFloatFromCoreGraphicsFloat(size.height + epsilon)
   };
+}
+
+static float RCTTextShadowViewBaseline(YGNodeRef node, const float width, const float height)
+{
+  RCTTextShadowView *shadowTextView = (__bridge RCTTextShadowView *)YGNodeGetContext(node);
+
+  CGSize size = (CGSize){
+    RCTCoreGraphicsFloatFromYogaFloat(width),
+    RCTCoreGraphicsFloatFromYogaFloat(height)
+  };
+
+  CGFloat lastBaseline = [shadowTextView lastBaselineForSize:size];
+
+  return RCTYogaFloatFromCoreGraphicsFloat(lastBaseline);
 }
 
 @end

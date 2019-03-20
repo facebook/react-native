@@ -1,27 +1,98 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  *
- * @providesModule Button
+ * @format
  * @flow
  */
+
 'use strict';
 
-const ColorPropType = require('ColorPropType');
 const Platform = require('Platform');
 const React = require('React');
-const PropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const TouchableNativeFeedback = require('TouchableNativeFeedback');
 const TouchableOpacity = require('TouchableOpacity');
 const View = require('View');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
+
+import type {PressEvent} from 'CoreEventTypes';
+
+type ButtonProps = $ReadOnly<{|
+  /**
+   * Text to display inside the button
+   */
+  title: string,
+
+  /**
+   * Handler to be called when the user taps the button
+   */
+  onPress: (event?: PressEvent) => mixed,
+
+  /**
+   * Color of the text (iOS), or background color of the button (Android)
+   */
+  color?: ?string,
+
+  /**
+   * TV preferred focus (see documentation for the View component).
+   */
+  hasTVPreferredFocus?: ?boolean,
+
+  /**
+   * TV next focus down (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusDown?: ?number,
+
+  /**
+   * TV next focus forward (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusForward?: ?number,
+
+  /**
+   * TV next focus left (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusLeft?: ?number,
+
+  /**
+   * TV next focus right (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusRight?: ?number,
+
+  /**
+   * TV next focus up (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusUp?: ?number,
+
+  /**
+   * Text to display for blindness accessibility features
+   */
+  accessibilityLabel?: ?string,
+
+  /**
+   * If true, disable all interactions for this component.
+   */
+  disabled?: ?boolean,
+
+  /**
+   * Used to locate this view in end-to-end tests.
+   */
+  testID?: ?string,
+|}>;
 
 /**
  * A basic button component that should render nicely on any platform. Supports
@@ -51,48 +122,7 @@ const invariant = require('fbjs/lib/invariant');
  *
  */
 
-class Button extends React.Component<{
-  title: string,
-  onPress: () => any,
-  color?: ?string,
-  accessibilityLabel?: ?string,
-  disabled?: ?boolean,
-  testID?: ?string,
-  hasTVPreferredFocus?: ?boolean,
-}> {
-  static propTypes = {
-    /**
-     * Text to display inside the button
-     */
-    title: PropTypes.string.isRequired,
-    /**
-     * Text to display for blindness accessibility features
-     */
-    accessibilityLabel: PropTypes.string,
-    /**
-     * Color of the text (iOS), or background color of the button (Android)
-     */
-    color: ColorPropType,
-    /**
-     * If true, disable all interactions for this component.
-     */
-    disabled: PropTypes.bool,
-    /**
-     * Handler to be called when the user taps the button
-     */
-    onPress: PropTypes.func.isRequired,
-    /**
-     * Used to locate this view in end-to-end tests.
-     */
-    testID: PropTypes.string,
-    /**
-     * *(Apple TV only)* TV preferred focus (see documentation for the View component).
-     *
-     * @platform ios
-     */
-    hasTVPreferredFocus: PropTypes.bool,
-  };
-
+class Button extends React.Component<ButtonProps> {
   render() {
     const {
       accessibilityLabel,
@@ -100,6 +130,11 @@ class Button extends React.Component<{
       onPress,
       title,
       hasTVPreferredFocus,
+      nextFocusDown,
+      nextFocusForward,
+      nextFocusLeft,
+      nextFocusRight,
+      nextFocusUp,
       disabled,
       testID,
     } = this.props;
@@ -112,29 +147,38 @@ class Button extends React.Component<{
         buttonStyles.push({backgroundColor: color});
       }
     }
-    const accessibilityTraits = ['button'];
+    const accessibilityStates = [];
     if (disabled) {
       buttonStyles.push(styles.buttonDisabled);
       textStyles.push(styles.textDisabled);
-      accessibilityTraits.push('disabled');
+      accessibilityStates.push('disabled');
     }
     invariant(
       typeof title === 'string',
       'The title prop of a Button must be a string',
     );
-    const formattedTitle = Platform.OS === 'android' ? title.toUpperCase() : title;
-    const Touchable = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
+    const formattedTitle =
+      Platform.OS === 'android' ? title.toUpperCase() : title;
+    const Touchable =
+      Platform.OS === 'android' ? TouchableNativeFeedback : TouchableOpacity;
     return (
       <Touchable
-        accessibilityComponentType="button"
         accessibilityLabel={accessibilityLabel}
-        accessibilityTraits={accessibilityTraits}
+        accessibilityRole="button"
+        accessibilityStates={accessibilityStates}
         hasTVPreferredFocus={hasTVPreferredFocus}
+        nextFocusDown={nextFocusDown}
+        nextFocusForward={nextFocusForward}
+        nextFocusLeft={nextFocusLeft}
+        nextFocusRight={nextFocusRight}
+        nextFocusUp={nextFocusUp}
         testID={testID}
         disabled={disabled}
         onPress={onPress}>
         <View style={buttonStyles}>
-          <Text style={textStyles} disabled={disabled}>{formattedTitle}</Text>
+          <Text style={textStyles} disabled={disabled}>
+            {formattedTitle}
+          </Text>
         </View>
       </Touchable>
     );
@@ -151,27 +195,27 @@ const styles = StyleSheet.create({
       borderRadius: 2,
     },
   }),
-  text: Platform.select({
-    ios: {
-      // iOS blue from https://developer.apple.com/ios/human-interface-guidelines/visual-design/color/
-      color: '#007AFF',
-      textAlign: 'center',
-      padding: 8,
-      fontSize: 18,
-    },
-    android: {
-      color: 'white',
-      textAlign: 'center',
-      padding: 8,
-      fontWeight: '500',
-    },
-  }),
+  text: {
+    textAlign: 'center',
+    padding: 8,
+    ...Platform.select({
+      ios: {
+        // iOS blue from https://developer.apple.com/ios/human-interface-guidelines/visual-design/color/
+        color: '#007AFF',
+        fontSize: 18,
+      },
+      android: {
+        color: 'white',
+        fontWeight: '500',
+      },
+    }),
+  },
   buttonDisabled: Platform.select({
     ios: {},
     android: {
       elevation: 0,
       backgroundColor: '#dfdfdf',
-    }
+    },
   }),
   textDisabled: Platform.select({
     ios: {
@@ -179,7 +223,7 @@ const styles = StyleSheet.create({
     },
     android: {
       color: '#a1a1a1',
-    }
+    },
   }),
 });
 
