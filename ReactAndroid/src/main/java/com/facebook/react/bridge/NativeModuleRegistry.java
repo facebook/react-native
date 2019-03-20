@@ -7,35 +7,22 @@
 package com.facebook.react.bridge;
 
 import com.facebook.infer.annotation.Assertions;
-<<<<<<< HEAD
-=======
 import com.facebook.react.module.annotations.ReactModule;
->>>>>>> v0.58.6
 import com.facebook.systrace.Systrace;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-<<<<<<< HEAD
-/**
-  * A set of Java APIs to expose to a particular JavaScript instance.
-  */
-=======
 /** A set of Java APIs to expose to a particular JavaScript instance. */
->>>>>>> v0.58.6
+
 public class NativeModuleRegistry {
 
   private final ReactApplicationContext mReactApplicationContext;
   private final Map<String, ModuleHolder> mModules;
 
   public NativeModuleRegistry(
-<<<<<<< HEAD
-    ReactApplicationContext reactApplicationContext,
-    Map<String, ModuleHolder> modules) {
-=======
       ReactApplicationContext reactApplicationContext, Map<String, ModuleHolder> modules) {
->>>>>>> v0.58.6
     mReactApplicationContext = reactApplicationContext;
     mModules = modules;
   }
@@ -49,20 +36,11 @@ public class NativeModuleRegistry {
     return mReactApplicationContext;
   }
 
-<<<<<<< HEAD
-  /* package */ Collection<JavaModuleWrapper> getJavaModules(
-      JSInstance jsInstance) {
-=======
   /* package */ Collection<JavaModuleWrapper> getJavaModules(JSInstance jsInstance) {
->>>>>>> v0.58.6
     ArrayList<JavaModuleWrapper> javaModules = new ArrayList<>();
     for (Map.Entry<String, ModuleHolder> entry : mModules.entrySet()) {
       if (!entry.getValue().isCxxModule()) {
-<<<<<<< HEAD
-        javaModules.add(new AcJavaModuleWrapper(jsInstance, type, entry.getValue()));
-=======
         javaModules.add(new JavaModuleWrapper(jsInstance, entry.getValue()));
->>>>>>> v0.58.6
       }
     }
     return javaModules;
@@ -132,18 +110,11 @@ public class NativeModuleRegistry {
 
   public void onBatchComplete() {
     // The only native module that uses the onBatchComplete is the UI Manager. Hence, instead of
-<<<<<<< HEAD
-    // iterating over all the modules for find this one instance, and then calling it, we short-circuit
-    // the search, and simply call OnBatchComplete on the UI Manager.
-    // With Fabric, UIManager would no longer be a NativeModule, so this call would simply go away
-    ModuleHolder moduleHolder = mModules.get("com.facebook.react.uimanager.UIManagerModule");
-=======
     // iterating over all the modules for find this one instance, and then calling it, we
     // short-circuit
     // the search, and simply call OnBatchComplete on the UI Manager.
     // With Fabric, UIManager would no longer be a NativeModule, so this call would simply go away
     ModuleHolder moduleHolder = mModules.get("UIManager");
->>>>>>> v0.58.6
     if (moduleHolder != null && moduleHolder.hasInstance()) {
       ((OnBatchCompleteListener) moduleHolder.getModule()).onBatchComplete();
     }

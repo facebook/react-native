@@ -16,10 +16,7 @@ public class ReactModuleInfo {
   private final boolean mNeedsEagerInit;
   private final boolean mHasConstants;
   private final boolean mIsCxxModule;
-<<<<<<< HEAD
-=======
   private String mClassName;
->>>>>>> v0.58.6
 
   public ReactModuleInfo(
     String name,

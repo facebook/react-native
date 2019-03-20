@@ -60,11 +60,6 @@ public class NativeModuleRegistryBuilder {
   }
 
   public NativeModuleRegistry build() {
-<<<<<<< HEAD
-    return new NativeModuleRegistry(
-        mReactApplicationContext, mModules);
-=======
     return new NativeModuleRegistry(mReactApplicationContext, mModules);
->>>>>>> v0.58.6
   }
 }

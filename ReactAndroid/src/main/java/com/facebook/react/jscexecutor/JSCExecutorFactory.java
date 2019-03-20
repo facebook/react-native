@@ -34,7 +34,3 @@ public class JSCExecutorFactory implements JavaScriptExecutorFactory {
     return "JSIExecutor+JSCRuntime";
   }
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> v0.58.6

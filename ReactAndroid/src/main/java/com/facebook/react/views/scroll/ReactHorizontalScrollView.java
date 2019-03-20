@@ -73,11 +73,8 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
   private int mSnapInterval = 0;
   private float mDecelerationRate = 0.985f;
   private @Nullable List<Integer> mSnapOffsets;
-<<<<<<< HEAD
-=======
   private boolean mSnapToStart = true;
   private boolean mSnapToEnd = true;
->>>>>>> v0.58.6
   private ReactViewBackgroundManager mReactBackgroundManager;
   private boolean mPagedArrowScrolling = false;
 
@@ -180,8 +177,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     mSnapOffsets = snapOffsets;
   }
 
-<<<<<<< HEAD
-=======
   public void setSnapToStart(boolean snapToStart) {
     mSnapToStart = snapToStart;
   }
@@ -190,7 +185,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     mSnapToEnd = snapToEnd;
   }
 
->>>>>>> v0.58.6
   public void flashScrollIndicators() {
     awakenScrollBars();
   }
@@ -427,11 +421,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     final int correctedVelocityX = (int)(Math.abs(velocityX) * Math.signum(mOnScrollDispatchHelper.getXFlingVelocity()));
 
     if (mPagingEnabled) {
-<<<<<<< HEAD
-      flingAndSnap(velocityX);
-=======
       flingAndSnap(correctedVelocityX);
->>>>>>> v0.58.6
     } else if (mScroller != null) {
       // FB SCROLLVIEW CHANGE
 
@@ -446,11 +436,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
       mScroller.fling(
         getScrollX(), // startX
         getScrollY(), // startY
-<<<<<<< HEAD
-        velocityX, // velocityX
-=======
         correctedVelocityX, // velocityX
->>>>>>> v0.58.6
         0, // velocityY
         0, // minX
         Integer.MAX_VALUE, // maxX
@@ -734,12 +720,9 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
 
     // get the nearest snap points to the target offset
     if (mSnapOffsets != null) {
-<<<<<<< HEAD
-=======
       firstOffset = mSnapOffsets.get(0);
       lastOffset = mSnapOffsets.get(mSnapOffsets.size() - 1);
 
->>>>>>> v0.58.6
       for (int i = 0; i < mSnapOffsets.size(); i ++) {
         int offset = mSnapOffsets.get(i);
 
@@ -759,11 +742,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
       double interval = (double) getSnapInterval();
       double ratio = (double) targetOffset / interval;
       smallerOffset = (int) (Math.floor(ratio) * interval);
-<<<<<<< HEAD
-      largerOffset = (int) (Math.ceil(ratio) * interval);
-=======
       largerOffset = Math.min((int) (Math.ceil(ratio) * interval), maximumOffset);
->>>>>>> v0.58.6
     }
 
     // Calculate the nearest offset
@@ -771,12 +750,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
       ? smallerOffset
       : largerOffset;
 
-<<<<<<< HEAD
-    // Chose the correct snap offset based on velocity
-    if (velocityX > 0) {
-      targetOffset = largerOffset;
-    } else if (velocityX < 0) {
-=======
     // if scrolling after the last snap offset and snapping to the
     // end of the list is disabled, then we allow free scrolling
     int currentOffset = getScrollX();
@@ -805,8 +778,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     } else if (velocityX < 0) {
       // when snapping velocity can feel sluggish for slow swipes
       velocityX -= (int) ((targetOffset - smallerOffset) * 10.0);
-
->>>>>>> v0.58.6
       targetOffset = smallerOffset;
     } else {
       targetOffset = nearestOffset;
@@ -849,7 +820,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
     } else {
       smoothScrollTo(targetOffset, getScrollY());
     }
-<<<<<<< HEAD
   }
 
   private void smoothScrollToNextPage(int direction) {
@@ -873,8 +843,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView implements
 
     smoothScrollTo(page * width, getScrollY());
     handlePostTouchScrolling(0, 0);
-=======
->>>>>>> v0.58.6
   }
 
   @Override

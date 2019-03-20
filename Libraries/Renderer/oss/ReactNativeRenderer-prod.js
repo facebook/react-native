@@ -21,7 +21,6 @@ var ReactNativeViewConfigRegistry = require("ReactNativeViewConfigRegistry"),
   TextInputState = require("TextInputState");
 var scheduler = require("scheduler"),
   ExceptionsManager = require("ExceptionsManager");
-
 function invariant(condition, format, a, b, c, d, e, f) {
   if (!condition) {
     condition = void 0;
@@ -295,7 +294,7 @@ function getListener(inst, registrationName) {
 }
 function getParent(inst) {
   do inst = inst.return;
-  while (inst && 7 !== inst.tag);
+  while (inst && 5 !== inst.tag);
   return inst ? inst : null;
 }
 function traverseTwoPhase(inst, fn, arg) {
@@ -1172,7 +1171,7 @@ function getComponentName(type) {
     case REACT_SUSPENSE_TYPE:
       return "Suspense";
   }
-  if ("object" === typeof type) {
+  if ("object" === typeof type)
     switch (type.$$typeof) {
       case REACT_CONTEXT_TYPE:
         return "Context.Consumer";
@@ -1191,12 +1190,6 @@ function getComponentName(type) {
         if ((type = 1 === type._status ? type._result : null))
           return getComponentName(type);
     }
-    if (
-      "function" === typeof type.then &&
-      (type = 1 === type._reactStatus ? type._reactResult : null)
-    )
-      return getComponentName(type);
-  }
   return null;
 }
 function isFiberMountedImpl(fiber) {
@@ -1207,7 +1200,7 @@ function isFiberMountedImpl(fiber) {
     for (; node.return; )
       if (((node = node.return), 0 !== (node.effectTag & 2))) return 1;
   }
-  return 5 === node.tag ? 2 : 3;
+  return 3 === node.tag ? 2 : 3;
 }
 function assertIsMounted(fiber) {
   invariant(
@@ -1283,14 +1276,14 @@ function findCurrentFiberUsingSlowPath(fiber) {
       "Return fibers should always be each others' alternates. This error is likely caused by a bug in React. Please file an issue."
     );
   }
-  invariant(5 === a.tag, "Unable to find node on an unmounted component.");
+  invariant(3 === a.tag, "Unable to find node on an unmounted component.");
   return a.stateNode.current === a ? fiber : alternate;
 }
 function findCurrentHostFiber(parent) {
   parent = findCurrentFiberUsingSlowPath(parent);
   if (!parent) return null;
   for (var node = parent; ; ) {
-    if (7 === node.tag || 8 === node.tag) return node;
+    if (5 === node.tag || 6 === node.tag) return node;
     if (node.child) (node.child.return = node), (node = node.child);
     else {
       if (node === parent) break;
@@ -2700,7 +2693,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     textContent,
     expirationTime
   ) {
-    if (null === current$$1 || 8 !== current$$1.tag)
+    if (null === current$$1 || 6 !== current$$1.tag)
       return (
         (current$$1 = createFiberFromText(
           textContent,
@@ -2737,7 +2730,7 @@ function ChildReconciler(shouldTrackSideEffects) {
   function updatePortal(returnFiber, current$$1, portal, expirationTime) {
     if (
       null === current$$1 ||
-      6 !== current$$1.tag ||
+      4 !== current$$1.tag ||
       current$$1.stateNode.containerInfo !== portal.containerInfo ||
       current$$1.stateNode.implementation !== portal.implementation
     )
@@ -3207,7 +3200,7 @@ function ChildReconciler(shouldTrackSideEffects) {
             ) {
               if (currentFirstChild.key === isUnkeyedTopLevelFragment)
                 if (
-                  6 === currentFirstChild.tag &&
+                  4 === currentFirstChild.tag &&
                   currentFirstChild.stateNode.containerInfo ===
                     newChild.containerInfo &&
                   currentFirstChild.stateNode.implementation ===
@@ -3245,7 +3238,7 @@ function ChildReconciler(shouldTrackSideEffects) {
     if ("string" === typeof newChild || "number" === typeof newChild)
       return (
         (newChild = "" + newChild),
-        null !== currentFirstChild && 8 === currentFirstChild.tag
+        null !== currentFirstChild && 6 === currentFirstChild.tag
           ? (deleteRemainingChildren(returnFiber, currentFirstChild.sibling),
             (currentFirstChild = useFiber(
               currentFirstChild,
@@ -3300,12 +3293,12 @@ var reconcileChildFibers = ChildReconciler(!0),
   isHydrating = !1;
 function tryHydrate(fiber, nextInstance) {
   switch (fiber.tag) {
-    case 7:
+    case 5:
       return (
         (nextInstance = shim$1(nextInstance, fiber.type, fiber.pendingProps)),
         null !== nextInstance ? ((fiber.stateNode = nextInstance), !0) : !1
       );
-    case 8:
+    case 6:
       return (
         (nextInstance = shim$1(nextInstance, fiber.pendingProps)),
         null !== nextInstance ? ((fiber.stateNode = nextInstance), !0) : !1
@@ -3345,38 +3338,6 @@ function tryToClaimNextHydratableInstance(fiber$jscomp$0) {
       (fiber$jscomp$0.effectTag |= 2),
         (isHydrating = !1),
         (hydrationParentFiber = fiber$jscomp$0);
-  }
-}
-function readLazyComponentType(thenable) {
-  switch (thenable._reactStatus) {
-    case 1:
-      return thenable._reactResult;
-    case 2:
-      throw thenable._reactResult;
-    case 0:
-      throw thenable;
-    default:
-      throw ((thenable._reactStatus = 0),
-      thenable.then(
-        function(resolvedValue) {
-          if (0 === thenable._reactStatus) {
-            thenable._reactStatus = 1;
-            if ("object" === typeof resolvedValue && null !== resolvedValue) {
-              var defaultExport = resolvedValue.default;
-              resolvedValue =
-                void 0 !== defaultExport && null !== defaultExport
-                  ? defaultExport
-                  : resolvedValue;
-            }
-            thenable._reactResult = resolvedValue;
-          }
-        },
-        function(error) {
-          0 === thenable._reactStatus &&
-            ((thenable._reactStatus = 2), (thenable._reactResult = error));
-        }
-      ),
-      thenable);
   }
 }
 var ReactCurrentOwner$3 = ReactSharedInternals.ReactCurrentOwner;
@@ -3970,21 +3931,17 @@ function beginWork(current$$1, workInProgress, renderExpirationTime) {
     updateExpirationTime < renderExpirationTime
   ) {
     switch (workInProgress.tag) {
-      case 5:
+      case 3:
         pushHostRootContext(workInProgress);
         break;
-      case 7:
+      case 5:
         pushHostContext(workInProgress);
         break;
       case 1:
         isContextProvider(workInProgress.type) &&
           pushContextProvider(workInProgress);
         break;
-      case 3:
-        isContextProvider(workInProgress.type._reactResult) &&
-          pushContextProvider(workInProgress);
-        break;
-      case 6:
+      case 4:
         pushHostContainer(
           workInProgress,
           workInProgress.stateNode.containerInfo
@@ -4179,20 +4136,6 @@ function beginWork(current$$1, workInProgress, renderExpirationTime) {
       );
     case 3:
       return (
-        (_Component5 = workInProgress.type._reactResult),
-        (updateExpirationTime = workInProgress.pendingProps),
-        (current$$1 = updateClassComponent(
-          current$$1,
-          workInProgress,
-          _Component5,
-          resolveDefaultProps(_Component5, updateExpirationTime),
-          renderExpirationTime
-        )),
-        (workInProgress.memoizedProps = updateExpirationTime),
-        current$$1
-      );
-    case 5:
-      return (
         pushHostRootContext(workInProgress),
         (updateExpirationTime = workInProgress.updateQueue),
         invariant(
@@ -4224,7 +4167,7 @@ function beginWork(current$$1, workInProgress, renderExpirationTime) {
             (workInProgress = workInProgress.child)),
         workInProgress
       );
-    case 7:
+    case 5:
       return (
         pushHostContext(workInProgress),
         null === current$$1 && tryToClaimNextHydratableInstance(workInProgress),
@@ -4239,7 +4182,7 @@ function beginWork(current$$1, workInProgress, renderExpirationTime) {
         (workInProgress = workInProgress.child),
         workInProgress
       );
-    case 8:
+    case 6:
       return (
         null === current$$1 && tryToClaimNextHydratableInstance(workInProgress),
         null
@@ -4667,7 +4610,7 @@ function commitUnmount(current$$1$jscomp$0) {
   }
 }
 function isHostParent(fiber) {
-  return 7 === fiber.tag || 5 === fiber.tag || 6 === fiber.tag;
+  return 5 === fiber.tag || 3 === fiber.tag || 4 === fiber.tag;
 }
 function commitPlacement(finishedWork) {
   a: {
@@ -4686,15 +4629,15 @@ function commitPlacement(finishedWork) {
   }
   var isContainer = (parent = void 0);
   switch (parentFiber.tag) {
-    case 7:
+    case 5:
       parent = parentFiber.stateNode;
       isContainer = !1;
       break;
-    case 5:
+    case 3:
       parent = parentFiber.stateNode.containerInfo;
       isContainer = !0;
       break;
-    case 6:
+    case 4:
       parent = parentFiber.stateNode.containerInfo;
       isContainer = !0;
       break;
@@ -4716,11 +4659,11 @@ function commitPlacement(finishedWork) {
     parentFiber.sibling.return = parentFiber.return;
     for (
       parentFiber = parentFiber.sibling;
-      7 !== parentFiber.tag && 8 !== parentFiber.tag;
+      5 !== parentFiber.tag && 6 !== parentFiber.tag;
 
     ) {
       if (parentFiber.effectTag & 2) continue b;
-      if (null === parentFiber.child || 6 === parentFiber.tag) continue b;
+      if (null === parentFiber.child || 4 === parentFiber.tag) continue b;
       else
         (parentFiber.child.return = parentFiber),
           (parentFiber = parentFiber.child);
@@ -4731,7 +4674,7 @@ function commitPlacement(finishedWork) {
     }
   }
   for (var node = finishedWork; ; ) {
-    if (7 === node.tag || 8 === node.tag)
+    if (5 === node.tag || 6 === node.tag)
       if (parentFiber)
         if (isContainer)
           invariant(
@@ -4800,7 +4743,7 @@ function commitPlacement(finishedWork) {
                   [index.length - 1],
                   []
                 )));
-    else if (6 !== node.tag && null !== node.child) {
+    else if (4 !== node.tag && null !== node.child) {
       node.child.return = node;
       node = node.child;
       continue;
@@ -4831,15 +4774,15 @@ function unmountHostComponents(current$$1) {
           "Expected to find a host parent. This error is likely caused by a bug in React. Please file an issue."
         );
         switch (currentParentIsValid.tag) {
-          case 7:
+          case 5:
             currentParent = currentParentIsValid.stateNode;
             currentParentIsContainer = !1;
             break a;
-          case 5:
+          case 3:
             currentParent = currentParentIsValid.stateNode.containerInfo;
             currentParentIsContainer = !0;
             break a;
-          case 6:
+          case 4:
             currentParent = currentParentIsValid.stateNode.containerInfo;
             currentParentIsContainer = !0;
             break a;
@@ -4848,11 +4791,11 @@ function unmountHostComponents(current$$1) {
       }
       currentParentIsValid = !0;
     }
-    if (7 === node.tag || 8 === node.tag) {
+    if (5 === node.tag || 6 === node.tag) {
       a: for (var root = node, node$jscomp$0 = root; ; )
         if (
           (commitUnmount(node$jscomp$0),
-          null !== node$jscomp$0.child && 6 !== node$jscomp$0.tag)
+          null !== node$jscomp$0.child && 4 !== node$jscomp$0.tag)
         )
           (node$jscomp$0.child.return = node$jscomp$0),
             (node$jscomp$0 = node$jscomp$0.child);
@@ -4880,7 +4823,7 @@ function unmountHostComponents(current$$1) {
         UIManager.manageChildren(root._nativeTag, [], [], [], [], [child]);
       }
     } else if (
-      (6 === node.tag
+      (4 === node.tag
         ? ((currentParent = node.stateNode.containerInfo),
           (currentParentIsContainer = !0))
         : commitUnmount(node),
@@ -4894,7 +4837,7 @@ function unmountHostComponents(current$$1) {
     for (; null === node.sibling; ) {
       if (null === node.return || node.return === current$$1) return;
       node = node.return;
-      6 === node.tag && (currentParentIsValid = !1);
+      4 === node.tag && (currentParentIsValid = !1);
     }
     node.sibling.return = node.return;
     node = node.sibling;
@@ -4909,7 +4852,7 @@ function commitWork(current$$1, finishedWork) {
       break;
     case 1:
       break;
-    case 7:
+    case 5:
       var instance = finishedWork.stateNode;
       if (null != instance) {
         var newProps = finishedWork.memoizedProps;
@@ -4933,7 +4876,7 @@ function commitWork(current$$1, finishedWork) {
             ));
       }
       break;
-    case 8:
+    case 6:
       invariant(
         null !== finishedWork.stateNode,
         "This should have a text node initialized. This error is likely caused by a bug in React. Please file an issue."
@@ -4942,7 +4885,7 @@ function commitWork(current$$1, finishedWork) {
         text: finishedWork.memoizedProps
       });
       break;
-    case 5:
+    case 3:
       break;
     case 12:
       break;
@@ -5071,16 +5014,6 @@ function unwindWork(workInProgress) {
         : null;
     case 3:
       return (
-        isContextProvider(workInProgress.type._reactResult) &&
-          popContext(workInProgress),
-        (effectTag = workInProgress.effectTag),
-        effectTag & 1024
-          ? ((workInProgress.effectTag = (effectTag & -1025) | 64),
-            workInProgress)
-          : null
-      );
-    case 5:
-      return (
         popHostContainer(workInProgress),
         popTopLevelContextObject(workInProgress),
         (effectTag = workInProgress.effectTag),
@@ -5091,7 +5024,7 @@ function unwindWork(workInProgress) {
         (workInProgress.effectTag = (effectTag & -2049) | 64),
         workInProgress
       );
-    case 7:
+    case 5:
       return popHostContext(workInProgress), null;
     case 13:
       return (
@@ -5101,7 +5034,7 @@ function unwindWork(workInProgress) {
             workInProgress)
           : null
       );
-    case 6:
+    case 4:
       return popHostContainer(workInProgress), null;
     case 10:
       return popProvider(workInProgress), null;
@@ -5139,20 +5072,13 @@ function resetStack() {
             popContext(interruptedWork$jscomp$0);
           break;
         case 3:
-          childContextTypes =
-            interruptedWork$jscomp$0.type._reactResult.childContextTypes;
-          null !== childContextTypes &&
-            void 0 !== childContextTypes &&
-            popContext(interruptedWork$jscomp$0);
-          break;
-        case 5:
           popHostContainer(interruptedWork$jscomp$0);
           popTopLevelContextObject(interruptedWork$jscomp$0);
           break;
-        case 7:
+        case 5:
           popHostContext(interruptedWork$jscomp$0);
           break;
-        case 6:
+        case 4:
           popHostContainer(interruptedWork$jscomp$0);
           break;
         case 10:
@@ -6278,11 +6204,11 @@ function completeRoot(root, finishedWork$jscomp$0, expirationTime) {
                 );
               }
               break;
-            case 7:
-              break;
-            case 8:
+            case 5:
               break;
             case 6:
+              break;
+            case 4:
               break;
             case 12:
               break;

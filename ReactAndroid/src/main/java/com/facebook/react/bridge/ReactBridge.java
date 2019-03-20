@@ -7,15 +7,9 @@
 
 package com.facebook.react.bridge;
 
-<<<<<<< HEAD
-import android.util.Log;
-
-import com.facebook.react.common.ReactConstants;
-=======
 import static com.facebook.systrace.Systrace.TRACE_TAG_REACT_JAVA_BRIDGE;
 
 import android.os.SystemClock;
->>>>>>> v0.58.6
 import com.facebook.soloader.SoLoader;
 import com.facebook.systrace.Systrace;
 
@@ -25,42 +19,34 @@ public class ReactBridge {
 
   private static boolean sDidInit = false;
 
-<<<<<<< HEAD
   // Office implementation of RN can work with two JS Engines: V8 and JSC.
   // There is a compile time flag to decide which one will be used and V8 is the default one.
   // We are exposing an API from ReactBridge so that consumer can choose JSC if required.
   private static boolean sUseJSC = false;
 
   public static void staticInit() {
-    // No locking required here, worst case we'll call into SoLoader twice
-    // which will do its own locking internally
-    if (!sDidInit) {
-      if (sUseJSC) {
-        SoLoader.loadLibrary("icu_common");
-        SoLoader.loadLibrary("jsc");
-      }
-      else {
-        SoLoader.loadLibrary("v8_libbase.cr");
-        SoLoader.loadLibrary("v8_libplatform.cr");
-        SoLoader.loadLibrary("v8.cr");
-      }
-
-      SoLoader.loadLibrary("glog_init");
-      SoLoader.loadLibrary("privatedata");
-      SoLoader.loadLibrary("fb");
-      SoLoader.loadLibrary("yoga");
-      SoLoader.loadLibrary("reactnativejni");
-      sDidInit = true;
-=======
-  public synchronized static void staticInit() {
     if (sDidInit) {
       return;
->>>>>>> v0.58.6
     }
     sDidInit = true;
 
     sLoadStartTime = SystemClock.uptimeMillis();
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactBridge.staticInit::load:reactnativejni");
+
+    if (sUseJSC) {
+      SoLoader.loadLibrary("icu_common");
+      SoLoader.loadLibrary("jsc");
+    }
+    else {
+      SoLoader.loadLibrary("v8_libbase.cr");
+      SoLoader.loadLibrary("v8_libplatform.cr");
+      SoLoader.loadLibrary("v8.cr");
+    }
+
+    SoLoader.loadLibrary("glog_init");
+    SoLoader.loadLibrary("privatedata");
+    SoLoader.loadLibrary("fb");
+    SoLoader.loadLibrary("yoga");
     SoLoader.loadLibrary("reactnativejni");
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     sLoadEndTime = SystemClock.uptimeMillis();
