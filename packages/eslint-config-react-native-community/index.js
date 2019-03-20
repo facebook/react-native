@@ -12,8 +12,6 @@ module.exports = {
 
   env: {
     es6: true,
-    jest: true,
-    'jest/globals': true,
   },
 
   plugins: [
@@ -29,6 +27,14 @@ module.exports = {
   settings: {
     react: {
       version: 'detect',
+    },
+  },
+
+  overrides: {
+    files: ['**/__tests__/**/*.js', '**/?(*.)(spec|test).js'],
+    env: {
+      jest: true,
+      'jest/globals': true,
     },
   },
 
