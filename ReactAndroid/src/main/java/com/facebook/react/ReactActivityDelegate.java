@@ -29,13 +29,10 @@ public class ReactActivityDelegate {
   private final @Nullable Activity mActivity;
   private final @Nullable String mMainComponentName;
 
+  private @Nullable PermissionListener mPermissionListener;
+  private @Nullable Callback mPermissionsCallback;
   private ReactDelegate mReactDelegate;
 
-  @Nullable
-  private PermissionListener mPermissionListener;
-
-  @Nullable
-  private Callback mPermissionsCallback;
 
   @Deprecated
   public ReactActivityDelegate(Activity activity, @Nullable String mainComponentName) {
@@ -48,9 +45,7 @@ public class ReactActivityDelegate {
     mMainComponentName = mainComponentName;
   }
 
-  protected
-  @Nullable
-  Bundle getLaunchOptions() {
+  protected @Nullable Bundle getLaunchOptions() {
     return null;
   }
 

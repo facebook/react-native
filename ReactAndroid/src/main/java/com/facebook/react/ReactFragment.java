@@ -1,10 +1,8 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
- * All rights reserved.
- * <p>
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.react;
@@ -31,8 +29,8 @@ import androidx.fragment.app.Fragment;
  */
 public class ReactFragment extends Fragment implements PermissionAwareActivity {
 
-  protected static final String ARG_COMPONENT_NAME = "arg_component_name";
-  protected static final String ARG_LAUNCH_OPTIONS = "arg_launch_options";
+  private static final String ARG_COMPONENT_NAME = "arg_component_name";
+  private static final String ARG_LAUNCH_OPTIONS = "arg_launch_options";
 
   private ReactDelegate mReactDelegate;
 
