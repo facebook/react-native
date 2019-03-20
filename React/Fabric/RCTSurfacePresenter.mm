@@ -74,6 +74,8 @@ using namespace facebook::react;
     } else {
       _reactNativeConfig = std::make_shared<const EmptyReactNativeConfig>();
     }
+    
+    _observers = [NSMutableArray array];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleBridgeWillReloadNotification:)
