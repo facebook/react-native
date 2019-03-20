@@ -13,7 +13,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 @DoNotStrip
-public class YogaNodeJNI extends YogaNode {
+public class YogaNodeJNIBase extends YogaNode {
 
   static {
     SoLoader.loadLibrary("yoga");
@@ -24,8 +24,8 @@ public class YogaNodeJNI extends YogaNode {
    */
   static native int jni_YGNodeGetInstanceCount();
 
-  private YogaNodeJNI mOwner;
-  @Nullable private List<YogaNodeJNI> mChildren;
+  private YogaNodeJNIBase mOwner;
+  @Nullable private List<YogaNodeJNIBase> mChildren;
   private YogaMeasureFunction mMeasureFunction;
   private YogaBaselineFunction mBaselineFunction;
   private long mNativePointer;
@@ -75,7 +75,7 @@ public class YogaNodeJNI extends YogaNode {
   @DoNotStrip private boolean mDoesLegacyStretchFlagAffectsLayout = false;
 
   private native long jni_YGNodeNew();
-  public YogaNodeJNI() {
+  public YogaNodeJNIBase() {
     mNativePointer = jni_YGNodeNew();
     if (mNativePointer == 0) {
       throw new IllegalStateException("Failed to allocate native memory");
@@ -83,7 +83,7 @@ public class YogaNodeJNI extends YogaNode {
   }
 
   private native long jni_YGNodeNewWithConfig(long configPointer);
-  public YogaNodeJNI(YogaConfig config) {
+  public YogaNodeJNIBase(YogaConfig config) {
     mNativePointer = jni_YGNodeNewWithConfig(config.mNativePointer);
     if (mNativePointer == 0) {
       throw new IllegalStateException("Failed to allocate native memory");
@@ -144,7 +144,7 @@ public class YogaNodeJNI extends YogaNode {
     return mChildren == null ? 0 : mChildren.size();
   }
 
-  public YogaNodeJNI getChildAt(int i) {
+  public YogaNodeJNIBase getChildAt(int i) {
     if (mChildren == null) {
       throw new IllegalStateException("YogaNode does not have children");
     }
@@ -154,7 +154,7 @@ public class YogaNodeJNI extends YogaNode {
   private static native void jni_YGNodeInsertChild(long nativePointer, long childPointer, int index);
 
   public void addChildAt(YogaNode c, int i) {
-    YogaNodeJNI child = (YogaNodeJNI) c;
+    YogaNodeJNIBase child = (YogaNodeJNIBase) c;
     if (child.mOwner != null) {
       throw new IllegalStateException("Child already has a parent, it must be removed first.");
     }
@@ -187,12 +187,12 @@ public class YogaNodeJNI extends YogaNode {
   }
 
   private static native void jni_YGNodeRemoveChild(long nativePointer, long childPointer);
-  public YogaNodeJNI removeChildAt(int i) {
+  public YogaNodeJNIBase removeChildAt(int i) {
     if (mChildren == null) {
       throw new IllegalStateException(
           "Trying to remove a child of a YogaNode that does not have children");
     }
-    final YogaNodeJNI child = mChildren.remove(i);
+    final YogaNodeJNIBase child = mChildren.remove(i);
     child.mOwner = null;
     jni_YGNodeRemoveChild(mNativePointer, child.mNativePointer);
     return child;
@@ -207,14 +207,14 @@ public class YogaNodeJNI extends YogaNode {
    * {@link YogaNode} is shared between two or more YogaTrees.
    */
   @Nullable
-  public YogaNodeJNI getOwner() {
+  public YogaNodeJNIBase getOwner() {
     return mOwner;
   }
 
   /** @deprecated Use #getOwner() instead. This will be removed in the next version. */
   @Deprecated
   @Nullable
-  public YogaNodeJNI getParent() {
+  public YogaNodeJNIBase getParent() {
     return getOwner();
   }
 
@@ -222,21 +222,21 @@ public class YogaNodeJNI extends YogaNode {
     return mChildren == null ? -1 : mChildren.indexOf(child);
   }
 
-  private static native void jni_YGNodeCalculateLayout(long nativePointer, float width, float height, long[] nativePointers, YogaNodeJNI[] nodes);
+  private static native void jni_YGNodeCalculateLayout(long nativePointer, float width, float height, long[] nativePointers, YogaNodeJNIBase[] nodes);
   public void calculateLayout(float width, float height) {
     long[] nativePointers = null;
-    YogaNodeJNI[] nodes = null;
+    YogaNodeJNIBase[] nodes = null;
 
-    ArrayList<YogaNodeJNI> n = new ArrayList<>();
+    ArrayList<YogaNodeJNIBase> n = new ArrayList<>();
     n.add(this);
     for (int i = 0; i < n.size(); ++i) {
-      List<YogaNodeJNI> children  = n.get(i).mChildren;
+      List<YogaNodeJNIBase> children  = n.get(i).mChildren;
       if (children != null) {
         n.addAll(children);
       }
     }
 
-    nodes = n.toArray(new YogaNodeJNI[n.size()]);
+    nodes = n.toArray(new YogaNodeJNIBase[n.size()]);
     nativePointers = new long[nodes.length];
     for (int i = 0; i < nodes.length; ++i) {
       nativePointers[i] = nodes[i].mNativePointer;
@@ -268,7 +268,7 @@ public class YogaNodeJNI extends YogaNode {
   private static native void jni_YGNodeCopyStyle(long dstNativePointer, long srcNativePointer);
   @Override
   public void copyStyle(YogaNode srcNode) {
-    jni_YGNodeCopyStyle(mNativePointer, ((YogaNodeJNI) srcNode).mNativePointer);
+    jni_YGNodeCopyStyle(mNativePointer, ((YogaNodeJNIBase) srcNode).mNativePointer);
   }
 
   public void markLayoutSeen() {
@@ -748,7 +748,7 @@ public class YogaNodeJNI extends YogaNode {
    * @return the nativePointer of the newNode {@linl YogaNode}
    */
   @DoNotStrip
-  private final long replaceChild(YogaNodeJNI newNode, int childIndex) {
+  private final long replaceChild(YogaNodeJNIBase newNode, int childIndex) {
     if (mChildren == null) {
       throw new IllegalStateException("Cannot replace child. YogaNode does not have children");
     }

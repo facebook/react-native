@@ -8,7 +8,7 @@
 #include <yoga/YGValue.h>
 
 struct JYogaNode : public facebook::jni::JavaClass<JYogaNode> {
-  static constexpr auto kJavaDescriptor = "Lcom/facebook/yoga/YogaNodeJNI;";
+  static constexpr auto kJavaDescriptor = "Lcom/facebook/yoga/YogaNodeJNIBase;";
 
   jfloat baseline(jfloat width, jfloat height);
   jlong measure(jfloat width, jint widthMode, jfloat height, jint heightMode);
