@@ -7,7 +7,6 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
-<<<<<<< HEAD
 # Flag to enable V8 in react-native code
 V8_ENABLED := 1
 
@@ -41,16 +40,5 @@ else
   LOCAL_SRC_FILES += $(LOCAL_JSC_FILES)
   LOCAL_SHARED_LIBRARIES += libjsc
 endif
-=======
-LOCAL_MODULE := jsi
-
-LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/*.cpp)
-
-LOCAL_C_INCLUDES += $(LOCAL_PATH)/..
-LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
-
-LOCAL_CFLAGS := -fexceptions -frtti -O3
-LOCAL_SHARED_LIBRARIES := libfolly_json libjsc glog
->>>>>>> v0.58.6
 
 include $(BUILD_STATIC_LIBRARY)

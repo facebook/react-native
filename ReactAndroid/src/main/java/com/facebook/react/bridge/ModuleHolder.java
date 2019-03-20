@@ -39,13 +39,7 @@ public class ModuleHolder {
   private final int mInstanceKey = sInstanceKeyCounter.getAndIncrement();
 
   private final String mName;
-<<<<<<< HEAD
-  private final boolean mCanOverrideExistingModule;
-  private final boolean mHasConstants;
-  private final boolean mIsCxxModule;
-=======
   private final ReactModuleInfo mReactModuleInfo;
->>>>>>> v0.58.6
 
   private @Nullable Provider<? extends NativeModule> mProvider;
   // Outside of the constructur, these should only be checked or set when synchronized on this
@@ -59,11 +53,7 @@ public class ModuleHolder {
   public ModuleHolder(ReactModuleInfo moduleInfo, Provider<? extends NativeModule> provider) {
     mName = moduleInfo.name();
     mProvider = provider;
-<<<<<<< HEAD
-    mIsCxxModule = moduleInfo.isCxxModule();
-=======
     mReactModuleInfo = moduleInfo;
->>>>>>> v0.58.6
     if (moduleInfo.needsEagerInit()) {
       mModule = create();
     }
@@ -71,11 +61,6 @@ public class ModuleHolder {
 
   public ModuleHolder(NativeModule nativeModule) {
     mName = nativeModule.getName();
-<<<<<<< HEAD
-    mCanOverrideExistingModule = nativeModule.canOverrideExistingModule();
-    mHasConstants = true;
-    mIsCxxModule = CxxModuleWrapper.class.isAssignableFrom(nativeModule.getClass());
-=======
     mReactModuleInfo =
         new ReactModuleInfo(
             nativeModule.getName(),
@@ -85,7 +70,6 @@ public class ModuleHolder {
             true,
             CxxModuleWrapper.class.isAssignableFrom(nativeModule.getClass()));
 
->>>>>>> v0.58.6
     mModule = nativeModule;
     PrinterHolder.getPrinter()
         .logMessage(ReactDebugOverlayTags.NATIVE_MODULE, "NativeModule init: %s", mName);
@@ -139,13 +123,10 @@ public class ModuleHolder {
     return mReactModuleInfo.isCxxModule();
   }
 
-<<<<<<< HEAD
-=======
   public String getClassName() {
     return mReactModuleInfo.className();
   }
 
->>>>>>> v0.58.6
   @DoNotStrip
   public NativeModule getModule() {
     NativeModule module;

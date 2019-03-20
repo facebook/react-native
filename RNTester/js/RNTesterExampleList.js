@@ -257,35 +257,6 @@ const styles = StyleSheet.create({
     color: '#888888',
     lineHeight: 20,
   },
-  searchRow: {
-    ...Platform.select({ // [TODO(macOS ISS#2323203)
-      macos: {
-        backgroundColor: {semantic: 'unemphasizedSelectedContentBackgroundColor'},
-        },
-      default: { // ]TODO(macOS ISS#2323203)
-        backgroundColor: '#eeeeee',
-      } // [TODO(macOS ISS#2323203)
-    }), // ]TODO(macOS ISS#2323203)
-    padding: 10,
-  },
-  searchTextInput: {
-    ...Platform.select({ // [TODO(macOS ISS#2323203)
-      macos: {
-        color: {semantic: 'textColor'},
-        backgroundColor: {semantic: 'textBackgroundColor'},
-        borderColor: {semantic: 'gridColor'},
-        },
-      default: { // ]TODO(macOS ISS#2323203)
-        backgroundColor: 'white',
-        borderColor: '#cccccc',
-      } // [TODO(macOS ISS#2323203)
-    }), // ]TODO(macOS ISS#2323203)
-    borderRadius: 3,
-    borderWidth: 1,
-    paddingLeft: 8,
-    paddingVertical: 0,
-    height: 35,
-  },
 });
 
 module.exports = RNTesterExampleList;

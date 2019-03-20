@@ -13,7 +13,13 @@
 #include <string>
 #include <vector>
 
+#ifndef JSI_EXPORT
+#ifdef _MSC_VER
+#define JSI_EXPORT
+#else
 #define JSI_EXPORT __attribute__((visibility("default")))
+#endif
+#endif
 
 class FBJSRuntime;
 namespace facebook {
@@ -288,9 +294,10 @@ class Pointer {
   friend class Runtime;
   friend class Value;
 
-  explicit Pointer(Runtime::PointerValue* ptr) : ptr_(ptr) {}
-
   typename Runtime::PointerValue* ptr_;
+
+ public:
+  explicit Pointer(Runtime::PointerValue* ptr) : ptr_(ptr) {}
 };
 
 /// Represents something that can be a JS property key.  Movable, not copyable.

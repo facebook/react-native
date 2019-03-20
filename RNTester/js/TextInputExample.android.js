@@ -368,11 +368,7 @@ class AutogrowingTextInputExample extends React.Component<{}> {
   render() {
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
      * when making Flow check .android.js files. */
-<<<<<<< HEAD
-    var {style, multiline, ...props} = this.props;
-=======
     const {style, multiline, ...props} = this.props;
->>>>>>> v0.58.6
     return (
       <View>
         <Text>Width:</Text>

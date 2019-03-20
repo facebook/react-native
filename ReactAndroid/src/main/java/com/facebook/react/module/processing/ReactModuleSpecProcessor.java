@@ -5,9 +5,6 @@
 
 package com.facebook.react.module.processing;
 
-<<<<<<< HEAD
-import com.facebook.react.bridge.CxxModuleWrapper;
-=======
 import static javax.lang.model.element.Modifier.PUBLIC;
 import static javax.tools.Diagnostic.Kind.ERROR;
 
@@ -30,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
->>>>>>> v0.58.6
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
@@ -157,11 +153,6 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
     } else {
       builder.addStatement("$T map = new $T()", MAP_TYPE, INSTANTIATED_MAP_TYPE);
 
-<<<<<<< HEAD
-      TypeMirror cxxModuleWrapperTypeMirror = mElements.getTypeElement(CxxModuleWrapper.class.getName()).asType();
-
-=======
->>>>>>> v0.58.6
       for (String nativeModule : nativeModules) {
         String keyString = nativeModule;
 
@@ -191,11 +182,6 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
                       name -> name.contentEquals("getConstants") || name.contentEquals("getTypedExportedConstants"));
         }
 
-<<<<<<< HEAD
-        boolean isCxxModule = mTypes.isAssignable(typeElement.asType(), cxxModuleWrapperTypeMirror);
-
-=======
->>>>>>> v0.58.6
         String valueString = new StringBuilder()
           .append("new ReactModuleInfo(")
           .append("\"").append(reactModule.name()).append("\"").append(", ")
@@ -203,11 +189,7 @@ public class ReactModuleSpecProcessor extends AbstractProcessor {
            .append(reactModule.canOverrideExistingModule()).append(", ")
           .append(reactModule.needsEagerInit()).append(", ")
           .append(hasConstants).append(", ")
-<<<<<<< HEAD
-          .append(isCxxModule)
-=======
           .append(reactModule.isCxxModule())
->>>>>>> v0.58.6
           .append(")")
           .toString();
 
