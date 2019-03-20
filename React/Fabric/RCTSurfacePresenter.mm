@@ -331,7 +331,10 @@ using namespace facebook::react;
 {
   RCTAssertMainQueue();
 
-  for (id<RCTSurfacePresenterObserver> observer in _observers) {
+  std::unique_lock<std::mutex> lock(_observerListMutex);
+  NSArray<id<RCTSurfacePresenterObserver>> *observers = [_observers copy];
+  lock.unlock();
+  for (id<RCTSurfacePresenterObserver> observer in observers) {
     if ([observer respondsToSelector:@selector(willMountComponentsWithRootTag:)]) {
       [observer willMountComponentsWithRootTag:rootTag];
     }
@@ -351,7 +354,10 @@ using namespace facebook::react;
       surface.view.rootView = (RCTSurfaceRootView *)rootComponentView;
     }
   }
-  for (id<RCTSurfacePresenterObserver> observer in _observers) {
+  std::unique_lock<std::mutex> lock(_observerListMutex);
+  NSArray<id<RCTSurfacePresenterObserver>> *observers = [_observers copy];
+  lock.unlock();
+  for (id<RCTSurfacePresenterObserver> observer in observers) {
     if ([observer respondsToSelector:@selector(didMountComponentsWithRootTag:)]) {
       [observer didMountComponentsWithRootTag:rootTag];
     }
