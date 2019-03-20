@@ -4,5 +4,5 @@
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 
-    <application tools:targetApi="28" tools:ignore="GoogleAppIndexingWarning" android:networkSecurityConfig="@xml/react_native_config" />
+    <application android:usesCleartextTraffic="true" tools:targetApi="28" tools:ignore="GoogleAppIndexingWarning" />
 </manifest>
