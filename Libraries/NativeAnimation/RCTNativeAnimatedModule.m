@@ -18,6 +18,7 @@ typedef void (^AnimatedOperation)(RCTNativeAnimatedNodesManager *nodesManager);
   NSMutableArray<AnimatedOperation> *_operations;
   // Operations called before views have been updated.
   NSMutableArray<AnimatedOperation> *_preOperations;
+  NSLock *_operationsLock;
   NSMutableDictionary<NSNumber *, NSNumber *> *_animIdIsManagedByFabric;
   NSMutableDictionary<NSNumber *, NSNumber *> *_animatedNodeIsManagedByFabric;
 }
@@ -34,9 +35,6 @@ RCT_EXPORT_MODULE();
 
 - (dispatch_queue_t)methodQueue
 {
-  // This module needs to be on the same queue as the UIManager to avoid
-  // having to lock `_operations` and `_preOperations` since `uiManagerWillPerformMounting`
-  // will be called from that queue.
   return RCTGetUIManagerQueue();
 }
 
@@ -48,6 +46,7 @@ RCT_EXPORT_MODULE();
   _operations = [NSMutableArray new];
   _preOperations = [NSMutableArray new];
   _animIdIsManagedByFabric = [NSMutableDictionary new];
+  _operationsLock = [NSLock new];
 
   [bridge.eventDispatcher addDispatchObserver:self];
   [bridge.uiManager.observerCoordinator addObserver:self];
@@ -201,12 +200,16 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
 
 - (void)addOperationBlock:(AnimatedOperation)operation
 {
+  [_operationsLock lock];
   [_operations addObject:operation];
+  [_operationsLock unlock];
 }
 
 - (void)addPreOperationBlock:(AnimatedOperation)operation
 {
+  [_operationsLock lock];
   [_preOperations addObject:operation];
+  [_operationsLock unlock];
 }
 
 - (void)flushOperationQueues
@@ -216,8 +219,10 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
   }
   NSArray<AnimatedOperation> *preOperations = _preOperations;
   NSArray<AnimatedOperation> *operations = _operations;
+  [_operationsLock lock];
   _preOperations = [NSMutableArray new];
   _operations = [NSMutableArray new];
+  [_operationsLock unlock];
 
 
   RCTExecuteOnMainQueue(^{
@@ -236,19 +241,29 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
 - (void)willMountComponentsWithRootTag:(NSInteger)rootTag
 {
   RCTAssertMainQueue();
-  for (AnimatedOperation operation in _preOperations) {
+  [_operationsLock lock];
+  NSArray<AnimatedOperation> *preOperations = [_preOperations copy];
+  [_operationsLock unlock];
+  for (AnimatedOperation operation in preOperations) {
     operation(self->_nodesManager);
   }
+  [_operationsLock lock];
   _preOperations = [NSMutableArray new];
+  [_operationsLock unlock];
 }
 
 - (void)didMountComponentsWithRootTag:(NSInteger)rootTag
 {
   RCTAssertMainQueue();
-  for (AnimatedOperation operation in _operations) {
+  [_operationsLock lock];
+  NSArray<AnimatedOperation> *operations = [_operations copy];
+  [_operationsLock unlock];
+  for (AnimatedOperation operation in operations) {
     operation(self->_nodesManager);
   }
+  [_operationsLock lock];
   _operations = [NSMutableArray new];
+  [_operationsLock unlock];
 }
 
 #pragma mark - RCTUIManagerObserver
@@ -261,8 +276,10 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
 
   NSArray<AnimatedOperation> *preOperations = _preOperations;
   NSArray<AnimatedOperation> *operations = _operations;
+  [_operationsLock lock];
   _preOperations = [NSMutableArray new];
   _operations = [NSMutableArray new];
+  [_operationsLock unlock];
 
   [uiManager prependUIBlock:^(__unused RCTUIManager *manager, __unused NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     for (AnimatedOperation operation in preOperations) {
