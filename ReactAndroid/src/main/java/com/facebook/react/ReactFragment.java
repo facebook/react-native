@@ -97,14 +97,6 @@ public class ReactFragment extends Fragment implements PermissionAwareActivity {
   }
   // endregion
 
-  /**
-   * This currently only checks to see if we've enabled the permission to draw over other apps.
-   * This is only used in debug/developer mode and is otherwise not used.
-   *
-   * @param requestCode Code that requested the activity
-   * @param resultCode  Code which describes the result
-   * @param data        Any data passed from the activity
-   */
   @Override
   public void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
