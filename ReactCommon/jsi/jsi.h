@@ -154,7 +154,11 @@ class Runtime {
   /// whose format is specific to the implementation.  If the input
   /// format is unknown, or evaluation causes an error, a JSIException
   /// will be thrown.
-  virtual void evaluateJavaScript(
+  /// Note this function should ONLY be used when there isn't another means
+  /// through the JSI API. For example, it will be much slower to use this to
+  /// call a global function than using the JSI APIs to read the function
+  /// property from the global object and then calling it explicitly.
+  virtual Value evaluateJavaScript(
       const std::shared_ptr<const Buffer>& buffer,
       const std::string& sourceURL) = 0;
 
@@ -167,13 +171,17 @@ class Runtime {
   /// type.
   /// The PreparedJavaScript object may be passed to multiple VM instances, so
   /// they can all share and benefit from the prepared script.
+  /// As with evaluateJavaScript(), using JavaScript code should be avoided
+  /// when the JSI API is sufficient.
   virtual std::shared_ptr<const PreparedJavaScript> prepareJavaScript(
       const std::shared_ptr<const Buffer>& buffer,
       std::string sourceURL) = 0;
 
   /// Evaluates a PreparedJavaScript. If evaluation causes an error, a
   /// JSIException will be thrown.
-  virtual void evaluatePreparedJavaScript(
+  /// As with evaluateJavaScript(), using JavaScript code should be avoided
+  /// when the JSI API is sufficient.
+  virtual Value evaluatePreparedJavaScript(
       const std::shared_ptr<const PreparedJavaScript>& js) = 0;
 
   /// \return the global object

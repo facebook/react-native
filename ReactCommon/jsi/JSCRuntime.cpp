@@ -41,10 +41,10 @@ class JSCRuntime : public jsi::Runtime {
       const std::shared_ptr<const jsi::Buffer> &buffer,
       std::string sourceURL) override;
 
-  void evaluatePreparedJavaScript(
+  jsi::Value evaluatePreparedJavaScript(
     const std::shared_ptr<const jsi::PreparedJavaScript>& js) override;
 
-  void evaluateJavaScript(
+  jsi::Value evaluateJavaScript(
       const std::shared_ptr<const jsi::Buffer> &buffer,
       const std::string& sourceURL) override;
   jsi::Object global() override;
@@ -334,17 +334,17 @@ std::shared_ptr<const jsi::PreparedJavaScript> JSCRuntime::prepareJavaScript(
       buffer, std::move(sourceURL));
 }
 
-void JSCRuntime::evaluatePreparedJavaScript(
+jsi::Value JSCRuntime::evaluatePreparedJavaScript(
   const std::shared_ptr<const jsi::PreparedJavaScript>& js) {
   assert(
       dynamic_cast<const jsi::SourceJavaScriptPreparation*>(js.get()) &&
       "preparedJavaScript must be a SourceJavaScriptPreparation");
   auto sourceJs =
       std::static_pointer_cast<const jsi::SourceJavaScriptPreparation>(js);
-  evaluateJavaScript(sourceJs, sourceJs->sourceURL());
+  return evaluateJavaScript(sourceJs, sourceJs->sourceURL());
 }
 
-void JSCRuntime::evaluateJavaScript(
+jsi::Value JSCRuntime::evaluateJavaScript(
     const std::shared_ptr<const jsi::Buffer> &buffer,
     const std::string& sourceURL) {
   std::string tmp(
@@ -362,6 +362,7 @@ void JSCRuntime::evaluateJavaScript(
     JSStringRelease(sourceURLRef);
   }
   checkException(res, exc);
+  return createValue(res);
 }
 
 jsi::Object JSCRuntime::global() {
