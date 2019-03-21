@@ -80,9 +80,6 @@ void YogaLayoutableShadowNode::appendChild(YogaLayoutableShadowNode *child) {
   auto yogaNodeRawPtr = &yogaNode_;
   auto childYogaNodeRawPtr = &child->yogaNode_;
 
-  // Cloned node must not be reinserted to the same parent.
-  assert(childYogaNodeRawPtr->getOwner() != yogaNodeRawPtr);
-
   if (childYogaNodeRawPtr->getOwner() != nullptr) {
     child = static_cast<YogaLayoutableShadowNode *>(
         cloneAndReplaceChild(child, yogaNode_.getChildren().size()));
