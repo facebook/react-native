@@ -5,9 +5,8 @@
 
 #pragma once
 
-#include <folly/SharedMutex.h>
+#include <better/mutex.h>
 #include <memory>
-#include <shared_mutex>
 
 #include <react/components/root/RootComponentDescriptor.h>
 #include <react/components/root/RootShadowNode.h>
@@ -84,7 +83,7 @@ class ShadowTree final {
   void emitLayoutEvents(const ShadowViewMutationList &mutations) const;
 
   const SurfaceId surfaceId_;
-  mutable folly::SharedMutex commitMutex_;
+  mutable better::shared_mutex commitMutex_;
   mutable SharedRootShadowNode rootShadowNode_; // Protected by `commitMutex_`.
   mutable int revision_{1}; // Protected by `commitMutex_`.
   ShadowTreeDelegate const *delegate_;

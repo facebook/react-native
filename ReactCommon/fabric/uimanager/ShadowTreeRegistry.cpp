@@ -9,14 +9,14 @@ namespace facebook {
 namespace react {
 
 void ShadowTreeRegistry::add(std::unique_ptr<ShadowTree> &&shadowTree) const {
-  std::unique_lock<folly::SharedMutex> lock(mutex_);
+  std::unique_lock<better::shared_mutex> lock(mutex_);
 
   registry_.emplace(shadowTree->getSurfaceId(), std::move(shadowTree));
 }
 
 std::unique_ptr<ShadowTree> ShadowTreeRegistry::remove(
     SurfaceId surfaceId) const {
-  std::unique_lock<folly::SharedMutex> lock(mutex_);
+  std::unique_lock<better::shared_mutex> lock(mutex_);
 
   auto iterator = registry_.find(surfaceId);
   auto shadowTree = std::unique_ptr<ShadowTree>(iterator->second.release());
@@ -27,7 +27,7 @@ std::unique_ptr<ShadowTree> ShadowTreeRegistry::remove(
 bool ShadowTreeRegistry::visit(
     SurfaceId surfaceId,
     std::function<void(const ShadowTree &shadowTree)> callback) const {
-  std::shared_lock<folly::SharedMutex> lock(mutex_);
+  std::shared_lock<better::shared_mutex> lock(mutex_);
 
   auto iterator = registry_.find(surfaceId);
 
