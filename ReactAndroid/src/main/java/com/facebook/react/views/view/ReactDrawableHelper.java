@@ -7,6 +7,7 @@
 
 package com.facebook.react.views.view;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -29,6 +30,7 @@ public class ReactDrawableHelper {
 
   private static final TypedValue sResolveOutValue = new TypedValue();
 
+  @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   public static Drawable createDrawableFromJSDescription(
       Context context,
       ReadableMap drawableDescriptionDict) {

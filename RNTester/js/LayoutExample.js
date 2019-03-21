@@ -174,7 +174,9 @@ class LayoutExample extends React.Component<$FlowFixMeProps> {
         </RNTesterBlock>
         <RNTesterBlock title="Flex Wrap">
           <CircleBlock style={{flexWrap: 'wrap'}}>
-            {'oooooooooooooooo'.split('').map((char, i) => <Circle key={i} />)}
+            {'oooooooooooooooo'.split('').map((char, i) => (
+              <Circle key={i} />
+            ))}
           </CircleBlock>
         </RNTesterBlock>
       </RNTesterPage>

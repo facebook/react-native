@@ -26,9 +26,7 @@ using namespace facebook::react;
 
     _switchView = [[UISwitch alloc] initWithFrame:self.bounds];
 
-    [_switchView addTarget:self
-                    action:@selector(onChange:)
-          forControlEvents:UIControlEventValueChanged];
+    [_switchView addTarget:self action:@selector(onChange:) forControlEvents:UIControlEventValueChanged];
 
     _switchView.on = defaultProps->value;
 
@@ -86,7 +84,8 @@ using namespace facebook::react;
   }
   _wasOn = sender.on;
 
-  std::dynamic_pointer_cast<const SwitchEventEmitter>(_eventEmitter)->onChange(SwitchOnChangeStruct{.value=static_cast<bool>(sender.on)});
+  std::dynamic_pointer_cast<const SwitchEventEmitter>(_eventEmitter)
+      ->onChange(SwitchOnChangeStruct{.value = static_cast<bool>(sender.on)});
 }
 
 @end

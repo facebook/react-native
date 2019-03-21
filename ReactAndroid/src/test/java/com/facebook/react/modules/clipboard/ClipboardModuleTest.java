@@ -27,7 +27,7 @@ import static org.junit.Assert.assertFalse;
 
 @SuppressLint({"ClipboardManager", "DeprecatedClass"})
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class ClipboardModuleTest {
 
   private static final String TEST_CONTENT = "test";

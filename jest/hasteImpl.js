@@ -24,9 +24,7 @@ if (REACT_NATIVE_CI) {
 
 function getPlugins() {
   try {
-    // @todo do not rely on private files
-    const findPlugins = require('@react-native-community/cli/build/core/findPlugins');
-
+    const {findPlugins} = require('@react-native-community/cli');
     return findPlugins(path.resolve(__dirname, pluginsPath));
   } catch (e) {
     return {
@@ -41,9 +39,7 @@ function getPlugins() {
 const plugins = getPlugins();
 
 // Detect out-of-tree platforms and add them to the whitelists
-const pluginRoots /*: Array<
-  string,
-> */ = plugins.haste.providesModuleNodeModules.map(
+const pluginRoots /*: Array<string> */ = plugins.haste.providesModuleNodeModules.map(
   name => path.resolve(__dirname, '../../', name) + path.sep,
 );
 
@@ -60,6 +56,7 @@ const BLACKLISTED_PATTERNS /*: Array<RegExp> */ = [
   /.*[\\\/]__(mocks|tests)__[\\\/].*/,
   /^Libraries[\\\/]Animated[\\\/]src[\\\/]polyfills[\\\/].*/,
   /^Libraries[\\\/]Renderer[\\\/]fb[\\\/].*/,
+  /DerivedData[\\\/].*/,
 ];
 
 const WHITELISTED_PREFIXES /*: Array<string> */ = [

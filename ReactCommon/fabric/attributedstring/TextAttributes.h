@@ -98,9 +98,8 @@ template <>
 struct hash<facebook::react::TextAttributes> {
   size_t operator()(
       const facebook::react::TextAttributes &textAttributes) const {
-    auto seed = size_t{0};
-    folly::hash::hash_combine(
-        seed,
+    return folly::hash::hash_combine(
+        0,
         textAttributes.foregroundColor,
         textAttributes.backgroundColor,
         textAttributes.opacity,
@@ -124,7 +123,6 @@ struct hash<facebook::react::TextAttributes> {
         textAttributes.textShadowColor,
         textAttributes.isHighlighted,
         textAttributes.layoutDirection);
-    return seed;
   }
 };
 } // namespace std

@@ -18,9 +18,6 @@ Promise.prototype.finally = function(onSettled) {
 };
 
 if (__DEV__) {
-  /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an
-   * error found when Flow v0.54 was deployed. To see the error delete this
-   * comment and run Flow. */
   require('promise/setimmediate/rejection-tracking').enable({
     allRejections: true,
     onUnhandled: (id, error = {}) => {
@@ -32,9 +29,6 @@ if (__DEV__) {
         message = Error.prototype.toString.call(error);
         stack = error.stack;
       } else {
-        /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses
-         * an error found when Flow v0.54 was deployed. To see the error delete
-         * this comment and run Flow. */
         message = require('pretty-format')(error);
       }
 

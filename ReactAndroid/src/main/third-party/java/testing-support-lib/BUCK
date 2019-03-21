@@ -9,8 +9,8 @@ rn_android_prebuilt_aar(
 
 fb_native.remote_file(
     name = "testing-support-lib-runner-download",
-    sha1 = "a31e7e8db98ca19fb3fab23f120d19a6f4e3e8a9",
-    url = "mvn:com.android.support.test:runner:aar:0.3",
+    sha1 = "810a7aacb5106d92cdf648b2497694c4ebf73500",
+    url = "mvn:androidx.test:runner:aar:1.1.1",
 )
 
 rn_android_prebuilt_aar(

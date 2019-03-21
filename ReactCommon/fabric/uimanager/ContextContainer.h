@@ -13,6 +13,8 @@
 #include <unordered_map>
 #include <utility>
 
+#include <glog/logging.h>
+
 namespace facebook {
 namespace react {
 

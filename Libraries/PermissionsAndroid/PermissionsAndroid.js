@@ -12,9 +12,12 @@
 
 const NativeModules = require('NativeModules');
 
-type Rationale = {
+export type Rationale = {
   title: string,
   message: string,
+  buttonPositive?: string,
+  buttonNegative?: string,
+  buttonNeutral?: string,
 };
 
 type PermissionStatus = 'granted' | 'denied' | 'never_ask_again';

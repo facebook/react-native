@@ -9,6 +9,7 @@
 #include <atomic>
 #include <condition_variable>
 #include <cstdlib>
+#include <jsi/jsilib.h>
 #include <mutex>
 #include <queue>
 #include <sstream>
@@ -36,8 +37,15 @@ class JSCRuntime : public jsi::Runtime {
   JSCRuntime(JSGlobalContextRef ctx);
   ~JSCRuntime();
 
-  void evaluateJavaScript(
-      std::unique_ptr<const jsi::Buffer> buffer,
+  std::shared_ptr<const jsi::PreparedJavaScript> prepareJavaScript(
+      const std::shared_ptr<const jsi::Buffer> &buffer,
+      std::string sourceURL) override;
+
+  jsi::Value evaluatePreparedJavaScript(
+    const std::shared_ptr<const jsi::PreparedJavaScript>& js) override;
+
+  jsi::Value evaluateJavaScript(
+      const std::shared_ptr<const jsi::Buffer> &buffer,
       const std::string& sourceURL) override;
   jsi::Object global() override;
 
@@ -142,6 +150,7 @@ class JSCRuntime : public jsi::Runtime {
   bool isHostFunction(const jsi::Function&) const override;
   jsi::Array getPropertyNames(const jsi::Object&) override;
 
+  // TODO: revisit this implementation
   jsi::WeakObject createWeakObject(const jsi::Object&) override;
   jsi::Value lockWeakObject(const jsi::WeakObject&) override;
 
@@ -176,7 +185,11 @@ class JSCRuntime : public jsi::Runtime {
   static JSStringRef stringRef(const jsi::String& str);
   static JSStringRef stringRef(const jsi::PropNameID& sym);
   static JSObjectRef objectRef(const jsi::Object& obj);
-
+    
+#ifdef RN_FABRIC_ENABLED
+  static JSObjectRef objectRef(const jsi::WeakObject& obj);
+#endif
+    
   // Factory methods for creating String/Object
   jsi::String createString(JSStringRef stringRef) const;
   jsi::PropNameID createPropNameID(JSStringRef stringRef);
@@ -238,14 +251,10 @@ class JSCRuntime : public jsi::Runtime {
 // JSStringRef utilities
 namespace {
 std::string JSStringToSTLString(JSStringRef str) {
-  std::string result;
   size_t maxBytes = JSStringGetMaximumUTF8CStringSize(str);
-  result.resize(maxBytes);
-  size_t bytesWritten = JSStringGetUTF8CString(str, &result[0], maxBytes);
-  // JSStringGetUTF8CString writes the null terminator, so we want to resize
-  // to `bytesWritten - 1` so that `result` has the correct length.
-  result.resize(bytesWritten - 1);
-  return result;
+  std::vector<char> buffer(maxBytes);
+  JSStringGetUTF8CString(str, buffer.data(), maxBytes);
+  return std::string(buffer.data());
 }
 
 JSStringRef getLengthString() {
@@ -318,8 +327,25 @@ JSCRuntime::~JSCRuntime() {
 #endif
 }
 
-void JSCRuntime::evaluateJavaScript(
-    std::unique_ptr<const jsi::Buffer> buffer,
+std::shared_ptr<const jsi::PreparedJavaScript> JSCRuntime::prepareJavaScript(
+    const std::shared_ptr<const jsi::Buffer> &buffer,
+    std::string sourceURL) {
+  return std::make_shared<jsi::SourceJavaScriptPreparation>(
+      buffer, std::move(sourceURL));
+}
+
+jsi::Value JSCRuntime::evaluatePreparedJavaScript(
+  const std::shared_ptr<const jsi::PreparedJavaScript>& js) {
+  assert(
+      dynamic_cast<const jsi::SourceJavaScriptPreparation*>(js.get()) &&
+      "preparedJavaScript must be a SourceJavaScriptPreparation");
+  auto sourceJs =
+      std::static_pointer_cast<const jsi::SourceJavaScriptPreparation>(js);
+  return evaluateJavaScript(sourceJs, sourceJs->sourceURL());
+}
+
+jsi::Value JSCRuntime::evaluateJavaScript(
+    const std::shared_ptr<const jsi::Buffer> &buffer,
     const std::string& sourceURL) {
   std::string tmp(
       reinterpret_cast<const char*>(buffer->data()), buffer->size());
@@ -336,6 +362,7 @@ void JSCRuntime::evaluateJavaScript(
     JSStringRelease(sourceURLRef);
   }
   checkException(res, exc);
+  return createValue(res);
 }
 
 jsi::Object JSCRuntime::global() {
@@ -574,7 +601,7 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
       }
       return rt.valueRef(ret);
     }
-    
+
     #define JSC_UNUSED(x) (void) (x);
 
     static bool setProperty(
@@ -627,7 +654,7 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
         JSPropertyNameAccumulatorAddName(propertyNames, stringRef(name));
       }
     }
-    
+
     #undef JSC_UNUSED
 
     static void finalize(JSObjectRef obj) {
@@ -798,12 +825,24 @@ jsi::Array JSCRuntime::getPropertyNames(const jsi::Object& obj) {
   return result;
 }
 
-jsi::WeakObject JSCRuntime::createWeakObject(const jsi::Object&) {
+jsi::WeakObject JSCRuntime::createWeakObject(const jsi::Object& obj) {
+#ifdef RN_FABRIC_ENABLED
+  // TODO: revisit this implementation
+  JSObjectRef objRef = objectRef(obj);
+  return make<jsi::WeakObject>(makeObjectValue(objRef));
+#else
   throw std::logic_error("Not implemented");
+#endif
 }
 
-jsi::Value JSCRuntime::lockWeakObject(const jsi::WeakObject&) {
+jsi::Value JSCRuntime::lockWeakObject(const jsi::WeakObject& obj) {
+#ifdef RN_FABRIC_ENABLED
+  // TODO: revisit this implementation
+  JSObjectRef objRef = objectRef(obj);
+  return jsi::Value(createObject(objRef));
+#else
   throw std::logic_error("Not implemented");
+#endif
 }
 
 jsi::Array JSCRuntime::createArray(size_t length) {
@@ -1198,7 +1237,14 @@ JSStringRef JSCRuntime::stringRef(const jsi::PropNameID& sym) {
 JSObjectRef JSCRuntime::objectRef(const jsi::Object& obj) {
   return static_cast<const JSCObjectValue*>(getPointerValue(obj))->obj_;
 }
-
+      
+#ifdef RN_FABRIC_ENABLED
+JSObjectRef JSCRuntime::objectRef(const jsi::WeakObject& obj) {
+  // TODO: revisit this implementation
+  return static_cast<const JSCObjectValue*>(getPointerValue(obj))->obj_;
+}
+#endif
+      
 void JSCRuntime::checkException(JSValueRef exc) {
   if (JSC_UNLIKELY(exc)) {
     throw jsi::JSError(*this, createValue(exc));

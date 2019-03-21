@@ -18,8 +18,8 @@ Pod::Spec.new do |spec|
   spec.name = 'yoga'
   spec.version = "#{version}.React"
   spec.license =  { :type => 'MIT' }
-  spec.homepage = 'https://facebook.github.io/yoga/'
-  spec.documentation_url = 'https://facebook.github.io/yoga/docs/api/c/'
+  spec.homepage = 'https://yogalayout.com'
+  spec.documentation_url = 'https://yogalayout.com/docs/'
 
   spec.summary = 'Yoga is a cross-platform layout engine which implements Flexbox.'
   spec.description = 'Yoga is a cross-platform layout engine enabling maximum collaboration within your team by implementing an API many designers are familiar with, and opening it up to developers across different platforms.'
@@ -47,7 +47,7 @@ Pod::Spec.new do |spec|
   source_files = File.join('ReactCommon/yoga', source_files) if ENV['INSTALL_YOGA_WITHOUT_PATH_OPTION']
   spec.source_files = source_files
 
-  header_files = 'yoga/{Yoga,YGEnums,YGMacros,YGValue}.h'
+  header_files = 'yoga/{Yoga,YGEnums,YGMacros,YGValue,YGStyle,CompactValue,YGFloatOptional,Yoga-internal,YGNode,YGConfig,YGLayout,YGMarker}.h'
   header_files = File.join('ReactCommon/yoga', header_files) if ENV['INSTALL_YOGA_WITHOUT_PATH_OPTION']
   spec.public_header_files = header_files
 end

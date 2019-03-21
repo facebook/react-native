@@ -83,7 +83,7 @@ public:
     bridge_.bridgeDescription =
       [NSString stringWithFormat:@"RCTCxxBridge %s",
                 ret->getDescription().c_str()];
-    return std::move(ret);
+    return ret;
   }
 
 private:
@@ -101,7 +101,7 @@ static bool isRAMBundle(NSData *script) {
 
 static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogger) {
   __weak RCTPerformanceLogger *weakPerformanceLogger = performanceLogger;
-  ReactMarker::logTaggedMarker = [weakPerformanceLogger](const ReactMarker::ReactMarkerId markerId, const char *tag) {
+  ReactMarker::logTaggedMarker = [weakPerformanceLogger](const ReactMarker::ReactMarkerId markerId, const char *__unused tag) {
     switch (markerId) {
       case ReactMarker::RUN_JS_BUNDLE_START:
         [weakPerformanceLogger markStartForTag:RCTPLScriptExecution];
@@ -357,7 +357,9 @@ struct RCTInstanceCallback : public InstanceCallback {
     dispatch_group_leave(prepareBridge);
   } onProgress:^(RCTLoadingProgress *progressData) {
 #if RCT_DEV && __has_include("RCTDevLoadingView.h")
-    RCTDevLoadingView *loadingView = [weakSelf moduleForClass:[RCTDevLoadingView class]];
+    // Note: RCTDevLoadingView should have been loaded at this point, so no need to allow lazy loading.
+    RCTDevLoadingView *loadingView = [weakSelf moduleForName:RCTBridgeModuleNameForClass([RCTDevLoadingView class])
+                                       lazilyLoadIfNecessary:NO];
     [loadingView updateProgress:progressData];
 #endif
   }];
@@ -407,9 +409,10 @@ struct RCTInstanceCallback : public InstanceCallback {
                                          "server or have included a .jsbundle file in your application bundle.");
     onSourceLoad(error, nil);
   } else {
+    __weak RCTCxxBridge *weakSelf = self;
     [RCTJavaScriptLoader loadBundleAtURL:self.bundleURL onProgress:onProgress onComplete:^(NSError *error, RCTSource *source) {
       if (error) {
-        RCTLogError(@"Failed to load bundle(%@) with error:(%@ %@)", self.bundleURL, error.localizedDescription, error.localizedFailureReason);
+        [weakSelf handleError:error];
         return;
       }
       onSourceLoad(error, source);
@@ -613,9 +616,9 @@ struct RCTInstanceCallback : public InstanceCallback {
         continue;
       } else if ([moduleData.moduleClass new] != nil) {
         // Both modules were non-nil, so it's unclear which should take precedence
-        RCTLogError(@"Attempted to register RCTBridgeModule class %@ for the "
-                    "name '%@', but name was already registered by class %@",
-                    moduleClass, moduleName, moduleData.moduleClass);
+        RCTLogWarn(@"Attempted to register RCTBridgeModule class %@ for the "
+                   "name '%@', but name was already registered by class %@",
+                   moduleClass, moduleName, moduleData.moduleClass);
       }
     }
 
@@ -981,7 +984,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
 - (void)reload
 {
   if (!_valid) {
-    RCTLogError(@"Attempting to reload bridge before it's valid: %@. Try restarting the development server if connected.", self);
+    RCTLogWarn(@"Attempting to reload bridge before it's valid: %@. Try restarting the development server if connected.", self);
   }
   [_parentBridge reload];
 }

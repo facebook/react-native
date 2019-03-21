@@ -35,32 +35,6 @@ class AccessibilityAndroidExample extends React.Component {
     count: 0,
     backgroundImportantForAcc: 0,
     forgroundImportantForAcc: 0,
-    screenReaderEnabled: false,
-  };
-
-  componentDidMount() {
-    AccessibilityInfo.addEventListener(
-      'change',
-      this._handleScreenReaderToggled,
-    );
-    AccessibilityInfo.fetch().done(isEnabled => {
-      this.setState({
-        screenReaderEnabled: isEnabled,
-      });
-    });
-  }
-
-  componentWillUnmount() {
-    AccessibilityInfo.removeEventListener(
-      'change',
-      this._handleScreenReaderToggled,
-    );
-  }
-
-  _handleScreenReaderToggled = isEnabled => {
-    this.setState({
-      screenReaderEnabled: isEnabled,
-    });
   };
 
   _addOne = () => {
@@ -83,109 +57,7 @@ class AccessibilityAndroidExample extends React.Component {
 
   render() {
     return (
-      <RNTesterPage title={'Accessibility'}>
-        <RNTesterBlock title="Nonaccessible view with TextViews">
-          <View>
-            <Text style={{color: 'green'}}>This is</Text>
-            <Text style={{color: 'blue'}}>nontouchable normal view.</Text>
-          </View>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="Accessible view with TextViews wihout label">
-          <View accessible={true}>
-            <Text style={{color: 'green'}}>This is</Text>
-            <Text style={{color: 'blue'}}>
-              nontouchable accessible view without label.
-            </Text>
-          </View>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="Accessible view with TextViews with label">
-          <View
-            accessible={true}
-            accessibilityLabel="I have label, so I read it instead of embedded text.">
-            <Text style={{color: 'green'}}>This is</Text>
-            <Text style={{color: 'blue'}}>
-              nontouchable accessible view with label.
-            </Text>
-          </View>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="Touchable with accessibilityRole = button">
-          <TouchableWithoutFeedback
-            onPress={() =>
-              ToastAndroid.show('Toasts work by default', ToastAndroid.SHORT)
-            }
-            accessibilityRole="button">
-            <View style={styles.embedded}>
-              <Text>Click me</Text>
-              <Text>Or not</Text>
-            </View>
-          </TouchableWithoutFeedback>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="Disabled Touchable with accessibilityRole = button">
-          <TouchableWithoutFeedback
-            onPress={() =>
-              ToastAndroid.show('Toasts work by default', ToastAndroid.SHORT)
-            }
-            accessibilityRole="button"
-            accessibilityStates={['disabled']}
-            disabled={true}>
-            <View>
-              <Text>I am disabled</Text>
-              <Text>Clicking me will not trigger any action.</Text>
-            </View>
-          </TouchableWithoutFeedback>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="Touchable with accessibilityRole = button and accessibilityHint">
-          <TouchableWithoutFeedback
-            onPress={() =>
-              ToastAndroid.show('Toasts work by default', ToastAndroid.SHORT)
-            }
-            accessibilityRole="button"
-            accessibilityHint="Triggers
-            Toasts">
-            <View>
-              <Text>Click Me!</Text>
-            </View>
-          </TouchableWithoutFeedback>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="Accessible View with hint, role, and state">
-          <View
-            accessible={true}
-            accessibilityRole="button"
-            accessibilityStates={['selected']}
-            accessibilityHint="accessibility hint">
-            <Text>Accessible view with hint, role, and state</Text>
-            <Text style={{color: 'gray'}}>
-              Talkback will say: accessibility hint button, selected{' '}
-            </Text>
-          </View>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="Accessible View with label, hint, role, and state">
-          <View
-            accessible={true}
-            accessibilityLabel="accessibility Label"
-            accessibilityRole="button"
-            accessibilityStates={['selected']}
-            accessibilityHint="accessibility Hint">
-            <Text>Accessible view with label, hint, role, and state</Text>
-            <Text style={{color: 'gray'}}>
-              Talkback will say: accessibility label, hint button, selected{' '}
-            </Text>
-          </View>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="Accessible View with no other properties set">
-          <View accessible={true}>
-            <Text>This accessible view has no label, so the text is read.</Text>
-          </View>
-        </RNTesterBlock>
-
+      <RNTesterPage title={'Accessibility Android APIs'}>
         <RNTesterBlock title="LiveRegion">
           <TouchableWithoutFeedback onPress={this._addOne}>
             <View style={styles.embedded}>
@@ -194,13 +66,6 @@ class AccessibilityAndroidExample extends React.Component {
           </TouchableWithoutFeedback>
           <Text accessibilityLiveRegion="polite">
             Clicked {this.state.count} times
-          </Text>
-        </RNTesterBlock>
-
-        <RNTesterBlock title="Check if the screen reader is enabled">
-          <Text>
-            The screen reader is{' '}
-            {this.state.screenReaderEnabled ? 'enabled' : 'disabled'}.
           </Text>
         </RNTesterBlock>
 
@@ -303,8 +168,8 @@ const styles = StyleSheet.create({
   },
 });
 
-exports.title = 'Accessibility';
-exports.description = 'Examples of using Accessibility API.';
+exports.title = 'AccessibilityAndroid';
+exports.description = 'Android specific Accessibility APIs.';
 exports.examples = [
   {
     title: 'Accessibility elements',

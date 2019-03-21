@@ -18,6 +18,9 @@ inline Value toValue(Runtime&, bool b) {
 inline Value toValue(Runtime&, double d) {
   return Value(d);
 }
+inline Value toValue(Runtime&, float f) {
+  return Value(static_cast<double>(f));
+}
 inline Value toValue(Runtime&, int i) {
   return Value(i);
 }

@@ -2,6 +2,8 @@
 
 #include "UIManagerBinding.h"
 
+#include <react/debug/SystraceSection.h>
+
 #include <jsi/JSIDynamic.h>
 
 namespace facebook {
@@ -42,6 +44,7 @@ void UIManagerBinding::startSurface(
   folly::dynamic parameters = folly::dynamic::object();
   parameters["rootTag"] = surfaceId;
   parameters["initialProps"] = initalProps;
+  parameters["fabric"] = true;
 
   auto module = getModule(runtime, "AppRegistry");
   auto method = module.getPropertyAsFunction(runtime, "runApplication");
@@ -66,6 +69,8 @@ void UIManagerBinding::dispatchEvent(
     const EventTarget *eventTarget,
     const std::string &type,
     const ValueFactory &payloadFactory) const {
+  SystraceSection s("UIManagerBinding::dispatchEvent");
+
   auto payload = payloadFactory(runtime);
 
   auto instanceHandle = eventTarget

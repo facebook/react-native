@@ -5,9 +5,11 @@
 
 #include "Scheduler.h"
 
+#include <glog/logging.h>
 #include <jsi/jsi.h>
 
 #include <react/core/LayoutContext.h>
+#include <react/debug/SystraceSection.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
 #include <react/uimanager/TimeUtils.h>
 #include <react/uimanager/UIManager.h>
@@ -44,11 +46,24 @@ Scheduler::Scheduler(
     uiManagerBinding->dispatchEvent(runtime, eventTarget, type, payloadFactory);
   };
 
+  auto statePipe = [uiManager = &uiManagerRef](
+                       const StateData::Shared &data,
+                       const StateTarget &stateTarget) {
+    uiManager->updateState(
+        stateTarget.getShadowNode().shared_from_this(), data);
+  };
+
   auto eventDispatcher = std::make_shared<EventDispatcher>(
-      eventPipe, synchronousEventBeatFactory, asynchronousEventBeatFactory);
+      eventPipe,
+      statePipe,
+      synchronousEventBeatFactory,
+      asynchronousEventBeatFactory);
 
   componentDescriptorRegistry_ =
       buildRegistryFunction(eventDispatcher, contextContainer);
+
+  rootComponentDescriptor_ =
+      std::make_unique<const RootComponentDescriptor>(eventDispatcher);
 
   uiManagerRef.setDelegate(this);
   uiManagerRef.setShadowTreeRegistry(&shadowTreeRegistry_);
@@ -69,8 +84,10 @@ void Scheduler::startSurface(
     const folly::dynamic &initialProps,
     const LayoutConstraints &layoutConstraints,
     const LayoutContext &layoutContext) const {
-  auto shadowTree =
-      std::make_unique<ShadowTree>(surfaceId, layoutConstraints, layoutContext);
+  SystraceSection s("Scheduler::startSurface");
+
+  auto shadowTree = std::make_unique<ShadowTree>(
+      surfaceId, layoutConstraints, layoutContext, *rootComponentDescriptor_);
   shadowTree->setDelegate(this);
 
   shadowTreeRegistry_.add(std::move(shadowTree));
@@ -86,7 +103,9 @@ void Scheduler::startSurface(
 void Scheduler::renderTemplateToSurface(
     SurfaceId surfaceId,
     const std::string &uiTemplate) {
+  SystraceSection s("Scheduler::renderTemplateToSurface");
   long commitStartTime = getTime();
+
   try {
     if (uiTemplate.size() == 0) {
       return;
@@ -105,9 +124,16 @@ void Scheduler::renderTemplateToSurface(
           [&](const SharedRootShadowNode &oldRootShadowNode) {
             return std::make_shared<RootShadowNode>(
                 *oldRootShadowNode,
-                ShadowNodeFragment{.children =
-                                       std::make_shared<SharedShadowNodeList>(
-                                           SharedShadowNodeList{tree})});
+                ShadowNodeFragment{
+                    /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
+                    /* .rootTag = */ ShadowNodeFragment::surfaceIdPlaceholder(),
+                    /* .props = */ ShadowNodeFragment::propsPlaceholder(),
+                    /* .eventEmitter = */
+                    ShadowNodeFragment::eventEmitterPlaceholder(),
+                    /* .children = */
+                    std::make_shared<SharedShadowNodeList>(
+                        SharedShadowNodeList{tree}),
+                });
           },
           commitStartTime);
     });
@@ -118,6 +144,8 @@ void Scheduler::renderTemplateToSurface(
 }
 
 void Scheduler::stopSurface(SurfaceId surfaceId) const {
+  SystraceSection s("Scheduler::stopSurface");
+
   long commitStartTime = getTime();
   shadowTreeRegistry_.visit(
       surfaceId, [commitStartTime](const ShadowTree &shadowTree) {
@@ -127,8 +155,15 @@ void Scheduler::stopSurface(SurfaceId surfaceId) const {
               return std::make_shared<RootShadowNode>(
                   *oldRootShadowNode,
                   ShadowNodeFragment{
-                      .children =
-                          ShadowNode::emptySharedShadowNodeSharedList()});
+                      /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
+                      /* .rootTag = */
+                      ShadowNodeFragment::surfaceIdPlaceholder(),
+                      /* .props = */ ShadowNodeFragment::propsPlaceholder(),
+                      /* .eventEmitter = */
+                      ShadowNodeFragment::eventEmitterPlaceholder(),
+                      /* .children = */
+                      ShadowNode::emptySharedShadowNodeSharedList(),
+                  });
             },
             commitStartTime);
       });
@@ -147,6 +182,8 @@ Size Scheduler::measureSurface(
     SurfaceId surfaceId,
     const LayoutConstraints &layoutConstraints,
     const LayoutContext &layoutContext) const {
+  SystraceSection s("Scheduler::measureSurface");
+
   long commitStartTime = getTime();
 
   Size size;
@@ -168,6 +205,8 @@ void Scheduler::constraintSurfaceLayout(
     SurfaceId surfaceId,
     const LayoutConstraints &layoutConstraints,
     const LayoutContext &layoutContext) const {
+  SystraceSection s("Scheduler::constraintSurfaceLayout");
+
   long commitStartTime = getTime();
 
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree &shadowTree) {
@@ -177,6 +216,11 @@ void Scheduler::constraintSurfaceLayout(
         },
         commitStartTime);
   });
+}
+
+const ComponentDescriptor &Scheduler::getComponentDescriptor(
+    ComponentHandle handle) {
+  return componentDescriptorRegistry_->at(handle);
 }
 
 #pragma mark - Delegate
@@ -196,6 +240,8 @@ void Scheduler::shadowTreeDidCommit(
     const ShadowViewMutationList &mutations,
     long commitStartTime,
     long layoutTime) const {
+  SystraceSection s("Scheduler::shadowTreeDidCommit");
+
   if (delegate_) {
     delegate_->schedulerDidFinishTransaction(
         shadowTree.getSurfaceId(), mutations, commitStartTime, layoutTime);
@@ -208,12 +254,21 @@ void Scheduler::uiManagerDidFinishTransaction(
     SurfaceId surfaceId,
     const SharedShadowNodeUnsharedList &rootChildNodes,
     long startCommitTime) {
+  SystraceSection s("Scheduler::uiManagerDidFinishTransaction");
+
   shadowTreeRegistry_.visit(surfaceId, [&](const ShadowTree &shadowTree) {
     shadowTree.commit(
         [&](const SharedRootShadowNode &oldRootShadowNode) {
           return std::make_shared<RootShadowNode>(
               *oldRootShadowNode,
-              ShadowNodeFragment{.children = rootChildNodes});
+              ShadowNodeFragment{
+                  /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
+                  /* .rootTag = */ ShadowNodeFragment::surfaceIdPlaceholder(),
+                  /* .props = */ ShadowNodeFragment::propsPlaceholder(),
+                  /* .eventEmitter = */
+                  ShadowNodeFragment::eventEmitterPlaceholder(),
+                  /* .children = */ rootChildNodes,
+              });
         },
         startCommitTime);
   });
@@ -221,16 +276,12 @@ void Scheduler::uiManagerDidFinishTransaction(
 
 void Scheduler::uiManagerDidCreateShadowNode(
     const SharedShadowNode &shadowNode) {
-  if (delegate_) {
-    auto layoutableShadowNode =
-        dynamic_cast<const LayoutableShadowNode *>(shadowNode.get());
-    auto isLayoutable = layoutableShadowNode != nullptr;
+  SystraceSection s("Scheduler::uiManagerDidCreateShadowNode");
 
+  if (delegate_) {
+    auto shadowView = ShadowView(*shadowNode);
     delegate_->schedulerDidRequestPreliminaryViewAllocation(
-        shadowNode->getRootTag(),
-        shadowNode->getComponentName(),
-        isLayoutable,
-        shadowNode->getComponentHandle());
+        shadowNode->getSurfaceId(), shadowView);
   }
 }
 

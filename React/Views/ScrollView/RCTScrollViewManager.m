@@ -34,6 +34,8 @@ RCT_ENUM_CONVERTER(UIScrollViewIndicatorStyle, (@{
   @"white": @(UIScrollViewIndicatorStyleWhite),
 }), UIScrollViewIndicatorStyleDefault, integerValue)
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunguarded-availability-new"
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
 RCT_ENUM_CONVERTER(UIScrollViewContentInsetAdjustmentBehavior, (@{
   @"automatic": @(UIScrollViewContentInsetAdjustmentAutomatic),
@@ -42,6 +44,7 @@ RCT_ENUM_CONVERTER(UIScrollViewContentInsetAdjustmentBehavior, (@{
   @"always": @(UIScrollViewContentInsetAdjustmentAlways),
 }), UIScrollViewContentInsetAdjustmentNever, integerValue)
 #endif
+#pragma clang diagnostic pop
 
 @end
 

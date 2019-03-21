@@ -10,14 +10,24 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTComponentViewFactory.h>
-#import <react/uimanager/ContextContainer.h>
 #import <React/RCTPrimitives.h>
 #import <react/config/ReactNativeConfig.h>
+#import <react/uimanager/ContextContainer.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class RCTFabricSurface;
 @class RCTMountingManager;
+
+@protocol RCTSurfacePresenterObserver <NSObject>
+
+@optional
+
+- (void)willMountComponentsWithRootTag:(ReactTag)rootTag;
+
+- (void)didMountComponentsWithRootTag:(ReactTag)rootTag;
+
+@end
 
 /**
  * Coordinates presenting of React Native Surfaces and represents application
@@ -65,6 +75,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setMinimumSize:(CGSize)minimumSize
            maximumSize:(CGSize)maximumSize
                surface:(RCTFabricSurface *)surface;
+
+- (BOOL)synchronouslyUpdateViewOnUIThread:(NSNumber *)reactTag props:(NSDictionary *)props;
+
+- (void)addObserver:(id<RCTSurfacePresenterObserver>)observer;
+
+- (void)removeObserver:(id<RCTSurfacePresenterObserver>)observer;
 
 @end
 

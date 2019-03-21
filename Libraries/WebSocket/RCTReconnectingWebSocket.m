@@ -163,7 +163,9 @@ static void my_os_log_error_impl(void *dso, os_log_t log, os_log_type_t type, co
 - (void)webSocket:(RCTSRWebSocket *)webSocket didFailWithError:(NSError *)error
 {
   [_delegate reconnectingWebSocketDidClose:self];
-  [self reconnect];
+  if ([error code] != ECONNREFUSED) {
+    [self reconnect];
+  }
 }
 
 - (void)webSocket:(RCTSRWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean

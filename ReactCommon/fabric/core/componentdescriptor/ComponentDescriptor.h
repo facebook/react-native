@@ -9,6 +9,8 @@
 
 #include <react/core/Props.h>
 #include <react/core/ShadowNode.h>
+#include <react/core/State.h>
+#include <react/core/StateData.h>
 
 namespace facebook {
 namespace react {
@@ -77,6 +79,20 @@ class ComponentDescriptor {
   virtual SharedEventEmitter createEventEmitter(
       SharedEventTarget eventTarget,
       const Tag &tag) const = 0;
+
+  /*
+   * Create an initial State object that represents (and contains) an initial
+   * State's data which can be constructed based on initial Props.
+   */
+  virtual State::Shared createInitialState(const SharedProps &props) const = 0;
+
+  /*
+   * Creates a new State object that represents (and contains) a new version of
+   * State's data.
+   */
+  virtual State::Shared createState(
+      const State::Shared &previousState,
+      const StateData::Shared &data) const = 0;
 };
 
 } // namespace react

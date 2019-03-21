@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <better/map.h>
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
 #include <jsi/jsi.h>
@@ -180,7 +181,7 @@ class RawValue {
   template <typename T>
   static bool checkValueType(
       const folly::dynamic &dynamic,
-      std::unordered_map<std::string, T> *type) noexcept {
+      better::map<std::string, T> *type) noexcept {
     if (!dynamic.isObject()) {
       return false;
     }
@@ -249,11 +250,11 @@ class RawValue {
   }
 
   template <typename T>
-  static std::unordered_map<std::string, T> castValue(
+  static better::map<std::string, T> castValue(
       const folly::dynamic &dynamic,
-      std::unordered_map<std::string, T> *type) noexcept {
+      better::map<std::string, T> *type) noexcept {
     assert(dynamic.isObject());
-    auto result = std::unordered_map<std::string, T>{};
+    auto result = better::map<std::string, T>{};
     for (const auto &item : dynamic.items()) {
       assert(item.first.isString());
       result[item.first.getString()] = castValue(item.second, (T *)nullptr);

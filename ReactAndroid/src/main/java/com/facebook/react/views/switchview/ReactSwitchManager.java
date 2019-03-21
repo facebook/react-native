@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
  */
 public class ReactSwitchManager extends SimpleViewManager<ReactSwitch> {
 
-  private static final String REACT_CLASS = "AndroidSwitch";
+  public static final String REACT_CLASS = "AndroidSwitch";
 
   static class ReactSwitchShadowNode extends LayoutShadowNode implements
       YogaMeasureFunction {

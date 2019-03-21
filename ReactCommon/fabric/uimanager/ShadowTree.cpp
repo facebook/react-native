@@ -5,8 +5,10 @@
 
 #include "ShadowTree.h"
 
+#include <react/components/root/RootComponentDescriptor.h>
 #include <react/core/LayoutContext.h>
 #include <react/core/LayoutPrimitives.h>
+#include <react/debug/SystraceSection.h>
 #include <react/mounting/Differentiator.h>
 #include <react/mounting/ShadowViewMutation.h>
 #include <react/uimanager/TimeUtils.h>
@@ -78,7 +80,8 @@ static void updateMountedFlag(
 ShadowTree::ShadowTree(
     SurfaceId surfaceId,
     const LayoutConstraints &layoutConstraints,
-    const LayoutContext &layoutContext)
+    const LayoutContext &layoutContext,
+    const RootComponentDescriptor &rootComponentDescriptor)
     : surfaceId_(surfaceId) {
   const auto noopEventEmitter = std::make_shared<const ViewEventEmitter>(
       nullptr, -1, std::shared_ptr<const EventDispatcher>());
@@ -86,14 +89,13 @@ ShadowTree::ShadowTree(
   const auto props = std::make_shared<const RootProps>(
       *RootShadowNode::defaultSharedProps(), layoutConstraints, layoutContext);
 
-  rootShadowNode_ = std::make_shared<RootShadowNode>(
-      ShadowNodeFragment{
-          .tag = surfaceId,
-          .rootTag = surfaceId,
-          .props = props,
-          .eventEmitter = noopEventEmitter,
-      },
-      nullptr);
+  rootShadowNode_ = std::static_pointer_cast<const RootShadowNode>(
+      rootComponentDescriptor.createShadowNode(ShadowNodeFragment{
+          /* .tag = */ surfaceId,
+          /* .rootTag = */ surfaceId,
+          /* .props = */ props,
+          /* .eventEmitter = */ noopEventEmitter,
+      }));
 }
 
 ShadowTree::~ShadowTree() {
@@ -102,7 +104,13 @@ ShadowTree::~ShadowTree() {
         return std::make_shared<RootShadowNode>(
             *oldRootShadowNode,
             ShadowNodeFragment{
-                .children = ShadowNode::emptySharedShadowNodeSharedList()});
+                /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
+                /* .rootTag = */ ShadowNodeFragment::surfaceIdPlaceholder(),
+                /* .props = */ ShadowNodeFragment::propsPlaceholder(),
+                /* .eventEmitter = */
+                ShadowNodeFragment::eventEmitterPlaceholder(),
+                /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
+            });
       },
       getTime());
 }
@@ -115,6 +123,8 @@ void ShadowTree::commit(
     ShadowTreeCommitTransaction transaction,
     long commitStartTime,
     int *revision) const {
+  SystraceSection s("ShadowTree::commit");
+
   int attempts = 0;
 
   while (true) {
@@ -133,11 +143,13 @@ bool ShadowTree::tryCommit(
     ShadowTreeCommitTransaction transaction,
     long commitStartTime,
     int *revision) const {
+  SystraceSection s("ShadowTree::tryCommit");
+
   SharedRootShadowNode oldRootShadowNode;
 
   {
     // Reading `rootShadowNode_` in shared manner.
-    std::shared_lock<folly::SharedMutex> lock(commitMutex_);
+    std::shared_lock<better::shared_mutex> lock(commitMutex_);
     oldRootShadowNode = rootShadowNode_;
   }
 
@@ -157,7 +169,7 @@ bool ShadowTree::tryCommit(
 
   {
     // Updating `rootShadowNode_` in unique manner if it hasn't changed.
-    std::unique_lock<folly::SharedMutex> lock(commitMutex_);
+    std::unique_lock<better::shared_mutex> lock(commitMutex_);
 
     if (rootShadowNode_ != oldRootShadowNode) {
       return false;
@@ -192,6 +204,8 @@ bool ShadowTree::tryCommit(
 
 void ShadowTree::emitLayoutEvents(
     const ShadowViewMutationList &mutations) const {
+  SystraceSection s("ShadowTree::emitLayoutEvents");
+
   for (const auto &mutation : mutations) {
     // Only `Insert` and `Update` mutations can affect layout metrics.
     if (mutation.type != ShadowViewMutation::Insert &&

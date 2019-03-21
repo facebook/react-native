@@ -34,18 +34,6 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('./ImageExample'),
   },
   {
-    key: 'ListViewExample',
-    module: require('./ListViewExample'),
-  },
-  {
-    key: 'ListViewGridLayoutExample',
-    module: require('./ListViewGridLayoutExample'),
-  },
-  {
-    key: 'ListViewPagingExample',
-    module: require('./ListViewPagingExample'),
-  },
-  {
     key: 'ModalExample',
     module: require('./ModalExample'),
   },
@@ -86,10 +74,6 @@ const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'SwipeableFlatListExample',
     module: require('./SwipeableFlatListExample'),
-  },
-  {
-    key: 'SwipeableListViewExample',
-    module: require('./SwipeableListViewExample'),
   },
   {
     key: 'SwitchExample',
@@ -135,6 +119,10 @@ const ComponentExamples: Array<RNTesterExample> = [
 
 const APIExamples: Array<RNTesterExample> = [
   {
+    key: 'AccessibilityExample',
+    module: require('./AccessibilityExample'),
+  },
+  {
     key: 'AccessibilityAndroidExample',
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
      * when making Flow check .android.js files. */
@@ -163,6 +151,10 @@ const APIExamples: Array<RNTesterExample> = [
   {
     key: 'ClipboardExample',
     module: require('./ClipboardExample'),
+  },
+  {
+    key: 'CrashExample',
+    module: require('./CrashExample'),
   },
   {
     key: 'DatePickerAndroidExample',

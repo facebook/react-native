@@ -25,7 +25,7 @@ class ParagraphComponentDescriptor final
     : public ConcreteComponentDescriptor<ParagraphShadowNode> {
  public:
   ParagraphComponentDescriptor(
-      SharedEventDispatcher eventDispatcher,
+      EventDispatcher::Shared eventDispatcher,
       const SharedContextContainer &contextContainer)
       : ConcreteComponentDescriptor<ParagraphShadowNode>(eventDispatcher) {
     // Every single `ParagraphShadowNode` will have a reference to
@@ -54,6 +54,7 @@ class ParagraphComponentDescriptor final
     }
   }
 
+ protected:
   void adopt(UnsharedShadowNode shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);
 
@@ -69,6 +70,8 @@ class ParagraphComponentDescriptor final
     // measurements.
     paragraphShadowNode->setMeasureCache(
         measureCache_ ? measureCache_.get() : nullptr);
+
+    paragraphShadowNode->dirtyLayout();
 
     // All `ParagraphShadowNode`s must have leaf Yoga nodes with properly
     // setup measure function.

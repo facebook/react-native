@@ -5,10 +5,10 @@
 
 #pragma once
 
-#include <folly/SharedMutex.h>
+#include <better/mutex.h>
 #include <memory>
-#include <shared_mutex>
 
+#include <react/components/root/RootComponentDescriptor.h>
 #include <react/components/root/RootShadowNode.h>
 #include <react/core/LayoutConstraints.h>
 #include <react/core/ReactPrimitives.h>
@@ -33,7 +33,8 @@ class ShadowTree final {
   ShadowTree(
       SurfaceId surfaceId,
       const LayoutConstraints &layoutConstraints,
-      const LayoutContext &layoutContext);
+      const LayoutContext &layoutContext,
+      const RootComponentDescriptor &rootComponentDescriptor);
 
   ~ShadowTree();
 
@@ -82,7 +83,7 @@ class ShadowTree final {
   void emitLayoutEvents(const ShadowViewMutationList &mutations) const;
 
   const SurfaceId surfaceId_;
-  mutable folly::SharedMutex commitMutex_;
+  mutable better::shared_mutex commitMutex_;
   mutable SharedRootShadowNode rootShadowNode_; // Protected by `commitMutex_`.
   mutable int revision_{1}; // Protected by `commitMutex_`.
   ShadowTreeDelegate const *delegate_;

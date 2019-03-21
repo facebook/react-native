@@ -24,6 +24,8 @@ void throwJSError(Runtime& rt, const char* msg) {
 
 Buffer::~Buffer() {}
 
+PreparedJavaScript::~PreparedJavaScript() = default;
+
 Value HostObject::get(Runtime&, const PropNameID&) {
   return Value();
 }

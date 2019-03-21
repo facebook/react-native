@@ -18,12 +18,14 @@ export type Registry = Map<Category, $ReadOnlyArray<YellowBoxWarning>>;
 
 export type Observer = (registry: Registry) => void;
 
+export type IgnorePattern = string | RegExp;
+
 export type Subscription = $ReadOnly<{|
   unsubscribe: () => void,
 |}>;
 
 const observers: Set<{observer: Observer}> = new Set();
-const ignorePatterns: Set<string> = new Set();
+const ignorePatterns: Set<IgnorePattern> = new Set();
 const registry: Registry = new Map();
 
 let disabled = false;
@@ -32,7 +34,12 @@ let updateTimeout = null;
 
 function isWarningIgnored(warning: YellowBoxWarning): boolean {
   for (const pattern of ignorePatterns) {
-    if (warning.message.content.includes(pattern)) {
+    if (pattern instanceof RegExp && pattern.test(warning.message.content)) {
+      return true;
+    } else if (
+      typeof pattern === 'string' &&
+      warning.message.content.includes(pattern)
+    ) {
       return true;
     }
   }
@@ -101,10 +108,21 @@ const YellowBoxRegistry = {
     }
   },
 
-  addIgnorePatterns(patterns: $ReadOnlyArray<string>): void {
-    const newPatterns = patterns.filter(
-      pattern => !ignorePatterns.has(pattern),
-    );
+  addIgnorePatterns(patterns: $ReadOnlyArray<IgnorePattern>): void {
+    const newPatterns = patterns.filter((pattern: IgnorePattern) => {
+      if (pattern instanceof RegExp) {
+        for (const existingPattern of ignorePatterns.entries()) {
+          if (
+            existingPattern instanceof RegExp &&
+            existingPattern.toString() === pattern.toString()
+          ) {
+            return false;
+          }
+        }
+        return true;
+      }
+      return !ignorePatterns.has(pattern);
+    });
     if (newPatterns.length === 0) {
       return;
     }

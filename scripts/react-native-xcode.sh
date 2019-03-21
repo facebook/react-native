@@ -63,10 +63,13 @@ cd $PROJECT_ROOT
 [ -z "$NVM_DIR" ] && export NVM_DIR="$HOME/.nvm"
 
 # Define entry file
-if [[ -s "index.ios.js" ]]; then
-  ENTRY_FILE=${1:-index.ios.js}
-else
-  ENTRY_FILE=${1:-index.js}
+if [[ "$ENTRY_FILE" ]]; then
+  # Use ENTRY_FILE defined by user
+  :
+elif [[ -s "index.ios.js" ]]; then
+   ENTRY_FILE=${1:-index.ios.js}
+ else
+   ENTRY_FILE=${1:-index.js}
 fi
 
 if [[ -s "$HOME/.nvm/nvm.sh" ]]; then

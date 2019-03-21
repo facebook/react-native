@@ -302,7 +302,7 @@ describe('promise tasks', () => {
     }, 100);
   };
 
-  it('resolves async tasks recusively before other queued tasks', () => {
+  it('resolves async tasks recursively before other queued tasks', () => {
     return new Promise(bigAsyncTest);
   });
 

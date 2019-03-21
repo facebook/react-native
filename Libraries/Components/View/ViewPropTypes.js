@@ -284,6 +284,41 @@ type AndroidViewProps = $ReadOnly<{|
    * See http://facebook.github.io/react-native/docs/view.html#importantforaccessibility
    */
   importantForAccessibility?: ?('auto' | 'yes' | 'no' | 'no-hide-descendants'),
+
+  /**
+   * TV next focus down (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusDown?: ?number,
+
+  /**
+   * TV next focus forward (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusForward?: ?number,
+
+  /**
+   * TV next focus left (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusLeft?: ?number,
+
+  /**
+   * TV next focus right (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusRight?: ?number,
+
+  /**
+   * TV next focus up (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusUp?: ?number,
 |}>;
 
 type IOSViewProps = $ReadOnly<{|
