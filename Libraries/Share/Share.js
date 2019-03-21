@@ -27,14 +27,8 @@ type Options = {
   subject?: string,
 };
 
-const DEPRECATION_WARNING = 'Warning: Share package is deprecated in favour of the lean core (https://github.com/facebook/react-native/issues/23313). Use https://github.com/react-native-community/react-native-simple-share for the exact same feature set or use https://github.com/react-native-community/react-native-share which has a rich feature set';
-
 class Share {
   /**
-   * Share is deprecated in favour of lean core 
-   * https://github.com/facebook/react-native/issues/23313 and 
-   * https://github.com/react-native-community/react-native-simple-share
-   * 
    * Open a dialog to share text content.
    *
    * In iOS, Returns a Promise which will be invoked an object containing `action`, `activityType`.
@@ -68,7 +62,13 @@ class Share {
    *
    */
   static share(content: Content, options: Options = {}): Promise<Object> {
-    console.warn(DEPRECATION_WARNING);
+    console.warn(
+      'Warning: Share package is deprecated in favour of the lean core ' +
+      '(https://github.com/facebook/react-native/issues/23313). Use ' +
+      'https://github.com/react-native-community/react-native-simple-share ' +
+      'for the exact same feature set or use https://github.com/react-native-community/react-native-share ' +
+      'which has a rich feature set'
+    );
     invariant(
       typeof content === 'object' && content !== null,
       'Content to share must be a valid object',
