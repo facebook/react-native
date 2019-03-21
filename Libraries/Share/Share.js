@@ -68,7 +68,7 @@ class Share {
    *
    */
   static share(content: Content, options: Options = {}): Promise<Object> {
-    console.ignoredYellowBox = [DEPRECATION_WARNING];
+    console.warn(DEPRECATION_WARNING);
     invariant(
       typeof content === 'object' && content !== null,
       'Content to share must be a valid object',
