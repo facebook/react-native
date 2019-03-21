@@ -31,7 +31,7 @@ module.exports = {
   },
 
   overrides: {
-    files: ['**/__tests__/**/*.js', '**/?(*.)(spec|test).js'],
+    files: ['**/__tests__/**/*.js', '**/*.spec.js', '**/*.test.js'],
     env: {
       jest: true,
       'jest/globals': true,
