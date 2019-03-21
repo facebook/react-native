@@ -9,6 +9,7 @@ package com.facebook.react.modules.network;
 import android.net.Uri;
 import android.util.Base64;
 
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -104,6 +105,7 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
 
   protected static final String NAME = "Networking";
 
+  private static final String TAG = "NetworkingModule";
   private static final String CONTENT_ENCODING_HEADER_NAME = "content-encoding";
   private static final String CONTENT_TYPE_HEADER_NAME = "content-type";
   private static final String REQUEST_BODY_KEY_STRING = "string";
@@ -234,10 +236,29 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void sendRequest(
+      String method,
+      String url,
+      final int requestId,
+      ReadableArray headers,
+      ReadableMap data,
+      final String responseType,
+      final boolean useIncrementalUpdates,
+      int timeout,
+      boolean withCredentials) {
+    try {
+      sendRequestInternal(method, url, requestId, headers, data, responseType,
+        useIncrementalUpdates, timeout, withCredentials);
+    } catch (Throwable th) {
+      FLog.e(TAG, "Failed to send url request: " + url, th);
+      ResponseUtil.onRequestError(getEventEmitter(), requestId, th.getMessage(), th);
+    }
+  }
+
   /**
    * @param timeout value of 0 results in no timeout
    */
-  public void sendRequest(
+  public void sendRequestInternal(
       String method,
       String url,
       final int requestId,
@@ -720,8 +741,8 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
       if (header == null || header.size() != 2) {
         return null;
       }
-      String headerName = header.getString(0);
-      String headerValue = header.getString(1);
+      String headerName = HeaderUtil.stripHeaderName(header.getString(0));
+      String headerValue = HeaderUtil.stripHeaderValue(header.getString(1));
       if (headerName == null || headerValue == null) {
         return null;
       }
