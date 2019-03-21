@@ -238,7 +238,7 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
   RCTAssertMainQueue();
   __block NSArray<AnimatedOperation> *preOperations;
   RCTUnsafeExecuteOnUIManagerQueueSync(^{
-    preOperations = [self->_preOperations copy];
+    preOperations = self->_preOperations;
     self->_preOperations = [NSMutableArray new];
   });
   for (AnimatedOperation operation in preOperations) {
@@ -251,7 +251,7 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
   RCTAssertMainQueue();
   __block NSArray<AnimatedOperation> *operations;
   RCTUnsafeExecuteOnUIManagerQueueSync(^{
-    operations = [self->_operations copy];
+    operations = self->_operations;
     self->_operations = [NSMutableArray new];
   });
   for (AnimatedOperation operation in operations) {
