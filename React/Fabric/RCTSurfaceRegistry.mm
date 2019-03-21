@@ -26,11 +26,10 @@
   return self;
 }
 
-- (NSEnumerator<RCTFabricSurface *> *)enumerator
+- (void)enumerateSurfaceWithBlock:(RCTSurfaceEnumeratorBlock)block
 {
   std::lock_guard<std::mutex> lock(_mutex);
-
-  return [[_registry copy] objectEnumerator];
+  block([_registry objectEnumerator]);
 }
 
 - (void)registerSurface:(RCTFabricSurface *)surface
