@@ -64,10 +64,9 @@ class Share {
   static share(content: Content, options: Options = {}): Promise<Object> {
     console.warn(
       'Warning: Share package is deprecated in favour of the lean core ' +
-      '(https://github.com/facebook/react-native/issues/23313). Use ' +
-      'https://github.com/react-native-community/react-native-simple-share ' +
+      'Use https://github.com/react-native-community/react-native-simple-share ' +
       'for the exact same feature set or use https://github.com/react-native-community/react-native-share ' +
-      'which has a rich feature set'
+      'which has a rich feature set',
     );
     invariant(
       typeof content === 'object' && content !== null,
