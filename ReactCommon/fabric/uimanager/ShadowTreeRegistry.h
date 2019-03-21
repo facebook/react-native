@@ -5,8 +5,7 @@
 
 #pragma once
 
-#include <folly/SharedMutex.h>
-#include <shared_mutex>
+#include <better/mutex.h>
 
 #include <react/core/ReactPrimitives.h>
 #include <react/uimanager/ShadowTree.h>
@@ -49,7 +48,7 @@ class ShadowTreeRegistry final {
       std::function<void(const ShadowTree &shadowTree)> callback) const;
 
  private:
-  mutable folly::SharedMutex mutex_;
+  mutable better::shared_mutex mutex_;
   mutable std::unordered_map<SurfaceId, std::unique_ptr<ShadowTree>>
       registry_; // Protected by `mutex_`.
 };

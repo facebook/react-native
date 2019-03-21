@@ -149,7 +149,7 @@ bool ShadowTree::tryCommit(
 
   {
     // Reading `rootShadowNode_` in shared manner.
-    std::shared_lock<folly::SharedMutex> lock(commitMutex_);
+    std::shared_lock<better::shared_mutex> lock(commitMutex_);
     oldRootShadowNode = rootShadowNode_;
   }
 
@@ -169,7 +169,7 @@ bool ShadowTree::tryCommit(
 
   {
     // Updating `rootShadowNode_` in unique manner if it hasn't changed.
-    std::unique_lock<folly::SharedMutex> lock(commitMutex_);
+    std::unique_lock<better::shared_mutex> lock(commitMutex_);
 
     if (rootShadowNode_ != oldRootShadowNode) {
       return false;
