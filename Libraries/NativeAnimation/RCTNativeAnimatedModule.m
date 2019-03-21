@@ -236,19 +236,27 @@ RCT_EXPORT_METHOD(removeAnimatedEventFromView:(nonnull NSNumber *)viewTag
 - (void)willMountComponentsWithRootTag:(NSInteger)rootTag
 {
   RCTAssertMainQueue();
-  for (AnimatedOperation operation in _preOperations) {
+  __block NSArray<AnimatedOperation> *preOperations;
+  RCTUnsafeExecuteOnUIManagerQueueSync(^{
+    preOperations = self->_preOperations;
+    self->_preOperations = [NSMutableArray new];
+  });
+  for (AnimatedOperation operation in preOperations) {
     operation(self->_nodesManager);
   }
-  _preOperations = [NSMutableArray new];
 }
 
 - (void)didMountComponentsWithRootTag:(NSInteger)rootTag
 {
   RCTAssertMainQueue();
-  for (AnimatedOperation operation in _operations) {
+  __block NSArray<AnimatedOperation> *operations;
+  RCTUnsafeExecuteOnUIManagerQueueSync(^{
+    operations = self->_operations;
+    self->_operations = [NSMutableArray new];
+  });
+  for (AnimatedOperation operation in operations) {
     operation(self->_nodesManager);
   }
-  _operations = [NSMutableArray new];
 }
 
 #pragma mark - RCTUIManagerObserver
