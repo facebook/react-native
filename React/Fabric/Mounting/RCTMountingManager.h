@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * Transfroms mutation insturctions to mount items and execute them.
- * The order of mutation tnstructions matters.
+ * The order of mutation insturctions matters.
  * Can be called from any thread.
  */
 - (void)performTransactionWithMutations:(facebook::react::ShadowViewMutationList)mutations rootTag:(ReactTag)rootTag;
