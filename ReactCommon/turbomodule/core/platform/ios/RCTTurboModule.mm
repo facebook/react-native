@@ -87,6 +87,7 @@ static NSArray *convertJSIArrayToNSArray(jsi::Runtime &runtime, const jsi::Array
   size_t size = value.size(runtime);
   NSMutableArray *result = [NSMutableArray new];
   for (size_t i = 0; i < size; i++) {
+    // Insert kCFNull when it's `undefined` value to preserve the indices.
     [result addObject:convertJSIValueToObjCObject(runtime, value.getValueAtIndex(runtime, i), jsInvoker) ?: (id)kCFNull];
   }
   return [result copy];
@@ -99,16 +100,21 @@ static NSDictionary *convertJSIObjectToNSDictionary(jsi::Runtime &runtime, const
   for (size_t i = 0; i < size; i++) {
     jsi::String name = propertyNames.getValueAtIndex(runtime, i).getString(runtime);
     NSString *k = convertJSIStringToNSString(runtime, name);
-    id v = convertJSIValueToObjCObject(runtime, value.getProperty(runtime, name), jsInvoker) ?: (id)kCFNull;
-    result[k] = v;
+    id v = convertJSIValueToObjCObject(runtime, value.getProperty(runtime, name), jsInvoker);
+    if (v) {
+      result[k] = v;
+    }
   }
   return [result copy];
 }
 
 static RCTResponseSenderBlock convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, std::shared_ptr<react::JSCallInvoker> jsInvoker);
 static id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, std::shared_ptr<react::JSCallInvoker> jsInvoker) {
-  if (value.isUndefined() || value.isNull()) {
+  if (value.isUndefined()) {
     return nil;
+  }
+  if (value.isNull()) {
+    return (id)kCFNull;
   }
   if (value.isBool()) {
     return @(value.getBool());
