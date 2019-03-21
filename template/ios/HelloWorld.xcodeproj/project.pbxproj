@@ -142,7 +142,6 @@
 				00E356EF1AD99517003FC87E /* HelloWorldTests */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
-				FA49361B719CC9BFDC3805AE /* Pods */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -158,13 +157,6 @@
 				2D02E4901E0B4A5D006451C7 /* HelloWorld-tvOSTests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		FA49361B719CC9BFDC3805AE /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Pods;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
