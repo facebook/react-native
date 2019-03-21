@@ -30,6 +30,14 @@ module.exports = {
     },
   },
 
+  overrides: {
+    files: ['**/__tests__/**/*.js', '**/?(*.)(spec|test).js'],
+    env: {
+      jest: true,
+      'jest/globals': true,
+    },
+  },
+
   // Map from global var to bool specifying if it can be redefined
   globals: {
     __DEV__: true,
