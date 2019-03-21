@@ -207,7 +207,7 @@ try {
           [
             'xcodebuild',
             '-workspace',
-            `"EndToEndTest.xcworkspace"`,
+            '"EndToEndTest.xcworkspace"',
             '-destination',
             `"${destination}"`,
             '-scheme',
