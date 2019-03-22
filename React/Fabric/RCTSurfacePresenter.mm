@@ -283,7 +283,7 @@ using namespace facebook::react;
 
 - (void)_startAllSurfaces
 {
-  [_surfaceRegistry enumerateSurfaceWithBlock:^(NSEnumerator<RCTFabricSurface *> * enumerator) {
+  [_surfaceRegistry enumerateWithBlock:^(NSEnumerator<RCTFabricSurface *> *enumerator) {
     for (RCTFabricSurface *surface in enumerator) {
       [self _startSurface:surface];
     }
@@ -292,7 +292,7 @@ using namespace facebook::react;
 
 - (void)_stopAllSurfaces
 {
-  [_surfaceRegistry enumerateSurfaceWithBlock:^(NSEnumerator<RCTFabricSurface *> * enumerator) {
+  [_surfaceRegistry enumerateWithBlock:^(NSEnumerator<RCTFabricSurface *> *enumerator) {
     for (RCTFabricSurface *surface in enumerator) {
       [self _stopSurface:surface];
     }
