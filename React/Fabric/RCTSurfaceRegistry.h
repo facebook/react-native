@@ -23,7 +23,7 @@ typedef void(^RCTSurfaceEnumeratorBlock)(NSEnumerator<RCTFabricSurface *> *enume
  */
 @interface RCTSurfaceRegistry : NSObject
 
-- (void)enumerateSurfaceWithBlock:(RCTSurfaceEnumeratorBlock)block;
+- (void)enumerateWithBlock:(RCTSurfaceEnumeratorBlock)block;
 
 /**
  * Adds Surface object into the registry.
