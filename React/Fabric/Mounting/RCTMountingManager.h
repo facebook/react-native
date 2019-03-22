@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) RCTComponentViewRegistry *componentViewRegistry;
 
 /**
- * Transfroms mutation insturctions to mount items and execute them.
+ * Transfroms mutation instructions to mount items and execute them.
  * The order of mutation insturctions matters.
  * Can be called from any thread.
  */
