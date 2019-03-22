@@ -31,13 +31,15 @@ export type RNTesterExampleModuleItem = $ReadOnly<{|
   render: () => React.Node,
 |}>;
 
-export type RNTesterExampleModule = $ReadOnly<{|
-  title: string,
-  description: string,
-  displayName?: ?string,
-  framework?: string,
-  examples: Array<RNTesterExampleModuleItem>,
-|}>;
+export type RNTesterExampleModule =
+  | $ReadOnly<{|
+      title: string,
+      description: string,
+      displayName?: ?string,
+      framework?: string,
+      examples: Array<RNTesterExampleModuleItem>,
+    |}>
+  | ComponentType<any>;
 
 export type RNTesterExample = $ReadOnly<{|
   key: string,
