@@ -795,7 +795,7 @@ public class ReactRootView extends FrameLayout implements RootView {
       }
     }
 
-    private boolean areInsetsEqual(RootViewInsets insets, RootViewInsets otherInsets) {
+    private boolean areInsetsEqual(@Nullable RootViewInsets insets, @Nullable RootViewInsets otherInsets) {
       return insets != null &&
         otherInsets != null &&
         insets.top == otherInsets.top &&
