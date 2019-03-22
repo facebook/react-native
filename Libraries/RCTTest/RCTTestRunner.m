@@ -199,7 +199,9 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
     if (expectErrorBlock) {
       RCTAssert(expectErrorBlock(errors[0]), @"Expected an error but the first one was missing or did not match.");
     } else {
-      RCTAssert(errors == nil, @"RedBox errors: %@", errors);
+      // [TODO(OSS Candidate ISS#2710739): xcpretty formats the test failure output to show only one line of the assert string followed by a snippet of source code including the assert statement and the lines just before and after.
+      // Convert the `errors` array into a single line string delimited by \n so that CI logs contain meaningful information.
+      RCTAssert(errors == nil, @"RedBox errors: %@", [[errors valueForKey:@"description"] componentsJoinedByString:@"\\n"]); // ]TODO(OSS Candidate ISS#2710739)
       RCTAssert(testModule.status != RCTTestStatusPending, @"Test didn't finish within %0.f seconds", kTestTimeoutSeconds);
       RCTAssert(testModule.status == RCTTestStatusPassed, @"Test failed");
     }
