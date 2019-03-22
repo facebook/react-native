@@ -198,7 +198,7 @@ class PushNotificationIOS {
           },
         );
         break;
-      case 'register':
+      case 'localNotification':
         listener = PushNotificationEmitter.addListener(
           DEVICE_LOCAL_NOTIF_EVENT,
           notifData => {
