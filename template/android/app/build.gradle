@@ -162,3 +162,5 @@ task copyDownloadableDepsToLibs(type: Copy) {
     from configurations.compile
     into 'libs'
 }
+
+apply from: file("../../node_modules/@react-native-community/cli/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
