@@ -15,6 +15,7 @@ const {
   LayoutContext,
   StyleSheet,
   View,
+  Text,
   StatusBar,
   Button,
   Platform,
@@ -45,7 +46,7 @@ class LayoutContextExample extends React.Component<Props, State> {
   render() {
     return (
       <LayoutContext>
-        {({layout, safeAreaInsets}) => {
+        {ctx => {
           return (
             <>
               <StatusBar
@@ -57,15 +58,23 @@ class LayoutContextExample extends React.Component<Props, State> {
                 style={[
                   styles.container,
                   {
-                    width: layout.width,
-                    height: layout.height,
-                    paddingTop: safeAreaInsets.top - BORDER_WIDTH,
-                    paddingRight: safeAreaInsets.right - BORDER_WIDTH,
-                    paddingBottom: safeAreaInsets.bottom - BORDER_WIDTH,
-                    paddingLeft: safeAreaInsets.left - BORDER_WIDTH,
+                    width: ctx.layout.width,
+                    height: ctx.layout.height,
+                    paddingTop: ctx.safeAreaInsets.top - BORDER_WIDTH,
+                    paddingRight: ctx.safeAreaInsets.right - BORDER_WIDTH,
+                    paddingBottom: ctx.safeAreaInsets.bottom - BORDER_WIDTH,
+                    paddingLeft: ctx.safeAreaInsets.left - BORDER_WIDTH,
                   },
                 ]}>
                 <View style={styles.content}>
+                  <Text
+                    style={{
+                      marginBottom: 32,
+                      backgroundColor: '#eee',
+                      padding: 16,
+                    }}>
+                    {JSON.stringify(ctx, null, 2)}
+                  </Text>
                   <Button
                     title="Toggle status bar hidden"
                     onPress={() =>
@@ -102,10 +111,9 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     backgroundColor: 'white',
-    alignItems: 'center',
-    justifyContent: 'center',
     borderWidth: BORDER_WIDTH,
     borderColor: 'blue',
+    padding: 32,
   },
 });
 
