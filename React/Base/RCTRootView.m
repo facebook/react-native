@@ -402,10 +402,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     return;
   }
   NSDictionary *layoutContext = RCTCreateLayoutContext(frame, safeAreaInsets);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
   [_bridge.eventDispatcher sendDeviceEventWithName:@"didUpdateLayoutContext" body:@{
     @"rootTag": _contentView.reactTag,
     @"layoutContext": layoutContext,
   }];
+#pragma clang diagnostic pop
 
   _lastFrame = frame;
   _lastSafeAreaInsets = safeAreaInsets;
