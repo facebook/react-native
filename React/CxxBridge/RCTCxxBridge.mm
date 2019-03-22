@@ -99,6 +99,19 @@ static bool isRAMBundle(NSData *script) {
   return parseTypeFromHeader(header) == ScriptTag::RAMBundle;
 }
 
+static void notifyAboutModuleSetup(RCTPerformanceLogger *performanceLogger, const char *tag) {
+  NSString *moduleName = [[NSString alloc] initWithUTF8String:tag];
+  if (moduleName) {
+    int64_t setupTime = [performanceLogger durationForTag:RCTPLNativeModuleSetup];
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidSetupModuleNotification
+                                                        object:nil
+                                                      userInfo:@{
+                                                                 RCTDidSetupModuleNotificationModuleNameKey: moduleName,
+                                                                 RCTDidSetupModuleNotificationSetupTimeKey: @(setupTime)
+                                                                 }];
+  }
+}
+
 static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogger) {
   __weak RCTPerformanceLogger *weakPerformanceLogger = performanceLogger;
   ReactMarker::logTaggedMarker = [weakPerformanceLogger](const ReactMarker::ReactMarkerId markerId, const char *__unused tag) {
@@ -116,11 +129,16 @@ static void registerPerformanceLoggerHooks(RCTPerformanceLogger *performanceLogg
         [weakPerformanceLogger appendStopForTag:RCTPLRAMNativeRequires];
         [weakPerformanceLogger addValue:1 forTag:RCTPLRAMNativeRequiresCount];
         break;
+      case ReactMarker::NATIVE_MODULE_SETUP_START:
+        [weakPerformanceLogger markStartForTag:RCTPLNativeModuleSetup];
+        break;
+      case ReactMarker::NATIVE_MODULE_SETUP_STOP:
+        [weakPerformanceLogger markStopForTag:RCTPLNativeModuleSetup];
+        notifyAboutModuleSetup(weakPerformanceLogger, tag);
+        break;
       case ReactMarker::CREATE_REACT_CONTEXT_STOP:
       case ReactMarker::JS_BUNDLE_STRING_CONVERT_START:
       case ReactMarker::JS_BUNDLE_STRING_CONVERT_STOP:
-      case ReactMarker::NATIVE_MODULE_SETUP_START:
-      case ReactMarker::NATIVE_MODULE_SETUP_STOP:
       case ReactMarker::REGISTER_JS_SEGMENT_START:
       case ReactMarker::REGISTER_JS_SEGMENT_STOP:
         // These are not used on iOS.

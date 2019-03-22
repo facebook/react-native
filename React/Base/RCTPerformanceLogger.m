@@ -41,6 +41,7 @@
       @"NativeModulePrepareConfig",
       @"NativeModuleInjectConfig",
       @"NativeModuleMainThreadUsesCount",
+      @"NativeModuleSetup",
       @"JSCWrapperOpenLibrary",
       @"JSCExecutorSetup",
       @"BridgeStartup",
