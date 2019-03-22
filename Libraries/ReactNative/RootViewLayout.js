@@ -9,7 +9,6 @@
  */
 
 const React = require('React');
-const EmitterSubscription = require('EmitterSubscription');
 const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
 
 import type {Layout} from 'CoreEventTypes';
@@ -40,40 +39,29 @@ type Props = {|
   rootTag: number,
 |};
 
-type State = {
-  layoutContext: LayoutContext,
-};
-
-class RootViewLayoutManager extends React.Component<Props, State> {
-  state = {
-    layoutContext: this.props.initialLayoutContext,
-  };
-  _subscription: EmitterSubscription | null = null;
-
-  componentDidMount() {
-    this._subscription = RCTDeviceEventEmitter.addListener(
+function RootViewLayoutManager({
+  children,
+  initialLayoutContext,
+  rootTag,
+}: Props) {
+  const [layoutContext, setLayoutContext] = React.useState<LayoutContext>(
+    initialLayoutContext,
+  );
+  React.useEffect(() => {
+    const subscription = RCTDeviceEventEmitter.addListener(
       'didUpdateLayoutContext',
-      ({rootTag, layoutContext}) => {
-        if (rootTag === this.props.rootTag) {
-          this.setState({layoutContext});
+      event => {
+        if (rootTag === event.rootTag) {
+          setLayoutContext(event.layoutContext);
         }
       },
     );
-  }
+    return () => {
+      subscription.remove();
+    };
+  }, [rootTag]);
 
-  componentWillUnmount() {
-    if (this._subscription !== null) {
-      this._subscription.remove();
-    }
-  }
-
-  render() {
-    return (
-      <Context.Provider value={this.state.layoutContext}>
-        {this.props.children}
-      </Context.Provider>
-    );
-  }
+  return <Context.Provider value={layoutContext}>{children}</Context.Provider>;
 }
 
 module.exports = {
