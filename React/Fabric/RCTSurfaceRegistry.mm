@@ -26,7 +26,7 @@
   return self;
 }
 
-- (void)enumerateSurfaceWithBlock:(RCTSurfaceEnumeratorBlock)block
+- (void)enumerateWithBlock:(RCTSurfaceEnumeratorBlock)block
 {
   std::lock_guard<std::mutex> lock(_mutex);
   block([_registry objectEnumerator]);
