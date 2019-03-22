@@ -60,13 +60,21 @@ const Header = ({onBack, title}: {onBack?: () => mixed, title: string}) => (
 );
 
 class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
+  _mounted: boolean; // TODO(OSS Candidate ISS#2710739)
+
   UNSAFE_componentWillMount() {
     //  BackHandler.addEventListener('hardwareBackPress', this._handleBack);
   }
 
   componentDidMount() {
+    this._mounted = true; // TODO(OSS Candidate ISS#2710739)
     Linking.getInitialURL().then(url => {
       AsyncStorage.getItem(APP_STATE_KEY, (err, storedString) => {
+        // [TODO(OSS Candidate ISS#2710739)
+        if (!this._mounted) {
+          return;
+        }
+        // ]TODO(OSS Candidate ISS#2710739)
         const exampleAction = URIActionMap(
           this.props.exampleFromAppetizeParams,
         );
@@ -90,6 +98,12 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
       this._handleAction(URIActionMap(url));
     });
   }
+
+  // [TODO(OSS Candidate ISS#2710739)
+  componentWillUnmount() {
+    this._mounted = false;
+  }
+  // ]TODO(OSS Candidate ISS#2710739)
 
   _handleBack = () => {
     this._handleAction(RNTesterActions.Back());
