@@ -283,16 +283,20 @@ using namespace facebook::react;
 
 - (void)_startAllSurfaces
 {
-  for (RCTFabricSurface *surface in _surfaceRegistry.enumerator) {
-    [self _startSurface:surface];
-  }
+  [_surfaceRegistry enumerateWithBlock:^(NSEnumerator<RCTFabricSurface *> *enumerator) {
+    for (RCTFabricSurface *surface in enumerator) {
+      [self _startSurface:surface];
+    }
+  }];
 }
 
 - (void)_stopAllSurfaces
 {
-  for (RCTFabricSurface *surface in _surfaceRegistry.enumerator) {
-    [self _stopSurface:surface];
-  }
+  [_surfaceRegistry enumerateWithBlock:^(NSEnumerator<RCTFabricSurface *> *enumerator) {
+    for (RCTFabricSurface *surface in enumerator) {
+      [self _stopSurface:surface];
+    }
+  }];
 }
 
 #pragma mark - RCTSchedulerDelegate
