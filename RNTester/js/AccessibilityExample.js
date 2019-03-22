@@ -190,7 +190,7 @@ class SelectionExample extends React.Component {
   };
 
   render() {
-    let accessibilityStates = new Array();
+    let accessibilityStates = [];
     let accessibilityHint = 'click me to select';
     if (this.state.isSelected) {
       accessibilityStates.push('selected');
