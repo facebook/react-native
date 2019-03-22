@@ -14,6 +14,8 @@
 #import <cxxreact/MessageQueueThread.h>
 #import <jsireact/JSCallInvoker.h>
 #import <jsireact/TurboModule.h>
+#import <unordered_map>
+#import <string>
 
 #define RCT_IS_TURBO_MODULE_CLASS(klass) ((RCTTurboModuleEnabled() && [(klass) conformsToProtocol:@protocol(RCTTurboModule)]))
 #define RCT_IS_TURBO_MODULE_INSTANCE(module) RCT_IS_TURBO_MODULE_CLASS([(module) class])
@@ -36,6 +38,22 @@ public:
       size_t count) override;
 
   id<RCTTurboModule> instance_;
+protected:
+  void setMethodArgConversionSelector(NSString *methodName, int argIndex, NSString *fnName);
+private:
+  NSMutableDictionary<NSString *, NSMutableArray *> *methodArgConversionSelectors_;
+  NSInvocation *getMethodInvocation(
+     jsi::Runtime &runtime,
+     TurboModuleMethodValueKind valueKind,
+     const id<RCTTurboModule> module,
+     std::shared_ptr<JSCallInvoker> jsInvoker,
+     const std::string& methodName,
+     SEL selector,
+     const jsi::Value *args,
+     size_t count,
+     NSMutableArray *retainedObjectsForInvocation);
+  BOOL hasMethodArgConversionSelector(NSString *methodName, int argIndex);
+  SEL getMethodArgConversionSelector(NSString *methodName, int argIndex);
 };
 
 } // namespace react
