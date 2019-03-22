@@ -527,7 +527,6 @@ public class ReactRootView extends FrameLayout implements RootView {
     windowInsets.bottom = Math.max(windowLocation[1] + getHeight() + windowInsets.bottom - screenMetrics.heightPixels, 0);
     windowInsets.right = Math.max(windowLocation[0] + getWidth() + windowInsets.right - screenMetrics.widthPixels, 0);
     return windowInsets;
-
   }
 
   private WritableMap getLayoutContext() {
@@ -689,11 +688,11 @@ public class ReactRootView extends FrameLayout implements RootView {
     private int mDeviceRotation = 0;
     private DisplayMetrics mWindowMetrics = new DisplayMetrics();
     private DisplayMetrics mScreenMetrics = new DisplayMetrics();
-    private int mWidth = 0;
-    private int mHeight = 0;
-    private float mX = 0;
-    private float mY = 0;
-    private @Nullable RootViewInsets mSafeAreaInsets;
+    private int mWidth = getWidth();
+    private int mHeight = getHeight();
+    private float mX = getX();
+    private float mY = getY();
+    private RootViewInsets mSafeAreaInsets = getSafeAreaInsets();
 
     /* package */ CustomGlobalLayoutListener() {
       DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(getContext().getApplicationContext());
