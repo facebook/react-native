@@ -96,6 +96,12 @@ public class ReactRootView extends FrameLayout implements RootView {
   private int mLastHeight = 0;
   private @UIManagerType int mUIManagerType = DEFAULT;
   private final boolean mUseSurface;
+  // Previous values for layout context.
+  private int mFrameWidth = 0;
+  private int mFrameHeight = 0;
+  private float mFrameX = 0;
+  private float mFrameY = 0;
+  private @Nullable RootViewInsets mSafeAreaInsets = null;
 
   public ReactRootView(Context context) {
     super(context);
@@ -529,7 +535,7 @@ public class ReactRootView extends FrameLayout implements RootView {
     return windowInsets;
   }
 
-  private WritableMap getLayoutContext() {
+  private WritableMap getLayoutContext(RootViewInsets safeAreaInsets) {
     WritableNativeMap layout = new WritableNativeMap();
     layout.putDouble("width", PixelUtil.toDIPFromPixel(getWidth()));
     layout.putDouble("height", PixelUtil.toDIPFromPixel(getHeight()));
@@ -537,7 +543,6 @@ public class ReactRootView extends FrameLayout implements RootView {
     layout.putDouble("y", PixelUtil.toDIPFromPixel(getY()));
 
     WritableNativeMap safeAreaInsetsMap = new WritableNativeMap();
-    RootViewInsets safeAreaInsets = getSafeAreaInsets();
     safeAreaInsetsMap.putDouble("top", PixelUtil.toDIPFromPixel(safeAreaInsets.top));
     safeAreaInsetsMap.putDouble("right", PixelUtil.toDIPFromPixel(safeAreaInsets.right));
     safeAreaInsetsMap.putDouble("bottom", PixelUtil.toDIPFromPixel(safeAreaInsets.bottom));
@@ -578,7 +583,13 @@ public class ReactRootView extends FrameLayout implements RootView {
 
           WritableNativeMap appParams = new WritableNativeMap();
           appParams.putDouble("rootTag", getRootViewTag());
-          appParams.putMap("initialLayoutContext", getLayoutContext());
+          RootViewInsets insets = getSafeAreaInsets();
+          mSafeAreaInsets = insets;
+          mFrameHeight = getHeight();
+          mFrameWidth = getWidth();
+          mFrameX = getX();
+          mFrameY = getY();
+          appParams.putMap("initialLayoutContext", getLayoutContext(insets));
           @Nullable Bundle appProperties = getAppProperties();
           if (appProperties != null) {
             appParams.putMap("initialProps", Arguments.fromBundle(appProperties));
@@ -688,11 +699,6 @@ public class ReactRootView extends FrameLayout implements RootView {
     private int mDeviceRotation = 0;
     private DisplayMetrics mWindowMetrics = new DisplayMetrics();
     private DisplayMetrics mScreenMetrics = new DisplayMetrics();
-    private int mWidth = getWidth();
-    private int mHeight = getHeight();
-    private float mX = getX();
-    private float mY = getY();
-    private RootViewInsets mSafeAreaInsets = getSafeAreaInsets();
 
     /* package */ CustomGlobalLayoutListener() {
       DisplayMetricsHolder.initDisplayMetricsIfNotInitialized(getContext().getApplicationContext());
@@ -759,17 +765,17 @@ public class ReactRootView extends FrameLayout implements RootView {
 
     private void checkForLayoutContextChanges() {
       RootViewInsets safeAreaInsets = getSafeAreaInsets();
-      if (mWidth != getWidth() ||
-        mHeight != getHeight() ||
-        mX != getX() ||
-        mY != getY() ||
+      if (mFrameWidth != getWidth() ||
+        mFrameHeight != getHeight() ||
+        mFrameX != getX() ||
+        mFrameY != getY() ||
         !areInsetsEqual(mSafeAreaInsets, safeAreaInsets)) {
         mSafeAreaInsets = safeAreaInsets;
-        mWidth = getWidth();
-        mHeight = getHeight();
-        mX = getX();
-        mY = getY();
-        emitLayoutContextEvent();
+        mFrameWidth = getWidth();
+        mFrameHeight = getHeight();
+        mFrameX = getX();
+        mFrameY = getY();
+        emitLayoutContextEvent(safeAreaInsets);
       }
     }
 
@@ -840,9 +846,9 @@ public class ReactRootView extends FrameLayout implements RootView {
           .emitUpdateDimensionsEvent();
     }
 
-    private void emitLayoutContextEvent() {
+    private void emitLayoutContextEvent(RootViewInsets safeAreaInsets) {
       WritableNativeMap event = new WritableNativeMap();
-      event.putMap("layoutContext", getLayoutContext());
+      event.putMap("layoutContext", getLayoutContext(safeAreaInsets));
       event.putInt("rootTag", getRootViewTag());
       sendEvent("didUpdateLayoutContext", event);
     }
