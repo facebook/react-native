@@ -28,11 +28,3 @@ struct JYogaLogger : public facebook::jni::JavaClass<JYogaLogger> {
       facebook::jni::alias_ref<JYogaLogLevel>,
       jstring);
 };
-
-struct JYogaValue : public facebook::jni::JavaClass<JYogaValue> {
-  constexpr static auto kJavaDescriptor = "Lcom/facebook/yoga/YogaValue;";
-
-  static facebook::jni::local_ref<javaobject> create(YGValue value) {
-    return newInstance(value.value, static_cast<int>(value.unit));
-  }
-};

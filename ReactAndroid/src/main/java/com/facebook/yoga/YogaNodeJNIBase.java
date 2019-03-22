@@ -349,7 +349,7 @@ public abstract class YogaNodeJNIBase extends YogaNode {
   }
 
   public YogaValue getFlexBasis() {
-    return (YogaValue) YogaNative.jni_YGNodeStyleGetFlexBasis(mNativePointer);
+    return valueFromLong(YogaNative.jni_YGNodeStyleGetFlexBasis(mNativePointer));
   }
 
   public void setFlexBasis(float flexBasis) {
@@ -365,7 +365,7 @@ public abstract class YogaNodeJNIBase extends YogaNode {
   }
 
   public YogaValue getMargin(YogaEdge edge) {
-    return (YogaValue) YogaNative.jni_YGNodeStyleGetMargin(mNativePointer, edge.intValue());
+    return valueFromLong(YogaNative.jni_YGNodeStyleGetMargin(mNativePointer, edge.intValue()));
   }
 
   public void setMargin(YogaEdge edge, float margin) {
@@ -381,7 +381,7 @@ public abstract class YogaNodeJNIBase extends YogaNode {
   }
 
   public YogaValue getPadding(YogaEdge edge) {
-    return (YogaValue) YogaNative.jni_YGNodeStyleGetPadding(mNativePointer, edge.intValue());
+    return valueFromLong(YogaNative.jni_YGNodeStyleGetPadding(mNativePointer, edge.intValue()));
   }
 
   public void setPadding(YogaEdge edge, float padding) {
@@ -401,7 +401,7 @@ public abstract class YogaNodeJNIBase extends YogaNode {
   }
 
   public YogaValue getPosition(YogaEdge edge) {
-    return (YogaValue) YogaNative.jni_YGNodeStyleGetPosition(mNativePointer, edge.intValue());
+    return valueFromLong(YogaNative.jni_YGNodeStyleGetPosition(mNativePointer, edge.intValue()));
   }
 
   public void setPosition(YogaEdge edge, float position) {
@@ -413,7 +413,7 @@ public abstract class YogaNodeJNIBase extends YogaNode {
   }
 
   public YogaValue getWidth() {
-    return (YogaValue) YogaNative.jni_YGNodeStyleGetWidth(mNativePointer);
+    return valueFromLong(YogaNative.jni_YGNodeStyleGetWidth(mNativePointer));
   }
 
   public void setWidth(float width) {
@@ -429,7 +429,7 @@ public abstract class YogaNodeJNIBase extends YogaNode {
   }
 
   public YogaValue getHeight() {
-    return (YogaValue) YogaNative.jni_YGNodeStyleGetHeight(mNativePointer);
+    return valueFromLong(YogaNative.jni_YGNodeStyleGetHeight(mNativePointer));
   }
 
   public void setHeight(float height) {
@@ -445,7 +445,7 @@ public abstract class YogaNodeJNIBase extends YogaNode {
   }
 
   public YogaValue getMinWidth() {
-    return (YogaValue) YogaNative.jni_YGNodeStyleGetMinWidth(mNativePointer);
+    return valueFromLong(YogaNative.jni_YGNodeStyleGetMinWidth(mNativePointer));
   }
 
   public void setMinWidth(float minWidth) {
@@ -457,7 +457,7 @@ public abstract class YogaNodeJNIBase extends YogaNode {
   }
 
   public YogaValue getMinHeight() {
-    return (YogaValue) YogaNative.jni_YGNodeStyleGetMinHeight(mNativePointer);
+    return valueFromLong(YogaNative.jni_YGNodeStyleGetMinHeight(mNativePointer));
   }
 
   public void setMinHeight(float minHeight) {
@@ -469,7 +469,7 @@ public abstract class YogaNodeJNIBase extends YogaNode {
   }
 
   public YogaValue getMaxWidth() {
-    return (YogaValue) YogaNative.jni_YGNodeStyleGetMaxWidth(mNativePointer);
+    return valueFromLong(YogaNative.jni_YGNodeStyleGetMaxWidth(mNativePointer));
   }
 
   public void setMaxWidth(float maxWidth) {
@@ -481,7 +481,7 @@ public abstract class YogaNodeJNIBase extends YogaNode {
   }
 
   public YogaValue getMaxHeight() {
-    return (YogaValue) YogaNative.jni_YGNodeStyleGetMaxHeight(mNativePointer);
+    return valueFromLong(YogaNative.jni_YGNodeStyleGetMaxHeight(mNativePointer));
   }
 
   public void setMaxHeight(float maxheight) {
@@ -655,5 +655,9 @@ public abstract class YogaNodeJNIBase extends YogaNode {
     mChildren.add(childIndex, newNode);
     newNode.mOwner = this;
     return newNode.mNativePointer;
+  }
+
+  private static YogaValue valueFromLong(long raw) {
+    return new YogaValue(Float.intBitsToFloat((int) raw), (int) (raw >> 32));
   }
 }

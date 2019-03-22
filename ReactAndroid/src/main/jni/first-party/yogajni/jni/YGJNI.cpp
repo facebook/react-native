@@ -9,6 +9,7 @@
 #include <yoga/Yoga.h>
 #include <yoga/log.h>
 #include <cstdint>
+#include <cstring>
 #include <iostream>
 #include <map>
 
@@ -125,6 +126,19 @@ public:
   YGNodeEdges& add(Edge edge) {
     edges_ |= edge;
     return *this;
+  }
+};
+
+struct YogaValue {
+  static constexpr jint NAN_BYTES = 0x7fc00000;
+
+  static jlong asJavaLong(const YGValue& value) {
+    uint32_t valueBytes = 0;
+    memcpy(&valueBytes, &value.value, sizeof valueBytes);
+    return ((jlong) value.unit) << 32 | valueBytes;
+  }
+  constexpr static jlong undefinedAsJavaLong() {
+    return ((jlong) YGUnitUndefined) << 32 | NAN_BYTES;
   }
 };
 
@@ -472,9 +486,8 @@ void jni_YGNodeCopyStyle(jlong dstNativePointer, jlong srcNativePointer) {
   }
 
 #define YG_NODE_JNI_STYLE_UNIT_PROP(name)                                     \
-  local_ref<jobject> jni_YGNodeStyleGet##name(                                \
-      alias_ref<jclass>, jlong nativePointer) {                               \
-    return JYogaValue::create(                                                \
+  jlong jni_YGNodeStyleGet##name(alias_ref<jclass>, jlong nativePointer) {    \
+    return YogaValue::asJavaLong(                                             \
         YGNodeStyleGet##name(_jlong2YGNodeRef(nativePointer)));               \
   }                                                                           \
                                                                               \
@@ -509,9 +522,9 @@ void jni_YGNodeCopyStyle(jlong dstNativePointer, jlong srcNativePointer) {
   }
 
 #define YG_NODE_JNI_STYLE_EDGE_UNIT_PROP(name)                        \
-  local_ref<jobject> jni_YGNodeStyleGet##name(                        \
+  jlong jni_YGNodeStyleGet##name(                                     \
       alias_ref<jclass>, jlong nativePointer, jint edge) {            \
-    return JYogaValue::create(YGNodeStyleGet##name(                   \
+    return YogaValue::asJavaLong(YGNodeStyleGet##name(                \
         _jlong2YGNodeRef(nativePointer), static_cast<YGEdge>(edge))); \
   }                                                                   \
                                                                       \
@@ -841,15 +854,15 @@ jint jni_YGNodeGetInstanceCount() {
   return YGNodeGetInstanceCount();
 }
 
-local_ref<jobject> jni_YGNodeStyleGetMargin(
+jlong jni_YGNodeStyleGetMargin(
     alias_ref<jclass>,
     jlong nativePointer,
     jint edge) {
   YGNodeRef yogaNodeRef = _jlong2YGNodeRef(nativePointer);
   if (!YGNodeEdges{yogaNodeRef}.has(YGNodeEdges::MARGIN)) {
-    return JYogaValue::create(YGValueUndefined);
+    return YogaValue::undefinedAsJavaLong();
   }
-  return JYogaValue::create(
+  return YogaValue::asJavaLong(
       YGNodeStyleGetMargin(yogaNodeRef, static_cast<YGEdge>(edge)));
 }
 
@@ -876,15 +889,15 @@ void jni_YGNodeStyleSetMarginAuto(jlong nativePointer, jint edge) {
   YGNodeStyleSetMarginAuto(yogaNodeRef, static_cast<YGEdge>(edge));
 }
 
-local_ref<jobject> jni_YGNodeStyleGetPadding(
+jlong jni_YGNodeStyleGetPadding(
     alias_ref<jclass>,
     jlong nativePointer,
     jint edge) {
   YGNodeRef yogaNodeRef = _jlong2YGNodeRef(nativePointer);
   if (!YGNodeEdges{yogaNodeRef}.has(YGNodeEdges::PADDING)) {
-    return JYogaValue::create(YGValueUndefined);
+    return YogaValue::undefinedAsJavaLong();
   }
-  return JYogaValue::create(
+  return YogaValue::asJavaLong(
       YGNodeStyleGetPadding(yogaNodeRef, static_cast<YGEdge>(edge)));
 }
 
