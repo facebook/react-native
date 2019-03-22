@@ -11,6 +11,7 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTModuleMethod.h>
 #import <cxxreact/MessageQueueThread.h>
 #import <jsireact/JSCallInvoker.h>
 #import <jsireact/TurboModule.h>
@@ -41,17 +42,25 @@ public:
 protected:
   void setMethodArgConversionSelector(NSString *methodName, int argIndex, NSString *fnName);
 private:
+  /**
+   * TODO(ramanpreet):
+   * Investigate an optimization that'll let us get rid of this NSMutableDictionary.
+   */
   NSMutableDictionary<NSString *, NSMutableArray *> *methodArgConversionSelectors_;
+  NSDictionary<NSString *, NSArray<NSString *> *> *methodArgumentTypeNames_;
+  NSString* getArgumentTypeName(NSString* methodName, int argIndex);
+
   NSInvocation *getMethodInvocation(
-     jsi::Runtime &runtime,
-     TurboModuleMethodValueKind valueKind,
-     const id<RCTTurboModule> module,
-     std::shared_ptr<JSCallInvoker> jsInvoker,
-     const std::string& methodName,
-     SEL selector,
-     const jsi::Value *args,
-     size_t count,
-     NSMutableArray *retainedObjectsForInvocation);
+    jsi::Runtime &runtime,
+    TurboModuleMethodValueKind valueKind,
+    const id<RCTTurboModule> module,
+    std::shared_ptr<JSCallInvoker> jsInvoker,
+    const std::string& methodName,
+    SEL selector,
+    const jsi::Value *args,
+    size_t count,
+    NSMutableArray *retainedObjectsForInvocation);
+
   BOOL hasMethodArgConversionSelector(NSString *methodName, int argIndex);
   SEL getMethodArgConversionSelector(NSString *methodName, int argIndex);
 };

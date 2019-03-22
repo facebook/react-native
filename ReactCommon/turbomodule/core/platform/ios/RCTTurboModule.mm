@@ -12,7 +12,9 @@
 #import <sstream>
 #import <vector>
 
+#import <React/RCTConvert.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTModuleMethod.h>
 #import <React/RCTUtils.h>
 #import <jsireact/JSCallInvoker.h>
 #import <jsireact/LongLivedObject.h>
@@ -406,6 +408,63 @@ jsi::Value performMethodInvocation(
 
 } // namespace
 
+/**
+ * Given a method name, and an argument index, return type type of that argument.
+ * Prerequisite: You must wrap the method declaration inside some variant of the
+ * RCT_EXPORT_METHOD macro.
+ *
+ * This method returns nil if the method for which you're querying the argument type
+ * is not wrapped in an RCT_EXPORT_METHOD.
+ *
+ * Note: This is only being introduced for backward compatibility. It will be removed
+ *       in the future.
+ */
+NSString* ObjCTurboModule::getArgumentTypeName(NSString* methodName, int argIndex) {
+  if (!methodArgumentTypeNames_) {
+    NSMutableDictionary<NSString *, NSArray<NSString *> *> *methodArgumentTypeNames = [NSMutableDictionary new];
+
+    unsigned int numberOfMethods;
+    Class cls = [instance_ class];
+    Method *methods = class_copyMethodList(object_getClass(cls), &numberOfMethods);
+
+    if (methods) {
+      for (unsigned int i = 0; i < numberOfMethods; i++) {
+        SEL s = method_getName(methods[i]);
+        NSString* mName = NSStringFromSelector(s);
+        if (![mName hasPrefix:@"__rct_export__"]) {
+          continue;
+        }
+
+        // Message dispatch logic from old infra
+        RCTMethodInfo *(*getMethodInfo)(id, SEL) = (__typeof__(getMethodInfo))objc_msgSend;
+        RCTMethodInfo *methodInfo = getMethodInfo(cls, s);
+
+        NSArray<RCTMethodArgument *> *arguments;
+        NSString *otherMethodName = RCTParseMethodSignature(methodInfo->objcName, &arguments);
+
+        NSMutableArray* argumentTypes = [NSMutableArray arrayWithCapacity:[arguments count]];
+        for (int j = 0; j < [arguments count]; j += 1) {
+          [argumentTypes addObject:arguments[j].type];
+        }
+
+        NSString *normalizedOtherMethodName = [otherMethodName stringByReplacingOccurrencesOfString:@":" withString:@""];
+        methodArgumentTypeNames[normalizedOtherMethodName] = argumentTypes;
+      }
+
+      free(methods);
+    }
+
+    methodArgumentTypeNames_ = methodArgumentTypeNames;
+  }
+
+  if (methodArgumentTypeNames_[methodName]) {
+    assert([methodArgumentTypeNames_[methodName] count] > argIndex);
+    return methodArgumentTypeNames_[methodName][argIndex];
+  }
+
+  return nil;
+}
+
 NSInvocation *ObjCTurboModule::getMethodInvocation(
    jsi::Runtime &runtime,
    TurboModuleMethodValueKind valueKind,
@@ -429,6 +488,36 @@ NSInvocation *ObjCTurboModule::getMethodInvocation(
     } else {
       id v = convertJSIValueToObjCObject(runtime, *arg, jsInvoker);
       NSString *methodNameObjc = @(methodName.c_str());
+
+      NSMethodSignature *methodSignature = [[module class] instanceMethodSignatureForSelector:selector];
+      const char *objcType = [methodSignature getArgumentTypeAtIndex:i];
+
+      if (objcType[0] == _C_ID) {
+        NSString* argumentType = getArgumentTypeName(methodNameObjc, i);
+
+        /**
+         * When argumentType is nil, it means that the method hasn't been wrapped with
+         * an RCT_EXPORT_METHOD macro. Therefore, we do not support converting the method
+         * arguments using RCTConvert.
+         */
+        if (argumentType != nil) {
+          NSString *rctConvertMethodName = [NSString stringWithFormat:@"%@:", argumentType];
+          SEL rctConvertSelector = NSSelectorFromString(rctConvertMethodName);
+
+          if ([RCTConvert respondsToSelector: rctConvertSelector]) {
+            // Message dispatch logic from old infra
+            id (*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;
+            v = convert([RCTConvert class], rctConvertSelector, v);
+
+            /**
+             * TODO(ramanpreet):
+             * Investigate whether we can avoid inserting to retainedObjectsForInvocation.
+             * Otherwise, NSInvocation raises a BAD_ACCESS when we invoke the retainArguments method.
+             **/
+            [retainedObjectsForInvocation addObject:v];
+          }
+        }
+      }
 
       if ([v isKindOfClass:[NSDictionary class]] && hasMethodArgConversionSelector(methodNameObjc, i)) {
         SEL methodArgConversionSelector = getMethodArgConversionSelector(methodNameObjc, i);
@@ -488,12 +577,12 @@ jsi::Value ObjCTurboModule::invokeMethod(
 BOOL ObjCTurboModule::hasMethodArgConversionSelector(NSString *methodName, int argIndex) {
   return methodArgConversionSelectors_ && methodArgConversionSelectors_[methodName] && ![methodArgConversionSelectors_[methodName][argIndex] isEqual:[NSNull null]];
 }
-  
+
 SEL ObjCTurboModule::getMethodArgConversionSelector(NSString *methodName, int argIndex) {
   assert(hasMethodArgConversionSelector(methodName, argIndex));
   return (SEL)((NSValue *)methodArgConversionSelectors_[methodName][argIndex]).pointerValue;
 }
-  
+
 void ObjCTurboModule::setMethodArgConversionSelector(NSString *methodName, int argIndex, NSString *fnName) {
   if (!methodArgConversionSelectors_) {
     methodArgConversionSelectors_ = [NSMutableDictionary new];
