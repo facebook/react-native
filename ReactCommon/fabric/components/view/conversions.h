@@ -253,7 +253,7 @@ inline void fromRawValue(const RawValue &value, YGPositionType &result) {
 inline void fromRawValue(const RawValue &value, YGWrap &result) {
   assert(value.hasType<std::string>());
   auto stringValue = (std::string)value;
-  if (stringValue == "nowrap") {
+  if (stringValue == "no-wrap") {
     result = YGWrapNoWrap;
     return;
   }
