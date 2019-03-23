@@ -81,19 +81,17 @@
 static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 {
   NSMutableString *str = [NSMutableString stringWithString:@""];
-  if (view) {
-    for (UIView *subview in view.subviews) {
-      NSString *label = subview.accessibilityLabel;
-      if (!label) {
-        label = RCTRecursiveAccessibilityLabel(subview);
+   for (UIView *subview in view.subviews) {
+     NSString *label = subview.accessibilityLabel;
+     if (!label) {
+       label = RCTRecursiveAccessibilityLabel(subview);
+     }
+     if (label && label.length > 0) {
+      if (str.length > 0) {
+        [str appendString:@" "];
       }
-      if (label && label.length > 0) {
-        if (str.length > 0) {
-          [str appendString:@" "];
-        }
-        [str appendString:label];
-      }
-    }  
+      [str appendString:label];
+    }
   }
   return str;
 }
@@ -153,7 +151,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   if (label) {
     return label;
   }
-  return RCTRecursiveAccessibilityLabel(nil);
+  return nil;
 }
 
 - (NSArray <UIAccessibilityCustomAction *> *)accessibilityCustomActions
