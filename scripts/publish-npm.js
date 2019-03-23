@@ -52,11 +52,7 @@
 /*eslint-disable no-undef */
 require('shelljs/global');
 
-<<<<<<< HEAD
-const buildBranch = process.env.CIRCLE_BRANCH;
-=======
 const buildTag = process.env.CIRCLE_TAG;
->>>>>>> v0.58.6
 const otp = process.env.NPM_CONFIG_OTP;
 
 if (!buildTag) {
@@ -73,7 +69,7 @@ if (!match) {
 let [, branchVersion] = match;
 
 // 34c034298dc9cad5a4553964a5a324450fda0385
-const currentCommit = exec('git rev-parse HEAD', {silent: true}).stdout.trim();
+const currentCommit = exec('git rev-parse HEAD', { silent: true }).stdout.trim();
 // [34c034298dc9cad5a4553964a5a324450fda0385, refs/heads/0.33-stable, refs/tags/latest, refs/tags/v0.33.1, refs/tags/v0.34.1-rc]
 const tagsWithVersion = exec(`git ls-remote origin | grep ${currentCommit}`, {
   silent: true,

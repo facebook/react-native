@@ -6,13 +6,7 @@
  */
 
 dependencies {
-<<<<<<< HEAD
-    compile fileTree(dir: "libs", include: ["*.jar"])
-    compile "com.android.support:appcompat-v7:27.1.1"
-    compile "com.facebook.react:react-native:+"
-=======
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.android.support:appcompat-v7:27.1.1"
     implementation "com.facebook.react:react-native:+"
->>>>>>> v0.58.6
 }

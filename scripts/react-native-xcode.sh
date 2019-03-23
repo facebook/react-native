@@ -100,8 +100,7 @@ nodejs_not_found()
   exit 2
 }
 
-<<<<<<< HEAD
-type $NODE_BINARY >/dev/null 2>&1 || nodejs_not_found
+type "$NODE_BINARY" >/dev/null 2>&1 || nodejs_not_found
 
 # Print commands before executing them (useful for troubleshooting)
 set -x
@@ -127,14 +126,7 @@ case "$PLATFORM_NAME" in
     ;;
 esac
 
-$NODE_BINARY "$CLI_PATH" $BUNDLE_COMMAND \
-=======
-type "$NODE_BINARY" >/dev/null 2>&1 || nodejs_not_found
-
-BUNDLE_FILE="$DEST/main.jsbundle"
-
 "$NODE_BINARY" "$CLI_PATH" $BUNDLE_COMMAND \
->>>>>>> v0.58.6
   $CONFIG_ARG \
   --entry-file "$ENTRY_FILE" \
   --platform "$BUNDLE_PLATFORM" \
