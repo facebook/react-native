@@ -20,6 +20,25 @@
 #import "RCTTextAttributes.h"
 #import "RCTTextSelection.h"
 
+@interface NSString (RCTUtility)
+
+@property (nonatomic, readonly) NSUInteger reactLengthOfGlyphs;
+
+@end
+
+@implementation NSString (RCTUtility)
+
+- (NSUInteger)reactLengthOfGlyphs
+{
+  __block NSUInteger lengthOfGlyphs = 0;
+  [self enumerateSubstringsInRange:NSMakeRange(0, self.length) options:NSStringEnumerationByComposedCharacterSequences usingBlock:^(NSString * _Nullable substring, NSRange substringRange, NSRange enclosingRange, BOOL * _Nonnull stop){
+    lengthOfGlyphs++;
+  }];
+  return lengthOfGlyphs;
+}
+
+@end
+
 @implementation RCTBaseTextInputView {
   __weak RCTBridge *_bridge;
   __weak RCTEventDispatcher *_eventDispatcher;
@@ -373,13 +392,24 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   }
 
   if (_maxLength) {
-    NSInteger allowedLength = MAX(_maxLength.integerValue - (NSInteger)backedTextInputView.attributedText.string.length + (NSInteger)range.length, 0);
-
-    if (text.length > allowedLength) {
+    NSString *backedTextInputViewText = backedTextInputView.attributedText.string;
+    __block NSInteger allowedLength = MAX(_maxLength.integerValue - (NSInteger)backedTextInputViewText.reactLengthOfGlyphs + (NSInteger)[backedTextInputViewText substringWithRange:range].reactLengthOfGlyphs, 0);
+    NSUInteger textGlyphsLength = text.reactLengthOfGlyphs;
+    if (textGlyphsLength > allowedLength) {
       // If we typed/pasted more than one character, limit the text inputted.
-      if (text.length > 1) {
+      if (textGlyphsLength > 1) {
+        __block NSUInteger allowedIndex = 0;
+        // We truncated the text based on glyphs.
+        [text enumerateSubstringsInRange:NSMakeRange(0, text.length) options:NSStringEnumerationByComposedCharacterSequences usingBlock:^(NSString * _Nullable substring, NSRange substringRange, NSRange enclosingRange, BOOL * _Nonnull stop){
+          if (allowedLength == 0) {
+            *stop = YES;
+            return;
+          }
+          allowedIndex = substringRange.location + substringRange.length;
+          allowedLength--;
+        }];
         // Truncate the input string so the result is exactly maxLength
-        NSString *limitedString = [text substringToIndex:allowedLength];
+        NSString *limitedString = [text substringToIndex:allowedIndex];
         NSMutableAttributedString *newAttributedText = [backedTextInputView.attributedText mutableCopy];
         [newAttributedText replaceCharactersInRange:range withString:limitedString];
         backedTextInputView.attributedText = newAttributedText;
