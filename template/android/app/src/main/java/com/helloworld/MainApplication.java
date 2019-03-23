@@ -21,7 +21,7 @@ public class MainApplication extends Application implements ReactApplication {
 
     @Override
     protected List<ReactPackage> getPackages() {
-      List<ReactPackage> packages = new ArrayList<>(PackageList.getPackages());
+      List<ReactPackage> packages = new ArrayList<>((new PackageList(this)).getPackages());
       // additional non auto-detected packages can be added here, e.g.:
       // packages.add(new MyReactNativePackage());
       return packages;
