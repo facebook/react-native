@@ -21,7 +21,7 @@ const View = require('View');
 
 const invariant = require('fbjs/lib/invariant');
 
-import type {PressEvent} from 'CoreEventTypes';
+import type { PressEvent } from 'CoreEventTypes';
 
 type ButtonProps = $ReadOnly<{|
   /**
@@ -29,38 +29,38 @@ type ButtonProps = $ReadOnly<{|
    */
   title: string,
 
-  /**
-   * Handler to be called when the user taps the button
-   */
-  onPress: (event?: PressEvent) => mixed,
+    /**
+     * Handler to be called when the user taps the button
+     */
+    onPress: (event?: PressEvent) => mixed,
 
-  /**
-   * Color of the text (iOS), or background color of the button (Android)
-   */
-  color?: ?string,
+      /**
+       * Color of the text (iOS), or background color of the button (Android)
+       */
+      color ?: ? string,
 
-  /**
-   * TV preferred focus (see documentation for the View component).
-   */
-  hasTVPreferredFocus?: ?boolean,
+      /**
+       * TV preferred focus (see documentation for the View component).
+       */
+      hasTVPreferredFocus ?: ? boolean,
 
-  /**
-   * Text to display for blindness accessibility features
-   */
-  accessibilityLabel?: ?string,
-   /**
-    * Hint text to display blindness accessibility features
-    */
-  accessibilityHint: PropTypes.string, // TODO(OSS Candidate ISS#2710739)
-  /**
-   * If true, disable all interactions for this component.
-   */
-  disabled?: ?boolean,
+      /**
+       * Text to display for blindness accessibility features
+       */
+      accessibilityLabel ?: ? string,
+      /**
+       * Hint text to display blindness accessibility features
+       */
+      accessibilityHint: PropTypes.string, // TODO(OSS Candidate ISS#2710739)
+        /**
+         * If true, disable all interactions for this component.
+         */
+        disabled ?: ? boolean,
 
-  /**
-   * Used to locate this view in end-to-end tests.
-   */
-  testID?: ?string,
+        /**
+         * Used to locate this view in end-to-end tests.
+         */
+        testID ?: ? string,
 |}>;
 
 /**
@@ -106,10 +106,13 @@ class Button extends React.Component<ButtonProps> {
     const buttonStyles = [styles.button];
     const textStyles = [styles.text];
     if (color) {
-      if (Platform.OS === 'ios' || Platform.OS === 'macos') { // TODO(macOS ISS#2323203)
-        textStyles.push({color: color});
+      if (
+        Platform.OS === 'ios' ||
+        Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */
+      ) {
+        textStyles.push({ color: color });
       } else {
-        buttonStyles.push({backgroundColor: color});
+        buttonStyles.push({ backgroundColor: color });
       }
     }
     const accessibilityStates = [];
@@ -125,11 +128,11 @@ class Button extends React.Component<ButtonProps> {
     const formattedTitle =
       Platform.OS === 'android' ? title.toUpperCase() : title;
     const Touchable =
-       (Platform.OS === 'android') // [TODO(windows ISS)
-         ? TouchableNativeFeedback
-         : (Platform.OS === 'uwp' || Platform.OS === 'windesktop')
-           ? TouchableHighlight
-           : TouchableOpacity; // ]TODO(windows ISS)
+      Platform.OS === 'android' // [TODO(windows ISS)
+        ? TouchableNativeFeedback
+        : Platform.OS === 'uwp' || Platform.OS === 'windesktop'
+          ? TouchableHighlight
+          : TouchableOpacity; // ]TODO(windows ISS)
     return (
       <Touchable
         accessibilityLabel={accessibilityLabel}
@@ -160,11 +163,12 @@ const styles = StyleSheet.create({
       borderRadius: 2,
     },
     macos: {}, // TODO(macOS ISS#2323203)
-    uwp: {  // [TODO(windows ISS)
+    uwp: {
+      // [TODO(windows ISS)
       backgroundColor: '#2196F3',
       borderRadius: 2,
     },
-    windesktop: {},  // ]TODO(windows ISS)
+    windesktop: {}, // ]TODO(windows ISS)
   }),
   text: {
     textAlign: 'center',
@@ -197,7 +201,8 @@ const styles = StyleSheet.create({
       backgroundColor: '#dfdfdf',
     },
     macos: {}, // TODO(macOS ISS#2323203)
-    uwp: { // [TODO(windows ISS)
+    uwp: {
+      // [TODO(windows ISS)
       backgroundColor: '#dfdfdf',
     },
     windesktop: {}, // ]TODO(windows ISS)
@@ -206,13 +211,15 @@ const styles = StyleSheet.create({
     ios: {
       color: '#cdcdcd',
     },
-    macos: { // [TODO(macOS ISS#2323203)
+    macos: {
+      // [TODO(macOS ISS#2323203)
       color: '#cdcdcd',
     }, // ]TODO(macOS ISS#2323203)
     android: {
       color: '#a1a1a1',
     },
-    uwp: { // [TODO(windows ISS)
+    uwp: {
+      // [TODO(windows ISS)
       color: '#a1a1a1',
     },
     windesktop: {

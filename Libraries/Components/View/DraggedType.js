@@ -12,16 +12,10 @@
 
 'use strict';
 
-export type DraggedType = 
-  | 'fileUrl';
+export type DraggedType = 'fileUrl';
 
-export type DraggedTypesType =
-  | DraggedType
-  | $ReadOnlyArray<DraggedType>;
+export type DraggedTypesType = DraggedType | $ReadOnlyArray<DraggedType>;
 
 module.exports = {
-  DraggedTypes: [
-    'fileUrl'
-  ],
+  DraggedTypes: ['fileUrl'],
 };
-

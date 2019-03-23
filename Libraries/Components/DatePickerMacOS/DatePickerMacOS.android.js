@@ -14,7 +14,7 @@ var StyleSheet = require('StyleSheet');
 var Text = require('Text');
 var View = require('View');
 
-class dummyDatePickerMacOS extends React.Component {
+class DummyDatePickerMacOS extends React.Component {
   render() {
     return (
       <View style={[styles.dummyDatePickerMacOS, this.props.style]}>
@@ -38,7 +38,7 @@ var styles = StyleSheet.create({
   datePickerText: {
     color: '#333333',
     margin: 20,
-  }
+  },
 });
 
 module.exports = DummyDatePickerMacOS;

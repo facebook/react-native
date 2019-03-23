@@ -118,7 +118,10 @@ function lazifyViewManagerConfig(viewName) {
  * only needed for iOS, which puts the constants in the ViewManager
  * namespace instead of UIManager, unlike Android.
  */
-if (Platform.OS === 'ios' || Platform.OS === 'macos') { // TODO(macOS ISS#2323203)
+if (
+  Platform.OS === 'ios' ||
+  Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */
+) {
   Object.keys(UIManager).forEach(viewName => {
     lazifyViewManagerConfig(viewName);
   });

@@ -36,12 +36,8 @@ import type {
 } from 'ViewAccessibility';
 
 // [TODO(macOS ISS#2323203)
-const {
-  DraggedTypes
-} = require('DraggedType');
-import type {
-  DraggedTypesType
-} from 'DraggedType';
+const {DraggedTypes} = require('DraggedType');
+import type {DraggedTypesType} from 'DraggedType';
 // ]TODO(macOS ISS#2323203)
 
 const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
@@ -76,8 +72,8 @@ export type Props = $ReadOnly<{|
   onPressOut?: ?Function,
   onAccessibilityTap?: ?Function, // TODO(OSS Candidate ISS#2710739)
   acceptsKeyboardFocus?: ?boolean, // [TODO(macOS ISS#2323203)
-  onMouseEnter?: ?Function, 
-  onMouseLeave?: ?Function, 
+  onMouseEnter?: ?Function,
+  onMouseLeave?: ?Function,
   onDragEnter?: ?Function,
   onMouseLeave?: ?Function,
   onDragEnter?: ?Function,
@@ -116,6 +112,7 @@ const TouchableWithoutFeedback = ((createReactClass({
       PropTypes.arrayOf(PropTypes.oneOf(DeprecatedAccessibilityTraits)),
     ]),
     onAccessibilityTap: PropTypes.func, // TODO(OSS Candidate ISS#2710739)
+    tabIndex: PropTypes.number, // TODO(macOS/win ISS#2323203)
 
     /**
      * When `accessible` is true (which is the default) this may be called when
@@ -157,15 +154,16 @@ const TouchableWithoutFeedback = ((createReactClass({
      * Enables Drag'n'Drop Support for certain types of dragged types
      *
      * Possible values for `draggedTypes` are:
-     * 
+     *
      * - `'fileUrl'`
-     * 
+     *
      * @platform macos
      */
-    draggedTypes: PropTypes.oneOfType([ // TODO(macOS ISS#2323203)
+    draggedTypes: PropTypes.oneOfType([
       PropTypes.oneOf(DraggedTypes),
       PropTypes.arrayOf(PropTypes.oneOf(DraggedTypes)),
-    ]),
+    ]), // TODO(macOS ISS#2323203)
+    tooltip: PropTypes.string, // TODO(macOS/win ISS#2323203)
     /**
      * Called when the touch is released, but not if cancelled (e.g. by a scroll
      * that steals the responder lock).
@@ -298,8 +296,13 @@ const TouchableWithoutFeedback = ((createReactClass({
       accessibilityStates: this.props.accessibilityStates,
       accessibilityTraits: this.props.accessibilityTraits,
       onAccessibilityTap: this.props.onAccessibilityTap, // TODO(OSS Candidate ISS#2710739)
-      acceptsKeyboardFocus: (this.props.acceptsKeyboardFocus === undefined || this.props.acceptsKeyboardFocus) && !this.props.disabled, // TODO(macOS ISS#2323203)
-      enableFocusRing: (this.props.enableFocusRing === true && !this.props.disabled), // TODO(macOS ISS#2323203)
+      acceptsKeyboardFocus:
+        (this.props.acceptsKeyboardFocus === undefined ||
+          this.props.acceptsKeyboardFocus) &&
+        !this.props.disabled, // TODO(macOS ISS#2323203)
+      enableFocusRing:
+        this.props.enableFocusRing === true && !this.props.disabled, // TODO(macOS ISS#2323203)
+      tabIndex: this.props.tabIndex, // TODO(win ISS#2323203)
       nativeID: this.props.nativeID,
       testID: this.props.testID,
       onLayout: this.props.onLayout,
@@ -311,7 +314,9 @@ const TouchableWithoutFeedback = ((createReactClass({
       onResponderMove: this.touchableHandleResponderMove,
       onResponderRelease: this.touchableHandleResponderRelease,
       onResponderTerminate: this.touchableHandleResponderTerminate,
-      clickable: this.props.clickable !== false && this.props.onPress !== undefined, // TODO(android ISS)
+      tooltip: this.props.tooltip, // TODO(macOS/win ISS#2323203)
+      clickable:
+        this.props.clickable !== false && this.props.onPress !== undefined, // TODO(android ISS)
       onClick: this.touchableHandlePress, // TODO(android ISS)
       onMouseEnter: this.props.onMouseEnter, // [TODO(macOS ISS#2323203)
       onMouseLeave: this.props.onMouseLeave, // [TODO(macOS ISS#2323203)

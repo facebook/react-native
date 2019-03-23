@@ -405,7 +405,7 @@ class RTLExample extends React.Component<any, State> {
         style={[
           styles.container,
           // `direction` property is supported only on iOS&macOS now.
-          (Platform.OS === 'ios' || Platform.OS === 'macos')
+          Platform.OS === 'ios' || Platform.OS === 'macos'
             ? {direction: this.state.isRTL ? 'rtl' : 'ltr'}
             : null,
         ]}

@@ -12,6 +12,7 @@
 
 import React, {Component} from 'react';
 import {ActivityIndicator, StyleSheet, View} from 'react-native';
+const Platform = require('Platform');
 
 /**
  * Optional Flowtype state and timer types definition
@@ -100,8 +101,18 @@ exports.examples = [
     render() {
       return (
         <View style={styles.horizontal}>
-          <ActivityIndicator color="#0000ff" />
-          <ActivityIndicator color="#aa00aa" />
+          <ActivityIndicator
+            color={
+              Platform.OS === 'macos'
+                ? {dynamic: {light: 'black', dark: 'white'}}
+                : '#0000ff'
+            }
+          />
+          <ActivityIndicator
+            color={
+              Platform.OS === 'macos' ? {semantic: 'textColor'} : '#aa00aa'
+            }
+          />
           <ActivityIndicator color="#aa3300" />
           <ActivityIndicator color="#00aa00" />
         </View>
@@ -149,7 +160,7 @@ exports.examples = [
           size="large"
         />
       );
-    }
+    },
   },
   {
     platform: 'android',
@@ -185,5 +196,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     padding: 8,
+    ...Platform.select({
+      macos: {
+        backgroundColor: {semantic: 'windowBackgroundColor'},
+      },
+      default: {
+        backgroundColor: undefined,
+      },
+    }),
   },
 });

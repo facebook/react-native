@@ -37,13 +37,22 @@ function currentlyFocusedField(): ?number {
 function focusTextInput(textFieldID: ?number) {
   if (currentlyFocusedID !== textFieldID && textFieldID !== null) {
     // TODO(android ISS) removed: currentlyFocusedID = textFieldID;
-    if (Platform.OS === 'ios' || Platform.OS === 'macos') { // TODO(macOS ISS#2323203)
+    if (
+      Platform.OS === 'ios' ||
+      Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */
+    ) {
       UIManager.focus(textFieldID);
     } else if (Platform.OS === 'android') {
       UIManager.dispatchViewManagerCommand(
         textFieldID,
         UIManager.getViewManagerConfig('AndroidTextInput').Commands
           .focusTextInput,
+        null,
+      );
+    } else if (Platform.OS === 'win32') {
+      UIManager.dispatchViewManagerCommand(
+        textFieldID,
+        UIManager.RCTView.Commands.focus,
         null,
       );
     }
@@ -58,13 +67,22 @@ function focusTextInput(textFieldID: ?number) {
 function blurTextInput(textFieldID: ?number) {
   if (currentlyFocusedID === textFieldID && textFieldID !== null) {
     currentlyFocusedID = null;
-    if (Platform.OS === 'ios' || Platform.OS === 'macos') { // TODO(macOS ISS#2323203)
+    if (
+      Platform.OS === 'ios' ||
+      Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */
+    ) {
       UIManager.blur(textFieldID);
     } else if (Platform.OS === 'android') {
       UIManager.dispatchViewManagerCommand(
         textFieldID,
         UIManager.getViewManagerConfig('AndroidTextInput').Commands
           .blurTextInput,
+        null,
+      );
+    } else if (Platform.OS === 'win32') {
+      UIManager.dispatchViewManagerCommand(
+        textFieldID,
+        UIManager.RCTView.Commands.blur,
         null,
       );
     }

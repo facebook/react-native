@@ -422,33 +422,38 @@ class WebView extends React.Component {
       otherView = (this.props.renderLoading || defaultRenderLoading)();
     } else if (this.state.viewState === WebViewState.ERROR) {
       var errorEvent = this.state.lastErrorEvent;
-      invariant(
-        errorEvent != null,
-        'lastErrorEvent expected to be non-null'
-      );
+      invariant(errorEvent != null, 'lastErrorEvent expected to be non-null');
       otherView = (this.props.renderError || defaultRenderError)(
         errorEvent.domain,
         errorEvent.code,
-        errorEvent.description
+        errorEvent.description,
       );
     } else if (this.state.viewState !== WebViewState.IDLE) {
       console.error(
-        'RCTWebView invalid state encountered: ' + this.state.loading
+        'RCTWebView invalid state encountered: ' + this.state.loading,
       );
     }
 
     var webViewStyles = [styles.container, styles.webView, this.props.style];
-    if (this.state.viewState === WebViewState.LOADING ||
-      this.state.viewState === WebViewState.ERROR) {
+    if (
+      this.state.viewState === WebViewState.LOADING ||
+      this.state.viewState === WebViewState.ERROR
+    ) {
       // if we're in either LOADING or ERROR states, don't show the webView
       webViewStyles.push(styles.hidden);
     }
 
-    var onShouldStartLoadWithRequest = this.props.onShouldStartLoadWithRequest && ((event: Event) => {
-      var shouldStart = this.props.onShouldStartLoadWithRequest &&
-        this.props.onShouldStartLoadWithRequest(event.nativeEvent);
-      RCTWebViewManager.startLoadWithResult(!!shouldStart, event.nativeEvent.lockIdentifier);
-    });
+    var onShouldStartLoadWithRequest =
+      this.props.onShouldStartLoadWithRequest &&
+      ((event: Event) => {
+        var shouldStart =
+          this.props.onShouldStartLoadWithRequest &&
+          this.props.onShouldStartLoadWithRequest(event.nativeEvent);
+        RCTWebViewManager.startLoadWithResult(
+          !!shouldStart,
+          event.nativeEvent.lockIdentifier,
+        );
+      });
 
     var source = this.props.source || {};
     if (this.props.html) {
@@ -459,7 +464,7 @@ class WebView extends React.Component {
 
     const messagingEnabled = typeof this.props.onMessage === 'function';
 
-    var webView =
+    var webView = (
       <RCTWebView
         ref={RCT_WEBVIEW_REF}
         key="webViewKey"
@@ -469,7 +474,9 @@ class WebView extends React.Component {
         bounces={this.props.bounces}
         scrollEnabled={this.props.scrollEnabled}
         contentInset={this.props.contentInset}
-        automaticallyAdjustContentInsets={this.props.automaticallyAdjustContentInsets}
+        automaticallyAdjustContentInsets={
+          this.props.automaticallyAdjustContentInsets
+        }
         onLoadingStart={this._onLoadingStart}
         onLoadingFinish={this._onLoadingFinish}
         onLoadingError={this._onLoadingError}
@@ -478,9 +485,12 @@ class WebView extends React.Component {
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         scalesPageToFit={this.props.scalesPageToFit}
         allowsInlineMediaPlayback={this.props.allowsInlineMediaPlayback}
-        mediaPlaybackRequiresUserAction={this.props.mediaPlaybackRequiresUserAction}
+        mediaPlaybackRequiresUserAction={
+          this.props.mediaPlaybackRequiresUserAction
+        }
         dataDetectorTypes={this.props.dataDetectorTypes}
-      />;
+      />
+    );
 
     return (
       <View style={styles.container}>
@@ -497,7 +507,7 @@ class WebView extends React.Component {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.goForward,
-      null
+      null,
     );
   };
 
@@ -508,7 +518,7 @@ class WebView extends React.Component {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.goBack,
-      null
+      null,
     );
   };
 
@@ -520,7 +530,7 @@ class WebView extends React.Component {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.reload,
-      null
+      null,
     );
   };
 
@@ -531,7 +541,7 @@ class WebView extends React.Component {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.stopLoading,
-      null
+      null,
     );
   };
 
@@ -545,25 +555,25 @@ class WebView extends React.Component {
    * document.addEventListener('message', e => { document.title = e.data; });
    * ```
    */
-  postMessage = (data) => {
+  postMessage = data => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.postMessage,
-      [String(data)]
+      [String(data)],
     );
   };
 
   /**
-  * Injects a javascript string into the referenced WebView. Deliberately does not
-  * return a response because using eval() to return a response breaks this method
-  * on pages with a Content Security Policy that disallows eval(). If you need that
-  * functionality, look into postMessage/onMessage.
-  */
-  injectJavaScript = (data) => {
+   * Injects a javascript string into the referenced WebView. Deliberately does not
+   * return a response because using eval() to return a response breaks this method
+   * on pages with a Content Security Policy that disallows eval(). If you need that
+   * functionality, look into postMessage/onMessage.
+   */
+  injectJavaScript = data => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.RCTWebView.Commands.injectJavaScript,
-      [data]
+      [data],
     );
   };
 
@@ -599,7 +609,7 @@ class WebView extends React.Component {
 
     this.setState({
       lastErrorEvent: event.nativeEvent,
-      viewState: WebViewState.ERROR
+      viewState: WebViewState.ERROR,
     });
   };
 
@@ -616,7 +626,7 @@ class WebView extends React.Component {
   _onMessage = (event: Event) => {
     var {onMessage} = this.props;
     onMessage && onMessage(event);
-  }
+  };
 }
 
 var RCTWebView = requireNativeComponent('RCTWebView', WebView, {
