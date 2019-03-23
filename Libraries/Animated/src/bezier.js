@@ -1,8 +1,13 @@
 /**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
  * BezierEasing - use bezier curve for transition easing function
  * https://github.com/gre/bezier-easing
  *
- * @flow
+ * @flow strict
  * @format
  * @copyright 2014-2015 Gaëtan Renaudeau. MIT License.
  */
@@ -40,10 +45,12 @@ function getSlope(aT, aA1, aA2) {
   return 3.0 * A(aA1, aA2) * aT * aT + 2.0 * B(aA1, aA2) * aT + C(aA1);
 }
 
-function binarySubdivide(aX, aA, aB, mX1, mX2) {
+function binarySubdivide(aX, _aA, _aB, mX1, mX2) {
   let currentX,
     currentT,
-    i = 0;
+    i = 0,
+    aA = _aA,
+    aB = _aB;
   do {
     currentT = aA + (aB - aA) / 2.0;
     currentX = calcBezier(currentT, mX1, mX2) - aX;
@@ -59,7 +66,8 @@ function binarySubdivide(aX, aA, aB, mX1, mX2) {
   return currentT;
 }
 
-function newtonRaphsonIterate(aX, aGuessT, mX1, mX2) {
+function newtonRaphsonIterate(aX, _aGuessT, mX1, mX2) {
+  let aGuessT = _aGuessT;
   for (let i = 0; i < NEWTON_ITERATIONS; ++i) {
     const currentSlope = getSlope(aGuessT, mX1, mX2);
     if (currentSlope === 0.0) {
@@ -77,7 +85,7 @@ module.exports = function bezier(
   mX2: number,
   mY2: number,
 ) {
-  if (!(0 <= mX1 && mX1 <= 1 && 0 <= mX2 && mX2 <= 1)) {
+  if (!(mX1 >= 0 && mX1 <= 1 && mX2 >= 0 && mX2 <= 1)) {
     throw new Error('bezier x values must be in [0, 1] range');
   }
 

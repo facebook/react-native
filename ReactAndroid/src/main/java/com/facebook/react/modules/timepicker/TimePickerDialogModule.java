@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -33,7 +33,7 @@ import javax.annotation.Nullable;
  * {@link NativeModule} that allows JS to show a native time picker dialog and get called back when
  * the user selects a time.
  */
-@ReactModule(name = "TimePickerAndroid")
+@ReactModule(name = TimePickerDialogModule.FRAGMENT_TAG)
 public class TimePickerDialogModule extends ReactContextBaseJavaModule {
 
   @VisibleForTesting
@@ -54,7 +54,7 @@ public class TimePickerDialogModule extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "TimePickerAndroid";
+    return FRAGMENT_TAG;
   }
 
   private class TimePickerDialogListener implements OnTimeSetListener, OnDismissListener {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include <fabric/components/switch/SwitchEventEmitter.h>
-#include <fabric/components/switch/SwitchProps.h>
-#include <fabric/components/view/ConcreteViewShadowNode.h>
+#include <react/components/switch/SwitchEventEmitter.h>
+#include <react/components/switch/SwitchProps.h>
+#include <react/components/view/ConcreteViewShadowNode.h>
 
 namespace facebook {
 namespace react {
@@ -19,12 +19,10 @@ extern const char SwitchComponentName[];
 /*
  * `ShadowNode` for <Switch> component.
  */
-using SwitchShadowNode =
-  ConcreteViewShadowNode<
+using SwitchShadowNode = ConcreteViewShadowNode<
     SwitchComponentName,
     SwitchProps,
-    SwitchEventEmitter
-  >;
+    SwitchEventEmitter>;
 
 } // namespace react
 } // namespace facebook

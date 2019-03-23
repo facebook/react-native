@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,23 +7,19 @@
 
 package com.facebook.react.views.progressbar;
 
-import com.facebook.react.uimanager.ReactShadowNodeImpl;
-import javax.annotation.Nullable;
-
-import java.util.HashSet;
-import java.util.Set;
-
 import android.util.SparseIntArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-
-import com.facebook.yoga.YogaMeasureMode;
-import com.facebook.yoga.YogaMeasureFunction;
-import com.facebook.yoga.YogaNode;
-import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.yoga.YogaMeasureFunction;
+import com.facebook.yoga.YogaMeasureMode;
+import com.facebook.yoga.YogaMeasureOutput;
+import com.facebook.yoga.YogaNode;
+import java.util.HashSet;
+import java.util.Set;
+import javax.annotation.Nullable;
 
 /**
  * Node responsible for holding the style of the ProgressBar, see under
@@ -45,34 +41,8 @@ public class ProgressBarShadowNode extends LayoutShadowNode implements YogaMeasu
     initMeasureFunction();
   }
 
-  public ProgressBarShadowNode(ProgressBarShadowNode node) {
-    super(node);
-    mWidth = node.mWidth.clone();
-    mHeight = node.mHeight.clone();
-    mMeasured = new HashSet<>(node.mMeasured);
-  }
-
-  @Override
-  public ReactShadowNodeImpl mutableCopyWithNewChildren(long instanceHandle) {
-    ProgressBarShadowNode node = (ProgressBarShadowNode) super.mutableCopyWithNewChildren(instanceHandle);
-    node.initMeasureFunction();
-    return node;
-  }
-
   private void initMeasureFunction() {
     setMeasureFunction(this);
-  }
-
-  @Override
-  public ReactShadowNodeImpl mutableCopy(long instanceHandle) {
-    ProgressBarShadowNode node = (ProgressBarShadowNode) super.mutableCopy(instanceHandle);
-    node.initMeasureFunction();
-    return node;
-  }
-
-  @Override
-  public ProgressBarShadowNode copy() {
-    return new ProgressBarShadowNode(this);
   }
 
   public @Nullable String getStyle() {

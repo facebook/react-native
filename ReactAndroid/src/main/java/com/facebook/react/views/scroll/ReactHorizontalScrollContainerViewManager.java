@@ -1,4 +1,4 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -14,7 +14,7 @@ import com.facebook.react.uimanager.ViewGroupManager;
 public class ReactHorizontalScrollContainerViewManager
     extends ViewGroupManager<ReactHorizontalScrollContainerView> {
 
-  protected static final String REACT_CLASS = "AndroidHorizontalScrollContentView";
+  public static final String REACT_CLASS = "AndroidHorizontalScrollContentView";
 
   public ReactHorizontalScrollContainerViewManager() {}
 

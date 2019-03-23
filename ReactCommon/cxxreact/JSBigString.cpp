@@ -1,4 +1,4 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -8,9 +8,13 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
+#include <glog/logging.h>
+
 #include <folly/Memory.h>
 #include <folly/portability/SysMman.h>
 #include <folly/ScopeGuard.h>
+
+#include <unistd.h> // ISS for `dup` that we don't pull in otherwise
 
 namespace facebook {
 namespace react {
@@ -19,6 +23,7 @@ JSBigFileString::JSBigFileString(int fd, size_t size, off_t offset /*= 0*/)
   : m_fd{ -1 }
   , m_data{ nullptr }
 {
+  dup(3);
   folly::checkUnixError(m_fd = dup(fd),
     "Could not duplicate file descriptor");
 

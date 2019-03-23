@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -553,7 +553,7 @@ module.exports = (function(global, undefined) {
 
   const getHash = (function() {
     const propIsEnumerable = Object.prototype.propertyIsEnumerable;
-    const hashProperty = guid();
+    const hashProperty = '__MAP_POLYFILL_INTERNAL_HASH__';
     let hashCounter = 0;
 
     /**

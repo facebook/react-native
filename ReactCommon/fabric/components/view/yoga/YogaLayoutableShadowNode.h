@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,26 +12,24 @@
 
 #include <yoga/YGNode.h>
 
-#include <fabric/components/view/YogaStylableProps.h>
-#include <fabric/core/LayoutableShadowNode.h>
-#include <fabric/core/Sealable.h>
-#include <fabric/debug/DebugStringConvertible.h>
+#include <react/components/view/YogaStylableProps.h>
+#include <react/core/LayoutableShadowNode.h>
+#include <react/core/Sealable.h>
+#include <react/debug/DebugStringConvertible.h>
 
 namespace facebook {
 namespace react {
 
-class YogaLayoutableShadowNode:
-  public LayoutableShadowNode,
-  public virtual DebugStringConvertible,
-  public virtual Sealable {
-
-public:
-
+class YogaLayoutableShadowNode : public LayoutableShadowNode,
+                                 public virtual DebugStringConvertible,
+                                 public virtual Sealable {
+ public:
 #pragma mark - Constructors
 
   YogaLayoutableShadowNode();
 
-  YogaLayoutableShadowNode(const YogaLayoutableShadowNode &layoutableShadowNode);
+  YogaLayoutableShadowNode(
+      const YogaLayoutableShadowNode &layoutableShadowNode);
 
 #pragma mark - Mutating Methods
 
@@ -43,13 +41,15 @@ public:
 
   /*
    * Appends `child`'s Yoga node to the own Yoga node.
-   * Complements `ShadowNode::appendChild(...)` functionality from Yoga perspective.
+   * Complements `ShadowNode::appendChild(...)` functionality from Yoga
+   * perspective.
    */
   void appendChild(YogaLayoutableShadowNode *child);
 
   /*
-   * Sets Yoga children based on collection of `YogaLayoutableShadowNode` instances.
-   * Complements `ShadowNode::setChildren(...)` functionality from Yoga perspective.
+   * Sets Yoga children based on collection of `YogaLayoutableShadowNode`
+   * instances. Complements `ShadowNode::setChildren(...)` functionality from
+   * Yoga perspective.
    */
   void setChildren(std::vector<YogaLayoutableShadowNode *> children);
 
@@ -72,12 +72,12 @@ public:
    * See `LayoutableShadowNode` for more details.
    */
   void layout(LayoutContext layoutContext) override;
-  
+
   void layoutChildren(LayoutContext layoutContext) override;
 
   std::vector<LayoutableShadowNode *> getLayoutableChildNodes() const override;
 
-protected:
+ protected:
   /*
    * All Yoga functions only accept non-const arguments, so we have to mark
    * Yoga node as `mutable` here to avoid `static_cast`ing the pointer to this
@@ -90,10 +90,18 @@ protected:
    */
   YGConfig yogaConfig_;
 
-private:
+ private:
   static void initializeYogaConfig(YGConfig &config);
-  static YGNode *yogaNodeCloneCallbackConnector(YGNode *oldYogaNode, YGNode *parentYogaNode, int childIndex);
-  static YGSize yogaNodeMeasureCallbackConnector(YGNode *yogaNode, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode);
+  static YGNode *yogaNodeCloneCallbackConnector(
+      YGNode *oldYogaNode,
+      YGNode *parentYogaNode,
+      int childIndex);
+  static YGSize yogaNodeMeasureCallbackConnector(
+      YGNode *yogaNode,
+      float width,
+      YGMeasureMode widthMode,
+      float height,
+      YGMeasureMode heightMode);
 };
 
 } // namespace react

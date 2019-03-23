@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <fabric/components/text/RawTextProps.h>
-#include <fabric/core/ConcreteShadowNode.h>
+#include <react/components/text/RawTextProps.h>
+#include <react/core/ConcreteShadowNode.h>
 
 namespace facebook {
 namespace react {
@@ -22,10 +22,7 @@ extern const char RawTextComponentName[];
  * <RawText> component must not have any children.
  */
 using RawTextShadowNode =
-  ConcreteShadowNode<
-    RawTextComponentName,
-    RawTextProps
-  >;
+    ConcreteShadowNode<RawTextComponentName, RawTextProps>;
 
 } // namespace react
 } // namespace facebook

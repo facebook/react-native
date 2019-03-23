@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,9 +10,9 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {StyleSheet, Text, TouchableHighlight, View} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {StyleSheet, Text, TouchableHighlight, View} = ReactNative;
 
 class XHRExampleHeaders extends React.Component {
   xhr: XMLHttpRequest;
@@ -32,7 +32,7 @@ class XHRExampleHeaders extends React.Component {
   download() {
     this.xhr && this.xhr.abort();
 
-    var xhr = this.xhr || new XMLHttpRequest();
+    const xhr = this.xhr || new XMLHttpRequest();
     xhr.onreadystatechange = () => {
       if (xhr.readyState === xhr.DONE) {
         if (this.cancelled) {
@@ -75,7 +75,7 @@ class XHRExampleHeaders extends React.Component {
   }
 
   render() {
-    var button =
+    const button =
       this.state.status === 'Downloading...' ? (
         <View style={styles.wrapper}>
           <View style={styles.button}>
@@ -101,7 +101,7 @@ class XHRExampleHeaders extends React.Component {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   wrapper: {
     borderRadius: 5,
     marginBottom: 5,

@@ -1,4 +1,4 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -20,7 +20,7 @@ import javax.annotation.Nullable;
 @ReactModule(name = JSDevSupport.MODULE_NAME)
 public class JSDevSupport extends ReactContextBaseJavaModule {
 
-  static final String MODULE_NAME = "JSDevSupport";
+  public static final String MODULE_NAME = "JSDevSupport";
 
   public static final int ERROR_CODE_EXCEPTION = 0;
   public static final int ERROR_CODE_VIEW_NOT_FOUND = 1;

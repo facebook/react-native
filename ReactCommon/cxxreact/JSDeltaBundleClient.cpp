@@ -1,3 +1,8 @@
+// Copyright (c) Facebook, Inc. and its affiliates.
+//
+// This source code is licensed under the MIT license found in the
+// LICENSE file in the root directory of this source tree.
+
 #include "JSDeltaBundleClient.h"
 
 #include <sstream>
@@ -13,9 +18,7 @@ namespace {
 
     for (auto section : {pre, post}) {
       if (section != nullptr) {
-        for (folly::dynamic pair : *section) {
-          startupCode << pair[1].getString() << '\n';
-        }
+        startupCode << section->getString() << '\n';
       }
     }
 
@@ -24,28 +27,30 @@ namespace {
 } // namespace
 
 void JSDeltaBundleClient::patch(const folly::dynamic& delta) {
-  auto const reset = delta.get_ptr("reset");
-  if (reset != nullptr && reset->asBool()) {
+  auto const base = delta.get_ptr("base");
+
+  if (base != nullptr && base->asBool()) {
     clear();
-  }
 
-  auto const pre = delta.get_ptr("pre");
-  auto const post = delta.get_ptr("post");
+    auto const pre = delta.get_ptr("pre");
+    auto const post = delta.get_ptr("post");
 
-  if ((pre != nullptr && pre->size() > 0) || (post != nullptr && post->size() > 0)) {
     startupCode_ = startupCode(pre, post);
+  } else {
+    const folly::dynamic *deleted = delta.get_ptr("deleted");
+    if (deleted != nullptr) {
+      for (const folly::dynamic id : *deleted) {
+        modules_.erase(id.getInt());
+      }
+    }
   }
 
-  const folly::dynamic *modules = delta.get_ptr("delta");
+  const folly::dynamic *modules = delta.get_ptr("modules");
   if (modules != nullptr) {
     for (const folly::dynamic pair : *modules) {
       auto id = pair[0].getInt();
       auto module = pair[1];
-      if (module.isNull()) {
-        modules_.erase(id);
-      } else {
-        modules_.emplace(id, module.getString());
-      }
+      modules_.emplace(id, module.getString());
     }
   }
 }

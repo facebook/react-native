@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,9 +10,9 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {Animated, StyleSheet, Text, View} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {Animated, StyleSheet, Text, View} = ReactNative;
 
 class Flip extends React.Component<{}, $FlowFixMeState> {
   state = {
@@ -54,10 +54,8 @@ class Flip extends React.Component<{}, $FlowFixMeState> {
         <Animated.View
           style={[
             styles.flipCard,
+            styles.flipCard1,
             {
-              position: 'absolute',
-              top: 0,
-              backgroundColor: 'red',
               transform: [
                 {perspective: 850},
                 {
@@ -76,7 +74,7 @@ class Flip extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     height: 500,
   },
@@ -177,6 +175,11 @@ var styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'blue',
     backfaceVisibility: 'hidden',
+  },
+  flipCard1: {
+    position: 'absolute',
+    top: 0,
+    backgroundColor: 'red',
   },
   flipText: {
     width: 90,
