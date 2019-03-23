@@ -36,10 +36,13 @@ type State = {|
 |};
 
 const VIEWPORT_RATIO = 0.5;
-const MAX_ITEMS = (Platform.OS === 'win32' || Platform.OS === 'windesktop') ? 3 : Math.floor( // TODO(windows ISS)
-  (Dimensions.get('window').height * VIEWPORT_RATIO) /
-    (YellowBoxListRow.GUTTER + YellowBoxListRow.HEIGHT),
-);
+const MAX_ITEMS =
+  Platform.OS === 'win32' || Platform.OS === 'windesktop'
+    ? 3
+    : Math.floor(
+        (Dimensions.get('window').height * VIEWPORT_RATIO) /
+          (YellowBoxListRow.GUTTER + YellowBoxListRow.HEIGHT),
+      ); // TODO(windows ISS)
 
 class YellowBoxList extends React.Component<Props, State> {
   state = {

@@ -13,7 +13,7 @@
 
 'use strict';
 
-import type { AlertType, AlertButtonStyle } from 'AlertIOS';
+import type {AlertType, AlertButtonStyle} from 'AlertIOS';
 
 var RCTAlertManager = require('NativeModules').AlertManager;
 
@@ -175,13 +175,11 @@ class AlertMacOS {
     modal?: ?boolean,
     critical?: ?boolean,
   ): void {
-
     var callbacks = [];
     var buttons = [];
     if (typeof callbackOrButtons === 'function') {
       callbacks = [callbackOrButtons];
-    }
-    else if (callbackOrButtons instanceof Array) {
+    } else if (callbackOrButtons instanceof Array) {
       callbackOrButtons.forEach((btn, index) => {
         callbacks[index] = btn.onPress;
         if (btn.text || index < (callbackOrButtons || []).length - 1) {
@@ -192,18 +190,21 @@ class AlertMacOS {
       });
     }
 
-    RCTAlertManager.alertWithArgs({
-      title: title || undefined,
-      message: message || undefined,
-      buttons,
-      type: type || undefined,
-      defaultInputs,
-      modal: modal || undefined,
-      critical: critical || undefined,
-    }, (id, value) => {
-      var cb = callbacks[id];
-      cb && cb(value);
-    });
+    RCTAlertManager.alertWithArgs(
+      {
+        title: title || undefined,
+        message: message || undefined,
+        buttons,
+        type: type || undefined,
+        defaultInputs,
+        modal: modal || undefined,
+        critical: critical || undefined,
+      },
+      (id, value) => {
+        var cb = callbacks[id];
+        cb && cb(value);
+      },
+    );
   }
 }
 

@@ -115,6 +115,10 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
               automaticallyAdjustContentInsets={false}
               keyboardDismissMode="on-drag"
               renderSectionHeader={renderSectionHeader}
+              backgroundColor={Platform.select({
+                macos: 'transparent',
+                default: undefined,
+              })} // TODO(macOS ISS#2323203)
             />
           )}
         />
@@ -122,10 +126,10 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
     );
   }
 
-  _handleOnSelectionEntered = (item) => {
+  _handleOnSelectionEntered = item => {
     const {key} = item;
     this.props.onNavigate(RNTesterActions.ExampleAction(key));
-  }
+  };
 
   _itemShouldUpdate(curr, prev) {
     return curr.item !== prev.item;
@@ -178,43 +182,51 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   list: {
-    ...Platform.select({ // [TODO(macOS ISS#2323203)
+    ...Platform.select({
+      // [TODO(macOS ISS#2323203)
       macos: {
         backgroundColor: {semantic: 'controlBackgroundColor'},
       },
-      default: { // ]TODO(macOS ISS#2323203)
+      default: {
+        // ]TODO(macOS ISS#2323203)
         backgroundColor: '#eeeeee',
-      } // [TODO(macOS ISS#2323203)
-    }) // ]TODO(macOS ISS#2323203)
+      }, // [TODO(macOS ISS#2323203)
+    }), // ]TODO(macOS ISS#2323203)
   },
   sectionHeader: {
-    ...Platform.select({ // [TODO(macOS ISS#2323203)
+    ...Platform.select({
+      // [TODO(macOS ISS#2323203)
       macos: {
-        backgroundColor: {semantic: 'unemphasizedSelectedContentBackgroundColor'},
-        color: {semantic: 'headerTextColor'}
+        backgroundColor: {
+          semantic: 'unemphasizedSelectedContentBackgroundColor',
+        },
+        color: {semantic: 'headerTextColor'},
       },
-      default: { // ]TODO(macOS ISS#2323203)
+      default: {
+        // ]TODO(macOS ISS#2323203)
         backgroundColor: '#eeeeee',
-        color: 'black'
-      } // [TODO(macOS ISS#2323203)
+        color: 'black',
+      }, // [TODO(macOS ISS#2323203)
     }), // ]TODO(macOS ISS#2323203)
     padding: 5,
     fontWeight: '500',
     fontSize: 11,
   },
   row: {
-    ...Platform.select({ // [TODO(macOS ISS#2323203)
+    ...Platform.select({
+      // [TODO(macOS ISS#2323203)
       macos: {
         backgroundColor: {semantic: 'controlBackgroundColor'},
-        },
-      default: { // ]TODO(macOS ISS#2323203)
+      },
+      default: {
+        // ]TODO(macOS ISS#2323203)
         backgroundColor: 'white',
-      } // [TODO(macOS ISS#2323203)
+      }, // [TODO(macOS ISS#2323203)
     }), // ]TODO(macOS ISS#2323203)
     justifyContent: 'center',
     paddingHorizontal: 15,
     paddingVertical: 8,
-  },  
+  },
   selectedRow: {
     backgroundColor: '#DDECF8',
     justifyContent: 'center',
@@ -223,13 +235,15 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: StyleSheet.hairlineWidth,
-    ...Platform.select({ // [TODO(macOS ISS#2323203)
+    ...Platform.select({
+      // [TODO(macOS ISS#2323203)
       macos: {
         backgroundColor: {semantic: 'separatorColor'},
-        },
-      default: { // ]TODO(macOS ISS#2323203)
+      },
+      default: {
+        // ]TODO(macOS ISS#2323203)
         backgroundColor: '#bbbbbb',
-      } // [TODO(macOS ISS#2323203)
+      }, // [TODO(macOS ISS#2323203)
     }), // ]TODO(macOS ISS#2323203)
     marginLeft: 15,
   },
@@ -237,19 +251,22 @@ const styles = StyleSheet.create({
     height: StyleSheet.hairlineWidth,
     backgroundColor: 'rgb(217, 217, 217)',
   },
-  sectionListContentContainer: {
-    backgroundColor: 'white',
-  },
+  sectionListContentContainer: Platform.select({
+    macos: {backgroundColor: {semantic: 'separatorColor'}},
+    default: {backgroundColor: 'white'},
+  }),
   rowTitleText: {
     fontSize: 17,
     fontWeight: '500',
-    ...Platform.select({ // [TODO(macOS ISS#2323203)
+    ...Platform.select({
+      // [TODO(macOS ISS#2323203)
       macos: {
         color: {semantic: 'controlTextColor'},
-        },
-      default: { // ]TODO(macOS ISS#2323203)
+      },
+      default: {
+        // ]TODO(macOS ISS#2323203)
         color: 'black',
-      } // [TODO(macOS ISS#2323203)
+      }, // [TODO(macOS ISS#2323203)
     }), // ]TODO(macOS ISS#2323203)
   },
   rowDetailText: {

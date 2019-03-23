@@ -17,11 +17,17 @@ export type SemanticOrDynamicColorType = {
   semantic?: string,
   dynamic?: {
     light: ?(string | number | SemanticOrDynamicColorType),
-    dark: ?(string | number | SemanticOrDynamicColorType)
-  }
+    dark: ?(string | number | SemanticOrDynamicColorType),
+  },
 }; // ]TODO(macOS ISS#2323203)
 
-function normalizeColor(color: ?(string | number | SemanticOrDynamicColorType)): ?(number | SemanticOrDynamicColorType) { // TODO(macOS ISS#2323203)
+function normalizeColor(
+  color: ?(
+    | string
+    | number
+    | SemanticOrDynamicColorType
+  ) /* TODO(macOS ISS#2323203) */,
+): ?(number | SemanticOrDynamicColorType) /* TODO(macOS ISS#2323203) */ {
   const matchers = getMatchers();
   let match;
 
@@ -32,7 +38,8 @@ function normalizeColor(color: ?(string | number | SemanticOrDynamicColorType)):
     return null;
   }
 
-  if (typeof color === 'object' && color !== null && Platform.OS === 'macos') { // [TODO(macOS ISS#2323203)
+  if (typeof color === 'object' && color !== null && Platform.OS === 'macos') {
+    // [TODO(macOS ISS#2323203)
     if ('semantic' in color) {
       // a macos semantic color
       return color;
@@ -42,12 +49,12 @@ function normalizeColor(color: ?(string | number | SemanticOrDynamicColorType)):
       const dynamicColor: SemanticOrDynamicColorType = {
         dynamic: {
           light: normalizeColor(dynamic.light),
-          dark: normalizeColor(dynamic.dark)
-        }
+          dark: normalizeColor(dynamic.dark),
+        },
       };
       return dynamicColor;
     }
-  } 
+  }
   if (typeof color !== 'string') {
     return null;
   } // ]TODO(macOS ISS#2323203)

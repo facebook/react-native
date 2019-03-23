@@ -24,13 +24,9 @@ import type {
 } from 'ViewAccessibility';
 
 // [TODO(macOS ISS#2323203)
-const {
-  DraggedTypes
-} = require('DraggedType');
+const {DraggedTypes} = require('DraggedType');
 
-import type {
-  DraggedType
-} from 'DraggedType';
+import type {DraggedType} from 'DraggedType';
 // ]TODO(macOS ISS#2323203)
 
 export type ViewLayout = Layout;
@@ -222,38 +218,6 @@ type AndroidViewProps = $ReadOnly<{|
   nativeBackgroundAndroid?: ?Object,
   nativeForegroundAndroid?: ?Object,
 
-  /* Deprecated transform prop. Use the transform style prop instead */
-  rotation?: empty,
-  /* Deprecated transform prop. Use the transform style prop instead */
-  scaleX?: empty,
-  /* Deprecated transform prop. Use the transform style prop instead */
-  scaleY?: empty,
-  /* Deprecated transform prop. Use the transform style prop instead */
-  translateX?: empty,
-  /* Deprecated transform prop. Use the transform style prop instead */
-  translateY?: empty,
-
-  /**
-   * When `true`, indicates that the view is clickable. By default,
-   * all the touchable elements are clickable.
-   * 
-   * @platform android
-   */
-  clickable: PropTypes.bool, // TODO(android ISS)
-  
-  /**
-   * When `clickable` is true, the system will try to invoke this function
-   * when the user performs a click.
-   * 
-   * @platform android
-   */
-  onClick: PropTypes.func, // TODO(android ISS)
-|}>;
-
-type AndroidViewProps = $ReadOnly<{|
-  nativeBackgroundAndroid?: ?Object,
-  nativeForegroundAndroid?: ?Object,
-
   /**
    * Whether this `View` should render itself (and all of its children) into a
    * single hardware texture on the GPU.
@@ -287,6 +251,22 @@ type AndroidViewProps = $ReadOnly<{|
   needsOffscreenAlphaCompositing?: ?boolean,
 
   /**
+   * When `true`, indicates that the view is clickable. By default,
+   * all the touchable elements are clickable.
+   * 
+   * @platform android
+   */
+  clickable?: ?boolean, // TODO(android ISS)
+  
+  /**
+   * When `clickable` is true, the system will try to invoke this function
+   * when the user performs a click.
+   * 
+   * @platform android
+   */
+
+  onClick?: ?Function, // TODO(android ISS)
+  /**
    * Indicates to accessibility services to treat UI component like a
    * native one. Works for Android only.
    *
@@ -294,6 +274,7 @@ type AndroidViewProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#accessibilitycomponenttype
    */
+
   accessibilityComponentType?: ?AccessibilityComponentType,
 
   /**
@@ -311,7 +292,7 @@ type AndroidViewProps = $ReadOnly<{|
    * 
    * @platform android
    */
-  onFocusChange: PropTypes.func, // TODO(android ISS)
+  onFocusChange?: ?Function, // TODO(android ISS)
 
   /**
    * Controls how view is important for accessibility which is if it
@@ -383,9 +364,9 @@ type IOSViewProps = $ReadOnly<{|
    *
    * @platform ios
    */
-  onAccessibilityAction: PropTypes.func,
-  
-  onDoubleClick: PropTypes.func, // TODO(macOS ISS#2323203)
+  onAccessibilityAction?: ?Function,
+
+  onDoubleClick?: ?Function, // TODO(macOS ISS#2323203)
 
   /**
    * When `accessible` is true, the system will try to invoke this function
@@ -393,7 +374,7 @@ type IOSViewProps = $ReadOnly<{|
    *
    * See http://facebook.github.io/react-native/docs/view.html#onaccessibilitytap
    */
-  onAccessibilityTap: PropTypes.func,
+  onAccessibilityTap?: ?Function,
 
   /**
    * When `accessible` is `true`, the system will invoke this function when the
@@ -473,6 +454,8 @@ export type ViewProps = $ReadOnly<{|
    */
   nativeID?: ?string,
 
+  tabIndex?: ?number, // TODO(win ISS#2323203)
+
   /**
    * This defines how far a touch event can start away from the view.
    * Typical interface guidelines recommend touch targets that are at least
@@ -509,55 +492,55 @@ export type ViewProps = $ReadOnly<{|
 
   /**
    * Fired when a pointing device is moved over the view
-   * 
+   *
    * @platform macos
    */
-  onMouseEnter: PropTypes.func, // TODO(macOS ISS#2323203)
-  
+  onMouseEnter?: ?Function, // TODO(macOS ISS#2323203)
+
   /**
    * Fired when a pointing device is moved out the view
-   * 
+   *
    * @platform macos
    */
-  onMouseLeave: PropTypes.func, // TODO(macOS ISS#2323203)
-  
+  onMouseLeave?: ?Function, // TODO(macOS ISS#2323203)
+
   /**
    * Fired when a dragged element enters a valid drop target
-   * 
+   *
    * @platform macos
    */
-  onDragEnter: PropTypes.func, // TODO(macOS ISS#2323203)
-  
+  onDragEnter?: ?Function, // TODO(macOS ISS#2323203)
+
   /**
    * Fired when a dragged element leaves a valid drop target
-   * 
+   *
    * @platform macos
    */
-  onDragLeave: PropTypes.func, // TODO(macOS ISS#2323203)
+  onDragLeave?: ?Function, // TODO(macOS ISS#2323203)
 
   /**
    * Fired when an element is dropped on a valid drop target
-   * 
+   *
    * @platform macos
    */
-  onDrop: PropTypes.func, // TODO(macOS ISS#2323203)
-  
-  /**
-  * Specifies the Tooltip for the view
-  * @platform macos
-  */
-  tooltip: PropTypes.string, // TODO(macOS ISS#2323203)
+  onDrop?: ?Function, // TODO(macOS ISS#2323203)
 
   /**
-  * Specifies whether the view participates in the key view loop as user tabs
-  * through different controls.
-  */
-  acceptsKeyboardFocus: PropTypes.bool, // TODO(macOS ISS#2323203)
+   * Specifies the Tooltip for the view
+   * @platform macos
+   */
+  tooltip?: ?string, // TODO(macOS ISS#2323203)
 
   /**
-  * Specifies whether focus ring should be drawn when the view has the first responder status.
-  */
-  enableFocusRing: PropTypes.bool, // TODO(macOS ISS#2323203)
+   * Specifies whether the view participates in the key view loop as user tabs
+   * through different controls.
+   */
+  acceptsKeyboardFocus?: ?boolean, // TODO(macOS ISS#2323203)
+
+  /**
+   * Specifies whether focus ring should be drawn when the view has the first responder status.
+   */
+  enableFocusRing?: ?boolean, // TODO(macOS ISS#2323203)
 
   /**
    * Fired when an element is focused
@@ -565,7 +548,7 @@ export type ViewProps = $ReadOnly<{|
    * @platform macos
    * @platform ios
    */
-  onFocus: PropTypes.func, // TODO(macOS ISS#2323203)
+  onFocus?: ?Function, // TODO(macOS ISS#2323203)
 
   /**
    * Fired when an element loses focus
@@ -573,21 +556,18 @@ export type ViewProps = $ReadOnly<{|
    * @platform macos
    * @platform ios
    */
-  onBlur: PropTypes.func, // TODO(macOS ISS#2323203)
+  onBlur?: ?Function, // TODO(macOS ISS#2323203)
 
   /**
    * Enables Dran'n'Drop Support for certain types of dragged types
    *
    * Possible values for `draggedTypes` are:
-   * 
+   *
    * - `'fileUrl'`
-   * 
+   *
    * @platform macos
    */
-  draggedTypes: PropTypes.oneOfType([ // TODO(macOS ISS#2323203)
-    PropTypes.oneOf(DraggedTypes),
-    PropTypes.arrayOf(PropTypes.oneOf(DraggedTypes)),
-  ]),
+  draggedTypes?: ?DraggedTypes | ?$ReadOnlyArray<DraggedTypes>, // TODO(macOS ISS#2323203)
 
   /**
    * Any additional platform-specific view prop types, or prop type overrides.

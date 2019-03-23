@@ -1,6 +1,13 @@
-# Change Log - @microsoft/react-native
+# Change Log - react-native
 
-This log was last generated on Tue, 05 Mar 2019 20:54:55 GMT and should not be manually modified.
+This log was last generated on Wed, 06 Mar 2019 05:43:46 GMT and should not be manually modified.
+
+## 0.0.2
+Wed, 06 Mar 2019 05:43:46 GMT
+
+### Patches
+
+- Rename microsoft react-native
 
 ## 0.3.9
 Tue, 05 Mar 2019 20:54:55 GMT

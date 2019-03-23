@@ -857,8 +857,7 @@ exports.examples = [
   },
   {
     title: 'Bundled images',
-    description:
-      'Images shipped in a separate native bundle',
+    description: 'Images shipped in a separate native bundle',
     render: function() {
       return (
         <View style={{flexDirection: 'row'}}>

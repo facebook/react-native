@@ -30,6 +30,7 @@ ReactNativeViewAttributes.UIView = {
   importantForAccessibility: true,
   nativeID: true,
   testID: true,
+  tabIndex: true, // TODO(win ISS#2323203)
   renderToHardwareTextureAndroid: true,
   shouldRasterizeIOS: true,
   onLayout: true,

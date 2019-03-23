@@ -167,7 +167,10 @@ function interpolate(
 
 function colorToRgba(input: string): string {
   let int32Color = normalizeColor(input);
-  if (int32Color === null || typeof int32Color !== 'number') { // TODO(macOS ISS#2323203)
+  if (
+    int32Color === null ||
+    typeof int32Color !== 'number' /* TODO(macOS ISS#2323203) */
+  ) {
     return input;
   }
 

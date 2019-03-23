@@ -17,7 +17,7 @@ const requireNativeComponent = require('requireNativeComponent');
 
 import type {SwitchChangeEvent} from 'CoreEventTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {SemanticOrDynamicColorType} from 'normalizeColor' // TODO(macOS ISS#2323203)
+import type {SemanticOrDynamicColorType} from 'normalizeColor'; // TODO(macOS ISS#2323203)
 
 // @see ReactSwitchManager.java
 export type NativeAndroidProps = $ReadOnly<{|

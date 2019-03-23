@@ -20,7 +20,9 @@ class DummyDatePickerIOS extends React.Component {
   render() {
     return (
       <View style={[styles.dummyDatePickerIOS, this.props.style]}>
-        <Text style={styles.datePickerText}>DatePickerIOS is not supported on this platform!</Text>
+        <Text style={styles.datePickerText}>
+          DatePickerIOS is not supported on this platform!
+        </Text>
       </View>
     );
   }
@@ -40,7 +42,7 @@ var styles = StyleSheet.create({
   datePickerText: {
     color: '#333333',
     margin: 20,
-  }
+  },
 });
 
 module.exports = DummyDatePickerIOS;
