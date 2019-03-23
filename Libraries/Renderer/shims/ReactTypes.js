@@ -19,6 +19,8 @@ export type ReactNode =
 
 export type ReactEmpty = null | void | boolean;
 
+export type ReactEmpty = null | void | boolean;
+
 export type ReactFragment = ReactEmpty | Iterable<React$Node>;
 
 export type ReactNodeList = ReactEmpty | React$Node;
@@ -56,12 +58,12 @@ export type ReactContext<T> = {
   $$typeof: Symbol | number,
   Consumer: ReactContext<T>,
   Provider: ReactProviderType<T>,
-  unstable_read: () => T,
 
   _calculateChangedBits: ((a: T, b: T) => number) | null,
 
   _currentValue: T,
   _currentValue2: T,
+  _threadCount: number,
 
   // DEV only
   _currentRenderer?: Object | null,

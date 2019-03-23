@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -26,6 +26,7 @@ type Timespan = {
 
 let timespans: {[key: string]: Timespan} = {};
 let extras: {[key: string]: any} = {};
+let points: {[key: string]: number} = {};
 const cookies: {[key: string]: number} = {};
 
 const PRINT_TO_CONSOLE: false = false; // Type as false to prevent accidentally committing `true`;
@@ -107,6 +108,7 @@ const PerformanceLogger = {
   clear() {
     timespans = {};
     extras = {};
+    points = {};
     if (PRINT_TO_CONSOLE) {
       infoLog('PerformanceLogger.js', 'clear');
     }
@@ -119,6 +121,7 @@ const PerformanceLogger = {
       }
     }
     extras = {};
+    points = {};
     if (PRINT_TO_CONSOLE) {
       infoLog('PerformanceLogger.js', 'clearCompleted');
     }
@@ -132,6 +135,7 @@ const PerformanceLogger = {
       return previous;
     }, {});
     extras = {};
+    points = {};
     if (PRINT_TO_CONSOLE) {
       infoLog('PerformanceLogger.js', 'clearExceptTimespans', keys);
     }
@@ -187,6 +191,29 @@ const PerformanceLogger = {
 
   logExtras() {
     infoLog(extras);
+  },
+
+  markPoint(key: string, timestamp?: number) {
+    if (points[key]) {
+      if (__DEV__) {
+        infoLog(
+          'PerformanceLogger: Attempting to mark a point that has been already logged ',
+          key,
+        );
+      }
+      return;
+    }
+    points[key] = timestamp ?? performanceNow();
+  },
+
+  getPoints() {
+    return points;
+  },
+
+  logPoints() {
+    for (const key in points) {
+      infoLog(key + ': ' + points[key] + 'ms');
+    }
   },
 };
 

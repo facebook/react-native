@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,11 +10,9 @@
 
 'use strict';
 
-var React = require('react');
-var createReactClass = require('create-react-class');
-const PropTypes = require('prop-types');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   ActivityIndicator,
   Alert,
   CameraRoll,
@@ -25,105 +23,123 @@ var {
   StyleSheet,
   View,
 } = ReactNative;
+const ListViewDataSource = require('ListViewDataSource');
 
-var groupByEveryN = require('groupByEveryN');
-var logError = require('logError');
+const groupByEveryN = require('groupByEveryN');
+const logError = require('logError');
 
-var propTypes = {
+import type {
+  PhotoIdentifier,
+  PhotoIdentifiersPage,
+  GetPhotosParams,
+} from 'CameraRoll';
+
+function rowHasChanged<T>(r1: Array<T>, r2: Array<T>): boolean {
+  if (r1.length !== r2.length) {
+    return true;
+  }
+
+  for (let i = 0; i < r1.length; i++) {
+    if (r1[i] !== r2[i]) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+type Props = $ReadOnly<{|
   /**
    * The group where the photos will be fetched from. Possible
    * values are 'Album', 'All', 'Event', 'Faces', 'Library', 'PhotoStream'
    * and SavedPhotos.
    */
-  groupTypes: PropTypes.oneOf([
-    'Album',
-    'All',
-    'Event',
-    'Faces',
-    'Library',
-    'PhotoStream',
-    'SavedPhotos',
-  ]),
+  groupTypes:
+    | 'Album'
+    | 'All'
+    | 'Event'
+    | 'Faces'
+    | 'Library'
+    | 'PhotoStream'
+    | 'SavedPhotos',
 
   /**
    * Number of images that will be fetched in one page.
    */
-  batchSize: PropTypes.number,
+  batchSize: number,
 
   /**
    * A function that takes a single image as a parameter and renders it.
    */
-  renderImage: PropTypes.func,
+  renderImage: PhotoIdentifier => React.Node,
 
   /**
    * imagesPerRow: Number of images to be shown in each row.
    */
-  imagesPerRow: PropTypes.number,
+
+  imagesPerRow: number,
 
   /**
    * The asset type, one of 'Photos', 'Videos' or 'All'
    */
-  assetType: PropTypes.oneOf(['Photos', 'Videos', 'All']),
-};
+  assetType: 'Photos' | 'Videos' | 'All',
+|}>;
 
-var CameraRollView = createReactClass({
-  displayName: 'CameraRollView',
-  propTypes: propTypes,
+type State = {|
+  assets: Array<PhotoIdentifier>,
+  lastCursor: ?string,
+  noMore: boolean,
+  loadingMore: boolean,
+  dataSource: ListViewDataSource,
+|};
 
-  getDefaultProps: function(): Object {
+class CameraRollView extends React.Component<Props, State> {
+  static defaultProps = {
+    groupTypes: 'SavedPhotos',
+    batchSize: 5,
+    imagesPerRow: 1,
+    assetType: 'Photos',
+    renderImage: function(asset: PhotoIdentifier) {
+      const imageSize = 150;
+      const imageStyle = [styles.image, {width: imageSize, height: imageSize}];
+      return <Image source={asset.node.image} style={imageStyle} />;
+    },
+  };
+
+  state = this.getInitialState();
+
+  getInitialState() {
     return {
-      groupTypes: 'SavedPhotos',
-      batchSize: 5,
-      imagesPerRow: 1,
-      assetType: 'Photos',
-      renderImage: function(asset) {
-        var imageSize = 150;
-        var imageStyle = [styles.image, {width: imageSize, height: imageSize}];
-        return <Image source={asset.node.image} style={imageStyle} />;
-      },
-    };
-  },
-
-  getInitialState: function() {
-    var ds = new ListView.DataSource({rowHasChanged: this._rowHasChanged});
-
-    return {
-      assets: ([]: Array<Image>),
-      groupTypes: this.props.groupTypes,
-      lastCursor: (null: ?string),
-      assetType: this.props.assetType,
+      assets: [],
+      lastCursor: null,
       noMore: false,
       loadingMore: false,
-      dataSource: ds,
+      dataSource: new ListView.DataSource({rowHasChanged: rowHasChanged}),
     };
-  },
+  }
 
   /**
    * This should be called when the image renderer is changed to tell the
    * component to re-render its assets.
    */
-  rendererChanged: function() {
-    var ds = new ListView.DataSource({rowHasChanged: this._rowHasChanged});
+  rendererChanged() {
+    const ds = new ListView.DataSource({rowHasChanged: rowHasChanged});
     this.state.dataSource = ds.cloneWithRows(
-      // $FlowFixMe(>=0.41.0)
       groupByEveryN(this.state.assets, this.props.imagesPerRow),
     );
-  },
+  }
 
-  componentDidMount: function() {
+  componentDidMount() {
     this.fetch();
-  },
+  }
 
-  /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an error
-   * found when Flow v0.68 was deployed. To see the error delete this comment
-   * and run Flow. */
-  UNSAFE_componentWillReceiveProps: function(nextProps: {groupTypes?: string}) {
+  UNSAFE_componentWillReceiveProps(nextProps: Props) {
     if (this.props.groupTypes !== nextProps.groupTypes) {
       this.fetch(true);
     }
-  },
+  }
 
-  _fetch: async function(clear?: boolean) {
+  async _fetch(clear?: boolean) {
     if (clear) {
       this.setState(this.getInitialState(), this.fetch);
       return;
@@ -143,7 +159,7 @@ var CameraRollView = createReactClass({
       }
     }
 
-    const fetchParams: Object = {
+    const fetchParams: GetPhotosParams = {
       first: this.props.batchSize,
       groupTypes: this.props.groupTypes,
       assetType: this.props.assetType,
@@ -162,21 +178,21 @@ var CameraRollView = createReactClass({
     } catch (e) {
       logError(e);
     }
-  },
+  }
 
   /**
    * Fetches more images from the camera roll. If clear is set to true, it will
    * set the component to its initial state and re-fetch the images.
    */
-  fetch: function(clear?: boolean) {
+  fetch = (clear?: boolean) => {
     if (!this.state.loadingMore) {
       this.setState({loadingMore: true}, () => {
         this._fetch(clear);
       });
     }
-  },
+  };
 
-  render: function() {
+  render() {
     return (
       <ListView
         renderRow={this._renderRow}
@@ -187,49 +203,34 @@ var CameraRollView = createReactClass({
         enableEmptySections
       />
     );
-  },
+  }
 
-  _rowHasChanged: function(r1: Array<Image>, r2: Array<Image>): boolean {
-    if (r1.length !== r2.length) {
-      return true;
-    }
-
-    for (var i = 0; i < r1.length; i++) {
-      if (r1[i] !== r2[i]) {
-        return true;
-      }
-    }
-
-    return false;
-  },
-
-  _renderFooterSpinner: function() {
+  _renderFooterSpinner = () => {
     if (!this.state.noMore) {
       return <ActivityIndicator />;
     }
     return null;
-  },
+  };
 
   // rowData is an array of images
-  _renderRow: function(
-    rowData: Array<Image>,
+  _renderRow = (
+    rowData: Array<PhotoIdentifier>,
     sectionID: string,
     rowID: string,
-  ) {
-    var images = rowData.map(image => {
+  ) => {
+    const images = rowData.map(image => {
       if (image === null) {
         return null;
       }
-      // $FlowFixMe(>=0.41.0)
       return this.props.renderImage(image);
     });
 
     return <View style={styles.row}>{images}</View>;
-  },
+  };
 
-  _appendAssets: function(data: Object) {
-    var assets = data.edges;
-    var newState: Object = {loadingMore: false};
+  _appendAssets(data: PhotoIdentifiersPage) {
+    const assets = data.edges;
+    const newState: $Shape<State> = {loadingMore: false};
 
     if (!data.page_info.has_next_page) {
       newState.noMore = true;
@@ -239,35 +240,27 @@ var CameraRollView = createReactClass({
       newState.lastCursor = data.page_info.end_cursor;
       newState.assets = this.state.assets.concat(assets);
       newState.dataSource = this.state.dataSource.cloneWithRows(
-        // $FlowFixMe(>=0.41.0)
         groupByEveryN(newState.assets, this.props.imagesPerRow),
       );
     }
 
     this.setState(newState);
-  },
+  }
 
-  _onEndReached: function() {
+  _onEndReached = () => {
     if (!this.state.noMore) {
       this.fetch();
     }
-  },
-});
+  };
+}
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     flex: 1,
   },
-  url: {
-    fontSize: 9,
-    marginBottom: 14,
-  },
   image: {
     margin: 4,
-  },
-  info: {
-    flex: 1,
   },
   container: {
     flex: 1,

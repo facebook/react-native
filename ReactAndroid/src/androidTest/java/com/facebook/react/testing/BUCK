@@ -1,9 +1,9 @@
-load("//ReactNative:DEFS.bzl", "react_native_dep", "react_native_integration_tests_target", "react_native_target", "rn_android_library")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_dep", "react_native_integration_tests_target", "react_native_target", "rn_android_library")
 
 rn_android_library(
     name = "testing",
     srcs = glob(
-        ["**/*.java"],
+        ["*.java"],
         exclude = [
             "idledetection/**/*.java",
             "network/**/*.java",
@@ -28,7 +28,7 @@ rn_android_library(
         react_native_target("java/com/facebook/react/common:common"),
         react_native_target("java/com/facebook/react/devsupport:interfaces"),
         react_native_target("java/com/facebook/react/fabric:fabric"),
-        react_native_target("java/com/facebook/react/fabric/jsc:jsc"),
+        react_native_target("java/com/facebook/react/jscexecutor:jscexecutor"),
         react_native_target("java/com/facebook/react/module/annotations:annotations"),
         react_native_target("java/com/facebook/react/module/model:model"),
         react_native_target("java/com/facebook/react/modules/core:core"),

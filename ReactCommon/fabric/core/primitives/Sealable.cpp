@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -26,11 +26,11 @@ namespace react {
 
 #ifndef NDEBUG
 
-Sealable::Sealable(): sealed_(false) {}
+Sealable::Sealable() : sealed_(false) {}
 
-Sealable::Sealable(const Sealable &other): sealed_(false) {};
+Sealable::Sealable(const Sealable &other) : sealed_(false){};
 
-Sealable::Sealable(Sealable &&other) noexcept: sealed_(false) {};
+Sealable::Sealable(Sealable &&other) noexcept : sealed_(false){};
 
 Sealable::~Sealable() noexcept {};
 

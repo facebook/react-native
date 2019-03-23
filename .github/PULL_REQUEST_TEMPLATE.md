@@ -23,6 +23,3 @@ If you are making a new change then one of the following should be done:
 #### Focus areas to test
 
 (optional)
-
-
-

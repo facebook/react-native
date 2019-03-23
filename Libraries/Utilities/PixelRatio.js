@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -68,9 +68,15 @@ class PixelRatio {
    *     - iPhone 4, 4S
    *     - iPhone 5, 5c, 5s
    *     - iPhone 6
+   *     - iPhone 7
+   *     - iPhone 8
+   *     - iPhone SE
    *     - xhdpi Android devices (320 dpi)
    *   - PixelRatio.get() === 3
-   *     - iPhone 6 plus
+   *     - iPhone 6 Plus
+   *     - iPhone 7 Plus
+   *     - iPhone 8 Plus
+   *     - iPhone X
    *     - xxhdpi Android devices (480 dpi)
    *   - PixelRatio.get() === 3.5
    *     - Nexus 6

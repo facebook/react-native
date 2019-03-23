@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,12 +10,12 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var Platform = require('Platform');
+const React = require('react');
+const ReactNative = require('react-native');
+const Platform = require('Platform');
 
-var nativeImageSource = require('nativeImageSource');
-var {Image, StyleSheet, Text, View} = ReactNative;
+const nativeImageSource = require('nativeImageSource');
+const {Image, StyleSheet, Text, View} = ReactNative;
 
 class ImageCapInsetsExample extends React.Component<{}> {
   render() {
@@ -59,22 +59,16 @@ class ImageCapInsetsExample extends React.Component<{}> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   background: {
     backgroundColor: '#F6F6F6',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  horizontal: {
-    flexDirection: 'row',
-  },
   storyBackground: {
     width: 250,
     height: 150,
     borderWidth: 1,
-  },
-  text: {
-    fontSize: 13.5,
   },
 });
 
