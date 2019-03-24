@@ -47,7 +47,7 @@ function RootViewLayoutManager({
   const [layoutContext, setLayoutContext] = React.useState<LayoutContext>(
     initialLayoutContext,
   );
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     const subscription = RCTDeviceEventEmitter.addListener(
       'didUpdateLayoutContext',
       event => {
