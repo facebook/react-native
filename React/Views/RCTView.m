@@ -151,7 +151,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   if (label) {
     return label;
   }
-  return RCTRecursiveAccessibilityLabel(self);
+  return RCTRecursiveAccessibilityLabel(nil);
 }
 
 - (NSArray <UIAccessibilityCustomAction *> *)accessibilityCustomActions
