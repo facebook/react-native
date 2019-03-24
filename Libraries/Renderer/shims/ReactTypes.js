@@ -19,8 +19,6 @@ export type ReactNode =
 
 export type ReactEmpty = null | void | boolean;
 
-export type ReactEmpty = null | void | boolean;
-
 export type ReactFragment = ReactEmpty | Iterable<React$Node>;
 
 export type ReactNodeList = ReactEmpty | React$Node;
