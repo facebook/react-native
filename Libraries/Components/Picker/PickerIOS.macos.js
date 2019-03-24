@@ -19,28 +19,15 @@ var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 const PropTypes = require('prop-types');
 var StyleSheet = require('StyleSheet');
-var StyleSheetPropType = require('StyleSheetPropType');
-var TextStylePropTypes = require('TextStylePropTypes');
 var View = require('View');
-const ViewPropTypes = require('ViewPropTypes');
 var processColor = require('processColor');
 
 var createReactClass = require('create-react-class');
-var itemStylePropType = StyleSheetPropType(TextStylePropTypes);
 var requireNativeComponent = require('requireNativeComponent');
 
 var PickerIOS = createReactClass({
   displayName: 'PickerIOS',
   mixins: [NativeMethodsMixin],
-
-  propTypes: {
-    ...ViewPropTypes,
-    children: PropTypes.arrayOf(PropTypes.any),
-    itemStyle: itemStylePropType,
-    onChange: PropTypes.func,
-    onValueChange: PropTypes.func,
-    selectedValue: PropTypes.any, // string or integer basically
-  },
 
   getInitialState: function() {
     return this._stateFromProps(this.props);

@@ -37,30 +37,30 @@ type ButtonProps = $ReadOnly<{|
       /**
        * Color of the text (iOS), or background color of the button (Android)
        */
-      color ?: ? string,
+      color?: ?string,
 
       /**
        * TV preferred focus (see documentation for the View component).
        */
-      hasTVPreferredFocus ?: ? boolean,
+      hasTVPreferredFocus?: ?boolean,
 
       /**
        * Text to display for blindness accessibility features
        */
-      accessibilityLabel ?: ? string,
+      accessibilityLabel?: ?string,
       /**
        * Hint text to display blindness accessibility features
        */
-      accessibilityHint: PropTypes.string, // TODO(OSS Candidate ISS#2710739)
+      accessibilityHint? : ?string, // TODO(OSS Candidate ISS#2710739)
         /**
          * If true, disable all interactions for this component.
          */
-        disabled ?: ? boolean,
+        disabled?: ?boolean,
 
         /**
          * Used to locate this view in end-to-end tests.
          */
-        testID ?: ? string,
+        testID?: ?string,
 |}>;
 
 /**
