@@ -67,6 +67,7 @@ static NSDictionary * RCTCreateLayoutContext(CGRect frame, UIEdgeInsets safeArea
   CGSize _intrinsicContentSize;
   CGRect _lastFrame;
   UIEdgeInsets _lastSafeAreaInsets;
+  BOOL _isMeasured;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -93,6 +94,7 @@ static NSDictionary * RCTCreateLayoutContext(CGRect frame, UIEdgeInsets safeArea
     _sizeFlexibility = RCTRootViewSizeFlexibilityNone;
     _lastFrame = CGRectZero;
     _lastSafeAreaInsets = UIEdgeInsetsZero;
+    _isMeasured = NO;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(bridgeDidReload)
@@ -117,10 +119,6 @@ static NSDictionary * RCTCreateLayoutContext(CGRect frame, UIEdgeInsets safeArea
 #endif
 
     [self showLoadingView];
-
-    // Immediately schedule the application to be started.
-    // (Sometimes actual `_bridge` is already batched bridge here.)
-    [self bundleFinishedLoading:([_bridge batchedBridge] ?: _bridge)];
   }
 
   RCT_PROFILE_END_EVENT(RCTProfileTagAlways, @"");
@@ -197,7 +195,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     CGRectGetMidY(self.bounds)
   };
 
-  [self maybeUpdateLayoutContext];
+  if (!_isMeasured) {
+    _isMeasured = YES;
+    // Schedule the application to be started right after the first layout.
+    // This is needed since we need the root view initial frame.
+    // (Sometimes actual `_bridge` is already batched bridge here.)
+    [self bundleFinishedLoading:([_bridge batchedBridge] ?: _bridge)];
+  } else {
+    [self maybeUpdateLayoutContext];
+  }
 }
 
 - (UIViewController *)reactViewController
@@ -309,10 +315,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)runApplication:(RCTBridge *)bridge
 {
   NSString *moduleName = _moduleName ?: @"";
+  UIEdgeInsets safeAreaInsets = RCTSafeAreaInsetsForView(self, YES);
+  _lastFrame = self.frame;
+  _lastSafeAreaInsets = safeAreaInsets;
   NSDictionary *appParameters = @{
     @"rootTag": _contentView.reactTag,
     @"initialProps": _appProperties ?: @{},
-    @"initialLayoutContext": RCTCreateLayoutContext(self.frame, RCTSafeAreaInsetsForView(self, YES)),
+    @"initialLayoutContext": RCTCreateLayoutContext(self.frame, safeAreaInsets),
   };
 
   RCTLogInfo(@"Running application %@ (%@)", moduleName, appParameters);
@@ -418,7 +427,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)safeAreaInsetsDidChange
 {
-  [self maybeUpdateLayoutContext];
+  if (_isMeasured) {
+    [self maybeUpdateLayoutContext];
+  }
 }
 
 #endif
