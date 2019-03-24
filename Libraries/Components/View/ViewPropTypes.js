@@ -573,4 +573,4 @@ export type ViewProps = $ReadOnly<{|
    * Any additional platform-specific view prop types, or prop type overrides.
    */
   ...PlatformViewPropTypes,
-|};
+|}>;

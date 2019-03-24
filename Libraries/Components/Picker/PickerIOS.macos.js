@@ -25,6 +25,15 @@ var processColor = require('processColor');
 var createReactClass = require('create-react-class');
 var requireNativeComponent = require('requireNativeComponent');
 
+type PickerIOSProps = $ReadOnly<{|
+  ...ViewProps,
+  children: React.ChildrenArray<React.Element<typeof PickerIOSItem>>,
+  itemStyle?: ?TextStyleProp,
+  onChange?: ?(event: PickerIOSChangeEvent) => mixed,
+  onValueChange?: ?(newValue: any, newIndex: number) => mixed,
+  selectedValue: any,
+|}>;
+
 var PickerIOS = createReactClass({
   displayName: 'PickerIOS',
   mixins: [NativeMethodsMixin],
@@ -33,7 +42,7 @@ var PickerIOS = createReactClass({
     return this._stateFromProps(this.props);
   },
 
-  componentWillReceiveProps: function(nextProps) {
+  componentWillReceiveProps: function(nextProps: PickerIOSProps) {
     this.setState(this._stateFromProps(nextProps));
   },
 
