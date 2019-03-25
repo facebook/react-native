@@ -14,6 +14,7 @@
 #include <react/components/view/primitives.h>
 #include <react/core/LayoutMetrics.h>
 #include <react/graphics/Geometry.h>
+#include <react/graphics/Transform.h>
 #include <stdlib.h>
 #include <yoga/YGEnums.h>
 #include <yoga/YGNode.h>
