@@ -213,6 +213,7 @@ public abstract class YogaNode {
 
   public abstract void setData(Object data);
 
+  @Nullable
   public abstract Object getData();
 
   public abstract void print();

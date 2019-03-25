@@ -14,12 +14,12 @@ import javax.annotation.Nullable;
 @DoNotStrip
 public abstract class YogaNodeJNIBase extends YogaNode {
 
-  private YogaNodeJNIBase mOwner;
+  @Nullable private YogaNodeJNIBase mOwner;
   @Nullable private List<YogaNodeJNIBase> mChildren;
-  private YogaMeasureFunction mMeasureFunction;
-  private YogaBaselineFunction mBaselineFunction;
+  @Nullable private YogaMeasureFunction mMeasureFunction;
+  @Nullable private YogaBaselineFunction mBaselineFunction;
   private long mNativePointer;
-  private Object mData;
+  @Nullable private Object mData;
 
   /* Those flags needs be in sync with YGJNI.cpp */
   private static final int MARGIN = 1;
@@ -623,7 +623,8 @@ public abstract class YogaNodeJNIBase extends YogaNode {
     mData = data;
   }
 
-  public Object getData() {
+  @Override
+  public @Nullable Object getData() {
     return mData;
   }
 
