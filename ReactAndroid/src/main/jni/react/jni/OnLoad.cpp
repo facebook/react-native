@@ -76,7 +76,6 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     NativeMap::registerNatives();
     ReadableNativeMap::registerNatives();
     WritableNativeMap::registerNatives();
-    ReadableNativeMapKeySetIterator::registerNatives();
 
     #ifdef WITH_INSPECTOR
     JInspector::registerNatives();

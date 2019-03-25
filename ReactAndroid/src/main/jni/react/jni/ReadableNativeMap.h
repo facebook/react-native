@@ -29,16 +29,6 @@ struct ReadableNativeMap : jni::HybridClass<ReadableNativeMap, NativeMap> {
   jni::local_ref<jni::JArrayClass<jstring>> importKeys();
   jni::local_ref<jni::JArrayClass<jobject>> importValues();
   jni::local_ref<jni::JArrayClass<jobject>> importTypes();
-  bool hasKey(const std::string& key);
-  const folly::dynamic& getMapValue(const std::string& key);
-  bool isNull(const std::string& key);
-  bool getBooleanKey(const std::string& key);
-  double getDoubleKey(const std::string& key);
-  jint getIntKey(const std::string& key);
-  jni::local_ref<jstring> getStringKey(const std::string& key);
-  jni::local_ref<ReadableNativeArray::jhybridobject> getArrayKey(const std::string& key);
-  jni::local_ref<jhybridobject> getMapKey(const std::string& key);
-  jni::local_ref<ReadableType> getValueType(const std::string& key);
   folly::Optional<folly::dynamic> keys_;
   static jni::local_ref<jhybridobject> createWithContents(folly::dynamic&& map);
 
@@ -50,25 +40,6 @@ struct ReadableNativeMap : jni::HybridClass<ReadableNativeMap, NativeMap> {
   friend HybridBase;
   friend struct WritableNativeMap;
 };
-
-struct ReadableNativeMapKeySetIterator : jni::HybridClass<ReadableNativeMapKeySetIterator> {
-  static auto constexpr kJavaDescriptor = "Lcom/facebook/react/bridge/ReadableNativeMap$ReadableNativeMapKeySetIterator;";
-
-  ReadableNativeMapKeySetIterator(const folly::dynamic& map);
-
-  bool hasNextKey();
-  jni::local_ref<jstring> nextKey();
-
-  static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jclass>, ReadableNativeMap* nativeMap);
-  static void registerNatives();
-
-  folly::dynamic::const_item_iterator iter_;
-  // The Java side holds a strong ref to the Java ReadableNativeMap.
-  const folly::dynamic& map_;
-};
-
-jint makeJIntOrThrow(int64_t integer);
-int64_t convertDynamicIfIntegral(const folly::dynamic&);
 
 } // namespace react
 } // namespace facebook

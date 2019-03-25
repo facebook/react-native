@@ -12,6 +12,31 @@ using namespace facebook::jni;
 namespace facebook {
 namespace react {
 
+jint makeJIntOrThrow(int64_t integer) {
+  jint javaint = static_cast<jint>(integer);
+  if (integer != javaint) {
+    throwNewJavaException(
+      exceptions::gUnexpectedNativeTypeExceptionClass,
+      "Value '%lld' doesn't fit into a 32 bit signed int", integer);
+  }
+  return javaint;
+}
+
+int64_t convertDynamicIfIntegral(const folly::dynamic& val) {
+  if (val.isInt()) {
+    return val.getInt();
+  }
+  double dbl = val.getDouble();
+  int64_t result = static_cast<int64_t>(dbl);
+  if (dbl != result) {
+    throwNewJavaException(
+      exceptions::gUnexpectedNativeTypeExceptionClass,
+      "Tried to read an int, but got a non-integral double: %f", dbl);
+  }
+  return result;
+}
+
+
 
 // This attribute exports the ctor symbol, so ReadableNativeArray to be
 // constructed from other DSOs.
