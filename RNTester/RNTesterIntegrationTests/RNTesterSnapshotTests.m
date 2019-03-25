@@ -39,7 +39,7 @@ RCT_TEST(ViewExample)
 RCT_TEST(LayoutExample)
 RCT_TEST(ARTExample)
 RCT_TEST(ScrollViewExample)
-//RCT_TEST(TextExample)
+RCT_TEST(TextExample)
 #if !TARGET_OS_TV
 // No switch or slider available on tvOS
 RCT_TEST(SwitchExample)
