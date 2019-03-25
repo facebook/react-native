@@ -18,9 +18,10 @@ __attribute__((visibility("default")))
 ReadableNativeArray::ReadableNativeArray(folly::dynamic array)
     : HybridBase(std::move(array)) {}
 
-void ReadableNativeArray::mapException(const std::exception& ex) {
-  if (dynamic_cast<const folly::TypeError*>(&ex) != nullptr) {
-    throwNewJavaException(exceptions::gUnexpectedNativeTypeExceptionClass, ex.what());
+void ReadableNativeArray::mapException(const std::exception &ex) {
+  if (dynamic_cast<const folly::TypeError *>(&ex) != nullptr) {
+    throwNewJavaException(
+        exceptions::gUnexpectedNativeTypeExceptionClass, ex.what());
   }
 }
 
@@ -28,39 +29,7 @@ local_ref<JArrayClass<jobject>> ReadableNativeArray::importArray() {
   jint size = array_.size();
   auto jarray = JArrayClass<jobject>::newArray(size);
   for (jint ii = 0; ii < size; ii++) {
-    const auto &element = array_.at(ii);
-    switch(element.type()) {
-      case folly::dynamic::Type::NULLT: {
-        jarray->setElement(ii, nullptr);
-        break;
-      }
-      case folly::dynamic::Type::BOOL: {
-        (*jarray)[ii] = JBoolean::valueOf(element.getBool());
-        break;
-      }
-      case folly::dynamic::Type::INT64: {
-        (*jarray)[ii] = JDouble::valueOf(element.getInt());
-        break;
-      }
-      case folly::dynamic::Type::DOUBLE: {
-        (*jarray)[ii] = JDouble::valueOf(element.getDouble());
-        break;
-      }
-      case folly::dynamic::Type::STRING: {
-        (*jarray)[ii] = make_jstring(element.getString());
-        break;
-      }
-      case folly::dynamic::Type::OBJECT: {
-        (*jarray)[ii] =  ReadableNativeMap::newObjectCxxArgs(element);
-        break;
-      }
-      case folly::dynamic::Type::ARRAY: {
-        (*jarray)[ii] = ReadableNativeArray::newObjectCxxArgs(element);
-        break;
-      }
-      default:
-        break;
-    }
+    addDynamicToJArray(jarray, ii, array_.at(ii));
   }
   return jarray;
 }
@@ -76,8 +45,8 @@ local_ref<JArrayClass<jobject>> ReadableNativeArray::importTypeArray() {
 
 void ReadableNativeArray::registerNatives() {
   registerHybrid({
-    makeNativeMethod("importArray", ReadableNativeArray::importArray),
-    makeNativeMethod("importTypeArray", ReadableNativeArray::importTypeArray),
+      makeNativeMethod("importArray", ReadableNativeArray::importArray),
+      makeNativeMethod("importTypeArray", ReadableNativeArray::importTypeArray),
   });
 }
 

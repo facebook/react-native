@@ -10,9 +10,49 @@ using namespace facebook::jni;
 namespace facebook {
 namespace react {
 
-void ReadableNativeMap::mapException(const std::exception& ex) {
-  if (dynamic_cast<const folly::TypeError*>(&ex) != nullptr) {
-    throwNewJavaException(exceptions::gUnexpectedNativeTypeExceptionClass, ex.what());
+void ReadableNativeMap::mapException(const std::exception &ex) {
+  if (dynamic_cast<const folly::TypeError *>(&ex) != nullptr) {
+    throwNewJavaException(
+        exceptions::gUnexpectedNativeTypeExceptionClass, ex.what());
+  }
+}
+
+void addDynamicToJArray(
+    local_ref<JArrayClass<jobject>> jarray,
+    jint index,
+    const folly::dynamic &dyn) {
+  switch (dyn.type()) {
+    case folly::dynamic::Type::NULLT: {
+      jarray->setElement(index, nullptr);
+      break;
+    }
+    case folly::dynamic::Type::BOOL: {
+      (*jarray)[index] = JBoolean::valueOf(dyn.getBool());
+      break;
+    }
+    case folly::dynamic::Type::INT64: {
+      (*jarray)[index] = JDouble::valueOf(dyn.getInt());
+      break;
+    }
+    case folly::dynamic::Type::DOUBLE: {
+      (*jarray)[index] = JDouble::valueOf(dyn.getDouble());
+      break;
+    }
+    case folly::dynamic::Type::STRING: {
+      (*jarray)[index] = make_jstring(dyn.getString());
+      break;
+    }
+    case folly::dynamic::Type::OBJECT: {
+      (*jarray)[index] = ReadableNativeMap::newObjectCxxArgs(dyn);
+      break;
+    }
+    case folly::dynamic::Type::ARRAY: {
+      (*jarray)[index] = ReadableNativeArray::newObjectCxxArgs(dyn);
+      break;
+    }
+    default:
+      jarray->setElement(index, nullptr);
+      break;
   }
 }
 
@@ -35,41 +75,7 @@ local_ref<JArrayClass<jobject>> ReadableNativeMap::importValues() {
   auto jarray = JArrayClass<jobject>::newArray(size);
   for (jint ii = 0; ii < size; ii++) {
     const std::string &key = keys_.value()[ii].getString();
-    const auto &element = map_.at(key);
-    switch(element.type()) {
-      case folly::dynamic::Type::NULLT: {
-        jarray->setElement(ii, nullptr);
-        break;
-      }
-      case folly::dynamic::Type::BOOL: {
-        (*jarray)[ii] = JBoolean::valueOf(element.getBool());
-        break;
-      }
-      case folly::dynamic::Type::INT64: {
-        (*jarray)[ii] = JDouble::valueOf(element.getInt());
-        break;
-      }
-      case folly::dynamic::Type::DOUBLE: {
-        (*jarray)[ii] = JDouble::valueOf(element.getDouble());
-        break;
-      }
-      case folly::dynamic::Type::STRING: {
-        (*jarray)[ii] = make_jstring(element.getString());
-        break;
-      }
-      case folly::dynamic::Type::OBJECT: {
-        (*jarray)[ii] = ReadableNativeMap::newObjectCxxArgs(element);
-        break;
-      }
-      case folly::dynamic::Type::ARRAY: {
-        (*jarray)[ii] = ReadableNativeArray::newObjectCxxArgs(element);
-        break;
-      }
-      default: {
-        jarray->setElement(ii, nullptr);
-        break;
-      }
-    }
+    addDynamicToJArray(jarray, ii, map_.at(key));
   }
   return jarray;
 }
@@ -84,14 +90,17 @@ local_ref<JArrayClass<jobject>> ReadableNativeMap::importTypes() {
   return jarray;
 }
 
-local_ref<ReadableNativeMap::jhybridobject> ReadableNativeMap::createWithContents(folly::dynamic&& map) {
+local_ref<ReadableNativeMap::jhybridobject>
+ReadableNativeMap::createWithContents(folly::dynamic &&map) {
   if (map.isNull()) {
     return local_ref<jhybridobject>(nullptr);
   }
 
   if (!map.isObject()) {
-    throwNewJavaException(exceptions::gUnexpectedNativeTypeExceptionClass,
-                          "expected Map, got a %s", map.typeName());
+    throwNewJavaException(
+        exceptions::gUnexpectedNativeTypeExceptionClass,
+        "expected Map, got a %s",
+        map.typeName());
   }
 
   return newObjectCxxArgs(std::move(map));
@@ -105,5 +114,5 @@ void ReadableNativeMap::registerNatives() {
   });
 }
 
-}  // namespace react
-}  // namespace facebook
+} // namespace react
+} // namespace facebook
