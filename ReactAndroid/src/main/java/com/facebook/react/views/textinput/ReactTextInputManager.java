@@ -7,6 +7,8 @@
 
 package com.facebook.react.views.textinput;
 
+import static android.view.View.FOCUS_FORWARD;
+
 import android.annotation.TargetApi;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
@@ -896,6 +898,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
               // Prevent default behavior except when we want it to insert a newline.
               return blurOnSubmit || !isMultiline;
+            } else if (actionId == EditorInfo.IME_ACTION_NEXT) {
+              View v1 = v.focusSearch(FOCUS_FORWARD);
+              if (v1 != null && !v.requestFocus(FOCUS_FORWARD)) {
+                return true;
+              }
+              return false;
             }
 
             return true;
