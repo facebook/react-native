@@ -17,6 +17,8 @@ const processColor = require('processColor');
 
 const StatusBarManager = require('NativeModules').StatusBarManager;
 
+import type {ColorValue} from 'StyleSheetTypes'; // TODO(macOS ISS#2323203)
+
 /**
  * Status bar style
  */
@@ -28,11 +30,11 @@ export type StatusBarStyle = $Enum<{
   /**
    * Dark background, white texts and icons
    */
-  'light-content': string,
+  'light-content': ColorValue, // TODO(macOS ISS#2323203)
   /**
    * Light background, dark texts and icons
    */
-  'dark-content': string,
+  'dark-content': ColorValue, // TODO(macOS ISS#2323203)
 }>;
 
 /**
@@ -58,7 +60,7 @@ type AndroidProps = $ReadOnly<{|
    * The background color of the status bar.
    * @platform android
    */
-  backgroundColor?: ?string,
+  backgroundColor?: ?ColorValue, // TODO(macOS ISS#2323203)
   /**
    * If the status bar is translucent.
    * When translucent is set to true, the app will draw under the status bar.

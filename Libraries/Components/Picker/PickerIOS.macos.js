@@ -25,6 +25,19 @@ var processColor = require('processColor');
 var createReactClass = require('create-react-class');
 var requireNativeComponent = require('requireNativeComponent');
 
+import type {ColorValue} from 'StyleSheetTypes';
+import type {ViewProps} from 'ViewPropTypes';
+import type {TextStyleProp} from 'StyleSheet';
+
+type PickerIOSChangeEvent = SyntheticEvent<
+  $ReadOnly<{|
+    newValue: any,
+    newIndex: number,
+  |}>,
+>;
+
+type Label = Stringish | number;
+
 type PickerIOSProps = $ReadOnly<{|
   ...ViewProps,
   children: React.ChildrenArray<React.Element<typeof PickerIOSItem>>,
@@ -33,6 +46,16 @@ type PickerIOSProps = $ReadOnly<{|
   onValueChange?: ?(newValue: any, newIndex: number) => mixed,
   selectedValue: any,
 |}>;
+
+type ItemProps = $ReadOnly<{|
+  label: ?Label,
+  value?: ?any,
+  color?: ?ColorValue,
+|}>;
+
+const PickerIOSItem = (props: ItemProps) => {
+  return null;
+};
 
 var PickerIOS = createReactClass({
   displayName: 'PickerIOS',

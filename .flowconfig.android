@@ -22,6 +22,15 @@
 ; Ignore polyfills
 .*/Libraries/polyfills/.*
 
+; Ignore files that have a base platform file and an android file
+<PROJECT_ROOT>/Libraries/Image/Image.js
+<PROJECT_ROOT>/Libraries/Network/RCTNetworking.js
+<PROJECT_ROOT>/Libraries/Utilities/HMRLoadingView.js
+<PROJECT_ROOT>/Libraries/Components/Touchable/TouchableNativeFeedback.js
+
+; Ignore rn-cli.config.js
+<PROJECT_ROOT>/rn-cli.config.js
+
 ; These should not be required directly
 ; require from fbjs/lib instead: require('fbjs/lib/invariant')
 .*/node_modules/invariant/.*

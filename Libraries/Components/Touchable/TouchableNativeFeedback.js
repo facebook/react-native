@@ -4,7 +4,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
  * @format
  */
 
@@ -17,7 +16,7 @@ const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const View = require('View');
 
-class DummyTouchableNativeFeedback extends React.Component<Object> {
+class DummyTouchableNativeFeedback extends React.Component {
   static SelectableBackground = () => ({});
   static SelectableBackgroundBorderless = () => ({});
   static Ripple = () => ({});
