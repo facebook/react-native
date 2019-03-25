@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.bridge;
 
 import com.facebook.infer.annotation.Assertions;
@@ -13,6 +12,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.config.ReactFeatureFlags;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -32,17 +32,19 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
   }
 
   private @Nullable String[] mKeys;
-  private @Nullable HashMap<String,Object> mLocalMap;
-  private @Nullable HashMap<String,ReadableType> mLocalTypeMap;
+  private @Nullable HashMap<String, Object> mLocalMap;
+  private @Nullable HashMap<String, ReadableType> mLocalTypeMap;
   private static int mJniCallCounter;
+
   public static void setUseNativeAccessor(boolean useNativeAccessor) {
     ReactFeatureFlags.useMapNativeAccessor = useNativeAccessor;
   }
+
   public static int getJNIPassCounter() {
     return mJniCallCounter;
   }
 
-  private HashMap<String,Object> getLocalMap() {
+  private HashMap<String, Object> getLocalMap() {
     // Fast return for the common case
     if (mLocalMap != null) {
       return mLocalMap;
@@ -58,17 +60,19 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
         mJniCallCounter++;
         int length = mKeys.length;
         mLocalMap = new HashMap<>(length);
-        for(int i = 0; i< length; i++) {
+        for (int i = 0; i < length; i++) {
           mLocalMap.put(mKeys[i], values[i]);
         }
       }
     }
     return mLocalMap;
   }
+
   private native String[] importKeys();
+
   private native Object[] importValues();
 
-  private @Nonnull HashMap<String,ReadableType> getLocalTypeMap() {
+  private @Nonnull HashMap<String, ReadableType> getLocalTypeMap() {
     // Fast and non-blocking return for common case
     if (mLocalTypeMap != null) {
       return mLocalTypeMap;
@@ -85,13 +89,14 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
         mJniCallCounter++;
         int length = mKeys.length;
         mLocalTypeMap = new HashMap<>(length);
-        for(int i = 0; i< length; i++) {
+        for (int i = 0; i < length; i++) {
           mLocalTypeMap.put(mKeys[i], (ReadableType) types[i]);
         }
       }
     }
     return mLocalTypeMap;
   }
+
   private native Object[] importTypes();
 
   @Override
@@ -102,6 +107,7 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
     }
     return getLocalMap().containsKey(name);
   }
+
   private native boolean hasKeyNative(String name);
 
   @Override
@@ -115,6 +121,7 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
     }
     throw new NoSuchKeyException(name);
   }
+
   private native boolean isNullNative(@Nonnull String name);
 
   private @Nonnull Object getValue(@Nonnull String name) {
@@ -146,8 +153,12 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
   private void checkInstance(String name, Object value, Class type) {
     if (value != null && !type.isInstance(value)) {
       throw new ClassCastException(
-        "Value for " + name + " cannot be cast from " +
-          value.getClass().getSimpleName() + " to " + type.getSimpleName());
+          "Value for "
+              + name
+              + " cannot be cast from "
+              + value.getClass().getSimpleName()
+              + " to "
+              + type.getSimpleName());
     }
   }
 
@@ -159,6 +170,7 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
     }
     return getValue(name, Boolean.class).booleanValue();
   }
+
   private native boolean getBooleanNative(String name);
 
   @Override
@@ -169,6 +181,7 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
     }
     return getValue(name, Double.class).doubleValue();
   }
+
   private native double getDoubleNative(String name);
 
   @Override
@@ -181,6 +194,7 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
     // All numbers coming out of native are doubles, so cast here then truncate
     return getValue(name, Double.class).intValue();
   }
+
   private native int getIntNative(String name);
 
   @Override
@@ -191,6 +205,7 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
     }
     return getNullableValue(name, String.class);
   }
+
   private native String getStringNative(String name);
 
   @Override
@@ -201,6 +216,7 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
     }
     return getNullableValue(name, ReadableArray.class);
   }
+
   private native ReadableNativeArray getArrayNative(String name);
 
   @Override
@@ -211,6 +227,7 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
     }
     return getNullableValue(name, ReadableNativeMap.class);
   }
+
   private native ReadableNativeMap getMapNative(String name);
 
   @Override
@@ -224,11 +241,17 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
     }
     throw new NoSuchKeyException(name);
   }
+
   private native ReadableType getTypeNative(String name);
 
   @Override
   public @Nonnull Dynamic getDynamic(@Nonnull String name) {
     return DynamicFromMap.create(this, name);
+  }
+
+  @Override
+  public @Nonnull Iterator<Map.Entry<String, Object>> getEntryIterator() {
+    return getLocalMap().entrySet().iterator();
   }
 
   @Override
@@ -283,8 +306,8 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
             break;
           default:
             throw new IllegalArgumentException("Could not convert object with key: " + key + ".");
-          }
         }
+      }
       return hashMap;
     }
 
@@ -314,17 +337,13 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
     return hashMap;
   }
 
-  /**
-   * Implementation of a {@link ReadableNativeMap} iterator in native memory.
-   */
+  /** Implementation of a {@link ReadableNativeMap} iterator in native memory. */
   @DoNotStrip
   private static class ReadableNativeMapKeySetIterator implements ReadableMapKeySetIterator {
-    @DoNotStrip
-    private final HybridData mHybridData;
+    @DoNotStrip private final HybridData mHybridData;
 
     // Need to hold a strong ref to the map so that our native references remain valid.
-    @DoNotStrip
-    private final ReadableNativeMap mMap;
+    @DoNotStrip private final ReadableNativeMap mMap;
 
     public ReadableNativeMapKeySetIterator(ReadableNativeMap readableNativeMap) {
       mMap = readableNativeMap;
@@ -333,6 +352,7 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
 
     @Override
     public native boolean hasNextKey();
+
     @Override
     public native String nextKey();
 

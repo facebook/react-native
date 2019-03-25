@@ -9,6 +9,7 @@ package com.facebook.react.uimanager;
 
 import java.util.Map;
 
+import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 
 import com.facebook.react.bridge.ReadableMap;
@@ -92,6 +93,20 @@ public class SimpleViewPropertyTest {
 
     mManager.updateProperties(view, buildStyles("opacity", null));
     assertThat(view.getAlpha()).isEqualTo(1.0f);
+  }
+
+  @Test
+  public void testBackgroundColor() {
+    View view = mManager.createView(mThemedContext, new JSResponderHandler());
+
+    mManager.updateProperties(view, buildStyles());
+    assertThat(view.getBackground()).isEqualTo(null);
+
+    mManager.updateProperties(view, buildStyles("backgroundColor", 12));
+    assertThat(((ColorDrawable)view.getBackground()).getColor()).isEqualTo(12);
+
+    mManager.updateProperties(view, buildStyles("backgroundColor", null));
+    assertThat(((ColorDrawable)view.getBackground()).getColor()).isEqualTo(0);
   }
 
   @Test
