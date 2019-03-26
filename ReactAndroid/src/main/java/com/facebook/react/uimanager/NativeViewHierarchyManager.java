@@ -11,6 +11,7 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
+import android.util.SparseIntArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,6 +36,8 @@ import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
 import com.facebook.react.uimanager.layoutanimation.LayoutAnimationListener;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
+import java.util.HashMap;
+import java.util.Map;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
@@ -73,6 +76,7 @@ public class NativeViewHierarchyManager {
   private final JSResponderHandler mJSResponderHandler = new JSResponderHandler();
   private final RootViewManager mRootViewManager;
   private final LayoutAnimationController mLayoutAnimator = new LayoutAnimationController();
+  private final Map<Integer, SparseIntArray> mTagsToPendingIndicesToDelete = new HashMap<>();
 
   private boolean mLayoutAnimationEnabled;
   private PopupMenu mPopupMenu;
@@ -337,18 +341,48 @@ public class NativeViewHierarchyManager {
   }
 
   /**
+   * Given an index to action on under synchronous deletes, return an updated index factoring in
+   * asynchronous deletes (where the async delete operations have not yet been performed)
+   */
+  private int normalizeIndex(int index, SparseIntArray pendingIndices) {
+    int normalizedIndex = index;
+    for (int i = 0; i <= index; i++) {
+      normalizedIndex += pendingIndices.get(i);
+    }
+    return normalizedIndex;
+  }
+
+  /**
+   * Given React tag, return sparse array of direct child indices that are pending deletion (due to
+   * async view deletion)
+   */
+  private SparseIntArray getOrCreatePendingIndicesToDelete(int tag) {
+    SparseIntArray pendingIndicesToDelete = mTagsToPendingIndicesToDelete.get(tag);
+    if (pendingIndicesToDelete ==  null) {
+      pendingIndicesToDelete = new SparseIntArray();
+      mTagsToPendingIndicesToDelete.put(tag, pendingIndicesToDelete);
+    }
+    return pendingIndicesToDelete;
+  }
+
+  /**
    * @param tag react tag of the node we want to manage
    * @param indicesToRemove ordered (asc) list of indicies at which view should be removed
    * @param viewsToAdd ordered (asc based on mIndex property) list of tag-index pairs that represent
    * a view which should be added at the specified index
    * @param tagsToDelete list of tags corresponding to views that should be removed
+   * @param indicesToDelete parallel list to tagsToDelete, list of indices of those tags
    */
   public synchronized void manageChildren(
       int tag,
       @Nullable int[] indicesToRemove,
       @Nullable ViewAtIndex[] viewsToAdd,
-      @Nullable int[] tagsToDelete) {
+      @Nullable int[] tagsToDelete,
+      @Nullable int[] indicesToDelete) {
     UiThreadUtil.assertOnUiThread();
+
+    final SparseIntArray pendingIndicesToDelete = getOrCreatePendingIndicesToDelete(tag);
+
     final ViewGroup viewToManage = (ViewGroup) mTagsToViews.get(tag);
     final ViewGroupManager viewManager = (ViewGroupManager) resolveViewManager(tag);
     if (viewToManage == null) {
@@ -405,7 +439,8 @@ public class NativeViewHierarchyManager {
                       tagsToDelete));
         }
 
-        View viewToRemove = viewManager.getChildAt(viewToManage, indexToRemove);
+        int normalizedIndexToRemove = normalizeIndex(indexToRemove, pendingIndicesToDelete);
+        View viewToRemove = viewManager.getChildAt(viewToManage, normalizedIndexToRemove);
 
         if (mLayoutAnimationEnabled &&
             mLayoutAnimator.shouldAnimateLayout(viewToRemove) &&
@@ -413,7 +448,7 @@ public class NativeViewHierarchyManager {
           // The view will be removed and dropped by the 'delete' layout animation
           // instead, so do nothing
         } else {
-          viewManager.removeViewAt(viewToManage, indexToRemove);
+          viewManager.removeViewAt(viewToManage, normalizedIndexToRemove);
         }
 
         lastIndexToRemove = indexToRemove;
@@ -435,13 +470,15 @@ public class NativeViewHierarchyManager {
                       viewsToAdd,
                       tagsToDelete));
         }
-        viewManager.addView(viewToManage, viewToAdd, viewAtIndex.mIndex);
+        int normalizedIndexToAdd = normalizeIndex(viewAtIndex.mIndex, pendingIndicesToDelete);
+        viewManager.addView(viewToManage, viewToAdd, normalizedIndexToAdd);
       }
     }
 
     if (tagsToDelete != null) {
       for (int i = 0; i < tagsToDelete.length; i++) {
         int tagToDelete = tagsToDelete[i];
+        final int indexToDelete = indicesToDelete[i];
         final View viewToDestroy = mTagsToViews.get(tagToDelete);
         if (viewToDestroy == null) {
           throw new IllegalViewOperationException(
@@ -457,13 +494,20 @@ public class NativeViewHierarchyManager {
 
         if (mLayoutAnimationEnabled &&
             mLayoutAnimator.shouldAnimateLayout(viewToDestroy)) {
-          mLayoutAnimator.deleteView(viewToDestroy, new LayoutAnimationListener() {
-            @Override
-            public void onAnimationEnd() {
-              viewManager.removeView(viewToManage, viewToDestroy);
-              dropView(viewToDestroy);
-            }
-          });
+          int updatedCount = pendingIndicesToDelete.get(indexToDelete, 0) + 1;
+          pendingIndicesToDelete.put(indexToDelete, updatedCount);
+          mLayoutAnimator.deleteView(
+              viewToDestroy,
+              new LayoutAnimationListener() {
+                @Override
+                public void onAnimationEnd() {
+                  viewManager.removeView(viewToManage, viewToDestroy);
+                  dropView(viewToDestroy);
+
+                  int count = pendingIndicesToDelete.get(indexToDelete, 0);
+                  pendingIndicesToDelete.put(indexToDelete, Math.max(0, count - 1));
+                }
+              });
         } else {
           dropView(viewToDestroy);
         }
@@ -580,6 +624,7 @@ public class NativeViewHierarchyManager {
       }
       viewGroupManager.removeAllViews(viewGroup);
     }
+    mTagsToPendingIndicesToDelete.remove(view.getId());
     mTagsToViews.remove(view.getId());
     mTagsToViewManagers.remove(view.getId());
   }

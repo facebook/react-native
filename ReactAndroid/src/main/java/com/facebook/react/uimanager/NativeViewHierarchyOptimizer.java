@@ -145,13 +145,15 @@ public class NativeViewHierarchyOptimizer {
       int[] indicesToRemove,
       int[] tagsToRemove,
       ViewAtIndex[] viewsToAdd,
-      int[] tagsToDelete) {
+      int[] tagsToDelete,
+      int[] indicesToDelete) {
     if (!ENABLED) {
       mUIViewOperationQueue.enqueueManageChildren(
           nodeToManage.getReactTag(),
           indicesToRemove,
           viewsToAdd,
-          tagsToDelete);
+          tagsToDelete,
+          indicesToDelete);
       return;
     }
 
@@ -276,9 +278,10 @@ public class NativeViewHierarchyOptimizer {
 
       mUIViewOperationQueue.enqueueManageChildren(
           nativeNodeToRemoveFrom.getReactTag(),
-          new int[]{index},
+          new int[] {index},
           null,
-          shouldDelete ? new int[]{nodeToRemove.getReactTag()} : null);
+          shouldDelete ? new int[] {nodeToRemove.getReactTag()} : null,
+          shouldDelete ? new int[] {index} : null);
     } else {
       for (int i = nodeToRemove.getChildCount() - 1; i >= 0; i--) {
         removeNodeFromParent(nodeToRemove.getChildAt(i), shouldDelete);
@@ -301,7 +304,8 @@ public class NativeViewHierarchyOptimizer {
     mUIViewOperationQueue.enqueueManageChildren(
         parent.getReactTag(),
         null,
-        new ViewAtIndex[]{new ViewAtIndex(child.getReactTag(), index)},
+        new ViewAtIndex[] {new ViewAtIndex(child.getReactTag(), index)},
+        null,
         null);
   }
 

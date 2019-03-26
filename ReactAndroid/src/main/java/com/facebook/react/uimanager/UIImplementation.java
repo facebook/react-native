@@ -347,6 +347,7 @@ public class UIImplementation {
     int[] indicesToRemove = new int[numToMove + numToRemove];
     int[] tagsToRemove = new int[indicesToRemove.length];
     int[] tagsToDelete = new int[numToRemove];
+    int[] indicesToDelete = new int[numToRemove];
 
     if (numToMove > 0) {
       Assertions.assertNotNull(moveFrom);
@@ -380,6 +381,7 @@ public class UIImplementation {
         indicesToRemove[numToMove + i] = indexToRemove;
         tagsToRemove[numToMove + i] = tagToRemove;
         tagsToDelete[i] = tagToRemove;
+        indicesToDelete[i] = indexToRemove;
       }
     }
 
@@ -423,7 +425,8 @@ public class UIImplementation {
           indicesToRemove,
           tagsToRemove,
           viewsToAdd,
-          tagsToDelete);
+          tagsToDelete,
+          indicesToDelete);
     }
 
     for (int i = 0; i < tagsToDelete.length; i++) {
