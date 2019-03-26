@@ -158,6 +158,8 @@ export type TextProps = $ReadOnly<{|
    */
   selectionColor?: ?string,
 
+  dataDetectorType?: ?('phoneNumber' | 'link' | 'email' | 'none' | 'all'),
+
   /**
    * Set text break strategy on Android.
    *
