@@ -314,14 +314,12 @@ TEST(ShadowNodeTest, handleBacktracking) {
   std::vector<std::reference_wrapper<const ShadowNode>> ancestors = {};
 
   // Negative case:
-  auto success = nodeZ->constructAncestorPath(*nodeA, ancestors);
-  ASSERT_FALSE(success);
-  ASSERT_EQ(ancestors.size(), 0);
+  auto ancestors1 = nodeZ->getAncestors(*nodeA);
+  ASSERT_EQ(ancestors1.size(), 0);
 
   // Positive case:
-  success = nodeABC->constructAncestorPath(*nodeA, ancestors);
-  ASSERT_TRUE(success);
-  ASSERT_EQ(ancestors.size(), 2);
-  ASSERT_EQ(&ancestors[0].get(), nodeAB.get());
-  ASSERT_EQ(&ancestors[1].get(), nodeA.get());
+  auto ancestors2 = nodeABC->getAncestors(*nodeA);
+  ASSERT_EQ(ancestors2.size(), 2);
+  ASSERT_EQ(&ancestors2[0].first.get(), nodeA.get());
+  ASSERT_EQ(&ancestors2[1].first.get(), nodeAB.get());
 }
