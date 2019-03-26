@@ -94,7 +94,7 @@ if [[ ! -x node && -d ${HOME}/.anyenv/bin ]]; then
 fi
 
 # check and assign NODE_BINARY env
-# shellcheck source=node-binary.sh
+# shellcheck disable=SC1091
 source './node-binary.sh'
 
 [ -z "$NODE_ARGS" ] && export NODE_ARGS=""

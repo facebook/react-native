@@ -14,7 +14,7 @@ PROJECT_ROOT="$THIS_DIR/../../.."
 source "${THIS_DIR}/.packager.env"
 
 # check and assign NODE_BINARY env
-# shellcheck source=node-binary.sh
+# shellcheck disable=SC1091
 source "${THIS_DIR}/node-binary.sh"
 
 # When running react-native tests, react-native doesn't live in node_modules but in the PROJECT_ROOT
