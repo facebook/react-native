@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,7 +9,10 @@
 
 'use strict';
 
-const {createProjectFromTemplate} = require('../generator/templates');
+const {
+  listTemplatesAndExit,
+  createProjectFromTemplate,
+} = require('../generator/templates');
 const execSync = require('child_process').execSync;
 const fs = require('fs');
 const minimist = require('minimist');
@@ -41,8 +44,14 @@ function init(projectDir, argsOrName) {
   const newProjectName = args[0];
   const options = minimist(args);
 
-  console.log('Setting up new React Native app in ' + projectDir);
-  generateProject(projectDir, newProjectName, options);
+  if (listTemplatesAndExit(newProjectName, options)) {
+    // Just listing templates using 'react-native init --template'
+    // Not creating a new app.
+    return;
+  } else {
+    console.log('Setting up new React Native app in ' + projectDir);
+    generateProject(projectDir, newProjectName, options);
+  }
 }
 
 /**
@@ -90,7 +99,7 @@ function generateProject(destinationRoot, newProjectName, options) {
     });
   }
   if (!options['skip-jest']) {
-    const jestDeps = `jest babel-core@^7.0.0-bridge.0 babel-jest metro-react-native-babel-preset react-test-renderer@${reactVersion}`;
+    const jestDeps = `jest babel-jest metro-react-native-babel-preset react-test-renderer@${reactVersion}`;
     if (yarnVersion) {
       console.log('Adding Jest...');
       execSync(`yarn add ${jestDeps} --dev --exact`, {stdio: 'inherit'});

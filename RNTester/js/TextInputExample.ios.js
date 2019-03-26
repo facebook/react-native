@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,9 +12,9 @@
 
 const Button = require('Button');
 const InputAccessoryView = require('InputAccessoryView');
-const React = require('react');
-const ReactNative = require('react-native');
-const {Text, TextInput, View, StyleSheet, Slider, Switch, Alert} = ReactNative;
+var React = require('react');
+var ReactNative = require('react-native');
+var {Text, TextInput, View, StyleSheet, Slider, Switch} = ReactNative;
 
 class WithLabel extends React.Component<$FlowFixMeProps> {
   render() {
@@ -71,7 +71,7 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
               'onSelectionChange range: ' +
                 event.nativeEvent.selection.start +
                 ',' +
-                (event.nativeEvent.selection.end || ''),
+                event.nativeEvent.selection.end,
             )
           }
           onKeyPress={event => {
@@ -92,9 +92,6 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
 }
 
 class TextInputAccessoryViewExample extends React.Component<{}, *> {
-  /* $FlowFixMe(>=0.85.0 site=react_native_ios_fb) This comment suppresses an
-   * error found when Flow v0.85 was deployed. To see the error, delete this
-   * comment and run Flow. */
   constructor(props) {
     super(props);
     this.state = {text: 'Placeholder Text'};
@@ -124,17 +121,14 @@ class TextInputAccessoryViewExample extends React.Component<{}, *> {
 }
 
 class RewriteExample extends React.Component<$FlowFixMeProps, any> {
-  /* $FlowFixMe(>=0.85.0 site=react_native_ios_fb) This comment suppresses an
-   * error found when Flow v0.85 was deployed. To see the error, delete this
-   * comment and run Flow. */
   constructor(props) {
     super(props);
     this.state = {text: ''};
   }
   render() {
-    const limit = 20;
-    const remainder = limit - this.state.text.length;
-    const remainderColor = remainder > 5 ? 'blue' : 'red';
+    var limit = 20;
+    var remainder = limit - this.state.text.length;
+    var remainderColor = remainder > 5 ? 'blue' : 'red';
     return (
       <View style={styles.rewriteContainer}>
         <TextInput
@@ -159,9 +153,6 @@ class RewriteExampleInvalidCharacters extends React.Component<
   $FlowFixMeProps,
   any,
 > {
-  /* $FlowFixMe(>=0.85.0 site=react_native_ios_fb) This comment suppresses an
-   * error found when Flow v0.85 was deployed. To see the error, delete this
-   * comment and run Flow. */
   constructor(props) {
     super(props);
     this.state = {text: ''};
@@ -183,9 +174,6 @@ class RewriteExampleInvalidCharacters extends React.Component<
 }
 
 class RewriteExampleKana extends React.Component<$FlowFixMeProps, any> {
-  /* $FlowFixMe(>=0.85.0 site=react_native_ios_fb) This comment suppresses an
-   * error found when Flow v0.85 was deployed. To see the error, delete this
-   * comment and run Flow. */
   constructor(props) {
     super(props);
     this.state = {text: ''};
@@ -207,9 +195,6 @@ class RewriteExampleKana extends React.Component<$FlowFixMeProps, any> {
 }
 
 class SecureEntryExample extends React.Component<$FlowFixMeProps, any> {
-  /* $FlowFixMe(>=0.85.0 site=react_native_ios_fb) This comment suppresses an
-   * error found when Flow v0.85 was deployed. To see the error, delete this
-   * comment and run Flow. */
   constructor(props) {
     super(props);
     this.state = {text: ''};
@@ -231,9 +216,6 @@ class SecureEntryExample extends React.Component<$FlowFixMeProps, any> {
 }
 
 class TokenizedTextExample extends React.Component<$FlowFixMeProps, any> {
-  /* $FlowFixMe(>=0.85.0 site=react_native_ios_fb) This comment suppresses an
-   * error found when Flow v0.85 was deployed. To see the error, delete this
-   * comment and run Flow. */
   constructor(props) {
     super(props);
     this.state = {text: 'Hello #World'};
@@ -348,10 +330,10 @@ class BlurOnSubmitExample extends React.Component<{}> {
 }
 
 type SelectionExampleState = {
-  selection: $ReadOnly<{|
+  selection: {|
     start: number,
     end?: number,
-  |}>,
+  |},
   value: string,
 };
 
@@ -374,7 +356,7 @@ class SelectionExample extends React.Component<
   }
 
   getRandomPosition() {
-    const length = this.state.value.length;
+    var length = this.state.value.length;
     return Math.round(Math.random() * length);
   }
 
@@ -384,7 +366,7 @@ class SelectionExample extends React.Component<
   }
 
   selectRandom() {
-    const positions = [this.getRandomPosition(), this.getRandomPosition()].sort(
+    var positions = [this.getRandomPosition(), this.getRandomPosition()].sort(
       (a, b) => a - b,
     );
     this.select(...positions);
@@ -399,7 +381,7 @@ class SelectionExample extends React.Component<
   }
 
   render() {
-    const length = this.state.value.length;
+    var length = this.state.value.length;
 
     return (
       <View>
@@ -454,7 +436,7 @@ class AutogrowingTextInputExample extends React.Component<
   }
 
   render() {
-    const {style, multiline, ...props} = this.props;
+    var {style, multiline, ...props} = this.props;
     return (
       <View>
         <Text>Width:</Text>
@@ -489,7 +471,10 @@ class AutogrowingTextInputExample extends React.Component<
   }
 }
 
-const styles = StyleSheet.create({
+var styles = StyleSheet.create({
+  page: {
+    paddingBottom: 300,
+  },
   default: {
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#0f0f0f',
@@ -516,6 +501,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: 'Cochin',
     height: 60,
+  },
+  multilineChild: {
+    width: 50,
+    height: 40,
+    position: 'absolute',
+    right: 5,
+    backgroundColor: 'red',
   },
   eventLabel: {
     margin: 3,
@@ -651,7 +643,7 @@ exports.examples = [
   {
     title: 'Keyboard types',
     render: function() {
-      const keyboardTypes = [
+      var keyboardTypes = [
         'default',
         'ascii-capable',
         'numbers-and-punctuation',
@@ -665,7 +657,7 @@ exports.examples = [
         'web-search',
         'numeric',
       ];
-      const examples = keyboardTypes.map(type => {
+      var examples = keyboardTypes.map(type => {
         return (
           <WithLabel key={type} label={type}>
             <TextInput keyboardType={type} style={styles.default} />
@@ -678,8 +670,8 @@ exports.examples = [
   {
     title: 'Keyboard appearance',
     render: function() {
-      const keyboardAppearance = ['default', 'light', 'dark'];
-      const examples = keyboardAppearance.map(type => {
+      var keyboardAppearance = ['default', 'light', 'dark'];
+      var examples = keyboardAppearance.map(type => {
         return (
           <WithLabel key={type} label={type}>
             <TextInput keyboardAppearance={type} style={styles.default} />
@@ -692,7 +684,7 @@ exports.examples = [
   {
     title: 'Return key types',
     render: function() {
-      const returnKeyTypes = [
+      var returnKeyTypes = [
         'default',
         'go',
         'google',
@@ -705,7 +697,7 @@ exports.examples = [
         'done',
         'emergency-call',
       ];
-      const examples = returnKeyTypes.map(type => {
+      var examples = returnKeyTypes.map(type => {
         return (
           <WithLabel key={type} label={type}>
             <TextInput returnKeyType={type} style={styles.default} />
@@ -862,9 +854,7 @@ exports.examples = [
             returnKeyType="next"
             blurOnSubmit={true}
             multiline={true}
-            onSubmitEditing={event =>
-              Alert.alert('Alert', event.nativeEvent.text)
-            }
+            onSubmitEditing={event => alert(event.nativeEvent.text)}
           />
         </View>
       );
@@ -1080,21 +1070,6 @@ exports.examples = [
               defaultValue="9402512345"
               style={styles.default}
             />
-          </WithLabel>
-        </View>
-      );
-    },
-  },
-  {
-    title: 'Text Content Type',
-    render: function() {
-      return (
-        <View>
-          <WithLabel label="emailAddress">
-            <TextInput textContentType="emailAddress" style={styles.default} />
-          </WithLabel>
-          <WithLabel label="name">
-            <TextInput textContentType="name" style={styles.default} />
           </WithLabel>
         </View>
       );

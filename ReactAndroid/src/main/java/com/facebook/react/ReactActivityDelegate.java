@@ -1,4 +1,4 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
+// Copyright (c) 2004-present, Facebook, Inc.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -205,14 +205,14 @@ public class ReactActivityDelegate {
     };
   }
 
-  protected Context getContext() {
+  private Context getContext() {
     if (mActivity != null) {
       return mActivity;
     }
     return Assertions.assertNotNull(mFragmentActivity);
   }
 
-  protected Activity getPlainActivity() {
+  private Activity getPlainActivity() {
     return ((Activity) getContext());
   }
 }

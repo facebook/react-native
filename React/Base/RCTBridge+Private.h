@@ -1,9 +1,12 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+
+#import <JavaScriptCore/JavaScriptCore.h>
+#import <JavaScriptCore/JSBase.h>
 
 #import <React/RCTBridge.h>
 
@@ -12,11 +15,11 @@
 
 RCT_EXTERN NSArray<Class> *RCTGetModuleClasses(void);
 
+RCT_EXTERN __attribute__((weak)) void RCTFBQuickPerformanceLoggerConfigureHooks(JSGlobalContextRef ctx);
+
 #if RCT_DEBUG
 RCT_EXTERN void RCTVerifyAllModulesExported(NSArray *extraModules);
 #endif
-
-RCT_EXTERN void RCTRegisterModule(Class);
 
 @interface RCTBridge ()
 
@@ -136,6 +139,15 @@ RCT_EXTERN void RCTRegisterModule(Class);
 
 @end
 
+@interface RCTBridge (JavaScriptCore)
+
+/**
+ * The raw JSGlobalContextRef used by the bridge.
+ */
+@property (nonatomic, readonly, assign) JSGlobalContextRef jsContextRef;
+
+@end
+
 @interface RCTBridge (Inspector)
 
 @property (nonatomic, readonly, getter=isInspectable) BOOL inspectable;
@@ -143,8 +155,6 @@ RCT_EXTERN void RCTRegisterModule(Class);
 @end
 
 @interface RCTCxxBridge : RCTBridge
-
-@property (nonatomic) void *runtime;
 
 - (instancetype)initWithParentBridge:(RCTBridge *)bridge NS_DESIGNATED_INITIALIZER;
 

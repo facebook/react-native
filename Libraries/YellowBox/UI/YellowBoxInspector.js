@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -77,11 +77,6 @@ class YellowBoxInspector extends React.Component<Props, State> {
             <View style={styles.bodyHeading}>
               <Text style={styles.bodyHeadingText}>Stack</Text>
               <YellowBoxInspectorSourceMapStatus
-                onPress={
-                  warning.symbolicated.status === 'FAILED'
-                    ? this._handleRetrySymbolication
-                    : null
-                }
                 status={warning.symbolicated.status}
               />
             </View>
@@ -125,16 +120,6 @@ class YellowBoxInspector extends React.Component<Props, State> {
   componentWillUnmount(): void {
     this._cancelSymbolication();
   }
-
-  _handleRetrySymbolication = () => {
-    this._cancelSymbolication();
-    this.forceUpdate(() => {
-      const warning = this.props.warnings[this.state.selectedIndex];
-      this._symbolication = warning.retrySymbolicate(() => {
-        this.forceUpdate();
-      });
-    });
-  };
 
   _handleSymbolication(): void {
     const warning = this.props.warnings[this.state.selectedIndex];

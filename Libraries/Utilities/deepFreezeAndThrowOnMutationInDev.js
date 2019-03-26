@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -41,8 +41,8 @@ function deepFreezeAndThrowOnMutationInDev<T: Object>(object: T): T {
     const keys = Object.keys(object);
     const hasOwnProperty = Object.prototype.hasOwnProperty;
 
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i];
+    for (var i = 0; i < keys.length; i++) {
+      var key = keys[i];
       if (hasOwnProperty.call(object, key)) {
         Object.defineProperty(object, key, {
           get: identity.bind(null, object[key]),
@@ -56,8 +56,8 @@ function deepFreezeAndThrowOnMutationInDev<T: Object>(object: T): T {
     Object.freeze(object);
     Object.seal(object);
 
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i];
+    for (var i = 0; i < keys.length; i++) {
+      var key = keys[i];
       if (hasOwnProperty.call(object, key)) {
         deepFreezeAndThrowOnMutationInDev(object[key]);
       }

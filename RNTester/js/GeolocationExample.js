@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,9 +10,9 @@
 
 'use strict';
 
-const React = require('react');
-const ReactNative = require('react-native');
-const {StyleSheet, Text, View, Alert} = ReactNative;
+var React = require('react');
+var ReactNative = require('react-native');
+var {StyleSheet, Text, View} = ReactNative;
 
 exports.framework = 'React';
 exports.title = 'Geolocation';
@@ -38,14 +38,14 @@ class GeolocationExample extends React.Component<{}, $FlowFixMeState> {
   componentDidMount() {
     navigator.geolocation.getCurrentPosition(
       position => {
-        const initialPosition = JSON.stringify(position);
+        var initialPosition = JSON.stringify(position);
         this.setState({initialPosition});
       },
-      error => Alert.alert('Error', JSON.stringify(error)),
+      error => alert(JSON.stringify(error)),
       {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000},
     );
     this.watchID = navigator.geolocation.watchPosition(position => {
-      const lastPosition = JSON.stringify(position);
+      var lastPosition = JSON.stringify(position);
       this.setState({lastPosition});
     });
   }
@@ -70,7 +70,7 @@ class GeolocationExample extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-const styles = StyleSheet.create({
+var styles = StyleSheet.create({
   title: {
     fontWeight: '500',
   },

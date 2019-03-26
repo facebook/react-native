@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,9 +10,9 @@
 
 'use strict';
 
-const React = require('react');
-const ReactNative = require('react-native');
-const {Text, TextInput, View, StyleSheet, Slider, Switch} = ReactNative;
+var React = require('react');
+var ReactNative = require('react-native');
+var {Text, TextInput, View, StyleSheet, Slider, Switch} = ReactNative;
 
 class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
   state = {
@@ -48,8 +48,7 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
           }
           onContentSizeChange={event =>
             this.updateText(
-              'onContentSizeChange size: ' +
-                JSON.stringify(event.nativeEvent.contentSize),
+              'onContentSizeChange size: ' + event.nativeEvent.contentSize,
             )
           }
           onEndEditing={event =>
@@ -76,17 +75,14 @@ class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
 }
 
 class RewriteExample extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
-  /* $FlowFixMe(>=0.85.0 site=react_native_android_fb) This comment suppresses
-   * an error found when Flow v0.85 was deployed. To see the error, delete this
-   * comment and run Flow. */
   constructor(props) {
     super(props);
     this.state = {text: ''};
   }
   render() {
-    const limit = 20;
-    const remainder = limit - this.state.text.length;
-    const remainderColor = remainder > 5 ? 'blue' : 'red';
+    var limit = 20;
+    var remainder = limit - this.state.text.length;
+    var remainderColor = remainder > 5 ? 'blue' : 'red';
     return (
       /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
        * when making Flow check .android.js files. */
@@ -117,9 +113,6 @@ class TokenizedTextExample extends React.Component<
   $FlowFixMeProps,
   $FlowFixMeState,
 > {
-  /* $FlowFixMe(>=0.85.0 site=react_native_android_fb) This comment suppresses
-   * an error found when Flow v0.85 was deployed. To see the error, delete this
-   * comment and run Flow. */
   constructor(props) {
     super(props);
     this.state = {text: 'Hello #World'};
@@ -254,10 +247,10 @@ class ToggleDefaultPaddingExample extends React.Component<
 }
 
 type SelectionExampleState = {
-  selection: $ReadOnly<{|
+  selection: {
     start: number,
-    end?: number,
-  |}>,
+    end: number,
+  },
   value: string,
 };
 
@@ -280,7 +273,7 @@ class SelectionExample extends React.Component<
   }
 
   getRandomPosition() {
-    const length = this.state.value.length;
+    var length = this.state.value.length;
     return Math.round(Math.random() * length);
   }
 
@@ -290,10 +283,7 @@ class SelectionExample extends React.Component<
   }
 
   selectRandom() {
-    const positions = [
-      this.getRandomPosition(),
-      this.getRandomPosition(),
-    ].sort();
+    var positions = [this.getRandomPosition(), this.getRandomPosition()].sort();
     this.select(...positions);
   }
 
@@ -306,7 +296,7 @@ class SelectionExample extends React.Component<
   }
 
   render() {
-    const length = this.state.value.length;
+    var length = this.state.value.length;
 
     return (
       <View>
@@ -368,7 +358,7 @@ class AutogrowingTextInputExample extends React.Component<{}> {
   render() {
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
      * when making Flow check .android.js files. */
-    const {style, multiline, ...props} = this.props;
+    var {style, multiline, ...props} = this.props;
     return (
       <View>
         <Text>Width:</Text>
@@ -420,7 +410,7 @@ class AutogrowingTextInputExample extends React.Component<{}> {
   }
 }
 
-const styles = StyleSheet.create({
+var styles = StyleSheet.create({
   multiline: {
     height: 60,
     fontSize: 16,
@@ -468,8 +458,8 @@ exports.examples = [
   {
     title: 'Auto-capitalize',
     render: function() {
-      const autoCapitalizeTypes = ['none', 'sentences', 'words', 'characters'];
-      const examples = autoCapitalizeTypes.map(type => {
+      var autoCapitalizeTypes = ['none', 'sentences', 'words', 'characters'];
+      var examples = autoCapitalizeTypes.map(type => {
         return (
           <TextInput
             key={type}
@@ -504,13 +494,8 @@ exports.examples = [
   {
     title: 'Keyboard types',
     render: function() {
-      const keyboardTypes = [
-        'default',
-        'email-address',
-        'numeric',
-        'phone-pad',
-      ];
-      const examples = keyboardTypes.map(type => {
+      var keyboardTypes = ['default', 'email-address', 'numeric', 'phone-pad'];
+      var examples = keyboardTypes.map(type => {
         return (
           <TextInput
             key={type}
@@ -778,7 +763,7 @@ exports.examples = [
   {
     title: 'Return key',
     render: function() {
-      const returnKeyTypes = [
+      var returnKeyTypes = [
         'none',
         'go',
         'search',
@@ -787,8 +772,8 @@ exports.examples = [
         'previous',
         'next',
       ];
-      const returnKeyLabels = ['Compile', 'React Native'];
-      const examples = returnKeyTypes.map(type => {
+      var returnKeyLabels = ['Compile', 'React Native'];
+      var examples = returnKeyTypes.map(type => {
         return (
           <TextInput
             key={type}
@@ -798,7 +783,7 @@ exports.examples = [
           />
         );
       });
-      const types = returnKeyLabels.map(type => {
+      var types = returnKeyLabels.map(type => {
         return (
           <TextInput
             key={type}

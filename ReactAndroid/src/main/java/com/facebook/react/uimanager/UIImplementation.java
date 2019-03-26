@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -709,7 +709,7 @@ public class UIImplementation {
           }
 
           if (mLayoutUpdateListener != null) {
-            mOperationsQueue.enqueueLayoutUpdateFinished(cssRoot, mLayoutUpdateListener);
+            mLayoutUpdateListener.onLayoutUpdated(cssRoot);
           }
         }
       }
@@ -820,6 +820,14 @@ public class UIImplementation {
 
   public void sendAccessibilityEvent(int tag, int eventType) {
     mOperationsQueue.enqueueSendAccessibilityEvent(tag, eventType);
+  }
+
+  public void performAccessibilityAction(int tag, int action) {
+    mOperationsQueue.enqueuePerformAccessibilityAction(tag, action);
+  }
+
+  public void announceForAccessibility(int tag, String announcement) {
+    mOperationsQueue.enqueueAnnounceForAccessibility(tag, announcement);
   }
 
   public void onHostResume() {

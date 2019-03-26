@@ -1,4 +1,4 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
+// Copyright (c) 2004-present, Facebook, Inc.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -10,23 +10,28 @@ package com.facebook.react.uimanager.layoutanimation;
  * view creation.
  */
 /* package */ enum AnimatedPropertyType {
-  OPACITY,
-  SCALE_X,
-  SCALE_Y,
-  SCALE_XY;
+  OPACITY("opacity"),
+  SCALE_X("scaleX"),
+  SCALE_Y("scaleY"),
+  SCALE_XY("scaleXY");
+
+  private final String mName;
+
+  private AnimatedPropertyType(String name) {
+    mName = name;
+  }
 
   public static AnimatedPropertyType fromString(String name) {
-    switch (name) {
-      case "opacity":
-        return OPACITY;
-      case "scaleX":
-        return SCALE_X;
-      case "scaleY":
-        return SCALE_Y;
-      case "scaleXY":
-        return SCALE_XY;
-      default:
-        throw new IllegalArgumentException("Unsupported animated property: " + name);
+    for (AnimatedPropertyType property : AnimatedPropertyType.values()) {
+      if (property.toString().equalsIgnoreCase(name)) {
+        return property;
+      }
     }
+    throw new IllegalArgumentException("Unsupported animated property : " + name);
+  }
+
+  @Override
+  public String toString() {
+    return mName;
   }
 }

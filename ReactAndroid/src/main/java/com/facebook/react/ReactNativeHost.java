@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,7 +15,6 @@ import com.facebook.react.bridge.ReactMarker;
 import com.facebook.react.bridge.ReactMarkerConstants;
 import com.facebook.react.common.LifecycleState;
 import com.facebook.react.devsupport.RedBoxHandler;
-import com.facebook.react.uimanager.UIImplementationProvider;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -71,7 +70,6 @@ public abstract class ReactNativeHost {
       .setUseDeveloperSupport(getUseDeveloperSupport())
       .setRedBoxHandler(getRedBoxHandler())
       .setJavaScriptExecutorFactory(getJavaScriptExecutorFactory())
-      .setUIImplementationProvider(getUIImplementationProvider())
       .setJSIModulesPackage(getJSIModulePackage())
       .setInitialLifecycleState(LifecycleState.BEFORE_CREATE);
 
@@ -107,16 +105,6 @@ public abstract class ReactNativeHost {
 
   protected final Application getApplication() {
     return mApplication;
-  }
-
-  /**
-   * Get the {@link UIImplementationProvider} to use. Override this method if you want to use a
-   * custom UI implementation.
-   *
-   * Note: this is very advanced functionality, in 99% of cases you don't need to override this.
-   */
-  protected UIImplementationProvider getUIImplementationProvider() {
-    return new UIImplementationProvider();
   }
 
   protected @Nullable

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,21 +10,12 @@
 
 'use strict';
 
-const React = require('react');
-const ReactNative = require('react-native');
-const {
-  Image,
-  ListView,
-  TouchableHighlight,
-  StyleSheet,
-  Text,
-  View,
-} = ReactNative;
-const ListViewDataSource = require('ListViewDataSource');
+var React = require('react');
+var createReactClass = require('create-react-class');
+var ReactNative = require('react-native');
+var {Image, ListView, TouchableHighlight, StyleSheet, Text, View} = ReactNative;
 
-import type {RNTesterProps} from 'RNTesterTypes';
-
-const THUMB_URLS = [
+var THUMB_URLS = [
   require('./Thumbnails/like.png'),
   require('./Thumbnails/dislike.png'),
   require('./Thumbnails/call.png'),
@@ -39,30 +30,28 @@ const THUMB_URLS = [
   require('./Thumbnails/victory.png'),
 ];
 
-type State = {|
-  dataSource: ListViewDataSource,
-|};
+var ListViewGridLayoutExample = createReactClass({
+  displayName: 'ListViewGridLayoutExample',
 
-class ListViewGridLayoutExample extends React.Component<RNTesterProps, State> {
-  static title = '<ListView> - Grid Layout';
-  static description = 'Flexbox grid layout.';
+  statics: {
+    title: '<ListView> - Grid Layout',
+    description: 'Flexbox grid layout.',
+  },
 
-  state = {
-    dataSource: this.getInitialDataSource(),
-  };
+  getInitialState: function() {
+    var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    return {
+      dataSource: ds.cloneWithRows(this._genRows({})),
+    };
+  },
 
-  getInitialDataSource() {
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-    return ds.cloneWithRows(this._genRows({}));
-  }
+  _pressData: ({}: {[key: number]: boolean}),
 
-  _pressData: {[key: number]: boolean} = {};
-
-  UNSAFE_componentWillMount() {
+  UNSAFE_componentWillMount: function() {
     this._pressData = {};
-  }
+  },
 
-  render() {
+  render: function() {
     return (
       // ListView wraps ScrollView and so takes on its properties.
       // With that in mind you can use the ScrollView's contentContainerStyle prop to style the items.
@@ -75,11 +64,11 @@ class ListViewGridLayoutExample extends React.Component<RNTesterProps, State> {
         renderRow={this._renderRow}
       />
     );
-  }
+  },
 
-  _renderRow = (rowData: string, sectionID: number, rowID: number) => {
-    const rowHash = Math.abs(hashCode(rowData));
-    const imgSource = THUMB_URLS[rowHash % THUMB_URLS.length];
+  _renderRow: function(rowData: string, sectionID: number, rowID: number) {
+    var rowHash = Math.abs(hashCode(rowData));
+    var imgSource = THUMB_URLS[rowHash % THUMB_URLS.length];
     return (
       <TouchableHighlight
         onPress={() => this._pressRow(rowID)}
@@ -92,37 +81,37 @@ class ListViewGridLayoutExample extends React.Component<RNTesterProps, State> {
         </View>
       </TouchableHighlight>
     );
-  };
+  },
 
-  _genRows(pressData: {[key: number]: boolean}): Array<string> {
-    const dataBlob = [];
-    for (let ii = 0; ii < 100; ii++) {
-      const pressedText = pressData[ii] ? ' (X)' : '';
+  _genRows: function(pressData: {[key: number]: boolean}): Array<string> {
+    var dataBlob = [];
+    for (var ii = 0; ii < 100; ii++) {
+      var pressedText = pressData[ii] ? ' (X)' : '';
       dataBlob.push('Cell ' + ii + pressedText);
     }
     return dataBlob;
-  }
+  },
 
-  _pressRow = (rowID: number) => {
+  _pressRow: function(rowID: number) {
     this._pressData[rowID] = !this._pressData[rowID];
     this.setState({
       dataSource: this.state.dataSource.cloneWithRows(
         this._genRows(this._pressData),
       ),
     });
-  };
-}
+  },
+});
 
 /* eslint no-bitwise: 0 */
-const hashCode = function(str) {
-  let hash = 15;
-  for (let ii = str.length - 1; ii >= 0; ii--) {
+var hashCode = function(str) {
+  var hash = 15;
+  for (var ii = str.length - 1; ii >= 0; ii--) {
     hash = (hash << 5) - hash + str.charCodeAt(ii);
   }
   return hash;
 };
 
-const styles = StyleSheet.create({
+var styles = StyleSheet.create({
   list: {
     justifyContent: 'space-around',
     flexDirection: 'row',

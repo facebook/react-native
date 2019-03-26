@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,8 +9,8 @@
 
 #include <memory>
 
-#include <react/imagemanager/ImageRequest.h>
-#include <react/imagemanager/primitives.h>
+#include <fabric/imagemanager/ImageRequest.h>
+#include <fabric/imagemanager/primitives.h>
 
 namespace facebook {
 namespace react {
@@ -23,13 +23,14 @@ using SharedImageManager = std::shared_ptr<ImageManager>;
  * Cross platform facade for iOS-specific RCTImageManager.
  */
 class ImageManager {
- public:
+public:
+
   ImageManager(void *platformSpecificCounterpart);
   ~ImageManager();
 
   ImageRequest requestImage(const ImageSource &imageSource) const;
 
- private:
+private:
   void *self_;
 };
 

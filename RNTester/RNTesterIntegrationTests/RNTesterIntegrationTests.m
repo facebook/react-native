@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -49,21 +49,20 @@
 configurationBlock:nil];
 }
 
-// Disabled
-//- (void)testTheTester_ExpectError
-//{
-//  [_runner runTest:_cmd
-//            module:@"IntegrationTestHarnessTest"
-//      initialProps:@{@"shouldThrow": @YES}
-//configurationBlock:nil
-//  expectErrorRegex:@"because shouldThrow"];
-//}
+- (void)testTheTester_ExpectError
+{
+  [_runner runTest:_cmd
+            module:@"IntegrationTestHarnessTest"
+      initialProps:@{@"shouldThrow": @YES}
+configurationBlock:nil
+  expectErrorRegex:@"because shouldThrow"];
+}
 
 #pragma mark - JS tests
 
 // This list should be kept in sync with IntegrationTestsApp.js
 RCT_TEST(IntegrationTestHarnessTest)
-// RCT_TEST(TimersTest) // Disabled due to issue introduced in 61346d3
+RCT_TEST(TimersTest)
 RCT_TEST(AsyncStorageTest)
 RCT_TEST(AppEventsTest)
 //RCT_TEST(ImageCachePolicyTest) // This test never passed.
@@ -72,7 +71,7 @@ RCT_TEST(ImageSnapshotTest)
 RCT_TEST(SimpleSnapshotTest)
 RCT_TEST(SyncMethodTest)
 RCT_TEST(PromiseTest)
-RCT_TEST_ONLY_WITH_PACKAGER(WebSocketTest) // Requires a WebSocket test server, see scripts/objc-test.sh
+RCT_TEST_ONLY_WITH_PACKAGER(WebSocketTest)
 #if !TARGET_OS_OSX // ios specific
 RCT_TEST(AccessibilityManagerTest)
 #endif

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,15 +10,15 @@
 
 'use strict';
 
-const React = require('react');
-const ReactNative = require('react-native');
-const {Animated, LayoutAnimation, PanResponder, StyleSheet, View} = ReactNative;
+var React = require('react');
+var ReactNative = require('react-native');
+var {Animated, LayoutAnimation, PanResponder, StyleSheet, View} = ReactNative;
 
-const AnExSet = require('AnExSet');
+var AnExSet = require('AnExSet');
 
-const CIRCLE_SIZE = 80;
-const CIRCLE_MARGIN = 18;
-const NUM_CIRCLES = 30;
+var CIRCLE_SIZE = 80;
+var CIRCLE_MARGIN = 18;
+var NUM_CIRCLES = 30;
 
 class Circle extends React.Component<any, any> {
   longTimer: number;
@@ -37,7 +37,7 @@ class Circle extends React.Component<any, any> {
   }
 
   _onLongPress(): void {
-    const config = {tension: 40, friction: 3};
+    var config = {tension: 40, friction: 3};
     this.state.pan.addListener(value => {
       // Async listener for state changes  (step1: uncomment)
       this.props.onMove && this.props.onMove(value);
@@ -77,11 +77,9 @@ class Circle extends React.Component<any, any> {
   }
 
   render(): React.Node {
-    let handlers;
-    let dragStyle = null;
     if (this.state.panResponder) {
-      handlers = this.state.panResponder.panHandlers;
-      dragStyle = {
+      var handlers = this.state.panResponder.panHandlers;
+      var dragStyle = {
         //  Used to position while dragging
         position: 'absolute', //  Hoist out of layout                    (step1: uncomment)
         ...this.state.pan.getLayout(), //  Convenience converter                  (step1: uncomment)
@@ -108,7 +106,7 @@ class Circle extends React.Component<any, any> {
         },
       };
     }
-    const animatedStyle: Object = {
+    var animatedStyle: Object = {
       shadowOpacity: this.state.pop, // no need for interpolation            (step2d: uncomment)
       transform: [
         {
@@ -119,12 +117,11 @@ class Circle extends React.Component<any, any> {
         },
       ],
     };
-    const openVal = this.props.openVal;
-    let innerOpenStyle = null;
+    var openVal = this.props.openVal;
     if (this.props.dummy) {
       animatedStyle.opacity = 0;
     } else if (this.state.isActive) {
-      innerOpenStyle = [
+      var innerOpenStyle = [
         styles.open,
         {
           // (step4: uncomment)
@@ -178,7 +175,7 @@ class Circle extends React.Component<any, any> {
     );
   }
   _toggleIsActive(velocity) {
-    const config = {tension: 30, friction: 7};
+    var config = {tension: 30, friction: 7};
     if (this.state.isActive) {
       Animated.spring(this.props.openVal, {toValue: 0, ...config}).start(() => {
         // (step4: uncomment)
@@ -203,8 +200,8 @@ class AnExApp extends React.Component<any, any> {
   _onMove: (position: Point) => void;
   constructor(props: any): void {
     super(props);
-    const keys = [];
-    for (let idx = 0; idx < NUM_CIRCLES; idx++) {
+    var keys = [];
+    for (var idx = 0; idx < NUM_CIRCLES; idx++) {
       keys.push('E' + idx);
     }
     this.state = {
@@ -216,14 +213,13 @@ class AnExApp extends React.Component<any, any> {
   }
 
   render(): React.Node {
-    const circles = this.state.keys.map((key, idx) => {
+    var circles = this.state.keys.map((key, idx) => {
       if (key === this.state.activeKey) {
         return <Circle key={key + 'd'} dummy={true} />;
       } else {
-        let onLayout = null;
         if (!this.state.restLayouts[idx]) {
-          onLayout = function(index, e) {
-            const layout = e.nativeEvent.layout;
+          var onLayout = function(index, e) {
+            var layout = e.nativeEvent.layout;
             this.setState(state => {
               state.restLayouts[index] = layout;
               return state;
@@ -278,7 +274,7 @@ class AnExApp extends React.Component<any, any> {
   }
 
   _onMove(position: Point): void {
-    const newKeys = moveToClosest(this.state, position);
+    var newKeys = moveToClosest(this.state, position);
     if (newKeys !== this.state.keys) {
       LayoutAnimation.easeInEaseOut(); // animates layout update as one batch (step3: uncomment)
       this.setState({keys: newKeys});
@@ -288,18 +284,18 @@ class AnExApp extends React.Component<any, any> {
 
 type Point = {x: number, y: number};
 function distance(p1: Point, p2: Point): number {
-  const dx = p1.x - p2.x;
-  const dy = p1.y - p2.y;
+  var dx = p1.x - p2.x;
+  var dy = p1.y - p2.y;
   return dx * dx + dy * dy;
 }
 
 function moveToClosest({activeKey, keys, restLayouts}, position) {
-  const activeIdx = -1;
-  let closestIdx = activeIdx;
-  let minDist = Infinity;
-  const newKeys = [];
+  var activeIdx = -1;
+  var closestIdx = activeIdx;
+  var minDist = Infinity;
+  var newKeys = [];
   keys.forEach((key, idx) => {
-    const dist = distance(position, restLayouts[idx]);
+    var dist = distance(position, restLayouts[idx]);
     if (key === activeKey) {
       idx = activeIdx;
     } else {
@@ -318,7 +314,7 @@ function moveToClosest({activeKey, keys, restLayouts}, position) {
   }
 }
 
-const styles = StyleSheet.create({
+var styles = StyleSheet.create({
   container: {
     flex: 1,
   },

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2013-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,15 +9,15 @@
 
 'use strict';
 
-const BatchedBridge = require('BatchedBridge');
-const React = require('React');
-const RecordingModule = require('NativeModules').PickerAndroidRecordingModule;
-const Picker = require('Picker');
-const View = require('View');
+var BatchedBridge = require('BatchedBridge');
+var React = require('React');
+var RecordingModule = require('NativeModules').PickerAndroidRecordingModule;
+var Picker = require('Picker');
+var View = require('View');
 
-const Item = Picker.Item;
+var Item = Picker.Item;
 
-let appInstance;
+var appInstance;
 
 class PickerAndroidTestApp extends React.Component {
   state = {
@@ -69,7 +69,7 @@ class PickerAndroidTestApp extends React.Component {
   };
 }
 
-const PickerAndroidTestModule = {
+var PickerAndroidTestModule = {
   PickerAndroidTestApp: PickerAndroidTestApp,
   selectItem: function(value) {
     appInstance.setState({selected: value});

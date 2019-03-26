@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,16 +11,17 @@
 'use strict';
 
 const ActivityIndicator = require('ActivityIndicator');
-const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
-const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
+const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const Linking = require('Linking');
 const PropTypes = require('prop-types');
 const React = require('React');
 const ReactNative = require('ReactNative');
+const ScrollView = require('ScrollView');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const UIManager = require('UIManager');
 const View = require('View');
+const ViewPropTypes = require('ViewPropTypes');
 const WebViewShared = require('WebViewShared');
 
 const deprecatedPropType = require('deprecatedPropType');
@@ -113,7 +114,7 @@ class WebView extends React.Component {
   static JSNavigationScheme = JSNavigationScheme;
   static NavigationType = NavigationType;
   static propTypes = {
-    ...DeprecatedViewPropTypes,
+    ...ViewPropTypes,
 
     html: deprecatedPropType(
       PropTypes.string,
@@ -233,7 +234,7 @@ class WebView extends React.Component {
      * the scroll view. Defaults to {top: 0, left: 0, bottom: 0, right: 0}.
      * @platform ios
      */
-    contentInset: DeprecatedEdgeInsetsPropType,
+    contentInset: EdgeInsetsPropType,
     /**
      * Function that is invoked when the `WebView` loading starts or ends.
      */
@@ -256,7 +257,7 @@ class WebView extends React.Component {
     /**
      * The style to apply to the `WebView`.
      */
-    style: DeprecatedViewPropTypes.style,
+    style: ViewPropTypes.style,
 
     /**
      * Determines the types of data converted to clickable URLs in the web view's content.
@@ -560,10 +561,10 @@ class WebView extends React.Component {
 
   _getCommands() {
     if (!this.props.useWebKit) {
-      return UIManager.getViewManagerConfig('RCTWebView').Commands;
+      return UIManager.RCTWebView.Commands;
     }
 
-    return UIManager.getViewManagerConfig('RCTWKWebView').Commands;
+    return UIManager.RCTWKWebView.Commands;
   }
 
   /**

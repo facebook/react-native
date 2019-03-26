@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -53,9 +53,6 @@ const computeNextValLinear = function(anim, from, to, value) {
   let nextVal = from * (1 - ratio) + to * ratio;
   if (hasRoundRatio) {
     nextVal = Math.round(roundRatio * nextVal) / roundRatio;
-  }
-  if (!isFinite(nextVal)) {
-    nextVal = null;
   }
   return nextVal;
 };
@@ -189,17 +186,17 @@ const buildStyleInterpolator = function(anims) {
           );
           didMatrix = true;
         } else {
-          const next = computeNextValLinearScalar(anim, value);
+          var next = computeNextValLinearScalar(anim, value);
           didChange = setNextValAndDetectChange(result, name, next, didChange);
         }
       } else if (anim.type === 'constant') {
-        const next = anim.value;
+        var next = anim.value;
         didChange = setNextValAndDetectChange(result, name, next, didChange);
       } else if (anim.type === 'step') {
-        const next = value >= anim.threshold ? anim.to : anim.from;
+        var next = value >= anim.threshold ? anim.to : anim.from;
         didChange = setNextValAndDetectChange(result, name, next, didChange);
       } else if (anim.type === 'identity') {
-        const next = value;
+        var next = value;
         didChange = setNextValAndDetectChange(result, name, next, didChange);
       }
     }

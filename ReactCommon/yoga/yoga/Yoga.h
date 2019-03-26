@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Facebook, Inc. and its affiliates.
+ *  Copyright (c) 2014-present, Facebook, Inc.
  *
  *  This source code is licensed under the MIT license found in the LICENSE
  *  file in the root directory of this source tree.
@@ -45,16 +45,6 @@ typedef struct YGValue {
 extern const YGValue YGValueUndefined;
 extern const YGValue YGValueAuto;
 
-#ifdef __cplusplus
-
-YG_EXTERN_C_END
-
-extern bool operator==(const YGValue& lhs, const YGValue& rhs);
-extern bool operator!=(const YGValue& lhs, const YGValue& rhs);
-
-YG_EXTERN_C_BEGIN
-
-#endif
 
 typedef struct YGConfig* YGConfigRef;
 
@@ -114,12 +104,6 @@ WIN_EXPORT void YGNodeSetChildren(
     const YGNodeRef children[],
     const uint32_t count);
 
-WIN_EXPORT void YGNodeSetIsReferenceBaseline(
-    YGNodeRef node,
-    bool isReferenceBaseline);
-
-WIN_EXPORT bool YGNodeIsReferenceBaseline(YGNodeRef node);
-
 WIN_EXPORT void YGNodeCalculateLayout(
     const YGNodeRef node,
     const float availableWidth,
@@ -163,11 +147,10 @@ WIN_EXPORT void YGNodeCopyStyle(
     const YGNodeRef dstNode,
     const YGNodeRef srcNode);
 
-WIN_EXPORT void* YGNodeGetContext(YGNodeRef node);
-WIN_EXPORT void YGNodeSetContext(YGNodeRef node, void* context);
-void YGConfigSetPrintTreeFlag(YGConfigRef config, bool enabled);
+void* YGNodeGetContext(YGNodeRef node);
+void YGNodeSetContext(YGNodeRef node, void* context);
 YGMeasureFunc YGNodeGetMeasureFunc(YGNodeRef node);
-WIN_EXPORT void YGNodeSetMeasureFunc(YGNodeRef node, YGMeasureFunc measureFunc);
+void YGNodeSetMeasureFunc(YGNodeRef node, YGMeasureFunc measureFunc);
 YGBaselineFunc YGNodeGetBaselineFunc(YGNodeRef node);
 void YGNodeSetBaselineFunc(YGNodeRef node, YGBaselineFunc baselineFunc);
 YGDirtiedFunc YGNodeGetDirtiedFunc(YGNodeRef node);

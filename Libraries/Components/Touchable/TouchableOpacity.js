@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,6 +15,7 @@ const Easing = require('Easing');
 const NativeMethodsMixin = require('NativeMethodsMixin');
 const React = require('React');
 const PropTypes = require('prop-types');
+const TimerMixin = require('react-timer-mixin');
 const Touchable = require('Touchable');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 
@@ -24,14 +25,14 @@ const flattenStyle = require('flattenStyle');
 
 import type {Props as TouchableWithoutFeedbackProps} from 'TouchableWithoutFeedback';
 import type {ViewStyleProp} from 'StyleSheet';
-import type {TVParallaxPropertiesType} from 'TVViewPropTypes';
-import type {PressEvent} from 'CoreEventTypes';
+
+type Event = Object;
 
 const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 type TVProps = $ReadOnly<{|
   hasTVPreferredFocus?: ?boolean,
-  tvParallaxProperties?: ?TVParallaxPropertiesType,
+  tvParallaxProperties?: ?Object,
 |}>;
 
 type Props = $ReadOnly<{|
@@ -131,7 +132,7 @@ type Props = $ReadOnly<{|
  */
 const TouchableOpacity = ((createReactClass({
   displayName: 'TouchableOpacity',
-  mixins: [Touchable.Mixin, NativeMethodsMixin],
+  mixins: [TimerMixin, Touchable.Mixin, NativeMethodsMixin],
 
   propTypes: {
     ...TouchableWithoutFeedback.propTypes,
@@ -193,7 +194,7 @@ const TouchableOpacity = ((createReactClass({
    * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
    * defined on your component.
    */
-  touchableHandleActivePressIn: function(e: PressEvent) {
+  touchableHandleActivePressIn: function(e: Event) {
     if (e.dispatchConfig.registrationName === 'onResponderGrant') {
       this._opacityActive(0);
     } else {
@@ -202,16 +203,16 @@ const TouchableOpacity = ((createReactClass({
     this.props.onPressIn && this.props.onPressIn(e);
   },
 
-  touchableHandleActivePressOut: function(e: PressEvent) {
+  touchableHandleActivePressOut: function(e: Event) {
     this._opacityInactive(250);
     this.props.onPressOut && this.props.onPressOut(e);
   },
 
-  touchableHandlePress: function(e: PressEvent) {
+  touchableHandlePress: function(e: Event) {
     this.props.onPress && this.props.onPress(e);
   },
 
-  touchableHandleLongPress: function(e: PressEvent) {
+  touchableHandleLongPress: function(e: Event) {
     this.props.onLongPress && this.props.onLongPress(e);
   },
 
@@ -247,7 +248,7 @@ const TouchableOpacity = ((createReactClass({
 
   _getChildStyleOpacityWithDefault: function() {
     const childStyle = flattenStyle(this.props.style) || {};
-    return childStyle.opacity == null ? 1 : childStyle.opacity;
+    return childStyle.opacity == undefined ? 1 : childStyle.opacity;
   },
 
   render: function() {

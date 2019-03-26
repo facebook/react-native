@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,29 +10,31 @@
 
 'use strict';
 
-const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
+const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const React = require('React');
 const PropTypes = require('prop-types');
+const TimerMixin = require('react-timer-mixin');
 const Touchable = require('Touchable');
 const View = require('View');
 
 const createReactClass = require('create-react-class');
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
+const warning = require('fbjs/lib/warning');
 
 const {
-  DeprecatedAccessibilityComponentTypes,
-  DeprecatedAccessibilityRoles,
-  DeprecatedAccessibilityStates,
-  DeprecatedAccessibilityTraits,
-} = require('DeprecatedViewAccessibility');
+  AccessibilityComponentTypes,
+  AccessibilityRoles,
+  AccessibilityStates,
+  AccessibilityTraits,
+} = require('ViewAccessibility');
 
 import type {PressEvent} from 'CoreEventTypes';
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type {
   AccessibilityComponentType,
   AccessibilityRole,
-  AccessibilityStates,
-  AccessibilityTraits,
+  AccessibilityStates as AccessibilityStatesFlow,
+  AccessibilityTraits as AccessibilityTraitsFlow,
 } from 'ViewAccessibility';
 
 // [TODO(macOS ISS#2323203)
@@ -51,11 +53,10 @@ export type Props = $ReadOnly<{|
     | string
     | Array<any>
     | any,
-  accessibilityHint?: ?Stringish,
-  accessibilityIgnoresInvertColors?: ?boolean,
+  accessibilityHint?: string,
   accessibilityRole?: ?AccessibilityRole,
-  accessibilityStates?: ?AccessibilityStates,
-  accessibilityTraits?: ?AccessibilityTraits,
+  accessibilityStates?: ?AccessibilityStatesFlow,
+  accessibilityTraits?: ?AccessibilityTraitsFlow,
   children?: ?React.Node,
   delayLongPress?: ?number,
   delayPressIn?: ?number,
@@ -63,8 +64,6 @@ export type Props = $ReadOnly<{|
   disabled?: ?boolean,
   hitSlop?: ?EdgeInsetsProp,
   nativeID?: ?string,
-  onBlur?: ?Function,
-  onFocus?: ?Function,
   onLayout?: ?Function,
   onLongPress?: ?Function,
   onPress?: ?Function,
@@ -94,22 +93,20 @@ export type Props = $ReadOnly<{|
  */
 const TouchableWithoutFeedback = ((createReactClass({
   displayName: 'TouchableWithoutFeedback',
-  mixins: [Touchable.Mixin],
+  mixins: [TimerMixin, Touchable.Mixin],
 
   propTypes: {
     accessible: PropTypes.bool,
     accessibilityLabel: PropTypes.node,
     accessibilityHint: PropTypes.string,
-    accessibilityComponentType: PropTypes.oneOf(
-      DeprecatedAccessibilityComponentTypes,
-    ),
-    accessibilityRole: PropTypes.oneOf(DeprecatedAccessibilityRoles),
+    accessibilityComponentType: PropTypes.oneOf(AccessibilityComponentTypes),
+    accessibilityRole: PropTypes.oneOf(AccessibilityRoles),
     accessibilityStates: PropTypes.arrayOf(
-      PropTypes.oneOf(DeprecatedAccessibilityStates),
+      PropTypes.oneOf(AccessibilityStates),
     ),
     accessibilityTraits: PropTypes.oneOfType([
-      PropTypes.oneOf(DeprecatedAccessibilityTraits),
-      PropTypes.arrayOf(PropTypes.oneOf(DeprecatedAccessibilityTraits)),
+      PropTypes.oneOf(AccessibilityTraits),
+      PropTypes.arrayOf(PropTypes.oneOf(AccessibilityTraits)),
     ]),
     onAccessibilityTap: PropTypes.func, // TODO(OSS Candidate ISS#2710739)
     tabIndex: PropTypes.number, // TODO(macOS/win ISS#2323203)
@@ -209,7 +206,7 @@ const TouchableWithoutFeedback = ((createReactClass({
      * reactivated! Move it back and forth several times while the scroll view
      * is disabled. Ensure you pass in a constant to reduce memory allocations.
      */
-    pressRetentionOffset: DeprecatedEdgeInsetsPropType,
+    pressRetentionOffset: EdgeInsetsPropType,
     /**
      * This defines how far your touch can start away from the button. This is
      * added to `pressRetentionOffset` when moving off of the button.
@@ -218,7 +215,7 @@ const TouchableWithoutFeedback = ((createReactClass({
      * of sibling views always takes precedence if a touch hits two overlapping
      * views.
      */
-    hitSlop: DeprecatedEdgeInsetsPropType,
+    hitSlop: EdgeInsetsPropType,
   },
 
   getInitialState: function() {
@@ -319,10 +316,10 @@ const TouchableWithoutFeedback = ((createReactClass({
         this.props.clickable !== false && this.props.onPress !== undefined, // TODO(android ISS)
       onClick: this.touchableHandlePress, // TODO(android ISS)
       onMouseEnter: this.props.onMouseEnter, // [TODO(macOS ISS#2323203)
-      onMouseLeave: this.props.onMouseLeave, // [TODO(macOS ISS#2323203)
-      onDragEnter: this.props.onDragEnter, // [TODO(macOS ISS#2323203)
-      onDragLeave: this.props.onDragLeave, // [TODO(macOS ISS#2323203)
-      onDrop: this.props.onDrop, // [TODO(macOS ISS#2323203)
+      onMouseLeave: this.props.onMouseLeave,
+      onDragEnter: this.props.onDragEnter,
+      onDragLeave: this.props.onDragLeave,
+      onDrop: this.props.onDrop,
       draggedTypes: this.props.draggedTypes, // ]TODO(macOS ISS#2323203)
       children,
     });

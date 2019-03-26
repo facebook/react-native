@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -20,7 +20,7 @@ import com.facebook.react.util.JSStackTrace;
 @ReactModule(name = ExceptionsManagerModule.NAME)
 public class ExceptionsManagerModule extends BaseJavaModule {
 
-  public static final String NAME = "ExceptionsManager";
+  protected static final String NAME = "ExceptionsManager";
 
   private final DevSupportManager mDevSupportManager;
 

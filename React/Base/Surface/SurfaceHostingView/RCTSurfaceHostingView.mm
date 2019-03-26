@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -26,13 +26,6 @@
   RCTSurfaceStage _stage;
 }
 
-+ (RCTSurface *)createSurfaceWithBridge:(RCTBridge *)bridge
-                             moduleName:(NSString *)moduleName
-                      initialProperties:(NSDictionary *)initialProperties
-{
-  return [[RCTSurface alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
-}
-
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
 RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
@@ -42,7 +35,7 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
              initialProperties:(NSDictionary *)initialProperties
                sizeMeasureMode:(RCTSurfaceSizeMeasureMode)sizeMeasureMode
 {
-  RCTSurface *surface = [[self class] createSurfaceWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
+  RCTSurface *surface = [self createSurfaceWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
   return [self initWithSurface:surface sizeMeasureMode:sizeMeasureMode];
 }
 
@@ -50,7 +43,6 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
 {
   if (self = [super initWithFrame:CGRectZero]) {
     _surface = surface;
-    [_surface start];
     _sizeMeasureMode = sizeMeasureMode;
 
     _surface.delegate = self;
@@ -61,9 +53,11 @@ RCT_NOT_IMPLEMENTED(- (nullable instancetype)initWithCoder:(NSCoder *)coder)
   return self;
 }
 
-- (void)dealloc
+- (RCTSurface *)createSurfaceWithBridge:(RCTBridge *)bridge
+                             moduleName:(NSString *)moduleName
+                      initialProperties:(NSDictionary *)initialProperties
 {
-  [_surface stop];
+  return [[RCTSurface alloc] initWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
 }
 
 - (void)setFrame:(CGRect)frame

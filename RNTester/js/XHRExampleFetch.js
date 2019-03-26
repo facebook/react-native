@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,9 +10,9 @@
 
 'use strict';
 
-const React = require('react');
-const ReactNative = require('react-native');
-const {StyleSheet, Text, TextInput, View, Platform} = ReactNative;
+var React = require('react');
+var ReactNative = require('react-native');
+var {StyleSheet, Text, TextInput, View, Platform} = ReactNative;
 
 class XHRExampleFetch extends React.Component<any, any> {
   responseURL: ?string;
@@ -27,7 +27,7 @@ class XHRExampleFetch extends React.Component<any, any> {
     this.responseHeaders = null;
   }
 
-  submit(uri: string) {
+  submit(uri: String) {
     fetch(uri)
       .then(response => {
         this.responseURL = response.url;
@@ -44,11 +44,11 @@ class XHRExampleFetch extends React.Component<any, any> {
       return null;
     }
 
-    const responseHeaders = [];
-    const keys = Object.keys(this.responseHeaders.map);
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i];
-      const value = this.responseHeaders.get(key);
+    var responseHeaders = [];
+    var keys = Object.keys(this.responseHeaders.map);
+    for (var i = 0; i < keys.length; i++) {
+      var key = keys[i];
+      var value = this.responseHeaders.get(key);
       responseHeaders.push(
         <Text>
           {key}: {value}
@@ -59,21 +59,21 @@ class XHRExampleFetch extends React.Component<any, any> {
   }
 
   render() {
-    const responseURL = this.responseURL ? (
+    var responseURL = this.responseURL ? (
       <View style={{marginTop: 10}}>
         <Text style={styles.label}>Server response URL:</Text>
         <Text>{this.responseURL}</Text>
       </View>
     ) : null;
 
-    const responseHeaders = this.responseHeaders ? (
+    var responseHeaders = this.responseHeaders ? (
       <View style={{marginTop: 10}}>
         <Text style={styles.label}>Server response headers:</Text>
         {this._renderHeaders()}
       </View>
     ) : null;
 
-    const response = this.state.responseText ? (
+    var response = this.state.responseText ? (
       <View style={{marginTop: 10}}>
         <Text style={styles.label}>Server response:</Text>
         <TextInput
@@ -104,7 +104,7 @@ class XHRExampleFetch extends React.Component<any, any> {
   }
 }
 
-const styles = StyleSheet.create({
+var styles = StyleSheet.create({
   textInput: {
     flex: 1,
     borderRadius: 3,

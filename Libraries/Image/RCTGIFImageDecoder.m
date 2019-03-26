@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -32,17 +32,7 @@ RCT_EXPORT_MODULE()
 {
   CGImageSourceRef imageSource = CGImageSourceCreateWithData((CFDataRef)imageData, NULL);
   NSDictionary<NSString *, id> *properties = (__bridge_transfer NSDictionary *)CGImageSourceCopyProperties(imageSource, NULL);
-  CGFloat loopCount = 0;
-  if ([[properties[(id)kCGImagePropertyGIFDictionary] allKeys] containsObject:(id)kCGImagePropertyGIFLoopCount]) {
-    loopCount = [properties[(id)kCGImagePropertyGIFDictionary][(id)kCGImagePropertyGIFLoopCount] unsignedIntegerValue];
-    if (loopCount == 0) {
-      // A loop count of 0 means infinite
-      loopCount = HUGE_VALF;
-    } else {
-      // A loop count of 1 means it should repeat twice, 2 means, thrice, etc.
-      loopCount += 1;
-    }
-  }
+  NSUInteger loopCount = [properties[(id)kCGImagePropertyGIFDictionary][(id)kCGImagePropertyGIFLoopCount] unsignedIntegerValue];
 
   UIImage *image = nil;
   size_t imageCount = CGImageSourceGetCount(imageSource);
@@ -98,12 +88,11 @@ RCT_EXPORT_MODULE()
     // Create animation
     CAKeyframeAnimation *animation = [CAKeyframeAnimation animationWithKeyPath:@"contents"];
     animation.calculationMode = kCAAnimationDiscrete;
-    animation.repeatCount = loopCount;
+    animation.repeatCount = loopCount == 0 ? HUGE_VALF : loopCount;
     animation.keyTimes = keyTimes;
     animation.values = images;
     animation.duration = duration;
     animation.removedOnCompletion = NO;
-    animation.fillMode = kCAFillModeForwards;
     image.reactKeyframeAnimation = animation;
 
   } else {

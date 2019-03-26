@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2013-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,7 +13,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.Choreographer;
-import com.facebook.react.bridge.UiThreadUtil;
 
 /**
  * Wrapper class for abstracting away availability of the JellyBean Choreographer. If Choreographer
@@ -24,17 +23,13 @@ public class ChoreographerCompat {
   private static final long ONE_FRAME_MILLIS = 17;
   private static final boolean IS_JELLYBEAN_OR_HIGHER =
     Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
-  private static ChoreographerCompat sInstance;
+  private static final ChoreographerCompat INSTANCE = new ChoreographerCompat();
 
   private Handler mHandler;
   private Choreographer mChoreographer;
 
   public static ChoreographerCompat getInstance() {
-    UiThreadUtil.assertOnUiThread();
-    if (sInstance == null){
-      sInstance = new ChoreographerCompat();
-    }
-    return sInstance;
+    return INSTANCE;
   }
 
   private ChoreographerCompat() {

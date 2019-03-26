@@ -1,229 +1,206 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
+// Copyright (c) 2004-present, Facebook, Inc.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
 
 #include "Differentiator.h"
 
-#include <react/core/LayoutableShadowNode.h>
-#include "ShadowView.h"
-
 namespace facebook {
 namespace react {
 
-static void sliceChildShadowNodeViewPairsRecursively(
-    ShadowViewNodePairList &pairList,
-    Point layoutOffset,
-    const ShadowNode &shadowNode) {
-  for (const auto &childShadowNode : shadowNode.getChildren()) {
-    auto shadowView = ShadowView(*childShadowNode);
-
-    const auto layoutableShadowNode =
-        dynamic_cast<const LayoutableShadowNode *>(childShadowNode.get());
-    if (layoutableShadowNode && layoutableShadowNode->isLayoutOnly()) {
-      sliceChildShadowNodeViewPairsRecursively(
-          pairList,
-          layoutOffset + shadowView.layoutMetrics.frame.origin,
-          *childShadowNode);
-    } else {
-      shadowView.layoutMetrics.frame.origin += layoutOffset;
-      pairList.push_back({shadowView, *childShadowNode});
-    }
-  }
-}
-
-static ShadowViewNodePairList sliceChildShadowNodeViewPairs(
-    const ShadowNode &shadowNode) {
-  ShadowViewNodePairList pairList;
-  sliceChildShadowNodeViewPairsRecursively(pairList, {0, 0}, shadowNode);
-  return pairList;
-}
-
-static void calculateShadowViewMutations(
-    ShadowViewMutationList &mutations,
-    const ShadowView &parentShadowView,
-    const ShadowViewNodePairList &oldChildPairs,
-    const ShadowViewNodePairList &newChildPairs) {
+static void calculateMutationInstructions(
+  TreeMutationInstructionList &instructions,
+  SharedShadowNode parentNode,
+  const SharedShadowNodeList &oldChildNodes,
+  const SharedShadowNodeList &newChildNodes
+) {
   // The current version of the algorithm is otimized for simplicity,
-  // not for performance or optimal result.
+  // not for performance of optimal result.
 
-  if (oldChildPairs == newChildPairs) {
+  // TODO(shergin): Consider to use Minimal Edit Distance algorithm to produce
+  // optimal set of instructions and improve mounting performance.
+  // https://en.wikipedia.org/wiki/Edit_distance
+  // https://www.geeksforgeeks.org/dynamic-programming-set-5-edit-distance/
+
+  if (oldChildNodes == newChildNodes) {
     return;
   }
 
-  if (oldChildPairs.size() == 0 && newChildPairs.size() == 0) {
+  if (oldChildNodes.size() == 0 && newChildNodes.size() == 0) {
     return;
   }
 
-  std::unordered_map<Tag, ShadowViewNodePair> insertedPaires;
+  std::unordered_map<Tag, SharedShadowNode> insertedNodes;
   int index = 0;
 
-  ShadowViewMutationList createMutations = {};
-  ShadowViewMutationList deleteMutations = {};
-  ShadowViewMutationList insertMutations = {};
-  ShadowViewMutationList removeMutations = {};
-  ShadowViewMutationList updateMutations = {};
-  ShadowViewMutationList downwardMutations = {};
-  ShadowViewMutationList destructiveDownwardMutations = {};
+  TreeMutationInstructionList createInstructions = {};
+  TreeMutationInstructionList deleteInstructions = {};
+  TreeMutationInstructionList insertInstructions = {};
+  TreeMutationInstructionList removeInstructions = {};
+  TreeMutationInstructionList replaceInstructions = {};
+  TreeMutationInstructionList downwardInstructions = {};
+  TreeMutationInstructionList destructionDownwardInstructions = {};
 
-  // Stage 1: Collecting `Update` mutations
-  for (index = 0; index < oldChildPairs.size() && index < newChildPairs.size();
-       index++) {
-    const auto &oldChildPair = oldChildPairs[index];
-    const auto &newChildPair = newChildPairs[index];
+  // Stage 1: Collectings Updates
+  for (index = 0; index < oldChildNodes.size() && index < newChildNodes.size(); index++) {
+    const auto &oldChildNode = oldChildNodes.at(index);
+    const auto &newChildNode = newChildNodes.at(index);
 
-    if (oldChildPair.shadowView.tag != newChildPair.shadowView.tag) {
+    if (oldChildNode->getTag() != newChildNode->getTag()) {
       // Totally different nodes, updating is impossible.
       break;
     }
 
-    if (oldChildPair.shadowView != newChildPair.shadowView) {
-      updateMutations.push_back(ShadowViewMutation::UpdateMutation(
-          parentShadowView,
-          oldChildPair.shadowView,
-          newChildPair.shadowView,
-          index));
+    if (*oldChildNode != *newChildNode) {
+      replaceInstructions.push_back(
+        TreeMutationInstruction::Replace(
+          parentNode,
+          oldChildNode,
+          newChildNode,
+          index
+        )
+      );
     }
 
-    const auto oldGrandChildPairs =
-        sliceChildShadowNodeViewPairs(oldChildPair.shadowNode);
-    const auto newGrandChildPairs =
-        sliceChildShadowNodeViewPairs(newChildPair.shadowNode);
-    calculateShadowViewMutations(
-        *(newGrandChildPairs.size() ? &downwardMutations
-                                    : &destructiveDownwardMutations),
-        oldChildPair.shadowView,
-        oldGrandChildPairs,
-        newGrandChildPairs);
+    calculateMutationInstructions(
+      *(newChildNode->getChildren().size() ? &downwardInstructions : &destructionDownwardInstructions),
+      oldChildNode,
+      oldChildNode->getChildren(),
+      newChildNode->getChildren()
+    );
   }
 
   int lastIndexAfterFirstStage = index;
 
-  // Stage 2: Collecting `Insert` mutations
-  for (; index < newChildPairs.size(); index++) {
-    const auto &newChildPair = newChildPairs[index];
+  // Stage 2: Collectings Insertions
+  for (; index < newChildNodes.size(); index++) {
+    const auto &newChildNode = newChildNodes.at(index);
 
-    insertMutations.push_back(ShadowViewMutation::InsertMutation(
-        parentShadowView, newChildPair.shadowView, index));
+    insertInstructions.push_back(
+      TreeMutationInstruction::Insert(
+        parentNode,
+        newChildNode,
+        index
+      )
+    );
 
-    insertedPaires.insert({newChildPair.shadowView.tag, newChildPair});
+    insertedNodes.insert({newChildNode->getTag(), newChildNode});
   }
 
-  // Stage 3: Collecting `Delete` and `Remove` mutations
-  for (index = lastIndexAfterFirstStage; index < oldChildPairs.size();
-       index++) {
-    const auto &oldChildPair = oldChildPairs[index];
+  // Stage 3: Collectings Deletions and Removals
+  for (index = lastIndexAfterFirstStage; index < oldChildNodes.size(); index++) {
+    const auto &oldChildNode = oldChildNodes.at(index);
 
-    // Even if the old view was (re)inserted, we have to generate `remove`
-    // mutation.
-    removeMutations.push_back(ShadowViewMutation::RemoveMutation(
-        parentShadowView, oldChildPair.shadowView, index));
+    // Even if the old node was (re)inserted, we have to generate `remove`
+    // instruction.
+    removeInstructions.push_back(
+      TreeMutationInstruction::Remove(
+        parentNode,
+        oldChildNode,
+        index
+      )
+    );
 
-    const auto &it = insertedPaires.find(oldChildPair.shadowView.tag);
+    const auto &it = insertedNodes.find(oldChildNode->getTag());
 
-    if (it == insertedPaires.end()) {
-      // The old view was *not* (re)inserted.
-      // We have to generate `delete` mutation and apply the algorithm
+    if (it == insertedNodes.end()) {
+      // The old node was *not* (re)inserted.
+      // We have to generate `delete` instruction and apply the algorithm
       // recursively.
-      deleteMutations.push_back(
-          ShadowViewMutation::DeleteMutation(oldChildPair.shadowView));
+      deleteInstructions.push_back(
+        TreeMutationInstruction::Delete(
+          oldChildNode
+        )
+      );
 
       // We also have to call the algorithm recursively to clean up the entire
-      // subtree starting from the removed view.
-      calculateShadowViewMutations(
-          destructiveDownwardMutations,
-          oldChildPair.shadowView,
-          sliceChildShadowNodeViewPairs(oldChildPair.shadowNode),
-          {});
+      // subtree starting from the removed node.
+      calculateMutationInstructions(
+        destructionDownwardInstructions,
+        oldChildNode,
+        oldChildNode->getChildren(),
+        {}
+      );
     } else {
-      // The old view *was* (re)inserted.
-      // We have to call the algorithm recursively if the inserted view
+      // The old node *was* (re)inserted.
+      // We have to call the algorithm recursively if the inserted node
       // is *not* the same as removed one.
-      const auto &newChildPair = it->second;
-      if (newChildPair.shadowView != oldChildPair.shadowView) {
-        const auto oldGrandChildPairs =
-            sliceChildShadowNodeViewPairs(oldChildPair.shadowNode);
-        const auto newGrandChildPairs =
-            sliceChildShadowNodeViewPairs(newChildPair.shadowNode);
-        calculateShadowViewMutations(
-            *(newGrandChildPairs.size() ? &downwardMutations
-                                        : &destructiveDownwardMutations),
-            newChildPair.shadowView,
-            oldGrandChildPairs,
-            newGrandChildPairs);
+      const auto &newChildNode = it->second;
+      if (newChildNode != oldChildNode) {
+        calculateMutationInstructions(
+          *(newChildNode->getChildren().size() ? &downwardInstructions : &destructionDownwardInstructions),
+          newChildNode,
+          oldChildNode->getChildren(),
+          newChildNode->getChildren()
+        );
       }
 
-      // In any case we have to remove the view from `insertedPaires` as
-      // indication that the view was actually removed (which means that
-      // the view existed before), hence we don't have to generate
-      // `create` mutation.
-      insertedPaires.erase(it);
+      // In any case we have to remove the node from `insertedNodes` as
+      // indication that the node was actually removed (which means that
+      // the node existed before), hence we don't have to generate
+      // `create` instruction.
+      insertedNodes.erase(it);
     }
   }
 
-  // Stage 4: Collecting `Create` mutations
-  for (index = lastIndexAfterFirstStage; index < newChildPairs.size();
-       index++) {
-    const auto &newChildPair = newChildPairs[index];
+  // Stage 4: Collectings Creations
+  for (index = lastIndexAfterFirstStage; index < newChildNodes.size(); index++) {
+    const auto &newChildNode = newChildNodes.at(index);
 
-    if (insertedPaires.find(newChildPair.shadowView.tag) ==
-        insertedPaires.end()) {
-      // The new view was (re)inserted, so there is no need to create it.
+    if (insertedNodes.find(newChildNode->getTag()) == insertedNodes.end()) {
+      // The new node was (re)inserted, so there is no need to create it.
       continue;
     }
 
-    createMutations.push_back(
-        ShadowViewMutation::CreateMutation(newChildPair.shadowView));
+    createInstructions.push_back(
+      TreeMutationInstruction::Create(
+        newChildNode
+      )
+    );
 
-    calculateShadowViewMutations(
-        downwardMutations,
-        newChildPair.shadowView,
-        {},
-        sliceChildShadowNodeViewPairs(newChildPair.shadowNode));
+    calculateMutationInstructions(
+      downwardInstructions,
+      newChildNode,
+      {},
+      newChildNode->getChildren()
+    );
   }
 
-  // All mutations in an optimal order:
-  mutations.insert(
-      mutations.end(),
-      destructiveDownwardMutations.begin(),
-      destructiveDownwardMutations.end());
-  mutations.insert(
-      mutations.end(), updateMutations.begin(), updateMutations.end());
-  mutations.insert(
-      mutations.end(), removeMutations.rbegin(), removeMutations.rend());
-  mutations.insert(
-      mutations.end(), deleteMutations.begin(), deleteMutations.end());
-  mutations.insert(
-      mutations.end(), createMutations.begin(), createMutations.end());
-  mutations.insert(
-      mutations.end(), insertMutations.begin(), insertMutations.end());
-  mutations.insert(
-      mutations.end(), downwardMutations.begin(), downwardMutations.end());
+  // All instructions in an optimal order:
+  instructions.insert(instructions.end(), destructionDownwardInstructions.begin(), destructionDownwardInstructions.end());
+  instructions.insert(instructions.end(), replaceInstructions.begin(), replaceInstructions.end());
+  instructions.insert(instructions.end(), removeInstructions.rbegin(), removeInstructions.rend());
+  instructions.insert(instructions.end(), createInstructions.begin(), createInstructions.end());
+  instructions.insert(instructions.end(), downwardInstructions.begin(), downwardInstructions.end());
+  instructions.insert(instructions.end(), insertInstructions.begin(), insertInstructions.end());
+  instructions.insert(instructions.end(), deleteInstructions.begin(), deleteInstructions.end());
 }
 
-ShadowViewMutationList calculateShadowViewMutations(
-    const ShadowNode &oldRootShadowNode,
-    const ShadowNode &newRootShadowNode) {
+void calculateMutationInstructions(
+  TreeMutationInstructionList &instructions,
+  const SharedShadowNode &oldRootShadowNode,
+  const SharedShadowNode &newRootShadowNode
+) {
   // Root shadow nodes must have same tag.
-  assert(oldRootShadowNode.getTag() == newRootShadowNode.getTag());
+  assert(oldRootShadowNode->getTag() == newRootShadowNode->getTag());
 
-  ShadowViewMutationList mutations;
-
-  auto oldRootShadowView = ShadowView(oldRootShadowNode);
-  auto newRootShadowView = ShadowView(newRootShadowNode);
-
-  if (oldRootShadowView != newRootShadowView) {
-    mutations.push_back(ShadowViewMutation::UpdateMutation(
-        ShadowView(), oldRootShadowView, newRootShadowView, -1));
+  if (*oldRootShadowNode != *newRootShadowNode) {
+    instructions.push_back(
+      TreeMutationInstruction::Replace(
+        nullptr,
+        oldRootShadowNode,
+        newRootShadowNode,
+        -1
+      )
+    );
   }
 
-  calculateShadowViewMutations(
-      mutations,
-      ShadowView(oldRootShadowNode),
-      sliceChildShadowNodeViewPairs(oldRootShadowNode),
-      sliceChildShadowNodeViewPairs(newRootShadowNode));
-
-  return mutations;
+  calculateMutationInstructions(
+    instructions,
+    oldRootShadowNode,
+    oldRootShadowNode->getChildren(),
+    newRootShadowNode->getChildren()
+  );
 }
 
 } // namespace react

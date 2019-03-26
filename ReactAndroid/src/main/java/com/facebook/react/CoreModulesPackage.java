@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -26,7 +26,6 @@ import com.facebook.react.modules.core.Timing;
 import com.facebook.react.modules.debug.SourceCodeModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
-import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.systrace.Systrace;
@@ -60,7 +59,6 @@ import javax.inject.Provider;
   CoreModulesPackage(
       ReactInstanceManager reactInstanceManager,
       DefaultHardwareBackBtnHandler hardwareBackBtnHandler,
-      @Nullable UIImplementationProvider uiImplementationProvider,
       boolean lazyViewManagersEnabled,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     mReactInstanceManager = reactInstanceManager;
@@ -73,7 +71,7 @@ import javax.inject.Provider;
   public List<ModuleSpec> getNativeModules(final ReactApplicationContext reactContext) {
     return Arrays.asList(
         ModuleSpec.nativeModuleSpec(
-            AndroidInfoModule.NAME,
+            AndroidInfoModule.class,
             new Provider<NativeModule>() {
               @Override
               public NativeModule get() {
@@ -81,7 +79,7 @@ import javax.inject.Provider;
               }
             }),
         ModuleSpec.nativeModuleSpec(
-            DeviceEventManagerModule.NAME,
+            DeviceEventManagerModule.class,
             new Provider<NativeModule>() {
               @Override
               public NativeModule get() {
@@ -89,7 +87,7 @@ import javax.inject.Provider;
               }
             }),
         ModuleSpec.nativeModuleSpec(
-            ExceptionsManagerModule.NAME,
+            ExceptionsManagerModule.class,
             new Provider<NativeModule>() {
               @Override
               public NativeModule get() {
@@ -97,7 +95,7 @@ import javax.inject.Provider;
               }
             }),
         ModuleSpec.nativeModuleSpec(
-            HeadlessJsTaskSupportModule.NAME,
+            HeadlessJsTaskSupportModule.class,
             new Provider<NativeModule>() {
               @Override
               public NativeModule get() {
@@ -105,7 +103,7 @@ import javax.inject.Provider;
               }
             }),
         ModuleSpec.nativeModuleSpec(
-            SourceCodeModule.NAME,
+            SourceCodeModule.class,
             new Provider<NativeModule>() {
               @Override
               public NativeModule get() {
@@ -113,7 +111,7 @@ import javax.inject.Provider;
               }
             }),
         ModuleSpec.nativeModuleSpec(
-            Timing.NAME,
+            Timing.class,
             new Provider<NativeModule>() {
               @Override
               public NativeModule get() {
@@ -121,7 +119,7 @@ import javax.inject.Provider;
               }
             }),
         ModuleSpec.nativeModuleSpec(
-            UIManagerModule.NAME,
+            UIManagerModule.class,
             new Provider<NativeModule>() {
               @Override
               public NativeModule get() {
@@ -129,7 +127,7 @@ import javax.inject.Provider;
               }
             }),
         ModuleSpec.nativeModuleSpec(
-            DeviceInfoModule.NAME,
+            DeviceInfoModule.class,
             new Provider<NativeModule>() {
               @Override
               public NativeModule get() {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,79 +7,121 @@
  * @flow
  * @format
  */
-
 'use strict';
 
+const PropTypes = require('prop-types');
 const UIManager = require('UIManager');
 
-type Type =
-  | 'spring'
-  | 'linear'
-  | 'easeInEaseOut'
-  | 'easeIn'
-  | 'easeOut'
-  | 'keyboard';
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
+const keyMirror = require('fbjs/lib/keyMirror');
 
-type Property = 'opacity' | 'scaleX' | 'scaleY' | 'scaleXY';
+const {checkPropTypes} = PropTypes;
 
-type AnimationConfig = $ReadOnly<{|
+const TypesEnum = {
+  spring: true,
+  linear: true,
+  easeInEaseOut: true,
+  easeIn: true,
+  easeOut: true,
+  keyboard: true,
+};
+const Types = keyMirror(TypesEnum);
+
+const PropertiesEnum = {
+  opacity: true,
+  scaleX: true,
+  scaleY: true,
+  scaleXY: true,
+};
+const Properties = keyMirror(PropertiesEnum);
+
+const animType = PropTypes.shape({
+  duration: PropTypes.number,
+  delay: PropTypes.number,
+  springDamping: PropTypes.number,
+  initialVelocity: PropTypes.number,
+  type: PropTypes.oneOf(Object.keys(Types)).isRequired,
+  property: PropTypes.oneOf(
+    // Only applies to create/delete
+    Object.keys(Properties),
+  ),
+});
+
+type Anim = {
   duration?: number,
   delay?: number,
   springDamping?: number,
   initialVelocity?: number,
-  type?: Type,
-  property?: Property,
-|}>;
+  type?: $Enum<typeof TypesEnum>,
+  property?: $Enum<typeof PropertiesEnum>,
+};
 
-type LayoutAnimationConfig = $ReadOnly<{|
+const configType = PropTypes.shape({
+  duration: PropTypes.number.isRequired,
+  create: animType,
+  update: animType,
+  delete: animType,
+});
+
+type Config = {
   duration: number,
-  create?: AnimationConfig,
-  update?: AnimationConfig,
-  delete?: AnimationConfig,
-|}>;
+  create?: Anim,
+  update?: Anim,
+  delete?: Anim,
+};
 
-function configureNext(
-  config: LayoutAnimationConfig,
-  onAnimationDidEnd?: Function,
-) {
+function checkConfig(config: Config, location: string, name: string) {
+  checkPropTypes({config: configType}, {config}, location, name);
+}
+
+function configureNext(config: Config, onAnimationDidEnd?: Function) {
+  if (__DEV__) {
+    checkConfig(config, 'config', 'LayoutAnimation.configureNext');
+  }
   UIManager.configureNextLayoutAnimation(
     config,
-    onAnimationDidEnd ?? function() {},
+    onAnimationDidEnd || function() {},
     function() {
       /* unused */
     },
   );
 }
 
-function create(
-  duration: number,
-  type: Type,
-  property: Property,
-): LayoutAnimationConfig {
+function create(duration: number, type, creationProp): Config {
   return {
     duration,
-    create: {type, property},
-    update: {type},
-    delete: {type, property},
+    create: {
+      type,
+      property: creationProp,
+    },
+    update: {
+      type,
+    },
+    delete: {
+      type,
+      property: creationProp,
+    },
   };
 }
 
 const Presets = {
-  easeInEaseOut: create(300, 'easeInEaseOut', 'opacity'),
-  linear: create(500, 'linear', 'opacity'),
+  easeInEaseOut: create(300, Types.easeInEaseOut, Properties.opacity),
+  linear: create(500, Types.linear, Properties.opacity),
   spring: {
     duration: 700,
     create: {
-      type: 'linear',
-      property: 'opacity',
+      type: Types.linear,
+      property: Properties.opacity,
     },
     update: {
-      type: 'spring',
+      type: Types.spring,
       springDamping: 0.4,
     },
     delete: {
-      type: 'linear',
-      property: 'opacity',
+      type: Types.linear,
+      property: Properties.opacity,
     },
   },
 };
@@ -101,8 +143,9 @@ const LayoutAnimation = {
    * @param config Specifies animation properties:
    *
    *   - `duration` in milliseconds
-   *   - `create`, `AnimationConfig` for animating in new views
-   *   - `update`, `AnimationConfig` for animating views that have been updated
+   *   - `create`, config for animating in new views (see `Anim` type)
+   *   - `update`, config for animating views that have been updated
+   * (see `Anim` type)
    *
    * @param onAnimationDidEnd Called when the animation finished.
    * Only supported on iOS.
@@ -113,23 +156,9 @@ const LayoutAnimation = {
    * Helper for creating a config for `configureNext`.
    */
   create,
-  Types: Object.freeze({
-    spring: 'spring',
-    linear: 'linear',
-    easeInEaseOut: 'easeInEaseOut',
-    easeIn: 'easeIn',
-    easeOut: 'easeOut',
-    keyboard: 'keyboard',
-  }),
-  Properties: Object.freeze({
-    opacity: 'opacity',
-    scaleX: 'scaleX',
-    scaleY: 'scaleY',
-    scaleXY: 'scaleXY',
-  }),
-  checkConfig(...args: Array<mixed>) {
-    console.error('LayoutAnimation.checkConfig(...) has been disabled.');
-  },
+  Types,
+  Properties,
+  checkConfig,
   Presets,
   easeInEaseOut: configureNext.bind(null, Presets.easeInEaseOut),
   linear: configureNext.bind(null, Presets.linear),

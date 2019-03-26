@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2013-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,14 +9,14 @@
 
 'use strict';
 
-const BatchedBridge = require('BatchedBridge');
-const {assertEquals, assertTrue} = require('Asserts');
+var BatchedBridge = require('BatchedBridge');
+var {assertEquals, assertTrue} = require('Asserts');
 
 function strictStringCompare(a, b) {
   if (typeof a !== 'string' || typeof b !== 'string' || a.length !== b.length) {
     return false;
   }
-  for (let i = 0; i < a.length; i++) {
+  for (var i = 0; i < a.length; i++) {
     if (a.charCodeAt(i) !== b.charCodeAt(i)) {
       return false;
     }
@@ -28,7 +28,7 @@ function assertStrictStringEquals(a, b) {
   assertTrue(strictStringCompare(a, b), 'Expected: ' + a + ', received: ' + b);
 }
 
-const TestJavaToJSArgumentsModule = {
+var TestJavaToJSArgumentsModule = {
   receiveBasicTypes: function(str, dbl, bool, null_arg) {
     assertEquals('foo', str);
     assertEquals(3.14, dbl);
@@ -45,15 +45,15 @@ const TestJavaToJSArgumentsModule = {
   receiveNestedArray: function(arr) {
     assertEquals(2, arr.length);
     assertEquals('level1', arr[0]);
-    const arr2 = arr[1];
+    var arr2 = arr[1];
     assertEquals('level2', arr2[0]);
-    const arr3 = arr2[1];
+    var arr3 = arr2[1];
     assertEquals('level3', arr3[0]);
   },
   receiveArrayWithMaps: function(arr) {
     assertEquals(2, arr.length);
-    const m1 = arr[0];
-    const m2 = arr[1];
+    var m1 = arr[0];
+    var m2 = arr[1];
     assertEquals('m1v1', m1.m1k1);
     assertEquals('m1v2', m1.m1k2);
     assertEquals('m2v1', m2.m2k1);
@@ -65,12 +65,12 @@ const TestJavaToJSArgumentsModule = {
     assertEquals(null, map.nullKey);
   },
   receiveNestedMap: function(map) {
-    const nestedMap = map.nestedMap;
+    var nestedMap = map.nestedMap;
     assertEquals('foxes', nestedMap.animals);
   },
   receiveMapWithArrays: function(map) {
-    const a1 = map.array1;
-    const a2 = map.array2;
+    var a1 = map.array1;
+    var a2 = map.array2;
     assertEquals(3, a1.length);
     assertEquals(2, a2.length);
     assertEquals(3, a1[0]);

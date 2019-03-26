@@ -1,24 +1,26 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
+// Copyright (c) 2004-present, Facebook, Inc.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
 
 #pragma once
 
-#include <react/core/ShadowNode.h>
-#include <react/uimanager/ShadowViewMutation.h>
+#include <fabric/core/ShadowNode.h>
+#include <fabric/uimanager/TreeMutationInstruction.h>
 
 namespace facebook {
 namespace react {
 
 /*
- * Calculates a list of view mutations which describes how the old
- * `ShadowTree` can be transformed to the new one.
- * The list of mutations might be and might not be optimal.
+ * Calculates set of mutation instuctions which describe how the old
+ * ShadowNode tree can be transformed to the new ShadowNode tree.
+ * The set of instuctions might be and might not be optimal.
  */
-ShadowViewMutationList calculateShadowViewMutations(
-    const ShadowNode &oldRootShadowNode,
-    const ShadowNode &newRootShadowNode);
+void calculateMutationInstructions(
+  TreeMutationInstructionList &instructions,
+  const SharedShadowNode &oldNode,
+  const SharedShadowNode &newNode
+);
 
 } // namespace react
 } // namespace facebook

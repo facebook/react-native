@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -32,8 +32,8 @@ module.exports = {
   options: [
     {
       command: '--port [number]',
+      default: process.env.RCT_METRO_PORT || 8081,
       parse: (val: string) => Number(val),
-      default: (config: ConfigT) => config.server.port,
     },
     {
       command: '--host [string]',
@@ -42,14 +42,18 @@ module.exports = {
     {
       command: '--projectRoot [string]',
       description: 'Specify the main project root',
-      default: (config: ConfigT) => config.projectRoot,
+      default: (config: ConfigT) => {
+        return config.projectRoot;
+      },
     },
     {
       command: '--watchFolders [list]',
       description:
         'Specify any additional folders to be added to the watch list',
       parse: (val: string) => val.split(','),
-      default: (config: ConfigT) => config.watchFolders,
+      default: (config: ConfigT) => {
+        return config.watchFolders;
+      },
     },
     {
       command: '--assetExts [list]',
@@ -77,7 +81,11 @@ module.exports = {
       description:
         'Specify any npm packages that import dependencies with providesModule',
       parse: (val: string) => val.split(','),
-      default: (config: ConfigT) => config.resolver.providesModuleNodeModules,
+      default: (config: RNConfig) => {
+        return config.resolver
+          ? config.resolver.providesModuleNodeModules
+          : undefined;
+      },
     },
     {
       command: '--max-workers [number]',
@@ -85,7 +93,6 @@ module.exports = {
         'Specifies the maximum number of workers the worker-pool ' +
         'will spawn for transforming files. This defaults to the number of the ' +
         'cores available on your machine.',
-      default: (config: ConfigT) => config.maxWorkers,
       parse: (workers: string) => Number(workers),
     },
     {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,22 +9,20 @@
 
 #import <React/RCTComponentViewProtocol.h>
 #import <React/UIView+ComponentViewProtocol.h>
-#import <react/core/LayoutMetrics.h>
-#import <react/core/Props.h>
-#import <react/components/view/ViewEventEmitter.h>
-#import <react/components/view/ViewProps.h>
-#import <react/events/EventEmitter.h>
-#import <React/RCTTouchableComponentViewProtocol.h>
+#import <fabric/core/LayoutMetrics.h>
+#import <fabric/core/Props.h>
+#import <fabric/components/view/ViewEventEmitter.h>
+#import <fabric/events/EventEmitter.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 /**
  * UIView class for <View> component.
  */
-@interface RCTViewComponentView : UIView <RCTComponentViewProtocol, RCTTouchableComponentViewProtocol> {
+@interface RCTViewComponentView : UIView <RCTComponentViewProtocol> {
 @protected
   facebook::react::LayoutMetrics _layoutMetrics;
-  facebook::react::SharedViewProps _props;
+  facebook::react::SharedProps _props;
   facebook::react::SharedViewEventEmitter _eventEmitter;
 }
 

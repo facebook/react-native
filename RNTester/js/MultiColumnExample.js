@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,7 +12,7 @@
 
 const React = require('react');
 const ReactNative = require('react-native');
-const {FlatList, StyleSheet, Text, View, Alert} = ReactNative;
+const {FlatList, StyleSheet, Text, View} = ReactNative;
 
 const RNTesterPage = require('./RNTesterPage');
 
@@ -91,13 +91,12 @@ class MultiColumnExample extends React.PureComponent<
           data={filteredData}
           key={this.state.numColumns + (this.state.fixedHeight ? 'f' : 'v')}
           numColumns={this.state.numColumns || 1}
-          onRefresh={() =>
-            Alert.alert('Alert', 'onRefresh: nothing to refresh :P')
-          }
+          onRefresh={() => alert('onRefresh: nothing to refresh :P')}
           refreshing={false}
           renderItem={this._renderItemComponent}
           disableVirtualization={!this.state.virtualized}
           onViewableItemsChanged={this._onViewableItemsChanged}
+          legacyImplementation={false}
         />
       </RNTesterPage>
     );

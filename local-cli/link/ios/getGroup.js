@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,8 +9,8 @@
 
 const getFirstProject = project => project.getFirstProject().firstProject;
 
-const findGroup = (groups, name) =>
-  groups.children.find(group => group.comment === name);
+const findGroup = (group, name) =>
+  group.children.find(group => group.comment === name);
 
 /**
  * Returns group from .xcodeproj if one exists, null otherwise
@@ -23,22 +23,22 @@ const findGroup = (groups, name) =>
 module.exports = function getGroup(project, path) {
   const firstProject = getFirstProject(project);
 
-  let groups = project.getPBXGroupByKey(firstProject.mainGroup);
+  var group = project.getPBXGroupByKey(firstProject.mainGroup);
 
   if (!path) {
-    return groups;
+    return group;
   }
 
   for (var name of path.split('/')) {
-    var foundGroup = findGroup(groups, name);
+    var foundGroup = findGroup(group, name);
 
     if (foundGroup) {
-      groups = project.getPBXGroupByKey(foundGroup.value);
+      group = project.getPBXGroupByKey(foundGroup.value);
     } else {
-      groups = null;
+      group = null;
       break;
     }
   }
 
-  return groups;
+  return group;
 };

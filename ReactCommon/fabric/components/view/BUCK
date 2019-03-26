@@ -1,6 +1,6 @@
-load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "get_debug_preprocessor_flags")
+load("//configurations/buck/apple:flag_defs.bzl", "OBJC_ARC_PREPROCESSOR_FLAGS", "get_application_ios_flags", "get_debug_preprocessor_flags")
 load(
-    "//tools/build_defs/oss:rn_defs.bzl",
+    "//ReactNative:DEFS.bzl",
     "ANDROID",
     "APPLE",
     "fb_xplat_cxx_test",
@@ -31,7 +31,7 @@ rn_xplat_cxx_library(
             ("root", "*.h"),
             ("yoga", "*.h"),
         ],
-        prefix = "react/components/view",
+        prefix = "fabric/components/view",
     ),
     compiler_flags = [
         "-fexceptions",

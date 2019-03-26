@@ -1,4 +1,4 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
+// Copyright (c) 2004-present, Facebook, Inc.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -25,7 +25,6 @@ public enum ReactMarkerConstants {
   NATIVE_MODULE_INITIALIZE_END,
   SETUP_REACT_CONTEXT_START,
   SETUP_REACT_CONTEXT_END,
-  CHANGE_THREAD_PRIORITY,
   CREATE_UI_MANAGER_MODULE_START,
   CREATE_UI_MANAGER_MODULE_END,
   CREATE_VIEW_MANAGERS_START,
@@ -91,8 +90,4 @@ public enum ReactMarkerConstants {
   BYTECODE_CREATION_FAILED,
   BYTECODE_READ_FAILED,
   BYTECODE_WRITE_FAILED,
-  VM_INIT,
-  ON_FRAGMENT_CREATE,
-  JAVASCRIPT_EXECUTOR_FACTORY_INJECT_START,
-  JAVASCRIPT_EXECUTOR_FACTORY_INJECT_END,
 }

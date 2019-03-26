@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,7 +10,6 @@
 #import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 #import <React/RCTConvert.h>
 
-#import "RCTAnimationUtils.h"
 #import "RCTValueAnimatedNode.h"
 
 @interface RCTDecayAnimation ()
@@ -101,7 +100,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   CGFloat value = _fromValue +
     (_velocity / (1 - _deceleration)) *
-    (1 - exp(-(1 - _deceleration) * (currentTime - _frameStartTime) * 1000.0 / RCTAnimationDragCoefficient()));
+    (1 - exp(-(1 - _deceleration) * (currentTime - _frameStartTime) * 1000.0));
 
   [self updateValue:value];
 

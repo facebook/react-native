@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,15 +10,15 @@
 
 'use strict';
 
-const DeprecatedTextPropTypes = require('DeprecatedTextPropTypes');
 const React = require('React');
 const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const TextAncestor = require('TextAncestor');
+const TextPropTypes = require('TextPropTypes');
 const Touchable = require('Touchable');
 const UIManager = require('UIManager');
 
 const createReactNativeComponentClass = require('createReactNativeComponentClass');
-const nullthrows = require('nullthrows');
+const nullthrows = require('fbjs/lib/nullthrows');
 const processColor = require('processColor');
 
 import type {PressEvent} from 'CoreEventTypes';
@@ -27,10 +27,10 @@ import type {PressRetentionOffset, TextProps} from 'TextProps';
 
 type ResponseHandlers = $ReadOnly<{|
   onStartShouldSetResponder: () => boolean,
-  onResponderGrant: (event: PressEvent, dispatchID: string) => void,
-  onResponderMove: (event: PressEvent) => void,
-  onResponderRelease: (event: PressEvent) => void,
-  onResponderTerminate: (event: PressEvent) => void,
+  onResponderGrant: (event: SyntheticEvent<>, dispatchID: string) => void,
+  onResponderMove: (event: SyntheticEvent<>) => void,
+  onResponderRelease: (event: SyntheticEvent<>) => void,
+  onResponderTerminate: (event: SyntheticEvent<>) => void,
   onResponderTerminationRequest: () => boolean,
 |}>;
 
@@ -58,19 +58,12 @@ const viewConfig = {
     numberOfLines: true,
     ellipsizeMode: true,
     allowFontScaling: true,
-    maxFontSizeMultiplier: true,
     disabled: true,
     selectable: true,
     selectionColor: true,
     adjustsFontSizeToFit: true,
     minimumFontScale: true,
     textBreakStrategy: true,
-    onTextLayout: true,
-  },
-  directEventTypes: {
-    topTextLayout: {
-      registrationName: 'onTextLayout',
-    },
   },
   uiViewClassName: 'RCTText',
 };
@@ -93,12 +86,12 @@ class TouchableText extends React.Component<Props, State> {
   touchableHandleLongPress: ?(event: PressEvent) => void;
   touchableHandlePress: ?(event: PressEvent) => void;
   touchableHandleResponderGrant: ?(
-    event: PressEvent,
+    event: SyntheticEvent<>,
     dispatchID: string,
   ) => void;
-  touchableHandleResponderMove: ?(event: PressEvent) => void;
-  touchableHandleResponderRelease: ?(event: PressEvent) => void;
-  touchableHandleResponderTerminate: ?(event: PressEvent) => void;
+  touchableHandleResponderMove: ?(event: SyntheticEvent<>) => void;
+  touchableHandleResponderRelease: ?(event: SyntheticEvent<>) => void;
+  touchableHandleResponderTerminate: ?(event: SyntheticEvent<>) => void;
   touchableHandleResponderTerminationRequest: ?() => boolean;
 
   state = {
@@ -108,12 +101,10 @@ class TouchableText extends React.Component<Props, State> {
     responseHandlers: null,
   };
 
-  static getDerivedStateFromProps(
-    nextProps: Props,
-    prevState: State,
-  ): $Shape<State> | null {
+  static getDerivedStateFromProps(nextProps: Props, prevState: State): ?State {
     return prevState.responseHandlers == null && isTouchable(nextProps)
       ? {
+          ...prevState,
           responseHandlers: prevState.createResponderHandlers(),
         }
       : null;
@@ -173,25 +164,25 @@ class TouchableText extends React.Component<Props, State> {
         }
         return shouldSetResponder;
       },
-      onResponderGrant: (event: PressEvent, dispatchID: string): void => {
+      onResponderGrant: (event: SyntheticEvent<>, dispatchID: string): void => {
         nullthrows(this.touchableHandleResponderGrant)(event, dispatchID);
         if (this.props.onResponderGrant != null) {
           this.props.onResponderGrant.call(this, event, dispatchID);
         }
       },
-      onResponderMove: (event: PressEvent): void => {
+      onResponderMove: (event: SyntheticEvent<>): void => {
         nullthrows(this.touchableHandleResponderMove)(event);
         if (this.props.onResponderMove != null) {
           this.props.onResponderMove.call(this, event);
         }
       },
-      onResponderRelease: (event: PressEvent): void => {
+      onResponderRelease: (event: SyntheticEvent<>): void => {
         nullthrows(this.touchableHandleResponderRelease)(event);
         if (this.props.onResponderRelease != null) {
           this.props.onResponderRelease.call(this, event);
         }
       },
-      onResponderTerminate: (event: PressEvent): void => {
+      onResponderTerminate: (event: SyntheticEvent<>): void => {
         nullthrows(this.touchableHandleResponderTerminate)(event);
         if (this.props.onResponderTerminate != null) {
           this.props.onResponderTerminate.call(this, event);
@@ -260,13 +251,12 @@ const RCTText = createReactNativeComponentClass(
 );
 
 const RCTVirtualText =
-  UIManager.getViewManagerConfig('RCTVirtualText') == null
+  UIManager.RCTVirtualText == null
     ? RCTText
     : createReactNativeComponentClass('RCTVirtualText', () => ({
         validAttributes: {
           ...ReactNativeViewAttributes.UIView,
           isHighlighted: true,
-          maxFontSizeMultiplier: true,
         },
         uiViewClassName: 'RCTVirtualText',
       }));
@@ -279,9 +269,8 @@ const Text = (
 };
 // $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
 const TextToExport = React.forwardRef(Text);
-TextToExport.displayName = 'Text';
 
 // TODO: Deprecate this.
-TextToExport.propTypes = DeprecatedTextPropTypes;
+TextToExport.propTypes = TextPropTypes;
 
 module.exports = (TextToExport: Class<NativeComponent<TextProps>>);

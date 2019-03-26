@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,51 +10,35 @@
 
 'use strict';
 
-const ProgressBar = require('ProgressBarAndroid');
-const React = require('React');
-const RNTesterBlock = require('RNTesterBlock');
-const RNTesterPage = require('RNTesterPage');
+var ProgressBar = require('ProgressBarAndroid');
+var React = require('React');
+var createReactClass = require('create-react-class');
+var RNTesterBlock = require('RNTesterBlock');
+var RNTesterPage = require('RNTesterPage');
 
-import type {ProgressBarAndroidProps} from 'ProgressBarAndroid';
+var TimerMixin = require('react-timer-mixin');
 
-type MovingBarProps = $ReadOnly<{|
-  ...$Diff<
-    ProgressBarAndroidProps,
-    {
-      progress: ?number,
-    },
-  >,
-  indeterminate: false,
-|}>;
+var MovingBar = createReactClass({
+  displayName: 'MovingBar',
+  mixins: [TimerMixin],
 
-type MovingBarState = {
-  progress: number,
-};
+  getInitialState: function() {
+    return {
+      progress: 0,
+    };
+  },
 
-class MovingBar extends React.Component<MovingBarProps, MovingBarState> {
-  _intervalID: ?IntervalID = null;
-
-  state = {
-    progress: 0,
-  };
-
-  componentDidMount() {
-    this._intervalID = setInterval(() => {
-      const progress = (this.state.progress + 0.02) % 1;
-      this.setState({progress});
+  componentDidMount: function() {
+    this.setInterval(() => {
+      var progress = (this.state.progress + 0.02) % 1;
+      this.setState({progress: progress});
     }, 50);
-  }
+  },
 
-  componentWillUnmount() {
-    if (this._intervalID != null) {
-      clearInterval(this._intervalID);
-    }
-  }
-
-  render() {
+  render: function() {
     return <ProgressBar progress={this.state.progress} {...this.props} />;
-  }
-}
+  },
+});
 
 class ProgressBarAndroidExample extends React.Component<{}> {
   static title = '<ProgressBarAndroid>';

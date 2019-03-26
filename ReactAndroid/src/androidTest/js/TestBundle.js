@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2013-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -32,14 +32,9 @@ require('TextInputTestModule');
 require('TimePickerDialogTestModule');
 
 // Define catalyst test apps used in integration tests
-const AppRegistry = require('AppRegistry');
+var AppRegistry = require('AppRegistry');
 
-const apps = [
-  {
-    appKey: 'AnimatedTransformTestApp',
-    component: () =>
-      require('AnimatedTransformTestModule').AnimatedTransformTestApp,
-  },
+var apps = [
   {
     appKey: 'CatalystRootViewTestApp',
     component: () =>
@@ -58,14 +53,6 @@ const apps = [
     appKey: 'HorizontalScrollViewTestApp',
     component: () =>
       require('ScrollViewTestModule').HorizontalScrollViewTestApp,
-  },
-  {
-    appKey: 'ImageOverlayColorTestApp',
-    component: () => require('ImageOverlayColorTestApp'),
-  },
-  {
-    appKey: 'ImageErrorTestApp',
-    component: () => require('ImageErrorTestApp'),
   },
   {
     appKey: 'InitialPropsTestApp',

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -24,11 +24,11 @@ import com.facebook.react.uimanager.DisplayMetricsHolder;
 /**
  * Module that exposes Android Constants to JS.
  */
-@ReactModule(name = DeviceInfoModule.NAME)
+@ReactModule(name = DeviceInfoModule.sModuleName)
 public class DeviceInfoModule extends BaseJavaModule implements
     LifecycleEventListener {
 
-  public static final String NAME = "DeviceInfo";
+  static final String sModuleName = "DeviceInfo";
 
   private @Nullable ReactApplicationContext mReactApplicationContext;
   private float mFontScale;
@@ -47,7 +47,7 @@ public class DeviceInfoModule extends BaseJavaModule implements
 
   @Override
   public String getName() {
-    return NAME;
+    return sModuleName;
   }
 
   @Override

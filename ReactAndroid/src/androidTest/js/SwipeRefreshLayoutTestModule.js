@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2013-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,16 +9,15 @@
 
 'use strict';
 
-const BatchedBridge = require('BatchedBridge');
-const React = require('React');
-const RecordingModule = require('NativeModules')
+var BatchedBridge = require('BatchedBridge');
+var React = require('React');
+var RecordingModule = require('NativeModules')
   .SwipeRefreshLayoutRecordingModule;
-const ScrollView = require('ScrollView');
-const StyleSheet = require('StyleSheet');
-const RefreshControl = require('RefreshControl');
-const Text = require('Text');
-const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-const View = require('View');
+var ScrollView = require('ScrollView');
+var RefreshControl = require('RefreshControl');
+var Text = require('Text');
+var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+var View = require('View');
 
 class Row extends React.Component {
   state = {
@@ -40,7 +39,7 @@ class Row extends React.Component {
   };
 }
 
-let app = null;
+var app = null;
 
 class SwipeRefreshLayoutTestApp extends React.Component {
   state = {
@@ -52,16 +51,16 @@ class SwipeRefreshLayoutTestApp extends React.Component {
   }
 
   render() {
-    const rows = [];
-    for (let i = 0; i < this.state.rows; i++) {
+    var rows = [];
+    for (var i = 0; i < this.state.rows; i++) {
       rows.push(<Row key={i} />);
     }
     return (
       <ScrollView
-        style={styles.container}
+        style={{flex: 1}}
         refreshControl={
           <RefreshControl
-            style={styles.content}
+            style={{flex: 1}}
             refreshing={false}
             onRefresh={() => RecordingModule.onRefresh()}
           />
@@ -72,7 +71,7 @@ class SwipeRefreshLayoutTestApp extends React.Component {
   }
 }
 
-const SwipeRefreshLayoutTestModule = {
+var SwipeRefreshLayoutTestModule = {
   SwipeRefreshLayoutTestApp,
   setRows: function(rows) {
     if (app != null) {
@@ -85,14 +84,5 @@ BatchedBridge.registerCallableModule(
   'SwipeRefreshLayoutTestModule',
   SwipeRefreshLayoutTestModule,
 );
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-  },
-});
 
 module.exports = SwipeRefreshLayoutTestModule;

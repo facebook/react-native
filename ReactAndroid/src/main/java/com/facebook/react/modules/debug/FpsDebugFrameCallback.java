@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,6 @@
 
 package com.facebook.react.modules.debug;
 
-import com.facebook.react.bridge.UiThreadUtil;
 import javax.annotation.Nullable;
 
 import java.util.Map;
@@ -60,7 +59,7 @@ public class FpsDebugFrameCallback extends ChoreographerCompat.FrameCallback {
 
   private static final double EXPECTED_FRAME_TIME = 16.9;
 
-  private @Nullable ChoreographerCompat mChoreographer;
+  private final ChoreographerCompat mChoreographer;
   private final ReactContext mReactContext;
   private final UIManagerModule mUIManagerModule;
   private final DidJSUpdateUiDuringFrameDetector mDidJSUpdateUiDuringFrameDetector;
@@ -75,7 +74,8 @@ public class FpsDebugFrameCallback extends ChoreographerCompat.FrameCallback {
   private boolean mIsRecordingFpsInfoAtEachFrame = false;
   private @Nullable TreeMap<Long, FpsInfo> mTimeToFps;
 
-  public FpsDebugFrameCallback(ReactContext reactContext) {
+  public FpsDebugFrameCallback(ChoreographerCompat choreographer, ReactContext reactContext) {
+    mChoreographer = choreographer;
     mReactContext = reactContext;
     mUIManagerModule = reactContext.getNativeModule(UIManagerModule.class);
     mDidJSUpdateUiDuringFrameDetector = new DidJSUpdateUiDuringFrameDetector();
@@ -120,9 +120,8 @@ public class FpsDebugFrameCallback extends ChoreographerCompat.FrameCallback {
       mTimeToFps.put(System.currentTimeMillis(), info);
     }
     mExpectedNumFramesPrev = expectedNumFrames;
-    if (mChoreographer != null) {
-      mChoreographer.postFrameCallback(this);
-    }
+
+    mChoreographer.postFrameCallback(this);
   }
 
   public void start() {
@@ -130,14 +129,7 @@ public class FpsDebugFrameCallback extends ChoreographerCompat.FrameCallback {
     mReactContext.getCatalystInstance().addBridgeIdleDebugListener(
         mDidJSUpdateUiDuringFrameDetector);
     mUIManagerModule.setViewHierarchyUpdateDebugListener(mDidJSUpdateUiDuringFrameDetector);
-    final FpsDebugFrameCallback fpsDebugFrameCallback = this;
-    UiThreadUtil.runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        mChoreographer = ChoreographerCompat.getInstance();
-        mChoreographer.postFrameCallback(fpsDebugFrameCallback);
-      }
-    });
+    mChoreographer.postFrameCallback(this);
   }
 
   public void startAndRecordFpsAtEachFrame() {

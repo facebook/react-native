@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,6 +18,12 @@ const {TestModule} = ReactNative.NativeModules;
 const DEFAULT_WS_URL = 'ws://localhost:5555/';
 
 const WS_EVENTS = ['close', 'error', 'message', 'open'];
+const WS_STATES = [
+  /* 0 */ 'CONNECTING',
+  /* 1 */ 'OPEN',
+  /* 2 */ 'CLOSING',
+  /* 3 */ 'CLOSED',
+];
 
 type State = {
   url: string,
@@ -44,6 +50,7 @@ class WebSocketTest extends React.Component<{}, State> {
 
   _waitFor = (condition: any, timeout: any, callback: any) => {
     let remaining = timeout;
+    let t;
     const timeoutFunction = function() {
       if (condition()) {
         callback(true);
@@ -53,10 +60,10 @@ class WebSocketTest extends React.Component<{}, State> {
       if (remaining === 0) {
         callback(false);
       } else {
-        setTimeout(timeoutFunction, 1000);
+        t = setTimeout(timeoutFunction, 1000);
       }
     };
-    setTimeout(timeoutFunction, 1000);
+    t = setTimeout(timeoutFunction, 1000);
   };
 
   _connect = () => {
@@ -114,30 +121,39 @@ class WebSocketTest extends React.Component<{}, State> {
   }
 
   testConnect = () => {
-    this._connect();
-    this._waitFor(this._socketIsConnected, 5, connectSucceeded => {
+    const component = this;
+    component._connect();
+    component._waitFor(component._socketIsConnected, 5, function(
+      connectSucceeded,
+    ) {
       if (!connectSucceeded) {
         TestModule.markTestPassed(false);
         return;
       }
-      this.testSendAndReceive();
+      component.testSendAndReceive();
     });
   };
 
   testSendAndReceive = () => {
-    this._sendTestMessage();
-    this._waitFor(this._receivedTestExpectedResponse, 5, messageReceived => {
+    const component = this;
+    component._sendTestMessage();
+    component._waitFor(component._receivedTestExpectedResponse, 5, function(
+      messageReceived,
+    ) {
       if (!messageReceived) {
         TestModule.markTestPassed(false);
         return;
       }
-      this.testDisconnect();
+      component.testDisconnect();
     });
   };
 
   testDisconnect = () => {
-    this._disconnect();
-    this._waitFor(this._socketIsDisconnected, 5, disconnectSucceeded => {
+    const component = this;
+    component._disconnect();
+    component._waitFor(component._socketIsDisconnected, 5, function(
+      disconnectSucceeded,
+    ) {
       TestModule.markTestPassed(disconnectSucceeded);
     });
   };

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -33,18 +33,13 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
   private final @Nullable String mImageUri;
   private final int mWidth;
   private final int mHeight;
-  private final @Nullable String mImageError;
 
   public ImageLoadEvent(int viewId, @ImageEventType int eventType) {
     this(viewId, eventType, null);
   }
 
-  public ImageLoadEvent(int viewId, @ImageEventType int eventType, boolean error, String message) {
-    this(viewId, eventType, null, 0, 0, message);
-  }
-
   public ImageLoadEvent(int viewId, @ImageEventType int eventType, String imageUri) {
-    this(viewId, eventType, imageUri, 0, 0, null);
+    this(viewId, eventType, imageUri, 0, 0);
   }
 
   public ImageLoadEvent(
@@ -53,22 +48,11 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
     @Nullable String imageUri,
     int width,
     int height) {
-    this(viewId, eventType, imageUri, width, height, null);
-  }
-
-  public ImageLoadEvent(
-    int viewId,
-    @ImageEventType int eventType,
-    @Nullable String imageUri,
-    int width,
-    int height,
-    @Nullable String message) {
     super(viewId);
     mEventType = eventType;
     mImageUri = imageUri;
     mWidth = width;
     mHeight = height;
-    mImageError = message;
   }
 
   public static String eventNameForType(@ImageEventType int eventType) {
@@ -104,7 +88,7 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
   public void dispatch(RCTEventEmitter rctEventEmitter) {
     WritableMap eventData = null;
 
-    if (mImageUri != null || (mEventType == ON_LOAD || mEventType == ON_ERROR)) {
+    if (mImageUri != null || mEventType == ON_LOAD) {
       eventData = Arguments.createMap();
 
       if (mImageUri != null) {
@@ -119,8 +103,6 @@ public class ImageLoadEvent extends Event<ImageLoadEvent> {
           source.putString("url", mImageUri);
         }
         eventData.putMap("source", source);
-      } else if (mEventType == ON_ERROR) {
-        eventData.putString("error", mImageError);
       }
     }
 

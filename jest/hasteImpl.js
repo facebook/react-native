@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2014-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,17 +13,7 @@
 const path = require('path');
 const findPlugins = require('../local-cli/core/findPlugins');
 
-const REACT_NATIVE_CI = process.cwd() === path.resolve(__dirname, '..');
-
-let pluginsPath;
-
-if (REACT_NATIVE_CI) {
-  pluginsPath = '..';
-} else {
-  pluginsPath = '../../../';
-}
-
-const plugins = findPlugins([path.resolve(__dirname, pluginsPath)]);
+const plugins = findPlugins([path.resolve(__dirname, '../../../')]);
 
 // Detect out-of-tree platforms and add them to the whitelists
 const pluginRoots /*: Array<

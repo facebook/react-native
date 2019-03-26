@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -19,7 +19,7 @@ import type {ViewProps} from 'ViewPropTypes';
 
 const AndroidProgressBar = requireNativeComponent('AndroidProgressBar');
 
-export type ProgressBarAndroidProps = $ReadOnly<{|
+type Props = $ReadOnly<{|
   ...ViewProps,
 
   /**
@@ -83,7 +83,7 @@ export type ProgressBarAndroidProps = $ReadOnly<{|
  * ```
  */
 const ProgressBarAndroid = (
-  props: ProgressBarAndroidProps,
+  props: Props,
   forwardedRef: ?React.Ref<'AndroidProgressBar'>,
 ) => {
   return <AndroidProgressBar {...props} ref={forwardedRef} />;
@@ -98,6 +98,4 @@ ProgressBarAndroidToExport.defaultProps = {
   animating: true,
 };
 
-module.exports = (ProgressBarAndroidToExport: Class<
-  NativeComponent<ProgressBarAndroidProps>,
->);
+module.exports = (ProgressBarAndroidToExport: Class<NativeComponent<Props>>);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import <react/uimanager/ShadowView.h>
-#import <react/uimanager/ShadowViewMutation.h>
+#import <fabric/uimanager/TreeMutationInstruction.h>
 #import <React/RCTPrimitives.h>
 #import <React/RCTMountingManagerDelegate.h>
 
@@ -29,8 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
  * The order of mutation tnstructions matters.
  * Can be called from any thread.
  */
-- (void)performTransactionWithMutations:(facebook::react::ShadowViewMutationList)mutations
-                                rootTag:(ReactTag)rootTag;
+- (void)mutateComponentViewTreeWithMutationInstructions:(facebook::react::TreeMutationInstructionList)instructions
+                                                rootTag:(ReactTag)rootTag;
 
 /**
  * Suggests preliminary creation of a component view of given type.

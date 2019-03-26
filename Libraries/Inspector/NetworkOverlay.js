@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,7 +10,7 @@
 
 'use strict';
 
-const FlatList = require('FlatList');
+const ListView = require('ListView');
 const React = require('React');
 const ScrollView = require('ScrollView');
 const StyleSheet = require('StyleSheet');
@@ -21,12 +21,12 @@ const WebSocketInterceptor = require('WebSocketInterceptor');
 const XHRInterceptor = require('XHRInterceptor');
 
 const LISTVIEW_CELL_HEIGHT = 15;
+const SEPARATOR_THICKNESS = 2;
 
 // Global id for the intercepted XMLHttpRequest objects.
 let nextXHRId = 0;
 
 type NetworkRequestInfo = {
-  id: number,
   type?: string,
   url?: string,
   method?: string,
@@ -46,57 +46,61 @@ type NetworkRequestInfo = {
   serverError?: Object,
 };
 
-type Props = $ReadOnly<{||}>;
-type State = {|
-  detailRowId: ?number,
-  requests: Array<NetworkRequestInfo>,
-|};
-
-function getStringByValue(value: any): string {
-  if (value === undefined) {
-    return 'undefined';
-  }
-  if (typeof value === 'object') {
-    return JSON.stringify(value);
-  }
-  if (typeof value === 'string' && value.length > 500) {
-    return String(value)
-      .substr(0, 500)
-      .concat('\n***TRUNCATED TO 500 CHARACTERS***');
-  }
-  return value;
-}
-
-function getTypeShortName(type: any): string {
-  if (type === 'XMLHttpRequest') {
-    return 'XHR';
-  } else if (type === 'WebSocket') {
-    return 'WS';
-  }
-
-  return '';
-}
-
-function keyExtractor(request: NetworkRequestInfo): string {
-  return String(request.id);
-}
-
 /**
  * Show all the intercepted network requests over the InspectorPanel.
  */
-class NetworkOverlay extends React.Component<Props, State> {
-  _requestsListView: ?React.ElementRef<typeof FlatList>;
-  _detailScrollView: ?React.ElementRef<typeof ScrollView>;
+class NetworkOverlay extends React.Component<
+  Object,
+  {
+    dataSource: ListView.DataSource,
+    newDetailInfo: boolean,
+    detailRowID: ?number,
+  },
+> {
+  _requests: Array<NetworkRequestInfo>;
+  _listViewDataSource: ListView.DataSource;
+  _listView: ?ListView;
+  _listViewHighlighted: boolean;
+  _listViewHeight: number;
+  _scrollView: ?ScrollView;
+  _detailViewItems: Array<Array<React.Element<any>>>;
+  _listViewOnLayout: (event: Event) => void;
+  _captureRequestListView: (listRef: ?ListView) => void;
+  _captureDetailScrollView: (scrollRef: ?ScrollView) => void;
+  _renderRow: (
+    rowData: NetworkRequestInfo,
+    sectionID: number,
+    rowID: number,
+    highlightRow: (sectionID: number, rowID: number) => void,
+  ) => React.Element<any>;
+  _closeButtonClicked: () => void;
+  // Map of `socketId` -> `index in `_requests``.
+  _socketIdMap: Object;
+  // Map of `xhr._index` -> `index in `_requests``.
+  _xhrIdMap: {[key: number]: number};
 
-  // Map of `socketId` -> `index in `this.state.requests`.
-  _socketIdMap = {};
-  // Map of `xhr._index` -> `index in `this.state.requests`.
-  _xhrIdMap: {[key: number]: number} = {};
-
-  state = {
-    detailRowId: null,
-    requests: [],
-  };
+  constructor(props: Object) {
+    super(props);
+    this._requests = [];
+    this._detailViewItems = [];
+    this._listViewDataSource = new ListView.DataSource({
+      rowHasChanged: (r1, r2) => r1 !== r2,
+    });
+    this.state = {
+      dataSource: this._listViewDataSource.cloneWithRows([]),
+      newDetailInfo: false,
+      detailRowID: null,
+    };
+    this._listViewHighlighted = false;
+    this._listViewHeight = 0;
+    this._captureRequestListView = this._captureRequestListView.bind(this);
+    this._captureDetailScrollView = this._captureDetailScrollView.bind(this);
+    this._listViewOnLayout = this._listViewOnLayout.bind(this);
+    this._renderRow = this._renderRow.bind(this);
+    this._closeButtonClicked = this._closeButtonClicked.bind(this);
+    this._socketIdMap = {};
+    this._xhrIdMap = {};
+  }
 
   _enableXHRInterception(): void {
     if (XHRInterceptor.isInterceptorEnabled()) {
@@ -108,20 +112,20 @@ class NetworkOverlay extends React.Component<Props, State> {
       // to the xhr object as a private `_index` property to identify it,
       // so that we can distinguish different xhr objects in callbacks.
       xhr._index = nextXHRId++;
-      const xhrIndex = this.state.requests.length;
+      const xhrIndex = this._requests.length;
       this._xhrIdMap[xhr._index] = xhrIndex;
 
       const _xhr: NetworkRequestInfo = {
-        id: xhrIndex,
         type: 'XMLHttpRequest',
         method: method,
         url: url,
       };
+      this._requests.push(_xhr);
+      this._detailViewItems.push([]);
+      this._genDetailViewItem(xhrIndex);
       this.setState(
-        {
-          requests: this.state.requests.concat(_xhr),
-        },
-        this._scrollRequestsToBottom,
+        {dataSource: this._listViewDataSource.cloneWithRows(this._requests)},
+        this._scrollToBottom(),
       );
     });
 
@@ -130,15 +134,12 @@ class NetworkOverlay extends React.Component<Props, State> {
       if (xhrIndex === -1) {
         return;
       }
-
-      this.setState(({requests}) => {
-        const networkRequestInfo = requests[xhrIndex];
-        if (!networkRequestInfo.requestHeaders) {
-          networkRequestInfo.requestHeaders = {};
-        }
-        networkRequestInfo.requestHeaders[header] = value;
-        return {requests};
-      });
+      const networkInfo = this._requests[xhrIndex];
+      if (!networkInfo.requestHeaders) {
+        networkInfo.requestHeaders = {};
+      }
+      networkInfo.requestHeaders[header] = value;
+      this._genDetailViewItem(xhrIndex);
     });
 
     XHRInterceptor.setSendCallback((data, xhr) => {
@@ -146,12 +147,8 @@ class NetworkOverlay extends React.Component<Props, State> {
       if (xhrIndex === -1) {
         return;
       }
-
-      this.setState(({requests}) => {
-        const networkRequestInfo = requests[xhrIndex];
-        networkRequestInfo.dataSent = data;
-        return {requests};
-      });
+      this._requests[xhrIndex].dataSent = data;
+      this._genDetailViewItem(xhrIndex);
     });
 
     XHRInterceptor.setHeaderReceivedCallback(
@@ -160,14 +157,11 @@ class NetworkOverlay extends React.Component<Props, State> {
         if (xhrIndex === -1) {
           return;
         }
-
-        this.setState(({requests}) => {
-          const networkRequestInfo = requests[xhrIndex];
-          networkRequestInfo.responseContentType = type;
-          networkRequestInfo.responseSize = size;
-          networkRequestInfo.responseHeaders = responseHeaders;
-          return {requests};
-        });
+        const networkInfo = this._requests[xhrIndex];
+        networkInfo.responseContentType = type;
+        networkInfo.responseSize = size;
+        networkInfo.responseHeaders = responseHeaders;
+        this._genDetailViewItem(xhrIndex);
       },
     );
 
@@ -177,17 +171,13 @@ class NetworkOverlay extends React.Component<Props, State> {
         if (xhrIndex === -1) {
           return;
         }
-
-        this.setState(({requests}) => {
-          const networkRequestInfo = requests[xhrIndex];
-          networkRequestInfo.status = status;
-          networkRequestInfo.timeout = timeout;
-          networkRequestInfo.response = response;
-          networkRequestInfo.responseURL = responseURL;
-          networkRequestInfo.responseType = responseType;
-
-          return {requests};
-        });
+        const networkInfo = this._requests[xhrIndex];
+        networkInfo.status = status;
+        networkInfo.timeout = timeout;
+        networkInfo.response = response;
+        networkInfo.responseURL = responseURL;
+        networkInfo.responseType = responseType;
+        this._genDetailViewItem(xhrIndex);
       },
     );
 
@@ -202,19 +192,19 @@ class NetworkOverlay extends React.Component<Props, State> {
     // Show the WebSocket request item in listView when 'connect' is called.
     WebSocketInterceptor.setConnectCallback(
       (url, protocols, options, socketId) => {
-        const socketIndex = this.state.requests.length;
+        const socketIndex = this._requests.length;
         this._socketIdMap[socketId] = socketIndex;
         const _webSocket: NetworkRequestInfo = {
-          id: socketIndex,
           type: 'WebSocket',
           url: url,
           protocols: protocols,
         };
+        this._requests.push(_webSocket);
+        this._detailViewItems.push([]);
+        this._genDetailViewItem(socketIndex);
         this.setState(
-          {
-            requests: this.state.requests.concat(_webSocket),
-          },
-          this._scrollRequestsToBottom,
+          {dataSource: this._listViewDataSource.cloneWithRows(this._requests)},
+          this._scrollToBottom(),
         );
       },
     );
@@ -226,13 +216,10 @@ class NetworkOverlay extends React.Component<Props, State> {
           return;
         }
         if (statusCode !== null && closeReason !== null) {
-          this.setState(({requests}) => {
-            const networkRequestInfo = requests[socketIndex];
-            networkRequestInfo.status = statusCode;
-            networkRequestInfo.closeReason = closeReason;
-            return {requests};
-          });
+          this._requests[socketIndex].status = statusCode;
+          this._requests[socketIndex].closeReason = closeReason;
         }
+        this._genDetailViewItem(socketIndex);
       },
     );
 
@@ -241,17 +228,12 @@ class NetworkOverlay extends React.Component<Props, State> {
       if (socketIndex === undefined) {
         return;
       }
-
-      this.setState(({requests}) => {
-        const networkRequestInfo = requests[socketIndex];
-
-        if (!networkRequestInfo.messages) {
-          networkRequestInfo.messages = '';
-        }
-        networkRequestInfo.messages += 'Sent: ' + JSON.stringify(data) + '\n';
-
-        return {requests};
-      });
+      if (!this._requests[socketIndex].messages) {
+        this._requests[socketIndex].messages = '';
+      }
+      this._requests[socketIndex].messages +=
+        'Sent: ' + JSON.stringify(data) + '\n';
+      this._genDetailViewItem(socketIndex);
     });
 
     WebSocketInterceptor.setOnMessageCallback((socketId, message) => {
@@ -259,18 +241,12 @@ class NetworkOverlay extends React.Component<Props, State> {
       if (socketIndex === undefined) {
         return;
       }
-
-      this.setState(({requests}) => {
-        const networkRequestInfo = requests[socketIndex];
-
-        if (!networkRequestInfo.messages) {
-          networkRequestInfo.messages = '';
-        }
-        networkRequestInfo.messages +=
-          'Received: ' + JSON.stringify(message) + '\n';
-
-        return {requests};
-      });
+      if (!this._requests[socketIndex].messages) {
+        this._requests[socketIndex].messages = '';
+      }
+      this._requests[socketIndex].messages +=
+        'Received: ' + JSON.stringify(message) + '\n';
+      this._genDetailViewItem(socketIndex);
     });
 
     WebSocketInterceptor.setOnCloseCallback((socketId, message) => {
@@ -278,13 +254,8 @@ class NetworkOverlay extends React.Component<Props, State> {
       if (socketIndex === undefined) {
         return;
       }
-
-      this.setState(({requests}) => {
-        const networkRequestInfo = requests[socketIndex];
-        networkRequestInfo.serverClose = message;
-
-        return {requests};
-      });
+      this._requests[socketIndex].serverClose = message;
+      this._genDetailViewItem(socketIndex);
     });
 
     WebSocketInterceptor.setOnErrorCallback((socketId, message) => {
@@ -292,13 +263,8 @@ class NetworkOverlay extends React.Component<Props, State> {
       if (socketIndex === undefined) {
         return;
       }
-
-      this.setState(({requests}) => {
-        const networkRequestInfo = requests[socketIndex];
-        networkRequestInfo.serverError = message;
-
-        return {requests};
-      });
+      this._requests[socketIndex].serverError = message;
+      this._genDetailViewItem(socketIndex);
     });
 
     // Fire above callbacks.
@@ -315,100 +281,126 @@ class NetworkOverlay extends React.Component<Props, State> {
     WebSocketInterceptor.disableInterception();
   }
 
-  _renderItem = ({item, index}): ?React.Element<any> => {
-    const tableRowViewStyle = [
-      styles.tableRow,
-      index % 2 === 1 ? styles.tableRowOdd : styles.tableRowEven,
-      index === this.state.detailRowId && styles.tableRowPressed,
-    ];
-    const urlCellViewStyle = styles.urlCellView;
-    const methodCellViewStyle = styles.methodCellView;
-
+  _renderRow(
+    rowData: NetworkRequestInfo,
+    sectionID: number,
+    rowID: number,
+    highlightRow: (sectionID: number, rowID: number) => void,
+  ): React.Element<any> {
+    let urlCellViewStyle = styles.urlEvenCellView;
+    let methodCellViewStyle = styles.methodEvenCellView;
+    if (rowID % 2 === 1) {
+      urlCellViewStyle = styles.urlOddCellView;
+      methodCellViewStyle = styles.methodOddCellView;
+    }
     return (
       <TouchableHighlight
         onPress={() => {
-          this._pressRow(index);
+          this._pressRow(rowID);
+          highlightRow(sectionID, rowID);
         }}>
         <View>
-          <View style={tableRowViewStyle}>
+          <View style={styles.tableRow}>
             <View style={urlCellViewStyle}>
               <Text style={styles.cellText} numberOfLines={1}>
-                {item.url}
+                {rowData.url}
               </Text>
             </View>
             <View style={methodCellViewStyle}>
               <Text style={styles.cellText} numberOfLines={1}>
-                {getTypeShortName(item.type)}
+                {this._getTypeShortName(rowData.type)}
               </Text>
             </View>
           </View>
         </View>
       </TouchableHighlight>
     );
-  };
+  }
 
-  _renderItemDetail(id) {
-    const requestItem = this.state.requests[id];
-    const details = Object.keys(requestItem).map(key => {
-      if (key === 'id') {
-        return;
-      }
-      return (
-        <View style={styles.detailViewRow} key={key}>
-          <Text style={[styles.detailViewText, styles.detailKeyCellView]}>
-            {key}
-          </Text>
-          <Text style={[styles.detailViewText, styles.detailValueCellView]}>
-            {getStringByValue(requestItem[key])}
-          </Text>
-        </View>
-      );
-    });
-
+  _renderSeperator(
+    sectionID: number,
+    rowID: number,
+    adjacentRowHighlighted: boolean,
+  ): React.Element<any> {
     return (
-      <View>
-        <TouchableHighlight
-          style={styles.closeButton}
-          onPress={this._closeButtonClicked}>
-          <View>
-            <Text style={styles.closeButtonText}>v</Text>
-          </View>
-        </TouchableHighlight>
-        <ScrollView
-          style={styles.detailScrollView}
-          ref={scrollRef => (this._detailScrollView = scrollRef)}>
-          {details}
-        </ScrollView>
-      </View>
+      <View
+        key={`${sectionID}-${rowID}`}
+        style={{
+          height: adjacentRowHighlighted ? SEPARATOR_THICKNESS : 0,
+          backgroundColor: adjacentRowHighlighted ? '#3B5998' : '#CCCCCC',
+        }}
+      />
     );
   }
 
-  _scrollRequestsToBottom(): void {
-    if (this._requestsListView) {
-      this._requestsListView.scrollToEnd();
+  _scrollToBottom(): void {
+    if (this._listView) {
+      const scrollResponder = this._listView.getScrollResponder();
+      if (scrollResponder) {
+        const scrollY = Math.max(
+          this._requests.length * LISTVIEW_CELL_HEIGHT +
+            (this._listViewHighlighted ? 2 * SEPARATOR_THICKNESS : 0) -
+            this._listViewHeight,
+          0,
+        );
+        scrollResponder.scrollResponderScrollTo({
+          x: 0,
+          y: scrollY,
+          animated: true,
+        });
+      }
     }
+  }
+
+  _captureRequestListView(listRef: ?ListView): void {
+    this._listView = listRef;
+  }
+
+  _listViewOnLayout(event: any): void {
+    const {height} = event.nativeEvent.layout;
+    this._listViewHeight = height;
   }
 
   /**
    * Popup a scrollView to dynamically show detailed information of
    * the request, when pressing a row in the network flow listView.
    */
-  _pressRow(rowId: number): void {
-    this.setState({detailRowId: rowId}, this._scrollDetailToTop);
+  _pressRow(rowID: number): void {
+    this._listViewHighlighted = true;
+    this.setState({detailRowID: rowID}, this._scrollToTop());
   }
 
-  _scrollDetailToTop = (): void => {
-    if (this._detailScrollView) {
-      this._detailScrollView.scrollTo({
+  _scrollToTop(): void {
+    if (this._scrollView) {
+      this._scrollView.scrollTo({
         y: 0,
         animated: false,
       });
     }
-  };
+  }
 
-  _closeButtonClicked = () => {
-    this.setState({detailRowId: null});
-  };
+  _captureDetailScrollView(scrollRef: ?ScrollView): void {
+    this._scrollView = scrollRef;
+  }
+
+  _closeButtonClicked() {
+    this.setState({detailRowID: null});
+  }
+
+  _getStringByValue(value: any): string {
+    if (value === undefined) {
+      return 'undefined';
+    }
+    if (typeof value === 'object') {
+      return JSON.stringify(value);
+    }
+    if (typeof value === 'string' && value.length > 500) {
+      return String(value)
+        .substr(0, 500)
+        .concat('\n***TRUNCATED TO 500 CHARACTERS***');
+    }
+    return value;
+  }
 
   _getRequestIndexByXHRID(index: number): number {
     if (index === undefined) {
@@ -422,14 +414,68 @@ class NetworkOverlay extends React.Component<Props, State> {
     }
   }
 
-  render(): React.Node {
-    const {requests, detailRowId} = this.state;
+  _getTypeShortName(type: any): string {
+    if (type === 'XMLHttpRequest') {
+      return 'XHR';
+    } else if (type === 'WebSocket') {
+      return 'WS';
+    }
 
+    return '';
+  }
+
+  /**
+   * Generate a list of views containing network request information for
+   * a XHR object, to be shown in the detail scrollview. This function
+   * should be called every time there is a new update of the XHR object,
+   * in order to show network request/response information in real time.
+   */
+  _genDetailViewItem(index: number): void {
+    this._detailViewItems[index] = [];
+    const detailViewItem = this._detailViewItems[index];
+    const requestItem = this._requests[index];
+    for (let key in requestItem) {
+      detailViewItem.push(
+        <View style={styles.detailViewRow} key={key}>
+          <Text style={[styles.detailViewText, styles.detailKeyCellView]}>
+            {key}
+          </Text>
+          <Text style={[styles.detailViewText, styles.detailValueCellView]}>
+            {this._getStringByValue(requestItem[key])}
+          </Text>
+        </View>,
+      );
+    }
+    // Re-render if this network request is showing in the detail view.
+    if (
+      this.state.detailRowID != null &&
+      Number(this.state.detailRowID) === index
+    ) {
+      this.setState({newDetailInfo: true});
+    }
+  }
+
+  render() {
     return (
       <View style={styles.container}>
-        {detailRowId != null && this._renderItemDetail(detailRowId)}
+        {this.state.detailRowID != null && (
+          <TouchableHighlight
+            style={styles.closeButton}
+            onPress={this._closeButtonClicked}>
+            <View>
+              <Text style={styles.clostButtonText}>v</Text>
+            </View>
+          </TouchableHighlight>
+        )}
+        {this.state.detailRowID != null && (
+          <ScrollView
+            style={styles.detailScrollView}
+            ref={this._captureDetailScrollView}>
+            {this._detailViewItems[this.state.detailRowID]}
+          </ScrollView>
+        )}
         <View style={styles.listViewTitle}>
-          {requests.length > 0 && (
+          {this._requests.length > 0 && (
             <View style={styles.tableRow}>
               <View style={styles.urlTitleCellView}>
                 <Text style={styles.cellText} numberOfLines={1}>
@@ -444,14 +490,15 @@ class NetworkOverlay extends React.Component<Props, State> {
             </View>
           )}
         </View>
-
-        <FlatList
-          ref={listRef => (this._requestsListView = listRef)}
+        <ListView
           style={styles.listView}
-          data={requests}
-          renderItem={this._renderItem}
-          keyExtractor={keyExtractor}
-          extraData={this.state}
+          ref={this._captureRequestListView}
+          dataSource={this.state.dataSource}
+          renderRow={this._renderRow}
+          enableEmptySections={true}
+          renderSeparator={this._renderSeperator}
+          // $FlowFixMe Found when typing ListView
+          onLayout={this._listViewOnLayout}
         />
       </View>
     );
@@ -475,16 +522,6 @@ const styles = StyleSheet.create({
   tableRow: {
     flexDirection: 'row',
     flex: 1,
-    height: LISTVIEW_CELL_HEIGHT,
-  },
-  tableRowEven: {
-    backgroundColor: '#555',
-  },
-  tableRowOdd: {
-    backgroundColor: '#000',
-  },
-  tableRowPressed: {
-    backgroundColor: '#3B5998',
   },
   cellText: {
     color: 'white',
@@ -513,20 +550,41 @@ const styles = StyleSheet.create({
     flex: 5,
     paddingLeft: 3,
   },
-  methodCellView: {
+  methodOddCellView: {
     height: 15,
     borderColor: '#DCD7CD',
     borderRightWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#000',
     flex: 1,
   },
-  urlCellView: {
+  urlOddCellView: {
     height: 15,
     borderColor: '#DCD7CD',
     borderLeftWidth: 1,
     borderRightWidth: 1,
     justifyContent: 'center',
+    backgroundColor: '#000',
+    flex: 5,
+    paddingLeft: 3,
+  },
+  methodEvenCellView: {
+    height: 15,
+    borderColor: '#DCD7CD',
+    borderRightWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#888',
+    flex: 1,
+  },
+  urlEvenCellView: {
+    height: 15,
+    borderColor: '#DCD7CD',
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
+    justifyContent: 'center',
+    backgroundColor: '#888',
     flex: 5,
     paddingLeft: 3,
   },
@@ -550,7 +608,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 11,
   },
-  closeButtonText: {
+  clostButtonText: {
     color: 'white',
     fontSize: 10,
   },

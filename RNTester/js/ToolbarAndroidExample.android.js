@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,16 +10,16 @@
 
 'use strict';
 
-const React = require('react');
-const ReactNative = require('react-native');
+var React = require('react');
+var ReactNative = require('react-native');
 
-const nativeImageSource = require('nativeImageSource');
-const {StyleSheet, Text, View} = ReactNative;
-const RNTesterBlock = require('./RNTesterBlock');
-const RNTesterPage = require('./RNTesterPage');
+var nativeImageSource = require('nativeImageSource');
+var {StyleSheet, Text, View} = ReactNative;
+var RNTesterBlock = require('./RNTesterBlock');
+var RNTesterPage = require('./RNTesterPage');
 
-const Switch = require('Switch');
-const ToolbarAndroid = require('ToolbarAndroid');
+var Switch = require('Switch');
+var ToolbarAndroid = require('ToolbarAndroid');
 
 class ToolbarAndroidExample extends React.Component<{}, $FlowFixMeState> {
   static title = '<ToolbarAndroid>';
@@ -61,7 +61,8 @@ class ToolbarAndroidExample extends React.Component<{}, $FlowFixMeState> {
               height: 144,
             })}
             style={styles.toolbar}>
-            <View style={styles.switchWrapper}>
+            <View
+              style={{height: 56, flexDirection: 'row', alignItems: 'center'}}>
               <Switch
                 value={this.state.toolbarSwitch}
                 onValueChange={value => this.setState({toolbarSwitch: value})}
@@ -140,7 +141,7 @@ class ToolbarAndroidExample extends React.Component<{}, $FlowFixMeState> {
   };
 }
 
-const toolbarActions = [
+var toolbarActions = [
   {
     title: 'Create',
     icon: nativeImageSource({
@@ -162,15 +163,10 @@ const toolbarActions = [
   },
 ];
 
-const styles = StyleSheet.create({
+var styles = StyleSheet.create({
   toolbar: {
     backgroundColor: '#e9eaed',
     height: 56,
-  },
-  switchWrapper: {
-    height: 56,
-    flexDirection: 'row',
-    alignItems: 'center',
   },
 });
 

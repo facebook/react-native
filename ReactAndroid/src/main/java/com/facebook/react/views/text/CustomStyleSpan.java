@@ -1,6 +1,5 @@
-
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -47,18 +46,6 @@ public class CustomStyleSpan extends MetricAffectingSpan {
     mWeight = fontWeight;
     mFontFamily = fontFamily;
     mFontPath = fontPath;
-    mAssetManager = assetManager;
-  }
-
-  public CustomStyleSpan(
-      int fontStyle,
-      int fontWeight,
-      @Nullable String fontFamily,
-      AssetManager assetManager) {
-    mStyle = fontStyle;
-    mWeight = fontWeight;
-    mFontFamily = fontFamily;
-    mFontPath = null;
     mAssetManager = assetManager;
   }
 
@@ -140,7 +127,6 @@ public class CustomStyleSpan extends MetricAffectingSpan {
     } else {
       paint.setTypeface(Typeface.defaultFromStyle(want));
     }
-    paint.setSubpixelText(true);
   }
 
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -113,7 +113,6 @@ const ActivityIndicator = (
 
 // $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
 const ActivityIndicatorWithRef = React.forwardRef(ActivityIndicator);
-ActivityIndicatorWithRef.displayName = 'ActivityIndicator';
 
 ActivityIndicatorWithRef.defaultProps = {
   animating: true,

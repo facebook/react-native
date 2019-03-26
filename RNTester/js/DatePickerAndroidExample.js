@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,17 +9,17 @@
 
 'use strict';
 
-const React = require('react');
-const ReactNative = require('react-native');
-const {
+var React = require('react');
+var ReactNative = require('react-native');
+var {
   DatePickerAndroid,
   StyleSheet,
   Text,
   TouchableWithoutFeedback,
 } = ReactNative;
 
-const RNTesterBlock = require('./RNTesterBlock');
-const RNTesterPage = require('./RNTesterPage');
+var RNTesterBlock = require('./RNTesterBlock');
+var RNTesterPage = require('./RNTesterPage');
 
 class DatePickerAndroidExample extends React.Component {
   static title = 'DatePickerAndroid';
@@ -44,12 +44,12 @@ class DatePickerAndroidExample extends React.Component {
 
   showPicker = async (stateKey, options) => {
     try {
-      const newState = {};
+      var newState = {};
       const {action, year, month, day} = await DatePickerAndroid.open(options);
       if (action === DatePickerAndroid.dismissedAction) {
         newState[stateKey + 'Text'] = 'dismissed';
       } else {
-        const date = new Date(year, month, day);
+        var date = new Date(year, month, day);
         newState[stateKey + 'Text'] = date.toLocaleDateString();
         newState[stateKey + 'Date'] = date;
       }
@@ -139,7 +139,7 @@ class DatePickerAndroidExample extends React.Component {
   }
 }
 
-const styles = StyleSheet.create({
+var styles = StyleSheet.create({
   text: {
     color: 'black',
   },

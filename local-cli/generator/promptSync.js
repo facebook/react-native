@@ -1,11 +1,4 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @format
- */
+/** @format */
 
 // Simplified version of:
 // https://github.com/0x00A/prompt-sync/blob/master/index.js
@@ -19,7 +12,11 @@ function create() {
   return prompt;
 
   function prompt(ask, value, opts) {
-    var insert = 0;
+    var insert = 0,
+      savedinsert = 0,
+      res,
+      i,
+      savedstr;
     opts = opts || {};
 
     if (Object(ask) === ask) {
@@ -43,14 +40,19 @@ function create() {
       process.stdin.setRawMode(true);
     }
 
-    var buf = Buffer.alloc(3);
+    var buf = new Buffer(3);
     var str = '',
       character,
       read;
 
+    savedstr = '';
+
     if (ask) {
       process.stdout.write(ask);
     }
+
+    var cycle = 0;
+    var prevComplete;
 
     while (true) {
       read = fs.readSync(fd, buf, 0, 3);
@@ -62,7 +64,7 @@ function create() {
           insert = str.length;
           process.stdout.write('\u001b[2K\u001b[0G' + ask + str);
           process.stdout.write('\u001b[' + (insert + ask.length + 1) + 'G');
-          buf = Buffer.alloc(3);
+          buf = new Buffer(3);
         }
         continue; // any other 3 character sequence is ignored
       }
@@ -71,7 +73,7 @@ function create() {
       character = buf[read - 1];
 
       // catch a ^C and return null
-      if (character === 3) {
+      if (character == 3) {
         process.stdout.write('^C\n');
         fs.closeSync(fd);
         process.exit(130);
@@ -80,15 +82,12 @@ function create() {
       }
 
       // catch the terminating character
-      if (character === term) {
+      if (character == term) {
         fs.closeSync(fd);
         break;
       }
 
-      if (
-        character === 127 ||
-        (process.platform === 'win32' && character === 8)
-      ) {
+      if (character == 127 || (process.platform == 'win32' && character == 8)) {
         //backspace
         if (!insert) {
           continue;
@@ -113,7 +112,7 @@ function create() {
         );
       } else {
         process.stdout.write('\u001b[s');
-        if (insert === str.length) {
+        if (insert == str.length) {
           process.stdout.write('\u001b[2K\u001b[0G' + ask + str);
         } else {
           if (ask) {

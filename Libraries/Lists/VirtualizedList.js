@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -32,7 +32,7 @@ const warning = require('fbjs/lib/warning');
 
 const {computeWindowedRenderLimits} = require('VirtualizeUtils');
 
-import type {ViewStyleProp} from 'StyleSheet';
+import type {DangerouslyImpreciseStyleProp, ViewStyleProp} from 'StyleSheet';
 import type {
   ViewabilityConfig,
   ViewToken,
@@ -693,7 +693,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   }
 
   static getDerivedStateFromProps(newProps: Props, prevState: State) {
-    const {data, getItemCount, maxToRenderPerBatch} = newProps;
+    const {data, extraData, getItemCount, maxToRenderPerBatch} = newProps;
     // first and last could be stale (e.g. if a new, shorter items props is passed in), so we make
     // sure we're rendering a reasonable range here.
     return {
@@ -711,7 +711,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     stickyIndicesFromProps: Set<number>,
     first: number,
     last: number,
-    inversionStyle: ViewStyleProp,
+    inversionStyle: ?DangerouslyImpreciseStyleProp,
   ) {
     const {
       CellRendererComponent,
@@ -998,6 +998,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       (this.props.renderScrollComponent || this._defaultRenderScrollComponent)(
         scrollProps,
       ),
+      // $FlowFixMe Invalid prop usage
       {
         ref: this._captureScrollRef,
       },
@@ -1005,7 +1006,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     );
     if (this.props.debug) {
       return (
-        <View style={styles.debug}>
+        <View style={{flex: 1}}>
           {ret}
           {this._renderDebugOverlay()}
         </View>
@@ -1170,40 +1171,28 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   };
 
   measureLayoutRelativeToContainingList(): void {
-    // TODO (T35574538): findNodeHandle sometimes crashes with "Unable to find
-    // node on an unmounted component" during scrolling
-    try {
-      UIManager.measureLayout(
-        ReactNative.findNodeHandle(this),
-        ReactNative.findNodeHandle(
-          this.context.virtualizedList.getOutermostParentListRef(),
-        ),
-        error => {
-          console.warn(
-            "VirtualizedList: Encountered an error while measuring a list's" +
-              ' offset from its containing VirtualizedList.',
-          );
-        },
-        (x, y, width, height) => {
-          this._offsetFromParentVirtualizedList = this._selectOffset({x, y});
-          this._scrollMetrics.contentLength = this._selectLength({
-            width,
-            height,
-          });
+    UIManager.measureLayout(
+      ReactNative.findNodeHandle(this),
+      ReactNative.findNodeHandle(
+        this.context.virtualizedList.getOutermostParentListRef(),
+      ),
+      error => {
+        console.warn(
+          "VirtualizedList: Encountered an error while measuring a list's" +
+            ' offset from its containing VirtualizedList.',
+        );
+      },
+      (x, y, width, height) => {
+        this._offsetFromParentVirtualizedList = this._selectOffset({x, y});
+        this._scrollMetrics.contentLength = this._selectLength({width, height});
 
-          const scrollMetrics = this._convertParentScrollMetrics(
-            this.context.virtualizedList.getScrollMetrics(),
-          );
-          this._scrollMetrics.visibleLength = scrollMetrics.visibleLength;
-          this._scrollMetrics.offset = scrollMetrics.offset;
-        },
-      );
-    } catch (error) {
-      console.warn(
-        'measureLayoutRelativeToContainingList threw an error',
-        error.stack,
-      );
-    }
+        const scrollMetrics = this._convertParentScrollMetrics(
+          this.context.virtualizedList.getScrollMetrics(),
+        );
+        this._scrollMetrics.visibleLength = scrollMetrics.visibleLength;
+        this._scrollMetrics.offset = scrollMetrics.offset;
+      },
+    );
   }
 
   _onLayout = (e: Object) => {
@@ -1325,41 +1314,47 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     const windowLen = frameLast.offset + frameLast.length - windowTop;
     const visTop = this._scrollMetrics.offset;
     const visLen = this._scrollMetrics.visibleLength;
-
+    const baseStyle = {position: 'absolute', top: 0, right: 0};
     return (
-      <View style={[styles.debugOverlayBase, styles.debugOverlay]}>
+      <View
+        style={{
+          ...baseStyle,
+          bottom: 0,
+          width: 20,
+          borderColor: 'blue',
+          borderWidth: 1,
+        }}>
         {framesInLayout.map((f, ii) => (
           <View
             key={'f' + ii}
-            style={[
-              styles.debugOverlayBase,
-              styles.debugOverlayFrame,
-              {
-                top: f.offset * normalize,
-                height: f.length * normalize,
-              },
-            ]}
+            style={{
+              ...baseStyle,
+              left: 0,
+              top: f.offset * normalize,
+              height: f.length * normalize,
+              backgroundColor: 'orange',
+            }}
           />
         ))}
         <View
-          style={[
-            styles.debugOverlayBase,
-            styles.debugOverlayFrameLast,
-            {
-              top: windowTop * normalize,
-              height: windowLen * normalize,
-            },
-          ]}
+          style={{
+            ...baseStyle,
+            left: 0,
+            top: windowTop * normalize,
+            height: windowLen * normalize,
+            borderColor: 'green',
+            borderWidth: 2,
+          }}
         />
         <View
-          style={[
-            styles.debugOverlayBase,
-            styles.debugOverlayFrameVis,
-            {
-              top: visTop * normalize,
-              height: visLen * normalize,
-            },
-          ]}
+          style={{
+            ...baseStyle,
+            left: 0,
+            top: visTop * normalize,
+            height: visLen * normalize,
+            borderColor: 'red',
+            borderWidth: 2,
+          }}
         />
       </View>
     );
@@ -1755,7 +1750,7 @@ class CellRenderer extends React.Component<
     fillRateHelper: FillRateHelper,
     horizontal: ?boolean,
     index: number,
-    inversionStyle: ViewStyleProp,
+    inversionStyle: ?DangerouslyImpreciseStyleProp,
     isSelected: ?boolean, // TODO(macOS ISS#2323203)
     item: Item,
     onLayout: (event: Object) => void, // This is extracted by ScrollViewStickyHeader
@@ -1912,34 +1907,6 @@ const styles = StyleSheet.create({
   },
   horizontallyInverted: {
     transform: [{scaleX: -1}],
-  },
-  debug: {
-    flex: 1,
-  },
-  debugOverlayBase: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-  },
-  debugOverlay: {
-    bottom: 0,
-    width: 20,
-    borderColor: 'blue',
-    borderWidth: 1,
-  },
-  debugOverlayFrame: {
-    left: 0,
-    backgroundColor: 'orange',
-  },
-  debugOverlayFrameLast: {
-    left: 0,
-    borderColor: 'green',
-    borderWidth: 2,
-  },
-  debugOverlayFrameVis: {
-    left: 0,
-    borderColor: 'red',
-    borderWidth: 2,
   },
 });
 

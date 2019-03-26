@@ -1,6 +1,6 @@
 
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -262,8 +262,9 @@ public class ReactImageView extends GenericDraweeView {
         @Override
         public void onFailure(String id, Throwable throwable) {
           mEventDispatcher.dispatchEvent(
-            new ImageLoadEvent(getId(), ImageLoadEvent.ON_ERROR,
-              true, throwable.getMessage()));
+            new ImageLoadEvent(getId(), ImageLoadEvent.ON_ERROR));
+          mEventDispatcher.dispatchEvent(
+            new ImageLoadEvent(getId(), ImageLoadEvent.ON_LOAD_END));
         }
       };
     }
@@ -438,7 +439,7 @@ public class ReactImageView extends GenericDraweeView {
     hierarchy.setActualImageScaleType(mScaleType);
 
     if (mDefaultImageDrawable != null) {
-      hierarchy.setPlaceholderImage(mDefaultImageDrawable, mScaleType);
+      hierarchy.setPlaceholderImage(mDefaultImageDrawable, ScalingUtils.ScaleType.CENTER);
     }
 
     if (mLoadingImageDrawable != null) {

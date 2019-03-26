@@ -1,11 +1,11 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict-local
+ * @flow
  */
 
 'use strict';
@@ -21,19 +21,10 @@ import type {ImageSource} from 'ImageSource';
 import type {ViewStyleProp} from 'StyleSheet';
 import type {ColorValue} from 'StyleSheetTypes';
 import type {ViewProps} from 'ViewPropTypes';
-import type {SyntheticEvent} from 'CoreEventTypes';
 
 const RCTSlider = requireNativeComponent('RCTSlider');
 
-type Event = SyntheticEvent<
-  $ReadOnly<{|
-    value: number,
-    /**
-     * Android Only.
-     */
-    fromUser?: boolean,
-  |}>,
->;
+type Event = Object;
 
 type IOSProps = $ReadOnly<{|
   /**
@@ -75,7 +66,7 @@ type Props = $ReadOnly<{|
 
   /**
    * Used to style and layout the `Slider`.  See `StyleSheet.js` and
-   * `DeprecatedViewStylePropTypes.js` for more info.
+   * `ViewStylePropTypes.js` for more info.
    */
   style?: ?ViewStyleProp,
 
@@ -127,14 +118,14 @@ type Props = $ReadOnly<{|
   /**
    * Callback continuously called while the user is dragging the slider.
    */
-  onValueChange?: ?(value: number) => void,
+  onValueChange?: ?Function,
 
   /**
    * Callback that is called when the user releases the slider,
    * regardless if the value has changed. The current value is passed
    * as an argument to the callback handler.
    */
-  onSlidingComplete?: ?(value: number) => void,
+  onSlidingComplete?: ?Function,
 
   /**
    * Used to locate this view in UI automation tests.
@@ -218,8 +209,7 @@ const Slider = (
       if (Platform.OS === 'android') {
         // On Android there's a special flag telling us the user is
         // dragging the slider.
-        userEvent =
-          event.nativeEvent.fromUser != null && event.nativeEvent.fromUser;
+        userEvent = event.nativeEvent.fromUser;
       }
       props.onValueChange &&
         userEvent &&

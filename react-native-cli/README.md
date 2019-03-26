@@ -35,10 +35,6 @@ Running it for the first time creates a default config file. Open `~/.config/sin
         allow_access: $all
         allow_publish: $all
 
-      '**':
-        allow_access: $all
-        proxy: npmjs
-
       '*':
         allow_access: $all
         proxy: npmjs

@@ -1,11 +1,11 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow strict
+ * @flow
  */
 
 'use strict';
@@ -175,7 +175,10 @@ class Easing {
    *
    * - http://tiny.cc/back_default (s = 1.70158, default)
    */
-  static back(s: number = 1.70158): (t: number) => number {
+  static back(s: number): (t: number) => number {
+    if (s === undefined) {
+      s = 1.70158;
+    }
     return t => t * t * ((s + 1) * t - s);
   }
 
@@ -190,17 +193,17 @@ class Easing {
     }
 
     if (t < 2 / 2.75) {
-      const t2 = t - 1.5 / 2.75;
-      return 7.5625 * t2 * t2 + 0.75;
+      t -= 1.5 / 2.75;
+      return 7.5625 * t * t + 0.75;
     }
 
     if (t < 2.5 / 2.75) {
-      const t2 = t - 2.25 / 2.75;
-      return 7.5625 * t2 * t2 + 0.9375;
+      t -= 2.25 / 2.75;
+      return 7.5625 * t * t + 0.9375;
     }
 
-    const t2 = t - 2.625 / 2.75;
-    return 7.5625 * t2 * t2 + 0.984375;
+    t -= 2.625 / 2.75;
+    return 7.5625 * t * t + 0.984375;
   }
 
   /**

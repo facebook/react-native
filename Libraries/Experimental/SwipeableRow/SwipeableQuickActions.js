@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,12 +14,7 @@ const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
-import type {ViewStyleProp} from 'StyleSheet';
-
-type Props = $ReadOnly<{|
-  style?: ?ViewStyleProp,
-  children: React.Node,
-|}>;
+const ViewPropTypes = require('ViewPropTypes');
 
 /**
  * A thin wrapper around standard quick action buttons that can, if the user
@@ -31,8 +26,13 @@ type Props = $ReadOnly<{|
  *   <SwipeableQuickActionButton {..props} />
  * </SwipeableQuickActions>
  */
-class SwipeableQuickActions extends React.Component<Props> {
+class SwipeableQuickActions extends React.Component<{style?: $FlowFixMe}> {
+  static propTypes = {
+    style: ViewPropTypes.style,
+  };
+
   render(): React.Node {
+    // $FlowFixMe found when converting React.createClass to ES6
     const children = this.props.children;
     let buttons = [];
 
@@ -41,7 +41,8 @@ class SwipeableQuickActions extends React.Component<Props> {
       for (let i = 0; i < children.length; i++) {
         buttons.push(children[i]);
 
-        if (i < children.length - 1) {
+        // $FlowFixMe found when converting React.createClass to ES6
+        if (i < this.props.children.length - 1) {
           // Not last button
           buttons.push(<View key={i} style={styles.divider} />);
         }

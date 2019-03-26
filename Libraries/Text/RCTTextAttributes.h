@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -31,7 +31,6 @@ extern NSString *const RCTTextAttributesTagAttributeName;
 @property (nonatomic, copy, nullable) NSString *fontFamily;
 @property (nonatomic, assign) CGFloat fontSize;
 @property (nonatomic, assign) CGFloat fontSizeMultiplier;
-@property (nonatomic, assign) CGFloat maxFontSizeMultiplier;
 @property (nonatomic, copy, nullable) NSString *fontWeight;
 @property (nonatomic, copy, nullable) NSString *fontStyle;
 @property (nonatomic, copy, nullable) NSArray<NSString *> *fontVariant;
@@ -72,7 +71,7 @@ extern NSString *const RCTTextAttributesTagAttributeName;
 - (UIFont *)effectiveFont;
 
 /**
- * Font size multiplier reflects `allowFontScaling`, `fontSizeMultiplier`, and `maxFontSizeMultiplier`.
+ * Font size multiplier reflects `allowFontScaling` and `fontSizeMultiplier`.
  */
 - (CGFloat)effectiveFontSizeMultiplier;
 

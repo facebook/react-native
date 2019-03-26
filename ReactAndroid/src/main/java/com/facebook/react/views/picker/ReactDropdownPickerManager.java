@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,7 +18,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 @ReactModule(name = ReactDropdownPickerManager.REACT_CLASS)
 public class ReactDropdownPickerManager extends ReactPickerManager {
 
-  public static final String REACT_CLASS = "AndroidDropdownPicker";
+  protected static final String REACT_CLASS = "AndroidDropdownPicker";
 
   @Override
   public String getName() {

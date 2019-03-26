@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,8 +10,13 @@
 
 'use strict';
 
+const ColorPropType = require('ColorPropType');
 const React = require('React');
+const ReactPropTypes = require('prop-types');
 const StyleSheet = require('StyleSheet');
+const StyleSheetPropType = require('StyleSheetPropType');
+const ViewPropTypes = require('ViewPropTypes');
+const ViewStylePropTypes = require('ViewStylePropTypes');
 
 const processColor = require('processColor');
 const requireNativeComponent = require('requireNativeComponent');
@@ -22,30 +27,41 @@ const DialogPicker = requireNativeComponent('AndroidDialogPicker');
 const REF_PICKER = 'picker';
 const MODE_DROPDOWN = 'dropdown';
 
-import type {SyntheticEvent} from 'CoreEventTypes';
-import type {TextStyleProp} from 'StyleSheet';
+const pickerStyleType = StyleSheetPropType({
+  ...ViewStylePropTypes,
+  color: ColorPropType,
+});
 
-type PickerAndroidChangeEvent = SyntheticEvent<
-  $ReadOnly<{|
-    position: number,
-  |}>,
->;
-
-type PickerAndroidProps = $ReadOnly<{|
-  children?: React.Node,
-  style?: ?TextStyleProp,
-  selectedValue?: any,
-  enabled?: ?boolean,
-  mode?: ?('dialog' | 'dropdown'),
-  onValueChange?: ?(newValue: any, newIndex: number) => mixed,
-  prompt?: ?string,
-  testID?: string,
-|}>;
+type Event = Object;
 
 /**
  * Not exposed as a public API - use <Picker> instead.
  */
-class PickerAndroid extends React.Component<PickerAndroidProps, *> {
+class PickerAndroid extends React.Component<
+  {
+    style?: $FlowFixMe,
+    selectedValue?: any,
+    enabled?: boolean,
+    mode?: 'dialog' | 'dropdown',
+    onValueChange?: Function,
+    prompt?: string,
+    testID?: string,
+  },
+  *,
+> {
+  /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
+   * when making Flow check .android.js files. */
+  static propTypes = {
+    ...ViewPropTypes,
+    style: pickerStyleType,
+    selectedValue: ReactPropTypes.any,
+    enabled: ReactPropTypes.bool,
+    mode: ReactPropTypes.oneOf(['dialog', 'dropdown']),
+    onValueChange: ReactPropTypes.func,
+    prompt: ReactPropTypes.string,
+    testID: ReactPropTypes.string,
+  };
+
   /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
    * when making Flow check .android.js files. */
   constructor(props, context) {
@@ -106,7 +122,7 @@ class PickerAndroid extends React.Component<PickerAndroidProps, *> {
     return <Picker ref={REF_PICKER} {...nativeProps} />;
   }
 
-  _onChange = (event: PickerAndroidChangeEvent) => {
+  _onChange = (event: Event) => {
     if (this.props.onValueChange) {
       const position = event.nativeEvent.position;
       if (position >= 0) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,43 +14,14 @@ const ElementProperties = require('ElementProperties');
 const NetworkOverlay = require('NetworkOverlay');
 const PerformanceOverlay = require('PerformanceOverlay');
 const React = require('React');
+const PropTypes = require('prop-types');
 const ScrollView = require('ScrollView');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const TouchableHighlight = require('TouchableHighlight');
 const View = require('View');
 
-import type {ViewStyleProp} from 'StyleSheet';
-
-type Props = $ReadOnly<{|
-  devtoolsIsOpen: boolean,
-  inspecting: boolean,
-  setInspecting: (val: boolean) => void,
-  perfing: boolean,
-  setPerfing: (val: boolean) => void,
-  touchTargeting: boolean,
-  setTouchTargeting: (val: boolean) => void,
-  networking: boolean,
-  setNetworking: (val: boolean) => void,
-  hierarchy?: ?Array<{|name: string|}>,
-  selection?: ?number,
-  setSelection: number => mixed,
-  inspected?: ?$ReadOnly<{|
-    style?: ?ViewStyleProp,
-    frame?: ?$ReadOnly<{|
-      top?: ?number,
-      left?: ?number,
-      width?: ?number,
-      height: ?number,
-    |}>,
-    source?: ?{|
-      fileName?: string,
-      lineNumber?: number,
-    |},
-  |}>,
-|}>;
-
-class InspectorPanel extends React.Component<Props> {
+class InspectorPanel extends React.Component<$FlowFixMeProps> {
   renderWaiting() {
     if (this.props.inspecting) {
       return (
@@ -69,7 +40,6 @@ class InspectorPanel extends React.Component<Props> {
             style={this.props.inspected.style}
             frame={this.props.inspected.frame}
             source={this.props.inspected.source}
-            // $FlowFixMe: Hierarchy should be non-nullable
             hierarchy={this.props.hierarchy}
             selection={this.props.selection}
             setSelection={this.props.setSelection}
@@ -87,22 +57,22 @@ class InspectorPanel extends React.Component<Props> {
       <View style={styles.container}>
         {!this.props.devtoolsIsOpen && contents}
         <View style={styles.buttonRow}>
-          <InspectorPanelButton
+          <Button
             title={'Inspect'}
             pressed={this.props.inspecting}
             onClick={this.props.setInspecting}
           />
-          <InspectorPanelButton
+          <Button
             title={'Perf'}
             pressed={this.props.perfing}
             onClick={this.props.setPerfing}
           />
-          <InspectorPanelButton
+          <Button
             title={'Network'}
             pressed={this.props.networking}
             onClick={this.props.setNetworking}
           />
-          <InspectorPanelButton
+          <Button
             title={'Touchables'}
             pressed={this.props.touchTargeting}
             onClick={this.props.setTouchTargeting}
@@ -113,13 +83,20 @@ class InspectorPanel extends React.Component<Props> {
   }
 }
 
-type InspectorPanelButtonProps = $ReadOnly<{|
-  onClick: (val: boolean) => void,
-  pressed: boolean,
-  title: string,
-|}>;
+InspectorPanel.propTypes = {
+  devtoolsIsOpen: PropTypes.bool,
+  inspecting: PropTypes.bool,
+  setInspecting: PropTypes.func,
+  inspected: PropTypes.object,
+  perfing: PropTypes.bool,
+  setPerfing: PropTypes.func,
+  touchTargeting: PropTypes.bool,
+  setTouchTargeting: PropTypes.func,
+  networking: PropTypes.bool,
+  setNetworking: PropTypes.func,
+};
 
-class InspectorPanelButton extends React.Component<InspectorPanelButtonProps> {
+class Button extends React.Component<$FlowFixMeProps> {
   render() {
     return (
       <TouchableHighlight

@@ -1,40 +1,31 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2013-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
  */
 
 'use strict';
 
-const BatchedBridge = require('BatchedBridge');
-const React = require('React');
-const View = require('View');
-const ScrollView = require('ScrollView');
-const Text = require('Text');
-const StyleSheet = require('StyleSheet');
-const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-const ScrollListener = require('NativeModules').ScrollListener;
+var BatchedBridge = require('BatchedBridge');
+var React = require('React');
+var createReactClass = require('create-react-class');
+var View = require('View');
+var ScrollView = require('ScrollView');
+var Text = require('Text');
+var StyleSheet = require('StyleSheet');
+var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+var ScrollListener = require('NativeModules').ScrollListener;
 
-const NUM_ITEMS = 100;
-
-import type {PressEvent} from 'CoreEventTypes';
+var NUM_ITEMS = 100;
 
 // Shared by integration tests for ScrollView and HorizontalScrollView
 
-let scrollViewApp;
+var scrollViewApp;
 
-type ItemProps = $ReadOnly<{|
-  onPress: (event: PressEvent) => void,
-  text: string,
-|}>;
-
-type ItemState = {||};
-
-class Item extends React.Component<ItemProps, ItemState> {
+class Item extends React.Component {
   render() {
     return (
       <TouchableWithoutFeedback onPress={this.props.onPress}>
@@ -46,9 +37,9 @@ class Item extends React.Component<ItemProps, ItemState> {
   }
 }
 
-const getInitialState = function() {
-  const data = [];
-  for (let i = 0; i < NUM_ITEMS; i++) {
+var getInitialState = function() {
+  var data = [];
+  for (var i = 0; i < NUM_ITEMS; i++) {
     data[i] = {text: 'Item ' + i + '!'};
   }
   return {
@@ -56,101 +47,92 @@ const getInitialState = function() {
   };
 };
 
-const onScroll = function(e) {
+var onScroll = function(e) {
   ScrollListener.onScroll(
     e.nativeEvent.contentOffset.x,
     e.nativeEvent.contentOffset.y,
   );
 };
 
-const onScrollBeginDrag = function(e) {
+var onScrollBeginDrag = function(e) {
   ScrollListener.onScrollBeginDrag(
     e.nativeEvent.contentOffset.x,
     e.nativeEvent.contentOffset.y,
   );
 };
 
-const onScrollEndDrag = function(e) {
+var onScrollEndDrag = function(e) {
   ScrollListener.onScrollEndDrag(
     e.nativeEvent.contentOffset.x,
     e.nativeEvent.contentOffset.y,
   );
 };
 
-const onItemPress = function(itemNumber) {
+var onItemPress = function(itemNumber) {
   ScrollListener.onItemPress(itemNumber);
 };
 
-type Props = $ReadOnly<{||}>;
-type State = {|
-  data: $ReadOnlyArray<{|text: string|}>,
-|};
+var ScrollViewTestApp = createReactClass({
+  displayName: 'ScrollViewTestApp',
+  getInitialState: getInitialState,
+  onScroll: onScroll,
+  onItemPress: onItemPress,
+  onScrollBeginDrag: onScrollBeginDrag,
+  onScrollEndDrag: onScrollEndDrag,
 
-class ScrollViewTestApp extends React.Component<Props, State> {
-  scrollView = React.createRef();
-  state = getInitialState();
+  scrollTo: function(destX, destY) {
+    this.refs.scrollView.scrollTo(destY, destX);
+  },
 
-  scrollTo(destX: number, destY: number) {
-    const scrollView = this.scrollView.current;
-    if (scrollView == null) {
-      return;
-    }
-
-    scrollView.scrollTo(destY, destX);
-  }
-
-  render() {
+  render: function() {
     scrollViewApp = this;
-    const children = this.state.data.map((item, index) => (
+    var children = this.state.data.map((item, index) => (
       <Item
         key={index}
         text={item.text}
-        onPress={onItemPress.bind(this, index)}
+        onPress={this.onItemPress.bind(this, index)}
       />
     ));
     return (
       <ScrollView
-        onScroll={onScroll}
-        onScrollBeginDrag={onScrollBeginDrag}
-        onScrollEndDrag={onScrollEndDrag}
-        ref={this.scrollView}>
+        onScroll={this.onScroll}
+        onScrollBeginDrag={this.onScrollBeginDrag}
+        onScrollEndDrag={this.onScrollEndDrag}
+        ref="scrollView">
         {children}
       </ScrollView>
     );
-  }
-}
+  },
+});
 
-class HorizontalScrollViewTestApp extends React.Component<Props, State> {
-  scrollView = React.createRef();
-  state = getInitialState();
+var HorizontalScrollViewTestApp = createReactClass({
+  displayName: 'HorizontalScrollViewTestApp',
+  getInitialState: getInitialState,
+  onScroll: onScroll,
+  onItemPress: onItemPress,
 
-  scrollTo(destX: number, destY: number) {
-    const scrollView = this.scrollView.current;
-    if (scrollView == null) {
-      return;
-    }
+  scrollTo: function(destX, destY) {
+    this.refs.scrollView.scrollTo(destY, destX);
+  },
 
-    scrollView.scrollTo(destY, destX);
-  }
-
-  render() {
+  render: function() {
     scrollViewApp = this;
-    const children = this.state.data.map((item, index) => (
+    var children = this.state.data.map((item, index) => (
       <Item
         key={index}
         text={item.text}
-        onPress={onItemPress.bind(this, index)}
+        onPress={this.onItemPress.bind(this, index)}
       />
     ));
     return (
-      <ScrollView horizontal={true} onScroll={onScroll} ref={this.scrollView}>
+      <ScrollView horizontal={true} onScroll={this.onScroll} ref="scrollView">
         {children}
       </ScrollView>
     );
-  }
-}
+  },
+});
 
-const styles = StyleSheet.create({
+var styles = StyleSheet.create({
   item_container: {
     padding: 30,
     backgroundColor: '#ffffff',
@@ -162,10 +144,10 @@ const styles = StyleSheet.create({
   },
 });
 
-const ScrollViewTestModule = {
+var ScrollViewTestModule = {
   ScrollViewTestApp: ScrollViewTestApp,
   HorizontalScrollViewTestApp: HorizontalScrollViewTestApp,
-  scrollTo(destX: number, destY: number) {
+  scrollTo: function(destX, destY) {
     scrollViewApp.scrollTo(destX, destY);
   },
 };

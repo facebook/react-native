@@ -22,73 +22,65 @@ var ViewPropTypes = require('ViewPropTypes');
 var createReactClass = require('create-react-class');
 var requireNativeComponent = require('requireNativeComponent');
 
-
-import type {NativeComponent} from 'ReactNative';
-import type {ImageSource} from 'ImageSource';
-import type {ColorValue} from 'StyleSheetTypes';
-import type {ViewProps} from 'ViewPropTypes';
-
-type Props = $ReadOnly<{|
-  ...ViewProps,
-
-  /**
-   * The progress bar style.
-   */
-  progressViewStyle?: ?('default' | 'bar'),
-
-  /**
-   * The progress value (between 0 and 1).
-   */
-  progress?: ?number,
-
-  /**
-   * The tint color of the progress bar itself.
-   */
-  progressTintColor?: ?ColorValue,
-
-  /**
-   * The tint color of the progress bar track.
-   */
-  trackTintColor?: ?ColorValue,
-
-  /**
-   * A stretchable image to display as the progress bar.
-   */
-  progressImage?: ?ImageSource,
-
-  /**
-   * A stretchable image to display behind the progress bar.
-   */
-  trackImage?: ?ImageSource,
-|}>;
-
-type NativeProgressViewIOS = Class<NativeComponent<Props>>;
-
-const RCTProgressView = ((requireNativeComponent(
-  'RCTProgressView',
-): any): NativeProgressViewIOS);
-
 /**
  * Use `ProgressViewIOS` to render a UIProgressView on iOS.
  */
-const ProgressViewIOS = (
-  props: Props,
-  forwardedRef?: ?React.Ref<typeof RCTProgressView>,
-) => (
-  <RCTProgressView
-    {...props}
-    style={[styles.progressView, props.style]}
-    ref={forwardedRef}
-  />
-);
+var ProgressViewIOS = createReactClass({
+  displayName: 'ProgressViewIOS',
+  mixins: [NativeMethodsMixin],
 
-const styles = StyleSheet.create({
+  propTypes: {
+    ...ViewPropTypes,
+    /**
+     * The progress bar style.
+     */
+    progressViewStyle: PropTypes.oneOf(['default', 'bar']),
+
+    /**
+     * The progress value (between 0 and 1).
+     */
+    progress: PropTypes.number,
+
+    /**
+     * The tint color of the progress bar itself.
+     */
+    progressTintColor: PropTypes.string,
+
+    /**
+     * The tint color of the progress bar track.
+     */
+    trackTintColor: PropTypes.string,
+
+    /**
+     * A stretchable image to display as the progress bar.
+     */
+    progressImage: Image.propTypes.source,
+
+    /**
+     * A stretchable image to display behind the progress bar.
+     */
+    trackImage: Image.propTypes.source,
+  },
+
+  render: function() {
+    return (
+      <RCTProgressView
+        {...this.props}
+        style={[styles.progressView, this.props.style]}
+      />
+    );
+  },
+});
+
+var styles = StyleSheet.create({
   progressView: {
     height: 2,
   },
 });
 
-// $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
-const ProgressViewIOSWithRef = React.forwardRef(ProgressViewIOS);
+var RCTProgressView = requireNativeComponent(
+  'RCTProgressView' /* TODO refactor to a class that extends React.Component<Props>,
+  ProgressViewIOS*/,
+);
 
-module.exports = (ProgressViewIOSWithRef: NativeProgressViewIOS);
+module.exports = ProgressViewIOS;

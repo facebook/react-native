@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -71,21 +71,21 @@ if (__DEV__) {
     }
   };
 
-  const closestTypeFor = function(type, allowedTypes) {
+  var closestTypeFor = function(type, allowedTypes) {
     const typeRecommendations = allowedTypes.map(
       typeRecommendationFor.bind(this, type),
     );
     return typeRecommendations.sort(recommendationSort)[0];
   };
 
-  const typeRecommendationFor = function(type, recommendedType) {
+  var typeRecommendationFor = function(type, recommendedType) {
     return {
       type: recommendedType,
       distance: damerauLevenshteinDistance(type, recommendedType),
     };
   };
 
-  const recommendationSort = function(recommendationA, recommendationB) {
+  var recommendationSort = function(recommendationA, recommendationB) {
     if (recommendationA.distance < recommendationB.distance) {
       return -1;
     } else if (recommendationA.distance > recommendationB.distance) {
@@ -95,11 +95,11 @@ if (__DEV__) {
     }
   };
 
-  const isCloseEnough = function(closestType, actualType) {
+  var isCloseEnough = function(closestType, actualType) {
     return closestType.distance / actualType.length < 0.334;
   };
 
-  const damerauLevenshteinDistance = function(a, b) {
+  var damerauLevenshteinDistance = function(a, b) {
     let i, j;
     const d = [];
 

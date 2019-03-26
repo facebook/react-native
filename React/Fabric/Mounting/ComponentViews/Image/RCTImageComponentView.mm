@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,12 +7,12 @@
 
 #import "RCTImageComponentView.h"
 
-#import <react/components/image/ImageEventEmitter.h>
-#import <react/components/image/ImageLocalData.h>
-#import <react/components/image/ImageProps.h>
-#import <react/imagemanager/ImageRequest.h>
-#import <react/imagemanager/ImageResponse.h>
-#import <react/imagemanager/RCTImagePrimitivesConversions.h>
+#import <fabric/components/image/ImageEventEmitter.h>
+#import <fabric/components/image/ImageLocalData.h>
+#import <fabric/components/image/ImageProps.h>
+#import <fabric/imagemanager/ImageRequest.h>
+#import <fabric/imagemanager/ImageResponse.h>
+#import <fabric/imagemanager/RCTImagePrimitivesConversions.h>
 
 #import "RCTConversions.h"
 #import "MainQueueExecutor.h"
@@ -27,13 +27,11 @@ using namespace facebook::react;
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const ImageProps>();
-    _props = defaultProps;
-
     _imageView = [[UIImageView alloc] initWithFrame:self.bounds];
     _imageView.clipsToBounds = YES;
 
-    _imageView.contentMode = (UIViewContentMode)RCTResizeModeFromImageResizeMode(defaultProps->resizeMode);
+    auto defaultProps = ImageProps();
+    _imageView.contentMode = (UIViewContentMode)RCTResizeModeFromImageResizeMode(defaultProps.resizeMode);
 
     self.contentView = _imageView;
   }
@@ -45,10 +43,15 @@ using namespace facebook::react;
 
 - (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
 {
-  const auto &oldImageProps = *std::static_pointer_cast<const ImageProps>(oldProps ?: _props);
-  const auto &newImageProps = *std::static_pointer_cast<const ImageProps>(props);
+  if (!oldProps) {
+    oldProps = _props ?: std::make_shared<const ImageProps>();
+  }
+  _props = props;
 
   [super updateProps:props oldProps:oldProps];
+
+  const auto &oldImageProps = *std::dynamic_pointer_cast<const ImageProps>(oldProps);
+  const auto &newImageProps = *std::dynamic_pointer_cast<const ImageProps>(props);
 
   // `resizeMode`
   if (oldImageProps.resizeMode != newImageProps.resizeMode) {
@@ -73,8 +76,8 @@ using namespace facebook::react;
   _imageLocalData = std::static_pointer_cast<const ImageLocalData>(localData);
   assert(_imageLocalData);
   auto future = _imageLocalData->getImageRequest().getResponseFuture();
-  future.via(&MainQueueExecutor::instance()).thenValue([self](ImageResponse &&imageResponse) {
-    self.image = (__bridge UIImage *)imageResponse.getImage().get();
+  future.via(&MainQueueExecutor::instance()).then([self](ImageResponse &&imageResponse) {
+    self.image = (__bridge_transfer UIImage *)imageResponse.getImage().get();
   });
 }
 
@@ -82,7 +85,6 @@ using namespace facebook::react;
 {
   [super prepareForRecycle];
   _imageView.image = nil;
-  _imageLocalData.reset();
 }
 
 #pragma mark - Other

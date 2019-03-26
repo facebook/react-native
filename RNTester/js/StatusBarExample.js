@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -498,7 +498,7 @@ const examples = [
 
 exports.examples = examples;
 
-const styles = StyleSheet.create({
+var styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -517,6 +517,11 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: '#eeeeee',
     padding: 10,
+  },
+  title: {
+    marginTop: 16,
+    marginBottom: 8,
+    fontWeight: 'bold',
   },
   modalButton: {
     marginTop: 10,

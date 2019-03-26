@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include <react/attributedstring/TextAttributes.h>
-#include <react/core/Props.h>
-#include <react/graphics/Color.h>
-#include <react/graphics/Geometry.h>
+#include <fabric/attributedstring/TextAttributes.h>
+#include <fabric/core/Props.h>
+#include <fabric/graphics/Color.h>
+#include <fabric/graphics/Geometry.h>
 
 namespace facebook {
 namespace react {
@@ -20,19 +20,18 @@ namespace react {
  * that can have text attributes (such as Text and Paragraph).
  */
 class BaseTextProps {
- public:
+public:
+
   BaseTextProps() = default;
   BaseTextProps(const BaseTextProps &sourceProps, const RawProps &rawProps);
 
 #pragma mark - Props
 
-  const TextAttributes textAttributes{};
+  const TextAttributes textAttributes {};
 
 #pragma mark - DebugStringConvertible (partially)
 
-#if RN_DEBUG_STRING_CONVERTIBLE
   SharedDebugStringConvertibleList getDebugProps() const;
-#endif
 };
 
 } // namespace react

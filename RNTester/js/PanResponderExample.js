@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,78 +10,37 @@
 
 'use strict';
 
-const React = require('react');
-const ReactNative = require('react-native');
-const {PanResponder, StyleSheet, View} = ReactNative;
+var React = require('react');
+var createReactClass = require('create-react-class');
+var ReactNative = require('react-native');
+var {PanResponder, StyleSheet, View} = ReactNative;
 
-import type {PanResponderInstance, GestureState} from 'PanResponder';
-import type {PressEvent} from 'CoreEventTypes';
+var CIRCLE_SIZE = 80;
 
-type CircleStyles = {
-  backgroundColor?: string,
-  left?: number,
-  top?: number,
-};
+var PanResponderExample = createReactClass({
+  displayName: 'PanResponderExample',
 
-const CIRCLE_SIZE = 80;
+  statics: {
+    title: 'PanResponder Sample',
+    description:
+      'Shows the use of PanResponder to provide basic gesture handling.',
+  },
 
-type Props = $ReadOnly<{||}>;
+  _panResponder: {},
+  _previousLeft: 0,
+  _previousTop: 0,
+  _circleStyles: {},
+  circle: (null: ?{setNativeProps(props: Object): void}),
 
-class PanResponderExample extends React.Component<Props> {
-  static title = 'PanResponder Sample';
-  static description =
-    'Shows the Use of PanResponder to provide basic gesture handling';
-
-  _handleStartShouldSetPanResponder = (
-    event: PressEvent,
-    gestureState: GestureState,
-  ): boolean => {
-    // Should we become active when the user presses down on the circle?
-    return true;
-  };
-
-  _handleMoveShouldSetPanResponder = (
-    event: PressEvent,
-    gestureState: GestureState,
-  ): boolean => {
-    // Should we become active when the user moves a touch over the circle?
-    return true;
-  };
-
-  _handlePanResponderGrant = (
-    event: PressEvent,
-    gestureState: GestureState,
-  ) => {
-    this._highlight();
-  };
-
-  _handlePanResponderMove = (event: PressEvent, gestureState: GestureState) => {
-    this._circleStyles.style.left = this._previousLeft + gestureState.dx;
-    this._circleStyles.style.top = this._previousTop + gestureState.dy;
-    this._updateNativeStyles();
-  };
-
-  _handlePanResponderEnd = (event: PressEvent, gestureState: GestureState) => {
-    this._unHighlight();
-    this._previousLeft += gestureState.dx;
-    this._previousTop += gestureState.dy;
-  };
-
-  _panResponder: PanResponderInstance = PanResponder.create({
-    onStartShouldSetPanResponder: this._handleStartShouldSetPanResponder,
-    onMoveShouldSetPanResponder: this._handleMoveShouldSetPanResponder,
-    onPanResponderGrant: this._handlePanResponderGrant,
-    onPanResponderMove: this._handlePanResponderMove,
-    onPanResponderRelease: this._handlePanResponderEnd,
-    onPanResponderTerminate: this._handlePanResponderEnd,
-  });
-
-  _previousLeft: number = 0;
-  _previousTop: number = 0;
-  _circleStyles: {|style: CircleStyles|} = {style: {}};
-  circle: ?React.ElementRef<typeof View> = null;
-
-  UNSAFE_componentWillMount() {
+  UNSAFE_componentWillMount: function() {
+    this._panResponder = PanResponder.create({
+      onStartShouldSetPanResponder: this._handleStartShouldSetPanResponder,
+      onMoveShouldSetPanResponder: this._handleMoveShouldSetPanResponder,
+      onPanResponderGrant: this._handlePanResponderGrant,
+      onPanResponderMove: this._handlePanResponderMove,
+      onPanResponderRelease: this._handlePanResponderEnd,
+      onPanResponderTerminate: this._handlePanResponderEnd,
+    });
     this._previousLeft = 20;
     this._previousTop = 84;
     this._circleStyles = {
@@ -91,27 +50,13 @@ class PanResponderExample extends React.Component<Props> {
         backgroundColor: 'green',
       },
     };
-  }
+  },
 
-  componentDidMount() {
+  componentDidMount: function() {
     this._updateNativeStyles();
-  }
+  },
 
-  _highlight() {
-    this._circleStyles.style.backgroundColor = 'blue';
-    this._updateNativeStyles();
-  }
-
-  _unHighlight() {
-    this._circleStyles.style.backgroundColor = 'green';
-    this._updateNativeStyles();
-  }
-
-  _updateNativeStyles() {
-    this.circle && this.circle.setNativeProps(this._circleStyles);
-  }
-
-  render() {
+  render: function() {
     return (
       <View style={styles.container}>
         <View
@@ -123,10 +68,54 @@ class PanResponderExample extends React.Component<Props> {
         />
       </View>
     );
-  }
-}
+  },
 
-const styles = StyleSheet.create({
+  _highlight: function() {
+    this._circleStyles.style.backgroundColor = 'blue';
+    this._updateNativeStyles();
+  },
+
+  _unHighlight: function() {
+    this._circleStyles.style.backgroundColor = 'green';
+    this._updateNativeStyles();
+  },
+
+  _updateNativeStyles: function() {
+    this.circle && this.circle.setNativeProps(this._circleStyles);
+  },
+
+  _handleStartShouldSetPanResponder: function(
+    e: Object,
+    gestureState: Object,
+  ): boolean {
+    // Should we become active when the user presses down on the circle?
+    return true;
+  },
+
+  _handleMoveShouldSetPanResponder: function(
+    e: Object,
+    gestureState: Object,
+  ): boolean {
+    // Should we become active when the user moves a touch over the circle?
+    return true;
+  },
+
+  _handlePanResponderGrant: function(e: Object, gestureState: Object) {
+    this._highlight();
+  },
+  _handlePanResponderMove: function(e: Object, gestureState: Object) {
+    this._circleStyles.style.left = this._previousLeft + gestureState.dx;
+    this._circleStyles.style.top = this._previousTop + gestureState.dy;
+    this._updateNativeStyles();
+  },
+  _handlePanResponderEnd: function(e: Object, gestureState: Object) {
+    this._unHighlight();
+    this._previousLeft += gestureState.dx;
+    this._previousTop += gestureState.dy;
+  },
+});
+
+var styles = StyleSheet.create({
   circle: {
     width: CIRCLE_SIZE,
     height: CIRCLE_SIZE,

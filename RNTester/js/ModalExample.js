@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,9 +10,9 @@
 
 'use strict';
 
-const React = require('react');
-const ReactNative = require('react-native');
-const {
+var React = require('react');
+var ReactNative = require('react-native');
+var {
   Modal,
   Picker,
   Platform,
@@ -44,7 +44,7 @@ class Button extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   };
 
   render() {
-    const colorStyle = {
+    var colorStyle = {
       color: this.state.active ? '#fff' : '#000',
     };
     return (
@@ -106,15 +106,15 @@ class ModalExample extends React.Component<{}, $FlowFixMeState> {
   }
 
   render() {
-    const modalBackgroundStyle = {
+    var modalBackgroundStyle = {
       backgroundColor: this.state.transparent
         ? 'rgba(0, 0, 0, 0.5)'
         : '#f5fcff',
     };
-    const innerContainerTransparentStyle = this.state.transparent
+    var innerContainerTransparentStyle = this.state.transparent
       ? {backgroundColor: '#fff', padding: 20}
       : null;
-    const activeButtonStyle = {
+    var activeButtonStyle = {
       backgroundColor: '#ddd',
     };
 
@@ -241,7 +241,7 @@ exports.examples = [
   },
 ];
 
-const styles = StyleSheet.create({
+var styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',

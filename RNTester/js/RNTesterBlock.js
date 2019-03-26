@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,26 +10,32 @@
 
 'use strict';
 
-const React = require('react');
-const {StyleSheet, Text, View} = require('react-native');
+var React = require('react');
+var PropTypes = require('prop-types');
+var ReactNative = require('react-native');
+var {StyleSheet, Text, View} = ReactNative;
 
-type Props = $ReadOnly<{|
-  children?: React.Node,
-  title?: ?string,
-  description?: ?string,
-|}>;
+class RNTesterBlock extends React.Component<
+  {
+    title?: string,
+    description?: string,
+  },
+  $FlowFixMeState,
+> {
+  static propTypes = {
+    title: PropTypes.string,
+    description: PropTypes.string,
+  };
 
-type State = {|
-  description: ?string,
-|};
-
-class RNTesterBlock extends React.Component<Props, State> {
-  state = {description: null};
+  state = {description: (null: ?string)};
 
   render() {
-    const description = this.props.description ? (
-      <Text style={styles.descriptionText}>{this.props.description}</Text>
-    ) : null;
+    var description;
+    if (this.props.description) {
+      description = (
+        <Text style={styles.descriptionText}>{this.props.description}</Text>
+      );
+    }
 
     return (
       <View style={styles.container}>
@@ -37,13 +43,18 @@ class RNTesterBlock extends React.Component<Props, State> {
           <Text style={styles.titleText}>{this.props.title}</Text>
           {description}
         </View>
-        <View style={styles.children}>{this.props.children}</View>
+        <View style={styles.children}>
+          {
+            // $FlowFixMe found when converting React.createClass to ES6
+            this.props.children
+          }
+        </View>
       </View>
     );
   }
 }
 
-const styles = StyleSheet.create({
+var styles = StyleSheet.create({
   container: {
     borderRadius: 3,
     borderWidth: 0.5,
@@ -68,6 +79,16 @@ const styles = StyleSheet.create({
   },
   descriptionText: {
     fontSize: 14,
+  },
+  disclosure: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    padding: 10,
+  },
+  disclosureIcon: {
+    width: 12,
+    height: 8,
   },
   children: {
     margin: 10,

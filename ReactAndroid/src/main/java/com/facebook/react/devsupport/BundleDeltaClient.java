@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2018-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -25,7 +25,7 @@ import okio.BufferedSource;
 public abstract class BundleDeltaClient {
 
   private static final String METRO_DELTA_ID_HEADER = "X-Metro-Delta-ID";
-  @Nullable private String mRevisionId;
+  @Nullable private String mDeltaId;
 
   public enum ClientType {
     NONE,
@@ -54,45 +54,46 @@ public abstract class BundleDeltaClient {
     BufferedSource body,
     File outputFile) throws IOException;
 
-  final public synchronized String extendUrlForDelta(String bundleURL) {
-    return mRevisionId != null ? bundleURL + "&revisionId=" + mRevisionId : bundleURL;
+  final public String extendUrlForDelta(String bundleURL) {
+    return mDeltaId != null ? bundleURL + "&deltaBundleId=" + mDeltaId : bundleURL;
   }
 
-  public synchronized void reset() {
-    mRevisionId = null;
+  public void reset() {
+    mDeltaId = null;
   }
 
-  public synchronized Pair<Boolean, NativeDeltaClient> processDelta(
+  public Pair<Boolean, NativeDeltaClient> processDelta(
     Headers headers,
     BufferedSource body,
     File outputFile) throws IOException {
 
-    mRevisionId = headers.get(METRO_DELTA_ID_HEADER);
+    mDeltaId = headers.get(METRO_DELTA_ID_HEADER);
     return processDelta(body, outputFile);
   }
 
   private static class BundleDeltaJavaClient extends BundleDeltaClient {
 
-    byte[] mPreCode;
-    byte[] mPostCode;
-    final LinkedHashMap<Number, byte[]> mModules = new LinkedHashMap<Number, byte[]>();
+    final LinkedHashMap<Number, byte[]> mPreModules = new LinkedHashMap<Number, byte[]>();
+    final LinkedHashMap<Number, byte[]> mDeltaModules = new LinkedHashMap<Number, byte[]>();
+    final LinkedHashMap<Number, byte[]> mPostModules = new LinkedHashMap<Number, byte[]>();
 
     @Override
     public boolean canHandle(ClientType type) {
       return type == ClientType.DEV_SUPPORT;
     }
 
-    public synchronized void reset() {
+    public void reset() {
       super.reset();
-      mPreCode = null;
-      mPostCode = null;
-      mModules.clear();
+      mDeltaModules.clear();
+      mPreModules.clear();
+      mPostModules.clear();
     }
 
     @Override
     public synchronized Pair<Boolean, NativeDeltaClient> processDelta(
       BufferedSource body,
       File outputFile) throws IOException {
+
       JsonReader jsonReader = new JsonReader(new InputStreamReader(body.inputStream()));
       jsonReader.beginObject();
       int numChangedModules = 0;
@@ -100,13 +101,11 @@ public abstract class BundleDeltaClient {
       while (jsonReader.hasNext()) {
         String name = jsonReader.nextName();
         if (name.equals("pre")) {
-          mPreCode = jsonReader.nextString().getBytes();
+          numChangedModules += patchDelta(jsonReader, mPreModules);
         } else if (name.equals("post")) {
-          mPostCode = jsonReader.nextString().getBytes();
-        } else if (name.equals("modules")) {
-          numChangedModules += setModules(jsonReader, mModules);
-        } else if (name.equals("deleted")) {
-          numChangedModules += removeModules(jsonReader, mModules);
+          numChangedModules += patchDelta(jsonReader, mPostModules);
+        } else if (name.equals("delta")) {
+          numChangedModules += patchDelta(jsonReader, mDeltaModules);
         } else {
           jsonReader.skipValue();
         }
@@ -124,16 +123,20 @@ public abstract class BundleDeltaClient {
       FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
 
       try {
-        fileOutputStream.write(mPreCode);
-        fileOutputStream.write('\n');
-
-        for (byte[] code : mModules.values()) {
+        for (byte[] code : mPreModules.values()) {
           fileOutputStream.write(code);
           fileOutputStream.write('\n');
         }
 
-        fileOutputStream.write(mPostCode);
-        fileOutputStream.write('\n');
+        for (byte[] code : mDeltaModules.values()) {
+          fileOutputStream.write(code);
+          fileOutputStream.write('\n');
+        }
+
+        for (byte[] code : mPostModules.values()) {
+          fileOutputStream.write(code);
+          fileOutputStream.write('\n');
+        }
       } finally {
         fileOutputStream.flush();
         fileOutputStream.close();
@@ -142,7 +145,7 @@ public abstract class BundleDeltaClient {
       return Pair.create(Boolean.TRUE, null);
     }
 
-    private static int setModules(JsonReader jsonReader, LinkedHashMap<Number, byte[]> map)
+    private static int patchDelta(JsonReader jsonReader, LinkedHashMap<Number, byte[]> map)
       throws IOException {
       jsonReader.beginArray();
 
@@ -152,27 +155,14 @@ public abstract class BundleDeltaClient {
 
         int moduleId = jsonReader.nextInt();
 
-        map.put(moduleId, jsonReader.nextString().getBytes());
+        if (jsonReader.peek() == JsonToken.NULL) {
+          jsonReader.skipValue();
+          map.remove(moduleId);
+        } else {
+          map.put(moduleId, jsonReader.nextString().getBytes());
+        }
 
         jsonReader.endArray();
-        numModules++;
-      }
-
-      jsonReader.endArray();
-
-      return numModules;
-    }
-
-    private static int removeModules(JsonReader jsonReader, LinkedHashMap<Number, byte[]> map)
-      throws IOException {
-      jsonReader.beginArray();
-
-      int numModules = 0;
-      while (jsonReader.hasNext()) {
-        int moduleId = jsonReader.nextInt();
-
-        map.remove(moduleId);
-
         numModules++;
       }
 
