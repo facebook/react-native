@@ -21,49 +21,6 @@ public abstract class YogaNodeJNIBase extends YogaNode {
   private long mNativePointer;
   @Nullable private Object mData;
 
-  /* Those flags needs be in sync with YGJNI.cpp */
-  private static final int MARGIN = 1;
-  private static final int PADDING = 2;
-  private static final int BORDER = 4;
-
-  @DoNotStrip
-  private float mWidth = YogaConstants.UNDEFINED;
-  @DoNotStrip
-  private float mHeight = YogaConstants.UNDEFINED;
-  @DoNotStrip
-  private float mTop = YogaConstants.UNDEFINED;
-  @DoNotStrip
-  private float mLeft = YogaConstants.UNDEFINED;
-  @DoNotStrip
-  private float mMarginLeft = 0;
-  @DoNotStrip
-  private float mMarginTop = 0;
-  @DoNotStrip
-  private float mMarginRight = 0;
-  @DoNotStrip
-  private float mMarginBottom = 0;
-  @DoNotStrip
-  private float mPaddingLeft = 0;
-  @DoNotStrip
-  private float mPaddingTop = 0;
-  @DoNotStrip
-  private float mPaddingRight = 0;
-  @DoNotStrip
-  private float mPaddingBottom = 0;
-  @DoNotStrip
-  private float mBorderLeft = 0;
-  @DoNotStrip
-  private float mBorderTop = 0;
-  @DoNotStrip
-  private float mBorderRight = 0;
-  @DoNotStrip
-  private float mBorderBottom = 0;
-  @DoNotStrip
-  private int mLayoutDirection = 0;
-  @DoNotStrip
-  private boolean mHasNewLayout = true;
-  @DoNotStrip private boolean mDoesLegacyStretchFlagAffectsLayout = false;
-
   public YogaNodeJNIBase() {
     mNativePointer = YogaNative.jni_YGNodeNew();
     if (mNativePointer == 0) {
@@ -96,30 +53,9 @@ public abstract class YogaNodeJNIBase extends YogaNode {
     }
   }
   public void reset() {
-    mHasNewLayout = true;
-
-    mWidth = YogaConstants.UNDEFINED;
-    mHeight = YogaConstants.UNDEFINED;
-    mTop = YogaConstants.UNDEFINED;
-    mLeft = YogaConstants.UNDEFINED;
-    mMarginLeft = 0;
-    mMarginTop = 0;
-    mMarginRight = 0;
-    mMarginBottom = 0;
-    mPaddingLeft = 0;
-    mPaddingTop = 0;
-    mPaddingRight = 0;
-    mPaddingBottom = 0;
-    mBorderLeft = 0;
-    mBorderTop = 0;
-    mBorderRight = 0;
-    mBorderBottom = 0;
-    mLayoutDirection = 0;
-
     mMeasureFunction = null;
     mBaselineFunction = null;
     mData = null;
-    mDoesLegacyStretchFlagAffectsLayout = false;
 
     YogaNative.jni_YGNodeReset(mNativePointer);
   }
@@ -219,10 +155,6 @@ public abstract class YogaNodeJNIBase extends YogaNode {
     YogaNative.jni_YGNodeCalculateLayout(mNativePointer, width, height, nativePointers, nodes);
   }
 
-  public boolean hasNewLayout() {
-    return mHasNewLayout;
-  }
-
   public void dirty() {
     YogaNative.jni_YGNodeMarkDirty(mNativePointer);
   }
@@ -238,10 +170,6 @@ public abstract class YogaNodeJNIBase extends YogaNode {
   @Override
   public void copyStyle(YogaNode srcNode) {
     YogaNative.jni_YGNodeCopyStyle(mNativePointer, ((YogaNodeJNIBase) srcNode).mNativePointer);
-  }
-
-  public void markLayoutSeen() {
-    mHasNewLayout = false;
   }
 
   public YogaDirection getStyleDirection() {
@@ -500,86 +428,7 @@ public abstract class YogaNodeJNIBase extends YogaNode {
     YogaNative.jni_YGNodeStyleSetAspectRatio(mNativePointer, aspectRatio);
   }
 
-  public float getLayoutX() {
-    return mLeft;
-  }
-
-  public float getLayoutY() {
-    return mTop;
-  }
-
-  public float getLayoutWidth() {
-    return mWidth;
-  }
-
-  public float getLayoutHeight() {
-    return mHeight;
-  }
-
-  public boolean getDoesLegacyStretchFlagAffectsLayout() {
-    return mDoesLegacyStretchFlagAffectsLayout;
-  }
-
-  public float getLayoutMargin(YogaEdge edge) {
-    switch (edge) {
-      case LEFT:
-        return mMarginLeft;
-      case TOP:
-        return mMarginTop;
-      case RIGHT:
-        return mMarginRight;
-      case BOTTOM:
-        return mMarginBottom;
-      case START:
-        return getLayoutDirection() == YogaDirection.RTL ? mMarginRight : mMarginLeft;
-      case END:
-        return getLayoutDirection() == YogaDirection.RTL ? mMarginLeft : mMarginRight;
-      default:
-        throw new IllegalArgumentException("Cannot get layout margins of multi-edge shorthands");
-    }
-  }
-
-  public float getLayoutPadding(YogaEdge edge) {
-    switch (edge) {
-      case LEFT:
-        return mPaddingLeft;
-      case TOP:
-        return mPaddingTop;
-      case RIGHT:
-        return mPaddingRight;
-      case BOTTOM:
-        return mPaddingBottom;
-      case START:
-        return getLayoutDirection() == YogaDirection.RTL ? mPaddingRight : mPaddingLeft;
-      case END:
-        return getLayoutDirection() == YogaDirection.RTL ? mPaddingLeft : mPaddingRight;
-      default:
-        throw new IllegalArgumentException("Cannot get layout paddings of multi-edge shorthands");
-    }
-  }
-
-  public float getLayoutBorder(YogaEdge edge) {
-    switch (edge) {
-      case LEFT:
-        return mBorderLeft;
-      case TOP:
-        return mBorderTop;
-      case RIGHT:
-        return mBorderRight;
-      case BOTTOM:
-        return mBorderBottom;
-      case START:
-        return getLayoutDirection() == YogaDirection.RTL ? mBorderRight : mBorderLeft;
-      case END:
-        return getLayoutDirection() == YogaDirection.RTL ? mBorderLeft : mBorderRight;
-      default:
-        throw new IllegalArgumentException("Cannot get layout border of multi-edge shorthands");
-    }
-  }
-
-  public YogaDirection getLayoutDirection() {
-    return YogaDirection.fromInt(mLayoutDirection);
-  }
+  public abstract boolean getDoesLegacyStretchFlagAffectsLayout();
 
   public void setMeasureFunction(YogaMeasureFunction measureFunction) {
     mMeasureFunction = measureFunction;
