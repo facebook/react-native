@@ -1,6 +1,6 @@
-load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "get_debug_preprocessor_flags")
+load("//configurations/buck/apple:flag_defs.bzl", "get_debug_preprocessor_flags")
 load(
-    "//tools/build_defs/oss:rn_defs.bzl",
+    "//ReactNative:DEFS.bzl",
     "ANDROID",
     "APPLE",
     "fb_xplat_cxx_test",
@@ -28,7 +28,7 @@ rn_xplat_cxx_library(
         [
             ("", "*.h"),
         ],
-        prefix = "react/uimanager",
+        prefix = "fabric/uimanager",
     ),
     compiler_flags = [
         "-fexceptions",
@@ -39,7 +39,7 @@ rn_xplat_cxx_library(
     fbobjc_compiler_flags = APPLE_COMPILER_FLAGS,
     fbobjc_preprocessor_flags = get_debug_preprocessor_flags() + get_apple_inspector_flags(),
     fbobjc_tests = [
-        ":uimanagertests",
+        ":tests",
     ],
     force_static = True,
     macosx_tests_override = [],
@@ -55,8 +55,6 @@ rn_xplat_cxx_library(
         "xplat//folly:headers_only",
         "xplat//folly:memory",
         "xplat//folly:molly",
-        "xplat//jsi:JSIDynamic",
-        "xplat//jsi:jsi",
         "xplat//third-party/glog:glog",
         react_native_xplat_target("fabric/components/root:root"),
         react_native_xplat_target("fabric/components/view:view"),
@@ -67,7 +65,7 @@ rn_xplat_cxx_library(
 )
 
 fb_xplat_cxx_test(
-    name = "uimanagertests",
+    name = "tests",
     srcs = glob(["tests/**/*.cpp"]),
     headers = glob(["tests/**/*.h"]),
     compiler_flags = [
@@ -77,16 +75,10 @@ fb_xplat_cxx_test(
         "-Wall",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
-    platforms = (ANDROID, APPLE),
+    platforms = APPLE,
     deps = [
         "xplat//folly:molly",
         "xplat//third-party/gmock:gtest",
         ":uimanager",
-        react_native_xplat_target("fabric/components/activityindicator:activityindicator"),
-        react_native_xplat_target("fabric/components/image:image"),
-        react_native_xplat_target("fabric/components/root:root"),
-        react_native_xplat_target("fabric/components/scrollview:scrollview"),
-        react_native_xplat_target("fabric/components/text:text"),
-        react_native_xplat_target("fabric/components/view:view"),
     ],
 )

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -74,7 +74,7 @@ function copyProjectTemplateAndReplace(
     }
 
     const relativeFilePath = path.relative(srcPath, absoluteSrcFilePath);
-    const relativeRenamedPath = translateFilePath(relativeFilePath)
+    const relativeRenamedPath = dotFilePath(relativeFilePath)
       .replace(/HelloWorld/g, newProjectName)
       .replace(/helloworld/g, newProjectName.toLowerCase());
 
@@ -118,22 +118,20 @@ function copyProjectTemplateAndReplace(
 }
 
 /**
- * There are various files in the templates folder in the RN repo. We want
+ * There are various dotfiles in the templates folder in the RN repo. We want
  * these to be ignored by tools when working with React Native itself.
  * Example: _babelrc file is ignored by Babel, renamed to .babelrc inside
  *          a real app folder.
  * This is especially important for .gitignore because npm has some special
  * behavior of automatically renaming .gitignore to .npmignore.
  */
-function translateFilePath(path) {
+function dotFilePath(path) {
   if (!path) {
     return path;
   }
   return path
-    .replace('_BUCK', 'BUCK')
     .replace('_gitignore', '.gitignore')
     .replace('_gitattributes', '.gitattributes')
-    .replace('_babel.config.js', 'babel.config.js')
     .replace('_babelrc', '.babelrc')
     .replace('_flowconfig', '.flowconfig')
     .replace('_buckconfig', '.buckconfig')

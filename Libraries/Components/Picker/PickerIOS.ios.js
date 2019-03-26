@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -48,7 +48,6 @@ type RCTPickerIOSType = Class<
       onStartShouldSetResponder: () => boolean,
       selectedIndex: number,
       style?: ?TextStyleProp,
-      testID?: ?string,
     |}>,
   >,
 >;
@@ -116,7 +115,6 @@ class PickerIOS extends React.Component<Props, State> {
           ref={picker => {
             this._picker = picker;
           }}
-          testID={this.props.testID}
           style={[styles.pickerIOS, this.props.itemStyle]}
           items={this.state.items}
           selectedIndex={this.state.selectedIndex}

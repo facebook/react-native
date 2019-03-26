@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -26,37 +26,12 @@ static const NSTimeInterval kTestTimeoutSeconds = 120;
   FBSnapshotTestController *_testController;
   RCTBridgeModuleListProvider _moduleProvider;
   NSString *_appPath;
-  __weak id<RCTBridgeDelegate> _bridgeDelegate;
 }
 
 - (instancetype)initWithApp:(NSString *)app
          referenceDirectory:(NSString *)referenceDirectory
              moduleProvider:(RCTBridgeModuleListProvider)block
                   scriptURL:(NSURL *)scriptURL
-{
-  return [self initWithApp:app
-        referenceDirectory:referenceDirectory
-            moduleProvider:block
-                 scriptURL:scriptURL
-            bridgeDelegate:nil];
-}
-
-- (instancetype)initWithApp:(NSString *)app
-         referenceDirectory:(NSString *)referenceDirectory
-             bridgeDelegate:(id<RCTBridgeDelegate>)bridgeDelegate
-{
-  return [self initWithApp:app
-        referenceDirectory:referenceDirectory
-            moduleProvider:nil
-                 scriptURL:nil
-            bridgeDelegate:bridgeDelegate];
-}
-
-- (instancetype)initWithApp:(NSString *)app
-         referenceDirectory:(NSString *)referenceDirectory
-             moduleProvider:(RCTBridgeModuleListProvider)block
-                  scriptURL:(NSURL *)scriptURL
-             bridgeDelegate:(id<RCTBridgeDelegate>)bridgeDelegate
 {
   RCTAssertParam(app);
   RCTAssertParam(referenceDirectory);
@@ -72,11 +47,10 @@ static const NSTimeInterval kTestTimeoutSeconds = 120;
     _testController.referenceImagesDirectory = referenceDirectory;
     _moduleProvider = [block copy];
     _appPath = app;
-    _bridgeDelegate = bridgeDelegate;
 
     if (scriptURL != nil) {
       _scriptURL = scriptURL;
-    } else if (!_bridgeDelegate) {
+    } else {
       [self updateScript];
     }
   }
@@ -85,18 +59,13 @@ static const NSTimeInterval kTestTimeoutSeconds = 120;
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
-- (NSURL *)defaultScriptURL
-{
-  if (getenv("CI_USE_PACKAGER") || _useBundler) {
-    return [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.bundle?platform=%@&dev=true", _appPath, kRCTPlatformName]]; // TODO(macOS ISS#2323203)
-  } else {
-    return [[NSBundle bundleForClass:[RCTBridge class]] URLForResource:@"main" withExtension:@"jsbundle"];
-  }
-}
-
 - (void)updateScript
 {
-  _scriptURL = [self defaultScriptURL];
+  if (getenv("CI_USE_PACKAGER") || _useBundler) {
+    _scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@.bundle?platform=%@&dev=true", _appPath, kRCTPlatformName]]; // TODO(macOS ISS#2323203)
+  } else {
+    _scriptURL = [[NSBundle bundleForClass:[RCTBridge class]] URLForResource:@"main" withExtension:@"jsbundle"];
+  }
   RCTAssert(_scriptURL != nil, @"No scriptURL set");
 }
 
@@ -161,14 +130,9 @@ expectErrorBlock:(BOOL(^)(NSString *error))expectErrorBlock
   });
 
   @autoreleasepool {
-    RCTBridge *bridge;
-    if (_bridgeDelegate) {
-      bridge = [[RCTBridge alloc] initWithDelegate:_bridgeDelegate launchOptions:nil];
-    } else {
-      bridge= [[RCTBridge alloc] initWithBundleURL:_scriptURL
-                                    moduleProvider:_moduleProvider
-                                     launchOptions:nil];
-    }
+    RCTBridge *bridge = [[RCTBridge alloc] initWithBundleURL:_scriptURL
+                                              moduleProvider:_moduleProvider
+                                               launchOptions:nil];
     [bridge.devSettings setIsDebuggingRemotely:_useJSDebugger];
     batchedBridge = [bridge batchedBridge];
 

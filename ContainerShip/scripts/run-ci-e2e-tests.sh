@@ -1,10 +1,4 @@
 #!/bin/bash
-#
-# Copyright (c) Facebook, Inc. and its affiliates.
-#
-# This source code is licensed under the MIT license found in the
-# LICENSE file in the root directory of this source tree.
-#
 
 set -ex
 
@@ -18,12 +12,11 @@ RUN_IOS=0
 RUN_JS=0
 
 RETRY_COUNT=${RETRY_COUNT:-2}
-AVD_UUID=$(< /dev/urandom tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)
+AVD_UUID=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)
+
 ANDROID_NPM_DEPS="appium@1.5.1 mocha@2.4.5 wd@0.3.11 colors@1.0.3 pretty-data2@0.40.1"
-CLI_PACKAGE="$ROOT/react-native-cli/react-native-cli-*.tgz"
-PACKAGE="$ROOT/react-native-*.tgz"
-# Version of react-native-dummy to test against
-REACT_DUMMY_PLATFORM=react-native-dummy@0.1.0
+CLI_PACKAGE=$ROOT/react-native-cli/react-native-cli-*.tgz
+PACKAGE=$ROOT/react-native-*.tgz
 
 # solve issue with max user watches limit
 echo 65536 | tee -a /proc/sys/fs/inotify/max_user_watches
@@ -34,7 +27,7 @@ watchman shutdown-server
 # $2 -- command to run
 function retry() {
     local -r -i max_attempts="$1"; shift
-    local -r cmd="$*"
+    local -r cmd="$@"
     local -i attempt_num=1
 
     until $cmd; do
@@ -82,7 +75,7 @@ while :; do
 done
 
 function e2e_suite() {
-    cd "$ROOT"
+    cd $ROOT
 
     if [ $RUN_ANDROID -eq 0 ] && [ $RUN_IOS -eq 0 ] && [ $RUN_JS -eq 0 ]; then
       echo "No e2e tests specified!"
@@ -95,8 +88,8 @@ function e2e_suite() {
     # To make sure we actually installed the local version
     # of react-native, we will create a temp file inside the template
     # and check that it exists after `react-native init
-    IOS_MARKER="$(mktemp "$ROOT"/local-cli/templates/HelloWorld/ios/HelloWorld/XXXXXXXX)"
-    ANDROID_MARKER="$(mktemp "$ROOT"/local-cli/templates/HelloWorld/android/XXXXXXXX)"
+    IOS_MARKER=$(mktemp $ROOT/local-cli/templates/HelloWorld/ios/HelloWorld/XXXXXXXX)
+    ANDROID_MARKER=$(mktemp ${ROOT}/local-cli/templates/HelloWorld/android/XXXXXXXX)
 
     # install CLI
     cd react-native-cli
@@ -105,8 +98,8 @@ function e2e_suite() {
 
     # can skip cli install for non sudo mode
     if [ $RUN_CLI_INSTALL -ne 0 ]; then
-      if ! npm install -g "$CLI_PACKAGE"
-      then
+      npm install -g $CLI_PACKAGE
+      if [ $? -ne 0 ]; then
         echo "Could not install react-native-cli globally, please run in su mode"
         echo "Or with --skip-cli-install to skip this step"
         return 1
@@ -118,7 +111,7 @@ function e2e_suite() {
 
         # create virtual device
         if ! android list avd | grep "$AVD_UUID" > /dev/null; then
-            echo no | android create avd -n "$AVD_UUID" -f -t android-19 --abi default/armeabi-v7a
+            echo no | android create avd -n $AVD_UUID -f -t android-19 --abi default/armeabi-v7a
         fi
 
         # newline at end of adb devices call and first line is headers
@@ -131,10 +124,9 @@ function e2e_suite() {
         fi
 
         # emulator setup
-        emulator64-arm -avd "$AVD_UUID" -no-skin -no-audio -no-window -no-boot-anim &
+        emulator64-arm -avd $AVD_UUID -no-skin -no-audio -no-window -no-boot-anim &
 
         bootanim=""
-        # shellcheck disable=SC2076
         until [[ "$bootanim" =~ "stopped" ]]; do
             sleep 5
             bootanim=$(adb -e shell getprop init.svc.bootanim 2>&1)
@@ -143,23 +135,23 @@ function e2e_suite() {
 
         set -ex
 
-      if ! ./gradlew :ReactAndroid:installArchives -Pjobs=1 -Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"
-      then
+      ./gradlew :ReactAndroid:installArchives -Pjobs=1 -Dorg.gradle.jvmargs="-Xmx512m -XX:+HeapDumpOnOutOfMemoryError"
+      if [ $? -ne 0 ]; then
         echo "Failed to compile Android binaries"
         return 1
       fi
     fi
 
-    if ! npm pack
-    then
+    npm pack
+    if [ $? -ne 0 ]; then
       echo "Failed to pack react-native"
       return 1
     fi
 
-    cd "$TEMP_DIR"
+    cd $TEMP_DIR
 
-    if ! retry "$RETRY_COUNT" react-native init EndToEndTest --version "$PACKAGE" --npm
-    then
+    retry $RETRY_COUNT react-native init EndToEndTest --version $PACKAGE --npm
+    if [ $? -ne 0 ]; then
       echo "Failed to execute react-native init"
       echo "Most common reason is npm registry connectivity, try again"
       return 1
@@ -172,21 +164,20 @@ function e2e_suite() {
       echo "Running an Android e2e test"
       echo "Installing e2e framework"
 
-      if ! retry "$RETRY_COUNT" npm install --save-dev "$ANDROID_NPM_DEPS" --silent >> /dev/null
-      then
+      retry $RETRY_COUNT npm install --save-dev $ANDROID_NPM_DEPS --silent >> /dev/null
+      if [ $? -ne 0 ]; then
         echo "Failed to install appium"
         echo "Most common reason is npm registry connectivity, try again"
         return 1
       fi
 
-      cp "$SCRIPTS/android-e2e-test.js" android-e2e-test.js
+      cp $SCRIPTS/android-e2e-test.js android-e2e-test.js
 
-      (
-      cd android || exit
+      cd android
       echo "Downloading Maven deps"
       ./gradlew :app:copyDownloadableDepsToLibs
-      )
 
+      cd ..
       keytool -genkey -v -keystore android/keystores/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US"
 
       node ./node_modules/.bin/appium >> /dev/null &
@@ -197,8 +188,9 @@ function e2e_suite() {
       buck build android/app
 
       # hack to get node unhung (kill buckd)
-      if ! kill -9 "$(pgrep java)"
-      then
+      kill -9 $(pgrep java)
+
+      if [ $? -ne 0 ]; then
         echo "could not execute Buck build, is it installed and in PATH?"
         return 1
       fi
@@ -209,23 +201,23 @@ function e2e_suite() {
       sleep 15
 
       echo "Executing android e2e test"
-      if ! retry "$RETRY_COUNT" node node_modules/.bin/_mocha android-e2e-test.js
-      then
+      retry $RETRY_COUNT node node_modules/.bin/_mocha android-e2e-test.js
+      if [ $? -ne 0 ]; then
         echo "Failed to run Android e2e tests"
         echo "Most likely the code is broken"
         return 1
       fi
 
       # kill packager process
-      if kill -0 "$SERVER_PID"; then
+      if kill -0 $SERVER_PID; then
         echo "Killing packager $SERVER_PID"
-        kill -9 "$SERVER_PID"
+        kill -9 $SERVER_PID
       fi
 
       # kill appium process
-      if kill -0 "$APPIUM_PID"; then
+      if kill -0 $APPIUM_PID; then
         echo "Killing appium $APPIUM_PID"
-        kill -9 "$APPIUM_PID"
+        kill -9 $APPIUM_PID
       fi
 
     fi
@@ -238,37 +230,24 @@ function e2e_suite() {
     # js tests
     if [ $RUN_JS -ne 0 ]; then
       # Check the packager produces a bundle (doesn't throw an error)
-      if ! react-native bundle --max-workers 1 --platform android --dev true --entry-file index.js --bundle-output android-bundle.js
-      then
+      react-native bundle --max-workers 1 --platform android --dev true --entry-file index.js --bundle-output android-bundle.js
+      if [ $? -ne 0 ]; then
         echo "Could not build android bundle"
         return 1
       fi
 
-      if ! react-native bundle --max-workers 1 --platform ios --dev true --entry-file index.js --bundle-output ios-bundle.js
-      then
+      react-native bundle --max-workers 1 --platform ios --dev true --entry-file index.js --bundle-output ios-bundle.js
+      if [ $? -ne 0 ]; then
         echo "Could not build iOS bundle"
-        return 1
-      fi
-
-      if ! retry "$RETRY_COUNT" npm install --save "$REACT_DUMMY_PLATFORM" --silent >> /dev/null
-      then
-        echo "Failed to install react-native-dummy"
-        echo "Most common reason is npm registry connectivity, try again"
-        return 1
-      fi
-
-      if ! react-native bundle --max-workers 1 --platform dummy --dev true --entry-file index.js --bundle-output dummy-bundle.js
-      then
-        echo "Could not build dummy bundle"
         return 1
       fi
     fi
 
     # directory cleanup
-    rm "$IOS_MARKER"
-    rm "$ANDROID_MARKER"
+    rm $IOS_MARKER
+    rm $ANDROID_MARKER
 
     return 0
 }
 
-retry "$RETRY_COUNT" e2e_suite
+retry $RETRY_COUNT e2e_suite

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,9 +9,10 @@
 #import <memory>
 
 #import <React/RCTPrimitives.h>
-#import <react/core/LayoutConstraints.h>
-#import <react/core/LayoutContext.h>
-#import <react/uimanager/ShadowViewMutation.h>
+#import <fabric/core/LayoutConstraints.h>
+#import <fabric/core/LayoutContext.h>
+#import <fabric/uimanager/FabricUIManager.h>
+#import <fabric/uimanager/TreeMutationInstruction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -22,8 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @protocol RCTSchedulerDelegate
 
-- (void)schedulerDidFinishTransaction:(facebook::react::ShadowViewMutationList)mutations
-                              rootTag:(ReactTag)rootTag;
+- (void)schedulerDidComputeMutationInstructions:(facebook::react::TreeMutationInstructionList)instructions rootTag:(ReactTag)rootTag;
 
 - (void)schedulerDidRequestPreliminaryViewAllocationWithComponentName:(NSString *)componentName;
 
@@ -36,23 +36,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (atomic, weak, nullable) id<RCTSchedulerDelegate> delegate;
 
-- (instancetype)initWithContextContainer:(std::shared_ptr<void>)contextContatiner;
+- (void)registerRootTag:(ReactTag)tag;
 
-- (void)startSurfaceWithSurfaceId:(facebook::react::SurfaceId)surfaceId
-                       moduleName:(NSString *)moduleName
-                     initailProps:(NSDictionary *)initialProps
-                layoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints
-                    layoutContext:(facebook::react::LayoutContext)layoutContext;
+- (void)unregisterRootTag:(ReactTag)tag;
 
-- (void)stopSurfaceWithSurfaceId:(facebook::react::SurfaceId)surfaceId;
+- (CGSize)measureWithLayoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints
+                         layoutContext:(facebook::react::LayoutContext)layoutContext
+                               rootTag:(ReactTag)rootTag;
 
-- (CGSize)measureSurfaceWithLayoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints
+- (void)constraintLayoutWithLayoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints
                                 layoutContext:(facebook::react::LayoutContext)layoutContext
-                                    surfaceId:(facebook::react::SurfaceId)surfaceId;
+                                      rootTag:(ReactTag)rootTag;
 
-- (void)constraintSurfaceLayoutWithLayoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints
-                                       layoutContext:(facebook::react::LayoutContext)layoutContext
-                                           surfaceId:(facebook::react::SurfaceId)surfaceId;
+@end
+
+@interface RCTScheduler (Deprecated)
+
+- (std::shared_ptr<facebook::react::FabricUIManager>)uiManager_DO_NOT_USE;
 
 @end
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,16 +15,14 @@ const Easing = require('Easing');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
+const View = require('View');
 const YellowBoxImageSource = require('YellowBoxImageSource');
-const YellowBoxPressable = require('YellowBoxPressable');
 const YellowBoxStyle = require('YellowBoxStyle');
 
 import type {CompositeAnimation} from 'AnimatedImplementation';
 import type AnimatedInterpolation from 'AnimatedInterpolation';
-import type {PressEvent} from 'CoreEventTypes';
 
 type Props = $ReadOnly<{|
-  onPress?: ?(event: PressEvent) => void,
   status: 'COMPLETE' | 'FAILED' | 'NONE' | 'PENDING',
 |}>;
 
@@ -54,13 +52,7 @@ class YellowBoxInspectorSourceMapStatus extends React.Component<Props, State> {
     }
 
     return image == null ? null : (
-      <YellowBoxPressable
-        backgroundColor={{
-          default: YellowBoxStyle.getTextColor(0.8),
-          pressed: YellowBoxStyle.getTextColor(0.6),
-        }}
-        hitSlop={{bottom: 8, left: 8, right: 8, top: 8}}
-        onPress={this.props.onPress}
+      <View
         style={StyleSheet.compose(
           styles.root,
           this.props.status === 'PENDING' ? styles.pending : null,
@@ -75,7 +67,7 @@ class YellowBoxInspectorSourceMapStatus extends React.Component<Props, State> {
           )}
         />
         <Text style={styles.text}>Source Map</Text>
-      </YellowBoxPressable>
+      </View>
     );
   }
 
@@ -133,6 +125,7 @@ class YellowBoxInspectorSourceMapStatus extends React.Component<Props, State> {
 const styles = StyleSheet.create({
   root: {
     alignItems: 'center',
+    backgroundColor: YellowBoxStyle.getTextColor(0.8),
     borderRadius: 12,
     flexDirection: 'row',
     height: 24,

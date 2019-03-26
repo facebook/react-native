@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,9 +10,9 @@
 
 'use strict';
 
-const React = require('react');
-const ReactNative = require('react-native');
-const {
+var React = require('react');
+var ReactNative = require('react-native');
+var {
   StyleSheet,
   View,
   Text,
@@ -25,7 +25,7 @@ exports.framework = 'React';
 exports.title = 'Vibration';
 exports.description = 'Vibration API';
 
-let pattern, patternLiteral, patternDescription;
+var pattern, patternLiteral, patternDescription;
 if (Platform.OS === 'android') {
   pattern = [0, 500, 200, 500];
   patternLiteral = '[0, 500, 200, 500]';
@@ -115,7 +115,7 @@ exports.examples = [
   },
 ];
 
-const styles = StyleSheet.create({
+var styles = StyleSheet.create({
   wrapper: {
     borderRadius: 5,
     marginBottom: 5,

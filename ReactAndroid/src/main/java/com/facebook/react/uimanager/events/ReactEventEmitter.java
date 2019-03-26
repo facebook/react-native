@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2014-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,6 +9,7 @@ package com.facebook.react.uimanager.events;
 
 import static com.facebook.react.uimanager.events.TouchesHelper.TARGET_KEY;
 
+import android.util.Log;
 import android.util.SparseArray;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -16,6 +17,8 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
+import java.io.Closeable;
+import java.io.IOException;
 import javax.annotation.Nullable;
 
 public class ReactEventEmitter implements RCTEventEmitter {

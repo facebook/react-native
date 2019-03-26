@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -399,19 +399,7 @@ function extractStrokeJoin(strokeJoin) {
 // Note: ART has a notion of width and height on Shape but AFAIK it's a noop in
 // ReactART.
 
-export type ShapeProps = {|
-  fill?: mixed,
-  stroke?: mixed,
-  strokeCap?: mixed,
-  strokeDash?: mixed,
-  strokeJoin?: mixed,
-  strokeWidth?: mixed,
-  x?: number,
-  y?: number,
-  opacity?: mixed,
-|};
-
-class Shape extends React.Component<ShapeProps> {
+class Shape extends React.Component {
   render() {
     const props = this.props;
     const path = props.d || childrenAsString(props.children);

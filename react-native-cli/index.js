@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -40,6 +40,7 @@
 
 var fs = require('fs');
 var path = require('path');
+var exec = require('child_process').exec;
 var execSync = require('child_process').execSync;
 var chalk = require('chalk');
 var prompt = require('prompt');
@@ -58,7 +59,7 @@ var semver = require('semver');
  *     - "/Users/home/react-native/react-native-0.22.0.tgz" - for package prepared with `npm pack`, useful for e2e tests
  */
 
-var args = require('minimist')(process.argv.slice(2));
+var options = require('minimist')(process.argv.slice(2));
 
 var CLI_MODULE_PATH = function() {
   return path.resolve(process.cwd(), 'node_modules', 'react-native', 'cli.js');
@@ -73,7 +74,7 @@ var REACT_NATIVE_PACKAGE_JSON_PATH = function() {
   );
 };
 
-if (args._.length === 0 && (args.v || args.version)) {
+if (options._.length === 0 && (options.v || options.version)) {
   printVersionsAndExit(REACT_NATIVE_PACKAGE_JSON_PATH());
 }
 
@@ -112,20 +113,20 @@ if (fs.existsSync(cliPath)) {
   cli = require(cliPath);
 }
 
-var commands = args._;
+var commands = options._;
 if (cli) {
   cli.run();
 } else {
-  if (args._.length === 0 && (args.h || args.help)) {
+  if (options._.length === 0 && (options.h || options.help)) {
     console.log(
       [
         '',
-        '  Usage: react-native [command] [args]',
+        '  Usage: react-native [command] [options]',
         '',
         '',
         '  Commands:',
         '',
-        '    init <ProjectName> [args]  generates a new project and installs its dependencies',
+        '    init <ProjectName> [options]  generates a new project and installs its dependencies',
         '',
         '  Options:',
         '',
@@ -151,7 +152,7 @@ if (cli) {
         console.error('Usage: react-native init <ProjectName> [--verbose]');
         process.exit(1);
       } else {
-        init(commands[1], args);
+        init(commands[1], options);
       }
       break;
     default:
@@ -214,11 +215,6 @@ function createAfterConfirmation(name, options) {
   };
 
   prompt.get(property, function(err, result) {
-    if (err) {
-      console.log('Error initializing project');
-      process.exit(1);
-    }
-
     if (result.yesno[0] === 'y') {
       createProject(name, options);
     } else {

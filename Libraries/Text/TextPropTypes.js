@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,13 +10,13 @@
 
 'use strict';
 
-const DeprecatedColorPropType = require('DeprecatedColorPropType');
-const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
+const ColorPropType = require('ColorPropType');
+const EdgeInsetsPropType = require('EdgeInsetsPropType');
 const PropTypes = require('prop-types');
-const DeprecatedStyleSheetPropType = require('DeprecatedStyleSheetPropType');
+const StyleSheetPropType = require('StyleSheetPropType');
 const TextStylePropTypes = require('TextStylePropTypes');
 
-const stylePropType = DeprecatedStyleSheetPropType(TextStylePropTypes);
+const stylePropType = StyleSheetPropType(TextStylePropTypes);
 
 module.exports = {
   /**
@@ -62,7 +62,7 @@ module.exports = {
    *
    * See https://facebook.github.io/react-native/docs/text.html#pressretentionoffset
    */
-  pressRetentionOffset: DeprecatedEdgeInsetsPropType,
+  pressRetentionOffset: EdgeInsetsPropType,
   /**
    * Lets the user select text.
    *
@@ -74,7 +74,7 @@ module.exports = {
    *
    * See https://facebook.github.io/react-native/docs/text.html#selectioncolor
    */
-  selectionColor: DeprecatedColorPropType,
+  selectionColor: ColorPropType,
   /**
    * When `true`, no visual change is made when text is pressed down.
    *
@@ -100,14 +100,6 @@ module.exports = {
    * See https://facebook.github.io/react-native/docs/text.html#allowfontscaling
    */
   allowFontScaling: PropTypes.bool,
-  /**
-   * Specifies largest possible scale a font can reach when `allowFontScaling` is enabled.
-   * Possible values:
-   * `null/undefined` (default): inherit from the parent node or the global default (0)
-   * `0`: no max, ignore parent/global default
-   * `>= 1`: sets the maxFontSizeMultiplier of this node to this value
-   */
-  maxFontSizeMultiplier: PropTypes.number,
   /**
    * Indicates whether the view is an accessibility element.
    *

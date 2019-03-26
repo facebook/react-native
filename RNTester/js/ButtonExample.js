@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,7 +12,7 @@
 
 const React = require('react');
 const ReactNative = require('react-native');
-const {Alert, Button, View, StyleSheet} = ReactNative;
+const {Alert, Button, View} = ReactNative;
 
 function onButtonPress(buttonName) {
   Alert.alert(`${buttonName} has been pressed!`);
@@ -63,7 +63,7 @@ exports.examples = [
       'This layout strategy lets the title define the width of ' + 'the button',
     render: function() {
       return (
-        <View style={styles.container}>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <Button
             onPress={() => onButtonPress('Left')}
             title="This looks great!"
@@ -94,10 +94,3 @@ exports.examples = [
     },
   },
 ];
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-});

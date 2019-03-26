@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2013-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,16 +9,14 @@
  */
 'use strict';
 
-const DeprecatedColorPropType = require('DeprecatedColorPropType');
-const Platform = require('Platform');
+const ColorPropType = require('ColorPropType');
 const React = require('React');
 const StyleSheet = require('StyleSheet');
+const ViewPropTypes = require('ViewPropTypes');
 
 const requireNativeComponent = require('requireNativeComponent');
 
 const RCTInputAccessoryView = requireNativeComponent('RCTInputAccessoryView');
-
-import type {ViewStyleProp} from 'StyleSheet';
 
 /**
  * Note: iOS only
@@ -78,22 +76,20 @@ import type {ViewStyleProp} from 'StyleSheet';
  * For an example, look at InputAccessoryViewExample.js in RNTester.
  */
 
-type Props = $ReadOnly<{|
+type Props = {
   +children: React.Node,
   /**
    * An ID which is used to associate this `InputAccessoryView` to
    * specified TextInput(s).
    */
-  nativeID?: ?string,
-  style?: ?ViewStyleProp,
-  backgroundColor?: ?DeprecatedColorPropType,
-|}>;
+  nativeID?: string,
+  style?: ViewPropTypes.style,
+  backgroundColor?: ColorPropType,
+};
 
 class InputAccessoryView extends React.Component<Props> {
   render(): React.Node {
-    if (Platform.OS !== 'ios') {
-      console.warn('<InputAccessoryView> is only supported on iOS.');
-    }
+    console.warn('<InputAccessoryView> is not supported on Android yet.');
 
     if (React.Children.count(this.props.children) === 0) {
       return null;

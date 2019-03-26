@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,12 +7,12 @@
 
 #import "RCTParagraphComponentView.h"
 
-#import <react/components/text/ParagraphLocalData.h>
-#import <react/components/text/ParagraphProps.h>
-#import <react/core/LocalData.h>
-#import <react/graphics/Geometry.h>
-#import <react/textlayoutmanager/TextLayoutManager.h>
-#import <react/textlayoutmanager/RCTTextLayoutManager.h>
+#import <fabric/components/text/ParagraphLocalData.h>
+#import <fabric/components/text/ParagraphProps.h>
+#import <fabric/core/LocalData.h>
+#import <fabric/graphics/Geometry.h>
+#import <fabric/textlayoutmanager/TextLayoutManager.h>
+#import <fabric/textlayoutmanager/RCTTextLayoutManager.h>
 #import "RCTConversions.h"
 
 using namespace facebook::react;
@@ -25,9 +25,6 @@ using namespace facebook::react;
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const ParagraphProps>();
-    _props = defaultProps;
-
     self.isAccessibilityElement = YES;
     self.accessibilityTraits |= UIAccessibilityTraitStaticText;
     self.opaque = NO;
@@ -39,10 +36,8 @@ using namespace facebook::react;
 
 - (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
 {
-  const auto &paragraphProps = std::static_pointer_cast<const ParagraphProps>(props);
-
   [super updateProps:props oldProps:oldProps];
-
+  auto paragraphProps = std::static_pointer_cast<const ParagraphProps>(props);
   assert(paragraphProps);
   _paragraphAttributes = paragraphProps->paragraphAttributes;
 }
@@ -77,8 +72,7 @@ using namespace facebook::react;
 
 - (NSString *)accessibilityLabel
 {
-  NSString *superAccessibilityLabel =
-    RCTNSStringFromStringNilIfEmpty(_props->accessibilityLabel);
+  NSString *superAccessibilityLabel = [super accessibilityLabel];
   if (superAccessibilityLabel) {
     return superAccessibilityLabel;
   }
@@ -90,28 +84,4 @@ using namespace facebook::react;
   return RCTNSStringFromString(_paragraphLocalData->getAttributedString().getString());
 }
 
-- (SharedTouchEventEmitter)touchEventEmitterAtPoint:(CGPoint)point
-{
-  if (!_paragraphLocalData) {
-    return _eventEmitter;
-  }
-
-  SharedTextLayoutManager textLayoutManager = _paragraphLocalData->getTextLayoutManager();
-  RCTTextLayoutManager *nativeTextLayoutManager = (__bridge RCTTextLayoutManager *)textLayoutManager->getNativeTextLayoutManager();
-  CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
-
-  SharedShadowNode textShadowNode = [nativeTextLayoutManager getParentShadowNodeWithAttributeString:_paragraphLocalData->getAttributedString()
-                                                                                paragraphAttributes:_paragraphAttributes
-                                                                                              frame:frame
-                                                                                            atPoint:point];
-
-  if (!textShadowNode) {
-    return _eventEmitter;
-  }
-
-  SharedEventEmitter eventEmitter = textShadowNode->getEventEmitter();
-  assert(std::dynamic_pointer_cast<const TouchEventEmitter>(eventEmitter));
-  return std::static_pointer_cast<const TouchEventEmitter>(eventEmitter);
-}
-
- @end
+@end

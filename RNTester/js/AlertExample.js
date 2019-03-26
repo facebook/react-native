@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,14 +9,14 @@
 
 'use strict';
 
-const React = require('react');
-const ReactNative = require('react-native');
-const {Alert, StyleSheet, Text, TouchableHighlight, View} = ReactNative;
+var React = require('react');
+var ReactNative = require('react-native');
+var {Alert, StyleSheet, Text, TouchableHighlight, View} = ReactNative;
 
-const RNTesterBlock = require('./RNTesterBlock');
+var RNTesterBlock = require('./RNTesterBlock');
 
 // corporate ipsum > lorem ipsum
-const alertMessage =
+var alertMessage =
   'Credibly reintermediate next-generation potentialities after goal-oriented ' +
   'catalysts for change. Dynamically revolutionize.';
 
@@ -134,7 +134,7 @@ class AlertExample extends React.Component {
   }
 }
 
-const styles = StyleSheet.create({
+var styles = StyleSheet.create({
   wrapper: {
     borderRadius: 5,
     marginBottom: 5,

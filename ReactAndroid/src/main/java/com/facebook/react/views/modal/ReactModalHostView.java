@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,6 @@
 
 package com.facebook.react.views.modal;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -16,7 +15,6 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStructure;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
@@ -30,7 +28,6 @@ import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
-import com.facebook.react.views.common.ContextUtils;
 import com.facebook.react.views.view.ReactViewGroup;
 import java.util.ArrayList;
 import javax.annotation.Nullable;
@@ -73,12 +70,6 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
     ((ReactContext) context).addLifecycleEventListener(this);
 
     mHostView = new DialogRootViewGroup(context);
-  }
-
-  @TargetApi(23)
-  @Override
-  public void dispatchProvideStructure(ViewStructure structure) {
-    mHostView.dispatchProvideStructure(structure);
   }
 
   @Override
@@ -132,11 +123,9 @@ public class ReactModalHostView extends ViewGroup implements LifecycleEventListe
 
   private void dismiss() {
     if (mDialog != null) {
-      if (mDialog.isShowing()) {
-        Activity dialogContext = ContextUtils.findContextOfType(mDialog.getContext(), Activity.class);
-        if (dialogContext == null || !dialogContext.isFinishing()) {
-          mDialog.dismiss();
-        }
+      Activity currentActivity = getCurrentActivity();
+      if (mDialog.isShowing() && (currentActivity == null || !currentActivity.isFinishing())) {
+        mDialog.dismiss();
       }
       mDialog = null;
 

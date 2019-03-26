@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,7 +13,7 @@ const PropTypes = require('prop-types');
 const {checkPropTypes} = PropTypes;
 const RCTCameraRollManager = require('NativeModules').CameraRollManager;
 
-const deprecatedCreateStrictShapeTypeChecker = require('deprecatedCreateStrictShapeTypeChecker');
+const createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
 const invariant = require('fbjs/lib/invariant');
 
 const GROUP_TYPES_OPTIONS = {
@@ -32,12 +32,10 @@ const ASSET_TYPE_OPTIONS = {
   Photos: 'Photos',
 };
 
-export type GroupTypes = $Keys<typeof GROUP_TYPES_OPTIONS>;
-
-export type GetPhotosParams = {
+type GetPhotosParams = {
   first: number,
   after?: string,
-  groupTypes?: GroupTypes,
+  groupTypes?: $Keys<typeof GROUP_TYPES_OPTIONS>,
   groupName?: string,
   assetType?: $Keys<typeof ASSET_TYPE_OPTIONS>,
   mimeTypes?: Array<string>,
@@ -46,7 +44,7 @@ export type GetPhotosParams = {
 /**
  * Shape of the param arg for the `getPhotos` function.
  */
-const getPhotosParamChecker = deprecatedCreateStrictShapeTypeChecker({
+const getPhotosParamChecker = createStrictShapeTypeChecker({
   /**
    * The number of photos wanted in reverse order of the photo application
    * (i.e. most recent first for SavedPhotos).
@@ -81,51 +79,48 @@ const getPhotosParamChecker = deprecatedCreateStrictShapeTypeChecker({
   mimeTypes: PropTypes.arrayOf(PropTypes.string),
 });
 
-export type PhotoIdentifier = {
-  node: {
-    type: string,
-    group_name: string,
-    image: {
-      filename: string,
-      uri: string,
-      height: number,
-      width: number,
-      isStored?: boolean,
-      playableDuration: number,
+type GetPhotosReturn = Promise<{
+  edges: Array<{
+    node: {
+      type: string,
+      group_name: string,
+      image: {
+        uri: string,
+        height: number,
+        width: number,
+        isStored?: boolean,
+        playableDuration: number,
+      },
+      timestamp: number,
+      location?: {
+        latitude?: number,
+        longitude?: number,
+        altitude?: number,
+        heading?: number,
+        speed?: number,
+      },
     },
-    timestamp: number,
-    location?: {
-      latitude?: number,
-      longitude?: number,
-      altitude?: number,
-      heading?: number,
-      speed?: number,
-    },
-  },
-};
-
-export type PhotoIdentifiersPage = {
-  edges: Array<PhotoIdentifier>,
+  }>,
   page_info: {
     has_next_page: boolean,
     start_cursor?: string,
     end_cursor?: string,
   },
-};
+}>;
 
 /**
  * Shape of the return value of the `getPhotos` function.
  */
-const getPhotosReturnChecker = deprecatedCreateStrictShapeTypeChecker({
+const getPhotosReturnChecker = createStrictShapeTypeChecker({
   edges: PropTypes.arrayOf(
     /* $FlowFixMe(>=0.66.0 site=react_native_fb) This comment suppresses an
      * error found when Flow v0.66 was deployed. To see the error delete this
      * comment and run Flow. */
-    deprecatedCreateStrictShapeTypeChecker({
-      node: deprecatedCreateStrictShapeTypeChecker({
+    createStrictShapeTypeChecker({
+      node: createStrictShapeTypeChecker({
         type: PropTypes.string.isRequired,
         group_name: PropTypes.string.isRequired,
-        image: deprecatedCreateStrictShapeTypeChecker({
+        image: createStrictShapeTypeChecker({
           uri: PropTypes.string.isRequired,
           height: PropTypes.number.isRequired,
           width: PropTypes.number.isRequired,
@@ -133,7 +128,7 @@ const getPhotosReturnChecker = deprecatedCreateStrictShapeTypeChecker({
           playableDuration: PropTypes.number.isRequired,
         }).isRequired,
         timestamp: PropTypes.number.isRequired,
-        location: deprecatedCreateStrictShapeTypeChecker({
+        location: createStrictShapeTypeChecker({
           latitude: PropTypes.number,
           longitude: PropTypes.number,
           altitude: PropTypes.number,
@@ -143,7 +138,7 @@ const getPhotosReturnChecker = deprecatedCreateStrictShapeTypeChecker({
       }).isRequired,
     }),
   ).isRequired,
-  page_info: deprecatedCreateStrictShapeTypeChecker({
+  page_info: createStrictShapeTypeChecker({
     has_next_page: PropTypes.bool.isRequired,
     start_cursor: PropTypes.string,
     end_cursor: PropTypes.string,
@@ -156,8 +151,8 @@ const getPhotosReturnChecker = deprecatedCreateStrictShapeTypeChecker({
  * See https://facebook.github.io/react-native/docs/cameraroll.html
  */
 class CameraRoll {
-  static GroupTypesOptions = GROUP_TYPES_OPTIONS;
-  static AssetTypeOptions = ASSET_TYPE_OPTIONS;
+  static GroupTypesOptions: Object = GROUP_TYPES_OPTIONS;
+  static AssetTypeOptions: Object = ASSET_TYPE_OPTIONS;
 
   /**
    * `CameraRoll.saveImageWithTag()` is deprecated. Use `CameraRoll.saveToCameraRoll()` instead.
@@ -209,7 +204,7 @@ class CameraRoll {
    *
    * See https://facebook.github.io/react-native/docs/cameraroll.html#getphotos
    */
-  static getPhotos(params: GetPhotosParams): Promise<PhotoIdentifiersPage> {
+  static getPhotos(params: GetPhotosParams): GetPhotosReturn {
     if (__DEV__) {
       checkPropTypes(
         {params: getPhotosParamChecker},

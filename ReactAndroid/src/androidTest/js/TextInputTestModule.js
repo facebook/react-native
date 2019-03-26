@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2013-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,16 +9,16 @@
 
 'use strict';
 
-const BatchedBridge = require('BatchedBridge');
-const React = require('React');
-const StyleSheet = require('StyleSheet');
-const Text = require('Text');
-const TextInput = require('TextInput');
-const View = require('View');
+var BatchedBridge = require('BatchedBridge');
+var React = require('React');
+var StyleSheet = require('StyleSheet');
+var Text = require('Text');
+var TextInput = require('TextInput');
+var View = require('View');
 
-const Recording = require('NativeModules').Recording;
+var Recording = require('NativeModules').Recording;
 
-let app;
+var app;
 
 class TokenizedTextExample extends React.Component {
   constructor(props) {
@@ -122,18 +122,18 @@ class TextInputTestApp extends React.Component {
         />
         <TextInput
           ref="textInput4"
-          style={[styles.textInput, styles.textInputColor]}
+          style={[styles.textInput, {color: '#00ff00'}]}
           testID="textInput4"
         />
         <TextInput
           ref="textInput5"
-          style={[styles.textInput, styles.textInputColor]}
+          style={[styles.textInput, {color: '#00ff00'}]}
           defaultValue=""
           testID="textInput5"
         />
         <TextInput
           ref="textInput6"
-          style={[styles.textInput, styles.textInputColor]}
+          style={[styles.textInput, {color: '#00ff00'}]}
           defaultValue="Text"
           testID="textInput6"
         />
@@ -149,7 +149,7 @@ class TextInputTestApp extends React.Component {
   }
 }
 
-const styles = StyleSheet.create({
+var styles = StyleSheet.create({
   container: {
     padding: 5,
     margin: 10,
@@ -166,12 +166,9 @@ const styles = StyleSheet.create({
     color: 'blue',
     fontWeight: 'bold',
   },
-  textInputColor: {
-    marginLeft: 20,
-  },
 });
 
-const TextInputTestModule = {
+var TextInputTestModule = {
   TextInputTestApp,
   setValueRef: function(ref, value) {
     app.refs[ref].setNativeProps({

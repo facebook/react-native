@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,7 +7,6 @@
  * On Apple TV, this implements back navigation using the TV remote's menu button.
  * On iOS, this just implements a stub.
  *
- * @flow
  * @format
  */
 
@@ -16,9 +15,11 @@
 const Platform = require('Platform');
 const TVEventHandler = require('TVEventHandler');
 
-type BackPressEventName = 'backPress' | 'hardwareBackPress';
+type BackPressEventName = $Enum<{
+  backPress: string,
+}>;
 
-function emptyFunction(): void {}
+function emptyFunction() {}
 
 /**
  * Detect hardware button presses for back navigation.
@@ -52,19 +53,7 @@ function emptyFunction(): void {}
  * });
  * ```
  */
-type TBackHandler = {|
-  +exitApp: () => void,
-  +addEventListener: (
-    eventName: BackPressEventName,
-    handler: Function,
-  ) => {remove: () => void},
-  +removeEventListener: (
-    eventName: BackPressEventName,
-    handler: Function,
-  ) => void,
-|};
-
-let BackHandler: TBackHandler;
+let BackHandler;
 
 if (Platform.isTV) {
   const _tvEventHandler = new TVEventHandler();
@@ -113,12 +102,12 @@ if (Platform.isTV) {
 } else {
   BackHandler = {
     exitApp: emptyFunction,
-    addEventListener(_eventName: BackPressEventName, _handler: Function) {
+    addEventListener() {
       return {
         remove: emptyFunction,
       };
     },
-    removeEventListener(_eventName: BackPressEventName, _handler: Function) {},
+    removeEventListener: emptyFunction,
   };
 }
 

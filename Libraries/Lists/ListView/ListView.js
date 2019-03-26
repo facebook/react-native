@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -18,6 +18,7 @@ const RCTScrollViewManager = require('NativeModules').ScrollViewManager;
 const ScrollView = require('ScrollView');
 const ScrollResponder = require('ScrollResponder');
 const StaticRenderer = require('StaticRenderer');
+const TimerMixin = require('react-timer-mixin');
 const View = require('View');
 const cloneReferencedElement = require('react-clone-referenced-element');
 const createReactClass = require('create-react-class');
@@ -215,7 +216,6 @@ type Props = $ReadOnly<{|
 
 const ListView = createReactClass({
   displayName: 'ListView',
-  _rafIds: ([]: Array<AnimationFrameID>),
   _childFrames: ([]: Array<Object>),
   _sentEndForContentLength: (null: ?number),
   _scrollComponent: (null: ?React.ElementRef<typeof ScrollView>),
@@ -223,7 +223,7 @@ const ListView = createReactClass({
   _visibleRows: ({}: Object),
   scrollProperties: ({}: Object),
 
-  mixins: [ScrollResponder.Mixin],
+  mixins: [ScrollResponder.Mixin, TimerMixin],
 
   statics: {
     DataSource: ListViewDataSource,
@@ -347,23 +347,16 @@ const ListView = createReactClass({
       contentLength: null,
       offset: 0,
     };
-
-    this._rafIds = [];
     this._childFrames = [];
     this._visibleRows = {};
     this._prevRenderedRowsCount = 0;
     this._sentEndForContentLength = null;
   },
 
-  componentWillUnmount: function() {
-    this._rafIds.forEach(cancelAnimationFrame);
-    this._rafIds = [];
-  },
-
   componentDidMount: function() {
     // do this in animation frame until componentDidMount actually runs after
     // the component is laid out
-    this._requestAnimationFrame(() => {
+    this.requestAnimationFrame(() => {
       this._measureAndUpdateScrollProps();
     });
   },
@@ -391,7 +384,7 @@ const ListView = createReactClass({
   },
 
   componentDidUpdate: function() {
-    this._requestAnimationFrame(() => {
+    this.requestAnimationFrame(() => {
       this._measureAndUpdateScrollProps();
     });
   },
@@ -541,14 +534,6 @@ const ListView = createReactClass({
   /**
    * Private methods
    */
-
-  _requestAnimationFrame: function(fn: () => void): void {
-    const rafId = requestAnimationFrame(() => {
-      this._rafIds = this._rafIds.filter(id => id !== rafId);
-      fn();
-    });
-    this._rafIds.push(rafId);
-  },
 
   _measureAndUpdateScrollProps: function() {
     const scrollComponent = this.getScrollResponder();

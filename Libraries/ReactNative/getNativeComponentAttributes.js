@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -24,7 +24,7 @@ const warning = require('fbjs/lib/warning');
 import type {SemanticOrDynamicColorType} from 'normalizeColor'; // ]TODO(macOS ISS#2323203)
 
 function getNativeComponentAttributes(uiViewClassName: string) {
-  const viewConfig = UIManager.getViewManagerConfig(uiViewClassName);
+  const viewConfig = UIManager[uiViewClassName];
 
   invariant(
     viewConfig != null && viewConfig.NativeProps != null,
@@ -37,7 +37,7 @@ function getNativeComponentAttributes(uiViewClassName: string) {
   let {baseModuleName, bubblingEventTypes, directEventTypes} = viewConfig;
   let nativeProps = viewConfig.NativeProps;
   while (baseModuleName) {
-    const baseModule = UIManager.getViewManagerConfig(baseModuleName);
+    const baseModule = UIManager[baseModuleName];
     if (!baseModule) {
       warning(false, 'Base module "%s" does not exist', baseModuleName);
       baseModuleName = null;
@@ -97,7 +97,7 @@ function attachDefaultEventTypes(viewConfig: any) {
   // This is supported on UIManager platforms (ex: Android),
   // as lazy view managers are not implemented for all platforms.
   // See [UIManager] for details on constants and implementations.
-  if (UIManager.ViewManagerNames || UIManager.LazyViewManagersEnabled) {
+  if (UIManager.ViewManagerNames) {
     // Lazy view managers enabled.
     viewConfig = merge(viewConfig, UIManager.getDefaultEventTypes());
   } else {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,9 +9,9 @@
 
 'use strict';
 
-const React = require('react');
-const ReactNative = require('react-native');
-const {
+var React = require('react');
+var ReactNative = require('react-native');
+var {
   Image,
   StyleSheet,
   Text,
@@ -23,9 +23,9 @@ const {
 
 import type {ViewPagerScrollState} from 'ViewPagerAndroid';
 
-const PAGES = 5;
-const BGCOLOR = ['#fdc08e', '#fff6b9', '#99d1b7', '#dde5fe', '#f79273'];
-const IMAGE_URIS = [
+var PAGES = 5;
+var BGCOLOR = ['#fdc08e', '#fff6b9', '#99d1b7', '#dde5fe', '#f79273'];
+var IMAGE_URIS = [
   'https://apod.nasa.gov/apod/image/1410/20141008tleBaldridge001h990.jpg',
   'https://apod.nasa.gov/apod/image/1409/volcanicpillar_vetter_960.jpg',
   'https://apod.nasa.gov/apod/image/1409/m27_snyder_960.jpg',
@@ -43,7 +43,7 @@ class LikeCount extends React.Component {
   };
 
   render() {
-    const thumbsUp = '\uD83D\uDC4D';
+    var thumbsUp = '\uD83D\uDC4D';
     return (
       <View style={styles.likeContainer}>
         <TouchableOpacity onPress={this.onClick} style={styles.likeButton}>
@@ -79,10 +79,9 @@ class Button extends React.Component {
 
 class ProgressBar extends React.Component {
   render() {
-    const fractionalPosition =
+    var fractionalPosition =
       this.props.progress.position + this.props.progress.offset;
-    const progressBarSize =
-      (fractionalPosition / (PAGES - 1)) * this.props.size;
+    var progressBarSize = (fractionalPosition / (PAGES - 1)) * this.props.size;
     return (
       <View style={[styles.progressBarContainer, {width: this.props.size}]}>
         <View style={[styles.progressBar, {width: progressBarSize}]} />
@@ -119,7 +118,7 @@ class ViewPagerAndroidExample extends React.Component {
   };
 
   move = delta => {
-    const page = this.state.page + delta;
+    var page = this.state.page + delta;
     this.go(page);
   };
 
@@ -134,9 +133,9 @@ class ViewPagerAndroidExample extends React.Component {
   };
 
   render() {
-    const pages = [];
-    for (let i = 0; i < PAGES; i++) {
-      const pageStyle = {
+    var pages = [];
+    for (var i = 0; i < PAGES; i++) {
+      var pageStyle = {
         backgroundColor: BGCOLOR[i % BGCOLOR.length],
         alignItems: 'center',
         padding: 20,
@@ -151,7 +150,7 @@ class ViewPagerAndroidExample extends React.Component {
         </View>,
       );
     }
-    const {page, animationsAreEnabled} = this.state;
+    var {page, animationsAreEnabled} = this.state;
     return (
       <View style={styles.container}>
         <ViewPagerAndroid
@@ -223,7 +222,7 @@ class ViewPagerAndroidExample extends React.Component {
   }
 }
 
-const styles = StyleSheet.create({
+var styles = StyleSheet.create({
   buttons: {
     flexDirection: 'row',
     height: 30,

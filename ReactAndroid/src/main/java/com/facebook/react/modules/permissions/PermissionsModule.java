@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -29,11 +29,10 @@ import java.util.ArrayList;
 /**
  * Module that exposes the Android M Permission system to JS.
  */
-@ReactModule(name = PermissionsModule.NAME)
+@ReactModule(name = "PermissionsAndroid")
 public class PermissionsModule extends ReactContextBaseJavaModule implements PermissionListener {
 
   private static final String ERROR_INVALID_ACTIVITY = "E_INVALID_ACTIVITY";
-  public static final String NAME = "PermissionsAndroid";
   private final SparseArray<Callback> mCallbacks;
   private int mRequestCode = 0;
   private final String GRANTED = "granted";
@@ -47,7 +46,7 @@ public class PermissionsModule extends ReactContextBaseJavaModule implements Per
 
   @Override
   public String getName() {
-    return NAME;
+    return "PermissionsAndroid";
   }
 
   /**

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,17 +10,17 @@
 
 'use strict';
 
-const React = require('react');
-const ReactNative = require('react-native');
-const {StyleSheet, Text, View} = ReactNative;
+var React = require('react');
+var ReactNative = require('react-native');
+var {StyleSheet, Text, View} = ReactNative;
 
-const RNTesterBlock = require('./RNTesterBlock');
-const RNTesterPage = require('./RNTesterPage');
+var RNTesterBlock = require('./RNTesterBlock');
+var RNTesterPage = require('./RNTesterPage');
 
 class Circle extends React.Component<$FlowFixMeProps> {
   render() {
-    const size = this.props.size || 20;
-    const backgroundColor = this.props.bgColor || '#527fe4';
+    var size = this.props.size || 20;
+    var backgroundColor = this.props.bgColor || '#527fe4';
     return (
       <View
         style={{
@@ -37,7 +37,7 @@ class Circle extends React.Component<$FlowFixMeProps> {
 
 class CircleBlock extends React.Component<$FlowFixMeProps> {
   render() {
-    const circleStyle = {
+    var circleStyle = {
       flexDirection: 'row',
       backgroundColor: '#f6f7f8',
       borderWidth: 0.5,
@@ -56,7 +56,7 @@ class LayoutExample extends React.Component<$FlowFixMeProps> {
   static displayName = 'LayoutExample';
 
   render() {
-    const fiveColoredCircles = [
+    var fiveColoredCircles = [
       <Circle bgColor="#527fe4" key="blue" />,
       <Circle bgColor="#D443E3" key="violet" />,
       <Circle bgColor="#FF9049" key="orange" />,
@@ -186,7 +186,7 @@ class LayoutExample extends React.Component<$FlowFixMeProps> {
   }
 }
 
-const styles = StyleSheet.create({
+var styles = StyleSheet.create({
   overlay: {
     backgroundColor: '#aaccff',
     borderRadius: 10,

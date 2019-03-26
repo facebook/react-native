@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -31,7 +31,7 @@ import javax.annotation.Nullable;
 @ReactModule(name = REACT_CLASS)
 public class SwipeRefreshLayoutManager extends ViewGroupManager<ReactSwipeRefreshLayout> {
 
-  public static final String REACT_CLASS = "AndroidSwipeRefreshLayout";
+  protected static final String REACT_CLASS = "AndroidSwipeRefreshLayout";
 
   @Override
   protected ReactSwipeRefreshLayout createViewInstance(ThemedReactContext reactContext) {

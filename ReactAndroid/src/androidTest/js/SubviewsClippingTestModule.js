@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2013-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,43 +9,44 @@
 
 'use strict';
 
-const BatchedBridge = require('BatchedBridge');
-const React = require('React');
-const ScrollView = require('ScrollView');
-const StyleSheet = require('StyleSheet');
-const View = require('View');
+var BatchedBridge = require('BatchedBridge');
+var React = require('React');
+var ScrollView = require('ScrollView');
+var StyleSheet = require('StyleSheet');
+var View = require('View');
 
-const requireNativeComponent = require('requireNativeComponent');
+var requireNativeComponent = require('requireNativeComponent');
 
-const ClippableView = requireNativeComponent('ClippableView');
+var ClippableView = requireNativeComponent('ClippableView');
 
 class ClippingSample1 extends React.Component {
   render() {
+    var styles = sample1Styles;
     return (
       <View>
         <ClippableView
           clippableViewID="outer"
-          style={sample1Styles.outer}
+          style={styles.outer}
           removeClippedSubviews={true}>
           <ClippableView
             clippableViewID="inner1"
-            style={[sample1Styles.inner, sample1Styles.inner1]}
+            style={[styles.inner, styles.inner1]}
           />
           <ClippableView
             clippableViewID="inner2"
-            style={[sample1Styles.inner, sample1Styles.inner2]}
+            style={[styles.inner, styles.inner2]}
           />
           <ClippableView
             clippableViewID="inner3"
-            style={[sample1Styles.inner, sample1Styles.inner3]}
+            style={[styles.inner, styles.inner3]}
           />
           <ClippableView
             clippableViewID="inner4"
-            style={[sample1Styles.inner, sample1Styles.inner4]}
+            style={[styles.inner, styles.inner4]}
           />
           <ClippableView
             clippableViewID="inner5"
-            style={[sample1Styles.inner, sample1Styles.inner5]}
+            style={[styles.inner, styles.inner5]}
           />
         </ClippableView>
       </View>
@@ -53,7 +54,7 @@ class ClippingSample1 extends React.Component {
   }
 }
 
-const sample1Styles = StyleSheet.create({
+var sample1Styles = StyleSheet.create({
   outer: {
     width: 200,
     height: 200,
@@ -89,31 +90,32 @@ const sample1Styles = StyleSheet.create({
 
 class ClippingSample2 extends React.Component {
   render() {
+    var styles = sample2Styles;
     return (
       <View>
         <ClippableView
           clippableViewID="outer"
-          style={sample2Styles.outer}
+          style={styles.outer}
           removeClippedSubviews={true}>
           <ClippableView
             clippableViewID="complexInner"
-            style={sample2Styles.complexInner}
+            style={styles.complexInner}
             removeClippedSubviews={true}>
             <ClippableView
               clippableViewID="inner1"
-              style={[sample2Styles.inner, sample2Styles.inner1]}
+              style={[styles.inner, styles.inner1]}
             />
             <ClippableView
               clippableViewID="inner2"
-              style={[sample2Styles.inner, sample2Styles.inner2]}
+              style={[styles.inner, styles.inner2]}
             />
             <ClippableView
               clippableViewID="inner3"
-              style={[sample2Styles.inner, sample2Styles.inner3]}
+              style={[styles.inner, styles.inner3]}
             />
             <ClippableView
               clippableViewID="inner4"
-              style={[sample2Styles.inner, sample2Styles.inner4]}
+              style={[styles.inner, styles.inner4]}
             />
           </ClippableView>
         </ClippableView>
@@ -122,7 +124,7 @@ class ClippingSample2 extends React.Component {
   }
 }
 
-const sample2Styles = StyleSheet.create({
+var sample2Styles = StyleSheet.create({
   outer: {
     width: 200,
     height: 200,
@@ -162,21 +164,17 @@ const sample2Styles = StyleSheet.create({
 
 class UpdatingSample1 extends React.Component {
   render() {
-    const inner1Styles = [
-      updating1Styles.inner1,
+    var styles = updating1Styles;
+    var inner1Styles = [
+      styles.inner1,
       {height: this.props.update1 ? 200 : 100},
     ];
-
-    const inner2Styles = [
-      updating1Styles.inner2,
-      {top: this.props.update2 ? 200 : 50},
-    ];
-
+    var inner2Styles = [styles.inner2, {top: this.props.update2 ? 200 : 50}];
     return (
       <View>
         <ClippableView
           clippableViewID="outer"
-          style={updating1Styles.outer}
+          style={styles.outer}
           removeClippedSubviews={true}>
           <ClippableView clippableViewID="inner1" style={inner1Styles} />
           <ClippableView clippableViewID="inner2" style={inner2Styles} />
@@ -186,7 +184,7 @@ class UpdatingSample1 extends React.Component {
   }
 }
 
-const updating1Styles = StyleSheet.create({
+var updating1Styles = StyleSheet.create({
   outer: {
     width: 200,
     height: 200,
@@ -212,28 +210,22 @@ const updating1Styles = StyleSheet.create({
 
 class UpdatingSample2 extends React.Component {
   render() {
-    const outerStyles = [
-      updating2Styles.outer,
-      {height: this.props.update ? 200 : 100},
-    ];
-
+    var styles = updating2Styles;
+    var outerStyles = [styles.outer, {height: this.props.update ? 200 : 100}];
     return (
       <View>
         <ClippableView
           clippableViewID="outer"
           style={outerStyles}
           removeClippedSubviews={true}>
-          <ClippableView
-            clippableViewID="inner"
-            style={updating2Styles.inner}
-          />
+          <ClippableView clippableViewID="inner" style={styles.inner} />
         </ClippableView>
       </View>
     );
   }
 }
 
-const updating2Styles = StyleSheet.create({
+var updating2Styles = StyleSheet.create({
   outer: {
     width: 100,
     height: 100,
@@ -250,32 +242,23 @@ const updating2Styles = StyleSheet.create({
 
 class ScrollViewTest extends React.Component {
   render() {
-    const children = [];
-    for (let i = 0; i < 4; i++) {
+    var styles = scrollTestStyles;
+    var children = [];
+    for (var i = 0; i < 4; i++) {
       children[i] = (
-        <ClippableView
-          key={i}
-          style={scrollTestStyles.row}
-          clippableViewID={'' + i}
-        />
+        <ClippableView key={i} style={styles.row} clippableViewID={'' + i} />
       );
     }
-    for (let i = 4; i < 6; i++) {
-      const viewID = 'C' + (i - 4);
+    for (var i = 4; i < 6; i++) {
+      var viewID = 'C' + (i - 4);
       children[i] = (
         <ClippableView
           key={i}
-          style={scrollTestStyles.complex}
+          style={styles.complex}
           clippableViewID={viewID}
           removeClippedSubviews={true}>
-          <ClippableView
-            style={scrollTestStyles.inner}
-            clippableViewID={viewID + '.1'}
-          />
-          <ClippableView
-            style={scrollTestStyles.inner}
-            clippableViewID={viewID + '.2'}
-          />
+          <ClippableView style={styles.inner} clippableViewID={viewID + '.1'} />
+          <ClippableView style={styles.inner} clippableViewID={viewID + '.2'} />
         </ClippableView>
       );
     }
@@ -283,7 +266,7 @@ class ScrollViewTest extends React.Component {
     return (
       <ScrollView
         removeClippedSubviews={true}
-        style={scrollTestStyles.scrollView}
+        style={styles.scrollView}
         testID="scroll_view">
         {children}
       </ScrollView>
@@ -291,7 +274,7 @@ class ScrollViewTest extends React.Component {
   }
 }
 
-const scrollTestStyles = StyleSheet.create({
+var scrollTestStyles = StyleSheet.create({
   scrollView: {
     width: 200,
     height: 300,
@@ -320,7 +303,7 @@ const scrollTestStyles = StyleSheet.create({
   },
 });
 
-let appInstance = null;
+var appInstance = null;
 
 class SubviewsClippingTestApp extends React.Component {
   state = {};
@@ -334,12 +317,12 @@ class SubviewsClippingTestApp extends React.Component {
   };
 
   render() {
-    const component = this.state.component;
+    var component = this.state.component;
     return <View>{component}</View>;
   }
 }
 
-const SubviewsClippingTestModule = {
+var SubviewsClippingTestModule = {
   App: SubviewsClippingTestApp,
   renderClippingSample1: function() {
     appInstance.setComponent(<ClippingSample1 />);

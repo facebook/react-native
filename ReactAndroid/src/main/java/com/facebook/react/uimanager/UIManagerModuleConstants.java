@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -35,7 +35,7 @@ import java.util.Map;
                 "phasedRegistrationNames",
                 MapBuilder.of("bubbled", "onSelect", "captured", "onSelectCapture")))
         .put(
-            TouchEventType.getJSEventName(TouchEventType.START),
+            TouchEventType.START.getJSEventName(),
             MapBuilder.of(
                 "phasedRegistrationNames",
                 MapBuilder.of(
@@ -44,7 +44,7 @@ import java.util.Map;
                     "captured",
                     "onTouchStartCapture")))
         .put(
-            TouchEventType.getJSEventName(TouchEventType.MOVE),
+            TouchEventType.MOVE.getJSEventName(),
             MapBuilder.of(
                 "phasedRegistrationNames",
                 MapBuilder.of(
@@ -53,7 +53,7 @@ import java.util.Map;
                     "captured",
                     "onTouchMoveCapture")))
         .put(
-            TouchEventType.getJSEventName(TouchEventType.END),
+            TouchEventType.END.getJSEventName(),
             MapBuilder.of(
                 "phasedRegistrationNames",
                 MapBuilder.of(
@@ -62,7 +62,7 @@ import java.util.Map;
                     "captured",
                     "onTouchEndCapture")))
         .put(
-            TouchEventType.getJSEventName(TouchEventType.CANCEL),
+            TouchEventType.CANCEL.getJSEventName(),
             MapBuilder.of(
                 "phasedRegistrationNames",
                 MapBuilder.of(

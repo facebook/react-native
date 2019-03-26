@@ -1,4 +1,4 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
+// Copyright (c) 2004-present, Facebook, Inc.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -46,19 +46,19 @@ public class LayoutAnimationController {
 
     mShouldAnimateLayout = false;
     int globalDuration = config.hasKey("duration") ? config.getInt("duration") : 0;
-    if (config.hasKey(LayoutAnimationType.toString(LayoutAnimationType.CREATE))) {
+    if (config.hasKey(LayoutAnimationType.CREATE.toString())) {
       mLayoutCreateAnimation.initializeFromConfig(
-          config.getMap(LayoutAnimationType.toString(LayoutAnimationType.CREATE)), globalDuration);
+          config.getMap(LayoutAnimationType.CREATE.toString()), globalDuration);
       mShouldAnimateLayout = true;
     }
-    if (config.hasKey(LayoutAnimationType.toString(LayoutAnimationType.UPDATE))) {
+    if (config.hasKey(LayoutAnimationType.UPDATE.toString())) {
       mLayoutUpdateAnimation.initializeFromConfig(
-          config.getMap(LayoutAnimationType.toString(LayoutAnimationType.UPDATE)), globalDuration);
+          config.getMap(LayoutAnimationType.UPDATE.toString()), globalDuration);
       mShouldAnimateLayout = true;
     }
-    if (config.hasKey(LayoutAnimationType.toString(LayoutAnimationType.DELETE))) {
+    if (config.hasKey(LayoutAnimationType.DELETE.toString())) {
       mLayoutDeleteAnimation.initializeFromConfig(
-          config.getMap(LayoutAnimationType.toString(LayoutAnimationType.DELETE)), globalDuration);
+          config.getMap(LayoutAnimationType.DELETE.toString()), globalDuration);
       mShouldAnimateLayout = true;
     }
   }

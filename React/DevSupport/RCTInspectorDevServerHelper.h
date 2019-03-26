@@ -1,10 +1,12 @@
-// Copyright (c) Facebook, Inc. and its affiliates.
+// Copyright (c) 2004-present, Facebook, Inc.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
 
 #import <Foundation/Foundation.h>
+#import <JavaScriptCore/JSBase.h>
 #import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
+
 #import <React/RCTDefines.h>
 #import <React/RCTInspectorPackagerConnection.h>
 

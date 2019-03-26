@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,36 +10,35 @@
 
 'use strict';
 
-const React = require('react');
-const ReactNative = require('react-native');
-const {AlertIOS, AlertMacOS, Platform, ToastAndroid, Text, View} = ReactNative;
-const RNTesterButton = require('./RNTesterButton');
-const performanceNow = require('fbjs/lib/performanceNow');
+var React = require('react');
+var createReactClass = require('create-react-class');
+var ReactNative = require('react-native');
+var {AlertIOS, AlertMacOS, Platform, ToastAndroid, Text, View} = ReactNative;
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
+var TimerMixin = require('react-timer-mixin');
+var RNTesterButton = require('./RNTesterButton');
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
+var performanceNow = require('fbjs/lib/performanceNow');
 
 function burnCPU(milliseconds) {
   const start = performanceNow();
   while (performanceNow() < start + milliseconds) {}
 }
 
-type RequestIdleCallbackTesterProps = $ReadOnly<{||}>;
-type RequestIdleCallbackTesterState = {|message: string|};
-
-class RequestIdleCallbackTester extends React.Component<
-  RequestIdleCallbackTesterProps,
-  RequestIdleCallbackTesterState,
-> {
+class RequestIdleCallbackTester extends React.Component<{}, $FlowFixMeState> {
   state = {
     message: '-',
   };
 
-  _idleTimer: ?IdleCallbackID = null;
+  _idleTimer: any = null;
   _iters = 0;
 
   componentWillUnmount() {
-    if (this._idleTimer != null) {
-      cancelIdleCallback(this._idleTimer);
-      this._idleTimer = null;
-    }
+    cancelIdleCallback(this._idleTimer);
   }
 
   render() {
@@ -53,7 +52,7 @@ class RequestIdleCallbackTester extends React.Component<
           Burn CPU inside of requestIdleCallback
         </RNTesterButton>
 
-        <RNTesterButton onPress={this._runWithTimeout}>
+        <RNTesterButton onPress={this._runWithTimeout.bind(this)}>
           Run requestIdleCallback with timeout option
         </RNTesterButton>
 
@@ -70,12 +69,8 @@ class RequestIdleCallbackTester extends React.Component<
     );
   }
 
-  _run(shouldBurnCPU: boolean) {
-    if (this._idleTimer != null) {
-      cancelIdleCallback(this._idleTimer);
-      this._idleTimer = null;
-    }
-
+  _run = shouldBurnCPU => {
+    cancelIdleCallback(this._idleTimer);
     this._idleTimer = requestIdleCallback(deadline => {
       let message = '';
 
@@ -87,14 +82,10 @@ class RequestIdleCallbackTester extends React.Component<
         message: `${message} ${deadline.timeRemaining()}ms remaining in frame`,
       });
     });
-  }
+  };
 
   _runWithTimeout = () => {
-    if (this._idleTimer != null) {
-      cancelIdleCallback(this._idleTimer);
-      this._idleTimer = null;
-    }
-
+    cancelIdleCallback(this._idleTimer);
     this._idleTimer = requestIdleCallback(
       deadline => {
         this.setState({
@@ -109,11 +100,7 @@ class RequestIdleCallbackTester extends React.Component<
   };
 
   _runBackground = () => {
-    if (this._idleTimer != null) {
-      cancelIdleCallback(this._idleTimer);
-      this._idleTimer = null;
-    }
-
+    cancelIdleCallback(this._idleTimer);
     const handler = deadline => {
       while (deadline.timeRemaining() > 5) {
         burnCPU(5);
@@ -130,94 +117,57 @@ class RequestIdleCallbackTester extends React.Component<
 
   _stopBackground = () => {
     this._iters = 0;
-    if (this._idleTimer != null) {
-      cancelIdleCallback(this._idleTimer);
-      this._idleTimer = null;
-    }
+    cancelIdleCallback(this._idleTimer);
   };
 }
 
-type TimerTesterProps = $ReadOnly<{|
-  dt?: number,
-  type: string,
-|}>;
+var TimerTester = createReactClass({
+  displayName: 'TimerTester',
+  mixins: [TimerMixin],
 
-class TimerTester extends React.Component<TimerTesterProps> {
-  _ii = 0;
-  _iters = 0;
-  _start = 0;
-  _timerId: ?TimeoutID = null;
-  _rafId: ?AnimationFrameID = null;
-  _intervalId: ?IntervalID = null;
-  _immediateId: ?Object = null;
-  _timerFn: ?() => any = null;
+  _ii: 0,
+  _iters: 0,
+  _start: 0,
+  _timerFn: (null: ?() => any),
+  _handle: (null: any),
 
-  render() {
-    const args =
-      'fn' + (this.props.dt !== undefined ? ', ' + this.props.dt : '');
+  render: function() {
+    var args = 'fn' + (this.props.dt !== undefined ? ', ' + this.props.dt : '');
     return (
       <RNTesterButton onPress={this._run}>
         Measure: {this.props.type}({args}) - {this._ii || 0}
       </RNTesterButton>
     );
-  }
+  },
 
-  componentWillUnmount() {
-    if (this._timerId != null) {
-      clearTimeout(this._timerId);
-      this._timerId = null;
-    }
-
-    if (this._rafId != null) {
-      cancelAnimationFrame(this._rafId);
-      this._rafId = null;
-    }
-
-    if (this._immediateId != null) {
-      clearImmediate(this._immediateId);
-      this._immediateId = null;
-    }
-
-    if (this._intervalId != null) {
-      clearInterval(this._intervalId);
-      this._intervalId = null;
-    }
-  }
-
-  _run = () => {
+  _run: function() {
     if (!this._start) {
-      const d = new Date();
+      var d = new Date();
       this._start = d.getTime();
       this._iters = 100;
       this._ii = 0;
       if (this.props.type === 'setTimeout') {
-        if (this.props.dt !== undefined && this.props.dt < 1) {
+        if (this.props.dt < 1) {
           this._iters = 5000;
-        } else if (this.props.dt !== undefined && this.props.dt > 20) {
+        } else if (this.props.dt > 20) {
           this._iters = 10;
         }
-        this._timerFn = () => {
-          this._timerId = setTimeout(this._run, this.props.dt);
-        };
+        this._timerFn = () => this.setTimeout(this._run, this.props.dt);
       } else if (this.props.type === 'requestAnimationFrame') {
-        this._timerFn = () => {
-          this._rafId = requestAnimationFrame(this._run);
-        };
+        this._timerFn = () => this.requestAnimationFrame(this._run);
       } else if (this.props.type === 'setImmediate') {
         this._iters = 5000;
-        this._timerFn = () => {
-          this._immediateId = setImmediate(this._run);
-        };
+        this._timerFn = () => this.setImmediate(this._run);
       } else if (this.props.type === 'setInterval') {
         this._iters = 30; // Only used for forceUpdate periodicidy
         this._timerFn = null;
-        this._intervalId = setInterval(this._run, this.props.dt);
+        this._handle = this.setInterval(this._run, this.props.dt);
       }
     }
-    if (this._ii >= this._iters && this._intervalId == null) {
-      const d = new Date();
-      const e = d.getTime() - this._start;
-      const msg =
+    if (this._ii >= this._iters && !this._handle) {
+      var d = new Date();
+      var e = d.getTime() - this._start;
+      var msg =
         'Finished ' +
         this._ii +
         ' ' +
@@ -247,25 +197,25 @@ class TimerTester extends React.Component<TimerTesterProps> {
     if (this._ii % (this._iters / 5) === 0) {
       this.forceUpdate();
     }
-    if (this._timerFn) {
-      this._timerId = this._timerFn();
-    }
-  };
+    this._timerFn && this._timerFn();
+  },
 
-  clear = () => {
-    if (this._intervalId != null) {
-      clearInterval(this._intervalId);
+  clear: function() {
+    this.clearInterval(this._handle); // invalid handles are ignored
+    if (this._handle) {
       // Configure things so we can do a final run to update UI and reset state.
-      this._intervalId = null;
+      this._handle = null;
       this._iters = this._ii;
       this._run();
     }
-  };
-}
+  },
+});
 
 exports.framework = 'React';
-exports.title = 'Timers';
-exports.description = 'A demonstration of Timers in React Native.';
+exports.title = 'Timers, TimerMixin';
+exports.description =
+  'The TimerMixin provides timer functions for executing ' +
+  'code in the future that are safely cleaned up when the component unmounts.';
 
 exports.examples = [
   {
@@ -322,21 +272,11 @@ exports.examples = [
     description:
       'Execute function fn every t milliseconds until cancelled ' +
       'or component is unmounted.',
-    render: function() {
-      type IntervalExampleProps = $ReadOnly<{||}>;
-      type IntervalExampleState = {|
-        showTimer: boolean,
-      |};
-
-      class IntervalExample extends React.Component<
-        IntervalExampleProps,
-        IntervalExampleState,
-      > {
+    render: function(): React.Element<any> {
+      class IntervalExample extends React.Component<{}, $FlowFixMeState> {
         state = {
           showTimer: true,
         };
-
-        _timerTester: ?React.ElementRef<typeof TimerTester>;
 
         render() {
           return (
@@ -352,13 +292,8 @@ exports.examples = [
         _renderTimer = () => {
           return (
             <View>
-              <TimerTester
-                ref={ref => (this._timerTester = ref)}
-                dt={25}
-                type="setInterval"
-              />
-              <RNTesterButton
-                onPress={() => this._timerTester && this._timerTester.clear()}>
+              <TimerTester ref="interval" dt={25} type="setInterval" />
+              <RNTesterButton onPress={() => this.refs.interval.clear()}>
                 Clear interval
               </RNTesterButton>
             </View>

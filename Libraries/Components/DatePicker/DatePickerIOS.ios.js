@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,7 +8,7 @@
  * This is a controlled component version of RCTDatePickerIOS
  *
  * @format
- * @flow strict-local
+ * @flow
  */
 
 'use strict';
@@ -21,15 +21,10 @@ const View = require('View');
 const requireNativeComponent = require('requireNativeComponent');
 
 import type {ViewProps} from 'ViewPropTypes';
-import type {SyntheticEvent} from 'CoreEventTypes';
 
 const RCTDatePickerIOS = requireNativeComponent('RCTDatePicker');
 
-type Event = SyntheticEvent<
-  $ReadOnly<{|
-    timestamp: number,
-  |}>,
->;
+type Event = Object;
 
 type Props = $ReadOnly<{|
   ...ViewProps,
@@ -148,7 +143,6 @@ class DatePickerIOS extends React.Component<Props> {
     return (
       <View style={props.style}>
         <RCTDatePickerIOS
-          testID={props.testID}
           ref={picker => {
             this._picker = picker;
           }}
@@ -160,11 +154,7 @@ class DatePickerIOS extends React.Component<Props> {
                 ? props.initialDate.getTime()
                 : undefined
           }
-          locale={
-            props.locale != null && props.locale !== ''
-              ? props.locale
-              : undefined
-          }
+          locale={props.locale ? props.locale : undefined}
           maximumDate={
             props.maximumDate ? props.maximumDate.getTime() : undefined
           }

@@ -1,13 +1,11 @@
-load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
-
-fb_native.prebuilt_jar(
+prebuilt_jar(
     name = "okio",
     binary_jar = ":okio-binary.jar",
     visibility = ["//ReactAndroid/..."],
 )
 
-fb_native.remote_file(
+remote_file(
     name = "okio-binary.jar",
-    sha1 = "bc28b5a964c8f5721eb58ee3f3c47a9bcbf4f4d8",
-    url = "mvn:com.squareup.okio:okio:jar:1.15.0",
+    sha1 = "102d7be47241d781ef95f1581d414b0943053130",
+    url = "mvn:com.squareup.okio:okio:jar:1.14.0",
 )

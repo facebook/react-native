@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -35,7 +35,7 @@ server.on('connection', ws => {
     console.log('Received message:', message);
     console.log('Cookie:', ws.upgradeReq.headers.cookie);
     if (respondWithBinary) {
-      message = Buffer.from(message);
+      message = new Buffer(message);
     }
     if (message === 'getImage') {
       message = fs.readFileSync(path.resolve(__dirname, 'flux@3x.png'));

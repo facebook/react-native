@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,10 +10,10 @@
 
 'use strict';
 
-const React = require('react');
-const ReactNative = require('react-native');
-const {Animated, Easing, StyleSheet, Text, View} = ReactNative;
-const RNTesterButton = require('./RNTesterButton');
+var React = require('react');
+var ReactNative = require('react-native');
+var {Animated, Easing, StyleSheet, Text, View} = ReactNative;
+var RNTesterButton = require('./RNTesterButton');
 
 exports.framework = 'React';
 exports.title = 'Animated - Examples';
@@ -59,9 +59,6 @@ exports.examples = [
         }
       }
       class FadeInExample extends React.Component<$FlowFixMeProps, any> {
-        /* $FlowFixMe(>=0.85.0 site=react_native_fb) This comment suppresses an
-         * error found when Flow v0.85 was deployed. To see the error, delete
-         * this comment and run Flow. */
         constructor(props) {
           super(props);
           this.state = {
@@ -161,7 +158,7 @@ exports.examples = [
         <View>
           <RNTesterButton
             onPress={() => {
-              const timing = Animated.timing;
+              var timing = Animated.timing;
               Animated.sequence([
                 // One after the other
                 timing(this.anims[0], {
@@ -246,7 +243,7 @@ exports.examples = [
           <Animated.Image
             source={require('./bunny.png')}
             style={[
-              styles.rotatingImage,
+              {width: 70, height: 70},
               {
                 transform: [
                   {
@@ -288,7 +285,7 @@ exports.examples = [
   },
 ];
 
-const styles = StyleSheet.create({
+var styles = StyleSheet.create({
   content: {
     backgroundColor: 'deepskyblue',
     borderWidth: 1,
@@ -297,9 +294,5 @@ const styles = StyleSheet.create({
     margin: 20,
     borderRadius: 10,
     alignItems: 'center',
-  },
-  rotatingImage: {
-    width: 70,
-    height: 70,
   },
 });

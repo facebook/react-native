@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,6 +9,7 @@
  */
 'use strict';
 
+const MetroListView = require('MetroListView');
 const Platform = require('Platform');
 const React = require('React');
 const ScrollView = require('ScrollView');
@@ -182,10 +183,7 @@ type OptionalProps<SectionT: SectionBase<any>> = {
    */
   stickySectionHeadersEnabled?: boolean,
 
-  /**
-   * The legacy implementation is no longer supported.
-   */
-  legacyImplementation?: empty,
+  legacyImplementation?: ?boolean,
 };
 
 export type Props<SectionT> = RequiredProps<SectionT> &
@@ -278,9 +276,7 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
     viewOffset?: number,
     viewPosition?: number,
   }) {
-    if (this._wrapperListRef != null) {
-      this._wrapperListRef.scrollToLocation(params);
-    }
+    this._wrapperListRef.scrollToLocation(params);
   }
 
   /**
@@ -290,6 +286,7 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
    */
   recordInteraction() {
     const listRef = this._wrapperListRef && this._wrapperListRef.getListRef();
+    // $FlowFixMe Found when typing ListView
     listRef && listRef.recordInteraction();
   }
 
@@ -328,14 +325,20 @@ class SectionList<SectionT: SectionBase<any>> extends React.PureComponent<
   }
 
   render() {
+    const List = this.props.legacyImplementation
+      ? MetroListView
+      : VirtualizedSectionList;
     /* $FlowFixMe(>=0.66.0 site=react_native_fb) This comment suppresses an
      * error found when Flow v0.66 was deployed. To see the error delete this
      * comment and run Flow. */
-    return <VirtualizedSectionList {...this.props} ref={this._captureRef} />;
+    return <List {...this.props} ref={this._captureRef} />;
   }
 
-  _wrapperListRef: ?React.ElementRef<typeof VirtualizedSectionList>;
+  _wrapperListRef: MetroListView | VirtualizedSectionList<any>;
   _captureRef = ref => {
+    /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This comment
+     * suppresses an error when upgrading Flow's support for React. To see the
+     * error delete this comment and run Flow. */
     this._wrapperListRef = ref;
   };
 }

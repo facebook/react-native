@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -21,10 +21,7 @@ function deprecatedPropType(
 ): ReactPropsCheckType {
   return function validate(props, propName, componentName, ...rest) {
     // Don't warn for native components.
-    if (
-      !UIManager.getViewManagerConfig(componentName) &&
-      props[propName] !== undefined
-    ) {
+    if (!UIManager[componentName] && props[propName] !== undefined) {
       console.warn(
         `\`${propName}\` supplied to \`${componentName}\` has been deprecated. ${explanation}`,
       );

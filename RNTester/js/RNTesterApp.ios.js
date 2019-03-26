@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -78,8 +78,17 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
         );
         const urlAction = URIActionMap(url);
         const launchAction = exampleAction || urlAction;
-        const initialAction = launchAction || {type: 'InitialAction'};
-        this.setState(RNTesterNavigationReducer(undefined, initialAction));
+        if (err || !storedString) {
+          const initialAction = launchAction || {type: 'InitialAction'};
+          this.setState(RNTesterNavigationReducer(undefined, initialAction));
+          return;
+        }
+        const storedState = JSON.parse(storedString);
+        if (launchAction) {
+          this.setState(RNTesterNavigationReducer(storedState, launchAction));
+          return;
+        }
+        this.setState(storedState);
       });
     });
 
@@ -130,6 +139,9 @@ class RNTesterApp extends React.Component<Props, RNTesterNavigationState> {
     return (
       <View style={styles.exampleContainer}>
         <Header title="RNTester" />
+        {/* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
+          * comment suppresses an error when upgrading Flow's support for
+          * React. To see the error delete this comment and run Flow. */}
         <RNTesterExampleList
           onNavigate={this._handleAction}
           list={RNTesterList}
@@ -184,10 +196,7 @@ RNTesterList.ComponentExamples.concat(RNTesterList.APIExamples).forEach(
         render() {
           return (
             <SnapshotViewIOS>
-              <RNTesterExampleContainer
-                module={ExampleModule}
-                displayFilter={false}
-              />
+              <RNTesterExampleContainer module={ExampleModule} />
             </SnapshotViewIOS>
           );
         }

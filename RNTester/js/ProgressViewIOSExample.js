@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,45 +10,39 @@
 
 'use strict';
 
-const React = require('react');
-const ReactNative = require('react-native');
-const {ProgressViewIOS, StyleSheet, View} = ReactNative;
+var React = require('react');
+var createReactClass = require('create-react-class');
+var ReactNative = require('react-native');
+var {ProgressViewIOS, StyleSheet, View} = ReactNative;
+/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
+ * found when Flow v0.54 was deployed. To see the error delete this comment and
+ * run Flow. */
+var TimerMixin = require('react-timer-mixin');
 
-type Props = {||};
-type State = {|
-  progress: number,
-|};
+var ProgressViewExample = createReactClass({
+  displayName: 'ProgressViewExample',
+  mixins: [TimerMixin],
 
-class ProgressViewExample extends React.Component<Props, State> {
-  _rafId: ?AnimationFrameID = null;
-
-  state = {
-    progress: 0,
-  };
+  getInitialState() {
+    return {
+      progress: 0,
+    };
+  },
 
   componentDidMount() {
     this.updateProgress();
-  }
+  },
 
-  componentWillUnmount() {
-    if (this._rafId != null) {
-      cancelAnimationFrame(this._rafId);
-    }
-  }
-
-  updateProgress = () => {
-    const progress = this.state.progress + 0.01;
+  updateProgress() {
+    var progress = this.state.progress + 0.01;
     this.setState({progress});
-    this._rafId = requestAnimationFrame(() => this.updateProgress());
-  };
+    this.requestAnimationFrame(() => this.updateProgress());
+  },
 
-  /* $FlowFixMe(>=0.85.0 site=react_native_fb) This comment suppresses an error
-   * found when Flow v0.85 was deployed. To see the error, delete this comment
-   * and run Flow. */
-  getProgress = offset => {
-    const progress = this.state.progress + offset;
+  getProgress(offset) {
+    var progress = this.state.progress + offset;
     return Math.sin(progress % Math.PI) % 1;
-  };
+  },
 
   render() {
     return (
@@ -79,8 +73,8 @@ class ProgressViewExample extends React.Component<Props, State> {
         />
       </View>
     );
-  }
-}
+  },
+});
 
 exports.displayName = (undefined: ?string);
 exports.framework = 'React';
@@ -95,7 +89,7 @@ exports.examples = [
   },
 ];
 
-const styles = StyleSheet.create({
+var styles = StyleSheet.create({
   container: {
     marginTop: -20,
     backgroundColor: 'transparent',

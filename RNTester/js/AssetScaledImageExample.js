@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,27 +10,20 @@
 
 'use strict';
 
-const React = require('react');
-const ReactNative = require('react-native');
-const {Image, StyleSheet, View, ScrollView} = ReactNative;
+var React = require('react');
+var ReactNative = require('react-native');
+var {Image, StyleSheet, View, ScrollView} = ReactNative;
 
-import type {PhotoIdentifier} from 'CameraRoll';
-
-type Props = $ReadOnly<{|
-  asset: PhotoIdentifier,
-|}>;
-
-type State = {|
-  asset: PhotoIdentifier,
-|};
-
-class AssetScaledImageExample extends React.Component<Props, State> {
+class AssetScaledImageExample extends React.Component<
+  $FlowFixMeProps,
+  $FlowFixMeState,
+> {
   state = {
     asset: this.props.asset,
   };
 
   render() {
-    const image = this.state.asset.node.image;
+    var image = this.state.asset.node.image;
     return (
       <ScrollView>
         <View style={styles.row}>
@@ -50,12 +43,16 @@ class AssetScaledImageExample extends React.Component<Props, State> {
   }
 }
 
-const styles = StyleSheet.create({
+var styles = StyleSheet.create({
   row: {
     padding: 5,
     flex: 1,
     flexDirection: 'row',
     alignSelf: 'center',
+  },
+  textColumn: {
+    flex: 1,
+    flexDirection: 'column',
   },
   imageWide: {
     borderWidth: 1,

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -33,14 +33,13 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.module.annotations.ReactModule;
 
-@ReactModule(name = ImageLoaderModule.NAME)
+@ReactModule(name = "ImageLoader")
 public class ImageLoaderModule extends ReactContextBaseJavaModule implements
   LifecycleEventListener {
 
   private static final String ERROR_INVALID_URI = "E_INVALID_URI";
   private static final String ERROR_PREFETCH_FAILURE = "E_PREFETCH_FAILURE";
   private static final String ERROR_GET_SIZE_FAILURE = "E_GET_SIZE_FAILURE";
-  public static final String NAME = "ImageLoader";
 
   private final Object mCallerContext;
   private final Object mEnqueuedRequestMonitor = new Object();
@@ -58,7 +57,7 @@ public class ImageLoaderModule extends ReactContextBaseJavaModule implements
 
   @Override
   public String getName() {
-    return NAME;
+    return "ImageLoader";
   }
 
   /**

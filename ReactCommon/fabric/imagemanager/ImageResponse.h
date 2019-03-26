@@ -1,11 +1,11 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <memory>
+#import <memory>
 
 namespace facebook {
 namespace react {
@@ -14,12 +14,13 @@ namespace react {
  * Represents retrieved image bitmap and any assotiated platform-specific info.
  */
 class ImageResponse final {
- public:
+
+public:
   ImageResponse(const std::shared_ptr<void> &image);
 
   std::shared_ptr<void> getImage() const;
 
- private:
+private:
   std::shared_ptr<void> image_;
 };
 

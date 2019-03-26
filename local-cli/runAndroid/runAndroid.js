@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -121,7 +121,7 @@ function buildAndRun(args) {
   const adbPath = getAdbPath();
   if (args.deviceId) {
     if (isString(args.deviceId)) {
-      return runOnSpecificDevice(
+      runOnSpecificDevice(
         args,
         cmd,
         packageNameWithSuffix,
@@ -132,13 +132,7 @@ function buildAndRun(args) {
       console.log(chalk.red('Argument missing for parameter --deviceId'));
     }
   } else {
-    return runOnAllDevices(
-      args,
-      cmd,
-      packageNameWithSuffix,
-      packageName,
-      adbPath,
-    );
+    runOnAllDevices(args, cmd, packageNameWithSuffix, packageName, adbPath);
   }
 }
 
@@ -311,7 +305,7 @@ function runOnAllDevices(
     // stderr is automatically piped from the gradle process, so the user
     // should see the error already, there is no need to do
     // `console.log(e.stderr)`
-    return Promise.reject(e);
+    return Promise.reject();
   }
   const devices = adb.getDevices();
   if (devices && devices.length > 0) {
@@ -349,7 +343,7 @@ function runOnAllDevices(
       // stderr is automatically piped from the gradle process, so the user
       // should see the error already, there is no need to do
       // `console.log(e.stderr)`
-      return Promise.reject(e);
+      return Promise.reject();
     }
   }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,11 +7,12 @@
 
 #import "RCTScheduler.h"
 
-#import <react/uimanager/ContextContainer.h>
-#import <react/uimanager/Scheduler.h>
-#import <react/uimanager/SchedulerDelegate.h>
-
-#import <React/RCTFollyConvert.h>
+#import <fabric/imagemanager/ImageManager.h>
+#import <fabric/uimanager/ContextContainer.h>
+#import <fabric/uimanager/Scheduler.h>
+#import <fabric/uimanager/SchedulerDelegate.h>
+#import <React/RCTImageLoader.h>
+#import <React/RCTBridge+Private.h>
 
 #import "RCTConversions.h"
 
@@ -19,15 +20,14 @@ using namespace facebook::react;
 
 class SchedulerDelegateProxy: public SchedulerDelegate {
 public:
-  SchedulerDelegateProxy(void *scheduler):
-    scheduler_(scheduler) {}
+  SchedulerDelegateProxy(void *scheduler): scheduler_(scheduler) {}
 
-  void schedulerDidFinishTransaction(Tag rootTag, const ShadowViewMutationList &mutations) override {
+  void schedulerDidComputeMutationInstructions(Tag rootTag, const TreeMutationInstructionList &instructions) override {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
-    [scheduler.delegate schedulerDidFinishTransaction:mutations rootTag:rootTag];
+    [scheduler.delegate schedulerDidComputeMutationInstructions:instructions rootTag:rootTag];
   }
 
-  void schedulerDidRequestPreliminaryViewAllocation(SurfaceId surfaceId, ComponentName componentName, bool isLayoutable, ComponentHandle componentHandle) override {
+  void schedulerDidRequestPreliminaryViewAllocation(ComponentName componentName) override {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
     [scheduler.delegate schedulerDidRequestPreliminaryViewAllocationWithComponentName:RCTNSStringFromString(componentName, NSASCIIStringEncoding)];
   }
@@ -41,11 +41,17 @@ private:
   std::shared_ptr<SchedulerDelegateProxy> _delegateProxy;
 }
 
-- (instancetype)initWithContextContainer:(std::shared_ptr<void>)contextContatiner
+- (instancetype)init
 {
   if (self = [super init]) {
     _delegateProxy = std::make_shared<SchedulerDelegateProxy>((__bridge void *)self);
-    _scheduler = std::make_shared<Scheduler>(std::static_pointer_cast<ContextContainer>(contextContatiner));
+
+    SharedContextContainer contextContainer = std::make_shared<ContextContainer>();
+
+    void *imageLoader = (__bridge void *)[[RCTBridge currentBridge] imageLoader];
+    contextContainer->registerInstance(std::make_shared<ImageManager>(imageLoader));
+
+    _scheduler = std::make_shared<Scheduler>(contextContainer);
     _scheduler->setDelegate(_delegateProxy.get());
   }
 
@@ -57,43 +63,37 @@ private:
   _scheduler->setDelegate(nullptr);
 }
 
-- (void)startSurfaceWithSurfaceId:(SurfaceId)surfaceId
-                       moduleName:(NSString *)moduleName
-                     initailProps:(NSDictionary *)initialProps
-                layoutConstraints:(LayoutConstraints)layoutConstraints
-                    layoutContext:(LayoutContext)layoutContext;
+- (void)registerRootTag:(ReactTag)tag
 {
-  auto props = convertIdToFollyDynamic(initialProps);
-  _scheduler->startSurface(
-      surfaceId,
-      RCTStringFromNSString(moduleName),
-      props,
-      layoutConstraints,
-      layoutContext);
-  _scheduler->renderTemplateToSurface(
-      surfaceId,
-      props.getDefault("navigationConfig")
-          .getDefault("initialUITemplate", "")
-          .getString());
+  _scheduler->registerRootTag(tag);
 }
 
-- (void)stopSurfaceWithSurfaceId:(SurfaceId)surfaceId
+- (void)unregisterRootTag:(ReactTag)tag
 {
-  _scheduler->stopSurface(surfaceId);
+  _scheduler->unregisterRootTag(tag);
 }
 
-- (CGSize)measureSurfaceWithLayoutConstraints:(LayoutConstraints)layoutConstraints
+- (CGSize)measureWithLayoutConstraints:(LayoutConstraints)layoutConstraints
+                         layoutContext:(LayoutContext)layoutContext
+                               rootTag:(ReactTag)rootTag
+{
+  return RCTCGSizeFromSize(_scheduler->measure(rootTag, layoutConstraints, layoutContext));
+}
+
+- (void)constraintLayoutWithLayoutConstraints:(LayoutConstraints)layoutConstraints
                                 layoutContext:(LayoutContext)layoutContext
-                                    surfaceId:(SurfaceId)surfaceId
+                                      rootTag:(ReactTag)rootTag
 {
-  return RCTCGSizeFromSize(_scheduler->measureSurface(surfaceId, layoutConstraints, layoutContext));
+  _scheduler->constraintLayout(rootTag, layoutConstraints, layoutContext);
 }
 
-- (void)constraintSurfaceLayoutWithLayoutConstraints:(LayoutConstraints)layoutConstraints
-                                       layoutContext:(LayoutContext)layoutContext
-                                           surfaceId:(SurfaceId)surfaceId
+@end
+
+@implementation RCTScheduler (Deprecated)
+
+- (std::shared_ptr<FabricUIManager>)uiManager_DO_NOT_USE
 {
-  _scheduler->constraintSurfaceLayout(surfaceId, layoutConstraints, layoutContext);
+  return _scheduler->getUIManager_DO_NOT_USE();
 }
 
 @end

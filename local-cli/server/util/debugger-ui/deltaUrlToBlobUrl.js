@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -22,29 +22,31 @@
   async function deltaUrlToBlobUrl(deltaUrl) {
     const client = global.DeltaPatcher.get(deltaUrl);
 
-    const revisionId = client.getLastRevisionId()
-      ? `&revisionId=${client.getLastRevisionId()}`
+    const deltaBundleId = client.getLastBundleId()
+      ? `&deltaBundleId=${client.getLastBundleId()}`
       : '';
 
-    const data = await fetch(deltaUrl + revisionId);
+    const data = await fetch(deltaUrl + deltaBundleId);
     const bundle = await data.json();
 
-    const deltaPatcher = client.applyDelta(bundle);
+    const deltaPatcher = client.applyDelta({
+      id: bundle.id,
+      pre: new Map(bundle.pre),
+      post: new Map(bundle.post),
+      delta: new Map(bundle.delta),
+      reset: bundle.reset,
+    });
 
     let cachedBundle = cachedBundleUrls.get(deltaUrl);
 
     // If nothing changed, avoid recreating a bundle blob by reusing the
     // previous one.
-    if (
-      deltaPatcher.getLastNumModifiedFiles() === 0 &&
-      cachedBundle != null &&
-      cachedBundle !== ''
-    ) {
+    if (deltaPatcher.getLastNumModifiedFiles() === 0 && cachedBundle) {
       return cachedBundle;
     }
 
     // Clean up the previous bundle URL to not leak memory.
-    if (cachedBundle != null && cachedBundle !== '') {
+    if (cachedBundle) {
       URL.revokeObjectURL(cachedBundle);
     }
 

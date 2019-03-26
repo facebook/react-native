@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,36 +8,37 @@
 
 #include <memory>
 
-#include <react/events/EventBeat.h>
-#include <react/events/EventQueue.h>
-#include <react/events/RawEvent.h>
-#include <react/events/primitives.h>
+#include <fabric/events/primitives.h>
+#include <folly/dynamic.h>
 
 namespace facebook {
 namespace react {
 
 class EventDispatcher;
+
 using SharedEventDispatcher = std::shared_ptr<const EventDispatcher>;
-using WeakEventDispatcher = std::weak_ptr<const EventDispatcher>;
 
 /*
- * Represents event-delivery infrastructure.
- * Particular `EventEmitter` clases use this for sending events.
+ * Abstract class that represent event-delivery infrastructure.
+ * Particular `EventEmitter` clases use an object of this class to invoke
+ * events.
  */
 class EventDispatcher {
- public:
-  EventDispatcher(
-      const EventPipe &eventPipe,
-      const EventBeatFactory &synchonousEventBeatFactory,
-      const EventBeatFactory &asynchonousEventBeatFactory);
+
+public:
 
   /*
-   * Dispatches a raw event with given priority using event-delivery pipe.
+   * Dispatches "raw" event using some event-delivery infrastructure.
    */
-  void dispatchEvent(const RawEvent &rawEvent, EventPriority priority) const;
+  virtual void dispatchEvent(
+    const EventTarget &eventTarget,
+    const std::string &type,
+    const folly::dynamic &payload,
+    const EventPriority &priority
+  ) const = 0;
 
- private:
-  std::array<std::unique_ptr<EventQueue>, 4> eventQueues_;
+  virtual void releaseEventTarget(const EventTarget &eventTarget) const = 0;
+
 };
 
 } // namespace react

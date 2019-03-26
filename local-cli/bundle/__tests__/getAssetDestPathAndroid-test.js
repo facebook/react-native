@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,8 +13,6 @@
 jest.dontMock('../getAssetDestPathAndroid').dontMock('../assetPathUtils');
 
 const getAssetDestPathAndroid = require('../getAssetDestPathAndroid');
-
-const path = require('path');
 
 describe('getAssetDestPathAndroid', () => {
   it('should use the right destination folder', () => {
@@ -47,7 +45,7 @@ describe('getAssetDestPathAndroid', () => {
     };
 
     expect(getAssetDestPathAndroid(asset, 1)).toBe(
-      path.normalize('drawable-mdpi/app_test_icon.png'),
+      'drawable-mdpi/app_test_icon.png',
     );
   });
 
@@ -68,8 +66,6 @@ describe('getAssetDestPathAndroid', () => {
       httpServerLocation: '/assets/app/test',
     };
 
-    expect(getAssetDestPathAndroid(asset, 1)).toBe(
-      path.normalize('raw/app_test_video.mp4'),
-    );
+    expect(getAssetDestPathAndroid(asset, 1)).toBe('raw/app_test_video.mp4');
   });
 });

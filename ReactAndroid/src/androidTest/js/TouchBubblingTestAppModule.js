@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2013-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,12 +9,12 @@
 
 'use strict';
 
-const Recording = require('NativeModules').Recording;
+var Recording = require('NativeModules').Recording;
 
-const React = require('React');
-const StyleSheet = require('StyleSheet');
-const View = require('View');
-const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+var React = require('React');
+var StyleSheet = require('StyleSheet');
+var View = require('View');
+var TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 
 class TouchBubblingTestApp extends React.Component {
   handlePress = record => {
@@ -48,7 +48,7 @@ class TouchBubblingTestApp extends React.Component {
   }
 }
 
-const styles = StyleSheet.create({
+var styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
     backgroundColor: '#ccdd44',

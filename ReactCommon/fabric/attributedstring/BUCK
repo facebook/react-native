@@ -1,14 +1,14 @@
-load("@fbsource//tools/build_defs/apple:flag_defs.bzl", "get_debug_preprocessor_flags")
+load("//configurations/buck/apple:flag_defs.bzl", "OBJC_ARC_PREPROCESSOR_FLAGS", "get_application_ios_flags", "get_debug_preprocessor_flags")
 load(
-    "//tools/build_defs/oss:rn_defs.bzl",
+    "//ReactNative:DEFS.bzl",
     "ANDROID",
     "APPLE",
-    "fb_xplat_cxx_test",
-    "get_apple_compiler_flags",
     "get_apple_inspector_flags",
     "react_native_xplat_target",
-    "rn_xplat_cxx_library",
+    "get_apple_compiler_flags",
     "subdir_glob",
+    "fb_xplat_cxx_test",
+    "rn_xplat_cxx_library",
 )
 
 APPLE_COMPILER_FLAGS = get_apple_compiler_flags()
@@ -28,7 +28,7 @@ rn_xplat_cxx_library(
         [
             ("", "*.h"),
         ],
-        prefix = "react/attributedstring",
+        prefix = "fabric/attributedstring",
     ),
     compiler_flags = [
         "-fexceptions",
@@ -73,7 +73,7 @@ fb_xplat_cxx_test(
         "-Wall",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
-    platforms = (ANDROID, APPLE),
+    platforms = APPLE,
     deps = [
         "xplat//folly:molly",
         "xplat//third-party/gmock:gtest",

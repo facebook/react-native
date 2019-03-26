@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,20 +10,13 @@
 
 'use strict';
 
-const React = require('react');
-const ReactNative = require('react-native');
-const {
-  ActionSheetIOS,
-  StyleSheet,
-  takeSnapshot,
-  Text,
-  View,
-  Alert,
-} = ReactNative;
+var React = require('react');
+var ReactNative = require('react-native');
+var {ActionSheetIOS, StyleSheet, takeSnapshot, Text, View} = ReactNative;
 
-const BUTTONS = ['Option 0', 'Option 1', 'Option 2', 'Delete', 'Cancel'];
-const DESTRUCTIVE_INDEX = 3;
-const CANCEL_INDEX = 4;
+var BUTTONS = ['Option 0', 'Option 1', 'Option 2', 'Delete', 'Cancel'];
+var DESTRUCTIVE_INDEX = 3;
+var CANCEL_INDEX = 4;
 
 class ActionSheetExample extends React.Component<{}, $FlowFixMeState> {
   state = {
@@ -113,9 +106,9 @@ class ShareActionSheetExample extends React.Component<
         subject: 'a subject to go in the email heading',
         excludedActivityTypes: ['com.apple.UIKit.activity.PostToTwitter'],
       },
-      error => Alert.alert('Error', error),
+      error => alert(error),
       (completed, method) => {
-        let text;
+        var text;
         if (completed) {
           text = `Shared via ${method}`;
         } else {
@@ -153,9 +146,9 @@ class ShareScreenshotExample extends React.Component<{}, $FlowFixMeState> {
             url: uri,
             excludedActivityTypes: ['com.apple.UIKit.activity.PostToTwitter'],
           },
-          error => Alert.alert('Error', error),
+          error => alert(error),
           (completed, method) => {
-            let text;
+            var text;
             if (completed) {
               text = `Shared via ${method}`;
             } else {
@@ -165,11 +158,11 @@ class ShareScreenshotExample extends React.Component<{}, $FlowFixMeState> {
           },
         );
       })
-      .catch(error => Alert.alert('Error', error));
+      .catch(error => alert(error));
   };
 }
 
-const style = StyleSheet.create({
+var style = StyleSheet.create({
   button: {
     marginBottom: 10,
     fontWeight: '500',

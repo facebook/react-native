@@ -125,9 +125,6 @@ class TextInputAccessoryViewExample extends React.Component<{}, *> {
 */
 
 class RewriteExample extends React.Component<$FlowFixMeProps, any> {
-  /* $FlowFixMe(>=0.85.0 site=react_native_fb) This comment suppresses an
-  * error found when Flow v0.85 was deployed. To see the error, delete
-  * this comment and run Flow. */
   constructor(props) {
     super(props);
     this.state = {text: ''};
@@ -160,10 +157,7 @@ class RewriteExampleInvalidCharacters extends React.Component<
   $FlowFixMeProps,
   any,
 > {
-  /* $FlowFixMe(>=0.85.0 site=react_native_fb) This comment suppresses an
-  * error found when Flow v0.85 was deployed. To see the error, delete
-  * this comment and run Flow. */
- constructor(props) {
+  constructor(props) {
     super(props);
     this.state = {text: ''};
   }
@@ -184,10 +178,7 @@ class RewriteExampleInvalidCharacters extends React.Component<
 }
 
 class RewriteExampleKana extends React.Component<$FlowFixMeProps, any> {
-  /* $FlowFixMe(>=0.85.0 site=react_native_fb) This comment suppresses an
-  * error found when Flow v0.85 was deployed. To see the error, delete
-  * this comment and run Flow. */
- constructor(props) {
+  constructor(props) {
     super(props);
     this.state = {text: ''};
   }
@@ -208,10 +199,7 @@ class RewriteExampleKana extends React.Component<$FlowFixMeProps, any> {
 }
 
 class SecureEntryExample extends React.Component<$FlowFixMeProps, any> {
-  /* $FlowFixMe(>=0.85.0 site=react_native_fb) This comment suppresses an
-  * error found when Flow v0.85 was deployed. To see the error, delete
-  * this comment and run Flow. */
- constructor(props) {
+  constructor(props) {
     super(props);
     this.state = {text: ''};
   }
@@ -232,10 +220,7 @@ class SecureEntryExample extends React.Component<$FlowFixMeProps, any> {
 }
 
 class TokenizedTextExample extends React.Component<$FlowFixMeProps, any> {
-  /* $FlowFixMe(>=0.85.0 site=react_native_fb) This comment suppresses an
-  * error found when Flow v0.85 was deployed. To see the error, delete
-  * this comment and run Flow. */
- constructor(props) {
+  constructor(props) {
     super(props);
     this.state = {text: 'Hello #World'};
   }
@@ -349,10 +334,10 @@ class BlurOnSubmitExample extends React.Component<{}> {
 }
 
 type SelectionExampleState = {
-  selection: $ReadOnly<{|
+  selection: {|
     start: number,
     end?: number,
-  |}>,
+  |},
   value: string,
 };
 

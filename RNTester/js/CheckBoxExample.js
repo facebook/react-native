@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2017-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,12 +7,11 @@
  * @flow
  * @format
  */
-
 'use strict';
 
 const React = require('react');
 const ReactNative = require('react-native');
-const {CheckBox, Text, View, StyleSheet} = ReactNative;
+const {CheckBox, Text, View} = ReactNative;
 
 class BasicCheckBoxExample extends React.Component<{}, $FlowFixMeState> {
   state = {
@@ -25,7 +24,7 @@ class BasicCheckBoxExample extends React.Component<{}, $FlowFixMeState> {
       <View>
         <CheckBox
           onValueChange={value => this.setState({falseCheckBoxIsOn: value})}
-          style={styles.checkbox}
+          style={{marginBottom: 10}}
           value={this.state.falseCheckBoxIsOn}
         />
         <CheckBox
@@ -41,7 +40,7 @@ class DisabledCheckBoxExample extends React.Component<{}, $FlowFixMeState> {
   render() {
     return (
       <View>
-        <CheckBox disabled={true} style={styles.checkbox} value={true} />
+        <CheckBox disabled={true} style={{marginBottom: 10}} value={true} />
         <CheckBox disabled={true} value={false} />
       </View>
     );
@@ -56,16 +55,16 @@ class EventCheckBoxExample extends React.Component<{}, $FlowFixMeState> {
 
   render() {
     return (
-      <View style={styles.container}>
+      <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
         <View>
           <CheckBox
             onValueChange={value => this.setState({eventCheckBoxIsOn: value})}
-            style={styles.checkbox}
+            style={{marginBottom: 10}}
             value={this.state.eventCheckBoxIsOn}
           />
           <CheckBox
             onValueChange={value => this.setState({eventCheckBoxIsOn: value})}
-            style={styles.checkbox}
+            style={{marginBottom: 10}}
             value={this.state.eventCheckBoxIsOn}
           />
           <Text>{this.state.eventCheckBoxIsOn ? 'On' : 'Off'}</Text>
@@ -75,14 +74,14 @@ class EventCheckBoxExample extends React.Component<{}, $FlowFixMeState> {
             onValueChange={value =>
               this.setState({eventCheckBoxRegressionIsOn: value})
             }
-            style={styles.checkbox}
+            style={{marginBottom: 10}}
             value={this.state.eventCheckBoxRegressionIsOn}
           />
           <CheckBox
             onValueChange={value =>
               this.setState({eventCheckBoxRegressionIsOn: value})
             }
-            style={styles.checkbox}
+            style={{marginBottom: 10}}
             value={this.state.eventCheckBoxRegressionIsOn}
           />
           <Text>{this.state.eventCheckBoxRegressionIsOn ? 'On' : 'Off'}</Text>
@@ -123,13 +122,3 @@ exports.title = '<CheckBox>';
 exports.displayName = 'CheckBoxExample';
 exports.description = 'Native boolean input';
 exports.examples = examples;
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  checkbox: {
-    marginBottom: 10,
-  },
-});

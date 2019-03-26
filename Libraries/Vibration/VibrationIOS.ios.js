@@ -1,10 +1,11 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @flow strict-local
  */
 
 'use strict';
@@ -12,7 +13,6 @@
 const RCTVibration = require('NativeModules').Vibration;
 
 const invariant = require('fbjs/lib/invariant');
-const warning = require('fbjs/lib/warning');
 
 /**
  * NOTE: `VibrationIOS` is being deprecated. Use `Vibration` instead.
@@ -32,10 +32,6 @@ const VibrationIOS = {
    * @deprecated
    */
   vibrate: function() {
-    warning(
-      false,
-      'VibrationIOS is deprecated and will be removed. Please use Vibration instead.',
-    );
     invariant(arguments[0] === undefined, 'Vibration patterns not supported.');
     RCTVibration.vibrate();
   },

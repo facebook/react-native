@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2013-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,10 +9,9 @@
 
 'use strict';
 
-const React = require('React');
-const Recording = require('NativeModules').Recording;
-const StyleSheet = require('StyleSheet');
-const View = require('View');
+var React = require('React');
+var Recording = require('NativeModules').Recording;
+var View = require('View');
 
 class CatalystRootViewTestApp extends React.Component {
   componentWillUnmount() {
@@ -20,15 +19,9 @@ class CatalystRootViewTestApp extends React.Component {
   }
 
   render() {
-    return <View collapsable={false} style={styles.container} />;
+    return <View collapsable={false} style={{alignSelf: 'stretch'}} />;
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignSelf: 'stretch',
-  },
-});
 
 module.exports = {
   CatalystRootViewTestApp: CatalystRootViewTestApp,

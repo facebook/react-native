@@ -1,14 +1,7 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * @format
- */
+/** @format */
 
-const fs = jest.requireActual('fs');
-const path = jest.requireActual('path');
+const fs = require.requireActual('fs');
+const path = require('path');
 
 const manifest = fs.readFileSync(
   path.join(__dirname, './files/AndroidManifest.xml'),

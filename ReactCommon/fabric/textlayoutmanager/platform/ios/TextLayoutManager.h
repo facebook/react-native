@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,10 +9,9 @@
 
 #include <memory>
 
-#include <react/attributedstring/AttributedString.h>
-#include <react/attributedstring/ParagraphAttributes.h>
-#include <react/core/LayoutConstraints.h>
-#include <react/uimanager/ContextContainer.h>
+#include <fabric/attributedstring/AttributedString.h>
+#include <fabric/attributedstring/ParagraphAttributes.h>
+#include <fabric/core/LayoutConstraints.h>
 
 namespace facebook {
 namespace react {
@@ -25,18 +24,18 @@ using SharedTextLayoutManager = std::shared_ptr<const TextLayoutManager>;
  * Cross platform facade for iOS-specific RCTTTextLayoutManager.
  */
 class TextLayoutManager {
- public:
-  TextLayoutManager(const SharedContextContainer &contextContainer);
+public:
+  TextLayoutManager();
   ~TextLayoutManager();
 
   /*
    * Measures `attributedString` using native text rendering infrastructure.
    */
   Size measure(
-      Tag reactTag,
-      AttributedString attributedString,
-      ParagraphAttributes paragraphAttributes,
-      LayoutConstraints layoutConstraints) const;
+    AttributedString attributedString,
+    ParagraphAttributes paragraphAttributes,
+    LayoutConstraints layoutConstraints
+  ) const;
 
   /*
    * Returns an opaque pointer to platform-specific TextLayoutManager.
@@ -44,7 +43,7 @@ class TextLayoutManager {
    */
   void *getNativeTextLayoutManager() const;
 
- private:
+private:
   void *self_;
 };
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,9 +13,11 @@
 const React = require('react');
 const ReactNative = require('react-native');
 const {
+  Alert,
   CameraRoll,
   Image,
   ImageEditor,
+  Linking,
   Platform,
   StyleSheet,
   Text,
@@ -52,9 +54,9 @@ class XHRExampleFormData extends React.Component<Object, Object> {
       if (!this._isMounted) {
         return;
       }
-      const edges = data.edges;
-      const edge = edges[Math.floor(Math.random() * edges.length)];
-      const randomPhoto = edge && edge.node && edge.node.image;
+      var edges = data.edges;
+      var edge = edges[Math.floor(Math.random() * edges.length)];
+      var randomPhoto = edge && edge.node && edge.node.image;
       if (randomPhoto) {
         let {width, height} = randomPhoto;
         width *= 0.25;
@@ -70,31 +72,31 @@ class XHRExampleFormData extends React.Component<Object, Object> {
   };
 
   _addTextParam = () => {
-    const textParams = this.state.textParams;
+    var textParams = this.state.textParams;
     textParams.push({name: '', value: ''});
     this.setState({textParams});
   };
 
   _onTextParamNameChange(index, text) {
-    const textParams = this.state.textParams;
+    var textParams = this.state.textParams;
     textParams[index].name = text;
     this.setState({textParams});
   }
 
   _onTextParamValueChange(index, text) {
-    const textParams = this.state.textParams;
+    var textParams = this.state.textParams;
     textParams[index].value = text;
     this.setState({textParams});
   }
 
   _upload = () => {
-    const xhr = new XMLHttpRequest();
+    var xhr = new XMLHttpRequest();
     xhr.open('POST', 'http://posttestserver.com/post.php');
     xhr.onload = () => {
       this.setState({isUploading: false});
       XHRExampleBinaryUpload.handlePostTestServerUpload(xhr);
     };
-    const formdata = new FormData();
+    var formdata = new FormData();
     if (this.state.randomPhoto) {
       formdata.append('image', {
         ...this.state.randomPhoto,
@@ -116,13 +118,13 @@ class XHRExampleFormData extends React.Component<Object, Object> {
   };
 
   render() {
-    let image = null;
+    var image = null;
     if (this.state.randomPhoto) {
       image = (
         <Image source={this.state.randomPhoto} style={styles.randomPhoto} />
       );
     }
-    const textItems = this.state.textParams.map((item, index) => (
+    var textItems = this.state.textParams.map((item, index) => (
       <View style={styles.paramRow}>
         <TextInput
           autoCapitalize="none"
@@ -141,12 +143,12 @@ class XHRExampleFormData extends React.Component<Object, Object> {
         />
       </View>
     ));
-    let uploadButtonLabel = this.state.isUploading ? 'Uploading...' : 'Upload';
-    const uploadProgress = this.state.uploadProgress;
+    var uploadButtonLabel = this.state.isUploading ? 'Uploading...' : 'Upload';
+    var uploadProgress = this.state.uploadProgress;
     if (uploadProgress !== null) {
       uploadButtonLabel += ' ' + Math.round(uploadProgress * 100) + '%';
     }
-    let uploadButton = (
+    var uploadButton = (
       <View style={styles.uploadButtonBox}>
         <Text style={styles.uploadButtonLabel}>{uploadButtonLabel}</Text>
       </View>

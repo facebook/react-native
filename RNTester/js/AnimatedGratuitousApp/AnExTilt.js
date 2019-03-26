@@ -1,5 +1,5 @@
 /**
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) 2015-present, Facebook, Inc.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,9 +10,9 @@
 
 'use strict';
 
-const React = require('react');
-const ReactNative = require('react-native');
-const {Animated, PanResponder, StyleSheet} = ReactNative;
+var React = require('react');
+var ReactNative = require('react-native');
+var {Animated, PanResponder, StyleSheet} = ReactNative;
 
 class AnExTilt extends React.Component<Object, any> {
   constructor(props: Object) {
@@ -37,7 +37,7 @@ class AnExTilt extends React.Component<Object, any> {
         [null, {dx: this.state.panX}], // panX is linked to the gesture
       ),
       onPanResponderRelease: (e, gestureState) => {
-        let toValue = 0;
+        var toValue = 0;
         if (gestureState.dx > 100) {
           toValue = 500;
         } else if (gestureState.dx < -100) {
@@ -50,7 +50,7 @@ class AnExTilt extends React.Component<Object, any> {
           friction: 3,
         }).start();
         this.state.panX.removeAllListeners();
-        const id = this.state.panX.addListener(({value}) => {
+        var id = this.state.panX.addListener(({value}) => {
           // listen until offscreen
           if (Math.abs(value) > 400) {
             this.state.panX.removeListener(id); // offscreen, so stop listening
@@ -122,7 +122,7 @@ class AnExTilt extends React.Component<Object, any> {
   }
 }
 
-const styles = StyleSheet.create({
+var styles = StyleSheet.create({
   tilt: {
     overflow: 'hidden',
     height: 200,
