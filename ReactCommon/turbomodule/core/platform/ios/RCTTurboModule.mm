@@ -115,11 +115,8 @@ static NSDictionary *convertJSIObjectToNSDictionary(jsi::Runtime &runtime, const
 
 static RCTResponseSenderBlock convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, std::shared_ptr<react::JSCallInvoker> jsInvoker);
 static id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, std::shared_ptr<react::JSCallInvoker> jsInvoker) {
-  if (value.isUndefined()) {
+  if (value.isUndefined() || value.isNull()) {
     return nil;
-  }
-  if (value.isNull()) {
-    return (id)kCFNull;
   }
   if (value.isBool()) {
     return @(value.getBool());
