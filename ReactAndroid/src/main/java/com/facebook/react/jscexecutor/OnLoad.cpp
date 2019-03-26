@@ -11,6 +11,7 @@
 #include <react/jni/JSLogging.h>
 #include <react/jni/JavaScriptExecutorHolder.h>
 #include <react/jni/ReadableNativeMap.h>
+#include <cxxreact/ReactMarker.h>
 
 namespace facebook {
 namespace react {
@@ -19,6 +20,8 @@ namespace {
 
 class JSCExecutorFactory : public JSExecutorFactory {
  public:
+  JSCExecutorFactory() : logTaggedMarker_(nullptr) {}
+  JSCExecutorFactory(ReactMarker::LogTaggedMarker logTaggedMarker) : logTaggedMarker_(logTaggedMarker) {}
   std::unique_ptr<JSExecutor> createJSExecutor(
       std::shared_ptr<ExecutorDelegate> delegate,
       std::shared_ptr<MessageQueueThread> jsQueue) override {
@@ -32,8 +35,12 @@ class JSCExecutorFactory : public JSExecutorFactory {
         jsc::makeJSCRuntime(),
         delegate,
         JSIExecutor::defaultTimeoutInvoker,
-        installBindings);
+        installBindings,
+        logTaggedMarker_);
   }
+
+ private:
+  ReactMarker::LogTaggedMarker logTaggedMarker_;
 };
 
 } // namespace
@@ -52,9 +59,8 @@ class JSCExecutorHolder
     // This is kind of a weird place for stuff, but there's no other
     // good place for initialization which is specific to JSC on
     // Android.
-    JReactMarker::setLogPerfMarkerIfNeeded();
     // TODO mhorowitz T28461666 fill in some missing nice to have glue
-    return makeCxxInstance(folly::make_unique<JSCExecutorFactory>());
+    return makeCxxInstance(folly::make_unique<JSCExecutorFactory>(JReactMarker::setLogPerfMarkerIfNeeded()));
   }
 
   static void registerNatives() {

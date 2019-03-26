@@ -19,8 +19,10 @@ namespace facebook {
 namespace react {
 
 JSINativeModules::JSINativeModules(
-    std::shared_ptr<ModuleRegistry> moduleRegistry)
-    : m_moduleRegistry(std::move(moduleRegistry)) {}
+    std::shared_ptr<ModuleRegistry> moduleRegistry,
+    ReactMarker::LogTaggedMarker logTaggedMarker)
+    : m_moduleRegistry(std::move(moduleRegistry)),
+    logTaggedMarker_(logTaggedMarker) {}
 
 Value JSINativeModules::getModule(Runtime& rt, const PropNameID& name) {
   if (!m_moduleRegistry) {
@@ -54,9 +56,9 @@ void JSINativeModules::reset() {
 folly::Optional<Object> JSINativeModules::createModule(
     Runtime& rt,
     const std::string& name) {
-  bool hasLogger(ReactMarker::logTaggedMarker);
+  bool hasLogger(logTaggedMarker_);
   if (hasLogger) {
-    ReactMarker::logTaggedMarker(
+    logTaggedMarker_(
         ReactMarker::NATIVE_MODULE_SETUP_START, name.c_str());
   }
 
@@ -80,7 +82,7 @@ folly::Optional<Object> JSINativeModules::createModule(
       moduleInfo.asObject(rt).getPropertyAsObject(rt, "module"));
 
   if (hasLogger) {
-    ReactMarker::logTaggedMarker(
+    logTaggedMarker_(
         ReactMarker::NATIVE_MODULE_SETUP_STOP, name.c_str());
   }
 

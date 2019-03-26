@@ -11,11 +11,8 @@
 namespace facebook {
 namespace react {
 
-void JReactMarker::setLogPerfMarkerIfNeeded() {
-  static std::once_flag flag {};
-  std::call_once(flag, [](){
-    ReactMarker::logTaggedMarker = JReactMarker::logPerfMarker;
-  });
+ReactMarker::LogTaggedMarker JReactMarker::setLogPerfMarkerIfNeeded() {
+  return JReactMarker::logPerfMarker;
 }
 
 void JReactMarker::logMarker(const std::string& marker) {

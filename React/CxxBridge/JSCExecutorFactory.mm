@@ -32,7 +32,8 @@ std::unique_ptr<JSExecutor> JSCExecutorFactory::createJSExecutor(
       facebook::jsc::makeJSCRuntime(),
       delegate,
       JSIExecutor::defaultTimeoutInvoker,
-      std::move(installBindings));
+      std::move(installBindings),
+      logTaggedMarker_);
 }
 
 } // namespace react
