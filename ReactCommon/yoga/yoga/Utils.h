@@ -52,7 +52,12 @@ struct YGCollectFlexItemsRowValues {
   float crossDim;
 };
 
-bool YGValueEqual(const YGValue a, const YGValue b);
+bool YGValueEqual(const YGValue& a, const YGValue& b);
+inline bool YGValueEqual(
+    facebook::yoga::detail::CompactValue a,
+    facebook::yoga::detail::CompactValue b) {
+  return YGValueEqual((YGValue) a, (YGValue) b);
+}
 
 // This custom float equality function returns true if either absolute
 // difference between two floats is less than 0.0001f or both are undefined.
@@ -103,6 +108,12 @@ inline YGFloatOptional YGResolveValue(
     default:
       return YGFloatOptional{};
   }
+}
+
+inline YGFloatOptional YGResolveValue(
+    yoga::detail::CompactValue value,
+    float ownerSize) {
+  return YGResolveValue((YGValue) value, ownerSize);
 }
 
 inline bool YGFlexDirectionIsColumn(const YGFlexDirection flexDirection) {
