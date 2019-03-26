@@ -25,6 +25,15 @@ class AnimatedWithChildren extends AnimatedNode {
       this.__isNative = true;
       for (const child of this._children) {
         child.__makeNative();
+      }
+    }
+  }
+
+  __connectAnimatedNodes() {
+    if (!this.__isConnected) {
+      this.__isConnected = true;
+      for (const child of this._children) {
+        child.__connectAnimatedNodes();
         NativeAnimatedHelper.API.connectAnimatedNodes(
           this.__getNativeTag(),
           child.__getNativeTag(),
