@@ -11,11 +11,6 @@ import com.facebook.proguard.annotations.DoNotStrip;
 @DoNotStrip
 public class YogaNodeJNI extends YogaNodeJNIBase {
 
-  /* Those flags needs be in sync with YGJNI.cpp */
-  private static final int MARGIN = 1;
-  private static final int PADDING = 2;
-  private static final int BORDER = 4;
-
   @DoNotStrip
   private float mWidth = YogaConstants.UNDEFINED;
   @DoNotStrip
