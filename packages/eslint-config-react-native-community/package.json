@@ -8,6 +8,8 @@
     "url": "git@github.com:facebook/react-native.git"
   },
   "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^1.5.0",
+    "@typescript-eslint/parser": "^1.5.0",
     "babel-eslint": "10.0.1",
     "eslint-plugin-eslint-comments": "^3.1.1",
     "eslint-plugin-flowtype": "2.50.3",
