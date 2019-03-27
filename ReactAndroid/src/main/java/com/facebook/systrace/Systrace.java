@@ -7,8 +7,7 @@
 
 package com.facebook.systrace;
 
-import android.os.Build;
-import android.os.Trace;
+import androidx.core.os.TraceCompat;
 
 /**
  * Systrace stub that mostly does nothing but delegates to Trace for beginning/ending sections.
@@ -55,15 +54,11 @@ public class Systrace {
   }
 
   public static void beginSection(long tag, final String sectionName) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-      Trace.beginSection(sectionName);
-    }
+    TraceCompat.beginSection(sectionName);
   }
 
   public static void endSection(long tag) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-      Trace.endSection();
-    }
+    TraceCompat.endSection();
   }
 
   public static void beginAsyncSection(
@@ -74,7 +69,7 @@ public class Systrace {
 
   public static void beginAsyncSection(
       long tag, final String sectionName, final int cookie, final long startNanos) {}
-  
+
   public static void endAsyncSection(
       long tag,
       final String sectionName,
@@ -83,7 +78,7 @@ public class Systrace {
 
   public static void endAsyncSection(
       long tag, final String sectionName, final int cookie, final long endNanos) {}
-  
+
   public static void traceCounter(
       long tag,
       final String counterName,
