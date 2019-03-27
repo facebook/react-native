@@ -61,15 +61,15 @@ RCT_EXPORT_METHOD(postMessage:(nonnull NSNumber *)reactTag message:(NSString *)m
   }];
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(bounces, BOOL, RCTWKWebView) {
+RCT_CUSTOM_VIEW_PROPERTY(bounces, BOOL, __unused RCTWKWebView) {
   view.bounces = json == nil ? true : [RCTConvert BOOL: json];
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(scrollEnabled, BOOL, RCTWKWebView) {
+RCT_CUSTOM_VIEW_PROPERTY(scrollEnabled, BOOL, __unused RCTWKWebView) {
   view.scrollEnabled = json == nil ? true : [RCTConvert BOOL: json];
 }
 
-RCT_CUSTOM_VIEW_PROPERTY(decelerationRate, CGFloat, RCTWKWebView) {
+RCT_CUSTOM_VIEW_PROPERTY(decelerationRate, CGFloat, __unused RCTWKWebView) {
   view.decelerationRate = json == nil ? UIScrollViewDecelerationRateNormal : [RCTConvert CGFloat: json];
 }
 
@@ -135,7 +135,7 @@ RCT_EXPORT_METHOD(stopLoading:(nonnull NSNumber *)reactTag)
 
 #pragma mark - Exported synchronous methods
 
-- (BOOL)          webView:(RCTWKWebView *)webView
+- (BOOL)          webView:(__unused RCTWKWebView *)webView
 shouldStartLoadForRequest:(NSMutableDictionary<NSString *, id> *)request
              withCallback:(RCTDirectEventBlock)callback
 {

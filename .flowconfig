@@ -3,7 +3,7 @@
 .*/*[.]android.js
 
 ; Ignore templates for 'react-native init'
-.*/local-cli/templates/.*
+<PROJECT_ROOT>/template/.*
 
 ; Ignore the Dangerfile
 <PROJECT_ROOT>/bots/dangerfile.js
@@ -22,20 +22,21 @@
 ; Ignore polyfills
 .*/Libraries/polyfills/.*
 
-; Ignore metro
-.*/node_modules/metro/.*
-
 ; These should not be required directly
-; require from fbjs/lib instead: require('fbjs/lib/invariant')
-.*/node_modules/invariant/.*
+; require from fbjs/lib instead: require('fbjs/lib/warning')
 .*/node_modules/warning/.*
+
+; Flow doesn't support platforms
+.*/Libraries/Utilities/HMRLoadingView.js
+
+[untyped]
+.*/node_modules/@react-native-community/cli/.*/.*
 
 [include]
 
 [libs]
 Libraries/react-native/react-native-interface.js
 flow/
-flow-github/
 
 [options]
 emoji=true
@@ -59,6 +60,7 @@ module.system.haste.paths.blacklist=.*/__mocks__/.*
 module.system.haste.paths.whitelist=<PROJECT_ROOT>/Libraries/.*
 module.system.haste.paths.whitelist=<PROJECT_ROOT>/RNTester/.*
 module.system.haste.paths.whitelist=<PROJECT_ROOT>/IntegrationTests/.*
+module.system.haste.paths.blacklist=<PROJECT_ROOT>/Libraries/react-native/react-native-implementation.js
 module.system.haste.paths.blacklist=<PROJECT_ROOT>/Libraries/Animated/src/polyfills/.*
 
 munge_underscores=true
@@ -70,25 +72,23 @@ suppress_type=$FlowFixMe
 suppress_type=$FlowFixMeProps
 suppress_type=$FlowFixMeState
 
-suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(<VERSION>\\)? *\\(site=[a-z,_]*[react_native\\(_ios\\)?_oss|react_native\\(_ios\\)?_fb][a-z,_]*\\)?)\\)
-suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(<VERSION>\\)? *\\(site=[a-z,_]*[react_native\\(_ios\\)?_oss|react_native\\(_ios\\)?_fb][a-z,_]*\\)?)\\)?:? #[0-9]+
-suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
+suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(<VERSION>\\)? *\\(site=[a-z,_]*react_native\\(_ios\\)?_\\(oss\\|fb\\)[a-z,_]*\\)?)\\)
+suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(<VERSION>\\)? *\\(site=[a-z,_]*react_native\\(_ios\\)?_\\(oss\\|fb\\)[a-z,_]*\\)?)\\)?:? #[0-9]+
 suppress_comment=\\(.\\|\n\\)*\\$FlowExpectedError
 
 [lints]
-all=warn
-unnecessary-optional-chain=off
-
-# There is an ESLint rule for this
-unclear-type=off
-
-sketchy-null=off
 sketchy-null-number=warn
 sketchy-null-mixed=warn
-
-# This is noisy for now. We *do* still want to warn on importing types
-# from untyped files, which is covered by untyped-type-import
-untyped-import=off
+sketchy-number=warn
+untyped-type-import=warn
+nonstrict-import=warn
+deprecated-type=warn
+unsafe-getters-setters=warn
+inexact-spread=warn
+unnecessary-invariant=warn
+deprecated-call-syntax=warn
+signature-verification-failure=warn
+deprecated-utility=error
 
 [strict]
 deprecated-type
@@ -100,4 +100,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.82.0
+^0.95.0

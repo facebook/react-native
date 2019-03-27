@@ -16,6 +16,9 @@ typedef void (^RCTImageLoaderPartialLoadBlock)(UIImage *image);
 typedef void (^RCTImageLoaderCompletionBlock)(NSError *error, UIImage *image);
 typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 
+@protocol RCTImageURLLoader;
+@protocol RCTImageDataDecoder;
+
 /**
  * Provides an interface to use for providing a image caching strategy.
  */
@@ -24,15 +27,14 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 - (UIImage *)imageForUrl:(NSString *)url
                     size:(CGSize)size
                    scale:(CGFloat)scale
-              resizeMode:(RCTResizeMode)resizeMode
-            responseDate:(NSString *)responseDate;
+              resizeMode:(RCTResizeMode)resizeMode;
 
 - (void)addImageToCache:(UIImage *)image
                     URL:(NSString *)url
                    size:(CGSize)size
                   scale:(CGFloat)scale
              resizeMode:(RCTResizeMode)resizeMode
-           responseDate:(NSString *)responseDate;
+               response:(NSURLResponse *)response;
 
 @end
 
@@ -51,6 +53,11 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 @interface UIImage (React)
 
 @property (nonatomic, copy) CAKeyframeAnimation *reactKeyframeAnimation;
+
+/**
+ * Memory bytes of the image with the default calculation of static image or GIF. Custom calculations of decoded bytes can be assigned manually.
+ */
+@property (nonatomic, assign) NSInteger reactDecodedImageBytes;
 
 @end
 
@@ -83,6 +90,9 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 
 - (instancetype)init;
 - (instancetype)initWithRedirectDelegate:(id<RCTImageRedirectProtocol>)redirectDelegate NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithRedirectDelegate:(id<RCTImageRedirectProtocol>)redirectDelegate
+                              loadersProvider:(NSArray<id<RCTImageURLLoader>> * (^)(void))getLoaders
+                             decodersProvider:(NSArray<id<RCTImageDataDecoder>> * (^)(void))getDecoders;
 
 /**
  * Loads the specified image at the highest available resolution.
@@ -140,7 +150,7 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 
 /**
  * Allows developers to set their own caching implementation for
- * decoded images as long as it conforms to the RCTImageCacheDelegate
+ * decoded images as long as it conforms to the RCTImageCache
  * protocol. This method should be called in bridgeDidInitializeModule.
  */
 - (void)setImageCache:(id<RCTImageCache>)cache;

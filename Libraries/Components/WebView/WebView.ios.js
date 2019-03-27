@@ -4,8 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow
  * @format
- * @noflow
  */
 
 'use strict';
@@ -17,7 +17,6 @@ const Linking = require('Linking');
 const PropTypes = require('prop-types');
 const React = require('React');
 const ReactNative = require('ReactNative');
-const ScrollView = require('ScrollView');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
 const UIManager = require('UIManager');
@@ -25,7 +24,7 @@ const View = require('View');
 const WebViewShared = require('WebViewShared');
 
 const deprecatedPropType = require('deprecatedPropType');
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 const keyMirror = require('fbjs/lib/keyMirror');
 const processDecelerationRate = require('processDecelerationRate');
 const requireNativeComponent = require('requireNativeComponent');
@@ -88,6 +87,9 @@ const defaultRenderError = (errorDomain, errorCode, errorDesc) => (
   </View>
 );
 
+type Props = any;
+type State = any;
+
 /**
  * `WebView` renders web content in a native view.
  *
@@ -110,7 +112,7 @@ const defaultRenderError = (errorDomain, errorCode, errorDesc) => (
  * You can use this component to navigate back and forth in the web view's
  * history and configure various properties for the web content.
  */
-class WebView extends React.Component {
+class WebView extends React.Component<Props, State> {
   static JSNavigationScheme = JSNavigationScheme;
   static NavigationType = NavigationType;
   static propTypes = {
@@ -285,6 +287,16 @@ class WebView extends React.Component {
       PropTypes.oneOf(DataDetectorTypes),
       PropTypes.arrayOf(PropTypes.oneOf(DataDetectorTypes)),
     ]),
+
+    /**
+     * Used on Android only to disable Hardware Acceleration if needed
+     * Hardware acceleration can not be enabled at view level but it can be
+     * disabled see:
+     * https://developer.android.com/guide/topics/graphics/hardware-accel
+     *
+     * @platform android
+     */
+    hardwareAccelerationEnabledExperimental: PropTypes.bool,
 
     /**
      * Boolean value to enable JavaScript in the `WebView`. Used on Android only
@@ -482,8 +494,8 @@ class WebView extends React.Component {
       let shouldStart = true;
       const {url} = event.nativeEvent;
       const origin = WebViewShared.extractOrigin(url);
-      const passesWhitelist = compiledWhitelist.some(x =>
-        new RegExp(x).test(origin),
+      const passesWhitelist = compiledWhitelist.some(
+        x => origin && new RegExp(x).test(origin),
       );
       shouldStart = shouldStart && passesWhitelist;
       if (!passesWhitelist) {
@@ -622,7 +634,7 @@ class WebView extends React.Component {
    * document.addEventListener('message', e => { document.title = e.data; });
    * ```
    */
-  postMessage = data => {
+  postMessage = (data: string) => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       this._getCommands().postMessage,
@@ -636,7 +648,7 @@ class WebView extends React.Component {
    * on pages with a Content Security Policy that disallows eval(). If you need that
    * functionality, look into postMessage/onMessage.
    */
-  injectJavaScript = data => {
+  injectJavaScript = (data: string) => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       this._getCommands().injectJavaScript,
@@ -695,7 +707,7 @@ class WebView extends React.Component {
     onMessage && onMessage(event);
   };
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: Props) {
     if (!(prevProps.useWebKit && this.props.useWebKit)) {
       return;
     }
@@ -720,16 +732,8 @@ class WebView extends React.Component {
   }
 }
 
-const RCTWebView = requireNativeComponent(
-  'RCTWebView',
-  WebView,
-  WebView.extraNativeComponentConfig,
-);
-const RCTWKWebView = requireNativeComponent(
-  'RCTWKWebView',
-  WebView,
-  WebView.extraNativeComponentConfig,
-);
+const RCTWebView = requireNativeComponent('RCTWebView');
+const RCTWKWebView = requireNativeComponent('RCTWKWebView');
 
 const styles = StyleSheet.create({
   container: {

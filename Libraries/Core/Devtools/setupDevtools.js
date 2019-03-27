@@ -10,16 +10,6 @@
 
 'use strict';
 
-type DevToolsPluginConnection = {
-  isAppActive: () => boolean,
-  host: string,
-  port: number,
-};
-
-type DevToolsPlugin = {
-  connectToDevTools: (connection: DevToolsPluginConnection) => void,
-};
-
 let register = function() {
   // noop
 };
@@ -27,9 +17,6 @@ let register = function() {
 if (__DEV__) {
   const AppState = require('AppState');
   const WebSocket = require('WebSocket');
-  /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an
-   * error found when Flow v0.54 was deployed. To see the error delete this
-   * comment and run Flow. */
   const reactDevTools = require('react-devtools-core');
   const getDevServer = require('getDevServer');
 

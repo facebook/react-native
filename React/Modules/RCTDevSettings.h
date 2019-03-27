@@ -72,11 +72,6 @@
 - (void)toggleElementInspector;
 
 /**
- * Toggle JSC's sampling profiler.
- */
-- (void)toggleJSCSamplingProfiler;
-
-/**
  * Enables starting of profiling sampler on launch
  */
 @property (nonatomic, assign) BOOL startSamplingProfilerOnLaunch;

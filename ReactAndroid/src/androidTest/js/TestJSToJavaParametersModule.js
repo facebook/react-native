@@ -9,10 +9,10 @@
 
 'use strict';
 
-var BatchedBridge = require('BatchedBridge');
-var Recording = require('NativeModules').Recording;
+const BatchedBridge = require('BatchedBridge');
+const Recording = require('NativeModules').Recording;
 
-var TestJSToJavaParametersModule = {
+const TestJSToJavaParametersModule = {
   returnBasicTypes: function() {
     Recording.receiveBasicTypes('foo', 3.14, true, null);
   },

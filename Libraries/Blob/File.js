@@ -11,7 +11,7 @@
 
 const Blob = require('Blob');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 import type {BlobOptions} from 'BlobTypes';
 

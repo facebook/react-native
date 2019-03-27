@@ -7,16 +7,10 @@
 
 package com.facebook.react.uimanager;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.WeakHashMap;
-
 import android.view.View;
 import android.view.ViewGroup;
-
+import java.util.List;
+import java.util.WeakHashMap;
 import javax.annotation.Nullable;
 
 /**

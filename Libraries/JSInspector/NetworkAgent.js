@@ -12,7 +12,6 @@
 
 const InspectorAgent = require('InspectorAgent');
 const JSInspector = require('JSInspector');
-const Map = require('Map');
 const XMLHttpRequest = require('XMLHttpRequest');
 
 import type EventSender from 'InspectorAgent';

@@ -12,7 +12,7 @@ Before running the app, make sure you ran:
 
 ### Running on iOS
 
-Mac OS and Xcode are required.
+Both macOS and Xcode are required.
 
 - Open `RNTester/RNTester.xcodeproj` in Xcode
 - Hit the Run button
@@ -57,6 +57,29 @@ Run the following commands from the react-native folder:
     ./scripts/packager.sh
 
 _Note: The native libs are still built using gradle. Full build with buck is coming soon(tm)._
+
+## Running Detox Tests on iOS
+
+Install Detox from [here](https://github.com/wix/Detox/blob/master/docs/Introduction.GettingStarted.md).
+
+To run the e2e tests locally, run the following commands from the react-native folder:
+
+    yarn build-ios-e2e
+    yarn test-ios-e2e
+
+These are the equivalent of running:
+
+    detox build -c ios.sim.release
+    detox test -c ios.sim.release --cleanup
+
+These build the app in Release mode, so the production code is bundled and included in the built app.
+
+When developing E2E tests, you may want to run in development mode, so that changes to the production code show up immediately. To do this, run:
+
+    detox build -c ios.sim.debug
+    detox test -c ios.sim.debug
+
+You will also need to have Metro Bundler running in another terminal. Note that if you've previously run the E2E tests in release mode, you may need to delete the `RNTester/build` folder before rerunning `detox build`.
 
 ## Built from source
 

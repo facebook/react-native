@@ -9,9 +9,9 @@
 
 'use strict';
 
-var Assert = require('NativeModules').Assert;
+const Assert = require('NativeModules').Assert;
 
-var Asserts = {
+const Asserts = {
   assertEquals: function(expected, actual, msg) {
     if (expected !== actual) {
       Assert.fail(

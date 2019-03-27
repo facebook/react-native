@@ -94,8 +94,6 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
 
   void removeAndDisposeAllChildren();
 
-  @Nullable ReactStylesDiffMap getNewProps();
-
   /**
    * This method will be called by {@link UIManagerModule} once per batch, before calculating
    * layout. Will be only called for nodes that are marked as updated with {@link #markUpdated()} or
@@ -149,6 +147,8 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   boolean shouldNotifyOnLayout();
 
   void calculateLayout();
+
+  void calculateLayout(float width, float height);
 
   boolean hasNewLayout();
 
@@ -349,11 +349,9 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
 
   void dispose();
 
-  /**
-   * @return an immutable {@link List<ReactShadowNode>} containing the children of this
-   * {@link ReactShadowNode}.
-   */
-  List<ReactShadowNode> getChildrenList();
+  void setMeasureSpecs(int widthMeasureSpec, int heightMeasureSpec);
 
-  void updateScreenLayout(ReactShadowNode prevNode);
+  Integer getWidthMeasureSpec();
+
+  Integer getHeightMeasureSpec();
 }

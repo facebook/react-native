@@ -7,18 +7,20 @@
 
 #include "Props.h"
 
-#include <fabric/core/propsConversions.h>
 #include <folly/dynamic.h>
+#include <react/core/propsConversions.h>
 
 namespace facebook {
 namespace react {
 
-Props::Props(const Props &sourceProps, const RawProps &rawProps):
-  nativeId(convertRawProp(rawProps, "nativeID", sourceProps.nativeId))
-  #ifdef ANDROID
-  ,rawProps(rawProps)
-  #endif
-  {};
+Props::Props(const Props &sourceProps, const RawProps &rawProps)
+    : nativeId(convertRawProp(rawProps, "nativeID", sourceProps.nativeId)),
+      revision(sourceProps.revision + 1)
+#ifdef ANDROID
+      ,
+      rawProps((folly::dynamic)rawProps)
+#endif
+          {};
 
 } // namespace react
 } // namespace facebook

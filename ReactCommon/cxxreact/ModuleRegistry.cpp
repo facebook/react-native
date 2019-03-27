@@ -90,13 +90,13 @@ folly::Optional<ModuleConfig> ModuleRegistry::getConfig(const std::string& name)
 
   if (it == modulesByName_.end()) {
     if (unknownModules_.find(name) != unknownModules_.end()) {
-      return nullptr;
+      return folly::none;
     }
     if (!moduleNotFoundCallback_ ||
         !moduleNotFoundCallback_(name) ||
         (it = modulesByName_.find(name)) == modulesByName_.end()) {
       unknownModules_.insert(name);
-      return nullptr;
+      return folly::none;
     }
   }
   size_t index = it->second;
@@ -143,7 +143,7 @@ folly::Optional<ModuleConfig> ModuleRegistry::getConfig(const std::string& name)
 
   if (config.size() == 2 && config[1].empty()) {
     // no constants or methods
-    return nullptr;
+    return folly::none;
   } else {
     return ModuleConfig{index, config};
   }

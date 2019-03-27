@@ -5,80 +5,85 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
+ * @flow
  */
 
 'use strict';
 
 const React = require('react');
-const createReactClass = require('create-react-class');
 const ReactNative = require('react-native');
 const RCTNativeAppEventEmitter = require('RCTNativeAppEventEmitter');
-const Subscribable = require('Subscribable');
 
 const {View} = ReactNative;
 
 const {TestModule} = ReactNative.NativeModules;
+import type EmitterSubscription from 'EmitterSubscription';
 
 const reactViewWidth = 101;
 const reactViewHeight = 102;
 const newReactViewWidth = 201;
 const newReactViewHeight = 202;
 
-const ReactContentSizeUpdateTest = createReactClass({
-  displayName: 'ReactContentSizeUpdateTest',
-  mixins: [Subscribable.Mixin],
-  _timeoutID: (null: ?TimeoutID),
+type Props = {||};
 
-  UNSAFE_componentWillMount: function() {
-    this.addListenerOn(
-      RCTNativeAppEventEmitter,
+type State = {|
+  height: number,
+  width: number,
+|};
+
+class ReactContentSizeUpdateTest extends React.Component<Props, State> {
+  _timeoutID: ?TimeoutID = null;
+  _subscription: ?EmitterSubscription = null;
+
+  state = {
+    height: reactViewHeight,
+    width: reactViewWidth,
+  };
+
+  UNSAFE_componentWillMount() {
+    this._subscription = RCTNativeAppEventEmitter.addListener(
       'rootViewDidChangeIntrinsicSize',
       this.rootViewDidChangeIntrinsicSize,
     );
-  },
+  }
 
-  getInitialState: function() {
-    return {
-      height: reactViewHeight,
-      width: reactViewWidth,
-    };
-  },
+  componentDidMount() {
+    this._timeoutID = setTimeout(() => {
+      this.updateViewSize();
+    }, 1000);
+  }
 
-  updateViewSize: function() {
+  componentWillUnmount() {
+    if (this._timeoutID != null) {
+      clearTimeout(this._timeoutID);
+    }
+
+    if (this._subscription != null) {
+      this._subscription.remove();
+    }
+  }
+
+  updateViewSize() {
     this.setState({
       height: newReactViewHeight,
       width: newReactViewWidth,
     });
-  },
+  }
 
-  componentDidMount: function() {
-    this._timeoutID = setTimeout(() => {
-      this.updateViewSize();
-    }, 1000);
-  },
-
-  componentWillUnmount: function() {
-    if (this._timeoutID != null) {
-      clearTimeout(this._timeoutID);
-    }
-  },
-
-  rootViewDidChangeIntrinsicSize: function(intrinsicSize) {
+  rootViewDidChangeIntrinsicSize = (intrinsicSize: State) => {
     if (
       intrinsicSize.height === newReactViewHeight &&
       intrinsicSize.width === newReactViewWidth
     ) {
       TestModule.markTestPassed(true);
     }
-  },
+  };
 
   render() {
     return (
       <View style={{height: this.state.height, width: this.state.width}} />
     );
-  },
-});
-
-ReactContentSizeUpdateTest.displayName = 'ReactContentSizeUpdateTest';
+  }
+}
 
 module.exports = ReactContentSizeUpdateTest;

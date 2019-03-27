@@ -7,8 +7,8 @@ IMAGE_EVENT_FILES = [
 rn_android_library(
     name = "imageevents",
     srcs = IMAGE_EVENT_FILES,
+    is_androidx = True,
     provided_deps = [
-        react_native_dep("third-party/android/support-annotations:android-support-annotations"),
         react_native_dep("third-party/android/support/v4:lib-support-v4"),
     ],
     required_for_source_only_abi = True,
@@ -26,8 +26,8 @@ rn_android_library(
         ["*.java"],
         exclude = IMAGE_EVENT_FILES,
     ),
+    is_androidx = True,
     provided_deps = [
-        react_native_dep("third-party/android/support-annotations:android-support-annotations"),
         react_native_dep("third-party/android/support/v4:lib-support-v4"),
     ],
     visibility = [

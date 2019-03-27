@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import <React/RCTImageLoader.h>
-#import <fabric/imagemanager/primitives.h>
+#import <react/imagemanager/primitives.h>
 
 using namespace facebook::react;
 

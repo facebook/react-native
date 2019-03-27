@@ -14,7 +14,7 @@
 @class RCTBridge;
 @class RCTSurface;
 
-typedef UIView *(^RCTSurfaceHostingViewActivityIndicatorViewFactory)();
+typedef UIView *_Nullable(^RCTSurfaceHostingViewActivityIndicatorViewFactory)(void);
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -8,16 +8,18 @@
 #include <memory>
 
 #include <assert.h>
-#include <fabric/attributedstring/TextAttributes.h>
-#include <fabric/attributedstring/conversions.h>
-#include <fabric/attributedstring/primitives.h>
-#include <fabric/graphics/conversions.h>
 #include <gtest/gtest.h>
+#include <react/attributedstring/TextAttributes.h>
+#include <react/attributedstring/conversions.h>
+#include <react/attributedstring/primitives.h>
+#include <react/graphics/conversions.h>
 
 namespace facebook {
 namespace react {
 
-TEST(AttributedStringTest, testSomething) {
+#ifdef ANDROID
+
+TEST(AttributedStringTest, testToDynamic) {
   auto attString = new AttributedString();
   auto fragment = new AttributedString::Fragment();
   fragment->string = "test";
@@ -41,6 +43,8 @@ TEST(AttributedStringTest, testSomething) {
   assert(textAttribute["fontStyle"] == toString(*text->fontStyle));
   assert(textAttribute["fontWeight"] == toString(*text->fontWeight));
 }
+
+#endif
 
 } // namespace react
 } // namespace facebook

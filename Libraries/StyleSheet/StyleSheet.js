@@ -25,9 +25,6 @@ import type {
   ____TextStyleProp_Internal,
   ____ImageStyle_Internal,
   ____ImageStyleProp_Internal,
-  ____LayoutStyle_Internal,
-  ____ShadowStyle_Internal,
-  ____TransformStyle_Internal,
 } from 'StyleSheetTypes';
 
 /**
@@ -154,21 +151,12 @@ export type ImageStyle = ____ImageStyle_Internal;
  */
 export type DangerouslyImpreciseStyle = ____DangerouslyImpreciseStyle_Internal;
 
-/**
- * These types are simlilar to the style types above. They are objects of the
- * possible style keys in that group. For example, ShadowStyle contains
- * keys like `shadowColor` and `shadowRadius`.
- */
-export type LayoutStyle = ____LayoutStyle_Internal;
-export type ShadowStyle = ____ShadowStyle_Internal;
-export type TransformStyle = ____TransformStyle_Internal;
-
 let hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
 if (hairlineWidth === 0) {
   hairlineWidth = 1 / PixelRatio.get();
 }
 
-const absoluteFill: LayoutStyle = {
+const absoluteFill = {
   position: 'absolute',
   left: 0,
   right: 0,
@@ -339,7 +327,7 @@ module.exports = {
   ) {
     let value;
 
-    if (typeof ReactNativeStyleAttributes[property] === 'string') {
+    if (ReactNativeStyleAttributes[property] === true) {
       value = {};
     } else if (typeof ReactNativeStyleAttributes[property] === 'object') {
       value = ReactNativeStyleAttributes[property];

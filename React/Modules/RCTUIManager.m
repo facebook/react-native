@@ -50,6 +50,14 @@ static void RCTTraverseViewNodes(id<RCTComponent> view, void (^block)(id<RCTComp
   }
 }
 
+static NSString *RCTNativeIDRegistryKey(NSString *nativeID, NSNumber *rootTag)
+{
+  if (!nativeID || !rootTag) {
+    return @"";
+  }
+  return [NSString stringWithFormat:@"%@-%@", rootTag, nativeID];
+}
+
 NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification = @"RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotification";
 
 @implementation RCTUIManager
@@ -63,12 +71,13 @@ NSString *const RCTUIManagerWillUpdateViewsDueToContentSizeMultiplierChangeNotif
 
   NSMutableDictionary<NSNumber *, RCTShadowView *> *_shadowViewRegistry; // RCT thread only
   NSMutableDictionary<NSNumber *, UIView *> *_viewRegistry; // Main thread only
+  NSMapTable<NSString *, UIView *> *_nativeIDRegistry;
 
   NSMapTable<RCTShadowView *, NSArray<NSString *> *> *_shadowViewsWithUpdatedProps; // UIManager queue only.
   NSHashTable<RCTShadowView *> *_shadowViewsWithUpdatedChildren; // UIManager queue only.
 
   // Keyed by viewName
-  NSDictionary *_componentDataByName;
+  NSMutableDictionary *_componentDataByName;
 }
 
 @synthesize bridge = _bridge;
@@ -106,6 +115,7 @@ RCT_EXPORT_MODULE()
     self->_rootViewTags = nil;
     self->_shadowViewRegistry = nil;
     self->_viewRegistry = nil;
+    self->_nativeIDRegistry = nil;
     self->_bridge = nil;
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -131,13 +141,22 @@ RCT_EXPORT_MODULE()
   return _viewRegistry;
 }
 
+- (NSMapTable *)nativeIDRegistry
+{
+  if (!_nativeIDRegistry) {
+    _nativeIDRegistry = [NSMapTable strongToWeakObjectsMapTable];
+  }
+  return _nativeIDRegistry;
+}
+
 - (void)setBridge:(RCTBridge *)bridge
 {
-  RCTAssert(_bridge == nil, @"Should not re-use same UIIManager instance");
+  RCTAssert(_bridge == nil, @"Should not re-use same UIManager instance");
   _bridge = bridge;
 
   _shadowViewRegistry = [NSMutableDictionary new];
   _viewRegistry = [NSMutableDictionary new];
+  _nativeIDRegistry = [NSMapTable strongToWeakObjectsMapTable];
 
   _shadowViewsWithUpdatedProps = [NSMapTable weakToStrongObjectsMapTable];
   _shadowViewsWithUpdatedChildren = [NSHashTable weakObjectsHashTable];
@@ -148,17 +167,15 @@ RCT_EXPORT_MODULE()
 
   _observerCoordinator = [RCTUIManagerObserverCoordinator new];
 
-  // Get view managers from bridge
-  NSMutableDictionary *componentDataByName = [NSMutableDictionary new];
+  // Get view managers from bridge=
+  _componentDataByName = [NSMutableDictionary new];
   for (Class moduleClass in _bridge.moduleClasses) {
     if ([moduleClass isSubclassOfClass:[RCTViewManager class]]) {
       RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:moduleClass
                                                                                 bridge:_bridge];
-      componentDataByName[componentData.name] = componentData;
+      _componentDataByName[componentData.name] = componentData;
     }
   }
-
-  _componentDataByName = [componentDataByName copy];
 
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(didReceiveNewContentSizeMultiplier)
@@ -368,31 +385,30 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
   } forTag:view.reactTag];
 }
 
-/**
- * TODO(yuwang): implement the nativeID functionality in a more efficient way
- *               instead of searching the whole view tree
- */
 - (UIView *)viewForNativeID:(NSString *)nativeID withRootTag:(NSNumber *)rootTag
 {
-  RCTAssertMainQueue();
-  UIView *view = [self viewForReactTag:rootTag];
-  return [self _lookupViewForNativeID:nativeID inView:view];
+  if (!nativeID || !rootTag) {
+    return nil;
+  }
+  UIView *view;
+  @synchronized(self) {
+    view = [_nativeIDRegistry objectForKey:RCTNativeIDRegistryKey(nativeID, rootTag)];
+  }
+  return view;
 }
 
-- (UIView *)_lookupViewForNativeID:(NSString *)nativeID inView:(UIView *)view
+- (void)setNativeID:(NSString *)nativeID forView:(UIView *)view
 {
-  RCTAssertMainQueue();
-  if (view != nil && [nativeID isEqualToString:view.nativeID]) {
-    return view;
+  if (!nativeID || !view) {
+    return;
   }
-
-  for (UIView *subview in view.subviews) {
-    UIView *targetView = [self _lookupViewForNativeID:nativeID inView:subview];
-    if (targetView != nil) {
-      return targetView;
+  __weak RCTUIManager *weakSelf = self;
+  RCTExecuteOnUIManagerQueue(^{
+    NSNumber *rootTag = [weakSelf shadowViewForReactTag:view.reactTag].rootView.reactTag;
+    @synchronized(weakSelf) {
+      [weakSelf.nativeIDRegistry setObject:view forKey:RCTNativeIDRegistryKey(nativeID, rootTag)];
     }
-  }
-  return nil;
+  });
 }
 
 - (void)setSize:(CGSize)size forView:(UIView *)view
@@ -490,6 +506,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
     UIUserInterfaceLayoutDirection layoutDirection;
     BOOL isNew;
     BOOL parentIsNew;
+    RCTDisplayType displayType;
   } RCTFrameData;
 
   // Construct arrays then hand off to main thread
@@ -507,6 +524,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
         layoutMetrics.layoutDirection,
         shadowView.isNewView,
         shadowView.superview.isNewView,
+        layoutMetrics.displayType
       };
     }
   }
@@ -568,6 +586,7 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
       RCTLayoutAnimation *updatingLayoutAnimation = isNew ? nil : layoutAnimationGroup.updatingLayoutAnimation;
       BOOL shouldAnimateCreation = isNew && !frameData.parentIsNew;
       RCTLayoutAnimation *creatingLayoutAnimation = shouldAnimateCreation ? layoutAnimationGroup.creatingLayoutAnimation : nil;
+      BOOL isHidden = frameData.displayType == RCTDisplayTypeNone;
 
       void (^completion)(BOOL) = ^(BOOL finished) {
         completionsCalled++;
@@ -582,6 +601,10 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
 
       if (view.reactLayoutDirection != layoutDirection) {
         view.reactLayoutDirection = layoutDirection;
+      }
+
+      if (view.isHidden != isHidden) {
+        view.hidden = isHidden;
       }
 
       if (creatingLayoutAnimation) {
@@ -1174,7 +1197,7 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
     [tags addObject:shadowView.reactTag];
   }
 
-  [self addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+  [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     for (NSNumber *tag in tags) {
       UIView<RCTComponent> *view = viewRegistry[tag];
       [view didUpdateReactSubviews];
@@ -1199,7 +1222,7 @@ RCT_EXPORT_METHOD(dispatchViewManagerCommand:(nonnull NSNumber *)reactTag
     [tags setObject:props forKey:shadowView.reactTag];
   }
 
-  [self addUIBlock:^(RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
+  [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
     for (NSNumber *tag in tags) {
       UIView<RCTComponent> *view = viewRegistry[tag];
       [view didSetProps:[tags objectForKey:tag]];
@@ -1344,126 +1367,6 @@ RCT_EXPORT_METHOD(measureLayoutRelativeToParent:(nonnull NSNumber *)reactTag
 }
 
 /**
- * Returns an array of computed offset layouts in a dictionary form. The layouts are of any React subviews
- * that are immediate descendants to the parent view found within a specified rect. The dictionary result
- * contains left, top, width, height and an index. The index specifies the position among the other subviews.
- * Only layouts for views that are within the rect passed in are returned. Invokes the error callback if the
- * passed in parent view does not exist. Invokes the supplied callback with the array of computed layouts.
- */
-RCT_EXPORT_METHOD(measureViewsInRect:(CGRect)rect
-                  parentView:(nonnull NSNumber *)reactTag
-                  errorCallback:(__unused RCTResponseSenderBlock)errorCallback
-                  callback:(RCTResponseSenderBlock)callback)
-{
-  RCTShadowView *shadowView = _shadowViewRegistry[reactTag];
-  if (!shadowView) {
-    RCTLogError(@"Attempting to measure view that does not exist (tag #%@)", reactTag);
-    return;
-  }
-  NSArray<RCTShadowView *> *childShadowViews = [shadowView reactSubviews];
-  NSMutableArray<NSDictionary *> *results =
-    [[NSMutableArray alloc] initWithCapacity:childShadowViews.count];
-
-  [childShadowViews enumerateObjectsUsingBlock:
-   ^(RCTShadowView *childShadowView, NSUInteger idx, __unused BOOL *stop) {
-    CGRect childLayout = [childShadowView measureLayoutRelativeToAncestor:shadowView];
-    if (CGRectIsNull(childLayout)) {
-      RCTLogError(@"View %@ (tag #%@) is not a descendant of %@ (tag #%@)",
-                  childShadowView, childShadowView.reactTag, shadowView, shadowView.reactTag);
-      return;
-    }
-
-    CGFloat leftOffset = childLayout.origin.x;
-    CGFloat topOffset = childLayout.origin.y;
-    CGFloat width = childLayout.size.width;
-    CGFloat height = childLayout.size.height;
-
-    if (leftOffset <= rect.origin.x + rect.size.width &&
-        leftOffset + width >= rect.origin.x &&
-        topOffset <= rect.origin.y + rect.size.height &&
-        topOffset + height >= rect.origin.y) {
-
-      // This view is within the layout rect
-      NSDictionary *result = @{@"index": @(idx),
-                               @"left": @(leftOffset),
-                               @"top": @(topOffset),
-                               @"width": @(width),
-                               @"height": @(height)};
-
-      [results addObject:result];
-    }
-  }];
-  callback(@[results]);
-}
-
-RCT_EXPORT_METHOD(takeSnapshot:(id /* NSString or NSNumber */)target
-                  withOptions:(NSDictionary *)options
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
-{
-  [self addUIBlock:^(__unused RCTUIManager *uiManager, NSDictionary<NSNumber *, UIView *> *viewRegistry) {
-
-    // Get view
-    UIView *view;
-    if (target == nil || [target isEqual:@"window"]) {
-      view = RCTKeyWindow();
-    } else if ([target isKindOfClass:[NSNumber class]]) {
-      view = viewRegistry[target];
-      if (!view) {
-        RCTLogError(@"No view found with reactTag: %@", target);
-        return;
-      }
-    }
-
-    // Get options
-    CGSize size = [RCTConvert CGSize:options];
-    NSString *format = [RCTConvert NSString:options[@"format"] ?: @"png"];
-
-    // Capture image
-    if (size.width < 0.1 || size.height < 0.1) {
-      size = view.bounds.size;
-    }
-    UIGraphicsBeginImageContextWithOptions(size, NO, 0);
-    BOOL success = [view drawViewHierarchyInRect:(CGRect){CGPointZero, size} afterScreenUpdates:YES];
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-
-    if (!success || !image) {
-      reject(RCTErrorUnspecified, @"Failed to capture view snapshot.", nil);
-      return;
-    }
-
-    // Convert image to data (on a background thread)
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-
-      NSData *data;
-      if ([format isEqualToString:@"png"]) {
-        data = UIImagePNGRepresentation(image);
-      } else if ([format isEqualToString:@"jpeg"]) {
-        CGFloat quality = [RCTConvert CGFloat:options[@"quality"] ?: @1];
-        data = UIImageJPEGRepresentation(image, quality);
-      } else {
-        RCTLogError(@"Unsupported image format: %@", format);
-        return;
-      }
-
-      // Save to a temp file
-      NSError *error = nil;
-      NSString *tempFilePath = RCTTempFilePath(format, &error);
-      if (tempFilePath) {
-        if ([data writeToFile:tempFilePath options:(NSDataWritingOptions)0 error:&error]) {
-          resolve(tempFilePath);
-          return;
-        }
-      }
-
-      // If we reached here, something went wrong
-      reject(RCTErrorUnspecified, error.localizedDescription, error);
-    });
-  }];
-}
-
-/**
  * JS sets what *it* considers to be the responder. Later, scroll views can use
  * this in order to determine if scrolling is appropriate.
  */
@@ -1485,67 +1388,125 @@ RCT_EXPORT_METHOD(clearJSResponder)
   }];
 }
 
+static NSMutableDictionary<NSString *, id> *moduleConstantsForComponent(
+    NSMutableDictionary<NSString *, NSDictionary *> *directEvents,
+    NSMutableDictionary<NSString *, NSDictionary *> *bubblingEvents,
+    RCTComponentData *componentData) {
+  NSMutableDictionary<NSString *, id> *moduleConstants = [NSMutableDictionary new];
+
+  // Register which event-types this view dispatches.
+  // React needs this for the event plugin.
+  NSMutableDictionary<NSString *, NSDictionary *> *bubblingEventTypes = [NSMutableDictionary new];
+  NSMutableDictionary<NSString *, NSDictionary *> *directEventTypes = [NSMutableDictionary new];
+
+  // Add manager class
+  moduleConstants[@"Manager"] = RCTBridgeModuleNameForClass(componentData.managerClass);
+
+  // Add native props
+  NSDictionary<NSString *, id> *viewConfig = [componentData viewConfig];
+  moduleConstants[@"NativeProps"] = viewConfig[@"propTypes"];
+  moduleConstants[@"baseModuleName"] = viewConfig[@"baseModuleName"];
+  moduleConstants[@"bubblingEventTypes"] = bubblingEventTypes;
+  moduleConstants[@"directEventTypes"] = directEventTypes;
+
+  // Add direct events
+  for (NSString *eventName in viewConfig[@"directEvents"]) {
+    if (!directEvents[eventName]) {
+      directEvents[eventName] = @{
+                                  @"registrationName": [eventName stringByReplacingCharactersInRange:(NSRange){0, 3} withString:@"on"],
+                                  };
+    }
+    directEventTypes[eventName] = directEvents[eventName];
+    if (RCT_DEBUG && bubblingEvents[eventName]) {
+      RCTLogError(@"Component '%@' re-registered bubbling event '%@' as a "
+                  "direct event", componentData.name, eventName);
+    }
+  }
+
+  // Add bubbling events
+  for (NSString *eventName in viewConfig[@"bubblingEvents"]) {
+    if (!bubblingEvents[eventName]) {
+      NSString *bubbleName = [eventName stringByReplacingCharactersInRange:(NSRange){0, 3} withString:@"on"];
+      bubblingEvents[eventName] = @{
+                                    @"phasedRegistrationNames": @{
+                                        @"bubbled": bubbleName,
+                                        @"captured": [bubbleName stringByAppendingString:@"Capture"],
+                                        }
+                                    };
+    }
+    bubblingEventTypes[eventName] = bubblingEvents[eventName];
+    if (RCT_DEBUG && directEvents[eventName]) {
+      RCTLogError(@"Component '%@' re-registered direct event '%@' as a "
+                  "bubbling event", componentData.name, eventName);
+    }
+  }
+
+  return moduleConstants;
+}
+
 - (NSDictionary<NSString *, id> *)constantsToExport
+{
+  return [self getConstants];
+}
+
+- (NSDictionary<NSString *, id> *)getConstants
 {
   NSMutableDictionary<NSString *, NSDictionary *> *constants = [NSMutableDictionary new];
   NSMutableDictionary<NSString *, NSDictionary *> *directEvents = [NSMutableDictionary new];
   NSMutableDictionary<NSString *, NSDictionary *> *bubblingEvents = [NSMutableDictionary new];
 
   [_componentDataByName enumerateKeysAndObjectsUsingBlock:^(NSString *name, RCTComponentData *componentData, __unused BOOL *stop) {
-     NSMutableDictionary<NSString *, id> *moduleConstants = [NSMutableDictionary new];
-
-     // Register which event-types this view dispatches.
-     // React needs this for the event plugin.
-     NSMutableDictionary<NSString *, NSDictionary *> *bubblingEventTypes = [NSMutableDictionary new];
-     NSMutableDictionary<NSString *, NSDictionary *> *directEventTypes = [NSMutableDictionary new];
-
-     // Add manager class
-     moduleConstants[@"Manager"] = RCTBridgeModuleNameForClass(componentData.managerClass);
-
-     // Add native props
-     NSDictionary<NSString *, id> *viewConfig = [componentData viewConfig];
-     moduleConstants[@"NativeProps"] = viewConfig[@"propTypes"];
-     moduleConstants[@"baseModuleName"] = viewConfig[@"baseModuleName"];
-     moduleConstants[@"bubblingEventTypes"] = bubblingEventTypes;
-     moduleConstants[@"directEventTypes"] = directEventTypes;
-
-     // Add direct events
-     for (NSString *eventName in viewConfig[@"directEvents"]) {
-       if (!directEvents[eventName]) {
-         directEvents[eventName] = @{
-           @"registrationName": [eventName stringByReplacingCharactersInRange:(NSRange){0, 3} withString:@"on"],
-         };
-       }
-       directEventTypes[eventName] = directEvents[eventName];
-       if (RCT_DEBUG && bubblingEvents[eventName]) {
-         RCTLogError(@"Component '%@' re-registered bubbling event '%@' as a "
-                     "direct event", componentData.name, eventName);
-       }
-     }
-
-     // Add bubbling events
-     for (NSString *eventName in viewConfig[@"bubblingEvents"]) {
-       if (!bubblingEvents[eventName]) {
-         NSString *bubbleName = [eventName stringByReplacingCharactersInRange:(NSRange){0, 3} withString:@"on"];
-         bubblingEvents[eventName] = @{
-           @"phasedRegistrationNames": @{
-             @"bubbled": bubbleName,
-             @"captured": [bubbleName stringByAppendingString:@"Capture"],
-           }
-         };
-       }
-       bubblingEventTypes[eventName] = bubblingEvents[eventName];
-       if (RCT_DEBUG && directEvents[eventName]) {
-         RCTLogError(@"Component '%@' re-registered direct event '%@' as a "
-                     "bubbling event", componentData.name, eventName);
-       }
-     }
-
-     RCTAssert(!constants[name], @"UIManager already has constants for %@", componentData.name);
-     constants[name] = moduleConstants;
+    RCTAssert(!constants[name], @"UIManager already has constants for %@", componentData.name);
+    NSMutableDictionary<NSString *, id> *moduleConstants = moduleConstantsForComponent(directEvents, bubblingEvents, componentData);
+    constants[name] = moduleConstants;
   }];
 
   return constants;
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(lazilyLoadView:(NSString *)name)
+{
+  if (_componentDataByName[name]) {
+    return @{};
+  }
+
+  id<RCTBridgeDelegate> delegate = self.bridge.delegate;
+  if (![delegate respondsToSelector:@selector(bridge:didNotFindModule:)]) {
+    return @{};
+  }
+
+  NSString *moduleName = name;
+  BOOL result = [delegate bridge:self.bridge didNotFindModule:moduleName];
+  if (!result) {
+    moduleName = [name stringByAppendingString:@"Manager"];
+    result = [delegate bridge:self.bridge didNotFindModule:moduleName];
+  }
+  if (!result) {
+    return @{};
+  }
+
+  id module = [self.bridge moduleForName:moduleName lazilyLoadIfNecessary:RCTTurboModuleEnabled()];
+  if (module == nil) {
+    // There is all sorts of code in this codebase that drops prefixes.
+    //
+    // If we didn't find a module, it's possible because it's stored under a key
+    // which had RCT Prefixes stripped. Lets check one more time...
+    module = [self.bridge moduleForName:RCTDropReactPrefixes(moduleName) lazilyLoadIfNecessary:RCTTurboModuleEnabled()];
+  }
+
+  if (!module) {
+    return @{};
+  }
+
+  RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:[module class] bridge:self.bridge];
+  _componentDataByName[componentData.name] = componentData;
+  NSMutableDictionary *directEvents = [NSMutableDictionary new];
+  NSMutableDictionary *bubblingEvents = [NSMutableDictionary new];
+  NSMutableDictionary<NSString *, id> *moduleConstants = moduleConstantsForComponent(directEvents, bubblingEvents, componentData);
+  return
+  @{
+    @"viewConfig": moduleConstants,
+    };
 }
 
 RCT_EXPORT_METHOD(configureNextLayoutAnimation:(NSDictionary *)config

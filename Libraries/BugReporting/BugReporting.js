@@ -11,7 +11,6 @@
 'use strict';
 
 const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-const Map = require('Map');
 const infoLog = require('infoLog');
 
 import type EmitterSubscription from 'EmitterSubscription';

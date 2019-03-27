@@ -18,7 +18,7 @@ const TouchableNativeFeedback = require('TouchableNativeFeedback');
 const TouchableOpacity = require('TouchableOpacity');
 const View = require('View');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 import type {PressEvent} from 'CoreEventTypes';
 
@@ -42,6 +42,41 @@ type ButtonProps = $ReadOnly<{|
    * TV preferred focus (see documentation for the View component).
    */
   hasTVPreferredFocus?: ?boolean,
+
+  /**
+   * TV next focus down (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusDown?: ?number,
+
+  /**
+   * TV next focus forward (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusForward?: ?number,
+
+  /**
+   * TV next focus left (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusLeft?: ?number,
+
+  /**
+   * TV next focus right (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusRight?: ?number,
+
+  /**
+   * TV next focus up (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusUp?: ?number,
 
   /**
    * Text to display for blindness accessibility features
@@ -95,6 +130,11 @@ class Button extends React.Component<ButtonProps> {
       onPress,
       title,
       hasTVPreferredFocus,
+      nextFocusDown,
+      nextFocusForward,
+      nextFocusLeft,
+      nextFocusRight,
+      nextFocusUp,
       disabled,
       testID,
     } = this.props;
@@ -127,6 +167,11 @@ class Button extends React.Component<ButtonProps> {
         accessibilityRole="button"
         accessibilityStates={accessibilityStates}
         hasTVPreferredFocus={hasTVPreferredFocus}
+        nextFocusDown={nextFocusDown}
+        nextFocusForward={nextFocusForward}
+        nextFocusLeft={nextFocusLeft}
+        nextFocusRight={nextFocusRight}
+        nextFocusUp={nextFocusUp}
         testID={testID}
         disabled={disabled}
         onPress={onPress}>
@@ -150,21 +195,21 @@ const styles = StyleSheet.create({
       borderRadius: 2,
     },
   }),
-  text: Platform.select({
-    ios: {
-      // iOS blue from https://developer.apple.com/ios/human-interface-guidelines/visual-design/color/
-      color: '#007AFF',
-      textAlign: 'center',
-      padding: 8,
-      fontSize: 18,
-    },
-    android: {
-      color: 'white',
-      textAlign: 'center',
-      padding: 8,
-      fontWeight: '500',
-    },
-  }),
+  text: {
+    textAlign: 'center',
+    padding: 8,
+    ...Platform.select({
+      ios: {
+        // iOS blue from https://developer.apple.com/ios/human-interface-guidelines/visual-design/color/
+        color: '#007AFF',
+        fontSize: 18,
+      },
+      android: {
+        color: 'white',
+        fontWeight: '500',
+      },
+    }),
+  },
   buttonDisabled: Platform.select({
     ios: {},
     android: {

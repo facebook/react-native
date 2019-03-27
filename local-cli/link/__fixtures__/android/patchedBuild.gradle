@@ -1,9 +1,0 @@
-dependencies {
-    implementation project(':test')
-    implementation(project(':test2')) {
-      exclude(group: 'org.unwanted', module: 'test10')
-    }
-    implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "com.android.support:appcompat-v7:27.1.1"
-    implementation "com.facebook.react:react-native:+"
-}

@@ -10,9 +10,9 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {StyleSheet, Text, View} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {StyleSheet, Text, View} = ReactNative;
 
 class ExampleBox extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
   state = {
@@ -42,8 +42,8 @@ class ExampleBox extends React.Component<$FlowFixMeProps, $FlowFixMeState> {
           onTouchEndCapture={this.handleTouchCapture}
           onTouchStart={this.flushReactChanges}>
           {/* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
-            * comment suppresses an error when upgrading Flow's support for
-            * React. To see the error delete this comment and run Flow. */}
+           * comment suppresses an error when upgrading Flow's support for
+           * React. To see the error delete this comment and run Flow. */}
           <this.props.Component onLog={this.handleLog} />
         </View>
         <View style={styles.logBox}>
@@ -171,7 +171,7 @@ type ExampleClass = {
   description: string,
 };
 
-var exampleClasses: Array<ExampleClass> = [
+const exampleClasses: Array<ExampleClass> = [
   {
     Component: NoneExample,
     title: '`none`',
@@ -192,7 +192,7 @@ var exampleClasses: Array<ExampleClass> = [
   },
 ];
 
-var infoToExample = info => {
+const infoToExample = info => {
   return {
     title: info.title,
     description: info.description,
@@ -202,7 +202,7 @@ var infoToExample = info => {
   };
 };
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   text: {
     fontSize: 10,
     color: '#5577cc',
@@ -229,9 +229,6 @@ var styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: '#f0f0f0',
     backgroundColor: '#f9f9f9',
-  },
-  bottomSpacer: {
-    marginBottom: 100,
   },
 });
 

@@ -7,8 +7,10 @@
 
 #pragma once
 
-#include <fabric/core/ShadowNode.h>
-#include <fabric/core/Props.h>
+#include <react/core/Props.h>
+#include <react/core/ShadowNode.h>
+#include <react/core/State.h>
+#include <react/core/StateData.h>
 
 namespace facebook {
 namespace react {
@@ -24,8 +26,7 @@ using SharedComponentDescriptor = std::shared_ptr<ComponentDescriptor>;
  * `ShadowNode`s (such as creating, cloning, props and children managing).
  */
 class ComponentDescriptor {
-public:
-
+ public:
   virtual ~ComponentDescriptor() = default;
 
   /*
@@ -45,24 +46,21 @@ public:
    * Creates a new `ShadowNode` of a particular type.
    */
   virtual SharedShadowNode createShadowNode(
-    const ShadowNodeFragment &fragment
-  ) const = 0;
+      const ShadowNodeFragment &fragment) const = 0;
 
   /*
    * Clones a `ShadowNode` with optionally new `props` and/or `children`.
    */
   virtual UnsharedShadowNode cloneShadowNode(
-    const ShadowNode &sourceShadowNode,
-    const ShadowNodeFragment &fragment
-  ) const = 0;
+      const ShadowNode &sourceShadowNode,
+      const ShadowNodeFragment &fragment) const = 0;
 
   /*
    * Appends (by mutating) a given `childShadowNode` to `parentShadowNode`.
    */
   virtual void appendChild(
-    const SharedShadowNode &parentShadowNode,
-    const SharedShadowNode &childShadowNode
-  ) const = 0;
+      const SharedShadowNode &parentShadowNode,
+      const SharedShadowNode &childShadowNode) const = 0;
 
   /*
    * Creates a new `Props` of a particular type with all values copied from
@@ -71,18 +69,30 @@ public:
    * will be used.
    */
   virtual SharedProps cloneProps(
-    const SharedProps &props,
-    const RawProps &rawProps
-  ) const = 0;
+      const SharedProps &props,
+      const RawProps &rawProps) const = 0;
 
   /*
    * Creates a new `EventEmitter` object compatible with particular type of
    * shadow nodes.
    */
   virtual SharedEventEmitter createEventEmitter(
-    SharedEventTarget eventTarget,
-    const Tag &tag
-  ) const = 0;
+      SharedEventTarget eventTarget,
+      const Tag &tag) const = 0;
+
+  /*
+   * Create an initial State object that represents (and contains) an initial
+   * State's data which can be constructed based on initial Props.
+   */
+  virtual State::Shared createInitialState(const SharedProps &props) const = 0;
+
+  /*
+   * Creates a new State object that represents (and contains) a new version of
+   * State's data.
+   */
+  virtual State::Shared createState(
+      const State::Shared &previousState,
+      const StateData::Shared &data) const = 0;
 };
 
 } // namespace react

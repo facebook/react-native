@@ -10,41 +10,45 @@
 
 'use strict';
 
-var React = require('react');
-var createReactClass = require('create-react-class');
-var ReactNative = require('react-native');
-var {ProgressViewIOS, StyleSheet, View} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {ProgressViewIOS, StyleSheet, View} = ReactNative;
 
-var ProgressViewExample = createReactClass({
-  displayName: 'ProgressViewExample',
-  _rafId: (null: ?AnimationFrameID),
+type Props = {||};
+type State = {|
+  progress: number,
+|};
 
-  getInitialState() {
-    return {
-      progress: 0,
-    };
-  },
+class ProgressViewExample extends React.Component<Props, State> {
+  _rafId: ?AnimationFrameID = null;
+
+  state = {
+    progress: 0,
+  };
 
   componentDidMount() {
     this.updateProgress();
-  },
+  }
 
   componentWillUnmount() {
     if (this._rafId != null) {
       cancelAnimationFrame(this._rafId);
     }
-  },
+  }
 
-  updateProgress() {
-    var progress = this.state.progress + 0.01;
+  updateProgress = () => {
+    const progress = this.state.progress + 0.01;
     this.setState({progress});
     this._rafId = requestAnimationFrame(() => this.updateProgress());
-  },
+  };
 
-  getProgress(offset) {
-    var progress = this.state.progress + offset;
+  /* $FlowFixMe(>=0.85.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.85 was deployed. To see the error, delete this comment
+   * and run Flow. */
+  getProgress = offset => {
+    const progress = this.state.progress + offset;
     return Math.sin(progress % Math.PI) % 1;
-  },
+  };
 
   render() {
     return (
@@ -75,6 +79,16 @@ var ProgressViewExample = createReactClass({
         />
       </View>
     );
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    marginTop: -20,
+    backgroundColor: 'transparent',
+  },
+  progressView: {
+    marginTop: 20,
   },
 });
 
@@ -90,13 +104,3 @@ exports.examples = [
     },
   },
 ];
-
-var styles = StyleSheet.create({
-  container: {
-    marginTop: -20,
-    backgroundColor: 'transparent',
-  },
-  progressView: {
-    marginTop: 20,
-  },
-});

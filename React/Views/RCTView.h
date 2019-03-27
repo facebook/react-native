@@ -24,6 +24,7 @@
 @property (nonatomic, copy) RCTDirectEventBlock onAccessibilityAction;
 @property (nonatomic, copy) RCTDirectEventBlock onAccessibilityTap;
 @property (nonatomic, copy) RCTDirectEventBlock onMagicTap;
+@property (nonatomic, copy) RCTDirectEventBlock onAccessibilityEscape;
 
 /**
  * Accessibility properties

@@ -16,8 +16,7 @@ using namespace facebook::react;
   SharedEventEmitter _eventEmitter;
 }
 
-- (instancetype)initWithTag:(ReactTag)tag
-              eventEmitter:(SharedEventEmitter)eventEmitter
+- (instancetype)initWithTag:(ReactTag)tag eventEmitter:(SharedEventEmitter)eventEmitter
 {
   if (self = [super init]) {
     _tag = tag;

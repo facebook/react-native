@@ -1,21 +1,26 @@
 ---
-name: 💬 Question
-about: If you need help with your React Native app, the right place to go depends on the type of help that you need.
+name: "🤔 Questions and Help"
+about: You need help writing your React Native app.
+title: 'Question: '
+labels: 'Type: Question'
 
 ---
 
---------------^ Click "Preview" for a nicer view!
+We use GitHub Issues exclusively to track bugs in React Native. As it happens, support requests that are created as issues are likely to be closed. We want to make sure you are able to find the help you seek. Please take a look at the following resources.
 
-GitHub Issues in the `facebook/react-native` repository are used exclusively for tracking bugs in React Native. GitHub may not be the ideal place to ask questions about using React Native, but we have compiled a list of resources that should help.
 
-### Get help with your React Native app or ask code-level questions
+## Coding Questions
 
-Many members of the community use Stack Overflow to ask questions. Read through the [existing questions](http://stackoverflow.com/questions/tagged/react-native?sort=frequent) tagged with **react-native** or [ask your own](http://stackoverflow.com/questions/ask?tags=react-native)!
+### https://stackoverflow.com/questions/tagged/react-native
 
-### Talk about best practices or propose changes to React Native
+If you have a coding question related to React Native, it might be better suited for Stack Overflow. It's a great place to browse through frequent questions about using React Native, as well as ask for help with specific questions.
 
-For longer-form conversations about React Native, we’ve set up a [discussion forum at **discuss.reactjs.org**](https://discuss.reactjs.org/t/welcome-react-native-community-group/10239). This forum is a great place for discussion about best practices and application architecture as well as the future of React Native.
 
-### Chat with React and React Native community members
+## Talk to other React Native developers
 
-If you need an answer right away, check out the [Reactiflux Discord](https://discord.gg/0ZcbPKXt5bZjGY5n) community. There are usually a number of React Native experts there who can help out or point you to somewhere you might want to look.
+### https://www.reactiflux.com/
+
+Reactiflux is an active community of React and React Native developers. If you are looking for immediate assistance or have a general question about React Native, the #react-native channel is a good place to start.
+
+
+> For a full list of community resources, check out React Native's Community page at https://facebook.github.io/react-native/help.

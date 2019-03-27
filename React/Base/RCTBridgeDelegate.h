@@ -72,4 +72,9 @@
 - (void)loadSourceForBridge:(RCTBridge *)bridge
                   withBlock:(RCTSourceLoadBlock)loadCallback;
 
+/**
+ * Retrieve the list of lazy-native-modules names for the given bridge.
+ */
+- (NSDictionary<NSString *, Class> *)extraLazyModuleClassesForBridge:(RCTBridge *)bridge;
+
 @end

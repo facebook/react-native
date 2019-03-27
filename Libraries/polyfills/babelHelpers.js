@@ -44,6 +44,8 @@
  * @polyfill
  */
 
+/* eslint-disable no-func-assign, no-shadow, no-proto, no-void, no-undef-init */
+
 'use strict';
 
 var babelHelpers = (global.babelHelpers = {});

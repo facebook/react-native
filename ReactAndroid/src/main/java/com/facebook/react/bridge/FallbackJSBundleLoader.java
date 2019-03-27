@@ -50,10 +50,10 @@ public final class FallbackJSBundleLoader extends JSBundleLoader {
    * it is replaced by the next most preferred loader.
    */
   @Override
-  public String loadScript(CatalystInstanceImpl instance) {
+  public String loadScript(JSBundleLoaderDelegate delegate) {
     while (true) {
       try {
-        return getDelegateLoader().loadScript(instance);
+        return getDelegateLoader().loadScript(delegate);
       } catch (Exception e) {
         if (e.getMessage() == null || !e.getMessage().startsWith(RECOVERABLE)) {
           throw e;

@@ -14,6 +14,20 @@
 
 NSString *const RCTBaseTextShadowViewEmbeddedShadowViewAttributeName = @"RCTBaseTextShadowViewEmbeddedShadowViewAttributeName";
 
+static void RCTInlineViewYogaNodeDirtied(YGNodeRef node)
+{
+  // An inline view (a view nested inside of a text node) does not have a parent
+  // in the Yoga tree. Consequently, we have to manually propagate the inline
+  // view's dirty signal up through the text nodes. At some point, it'll reach
+  // the outermost text node which has a Yoga node and then Yoga will take over
+  // the dirty signal propagation.
+  RCTShadowView *inlineView = (__bridge RCTShadowView *)YGNodeGetContext(node);
+  RCTBaseTextShadowView *baseTextShadowView =
+    (RCTBaseTextShadowView *)inlineView.reactSuperview;
+  
+  [baseTextShadowView dirtyLayout];
+}
+
 @implementation RCTBaseTextShadowView
 {
   NSAttributedString *_Nullable _cachedAttributedText;
@@ -33,6 +47,30 @@ NSString *const RCTBaseTextShadowViewEmbeddedShadowViewAttributeName = @"RCTBase
 {
   [super setReactTag:reactTag];
   _textAttributes.tag = reactTag;
+}
+
+#pragma mark - Life Cycle
+
+- (void)insertReactSubview:(RCTShadowView *)subview atIndex:(NSInteger)index
+{
+  [super insertReactSubview:subview atIndex:index];
+  
+  [self dirtyLayout];
+  
+  if (![subview isKindOfClass:[RCTVirtualTextShadowView class]]) {
+    YGNodeSetDirtiedFunc(subview.yogaNode, RCTInlineViewYogaNodeDirtied);
+  }
+}
+
+- (void)removeReactSubview:(RCTShadowView *)subview
+{
+  if (![subview isKindOfClass:[RCTVirtualTextShadowView class]]) {
+    YGNodeSetDirtiedFunc(subview.yogaNode, NULL);
+  }
+  
+  [self dirtyLayout];
+  
+  [super removeReactSubview:subview];
 }
 
 #pragma mark - attributedString

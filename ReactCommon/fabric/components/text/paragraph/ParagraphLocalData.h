@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include <fabric/attributedstring/AttributedString.h>
-#include <fabric/core/LocalData.h>
-#include <fabric/textlayoutmanager/TextLayoutManager.h>
+#include <react/attributedstring/AttributedString.h>
+#include <react/core/LocalData.h>
+#include <react/textlayoutmanager/TextLayoutManager.h>
 
 namespace facebook {
 namespace react {
@@ -38,7 +38,9 @@ class ParagraphLocalData : public LocalData {
   SharedTextLayoutManager getTextLayoutManager() const;
   void setTextLayoutManager(SharedTextLayoutManager textLayoutManager);
 
+#ifdef ANDROID
   folly::dynamic getDynamic() const override;
+#endif
 
 #pragma mark - DebugStringConvertible
 

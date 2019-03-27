@@ -12,9 +12,6 @@
 
 /* eslint-env node */
 
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
 const WebSocket = require('ws');
 
 const fs = require('fs');
@@ -33,9 +30,8 @@ const server = new WebSocket.Server({port: 5555});
 server.on('connection', ws => {
   ws.on('message', message => {
     console.log('Received message:', message);
-    console.log('Cookie:', ws.upgradeReq.headers.cookie);
     if (respondWithBinary) {
-      message = new Buffer(message);
+      message = Buffer.from(message);
     }
     if (message === 'getImage') {
       message = fs.readFileSync(path.resolve(__dirname, 'flux@3x.png'));

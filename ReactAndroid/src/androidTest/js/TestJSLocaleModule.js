@@ -9,10 +9,10 @@
 
 'use strict';
 
-var BatchedBridge = require('BatchedBridge');
-var Recording = require('NativeModules').Recording;
+const BatchedBridge = require('BatchedBridge');
+const Recording = require('NativeModules').Recording;
 
-var TestJSLocaleModule = {
+const TestJSLocaleModule = {
   toUpper: function(s) {
     Recording.record(s.toUpperCase());
   },

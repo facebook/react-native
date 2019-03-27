@@ -15,6 +15,7 @@ import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.module.model.ReactModuleInfo;
+import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.systrace.SystraceMessage;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
@@ -68,7 +69,9 @@ public class ModuleHolder {
             nativeModule.canOverrideExistingModule(),
             true,
             true,
-            CxxModuleWrapper.class.isAssignableFrom(nativeModule.getClass()));
+            CxxModuleWrapper.class.isAssignableFrom(nativeModule.getClass()),
+            TurboModule.class.isAssignableFrom(nativeModule.getClass())
+          );
 
     mModule = nativeModule;
     PrinterHolder.getPrinter()
@@ -117,6 +120,10 @@ public class ModuleHolder {
 
   public boolean getHasConstants() {
     return mReactModuleInfo.hasConstants();
+  }
+
+  public boolean isTurboModule() {
+    return mReactModuleInfo.isTurboModule();
   }
 
   public boolean isCxxModule() {
@@ -192,7 +199,7 @@ public class ModuleHolder {
         doInitialize(module);
       }
     } finally {
-      ReactMarker.logMarker(CREATE_MODULE_END, mInstanceKey);
+      ReactMarker.logMarker(CREATE_MODULE_END, mName ,mInstanceKey);
       SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
     }
     return module;
@@ -222,7 +229,7 @@ public class ModuleHolder {
         }
       }
     } finally {
-      ReactMarker.logMarker(ReactMarkerConstants.INITIALIZE_MODULE_END, mInstanceKey);
+      ReactMarker.logMarker(ReactMarkerConstants.INITIALIZE_MODULE_END, mName, mInstanceKey);
       SystraceMessage.endSection(TRACE_TAG_REACT_JAVA_BRIDGE).flush();
     }
   }

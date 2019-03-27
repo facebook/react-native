@@ -11,6 +11,9 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.jni.HybridData;
 import com.facebook.proguard.annotations.DoNotStrip;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Implementation of a write-only array stored in native memory. Use
  * {@link Arguments#createArray()} if you need to stub out creating this class in a test.
@@ -35,11 +38,11 @@ public class WritableNativeArray extends ReadableNativeArray implements Writable
   @Override
   public native void pushInt(int value);
   @Override
-  public native void pushString(String value);
+  public native void pushString(@Nullable String value);
 
   // Note: this consumes the map so do not reuse it.
   @Override
-  public void pushArray(WritableArray array) {
+  public void pushArray(@Nullable WritableArray array) {
     Assertions.assertCondition(
         array == null || array instanceof WritableNativeArray, "Illegal type provided");
     pushNativeArray((WritableNativeArray) array);
@@ -47,7 +50,7 @@ public class WritableNativeArray extends ReadableNativeArray implements Writable
 
   // Note: this consumes the map so do not reuse it.
   @Override
-  public void pushMap(WritableMap map) {
+  public void pushMap(@Nullable WritableMap map) {
     Assertions.assertCondition(
         map == null || map instanceof WritableNativeMap, "Illegal type provided");
     pushNativeMap((WritableNativeMap) map);

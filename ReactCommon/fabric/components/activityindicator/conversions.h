@@ -7,16 +7,16 @@
 
 #pragma once
 
-#include <fabric/components/activityindicator/primitives.h>
 #include <folly/dynamic.h>
+#include <react/components/activityindicator/primitives.h>
 
 namespace facebook {
 namespace react {
 
-inline void fromDynamic(
-    const folly::dynamic &value,
+inline void fromRawValue(
+    const RawValue &value,
     ActivityIndicatorViewSize &result) {
-  auto string = value.asString();
+  auto string = (std::string)value;
   if (string == "large") {
     result = ActivityIndicatorViewSize::Large;
     return;

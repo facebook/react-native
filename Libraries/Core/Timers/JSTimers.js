@@ -12,7 +12,7 @@
 const Platform = require('Platform');
 const Systrace = require('Systrace');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 const {Timing} = require('NativeModules');
 const BatchedBridge = require('BatchedBridge');
 
@@ -21,9 +21,6 @@ import type {ExtendedError} from 'parseErrorStack';
 let _performanceNow = null;
 function performanceNow() {
   if (!_performanceNow) {
-    /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an
-     * error found when Flow v0.54 was deployed. To see the error delete this
-     * comment and run Flow. */
     _performanceNow = require('fbjs/lib/performanceNow');
   }
   return _performanceNow();
@@ -102,9 +99,6 @@ function _allocateCallback(func: Function, type: JSTimerType): number {
  * recurring (setInterval).
  */
 function _callTimer(timerID: number, frameTime: number, didTimeout: ?boolean) {
-  /* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an
-   * error found when Flow v0.54 was deployed. To see the error delete this
-   * comment and run Flow. */
   require('fbjs/lib/warning')(
     timerID <= GUID,
     'Tried to call timer with ID %s but no such timer exists.',
@@ -290,9 +284,6 @@ const JSTimers = {
    * @param {function} func Callback to be invoked before the end of the
    * current JavaScript execution loop.
    */
-  /* $FlowFixMe(>=0.79.1 site=react_native_fb) This comment suppresses an
-   * error found when Flow v0.79 was deployed. To see the error delete this
-   * comment and run Flow. */
   setImmediate: function(func: Function, ...args: any) {
     const id = _allocateCallback(
       () => func.apply(undefined, args),
@@ -305,9 +296,6 @@ const JSTimers = {
   /**
    * @param {function} func Callback to be invoked every frame.
    */
-  /* $FlowFixMe(>=0.79.1 site=react_native_fb) This comment suppresses an
-   * error found when Flow v0.79 was deployed. To see the error delete this
-   * comment and run Flow. */
   requestAnimationFrame: function(func: Function) {
     const id = _allocateCallback(func, 'requestAnimationFrame');
     Timing.createTimer(id, 1, Date.now(), /* recurring */ false);
@@ -319,9 +307,6 @@ const JSTimers = {
    * with time remaining in frame.
    * @param {?object} options
    */
-  /* $FlowFixMe(>=0.79.1 site=react_native_fb) This comment suppresses an
-   * error found when Flow v0.79 was deployed. To see the error delete this
-   * comment and run Flow. */
   requestIdleCallback: function(func: Function, options: ?Object) {
     if (requestIdleCallbacks.length === 0) {
       Timing.setSendIdleEvents(true);

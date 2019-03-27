@@ -9,9 +9,9 @@
 
 #include <memory>
 
-#include <fabric/components/view/ViewProps.h>
-#include <fabric/core/LayoutConstraints.h>
-#include <fabric/core/LayoutContext.h>
+#include <react/components/view/ViewProps.h>
+#include <react/core/LayoutConstraints.h>
+#include <react/core/LayoutContext.h>
 
 namespace facebook {
 namespace react {
@@ -23,6 +23,7 @@ using SharedRootProps = std::shared_ptr<const RootProps>;
 class RootProps final : public ViewProps {
  public:
   RootProps() = default;
+  RootProps(const RootProps &sourceProps, const RawProps &rawProps);
   RootProps(
       const RootProps &sourceProps,
       const LayoutConstraints &layoutConstraints,

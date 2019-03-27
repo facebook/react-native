@@ -75,6 +75,7 @@ public:
   void setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue);
   void* getJavaScriptContext();
   bool isInspectable();
+  bool isBatchActive();
 
   void handleMemoryPressure(int pressureLevel);
 

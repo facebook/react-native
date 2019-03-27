@@ -7,9 +7,9 @@
 
 #include "ParagraphProps.h"
 
-#include <fabric/attributedstring/conversions.h>
-#include <fabric/core/propsConversions.h>
-#include <fabric/debug/debugStringConvertibleUtils.h>
+#include <react/attributedstring/conversions.h>
+#include <react/core/propsConversions.h>
+#include <react/debug/debugStringConvertibleUtils.h>
 
 namespace facebook {
 namespace react {

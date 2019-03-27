@@ -7,8 +7,10 @@
 
 #pragma once
 
-#include <fabric/core/Props.h>
-#include <fabric/core/ShadowNode.h>
+#include <react/core/ConcreteState.h>
+#include <react/core/Props.h>
+#include <react/core/ShadowNode.h>
+#include <react/core/StateData.h>
 
 namespace facebook {
 namespace react {
@@ -20,14 +22,16 @@ namespace react {
  * with many handy features.
  */
 template <
-  const char *concreteComponentName,
-  typename PropsT,
-  typename EventEmitterT = EventEmitter
->
-class ConcreteShadowNode: public ShadowNode {
-  static_assert(std::is_base_of<Props, PropsT>::value, "PropsT must be a descendant of Props");
+    const char *concreteComponentName,
+    typename PropsT,
+    typename EventEmitterT = EventEmitter,
+    typename StateDataT = StateData>
+class ConcreteShadowNode : public ShadowNode {
+  static_assert(
+      std::is_base_of<Props, PropsT>::value,
+      "PropsT must be a descendant of Props");
 
-public:
+ public:
   using ShadowNode::ShadowNode;
 
   using ConcreteProps = PropsT;
@@ -35,6 +39,8 @@ public:
   using ConcreteEventEmitter = EventEmitterT;
   using SharedConcreteEventEmitter = std::shared_ptr<const EventEmitterT>;
   using SharedConcreteShadowNode = std::shared_ptr<const ConcreteShadowNode>;
+  using ConcreteState = ConcreteState<StateDataT>;
+  using ConcreteStateData = StateDataT;
 
   static ComponentName Name() {
     return ComponentName(concreteComponentName);
@@ -44,13 +50,23 @@ public:
     return ComponentHandle(concreteComponentName);
   }
 
-  static SharedConcreteProps Props(const RawProps &rawProps, const SharedProps &baseProps = nullptr) {
-    return std::make_shared<const PropsT>(baseProps ? *std::static_pointer_cast<const PropsT>(baseProps) : PropsT(), rawProps);
+  static SharedConcreteProps Props(
+      const RawProps &rawProps,
+      const SharedProps &baseProps = nullptr) {
+    return std::make_shared<const PropsT>(
+        baseProps ? *std::static_pointer_cast<const PropsT>(baseProps)
+                  : PropsT(),
+        rawProps);
   }
 
   static SharedConcreteProps defaultSharedProps() {
-    static const SharedConcreteProps defaultSharedProps = std::make_shared<const PropsT>();
+    static const SharedConcreteProps defaultSharedProps =
+        std::make_shared<const PropsT>();
     return defaultSharedProps;
+  }
+
+  static ConcreteStateData initialStateData(const SharedConcreteProps &props) {
+    return {};
   }
 
   ComponentName getComponentName() const override {
@@ -66,16 +82,26 @@ public:
     return std::static_pointer_cast<const PropsT>(props_);
   }
 
+  const typename ConcreteState::Shared getState() const {
+    return std::static_pointer_cast<const ConcreteState>(state_);
+  }
+
   /*
    * Returns subset of children that are inherited from `SpecificShadowNodeT`.
    */
-  template<typename SpecificShadowNodeT>
-  std::vector<SpecificShadowNodeT *> getChildrenSlice() const {
-    std::vector<SpecificShadowNodeT *> children;
+  template <typename SpecificShadowNodeT>
+  better::
+      small_vector<SpecificShadowNodeT *, kShadowNodeChildrenSmallVectorSize>
+      getChildrenSlice() const {
+    better::
+        small_vector<SpecificShadowNodeT *, kShadowNodeChildrenSmallVectorSize>
+            children;
     for (const auto &childShadowNode : getChildren()) {
-      auto specificChildShadowNode = dynamic_cast<const SpecificShadowNodeT *>(childShadowNode.get());
+      auto specificChildShadowNode =
+          dynamic_cast<const SpecificShadowNodeT *>(childShadowNode.get());
       if (specificChildShadowNode) {
-        children.push_back(const_cast<SpecificShadowNodeT *>(specificChildShadowNode));
+        children.push_back(
+            const_cast<SpecificShadowNodeT *>(specificChildShadowNode));
       }
     }
     return children;

@@ -5,6 +5,8 @@
 
 package com.facebook.react.uimanager.layoutanimation;
 
+import java.util.Locale;
+
 /**
  * Enum representing the different interpolators that can be used in layout animation configuration.
  */
@@ -16,7 +18,7 @@ package com.facebook.react.uimanager.layoutanimation;
   SPRING;
 
   public static InterpolatorType fromString(String name) {
-    switch (name.toLowerCase()) {
+    switch (name.toLowerCase(Locale.US)) {
       case "linear":
         return LINEAR;
       case "easein":

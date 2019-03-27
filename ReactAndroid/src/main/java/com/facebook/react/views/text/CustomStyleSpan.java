@@ -15,7 +15,7 @@ import android.graphics.Typeface;
 import android.text.TextPaint;
 import android.text.style.MetricAffectingSpan;
 
-public class CustomStyleSpan extends MetricAffectingSpan {
+public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
 
   /**
    * A {@link MetricAffectingSpan} that allows to change the style of the displayed font.

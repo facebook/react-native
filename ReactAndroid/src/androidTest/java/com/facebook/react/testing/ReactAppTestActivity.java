@@ -11,7 +11,7 @@ import static com.facebook.react.bridge.UiThreadUtil.runOnUiThread;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import androidx.fragment.app.FragmentActivity;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
@@ -53,7 +53,7 @@ public class ReactAppTestActivity extends FragmentActivity
   private static final String DEFAULT_BUNDLE_NAME = "AndroidTestBundle.js";
   private static final int ROOT_VIEW_ID = 8675309;
   // we need a bigger timeout for CI builds because they run on a slow emulator
-  private static final long IDLE_TIMEOUT_MS = 120000;
+  private static final long IDLE_TIMEOUT_MS = 240000;
   private final CountDownLatch mDestroyCountDownLatch = new CountDownLatch(1);
   private CountDownLatch mLayoutEvent = new CountDownLatch(1);
   private @Nullable ReactBridgeIdleSignaler mBridgeIdleSignaler;

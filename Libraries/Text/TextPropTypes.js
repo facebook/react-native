@@ -18,6 +18,8 @@ const TextStylePropTypes = require('TextStylePropTypes');
 
 const stylePropType = DeprecatedStyleSheetPropType(TextStylePropTypes);
 
+const DataDetectorTypes = ['phoneNumber', 'link', 'email', 'none', 'all'];
+
 module.exports = {
   /**
    * When `numberOfLines` is set, this prop defines how text will be
@@ -132,4 +134,10 @@ module.exports = {
    * See https://facebook.github.io/react-native/docs/text.html#disabled
    */
   disabled: PropTypes.bool,
+  /**
+   * Determines the types of data converted to clickable URLs in text.
+   *
+   * See https://facebook.github.io/react-native/docs/text.html#dataDetectorType
+   */
+  dataDetectorType: PropTypes.oneOf(DataDetectorTypes),
 };

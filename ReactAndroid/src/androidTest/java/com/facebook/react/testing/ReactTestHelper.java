@@ -15,7 +15,6 @@ import javax.annotation.Nullable;
 
 import android.app.Instrumentation;
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -34,8 +33,8 @@ import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.bridge.queue.ReactQueueConfigurationSpec;
 import com.facebook.react.bridge.CatalystInstanceImpl;
 import com.facebook.react.bridge.JSBundleLoader;
-import com.facebook.react.bridge.JSCJavaScriptExecutorFactory;
 import com.facebook.react.bridge.JavaScriptExecutor;
+import com.facebook.react.jscexecutor.JSCExecutorFactory;
 import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.uimanager.ViewManager;
 import com.android.internal.util.Predicate;
@@ -85,7 +84,7 @@ public class ReactTestHelper {
         }
         JavaScriptExecutor executor = null;
         try {
-          executor = new JSCJavaScriptExecutorFactory("ReactTestHelperApp", "ReactTestHelperDevice").create();
+          executor = new JSCExecutorFactory("ReactTestHelperApp", "ReactTestHelperDevice").create();
         } catch (Exception e) {
           throw new RuntimeException(e);
         }
@@ -120,12 +119,13 @@ public class ReactTestHelper {
   }
 
   public static ReactTestFactory getReactTestFactory() {
-    Instrumentation inst = InstrumentationRegistry.getInstrumentation();
-    if (!(inst instanceof ReactTestFactory)) {
+// TODO: re-enable after cleanup of android-x migration
+//    Instrumentation inst = InstrumentationRegistry.getInstrumentation();
+//    if (!(inst instanceof ReactTestFactory)) {
       return new DefaultReactTestFactory();
-    }
-
-    return (ReactTestFactory) inst;
+//    }
+//
+//    return (ReactTestFactory) inst;
   }
 
   public static ReactTestFactory.ReactInstanceEasyBuilder catalystInstanceBuilder(
@@ -151,13 +151,14 @@ public class ReactTestHelper {
           final CatalystInstance instance = builder.build();
           testCase.initializeWithInstance(instance);
           instance.runJSBundle();
-          InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
+// TODO: re-enable after cleanup of android-x migration
+//          InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
+//            @Override
+//            public void run() {
               ReactChoreographer.initialize();
               instance.initialize();
-            }
-          });
+//            }
+//          });
           testCase.waitForBridgeAndUIIdle();
           return instance;
         }

@@ -7,7 +7,7 @@
 
 #include "AttributedString.h"
 
-#include <fabric/debug/DebugStringConvertibleItem.h>
+#include <react/debug/DebugStringConvertibleItem.h>
 
 namespace facebook {
 namespace react {
@@ -18,12 +18,12 @@ using Fragments = AttributedString::Fragments;
 #pragma mark - Fragment
 
 bool Fragment::operator==(const Fragment &rhs) const {
-  return std::tie(string, textAttributes, shadowNode, parentShadowNode) ==
+  return std::tie(string, textAttributes, shadowView, parentShadowView) ==
       std::tie(
              rhs.string,
              rhs.textAttributes,
-             rhs.shadowNode,
-             rhs.parentShadowNode);
+             rhs.shadowView,
+             rhs.parentShadowView);
 }
 
 bool Fragment::operator!=(const Fragment &rhs) const {
@@ -34,11 +34,21 @@ bool Fragment::operator!=(const Fragment &rhs) const {
 
 void AttributedString::appendFragment(const Fragment &fragment) {
   ensureUnsealed();
+
+  if (fragment.string.empty()) {
+    return;
+  }
+
   fragments_.push_back(fragment);
 }
 
 void AttributedString::prependFragment(const Fragment &fragment) {
   ensureUnsealed();
+
+  if (fragment.string.empty()) {
+    return;
+  }
+
   fragments_.insert(fragments_.begin(), fragment);
 }
 
@@ -60,7 +70,7 @@ void AttributedString::prependAttributedString(
       attributedString.fragments_.end());
 }
 
-const std::vector<Fragment> &AttributedString::getFragments() const {
+const Fragments &AttributedString::getFragments() const {
   return fragments_;
 }
 
@@ -72,8 +82,12 @@ std::string AttributedString::getString() const {
   return string;
 }
 
+bool AttributedString::isEmpty() const {
+  return fragments_.empty();
+}
+
 bool AttributedString::operator==(const AttributedString &rhs) const {
-  return fragments_ != rhs.fragments_;
+  return fragments_ == rhs.fragments_;
 }
 
 bool AttributedString::operator!=(const AttributedString &rhs) const {
@@ -89,11 +103,6 @@ SharedDebugStringConvertibleList AttributedString::getDebugChildren() const {
   for (auto &&fragment : fragments_) {
     auto propsList =
         fragment.textAttributes.DebugStringConvertible::getDebugProps();
-
-    if (fragment.shadowNode) {
-      propsList.push_back(std::make_shared<DebugStringConvertibleItem>(
-          "shadowNode", fragment.shadowNode->getDebugDescription()));
-    }
 
     list.push_back(std::make_shared<DebugStringConvertibleItem>(
         "Fragment",

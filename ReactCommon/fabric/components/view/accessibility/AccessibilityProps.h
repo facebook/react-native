@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include <fabric/components/view/AccessibilityPrimitives.h>
-#include <fabric/core/Props.h>
-#include <fabric/core/ReactPrimitives.h>
-#include <fabric/debug/DebugStringConvertible.h>
+#include <react/components/view/AccessibilityPrimitives.h>
+#include <react/core/Props.h>
+#include <react/core/ReactPrimitives.h>
+#include <react/debug/DebugStringConvertible.h>
 
 namespace facebook {
 namespace react {
@@ -29,11 +29,20 @@ class AccessibilityProps : public virtual DebugStringConvertible {
 #pragma mark - Props
 
   const bool accessible{false};
-  const std::vector<std::string> accessibilityActions{};
-  const std::string accessibilityLabel{""};
   const AccessibilityTraits accessibilityTraits{AccessibilityTraits::None};
+  const std::string accessibilityLabel{""};
+  const std::string accessibilityHint{""};
+  const std::vector<std::string> accessibilityActions{};
   const bool accessibilityViewIsModal{false};
   const bool accessibilityElementsHidden{false};
+  const bool accessibilityIgnoresInvertColors{false};
+  const std::string testId{""};
+
+#pragma mark - DebugStringConvertible
+
+#if RN_DEBUG_STRING_CONVERTIBLE
+  SharedDebugStringConvertibleList getDebugProps() const override;
+#endif
 };
 
 } // namespace react

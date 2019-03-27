@@ -5,14 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 /* eslint-env jest */
 
 'use strict';
-
-declare var jest: any;
 
 const React = require('React');
 const View = require('View');

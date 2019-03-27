@@ -189,17 +189,17 @@ const buildStyleInterpolator = function(anims) {
           );
           didMatrix = true;
         } else {
-          var next = computeNextValLinearScalar(anim, value);
+          const next = computeNextValLinearScalar(anim, value);
           didChange = setNextValAndDetectChange(result, name, next, didChange);
         }
       } else if (anim.type === 'constant') {
-        var next = anim.value;
+        const next = anim.value;
         didChange = setNextValAndDetectChange(result, name, next, didChange);
       } else if (anim.type === 'step') {
-        var next = value >= anim.threshold ? anim.to : anim.from;
+        const next = value >= anim.threshold ? anim.to : anim.from;
         didChange = setNextValAndDetectChange(result, name, next, didChange);
       } else if (anim.type === 'identity') {
-        var next = value;
+        const next = value;
         didChange = setNextValAndDetectChange(result, name, next, didChange);
       }
     }

@@ -113,6 +113,27 @@ class IsIPhoneXExample extends React.Component<{}> {
   }
 }
 
+const styles = StyleSheet.create({
+  modal: {
+    flex: 1,
+  },
+  safeArea: {
+    flex: 1,
+    height: 1000,
+  },
+  safeAreaContent: {
+    flex: 1,
+    backgroundColor: '#ffaaaa',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+
+exports.displayName = (undefined: ?string);
+exports.framework = 'React';
+exports.title = '<SafeAreaView>';
+exports.description =
+  'SafeAreaView automatically applies paddings reflect the portion of the view that is not covered by other (special) ancestor views.';
 exports.examples = [
   {
     title: '<SafeAreaView> Example',
@@ -130,19 +151,3 @@ exports.examples = [
     render: () => <IsIPhoneXExample />,
   },
 ];
-
-var styles = StyleSheet.create({
-  modal: {
-    flex: 1,
-  },
-  safeArea: {
-    flex: 1,
-    height: 1000,
-  },
-  safeAreaContent: {
-    flex: 1,
-    backgroundColor: '#ffaaaa',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

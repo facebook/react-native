@@ -7,8 +7,8 @@
  * On Apple TV, this implements back navigation using the TV remote's menu button.
  * On iOS, this just implements a stub.
  *
- * @format
  * @flow
+ * @format
  */
 
 'use strict';
@@ -16,10 +16,7 @@
 const Platform = require('Platform');
 const TVEventHandler = require('TVEventHandler');
 
-type BackPressEventName = $Enum<{
-  backPress: string,
-  hardwareBackPress: string,
-}>;
+type BackPressEventName = 'backPress' | 'hardwareBackPress';
 
 function emptyFunction(): void {}
 
@@ -53,7 +50,19 @@ function emptyFunction(): void {}
  * });
  * ```
  */
-let BackHandler;
+type TBackHandler = {|
+  +exitApp: () => void,
+  +addEventListener: (
+    eventName: BackPressEventName,
+    handler: Function,
+  ) => {remove: () => void},
+  +removeEventListener: (
+    eventName: BackPressEventName,
+    handler: Function,
+  ) => void,
+|};
+
+let BackHandler: TBackHandler;
 
 if (Platform.isTV) {
   const _tvEventHandler = new TVEventHandler();

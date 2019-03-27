@@ -1,10 +1,15 @@
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+
 """Helpers for referring to React Native open source code.
 
 This lets us build React Native:
  - At Facebook by running buck from the root of the fb repo
  - Outside of Facebook by running buck in the root of the git repo
 """
-# @lint-ignore-every SKYLINT BUCKRESTRICTEDSYNTAX
+# @lint-ignore-every BUCKRESTRICTEDSYNTAX
 
 _DEBUG_PREPROCESSOR_FLAGS = []
 
@@ -21,8 +26,6 @@ IS_OSS_BUILD = True
 GLOG_DEP = "//ReactAndroid/build/third-party-ndk/glog:glog"
 
 INSPECTOR_FLAGS = []
-
-APPLE_JSC_INTERNAL_DEPS = []
 
 APPLE_JSC_DEPS = []
 
@@ -83,10 +86,14 @@ def react_native_tests_target(path):
 def react_native_integration_tests_target(path):
     return "//ReactAndroid/src/androidTest/" + path
 
-# Helper for referring to non-RN code from RN OSS code.
+# Helpers for referring to non-RN code from RN OSS code.
 # Example: react_native_dep('java/com/facebook/systrace:systrace')
 def react_native_dep(path):
     return "//ReactAndroid/src/main/" + path
+
+# Example: react_native_xplat_dep('java/com/facebook/systrace:systrace')
+def react_native_xplat_dep(path):
+    return "//ReactCommon/" + path
 
 # React property preprocessor
 def rn_android_library(name, deps = [], plugins = [], *args, **kwargs):
@@ -112,7 +119,30 @@ def rn_android_library(name, deps = [], plugins = [], *args, **kwargs):
 
         plugins = list(set(plugins + react_module_plugins))
 
-    native.android_library(name = name, deps = deps, plugins = plugins, *args, **kwargs)
+    is_androidx = kwargs.pop("is_androidx", False)
+    provided_deps = kwargs.pop("provided_deps", [])
+    appcompat = react_native_dep("third-party/android/support/v7/appcompat-orig:appcompat")
+    support_v4 = react_native_dep("third-party/android/support/v4:lib-support-v4")
+
+    if is_androidx and (appcompat in deps or appcompat in provided_deps):
+        # add androidx target to provided_deps
+        pass
+        # provided_deps.append(
+        #     react_native_dep(
+        #         ""
+        #     )
+        # )
+
+    if is_androidx and (support_v4 in deps or support_v4 in provided_deps):
+        # add androidx target to provided_deps
+        pass
+        # provided_deps.append(
+        #     react_native_dep(
+        #         ""
+        #     )
+        # )
+
+    native.android_library(name = name, deps = deps, plugins = plugins, provided_deps = provided_deps, *args, **kwargs)
 
 def rn_android_binary(*args, **kwargs):
     native.android_binary(*args, **kwargs)
@@ -138,8 +168,13 @@ def rn_prebuilt_native_library(*args, **kwargs):
 def rn_prebuilt_jar(*args, **kwargs):
     native.prebuilt_jar(*args, **kwargs)
 
+def rn_genrule(*args, **kwargs):
+    native.genrule(*args, **kwargs)
+
 def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
     vm_args = vm_args or []
+
+    is_androidx = kwargs.pop("is_androidx", False)
 
     extra_vm_args = [
         "-XX:+UseConcMarkSweepGC",  # required by -XX:+CMSClassUnloadingEnabled
@@ -172,6 +207,7 @@ def rn_robolectric_test(name, srcs, vm_args = None, *args, **kwargs):
     )
 
 def cxx_library(allow_jni_merging = None, **kwargs):
+    _ignore = allow_jni_merging
     args = {
         k: v
         for k, v in kwargs.items()
@@ -263,10 +299,10 @@ def _single_subdir_glob(dirpath, glob_pattern, exclude = None, prefix = None):
 def oss_cxx_library(**kwargs):
     cxx_library(**kwargs)
 
-def jni_instrumentation_test_lib(**kwargs):
+def jni_instrumentation_test_lib(**_kwargs):
     """A noop stub for OSS build."""
     pass
 
-def fb_xplat_cxx_test(**kwargs):
+def fb_xplat_cxx_test(**_kwargs):
     """A noop stub for OSS build."""
     pass

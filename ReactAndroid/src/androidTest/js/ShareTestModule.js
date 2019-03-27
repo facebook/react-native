@@ -9,11 +9,11 @@
 
 'use strict';
 
-var BatchedBridge = require('BatchedBridge');
-var React = require('React');
-var RecordingModule = require('NativeModules').ShareRecordingModule;
-var Share = require('Share');
-var View = require('View');
+const BatchedBridge = require('BatchedBridge');
+const React = require('React');
+const RecordingModule = require('NativeModules').ShareRecordingModule;
+const Share = require('Share');
+const View = require('View');
 
 class ShareTestApp extends React.Component {
   render() {
@@ -21,7 +21,7 @@ class ShareTestApp extends React.Component {
   }
 }
 
-var ShareTestModule = {
+const ShareTestModule = {
   ShareTestApp: ShareTestApp,
   showShareDialog: function(content, options) {
     Share.share(content, options).then(

@@ -7,15 +7,15 @@
 
 #pragma once
 
-#include <fabric/components/view/AccessibleShadowNode.h>
-#include <fabric/components/view/ViewEventEmitter.h>
-#include <fabric/components/view/ViewProps.h>
-#include <fabric/components/view/YogaLayoutableShadowNode.h>
-#include <fabric/core/ConcreteShadowNode.h>
-#include <fabric/core/LayoutableShadowNode.h>
-#include <fabric/core/ShadowNode.h>
-#include <fabric/core/ShadowNodeFragment.h>
-#include <fabric/debug/DebugStringConvertibleItem.h>
+#include <react/components/view/AccessibleShadowNode.h>
+#include <react/components/view/ViewEventEmitter.h>
+#include <react/components/view/ViewProps.h>
+#include <react/components/view/YogaLayoutableShadowNode.h>
+#include <react/core/ConcreteShadowNode.h>
+#include <react/core/LayoutableShadowNode.h>
+#include <react/core/ShadowNode.h>
+#include <react/core/ShadowNodeFragment.h>
+#include <react/debug/DebugStringConvertibleItem.h>
 
 namespace facebook {
 namespace react {
@@ -28,11 +28,13 @@ namespace react {
 template <
     const char *concreteComponentName,
     typename ViewPropsT = ViewProps,
-    typename ViewEventEmitterT = ViewEventEmitter>
+    typename ViewEventEmitterT = ViewEventEmitter,
+    typename... Ts>
 class ConcreteViewShadowNode : public ConcreteShadowNode<
                                    concreteComponentName,
                                    ViewPropsT,
-                                   ViewEventEmitterT>,
+                                   ViewEventEmitterT,
+                                   Ts...>,
                                public AccessibleShadowNode,
                                public YogaLayoutableShadowNode {
   static_assert(
@@ -46,14 +48,17 @@ class ConcreteViewShadowNode : public ConcreteShadowNode<
       "ViewPropsT must be a descendant of AccessibilityProps");
 
  public:
-  using BaseShadowNode =
-      ConcreteShadowNode<concreteComponentName, ViewPropsT, ViewEventEmitterT>;
+  using BaseShadowNode = ConcreteShadowNode<
+      concreteComponentName,
+      ViewPropsT,
+      ViewEventEmitterT,
+      Ts...>;
   using ConcreteViewProps = ViewPropsT;
 
   ConcreteViewShadowNode(
       const ShadowNodeFragment &fragment,
-      const ShadowNodeCloneFunction &cloneFunction)
-      : BaseShadowNode(fragment, cloneFunction),
+      const ComponentDescriptor &componentDescriptor)
+      : BaseShadowNode(fragment, componentDescriptor),
         AccessibleShadowNode(
             std::static_pointer_cast<const ConcreteViewProps>(fragment.props)),
         YogaLayoutableShadowNode() {

@@ -4,7 +4,8 @@
 **/main.js
 Libraries/vendor/**/*
 Libraries/Renderer/*
+packages/*/node_modules
 pr-inactivity-bookmarklet.js
 question-bookmarklet.js
 flow/
-danger/
+bots/node_modules

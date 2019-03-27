@@ -10,15 +10,15 @@
 
 'use strict';
 
-var React = require('react');
+const React = require('react');
 
-var XHRExampleDownload = require('./XHRExampleDownload');
-var XHRExampleBinaryUpload = require('./XHRExampleBinaryUpload');
-var XHRExampleFormData = require('./XHRExampleFormData');
-var XHRExampleHeaders = require('./XHRExampleHeaders');
-var XHRExampleFetch = require('./XHRExampleFetch');
-var XHRExampleOnTimeOut = require('./XHRExampleOnTimeOut');
-var XHRExampleCookies = require('./XHRExampleCookies');
+const XHRExampleDownload = require('./XHRExampleDownload');
+const XHRExampleBinaryUpload = require('./XHRExampleBinaryUpload');
+const XHRExampleFormData = require('./XHRExampleFormData');
+const XHRExampleHeaders = require('./XHRExampleHeaders');
+const XHRExampleFetch = require('./XHRExampleFetch');
+const XHRExampleOnTimeOut = require('./XHRExampleOnTimeOut');
+const XHRExampleCookies = require('./XHRExampleCookies');
 
 exports.framework = 'React';
 exports.title = 'XMLHttpRequest';

@@ -7,10 +7,10 @@
 
 #include "YogaStylableProps.h"
 
-#include <fabric/components/view/conversions.h>
-#include <fabric/components/view/propsConversions.h>
-#include <fabric/core/propsConversions.h>
-#include <fabric/debug/debugStringConvertibleUtils.h>
+#include <react/components/view/conversions.h>
+#include <react/components/view/propsConversions.h>
+#include <react/core/propsConversions.h>
+#include <react/debug/debugStringConvertibleUtils.h>
 #include <yoga/YGNode.h>
 #include <yoga/Yoga.h>
 

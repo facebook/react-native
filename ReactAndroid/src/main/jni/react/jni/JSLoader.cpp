@@ -59,8 +59,9 @@ std::unique_ptr<const JSBigString> loadScriptFromAssets(
     }
   }
 
-  throw std::runtime_error(folly::to<std::string>("Unable to load script from assets '", assetName,
-    "'. Make sure your bundle is packaged correctly or you're running a packager server."));
+  throw std::runtime_error(folly::to<std::string>("Unable to load script. Make sure you're "
+    "either running a Metro server (run 'react-native start') or that your bundle '", assetName,
+    "' is packaged correctly for release."));
 }
 
 }}

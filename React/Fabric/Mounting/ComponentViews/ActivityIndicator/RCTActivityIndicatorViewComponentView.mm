@@ -7,11 +7,14 @@
 
 #import "RCTActivityIndicatorViewComponentView.h"
 
-#import <fabric/components/activityindicator/ActivityIndicatorViewProps.h>
+#import <react/components/rncore/EventEmitters.h>
+#import <react/components/rncore/Props.h>
+#import <react/components/rncore/ShadowNodes.h>
 
 using namespace facebook::react;
 
-static UIActivityIndicatorViewStyle convertActivityIndicatorViewStyle(const ActivityIndicatorViewSize &size) {
+static UIActivityIndicatorViewStyle convertActivityIndicatorViewStyle(const ActivityIndicatorViewSize &size)
+{
   switch (size) {
     case ActivityIndicatorViewSize::Small:
       return UIActivityIndicatorViewStyleWhite;
@@ -22,6 +25,13 @@ static UIActivityIndicatorViewStyle convertActivityIndicatorViewStyle(const Acti
 
 @implementation RCTActivityIndicatorViewComponentView {
   UIActivityIndicatorView *_activityIndicatorView;
+}
+
+#pragma mark - RCTComponentViewProtocol
+
++ (ComponentHandle)componentHandle
+{
+  return ActivityIndicatorViewShadowNode::Handle();
 }
 
 - (instancetype)initWithFrame:(CGRect)frame

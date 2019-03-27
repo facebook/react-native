@@ -11,7 +11,6 @@
 'use strict';
 
 const path = require('path');
-const findPlugins = require('../local-cli/core/findPlugins');
 
 const REACT_NATIVE_CI = process.cwd() === path.resolve(__dirname, '..');
 
@@ -23,12 +22,24 @@ if (REACT_NATIVE_CI) {
   pluginsPath = '../../../';
 }
 
-const plugins = findPlugins([path.resolve(__dirname, pluginsPath)]);
+function getPlugins() {
+  try {
+    const {findPlugins} = require('@react-native-community/cli');
+    return findPlugins(path.resolve(__dirname, pluginsPath));
+  } catch (e) {
+    return {
+      haste: {
+        providesModuleNodeModules: [],
+        platforms: [],
+      },
+    };
+  }
+}
+
+const plugins = getPlugins();
 
 // Detect out-of-tree platforms and add them to the whitelists
-const pluginRoots /*: Array<
-  string,
-> */ = plugins.haste.providesModuleNodeModules.map(
+const pluginRoots /*: Array<string> */ = plugins.haste.providesModuleNodeModules.map(
   name => path.resolve(__dirname, '../../', name) + path.sep,
 );
 
@@ -45,6 +56,7 @@ const BLACKLISTED_PATTERNS /*: Array<RegExp> */ = [
   /.*[\\\/]__(mocks|tests)__[\\\/].*/,
   /^Libraries[\\\/]Animated[\\\/]src[\\\/]polyfills[\\\/].*/,
   /^Libraries[\\\/]Renderer[\\\/]fb[\\\/].*/,
+  /DerivedData[\\\/].*/,
 ];
 
 const WHITELISTED_PREFIXES /*: Array<string> */ = [

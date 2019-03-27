@@ -19,7 +19,7 @@ const pointsDiffer = require('pointsDiffer');
 const processColor = require('processColor');
 const resolveAssetSource = require('resolveAssetSource');
 const sizesDiffer = require('sizesDiffer');
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 const warning = require('fbjs/lib/warning');
 
 function getNativeComponentAttributes(uiViewClassName: string) {

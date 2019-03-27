@@ -48,5 +48,8 @@ RCT_CUSTOM_VIEW_PROPERTY(disabled, BOOL, RCTSwitch)
     view.enabled = defaultView.enabled;
   }
 }
+RCT_REMAP_VIEW_PROPERTY(thumbColor, thumbTintColor, UIColor);
+RCT_REMAP_VIEW_PROPERTY(trackColorForFalse, tintColor, UIColor);
+RCT_REMAP_VIEW_PROPERTY(trackColorForTrue, onTintColor, UIColor);
 
 @end

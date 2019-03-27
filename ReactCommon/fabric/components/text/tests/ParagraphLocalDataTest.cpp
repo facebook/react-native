@@ -8,15 +8,17 @@
 #include <memory>
 
 #include <assert.h>
-#include <fabric/attributedstring/AttributedString.h>
-#include <fabric/attributedstring/TextAttributes.h>
-#include <fabric/attributedstring/primitives.h>
-#include <fabric/components/text/ParagraphLocalData.h>
-#include <fabric/components/text/conversions.h>
 #include <gtest/gtest.h>
+#include <react/attributedstring/AttributedString.h>
+#include <react/attributedstring/TextAttributes.h>
+#include <react/attributedstring/primitives.h>
+#include <react/components/text/ParagraphLocalData.h>
+#include <react/components/text/conversions.h>
 
 namespace facebook {
 namespace react {
+
+#ifdef ANDROID
 
 TEST(ParagraphLocalDataTest, testSomething) {
   auto attString = AttributedString();
@@ -45,6 +47,8 @@ TEST(ParagraphLocalDataTest, testSomething) {
   assert(textAttribute["fontStyle"] == toString(*text.fontStyle));
   assert(textAttribute["fontWeight"] == toString(*text.fontWeight));
 }
+
+#endif
 
 } // namespace react
 } // namespace facebook

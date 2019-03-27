@@ -7,11 +7,12 @@
 
 #include "BaseTextShadowNode.h"
 
-#include <fabric/components/text/RawTextProps.h>
-#include <fabric/components/text/RawTextShadowNode.h>
-#include <fabric/components/text/TextProps.h>
-#include <fabric/components/text/TextShadowNode.h>
-#include <fabric/debug/DebugStringConvertibleItem.h>
+#include <react/components/text/RawTextProps.h>
+#include <react/components/text/RawTextShadowNode.h>
+#include <react/components/text/TextProps.h>
+#include <react/components/text/TextShadowNode.h>
+#include <react/debug/DebugStringConvertibleItem.h>
+#include <react/mounting/ShadowView.h>
 
 namespace facebook {
 namespace react {
@@ -29,7 +30,12 @@ AttributedString BaseTextShadowNode::getAttributedString(
       auto fragment = AttributedString::Fragment{};
       fragment.string = rawTextShadowNode->getProps()->text;
       fragment.textAttributes = textAttributes;
-      fragment.parentShadowNode = parentNode;
+
+      // Storing a retaining pointer to `ParagraphShadowNode` inside
+      // `attributedString` causes a retain cycle (besides that fact that we
+      // don't need it at all). Storing a `ShadowView` instance instead of
+      // `ShadowNode` should properly fix this problem.
+      fragment.parentShadowView = ShadowView(*parentNode);
       attributedString.appendFragment(fragment);
       continue;
     }
@@ -48,7 +54,7 @@ AttributedString BaseTextShadowNode::getAttributedString(
 
     // Any other kind of ShadowNode
     auto fragment = AttributedString::Fragment{};
-    fragment.shadowNode = childNode;
+    fragment.shadowView = ShadowView(*childNode);
     fragment.textAttributes = textAttributes;
     attributedString.appendFragment(fragment);
   }

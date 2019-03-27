@@ -177,7 +177,7 @@ public class TouchTargetHelper {
     if (child instanceof ReactHitSlopView && ((ReactHitSlopView) child).getHitSlopRect() != null) {
       Rect hitSlopRect = ((ReactHitSlopView) child).getHitSlopRect();
       if ((localX >= -hitSlopRect.left && localX < (child.getRight() - child.getLeft()) + hitSlopRect.right)
-          && (localY >= -hitSlopRect.top && localY < (child.getBottom() - child.getTop()) + hitSlopRect.bottom)) {
+        && (localY >= -hitSlopRect.top && localY < (child.getBottom() - child.getTop()) + hitSlopRect.bottom)) {
         outLocalPoint.set(localX, localY);
         return true;
       }
@@ -185,7 +185,7 @@ public class TouchTargetHelper {
       return false;
     } else {
       if ((localX >= 0 && localX < (child.getRight() - child.getLeft()))
-          && (localY >= 0 && localY < (child.getBottom() - child.getTop()))) {
+        && (localY >= 0 && localY < (child.getBottom() - child.getTop()))) {
         outLocalPoint.set(localX, localY);
         return true;
       }

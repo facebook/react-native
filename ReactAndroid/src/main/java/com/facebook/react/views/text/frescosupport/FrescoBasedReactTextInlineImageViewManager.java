@@ -25,7 +25,7 @@ import com.facebook.react.uimanager.ViewManager;
 public class FrescoBasedReactTextInlineImageViewManager
   extends ViewManager<View, FrescoBasedReactTextInlineImageShadowNode> {
 
-  protected static final String REACT_CLASS = "RCTTextInlineImage";
+  public static final String REACT_CLASS = "RCTTextInlineImage";
 
   private final @Nullable AbstractDraweeControllerBuilder mDraweeControllerBuilder;
   private final @Nullable Object mCallerContext;

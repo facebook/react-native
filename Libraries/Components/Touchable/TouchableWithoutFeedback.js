@@ -26,7 +26,7 @@ const {
   DeprecatedAccessibilityTraits,
 } = require('DeprecatedViewAccessibility');
 
-import type {PressEvent} from 'CoreEventTypes';
+import type {SyntheticEvent, LayoutEvent, PressEvent} from 'CoreEventTypes';
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type {
   AccessibilityComponentType,
@@ -35,17 +35,37 @@ import type {
   AccessibilityTraits,
 } from 'ViewAccessibility';
 
+type TargetEvent = SyntheticEvent<
+  $ReadOnly<{|
+    target: number,
+  |}>,
+>;
+
+type BlurEvent = TargetEvent;
+type FocusEvent = TargetEvent;
+
 const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
+
+const OVERRIDE_PROPS = [
+  'accessibilityComponentType',
+  'accessibilityLabel',
+  'accessibilityHint',
+  'accessibilityIgnoresInvertColors',
+  'accessibilityRole',
+  'accessibilityStates',
+  'accessibilityTraits',
+  'hitSlop',
+  'nativeID',
+  'onBlur',
+  'onFocus',
+  'onLayout',
+  'testID',
+];
 
 export type Props = $ReadOnly<{|
   accessible?: ?boolean,
   accessibilityComponentType?: ?AccessibilityComponentType,
-  accessibilityLabel?:
-    | null
-    | React$PropType$Primitive<any>
-    | string
-    | Array<any>
-    | any,
+  accessibilityLabel?: ?Stringish,
   accessibilityHint?: ?Stringish,
   accessibilityIgnoresInvertColors?: ?boolean,
   accessibilityRole?: ?AccessibilityRole,
@@ -58,13 +78,13 @@ export type Props = $ReadOnly<{|
   disabled?: ?boolean,
   hitSlop?: ?EdgeInsetsProp,
   nativeID?: ?string,
-  onBlur?: ?Function,
-  onFocus?: ?Function,
-  onLayout?: ?Function,
-  onLongPress?: ?Function,
-  onPress?: ?Function,
-  onPressIn?: ?Function,
-  onPressOut?: ?Function,
+  onBlur?: ?(e: BlurEvent) => void,
+  onFocus?: ?(e: FocusEvent) => void,
+  onLayout?: ?(event: LayoutEvent) => mixed,
+  onLongPress?: ?(event: PressEvent) => mixed,
+  onPress?: ?(event: PressEvent) => mixed,
+  onPressIn?: ?(event: PressEvent) => mixed,
+  onPressOut?: ?(event: PressEvent) => mixed,
   pressRetentionOffset?: ?EdgeInsetsProp,
   rejectResponderTermination?: ?boolean,
   testID?: ?string,
@@ -88,6 +108,7 @@ const TouchableWithoutFeedback = ((createReactClass({
     accessibilityComponentType: PropTypes.oneOf(
       DeprecatedAccessibilityComponentTypes,
     ),
+    accessibilityIgnoresInvertColors: PropTypes.bool,
     accessibilityRole: PropTypes.oneOf(DeprecatedAccessibilityRoles),
     accessibilityStates: PropTypes.arrayOf(
       PropTypes.oneOf(DeprecatedAccessibilityStates),
@@ -235,18 +256,17 @@ const TouchableWithoutFeedback = ((createReactClass({
         Touchable.renderDebugView({color: 'red', hitSlop: this.props.hitSlop}),
       );
     }
+
+    const overrides = {};
+    for (const prop of OVERRIDE_PROPS) {
+      if (this.props[prop] !== undefined) {
+        overrides[prop] = this.props[prop];
+      }
+    }
+
     return (React: any).cloneElement(child, {
+      ...overrides,
       accessible: this.props.accessible !== false,
-      accessibilityLabel: this.props.accessibilityLabel,
-      accessibilityHint: this.props.accessibilityHint,
-      accessibilityComponentType: this.props.accessibilityComponentType,
-      accessibilityRole: this.props.accessibilityRole,
-      accessibilityStates: this.props.accessibilityStates,
-      accessibilityTraits: this.props.accessibilityTraits,
-      nativeID: this.props.nativeID,
-      testID: this.props.testID,
-      onLayout: this.props.onLayout,
-      hitSlop: this.props.hitSlop,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
       onResponderTerminationRequest: this
         .touchableHandleResponderTerminationRequest,

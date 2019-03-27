@@ -11,15 +11,15 @@
  *
  *
  * To set up:
- * - npm install --save-dev appium@1.5.1 mocha@2.4.5 wd@0.3.11 colors@1.0.3 pretty-data2@0.40.1
+ * - npm install --save-dev appium@1.11.1 mocha@2.4.5 wd@1.11.1 colors@1.0.3 pretty-data2@0.40.1
  * - cp <this file> <to app installation path>
- * - keytool -genkey -v -keystore android/keystores/debug.keystore -storepass android -alias androiddebugkey -keypass android -dname "CN=Android Debug,O=Android,C=US
+ * - keytool -genkey -v -keystore android/app/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
  *
  * To run this test:
  * - npm start
  * - node node_modules/.bin/appium
  * - (cd android && ./gradlew :app:copyDownloadableDepsToLibs)
- * - buck build android/app
+ * - react-native run-android
  * - node ../node_modules/.bin/_mocha ../android-e2e-test.js
  *
  * @format
@@ -50,8 +50,8 @@ describe('Android Test App', function() {
     driver.on('status', function(info) {
       console.log(info.cyan);
     });
-    driver.on('command', function(method, path, data) {
-      if (path === 'source()' && data) {
+    driver.on('command', function(method, command, data) {
+      if (command === 'source()' && data) {
         console.log(
           ' > ' + method.yellow,
           'Screen contents'.grey,
@@ -59,11 +59,11 @@ describe('Android Test App', function() {
           pd.xml(data).yellow,
         );
       } else {
-        console.log(' > ' + method.yellow, path.grey, data || '');
+        console.log(' > ' + method.yellow, command.grey, data || '');
       }
     });
-    driver.on('http', function(method, path, data) {
-      console.log(' > ' + method.magenta, path, (data || '').grey);
+    driver.on('http', function(method, urlPath, data) {
+      console.log(' > ' + method.magenta, urlPath, (data || '').grey);
     });
 
     // every interval print what is on the screen
@@ -77,7 +77,7 @@ describe('Android Test App', function() {
     const desired = {
       platformName: 'Android',
       deviceName: 'Android Emulator',
-      app: path.resolve('buck-out/gen/android/app/app.apk'),
+      app: path.resolve('android/app/build/outputs/apk/debug/app-debug.apk'),
     };
 
     // React Native in dev mode often starts with Red Box "Can't fibd variable __fbBatchedBridge..."
@@ -89,12 +89,12 @@ describe('Android Test App', function() {
       .then(
         elem => {
           elem.click();
+          driver.sleep(2000);
         },
         err => {
           // ignoring if Reload JS button can't be located
         },
-      )
-      .setImplicitWaitTimeout(150000);
+      );
   });
 
   after(function() {
@@ -104,9 +104,44 @@ describe('Android Test App', function() {
     return driver.quit();
   });
 
-  it('should have Hot Module Reloading working', function() {
-    const androidAppCode = fs.readFileSync('index.js', 'utf-8');
+  it('should display new content after a refresh', function() {
+    const androidAppCode = fs.readFileSync('App.js', 'utf-8');
     let intervalToUpdate;
+    return (
+      driver
+        .waitForElementByXPath(
+          '//android.widget.TextView[starts-with(@text, "Welcome to React Native!")]',
+        )
+        .then(() => {
+          fs.writeFileSync(
+            'App.js',
+            androidAppCode.replace(
+              'Welcome to React Native!',
+              'Welcome to React Native! Reloaded',
+            ),
+            'utf-8',
+          );
+        })
+        .sleep(1000)
+        // http://developer.android.com/reference/android/view/KeyEvent.html#KEYCODE_MENU
+        .pressDeviceKey(46)
+        .pressDeviceKey(46)
+        .sleep(2000)
+        .waitForElementByXPath(
+          '//android.widget.TextView[starts-with(@text, "Welcome to React Native! Reloaded")]',
+        )
+        .finally(() => {
+          clearInterval(intervalToUpdate);
+          fs.writeFileSync('App.js', androidAppCode, 'utf-8');
+          driver
+            .pressDeviceKey(46)
+            .pressDeviceKey(46)
+            .sleep(2000);
+        })
+    );
+  });
+
+  it('should have the menu available', function() {
     return (
       driver
         .waitForElementByXPath(
@@ -114,50 +149,9 @@ describe('Android Test App', function() {
         )
         // http://developer.android.com/reference/android/view/KeyEvent.html#KEYCODE_MENU
         .pressDeviceKey(82)
-        .elementByXPath(
-          '//android.widget.TextView[starts-with(@text, "Enable Hot Reloading")]',
-        )
-        .click()
         .waitForElementByXPath(
-          '//android.widget.TextView[starts-with(@text, "Welcome to React Native!")]',
+          '//android.widget.TextView[starts-with(@text, "Toggle Inspector")]',
         )
-        .then(() => {
-          let iteration = 0;
-          // CI environment can be quite slow and we can't guarantee that it can consistently motice a file change
-          // so we change the file every few seconds just in case
-          intervalToUpdate = setInterval(() => {
-            fs.writeFileSync(
-              'index.js',
-              androidAppCode.replace(
-                'Welcome to React Native!',
-                'Welcome to React Native with HMR!' + iteration,
-              ),
-              'utf-8',
-            );
-          }, 3000);
-        })
-        .waitForElementByXPath(
-          '//android.widget.TextView[starts-with(@text, "Welcome to React Native with HMR!")]',
-        )
-        .finally(() => {
-          clearInterval(intervalToUpdate);
-          fs.writeFileSync('index.js', androidAppCode, 'utf-8');
-        })
     );
-  });
-
-  it('should have Debug In Chrome working', function() {
-    const androidAppCode = fs.readFileSync('index.js', 'utf-8');
-    // http://developer.android.com/reference/android/view/KeyEvent.html#KEYCODE_MENU
-    return driver
-      .waitForElementByXPath(
-        '//android.widget.TextView[starts-with(@text, "Welcome to React Native!")]',
-      )
-      .pressDeviceKey(82)
-      .elementByXPath('//android.widget.TextView[starts-with(@text, "Debug")]')
-      .click()
-      .waitForElementByXPath(
-        '//android.widget.TextView[starts-with(@text, "Welcome to React Native!")]',
-      );
   });
 });

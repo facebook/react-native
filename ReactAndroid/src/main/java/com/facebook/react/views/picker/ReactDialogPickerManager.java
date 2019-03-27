@@ -18,7 +18,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 @ReactModule(name = ReactDialogPickerManager.REACT_CLASS)
 public class ReactDialogPickerManager extends ReactPickerManager {
 
-  protected static final String REACT_CLASS = "AndroidDialogPicker";
+  public static final String REACT_CLASS = "AndroidDialogPicker";
 
   @Override
   public String getName() {

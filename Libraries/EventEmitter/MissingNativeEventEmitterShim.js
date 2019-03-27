@@ -13,7 +13,7 @@
 const EmitterSubscription = require('EmitterSubscription');
 const EventEmitter = require('EventEmitter');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 class MissingNativeEventEmitterShim extends EventEmitter {
   isAvailable: boolean = false;

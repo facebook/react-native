@@ -35,6 +35,19 @@
   return self;
 }
 
+- (void)didSetProps:(NSArray<NSString *> *)changedProps
+{
+  [super didSetProps:changedProps];
+
+  // When applying a semi-transparent background color to Text component
+  // we must set the root text nodes text attribute background color to nil
+  // because the background color is drawn on the RCTTextView itself, as well
+  // as on the glphy background draw step. By setting this to nil, we allow
+  // the RCTTextView backgroundColor to be used, without affecting nested Text
+  // components.
+  self.textAttributes.backgroundColor = nil;
+}
+
 - (BOOL)isYogaLeafNode
 {
   return YES;
@@ -290,6 +303,9 @@
         RCTRoundPixelValue(attachmentSize.width),
         RCTRoundPixelValue(attachmentSize.height)
       }};
+      
+      NSRange truncatedGlyphRange = [layoutManager truncatedGlyphRangeInLineFragmentForGlyphAtIndex:range.location];
+      BOOL viewIsTruncated = NSIntersectionRange(range, truncatedGlyphRange).length != 0;
 
       RCTLayoutContext localLayoutContext = layoutContext;
       localLayoutContext.absolutePosition.x += frame.origin.x;
@@ -300,9 +316,11 @@
                         layoutDirection:self.layoutMetrics.layoutDirection
                           layoutContext:localLayoutContext];
 
-      // Reinforcing a proper frame origin for the Shadow View.
       RCTLayoutMetrics localLayoutMetrics = shadowView.layoutMetrics;
-      localLayoutMetrics.frame.origin = frame.origin;
+      localLayoutMetrics.frame.origin = frame.origin; // Reinforcing a proper frame origin for the Shadow View.
+      if (viewIsTruncated) {
+        localLayoutMetrics.displayType = RCTDisplayTypeNone;
+      }
       [shadowView layoutWithMetrics:localLayoutMetrics layoutContext:localLayoutContext];
     }
   ];

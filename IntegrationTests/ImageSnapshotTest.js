@@ -12,7 +12,7 @@
 
 const React = require('react');
 const ReactNative = require('react-native');
-const {Image, View} = ReactNative;
+const {Image} = ReactNative;
 const {TestModule} = ReactNative.NativeModules;
 
 class ImageSnapshotTest extends React.Component<{}> {

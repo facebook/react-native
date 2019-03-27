@@ -262,9 +262,8 @@ public class ReactImageView extends GenericDraweeView {
         @Override
         public void onFailure(String id, Throwable throwable) {
           mEventDispatcher.dispatchEvent(
-            new ImageLoadEvent(getId(), ImageLoadEvent.ON_ERROR));
-          mEventDispatcher.dispatchEvent(
-            new ImageLoadEvent(getId(), ImageLoadEvent.ON_LOAD_END));
+            new ImageLoadEvent(getId(), ImageLoadEvent.ON_ERROR,
+              true, throwable.getMessage()));
         }
       };
     }
@@ -439,7 +438,7 @@ public class ReactImageView extends GenericDraweeView {
     hierarchy.setActualImageScaleType(mScaleType);
 
     if (mDefaultImageDrawable != null) {
-      hierarchy.setPlaceholderImage(mDefaultImageDrawable, ScalingUtils.ScaleType.CENTER);
+      hierarchy.setPlaceholderImage(mDefaultImageDrawable, mScaleType);
     }
 
     if (mLoadingImageDrawable != null) {

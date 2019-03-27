@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import <fabric/textlayoutmanager/RCTFontProperties.h>
+#import <react/textlayoutmanager/RCTFontProperties.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

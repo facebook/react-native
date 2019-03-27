@@ -17,7 +17,7 @@ const ImageViewNativeComponent = require('ImageViewNativeComponent');
 const NativeModules = require('NativeModules');
 const PropTypes = require('prop-types');
 const React = require('React');
-const ReactNative = require('ReactNative');
+const ReactNative = require('ReactNative'); // eslint-disable-line no-unused-vars
 const StyleSheet = require('StyleSheet');
 const TextAncestor = require('TextAncestor');
 
@@ -123,12 +123,41 @@ const ImageProps = {
   ]),
 };
 
+/**
+ * Retrieve the width and height (in pixels) of an image prior to displaying it
+ *
+ * See https://facebook.github.io/react-native/docs/image.html#getsize
+ */
 function getSize(
   url: string,
   success: (width: number, height: number) => void,
   failure?: (error: any) => void,
 ) {
   return ImageLoader.getSize(url)
+    .then(function(sizes) {
+      success(sizes.width, sizes.height);
+    })
+    .catch(
+      failure ||
+        function() {
+          console.warn('Failed to get size for image: ' + url);
+        },
+    );
+}
+
+/**
+ * Retrieve the width and height (in pixels) of an image prior to displaying it
+ * with the ability to provide the headers for the request
+ *
+ * See https://facebook.github.io/react-native/docs/image.html#getsizewithheaders
+ */
+function getSizeWithHeaders(
+  url: string,
+  headers: {[string]: string},
+  success: (width: number, height: number) => void,
+  failure?: (error: any) => void,
+) {
+  return ImageLoader.getSizeWithHeaders(url, headers)
     .then(function(sizes) {
       success(sizes.width, sizes.height);
     })
@@ -157,14 +186,13 @@ function abortPrefetch(requestId: number) {
  */
 async function queryCache(
   urls: Array<string>,
-): Promise<Map<string, 'memory' | 'disk'>> {
+): Promise<{[string]: 'memory' | 'disk' | 'disk/memory'}> {
   return await ImageLoader.queryCache(urls);
 }
 
-declare class ImageComponentType extends ReactNative.NativeComponent<
-  ImagePropsType,
-> {
+declare class ImageComponentType extends ReactNative.NativeComponent<ImagePropsType> {
   static getSize: typeof getSize;
+  static getSizeWithHeaders: typeof getSizeWithHeaders;
   static prefetch: typeof prefetch;
   static abortPrefetch: typeof abortPrefetch;
   static queryCache: typeof queryCache;
@@ -258,23 +286,39 @@ let Image = (
   );
 };
 
-// $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
 Image = React.forwardRef(Image);
+Image.displayName = 'Image';
 
 /**
- * Prefetches a remote image for later use by downloading it to the disk
- * cache
+ * Retrieve the width and height (in pixels) of an image prior to displaying it
  *
- * See https://facebook.github.io/react-native/docs/image.html#prefetch
+ * See https://facebook.github.io/react-native/docs/image.html#getsize
  */
+/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
 Image.getSize = getSize;
 
 /**
+ * Retrieve the width and height (in pixels) of an image prior to displaying it
+ * with the ability to provide the headers for the request
+ *
+ * See https://facebook.github.io/react-native/docs/image.html#getsizewithheaders
+ */
+/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
+Image.getSizeWithHeaders = getSizeWithHeaders;
+
+/**
  * Prefetches a remote image for later use by downloading it to the disk
  * cache
  *
  * See https://facebook.github.io/react-native/docs/image.html#prefetch
  */
+/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
 Image.prefetch = prefetch;
 
 /**
@@ -282,6 +326,9 @@ Image.prefetch = prefetch;
  *
  * See https://facebook.github.io/react-native/docs/image.html#abortprefetch
  */
+/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
 Image.abortPrefetch = abortPrefetch;
 
 /**
@@ -289,6 +336,9 @@ Image.abortPrefetch = abortPrefetch;
  *
  * See https://facebook.github.io/react-native/docs/image.html#querycache
  */
+/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
 Image.queryCache = queryCache;
 
 /**
@@ -296,8 +346,14 @@ Image.queryCache = queryCache;
  *
  * See https://facebook.github.io/react-native/docs/image.html#resolveassetsource
  */
+/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
 Image.resolveAssetSource = resolveAssetSource;
 
+/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
 Image.propTypes = ImageProps;
 
 const styles = StyleSheet.create({
@@ -306,4 +362,7 @@ const styles = StyleSheet.create({
   },
 });
 
+/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
 module.exports = (Image: Class<ImageComponentType>);

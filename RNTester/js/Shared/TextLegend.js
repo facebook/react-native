@@ -17,6 +17,8 @@ class TextLegend extends React.Component<*, *> {
   state = {
     textMetrics: [],
     language: 'english',
+    alignment: 'left',
+    fontSize: 50,
   };
 
   render() {
@@ -50,6 +52,18 @@ class TextLegend extends React.Component<*, *> {
     };
     return (
       <View>
+        <Text
+          onPress={() =>
+            this.setState(prevState => ({fontSize: prevState.fontSize + 3}))
+          }>
+          Increase size
+        </Text>
+        <Text
+          onPress={() =>
+            this.setState(prevState => ({fontSize: prevState.fontSize - 3}))
+          }>
+          Decrease size
+        </Text>
         <Picker
           selectedValue={this.state.language}
           onValueChange={itemValue => this.setState({language: itemValue})}>
@@ -179,17 +193,48 @@ class TextLegend extends React.Component<*, *> {
                   }}>
                   End of text
                 </Text>,
+                <View
+                  key="start of text view"
+                  style={{
+                    top: y,
+                    height: height,
+                    width: 1,
+                    left: x,
+                    position: 'absolute',
+                    backgroundColor: 'brown',
+                  }}
+                />,
+                <Text
+                  key="start of text text"
+                  style={{
+                    top: y,
+                    left: x + 5,
+                    position: 'absolute',
+                    color: 'brown',
+                  }}>
+                  Start of text
+                </Text>,
               ];
             },
           )}
           <Text
-            onTextLayout={event =>
-              this.setState({textMetrics: event.nativeEvent.lines})
-            }
-            style={{fontSize: 50}}>
+            onTextLayout={event => {
+              this.setState({textMetrics: event.nativeEvent.lines});
+            }}
+            style={{
+              fontSize: this.state.fontSize,
+              textAlign: this.state.alignment,
+            }}>
             {PANGRAMS[this.state.language]}
           </Text>
         </View>
+        <Picker
+          selectedValue={this.state.alignment}
+          onValueChange={itemValue => this.setState({alignment: itemValue})}>
+          <Picker.Item label="Left align" value="left" />
+          <Picker.Item label="Center align" value="center" />
+          <Picker.Item label="Right align" value="right" />
+        </Picker>
       </View>
     );
   }

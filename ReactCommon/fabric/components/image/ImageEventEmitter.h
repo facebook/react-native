@@ -6,7 +6,7 @@
  */
 #pragma once
 
-#include <fabric/components/view/ViewEventEmitter.h>
+#include <react/components/view/ViewEventEmitter.h>
 
 namespace facebook {
 namespace react {
@@ -18,7 +18,7 @@ class ImageEventEmitter : public ViewEventEmitter {
   void onLoadStart() const;
   void onLoad() const;
   void onLoadEnd() const;
-  void onProgress() const;
+  void onProgress(double) const;
   void onError() const;
   void onPartialLoad() const;
 };

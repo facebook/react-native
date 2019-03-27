@@ -16,31 +16,6 @@
   BOOL _isLayoutDirty;
 }
 
-#pragma mark - Life Cycle
-
-- (void)insertReactSubview:(RCTShadowView *)subview atIndex:(NSInteger)index
-{
-  [super insertReactSubview:subview atIndex:index];
-
-  [self dirtyLayout];
-
-  if (![subview isKindOfClass:[RCTVirtualTextShadowView class]]) {
-    YGNodeSetDirtiedFunc(subview.yogaNode, RCTVirtualTextShadowViewYogaNodeDirtied);
-  }
-
-}
-
-- (void)removeReactSubview:(RCTShadowView *)subview
-{
-  if (![subview isKindOfClass:[RCTVirtualTextShadowView class]]) {
-    YGNodeSetDirtiedFunc(subview.yogaNode, NULL);
-  }
-
-  [self dirtyLayout];
-
-  [super removeReactSubview:subview];
-}
-
 #pragma mark - Layout
 
 - (void)dirtyLayout
@@ -58,16 +33,6 @@
 - (void)clearLayout
 {
   _isLayoutDirty = NO;
-}
-
-static void RCTVirtualTextShadowViewYogaNodeDirtied(YGNodeRef node)
-{
-  RCTShadowView *shadowView = (__bridge RCTShadowView *)YGNodeGetContext(node);
-
-  RCTVirtualTextShadowView *virtualTextShadowView =
-    (RCTVirtualTextShadowView *)shadowView.reactSuperview;
-
-  [virtualTextShadowView dirtyLayout];
 }
 
 @end

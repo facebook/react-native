@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include <fabric/components/text/BaseTextShadowNode.h>
-#include <fabric/components/text/TextProps.h>
-#include <fabric/components/view/ViewEventEmitter.h>
-#include <fabric/core/ConcreteShadowNode.h>
+#include <react/components/text/BaseTextShadowNode.h>
+#include <react/components/text/TextProps.h>
+#include <react/components/view/ViewEventEmitter.h>
+#include <react/core/ConcreteShadowNode.h>
 
 namespace facebook {
 namespace react {

@@ -9,10 +9,10 @@
 #import <memory>
 
 #import <React/RCTPrimitives.h>
-#import <fabric/core/LayoutConstraints.h>
-#import <fabric/core/LayoutContext.h>
-#import <fabric/uimanager/FabricUIManager.h>
-#import <fabric/uimanager/ShadowViewMutation.h>
+#import <react/core/ComponentDescriptor.h>
+#import <react/core/LayoutConstraints.h>
+#import <react/core/LayoutContext.h>
+#import <react/mounting/ShadowViewMutation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)schedulerDidFinishTransaction:(facebook::react::ShadowViewMutationList)mutations
                               rootTag:(ReactTag)rootTag;
 
-- (void)schedulerDidRequestPreliminaryViewAllocationWithComponentName:(NSString *)componentName;
+- (void)schedulerOptimisticallyCreateComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle;
 
 @end
 
@@ -41,7 +41,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)startSurfaceWithSurfaceId:(facebook::react::SurfaceId)surfaceId
                        moduleName:(NSString *)moduleName
-                     initailProps:(NSDictionary *)initialProps;
+                     initialProps:(NSDictionary *)initialProps
+                layoutConstraints:(facebook::react::LayoutConstraints)layoutConstraints
+                    layoutContext:(facebook::react::LayoutContext)layoutContext;
 
 - (void)stopSurfaceWithSurfaceId:(facebook::react::SurfaceId)surfaceId;
 
@@ -53,11 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
                                        layoutContext:(facebook::react::LayoutContext)layoutContext
                                            surfaceId:(facebook::react::SurfaceId)surfaceId;
 
-@end
-
-@interface RCTScheduler (Deprecated)
-
-- (std::shared_ptr<facebook::react::FabricUIManager>)uiManager_DO_NOT_USE;
+- (const facebook::react::ComponentDescriptor &)getComponentDescriptor:(facebook::react::ComponentHandle)handle;
 
 @end
 

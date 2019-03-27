@@ -10,7 +10,7 @@
 
 'use strict';
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 const levelsMap = {
   log: 'log',

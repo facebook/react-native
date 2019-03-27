@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
+ * @flow
  * @format
  */
 
@@ -39,10 +40,13 @@ const defaultRenderLoading = () => (
   </View>
 );
 
+type Props = any;
+type State = any;
+
 /**
  * Renders a native WebView.
  */
-class WebView extends React.Component {
+class WebView extends React.Component<Props, State> {
   static propTypes = {
     ...DeprecatedViewPropTypes,
     renderError: PropTypes.func,
@@ -114,6 +118,16 @@ class WebView extends React.Component {
      * @platform ios
      */
     useWebKit: PropTypes.bool,
+
+    /**
+     * Used on Android only to disable Hardware Acceleration if needed
+     * Hardware acceleration can not be enabled at view level but it can be
+     * disabled see:
+     * https://developer.android.com/guide/topics/graphics/hardware-accel
+     *
+     * @platform android
+     */
+    hardwareAccelerationEnabledExperimental: PropTypes.bool,
 
     /**
      * Used on Android only, JS is enabled by default for WebView on iOS
@@ -248,6 +262,7 @@ class WebView extends React.Component {
     javaScriptEnabled: true,
     thirdPartyCookiesEnabled: true,
     scalesPageToFit: true,
+    hardwareAccelerationEnabledExperimental: true,
     saveFormDataDisabled: false,
     originWhitelist: WebViewShared.defaultOriginWhitelist,
   };
@@ -327,6 +342,9 @@ class WebView extends React.Component {
         injectedJavaScript={this.props.injectedJavaScript}
         userAgent={this.props.userAgent}
         javaScriptEnabled={this.props.javaScriptEnabled}
+        hardwareAccelerationEnabledExperimental={
+          this.props.hardwareAccelerationEnabledExperimental
+        }
         thirdPartyCookiesEnabled={this.props.thirdPartyCookiesEnabled}
         domStorageEnabled={this.props.domStorageEnabled}
         messagingEnabled={typeof this.props.onMessage === 'function'}
@@ -398,7 +416,7 @@ class WebView extends React.Component {
     );
   };
 
-  postMessage = data => {
+  postMessage = (data: string) => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.getViewManagerConfig('RCTWebView').Commands.postMessage,
@@ -412,7 +430,7 @@ class WebView extends React.Component {
    * on pages with a Content Security Policy that disallows eval(). If you need that
    * functionality, look into postMessage/onMessage.
    */
-  injectJavaScript = data => {
+  injectJavaScript = (data: string) => {
     UIManager.dispatchViewManagerCommand(
       this.getWebViewHandle(),
       UIManager.getViewManagerConfig('RCTWebView').Commands.injectJavaScript,
@@ -424,7 +442,7 @@ class WebView extends React.Component {
    * We return an event with a bunch of fields including:
    *  url, title, loading, canGoBack, canGoForward
    */
-  updateNavigationState = event => {
+  updateNavigationState = (event: any) => {
     if (this.props.onNavigationStateChange) {
       this.props.onNavigationStateChange(event.nativeEvent);
     }
@@ -434,13 +452,13 @@ class WebView extends React.Component {
     return ReactNative.findNodeHandle(this.refs[RCT_WEBVIEW_REF]);
   };
 
-  onLoadingStart = event => {
+  onLoadingStart = (event: any) => {
     const onLoadStart = this.props.onLoadStart;
     onLoadStart && onLoadStart(event);
     this.updateNavigationState(event);
   };
 
-  onLoadingError = event => {
+  onLoadingError = (event: any) => {
     event.persist(); // persist this event because we need to store it
     const {onError, onLoadEnd} = this.props;
     onError && onError(event);
@@ -453,7 +471,7 @@ class WebView extends React.Component {
     });
   };
 
-  onLoadingFinish = event => {
+  onLoadingFinish = (event: any) => {
     const {onLoad, onLoadEnd} = this.props;
     onLoad && onLoad(event);
     onLoadEnd && onLoadEnd(event);
@@ -463,7 +481,7 @@ class WebView extends React.Component {
     this.updateNavigationState(event);
   };
 
-  onMessage = (event: Event) => {
+  onMessage = (event: any) => {
     const {onMessage} = this.props;
     onMessage && onMessage(event);
   };

@@ -11,75 +11,136 @@
 'use strict';
 
 const React = require('react');
-const createReactClass = require('create-react-class');
 const ReactNative = require('react-native');
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
-const TimerMixin = require('react-timer-mixin');
-
 const {StyleSheet, Text, View} = ReactNative;
 const {TestModule} = ReactNative.NativeModules;
 
-const TimersTest = createReactClass({
-  displayName: 'TimersTest',
-  mixins: [TimerMixin],
+type Props = $ReadOnly<{||}>;
 
-  _nextTest: () => {},
-  _interval: -1,
+type State = {|
+  count: number,
+  done: boolean,
+|};
 
-  getInitialState() {
-    return {
-      count: 0,
-      done: false,
-    };
-  },
+type ImmediateID = Object;
+
+class TimersTest extends React.Component<Props, State> {
+  _nextTest = () => {};
+  _interval: ?IntervalID = null;
+
+  _timeoutIDs: Set<TimeoutID> = new Set();
+  _intervalIDs: Set<IntervalID> = new Set();
+  _immediateIDs: Set<ImmediateID> = new Set();
+  _animationFrameIDs: Set<AnimationFrameID> = new Set();
+
+  state = {
+    count: 0,
+    done: false,
+  };
+
+  setTimeout(fn: () => void, time: number): TimeoutID {
+    const id = setTimeout(() => {
+      this._timeoutIDs.delete(id);
+      fn();
+    }, time);
+
+    this._timeoutIDs.add(id);
+
+    return id;
+  }
+
+  clearTimeout(id: TimeoutID) {
+    this._timeoutIDs.delete(id);
+    clearTimeout(id);
+  }
+
+  setInterval(fn: () => void, time: number): IntervalID {
+    const id = setInterval(() => {
+      fn();
+    }, time);
+
+    this._intervalIDs.add(id);
+
+    return id;
+  }
+
+  clearInterval(id: IntervalID) {
+    this._intervalIDs.delete(id);
+    clearInterval(id);
+  }
+
+  setImmediate(fn: () => void): ImmediateID {
+    const id = setImmediate(() => {
+      this._immediateIDs.delete(id);
+      fn();
+    });
+
+    this._immediateIDs.add(id);
+
+    return id;
+  }
+
+  requestAnimationFrame(fn: () => void): AnimationFrameID {
+    const id = requestAnimationFrame(() => {
+      this._animationFrameIDs.delete(id);
+      fn();
+    });
+
+    this._animationFrameIDs.add(id);
+
+    return id;
+  }
+
+  cancelAnimationFrame(id: AnimationFrameID): void {
+    this._animationFrameIDs.delete(id);
+    cancelAnimationFrame(id);
+  }
 
   componentDidMount() {
     this.setTimeout(this.testSetTimeout0, 1000);
-  },
+  }
 
   testSetTimeout0() {
     this.setTimeout(this.testSetTimeout1, 0);
-  },
+  }
 
   testSetTimeout1() {
     this.setTimeout(this.testSetTimeout50, 1);
-  },
+  }
 
   testSetTimeout50() {
     this.setTimeout(this.testRequestAnimationFrame, 50);
-  },
+  }
 
   testRequestAnimationFrame() {
     this.requestAnimationFrame(this.testSetInterval0);
-  },
+  }
 
   testSetInterval0() {
     this._nextTest = this.testSetInterval20;
     this._interval = this.setInterval(this._incrementInterval, 0);
-  },
+  }
 
   testSetInterval20() {
     this._nextTest = this.testSetImmediate;
     this._interval = this.setInterval(this._incrementInterval, 20);
-  },
+  }
 
   testSetImmediate() {
     this.setImmediate(this.testClearTimeout0);
-  },
+  }
 
   testClearTimeout0() {
     const timeout = this.setTimeout(() => this._fail('testClearTimeout0'), 0);
     this.clearTimeout(timeout);
     this.testClearTimeout30();
-  },
+  }
 
   testClearTimeout30() {
     const timeout = this.setTimeout(() => this._fail('testClearTimeout30'), 30);
     this.clearTimeout(timeout);
     this.setTimeout(this.testClearMulti, 50);
-  },
+  }
 
   testClearMulti() {
     const fails = [];
@@ -96,7 +157,7 @@ const TimersTest = createReactClass({
     this.setTimeout(() => this.clearTimeout(delayClear), 20);
 
     this.setTimeout(this.testOrdering, 50);
-  },
+  }
 
   testOrdering() {
     // Clear timers are set first because it's more likely to uncover bugs.
@@ -131,42 +192,73 @@ const TimersTest = createReactClass({
       25,
     );
     this.setTimeout(this.done, 50);
-  },
+  }
 
   done() {
     this.setState({done: true}, () => {
       TestModule.markTestCompleted();
     });
-  },
+  }
+
+  componentWillUnmount() {
+    for (const timeoutID of this._timeoutIDs) {
+      clearTimeout(timeoutID);
+    }
+
+    for (const intervalID of this._intervalIDs) {
+      clearInterval(intervalID);
+    }
+
+    for (const requestAnimationFrameID of this._animationFrameIDs) {
+      cancelAnimationFrame(requestAnimationFrameID);
+    }
+
+    for (const immediateID of this._immediateIDs) {
+      clearImmediate(immediateID);
+    }
+
+    this._timeoutIDs = new Set();
+    this._intervalIDs = new Set();
+    this._animationFrameIDs = new Set();
+    this._immediateIDs = new Set();
+
+    if (this._interval != null) {
+      clearInterval(this._interval);
+      this._interval = null;
+    }
+  }
 
   render() {
     return (
       <View style={styles.container}>
         <Text>
-          {this.constructor.displayName + ': \n'}
+          {this.constructor.name + ': \n'}
           Intervals: {this.state.count + '\n'}
           {this.state.done ? 'Done' : 'Testing...'}
         </Text>
       </View>
     );
-  },
+  }
 
   _incrementInterval() {
     if (this.state.count > 3) {
       throw new Error('interval incremented past end.');
     }
     if (this.state.count === 3) {
-      this.clearInterval(this._interval);
+      if (this._interval != null) {
+        this.clearInterval(this._interval);
+        this._interval = null;
+      }
       this.setState({count: 0}, this._nextTest);
       return;
     }
     this.setState({count: this.state.count + 1});
-  },
+  }
 
   _fail(caller: string): void {
     throw new Error('_fail called by ' + caller);
-  },
-});
+  }
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -174,7 +266,5 @@ const styles = StyleSheet.create({
     padding: 40,
   },
 });
-
-TimersTest.displayName = 'TimersTest';
 
 module.exports = TimersTest;

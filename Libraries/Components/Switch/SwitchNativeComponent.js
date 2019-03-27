@@ -18,25 +18,33 @@ const requireNativeComponent = require('requireNativeComponent');
 import type {SwitchChangeEvent} from 'CoreEventTypes';
 import type {ViewProps} from 'ViewPropTypes';
 
+type SwitchProps = $ReadOnly<{|
+  ...ViewProps,
+  disabled?: ?boolean,
+  onChange?: ?(event: SwitchChangeEvent) => mixed,
+  thumbColor?: ?string,
+  trackColorForFalse?: ?string,
+  trackColorForTrue?: ?string,
+  value?: ?boolean,
+|}>;
+
 // @see ReactSwitchManager.java
 export type NativeAndroidProps = $ReadOnly<{|
-  ...ViewProps,
+  ...SwitchProps,
+
   enabled?: ?boolean,
   on?: ?boolean,
-  onChange?: ?(event: SwitchChangeEvent) => mixed,
   thumbTintColor?: ?string,
   trackTintColor?: ?string,
 |}>;
 
 // @see RCTSwitchManager.m
 export type NativeIOSProps = $ReadOnly<{|
-  ...ViewProps,
-  disabled?: ?boolean,
-  onChange?: ?(event: SwitchChangeEvent) => mixed,
+  ...SwitchProps,
+
   onTintColor?: ?string,
   thumbTintColor?: ?string,
   tintColor?: ?string,
-  value?: ?boolean,
 |}>;
 
 type SwitchNativeComponentType = Class<

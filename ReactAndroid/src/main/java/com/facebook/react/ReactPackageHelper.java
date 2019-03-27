@@ -1,6 +1,13 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 package com.facebook.react;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ModuleHolder;
 import com.facebook.react.bridge.NativeModule;

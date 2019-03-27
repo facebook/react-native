@@ -13,11 +13,8 @@
 const NativeEventEmitter = require('NativeEventEmitter');
 const RCTLocationObserver = require('NativeModules').LocationObserver;
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 const logError = require('logError');
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
 const warning = require('fbjs/lib/warning');
 
 const LocationEventEmitter = new NativeEventEmitter(RCTLocationObserver);
@@ -48,11 +45,11 @@ type GeoOptions = {
  */
 const Geolocation = {
   /*
-    * Sets configuration options that will be used in all location requests.
-    *
-    * See https://facebook.github.io/react-native/docs/geolocation.html#setrnconfiguration
-    *
-    */
+   * Sets configuration options that will be used in all location requests.
+   *
+   * See https://facebook.github.io/react-native/docs/geolocation.html#setrnconfiguration
+   *
+   */
   setRNConfiguration: function(config: GeoConfiguration) {
     if (RCTLocationObserver.setConfiguration) {
       RCTLocationObserver.setConfiguration(config);
@@ -60,7 +57,7 @@ const Geolocation = {
   },
 
   /*
-   * Request suitable Location permission based on the key configured on pList.
+   * Requests Location permissions based on the key configured on pList.
    *
    * See https://facebook.github.io/react-native/docs/geolocation.html#requestauthorization
    */
@@ -129,6 +126,11 @@ const Geolocation = {
     return watchID;
   },
 
+  /*
+   * Unsubscribes the watcher with the given watchID.
+   *
+   * See https://facebook.github.io/react-native/docs/geolocation.html#clearwatch
+   */
   clearWatch: function(watchID: number) {
     const sub = subscriptions[watchID];
     if (!sub) {
@@ -153,6 +155,11 @@ const Geolocation = {
     }
   },
 
+  /*
+   * Stops observing for device location changes and removes all registered listeners.
+   *
+   * See https://facebook.github.io/react-native/docs/geolocation.html#stopobserving
+   */
   stopObserving: function() {
     if (updatesEnabled) {
       RCTLocationObserver.stopObserving();

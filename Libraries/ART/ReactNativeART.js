@@ -19,7 +19,7 @@ const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 
 const createReactNativeComponentClass = require('createReactNativeComponentClass');
 const merge = require('merge');
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 // Diff Helpers
 
@@ -399,7 +399,19 @@ function extractStrokeJoin(strokeJoin) {
 // Note: ART has a notion of width and height on Shape but AFAIK it's a noop in
 // ReactART.
 
-class Shape extends React.Component {
+export type ShapeProps = {|
+  fill?: mixed,
+  stroke?: mixed,
+  strokeCap?: mixed,
+  strokeDash?: mixed,
+  strokeJoin?: mixed,
+  strokeWidth?: mixed,
+  x?: number,
+  y?: number,
+  opacity?: mixed,
+|};
+
+class Shape extends React.Component<ShapeProps> {
   render() {
     const props = this.props;
     const path = props.d || childrenAsString(props.children);

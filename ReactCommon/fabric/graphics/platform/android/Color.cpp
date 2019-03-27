@@ -24,8 +24,23 @@ ColorComponents colorComponentsFromColor(SharedColor sharedColor) {
   Color color = *sharedColor;
   return ColorComponents{(float)((color >> 16) & 0xff) / ratio,
                          (float)((color >> 8) & 0xff) / ratio,
-                         (float)((color)&0xff) / ratio,
+                         (float)((color >> 0) & 0xff) / ratio,
                          (float)((color >> 24) & 0xff) / ratio};
+}
+
+SharedColor clearColor() {
+  static SharedColor color = colorFromComponents(ColorComponents{0, 0, 0, 0});
+  return color;
+}
+
+SharedColor blackColor() {
+  static SharedColor color = colorFromComponents(ColorComponents{0, 0, 0, 1});
+  return color;
+}
+
+SharedColor whiteColor() {
+  static SharedColor color = colorFromComponents(ColorComponents{1, 1, 1, 1});
+  return color;
 }
 
 } // namespace react

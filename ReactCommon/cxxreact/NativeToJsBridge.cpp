@@ -37,9 +37,13 @@ public:
   std::shared_ptr<ModuleRegistry> getModuleRegistry() override {
     return m_registry;
   }
+  
+  bool isBatchActive() {
+    return m_batchHadNativeModuleCalls;
+  }
 
   void callNativeModules(
-      JSExecutor& executor, folly::dynamic&& calls, bool isEndOfBatch) override {
+      __unused JSExecutor& executor, folly::dynamic&& calls, bool isEndOfBatch) override {
 
     CHECK(m_registry || calls.empty()) <<
       "native module calls cannot be completed with no native modules";
@@ -64,7 +68,7 @@ public:
   }
 
   MethodCallResult callSerializableNativeHook(
-      JSExecutor& executor, unsigned int moduleId, unsigned int methodId,
+      __unused JSExecutor& executor, unsigned int moduleId, unsigned int methodId,
       folly::dynamic&& args) override {
     return m_registry->callSerializableNativeHook(moduleId, methodId, std::move(args));
   }
@@ -99,6 +103,7 @@ void NativeToJsBridge::loadApplication(
     std::unique_ptr<RAMBundleRegistry> bundleRegistry,
     std::unique_ptr<const JSBigString> startupScript,
     std::string startupScriptSourceURL) {
+
   runOnExecutorQueue(
       [this,
        bundleRegistryWrap=folly::makeMoveWrapper(std::move(bundleRegistry)),
@@ -161,6 +166,8 @@ void NativeToJsBridge::callFunction(
           "JSCall",
           systraceCookie);
       SystraceSection s("NativeToJsBridge::callFunction", "module", module, "method", method);
+      #else
+      (void)(systraceCookie);
       #endif
       // This is safe because we are running on the executor's thread: it won't
       // destruct until after it's been unregistered (which we check above) and
@@ -191,6 +198,8 @@ void NativeToJsBridge::invokeCallback(double callbackId, folly::dynamic&& argume
           "<callback>",
           systraceCookie);
       SystraceSection s("NativeToJsBridge::invokeCallback");
+      #else
+      (void)(systraceCookie);
       #endif
       executor->invokeCallback(callbackId, arguments);
     });
@@ -217,6 +226,10 @@ void* NativeToJsBridge::getJavaScriptContext() {
 
 bool NativeToJsBridge::isInspectable() {
   return m_executor->isInspectable();
+}
+  
+bool NativeToJsBridge::isBatchActive() {
+  return m_delegate->isBatchActive();
 }
 
 void NativeToJsBridge::handleMemoryPressure(int pressureLevel) {

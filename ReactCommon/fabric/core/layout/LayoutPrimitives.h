@@ -35,14 +35,11 @@ enum class LayoutDirection {
 } // namespace react
 } // namespace facebook
 
-namespace std
-{
-	template <>
-	struct hash<facebook::react::LayoutDirection>
-	{
-		size_t operator()(const facebook::react::LayoutDirection& v) const
-		{
-			return hash<int>()(static_cast<int>(v));
-		}
-	};
-}
+namespace std {
+template <>
+struct hash<facebook::react::LayoutDirection> {
+  size_t operator()(const facebook::react::LayoutDirection &v) const {
+    return hash<int>()(static_cast<int>(v));
+  }
+};
+} // namespace std

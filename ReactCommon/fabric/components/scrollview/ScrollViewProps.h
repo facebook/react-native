@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <fabric/components/scrollview/primitives.h>
-#include <fabric/components/view/ViewProps.h>
+#include <react/components/scrollview/primitives.h>
+#include <react/components/view/ViewProps.h>
 
 namespace facebook {
 namespace react {
@@ -21,8 +21,8 @@ class ScrollViewProps final : public ViewProps {
 
 #pragma mark - Props
 
-  const bool alwaysBounceHorizontal{true};
-  const bool alwaysBounceVertical{true};
+  const bool alwaysBounceHorizontal{};
+  const bool alwaysBounceVertical{};
   const bool bounces{true};
   const bool bouncesZoom{true};
   const bool canCancelContentTouches{true};

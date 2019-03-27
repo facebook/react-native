@@ -9,19 +9,17 @@
 
 'use strict';
 
-const MockNativeMethods = require.requireActual('./MockNativeMethods');
-const mockComponent = require.requireActual('./mockComponent');
+const MockNativeMethods = jest.requireActual('./MockNativeMethods');
+const mockComponent = jest.requireActual('./mockComponent');
 
-require.requireActual('../Libraries/polyfills/babelHelpers.js');
-require.requireActual('../Libraries/polyfills/Object.es7.js');
-require.requireActual('../Libraries/polyfills/error-guard');
+jest.requireActual('../Libraries/polyfills/babelHelpers.js');
+jest.requireActual('../Libraries/polyfills/Object.es7.js');
+jest.requireActual('../Libraries/polyfills/error-guard');
 
 global.__DEV__ = true;
 
-global.Promise = require.requireActual('promise');
-global.regeneratorRuntime = require.requireActual(
-  'regenerator-runtime/runtime',
-);
+global.Promise = jest.requireActual('promise');
+global.regeneratorRuntime = jest.requireActual('regenerator-runtime/runtime');
 
 global.requestAnimationFrame = function(callback) {
   return setTimeout(callback, 0);
@@ -30,7 +28,7 @@ global.cancelAnimationFrame = function(id) {
   clearTimeout(id);
 };
 
-jest.mock('setupDevtools').mock('npmlog');
+jest.mock('setupDevtools');
 
 // there's a __mock__ for it.
 jest.setMock('ErrorUtils', require('ErrorUtils'));
@@ -42,35 +40,11 @@ jest
   .mock('TextInput', () => mockComponent('TextInput'))
   .mock('Modal', () => mockComponent('Modal'))
   .mock('View', () => mockComponent('View', MockNativeMethods))
-  .mock('RefreshControl', () => require.requireMock('RefreshControlMock'))
-  .mock('ScrollView', () => require.requireMock('ScrollViewMock'))
+  .mock('RefreshControl', () => jest.requireMock('RefreshControlMock'))
+  .mock('ScrollView', () => jest.requireMock('ScrollViewMock'))
   .mock('ActivityIndicator', () => mockComponent('ActivityIndicator'))
-  .mock('ListView', () => require.requireMock('ListViewMock'))
-  .mock('ListViewDataSource', () => {
-    const DataSource = require.requireActual('ListViewDataSource');
-    DataSource.prototype.toJSON = function() {
-      function ListViewDataSource(dataBlob) {
-        this.items = 0;
-        // Ensure this doesn't throw.
-        try {
-          Object.keys(dataBlob).forEach(key => {
-            this.items +=
-              dataBlob[key] &&
-              (dataBlob[key].length || dataBlob[key].size || 0);
-          });
-        } catch (e) {
-          this.items = 'unknown';
-        }
-      }
-
-      return new ListViewDataSource(this._dataBlob);
-    };
-    return DataSource;
-  })
   .mock('AnimatedImplementation', () => {
-    const AnimatedImplementation = require.requireActual(
-      'AnimatedImplementation',
-    );
+    const AnimatedImplementation = jest.requireActual('AnimatedImplementation');
     const oldCreate = AnimatedImplementation.createAnimatedComponent;
     AnimatedImplementation.createAnimatedComponent = function(Component) {
       const Wrapped = oldCreate(Component);
@@ -80,7 +54,7 @@ jest
     return AnimatedImplementation;
   })
   .mock('ReactNative', () => {
-    const ReactNative = require.requireActual('ReactNative');
+    const ReactNative = jest.requireActual('ReactNative');
     const NativeMethodsMixin =
       ReactNative.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED
         .NativeMethodsMixin;
@@ -93,6 +67,19 @@ jest
   .mock('ensureComponentIsNative', () => () => true);
 
 const mockNativeModules = {
+  AccessibilityInfo: {
+    addEventListener: jest.fn(),
+    announceForAccessibility: jest.fn(),
+    fetch: jest.fn(),
+    isBoldTextEnabled: jest.fn(),
+    isGrayscaleEnabled: jest.fn(),
+    isInvertColorsEnabled: jest.fn(),
+    isReduceMotionEnabled: jest.fn(),
+    isReduceTransparencyEnabled: jest.fn(),
+    isScreenReaderEnabled: jest.fn(),
+    removeEventListener: jest.fn(),
+    setAccessibilityFocus: jest.fn(),
+  },
   AlertManager: {
     alertWithArgs: jest.fn(),
   },
@@ -119,6 +106,12 @@ const mockNativeModules = {
   BuildInfo: {
     appVersion: '0',
     buildVersion: '0',
+    getConstants() {
+      return {
+        appVersion: '0',
+        buildVersion: '0',
+      };
+    },
   },
   Clipboard: {
     setString: jest.fn(),
@@ -172,12 +165,18 @@ const mockNativeModules = {
   Linking: {
     openURL: jest.fn(),
     canOpenURL: jest.fn(() => Promise.resolve(true)),
+    openSettings: jest.fn(),
     addEventListener: jest.fn(),
     getInitialURL: jest.fn(() => Promise.resolve()),
     removeEventListener: jest.fn(),
+    sendIntent: jest.fn(),
   },
   LocationObserver: {
+    addListener: jest.fn(),
     getCurrentPosition: jest.fn(),
+    removeListeners: jest.fn(),
+    requestAuthorization: jest.fn(),
+    setConfiguration: jest.fn(),
     startObserving: jest.fn(),
     stopObserving: jest.fn(),
   },

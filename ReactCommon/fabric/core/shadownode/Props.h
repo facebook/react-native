@@ -9,9 +9,9 @@
 
 #include <folly/dynamic.h>
 
-#include <fabric/core/Sealable.h>
-#include <fabric/core/ReactPrimitives.h>
-#include <fabric/debug/DebugStringConvertible.h>
+#include <react/core/ReactPrimitives.h>
+#include <react/core/Sealable.h>
+#include <react/debug/DebugStringConvertible.h>
 
 namespace facebook {
 namespace react {
@@ -23,19 +23,25 @@ using SharedProps = std::shared_ptr<const Props>;
 /*
  * Represents the most generic props object.
  */
-class Props:
-  public virtual Sealable,
-  public virtual DebugStringConvertible {
-
-public:
+class Props : public virtual Sealable, public virtual DebugStringConvertible {
+ public:
   Props() = default;
   Props(const Props &sourceProps, const RawProps &rawProps);
   virtual ~Props() = default;
 
   const std::string nativeId;
 
+  /*
+   * Special value that represents generation number of `Props` object, which
+   * increases when the object was constructed with some source `Props` object.
+   * Default props objects (that was constructed using default constructor) have
+   * revision equals `0`.
+   * The value might be used for optimization purposes.
+   */
+  const int revision{0};
+
 #ifdef ANDROID
-  const RawProps rawProps;
+  const folly::dynamic rawProps = folly::dynamic::object();
 #endif
 };
 

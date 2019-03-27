@@ -8,7 +8,7 @@
 package com.facebook.react.views.scroll;
 
 import android.graphics.Color;
-import android.support.v4.view.ViewCompat;
+import androidx.core.view.ViewCompat;
 import android.util.DisplayMetrics;
 
 import com.facebook.react.bridge.ReadableArray;
@@ -39,7 +39,7 @@ public class ReactHorizontalScrollViewManager
     extends ViewGroupManager<ReactHorizontalScrollView>
     implements ReactScrollViewCommandHelper.ScrollCommandHandler<ReactHorizontalScrollView> {
 
-  protected static final String REACT_CLASS = "AndroidHorizontalScrollView";
+  public static final String REACT_CLASS = "AndroidHorizontalScrollView";
 
   private static final int[] SPACING_TYPES = {
       Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
@@ -254,5 +254,10 @@ public class ReactHorizontalScrollViewManager
   @ReactProp(name = "overflow")
   public void setOverflow(ReactHorizontalScrollView view, @Nullable String overflow) {
     view.setOverflow(overflow);
+  }
+
+  @ReactProp(name = "persistentScrollbar")
+  public void setPersistentScrollbar(ReactHorizontalScrollView view, boolean value) {
+    view.setScrollbarFadingEnabled(!value);
   }
 }

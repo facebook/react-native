@@ -7,7 +7,7 @@
 
 #include "ScrollViewShadowNode.h"
 
-#include <fabric/core/LayoutMetrics.h>
+#include <react/core/LayoutMetrics.h>
 
 #include "ScrollViewLocalData.h"
 

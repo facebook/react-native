@@ -7,11 +7,11 @@
 
 #include "ScrollViewProps.h"
 
-#include <fabric/components/scrollview/conversions.h>
-#include <fabric/debug/debugStringConvertibleUtils.h>
-#include <fabric/graphics/conversions.h>
+#include <react/components/scrollview/conversions.h>
+#include <react/debug/debugStringConvertibleUtils.h>
+#include <react/graphics/conversions.h>
 
-#include <fabric/core/propsConversions.h>
+#include <react/core/propsConversions.h>
 
 namespace facebook {
 namespace react {
@@ -23,13 +23,11 @@ ScrollViewProps::ScrollViewProps(
       alwaysBounceHorizontal(convertRawProp(
           rawProps,
           "alwaysBounceHorizontal",
-          sourceProps.alwaysBounceHorizontal,
-          true)),
+          sourceProps.alwaysBounceHorizontal)),
       alwaysBounceVertical(convertRawProp(
           rawProps,
           "alwaysBounceVertical",
-          sourceProps.alwaysBounceVertical,
-          true)),
+          sourceProps.alwaysBounceVertical)),
       bounces(convertRawProp(rawProps, "bounces", sourceProps.bounces, true)),
       bouncesZoom(convertRawProp(
           rawProps,

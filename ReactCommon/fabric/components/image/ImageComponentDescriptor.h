@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include <fabric/components/image/ImageShadowNode.h>
-#include <fabric/core/ConcreteComponentDescriptor.h>
-#include <fabric/imagemanager/ImageManager.h>
-#include <fabric/uimanager/ContextContainer.h>
+#include <react/components/image/ImageShadowNode.h>
+#include <react/core/ConcreteComponentDescriptor.h>
+#include <react/imagemanager/ImageManager.h>
+#include <react/uimanager/ContextContainer.h>
 
 namespace facebook {
 namespace react {
@@ -22,13 +22,22 @@ class ImageComponentDescriptor final
     : public ConcreteComponentDescriptor<ImageShadowNode> {
  public:
   ImageComponentDescriptor(
-      SharedEventDispatcher eventDispatcher,
+      EventDispatcher::Shared eventDispatcher,
       const SharedContextContainer &contextContainer)
       : ConcreteComponentDescriptor(eventDispatcher),
+  // TODO (39486757): implement image manager on Android, currently Android does
+  // not have an ImageManager so this will crash
+#ifndef ANDROID
         imageManager_(
             contextContainer
-                ? contextContainer->getInstance<SharedImageManager>()
-                : nullptr) {}
+                ? contextContainer->getInstance<SharedImageManager>(
+                      "ImageManager")
+                : nullptr) {
+  }
+#else
+        imageManager_(nullptr) {
+  }
+#endif
 
   void adopt(UnsharedShadowNode shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);

@@ -11,6 +11,7 @@
 
 #import "RCTBridge.h"
 #import "RCTBridgeModule.h"
+#import "RCTComponentEvent.h"
 #import "RCTConvert.h"
 #import "RCTParserUtils.h"
 #import "RCTShadowView.h"
@@ -114,12 +115,10 @@ static RCTPropBlock createEventSetter(NSString *propName, SEL setter, RCTBridge 
           return;
         }
 
-        NSMutableDictionary *mutableEvent = [NSMutableDictionary dictionaryWithDictionary:event];
-        mutableEvent[@"target"] = strongTarget.reactTag;
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        [weakBridge.eventDispatcher sendInputEventWithName:RCTNormalizeInputEventName(propName) body:mutableEvent];
-#pragma clang diagnostic pop
+        RCTComponentEvent *componentEvent = [[RCTComponentEvent alloc] initWithName:propName
+                                                                            viewTag:strongTarget.reactTag
+                                                                               body:event];
+        [weakBridge.eventDispatcher sendEvent:componentEvent];
       };
     }
     ((void (*)(id, SEL, id))objc_msgSend)(target, setter, eventHandler);

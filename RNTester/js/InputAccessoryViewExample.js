@@ -23,7 +23,8 @@ const {
   View,
 } = ReactNative;
 
-class Message extends React.PureComponent<*> {
+type MessageProps = $ReadOnly<{||}>;
+class Message extends React.PureComponent<MessageProps> {
   render() {
     return (
       <View style={styles.textBubbleBackground}>
@@ -33,7 +34,9 @@ class Message extends React.PureComponent<*> {
   }
 }
 
-class TextInputBar extends React.PureComponent<*, *> {
+type TextInputProps = $ReadOnly<{||}>;
+type TextInputState = {|text: string|};
+class TextInputBar extends React.PureComponent<TextInputProps, TextInputState> {
   state = {text: ''};
 
   render() {
@@ -59,19 +62,17 @@ class TextInputBar extends React.PureComponent<*, *> {
 }
 
 const BAR_HEIGHT = 44;
-
-class InputAccessoryViewExample extends React.Component<*> {
-  static title = '<InputAccessoryView>';
-  static description =
-    'Example showing how to use an InputAccessoryView to build an iMessage-like sticky text input';
-
+type InputAccessoryProps = $ReadOnly<{||}>;
+class InputAccessoryViewExample extends React.Component<InputAccessoryProps> {
   render() {
     return (
       <>
         <ScrollView style={styles.fill} keyboardDismissMode="interactive">
           {Array(15)
             .fill()
-            .map((_, i) => <Message key={i} />)}
+            .map((_, i) => (
+              <Message key={i} />
+            ))}
         </ScrollView>
         <InputAccessoryView backgroundColor="#fffffff7">
           <TextInputBar />
@@ -108,4 +109,14 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = InputAccessoryViewExample;
+exports.title = '<InputAccessoryView>';
+exports.description =
+  'Example showing how to use an InputAccessoryView to build an iMessage-like sticky text input';
+exports.examples = [
+  {
+    title: 'Simple view with sticky input',
+    render: function(): React.Node {
+      return <InputAccessoryViewExample />;
+    },
+  },
+];

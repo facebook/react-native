@@ -14,7 +14,7 @@ const AnimatedProps = require('./nodes/AnimatedProps');
 const React = require('React');
 const DeprecatedViewStylePropTypes = require('DeprecatedViewStylePropTypes');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 function createAnimatedComponent(Component: any): any {
   invariant(
@@ -30,13 +30,11 @@ function createAnimatedComponent(Component: any): any {
     _prevComponent: any;
     _propsAnimated: AnimatedProps;
     _eventDetachers: Array<Function> = [];
-    _setComponentRef: Function;
 
     static __skipSetNativeProps_FOR_TESTS_ONLY = false;
 
     constructor(props: Object) {
       super(props);
-      this._setComponentRef = this._setComponentRef.bind(this);
     }
 
     componentWillUnmount() {
@@ -164,10 +162,10 @@ function createAnimatedComponent(Component: any): any {
       );
     }
 
-    _setComponentRef(c) {
+    _setComponentRef = c => {
       this._prevComponent = this._component;
       this._component = c;
-    }
+    };
 
     // A third party library can use getNode()
     // to get the node reference of the decorated component

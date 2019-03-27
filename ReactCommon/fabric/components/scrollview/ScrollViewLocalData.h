@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <fabric/core/LocalData.h>
-#include <fabric/graphics/Geometry.h>
+#include <react/core/LocalData.h>
+#include <react/graphics/Geometry.h>
 
 namespace facebook {
 namespace react {

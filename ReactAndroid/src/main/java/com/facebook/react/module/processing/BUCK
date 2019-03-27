@@ -23,5 +23,6 @@ rn_java_library(
         react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_target("java/com/facebook/react/module/annotations:annotations"),
         react_native_target("java/com/facebook/react/module/model:model"),
+        react_native_target("java/com/facebook/react/turbomodule/core/interfaces:interfaces"),
     ],
 )

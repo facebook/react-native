@@ -9,8 +9,8 @@
 
 'use strict';
 
+// eslint-disable-next-line no-unused-vars
 const __fbBatchedBridge = {
-  // eslint-disable-line no-unused-vars
   flushedQueue: function() {
     return null;
   },

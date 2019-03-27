@@ -10,6 +10,7 @@
 
 'use strict';
 
+require('InitializeCore');
 const React = require('react');
 const ReactNative = require('react-native');
 const {
@@ -60,8 +61,8 @@ class IntegrationTestsApp extends React.Component<{}, $FlowFixMeState> {
       return (
         <ScrollView>
           {/* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
-            * comment suppresses an error when upgrading Flow's support for
-            * React. To see the error delete this comment and run Flow. */}
+           * comment suppresses an error when upgrading Flow's support for
+           * React. To see the error delete this comment and run Flow. */}
           <this.state.test />
         </ScrollView>
       );

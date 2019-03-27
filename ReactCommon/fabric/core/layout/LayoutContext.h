@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <fabric/graphics/Geometry.h>
+#include <react/graphics/Geometry.h>
 
 namespace facebook {
 namespace react {
@@ -20,7 +20,7 @@ struct LayoutContext {
   /*
    * Compound absolute position of the node relative to the root node.
    */
-  Point absolutePosition {0, 0};
+  Point absolutePosition{0, 0};
 
   /*
    * Reflects the scale factor needed to convert from the logical coordinate
