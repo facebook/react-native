@@ -39,7 +39,6 @@ import javax.annotation.Nullable;
  * shadow node hierarchy that is then mapped to a native view hierarchy.
  */
 public class UIImplementation {
-  // Lock needed in order to fix https://github.com/facebook/react-native/issues/17178#issuecomment-395858863
   protected Object uiImplementationThreadLock = new Object();
 
   protected final EventDispatcher mEventDispatcher;
@@ -365,8 +364,9 @@ public class UIImplementation {
           int moveFromIndex = moveFrom.getInt(i);
           int tagToMove = cssNodeToManage.getChildAt(moveFromIndex).getReactTag();
           viewsToAdd[i] = new ViewAtIndex(
-              tagToMove,
-              moveTo.getInt(i));
+            tagToMove,
+            moveTo.getInt(i)
+          );
           indicesToRemove[i] = moveFromIndex;
           tagsToRemove[i] = tagToMove;
         }
