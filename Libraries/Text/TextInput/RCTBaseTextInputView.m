@@ -19,25 +19,7 @@
 #import "RCTInputAccessoryViewContent.h"
 #import "RCTTextAttributes.h"
 #import "RCTTextSelection.h"
-
-@interface NSString (RCTUtility)
-
-@property (nonatomic, readonly) NSUInteger reactLengthOfGlyphs;
-
-@end
-
-@implementation NSString (RCTUtility)
-
-- (NSUInteger)reactLengthOfGlyphs
-{
-  __block NSUInteger lengthOfGlyphs = 0;
-  [self enumerateSubstringsInRange:NSMakeRange(0, self.length) options:NSStringEnumerationByComposedCharacterSequences usingBlock:^(NSString * _Nullable substring, NSRange substringRange, NSRange enclosingRange, BOOL * _Nonnull stop){
-    lengthOfGlyphs++;
-  }];
-  return lengthOfGlyphs;
-}
-
-@end
+#import "NSString+RCTUtility.h"
 
 @implementation RCTBaseTextInputView {
   __weak RCTBridge *_bridge;
@@ -379,6 +361,38 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   // Does nothing.
 }
 
+- (void)trimInputTextInRange:(NSRange)range
+             replacementText:(NSString *)text
+               allowedLength:(NSInteger)length
+{
+  __block NSUInteger allowedIndex = 0;
+  __block NSInteger allowedLength = length;
+  
+  id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
+  
+  // We truncated the text based on glyphs.
+  [text enumerateSubstringsInRange:NSMakeRange(0, text.length) options:NSStringEnumerationByComposedCharacterSequences usingBlock:^(NSString * _Nullable substring, NSRange substringRange, NSRange enclosingRange, BOOL * _Nonnull stop){
+    if (allowedLength == 0) {
+      *stop = YES;
+      return;
+    }
+    allowedIndex = substringRange.location + substringRange.length;
+    allowedLength--;
+  }];
+  // Truncate the input string so the result is exactly maxLength
+  NSString *limitedString = [text substringToIndex:allowedIndex];
+  NSMutableAttributedString *newAttributedText = [backedTextInputView.attributedText mutableCopy];
+  [newAttributedText replaceCharactersInRange:range withString:limitedString];
+  backedTextInputView.attributedText = newAttributedText;
+  _predictedText = newAttributedText.string;
+  
+  // Collapse selection at end of insert to match normal paste behavior.
+  UITextPosition *insertEnd = [backedTextInputView positionFromPosition:backedTextInputView.beginningOfDocument
+                                                                 offset:(range.location + limitedString.length)];
+  [backedTextInputView setSelectedTextRange:[backedTextInputView textRangeFromPosition:insertEnd toPosition:insertEnd]
+                             notifyDelegate:YES];
+}
+
 - (BOOL)textInputShouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
   id<RCTBackedTextInputViewProtocol> backedTextInputView = self.backedTextInputView;
@@ -393,34 +407,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   if (_maxLength) {
     NSString *backedTextInputViewText = backedTextInputView.attributedText.string;
-    __block NSInteger allowedLength = MAX(_maxLength.integerValue - (NSInteger)backedTextInputViewText.reactLengthOfGlyphs + (NSInteger)[backedTextInputViewText substringWithRange:range].reactLengthOfGlyphs, 0);
+    // Get allowedLength based on glyphs
+    NSInteger allowedLength = MAX(_maxLength.integerValue - (NSInteger)backedTextInputViewText.reactLengthOfGlyphs + (NSInteger)[backedTextInputViewText substringWithRange:range].reactLengthOfGlyphs, 0);
     NSUInteger textGlyphsLength = text.reactLengthOfGlyphs;
     if (textGlyphsLength > allowedLength) {
       // If we typed/pasted more than one character, limit the text inputted.
       if (textGlyphsLength > 1) {
-        __block NSUInteger allowedIndex = 0;
-        // We truncated the text based on glyphs.
-        [text enumerateSubstringsInRange:NSMakeRange(0, text.length) options:NSStringEnumerationByComposedCharacterSequences usingBlock:^(NSString * _Nullable substring, NSRange substringRange, NSRange enclosingRange, BOOL * _Nonnull stop){
-          if (allowedLength == 0) {
-            *stop = YES;
-            return;
-          }
-          allowedIndex = substringRange.location + substringRange.length;
-          allowedLength--;
-        }];
-        // Truncate the input string so the result is exactly maxLength
-        NSString *limitedString = [text substringToIndex:allowedIndex];
-        NSMutableAttributedString *newAttributedText = [backedTextInputView.attributedText mutableCopy];
-        [newAttributedText replaceCharactersInRange:range withString:limitedString];
-        backedTextInputView.attributedText = newAttributedText;
-        _predictedText = newAttributedText.string;
-
-        // Collapse selection at end of insert to match normal paste behavior.
-        UITextPosition *insertEnd = [backedTextInputView positionFromPosition:backedTextInputView.beginningOfDocument
-                                                                       offset:(range.location + allowedLength)];
-        [backedTextInputView setSelectedTextRange:[backedTextInputView textRangeFromPosition:insertEnd toPosition:insertEnd]
-                                   notifyDelegate:YES];
-
+        [self trimInputTextInRange:range replacementText:text allowedLength:allowedLength];
         [self textInputDidChange];
       }
 
