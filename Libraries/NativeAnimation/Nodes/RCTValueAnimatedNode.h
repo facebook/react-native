@@ -24,7 +24,6 @@
 - (void)extractOffset;
 
 @property (nonatomic, assign) CGFloat value;
-@property (nonatomic, strong) id animatedObject;
 @property (nonatomic, weak) id<RCTValueAnimatedNodeObserver> valueObserver;
 
 @end

@@ -271,7 +271,8 @@ function transformDataType(value: any): number {
     const radians = (degrees * Math.PI) / 180.0;
     return radians;
   } else {
-    return value;
+    // Assume radians
+    return parseFloat(value) || 0;
   }
 }
 

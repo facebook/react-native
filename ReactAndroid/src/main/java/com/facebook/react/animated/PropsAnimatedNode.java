@@ -84,12 +84,7 @@ import javax.annotation.Nullable;
       } else if (node instanceof StyleAnimatedNode) {
         ((StyleAnimatedNode) node).collectViewUpdates(mPropMap);
       } else if (node instanceof ValueAnimatedNode) {
-        Object animatedObject = ((ValueAnimatedNode) node).getAnimatedObject();
-        if (animatedObject instanceof String) {
-          mPropMap.putString(entry.getKey(), (String)animatedObject);
-        } else {
-          mPropMap.putDouble(entry.getKey(), ((ValueAnimatedNode) node).getValue());
-        }
+        mPropMap.putDouble(entry.getKey(), ((ValueAnimatedNode) node).getValue());
       } else {
         throw new IllegalArgumentException("Unsupported type of node used in property node " +
             node.getClass());
