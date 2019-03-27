@@ -37,10 +37,6 @@
     translatable="true"
     >Combo Box</string>
   <string
-    name="editabletext_description"
-    translatable="true"
-    >Edit</string>
-  <string
     name="menu_description"
     translatable="true"
     >Menu</string>
@@ -57,7 +53,7 @@
     translatable="true"
     >Progress Bar</string>
   <string
-    name="radiobutton_description"
+    name="radio_description"
     translatable="true"
     >Radio Button</string>
   <string

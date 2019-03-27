@@ -40,14 +40,13 @@ public class AccessibilityDelegateUtil {
 
   public enum AccessibilityRole {
     NONE, BUTTON, LINK, SEARCH, IMAGE, IMAGEBUTTON, KEYBOARDKEY, TEXT, ADJUSTABLE, SUMMARY, HEADER, ALERT, CHECKBOX,
-    COMBOBOX, EDITABLETEXT, MENU, MENUBAR, MENUITEM, PROGRESSBAR, RADIOBUTTON, RADIOGROUP, SCROLLBAR, SPINBUTTON,
+    COMBOBOX, MENU, MENUBAR, MENUITEM, PROGRESSBAR, RADIO, RADIOGROUP, SCROLLBAR, SPINBUTTON,
     SWITCH, TAB, TABLIST, TIMER, TOOLBAR;
 
     public static String getValue(AccessibilityRole role) {
       switch (role) {
       case BUTTON:
         return "android.widget.Button";
-      case EDITABLETEXT:
       case SEARCH:
         return "android.widget.EditText";
       case IMAGE:
@@ -60,11 +59,9 @@ public class AccessibilityDelegateUtil {
         return "android.widget.TextView";
       case ADJUSTABLE:
         return "android.widget.SeekBar";
-      case SWITCH:
-        return "android.widget.Switch";
       case CHECKBOX:
         return "android.widget.CheckBox";
-      case RADIOBUTTON:
+      case RADIO:
         return "android.widget.RadioButton";
       case SPINBUTTON:
         return "android.widget.SpinButton";
@@ -80,6 +77,7 @@ public class AccessibilityDelegateUtil {
       case PROGRESSBAR:
       case RADIOGROUP:
       case SCROLLBAR:
+      case SWITCH:
       case TAB:
       case TABLIST:
       case TIMER:
@@ -208,9 +206,6 @@ public class AccessibilityDelegateUtil {
     if (role.equals(AccessibilityRole.COMBOBOX)) {
       nodeInfo.setRoleDescription(context.getString(R.string.combobox_description));
     }
-    if (role.equals(AccessibilityRole.EDITABLETEXT)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.editabletext_description));
-    }
     if (role.equals(AccessibilityRole.MENU)) {
       nodeInfo.setRoleDescription(context.getString(R.string.menu_description));
     }
@@ -223,8 +218,8 @@ public class AccessibilityDelegateUtil {
     if (role.equals(AccessibilityRole.PROGRESSBAR)) {
       nodeInfo.setRoleDescription(context.getString(R.string.progressbar_description));
     }
-    if (role.equals(AccessibilityRole.RADIOBUTTON)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.radiobutton_description));
+    if (role.equals(AccessibilityRole.RADIO)) {
+      nodeInfo.setRoleDescription(context.getString(R.string.radio_description));
     }
     if (role.equals(AccessibilityRole.RADIOGROUP)) {
       nodeInfo.setRoleDescription(context.getString(R.string.radiogroup_description));

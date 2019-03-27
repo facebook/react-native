@@ -324,12 +324,6 @@ class AccessibilityRoleAndStateExample extends React.Component<{}> {
           <Text>Combobox example</Text>
         </View>
         <View
-          accessibilityLabel="element 4"
-          accessibilityRole="editabletext"
-          accessible={true}>
-          <Text>Editable text example</Text>
-        </View>
-        <View
           accessibilityLabel="element 5"
           accessibilityRole="menu"
           accessible={true}>
@@ -355,7 +349,7 @@ class AccessibilityRoleAndStateExample extends React.Component<{}> {
         </View>
         <View
           accessibilityLabel="element 9"
-          accessibilityRole="radiobutton"
+          accessibilityRole="radio"
           accessible={true}>
           <Text>Radio button example</Text>
         </View>
@@ -380,12 +374,9 @@ class AccessibilityRoleAndStateExample extends React.Component<{}> {
         <View
           accessibilityLabel="element 13"
           accessibilityRole="switch"
-          accessibilityStates={['checked']}
+          accessibilityStates={['on']}
           accessible={true}>
           <Text>Switch example</Text>
-          <Text style={{color: 'gray'}}>
-            Talkback announces the text as the switch's state.
-          </Text>
         </View>
         <View
           accessibilityLabel="element 14"
