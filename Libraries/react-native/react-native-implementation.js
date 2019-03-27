@@ -137,9 +137,6 @@ module.exports = {
     );
     return require('StatusBar');
   },
-  get SwipeableFlatList() {
-    return require('SwipeableFlatList');
-  },
   get Text() {
     return require('Text');
   },
