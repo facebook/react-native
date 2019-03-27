@@ -126,36 +126,6 @@ RCT_EXTERN BOOL RCTIsBundleAssetURL(NSURL *__nullable imageURL);
 // Determines if a given image URL refers to a image in library
 RCT_EXTERN BOOL RCTIsLibraryAssetURL(NSURL *__nullable imageURL);
 
-// Returns the Path of tmp directory
-RCT_EXTERN NSString *__nullable RCTTmpPath(void);
-
-// Returns the relative path within the tmp for an absolute URL
-// (or nil, if the URL does not specify a path within the tmp directory)
-RCT_EXTERN NSString *__nullable RCTTmpPathForURL(NSURL *__nullable URL);
-
-// Determines if a given image URL refers to a image in tmp/
-RCT_EXTERN BOOL RCTIsTmpAssetURL(NSURL *__nullable imageURL);
-
-// Returns the Path of Home directory
-RCT_EXTERN NSString *__nullable RCTHomePath(void);
-
-// Returns the relative path within the Home for an absolute URL
-// (or nil, if the URL does not specify a path within the Home directory)
-RCT_EXTERN NSString *__nullable RCTHomePathForURL(NSURL *__nullable URL);
-
-// Determines if a given image URL refers to a image in Home directory (~)
-RCT_EXTERN BOOL RCTIsHomeAssetURL(NSURL *__nullable imageURL);
-
-// Returns the Path of Documents directory
-RCT_EXTERN NSString *__nullable RCTDocumentsPath(void);
-
-// Returns the relative path within the Documents for an absolute URL
-// (or nil, if the URL does not specify a path within the Documents directory)
-RCT_EXTERN NSString *__nullable RCTDocumentsPathForURL(NSURL *__nullable URL);
-
-// Determines if a given image URL refers to a image in Documents/
-RCT_EXTERN BOOL RCTIsDocumentsAssetURL(NSURL *__nullable imageURL);
-
 // Determines if a given image URL refers to a local image
 RCT_EXTERN BOOL RCTIsLocalAssetURL(NSURL *__nullable imageURL);
 
