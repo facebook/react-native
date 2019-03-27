@@ -214,11 +214,11 @@ class JSCRuntime : public jsi::Runtime {
   static JSStringRef stringRef(const jsi::String& str);
   static JSStringRef stringRef(const jsi::PropNameID& sym);
   static JSObjectRef objectRef(const jsi::Object& obj);
-    
+
 #ifdef RN_FABRIC_ENABLED
   static JSObjectRef objectRef(const jsi::WeakObject& obj);
 #endif
-    
+
   // Factory methods for creating String/Object
   jsi::Symbol createSymbol(JSValueRef symbolRef) const;
   jsi::String createString(JSStringRef stringRef) const;
@@ -918,7 +918,7 @@ jsi::Array JSCRuntime::getPropertyNames(const jsi::Object& obj) {
   return result;
 }
 
-jsi::WeakObject JSCRuntime::createWeakObject(const jsi::Object& obj) {
+jsi::WeakObject JSCRuntime::createWeakObject(__unused const jsi::Object& obj) {
 #ifdef RN_FABRIC_ENABLED
   // TODO: revisit this implementation
   JSObjectRef objRef = objectRef(obj);
@@ -928,7 +928,7 @@ jsi::WeakObject JSCRuntime::createWeakObject(const jsi::Object& obj) {
 #endif
 }
 
-jsi::Value JSCRuntime::lockWeakObject(const jsi::WeakObject& obj) {
+jsi::Value JSCRuntime::lockWeakObject(__unused const jsi::WeakObject& obj) {
 #ifdef RN_FABRIC_ENABLED
   // TODO: revisit this implementation
   JSObjectRef objRef = objectRef(obj);
@@ -1359,14 +1359,14 @@ JSStringRef JSCRuntime::stringRef(const jsi::PropNameID& sym) {
 JSObjectRef JSCRuntime::objectRef(const jsi::Object& obj) {
   return static_cast<const JSCObjectValue*>(getPointerValue(obj))->obj_;
 }
-      
+
 #ifdef RN_FABRIC_ENABLED
 JSObjectRef JSCRuntime::objectRef(const jsi::WeakObject& obj) {
   // TODO: revisit this implementation
   return static_cast<const JSCObjectValue*>(getPointerValue(obj))->obj_;
 }
 #endif
-      
+
 void JSCRuntime::checkException(JSValueRef exc) {
   if (JSC_UNLIKELY(exc)) {
     throw jsi::JSError(*this, createValue(exc));
