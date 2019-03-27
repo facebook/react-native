@@ -12,7 +12,7 @@
 # also run the RNTester integration test (needs JS and packager).
 # ./objc-test.sh test
 
-set -ex
+set -e
 
 SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 ROOT=$(dirname "$SCRIPTS")
@@ -55,47 +55,68 @@ function waitForPackager {
   echo "Packager is ready!"
 }
 
+function runTests {
+  xcodebuild \
+    -project "RNTester/RNTester.xcodeproj" \
+    -scheme "$SCHEME" \
+    -sdk "$SDK" \
+    -destination "$DESTINATION" \
+    -UseModernBuildSystem="$USE_MODERN_BUILD_SYSTEM" \
+    build test
+}
+
+function buildProject {
+  xcodebuild \
+    -project "RNTester/RNTester.xcodeproj" \
+    -scheme "$SCHEME" \
+    -sdk "$SDK" \
+    -UseModernBuildSystem="$USE_MODERN_BUILD_SYSTEM" \
+    build
+}
+
+function prettyFormat {
+  if ! [ -x "$(command -v xcpretty)" ]; then
+    echo 'Warning: xcpretty is not installed. Install xcpretty to generate JUnit reports.'
+  fi
+
+  if [ "$CI" ]; then
+    # Circle CI expects JUnit reports to be available here
+    REPORTS_DIR="$HOME/react-native/reports"
+  else
+    THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
+
+    # Write reports to the react-native root dir
+    REPORTS_DIR="$THIS_DIR/../build/reports"
+  fi
+
+  xcpretty --report junit --output "$REPORTS_DIR/junit/$TEST_NAME/results.xml"
+}
+
 # If first argument is "test", actually start the packager and run tests.
-# Otherwise, just build RNTester for tvOS and exit
+# Otherwise, just build RNTester and exit
 
 if [ "$1" = "test" ]; then
 
-# Start the packager
-yarn start --max-workers=1 || echo "Can't start packager automatically" &
-# Start the WebSocket test server
-open "./IntegrationTests/launchWebSocketServer.command" || echo "Can't start web socket server automatically"
+  # Start the packager
+  yarn start --max-workers=1 || echo "Can't start packager automatically" &
+  # Start the WebSocket test server
+  open "./IntegrationTests/launchWebSocketServer.command" || echo "Can't start web socket server automatically"
 
-waitForPackager
+  waitForPackager
 
-# Preload the RNTesterApp bundle for better performance in integration tests
-curl 'http://localhost:8081/RNTester/js/RNTesterApp.ios.bundle?platform=ios&dev=true' -o temp.bundle
-rm temp.bundle
-curl 'http://localhost:8081/RNTester/js/RNTesterApp.ios.bundle?platform=ios&dev=true&minify=false' -o temp.bundle
-rm temp.bundle
-curl 'http://localhost:8081/IntegrationTests/IntegrationTestsApp.bundle?platform=ios&dev=true' -o temp.bundle
-rm temp.bundle
-curl 'http://localhost:8081/IntegrationTests/RCTRootViewIntegrationTestApp.bundle?platform=ios&dev=true' -o temp.bundle
-rm temp.bundle
+  # Preload the RNTesterApp bundle for better performance in integration tests
+  curl 'http://localhost:8081/RNTester/js/RNTesterApp.ios.bundle?platform=ios&dev=true' -o temp.bundle
+  rm temp.bundle
+  curl 'http://localhost:8081/RNTester/js/RNTesterApp.ios.bundle?platform=ios&dev=true&minify=false' -o temp.bundle
+  rm temp.bundle
+  curl 'http://localhost:8081/IntegrationTests/IntegrationTestsApp.bundle?platform=ios&dev=true' -o temp.bundle
+  rm temp.bundle
+  curl 'http://localhost:8081/IntegrationTests/RCTRootViewIntegrationTestApp.bundle?platform=ios&dev=true' -o temp.bundle
+  rm temp.bundle
 
-# Run tests
-xcodebuild \
-  -project "RNTester/RNTester.xcodeproj" \
-  -scheme "$SCHEME" \
-  -sdk "$SDK" \
-  -destination "$DESTINATION" \
-  -UseModernBuildSystem=NO \
-  build test \
-  | xcpretty --report junit --output "$HOME/react-native/reports/junit/$TEST_NAME/results.xml" \
-  && exit "${PIPESTATUS[0]}"
-
+  # Build and run tests.
+  runTests | prettyFormat && exit "${PIPESTATUS[0]}"
 else
-
-# Don't run tests. No need to pass -destination to xcodebuild.
-xcodebuild \
-  -project "RNTester/RNTester.xcodeproj" \
-  -scheme "$SCHEME" \
-  -sdk "$SDK" \
-  -UseModernBuildSystem=NO \
-  build
-
+  # Build without running tests.
+  buildProject | prettyFormat && exit "${PIPESTATUS[0]}"
 fi
