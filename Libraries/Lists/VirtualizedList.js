@@ -873,16 +873,17 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         <ListEmptyComponent />
       )): any);
       cells.push(
-        React.cloneElement(element, {
-          key: '$empty',
-          onLayout: event => {
-            this._onLayoutEmpty(event);
-            if (element.props.onLayout) {
-              element.props.onLayout(event);
-            }
-          },
-          style: [element.props.style, inversionStyle],
-        }),
+        <View key="$empty" style={inversionStyle}>
+          {React.cloneElement(element, {
+            onLayout: event => {
+              this._onLayoutEmpty(event);
+              if (element.props.onLayout) {
+                element.props.onLayout(event);
+              }
+            },
+            style: element.props.style,
+          })}
+        </View>,
       );
     }
     if (ListFooterComponent) {
