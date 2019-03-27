@@ -21,12 +21,6 @@ const View = require('View');
 
 import type {Insets} from 'CoreEventTypes';
 
-exports.displayName = (undefined: ?string);
-exports.framework = 'React';
-exports.title = '<SafeAreaView>';
-exports.description =
-  'SafeAreaView automatically applies paddings reflect the portion of the view that is not covered by other (special) ancestor views.';
-
 class SafeAreaViewExample extends React.Component<
   {},
   {|
