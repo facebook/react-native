@@ -35,16 +35,10 @@ class AnimatedNode {
 
   /* Methods and props used by native Animated impl */
   __isNative: boolean;
-  __isConnected: boolean;
   __nativeTag: ?number;
   __makeNative() {
     if (!this.__isNative) {
       throw new Error('This node cannot be made a "native" animated node');
-    }
-  }
-  __connectAnimatedNodes() {
-    if (!this.__isNative) {
-      throw new Error('This node cannot be connected natively');
     }
   }
   __getNativeTag(): ?number {

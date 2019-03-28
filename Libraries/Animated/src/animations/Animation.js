@@ -56,8 +56,9 @@ class Animation {
     onEnd && onEnd(result);
   }
   __startNativeAnimation(animatedValue: AnimatedValue): void {
+    NativeAnimatedHelper.API.enableQueue();
     animatedValue.__makeNative();
-    animatedValue.__connectAnimatedNodes();
+    NativeAnimatedHelper.API.disableQueue();
     this.__nativeId = NativeAnimatedHelper.generateNewAnimationId();
     NativeAnimatedHelper.API.startAnimatingNode(
       this.__nativeId,

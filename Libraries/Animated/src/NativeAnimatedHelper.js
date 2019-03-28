@@ -29,11 +29,24 @@ type EventMapping = {
 
 let nativeEventEmitter;
 
+let queueConnections = false;
+let queue = [];
+
 /**
  * Simple wrappers around NativeAnimatedModule to provide flow and autocmplete support for
  * the native module methods
  */
 const API = {
+  enableQueue: function(): void {
+    queueConnections = true;
+  },
+  disableQueue: function(): void {
+    queueConnections = false;
+    while (queue.length) {
+      const args = queue.shift();
+      NativeAnimatedModule.connectAnimatedNodes(args[0], args[1]);
+    }
+  },
   createAnimatedNode: function(tag: ?number, config: Object): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.createAnimatedNode(tag, config);
@@ -48,6 +61,10 @@ const API = {
   },
   connectAnimatedNodes: function(parentTag: ?number, childTag: ?number): void {
     assertNativeAnimatedModule();
+    if (queueConnections) {
+      queue.push([parentTag, childTag]);
+      return;
+    }
     NativeAnimatedModule.connectAnimatedNodes(parentTag, childTag);
   },
   disconnectAnimatedNodes: function(
