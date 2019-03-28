@@ -7,7 +7,7 @@
 
 [maven_repositories]
   central = https://repo1.maven.org/maven2
-  google = https://maven.google.com
+  google = https://dl.google.com/dl/android/maven2/
 
 [alias]
   rntester = //RNTester/android/app:app

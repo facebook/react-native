@@ -1,5 +1,13 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 package com.facebook.react.bridge;
 
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.common.MeasureSpecProvider;
 import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 
@@ -10,7 +18,12 @@ public interface UIManager extends JSIModule, PerformanceCounter {
   /**
    * Registers a new root view.
    */
-  <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> int addRootView(final T rootView);
+  <T extends SizeMonitoringFrameLayout & MeasureSpecProvider> int addRootView(final T rootView, WritableMap initialProps, @Nullable String initialUITemplate);
+
+  /**
+   * Unregisters a new root view.
+   */
+  void removeRootView(int reactRootTag);
 
   /**
    * Updates the layout specs of the RootShadowNode based on the Measure specs received by
@@ -21,7 +34,7 @@ public interface UIManager extends JSIModule, PerformanceCounter {
   /**
    * Dispatches the commandId received by parameter to the view associated with the reactTag.
    * The command will be processed in the UIThread.
-   * 
+   *
    * @param reactTag {@link int} that identifies the view that will receive this command
    * @param commandId {@link int} command id
    * @param commandArgs {@link ReadableArray} parameters associated with the command

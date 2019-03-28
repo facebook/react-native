@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,49 +10,39 @@
 
 'use strict';
 
-var PropTypes = require('prop-types');
-var React = require('react');
-var ReactNative = require('react-native');
-var {ScrollView, StyleSheet, View} = ReactNative;
+const React = require('react');
+const {ScrollView, StyleSheet, View} = require('react-native');
 
-var RNTesterTitle = require('./RNTesterTitle');
+const RNTesterTitle = require('./RNTesterTitle');
 
-class RNTesterPage extends React.Component<{
-  noScroll?: boolean,
-  noSpacer?: boolean,
-}> {
-  static propTypes = {
-    noScroll: PropTypes.bool,
-    noSpacer: PropTypes.bool,
-  };
+type Props = $ReadOnly<{|
+  children?: React.Node,
+  title?: ?string,
+  noScroll?: ?boolean,
+  noSpacer?: ?boolean,
+|}>;
 
+class RNTesterPage extends React.Component<Props> {
   render() {
-    var ContentWrapper;
-    var wrapperProps = {};
+    let ContentWrapper;
+    let wrapperProps = {};
     if (this.props.noScroll) {
       ContentWrapper = ((View: any): React.ComponentType<any>);
     } else {
       ContentWrapper = (ScrollView: React.ComponentType<any>);
-      // $FlowFixMe found when converting React.createClass to ES6
       wrapperProps.automaticallyAdjustContentInsets = !this.props.title;
       wrapperProps.keyboardShouldPersistTaps = 'handled';
       wrapperProps.keyboardDismissMode = 'interactive';
     }
-    /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.68 was deployed. To see the error delete this
-     * comment and run Flow. */
-    var title = this.props.title ? (
+    const title = this.props.title ? (
       <RNTesterTitle title={this.props.title} />
     ) : null;
-    var spacer = this.props.noSpacer ? null : <View style={styles.spacer} />;
+    const spacer = this.props.noSpacer ? null : <View style={styles.spacer} />;
     return (
       <View style={styles.container}>
         {title}
         <ContentWrapper style={styles.wrapper} {...wrapperProps}>
-          {
-            // $FlowFixMe found when converting React.createClass to ES6
-            this.props.children
-          }
+          {this.props.children}
           {spacer}
         </ContentWrapper>
       </View>
@@ -60,7 +50,7 @@ class RNTesterPage extends React.Component<{
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     backgroundColor: '#e9eaed',
     flex: 1,

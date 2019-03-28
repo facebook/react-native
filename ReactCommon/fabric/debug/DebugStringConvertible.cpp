@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,7 +10,11 @@
 namespace facebook {
 namespace react {
 
-std::string DebugStringConvertible::getDebugChildrenDescription(DebugStringConvertibleOptions options, int depth) const {
+#if RN_DEBUG_STRING_CONVERTIBLE
+
+std::string DebugStringConvertible::getDebugChildrenDescription(
+    DebugStringConvertibleOptions options,
+    int depth) const {
   if (depth >= options.maximumDepth) {
     return "";
   }
@@ -28,7 +32,9 @@ std::string DebugStringConvertible::getDebugChildrenDescription(DebugStringConve
   return childrenString;
 }
 
-std::string DebugStringConvertible::getDebugPropsDescription(DebugStringConvertibleOptions options, int depth) const {
+std::string DebugStringConvertible::getDebugPropsDescription(
+    DebugStringConvertibleOptions options,
+    int depth) const {
   if (depth >= options.maximumDepth) {
     return "";
   }
@@ -43,8 +49,10 @@ std::string DebugStringConvertible::getDebugPropsDescription(DebugStringConverti
     auto name = prop->getDebugName();
     auto value = prop->getDebugValue();
     auto children = prop->getDebugPropsDescription(options, depth + 1);
-    auto valueAndChildren = value + (children.empty() ? "" : "(" + children + ")");
-    propsString += " " + name + (valueAndChildren.empty() ? "" : "=" + valueAndChildren);
+    auto valueAndChildren =
+        value + (children.empty() ? "" : "(" + children + ")");
+    propsString +=
+        " " + name + (valueAndChildren.empty() ? "" : "=" + valueAndChildren);
   }
 
   if (!propsString.empty()) {
@@ -55,19 +63,23 @@ std::string DebugStringConvertible::getDebugPropsDescription(DebugStringConverti
   return propsString;
 }
 
-std::string DebugStringConvertible::getDebugDescription(DebugStringConvertibleOptions options, int depth) const {
-  std::string nameString = getDebugName();
-  std::string valueString = getDebugValue();
-  std::string childrenString = getDebugChildrenDescription(options, depth);
-  std::string propsString = getDebugPropsDescription(options, depth);
+std::string DebugStringConvertible::getDebugDescription(
+    DebugStringConvertibleOptions options,
+    int depth) const {
+  auto nameString = getDebugName();
+  auto valueString = getDebugValue();
+  auto childrenString = getDebugChildrenDescription(options, depth);
+  auto propsString = getDebugPropsDescription(options, depth);
 
-  std::string leading = options.format ? std::string(depth * 2, ' ') : "";
-  std::string trailing = options.format ? "\n" : "";
+  auto leading = options.format ? std::string(depth * 2, ' ') : std::string{""};
+  auto trailing = options.format ? std::string{"\n"} : std::string{""};
 
   return leading + "<" + nameString +
-    (valueString.empty() ? "" : "=" + valueString) +
-    (propsString.empty() ? "" : " " + propsString) +
-    (childrenString.empty() ? "/>" + trailing : ">" + trailing + childrenString + leading + "</" + nameString + ">" + trailing);
+      (valueString.empty() ? "" : "=" + valueString) +
+      (propsString.empty() ? "" : " " + propsString) +
+      (childrenString.empty() ? "/>" + trailing
+                              : ">" + trailing + childrenString + leading +
+               "</" + nameString + ">" + trailing);
 }
 
 std::string DebugStringConvertible::getDebugName() const {
@@ -78,13 +90,16 @@ std::string DebugStringConvertible::getDebugValue() const {
   return "";
 }
 
-SharedDebugStringConvertibleList DebugStringConvertible::getDebugChildren() const {
+SharedDebugStringConvertibleList DebugStringConvertible::getDebugChildren()
+    const {
   return SharedDebugStringConvertibleList();
 }
 
 SharedDebugStringConvertibleList DebugStringConvertible::getDebugProps() const {
   return SharedDebugStringConvertibleList();
 }
+
+#endif
 
 } // namespace react
 } // namespace facebook
