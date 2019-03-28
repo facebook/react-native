@@ -50,7 +50,8 @@
     "README.md",
     "third-party-podspecs",
     "template",
-    "local-cli"
+    "local-cli",
+    "template.config.js"
   ],
   "scripts": {
     "start": "react-native start --reactNativePath .",
