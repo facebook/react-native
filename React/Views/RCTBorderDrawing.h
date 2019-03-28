@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,6 +8,7 @@
 #import "RCTUIKit.h" // TODO(macOS ISS#2323203)
 
 #import <React/RCTBorderStyle.h>
+#import <React/RCTDefines.h>
 
 typedef struct {
   CGFloat topLeft;
@@ -33,24 +34,24 @@ typedef struct {
 /**
  * Determine if the border widths, colors and radii are all equal.
  */
-BOOL RCTBorderInsetsAreEqual(UIEdgeInsets borderInsets);
-BOOL RCTCornerRadiiAreEqual(RCTCornerRadii cornerRadii);
-BOOL RCTBorderColorsAreEqual(RCTBorderColors borderColors);
+RCT_EXTERN BOOL RCTBorderInsetsAreEqual(UIEdgeInsets borderInsets);
+RCT_EXTERN BOOL RCTCornerRadiiAreEqual(RCTCornerRadii cornerRadii);
+RCT_EXTERN BOOL RCTBorderColorsAreEqual(RCTBorderColors borderColors);
 
 /**
  * Convert RCTCornerRadii to RCTCornerInsets by applying border insets.
  * Effectively, returns radius - inset, with a lower bound of 0.0.
  */
-RCTCornerInsets RCTGetCornerInsets(RCTCornerRadii cornerRadii,
-                                   UIEdgeInsets borderInsets);
+RCT_EXTERN RCTCornerInsets RCTGetCornerInsets(RCTCornerRadii cornerRadii,
+                                              UIEdgeInsets borderInsets);
 
 /**
  * Create a CGPath representing a rounded rectangle with the specified bounds
  * and corner insets. Note that the CGPathRef must be released by the caller.
  */
-CGPathRef RCTPathCreateWithRoundedRect(CGRect bounds,
-                                       RCTCornerInsets cornerInsets,
-                                       const CGAffineTransform *transform);
+RCT_EXTERN CGPathRef RCTPathCreateWithRoundedRect(CGRect bounds,
+                                                  RCTCornerInsets cornerInsets,
+                                                  const CGAffineTransform *transform);
 
 /**
  * Draw a CSS-compliant border as an image. You can determine if it's scalable
@@ -59,11 +60,11 @@ CGPathRef RCTPathCreateWithRoundedRect(CGRect bounds,
  * `borderInsets` defines the border widths for each edge.
  * `scaleFactor` defines the backing scale factor of the device for supporting high-resolution drawing.
  */
-UIImage *RCTGetBorderImage(RCTBorderStyle borderStyle,
-                           CGSize viewSize,
-                           RCTCornerRadii cornerRadii,
-                           UIEdgeInsets borderInsets,
-                           RCTBorderColors borderColors,
-                           CGColorRef backgroundColor,
-                           BOOL drawToEdge,
-                           CGFloat scaleFactor); // TODO(macOS ISS#2323203)
+RCT_EXTERN UIImage *RCTGetBorderImage(RCTBorderStyle borderStyle,
+                                      CGSize viewSize,
+                                      RCTCornerRadii cornerRadii,
+                                      UIEdgeInsets borderInsets,
+                                      RCTBorderColors borderColors,
+                                      CGColorRef backgroundColor,
+                                      BOOL drawToEdge,
+                                      CGFloat scaleFactor); // TODO(macOS ISS#2323203)

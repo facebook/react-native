@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -13,90 +13,8 @@
 /* eslint-disable react-native/no-inline-styles */
 
 const React = require('react');
-const {Button, StyleSheet, Text, View} = require('react-native');
+const {StyleSheet, Text, View} = require('react-native');
 const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-
-// [TODO(windows ISS)
-const TouchableNativeFeedback = require('TouchableNativeFeedback');
-
-class ViewFocusEventsExample extends React.Component<{}, $FlowFixMeState> {
-  state = {
-    showSampleViews: false,
-    showTextView: false,
-  };
-
-  defaultFocusView: ?React.ElementRef<typeof View>;
-  view1: ?React.ElementRef<typeof View>;
-  view2: ?React.ElementRef<typeof View>;
-
-  render() {
-    const styles = StyleSheet.create({
-      focusView: {
-        backgroundColor: '#527FE4',
-        borderColor: '#000033',
-        borderWidth: 1,
-      },
-    });
-    return (
-      <View>
-        <Button
-          onPress={() =>
-            this.setState({showSampleViews: !this.state.showSampleViews})
-          }
-          title={
-            this.state.showSampleViews
-              ? 'Hide Sample Focus event View'
-              : 'Show Sample View'
-          }
-        />
-        <Button
-          onPress={() =>
-            this.defaultFocusView ? this.defaultFocusView.focus() : null
-          }
-          title={'Give Focus to default View'}
-        />
-        {this.state.showSampleViews ? (
-          <View>
-            <Text> Enter on any view will move focus within this view </Text>
-            <TouchableNativeFeedback
-              onPress={() =>
-                this.defaultFocusView ? this.defaultFocusView.focus() : null
-              }>
-              <View ref={v => (this.view1 = v)} style={[styles.focusView]}>
-                <Text> Test View</Text>
-              </View>
-            </TouchableNativeFeedback>
-
-            <TouchableNativeFeedback
-              onPress={() => (this.view2 ? this.view2.focus() : null)}>
-              <View
-                ref={v => (this.defaultFocusView = v)}
-                style={[styles.focusView]}>
-                <Text> Default Focus View </Text>
-              </View>
-            </TouchableNativeFeedback>
-
-            <TouchableNativeFeedback
-              onPress={() => (this.view1 ? this.view1.focus() : null)}>
-              <View
-                ref={v => (this.view2 = v)}
-                style={[styles.focusView]}
-                onFocusChange={hasFocus => {
-                  this.setState({showTextView: hasFocus});
-                }}>
-                <Text> Show sample textview on focus </Text>
-              </View>
-            </TouchableNativeFeedback>
-            {this.state.showTextView ? (
-              <Text> This is a sample Text</Text>
-            ) : null}
-          </View>
-        ) : null}
-      </View>
-    );
-  }
-}
-// ]TODO(windows ISS)
 
 exports.title = '<View>';
 exports.description =
@@ -186,21 +104,33 @@ exports.examples = [
             <TouchableWithoutFeedback onPress={this._handlePress}>
               <View>
                 <View
-                  style={{
-                    borderWidth: 1,
-                    borderStyle: this.state.showBorder ? 'dashed' : null,
-                    padding: 5,
-                  }}>
+                  style={[
+                    {
+                      borderWidth: 1,
+                      padding: 5,
+                    },
+                    this.state.showBorder
+                      ? {
+                          borderStyle: 'dashed',
+                        }
+                      : null,
+                  ]}>
                   <Text style={{fontSize: 11}}>Dashed border style</Text>
                 </View>
                 <View
-                  style={{
-                    marginTop: 5,
-                    borderWidth: 1,
-                    borderRadius: 5,
-                    borderStyle: this.state.showBorder ? 'dotted' : null,
-                    padding: 5,
-                  }}>
+                  style={[
+                    {
+                      marginTop: 5,
+                      borderWidth: 1,
+                      borderRadius: 5,
+                      padding: 5,
+                    },
+                    this.state.showBorder
+                      ? {
+                          borderStyle: 'dotted',
+                        }
+                      : null,
+                  ]}>
                   <Text style={{fontSize: 11}}>Dotted border style</Text>
                 </View>
               </View>
@@ -402,6 +332,74 @@ exports.examples = [
         };
       }
       return <ZIndexExample />;
+    },
+  },
+  {
+    title: 'BackfaceVisibility',
+    render: function() {
+      return (
+        <>
+          <Text style={{paddingBottom: 10}}>
+            View #1, front is visible, back is hidden.
+          </Text>
+          <View style={{justifyContent: 'center', alignItems: 'center'}}>
+            <View
+              style={{
+                height: 200,
+                width: 200,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'blue',
+                backfaceVisibility: 'hidden',
+              }}>
+              <Text>Front</Text>
+            </View>
+            <View
+              style={{
+                height: 200,
+                width: 200,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'red',
+                backfaceVisibility: 'hidden',
+                transform: [{rotateY: '180deg'}],
+                position: 'absolute',
+                top: 0,
+              }}>
+              <Text>Back (You should not see this)</Text>
+            </View>
+          </View>
+          <Text style={{paddingVertical: 10}}>
+            View #2, front is hidden, back is visible.
+          </Text>
+          <View style={{justifyContent: 'center', alignItems: 'center'}}>
+            <View
+              style={{
+                height: 200,
+                width: 200,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'blue',
+                backfaceVisibility: 'hidden',
+              }}>
+              <Text>Front (You should not see this)</Text>
+            </View>
+            <View
+              style={{
+                height: 200,
+                width: 200,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: 'red',
+                backfaceVisibility: 'hidden',
+                position: 'absolute',
+                top: 0,
+              }}>
+              <Text>Back</Text>
+            </View>
+          </View>
+        </>
+      );
     },
   },
 ];

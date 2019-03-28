@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2013-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -9,11 +9,12 @@
 
 'use strict';
 
-var BatchedBridge = require('BatchedBridge');
-var DatePickerAndroid = require('DatePickerAndroid');
-var React = require('React');
-var RecordingModule = require('NativeModules').DatePickerDialogRecordingModule;
-var View = require('View');
+const BatchedBridge = require('BatchedBridge');
+const DatePickerAndroid = require('DatePickerAndroid');
+const React = require('React');
+const RecordingModule = require('NativeModules')
+  .DatePickerDialogRecordingModule;
+const View = require('View');
 
 class DatePickerDialogTestApp extends React.Component {
   render() {
@@ -21,7 +22,7 @@ class DatePickerDialogTestApp extends React.Component {
   }
 }
 
-var DatePickerDialogTestModule = {
+const DatePickerDialogTestModule = {
   DatePickerDialogTestApp: DatePickerDialogTestApp,
   showDatePickerDialog: function(options) {
     DatePickerAndroid.open(options).then(

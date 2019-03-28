@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,9 +10,9 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
   StyleSheet,
   Text,
   TextInput,
@@ -22,13 +22,13 @@ var {
   WebView,
 } = ReactNative;
 
-var HEADER = '#3b5998';
-var BGWASH = 'rgba(255,255,255,0.8)';
-var DISABLED_WASH = 'rgba(255,255,255,0.25)';
+const HEADER = '#3b5998';
+const BGWASH = 'rgba(255,255,255,0.8)';
+const DISABLED_WASH = 'rgba(255,255,255,0.25)';
 
-var TEXT_INPUT_REF = 'urlInput';
-var WEBVIEW_REF = 'webview';
-var DEFAULT_URL = 'https://m.facebook.com';
+const TEXT_INPUT_REF = 'urlInput';
+const WEBVIEW_REF = 'webview';
+const DEFAULT_URL = 'https://m.facebook.com';
 const FILE_SYSTEM_ORIGIN_WHITE_LIST = ['file://*', 'http://*', 'https://*'];
 
 class WebViewExample extends React.Component<{}, $FlowFixMeState> {
@@ -44,7 +44,7 @@ class WebViewExample extends React.Component<{}, $FlowFixMeState> {
   inputText = '';
 
   handleTextInputChange = event => {
-    var url = event.nativeEvent.text;
+    let url = event.nativeEvent.text;
     if (!/^[a-zA-Z-_]+:/.test(url)) {
       url = 'http://' + url;
     }
@@ -143,7 +143,7 @@ class WebViewExample extends React.Component<{}, $FlowFixMeState> {
   };
 
   pressGoButton = () => {
-    var url = this.inputText.toLowerCase();
+    const url = this.inputText.toLowerCase();
     if (url === this.state.url) {
       this.reload();
     } else {
@@ -297,7 +297,7 @@ class InjectJS extends React.Component<{}> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: HEADER,
@@ -361,10 +361,6 @@ var styles = StyleSheet.create({
   statusBarText: {
     color: 'white',
     fontSize: 13,
-  },
-  spinner: {
-    width: 20,
-    marginRight: 6,
   },
   buttons: {
     flexDirection: 'row',
@@ -436,6 +432,7 @@ exports.examples = [
             backgroundColor: BGWASH,
             height: 100,
           }}
+          allowFileAccess={true}
           originWhitelist={FILE_SYSTEM_ORIGIN_WHITE_LIST}
           source={require('./helloworld.html')}
           scalesPageToFit={true}

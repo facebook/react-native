@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -49,8 +49,8 @@ function renderApplication<Props: Object>(
     RootComponent.prototype.unstable_isAsyncReactComponent === true
   ) {
     // $FlowFixMe This is not yet part of the official public API
-    const AsyncMode = React.unstable_AsyncMode;
-    renderable = <AsyncMode>{renderable}</AsyncMode>;
+    const ConcurrentMode = React.unstable_ConcurrentMode;
+    renderable = <ConcurrentMode>{renderable}</ConcurrentMode>;
   }
 
   if (fabric) {

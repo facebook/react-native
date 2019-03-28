@@ -14,7 +14,11 @@
 #include <vector>
 
 #ifndef JSI_EXPORT
+#ifdef _MSC_VER
+#define JSI_EXPORT
+#else
 #define JSI_EXPORT __attribute__((visibility("default")))
+#endif
 #endif
 
 class FBJSRuntime;

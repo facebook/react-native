@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -43,7 +43,7 @@ public class ReactScrollViewManager
     extends ViewGroupManager<ReactScrollView>
     implements ReactScrollViewCommandHelper.ScrollCommandHandler<ReactScrollView> {
 
-  protected static final String REACT_CLASS = "RCTScrollView";
+  public static final String REACT_CLASS = "RCTScrollView";
 
   private static final int[] SPACING_TYPES = {
       Spacing.ALL, Spacing.LEFT, Spacing.RIGHT, Spacing.TOP, Spacing.BOTTOM,
@@ -103,6 +103,16 @@ public class ReactScrollViewManager
       offsets.add((int) (snapToOffsets.getDouble(i) * screenDisplayMetrics.density));
     }
     view.setSnapOffsets(offsets);
+  }
+
+  @ReactProp(name = "snapToStart")
+  public void setSnapToStart(ReactScrollView view, boolean snapToStart) {
+    view.setSnapToStart(snapToStart);
+  }
+
+  @ReactProp(name = "snapToEnd")
+  public void setSnapToEnd(ReactScrollView view, boolean snapToEnd) {
+    view.setSnapToEnd(snapToEnd);
   }
 
   @ReactProp(name = ReactClippingViewGroupHelper.PROP_REMOVE_CLIPPED_SUBVIEWS)
@@ -239,6 +249,11 @@ public class ReactScrollViewManager
     view.setBorderColor(SPACING_TYPES[index], rgbComponent, alphaComponent);
   }
 
+  @ReactProp(name = "overflow")
+  public void setOverflow(ReactScrollView view, @Nullable String overflow) {
+    view.setOverflow(overflow);
+  }
+
   @Override
   public void scrollToEnd(
       ReactScrollView scrollView,
@@ -260,11 +275,11 @@ public class ReactScrollViewManager
 
   public static Map<String, Object> createExportedCustomDirectEventTypeConstants() {
     return MapBuilder.<String, Object>builder()
-        .put(ScrollEventType.SCROLL.getJSEventName(), MapBuilder.of("registrationName", "onScroll"))
-        .put(ScrollEventType.BEGIN_DRAG.getJSEventName(), MapBuilder.of("registrationName", "onScrollBeginDrag"))
-        .put(ScrollEventType.END_DRAG.getJSEventName(), MapBuilder.of("registrationName", "onScrollEndDrag"))
-        .put(ScrollEventType.MOMENTUM_BEGIN.getJSEventName(), MapBuilder.of("registrationName", "onMomentumScrollBegin"))
-        .put(ScrollEventType.MOMENTUM_END.getJSEventName(), MapBuilder.of("registrationName", "onMomentumScrollEnd"))
+        .put(ScrollEventType.getJSEventName(ScrollEventType.SCROLL), MapBuilder.of("registrationName", "onScroll"))
+        .put(ScrollEventType.getJSEventName(ScrollEventType.BEGIN_DRAG), MapBuilder.of("registrationName", "onScrollBeginDrag"))
+        .put(ScrollEventType.getJSEventName(ScrollEventType.END_DRAG), MapBuilder.of("registrationName", "onScrollEndDrag"))
+        .put(ScrollEventType.getJSEventName(ScrollEventType.MOMENTUM_BEGIN), MapBuilder.of("registrationName", "onMomentumScrollBegin"))
+        .put(ScrollEventType.getJSEventName(ScrollEventType.MOMENTUM_END), MapBuilder.of("registrationName", "onMomentumScrollEnd"))
         .build();
   }
 }

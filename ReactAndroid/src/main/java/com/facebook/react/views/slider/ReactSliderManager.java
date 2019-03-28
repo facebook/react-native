@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -38,7 +38,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
 
   private static final int STYLE = android.R.attr.seekBarStyle;
 
-  private static final String REACT_CLASS = "RCTSlider";
+  public static final String REACT_CLASS = "RCTSlider";
 
   static class ReactSliderShadowNode extends LayoutShadowNode implements
       YogaMeasureFunction {
@@ -51,34 +51,8 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
       initMeasureFunction();
     }
 
-    private ReactSliderShadowNode(ReactSliderShadowNode node) {
-      super(node);
-      mWidth = node.mWidth;
-      mHeight = node.mHeight;
-      mMeasured = node.mMeasured;
-    }
-
     private void initMeasureFunction() {
       setMeasureFunction(this);
-    }
-
-    @Override
-    public ReactShadowNodeImpl mutableCopy(long instanceHandle) {
-      ReactSliderShadowNode reactShadowNode = (ReactSliderShadowNode) super.mutableCopy(instanceHandle);
-      reactShadowNode.initMeasureFunction();
-      return reactShadowNode;
-    }
-
-    @Override
-    public ReactShadowNodeImpl mutableCopyWithNewChildren(long instanceHandle) {
-      ReactSliderShadowNode reactShadowNode = (ReactSliderShadowNode) super.mutableCopyWithNewChildren(instanceHandle);
-      reactShadowNode.initMeasureFunction();
-      return reactShadowNode;
-    }
-
-    @Override
-    protected ReactSliderShadowNode copy() {
-      return new ReactSliderShadowNode(this);
     }
 
     @Override

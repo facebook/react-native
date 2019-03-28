@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -68,6 +68,25 @@ template<typename T>
 constexpr bool IsJniPrimitive() {
   return is_jni_primitive<T>::value;
 }
+
+/// Metafunction to determine whether a series of types are all primitive JNI types.
+template<typename ...Ts>
+struct are_jni_primitives;
+
+template<typename T, typename ...Ts>
+struct are_jni_primitives<T, Ts...> :
+  std::integral_constant<bool,
+    is_jni_primitive<T>::value && are_jni_primitives<Ts...>::value> {};
+
+template<>
+struct are_jni_primitives<> : std::integral_constant<bool, true> {};
+
+/// Helper to simplify use of are_jni_primitives
+template<typename ...Ts>
+constexpr bool AreJniPrimitives() {
+  return are_jni_primitives<Ts...>::value;
+}
+
 
 /// Metafunction to determine whether a type is a JNI array of primitives or not
 template <typename T>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -14,6 +14,8 @@ import android.provider.Settings.Secure;
 
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.common.build.ReactBuildConfig;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.module.annotations.ReactModule;
 
 import java.util.HashMap;
@@ -26,9 +28,9 @@ import static android.content.Context.UI_MODE_SERVICE;
 /**
  * Module that exposes Android Constants to JS.
  */
-@ReactModule(name = "PlatformConstants")
+@ReactModule(name = AndroidInfoModule.NAME)
 public class AndroidInfoModule extends ReactContextBaseJavaModule {
-
+  public static final String NAME = "PlatformConstants";
   private static final String IS_TESTING = "IS_TESTING";
 
   public AndroidInfoModule(ReactApplicationContext reactContext) {
@@ -69,11 +71,17 @@ public class AndroidInfoModule extends ReactContextBaseJavaModule {
     constants.put("Serial", Build.SERIAL);
     constants.put("Fingerprint", Build.FINGERPRINT);
     constants.put("Model", Build.MODEL);
-    constants.put("ServerHost", AndroidInfoHelpers.getServerHost());
+    if (ReactBuildConfig.DEBUG) {
+      constants.put("ServerHost", AndroidInfoHelpers.getServerHost());
+    }
     constants.put("isTesting", "true".equals(System.getProperty(IS_TESTING)));
     constants.put("reactNativeVersion", ReactNativeVersion.VERSION);
     constants.put("uiMode", uiMode());
-    constants.put("androidID", Secure.getString(getReactApplicationContext().getContentResolver(), Secure.ANDROID_ID));
     return constants;
+  }
+
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public String getAndroidID(){
+    return Secure.getString(getReactApplicationContext().getContentResolver(),Secure.ANDROID_ID);
   }
 }

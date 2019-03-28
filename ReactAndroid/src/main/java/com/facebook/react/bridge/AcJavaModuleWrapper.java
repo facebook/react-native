@@ -47,7 +47,7 @@ public final class AcJavaModuleWrapper extends JavaModuleWrapper {
   }
 
   public AcJavaModuleWrapper(JSInstance jsInstance, String moduleClass, ModuleHolder moduleHolder) {
-    super(jsInstance, moduleClass, moduleHolder);
+    super(jsInstance, moduleHolder);
     ModuleHelper helper = null;
     if (helper == null && mCustomModuleProvider != null) {
       helper = mCustomModuleProvider.getModuleHelper(getModule());
