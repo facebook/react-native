@@ -20,6 +20,7 @@ class RNTesterExampleContainer extends React.Component {
     // Filter platform-specific examples
     const {description, platform} = example;
     let {title} = example;
+    let platformSupported;
     if (platform) {
       if (Array.isArray(platform)) {
         if (!platform.includes(Platform.OS)) {

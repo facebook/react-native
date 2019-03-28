@@ -8,7 +8,7 @@
  * @flow
  */
 
- // TODO(macOS ISS#2323203)
+// TODO(macOS ISS#2323203)
 
 'use strict';
 
