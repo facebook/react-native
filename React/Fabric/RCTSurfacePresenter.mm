@@ -221,6 +221,11 @@ using namespace facebook::react;
   _contextContainer->registerInstance(_reactNativeConfig, "ReactNativeConfig");
 
   auto messageQueueThread = _batchedBridge.jsMessageThread;
+  if (messageQueueThread) {
+    // Make sure initializeBridge completed
+    messageQueueThread->runOnQueueSync([] {});
+  }
+  
   auto runtime = (facebook::jsi::Runtime *)((RCTCxxBridge *)_batchedBridge).runtime;
 
   RuntimeExecutor runtimeExecutor =
