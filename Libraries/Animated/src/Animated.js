@@ -13,23 +13,23 @@
 const AnimatedImplementation = require('AnimatedImplementation');
 
 module.exports = {
-get FlatList() {
-  return require('AnimatedFlatList');
+  get FlatList() {
+    return require('AnimatedFlatList');
   },
-get Image() {
-  return require('AnimatedImage');
+  get Image() {
+    return require('AnimatedImage');
   },
-get ScrollView() {
-  return require('AnimatedScrollView');
+  get ScrollView() {
+    return require('AnimatedScrollView');
   },
-get SectionList() {
-  return require('AnimatedSectionList');
+  get SectionList() {
+    return require('AnimatedSectionList');
   },
-get Text() {
-  return require('AnimatedText');
+  get Text() {
+    return require('AnimatedText');
   },
-get View() {
-  return require('AnimatedView');
+  get View() {
+    return require('AnimatedView');
   },
-...AnimatedImplementation,
+  ...AnimatedImplementation,
 };
