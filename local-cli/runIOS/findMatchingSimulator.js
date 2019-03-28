@@ -43,9 +43,12 @@ function findMatchingSimulator(simulators, simulatorString) {
     const device = devices[versionDescriptor];
     let version = versionDescriptor;
 
-    if ((/^com\.apple\.CoreSimulator\.SimRuntime\./g).test(version)) {
+    if (/^com\.apple\.CoreSimulator\.SimRuntime\./g.test(version)) {
       // Transform "com.apple.CoreSimulator.SimRuntime.iOS-12-2" into "iOS 12.2"
-      version = version.replace(/^com\.apple\.CoreSimulator\.SimRuntime\.([^-]+)-([^-]+)-([^-]+)$/g, '$1 $2.$3');
+      version = version.replace(
+        /^com\.apple\.CoreSimulator\.SimRuntime\.([^-]+)-([^-]+)-([^-]+)$/g,
+        '$1 $2.$3',
+      );
     }
 
     // Making sure the version of the simulator is an iOS or tvOS (Removes Apple Watch, etc)

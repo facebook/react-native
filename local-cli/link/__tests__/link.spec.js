@@ -11,7 +11,7 @@
 'use strict';
 
 const log = require('npmlog');
-jest.setMock('chalk', { grey: str => str });
+jest.setMock('chalk', {grey: str => str});
 
 describe('link', () => {
   beforeEach(() => {
@@ -33,11 +33,11 @@ describe('link', () => {
 
   it('should accept a name of a dependency to link', done => {
     const config = {
-      getPlatformConfig: () => ({ ios: {}, android: {} }),
-      getProjectConfig: () => ({ assets: [] }),
+      getPlatformConfig: () => ({ios: {}, android: {}}),
+      getProjectConfig: () => ({assets: []}),
       getDependencyConfig: jest
         .fn()
-        .mockReturnValue({ assets: [], commands: {} }),
+        .mockReturnValue({assets: [], commands: {}}),
     };
 
     const link = require('../link').func;
@@ -51,11 +51,11 @@ describe('link', () => {
 
   it('should accept the name of a dependency with a scope / tag', async () => {
     const config = {
-      getPlatformConfig: () => ({ ios: {}, android: {} }),
-      getProjectConfig: () => ({ assets: [] }),
+      getPlatformConfig: () => ({ios: {}, android: {}}),
+      getProjectConfig: () => ({assets: []}),
       getDependencyConfig: jest
         .fn()
-        .mockReturnValue({ assets: [], commands: {} }),
+        .mockReturnValue({assets: [], commands: {}}),
     };
 
     const link = require('../link').func;
@@ -67,15 +67,15 @@ describe('link', () => {
 
   it('should register native module when android/ios projects are present', done => {
     const registerNativeModule = jest.fn();
-    const dependencyConfig = { android: {}, ios: {}, assets: [], commands: {} };
+    const dependencyConfig = {android: {}, ios: {}, assets: [], commands: {}};
     const androidLinkConfig = require('../android');
     const iosLinkConfig = require('../ios');
     const config = {
       getPlatformConfig: () => ({
-        ios: { linkConfig: iosLinkConfig },
-        android: { linkConfig: androidLinkConfig },
+        ios: {linkConfig: iosLinkConfig},
+        android: {linkConfig: androidLinkConfig},
       }),
-      getProjectConfig: () => ({ android: {}, ios: {}, assets: [] }),
+      getProjectConfig: () => ({android: {}, ios: {}, assets: []}),
       getDependencyConfig: jest.fn().mockReturnValue(dependencyConfig),
     };
 
@@ -97,10 +97,10 @@ describe('link', () => {
 
   it('should not register modules when they are already installed', done => {
     const registerNativeModule = jest.fn();
-    const dependencyConfig = { ios: {}, android: {}, assets: [], commands: {} };
+    const dependencyConfig = {ios: {}, android: {}, assets: [], commands: {}};
     const config = {
-      getPlatformConfig: () => ({ ios: {}, android: {} }),
-      getProjectConfig: () => ({ ios: {}, android: {}, assets: [] }),
+      getPlatformConfig: () => ({ios: {}, android: {}}),
+      getProjectConfig: () => ({ios: {}, android: {}, assets: []}),
       getDependencyConfig: jest.fn().mockReturnValue(dependencyConfig),
     };
 
@@ -137,9 +137,9 @@ describe('link', () => {
       getPlatformConfig: () => ({
         ios: {},
         android: {},
-        test: { linkConfig: () => linkPluginConfig },
+        test: {linkConfig: () => linkPluginConfig},
       }),
-      getProjectConfig: () => ({ ios: {}, android: {}, test: {}, assets: [] }),
+      getProjectConfig: () => ({ios: {}, android: {}, test: {}, assets: []}),
       getDependencyConfig: jest.fn().mockReturnValue(dependencyConfig),
     };
 
@@ -172,9 +172,9 @@ describe('link', () => {
       getPlatformConfig: () => ({
         ios: {},
         android: {},
-        test: { linkConfig: () => linkPluginConfig },
+        test: {linkConfig: () => linkPluginConfig},
       }),
-      getProjectConfig: () => ({ ios: {}, android: {}, test: {}, assets: [] }),
+      getProjectConfig: () => ({ios: {}, android: {}, test: {}, assets: []}),
       getDependencyConfig: jest.fn().mockReturnValue(dependencyConfig),
     };
 
@@ -201,12 +201,12 @@ describe('link', () => {
 
     const linkConfig = require('../ios');
     const config = {
-      getPlatformConfig: () => ({ ios: { linkConfig: linkConfig } }),
-      getProjectConfig: () => ({ ios: {}, assets: [] }),
+      getPlatformConfig: () => ({ios: {linkConfig: linkConfig}}),
+      getProjectConfig: () => ({ios: {}, assets: []}),
       getDependencyConfig: jest.fn().mockReturnValue({
         ios: {},
         assets: [],
-        commands: { prelink, postlink },
+        commands: {prelink, postlink},
       }),
     };
 
@@ -223,7 +223,7 @@ describe('link', () => {
 
   it('should copy assets from both project and dependencies projects', done => {
     const dependencyAssets = ['Fonts/Font.ttf'];
-    const dependencyConfig = { assets: dependencyAssets, ios: {}, commands: {} };
+    const dependencyConfig = {assets: dependencyAssets, ios: {}, commands: {}};
     const projectAssets = ['Fonts/FontC.ttf'];
     const copyAssets = jest.fn();
 
@@ -231,8 +231,8 @@ describe('link', () => {
 
     const linkConfig = require('../ios');
     const config = {
-      getPlatformConfig: () => ({ ios: { linkConfig: linkConfig } }),
-      getProjectConfig: () => ({ ios: {}, assets: projectAssets }),
+      getPlatformConfig: () => ({ios: {linkConfig: linkConfig}}),
+      getProjectConfig: () => ({ios: {}, assets: projectAssets}),
       getDependencyConfig: jest.fn().mockReturnValue(dependencyConfig),
     };
 

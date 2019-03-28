@@ -252,15 +252,15 @@ type AndroidViewProps = $ReadOnly<{|
   /**
    * When `true`, indicates that the view is clickable. By default,
    * all the touchable elements are clickable.
-   * 
+   *
    * @platform android
    */
   clickable?: ?boolean, // TODO(android ISS)
-  
+
   /**
    * When `clickable` is true, the system will try to invoke this function
    * when the user performs a click.
-   * 
+   *
    * @platform android
    */
 
@@ -288,7 +288,7 @@ type AndroidViewProps = $ReadOnly<{|
 
   /**
    * fired when the view focus changes (gain->lose or lose->gain)
-   * 
+   *
    * @platform android
    */
   onFocusChange?: ?Function, // TODO(android ISS)
@@ -474,8 +474,8 @@ export type ViewProps = $ReadOnly<{|
    * See http://facebook.github.io/react-native/docs/view.html#pointerevents
    */
   pointerEvents?: ?('auto' | 'box-none' | 'box-only' | 'none'),
- 
-   /**
+
+  /**
    * This is a special performance property exposed by `RCTView` and is useful
    * for scrolling content when there are many subviews, most of which are
    * offscreen. For this property to be effective, it must be applied to a
