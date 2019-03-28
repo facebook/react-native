@@ -22,7 +22,6 @@ var ViewPropTypes = require('ViewPropTypes');
 var createReactClass = require('create-react-class');
 var requireNativeComponent = require('requireNativeComponent');
 
-
 import type {NativeComponent} from 'ReactNative';
 import type {ImageSource} from 'ImageSource';
 import type {ColorValue} from 'StyleSheetTypes';

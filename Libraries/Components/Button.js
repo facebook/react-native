@@ -21,7 +21,7 @@ const View = require('View');
 
 const invariant = require('fbjs/lib/invariant');
 
-import type { PressEvent } from 'CoreEventTypes';
+import type {PressEvent} from 'CoreEventTypes';
 
 type ButtonProps = $ReadOnly<{|
   /**
@@ -29,38 +29,38 @@ type ButtonProps = $ReadOnly<{|
    */
   title: string,
 
-    /**
-     * Handler to be called when the user taps the button
-     */
-    onPress: (event?: PressEvent) => mixed,
+  /**
+   * Handler to be called when the user taps the button
+   */
+  onPress: (event?: PressEvent) => mixed,
 
-      /**
-       * Color of the text (iOS), or background color of the button (Android)
-       */
-      color?: ?string,
+  /**
+   * Color of the text (iOS), or background color of the button (Android)
+   */
+  color?: ?string,
 
-      /**
-       * TV preferred focus (see documentation for the View component).
-       */
-      hasTVPreferredFocus?: ?boolean,
+  /**
+   * TV preferred focus (see documentation for the View component).
+   */
+  hasTVPreferredFocus?: ?boolean,
 
-      /**
-       * Text to display for blindness accessibility features
-       */
-      accessibilityLabel?: ?string,
-      /**
-       * Hint text to display blindness accessibility features
-       */
-      accessibilityHint? : ?string, // TODO(OSS Candidate ISS#2710739)
-        /**
-         * If true, disable all interactions for this component.
-         */
-        disabled?: ?boolean,
+  /**
+   * Text to display for blindness accessibility features
+   */
+  accessibilityLabel?: ?string,
+  /**
+   * Hint text to display blindness accessibility features
+   */
+  accessibilityHint?: ?string, // TODO(OSS Candidate ISS#2710739)
+  /**
+   * If true, disable all interactions for this component.
+   */
+  disabled?: ?boolean,
 
-        /**
-         * Used to locate this view in end-to-end tests.
-         */
-        testID?: ?string,
+  /**
+   * Used to locate this view in end-to-end tests.
+   */
+  testID?: ?string,
 |}>;
 
 /**
@@ -110,9 +110,9 @@ class Button extends React.Component<ButtonProps> {
         Platform.OS === 'ios' ||
         Platform.OS === 'macos' /* TODO(macOS ISS#2323203) */
       ) {
-        textStyles.push({ color: color });
+        textStyles.push({color: color});
       } else {
-        buttonStyles.push({ backgroundColor: color });
+        buttonStyles.push({backgroundColor: color});
       }
     }
     const accessibilityStates = [];
@@ -183,11 +183,13 @@ const styles = StyleSheet.create({
         color: 'white',
         fontWeight: '500',
       },
-      macos: { // [TODO(macOS ISS#2323203)
+      macos: {
+        // [TODO(macOS ISS#2323203)
         color: '#007AFF',
         fontSize: 18,
       }, // ]TODO(macOS ISS#2323203)
-      uwp: { // [TODO(windows ISS)
+      uwp: {
+        // [TODO(windows ISS)
         color: 'white',
         fontWeight: '500',
       },

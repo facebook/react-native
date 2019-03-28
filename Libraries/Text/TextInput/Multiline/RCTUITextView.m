@@ -190,18 +190,15 @@ static UIColor *defaultPlaceholderColor()
 
 - (void)setAttributedText:(NSAttributedString *)attributedText
 {
-  // Using `setAttributedString:` while user is typing breaks some internal mechanics
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+ // Using `setAttributedString:` while user is typing breaks some internal mechanics
   // when entering complex input languages such as Chinese, Korean or Japanese.
   // see: https://github.com/facebook/react-native/issues/19339
 
   // We try to avoid calling this method as much as we can.
   // If the text has changed, there is nothing we can do.
   if (![super.attributedText.string isEqualToString:attributedText.string]) {
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
     [super setAttributedText:attributedText];
-#else // [TODO(macOS ISS#2323203)
-    [self.textStorage setAttributedString:attributedText];
-#endif // ]TODO(macOS ISS#2323203)
   } else {
   // But if the text is preserved, we just copying the attributes from the source string.
     if (![super.attributedText isEqualToAttributedString:attributedText]) {
@@ -210,6 +207,9 @@ static UIColor *defaultPlaceholderColor()
   }
 
   [self textDidChange];
+#else // [TODO(macOS ISS#2323203)
+  [self.textStorage setAttributedString:attributedText];
+#endif // ]TODO(macOS ISS#2323203)
 }
 
 #pragma mark - Overrides
