@@ -304,23 +304,8 @@
 		1854FF5B1EF485C60008DADC /* SampleCxxModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0D41E03699D0018521A /* SampleCxxModule.h */; };
 		1854FF5C1EF485C60008DADC /* SystraceSection.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0D51E03699D0018521A /* SystraceSection.h */; };
 		1854FF621EF487C00008DADC /* (null) in Headers */ = {isa = PBXBuildFile; };
-		1854FF641EF487CB0008DADC /* (null) in Headers */ = {isa = PBXBuildFile; };
-		1854FF661EF487D10008DADC /* (null) in Headers */ = {isa = PBXBuildFile; };
-		1854FF681EF487DE0008DADC /* (null) in Headers */ = {isa = PBXBuildFile; };
-		1854FF691EF487E20008DADC /* (null) in Headers */ = {isa = PBXBuildFile; };
-		1854FF6B1EF487E80008DADC /* (null) in Headers */ = {isa = PBXBuildFile; };
-		1854FF6D1EF487EE0008DADC /* (null) in Headers */ = {isa = PBXBuildFile; };
 		18572B9F1EF32003007EAD54 /* RCTUIKit.h in Headers */ = {isa = PBXBuildFile; fileRef = 6BF8B4B21EC550F500061E2F /* RCTUIKit.h */; };
-		18632BF71EF494C70010A3BB /* (null) in Copy Headers */ = {isa = PBXBuildFile; };
-		18632BF81EF494C70010A3BB /* (null) in Copy Headers */ = {isa = PBXBuildFile; };
-		18632BF91EF494C70010A3BB /* (null) in Copy Headers */ = {isa = PBXBuildFile; };
-		18632BFA1EF494C70010A3BB /* (null) in Copy Headers */ = {isa = PBXBuildFile; };
-		18632BFB1EF494C70010A3BB /* (null) in Copy Headers */ = {isa = PBXBuildFile; };
-		18632BFC1EF494C70010A3BB /* (null) in Copy Headers */ = {isa = PBXBuildFile; };
-		18632BFD1EF494C70010A3BB /* (null) in Copy Headers */ = {isa = PBXBuildFile; };
 		18632C021EF495D40010A3BB /* libcxxreact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B857F421EC51FCF00A9D063 /* libcxxreact.a */; };
-		18632C031EF495D40010A3BB /* libdouble-conversion.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1882027C1EF48B7E00C9B354 /* libdouble-conversion.a */; };
-		18632C041EF495D40010A3BB /* libjschelpers.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B857F4F1EC51FD400A9D063 /* libjschelpers.a */; };
 		18632C051EF495D40010A3BB /* libthird-party.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 188202A21EF48CF700C9B354 /* libthird-party.a */; };
 		18632C061EF495D40010A3BB /* libyoga.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B857F341EC51FCC00A9D063 /* libyoga.a */; };
 		18632C1A1EF49C9D0010A3BB /* CxxModule.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D92B0A71E03699D0018521A /* CxxModule.h */; };
@@ -620,16 +605,12 @@
 		18B8F9CA214335C800CE911A /* RCTLayout.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 591F78D9202ADB22004A668C /* RCTLayout.h */; };
 		18C2C6682141C86E004314E0 /* JSException.h in Headers */ = {isa = PBXBuildFile; fileRef = 18C2C6662141C86E004314E0 /* JSException.h */; };
 		18C2C6692141C86E004314E0 /* JSException.h in Headers */ = {isa = PBXBuildFile; fileRef = 18C2C6662141C86E004314E0 /* JSException.h */; };
-		18C2C66B2141C8AC004314E0 /* JSException.h in Headers */ = {isa = PBXBuildFile; fileRef = 18C2C6662141C86E004314E0 /* JSException.h */; };
-		18C2C66E2141C8DD004314E0 /* JSException.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 18C2C6662141C86E004314E0 /* JSException.h */; };
 		18C2C6712141C955004314E0 /* RCTPlatformDisplayLink.h in Headers */ = {isa = PBXBuildFile; fileRef = 18C2C6702141C955004314E0 /* RCTPlatformDisplayLink.h */; };
 		18C2C6722141C955004314E0 /* RCTPlatformDisplayLink.h in Headers */ = {isa = PBXBuildFile; fileRef = 18C2C6702141C955004314E0 /* RCTPlatformDisplayLink.h */; };
 		18C2C6732141C955004314E0 /* RCTPlatformDisplayLink.h in Headers */ = {isa = PBXBuildFile; fileRef = 18C2C6702141C955004314E0 /* RCTPlatformDisplayLink.h */; };
 		18C2C6742141C99B004314E0 /* RCTPlatformDisplayLink.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 18C2C6702141C955004314E0 /* RCTPlatformDisplayLink.h */; };
 		18C2C6752141C9A8004314E0 /* RCTPlatformDisplayLink.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 18C2C6702141C955004314E0 /* RCTPlatformDisplayLink.h */; };
 		18C2C6762141C9B4004314E0 /* RCTPlatformDisplayLink.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 18C2C6702141C955004314E0 /* RCTPlatformDisplayLink.h */; };
-		18C3A9AA1FE1CDCC00DEC48A /* (null) in Headers */ = {isa = PBXBuildFile; };
-		18C3A9AC1FE1CDCC00DEC48A /* (null) in Copy Headers */ = {isa = PBXBuildFile; };
 		18C3A9C21FE1D4AD00DEC48A /* RCTCxxBridgeDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 134D63C21F1FEC4B008872B5 /* RCTCxxBridgeDelegate.h */; };
 		18C3A9C51FE1D7D200DEC48A /* RAMBundleRegistry.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = C6D380181F71D75B00621378 /* RAMBundleRegistry.h */; };
 		18C3A9C61FE1D88400DEC48A /* RCTUIManagerUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 59500D411F71C63700B122B7 /* RCTUIManagerUtils.h */; };
@@ -706,12 +687,10 @@
 		18F3B9EA2142F1E300AD247D /* RCTWebSocketModule.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D0E37891F1CC40000DCAC9F /* RCTWebSocketModule.h */; };
 		18F3B9EB2142F1E600AD247D /* RCTReconnectingWebSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7BFD2B1EA8E3FA008DFB7A /* RCTReconnectingWebSocket.h */; };
 		18F3B9EC2142F1E900AD247D /* RCTSRWebSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D7BFD2C1EA8E3FA008DFB7A /* RCTSRWebSocket.h */; };
-		18F3BA0C2142F48D00AD247D /* RCTProgressViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 13513F3B1B1F43F400FCE529 /* RCTProgressViewManager.m */; };
 		18F3BA0D2142F49600AD247D /* RCTProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18008F9A2141A922007F325D /* RCTProgressView.m */; };
 		18F3BA0F2142F4DB00AD247D /* RCTWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F3BA0E2142F4DB00AD247D /* RCTWebView.m */; };
 		18F3BA162142F86400AD247D /* InspectorInterfaces.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = EBF21BBA1FC498270052F4D5 /* InspectorInterfaces.h */; };
 		18F3BA182142F86400AD247D /* InspectorInterfaces.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EBF21BBB1FC498270052F4D5 /* InspectorInterfaces.cpp */; };
-		18F3BA232142F94400AD247D /* (null) in Sources */ = {isa = PBXBuildFile; };
 		18F3BA242142F94800AD247D /* YGLayout.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5343895E203905B6008E0CB3 /* YGLayout.cpp */; };
 		18F3BA252142F94B00AD247D /* YGStyle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5352C5722038FF8D00A3B97E /* YGStyle.cpp */; };
 		18F3BA262142F94F00AD247D /* Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 53756E372004FFF700FBBD99 /* Utils.cpp */; };
@@ -737,11 +716,6 @@
 		18F3BA3A2142F97000AD247D /* (null) in Sources */ = {isa = PBXBuildFile; };
 		18F3BA3B2142F97000AD247D /* RAMBundleRegistry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C6D380191F71D75B00621378 /* RAMBundleRegistry.cpp */; };
 		18F3BA3C2142F97000AD247D /* SampleCxxModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3D92B0D31E03699D0018521A /* SampleCxxModule.cpp */; };
-		18F3BA3E2142F97800AD247D /* (null) in Sources */ = {isa = PBXBuildFile; };
-		18F3BA3F2142F97800AD247D /* (null) in Sources */ = {isa = PBXBuildFile; };
-		18F3BA402142F97800AD247D /* (null) in Sources */ = {isa = PBXBuildFile; };
-		18F3BA412142F97800AD247D /* (null) in Sources */ = {isa = PBXBuildFile; };
-		18F3BA422142F97800AD247D /* (null) in Sources */ = {isa = PBXBuildFile; };
 		18F3BA432142F98500AD247D /* (null) in Sources */ = {isa = PBXBuildFile; };
 		18F3BA442142F98500AD247D /* (null) in Sources */ = {isa = PBXBuildFile; };
 		18F3BA452142F98500AD247D /* (null) in Sources */ = {isa = PBXBuildFile; };
@@ -849,8 +823,6 @@
 		2D3B5ECA1D9B095F00451313 /* RCTComponentData.m in Sources */ = {isa = PBXBuildFile; fileRef = 13AB90C01B6FA36700713B4F /* RCTComponentData.m */; };
 		2D3B5ECB1D9B096200451313 /* RCTConvert+CoreLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 13456E921ADAD2DE009F94A7 /* RCTConvert+CoreLocation.m */; };
 		2D3B5ECF1D9B096F00451313 /* RCTFont.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3D37B5811D522B190042D5B5 /* RCTFont.mm */; };
-		2D3B5ED61D9B098400451313 /* RCTModalHostViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 83A1FE8E1B62643A00BE0E65 /* RCTModalHostViewManager.m */; };
-		2D3B5EDD1D9B09A300451313 /* RCTProgressViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 13513F3B1B1F43F400FCE529 /* RCTProgressViewManager.m */; };
 		2D3B5EE01D9B09AD00451313 /* RCTRootShadowView.m in Sources */ = {isa = PBXBuildFile; fileRef = 13BCE8081C99CB9D00DD7AAD /* RCTRootShadowView.m */; };
 		2D3B5EE31D9B09B700451313 /* RCTSegmentedControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 131B6AF11AF1093D00FFC3E0 /* RCTSegmentedControl.m */; };
 		2D3B5EE41D9B09BB00451313 /* RCTSegmentedControlManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 131B6AF31AF1093D00FFC3E0 /* RCTSegmentedControlManager.m */; };
@@ -1663,6 +1635,30 @@
 		9F0D8930224166060053729F /* Unicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F0D892F224166050053729F /* Unicode.cpp */; };
 		9F0D8931224166060053729F /* Unicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F0D892F224166050053729F /* Unicode.cpp */; };
 		9F0D8932224166060053729F /* Unicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9F0D892F224166050053729F /* Unicode.cpp */; };
+		9FB7D34C224954A600F31D11 /* libjsinspector-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F2AC95E2239D788005C9C14 /* libjsinspector-macOS.a */; };
+		9FB7D34D224954B300F31D11 /* libjsi-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21D78224303D900E7F88E /* libjsi-macOS.a */; };
+		9FB7D34E224954CC00F31D11 /* libjsiexecutor-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21D94224305AA00E7F88E /* libjsiexecutor-macOS.a */; };
+		9FB7D34F224954EE00F31D11 /* libdouble-conversion.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1882027C1EF48B7E00C9B354 /* libdouble-conversion.a */; };
+		9FB7D3EB224ABDA400F31D11 /* RCTDatePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 133CAE8D1B8E5CFD00F6AD92 /* RCTDatePicker.m */; };
+		9FD21D65224303D900E7F88E /* jsi.h in Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6E1214B3F6800DD5AC8 /* jsi.h */; };
+		9FD21D66224303D900E7F88E /* JSCRuntime.h in Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6DE214B3F6800DD5AC8 /* JSCRuntime.h */; };
+		9FD21D67224303D900E7F88E /* JSIDynamic.h in Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6DC214B3F6800DD5AC8 /* JSIDynamic.h */; };
+		9FD21D68224303D900E7F88E /* jsi-inl.h in Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6D9214B3F6800DD5AC8 /* jsi-inl.h */; };
+		9FD21D69224303D900E7F88E /* instrumentation.h in Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6E0214B3F6800DD5AC8 /* instrumentation.h */; };
+		9FD21D6B224303D900E7F88E /* instrumentation.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6E0214B3F6800DD5AC8 /* instrumentation.h */; };
+		9FD21D6C224303D900E7F88E /* jsi-inl.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6D9214B3F6800DD5AC8 /* jsi-inl.h */; };
+		9FD21D6D224303D900E7F88E /* JSIDynamic.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6DC214B3F6800DD5AC8 /* JSIDynamic.h */; };
+		9FD21D6E224303D900E7F88E /* JSCRuntime.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6DE214B3F6800DD5AC8 /* JSCRuntime.h */; };
+		9FD21D6F224303D900E7F88E /* jsi.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = EDEBC6E1214B3F6800DD5AC8 /* jsi.h */; };
+		9FD21D71224303D900E7F88E /* JSCRuntime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDEBC6DD214B3F6800DD5AC8 /* JSCRuntime.cpp */; };
+		9FD21D72224303D900E7F88E /* jsi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDEBC6DB214B3F6800DD5AC8 /* jsi.cpp */; };
+		9FD21D73224303D900E7F88E /* JSIDynamic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDEBC6DA214B3F6800DD5AC8 /* JSIDynamic.cpp */; };
+		9FD21D88224305AA00E7F88E /* JSINativeModules.h in Headers */ = {isa = PBXBuildFile; fileRef = ED6189682155BBF70000C9A7 /* JSINativeModules.h */; };
+		9FD21D89224305AA00E7F88E /* JSIExecutor.h in Headers */ = {isa = PBXBuildFile; fileRef = ED6189672155BBF70000C9A7 /* JSIExecutor.h */; };
+		9FD21D8B224305AA00E7F88E /* JSIExecutor.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = ED6189672155BBF70000C9A7 /* JSIExecutor.h */; };
+		9FD21D8C224305AA00E7F88E /* JSINativeModules.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = ED6189682155BBF70000C9A7 /* JSINativeModules.h */; };
+		9FD21D8E224305AA00E7F88E /* JSINativeModules.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDDA711B2164285A00B2D070 /* JSINativeModules.cpp */; };
+		9FD21D8F224305AA00E7F88E /* JSIExecutor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDDA711C2164285A00B2D070 /* JSIExecutor.cpp */; };
 		A2440AA21DF8D854006E7BFC /* RCTReloadCommand.h in Headers */ = {isa = PBXBuildFile; fileRef = A2440AA01DF8D854006E7BFC /* RCTReloadCommand.h */; };
 		A2440AA31DF8D854006E7BFC /* RCTReloadCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = A2440AA11DF8D854006E7BFC /* RCTReloadCommand.m */; };
 		A2440AA41DF8D865006E7BFC /* RCTReloadCommand.h in Headers */ = {isa = PBXBuildFile; fileRef = A2440AA01DF8D854006E7BFC /* RCTReloadCommand.h */; };
@@ -1756,9 +1752,7 @@
 		EDEBC7E0214C709200DD5AC8 /* libjsinspector.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EBF21BDC1FC498900052F4D5 /* libjsinspector.a */; };
 		F1EFDA50201F661000EE6E4C /* RCTUIUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = F1EFDA4E201F660F00EE6E4C /* RCTUIUtils.m */; };
 		F20481842092E7D400942480 /* (null) in Headers */ = {isa = PBXBuildFile; };
-		F20481862092E7E800942480 /* (null) in Headers */ = {isa = PBXBuildFile; };
 		F20481882092E7EA00942480 /* (null) in Headers */ = {isa = PBXBuildFile; };
-		F204818F2093178D00942480 /* (null) in Copy Headers */ = {isa = PBXBuildFile; };
 		FEFAAC9E1FDB89B50057BBE0 /* RCTRedBoxExtraDataViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FEFAAC9C1FDB89B40057BBE0 /* RCTRedBoxExtraDataViewController.m */; };
 		FEFAAC9F1FDB89B50057BBE0 /* RCTRedBoxExtraDataViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = FEFAAC9D1FDB89B40057BBE0 /* RCTRedBoxExtraDataViewController.h */; };
 /* End PBXBuildFile section */
@@ -1771,47 +1765,12 @@
 			remoteGlobalIDString = 139D7E871E25C6D100323FB7;
 			remoteInfo = "double-conversion";
 		};
-		185EBE351EF4804C0061FD3E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 6B857F431EC51FD400A9D063;
-			remoteInfo = "jschelpers-macOS";
-		};
-		18632BF51EF4940D0010A3BB /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 188202A11EF48CF700C9B354;
-			remoteInfo = "third-party-macOS";
-		};
 		188202BE1EF48DBD00C9B354 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 1882027B1EF48B7E00C9B354;
 			remoteInfo = "double-conversion-macOS";
-		};
-		18C3A9B31FE1D2C600DEC48A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 18C3A9A81FE1CDCC00DEC48A;
-			remoteInfo = "privatedata-macOS";
-		};
-		18C3A9B51FE1D2E600DEC48A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 18C3A9A81FE1CDCC00DEC48A;
-			remoteInfo = "privatedata-macOS";
-		};
-		18F3BA202142F8EA00AD247D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 18F3BA132142F86400AD247D;
-			remoteInfo = "jsinspector-macOS";
 		};
 		3D0574541DE5FF9600184BB4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1868,6 +1827,62 @@
 			proxyType = 1;
 			remoteGlobalIDString = 3D383D3D1EBD27B9005632C8;
 			remoteInfo = "double-conversion-tvOS";
+		};
+		9FD21D792243043100E7F88E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1882027B1EF48B7E00C9B354;
+			remoteInfo = "double-conversion-macOS";
+		};
+		9FD21D7C2243058900E7F88E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9FD21D61224303D900E7F88E;
+			remoteInfo = "jsi-macOS";
+		};
+		9FD21D7E2243059300E7F88E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 18F3BA132142F86400AD247D;
+			remoteInfo = "jsinspector-macOS";
+		};
+		9FD21D95224305C100E7F88E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9FD21D80224305AA00E7F88E;
+			remoteInfo = "jsiexecutor-macOS";
+		};
+		9FD21D972243061900E7F88E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9FD21D61224303D900E7F88E;
+			remoteInfo = "jsi-macOS";
+		};
+		9FD21D992243062200E7F88E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 188202A11EF48CF700C9B354;
+			remoteInfo = "third-party-macOS";
+		};
+		9FD21D9B2243062900E7F88E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6B857F351EC51FCF00A9D063;
+			remoteInfo = "cxxreact-macOS";
+		};
+		9FF8D1E62243081A00B8CECA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1882027B1EF48B7E00C9B354;
+			remoteInfo = "double-conversion-macOS";
 		};
 		ED296F7D214C957300B7C4FE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -2041,25 +2056,6 @@
 			name = "Copy Headers";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		1854FF5E1EF487570008DADC /* Copy Headers */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = include/jschelpers;
-			dstSubfolderSpec = 16;
-			files = (
-				18C2C66E2141C8DD004314E0 /* JSException.h in Copy Headers */,
-				F204818F2093178D00942480 /* (null) in Copy Headers */,
-				18632BF71EF494C70010A3BB /* (null) in Copy Headers */,
-				18632BF81EF494C70010A3BB /* (null) in Copy Headers */,
-				18632BF91EF494C70010A3BB /* (null) in Copy Headers */,
-				18632BFA1EF494C70010A3BB /* (null) in Copy Headers */,
-				18632BFB1EF494C70010A3BB /* (null) in Copy Headers */,
-				18632BFC1EF494C70010A3BB /* (null) in Copy Headers */,
-				18632BFD1EF494C70010A3BB /* (null) in Copy Headers */,
-			);
-			name = "Copy Headers";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		18632BFF1EF495700010A3BB /* Copy Headers */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2193,17 +2189,6 @@
 				1882029C1EF48CAE00C9B354 /* strtod.h in CopyFiles */,
 				1882029D1EF48CAE00C9B354 /* utils.h in CopyFiles */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		18C3A9AB1FE1CDCC00DEC48A /* Copy Headers */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = include/privatedata;
-			dstSubfolderSpec = 16;
-			files = (
-				18C3A9AC1FE1CDCC00DEC48A /* (null) in Copy Headers */,
-			);
-			name = "Copy Headers";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		18F3BA152142F86400AD247D /* Copy Headers */ = {
@@ -2598,6 +2583,33 @@
 				3DA981BC1E5B0E34004F2374 /* RecoverableError.h in Copy Headers */,
 				3DA981BD1E5B0E34004F2374 /* SampleCxxModule.h in Copy Headers */,
 				3DA981BE1E5B0E34004F2374 /* SystraceSection.h in Copy Headers */,
+			);
+			name = "Copy Headers";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9FD21D6A224303D900E7F88E /* Copy Headers */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 12;
+			dstPath = include/jsi;
+			dstSubfolderSpec = 16;
+			files = (
+				9FD21D6B224303D900E7F88E /* instrumentation.h in Copy Headers */,
+				9FD21D6C224303D900E7F88E /* jsi-inl.h in Copy Headers */,
+				9FD21D6D224303D900E7F88E /* JSIDynamic.h in Copy Headers */,
+				9FD21D6E224303D900E7F88E /* JSCRuntime.h in Copy Headers */,
+				9FD21D6F224303D900E7F88E /* jsi.h in Copy Headers */,
+			);
+			name = "Copy Headers";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9FD21D8A224305AA00E7F88E /* Copy Headers */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 12;
+			dstPath = include/jsireact;
+			dstSubfolderSpec = 16;
+			files = (
+				9FD21D8B224305AA00E7F88E /* JSIExecutor.h in Copy Headers */,
+				9FD21D8C224305AA00E7F88E /* JSINativeModules.h in Copy Headers */,
 			);
 			name = "Copy Headers";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3057,7 +3069,6 @@
 		6B7049C81EDF81E3005670F5 /* RCTPlatform.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTPlatform.m; sourceTree = "<group>"; };
 		6B857F341EC51FCC00A9D063 /* libyoga.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libyoga.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		6B857F421EC51FCF00A9D063 /* libcxxreact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcxxreact.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		6B857F4F1EC51FD400A9D063 /* libjschelpers.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libjschelpers.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		6BDE7A171ECA38AC00CC951F /* RCTUIKit.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTUIKit.m; sourceTree = "<group>"; };
 		6BF8B4B21EC550F500061E2F /* RCTUIKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTUIKit.h; sourceTree = "<group>"; };
 		830213F31A654E0800B993E6 /* RCTBridgeModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTBridgeModule.h; sourceTree = "<group>"; };
@@ -3102,7 +3113,8 @@
 		9F0D892F224166050053729F /* Unicode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Unicode.cpp; path = folly/Unicode.cpp; sourceTree = "<group>"; };
 		9F2AC95D2239D788005C9C14 /* libReact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libReact.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		9F2AC95E2239D788005C9C14 /* libjsinspector-macOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libjsinspector-macOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		9F2AC95F2239D788005C9C14 /* libprivatedata-macOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libprivatedata-macOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		9FD21D78224303D900E7F88E /* libjsi-macOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libjsi-macOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		9FD21D94224305AA00E7F88E /* libjsiexecutor-macOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libjsiexecutor-macOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A2440AA01DF8D854006E7BFC /* RCTReloadCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RCTReloadCommand.h; sourceTree = "<group>"; };
 		A2440AA11DF8D854006E7BFC /* RCTReloadCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTReloadCommand.m; sourceTree = "<group>"; };
 		AC70D2E81DE489E4002E6351 /* RCTJavaScriptLoader.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RCTJavaScriptLoader.mm; sourceTree = "<group>"; };
@@ -3162,11 +3174,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9FB7D34C224954A600F31D11 /* libjsinspector-macOS.a in Frameworks */,
 				18632C021EF495D40010A3BB /* libcxxreact.a in Frameworks */,
-				18632C031EF495D40010A3BB /* libdouble-conversion.a in Frameworks */,
-				18632C041EF495D40010A3BB /* libjschelpers.a in Frameworks */,
-				18632C051EF495D40010A3BB /* libthird-party.a in Frameworks */,
+				9FB7D34D224954B300F31D11 /* libjsi-macOS.a in Frameworks */,
+				9FB7D34E224954CC00F31D11 /* libjsiexecutor-macOS.a in Frameworks */,
 				18632C061EF495D40010A3BB /* libyoga.a in Frameworks */,
+				9FB7D34F224954EE00F31D11 /* libdouble-conversion.a in Frameworks */,
+				18632C051EF495D40010A3BB /* libthird-party.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3196,6 +3210,20 @@
 				3D383D721EBD2949005632C8 /* libthird-party.a in Frameworks */,
 				3D8ED92C1E5B120100D83D20 /* libcxxreact.a in Frameworks */,
 				3D3CD9441DE5FC6500167DC4 /* (null) in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9FD21D74224303D900E7F88E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9FD21D90224305AA00E7F88E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3806,7 +3834,8 @@
 				ED296FEE214C9CF800B7C4FE /* libjsiexecutor-tvOS.a */,
 				9F2AC95D2239D788005C9C14 /* libReact.a */,
 				9F2AC95E2239D788005C9C14 /* libjsinspector-macOS.a */,
-				9F2AC95F2239D788005C9C14 /* libprivatedata-macOS.a */,
+				9FD21D78224303D900E7F88E /* libjsi-macOS.a */,
+				9FD21D94224305AA00E7F88E /* libjsiexecutor-macOS.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -3920,7 +3949,6 @@
 				18C2C6662141C86E004314E0 /* JSException.h */,
 				6B857F421EC51FCF00A9D063 /* libcxxreact.a */,
 				1882027C1EF48B7E00C9B354 /* libdouble-conversion.a */,
-				6B857F4F1EC51FD400A9D063 /* libjschelpers.a */,
 				188202A21EF48CF700C9B354 /* libthird-party.a */,
 				6B857F341EC51FCC00A9D063 /* libyoga.a */,
 			);
@@ -4282,21 +4310,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		1854FF5D1EF487540008DADC /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				1854FF661EF487D10008DADC /* (null) in Headers */,
-				1854FF641EF487CB0008DADC /* (null) in Headers */,
-				1854FF6D1EF487EE0008DADC /* (null) in Headers */,
-				1854FF691EF487E20008DADC /* (null) in Headers */,
-				1854FF6B1EF487E80008DADC /* (null) in Headers */,
-				1854FF681EF487DE0008DADC /* (null) in Headers */,
-				18C2C66B2141C8AC004314E0 /* JSException.h in Headers */,
-				F20481862092E7E800942480 /* (null) in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		1882027A1EF48B7E00C9B354 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -4311,14 +4324,6 @@
 				1882028B1EF48BF000C9B354 /* double-conversion.h in Headers */,
 				188202871EF48BF000C9B354 /* cached-powers.h in Headers */,
 				188202891EF48BF000C9B354 /* diy-fp.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		18C3A9A91FE1CDCC00DEC48A /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				18C3A9AA1FE1CDCC00DEC48A /* (null) in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4779,6 +4784,27 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		9FD21D64224303D900E7F88E /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9FD21D65224303D900E7F88E /* jsi.h in Headers */,
+				9FD21D66224303D900E7F88E /* JSCRuntime.h in Headers */,
+				9FD21D67224303D900E7F88E /* JSIDynamic.h in Headers */,
+				9FD21D68224303D900E7F88E /* jsi-inl.h in Headers */,
+				9FD21D69224303D900E7F88E /* instrumentation.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9FD21D87224305AA00E7F88E /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9FD21D88224305AA00E7F88E /* JSINativeModules.h in Headers */,
+				9FD21D89224305AA00E7F88E /* JSIExecutor.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EBF21BC41FC498900052F4D5 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -4921,23 +4947,6 @@
 			name = "third-party-macOS";
 			productName = "third-party-macOS";
 			productReference = 188202A21EF48CF700C9B354 /* libthird-party.a */;
-			productType = "com.apple.product-type.library.static";
-		};
-		18C3A9A81FE1CDCC00DEC48A /* privatedata-macOS */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 18C3A9AF1FE1CDCC00DEC48A /* Build configuration list for PBXNativeTarget "privatedata-macOS" */;
-			buildPhases = (
-				18C3A9A91FE1CDCC00DEC48A /* Headers */,
-				18C3A9AB1FE1CDCC00DEC48A /* Copy Headers */,
-				18F3BA1F2142F8B200AD247D /* Sources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = "privatedata-macOS";
-			productName = React;
-			productReference = 9F2AC95F2239D788005C9C14 /* libprivatedata-macOS.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		18F3BA132142F86400AD247D /* jsinspector-macOS */ = {
@@ -5100,6 +5109,9 @@
 			buildRules = (
 			);
 			dependencies = (
+				9FD21D7D2243058900E7F88E /* PBXTargetDependency */,
+				9FD21D7F2243059300E7F88E /* PBXTargetDependency */,
+				9FD21D96224305C100E7F88E /* PBXTargetDependency */,
 				6B857F551EC5218B00A9D063 /* PBXTargetDependency */,
 				6B857F531EC5218600A9D063 /* PBXTargetDependency */,
 			);
@@ -5136,32 +5148,11 @@
 			buildRules = (
 			);
 			dependencies = (
-				18F3BA212142F8EA00AD247D /* PBXTargetDependency */,
-				18C3A9B61FE1D2E600DEC48A /* PBXTargetDependency */,
-				185EBE361EF4804C0061FD3E /* PBXTargetDependency */,
+				9FF8D1E72243081A00B8CECA /* PBXTargetDependency */,
 			);
 			name = "cxxreact-macOS";
 			productName = React;
 			productReference = 6B857F421EC51FCF00A9D063 /* libcxxreact.a */;
-			productType = "com.apple.product-type.library.static";
-		};
-		6B857F431EC51FD400A9D063 /* jschelpers-macOS */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 6B857F4C1EC51FD400A9D063 /* Build configuration list for PBXNativeTarget "jschelpers-macOS" */;
-			buildPhases = (
-				1854FF5D1EF487540008DADC /* Headers */,
-				1854FF5E1EF487570008DADC /* Copy Headers */,
-				18F3BA122142F85600AD247D /* Sources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				18C3A9B41FE1D2C600DEC48A /* PBXTargetDependency */,
-				18632BF61EF4940D0010A3BB /* PBXTargetDependency */,
-			);
-			name = "jschelpers-macOS";
-			productName = React;
-			productReference = 6B857F4F1EC51FD400A9D063 /* libjschelpers.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		83CBBA2D1A601D0E00E9B192 /* React */ = {
@@ -5187,6 +5178,46 @@
 			name = React;
 			productName = React;
 			productReference = 83CBBA2E1A601D0E00E9B192 /* libReact.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		9FD21D61224303D900E7F88E /* jsi-macOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9FD21D75224303D900E7F88E /* Build configuration list for PBXNativeTarget "jsi-macOS" */;
+			buildPhases = (
+				9FD21D64224303D900E7F88E /* Headers */,
+				9FD21D6A224303D900E7F88E /* Copy Headers */,
+				9FD21D70224303D900E7F88E /* Sources */,
+				9FD21D74224303D900E7F88E /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9FD21D7A2243043100E7F88E /* PBXTargetDependency */,
+			);
+			name = "jsi-macOS";
+			productName = React;
+			productReference = 9FD21D78224303D900E7F88E /* libjsi-macOS.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		9FD21D80224305AA00E7F88E /* jsiexecutor-macOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9FD21D91224305AA00E7F88E /* Build configuration list for PBXNativeTarget "jsiexecutor-macOS" */;
+			buildPhases = (
+				9FD21D87224305AA00E7F88E /* Headers */,
+				9FD21D8A224305AA00E7F88E /* Copy Headers */,
+				9FD21D8D224305AA00E7F88E /* Sources */,
+				9FD21D90224305AA00E7F88E /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9FD21D982243061900E7F88E /* PBXTargetDependency */,
+				9FD21D9A2243062200E7F88E /* PBXTargetDependency */,
+				9FD21D9C2243062900E7F88E /* PBXTargetDependency */,
+			);
+			name = "jsiexecutor-macOS";
+			productName = React;
+			productReference = 9FD21D94224305AA00E7F88E /* libjsiexecutor-macOS.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		EBF21BBF1FC498900052F4D5 /* jsinspector */ = {
@@ -5358,7 +5389,6 @@
 				3D3CD9191DE5FBEC00167DC4 /* cxxreact */,
 				6B857F351EC51FCF00A9D063 /* cxxreact-macOS */,
 				3D3CD9261DE5FBEE00167DC4 /* cxxreact-tvOS */,
-				6B857F431EC51FD400A9D063 /* jschelpers-macOS */,
 				EBF21BBF1FC498900052F4D5 /* jsinspector */,
 				18F3BA132142F86400AD247D /* jsinspector-macOS */,
 				EBF21BDD1FC4989A0052F4D5 /* jsinspector-tvOS */,
@@ -5368,10 +5398,11 @@
 				139D7E871E25C6D100323FB7 /* double-conversion */,
 				1882027B1EF48B7E00C9B354 /* double-conversion-macOS */,
 				3D383D3D1EBD27B9005632C8 /* double-conversion-tvOS */,
-				18C3A9A81FE1CDCC00DEC48A /* privatedata-macOS */,
 				EDEBC6BA214B3E7000DD5AC8 /* jsi */,
-				EDEBC724214B45A300DD5AC8 /* jsiexecutor */,
 				ED296F98214C9A0900B7C4FE /* jsi-tvOS */,
+				9FD21D61224303D900E7F88E /* jsi-macOS */,
+				EDEBC724214B45A300DD5AC8 /* jsiexecutor */,
+				9FD21D80224305AA00E7F88E /* jsiexecutor-macOS */,
 				ED296FD0214C9CF800B7C4FE /* jsiexecutor-tvOS */,
 			);
 		};
@@ -5509,7 +5540,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd $SRCROOT/..\nexec ./scripts/ios-install-third-party.sh";
+			shellScript = "cd $SRCROOT/..\nexec ./scripts/ios-install-third-party.sh\n";
 		};
 		190EE32F1E6A43DE00A8543A /* Install Third Party */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -5523,7 +5554,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"$SRCROOT/..\"\nexec ./scripts/ios-install-third-party.sh";
+			shellScript = "cd \"$SRCROOT/..\"\nexec ./scripts/ios-install-third-party.sh\n";
 		};
 		2D6948201DA3042200B3FA97 /* Include RCTJSCProfiler */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -5670,7 +5701,6 @@
 				2D3B5EE01D9B09AD00451313 /* RCTRootShadowView.m in Sources */,
 				2D3B5EBA1D9B092100451313 /* RCTI18nUtil.m in Sources */,
 				2D3B5EB41D9B090A00451313 /* RCTDevLoadingView.m in Sources */,
-				18F3BA0C2142F48D00AD247D /* RCTProgressViewManager.m in Sources */,
 				2D3B5EEF1D9B09DC00451313 /* RCTViewManager.m in Sources */,
 				13134C971E296B2A00B9F3CB /* RCTObjcExecutor.mm in Sources */,
 				130E3D8B1E6A083900ACE484 /* RCTDevSettings.mm in Sources */,
@@ -5686,6 +5716,7 @@
 				59E604A31FE9CCE300BD90C5 /* RCTScrollContentViewManager.m in Sources */,
 				1384E20B1E806D5B00545659 /* RCTNativeModule.mm in Sources */,
 				2D3B5EC21D9B093B00451313 /* RCTProfile.m in Sources */,
+				9FB7D3EB224ABDA400F31D11 /* RCTDatePicker.m in Sources */,
 				2D3B5ECB1D9B096200451313 /* RCTConvert+CoreLocation.m in Sources */,
 				2D3B5EEE1D9B09DA00451313 /* RCTView.m in Sources */,
 				2D3B5E981D9B089500451313 /* RCTConvert.m in Sources */,
@@ -5724,9 +5755,7 @@
 				2D3B5EBB1D9B092300451313 /* RCTI18nManager.m in Sources */,
 				2D3B5EBE1D9B092D00451313 /* RCTUIManager.m in Sources */,
 				C60128AE1F3D1258009DF9FF /* RCTCxxConvert.m in Sources */,
-				2D3B5EDD1D9B09A300451313 /* RCTProgressViewManager.m in Sources */,
 				2D3B5E9A1D9B089D00451313 /* RCTEventDispatcher.m in Sources */,
-				2D3B5ED61D9B098400451313 /* RCTModalHostViewManager.m in Sources */,
 				2D3B5EC71D9B095600451313 /* RCTActivityIndicatorView.m in Sources */,
 				2D3B5EB21D9B090300451313 /* RCTAsyncLocalStorage.m in Sources */,
 			);
@@ -5916,18 +5945,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		18F3BA122142F85600AD247D /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				18F3BA402142F97800AD247D /* (null) in Sources */,
-				18F3BA3F2142F97800AD247D /* (null) in Sources */,
-				18F3BA3E2142F97800AD247D /* (null) in Sources */,
-				18F3BA412142F97800AD247D /* (null) in Sources */,
-				18F3BA422142F97800AD247D /* (null) in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		18F3BA172142F86400AD247D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -5974,14 +5991,6 @@
 				18F3BA532142F99300AD247D /* strtod.cc in Sources */,
 				18F3BA502142F99300AD247D /* double-conversion.cc in Sources */,
 				18F3BA4D2142F99300AD247D /* bignum.cc in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		18F3BA1F2142F8B200AD247D /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				18F3BA232142F94400AD247D /* (null) in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6247,6 +6256,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		9FD21D70224303D900E7F88E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9FD21D71224303D900E7F88E /* JSCRuntime.cpp in Sources */,
+				9FD21D72224303D900E7F88E /* jsi.cpp in Sources */,
+				9FD21D73224303D900E7F88E /* JSIDynamic.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9FD21D8D224305AA00E7F88E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9FD21D8E224305AA00E7F88E /* JSINativeModules.cpp in Sources */,
+				9FD21D8F224305AA00E7F88E /* JSIExecutor.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EBF21BD31FC498900052F4D5 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -6309,35 +6337,10 @@
 			target = 139D7E871E25C6D100323FB7 /* double-conversion */;
 			targetProxy = 1320081C1E283DCB00F0C457 /* PBXContainerItemProxy */;
 		};
-		185EBE361EF4804C0061FD3E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 6B857F431EC51FD400A9D063 /* jschelpers-macOS */;
-			targetProxy = 185EBE351EF4804C0061FD3E /* PBXContainerItemProxy */;
-		};
-		18632BF61EF4940D0010A3BB /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 188202A11EF48CF700C9B354 /* third-party-macOS */;
-			targetProxy = 18632BF51EF4940D0010A3BB /* PBXContainerItemProxy */;
-		};
 		188202BF1EF48DBD00C9B354 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 1882027B1EF48B7E00C9B354 /* double-conversion-macOS */;
 			targetProxy = 188202BE1EF48DBD00C9B354 /* PBXContainerItemProxy */;
-		};
-		18C3A9B41FE1D2C600DEC48A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 18C3A9A81FE1CDCC00DEC48A /* privatedata-macOS */;
-			targetProxy = 18C3A9B31FE1D2C600DEC48A /* PBXContainerItemProxy */;
-		};
-		18C3A9B61FE1D2E600DEC48A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 18C3A9A81FE1CDCC00DEC48A /* privatedata-macOS */;
-			targetProxy = 18C3A9B51FE1D2E600DEC48A /* PBXContainerItemProxy */;
-		};
-		18F3BA212142F8EA00AD247D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 18F3BA132142F86400AD247D /* jsinspector-macOS */;
-			targetProxy = 18F3BA202142F8EA00AD247D /* PBXContainerItemProxy */;
 		};
 		3D0574551DE5FF9600184BB4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -6373,6 +6376,46 @@
 			isa = PBXTargetDependency;
 			target = 6B857F241EC51FCC00A9D063 /* yoga-macOS */;
 			targetProxy = 6B857F541EC5218B00A9D063 /* PBXContainerItemProxy */;
+		};
+		9FD21D7A2243043100E7F88E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1882027B1EF48B7E00C9B354 /* double-conversion-macOS */;
+			targetProxy = 9FD21D792243043100E7F88E /* PBXContainerItemProxy */;
+		};
+		9FD21D7D2243058900E7F88E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9FD21D61224303D900E7F88E /* jsi-macOS */;
+			targetProxy = 9FD21D7C2243058900E7F88E /* PBXContainerItemProxy */;
+		};
+		9FD21D7F2243059300E7F88E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 18F3BA132142F86400AD247D /* jsinspector-macOS */;
+			targetProxy = 9FD21D7E2243059300E7F88E /* PBXContainerItemProxy */;
+		};
+		9FD21D96224305C100E7F88E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9FD21D80224305AA00E7F88E /* jsiexecutor-macOS */;
+			targetProxy = 9FD21D95224305C100E7F88E /* PBXContainerItemProxy */;
+		};
+		9FD21D982243061900E7F88E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9FD21D61224303D900E7F88E /* jsi-macOS */;
+			targetProxy = 9FD21D972243061900E7F88E /* PBXContainerItemProxy */;
+		};
+		9FD21D9A2243062200E7F88E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 188202A11EF48CF700C9B354 /* third-party-macOS */;
+			targetProxy = 9FD21D992243062200E7F88E /* PBXContainerItemProxy */;
+		};
+		9FD21D9C2243062900E7F88E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6B857F351EC51FCF00A9D063 /* cxxreact-macOS */;
+			targetProxy = 9FD21D9B2243062900E7F88E /* PBXContainerItemProxy */;
+		};
+		9FF8D1E72243081A00B8CECA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1882027B1EF48B7E00C9B354 /* double-conversion-macOS */;
+			targetProxy = 9FF8D1E62243081A00B8CECA /* PBXContainerItemProxy */;
 		};
 		ED296F7E214C957300B7C4FE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -6590,6 +6633,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CODE_SIGN_IDENTITY = "-";
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -6612,6 +6656,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CODE_SIGN_IDENTITY = "-";
 				COPY_PHASE_STRIP = NO;
@@ -6620,37 +6665,6 @@
 				GCC_ENABLE_CPP_EXCEPTIONS = YES;
 				GCC_ENABLE_CPP_RTTI = YES;
 				PRODUCT_NAME = "third-party";
-				SDKROOT = macosx;
-			};
-			name = Release;
-		};
-		18C3A9B01FE1CDCC00DEC48A /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
-			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
-				CLANG_STATIC_ANALYZER_MODE = deep;
-				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/privatedata;
-				RUN_CLANG_STATIC_ANALYZER = YES;
-				SDKROOT = macosx;
-			};
-			name = Debug;
-		};
-		18C3A9B11FE1CDCC00DEC48A /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
-			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
-				CLANG_STATIC_ANALYZER_MODE = deep;
-				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
-				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/privatedata;
-				RUN_CLANG_STATIC_ANALYZER = NO;
 				SDKROOT = macosx;
 			};
 			name = Release;
@@ -7054,38 +7068,6 @@
 			};
 			name = Release;
 		};
-		6B857F4D1EC51FD400A9D063 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
-			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
-				CLANG_STATIC_ANALYZER_MODE = deep;
-				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
-				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = jschelpers;
-				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/jschelpers;
-				RUN_CLANG_STATIC_ANALYZER = YES;
-				SDKROOT = macosx;
-			};
-			name = Debug;
-		};
-		6B857F4E1EC51FD400A9D063 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
-			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
-				CLANG_STATIC_ANALYZER_MODE = deep;
-				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
-				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = jschelpers;
-				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/jschelpers;
-				RUN_CLANG_STATIC_ANALYZER = NO;
-				SDKROOT = macosx;
-			};
-			name = Release;
-		};
 		83CBBA201A601CBA00E9B192 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -7260,6 +7242,68 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/React;
 				RUN_CLANG_STATIC_ANALYZER = NO;
+			};
+			name = Release;
+		};
+		9FD21D76224303D900E7F88E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_STATIC_ANALYZER_MODE = deep;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/jsi;
+				RUN_CLANG_STATIC_ANALYZER = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		9FD21D77224303D900E7F88E /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_STATIC_ANALYZER_MODE = deep;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/jsi;
+				RUN_CLANG_STATIC_ANALYZER = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		9FD21D92224305AA00E7F88E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_STATIC_ANALYZER_MODE = deep;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/jsireact;
+				RUN_CLANG_STATIC_ANALYZER = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		9FD21D93224305AA00E7F88E /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3D788F841EBD2D240063D616 /* third-party.xcconfig */;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_STATIC_ANALYZER_MODE = deep;
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = /usr/local/include/jsireact;
+				RUN_CLANG_STATIC_ANALYZER = NO;
+				SDKROOT = macosx;
 			};
 			name = Release;
 		};
@@ -7555,15 +7599,6 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		18C3A9AF1FE1CDCC00DEC48A /* Build configuration list for PBXNativeTarget "privatedata-macOS" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				18C3A9B01FE1CDCC00DEC48A /* Debug */,
-				18C3A9B11FE1CDCC00DEC48A /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		18F3BA192142F86400AD247D /* Build configuration list for PBXNativeTarget "jsinspector-macOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -7663,15 +7698,6 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		6B857F4C1EC51FD400A9D063 /* Build configuration list for PBXNativeTarget "jschelpers-macOS" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				6B857F4D1EC51FD400A9D063 /* Debug */,
-				6B857F4E1EC51FD400A9D063 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "React" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -7686,6 +7712,24 @@
 			buildConfigurations = (
 				83CBBA401A601D0F00E9B192 /* Debug */,
 				83CBBA411A601D0F00E9B192 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9FD21D75224303D900E7F88E /* Build configuration list for PBXNativeTarget "jsi-macOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9FD21D76224303D900E7F88E /* Debug */,
+				9FD21D77224303D900E7F88E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9FD21D91224305AA00E7F88E /* Build configuration list for PBXNativeTarget "jsiexecutor-macOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9FD21D92224305AA00E7F88E /* Debug */,
+				9FD21D93224305AA00E7F88E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
