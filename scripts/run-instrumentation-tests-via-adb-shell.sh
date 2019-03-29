@@ -1,5 +1,9 @@
 #!/bin/bash
-
+# Copyright (c) Facebook, Inc. and its affiliates.
+#
+# This source code is licensed under the MIT license found in the
+# LICENSE file in the root directory of this source tree.
+#
 # Python script to run instrumentation tests, copied from https://github.com/circleci/circle-dummy-android
 # Example: ./scripts/run-android-instrumentation-tests.sh com.facebook.react.tests com.facebook.react.tests.ReactPickerTestCase
 #
@@ -24,7 +28,7 @@ test_class = None
 
 if len(sys.argv) > 2:
   test_class = sys.argv[2]
-  
+
 def update():
   # prevent CircleCI from killing the process for inactivity
   while not done:
@@ -38,10 +42,10 @@ t.start()
 def run():
   sp.Popen(['adb', 'wait-for-device']).communicate()
   if (test_class != None):
-    p = sp.Popen('adb shell am instrument -w -e class %s %s/android.support.test.runner.AndroidJUnitRunner' 
+    p = sp.Popen('adb shell am instrument -w -e class %s %s/android.support.test.runner.AndroidJUnitRunner'
       % (test_class, test_app), shell=True, stdout=sp.PIPE, stderr=sp.PIPE, stdin=sp.PIPE)
   else :
-    p = sp.Popen('adb shell am instrument -w %s/android.support.test.runner.AndroidJUnitRunner' 
+    p = sp.Popen('adb shell am instrument -w %s/android.support.test.runner.AndroidJUnitRunner'
       % (test_app), shell=True, stdout=sp.PIPE, stderr=sp.PIPE, stdin=sp.PIPE)
   return p.communicate()
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -12,12 +12,14 @@
 const React = require('react');
 const {Platform} = require('react-native');
 const RNTesterBlock = require('./RNTesterBlock');
+const RNTesterExampleFilter = require('./RNTesterExampleFilter');
 const RNTesterPage = require('./RNTesterPage');
 
 class RNTesterExampleContainer extends React.Component {
   renderExample(example, i) {
     // Filter platform-specific examples
-    var {title, description, platform} = example;
+    const {description, platform} = example;
+    let {title} = example;
     let platformSupported;
     if (platform) {
       if (Array.isArray(platform)) {
@@ -46,9 +48,36 @@ class RNTesterExampleContainer extends React.Component {
       return <this.props.module />;
     }
 
+    if (
+      this.props.displayFilter === false ||
+      this.props.module.examples.length === 1
+    ) {
+      return (
+        <RNTesterPage title={this.props.title}>
+          {this.props.module.examples.map(this.renderExample)}
+        </RNTesterPage>
+      );
+    }
+
+    const filter = ({example, filterRegex}) => filterRegex.test(example.title);
+
+    const sections = [
+      {
+        data: this.props.module.examples,
+        title: 'EXAMPLES',
+        key: 'e',
+      },
+    ];
+
     return (
       <RNTesterPage title={this.props.title}>
-        {this.props.module.examples.map(this.renderExample)}
+        <RNTesterExampleFilter
+          sections={sections}
+          filter={filter}
+          render={({filteredSections}) =>
+            filteredSections[0].data.map(this.renderExample)
+          }
+        />
       </RNTesterPage>
     );
   }

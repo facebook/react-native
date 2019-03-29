@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -31,9 +31,10 @@ import javax.annotation.Nullable;
 /**
  * Native module that exposes Geolocation to JS.
  */
-@ReactModule(name = "LocationObserver")
+@ReactModule(name = LocationModule.NAME)
 public class LocationModule extends ReactContextBaseJavaModule {
 
+  public static final String NAME = "LocationObserver";
   private @Nullable String mWatchedProvider;
   private static final float RCT_DEFAULT_LOCATION_ACCURACY = 100;
 
@@ -66,7 +67,7 @@ public class LocationModule extends ReactContextBaseJavaModule {
 
   @Override
   public String getName() {
-    return "LocationObserver";
+    return NAME;
   }
 
   private static class LocationOptions {

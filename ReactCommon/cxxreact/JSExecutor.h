@@ -1,4 +1,4 @@
-// Copyright (c) 2004-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
@@ -75,9 +75,9 @@ public:
    * Execute an application script bundle in the JS context.
    */
   virtual void loadApplicationScript(std::unique_ptr<const JSBigString> script,
-                                     uint64_t scriptVersion,
+                                     uint64_t scriptVersion, // TODO(OSS Candidate ISS#2710739)
                                      std::string sourceURL,
-                                     std::string&& bytecodeFileName) = 0;
+                                     std::string&& bytecodeFileName) = 0; // TODO(OSS Candidate ISS#2710739)
 
   /**
    * Add an application "RAM" bundle registry

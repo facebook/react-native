@@ -1,5 +1,5 @@
-load("@xplat//tools/build_defs:glob_defs.bzl", "subdir_glob")
-load("//ReactNative:DEFS.bzl", "rn_xplat_cxx_library")
+load("@fbsource//tools/build_defs:glob_defs.bzl", "subdir_glob")
+load("//tools/build_defs/oss:rn_defs.bzl", "rn_xplat_cxx_library")
 
 EXPORTED_HEADERS = [
     "InspectorInterfaces.h",

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -26,7 +26,6 @@ const flattenStyle = require('flattenStyle');
 const invariant = require('fbjs/lib/invariant');
 const processDecelerationRate = require('processDecelerationRate');
 const requireNativeComponent = require('requireNativeComponent');
-const warning = require('fbjs/lib/warning');
 const resolveAssetSource = require('resolveAssetSource');
 
 import type {PressEvent} from 'CoreEventTypes';
@@ -218,6 +217,11 @@ type IOSProps = $ReadOnly<{|
    */
   scrollsToTop?: ?boolean,
   /**
+   * Fires when the scroll view scrolls to top after the status bar has been tapped
+   * @platform ios
+   */
+  onScrollToTop?: ?Function,
+  /**
    * When true, shows a horizontal scroll indicator.
    * The default value is true.
    */
@@ -406,7 +410,9 @@ export type Props = $ReadOnly<{|
    *   - `false`, deprecated, use 'never' instead
    *   - `true`, deprecated, use 'always' instead
    */
-  // $FlowFixMe(site=react_native_fb) Issues found when typing ScrollView
+  /* $FlowFixMe(>=0.86.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.86 was deployed. To see the error, delete this comment
+   * and run Flow. */
   keyboardShouldPersistTaps?: ?('always' | 'never' | 'handled' | false | true),
   /**
    * Called when the momentum scroll starts (scroll which occurs as the ScrollView glides to a stop).
@@ -489,6 +495,22 @@ export type Props = $ReadOnly<{|
    */
   snapToOffsets?: ?$ReadOnlyArray<number>,
   /**
+   * Use in conjuction with `snapToOffsets`. By default, the beginning
+   * of the list counts as a snap offset. Set `snapToStart` to false to disable
+   * this behavior and allow the list to scroll freely between its start and
+   * the first `snapToOffsets` offset.
+   * The default value is true.
+   */
+  snapToStart?: ?boolean,
+  /**
+   * Use in conjuction with `snapToOffsets`. By default, the end
+   * of the list counts as a snap offset. Set `snapToEnd` to false to disable
+   * this behavior and allow the list to scroll freely between its end and
+   * the last `snapToOffsets` offset.
+   * The default value is true.
+   */
+  snapToEnd?: ?boolean,
+  /**
    * Experimental: When true, offscreen child views (whose `overflow` value is
    * `hidden`) are removed from their native backing superview when offscreen.
    * This can improve scrolling performance on long lists. The default value is
@@ -503,7 +525,6 @@ export type Props = $ReadOnly<{|
    * See [RefreshControl](docs/refreshcontrol.html).
    */
   refreshControl?: ?React.Element<any>,
-  style?: ?ViewStyleProp,
   children?: React.Node,
 |}>;
 
@@ -1005,6 +1026,10 @@ const ScrollView = createReactClass({
           ? true
           : false,
       DEPRECATED_sendUpdatedChildFrames,
+      // default to true
+      snapToStart: this.props.snapToStart !== false,
+      // default to true
+      snapToEnd: this.props.snapToEnd !== false,
       // pagingEnabled is overridden by snapToInterval / snapToOffsets
       pagingEnabled: Platform.select({
         // on iOS, pagingEnabled must be set to false to have snapToInterval / snapToOffsets work

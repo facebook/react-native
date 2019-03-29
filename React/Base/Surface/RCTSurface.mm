@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -558,6 +558,20 @@
       [self->_bridge.uiManager.observerCoordinator removeObserver:self];
     });
   }
+}
+
+- (BOOL)start
+{
+  // Does nothing.
+  // The Start&Stop feature is not implemented for regular Surface yet.
+  return YES;
+}
+
+- (BOOL)stop
+{
+  // Does nothing.
+  // The Start&Stop feature is not implemented for regular Surface yet.
+  return YES;
 }
 
 #pragma mark - Mounting/Unmounting of React components

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,14 +10,14 @@
 
 'use strict';
 
-const ColorPropType = require('ColorPropType');
+const DeprecatedColorPropType = require('DeprecatedColorPropType');
 const ReactPropTypes = require('prop-types');
-const ViewStylePropTypes = require('ViewStylePropTypes');
+const DeprecatedViewStylePropTypes = require('DeprecatedViewStylePropTypes');
 
 const TextStylePropTypes = {
-  ...ViewStylePropTypes,
+  ...DeprecatedViewStylePropTypes,
 
-  color: ColorPropType,
+  color: DeprecatedColorPropType,
   fontFamily: ReactPropTypes.string,
   /**
    * Specifies the fully qualified path of the font file.
@@ -61,7 +61,7 @@ const TextStylePropTypes = {
     height: ReactPropTypes.number,
   }),
   textShadowRadius: ReactPropTypes.number,
-  textShadowColor: ColorPropType,
+  textShadowColor: DeprecatedColorPropType,
   /**
    * @platform ios
    */
@@ -112,10 +112,7 @@ const TextStylePropTypes = {
   /**
    * @platform ios
    */
-  textDecorationColor: ColorPropType,
-  /**
-   * @platform ios
-   */
+  textDecorationColor: DeprecatedColorPropType,
   textTransform: ReactPropTypes.oneOf([
     'none' /*default*/,
     'capitalize',

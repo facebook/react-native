@@ -68,8 +68,6 @@ package-lock.json
 /third-party
 /packages/
 
-/third-party
-
 # Root dir shouldn't have Xcode project
 /*.xcodeproj
 

@@ -1,4 +1,4 @@
-load("//ReactNative:DEFS.bzl", "react_native_target", "rn_android_resource")
+load("//tools/build_defs/oss:rn_defs.bzl", "react_native_target", "rn_android_resource")
 
 rn_android_resource(
     name = "devsupport",
