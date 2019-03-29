@@ -111,7 +111,7 @@
     "babel-eslint": "10.0.1",
     "clang-format": "^1.2.4",
     "coveralls": "^3.0.2",
-    "detox": "9.0.4",
+    "detox": "12.1.1",
     "eslint": "5.1.0",
     "eslint-config-fb-strict": "24.3.0",
     "eslint-config-fbjs": "2.1.0",
