@@ -107,10 +107,6 @@ const ComponentExamples: Array<RNTesterExample> = [
      * when making Flow check .android.js files. */
     module: require('./ViewPagerAndroidExample'),
   },
-  {
-    key: 'WebViewExample',
-    module: require('./WebViewExample'),
-  },
 ];
 
 const APIExamples: Array<RNTesterExample> = [

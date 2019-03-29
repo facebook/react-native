@@ -18,7 +18,6 @@ const XHRExampleFormData = require('./XHRExampleFormData');
 const XHRExampleHeaders = require('./XHRExampleHeaders');
 const XHRExampleFetch = require('./XHRExampleFetch');
 const XHRExampleOnTimeOut = require('./XHRExampleOnTimeOut');
-const XHRExampleCookies = require('./XHRExampleCookies');
 
 exports.framework = 'React';
 exports.title = 'XMLHttpRequest';
@@ -60,12 +59,6 @@ exports.examples = [
     title: 'Time Out Test',
     render() {
       return <XHRExampleOnTimeOut />;
-    },
-  },
-  {
-    title: 'Cookies',
-    render() {
-      return <XHRExampleCookies />;
     },
   },
 ];
