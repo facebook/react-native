@@ -20,6 +20,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import android.view.View;
 import com.facebook.common.logging.FLog;
+import com.facebook.debug.holder.PrinterHolder;
+import com.facebook.debug.tags.ReactDebugOverlayTags;
 import com.facebook.infer.annotation.ThreadConfined;
 import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -65,7 +67,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @SuppressLint("MissingNativeLoadLibrary")
 public class FabricUIManager implements UIManager, LifecycleEventListener {
 
-  private static final String TAG = FabricUIManager.class.getSimpleName();
+  public static final String TAG = FabricUIManager.class.getSimpleName();
+  public static final boolean DEBUG =
+      PrinterHolder.getPrinter().shouldDisplayLogMessage(ReactDebugOverlayTags.FABRIC_UI_MANAGER);
 
   private static final Map<String, String> sComponentNames = new HashMap<>();
   private static final int FRAME_TIME_MS = 16;
@@ -161,7 +165,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     mMountingManager.removeRootView(reactRootTag);
     mReactContextForRootTag.remove(reactRootTag);
   }
-  
+
   @Override
   public void initialize() {
     mEventDispatcher.registerEventEmitter(FABRIC, new FabricEventEmitter(this));
