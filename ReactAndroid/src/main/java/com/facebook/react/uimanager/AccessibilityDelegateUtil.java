@@ -44,6 +44,7 @@ public class AccessibilityDelegateUtil {
   public static final HashMap<String, Integer> sActionIdMap= new HashMap<>();
   static {
       sActionIdMap.put("activate", AccessibilityActionCompat.ACTION_CLICK.getId());
+      sActionIdMap.put("longpress", AccessibilityActionCompat.ACTION_LONG_CLICK.getId());
       sActionIdMap.put("increment", AccessibilityActionCompat.ACTION_SCROLL_FORWARD.getId());
       sActionIdMap.put("decrement", AccessibilityActionCompat.ACTION_SCROLL_BACKWARD.getId());      
   }
