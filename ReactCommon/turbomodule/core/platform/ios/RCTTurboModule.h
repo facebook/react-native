@@ -24,6 +24,8 @@
 namespace facebook {
 namespace react {
 
+class Instance;
+
 /**
  * ObjC++ specific TurboModule base class.
  */
@@ -89,5 +91,6 @@ private:
 @interface RCTBridge ()
 
 - (std::shared_ptr<facebook::react::MessageQueueThread>)jsMessageThread;
+- (std::shared_ptr<facebook::react::Instance>)reactInstance;
 
 @end
