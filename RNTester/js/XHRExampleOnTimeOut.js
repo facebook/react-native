@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -10,9 +10,9 @@
 
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {StyleSheet, Text, TouchableHighlight, View} = ReactNative;
+const React = require('react');
+const ReactNative = require('react-native');
+const {StyleSheet, Text, TouchableHighlight, View} = ReactNative;
 
 class XHRExampleOnTimeOut extends React.Component<any, any> {
   xhr: XMLHttpRequest;
@@ -28,7 +28,7 @@ class XHRExampleOnTimeOut extends React.Component<any, any> {
   loadTimeOutRequest() {
     this.xhr && this.xhr.abort();
 
-    var xhr = this.xhr || new XMLHttpRequest();
+    const xhr = this.xhr || new XMLHttpRequest();
 
     xhr.onerror = () => {
       console.log('Status ', xhr.status);
@@ -60,7 +60,7 @@ class XHRExampleOnTimeOut extends React.Component<any, any> {
   }
 
   render() {
-    var button = this.state.loading ? (
+    const button = this.state.loading ? (
       <View style={styles.wrapper}>
         <View style={styles.button}>
           <Text>Loading...</Text>
@@ -85,7 +85,7 @@ class XHRExampleOnTimeOut extends React.Component<any, any> {
   }
 }
 
-var styles = StyleSheet.create({
+const styles = StyleSheet.create({
   wrapper: {
     borderRadius: 5,
     marginBottom: 5,

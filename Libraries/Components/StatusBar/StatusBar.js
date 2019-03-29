@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -11,13 +11,13 @@
 'use strict';
 
 const React = require('React');
-const PropTypes = require('prop-types');
-const ColorPropType = require('ColorPropType');
 const Platform = require('Platform');
 
 const processColor = require('processColor');
 
 const StatusBarManager = require('NativeModules').StatusBarManager;
+
+import type {ColorValue} from 'StyleSheetTypes'; // TODO(macOS ISS#2323203)
 
 /**
  * Status bar style
@@ -30,11 +30,11 @@ export type StatusBarStyle = $Enum<{
   /**
    * Dark background, white texts and icons
    */
-  'light-content': string,
+  'light-content': ColorValue, // TODO(macOS ISS#2323203)
   /**
    * Light background, dark texts and icons
    */
-  'dark-content': string,
+  'dark-content': ColorValue, // TODO(macOS ISS#2323203)
 }>;
 
 /**
@@ -55,9 +55,55 @@ export type StatusBarAnimation = $Enum<{
   slide: string,
 }>;
 
-type DefaultProps = {
-  animated: boolean,
-};
+type AndroidProps = $ReadOnly<{|
+  /**
+   * The background color of the status bar.
+   * @platform android
+   */
+  backgroundColor?: ?ColorValue, // TODO(macOS ISS#2323203)
+  /**
+   * If the status bar is translucent.
+   * When translucent is set to true, the app will draw under the status bar.
+   * This is useful when using a semi transparent status bar color.
+   *
+   * @platform android
+   */
+  translucent?: ?boolean,
+|}>;
+
+type IOSProps = $ReadOnly<{|
+  /**
+   * If the network activity indicator should be visible.
+   *
+   * @platform ios
+   */
+  networkActivityIndicatorVisible?: ?boolean,
+  /**
+   * The transition effect when showing and hiding the status bar using the `hidden`
+   * prop. Defaults to 'fade'.
+   *
+   * @platform ios
+   */
+  showHideTransition?: ?('fade' | 'slide'),
+|}>;
+
+type Props = $ReadOnly<{|
+  ...AndroidProps,
+  ...IOSProps,
+  /**
+   * If the status bar is hidden.
+   */
+  hidden?: ?boolean,
+  /**
+   * If the transition between status bar property changes should be animated.
+   * Supported for backgroundColor, barStyle and hidden.
+   */
+  animated?: ?boolean,
+  /**
+   * Sets the color of the status bar text.
+   */
+  barStyle?: ?('default' | 'light-content' | 'dark-content'),
+|}>;
 
 /**
  * Merges the prop stack with the default values.
@@ -148,15 +194,7 @@ function createStackEntry(props: any): any {
  *
  * `currentHeight` (Android only) The height of the status bar.
  */
-class StatusBar extends React.Component<{
-  hidden?: boolean,
-  animated?: boolean,
-  backgroundColor?: string,
-  translucent?: boolean,
-  barStyle?: 'default' | 'light-content' | 'dark-content',
-  networkActivityIndicatorVisible?: boolean,
-  showHideTransition?: 'fade' | 'slide',
-}> {
+class StatusBar extends React.Component<Props> {
   static _propsStack = [];
 
   static _defaultProps = createStackEntry({
@@ -260,48 +298,6 @@ class StatusBar extends React.Component<{
     StatusBar._defaultProps.translucent = translucent;
     StatusBarManager.setTranslucent(translucent);
   }
-
-  static propTypes = {
-    /**
-     * If the status bar is hidden.
-     */
-    hidden: PropTypes.bool,
-    /**
-     * If the transition between status bar property changes should be animated.
-     * Supported for backgroundColor, barStyle and hidden.
-     */
-    animated: PropTypes.bool,
-    /**
-     * The background color of the status bar.
-     * @platform android
-     */
-    backgroundColor: ColorPropType,
-    /**
-     * If the status bar is translucent.
-     * When translucent is set to true, the app will draw under the status bar.
-     * This is useful when using a semi transparent status bar color.
-     *
-     * @platform android
-     */
-    translucent: PropTypes.bool,
-    /**
-     * Sets the color of the status bar text.
-     */
-    barStyle: PropTypes.oneOf(['default', 'light-content', 'dark-content']),
-    /**
-     * If the network activity indicator should be visible.
-     *
-     * @platform ios
-     */
-    networkActivityIndicatorVisible: PropTypes.bool,
-    /**
-     * The transition effect when showing and hiding the status bar using the `hidden`
-     * prop. Defaults to 'fade'.
-     *
-     * @platform ios
-     */
-    showHideTransition: PropTypes.oneOf(['fade', 'slide']),
-  };
 
   static defaultProps = {
     animated: false,

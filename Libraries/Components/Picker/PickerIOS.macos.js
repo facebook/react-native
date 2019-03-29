@@ -19,34 +19,53 @@ var NativeMethodsMixin = require('NativeMethodsMixin');
 var React = require('React');
 const PropTypes = require('prop-types');
 var StyleSheet = require('StyleSheet');
-var StyleSheetPropType = require('StyleSheetPropType');
-var TextStylePropTypes = require('TextStylePropTypes');
 var View = require('View');
-const ViewPropTypes = require('ViewPropTypes');
 var processColor = require('processColor');
 
 var createReactClass = require('create-react-class');
-var itemStylePropType = StyleSheetPropType(TextStylePropTypes);
 var requireNativeComponent = require('requireNativeComponent');
+
+import type {ColorValue} from 'StyleSheetTypes';
+import type {ViewProps} from 'ViewPropTypes';
+import type {TextStyleProp} from 'StyleSheet';
+
+type PickerIOSChangeEvent = SyntheticEvent<
+  $ReadOnly<{|
+    newValue: any,
+    newIndex: number,
+  |}>,
+>;
+
+type Label = Stringish | number;
+
+type PickerIOSProps = $ReadOnly<{|
+  ...ViewProps,
+  children: React.ChildrenArray<React.Element<typeof PickerIOSItem>>,
+  itemStyle?: ?TextStyleProp,
+  onChange?: ?(event: PickerIOSChangeEvent) => mixed,
+  onValueChange?: ?(newValue: any, newIndex: number) => mixed,
+  selectedValue: any,
+|}>;
+
+type ItemProps = $ReadOnly<{|
+  label: ?Label,
+  value?: ?any,
+  color?: ?ColorValue,
+|}>;
+
+const PickerIOSItem = (props: ItemProps) => {
+  return null;
+};
 
 var PickerIOS = createReactClass({
   displayName: 'PickerIOS',
   mixins: [NativeMethodsMixin],
 
-  propTypes: {
-    ...ViewPropTypes,
-    children: PropTypes.arrayOf(PropTypes.any),
-    itemStyle: itemStylePropType,
-    onChange: PropTypes.func,
-    onValueChange: PropTypes.func,
-    selectedValue: PropTypes.any, // string or integer basically
-  },
-
   getInitialState: function() {
     return this._stateFromProps(this.props);
   },
 
-  componentWillReceiveProps: function(nextProps) {
+  componentWillReceiveProps: function(nextProps: PickerIOSProps) {
     this.setState(this._stateFromProps(nextProps));
   },
 

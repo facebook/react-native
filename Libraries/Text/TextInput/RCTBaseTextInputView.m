@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -111,16 +111,26 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   // Similarly, when the user is in the middle of inputting some text in Japanese/Chinese, there will be styling on the
   // text that we should disregard. See https://developer.apple.com/documentation/uikit/uitextinput/1614489-markedtextrange?language=objc
   // for more info.
+  // If the user added an emoji, the sytem adds a font attribute for the emoji and stores the original font in NSOriginalFont.
   // Lastly, when entering a password, etc., there will be additional styling on the field as the native text view
   // handles showing the last character for a split second.
+  __block BOOL fontHasBeenUpdatedBySystem = false;
+  [oldText enumerateAttribute:@"NSOriginalFont" inRange:NSMakeRange(0, oldText.length) options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
+    if (value){
+      fontHasBeenUpdatedBySystem = true;
+    }
+  }];
+
   BOOL shouldFallbackToBareTextComparison =
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
     [self.backedTextInputView.textInputMode.primaryLanguage isEqualToString:@"dictation"] ||
     self.backedTextInputView.markedTextRange ||
-    self.backedTextInputView.isSecureTextEntry;
+    self.backedTextInputView.isSecureTextEntry ||
+    fontHasBeenUpdatedBySystem;
 #else // [TODO(macOS ISS#2323203)
     NO;
 #endif // ]TODO(macOS ISS#2323203)
+
   if (shouldFallbackToBareTextComparison) {
     return ([newText.string isEqualToString:oldText.string]);
   } else {
@@ -232,9 +242,63 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 {
   #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
     if (@available(iOS 10.0, *)) {
+
+        static dispatch_once_t onceToken;
+        static NSDictionary<NSString *, NSString *> *contentTypeMap;
+
+        dispatch_once(&onceToken, ^{
+          contentTypeMap = @{@"none": @"",
+                             @"URL": UITextContentTypeURL,
+                             @"addressCity": UITextContentTypeAddressCity,
+                             @"addressCityAndState":UITextContentTypeAddressCityAndState,
+                             @"addressState": UITextContentTypeAddressState,
+                             @"countryName": UITextContentTypeCountryName,
+                             @"creditCardNumber": UITextContentTypeCreditCardNumber,
+                             @"emailAddress": UITextContentTypeEmailAddress,
+                             @"familyName": UITextContentTypeFamilyName,
+                             @"fullStreetAddress": UITextContentTypeFullStreetAddress,
+                             @"givenName": UITextContentTypeGivenName,
+                             @"jobTitle": UITextContentTypeJobTitle,
+                             @"location": UITextContentTypeLocation,
+                             @"middleName": UITextContentTypeMiddleName,
+                             @"name": UITextContentTypeName,
+                             @"namePrefix": UITextContentTypeNamePrefix,
+                             @"nameSuffix": UITextContentTypeNameSuffix,
+                             @"nickname": UITextContentTypeNickname,
+                             @"organizationName": UITextContentTypeOrganizationName,
+                             @"postalCode": UITextContentTypePostalCode,
+                             @"streetAddressLine1": UITextContentTypeStreetAddressLine1,
+                             @"streetAddressLine2": UITextContentTypeStreetAddressLine2,
+                             @"sublocality": UITextContentTypeSublocality,
+                             @"telephoneNumber": UITextContentTypeTelephoneNumber,
+                             };
+
+          #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
+            if (@available(iOS 11.0, tvOS 11.0, *)) {
+              NSDictionary<NSString *, NSString *> * iOS11extras = @{@"username": UITextContentTypeUsername,
+                                                                     @"password": UITextContentTypePassword};
+              
+              NSMutableDictionary<NSString *, NSString *> * iOS11baseMap = [contentTypeMap mutableCopy];
+              [iOS11baseMap addEntriesFromDictionary:iOS11extras];
+              contentTypeMap = [iOS11baseMap copy];
+            }
+          #endif
+
+          #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 120000 /* __IPHONE_12_0 */
+            if (@available(iOS 12.0, tvOS 12.0, *)) {
+              NSDictionary<NSString *, NSString *> * iOS12extras = @{@"newPassword": UITextContentTypeNewPassword,
+                                                                     @"oneTimeCode": UITextContentTypeOneTimeCode};
+              
+              NSMutableDictionary<NSString *, NSString *> * iOS12baseMap = [contentTypeMap mutableCopy];
+              [iOS12baseMap addEntriesFromDictionary:iOS12extras];
+              contentTypeMap = [iOS12baseMap copy];
+            }
+          #endif
+        });
+
         // Setting textContentType to an empty string will disable any
         // default behaviour, like the autofill bar for password inputs
-        self.backedTextInputView.textContentType = [type isEqualToString:@"none"] ? @"" : type;
+        self.backedTextInputView.textContentType = contentTypeMap[type] ?: type;
     }
   #endif
 }
@@ -375,15 +439,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   NSString *predictedText = [self predictedText]; // TODO(OSS Candidate ISS#2710739)
   NSString *previousText = [predictedText substringWithRange:range] ?: @"";
 
-  // After clearing the text by replacing it with an empty string, `_predictedText`
-  // still preserves the deleted text.
-  // As the first character in the TextInput always comes with the range value (0, 0),
-  // we should check the range value in order to avoid appending a character to the deleted string
-  // (which caused the issue #18374)
-  if (!NSEqualRanges(range, NSMakeRange(0, 0)) && predictedText) { // TODO(OSS Candidate ISS#2710739)
-    [self setPredictedText:[predictedText stringByReplacingCharactersInRange:range withString:text]]; // TODO(OSS Candidate ISS#2710739)
-  } else {
+  if (!_predictedText || backedTextInputView.attributedText.string.length == 0) {
     [self setPredictedText:text]; // TODO(OSS Candidate ISS#2710739)
+  } else {
+    [self setPredictedText:[predictedText stringByReplacingCharactersInRange:range withString:text]]; // TODO(OSS Candidate ISS#2710739)
   }
 
   if (_onTextInput) {

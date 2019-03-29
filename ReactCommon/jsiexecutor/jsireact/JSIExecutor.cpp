@@ -3,7 +3,7 @@
 // This source code is licensed under the MIT license found in the
  // LICENSE file in the root directory of this source tree.
 
-#include "jsireact/JSIExecutor.h"
+#include "JSIExecutor.h"
 
 #include <cxxreact/JSBigString.h>
 #include <cxxreact/ModuleRegistry.h>
@@ -14,6 +14,7 @@
 #include <glog/logging.h>
 #include <jsi/JSIDynamic.h>
 
+#include <sstream>
 #include <stdexcept>
 
 using namespace facebook::jsi;
@@ -88,10 +89,10 @@ JSIExecutor::JSIExecutor(
 }
 
 void JSIExecutor::loadApplicationScript(
-    std::unique_ptr<const JSBigString> script,
-    uint64_t scriptVersion,
-    std::string sourceURL,
-    std::string&& bytecodeFileName) {
+      std::unique_ptr<const JSBigString> script,
+      uint64_t /*scriptVersion*/, // TODO(OSS Candidate ISS#2710739)
+      std::string sourceURL,
+      std::string&& /*bytecodeFileName*/) { // TODO(OSS Candidate ISS#2710739)
   SystraceSection s("JSIExecutor::loadApplicationScript");
 
   // TODO: check for and use precompiled HBC

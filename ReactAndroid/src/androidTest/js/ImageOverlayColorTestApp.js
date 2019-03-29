@@ -1,0 +1,29 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+'use strict';
+
+const React = require('React');
+const Image = require('Image');
+
+class ImageOverlayColorTestApp extends React.Component {
+  render() {
+    const uri =
+      'data:image/gif;base64,' +
+      'R0lGODdhMAAwAPAAAAAAAP///ywAAAAAMAAwAAAC8IyPqcvt3wCcDkiLc7C0qwyGHhSWpjQu5yqmCYsapy' +
+      'uvUUlvONmOZtfzgFzByTB10QgxOR0TqBQejhRNzOfkVJ+5YiUqrXF5Y5lKh/DeuNcP5yLWGsEbtLiOSpa/' +
+      'TPg7JpJHxyendzWTBfX0cxOnKPjgBzi4diinWGdkF8kjdfnycQZXZeYGejmJlZeGl9i2icVqaNVailT6F5' +
+      'iJ90m6mvuTS4OK05M0vDk0Q4XUtwvKOzrcd3iq9uisF81M1OIcR7lEewwcLp7tuNNkM3uNna3F2JQFo97V' +
+      'riy/Xl4/f1cf5VWzXyym7PHhhx4dbgYKAAA7';
+
+    return <Image testID="image" source={{uri: uri}} overlayColor="#FF0000" />;
+  }
+}
+
+module.exports = ImageOverlayColorTestApp;

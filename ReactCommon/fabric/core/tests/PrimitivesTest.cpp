@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-present, Facebook, Inc.
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -7,8 +7,8 @@
 
 #include <exception>
 
-#include <fabric/core/Sealable.h>
 #include <gtest/gtest.h>
+#include <react/core/Sealable.h>
 
 using namespace facebook::react;
 
@@ -30,7 +30,8 @@ TEST(SealableTest, handleAssignmentsCorrectly) {
   Sealable other2;
   EXPECT_THROW(obj = other2, std::runtime_error);
 
-  // It doesn't matter if the other object is also sealed, it's still not allowed.
+  // It doesn't matter if the other object is also sealed, it's still not
+  // allowed.
   other2.seal();
   EXPECT_THROW(obj = other2, std::runtime_error);
 

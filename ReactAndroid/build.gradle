@@ -1,12 +1,13 @@
-// Copyright (c) 2015-present, Facebook, Inc.
+// Copyright (c) Facebook, Inc. and its affiliates.
 
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
 
-apply plugin: 'com.android.library'
-apply plugin: 'maven'
-
-apply plugin: 'de.undercouch.download'
+plugins {
+    id("com.android.library")
+    id("maven")
+    id("de.undercouch.download")
+}
 
 import de.undercouch.gradle.tasks.download.Download
 import org.apache.tools.ant.taskdefs.condition.Os
@@ -58,10 +59,10 @@ def isV8Enabled() {
 
 // For GitHub CI - we use this task
 task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
-    src 'https://github.com/react-native-community/boost-for-react-native/releases/download/v1.63.0-0/boost_1_63_0.tar.gz'
+    src "https://github.com/react-native-community/boost-for-react-native/releases/download/v${BOOST_VERSION.replace("_", ".")}-0/boost_${BOOST_VERSION}.tar.gz"
     onlyIfNewer true
     overwrite false
-    dest new File(downloadsDir, 'boost_1_63_0.tar.gz')
+    dest new File(downloadsDir, "boost_${BOOST_VERSION}.tar.gz")
 }
 
 task prepareBoost(dependsOn: createNativeDepsDirectories, type: Copy) {
@@ -259,7 +260,7 @@ android {
 
     sourceSets.main {
         jni.srcDirs = []
-        jniLibs.srcDir "$buildDir/react-ndk/exported"
+        jniLibs.srcDirs = ["$buildDir/react-ndk/exported", 'src/main/jni/third-party/jsc/jni']
         res.srcDirs = ['src/main/res/devsupport', 'src/main/res/shell', 'src/main/res/views/modal', 'src/main/res/views/uimanager']
         java {
             srcDirs = ['src/main/java', 'src/main/libraries/soloader/java', 'src/main/jni/first-party/fb/jni/java']
@@ -296,17 +297,15 @@ dependencies {
 
     api 'com.facebook.infer.annotation:infer-annotation:0.11.2'
     api 'javax.inject:javax.inject:1'
-    api 'com.android.support:appcompat-v7:26.0.2'
+    api 'com.android.support:appcompat-v7:28.0.0'
     api "com.facebook.fresco:fresco:${FRESCO_VERSION}"
     api "com.facebook.fresco:imagepipeline-okhttp3:${FRESCO_VERSION}"
-    api 'com.facebook.soloader:soloader:0.5.1'
+    api "com.facebook.soloader:soloader:${SO_LOADER_VERSION}"
     api 'com.google.code.findbugs:jsr305:3.0.2'
     api "com.squareup.okhttp3:okhttp:${OKHTTP_VERSION}"
     api "com.squareup.okhttp3:okhttp-urlconnection:${OKHTTP_VERSION}"
-    api 'com.squareup.okio:okio:1.14.0'
-    if (!isV8Enabled()) {
-        compile 'org.webkit:android-jsc:r174650'
-    }
+    api 'com.squareup.okio:okio:1.15.0'
+    compile 'org.webkit:android-jsc:r174650'
 
     testImplementation "junit:junit:${JUNIT_VERSION}"
     testImplementation "org.powermock:powermock-api-mockito:${POWERMOCK_VERSION}"
@@ -317,7 +316,8 @@ dependencies {
     testImplementation "org.robolectric:robolectric:${ROBOLECTRIC_VERSION}"
 
     androidTestImplementation fileTree(dir: 'src/main/third-party/java/buck-android-support/', include: ['*.jar'])
-    androidTestImplementation 'com.android.support.test:runner:0.3'
+    androidTestImplementation "com.android.support.test:runner:${ANDROID_SUPPORT_TEST_VERSION}"
+    androidTestImplementation "com.android.support.test:rules:${ANDROID_SUPPORT_TEST_VERSION}"
     androidTestImplementation "org.mockito:mockito-core:${MOCKITO_CORE_VERSION}"
 }
 

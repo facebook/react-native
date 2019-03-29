@@ -79,11 +79,10 @@ class JSIExecutor : public JSExecutor {
       Logger logger,
       const JSIScopedTimeoutInvoker& timeoutInvoker,
       RuntimeInstaller runtimeInstaller);
-  void loadApplicationScript(
-      std::unique_ptr<const JSBigString> script,
-      uint64_t scriptVersion,
-      std::string sourceURL,
-      std::string&& bytecodeFileName) override;
+  void loadApplicationScript(std::unique_ptr<const JSBigString> script,
+                             uint64_t scriptVersion, // TODO(OSS Candidate ISS#2710739)
+                             std::string sourceURL,
+                             std::string&& bytecodeFileName) override; // TODO(OSS Candidate ISS#2710739)
   void setBundleRegistry(std::unique_ptr<RAMBundleRegistry>) override;
   void registerBundle(uint32_t bundleId, const std::string& bundlePath)
       override;
