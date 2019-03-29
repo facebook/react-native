@@ -274,25 +274,23 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
                              };
 
           #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000 /* __IPHONE_11_0 */
-            if (@available(iOS 11.0, *)) {
+            if (@available(iOS 11.0, tvOS 11.0, *)) {
               NSDictionary<NSString *, NSString *> * iOS11extras = @{@"username": UITextContentTypeUsername,
                                                                      @"password": UITextContentTypePassword};
-
+              
               NSMutableDictionary<NSString *, NSString *> * iOS11baseMap = [contentTypeMap mutableCopy];
               [iOS11baseMap addEntriesFromDictionary:iOS11extras];
-
               contentTypeMap = [iOS11baseMap copy];
             }
           #endif
 
           #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 120000 /* __IPHONE_12_0 */
-            if (@available(iOS 12.0, *)) {
+            if (@available(iOS 12.0, tvOS 12.0, *)) {
               NSDictionary<NSString *, NSString *> * iOS12extras = @{@"newPassword": UITextContentTypeNewPassword,
                                                                      @"oneTimeCode": UITextContentTypeOneTimeCode};
-
+              
               NSMutableDictionary<NSString *, NSString *> * iOS12baseMap = [contentTypeMap mutableCopy];
               [iOS12baseMap addEntriesFromDictionary:iOS12extras];
-
               contentTypeMap = [iOS12baseMap copy];
             }
           #endif
