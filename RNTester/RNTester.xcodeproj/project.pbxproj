@@ -61,12 +61,10 @@
 		18316E1B1EF9EB7D003DADF3 /* RCTAllocationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFA41B21F5E400C1F8F2 /* RCTAllocationTests.m */; };
 		1834500B1EFAD54F0000CF82 /* libRCTTest-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 18DF57271EFA056600BF4666 /* libRCTTest-macOS.a */; };
 		183938D01F9A55AE00930D92 /* RNTesterTestModule.m in Sources */ = {isa = PBXBuildFile; fileRef = C654F0B21EB34A73000B7A9A /* RNTesterTestModule.m */; };
-		184808F321668CA100C3C43F /* libRCTLinking-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D429028F1F1CE21600685AE7 /* libRCTLinking-macOS.a */; };
 		1879ECF921E84E2800D98372 /* RCTConvert_NSColorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1879ECDE21E84E2800D98372 /* RCTConvert_NSColorTests.m */; };
 		18AA4BD41EF9C724008C7756 /* RCTURLUtilsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B6C1A21C34225900D3FAF5 /* RCTURLUtilsTests.m */; };
 		18BFA4C51F01C46D00969486 /* OCMock.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18BFA4931F01C46700969486 /* OCMock.framework */; };
 		18BFA4CB1F01C52400969486 /* RCTEventDispatcherTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1497CFA91B21F5E400C1F8F2 /* RCTEventDispatcherTests.m */; };
-		18CD948B2149BA90009E2179 /* libRCTTest-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 18DF57271EFA056600BF4666 /* libRCTTest-macOS.a */; };
 		18CF508F1F9A6A3B0038A244 /* RNTesterBundle-macOS.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 641DD8EE1F16AA8500B6415F /* RNTesterBundle-macOS.bundle */; };
 		18D5934D1EF9F8BC005F0CEC /* RCTImageLoaderHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 8385CF031B87479200C6273E /* RCTImageLoaderHelpers.m */; };
 		18D593781EF9F8CB005F0CEC /* RCTImageLoaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8385CEF41B873B5C00C6273E /* RCTImageLoaderTests.m */; };
@@ -134,7 +132,6 @@
 		2DD323E71DA2DE3F000FE1B8 /* libRCTSettings-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323C81DA2DD8B000FE1B8 /* libRCTSettings-tvOS.a */; };
 		2DD323E81DA2DE3F000FE1B8 /* libRCTText-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323D01DA2DD8B000FE1B8 /* libRCTText-tvOS.a */; };
 		2DD323E91DA2DE3F000FE1B8 /* libRCTWebSocket-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323D51DA2DD8B000FE1B8 /* libRCTWebSocket-tvOS.a */; };
-		2DD323EA1DA2DE3F000FE1B8 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323D91DA2DD8B000FE1B8 /* libReact.a */; };
 		2DDEF0101F84BF7B00DBDF73 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2DDEF00F1F84BF7B00DBDF73 /* Images.xcassets */; };
 		2DE7E7FD1FB2A4F3009E225D /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323B51DA2DD8B000FE1B8 /* libRCTAnimation.a */; };
 		2DE7E7FE1FB2A4F3009E225D /* libRCTBlob-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5281CA531EEAC9A700AC40CD /* libRCTBlob-tvOS.a */; };
@@ -180,18 +177,20 @@
 		83636F8F1B53F22C009F943E /* RCTUIManagerScenarioTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 83636F8E1B53F22C009F943E /* RCTUIManagerScenarioTests.m */; };
 		8385CEF51B873B5C00C6273E /* RCTImageLoaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8385CEF41B873B5C00C6273E /* RCTImageLoaderTests.m */; };
 		8385CF041B87479200C6273E /* RCTImageLoaderHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 8385CF031B87479200C6273E /* RCTImageLoaderHelpers.m */; };
-		9F080905224EBF4A009E6F5A /* libRCTBlob-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6484CE5A201A7557004275A4 /* libRCTBlob-macOS.a */; };
-		9F080906224EBF55009E6F5A /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21D122242EFA400E7F88E /* libReact.a */; };
-		9F080907224EBF74009E6F5A /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CF92242EFA400E7F88E /* libRCTWebSocket.a */; };
-		9F080908224EBF7B009E6F5A /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CF12242EFA400E7F88E /* libRCTText.a */; };
-		9F080909224EBF8D009E6F5A /* libRCTSettings-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6448A5D21F292F16006FF1F5 /* libRCTSettings-macOS.a */; };
-		9F08090A224EBF94009E6F5A /* libRCTPushNotification-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6424F7B21F669A8E0025D741 /* libRCTPushNotification-macOS.a */; };
-		9F08090B224EBF9A009E6F5A /* libRCTNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CE72242EFA400E7F88E /* libRCTNetwork.a */; };
-		9F08090C224EBFA0009E6F5A /* libRCTImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CE12242EFA400E7F88E /* libRCTImage.a */; };
-		9F08090D224EBFA5009E6F5A /* libRCTGeolocation-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4633DB601F207C140080B326 /* libRCTGeolocation-macOS.a */; };
-		9F08090E224EBFAC009E6F5A /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 649D87D91F69DA030005AF18 /* libRCTActionSheet.a */; };
-		9F08090F224EBFCF009E6F5A /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21D122242EFA400E7F88E /* libReact.a */; };
-		9F080910224EBFD7009E6F5A /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CF92242EFA400E7F88E /* libRCTWebSocket.a */; };
+		9F0808A2224EBE8C009E6F5A /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21D122242EFA400E7F88E /* libReact.a */; };
+		9F0808C0224EBE9A009E6F5A /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CF92242EFA400E7F88E /* libRCTWebSocket.a */; };
+		9F41BA75224EC42800E8BAA1 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2DD323D91DA2DD8B000FE1B8 /* libReact.a */; };
+		9F4659FA224EAF5E005BEE04 /* libRCTBlob-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6484CE5A201A7557004275A4 /* libRCTBlob-macOS.a */; };
+		9F4659FB224EB002005BEE04 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 649D87D91F69DA030005AF18 /* libRCTActionSheet.a */; };
+		9F4659FC224EB00E005BEE04 /* libRCTGeolocation-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4633DB601F207C140080B326 /* libRCTGeolocation-macOS.a */; };
+		9F4659FD224EB088005BEE04 /* libRCTImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CE12242EFA400E7F88E /* libRCTImage.a */; };
+		9F4659FE224EB092005BEE04 /* libRCTNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CE72242EFA400E7F88E /* libRCTNetwork.a */; };
+		9F4659FF224EB0D9005BEE04 /* libRCTPushNotification-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6424F7B21F669A8E0025D741 /* libRCTPushNotification-macOS.a */; };
+		9F465A00224EB0E5005BEE04 /* libRCTSettings-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6448A5D21F292F16006FF1F5 /* libRCTSettings-macOS.a */; };
+		9F465A01224EB0F8005BEE04 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CF12242EFA400E7F88E /* libRCTText.a */; };
+		9F465A02224EB106005BEE04 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CF92242EFA400E7F88E /* libRCTWebSocket.a */; };
+		9F465A03224EB10E005BEE04 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21D122242EFA400E7F88E /* libReact.a */; };
+		9F465A05224EB177005BEE04 /* libRCTTest-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 18DF57271EFA056600BF4666 /* libRCTTest-macOS.a */; };
 		9FB7D3EC224ABDCE00F31D11 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CF92242EFA400E7F88E /* libRCTWebSocket.a */; };
 		9FB7D3ED224ABEFE00F31D11 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21D122242EFA400E7F88E /* libReact.a */; };
 		9FB7D3EF224AC0DE00F31D11 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FB7D3EE224AC0DE00F31D11 /* JavaScriptCore.framework */; };
@@ -1021,19 +1020,19 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9F08090E224EBFAC009E6F5A /* libRCTActionSheet.a in Frameworks */,
-				9F08090D224EBFA5009E6F5A /* libRCTGeolocation-macOS.a in Frameworks */,
-				9F08090C224EBFA0009E6F5A /* libRCTImage.a in Frameworks */,
-				9F08090B224EBF9A009E6F5A /* libRCTNetwork.a in Frameworks */,
-				9F08090A224EBF94009E6F5A /* libRCTPushNotification-macOS.a in Frameworks */,
-				9F080909224EBF8D009E6F5A /* libRCTSettings-macOS.a in Frameworks */,
-				9F080908224EBF7B009E6F5A /* libRCTText.a in Frameworks */,
-				9F080907224EBF74009E6F5A /* libRCTWebSocket.a in Frameworks */,
-				9F080906224EBF55009E6F5A /* libReact.a in Frameworks */,
-				9F080905224EBF4A009E6F5A /* libRCTBlob-macOS.a in Frameworks */,
-				18BFA4C51F01C46D00969486 /* OCMock.framework in Frameworks */,
-				1834500B1EFAD54F0000CF82 /* libRCTTest-macOS.a in Frameworks */,
+				9F4659FA224EAF5E005BEE04 /* libRCTBlob-macOS.a in Frameworks */,
 				18FE57B02149BCDB000CB2A7 /* libRCTAnimation.a in Frameworks */,
+				9F4659FB224EB002005BEE04 /* libRCTActionSheet.a in Frameworks */,
+				9F4659FC224EB00E005BEE04 /* libRCTGeolocation-macOS.a in Frameworks */,
+				9F4659FD224EB088005BEE04 /* libRCTImage.a in Frameworks */,
+				9F4659FE224EB092005BEE04 /* libRCTNetwork.a in Frameworks */,
+				9F4659FF224EB0D9005BEE04 /* libRCTPushNotification-macOS.a in Frameworks */,
+				9F465A00224EB0E5005BEE04 /* libRCTSettings-macOS.a in Frameworks */,
+				1834500B1EFAD54F0000CF82 /* libRCTTest-macOS.a in Frameworks */,
+				9F465A01224EB0F8005BEE04 /* libRCTText.a in Frameworks */,
+				9F465A02224EB106005BEE04 /* libRCTWebSocket.a in Frameworks */,
+				9F465A03224EB10E005BEE04 /* libReact.a in Frameworks */,
+				18BFA4C51F01C46D00969486 /* OCMock.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1041,10 +1040,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9F080910224EBFD7009E6F5A /* libRCTWebSocket.a in Frameworks */,
-				9F08090F224EBFCF009E6F5A /* libReact.a in Frameworks */,
-				18CD948B2149BA90009E2179 /* libRCTTest-macOS.a in Frameworks */,
-				184808F321668CA100C3C43F /* libRCTLinking-macOS.a in Frameworks */,
+				9F0808C0224EBE9A009E6F5A /* libRCTWebSocket.a in Frameworks */,
+				9F0808A2224EBE8C009E6F5A /* libReact.a in Frameworks */,
+				9F465A05224EB177005BEE04 /* libRCTTest-macOS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1060,10 +1058,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9F41BA75224EC42800E8BAA1 /* libReact.a in Frameworks */,
 				ED2970992150247000B7C4FE /* JavaScriptCore.framework in Frameworks */,
 				52C11BE11EEACA7800C1A058 /* libRCTBlob-tvOS.a in Frameworks */,
 				2D66FF901ECA407E00F0A767 /* libART-tvOS.a in Frameworks */,
-				2DD323EA1DA2DE3F000FE1B8 /* libReact.a in Frameworks */,
 				2DD323E31DA2DE3F000FE1B8 /* libRCTAnimation.a in Frameworks */,
 				3D302F221DF8285100D6DDAE /* libRCTImage-tvOS.a in Frameworks */,
 				2DD323E51DA2DE3F000FE1B8 /* libRCTLinking-tvOS.a in Frameworks */,
