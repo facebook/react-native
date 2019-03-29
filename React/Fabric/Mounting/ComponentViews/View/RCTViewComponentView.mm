@@ -357,9 +357,11 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
 - (void)invalidateLayer
 {
   CALayer *layer = self.layer;
+
   if (CGSizeEqualToSize(layer.bounds.size, CGSizeZero)) {
     return;
   }
+
   const auto borderMetrics =
       _props->resolveBorderMetrics(_layoutMetrics.layoutDirection == LayoutDirection::RightToLeft);
 
