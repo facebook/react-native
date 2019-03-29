@@ -13,25 +13,26 @@
 namespace facebook {
 namespace react {
 
-class MessageQueueThread;
+class Instance;
 
 /**
  * A generic native-to-JS call invoker. It guarantees that any calls from any
  * thread are queued on the right JS thread.
  *
- * For now, this is a thin-wrapper around existing MessageQueueThread. Eventually,
+ * For now, this is a thin-wrapper around existing bridge (`Instance`). Eventually,
  * it should be consolidated with Fabric implementation so there's only one
  * API to call JS from native, whether synchronously or asynchronously.
+ * Also, this class should not depend on `Instance` in the future.
  */
 class JSCallInvoker {
 public:
-  JSCallInvoker(std::shared_ptr<MessageQueueThread> jsThread);
+  JSCallInvoker(std::shared_ptr<Instance> reactInstance);
 
   void invokeAsync(std::function<void()>&& func);
-  void invokeSync(std::function<void()>&& func);
+  // TODO: add sync support
 
 private:
-  std::shared_ptr<MessageQueueThread> jsThread_;
+  std::shared_ptr<Instance> reactInstance_;
 };
 
 } // namespace react

@@ -7,20 +7,19 @@
 
 #include "JSCallInvoker.h"
 
-#include <cxxreact/MessageQueueThread.h>
+#include <cxxreact/Instance.h>
 
 namespace facebook {
 namespace react {
 
-JSCallInvoker::JSCallInvoker(std::shared_ptr<MessageQueueThread> jsThread)
-  : jsThread_(jsThread) {}
+JSCallInvoker::JSCallInvoker(std::shared_ptr<Instance> reactInstance)
+  : reactInstance_(reactInstance) {}
 
 void JSCallInvoker::invokeAsync(std::function<void()>&& func) {
-  jsThread_->runOnQueue(std::move(func));
-}
-
-void JSCallInvoker::invokeSync(std::function<void()>&& func) {
-  jsThread_->runOnQueueSync(std::move(func));
+  if (reactInstance_ == nullptr) {
+    return;
+  }
+  reactInstance_->invokeAsync(std::move(func));
 }
 
 } // namespace react

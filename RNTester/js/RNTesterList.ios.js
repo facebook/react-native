@@ -158,11 +158,6 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('./ViewExample'),
     supportsTVOS: true,
   },
-  {
-    key: 'WebViewExample',
-    module: require('./WebViewExample'),
-    supportsTVOS: false,
-  },
 ];
 
 const APIExamples: Array<RNTesterExample> = [

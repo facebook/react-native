@@ -103,10 +103,11 @@ class JSIExecutor : public JSExecutor {
     invokee();
   }
 
+  void flush() override;
+
  private:
   class NativeModuleProxy;
 
-  void flush();
   void bindBridge();
   void callNativeModules(const jsi::Value &queue, bool isEndOfBatch);
   jsi::Value nativeCallSyncHook(const jsi::Value *args, size_t count);
