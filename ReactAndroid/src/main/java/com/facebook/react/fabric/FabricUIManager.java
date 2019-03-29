@@ -84,8 +84,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     sComponentNames.put("Image", "RCTImageView");
     sComponentNames.put("ScrollView", "RCTScrollView");
     sComponentNames.put("Slider", "RCTSlider");
-    sComponentNames.put("ReactPerformanceLoggerFlag", "ReactPerformanceLoggerFlag");
-    sComponentNames.put("ReactTTRCRenderFlag", "ReactTTRCRenderFlag");
     sComponentNames.put("Paragraph", "RCTText");
     sComponentNames.put("Text", "RCText");
     sComponentNames.put("RawText", "RCTRawText");
@@ -196,7 +194,13 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     String component = sComponentNames.get(componentName);
     synchronized (mPreMountItemsLock) {
       mPreMountItems.add(
-          new PreAllocateViewMountItem(context, rootTag, reactTag, component, props, isLayoutable));
+          new PreAllocateViewMountItem(
+              context,
+              rootTag,
+              reactTag,
+              component != null ? component : componentName,
+              props,
+              isLayoutable));
     }
   }
 
