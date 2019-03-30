@@ -1,2 +1,0 @@
-DIRS = \
-    android{droidarm,droidx86} \
