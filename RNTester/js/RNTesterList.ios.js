@@ -317,6 +317,10 @@ const APIExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
+    key: 'StrictModeExample',
+    module: require('./StrictModeExample'),
+  },
+  {
     key: 'TimerExample',
     module: require('./TimerExample'),
     supportsTVOS: true,

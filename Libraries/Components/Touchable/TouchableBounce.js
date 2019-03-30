@@ -10,39 +10,63 @@
 'use strict';
 
 const Animated = require('Animated');
-const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
-const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
-const NativeMethodsMixin = require('NativeMethodsMixin');
 const Platform = require('Platform');
-const PropTypes = require('prop-types');
 const React = require('React');
 const Touchable = require('Touchable');
-const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
 
-const createReactClass = require('create-react-class');
-
+import type {PressEvent} from 'CoreEventTypes';
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type {ViewStyleProp} from 'StyleSheet';
+import type {BlurEvent, FocusEvent, TouchableState} from 'Touchable';
 import type {Props as TouchableWithoutFeedbackProps} from 'TouchableWithoutFeedback';
-import type {PressEvent} from 'CoreEventTypes';
-
-type State = {
-  animationID: ?number,
-  scale: Animated.Value,
-};
 
 const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 type Props = $ReadOnly<{|
   ...TouchableWithoutFeedbackProps,
 
+  // The function passed takes a callback to start the animation which should
+  // be run after this onPress handler is done. You can use this (for example)
+  // to update UI before starting the animation.
   onPressWithCompletion?: ?(fn: () => void) => void,
+  // the function passed is called after the animation is complete
   onPressAnimationComplete?: ?() => void,
+  /**
+   * When the scroll view is disabled, this defines how far your touch may
+   * move off of the button, before deactivating the button. Once deactivated,
+   * try moving it back and you'll see that the button is once again
+   * reactivated! Move it back and forth several times while the scroll view
+   * is disabled. Ensure you pass in a constant to reduce memory allocations.
+   */
   pressRetentionOffset?: ?EdgeInsetsProp,
-  releaseVelocity?: ?number,
-  releaseBounciness?: ?number,
+  releaseVelocity: number,
+  releaseBounciness: number,
+  /**
+   * Style to apply to the container/underlay. Most commonly used to make sure
+   * rounded corners match the wrapped component.
+   */
   style?: ?ViewStyleProp,
 |}>;
+
+type State = {|
+  scale: Animated.Value,
+
+  ...TouchableState,
+|};
+
+function createTouchMixin(
+  node: React.ElementRef<typeof TouchableBounce>,
+): typeof Touchable.MixinWithoutDefaultFocusAndBlur {
+  const touchMixin = {...Touchable.MixinWithoutDefaultFocusAndBlur};
+
+  for (const key in touchMixin) {
+    if (typeof touchMixin[key] === 'function') {
+      touchMixin[key] = touchMixin[key].bind(node);
+    }
+  }
+
+  return touchMixin;
+}
 
 /**
  * Example of using the `TouchableMixin` to play well with other responder
@@ -51,50 +75,52 @@ type Props = $ReadOnly<{|
  * `TouchableMixin` expects us to implement some abstract methods to handle
  * interesting interactions such as `handleTouchablePress`.
  */
-const TouchableBounce = ((createReactClass({
-  displayName: 'TouchableBounce',
-  mixins: [Touchable.Mixin.withoutDefaultFocusAndBlur, NativeMethodsMixin],
+class TouchableBounce extends React.Component<Props, State> {
+  static defaultProps = {
+    releaseBounciness: 10,
+    releaseVelocity: 10,
+  };
 
-  propTypes: {
-    /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-     * error found when Flow v0.89 was deployed. To see the error, delete this
-     * comment and run Flow. */
-    ...TouchableWithoutFeedback.propTypes,
-    // The function passed takes a callback to start the animation which should
-    // be run after this onPress handler is done. You can use this (for example)
-    // to update UI before starting the animation.
-    onPressWithCompletion: PropTypes.func,
-    // the function passed is called after the animation is complete
-    onPressAnimationComplete: PropTypes.func,
-    /**
-     * When the scroll view is disabled, this defines how far your touch may
-     * move off of the button, before deactivating the button. Once deactivated,
-     * try moving it back and you'll see that the button is once again
-     * reactivated! Move it back and forth several times while the scroll view
-     * is disabled. Ensure you pass in a constant to reduce memory allocations.
-     */
-    pressRetentionOffset: DeprecatedEdgeInsetsPropType,
-    releaseVelocity: PropTypes.number.isRequired,
-    releaseBounciness: PropTypes.number.isRequired,
-    /**
-     * Style to apply to the container/underlay. Most commonly used to make sure
-     * rounded corners match the wrapped component.
-     */
-    style: DeprecatedViewPropTypes.style,
-  },
+  _touchMixin: typeof Touchable.MixinWithoutDefaultFocusAndBlur = createTouchMixin(
+    this,
+  );
 
-  getDefaultProps: function() {
-    return {releaseBounciness: 10, releaseVelocity: 10};
-  },
+  constructor(props: Props) {
+    super(props);
 
-  getInitialState: function(): State {
-    return {
-      ...this.touchableGetInitialState(),
+    const touchMixin = Touchable.MixinWithoutDefaultFocusAndBlur;
+    for (const key in touchMixin) {
+      if (
+        typeof touchMixin[key] === 'function' &&
+        (key.startsWith('_') || key.startsWith('touchable'))
+      ) {
+        // $FlowFixMe - dynamically adding properties to a class
+        (this: any)[key] = touchMixin[key].bind(this);
+      }
+    }
+
+    Object.keys(touchMixin)
+      .filter(key => typeof touchMixin[key] !== 'function')
+      .forEach(key => {
+        // $FlowFixMe - dynamically adding properties to a class
+        (this: any)[key] = touchMixin[key];
+      });
+
+    this.state = {
       scale: new Animated.Value(1),
+      ...this._touchMixin.touchableGetInitialState(),
     };
-  },
+  }
 
-  bounceTo: function(
+  componentDidMount() {
+    this._touchMixin.componentDidMount();
+  }
+
+  componentWillUnmount() {
+    this._touchMixin.componentWillUnmount();
+  }
+
+  bounceTo(
     value: number,
     velocity: number,
     bounciness: number,
@@ -106,37 +132,37 @@ const TouchableBounce = ((createReactClass({
       bounciness,
       useNativeDriver: true,
     }).start(callback);
-  },
+  }
 
   /**
    * `Touchable.Mixin` self callbacks. The mixin will invoke these if they are
    * defined on your component.
    */
-  touchableHandleActivePressIn: function(e: PressEvent) {
+  touchableHandleActivePressIn(e: PressEvent) {
     this.bounceTo(0.93, 0.1, 0);
     this.props.onPressIn && this.props.onPressIn(e);
-  },
+  }
 
-  touchableHandleActivePressOut: function(e: PressEvent) {
+  touchableHandleActivePressOut(e: PressEvent) {
     this.bounceTo(1, 0.4, 0);
     this.props.onPressOut && this.props.onPressOut(e);
-  },
+  }
 
-  touchableHandleFocus: function(e: Event) {
+  touchableHandleFocus(e: FocusEvent) {
     if (Platform.isTV) {
       this.bounceTo(0.93, 0.1, 0);
     }
     this.props.onFocus && this.props.onFocus(e);
-  },
+  }
 
-  touchableHandleBlur: function(e: Event) {
+  touchableHandleBlur(e: BlurEvent) {
     if (Platform.isTV) {
       this.bounceTo(1, 0.4, 0);
     }
     this.props.onBlur && this.props.onBlur(e);
-  },
+  }
 
-  touchableHandlePress: function(e: PressEvent) {
+  touchableHandlePress(e: PressEvent) {
     const onPressWithCompletion = this.props.onPressWithCompletion;
     if (onPressWithCompletion) {
       onPressWithCompletion(() => {
@@ -158,21 +184,21 @@ const TouchableBounce = ((createReactClass({
       this.props.onPressAnimationComplete,
     );
     this.props.onPress && this.props.onPress(e);
-  },
+  }
 
-  touchableGetPressRectOffset: function(): typeof PRESS_RETENTION_OFFSET {
+  touchableGetPressRectOffset(): EdgeInsetsProp {
     return this.props.pressRetentionOffset || PRESS_RETENTION_OFFSET;
-  },
+  }
 
-  touchableGetHitSlop: function(): ?EdgeInsetsProp {
+  touchableGetHitSlop(): ?EdgeInsetsProp {
     return this.props.hitSlop;
-  },
+  }
 
-  touchableGetHighlightDelayMS: function(): number {
+  touchableGetHighlightDelayMS(): number {
     return 0;
-  },
+  }
 
-  render: function(): React.Element<any> {
+  render(): React.Element<any> {
     return (
       <Animated.View
         style={[{transform: [{scale: this.state.scale}]}, this.props.style]}
@@ -184,14 +210,18 @@ const TouchableBounce = ((createReactClass({
         nativeID={this.props.nativeID}
         testID={this.props.testID}
         hitSlop={this.props.hitSlop}
-        onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
-        onResponderTerminationRequest={
-          this.touchableHandleResponderTerminationRequest
+        onStartShouldSetResponder={
+          this._touchMixin.touchableHandleStartShouldSetResponder
         }
-        onResponderGrant={this.touchableHandleResponderGrant}
-        onResponderMove={this.touchableHandleResponderMove}
-        onResponderRelease={this.touchableHandleResponderRelease}
-        onResponderTerminate={this.touchableHandleResponderTerminate}>
+        onResponderTerminationRequest={
+          this._touchMixin.touchableHandleResponderTerminationRequest
+        }
+        onResponderGrant={this._touchMixin.touchableHandleResponderGrant}
+        onResponderMove={this._touchMixin.touchableHandleResponderMove}
+        onResponderRelease={this._touchMixin.touchableHandleResponderRelease}
+        onResponderTerminate={
+          this._touchMixin.touchableHandleResponderTerminate
+        }>
         {this.props.children}
         {Touchable.renderDebugView({
           color: 'orange',
@@ -199,7 +229,7 @@ const TouchableBounce = ((createReactClass({
         })}
       </Animated.View>
     );
-  },
-}): any): React.ComponentType<Props>);
+  }
+}
 
 module.exports = TouchableBounce;

@@ -216,7 +216,7 @@ type AndroidDrawableRipple = $ReadOnly<{|
   borderless?: ?boolean,
 |}>;
 
-type AndroidDrawable = AndroidDrawableThemeAttr | AndroidDrawableRipple;
+export type AndroidDrawable = AndroidDrawableThemeAttr | AndroidDrawableRipple;
 
 type AndroidViewProps = $ReadOnly<{|
   nativeBackgroundAndroid?: ?AndroidDrawable,

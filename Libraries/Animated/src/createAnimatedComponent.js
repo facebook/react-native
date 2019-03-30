@@ -35,6 +35,8 @@ function createAnimatedComponent(Component: any): any {
 
     constructor(props: Object) {
       super(props);
+
+      this._attachProps(this.props);
     }
 
     componentWillUnmount() {
@@ -44,10 +46,6 @@ function createAnimatedComponent(Component: any): any {
 
     setNativeProps(props) {
       this._component.setNativeProps(props);
-    }
-
-    UNSAFE_componentWillMount() {
-      this._attachProps(this.props);
     }
 
     componentDidMount() {
@@ -131,11 +129,9 @@ function createAnimatedComponent(Component: any): any {
       oldPropsAnimated && oldPropsAnimated.__detach();
     }
 
-    UNSAFE_componentWillReceiveProps(newProps) {
-      this._attachProps(newProps);
-    }
-
     componentDidUpdate(prevProps) {
+      this._attachProps(this.props);
+
       if (this._component !== this._prevComponent) {
         this._propsAnimated.setNativeView(this._component);
       }

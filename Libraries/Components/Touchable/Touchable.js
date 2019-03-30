@@ -23,7 +23,7 @@ const View = require('View');
 const keyMirror = require('fbjs/lib/keyMirror');
 const normalizeColor = require('normalizeColor');
 
-import type {PressEvent} from 'CoreEventTypes';
+import type {SyntheticEvent, PressEvent} from 'CoreEventTypes';
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 
 const extractSingleTouch = nativeEvent => {
@@ -148,6 +148,22 @@ type State =
   | typeof States.RESPONDER_ACTIVE_LONG_PRESS_IN
   | typeof States.RESPONDER_ACTIVE_LONG_PRESS_OUT
   | typeof States.ERROR;
+
+export type TouchableState = {|
+  touchable: {
+    touchState: ?State,
+    responderID: ?number,
+  },
+|};
+
+type TargetEvent = SyntheticEvent<
+  $ReadOnly<{|
+    target: number,
+  |}>,
+>;
+
+export type BlurEvent = TargetEvent;
+export type FocusEvent = TargetEvent;
 
 /*
  * Quick lookup map for states that are considered to be "active"
@@ -576,9 +592,9 @@ const TouchableMixin = {
    * currently has the focus. Most platforms only support a single element being
    * focused at a time, in which case there may have been a previously focused
    * element that was blurred just prior to this. This can be overridden when
-   * using `Touchable.Mixin.withoutDefaultFocusAndBlur`.
+   * using `Touchable.MixinWithoutDefaultFocusAndBlur`.
    */
-  touchableHandleFocus: function(e: Event) {
+  touchableHandleFocus: function(e: FocusEvent) {
     this.props.onFocus && this.props.onFocus(e);
   },
 
@@ -588,9 +604,9 @@ const TouchableMixin = {
    * no longer has focus. Most platforms only support a single element being
    * focused at a time, in which case the focus may have moved to another.
    * This can be overridden when using
-   * `Touchable.Mixin.withoutDefaultFocusAndBlur`.
+   * `Touchable.MixinWithoutDefaultFocusAndBlur`.
    */
-  touchableHandleBlur: function(e: Event) {
+  touchableHandleBlur: function(e: BlurEvent) {
     this.props.onBlur && this.props.onBlur(e);
   },
 
@@ -900,8 +916,6 @@ const TouchableMixin = {
       }
     }
   },
-
-  withoutDefaultFocusAndBlur: {},
 };
 
 /**
@@ -910,15 +924,13 @@ const TouchableMixin = {
  * be set on TV platforms, without breaking existing implementations of
  * `Touchable`.
  */
-const {
-  touchableHandleFocus,
-  touchableHandleBlur,
-  ...TouchableMixinWithoutDefaultFocusAndBlur
-} = TouchableMixin;
-TouchableMixin.withoutDefaultFocusAndBlur = TouchableMixinWithoutDefaultFocusAndBlur;
+const TouchableMixinWithoutDefaultFocusAndBlur = {...TouchableMixin};
+delete TouchableMixinWithoutDefaultFocusAndBlur.touchableHandleFocus;
+delete TouchableMixinWithoutDefaultFocusAndBlur.touchableHandleBlur;
 
 const Touchable = {
   Mixin: TouchableMixin,
+  MixinWithoutDefaultFocusAndBlur: TouchableMixinWithoutDefaultFocusAndBlur,
   TOUCH_TARGET_DEBUG: false, // Highlights all touchable targets. Toggle with Inspector.
   /**
    * Renders a debugging overlay to visualize touch target with hitSlop (might not work on Android).
@@ -928,7 +940,7 @@ const Touchable = {
     hitSlop,
   }: {
     color: string | number,
-    hitSlop: EdgeInsetsProp,
+    hitSlop: ?EdgeInsetsProp,
   }) => {
     if (!Touchable.TOUCH_TARGET_DEBUG) {
       return null;
