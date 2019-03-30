@@ -607,12 +607,11 @@ const ScrollResponderMixin = {
   },
 
   /**
-   * `componentWillMount` is the closest thing to a  standard "constructor" for
-   * React components.
+   * Constructor for this mixin, call from constructor or from deprecated UNSAFE_componentWillMount
    *
    * The `keyboardWillShow` is called before input focus.
    */
-  UNSAFE_componentWillMount: function() {
+  scrollResponderMixinConstructor: function() {
     const {keyboardShouldPersistTaps} = this.props;
     warning(
       typeof keyboardShouldPersistTaps !== 'boolean',

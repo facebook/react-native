@@ -636,6 +636,17 @@ class ScrollView extends React.Component<Props, State> {
         // $FlowFixMe - dynamically adding properties to a class
         (this: any)[key] = ScrollResponder.Mixin[key];
       });
+
+    this._scrollResponder.scrollResponderMixinConstructor();
+
+    this._scrollAnimatedValue = new AnimatedImplementation.Value(
+      props.contentOffset ? props.contentOffset.y : 0,
+    );
+    this._scrollAnimatedValue.setOffset(
+      props.contentInset ? props.contentInset.top : 0,
+    );
+    this._stickyHeaderRefs = new Map();
+    this._headerLayoutYs = new Map();
   }
 
   _scrollAnimatedValue: AnimatedImplementation.Value = new AnimatedImplementation.Value(
@@ -650,35 +661,21 @@ class ScrollView extends React.Component<Props, State> {
     ...ScrollResponder.Mixin.scrollResponderMixinGetInitialState(),
   };
 
-  UNSAFE_componentWillMount() {
-    this._scrollResponder.UNSAFE_componentWillMount();
-    this._scrollAnimatedValue = new AnimatedImplementation.Value(
-      this.props.contentOffset ? this.props.contentOffset.y : 0,
-    );
-    this._scrollAnimatedValue.setOffset(
-      this.props.contentInset ? this.props.contentInset.top : 0,
-    );
-    this._stickyHeaderRefs = new Map();
-    this._headerLayoutYs = new Map();
-  }
-
-  UNSAFE_componentWillReceiveProps(nextProps: Props) {
-    const currentContentInsetTop = this.props.contentInset
-      ? this.props.contentInset.top
-      : 0;
-    const nextContentInsetTop = nextProps.contentInset
-      ? nextProps.contentInset.top
-      : 0;
-    if (currentContentInsetTop !== nextContentInsetTop) {
-      this._scrollAnimatedValue.setOffset(nextContentInsetTop || 0);
-    }
-  }
-
   componentDidMount() {
     this._updateAnimatedNodeAttachment();
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps: Props) {
+    const prevContentInsetTop = prevProps.contentInset
+      ? prevProps.contentInset.top
+      : 0;
+    const currentContentInsetTop = this.props.contentInset
+      ? this.props.contentInset.top
+      : 0;
+    if (prevContentInsetTop !== currentContentInsetTop) {
+      this._scrollAnimatedValue.setOffset(currentContentInsetTop || 0);
+    }
+
     this._updateAnimatedNodeAttachment();
   }
 
