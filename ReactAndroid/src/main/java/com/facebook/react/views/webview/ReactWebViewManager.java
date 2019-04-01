@@ -19,6 +19,7 @@ import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.webkit.ClientCertRequest;
 import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
@@ -102,6 +103,8 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
 
   // Intent urls are a type of deeplinks which start with: intent://
   private static final String INTENT_URL_PREFIX = "intent://";
+
+  private static CustomClientCertRequestHandler customClientCertRequestHandler = null;
 
   protected WebViewConfig mWebViewConfig;
   protected @Nullable WebView.PictureListener mPictureListener;
@@ -208,6 +211,15 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         }
       }
       return false;
+    }
+
+    @Override
+    public void onReceivedClientCertRequest(WebView webview, ClientCertRequest request) {
+      if (ReactWebViewManager.customClientCertRequestHandler != null) {
+        ReactWebViewManager.customClientCertRequestHandler.handle(webview, request);
+      } else {
+        super.onReceivedClientCertRequest(webview, request);
+      }
     }
 
     @Override
@@ -733,5 +745,13 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     EventDispatcher eventDispatcher =
         reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher();
     eventDispatcher.dispatchEvent(event);
+  }
+
+  public static interface CustomClientCertRequestHandler {
+    public void handle(WebView webview, ClientCertRequest request);
+  }
+
+  public static void setCustomClientCertRequestHandler(CustomClientCertRequestHandler handler) {
+    ReactWebViewManager.customClientCertRequestHandler = handler;
   }
 }
