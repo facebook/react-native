@@ -232,11 +232,6 @@ const APIExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
-    key: 'GeolocationExample',
-    module: require('./GeolocationExample'),
-    supportsTVOS: false,
-  },
-  {
     key: 'ImageEditingExample',
     module: require('./ImageEditingExample'),
     supportsTVOS: false,
