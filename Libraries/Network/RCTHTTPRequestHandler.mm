@@ -64,7 +64,7 @@ RCT_EXPORT_MODULE()
     callbackQueue.maxConcurrentOperationCount = 1;
     callbackQueue.underlyingQueue = [[_bridge networking] methodQueue];
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    [configuration allowsCellularAccess:NO];
+    [configuration setAllowsCellularAccess:NO];
     [configuration setHTTPShouldSetCookies:YES];
     [configuration setHTTPCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
     [configuration setHTTPCookieStorage:[NSHTTPCookieStorage sharedHTTPCookieStorage]];
