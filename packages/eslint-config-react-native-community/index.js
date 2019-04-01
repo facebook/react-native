@@ -290,6 +290,7 @@ module.exports = {
     // React-Hooks Plugin
     // The following rules are made available via `eslint-plugin-react-hooks`
     'react-hooks/rules-of-hooks': 'error',
+    'react-hooks/exhaustive-deps': 'error',
 
     // React-Native Plugin
     // The following rules are made available via `eslint-plugin-react-native`

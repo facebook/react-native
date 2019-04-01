@@ -42,12 +42,12 @@ public class MountingManager {
   private final ConcurrentHashMap<Integer, ViewState> mTagToViewState;
   private final ViewManagerRegistry mViewManagerRegistry;
   private final RootViewManager mRootViewManager = new RootViewManager();
-  private final ContextBasedViewPool mViewPool;
+  private final ViewFactory mViewFactory;
 
   public MountingManager(ViewManagerRegistry viewManagerRegistry) {
     mTagToViewState = new ConcurrentHashMap<>();
     mViewManagerRegistry = viewManagerRegistry;
-    mViewPool = new ContextBasedViewPool(viewManagerRegistry);
+    mViewFactory = new ViewManagerFactory(viewManagerRegistry);
   }
 
   @UiThread
@@ -91,7 +91,7 @@ public class MountingManager {
 
     mTagToViewState.remove(reactTag);
     Context context = view.getContext();
-    mViewPool.returnToPool(
+    mViewFactory.recycle(
         (ThemedReactContext) context, Assertions.assertNotNull(viewManager).getName(), view);
   }
 
@@ -174,7 +174,7 @@ public class MountingManager {
 
     if (isLayoutable) {
       viewManager = mViewManagerRegistry.get(componentName);
-      view = mViewPool.getOrCreateView(componentName, themedReactContext);
+      view = mViewFactory.getOrCreateView(componentName, themedReactContext);
       view.setId(reactTag);
     }
 

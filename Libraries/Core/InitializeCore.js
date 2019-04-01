@@ -37,7 +37,7 @@ require('setUpRegeneratorRuntime');
 require('setUpTimers');
 require('setUpXHR');
 require('setUpAlert');
-require('setUpGeolocation');
+require('setUpNavigator');
 require('setUpBatchedBridge');
 require('setUpSegmentFetcher');
 if (__DEV__) {

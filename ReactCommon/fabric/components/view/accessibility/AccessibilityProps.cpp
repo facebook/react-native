@@ -7,8 +7,6 @@
 
 #include "AccessibilityProps.h"
 
-#include <glog/logging.h>
-
 #include <react/components/view/accessibilityPropsConversions.h>
 #include <react/components/view/propsConversions.h>
 #include <react/core/propsConversions.h>
@@ -57,7 +55,6 @@ AccessibilityProps::AccessibilityProps(
 #if RN_DEBUG_STRING_CONVERTIBLE
 SharedDebugStringConvertibleList AccessibilityProps::getDebugProps() const {
   const auto &defaultProps = AccessibilityProps();
-  LOG(INFO) << "Call AccessibilityProps::getDebugProps with testId " << testId;
   return SharedDebugStringConvertibleList{
       debugStringConvertibleItem("testId", testId, defaultProps.testId),
   };

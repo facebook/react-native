@@ -152,7 +152,7 @@ static void calculateShadowViewMutations(
       // We have to call the algorithm recursively if the inserted view
       // is *not* the same as removed one.
       const auto &newChildPair = it->second;
-      if (newChildPair.shadowView != oldChildPair.shadowView) {
+      if (newChildPair != oldChildPair) {
         const auto oldGrandChildPairs =
             sliceChildShadowNodeViewPairs(*oldChildPair.shadowNode);
         const auto newGrandChildPairs =
