@@ -5,6 +5,8 @@
 
 #include "ShadowTree.h"
 
+#include <glog/logging.h>
+
 #include <react/components/root/RootComponentDescriptor.h>
 #include <react/core/LayoutContext.h>
 #include <react/core/LayoutPrimitives.h>
@@ -194,6 +196,20 @@ bool ShadowTree::tryCommit(
     if (revision) {
       *revision = revision_;
     }
+
+#ifdef RN_SHADOW_TREE_INTROSPECTION
+    stubViewTree_.mutate(mutations);
+    auto stubViewTree = stubViewTreeFromShadowNode(*rootShadowNode_);
+    if (stubViewTree_ != stubViewTree) {
+      LOG(ERROR) << "Old tree:"
+                 << "\n"
+                 << oldRootShadowNode->getDebugDescription() << "\n";
+      LOG(ERROR) << "New tree:"
+                 << "\n"
+                 << newRootShadowNode->getDebugDescription() << "\n";
+      assert(false);
+    }
+#endif
   }
 
   emitLayoutEvents(mutations);

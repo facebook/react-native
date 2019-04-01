@@ -5,6 +5,10 @@
 
 #pragma once
 
+#ifdef DEBUG
+#define RN_SHADOW_TREE_INTROSPECTION
+#endif
+
 #include <better/mutex.h>
 #include <memory>
 
@@ -15,6 +19,10 @@
 #include <react/core/ShadowNode.h>
 #include <react/mounting/ShadowTreeDelegate.h>
 #include <react/mounting/ShadowViewMutation.h>
+
+#ifdef RN_SHADOW_TREE_INTROSPECTION
+#include <react/mounting/stubs.h>
+#endif
 
 namespace facebook {
 namespace react {
@@ -87,6 +95,10 @@ class ShadowTree final {
   mutable SharedRootShadowNode rootShadowNode_; // Protected by `commitMutex_`.
   mutable int revision_{1}; // Protected by `commitMutex_`.
   ShadowTreeDelegate const *delegate_;
+
+#ifdef RN_SHADOW_TREE_INTROSPECTION
+  mutable StubViewTree stubViewTree_; // Protected by `commitMutex_`.
+#endif
 };
 
 } // namespace react
