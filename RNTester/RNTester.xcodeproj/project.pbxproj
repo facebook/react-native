@@ -194,6 +194,9 @@
 		9FB7D3EC224ABDCE00F31D11 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CF92242EFA400E7F88E /* libRCTWebSocket.a */; };
 		9FB7D3ED224ABEFE00F31D11 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21D122242EFA400E7F88E /* libReact.a */; };
 		9FB7D3EF224AC0DE00F31D11 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FB7D3EE224AC0DE00F31D11 /* JavaScriptCore.framework */; };
+		9FCC5E9422528BCA009029D1 /* libRCTNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CE72242EFA400E7F88E /* libRCTNetwork.a */; };
+		9FCC5E9522528BE9009029D1 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CF12242EFA400E7F88E /* libRCTText.a */; };
+		9FCC5E9622528C37009029D1 /* libRCTImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CE12242EFA400E7F88E /* libRCTImage.a */; };
 		BC9C03401DC9F1D600B1C635 /* RCTDevMenuTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BC9C033F1DC9F1D600B1C635 /* RCTDevMenuTests.m */; };
 		C654F0B31EB34A73000B7A9A /* RNTesterTestModule.m in Sources */ = {isa = PBXBuildFile; fileRef = C654F0B21EB34A73000B7A9A /* RNTesterTestModule.m */; };
 		C654F17E1EB34D24000B7A9A /* RNTesterTestModule.m in Sources */ = {isa = PBXBuildFile; fileRef = C654F0B21EB34A73000B7A9A /* RNTesterTestModule.m */; };
@@ -1002,6 +1005,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9FCC5E9622528C37009029D1 /* libRCTImage.a in Frameworks */,
+				9FCC5E9522528BE9009029D1 /* libRCTText.a in Frameworks */,
+				9FCC5E9422528BCA009029D1 /* libRCTNetwork.a in Frameworks */,
 				9FB7D3EF224AC0DE00F31D11 /* JavaScriptCore.framework in Frameworks */,
 				9FB7D3ED224ABEFE00F31D11 /* libReact.a in Frameworks */,
 				6484CE5B201A7557004275A4 /* libRCTBlob-macOS.a in Frameworks */,
