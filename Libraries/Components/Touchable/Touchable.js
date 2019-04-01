@@ -484,6 +484,7 @@ const TouchableMixin = {
    * Place as callback for a DOM element's `onResponderRelease` event.
    */
   touchableHandleResponderRelease: function(e: PressEvent) {
+    this.pressInLocation = null;
     this._receiveSignal(Signals.RESPONDER_RELEASE, e);
   },
 
@@ -491,6 +492,7 @@ const TouchableMixin = {
    * Place as callback for a DOM element's `onResponderTerminate` event.
    */
   touchableHandleResponderTerminate: function(e: PressEvent) {
+    this.pressInLocation = null;
     this._receiveSignal(Signals.RESPONDER_TERMINATED, e);
   },
 
@@ -498,11 +500,6 @@ const TouchableMixin = {
    * Place as callback for a DOM element's `onResponderMove` event.
    */
   touchableHandleResponderMove: function(e: PressEvent) {
-    if (
-      this.state.touchable.touchState === States.RESPONDER_INACTIVE_PRESS_IN
-    ) {
-      return;
-    }
     // Measurement may not have returned yet.
     if (!this.state.touchable.positionOnActivate) {
       return;
@@ -563,9 +560,13 @@ const TouchableMixin = {
           dimensionsOnActivate.height +
           pressExpandBottom;
     if (isTouchWithinActive) {
+      const prevState = this.state.touchable.touchState;
       this._receiveSignal(Signals.ENTER_PRESS_RECT, e);
       const curState = this.state.touchable.touchState;
-      if (curState === States.RESPONDER_INACTIVE_PRESS_IN) {
+      if (
+        curState === States.RESPONDER_INACTIVE_PRESS_IN &&
+        prevState !== States.RESPONDER_INACTIVE_PRESS_IN
+      ) {
         // fix for t7967420
         this._cancelLongPressDelayTimeout();
       }
