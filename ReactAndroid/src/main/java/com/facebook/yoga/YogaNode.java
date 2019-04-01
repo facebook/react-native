@@ -211,6 +211,8 @@ public abstract class YogaNode {
 
   public abstract boolean isMeasureDefined();
 
+  public abstract boolean isBaselineDefined();
+
   public abstract void setData(Object data);
 
   @Nullable

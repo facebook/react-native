@@ -468,6 +468,11 @@ public abstract class YogaNodeJNIBase extends YogaNode {
     return mMeasureFunction != null;
   }
 
+  @Override
+  public boolean isBaselineDefined() {
+    return mBaselineFunction != null;
+  }
+
   public void setData(Object data) {
     mData = data;
   }
