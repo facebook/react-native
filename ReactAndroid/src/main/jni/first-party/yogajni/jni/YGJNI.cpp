@@ -72,6 +72,8 @@ const short int LAYOUT_MARGIN_START_INDEX = 6;
 const short int LAYOUT_PADDING_START_INDEX = 10;
 const short int LAYOUT_BORDER_START_INDEX = 14;
 
+bool useBatchingForLayoutOutputs;
+
 class PtrJNodeMap {
   using JNodeArray = JArrayClass<JYogaNode::javaobject>;
   std::map<YGNodeRef, size_t> ptrsToIdxs_;
@@ -194,7 +196,7 @@ static void YGTransferLayoutOutputsRecursive(
 
   auto edgesSet = YGNodeEdges{root};
 
-  if (false) {
+  if (useBatchingForLayoutOutputs) {
     bool marginFieldSet = edgesSet.has(YGNodeEdges::MARGIN);
     bool paddingFieldSet = edgesSet.has(YGNodeEdges::PADDING);
     bool borderFieldSet = edgesSet.has(YGNodeEdges::BORDER);
@@ -431,16 +433,21 @@ static int YGJNILogFunc(
   return result;
 }
 
-jlong jni_YGNodeNew(alias_ref<jclass>) {
+jlong jni_YGNodeNew(alias_ref<jobject> thiz, jboolean useBatching) {
   const YGNodeRef node = YGNodeNew();
   node->setContext(YGNodeContext{}.asVoidPtr);
   node->setPrintFunc(YGPrint);
+  useBatchingForLayoutOutputs = useBatching;
   return reinterpret_cast<jlong>(node);
 }
 
-jlong jni_YGNodeNewWithConfig(alias_ref<jclass>, jlong configPointer) {
+jlong jni_YGNodeNewWithConfig(
+    alias_ref<jclass>,
+    jlong configPointer,
+    jboolean useBatching) {
   const YGNodeRef node = YGNodeNewWithConfig(_jlong2YGConfigRef(configPointer));
   node->setContext(YGNodeContext{}.asVoidPtr);
+  useBatchingForLayoutOutputs = useBatching;
   return reinterpret_cast<jlong>(node);
 }
 

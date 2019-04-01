@@ -22,14 +22,14 @@ public abstract class YogaNodeJNIBase extends YogaNode {
   @Nullable private Object mData;
 
   public YogaNodeJNIBase() {
-    mNativePointer = YogaNative.jni_YGNodeNew();
+    mNativePointer = YogaNative.jni_YGNodeNew(YogaConfig.useBatchingForLayoutOutputs);
     if (mNativePointer == 0) {
       throw new IllegalStateException("Failed to allocate native memory");
     }
   }
 
   public YogaNodeJNIBase(YogaConfig config) {
-    mNativePointer = YogaNative.jni_YGNodeNewWithConfig(config.mNativePointer);
+    mNativePointer = YogaNative.jni_YGNodeNewWithConfig(config.mNativePointer, YogaConfig.useBatchingForLayoutOutputs);
     if (mNativePointer == 0) {
       throw new IllegalStateException("Failed to allocate native memory");
     }
