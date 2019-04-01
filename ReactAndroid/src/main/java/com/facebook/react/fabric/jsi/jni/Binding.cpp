@@ -18,8 +18,8 @@
 #include <react/uimanager/ContextContainer.h>
 #include <react/uimanager/Scheduler.h>
 #include <react/uimanager/SchedulerDelegate.h>
-#include <react/uimanager/TimeUtils.h>
 #include <react/uimanager/primitives.h>
+#include <react/utils/TimeUtils.h>
 
 using namespace facebook::jni;
 using namespace facebook::jsi;

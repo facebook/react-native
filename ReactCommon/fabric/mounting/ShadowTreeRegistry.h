@@ -8,7 +8,7 @@
 #include <better/mutex.h>
 
 #include <react/core/ReactPrimitives.h>
-#include <react/uimanager/ShadowTree.h>
+#include <react/mounting/ShadowTree.h>
 
 namespace facebook {
 namespace react {

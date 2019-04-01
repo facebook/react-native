@@ -11,7 +11,7 @@
 #include <react/debug/SystraceSection.h>
 #include <react/mounting/Differentiator.h>
 #include <react/mounting/ShadowViewMutation.h>
-#include <react/uimanager/TimeUtils.h>
+#include <react/utils/TimeUtils.h>
 
 #include "ShadowTreeDelegate.h"
 
@@ -96,6 +96,10 @@ ShadowTree::ShadowTree(
           /* .props = */ props,
           /* .eventEmitter = */ noopEventEmitter,
       }));
+
+#ifdef RN_SHADOW_TREE_INTROSPECTION
+  stubViewTree_ = stubViewTreeFromShadowNode(*rootShadowNode_);
+#endif
 }
 
 ShadowTree::~ShadowTree() {
