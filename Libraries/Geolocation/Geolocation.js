@@ -29,11 +29,11 @@ type GeoConfiguration = {
   skipPermissionRequests: boolean,
 };
 
-type GeoOptions = {
+export type GeoOptions = {
   timeout?: number,
   maximumAge?: number,
   enableHighAccuracy?: boolean,
-  distanceFilter: number,
+  distanceFilter?: number,
   useSignificantChanges?: boolean,
 };
 
