@@ -6,6 +6,10 @@
  */
 package com.facebook.react.fabric.mounting.mountitems;
 
+import static com.facebook.react.fabric.FabricUIManager.DEBUG;
+import static com.facebook.react.fabric.FabricUIManager.TAG;
+
+import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -21,7 +25,12 @@ public class PreAllocateViewMountItem implements MountItem {
   private final boolean mIsLayoutable;
 
   public PreAllocateViewMountItem(
-      ThemedReactContext context, int rootTag, int reactTag, String component, ReadableMap props, boolean isLayoutable) {
+      ThemedReactContext context,
+      int rootTag,
+      int reactTag,
+      String component,
+      ReadableMap props,
+      boolean isLayoutable) {
     mContext = context;
     mComponent = component;
     mRootTag = rootTag;
@@ -32,11 +41,23 @@ public class PreAllocateViewMountItem implements MountItem {
 
   @Override
   public void execute(MountingManager mountingManager) {
+    if (DEBUG) {
+      FLog.d(TAG, "Executing pre-allocation of: " + toString());
+    }
     mountingManager.preallocateView(mContext, mComponent, mReactTag, mProps, mIsLayoutable);
   }
 
   @Override
   public String toString() {
-    return "[" + mRootTag + "] - Preallocate " + mComponent;
+    return "PreAllocateViewMountItem ["
+        + mReactTag
+        + "] - component: "
+        + mComponent
+        + " rootTag: "
+        + mRootTag
+        + " mIsLayoutable: "
+        + mIsLayoutable
+        + " props: "
+        + mProps;
   }
 }

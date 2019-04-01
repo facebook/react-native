@@ -55,7 +55,8 @@ void TurboModuleManager::installJSIBindings() {
   TurboModuleBinding::install(*runtime_, std::make_shared<TurboModuleBinding>(
       [this](const std::string &name) {
         const auto moduleInstance = getJavaModule(name);
-        const auto jsInvoker = std::make_shared<react::JSCallInvoker>(jsMessageQueueThread_);
+        // TODO: Pass in react Instance to JSCallInvoker instead.
+        const auto jsInvoker = std::make_shared<react::JSCallInvoker>(nullptr);
         return moduleProvider_(name, moduleInstance, jsInvoker);
       })
   );

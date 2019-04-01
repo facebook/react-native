@@ -210,6 +210,11 @@ struct RCTInstanceCallback : public InstanceCallback {
   return _jsMessageThread;
 }
 
+- (std::shared_ptr<Instance>)reactInstance
+{
+  return _reactInstance;
+}
+
 - (BOOL)isInspectable
 {
   return _reactInstance ? _reactInstance->isInspectable() : NO;

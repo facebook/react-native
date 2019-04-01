@@ -11,6 +11,7 @@ import com.facebook.soloader.SoLoader;
 public class YogaConfig {
 
   public static int SPACING_TYPE = 1;
+  public static boolean useBatchingForLayoutOutputs = false;
 
   long mNativePointer;
   private YogaLogger mLogger;

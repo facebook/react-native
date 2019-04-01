@@ -34,7 +34,6 @@ rn_android_library(
         react_native_target("java/com/facebook/react/modules/i18nmanager:i18nmanager"),
         react_native_target("java/com/facebook/react/modules/image:image"),
         react_native_target("java/com/facebook/react/modules/intent:intent"),
-        react_native_target("java/com/facebook/react/modules/location:location"),
         react_native_target("java/com/facebook/react/modules/netinfo:netinfo"),
         react_native_target("java/com/facebook/react/modules/network:network"),
         react_native_target("java/com/facebook/react/modules/permissions:permissions"),

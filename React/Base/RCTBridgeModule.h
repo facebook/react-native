@@ -74,6 +74,17 @@ RCT_EXTERN void RCTRegisterModule(Class); \
 + (void)load { RCTRegisterModule(self); }
 
 /**
+ * Same as RCT_EXPORT_MODULE, but uses __attribute__((constructor)) for module
+ * registration. Useful for registering swift classes that forbids use of load
+ * Used in RCT_EXTERN_REMAP_MODULE
+ */
+#define RCT_EXPORT_MODULE_NO_LOAD(js_name, objc_name) \
+RCT_EXTERN void RCTRegisterModule(Class); \
++ (NSString *)moduleName { return @#js_name; } \
+__attribute__((constructor)) static void \
+RCT_CONCAT(initialize_, objc_name)() { RCTRegisterModule([objc_name class]); }
+
+/**
  * To improve startup performance users may want to generate their module lists
  * at build time and hook the delegate to merge with the runtime list. This
  * macro takes the place of the above for those cases by omitting the +load
@@ -250,7 +261,7 @@ RCT_EXTERN void RCTRegisterModule(Class); \
   @interface objc_name (RCTExternModule) <RCTBridgeModule> \
   @end \
   @implementation objc_name (RCTExternModule) \
-  RCT_EXPORT_MODULE(js_name)
+  RCT_EXPORT_MODULE_NO_LOAD(js_name, objc_name)
 
 /**
  * Use this macro in accordance with RCT_EXTERN_MODULE to export methods

@@ -11,10 +11,6 @@
 
 const {polyfillObjectProperty} = require('PolyfillFunctions');
 
-/**
- * Set up Geolocation.
- * You can use this module directly, or just require InitializeCore.
- */
 let navigator = global.navigator;
 if (navigator === undefined) {
   global.navigator = navigator = {};
@@ -22,4 +18,3 @@ if (navigator === undefined) {
 
 // see https://github.com/facebook/react-native/issues/10881
 polyfillObjectProperty(navigator, 'product', () => 'ReactNative');
-polyfillObjectProperty(navigator, 'geolocation', () => require('Geolocation'));
