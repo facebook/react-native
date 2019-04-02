@@ -15,7 +15,10 @@ using namespace facebook::react;
 namespace {
 int tempFileFromString(std::string contents)
 {
-  std::string tmp {getenv("TMPDIR")};
+  const char *tmpDir = getenv("TMPDIR");
+  if (tmpDir == nullptr)
+    tmpDir = "/tmp";
+  std::string tmp {tmpDir};
   tmp += "/temp.XXXXXX";
 
   std::vector<char> tmpBuf {tmp.begin(), tmp.end()};
