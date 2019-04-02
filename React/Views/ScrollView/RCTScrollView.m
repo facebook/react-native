@@ -7,7 +7,7 @@
 
 #import "RCTScrollView.h"
 
-#import "RCTUIKit.h" // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 
 #import "RCTConvert.h"
 #import "RCTEventDispatcher.h"

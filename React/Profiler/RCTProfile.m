@@ -13,7 +13,7 @@
 #import <objc/runtime.h>
 #import <stdatomic.h>
 
-#import "RCTUIKit.h" // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 
 #import "RCTAssert.h"
 #import "RCTBridge+Private.h"
