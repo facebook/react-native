@@ -14,7 +14,7 @@
 #import "RCTUIUtils.h"
 #endif // TODO(macOS ISS#2323203)
 #import "RCTUtils.h"
-#import "RCTUIKit.h" // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 #import "UIView+React.h" // TODO(macOS ISS#2323203)
 
 @implementation RCTDeviceInfo {

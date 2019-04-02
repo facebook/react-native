@@ -7,7 +7,7 @@
 
 // TODO(macOS ISS#2323203)
 
-#import "RCTUIKit.h"
+#import "React/RCTUIKit.h" // TODO(macOS ISS#2323203)
 
 #import <React/RCTAssert.h>
 
