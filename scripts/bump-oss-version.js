@@ -24,7 +24,7 @@ let argv = yargs.option('r', {
   default: 'origin',
 }).argv;
 
-// - check we are in release branch, e.g. 0.33-stable
+// Check we are in release branch, e.g. 0.33-stable
 let branch = exec('git symbolic-ref --short HEAD', {
   silent: true,
 }).stdout.trim();
@@ -100,7 +100,7 @@ let packageJson = JSON.parse(cat('package.json'));
 packageJson.version = version;
 fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2), 'utf-8');
 
-// - change ReactAndroid/gradle.properties
+// Change ReactAndroid/gradle.properties
 if (
   sed(
     '-i',
@@ -113,12 +113,12 @@ if (
   exit(1);
 }
 
-// change react-native version in template's package.json
+// Change react-native version in the template's package.json
 let templatePackageJson = JSON.parse(cat('template/package.json'));
 templatePackageJson.dependencies['react-native'] = version;
-fs.writeFileSync('./template/package.json', JSON.stringify(templatePackageJson, null, 2), 'utf-8');
+fs.writeFileSync('./template/package.json', JSON.stringify(templatePackageJson, null, 2) + '\n', 'utf-8');
 
-// verify that files changed, we just do a git diff and check how many times version is added across files
+// Verify that files changed, we just do a git diff and check how many times version is added across files
 let numberOfChangedLinesWithNewVersion = exec(
   `git diff -U0 | grep '^[+]' | grep -c ${version} `,
   {silent: true},
@@ -132,13 +132,13 @@ if (+numberOfChangedLinesWithNewVersion !== 3) {
   exit(1);
 }
 
-// - make commit [0.21.0-rc] Bump version numbers
+// Make commit [0.21.0-rc] Bump version numbers
 if (exec(`git commit -a -m "[${version}] Bump version numbers"`).code) {
   echo('failed to commit');
   exit(1);
 }
 
-// - add tag v0.21.0-rc
+// Add tag v0.21.0-rc
 if (exec(`git tag v${version}`).code) {
   echo(
     `failed to tag the commit with v${version}, are you sure this release wasn't made earlier?`,
