@@ -11,21 +11,34 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.appcompat.widget.TintContextWrapper;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.Spanned;
-import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
+
 import com.facebook.common.logging.FLog;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.ReactConstants;
+import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactCompoundView;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewDefaults;
+import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import javax.annotation.Nullable;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class ReactTextView extends AppCompatTextView implements ReactCompoundView {
 
@@ -39,6 +52,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private int mNumberOfLines = ViewDefaults.NUMBER_OF_LINES;
   private TextUtils.TruncateAt mEllipsizeLocation = TextUtils.TruncateAt.END;
   private int mLinkifyMaskType = 0;
+  private boolean mNotifyOnInlineViewLayout;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
   private Spannable mSpanned;
@@ -49,6 +63,185 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
     mDefaultGravityHorizontal =
       getGravity() & (Gravity.HORIZONTAL_GRAVITY_MASK | Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK);
     mDefaultGravityVertical = getGravity() & Gravity.VERTICAL_GRAVITY_MASK;
+  }
+
+  private WritableMap inlineViewJson(int visibility, int index, int left, int top, int right, int bottom) {
+    WritableMap json = Arguments.createMap();
+    if (visibility == View.GONE) {
+      json.putString("visibility", "gone");
+      json.putInt("index", index);
+    } else if (visibility == View.VISIBLE) {
+      json.putString("visibility", "visible");
+      json.putInt("index", index);
+      json.putDouble("left", PixelUtil.toDIPFromPixel(left));
+      json.putDouble("top", PixelUtil.toDIPFromPixel(top));
+      json.putDouble("right", PixelUtil.toDIPFromPixel(right));
+      json.putDouble("bottom", PixelUtil.toDIPFromPixel(bottom));
+    } else {
+      json.putString("visibility", "unknown");
+      json.putInt("index", index);
+    }
+    return json;
+  }
+
+  private ReactContext getReactContext() {
+    Context context = getContext();
+    return (context instanceof TintContextWrapper)
+        ? (ReactContext)((TintContextWrapper)context).getBaseContext()
+        : (ReactContext)context;
+  }
+
+  @Override
+  protected void onLayout(boolean changed,
+                          int textViewLeft,
+                          int textViewTop,
+                          int textViewRight,
+                          int textViewBottom) {
+    if (!(getText() instanceof Spanned)) {
+      /**
+       * In general, {@link #setText} is called via {@link ReactTextViewManager#updateExtraData}
+       * before we are laid out. This ordering is a requirement because we utilize the data from
+       * setText in onLayout.
+       *
+       * However, it's possible for us to get an extra layout before we've received our setText
+       * call. If this happens before the initial setText call, then getText() will have its default
+       * value which isn't a Spanned and we need to bail out. That's fine because we'll get a
+       * setText followed by a layout later.
+       *
+       * The cause for the extra early layout is that an ancestor gets transitioned from a
+       * layout-only node to a non layout-only node.
+       */
+      return;
+    }
+
+    UIManagerModule uiManager = getReactContext().getNativeModule(UIManagerModule.class);
+
+    Spanned text = (Spanned) getText();
+    Layout layout = getLayout();
+    TextInlineViewPlaceholderSpan[] placeholders = text.getSpans(0, text.length(), TextInlineViewPlaceholderSpan.class);
+    ArrayList inlineViewInfoArray = mNotifyOnInlineViewLayout ? new ArrayList(placeholders.length) : null;
+    int textViewWidth = textViewRight - textViewLeft;
+    int textViewHeight = textViewBottom - textViewTop;
+
+    for (TextInlineViewPlaceholderSpan placeholder : placeholders) {
+      View child = uiManager.resolveView(placeholder.getReactTag());
+
+      int start = text.getSpanStart(placeholder);
+      int line = layout.getLineForOffset(start);
+      boolean isLineTruncated = layout.getEllipsisCount(line) > 0;
+
+      if (// This truncation check works well on recent versions of Android (tested on 5.1.1 and
+          // 6.0.1) but not on Android 4.4.4. The reason is that getEllipsisCount is buggy on
+          // Android 4.4.4. Specifically, it incorrectly returns 0 if an inline view is the first
+          // thing to be truncated.
+          (isLineTruncated && start >= layout.getLineStart(line) + layout.getEllipsisStart(line)) ||
+
+          // This truncation check works well on Android 4.4.4 but not on others (e.g. 6.0.1).
+          // On Android 4.4.4, getLineEnd returns the first truncated character whereas on 6.0.1,
+          // it appears to return the position after the last character on the line even if that
+          // character is truncated.
+          line >= mNumberOfLines || start >= layout.getLineEnd(line)) {
+        // On some versions of Android (e.g. 4.4.4, 5.1.1), getPrimaryHorizontal can infinite
+        // loop when called on a character that appears after the ellipsis. Avoid this bug by
+        // special casing the character truncation case.
+        child.setVisibility(View.GONE);
+        if (mNotifyOnInlineViewLayout) {
+          inlineViewInfoArray.add(inlineViewJson(View.GONE, start, -1, -1, -1, -1));
+        }
+      } else {
+        int width = placeholder.getWidth();
+        int height = placeholder.getHeight();
+
+        // Calculate if the direction of the placeholder character is Right-To-Left.
+        boolean isRtlChar = layout.isRtlCharAt(start);
+
+        boolean isRtlParagraph = layout.getParagraphDirection(line) == Layout.DIR_RIGHT_TO_LEFT;
+
+        int placeholderHorizontalPosition;
+        // There's a bug on Samsung devices where calling getPrimaryHorizontal on
+        // the last offset in the layout will result in an endless loop. Work around
+        // this bug by avoiding getPrimaryHorizontal in that case.
+        if (start == text.length() - 1) {
+          placeholderHorizontalPosition = isRtlParagraph
+              // Equivalent to `layout.getLineLeft(line)` but `getLineLeft` returns incorrect
+              // values when the paragraph is RTL and `setSingleLine(true)`.
+            ? textViewWidth - (int)layout.getLineWidth(line)
+            : (int) layout.getLineRight(line) - width;
+        } else {
+          // The direction of the paragraph may not be exactly the direction the string is heading in at the
+          // position of the placeholder. So, if the direction of the character is the same as the paragraph
+          // use primary, secondary otherwise.
+          boolean characterAndParagraphDirectionMatch = isRtlParagraph == isRtlChar;
+
+          placeholderHorizontalPosition = characterAndParagraphDirectionMatch
+            ? (int) layout.getPrimaryHorizontal(start)
+            : (int) layout.getSecondaryHorizontal(start);
+          
+          if (isRtlParagraph) {
+            // Adjust `placeholderHorizontalPosition` to work around an Android bug.
+            // The bug is when the paragraph is RTL and `setSingleLine(true)`, some layout
+            // methods such as `getPrimaryHorizontal`, `getSecondaryHorizontal`, and
+            // `getLineRight` return incorrect values. Their return values seem to be off
+            // by the same number of pixels so subtracting these values cancels out the error.
+            //
+            // The result is equivalent to bugless versions of `getPrimaryHorizontal`/`getSecondaryHorizontal`.
+            placeholderHorizontalPosition = textViewWidth - ((int)layout.getLineRight(line) - placeholderHorizontalPosition);
+          }
+
+          if (isRtlChar) {
+            placeholderHorizontalPosition -= width;
+          }
+        }
+
+        int leftRelativeToTextView = isRtlChar
+          ? placeholderHorizontalPosition + getTotalPaddingRight()
+          : placeholderHorizontalPosition + getTotalPaddingLeft();
+
+        int left = textViewLeft + leftRelativeToTextView;
+
+        // Vertically align the inline view to the baseline of the line of text.
+        int topRelativeToTextView = getTotalPaddingTop() + layout.getLineBaseline(line) - height;
+        int top = textViewTop + topRelativeToTextView;
+
+        boolean isFullyClipped = textViewWidth <= leftRelativeToTextView || textViewHeight <= topRelativeToTextView;
+        int layoutVisibility = isFullyClipped ? View.GONE : View.VISIBLE;
+        int layoutLeft = left;
+        int layoutTop = top;
+        int layoutRight = left + width;
+        int layoutBottom = top + height;
+
+        // Keep these parameters in sync with what goes into `inlineViewInfoArray`.
+        child.setVisibility(layoutVisibility);
+        child.layout(layoutLeft, layoutTop, layoutRight, layoutBottom);
+        if (mNotifyOnInlineViewLayout) {
+          inlineViewInfoArray.add(
+              inlineViewJson(layoutVisibility, start, layoutLeft, layoutTop, layoutRight, layoutBottom));
+        }
+      }
+    }
+
+    if (mNotifyOnInlineViewLayout) {
+      Collections.sort(inlineViewInfoArray, new Comparator() {
+        @Override
+        public int compare(Object o1, Object o2) {
+          WritableMap m1 = (WritableMap)o1;
+          WritableMap m2 = (WritableMap)o2;
+          return m1.getInt("index") - m2.getInt("index");
+        }
+      });
+      WritableArray inlineViewInfoArray2 = Arguments.createArray();
+      for (Object item : inlineViewInfoArray) {
+        inlineViewInfoArray2.pushMap((WritableMap)item);
+      }
+
+      WritableMap event = Arguments.createMap();
+      event.putArray("inlineViews", inlineViewInfoArray2);
+      getReactContext().getJSModule(RCTEventEmitter.class).receiveEvent(
+          getId(),
+          "topInlineViewLayout",
+          event
+      );
+    }
   }
 
   public void setText(ReactTextUpdate update) {
@@ -86,6 +279,9 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         setJustificationMode(update.getJustificationMode());
       }
     }
+
+    // Ensure onLayout is called so the inline views can be repositioned.
+    requestLayout();
   }
 
   @Override
@@ -246,6 +442,10 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   public void setEllipsizeLocation(TextUtils.TruncateAt ellipsizeLocation) {
     mEllipsizeLocation = ellipsizeLocation;
+  }
+
+  public void setNotifyOnInlineViewLayout(boolean notifyOnInlineViewLayout) {
+    mNotifyOnInlineViewLayout = notifyOnInlineViewLayout;
   }
 
   public void updateView() {

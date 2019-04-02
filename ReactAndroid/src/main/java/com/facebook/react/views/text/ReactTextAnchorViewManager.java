@@ -183,4 +183,9 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
         break;
     }
   }
+
+  @ReactProp(name = "onInlineViewLayout")
+  public void setNotifyOnInlineViewLayout(ReactTextView view, boolean notifyOnInlineViewLayout) {
+    view.setNotifyOnInlineViewLayout(notifyOnInlineViewLayout);
+  }
 }
