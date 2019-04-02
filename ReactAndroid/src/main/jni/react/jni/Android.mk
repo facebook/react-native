@@ -10,6 +10,10 @@ include $(CLEAR_VARS)
 # Flag to enable V8 in react-native code
 V8_ENABLED := 1
 
+# Name of this module.
+#
+# Other modules can depend on this one by adding libreactnativejni to their
+# LOCAL_SHARED_LIBRARIES variable.
 LOCAL_MODULE := reactnativejni
 
 LOCAL_SRC_FILES := \
@@ -35,6 +39,7 @@ LOCAL_SRC_FILES := \
   WritableNativeArray.cpp \
   WritableNativeMap.cpp \
 
+# Include . in the header search path for all source files in this module.
 LOCAL_C_INCLUDES := $(LOCAL_PATH)
 
 # Include ./../../ in the header search path for modules that depend on
@@ -44,8 +49,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)
 #   ./../ == react
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../..
 
-LOCAL_CFLAGS += -fvisibility=hidden
-LOCAL_CFLAGS += -fexceptions -frtti
+LOCAL_CFLAGS += -fvisibility=hidden -fexceptions -frtti
 
 LOCAL_LDLIBS += -landroid
 
@@ -67,7 +71,6 @@ else
   LOCAL_CFLAGS += -DV8_ENABLED=0
   LOCAL_SHARED_LIBRARIES += libjsc
 endif
-
 
 # The static libraries (.a files) that this module depends on.
 LOCAL_STATIC_LIBRARIES := libreactnative

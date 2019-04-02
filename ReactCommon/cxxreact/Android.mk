@@ -34,9 +34,10 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_C_INCLUDES)
 LOCAL_CFLAGS := \
   -DLOG_TAG=\"ReactNative\"
 
+LOCAL_CFLAGS += -fexceptions -frtti
+
 LOCAL_STATIC_LIBRARIES := boost
 LOCAL_SHARED_LIBRARIES := libfb libfolly_json libglog 
-LOCAL_CXXFLAGS += -fexceptions -frtti
 
 LOCAL_V8_FILES := \
     File.cpp \
