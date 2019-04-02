@@ -1,10 +1,10 @@
-# This file defines the Android PR build steps used during the CI loop
+# This file defines the build steps to publish a release
 name: $(Date:yyyyMMdd).$(Rev:.r)
 
-trigger: none # will disable CI builds entirely
+trigger: 
+ - master
 
-pr:
-- master
+pr: none
 
 jobs:
   - job: RNGithubPublish
