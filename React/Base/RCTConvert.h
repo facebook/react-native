@@ -6,7 +6,7 @@
  */
 
 #import <QuartzCore/QuartzCore.h>
-#import "RCTUIKit.h" // TODO(macOS ISS#2323203)
+#import <React/RCTUIKit.h> // TODO(macOS ISS#2323203)
 
 #import <React/RCTAnimationType.h>
 #import <React/RCTBorderStyle.h>
