@@ -113,12 +113,17 @@ if (
   exit(1);
 }
 
+// change react-native version in template's package.json
+let templatePackageJson = JSON.parse(cat('template/package.json'));
+templatePackageJson.dependencies['react-native'] = version;
+fs.writeFileSync('./template/package.json', JSON.stringify(templatePackageJson, null, 2), 'utf-8');
+
 // verify that files changed, we just do a git diff and check how many times version is added across files
 let numberOfChangedLinesWithNewVersion = exec(
   `git diff -U0 | grep '^[+]' | grep -c ${version} `,
   {silent: true},
 ).stdout.trim();
-if (+numberOfChangedLinesWithNewVersion !== 2) {
+if (+numberOfChangedLinesWithNewVersion !== 3) {
   echo(
     'Failed to update all the files. package.json and gradle.properties must have versions in them',
   );
