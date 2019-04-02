@@ -31,6 +31,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final String PROP_ELEVATION = "elevation";
   private static final String PROP_Z_INDEX = "zIndex";
   private static final String PROP_RENDER_TO_HARDWARE_TEXTURE = "renderToHardwareTextureAndroid";
+  private static final String PROP_ACCESSIBLE = "accessible";
   private static final String PROP_ACCESSIBILITY_LABEL = "accessibilityLabel";
   private static final String PROP_ACCESSIBILITY_COMPONENT_TYPE = "accessibilityComponentType";
   private static final String PROP_ACCESSIBILITY_HINT = "accessibilityHint";
@@ -110,6 +111,11 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   public void setNativeId(@Nonnull T view, String nativeId) {
     view.setTag(R.id.view_tag_native_id, nativeId);
     ReactFindViewUtil.notifyViewRendered(view);
+  }
+
+  @ReactProp(name = PROP_ACCESSIBLE)
+  public void setAccessible(T view, boolean accessible) {
+    view.setImportantForAccessibility(accessible ? View.IMPORTANT_FOR_ACCESSIBILITY_YES : View.IMPORTANT_FOR_ACCESSIBILITY_NO);
   }
 
   @ReactProp(name = PROP_ACCESSIBILITY_LABEL)
