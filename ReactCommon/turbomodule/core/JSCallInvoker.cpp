@@ -12,14 +12,15 @@
 namespace facebook {
 namespace react {
 
-JSCallInvoker::JSCallInvoker(std::shared_ptr<Instance> reactInstance)
+JSCallInvoker::JSCallInvoker(std::weak_ptr<Instance> reactInstance)
   : reactInstance_(reactInstance) {}
 
 void JSCallInvoker::invokeAsync(std::function<void()>&& func) {
-  if (reactInstance_ == nullptr) {
+  auto instance = reactInstance_.lock();
+  if (instance == nullptr) {
     return;
   }
-  reactInstance_->invokeAsync(std::move(func));
+  instance->invokeAsync(std::move(func));
 }
 
 } // namespace react

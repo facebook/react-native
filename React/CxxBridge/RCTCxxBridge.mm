@@ -210,7 +210,7 @@ struct RCTInstanceCallback : public InstanceCallback {
   return _jsMessageThread;
 }
 
-- (std::shared_ptr<Instance>)reactInstance
+- (std::weak_ptr<Instance>)reactInstance
 {
   return _reactInstance;
 }

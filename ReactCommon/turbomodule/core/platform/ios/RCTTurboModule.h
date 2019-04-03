@@ -91,6 +91,6 @@ private:
 @interface RCTBridge ()
 
 - (std::shared_ptr<facebook::react::MessageQueueThread>)jsMessageThread;
-- (std::shared_ptr<facebook::react::Instance>)reactInstance;
+- (std::weak_ptr<facebook::react::Instance>)reactInstance;
 
 @end
