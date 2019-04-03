@@ -101,8 +101,8 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 @implementation RCTView
 {
   UIColor *_backgroundColor;
-  NSMutableDictionary *accessibilityActionsNameMap;
-  NSMutableDictionary *accessibilityActionsLabelMap;
+  NSMutableDictionary<NSString *, NSDictionary *> *accessibilityActionsNameMap;
+  NSMutableDictionary<NSString *, NSDictionary *> *accessibilityActionsLabelMap;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -160,10 +160,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
 -(void)setAccessibilityActions:(NSArray *)actions
 {
-  if (!actions || !actions.count) {
+  if (!actions) {
     return;
   }
-  _accessibilityActions = [NSMutableArray array];
   accessibilityActionsNameMap = [[NSMutableDictionary alloc] init];
   accessibilityActionsLabelMap = [[NSMutableDictionary alloc] init];
   for (NSDictionary *action in actions) {
@@ -179,7 +178,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
 - (NSArray <UIAccessibilityCustomAction *> *)accessibilityCustomActions
 {
-  if (!_accessibilityActions || !_accessibilityActions.count) {
+  if (!_accessibilityActions.count) {
     return nil;
   }
 
@@ -375,8 +374,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   else if (_onAccessibilityTap) {
     _onAccessibilityTap(nil);
     return YES;
-  }
-       else {
+  } else {
     return NO;
        }
 }
@@ -385,12 +383,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 {
   if ([self performAccessibilityAction:@"magicTap"]) {
     return YES;
-  }
-  else if (_onMagicTap) {
+  } else if (_onMagicTap) {
     _onMagicTap(nil);
     return YES;
-  }
-  else {
+  } else {
     return NO;
   }
 }
@@ -399,12 +395,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 {
   if ([self performAccessibilityAction:@"escape"]) {
     return YES;
-  }
-  else if (_onAccessibilityEscape) {
+  } else if (_onAccessibilityEscape) {
     _onAccessibilityEscape(nil);
     return YES;
-  }
-  else {
+  } else {
     return NO;
   }
 }
