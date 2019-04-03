@@ -372,6 +372,14 @@ static inline YGConfigRef _jlong2YGConfigRef(jlong addr) {
   return reinterpret_cast<YGConfigRef>(static_cast<intptr_t>(addr));
 }
 
+jlong jni_YGNodeClone(alias_ref<jobject> thiz, jlong nativePointer) {
+  auto node = _jlong2YGNodeRef(nativePointer);
+  const YGNodeRef clonedYogaNode = YGNodeClone(node);
+  clonedYogaNode->setContext(node->getContext());
+
+  return reinterpret_cast<jlong>(clonedYogaNode);
+}
+
 static YGSize YGJNIMeasureFunc(
     YGNodeRef node,
     float width,
@@ -1103,6 +1111,7 @@ jint JNI_OnLoad(JavaVM* vm, void*) {
             YGMakeCriticalNativeMethod(jni_YGNodeStyleSetAspectRatio),
             YGMakeCriticalNativeMethod(jni_YGNodeGetInstanceCount),
             YGMakeCriticalNativeMethod(jni_YGNodePrint),
+            YGMakeNativeMethod(jni_YGNodeClone),
             YGMakeNativeMethod(jni_YGNodeSetStyleInputs),
             YGMakeNativeMethod(jni_YGConfigNew),
             YGMakeNativeMethod(jni_YGConfigFree),
