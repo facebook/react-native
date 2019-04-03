@@ -11,6 +11,7 @@
 #include <fb/fbjni.h>
 #include <jsi/jsi.h>
 
+#include <cxxreact/Instance.h>
 #include <jsireact/TurboModuleBinding.h>
 
 #include <react/jni/JMessageQueueThread.h>
@@ -56,7 +57,9 @@ void TurboModuleManager::installJSIBindings() {
       [this](const std::string &name) {
         const auto moduleInstance = getJavaModule(name);
         // TODO: Pass in react Instance to JSCallInvoker instead.
-        const auto jsInvoker = std::make_shared<react::JSCallInvoker>(nullptr);
+        std::shared_ptr<Instance> instance = nullptr;
+        std::weak_ptr<Instance> weakInstance = instance;
+        const auto jsInvoker = std::make_shared<react::JSCallInvoker>(weakInstance);
         return moduleProvider_(name, moduleInstance, jsInvoker);
       })
   );
