@@ -411,8 +411,6 @@ WIN_EXPORT float YGRoundValueToPixelGrid(
     const bool forceCeil,
     const bool forceFloor);
 
-void YGSetUsedCachedEntries(size_t);
-
 YG_EXTERN_C_END
 
 #ifdef __cplusplus

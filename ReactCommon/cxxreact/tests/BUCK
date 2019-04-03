@@ -55,3 +55,17 @@ fb_xplat_cxx_test(
         react_native_xplat_target("cxxreact:jsbigstring"),
     ],
 )
+
+fb_xplat_cxx_test(
+    name = "jsbigstring_test",
+    srcs = ["jsbigstring.cpp"],
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+    ],
+    deps = [
+        "fbsource//xplat/folly:molly",
+        "fbsource//xplat/third-party/gmock:gtest",
+        react_native_xplat_target("cxxreact:jsbigstring"),
+    ],
+)

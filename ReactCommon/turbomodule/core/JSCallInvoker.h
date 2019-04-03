@@ -26,13 +26,13 @@ class Instance;
  */
 class JSCallInvoker {
 public:
-  JSCallInvoker(std::shared_ptr<Instance> reactInstance);
+  JSCallInvoker(std::weak_ptr<Instance> reactInstance);
 
   void invokeAsync(std::function<void()>&& func);
   // TODO: add sync support
 
 private:
-  std::shared_ptr<Instance> reactInstance_;
+  std::weak_ptr<Instance> reactInstance_;
 };
 
 } // namespace react

@@ -28,7 +28,9 @@ module.exports = {
       './jest/assetFileTransformer.js',
     ),
   },
-  transformIgnorePatterns: ['node_modules/(?!(jest-)?react-native)'],
+  transformIgnorePatterns: [
+    'node_modules/(?!(jest-)?react-native|@react-native-community)',
+  ],
   setupFiles: [require.resolve('./jest/setup.js')],
   testEnvironment: 'node',
 };

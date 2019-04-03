@@ -18,6 +18,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.LayoutShadowNode;
+import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.Spacing;
@@ -196,7 +197,12 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
     if (mMostRecentEventCount != UNSET) {
       ReactTextUpdate reactTextUpdate =
           new ReactTextUpdate(
-              spannedFromShadowNode(this, getText()),
+              spannedFromShadowNode(
+                  this,
+                  getText(),
+                  /* supportsInlineViews: */ false,
+                  /* nativeViewHierarchyOptimizer: */ null // only needed to support inline views
+              ),
               mMostRecentEventCount,
               mContainsImages,
               getPadding(Spacing.LEFT),

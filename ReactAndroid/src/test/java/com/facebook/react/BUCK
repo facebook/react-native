@@ -3,8 +3,7 @@ load("//tools/build_defs/oss:rn_defs.bzl", "YOGA_TARGET", "react_native_dep", "r
 rn_robolectric_test(
     name = "react",
     srcs = glob(["*.java"]),
-    # Please change the contact to the oncall of your team
-    contacts = ["oncall+fbandroid_sheriff@xmail.facebook.com"],
+    contacts = ["oncall+react_native@xmail.facebook.com"],
     deps = [
         YOGA_TARGET,
         react_native_dep("libraries/fbcore/src/test/java/com/facebook/powermock:powermock"),
@@ -17,7 +16,6 @@ rn_robolectric_test(
         react_native_dep("third-party/java/okio:okio"),
         react_native_dep("third-party/java/robolectric3/robolectric:robolectric"),
         react_native_target("java/com/facebook/react:react"),
-        react_native_target("java/com/facebook/react/animation:animation"),
         react_native_target("java/com/facebook/react/bridge:bridge"),
         react_native_target("java/com/facebook/react/common:common"),
         react_native_target("java/com/facebook/react/touch:touch"),

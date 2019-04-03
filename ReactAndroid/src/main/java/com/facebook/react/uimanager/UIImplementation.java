@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.View.MeasureSpec;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -429,15 +428,13 @@ public class UIImplementation {
         cssNodeToManage.addChildAt(cssNodeToAdd, viewAtIndex.mIndex);
       }
 
-      if (!cssNodeToManage.isVirtual() && !cssNodeToManage.isVirtualAnchor()) {
-        mNativeViewHierarchyOptimizer.handleManageChildren(
-            cssNodeToManage,
-            indicesToRemove,
-            tagsToRemove,
-            viewsToAdd,
-            tagsToDelete,
-            indicesToDelete);
-      }
+      mNativeViewHierarchyOptimizer.handleManageChildren(
+        cssNodeToManage,
+        indicesToRemove,
+        tagsToRemove,
+        viewsToAdd,
+        tagsToDelete,
+        indicesToDelete);
 
       for (int i = 0; i < tagsToDelete.length; i++) {
         removeShadowNode(mShadowNodeRegistry.getNode(tagsToDelete[i]));
@@ -467,11 +464,9 @@ public class UIImplementation {
         cssNodeToManage.addChildAt(cssNodeToAdd, i);
       }
 
-      if (!cssNodeToManage.isVirtual() && !cssNodeToManage.isVirtualAnchor()) {
-        mNativeViewHierarchyOptimizer.handleSetChildren(
-          cssNodeToManage,
-          childrenTags);
-      }
+      mNativeViewHierarchyOptimizer.handleSetChildren(
+        cssNodeToManage,
+        childrenTags);
     }
   }
 
@@ -699,44 +694,6 @@ public class UIImplementation {
   }
 
   /**
-   * Registers a new Animation that can then be added to a View using {@link #addAnimation}.
-   */
-  public void registerAnimation(Animation animation) {
-    mOperationsQueue.enqueueRegisterAnimation(animation);
-  }
-
-  /**
-   * Adds an Animation previously registered with {@link #registerAnimation} to a View and starts it
-   */
-  public void addAnimation(int reactTag, int animationID, Callback onSuccess) {
-    assertViewExists(reactTag, "addAnimation");
-    mOperationsQueue.enqueueAddAnimation(reactTag, animationID, onSuccess);
-  }
-
-  /**
-   * Removes an existing Animation, canceling it if it was in progress.
-   */
-  public void removeAnimation(int reactTag, int animationID) {
-    assertViewExists(reactTag, "removeAnimation");
-    mOperationsQueue.enqueueRemoveAnimation(animationID);
-  }
-
-  /**
-   * LayoutAnimation API on Android is currently experimental. Therefore, it needs to be enabled
-   * explicitly in order to avoid regression in existing application written for iOS using this API.
-   *
-   * Warning : This method will be removed in future version of React Native, and layout animation
-   * will be enabled by default, so always check for its existence before invoking it.
-   *
-   * TODO(9139831) : remove this method once layout animation is fully stable.
-   *
-   * @param enabled whether layout animation is enabled or not
-   */
-  public void setLayoutAnimationEnabledExperimental(boolean enabled) {
-    mOperationsQueue.enqueueSetLayoutAnimationEnabled(enabled);
-  }
-
-  /**
    * Configure an animation to be used for the native layout changes, and native views
    * creation. The animation will only apply during the current batch operations.
    *
@@ -748,11 +705,8 @@ public class UIImplementation {
    *        interrupted. In this case, callback parameter will be false.
    * @param error will be called if there was an error processing the animation
    */
-  public void configureNextLayoutAnimation(
-      ReadableMap config,
-      Callback success,
-      Callback error) {
-    mOperationsQueue.enqueueConfigureLayoutAnimation(config, success, error);
+  public void configureNextLayoutAnimation(ReadableMap config, Callback success) {
+    mOperationsQueue.enqueueConfigureLayoutAnimation(config, success);
   }
 
   public void setJSResponder(int reactTag, boolean blockNativeResponder) {
@@ -764,7 +718,7 @@ public class UIImplementation {
       return;
     }
 
-    while (node.isVirtual() || node.isLayoutOnly()) {
+    while (node.getNativeKind() == NativeKind.NONE) {
       node = node.getParent();
     }
     mOperationsQueue.enqueueSetJSResponder(node.getReactTag(), reactTag, blockNativeResponder);
@@ -903,14 +857,14 @@ public class UIImplementation {
 
   private void assertNodeDoesNotNeedCustomLayoutForChildren(ReactShadowNode node) {
     ViewManager viewManager = Assertions.assertNotNull(mViewManagers.get(node.getViewClass()));
-    ViewGroupManager viewGroupManager;
-    if (viewManager instanceof ViewGroupManager) {
-      viewGroupManager = (ViewGroupManager) viewManager;
+    IViewManagerWithChildren viewManagerWithChildren;
+    if (viewManager instanceof IViewManagerWithChildren) {
+      viewManagerWithChildren = (IViewManagerWithChildren) viewManager;
     } else {
       throw new IllegalViewOperationException("Trying to use view " + node.getViewClass() +
           " as a parent, but its Manager doesn't extends ViewGroupManager");
     }
-    if (viewGroupManager != null && viewGroupManager.needsCustomLayoutForChildren()) {
+    if (viewManagerWithChildren != null && viewManagerWithChildren.needsCustomLayoutForChildren()) {
       throw new IllegalViewOperationException(
           "Trying to measure a view using measureLayout/measureLayoutRelativeToParent relative to" +
               " an ancestor that requires custom layout for it's children (" + node.getViewClass() +
@@ -925,7 +879,7 @@ public class UIImplementation {
     for (int i = 0; i < cssNode.getChildCount(); i++) {
       notifyOnBeforeLayoutRecursive(cssNode.getChildAt(i));
     }
-    cssNode.onBeforeLayout();
+    cssNode.onBeforeLayout(mNativeViewHierarchyOptimizer);
   }
 
   protected void calculateRootLayout(ReactShadowNode cssRoot) {
@@ -957,10 +911,11 @@ public class UIImplementation {
       return;
     }
 
-    if (!cssNode.isVirtualAnchor()) {
-      for (int i = 0; i < cssNode.getChildCount(); i++) {
+    Iterable<? extends ReactShadowNode> cssChildren = cssNode.calculateLayoutOnChildren();
+    if (cssChildren != null) {
+      for (ReactShadowNode cssChild : cssChildren) {
         applyUpdatesRecursive(
-            cssNode.getChildAt(i),
+            cssChild,
             absoluteX + cssNode.getLayoutX(),
             absoluteY + cssNode.getLayoutY());
       }
