@@ -184,7 +184,11 @@ const TouchableBounce = ((createReactClass({
         nativeID={this.props.nativeID}
         testID={this.props.testID}
         hitSlop={this.props.hitSlop}
-        clickable={this.props.clickable !== false && this.props.onPress !== undefined && !this.props.disabled}
+        clickable={
+          this.props.clickable !== false &&
+          this.props.onPress !== undefined &&
+          !this.props.disabled
+        }
         onClick={this.touchableHandlePress}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={
