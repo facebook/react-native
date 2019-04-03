@@ -615,7 +615,7 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(UIView *view, 
                                 fmax(_scrollView.contentSize.height - _scrollView.bounds.size.height + _scrollView.contentInset.bottom + fmax(_scrollView.contentInset.top, 0), 0.01)); // Make width and height greater than 0
     // Ensure at least one scroll event will fire
     _allowNextScrollNoMatterWhat = YES;
-    if (!CGRectContainsPoint(maxRect, offset)) {
+    if (!CGRectContainsPoint(maxRect, offset) && !self.scrollToOverflowEnabled) {
       CGFloat x = fmax(offset.x, CGRectGetMinX(maxRect));
       x = fmin(x, CGRectGetMaxX(maxRect));
       CGFloat y = fmax(offset.y, CGRectGetMinY(maxRect));
