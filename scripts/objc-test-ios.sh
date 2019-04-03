@@ -11,7 +11,7 @@
 # also run the RNTester integration test (needs JS and packager):
 # ./objc-test-ios.sh test
 
-set -ex
+set -e
 
 SCRIPTS=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 ROOT=$(dirname "$SCRIPTS")
@@ -25,6 +25,7 @@ export TEST_NAME="iOS"
 export SCHEME="RNTester"
 export SDK="iphonesimulator"
 export DESTINATION="platform=iOS Simulator,name=${IOS_DEVICE},OS=${IOS_TARGET_OS}"
+export USE_MODERN_BUILD_SYSTEM="NO"
 
 # If there's a "test" argument, pass it to the test script.
 ./scripts/objc-test.sh $1
