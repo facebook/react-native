@@ -229,6 +229,7 @@
     "regenerator-runtime": "^0.11.0",
     "rimraf": "^2.5.4",
     "schedule": "0.3.0",
+    "scheduler": "0.11.3",
     "semver": "^5.0.3",
     "serve-static": "^1.13.1",
     "shell-quote": "1.6.1",
