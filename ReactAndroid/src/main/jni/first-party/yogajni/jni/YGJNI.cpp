@@ -7,6 +7,7 @@
 #include <fb/fbjni.h>
 #include <yoga/YGNode.h>
 #include <yoga/Yoga.h>
+#include <yoga/Yoga-internal.h>
 #include <yoga/log.h>
 #include <cstdint>
 #include <cstring>
