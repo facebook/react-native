@@ -729,8 +729,8 @@ public class NativeViewHierarchyManager {
     mJSResponderHandler.clearJSResponder();
   }
 
-  void configureLayoutAnimation(final ReadableMap config) {
-    mLayoutAnimator.initializeFromConfig(config);
+  void configureLayoutAnimation(final ReadableMap config, final Callback onAnimationComplete) {
+    mLayoutAnimator.initializeFromConfig(config, onAnimationComplete);
   }
 
   void clearLayoutAnimation() {

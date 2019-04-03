@@ -720,11 +720,8 @@ public class UIImplementation {
    *        interrupted. In this case, callback parameter will be false.
    * @param error will be called if there was an error processing the animation
    */
-  public void configureNextLayoutAnimation(
-      ReadableMap config,
-      Callback success,
-      Callback error) {
-    mOperationsQueue.enqueueConfigureLayoutAnimation(config, success, error);
+  public void configureNextLayoutAnimation(ReadableMap config, Callback success) {
+    mOperationsQueue.enqueueConfigureLayoutAnimation(config, success);
   }
 
   public void setJSResponder(int reactTag, boolean blockNativeResponder) {

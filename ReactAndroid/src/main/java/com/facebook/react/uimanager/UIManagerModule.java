@@ -709,8 +709,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    * Configure an animation to be used for the native layout changes, and native views creation. The
    * animation will only apply during the current batch operations.
    *
-   * <p>TODO(7728153) : animating view deletion is currently not supported. TODO(7613721) :
-   * callbacks are not supported, this feature will likely be killed.
+   * <p>TODO(7728153) : animating view deletion is currently not supported.
    *
    * @param config the configuration of the animation for view addition/removal/update.
    * @param success will be called when the animation completes, or when the animation get
@@ -719,7 +718,7 @@ public class UIManagerModule extends ReactContextBaseJavaModule
    */
   @ReactMethod
   public void configureNextLayoutAnimation(ReadableMap config, Callback success, Callback error) {
-    mUIImplementation.configureNextLayoutAnimation(config, success, error);
+    mUIImplementation.configureNextLayoutAnimation(config, success);
   }
 
   /**
