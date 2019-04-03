@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.View.MeasureSpec;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -692,29 +691,6 @@ public class UIImplementation {
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
     }
-  }
-
-  /**
-   * Registers a new Animation that can then be added to a View using {@link #addAnimation}.
-   */
-  public void registerAnimation(Animation animation) {
-    mOperationsQueue.enqueueRegisterAnimation(animation);
-  }
-
-  /**
-   * Adds an Animation previously registered with {@link #registerAnimation} to a View and starts it
-   */
-  public void addAnimation(int reactTag, int animationID, Callback onSuccess) {
-    assertViewExists(reactTag, "addAnimation");
-    mOperationsQueue.enqueueAddAnimation(reactTag, animationID, onSuccess);
-  }
-
-  /**
-   * Removes an existing Animation, canceling it if it was in progress.
-   */
-  public void removeAnimation(int reactTag, int animationID) {
-    assertViewExists(reactTag, "removeAnimation");
-    mOperationsQueue.enqueueRemoveAnimation(animationID);
   }
 
   /**

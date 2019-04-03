@@ -27,7 +27,6 @@ rn_robolectric_test(
         react_native_dep("third-party/java/okio:okio"),
         react_native_dep("third-party/java/robolectric3/robolectric:robolectric"),
         react_native_target("java/com/facebook/react:react"),
-        react_native_target("java/com/facebook/react/animation:animation"),
         react_native_target("java/com/facebook/react/bridge:bridge"),
         react_native_target("java/com/facebook/react/common:common"),
         react_native_target("java/com/facebook/react/touch:touch"),

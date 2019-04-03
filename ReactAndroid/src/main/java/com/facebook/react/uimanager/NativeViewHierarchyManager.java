@@ -21,9 +21,6 @@ import android.widget.PopupMenu;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
-import com.facebook.react.animation.Animation;
-import com.facebook.react.animation.AnimationListener;
-import com.facebook.react.animation.AnimationRegistry;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
@@ -68,7 +65,6 @@ public class NativeViewHierarchyManager {
 
   private static final String TAG = NativeViewHierarchyManager.class.getSimpleName();
 
-  private final AnimationRegistry mAnimationRegistry;
   private final SparseArray<View> mTagsToViews;
   private final SparseArray<ViewManager> mTagsToViewManagers;
   private final SparseBooleanArray mRootTags;
@@ -86,7 +82,6 @@ public class NativeViewHierarchyManager {
   }
 
   public NativeViewHierarchyManager(ViewManagerRegistry viewManagers, RootViewManager manager) {
-    mAnimationRegistry = new AnimationRegistry();
     mViewManagers = viewManagers;
     mTagsToViews = new SparseArray<>();
     mTagsToViewManagers = new SparseArray<>();
@@ -109,10 +104,6 @@ public class NativeViewHierarchyManager {
       throw new IllegalViewOperationException("ViewManager for tag " + tag + " could not be found");
     }
     return viewManager;
-  }
-
-  public AnimationRegistry getAnimationRegistry() {
-    return mAnimationRegistry;
   }
 
   public void setLayoutAnimationEnabled(boolean enabled) {
@@ -744,45 +735,6 @@ public class NativeViewHierarchyManager {
 
   void clearLayoutAnimation() {
     mLayoutAnimator.reset();
-  }
-
-  /* package */ synchronized void startAnimationForNativeView(
-      int reactTag,
-      Animation animation,
-      @Nullable final Callback animationCallback) {
-    UiThreadUtil.assertOnUiThread();
-    View view = mTagsToViews.get(reactTag);
-    final int animationId = animation.getAnimationID();
-    if (view != null) {
-      animation.setAnimationListener(new AnimationListener() {
-        @Override
-        public void onFinished() {
-          Animation removedAnimation = mAnimationRegistry.removeAnimation(animationId);
-
-          // There's a chance that there was already a removeAnimation call enqueued on the main
-          // thread when this callback got enqueued on the main thread, but the Animation class
-          // should handle only calling one of onFinished and onCancel exactly once.
-          Assertions.assertNotNull(removedAnimation, "Animation was already removed somehow!");
-          if (animationCallback != null) {
-            animationCallback.invoke(true);
-          }
-        }
-
-        @Override
-        public void onCancel() {
-          Animation removedAnimation = mAnimationRegistry.removeAnimation(animationId);
-
-          Assertions.assertNotNull(removedAnimation, "Animation was already removed somehow!");
-          if (animationCallback != null) {
-            animationCallback.invoke(false);
-          }
-        }
-      });
-      animation.start(view);
-    } else {
-      // TODO(5712813): cleanup callback in JS callbacks table in case of an error
-      throw new IllegalViewOperationException("View with tag " + reactTag + " not found");
-    }
   }
 
   public synchronized void dispatchCommand(

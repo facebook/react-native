@@ -20,7 +20,6 @@ import android.view.View;
 import com.facebook.common.logging.FLog;
 import com.facebook.debug.holder.PrinterHolder;
 import com.facebook.debug.tags.ReactDebugOverlayTags;
-import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedRunnable;
@@ -633,23 +632,6 @@ public class UIManagerModule extends ReactContextBaseJavaModule
   public void viewIsDescendantOf(
       final int reactTag, final int ancestorReactTag, final Callback callback) {
     mUIImplementation.viewIsDescendantOf(reactTag, ancestorReactTag, callback);
-  }
-
-  /** Registers a new Animation that can then be added to a View using {@link #addAnimation}. */
-  public void registerAnimation(Animation animation) {
-    mUIImplementation.registerAnimation(animation);
-  }
-
-  /**
-   * Adds an Animation previously registered with {@link #registerAnimation} to a View and starts it
-   */
-  public void addAnimation(int reactTag, int animationID, Callback onSuccess) {
-    mUIImplementation.addAnimation(reactTag, animationID, onSuccess);
-  }
-
-  /** Removes an existing Animation, canceling it if it was in progress. */
-  public void removeAnimation(int reactTag, int animationID) {
-    mUIImplementation.removeAnimation(reactTag, animationID);
   }
 
   @Override

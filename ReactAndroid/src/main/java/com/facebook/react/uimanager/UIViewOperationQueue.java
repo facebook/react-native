@@ -10,8 +10,6 @@ package com.facebook.react.uimanager;
 import android.os.SystemClock;
 import android.view.View;
 import com.facebook.common.logging.FLog;
-import com.facebook.react.animation.Animation;
-import com.facebook.react.animation.AnimationRegistry;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -33,9 +31,9 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 
 /**
- * This class acts as a buffer for command executed on {@link NativeViewHierarchyManager} or on
- * {@link AnimationRegistry}. It expose similar methods as mentioned classes but instead of
- * executing commands immediately it enqueues those operations in a queue that is then flushed from
+ * This class acts as a buffer for command executed on {@link NativeViewHierarchyManager}.
+ * It expose similar methods as mentioned classes but instead of executing commands
+ * immediately it enqueues those operations in a queue that is then flushed from
  * {@link UIManagerModule} once JS batch of ui operations is finished. This is to make sure that we
  * execute all the JS operation coming from a single batch a single loop of the main (UI) android
  * looper.
@@ -356,63 +354,6 @@ public class UIViewOperationQueue {
     }
   }
 
-  private class RegisterAnimationOperation extends AnimationOperation {
-
-    private final Animation mAnimation;
-
-    private RegisterAnimationOperation(Animation animation) {
-      super(animation.getAnimationID());
-      mAnimation = animation;
-    }
-
-    @Override
-    public void execute() {
-      mAnimationRegistry.registerAnimation(mAnimation);
-    }
-  }
-
-  private class AddAnimationOperation extends AnimationOperation {
-    private final int mReactTag;
-    private final Callback mSuccessCallback;
-
-    private AddAnimationOperation(int reactTag, int animationID, Callback successCallback) {
-      super(animationID);
-      mReactTag = reactTag;
-      mSuccessCallback = successCallback;
-    }
-
-    @Override
-    public void execute() {
-      Animation animation = mAnimationRegistry.getAnimation(mAnimationID);
-      if (animation != null) {
-        mNativeViewHierarchyManager.startAnimationForNativeView(
-            mReactTag,
-            animation,
-            mSuccessCallback);
-      } else {
-        // node or animation not found
-        // TODO(5712813): cleanup callback in JS callbacks table in case of an error
-        throw new IllegalViewOperationException("Animation with id " + mAnimationID
-            + " was not found");
-      }
-    }
-  }
-
-  private final class RemoveAnimationOperation extends AnimationOperation {
-
-    private RemoveAnimationOperation(int animationID) {
-      super(animationID);
-    }
-
-    @Override
-    public void execute() {
-      Animation animation = mAnimationRegistry.getAnimation(mAnimationID);
-      if (animation != null) {
-        animation.cancel();
-      }
-    }
-  }
-
   private class SetLayoutAnimationEnabledOperation implements UIOperation {
     private final boolean mEnabled;
 
@@ -604,7 +545,6 @@ public class UIViewOperationQueue {
   }
 
   private final NativeViewHierarchyManager mNativeViewHierarchyManager;
-  private final AnimationRegistry mAnimationRegistry;
   private final Object mDispatchRunnablesLock = new Object();
   private final Object mNonBatchedOperationsLock = new Object();
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
@@ -637,7 +577,6 @@ public class UIViewOperationQueue {
       NativeViewHierarchyManager nativeViewHierarchyManager,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     mNativeViewHierarchyManager = nativeViewHierarchyManager;
-    mAnimationRegistry = nativeViewHierarchyManager.getAnimationRegistry();
     mDispatchUIFrameCallback =
         new DispatchUIFrameCallback(
             reactContext,
@@ -793,21 +732,6 @@ public class UIViewOperationQueue {
     ReadableArray childrenTags) {
     mOperations.add(
       new SetChildrenOperation(reactTag, childrenTags));
-  }
-
-  public void enqueueRegisterAnimation(Animation animation) {
-    mOperations.add(new RegisterAnimationOperation(animation));
-  }
-
-  public void enqueueAddAnimation(
-      final int reactTag,
-      final int animationID,
-      final Callback onSuccess) {
-    mOperations.add(new AddAnimationOperation(reactTag, animationID, onSuccess));
-  }
-
-  public void enqueueRemoveAnimation(int animationID) {
-    mOperations.add(new RemoveAnimationOperation(animationID));
   }
 
   public void enqueueSetLayoutAnimationEnabled(
