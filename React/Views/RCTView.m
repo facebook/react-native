@@ -186,8 +186,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
 - (NSString *)accessibilityValue
 {
-  NSMutableString *value = [NSMutableString stringWithString:@""];
-  NSDictionary *roleDescriptions = @{
+  if (self.accessibilityTraits & (UIAccessibilityTraits)(1<<53)) {
+    for (NSString *state in _accessibilityStates) {
+      if ([state isEqualToString:@"checked"]) {
+        return @"1";
+      }
+    }
+  }
+  NSMutableArray *valueComponents = [NSMutableArray new];
+  NSDictionary<NSString *, NSString *> *roleDescriptions = @{
                                      @"alert" : @"alert",
                                      @"checkbox" : @"checkbox",
                                      @"combobox" : @"combo box",
@@ -205,7 +212,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
                                      @"timer" : @"timer",
                                      @"toolbar" : @"tool bar",
                                      };
-  NSDictionary *stateDescriptions = @{
+  NSDictionary<NSString *, NSString *> *stateDescriptions = @{
                                       @"checked" : @"checked",
                                       @"unchecked" : @"not checked",
                                       @"busy" : @"busy",
@@ -214,17 +221,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
                                       };
   NSString *roleDescription = _accessibilityRole ? roleDescriptions[_accessibilityRole]: nil;
   if (roleDescription) {
-    [value appendString:roleDescription];
+    [valueComponents addObject:roleDescription];
   }
   for (NSString *state in _accessibilityStates) {
-    NSString *stateDescription =state ? stateDescriptions[state] : nil;
+    NSString *stateDescription = state ? stateDescriptions[state] : nil;
     if (stateDescription) {
-        [value appendString:@" "];
-    [value appendString:stateDescription];
+      [valueComponents addObject:stateDescription];
     }
   }
-  if (value.length > 0) {
-    return value;
+  if (valueComponents.count > 0) {
+    return [valueComponents componentsJoinedByString:@",  "];
   }
   return nil;
 }

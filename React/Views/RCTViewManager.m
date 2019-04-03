@@ -57,7 +57,7 @@ RCT_MULTI_ENUM_CONVERTER(UIAccessibilityTraits, (@{
   @"radiogroup": @(UIAccessibilityTraitNone),
   @"scrollbar": @(UIAccessibilityTraitNone),
   @"spinbutton": @(UIAccessibilityTraitNone),
-  @"switch": @(UIAccessibilityTraitNone),
+  @"switch": @(UIAccessibilityTraitButton | (UIAccessibilityTraits)(1<<53)),
   @"tab": @(UIAccessibilityTraitNone),
   @"tablist": @(UIAccessibilityTraitNone),
   @"timer": @(UIAccessibilityTraitNone),
@@ -166,7 +166,7 @@ RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, RCTView)
 
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
 {
-  const UIAccessibilityTraits AccessibilityRolesMask = UIAccessibilityTraitNone | UIAccessibilityTraitButton | UIAccessibilityTraitLink | UIAccessibilityTraitSearchField | UIAccessibilityTraitImage | UIAccessibilityTraitKeyboardKey | UIAccessibilityTraitStaticText | UIAccessibilityTraitAdjustable | UIAccessibilityTraitHeader | UIAccessibilityTraitSummaryElement;
+  const UIAccessibilityTraits AccessibilityRolesMask = UIAccessibilityTraitNone | UIAccessibilityTraitButton | UIAccessibilityTraitLink | UIAccessibilityTraitSearchField | UIAccessibilityTraitImage | UIAccessibilityTraitKeyboardKey | UIAccessibilityTraitStaticText | UIAccessibilityTraitAdjustable | UIAccessibilityTraitHeader | UIAccessibilityTraitSummaryElement | (UIAccessibilityTraits)(1<<53);
   view.reactAccessibilityElement.accessibilityTraits = view.reactAccessibilityElement.accessibilityTraits & ~AccessibilityRolesMask;
   UIAccessibilityTraits newTraits = json ? [RCTConvert UIAccessibilityTraits:json] : defaultView.accessibilityTraits;
   if (newTraits != UIAccessibilityTraitNone) {
@@ -193,19 +193,16 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityStates, NSArray<NSString *>, RCTView)
   for (NSString *state in states) {
     if ([state isEqualToString:@"selected"]) {
       view.reactAccessibilityElement.accessibilityTraits |= UIAccessibilityTraitSelected;
-    }
-    else if ([state isEqualToString:@"disabled"]) {
+    } else if ([state isEqualToString:@"disabled"]) {
       view.reactAccessibilityElement.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
-    }
-    else {
+    } else {
       [newStates addObject:state];
     }
-    if (states.count > 0) {
-      ((RCTView *)view.reactAccessibilityElement).accessibilityStates = newStates;
-    }
-    else {
+  }
+  if (newStates.count > 0) {
+    ((RCTView *)view.reactAccessibilityElement).accessibilityStates = newStates;
+  } else {
       ((RCTView *)view.reactAccessibilityElement).accessibilityStates = nil;
-    }
   }
 }
 
