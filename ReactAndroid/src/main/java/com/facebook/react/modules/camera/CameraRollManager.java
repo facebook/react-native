@@ -417,7 +417,13 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
     float width = media.getInt(widthIndex);
     float height = media.getInt(heightIndex);
 
-    String mimeType = URLConnection.guessContentTypeFromName(photoUri.toString());
+    String mimeType;
+    try {
+      mimeType = URLConnection.guessContentTypeFromName(photoUri.toString());
+    } catch (StringIndexOutOfBoundsException e) {
+      FLog.e(ReactConstants.TAG, "Unable to guess content type from " + photoUri.toString(), e);
+      throw e;
+    }
 
     if (mimeType != null
         && mimeType.startsWith("video")) {
