@@ -17,10 +17,6 @@
     translatable="true"
     >Button, Image</string>
   <string
-    name="adjustable_description"
-    translatable="true"
-    >Adjustable</string>
-  <string
     name="header_description"
     translatable="false"
     >Heading</string>
@@ -28,10 +24,6 @@
     name="alert_description"
     translatable="true"
     >Alert</string>
-  <string
-    name="checkbox_description"
-    translatable="true"
-    >Checkbox</string>
   <string
     name="combobox_description"
     translatable="true"
@@ -53,10 +45,6 @@
     translatable="true"
     >Progress Bar</string>
   <string
-    name="radio_description"
-    translatable="true"
-    >Radio Button</string>
-  <string
     name="radiogroup_description"
     translatable="true"
     >Radio Group</string>
@@ -68,10 +56,6 @@
     name="spinbutton_description"
     translatable="true"
     >Spin Button</string>
-  <string
-    name="switch_description"
-    translatable="true"
-    >Switch</string>
   <string
     name="tab_description"
     translatable="true"
@@ -92,14 +76,6 @@
     name="summary_description"
     translatable="true"
     >Summary</string>
-  <string
-    name="state_on_description"
-    translatable="true"
-    >on</string>
-  <string
-    name="state_off_description"
-    translatable="true"
-    >off</string>
   <string
     name="state_busy_description"
     translatable="true"

@@ -44,8 +44,6 @@ export type AccessibilityRole =
 export type AccessibilityStates = $ReadOnlyArray<
   | 'disabled'
   | 'selected'
-  | 'on'
-  | 'off'
   | 'checked'
   | 'unchecked'
   | 'busy'

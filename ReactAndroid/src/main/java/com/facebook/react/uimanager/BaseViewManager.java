@@ -62,8 +62,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
 
   public static final HashMap<String, Integer> sStateDescription= new HashMap<String, Integer>();
   static {
-      sStateDescription.put("on", R.string.state_on_description);
-      sStateDescription.put("off", R.string.state_off_description);
       sStateDescription.put("busy", R.string.state_busy_description);
       sStateDescription.put("expanded", R.string.state_expanded_description);
       sStateDescription.put("collapsed", R.string.state_collapsed_description);

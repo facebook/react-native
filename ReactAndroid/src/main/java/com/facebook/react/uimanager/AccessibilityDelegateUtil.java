@@ -65,6 +65,8 @@ public class AccessibilityDelegateUtil {
         return "android.widget.RadioButton";
       case SPINBUTTON:
         return "android.widget.SpinButton";
+      case SWITCH:
+        return "android.widget.Switch";
       case NONE:
       case LINK:
       case SUMMARY:
@@ -77,7 +79,6 @@ public class AccessibilityDelegateUtil {
       case PROGRESSBAR:
       case RADIOGROUP:
       case SCROLLBAR:
-      case SWITCH:
       case TAB:
       case TABLIST:
       case TIMER:
@@ -188,9 +189,6 @@ public class AccessibilityDelegateUtil {
     if (role.equals(AccessibilityRole.SUMMARY)) {
       nodeInfo.setRoleDescription(context.getString(R.string.summary_description));
     }
-    if (role.equals(AccessibilityRole.ADJUSTABLE)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.adjustable_description));
-    }
     if (role.equals(AccessibilityRole.HEADER)) {
       nodeInfo.setRoleDescription(context.getString(R.string.header_description));
       final AccessibilityNodeInfoCompat.CollectionItemInfoCompat itemInfo =
@@ -199,9 +197,6 @@ public class AccessibilityDelegateUtil {
     }
     if (role.equals(AccessibilityRole.ALERT)) {
       nodeInfo.setRoleDescription(context.getString(R.string.alert_description));
-    }
-    if (role.equals(AccessibilityRole.CHECKBOX)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.checkbox_description));
     }
     if (role.equals(AccessibilityRole.COMBOBOX)) {
       nodeInfo.setRoleDescription(context.getString(R.string.combobox_description));
@@ -218,9 +213,6 @@ public class AccessibilityDelegateUtil {
     if (role.equals(AccessibilityRole.PROGRESSBAR)) {
       nodeInfo.setRoleDescription(context.getString(R.string.progressbar_description));
     }
-    if (role.equals(AccessibilityRole.RADIO)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.radio_description));
-    }
     if (role.equals(AccessibilityRole.RADIOGROUP)) {
       nodeInfo.setRoleDescription(context.getString(R.string.radiogroup_description));
     }
@@ -229,9 +221,6 @@ public class AccessibilityDelegateUtil {
     }
     if (role.equals(AccessibilityRole.SPINBUTTON)) {
       nodeInfo.setRoleDescription(context.getString(R.string.spinbutton_description));
-    }
-    if (role.equals(AccessibilityRole.SWITCH)) {
-      nodeInfo.setRoleDescription(context.getString(R.string.switch_description));
     }
     if (role.equals(AccessibilityRole.TAB)) {
       nodeInfo.setRoleDescription(context.getString(R.string.tab_description));

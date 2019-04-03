@@ -45,8 +45,6 @@ module.exports = {
   DeprecatedAccessibilityStates: [
     'selected',
     'disabled',
-    'on',
-    'off',
     'checked',
     'unchecked',
     'busy',

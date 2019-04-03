@@ -206,8 +206,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
                                      @"toolbar" : @"tool bar",
                                      };
   NSDictionary *stateDescriptions = @{
-                                      @"on" : @"on",
-                                      @"off" : @"off",
                                       @"checked" : @"checked",
                                       @"unchecked" : @"not checked",
                                       @"busy" : @"busy",

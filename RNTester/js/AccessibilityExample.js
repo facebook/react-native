@@ -239,39 +239,6 @@ class SelectionExample extends React.Component {
   }
 }
 
-class StateOnOffExample extends React.Component {
-  state = {
-    elementState: 'on',
-  };
-
-  _onElementPress = () => {
-    const elementState = this.state.elementState === 'on' ? 'off' : 'on';
-
-    this.setState({
-      elementState: elementState,
-    });
-
-    if (Platform.OS === 'android') {
-      UIManager.sendAccessibilityEvent(
-        findNodeHandle(this),
-        UIManager.AccessibilityEventTypes.typeViewClicked,
-      );
-    }
-  };
-
-  render() {
-    return (
-      <TouchableOpacity
-        onPress={this._onElementPress}
-        accessibilityLabel="element 18"
-        accessibilityStates={[this.state.elementState]}
-        accessibilityHint="click me to change state">
-        <Text>State on/off example</Text>
-      </TouchableOpacity>
-    );
-  }
-}
-
 class ExpandableElementExample extends React.Component {
   state = {
     expandState: 'collapsed',
@@ -374,7 +341,7 @@ class AccessibilityRoleAndStateExample extends React.Component<{}> {
         <View
           accessibilityLabel="element 13"
           accessibilityRole="switch"
-          accessibilityStates={['on']}
+          accessibilityStates={['checked']}
           accessible={true}>
           <Text>Switch example</Text>
         </View>
@@ -402,7 +369,6 @@ class AccessibilityRoleAndStateExample extends React.Component<{}> {
           accessible={true}>
           <Text>Toolbar example</Text>
         </View>
-        <StateOnOffExample />
         <View
           accessibilityLabel="element 19"
           accessibilityStates={['busy']}
