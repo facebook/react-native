@@ -62,12 +62,6 @@ class Instrumentation {
   virtual void writeBasicBlockProfileTraceToFile(
       const std::string& fileName) const = 0;
 
-  /// Enable sampling profiler.
-  virtual void enableSamplingProfiler() const = 0;
-
-  /// Dump sampled stack trace to the given file name.
-  virtual void dumpSampledTraceToFile(const std::string& fileName) const = 0;
-
   /// Dump external profiler symbols to the given file name.
   virtual void dumpProfilerSymbolsToFile(const std::string& fileName) const = 0;
 };

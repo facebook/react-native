@@ -14,10 +14,6 @@ struct JYogaNode : public facebook::jni::JavaClass<JYogaNode> {
   jlong measure(jfloat width, jint widthMode, jfloat height, jint heightMode);
 };
 
-struct JYogaConfig : public facebook::jni::JavaClass<JYogaConfig> {
-  static constexpr auto kJavaDescriptor = "Lcom/facebook/yoga/YogaConfig;";
-};
-
 struct JYogaLogLevel : public facebook::jni::JavaClass<JYogaLogLevel> {
   static constexpr auto kJavaDescriptor = "Lcom/facebook/yoga/YogaLogLevel;";
 
@@ -31,12 +27,4 @@ struct JYogaLogger : public facebook::jni::JavaClass<JYogaLogger> {
       facebook::jni::alias_ref<JYogaNode>,
       facebook::jni::alias_ref<JYogaLogLevel>,
       jstring);
-};
-
-struct JYogaValue : public facebook::jni::JavaClass<JYogaValue> {
-  constexpr static auto kJavaDescriptor = "Lcom/facebook/yoga/YogaValue;";
-
-  static facebook::jni::local_ref<javaobject> create(YGValue value) {
-    return newInstance(value.value, static_cast<int>(value.unit));
-  }
 };

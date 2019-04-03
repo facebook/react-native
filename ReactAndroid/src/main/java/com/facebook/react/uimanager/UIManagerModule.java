@@ -472,8 +472,13 @@ public class UIManagerModule extends ReactContextBaseJavaModule
       FLog.d(ReactConstants.TAG, message);
       PrinterHolder.getPrinter().logMessage(ReactDebugOverlayTags.UI_MANAGER, message);
     }
-
-    mUIImplementation.updateView(tag, className, props);
+    int uiManagerType = ViewUtil.getUIManagerType(tag);
+    if (uiManagerType == FABRIC) {
+      UIManager fabricUIManager = UIManagerHelper.getUIManager(getReactApplicationContext(), uiManagerType);
+      fabricUIManager.synchronouslyUpdateViewOnUIThread(tag, props);
+    } else {
+      mUIImplementation.updateView(tag, className, props);
+    }
   }
 
   /**
@@ -872,5 +877,10 @@ public class UIManagerModule extends ReactContextBaseJavaModule
 
     @Override
     public void onLowMemory() {}
+  }
+
+  public View resolveView(int tag) {
+    UiThreadUtil.assertOnUiThread();
+    return mUIImplementation.getUIViewOperationQueue().getNativeViewHierarchyManager().resolveView(tag);
   }
 }

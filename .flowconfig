@@ -86,7 +86,6 @@ deprecated-type=warn
 unsafe-getters-setters=warn
 inexact-spread=warn
 unnecessary-invariant=warn
-deprecated-call-syntax=warn
 signature-verification-failure=warn
 deprecated-utility=error
 
@@ -100,4 +99,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.95.0
+^0.96.0

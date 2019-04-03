@@ -4,7 +4,7 @@
 
 #include <react/core/ShadowNodeFragment.h>
 #include <react/debug/SystraceSection.h>
-#include <react/uimanager/TimeUtils.h>
+#include <react/utils/TimeUtils.h>
 
 namespace facebook {
 namespace react {

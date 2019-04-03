@@ -8,8 +8,8 @@
 
 #include <react/core/ShadowNode.h>
 #include <react/core/StateData.h>
+#include <react/mounting/ShadowTreeRegistry.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
-#include <react/uimanager/ShadowTreeRegistry.h>
 #include <react/uimanager/UIManagerDelegate.h>
 
 namespace facebook {

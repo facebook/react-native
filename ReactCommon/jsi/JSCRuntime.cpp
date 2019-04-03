@@ -69,6 +69,30 @@ class JSCRuntime : public jsi::Runtime {
 
  protected:
   friend class detail::ArgsConverter;
+  class JSCSymbolValue final : public PointerValue {
+#ifndef NDEBUG
+    JSCSymbolValue(JSGlobalContextRef ctx,
+                   const std::atomic<bool>& ctxInvalid,
+                   JSValueRef sym, std::atomic<intptr_t>& counter);
+#else
+    JSCSymbolValue(JSGlobalContextRef ctx,
+                   const std::atomic<bool>& ctxInvalid,
+                   JSValueRef sym);
+#endif
+    void invalidate() override;
+
+    JSGlobalContextRef ctx_;
+    const std::atomic<bool>& ctxInvalid_;
+    // There is no C type in the JSC API to represent Symbol, so this stored
+    // a JSValueRef which contains the Symbol.
+    JSValueRef sym_;
+#ifndef NDEBUG
+    std::atomic<intptr_t>& counter_;
+#endif
+   protected:
+    friend class JSCRuntime;
+  };
+
   class JSCStringValue final : public PointerValue {
 #ifndef NDEBUG
     JSCStringValue(JSStringRef str, std::atomic<intptr_t>& counter);
@@ -108,6 +132,7 @@ class JSCRuntime : public jsi::Runtime {
     friend class JSCRuntime;
   };
 
+  PointerValue* cloneSymbol(const Runtime::PointerValue* pv) override;
   PointerValue* cloneString(const Runtime::PointerValue* pv) override;
   PointerValue* cloneObject(const Runtime::PointerValue* pv) override;
   PointerValue* clonePropNameID(const Runtime::PointerValue* pv) override;
@@ -119,6 +144,8 @@ class JSCRuntime : public jsi::Runtime {
   jsi::PropNameID createPropNameIDFromString(const jsi::String& str) override;
   std::string utf8(const jsi::PropNameID&) override;
   bool compare(const jsi::PropNameID&, const jsi::PropNameID&) override;
+
+  std::string symbolToString(const jsi::Symbol&) override;
 
   jsi::String createStringFromAscii(const char* str, size_t length) override;
   jsi::String createStringFromUtf8(const uint8_t* utf8, size_t length) override;
@@ -176,12 +203,14 @@ class JSCRuntime : public jsi::Runtime {
       const jsi::Value* args,
       size_t count) override;
 
+  bool strictEquals(const jsi::Symbol& a, const jsi::Symbol& b) const override;
   bool strictEquals(const jsi::String& a, const jsi::String& b) const override;
   bool strictEquals(const jsi::Object& a, const jsi::Object& b) const override;
   bool instanceOf(const jsi::Object& o, const jsi::Function& f) override;
 
  private:
   // Basically convenience casts
+  static JSValueRef symbolRef(const jsi::Symbol& str);
   static JSStringRef stringRef(const jsi::String& str);
   static JSStringRef stringRef(const jsi::PropNameID& sym);
   static JSObjectRef objectRef(const jsi::Object& obj);
@@ -191,11 +220,13 @@ class JSCRuntime : public jsi::Runtime {
 #endif
     
   // Factory methods for creating String/Object
+  jsi::Symbol createSymbol(JSValueRef symbolRef) const;
   jsi::String createString(JSStringRef stringRef) const;
   jsi::PropNameID createPropNameID(JSStringRef stringRef);
   jsi::Object createObject(JSObjectRef objectRef) const;
 
   // Used by factory methods and clone methods
+  jsi::Runtime::PointerValue* makeSymbolValue(JSValueRef sym) const;
   jsi::Runtime::PointerValue* makeStringValue(JSStringRef str) const;
   jsi::Runtime::PointerValue* makeObjectValue(JSObjectRef obj) const;
 
@@ -209,6 +240,7 @@ class JSCRuntime : public jsi::Runtime {
   std::string desc_;
 #ifndef NDEBUG
   mutable std::atomic<intptr_t> objectCounter_;
+  mutable std::atomic<intptr_t> symbolCounter_;
   mutable std::atomic<intptr_t> stringCounter_;
 #endif
 };
@@ -380,6 +412,52 @@ bool JSCRuntime::isInspectable() {
   return false;
 }
 
+namespace {
+
+bool smellsLikeES6Symbol(JSGlobalContextRef ctx, JSValueRef ref) {
+  // Empirically, an es6 Symbol is not an object, but its type is
+  // object.  This makes no sense, but we'll run with it.
+  return (!JSValueIsObject(ctx, ref) &&
+          JSValueGetType(ctx, ref) == kJSTypeObject);
+}
+
+}
+
+JSCRuntime::JSCSymbolValue::JSCSymbolValue(
+    JSGlobalContextRef ctx,
+    const std::atomic<bool>& ctxInvalid,
+    JSValueRef sym
+#ifndef NDEBUG
+    ,
+    std::atomic<intptr_t>& counter
+#endif
+    )
+    : ctx_(ctx),
+      ctxInvalid_(ctxInvalid),
+      sym_(sym)
+#ifndef NDEBUG
+      ,
+      counter_(counter)
+#endif
+{
+  assert(smellsLikeES6Symbol(ctx_, sym_));
+  JSValueProtect(ctx_, sym_);
+#ifndef NDEBUG
+  counter_ += 1;
+#endif
+}
+
+void JSCRuntime::JSCSymbolValue::invalidate() {
+#ifndef NDEBUG
+  counter_ -= 1;
+#endif
+
+  if (!ctxInvalid_) {
+    JSValueUnprotect(ctx_, sym_);
+  }
+  delete this;
+}
+
 #ifndef NDEBUG
 JSCRuntime::JSCStringValue::JSCStringValue(
     JSStringRef str,
@@ -462,6 +540,15 @@ void JSCRuntime::JSCObjectValue::invalidate() {
   delete this;
 }
 
+jsi::Runtime::PointerValue* JSCRuntime::cloneSymbol(
+    const jsi::Runtime::PointerValue* pv) {
+  if (!pv) {
+    return nullptr;
+  }
+  const JSCSymbolValue* symbol = static_cast<const JSCSymbolValue*>(pv);
+  return makeSymbolValue(symbol->sym_);
+}
+
 jsi::Runtime::PointerValue* JSCRuntime::cloneString(
     const jsi::Runtime::PointerValue* pv) {
   if (!pv) {
@@ -523,6 +610,12 @@ std::string JSCRuntime::utf8(const jsi::PropNameID& sym) {
 
 bool JSCRuntime::compare(const jsi::PropNameID& a, const jsi::PropNameID& b) {
   return JSStringIsEqual(stringRef(a), stringRef(b));
+}
+
+std::string JSCRuntime::symbolToString(const jsi::Symbol& sym) {
+  return jsi::Value(*this, sym)
+    .toString(*this)
+    .utf8(*this);
 }
 
 jsi::String JSCRuntime::createStringFromAscii(const char* str, size_t length) {
@@ -1122,6 +1215,14 @@ jsi::Value JSCRuntime::callAsConstructor(
   return createValue(res);
 }
 
+bool JSCRuntime::strictEquals(const jsi::Symbol& a, const jsi::Symbol& b)
+    const {
+  JSValueRef exc = nullptr;
+  bool ret = JSValueIsEqual(ctx_, symbolRef(a), symbolRef(b), &exc);
+  const_cast<JSCRuntime*>(this)->checkException(exc);
+  return ret;
+}
+
 bool JSCRuntime::strictEquals(const jsi::String& a, const jsi::String& b)
     const {
   return JSStringIsEqual(stringRef(a), stringRef(b));
@@ -1138,6 +1239,15 @@ bool JSCRuntime::instanceOf(const jsi::Object& o, const jsi::Function& f) {
       JSValueIsInstanceOfConstructor(ctx_, objectRef(o), objectRef(f), &exc);
   checkException(exc);
   return res;
+}
+
+jsi::Runtime::PointerValue* JSCRuntime::makeSymbolValue(
+    JSValueRef symbolRef) const {
+#ifndef NDEBUG
+  return new JSCSymbolValue(ctx_, ctxInvalid_, symbolRef, symbolCounter_);
+#else
+  return new JSCSymbolValue(ctx_, ctxInvalid_, symbolRef);
+#endif
 }
 
 namespace {
@@ -1157,6 +1267,10 @@ jsi::Runtime::PointerValue* JSCRuntime::makeStringValue(
 #else
   return new JSCStringValue(stringRef);
 #endif
+}
+
+jsi::Symbol JSCRuntime::createSymbol(JSValueRef sym) const {
+  return make<jsi::Symbol>(makeSymbolValue(sym));
 }
 
 jsi::String JSCRuntime::createString(JSStringRef str) const {
@@ -1200,6 +1314,8 @@ jsi::Value JSCRuntime::createValue(JSValueRef value) const {
   } else if (JSValueIsObject(ctx_, value)) {
     JSObjectRef objRef = JSValueToObject(ctx_, value, nullptr);
     return jsi::Value(createObject(objRef));
+  } else if (smellsLikeES6Symbol(ctx_, value)) {
+    return jsi::Value(createSymbol(value));
   } else {
     // WHAT ARE YOU
     abort();
@@ -1216,6 +1332,8 @@ JSValueRef JSCRuntime::valueRef(const jsi::Value& value) {
     return JSValueMakeBoolean(ctx_, value.getBool());
   } else if (value.isNumber()) {
     return JSValueMakeNumber(ctx_, value.getNumber());
+  } else if (value.isSymbol()) {
+    return symbolRef(value.getSymbol(*this));
   } else if (value.isString()) {
     return JSValueMakeString(ctx_, stringRef(value.getString(*this)));
   } else if (value.isObject()) {
@@ -1224,6 +1342,10 @@ JSValueRef JSCRuntime::valueRef(const jsi::Value& value) {
     // What are you?
     abort();
   }
+}
+
+JSValueRef JSCRuntime::symbolRef(const jsi::Symbol& sym) {
+  return static_cast<const JSCSymbolValue*>(getPointerValue(sym))->sym_;
 }
 
 JSStringRef JSCRuntime::stringRef(const jsi::String& str) {

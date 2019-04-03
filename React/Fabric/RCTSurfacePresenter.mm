@@ -53,7 +53,7 @@ using namespace facebook::react;
   RCTBridge *_bridge; // Unsafe. We are moving away from Bridge.
   RCTBridge *_batchedBridge;
   std::shared_ptr<const ReactNativeConfig> _reactNativeConfig;
-  std::mutex _observerListMutex;
+  better::shared_mutex _observerListMutex;
   NSMutableArray<id<RCTSurfacePresenterObserver>> *_observers;
 }
 
@@ -221,6 +221,11 @@ using namespace facebook::react;
   _contextContainer->registerInstance(_reactNativeConfig, "ReactNativeConfig");
 
   auto messageQueueThread = _batchedBridge.jsMessageThread;
+  if (messageQueueThread) {
+    // Make sure initializeBridge completed
+    messageQueueThread->runOnQueueSync([] {});
+  }
+  
   auto runtime = (facebook::jsi::Runtime *)((RCTCxxBridge *)_batchedBridge).runtime;
 
   RuntimeExecutor runtimeExecutor =
@@ -283,16 +288,20 @@ using namespace facebook::react;
 
 - (void)_startAllSurfaces
 {
-  for (RCTFabricSurface *surface in _surfaceRegistry.enumerator) {
-    [self _startSurface:surface];
-  }
+  [_surfaceRegistry enumerateWithBlock:^(NSEnumerator<RCTFabricSurface *> *enumerator) {
+    for (RCTFabricSurface *surface in enumerator) {
+      [self _startSurface:surface];
+    }
+  }];
 }
 
 - (void)_stopAllSurfaces
 {
-  for (RCTFabricSurface *surface in _surfaceRegistry.enumerator) {
-    [self _stopSurface:surface];
-  }
+  [_surfaceRegistry enumerateWithBlock:^(NSEnumerator<RCTFabricSurface *> *enumerator) {
+    for (RCTFabricSurface *surface in enumerator) {
+      [self _stopSurface:surface];
+    }
+  }];
 }
 
 #pragma mark - RCTSchedulerDelegate
@@ -315,13 +324,13 @@ using namespace facebook::react;
 
 - (void)addObserver:(id<RCTSurfacePresenterObserver>)observer
 {
-  std::lock_guard<std::mutex> lock(_observerListMutex);
+  std::unique_lock<better::shared_mutex> lock(_observerListMutex);
   [self->_observers addObject:observer];
 }
 
 - (void)removeObserver:(id<RCTSurfacePresenterObserver>)observer
 {
-  std::lock_guard<std::mutex> lock(_observerListMutex);
+  std::unique_lock<better::shared_mutex> lock(_observerListMutex);
   [self->_observers removeObject:observer];
 }
 
@@ -331,6 +340,7 @@ using namespace facebook::react;
 {
   RCTAssertMainQueue();
 
+  std::shared_lock<better::shared_mutex> lock(_observerListMutex);
   for (id<RCTSurfacePresenterObserver> observer in _observers) {
     if ([observer respondsToSelector:@selector(willMountComponentsWithRootTag:)]) {
       [observer willMountComponentsWithRootTag:rootTag];
@@ -351,6 +361,8 @@ using namespace facebook::react;
       surface.view.rootView = (RCTSurfaceRootView *)rootComponentView;
     }
   }
+
+  std::shared_lock<better::shared_mutex> lock(_observerListMutex);
   for (id<RCTSurfacePresenterObserver> observer in _observers) {
     if ([observer respondsToSelector:@selector(didMountComponentsWithRootTag:)]) {
       [observer didMountComponentsWithRootTag:rootTag];

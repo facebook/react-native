@@ -11,10 +11,10 @@
 #include <react/core/LayoutContext.h>
 #include <react/debug/SystraceSection.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
-#include <react/uimanager/TimeUtils.h>
 #include <react/uimanager/UIManager.h>
 #include <react/uimanager/UIManagerBinding.h>
 #include <react/uimanager/UITemplateProcessor.h>
+#include <react/utils/TimeUtils.h>
 
 namespace facebook {
 namespace react {

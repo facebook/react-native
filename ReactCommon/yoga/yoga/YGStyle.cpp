@@ -5,6 +5,7 @@
  * file in the root directory of this source tree.
  */
 #include "YGStyle.h"
+#include "Utils.h"
 
 // Yoga specific properties, not compatible with flexbox specification
 bool operator==(const YGStyle& lhs, const YGStyle& rhs) {

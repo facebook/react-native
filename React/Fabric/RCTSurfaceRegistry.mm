@@ -8,11 +8,15 @@
 #import "RCTSurfaceRegistry.h"
 
 #import <mutex>
+#import <shared_mutex>
+#import <better/mutex.h>
 
 #import <React/RCTFabricSurface.h>
 
+using namespace facebook;
+
 @implementation RCTSurfaceRegistry {
-  std::mutex _mutex;
+  better::shared_mutex _mutex;
   NSMapTable<id, RCTFabricSurface *> *_registry;
 }
 
@@ -26,16 +30,15 @@
   return self;
 }
 
-- (NSEnumerator<RCTFabricSurface *> *)enumerator
+- (void)enumerateWithBlock:(RCTSurfaceEnumeratorBlock)block
 {
-  std::lock_guard<std::mutex> lock(_mutex);
-
-  return [_registry objectEnumerator];
+  std::shared_lock<better::shared_mutex> lock(_mutex);
+  block([_registry objectEnumerator]);
 }
 
 - (void)registerSurface:(RCTFabricSurface *)surface
 {
-  std::lock_guard<std::mutex> lock(_mutex);
+  std::unique_lock<better::shared_mutex> lock(_mutex);
 
   ReactTag rootTag = surface.rootViewTag.integerValue;
   [_registry setObject:surface forKey:(__bridge id)(void *)rootTag];
@@ -43,7 +46,7 @@
 
 - (void)unregisterSurface:(RCTFabricSurface *)surface
 {
-  std::lock_guard<std::mutex> lock(_mutex);
+  std::unique_lock<better::shared_mutex> lock(_mutex);
 
   ReactTag rootTag = surface.rootViewTag.integerValue;
   [_registry removeObjectForKey:(__bridge id)(void *)rootTag];
@@ -51,7 +54,7 @@
 
 - (RCTFabricSurface *)surfaceForRootTag:(ReactTag)rootTag
 {
-  std::lock_guard<std::mutex> lock(_mutex);
+  std::shared_lock<better::shared_mutex> lock(_mutex);
 
   return [_registry objectForKey:(__bridge id)(void *)rootTag];
 }

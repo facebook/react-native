@@ -668,7 +668,11 @@ exports[`VirtualizedList renders empty list with empty component 1`] = `
     >
       <header />
     </View>
-    <empty />
+    <View
+      style={null}
+    >
+      <empty />
+    </View>
     <View
       onLayout={[Function]}
     >

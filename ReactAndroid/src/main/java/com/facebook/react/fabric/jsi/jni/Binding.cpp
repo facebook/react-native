@@ -18,8 +18,8 @@
 #include <react/uimanager/ContextContainer.h>
 #include <react/uimanager/Scheduler.h>
 #include <react/uimanager/SchedulerDelegate.h>
-#include <react/uimanager/TimeUtils.h>
 #include <react/uimanager/primitives.h>
+#include <react/utils/TimeUtils.h>
 
 using namespace facebook::jni;
 using namespace facebook::jsi;
@@ -445,8 +445,9 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
 
   local_ref<ReadableMap::javaobject> readableMap =
       castReadableMap(ReadableNativeMap::newObjectCxxArgs(shadowView.props->rawProps));
+  auto component = getPlatformComponentName(shadowView);
   preallocateView(
-      javaUIManager_, surfaceId, shadowView.tag, make_jstring(shadowView.componentName).get(), readableMap.get(), isLayoutableShadowNode);
+      javaUIManager_, surfaceId, shadowView.tag, component.get(), readableMap.get(), isLayoutableShadowNode);
 }
 
 void Binding::registerNatives() {

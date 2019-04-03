@@ -17,7 +17,6 @@ PODS:
     - React-RCTActionSheet (= 1000.0.0)
     - React-RCTAnimation (= 1000.0.0)
     - React-RCTBlob (= 1000.0.0)
-    - React-RCTGeolocation (= 1000.0.0)
     - React-RCTImage (= 1000.0.0)
     - React-RCTLinking (= 1000.0.0)
     - React-RCTNetwork (= 1000.0.0)
@@ -71,8 +70,6 @@ PODS:
   - React-RCTCameraRoll (1000.0.0):
     - React-Core (= 1000.0.0)
     - React-RCTImage (= 1000.0.0)
-  - React-RCTGeolocation (1000.0.0):
-    - React-Core (= 1000.0.0)
   - React-RCTImage (1000.0.0):
     - React-Core (= 1000.0.0)
     - React-RCTNetwork (= 1000.0.0)
@@ -110,7 +107,6 @@ DEPENDENCIES:
   - React-RCTAnimation (from `../Libraries/NativeAnimation`)
   - React-RCTBlob (from `../Libraries/Blob`)
   - React-RCTCameraRoll (from `../Libraries/CameraRoll`)
-  - React-RCTGeolocation (from `../Libraries/Geolocation`)
   - React-RCTImage (from `../Libraries/Image`)
   - React-RCTLinking (from `../Libraries/LinkingIOS`)
   - React-RCTNetwork (from `../Libraries/Network`)
@@ -158,8 +154,6 @@ EXTERNAL SOURCES:
     :path: "../Libraries/Blob"
   React-RCTCameraRoll:
     :path: "../Libraries/CameraRoll"
-  React-RCTGeolocation:
-    :path: "../Libraries/Geolocation"
   React-RCTImage:
     :path: "../Libraries/Image"
   React-RCTLinking:
@@ -197,7 +191,6 @@ SPEC CHECKSUMS:
   React-RCTAnimation: b324c6eb699637c735650c6180e13d003eeb0e56
   React-RCTBlob: 069290c8db758bb1d77523a06d117dd668b6cef3
   React-RCTCameraRoll: 353af870a0acd5ebb0bcf6a8187ed78d94c4c65e
-  React-RCTGeolocation: 4bbdba9893dc3f22b22553904e54ae46dcedf48b
   React-RCTImage: 012d845d919177e2726743ad06052dda66592760
   React-RCTLinking: c6fe7b82bed97ce72203b2ce2f4aac87b1e2647f
   React-RCTNetwork: 2a2b22a17cd965de53ba21c5ca392d0da84ef322

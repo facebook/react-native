@@ -15,7 +15,6 @@ target 'RNTester' do
   pod 'React-RCTAnimation', :path => '../Libraries/NativeAnimation'
   pod 'React-RCTBlob', :path => '../Libraries/Blob'
   pod 'React-RCTCameraRoll', :path => '../Libraries/CameraRoll'
-  pod 'React-RCTGeolocation', :path => '../Libraries/Geolocation'
   pod 'React-RCTImage', :path => '../Libraries/Image'
   pod 'React-RCTLinking', :path => '../Libraries/LinkingIOS'
   pod 'React-RCTNetwork', :path => '../Libraries/Network'

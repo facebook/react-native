@@ -12,13 +12,13 @@
 #include <react/config/ReactNativeConfig.h>
 #include <react/core/ComponentDescriptor.h>
 #include <react/core/LayoutConstraints.h>
+#include <react/mounting/ShadowTree.h>
+#include <react/mounting/ShadowTreeDelegate.h>
+#include <react/mounting/ShadowTreeRegistry.h>
 #include <react/uimanager/ComponentDescriptorFactory.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
 #include <react/uimanager/ContextContainer.h>
 #include <react/uimanager/SchedulerDelegate.h>
-#include <react/uimanager/ShadowTree.h>
-#include <react/uimanager/ShadowTreeDelegate.h>
-#include <react/uimanager/ShadowTreeRegistry.h>
 #include <react/uimanager/UIManagerBinding.h>
 #include <react/uimanager/UIManagerDelegate.h>
 #include <react/uimanager/primitives.h>
