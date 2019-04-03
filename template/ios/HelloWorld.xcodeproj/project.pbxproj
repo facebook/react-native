@@ -193,7 +193,7 @@
 			dependencies = (
 			);
 			name = HelloWorld;
-			productName = "Hello World";
+			productName = "HelloWorld";
 			productReference = 13B07F961A680F5B00A75B9A /* HelloWorld.app */;
 			productType = "com.apple.product-type.application";
 		};
