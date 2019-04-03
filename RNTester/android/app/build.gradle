@@ -92,11 +92,10 @@ def enableSeparateBuildPerCPUArchitecture = true
 def enableProguardInReleaseBuilds = true
 
 /**
- * Use international variant JavaScriptCore
- * International variant includes ICU i18n library and necessary data allowing to use
- * e.g. Date.toLocaleString and String.localeCompare that give correct results
- * when using with locales other than en-US.
- * Note that this variant is about 6MiB larger per architecture than default.
+ * Use the international variant of JavaScriptCore
+ * This variant includes the ICU i18n library to make APIs like `Date.toLocaleString`
+ * and `String.localeCompare` work when using with locales other than en-US.
+ * Note that this variant is about 6MiB larger per architecture than the default.
  */
 def useIntlJsc = false
 
