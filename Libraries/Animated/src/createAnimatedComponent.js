@@ -209,12 +209,7 @@ function createAnimatedComponent(Component: any): any {
 
     let _eventDetachers = [];
 
-    const _attachNativeEvents = (x) => {
-      if (_component === null) {
-        // TODO: Figure out why this is called when _component is null
-        throw new Error('should not be null' + x);
-      }
-
+    const _attachNativeEvents = () => {
       // Make sure to get the scrollable node for components that implement
       // `ScrollResponder.Mixin`.
       const scrollableNode = _component.getScrollableNode
@@ -280,10 +275,10 @@ function createAnimatedComponent(Component: any): any {
               }
 
               _propsAnimated.setNativeView(_component);
-              _attachNativeEvents('b');
+              _attachNativeEvents();
             } else {
               _detachNativeEvents();
-              _attachNativeEvents('c');
+              _attachNativeEvents();
             }
           }
         }
@@ -298,10 +293,9 @@ function createAnimatedComponent(Component: any): any {
     }, []);
 
     useEffect(() => {
-      if (initialized) {
+      if (initialized && _component) {
         _detachNativeEvents();
-        // TODO: this triggers the error. component is not set yet...
-        _attachNativeEvents('a');
+        _attachNativeEvents();
       }
 
       const oldPropsAnimated = _propsAnimated;
@@ -336,10 +330,6 @@ function createAnimatedComponent(Component: any): any {
       />
     );
   };
-
-  // ISSUES:
-  // - _component.getScrollableNode() - null is not an object
-  //   - see animated value listener example
 
   AnimatedOnAFeeling.propTypes = AnimatedComponent.propTypes;
 
