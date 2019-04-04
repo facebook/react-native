@@ -80,5 +80,19 @@ class DebugStringConvertible {};
 
 #endif
 
+#if RN_DEBUG_STRING_CONVERTIBLE
+
+/*
+ * Set of particular-format-opinionated functions that convert base types to `std::string`; practically incapsulate `folly:to<>` and `folly::format`.
+ */
+std::string toString(std::string const &value);
+std::string toString(int const &value);
+std::string toString(bool const &value);
+std::string toString(float const &value);
+std::string toString(double const &value);
+std::string toString(void const *value);
+
+#endif
+
 } // namespace react
 } // namespace facebook

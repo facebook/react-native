@@ -7,6 +7,9 @@
 
 #include "DebugStringConvertible.h"
 
+#include <folly/Conv.h>
+#include <folly/Format.h>
+
 namespace facebook {
 namespace react {
 
@@ -105,6 +108,28 @@ SharedDebugStringConvertibleList DebugStringConvertible::getDebugChildren()
 
 SharedDebugStringConvertibleList DebugStringConvertible::getDebugProps() const {
   return SharedDebugStringConvertibleList();
+}
+
+/*
+ * `toString`-family implementation.
+ */
+std::string toString(std::string const &value) {
+  return value;
+}
+std::string toString(int const &value) {
+  return folly::to<std::string>(value);
+}
+std::string toString(bool const &value) {
+  return folly::to<std::string>(value);
+}
+std::string toString(float const &value) {
+  return folly::to<std::string>(value);
+}
+std::string toString(double const &value) {
+  return folly::to<std::string>(value);
+}
+std::string toString(void const *value) {
+  return folly::sformat("0x{0:016x}", reinterpret_cast<size_t>(value));
 }
 
 #endif
