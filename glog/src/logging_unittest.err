@@ -74,6 +74,8 @@ WDATE TIME__ THREADID logging_unittest.cc:LINE] log_if this
 IDATE TIME__ THREADID logging_unittest.cc:LINE] array
 IDATE TIME__ THREADID logging_unittest.cc:LINE] const array
 EDATE TIME__ THREADID logging_unittest.cc:LINE] foo 1000 0000001000 3e8
+EDATE TIME__ THREADID logging_unittest.cc:LINE] inner
+EDATE TIME__ THREADID logging_unittest.cc:LINE] outer
 no prefix
 IDATE TIME__ THREADID logging_unittest.cc:LINE] RAW: foo bar 10 3.400000
 WDATE TIME__ THREADID logging_unittest.cc:LINE] RAW: array

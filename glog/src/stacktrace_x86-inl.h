@@ -93,16 +93,23 @@ static void **NextStackFrame(void **old_sp) {
 // If you change this function, also change GetStackFrames below.
 int GetStackTrace(void** result, int max_depth, int skip_count) {
   void **sp;
-#ifdef __i386__
+
+#ifdef __GNUC__
+#if __GNUC__ * 100 + __GNUC_MINOR__ >= 402
+#define USE_BUILTIN_FRAME_ADDRESS
+#endif
+#endif
+
+#ifdef USE_BUILTIN_FRAME_ADDRESS
+  sp = reinterpret_cast<void**>(__builtin_frame_address(0));
+#elif defined(__i386__)
   // Stack frame format:
   //    sp[0]   pointer to previous frame
   //    sp[1]   caller address
   //    sp[2]   first argument
   //    ...
   sp = (void **)&result - 2;
-#endif
-
-#ifdef __x86_64__
+#elif defined(__x86_64__)
   // __builtin_frame_address(0) can return the wrong address on gcc-4.1.0-k8
   unsigned long rbp;
   // Move the value of the register %rbp into the local variable rbp.

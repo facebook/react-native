@@ -66,6 +66,21 @@ applications with -fno-omit-frame-pointer, then you can enable the
 frame pointer based stack unwinder by passing the
 --enable-frame-pointers flag to configure.
 
+*** NOTE FOR MAC OS SYSTEMS
+
+To build and test on macOS, you must install automake and libtool.
+Brew is the easiest way to install them:
+
+     brew install automake
+     brew install libtool
+
+Then you can build via:
+
+     ./autogen.sh && ./configure && make && make install
+
+And run the tests via:
+
+     make check
 
 Basic Installation
 ==================

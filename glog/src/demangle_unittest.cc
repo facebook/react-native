@@ -62,18 +62,37 @@ static const char *DemangleIt(const char * const mangled) {
   }
 }
 
+#if defined(OS_WINDOWS)
+
+TEST(Demangle, Windows) {
+  EXPECT_STREQ(
+    "public: static void __cdecl Foo::func(int)",
+    DemangleIt("?func@Foo@@SAXH@Z"));
+  EXPECT_STREQ(
+    "public: static void __cdecl Foo::func(int)",
+    DemangleIt("@ILT+1105(?func@Foo@@SAXH@Z)"));
+  EXPECT_STREQ(
+    "int __cdecl foobarArray(int * const)",
+    DemangleIt("?foobarArray@@YAHQAH@Z"));
+}
+
+#else
+
 // Test corner cases of bounary conditions.
 TEST(Demangle, CornerCases) {
-  char tmp[10];
-  EXPECT_TRUE(Demangle("_Z6foobarv", tmp, sizeof(tmp)));
-  // sizeof("foobar()") == 9
-  EXPECT_STREQ("foobar()", tmp);
-  EXPECT_TRUE(Demangle("_Z6foobarv", tmp, 9));
-  EXPECT_STREQ("foobar()", tmp);
-  EXPECT_FALSE(Demangle("_Z6foobarv", tmp, 8));  // Not enough.
-  EXPECT_FALSE(Demangle("_Z6foobarv", tmp, 1));
-  EXPECT_FALSE(Demangle("_Z6foobarv", tmp, 0));
-  EXPECT_FALSE(Demangle("_Z6foobarv", NULL, 0));  // Should not cause SEGV.
+  const size_t size = 10;
+  char tmp[size] = { 0 };
+  const char *demangled = "foobar()";
+  const char *mangled = "_Z6foobarv";
+  EXPECT_TRUE(Demangle(mangled, tmp, sizeof(tmp)));
+  // sizeof("foobar()") == size - 1
+  EXPECT_STREQ(demangled, tmp);
+  EXPECT_TRUE(Demangle(mangled, tmp, size - 1));
+  EXPECT_STREQ(demangled, tmp);
+  EXPECT_FALSE(Demangle(mangled, tmp, size - 2));  // Not enough.
+  EXPECT_FALSE(Demangle(mangled, tmp, 1));
+  EXPECT_FALSE(Demangle(mangled, tmp, 0));
+  EXPECT_FALSE(Demangle(mangled, NULL, 0));  // Should not cause SEGV.
 }
 
 // Test handling of functions suffixed with .clone.N, which is used by GCC
@@ -122,6 +141,8 @@ TEST(Demangle, FromFile) {
     EXPECT_EQ(demangled, DemangleIt(mangled.c_str()));
   }
 }
+
+#endif
 
 int main(int argc, char **argv) {
 #ifdef HAVE_LIB_GFLAGS

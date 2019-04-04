@@ -35,10 +35,17 @@
 // Note that we only have partial C++0x support yet.
 
 #include <stdio.h>  // for NULL
+#include "utilities.h"
 #include "demangle.h"
+
+#if defined(OS_WINDOWS)
+#include <DbgHelp.h>
+#pragma comment(lib, "DbgHelp")
+#endif
 
 _START_GOOGLE_NAMESPACE_
 
+#if !defined(OS_WINDOWS)
 typedef struct {
   const char *abbrev;
   const char *real_name;
@@ -1293,12 +1300,37 @@ static bool ParseTopLevelMangledName(State *state) {
   }
   return false;
 }
+#endif
 
 // The demangler entry point.
 bool Demangle(const char *mangled, char *out, int out_size) {
+#if defined(OS_WINDOWS)
+  // When built with incremental linking, the Windows debugger
+  // library provides a more complicated `Symbol->Name` with the
+  // Incremental Linking Table offset, which looks like
+  // `@ILT+1105(?func@Foo@@SAXH@Z)`. However, the demangler expects
+  // only the mangled symbol, `?func@Foo@@SAXH@Z`. Fortunately, the
+  // mangled symbol is guaranteed not to have parentheses,
+  // so we search for `(` and extract up to `)`.
+  //
+  // Since we may be in a signal handler here, we cannot use `std::string`.
+  char buffer[1024];  // Big enough for a sane symbol.
+  const char *lparen = strchr(mangled, '(');
+  if (lparen) {
+    // Extract the string `(?...)`
+    const char *rparen = strchr(lparen, ')');
+    size_t length = rparen - lparen - 1;
+    strncpy(buffer, lparen + 1, length);
+    buffer[length] = '\0';
+    mangled = buffer;
+  } // Else the symbol wasn't inside a set of parentheses
+  // We use the ANSI version to ensure the string type is always `char *`.
+  return UnDecorateSymbolName(mangled, out, out_size, UNDNAME_COMPLETE);
+#else
   State state;
   InitState(&state, mangled, out, out_size);
   return ParseTopLevelMangledName(&state) && !state.overflowed;
+#endif
 }
 
 _END_GOOGLE_NAMESPACE_

@@ -63,7 +63,10 @@ TEST_LIBS = $(GTEST_LIBS) $(GMOCK_LIBS) $(GFLAGS_LIBS)
 ## TESTS_ENVIRONMENT sets environment variables for when you run unittest,
 ## but it only seems to take effect for *binary* unittests (argh!)
 TESTS =
-TESTS_ENVIRONMENT =
+# Set a small stack size so that (at least on Linux) PIEs are mapped at a lower
+# address than DSOs. This is used by symbolize_pie_unittest to check that we can
+# successfully symbolize PIEs loaded at low addresses.
+TESTS_ENVIRONMENT = ulimit -s 8192;
 check_SCRIPTS =
 # Every time you add a unittest to check_SCRIPTS, add it here too
 noinst_SCRIPTS =
@@ -144,6 +147,14 @@ nodist_symbolize_unittest_SOURCES = $(nodist_gloginclude_HEADERS)
 symbolize_unittest_CXXFLAGS = $(PTHREAD_CFLAGS) $(TEST_CFLAGS)
 symbolize_unittest_LDFLAGS = $(PTHREAD_CFLAGS)
 symbolize_unittest_LDADD = libglog.la $(COMMON_LIBS) $(TEST_LIBS)
+
+TESTS += symbolize_pie_unittest
+symbolize_pie_unittest_SOURCES = $(gloginclude_HEADERS) \
+                                 src/symbolize_unittest.cc
+nodist_symbolize_pie_unittest_SOURCES = $(nodist_gloginclude_HEADERS)
+symbolize_pie_unittest_CXXFLAGS = $(PTHREAD_CFLAGS) $(TEST_CFLAGS) -fPIE
+symbolize_pie_unittest_LDFLAGS = $(PTHREAD_CFLAGS) -pie
+symbolize_pie_unittest_LDADD = libglog.la $(COMMON_LIBS) $(TEST_LIBS)
 
 TESTS += stl_logging_unittest
 stl_logging_unittest_SOURCES = $(gloginclude_HEADERS) \
