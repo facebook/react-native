@@ -207,6 +207,9 @@ bool ShadowTree::tryCommit(
       LOG(ERROR) << "New tree:"
                  << "\n"
                  << newRootShadowNode->getDebugDescription() << "\n";
+      LOG(ERROR) << "Mutations:"
+                 << "\n"
+                 << getDebugDescription(mutations);
       assert(false);
     }
 #endif

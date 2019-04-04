@@ -50,6 +50,27 @@ bool ShadowView::operator!=(const ShadowView &rhs) const {
   return !(*this == rhs);
 }
 
+#if RN_DEBUG_STRING_CONVERTIBLE
+
+std::string getDebugName(ShadowView const &object) {
+  return object.componentHandle == 0 ? object.componentName : "Empty";
+}
+
+std::vector<DebugStringConvertibleObject> getDebugProps(
+    ShadowView const &object,
+    DebugStringConvertibleOptions options) {
+  return {
+      {"tag", getDebugDescription(object.tag, options)},
+      {"props", getDebugDescription(object.props, options)},
+      {"eventEmitter", getDebugDescription(object.eventEmitter, options)},
+      {"layoutMetrics", getDebugDescription(object.layoutMetrics, options)},
+      {"localData", getDebugDescription(object.localData, options)},
+      {"state", getDebugDescription(object.state, options)},
+  };
+}
+
+#endif
+
 bool ShadowViewNodePair::operator==(const ShadowViewNodePair &rhs) const {
   return this->shadowNode == rhs.shadowNode;
 }
