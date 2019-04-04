@@ -288,7 +288,11 @@ import javax.annotation.Nullable;
     @Override
     protected @Nullable Object getValueOrDefault(Object value) {
       if (value != null) {
-        return (Integer) value;
+        if (value instanceof Double) {
+          return ((Double) value).intValue();
+        } else {
+          return (Integer) value;
+        }
       }
       return null;
     }
