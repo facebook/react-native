@@ -185,11 +185,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       final String componentName,
       ReadableMap props,
       boolean isLayoutable) {
-    if (UiThreadUtil.isOnUiThread()) {
-      // There is no reason to allocate views ahead of time on the main thread.
-      return;
-    }
-
     ThemedReactContext context = mReactContextForRootTag.get(rootTag);
     String component = sComponentNames.get(componentName);
     synchronized (mPreMountItemsLock) {
