@@ -74,6 +74,7 @@ public class NativeViewHierarchyManager {
   private final LayoutAnimationController mLayoutAnimator = new LayoutAnimationController();
   private final Map<Integer, SparseIntArray> mTagsToPendingIndicesToDelete = new HashMap<>();
 
+  private boolean mLayoutAnimationEnabled;
   private PopupMenu mPopupMenu;
 
   public NativeViewHierarchyManager(ViewManagerRegistry viewManagers) {
@@ -103,6 +104,10 @@ public class NativeViewHierarchyManager {
       throw new IllegalViewOperationException("ViewManager for tag " + tag + " could not be found");
     }
     return viewManager;
+  }
+
+  public void setLayoutAnimationEnabled(boolean enabled) {
+    mLayoutAnimationEnabled = enabled;
   }
 
   public synchronized void updateInstanceHandle(int tag, long instanceHandle) {
@@ -220,7 +225,8 @@ public class NativeViewHierarchyManager {
   }
 
   private void updateLayout(View viewToUpdate, int x, int y, int width, int height) {
-    if (mLayoutAnimator.shouldAnimateLayout(viewToUpdate)) {
+    if (mLayoutAnimationEnabled &&
+        mLayoutAnimator.shouldAnimateLayout(viewToUpdate)) {
       mLayoutAnimator.applyLayoutUpdate(viewToUpdate, x, y, width, height);
     } else {
       viewToUpdate.layout(x, y, x + width, y + height);
@@ -427,7 +433,8 @@ public class NativeViewHierarchyManager {
         int normalizedIndexToRemove = normalizeIndex(indexToRemove, pendingIndicesToDelete);
         View viewToRemove = viewManager.getChildAt(viewToManage, normalizedIndexToRemove);
 
-        if (mLayoutAnimator.shouldAnimateLayout(viewToRemove) &&
+        if (mLayoutAnimationEnabled &&
+            mLayoutAnimator.shouldAnimateLayout(viewToRemove) &&
             arrayContains(tagsToDelete, viewToRemove.getId())) {
           // The view will be removed and dropped by the 'delete' layout animation
           // instead, so do nothing
@@ -476,7 +483,8 @@ public class NativeViewHierarchyManager {
                       tagsToDelete));
         }
 
-        if (mLayoutAnimator.shouldAnimateLayout(viewToDestroy)) {
+        if (mLayoutAnimationEnabled &&
+            mLayoutAnimator.shouldAnimateLayout(viewToDestroy)) {
           int updatedCount = pendingIndicesToDelete.get(indexToDelete, 0) + 1;
           pendingIndicesToDelete.put(indexToDelete, updatedCount);
           mLayoutAnimator.deleteView(

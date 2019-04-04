@@ -27,12 +27,15 @@ const RNTesterExampleList = require('./RNTesterExampleList');
  * making Flow check .android.js files. */
 const RNTesterList = require('./RNTesterList');
 const RNTesterNavigationReducer = require('./RNTesterNavigationReducer');
+const UIManager = require('UIManager');
 const URIActionMap = require('./URIActionMap');
 const View = require('View');
 
 const nativeImageSource = require('nativeImageSource');
 
 import type {RNTesterNavigationState} from './RNTesterNavigationReducer';
+
+UIManager.setLayoutAnimationEnabledExperimental(true);
 
 const DRAWER_WIDTH_LEFT = 56;
 
