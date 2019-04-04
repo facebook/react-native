@@ -78,6 +78,19 @@ std::string DebugStringConvertible::getDebugDescription(
     DebugStringConvertibleOptions options) const {
   auto nameString = getDebugName();
   auto valueString = getDebugValue();
+
+  // Convention:
+  // If `name` and `value` are empty, `description` is also empty.
+  if (nameString.empty() && valueString.empty()) {
+    return "";
+  }
+
+  // Convention:
+  // If `name` is empty and `value` isn't empty, `description` equals `value`.
+  if (nameString.empty()) {
+    return valueString;
+  }
+
   auto childrenString = getDebugChildrenDescription(options);
   auto propsString = getDebugPropsDescription(options);
 
