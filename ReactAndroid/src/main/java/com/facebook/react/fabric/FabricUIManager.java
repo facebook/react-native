@@ -90,6 +90,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     sComponentNames.put("ActivityIndicatorView", "AndroidProgressBar");
     sComponentNames.put("ShimmeringView", "RKShimmeringView");
     sComponentNames.put("TemplateView", "RCTTemplateView");
+    sComponentNames.put("AxialGradientView", "RCTAxialGradientView");
   }
 
   private Binding mBinding;
