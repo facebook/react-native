@@ -11,4 +11,4 @@
 'use strict';
 
 // Not applicable to iOS.
-module.exports = require('View');
+module.exports = require('../../Libraries/Components/View/View');

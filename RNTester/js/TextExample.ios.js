@@ -10,7 +10,7 @@
 
 'use strict';
 
-const Platform = require('Platform');
+const Platform = require('../../Libraries/Utilities/Platform');
 const React = require('react');
 const ReactNative = require('react-native');
 const {Text, TextInput, View, LayoutAnimation, Button} = ReactNative;

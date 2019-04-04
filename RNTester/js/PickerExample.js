@@ -12,7 +12,7 @@
 
 const React = require('react');
 const ReactNative = require('react-native');
-const StyleSheet = require('StyleSheet');
+const StyleSheet = require('../../Libraries/StyleSheet/StyleSheet');
 
 const {Picker, Text} = ReactNative;
 

@@ -11,9 +11,9 @@
 'use strict';
 
 const React = require('react');
-const StyleSheet = require('StyleSheet');
-const TextInput = require('TextInput');
-const View = require('View');
+const StyleSheet = require('../../Libraries/StyleSheet/StyleSheet');
+const TextInput = require('../../Libraries/Components/TextInput/TextInput');
+const View = require('../../Libraries/Components/View/View');
 
 type Props = {
   filter: Function,

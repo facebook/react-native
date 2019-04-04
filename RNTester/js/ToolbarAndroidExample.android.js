@@ -13,13 +13,13 @@
 const React = require('react');
 const ReactNative = require('react-native');
 
-const nativeImageSource = require('nativeImageSource');
+const nativeImageSource = require('../../Libraries/Image/nativeImageSource');
 const {StyleSheet, Text, View} = ReactNative;
 const RNTesterBlock = require('./RNTesterBlock');
 const RNTesterPage = require('./RNTesterPage');
 
-const Switch = require('Switch');
-const ToolbarAndroid = require('ToolbarAndroid');
+const Switch = require('../../Libraries/Components/Switch/Switch');
+const ToolbarAndroid = require('../../Libraries/Components/ToolbarAndroid/ToolbarAndroid');
 
 class ToolbarAndroidExample extends React.Component<{}, $FlowFixMeState> {
   state = {

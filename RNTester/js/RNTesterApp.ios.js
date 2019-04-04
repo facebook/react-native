@@ -10,10 +10,10 @@
 
 'use strict';
 
-require('InitializeCore');
-const AsyncStorage = require('AsyncStorage');
-const BackHandler = require('BackHandler');
-const Linking = require('Linking');
+require('../../Libraries/Core/InitializeCore');
+const AsyncStorage = require('../../Libraries/Storage/AsyncStorage');
+const BackHandler = require('../../Libraries/Utilities/BackHandler');
+const Linking = require('../../Libraries/Linking/Linking');
 const React = require('react');
 const ReactNative = require('react-native');
 const RNTesterActions = require('./RNTesterActions');
@@ -34,7 +34,7 @@ const {
   YellowBox,
 } = ReactNative;
 
-import type {RNTesterExample} from 'RNTesterTypes';
+import type {RNTesterExample} from './Shared/RNTesterTypes';
 import type {RNTesterAction} from './RNTesterActions';
 import type {RNTesterNavigationState} from './RNTesterNavigationReducer';
 

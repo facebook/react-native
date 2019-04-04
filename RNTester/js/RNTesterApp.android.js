@@ -10,16 +10,16 @@
 
 'use strict';
 
-const AppRegistry = require('AppRegistry');
-const AsyncStorage = require('AsyncStorage');
-const BackHandler = require('BackHandler');
-const Dimensions = require('Dimensions');
-const DrawerLayoutAndroid = require('DrawerLayoutAndroid');
-const Linking = require('Linking');
+const AppRegistry = require('../../Libraries/ReactNative/AppRegistry');
+const AsyncStorage = require('../../Libraries/Storage/AsyncStorage');
+const BackHandler = require('../../Libraries/Utilities/BackHandler');
+const Dimensions = require('../../Libraries/Utilities/Dimensions');
+const DrawerLayoutAndroid = require('../../Libraries/Components/DrawerAndroid/DrawerLayoutAndroid');
+const Linking = require('../../Libraries/Linking/Linking');
 const React = require('react');
-const StatusBar = require('StatusBar');
-const StyleSheet = require('StyleSheet');
-const ToolbarAndroid = require('ToolbarAndroid');
+const StatusBar = require('../../Libraries/Components/StatusBar/StatusBar');
+const StyleSheet = require('../../Libraries/StyleSheet/StyleSheet');
+const ToolbarAndroid = require('../../Libraries/Components/ToolbarAndroid/ToolbarAndroid');
 const RNTesterActions = require('./RNTesterActions');
 const RNTesterExampleContainer = require('./RNTesterExampleContainer');
 const RNTesterExampleList = require('./RNTesterExampleList');
@@ -27,11 +27,11 @@ const RNTesterExampleList = require('./RNTesterExampleList');
  * making Flow check .android.js files. */
 const RNTesterList = require('./RNTesterList');
 const RNTesterNavigationReducer = require('./RNTesterNavigationReducer');
-const UIManager = require('UIManager');
+const UIManager = require('../../Libraries/ReactNative/UIManager');
 const URIActionMap = require('./URIActionMap');
-const View = require('View');
+const View = require('../../Libraries/Components/View/View');
 
-const nativeImageSource = require('nativeImageSource');
+const nativeImageSource = require('../../Libraries/Image/nativeImageSource');
 
 import type {RNTesterNavigationState} from './RNTesterNavigationReducer';
 

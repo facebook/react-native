@@ -86,27 +86,33 @@ class NotificationExample extends React.Component<{}> {
   }
 
   _sendNotification() {
-    require('RCTDeviceEventEmitter').emit('remoteNotificationReceived', {
-      remote: true,
-      aps: {
-        alert: 'Sample notification',
-        badge: '+1',
-        sound: 'default',
-        category: 'REACT_NATIVE',
-        'content-available': 1,
+    require('../../Libraries/EventEmitter/RCTDeviceEventEmitter').emit(
+      'remoteNotificationReceived',
+      {
+        remote: true,
+        aps: {
+          alert: 'Sample notification',
+          badge: '+1',
+          sound: 'default',
+          category: 'REACT_NATIVE',
+          'content-available': 1,
+        },
       },
-    });
+    );
   }
 
   _sendLocalNotification() {
-    require('RCTDeviceEventEmitter').emit('localNotificationReceived', {
-      aps: {
-        alert: 'Sample local notification',
-        badge: '+1',
-        sound: 'default',
-        category: 'REACT_NATIVE',
+    require('../../Libraries/EventEmitter/RCTDeviceEventEmitter').emit(
+      'localNotificationReceived',
+      {
+        aps: {
+          alert: 'Sample local notification',
+          badge: '+1',
+          sound: 'default',
+          category: 'REACT_NATIVE',
+        },
       },
-    });
+    );
   }
 
   _onRegistered(deviceToken) {

@@ -9,7 +9,7 @@
  */
 'use strict';
 
-const Platform = require('Platform');
+const Platform = require('../../Libraries/Utilities/Platform');
 const React = require('react');
 const ReactNative = require('react-native');
 const {
@@ -21,7 +21,7 @@ const {
   Image,
 } = ReactNative;
 
-import type {ViewStyleProp} from 'StyleSheet';
+import type {ViewStyleProp} from '../../Libraries/StyleSheet/StyleSheet';
 
 exports.displayName = 'ScrollViewExample';
 exports.title = '<ScrollView>';

@@ -10,18 +10,18 @@
 
 'use strict';
 
-const Platform = require('Platform');
+const Platform = require('../../Libraries/Utilities/Platform');
 const React = require('react');
-const SectionList = require('SectionList');
-const StyleSheet = require('StyleSheet');
-const Text = require('Text');
-const TouchableHighlight = require('TouchableHighlight');
+const SectionList = require('../../Libraries/Lists/SectionList');
+const StyleSheet = require('../../Libraries/StyleSheet/StyleSheet');
+const Text = require('../../Libraries/Text/Text');
+const TouchableHighlight = require('../../Libraries/Components/Touchable/TouchableHighlight');
 const RNTesterActions = require('./RNTesterActions');
 const RNTesterExampleFilter = require('./RNTesterExampleFilter');
-const View = require('View');
+const View = require('../../Libraries/Components/View/View');
 
-import type {RNTesterExample} from 'RNTesterTypes';
-import type {ViewStyleProp} from 'StyleSheet';
+import type {RNTesterExample} from './Shared/RNTesterTypes';
+import type {ViewStyleProp} from '../../Libraries/StyleSheet/StyleSheet';
 
 type Props = {
   onNavigate: Function,

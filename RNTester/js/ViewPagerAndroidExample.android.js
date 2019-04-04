@@ -21,7 +21,7 @@ const {
   ViewPagerAndroid,
 } = ReactNative;
 
-import type {ViewPagerScrollState} from 'ViewPagerAndroid';
+import type {ViewPagerScrollState} from '../../Libraries/Components/ViewPager/ViewPagerAndroid';
 
 const PAGES = 5;
 const BGCOLOR = ['#fdc08e', '#fff6b9', '#99d1b7', '#dde5fe', '#f79273'];

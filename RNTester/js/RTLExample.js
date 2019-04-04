@@ -24,7 +24,7 @@ const {
   View,
   Button,
 } = ReactNative;
-const Platform = require('Platform');
+const Platform = require('../../Libraries/Utilities/Platform');
 
 type State = {
   toggleStatus: any,

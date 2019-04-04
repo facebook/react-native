@@ -14,7 +14,7 @@ const React = require('react');
 const ReactNative = require('react-native');
 const {StyleSheet, Text, View} = ReactNative;
 
-const requireNativeComponent = require('requireNativeComponent');
+const requireNativeComponent = require('../../Libraries/ReactNative/requireNativeComponent');
 
 class AppPropertiesUpdateExample extends React.Component<{}> {
   render() {

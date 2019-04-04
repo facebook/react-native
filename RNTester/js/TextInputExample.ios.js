@@ -10,8 +10,8 @@
 
 'use strict';
 
-const Button = require('Button');
-const InputAccessoryView = require('InputAccessoryView');
+const Button = require('../../Libraries/Components/Button');
+const InputAccessoryView = require('../../Libraries/Components/TextInput/InputAccessoryView');
 const React = require('react');
 const ReactNative = require('react-native');
 const {Text, TextInput, View, StyleSheet, Slider, Switch, Alert} = ReactNative;

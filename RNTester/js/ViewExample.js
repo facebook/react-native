@@ -14,7 +14,7 @@
 
 const React = require('react');
 const {StyleSheet, Text, View} = require('react-native');
-const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
+const TouchableWithoutFeedback = require('../../Libraries/Components/Touchable/TouchableWithoutFeedback');
 
 exports.title = '<View>';
 exports.description =

@@ -28,7 +28,10 @@ const CameraRollView = require('./CameraRollView');
 
 const AssetScaledImageExampleView = require('./AssetScaledImageExample');
 
-import type {PhotoIdentifier, GroupTypes} from 'CameraRoll';
+import type {
+  PhotoIdentifier,
+  GroupTypes,
+} from '../../Libraries/CameraRoll/CameraRoll';
 
 type Props = $ReadOnly<{|
   navigator?: ?Array<

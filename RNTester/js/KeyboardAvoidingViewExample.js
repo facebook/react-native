@@ -9,7 +9,7 @@
 
 'use strict';
 
-const React = require('React');
+const React = require('react');
 const ReactNative = require('react-native');
 const {
   KeyboardAvoidingView,

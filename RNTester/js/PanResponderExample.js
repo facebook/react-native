@@ -14,8 +14,11 @@ const React = require('react');
 const ReactNative = require('react-native');
 const {PanResponder, StyleSheet, View} = ReactNative;
 
-import type {PanResponderInstance, GestureState} from 'PanResponder';
-import type {PressEvent} from 'CoreEventTypes';
+import type {
+  PanResponderInstance,
+  GestureState,
+} from '../../Libraries/Interaction/PanResponder';
+import type {PressEvent} from '../../Libraries/Types/CoreEventTypes';
 
 type CircleStyles = {
   backgroundColor?: string,
