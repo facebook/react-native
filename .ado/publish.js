@@ -107,13 +107,7 @@ function doPublish() {
           throw err;
         }
 
-        var formattedResponse = JSON.parse(body);
-
-        if (formattedResponse.errors) {
-          process.exitCode = 1;
-          console.error(formattedResponse.errors);
-          throw formattedResponse.errors;
-        }
+        console.log('Response: ' + body);
 
         exec(`del ${npmTarPath}`);
         exec(`git checkout ${publishBranchName}`);
