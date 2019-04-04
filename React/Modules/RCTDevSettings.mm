@@ -508,7 +508,12 @@ RCT_EXPORT_METHOD(toggleElementInspector)
 - (RCTDevSettings *)devSettings
 {
 #if RCT_DEV
-  return [self moduleForClass:[RCTDevSettings class]];
+  RCTDevSettings *devSettings = nil; // [TODO(OSS Candidate ISS#2710739)
+  Class devSettingsClass = [RCTDevSettings class];
+  if ([self moduleIsInitialized:devSettingsClass]) {
+    devSettings = [self moduleForClass:devSettingsClass];
+  }
+  return devSettings; // ]TODO(OSS Candidate ISS#2710739)
 #else
   return nil;
 #endif
