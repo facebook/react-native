@@ -20,7 +20,9 @@ class AddRemoveExample extends React.Component<{}, $FlowFixMeState> {
   };
 
   UNSAFE_componentWillUpdate() {
-    LayoutAnimation.easeInEaseOut();
+    LayoutAnimation.easeInEaseOut(args =>
+      console.log('AddRemoveExample completed', args),
+    );
   }
 
   _onPressAddView = () => {
@@ -73,7 +75,9 @@ class CrossFadeExample extends React.Component<{}, $FlowFixMeState> {
   };
 
   _onPressToggle = () => {
-    LayoutAnimation.easeInEaseOut();
+    LayoutAnimation.easeInEaseOut(args =>
+      console.log('CrossFadeExample completed', args),
+    );
     this.setState(state => ({toggled: !state.toggled}));
   };
 
@@ -116,12 +120,15 @@ class LayoutUpdateExample extends React.Component<{}, $FlowFixMeState> {
     this._clearTimeout();
     this.setState({width: 150});
 
-    LayoutAnimation.configureNext({
-      duration: 1000,
-      update: {
-        type: LayoutAnimation.Types.linear,
+    LayoutAnimation.configureNext(
+      {
+        duration: 1000,
+        update: {
+          type: LayoutAnimation.Types.linear,
+        },
       },
-    });
+      args => console.log('LayoutUpdateExample completed', args),
+    );
 
     this.timeout = setTimeout(() => this.setState({width: 100}), 500);
   };

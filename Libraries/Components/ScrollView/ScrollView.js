@@ -222,6 +222,12 @@ type IOSProps = $ReadOnly<{|
    */
   scrollIndicatorInsets?: ?EdgeInsetsProp,
   /**
+   * When true, the scroll view can be programmatically scrolled beyond its
+   * content size. The default value is false.
+   * @platform ios
+   */
+  scrollToOverflowEnabled?: ?boolean,
+  /**
    * When true, the scroll view scrolls to top when the status bar is tapped.
    * The default value is true.
    * @platform ios

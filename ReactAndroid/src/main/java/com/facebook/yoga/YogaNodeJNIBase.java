@@ -12,7 +12,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 @DoNotStrip
-public abstract class YogaNodeJNIBase extends YogaNode {
+public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
 
   @Nullable private YogaNodeJNIBase mOwner;
   @Nullable private List<YogaNodeJNIBase> mChildren;
@@ -91,6 +91,21 @@ public abstract class YogaNodeJNIBase extends YogaNode {
 
   public boolean isReferenceBaseline() {
     return YogaNative.jni_YGNodeIsReferenceBaseline(mNativePointer);
+  }
+
+  @Override
+  public YogaNodeJNIBase cloneWithoutChildren() {
+    try {
+      YogaNodeJNIBase clonedYogaNode = (YogaNodeJNIBase) super.clone();
+      long clonedNativePointer = YogaNative.jni_YGNodeClone(mNativePointer);
+      clonedYogaNode.mOwner = null;
+      clonedYogaNode.mNativePointer = clonedNativePointer;
+      clonedYogaNode.clearChildren();
+      return clonedYogaNode;
+    } catch (CloneNotSupportedException ex) {
+      // This class implements Cloneable, this should not happen
+      throw new RuntimeException(ex);
+    }
   }
 
   private void clearChildren() {

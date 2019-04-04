@@ -29,6 +29,8 @@ void YGNodeCalculateLayoutWithContext(
     YGDirection ownerDirection,
     void* layoutContext);
 
+void YGSetUsedCachedEntries(size_t);
+
 YG_EXTERN_C_END
 
 namespace facebook {

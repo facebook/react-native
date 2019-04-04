@@ -111,4 +111,5 @@ public class YogaNative {
   static native void jni_YGNodeSetHasBaselineFunc(long nativePointer, boolean hasMeasureFunc);
   static native void jni_YGNodePrint(long nativePointer);
   static native void jni_YGNodeSetStyleInputs(long nativePointer, float[] styleInputsArray, int size);
+  static native long jni_YGNodeClone(long nativePointer);
 }

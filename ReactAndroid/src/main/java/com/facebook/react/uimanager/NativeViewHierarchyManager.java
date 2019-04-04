@@ -21,9 +21,6 @@ import android.widget.PopupMenu;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
-import com.facebook.react.animation.Animation;
-import com.facebook.react.animation.AnimationListener;
-import com.facebook.react.animation.AnimationRegistry;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
@@ -68,7 +65,6 @@ public class NativeViewHierarchyManager {
 
   private static final String TAG = NativeViewHierarchyManager.class.getSimpleName();
 
-  private final AnimationRegistry mAnimationRegistry;
   private final SparseArray<View> mTagsToViews;
   private final SparseArray<ViewManager> mTagsToViewManagers;
   private final SparseBooleanArray mRootTags;
@@ -78,7 +74,6 @@ public class NativeViewHierarchyManager {
   private final LayoutAnimationController mLayoutAnimator = new LayoutAnimationController();
   private final Map<Integer, SparseIntArray> mTagsToPendingIndicesToDelete = new HashMap<>();
 
-  private boolean mLayoutAnimationEnabled;
   private PopupMenu mPopupMenu;
 
   public NativeViewHierarchyManager(ViewManagerRegistry viewManagers) {
@@ -86,7 +81,6 @@ public class NativeViewHierarchyManager {
   }
 
   public NativeViewHierarchyManager(ViewManagerRegistry viewManagers, RootViewManager manager) {
-    mAnimationRegistry = new AnimationRegistry();
     mViewManagers = viewManagers;
     mTagsToViews = new SparseArray<>();
     mTagsToViewManagers = new SparseArray<>();
@@ -109,14 +103,6 @@ public class NativeViewHierarchyManager {
       throw new IllegalViewOperationException("ViewManager for tag " + tag + " could not be found");
     }
     return viewManager;
-  }
-
-  public AnimationRegistry getAnimationRegistry() {
-    return mAnimationRegistry;
-  }
-
-  public void setLayoutAnimationEnabled(boolean enabled) {
-    mLayoutAnimationEnabled = enabled;
   }
 
   public synchronized void updateInstanceHandle(int tag, long instanceHandle) {
@@ -234,8 +220,7 @@ public class NativeViewHierarchyManager {
   }
 
   private void updateLayout(View viewToUpdate, int x, int y, int width, int height) {
-    if (mLayoutAnimationEnabled &&
-        mLayoutAnimator.shouldAnimateLayout(viewToUpdate)) {
+    if (mLayoutAnimator.shouldAnimateLayout(viewToUpdate)) {
       mLayoutAnimator.applyLayoutUpdate(viewToUpdate, x, y, width, height);
     } else {
       viewToUpdate.layout(x, y, x + width, y + height);
@@ -442,8 +427,7 @@ public class NativeViewHierarchyManager {
         int normalizedIndexToRemove = normalizeIndex(indexToRemove, pendingIndicesToDelete);
         View viewToRemove = viewManager.getChildAt(viewToManage, normalizedIndexToRemove);
 
-        if (mLayoutAnimationEnabled &&
-            mLayoutAnimator.shouldAnimateLayout(viewToRemove) &&
+        if (mLayoutAnimator.shouldAnimateLayout(viewToRemove) &&
             arrayContains(tagsToDelete, viewToRemove.getId())) {
           // The view will be removed and dropped by the 'delete' layout animation
           // instead, so do nothing
@@ -492,8 +476,7 @@ public class NativeViewHierarchyManager {
                       tagsToDelete));
         }
 
-        if (mLayoutAnimationEnabled &&
-            mLayoutAnimator.shouldAnimateLayout(viewToDestroy)) {
+        if (mLayoutAnimator.shouldAnimateLayout(viewToDestroy)) {
           int updatedCount = pendingIndicesToDelete.get(indexToDelete, 0) + 1;
           pendingIndicesToDelete.put(indexToDelete, updatedCount);
           mLayoutAnimator.deleteView(
@@ -738,51 +721,12 @@ public class NativeViewHierarchyManager {
     mJSResponderHandler.clearJSResponder();
   }
 
-  void configureLayoutAnimation(final ReadableMap config) {
-    mLayoutAnimator.initializeFromConfig(config);
+  void configureLayoutAnimation(final ReadableMap config, final Callback onAnimationComplete) {
+    mLayoutAnimator.initializeFromConfig(config, onAnimationComplete);
   }
 
   void clearLayoutAnimation() {
     mLayoutAnimator.reset();
-  }
-
-  /* package */ synchronized void startAnimationForNativeView(
-      int reactTag,
-      Animation animation,
-      @Nullable final Callback animationCallback) {
-    UiThreadUtil.assertOnUiThread();
-    View view = mTagsToViews.get(reactTag);
-    final int animationId = animation.getAnimationID();
-    if (view != null) {
-      animation.setAnimationListener(new AnimationListener() {
-        @Override
-        public void onFinished() {
-          Animation removedAnimation = mAnimationRegistry.removeAnimation(animationId);
-
-          // There's a chance that there was already a removeAnimation call enqueued on the main
-          // thread when this callback got enqueued on the main thread, but the Animation class
-          // should handle only calling one of onFinished and onCancel exactly once.
-          Assertions.assertNotNull(removedAnimation, "Animation was already removed somehow!");
-          if (animationCallback != null) {
-            animationCallback.invoke(true);
-          }
-        }
-
-        @Override
-        public void onCancel() {
-          Animation removedAnimation = mAnimationRegistry.removeAnimation(animationId);
-
-          Assertions.assertNotNull(removedAnimation, "Animation was already removed somehow!");
-          if (animationCallback != null) {
-            animationCallback.invoke(false);
-          }
-        }
-      });
-      animation.start(view);
-    } else {
-      // TODO(5712813): cleanup callback in JS callbacks table in case of an error
-      throw new IllegalViewOperationException("View with tag " + reactTag + " not found");
-    }
   }
 
   public synchronized void dispatchCommand(

@@ -52,7 +52,10 @@
     "third-party-podspecs",
     "template",
     "local-cli",
-    "template.config.js"
+    "template.config.js",
+    "!template/node_modules",
+    "!template/yarn.lock",
+    "!template/package-lock.json"
   ],
   "scripts": {
     "start": "react-native start --reactNativePath .",

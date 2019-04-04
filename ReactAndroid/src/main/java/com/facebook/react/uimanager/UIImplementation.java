@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.View.MeasureSpec;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.animation.Animation;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -695,44 +694,6 @@ public class UIImplementation {
   }
 
   /**
-   * Registers a new Animation that can then be added to a View using {@link #addAnimation}.
-   */
-  public void registerAnimation(Animation animation) {
-    mOperationsQueue.enqueueRegisterAnimation(animation);
-  }
-
-  /**
-   * Adds an Animation previously registered with {@link #registerAnimation} to a View and starts it
-   */
-  public void addAnimation(int reactTag, int animationID, Callback onSuccess) {
-    assertViewExists(reactTag, "addAnimation");
-    mOperationsQueue.enqueueAddAnimation(reactTag, animationID, onSuccess);
-  }
-
-  /**
-   * Removes an existing Animation, canceling it if it was in progress.
-   */
-  public void removeAnimation(int reactTag, int animationID) {
-    assertViewExists(reactTag, "removeAnimation");
-    mOperationsQueue.enqueueRemoveAnimation(animationID);
-  }
-
-  /**
-   * LayoutAnimation API on Android is currently experimental. Therefore, it needs to be enabled
-   * explicitly in order to avoid regression in existing application written for iOS using this API.
-   *
-   * Warning : This method will be removed in future version of React Native, and layout animation
-   * will be enabled by default, so always check for its existence before invoking it.
-   *
-   * TODO(9139831) : remove this method once layout animation is fully stable.
-   *
-   * @param enabled whether layout animation is enabled or not
-   */
-  public void setLayoutAnimationEnabledExperimental(boolean enabled) {
-    mOperationsQueue.enqueueSetLayoutAnimationEnabled(enabled);
-  }
-
-  /**
    * Configure an animation to be used for the native layout changes, and native views
    * creation. The animation will only apply during the current batch operations.
    *
@@ -744,11 +705,8 @@ public class UIImplementation {
    *        interrupted. In this case, callback parameter will be false.
    * @param error will be called if there was an error processing the animation
    */
-  public void configureNextLayoutAnimation(
-      ReadableMap config,
-      Callback success,
-      Callback error) {
-    mOperationsQueue.enqueueConfigureLayoutAnimation(config, success, error);
+  public void configureNextLayoutAnimation(ReadableMap config, Callback success) {
+    mOperationsQueue.enqueueConfigureLayoutAnimation(config, success);
   }
 
   public void setJSResponder(int reactTag, boolean blockNativeResponder) {
