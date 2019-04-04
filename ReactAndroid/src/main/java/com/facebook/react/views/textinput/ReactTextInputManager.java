@@ -202,6 +202,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         TextInlineImageSpan.possiblyUpdateInlineImageSpans(spannable, view);
       }
       view.maybeSetText(update);
+      if (update.getSelectionStart() != UNSET && update.getSelectionEnd() != UNSET)
+        view.setSelection(update.getSelectionStart(), update.getSelectionEnd());
     }
   }
 
@@ -271,17 +273,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
     if (fontStyle != currentTypeface.getStyle()) {
       view.setTypeface(currentTypeface, fontStyle);
-    }
-  }
-
-  @ReactProp(name = "selection")
-  public void setSelection(ReactEditText view, @Nullable ReadableMap selection) {
-    if (selection == null) {
-      return;
-    }
-
-    if (selection.hasKey("start") && selection.hasKey("end")) {
-      view.setSelection(selection.getInt("start"), selection.getInt("end"));
     }
   }
 
