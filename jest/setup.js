@@ -12,7 +12,6 @@
 const MockNativeMethods = jest.requireActual('./MockNativeMethods');
 const mockComponent = jest.requireActual('./mockComponent');
 
-jest.requireActual('../Libraries/polyfills/babelHelpers.js');
 jest.requireActual('../Libraries/polyfills/Object.es7.js');
 jest.requireActual('../Libraries/polyfills/error-guard');
 
