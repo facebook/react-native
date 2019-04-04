@@ -96,6 +96,7 @@
     "fbjs": "^1.0.0",
     "fbjs-scripts": "^1.1.0",
     "invariant": "^2.2.4",
+    "jsc-android": "^236355.1.1",
     "metro-babel-register": "0.52.0",
     "metro-react-native-babel-transformer": "0.52.0",
     "nullthrows": "^1.1.0",
