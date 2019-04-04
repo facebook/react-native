@@ -34,7 +34,9 @@
 
 #include "utilities.h"
 
-#include <pthread.h>
+#if defined(HAVE_PTHREAD)
+# include <pthread.h>
+#endif
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -87,12 +89,20 @@ int main(int argc, char **argv) {
     fprintf(stderr, "looping\n");
     while (true);
   } else if (command == "die_in_thread") {
+#if defined(HAVE_PTHREAD)
     pthread_t thread;
     pthread_create(&thread, NULL, &DieInThread, NULL);
     pthread_join(thread, NULL);
+#else
+    fprintf(stderr, "no pthread\n");
+    return 1;
+#endif
   } else if (command == "dump_to_stdout") {
     InstallFailureWriter(WriteToStdout);
     abort();
+  } else if (command == "installed") {
+    fprintf(stderr, "signal handler installed: %s\n",
+        IsFailureSignalHandlerInstalled() ? "true" : "false");
   } else {
     // Tell the shell script
     puts("OK");

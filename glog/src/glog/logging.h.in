@@ -931,16 +931,11 @@ struct CompileAssert {
 struct CrashReason;
 
 // Returns true if FailureSignalHandler is installed.
-bool IsFailureSignalHandlerInstalled();
+// Needs to be exported since it's used by the signalhandler_unittest.
+GOOGLE_GLOG_DLL_DECL bool IsFailureSignalHandlerInstalled();
 }  // namespace glog_internal_namespace_
 
-#define GOOGLE_GLOG_COMPILE_ASSERT(expr, msg) \
-  typedef @ac_google_namespace@::glog_internal_namespace_::CompileAssert<(bool(expr))> msg[bool(expr) ? 1 : -1]
-
 #define LOG_EVERY_N(severity, n)                                        \
-  GOOGLE_GLOG_COMPILE_ASSERT(@ac_google_namespace@::GLOG_ ## severity < \
-                             @ac_google_namespace@::NUM_SEVERITIES,     \
-                             INVALID_REQUESTED_LOG_SEVERITY);           \
   SOME_KIND_OF_LOG_EVERY_N(severity, (n), @ac_google_namespace@::LogMessage::SendToLog)
 
 #define SYSLOG_EVERY_N(severity, n) \
@@ -1113,6 +1108,7 @@ class GOOGLE_GLOG_DLL_DECL LogStreamBuf : public std::streambuf {
   LogStreamBuf(char *buf, int len) {
     setp(buf, buf + len - 2);
   }
+
   // This effectively ignores overflow.
   virtual int_type overflow(int_type ch) {
     return ch;
@@ -1152,11 +1148,12 @@ public:
   // http://msdn.microsoft.com/en-us/library/3tdb471s(VS.80).aspx
   // Let's just ignore the warning.
 #ifdef _MSC_VER
+# pragma warning(push)
 # pragma warning(disable: 4275)
 #endif
   class GOOGLE_GLOG_DLL_DECL LogStream : public std::ostream {
 #ifdef _MSC_VER
-# pragma warning(default: 4275)
+# pragma warning(pop)
 #endif
   public:
     LogStream(char *buf, int len, int ctr)

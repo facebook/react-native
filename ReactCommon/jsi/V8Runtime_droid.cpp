@@ -50,8 +50,7 @@ namespace facebook { namespace v8runtime {
     }
   }
 
-  V8Runtime::V8Runtime(const folly::dynamic& v8Config, const std::shared_ptr<Logger>& logger) : V8Runtime() {
-    logger_ = logger;
+  V8Runtime::V8Runtime(const folly::dynamic& v8Config) : V8Runtime() {
     isCacheEnabled_  = IsCacheEnabled(v8Config);
     shouldProduceFullCache_ = ShouldProduceFullCache(v8Config);
     shouldSetNoLazyFlag_ = ShouldSetNoLazyFlag(v8Config);

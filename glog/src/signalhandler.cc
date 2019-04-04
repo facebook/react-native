@@ -48,9 +48,6 @@
 
 _START_GOOGLE_NAMESPACE_
 
-// TOOD(hamaji): Use signal instead of sigaction?
-#ifdef HAVE_SIGACTION
-
 namespace {
 
 // We'll install the failure signal handler for these signals.  We could
@@ -66,9 +63,13 @@ const struct {
   { SIGILL, "SIGILL" },
   { SIGFPE, "SIGFPE" },
   { SIGABRT, "SIGABRT" },
+#if !defined(OS_WINDOWS)
   { SIGBUS, "SIGBUS" },
+#endif
   { SIGTERM, "SIGTERM" },
 };
+
+static bool kFailureSignalHandlerInstalled = false;
 
 // Returns the program counter from signal context, NULL if unknown.
 void* GetPC(void* ucontext_in_void) {
@@ -168,6 +169,9 @@ void DumpTimeInfo() {
   g_failure_writer(buf, formatter.num_bytes_written());
 }
 
+// TOOD(hamaji): Use signal instead of sigaction?
+#ifdef HAVE_SIGACTION
+
 // Dumps information about the signal to STDERR.
 void DumpSignalInfo(int signal_number, siginfo_t *siginfo) {
   // Get the signal name.
@@ -213,6 +217,8 @@ void DumpSignalInfo(int signal_number, siginfo_t *siginfo) {
   g_failure_writer(buf, formatter.num_bytes_written());
 }
 
+#endif  // HAVE_SIGACTION
+
 // Dumps information about the stack frame to STDERR.
 void DumpStackFrameInfo(const char* prefix, void* pc) {
   // Get the symbol name.
@@ -240,12 +246,17 @@ void DumpStackFrameInfo(const char* prefix, void* pc) {
 
 // Invoke the default signal handler.
 void InvokeDefaultSignalHandler(int signal_number) {
+#ifdef HAVE_SIGACTION
   struct sigaction sig_action;
   memset(&sig_action, 0, sizeof(sig_action));
   sigemptyset(&sig_action.sa_mask);
   sig_action.sa_handler = SIG_DFL;
   sigaction(signal_number, &sig_action, NULL);
   kill(getpid(), signal_number);
+#elif defined(OS_WINDOWS)
+  signal(signal_number, SIG_DFL);
+  raise(signal_number);
+#endif
 }
 
 // This variable is used for protecting FailureSignalHandler() from
@@ -256,9 +267,14 @@ static pthread_t* g_entered_thread_id_pointer = NULL;
 
 // Dumps signal and stack frame information, and invokes the default
 // signal handler once our job is done.
+#if defined(OS_WINDOWS)
+void FailureSignalHandler(int signal_number)
+#else
 void FailureSignalHandler(int signal_number,
                           siginfo_t *signal_info,
-                          void *ucontext) {
+                          void *ucontext)
+#endif
+{
   // First check if we've already entered the function.  We use an atomic
   // compare and swap operation for platforms that support it.  For other
   // platforms, we use a naive method that could lead to a subtle race.
@@ -298,16 +314,20 @@ void FailureSignalHandler(int signal_number,
   // First dump time info.
   DumpTimeInfo();
 
+#if !defined(OS_WINDOWS)
   // Get the program counter from ucontext.
   void *pc = GetPC(ucontext);
   DumpStackFrameInfo("PC: ", pc);
+#endif
 
 #ifdef HAVE_STACKTRACE
   // Get the stack traces.
   void *stack[32];
   // +1 to exclude this function.
   const int depth = GetStackTrace(stack, ARRAYSIZE(stack), 1);
+# ifdef HAVE_SIGACTION
   DumpSignalInfo(signal_number, signal_info);
+# endif
   // Dump the stack traces.
   for (int i = 0; i < depth; ++i) {
     DumpStackFrameInfo("    ", stack[i]);
@@ -333,18 +353,19 @@ void FailureSignalHandler(int signal_number,
 
 }  // namespace
 
-#endif  // HAVE_SIGACTION
-
 namespace glog_internal_namespace_ {
 
 bool IsFailureSignalHandlerInstalled() {
 #ifdef HAVE_SIGACTION
+  // TODO(andschwa): Return kFailureSignalHandlerInstalled?
   struct sigaction sig_action;
   memset(&sig_action, 0, sizeof(sig_action));
   sigemptyset(&sig_action.sa_mask);
   sigaction(SIGABRT, NULL, &sig_action);
   if (sig_action.sa_sigaction == &FailureSignalHandler)
     return true;
+#elif defined(OS_WINDOWS)
+  return kFailureSignalHandlerInstalled;
 #endif  // HAVE_SIGACTION
   return false;
 }
@@ -363,11 +384,18 @@ void InstallFailureSignalHandler() {
   for (size_t i = 0; i < ARRAYSIZE(kFailureSignals); ++i) {
     CHECK_ERR(sigaction(kFailureSignals[i].number, &sig_action, NULL));
   }
+  kFailureSignalHandlerInstalled = true;
+#elif defined(OS_WINDOWS)
+  for (size_t i = 0; i < ARRAYSIZE(kFailureSignals); ++i) {
+    CHECK_NE(signal(kFailureSignals[i].number, &FailureSignalHandler),
+             SIG_ERR);
+  }
+  kFailureSignalHandlerInstalled = true;
 #endif  // HAVE_SIGACTION
 }
 
 void InstallFailureWriter(void (*writer)(const char* data, int size)) {
-#ifdef HAVE_SIGACTION
+#if defined(HAVE_SIGACTION) || defined(OS_WINDOWS)
   g_failure_writer = writer;
 #endif  // HAVE_SIGACTION
 }

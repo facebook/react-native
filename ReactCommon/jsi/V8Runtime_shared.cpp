@@ -247,9 +247,7 @@ namespace facebook { namespace v8runtime {
     if (message.IsEmpty()) {
       // V8 didn't provide any extra information about this error; just
       // throw the exception.
-      std::string errorMessage{ "<Unknown exception>" };
-      Log(errorMessage, 3 /*LogLevel error*/);
-      throw jsi::JSError(*this, errorMessage);
+      throw jsi::JSError(*this, "<Unknown exception>");
     }
     else {
       // Print (filename):(line number): (message).
@@ -285,9 +283,7 @@ namespace facebook { namespace v8runtime {
         sstr << stack_trace_string2 << std::endl;
       }
 
-      std::string errorMessage{ sstr.str() };
-      Log(errorMessage, 3 /*LogLevel error*/);
-      throw jsi::JSError(*this, errorMessage);
+      throw jsi::JSError(*this, sstr.str());
     }
   }
 
@@ -744,7 +740,7 @@ namespace facebook { namespace v8runtime {
     return std::make_unique<V8Runtime>();
   }
 
-  std::unique_ptr<jsi::Runtime> makeV8Runtime(const folly::dynamic& v8Config, const std::shared_ptr<Logger>& logger) {
-    return std::make_unique<V8Runtime>(v8Config, logger);
+  std::unique_ptr<jsi::Runtime> makeV8Runtime(const folly::dynamic& v8Config) {
+    return std::make_unique<V8Runtime>(v8Config);
   }
 }} // namespace facebook::v8runtime

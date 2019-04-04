@@ -43,7 +43,7 @@ namespace facebook { namespace v8runtime {
   class V8Runtime : public jsi::Runtime {
   public:
     V8Runtime();
-    V8Runtime(const folly::dynamic& v8Config, const std::shared_ptr<Logger>& logger);
+    V8Runtime(const folly::dynamic& v8Config);
 
     V8Runtime(const v8::Platform* platform, std::shared_ptr<Logger>&& logger,
       std::shared_ptr<facebook::react::MessageQueueThread>&& jsQueue, std::shared_ptr<CacheProvider>&& cacheProvider,
@@ -373,12 +373,6 @@ namespace facebook { namespace v8runtime {
 
     bool ExecuteString(v8::Local<v8::String> source, const jsi::Buffer* cache, v8::Local<v8::Value> name, bool report_exceptions);
     bool ExecuteString(const v8::Local<v8::String>& source, const std::string& sourceURL);
-
-    void Log(const std::string& message, const unsigned int logLevel) {
-      if (logger_) {
-        (*logger_)("V8Runtime:: " + message, logLevel);
-      }
-    }
 
     void ReportException(v8::TryCatch* try_catch);
 

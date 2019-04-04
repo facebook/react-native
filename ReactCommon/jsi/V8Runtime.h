@@ -60,7 +60,7 @@ namespace v8runtime {
     std::unique_ptr<const jsi::Buffer> custom_snapshot = nullptr); /*Optional*/
 
   std::unique_ptr<jsi::Runtime> makeV8Runtime();
-  std::unique_ptr<jsi::Runtime> makeV8Runtime(const folly::dynamic& v8Config, const std::shared_ptr<Logger>& logger);
+  std::unique_ptr<jsi::Runtime> makeV8Runtime(const folly::dynamic& v8Config);
 
 } // namespace v8runtime
 } // namespace facebook

@@ -39,7 +39,9 @@
 #elif defined(__CYGWIN__) || defined(__CYGWIN32__)
 # define OS_CYGWIN
 #elif defined(linux) || defined(__linux) || defined(__linux__)
-# define OS_LINUX
+# ifndef OS_LINUX
+#  define OS_LINUX
+# endif
 #elif defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__)
 # define OS_MACOSX
 #elif defined(__FreeBSD__)
@@ -97,6 +99,8 @@
 //    malloc() from the unwinder.  This is a problem because we're
 //    trying to use the unwinder to instrument malloc().
 //
+// 4) The Windows API CaptureStackTrace.
+//
 // Note: if you add a new implementation here, make sure it works
 // correctly when GetStackTrace() is called with max_depth == 0.
 // Some code may do that.
@@ -110,6 +114,8 @@
 #  define STACKTRACE_H "stacktrace_x86_64-inl.h"
 # elif (defined(__ppc__) || defined(__PPC__)) && __GNUC__ >= 2
 #  define STACKTRACE_H "stacktrace_powerpc-inl.h"
+# elif defined(OS_WINDOWS)
+#  define STACKTRACE_H "stacktrace_windows-inl.h"
 # endif
 #endif
 
@@ -127,6 +133,9 @@
 #elif defined(OS_MACOSX) && defined(HAVE_DLADDR)
 // Use dladdr to symbolize.
 # define HAVE_SYMBOLIZE
+#elif defined(OS_WINDOWS)
+// Use DbgHelp to symbolize
+# define HAVE_SYMBOLIZE
 #endif
 
 #ifndef ARRAYSIZE
@@ -140,6 +149,9 @@ namespace glog_internal_namespace_ {
 
 #ifdef HAVE___ATTRIBUTE__
 # define ATTRIBUTE_NOINLINE __attribute__ ((noinline))
+# define HAVE_ATTRIBUTE_NOINLINE
+#elif defined(OS_WINDOWS)
+# define ATTRIBUTE_NOINLINE __declspec(noinline)
 # define HAVE_ATTRIBUTE_NOINLINE
 #else
 # define ATTRIBUTE_NOINLINE

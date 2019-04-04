@@ -47,6 +47,12 @@
 #ifdef HAVE_SYSLOG_H
 # include <syslog.h>
 #endif
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>  // For geteuid.
+#endif
+#ifdef HAVE_PWD_H
+# include <pwd.h>
+#endif
 
 #include "base/googleinit.h"
 
@@ -137,17 +143,19 @@ static void DumpStackTraceAndExit() {
   DumpStackTrace(1, DebugWriteToStderr, NULL);
 
   // TOOD(hamaji): Use signal instead of sigaction?
-#ifdef HAVE_SIGACTION
   if (IsFailureSignalHandlerInstalled()) {
     // Set the default signal handler for SIGABRT, to avoid invoking our
     // own signal handler installed by InstallFailureSignalHandler().
+#ifdef HAVE_SIGACTION
     struct sigaction sig_action;
     memset(&sig_action, 0, sizeof(sig_action));
     sigemptyset(&sig_action.sa_mask);
     sig_action.sa_handler = SIG_DFL;
     sigaction(SIGABRT, &sig_action, NULL);
-  }
+#elif defined(OS_WINDOWS)
+    signal(SIGABRT, SIG_DFL);
 #endif  // HAVE_SIGACTION
+  }
 
   abort();
 }
@@ -266,7 +274,7 @@ pid_t GetTID() {
   // If gettid() could not be used, we use one of the following.
 #if defined OS_LINUX
   return getpid();  // Linux:  getpid returns thread ID when gettid is absent
-#elif defined OS_WINDOWS || defined OS_CYGWIN
+#elif defined OS_WINDOWS && !defined OS_CYGWIN
   return GetCurrentThreadId();
 #else
   // If none of the techniques above worked, we use pthread_self().
@@ -297,8 +305,32 @@ static void MyUserNameInitializer() {
   if (user != NULL) {
     g_my_user_name = user;
   } else {
-    g_my_user_name = "invalid-user";
+#if defined(HAVE_PWD_H) && defined(HAVE_UNISTD_H)
+    struct passwd* result = NULL;
+    char buffer[1024] = {'\0'};
+    uid_t uid = geteuid();
+#ifdef ANDROID
+    result = getpwuid(uid);
+    if (result != NULL) {
+      g_my_user_name = result->pw_name;
+    }
+#else
+    struct passwd pwd;
+    int pwuid_res = getpwuid_r(uid, &pwd, buffer, sizeof(buffer), &result);
+    if (pwuid_res == 0) {
+      //g_my_user_name = pwd.pw_name;
+    }
+#endif
+    else {
+      snprintf(buffer, sizeof(buffer), "uid%d", uid);
+      g_my_user_name = buffer;
+    }
+#endif
+    if (g_my_user_name.empty()) {
+      g_my_user_name = "invalid-user";
+    }
   }
+
 }
 REGISTER_MODULE_INITIALIZER(utilities, MyUserNameInitializer());
 
@@ -349,4 +381,12 @@ _END_GOOGLE_NAMESPACE_
 // Make an implementation of stacktrace compiled.
 #ifdef STACKTRACE_H
 # include STACKTRACE_H
+# if 0
+// For include scanners which can't handle macro expansions.
+#  include "stacktrace_libunwind-inl.h"
+#  include "stacktrace_x86-inl.h"
+#  include "stacktrace_x86_64-inl.h"
+#  include "stacktrace_powerpc-inl.h"
+#  include "stacktrace_generic-inl.h"
+# endif
 #endif

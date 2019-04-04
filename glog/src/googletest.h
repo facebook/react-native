@@ -521,7 +521,7 @@ class Thread {
   virtual ~Thread() {}
 
   void SetJoinable(bool) {}
-#if defined(OS_WINDOWS) || defined(OS_CYGWIN)
+#if defined(OS_WINDOWS) && !defined(OS_CYGWIN)
   void Start() {
     handle_ = CreateThread(NULL,
                            0,
@@ -554,7 +554,7 @@ class Thread {
     return NULL;
   }
 
-#if defined(OS_WINDOWS) || defined(OS_CYGWIN)
+#if defined(OS_WINDOWS) && !defined(OS_CYGWIN)
   HANDLE handle_;
   DWORD th_;
 #else
@@ -576,21 +576,21 @@ void (*g_new_hook)() = NULL;
 
 _END_GOOGLE_NAMESPACE_
 
-void* operator new(size_t size) throw(std::bad_alloc) {
+void* operator new(size_t size) {
   if (GOOGLE_NAMESPACE::g_new_hook) {
     GOOGLE_NAMESPACE::g_new_hook();
   }
   return malloc(size);
 }
 
-void* operator new[](size_t size) throw(std::bad_alloc) {
+void* operator new[](size_t size) {
   return ::operator new(size);
 }
 
-void operator delete(void* p) throw() {
+void operator delete(void* p) noexcept {
   free(p);
 }
 
-void operator delete[](void* p) throw() {
+void operator delete[](void* p) noexcept {
   ::operator delete(p);
 }

@@ -137,7 +137,10 @@ static void VLOG2Initializer() {
   while ((sep = strchr(vmodule, '=')) != NULL) {
     string pattern(vmodule, sep - vmodule);
     int module_level;
-    if (sscanf(sep, "=%d", &module_level) == 1) {
+    const char *val = sep + 1;
+    char *t;
+    module_level = strtol(val, &t, 10);
+    if (val != t) {
       VModuleInfo* info = new VModuleInfo;
       info->module_pattern = pattern;
       info->vlog_level = module_level;
