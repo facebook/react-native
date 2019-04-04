@@ -149,7 +149,7 @@ class SectionListExample extends React.PureComponent<{}, $FlowFixMeState> {
           )}
           debug={this.state.debug}
           inverted={this.state.inverted}
-          enableVirtualization={this.state.virtualized}
+          disableVirtualization={!this.state.virtualized}
           onRefresh={() => Alert.alert('onRefresh: nothing to refresh :P')}
           onScroll={this._scrollSinkY}
           onViewableItemsChanged={this._onViewableItemsChanged}
