@@ -272,7 +272,7 @@ inline std::string getDebugDescription(
 
 // `void *`
 inline std::string getDebugDescription(
-    void const *pointer,
+    void *pointer,
     DebugStringConvertibleOptions options = {}) {
   return toString(pointer);
 }
@@ -293,6 +293,30 @@ std::string getDebugName(std::vector<T> const &vector) {
 template <typename T>
 std::vector<T> getDebugChildren(std::vector<T> const &vector) {
   return vector;
+}
+
+// `std::shared_ptr<T>`
+template <typename T>
+inline std::string getDebugDescription(
+    std::shared_ptr<T> const &pointer,
+    DebugStringConvertibleOptions options = {}) {
+  return getDebugDescription((void *)pointer.get()) + "(shared)";
+}
+
+// `std::weak_ptr<T>`
+template <typename T>
+inline std::string getDebugDescription(
+    std::weak_ptr<T> const &pointer,
+    DebugStringConvertibleOptions options = {}) {
+  return getDebugDescription((void *)pointer.lock().get()) + "(weak)";
+}
+
+// `std::unique_ptr<T>`
+template <typename T>
+inline std::string getDebugDescription(
+    std::unique_ptr<T const> const &pointer,
+    DebugStringConvertibleOptions options = {}) {
+  return getDebugDescription((void *)pointer.get()) + "(unique)";
 }
 
 /*

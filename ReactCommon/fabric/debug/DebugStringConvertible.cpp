@@ -142,6 +142,9 @@ std::string toString(double const &value) {
   return folly::to<std::string>(value);
 }
 std::string toString(void const *value) {
+  if (value == nullptr) {
+    return "null";
+  }
   return folly::sformat("0x{0:016x}", reinterpret_cast<size_t>(value));
 }
 
