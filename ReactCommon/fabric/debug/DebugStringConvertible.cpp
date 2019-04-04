@@ -13,33 +13,41 @@ namespace react {
 #if RN_DEBUG_STRING_CONVERTIBLE
 
 std::string DebugStringConvertible::getDebugChildrenDescription(
-    DebugStringConvertibleOptions options,
-    int depth) const {
-  if (depth >= options.maximumDepth) {
+    DebugStringConvertibleOptions options) const {
+  if (options.depth >= options.maximumDepth) {
     return "";
   }
 
-  std::string childrenString = "";
+  options.depth++;
+
+  auto trailing = options.format ? std::string{"\n"} : std::string{""};
+  auto childrenString = std::string{""};
 
   for (auto child : getDebugChildren()) {
     if (!child) {
       continue;
     }
 
-    childrenString += child->getDebugDescription(options, depth + 1);
+    childrenString += child->getDebugDescription(options) + trailing;
+  }
+
+  if (!childrenString.empty() && !trailing.empty()) {
+    // Removing trailing fragment.
+    childrenString.erase(childrenString.end() - 1);
   }
 
   return childrenString;
 }
 
 std::string DebugStringConvertible::getDebugPropsDescription(
-    DebugStringConvertibleOptions options,
-    int depth) const {
-  if (depth >= options.maximumDepth) {
+    DebugStringConvertibleOptions options) const {
+  if (options.depth >= options.maximumDepth) {
     return "";
   }
 
-  std::string propsString = "";
+  options.depth++;
+
+  auto propsString = std::string{""};
 
   for (auto prop : getDebugProps()) {
     if (!prop) {
@@ -48,7 +56,7 @@ std::string DebugStringConvertible::getDebugPropsDescription(
 
     auto name = prop->getDebugName();
     auto value = prop->getDebugValue();
-    auto children = prop->getDebugPropsDescription(options, depth + 1);
+    auto children = prop->getDebugPropsDescription(options);
     auto valueAndChildren =
         value + (children.empty() ? "" : "(" + children + ")");
     propsString +=
@@ -64,22 +72,22 @@ std::string DebugStringConvertible::getDebugPropsDescription(
 }
 
 std::string DebugStringConvertible::getDebugDescription(
-    DebugStringConvertibleOptions options,
-    int depth) const {
+    DebugStringConvertibleOptions options) const {
   auto nameString = getDebugName();
   auto valueString = getDebugValue();
-  auto childrenString = getDebugChildrenDescription(options, depth);
-  auto propsString = getDebugPropsDescription(options, depth);
+  auto childrenString = getDebugChildrenDescription(options);
+  auto propsString = getDebugPropsDescription(options);
 
-  auto leading = options.format ? std::string(depth * 2, ' ') : std::string{""};
+  auto leading =
+      options.format ? std::string(options.depth * 2, ' ') : std::string{""};
   auto trailing = options.format ? std::string{"\n"} : std::string{""};
 
   return leading + "<" + nameString +
       (valueString.empty() ? "" : "=" + valueString) +
       (propsString.empty() ? "" : " " + propsString) +
-      (childrenString.empty() ? "/>" + trailing
-                              : ">" + trailing + childrenString + leading +
-               "</" + nameString + ">" + trailing);
+      (childrenString.empty() ? "/>"
+                              : ">" + trailing + childrenString + trailing +
+               leading + "</" + nameString + ">");
 }
 
 std::string DebugStringConvertible::getDebugName() const {

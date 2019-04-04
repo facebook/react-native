@@ -30,6 +30,7 @@ using SharedDebugStringConvertibleList =
 
 struct DebugStringConvertibleOptions {
   bool format{true};
+  int depth{0};
   int maximumDepth{INT_MAX};
 };
 
@@ -63,17 +64,14 @@ class DebugStringConvertible {
   // Default implementation returns a description of the subtree
   // rooted at this node, represented in XML-like format.
   virtual std::string getDebugDescription(
-      DebugStringConvertibleOptions options = {},
-      int depth = 0) const;
+      DebugStringConvertibleOptions options = {}) const;
 
   // Do same as `getDebugDescription` but return only *children* and
   // *properties* parts (which are used in `getDebugDescription`).
   virtual std::string getDebugPropsDescription(
-      DebugStringConvertibleOptions options = {},
-      int depth = 0) const;
+      DebugStringConvertibleOptions options = {}) const;
   virtual std::string getDebugChildrenDescription(
-      DebugStringConvertibleOptions options = {},
-      int depth = 0) const;
+      DebugStringConvertibleOptions options = {}) const;
 };
 
 #else
