@@ -43,7 +43,7 @@ class AccessibilityIOSExample extends React.Component<Props> {
         <View
           onAccessibilityAction={event => {
             if (event.nativeEvent.actionName === 'escape') {
-              alert('onAccessibilityEscape success');
+              Alert.alert('onAccessibilityEscape success');
             }
           }}
           accessible={true}
