@@ -178,7 +178,6 @@ class CheckboxExample extends React.Component {
   }
 }
 
-
 class SwitchExample extends React.Component {
   state = {
     switchState: 'checked',
@@ -374,7 +373,7 @@ class AccessibilityRoleAndStateExample extends React.Component<{}> {
           accessible={true}>
           <Text>Spin button example</Text>
         </View>
-        <SwitchExample/>
+        <SwitchExample />
         <View
           accessibilityLabel="element 13"
           accessibilityRole="tab"
