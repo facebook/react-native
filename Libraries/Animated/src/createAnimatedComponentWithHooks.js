@@ -26,7 +26,7 @@ function createAnimatedComponentWithHooks(Component: any): any {
       'use a class component instead.',
   );
 
-  const AnimatedOnAFeeling = props => {
+  const AnimatedComponent = props => {
     const [initialized, setInitialized] = useState(false);
     const [, forceUpdate] = useState();
 
@@ -70,7 +70,7 @@ function createAnimatedComponentWithHooks(Component: any): any {
         // So a deferred call won't always be invoked.
         _invokeAnimatedPropsCallbackOnMount = true;
       } else if (
-        AnimatedOnAFeeling.__skipSetNativeProps_FOR_TESTS_ONLY ||
+        AnimatedComponent.__skipSetNativeProps_FOR_TESTS_ONLY ||
         typeof _component.setNativeProps !== 'function'
       ) {
         forceUpdate();
@@ -181,7 +181,7 @@ function createAnimatedComponentWithHooks(Component: any): any {
 
   const propTypes = Component.propTypes;
 
-  AnimatedOnAFeeling.propTypes = {
+  AnimatedComponent.propTypes = {
     style: function(props, propName, componentName) {
       if (!propTypes) {
         return;
@@ -204,7 +204,7 @@ function createAnimatedComponentWithHooks(Component: any): any {
   };
 
   return React.forwardRef((props, ref) => {
-    return <AnimatedOnAFeeling {...props} apiRef={ref} />;
+    return <AnimatedComponent {...props} apiRef={ref} />;
   });
 }
 

@@ -10,7 +10,7 @@
 'use strict';
 
 const {AnimatedEvent} = require('./AnimatedEvent');
-const createAnimatedComponentWithHooks = require('./AnimatedOnAFeeling');
+const createAnimatedComponentWithHooks = require('./createAnimatedComponentWithHooks');
 const AnimatedProps = require('./nodes/AnimatedProps');
 const React = require('React');
 const DeprecatedViewStylePropTypes = require('DeprecatedViewStylePropTypes');
@@ -202,7 +202,10 @@ function createAnimatedComponentOld(Component: any): any {
   return AnimatedComponent;
 }
 
-function createAnimatedComponent(Component: any, useHooks?: boolean): any {
+function createAnimatedComponent(
+  Component: any,
+  useHooks?: boolean = false, // can be set to true later on
+): any {
   if (useHooks === true) {
     return createAnimatedComponentWithHooks(Component);
   }
