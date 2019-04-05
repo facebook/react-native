@@ -42,6 +42,10 @@ public class OkHttpClientProvider {
     sFactory = factory;
   }
 
+  public static boolean hasOkHttpClient() {
+    return sClient != null;
+  }
+
   public static OkHttpClient getOkHttpClient() {
     if (sClient == null) {
       sClient = createClient();
