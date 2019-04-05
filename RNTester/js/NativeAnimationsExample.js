@@ -220,24 +220,26 @@ class EventExample extends React.Component<{}, $FlowFixMeState> {
   };
 
   render() {
-    const opacity = this.state.scrollX.interpolate({
-      inputRange: [0, 200],
-      outputRange: [1, 0],
-    });
     return (
       <View>
         <Animated.View
           style={[
             styles.block,
             {
-              opacity,
+              transform: [
+                {
+                  rotate: this.state.scrollX.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['0deg', '1deg'],
+                  }),
+                },
+              ],
             },
           ]}
         />
         <Animated.ScrollView
           horizontal
           style={{height: 100, marginTop: 16}}
-          scrollEventThrottle={16}
           onScroll={Animated.event(
             [{nativeEvent: {contentOffset: {x: this.state.scrollX}}}],
             {useNativeDriver: true},
@@ -247,8 +249,9 @@ class EventExample extends React.Component<{}, $FlowFixMeState> {
               width: 600,
               backgroundColor: '#eee',
               justifyContent: 'center',
+              paddingLeft: 100,
             }}>
-            <Text>Scroll me!</Text>
+            <Text>Scroll me sideways!</Text>
           </View>
         </Animated.ScrollView>
       </View>
@@ -637,7 +640,7 @@ exports.examples = [
     },
   },
   {
-    title: 'Drive custom property',
+    title: 'Drive custom property (tap to animate)',
     render: function() {
       return (
         <Tester type="timing" config={{duration: 1000}}>
