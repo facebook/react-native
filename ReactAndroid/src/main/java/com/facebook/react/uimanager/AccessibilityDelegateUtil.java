@@ -138,10 +138,16 @@ public class AccessibilityDelegateUtil {
       case "checked":
         info.setCheckable(true);
         info.setChecked(true);
+        if (info.getClassName().equals("android.widget.Switch")) {
+          info.setText(context.getString(R.string.state_on_description));
+        }
         break;
       case "unchecked":
         info.setCheckable(true);
         info.setChecked(false);
+        if (info.getClassName().equals("android.widget.Switch")) {
+          info.setText(context.getString(R.string.state_off_description));
+        }
         break;
       case "hasPopup":
         info.setCanOpenPopup(true);

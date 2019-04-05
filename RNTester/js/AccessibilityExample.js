@@ -178,6 +178,42 @@ class CheckboxExample extends React.Component {
   }
 }
 
+
+class SwitchExample extends React.Component {
+  state = {
+    switchState: 'checked',
+  };
+
+  _onSwitchToggle = () => {
+    const switchState =
+      this.state.switchState === 'checked' ? 'unchecked' : 'checked';
+
+    this.setState({
+      switchState: switchState,
+    });
+
+    if (Platform.OS === 'android') {
+      UIManager.sendAccessibilityEvent(
+        findNodeHandle(this),
+        UIManager.AccessibilityEventTypes.typeViewClicked,
+      );
+    }
+  };
+
+  render() {
+    return (
+      <TouchableOpacity
+        onPress={this._onSwitchToggle}
+        accessibilityLabel="element 12"
+        accessibilityRole="switch"
+        accessibilityStates={[this.state.switchState]}
+        accessible={true}>
+        <Text>Switch example</Text>
+      </TouchableOpacity>
+    );
+  }
+}
+
 class SelectionExample extends React.Component {
   constructor(props) {
     super(props);
@@ -221,7 +257,7 @@ class SelectionExample extends React.Component {
               );
             }
           }}
-          accessibilityLabel="element 21"
+          accessibilityLabel="element 19"
           accessibilityStates={accessibilityStates}
           accessibilityHint={accessibilityHint}>
           <Text>Selectable element example</Text>
@@ -264,7 +300,7 @@ class ExpandableElementExample extends React.Component {
     return (
       <TouchableOpacity
         onPress={this._onElementPress}
-        accessibilityLabel="element 20"
+        accessibilityLabel="element 18"
         accessibilityStates={[this.state.expandState]}
         accessibilityHint="click me to change state">
         <Text>Expandable element example</Text>
@@ -291,86 +327,80 @@ class AccessibilityRoleAndStateExample extends React.Component<{}> {
           <Text>Combobox example</Text>
         </View>
         <View
-          accessibilityLabel="element 5"
+          accessibilityLabel="element 4"
           accessibilityRole="menu"
           accessible={true}>
           <Text>Menu example</Text>
         </View>
         <View
-          accessibilityLabel="element 6"
+          accessibilityLabel="element 5"
           accessibilityRole="menubar"
           accessible={true}>
           <Text>Menu bar example</Text>
         </View>
         <View
-          accessibilityLabel="element 7"
+          accessibilityLabel="element 6"
           accessibilityRole="menuitem"
           accessible={true}>
           <Text>Menu item example</Text>
         </View>
         <View
-          accessibilityLabel="element 8"
+          accessibilityLabel="element 7"
           accessibilityRole="progressbar"
           accessible={true}>
           <Text>Progress bar example</Text>
         </View>
         <View
-          accessibilityLabel="element 9"
+          accessibilityLabel="element 8"
           accessibilityRole="radio"
           accessible={true}>
           <Text>Radio button example</Text>
         </View>
         <View
-          accessibilityLabel="element 10"
+          accessibilityLabel="element 9"
           accessibilityRole="radiogroup"
           accessible={true}>
           <Text>Radio group example</Text>
         </View>
         <View
-          accessibilityLabel="element 11"
+          accessibilityLabel="element 10"
           accessibilityRole="scrollbar"
           accessible={true}>
           <Text>Scrollbar example</Text>
         </View>
         <View
-          accessibilityLabel="element 12"
+          accessibilityLabel="element 11"
           accessibilityRole="spinbutton"
           accessible={true}>
           <Text>Spin button example</Text>
         </View>
+        <SwitchExample/>
         <View
           accessibilityLabel="element 13"
-          accessibilityRole="switch"
-          accessibilityStates={['checked']}
-          accessible={true}>
-          <Text>Switch example</Text>
-        </View>
-        <View
-          accessibilityLabel="element 14"
           accessibilityRole="tab"
           accessible={true}>
           <Text>Tab example</Text>
         </View>
         <View
-          accessibilityLabel="element 15"
+          accessibilityLabel="element 14"
           accessibilityRole="tablist"
           accessible={true}>
           <Text>Tab list example</Text>
         </View>
         <View
-          accessibilityLabel="element 16"
+          accessibilityLabel="element 15"
           accessibilityRole="timer"
           accessible={true}>
           <Text>Timer example</Text>
         </View>
         <View
-          accessibilityLabel="element 17"
+          accessibilityLabel="element 16"
           accessibilityRole="toolbar"
           accessible={true}>
           <Text>Toolbar example</Text>
         </View>
         <View
-          accessibilityLabel="element 19"
+          accessibilityLabel="element 17"
           accessibilityStates={['busy']}
           accessible={true}>
           <Text>State busy example</Text>

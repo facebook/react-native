@@ -12,6 +12,8 @@
 #import <React/RCTPointerEvents.h>
 #import <React/RCTView.h>
 
+extern const UIAccessibilityTraits SwitchAccessibilityTrait;
+
 @protocol RCTAutoInsetsProtocol;
 
 @class RCTView;

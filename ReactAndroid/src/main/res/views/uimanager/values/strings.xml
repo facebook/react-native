@@ -88,4 +88,12 @@
     name="state_collapsed_description"
     translatable="true"
     >collapsed</string>
+  <string
+    name="state_on_description"
+    translatable="true"
+    >on</string>
+  <string
+    name="state_off_description"
+    translatable="true"
+    >off</string>
 </resources>

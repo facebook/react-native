@@ -15,6 +15,8 @@
 #import "UIView+React.h"
 #import "RCTI18nUtil.h"
 
+UIAccessibilityTraits const SwitchAccessibilityTrait = 0x20000000000001;
+
 @implementation UIView (RCTViewUnmounting)
 
 - (void)react_remountAllSubviews
@@ -186,39 +188,49 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
 - (NSString *)accessibilityValue
 {
-  if (self.accessibilityTraits & (UIAccessibilityTraits)(1<<53)) {
+  if ((self.accessibilityTraits & SwitchAccessibilityTrait) == SwitchAccessibilityTrait) {
     for (NSString *state in _accessibilityStates) {
       if ([state isEqualToString:@"checked"]) {
         return @"1";
+      } else if ([state isEqualToString:@"unchecked"]) {
+        return @"0";
       }
     }
   }
   NSMutableArray *valueComponents = [NSMutableArray new];
-  NSDictionary<NSString *, NSString *> *roleDescriptions = @{
-                                     @"alert" : @"alert",
-                                     @"checkbox" : @"checkbox",
-                                     @"combobox" : @"combo box",
-                                     @"menu" : @"menu",
-                                     @"menubar" : @"menu bar",
-                                     @"menuitem" : @"menu item",
-                                     @"progressbar" : @"progress bar",
-                                     @"radio" : @"radio button",
-                                     @"radiogroup" : @"radio group",
-                                     @"scrollbar" : @"scroll bar",
-                                     @"spinbutton" : @"spin button",
-                                     @"switch" : @"switch",
-                                     @"tab" : @"tab",
-                                     @"tablist" : @"tab list",
-                                     @"timer" : @"timer",
-                                     @"toolbar" : @"tool bar",
-                                     };
-  NSDictionary<NSString *, NSString *> *stateDescriptions = @{
-                                      @"checked" : @"checked",
-                                      @"unchecked" : @"not checked",
-                                      @"busy" : @"busy",
-                                      @"expanded" : @"expanded",
-                                      @"collapsed" : @"collapsed",
-                                      };
+  static NSDictionary<NSString *, NSString *> *roleDescriptions = nil;
+  static dispatch_once_t onceToken1;
+  dispatch_once(&onceToken1, ^{
+    roleDescriptions = @{
+                         @"alert" : @"alert",
+                         @"checkbox" : @"checkbox",
+                         @"combobox" : @"combo box",
+                         @"menu" : @"menu",
+                         @"menubar" : @"menu bar",
+                         @"menuitem" : @"menu item",
+                         @"progressbar" : @"progress bar",
+                         @"radio" : @"radio button",
+                         @"radiogroup" : @"radio group",
+                         @"scrollbar" : @"scroll bar",
+                         @"spinbutton" : @"spin button",
+                         @"switch" : @"switch",
+                         @"tab" : @"tab",
+                         @"tablist" : @"tab list",
+                         @"timer" : @"timer",
+                         @"toolbar" : @"tool bar",
+                         };
+  });
+  static NSDictionary<NSString *, NSString *> *stateDescriptions = nil;
+  static dispatch_once_t onceToken2;
+  dispatch_once(&onceToken2, ^{
+    stateDescriptions = @{
+                          @"checked" : @"checked",
+                          @"unchecked" : @"not checked",
+                          @"busy" : @"busy",
+                          @"expanded" : @"expanded",
+                          @"collapsed" : @"collapsed",
+                          };
+  });
   NSString *roleDescription = _accessibilityRole ? roleDescriptions[_accessibilityRole]: nil;
   if (roleDescription) {
     [valueComponents addObject:roleDescription];

@@ -57,7 +57,7 @@ RCT_MULTI_ENUM_CONVERTER(UIAccessibilityTraits, (@{
   @"radiogroup": @(UIAccessibilityTraitNone),
   @"scrollbar": @(UIAccessibilityTraitNone),
   @"spinbutton": @(UIAccessibilityTraitNone),
-  @"switch": @(UIAccessibilityTraitButton | (UIAccessibilityTraits)(1<<53)),
+  @"switch": @(SwitchAccessibilityTrait),
   @"tab": @(UIAccessibilityTraitNone),
   @"tablist": @(UIAccessibilityTraitNone),
   @"timer": @(UIAccessibilityTraitNone),
@@ -166,7 +166,7 @@ RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, RCTView)
 
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
 {
-  const UIAccessibilityTraits AccessibilityRolesMask = UIAccessibilityTraitNone | UIAccessibilityTraitButton | UIAccessibilityTraitLink | UIAccessibilityTraitSearchField | UIAccessibilityTraitImage | UIAccessibilityTraitKeyboardKey | UIAccessibilityTraitStaticText | UIAccessibilityTraitAdjustable | UIAccessibilityTraitHeader | UIAccessibilityTraitSummaryElement | (UIAccessibilityTraits)(1<<53);
+  const UIAccessibilityTraits AccessibilityRolesMask = UIAccessibilityTraitNone | UIAccessibilityTraitButton | UIAccessibilityTraitLink | UIAccessibilityTraitSearchField | UIAccessibilityTraitImage | UIAccessibilityTraitKeyboardKey | UIAccessibilityTraitStaticText | UIAccessibilityTraitAdjustable | UIAccessibilityTraitHeader | UIAccessibilityTraitSummaryElement | SwitchAccessibilityTrait;
   view.reactAccessibilityElement.accessibilityTraits = view.reactAccessibilityElement.accessibilityTraits & ~AccessibilityRolesMask;
   UIAccessibilityTraits newTraits = json ? [RCTConvert UIAccessibilityTraits:json] : defaultView.accessibilityTraits;
   if (newTraits != UIAccessibilityTraitNone) {
