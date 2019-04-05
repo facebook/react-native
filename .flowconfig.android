@@ -44,6 +44,10 @@ emoji=true
 esproposal.optional_chaining=enable
 esproposal.nullish_coalescing=enable
 
+module.file_ext=.js
+module.file_ext=.json
+module.file_ext=.android.js
+
 module.system=haste
 module.system.haste.use_name_reducers=true
 # keep the following in sync with server/haste/hasteImpl.js
