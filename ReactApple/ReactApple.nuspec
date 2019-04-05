@@ -27,7 +27,7 @@
     <!-- headers -->
     <file src="__OUTPUTDIR__/iphonesimulator/Debug/build.sym/Debug-iphonesimulator/include/**" target="include"/>
 
-    <file src="../third-party/folly-2016.10.31.00/**/*.h" target="include"/>
+    <file src="../third-party/folly-2018.10.22.00/**/*.h" target="include"/>
     <file src="../third-party/glog-0.3.5/src/glog/*.h" target="include/glog"/>
   </files>
 </package>
