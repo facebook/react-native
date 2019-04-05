@@ -118,6 +118,25 @@ function createAnimatedComponentWithHooks(Component: any): any {
       }
     }, []);
 
+    // Update ref when needed
+    useEffect(() => {
+      if (props.apiRef) {
+        props.apiRef.current = {
+          getNode() {
+            return _component;
+          },
+        };
+      }
+    }, [props.apiRef]);
+
+    useEffect(() => {
+      return () => {
+        if (props.apiRef) {
+          props.apiRef.current = null;
+        }
+      };
+    }, []);
+
     useEffect(() => {
       if (initialized && _component) {
         _detachNativeEvents();
@@ -184,7 +203,9 @@ function createAnimatedComponentWithHooks(Component: any): any {
     },
   };
 
-  return AnimatedOnAFeeling;
+  return React.forwardRef((props, ref) => {
+    return <AnimatedOnAFeeling {...props} apiRef={ref} />;
+  });
 }
 
 module.exports = createAnimatedComponentWithHooks;
