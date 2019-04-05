@@ -34,6 +34,15 @@
 // LOG(INFO) << "data: " << x;
 // vector<int> v1, v2;
 // CHECK_EQ(v1, v2);
+//
+// If you want to use this header file with hash maps or slist, you
+// need to define macros before including this file:
+//
+// - GLOG_STL_LOGGING_FOR_UNORDERED     - <unordered_map> and <unordered_set>
+// - GLOG_STL_LOGGING_FOR_TR1_UNORDERED - <tr1/unordered_(map|set)>
+// - GLOG_STL_LOGGING_FOR_EXT_HASH      - <ext/hash_(map|set)>
+// - GLOG_STL_LOGGING_FOR_EXT_SLIST     - <ext/slist>
+//
 
 #ifndef UTIL_GTL_STL_LOGGING_INL_H_
 #define UTIL_GTL_STL_LOGGING_INL_H_
@@ -50,9 +59,21 @@
 #include <utility>
 #include <vector>
 
-#ifdef __GNUC__
+#ifdef GLOG_STL_LOGGING_FOR_UNORDERED
+# include <unordered_map>
+# include <unordered_set>
+#endif
+
+#ifdef GLOG_STL_LOGGING_FOR_TR1_UNORDERED
+# include <tr1/unordered_map>
+# include <tr1/unordered_set>
+#endif
+
+#ifdef GLOG_STL_LOGGING_FOR_EXT_HASH
 # include <ext/hash_set>
 # include <ext/hash_map>
+#endif
+#ifdef GLOG_STL_LOGGING_FOR_EXT_SLIST
 # include <ext/slist>
 #endif
 
@@ -80,7 +101,7 @@ inline std::ostream& operator<<(std::ostream& out, \
 OUTPUT_TWO_ARG_CONTAINER(std::vector)
 OUTPUT_TWO_ARG_CONTAINER(std::deque)
 OUTPUT_TWO_ARG_CONTAINER(std::list)
-#ifdef __GNUC__
+#ifdef GLOG_STL_LOGGING_FOR_EXT_SLIST
 OUTPUT_TWO_ARG_CONTAINER(__gnu_cxx::slist)
 #endif
 
@@ -109,7 +130,15 @@ inline std::ostream& operator<<(std::ostream& out, \
 
 OUTPUT_FOUR_ARG_CONTAINER(std::map)
 OUTPUT_FOUR_ARG_CONTAINER(std::multimap)
-#ifdef __GNUC__
+#ifdef GLOG_STL_LOGGING_FOR_UNORDERED
+OUTPUT_FOUR_ARG_CONTAINER(std::unordered_set)
+OUTPUT_FOUR_ARG_CONTAINER(std::unordered_multiset)
+#endif
+#ifdef GLOG_STL_LOGGING_FOR_TR1_UNORDERED
+OUTPUT_FOUR_ARG_CONTAINER(std::tr1::unordered_set)
+OUTPUT_FOUR_ARG_CONTAINER(std::tr1::unordered_multiset)
+#endif
+#ifdef GLOG_STL_LOGGING_FOR_EXT_HASH
 OUTPUT_FOUR_ARG_CONTAINER(__gnu_cxx::hash_set)
 OUTPUT_FOUR_ARG_CONTAINER(__gnu_cxx::hash_multiset)
 #endif
@@ -124,7 +153,15 @@ inline std::ostream& operator<<(std::ostream& out, \
   return out; \
 }
 
-#ifdef __GNUC__
+#ifdef GLOG_STL_LOGGING_FOR_UNORDERED
+OUTPUT_FIVE_ARG_CONTAINER(std::unordered_map)
+OUTPUT_FIVE_ARG_CONTAINER(std::unordered_multimap)
+#endif
+#ifdef GLOG_STL_LOGGING_FOR_TR1_UNORDERED
+OUTPUT_FIVE_ARG_CONTAINER(std::tr1::unordered_map)
+OUTPUT_FIVE_ARG_CONTAINER(std::tr1::unordered_multimap)
+#endif
+#ifdef GLOG_STL_LOGGING_FOR_EXT_HASH
 OUTPUT_FIVE_ARG_CONTAINER(__gnu_cxx::hash_map)
 OUTPUT_FIVE_ARG_CONTAINER(__gnu_cxx::hash_multimap)
 #endif

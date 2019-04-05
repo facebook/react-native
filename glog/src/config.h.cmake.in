@@ -174,9 +174,6 @@
 /* location of source code */
 #cmakedefine TEST_SRC_DIR ${TEST_SRC_DIR}
 
-/* Define to necessary thread-local storage attribute. */
-#cmakedefine GLOG_THREAD_LOCAL_STORAGE ${GLOG_THREAD_LOCAL_STORAGE}
-
 /* Version number of package */
 #cmakedefine VERSION
 

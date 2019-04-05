@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual C++ Express 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libglog", "vsprojects\libglog\libglog.vcproj", "{34BD04BD-BC1D-4BFC-AAFC-ED02D9E960F1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "logging_unittest", "vsprojects\logging_unittest\logging_unittest.vcproj", "{DD0690AA-5E09-46B5-83FD-4B28604CABA8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{34BD04BD-BC1D-4BFC-AAFC-ED02D9E960F1} = {34BD04BD-BC1D-4BFC-AAFC-ED02D9E960F1}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libglog_static", "vsprojects\libglog_static\libglog_static.vcproj", "{772C2111-BBBF-49E6-B912-198A7F7A88E5}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "logging_unittest_static", "vsprojects\logging_unittest_static\logging_unittest_static.vcproj", "{9B239B45-84A9-4E06-AC46-8E220CD43974}"
+	ProjectSection(ProjectDependencies) = postProject
+		{772C2111-BBBF-49E6-B912-198A7F7A88E5} = {772C2111-BBBF-49E6-B912-198A7F7A88E5}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{34BD04BD-BC1D-4BFC-AAFC-ED02D9E960F1}.Debug|Win32.ActiveCfg = Debug|Win32
+		{34BD04BD-BC1D-4BFC-AAFC-ED02D9E960F1}.Debug|Win32.Build.0 = Debug|Win32
+		{34BD04BD-BC1D-4BFC-AAFC-ED02D9E960F1}.Release|Win32.ActiveCfg = Release|Win32
+		{34BD04BD-BC1D-4BFC-AAFC-ED02D9E960F1}.Release|Win32.Build.0 = Release|Win32
+		{DD0690AA-5E09-46B5-83FD-4B28604CABA8}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DD0690AA-5E09-46B5-83FD-4B28604CABA8}.Debug|Win32.Build.0 = Debug|Win32
+		{DD0690AA-5E09-46B5-83FD-4B28604CABA8}.Release|Win32.ActiveCfg = Release|Win32
+		{DD0690AA-5E09-46B5-83FD-4B28604CABA8}.Release|Win32.Build.0 = Release|Win32
+		{772C2111-BBBF-49E6-B912-198A7F7A88E5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{772C2111-BBBF-49E6-B912-198A7F7A88E5}.Debug|Win32.Build.0 = Debug|Win32
+		{772C2111-BBBF-49E6-B912-198A7F7A88E5}.Release|Win32.ActiveCfg = Release|Win32
+		{772C2111-BBBF-49E6-B912-198A7F7A88E5}.Release|Win32.Build.0 = Release|Win32
+		{9B239B45-84A9-4E06-AC46-8E220CD43974}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9B239B45-84A9-4E06-AC46-8E220CD43974}.Debug|Win32.Build.0 = Debug|Win32
+		{9B239B45-84A9-4E06-AC46-8E220CD43974}.Release|Win32.ActiveCfg = Release|Win32
+		{9B239B45-84A9-4E06-AC46-8E220CD43974}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

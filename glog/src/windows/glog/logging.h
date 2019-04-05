@@ -938,7 +938,13 @@ struct CrashReason;
 bool IsFailureSignalHandlerInstalled();
 }  // namespace glog_internal_namespace_
 
+#define GOOGLE_GLOG_COMPILE_ASSERT(expr, msg) \
+  typedef google::glog_internal_namespace_::CompileAssert<(bool(expr))> msg[bool(expr) ? 1 : -1]
+
 #define LOG_EVERY_N(severity, n)                                        \
+  GOOGLE_GLOG_COMPILE_ASSERT(google::GLOG_ ## severity < \
+                             google::NUM_SEVERITIES,     \
+                             INVALID_REQUESTED_LOG_SEVERITY);           \
   SOME_KIND_OF_LOG_EVERY_N(severity, (n), google::LogMessage::SendToLog)
 
 #define SYSLOG_EVERY_N(severity, n) \
@@ -1111,12 +1117,6 @@ class GOOGLE_GLOG_DLL_DECL LogStreamBuf : public std::streambuf {
   LogStreamBuf(char *buf, int len) {
     setp(buf, buf + len - 2);
   }
-
-  // Resets the buffer. Useful if we reuse it by means of TLS.
-  void reset() {
-     setp(pbase(), epptr());
-  }
-
   // This effectively ignores overflow.
   virtual int_type overflow(int_type ch) {
     return ch;
@@ -1179,7 +1179,6 @@ public:
     size_t pcount() const { return streambuf_.pcount(); }
     char* pbase() const { return streambuf_.pbase(); }
     char* str() const { return pbase(); }
-    void reset() { streambuf_.reset(); }
 
   private:
     LogStream(const LogStream&);
