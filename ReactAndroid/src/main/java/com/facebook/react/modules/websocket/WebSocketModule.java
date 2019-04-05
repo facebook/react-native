@@ -85,14 +85,14 @@ public final class WebSocketModule extends ReactContextBaseJavaModule {
     @Nullable final ReadableArray protocols,
     @Nullable final ReadableMap options,
     final int id) {
-    OkHttpClient.Builder builder;
+    OkHttpClient.Builder cBuilder;
     if (OkHttpClientProvider.hasOkHttpClient()) {
-      builder = OkHttpClientProvider.getOkHttpClient().newBuilder();
+      cBuilder = OkHttpClientProvider.getOkHttpClient().newBuilder();
     } else {
-      builder = new OkHttpClient.Builder();
+      cBuilder = new OkHttpClient.Builder();
     }
 
-    OkHttpClient client = builder
+    OkHttpClient client = cBuilder
       .connectTimeout(10, TimeUnit.SECONDS)
       .writeTimeout(10, TimeUnit.SECONDS)
       .readTimeout(0, TimeUnit.MINUTES) // Disable timeouts for read
