@@ -1,6 +1,3 @@
-cmake_policy (PUSH)
-cmake_policy (VERSION @glog_POLICY_VERSION@)
-
 @PACKAGE_INIT@
 
 include (CMakeFindDependencyMacro)
@@ -8,5 +5,3 @@ include (CMakeFindDependencyMacro)
 @gflags_DEPENDENCY@
 
 include ("${CMAKE_CURRENT_LIST_DIR}/glog-targets.cmake")
-
-cmake_policy (POP)

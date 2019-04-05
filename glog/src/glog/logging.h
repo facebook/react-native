@@ -48,14 +48,6 @@
 #endif
 #include <vector>
 
-// Annoying stuff for windows -- makes sure clients can import these functions
-#ifndef GOOGLE_GLOG_DLL_DECL
-# if defined(_WIN32) && !defined(__CYGWIN__)
-#   define GOOGLE_GLOG_DLL_DECL  __declspec(dllimport)
-# else
-#   define GOOGLE_GLOG_DLL_DECL
-# endif
-#endif
 #if defined(_MSC_VER)
 #define GLOG_MSVC_PUSH_DISABLE_WARNING(n) __pragma(warning(push)) \
                                      __pragma(warning(disable:n))
@@ -63,6 +55,15 @@
 #else
 #define GLOG_MSVC_PUSH_DISABLE_WARNING(n)
 #define GLOG_MSVC_POP_WARNING()
+#endif
+
+// Annoying stuff for windows -- makes sure clients can import these functions
+#ifndef GOOGLE_GLOG_DLL_DECL
+# if defined(_WIN32) && !defined(__CYGWIN__)
+#   define GOOGLE_GLOG_DLL_DECL  __declspec(dllimport)
+# else
+#   define GOOGLE_GLOG_DLL_DECL
+# endif
 #endif
 
 // We care a lot about number of bits things take up.  Unfortunately,
@@ -129,14 +130,27 @@ typedef unsigned __int64 uint64;
 #ifndef GOOGLE_PREDICT_BRANCH_NOT_TAKEN
 #if 1
 #define GOOGLE_PREDICT_BRANCH_NOT_TAKEN(x) (__builtin_expect(x, 0))
-#define GOOGLE_PREDICT_FALSE(x) (__builtin_expect(x, 0))
-#define GOOGLE_PREDICT_TRUE(x) (__builtin_expect(!!(x), 1))
 #else
 #define GOOGLE_PREDICT_BRANCH_NOT_TAKEN(x) x
+#endif
+#endif
+
+#ifndef GOOGLE_PREDICT_FALSE
+#if 1
+#define GOOGLE_PREDICT_FALSE(x) (__builtin_expect(x, 0))
+#else
 #define GOOGLE_PREDICT_FALSE(x) x
+#endif
+#endif
+
+#ifndef GOOGLE_PREDICT_TRUE
+#if 1
+#define GOOGLE_PREDICT_TRUE(x) (__builtin_expect(!!(x), 1))
+#else
 #define GOOGLE_PREDICT_TRUE(x) x
 #endif
 #endif
+
 
 // Make a bunch of macros for logging.  The way to log things is to stream
 // things to LOG(<a particular severity level>).  E.g.,
@@ -347,6 +361,9 @@ DECLARE_int32(minloglevel);
 // default logging directory.
 DECLARE_string(log_dir);
 
+// Set the log file mode.
+DECLARE_int32(logfile_mode);
+
 // Sets the path of the directory into which to put additional links
 // to the log files.
 DECLARE_string(log_link);
@@ -414,9 +431,15 @@ DECLARE_bool(stop_logging_if_full_disk);
 #define LOG_TO_STRING_FATAL(message) google::NullStreamFatal()
 #endif
 
+#if defined(NDEBUG) && !defined(DCHECK_ALWAYS_ON)
+#define DCHECK_IS_ON() 0
+#else
+#define DCHECK_IS_ON() 1
+#endif
+
 // For DFATAL, we want to use LogMessage (as opposed to
 // LogMessageFatal), to be consistent with the original behavior.
-#ifdef NDEBUG
+#if !DCHECK_IS_ON()
 #define COMPACT_GOOGLE_LOG_DFATAL COMPACT_GOOGLE_LOG_ERROR
 #elif GOOGLE_STRIP_LOG <= 3
 #define COMPACT_GOOGLE_LOG_DFATAL google::LogMessage( \
@@ -542,7 +565,7 @@ class LogSink;  // defined below
 //   vector<string> *outvec;
 // The cast is to disambiguate NULL arguments.
 #define LOG_STRING(severity, outvec) \
-  LOG_TO_STRING_##severity(static_cast<vector<string>*>(outvec)).stream()
+  LOG_TO_STRING_##severity(static_cast<std::vector<std::string>*>(outvec)).stream()
 
 #define LOG_IF(severity, condition) \
   !(condition) ? (void) 0 : google::LogMessageVoidify() & LOG(severity)
@@ -555,7 +578,7 @@ class LogSink;  // defined below
   SYSLOG_IF(FATAL, !(condition)) << "Assert failed: " #condition
 
 // CHECK dies with a fatal error if condition is not true.  It is *not*
-// controlled by NDEBUG, so the check will be executed regardless of
+// controlled by DCHECK_IS_ON(), so the check will be executed regardless of
 // compilation mode.  Therefore, it is safe to do things like:
 //    CHECK(fp->Write(x) == 4)
 #define CHECK(condition)  \
@@ -705,15 +728,15 @@ DEFINE_CHECK_OP_IMPL(Check_GT, > )
 #if defined(STATIC_ANALYSIS)
 // Only for static analysis tool to know that it is equivalent to assert
 #define CHECK_OP_LOG(name, op, val1, val2, log) CHECK((val1) op (val2))
-#elif !defined(NDEBUG)
+#elif DCHECK_IS_ON()
 // In debug mode, avoid constructing CheckOpStrings if possible,
 // to reduce the overhead of CHECK statments by 2x.
 // Real DCHECK-heavy tests have seen 1.5x speedups.
 
-// The meaning of "string" might be different between now and 
+// The meaning of "string" might be different between now and
 // when this macro gets invoked (e.g., if someone is experimenting
 // with other string implementations that get defined after this
-// file is included).  Save the current meaning now and use it 
+// file is included).  Save the current meaning now and use it
 // in the macro.
 typedef std::string _Check_string;
 #define CHECK_OP_LOG(name, op, val1, val2, log)                         \
@@ -734,7 +757,7 @@ typedef std::string _Check_string;
              google::GetReferenceableValue(val2),        \
              #val1 " " #op " " #val2))                                  \
     log(__FILE__, __LINE__, _result).stream()
-#endif  // STATIC_ANALYSIS, !NDEBUG
+#endif  // STATIC_ANALYSIS, DCHECK_IS_ON()
 
 #if GOOGLE_STRIP_LOG <= 3
 #define CHECK_OP(name, op, val1, val2) \
@@ -908,8 +931,7 @@ struct CompileAssert {
 struct CrashReason;
 
 // Returns true if FailureSignalHandler is installed.
-// Needs to be exported since it's used by the signalhandler_unittest.
-GOOGLE_GLOG_DLL_DECL bool IsFailureSignalHandlerInstalled();
+bool IsFailureSignalHandlerInstalled();
 }  // namespace glog_internal_namespace_
 
 #define GOOGLE_GLOG_COMPILE_ASSERT(expr, msg) \
@@ -960,7 +982,7 @@ const LogSeverity GLOG_0 = GLOG_ERROR;
 
 // Plus some debug-logging macros that get compiled to nothing for production
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
 
 #define DLOG(severity) LOG(severity)
 #define DVLOG(verboselevel) VLOG(verboselevel)
@@ -970,7 +992,7 @@ const LogSeverity GLOG_0 = GLOG_ERROR;
   LOG_IF_EVERY_N(severity, condition, n)
 #define DLOG_ASSERT(condition) LOG_ASSERT(condition)
 
-// debug-only checking.  not executed in NDEBUG mode.
+// debug-only checking.  executed if DCHECK_IS_ON().
 #define DCHECK(condition) CHECK(condition)
 #define DCHECK_EQ(val1, val2) CHECK_EQ(val1, val2)
 #define DCHECK_NE(val1, val2) CHECK_NE(val1, val2)
@@ -984,7 +1006,7 @@ const LogSeverity GLOG_0 = GLOG_ERROR;
 #define DCHECK_STRNE(str1, str2) CHECK_STRNE(str1, str2)
 #define DCHECK_STRCASENE(str1, str2) CHECK_STRCASENE(str1, str2)
 
-#else  // NDEBUG
+#else  // !DCHECK_IS_ON()
 
 #define DLOG(severity) \
   true ? (void) 0 : google::LogMessageVoidify() & LOG(severity)
@@ -1065,7 +1087,7 @@ const LogSeverity GLOG_0 = GLOG_ERROR;
   while (false) \
     GLOG_MSVC_POP_WARNING() CHECK_STRCASENE(str1, str2)
 
-#endif  // NDEBUG
+#endif  // DCHECK_IS_ON()
 
 // Log only in verbose mode.
 
@@ -1085,7 +1107,7 @@ namespace base_logging {
 // LogMessage::LogStream is a std::ostream backed by this streambuf.
 // This class ignores overflow and leaves two bytes at the end of the
 // buffer to allow for a '\n' and '\0'.
-class LogStreamBuf : public std::streambuf {
+class GOOGLE_GLOG_DLL_DECL LogStreamBuf : public std::streambuf {
  public:
   // REQUIREMENTS: "len" must be >= 2 to account for the '\n' and '\n'.
   LogStreamBuf(char *buf, int len) {
@@ -1155,6 +1177,8 @@ public:
     char* str() const { return pbase(); }
 
   private:
+    LogStream(const LogStream&);
+    LogStream& operator=(const LogStream&);
     base_logging::LogStreamBuf streambuf_;
     int ctr_;  // Counter hack (for the LOG_EVERY_X() macro)
     LogStream *self_;  // Consistency check hack
@@ -1222,7 +1246,7 @@ public:
   void SendToSyslogAndLog();  // Actually dispatch to syslog and the logs
 
   // Call abort() or similar to perform LOG(FATAL) crash.
-  static void Fail() __attribute__ ((noreturn));
+  static void __attribute__ ((noreturn)) Fail();
 
   std::ostream& stream();
 
@@ -1270,7 +1294,7 @@ class GOOGLE_GLOG_DLL_DECL LogMessageFatal : public LogMessage {
  public:
   LogMessageFatal(const char* file, int line);
   LogMessageFatal(const char* file, int line, const CheckOpString& result);
-  ~LogMessageFatal() __attribute__ ((noreturn));
+  __attribute__ ((noreturn)) ~LogMessageFatal();
 };
 
 // A non-macro interface to the log facility; (useful
@@ -1285,6 +1309,35 @@ inline void LogAtLevel(int const severity, std::string const &msg) {
 // LOG macros, 2. this macro can be used as C++ stream.
 #define LOG_AT_LEVEL(severity) google::LogMessage(__FILE__, __LINE__, severity).stream()
 
+// Check if it's compiled in C++11 mode.
+//
+// GXX_EXPERIMENTAL_CXX0X is defined by gcc and clang up to at least
+// gcc-4.7 and clang-3.1 (2011-12-13).  __cplusplus was defined to 1
+// in gcc before 4.7 (Crosstool 16) and clang before 3.1, but is
+// defined according to the language version in effect thereafter.
+// Microsoft Visual Studio 14 (2015) sets __cplusplus==199711 despite
+// reasonably good C++11 support, so we set LANG_CXX for it and
+// newer versions (_MSC_VER >= 1900).
+#if (defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L || \
+     (defined(_MSC_VER) && _MSC_VER >= 1900))
+// Helper for CHECK_NOTNULL().
+//
+// In C++11, all cases can be handled by a single function. Since the value
+// category of the argument is preserved (also for rvalue references),
+// member initializer lists like the one below will compile correctly:
+//
+//   Foo()
+//     : x_(CHECK_NOTNULL(MethodReturningUniquePtr())) {}
+template <typename T>
+T CheckNotNull(const char* file, int line, const char* names, T&& t) {
+ if (t == nullptr) {
+   LogMessageFatal(file, line, new std::string(names));
+ }
+ return std::forward<T>(t);
+}
+
+#else
+
 // A small helper for CHECK_NOTNULL().
 template <typename T>
 T* CheckNotNull(const char *file, int line, const char *names, T* t) {
@@ -1293,6 +1346,7 @@ T* CheckNotNull(const char *file, int line, const char *names, T* t) {
   }
   return t;
 }
+#endif
 
 // Allow folks to put a counter in the LOG_EVERY_X()'ed messages. This
 // only works if ostream is a LogStream. If the ostream is not a
@@ -1532,8 +1586,12 @@ extern GOOGLE_GLOG_DLL_DECL void SetLogger(LogSeverity level, Logger* logger);
 // be set to an empty string, if this function failed. This means, in most
 // cases, you do not need to check the error code and you can directly
 // use the value of "buf". It will never have an undefined value.
+// DEPRECATED: Use StrError(int) instead.
 GOOGLE_GLOG_DLL_DECL int posix_strerror_r(int err, char *buf, size_t len);
 
+// A thread-safe replacement for strerror(). Returns a string describing the
+// given POSIX error code.
+GOOGLE_GLOG_DLL_DECL std::string StrError(int err);
 
 // A class for which we define operator<<, which does nothing.
 class GOOGLE_GLOG_DLL_DECL NullStream : public LogMessage::LogStream {
@@ -1570,7 +1628,7 @@ class GOOGLE_GLOG_DLL_DECL NullStreamFatal : public NullStream {
   NullStreamFatal() { }
   NullStreamFatal(const char* file, int line, const CheckOpString& result) :
       NullStream(file, line, result) { }
-  __attribute__ ((noreturn)) ~NullStreamFatal() { _exit(1); }
+  __attribute__ ((noreturn)) ~NullStreamFatal() throw () { _exit(1); }
 };
 
 // Install a signal handler that will dump signal information and a stack
