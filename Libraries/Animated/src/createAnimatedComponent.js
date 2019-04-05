@@ -204,7 +204,7 @@ function createAnimatedComponentOld(Component: any): any {
 
 function createAnimatedComponent(
   Component: any,
-  useHooks?: boolean = false, // can be set to true later on
+  useHooks?: boolean = true,
 ): any {
   if (useHooks === true) {
     return createAnimatedComponentWithHooks(Component);
