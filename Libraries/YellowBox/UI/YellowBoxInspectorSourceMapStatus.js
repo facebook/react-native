@@ -10,18 +10,18 @@
 
 'use strict';
 
-const Animated = require('Animated');
-const Easing = require('Easing');
-const React = require('React');
-const StyleSheet = require('StyleSheet');
-const Text = require('Text');
-const YellowBoxImageSource = require('YellowBoxImageSource');
-const YellowBoxPressable = require('YellowBoxPressable');
-const YellowBoxStyle = require('YellowBoxStyle');
+const Animated = require('../../Animated/src/Animated');
+const Easing = require('../../Animated/src/Easing');
+const React = require('react');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
+const Text = require('../../Text/Text');
+const YellowBoxImageSource = require('./YellowBoxImageSource');
+const YellowBoxPressable = require('./YellowBoxPressable');
+const YellowBoxStyle = require('./YellowBoxStyle');
 
-import type {CompositeAnimation} from 'AnimatedImplementation';
-import type AnimatedInterpolation from 'AnimatedInterpolation';
-import type {PressEvent} from 'CoreEventTypes';
+import type {CompositeAnimation} from '../../Animated/src/AnimatedImplementation';
+import type AnimatedInterpolation from '../../Animated/src/nodes/AnimatedInterpolation';
+import type {PressEvent} from '../../Types/CoreEventTypes';
 
 type Props = $ReadOnly<{|
   onPress?: ?(event: PressEvent) => void,
