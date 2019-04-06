@@ -42,9 +42,7 @@ afterEvaluate {
 
             // Create dirs if they are not there (e.g. the "clean" task just ran)
             doFirst {
-                jsBundleDir.deleteDir()
                 jsBundleDir.mkdirs()
-                resourcesDir.deleteDir()
                 resourcesDir.mkdirs()
             }
 
