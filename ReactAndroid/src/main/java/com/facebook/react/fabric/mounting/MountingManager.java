@@ -17,6 +17,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableNativeMap;
 import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.fabric.FabricUIManager;
@@ -26,11 +27,13 @@ import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.RootView;
 import com.facebook.react.uimanager.RootViewManager;
+import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.yoga.YogaMeasureMode;
+import android.util.Log;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -271,6 +274,26 @@ public class MountingManager {
   }
 
   @UiThread
+  public void updateState(final int reactTag, StateWrapper stateWrapper) {
+    UiThreadUtil.assertOnUiThread();
+    ViewState viewState = getViewState(reactTag);
+    ReadableNativeMap newState = stateWrapper.getState();
+    if (viewState.mCurrentState != null && viewState.mCurrentState.equals(newState)) {
+      return;
+    }
+    viewState.mCurrentState = newState;
+
+    ViewManager viewManager = viewState.mViewManager;
+
+    if (viewManager == null) {
+      throw new IllegalStateException("Unable to find ViewManager for tag: " + reactTag);
+    }
+    viewManager.updateState(
+      viewState.mView,
+      stateWrapper);
+  }
+
+  @UiThread
   public void preallocateView(
     ThemedReactContext reactContext,
     String componentName,
@@ -326,6 +349,7 @@ public class MountingManager {
     @Nullable final ViewManager mViewManager;
     public ReactStylesDiffMap mCurrentProps;
     public ReadableMap mCurrentLocalData;
+    public ReadableMap mCurrentState;
     public EventEmitterWrapper mEventEmitter;
 
     private ViewState(int reactTag, @Nullable View view, @Nullable ViewManager viewManager) {

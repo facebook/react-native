@@ -7,29 +7,25 @@
 package com.facebook.react.fabric.mounting.mountitems;
 
 import com.facebook.react.fabric.mounting.MountingManager;
-import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.uimanager.StateWrapper;
 
-public class UpdateLocalDataMountItem implements MountItem {
+public class UpdateStateMountItem implements MountItem {
 
   private final int mReactTag;
-  private final ReadableMap mNewLocalData;
+  private final StateWrapper mStateWrapper;
 
-  public UpdateLocalDataMountItem(int reactTag, ReadableMap newLocalData) {
+  public UpdateStateMountItem(int reactTag, StateWrapper stateWrapper) {
     mReactTag = reactTag;
-    mNewLocalData = newLocalData;
+    mStateWrapper = stateWrapper;
   }
 
   @Override
   public void execute(MountingManager mountingManager) {
-    mountingManager.updateLocalData(mReactTag, mNewLocalData);
-  }
-
-  public ReadableMap getNewLocalData() {
-    return mNewLocalData;
+    mountingManager.updateState(mReactTag, mStateWrapper);
   }
 
   @Override
   public String toString() {
-    return "UpdateLocalDataMountItem [" + mReactTag + "] - localData: " + mNewLocalData;
+    return "UpdateStateMountItem [" + mReactTag + "] - stateWrapper: " + mStateWrapper;
   }
 }
