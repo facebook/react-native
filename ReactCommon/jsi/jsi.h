@@ -25,7 +25,6 @@
 #endif // _MSC_VER
 #endif // !defined(JSI_EXPORT)
 
-class FBJSRuntime;
 namespace facebook {
 namespace jsi {
 
@@ -311,10 +310,6 @@ class Runtime {
   static T make(PointerValue* pv);
   static const PointerValue* getPointerValue(const Pointer& pointer);
   static const PointerValue* getPointerValue(const Value& value);
-
-  friend class ::FBJSRuntime;
-  template <typename Plain, typename Base>
-  friend class RuntimeDecorator;
 };
 
 // Base class for pointer-storing types.
