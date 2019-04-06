@@ -10,5 +10,5 @@
 'use strict';
 
 module.exports = {
-  reactNativePath: '.',
+  reactNativePath: __dirname,
 };
