@@ -86,8 +86,8 @@
 }
 </code></pre>
 <p>If your app is using <a href="https://developer.apple.com/library/prerelease/ios/documentation/General/Conceptual/AppSearch/UniversalLinks.html">Universal Links</a>, you'll need to add the following code as well:</p>
-<pre><code class="hljs css language-objectivec">- (<span class="hljs-built_in">BOOL</span>)application:(<span class="hljs-built_in">UIApplication</span> *)application continueUserActivity:(<span class="hljs-built_in">NSUserActivity</span> *)userActivity
- restorationHandler:(<span class="hljs-keyword">void</span> (^)(<span class="hljs-built_in">NSArray</span> * _Nullable))restorationHandler
+<pre><code class="hljs css language-objectivec">- (<span class="hljs-built_in">BOOL</span>)application:(<span class="hljs-built_in">UIApplication</span> *)application continueUserActivity:(<span class="hljs-keyword">nonnull</span> <span class="hljs-built_in">NSUserActivity</span> *)userActivity
+ restorationHandler:(<span class="hljs-keyword">nonnull</span> <span class="hljs-keyword">void</span> (^)(<span class="hljs-built_in">NSArray</span>&lt;<span class="hljs-keyword">id</span>&lt;<span class="hljs-built_in">UIUserActivityRestoring</span>&gt;&gt; * _Nullable))restorationHandler
 {
  <span class="hljs-keyword">return</span> [RCTLinkingManager application:application
                   continueUserActivity:userActivity
