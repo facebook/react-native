@@ -299,9 +299,14 @@ WritableMap params <span class="token operator">=</span> Arguments<span class="t
 <p>You can also directly use the <code>DeviceEventEmitter</code> module to listen for events.</p>
 <pre><code class="hljs css language-javascript"><span class="token operator">...</span>
 <span class="token function">componentDidMount</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
-  DeviceEventEmitter<span class="token punctuation">.</span><span class="token function">addListener</span><span class="token punctuation">(</span><span class="token string">'keyboardWillShow'</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span>e<span class="token punctuation">:</span> Event<span class="token punctuation">)</span> <span class="token punctuation">{</span>
-    <span class="token comment">// handle event.</span>
+  <span class="token keyword">this</span><span class="token punctuation">.</span>subscription <span class="token operator">=</span> DeviceEventEmitter<span class="token punctuation">.</span><span class="token function">addListener</span><span class="token punctuation">(</span><span class="token string">'keyboardWillShow'</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span>e<span class="token punctuation">:</span> Event<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// handle event</span>
   <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token function">componentWillUnmount</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">// When you want to stop listening to new events, simply call .remove() on the subscription</span>
+  <span class="token keyword">this</span><span class="token punctuation">.</span>subscription<span class="token punctuation">.</span><span class="token function">remove</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span>
 <span class="token operator">...</span>
 </code></pre>
