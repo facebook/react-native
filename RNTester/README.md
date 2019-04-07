@@ -81,7 +81,7 @@ When developing E2E tests, you may want to run in development mode, so that chan
 
 You will also need to have Metro Bundler running in another terminal. Note that if you've previously run the E2E tests in release mode, you may need to delete the `RNTester/build` folder before rerunning `detox build`.
 
-## Built from source
+## Building from source
 
 Building the app on both iOS and Android means building the React Native framework from source. This way you're running the latest native and JS code the way you see it in your clone of the github repo.
 
