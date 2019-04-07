@@ -22,10 +22,6 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('./ButtonExample'),
   },
   {
-    key: 'CheckBoxExample',
-    module: require('./CheckBoxExample'),
-  },
-  {
     key: 'FlatListExample',
     module: require('./FlatListExample'),
   },
