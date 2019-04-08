@@ -1,2 +1,2 @@
 DIRS = \
-    jni{droidarm,droidx86} \
+    jni{droidarm,droidarm64,droidx64,droidx86} \
