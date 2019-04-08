@@ -1,2 +1,2 @@
 DIRS = \
-    main{droidarm,droidx86} \
+    main{droidarm,droidarm64,droidx64,droidx86} \

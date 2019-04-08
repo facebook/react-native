@@ -1,4 +1,4 @@
 DIRS = \
-    lyra{droidarm,droidx86} \
-    jni{droidarm,droidx86} \
-    android{droidarm,droidx86} \
+    lyra{droidarm,droidarm64,droidx64,droidx86} \
+    jni{droidarm,droidarm64,droidx64,droidx86} \
+    android{droidarm,droidarm64,droidx64,droidx86} \

@@ -1,4 +1,4 @@
 DIRS = \
-    devmainJava{droidarm,droidx86} \
-    src{droidarm,droidx86} \
+    devmainJava{droidarm,droidarm64,droidx64,droidx86} \
+    src{droidarm,droidarm64,droidx64,droidx86} \
 

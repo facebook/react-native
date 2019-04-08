@@ -1,8 +1,8 @@
 DIRS = \
-    glog{droidarm,droidx86} \
+    glog{droidarm,droidarm64,droidx64,droidx86} \
     folly\
-    double-conversion{droidarm,droidx86} \
+    double-conversion{droidarm,droidarm64,droidx64,droidx86} \
     reactcommon \
-    reactwindows{!droidarm,!droidx86} \
-    processor{droidarm,droidx86} \
-    reactAndroid{droidarm,droidx86} \
+    reactwindows{!droidarm,!droidarm64,!droidx64,!droidx86} \
+    processor{droidarm,droidarm64,droidx64,droidx86} \
+    reactAndroid{droidarm,droidarm64,droidx64,droidx86} \

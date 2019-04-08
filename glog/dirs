@@ -1,2 +1,2 @@
 DIRS = \
-    src{droidarm,droidx86} \
+    src{droidarm,droidarm64,droidx64,droidx86} \
