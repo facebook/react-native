@@ -592,6 +592,10 @@ public class NativeViewHierarchyManager {
    */
   protected synchronized void dropView(View view) {
     UiThreadUtil.assertOnUiThread();
+    if (view == null) {
+      // Ignore this drop operation when view is null.
+      return;
+    }
     if (mTagsToViewManagers.get(view.getId()) == null) {
       // This view has already been dropped (likely due to a threading issue caused by async js
       // execution). Ignore this drop operation.
