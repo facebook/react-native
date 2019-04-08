@@ -3089,12 +3089,19 @@ static void YGNodelayoutImpl(
               const float childHeight =
                   !isMainAxisRow ? childMainSize : childCrossSize;
 
+              auto alignContent = node->getStyle().alignContent;
+              auto crossAxisDoesNotGrow =
+                  alignContent != YGAlignStretch && isNodeFlexWrap;
               const YGMeasureMode childWidthMeasureMode =
-                  YGFloatIsUndefined(childWidth) ? YGMeasureModeUndefined
-                                                 : YGMeasureModeExactly;
+                  YGFloatIsUndefined(childWidth) ||
+                      (!isMainAxisRow && crossAxisDoesNotGrow)
+                  ? YGMeasureModeUndefined
+                  : YGMeasureModeExactly;
               const YGMeasureMode childHeightMeasureMode =
-                  YGFloatIsUndefined(childHeight) ? YGMeasureModeUndefined
-                                                  : YGMeasureModeExactly;
+                  YGFloatIsUndefined(childHeight) ||
+                      (isMainAxisRow && crossAxisDoesNotGrow)
+                  ? YGMeasureModeUndefined
+                  : YGMeasureModeExactly;
 
               YGLayoutNodeInternal(
                   child,
@@ -3148,7 +3155,7 @@ static void YGNodelayoutImpl(
 
   // STEP 8: MULTI-LINE CONTENT ALIGNMENT
   // currentLead stores the size of the cross dim
-  if (performLayout && (lineCount > 1 || YGIsBaselineLayout(node))) {
+  if (performLayout && (isNodeFlexWrap || YGIsBaselineLayout(node))) {
     float crossDimLead = 0;
     float currentLead = leadingPaddingAndBorderCross;
     if (!YGFloatIsUndefined(availableInnerCrossDim)) {
