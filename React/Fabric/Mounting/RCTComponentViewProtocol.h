@@ -85,6 +85,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)prepareForRecycle;
 
+/**
+ * Read the last props used to update the view.
+ */
+- (facebook::react::SharedProps)props;
+
 @end
 
 NS_ASSUME_NONNULL_END

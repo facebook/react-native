@@ -74,7 +74,7 @@ using namespace facebook::react;
     } else {
       _reactNativeConfig = std::make_shared<const EmptyReactNativeConfig>();
     }
-    
+
     _observers = [NSMutableArray array];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -176,17 +176,9 @@ using namespace facebook::react;
   }
   ComponentHandle handle = [[componentView class] componentHandle];
   const facebook::react::ComponentDescriptor &componentDescriptor = [self._scheduler getComponentDescriptor:handle];
-
-  // Note: we use an empty object for `oldProps` to rely on the diffing algorithm internal to the
-  // RCTComponentViewProtocol::updateProps method. If there is a bug in that diffing, some props
-  // could get reset. One way around this would be to require all RCTComponentViewProtocol
-  // implementations to expose their current props so we could clone them, but that could be
-  // problematic for threading and other reasons.
-  facebook::react::SharedProps newProps =
-      componentDescriptor.cloneProps(nullptr, RawProps(convertIdToFollyDynamic(props)));
-  facebook::react::SharedProps oldProps = componentDescriptor.cloneProps(nullptr, RawProps(folly::dynamic::object()));
-
-  [self->_mountingManager synchronouslyUpdateViewOnUIThread:tag oldProps:oldProps newProps:newProps];
+  [self->_mountingManager synchronouslyUpdateViewOnUIThread:tag
+                                               changedProps:props
+                                        componentDescriptor:componentDescriptor];
   return YES;
 }
 
@@ -225,7 +217,7 @@ using namespace facebook::react;
     // Make sure initializeBridge completed
     messageQueueThread->runOnQueueSync([] {});
   }
-  
+
   auto runtime = (facebook::jsi::Runtime *)((RCTCxxBridge *)_batchedBridge).runtime;
 
   RuntimeExecutor runtimeExecutor =

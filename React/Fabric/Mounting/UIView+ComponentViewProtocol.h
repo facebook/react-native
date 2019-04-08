@@ -34,6 +34,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)prepareForRecycle;
 
+- (facebook::react::SharedProps)props;
+
 @end
 
 NS_ASSUME_NONNULL_END

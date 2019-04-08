@@ -29,8 +29,12 @@ using namespace facebook::react;
     static const auto defaultProps = std::make_shared<const ViewProps>();
     _props = defaultProps;
   }
-
   return self;
+}
+
+- (facebook::react::SharedProps)props
+{
+  return _props;
 }
 
 - (void)setContentView:(UIView *)contentView

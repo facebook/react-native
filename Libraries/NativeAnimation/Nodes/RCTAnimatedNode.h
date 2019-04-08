@@ -23,6 +23,8 @@
 
 @property (nonatomic, readonly) BOOL needsUpdate;
 
+-(BOOL)isManagedByFabric;
+
 /**
  * Marks a node and its children as needing update.
  */

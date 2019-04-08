@@ -9,6 +9,7 @@
 
 #import <React/RCTMountingManagerDelegate.h>
 #import <React/RCTPrimitives.h>
+#import <react/core/ComponentDescriptor.h>
 #import <react/core/ReactPrimitives.h>
 #import <react/mounting/ShadowView.h>
 #import <react/mounting/ShadowViewMutation.h>
@@ -40,8 +41,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)optimisticallyCreateComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle;
 
 - (void)synchronouslyUpdateViewOnUIThread:(ReactTag)reactTag
-                                 oldProps:(facebook::react::SharedProps)oldProps
-                                 newProps:(facebook::react::SharedProps)newProps;
+                             changedProps:(NSDictionary *)props
+                      componentDescriptor:(const facebook::react::ComponentDescriptor &)componentDescriptor;
+
 @end
 
 NS_ASSUME_NONNULL_END

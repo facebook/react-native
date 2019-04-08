@@ -8,8 +8,10 @@
 #import "RCTMountingManager.h"
 
 #import <React/RCTAssert.h>
+#import <React/RCTFollyConvert.h>
 #import <React/RCTUtils.h>
 #import <react/core/LayoutableShadowNode.h>
+#import <react/core/RawProps.h>
 #import <react/debug/SystraceSection.h>
 
 #import "RCTComponentViewProtocol.h"
@@ -40,7 +42,7 @@ using namespace facebook::react;
   return self;
 }
 
-- (void)performTransactionWithMutations:(facebook::react::ShadowViewMutationList)mutations rootTag:(ReactTag)rootTag
+- (void)performTransactionWithMutations:(ShadowViewMutationList)mutations rootTag:(ReactTag)rootTag
 {
   NSMutableArray<RCTMountItemProtocol> *mountItems;
 
@@ -193,9 +195,12 @@ using namespace facebook::react;
 }
 
 - (void)synchronouslyUpdateViewOnUIThread:(ReactTag)reactTag
-                                 oldProps:(SharedProps)oldProps
-                                 newProps:(SharedProps)newProps
+                             changedProps:(NSDictionary *)props
+                      componentDescriptor:(const ComponentDescriptor &)componentDescriptor
 {
+  UIView<RCTComponentViewProtocol> *componentView = [self->_componentViewRegistry componentViewByTag:reactTag];
+  SharedProps oldProps = [componentView props];
+  SharedProps newProps = componentDescriptor.cloneProps(oldProps, RawProps(convertIdToFollyDynamic(props)));
   RCTUpdatePropsMountItem *mountItem = [[RCTUpdatePropsMountItem alloc] initWithTag:reactTag
                                                                            oldProps:oldProps
                                                                            newProps:newProps];
