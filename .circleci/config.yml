@@ -514,13 +514,15 @@ jobs:
   # -------------------------
   test-docker-build:
     machine: true
-    filters: *filter-ignore-gh-pages
     steps:
       - checkout
-      - npx envinfo@latest
-      - yarn run docker-setup-android
-      - yarn run docker-build-android
-      -
+      - run: npx envinfo@latest
+      - run:
+          name: Build Android RNTester App
+          command: |
+            yarn run docker-setup-android
+            yarn run docker-build-android
+
   # -------------------------
   #      JOBS: Coverage
   # -------------------------
