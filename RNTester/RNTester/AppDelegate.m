@@ -77,6 +77,7 @@
 #ifdef RN_FABRIC_ENABLED
 // FIXME: remove when resolved https://github.com/facebook/react-native/issues/23910
 - (void)handleJavaScriptDidLoadNotification:(__unused NSNotification*)notification {
+  return;
   dispatch_async(dispatch_get_main_queue(), ^{
     [self->_surfacePresenter _startAllSurfaces];
   });

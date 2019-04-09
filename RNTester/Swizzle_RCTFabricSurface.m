@@ -13,6 +13,7 @@
 @implementation RCTFabricSurface (SwizzleMeTimbers)
 
 + (void)load {
+  return;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     Class class = [self class];
