@@ -512,7 +512,7 @@ jobs:
   # -------------------------
   #    JOBS: Test Docker Build
   # -------------------------
-  test-docker-build:
+  test_docker_build:
     machine: true
     steps:
       - checkout
