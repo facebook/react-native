@@ -66,12 +66,16 @@ class YellowBoxInspector extends React.Component<Props, State> {
             <View style={styles.bodyHeading}>
               <Text style={styles.bodyHeadingText}>Warning</Text>
             </View>
-            <Text style={styles.bodyText}>
+            {/* There is a bug on iOS that causes very long text to
+                render incorrectly. As a workaround we can use a non-editable
+                multiline TextInput which does not have the bug.
+                See https://github.com/facebook/react-native/issues/19453 */}
+            <TextInput style={styles.bodyText} multiline editable={false}>
               {YellowBoxCategory.render(
                 warning.message,
                 styles.substitutionText,
               )}
-            </Text>
+            </TextInput>
           </View>
           <View style={styles.bodySection}>
             <View style={styles.bodyHeading}>
