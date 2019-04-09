@@ -147,26 +147,30 @@ void Scheduler::stopSurface(SurfaceId surfaceId) const {
   SystraceSection s("Scheduler::stopSurface");
 
   long commitStartTime = getTime();
-  shadowTreeRegistry_.visit(
-      surfaceId, [commitStartTime](const ShadowTree &shadowTree) {
-        // As part of stopping the Surface, we have to commit an empty tree.
-        return shadowTree.tryCommit(
-            [&](const SharedRootShadowNode &oldRootShadowNode) {
-              return std::make_shared<RootShadowNode>(
-                  *oldRootShadowNode,
-                  ShadowNodeFragment{
-                      /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-                      /* .rootTag = */
-                      ShadowNodeFragment::surfaceIdPlaceholder(),
-                      /* .props = */ ShadowNodeFragment::propsPlaceholder(),
-                      /* .eventEmitter = */
-                      ShadowNodeFragment::eventEmitterPlaceholder(),
-                      /* .children = */
-                      ShadowNode::emptySharedShadowNodeSharedList(),
-                  });
-            },
-            commitStartTime);
-      });
+  
+  auto hasShadowTree = shadowTreeRegistry_.visit(
+        surfaceId, [commitStartTime](const ShadowTree &shadowTree) {
+          // As part of stopping the Surface, we have to commit an empty tree.
+          return shadowTree.tryCommit(
+              [&](const SharedRootShadowNode &oldRootShadowNode) {
+                return std::make_shared<RootShadowNode>(
+                    *oldRootShadowNode,
+                    ShadowNodeFragment{
+                        /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
+                        /* .rootTag = */
+                        ShadowNodeFragment::surfaceIdPlaceholder(),
+                        /* .props = */ ShadowNodeFragment::propsPlaceholder(),
+                        /* .eventEmitter = */
+                        ShadowNodeFragment::eventEmitterPlaceholder(),
+                        /* .children = */
+                        ShadowNode::emptySharedShadowNodeSharedList(),
+                    });
+              },
+              commitStartTime);
+        });
+  if (!hasShadowTree) {
+    return;
+  }
 
   auto shadowTree = shadowTreeRegistry_.remove(surfaceId);
   shadowTree->setDelegate(nullptr);

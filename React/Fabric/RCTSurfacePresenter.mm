@@ -271,9 +271,11 @@ using namespace facebook::react;
 
   UIView<RCTComponentViewProtocol> *rootView =
     [_mountingManager.componentViewRegistry componentViewByTag:surface.rootTag];
-  [_mountingManager.componentViewRegistry enqueueComponentViewWithComponentHandle:RootShadowNode::Handle()
-                                                                              tag:surface.rootTag
-                                                                    componentView:rootView];
+  if (rootView) {
+    [_mountingManager.componentViewRegistry enqueueComponentViewWithComponentHandle:RootShadowNode::Handle()
+                                                                                tag:surface.rootTag
+                                                                      componentView:rootView];
+  }
 
   [surface _unsetStage:(RCTSurfaceStagePrepared | RCTSurfaceStageMounted)];
 }
