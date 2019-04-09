@@ -43,10 +43,14 @@ let exitCode;
 // Make sure we installed local version of react-native
 function checkMarker() {
   if (!test('-e', path.basename(MARKER))) {
-    echo('Marker was not found, react native init command failed?');
+    echo('Marker was not found, template copy failed?');
     exitCode = 1;
     throw Error(exitCode);
   }
+}
+
+function describe(message) {
+  echo(`\n\n>>>>> ${message}\n\n\n`);
 }
 
 try {
@@ -81,26 +85,59 @@ try {
 
   const PACKAGE = path.join(ROOT, 'react-native-*.tgz');
   cd(TEMP);
+
+  echo('Creating a basic React Native app from template');
+  const E2E_APP_ROOT = path.join(TEMP, 'template');
+  cp('-R', path.join(ROOT, 'template'), E2E_APP_ROOT);
+
+  cd(E2E_APP_ROOT);
+  ls(E2E_APP_ROOT)
+    .filter(function(file) {
+      return file !== '__tests__' && file.match(/^_.*$/);
+    })
+    .forEach(function(src) {
+      const dst = path.join(E2E_APP_ROOT, src.replace(/^_/, '.'));
+      mv(src, dst);
+    });
+
+  sed('-i', 'HelloWorld', 'test-template', 'package.json');
+
+  echo('Installing React Native packages');
+  exec(`npm install ${PACKAGE}`);
   if (
     tryExecNTimes(
       () => {
         exec('sleep 10s');
-        return exec(`react-native init EndToEndTest --version ${PACKAGE}`).code;
+        return exec('npm install --save-dev flow-bin').code;
       },
       numberOfRetries,
-      () => rm('-rf', 'EndToEndTest'),
+      () => rm('-rf', E2E_APP_ROOT),
     )
   ) {
-    echo('Failed to execute react-native init');
+    echo('Failed to install Flow');
     echo('Most common reason is npm registry connectivity, try again');
     exitCode = 1;
     throw Error(exitCode);
   }
 
-  cd('EndToEndTest');
+  if (
+    tryExecNTimes(
+      () => {
+        exec('sleep 10s');
+        return exec('npm install').code;
+      },
+      numberOfRetries,
+      () => rm('-rf', E2E_APP_ROOT),
+    )
+  ) {
+    echo('Failed to execute npm install');
+    echo('Most common reason is npm registry connectivity, try again');
+    exitCode = 1;
+    throw Error(exitCode);
+  }
 
   if (argv.android) {
-    echo('Running an Android end-to-end test');
+    describe('Executing Android end-to-end tests');
     checkMarker();
     echo('Installing end-to-end framework');
     if (
@@ -154,7 +191,7 @@ try {
     SERVER_PID = packagerProcess.pid;
     // wait a bit to allow packager to startup
     exec('sleep 15s');
-    echo('Executing android end-to-end test');
+    describe('Test: Android end-to-end test');
     if (
       tryExecNTimes(() => {
         exec('sleep 10s');
@@ -171,7 +208,7 @@ try {
   if (argv.ios || argv.tvos) {
     checkMarker();
     var iosTestType = argv.tvos ? 'tvOS' : 'iOS';
-    echo('Running the ' + iosTestType + ' app');
+    describe('Executing ' + iosTestType + ' end-to-end tests');
     cd('ios');
     // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
     const packagerEnv = Object.create(process.env);
@@ -189,7 +226,7 @@ try {
     echo(`Starting packager server, ${SERVER_PID}`);
     echo('Running pod install');
     exec('pod install');
-    echo('Executing ' + iosTestType + ' end-to-end test');
+    describe('Test: ' + iosTestType + ' end-to-end test');
     if (
       tryExecNTimes(() => {
         exec('sleep 10s');
@@ -240,6 +277,7 @@ try {
   if (argv.js) {
     checkMarker();
     // Check the packager produces a bundle (doesn't throw an error)
+    describe('Test: Verify packager can generate an Android bundle');
     if (
       exec(
         'react-native bundle --max-workers 1 --platform android --dev true --entry-file index.js --bundle-output android-bundle.js',
@@ -249,12 +287,19 @@ try {
       exitCode = 1;
       throw Error(exitCode);
     }
+    describe('Test: Verify packager can generate an iOS bundle');
     if (
       exec(
         'react-native --max-workers 1 bundle --platform ios --dev true --entry-file index.js --bundle-output ios-bundle.js',
       ).code
     ) {
       echo('Could not build iOS bundle');
+      exitCode = 1;
+      throw Error(exitCode);
+    }
+    describe('Test: Flow check');
+    if (exec('./node_modules/.bin/flow check').code) {
+      echo('Flow check failed.');
       exitCode = 1;
       throw Error(exitCode);
     }
