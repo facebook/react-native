@@ -139,15 +139,6 @@ aliases:
     requires:
       - checkout_code
 
-  - &test-docker-build
-    machine: true
-    filters: *filter-ignore-gh-pages
-    steps:
-      - checkout
-      - npx envinfo@latest
-      - yarn run docker-setup-android
-      - yarn run docker-build-android
-
 # -------------------------
 #        DEFAULTS
 # -------------------------
@@ -517,7 +508,19 @@ jobs:
       
       - store_test_results:
           path: ~/react-native/reports/junit
-  
+
+  # -------------------------
+  #    JOBS: Test Docker Build
+  # -------------------------
+  test-docker-build:
+    machine: true
+    filters: *filter-ignore-gh-pages
+    steps:
+      - checkout
+      - npx envinfo@latest
+      - yarn run docker-setup-android
+      - yarn run docker-build-android
+      -
   # -------------------------
   #      JOBS: Coverage
   # -------------------------
@@ -601,7 +604,7 @@ workflows:
       - test_android: *run-after-checkout
       - test_ios: *run-after-checkout
       - test_detox_end_to_end: *run-after-checkout
-      - test_docker_build: *test-docker-build
+      - test_docker_build
 
   releases:
     jobs:
