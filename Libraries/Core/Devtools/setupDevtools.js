@@ -20,12 +20,10 @@ if (__DEV__) {
   const reactDevTools = require('react-devtools-core');
   const getDevServer = require('getDevServer');
 
-  // Initialize dev tools only if the native module for WebSocket is available
-  if (WebSocket.isAvailable) {
+  // Initialize dev tools,
+  // only if native modules for WebSocket and AppState are available
+  if (WebSocket.isAvailable && AppState.isAvailable) {
     // Don't steal the DevTools from currently active app.
-    // Note: if you add any AppState subscriptions to this file,
-    // you will also need to guard against `AppState.isAvailable`,
-    // or the code will throw for bundles that don't have it.
     const isAppActive = () => AppState.currentState !== 'background';
 
     // Get hostname from development server (packager)
