@@ -31,23 +31,10 @@ const ROOT = path.normalize(path.join(__dirname, '..'));
 const tryExecNTimes = require('./try-n-times');
 
 const TEMP = exec('mktemp -d /tmp/react-native-XXXXXXXX').stdout.trim();
-// To make sure we actually installed the local version
-// of react-native, we will create a temp file inside the template
-// and check that it exists after `react-native init
-const MARKER = exec(`mktemp ${ROOT}/template/XXXXXXXX`).stdout.trim();
 const numberOfRetries = argv.retries || 1;
 let SERVER_PID;
 let APPIUM_PID;
 let exitCode;
-
-// Make sure we installed local version of react-native
-function checkMarker() {
-  if (!test('-e', path.basename(MARKER))) {
-    echo('Marker was not found, template copy failed?');
-    exitCode = 1;
-    throw Error(exitCode);
-  }
-}
 
 function describe(message) {
   echo(`\n\n>>>>> ${message}\n\n\n`);
@@ -86,23 +73,24 @@ try {
   const PACKAGE = path.join(ROOT, 'react-native-*.tgz');
   cd(TEMP);
 
-  echo('Creating a basic React Native app from template');
-  const E2E_APP_ROOT = path.join(TEMP, 'template');
-  cp('-R', path.join(ROOT, 'template'), E2E_APP_ROOT);
-
-  cd(E2E_APP_ROOT);
-  ls(E2E_APP_ROOT)
-    .filter(function(file) {
-      return file !== '__tests__' && file.match(/^_.*$/);
-    })
-    .forEach(function(src) {
-      const dst = path.join(E2E_APP_ROOT, src.replace(/^_/, '.'));
-      mv(src, dst);
-    });
-
-  sed('-i', 'HelloWorld', 'test-template', 'package.json');
-
-  echo('Installing React Native packages');
+  echo('Creating EndToEndTest React Native app');
+  if (
+    tryExecNTimes(
+      () => {
+        exec('sleep 10s');
+        return exec('react-native init EndToEndTest').code;
+      },
+      numberOfRetries,
+      () => rm('-rf', E2E_APP_ROOT),
+    )
+  ) {
+    echo('Failed to execute react-native init');
+    echo('Most common reason is npm registry connectivity, try again');
+    exitCode = 1;
+    throw Error(exitCode);
+  }
+  cd('EndToEndTest');
+  echo('Installing React Native package');
   exec(`npm install ${PACKAGE}`);
   if (
     tryExecNTimes(
@@ -119,7 +107,7 @@ try {
     exitCode = 1;
     throw Error(exitCode);
   }
-
+  echo('Installing node_modules');
   if (
     tryExecNTimes(
       () => {
@@ -138,7 +126,6 @@ try {
 
   if (argv.android) {
     describe('Executing Android end-to-end tests');
-    checkMarker();
     echo('Installing end-to-end framework');
     if (
       tryExecNTimes(
@@ -206,7 +193,6 @@ try {
   }
 
   if (argv.ios || argv.tvos) {
-    checkMarker();
     var iosTestType = argv.tvos ? 'tvOS' : 'iOS';
     describe('Executing ' + iosTestType + ' end-to-end tests');
     cd('ios');
@@ -230,7 +216,7 @@ try {
     if (
       tryExecNTimes(() => {
         exec('sleep 10s');
-        let destination = 'platform=iOS Simulator,name=iPhone 5s,OS=12.1';
+        let destination = 'platform=iOS Simulator,name=iPhone 6s,OS=12.1';
         let sdk = 'iphonesimulator';
         let scheme = 'EndToEndTest';
 
@@ -275,7 +261,7 @@ try {
   }
 
   if (argv.js) {
-    checkMarker();
+    describe('Executing JavaScript end-to-end tests');
     // Check the packager produces a bundle (doesn't throw an error)
     describe('Test: Verify packager can generate an Android bundle');
     if (
@@ -306,9 +292,6 @@ try {
   }
   exitCode = 0;
 } finally {
-  cd(ROOT);
-  rm(MARKER);
-
   if (SERVER_PID) {
     echo(`Killing packager ${SERVER_PID}`);
     exec(`kill -9 ${SERVER_PID}`);
