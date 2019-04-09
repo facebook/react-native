@@ -459,6 +459,10 @@ public class DevSupportManagerImpl implements
         new DevOptionHandler() {
           @Override
           public void onOptionSelected() {
+            if (mDevSettings.isHotModuleReplacementEnabled()) {
+              Toast.makeText(mApplicationContext, "Dev mode and HRM cannot be both enabled at once. Disabling HMR...", Toast.LENGTH_LONG).show();
+              mDevSettings.setHotModuleReplacementEnabled(false);
+            }
             handleReloadJS();
           }
         });
@@ -509,6 +513,10 @@ public class DevSupportManagerImpl implements
             new DevOptionHandler() {
               @Override
               public void onOptionSelected() {
+                if (!mDevSettings.isJSDevModeEnabled()) {
+                  Toast.makeText(mApplicationContext, "Dev mode needs to be turned on to enable HRM.", Toast.LENGTH_LONG).show();
+                  return;
+                }
                 mDevSettings.setHotModuleReplacementEnabled(!mDevSettings.isHotModuleReplacementEnabled());
                 handleReloadJS();
               }
