@@ -15,6 +15,7 @@ const React = require('React');
 const ScrollView = require('ScrollView');
 const StyleSheet = require('StyleSheet');
 const Text = require('Text');
+const TextInput = require('TextInput');
 const View = require('View');
 const YellowBoxCategory = require('YellowBoxCategory');
 const YellowBoxInspectorFooter = require('YellowBoxInspectorFooter');
