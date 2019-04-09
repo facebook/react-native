@@ -516,10 +516,13 @@ jobs:
     machine: true
     steps:
       - checkout
-      - run: npx envinfo@latest
       - run:
           name: Build Android RNTester App
           command: |
+            source ~/.bashrc
+            nvm i node
+            npm i -g yarn
+            npx envinfo@latest
             yarn run docker-setup-android
             yarn run docker-build-android
 
