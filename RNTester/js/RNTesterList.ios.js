@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {RNTesterExample} from 'RNTesterTypes';
+import type {RNTesterExample} from './Shared/RNTesterTypes';
 
 const ComponentExamples: Array<RNTesterExample> = [
   {
