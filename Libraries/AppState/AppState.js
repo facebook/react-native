@@ -118,7 +118,7 @@ function throwMissingNativeModule() {
   invariant(
     false,
     'Cannot use AppState module when native RCTAppState is not included in the build.\n' +
-    'Either include it, or check AppState.isAvailable before calling any methods.'
+      'Either include it, or check AppState.isAvailable before calling any methods.',
   );
 }
 

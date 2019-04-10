@@ -10,7 +10,6 @@
 
 'use strict';
 
-const FormData = require('FormData');
 const NativeEventEmitter = require('NativeEventEmitter');
 const RCTNetworkingNative = require('NativeModules').Networking;
 const convertRequestBody = require('convertRequestBody');
@@ -20,7 +19,6 @@ import type {RequestBody} from 'convertRequestBody';
 import type {NativeResponseType} from './XMLHttpRequest';
 
 class RCTNetworking extends NativeEventEmitter {
-
   constructor() {
     super(RCTNetworkingNative);
   }

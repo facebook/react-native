@@ -12,7 +12,6 @@
 
 // Do not require the native RCTNetworking module directly! Use this wrapper module instead.
 // It will add the necessary requestId, so that you don't have to generate it yourself.
-const FormData = require('FormData');
 const NativeEventEmitter = require('NativeEventEmitter');
 const RCTNetworkingNative = require('NativeModules').Networking;
 const convertRequestBody = require('convertRequestBody');
@@ -41,7 +40,6 @@ function generateRequestId(): number {
  * requestId to each network request that can be used to abort that request later on.
  */
 class RCTNetworking extends NativeEventEmitter {
-
   constructor() {
     super(RCTNetworkingNative);
   }
