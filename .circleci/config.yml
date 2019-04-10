@@ -267,12 +267,12 @@ jobs:
           name: Lint code
           command: scripts/circleci/exec_swallow_error.sh yarn lint --format junit -o ~/react-native/reports/junit/eslint/results.xml
 
-      - run: 
+      - run:
           name: Check for errors in code using Flow (iOS)
           command: yarn flow-check-ios
           when: always
 
-      - run: 
+      - run:
           name: Check for errors in code using Flow (Android)
           command: yarn flow-check-android
           when: always
@@ -301,7 +301,7 @@ jobs:
 
       - run: *run-js-tests
 
-      - run: 
+      - run:
           name: JavaScript End-to-End Test Suite
           command: node ./scripts/run-ci-e2e-tests.js --js --retries 3;
 
@@ -338,19 +338,19 @@ jobs:
 
       - run:
           name: Boot iPhone Simulator
-          command: source scripts/.tests.env && xcrun simctl boot "$IOS_DEVICE" || true      
+          command: source scripts/.tests.env && xcrun simctl boot "$IOS_DEVICE" || true
 
       - restore-cache: *restore-brew-cache
       - run:
           name: Install Watchman
           command: |
             HOMEBREW_NO_AUTO_UPDATE=1 brew install watchman >/dev/null
-            touch .watchmanconfig      
+            touch .watchmanconfig
       - save-cache: *save-brew-cache
 
       - run:
           name: iOS Test Suite
-          command: ./scripts/objc-test-ios.sh test      
+          command: ./scripts/objc-test-ios.sh test
 
       - run:
           name: iOS End-to-End Test Suite
@@ -366,10 +366,9 @@ jobs:
       - attach_workspace:
           at: ~/react-native
 
-      - run: 
-          name: Start iPhone 5s simulator
-          background: true
-          command: xcrun simctl boot "iPhone 5s" || true
+      - run:
+          name: Boot iPhone Simulator
+          command: source scripts/.tests.env && xcrun simctl boot "$IOS_DEVICE" || true
 
       - run:
           name: Configure Environment Variables
@@ -422,8 +421,8 @@ jobs:
       # Starting emulator in advance as it takes some time to boot.
       - run:
           name: Create Android Virtual Device
-          command: source scripts/android-setup.sh && createAVD      
-      - run: 
+          command: source scripts/android-setup.sh && createAVD
+      - run:
           name: Launch Android Virtual Device in Background
           command: source scripts/android-setup.sh && launchAVD
           background: true
@@ -432,7 +431,7 @@ jobs:
 
       # Install Buck
       - restore-cache: *restore-buck-downloads-cache
-      - run: 
+      - run:
           name: Install BUCK
           command: |
             buck --version
@@ -441,13 +440,13 @@ jobs:
               git clone https://github.com/uber/okbuck.git ~/okbuck --depth=1
             fi
             mkdir -p ~/react-native/tooling/junit
-            cp -R ~/okbuck/tooling/junit/* ~/react-native/tooling/junit/.      
+            cp -R ~/okbuck/tooling/junit/* ~/react-native/tooling/junit/.
       - save-cache: *save-buck-downloads-cache
 
       # Validate Android test environment (including Buck)
       - run:
           name: Validate Android Test Environment
-          command: ./scripts/validate-android-test-env.sh      
+          command: ./scripts/validate-android-test-env.sh
 
       # Download dependencies using Buck
       - run: *download-dependencies-buck
@@ -472,12 +471,12 @@ jobs:
       - run:
           name: Build JavaScript Bundle
           command: node cli.js bundle --max-workers 2 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js --reactNativePath .
-      
+
 
       # Wait for AVD to finish booting before running tests
       - run:
           name: Wait for Android Virtual Device
-          command: source scripts/android-setup.sh && waitForAVD      
+          command: source scripts/android-setup.sh && waitForAVD
 
       # Test Suite
       - run:
@@ -491,7 +490,7 @@ jobs:
               echo "JavaScript bundle missing, cannot run instrumentation tests. Verify Build JavaScript Bundle step completed successfully."; exit 1;
             fi
             source scripts/android-setup.sh && NO_BUCKD=1 retry3 timeout 300 buck install ReactAndroid/src/androidTest/buck-runner:instrumentation-tests --config build.threads=$BUILD_THREADS
-      
+
       - run:
           name: Build Android RNTester App
           command: ./gradlew RNTester:android:app:assembleRelease
@@ -505,10 +504,10 @@ jobs:
             find . -type f -regex ".*/buck-out/gen/ReactAndroid/src/test/.*/.*xml" -exec cp {} ~/react-native/reports/buck/ \;
             ./tooling/junit/buck_to_junit.sh ~/react-native/reports/buck/all-results-raw.xml ~/react-native/reports/junit/all-results-junit.xml
           when: always
-      
+
       - store_test_results:
           path: ~/react-native/reports/junit
-  
+
   # -------------------------
   #      JOBS: Coverage
   # -------------------------
@@ -529,7 +528,7 @@ jobs:
           command: |
             yarn test --coverage --maxWorkers=2
             cat ./coverage/lcov.info | ./node_modules/.bin/coveralls
-          when: always      
+          when: always
       - store_artifacts:
           path: ~/react-native/coverage/
 
