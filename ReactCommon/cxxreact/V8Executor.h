@@ -8,7 +8,6 @@
 #include <cxxreact/RAMBundleRegistry.h>
 #include <folly/Optional.h>
 #include <folly/json.h>
-#include <jschelpers/JSException.h>
 #include "MessageQueueThread.h"
 #include <privatedata/PrivateDataBase.h>
 #include <string>

@@ -84,7 +84,6 @@ set(REACT_SRC_HEADERS
   Profiler/RCTFPSGraph.h
   Profiler/RCTMacros.h
   Profiler/RCTProfile.h
-  ../ReactCommon/jschelpers/JSCJSException.h
   Views/RCTActivityIndicatorView.h
   Views/RCTActivityIndicatorViewManager.h
   Views/RCTAnimationType.h

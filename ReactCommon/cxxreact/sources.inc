@@ -24,26 +24,6 @@ SOURCES_V8_FILES = \
     ..\V8NativeModules.cpp \
     ..\V8Executor.cpp \
 
-SOURCES_JSC_FILES = \
-    $(SOURCES_JSC_FILES) \
-    ..\JSCExecutor.cpp \
-    ..\JSCLegacyTracing.cpp \
-    ..\JSCMemory.cpp \
-    ..\JSCNativeModules.cpp \
-    ..\JSCPerfStats.cpp \
-    ..\JSCSamplingProfiler.cpp \
-    ..\JSCTracing.cpp \
-    ..\JSCUtils.cpp \
-
-!ifndef NOJSC
-SOURCES_WIN32 = \
-    $(SOURCES_JSC_FILES) \
-
-SOURCES_WINRT = \
-    $(SOURCES_JSC_FILES) \
-
-!endif
-
 SOURCES_WIN32 = \
     $(SOURCES_WIN32) \
     $(SOURCES_SHARED) \

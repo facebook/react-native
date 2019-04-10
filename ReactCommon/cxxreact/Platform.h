@@ -10,9 +10,6 @@
 #include <string>
 
 #include <cxxreact/ReactMarker.h>
-#if (!defined (NOJSC)) && (!V8_ENABLED)
-#include <jschelpers/JavaScriptCore.h>
-#endif
 
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))

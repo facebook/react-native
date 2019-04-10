@@ -12,7 +12,6 @@ set(SOURCES
 	cxxreact/Platform.cpp
 	cxxreact/RAMBundleRegistry.cpp
 	cxxreact/ReactMarker.cpp
-	jschelpers/Unicode.cpp
 	jsi/jsi.cpp
 	jsi/JSIDynamic.cpp
 	jsiexecutor/jsireact/JSIExecutor.cpp
@@ -46,30 +45,8 @@ if(ANDROID)
 	set(SOURCES ${SOURCES}
 		cxxreact/fbsystrace.cpp
 		cxxreact/JSBigString.cpp
-#		cxxreact/JSIndexedRAMBundleRegistry.cpp
-#TODO: JavaScriptCore NuGet package
-#		jschelpers/JSCHelpers.cpp
-#		jschelpers/Value.cpp)
 		)
 endif(ANDROID)
-
-if(NOT NO_JSC)
-	set(SOURCES ${SOURCES}
-		privatedata/PrivateDataBase.cpp
-		cxxreact/JSCExecutor.cpp
-		cxxreact/JSCLegacyTracing.cpp
-		cxxreact/JSCMemory.cpp
-		cxxreact/JSCNativeModules.cpp
-		cxxreact/JSCPerfStats.cpp
-		cxxreact/JSCTracing.cpp
-		cxxreact/JSCUtils.cpp
-		cxxreact/JSCSamplingProfiler.cpp
-		jschelpers/JSCJSException.cpp
-		jschelpers/JSCHelpers.cpp
-		jschelpers/JSCWrapper.cpp
-		jschelpers/systemJSCWrapper.cpp
-		jschelpers/Value.cpp)
-endif(NOT NO_JSC)
 
 add_library(reactcommon ${SOURCES})
 
