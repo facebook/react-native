@@ -36,6 +36,7 @@
     "scripts/launchPackager.command",
     "scripts/packager.sh",
     "scripts/react-native-xcode.sh",
+    "scripts/node-binary.sh",
     "jest-preset.js",
     "jest",
     "lib",
