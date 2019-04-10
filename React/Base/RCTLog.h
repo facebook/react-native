@@ -11,10 +11,6 @@
 #import <React/RCTDefines.h>
 #import <React/RCTUtils.h>
 
-#ifndef RCTLOG_ENABLED
-#define RCTLOG_ENABLED 1
-#endif
-
 /**
  * Thresholds for logs to display a redbox. You can override these values when debugging
  * in order to tweak the default logging behavior.
