@@ -94,8 +94,11 @@ public class MountingManager {
 
     mTagToViewState.remove(reactTag);
     Context context = view.getContext();
-    mViewFactory.recycle(
-        (ThemedReactContext) context, Assertions.assertNotNull(viewManager).getName(), view);
+    if (context instanceof ThemedReactContext) {
+      // We only recycle views that were created by RN (its context is instance of ThemedReactContext)
+      mViewFactory.recycle(
+          (ThemedReactContext) context, Assertions.assertNotNull(viewManager).getName(), view);
+    }
   }
 
   /** Releases all references to react root tag. */
