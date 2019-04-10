@@ -6,19 +6,19 @@
  */
 
 #ifdef RN_FABRIC_ENABLED
-#include <react/uimanager/ComponentDescriptorFactory.h>
-#include <react/uimanager/ComponentDescriptorRegistry.h>
-#include <react/uimanager/ContextContainer.h>
 
-#include <react/config/ReactNativeConfig.h>
 #include <react/components/image/ImageComponentDescriptor.h>
-#include <react/components/scrollview/ScrollViewComponentDescriptor.h>
 #include <react/components/rncore/ComponentDescriptors.h>
+#include <react/components/scrollview/ScrollViewComponentDescriptor.h>
+#include <react/components/slider/SliderComponentDescriptor.h>
 #include <react/components/text/ParagraphComponentDescriptor.h>
 #include <react/components/text/RawTextComponentDescriptor.h>
 #include <react/components/text/TextComponentDescriptor.h>
 #include <react/components/view/ViewComponentDescriptor.h>
-#include <react/components/slider/SliderComponentDescriptor.h>
+#include <react/config/ReactNativeConfig.h>
+#include <react/uimanager/ComponentDescriptorFactory.h>
+#include <react/uimanager/ComponentDescriptorRegistry.h>
+#include <react/uimanager/ContextContainer.h>
 
 namespace facebook {
 namespace react {
