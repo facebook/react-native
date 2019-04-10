@@ -17,6 +17,7 @@
 #import "RCTScrollViewComponentView.h"
 #import "RCTSliderComponentView.h"
 #import "RCTSwitchComponentView.h"
+#import "RCTUnimplementedNativeComponentView.h"
 #import "RCTViewComponentView.h"
 
 using namespace facebook::react;
@@ -39,6 +40,7 @@ using namespace facebook::react;
   [componentViewFactory registerComponentViewClass:[RCTActivityIndicatorViewComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTSliderComponentView class]];
   [componentViewFactory registerComponentViewClass:[RCTSwitchComponentView class]];
+  [componentViewFactory registerComponentViewClass:[RCTUnimplementedNativeComponentView class]];
 
   return componentViewFactory;
 }

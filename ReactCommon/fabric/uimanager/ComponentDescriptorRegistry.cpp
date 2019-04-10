@@ -92,9 +92,12 @@ const ComponentDescriptor &ComponentDescriptorRegistry::at(
 
   auto it = _registryByName.find(unifiedComponentName);
   if (it == _registryByName.end()) {
-    throw std::invalid_argument(
-        ("Unable to find componentDescriptor for " + unifiedComponentName)
-            .c_str());
+    if (_fallbackComponentDescriptor == nullptr) {
+      throw std::invalid_argument(
+          ("Unable to find componentDescriptor for " + unifiedComponentName)
+              .c_str());
+    }
+    return *_fallbackComponentDescriptor.get();
   }
   return *it->second;
 }
@@ -121,6 +124,17 @@ SharedShadowNode ComponentDescriptorRegistry::createNode(
       componentDescriptor->createEventEmitter(std::move(eventTarget), tag),
   });
   return shadowNode;
+}
+
+void ComponentDescriptorRegistry::setFallbackComponentDescriptor(
+    SharedComponentDescriptor descriptor) {
+  _fallbackComponentDescriptor = descriptor;
+  registerComponentDescriptor(descriptor);
+}
+
+const SharedComponentDescriptor
+ComponentDescriptorRegistry::getFallbackComponentDescriptor() const {
+  return _fallbackComponentDescriptor;
 }
 
 } // namespace react

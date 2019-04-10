@@ -39,10 +39,13 @@ class ComponentDescriptorRegistry {
       Tag rootTag,
       const folly::dynamic &props,
       const SharedEventTarget &eventTarget) const;
+  void setFallbackComponentDescriptor(SharedComponentDescriptor descriptor);
+  const SharedComponentDescriptor getFallbackComponentDescriptor() const;
 
  private:
   better::map<ComponentHandle, SharedComponentDescriptor> _registryByHandle;
   better::map<ComponentName, SharedComponentDescriptor> _registryByName;
+  SharedComponentDescriptor _fallbackComponentDescriptor;
 };
 
 } // namespace react
