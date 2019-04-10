@@ -120,9 +120,10 @@ public class MountingManager {
     UiThreadUtil.assertOnUiThread();
     ViewState parentViewState = getViewState(parentTag);
     final ViewGroup parentView = (ViewGroup) parentViewState.mView;
-    final View view = getViewState(tag).mView;
+    ViewState viewState = getViewState(tag);
+    final View view = viewState.mView;
     if (view == null) {
-      throw new IllegalStateException("Unable to find view for tag " + tag);
+      throw new IllegalStateException("Unable to find view for view " + viewState);
     }
     getViewGroupManager(parentViewState).addView(parentView, view, index);
   }
@@ -130,7 +131,7 @@ public class MountingManager {
   private ViewState getViewState(int tag) {
     ViewState viewState = mTagToViewState.get(tag);
     if (viewState == null) {
-      throw new IllegalStateException("Unable to find viewState for tag " + tag);
+      throw new IllegalStateException("Unable to find viewState view " + viewState);
     }
     return viewState;
   }
@@ -152,7 +153,7 @@ public class MountingManager {
   @SuppressWarnings("unchecked") // prevents unchecked conversion warn of the <ViewGroup> type
   private static ViewGroupManager<ViewGroup> getViewGroupManager(ViewState viewState) {
     if (viewState.mViewManager == null) {
-      throw new IllegalStateException("Unable to find ViewManager");
+      throw new IllegalStateException("Unable to find ViewManager for view: " + viewState);
     }
     return (ViewGroupManager<ViewGroup>) viewState.mViewManager;
   }
@@ -175,6 +176,10 @@ public class MountingManager {
       String componentName,
       int reactTag,
       boolean isLayoutable) {
+    if (mTagToViewState.get(reactTag) != null) {
+      return;
+    }
+
     View view = null;
     ViewManager viewManager = null;
 
@@ -264,7 +269,7 @@ public class MountingManager {
     ViewManager viewManager = viewState.mViewManager;
 
     if (viewManager == null) {
-      throw new IllegalStateException("Unable to find ViewManager for tag: " + reactTag);
+      throw new IllegalStateException("Unable to find ViewManager for view: " + viewState);
     }
     Object extraData =
         viewManager.updateLocalData(
@@ -304,7 +309,9 @@ public class MountingManager {
     ReadableMap props,
     boolean isLayoutable) {
 
-    if (mTagToViewState.get(reactTag) != null) return;
+    if (mTagToViewState.get(reactTag) != null) {
+      throw new IllegalStateException("View for component " + componentName + " with tag " + reactTag + " already exists.");
+    }
 
     createView(reactContext, componentName, reactTag, isLayoutable);
     if (isLayoutable) {
@@ -364,6 +371,11 @@ public class MountingManager {
       mView = view;
       mIsRoot = isRoot;
       mViewManager = viewManager;
+    }
+
+    @Override
+    public String toString() {
+      return "ViewState [" + mReactTag + "] - isRoot: " + mIsRoot + " - props: " + mCurrentProps + " - localData: " + mCurrentLocalData + " - viewManager: " + mViewManager;
     }
   }
 }
