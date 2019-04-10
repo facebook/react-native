@@ -10,5 +10,7 @@
 
 'use strict';
 
+const {View} = require('react-native');
+
 // Not applicable to iOS.
-module.exports = require('../../Libraries/Components/View/View');
+module.exports = View;

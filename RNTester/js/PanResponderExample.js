@@ -11,8 +11,7 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {PanResponder, StyleSheet, View} = ReactNative;
+const {PanResponder, StyleSheet, View} = require('react-native');
 
 import type {
   PanResponderInstance,

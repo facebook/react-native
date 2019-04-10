@@ -11,15 +11,15 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
 const {
   Alert,
+  DeviceEventEmitter,
   PushNotificationIOS,
   StyleSheet,
   Text,
   TouchableHighlight,
   View,
-} = ReactNative;
+} = require('react-native');
 
 class Button extends React.Component<$FlowFixMeProps> {
   render() {
@@ -86,33 +86,27 @@ class NotificationExample extends React.Component<{}> {
   }
 
   _sendNotification() {
-    require('../../Libraries/EventEmitter/RCTDeviceEventEmitter').emit(
-      'remoteNotificationReceived',
-      {
-        remote: true,
-        aps: {
-          alert: 'Sample notification',
-          badge: '+1',
-          sound: 'default',
-          category: 'REACT_NATIVE',
-          'content-available': 1,
-        },
+    DeviceEventEmitter.emit('remoteNotificationReceived', {
+      remote: true,
+      aps: {
+        alert: 'Sample notification',
+        badge: '+1',
+        sound: 'default',
+        category: 'REACT_NATIVE',
+        'content-available': 1,
       },
-    );
+    });
   }
 
   _sendLocalNotification() {
-    require('../../Libraries/EventEmitter/RCTDeviceEventEmitter').emit(
-      'localNotificationReceived',
-      {
-        aps: {
-          alert: 'Sample local notification',
-          badge: '+1',
-          sound: 'default',
-          category: 'REACT_NATIVE',
-        },
+    DeviceEventEmitter.emit('localNotificationReceived', {
+      aps: {
+        alert: 'Sample local notification',
+        badge: '+1',
+        sound: 'default',
+        category: 'REACT_NATIVE',
       },
-    );
+    });
   }
 
   _onRegistered(deviceToken) {

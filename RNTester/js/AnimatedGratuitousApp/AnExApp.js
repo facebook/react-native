@@ -11,8 +11,13 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {Animated, LayoutAnimation, PanResponder, StyleSheet, View} = ReactNative;
+const {
+  Animated,
+  LayoutAnimation,
+  PanResponder,
+  StyleSheet,
+  View,
+} = require('react-native');
 
 const AnExSet = require('./AnExSet');
 

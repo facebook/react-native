@@ -10,11 +10,18 @@
 
 'use strict';
 
-const Button = require('../../Libraries/Components/Button');
-const InputAccessoryView = require('../../Libraries/Components/TextInput/InputAccessoryView');
 const React = require('react');
-const ReactNative = require('react-native');
-const {Text, TextInput, View, StyleSheet, Slider, Switch, Alert} = ReactNative;
+const {
+  Button,
+  InputAccessoryView,
+  Text,
+  TextInput,
+  View,
+  StyleSheet,
+  Slider,
+  Switch,
+  Alert,
+} = require('react-native');
 
 class WithLabel extends React.Component<$FlowFixMeProps> {
   render() {

@@ -11,8 +11,7 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {Animated, PanResponder, StyleSheet, View} = ReactNative;
+const {Animated, PanResponder, StyleSheet, View} = require('react-native');
 
 const NUM_BOBBLES = 5;
 const RAD_EACH = Math.PI / 2 / (NUM_BOBBLES - 2);

@@ -9,17 +9,15 @@
  */
 'use strict';
 
-const Platform = require('../../Libraries/Utilities/Platform');
 const React = require('react');
-const ReactNative = require('react-native');
 const {
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  Image,
-} = ReactNative;
+} = require('react-native');
 
 import type {ViewStyleProp} from '../../Libraries/StyleSheet/StyleSheet';
 

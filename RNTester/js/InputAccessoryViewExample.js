@@ -11,7 +11,6 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
 const {
   Alert,
   Button,
@@ -21,7 +20,7 @@ const {
   Text,
   TextInput,
   View,
-} = ReactNative;
+} = require('react-native');
 
 type MessageProps = $ReadOnly<{||}>;
 class Message extends React.PureComponent<MessageProps> {

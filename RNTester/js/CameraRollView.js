@@ -11,7 +11,6 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
 const {
   ActivityIndicator,
   Alert,
@@ -22,7 +21,7 @@ const {
   Platform,
   StyleSheet,
   View,
-} = ReactNative;
+} = require('react-native');
 
 const groupByEveryN = require('../../Libraries/Utilities/groupByEveryN');
 const logError = require('../../Libraries/Utilities/logError');

@@ -10,8 +10,13 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {AccessibilityInfo, Text, View, TouchableOpacity, Alert} = ReactNative;
+const {
+  AccessibilityInfo,
+  Text,
+  View,
+  TouchableOpacity,
+  Alert,
+} = require('react-native');
 
 const RNTesterBlock = require('./RNTesterBlock');
 

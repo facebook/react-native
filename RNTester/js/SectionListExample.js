@@ -11,8 +11,14 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {Alert, Animated, Button, StyleSheet, Text, View} = ReactNative;
+const {
+  Alert,
+  Animated,
+  Button,
+  StyleSheet,
+  Text,
+  View,
+} = require('react-native');
 
 const RNTesterPage = require('./RNTesterPage');
 

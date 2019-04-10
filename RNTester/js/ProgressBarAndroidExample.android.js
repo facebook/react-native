@@ -10,8 +10,8 @@
 
 'use strict';
 
-const ProgressBar = require('../../Libraries/Components/ProgressBarAndroid/ProgressBarAndroid');
 const React = require('react');
+const {ProgressBarAndroid: ProgressBar} = require('react-native');
 const RNTesterBlock = require('./RNTesterBlock');
 const RNTesterPage = require('./RNTesterPage');
 

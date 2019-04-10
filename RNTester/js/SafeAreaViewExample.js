@@ -9,15 +9,17 @@
  */
 'use strict';
 
-const Button = require('../../Libraries/Components/Button');
-const DeviceInfo = require('../../Libraries/Utilities/DeviceInfo');
-const Modal = require('../../Libraries/Modal/Modal');
 const React = require('react');
-const SafeAreaView = require('../../Libraries/Components/SafeAreaView/SafeAreaView');
-const StyleSheet = require('../../Libraries/StyleSheet/StyleSheet');
-const Switch = require('../../Libraries/Components/Switch/Switch');
-const Text = require('../../Libraries/Text/Text');
-const View = require('../../Libraries/Components/View/View');
+const {
+  Button,
+  DeviceInfo,
+  Modal,
+  SafeAreaView,
+  StyleSheet,
+  Switch,
+  Text,
+  View,
+} = require('react-native');
 
 class SafeAreaViewExample extends React.Component<
   {},

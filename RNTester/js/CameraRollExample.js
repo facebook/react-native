@@ -10,7 +10,6 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
 const {
   CameraRoll,
   Image,
@@ -20,7 +19,7 @@ const {
   Text,
   View,
   TouchableOpacity,
-} = ReactNative;
+} = require('react-native');
 
 const invariant = require('invariant');
 

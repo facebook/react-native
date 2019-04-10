@@ -10,15 +10,17 @@
 
 'use strict';
 
-const Platform = require('../../Libraries/Utilities/Platform');
 const React = require('react');
-const SectionList = require('../../Libraries/Lists/SectionList');
-const StyleSheet = require('../../Libraries/StyleSheet/StyleSheet');
-const Text = require('../../Libraries/Text/Text');
-const TouchableHighlight = require('../../Libraries/Components/Touchable/TouchableHighlight');
+const {
+  Platform,
+  SectionList,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View,
+} = require('react-native');
 const RNTesterActions = require('./RNTesterActions');
 const RNTesterExampleFilter = require('./RNTesterExampleFilter');
-const View = require('../../Libraries/Components/View/View');
 
 import type {RNTesterExample} from './Shared/RNTesterTypes';
 import type {ViewStyleProp} from '../../Libraries/StyleSheet/StyleSheet';

@@ -11,8 +11,14 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {Text, TextInput, View, StyleSheet, Slider, Switch} = ReactNative;
+const {
+  Text,
+  TextInput,
+  View,
+  StyleSheet,
+  Slider,
+  Switch,
+} = require('react-native');
 
 class TextEventsExample extends React.Component<{}, $FlowFixMeState> {
   state = {

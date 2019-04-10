@@ -11,11 +11,9 @@
 'use strict';
 
 const React = require('react');
-const StyleSheet = require('../../Libraries/StyleSheet/StyleSheet');
-const UIManager = require('../../Libraries/ReactNative/UIManager');
-const View = require('../../Libraries/Components/View/View');
+const {NativeModules, StyleSheet, UIManager, View} = require('react-native');
 
-const {TestModule} = require('../../Libraries/BatchedBridge/NativeModules');
+const {TestModule} = NativeModules;
 
 import type {SyntheticEvent} from '../../Libraries/Types/CoreEventTypes';
 import type {ViewProps} from '../../Libraries/Components/View/ViewPropTypes';

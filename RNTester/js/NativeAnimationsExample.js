@@ -11,7 +11,6 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
 const {
   View,
   Text,
@@ -19,7 +18,7 @@ const {
   StyleSheet,
   TouchableWithoutFeedback,
   Slider,
-} = ReactNative;
+} = require('react-native');
 
 const AnimatedSlider = Animated.createAnimatedComponent(Slider);
 

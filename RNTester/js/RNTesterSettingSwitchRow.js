@@ -11,11 +11,8 @@
 'use strict';
 
 const React = require('react');
-const StyleSheet = require('../../Libraries/StyleSheet/StyleSheet');
-const Switch = require('../../Libraries/Components/Switch/Switch');
-const Text = require('../../Libraries/Text/Text');
+const {StyleSheet, Switch, Text, View} = require('react-native');
 const RNTesterStatePersister = require('./RNTesterStatePersister');
-const View = require('../../Libraries/Components/View/View');
 
 class RNTesterSettingSwitchRow extends React.Component<
   $FlowFixMeProps,

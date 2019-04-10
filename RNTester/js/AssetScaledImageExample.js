@@ -11,8 +11,7 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {Image, StyleSheet, View, ScrollView} = ReactNative;
+const {Image, StyleSheet, View, ScrollView} = require('react-native');
 
 import type {PhotoIdentifier} from '../../Libraries/CameraRoll/CameraRoll';
 
