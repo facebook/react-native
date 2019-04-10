@@ -116,7 +116,7 @@
     "babel-eslint": "10.0.1",
     "clang-format": "^1.2.4",
     "coveralls": "^3.0.2",
-    "detox": "9.0.4",
+    "detox": "12.1.1",
     "eslint": "5.1.0",
     "eslint-config-fb-strict": "24.3.0",
     "eslint-config-fbjs": "2.1.0",
@@ -152,13 +152,13 @@
         "binaryPath": "RNTester/build/Build/Products/Release-iphonesimulator/RNTester.app/",
         "build": "xcodebuild -project RNTester/RNTester.xcodeproj -scheme RNTester -configuration Release -sdk iphonesimulator -derivedDataPath RNTester/build -UseModernBuildSystem=NO -quiet",
         "type": "ios.simulator",
-        "name": "iPhone 8"
+        "name": "iPhone 6s"
       },
       "ios.sim.debug": {
         "binaryPath": "RNTester/build/Build/Products/Debug-iphonesimulator/RNTester.app/",
         "build": "xcodebuild -project RNTester/RNTester.xcodeproj -scheme RNTester -configuration Debug -sdk iphonesimulator -derivedDataPath RNTester/build -UseModernBuildSystem=NO -quiet",
         "type": "ios.simulator",
-        "name": "iPhone 8"
+        "name": "iPhone 6s"
       }
     }
   }
