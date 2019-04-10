@@ -39,6 +39,7 @@ using namespace facebook::react;
 
 @interface RCTBridge ()
 - (std::shared_ptr<facebook::react::MessageQueueThread>)jsMessageThread;
+- (void)invokeAsync:(std::function<void()> &&)func;
 @end
 
 @interface RCTSurfacePresenter () <RCTSchedulerDelegate, RCTMountingManagerDelegate>
@@ -220,12 +221,12 @@ using namespace facebook::react;
 
   auto runtime = (facebook::jsi::Runtime *)((RCTCxxBridge *)_batchedBridge).runtime;
 
-  RuntimeExecutor runtimeExecutor =
-    [runtime, messageQueueThread](std::function<void(facebook::jsi::Runtime &runtime)> &&callback) {
-      messageQueueThread->runOnQueue([runtime, callback = std::move(callback)]() {
-        callback(*runtime);
-      });
-    };
+  RuntimeExecutor runtimeExecutor = [self, runtime](std::function<void(facebook::jsi::Runtime & runtime)> &&callback) {
+    // For now, ask the bridge to queue the callback asynchronously to ensure that
+    // it's not invoked too early, e.g. before the bridge is fully ready.
+    // Revisit this after Fabric/TurboModule is fully rolled out.
+    [((RCTCxxBridge *)_batchedBridge) invokeAsync:[runtime, callback = std::move(callback)]() { callback(*runtime); }];
+  };
 
   EventBeatFactory synchronousBeatFactory = [runtimeExecutor]() {
     return std::make_unique<MainRunLoopEventBeat>(runtimeExecutor);
