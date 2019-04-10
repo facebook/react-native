@@ -84,7 +84,11 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
   readyState: number = CONNECTING;
   url: ?string;
 
-  constructor(url: string, protocols: ?string | ?Array<string>, options: ?{origin?: string}) {
+  constructor(
+    url: string,
+    protocols: ?string | ?Array<string>,
+    options: ?{headers?: {origin?: string}},
+  ) {
     super();
     if (typeof protocols === 'string') {
       protocols = [protocols];
