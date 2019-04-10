@@ -514,7 +514,7 @@ public class DevSupportManagerImpl implements
               @Override
               public void onOptionSelected() {
                 if (!mDevSettings.isHotModuleReplacementEnabled() && !mDevSettings.isJSDevModeEnabled()) {
-                  Toast.makeText(mApplicationContext, "You're trying to enable HMR while Dev mode is off. Turning the Dev mode on...", Toast.LENGTH_LONG).show();
+                  Toast.makeText(mApplicationContext, "You're trying to enable HMR while Dev mode is off. Turning both HMR and the Dev mode on...", Toast.LENGTH_LONG).show();
                   mDevSettings.setJSDevModeEnabled(true);
                 }
                 mDevSettings.setHotModuleReplacementEnabled(!mDevSettings.isHotModuleReplacementEnabled());
