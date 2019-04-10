@@ -9,8 +9,8 @@
 nodejs_not_found()
 {
   echo "error: Can't find the '$NODE_BINARY' binary to build the React Native bundle. " \
-       "If you have a non-standard Node.js installation, select your project in Xcode, find "\
-       "'Build Phases' - 'Bundle React Native code and images' and change NODE_BINARY to an "\
+       "If you have a non-standard Node.js installation, select your project in Xcode, find " \
+       "'Build Phases' - 'Bundle React Native code and images' and change NODE_BINARY to an " \
        "absolute path to your node executable. You can find it by invoking 'which node' in the terminal." >&2
   exit 2
 }
