@@ -23,7 +23,6 @@ LOCAL_LDLIBS = \
     $(OPENSOURCE_REACTNATIVETARGETDIR)\libfolly_json.so \
     $(OPENSOURCE_REACTNATIVETARGETDIR)\libprivatedata.so \
   
-!if ($(V8_ENABLED) == 1)
 SOURCES = $(SOURCES) \
     $(SOURCES_V8_FILES) \
 
@@ -34,14 +33,3 @@ LOCAL_LDLIBS = \
     $(PKGOFFICE_GOOGLE_V8_ANDROID)\$(PLATFORM)\$(FLAVOR)\x-none\libv8.cr.so \
     $(PKGOFFICE_GOOGLE_V8_ANDROID)\$(PLATFORM)\$(FLAVOR)\x-none\libv8_libbase.cr.so \
     $(PKGOFFICE_GOOGLE_V8_ANDROID)\$(PLATFORM)\$(FLAVOR)\x-none\libv8_libplatform.cr.so \
-
-!else
-SOURCES = $(SOURCES) \
-    $(SOURCES_JSC_FILES)  \
-
-LOCAL_CFLAGS = $(LOCAL_CFLAGS) -DV8_ENABLED=0
-
-LOCAL_LDLIBS = \
-    $(LOCAL_LDLIBS) \
-    $(PKGREACTNATIVEANDROIDRIR_BIN)\x-none\libjsc.so \
-!endif

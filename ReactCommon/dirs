@@ -1,6 +1,5 @@
 DIRS = \
 	cxxreact \
-	jschelpers \
 	jsi \
 	jsiexecutor \
 	privatedata \
