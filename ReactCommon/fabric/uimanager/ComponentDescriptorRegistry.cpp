@@ -76,8 +76,8 @@ static const std::string componentNameByReactViewName(std::string viewName) {
   // implementation of core components.
   if (viewName == "SinglelineTextInputView" ||
       viewName == "MultilineTextInputView" || viewName == "AndroidTextInput" ||
-      viewName == "RefreshControl" || viewName == "AndroidSwipeRefreshLayout" ||
-      viewName == "SafeAreaView" || viewName == "ScrollContentView" ||
+      viewName == "RefreshControl" || viewName == "SafeAreaView" ||
+      viewName == "ScrollContentView" ||
       viewName == "AndroidHorizontalScrollContentView" // Android
   ) {
     return "View";
