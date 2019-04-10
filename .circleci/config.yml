@@ -157,7 +157,7 @@ js_defaults: &js_defaults
 android_defaults: &android_defaults
   <<: *defaults
   docker:
-  - image: reactnativecommunity/react-native-android:2019-1-19
+    - image: reactnativecommunity/react-native-android:2019-1-19
   resource_class: "large"
   environment:
     - TERM: "dumb"
@@ -509,6 +509,23 @@ jobs:
           path: ~/react-native/reports/junit
 
   # -------------------------
+  #    JOBS: Test Docker Build
+  # -------------------------
+  test_docker_build:
+    machine: true
+    steps:
+      - checkout
+      - run:
+          name: Build Docker container for Android RNTester App
+          command: |
+            source ~/.bashrc
+            nvm i node
+            npm i -g yarn
+            npx envinfo@latest
+            yarn run docker-setup-android
+            yarn run docker-build-android
+
+  # -------------------------
   #      JOBS: Coverage
   # -------------------------
   # Collect JavaScript test coverage
@@ -591,6 +608,7 @@ workflows:
       - test_android: *run-after-checkout
       - test_ios: *run-after-checkout
       - test_detox_end_to_end: *run-after-checkout
+      - test_docker_build
 
   releases:
     jobs:
