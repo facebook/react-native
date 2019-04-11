@@ -14,7 +14,7 @@ const AnimatedProps = require('./nodes/AnimatedProps');
 const React = require('React');
 const DeprecatedViewStylePropTypes = require('DeprecatedViewStylePropTypes');
 
-const {useCallback, useEffect, useState} = React;
+const {useCallback, useEffect, useImperativeHandle, useState} = React;
 
 const invariant = require('invariant');
 
@@ -26,7 +26,7 @@ function createAnimatedComponentWithHooks(Component: any): any {
       'use a class component instead.',
   );
 
-  const AnimatedComponent = props => {
+  const AnimatedComponent = (props: any, forwardedRef?: any) => {
     const [initialized, setInitialized] = useState(false);
     const [, forceUpdate] = useState();
 
@@ -102,9 +102,6 @@ function createAnimatedComponentWithHooks(Component: any): any {
 
               _propsAnimated.setNativeView(_component);
               _attachNativeEvents();
-            } else {
-              _detachNativeEvents();
-              _attachNativeEvents();
             }
           }
         }
@@ -116,29 +113,16 @@ function createAnimatedComponentWithHooks(Component: any): any {
       if (!initialized) {
         setInitialized(true);
       }
-    }, []);
 
-    // Update ref when needed
-    useEffect(() => {
-      if (props.apiRef) {
-        props.apiRef.current = {
-          getNode() {
-            return _component;
-          },
-        };
-      }
-    }, [props.apiRef]);
-
-    useEffect(() => {
       return () => {
-        if (props.apiRef) {
-          props.apiRef.current = null;
-        }
+        _detachNativeEvents();
+
+        _propsAnimated && _propsAnimated.__detach();
       };
     }, []);
 
     useEffect(() => {
-      if (initialized && _component) {
+      if (_component) {
         _detachNativeEvents();
         _attachNativeEvents();
       }
@@ -157,6 +141,12 @@ function createAnimatedComponentWithHooks(Component: any): any {
       // the very next operation.
       oldPropsAnimated && oldPropsAnimated.__detach();
     }, [props]);
+
+    useImperativeHandle(forwardedRef, () => ({
+      getNode: () => {
+        return _component;
+      },
+    }));
 
     let _propsAnimated: AnimatedProps = new AnimatedProps(
       props,
@@ -181,7 +171,10 @@ function createAnimatedComponentWithHooks(Component: any): any {
 
   const propTypes = Component.propTypes;
 
-  AnimatedComponent.propTypes = {
+  const AnimatedComponentWithRef = React.forwardRef(AnimatedComponent);
+  AnimatedComponentWithRef.displayName = 'AnimatedComponent';
+
+  AnimatedComponentWithRef.propTypes = {
     style: function(props, propName, componentName) {
       if (!propTypes) {
         return;
@@ -203,9 +196,7 @@ function createAnimatedComponentWithHooks(Component: any): any {
     },
   };
 
-  return React.forwardRef((props, ref) => {
-    return <AnimatedComponent {...props} apiRef={ref} />;
-  });
+  return AnimatedComponentWithRef;
 }
 
 module.exports = createAnimatedComponentWithHooks;
