@@ -32,7 +32,7 @@ SharedShadowNode UIManager::createNode(
               fallbackDescriptor->getComponentHandle() ==
                   componentDescriptor.getComponentHandle()
           ? componentDescriptor.cloneProps(
-                nullptr, RawProps(folly::dynamic::object("name", name)))
+                props, RawProps(folly::dynamic::object("name", name)))
           : props,
       /* .eventEmitter = */
       componentDescriptor.createEventEmitter(std::move(eventTarget), tag),
