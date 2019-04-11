@@ -18,7 +18,6 @@ import type {TVViewProps} from 'TVViewPropTypes';
 import type {
   AccessibilityComponentType,
   AccessibilityTrait,
-  AccessibilityNodeInfoProp,
   AccessibilityRole,
   AccessibilityStates,
 } from 'ViewAccessibility';
