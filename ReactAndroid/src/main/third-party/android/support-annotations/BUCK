@@ -1,0 +1,13 @@
+load("//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+
+fb_native.prebuilt_jar(
+    name = "android-support-annotations",
+    binary_jar = ":annotation.jar",
+    visibility = ["PUBLIC"],
+)
+
+fb_native.remote_file(
+    name = "annotation.jar",
+    sha1 = "2dfd8f6b2a8fc466a1ae4e329fb79cd580f6393f",
+    url = "mvn:androidx.annotation:annotation:jar:1.0.1",
+)
