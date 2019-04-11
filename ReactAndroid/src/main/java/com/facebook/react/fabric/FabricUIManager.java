@@ -282,7 +282,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @Override
   public void synchronouslyUpdateViewOnUIThread(int reactTag, ReadableMap props) {
     long time = SystemClock.uptimeMillis();
-    scheduleMountItems(updatePropsMountItem(reactTag, props), time, 0, time, time);
+    try {
+      scheduleMountItems(updatePropsMountItem(reactTag, props), time, 0, time, time);
+    } catch (Exception ex) {
+      // ignore exceptions for now
+      // TODO T42943890: Fix animations in Fabric and remove this try/catch
+    }
   }
 
   /**
