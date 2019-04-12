@@ -11,10 +11,18 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {Image, LayoutAnimation, StyleSheet, Text, View} = ReactNative;
+const {
+  Image,
+  LayoutAnimation,
+  StyleSheet,
+  Text,
+  View,
+} = require('react-native');
 
-import type {ViewLayout, ViewLayoutEvent} from 'ViewPropTypes';
+import type {
+  ViewLayout,
+  ViewLayoutEvent,
+} from '../../Libraries/Components/View/ViewPropTypes';
 
 type Props = $ReadOnly<{||}>;
 type State = {

@@ -14,6 +14,7 @@
 #include <react/core/ConcreteComponentDescriptor.h>
 #include <react/textlayoutmanager/TextLayoutManager.h>
 #include <react/uimanager/ContextContainer.h>
+#include <react/config/ReactNativeConfig.h>
 
 namespace facebook {
 namespace react {

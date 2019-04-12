@@ -1,6 +1,6 @@
 {
   "name": "@react-native-community/eslint-config",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "ESLint config for React Native",
   "main": "index.js",
   "repository": {

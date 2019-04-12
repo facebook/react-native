@@ -11,8 +11,7 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {AccessibilityInfo, Text, View, TouchableOpacity, Alert} = ReactNative;
+const {Text, View, Alert} = require('react-native');
 
 const RNTesterBlock = require('./RNTesterBlock');
 
@@ -34,7 +33,9 @@ class AccessibilityIOSExample extends React.Component<Props> {
           <Text>Accessibility magic tap example</Text>
         </View>
         <View
-          onAccessibilityEscape={() => alert('onAccessibilityEscape success')}
+          onAccessibilityEscape={() =>
+            Alert.alert('onAccessibilityEscape success')
+          }
           accessible={true}>
           <Text>Accessibility escape example</Text>
         </View>

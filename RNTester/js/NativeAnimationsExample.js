@@ -11,7 +11,6 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
 const {
   View,
   Text,
@@ -19,7 +18,7 @@ const {
   StyleSheet,
   TouchableWithoutFeedback,
   Slider,
-} = ReactNative;
+} = require('react-native');
 
 const AnimatedSlider = Animated.createAnimatedComponent(Slider);
 
@@ -155,7 +154,7 @@ class LoopExample extends React.Component<{}, $FlowFixMeState> {
   }
 }
 
-const RNTesterSettingSwitchRow = require('RNTesterSettingSwitchRow');
+const RNTesterSettingSwitchRow = require('./RNTesterSettingSwitchRow');
 class InternalSettings extends React.Component<
   {},
   {busyTime: number | string, filteredStall: number},
@@ -188,16 +187,20 @@ class InternalSettings extends React.Component<
           initialValue={false}
           label="Track JS Stalls"
           onEnable={() => {
-            require('JSEventLoopWatchdog').install({thresholdMS: 25});
-            this.setState({busyTime: '<none>'});
-            require('JSEventLoopWatchdog').addHandler({
-              onStall: ({busyTime}) =>
-                this.setState(state => ({
-                  busyTime,
-                  filteredStall:
-                    (state.filteredStall || 0) * 0.97 + busyTime * 0.03,
-                })),
+            require('../../Libraries/Interaction/JSEventLoopWatchdog').install({
+              thresholdMS: 25,
             });
+            this.setState({busyTime: '<none>'});
+            require('../../Libraries/Interaction/JSEventLoopWatchdog').addHandler(
+              {
+                onStall: ({busyTime}) =>
+                  this.setState(state => ({
+                    busyTime,
+                    filteredStall:
+                      (state.filteredStall || 0) * 0.97 + busyTime * 0.03,
+                  })),
+              },
+            );
           }}
           onDisable={() => {
             console.warn('Cannot disable yet....');

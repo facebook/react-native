@@ -41,11 +41,13 @@ import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.modules.appregistry.AppRegistry;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
+import com.facebook.react.surface.ReactStage;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.JSTouchDispatcher;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.RootView;
+import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.common.UIManagerType;
@@ -65,7 +67,7 @@ import javax.annotation.Nullable;
  * subsequent touch events related to that gesture (in case when JS code wants to handle that
  * gesture).
  */
-public class ReactRootView extends FrameLayout implements RootView {
+public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
 
   /**
    * Listener interface for react root view events
@@ -122,11 +124,6 @@ public class ReactRootView extends FrameLayout implements RootView {
 
   private void init() {
     setClipChildren(false);
-  }
-
-  public View getView() {
-    // TODO add mUseSurface to return surface here
-    return this;
   }
 
   @Override
@@ -347,6 +344,11 @@ public class ReactRootView extends FrameLayout implements RootView {
     }
   }
 
+  @Override
+  public ViewGroup getRootViewGroup() {
+    return this;
+  }
+
   /**
    * {@see #startReactApplication(ReactInstanceManager, String, android.os.Bundle)}
    */
@@ -433,6 +435,17 @@ public class ReactRootView extends FrameLayout implements RootView {
     mShouldLogContentAppeared = false;
   }
 
+  @Override
+  public void onStage(int stage) {
+    switch(stage) {
+      case ReactStage.ON_ATTACH_TO_INSTANCE:
+        onAttachedToReactInstance();
+        break;
+      default:
+        break;
+    }
+  }
+
   public void onAttachedToReactInstance() {
     // Create the touch dispatcher here instead of having it always available, to make sure
     // that all touch events are only passed to JS after React/JS side is ready to consume
@@ -452,10 +465,12 @@ public class ReactRootView extends FrameLayout implements RootView {
     return Assertions.assertNotNull(mJSModuleName);
   }
 
+  @Override
   public @Nullable Bundle getAppProperties() {
     return mAppProperties;
   }
 
+  @Override
   public @Nullable String getInitialUITemplate() {
     return mInitialUITemplate;
   }
@@ -472,7 +487,8 @@ public class ReactRootView extends FrameLayout implements RootView {
    * Calls into JS to start the React application. Can be called multiple times with the
    * same rootTag, which will re-render the application from the root.
    */
-  /* package */ void runApplication() {
+  @Override
+  public void runApplication() {
       Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactRootView.runApplication");
       try {
         if (mReactInstanceManager == null || !mIsAttachedToInstance) {
@@ -581,6 +597,7 @@ public class ReactRootView extends FrameLayout implements RootView {
     mUIManagerType = isFabric ? FABRIC : DEFAULT;
   }
 
+  @Override
   public @UIManagerType int getUIManagerType() {
     return mUIManagerType;
   }

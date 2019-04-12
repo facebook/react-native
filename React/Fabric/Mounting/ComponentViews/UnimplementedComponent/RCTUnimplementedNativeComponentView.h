@@ -7,16 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import <React/RCTViewComponentView.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
-@class RCTComponentViewRegistry;
-
-/**
- * Granular representation of any change in a user interface.
- */
-@protocol RCTMountItemProtocol <NSObject>
-
-- (void)executeWithRegistry:(RCTComponentViewRegistry *)registry;
+@interface RCTUnimplementedNativeComponentView : RCTViewComponentView
 
 @end
 

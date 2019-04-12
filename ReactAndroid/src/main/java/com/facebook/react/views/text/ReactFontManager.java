@@ -12,9 +12,13 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Typeface;
 import android.util.SparseArray;
+
+import androidx.core.content.res.ResourcesCompat;
+
 
 /**
  * Class responsible to load and cache Typeface objects. It will first try to load typefaces inside
@@ -37,9 +41,11 @@ public class ReactFontManager {
   private static ReactFontManager sReactFontManagerInstance;
 
   private Map<String, FontFamily> mFontCache;
+  private Map<String, Typeface> mTypeCache;
 
   private ReactFontManager() {
     mFontCache = new HashMap<>();
+    mTypeCache = new HashMap<>();
   }
 
   public static ReactFontManager getInstance() {
@@ -49,8 +55,7 @@ public class ReactFontManager {
     return sReactFontManagerInstance;
   }
 
-  public
-  @Nullable Typeface getTypeface(
+  private @Nullable Typeface getTypeface(
       String fontFamilyName,
       int style,
       AssetManager assetManager) {
@@ -69,6 +74,33 @@ public class ReactFontManager {
     }
 
     return typeface;
+  }
+
+  public @Nullable Typeface getTypeface(
+    String fontFamilyName,
+    int style,
+    Context context) {
+    Typeface font = mTypeCache.get(fontFamilyName);
+
+    if (font != null) {
+      return Typeface.create(
+        font,
+        style
+      );
+    }
+
+    int fontId = context.getResources().getIdentifier(fontFamilyName, "font", context.getPackageName());
+    if (fontId != 0) {
+      font = ResourcesCompat.getFont(context, fontId);
+      if (font != null) {
+        mTypeCache.put(fontFamilyName, font);
+        return Typeface.create(
+          font,
+          style
+        );
+      }
+    }
+    return getTypeface(fontFamilyName, style, context.getAssets());
   }
 
   /**
