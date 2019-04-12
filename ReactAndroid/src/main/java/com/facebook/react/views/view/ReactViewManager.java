@@ -245,7 +245,6 @@ public class ReactViewManager extends ViewGroupManager<ReactViewGroup> {
     else {
       view.setOnClickListener(null);
       view.setClickable(false);
-      view.setFocusable(false);
     }
   }
 
