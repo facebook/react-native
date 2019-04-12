@@ -191,6 +191,52 @@
 		9F465A02224EB106005BEE04 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CF92242EFA400E7F88E /* libRCTWebSocket.a */; };
 		9F465A03224EB10E005BEE04 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21D122242EFA400E7F88E /* libReact.a */; };
 		9F465A05224EB177005BEE04 /* libRCTTest-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 18DF57271EFA056600BF4666 /* libRCTTest-macOS.a */; };
+		9F6168B9225EA318008F89F1 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139FDED91B0651EA00C62182 /* libRCTWebSocket.a */; };
+		9F6168E9225EA31F008F89F1 /* libRCTVibration.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D85B829C1AB6D5CE003F4FE2 /* libRCTVibration.a */; };
+		9F6168EA225EA326008F89F1 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13417FEF1AA914B8003F314A /* libRCTText.a */; };
+		9F6168EB225EA331008F89F1 /* libRCTSettings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 834C36D21AF8DA610019C93C /* libRCTSettings.a */; };
+		9F6168EC225EA338008F89F1 /* libRCTPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14DC67F11AB71876001358AB /* libRCTPushNotification.a */; };
+		9F6168ED225EA33D008F89F1 /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 357859011B28D2C500341EDB /* libRCTLinking.a */; };
+		9F6168EE225EA344008F89F1 /* libRCTImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13417FE81AA91428003F314A /* libRCTImage.a */; };
+		9F6168EF225EA34B008F89F1 /* libRCTNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1341802B1AA91779003F314A /* libRCTNetwork.a */; };
+		9F6168F0225EA350008F89F1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 134A8A251AACED6A00945AAE /* libRCTGeolocation.a */; };
+		9F6168F1225EA357008F89F1 /* libRCTCameraRoll.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 138DEE091B9EDDDB007F4EA5 /* libRCTCameraRoll.a */; };
+		9F6168F2225EA35C008F89F1 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13E501A31D07A502005F35D8 /* libRCTAnimation.a */; };
+		9F6168F3225EA362008F89F1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 147CED4B1AB34F8C00DA3E4C /* libRCTActionSheet.a */; };
+		9F6168F4225EA367008F89F1 /* libART.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D66FF651ECA405900F0A767 /* libART.a */; };
+		9F6168F5225EA36D008F89F1 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5281CA511EEAC9A700AC40CD /* libRCTBlob.a */; };
+		9F6168F6225EA374008F89F1 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14AADF041AC3DB95002390C9 /* libReact.a */; };
+		9F6168F7225EA3C8008F89F1 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EDEBC7DA214C681C00DD5AC8 /* JavaScriptCore.framework */; };
+		9F61696B225FB3F1008F89F1 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EDEBC7DA214C681C00DD5AC8 /* JavaScriptCore.framework */; };
+		9F61696C225FB3F1008F89F1 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14AADF041AC3DB95002390C9 /* libReact.a */; };
+		9F61696D225FB3F1008F89F1 /* libRCTBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5281CA511EEAC9A700AC40CD /* libRCTBlob.a */; };
+		9F61696E225FB3F1008F89F1 /* libART.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D66FF651ECA405900F0A767 /* libART.a */; };
+		9F61696F225FB3F1008F89F1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 147CED4B1AB34F8C00DA3E4C /* libRCTActionSheet.a */; };
+		9F616970225FB3F1008F89F1 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13E501A31D07A502005F35D8 /* libRCTAnimation.a */; };
+		9F616971225FB3F1008F89F1 /* libRCTCameraRoll.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 138DEE091B9EDDDB007F4EA5 /* libRCTCameraRoll.a */; };
+		9F616972225FB3F1008F89F1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 134A8A251AACED6A00945AAE /* libRCTGeolocation.a */; };
+		9F616973225FB3F1008F89F1 /* libRCTNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1341802B1AA91779003F314A /* libRCTNetwork.a */; };
+		9F616974225FB3F1008F89F1 /* libRCTImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13417FE81AA91428003F314A /* libRCTImage.a */; };
+		9F616975225FB3F1008F89F1 /* libRCTLinking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 357859011B28D2C500341EDB /* libRCTLinking.a */; };
+		9F616976225FB3F1008F89F1 /* libRCTPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14DC67F11AB71876001358AB /* libRCTPushNotification.a */; };
+		9F616977225FB3F1008F89F1 /* libRCTSettings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 834C36D21AF8DA610019C93C /* libRCTSettings.a */; };
+		9F616978225FB3F1008F89F1 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13417FEF1AA914B8003F314A /* libRCTText.a */; };
+		9F616979225FB3F1008F89F1 /* libRCTVibration.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D85B829C1AB6D5CE003F4FE2 /* libRCTVibration.a */; };
+		9F61697A225FB3F1008F89F1 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139FDED91B0651EA00C62182 /* libRCTWebSocket.a */; };
+		9F616991225FB40C008F89F1 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EDEBC7DA214C681C00DD5AC8 /* JavaScriptCore.framework */; };
+		9F6169F9225FCB91008F89F1 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21D122242EFA400E7F88E /* libReact.a */; };
+		9F6169FA225FCBBF008F89F1 /* libRCTBlob-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6484CE5A201A7557004275A4 /* libRCTBlob-macOS.a */; };
+		9F6169FB225FCBFF008F89F1 /* libART-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 647647311F0BC04800C2D89B /* libART-macOS.a */; };
+		9F6169FC225FCCB1008F89F1 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 647647C81F0BCC5500C2D89B /* libRCTAnimation.a */; };
+		9F6169FD225FCCD0008F89F1 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CF92242EFA400E7F88E /* libRCTWebSocket.a */; };
+		9F6169FE225FCCD9008F89F1 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CF12242EFA400E7F88E /* libRCTText.a */; };
+		9F6169FF225FCD1F008F89F1 /* libRCTSettings-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6448A5D21F292F16006FF1F5 /* libRCTSettings-macOS.a */; };
+		9F616A00225FCDAD008F89F1 /* libRCTPushNotification-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6424F7B21F669A8E0025D741 /* libRCTPushNotification-macOS.a */; };
+		9F616A01225FCDB7008F89F1 /* libRCTNetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CE72242EFA400E7F88E /* libRCTNetwork.a */; };
+		9F616A02225FCE58008F89F1 /* libRCTLinking-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D429028F1F1CE21600685AE7 /* libRCTLinking-macOS.a */; };
+		9F616A03225FCE63008F89F1 /* libRCTImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CE12242EFA400E7F88E /* libRCTImage.a */; };
+		9F616A04225FCE6F008F89F1 /* libRCTGeolocation-macOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4633DB601F207C140080B326 /* libRCTGeolocation-macOS.a */; };
+		9F616A05225FCED3008F89F1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 649D87D91F69DA030005AF18 /* libRCTActionSheet.a */; };
 		9FB7D3EC224ABDCE00F31D11 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21CF92242EFA400E7F88E /* libRCTWebSocket.a */; };
 		9FB7D3ED224ABEFE00F31D11 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FD21D122242EFA400E7F88E /* libReact.a */; };
 		9FB7D3EF224AC0DE00F31D11 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9FB7D3EE224AC0DE00F31D11 /* JavaScriptCore.framework */; };
@@ -948,6 +994,8 @@
 		8385CEF41B873B5C00C6273E /* RCTImageLoaderTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageLoaderTests.m; sourceTree = "<group>"; };
 		8385CF031B87479200C6273E /* RCTImageLoaderHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTImageLoaderHelpers.m; sourceTree = "<group>"; };
 		8385CF051B8747A000C6273E /* RCTImageLoaderHelpers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTImageLoaderHelpers.h; sourceTree = "<group>"; };
+		9F61697E225FB3F1008F89F1 /* libiosSimulatorBuild.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libiosSimulatorBuild.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		9F6169A4225FB40C008F89F1 /* libmacOSBuild.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmacOSBuild.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		9FB7D3EE224AC0DE00F31D11 /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.14.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 		BC9C033F1DC9F1D600B1C635 /* RCTDevMenuTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTDevMenuTests.m; sourceTree = "<group>"; };
 		C654F0B21EB34A73000B7A9A /* RNTesterTestModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNTesterTestModule.m; sourceTree = "<group>"; };
@@ -1014,6 +1062,22 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9F6168F7225EA3C8008F89F1 /* JavaScriptCore.framework in Frameworks */,
+				9F6168F6225EA374008F89F1 /* libReact.a in Frameworks */,
+				9F6168F5225EA36D008F89F1 /* libRCTBlob.a in Frameworks */,
+				9F6168F4225EA367008F89F1 /* libART.a in Frameworks */,
+				9F6168F3225EA362008F89F1 /* libRCTActionSheet.a in Frameworks */,
+				9F6168F2225EA35C008F89F1 /* libRCTAnimation.a in Frameworks */,
+				9F6168F1225EA357008F89F1 /* libRCTCameraRoll.a in Frameworks */,
+				9F6168F0225EA350008F89F1 /* libRCTGeolocation.a in Frameworks */,
+				9F6168EF225EA34B008F89F1 /* libRCTNetwork.a in Frameworks */,
+				9F6168EE225EA344008F89F1 /* libRCTImage.a in Frameworks */,
+				9F6168ED225EA33D008F89F1 /* libRCTLinking.a in Frameworks */,
+				9F6168EC225EA338008F89F1 /* libRCTPushNotification.a in Frameworks */,
+				9F6168EB225EA331008F89F1 /* libRCTSettings.a in Frameworks */,
+				9F6168EA225EA326008F89F1 /* libRCTText.a in Frameworks */,
+				9F6168E9225EA31F008F89F1 /* libRCTVibration.a in Frameworks */,
+				9F6168B9225EA318008F89F1 /* libRCTWebSocket.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1129,6 +1193,50 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9F61696A225FB3F1008F89F1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9F61696B225FB3F1008F89F1 /* JavaScriptCore.framework in Frameworks */,
+				9F61696C225FB3F1008F89F1 /* libReact.a in Frameworks */,
+				9F61696D225FB3F1008F89F1 /* libRCTBlob.a in Frameworks */,
+				9F61696E225FB3F1008F89F1 /* libART.a in Frameworks */,
+				9F61696F225FB3F1008F89F1 /* libRCTActionSheet.a in Frameworks */,
+				9F616970225FB3F1008F89F1 /* libRCTAnimation.a in Frameworks */,
+				9F616971225FB3F1008F89F1 /* libRCTCameraRoll.a in Frameworks */,
+				9F616972225FB3F1008F89F1 /* libRCTGeolocation.a in Frameworks */,
+				9F616973225FB3F1008F89F1 /* libRCTNetwork.a in Frameworks */,
+				9F616974225FB3F1008F89F1 /* libRCTImage.a in Frameworks */,
+				9F616975225FB3F1008F89F1 /* libRCTLinking.a in Frameworks */,
+				9F616976225FB3F1008F89F1 /* libRCTPushNotification.a in Frameworks */,
+				9F616977225FB3F1008F89F1 /* libRCTSettings.a in Frameworks */,
+				9F616978225FB3F1008F89F1 /* libRCTText.a in Frameworks */,
+				9F616979225FB3F1008F89F1 /* libRCTVibration.a in Frameworks */,
+				9F61697A225FB3F1008F89F1 /* libRCTWebSocket.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9F616990225FB40C008F89F1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9F616991225FB40C008F89F1 /* JavaScriptCore.framework in Frameworks */,
+				9F6169FB225FCBFF008F89F1 /* libART-macOS.a in Frameworks */,
+				9F616A05225FCED3008F89F1 /* libRCTActionSheet.a in Frameworks */,
+				9F6169FC225FCCB1008F89F1 /* libRCTAnimation.a in Frameworks */,
+				9F6169FA225FCBBF008F89F1 /* libRCTBlob-macOS.a in Frameworks */,
+				9F616A04225FCE6F008F89F1 /* libRCTGeolocation-macOS.a in Frameworks */,
+				9F616A03225FCE63008F89F1 /* libRCTImage.a in Frameworks */,
+				9F616A02225FCE58008F89F1 /* libRCTLinking-macOS.a in Frameworks */,
+				9F616A01225FCDB7008F89F1 /* libRCTNetwork.a in Frameworks */,
+				9F616A00225FCDAD008F89F1 /* libRCTPushNotification-macOS.a in Frameworks */,
+				9F6169FF225FCD1F008F89F1 /* libRCTSettings-macOS.a in Frameworks */,
+				9F6169FE225FCCD9008F89F1 /* libRCTText.a in Frameworks */,
+				9F6169FD225FCCD0008F89F1 /* libRCTWebSocket.a in Frameworks */,
+				9F6169F9225FCB91008F89F1 /* libReact.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1544,6 +1652,8 @@
 				18FC77A61EF4770B002B3F17 /* RNTester-macOSIntegrationTests.xctest */,
 				641DD8EE1F16AA8500B6415F /* RNTesterBundle-macOS.bundle */,
 				18D8D99F21C06BCE00E0CCAC /* libiosDeviceBuild.a */,
+				9F61697E225FB3F1008F89F1 /* libiosSimulatorBuild.a */,
+				9F6169A4225FB40C008F89F1 /* libmacOSBuild.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1830,6 +1940,68 @@
 			productReference = 641DD8EE1F16AA8500B6415F /* RNTesterBundle-macOS.bundle */;
 			productType = "com.apple.product-type.bundle";
 		};
+		9F616959225FB3F1008F89F1 /* iosSimulatorBuild */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9F61697B225FB3F1008F89F1 /* Build configuration list for PBXNativeTarget "iosSimulatorBuild" */;
+			buildPhases = (
+				9F616969225FB3F1008F89F1 /* Sources */,
+				9F61696A225FB3F1008F89F1 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9F61695A225FB3F1008F89F1 /* PBXTargetDependency */,
+				9F61695B225FB3F1008F89F1 /* PBXTargetDependency */,
+				9F61695C225FB3F1008F89F1 /* PBXTargetDependency */,
+				9F61695D225FB3F1008F89F1 /* PBXTargetDependency */,
+				9F61695E225FB3F1008F89F1 /* PBXTargetDependency */,
+				9F61695F225FB3F1008F89F1 /* PBXTargetDependency */,
+				9F616960225FB3F1008F89F1 /* PBXTargetDependency */,
+				9F616961225FB3F1008F89F1 /* PBXTargetDependency */,
+				9F616962225FB3F1008F89F1 /* PBXTargetDependency */,
+				9F616963225FB3F1008F89F1 /* PBXTargetDependency */,
+				9F616964225FB3F1008F89F1 /* PBXTargetDependency */,
+				9F616965225FB3F1008F89F1 /* PBXTargetDependency */,
+				9F616966225FB3F1008F89F1 /* PBXTargetDependency */,
+				9F616967225FB3F1008F89F1 /* PBXTargetDependency */,
+				9F616968225FB3F1008F89F1 /* PBXTargetDependency */,
+			);
+			name = iosSimulatorBuild;
+			productName = DeviceBuild;
+			productReference = 9F61697E225FB3F1008F89F1 /* libiosSimulatorBuild.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		9F61697F225FB40C008F89F1 /* macOSBuild */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9F6169A1225FB40C008F89F1 /* Build configuration list for PBXNativeTarget "macOSBuild" */;
+			buildPhases = (
+				9F61698F225FB40C008F89F1 /* Sources */,
+				9F616990225FB40C008F89F1 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9F616980225FB40C008F89F1 /* PBXTargetDependency */,
+				9F616981225FB40C008F89F1 /* PBXTargetDependency */,
+				9F616982225FB40C008F89F1 /* PBXTargetDependency */,
+				9F616983225FB40C008F89F1 /* PBXTargetDependency */,
+				9F616984225FB40C008F89F1 /* PBXTargetDependency */,
+				9F616985225FB40C008F89F1 /* PBXTargetDependency */,
+				9F616986225FB40C008F89F1 /* PBXTargetDependency */,
+				9F616987225FB40C008F89F1 /* PBXTargetDependency */,
+				9F616988225FB40C008F89F1 /* PBXTargetDependency */,
+				9F616989225FB40C008F89F1 /* PBXTargetDependency */,
+				9F61698A225FB40C008F89F1 /* PBXTargetDependency */,
+				9F61698B225FB40C008F89F1 /* PBXTargetDependency */,
+				9F61698C225FB40C008F89F1 /* PBXTargetDependency */,
+				9F61698D225FB40C008F89F1 /* PBXTargetDependency */,
+				9F61698E225FB40C008F89F1 /* PBXTargetDependency */,
+			);
+			name = macOSBuild;
+			productName = DeviceBuild;
+			productReference = 9F6169A4225FB40C008F89F1 /* libmacOSBuild.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1887,6 +2059,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -1973,6 +2146,8 @@
 				18FC77A51EF4770B002B3F17 /* RNTester-macOSIntegrationTests */,
 				641DD8E51F16AA8500B6415F /* RNTesterBundle-macOS */,
 				18D8D99E21C06BCE00E0CCAC /* iosDeviceBuild */,
+				9F616959225FB3F1008F89F1 /* iosSimulatorBuild */,
+				9F61697F225FB40C008F89F1 /* macOSBuild */,
 			);
 		};
 /* End PBXProject section */
@@ -2776,6 +2951,20 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		9F616969225FB3F1008F89F1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9F61698F225FB40C008F89F1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -3047,6 +3236,126 @@
 			isa = PBXTargetDependency;
 			target = 641DD8E51F16AA8500B6415F /* RNTesterBundle-macOS */;
 			targetProxy = 641DD8F11F16B77700B6415F /* PBXContainerItemProxy */;
+		};
+		9F61695A225FB3F1008F89F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = React;
+		};
+		9F61695B225FB3F1008F89F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RCTBlob;
+		};
+		9F61695C225FB3F1008F89F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ART;
+		};
+		9F61695D225FB3F1008F89F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RCTActionSheet;
+		};
+		9F61695E225FB3F1008F89F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RCTAnimation;
+		};
+		9F61695F225FB3F1008F89F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RCTCameraRoll;
+		};
+		9F616960225FB3F1008F89F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RCTGeolocation;
+		};
+		9F616961225FB3F1008F89F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RCTImage;
+		};
+		9F616962225FB3F1008F89F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RCTLinking;
+		};
+		9F616963225FB3F1008F89F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RCTNetwork;
+		};
+		9F616964225FB3F1008F89F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RCTPushNotification;
+		};
+		9F616965225FB3F1008F89F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RCTSettings;
+		};
+		9F616966225FB3F1008F89F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RCTText;
+		};
+		9F616967225FB3F1008F89F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RCTVibration;
+		};
+		9F616968225FB3F1008F89F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RCTWebSocket;
+		};
+		9F616980225FB40C008F89F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = React;
+		};
+		9F616981225FB40C008F89F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RCTBlob;
+		};
+		9F616982225FB40C008F89F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ART;
+		};
+		9F616983225FB40C008F89F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RCTActionSheet;
+		};
+		9F616984225FB40C008F89F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RCTAnimation;
+		};
+		9F616985225FB40C008F89F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RCTCameraRoll;
+		};
+		9F616986225FB40C008F89F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RCTGeolocation;
+		};
+		9F616987225FB40C008F89F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RCTImage;
+		};
+		9F616988225FB40C008F89F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RCTLinking;
+		};
+		9F616989225FB40C008F89F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RCTNetwork;
+		};
+		9F61698A225FB40C008F89F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RCTPushNotification;
+		};
+		9F61698B225FB40C008F89F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RCTSettings;
+		};
+		9F61698C225FB40C008F89F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RCTText;
+		};
+		9F61698D225FB40C008F89F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RCTVibration;
+		};
+		9F61698E225FB40C008F89F1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RCTWebSocket;
 		};
 /* End PBXTargetDependency section */
 
@@ -3674,6 +3983,62 @@
 			};
 			name = Release;
 		};
+		9F61697C225FB3F1008F89F1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					arm64e,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		9F61697D225FB3F1008F89F1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					arm64e,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		9F6169A2225FB40C008F89F1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					arm64e,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		9F6169A3225FB40C008F89F1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					arm64e,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -3790,6 +4155,24 @@
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,
 				83CBBA211A601CBA00E9B192 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9F61697B225FB3F1008F89F1 /* Build configuration list for PBXNativeTarget "iosSimulatorBuild" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9F61697C225FB3F1008F89F1 /* Debug */,
+				9F61697D225FB3F1008F89F1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9F6169A1225FB40C008F89F1 /* Build configuration list for PBXNativeTarget "macOSBuild" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9F6169A2225FB40C008F89F1 /* Debug */,
+				9F6169A3225FB40C008F89F1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
