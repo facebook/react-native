@@ -27,11 +27,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) RCTComponentViewRegistry *componentViewRegistry;
 
 /**
- * Transfroms mutation instructions to mount items and executes them.
- * The order of mutation instructions matters.
+ * Schedule mutations to be performed on the main thread.
  * Can be called from any thread.
  */
-- (void)performTransactionWithMutations:(facebook::react::ShadowViewMutationList)mutations rootTag:(ReactTag)rootTag;
+- (void)scheduleMutations:(facebook::react::ShadowViewMutationList const &)mutations rootTag:(ReactTag)rootTag;
 
 /**
  * Suggests preliminary creation of a component view of given type.

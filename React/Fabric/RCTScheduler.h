@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @protocol RCTSchedulerDelegate
 
-- (void)schedulerDidFinishTransaction:(facebook::react::ShadowViewMutationList)mutations
+- (void)schedulerDidFinishTransaction:(facebook::react::ShadowViewMutationList const &)mutations
                               rootTag:(ReactTag)rootTag;
 
 - (void)schedulerOptimisticallyCreateComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle;
