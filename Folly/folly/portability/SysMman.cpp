@@ -126,7 +126,11 @@ void* mmap(void* addr, size_t length, int prot, int flags, int fd, off_t off) {
         h,
         nullptr,
         newProt,
+#ifdef _WIN64
         (DWORD)((length >> 32) & 0xFFFFFFFF),
+#else
+        0,
+#endif
         (DWORD)(length & 0xFFFFFFFF),
         nullptr);
     if (fmh == nullptr) {
