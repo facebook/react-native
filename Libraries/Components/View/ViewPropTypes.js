@@ -320,7 +320,6 @@ type AndroidViewProps = $ReadOnly<{|
    */
   nextFocusUp?: ?number,
 
-
   /**
    * Whether this `View` should be clickable with a non-touch click, eg. enter key on a hardware keyboard.
    *
