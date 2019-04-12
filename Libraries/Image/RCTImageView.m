@@ -78,13 +78,11 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
 
   // Whether the latest change of props requires the image to be reloaded
   BOOL _needsReload;
-
-  UIImageView *_imageView;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
-  if ((self = [super initWithFrame:CGRectZero])) {
+  if ((self = [super init])) {
     _bridge = bridge;
 
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
@@ -96,8 +94,6 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
                selector:@selector(clearImageIfDetached)
                    name:UIApplicationDidEnterBackgroundNotification
                  object:nil];
-    _imageView = [[UIImageView alloc] init];
-    [self addSubview:_imageView];
   }
   return self;
 }
@@ -109,14 +105,10 @@ static NSDictionary *onLoadParamsForSource(RCTImageSource *source)
 
 RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
-
-RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
-
 - (void)updateWithImage:(UIImage *)image
 {
   if (!image) {
-    _imageView.image = nil;
+    super.image = nil;
     return;
   }
 
@@ -133,16 +125,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   }
 
   // Apply trilinear filtering to smooth out mis-sized images
-  _imageView.layer.minificationFilter = kCAFilterTrilinear;
-  _imageView.layer.magnificationFilter = kCAFilterTrilinear;
+  self.layer.minificationFilter = kCAFilterTrilinear;
+  self.layer.magnificationFilter = kCAFilterTrilinear;
 
-  _imageView.image = image;
+  super.image = image;
 }
 
 - (void)setImage:(UIImage *)image
 {
   image = image ?: _defaultImage;
-  if (image != _imageView.image) {
+  if (image != self.image) {
     [self updateWithImage:image];
   }
 }
@@ -165,7 +157,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
       _needsReload = YES;
     } else {
       _capInsets = capInsets;
-      [self updateWithImage:_imageView.image];
+      [self updateWithImage:self.image];
     }
   }
 }
@@ -174,7 +166,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 {
   if (_renderingMode != renderingMode) {
     _renderingMode = renderingMode;
-    [self updateWithImage:_imageView.image];
+    [self updateWithImage:self.image];
   }
 }
 
@@ -194,9 +186,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     if (_resizeMode == RCTResizeModeRepeat) {
       // Repeat resize mode is handled by the UIImage. Use scale to fill
       // so the repeated image fills the UIImageView.
-      _imageView.contentMode = UIViewContentModeScaleToFill;
+      self.contentMode = UIViewContentModeScaleToFill;
     } else {
-      _imageView.contentMode = (UIViewContentMode)resizeMode;
+      self.contentMode = (UIViewContentMode)resizeMode;
     }
 
     if ([self shouldReloadImageSourceAfterResize]) {
@@ -219,8 +211,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 - (void)clearImage
 {
   [self cancelImageLoad];
-  [_imageView.layer removeAnimationForKey:@"contents"];
-  _imageView.image = nil;
+  [self.layer removeAnimationForKey:@"contents"];
+  self.image = nil;
   _imageSource = nil;
 }
 
@@ -359,10 +351,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     }
 
     if (image.reactKeyframeAnimation) {
-      [self->_imageView.layer addAnimation:image.reactKeyframeAnimation forKey:@"contents"];
+      [self.layer addAnimation:image.reactKeyframeAnimation forKey:@"contents"];
     } else {
-      [self->_imageView.layer removeAnimationForKey:@"contents"];
-      self->_imageView.image = image;
+      [self.layer removeAnimationForKey:@"contents"];
+      self.image = image;
     }
 
     if (isPartialLoad) {
@@ -409,8 +401,8 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     _targetSize = frame.size;
     [self reloadImage];
   } else if ([self shouldReloadImageSourceAfterResize]) {
-    CGSize imageSize = _imageView.image.size;
-    CGFloat imageScale = _imageView.image.scale;
+    CGSize imageSize = self.image.size;
+    CGFloat imageScale = self.image.scale;
     CGSize idealSize = RCTTargetSize(imageSize, imageScale, frame.size, RCTScreenScale(),
                                      (RCTResizeMode)self.contentMode, YES);
 
@@ -456,11 +448,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   } else if ([self shouldChangeImageSource]) {
     [self reloadImage];
   }
-}
-
-- (void)layoutSubviews {
-  [super layoutSubviews];
-  _imageView.frame = self.bounds;
 }
 
 @end
