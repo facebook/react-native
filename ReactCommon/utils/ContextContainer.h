@@ -8,10 +8,7 @@
 #include <memory>
 #include <mutex>
 #include <string>
-#include <typeindex>
-#include <typeinfo>
 #include <unordered_map>
-#include <utility>
 
 #include <glog/logging.h>
 
@@ -28,6 +25,8 @@ using SharedContextContainer = std::shared_ptr<ContextContainer>;
  */
 class ContextContainer final {
  public:
+  using Shared = std::shared_ptr<ContextContainer>;
+
   /*
    * Registers an instance of the particular type `T` in the container
    * using the provided `key`. Only one instance can be registered per key.
@@ -39,10 +38,10 @@ class ContextContainer final {
    *`EmptyReactNativeConfig`.
    */
   template <typename T>
-  void registerInstance(const T &instance, const std::string &key) {
+  void registerInstance(T const &instance, std::string const &key) {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    const auto res = instances_.insert({key, std::make_shared<T>(instance)});
+    auto res = instances_.insert({key, std::make_shared<T>(instance)});
     if (res.second == false) {
       LOG(FATAL) << "ContextContainer already had instance for key '" << key
                  << "'";
@@ -54,7 +53,7 @@ class ContextContainer final {
    * for `key`.
    */
   template <typename T>
-  T getInstance(const std::string &key) const {
+  T getInstance(std::string const &key) const {
     std::lock_guard<std::mutex> lock(mutex_);
 
     return *std::static_pointer_cast<T>(instances_.at(key));

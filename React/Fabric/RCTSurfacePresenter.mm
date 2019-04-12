@@ -29,7 +29,7 @@
 #import <react/core/LayoutConstraints.h>
 #import <react/core/LayoutContext.h>
 #import <react/imagemanager/ImageManager.h>
-#import <react/uimanager/ContextContainer.h>
+#import <react/utils/ContextContainer.h>
 
 #import "MainRunLoopEventBeat.h"
 #import "RuntimeEventBeat.h"

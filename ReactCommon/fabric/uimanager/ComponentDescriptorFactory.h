@@ -11,7 +11,7 @@
 
 #include <react/core/ComponentDescriptor.h>
 #include <react/core/EventDispatcher.h>
-#include <react/uimanager/ContextContainer.h>
+#include <react/utils/ContextContainer.h>
 
 #include "ComponentDescriptorRegistry.h"
 

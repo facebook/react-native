@@ -16,7 +16,7 @@
 #include <react/core/EventBeat.h>
 #include <react/core/EventEmitter.h>
 #include <react/uimanager/ComponentDescriptorFactory.h>
-#include <react/uimanager/ContextContainer.h>
+#include <react/utils/ContextContainer.h>
 #include <react/uimanager/Scheduler.h>
 #include <react/uimanager/SchedulerDelegate.h>
 #include <react/uimanager/primitives.h>

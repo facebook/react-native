@@ -12,7 +12,7 @@
 #import <React/RCTComponentViewFactory.h>
 #import <React/RCTPrimitives.h>
 #import <react/config/ReactNativeConfig.h>
-#import <react/uimanager/ContextContainer.h>
+#import <react/utils/ContextContainer.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -10,7 +10,7 @@
 #include <react/components/image/ImageShadowNode.h>
 #include <react/core/ConcreteComponentDescriptor.h>
 #include <react/imagemanager/ImageManager.h>
-#include <react/uimanager/ContextContainer.h>
+#include <react/utils/ContextContainer.h>
 
 namespace facebook {
 namespace react {

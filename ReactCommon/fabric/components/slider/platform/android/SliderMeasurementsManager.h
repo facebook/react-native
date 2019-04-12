@@ -9,7 +9,7 @@
 
 #include <react/core/ConcreteComponentDescriptor.h>
 #include <react/core/LayoutConstraints.h>
-#include <react/uimanager/ContextContainer.h>
+#include <react/utils/ContextContainer.h>
 
 namespace facebook {
 namespace react {
