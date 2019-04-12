@@ -25,7 +25,7 @@ INCLUDES_WINDOWS = \
     $(OPENSOURCE_REACTNATIVE)\OfficeISS\ReactWindows\ReactWindowsCore; \
     $(OPENSOURCE_REACTNATIVE)\OfficeISS\ReactWindows\ChakraCoreShim\ChakraHeaders; \
 
-!if "$(PLATFORM)" == "droidx86" || "$(PLATFORM)" == "droidarm"
+!if "$(IS_DROID)" == "1"
 INCLUDES = \
     $(INCLUDES); \
     $(INCLUDES_ANDROID); \
