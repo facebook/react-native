@@ -28,12 +28,12 @@ class ArrayPropsNativeComponentProps final : public ViewProps {
 #pragma mark - Props
 
   const std::vector<std::string> names{};
-const std::vector<bool> disableds{};
-const std::vector<int> progress{};
-const std::vector<Float> radii{};
-const std::vector<SharedColor> colors{};
-const std::vector<ImageSource> srcs{};
-const std::vector<Point> points{};
+  const std::vector<bool> disableds{};
+  const std::vector<int> progress{};
+  const std::vector<Float> radii{};
+  const std::vector<SharedColor> colors{};
+  const std::vector<ImageSource> srcs{};
+  const std::vector<Point> points{};
 };
 
 } // namespace react
@@ -128,16 +128,16 @@ enum class EnumPropsNativeComponentAlignment { Top, Center, Bottom };
 static inline void fromRawValue(const RawValue &value, EnumPropsNativeComponentAlignment &result) {
   auto string = (std::string)value;
   if (string == \\"top\\") { result = EnumPropsNativeComponentAlignment::Top; return; }
-if (string == \\"center\\") { result = EnumPropsNativeComponentAlignment::Center; return; }
-if (string == \\"bottom\\") { result = EnumPropsNativeComponentAlignment::Bottom; return; }
+  if (string == \\"center\\") { result = EnumPropsNativeComponentAlignment::Center; return; }
+  if (string == \\"bottom\\") { result = EnumPropsNativeComponentAlignment::Bottom; return; }
   abort();
 }
 
 static inline std::string toString(const EnumPropsNativeComponentAlignment &value) {
   switch (value) {
     case EnumPropsNativeComponentAlignment::Top: return \\"top\\";
-case EnumPropsNativeComponentAlignment::Center: return \\"center\\";
-case EnumPropsNativeComponentAlignment::Bottom: return \\"bottom\\";
+    case EnumPropsNativeComponentAlignment::Center: return \\"center\\";
+    case EnumPropsNativeComponentAlignment::Bottom: return \\"bottom\\";
   }
 }
 
@@ -245,11 +245,11 @@ class FloatPropNativeComponentProps final : public ViewProps {
 #pragma mark - Props
 
   const Float blurRadius{0.0};
-const Float blurRadius2{0.001};
-const Float blurRadius3{2.1};
-const Float blurRadius4{0.0};
-const Float blurRadius5{1.0};
-const Float blurRadius6{0.0};
+  const Float blurRadius2{0.001};
+  const Float blurRadius3{2.1};
+  const Float blurRadius4{0.0};
+  const Float blurRadius5{1.0};
+  const Float blurRadius6{0.0};
 };
 
 } // namespace react
@@ -315,8 +315,8 @@ class IntegerPropNativeComponentProps final : public ViewProps {
 #pragma mark - Props
 
   const int progress1{0};
-const int progress2{-1};
-const int progress3{10};
+  const int progress2{-1};
+  const int progress3{10};
 };
 
 } // namespace react
@@ -384,9 +384,9 @@ class ImageColorPropNativeComponentProps final : public ViewProps {
 #pragma mark - Props
 
   const ImageSource thumbImage{};
-const SharedColor color{};
-const SharedColor thumbTintColor{};
-const Point point{};
+  const SharedColor color{};
+  const SharedColor thumbTintColor{};
+  const Point point{};
 };
 
 } // namespace react
