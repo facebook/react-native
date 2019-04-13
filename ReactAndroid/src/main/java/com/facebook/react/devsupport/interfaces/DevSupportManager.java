@@ -45,6 +45,11 @@ public interface DevSupportManager extends NativeModuleCallExceptionHandler {
   void handleReloadJS();
   void reloadJSFromServer(final String bundleURL);
   void isPackagerRunning(PackagerStatusCallback callback);
+  void setHotModuleReplacementEnabled(boolean isHotModuleReplacementEnabled);
+  void setRemoteJSDebugEnabled(boolean isRemoteJSDebugEnabled);
+  void setReloadOnJSChangeEnabled(boolean isReloadOnJSChangeEnabled);
+  void setFpsDebugEnabled(boolean isFpsDebugEnabled);
+  void toggleElementInspector();
   @Nullable File downloadBundleResourceFromUrlSync(
       final String resourceURL,
       final File outputFile);

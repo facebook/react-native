@@ -1040,6 +1040,80 @@ public class DevSupportManagerImpl implements
     mDevServerHelper.closeInspectorConnection();
   }
 
+  @Override
+  public void setHotModuleReplacementEnabled(boolean enableHotModuleReplacement) {
+    if (!mIsDevSupportEnabled) return;
+
+    UiThreadUtil.runOnUiThread(
+      new Runnable() {
+        @Override
+        public void run() {
+          mDevSettings.setHotModuleReplacementEnabled(enableHotModuleReplacement);
+          handleReloadJS();
+        }
+      }
+    );
+  }
+
+  @Override
+  public void setRemoteJSDebugEnabled(boolean isRemoteJSDebugEnabled) {
+    if (!mIsDevSupportEnabled) return;
+
+    UiThreadUtil.runOnUiThread(
+      new Runnable() {
+        @Override
+        public void run() {
+          mDevSettings.setRemoteJSDebugEnabled(isRemoteJSDebugEnabled);
+          handleReloadJS();
+        }
+      }
+    );
+  }
+
+  @Override
+  public void setReloadOnJSChangeEnabled(boolean isReloadOnJSChangeEnabled) {
+    if (!mIsDevSupportEnabled) return;
+
+    UiThreadUtil.runOnUiThread(
+      new Runnable() {
+        @Override
+        public void run() {
+          mDevSettings.setReloadOnJSChangeEnabled(isReloadOnJSChangeEnabled);
+          handleReloadJS();
+        }
+      }
+    );
+  }
+
+  @Override
+  public void setFpsDebugEnabled(boolean isFpsDebugEnabled) {
+    if (!mIsDevSupportEnabled) return;
+
+    UiThreadUtil.runOnUiThread(
+      new Runnable() {
+        @Override
+        public void run() {
+          mDevSettings.setFpsDebugEnabled(isFpsDebugEnabled);
+        }
+      }
+    );
+  }
+
+  @Override
+  public void toggleElementInspector() {
+    if (!mIsDevSupportEnabled) return;
+
+    UiThreadUtil.runOnUiThread(
+      new Runnable() {
+        @Override
+        public void run() {
+          mDevSettings.setElementInspectorEnabled(!mDevSettings.isElementInspectorEnabled());
+          mReactInstanceManagerHelper.toggleElementInspector();
+        }
+      }
+    );
+  }
+
   private void reload() {
     UiThreadUtil.assertOnUiThread();
 
