@@ -51,7 +51,7 @@ function generatePropsString(component: ComponentShape) {
         prop.name
       }", sourceProps.${prop.name}, ${prop.name}))`;
     })
-    .join(',\n');
+    .join(',\n' + '    ');
 }
 
 function getClassExtendString(component): string {
