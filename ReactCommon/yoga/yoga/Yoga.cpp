@@ -665,19 +665,19 @@ struct DimensionProp {
         edge <= YGEdgeEnd,                                              \
         "Cannot get layout properties of multi-edge shorthands");       \
                                                                         \
-    if (edge == YGEdgeLeft) {                                           \
+    if (edge == YGEdgeStart) {                                          \
       if (node->getLayout().direction == YGDirectionRTL) {              \
-        return node->getLayout().instanceName[YGEdgeEnd];               \
+        return node->getLayout().instanceName[YGEdgeRight];             \
       } else {                                                          \
-        return node->getLayout().instanceName[YGEdgeStart];             \
+        return node->getLayout().instanceName[YGEdgeLeft];              \
       }                                                                 \
     }                                                                   \
                                                                         \
-    if (edge == YGEdgeRight) {                                          \
+    if (edge == YGEdgeEnd) {                                            \
       if (node->getLayout().direction == YGDirectionRTL) {              \
-        return node->getLayout().instanceName[YGEdgeStart];             \
+        return node->getLayout().instanceName[YGEdgeLeft];              \
       } else {                                                          \
-        return node->getLayout().instanceName[YGEdgeEnd];               \
+        return node->getLayout().instanceName[YGEdgeRight];             \
       }                                                                 \
     }                                                                   \
                                                                         \
@@ -2674,12 +2674,13 @@ static void YGNodelayoutImpl(
   const YGFlexDirection flexColumnDirection =
       YGResolveFlexDirection(YGFlexDirectionColumn, direction);
 
+  const YGEdge startEdge =
+      direction == YGDirectionLTR ? YGEdgeLeft : YGEdgeRight;
+  const YGEdge endEdge = direction == YGDirectionLTR ? YGEdgeRight : YGEdgeLeft;
   node->setLayoutMargin(
-      node->getLeadingMargin(flexRowDirection, ownerWidth).unwrap(),
-      YGEdgeStart);
+      node->getLeadingMargin(flexRowDirection, ownerWidth).unwrap(), startEdge);
   node->setLayoutMargin(
-      node->getTrailingMargin(flexRowDirection, ownerWidth).unwrap(),
-      YGEdgeEnd);
+      node->getTrailingMargin(flexRowDirection, ownerWidth).unwrap(), endEdge);
   node->setLayoutMargin(
       node->getLeadingMargin(flexColumnDirection, ownerWidth).unwrap(),
       YGEdgeTop);
@@ -2687,18 +2688,17 @@ static void YGNodelayoutImpl(
       node->getTrailingMargin(flexColumnDirection, ownerWidth).unwrap(),
       YGEdgeBottom);
 
-  node->setLayoutBorder(node->getLeadingBorder(flexRowDirection), YGEdgeStart);
-  node->setLayoutBorder(node->getTrailingBorder(flexRowDirection), YGEdgeEnd);
+  node->setLayoutBorder(node->getLeadingBorder(flexRowDirection), startEdge);
+  node->setLayoutBorder(node->getTrailingBorder(flexRowDirection), endEdge);
   node->setLayoutBorder(node->getLeadingBorder(flexColumnDirection), YGEdgeTop);
   node->setLayoutBorder(
       node->getTrailingBorder(flexColumnDirection), YGEdgeBottom);
 
   node->setLayoutPadding(
       node->getLeadingPadding(flexRowDirection, ownerWidth).unwrap(),
-      YGEdgeStart);
+      startEdge);
   node->setLayoutPadding(
-      node->getTrailingPadding(flexRowDirection, ownerWidth).unwrap(),
-      YGEdgeEnd);
+      node->getTrailingPadding(flexRowDirection, ownerWidth).unwrap(), endEdge);
   node->setLayoutPadding(
       node->getLeadingPadding(flexColumnDirection, ownerWidth).unwrap(),
       YGEdgeTop);

@@ -14,9 +14,9 @@ constexpr std::array<float, 2> kYGDefaultDimensionValues = {
 struct YGLayout {
   std::array<float, 4> position = {};
   std::array<float, 2> dimensions = kYGDefaultDimensionValues;
-  std::array<float, 6> margin = {};
-  std::array<float, 6> border = {};
-  std::array<float, 6> padding = {};
+  std::array<float, 4> margin = {};
+  std::array<float, 4> border = {};
+  std::array<float, 4> padding = {};
   YGDirection direction : 2;
   bool didUseLegacyFlag : 1;
   bool doesLegacyStretchFlagAffectsLayout : 1;
