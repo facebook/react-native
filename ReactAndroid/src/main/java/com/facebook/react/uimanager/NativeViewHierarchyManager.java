@@ -842,6 +842,6 @@ public class NativeViewHierarchyManager {
     if (view == null) {
       throw new JSApplicationIllegalArgumentException("Could not find view with tag " + tag);
     }
-    AccessibilityHelper.sendAccessibilityEvent(view, eventType);
+    view.sendAccessibilityEvent(eventType);
   }
 }

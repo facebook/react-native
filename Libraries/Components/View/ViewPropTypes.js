@@ -15,12 +15,7 @@ import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type React from 'React';
 import type {ViewStyleProp} from 'StyleSheet';
 import type {TVViewProps} from 'TVViewPropTypes';
-import type {
-  AccessibilityComponentType,
-  AccessibilityTrait,
-  AccessibilityRole,
-  AccessibilityStates,
-} from 'ViewAccessibility';
+import type {AccessibilityRole, AccessibilityStates} from 'ViewAccessibility';
 
 export type ViewLayout = Layout;
 export type ViewLayoutEvent = LayoutEvent;
@@ -255,16 +250,6 @@ type AndroidViewProps = $ReadOnly<{|
   needsOffscreenAlphaCompositing?: ?boolean,
 
   /**
-   * Indicates to accessibility services to treat UI component like a
-   * native one. Works for Android only.
-   *
-   * @platform android
-   *
-   * See http://facebook.github.io/react-native/docs/view.html#accessibilitycomponenttype
-   */
-  accessibilityComponentType?: ?AccessibilityComponentType,
-
-  /**
    * Indicates to accessibility services whether the user should be notified
    * when this view changes. Works for Android API >= 19 only.
    *
@@ -335,21 +320,6 @@ type IOSViewProps = $ReadOnly<{|
    * @platform ios
    */
   accessibilityIgnoresInvertColors?: ?boolean,
-
-  /**
-   * Provides additional traits to screen reader. By default no traits are
-   * provided unless specified otherwise in element.
-   *
-   * You can provide one trait or an array of many traits.
-   *
-   * @platform ios
-   *
-   * See http://facebook.github.io/react-native/docs/view.html#accessibilitytraits
-   */
-  accessibilityTraits?: ?(
-    | AccessibilityTrait
-    | $ReadOnlyArray<AccessibilityTrait>
-  ),
 
   /**
    * A value indicating whether VoiceOver should ignore the elements
