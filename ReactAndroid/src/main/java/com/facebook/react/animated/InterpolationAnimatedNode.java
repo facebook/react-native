@@ -224,7 +224,8 @@ import javax.annotation.Nullable;
             String num = isAlpha ? Double.toString((double)rounded / 1000) : Integer.toString(rounded);
             mSOutputMatcher.appendReplacement(sb, num);
           } else {
-            String num = val == 0 ? "0" : val == 1 ? "1" : Double.toString(val);
+            int intVal = (int)val;
+            String num = intVal != val ? Double.toString(val) : Integer.toString(intVal);
             mSOutputMatcher.appendReplacement(sb, num);
           }
         }
