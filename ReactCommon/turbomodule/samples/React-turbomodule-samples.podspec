@@ -22,7 +22,7 @@ folly_version = '2018.10.22.00'
 boost_compiler_flags = '-Wno-documentation'
 
 Pod::Spec.new do |s|
-  s.name                   = "React-turbomodule-core"
+  s.name                   = "React-turbomodule-samples"
   s.version                = version
   s.summary                = "-"  # TODO
   s.homepage               = "http://facebook.github.io/react-native/"
@@ -39,9 +39,10 @@ Pod::Spec.new do |s|
   s.dependency "React-Core", version
   s.dependency "React-cxxreact", version
   s.dependency "React-jsi", version
+  s.dependency "React-turbomodule-core", version
   s.dependency "Folly", folly_version
 
-  s.subspec "core-ios" do |ss|
+  s.subspec "samples-ios" do |ss|
     ss.source_files   = "platform/ios/*.{mm,cpp,h}"
     ss.header_dir     = "jsireact"
   end

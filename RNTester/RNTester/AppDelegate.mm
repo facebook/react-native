@@ -28,7 +28,9 @@
 #endif
 
 #ifdef RN_TURBO_MODULE_ENABLED
-#import <React/RCTTurboModuleManager.h>
+#import <jsireact/RCTTurboModuleManager.h>
+
+#import "RNTesterTurboModuleProvider.h"
 #endif
 
 #ifdef RN_TURBO_MODULE_ENABLED
@@ -150,22 +152,23 @@
 
 #ifdef RN_TURBO_MODULE_ENABLED
 
-  - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                       jsInvoker:(std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker
 {
-  return nullptr;
+  return RNTesterTurboModuleProvider(name, jsInvoker);
 }
 
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
                                                        instance:(id<RCTTurboModule>)instance
                                                       jsInvoker:(std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker
 {
-  return nullptr;
+  return RNTesterTurboModuleProvider(name, instance, jsInvoker);
 }
 
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
 {
-  return nil;
+  // No custom initializer here.
+  return [moduleClass new];
 }
 
 #endif

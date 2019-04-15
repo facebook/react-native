@@ -38,6 +38,7 @@ target 'RNTester' do
   pod 'yoga', :path => '../ReactCommon/yoga'
 
   pod 'React-turbomodule-core', :path => '../ReactCommon/turbomodule/core'
+  pod 'React-turbomodule-samples', :path => '../ReactCommon/turbomodule/samples'
 
   # Third party deps podspec link
   pod 'DoubleConversion', :podspec => '../third-party-podspecs/DoubleConversion.podspec'
