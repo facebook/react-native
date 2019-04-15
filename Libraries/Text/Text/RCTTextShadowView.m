@@ -35,6 +35,13 @@
   return self;
 }
 
+- (void)didSetProps:(NSArray<NSString *> *)changedProps
+{
+  [super didSetProps:changedProps];
+
+  self.textAttributes.opacity = NAN;
+}
+
 - (BOOL)isYogaLeafNode
 {
   return YES;
