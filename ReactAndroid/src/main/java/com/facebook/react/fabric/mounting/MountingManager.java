@@ -171,10 +171,11 @@ public class MountingManager {
   }
 
   @UiThread
-  public void createView(
+  public void createViewWithProps(
       ThemedReactContext themedReactContext,
       String componentName,
       int reactTag,
+      ReadableMap props,
       boolean isLayoutable) {
     if (mTagToViewState.get(reactTag) != null) {
       return;
@@ -183,13 +184,21 @@ public class MountingManager {
     View view = null;
     ViewManager viewManager = null;
 
+    ReactStylesDiffMap diffMap = null;
+    if (props != null) {
+      diffMap = new ReactStylesDiffMap(props);
+    }
+
     if (isLayoutable) {
       viewManager = mViewManagerRegistry.get(componentName);
-      view = mViewFactory.getOrCreateView(componentName, themedReactContext);
+      view = mViewFactory.getOrCreateView(componentName, diffMap, themedReactContext);
       view.setId(reactTag);
     }
 
-    mTagToViewState.put(reactTag, new ViewState(reactTag, view, viewManager));
+    ViewState viewState = new ViewState(reactTag, view, viewManager);
+    viewState.mCurrentProps = diffMap;
+
+    mTagToViewState.put(reactTag, viewState);
   }
 
   @UiThread
@@ -313,10 +322,7 @@ public class MountingManager {
       throw new IllegalStateException("View for component " + componentName + " with tag " + reactTag + " already exists.");
     }
 
-    createView(reactContext, componentName, reactTag, isLayoutable);
-    if (isLayoutable) {
-      updateProps(reactTag, props);
-    }
+    createViewWithProps(reactContext, componentName, reactTag, props, isLayoutable);
   }
 
   @UiThread
