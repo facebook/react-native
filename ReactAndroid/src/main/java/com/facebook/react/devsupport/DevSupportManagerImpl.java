@@ -1042,7 +1042,9 @@ public class DevSupportManagerImpl implements
 
   @Override
   public void setHotModuleReplacementEnabled(boolean enableHotModuleReplacement) {
-    if (!mIsDevSupportEnabled) return;
+    if (!mIsDevSupportEnabled) {
+      return;
+    }
 
     UiThreadUtil.runOnUiThread(
       new Runnable() {
@@ -1057,7 +1059,9 @@ public class DevSupportManagerImpl implements
 
   @Override
   public void setRemoteJSDebugEnabled(boolean isRemoteJSDebugEnabled) {
-    if (!mIsDevSupportEnabled) return;
+    if (!mIsDevSupportEnabled) {
+      return;
+    }
 
     UiThreadUtil.runOnUiThread(
       new Runnable() {
@@ -1072,7 +1076,9 @@ public class DevSupportManagerImpl implements
 
   @Override
   public void setReloadOnJSChangeEnabled(boolean isReloadOnJSChangeEnabled) {
-    if (!mIsDevSupportEnabled) return;
+    if (!mIsDevSupportEnabled) {
+      return;
+    }
 
     UiThreadUtil.runOnUiThread(
       new Runnable() {
@@ -1087,7 +1093,9 @@ public class DevSupportManagerImpl implements
 
   @Override
   public void setFpsDebugEnabled(boolean isFpsDebugEnabled) {
-    if (!mIsDevSupportEnabled) return;
+    if (!mIsDevSupportEnabled) {
+      return;
+    }
 
     UiThreadUtil.runOnUiThread(
       new Runnable() {
@@ -1101,7 +1109,9 @@ public class DevSupportManagerImpl implements
 
   @Override
   public void toggleElementInspector() {
-    if (!mIsDevSupportEnabled) return;
+    if (!mIsDevSupportEnabled) {
+      return;
+    }
 
     UiThreadUtil.runOnUiThread(
       new Runnable() {
