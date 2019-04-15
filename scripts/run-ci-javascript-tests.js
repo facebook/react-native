@@ -20,7 +20,6 @@
 require('shelljs/global');
 
 const argv = require('yargs').argv;
-const path = require('path');
 
 const numberOfMaxWorkers = argv.maxWorkers || 1;
 let exitCode;
