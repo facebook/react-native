@@ -8,11 +8,15 @@
 
 #import "AppDelegate.h"
 
+#import <React/JSCExecutorFactory.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
+#import <React/RCTCxxBridgeDelegate.h>
 #import <React/RCTJavaScriptLoader.h>
 #import <React/RCTLinkingManager.h>
 #import <React/RCTRootView.h>
+
+#import <cxxreact/JSExecutor.h>
 
 #if !TARGET_OS_TV
 #import <React/RCTPushNotificationManager.h>
@@ -22,7 +26,7 @@
 #import <React/RCTSurfacePresenter.h>
 #import <React/RCTFabricSurfaceHostingProxyRootView.h>
 
-@interface AppDelegate() <RCTBridgeDelegate>{
+@interface AppDelegate() <RCTCxxBridgeDelegate>{
   RCTSurfacePresenter *_surfacePresenter;
 }
 @end
@@ -33,7 +37,7 @@
 @end
 
 #else
-@interface AppDelegate() <RCTBridgeDelegate>
+@interface AppDelegate() <RCTCxxBridgeDelegate>
 @end
 #endif
 
@@ -103,6 +107,22 @@
   [RCTJavaScriptLoader loadBundleAtURL:[self sourceURLForBridge:bridge]
                             onProgress:onProgress
                             onComplete:loadCallback];
+}
+
+# pragma mark - RCTCxxBridgeDelegate
+
+- (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
+{
+  __weak __typeof(self) weakSelf = self;
+  return std::make_unique<facebook::react::JSCExecutorFactory>([weakSelf, bridge](facebook::jsi::Runtime &runtime) {
+    if (!bridge) {
+      return;
+    }
+    __typeof(self) strongSelf = weakSelf;
+    if (strongSelf) {
+      // TODO: Install bindings to the JS runtime.
+    }
+  });
 }
 
 # pragma mark - Push Notifications
