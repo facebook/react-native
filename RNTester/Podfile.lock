@@ -88,6 +88,17 @@ PODS:
   - React-RCTWebSocket (1000.0.0):
     - React-Core (= 1000.0.0)
     - React-fishhook (= 1000.0.0)
+  - React-turbomodule-core (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - React-Core (= 1000.0.0)
+    - React-cxxreact (= 1000.0.0)
+    - React-jsi (= 1000.0.0)
+    - React-turbomodule-core/core-ios (= 1000.0.0)
+  - React-turbomodule-core/core-ios (1000.0.0):
+    - Folly (= 2018.10.22.00)
+    - React-Core (= 1000.0.0)
+    - React-cxxreact (= 1000.0.0)
+    - React-jsi (= 1000.0.0)
   - yoga (1000.0.0.React)
 
 DEPENDENCIES:
@@ -115,6 +126,7 @@ DEPENDENCIES:
   - React-RCTText (from `../Libraries/Text`)
   - React-RCTVibration (from `../Libraries/Vibration`)
   - React-RCTWebSocket (from `../Libraries/WebSocket`)
+  - React-turbomodule-core (from `../ReactCommon/turbomodule/core`)
   - yoga (from `../ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -170,6 +182,8 @@ EXTERNAL SOURCES:
     :path: "../Libraries/Vibration"
   React-RCTWebSocket:
     :path: "../Libraries/WebSocket"
+  React-turbomodule-core:
+    :path: "../ReactCommon/turbomodule/core"
   yoga:
     :path: "../ReactCommon/yoga"
 
@@ -199,8 +213,9 @@ SPEC CHECKSUMS:
   React-RCTText: 469ec754592c92fc639825e558908c2f0e783e2c
   React-RCTVibration: ade3c169b54f3bc16c9a9918e17e48ef66aee6ba
   React-RCTWebSocket: 90b78ed51d53d17db417d3956decba3f7ace58e4
+  React-turbomodule-core: d4c0c7d6a7d97e25ac6d0316c2a7950d199b398e
   yoga: 542cb34fe3bca476487e08eb516dd640ea996a65
 
-PODFILE CHECKSUM: ab35b96fa954669fff47b015261668e4be104900
+PODFILE CHECKSUM: e587e581dcf974f8a9b7b1ff624f5114082b8045
 
 COCOAPODS: 1.6.1

@@ -25,19 +25,33 @@
 #ifdef RN_FABRIC_ENABLED
 #import <React/RCTSurfacePresenter.h>
 #import <React/RCTFabricSurfaceHostingProxyRootView.h>
+#endif
 
+#ifdef RN_TURBO_MODULE_ENABLED
+#import <React/RCTTurboModuleManager.h>
+#endif
+
+#ifdef RN_TURBO_MODULE_ENABLED
+@interface AppDelegate() <RCTCxxBridgeDelegate, RCTTurboModuleManagerDelegate>{
+#else
 @interface AppDelegate() <RCTCxxBridgeDelegate>{
+#endif
+
+#ifdef RN_FABRIC_ENABLED
   RCTSurfacePresenter *_surfacePresenter;
+#endif
+
+#ifdef RN_TURBO_MODULE_ENABLED
+  RCTTurboModuleManager *_turboModuleManager;
+#endif
+
 }
 @end
 
+#ifdef RN_FABRIC_ENABLED
 // FIXME: remove when resolved https://github.com/facebook/react-native/issues/23910
 @interface RCTSurfacePresenter ()
 -(void)_startAllSurfaces;
-@end
-
-#else
-@interface AppDelegate() <RCTCxxBridgeDelegate>
 @end
 #endif
 
@@ -45,6 +59,10 @@
 
 - (BOOL)application:(__unused UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+#ifdef RN_TURBO_MODULE_ENABLED
+  RCTEnableTurboModule(YES);
+#endif
+
   _bridge = [[RCTBridge alloc] initWithDelegate:self
                                   launchOptions:launchOptions];
   
@@ -120,10 +138,37 @@
     }
     __typeof(self) strongSelf = weakSelf;
     if (strongSelf) {
-      // TODO: Install bindings to the JS runtime.
+#ifdef RN_TURBO_MODULE_ENABLED
+      strongSelf->_turboModuleManager = [[RCTTurboModuleManager alloc] initWithRuntime:&runtime bridge:bridge delegate:strongSelf];
+      [strongSelf->_turboModuleManager installJSBinding];
+#endif
     }
   });
 }
+
+#pragma mark RCTTurboModuleManagerDelegate
+
+#ifdef RN_TURBO_MODULE_ENABLED
+
+  - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
+                                                      jsInvoker:(std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker
+{
+  return nullptr;
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
+                                                       instance:(id<RCTTurboModule>)instance
+                                                      jsInvoker:(std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker
+{
+  return nullptr;
+}
+
+- (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
+{
+  return nil;
+}
+
+#endif
 
 # pragma mark - Push Notifications
 
