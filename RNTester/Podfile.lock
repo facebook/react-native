@@ -178,13 +178,13 @@ SPEC CHECKSUMS:
   DoubleConversion: 5805e889d232975c086db112ece9ed034df7a0b2
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
-  React: 113a88ebe41487ae78bde6494495d0e25f9fe2ff
+  React: 7c652b87c228731c51ab5764de68b6c17e6342be
   React-ART: 28f8815acbbc4816cec14866b59911a83eb780ed
-  React-Core: 9da7fd6dc9e1e773f578cae2a00621a7c4422816
+  React-Core: 85bf24f380e5228013f5f75d7c1b6338a003a2b2
   React-cxxreact: 7e670bad16eb78fa889573d931c12bb1003a3598
   React-DevSupport: f34768e3aad3e59ee9800c752a78bc6cb24d0f75
   React-fishhook: d2a67f0eaeef9fe0dca0526812ca8fcff4b6f17b
-  React-jsi: 74e5e06d56f71aff1cd75c7ca56cf0f27940e792
+  React-jsi: ae62f3eff7357d3c11722653d13d0c6399b5c372
   React-jsiexecutor: ee776181a1ba315dbae9500c4dba5cb94ea3c5d2
   React-jsinspector: ea0a218071a11c3687cef2480580180caa6a64c0
   React-RCTActionSheet: caf6532394bdbbe0fc0ec2363c84f26bcfcdd36a
@@ -201,6 +201,6 @@ SPEC CHECKSUMS:
   React-RCTWebSocket: 90b78ed51d53d17db417d3956decba3f7ace58e4
   yoga: 542cb34fe3bca476487e08eb516dd640ea996a65
 
-PODFILE CHECKSUM: 74d947ec52f59c3db4f273853e36d504be6e9414
+PODFILE CHECKSUM: ab35b96fa954669fff47b015261668e4be104900
 
 COCOAPODS: 1.6.1
