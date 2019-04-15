@@ -221,9 +221,11 @@ import javax.annotation.Nullable;
             // round the opacity (4th column).
             boolean isAlpha = i == 4;
             int rounded = (int)Math.round(isAlpha ? val * 1000 : val);
-            mSOutputMatcher.appendReplacement(sb, isAlpha ? String.valueOf((double)rounded / 1000) : String.valueOf(rounded));
+            String num = Double.toString(isAlpha ? (double)rounded / 1000 : rounded);
+            mSOutputMatcher.appendReplacement(sb, num);
           } else {
-            mSOutputMatcher.appendReplacement(sb, String.valueOf(val));
+            String num = val == 0 ? "0" : val == 1 ? "1" : Double.toString(val);
+            mSOutputMatcher.appendReplacement(sb, num);
           }
         }
         mSOutputMatcher.appendTail(sb);

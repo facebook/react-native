@@ -151,7 +151,8 @@ static NSRegularExpression *regex;
           CGFloat rounded = isAlpha ? round(val * 1000) / 1000 : round(val);
           str = isAlpha ? [NSString stringWithFormat:@"%1.3f", rounded] : [NSString stringWithFormat:@"%1.0f", rounded];
         } else {
-          str = [NSString stringWithFormat:@"%1f", val];
+          NSNumber *numberValue = [NSNumber numberWithDouble:val];
+          str = [numberValue stringValue];
         }
 
         [formattedText replaceCharactersInRange:[match range] withString:str];
