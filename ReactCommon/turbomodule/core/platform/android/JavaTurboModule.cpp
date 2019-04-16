@@ -143,6 +143,23 @@ jsi::Value JavaTurboModule::get(jsi::Runtime& runtime, const jsi::PropNameID& pr
   }
 }
 
+static void throwIfJNIReportsPendingException() {
+  JNIEnv *env = jni::Environment::current();
+  if (env->ExceptionCheck()) {
+    jthrowable ex = env->ExceptionOccurred();
+
+    // There should be no pending exceptions before we call into JNI
+    env->ExceptionClear();
+
+    auto exception = jni::adopt_local(ex);
+    auto getMessage =
+        exception->getClass()->getMethod<std::string()>("getMessage");
+    auto message = getMessage(exception)->toStdString();
+
+    throw std::runtime_error(message);
+  }
+}
+
 jsi::Value JavaTurboModule::invokeJavaMethod(
     jsi::Runtime &runtime,
     TurboModuleMethodValueKind valueKind,
@@ -166,19 +183,29 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
   switch (valueKind) {
     case VoidKind: {
       env->CallVoidMethodA(instance, methodID, jargs.data());
+      throwIfJNIReportsPendingException();
+
       return jsi::Value::undefined();
     }
     case BooleanKind: {
-      return jsi::Value(
-          (bool)env->CallBooleanMethodA(instance, methodID, jargs.data()));
+      bool returnBoolean =
+          (bool)env->CallBooleanMethodA(instance, methodID, jargs.data());
+      throwIfJNIReportsPendingException();
+
+      return jsi::Value(returnBoolean);
     }
     case NumberKind: {
-      return jsi::Value(
-          (double)env->CallDoubleMethodA(instance, methodID, jargs.data()));
+      double returnDouble =
+          (double)env->CallDoubleMethodA(instance, methodID, jargs.data());
+      throwIfJNIReportsPendingException();
+
+      return jsi::Value(returnDouble);
     }
     case StringKind: {
       auto returnString =
           (jstring)env->CallObjectMethodA(instance, methodID, jargs.data());
+      throwIfJNIReportsPendingException();
+
       if (returnString == nullptr) {
         return jsi::Value::null();
       }
@@ -190,6 +217,8 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
     case ObjectKind: {
       auto returnObject =
           (jobject)env->CallObjectMethodA(instance, methodID, jargs.data());
+      throwIfJNIReportsPendingException();
+
       if (returnObject == nullptr) {
         return jsi::Value::null();
       }
@@ -200,6 +229,8 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
     case ArrayKind: {
       auto returnObject =
           (jobject)env->CallObjectMethodA(instance, methodID, jargs.data());
+      throwIfJNIReportsPendingException();
+
       if (returnObject == nullptr) {
         return jsi::Value::null();
       }
@@ -254,6 +285,8 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
 
       jsi::Value promise =
           Promise.callAsConstructor(runtime, promiseConstructorArg);
+      throwIfJNIReportsPendingException();
+
       return promise;
     }
     default:
