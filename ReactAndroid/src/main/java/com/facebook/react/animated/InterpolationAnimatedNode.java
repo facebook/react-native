@@ -27,7 +27,9 @@ import javax.annotation.Nullable;
   public static final String EXTRAPOLATE_TYPE_IDENTITY = "identity";
   public static final String EXTRAPOLATE_TYPE_CLAMP = "clamp";
   public static final String EXTRAPOLATE_TYPE_EXTEND = "extend";
-  static final Pattern regex = Pattern.compile("[0-9.-]+");
+
+  private static final String fpRegex = "[+-]?(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?";
+  private static final Pattern fpPattern = Pattern.compile(fpRegex);
 
   private static double[] fromDoubleArray(ReadableArray ary) {
     double[] res = new double[ary.size()];
@@ -139,11 +141,11 @@ import javax.annotation.Nullable;
       mOutputRange = new double[size];
       mPattern = output.getString(0);
       mShouldRound = mPattern.startsWith("rgb");
-      mSOutputMatcher = regex.matcher(mPattern);
+      mSOutputMatcher = fpPattern.matcher(mPattern);
       ArrayList<ArrayList<Double>> mOutputRanges = new ArrayList<>();
       for (int i = 0; i < size; i++) {
         String val = output.getString(i);
-        Matcher m = regex.matcher(val);
+        Matcher m = fpPattern.matcher(val);
         ArrayList<Double> outputRange = new ArrayList<>();
         mOutputRanges.add(outputRange);
         while (m.find()) {

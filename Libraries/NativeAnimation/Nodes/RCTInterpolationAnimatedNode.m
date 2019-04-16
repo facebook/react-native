@@ -31,7 +31,8 @@ static NSRegularExpression *regex;
 {
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    regex = [NSRegularExpression regularExpressionWithPattern:@"[0-9.-]+" options:NSRegularExpressionCaseInsensitive error:nil];
+    NSString *fpRegex = @"[+-]?(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?";
+    regex = [NSRegularExpression regularExpressionWithPattern:fpRegex options:NSRegularExpressionCaseInsensitive error:nil];
   });
   if ((self = [super initWithTag:tag config:config])) {
     _inputRange = [config[@"inputRange"] copy];
