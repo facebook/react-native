@@ -13,6 +13,7 @@
 #import <react/core/LayoutConstraints.h>
 #import <react/core/LayoutContext.h>
 #import <react/mounting/ShadowViewMutation.h>
+#import <react/utils/ContextContainer.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -37,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (atomic, weak, nullable) id<RCTSchedulerDelegate> delegate;
 
-- (instancetype)initWithContextContainer:(std::shared_ptr<void>)contextContatiner;
+- (instancetype)initWithContextContainer:(facebook::react::ContextContainer::Shared)contextContatiner;
 
 - (void)startSurfaceWithSurfaceId:(facebook::react::SurfaceId)surfaceId
                        moduleName:(NSString *)moduleName

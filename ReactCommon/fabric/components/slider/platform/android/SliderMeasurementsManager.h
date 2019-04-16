@@ -20,7 +20,7 @@ namespace react {
  */
 class SliderMeasurementsManager {
  public:
-  SliderMeasurementsManager(const SharedContextContainer &contextContainer)
+  SliderMeasurementsManager(const ContextContainer::Shared &contextContainer)
       : contextContainer_(contextContainer) {}
 
   static inline bool shouldMeasureSlider() {
@@ -30,7 +30,7 @@ class SliderMeasurementsManager {
   Size measure(LayoutConstraints layoutConstraints) const;
 
  private:
-  const SharedContextContainer contextContainer_;
+  const ContextContainer::Shared contextContainer_;
   mutable std::mutex mutex_;
   mutable bool hasBeenMeasured_ = false;
   mutable Size cachedMeasurement_{};

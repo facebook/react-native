@@ -20,7 +20,7 @@ namespace facebook {
 namespace react {
 
 Scheduler::Scheduler(
-    const SharedContextContainer &contextContainer,
+    ContextContainer::Shared const &contextContainer,
     ComponentRegistryFactory buildRegistryFunction) {
   const auto asynchronousEventBeatFactory =
       contextContainer->getInstance<EventBeatFactory>("asynchronous");

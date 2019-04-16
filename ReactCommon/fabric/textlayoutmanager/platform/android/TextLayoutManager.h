@@ -26,7 +26,7 @@ using SharedTextLayoutManager = std::shared_ptr<const TextLayoutManager>;
  */
 class TextLayoutManager {
  public:
-  TextLayoutManager(const SharedContextContainer &contextContainer)
+  TextLayoutManager(const ContextContainer::Shared &contextContainer)
       : contextContainer_(contextContainer){};
   ~TextLayoutManager();
 
@@ -47,7 +47,7 @@ class TextLayoutManager {
  private:
   void *self_;
 
-  SharedContextContainer contextContainer_;
+  ContextContainer::Shared contextContainer_;
 };
 
 } // namespace react

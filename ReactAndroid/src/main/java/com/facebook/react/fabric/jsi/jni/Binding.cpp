@@ -97,7 +97,7 @@ void Binding::installFabricUIManager(
     jni::alias_ref<jobject> reactNativeConfig) {
   javaUIManager_ = make_global(javaUIManager);
 
-  SharedContextContainer contextContainer =
+  ContextContainer::Shared contextContainer =
       std::make_shared<ContextContainer>();
 
   auto sharedJSMessageQueueThread =

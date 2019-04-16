@@ -17,7 +17,7 @@ namespace react {
  */
 ComponentRegistryFactory getDefaultComponentRegistryFactory() {
   return [](const EventDispatcher::Shared &eventDispatcher,
-            const SharedContextContainer &contextContainer) {
+            const ContextContainer::Shared &contextContainer) {
     auto registry = std::make_shared<ComponentDescriptorRegistry>();
     return registry;
   };

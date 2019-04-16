@@ -27,7 +27,7 @@ class ParagraphComponentDescriptor final
  public:
   ParagraphComponentDescriptor(
       EventDispatcher::Shared eventDispatcher,
-      const SharedContextContainer &contextContainer)
+      ContextContainer::Shared const &contextContainer)
       : ConcreteComponentDescriptor<ParagraphShadowNode>(eventDispatcher) {
     // Every single `ParagraphShadowNode` will have a reference to
     // a shared `TextLayoutManager`.

@@ -7,6 +7,7 @@
 
 #include <exception>
 
+#include <glog/logging.h>
 #include <gtest/gtest.h>
 #include <react/uimanager/ComponentDescriptorFactory.h>
 #include <react/uimanager/UITemplateProcessor.h>
@@ -31,7 +32,7 @@ namespace react {
 // TODO (T29441913): Codegen this app-specific implementation.
 ComponentRegistryFactory getDefaultComponentRegistryFactory() {
   return [](const EventDispatcher::Shared &eventDispatcher,
-            const SharedContextContainer &contextContainer) {
+            const ContextContainer::Shared &contextContainer) {
     auto registry = std::make_shared<ComponentDescriptorRegistry>();
     registry->registerComponentDescriptor(
         std::make_shared<ViewComponentDescriptor>(eventDispatcher));

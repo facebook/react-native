@@ -32,7 +32,7 @@ namespace react {
 class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
  public:
   Scheduler(
-      const SharedContextContainer &contextContainer,
+      ContextContainer::Shared const &contextContainer,
       ComponentRegistryFactory buildRegistryFunction);
   ~Scheduler();
 

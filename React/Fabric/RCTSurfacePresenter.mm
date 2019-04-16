@@ -201,7 +201,7 @@ using namespace facebook::react;
 
 @synthesize contextContainer = _contextContainer;
 
-- (SharedContextContainer)contextContainer
+- (ContextContainer::Shared)contextContainer
 {
   std::lock_guard<std::mutex> lock(_contextContainerMutex);
 

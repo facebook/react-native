@@ -26,7 +26,7 @@ using SharedTextLayoutManager = std::shared_ptr<const TextLayoutManager>;
  */
 class TextLayoutManager {
  public:
-  TextLayoutManager(const SharedContextContainer &contextContainer);
+  TextLayoutManager(ContextContainer::Shared const &contextContainer);
   ~TextLayoutManager();
 
   /*

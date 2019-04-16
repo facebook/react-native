@@ -23,7 +23,7 @@ class ImageComponentDescriptor final
  public:
   ImageComponentDescriptor(
       EventDispatcher::Shared eventDispatcher,
-      const SharedContextContainer &contextContainer)
+      ContextContainer::Shared const &contextContainer)
       : ConcreteComponentDescriptor(eventDispatcher),
   // TODO (39486757): implement image manager on Android, currently Android does
   // not have an ImageManager so this will crash

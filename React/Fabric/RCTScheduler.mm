@@ -11,7 +11,6 @@
 #import <react/uimanager/ComponentDescriptorFactory.h>
 #import <react/uimanager/Scheduler.h>
 #import <react/uimanager/SchedulerDelegate.h>
-#import <react/utils/ContextContainer.h>
 
 #import <React/RCTFollyConvert.h>
 
@@ -48,12 +47,11 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
   std::shared_ptr<SchedulerDelegateProxy> _delegateProxy;
 }
 
-- (instancetype)initWithContextContainer:(std::shared_ptr<void>)contextContainer
+- (instancetype)initWithContextContainer:(ContextContainer::Shared)contextContainer
 {
   if (self = [super init]) {
     _delegateProxy = std::make_shared<SchedulerDelegateProxy>((__bridge void *)self);
-    _scheduler = std::make_shared<Scheduler>(
-        std::static_pointer_cast<ContextContainer>(contextContainer), getDefaultComponentRegistryFactory());
+    _scheduler = std::make_shared<Scheduler>(contextContainer, getDefaultComponentRegistryFactory());
     _scheduler->setDelegate(_delegateProxy.get());
   }
 

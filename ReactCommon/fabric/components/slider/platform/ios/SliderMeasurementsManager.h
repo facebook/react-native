@@ -20,7 +20,7 @@ namespace react {
  */
 class SliderMeasurementsManager {
  public:
-  SliderMeasurementsManager(const SharedContextContainer &contextContainer) {}
+  SliderMeasurementsManager(ContextContainer::Shared const &contextContainer) {}
 
   static inline bool shouldMeasureSlider() {
     return false;

@@ -28,7 +28,7 @@ namespace react {
  */
 ComponentRegistryFactory getDefaultComponentRegistryFactory() {
   return [](const EventDispatcher::Shared &eventDispatcher,
-            const SharedContextContainer &contextContainer) {
+            const ContextContainer::Shared &contextContainer) {
     auto registry = std::make_shared<ComponentDescriptorRegistry>();
     registry->registerComponentDescriptor(std::make_shared<ViewComponentDescriptor>(eventDispatcher));
     registry->registerComponentDescriptor(std::make_shared<ImageComponentDescriptor>(eventDispatcher, contextContainer));
