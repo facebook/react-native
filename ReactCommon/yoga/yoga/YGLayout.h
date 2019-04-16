@@ -44,7 +44,5 @@ struct YGLayout {
         hadOverflow(false) {}
 
   bool operator==(YGLayout layout) const;
-  bool operator!=(YGLayout layout) const {
-    return !(*this == layout);
-  }
+  bool operator!=(YGLayout layout) const { return !(*this == layout); }
 };

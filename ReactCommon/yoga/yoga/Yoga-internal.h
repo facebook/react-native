@@ -112,12 +112,8 @@ public:
     values_.fill(defaultValue);
   }
 
-  const CompactValue& operator[](size_t i) const noexcept {
-    return values_[i];
-  }
-  CompactValue& operator[](size_t i) noexcept {
-    return values_[i];
-  }
+  const CompactValue& operator[](size_t i) const noexcept { return values_[i]; }
+  CompactValue& operator[](size_t i) noexcept { return values_[i]; }
 
   template <size_t I>
   YGValue get() const noexcept {
