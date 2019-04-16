@@ -28,17 +28,47 @@ namespace react {
 JavaTurboModule::JavaTurboModule(const std::string &name, jni::global_ref<JTurboModule> instance, std::shared_ptr<JSCallInvoker> jsInvoker)
   : TurboModule(name, jsInvoker), instance_(instance) {}
 
+jni::local_ref<JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
+    jsi::Function &function,
+    jsi::Runtime &rt,
+    std::shared_ptr<JSCallInvoker> jsInvoker) {
+  auto wrapper = std::make_shared<react::CallbackWrapper>(
+      std::move(function), rt, jsInvoker);
+  std::function<void(folly::dynamic)> fn = [wrapper](folly::dynamic responses) {
+    if (wrapper == nullptr) {
+      throw std::runtime_error("callback arg cannot be called more than once");
+    }
+    std::shared_ptr<react::CallbackWrapper> rw = wrapper;
+    wrapper->jsInvoker->invokeAsync([rw, responses]() {
+      // TODO (T43155926) valueFromDynamic already returns a Value array. Don't
+      // iterate again
+      jsi::Value args = jsi::valueFromDynamic(rw->runtime, responses);
+      auto argsArray = args.getObject(rw->runtime).asArray(rw->runtime);
+      std::vector<jsi::Value> result;
+      for (size_t i = 0; i < argsArray.size(rw->runtime); i++) {
+        result.emplace_back(
+            rw->runtime, argsArray.getValueAtIndex(rw->runtime, i));
+      }
+      rw->callback.call(
+          rw->runtime, (const jsi::Value *)result.data(), result.size());
+    });
+  };
+  wrapper = nullptr;
+  return JCxxCallbackImpl::newObjectCxxArgs(fn);
+}
+
 // fnjni already does this conversion, but since we are using plain JNI, this needs to be done again
 // TODO (axe) Reuse existing implementation as needed - the exist in MethodInvoker.cpp
 // TODO (axe) If at runtime, JS sends incorrect arguments and this is not typechecked, conversion here will fail. Check for that case (OSS)
-std::unique_ptr<jvalue[]> convertFromJValueArgsToJNIArgs(
+std::vector<jvalue> convertJSIArgsToJNIArgs(
     JNIEnv *env,
     jsi::Runtime &rt,
     const jsi::Value *args,
     size_t count,
-    std::shared_ptr<JSCallInvoker> jsInvoker
-  ) {
-  auto jargs = std::make_unique<jvalue[]>(count);
+    std::shared_ptr<JSCallInvoker> jsInvoker,
+    TurboModuleMethodValueKind valueKind) {
+  auto jargs =
+      std::vector<jvalue>(valueKind == PromiseKind ? count + 1 : count);
   for (size_t i = 0; i < count; i++) {
    const jsi::Value *arg = &args[i];
    if (arg->isBool()) {
@@ -61,27 +91,9 @@ std::unique_ptr<jvalue[]> convertFromJValueArgsToJNIArgs(
        auto jParams = ReadableNativeArray::newObjectCxxArgs(std::move(dynamicFromValue));
        jargs[i].l = jParams.release();
      } else if (objectArg.isFunction(rt)) {
-       auto wrapper = std::make_shared<react::CallbackWrapper>(objectArg.getFunction(rt), rt, jsInvoker);
-       std::function<void(folly::dynamic)> fn = [wrapper](folly::dynamic responses){
-         if (wrapper == nullptr) {
-           throw std::runtime_error("callback arg cannot be called more than once");
-         }
-         std::shared_ptr<react::CallbackWrapper> rw = wrapper;
-         wrapper->jsInvoker->invokeAsync([rw, responses]() {
-           // TODO (axe) valueFromDynamic already returns a Value array. Don't iterate again
-           jsi::Value args = jsi::valueFromDynamic(rw->runtime, responses);
-           auto argsArray = args.getObject(rw->runtime).asArray(rw->runtime);
-           std::vector<jsi::Value> result;
-           for (size_t i = 0; i < argsArray.size(rw->runtime); i++) {
-             result.emplace_back(rw->runtime, argsArray.getValueAtIndex(rw->runtime, i));
-           }
-           rw->callback.call(rw->runtime, (const jsi::Value *)result.data(), result.size());
-         });
-       };
-       wrapper = nullptr;
-       // TODO Use our own implementation of callback instead of relying on JCxxCallbackImpl
-       auto callback = JCxxCallbackImpl::newObjectCxxArgs(fn);
-       jargs[i].l = callback.release();
+       jsi::Function fn = objectArg.getFunction(rt);
+       jargs[i].l =
+           createJavaCallbackFromJSIFunction(fn, rt, jsInvoker).release();
      } else {
        auto dynamicFromValue = jsi::dynamicFromValue(rt, args[i]);
        auto jParams = ReadableNativeMap::createWithContents(std::move(dynamicFromValue));
@@ -89,7 +101,7 @@ std::unique_ptr<jvalue[]> convertFromJValueArgsToJNIArgs(
      }
    }
  }
-  return jargs;
+ return jargs;
 }
 
 jsi::Value convertFromJMapToValue(JNIEnv *env, jsi::Runtime &rt, jobject arg) {
@@ -132,13 +144,12 @@ jsi::Value JavaTurboModule::get(jsi::Runtime& runtime, const jsi::PropNameID& pr
 }
 
 jsi::Value JavaTurboModule::invokeJavaMethod(
-    jsi::Runtime &rt,
+    jsi::Runtime &runtime,
     TurboModuleMethodValueKind valueKind,
     const std::string &methodName,
     const std::string &methodSignature,
     const jsi::Value *args,
     size_t count) {
-
   // We are using JNI directly instead of fbjni since we don't want template functiosn
   // when finding methods.
   JNIEnv *env = jni::Environment::current();
@@ -148,47 +159,102 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
   // TODO (axe) Memoize method call, so we don't look it up each time the method is called
   jmethodID methodID = env->GetMethodID(cls, methodName.c_str(), methodSignature.c_str());
 
-  std::unique_ptr<jvalue[]>jargs = convertFromJValueArgsToJNIArgs(env, rt, args, count, jsInvoker_);
+  std::vector<jvalue> jargs =
+      convertJSIArgsToJNIArgs(env, runtime, args, count, jsInvoker_, valueKind);
   auto instance = instance_.get();
 
   switch (valueKind) {
     case VoidKind: {
-      env->CallVoidMethodA(instance, methodID, jargs.get());
+      env->CallVoidMethodA(instance, methodID, jargs.data());
       return jsi::Value::undefined();
     }
     case BooleanKind: {
-      return jsi::Value((bool)env->CallBooleanMethodA(instance, methodID, jargs.get()));
+      return jsi::Value(
+          (bool)env->CallBooleanMethodA(instance, methodID, jargs.data()));
     }
     case NumberKind: {
-      return jsi::Value((double)env->CallDoubleMethodA(instance, methodID, jargs.get()));
+      return jsi::Value(
+          (double)env->CallDoubleMethodA(instance, methodID, jargs.data()));
     }
     case StringKind: {
-      auto returnString = (jstring) env->CallObjectMethodA(instance, methodID, jargs.get());
+      auto returnString =
+          (jstring)env->CallObjectMethodA(instance, methodID, jargs.data());
       if (returnString == nullptr) {
         return jsi::Value::null();
       }
       const char *js = env->GetStringUTFChars(returnString, nullptr);
       std::string result = js;
       env->ReleaseStringUTFChars(returnString, js);
-      return jsi::Value(rt, jsi::String::createFromUtf8(rt, result));
+      return jsi::Value(runtime, jsi::String::createFromUtf8(runtime, result));
     }
     case ObjectKind: {
-      auto returnObject = (jobject) env->CallObjectMethodA(instance, methodID, jargs.get());
+      auto returnObject =
+          (jobject)env->CallObjectMethodA(instance, methodID, jargs.data());
       if (returnObject == nullptr) {
         return jsi::Value::null();
       }
       auto jResult = jni::adopt_local(returnObject);
       auto result = jni::static_ref_cast<NativeMap::jhybridobject>(jResult);
-      return jsi::valueFromDynamic(rt, result->cthis()->consume());
+      return jsi::valueFromDynamic(runtime, result->cthis()->consume());
     }
     case ArrayKind: {
-      auto returnObject = (jobject) env->CallObjectMethodA(instance, methodID, jargs.get());
+      auto returnObject =
+          (jobject)env->CallObjectMethodA(instance, methodID, jargs.data());
       if (returnObject == nullptr) {
         return jsi::Value::null();
       }
       auto jResult = jni::adopt_local(returnObject);
       auto result = jni::static_ref_cast<NativeArray::jhybridobject>(jResult);
-      return jsi::valueFromDynamic(rt, result->cthis()->consume());
+      return jsi::valueFromDynamic(runtime, result->cthis()->consume());
+    }
+    case PromiseKind: {
+      jsi::Function Promise =
+          runtime.global().getPropertyAsFunction(runtime, "Promise");
+
+      jsi::Function promiseConstructorArg = jsi::Function::createFromHostFunction(
+          runtime,
+          jsi::PropNameID::forAscii(runtime, "fn"),
+          2,
+          [this, &jargs, count, instance, methodID, env](
+              jsi::Runtime &runtime,
+              const jsi::Value &thisVal,
+              const jsi::Value *promiseConstructorArgs,
+              size_t promiseConstructorArgCount) {
+            if (promiseConstructorArgCount != 2) {
+              throw std::invalid_argument("Promise fn arg count must be 2");
+            }
+
+            jsi::Function resolveJSIFn =
+                promiseConstructorArgs[0].getObject(runtime).getFunction(
+                    runtime);
+            jsi::Function rejectJSIFn =
+                promiseConstructorArgs[1].getObject(runtime).getFunction(
+                    runtime);
+
+            auto resolve = createJavaCallbackFromJSIFunction(
+                               resolveJSIFn, runtime, jsInvoker_)
+                               .release();
+            auto reject = createJavaCallbackFromJSIFunction(
+                              rejectJSIFn, runtime, jsInvoker_)
+                              .release();
+
+            jclass cls =
+                env->FindClass("com/facebook/react/bridge/PromiseImpl");
+            jmethodID constructor = env->GetMethodID(
+                cls,
+                "<init>",
+                "(Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V");
+            jobject promise = env->NewObject(cls, constructor, resolve, reject);
+
+            jargs[count].l = promise;
+            env->CallVoidMethodA(instance, methodID, jargs.data());
+
+            return jsi::Value::undefined();
+          });
+
+      jsi::Value promise =
+          Promise.callAsConstructor(runtime, promiseConstructorArg);
+      return promise;
     }
     default:
       throw std::runtime_error("Unable to find method module: " + methodName + "(" + methodSignature + ")" + "in module " + jClassName_);
