@@ -7,10 +7,12 @@
 
 #pragma once
 
+#include <react/core/EventDispatcher.h>
 #include <react/core/Props.h>
 #include <react/core/ShadowNode.h>
 #include <react/core/State.h>
 #include <react/core/StateData.h>
+#include <react/utils/ContextContainer.h>
 
 namespace facebook {
 namespace react {
@@ -27,7 +29,18 @@ using SharedComponentDescriptor = std::shared_ptr<ComponentDescriptor>;
  */
 class ComponentDescriptor {
  public:
+  using Shared = std::shared_ptr<ComponentDescriptor const>;
+
+  ComponentDescriptor(
+      EventDispatcher::Shared const &eventDispatcher,
+      ContextContainer::Shared const &contextContainer = {});
+
   virtual ~ComponentDescriptor() = default;
+
+  /*
+   * Returns stored instance of `ContextContainer`.
+   */
+  ContextContainer::Shared const &getContextContainer();
 
   /*
    * Returns `componentHandle` associated with particular kind of components.
@@ -93,6 +106,10 @@ class ComponentDescriptor {
   virtual State::Shared createState(
       const State::Shared &previousState,
       const StateData::Shared &data) const = 0;
+
+ protected:
+  EventDispatcher::Shared eventDispatcher_;
+  ContextContainer::Shared contextContainer_;
 };
 
 } // namespace react
