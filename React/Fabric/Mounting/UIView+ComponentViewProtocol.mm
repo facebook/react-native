@@ -82,6 +82,11 @@ using namespace facebook::react;
   }
 }
 
+- (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
+{
+  // Default implementation does nothing.
+}
+
 - (void)prepareForRecycle
 {
   // Default implementation does nothing.

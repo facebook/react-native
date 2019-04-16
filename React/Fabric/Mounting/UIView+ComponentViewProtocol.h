@@ -32,6 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateLayoutMetrics:(facebook::react::LayoutMetrics)layoutMetrics
            oldLayoutMetrics:(facebook::react::LayoutMetrics)oldLayoutMetrics;
 
+- (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask;
+
 - (void)prepareForRecycle;
 
 - (facebook::react::SharedProps)props;
