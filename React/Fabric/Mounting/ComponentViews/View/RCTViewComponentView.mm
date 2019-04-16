@@ -21,6 +21,7 @@ using namespace facebook::react;
 @implementation RCTViewComponentView {
   UIColor *_backgroundColor;
   CALayer *_borderLayer;
+  BOOL _needsInvalidateLayer;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -245,9 +246,7 @@ using namespace facebook::react;
 #endif
   }
 
-  if (needsInvalidateLayer) {
-    [self invalidateLayer];
-  }
+  _needsInvalidateLayer = _needsInvalidateLayer || needsInvalidateLayer;
 }
 
 - (void)updateEventEmitter:(SharedEventEmitter)eventEmitter
@@ -258,10 +257,19 @@ using namespace facebook::react;
 
 - (void)updateLayoutMetrics:(LayoutMetrics)layoutMetrics oldLayoutMetrics:(LayoutMetrics)oldLayoutMetrics
 {
-  _layoutMetrics = layoutMetrics;
-
   [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:oldLayoutMetrics];
 
+  _layoutMetrics = layoutMetrics;
+  _needsInvalidateLayer = YES;
+}
+
+- (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask
+{
+  if (!_needsInvalidateLayer) {
+    return;
+  }
+
+  _needsInvalidateLayer = NO;
   [self invalidateLayer];
 }
 
