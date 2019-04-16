@@ -304,19 +304,24 @@ SEL resolveMethodSelector(
     }
   } else {
     unsigned int numberOfMethods;
-    Method *methods = class_copyMethodList([module class], &numberOfMethods);
-    if (methods) {
-      NSString *methodPrefix = [NSString stringWithFormat:@"%s:", methodName.c_str()];
-      for (unsigned int i = 0; i < numberOfMethods; i++) {
-        SEL s = method_getName(methods[i]);
-        NSString *objcMethodName = NSStringFromSelector(s);
-        if ([objcMethodName hasPrefix:methodPrefix]) {
-          selector = s;
-          break;
+    Class cls = [module class];
+    while (cls && cls != [NSObject class] && cls != [NSProxy class]) {
+      Method *methods = class_copyMethodList(cls, &numberOfMethods);
+      if (methods) {
+        NSString *methodPrefix = [NSString stringWithFormat:@"%s:", methodName.c_str()];
+        for (unsigned int i = 0; i < numberOfMethods; i++) {
+          SEL s = method_getName(methods[i]);
+          NSString *objcMethodName = NSStringFromSelector(s);
+          if ([objcMethodName hasPrefix:methodPrefix]) {
+            free(methods);
+            return s;
+          }
         }
+        free(methods);
       }
-      free(methods);
+      cls = class_getSuperclass(cls);
     }
+
     if (!selector) {
       throw std::runtime_error("Unable to find method: " + methodName + " for module: " + moduleName + ". Make sure the module is installed correctly.");
     }
@@ -422,33 +427,36 @@ NSString* ObjCTurboModule::getArgumentTypeName(NSString* methodName, int argInde
 
     unsigned int numberOfMethods;
     Class cls = [instance_ class];
-    Method *methods = class_copyMethodList(object_getClass(cls), &numberOfMethods);
-
-    if (methods) {
-      for (unsigned int i = 0; i < numberOfMethods; i++) {
-        SEL s = method_getName(methods[i]);
-        NSString* mName = NSStringFromSelector(s);
-        if (![mName hasPrefix:@"__rct_export__"]) {
-          continue;
+    while (cls && cls != [NSObject class] && cls != [NSProxy class]) {
+      Method *methods = class_copyMethodList(object_getClass(cls), &numberOfMethods);
+      
+      if (methods) {
+        for (unsigned int i = 0; i < numberOfMethods; i++) {
+          SEL s = method_getName(methods[i]);
+          NSString* mName = NSStringFromSelector(s);
+          if (![mName hasPrefix:@"__rct_export__"]) {
+            continue;
+          }
+          
+          // Message dispatch logic from old infra
+          RCTMethodInfo *(*getMethodInfo)(id, SEL) = (__typeof__(getMethodInfo))objc_msgSend;
+          RCTMethodInfo *methodInfo = getMethodInfo(cls, s);
+          
+          NSArray<RCTMethodArgument *> *arguments;
+          NSString *otherMethodName = RCTParseMethodSignature(methodInfo->objcName, &arguments);
+          
+          NSMutableArray* argumentTypes = [NSMutableArray arrayWithCapacity:[arguments count]];
+          for (int j = 0; j < [arguments count]; j += 1) {
+            [argumentTypes addObject:arguments[j].type];
+          }
+          
+          NSString *normalizedOtherMethodName = [otherMethodName stringByReplacingOccurrencesOfString:@":" withString:@""];
+          methodArgumentTypeNames[normalizedOtherMethodName] = argumentTypes;
         }
-
-        // Message dispatch logic from old infra
-        RCTMethodInfo *(*getMethodInfo)(id, SEL) = (__typeof__(getMethodInfo))objc_msgSend;
-        RCTMethodInfo *methodInfo = getMethodInfo(cls, s);
-
-        NSArray<RCTMethodArgument *> *arguments;
-        NSString *otherMethodName = RCTParseMethodSignature(methodInfo->objcName, &arguments);
-
-        NSMutableArray* argumentTypes = [NSMutableArray arrayWithCapacity:[arguments count]];
-        for (int j = 0; j < [arguments count]; j += 1) {
-          [argumentTypes addObject:arguments[j].type];
-        }
-
-        NSString *normalizedOtherMethodName = [otherMethodName stringByReplacingOccurrencesOfString:@":" withString:@""];
-        methodArgumentTypeNames[normalizedOtherMethodName] = argumentTypes;
+        
+        free(methods);
       }
-
-      free(methods);
+      cls = class_getSuperclass(cls);
     }
 
     methodArgumentTypeNames_ = methodArgumentTypeNames;
