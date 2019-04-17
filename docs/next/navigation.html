@@ -66,6 +66,14 @@
 <p>The first step is to install in your project:</p>
 <pre><code class="hljs">npm <span class="hljs-keyword">install</span> <span class="hljs-comment">--save react-navigation</span>
 </code></pre>
+<p>The second step is to install react-native-gesture-handler</p>
+<pre><code class="hljs">yarn <span class="hljs-keyword">add</span><span class="bash"> react-native-gesture-handler
+</span><span class="hljs-comment"># or with npm</span>
+<span class="hljs-comment"># npm install --save react-native-gesture-handler</span>
+</code></pre>
+<p>Now we need to link our react-native to react-native-gesture-handler</p>
+<pre><code class="hljs">react-<span class="hljs-keyword">native</span> link react-<span class="hljs-keyword">native</span>-gesture-<span class="hljs-keyword">handler</span>
+</code></pre>
 <p>Then you can quickly create an app with a home screen and a profile screen:</p>
 <pre><code class="hljs css language-javascript"><span class="token keyword">import</span> <span class="token punctuation">{</span>createStackNavigator<span class="token punctuation">,</span> createAppContainer<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-navigation'</span><span class="token punctuation">;</span>
 
