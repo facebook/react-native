@@ -22,6 +22,7 @@ const generateEventEmitterCpp = require('./GenerateEventEmitterCpp.js');
 const generateEventEmitterH = require('./GenerateEventEmitterH.js');
 const generatePropsCpp = require('./GeneratePropsCpp.js');
 const generatePropsH = require('./GeneratePropsH.js');
+const generateTests = require('./GenerateTests.js');
 const generateShadowNodeCpp = require('./GenerateShadowNodeCpp.js');
 const generateShadowNodeH = require('./GenerateShadowNodeH.js');
 const generateViewConfigJs = require('./GenerateViewConfigJs.js');
@@ -53,6 +54,7 @@ module.exports = {
       ...generateEventEmitterH.generate(libraryName, schema),
       ...generatePropsCpp.generate(libraryName, schema),
       ...generatePropsH.generate(libraryName, schema),
+      ...generateTests.generate(libraryName, schema),
       ...generateShadowNodeCpp.generate(libraryName, schema),
       ...generateShadowNodeH.generate(libraryName, schema),
       ...generateViewConfigJs.generate(libraryName, schema),
