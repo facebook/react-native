@@ -27,6 +27,8 @@ extern const UIAccessibilityTraits SwitchAccessibilityTrait;
 @property (nonatomic, copy) RCTDirectEventBlock onAccessibilityTap;
 @property (nonatomic, copy) RCTDirectEventBlock onMagicTap;
 @property (nonatomic, copy) RCTDirectEventBlock onAccessibilityEscape;
+@property (nonatomic, copy) RCTDirectEventBlock onAccessibilityFocus;
+@property (nonatomic, copy) RCTDirectEventBlock onAccessibilityBlur;
 
 /**
  * Accessibility properties

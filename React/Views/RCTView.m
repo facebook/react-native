@@ -357,6 +357,24 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
   }
 }
 
+- (void)accessibilityElementDidLoseFocus
+{
+  [super accessibilityElementDidLoseFocus];
+
+  if (_onAccessibilityBlur) {
+    _onAccessibilityBlur(nil);
+  }
+}
+
+- (void)accessibilityElementDidBecomeFocused
+{
+  [super accessibilityElementDidBecomeFocused];
+
+  if (_onAccessibilityFocus) {
+    _onAccessibilityFocus(nil);
+  }
+}
+
 - (NSString *)description
 {
   NSString *superDescription = super.description;

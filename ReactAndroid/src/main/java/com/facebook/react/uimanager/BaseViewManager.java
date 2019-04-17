@@ -13,11 +13,13 @@ import androidx.core.view.ViewCompat;
 import java.util.HashMap;
 
 import com.facebook.react.R;
+import com.facebook.react.common.MapBuilder;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.AccessibilityDelegateUtil.AccessibilityRole;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
 
+import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -287,5 +289,13 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   protected void onAfterUpdateTransaction(@Nonnull T view) {
     super.onAfterUpdateTransaction(view);
     updateViewAccessibility(view);
+  }
+
+  @Override
+  public @Nullable Map<String, Object> getExportedCustomDirectEventTypeConstants() {
+    return MapBuilder.<String, Object>builder()
+          .put(AccessibilityDelegateUtil.getBlurEventName(), MapBuilder.of("registrationName", "onAccessibilityBlur"))
+          .put(AccessibilityDelegateUtil.getFocusEventName(), MapBuilder.of("registrationName", "onAccessibilityFocus"))
+          .build();
   }
 }

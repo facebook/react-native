@@ -6,21 +6,25 @@
 package com.facebook.react.uimanager;
 
 import android.content.Context;
-import androidx.core.view.AccessibilityDelegateCompat;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.CollectionItemInfoCompat;
 import android.text.SpannableString;
 import android.text.style.URLSpan;
+import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
-import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.CollectionItemInfoCompat;
-import android.view.View;
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.R;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+
 import java.util.Locale;
 import javax.annotation.Nullable;
+
+import com.facebook.react.R;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 /**
  * Utility class that handles the addition of a "role" for accessibility to
@@ -28,6 +32,17 @@ import javax.annotation.Nullable;
  */
 
 public class AccessibilityDelegateUtil {
+
+  public static final String BLUR_EVENT_NAME = "onAccessibilityBlur";
+  public static final String FOCUS_EVENT_NAME = "onAccessibilityFocus";
+
+  public static String getBlurEventName() {
+    return BLUR_EVENT_NAME;
+  }
+
+  public static String getFocusEventName() {
+    return FOCUS_EVENT_NAME;
+  }
 
   /**
    * These roles are defined by Google's TalkBack screen reader, and this list
@@ -108,17 +123,34 @@ public class AccessibilityDelegateUtil {
     // if a view already has an accessibility delegate, replacing it could cause
     // problems,
     // so leave it alone.
-    if (!ViewCompat.hasAccessibilityDelegate(view)
-        && (accessibilityRole != null || view.getTag(R.id.accessibility_states) != null)) {
+    if (!ViewCompat.hasAccessibilityDelegate(view)) {
       ViewCompat.setAccessibilityDelegate(view, new AccessibilityDelegateCompat() {
         @Override
         public void onInitializeAccessibilityNodeInfo(View host, AccessibilityNodeInfoCompat info) {
           super.onInitializeAccessibilityNodeInfo(host, info);
-          setRole(info, accessibilityRole, view.getContext());
-          // states are changable.
-          ReadableArray accessibilityStates = (ReadableArray) view.getTag(R.id.accessibility_states);
-          if (accessibilityStates != null) {
-            setState(info, accessibilityStates, view.getContext());
+
+          if (accessibilityRole != null || view.getTag(R.id.accessibility_states) != null) {
+            setRole(info, accessibilityRole, view.getContext());
+            // states are changable.
+            ReadableArray accessibilityStates = (ReadableArray) view.getTag(R.id.accessibility_states);
+            if (accessibilityStates != null) {
+              setState(info, accessibilityStates, view.getContext());
+            }
+          }
+        }
+
+        @Override
+        public void onInitializeAccessibilityEvent(View host, AccessibilityEvent accessibilityEvent) {
+          super.onInitializeAccessibilityEvent(host, accessibilityEvent);
+          ReactContext reactContext = (ReactContext)host.getContext();
+
+          WritableMap event = Arguments.createMap();
+          event.putInt("target", host.getId());
+
+          if (accessibilityEvent.getEventType() == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED) {
+            reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(host.getId(), BLUR_EVENT_NAME, event);
+          } else if (accessibilityEvent.getEventType() == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED) {
+            reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(host.getId(), FOCUS_EVENT_NAME, event);
           }
         }
       });
