@@ -107,8 +107,7 @@
     "prop-types": "^15.7.2",
     "react-devtools-core": "^3.6.0",
     "regenerator-runtime": "^0.13.2",
-    "stacktrace-parser": "^0.1.3",
-    "yargs": "^9.0.0"
+    "stacktrace-parser": "^0.1.3"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
@@ -143,6 +142,7 @@
     "react-native-dummy": "0.2.0",
     "react-test-renderer": "16.8.6",
     "shelljs": "^0.7.8",
+    "yargs": "^9.0.0",
     "ws": "^6.1.4"
   },
   "detox": {
