@@ -1040,6 +1040,90 @@ public class DevSupportManagerImpl implements
     mDevServerHelper.closeInspectorConnection();
   }
 
+  @Override
+  public void setHotModuleReplacementEnabled(final boolean isHotModuleReplacementEnabled) {
+    if (!mIsDevSupportEnabled) {
+      return;
+    }
+
+    UiThreadUtil.runOnUiThread(
+      new Runnable() {
+        @Override
+        public void run() {
+          mDevSettings.setHotModuleReplacementEnabled(isHotModuleReplacementEnabled);
+          handleReloadJS();
+        }
+      }
+    );
+  }
+
+  @Override
+  public void setRemoteJSDebugEnabled(final boolean isRemoteJSDebugEnabled) {
+    if (!mIsDevSupportEnabled) {
+      return;
+    }
+
+    UiThreadUtil.runOnUiThread(
+      new Runnable() {
+        @Override
+        public void run() {
+          mDevSettings.setRemoteJSDebugEnabled(isRemoteJSDebugEnabled);
+          handleReloadJS();
+        }
+      }
+    );
+  }
+
+  @Override
+  public void setReloadOnJSChangeEnabled(final boolean isReloadOnJSChangeEnabled) {
+    if (!mIsDevSupportEnabled) {
+      return;
+    }
+
+    UiThreadUtil.runOnUiThread(
+      new Runnable() {
+        @Override
+        public void run() {
+          mDevSettings.setReloadOnJSChangeEnabled(isReloadOnJSChangeEnabled);
+          handleReloadJS();
+        }
+      }
+    );
+  }
+
+  @Override
+  public void setFpsDebugEnabled(final boolean isFpsDebugEnabled) {
+    if (!mIsDevSupportEnabled) {
+      return;
+    }
+
+    UiThreadUtil.runOnUiThread(
+      new Runnable() {
+        @Override
+        public void run() {
+          mDevSettings.setFpsDebugEnabled(isFpsDebugEnabled);
+        }
+      }
+    );
+  }
+
+  @Override
+  public void toggleElementInspector() {
+    if (!mIsDevSupportEnabled) {
+      return;
+    }
+
+    UiThreadUtil.runOnUiThread(
+      new Runnable() {
+        @Override
+        public void run() {
+          mDevSettings.setElementInspectorEnabled(!mDevSettings.isElementInspectorEnabled());
+          mReactInstanceManagerHelper.toggleElementInspector();
+        }
+      }
+    );
+  }
+
   private void reload() {
     UiThreadUtil.assertOnUiThread();
 
