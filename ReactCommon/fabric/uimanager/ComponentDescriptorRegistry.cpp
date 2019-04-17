@@ -20,23 +20,7 @@ void ComponentDescriptorRegistry::registerComponentDescriptor(
   _registryByName[componentName] = componentDescriptor;
 }
 
-const SharedComponentDescriptor ComponentDescriptorRegistry::operator[](
-    const SharedShadowNode &shadowNode) const {
-  ComponentHandle componentHandle = shadowNode->getComponentHandle();
-  return _registryByHandle.at(componentHandle);
-}
-
-const SharedComponentDescriptor ComponentDescriptorRegistry::operator[](
-    const ComponentName &componentName) const {
-  auto it = _registryByName.find(componentName);
-  if (it == _registryByName.end()) {
-    throw std::invalid_argument(
-        ("Unable to find componentDescriptor for " + componentName).c_str());
-  }
-  return it->second;
-}
-
-static const std::string componentNameByReactViewName(std::string viewName) {
+static ComponentName componentNameByReactViewName(ComponentName viewName) {
   // We need this function only for the transition period;
   // eventually, all names will be unified.
 
@@ -86,8 +70,8 @@ static const std::string componentNameByReactViewName(std::string viewName) {
   return viewName;
 }
 
-const ComponentDescriptor &ComponentDescriptorRegistry::at(
-    ComponentName componentName) const {
+ComponentDescriptor const &ComponentDescriptorRegistry::at(
+    ComponentName const &componentName) const {
   auto unifiedComponentName = componentNameByReactViewName(componentName);
 
   auto it = _registryByName.find(unifiedComponentName);
@@ -102,28 +86,26 @@ const ComponentDescriptor &ComponentDescriptorRegistry::at(
   return *it->second;
 }
 
-const ComponentDescriptor &ComponentDescriptorRegistry::at(
+ComponentDescriptor const &ComponentDescriptorRegistry::at(
     ComponentHandle componentHandle) const {
   return *_registryByHandle.at(componentHandle);
 }
 
 SharedShadowNode ComponentDescriptorRegistry::createNode(
     Tag tag,
-    const std::string &viewName,
+    ComponentName const &viewName,
     Tag rootTag,
-    const folly::dynamic &props,
-    const SharedEventTarget &eventTarget) const {
-  ComponentName componentName = componentNameByReactViewName(viewName);
-  const SharedComponentDescriptor &componentDescriptor = (*this)[componentName];
-
-  SharedShadowNode shadowNode = componentDescriptor->createShadowNode({
+    folly::dynamic const &props,
+    SharedEventTarget const &eventTarget) const {
+  auto unifiedComponentName = componentNameByReactViewName(viewName);
+  auto const &componentDescriptor = this->at(unifiedComponentName);
+  return componentDescriptor.createShadowNode({
       /* .tag = */ tag,
       /* .rootTag = */ rootTag,
-      /* .props = */ componentDescriptor->cloneProps(nullptr, RawProps(props)),
+      /* .props = */ componentDescriptor.cloneProps(nullptr, RawProps(props)),
       /* .eventEmitter = */
-      componentDescriptor->createEventEmitter(std::move(eventTarget), tag),
+      componentDescriptor.createEventEmitter(std::move(eventTarget), tag),
   });
-  return shadowNode;
 }
 
 void ComponentDescriptorRegistry::setFallbackComponentDescriptor(
@@ -132,7 +114,7 @@ void ComponentDescriptorRegistry::setFallbackComponentDescriptor(
   registerComponentDescriptor(descriptor);
 }
 
-const SharedComponentDescriptor
+ComponentDescriptor::Shared
 ComponentDescriptorRegistry::getFallbackComponentDescriptor() const {
   return _fallbackComponentDescriptor;
 }

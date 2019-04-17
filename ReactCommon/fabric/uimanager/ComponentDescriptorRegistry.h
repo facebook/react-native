@@ -23,29 +23,28 @@ using SharedComponentDescriptorRegistry =
  */
 class ComponentDescriptorRegistry {
  public:
+  using Shared = std::shared_ptr<const ComponentDescriptorRegistry>;
+
   void registerComponentDescriptor(
       SharedComponentDescriptor componentDescriptor);
 
-  const ComponentDescriptor &at(ComponentName componentName) const;
-  const ComponentDescriptor &at(ComponentHandle componentHandle) const;
+  ComponentDescriptor const &at(ComponentName const &componentName) const;
+  ComponentDescriptor const &at(ComponentHandle componentHandle) const;
 
-  const SharedComponentDescriptor operator[](
-      const SharedShadowNode &shadowNode) const;
-  const SharedComponentDescriptor operator[](
-      const ComponentName &componentName) const;
   SharedShadowNode createNode(
       Tag tag,
-      const std::string &viewName,
+      ComponentName const &viewName,
       Tag rootTag,
-      const folly::dynamic &props,
-      const SharedEventTarget &eventTarget) const;
+      folly::dynamic const &props,
+      SharedEventTarget const &eventTarget) const;
+
   void setFallbackComponentDescriptor(SharedComponentDescriptor descriptor);
-  const SharedComponentDescriptor getFallbackComponentDescriptor() const;
+  ComponentDescriptor::Shared getFallbackComponentDescriptor() const;
 
  private:
   better::map<ComponentHandle, SharedComponentDescriptor> _registryByHandle;
   better::map<ComponentName, SharedComponentDescriptor> _registryByName;
-  SharedComponentDescriptor _fallbackComponentDescriptor;
+  ComponentDescriptor::Shared _fallbackComponentDescriptor;
 };
 
 } // namespace react
