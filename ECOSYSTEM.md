@@ -12,21 +12,22 @@ There are three types of stakeholders:
 
 Partners are companies that are significantly invested in React Native and have been for years. Informed by their use of React Native, they push for improvements of the core and/or the ecosystem around it. Facebook's partners think of React Native as a product: they understand the trade offs that the project makes as well as future plans and goals. Together we shape the vision for React Native to make it the best way to build applications.
 
-Our current set of partners include Callstack, Expo, Infinite Red, Microsoft and Software Mansion. Besides many engineers from these companies being core contributors, their responsibilities include:
+Our current set of partners include Callstack, Expo, Infinite Red, Microsoft and Software Mansion. Many engineers from these companies are core contributors, and their partner responsibilities also include:
 
 * **[Callstack](https://callstack.com/):** Manages releases, maintains the [React Native CLI](https://github.com/react-native-community/react-native-cli) and organizes [React Native EU](https://react-native.eu/)
 * **[Expo](https://expo.io/):** Builds [expo](https://github.com/expo/expo) on top of React Native to simplify app development
 * **[Infinite Red](https://infinite.red/):** Maintains the [ignite cli/boilerplate](https://github.com/infinitered/ignite), organizes [Chain React Conf](https://infinite.red/ChainReactConf)
-* **[Microsoft](https://www.microsoft.com/en-gb/):** Develops [React Native Windows](https://github.com/Microsoft/react-native-windows) for the UWP platform
-* **[Software Mansion](https://swmansion.com/):** Maintain core RN infrastructure, like JSC, Animated and popular third-party plugins.
+* **[Microsoft](https://www.microsoft.com/en-gb/):** Develops [React Native Windows](https://github.com/Microsoft/react-native-windows) for the Universal Windows Platform (UWP)
+* **[Software Mansion](https://swmansion.com/):** Maintain core infrastructure including JSC, Animated, and other popular third-party plugins.
 
 In terms of open source work, pull requests from partners are commonly prioritized. When you are contributing to React Native, you'll most likely meet somebody who works at one of the partner companies and who is a core contributor:
 
 ## Core Contributors
 
-Core contributors are individual people who contribute to the React Native project. A core contributor is somebody who displayed a lasting commitment to the evolution and maintenance of React Native. The work done by core contributors includes responsibilities mentioned in the “Partners” section above, and concretely means that they:
+Core contributors are individuals who contribute to the React Native project. A core contributor is somebody who displayed a lasting commitment to the evolution and maintenance of React Native. The work done by core contributors includes responsibilities mentioned in the “Partners” section above, and concretely means that they:
 
-* Consistently contribute high quality changes, fixes and improvements as well as reviewing changes from others
+* Consistently contribute high quality changes, fixes and improvements
+* Actively review changes and provide quality feedback to contributors
 * Manage the release process of React Native by maintaining release branches, communicating changes to users and publishing releases
 * Love to help out other users with issues on GitHub
 * Mentor and encourage first time contributors
@@ -36,7 +37,7 @@ Core contributors are individual people who contribute to the React Native proje
 
 These are behaviors we have observed in our existing core contributors. They aren't strict rules but rather outline their usual responsibilities. We do not expect every core contributor to do all of the above things all the time. Most importantly, we want to create a supportive and friendly environment that fosters collaboration. Above all else, **we are always polite and friendly.**
 
-Core contributor status is attained after consistently contributing and taking on the responsibilities mentioned above and granted by other core contributors. Similarly, after a long period of inactivity (6+ months), a core contributor may be removed.
+Core contributor status is attained after consistently contributing and taking on the responsibilities outlined above and granted by other core contributors. Similarly, after a long period of inactivity, a core contributor may be removed.
 
 We aim to make contributing to React Native as easy and transparent as possible. All important topics are handled through a [discussion or RFC process on GitHub](https://github.com/react-native-community/discussions-and-proposals). We are always looking for active, enthusiastic members of the React Native community to become core contributors.
 
@@ -44,7 +45,7 @@ We aim to make contributing to React Native as easy and transparent as possible.
 
 Community contributors are individuals who support projects in the [react-native-community](https://github.com/react-native-community) organization. This organization exists as an incubator for high quality components that extend the capabilities of React Native with functionality that many but not all applications require. Facebook engineers will provide guidance to help build a vibrant community of people and components that make React Native better.
 
-This has multiple benefits because we can:
+This structure has multiple benefits:
 
 * Keep the core of React Native small, which improves performance and reduces the surface area
 * Provide visibility to projects through shared representation, for example on the React Native website or on Twitter
