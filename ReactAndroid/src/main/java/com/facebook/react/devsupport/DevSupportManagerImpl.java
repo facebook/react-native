@@ -1041,7 +1041,7 @@ public class DevSupportManagerImpl implements
   }
 
   @Override
-  public void setHotModuleReplacementEnabled(boolean enableHotModuleReplacement) {
+  public void setHotModuleReplacementEnabled(final boolean isHotModuleReplacementEnabled) {
     if (!mIsDevSupportEnabled) {
       return;
     }
@@ -1050,7 +1050,7 @@ public class DevSupportManagerImpl implements
       new Runnable() {
         @Override
         public void run() {
-          mDevSettings.setHotModuleReplacementEnabled(enableHotModuleReplacement);
+          mDevSettings.setHotModuleReplacementEnabled(isHotModuleReplacementEnabled);
           handleReloadJS();
         }
       }
@@ -1058,7 +1058,7 @@ public class DevSupportManagerImpl implements
   }
 
   @Override
-  public void setRemoteJSDebugEnabled(boolean isRemoteJSDebugEnabled) {
+  public void setRemoteJSDebugEnabled(final boolean isRemoteJSDebugEnabled) {
     if (!mIsDevSupportEnabled) {
       return;
     }
@@ -1075,7 +1075,7 @@ public class DevSupportManagerImpl implements
   }
 
   @Override
-  public void setReloadOnJSChangeEnabled(boolean isReloadOnJSChangeEnabled) {
+  public void setReloadOnJSChangeEnabled(final boolean isReloadOnJSChangeEnabled) {
     if (!mIsDevSupportEnabled) {
       return;
     }
@@ -1092,7 +1092,7 @@ public class DevSupportManagerImpl implements
   }
 
   @Override
-  public void setFpsDebugEnabled(boolean isFpsDebugEnabled) {
+  public void setFpsDebugEnabled(final boolean isFpsDebugEnabled) {
     if (!mIsDevSupportEnabled) {
       return;
     }
