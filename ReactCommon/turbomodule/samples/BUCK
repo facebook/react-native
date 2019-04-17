@@ -62,6 +62,7 @@ rn_xplat_cxx_library(
     platforms = (ANDROID, APPLE),
     preprocessor_flags = [
         "-DLOG_TAG=\"ReactNative\"",
+        "-DRN_TURBO_MODULE_ENABLED",
         "-DWITH_FBSYSTRACE=1",
     ],
     visibility = [
