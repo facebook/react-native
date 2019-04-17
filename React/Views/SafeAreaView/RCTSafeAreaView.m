@@ -101,6 +101,10 @@ static BOOL UIEdgeInsetsEqualToEdgeInsetsWithThreshold(UIEdgeInsets insets1, UIE
 
 - (void)setSafeAreaInsets:(UIEdgeInsets)safeAreaInsets
 {
+  // HACK: enforces a bottom safe area inset when there isn't one being set.
+  // related issue: https://github.com/facebook/react-native/issues/18177
+  safeAreaInsets.bottom = safeAreaInsets.bottom == 0 && safeAreaInsets.left == 0 ? 34 : safeAreaInsets.bottom;
+  
   if (UIEdgeInsetsEqualToEdgeInsetsWithThreshold(safeAreaInsets, _currentSafeAreaInsets, 1.0 / RCTScreenScale())) {
     return;
   }
