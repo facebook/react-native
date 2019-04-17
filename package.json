@@ -83,7 +83,7 @@
     "test-ios-e2e": "detox test -c ios.sim.release RNTester/e2e"
   },
   "peerDependencies": {
-    "react": "16.8.3"
+    "react": "16.8.6"
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0",
@@ -139,9 +139,9 @@
     "jscodeshift": "^0.6.2",
     "mkdirp": "^0.5.1",
     "prettier": "1.16.4",
-    "react": "16.8.3",
+    "react": "16.8.6",
     "react-native-dummy": "0.2.0",
-    "react-test-renderer": "16.8.3",
+    "react-test-renderer": "16.8.6",
     "shelljs": "^0.7.8",
     "ws": "^6.1.4"
   },
