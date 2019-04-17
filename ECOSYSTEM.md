@@ -1,6 +1,6 @@
 # The React Native Ecosystem
 
-We aim to build a vibrant and inclusive ecosystem of partners, core contributors, and community that goes beyond the main React Native GitHub repository. This document/blog post explains the roles and responsibilities of various stakeholders and provides guidelines for the community organization. The structure outlined in this document has been in place for a while but hadn't been written down before.
+We aim to build a vibrant and inclusive ecosystem of partners, core contributors, and community that goes beyond the main React Native GitHub repository. This document explains the roles and responsibilities of various stakeholders and provides guidelines for the community organization. The structure outlined in this document has been in place for a while but hadn't been written down before.
 
 There are three types of stakeholders:
 
