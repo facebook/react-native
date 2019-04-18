@@ -10,10 +10,15 @@
 
 'use strict';
 
-const Platform = require('Platform');
 const React = require('react');
-const ReactNative = require('react-native');
-const {Text, TextInput, View, LayoutAnimation, Button} = ReactNative;
+const {
+  Button,
+  LayoutAnimation,
+  Platform,
+  Text,
+  TextInput,
+  View,
+} = require('react-native');
 const TextLegend = require('./Shared/TextLegend');
 
 type TextAlignExampleRTLState = {|

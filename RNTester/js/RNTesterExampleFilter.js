@@ -11,9 +11,7 @@
 'use strict';
 
 const React = require('react');
-const StyleSheet = require('StyleSheet');
-const TextInput = require('TextInput');
-const View = require('View');
+const {StyleSheet, TextInput, View} = require('react-native');
 
 type Props = {
   filter: Function,

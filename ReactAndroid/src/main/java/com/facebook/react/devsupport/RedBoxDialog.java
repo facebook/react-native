@@ -55,7 +55,6 @@ import org.json.JSONObject;
   private ListView mStackView;
   private Button mReloadJsButton;
   private Button mDismissButton;
-  private Button mCopyToClipboardButton;
   private @Nullable Button mReportButton;
   private @Nullable TextView mReportTextView;
   private @Nullable ProgressBar mLoadingIndicator;
@@ -229,35 +228,6 @@ import org.json.JSONObject;
     }
   }
 
-  private static class CopyToHostClipBoardTask extends AsyncTask<String, Void, Void> {
-    private final DevSupportManager mDevSupportManager;
-
-    private CopyToHostClipBoardTask(DevSupportManager devSupportManager) {
-      mDevSupportManager = devSupportManager;
-    }
-
-    @Override
-    protected Void doInBackground(String... clipBoardString) {
-      try {
-        String sendClipBoardUrl =
-            Uri.parse(mDevSupportManager.getSourceUrl()).buildUpon()
-                .path("/copy-to-clipboard")
-                .query(null)
-                .build()
-                .toString();
-        for (String string: clipBoardString) {
-          OkHttpClient client = new OkHttpClient();
-          RequestBody body = RequestBody.create(null, string);
-          Request request = new Request.Builder().url(sendClipBoardUrl).post(body).build();
-          client.newCall(request).execute();
-        }
-      } catch (Exception e) {
-        FLog.e(ReactConstants.TAG, "Could not copy to the host clipboard", e);
-      }
-      return null;
-    }
-  }
-
   protected RedBoxDialog(
     Context context,
     DevSupportManager devSupportManager,
@@ -287,19 +257,6 @@ import org.json.JSONObject;
       @Override
       public void onClick(View v) {
         dismiss();
-      }
-    });
-    mCopyToClipboardButton = (Button) findViewById(R.id.rn_redbox_copy_button);
-    mCopyToClipboardButton.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        String title = mDevSupportManager.getLastErrorTitle();
-        StackFrame[] stack = mDevSupportManager.getLastErrorStack();
-        Assertions.assertNotNull(title);
-        Assertions.assertNotNull(stack);
-        new CopyToHostClipBoardTask(mDevSupportManager).executeOnExecutor(
-            AsyncTask.THREAD_POOL_EXECUTOR,
-            StackTraceHelper.formatStackTrace(title, stack));
       }
     });
 

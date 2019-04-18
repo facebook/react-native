@@ -94,8 +94,11 @@ public class MountingManager {
 
     mTagToViewState.remove(reactTag);
     Context context = view.getContext();
-    mViewFactory.recycle(
-        (ThemedReactContext) context, Assertions.assertNotNull(viewManager).getName(), view);
+    if (context instanceof ThemedReactContext) {
+      // We only recycle views that were created by RN (its context is instance of ThemedReactContext)
+      mViewFactory.recycle(
+          (ThemedReactContext) context, Assertions.assertNotNull(viewManager).getName(), view);
+    }
   }
 
   /** Releases all references to react root tag. */
@@ -117,9 +120,10 @@ public class MountingManager {
     UiThreadUtil.assertOnUiThread();
     ViewState parentViewState = getViewState(parentTag);
     final ViewGroup parentView = (ViewGroup) parentViewState.mView;
-    final View view = getViewState(tag).mView;
+    ViewState viewState = getViewState(tag);
+    final View view = viewState.mView;
     if (view == null) {
-      throw new IllegalStateException("Unable to find view for tag " + tag);
+      throw new IllegalStateException("Unable to find view for view " + viewState);
     }
     getViewGroupManager(parentViewState).addView(parentView, view, index);
   }
@@ -127,7 +131,7 @@ public class MountingManager {
   private ViewState getViewState(int tag) {
     ViewState viewState = mTagToViewState.get(tag);
     if (viewState == null) {
-      throw new IllegalStateException("Unable to find viewState for tag " + tag);
+      throw new IllegalStateException("Unable to find viewState view " + viewState);
     }
     return viewState;
   }
@@ -149,7 +153,7 @@ public class MountingManager {
   @SuppressWarnings("unchecked") // prevents unchecked conversion warn of the <ViewGroup> type
   private static ViewGroupManager<ViewGroup> getViewGroupManager(ViewState viewState) {
     if (viewState.mViewManager == null) {
-      throw new IllegalStateException("Unable to find ViewManager");
+      throw new IllegalStateException("Unable to find ViewManager for view: " + viewState);
     }
     return (ViewGroupManager<ViewGroup>) viewState.mViewManager;
   }
@@ -167,21 +171,34 @@ public class MountingManager {
   }
 
   @UiThread
-  public void createView(
+  public void createViewWithProps(
       ThemedReactContext themedReactContext,
       String componentName,
       int reactTag,
+      ReadableMap props,
       boolean isLayoutable) {
+    if (mTagToViewState.get(reactTag) != null) {
+      return;
+    }
+
     View view = null;
     ViewManager viewManager = null;
 
+    ReactStylesDiffMap diffMap = null;
+    if (props != null) {
+      diffMap = new ReactStylesDiffMap(props);
+    }
+
     if (isLayoutable) {
       viewManager = mViewManagerRegistry.get(componentName);
-      view = mViewFactory.getOrCreateView(componentName, themedReactContext);
+      view = mViewFactory.getOrCreateView(componentName, diffMap, themedReactContext);
       view.setId(reactTag);
     }
 
-    mTagToViewState.put(reactTag, new ViewState(reactTag, view, viewManager));
+    ViewState viewState = new ViewState(reactTag, view, viewManager);
+    viewState.mCurrentProps = diffMap;
+
+    mTagToViewState.put(reactTag, viewState);
   }
 
   @UiThread
@@ -261,7 +278,7 @@ public class MountingManager {
     ViewManager viewManager = viewState.mViewManager;
 
     if (viewManager == null) {
-      throw new IllegalStateException("Unable to find ViewManager for tag: " + reactTag);
+      throw new IllegalStateException("Unable to find ViewManager for view: " + viewState);
     }
     Object extraData =
         viewManager.updateLocalData(
@@ -301,12 +318,11 @@ public class MountingManager {
     ReadableMap props,
     boolean isLayoutable) {
 
-    if (mTagToViewState.get(reactTag) != null) return;
-
-    createView(reactContext, componentName, reactTag, isLayoutable);
-    if (isLayoutable) {
-      updateProps(reactTag, props);
+    if (mTagToViewState.get(reactTag) != null) {
+      throw new IllegalStateException("View for component " + componentName + " with tag " + reactTag + " already exists.");
     }
+
+    createViewWithProps(reactContext, componentName, reactTag, props, isLayoutable);
   }
 
   @UiThread
@@ -361,6 +377,11 @@ public class MountingManager {
       mView = view;
       mIsRoot = isRoot;
       mViewManager = viewManager;
+    }
+
+    @Override
+    public String toString() {
+      return "ViewState [" + mReactTag + "] - isRoot: " + mIsRoot + " - props: " + mCurrentProps + " - localData: " + mCurrentLocalData + " - viewManager: " + mViewManager;
     }
   }
 }

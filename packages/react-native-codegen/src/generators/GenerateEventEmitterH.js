@@ -108,7 +108,7 @@ function generateStruct(
         structNameParts,
       )} ${property.name};`;
     })
-    .join('\n');
+    .join('\n' + '  ');
 
   properties.forEach((property: ObjectPropertyType) => {
     const name = property.name;
@@ -165,7 +165,7 @@ function generateEvent(componentName: string, event: EventTypeShape): string {
 function generateEvents(componentName: string, component): string {
   return component.events
     .map(event => generateEvent(componentName, event))
-    .join('\n\n');
+    .join('\n\n' + '  ');
 }
 
 module.exports = {

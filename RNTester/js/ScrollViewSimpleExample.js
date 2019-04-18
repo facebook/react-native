@@ -11,8 +11,12 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {ScrollView, StyleSheet, Text, TouchableOpacity} = ReactNative;
+const {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+} = require('react-native');
 
 const NUM_ITEMS = 20;
 

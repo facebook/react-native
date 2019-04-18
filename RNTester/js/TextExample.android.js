@@ -13,8 +13,7 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {Image, StyleSheet, Text, View} = ReactNative;
+const {Image, StyleSheet, Text, View} = require('react-native');
 const RNTesterBlock = require('./RNTesterBlock');
 const RNTesterPage = require('./RNTesterPage');
 const TextLegend = require('./Shared/TextLegend');
@@ -182,6 +181,14 @@ class TextExample extends React.Component<{}> {
               </Text>
               <Text style={{fontFamily: 'notoserif', fontStyle: 'italic'}}>
                 NotoSerif Italic (Missing Font file)
+              </Text>
+              <Text style={{fontFamily: 'srisakdi'}}>Srisakdi Regular</Text>
+              <Text
+                style={{
+                  fontFamily: 'srisakdi',
+                  fontWeight: 'bold',
+                }}>
+                Srisakdi Bold
               </Text>
             </View>
           </View>

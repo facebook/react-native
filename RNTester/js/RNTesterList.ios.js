@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {RNTesterExample} from 'RNTesterTypes';
+import type {RNTesterExample} from './Shared/RNTesterTypes';
 
 const ComponentExamples: Array<RNTesterExample> = [
   {
@@ -310,6 +310,11 @@ const APIExamples: Array<RNTesterExample> = [
     key: 'TransformExample',
     module: require('./TransformExample'),
     supportsTVOS: true,
+  },
+  {
+    key: 'TurboModuleExample',
+    module: require('./TurboModuleExample'),
+    supportsTVOS: false,
   },
   {
     key: 'TVEventHandlerExample',

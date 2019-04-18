@@ -1412,4 +1412,17 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithBundleURL:(__unused NSURL *)bundleUR
   return _reactInstance->getJavaScriptContext();
 }
 
+- (void)invokeAsync:(std::function<void()>&&)func
+{
+  __block auto retainedFunc = std::move(func);
+  __weak __typeof(self) weakSelf = self;
+  [self _runAfterLoad:^{
+    __strong __typeof(self) strongSelf = weakSelf;
+    if (strongSelf->_reactInstance == nullptr) {
+      return;
+    }
+    strongSelf->_reactInstance->invokeAsync(std::move(retainedFunc));
+  }];
+}
+
 @end

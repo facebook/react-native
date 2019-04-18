@@ -200,7 +200,7 @@ function generateEnumString(componentName: string, component): string {
               value,
             )}; return; }`,
         )
-        .join('\n');
+        .join('\n' + '  ');
 
       const toCases = values
         .map(
@@ -209,7 +209,7 @@ function generateEnumString(componentName: string, component): string {
               value,
             )}: return "${value}";`,
         )
-        .join('\n');
+        .join('\n' + '    ');
 
       return enumTemplate
         .replace(/::_ENUM_NAME_::/g, enumName)
@@ -232,7 +232,7 @@ function generatePropsString(
 
       return `const ${nativeType} ${prop.name}{${defaultValue}};`;
     })
-    .join('\n');
+    .join('\n' + '  ');
 }
 
 function getImports(component): Set<string> {

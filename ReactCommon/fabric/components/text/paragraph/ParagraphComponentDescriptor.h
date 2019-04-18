@@ -11,9 +11,10 @@
 #include "ParagraphShadowNode.h"
 
 #include <folly/container/EvictingCacheMap.h>
+#include <react/config/ReactNativeConfig.h>
 #include <react/core/ConcreteComponentDescriptor.h>
 #include <react/textlayoutmanager/TextLayoutManager.h>
-#include <react/uimanager/ContextContainer.h>
+#include <react/utils/ContextContainer.h>
 
 namespace facebook {
 namespace react {
@@ -26,7 +27,7 @@ class ParagraphComponentDescriptor final
  public:
   ParagraphComponentDescriptor(
       EventDispatcher::Shared eventDispatcher,
-      const SharedContextContainer &contextContainer)
+      ContextContainer::Shared const &contextContainer)
       : ConcreteComponentDescriptor<ParagraphShadowNode>(eventDispatcher) {
     // Every single `ParagraphShadowNode` will have a reference to
     // a shared `TextLayoutManager`.

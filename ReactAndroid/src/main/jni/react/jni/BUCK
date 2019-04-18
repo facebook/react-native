@@ -8,6 +8,7 @@ EXPORTED_HEADERS = [
     "JavaScriptExecutorHolder.h",
     "JCallback.h",
     "JMessageQueueThread.h",
+    "JNativeRunnable.h",
     "JReactMarker.h",
     "JSLoader.h",
     "JSLogging.h",

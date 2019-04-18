@@ -183,7 +183,7 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
 
   @Override
   public void putInt(@Nonnull String key, int value) {
-    mBackingMap.put(key, value);
+    mBackingMap.put(key, new Double(value));
   }
 
   @Override
