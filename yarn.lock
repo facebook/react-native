@@ -1064,47 +1064,51 @@
     "@types/istanbul-lib-coverage" "^2.0.0"
     "@types/yargs" "^12.0.9"
 
-"@react-native-community/cli-platform-android@^2.0.0-alpha.4":
-  version "2.0.0-alpha.4"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-2.0.0-alpha.4.tgz#23bed902473ed77feef1409623696905d857839c"
-  integrity sha512-axedvphfY7FY8EAzBHHTA5Y7MtGJrP2uxXPWFo936RgRDVspVmtw2ar98UXgCobhY/3iMuHnDber3iwO0tr4hw==
+"@react-native-community/cli-platform-android@2.0.0-alpha.9", "@react-native-community/cli-platform-android@^2.0.0-alpha.9":
+  version "2.0.0-alpha.9"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-android/-/cli-platform-android-2.0.0-alpha.9.tgz#a97ac08c58698e11ffe1a74858e7ed06036acbab"
+  integrity sha512-JwXofRrWolVJbH/TghyEedfzTcJ5SxP4459elyZZR93hT4/YF0tn9uKNA8fiF+keCU1UiAk7aTmXxSOyURJyAQ==
   dependencies:
-    "@react-native-community/cli-tools" "^2.0.0-alpha.4"
+    "@react-native-community/cli-tools" "^2.0.0-alpha.8"
+    logkitty "^0.4.0"
+    node-fetch "^2.2.0"
+    slash "^2.0.0"
+    xmldoc "^0.4.0"
 
-"@react-native-community/cli-platform-ios@^2.0.0-alpha.4":
-  version "2.0.0-alpha.4"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-2.0.0-alpha.4.tgz#5b0f4f2a2e6c07424a98c33ea6fb683c0d3c8e90"
-  integrity sha512-7C2O+oOz+N2lJSPxNTbt2VnIjpb4vDd+PF1Bd9iyOP79jfTRr6AEUvqJErHuzVdi88U6JUtB5QOU0E6XbnXBgg==
+"@react-native-community/cli-platform-ios@2.0.0-alpha.9", "@react-native-community/cli-platform-ios@^2.0.0-alpha.9":
+  version "2.0.0-alpha.9"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-platform-ios/-/cli-platform-ios-2.0.0-alpha.9.tgz#ac8319b5c69aca6337e643f1d0fd8112ef95486e"
+  integrity sha512-ly9UZWbUvOGpKDO8O2BpCn9E5V6vwInTMVBbjlZisEdBpzrwGNMKzYJmpYfQUpFPL3uLv6zWLIUGVS5E6XSbGg==
   dependencies:
-    "@react-native-community/cli-tools" "^2.0.0-alpha.4"
+    "@react-native-community/cli-tools" "^2.0.0-alpha.8"
+    chalk "^1.1.1"
+    xcode "^2.0.0"
 
-"@react-native-community/cli-tools@^2.0.0-alpha.4":
-  version "2.0.0-alpha.4"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-2.0.0-alpha.4.tgz#5e785d2814bd06f74099e666112f8f00ce08e646"
-  integrity sha512-50u4LxrxxfKMoykzUgjDsCf1YTvxZihTCphZuHyP9ApyXcS1lpBNNibExzNd6adyZq3zw6ZHM62ZTva9SwDDRg==
+"@react-native-community/cli-tools@^2.0.0-alpha.8":
+  version "2.0.0-alpha.8"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli-tools/-/cli-tools-2.0.0-alpha.8.tgz#acbfc1f3088b0103e57aac43ab7a00e347bf8dae"
+  integrity sha512-oE+nE8y0msZXs7d/6REycuQTVhh93G4p3aKv6vv+tLKooUA+ZvK2WpORrTQ/L6Ki5LBKZ7Qxwg8oq/s/7aJZUg==
   dependencies:
     chalk "^1.1.1"
     lodash "^4.17.5"
     mime "^1.3.4"
 
-"@react-native-community/cli@2.0.0-alpha.4":
-  version "2.0.0-alpha.4"
-  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-2.0.0-alpha.4.tgz#09f15e355dd92e116f3723a975a98842ac8d1ee8"
-  integrity sha512-6DYTmOnFv1dnJq+CPGUJ+VOMdLKMDFqPe1dl+NnERvnvuBP3DWmg5DAZiP2yuBGx1WqkxCQJzh3N2TknXtiE3Q==
+"@react-native-community/cli@2.0.0-alpha.10":
+  version "2.0.0-alpha.10"
+  resolved "https://registry.yarnpkg.com/@react-native-community/cli/-/cli-2.0.0-alpha.10.tgz#dab59fac81ffa764e104d91f0852be5494d1e755"
+  integrity sha512-zOkQi1gJRpzJM3vG7s5hTwbtAk0+kT5txKt7d3jcx1zspv/B3jCzv42BWaHy5E/l/6grnsxMtNv0dmABNNYinA==
   dependencies:
-    "@react-native-community/cli-platform-android" "^2.0.0-alpha.4"
-    "@react-native-community/cli-platform-ios" "^2.0.0-alpha.4"
-    "@react-native-community/cli-tools" "^2.0.0-alpha.4"
+    "@react-native-community/cli-platform-android" "^2.0.0-alpha.9"
+    "@react-native-community/cli-platform-ios" "^2.0.0-alpha.9"
+    "@react-native-community/cli-tools" "^2.0.0-alpha.8"
     chalk "^1.1.1"
     commander "^2.19.0"
     compression "^1.7.1"
     connect "^3.6.5"
     cosmiconfig "^5.1.0"
     deepmerge "^3.2.0"
-    denodeify "^1.2.1"
     envinfo "^7.1.0"
     errorhandler "^1.5.0"
-    escape-string-regexp "^1.0.5"
     execa "^1.0.0"
     fs-extra "^7.0.1"
     glob "^7.1.1"
@@ -1115,9 +1119,7 @@
     metro "^0.53.1"
     metro-config "^0.53.1"
     metro-core "^0.53.1"
-    metro-memory-fs "^0.53.1"
     metro-react-native-babel-transformer "^0.53.1"
-    mime "^1.3.4"
     minimist "^1.2.0"
     mkdirp "^0.5.1"
     morgan "^1.9.0"
@@ -1129,10 +1131,7 @@
     semver "^5.0.3"
     serve-static "^1.13.1"
     shell-quote "1.6.1"
-    slash "^2.0.0"
     ws "^1.1.0"
-    xcode "^2.0.0"
-    xmldoc "^0.4.0"
 
 "@reactions/component@^2.0.2":
   version "2.0.2"
@@ -1302,6 +1301,15 @@ ansi-escapes@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/ansi-escapes/-/ansi-escapes-3.1.0.tgz#f73207bb81207d75fd6c83f125af26eea378ca30"
   integrity sha512-UgAb8H9D41AQnu/PbWlCofQVcnV4Gs2bBJi9eZPxfU/hgglFh3SMDMENRIqdr7H6XFnXdoknctFByVsCOotTVw==
+
+ansi-fragments@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/ansi-fragments/-/ansi-fragments-0.2.1.tgz#24409c56c4cc37817c3d7caa99d8969e2de5a05e"
+  integrity sha512-DykbNHxuXQwUDRv5ibc2b0x7uw7wmwOGLBUd5RmaQ5z8Lhx19vwvKV+FAsM5rEA6dEcHxX+/Ad5s9eF2k2bB+w==
+  dependencies:
+    colorette "^1.0.7"
+    slice-ansi "^2.0.0"
+    strip-ansi "^5.0.0"
 
 ansi-gray@^0.1.1:
   version "0.1.1"
@@ -2081,6 +2089,11 @@ color-support@^1.1.3:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/color-support/-/color-support-1.1.3.tgz#93834379a1cc9a0c61f82f52f0d04322251bd5a2"
   integrity sha512-qiBjkpbMLO/HL68y+lh4q0/O1MZFj2RX6X/KmMa3+gJD3z+WwI1ZzDHysvqHGS3mP6mznPckpXmw1nI9cJjyRg==
+
+colorette@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/colorette/-/colorette-1.0.7.tgz#7adf43c445ee63a541b4a4aef7d13f03df1e0cc0"
+  integrity sha512-KeK4klsvAgdODAjFPm6QLzvStizJqlxMBtVo4KQMCgk5tt/tf9rAzxmxLHNRynJg3tJjkKGKbHx3j4HLox27Lw==
 
 colors@^1.0.3, colors@^1.1.2:
   version "1.3.3"
@@ -4733,6 +4746,14 @@ log-symbols@^2.2.0:
   dependencies:
     chalk "^2.0.1"
 
+logkitty@^0.4.0:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/logkitty/-/logkitty-0.4.1.tgz#bbda70eb9f0a3de5f42fb6b47499b9001a4b77d0"
+  integrity sha512-h8SSUaiyi+SIAUoYdWl+hb1zPF7AjFgmSdt2NulA6YLHmbDkNI+LjkIBw2pxfR70LlR9Y2U31npYwQ5GQ2Gq3g==
+  dependencies:
+    ansi-fragments "^0.2.1"
+    yargs "^12.0.5"
+
 loose-envify@^1.0.0, loose-envify@^1.1.0, loose-envify@^1.3.1, loose-envify@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/loose-envify/-/loose-envify-1.4.0.tgz#71ee51fa7be4caec1a63839f7e682d8132d30caf"
@@ -4914,11 +4935,6 @@ metro-inspector-proxy@0.53.1:
     rxjs "^5.4.3"
     ws "^1.1.5"
     yargs "^9.0.0"
-
-metro-memory-fs@^0.53.1:
-  version "0.53.1"
-  resolved "https://registry.yarnpkg.com/metro-memory-fs/-/metro-memory-fs-0.53.1.tgz#d8975317122b8a9a90f649337d58da85e4ae2559"
-  integrity sha512-Xb6/TnMOjquTIRyKpaGx/jYM01+ajtQEjGpGS/N1TtnQeW0P7HMZnD+e/FpMgXmdqsf2IiQMK7l8WONU2L3Evw==
 
 metro-minify-uglify@0.53.1:
   version "0.53.1"
@@ -6625,6 +6641,15 @@ slice-ansi@1.0.0:
   dependencies:
     is-fullwidth-code-point "^2.0.0"
 
+slice-ansi@^2.0.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/slice-ansi/-/slice-ansi-2.1.0.tgz#cacd7693461a637a5788d92a7dd4fba068e81636"
+  integrity sha512-Qu+VC3EwYLldKa1fCxuuvULvSJOKEgk9pi8dZeCVK7TqBfUNTH4sFkk4joj8afVSfAYgJoSOetjx9QWOJ5mYoQ==
+  dependencies:
+    ansi-styles "^3.2.0"
+    astral-regex "^1.0.0"
+    is-fullwidth-code-point "^2.0.0"
+
 slide@^1.1.5:
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/slide/-/slide-1.1.6.tgz#56eb027d65b4d2dce6cb2e2d32c4d4afc9e1d707"
@@ -6863,7 +6888,7 @@ strip-ansi@^5.0.0:
   dependencies:
     ansi-regex "^4.0.0"
 
-strip-ansi@^5.2.0:
+strip-ansi@^5.1.0, strip-ansi@^5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-5.2.0.tgz#8c9a536feb6afc962bdfa5b104a5091c1ad9c0ae"
   integrity sha512-DuRs1gKbBqsMKIZlrffwlug8MHkcnpjs5VPmL1PAh+mA30U0DTotfDZ0d2UUsXpPmPmMMJ6W773MaA3J+lbiWA==
@@ -7517,6 +7542,14 @@ yargs-parser@^10.1.0:
   dependencies:
     camelcase "^4.1.0"
 
+yargs-parser@^11.1.1:
+  version "11.1.1"
+  resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-11.1.1.tgz#879a0865973bca9f6bab5cbdf3b1c67ec7d3bcf4"
+  integrity sha512-C6kB/WJDiaxONLJQnF8ccx9SEeoTTLek8RVbaOIsrAUS8VrBEXfmeSnCZxygc+XC2sNMBIwOOnfcxiynjHsVSQ==
+  dependencies:
+    camelcase "^5.0.0"
+    decamelize "^1.2.0"
+
 yargs-parser@^13.0.0:
   version "13.0.0"
   resolved "https://registry.yarnpkg.com/yargs-parser/-/yargs-parser-13.0.0.tgz#3fc44f3e76a8bdb1cc3602e860108602e5ccde8b"
@@ -7549,6 +7582,24 @@ yargs@^12.0.2:
     which-module "^2.0.0"
     y18n "^3.2.1 || ^4.0.0"
     yargs-parser "^10.1.0"
+
+yargs@^12.0.5:
+  version "12.0.5"
+  resolved "https://registry.yarnpkg.com/yargs/-/yargs-12.0.5.tgz#05f5997b609647b64f66b81e3b4b10a368e7ad13"
+  integrity sha512-Lhz8TLaYnxq/2ObqHDql8dX8CJi97oHxrjUcYtzKbbykPtVW9WB+poxI+NM2UIzsMgNCZTIf0AQwsjK5yMAqZw==
+  dependencies:
+    cliui "^4.0.0"
+    decamelize "^1.2.0"
+    find-up "^3.0.0"
+    get-caller-file "^1.0.1"
+    os-locale "^3.0.0"
+    require-directory "^2.1.1"
+    require-main-filename "^1.0.1"
+    set-blocking "^2.0.0"
+    string-width "^2.0.0"
+    which-module "^2.0.0"
+    y18n "^3.2.1 || ^4.0.0"
+    yargs-parser "^11.1.1"
 
 yargs@^13.0.0:
   version "13.2.2"
