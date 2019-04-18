@@ -9,7 +9,7 @@
 
 #import <React/RCTMountItemProtocol.h>
 #import <React/RCTPrimitives.h>
-#import <react/events/EventEmitter.h>
+#import <react/core/EventEmitter.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -18,8 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface RCTUpdateEventEmitterMountItem : NSObject <RCTMountItemProtocol>
 
-- (instancetype)initWithTag:(ReactTag)tag
-              eventEmitter:(facebook::react::SharedEventEmitter)eventEmitter;
+- (instancetype)initWithTag:(ReactTag)tag eventEmitter:(facebook::react::SharedEventEmitter)eventEmitter;
 
 @end
 

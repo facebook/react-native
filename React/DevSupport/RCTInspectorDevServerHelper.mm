@@ -33,8 +33,8 @@ static NSString *getServerHost(NSURL *bundleURL, NSNumber *port)
 static NSURL *getInspectorDeviceUrl(NSURL *bundleURL)
 {
   NSNumber *inspectorProxyPort = @8082;
-  NSString *escapedDeviceName = [[[UIDevice currentDevice] name] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-  NSString *escapedAppName = [[[NSBundle mainBundle] bundleIdentifier] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+  NSString *escapedDeviceName = [[[UIDevice currentDevice] name] stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
+  NSString *escapedAppName = [[[NSBundle mainBundle] bundleIdentifier] stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
   return [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/inspector/device?name=%@&app=%@",
                                                         getServerHost(bundleURL, inspectorProxyPort),
                                                         escapedDeviceName,
@@ -44,8 +44,8 @@ static NSURL *getInspectorDeviceUrl(NSURL *bundleURL)
 static NSURL *getAttachDeviceUrl(NSURL *bundleURL, NSString *title)
 {
   NSNumber *metroBundlerPort = @8081;
-  NSString *escapedDeviceName = [[[UIDevice currentDevice] name] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-  NSString *escapedAppName = [[[NSBundle mainBundle] bundleIdentifier] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+  NSString *escapedDeviceName = [[[UIDevice currentDevice] name] stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLHostAllowedCharacterSet];
+  NSString *escapedAppName = [[[NSBundle mainBundle] bundleIdentifier] stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLHostAllowedCharacterSet];
   return [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/attach-debugger-nuclide?title=%@&device=%@&app=%@",
                                getServerHost(bundleURL, metroBundlerPort),
                                title,
@@ -91,8 +91,8 @@ static void displayErrorAlert(UIViewController *view, NSString *message) {
 
   __weak UIViewController *viewCapture = view;
   [[[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:
-    ^(NSData *_Nullable data,
-      NSURLResponse *_Nullable response,
+    ^(__unused NSData *_Nullable data,
+      __unused NSURLResponse *_Nullable response,
       NSError *_Nullable error) {
       UIViewController *viewCaptureStrong = viewCapture;
       if (error != nullptr && viewCaptureStrong != nullptr) {

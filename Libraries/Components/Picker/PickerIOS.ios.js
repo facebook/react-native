@@ -18,7 +18,7 @@ const ReactNative = require('ReactNative');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 const processColor = require('processColor');
-const requireNativeComponent = require('requireNativeComponent');
+const RCTPickerNativeComponent = require('RCTPickerNativeComponent');
 
 import type {SyntheticEvent} from 'CoreEventTypes';
 import type {ColorValue} from 'StyleSheetTypes';
@@ -51,10 +51,6 @@ type RCTPickerIOSType = Class<
     |}>,
   >,
 >;
-
-const RCTPickerIOS: RCTPickerIOSType = (requireNativeComponent(
-  'RCTPicker',
-): any);
 
 type Label = Stringish | number;
 
@@ -111,7 +107,7 @@ class PickerIOS extends React.Component<Props, State> {
   render() {
     return (
       <View style={this.props.style}>
-        <RCTPickerIOS
+        <RCTPickerNativeComponent
           ref={picker => {
             this._picker = picker;
           }}

@@ -10,40 +10,38 @@
 namespace facebook {
 namespace react {
 
-class ImageRequest::ImageNoLongerNeededException : public std::logic_error {
- public:
-  ImageNoLongerNeededException()
-      : std::logic_error("Image no longer needed.") {}
-};
-
-ImageRequest::ImageRequest(
-    const ImageSource &imageSource,
-    folly::Future<ImageResponse> &&responseFuture)
-    : imageSource_(imageSource),
-      responseFutureSplitter_(folly::splitFuture(std::move(responseFuture))) {}
+ImageRequest::ImageRequest(const ImageSource &imageSource)
+    : imageSource_(imageSource) {
+  coordinator_ = std::make_shared<ImageResponseObserverCoordinator>();
+}
 
 ImageRequest::ImageRequest(ImageRequest &&other) noexcept
     : imageSource_(std::move(other.imageSource_)),
-      responseFutureSplitter_(std::move(other.responseFutureSplitter_)) {
+      coordinator_(std::move(other.coordinator_)) {
   other.moved_ = true;
-};
+  other.coordinator_ = nullptr;
+  other.cancelRequest_ = nullptr;
+}
 
 ImageRequest::~ImageRequest() {
-  if (!moved_) {
-    auto future = responseFutureSplitter_.getFuture();
-    if (!future.isReady()) {
-      future.raise(ImageNoLongerNeededException());
-    }
+  if (cancelRequest_) {
+    cancelRequest_();
   }
 }
 
-folly::Future<ImageResponse> ImageRequest::getResponseFuture() const {
-  if (moved_) {
-    abort();
-  }
+void ImageRequest::setCancelationFunction(
+    std::function<void(void)> cancelationFunction) {
+  cancelRequest_ = cancelationFunction;
+}
 
-  std::lock_guard<std::mutex> lock(mutex_);
-  return responseFutureSplitter_.getFuture();
+const ImageResponseObserverCoordinator &ImageRequest::getObserverCoordinator()
+    const {
+  return *coordinator_;
+}
+
+const std::shared_ptr<const ImageResponseObserverCoordinator>
+    &ImageRequest::getSharedObserverCoordinator() const {
+  return coordinator_;
 }
 
 } // namespace react

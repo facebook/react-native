@@ -8,6 +8,8 @@
  * @flow
  */
 
+/* eslint-disable react-native/no-inline-styles */
+
 'use strict';
 
 const React = require('react');
@@ -461,6 +463,26 @@ class TextExample extends React.Component<{}> {
             keep writing it{"'"}ll just keep going and going
           </Text>
         </RNTesterBlock>
+        <RNTesterBlock title="allowFontScaling attribute">
+          <Text>
+            By default, text will respect Text Size accessibility setting on
+            Android. It means that all font sizes will be increased or decreased
+            depending on the value of the Text Size setting in the OS's Settings
+            app.
+          </Text>
+          <Text style={{marginTop: 10}}>
+            You can disable scaling for your Text component by passing {'"'}allowFontScaling={
+              '{'
+            }false{'}"'} prop.
+          </Text>
+          <Text allowFontScaling={false} style={{marginTop: 20, fontSize: 15}}>
+            This text will not scale.{' '}
+            <Text style={{fontSize: 15}}>
+              This text also won't scale because it inherits "allowFontScaling"
+              from its parent.
+            </Text>
+          </Text>
+        </RNTesterBlock>
         <RNTesterBlock title="selectable attribute">
           <Text selectable>
             This text is selectable if you click-and-hold, and will offer the
@@ -580,12 +602,26 @@ class TextExample extends React.Component<{}> {
               '.aa\tbb\t\tcc  dd EE \r\nZZ I like to eat apples. \n中文éé 我喜欢吃苹果。awdawd   '
             }
           </Text>
+          <Text
+            style={{
+              textTransform: 'uppercase',
+              fontSize: 16,
+              color: 'turquoise',
+              backgroundColor: 'blue',
+              lineHeight: 32,
+              letterSpacing: 2,
+              alignSelf: 'flex-start',
+            }}>
+            Works with other text styles
+          </Text>
+        </RNTesterBlock>
+        <RNTesterBlock title="Substring Emoji (should only see 'test')">
+          <Text>{'test🙃'.substring(0, 5)}</Text>
         </RNTesterBlock>
       </RNTesterPage>
     );
   }
 }
-
 const styles = StyleSheet.create({
   backgroundColorText: {
     left: 5,

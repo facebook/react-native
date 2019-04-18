@@ -6,8 +6,8 @@
  */
 
 #include "ParagraphShadowNode.h"
-
 #include "ParagraphLocalData.h"
+#include "ParagraphMeasurementCache.h"
 
 namespace facebook {
 namespace react {
@@ -32,6 +32,12 @@ void ParagraphShadowNode::setTextLayoutManager(
   textLayoutManager_ = textLayoutManager;
 }
 
+void ParagraphShadowNode::setMeasureCache(
+    const ParagraphMeasurementCache *cache) {
+  ensureUnsealed();
+  measureCache_ = cache;
+}
+
 void ParagraphShadowNode::updateLocalDataIfNeeded() {
   ensureUnsealed();
 
@@ -52,10 +58,28 @@ void ParagraphShadowNode::updateLocalDataIfNeeded() {
 #pragma mark - LayoutableShadowNode
 
 Size ParagraphShadowNode::measure(LayoutConstraints layoutConstraints) const {
+  AttributedString attributedString = getAttributedString();
+
+  if (attributedString.isEmpty()) {
+    return {0, 0};
+  }
+
+  const ParagraphAttributes paragraphAttributes =
+      getProps()->paragraphAttributes;
+
+  // Cache results of this function so we don't need to call measure()
+  // repeatedly.
+  if (measureCache_) {
+    return measureCache_->get(
+        ParagraphMeasurementCacheKey{attributedString, paragraphAttributes, layoutConstraints},
+        [&](const ParagraphMeasurementCacheKey &key) {
+          return textLayoutManager_->measure(
+              attributedString, paragraphAttributes, layoutConstraints);
+        });
+  }
+
   return textLayoutManager_->measure(
-      getAttributedString(),
-      getProps()->paragraphAttributes,
-      layoutConstraints);
+      attributedString, paragraphAttributes, layoutConstraints);
 }
 
 void ParagraphShadowNode::layout(LayoutContext layoutContext) {

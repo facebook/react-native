@@ -21,6 +21,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
@@ -92,9 +93,12 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
 
     public void showPendingAlert() {
       UiThreadUtil.assertOnUiThread();
+      SoftAssertions.assertCondition(mIsInForeground, "showPendingAlert() called in background");
       if (mFragmentToShow == null) {
         return;
       }
+
+      dismissExisting();
       if (isUsingSupportLibrary()) {
         ((SupportAlertFragment) mFragmentToShow).show(mSupportFragmentManager, FRAGMENT_TAG);
       } else {
@@ -104,6 +108,9 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
     }
 
     private void dismissExisting() {
+      if (!mIsInForeground) {
+        return;
+      }
       if (isUsingSupportLibrary()) {
         SupportAlertFragment oldFragment =
             (SupportAlertFragment) mSupportFragmentManager.findFragmentByTag(FRAGMENT_TAG);
@@ -119,7 +126,7 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
       }
     }
 
-    public void showNewAlert(boolean isInForeground, Bundle arguments, Callback actionCallback) {
+    public void showNewAlert(Bundle arguments, Callback actionCallback) {
       UiThreadUtil.assertOnUiThread();
 
       dismissExisting();
@@ -129,7 +136,7 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
 
       if (isUsingSupportLibrary()) {
         SupportAlertFragment alertFragment = new SupportAlertFragment(actionListener, arguments);
-        if (isInForeground) {
+        if (mIsInForeground && !mSupportFragmentManager.isStateSaved()) {
           if (arguments.containsKey(KEY_CANCELABLE)) {
             alertFragment.setCancelable(arguments.getBoolean(KEY_CANCELABLE));
           }
@@ -139,7 +146,7 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
         }
       } else {
         AlertFragment alertFragment = new AlertFragment(actionListener, arguments);
-        if (isInForeground) {
+        if (mIsInForeground) {
           if (arguments.containsKey(KEY_CANCELABLE)) {
             alertFragment.setCancelable(arguments.getBoolean(KEY_CANCELABLE));
           }
@@ -255,7 +262,7 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
     UiThreadUtil.runOnUiThread(new Runnable() {
       @Override
       public void run() {
-        fragmentManagerHelper.showNewAlert(mIsInForeground, args, actionCallback);
+        fragmentManagerHelper.showNewAlert(args, actionCallback);
       }
     });
 

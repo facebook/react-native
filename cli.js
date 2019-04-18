@@ -9,7 +9,7 @@
 
 'use strict';
 
-var cli = require('react-native-local-cli');
+var cli = require('@react-native-community/cli');
 
 if (require.main === module) {
   cli.run();

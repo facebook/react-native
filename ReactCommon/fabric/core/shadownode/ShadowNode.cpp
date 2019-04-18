@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include <react/core/ComponentDescriptor.h>
 #include <react/core/ShadowNodeFragment.h>
 #include <react/debug/DebugStringConvertible.h>
 #include <react/debug/debugStringConvertibleUtils.h>
@@ -26,13 +27,14 @@ SharedShadowNodeSharedList ShadowNode::emptySharedShadowNodeSharedList() {
 
 ShadowNode::ShadowNode(
     const ShadowNodeFragment &fragment,
-    const ShadowNodeCloneFunction &cloneFunction)
+    const ComponentDescriptor &componentDescriptor)
     : tag_(fragment.tag),
       rootTag_(fragment.rootTag),
       props_(fragment.props),
       eventEmitter_(fragment.eventEmitter),
       children_(fragment.children ?: emptySharedShadowNodeSharedList()),
-      cloneFunction_(cloneFunction),
+      state_(fragment.state),
+      componentDescriptor_(componentDescriptor),
       childrenAreShared_(true),
       revision_(1) {
   assert(props_);
@@ -48,7 +50,8 @@ ShadowNode::ShadowNode(
       eventEmitter_(fragment.eventEmitter ?: sourceShadowNode.eventEmitter_),
       children_(fragment.children ?: sourceShadowNode.children_),
       localData_(fragment.localData ?: sourceShadowNode.localData_),
-      cloneFunction_(sourceShadowNode.cloneFunction_),
+      state_(fragment.state ?: sourceShadowNode.getCommitedState()),
+      componentDescriptor_(sourceShadowNode.componentDescriptor_),
       childrenAreShared_(true),
       revision_(sourceShadowNode.revision_ + 1) {
   assert(props_);
@@ -56,8 +59,7 @@ ShadowNode::ShadowNode(
 }
 
 UnsharedShadowNode ShadowNode::clone(const ShadowNodeFragment &fragment) const {
-  assert(cloneFunction_);
-  return cloneFunction_(*this, fragment);
+  return componentDescriptor_.cloneShadowNode(*this, fragment);
 }
 
 #pragma mark - Getters
@@ -80,6 +82,15 @@ Tag ShadowNode::getTag() const {
 
 Tag ShadowNode::getRootTag() const {
   return rootTag_;
+}
+
+const State::Shared &ShadowNode::getState() const {
+  return state_;
+}
+
+const State::Shared &ShadowNode::getCommitedState() const {
+  return state_ ? state_->getCommitedState()
+                : ShadowNodeFragment::statePlaceholder();
 }
 
 SharedLocalData ShadowNode::getLocalData() const {
@@ -144,6 +155,13 @@ void ShadowNode::cloneChildrenIfShared() {
   }
   childrenAreShared_ = false;
   children_ = std::make_shared<SharedShadowNodeList>(*children_);
+}
+
+void ShadowNode::setMounted(bool mounted) const {
+  eventEmitter_->setEnabled(mounted);
+  if (mounted && state_) {
+    state_->commit(*this);
+  }
 }
 
 bool ShadowNode::constructAncestorPath(

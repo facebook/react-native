@@ -52,20 +52,25 @@ static void RCTReachabilityCallback(__unused SCNetworkReachabilityRef target, SC
 {
   RCTNetInfo *self = (__bridge id)info;
   BOOL didSetReachabilityFlags = [self setReachabilityStatus:flags];
+  
+  NSString *connectionType = self->_connectionType ?: RCTConnectionTypeUnknown;
+  NSString *effectiveConnectionType = self->_effectiveConnectionType ?: RCTEffectiveConnectionTypeUnknown;
+  NSString *networkInfo = self->_statusDeprecated ?: RCTReachabilityStateUnknown;
+
   if (self->_firstTimeReachability && self->_resolve) {
     SCNetworkReachabilityUnscheduleFromRunLoop(self->_firstTimeReachability, CFRunLoopGetMain(), kCFRunLoopCommonModes);
     CFRelease(self->_firstTimeReachability);
-    self->_resolve(@{@"connectionType": self->_connectionType ?: RCTConnectionTypeUnknown,
-                     @"effectiveConnectionType": self->_effectiveConnectionType ?: RCTEffectiveConnectionTypeUnknown,
-                     @"network_info": self->_statusDeprecated ?: RCTReachabilityStateUnknown});
+    self->_resolve(@{@"connectionType": connectionType,
+                     @"effectiveConnectionType": effectiveConnectionType,
+                     @"network_info": networkInfo});
     self->_firstTimeReachability = nil;
     self->_resolve = nil;
   }
 
   if (didSetReachabilityFlags && self->_isObserving) {
-    [self sendEventWithName:@"networkStatusDidChange" body:@{@"connectionType": self->_connectionType,
-                                                             @"effectiveConnectionType": self->_effectiveConnectionType,
-                                                             @"network_info": self->_statusDeprecated}];
+    [self sendEventWithName:@"networkStatusDidChange" body:@{@"connectionType": connectionType,
+                                                             @"effectiveConnectionType": effectiveConnectionType,
+                                                             @"network_info": networkInfo}];
   }
 }
 

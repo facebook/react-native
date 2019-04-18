@@ -157,7 +157,7 @@ function abortPrefetch(requestId: number) {
  */
 async function queryCache(
   urls: Array<string>,
-): Promise<Map<string, 'memory' | 'disk'>> {
+): Promise<{[string]: 'memory' | 'disk' | 'disk/memory'}> {
   return await ImageLoader.queryCache(urls);
 }
 
@@ -259,6 +259,7 @@ let Image = (
 };
 
 Image = React.forwardRef(Image);
+Image.displayName = 'Image';
 
 /**
  * Retrieve the width and height (in pixels) of an image prior to displaying it

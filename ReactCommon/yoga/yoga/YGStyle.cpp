@@ -7,43 +7,44 @@
 #include "YGStyle.h"
 
 // Yoga specific properties, not compatible with flexbox specification
-bool YGStyle::operator==(const YGStyle& style) {
-  bool areNonFloatValuesEqual = direction == style.direction &&
-      flexDirection == style.flexDirection &&
-      justifyContent == style.justifyContent &&
-      alignContent == style.alignContent && alignItems == style.alignItems &&
-      alignSelf == style.alignSelf && positionType == style.positionType &&
-      flexWrap == style.flexWrap && overflow == style.overflow &&
-      display == style.display && YGValueEqual(flexBasis, style.flexBasis) &&
-      margin == style.margin && position == style.position &&
-      padding == style.padding && border == style.border &&
-      dimensions == style.dimensions && minDimensions == style.minDimensions &&
-      maxDimensions == style.maxDimensions;
+bool operator==(const YGStyle& lhs, const YGStyle& rhs) {
+  bool areNonFloatValuesEqual = lhs.direction == rhs.direction &&
+      lhs.flexDirection == rhs.flexDirection &&
+      lhs.justifyContent == rhs.justifyContent &&
+      lhs.alignContent == rhs.alignContent &&
+      lhs.alignItems == rhs.alignItems && lhs.alignSelf == rhs.alignSelf &&
+      lhs.positionType == rhs.positionType && lhs.flexWrap == rhs.flexWrap &&
+      lhs.overflow == rhs.overflow && lhs.display == rhs.display &&
+      YGValueEqual(lhs.flexBasis, rhs.flexBasis) && lhs.margin == rhs.margin &&
+      lhs.position == rhs.position && lhs.padding == rhs.padding &&
+      lhs.border == rhs.border && lhs.dimensions == rhs.dimensions &&
+      lhs.minDimensions == rhs.minDimensions &&
+      lhs.maxDimensions == rhs.maxDimensions;
 
-  areNonFloatValuesEqual =
-      areNonFloatValuesEqual && flex.isUndefined() == style.flex.isUndefined();
-  if (areNonFloatValuesEqual && !flex.isUndefined() &&
-      !style.flex.isUndefined()) {
-    areNonFloatValuesEqual = areNonFloatValuesEqual && flex == style.flex;
+  areNonFloatValuesEqual = areNonFloatValuesEqual &&
+      lhs.flex.isUndefined() == rhs.flex.isUndefined();
+  if (areNonFloatValuesEqual && !lhs.flex.isUndefined() &&
+      !rhs.flex.isUndefined()) {
+    areNonFloatValuesEqual = areNonFloatValuesEqual && lhs.flex == rhs.flex;
   }
 
   areNonFloatValuesEqual = areNonFloatValuesEqual &&
-      flexGrow.isUndefined() == style.flexGrow.isUndefined();
-  if (areNonFloatValuesEqual && !flexGrow.isUndefined()) {
+      lhs.flexGrow.isUndefined() == rhs.flexGrow.isUndefined();
+  if (areNonFloatValuesEqual && !lhs.flexGrow.isUndefined()) {
     areNonFloatValuesEqual =
-        areNonFloatValuesEqual && flexGrow == style.flexGrow;
+        areNonFloatValuesEqual && lhs.flexGrow == rhs.flexGrow;
   }
 
   areNonFloatValuesEqual = areNonFloatValuesEqual &&
-      flexShrink.isUndefined() == style.flexShrink.isUndefined();
-  if (areNonFloatValuesEqual && !style.flexShrink.isUndefined()) {
+      lhs.flexShrink.isUndefined() == rhs.flexShrink.isUndefined();
+  if (areNonFloatValuesEqual && !rhs.flexShrink.isUndefined()) {
     areNonFloatValuesEqual =
-        areNonFloatValuesEqual && flexShrink == style.flexShrink;
+        areNonFloatValuesEqual && lhs.flexShrink == rhs.flexShrink;
   }
 
-  if (!(aspectRatio.isUndefined() && style.aspectRatio.isUndefined())) {
+  if (!(lhs.aspectRatio.isUndefined() && rhs.aspectRatio.isUndefined())) {
     areNonFloatValuesEqual =
-        areNonFloatValuesEqual && aspectRatio == style.aspectRatio;
+        areNonFloatValuesEqual && lhs.aspectRatio == rhs.aspectRatio;
   }
 
   return areNonFloatValuesEqual;

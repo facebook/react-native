@@ -22,7 +22,7 @@ ImageManager::~ImageManager() {
 
 ImageRequest ImageManager::requestImage(const ImageSource &imageSource) const {
   // Not implemented.
-  return {};
+  return ImageRequest(imageSource);
 }
 
 } // namespace react

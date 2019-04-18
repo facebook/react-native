@@ -26,7 +26,7 @@ struct ConcreteSystraceSection {
 public:
   template<typename... ConvertsToStringPiece>
   explicit
-  ConcreteSystraceSection(const char* name, ConvertsToStringPiece&&... args)
+  ConcreteSystraceSection(__unused const char* name, __unused ConvertsToStringPiece&&... args)
     : m_section(TRACE_TAG_REACT_CXX_BRIDGE, name, args...)
   {}
 
@@ -39,7 +39,7 @@ struct DummySystraceSection {
 public:
   template<typename... ConvertsToStringPiece>
   explicit
-  DummySystraceSection(const char* name, ConvertsToStringPiece&&... args)
+  DummySystraceSection(__unused const char* name, __unused ConvertsToStringPiece&&... args)
     {}
 };
 using SystraceSection = DummySystraceSection;

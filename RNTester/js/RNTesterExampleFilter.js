@@ -53,7 +53,7 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
     }));
 
     return (
-      <View>
+      <View style={styles.container}>
         {this._renderTextInput()}
         {this.props.render({filteredSections})}
       </View>
@@ -97,6 +97,9 @@ const styles = StyleSheet.create({
     paddingLeft: 8,
     paddingVertical: 0,
     height: 35,
+  },
+  container: {
+    flex: 1,
   },
 });
 

@@ -5,11 +5,29 @@
 	 * LICENSE file in the root directory of this source tree.
 	 *
 	 * @format
-	 * @flow strict-local
+	 * @flow
 	 */
 
 'use strict';
 
+import type {SyntheticEvent} from 'CoreEventTypes';
+import type {ViewProps} from 'ViewPropTypes';
+import type {NativeComponent} from 'ReactNative';
+
+type SnapshotReadyEvent = SyntheticEvent<
+  $ReadOnly<{
+    testIdentifier: string,
+  }>,
+>;
+
+type NativeProps = $ReadOnly<{|
+  ...ViewProps,
+  onSnapshotReady?: ?(event: SnapshotReadyEvent) => mixed,
+  testIdentifier?: ?string,
+|}>;
+
+type SnapshotViewNativeType = Class<NativeComponent<NativeProps>>;
+
 const requireNativeComponent = require('requireNativeComponent');
 
-module.exports = requireNativeComponent('RCTSnapshot');
+module.exports = ((requireNativeComponent('RCTSnapshot'):any): SnapshotViewNativeType);

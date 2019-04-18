@@ -70,7 +70,8 @@ public:
 
   template <YGUnit Unit>
   static CompactValue ofMaybe(float value) noexcept {
-    return std::isnan(value) ? ofUndefined() : of<Unit>(value);
+    return std::isnan(value) || std::isinf(value) ? ofUndefined()
+                                                  : of<Unit>(value);
   }
 
   static constexpr CompactValue ofZero() noexcept {
@@ -149,8 +150,8 @@ private:
   static constexpr uint32_t BIAS = 0x20000000;
   static constexpr uint32_t PERCENT_BIT = 0x40000000;
 
-  // these are signaling NaNs with specific bit pattern as payload
-  // they will be silenced whenever going through an FPU operation on ARM + x86
+  // these are signaling NaNs with specific bit pattern as payload they will be
+  // silenced whenever going through an FPU operation on ARM + x86
   static constexpr uint32_t AUTO_BITS = 0x7faaaaaa;
   static constexpr uint32_t ZERO_BITS_POINT = 0x7f8f0f0f;
   static constexpr uint32_t ZERO_BITS_PERCENT = 0x7f80f0f0;

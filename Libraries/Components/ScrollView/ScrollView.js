@@ -96,6 +96,13 @@ type IOSProps = $ReadOnly<{|
    */
   bounces?: ?boolean,
   /**
+   * By default, ScrollView has an active pan responder that hijacks panresponders
+   * deeper in the render tree in order to prevent accidental touches while scrolling.
+   * However, in certain occasions (such as when using snapToInterval) in a vertical scrollview
+   * You may want to disable this behavior in order to prevent the ScrollView from blocking touches
+   */
+  disableScrollViewPanResponder?: ?boolean,
+  /**
    * When true, gestures can drive zoom past min/max and the zoom will animate
    * to the min/max value at gesture end, otherwise the zoom will not exceed
    * the limits.
@@ -403,8 +410,8 @@ export type Props = $ReadOnly<{|
    *   - `false`, deprecated, use 'never' instead
    *   - `true`, deprecated, use 'always' instead
    */
-  /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an error
-   * found when Flow v0.89 was deployed. To see the error, delete this comment
+  /* $FlowFixMe(>=0.92.0 site=react_native_fb) This comment suppresses an error
+   * found when Flow v0.92 was deployed. To see the error, delete this comment
    * and run Flow. */
   keyboardShouldPersistTaps?: ?('always' | 'never' | 'handled' | false | true),
   /**
@@ -651,6 +658,18 @@ class ScrollView extends React.Component<Props, State> {
     this._headerLayoutYs = new Map();
   }
 
+  UNSAFE_componentWillReceiveProps(nextProps: Props) {
+    const currentContentInsetTop = this.props.contentInset
+      ? this.props.contentInset.top
+      : 0;
+    const nextContentInsetTop = nextProps.contentInset
+      ? nextProps.contentInset.top
+      : 0;
+    if (currentContentInsetTop !== nextContentInsetTop) {
+      this._scrollAnimatedValue.setOffset(nextContentInsetTop || 0);
+    }
+  }
+
   componentDidMount() {
     this._updateAnimatedNodeAttachment();
   }
@@ -761,7 +780,6 @@ class ScrollView extends React.Component<Props, State> {
   }
 
   _getKeyForIndex(index, childArray) {
-    // $FlowFixMe Invalid prop usage
     const child = childArray[index];
     return child && child.key;
   }

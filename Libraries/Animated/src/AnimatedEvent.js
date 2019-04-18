@@ -158,7 +158,7 @@ class AnimatedEvent {
     };
   }
 
-  _callListeners(...args) {
+  _callListeners(...args: any) {
     this._listeners.forEach(listener => listener(...args));
   }
 

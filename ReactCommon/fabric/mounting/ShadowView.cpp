@@ -24,7 +24,8 @@ ShadowView::ShadowView(const ShadowNode &shadowNode)
       props(shadowNode.getProps()),
       eventEmitter(shadowNode.getEventEmitter()),
       layoutMetrics(layoutMetricsFromShadowNode(shadowNode)),
-      localData(shadowNode.getLocalData()) {}
+      localData(shadowNode.getLocalData()),
+      state(shadowNode.getState()) {}
 
 bool ShadowView::operator==(const ShadowView &rhs) const {
   return std::tie(
@@ -33,14 +34,16 @@ bool ShadowView::operator==(const ShadowView &rhs) const {
              this->props,
              this->eventEmitter,
              this->layoutMetrics,
-             this->localData) ==
+             this->localData,
+             this->state) ==
       std::tie(
              rhs.tag,
              rhs.componentName,
              rhs.props,
              rhs.eventEmitter,
              rhs.layoutMetrics,
-             rhs.localData);
+             rhs.localData,
+             rhs.state);
 }
 
 bool ShadowView::operator!=(const ShadowView &rhs) const {

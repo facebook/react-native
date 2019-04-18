@@ -3,8 +3,8 @@
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
 
-apply plugin: 'maven'
-apply plugin: 'signing'
+apply(plugin: "maven")
+apply(plugin: "signing")
 
 ext {
     AAR_OUTPUT_URL = "file://${projectDir}/../android"
@@ -15,47 +15,47 @@ ext {
 // 2) To upload artifact to maven central use: :uploadArchives (you'd need to have the permission to do that)
 
 def isReleaseBuild() {
-    return VERSION_NAME.contains('SNAPSHOT') == false
+    return VERSION_NAME.contains("SNAPSHOT") == false
 }
 
 def getRepositoryUrl() {
-    return project.findProperty('repositoryUrl') ?: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+    return project.findProperty("repositoryUrl") ?: "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
 }
 
 def getRepositoryUsername() {
-    return project.findProperty('repositoryUsername') ?: ''
+    return project.findProperty("repositoryUsername") ?: ""
 }
 
 def getRepositoryPassword() {
-    return project.findProperty('repositoryPassword') ?: ''
+    return project.findProperty("repositoryPassword") ?: ""
 }
 
 def configureReactNativePom(def pom) {
     pom.project {
-        name POM_NAME
-        artifactId POM_ARTIFACT_ID
-        packaging POM_PACKAGING
-        description 'A framework for building native apps with React'
-        url 'https://github.com/facebook/react-native'
+        name(POM_NAME)
+        artifactId(POM_ARTIFACT_ID)
+        packaging(POM_PACKAGING)
+        description("A framework for building native apps with React")
+        url("https://github.com/facebook/react-native")
 
         scm {
-            url 'https://github.com/facebook/react-native.git'
-            connection 'scm:git:https://github.com/facebook/react-native.git'
-            developerConnection 'scm:git:git@github.com:facebook/react-native.git'
+            url("https://github.com/facebook/react-native.git")
+            connection("scm:git:https://github.com/facebook/react-native.git")
+            developerConnection("scm:git:git@github.com:facebook/react-native.git")
         }
 
         licenses {
             license {
-                name 'MIT License'
-                url 'https://github.com/facebook/react-native/blob/master/LICENSE'
-                distribution 'repo'
+                name("MIT License")
+                url("https://github.com/facebook/react-native/blob/master/LICENSE")
+                distribution("repo")
             }
         }
 
         developers {
             developer {
-                id 'facebook'
-                name 'Facebook'
+                id("facebook")
+                name("Facebook")
             }
         }
     }
@@ -64,7 +64,7 @@ def configureReactNativePom(def pom) {
 if (JavaVersion.current().isJava8Compatible()) {
   allprojects {
     tasks.withType(Javadoc) {
-      options.addStringOption('Xdoclint:none', '-quiet')
+      options.addStringOption("Xdoclint:none", "-quiet")
     }
   }
 }
@@ -74,40 +74,40 @@ afterEvaluate { project ->
     task androidJavadoc(type: Javadoc) {
         source = android.sourceSets.main.java.srcDirs
         classpath += files(android.bootClasspath)
-        classpath += files(project.getConfigurations().getByName('compile').asList())
-        include '**/*.java'
-        exclude '**/ReactBuildConfig.java'
+        classpath += files(project.getConfigurations().getByName("compile").asList())
+        include("**/*.java")
+        exclude("**/ReactBuildConfig.java")
     }
 
     task androidJavadocJar(type: Jar, dependsOn: androidJavadoc) {
-        classifier = 'javadoc'
-        from androidJavadoc.destinationDir
+        classifier = "javadoc"
+        from(androidJavadoc.destinationDir)
     }
 
     task androidSourcesJar(type: Jar) {
-        classifier = 'sources'
-        from android.sourceSets.main.java.srcDirs
-        include '**/*.java'
+        classifier = "sources"
+        from(android.sourceSets.main.java.srcDirs)
+        include("**/*.java")
     }
 
     android.libraryVariants.all { variant ->
         def name = variant.name.capitalize()
-        task "jar${name}"(type: Jar, dependsOn: variant.javaCompile) {
-            from variant.javaCompile.destinationDir
+        task "jar${name}"(type: Jar, dependsOn: variant.javaCompileProvider.get()) {
+            from(variant.javaCompileProvider.get().destinationDir)
         }
     }
 
     artifacts {
-        archives androidSourcesJar
-        archives androidJavadocJar
+        archives(androidSourcesJar)
+        archives(androidJavadocJar)
     }
 
     version = VERSION_NAME
     group = GROUP
 
     signing {
-        required { isReleaseBuild() && gradle.taskGraph.hasTask('uploadArchives') }
-        sign configurations.archives
+        required { isReleaseBuild() && gradle.taskGraph.hasTask("uploadArchives") }
+        sign(configurations.archives)
     }
 
     uploadArchives {
@@ -124,7 +124,7 @@ afterEvaluate { project ->
 
             }
 
-            configureReactNativePom pom
+            configureReactNativePom(pom)
         }
     }
 
@@ -132,9 +132,9 @@ afterEvaluate { project ->
         configuration = configurations.archives
         repositories.mavenDeployer {
             // Deploy to react-native/android, ready to publish to npm
-            repository url: AAR_OUTPUT_URL
+            repository(url: AAR_OUTPUT_URL)
 
-            configureReactNativePom pom
+            configureReactNativePom(pom)
         }
     }
 }

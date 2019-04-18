@@ -11,10 +11,13 @@
 #import <React/UIView+React.h>
 
 #import "RCTBackedTextInputDelegateAdapter.h"
+#import "RCTTextAttributes.h"
 
 @implementation RCTUITextField {
   RCTBackedTextFieldDelegateAdapter *_textInputDelegateAdapter;
 }
+
+@synthesize reactTextAttributes = _reactTextAttributes;
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -60,6 +63,21 @@
   [self _updatePlaceholder];
 }
 
+- (void)setReactTextAttributes:(RCTTextAttributes *)reactTextAttributes
+{
+  if ([reactTextAttributes isEqual:_reactTextAttributes]) {
+    return;
+  }
+  self.defaultTextAttributes = reactTextAttributes.effectiveTextAttributes;
+  _reactTextAttributes = reactTextAttributes;
+  [self _updatePlaceholder];
+}
+
+- (RCTTextAttributes *)reactTextAttributes
+{
+  return _reactTextAttributes;
+}
+
 - (void)_updatePlaceholder
 {
   if (self.placeholder == nil) {
@@ -69,6 +87,10 @@
   NSMutableDictionary *attributes = [NSMutableDictionary new];
   if (_placeholderColor) {
     [attributes setObject:_placeholderColor forKey:NSForegroundColorAttributeName];
+  }
+  // Kerning
+  if (!isnan(_reactTextAttributes.letterSpacing)) {
+    attributes[NSKernAttributeName] = @(_reactTextAttributes.letterSpacing);
   }
 
   self.attributedPlaceholder = [[NSAttributedString alloc] initWithString:self.placeholder
@@ -83,6 +105,16 @@
 - (void)setEditable:(BOOL)editable
 {
   self.enabled = editable;
+}
+
+- (void)setScrollEnabled:(BOOL)enabled
+{
+  // Do noting, compatible with multiline textinput
+}
+
+- (BOOL)scrollEnabled
+{
+  return NO;
 }
 
 #pragma mark - Context Menu
@@ -106,6 +138,7 @@
 
   return [super caretRectForPosition:position];
 }
+
 
 #pragma mark - Positioning Overrides
 

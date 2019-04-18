@@ -119,7 +119,7 @@ static NSURLCredential* clientAuthenticationCredential;
  * This method is called whenever JavaScript running within the web view calls:
  *   - window.webkit.messageHandlers.[MessageHanderName].postMessage
  */
-- (void)userContentController:(WKUserContentController *)userContentController
+- (void)userContentController:(__unused WKUserContentController *)userContentController
        didReceiveScriptMessage:(WKScriptMessage *)message
 {
   if (_onMessage != nil) {
@@ -232,7 +232,7 @@ static NSURLCredential* clientAuthenticationCredential;
  * Decides whether to allow or cancel a navigation.
  * @see https://fburl.com/42r9fxob
  */
-- (void)                  webView:(WKWebView *)webView
+- (void)                  webView:(__unused WKWebView *)webView
   decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction
                   decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 {
@@ -262,7 +262,7 @@ static NSURLCredential* clientAuthenticationCredential;
     if (![self.delegate webView:self
       shouldStartLoadForRequest:event
                    withCallback:_onShouldStartLoadWithRequest]) {
-      decisionHandler(WKNavigationResponsePolicyCancel);
+      decisionHandler(WKNavigationActionPolicyCancel);
       return;
     }
   }
@@ -281,15 +281,15 @@ static NSURLCredential* clientAuthenticationCredential;
   }
 
   // Allow all navigation by default
-  decisionHandler(WKNavigationResponsePolicyAllow);
+  decisionHandler(WKNavigationActionPolicyAllow);
 }
 
 /**
  * Called when an error occurs while the web view is loading content.
  * @see https://fburl.com/km6vqenw
  */
-- (void)               webView:(WKWebView *)webView
-  didFailProvisionalNavigation:(WKNavigation *)navigation
+- (void)               webView:(__unused WKWebView *)webView
+  didFailProvisionalNavigation:(__unused WKNavigation *)navigation
                      withError:(NSError *)error
 {
   if (_onLoadingError) {
@@ -318,7 +318,7 @@ static NSURLCredential* clientAuthenticationCredential;
   clientAuthenticationCredential = credential;
 }
 
-- (void)                    webView:(WKWebView *)webView
+- (void)                    webView:(__unused WKWebView *)webView
   didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
                   completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential * _Nullable))completionHandler
 {
@@ -348,8 +348,8 @@ static NSURLCredential* clientAuthenticationCredential;
  * Called when the navigation is complete.
  * @see https://fburl.com/rtys6jlb
  */
-- (void)      webView:(WKWebView *)webView
-  didFinishNavigation:(WKNavigation *)navigation
+- (void)      webView:(__unused WKWebView *)webView
+  didFinishNavigation:(__unused WKNavigation *)navigation
 {
   if (_messagingEnabled) {
     #if RCT_DEV

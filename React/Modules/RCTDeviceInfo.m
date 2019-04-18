@@ -105,6 +105,11 @@ static NSDictionary *RCTExportedDimensions(RCTBridge *bridge)
 
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
+  return [self getConstants];
+}
+
+- (NSDictionary<NSString *, id> *)getConstants
+{
   return @{
     @"Dimensions": RCTExportedDimensions(_bridge),
     // Note:

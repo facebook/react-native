@@ -445,6 +445,37 @@ describe('Animated tests', () => {
     });
   });
 
+  it('does not reset animation in a loop if resetBeforeIteration is false', () => {
+    const animation = {
+      start: jest.fn(),
+      reset: jest.fn(),
+      _isUsingNativeDriver: () => false,
+    };
+    const cb = jest.fn();
+
+    const loop = Animated.loop(animation, {resetBeforeIteration: false});
+
+    expect(animation.start).not.toBeCalled();
+
+    loop.start(cb);
+
+    expect(animation.start).toBeCalled();
+    expect(animation.reset).not.toBeCalled();
+    expect(cb).not.toBeCalled();
+
+    animation.start.mock.calls[0][0]({finished: true}); // End of loop 1
+    expect(animation.reset).not.toBeCalled();
+    expect(cb).not.toBeCalled();
+
+    animation.start.mock.calls[0][0]({finished: true}); // End of loop 2
+    expect(animation.reset).not.toBeCalled();
+    expect(cb).not.toBeCalled();
+
+    animation.start.mock.calls[0][0]({finished: true}); // End of loop 3
+    expect(animation.reset).not.toBeCalled();
+    expect(cb).not.toBeCalled();
+  });
+
   describe('Animated Parallel', () => {
     it('works with an empty parallel', () => {
       const cb = jest.fn();

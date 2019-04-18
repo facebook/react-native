@@ -137,6 +137,8 @@ class Switch extends React.Component<Props> {
             on: value === true,
             style,
             thumbTintColor: _thumbColor,
+            trackColorForFalse: _trackColorForFalse,
+            trackColorForTrue: _trackColorForTrue,
             trackTintColor:
               value === true ? _trackColorForTrue : _trackColorForFalse,
           }: NativeAndroidProps)

@@ -8,9 +8,11 @@
 #include <memory>
 #include <mutex>
 
+#include <react/components/root/RootComponentDescriptor.h>
 #include <react/config/ReactNativeConfig.h>
 #include <react/core/ComponentDescriptor.h>
 #include <react/core/LayoutConstraints.h>
+#include <react/uimanager/ComponentDescriptorFactory.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
 #include <react/uimanager/ContextContainer.h>
 #include <react/uimanager/SchedulerDelegate.h>
@@ -29,7 +31,9 @@ namespace react {
  */
 class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
  public:
-  Scheduler(const SharedContextContainer &contextContainer);
+  Scheduler(
+      const SharedContextContainer &contextContainer,
+      ComponentRegistryFactory buildRegistryFunction);
   ~Scheduler();
 
 #pragma mark - Surface Management
@@ -64,6 +68,8 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
       const LayoutConstraints &layoutConstraints,
       const LayoutContext &layoutContext) const;
 
+  const ComponentDescriptor &getComponentDescriptor(ComponentHandle handle);
+
 #pragma mark - Delegate
 
   /*
@@ -78,7 +84,8 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
 
   void uiManagerDidFinishTransaction(
       SurfaceId surfaceId,
-      const SharedShadowNodeUnsharedList &rootChildNodes) override;
+      const SharedShadowNodeUnsharedList &rootChildNodes,
+      long startCommitTime) override;
   void uiManagerDidCreateShadowNode(
       const SharedShadowNode &shadowNode) override;
 
@@ -86,11 +93,14 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
 
   void shadowTreeDidCommit(
       const ShadowTree &shadowTree,
-      const ShadowViewMutationList &mutations) const override;
+      const ShadowViewMutationList &mutations,
+      long commitStartTime,
+      long layoutTime) const override;
 
  private:
   SchedulerDelegate *delegate_;
   SharedComponentDescriptorRegistry componentDescriptorRegistry_;
+  std::unique_ptr<const RootComponentDescriptor> rootComponentDescriptor_;
   ShadowTreeRegistry shadowTreeRegistry_;
   RuntimeExecutor runtimeExecutor_;
   std::shared_ptr<UIManagerBinding> uiManagerBinding_;

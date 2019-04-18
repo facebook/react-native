@@ -20,8 +20,7 @@ TEST(ComponentDescriptorTest, createShadowNode) {
       descriptor->getComponentName().c_str(), TestShadowNode::Name().c_str());
   ASSERT_STREQ(descriptor->getComponentName().c_str(), "Test");
 
-  RawProps raw;
-  raw["nativeID"] = "abc";
+  const auto &raw = RawProps(folly::dynamic::object("nativeID", "abc"));
   SharedProps props = descriptor->cloneProps(nullptr, raw);
   SharedShadowNode node = descriptor->createShadowNode(
       ShadowNodeFragment{.tag = 9,
@@ -42,8 +41,7 @@ TEST(ComponentDescriptorTest, cloneShadowNode) {
   SharedComponentDescriptor descriptor =
       std::make_shared<TestComponentDescriptor>(nullptr);
 
-  RawProps raw;
-  raw["nativeID"] = "abc";
+  const auto &raw = RawProps(folly::dynamic::object("nativeID", "abc"));
   SharedProps props = descriptor->cloneProps(nullptr, raw);
   SharedShadowNode node = descriptor->createShadowNode(
       ShadowNodeFragment{.tag = 9,
@@ -62,8 +60,7 @@ TEST(ComponentDescriptorTest, appendChild) {
   SharedComponentDescriptor descriptor =
       std::make_shared<TestComponentDescriptor>(nullptr);
 
-  RawProps raw;
-  raw["nativeID"] = "abc";
+  const auto &raw = RawProps(folly::dynamic::object("nativeID", "abc"));
   SharedProps props = descriptor->cloneProps(nullptr, raw);
   SharedShadowNode node1 = descriptor->createShadowNode(
       ShadowNodeFragment{.tag = 1,

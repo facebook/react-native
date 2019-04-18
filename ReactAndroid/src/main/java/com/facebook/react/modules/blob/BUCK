@@ -4,7 +4,6 @@ rn_android_library(
     name = "blob",
     srcs = glob(["**/*.java"]),
     provided_deps = [
-        react_native_dep("third-party/android/support-annotations:android-support-annotations"),
         react_native_dep("third-party/android/support/v4:lib-support-v4"),
     ],
     visibility = [

@@ -34,8 +34,7 @@ using namespace facebook::react;
 {
   UIView<RCTComponentViewProtocol> *componentView = [registry componentViewByTag:_tag];
 
-  [componentView updateLayoutMetrics:_newLayoutMetrics
-                    oldLayoutMetrics:_oldLayoutMetrics];
+  [componentView updateLayoutMetrics:_newLayoutMetrics oldLayoutMetrics:_oldLayoutMetrics];
 }
 
 @end

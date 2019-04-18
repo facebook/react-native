@@ -15,6 +15,9 @@
 #import <jsireact/JSCallInvoker.h>
 #import <jsireact/TurboModule.h>
 
+#define RCT_IS_TURBO_MODULE_CLASS(klass) ((RCTTurboModuleEnabled() && [(klass) conformsToProtocol:@protocol(RCTTurboModule)]))
+#define RCT_IS_TURBO_MODULE_INSTANCE(module) RCT_IS_TURBO_MODULE_CLASS([(module) class])
+
 namespace facebook {
 namespace react {
 
@@ -38,19 +41,26 @@ public:
 } // namespace react
 } // namespace facebook
 
+@protocol RCTTurboModule <NSObject>
+@optional
+/**
+ * Used by TurboModules to get access to other TurboModules.
+ *
+ * Usage:
+ * Place `@synthesize turboModuleLookupDelegate = _turboModuleLookupDelegate`
+ * in the @implementation section of your TurboModule.
+ */
+@property (nonatomic, weak) id<RCTTurboModuleLookupDelegate> turboModuleLookupDelegate;
+
+@optional
+// This should be required, after migration is done.
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker;
+
+@end
+
 // TODO: Consolidate this extension with the one in RCTSurfacePresenter.
 @interface RCTBridge ()
 
 - (std::shared_ptr<facebook::react::MessageQueueThread>)jsMessageThread;
-
-@end
-
-/**
- * A backward-compatible protocol to be adopted by an existing RCTCxxModule-based class
- * so that it can support the TurboModule system.
- */
-@protocol RCTTurboCxxModule <RCTTurboModule>
-
-- (std::shared_ptr<facebook::react::TurboModule>)getTurboModuleWithJsInvoker:(std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker;
 
 @end

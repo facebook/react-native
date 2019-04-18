@@ -91,6 +91,11 @@ RCT_EXPORT_MODULE()
 
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
+  return [self getConstants];
+}
+
+- (NSDictionary<NSString *, id> *)getConstants
+{
   _exportedConstants = YES;
   _exportedConstantsOnMainQueue = RCTIsMainQueue();
   return @{ @"foo": @"bar" };

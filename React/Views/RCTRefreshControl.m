@@ -12,6 +12,8 @@
 @implementation RCTRefreshControl {
   BOOL _isInitialRender;
   BOOL _currentRefreshingState;
+  UInt64 _currentRefreshingStateClock;
+  UInt64 _currentRefreshingStateTimestamp;
   BOOL _refreshingProgrammatically;
   NSString *_title;
   UIColor *_titleColor;
@@ -21,6 +23,8 @@
 {
   if ((self = [super init])) {
     [self addTarget:self action:@selector(refreshControlValueChanged) forControlEvents:UIControlEventValueChanged];
+    _currentRefreshingStateClock = 1;
+    _currentRefreshingStateTimestamp = 0;
     _isInitialRender = true;
     _currentRefreshingState = false;
   }
@@ -49,6 +53,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 
 - (void)beginRefreshingProgrammatically
 {
+  UInt64 beginRefreshingTimestamp = _currentRefreshingStateTimestamp;
   _refreshingProgrammatically = YES;
   // When using begin refreshing we need to adjust the ScrollView content offset manually.
   UIScrollView *scrollView = (UIScrollView *)self.superview;
@@ -62,7 +67,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                      animations:^(void) {
                        [scrollView setContentOffset:offset];
                      } completion:^(__unused BOOL finished) {
-                       [super beginRefreshing];
+                       if(beginRefreshingTimestamp == self->_currentRefreshingStateTimestamp) {
+                         [super beginRefreshing];
+                         [self setCurrentRefreshingState:super.refreshing];
+                       }
                      }];
 }
 
@@ -72,6 +80,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   // endRefreshing otherwise the next pull to refresh will not work properly.
   UIScrollView *scrollView = (UIScrollView *)self.superview;
   if (_refreshingProgrammatically && scrollView.contentOffset.y < 0) {
+    UInt64 endRefreshingTimestamp = _currentRefreshingStateTimestamp;
     CGPoint offset = {scrollView.contentOffset.x, 0};
     [UIView animateWithDuration:0.25
                           delay:0
@@ -79,7 +88,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
                      animations:^(void) {
                        [scrollView setContentOffset:offset];
                      } completion:^(__unused BOOL finished) {
-                       [super endRefreshing];
+                       if(endRefreshingTimestamp == self->_currentRefreshingStateTimestamp) {
+                         [super endRefreshing];
+                         [self setCurrentRefreshingState:super.refreshing];
+                       }
                      }];
   } else {
     [super endRefreshing];
@@ -120,7 +132,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)setRefreshing:(BOOL)refreshing
 {
   if (_currentRefreshingState != refreshing) {
-    _currentRefreshingState = refreshing;
+    [self setCurrentRefreshingState:refreshing];
 
     if (refreshing) {
       if (!_isInitialRender) {
@@ -132,9 +144,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   }
 }
 
+- (void)setCurrentRefreshingState:(BOOL)refreshing
+{
+  _currentRefreshingState = refreshing;
+  _currentRefreshingStateTimestamp = _currentRefreshingStateClock++;
+}
+
 - (void)refreshControlValueChanged
 {
-  _currentRefreshingState = super.refreshing;
+  [self setCurrentRefreshingState:super.refreshing];
   _refreshingProgrammatically = NO;
 
   if (_onRefresh) {

@@ -25,5 +25,47 @@ void RootShadowNode::layout() {
   setLayoutMetrics(layoutMetricsFromYogaNode(yogaNode_));
 }
 
+UnsharedRootShadowNode RootShadowNode::clone(
+    const LayoutConstraints &layoutConstraints,
+    const LayoutContext &layoutContext) const {
+  auto props = std::make_shared<const RootProps>(
+      *getProps(), layoutConstraints, layoutContext);
+  auto newRootShadowNode = std::make_shared<RootShadowNode>(
+      *this, ShadowNodeFragment{.props = props});
+  return newRootShadowNode;
+}
+
+UnsharedRootShadowNode RootShadowNode::clone(
+    const SharedShadowNode &oldShadowNode,
+    const SharedShadowNode &newShadowNode) const {
+  std::vector<std::reference_wrapper<const ShadowNode>> ancestors;
+
+  if (!oldShadowNode->constructAncestorPath(*this, ancestors)) {
+    return UnsharedRootShadowNode{nullptr};
+  }
+
+  auto oldChild = oldShadowNode;
+  auto newChild = newShadowNode;
+
+  for (const auto &ancestor : ancestors) {
+    auto oldParent = ancestor.get().shared_from_this();
+
+    auto children = oldParent->getChildren();
+    std::replace(children.begin(), children.end(), oldChild, newChild);
+
+    auto sharedChildren = std::make_shared<SharedShadowNodeList>(children);
+    auto newParent =
+        oldParent->clone(ShadowNodeFragment{.children = sharedChildren});
+
+    newParent->replaceChild(oldChild, newChild);
+
+    oldChild = oldParent;
+    newChild = newParent;
+  }
+
+  return std::const_pointer_cast<RootShadowNode>(
+      std::static_pointer_cast<const RootShadowNode>(newChild));
+}
+
 } // namespace react
 } // namespace facebook

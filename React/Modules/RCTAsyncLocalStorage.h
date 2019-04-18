@@ -31,4 +31,11 @@
 // For clearing data when the bridge may not exist, e.g. when logging out.
 + (void)clearAllData;
 
+// Grab data from the cache. ResponseBlock result array will have an error at position 0, and an array of arrays at position 1.
+- (void)multiGet:(NSArray<NSString *> *)keys callback:(RCTResponseSenderBlock)callback;
+
+// Add multiple key value pairs to the cache.
+- (void)multiSet:(NSArray<NSArray<NSString *> *> *)kvPairs callback:(RCTResponseSenderBlock)callback;
+
+
 @end

@@ -25,8 +25,8 @@ struct YGLayout {
   uint32_t computedFlexBasisGeneration = 0;
   YGFloatOptional computedFlexBasis = {};
 
-  // Instead of recomputing the entire layout every single time, we
-  // cache some information to break early when nothing changed
+  // Instead of recomputing the entire layout every single time, we cache some
+  // information to break early when nothing changed
   uint32_t generationCount = 0;
   YGDirection lastOwnerDirection = (YGDirection) -1;
 

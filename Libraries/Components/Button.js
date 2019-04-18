@@ -44,6 +44,41 @@ type ButtonProps = $ReadOnly<{|
   hasTVPreferredFocus?: ?boolean,
 
   /**
+   * TV next focus down (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusDown?: ?number,
+
+  /**
+   * TV next focus forward (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusForward?: ?number,
+
+  /**
+   * TV next focus left (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusLeft?: ?number,
+
+  /**
+   * TV next focus right (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusRight?: ?number,
+
+  /**
+   * TV next focus up (see documentation for the View component).
+   *
+   * @platform android
+   */
+  nextFocusUp?: ?number,
+
+  /**
    * Text to display for blindness accessibility features
    */
   accessibilityLabel?: ?string,
@@ -95,6 +130,11 @@ class Button extends React.Component<ButtonProps> {
       onPress,
       title,
       hasTVPreferredFocus,
+      nextFocusDown,
+      nextFocusForward,
+      nextFocusLeft,
+      nextFocusRight,
+      nextFocusUp,
       disabled,
       testID,
     } = this.props;
@@ -127,6 +167,11 @@ class Button extends React.Component<ButtonProps> {
         accessibilityRole="button"
         accessibilityStates={accessibilityStates}
         hasTVPreferredFocus={hasTVPreferredFocus}
+        nextFocusDown={nextFocusDown}
+        nextFocusForward={nextFocusForward}
+        nextFocusLeft={nextFocusLeft}
+        nextFocusRight={nextFocusRight}
+        nextFocusUp={nextFocusUp}
         testID={testID}
         disabled={disabled}
         onPress={onPress}>
