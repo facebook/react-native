@@ -48,10 +48,11 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
 }
 
 - (instancetype)initWithContextContainer:(ContextContainer::Shared)contextContainer
+                componentRegistryFactory:(ComponentRegistryFactory)componentRegistryFactory
 {
   if (self = [super init]) {
     _delegateProxy = std::make_shared<SchedulerDelegateProxy>((__bridge void *)self);
-    _scheduler = std::make_shared<Scheduler>(contextContainer, getDefaultComponentRegistryFactory());
+    _scheduler = std::make_shared<Scheduler>(contextContainer, componentRegistryFactory);
     _scheduler->setDelegate(_delegateProxy.get());
   }
 

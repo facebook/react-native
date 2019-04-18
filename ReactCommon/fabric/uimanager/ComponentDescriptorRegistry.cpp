@@ -11,8 +11,47 @@
 namespace facebook {
 namespace react {
 
+ComponentDescriptorRegistry::ComponentDescriptorRegistry(
+    ComponentDescriptorParameters const &parameters)
+    : parameters_(parameters) {}
+
+void ComponentDescriptorRegistry::add(
+    ComponentDescriptorProvider componentDescriptorProvider) const {
+  std::unique_lock<better::shared_mutex> lock(mutex_);
+
+  auto componentDescriptor = componentDescriptorProvider.constructor(
+      parameters_.eventDispatcher, parameters_.contextContainer);
+  assert(
+      componentDescriptor->getComponentHandle() ==
+      componentDescriptorProvider.handle);
+  assert(
+      componentDescriptor->getComponentName() ==
+      componentDescriptorProvider.name);
+
+  auto sharedComponentDescriptor = std::shared_ptr<ComponentDescriptor const>(
+      std::move(componentDescriptor));
+  _registryByHandle[componentDescriptorProvider.handle] =
+      sharedComponentDescriptor;
+  _registryByName[componentDescriptorProvider.name] = sharedComponentDescriptor;
+}
+
+void ComponentDescriptorRegistry::remove(
+    ComponentDescriptorProvider componentDescriptorProvider) const {
+  std::unique_lock<better::shared_mutex> lock(mutex_);
+
+  assert(
+      _registryByHandle.find(componentDescriptorProvider.handle) !=
+      _registryByHandle.end());
+  assert(
+      _registryByName.find(componentDescriptorProvider.name) !=
+      _registryByName.end());
+
+  _registryByHandle.erase(componentDescriptorProvider.handle);
+  _registryByName.erase(componentDescriptorProvider.name);
+}
+
 void ComponentDescriptorRegistry::registerComponentDescriptor(
-    SharedComponentDescriptor componentDescriptor) {
+    SharedComponentDescriptor componentDescriptor) const {
   ComponentHandle componentHandle = componentDescriptor->getComponentHandle();
   _registryByHandle[componentHandle] = componentDescriptor;
 
@@ -72,6 +111,8 @@ static ComponentName componentNameByReactViewName(ComponentName viewName) {
 
 ComponentDescriptor const &ComponentDescriptorRegistry::at(
     ComponentName const &componentName) const {
+  std::shared_lock<better::shared_mutex> lock(mutex_);
+
   auto unifiedComponentName = componentNameByReactViewName(componentName);
 
   auto it = _registryByName.find(unifiedComponentName);
@@ -88,6 +129,8 @@ ComponentDescriptor const &ComponentDescriptorRegistry::at(
 
 ComponentDescriptor const &ComponentDescriptorRegistry::at(
     ComponentHandle componentHandle) const {
+  std::shared_lock<better::shared_mutex> lock(mutex_);
+
   return *_registryByHandle.at(componentHandle);
 }
 

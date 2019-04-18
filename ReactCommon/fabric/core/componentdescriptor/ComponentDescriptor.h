@@ -19,7 +19,7 @@ namespace react {
 
 class ComponentDescriptor;
 
-using SharedComponentDescriptor = std::shared_ptr<ComponentDescriptor>;
+using SharedComponentDescriptor = std::shared_ptr<ComponentDescriptor const>;
 
 /*
  * Abstract class defining an interface of `ComponentDescriptor`.

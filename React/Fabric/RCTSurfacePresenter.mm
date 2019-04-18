@@ -14,6 +14,7 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Private.h>
+#import <React/RCTComponentViewFactory.h>
 #import <React/RCTComponentViewRegistry.h>
 #import <React/RCTFabricSurface.h>
 #import <React/RCTFollyConvert.h>
@@ -29,6 +30,7 @@
 #import <react/core/LayoutConstraints.h>
 #import <react/core/LayoutContext.h>
 #import <react/imagemanager/ImageManager.h>
+#import <react/uimanager/ComponentDescriptorFactory.h>
 #import <react/utils/ContextContainer.h>
 
 #import "MainRunLoopEventBeat.h"
@@ -193,7 +195,15 @@ using namespace facebook::react;
     return _scheduler;
   }
 
-  _scheduler = [[RCTScheduler alloc] initWithContextContainer:self.contextContainer];
+  auto componentRegistryFactory = [factory = RNWrapManagedObject(self.componentViewFactory)](
+                                      EventDispatcher::Shared const &eventDispatcher,
+                                      ContextContainer::Shared const &contextContainer) {
+    return [(RCTComponentViewFactory *)RNUnwrapManagedObject(factory)
+        createComponentDescriptorRegistryWithParameters:{eventDispatcher, contextContainer}];
+  };
+
+  _scheduler = [[RCTScheduler alloc] initWithContextContainer:self.contextContainer
+                                     componentRegistryFactory:componentRegistryFactory];
   _scheduler.delegate = self;
 
   return _scheduler;
