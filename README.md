@@ -51,8 +51,11 @@ React Native brings [**React**'s][r] declarative UI framework to iOS and Android
 - **Developer Velocity.** See local changes in seconds. Changes to JavaScript code can be live reloaded without rebuilding the native app.
 - **Portability.** Reuse code across iOS, Android, and [other platforms][p].
 
+React Native is developed and supported by many companies and individual core contributors. Find out more in our [ecosystem overview][e].
+
 [r]: https://reactjs.org/
 [p]: https://facebook.github.io/react-native/docs/out-of-tree-platforms
+[e]: https://github.com/facebook/react-native/blob/master/ECOSYSTEM.md
 
 ## Contents
 

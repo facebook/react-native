@@ -106,9 +106,9 @@ const NSInteger RCTComponentViewRegistryRecyclePoolMaxSize = 1024;
   // This data is based on empirical evidence which should represent the reality pretty well.
   // Regular `<View>` has magnitude equals to `1` by definition.
   std::vector<std::pair<ComponentHandle, float>> componentMagnitudes = {
-      {[RCTViewComponentView componentHandle], 1},
-      {[RCTImageComponentView componentHandle], 0.3},
-      {[RCTParagraphComponentView componentHandle], 0.3},
+      {[RCTViewComponentView componentDescriptorProvider].handle, 1},
+      {[RCTImageComponentView componentDescriptorProvider].handle, 0.3},
+      {[RCTParagraphComponentView componentDescriptorProvider].handle, 0.3},
   };
 
   // `complexity` represents the complexity of a typical surface in a number of `<View>` components (with Flattening

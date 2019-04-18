@@ -8,11 +8,15 @@
 
 #import "AppDelegate.h"
 
+#import <React/JSCExecutorFactory.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
+#import <React/RCTCxxBridgeDelegate.h>
 #import <React/RCTJavaScriptLoader.h>
 #import <React/RCTLinkingManager.h>
 #import <React/RCTRootView.h>
+
+#import <cxxreact/JSExecutor.h>
 
 #if !TARGET_OS_TV
 #import <React/RCTPushNotificationManager.h>
@@ -21,19 +25,35 @@
 #ifdef RN_FABRIC_ENABLED
 #import <React/RCTSurfacePresenter.h>
 #import <React/RCTFabricSurfaceHostingProxyRootView.h>
+#endif
 
-@interface AppDelegate() <RCTBridgeDelegate>{
+#ifdef RN_TURBO_MODULE_ENABLED
+#import <jsireact/RCTTurboModuleManager.h>
+
+#import "RNTesterTurboModuleProvider.h"
+#endif
+
+#ifdef RN_TURBO_MODULE_ENABLED
+@interface AppDelegate() <RCTCxxBridgeDelegate, RCTTurboModuleManagerDelegate>{
+#else
+@interface AppDelegate() <RCTCxxBridgeDelegate>{
+#endif
+
+#ifdef RN_FABRIC_ENABLED
   RCTSurfacePresenter *_surfacePresenter;
+#endif
+
+#ifdef RN_TURBO_MODULE_ENABLED
+  RCTTurboModuleManager *_turboModuleManager;
+#endif
+
 }
 @end
 
+#ifdef RN_FABRIC_ENABLED
 // FIXME: remove when resolved https://github.com/facebook/react-native/issues/23910
 @interface RCTSurfacePresenter ()
 -(void)_startAllSurfaces;
-@end
-
-#else
-@interface AppDelegate() <RCTBridgeDelegate>
 @end
 #endif
 
@@ -41,6 +61,10 @@
 
 - (BOOL)application:(__unused UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+#ifdef RN_TURBO_MODULE_ENABLED
+  RCTEnableTurboModule(YES);
+#endif
+
   _bridge = [[RCTBridge alloc] initWithDelegate:self
                                   launchOptions:launchOptions];
   
@@ -104,6 +128,50 @@
                             onProgress:onProgress
                             onComplete:loadCallback];
 }
+
+# pragma mark - RCTCxxBridgeDelegate
+
+- (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
+{
+  __weak __typeof(self) weakSelf = self;
+  return std::make_unique<facebook::react::JSCExecutorFactory>([weakSelf, bridge](facebook::jsi::Runtime &runtime) {
+    if (!bridge) {
+      return;
+    }
+    __typeof(self) strongSelf = weakSelf;
+    if (strongSelf) {
+#ifdef RN_TURBO_MODULE_ENABLED
+      strongSelf->_turboModuleManager = [[RCTTurboModuleManager alloc] initWithRuntime:&runtime bridge:bridge delegate:strongSelf];
+      [strongSelf->_turboModuleManager installJSBinding];
+#endif
+    }
+  });
+}
+
+#pragma mark RCTTurboModuleManagerDelegate
+
+#ifdef RN_TURBO_MODULE_ENABLED
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
+                                                      jsInvoker:(std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker
+{
+  return RNTesterTurboModuleProvider(name, jsInvoker);
+}
+
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const std::string &)name
+                                                       instance:(id<RCTTurboModule>)instance
+                                                      jsInvoker:(std::shared_ptr<facebook::react::JSCallInvoker>)jsInvoker
+{
+  return RNTesterTurboModuleProvider(name, instance, jsInvoker);
+}
+
+- (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass
+{
+  // No custom initializer here.
+  return [moduleClass new];
+}
+
+#endif
 
 # pragma mark - Push Notifications
 

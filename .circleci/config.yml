@@ -266,6 +266,7 @@ jobs:
       - run:
           name: Lint code
           command: scripts/circleci/exec_swallow_error.sh yarn lint --format junit -o ~/react-native/reports/junit/eslint/results.xml
+          when: always
 
       - run:
           name: Check for errors in code using Flow (iOS)
@@ -284,6 +285,11 @@ jobs:
             ./scripts/circleci/validate_yarn_lockfile.sh
           when: always
 
+      - run:
+          name: Check formatting
+          command: yarn run format-check
+          when: always
+
       - store_test_results:
           path: ~/react-native/reports/junit
       - store_artifacts:
@@ -299,11 +305,13 @@ jobs:
       - attach_workspace:
           at: ~/react-native
 
-      - run: *run-js-tests
+      - run:
+          name: JavaScript Test Suite
+          command: node ./scripts/run-ci-javascript-tests.js --maxWorkers 2
 
       - run:
           name: JavaScript End-to-End Test Suite
-          command: node ./scripts/run-ci-e2e-tests.js --js --retries 3;
+          command: node ./scripts/run-ci-e2e-tests.js --js --retries 3
 
       - store_test_results:
           path: ~/react-native/reports/junit
@@ -319,9 +327,9 @@ jobs:
 
       - run: *yarn
 
-      - run: *run-js-tests
-
-      - run: yarn run format-check
+      - run:
+          name: JavaScript Test Suite
+          command: node ./scripts/run-ci-javascript-tests.js --maxWorkers 2
 
       - store_test_results:
           path: ~/react-native/reports/junit
@@ -608,7 +616,8 @@ workflows:
       - test_android: *run-after-checkout
       - test_ios: *run-after-checkout
       - test_detox_end_to_end: *run-after-checkout
-      - test_docker_build
+      - test_docker_build:
+          filters: *filter-ignore-gh-pages
 
   releases:
     jobs:

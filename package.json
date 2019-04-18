@@ -80,20 +80,21 @@
     "test-android-unit": "yarn run docker-build-android && yarn run test-android-run-unit",
     "test-android-e2e": "yarn run docker-build-android && yarn run test-android-run-e2e",
     "build-ios-e2e": "detox build -c ios.sim.release",
-    "test-ios-e2e": "detox test -c ios.sim.release"
+    "test-ios-e2e": "detox test -c ios.sim.release RNTester/e2e"
   },
   "peerDependencies": {
-    "react": "16.8.3"
+    "react": "16.8.6"
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0",
     "@react-native-community/cli": "^2.0.0",
+    "abort-controller": "^3.0.0",
     "art": "^0.10.0",
     "base64-js": "^1.1.2",
     "connect": "^3.6.5",
     "create-react-class": "^15.6.3",
     "escape-string-regexp": "^1.0.5",
-    "event-target-shim": "^1.0.5",
+    "event-target-shim": "^5.0.1",
     "fbjs": "^1.0.0",
     "fbjs-scripts": "^1.1.0",
     "invariant": "^2.2.4",
@@ -107,8 +108,7 @@
     "react-devtools-core": "^3.6.0",
     "regenerator-runtime": "^0.13.2",
     "stacktrace-parser": "^0.1.3",
-    "whatwg-fetch": "^3.0.0",
-    "yargs": "^9.0.0"
+    "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
@@ -118,7 +118,7 @@
     "babel-eslint": "10.0.1",
     "clang-format": "^1.2.4",
     "coveralls": "^3.0.2",
-    "detox": "12.1.1",
+    "detox": "12.2.0",
     "eslint": "5.1.0",
     "eslint-config-fb-strict": "24.3.0",
     "eslint-config-fbjs": "2.1.0",
@@ -132,23 +132,24 @@
     "eslint-plugin-react-hooks": "^1.5.1",
     "eslint-plugin-react-native": "3.6.0",
     "eslint-plugin-relay": "1.3.0",
-    "flow-bin": "^0.96.0",
+    "flow-bin": "^0.97.0",
     "flow-remove-types": "1.2.3",
     "jest": "^24.7.1",
     "jest-junit": "^6.3.0",
     "jscodeshift": "^0.6.2",
     "mkdirp": "^0.5.1",
     "prettier": "1.16.4",
-    "react": "16.8.3",
+    "react": "16.8.6",
     "react-native-dummy": "0.2.0",
-    "react-test-renderer": "16.8.3",
+    "react-test-renderer": "16.8.6",
     "shelljs": "^0.7.8",
+    "yargs": "^9.0.0",
     "ws": "^6.1.4"
   },
   "detox": {
     "test-runner": "jest",
     "runner-config": "RNTester/e2e/config.json",
-    "specs": "RNTester/e2e",
+    "specs": "",
     "configurations": {
       "ios.sim.release": {
         "binaryPath": "RNTester/build/Build/Products/Release-iphonesimulator/RNTester.app/",

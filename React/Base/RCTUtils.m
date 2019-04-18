@@ -22,6 +22,16 @@
 
 NSString *const RCTErrorUnspecified = @"EUNSPECIFIED";
 
+// Returns the Path of Home directory
+NSString *__nullable RCTHomePath(void);
+
+// Returns the relative path within the Home for an absolute URL
+// (or nil, if the URL does not specify a path within the Home directory)
+NSString *__nullable RCTHomePathForURL(NSURL *__nullable URL);
+
+// Determines if a given image URL refers to a image in Home directory (~)
+BOOL RCTIsHomeAssetURL(NSURL *__nullable imageURL);
+
 static NSString *__nullable _RCTJSONStringifyNoRetry(id __nullable jsonObject, NSError **error)
 {
   if (!jsonObject) {
@@ -624,6 +634,16 @@ NSString *__nullable RCTLibraryPath(void)
     return libraryPath;
 }
 
+NSString *__nullable RCTHomePath(void)
+{
+  static NSString *homePath = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    homePath = NSHomeDirectory();
+  });
+  return homePath;
+}
+
 NSString *__nullable RCTBundlePathForURL(NSURL *__nullable URL)
 {
   return RCTRelativePathForURL([[NSBundle mainBundle] resourcePath], URL);
@@ -633,6 +653,11 @@ NSString *__nullable RCTBundlePathForURL(NSURL *__nullable URL)
 NSString *__nullable RCTLibraryPathForURL(NSURL *__nullable URL)
 {
   return RCTRelativePathForURL(RCTLibraryPath(), URL);
+}
+
+NSString *__nullable RCTHomePathForURL(NSURL *__nullable URL)
+{
+  return RCTRelativePathForURL(RCTHomePath(), URL);
 }
 
 static BOOL RCTIsImageAssetsPath(NSString *path)
@@ -651,9 +676,14 @@ BOOL RCTIsLibraryAssetURL(NSURL *__nullable imageURL)
   return RCTIsImageAssetsPath(RCTLibraryPathForURL(imageURL));
 }
 
+BOOL RCTIsHomeAssetURL(NSURL *__nullable imageURL)
+{
+  return RCTIsImageAssetsPath(RCTHomePathForURL(imageURL));
+}
+
 BOOL RCTIsLocalAssetURL(NSURL *__nullable imageURL)
 {
-  return RCTIsBundleAssetURL(imageURL) || RCTIsLibraryAssetURL(imageURL);
+  return RCTIsBundleAssetURL(imageURL) || RCTIsHomeAssetURL(imageURL);
 }
 
 static NSString *bundleName(NSBundle *bundle)

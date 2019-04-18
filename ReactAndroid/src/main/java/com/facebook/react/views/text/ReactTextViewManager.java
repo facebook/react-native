@@ -6,6 +6,7 @@
  */
 package com.facebook.react.views.text;
 
+import android.content.Context;
 import android.text.Layout;
 import android.text.Spannable;
 import com.facebook.react.bridge.ReactContext;
@@ -112,7 +113,7 @@ public class ReactTextViewManager
 
   @Override
   public long measure(
-      ReactContext context,
+      Context context,
       ReadableMap localData,
       ReadableMap props,
       float width,

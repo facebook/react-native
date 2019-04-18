@@ -45,8 +45,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   using ConcreteState = typename ShadowNodeT::ConcreteState;
   using ConcreteStateData = typename ShadowNodeT::ConcreteState::Data;
 
-  ConcreteComponentDescriptor(EventDispatcher::Shared eventDispatcher)
-      : eventDispatcher_(eventDispatcher) {}
+  using ComponentDescriptor::ComponentDescriptor;
 
   ComponentHandle getComponentHandle() const override {
     return ShadowNodeT::Handle();
@@ -132,9 +131,6 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     // Default implementation does nothing.
     assert(shadowNode->getComponentHandle() == getComponentHandle());
   }
-
- private:
-  mutable EventDispatcher::Shared eventDispatcher_{nullptr};
 };
 
 } // namespace react

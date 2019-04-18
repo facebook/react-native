@@ -56,9 +56,7 @@ public:
     logger_.withContext = logger;
     loggerUsesContext_ = true;
   }
-  void setLogger(std::nullptr_t) {
-    setLogger(YGLogger{nullptr});
-  }
+  void setLogger(std::nullptr_t) { setLogger(YGLogger{nullptr}); }
 
   YGNodeRef cloneNode(
       YGNodeRef node,

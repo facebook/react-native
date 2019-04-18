@@ -7,21 +7,14 @@
 
 #import "RCTUnimplementedNativeComponentView.h"
 
+#import <react/components/rncore/ComponentDescriptors.h>
 #import <react/components/rncore/EventEmitters.h>
 #import <react/components/rncore/Props.h>
-#import <react/components/rncore/ShadowNodes.h>
 
 using namespace facebook::react;
 
 @implementation RCTUnimplementedNativeComponentView {
   UILabel *_label;
-}
-
-#pragma mark - RCTComponentViewProtocol
-
-+ (ComponentHandle)componentHandle
-{
-  return UnimplementedNativeViewShadowNode::Handle();
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -43,6 +36,13 @@ using namespace facebook::react;
   }
 
   return self;
+}
+
+#pragma mark - RCTComponentViewProtocol
+
++ (ComponentDescriptorProvider)componentDescriptorProvider
+{
+  return concreteComponentDescriptorProvider<UnimplementedNativeViewComponentDescriptor>();
 }
 
 - (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps

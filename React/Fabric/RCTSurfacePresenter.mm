@@ -14,6 +14,7 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Private.h>
+#import <React/RCTComponentViewFactory.h>
 #import <React/RCTComponentViewRegistry.h>
 #import <React/RCTFabricSurface.h>
 #import <React/RCTFollyConvert.h>
@@ -29,7 +30,8 @@
 #import <react/core/LayoutConstraints.h>
 #import <react/core/LayoutContext.h>
 #import <react/imagemanager/ImageManager.h>
-#import <react/uimanager/ContextContainer.h>
+#import <react/uimanager/ComponentDescriptorFactory.h>
+#import <react/utils/ContextContainer.h>
 
 #import "MainRunLoopEventBeat.h"
 #import "RuntimeEventBeat.h"
@@ -175,7 +177,7 @@ using namespace facebook::react;
   if (componentView == nil) {
     return NO; // This view probably isn't managed by Fabric
   }
-  ComponentHandle handle = [[componentView class] componentHandle];
+  ComponentHandle handle = [[componentView class] componentDescriptorProvider].handle;
   const facebook::react::ComponentDescriptor &componentDescriptor = [self._scheduler getComponentDescriptor:handle];
   [self->_mountingManager synchronouslyUpdateViewOnUIThread:tag
                                                changedProps:props
@@ -193,7 +195,15 @@ using namespace facebook::react;
     return _scheduler;
   }
 
-  _scheduler = [[RCTScheduler alloc] initWithContextContainer:self.contextContainer];
+  auto componentRegistryFactory = [factory = RNWrapManagedObject(self.componentViewFactory)](
+                                      EventDispatcher::Shared const &eventDispatcher,
+                                      ContextContainer::Shared const &contextContainer) {
+    return [(RCTComponentViewFactory *)RNUnwrapManagedObject(factory)
+        createComponentDescriptorRegistryWithParameters:{eventDispatcher, contextContainer}];
+  };
+
+  _scheduler = [[RCTScheduler alloc] initWithContextContainer:self.contextContainer
+                                     componentRegistryFactory:componentRegistryFactory];
   _scheduler.delegate = self;
 
   return _scheduler;
@@ -201,7 +211,7 @@ using namespace facebook::react;
 
 @synthesize contextContainer = _contextContainer;
 
-- (SharedContextContainer)contextContainer
+- (ContextContainer::Shared)contextContainer
 {
   std::lock_guard<std::mutex> lock(_contextContainerMutex);
 
@@ -299,15 +309,14 @@ using namespace facebook::react;
 
 #pragma mark - RCTSchedulerDelegate
 
-- (void)schedulerDidFinishTransaction:(facebook::react::ShadowViewMutationList)mutations
-                                        rootTag:(ReactTag)rootTag
+- (void)schedulerDidFinishTransaction:(facebook::react::ShadowViewMutationList const &)mutations
+                              rootTag:(ReactTag)rootTag
 {
   RCTFabricSurface *surface = [_surfaceRegistry surfaceForRootTag:rootTag];
 
   [surface _setStage:RCTSurfaceStagePrepared];
 
-  [_mountingManager performTransactionWithMutations:mutations
-                                            rootTag:rootTag];
+  [_mountingManager scheduleMutations:mutations rootTag:rootTag];
 }
 
 - (void)schedulerOptimisticallyCreateComponentViewWithComponentHandle:(ComponentHandle)componentHandle

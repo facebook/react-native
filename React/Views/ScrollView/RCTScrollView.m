@@ -855,7 +855,11 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
 
     // What is the current offset?
     CGFloat velocityAlongAxis = isHorizontal ? velocity.x : velocity.y;
-    CGFloat targetContentOffsetAlongAxis = isHorizontal ? targetContentOffset->x : targetContentOffset->y;
+    CGFloat targetContentOffsetAlongAxis = targetContentOffset->y;
+    if (isHorizontal) {
+      // Use current scroll offset to determine the next index to snap to when momentum disabled
+      targetContentOffsetAlongAxis = self.disableIntervalMomentum ? scrollView.contentOffset.x : targetContentOffset->x;
+    }
 
     // Offset based on desired alignment
     CGFloat frameLength = isHorizontal ? self.frame.size.width : self.frame.size.height;
@@ -868,6 +872,7 @@ RCT_SCROLL_EVENT_HANDLER(scrollViewDidScrollToTop, onScrollToTop)
 
     // Pick snap point based on direction and proximity
     CGFloat fractionalIndex = (targetContentOffsetAlongAxis + alignmentOffset) / snapToIntervalF;
+
     NSInteger snapIndex =
       velocityAlongAxis > 0.0 ?
         ceil(fractionalIndex) :

@@ -118,8 +118,8 @@ struct EventsNestedObjectNativeComponentOnChangeLocationSourceStruct {
 
 struct EventsNestedObjectNativeComponentOnChangeLocationStruct {
   EventsNestedObjectNativeComponentOnChangeLocationSourceStruct source;
-int x;
-int y;
+  int x;
+  int y;
 };
 
 struct EventsNestedObjectNativeComponentOnChangeStruct {
@@ -157,9 +157,9 @@ namespace react {
 
 struct EventsNativeComponentOnChangeStruct {
   bool value;
-std::string source;
-int progress;
-Float scale;
+  std::string source;
+  int progress;
+  Float scale;
 };
 
 struct EventsNativeComponentOnEventDirectStruct {
@@ -172,7 +172,7 @@ class EventsNativeComponentEventEmitter : public ViewEventEmitter {
 
   void onChange(EventsNativeComponentOnChangeStruct value) const;
 
-void onEventDirect(EventsNativeComponentOnEventDirectStruct value) const;
+  void onEventDirect(EventsNativeComponentOnEventDirectStruct value) const;
 };
 
 } // namespace react

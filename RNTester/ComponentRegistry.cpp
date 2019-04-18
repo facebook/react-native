@@ -18,7 +18,7 @@
 #include <react/config/ReactNativeConfig.h>
 #include <react/uimanager/ComponentDescriptorFactory.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
-#include <react/uimanager/ContextContainer.h>
+#include <react/utils/ContextContainer.h>
 
 namespace facebook {
 namespace react {
@@ -28,7 +28,7 @@ namespace react {
  */
 ComponentRegistryFactory getDefaultComponentRegistryFactory() {
   return [](const EventDispatcher::Shared &eventDispatcher,
-            const SharedContextContainer &contextContainer) {
+            const ContextContainer::Shared &contextContainer) {
     auto registry = std::make_shared<ComponentDescriptorRegistry>();
     registry->registerComponentDescriptor(std::make_shared<ViewComponentDescriptor>(eventDispatcher));
     registry->registerComponentDescriptor(std::make_shared<ImageComponentDescriptor>(eventDispatcher, contextContainer));

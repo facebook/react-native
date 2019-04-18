@@ -301,6 +301,9 @@ module.exports = {
   get ToastAndroid() {
     return require('ToastAndroid');
   },
+  get TurboModuleRegistry() {
+    return require('TurboModuleRegistry');
+  },
   get TVEventHandler() {
     return require('TVEventHandler');
   },
