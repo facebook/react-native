@@ -17,6 +17,11 @@ using namespace facebook::react;
 
 @implementation UIView (ComponentViewProtocol)
 
++ (std::vector<facebook::react::ComponentDescriptorProvider>)supplementalComponentDescriptorProviders
+{
+  return {};
+}
+
 - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
   [self insertSubview:childComponentView atIndex:index];

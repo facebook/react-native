@@ -175,7 +175,7 @@ using namespace facebook::react;
   if (componentView == nil) {
     return NO; // This view probably isn't managed by Fabric
   }
-  ComponentHandle handle = [[componentView class] componentHandle];
+  ComponentHandle handle = [[componentView class] componentDescriptorProvider].handle;
   const facebook::react::ComponentDescriptor &componentDescriptor = [self._scheduler getComponentDescriptor:handle];
   [self->_mountingManager synchronouslyUpdateViewOnUIThread:tag
                                                changedProps:props

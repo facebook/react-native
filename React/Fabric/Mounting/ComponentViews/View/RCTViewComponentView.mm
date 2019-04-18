@@ -10,9 +10,9 @@
 #import <React/RCTAssert.h>
 #import <React/RCTBorderDrawing.h>
 #import <objc/runtime.h>
+#import <react/components/view/ViewComponentDescriptor.h>
 #import <react/components/view/ViewEventEmitter.h>
 #import <react/components/view/ViewProps.h>
-#import <react/components/view/ViewShadowNode.h>
 
 #import "RCTConversions.h"
 
@@ -85,13 +85,13 @@ using namespace facebook::react;
 
 #pragma mark - RCTComponentViewProtocol
 
-+ (ComponentHandle)componentHandle
++ (ComponentDescriptorProvider)componentDescriptorProvider
 {
   RCTAssert(
       self == [RCTViewComponentView class],
-      @"`+[RCTComponentViewProtocol componentHandle]` must be implemented for all subclasses (and `%@` particularly).",
+      @"`+[RCTComponentViewProtocol componentDescriptorProvider]` must be implemented for all subclasses (and `%@` particularly).",
       NSStringFromClass([self class]));
-  return ViewShadowNode::Handle();
+  return concreteComponentDescriptorProvider<ViewComponentDescriptor>();
 }
 
 - (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps

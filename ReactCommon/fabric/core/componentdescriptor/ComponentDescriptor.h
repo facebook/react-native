@@ -30,6 +30,7 @@ using SharedComponentDescriptor = std::shared_ptr<ComponentDescriptor>;
 class ComponentDescriptor {
  public:
   using Shared = std::shared_ptr<ComponentDescriptor const>;
+  using Unique = std::unique_ptr<ComponentDescriptor const>;
 
   ComponentDescriptor(
       EventDispatcher::Shared const &eventDispatcher,

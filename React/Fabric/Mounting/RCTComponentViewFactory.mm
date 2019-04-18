@@ -49,7 +49,7 @@ using namespace facebook::react;
 {
   RCTAssertMainQueue();
 
-  ComponentHandle componentHandle = [componentViewClass componentHandle];
+  auto componentHandle = [componentViewClass componentDescriptorProvider].handle;
   _registry[componentHandle] = componentViewClass;
 }
 

@@ -13,6 +13,7 @@
 #import <react/core/LocalData.h>
 #import <react/core/Props.h>
 #import <react/core/State.h>
+#import <react/uimanager/ComponentDescriptorProvider.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -40,10 +41,16 @@ typedef NS_OPTIONS(NSInteger, RNComponentViewUpdateMask) {
 @protocol RCTComponentViewProtocol <NSObject>
 
 /*
- * Returns ComponentHandle of ComponentDescriptor which this ComponentView
+ * Returns a `ComponentDescriptorProvider` of a particular `ComponentDescriptor` which this component view
  * represents.
  */
-+ (facebook::react::ComponentHandle)componentHandle;
++ (facebook::react::ComponentDescriptorProvider)componentDescriptorProvider;
+
+/*
+ * Returns a list of supplemental  `ComponentDescriptorProvider`s (with do not have `ComponentView` counterparts) that
+ * require for this component view.
+ */
++ (std::vector<facebook::react::ComponentDescriptorProvider>)supplementalComponentDescriptorProviders;
 
 /*
  * Called for mounting (attaching) a child component view inside `self`

@@ -7,9 +7,9 @@
 
 #import "RCTActivityIndicatorViewComponentView.h"
 
+#import <react/components/rncore/ComponentDescriptors.h>
 #import <react/components/rncore/EventEmitters.h>
 #import <react/components/rncore/Props.h>
-#import <react/components/rncore/ShadowNodes.h>
 
 using namespace facebook::react;
 
@@ -29,9 +29,9 @@ static UIActivityIndicatorViewStyle convertActivityIndicatorViewStyle(const Acti
 
 #pragma mark - RCTComponentViewProtocol
 
-+ (ComponentHandle)componentHandle
++ (ComponentDescriptorProvider)componentDescriptorProvider
 {
-  return ActivityIndicatorViewShadowNode::Handle();
+  return concreteComponentDescriptorProvider<ActivityIndicatorViewComponentDescriptor>();
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
