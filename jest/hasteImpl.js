@@ -45,8 +45,8 @@ const NAME_REDUCERS /*: Array<[RegExp, string]> */ = [
   [/^(?:.*[\\\/])?([a-zA-Z0-9$_.-]+)$/, '$1'],
   // strip .js/.js.flow suffix
   [/^(.*)\.js(\.flow)?$/, '$1'],
-  // strip platform suffix
-  [/^(.*)\.(android|ios|native)$/, '$1'],
+  // strip native suffix
+  [/^(.*)\.(native)$/, '$1'],
   // strip plugin platform suffixes
   ...pluginNameReducers,
 ];

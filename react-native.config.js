@@ -9,6 +9,25 @@
  */
 'use strict';
 
+const {
+  commands: iOSCommands,
+  ...ios
+} = require('@react-native-community/cli-platform-ios');
+const {
+  commands: androidCommands,
+  ...android
+} = require('@react-native-community/cli-platform-android');
+
 module.exports = {
   reactNativePath: '.',
+  commands: [...iOSCommands, ...androidCommands],
+  platforms: {ios, android},
+  project: {
+    ios: {
+      project: './RNTester/RNTester.xcodeproj',
+    },
+    android: {
+      sourceDir: './RNTester',
+    },
+  },
 };
