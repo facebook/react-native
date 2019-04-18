@@ -334,7 +334,7 @@ public class MountingManager {
 
   @AnyThread
   public long measure(
-      ReactContext context,
+      Context context,
       String componentName,
       ReadableMap localData,
       ReadableMap props,

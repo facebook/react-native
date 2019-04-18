@@ -7,6 +7,7 @@
 
 package com.facebook.react.views.slider;
 
+import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
@@ -196,7 +197,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
 
   @Override
   public long measure(
-    ReactContext context,
+    Context context,
     ReadableMap localData,
     ReadableMap props,
     float width,

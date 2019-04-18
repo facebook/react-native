@@ -7,6 +7,7 @@
 
 package com.facebook.react.uimanager;
 
+import android.content.Context;
 import android.view.View;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -234,7 +235,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
   }
 
   public long measure(
-      ReactContext context,
+      Context context,
       ReadableMap localData,
       ReadableMap props,
       float width,
