@@ -176,6 +176,9 @@ module.exports = {
   get VirtualizedList() {
     return require('VirtualizedList');
   },
+  get VirtualizedSectionList() {
+    return require('VirtualizedSectionList');
+  },
 
   // APIs
   get ActionSheetIOS() {
