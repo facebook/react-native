@@ -27,4 +27,10 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(methodThatReturnsNil)
   return nil;
 }
 
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(methodThatCallsCallbackWithString:(NSString *)input callback:(RCTResponseSenderBlock)callback)
+{
+  callback(@[input]);
+  return nil;
+}
+
 @end

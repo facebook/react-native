@@ -43,6 +43,7 @@ function getReactDiffProcessValue(prop) {
     case 'StringTypeAnnotation':
     case 'Int32TypeAnnotation':
     case 'FloatTypeAnnotation':
+    case 'ArrayTypeAnnotation':
     case 'StringEnumTypeAnnotation':
       return j.literal(true);
     case 'NativePrimitiveTypeAnnotation':
@@ -54,6 +55,8 @@ function getReactDiffProcessValue(prop) {
         case 'ImageSourcePrimitive':
           return j.template
             .expression`${nativeTypesString}.ImageSourcePrimitive`;
+        case 'PointPrimitive':
+          return j.template.expression`${nativeTypesString}.PointPrimitive`;
         default:
           (typeAnnotation.name: empty);
           throw new Error('Receieved unknown NativePrimitiveTypeAnnotation');

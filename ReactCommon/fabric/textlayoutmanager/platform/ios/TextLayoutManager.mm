@@ -12,8 +12,8 @@
 namespace facebook {
 namespace react {
 
-TextLayoutManager::TextLayoutManager(
-    const SharedContextContainer &contextContainer) {
+TextLayoutManager::TextLayoutManager(ContextContainer::Shared const &contextContainer)
+{
   self_ = (__bridge_retained void *)[RCTTextLayoutManager new];
 }
 

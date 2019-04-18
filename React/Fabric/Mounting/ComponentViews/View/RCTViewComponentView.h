@@ -68,6 +68,17 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nonatomic, assign) UIEdgeInsets hitTestEdgeInsets;
 
+/**
+ * Enforcing `call super` semantic for overridden methods from `RCTComponentViewProtocol`.
+ */
+- (void)updateProps:(facebook::react::SharedProps)props
+           oldProps:(facebook::react::SharedProps)oldProps NS_REQUIRES_SUPER;
+- (void)updateEventEmitter:(facebook::react::SharedEventEmitter)eventEmitter NS_REQUIRES_SUPER;
+- (void)updateLayoutMetrics:(facebook::react::LayoutMetrics)layoutMetrics
+           oldLayoutMetrics:(facebook::react::LayoutMetrics)oldLayoutMetrics NS_REQUIRES_SUPER;
+- (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask NS_REQUIRES_SUPER;
+- (void)prepareForRecycle NS_REQUIRES_SUPER;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -38,10 +38,12 @@ export type IPerformanceLogger = {
   addTimespans(Array<number>, Array<string>): void,
   setExtra(string, any): void,
   getExtras(): {[key: string]: any},
+  removeExtra(string): ?any,
   logExtras(): void,
   markPoint(string, number | void): void,
   getPoints(): {[key: string]: number},
   logPoints(): void,
+  logEverything(): void,
 };
 
 const _cookies: {[key: string]: number} = {};
@@ -216,6 +218,12 @@ function createPerformanceLogger(): IPerformanceLogger {
       return this._extras;
     },
 
+    removeExtra(key: string): ?any {
+      const value = this._extras[key];
+      delete this._extras[key];
+      return value;
+    },
+
     logExtras() {
       infoLog(this._extras);
     },
@@ -241,6 +249,12 @@ function createPerformanceLogger(): IPerformanceLogger {
       for (const key in this._points) {
         infoLog(key + ': ' + this._points[key] + 'ms');
       }
+    },
+
+    logEverything() {
+      this.logTimespans();
+      this.logExtras();
+      this.logPoints();
     },
   };
   return result;

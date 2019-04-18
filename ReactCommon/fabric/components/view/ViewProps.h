@@ -13,6 +13,7 @@
 #include <react/core/Props.h>
 #include <react/graphics/Color.h>
 #include <react/graphics/Geometry.h>
+#include <react/graphics/Transform.h>
 
 namespace facebook {
 namespace react {

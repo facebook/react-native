@@ -44,6 +44,10 @@ fb_native.sh_binary(
 )
 
 rn_codegen_test(
+    fixture_name = "INTERFACE_ONLY",
+)
+
+rn_codegen_test(
     fixture_name = "BOOLEAN_PROP",
 )
 
@@ -65,6 +69,14 @@ rn_codegen_test(
 
 rn_codegen_test(
     fixture_name = "IMAGE_PROP",
+)
+
+rn_codegen_test(
+    fixture_name = "POINT_PROP",
+)
+
+rn_codegen_test(
+    fixture_name = "ARRAY_PROPS",
 )
 
 rn_codegen_test(
@@ -107,6 +119,7 @@ fb_xplat_cxx_binary(
     ],
     visibility = ["PUBLIC"],
     deps = [
+        ":generated_components-ARRAY_PROPS",
         ":generated_components-BOOLEAN_PROP",
         ":generated_components-COLOR_PROP",
         ":generated_components-ENUM_PROP",
@@ -115,7 +128,9 @@ fb_xplat_cxx_binary(
         ":generated_components-FLOAT_PROPS",
         ":generated_components-IMAGE_PROP",
         ":generated_components-INTEGER_PROPS",
+        ":generated_components-INTERFACE_ONLY",
         ":generated_components-MULTI_NATIVE_PROP",
+        ":generated_components-POINT_PROP",
         ":generated_components-STRING_PROP",
         ":generated_components-TWO_COMPONENTS_DIFFERENT_FILES",
         ":generated_components-TWO_COMPONENTS_SAME_FILE",
@@ -141,6 +156,7 @@ rn_xplat_cxx_library(
         "PUBLIC",
     ],
     deps = [
+        ":generated_components-ARRAY_PROPS",
         ":generated_components-BOOLEAN_PROP",
         ":generated_components-COLOR_PROP",
         ":generated_components-ENUM_PROP",
@@ -149,7 +165,9 @@ rn_xplat_cxx_library(
         ":generated_components-FLOAT_PROPS",
         ":generated_components-IMAGE_PROP",
         ":generated_components-INTEGER_PROPS",
+        ":generated_components-INTERFACE_ONLY",
         ":generated_components-MULTI_NATIVE_PROP",
+        ":generated_components-POINT_PROP",
         ":generated_components-STRING_PROP",
         ":generated_components-TWO_COMPONENTS_DIFFERENT_FILES",
         ":generated_components-TWO_COMPONENTS_SAME_FILE",

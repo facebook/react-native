@@ -83,9 +83,10 @@ public:
    * Synchronously tears down the bridge and the main executor.
    */
   void destroy();
-private:
+
   void runOnExecutorQueue(std::function<void(JSExecutor*)> task);
 
+private:
   // This is used to avoid a race condition where a proxyCallback gets queued
   // after ~NativeToJsBridge(), on the same thread. In that case, the callback
   // will try to run the task on m_callback which will have been destroyed
@@ -94,6 +95,11 @@ private:
   std::shared_ptr<JsToNativeBridge> m_delegate;
   std::unique_ptr<JSExecutor> m_executor;
   std::shared_ptr<MessageQueueThread> m_executorMessageQueueThread;
+
+  // Memoize this on the JS thread, so that it can be inspected from
+  // any thread later.  This assumes inspectability doesn't change for
+  // a JSExecutor instance, which is true for all existing implementations.
+  bool m_inspectable;
 
   // Keep track of whether the JS bundle containing the application logic causes
   // exception when evaluated initially. If so, more calls to JS will very

@@ -1,10 +1,9 @@
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
+ * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+ * directory of this source tree.
  */
-
 package com.facebook.react.bridge;
 
 import java.util.HashMap;
@@ -20,9 +19,9 @@ import javax.annotation.Nullable;
  * of {@link WritableNativeMap} created via {@link Arguments#createMap} or just {@link ReadableMap}
  * interface if you want your "native" module method to take a map from JS as an argument.
  *
- * Main purpose for this class is to be used in java-only unit tests, but could also be used outside
- * of tests in the code that operates only in java and needs to communicate with RN modules via
- * their JS-exposed API.
+ * <p>Main purpose for this class is to be used in java-only unit tests, but could also be used
+ * outside of tests in the code that operates only in java and needs to communicate with RN modules
+ * via their JS-exposed API.
  */
 public class JavaOnlyMap implements ReadableMap, WritableMap {
 
@@ -62,16 +61,19 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
     return res;
   }
 
-  /**
-   * @param keysAndValues keys and values, interleaved
-   */
+  /** @param keysAndValues keys and values, interleaved */
   private JavaOnlyMap(Object... keysAndValues) {
     if (keysAndValues.length % 2 != 0) {
       throw new IllegalArgumentException("You must provide the same number of keys and values");
     }
     mBackingMap = new HashMap();
     for (int i = 0; i < keysAndValues.length; i += 2) {
-      mBackingMap.put(keysAndValues[i], keysAndValues[i + 1]);
+      Object val = keysAndValues[i + 1];
+      if (val instanceof Number) {
+        // all values from JS are doubles, so emulate that here for tests.
+        val = ((Number)val).doubleValue();
+      }
+      mBackingMap.put(keysAndValues[i], val);
     }
   }
 
@@ -142,15 +144,20 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
     } else if (value instanceof Dynamic) {
       return ((Dynamic) value).getType();
     } else {
-      throw new IllegalArgumentException("Invalid value " + value.toString() + " for key " + name +
-        "contained in JavaOnlyMap");
+      throw new IllegalArgumentException(
+          "Invalid value " + value.toString() + " for key " + name + "contained in JavaOnlyMap");
     }
+  }
+
+  @Override
+  public @Nonnull Iterator<Map.Entry<String, Object>> getEntryIterator() {
+    return mBackingMap.entrySet().iterator();
   }
 
   @Override
   public @Nonnull ReadableMapKeySetIterator keySetIterator() {
     return new ReadableMapKeySetIterator() {
-      Iterator<String> mIterator = mBackingMap.keySet().iterator();
+      Iterator<Map.Entry<String, Object>> mIterator = mBackingMap.entrySet().iterator();
 
       @Override
       public boolean hasNextKey() {
@@ -159,7 +166,7 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
 
       @Override
       public String nextKey() {
-        return mIterator.next();
+        return mIterator.next().getKey();
       }
     };
   }
@@ -176,7 +183,7 @@ public class JavaOnlyMap implements ReadableMap, WritableMap {
 
   @Override
   public void putInt(@Nonnull String key, int value) {
-    mBackingMap.put(key, value);
+    mBackingMap.put(key, new Double(value));
   }
 
   @Override

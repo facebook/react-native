@@ -156,7 +156,7 @@ public class JavaOnlyArray implements ReadableArray, WritableArray {
 
   @Override
   public void pushInt(int value) {
-    mBackingList.add(value);
+    mBackingList.add(new Double(value));
   }
 
   @Override

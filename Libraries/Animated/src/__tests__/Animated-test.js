@@ -834,6 +834,47 @@ describe('Animated tests', () => {
       expect(value1.__getValue()).toBe(1492);
     });
 
+    it('should get updates for derived animated nodes', () => {
+      const value1 = new Animated.Value(40);
+      const value2 = new Animated.Value(50);
+      const value3 = new Animated.Value(0);
+      const value4 = Animated.add(value3, Animated.multiply(value1, value2));
+      const callback = jest.fn();
+      const view = new Animated.__PropsOnlyForTests(
+        {
+          style: {
+            transform: [
+              {
+                translateX: value4,
+              },
+            ],
+          },
+        },
+        callback,
+      );
+      const listener = jest.fn();
+      const id = value4.addListener(listener);
+      value3.setValue(137);
+      expect(listener.mock.calls.length).toBe(1);
+      expect(listener).toBeCalledWith({value: 2137});
+      value1.setValue(0);
+      expect(listener.mock.calls.length).toBe(2);
+      expect(listener).toBeCalledWith({value: 137});
+      expect(view.__getValue()).toEqual({
+        style: {
+          transform: [
+            {
+              translateX: 137,
+            },
+          ],
+        },
+      });
+      value4.removeListener(id);
+      value1.setValue(40);
+      expect(listener.mock.calls.length).toBe(2);
+      expect(value4.__getValue()).toBe(2137);
+    });
+
     it('should removeAll', () => {
       const value1 = new Animated.Value(0);
       const listener = jest.fn();

@@ -50,6 +50,8 @@ public class TextAttributeProps {
   protected int mTextAlign = Gravity.NO_GRAVITY;
   protected int mTextBreakStrategy =
     (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ? 0 : Layout.BREAK_STRATEGY_HIGH_QUALITY;
+  protected int mJustificationMode =
+          (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) ? 0 : Layout.JUSTIFICATION_MODE_NONE;
   protected TextTransform mTextTransform = TextTransform.UNSET;
 
   protected float mTextShadowOffsetDx = 0;
@@ -162,10 +164,10 @@ public class TextAttributeProps {
   public int getTextAlign() {
     int textAlign = mTextAlign;
     if (getLayoutDirection() == YogaDirection.RTL) {
-      if (textAlign == Gravity.RIGHT) {
-        textAlign = Gravity.LEFT;
-      } else if (textAlign == Gravity.LEFT) {
-        textAlign = Gravity.RIGHT;
+      if (textAlign == Gravity.END) {
+        textAlign = Gravity.START;
+      } else if (textAlign == Gravity.START) {
+        textAlign = Gravity.END;
       }
     }
     return textAlign;
@@ -204,19 +206,28 @@ public class TextAttributeProps {
   }
 
   public void setTextAlign(@Nullable String textAlign) {
-    if (textAlign == null || "auto".equals(textAlign)) {
-      mTextAlign = Gravity.NO_GRAVITY;
-    } else if ("left".equals(textAlign)) {
-      mTextAlign = Gravity.LEFT;
-    } else if ("right".equals(textAlign)) {
-      mTextAlign = Gravity.RIGHT;
-    } else if ("center".equals(textAlign)) {
-      mTextAlign = Gravity.CENTER_HORIZONTAL;
-    } else if ("justify".equals(textAlign)) {
-      // Fallback gracefully for cross-platform compat instead of error
-      mTextAlign = Gravity.LEFT;
+    if ("justify".equals(textAlign)) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        mJustificationMode = Layout.JUSTIFICATION_MODE_INTER_WORD;
+      }
+      mTextAlign = Gravity.START;
     } else {
-      throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlign);
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        mJustificationMode = Layout.JUSTIFICATION_MODE_NONE;
+      }
+
+      if (textAlign == null || "auto".equals(textAlign)) {
+        mTextAlign = Gravity.NO_GRAVITY;
+      } else if ("left".equals(textAlign)) {
+        mTextAlign = Gravity.START;
+      } else if ("right".equals(textAlign)) {
+        mTextAlign = Gravity.END;
+      } else if ("center".equals(textAlign)) {
+        mTextAlign = Gravity.CENTER_HORIZONTAL;
+      } else {
+        throw new JSApplicationIllegalArgumentException("Invalid textAlign: " + textAlign);
+      }
+
     }
   }
 

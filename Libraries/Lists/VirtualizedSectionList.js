@@ -67,11 +67,11 @@ type OptionalProps<SectionT: SectionBase> = {
    */
   ItemSeparatorComponent?: ?React.ComponentType<any>,
   /**
-   * Warning: Virtualization can drastically improve memory consumption for long lists, but trashes
-   * the state of items when they scroll out of the render window, so make sure all relavent data is
-   * stored outside of the recursive `renderItem` instance tree.
+   * DEPRECATED: Virtualization provides significant performance and memory optimizations, but fully
+   * unmounts react instances that are outside of the render window. You should only need to disable
+   * this for debugging purposes.
    */
-  enableVirtualization?: ?boolean,
+  disableVirtualization?: ?boolean,
   keyExtractor: (item: Item, index: number) => string,
   onEndReached?: ?({distanceFromEnd: number}) => void,
   /**
@@ -123,7 +123,7 @@ class VirtualizedSectionList<SectionT: SectionBase> extends React.PureComponent<
     sectionIndex: number,
     viewPosition?: number,
   }) {
-    let index = Platform.OS === 'ios' ? params.itemIndex : params.itemIndex - 1;
+    let index = Platform.OS === 'ios' ? params.itemIndex : params.itemIndex + 1;
     for (let ii = 0; ii < params.sectionIndex; ii++) {
       const section = this.props.getItem(this.props.sections, ii);
       const sectionData = this.props.getItem(section, 'data');

@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {RNTesterExample} from 'RNTesterTypes';
+import type {RNTesterExample} from './Shared/RNTesterTypes';
 
 const ComponentExamples: Array<RNTesterExample> = [
   {
@@ -72,10 +72,6 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('./StatusBarExample'),
   },
   {
-    key: 'SwipeableFlatListExample',
-    module: require('./SwipeableFlatListExample'),
-  },
-  {
     key: 'SwitchExample',
     module: require('./SwitchExample'),
   },
@@ -111,13 +107,13 @@ const ComponentExamples: Array<RNTesterExample> = [
      * when making Flow check .android.js files. */
     module: require('./ViewPagerAndroidExample'),
   },
-  {
-    key: 'WebViewExample',
-    module: require('./WebViewExample'),
-  },
 ];
 
 const APIExamples: Array<RNTesterExample> = [
+  {
+    key: 'AccessibilityExample',
+    module: require('./AccessibilityExample'),
+  },
   {
     key: 'AccessibilityAndroidExample',
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
@@ -149,16 +145,16 @@ const APIExamples: Array<RNTesterExample> = [
     module: require('./ClipboardExample'),
   },
   {
+    key: 'CrashExample',
+    module: require('./CrashExample'),
+  },
+  {
     key: 'DatePickerAndroidExample',
     module: require('./DatePickerAndroidExample'),
   },
   {
     key: 'Dimensions',
     module: require('./DimensionsExample'),
-  },
-  {
-    key: 'GeolocationExample',
-    module: require('./GeolocationExample'),
   },
   {
     key: 'ImageEditingExample',

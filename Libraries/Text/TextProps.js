@@ -13,11 +13,7 @@
 import type {LayoutEvent, PressEvent, TextLayoutEvent} from 'CoreEventTypes';
 import type React from 'React';
 import type {TextStyleProp} from 'StyleSheet';
-import type {
-  AccessibilityRole,
-  AccessibilityStates,
-  AccessibilityTrait,
-} from 'ViewAccessibility';
+import type {AccessibilityRole, AccessibilityStates} from 'ViewAccessibility';
 
 export type PressRetentionOffset = $ReadOnly<{|
   top: number,
@@ -40,7 +36,6 @@ export type TextProps = $ReadOnly<{|
   accessibilityLabel?: ?Stringish,
   accessibilityRole?: ?AccessibilityRole,
   accessibilityStates?: ?AccessibilityStates,
-  accessibilityTraits?: ?(AccessibilityTrait | Array<AccessibilityTrait>),
 
   /**
    * Whether font should be scaled down automatically.
@@ -157,6 +152,8 @@ export type TextProps = $ReadOnly<{|
    * See https://facebook.github.io/react-native/docs/text.html#selectioncolor
    */
   selectionColor?: ?string,
+
+  dataDetectorType?: ?('phoneNumber' | 'link' | 'email' | 'none' | 'all'),
 
   /**
    * Set text break strategy on Android.

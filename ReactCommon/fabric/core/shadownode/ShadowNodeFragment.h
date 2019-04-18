@@ -25,21 +25,26 @@ namespace react {
  * retain ownership of them.
  */
 struct ShadowNodeFragment {
-  Tag tag = 0;
-  Tag rootTag = 0;
-  const SharedProps &props = propsPlaceholder();
-  const SharedEventEmitter &eventEmitter = eventEmitterPlaceholder();
-  const SharedShadowNodeSharedList &children = childrenPlaceholder();
-  const SharedLocalData &localData = localDataPlaceholder();
-  const State::Shared &state = statePlaceholder();
+  Tag const tag = tagPlaceholder();
+  SurfaceId const rootTag = surfaceIdPlaceholder();
+  Props::Shared const &props = propsPlaceholder();
+  EventEmitter::Shared const &eventEmitter = eventEmitterPlaceholder();
+  ShadowNode::SharedListOfShared const &children = childrenPlaceholder();
+  LocalData::Shared const &localData = localDataPlaceholder();
+  State::Shared const &state = statePlaceholder();
 
-  static Tag tagPlaceholder();
-  static Tag surfaceIdPlaceholder();
-  static SharedProps &propsPlaceholder();
-  static SharedEventEmitter &eventEmitterPlaceholder();
-  static SharedShadowNodeSharedList &childrenPlaceholder();
-  static SharedLocalData &localDataPlaceholder();
-  static State::Shared &statePlaceholder();
+  /*
+   * Placeholders.
+   * Use as default arguments as an indication that the field does not need to
+   * be changed.
+   */
+  static Tag const tagPlaceholder();
+  static SurfaceId const surfaceIdPlaceholder();
+  static Props::Shared const &propsPlaceholder();
+  static EventEmitter::Shared const &eventEmitterPlaceholder();
+  static ShadowNode::SharedListOfShared const &childrenPlaceholder();
+  static LocalData::Shared const &localDataPlaceholder();
+  static State::Shared const &statePlaceholder();
 };
 
 } // namespace react

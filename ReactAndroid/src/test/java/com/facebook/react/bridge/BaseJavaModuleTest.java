@@ -27,7 +27,7 @@ import com.facebook.soloader.SoLoader;
  * Tests for {@link BaseJavaModule} and {@link JavaModuleWrapper}
  */
 @PrepareForTest({ReadableNativeArray.class, SoLoader.class})
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 @RunWith(RobolectricTestRunner.class)
 public class BaseJavaModuleTest {
 

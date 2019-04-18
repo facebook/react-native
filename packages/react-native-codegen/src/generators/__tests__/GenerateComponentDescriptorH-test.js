@@ -14,12 +14,14 @@
 const generator = require('../GenerateComponentDescriptorH.js');
 
 const {
+  ARRAY_PROPS,
   BOOLEAN_PROP,
   STRING_PROP,
   INTEGER_PROPS,
   FLOAT_PROPS,
   COLOR_PROP,
   IMAGE_PROP,
+  POINT_PROP,
   MULTI_NATIVE_PROP,
   ENUM_PROP,
   EVENT_PROPS,
@@ -28,6 +30,10 @@ const {
 } = require('../__test_fixtures__/fixtures.js');
 
 describe('GenerateComponentDescriptorH', () => {
+  it('can generate a array props', () => {
+    expect(generator.generate('ARRAY_PROPS', ARRAY_PROPS)).toMatchSnapshot();
+  });
+
   it('can generate a single boolean prop', () => {
     expect(generator.generate('BOOLEAN_PROP', BOOLEAN_PROP)).toMatchSnapshot();
   });
@@ -52,6 +58,10 @@ describe('GenerateComponentDescriptorH', () => {
 
   it('can generate a native primitive image prop', () => {
     expect(generator.generate('IMAGE_PROP', IMAGE_PROP)).toMatchSnapshot();
+  });
+
+  it('can generate a native primitive point prop', () => {
+    expect(generator.generate('IMAGE_PROP', POINT_PROP)).toMatchSnapshot();
   });
 
   it('can generate multiple native props', () => {

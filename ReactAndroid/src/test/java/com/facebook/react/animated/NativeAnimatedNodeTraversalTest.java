@@ -50,7 +50,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  */
 @PrepareForTest({Arguments.class})
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class NativeAnimatedNodeTraversalTest {
 
   private static long FRAME_LEN_NANOS = 1000000000L / 60L;

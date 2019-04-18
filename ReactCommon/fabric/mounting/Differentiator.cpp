@@ -39,7 +39,7 @@ static void sliceChildShadowNodeViewPairsRecursively(
           *childShadowNode);
     } else {
       shadowView.layoutMetrics.frame.origin += layoutOffset;
-      pairList.push_back({shadowView, *childShadowNode});
+      pairList.push_back({shadowView, childShadowNode.get()});
     }
   }
 }
@@ -98,9 +98,9 @@ static void calculateShadowViewMutations(
     }
 
     const auto oldGrandChildPairs =
-        sliceChildShadowNodeViewPairs(oldChildPair.shadowNode);
+        sliceChildShadowNodeViewPairs(*oldChildPair.shadowNode);
     const auto newGrandChildPairs =
-        sliceChildShadowNodeViewPairs(newChildPair.shadowNode);
+        sliceChildShadowNodeViewPairs(*newChildPair.shadowNode);
     calculateShadowViewMutations(
         *(newGrandChildPairs.size() ? &downwardMutations
                                     : &destructiveDownwardMutations),
@@ -145,18 +145,18 @@ static void calculateShadowViewMutations(
       calculateShadowViewMutations(
           destructiveDownwardMutations,
           oldChildPair.shadowView,
-          sliceChildShadowNodeViewPairs(oldChildPair.shadowNode),
+          sliceChildShadowNodeViewPairs(*oldChildPair.shadowNode),
           {});
     } else {
       // The old view *was* (re)inserted.
       // We have to call the algorithm recursively if the inserted view
       // is *not* the same as removed one.
       const auto &newChildPair = it->second;
-      if (newChildPair.shadowView != oldChildPair.shadowView) {
+      if (newChildPair != oldChildPair) {
         const auto oldGrandChildPairs =
-            sliceChildShadowNodeViewPairs(oldChildPair.shadowNode);
+            sliceChildShadowNodeViewPairs(*oldChildPair.shadowNode);
         const auto newGrandChildPairs =
-            sliceChildShadowNodeViewPairs(newChildPair.shadowNode);
+            sliceChildShadowNodeViewPairs(*newChildPair.shadowNode);
         calculateShadowViewMutations(
             *(newGrandChildPairs.size() ? &downwardMutations
                                         : &destructiveDownwardMutations),
@@ -191,7 +191,7 @@ static void calculateShadowViewMutations(
         downwardMutations,
         newChildPair.shadowView,
         {},
-        sliceChildShadowNodeViewPairs(newChildPair.shadowNode));
+        sliceChildShadowNodeViewPairs(*newChildPair.shadowNode));
   }
 
   // All mutations in an optimal order:
@@ -208,9 +208,9 @@ static void calculateShadowViewMutations(
   mutations.insert(
       mutations.end(), createMutations.begin(), createMutations.end());
   mutations.insert(
-      mutations.end(), insertMutations.begin(), insertMutations.end());
-  mutations.insert(
       mutations.end(), downwardMutations.begin(), downwardMutations.end());
+  mutations.insert(
+      mutations.end(), insertMutations.begin(), insertMutations.end());
 }
 
 ShadowViewMutationList calculateShadowViewMutations(
@@ -218,8 +218,8 @@ ShadowViewMutationList calculateShadowViewMutations(
     const ShadowNode &newRootShadowNode) {
   SystraceSection s("calculateShadowViewMutations");
 
-  // Root shadow nodes must have same tag.
-  assert(oldRootShadowNode.getTag() == newRootShadowNode.getTag());
+  // Root shadow nodes must be belong the same family.
+  assert(ShadowNode::sameFamily(oldRootShadowNode, newRootShadowNode));
 
   ShadowViewMutationList mutations;
 

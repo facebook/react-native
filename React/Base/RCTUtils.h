@@ -149,4 +149,6 @@ RCT_EXTERN NSURL *__nullable RCTURLByReplacingQueryParam(NSURL *__nullable URL, 
 // Given a string, drop common RN prefixes (RCT, RK, etc.)
 RCT_EXTERN NSString *RCTDropReactPrefixes(NSString *s);
 
+RCT_EXTERN BOOL RCTUIManagerTypeForTagIsFabric(NSNumber *reactTag);
+
 NS_ASSUME_NONNULL_END

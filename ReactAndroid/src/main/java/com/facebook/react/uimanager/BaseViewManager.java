@@ -6,10 +6,9 @@
 package com.facebook.react.uimanager;
 
 import android.graphics.Color;
-import android.os.Build;
-import android.support.v4.view.ViewCompat;
 import android.view.View;
 import android.view.ViewParent;
+import androidx.core.view.ViewCompat;
 import com.facebook.react.R;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.AccessibilityDelegateUtil.AccessibilityRole;
@@ -32,7 +31,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final String PROP_Z_INDEX = "zIndex";
   private static final String PROP_RENDER_TO_HARDWARE_TEXTURE = "renderToHardwareTextureAndroid";
   private static final String PROP_ACCESSIBILITY_LABEL = "accessibilityLabel";
-  private static final String PROP_ACCESSIBILITY_COMPONENT_TYPE = "accessibilityComponentType";
   private static final String PROP_ACCESSIBILITY_HINT = "accessibilityHint";
   private static final String PROP_ACCESSIBILITY_LIVE_REGION = "accessibilityLiveRegion";
   private static final String PROP_ACCESSIBILITY_ROLE = "accessibilityRole";
@@ -115,11 +113,6 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   @ReactProp(name = PROP_ACCESSIBILITY_LABEL)
   public void setAccessibilityLabel(@Nonnull T view, String accessibilityLabel) {
     view.setContentDescription(accessibilityLabel);
-  }
-
-  @ReactProp(name = PROP_ACCESSIBILITY_COMPONENT_TYPE)
-  public void setAccessibilityComponentType(@Nonnull T view, String accessibilityComponentType) {
-    AccessibilityHelper.updateAccessibilityComponentType(view, accessibilityComponentType);
   }
 
   @ReactProp(name = PROP_ACCESSIBILITY_HINT)

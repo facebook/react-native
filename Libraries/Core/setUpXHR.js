@@ -30,3 +30,11 @@ polyfillGlobal('File', () => require('File'));
 polyfillGlobal('FileReader', () => require('FileReader'));
 polyfillGlobal('URL', () => require('URL').URL); // flowlint-line untyped-import:off
 polyfillGlobal('URLSearchParams', () => require('URL').URLSearchParams); // flowlint-line untyped-import:off
+polyfillGlobal(
+  'AbortController',
+  () => require('abort-controller/dist/abort-controller').AbortController, // flowlint-line untyped-import:off
+);
+polyfillGlobal(
+  'AbortSignal',
+  () => require('abort-controller/dist/abort-controller').AbortSignal, // flowlint-line untyped-import:off
+);

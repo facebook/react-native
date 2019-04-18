@@ -6,9 +6,10 @@
  */
 package com.facebook.react.fabric.mounting;
 
-import android.support.annotation.UiThread;
+import androidx.annotation.UiThread;
 import android.view.View;
 import com.facebook.react.common.ClearableSynchronizedPool;
+import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
@@ -25,20 +26,20 @@ public final class ViewPool {
   }
 
   @UiThread
-  void createView(String componentName, ThemedReactContext context) {
+  void createView(String componentName, ReactStylesDiffMap props, ThemedReactContext context) {
     ClearableSynchronizedPool<View> viewPool = getViewPoolForComponent(componentName);
     ViewManager viewManager = mViewManagerRegistry.get(componentName);
     // TODO: T31905686 Integrate / re-implement jsResponder
-    View view = viewManager.createView(context, null);
+    View view = viewManager.createViewWithProps(context, props, null);
     viewPool.release(view);
   }
 
   @UiThread
-  View getOrCreateView(String componentName, ThemedReactContext context) {
+  View getOrCreateView(String componentName, ReactStylesDiffMap props, ThemedReactContext context) {
     ClearableSynchronizedPool<View> viewPool = getViewPoolForComponent(componentName);
     View view = viewPool.acquire();
     if (view == null) {
-      createView(componentName, context);
+      createView(componentName, props, context);
       view = viewPool.acquire();
     }
     return view;

@@ -109,6 +109,13 @@ public class ReactEditText extends EditText {
     mTextAttributes = new TextAttributes();
 
     applyTextAttributes();
+
+    // Turn off hardware acceleration for Oreo (T40484798)
+    // see https://issuetracker.google.com/issues/67102093
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+        && Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
+      setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+      }
   }
 
   // After the text changes inside an EditText, TextView checks if a layout() has been requested.

@@ -1,7 +1,9 @@
 ---
-name: 📃 Documentation Bug
+name: "📃 Documentation Bug"
 about: You want to report something that is wrong or missing from the documentation.
-labels: "Type: Docs"
+title: 'Docs:'
+labels: 'Type: Docs'
+
 ---
 
 The React Native website is hosted on a separate repository. You may let the

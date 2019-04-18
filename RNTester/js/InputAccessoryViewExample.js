@@ -10,8 +10,7 @@
 
 'use strict';
 
-const React = require('React');
-const ReactNative = require('react-native');
+const React = require('react');
 const {
   Alert,
   Button,
@@ -21,7 +20,7 @@ const {
   Text,
   TextInput,
   View,
-} = ReactNative;
+} = require('react-native');
 
 type MessageProps = $ReadOnly<{||}>;
 class Message extends React.PureComponent<MessageProps> {
@@ -70,7 +69,9 @@ class InputAccessoryViewExample extends React.Component<InputAccessoryProps> {
         <ScrollView style={styles.fill} keyboardDismissMode="interactive">
           {Array(15)
             .fill()
-            .map((_, i) => <Message key={i} />)}
+            .map((_, i) => (
+              <Message key={i} />
+            ))}
         </ScrollView>
         <InputAccessoryView backgroundColor="#fffffff7">
           <TextInputBar />

@@ -7,9 +7,9 @@
 
 #import "RCTSwitchComponentView.h"
 
+#import <react/components/rncore/ComponentDescriptors.h>
 #import <react/components/rncore/EventEmitters.h>
 #import <react/components/rncore/Props.h>
-#import <react/components/rncore/ShadowNodes.h>
 
 using namespace facebook::react;
 
@@ -38,9 +38,9 @@ using namespace facebook::react;
 
 #pragma mark - RCTComponentViewProtocol
 
-+ (ComponentHandle)componentHandle
++ (ComponentDescriptorProvider)componentDescriptorProvider
 {
-  return SwitchShadowNode::Handle();
+  return concreteComponentDescriptorProvider<SwitchComponentDescriptor>();
 }
 
 - (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps

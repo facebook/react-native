@@ -4,11 +4,13 @@
  * This source code is licensed under the MIT license found in the LICENSE
  * file in the root directory of this source tree.
  */
+#ifdef DEBUG
 #include "YGNodePrint.h"
 #include <stdarg.h>
 #include "YGEnums.h"
 #include "YGNode.h"
 #include "Yoga-internal.h"
+#include "Utils.h"
 
 namespace facebook {
 namespace yoga {
@@ -230,3 +232,4 @@ void YGNodeToString(
 }
 } // namespace yoga
 } // namespace facebook
+#endif
