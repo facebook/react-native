@@ -32,7 +32,7 @@ static NSString *getServerHost(NSURL *bundleURL, NSNumber *port)
 
 static NSURL *getInspectorDeviceUrl(NSURL *bundleURL)
 {
-  NSNumber *inspectorProxyPort = @8082;
+  NSNumber *inspectorProxyPort = @8081;
   NSString *escapedDeviceName = [[[UIDevice currentDevice] name] stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
   NSString *escapedAppName = [[[NSBundle mainBundle] bundleIdentifier] stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
   return [NSURL URLWithString:[NSString stringWithFormat:@"http://%@/inspector/device?name=%@&app=%@",

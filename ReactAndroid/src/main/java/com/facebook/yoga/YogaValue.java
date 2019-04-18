@@ -6,9 +6,6 @@
  */
 package com.facebook.yoga;
 
-import com.facebook.proguard.annotations.DoNotStrip;
-
-@DoNotStrip
 public class YogaValue {
   static final YogaValue UNDEFINED = new YogaValue(YogaConstants.UNDEFINED, YogaUnit.UNDEFINED);
   static final YogaValue ZERO = new YogaValue(0, YogaUnit.POINT);
@@ -22,7 +19,6 @@ public class YogaValue {
     this.unit = unit;
   }
 
-  @DoNotStrip
   YogaValue(float value, int unit) {
     this(value, YogaUnit.fromInt(unit));
   }

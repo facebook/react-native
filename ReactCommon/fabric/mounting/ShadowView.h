@@ -46,6 +46,15 @@ struct ShadowView final {
   State::Shared state = {};
 };
 
+#if RN_DEBUG_STRING_CONVERTIBLE
+
+std::string getDebugName(ShadowView const &object);
+std::vector<DebugStringConvertibleObject> getDebugProps(
+    ShadowView const &object,
+    DebugStringConvertibleOptions options = {});
+
+#endif
+
 /*
  * Describes pair of a `ShadowView` and a `ShadowNode`.
  */

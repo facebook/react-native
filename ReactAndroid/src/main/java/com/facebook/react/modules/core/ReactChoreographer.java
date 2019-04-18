@@ -136,11 +136,13 @@ public class ReactChoreographer {
   public synchronized void removeFrameCallback(
     CallbackType type,
     ChoreographerCompat.FrameCallback frameCallback) {
-    if (mCallbackQueues[type.getOrder()].removeFirstOccurrence(frameCallback)) {
-      mTotalCallbacks--;
-      maybeRemoveFrameCallback();
-    } else {
-      FLog.e(ReactConstants.TAG, "Tried to remove non-existent frame callback");
+    synchronized (ReactChoreographer.this) {
+      if (mCallbackQueues[type.getOrder()].removeFirstOccurrence(frameCallback)) {
+        mTotalCallbacks--;
+        maybeRemoveFrameCallback();
+      } else {
+        FLog.e(ReactConstants.TAG, "Tried to remove non-existent frame callback");
+      }
     }
   }
 

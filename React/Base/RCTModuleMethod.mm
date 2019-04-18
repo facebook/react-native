@@ -129,7 +129,6 @@ static BOOL checkCallbackMultipleInvocations(BOOL *didInvoke) {
 }
 #endif
 
-extern NSString *RCTParseMethodSignature(const char *input, NSArray<RCTMethodArgument *> **arguments);
 NSString *RCTParseMethodSignature(const char *input, NSArray<RCTMethodArgument *> **arguments)
 {
   RCTSkipWhitespace(&input);

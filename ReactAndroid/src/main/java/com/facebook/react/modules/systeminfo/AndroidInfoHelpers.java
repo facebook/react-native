@@ -24,7 +24,7 @@ public class AndroidInfoHelpers {
   public static final String METRO_HOST_PROP_NAME = "metro.host";
 
   private static final int DEBUG_SERVER_HOST_PORT = 8081;
-  private static final int INSPECTOR_PROXY_PORT = 8082;
+  private static final int INSPECTOR_PROXY_PORT = 8081;
 
   private static final String TAG = AndroidInfoHelpers.class.getSimpleName();
 

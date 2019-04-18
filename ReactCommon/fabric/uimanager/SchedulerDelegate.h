@@ -26,7 +26,7 @@ class SchedulerDelegate {
    */
   virtual void schedulerDidFinishTransaction(
       Tag rootTag,
-      const ShadowViewMutationList &mutations,
+      ShadowViewMutationList const &mutations,
       const long commitStartTime,
       const long layoutTime) = 0;
 

@@ -47,9 +47,7 @@ function configureNext(
     UIManager.configureNextLayoutAnimation(
       config,
       onAnimationDidEnd ?? function() {},
-      function() {
-        /* unused */
-      },
+      function() {} /* unused onError */,
     );
   }
 }

@@ -11,8 +11,7 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {Animated, PanResponder, StyleSheet, View} = ReactNative;
+const {Animated, PanResponder, StyleSheet, View} = require('react-native');
 
 class AnExChained extends React.Component<Object, any> {
   constructor(props: Object) {

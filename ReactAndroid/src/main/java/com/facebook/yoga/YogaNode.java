@@ -10,11 +10,11 @@ import javax.annotation.Nullable;
 
 public abstract class YogaNode {
   public static YogaNode create() {
-    return new YogaNodeJNI();
+    return YogaConfig.useBatchingForLayoutOutputs ? new YogaNodeJNIBatching() : new YogaNodeJNI();
   }
 
   public static YogaNode create(YogaConfig config) {
-    return new YogaNodeJNI(config);
+    return YogaConfig.useBatchingForLayoutOutputs ? new YogaNodeJNIBatching(config) : new YogaNodeJNI(config);
   }
 
   public abstract void reset();
@@ -211,11 +211,16 @@ public abstract class YogaNode {
 
   public abstract boolean isMeasureDefined();
 
+  public abstract boolean isBaselineDefined();
+
   public abstract void setData(Object data);
 
+  @Nullable
   public abstract Object getData();
 
   public abstract void print();
 
   public abstract void setStyleInputs(float[] styleInputs, int size);
+
+  public abstract YogaNode cloneWithoutChildren();
 }

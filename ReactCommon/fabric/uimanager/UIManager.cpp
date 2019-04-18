@@ -4,7 +4,7 @@
 
 #include <react/core/ShadowNodeFragment.h>
 #include <react/debug/SystraceSection.h>
-#include <react/uimanager/TimeUtils.h>
+#include <react/utils/TimeUtils.h>
 
 namespace facebook {
 namespace react {
@@ -18,13 +18,22 @@ SharedShadowNode UIManager::createNode(
   SystraceSection s("UIManager::createNode");
 
   auto &componentDescriptor = componentDescriptorRegistry_->at(name);
+  auto fallbackDescriptor =
+      componentDescriptorRegistry_->getFallbackComponentDescriptor();
+
   const auto &props = componentDescriptor.cloneProps(nullptr, rawProps);
   const auto &state = componentDescriptor.createInitialState(props);
 
   auto shadowNode = componentDescriptor.createShadowNode({
       /* .tag = */ tag,
       /* .rootTag = */ surfaceId,
-      /* .props = */ props,
+      /* .props = */
+      fallbackDescriptor != nullptr &&
+              fallbackDescriptor->getComponentHandle() ==
+                  componentDescriptor.getComponentHandle()
+          ? componentDescriptor.cloneProps(
+                props, RawProps(folly::dynamic::object("name", name)))
+          : props,
       /* .eventEmitter = */
       componentDescriptor.createEventEmitter(std::move(eventTarget), tag),
       /* .children = */ ShadowNodeFragment::childrenPlaceholder(),

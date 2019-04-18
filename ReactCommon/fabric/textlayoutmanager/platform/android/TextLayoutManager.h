@@ -12,7 +12,7 @@
 #include <react/attributedstring/AttributedString.h>
 #include <react/attributedstring/ParagraphAttributes.h>
 #include <react/core/LayoutConstraints.h>
-#include <react/uimanager/ContextContainer.h>
+#include <react/utils/ContextContainer.h>
 
 namespace facebook {
 namespace react {
@@ -26,7 +26,7 @@ using SharedTextLayoutManager = std::shared_ptr<const TextLayoutManager>;
  */
 class TextLayoutManager {
  public:
-  TextLayoutManager(const SharedContextContainer &contextContainer)
+  TextLayoutManager(const ContextContainer::Shared &contextContainer)
       : contextContainer_(contextContainer){};
   ~TextLayoutManager();
 
@@ -47,7 +47,7 @@ class TextLayoutManager {
  private:
   void *self_;
 
-  SharedContextContainer contextContainer_;
+  ContextContainer::Shared contextContainer_;
 };
 
 } // namespace react

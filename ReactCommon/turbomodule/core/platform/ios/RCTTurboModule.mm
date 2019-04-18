@@ -12,7 +12,9 @@
 #import <sstream>
 #import <vector>
 
+#import <React/RCTConvert.h>
 #import <React/RCTBridgeModule.h>
+#import <React/RCTModuleMethod.h>
 #import <React/RCTUtils.h>
 #import <jsireact/JSCallInvoker.h>
 #import <jsireact/LongLivedObject.h>
@@ -113,11 +115,8 @@ static NSDictionary *convertJSIObjectToNSDictionary(jsi::Runtime &runtime, const
 
 static RCTResponseSenderBlock convertJSIFunctionToCallback(jsi::Runtime &runtime, const jsi::Function &value, std::shared_ptr<react::JSCallInvoker> jsInvoker);
 static id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value, std::shared_ptr<react::JSCallInvoker> jsInvoker) {
-  if (value.isUndefined()) {
+  if (value.isUndefined() || value.isNull()) {
     return nil;
-  }
-  if (value.isNull()) {
-    return (id)kCFNull;
   }
   if (value.isBool()) {
     return @(value.getBool());
@@ -406,6 +405,63 @@ jsi::Value performMethodInvocation(
 
 } // namespace
 
+/**
+ * Given a method name, and an argument index, return type type of that argument.
+ * Prerequisite: You must wrap the method declaration inside some variant of the
+ * RCT_EXPORT_METHOD macro.
+ *
+ * This method returns nil if the method for which you're querying the argument type
+ * is not wrapped in an RCT_EXPORT_METHOD.
+ *
+ * Note: This is only being introduced for backward compatibility. It will be removed
+ *       in the future.
+ */
+NSString* ObjCTurboModule::getArgumentTypeName(NSString* methodName, int argIndex) {
+  if (!methodArgumentTypeNames_) {
+    NSMutableDictionary<NSString *, NSArray<NSString *> *> *methodArgumentTypeNames = [NSMutableDictionary new];
+
+    unsigned int numberOfMethods;
+    Class cls = [instance_ class];
+    Method *methods = class_copyMethodList(object_getClass(cls), &numberOfMethods);
+
+    if (methods) {
+      for (unsigned int i = 0; i < numberOfMethods; i++) {
+        SEL s = method_getName(methods[i]);
+        NSString* mName = NSStringFromSelector(s);
+        if (![mName hasPrefix:@"__rct_export__"]) {
+          continue;
+        }
+
+        // Message dispatch logic from old infra
+        RCTMethodInfo *(*getMethodInfo)(id, SEL) = (__typeof__(getMethodInfo))objc_msgSend;
+        RCTMethodInfo *methodInfo = getMethodInfo(cls, s);
+
+        NSArray<RCTMethodArgument *> *arguments;
+        NSString *otherMethodName = RCTParseMethodSignature(methodInfo->objcName, &arguments);
+
+        NSMutableArray* argumentTypes = [NSMutableArray arrayWithCapacity:[arguments count]];
+        for (int j = 0; j < [arguments count]; j += 1) {
+          [argumentTypes addObject:arguments[j].type];
+        }
+
+        NSString *normalizedOtherMethodName = [otherMethodName stringByReplacingOccurrencesOfString:@":" withString:@""];
+        methodArgumentTypeNames[normalizedOtherMethodName] = argumentTypes;
+      }
+
+      free(methods);
+    }
+
+    methodArgumentTypeNames_ = methodArgumentTypeNames;
+  }
+
+  if (methodArgumentTypeNames_[methodName]) {
+    assert([methodArgumentTypeNames_[methodName] count] > argIndex);
+    return methodArgumentTypeNames_[methodName][argIndex];
+  }
+
+  return nil;
+}
+
 NSInvocation *ObjCTurboModule::getMethodInvocation(
    jsi::Runtime &runtime,
    TurboModuleMethodValueKind valueKind,
@@ -418,34 +474,111 @@ NSInvocation *ObjCTurboModule::getMethodInvocation(
    NSMutableArray *retainedObjectsForInvocation) {
   NSInvocation *inv = [NSInvocation invocationWithMethodSignature:[[module class] instanceMethodSignatureForSelector:selector]];
   [inv setSelector:selector];
+  
+  NSMethodSignature *methodSignature = [[module class] instanceMethodSignatureForSelector:selector];
+  
   for (size_t i = 0; i < count; i++) {
     const jsi::Value *arg = &args[i];
+    const char *objCArgType = [methodSignature getArgumentTypeAtIndex:i + 2];
+    
     if (arg->isBool()) {
       bool v = arg->getBool();
-      [inv setArgument:(void *)&v atIndex:i + 2];
-    } else if (arg->isNumber()) {
+      
+      /**
+       * JS type checking ensures the Objective C argument here is either a BOOL or NSNumber*.
+       */
+      if (objCArgType[0] == _C_ID) {
+        id objCArg = [NSNumber numberWithBool:v];
+        [inv setArgument:(void *)&objCArg atIndex:i + 2];
+        [retainedObjectsForInvocation addObject:objCArg];
+      } else {
+        [inv setArgument:(void *)&v atIndex:i + 2];
+      }
+      
+      continue;
+    }
+    
+    if (arg->isNumber()) {
       double v = arg->getNumber();
-      [inv setArgument:(void *)&v atIndex:i + 2];
-    } else {
-      id v = convertJSIValueToObjCObject(runtime, *arg, jsInvoker);
-      NSString *methodNameObjc = @(methodName.c_str());
+      
+      /**
+       * JS type checking ensures the Objective C argument here is either a double or NSNumber*.
+       */
+      if (objCArgType[0] == _C_ID) {
+        id objCArg = [NSNumber numberWithDouble:v];
+        [inv setArgument:(void *)&objCArg atIndex:i + 2];
+        [retainedObjectsForInvocation addObject:objCArg];
+      } else {
+        [inv setArgument:(void *)&v atIndex:i + 2];
+      }
+      
+      continue;
+    }
+    
+    /**
+     * Convert arg to ObjC objects.
+     */
+    id objCArg = convertJSIValueToObjCObject(runtime, *arg, jsInvoker);
+    
+    if (objCArg) {
+      NSString *methodNameNSString = @(methodName.c_str());
+      
+      /**
+       * Convert objects using RCTConvert.
+       */
+      if (objCArgType[0] == _C_ID) {
+        NSString* argumentType = getArgumentTypeName(methodNameNSString, i);
+        if (argumentType != nil) {
+          NSString *rctConvertMethodName = [NSString stringWithFormat:@"%@:", argumentType];
+          SEL rctConvertSelector = NSSelectorFromString(rctConvertMethodName);
 
-      if ([v isKindOfClass:[NSDictionary class]] && hasMethodArgConversionSelector(methodNameObjc, i)) {
-        SEL methodArgConversionSelector = getMethodArgConversionSelector(methodNameObjc, i);
+          if ([RCTConvert respondsToSelector: rctConvertSelector]) {
+            // Message dispatch logic from old infra
+            id (*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;
+            id convertedObjCArg = convert([RCTConvert class], rctConvertSelector, objCArg);
+
+            [inv setArgument:(void *)&convertedObjCArg atIndex:i + 2];
+            if (convertedObjCArg) {
+              [retainedObjectsForInvocation addObject:convertedObjCArg];
+            }
+            continue;
+          }
+        }
+      }
+
+      /**
+       * Convert objects using RCTCxxConvert to structs.
+       */
+      if ([objCArg isKindOfClass:[NSDictionary class]] && hasMethodArgConversionSelector(methodNameNSString, i)) {
+        SEL methodArgConversionSelector = getMethodArgConversionSelector(methodNameNSString, i);
 
         // Message dispatch logic from old infra (link: https://git.io/fjf3U)
         RCTManagedPointer *(*convert)(id, SEL, id) = (__typeof__(convert))objc_msgSend;
-        RCTManagedPointer *box = convert([RCTCxxConvert class], methodArgConversionSelector, v);
+        RCTManagedPointer *box = convert([RCTCxxConvert class], methodArgConversionSelector, objCArg);
 
         void *pointer = box.voidPointer;
         [inv setArgument:&pointer atIndex:i + 2];
         [retainedObjectsForInvocation addObject:box];
-      } else {
-        [inv setArgument:(void *)&v atIndex:i + 2];
+        continue;
       }
     }
+    
+    /**
+     * Insert converted args unmodified.
+     */
+    [inv setArgument:(void *)&objCArg atIndex:i + 2];
+    if (objCArg) {
+      [retainedObjectsForInvocation addObject:objCArg];
+    }
   }
+  
+  /**
+   * TODO(rsnara):
+   * If you remove this call, then synchronous calls that return NSDictionary's break.
+   * Investigate why.
+   */
   [inv retainArguments];
+
   return inv;
 }
 
@@ -488,12 +621,12 @@ jsi::Value ObjCTurboModule::invokeMethod(
 BOOL ObjCTurboModule::hasMethodArgConversionSelector(NSString *methodName, int argIndex) {
   return methodArgConversionSelectors_ && methodArgConversionSelectors_[methodName] && ![methodArgConversionSelectors_[methodName][argIndex] isEqual:[NSNull null]];
 }
-  
+
 SEL ObjCTurboModule::getMethodArgConversionSelector(NSString *methodName, int argIndex) {
   assert(hasMethodArgConversionSelector(methodName, argIndex));
   return (SEL)((NSValue *)methodArgConversionSelectors_[methodName][argIndex]).pointerValue;
 }
-  
+
 void ObjCTurboModule::setMethodArgConversionSelector(NSString *methodName, int argIndex, NSString *fnName) {
   if (!methodArgConversionSelectors_) {
     methodArgConversionSelectors_ = [NSMutableDictionary new];

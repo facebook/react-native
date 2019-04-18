@@ -11,8 +11,14 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {Animated, Image, ScrollView, StyleSheet, Text, View} = ReactNative;
+const {
+  Animated,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} = require('react-native');
 
 class AnExScroll extends React.Component<$FlowFixMeProps, any> {
   state: any = {scrollX: new Animated.Value(0)};

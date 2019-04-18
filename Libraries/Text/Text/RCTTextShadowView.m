@@ -46,6 +46,7 @@
   // the RCTTextView backgroundColor to be used, without affecting nested Text
   // components.
   self.textAttributes.backgroundColor = nil;
+  self.textAttributes.opacity = NAN;
 }
 
 - (BOOL)isYogaLeafNode

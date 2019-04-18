@@ -222,6 +222,12 @@ type IOSProps = $ReadOnly<{|
    */
   scrollIndicatorInsets?: ?EdgeInsetsProp,
   /**
+   * When true, the scroll view can be programmatically scrolled beyond its
+   * content size. The default value is false.
+   * @platform ios
+   */
+  scrollToOverflowEnabled?: ?boolean,
+  /**
    * When true, the scroll view scrolls to top when the status bar is tapped.
    * The default value is true.
    * @platform ios
@@ -362,6 +368,13 @@ export type Props = $ReadOnly<{|
    * ```
    */
   contentContainerStyle?: ?ViewStyleProp,
+  /**
+   * When true, the scroll view stops on the next index (in relation to scroll
+   * position at release) regardless of how fast the gesture is. This can be
+   * used for horizontal pagination when the page is less than the width of
+   * the ScrollView. The default value is false.
+   */
+  disableIntervalMomentum?: ?boolean,
   /**
    * A floating-point number that determines how quickly the scroll view
    * decelerates after the user lifts their finger. You may also use string

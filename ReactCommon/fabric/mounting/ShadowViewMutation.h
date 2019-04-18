@@ -73,5 +73,14 @@ struct ShadowViewMutation final {
 
 using ShadowViewMutationList = std::vector<ShadowViewMutation>;
 
+#if RN_DEBUG_STRING_CONVERTIBLE
+
+std::string getDebugName(ShadowViewMutation const &object);
+std::vector<DebugStringConvertibleObject> getDebugProps(
+    ShadowViewMutation const &object,
+    DebugStringConvertibleOptions options = {});
+
+#endif
+
 } // namespace react
 } // namespace facebook

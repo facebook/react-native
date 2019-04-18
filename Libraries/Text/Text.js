@@ -66,10 +66,15 @@ const viewConfig = {
     minimumFontScale: true,
     textBreakStrategy: true,
     onTextLayout: true,
+    onInlineViewLayout: true,
+    dataDetectorType: true,
   },
   directEventTypes: {
     topTextLayout: {
       registrationName: 'onTextLayout',
+    },
+    topInlineViewLayout: {
+      registrationName: 'onInlineViewLayout',
     },
   },
   uiViewClassName: 'RCTText',

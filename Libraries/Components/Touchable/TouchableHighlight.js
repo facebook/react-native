@@ -422,6 +422,10 @@ const TouchableHighlight = ((createReactClass({
         nextFocusLeft={this.props.nextFocusLeft}
         nextFocusRight={this.props.nextFocusRight}
         nextFocusUp={this.props.nextFocusUp}
+        clickable={
+          this.props.clickable !== false && this.props.onPress !== undefined
+        }
+        onClick={this.touchableHandlePress}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={
           this.touchableHandleResponderTerminationRequest

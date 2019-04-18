@@ -10,9 +10,11 @@
 #include <better/map.h>
 #include <folly/Conv.h>
 #include <folly/dynamic.h>
+#include <glog/logging.h>
 #include <react/components/view/primitives.h>
 #include <react/core/LayoutMetrics.h>
 #include <react/graphics/Geometry.h>
+#include <react/graphics/Transform.h>
 #include <stdlib.h>
 #include <yoga/YGEnums.h>
 #include <yoga/YGNode.h>
@@ -143,12 +145,16 @@ inline void fromRawValue(const RawValue &value, YGDirection &result) {
     result = YGDirectionRTL;
     return;
   }
-  abort();
+  LOG(FATAL) << "Could not parse YGDirection:" << stringValue;
 }
 
 inline void fromRawValue(const RawValue &value, YGFlexDirection &result) {
   assert(value.hasType<std::string>());
   auto stringValue = (std::string)value;
+  if (stringValue == "row") {
+    result = YGFlexDirectionRow;
+    return;
+  }
   if (stringValue == "column") {
     result = YGFlexDirectionColumn;
     return;
@@ -157,15 +163,11 @@ inline void fromRawValue(const RawValue &value, YGFlexDirection &result) {
     result = YGFlexDirectionColumnReverse;
     return;
   }
-  if (stringValue == "row") {
-    result = YGFlexDirectionRow;
-    return;
-  }
   if (stringValue == "row-reverse") {
     result = YGFlexDirectionRowReverse;
     return;
   }
-  abort();
+  LOG(FATAL) << "Could not parse YGFlexDirection:" << stringValue;
 }
 
 inline void fromRawValue(const RawValue &value, YGJustify &result) {
@@ -195,7 +197,7 @@ inline void fromRawValue(const RawValue &value, YGJustify &result) {
     result = YGJustifySpaceEvenly;
     return;
   }
-  abort();
+  LOG(FATAL) << "Could not parse YGJustify:" << stringValue;
 }
 
 inline void fromRawValue(const RawValue &value, YGAlign &result) {
@@ -233,7 +235,7 @@ inline void fromRawValue(const RawValue &value, YGAlign &result) {
     result = YGAlignSpaceAround;
     return;
   }
-  abort();
+  LOG(FATAL) << "Could not parse YGAlign:" << stringValue;
 }
 
 inline void fromRawValue(const RawValue &value, YGPositionType &result) {
@@ -247,13 +249,13 @@ inline void fromRawValue(const RawValue &value, YGPositionType &result) {
     result = YGPositionTypeAbsolute;
     return;
   }
-  abort();
+  LOG(FATAL) << "Could not parse YGPositionType:" << stringValue;
 }
 
 inline void fromRawValue(const RawValue &value, YGWrap &result) {
   assert(value.hasType<std::string>());
   auto stringValue = (std::string)value;
-  if (stringValue == "no-wrap") {
+  if (stringValue == "nowrap") {
     result = YGWrapNoWrap;
     return;
   }
@@ -265,7 +267,7 @@ inline void fromRawValue(const RawValue &value, YGWrap &result) {
     result = YGWrapWrapReverse;
     return;
   }
-  abort();
+  LOG(FATAL) << "Could not parse YGWrap:" << stringValue;
 }
 
 inline void fromRawValue(const RawValue &value, YGOverflow &result) {
@@ -283,7 +285,7 @@ inline void fromRawValue(const RawValue &value, YGOverflow &result) {
     result = YGOverflowScroll;
     return;
   }
-  abort();
+  LOG(FATAL) << "Could not parse YGOverflow:" << stringValue;
 }
 
 inline void fromRawValue(const RawValue &value, YGDisplay &result) {
@@ -297,7 +299,7 @@ inline void fromRawValue(const RawValue &value, YGDisplay &result) {
     result = YGDisplayNone;
     return;
   }
-  abort();
+  LOG(FATAL) << "Could not parse YGDisplay:" << stringValue;
 }
 
 inline void fromRawValue(
@@ -337,7 +339,7 @@ inline void fromRawValue(const RawValue &value, YGFloatOptional &result) {
       return;
     }
   }
-  abort();
+  LOG(FATAL) << "Could not parse YGFloatOptional";
 }
 
 inline Float toRadians(const RawValue &value) {
@@ -441,7 +443,7 @@ inline void fromRawValue(const RawValue &value, PointerEventsMode &result) {
     result = PointerEventsMode::BoxOnly;
     return;
   }
-  abort();
+  LOG(FATAL) << "Could not parse PointerEventsMode:" << stringValue;
 }
 
 inline void fromRawValue(const RawValue &value, BorderStyle &result) {
@@ -459,7 +461,7 @@ inline void fromRawValue(const RawValue &value, BorderStyle &result) {
     result = BorderStyle::Dashed;
     return;
   }
-  abort();
+  LOG(FATAL) << "Could not parse BorderStyle:" << stringValue;
 }
 
 inline std::string toString(

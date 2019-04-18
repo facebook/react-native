@@ -13,10 +13,12 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
+import com.facebook.react.uimanager.IViewManagerWithChildren;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.yoga.YogaMeasureMode;
 import java.util.Map;
+
 import javax.annotation.Nullable;
 
 /**
@@ -25,7 +27,8 @@ import javax.annotation.Nullable;
  */
 @ReactModule(name = ReactTextViewManager.REACT_CLASS)
 public class ReactTextViewManager
-    extends ReactTextAnchorViewManager<ReactTextView, ReactTextShadowNode> {
+    extends ReactTextAnchorViewManager<ReactTextView, ReactTextShadowNode>
+    implements IViewManagerWithChildren {
 
   @VisibleForTesting public static final String REACT_CLASS = "RCTText";
 
@@ -65,6 +68,10 @@ public class ReactTextViewManager
     view.updateView();
   }
 
+  public boolean needsCustomLayoutForChildren() {
+    return true;
+  }
+
   @Override
   public Object updateLocalData(
       ReactTextView view, ReactStylesDiffMap props, ReactStylesDiffMap localData) {
@@ -98,7 +105,9 @@ public class ReactTextViewManager
 
   @Override
   public @Nullable Map getExportedCustomDirectEventTypeConstants() {
-    return MapBuilder.of("topTextLayout", MapBuilder.of("registrationName", "onTextLayout"));
+    return MapBuilder.of(
+        "topTextLayout", MapBuilder.of("registrationName", "onTextLayout"),
+        "topInlineViewLayout", MapBuilder.of("registrationName", "onInlineViewLayout"));
   }
 
   @Override

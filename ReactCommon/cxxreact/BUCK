@@ -44,6 +44,9 @@ rn_xplat_cxx_library(
     ],
     fbobjc_compiler_flags = get_apple_compiler_flags(),
     force_static = True,
+    preprocessor_flags = [
+        "-DWITH_FBREMAP=1",
+    ],
     visibility = [
         "PUBLIC",
     ],

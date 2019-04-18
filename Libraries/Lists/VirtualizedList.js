@@ -76,7 +76,7 @@ type OptionalProps = {
    * unmounts react instances that are outside of the render window. You should only need to disable
    * this for debugging purposes.
    */
-  disableVirtualization: boolean,
+  disableVirtualization?: ?boolean,
   /**
    * A marker property for telling the list to re-render (since it implements `PureComponent`). If
    * any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the
@@ -705,7 +705,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   };
 
   _isVirtualizationDisabled(): boolean {
-    return this.props.disableVirtualization;
+    return this.props.disableVirtualization || false;
   }
 
   _isNestedWithSameOrientation(): boolean {
@@ -881,7 +881,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
               element.props.onLayout(event);
             }
           },
-          style: [element.props.style, inversionStyle],
+          style: StyleSheet.compose(
+            inversionStyle,
+            element.props.style,
+          ),
         }),
       );
     }
@@ -925,7 +928,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           : this.props.inverted,
       stickyHeaderIndices,
     };
-    if (inversionStyle && itemCount !== 0) {
+    if (inversionStyle) {
       /* $FlowFixMe(>=0.70.0 site=react_native_fb) This comment suppresses an
        * error found when Flow v0.70 was deployed. To see the error delete
        * this comment and run Flow. */
@@ -1094,6 +1097,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
 
     this._computeBlankness();
+    this._updateViewableItems(this.props.data);
   }
 
   _onCellUnmount = (cellKey: string) => {

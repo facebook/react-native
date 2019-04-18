@@ -7,8 +7,8 @@
 
 #import "RCTRootComponentView.h"
 
+#import <react/components/root/RootComponentDescriptor.h>
 #import <react/components/root/RootProps.h>
-#import <react/components/root/RootShadowNode.h>
 
 using namespace facebook::react;
 
@@ -24,9 +24,11 @@ using namespace facebook::react;
   return self;
 }
 
-+ (ComponentHandle)componentHandle
+#pragma mark - RCTComponentViewProtocol
+
++ (ComponentDescriptorProvider)componentDescriptorProvider
 {
-  return RootShadowNode::Handle();
+  return concreteComponentDescriptorProvider<RootComponentDescriptor>();
 }
 
 @end

@@ -91,6 +91,14 @@ def enableSeparateBuildPerCPUArchitecture = true
  */
 def enableProguardInReleaseBuilds = true
 
+/**
+ * Use the international variant of JavaScriptCore
+ * This variant includes the ICU i18n library to make APIs like `Date.toLocaleString`
+ * and `String.localeCompare` work when using with locales other than en-US.
+ * Note that this variant is about 6MiB larger per architecture than the default.
+ */
+def useIntlJsc = false
+
 android {
     compileSdkVersion 28
 
@@ -132,6 +140,12 @@ android {
             signingConfig signingConfigs.release
         }
     }
+    packagingOptions {
+        pickFirst '**/armeabi-v7a/libc++_shared.so'
+        pickFirst '**/x86/libc++_shared.so'
+        pickFirst '**/x86_64/libc++_shared.so'
+        pickFirst '**/arm64-v8a/libc++_shared.so'
+    }
 }
 
 dependencies {
@@ -139,4 +153,10 @@ dependencies {
 
     // Build React Native from source
     implementation project(':ReactAndroid')
+
+    if (useIntlJsc) {
+        implementation 'org.webkit:android-jsc-intl:+'
+    } else {
+        implementation 'org.webkit:android-jsc:+'
+    }
 }

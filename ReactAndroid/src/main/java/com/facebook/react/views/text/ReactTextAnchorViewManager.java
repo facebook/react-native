@@ -9,6 +9,7 @@ package com.facebook.react.views.text;
 
 import android.text.Spannable;
 import android.text.TextUtils;
+import android.text.util.Linkify;
 import android.view.Gravity;
 import android.view.View;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -159,5 +160,32 @@ public abstract class ReactTextAnchorViewManager<T extends View, C extends React
   @ReactProp(name = "disabled", defaultBoolean = false)
   public void setDisabled(ReactTextView view, boolean disabled) {
     view.setEnabled(!disabled);
+  }
+
+  @ReactProp(name = "dataDetectorType")
+  public void setDataDetectorType(ReactTextView view, @Nullable String type) {
+    switch (type) {
+      case "phoneNumber":
+        view.setLinkifyMask(Linkify.PHONE_NUMBERS);
+        break;
+      case "link":
+        view.setLinkifyMask(Linkify.WEB_URLS);
+        break;
+      case "email":
+        view.setLinkifyMask(Linkify.EMAIL_ADDRESSES);
+        break;
+      case "all":
+        view.setLinkifyMask(Linkify.ALL);
+        break;
+      case "none":
+      default:
+        view.setLinkifyMask(0);
+        break;
+    }
+  }
+
+  @ReactProp(name = "onInlineViewLayout")
+  public void setNotifyOnInlineViewLayout(ReactTextView view, boolean notifyOnInlineViewLayout) {
+    view.setNotifyOnInlineViewLayout(notifyOnInlineViewLayout);
   }
 }

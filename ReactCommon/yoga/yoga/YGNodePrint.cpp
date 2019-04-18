@@ -10,6 +10,7 @@
 #include "YGEnums.h"
 #include "YGNode.h"
 #include "Yoga-internal.h"
+#include "Utils.h"
 
 namespace facebook {
 namespace yoga {

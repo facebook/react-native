@@ -10,12 +10,12 @@
 
 'use strict';
 
-const ProgressBar = require('ProgressBarAndroid');
-const React = require('React');
-const RNTesterBlock = require('RNTesterBlock');
-const RNTesterPage = require('RNTesterPage');
+const React = require('react');
+const {ProgressBarAndroid: ProgressBar} = require('react-native');
+const RNTesterBlock = require('./RNTesterBlock');
+const RNTesterPage = require('./RNTesterPage');
 
-import type {ProgressBarAndroidProps} from 'ProgressBarAndroid';
+import type {ProgressBarAndroidProps} from '../../Libraries/Components/ProgressBarAndroid/ProgressBarAndroid';
 
 type MovingBarProps = $ReadOnly<{|
   ...$Diff<

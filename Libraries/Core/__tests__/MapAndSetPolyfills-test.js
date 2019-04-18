@@ -14,8 +14,6 @@ const {freeze, seal, preventExtensions} = Object;
 
 function setup() {
   jest.setMock('../../vendor/core/_shouldPolyfillES6Collection', () => true);
-  jest.unmock('_wrapObjectFreezeAndFriends');
-  require('_wrapObjectFreezeAndFriends');
 }
 
 function cleanup() {

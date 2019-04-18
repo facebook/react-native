@@ -10,7 +10,6 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
 const {
   ScrollView,
   StyleSheet,
@@ -18,7 +17,7 @@ const {
   Text,
   TouchableWithoutFeedback,
   View,
-} = ReactNative;
+} = require('react-native');
 
 const styles = StyleSheet.create({
   row: {

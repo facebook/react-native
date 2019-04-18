@@ -10,35 +10,36 @@
 namespace facebook {
 namespace react {
 
-Tag ShadowNodeFragment::tagPlaceholder() {
+Tag const ShadowNodeFragment::tagPlaceholder() {
   return 0;
 }
 
-Tag ShadowNodeFragment::surfaceIdPlaceholder() {
+SurfaceId const ShadowNodeFragment::surfaceIdPlaceholder() {
   return 0;
 }
 
-SharedProps &ShadowNodeFragment::propsPlaceholder() {
-  static auto &instance = *new SharedProps();
+Props::Shared const &ShadowNodeFragment::propsPlaceholder() {
+  static auto &instance = *new Props::Shared();
   return instance;
 }
 
-SharedEventEmitter &ShadowNodeFragment::eventEmitterPlaceholder() {
-  static auto &instance = *new SharedEventEmitter();
+EventEmitter::Shared const &ShadowNodeFragment::eventEmitterPlaceholder() {
+  static auto &instance = *new EventEmitter::Shared();
   return instance;
 }
 
-SharedShadowNodeSharedList &ShadowNodeFragment::childrenPlaceholder() {
-  static auto &instance = *new SharedShadowNodeSharedList();
+ShadowNode::SharedListOfShared const &
+ShadowNodeFragment::childrenPlaceholder() {
+  static auto &instance = *new ShadowNode::SharedListOfShared();
   return instance;
 }
 
-SharedLocalData &ShadowNodeFragment::localDataPlaceholder() {
-  static auto &instance = *new SharedLocalData();
+LocalData::Shared const &ShadowNodeFragment::localDataPlaceholder() {
+  static auto &instance = *new LocalData::Shared();
   return instance;
 }
 
-State::Shared &ShadowNodeFragment::statePlaceholder() {
+State::Shared const &ShadowNodeFragment::statePlaceholder() {
   static auto &instance = *new State::Shared();
   return instance;
 }

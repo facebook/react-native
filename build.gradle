@@ -21,6 +21,10 @@ buildscript {
 allprojects {
     repositories {
         mavenLocal()
+        maven {
+            url("$rootDir/node_modules/jsc-android/dist")
+        }
+
         google()
         jcenter()
 
