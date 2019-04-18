@@ -23,8 +23,8 @@ typedef struct {
   int layouts;
   int measures;
   int maxMeasureCache;
-  int cachedLayouts;
-  int cachedMeasures;
+  int cachedLayouts = 0;
+  int cachedMeasures = 0;
 } YGMarkerLayoutData;
 
 typedef struct {
