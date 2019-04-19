@@ -15,7 +15,8 @@ ComponentDescriptor::ComponentDescriptor(
     ContextContainer::Shared const &contextContainer)
     : eventDispatcher_(eventDispatcher), contextContainer_(contextContainer) {}
 
-ContextContainer::Shared const &ComponentDescriptor::getContextContainer() {
+ContextContainer::Shared const &ComponentDescriptor::getContextContainer()
+    const {
   return contextContainer_;
 }
 

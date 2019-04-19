@@ -41,7 +41,7 @@ class ComponentDescriptor {
   /*
    * Returns stored instance of `ContextContainer`.
    */
-  ContextContainer::Shared const &getContextContainer();
+  ContextContainer::Shared const &getContextContainer() const;
 
   /*
    * Returns `componentHandle` associated with particular kind of components.
