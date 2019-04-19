@@ -13,7 +13,6 @@ const ios = require('@react-native-community/cli-platform-ios');
 const android = require('@react-native-community/cli-platform-android');
 
 module.exports = {
-  reactNativePath: '.',
   commands: [...ios.commands, ...android.commands],
   platforms: {
     ios: {
@@ -27,6 +26,10 @@ module.exports = {
       dependencyConfig: android.dependencyConfig,
     },
   },
+  /**
+   * Used when running RNTester (with React Native from source)
+   */
+  reactNativePath: '.',
   project: {
     ios: {
       project: './RNTester/RNTester.xcodeproj',
