@@ -10,17 +10,17 @@
 'use strict';
 
 const {
-  commands: iOSCommands,
+  commands: commandsIOS,
   ...ios
 } = require('@react-native-community/cli-platform-ios');
 const {
-  commands: androidCommands,
+  commands: commandsAndroid,
   ...android
 } = require('@react-native-community/cli-platform-android');
 
 module.exports = {
   reactNativePath: '.',
-  commands: [...iOSCommands, ...androidCommands],
+  commands: [...commandsIOS, ...commandsAndroid],
   platforms: {ios, android},
   project: {
     ios: {
