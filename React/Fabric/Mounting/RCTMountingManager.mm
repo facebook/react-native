@@ -7,17 +7,21 @@
 
 #import "RCTMountingManager.h"
 
+#import <better/map.h>
+
 #import <React/RCTAssert.h>
 #import <React/RCTFollyConvert.h>
 #import <React/RCTUtils.h>
 #import <react/core/LayoutableShadowNode.h>
 #import <react/core/RawProps.h>
 #import <react/debug/SystraceSection.h>
+#import <react/mounting/MountingTransactionSynchronizer.h>
 
 #import "RCTComponentViewProtocol.h"
 #import "RCTComponentViewRegistry.h"
 #import "RCTConversions.h"
 
+using namespace facebook;
 using namespace facebook::react;
 
 // `Create` instruction
@@ -200,7 +204,9 @@ static void RNPerformMountInstructions(ShadowViewMutationList const &mutations, 
   }
 }
 
-@implementation RCTMountingManager
+@implementation RCTMountingManager {
+  better::map<SurfaceId, MountingTransactionSynchronizer> syncronizers_;
+}
 
 - (instancetype)init
 {
@@ -211,35 +217,49 @@ static void RNPerformMountInstructions(ShadowViewMutationList const &mutations, 
   return self;
 }
 
-- (void)scheduleTransaction:(facebook::react::MountingTransaction &&)mountingTransaction;
+- (void)scheduleTransaction:(MountingTransaction &&)mountingTransaction;
 {
   if (RCTIsMainQueue()) {
     // Already on the proper thread, so:
     // * No need to do a thread jump;
     // * No need to do expensive copy of all mutations;
     // * No need to allocate a block.
-    [self mountMutations:mountingTransaction.getMutations() rootTag:mountingTransaction.getSurfaceId()];
+    [self mountMutations:std::move(mountingTransaction)];
     return;
   }
 
   // We need a non-reference for `mountingTransaction` to allow copy semantic.
-  __block auto mountingTransactionCopy = MountingTransaction{mountingTransaction};
+  auto sharedMountingTransaction = std::make_shared<MountingTransaction>(std::move(mountingTransaction));
 
   RCTExecuteOnMainQueue(^{
     RCTAssertMainQueue();
-    [self mountMutations:mountingTransactionCopy.getMutations() rootTag:mountingTransactionCopy.getSurfaceId()];
+    [self mountMutations:std::move(*sharedMountingTransaction)];
   });
 }
 
-- (void)mountMutations:(ShadowViewMutationList const &)mutations rootTag:(ReactTag)rootTag
+- (void)mountMutations:(MountingTransaction &&)mountingTransaction
 {
-  SystraceSection s("-[RCTMountingManager mountMutations:rootTag:]");
+  SystraceSection s("-[RCTMountingManager mountMutations:]");
 
   RCTAssertMainQueue();
 
-  [self.delegate mountingManager:self willMountComponentsWithRootTag:rootTag];
-  RNPerformMountInstructions(mutations, self.componentViewRegistry);
-  [self.delegate mountingManager:self didMountComponentsWithRootTag:rootTag];
+  auto &syncronizer = syncronizers_[mountingTransaction.getSurfaceId()];
+
+  syncronizer.push(std::move(mountingTransaction));
+
+  while (true) {
+    auto mountingTransactionOptional = syncronizer.pull();
+    if (!mountingTransactionOptional.has_value()) {
+      break;
+    }
+
+    auto transaction = std::move(*mountingTransactionOptional);
+    auto surfaceId = transaction.getSurfaceId();
+
+    [self.delegate mountingManager:self willMountComponentsWithRootTag:surfaceId];
+    RNPerformMountInstructions(transaction.getMutations(), self.componentViewRegistry);
+    [self.delegate mountingManager:self didMountComponentsWithRootTag:surfaceId];
+  }
 }
 
 - (void)synchronouslyUpdateViewOnUIThread:(ReactTag)reactTag
