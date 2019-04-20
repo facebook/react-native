@@ -12,6 +12,7 @@
 #import <react/core/ComponentDescriptor.h>
 #import <react/core/LayoutConstraints.h>
 #import <react/core/LayoutContext.h>
+#import <react/mounting/MountingTransaction.h>
 #import <react/mounting/ShadowViewMutation.h>
 #import <react/uimanager/ComponentDescriptorFactory.h>
 #import <react/utils/ContextContainer.h>
@@ -25,8 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @protocol RCTSchedulerDelegate
 
-- (void)schedulerDidFinishTransaction:(facebook::react::ShadowViewMutationList const &)mutations
-                              rootTag:(ReactTag)rootTag;
+- (void)schedulerDidFinishTransaction:(facebook::react::MountingTransaction &&)mountingTransaction;
 
 - (void)schedulerOptimisticallyCreateComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle;
 

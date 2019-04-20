@@ -242,14 +242,11 @@ SchedulerDelegate *Scheduler::getDelegate() const {
 
 void Scheduler::shadowTreeDidCommit(
     const ShadowTree &shadowTree,
-    const ShadowViewMutationList &mutations,
-    long commitStartTime,
-    long layoutTime) const {
+    MountingTransaction &&transaction) const {
   SystraceSection s("Scheduler::shadowTreeDidCommit");
 
   if (delegate_) {
-    delegate_->schedulerDidFinishTransaction(
-        shadowTree.getSurfaceId(), mutations, commitStartTime, layoutTime);
+    delegate_->schedulerDidFinishTransaction(std::move(transaction));
   }
 }
 

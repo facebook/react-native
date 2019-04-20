@@ -22,14 +22,10 @@ class SchedulerDelegateProxy : public SchedulerDelegate {
  public:
   SchedulerDelegateProxy(void *scheduler) : scheduler_(scheduler) {}
 
-  void schedulerDidFinishTransaction(
-      Tag rootTag,
-      const ShadowViewMutationList &mutations,
-      const long commitStartTime,
-      const long layoutTime) override
+  void schedulerDidFinishTransaction(MountingTransaction &&mountingTransaction) override
   {
     RCTScheduler *scheduler = (__bridge RCTScheduler *)scheduler_;
-    [scheduler.delegate schedulerDidFinishTransaction:mutations rootTag:rootTag];
+    [scheduler.delegate schedulerDidFinishTransaction:std::move(mountingTransaction)];
   }
 
   void schedulerDidRequestPreliminaryViewAllocation(SurfaceId surfaceId, const ShadowView &shadowView) override

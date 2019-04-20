@@ -211,23 +211,23 @@ static void RNPerformMountInstructions(ShadowViewMutationList const &mutations, 
   return self;
 }
 
-- (void)scheduleMutations:(ShadowViewMutationList const &)mutations rootTag:(ReactTag)rootTag
+- (void)scheduleTransaction:(facebook::react::MountingTransaction &&)mountingTransaction;
 {
   if (RCTIsMainQueue()) {
     // Already on the proper thread, so:
     // * No need to do a thread jump;
     // * No need to do expensive copy of all mutations;
     // * No need to allocate a block.
-    [self mountMutations:mutations rootTag:rootTag];
+    [self mountMutations:mountingTransaction.getMutations() rootTag:mountingTransaction.getSurfaceId()];
     return;
   }
 
-  // We need a non-reference for `mutations` to allow copy semantic.
-  auto mutationsCopy = mutations;
+  // We need a non-reference for `mountingTransaction` to allow copy semantic.
+  __block auto mountingTransactionCopy = MountingTransaction{mountingTransaction};
 
   RCTExecuteOnMainQueue(^{
     RCTAssertMainQueue();
-    [self mountMutations:mutationsCopy rootTag:rootTag];
+    [self mountMutations:mountingTransactionCopy.getMutations() rootTag:mountingTransactionCopy.getSurfaceId()];
   });
 }
 

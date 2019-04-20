@@ -309,14 +309,13 @@ using namespace facebook::react;
 
 #pragma mark - RCTSchedulerDelegate
 
-- (void)schedulerDidFinishTransaction:(facebook::react::ShadowViewMutationList const &)mutations
-                              rootTag:(ReactTag)rootTag
+- (void)schedulerDidFinishTransaction:(facebook::react::MountingTransaction &&)mountingTransaction
 {
-  RCTFabricSurface *surface = [_surfaceRegistry surfaceForRootTag:rootTag];
+  RCTFabricSurface *surface = [_surfaceRegistry surfaceForRootTag:mountingTransaction.getSurfaceId()];
 
   [surface _setStage:RCTSurfaceStagePrepared];
 
-  [_mountingManager scheduleMutations:mutations rootTag:rootTag];
+  [_mountingManager scheduleTransaction:std::move(mountingTransaction)];
 }
 
 - (void)schedulerOptimisticallyCreateComponentViewWithComponentHandle:(ComponentHandle)componentHandle

@@ -127,15 +127,14 @@ Tag ShadowTree::getSurfaceId() const {
 
 void ShadowTree::commit(
     ShadowTreeCommitTransaction transaction,
-    long commitStartTime,
-    int *revision) const {
+    long commitStartTime) const {
   SystraceSection s("ShadowTree::commit");
 
   int attempts = 0;
 
   while (true) {
     attempts++;
-    if (tryCommit(transaction, commitStartTime, revision)) {
+    if (tryCommit(transaction, commitStartTime)) {
       return;
     }
 
@@ -147,8 +146,7 @@ void ShadowTree::commit(
 
 bool ShadowTree::tryCommit(
     ShadowTreeCommitTransaction transaction,
-    long commitStartTime,
-    int *revision) const {
+    long commitStartTime) const {
   SystraceSection s("ShadowTree::tryCommit");
 
   SharedRootShadowNode oldRootShadowNode;
@@ -170,6 +168,7 @@ bool ShadowTree::tryCommit(
   layoutTime = getTime() - layoutTime;
   newRootShadowNode->sealRecursive();
 
+  int revision;
   auto mutations =
       calculateShadowViewMutations(*oldRootShadowNode, *newRootShadowNode);
 
@@ -190,12 +189,8 @@ bool ShadowTree::tryCommit(
           oldRootShadowNode->getChildren(), newRootShadowNode->getChildren());
     }
 
+    revision = revision_;
     revision_++;
-
-    // Returning last revision if requested.
-    if (revision) {
-      *revision = revision_;
-    }
 
 #ifdef RN_SHADOW_TREE_INTROSPECTION
     stubViewTree_.mutate(mutations);
@@ -219,7 +214,11 @@ bool ShadowTree::tryCommit(
 
   if (delegate_) {
     delegate_->shadowTreeDidCommit(
-        *this, mutations, commitStartTime, layoutTime);
+        *this,
+        {surfaceId_,
+         revision,
+         std::move(mutations),
+         {commitStartTime, layoutTime}});
   }
 
   return true;
