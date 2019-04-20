@@ -56,7 +56,7 @@ class Alert {
       let config = {
         title: title || '',
         message: message || '',
-        cancelable: false
+        cancelable: false,
       };
 
       if (options) {
