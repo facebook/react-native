@@ -25,7 +25,7 @@ module.exports = moduleName => {
   const SuperClass =
     typeof RealComponent === 'function' ? RealComponent : React.Component;
 
-  const NativeComponent = class extends SuperClass {
+  const Component = class extends SuperClass {
     static displayName = displayName;
 
     render() {
@@ -53,14 +53,14 @@ module.exports = moduleName => {
   };
 
   Object.keys(RealComponent).forEach(classStatic => {
-    NativeComponent[classStatic] = RealComponent[classStatic];
+    Component[classStatic] = RealComponent[classStatic];
   });
 
-  Object.assign(NativeComponent.prototype, {
+  Object.assign(Component.prototype, {
     ...MockNativeMethods,
     _nativeTag: 1,
     viewConfig: {validAttributes: {style: {}}},
   });
 
-  return NativeComponent;
+  return Component;
 };
