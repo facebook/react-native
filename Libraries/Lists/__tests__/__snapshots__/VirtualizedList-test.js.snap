@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`VirtualizedList handles nested lists 1`] = `
-<RCTScrollView
+<ScrollView
   data={
     Array [
       Object {
@@ -32,135 +32,131 @@ exports[`VirtualizedList handles nested lists 1`] = `
   updateCellsBatchingPeriod={50}
   windowSize={21}
 >
-  <View>
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
     <View
+      data={
+        Array [
+          Object {
+            "key": "outer0:inner0",
+          },
+          Object {
+            "key": "outer0:inner1",
+          },
+        ]
+      }
+      disableVirtualization={false}
+      getItem={[Function]}
+      getItemCount={[Function]}
+      horizontal={false}
+      initialNumToRender={10}
+      keyExtractor={[Function]}
+      maxToRenderPerBatch={10}
+      onContentSizeChange={[Function]}
+      onEndReachedThreshold={2}
       onLayout={[Function]}
-      style={null}
+      onMomentumScrollEnd={[Function]}
+      onScroll={[Function]}
+      onScrollBeginDrag={[Function]}
+      onScrollEndDrag={[Function]}
+      renderItem={[Function]}
+      scrollEventThrottle={50}
+      stickyHeaderIndices={Array []}
+      updateCellsBatchingPeriod={50}
+      windowSize={21}
     >
       <View
-        data={
-          Array [
-            Object {
-              "key": "outer0:inner0",
-            },
-            Object {
-              "key": "outer0:inner1",
-            },
-          ]
-        }
-        disableVirtualization={false}
-        getItem={[Function]}
-        getItemCount={[Function]}
-        horizontal={false}
-        initialNumToRender={10}
-        keyExtractor={[Function]}
-        maxToRenderPerBatch={10}
-        onContentSizeChange={[Function]}
-        onEndReachedThreshold={2}
         onLayout={[Function]}
-        onMomentumScrollEnd={[Function]}
-        onScroll={[Function]}
-        onScrollBeginDrag={[Function]}
-        onScrollEndDrag={[Function]}
-        renderItem={[Function]}
-        scrollEventThrottle={50}
-        stickyHeaderIndices={Array []}
-        updateCellsBatchingPeriod={50}
-        windowSize={21}
+        style={null}
       >
-        <View
-          onLayout={[Function]}
-          style={null}
-        >
-          <item
-            title="outer0:inner0"
-          />
-        </View>
-        <View
-          onLayout={[Function]}
-          style={null}
-        >
-          <item
-            title="outer0:inner1"
-          />
-        </View>
+        <item
+          title="outer0:inner0"
+        />
+      </View>
+      <View
+        onLayout={[Function]}
+        style={null}
+      >
+        <item
+          title="outer0:inner1"
+        />
       </View>
     </View>
-    <View
+  </View>
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <ScrollView
+      data={
+        Array [
+          Object {
+            "key": "outer1:inner0",
+          },
+          Object {
+            "key": "outer1:inner1",
+          },
+        ]
+      }
+      disableVirtualization={false}
+      getItem={[Function]}
+      getItemCount={[Function]}
+      horizontal={true}
+      initialNumToRender={10}
+      keyExtractor={[Function]}
+      maxToRenderPerBatch={10}
+      onContentSizeChange={[Function]}
+      onEndReachedThreshold={2}
       onLayout={[Function]}
-      style={null}
+      onMomentumScrollEnd={[Function]}
+      onScroll={[Function]}
+      onScrollBeginDrag={[Function]}
+      onScrollEndDrag={[Function]}
+      renderItem={[Function]}
+      scrollEventThrottle={50}
+      stickyHeaderIndices={Array []}
+      updateCellsBatchingPeriod={50}
+      windowSize={21}
     >
-      <RCTScrollView
-        data={
+      <View
+        onLayout={[Function]}
+        style={
           Array [
             Object {
-              "key": "outer1:inner0",
+              "flexDirection": "row",
             },
-            Object {
-              "key": "outer1:inner1",
-            },
+            null,
           ]
         }
-        disableVirtualization={false}
-        getItem={[Function]}
-        getItemCount={[Function]}
-        horizontal={true}
-        initialNumToRender={10}
-        keyExtractor={[Function]}
-        maxToRenderPerBatch={10}
-        onContentSizeChange={[Function]}
-        onEndReachedThreshold={2}
-        onLayout={[Function]}
-        onMomentumScrollEnd={[Function]}
-        onScroll={[Function]}
-        onScrollBeginDrag={[Function]}
-        onScrollEndDrag={[Function]}
-        renderItem={[Function]}
-        scrollEventThrottle={50}
-        stickyHeaderIndices={Array []}
-        updateCellsBatchingPeriod={50}
-        windowSize={21}
       >
-        <View>
-          <View
-            onLayout={[Function]}
-            style={
-              Array [
-                Object {
-                  "flexDirection": "row",
-                },
-                null,
-              ]
-            }
-          >
-            <item
-              title="outer1:inner0"
-            />
-          </View>
-          <View
-            onLayout={[Function]}
-            style={
-              Array [
-                Object {
-                  "flexDirection": "row",
-                },
-                null,
-              ]
-            }
-          >
-            <item
-              title="outer1:inner1"
-            />
-          </View>
-        </View>
-      </RCTScrollView>
-    </View>
+        <item
+          title="outer1:inner0"
+        />
+      </View>
+      <View
+        onLayout={[Function]}
+        style={
+          Array [
+            Object {
+              "flexDirection": "row",
+            },
+            null,
+          ]
+        }
+      >
+        <item
+          title="outer1:inner1"
+        />
+      </View>
+    </ScrollView>
   </View>
-</RCTScrollView>
+</ScrollView>
 `;
 
 exports[`VirtualizedList handles separators correctly 1`] = `
-<RCTScrollView
+<ScrollView
   ItemSeparatorComponent={[Function]}
   data={
     Array [
@@ -195,53 +191,51 @@ exports[`VirtualizedList handles separators correctly 1`] = `
   updateCellsBatchingPeriod={50}
   windowSize={21}
 >
-  <View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <item
-        title="i0"
-      />
-      <separator
-        highlighted={false}
-        leadingItem={
-          Object {
-            "key": "i0",
-          }
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <item
+      title="i0"
+    />
+    <separator
+      highlighted={false}
+      leadingItem={
+        Object {
+          "key": "i0",
         }
-      />
-    </View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <item
-        title="i1"
-      />
-      <separator
-        highlighted={false}
-        leadingItem={
-          Object {
-            "key": "i1",
-          }
-        }
-      />
-    </View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <item
-        title="i2"
-      />
-    </View>
+      }
+    />
   </View>
-</RCTScrollView>
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <item
+      title="i1"
+    />
+    <separator
+      highlighted={false}
+      leadingItem={
+        Object {
+          "key": "i1",
+        }
+      }
+    />
+  </View>
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <item
+      title="i2"
+    />
+  </View>
+</ScrollView>
 `;
 
 exports[`VirtualizedList handles separators correctly 2`] = `
-<RCTScrollView
+<ScrollView
   ItemSeparatorComponent={[Function]}
   data={
     Array [
@@ -276,53 +270,51 @@ exports[`VirtualizedList handles separators correctly 2`] = `
   updateCellsBatchingPeriod={50}
   windowSize={21}
 >
-  <View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <item
-        title="i0"
-      />
-      <separator
-        highlighted={true}
-        leadingItem={
-          Object {
-            "key": "i0",
-          }
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <item
+      title="i0"
+    />
+    <separator
+      highlighted={true}
+      leadingItem={
+        Object {
+          "key": "i0",
         }
-      />
-    </View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <item
-        title="i1"
-      />
-      <separator
-        highlighted={true}
-        leadingItem={
-          Object {
-            "key": "i1",
-          }
-        }
-      />
-    </View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <item
-        title="i2"
-      />
-    </View>
+      }
+    />
   </View>
-</RCTScrollView>
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <item
+      title="i1"
+    />
+    <separator
+      highlighted={true}
+      leadingItem={
+        Object {
+          "key": "i1",
+        }
+      }
+    />
+  </View>
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <item
+      title="i2"
+    />
+  </View>
+</ScrollView>
 `;
 
 exports[`VirtualizedList handles separators correctly 3`] = `
-<RCTScrollView
+<ScrollView
   ItemSeparatorComponent={[Function]}
   data={
     Array [
@@ -357,54 +349,52 @@ exports[`VirtualizedList handles separators correctly 3`] = `
   updateCellsBatchingPeriod={50}
   windowSize={21}
 >
-  <View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <item
-        title="i0"
-      />
-      <separator
-        highlighted={true}
-        leadingItem={
-          Object {
-            "key": "i0",
-          }
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <item
+      title="i0"
+    />
+    <separator
+      highlighted={true}
+      leadingItem={
+        Object {
+          "key": "i0",
         }
-      />
-    </View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <item
-        title="i1"
-      />
-      <separator
-        highlighted={true}
-        leadingItem={
-          Object {
-            "key": "i1",
-          }
-        }
-        press={true}
-      />
-    </View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <item
-        title="i2"
-      />
-    </View>
+      }
+    />
   </View>
-</RCTScrollView>
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <item
+      title="i1"
+    />
+    <separator
+      highlighted={true}
+      leadingItem={
+        Object {
+          "key": "i1",
+        }
+      }
+      press={true}
+    />
+  </View>
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <item
+      title="i2"
+    />
+  </View>
+</ScrollView>
 `;
 
 exports[`VirtualizedList renders all the bells and whistles 1`] = `
-<RCTScrollView
+<ScrollView
   ItemSeparatorComponent={[Function]}
   ListEmptyComponent={[Function]}
   ListFooterComponent={[Function]}
@@ -447,7 +437,7 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   refreshControl={
-    <RefreshControlMock
+    <Component
       onRefresh={[MockFunction]}
       refreshing={false}
     />
@@ -471,146 +461,143 @@ exports[`VirtualizedList renders all the bells and whistles 1`] = `
   updateCellsBatchingPeriod={50}
   windowSize={21}
 >
-  <RCTRefreshControl />
-  <View>
-    <View
-      onLayout={[Function]}
-      style={
-        Object {
-          "transform": Array [
-            Object {
-              "scaleY": -1,
-            },
-          ],
-        }
+  <View
+    onLayout={[Function]}
+    style={
+      Object {
+        "transform": Array [
+          Object {
+            "scaleY": -1,
+          },
+        ],
       }
-    >
-      <header />
-    </View>
-    <View
-      style={
-        Array [
-          Object {
-            "flexDirection": "column-reverse",
-          },
-          Object {
-            "transform": Array [
-              Object {
-                "scaleY": -1,
-              },
-            ],
-          },
-        ]
-      }
-    >
-      <item
-        value="0"
-      />
-      <separator />
-    </View>
-    <View
-      style={
-        Array [
-          Object {
-            "flexDirection": "column-reverse",
-          },
-          Object {
-            "transform": Array [
-              Object {
-                "scaleY": -1,
-              },
-            ],
-          },
-        ]
-      }
-    >
-      <item
-        value="1"
-      />
-      <separator />
-    </View>
-    <View
-      style={
-        Array [
-          Object {
-            "flexDirection": "column-reverse",
-          },
-          Object {
-            "transform": Array [
-              Object {
-                "scaleY": -1,
-              },
-            ],
-          },
-        ]
-      }
-    >
-      <item
-        value="2"
-      />
-      <separator />
-    </View>
-    <View
-      style={
-        Array [
-          Object {
-            "flexDirection": "column-reverse",
-          },
-          Object {
-            "transform": Array [
-              Object {
-                "scaleY": -1,
-              },
-            ],
-          },
-        ]
-      }
-    >
-      <item
-        value="3"
-      />
-      <separator />
-    </View>
-    <View
-      style={
-        Array [
-          Object {
-            "flexDirection": "column-reverse",
-          },
-          Object {
-            "transform": Array [
-              Object {
-                "scaleY": -1,
-              },
-            ],
-          },
-        ]
-      }
-    >
-      <item
-        value="4"
-      />
-    </View>
-    <View
-      onLayout={[Function]}
-      style={
-        Object {
-          "transform": Array [
-            Object {
-              "scaleY": -1,
-            },
-          ],
-        }
-      }
-    >
-      <footer />
-    </View>
+    }
+  >
+    <header />
   </View>
-</RCTScrollView>
+  <View
+    style={
+      Array [
+        Object {
+          "flexDirection": "column-reverse",
+        },
+        Object {
+          "transform": Array [
+            Object {
+              "scaleY": -1,
+            },
+          ],
+        },
+      ]
+    }
+  >
+    <item
+      value="0"
+    />
+    <separator />
+  </View>
+  <View
+    style={
+      Array [
+        Object {
+          "flexDirection": "column-reverse",
+        },
+        Object {
+          "transform": Array [
+            Object {
+              "scaleY": -1,
+            },
+          ],
+        },
+      ]
+    }
+  >
+    <item
+      value="1"
+    />
+    <separator />
+  </View>
+  <View
+    style={
+      Array [
+        Object {
+          "flexDirection": "column-reverse",
+        },
+        Object {
+          "transform": Array [
+            Object {
+              "scaleY": -1,
+            },
+          ],
+        },
+      ]
+    }
+  >
+    <item
+      value="2"
+    />
+    <separator />
+  </View>
+  <View
+    style={
+      Array [
+        Object {
+          "flexDirection": "column-reverse",
+        },
+        Object {
+          "transform": Array [
+            Object {
+              "scaleY": -1,
+            },
+          ],
+        },
+      ]
+    }
+  >
+    <item
+      value="3"
+    />
+    <separator />
+  </View>
+  <View
+    style={
+      Array [
+        Object {
+          "flexDirection": "column-reverse",
+        },
+        Object {
+          "transform": Array [
+            Object {
+              "scaleY": -1,
+            },
+          ],
+        },
+      ]
+    }
+  >
+    <item
+      value="4"
+    />
+  </View>
+  <View
+    onLayout={[Function]}
+    style={
+      Object {
+        "transform": Array [
+          Object {
+            "scaleY": -1,
+          },
+        ],
+      }
+    }
+  >
+    <footer />
+  </View>
+</ScrollView>
 `;
 
 exports[`VirtualizedList renders empty list 1`] = `
-<RCTScrollView
+<ScrollView
   data={Array []}
   disableVirtualization={false}
   getItem={[Function]}
@@ -631,13 +618,11 @@ exports[`VirtualizedList renders empty list 1`] = `
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}
->
-  <View />
-</RCTScrollView>
+/>
 `;
 
 exports[`VirtualizedList renders empty list with empty component 1`] = `
-<RCTScrollView
+<ScrollView
   ListEmptyComponent={[Function]}
   ListFooterComponent={[Function]}
   ListHeaderComponent={[Function]}
@@ -662,24 +647,22 @@ exports[`VirtualizedList renders empty list with empty component 1`] = `
   updateCellsBatchingPeriod={50}
   windowSize={21}
 >
-  <View>
-    <View
-      onLayout={[Function]}
-    >
-      <header />
-    </View>
-    <empty />
-    <View
-      onLayout={[Function]}
-    >
-      <footer />
-    </View>
+  <View
+    onLayout={[Function]}
+  >
+    <header />
   </View>
-</RCTScrollView>
+  <empty />
+  <View
+    onLayout={[Function]}
+  >
+    <footer />
+  </View>
+</ScrollView>
 `;
 
 exports[`VirtualizedList renders list with empty component 1`] = `
-<RCTScrollView
+<ScrollView
   ListEmptyComponent={[Function]}
   data={
     Array [
@@ -708,21 +691,19 @@ exports[`VirtualizedList renders list with empty component 1`] = `
   updateCellsBatchingPeriod={50}
   windowSize={21}
 >
-  <View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <item
-        value="hello"
-      />
-    </View>
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <item
+      value="hello"
+    />
   </View>
-</RCTScrollView>
+</ScrollView>
 `;
 
 exports[`VirtualizedList renders null list 1`] = `
-<RCTScrollView
+<ScrollView
   disableVirtualization={false}
   getItem={[Function]}
   getItemCount={[Function]}
@@ -742,13 +723,11 @@ exports[`VirtualizedList renders null list 1`] = `
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
   windowSize={21}
->
-  <View />
-</RCTScrollView>
+/>
 `;
 
 exports[`VirtualizedList renders simple list 1`] = `
-<RCTScrollView
+<ScrollView
   data={
     Array [
       Object {
@@ -782,37 +761,35 @@ exports[`VirtualizedList renders simple list 1`] = `
   updateCellsBatchingPeriod={50}
   windowSize={21}
 >
-  <View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <item
-        value="i1"
-      />
-    </View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <item
-        value="i2"
-      />
-    </View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <item
-        value="i3"
-      />
-    </View>
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <item
+      value="i1"
+    />
   </View>
-</RCTScrollView>
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <item
+      value="i2"
+    />
+  </View>
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <item
+      value="i3"
+    />
+  </View>
+</ScrollView>
 `;
 
 exports[`VirtualizedList test getItem functionality where data is not an Array 1`] = `
-<RCTScrollView
+<ScrollView
   data={
     Map {
       "id_0" => Object {
@@ -840,15 +817,13 @@ exports[`VirtualizedList test getItem functionality where data is not an Array 1
   updateCellsBatchingPeriod={50}
   windowSize={21}
 >
-  <View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <item
-        value="item_0"
-      />
-    </View>
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <item
+      value="item_0"
+    />
   </View>
-</RCTScrollView>
+</ScrollView>
 `;

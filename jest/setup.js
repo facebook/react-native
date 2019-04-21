@@ -34,14 +34,29 @@ jest.setMock('ErrorUtils', require('ErrorUtils'));
 
 jest
   .mock('InitializeCore', () => {})
-  .mock('Image', () => mockComponent('Image'))
-  .mock('Text', () => mockComponent('Text', MockNativeMethods))
-  .mock('TextInput', () => mockComponent('TextInput'))
-  .mock('Modal', () => mockComponent('Modal'))
-  .mock('View', () => mockComponent('View', MockNativeMethods))
-  .mock('RefreshControl', () => jest.requireMock('RefreshControlMock'))
-  .mock('ScrollView', () => jest.requireMock('ScrollViewMock'))
   .mock('ActivityIndicator', () => mockComponent('ActivityIndicator'))
+  .mock('DatePickerIOS', () => mockComponent('DatePickerIOS'))
+  .mock('DrawerLayoutAndroid', () => mockComponent('DrawerLayoutAndroid'))
+  .mock('Image', () => mockComponent('Image'))
+  .mock('InputAccessoryView', () => mockComponent('InputAccessoryView'))
+  .mock('MaskedViewIOS', () => mockComponent('MaskedViewIOS'))
+  .mock('Modal', () => mockComponent('Modal'))
+  .mock('Picker', () => mockComponent('Picker'))
+  .mock('PickerIOS', () => mockComponent('PickerIOS'))
+  .mock('ProgressBarAndroid', () => mockComponent('ProgressBarAndroid'))
+  .mock('ProgressViewIOS', () => mockComponent('ProgressViewIOS'))
+  .mock('RefreshControl', () => mockComponent('RefreshControl'))
+  .mock('SafeAreaView', () => mockComponent('SafeAreaView'))
+  .mock('ScrollView', () => mockComponent('ScrollView'))
+  .mock('SegmentedControlIOS', () => mockComponent('SegmentedControlIOS'))
+  .mock('Slider', () => mockComponent('Slider'))
+  .mock('SnapshotViewIOS', () => mockComponent('SnapshotViewIOS'))
+  .mock('StatusBar', () => mockComponent('StatusBar'))
+  .mock('Switch', () => mockComponent('Switch'))
+  .mock('Text', () => mockComponent('Text'))
+  .mock('TextInput', () => mockComponent('TextInput'))
+  .mock('View', () => mockComponent('View'))
+  .mock('ViewPagerAndroid', () => mockComponent('ViewPagerAndroid'))
   .mock('AnimatedImplementation', () => {
     const AnimatedImplementation = jest.requireActual('AnimatedImplementation');
     const oldCreate = AnimatedImplementation.createAnimatedComponent;
@@ -183,6 +198,12 @@ const mockNativeModules = {
     stopObserving: jest.fn(),
   },
   ModalFullscreenViewManager: {},
+  NativeAnimatedModule: {
+    addAnimatedEventToView: jest.fn(),
+    createAnimatedNode: jest.fn(),
+    connectAnimatedNodes: jest.fn(),
+    connectAnimatedNodeToView: jest.fn(),
+  },
   NetInfo: {
     fetch: jest.fn(() => Promise.resolve()),
     getConnectionInfo: jest.fn(() => Promise.resolve()),

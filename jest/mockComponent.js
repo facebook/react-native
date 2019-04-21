@@ -9,9 +9,11 @@
 
 'use strict';
 
-module.exports = (moduleName, instanceMethods) => {
-  const RealComponent = jest.requireActual(moduleName);
+module.exports = moduleName => {
   const React = require('react');
+
+  const RealComponent = jest.requireActual(moduleName);
+  const MockNativeMethods = jest.requireActual('./MockNativeMethods');
 
   const SuperClass =
     typeof RealComponent === 'function' ? RealComponent : React.Component;
@@ -54,9 +56,11 @@ module.exports = (moduleName, instanceMethods) => {
     Component[classStatic] = RealComponent[classStatic];
   });
 
-  if (instanceMethods != null) {
-    Object.assign(Component.prototype, instanceMethods);
-  }
+  Object.assign(Component.prototype, {
+    ...MockNativeMethods,
+    _nativeTag: 1,
+    viewConfig: {validAttributes: {style: {}}},
+  });
 
   return Component;
 };

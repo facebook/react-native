@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`FlatList renders all the bells and whistles 1`] = `
-<RCTScrollView
+<ScrollView
   ItemSeparatorComponent={[Function]}
   ListEmptyComponent={[Function]}
   ListFooterComponent={[Function]}
@@ -43,7 +43,7 @@ exports[`FlatList renders all the bells and whistles 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   refreshControl={
-    <RefreshControlMock
+    <Component
       onRefresh={[MockFunction]}
       refreshing={false}
     />
@@ -57,77 +57,74 @@ exports[`FlatList renders all the bells and whistles 1`] = `
   viewabilityConfigCallbackPairs={Array []}
   windowSize={21}
 >
-  <RCTRefreshControl />
-  <View>
+  <View
+    onLayout={[Function]}
+  >
+    <header />
+  </View>
+  <View
+    style={null}
+  >
     <View
-      onLayout={[Function]}
-    >
-      <header />
-    </View>
-    <View
-      style={null}
-    >
-      <View
-        style={
-          Object {
-            "flexDirection": "row",
-          }
+      style={
+        Object {
+          "flexDirection": "row",
         }
-      >
-        <item
-          value="0"
-        />
-        <item
-          value="1"
-        />
-      </View>
-      <separator />
-    </View>
-    <View
-      style={null}
+      }
     >
-      <View
-        style={
-          Object {
-            "flexDirection": "row",
-          }
+      <item
+        value="0"
+      />
+      <item
+        value="1"
+      />
+    </View>
+    <separator />
+  </View>
+  <View
+    style={null}
+  >
+    <View
+      style={
+        Object {
+          "flexDirection": "row",
         }
-      >
-        <item
-          value="2"
-        />
-        <item
-          value="3"
-        />
-      </View>
-      <separator />
-    </View>
-    <View
-      style={null}
+      }
     >
-      <View
-        style={
-          Object {
-            "flexDirection": "row",
-          }
+      <item
+        value="2"
+      />
+      <item
+        value="3"
+      />
+    </View>
+    <separator />
+  </View>
+  <View
+    style={null}
+  >
+    <View
+      style={
+        Object {
+          "flexDirection": "row",
         }
-      >
-        <item
-          value="4"
-        />
-      </View>
-    </View>
-    <View
-      onLayout={[Function]}
+      }
     >
-      <footer />
+      <item
+        value="4"
+      />
     </View>
   </View>
-</RCTScrollView>
+  <View
+    onLayout={[Function]}
+  >
+    <footer />
+  </View>
+</ScrollView>
 `;
 
 exports[`FlatList renders empty list 1`] = `
-<RCTScrollView
+<ScrollView
   data={Array []}
   disableVirtualization={false}
   getItem={[Function]}
@@ -151,13 +148,11 @@ exports[`FlatList renders empty list 1`] = `
   updateCellsBatchingPeriod={50}
   viewabilityConfigCallbackPairs={Array []}
   windowSize={21}
->
-  <View />
-</RCTScrollView>
+/>
 `;
 
 exports[`FlatList renders null list 1`] = `
-<RCTScrollView
+<ScrollView
   disableVirtualization={false}
   getItem={[Function]}
   getItemCount={[Function]}
@@ -180,13 +175,11 @@ exports[`FlatList renders null list 1`] = `
   updateCellsBatchingPeriod={50}
   viewabilityConfigCallbackPairs={Array []}
   windowSize={21}
->
-  <View />
-</RCTScrollView>
+/>
 `;
 
 exports[`FlatList renders simple list 1`] = `
-<RCTScrollView
+<ScrollView
   data={
     Array [
       Object {
@@ -223,31 +216,29 @@ exports[`FlatList renders simple list 1`] = `
   viewabilityConfigCallbackPairs={Array []}
   windowSize={21}
 >
-  <View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <item
-        value="i1"
-      />
-    </View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <item
-        value="i2"
-      />
-    </View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <item
-        value="i3"
-      />
-    </View>
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <item
+      value="i1"
+    />
   </View>
-</RCTScrollView>
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <item
+      value="i2"
+    />
+  </View>
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <item
+      value="i3"
+    />
+  </View>
+</ScrollView>
 `;

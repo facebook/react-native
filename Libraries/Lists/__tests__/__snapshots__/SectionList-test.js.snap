@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`SectionList rendering empty section headers is fine 1`] = `
-<RCTScrollView
+<ScrollView
   data={
     Array [
       Object {
@@ -58,37 +58,35 @@ exports[`SectionList rendering empty section headers is fine 1`] = `
   updateCellsBatchingPeriod={50}
   windowSize={21}
 >
-  <View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    />
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <item
-        v="i1"
-      />
-    </View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <item
-        v="i2"
-      />
-    </View>
-    <View
-      onLayout={[Function]}
-      style={null}
+  <View
+    onLayout={[Function]}
+    style={null}
+  />
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <item
+      v="i1"
     />
   </View>
-</RCTScrollView>
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <item
+      v="i2"
+    />
+  </View>
+  <View
+    onLayout={[Function]}
+    style={null}
+  />
+</ScrollView>
 `;
 
 exports[`SectionList renders a footer when there is no data 1`] = `
-<RCTScrollView
+<ScrollView
   data={
     Array [
       Object {
@@ -132,29 +130,27 @@ exports[`SectionList renders a footer when there is no data 1`] = `
   updateCellsBatchingPeriod={50}
   windowSize={21}
 >
-  <View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <sectionHeader
-        v="section:s1"
-      />
-    </View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <sectionFooter
-        v="section:s1"
-      />
-    </View>
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <sectionHeader
+      v="section:s1"
+    />
   </View>
-</RCTScrollView>
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <sectionFooter
+      v="section:s1"
+    />
+  </View>
+</ScrollView>
 `;
 
 exports[`SectionList renders a footer when there is no data and no header 1`] = `
-<RCTScrollView
+<ScrollView
   data={
     Array [
       Object {
@@ -197,25 +193,23 @@ exports[`SectionList renders a footer when there is no data and no header 1`] = 
   updateCellsBatchingPeriod={50}
   windowSize={21}
 >
-  <View>
-    <View
-      onLayout={[Function]}
-      style={null}
+  <View
+    onLayout={[Function]}
+    style={null}
+  />
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <sectionFooter
+      v="section:s1"
     />
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <sectionFooter
-        v="section:s1"
-      />
-    </View>
   </View>
-</RCTScrollView>
+</ScrollView>
 `;
 
 exports[`SectionList renders all the bells and whistles 1`] = `
-<RCTScrollView
+<ScrollView
   ListEmptyComponent={[Function]}
   ListFooterComponent={[Function]}
   ListHeaderComponent={[Function]}
@@ -276,7 +270,7 @@ exports[`SectionList renders all the bells and whistles 1`] = `
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
   refreshControl={
-    <RefreshControlMock
+    <Component
       onRefresh={[MockFunction]}
       refreshing={false}
     />
@@ -337,163 +331,160 @@ exports[`SectionList renders all the bells and whistles 1`] = `
   updateCellsBatchingPeriod={50}
   windowSize={21}
 >
-  <RCTRefreshControl />
-  <View>
-    <View
-      onLayout={[Function]}
-    >
-      <header
-        v=""
+  <View
+    onLayout={[Function]}
+  >
+    <header
+      v=""
+    />
+  </View>
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <sectionHeader
+      v="section:s1"
+    />
+  </View>
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <View>
+      <sectionSeparator
+        v="highlighted:false,leadingItem:undefined,leadingSection:undefined,section:s1,trailingItem:i1s1,trailingSection:s2"
       />
-    </View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <sectionHeader
-        v="section:s1"
+      <itemForSection1
+        v="item:i1s1,index:0,section:s1,separators:[object Object]"
       />
-    </View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <View>
-        <sectionSeparator
-          v="highlighted:false,leadingItem:undefined,leadingSection:undefined,section:s1,trailingItem:i1s1,trailingSection:s2"
-        />
-        <itemForSection1
-          v="item:i1s1,index:0,section:s1,separators:[object Object]"
-        />
-        <itemSeparatorForSection1
-          v="highlighted:false,leadingItem:i1s1,leadingSection:undefined,section:s1,trailingItem:i2s1,trailingSection:s2"
-        />
-      </View>
-    </View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <View>
-        <itemForSection1
-          v="item:i2s1,index:1,section:s1,separators:[object Object]"
-        />
-        <sectionSeparator
-          v="highlighted:false,leadingItem:i2s1,leadingSection:undefined,section:s1,trailingItem:undefined,trailingSection:s2"
-        />
-      </View>
-    </View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <sectionFooter
-        v="section:s1"
-      />
-    </View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <sectionHeader
-        v="section:s2"
-      />
-    </View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <View>
-        <sectionSeparator
-          v="highlighted:false,leadingItem:undefined,leadingSection:s1,section:s2,trailingItem:i1s2,trailingSection:s3"
-        />
-        <defaultItem
-          v="item:i1s2,index:0,section:s2,separators:[object Object]"
-        />
-        <defaultItemSeparator
-          v="highlighted:false,leadingItem:i1s2,leadingSection:s1,section:s2,trailingItem:i2s2,trailingSection:s3"
-        />
-      </View>
-    </View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <View>
-        <defaultItem
-          v="item:i2s2,index:1,section:s2,separators:[object Object]"
-        />
-        <sectionSeparator
-          v="highlighted:false,leadingItem:i2s2,leadingSection:s1,section:s2,trailingItem:undefined,trailingSection:s3"
-        />
-      </View>
-    </View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <sectionFooter
-        v="section:s2"
-      />
-    </View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <sectionHeader
-        v="section:s3"
-      />
-    </View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <View>
-        <sectionSeparator
-          v="highlighted:false,leadingItem:undefined,leadingSection:s2,section:s3,trailingItem:i1s3,trailingSection:undefined"
-        />
-        <defaultItem
-          v="item:i1s3,index:0,section:s3,separators:[object Object]"
-        />
-        <defaultItemSeparator
-          v="highlighted:false,leadingItem:i1s3,leadingSection:s2,section:s3,trailingItem:i2s3,trailingSection:undefined"
-        />
-      </View>
-    </View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <View>
-        <defaultItem
-          v="item:i2s3,index:1,section:s3,separators:[object Object]"
-        />
-        <sectionSeparator
-          v="highlighted:false,leadingItem:i2s3,leadingSection:s2,section:s3,trailingItem:undefined,trailingSection:undefined"
-        />
-      </View>
-    </View>
-    <View
-      onLayout={[Function]}
-      style={null}
-    >
-      <sectionFooter
-        v="section:s3"
-      />
-    </View>
-    <View
-      onLayout={[Function]}
-    >
-      <footer
-        v=""
+      <itemSeparatorForSection1
+        v="highlighted:false,leadingItem:i1s1,leadingSection:undefined,section:s1,trailingItem:i2s1,trailingSection:s2"
       />
     </View>
   </View>
-</RCTScrollView>
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <View>
+      <itemForSection1
+        v="item:i2s1,index:1,section:s1,separators:[object Object]"
+      />
+      <sectionSeparator
+        v="highlighted:false,leadingItem:i2s1,leadingSection:undefined,section:s1,trailingItem:undefined,trailingSection:s2"
+      />
+    </View>
+  </View>
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <sectionFooter
+      v="section:s1"
+    />
+  </View>
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <sectionHeader
+      v="section:s2"
+    />
+  </View>
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <View>
+      <sectionSeparator
+        v="highlighted:false,leadingItem:undefined,leadingSection:s1,section:s2,trailingItem:i1s2,trailingSection:s3"
+      />
+      <defaultItem
+        v="item:i1s2,index:0,section:s2,separators:[object Object]"
+      />
+      <defaultItemSeparator
+        v="highlighted:false,leadingItem:i1s2,leadingSection:s1,section:s2,trailingItem:i2s2,trailingSection:s3"
+      />
+    </View>
+  </View>
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <View>
+      <defaultItem
+        v="item:i2s2,index:1,section:s2,separators:[object Object]"
+      />
+      <sectionSeparator
+        v="highlighted:false,leadingItem:i2s2,leadingSection:s1,section:s2,trailingItem:undefined,trailingSection:s3"
+      />
+    </View>
+  </View>
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <sectionFooter
+      v="section:s2"
+    />
+  </View>
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <sectionHeader
+      v="section:s3"
+    />
+  </View>
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <View>
+      <sectionSeparator
+        v="highlighted:false,leadingItem:undefined,leadingSection:s2,section:s3,trailingItem:i1s3,trailingSection:undefined"
+      />
+      <defaultItem
+        v="item:i1s3,index:0,section:s3,separators:[object Object]"
+      />
+      <defaultItemSeparator
+        v="highlighted:false,leadingItem:i1s3,leadingSection:s2,section:s3,trailingItem:i2s3,trailingSection:undefined"
+      />
+    </View>
+  </View>
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <View>
+      <defaultItem
+        v="item:i2s3,index:1,section:s3,separators:[object Object]"
+      />
+      <sectionSeparator
+        v="highlighted:false,leadingItem:i2s3,leadingSection:s2,section:s3,trailingItem:undefined,trailingSection:undefined"
+      />
+    </View>
+  </View>
+  <View
+    onLayout={[Function]}
+    style={null}
+  >
+    <sectionFooter
+      v="section:s3"
+    />
+  </View>
+  <View
+    onLayout={[Function]}
+  >
+    <footer
+      v=""
+    />
+  </View>
+</ScrollView>
 `;
 
 exports[`SectionList renders empty list 1`] = `
-<RCTScrollView
+<ScrollView
   data={Array []}
   disableVirtualization={false}
   getItem={[Function]}
@@ -516,7 +507,5 @@ exports[`SectionList renders empty list 1`] = `
   stickySectionHeadersEnabled={true}
   updateCellsBatchingPeriod={50}
   windowSize={21}
->
-  <View />
-</RCTScrollView>
+/>
 `;
