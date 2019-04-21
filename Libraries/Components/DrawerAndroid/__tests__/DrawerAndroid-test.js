@@ -12,7 +12,7 @@
 'use strict';
 
 const React = require('React');
-const AndroidDrawerLayout = require('../DrawerLayoutAndroid.android');
+const DrawerLayoutAndroid = require('../DrawerLayoutAndroid.android');
 const View = require('View');
 
 const render = require('../../../../jest/renderer');
@@ -21,17 +21,17 @@ jest.mock('UIManager', () => ({
   getViewManagerConfig: jest.fn(() => ({Constants: {}})),
 }));
 
-describe('<AndroidDrawerLayout />', () => {
-  it('should render as <AndroidDrawerLayout> when mocked', () => {
+describe('<DrawerLayoutAndroid />', () => {
+  it('should render as <DrawerLayoutAndroid> when mocked', () => {
     const instance = render.create(
-      <AndroidDrawerLayout renderNavigationView={() => <View />} />,
+      <DrawerLayoutAndroid renderNavigationView={() => <View />} />,
     );
     expect(instance).toMatchSnapshot();
   });
 
   it('should shallow render as <DrawerLayoutAndroid> when mocked', () => {
     const output = render.shallow(
-      <AndroidDrawerLayout renderNavigationView={() => <View />} />,
+      <DrawerLayoutAndroid renderNavigationView={() => <View />} />,
     );
     expect(output).toMatchSnapshot();
   });
@@ -40,16 +40,16 @@ describe('<AndroidDrawerLayout />', () => {
     jest.dontMock('DrawerLayoutAndroid');
 
     const output = render.shallow(
-      <AndroidDrawerLayout renderNavigationView={() => <View />} />,
+      <DrawerLayoutAndroid renderNavigationView={() => <View />} />,
     );
     expect(output).toMatchSnapshot();
   });
 
-  it('should render as <AndroidDrawerLayout> when not mocked', () => {
+  it('should render as <DrawerLayoutAndroid> when not mocked', () => {
     jest.dontMock('DrawerLayoutAndroid');
 
     const instance = render.create(
-      <AndroidDrawerLayout renderNavigationView={() => <View />} />,
+      <DrawerLayoutAndroid renderNavigationView={() => <View />} />,
     );
     expect(instance).toMatchSnapshot();
   });

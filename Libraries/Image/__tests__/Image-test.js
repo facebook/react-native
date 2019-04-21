@@ -16,12 +16,12 @@ const Image = require('Image');
 const render = require('../../../jest/renderer');
 
 describe('<Image />', () => {
-  it('should render as <Image /> when mocked', () => {
+  it('should render as <Image> when mocked', () => {
     const instance = render.create(<Image source={{uri: 'foo-bar.jpg'}} />);
     expect(instance).toMatchSnapshot();
   });
 
-  it('should shallow render as <Image /> when mocked', () => {
+  it('should shallow render as <Image> when mocked', () => {
     const output = render.shallow(<Image source={{uri: 'foo-bar.jpg'}} />);
     expect(output).toMatchSnapshot();
   });

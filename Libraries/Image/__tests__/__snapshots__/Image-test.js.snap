@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`<Image /> should render as <Image /> when mocked 1`] = `
+exports[`<Image /> should render as <Image> when mocked 1`] = `
 <Image
   source={
     Object {
@@ -40,7 +40,7 @@ exports[`<Image /> should shallow render as <ForwardRef(Image)> when not mocked 
 />
 `;
 
-exports[`<Image /> should shallow render as <Image /> when mocked 1`] = `
+exports[`<Image /> should shallow render as <Image> when mocked 1`] = `
 <Image
   source={
     Object {
