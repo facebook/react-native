@@ -2,7 +2,7 @@
 
 exports[`<InputAccessoryView /> should render as <RCTInputAccessoryView> when mocked 1`] = `
 <RCTInputAccessoryView
-  nativeID={1}
+  nativeID="1"
   style={
     Array [
       undefined,
@@ -18,7 +18,7 @@ exports[`<InputAccessoryView /> should render as <RCTInputAccessoryView> when mo
 
 exports[`<InputAccessoryView /> should render as <RCTInputAccessoryView> when not mocked 1`] = `
 <RCTInputAccessoryView
-  nativeID={1}
+  nativeID="1"
   style={
     Array [
       undefined,
@@ -34,7 +34,7 @@ exports[`<InputAccessoryView /> should render as <RCTInputAccessoryView> when no
 
 exports[`<InputAccessoryView /> should shallow render as <InputAccessoryView> when mocked 1`] = `
 <InputAccessoryView
-  nativeID={1}
+  nativeID="1"
 >
   <View />
 </InputAccessoryView>
@@ -42,7 +42,7 @@ exports[`<InputAccessoryView /> should shallow render as <InputAccessoryView> wh
 
 exports[`<InputAccessoryView /> should shallow render as <InputAccessoryView> when not mocked 1`] = `
 <InputAccessoryView
-  nativeID={1}
+  nativeID="1"
 >
   <View />
 </InputAccessoryView>

@@ -19,7 +19,7 @@ const render = require('../../../../jest/renderer');
 describe('<InputAccessoryView />', () => {
   it('should render as <RCTInputAccessoryView> when mocked', () => {
     const instance = render.create(
-      <InputAccessoryView nativeID={1}>
+      <InputAccessoryView nativeID="1">
         <View />
       </InputAccessoryView>,
     );
@@ -28,7 +28,7 @@ describe('<InputAccessoryView />', () => {
 
   it('should shallow render as <InputAccessoryView> when mocked', () => {
     const output = render.shallow(
-      <InputAccessoryView nativeID={1}>
+      <InputAccessoryView nativeID="1">
         <View />
       </InputAccessoryView>,
     );
@@ -39,7 +39,7 @@ describe('<InputAccessoryView />', () => {
     jest.dontMock('InputAccessoryView');
 
     const output = render.shallow(
-      <InputAccessoryView nativeID={1}>
+      <InputAccessoryView nativeID="1">
         <View />
       </InputAccessoryView>,
     );
@@ -50,7 +50,7 @@ describe('<InputAccessoryView />', () => {
     jest.dontMock('InputAccessoryView');
 
     const instance = render.create(
-      <InputAccessoryView nativeID={1}>
+      <InputAccessoryView nativeID="1">
         <View />
       </InputAccessoryView>,
     );
