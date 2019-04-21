@@ -11,7 +11,7 @@ namespace facebook {
 namespace react {
 
 void MountingTransactionSynchronizer::push(MountingTransaction &&transaction) {
-  assert(transaction.getRevision() < 1 && "Invalid transaction revision.");
+  assert(transaction.getRevision() >= 1 && "Invalid transaction revision.");
 
   if (transaction.getRevision() == 1 && revision_ > 0) {
     // Special case:
