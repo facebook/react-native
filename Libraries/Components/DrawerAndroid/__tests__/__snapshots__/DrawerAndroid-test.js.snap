@@ -1,0 +1,117 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<AndroidDrawerLayout /> should render as <AndroidDrawerLayout> when mocked 1`] = `
+<AndroidDrawerLayout
+  drawerBackgroundColor="white"
+  onDrawerClose={[Function]}
+  onDrawerOpen={[Function]}
+  onDrawerSlide={[Function]}
+  onDrawerStateChanged={[Function]}
+  renderNavigationView={[Function]}
+  style={
+    Array [
+      Object {
+        "elevation": 16,
+        "flex": 1,
+      },
+      undefined,
+    ]
+  }
+>
+  <View
+    collapsable={false}
+    style={
+      Object {
+        "bottom": 0,
+        "left": 0,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+      }
+    }
+  />
+  <View
+    collapsable={false}
+    style={
+      Array [
+        Object {
+          "bottom": 0,
+          "position": "absolute",
+          "top": 0,
+        },
+        Object {
+          "backgroundColor": "white",
+          "width": undefined,
+        },
+      ]
+    }
+  >
+    <View />
+  </View>
+</AndroidDrawerLayout>
+`;
+
+exports[`<AndroidDrawerLayout /> should render as <AndroidDrawerLayout> when not mocked 1`] = `
+<AndroidDrawerLayout
+  drawerBackgroundColor="white"
+  onDrawerClose={[Function]}
+  onDrawerOpen={[Function]}
+  onDrawerSlide={[Function]}
+  onDrawerStateChanged={[Function]}
+  renderNavigationView={[Function]}
+  style={
+    Array [
+      Object {
+        "elevation": 16,
+        "flex": 1,
+      },
+      undefined,
+    ]
+  }
+>
+  <View
+    collapsable={false}
+    style={
+      Object {
+        "bottom": 0,
+        "left": 0,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+      }
+    }
+  />
+  <View
+    collapsable={false}
+    style={
+      Array [
+        Object {
+          "bottom": 0,
+          "position": "absolute",
+          "top": 0,
+        },
+        Object {
+          "backgroundColor": "white",
+          "width": undefined,
+        },
+      ]
+    }
+  >
+    <View />
+  </View>
+</AndroidDrawerLayout>
+`;
+
+exports[`<AndroidDrawerLayout /> should shallow render as <DrawerLayoutAndroid> when mocked 1`] = `
+<DrawerLayoutAndroid
+  drawerBackgroundColor="white"
+  renderNavigationView={[Function]}
+/>
+`;
+
+exports[`<AndroidDrawerLayout /> should shallow render as <DrawerLayoutAndroid> when not mocked 1`] = `
+<DrawerLayoutAndroid
+  drawerBackgroundColor="white"
+  renderNavigationView={[Function]}
+/>
+`;
