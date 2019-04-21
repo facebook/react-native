@@ -15,20 +15,20 @@ module.exports = moduleName => {
   const RealComponent = jest.requireActual(moduleName);
   const MockNativeMethods = jest.requireActual('./MockNativeMethods');
 
+  const displayName =
+    RealComponent.displayName ||
+    RealComponent.name ||
+    (RealComponent.render // handle React.forwardRef
+      ? RealComponent.render.displayName || RealComponent.render.name
+      : 'Unknown');
+
   const SuperClass =
     typeof RealComponent === 'function' ? RealComponent : React.Component;
 
-  const Component = class extends SuperClass {
-    static displayName = 'Component';
+  const NativeComponent = class extends SuperClass {
+    static displayName = displayName;
 
     render() {
-      const name =
-        RealComponent.displayName ||
-        RealComponent.name ||
-        (RealComponent.render // handle React.forwardRef
-          ? RealComponent.render.displayName || RealComponent.render.name
-          : 'Unknown');
-
       const props = Object.assign({}, RealComponent.defaultProps);
 
       if (this.props) {
@@ -45,7 +45,7 @@ module.exports = moduleName => {
       }
 
       return React.createElement(
-        name.replace(/^(RCT|RK)/, ''),
+        displayName.replace(/^(RCT|RK)/, ''),
         props,
         this.props.children,
       );
@@ -53,14 +53,14 @@ module.exports = moduleName => {
   };
 
   Object.keys(RealComponent).forEach(classStatic => {
-    Component[classStatic] = RealComponent[classStatic];
+    NativeComponent[classStatic] = RealComponent[classStatic];
   });
 
-  Object.assign(Component.prototype, {
+  Object.assign(NativeComponent.prototype, {
     ...MockNativeMethods,
     _nativeTag: 1,
     viewConfig: {validAttributes: {style: {}}},
   });
 
-  return Component;
+  return NativeComponent;
 };

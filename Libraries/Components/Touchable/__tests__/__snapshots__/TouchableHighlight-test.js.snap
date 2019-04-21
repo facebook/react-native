@@ -1,23 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`TouchableHighlight renders correctly 1`] = `
-<View
-  accessible={true}
-  clickable={false}
-  isTVSelectable={true}
-  onClick={[Function]}
-  onResponderGrant={[Function]}
-  onResponderMove={[Function]}
-  onResponderRelease={[Function]}
-  onResponderTerminate={[Function]}
-  onResponderTerminationRequest={[Function]}
-  onStartShouldSetResponder={[Function]}
+<TouchableHighlight
+  activeOpacity={0.85}
+  delayPressOut={100}
   style={Object {}}
+  underlayColor="black"
 >
-  <Text
-    style={null}
-  >
+  <Text>
     Touchable
   </Text>
-</View>
+</TouchableHighlight>
 `;

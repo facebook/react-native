@@ -32,44 +32,40 @@ jest.mock('setupDevtools');
 // there's a __mock__ for it.
 jest.setMock('ErrorUtils', require('ErrorUtils'));
 
+const NativeComponents = [
+  'ActivityIndicator',
+  'DatePickerIOS',
+  'DrawerLayoutAndroid',
+  'Image',
+  'InputAccessoryView',
+  'MaskedViewIOS',
+  'Modal',
+  'Picker',
+  'PickerIOS',
+  'ProgressBarAndroid',
+  'ProgressViewIOS',
+  'RefreshControl',
+  'SafeAreaView',
+  'ScrollView',
+  'SegmentedControlIOS',
+  'Slider',
+  'StatusBar',
+  'Switch',
+  'Text',
+  'TextInput',
+  'ToolbarAndroid',
+  'TouchableHighlight',
+  'TouchableNativeFeedback',
+  'TouchableOpacity',
+  'TouchableWithoutFeedback',
+  'View',
+];
+
+NativeComponents.forEach(component =>
+  jest.mock(component, () => mockComponent(component)),
+);
+
 jest
-  .mock('InitializeCore', () => {})
-  .mock('ActivityIndicator', () => mockComponent('ActivityIndicator'))
-  .mock('DatePickerIOS', () => mockComponent('DatePickerIOS'))
-  .mock('DrawerLayoutAndroid', () => mockComponent('DrawerLayoutAndroid'))
-  .mock('Image', () => mockComponent('Image'))
-  .mock('InputAccessoryView', () => mockComponent('InputAccessoryView'))
-  .mock('MaskedViewIOS', () => mockComponent('MaskedViewIOS'))
-  .mock('Modal', () => mockComponent('Modal'))
-  .mock('Picker', () => mockComponent('Picker'))
-  .mock('PickerIOS', () => mockComponent('PickerIOS'))
-  .mock('ProgressBarAndroid', () => mockComponent('ProgressBarAndroid'))
-  .mock('ProgressViewIOS', () => mockComponent('ProgressViewIOS'))
-  .mock('RefreshControl', () => mockComponent('RefreshControl'))
-  .mock('SafeAreaView', () => mockComponent('SafeAreaView'))
-  .mock('ScrollView', () => mockComponent('ScrollView'))
-  .mock('SegmentedControlIOS', () => mockComponent('SegmentedControlIOS'))
-  .mock('Slider', () => mockComponent('Slider'))
-  .mock('SnapshotViewIOS', () => mockComponent('SnapshotViewIOS'))
-  .mock('StatusBar', () => mockComponent('StatusBar'))
-  .mock('Switch', () => mockComponent('Switch'))
-  .mock('Text', () => mockComponent('Text'))
-  .mock('TextInput', () => mockComponent('TextInput'))
-  .mock('View', () => mockComponent('View'))
-  .mock('ViewPagerAndroid', () => mockComponent('ViewPagerAndroid'))
-  .mock('AnimatedImplementation', () => {
-    const AnimatedImplementation = jest.requireActual('AnimatedImplementation');
-    const oldCreate = AnimatedImplementation.createAnimatedComponent;
-    AnimatedImplementation.createAnimatedComponent = function(
-      Component,
-      defaultProps,
-    ) {
-      const Wrapped = oldCreate(Component, defaultProps);
-      Wrapped.__skipSetNativeProps_FOR_TESTS_ONLY = true;
-      return Wrapped;
-    };
-    return AnimatedImplementation;
-  })
   .mock('ReactNative', () => {
     const ReactNative = jest.requireActual('ReactNative');
     const NativeMethodsMixin =
