@@ -26,9 +26,6 @@ import type {
   ____TextStyleProp_Internal,
   ____ImageStyle_Internal,
   ____ImageStyleProp_Internal,
-  ____LayoutStyle_Internal,
-  ____ShadowStyle_Internal,
-  ____TransformStyle_Internal,
 } from 'StyleSheetTypes';
 
 /**
@@ -155,6 +152,7 @@ export type ImageStyle = ____ImageStyle_Internal;
  */
 export type DangerouslyImpreciseStyle = ____DangerouslyImpreciseStyle_Internal;
 
+<<<<<<< HEAD
 /**
  * These types are simlilar to the style types above. They are objects of the
  * possible style keys in that group. For example, ShadowStyle contains
@@ -168,11 +166,14 @@ let hairlineWidth =
   Platform.OS === 'win32' || Platform.OS === 'windesktop'
     ? 0.5
     : PixelRatio.roundToNearestPixel(0.4); // TODO(windows ISS)
+=======
+let hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
+>>>>>>> v0.59.0
 if (hairlineWidth === 0) {
   hairlineWidth = 1 / PixelRatio.get();
 }
 
-const absoluteFill: LayoutStyle = {
+const absoluteFill = {
   position: 'absolute',
   left: 0,
   right: 0,

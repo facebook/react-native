@@ -33,18 +33,12 @@ const UIManagerStatTracker = {
     const createViewOrig = UIManager.createView;
     UIManager.createView = function(tag, className, rootTag, props) {
       incStat('createView', 1);
-      /* $FlowFixMe(>=0.86.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.86 was deployed. To see the error, delete
-       * this comment and run Flow. */
       incStat('setProp', Object.keys(props || []).length);
       createViewOrig(tag, className, rootTag, props);
     };
     const updateViewOrig = UIManager.updateView;
     UIManager.updateView = function(tag, className, props) {
       incStat('updateView', 1);
-      /* $FlowFixMe(>=0.86.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.86 was deployed. To see the error, delete
-       * this comment and run Flow. */
       incStat('setProp', Object.keys(props || []).length);
       updateViewOrig(tag, className, props);
     };
@@ -58,13 +52,7 @@ const UIManagerStatTracker = {
       remove,
     ) {
       incStat('manageChildren', 1);
-      /* $FlowFixMe(>=0.86.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.86 was deployed. To see the error, delete
-       * this comment and run Flow. */
       incStat('move', Object.keys(moveFrom || []).length);
-      /* $FlowFixMe(>=0.86.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.86 was deployed. To see the error, delete
-       * this comment and run Flow. */
       incStat('remove', Object.keys(remove || []).length);
       manageChildrenOrig(tag, moveFrom, moveTo, addTags, addIndices, remove);
     };

@@ -16,7 +16,7 @@ const NativeModules = require('NativeModules');
 const RCTAppState = NativeModules.AppState;
 
 const logError = require('logError');
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 /**
  * `AppState` can tell you if the app is in the foreground or background,

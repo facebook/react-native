@@ -194,6 +194,7 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
   }
   [_alertControllers addObject:alertController];
 
+<<<<<<< HEAD
   [presentingController presentViewController:alertController animated:YES completion:nil];
 #else // [TODO(macOS ISS#2323203)
   
@@ -290,6 +291,11 @@ RCT_EXPORT_METHOD(alertWithArgs:(NSDictionary *)args
     [alert beginSheetModalForWindow:[NSApp keyWindow] completionHandler:callbacksHandlers];
   }
 #endif // ]TODO(macOS ISS#2323203)
+=======
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [presentingController presentViewController:alertController animated:YES completion:nil];
+  });
+>>>>>>> v0.59.0
 }
 
 @end

@@ -75,9 +75,9 @@ static const std::string componentNameByReactViewName(std::string viewName) {
   // We need this temporarly for testing purposes until we have proper
   // implementation of core components.
   if (viewName == "SinglelineTextInputView" ||
-      viewName == "MultilineTextInputView" || viewName == "RefreshControl" ||
-      viewName == "AndroidSwipeRefreshLayout" || viewName == "SafeAreaView" ||
-      viewName == "ScrollContentView" ||
+      viewName == "MultilineTextInputView" || viewName == "AndroidTextInput" ||
+      viewName == "RefreshControl" || viewName == "AndroidSwipeRefreshLayout" ||
+      viewName == "SafeAreaView" || viewName == "ScrollContentView" ||
       viewName == "AndroidHorizontalScrollContentView" // Android
   ) {
     return "View";
@@ -112,14 +112,13 @@ SharedShadowNode ComponentDescriptorRegistry::createNode(
     const SharedEventTarget &eventTarget) const {
   ComponentName componentName = componentNameByReactViewName(viewName);
   const SharedComponentDescriptor &componentDescriptor = (*this)[componentName];
-  RawProps rawProps = rawPropsFromDynamic(props);
 
   SharedShadowNode shadowNode = componentDescriptor->createShadowNode(
       {.tag = tag,
        .rootTag = rootTag,
        .eventEmitter =
            componentDescriptor->createEventEmitter(std::move(eventTarget), tag),
-       .props = componentDescriptor->cloneProps(nullptr, rawProps)});
+       .props = componentDescriptor->cloneProps(nullptr, RawProps(props))});
   return shadowNode;
 }
 

@@ -14,7 +14,7 @@ const AnimatedValueXY = require('../nodes/AnimatedValueXY');
 const Animation = require('./Animation');
 const SpringConfig = require('../SpringConfig');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 const {shouldUseNativeDriver} = require('../NativeAnimatedHelper');
 
 import type {AnimationConfig, EndCallback} from './Animation';

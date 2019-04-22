@@ -15,7 +15,7 @@ const AnimatedStyle = require('./AnimatedStyle');
 const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 const ReactNative = require('ReactNative');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 class AnimatedProps extends AnimatedNode {
   _props: Object;

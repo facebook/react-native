@@ -72,11 +72,9 @@ public class ReactTextViewManager
   @Override
   public Object updateLocalData(ReactTextView view, ReactStylesDiffMap props, ReactStylesDiffMap localData) {
     ReadableMap attributedString = localData.getMap("attributedString");
-    ReadableArray fragments = attributedString.getArray("fragments");
-    String string = attributedString.getString("string");
 
-    Spannable spanned = TextLayoutManager.spannedFromTextFragments(view.getContext(),
-      fragments, string);
+    Spannable spanned = TextLayoutManager.getOrCreateSpannableForText(view.getContext(),
+      attributedString);
     view.setSpanned(spanned);
 
     TextAttributeProps textViewProps = new TextAttributeProps(props);
@@ -84,8 +82,10 @@ public class ReactTextViewManager
     // TODO add textBreakStrategy prop into local Data
     int textBreakStrategy = Layout.BREAK_STRATEGY_HIGH_QUALITY;
 
-    return
-      new ReactTextUpdate(
+    // TODO add justificationMode prop into local Data
+    int justificationMode = Layout.JUSTIFICATION_MODE_NONE;
+
+    return new ReactTextUpdate(
         spanned,
         -1,             // TODO add this into local Data?
         false,          // TODO add this into local Data
@@ -94,7 +94,8 @@ public class ReactTextViewManager
         textViewProps.getEndPadding(),
         textViewProps.getBottomPadding(),
         textViewProps.getTextAlign(),
-        textBreakStrategy
+        textBreakStrategy,
+        justificationMode
       );
   }
 
@@ -103,9 +104,8 @@ public class ReactTextViewManager
     return MapBuilder.of("topTextLayout", MapBuilder.of("registrationName", "onTextLayout"));
   }
 
-  public float[] measure(
+  public long measure(
     ReactContext context,
-    ReactTextView view,
     ReadableNativeMap localData,
     ReadableNativeMap props,
     float width,
@@ -114,7 +114,6 @@ public class ReactTextViewManager
     YogaMeasureMode heightMode) {
 
     return TextLayoutManager.measureText(context,
-      view,
       localData,
       props,
       width,

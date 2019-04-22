@@ -11,6 +11,7 @@
 'use strict';
 
 import type {ComponentType} from 'React';
+import * as React from 'react';
 
 export type RNTesterProps = $ReadOnly<{|
   navigator?: ?$ReadOnlyArray<
@@ -21,4 +22,25 @@ export type RNTesterProps = $ReadOnly<{|
       passProps: any,
     |}>,
   >,
+|}>;
+
+export type RNTesterExampleModuleItem = $ReadOnly<{|
+  title: string,
+  platform?: string,
+  description?: string,
+  render: () => React.Node,
+|}>;
+
+export type RNTesterExampleModule = $ReadOnly<{|
+  title: string,
+  description: string,
+  displayName?: ?string,
+  framework?: string,
+  examples: Array<RNTesterExampleModuleItem>,
+|}>;
+
+export type RNTesterExample = $ReadOnly<{|
+  key: string,
+  module: RNTesterExampleModule,
+  supportsTVOS?: boolean,
 |}>;

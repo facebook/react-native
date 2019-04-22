@@ -6,6 +6,10 @@ rn_android_library(
     visibility = [
         "PUBLIC",
     ],
+    provided_deps = [
+        react_native_dep("third-party/android/support/v4:lib-support-v4"),
+        react_native_dep("third-party/android/support/v7/appcompat-orig:appcompat"),
+    ],
     deps = [
         react_native_dep("third-party/java/infer-annotations:infer-annotations"),
         react_native_dep("third-party/java/jsr-305:jsr-305"),

@@ -40,11 +40,27 @@ void EventQueue::onBeat(jsi::Runtime &runtime) const {
   }
 
   {
-    std::lock_guard<std::recursive_mutex> lock(EventEmitter::DispatchMutex());
+    std::lock_guard<std::mutex> lock(EventEmitter::DispatchMutex());
 
     for (const auto &event : queue) {
-      eventPipe_(
-          runtime, event.eventTarget.lock().get(), event.type, event.payload);
+      if (event.eventTarget) {
+        event.eventTarget->retain(runtime);
+      }
+    }
+  }
+
+  for (const auto &event : queue) {
+    eventPipe_(
+        runtime, event.eventTarget.get(), event.type, event.payloadFactory);
+  }
+
+  // No need to lock `EventEmitter::DispatchMutex()` here.
+  // The mutex protects from a situation when the `instanceHandle` can be
+  // deallocated during accessing, but that's impossible at this point because
+  // we have a strong pointer to it.
+  for (const auto &event : queue) {
+    if (event.eventTarget) {
+      event.eventTarget->release(runtime);
     }
   }
 }

@@ -95,8 +95,8 @@ function e2e_suite() {
     # To make sure we actually installed the local version
     # of react-native, we will create a temp file inside the template
     # and check that it exists after `react-native init
-    IOS_MARKER="$(mktemp "$ROOT"/local-cli/templates/HelloWorld/ios/HelloWorld/XXXXXXXX)"
-    ANDROID_MARKER="$(mktemp "$ROOT"/local-cli/templates/HelloWorld/android/XXXXXXXX)"
+    IOS_MARKER="$(mktemp "$ROOT"/template/ios/HelloWorld/XXXXXXXX)"
+    ANDROID_MARKER="$(mktemp "$ROOT"/template/android/XXXXXXXX)"
 
     # install CLI
     cd react-native-cli

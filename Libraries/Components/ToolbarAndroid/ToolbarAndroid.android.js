@@ -13,7 +13,7 @@
 const React = require('React');
 const UIManager = require('UIManager');
 
-const requireNativeComponent = require('requireNativeComponent');
+const ToolbarAndroidNativeComponent = require('ToolbarAndroidNativeComponent');
 const resolveAssetSource = require('resolveAssetSource');
 
 import type {SyntheticEvent} from 'CoreEventTypes';
@@ -57,8 +57,6 @@ import type {NativeComponent} from 'ReactNative';
  *
  * [0]: https://developer.android.com/reference/android/support/v7/widget/Toolbar.html
  */
-
-const NativeToolbar = requireNativeComponent('ToolbarAndroid');
 
 type Action = $ReadOnly<{|
   title: string,
@@ -163,7 +161,7 @@ type ToolbarAndroidProps = $ReadOnly<{|
 
 type Props = $ReadOnly<{|
   ...ToolbarAndroidProps,
-  forwardedRef: ?React.Ref<typeof NativeToolbar>,
+  forwardedRef: ?React.Ref<typeof ToolbarAndroidNativeComponent>,
 |}>;
 
 class ToolbarAndroid extends React.Component<Props> {
@@ -227,7 +225,7 @@ class ToolbarAndroid extends React.Component<Props> {
     }
 
     return (
-      <NativeToolbar
+      <ToolbarAndroidNativeComponent
         onSelect={this._onSelect}
         {...nativeProps}
         ref={forwardedRef}
@@ -236,16 +234,18 @@ class ToolbarAndroid extends React.Component<Props> {
   }
 }
 
-// $FlowFixMe - TODO T29156721 `React.forwardRef` is not defined in Flow, yet.
 const ToolbarAndroidToExport = React.forwardRef(
   (
     props: ToolbarAndroidProps,
-    forwardedRef: ?React.Ref<typeof NativeToolbar>,
+    forwardedRef: ?React.Ref<typeof ToolbarAndroidNativeComponent>,
   ) => {
     return <ToolbarAndroid {...props} forwardedRef={forwardedRef} />;
   },
 );
 
+/* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment suppresses an
+ * error found when Flow v0.89 was deployed. To see the error, delete this
+ * comment and run Flow. */
 module.exports = (ToolbarAndroidToExport: Class<
   NativeComponent<ToolbarAndroidProps>,
 >);

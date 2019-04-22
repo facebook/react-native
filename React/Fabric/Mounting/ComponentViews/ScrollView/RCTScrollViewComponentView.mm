@@ -8,6 +8,7 @@
 #import "RCTScrollViewComponentView.h"
 
 #import <React/RCTAssert.h>
+#import <react/components/scrollview/ScrollViewShadowNode.h>
 #import <react/components/scrollview/ScrollViewLocalData.h>
 #import <react/components/scrollview/ScrollViewProps.h>
 #import <react/components/scrollview/ScrollViewEventEmitter.h>
@@ -48,7 +49,12 @@ using namespace facebook::react;
   return self;
 }
 
-#pragma mark - ComponentViewProtocol
+#pragma mark - RCTComponentViewProtocol
+
++ (ComponentHandle)componentHandle
+{
+  return ScrollViewShadowNode::Handle();
+}
 
 - (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps
 {

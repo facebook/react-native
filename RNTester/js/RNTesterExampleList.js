@@ -20,9 +20,13 @@ const RNTesterActions = require('./RNTesterActions');
 const RNTesterExampleFilter = require('./RNTesterExampleFilter');
 const View = require('View');
 
+<<<<<<< HEAD
 /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found when
  * making Flow check .android.js files. */
 import type {RNTesterExample} from './RNTesterList.ios';
+=======
+import type {RNTesterExample} from 'RNTesterTypes';
+>>>>>>> v0.59.0
 import type {ViewStyleProp} from 'StyleSheet';
 
 type Props = {
@@ -77,9 +81,12 @@ const renderSectionHeader = ({section}) => (
 class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
   render() {
     const filter = ({example, filterRegex}) =>
+<<<<<<< HEAD
       /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
       * error found when Flow v0.68 was deployed. To see the error delete this
       * comment and run Flow. */
+=======
+>>>>>>> v0.59.0
       filterRegex.test(example.module.title) &&
       (!Platform.isTV || example.supportsTVOS);
 
@@ -100,6 +107,10 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
       <View style={[styles.listContainer, this.props.style]}>
         {this._renderTitleRow()}
         <RNTesterExampleFilter
+<<<<<<< HEAD
+=======
+          testID="explorer_search"
+>>>>>>> v0.59.0
           sections={sections}
           filter={filter}
           render={({filteredSections}) => (
@@ -115,10 +126,13 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
               automaticallyAdjustContentInsets={false}
               keyboardDismissMode="on-drag"
               renderSectionHeader={renderSectionHeader}
+<<<<<<< HEAD
               backgroundColor={Platform.select({
                 macos: 'transparent',
                 default: undefined,
               })} // TODO(macOS ISS#2323203)
+=======
+>>>>>>> v0.59.0
             />
           )}
         />
@@ -251,10 +265,16 @@ const styles = StyleSheet.create({
     height: StyleSheet.hairlineWidth,
     backgroundColor: 'rgb(217, 217, 217)',
   },
+<<<<<<< HEAD
   sectionListContentContainer: Platform.select({
     macos: {backgroundColor: {semantic: 'separatorColor'}},
     default: {backgroundColor: 'white'},
   }),
+=======
+  sectionListContentContainer: {
+    backgroundColor: 'white',
+  },
+>>>>>>> v0.59.0
   rowTitleText: {
     fontSize: 17,
     fontWeight: '500',

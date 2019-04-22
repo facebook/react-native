@@ -146,6 +146,10 @@ void ShadowNode::cloneChildrenIfShared() {
   children_ = std::make_shared<SharedShadowNodeList>(*children_);
 }
 
+void ShadowNode::setMounted(bool mounted) const {
+  eventEmitter_->setEnabled(mounted);
+}
+
 bool ShadowNode::constructAncestorPath(
     const ShadowNode &ancestorShadowNode,
     std::vector<std::reference_wrapper<const ShadowNode>> &ancestors) const {

@@ -10,8 +10,13 @@ buildscript {
         jcenter()
     }
     dependencies {
+<<<<<<< HEAD
         classpath 'com.android.tools.build:gradle:3.2.1'
         classpath 'de.undercouch:gradle-download-task:3.4.3'
+=======
+        classpath("com.android.tools.build:gradle:3.3.1")
+        classpath("de.undercouch:gradle-download-task:3.4.3")
+>>>>>>> v0.59.0
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -34,12 +39,15 @@ allprojects {
 
         def androidSdk = System.getenv("ANDROID_SDK")
         maven {
-            url "$androidSdk/extras/m2repository/"
+            url("$androidSdk/extras/m2repository/")
         }
     }
 }
+<<<<<<< HEAD
 
 task wrapper(type: Wrapper) {
     gradleVersion = '4.7'
     distributionUrl = distributionUrl.replace("bin", "all")
 }
+=======
+>>>>>>> v0.59.0

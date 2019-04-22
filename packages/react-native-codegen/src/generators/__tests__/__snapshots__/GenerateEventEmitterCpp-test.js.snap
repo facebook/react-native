@@ -1,0 +1,267 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GenerateEventEmitterCpp can generate fixture SINGLE_COMPONENT_WITH_BOOLEAN_PROP 1`] = `
+Map {
+  "EventEmitters.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/SINGLE_COMPONENT_WITH_BOOLEAN_PROP/EventEmitters.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterCpp can generate fixture SINGLE_COMPONENT_WITH_COLOR_PROP 1`] = `
+Map {
+  "EventEmitters.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/SINGLE_COMPONENT_WITH_COLOR_PROP/EventEmitters.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterCpp can generate fixture SINGLE_COMPONENT_WITH_ENUM_PROP 1`] = `
+Map {
+  "EventEmitters.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/SINGLE_COMPONENT_WITH_ENUM_PROP/EventEmitters.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterCpp can generate fixture SINGLE_COMPONENT_WITH_EVENT_NESTED_OBJECT_PROPS 1`] = `
+Map {
+  "EventEmitters.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/SINGLE_COMPONENT_WITH_EVENT_NESTED_OBJECT_PROPS/EventEmitters.h>
+
+namespace facebook {
+namespace react {
+
+void EventsNestedObjectNativeComponentEventEmitter::onChange(EventsNestedObjectNativeComponentOnChangeStruct event) const {
+  dispatchEvent(\\"change\\", [event=std::move(event)](jsi::Runtime &runtime) {
+    auto payload = jsi::Object(runtime);
+    {
+              auto location = jsi::Object(runtime);
+              {
+              auto source = jsi::Object(runtime);
+              source.setProperty(runtime, \\"url\\", event.location.source.url);
+
+              location.setProperty(runtime, \\"source\\", source);
+            }
+location.setProperty(runtime, \\"x\\", event.location.x);
+location.setProperty(runtime, \\"y\\", event.location.y);
+
+              payload.setProperty(runtime, \\"location\\", location);
+            }
+    return payload;
+  });
+}
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterCpp can generate fixture SINGLE_COMPONENT_WITH_EVENT_PROPS 1`] = `
+Map {
+  "EventEmitters.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/SINGLE_COMPONENT_WITH_EVENT_PROPS/EventEmitters.h>
+
+namespace facebook {
+namespace react {
+
+void EventsNativeComponentEventEmitter::onChange(EventsNativeComponentOnChangeStruct event) const {
+  dispatchEvent(\\"change\\", [event=std::move(event)](jsi::Runtime &runtime) {
+    auto payload = jsi::Object(runtime);
+    payload.setProperty(runtime, \\"value\\", event.value);
+payload.setProperty(runtime, \\"source\\", event.source);
+payload.setProperty(runtime, \\"progress\\", event.progress);
+payload.setProperty(runtime, \\"scale\\", event.scale);
+    return payload;
+  });
+}
+void EventsNativeComponentEventEmitter::onEventDirect(EventsNativeComponentOnEventDirectStruct event) const {
+  dispatchEvent(\\"eventDirect\\", [event=std::move(event)](jsi::Runtime &runtime) {
+    auto payload = jsi::Object(runtime);
+    payload.setProperty(runtime, \\"value\\", event.value);
+    return payload;
+  });
+}
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterCpp can generate fixture SINGLE_COMPONENT_WITH_FLOAT_PROPS 1`] = `
+Map {
+  "EventEmitters.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/SINGLE_COMPONENT_WITH_FLOAT_PROPS/EventEmitters.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterCpp can generate fixture SINGLE_COMPONENT_WITH_INTEGER_PROPS 1`] = `
+Map {
+  "EventEmitters.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/SINGLE_COMPONENT_WITH_INTEGER_PROPS/EventEmitters.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterCpp can generate fixture SINGLE_COMPONENT_WITH_STRING_PROP 1`] = `
+Map {
+  "EventEmitters.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/SINGLE_COMPONENT_WITH_STRING_PROP/EventEmitters.h>
+
+namespace facebook {
+namespace react {
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterCpp can generate fixture TWO_COMPONENTS_DIFFERENT_FILES 1`] = `
+Map {
+  "EventEmitters.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/TWO_COMPONENTS_DIFFERENT_FILES/EventEmitters.h>
+
+namespace facebook {
+namespace react {
+
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;
+
+exports[`GenerateEventEmitterCpp can generate fixture TWO_COMPONENTS_SAME_FILE 1`] = `
+Map {
+  "EventEmitters.cpp" => "
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+#include <react/components/TWO_COMPONENTS_SAME_FILE/EventEmitters.h>
+
+namespace facebook {
+namespace react {
+
+
+
+
+} // namespace react
+} // namespace facebook
+",
+}
+`;

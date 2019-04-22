@@ -17,8 +17,6 @@ const React = require('React');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 
-const emptyFunction = require('fbjs/lib/emptyFunction');
-
 import type {LayoutEvent, PressEvent} from 'CoreEventTypes';
 import type {GestureState} from 'PanResponder';
 
@@ -54,6 +52,8 @@ const RIGHT_SWIPE_BOUNCE_BACK_DURATION = 300;
  */
 const RIGHT_SWIPE_THRESHOLD = 30 * SLOW_SPEED_SWIPE_FACTOR;
 const DEFAULT_SWIPE_THRESHOLD = 30;
+
+const emptyFunction = () => {};
 
 type Props = $ReadOnly<{|
   children?: ?React.Node,

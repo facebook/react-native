@@ -1,9 +1,8 @@
-/*
- *  Copyright (c) Facebook, Inc.
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
  *
- *  This source code is licensed under the MIT license found in the LICENSE
- *  file in the root directory of this source tree.
- *
+ * This source code is licensed under the MIT license found in the LICENSE
+ * file in the root directory of this source tree.
  */
 package com.facebook.yoga;
 
@@ -172,17 +171,6 @@ public class YogaNode implements Cloneable {
     mChildren.add(i, child);
     child.mOwner = this;
     jni_YGNodeInsertChild(mNativePointer, child.mNativePointer, i);
-  }
-
-  private static native void jni_YGNodeInsertSharedChild(long nativePointer, long childPointer, int index);
-
-  public void addSharedChildAt(YogaNode child, int i) {
-    if (mChildren == null) {
-      mChildren = new ArrayList<>(4);
-    }
-    mChildren.add(i, child);
-    child.mOwner = null;
-    jni_YGNodeInsertSharedChild(mNativePointer, child.mNativePointer, i);
   }
 
   private static native void jni_YGNodeSetIsReferenceBaseline(long nativePointer, boolean isReferenceBaseline);

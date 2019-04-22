@@ -8,6 +8,7 @@
  * @format
  */
 
+<<<<<<< HEAD
 /* global element, by, expect */
 
 describe('DatePickerIOS', () => {
@@ -27,31 +28,75 @@ describe('DatePickerIOS', () => {
   it('Should change indicator with datetime picker', async () => {
     const testID = 'date-and-time';
     const indicatorID = 'date-and-time-indicator';
+=======
+/* global element, by, expect, device */
+
+const {
+  openComponentWithLabel,
+  openExampleWithTitle,
+} = require('../e2e-helpers');
+
+describe('DatePickerIOS', () => {
+  beforeAll(async () => {
+    await device.reloadReactNative();
+    await openComponentWithLabel(
+      '<DatePickerIOS>',
+      '<DatePickerIOS> Select dates and times using the native UIDatePicker.',
+    );
+  });
+
+  it('Should change indicator with datetime picker', async () => {
+    await openExampleWithTitle('Date and time picker');
+    const testID = 'date-and-time';
+>>>>>>> v0.59.0
 
     const testElement = await element(
       by.type('UIPickerView').withAncestor(by.id(testID)),
     );
+<<<<<<< HEAD
     const indicator = await element(by.id(indicatorID));
 
     await expect(testElement).toBeVisible();
     await expect(indicator).toBeVisible();
+=======
+    const dateIndicator = await element(by.id('date-indicator'));
+    const timeIndicator = await element(by.id('time-indicator'));
+
+    await expect(testElement).toBeVisible();
+    await expect(dateIndicator).toBeVisible();
+    await expect(timeIndicator).toBeVisible();
+>>>>>>> v0.59.0
 
     await testElement.setColumnToValue(0, 'Dec 4');
     await testElement.setColumnToValue(1, '4');
     await testElement.setColumnToValue(2, '10');
     await testElement.setColumnToValue(3, 'AM');
 
+<<<<<<< HEAD
     await expect(indicator).toHaveText('12/4/2005 4:10 AM');
   });
 
   it('Should change indicator with date-only picker', async () => {
     const testID = 'date-only';
     const indicatorID = 'date-and-time-indicator';
+=======
+    await expect(dateIndicator).toHaveText('12/4/2005');
+    await expect(timeIndicator).toHaveText('4:10 AM');
+  });
+
+  it('Should change indicator with date-only picker', async () => {
+    await openExampleWithTitle('Date only picker');
+    const testID = 'date-only';
+>>>>>>> v0.59.0
 
     const testElement = await element(
       by.type('UIPickerView').withAncestor(by.id(testID)),
     );
+<<<<<<< HEAD
     const indicator = await element(by.id(indicatorID));
+=======
+    const indicator = await element(by.id('date-indicator'));
+>>>>>>> v0.59.0
 
     await expect(testElement).toBeVisible();
     await expect(indicator).toBeVisible();
@@ -60,6 +105,10 @@ describe('DatePickerIOS', () => {
     await testElement.setColumnToValue(1, '3');
     await testElement.setColumnToValue(2, '2006');
 
+<<<<<<< HEAD
     await expect(indicator).toHaveText('11/3/2006 4:10 AM');
+=======
+    await expect(indicator).toHaveText('11/3/2006');
+>>>>>>> v0.59.0
   });
 });

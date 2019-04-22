@@ -9,8 +9,10 @@ package com.facebook.react.views.textinput;
 
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.os.Build;
 import android.text.InputType;
 import android.text.InputFilter;
+import android.text.Layout;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.inputmethod.EditorInfo;
@@ -344,6 +346,10 @@ public class ReactTextInputPropertyTest {
     assertThat(view.getGravity() & Gravity.HORIZONTAL_GRAVITY_MASK).isEqualTo(Gravity.CENTER_HORIZONTAL);
     mManager.updateProperties(view, buildStyles("textAlign", null));
     assertThat(view.getGravity() & Gravity.HORIZONTAL_GRAVITY_MASK).isEqualTo(defaultHorizontalGravity);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      mManager.updateProperties(view, buildStyles("textAlign", "justify"));
+      assertThat(view.getJustificationMode()).isEqualTo(Layout.JUSTIFICATION_MODE_INTER_WORD);
+    }
 
     // TextAlignVertical
     mManager.updateProperties(view, buildStyles("textAlignVertical", "top"));

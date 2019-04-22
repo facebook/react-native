@@ -58,4 +58,18 @@ public interface MessageQueueThread {
    */
   @DoNotStrip
   void quitSynchronous();
+
+  /**
+   * Returns the perf counters taken when the framework was started.  This
+   * method is intended to be used for instrumentation purposes.
+   */
+  @DoNotStrip
+  MessageQueueThreadPerfStats getPerfStats();
+
+  /**
+   * Resets the perf counters.  This is useful if the RN threads are being re-used.
+   * This method is intended to be used for instrumentation purposes.
+   */
+  @DoNotStrip
+  void resetPerfStats();
 }

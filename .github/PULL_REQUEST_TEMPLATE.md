@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # :warning: Make sure you are targeting Microsoft/react-native for your PR :warning:
 (then delete these lines)
 
@@ -23,3 +24,20 @@ If you are making a new change then one of the following should be done:
 #### Focus areas to test
 
 (optional)
+=======
+<!-- Thanks for submitting a pull request! We appreciate you spending the time to work on these changes. Please provide enough information so that others can review your pull request. The three fields below are mandatory. -->
+
+## Summary
+
+<!-- Explain the **motivation** for making this change. What existing problem does the pull request solve? -->
+
+## Changelog
+
+<!-- Help reviewers and the release process by writing your own changelog entry. See http://facebook.github.io/react-native/docs/contributing#changelog for an example. -->
+
+[CATEGORY] [TYPE] - Message
+
+## Test Plan
+
+<!-- Demonstrate the code is solid. Example: The exact commands you ran and their output, screenshots / videos if the pull request changes UI. -->
+>>>>>>> v0.59.0

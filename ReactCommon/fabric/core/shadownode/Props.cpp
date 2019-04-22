@@ -17,7 +17,7 @@ Props::Props(const Props &sourceProps, const RawProps &rawProps)
     : nativeId(convertRawProp(rawProps, "nativeID", sourceProps.nativeId))
 #ifdef ANDROID
       ,
-      rawProps(rawProps)
+      rawProps((folly::dynamic)rawProps)
 #endif
           {};
 

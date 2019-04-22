@@ -7,6 +7,7 @@
 
 #import "RCTViewComponentView.h"
 
+#import <react/components/view/ViewShadowNode.h>
 #import <react/components/view/ViewProps.h>
 #import <react/components/view/ViewEventEmitter.h>
 #import <objc/runtime.h>
@@ -76,6 +77,16 @@ using namespace facebook::react;
 - (void)setBackgroundColor:(UIColor *)backgroundColor
 {
   _backgroundColor = backgroundColor;
+}
+
+#pragma mark - RCTComponentViewProtocol
+
++ (ComponentHandle)componentHandle
+{
+  RCTAssert(
+    self == [RCTViewComponentView class],
+    @"`+[RCTComponentViewProtocol componentHandle]` must be implemented for all subclasses (and `%@` particularly).", NSStringFromClass([self class]));
+  return ViewShadowNode::Handle();
 }
 
 - (void)updateProps:(SharedProps)props
@@ -254,6 +265,12 @@ using namespace facebook::react;
   [super updateLayoutMetrics:layoutMetrics oldLayoutMetrics:oldLayoutMetrics];
 
   [self invalidateLayer];
+}
+
+- (void)prepareForRecycle
+{
+  [super prepareForRecycle];
+  _eventEmitter.reset();
 }
 
 - (UIView *)betterHitTest:(CGPoint)point withEvent:(UIEvent *)event
@@ -533,6 +550,12 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 - (BOOL)accessibilityPerformMagicTap
 {
   _eventEmitter->onAccessibilityMagicTap();
+  return YES;
+}
+
+- (BOOL)accessibilityPerformEscape
+{
+  _eventEmitter->onAccessibilityEscape();
   return YES;
 }
 

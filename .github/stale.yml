@@ -6,11 +6,12 @@ daysUntilClose: 7
 # Issues with these labels will never be considered stale
 exemptLabels:
   - Good first issue
-  - For Discussion
+  - "Type: Discussion"
+  - Partner
   - Core Team
   - "Help Wanted :octocat:"
-  - ":warning:Regression"
-  - ":clock1:PR Pending"
+  - "Impact: Regression"
+  - "Resolution: PR Submitted"
 # Label to use when marking an issue as stale
 staleLabel: Stale 
 # Comment to post when marking an issue as stale. Set to `false` to disable

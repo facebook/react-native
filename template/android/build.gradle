@@ -1,0 +1,53 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    ext {
+<<<<<<< HEAD:local-cli/templates/HelloWorld/android/build.gradle
+        buildToolsVersion = "28.0.2"
+        minSdkVersion = 16
+        compileSdkVersion = 28
+        targetSdkVersion = 27
+=======
+        buildToolsVersion = "28.0.3"
+        minSdkVersion = 16
+        compileSdkVersion = 28
+        targetSdkVersion = 28
+>>>>>>> v0.59.0:template/android/build.gradle
+        supportLibVersion = "28.0.0"
+    }
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+<<<<<<< HEAD:local-cli/templates/HelloWorld/android/build.gradle
+        classpath 'com.android.tools.build:gradle:3.2.1'
+=======
+        classpath 'com.android.tools.build:gradle:3.3.1'
+>>>>>>> v0.59.0:template/android/build.gradle
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        mavenLocal()
+        google()
+        jcenter()
+        maven {
+            // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+            url "$rootDir/../node_modules/react-native/android"
+        }
+    }
+}
+<<<<<<< HEAD:local-cli/templates/HelloWorld/android/build.gradle
+
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.7'
+    distributionUrl = distributionUrl.replace("bin", "all")
+}
+=======
+>>>>>>> v0.59.0:template/android/build.gradle

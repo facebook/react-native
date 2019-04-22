@@ -29,10 +29,7 @@ type State = {|
   dataSource: ListViewDataSource,
 |};
 
-class ListViewSimpleExample extends React.Component<RNTesterProps, State> {
-  static title = '<ListView>';
-  static description = 'Performant, scrollable list of data.';
-
+class ListViewExample extends React.Component<RNTesterProps, State> {
   state = {
     dataSource: this.getInitialDataSource(),
   };
@@ -166,4 +163,13 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = ListViewSimpleExample;
+exports.title = '<ListView>';
+exports.description = 'Performant, scrollable list of data.';
+exports.examples = [
+  {
+    title: 'Simple list of items',
+    render: function(): React.Element<typeof ListViewExample> {
+      return <ListViewExample />;
+    },
+  },
+];

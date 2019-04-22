@@ -18,12 +18,18 @@ const View = require('View');
 type Props = {
   filter: Function,
   render: Function,
+<<<<<<< HEAD
   /*
    * $FlowFixMe: We shoudl better type this (ideally so that render and filter are
    * aware of what they receive)
    */
   sections: Object,
   disableSearch?: boolean,
+=======
+  sections: Object,
+  disableSearch?: boolean,
+  testID?: string,
+>>>>>>> v0.59.0
 };
 
 type State = {
@@ -56,7 +62,11 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
     }));
 
     return (
+<<<<<<< HEAD
       <View>
+=======
+      <View style={styles.container}>
+>>>>>>> v0.59.0
         {this._renderTextInput()}
         {this.props.render({filteredSections})}
       </View>
@@ -79,7 +89,11 @@ class RNTesterExampleFilter extends React.Component<Props, State> {
           placeholder="Search..."
           underlineColorAndroid="transparent"
           style={styles.searchTextInput}
+<<<<<<< HEAD
           testID="explorer_search"
+=======
+          testID={this.props.testID}
+>>>>>>> v0.59.0
           value={this.state.filter}
         />
       </View>
@@ -101,6 +115,12 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
     height: 35,
   },
+<<<<<<< HEAD
+=======
+  container: {
+    flex: 1,
+  },
+>>>>>>> v0.59.0
 });
 
 module.exports = RNTesterExampleFilter;

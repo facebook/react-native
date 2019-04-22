@@ -18,7 +18,7 @@ const ReactNative = require('ReactNative');
 const StyleSheet = require('StyleSheet');
 const View = require('View');
 const processColor = require('processColor');
-const requireNativeComponent = require('requireNativeComponent');
+const RCTPickerNativeComponent = require('RCTPickerNativeComponent');
 
 import type {SyntheticEvent} from 'CoreEventTypes';
 import type {ColorValue} from 'StyleSheetTypes';
@@ -28,15 +28,20 @@ import type {SemanticOrDynamicColorType} from 'normalizeColor'; // ]TODO(macOS I
 
 type PickerIOSChangeEvent = SyntheticEvent<
   $ReadOnly<{|
-    newValue: any,
+    newValue: number | string,
     newIndex: number,
   |}>,
 >;
 
 type RCTPickerIOSItemType = $ReadOnly<{|
   label: ?Label,
+<<<<<<< HEAD
   value: ?any,
   textColor: ?(number | SemanticOrDynamicColorType), // ]TODO(macOS ISS#2323203)
+=======
+  value: ?(number | string),
+  textColor: ?number,
+>>>>>>> v0.59.0
 |}>;
 
 type RCTPickerIOSType = Class<
@@ -53,10 +58,6 @@ type RCTPickerIOSType = Class<
   >,
 >;
 
-const RCTPickerIOS: RCTPickerIOSType = (requireNativeComponent(
-  'RCTPicker',
-): any);
-
 type Label = Stringish | number;
 
 type Props = $ReadOnly<{|
@@ -64,8 +65,8 @@ type Props = $ReadOnly<{|
   children: React.ChildrenArray<React.Element<typeof PickerIOSItem>>,
   itemStyle?: ?TextStyleProp,
   onChange?: ?(event: PickerIOSChangeEvent) => mixed,
-  onValueChange?: ?(newValue: any, newIndex: number) => mixed,
-  selectedValue: any,
+  onValueChange?: ?(itemValue: string | number, itemIndex: number) => mixed,
+  selectedValue: ?(number | string),
 |}>;
 
 type State = {|
@@ -75,7 +76,7 @@ type State = {|
 
 type ItemProps = $ReadOnly<{|
   label: ?Label,
-  value?: ?any,
+  value?: ?(number | string),
   color?: ?ColorValue,
 |}>;
 
@@ -112,7 +113,7 @@ class PickerIOS extends React.Component<Props, State> {
   render() {
     return (
       <View style={this.props.style}>
-        <RCTPickerIOS
+        <RCTPickerNativeComponent
           ref={picker => {
             this._picker = picker;
           }}

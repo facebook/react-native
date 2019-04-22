@@ -28,4 +28,5 @@ polyfillGlobal('WebSocket', () => require('WebSocket'));
 polyfillGlobal('Blob', () => require('Blob'));
 polyfillGlobal('File', () => require('File'));
 polyfillGlobal('FileReader', () => require('FileReader'));
-polyfillGlobal('URL', () => require('URL'));
+polyfillGlobal('URL', () => require('URL').URL); // flowlint-line untyped-import:off
+polyfillGlobal('URLSearchParams', () => require('URL').URLSearchParams); // flowlint-line untyped-import:off

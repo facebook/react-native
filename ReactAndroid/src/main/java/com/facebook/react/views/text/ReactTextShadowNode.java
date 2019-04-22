@@ -6,6 +6,7 @@
  */
 package com.facebook.react.views.text;
 
+import android.annotation.TargetApi;
 import android.os.Build;
 import android.text.BoringLayout;
 import android.text.Layout;
@@ -37,6 +38,7 @@ import javax.annotation.Nullable;
  * <p>The class measures text in {@code <Text>} view and feeds native {@link TextView} using {@code
  * Spannable} object constructed in superclass.
  */
+@TargetApi(Build.VERSION_CODES.M)
 public class ReactTextShadowNode extends ReactBaseTextShadowNode {
 
   // It's important to pass the ANTI_ALIAS_FLAG flag to the constructor rather than setting it
@@ -60,7 +62,7 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
 
           // TODO(5578671): Handle text direction (see View#getTextDirectionHeuristic)
           TextPaint textPaint = sTextPaintInstance;
-          textPaint.setTextSize(mFontSize != UNSET ? mFontSize : getDefaultFontSize());
+          textPaint.setTextSize(mTextAttributes.getEffectiveFontSize());
           Layout layout;
           Spanned text =
               Assertions.assertNotNull(
@@ -97,14 +99,18 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
                   new StaticLayout(
                       text, textPaint, hintWidth, alignment, 1.f, 0.f, mIncludeFontPadding);
             } else {
-              layout =
+              StaticLayout.Builder builder =
                   StaticLayout.Builder.obtain(text, 0, text.length(), textPaint, hintWidth)
-                      .setAlignment(alignment)
-                      .setLineSpacing(0.f, 1.f)
-                      .setIncludePad(mIncludeFontPadding)
-                      .setBreakStrategy(mTextBreakStrategy)
-                      .setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NORMAL)
-                      .build();
+                    .setAlignment(alignment)
+                    .setLineSpacing(0.f, 1.f)
+                    .setIncludePad(mIncludeFontPadding)
+                    .setBreakStrategy(mTextBreakStrategy)
+                    .setHyphenationFrequency(Layout.HYPHENATION_FREQUENCY_NORMAL);
+
+              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                builder.setJustificationMode(mJustificationMode);
+              }
+              layout = builder.build();
             }
 
           } else if (boring != null && (unconstrainedWidth || boring.width <= width)) {
@@ -215,7 +221,8 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
               getPadding(Spacing.END),
               getPadding(Spacing.BOTTOM),
               getTextAlign(),
-              mTextBreakStrategy);
+              mTextBreakStrategy,
+              mJustificationMode);
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
     }
   }

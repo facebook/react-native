@@ -29,7 +29,11 @@
 @property (nonatomic, copy) RCTDirectEventBlock onAccessibilityTap;
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
 @property (nonatomic, copy) RCTDirectEventBlock onMagicTap;
+<<<<<<< HEAD
 #endif // TODO(macOS ISS#2323203)
+=======
+@property (nonatomic, copy) RCTDirectEventBlock onAccessibilityEscape;
+>>>>>>> v0.59.0
 
 /**
  * Accessibility properties

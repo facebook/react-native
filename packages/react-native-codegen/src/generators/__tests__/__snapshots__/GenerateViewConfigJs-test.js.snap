@@ -1,0 +1,409 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GenerateViewConfigJs can generate fixture SINGLE_COMPONENT_WITH_BOOLEAN_PROP 1`] = `
+Map {
+  "ViewConfigs.js" => "
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
+
+const BooleanPropNativeComponentViewConfig = {
+  uiViewClassName: 'BooleanPropNativeComponent',
+
+  validAttributes: {
+    disabled: true,
+    style: ReactNativeStyleAttributes
+  }
+};
+
+ReactNativeViewConfigRegistry.register(
+  'BooleanPropNativeComponent',
+  () => BooleanPropNativeComponentViewConfig,
+);
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture SINGLE_COMPONENT_WITH_COLOR_PROP 1`] = `
+Map {
+  "ViewConfigs.js" => "
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
+
+const ColorPropNativeComponentViewConfig = {
+  uiViewClassName: 'ColorPropNativeComponent',
+
+  validAttributes: {
+    tintColor: require('react-native').__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.NativePrimitives.ColorPrimitive,
+    style: ReactNativeStyleAttributes
+  }
+};
+
+ReactNativeViewConfigRegistry.register(
+  'ColorPropNativeComponent',
+  () => ColorPropNativeComponentViewConfig,
+);
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture SINGLE_COMPONENT_WITH_ENUM_PROP 1`] = `
+Map {
+  "ViewConfigs.js" => "
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
+
+const EnumPropsNativeComponentViewConfig = {
+  uiViewClassName: 'EnumPropsNativeComponent',
+
+  validAttributes: {
+    alignment: true,
+    style: ReactNativeStyleAttributes
+  }
+};
+
+ReactNativeViewConfigRegistry.register(
+  'EnumPropsNativeComponent',
+  () => EnumPropsNativeComponentViewConfig,
+);
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture SINGLE_COMPONENT_WITH_EVENT_NESTED_OBJECT_PROPS 1`] = `
+Map {
+  "ViewConfigs.js" => "
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
+
+const EventsNestedObjectNativeComponentViewConfig = {
+  uiViewClassName: 'EventsNestedObjectNativeComponent',
+
+  bubblingEventTypes: {
+    onChange: {
+      phasedRegistrationNames: {
+        captured: 'onChangeCapture',
+        bubbled: 'onChange'
+      }
+    }
+  },
+
+  validAttributes: {
+    disabled: true,
+    style: ReactNativeStyleAttributes
+  }
+};
+
+ReactNativeViewConfigRegistry.register(
+  'EventsNestedObjectNativeComponent',
+  () => EventsNestedObjectNativeComponentViewConfig,
+);
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture SINGLE_COMPONENT_WITH_EVENT_PROPS 1`] = `
+Map {
+  "ViewConfigs.js" => "
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
+
+const EventsNativeComponentViewConfig = {
+  uiViewClassName: 'EventsNativeComponent',
+
+  bubblingEventTypes: {
+    onChange: {
+      phasedRegistrationNames: {
+        captured: 'onChangeCapture',
+        bubbled: 'onChange'
+      }
+    }
+  },
+
+  directEventTypes: {
+    onEventDirect: {
+      registrationName: 'onEventDirect'
+    }
+  },
+
+  validAttributes: {
+    disabled: true,
+    style: ReactNativeStyleAttributes
+  }
+};
+
+ReactNativeViewConfigRegistry.register(
+  'EventsNativeComponent',
+  () => EventsNativeComponentViewConfig,
+);
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture SINGLE_COMPONENT_WITH_FLOAT_PROPS 1`] = `
+Map {
+  "ViewConfigs.js" => "
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
+
+const FloatPropNativeComponentViewConfig = {
+  uiViewClassName: 'FloatPropNativeComponent',
+
+  validAttributes: {
+    blurRadius: true,
+    blurRadius2: true,
+    blurRadius3: true,
+    blurRadius4: true,
+    blurRadius5: true,
+    style: ReactNativeStyleAttributes
+  }
+};
+
+ReactNativeViewConfigRegistry.register(
+  'FloatPropNativeComponent',
+  () => FloatPropNativeComponentViewConfig,
+);
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture SINGLE_COMPONENT_WITH_INTEGER_PROPS 1`] = `
+Map {
+  "ViewConfigs.js" => "
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
+
+const IntegerPropNativeComponentViewConfig = {
+  uiViewClassName: 'IntegerPropNativeComponent',
+
+  validAttributes: {
+    progress1: true,
+    progress2: true,
+    progress3: true,
+    style: ReactNativeStyleAttributes
+  }
+};
+
+ReactNativeViewConfigRegistry.register(
+  'IntegerPropNativeComponent',
+  () => IntegerPropNativeComponentViewConfig,
+);
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture SINGLE_COMPONENT_WITH_STRING_PROP 1`] = `
+Map {
+  "ViewConfigs.js" => "
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
+
+const StringPropComponentViewConfig = {
+  uiViewClassName: 'StringPropComponent',
+
+  validAttributes: {
+    accessibilityHint: true,
+    style: ReactNativeStyleAttributes
+  }
+};
+
+ReactNativeViewConfigRegistry.register(
+  'StringPropComponent',
+  () => StringPropComponentViewConfig,
+);
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture TWO_COMPONENTS_DIFFERENT_FILES 1`] = `
+Map {
+  "ViewConfigs.js" => "
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
+
+const MultiFile1NativeComponentViewConfig = {
+  uiViewClassName: 'MultiFile1NativeComponent',
+
+  validAttributes: {
+    disabled: true,
+    style: ReactNativeStyleAttributes
+  }
+};
+
+ReactNativeViewConfigRegistry.register(
+  'MultiFile1NativeComponent',
+  () => MultiFile1NativeComponentViewConfig,
+);
+
+const MultiFile2NativeComponentViewConfig = {
+  uiViewClassName: 'MultiFile2NativeComponent',
+
+  validAttributes: {
+    disabled: true,
+    style: ReactNativeStyleAttributes
+  }
+};
+
+ReactNativeViewConfigRegistry.register(
+  'MultiFile2NativeComponent',
+  () => MultiFile2NativeComponentViewConfig,
+);
+",
+}
+`;
+
+exports[`GenerateViewConfigJs can generate fixture TWO_COMPONENTS_SAME_FILE 1`] = `
+Map {
+  "ViewConfigs.js" => "
+/**
+ * Copyright (c) 2015-present, Facebook, Inc.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ * @flow
+ */
+
+'use strict';
+
+const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
+const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
+
+const MultiComponent1NativeComponentViewConfig = {
+  uiViewClassName: 'MultiComponent1NativeComponent',
+
+  validAttributes: {
+    disabled: true,
+    style: ReactNativeStyleAttributes
+  }
+};
+
+ReactNativeViewConfigRegistry.register(
+  'MultiComponent1NativeComponent',
+  () => MultiComponent1NativeComponentViewConfig,
+);
+
+const MultiComponent2NativeComponentViewConfig = {
+  uiViewClassName: 'MultiComponent2NativeComponent',
+
+  validAttributes: {
+    disabled: true,
+    style: ReactNativeStyleAttributes
+  }
+};
+
+ReactNativeViewConfigRegistry.register(
+  'MultiComponent2NativeComponent',
+  () => MultiComponent2NativeComponentViewConfig,
+);
+",
+}
+`;

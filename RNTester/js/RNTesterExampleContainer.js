@@ -44,10 +44,15 @@ class RNTesterExampleContainer extends React.Component {
   }
 
   render(): React.Element<any> {
-    if (!this.props.module.examples) {
-      return <this.props.module />;
+    if (this.props.module.examples.length === 1) {
+      return (
+        <RNTesterPage title={this.props.title}>
+          {this.renderExample(this.props.module.examples[0])}
+        </RNTesterPage>
+      );
     }
 
+<<<<<<< HEAD
     if (
       this.props.displayFilter === false ||
       this.props.module.examples.length === 1
@@ -59,6 +64,8 @@ class RNTesterExampleContainer extends React.Component {
       );
     }
 
+=======
+>>>>>>> v0.59.0
     const filter = ({example, filterRegex}) => filterRegex.test(example.title);
 
     const sections = [
@@ -72,6 +79,10 @@ class RNTesterExampleContainer extends React.Component {
     return (
       <RNTesterPage title={this.props.title}>
         <RNTesterExampleFilter
+<<<<<<< HEAD
+=======
+          testID="example_search"
+>>>>>>> v0.59.0
           sections={sections}
           filter={filter}
           render={({filteredSections}) =>

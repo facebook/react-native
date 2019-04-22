@@ -3,6 +3,11 @@
 // This source code is licensed under the MIT license found in the
 // LICENSE file in the root directory of this source tree.
 
+<<<<<<< HEAD
 include ':ReactAndroid'
 include ':processor'
 include ':RNTester:android:app'
+=======
+include(":ReactAndroid")
+include(":RNTester:android:app")
+>>>>>>> v0.59.0

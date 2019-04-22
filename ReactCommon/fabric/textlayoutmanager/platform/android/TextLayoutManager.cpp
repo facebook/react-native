@@ -8,6 +8,7 @@
 #include "TextLayoutManager.h"
 
 #include <react/attributedstring/conversions.h>
+#include <react/core/conversions.h>
 #include <react/jni/ReadableNativeMap.h>
 
 using namespace facebook::jni;
@@ -22,7 +23,6 @@ void *TextLayoutManager::getNativeTextLayoutManager() const {
 }
 
 Size TextLayoutManager::measure(
-    Tag reactTag,
     AttributedString attributedString,
     ParagraphAttributes paragraphAttributes,
     LayoutConstraints layoutConstraints) const {
@@ -30,17 +30,16 @@ Size TextLayoutManager::measure(
       contextContainer_->getInstance<jni::global_ref<jobject>>(
           "FabricUIManager");
 
-  auto clazz =
-      jni::findClassStatic("com/facebook/fbreact/fabric/FabricUIManager");
-  static auto measure = clazz->getMethod<JArrayFloat::javaobject(
-      jint,
-      jstring,
-      ReadableNativeMap::javaobject,
-      ReadableNativeMap::javaobject,
-      jint,
-      jint,
-      jint,
-      jint)>("measure");
+  static auto measure =
+      jni::findClassStatic("com/facebook/react/fabric/FabricUIManager")
+          ->getMethod<jlong(
+              jstring,
+              ReadableNativeMap::javaobject,
+              ReadableNativeMap::javaobject,
+              jint,
+              jint,
+              jint,
+              jint)>("measure");
 
   auto minimumSize = layoutConstraints.minimumSize;
   auto maximumSize = layoutConstraints.maximumSize;
@@ -49,22 +48,15 @@ Size TextLayoutManager::measure(
   int maxWidth = (int)maximumSize.width;
   int maxHeight = (int)maximumSize.height;
   local_ref<JString> componentName = make_jstring("RCTText");
-  auto values = measure(
+  return yogaMeassureToSize(measure(
       fabricUIManager,
-      reactTag,
       componentName.get(),
       ReadableNativeMap::newObjectCxxArgs(toDynamic(attributedString)).get(),
       ReadableNativeMap::newObjectCxxArgs(toDynamic(paragraphAttributes)).get(),
       minWidth,
       maxWidth,
       minHeight,
-      maxHeight);
-
-  std::vector<float> indices;
-  indices.resize(values->size());
-  values->getRegion(0, values->size(), indices.data());
-
-  return {indices[0], indices[1]};
+      maxHeight));
 }
 
 } // namespace react

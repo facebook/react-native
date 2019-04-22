@@ -34,9 +34,6 @@ class MultiColumnExample extends React.PureComponent<
   $FlowFixMeProps,
   $FlowFixMeState,
 > {
-  static title = '<FlatList> - MultiColumn';
-  static description = 'Performant, scrollable grid of data.';
-
   state = {
     data: genItemData(1000),
     filterText: '',
@@ -165,4 +162,13 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = MultiColumnExample;
+exports.title = '<FlatList> - MultiColumn';
+exports.description = 'Performant, scrollable grid of data.';
+exports.examples = [
+  {
+    title: 'Simple flat list multi column',
+    render: function(): React.Element<typeof MultiColumnExample> {
+      return <MultiColumnExample />;
+    },
+  },
+];

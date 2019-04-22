@@ -481,8 +481,10 @@ BOOL RCTRunningInTestEnvironment(void)
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
     NSDictionary *environment = [[NSProcessInfo processInfo] environment];
-    isTestEnvironment = objc_lookUpClass("SenTestCase") || objc_lookUpClass("XCTest") ||
-      [environment[@"IS_TESTING"] boolValue];
+    isTestEnvironment = objc_lookUpClass("SenTestCase") ||
+    objc_lookUpClass("XCTest") ||
+    objc_lookUpClass("SnapshotTestAppDelegate") ||
+    [environment[@"IS_TESTING"] boolValue];
   });
   return isTestEnvironment;
 }
@@ -763,13 +765,15 @@ UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
 
   if (!image) {
     // Attempt to load from the file system
-    NSData *fileData;
-    if (imageURL.pathExtension.length == 0) {
-      fileData = [NSData dataWithContentsOfURL:[imageURL URLByAppendingPathExtension:@"png"]];
-    } else {
-      fileData = [NSData dataWithContentsOfURL:imageURL];
+    NSString *filePath = [NSString stringWithUTF8String:[imageURL fileSystemRepresentation]];
+    if (filePath.pathExtension.length == 0) {
+      filePath = [filePath stringByAppendingPathExtension:@"png"];
     }
+<<<<<<< HEAD
     image = UIImageWithData(fileData); // TODO(macOS ISS#2323203)
+=======
+    image = [UIImage imageWithContentsOfFile:filePath];
+>>>>>>> v0.59.0
   }
 
   if (!image && !bundle) {

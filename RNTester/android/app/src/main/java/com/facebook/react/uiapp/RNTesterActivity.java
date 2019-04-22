@@ -31,10 +31,14 @@ public class RNTesterActivity extends ReactActivity {
     private static final String LOG_TAG = "RNTesterActivity";
     private static final String PARAM_ROUTE = "route";
     private Bundle mInitialProps = null;
+<<<<<<< HEAD
     private final String EMPTY_STRING = "";
     private final @Nullable Activity mActivity;
+=======
+    private final @Nullable ReactActivity mActivity;
+>>>>>>> v0.59.0
 
-    public RNTesterActivityDelegate(Activity activity, String mainComponentName) {
+    public RNTesterActivityDelegate(ReactActivity activity, String mainComponentName) {
       super(activity, mainComponentName);
       this.mActivity = activity;
     }

@@ -58,6 +58,11 @@ RCT_EXPORT_MODULE()
 
 - (NSDictionary<NSString *, id> *)constantsToExport
 {
+  return [self getConstants];
+}
+
+- (NSDictionary<NSString *, id> *)getConstants
+{
   return @{@"settings": RCTJSONClean([_defaults dictionaryRepresentation])};
 }
 

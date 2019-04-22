@@ -19,18 +19,35 @@ import type {SwitchChangeEvent} from 'CoreEventTypes';
 import type {ViewProps} from 'ViewPropTypes';
 import type {SemanticOrDynamicColorType} from 'normalizeColor'; // TODO(macOS ISS#2323203)
 
+type SwitchProps = $ReadOnly<{|
+  ...ViewProps,
+  disabled?: ?boolean,
+  onChange?: ?(event: SwitchChangeEvent) => mixed,
+  thumbColor?: ?string,
+  trackColorForFalse?: ?string,
+  trackColorForTrue?: ?string,
+  value?: ?boolean,
+|}>;
+
 // @see ReactSwitchManager.java
 export type NativeAndroidProps = $ReadOnly<{|
-  ...ViewProps,
+  ...SwitchProps,
+
   enabled?: ?boolean,
   on?: ?boolean,
+<<<<<<< HEAD
   onChange?: ?(event: SwitchChangeEvent) => mixed,
   thumbTintColor?: ?(string | SemanticOrDynamicColorType),
   trackTintColor?: ?(string | SemanticOrDynamicColorType),
+=======
+  thumbTintColor?: ?string,
+  trackTintColor?: ?string,
+>>>>>>> v0.59.0
 |}>;
 
 // @see RCTSwitchManager.m
 export type NativeIOSProps = $ReadOnly<{|
+<<<<<<< HEAD
   ...ViewProps,
   disabled?: ?boolean,
   onChange?: ?(event: SwitchChangeEvent) => mixed,
@@ -38,6 +55,13 @@ export type NativeIOSProps = $ReadOnly<{|
   thumbTintColor?: ?(string | SemanticOrDynamicColorType),
   tintColor?: ?(string | SemanticOrDynamicColorType),
   value?: ?boolean,
+=======
+  ...SwitchProps,
+
+  onTintColor?: ?string,
+  thumbTintColor?: ?string,
+  tintColor?: ?string,
+>>>>>>> v0.59.0
 |}>;
 
 type SwitchNativeComponentType = Class<

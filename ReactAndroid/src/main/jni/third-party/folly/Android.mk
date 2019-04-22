@@ -26,6 +26,7 @@ FOLLY_FLAGS := \
   -DFOLLY_NO_CONFIG=1 \
   -DFOLLY_HAVE_CLOCK_GETTIME=1 \
   -DFOLLY_HAVE_MEMRCHR=1 \
+  -DFOLLY_USE_LIBCPP=1
 
 # If APP_PLATFORM in Application.mk targets android-23 above, please comment this line.
 # NDK uses GNU style stderror_r() after API 23.

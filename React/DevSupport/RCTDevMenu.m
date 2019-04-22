@@ -490,6 +490,7 @@ RCT_EXPORT_METHOD(setHotLoadingEnabled:(BOOL)enabled)
 - (void)addItem:(NSString *)title handler:(dispatch_block_t)handler {}
 - (void)addItem:(RCTDevMenu *)item {}
 - (BOOL)isActionSheetShown { return NO; }
++ (NSString *)moduleName { return @""; }
 
 @end
 

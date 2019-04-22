@@ -32,6 +32,7 @@ public class ReactBridge {
 
     sLoadStartTime = SystemClock.uptimeMillis();
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "ReactBridge.staticInit::load:reactnativejni");
+<<<<<<< HEAD
 
     if (sUseJSC) {
       SoLoader.loadLibrary("icu_common");
@@ -47,7 +48,11 @@ public class ReactBridge {
     SoLoader.loadLibrary("privatedata");
     SoLoader.loadLibrary("fb");
     SoLoader.loadLibrary("yoga");
+=======
+    ReactMarker.logMarker(ReactMarkerConstants.LOAD_REACT_NATIVE_SO_FILE_START);
+>>>>>>> v0.59.0
     SoLoader.loadLibrary("reactnativejni");
+    ReactMarker.logMarker(ReactMarkerConstants.LOAD_REACT_NATIVE_SO_FILE_END);
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
     sLoadEndTime = SystemClock.uptimeMillis();
   }

@@ -12,7 +12,7 @@
 const Platform = require('Platform');
 const Systrace = require('Systrace');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 const {Timing} = require('NativeModules');
 const BatchedBridge = require('BatchedBridge');
 

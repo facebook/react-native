@@ -7,6 +7,7 @@
 
 #import "RCTActivityIndicatorViewComponentView.h"
 
+#import <react/components/activityindicator/ActivityIndicatorViewShadowNode.h>
 #import <react/components/activityindicator/ActivityIndicatorViewProps.h>
 
 using namespace facebook::react;
@@ -22,6 +23,13 @@ static UIActivityIndicatorViewStyle convertActivityIndicatorViewStyle(const Acti
 
 @implementation RCTActivityIndicatorViewComponentView {
   UIActivityIndicatorView *_activityIndicatorView;
+}
+
+#pragma mark - RCTComponentViewProtocol
+
++ (ComponentHandle)componentHandle
+{
+  return ActivityIndicatorViewShadowNode::Handle();
 }
 
 - (instancetype)initWithFrame:(CGRect)frame

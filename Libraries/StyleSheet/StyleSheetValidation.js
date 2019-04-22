@@ -14,7 +14,7 @@ const DeprecatedImageStylePropTypes = require('DeprecatedImageStylePropTypes');
 const TextStylePropTypes = require('TextStylePropTypes');
 const DeprecatedViewStylePropTypes = require('DeprecatedViewStylePropTypes');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 // Hardcoded because this is a legit case but we don't want to load it from
 // a private API. We might likely want to unify style sheet creation with how it

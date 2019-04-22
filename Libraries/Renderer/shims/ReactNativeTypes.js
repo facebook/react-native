@@ -129,9 +129,16 @@ type SecretInternalsFabricType = {
          * Provide minimal Flow typing for the high-level RN API and call it a day.
          */
 export type ReactNativeType = {
+<<<<<<< HEAD
             NativeComponent: typeof ReactNativeComponent,
           findNodeHandle(componentOrHandle: any): ?number,
           render(
+=======
+  NativeComponent: typeof ReactNativeComponent,
+  findNodeHandle(componentOrHandle: any): ?number,
+  setNativeProps(handle: any, nativeProps: Object): void,
+  render(
+>>>>>>> v0.59.0
     element: React$Element<any>,
           containerTag: any,
           callback: ?Function,
@@ -144,9 +151,16 @@ export type ReactNativeType = {
       };
       
 export type ReactFabricType = {
+<<<<<<< HEAD
               NativeComponent: typeof ReactNativeComponent,
             findNodeHandle(componentOrHandle: any): ?number,
             render(
+=======
+  NativeComponent: typeof ReactNativeComponent,
+  findNodeHandle(componentOrHandle: any): ?number,
+  setNativeProps(handle: any, nativeProps: Object): void,
+  render(
+>>>>>>> v0.59.0
     element: React$Element<any>,
             containerTag: any,
             callback: ?Function,

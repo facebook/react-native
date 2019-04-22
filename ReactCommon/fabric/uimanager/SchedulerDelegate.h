@@ -9,7 +9,7 @@
 
 #include <react/core/ReactPrimitives.h>
 #include <react/core/ShadowNode.h>
-#include <react/uimanager/ShadowViewMutation.h>
+#include <react/mounting/ShadowViewMutation.h>
 
 namespace facebook {
 namespace react {
@@ -26,7 +26,9 @@ class SchedulerDelegate {
    */
   virtual void schedulerDidFinishTransaction(
       Tag rootTag,
-      const ShadowViewMutationList &mutations) = 0;
+      const ShadowViewMutationList &mutations,
+      const long commitStartTime,
+      const long layoutTime) = 0;
 
   /*
    * Called right after a new ShadowNode was created.

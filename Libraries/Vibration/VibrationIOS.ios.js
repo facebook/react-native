@@ -11,7 +11,7 @@
 
 const RCTVibration = require('NativeModules').Vibration;
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 const warning = require('fbjs/lib/warning');
 
 /**

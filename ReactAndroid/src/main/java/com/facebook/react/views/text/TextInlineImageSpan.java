@@ -18,7 +18,7 @@
  /**
   * Base class for inline image spans.
   */
- public abstract class TextInlineImageSpan extends ReplacementSpan {
+ public abstract class TextInlineImageSpan extends ReplacementSpan implements ReactSpan {
 
    /**
     * For TextInlineImageSpan we need to update the Span to know that the window is attached and

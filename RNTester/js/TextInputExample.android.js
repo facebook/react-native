@@ -315,8 +315,6 @@ class SelectionExample extends React.Component<
           onChangeText={value => this.setState({value})}
           onSelectionChange={this.onSelectionChange.bind(this)}
           ref={textInput => (this._textInput = textInput)}
-          /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
-           * found when making Flow check .android.js files. */
           selection={this.state.selection}
           style={this.props.style}
           value={this.state.value}

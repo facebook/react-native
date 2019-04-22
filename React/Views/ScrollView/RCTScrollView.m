@@ -356,6 +356,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       contentOffset.y = -(scrollViewSize.height - subviewSize.height) / 2.0;
     }
   }
+<<<<<<< HEAD
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
   if (!NSEqualPoints(contentOffset, self.documentVisibleRect.origin))
   {
@@ -366,6 +367,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
     RCTSanitizeNaNValue(contentOffset.x, @"scrollView.contentOffset.x"),
     RCTSanitizeNaNValue(contentOffset.y, @"scrollView.contentOffset.y"));
 #endif // TODO(macOS ISS#2323203)
+=======
+
+  super.contentOffset = CGPointMake(
+    RCTSanitizeNaNValue(contentOffset.x, @"scrollView.contentOffset.x"),
+    RCTSanitizeNaNValue(contentOffset.y, @"scrollView.contentOffset.y"));
+>>>>>>> v0.59.0
 }
 
 - (void)setFrame:(CGRect)frame

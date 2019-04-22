@@ -9,13 +9,14 @@
  */
 'use strict';
 
+const Platform = require('Platform');
 const deepDiffer = require('deepDiffer');
 const React = require('React');
 const View = require('View');
 const VirtualizedList = require('VirtualizedList');
 const StyleSheet = require('StyleSheet');
 
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 
 import type {ViewStyleProp} from 'StyleSheet';
 import type {
@@ -219,6 +220,12 @@ export type Props<ItemT> = RequiredProps<ItemT> &
 const defaultProps = {
   ...VirtualizedList.defaultProps,
   numColumns: 1,
+  /**
+   * Enabling this prop on Android greatly improves scrolling performance with no known issues.
+   * The alternative is that scrolling on Android is unusably bad. Enabling it on iOS has a few
+   * known issues.
+   */
+  removeClippedSubviews: Platform.OS === 'android',
 };
 export type DefaultProps = typeof defaultProps;
 

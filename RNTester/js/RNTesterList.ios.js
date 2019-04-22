@@ -10,11 +10,7 @@
 
 'use strict';
 
-export type RNTesterExample = {
-  key: string,
-  module: Object,
-  supportsTVOS: boolean,
-};
+import type {RNTesterExample} from 'RNTesterTypes';
 
 const ComponentExamples: Array<RNTesterExample> = [
   {
@@ -169,16 +165,6 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: false,
   },
   {
-    key: 'TabBarIOSExample',
-    module: require('./TabBarIOSExample'),
-    supportsTVOS: true,
-  },
-  {
-    key: 'TabBarIOSBarStyleExample',
-    module: require('./TabBarIOSBarStyleExample'),
-    supportsTVOS: false,
-  },
-  {
     key: 'TextExample',
     module: require('./TextExample.ios'),
     supportsTVOS: true,
@@ -219,11 +205,6 @@ const APIExamples: Array<RNTesterExample> = [
   {
     key: 'ActionSheetIOSExample',
     module: require('./ActionSheetIOSExample'),
-    supportsTVOS: true,
-  },
-  {
-    key: 'AlertExample',
-    module: require('./AlertExample').AlertExample,
     supportsTVOS: true,
   },
   {

@@ -8,6 +8,7 @@
  * @format
  */
 
+<<<<<<< HEAD
 /* global element, by, expect */
 
 describe('Picker', () => {
@@ -25,6 +26,25 @@ describe('Picker', () => {
   });
 
   it('should be selectable by ID', async () => {
+=======
+/* global device, element, by, expect */
+const {
+  openComponentWithLabel,
+  openExampleWithTitle,
+} = require('../e2e-helpers');
+
+describe('Picker', () => {
+  beforeAll(async () => {
+    await device.reloadReactNative();
+    await openComponentWithLabel(
+      '<Picker>',
+      '<Picker> Provides multiple options to choose from, using either a dropdown menu or a dialog.',
+    );
+  });
+
+  it('should be selectable by ID', async () => {
+    await openExampleWithTitle('Basic picker');
+>>>>>>> v0.59.0
     await expect(element(by.id('basic-picker'))).toBeVisible();
   });
 });

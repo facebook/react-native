@@ -25,7 +25,9 @@ const BUTTONS = ['Option 0', 'Option 1', 'Option 2', 'Delete', 'Cancel'];
 const DESTRUCTIVE_INDEX = 3;
 const CANCEL_INDEX = 4;
 
-class ActionSheetExample extends React.Component<{}, $FlowFixMeState> {
+type Props = $ReadOnly<{||}>;
+type State = {|clicked: string|};
+class ActionSheetExample extends React.Component<Props, State> {
   state = {
     clicked: 'none',
   };
@@ -55,7 +57,10 @@ class ActionSheetExample extends React.Component<{}, $FlowFixMeState> {
   };
 }
 
-class ActionSheetTintExample extends React.Component<{}, $FlowFixMeState> {
+class ActionSheetTintExample extends React.Component<
+  $FlowFixMeProps,
+  $FlowFixMeState,
+> {
   state = {
     clicked: 'none',
   };
@@ -78,6 +83,52 @@ class ActionSheetTintExample extends React.Component<{}, $FlowFixMeState> {
         cancelButtonIndex: CANCEL_INDEX,
         destructiveButtonIndex: DESTRUCTIVE_INDEX,
         tintColor: 'green',
+      },
+      buttonIndex => {
+        this.setState({clicked: BUTTONS[buttonIndex]});
+      },
+    );
+  };
+}
+
+class ActionSheetAnchorExample extends React.Component<
+  $FlowFixMeProps,
+  $FlowFixMeState,
+> {
+  state = {
+    clicked: 'none',
+  };
+
+  anchorRef = React.createRef();
+
+  render() {
+    return (
+      <View>
+        <View style={style.anchorRow}>
+          <Text style={style.button}>
+            Click there to show the ActionSheet ->
+          </Text>
+          <Text
+            onPress={this.showActionSheet}
+            style={style.button}
+            ref={this.anchorRef}>
+            HERE
+          </Text>
+        </View>
+        <Text>Clicked button: {this.state.clicked}</Text>
+      </View>
+    );
+  }
+
+  showActionSheet = () => {
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: BUTTONS,
+        cancelButtonIndex: CANCEL_INDEX,
+        destructiveButtonIndex: DESTRUCTIVE_INDEX,
+        anchor: this.anchorRef.current
+          ? ReactNative.findNodeHandle(this.anchorRef.current)
+          : undefined,
       },
       buttonIndex => {
         this.setState({clicked: BUTTONS[buttonIndex]});
@@ -127,7 +178,10 @@ class ShareActionSheetExample extends React.Component<
   };
 }
 
-class ShareScreenshotExample extends React.Component<{}, $FlowFixMeState> {
+class ShareScreenshotExample extends React.Component<
+  $FlowFixMeProps,
+  $FlowFixMeState,
+> {
   state = {
     text: '',
   };
@@ -169,10 +223,73 @@ class ShareScreenshotExample extends React.Component<{}, $FlowFixMeState> {
   };
 }
 
+class ShareScreenshotAnchorExample extends React.Component<
+  $FlowFixMeProps,
+  $FlowFixMeState,
+> {
+  state = {
+    text: '',
+  };
+
+  anchorRef = React.createRef();
+
+  render() {
+    return (
+      <View>
+        <View style={style.anchorRow}>
+          <Text style={style.button}>
+            Click to show the Share ActionSheet ->
+          </Text>
+          <Text
+            onPress={this.showShareActionSheet}
+            style={style.button}
+            ref={this.anchorRef}>
+            HERE
+          </Text>
+        </View>
+        <Text>{this.state.text}</Text>
+      </View>
+    );
+  }
+
+  showShareActionSheet = () => {
+    // Take the snapshot (returns a temp file uri)
+    takeSnapshot('window')
+      .then(uri => {
+        // Share image data
+        ActionSheetIOS.showShareActionSheetWithOptions(
+          {
+            url: uri,
+            excludedActivityTypes: ['com.apple.UIKit.activity.PostToTwitter'],
+            anchor: this.anchorRef.current
+              ? ReactNative.findNodeHandle(this.anchorRef.current)
+              : undefined,
+          },
+          error => Alert.alert('Error', error),
+          (completed, method) => {
+            let text;
+            if (completed) {
+              text = `Shared via ${method}`;
+            } else {
+              text = "You didn't share";
+            }
+            this.setState({text});
+          },
+        );
+      })
+      .catch(error => Alert.alert('Error', error));
+  };
+}
+
 const style = StyleSheet.create({
   button: {
     marginBottom: 10,
     fontWeight: '500',
+  },
+  anchorRow: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 });
 
@@ -192,6 +309,12 @@ exports.examples = [
     },
   },
   {
+    title: 'Show Action Sheet with anchor',
+    render(): React.Element<any> {
+      return <ActionSheetAnchorExample />;
+    },
+  },
+  {
     title: 'Show Share Action Sheet',
     render(): React.Element<any> {
       return <ShareActionSheetExample url="https://code.facebook.com" />;
@@ -207,6 +330,12 @@ exports.examples = [
     title: 'Share Screenshot',
     render(): React.Element<any> {
       return <ShareScreenshotExample />;
+    },
+  },
+  {
+    title: 'Share from Anchor',
+    render(): React.Element<any> {
+      return <ShareScreenshotAnchorExample />;
     },
   },
 ];

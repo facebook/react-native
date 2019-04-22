@@ -13,12 +13,14 @@
 namespace facebook {
 namespace react {
 
-MainQueueExecutor &MainQueueExecutor::instance() {
+MainQueueExecutor &MainQueueExecutor::instance()
+{
   static auto instance = folly::Indestructible<MainQueueExecutor>{};
   return *instance;
 }
 
-void MainQueueExecutor::add(folly::Func function) {
+void MainQueueExecutor::add(folly::Func function)
+{
   __block folly::Func blockFunction = std::move(function);
   dispatch_async(dispatch_get_main_queue(), ^{
     blockFunction();

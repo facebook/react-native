@@ -110,6 +110,12 @@ class TouchEventEmitter : public EventEmitter {
   void onTouchMove(const TouchEvent &event) const;
   void onTouchEnd(const TouchEvent &event) const;
   void onTouchCancel(const TouchEvent &event) const;
+
+ private:
+  void dispatchTouchEvent(
+      const std::string &type,
+      const TouchEvent &event,
+      const EventPriority &priority) const;
 };
 
 } // namespace react

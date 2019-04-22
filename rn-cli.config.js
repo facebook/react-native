@@ -16,6 +16,7 @@ const fs = require('fs');
  * This cli config is needed for development purposes, e.g. for running
  * integration tests during local development or on CI services.
  */
+<<<<<<< HEAD
 
 // In sdx repo we need to use metro-resources to handle all the rush symlinking
 if (
@@ -54,3 +55,22 @@ if (
     },
   };
 }
+=======
+module.exports = {
+  extraNodeModules: {
+    'react-native': __dirname,
+  },
+  serializer: {
+    getModulesRunBeforeMainModule: () => [
+      require.resolve('./Libraries/Core/InitializeCore'),
+    ],
+    getPolyfills,
+  },
+  resolver: {
+    hasteImplModulePath: require.resolve('./jest/hasteImpl'),
+  },
+  transformer: {
+    assetRegistryPath: require.resolve('./Libraries/Image/AssetRegistry'),
+  },
+};
+>>>>>>> v0.59.0

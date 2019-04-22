@@ -55,13 +55,13 @@ public class Systrace {
   }
 
   public static void beginSection(long tag, final String sectionName) {
-    if (Build.VERSION.SDK_INT >= 18) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
       Trace.beginSection(sectionName);
     }
   }
 
   public static void endSection(long tag) {
-    if (Build.VERSION.SDK_INT >= 18) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
       Trace.endSection();
     }
   }

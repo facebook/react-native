@@ -332,6 +332,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 }
 #endif // TODO(macOS ISS#2323203)
 
+- (BOOL)accessibilityPerformEscape
+{
+  if (_onAccessibilityEscape) {
+    _onAccessibilityEscape(nil);
+    return YES;
+  } else {
+    return NO;
+  }
+}
+
 - (NSString *)description
 {
   NSString *superDescription = super.description;

@@ -12,7 +12,24 @@
 #include <react/textlayoutmanager/RCTFontUtils.h>
 #include <react/textlayoutmanager/RCTTextPrimitivesConversions.h>
 
-@implementation RCTSharedShadowNodeWrapper
+using namespace facebook::react;
+
+@implementation RCTWeakEventEmitterWrapper {
+  std::weak_ptr<const EventEmitter> _weakEventEmitter;
+}
+
+- (void)setEventEmitter:(SharedEventEmitter)eventEmitter {
+  _weakEventEmitter = eventEmitter;
+}
+
+- (SharedEventEmitter)eventEmitter {
+  return _weakEventEmitter.lock();
+}
+
+- (void)dealloc {
+  _weakEventEmitter.reset();
+}
+
 @end
 
 inline static UIFont *RCTEffectiveFontFromTextAttributes(
@@ -212,12 +229,9 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(
   for (auto fragment : attributedString.getFragments()) {
     NSAttributedString *nsAttributedStringFragment;
 
-    auto layoutableShadowNode =
-        std::dynamic_pointer_cast<const LayoutableShadowNode>(
-            fragment.shadowNode);
+    auto layoutMetrics = fragment.shadowView.layoutMetrics;
 
-    if (layoutableShadowNode) {
-      auto layoutMetrics = layoutableShadowNode->getLayoutMetrics();
+    if (layoutMetrics != EmptyLayoutMetrics) {
       CGRect bounds = {.origin = {.x = layoutMetrics.frame.origin.x,
                                   .y = layoutMetrics.frame.origin.y},
                        .size = {.width = layoutMetrics.frame.size.width,
@@ -242,13 +256,13 @@ NSAttributedString *RCTNSAttributedStringFromAttributedString(
         [[NSMutableAttributedString alloc]
             initWithAttributedString:nsAttributedStringFragment];
 
-    if (fragment.parentShadowNode) {
-      RCTSharedShadowNodeWrapper *parentShadowNode =
-          [RCTSharedShadowNodeWrapper new];
-      parentShadowNode.node = fragment.parentShadowNode;
+    if (fragment.parentShadowView.componentHandle) {
+      RCTWeakEventEmitterWrapper *eventEmitterWrapper =
+          [RCTWeakEventEmitterWrapper new];
+      eventEmitterWrapper.eventEmitter = fragment.parentShadowView.eventEmitter;
 
       NSDictionary<NSAttributedStringKey, id> *additionalTextAttributes =
-          @{RCTAttributedStringParentShadowNode : parentShadowNode};
+          @{RCTAttributedStringEventEmitterKey : eventEmitterWrapper};
 
       [nsMutableAttributedStringFragment
           addAttributes:additionalTextAttributes

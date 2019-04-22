@@ -20,6 +20,7 @@ namespace facebook {
 namespace react {
 
 JSBigFileString::JSBigFileString(int fd, size_t size, off_t offset /*= 0*/)
+<<<<<<< HEAD
   : m_fd{ -1 }
   , m_data{ nullptr }
 {
@@ -28,6 +29,14 @@ JSBigFileString::JSBigFileString(int fd, size_t size, off_t offset /*= 0*/)
     "Could not duplicate file descriptor");
 
   // Offsets given to mmap must be page aligned. We abstract away that
+=======
+  : m_fd { -1 }
+  , m_data { nullptr } {
+  folly::checkUnixError(m_fd = dup(fd),
+    "Could not duplicate file descriptor");
+
+  // Offsets given to mmap must be page aligend. We abstract away that
+>>>>>>> v0.59.0
   // restriction by sending a page aligned offset to mmap, and keeping track
   // of the offset within the page that we must alter the mmap pointer by to
   // get the final desired offset.
@@ -52,9 +61,17 @@ JSBigFileString::~JSBigFileString() {
   close(m_fd);
 }
 
+<<<<<<< HEAD
 const char* JSBigFileString::c_str() const {
   if (!m_data) {
     m_data = (const char *)mmap(0, m_size, PROT_READ, MAP_SHARED, m_fd, m_mapOff);
+=======
+
+const char *JSBigFileString::c_str() const {
+  if (!m_data) {
+    m_data =
+      (const char *) mmap(0, m_size, PROT_READ, MAP_SHARED, m_fd, m_mapOff);
+>>>>>>> v0.59.0
     CHECK(m_data != MAP_FAILED)
       << " fd: " << m_fd
       << " size: " << m_size

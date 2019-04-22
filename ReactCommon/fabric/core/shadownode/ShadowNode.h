@@ -102,6 +102,13 @@ class ShadowNode : public virtual Sealable,
   void setLocalData(const SharedLocalData &localData);
 
   /*
+   * Performs all side effects associated with mounting/unmounting in one place.
+   * This is not `virtual` on purpose, do not override this.
+   * `EventEmitter::DispatchMutex()` must be acquired before calling.
+   */
+  void setMounted(bool mounted) const;
+
+  /*
    * Forms a list of all ancestors of the node relative to the given ancestor.
    * The list starts from the parent node and ends with the given ancestor node.
    * Returns `true` if successful, `false` otherwise.

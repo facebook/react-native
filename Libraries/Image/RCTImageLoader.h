@@ -31,8 +31,7 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
                    size:(CGSize)size
                   scale:(CGFloat)scale
              resizeMode:(RCTResizeMode)resizeMode
-           responseDate:(NSString *)responseDate
-           cacheControl:(NSString *)cacheControl;
+               response:(NSURLResponse *)response;
 
 @end
 
@@ -51,6 +50,11 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 @interface UIImage (React)
 
 @property (nonatomic, copy) CAKeyframeAnimation *reactKeyframeAnimation;
+
+/**
+ * Memory bytes of the image with the default calculation of static image or GIF. Custom calculations of decoded bytes can be assigned manually.
+ */
+@property (nonatomic, assign) NSInteger reactDecodedImageBytes;
 
 @end
 
@@ -140,7 +144,7 @@ typedef dispatch_block_t RCTImageLoaderCancellationBlock;
 
 /**
  * Allows developers to set their own caching implementation for
- * decoded images as long as it conforms to the RCTImageCacheDelegate
+ * decoded images as long as it conforms to the RCTImageCache
  * protocol. This method should be called in bridgeDidInitializeModule.
  */
 - (void)setImageCache:(id<RCTImageCache>)cache;

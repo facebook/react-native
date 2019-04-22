@@ -1,0 +1,145 @@
+load("@fbsource//tools/build_defs:default_platform_defs.bzl", "ANDROID", "APPLE")
+load("@fbsource//tools/build_defs:fb_native_wrapper.bzl", "fb_native")
+load("@fbsource//tools/build_defs:fb_xplat_cxx_binary.bzl", "fb_xplat_cxx_binary")
+load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "rn_xplat_cxx_library")
+load("@fbsource//xplat/js/react-native-github/packages/react-native-codegen:DEFS.bzl", "rn_codegen_test")
+
+fb_native.sh_binary(
+    name = "copy_fixture_schema",
+    main = "buck_tests/copy_fixture.sh",
+    resources = [
+        "buck_tests/copy-fixture.js",
+        "buck_tests/copy_fixture.sh",
+        "src/generators/__test_fixtures__/fixtures.js",
+        "xplat//js:setup_env",
+    ],
+)
+
+fb_native.sh_binary(
+    name = "write_to_json",
+    main = "buck_tests/combine_js_to_schema.sh",
+    resources = [
+        "buck_tests/combine-js-to-schema.js",
+        "buck_tests/combine_js_to_schema.sh",
+        "xplat//js:setup_env",
+    ],
+    visibility = ["PUBLIC"],
+)
+
+fb_native.sh_binary(
+    name = "rn_codegen",
+    main = "buck_tests/generate_tests.sh",
+    resources = glob(
+        [
+            "buck_tests/**/*.js",
+            "src/**/*.js",
+        ],
+    ) + [
+        "buck_tests/generate-tests.js",
+        "package.json",
+        "xplat//js:setup_env",
+        "yarn.lock",
+    ],
+    visibility = ["PUBLIC"],
+)
+
+rn_codegen_test(
+    fixture_name = "SINGLE_COMPONENT_WITH_BOOLEAN_PROP",
+)
+
+rn_codegen_test(
+    fixture_name = "SINGLE_COMPONENT_WITH_STRING_PROP",
+)
+
+rn_codegen_test(
+    fixture_name = "SINGLE_COMPONENT_WITH_INTEGER_PROPS",
+)
+
+rn_codegen_test(
+    fixture_name = "SINGLE_COMPONENT_WITH_FLOAT_PROPS",
+)
+
+rn_codegen_test(
+    fixture_name = "SINGLE_COMPONENT_WITH_COLOR_PROP",
+)
+
+rn_codegen_test(
+    fixture_name = "SINGLE_COMPONENT_WITH_ENUM_PROP",
+)
+
+rn_codegen_test(
+    fixture_name = "SINGLE_COMPONENT_WITH_EVENT_PROPS",
+)
+
+rn_codegen_test(
+    fixture_name = "SINGLE_COMPONENT_WITH_EVENT_NESTED_OBJECT_PROPS",
+)
+
+rn_codegen_test(
+    fixture_name = "TWO_COMPONENTS_SAME_FILE",
+)
+
+rn_codegen_test(
+    fixture_name = "TWO_COMPONENTS_DIFFERENT_FILES",
+)
+
+fb_xplat_cxx_binary(
+    name = "rn_codegen_binary",
+    srcs = ["buck_tests/emptyFile.cpp"],
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-std=c++14",
+        "-Wall",
+    ],
+    platforms = (ANDROID, APPLE),
+    preprocessor_flags = [
+        "-DLOG_TAG=\"ReactNative\"",
+        "-DWITH_FBSYSTRACE=1",
+    ],
+    visibility = ["PUBLIC"],
+    deps = [
+        ":generated_components-SINGLE_COMPONENT_WITH_BOOLEAN_PROP",
+        ":generated_components-SINGLE_COMPONENT_WITH_COLOR_PROP",
+        ":generated_components-SINGLE_COMPONENT_WITH_ENUM_PROP",
+        ":generated_components-SINGLE_COMPONENT_WITH_EVENT_NESTED_OBJECT_PROPS",
+        ":generated_components-SINGLE_COMPONENT_WITH_EVENT_PROPS",
+        ":generated_components-SINGLE_COMPONENT_WITH_FLOAT_PROPS",
+        ":generated_components-SINGLE_COMPONENT_WITH_INTEGER_PROPS",
+        ":generated_components-SINGLE_COMPONENT_WITH_STRING_PROP",
+        ":generated_components-TWO_COMPONENTS_DIFFERENT_FILES",
+        ":generated_components-TWO_COMPONENTS_SAME_FILE",
+    ],
+)
+
+rn_xplat_cxx_library(
+    name = "rn_codegen_library",
+    srcs = ["buck_tests/emptyFile.cpp"],
+    headers = [],
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-std=c++14",
+        "-Wall",
+    ],
+    platforms = (ANDROID, APPLE),
+    preprocessor_flags = [
+        "-DLOG_TAG=\"ReactNative\"",
+        "-DWITH_FBSYSTRACE=1",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        ":generated_components-SINGLE_COMPONENT_WITH_BOOLEAN_PROP",
+        ":generated_components-SINGLE_COMPONENT_WITH_COLOR_PROP",
+        ":generated_components-SINGLE_COMPONENT_WITH_ENUM_PROP",
+        ":generated_components-SINGLE_COMPONENT_WITH_EVENT_NESTED_OBJECT_PROPS",
+        ":generated_components-SINGLE_COMPONENT_WITH_EVENT_PROPS",
+        ":generated_components-SINGLE_COMPONENT_WITH_FLOAT_PROPS",
+        ":generated_components-SINGLE_COMPONENT_WITH_INTEGER_PROPS",
+        ":generated_components-SINGLE_COMPONENT_WITH_STRING_PROP",
+        ":generated_components-TWO_COMPONENTS_DIFFERENT_FILES",
+        ":generated_components-TWO_COMPONENTS_SAME_FILE",
+    ],
+)

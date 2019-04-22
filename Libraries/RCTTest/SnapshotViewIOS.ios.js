@@ -15,8 +15,6 @@ const StyleSheet = require('StyleSheet');
 const UIManager = require('UIManager');
 const View = require('View');
 
-const requireNativeComponent = require('requireNativeComponent');
-
 const {TestModule} = require('NativeModules');
 
 import type {SyntheticEvent} from 'CoreEventTypes';
@@ -26,7 +24,7 @@ import type {ViewProps} from 'ViewPropTypes';
 // if you have linked against RCTTest like in tests, otherwise we will have
 // a warning printed out
 const RCTSnapshot = UIManager.getViewManagerConfig('RCTSnapshot')
-  ? requireNativeComponent('RCTSnapshot')
+  ? require('RCTSnapshotNativeComponent')
   : View;
 
 type SnapshotReadyEvent = SyntheticEvent<

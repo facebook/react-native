@@ -15,7 +15,7 @@ const EventEmitter = require('EventEmitter');
 const TaskQueue = require('TaskQueue');
 
 const infoLog = require('infoLog');
-const invariant = require('fbjs/lib/invariant');
+const invariant = require('invariant');
 const keyMirror = require('fbjs/lib/keyMirror');
 
 type Handle = number;

@@ -27,7 +27,8 @@ class ImageComponentDescriptor final
       : ConcreteComponentDescriptor(eventDispatcher),
         imageManager_(
             contextContainer
-                ? contextContainer->getInstance<SharedImageManager>()
+                ? contextContainer->getInstance<SharedImageManager>(
+                      "ImageManager")
                 : nullptr) {}
 
   void adopt(UnsharedShadowNode shadowNode) const override {

@@ -17,6 +17,7 @@ public class ReactModuleInfo {
   private final boolean mHasConstants;
   private final boolean mIsCxxModule;
   private String mClassName;
+  private final boolean mIsTurboModule;
 
   public ReactModuleInfo(
     String name,
@@ -24,13 +25,15 @@ public class ReactModuleInfo {
     boolean canOverrideExistingModule,
     boolean needsEagerInit,
     boolean hasConstants,
-    boolean isCxxModule) {
+    boolean isCxxModule,
+    boolean isTurboModule) {
     mName = name;
     mClassName = className;
     mCanOverrideExistingModule = canOverrideExistingModule;
     mNeedsEagerInit = needsEagerInit;
     mHasConstants = hasConstants;
     mIsCxxModule = isCxxModule;
+    mIsTurboModule = isTurboModule;
   }
 
   public String name() {
@@ -52,5 +55,7 @@ public class ReactModuleInfo {
   }
 
   public boolean isCxxModule() {return mIsCxxModule; }
+
+  public boolean isTurboModule() {return mIsTurboModule; }
 
 }

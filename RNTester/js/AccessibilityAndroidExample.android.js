@@ -31,9 +31,6 @@ const importantForAccessibilityValues = [
 ];
 
 class AccessibilityAndroidExample extends React.Component {
-  static title = 'Accessibility';
-  static description = 'Examples of using Accessibility API.';
-
   state = {
     count: 0,
     backgroundImportantForAcc: 0,
@@ -112,6 +109,31 @@ class AccessibilityAndroidExample extends React.Component {
               nontouchable accessible view with label.
             </Text>
           </View>
+        </RNTesterBlock>
+
+        <RNTesterBlock title="Touchable with accessibilityRole = header">
+          <View
+            accessible={true}
+            accessibilityLabel="I'm a header, so I read it instead of embedded text."
+            accessibilityRole="header">
+            <Text style={{color: 'green'}}>This is</Text>
+            <Text style={{color: 'blue'}}>
+              nontouchable accessible view with label.
+            </Text>
+          </View>
+        </RNTesterBlock>
+
+        <RNTesterBlock title="Touchable with accessibilityRole = link">
+          <TouchableWithoutFeedback
+            onPress={() =>
+              ToastAndroid.show('Toasts work by default', ToastAndroid.SHORT)
+            }
+            accessibilityRole="link">
+            <View style={styles.embedded}>
+              <Text>Click me</Text>
+              <Text>Or not</Text>
+            </View>
+          </TouchableWithoutFeedback>
         </RNTesterBlock>
 
         <RNTesterBlock title="Touchable with accessibilityRole = button">
@@ -306,4 +328,13 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = AccessibilityAndroidExample;
+exports.title = 'Accessibility';
+exports.description = 'Examples of using Accessibility API.';
+exports.examples = [
+  {
+    title: 'Accessibility elements',
+    render(): React.Element<typeof AccessibilityAndroidExample> {
+      return <AccessibilityAndroidExample />;
+    },
+  },
+];

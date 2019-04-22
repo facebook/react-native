@@ -11,7 +11,6 @@
 const Platform = require('Platform');
 const React = require('React');
 const View = require('View');
-const requireNativeComponent = require('requireNativeComponent');
 
 import type {ViewProps} from 'ViewPropTypes';
 
@@ -39,10 +38,15 @@ if (Platform.OS === 'android') {
     }
   };
 } else {
-  const RCTSafeAreaView = requireNativeComponent('RCTSafeAreaView');
+  const RCTSafeAreaViewNativeComponent = require('RCTSafeAreaViewNativeComponent');
   exported = class SafeAreaView extends React.Component<Props> {
     render(): React.Node {
-      return <RCTSafeAreaView emulateUnlessSupported={true} {...this.props} />;
+      return (
+        <RCTSafeAreaViewNativeComponent
+          emulateUnlessSupported={true}
+          {...this.props}
+        />
+      );
     }
   };
 }
