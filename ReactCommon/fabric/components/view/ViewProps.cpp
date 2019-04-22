@@ -7,6 +7,8 @@
 
 #include "ViewProps.h"
 
+#include <algorithm>
+
 #include <react/components/view/conversions.h>
 #include <react/components/view/propsConversions.h>
 #include <react/core/propsConversions.h>
@@ -16,9 +18,9 @@
 namespace facebook {
 namespace react {
 
-ViewProps::ViewProps(const YGStyle &yogaStyle) : YogaStylableProps(yogaStyle) {}
+ViewProps::ViewProps(YGStyle const &yogaStyle) : YogaStylableProps(yogaStyle) {}
 
-ViewProps::ViewProps(const ViewProps &sourceProps, const RawProps &rawProps)
+ViewProps::ViewProps(ViewProps const &sourceProps, RawProps const &rawProps)
     : Props(sourceProps, rawProps),
       YogaStylableProps(sourceProps, rawProps),
       AccessibilityProps(sourceProps, rawProps),
@@ -77,7 +79,47 @@ ViewProps::ViewProps(const ViewProps &sourceProps, const RawProps &rawProps)
 
 #pragma mark - Convenience Methods
 
-BorderMetrics ViewProps::resolveBorderMetrics(bool isRTL) const {
+static BorderRadii ensureNoOverlap(BorderRadii const &radii, Size const &size) {
+  // "Corner curves must not overlap: When the sum of any two adjacent border
+  // radii exceeds the size of the border box, UAs must proportionally reduce
+  // the used values of all border radii until none of them overlap."
+  // Source: https://www.w3.org/TR/css-backgrounds-3/#corner-overlap
+
+  auto insets = EdgeInsets{
+      /* .left = */ radii.topLeft + radii.bottomLeft,
+      /* .top = */ radii.topLeft + radii.topRight,
+      /* .right = */ radii.topRight + radii.bottomRight,
+      /* .bottom = */ radii.bottomLeft + radii.bottomRight,
+  };
+
+  auto insetsScale = EdgeInsets{
+      /* .left = */
+      insets.left > 0 ? std::min((Float)1.0, size.height / insets.left) : 0,
+      /* .top = */
+      insets.top > 0 ? std::min((Float)1.0, size.width / insets.top) : 0,
+      /* .right = */
+      insets.right > 0 ? std::min((Float)1.0, size.height / insets.right) : 0,
+      /* .bottom = */
+      insets.bottom > 0 ? std::min((Float)1.0, size.width / insets.bottom) : 0,
+  };
+
+  return BorderRadii{
+      /* topLeft = */
+      radii.topLeft * std::min(insetsScale.top, insetsScale.left),
+      /* topRight = */
+      radii.topRight * std::min(insetsScale.top, insetsScale.right),
+      /* bottomLeft = */
+      radii.bottomLeft * std::min(insetsScale.bottom, insetsScale.left),
+      /* bottomRight = */
+      radii.bottomRight * std::min(insetsScale.bottom, insetsScale.right),
+  };
+}
+
+BorderMetrics ViewProps::resolveBorderMetrics(
+    LayoutMetrics const &layoutMetrics) const {
+  auto isRTL =
+      bool{layoutMetrics.layoutDirection == LayoutDirection::RightToLeft};
+
   auto borderWidths = CascadedBorderWidths{
       /* .left = */ optionalFloatFromYogaValue(yogaStyle.border[YGEdgeLeft]),
       /* .top = */ optionalFloatFromYogaValue(yogaStyle.border[YGEdgeTop]),
@@ -96,7 +138,8 @@ BorderMetrics ViewProps::resolveBorderMetrics(bool isRTL) const {
   return {
       /* .borderColors = */ borderColors.resolve(isRTL, {}),
       /* .borderWidths = */ borderWidths.resolve(isRTL, 0),
-      /* .borderRadii = */ borderRadii.resolve(isRTL, 0),
+      /* .borderRadii = */
+      ensureNoOverlap(borderRadii.resolve(isRTL, 0), layoutMetrics.frame.size),
       /* .borderStyles = */ borderStyles.resolve(isRTL, BorderStyle::Solid),
   };
 }

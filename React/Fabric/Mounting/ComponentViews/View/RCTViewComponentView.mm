@@ -27,7 +27,7 @@ using namespace facebook::react;
 - (instancetype)initWithFrame:(CGRect)frame
 {
   if (self = [super initWithFrame:frame]) {
-    static const auto defaultProps = std::make_shared<const ViewProps>();
+    static auto const defaultProps = std::make_shared<ViewProps const>();
     _props = defaultProps;
   }
   return self;
@@ -101,16 +101,16 @@ using namespace facebook::react;
   RCTAssert(
       propsRawPtr &&
           ([self class] == [RCTViewComponentView class] ||
-           typeid(*propsRawPtr).hash_code() != typeid(const ViewProps).hash_code()),
+           typeid(*propsRawPtr).hash_code() != typeid(ViewProps const).hash_code()),
       @"`RCTViewComponentView` subclasses (and `%@` particularly) must setup `_props`"
        " instance variable with a default value in the constructor.",
       NSStringFromClass([self class]));
 #endif
 
-  const auto &oldViewProps = *std::static_pointer_cast<const ViewProps>(oldProps ?: _props);
-  const auto &newViewProps = *std::static_pointer_cast<const ViewProps>(props);
+  auto const &oldViewProps = *std::static_pointer_cast<ViewProps const>(oldProps ?: _props);
+  auto const &newViewProps = *std::static_pointer_cast<ViewProps const>(props);
 
-  _props = std::static_pointer_cast<const ViewProps>(props);
+  _props = std::static_pointer_cast<ViewProps const>(props);
 
   BOOL needsInvalidateLayer = NO;
 
@@ -251,8 +251,8 @@ using namespace facebook::react;
 
 - (void)updateEventEmitter:(SharedEventEmitter)eventEmitter
 {
-  assert(std::dynamic_pointer_cast<const ViewEventEmitter>(eventEmitter));
-  _eventEmitter = std::static_pointer_cast<const ViewEventEmitter>(eventEmitter);
+  assert(std::dynamic_pointer_cast<ViewEventEmitter const>(eventEmitter));
+  _eventEmitter = std::static_pointer_cast<ViewEventEmitter const>(eventEmitter);
 }
 
 - (void)updateLayoutMetrics:(LayoutMetrics)layoutMetrics oldLayoutMetrics:(LayoutMetrics)oldLayoutMetrics
@@ -374,15 +374,14 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
     return;
   }
 
-  const auto borderMetrics =
-      _props->resolveBorderMetrics(_layoutMetrics.layoutDirection == LayoutDirection::RightToLeft);
+  auto const borderMetrics = _props->resolveBorderMetrics(_layoutMetrics);
 
   // Stage 1. Shadow Path
-  BOOL layerHasShadow = layer.shadowOpacity > 0 && CGColorGetAlpha(layer.shadowColor) > 0;
+  BOOL const layerHasShadow = layer.shadowOpacity > 0 && CGColorGetAlpha(layer.shadowColor) > 0;
   if (layerHasShadow) {
     if (CGColorGetAlpha(_backgroundColor.CGColor) > 0.999) {
       // If view has a solid background color, calculate shadow path from border.
-      const RCTCornerInsets cornerInsets =
+      RCTCornerInsets const cornerInsets =
           RCTGetCornerInsets(RCTCornerRadiiFromBorderRadii(borderMetrics.borderRadii), UIEdgeInsetsZero);
       CGPathRef shadowPath = RCTPathCreateWithRoundedRect(self.bounds, cornerInsets, nil);
       layer.shadowPath = shadowPath;
@@ -396,7 +395,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
   }
 
   // Stage 2. Border Rendering
-  const bool useCoreAnimationBorderRendering =
+  bool const useCoreAnimationBorderRendering =
       borderMetrics.borderColors.isUniform() && borderMetrics.borderWidths.isUniform() &&
       borderMetrics.borderStyles.isUniform() && borderMetrics.borderRadii.isUniform() &&
       borderMetrics.borderStyles.left == BorderStyle::Solid &&
@@ -458,7 +457,7 @@ static RCTBorderStyle RCTBorderStyleFromBorderStyle(BorderStyle borderStyle)
       _borderLayer.contents = (id)image.CGImage;
       _borderLayer.contentsScale = image.scale;
 
-      const BOOL isResizable = !UIEdgeInsetsEqualToEdgeInsets(image.capInsets, UIEdgeInsetsZero);
+      BOOL isResizable = !UIEdgeInsetsEqualToEdgeInsets(image.capInsets, UIEdgeInsetsZero);
       if (isResizable) {
         _borderLayer.contentsCenter = contentsCenter;
       } else {
@@ -530,14 +529,14 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
 
 - (NSArray<UIAccessibilityCustomAction *> *)accessibilityCustomActions
 {
-  const auto &accessibilityActions = _props->accessibilityActions;
+  auto const &accessibilityActions = _props->accessibilityActions;
 
   if (accessibilityActions.size() == 0) {
     return nil;
   }
 
   NSMutableArray<UIAccessibilityCustomAction *> *customActions = [NSMutableArray array];
-  for (const auto &accessibilityAction : accessibilityActions) {
+  for (auto const &accessibilityAction : accessibilityActions) {
     [customActions
         addObject:[[UIAccessibilityCustomAction alloc] initWithName:RCTNSStringFromString(accessibilityAction)
                                                              target:self
