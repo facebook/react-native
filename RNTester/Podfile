@@ -1,29 +1,21 @@
 platform :ios, '9.0'
 
+require_relative '../scripts/autolink-ios'
+
 target 'RNTester' do
   # Uncomment for Swift
   # use_frameworks!
 
   project 'RNTesterPods.xcodeproj'
+  use_react_native!(path: "..")
 
-  pod 'React', :path => '../'
-  pod 'React-ART', :path => '../Libraries/ART'
-  pod 'React-Core', :path => '../React'
-  pod 'React-DevSupport', :path => '../React'
-  pod 'React-fishhook', :path => '../Libraries/fishhook'
-  pod 'React-RCTActionSheet', :path => '../Libraries/ActionSheetIOS'
-  pod 'React-RCTAnimation', :path => '../Libraries/NativeAnimation'
-  pod 'React-RCTBlob', :path => '../Libraries/Blob'
+  # Additional Pods which aren't included in the default Podfile
   pod 'React-RCTCameraRoll', :path => '../Libraries/CameraRoll'
-  pod 'React-RCTImage', :path => '../Libraries/Image'
-  pod 'React-RCTLinking', :path => '../Libraries/LinkingIOS'
-  pod 'React-RCTNetwork', :path => '../Libraries/Network'
+  pod 'React-ART', :path => '../Libraries/ART'
   pod 'React-RCTPushNotification', :path => '../Libraries/PushNotificationIOS'
-  pod 'React-RCTSettings', :path => '../Libraries/Settings'
-  pod 'React-RCTText', :path => '../Libraries/Text'
-  pod 'React-RCTVibration', :path => '../Libraries/Vibration'
-  pod 'React-RCTWebSocket', :path => '../Libraries/WebSocket'
 
+  # Additional Pods which are classed as unstable
+  #
   # Fabric Pods, uncomment these to enable in RNTester
   # pod 'React-Fabric', :path => '../ReactCommon'
   # pod 'React-graphics', :path => '../ReactCommon/fabric/graphics'
@@ -31,18 +23,6 @@ target 'RNTester' do
   # pod 'React-RCTFabric', :path => '../React'
   # pod 'Folly/Fabric', :podspec => '../third-party-podspecs/Folly.podspec'
 
-  pod 'React-cxxreact', :path => '../ReactCommon/cxxreact'
-  pod 'React-jsi', :path => '../ReactCommon/jsi'
-  pod 'React-jsiexecutor', :path => '../ReactCommon/jsiexecutor'
-  pod 'React-jsinspector', :path => '../ReactCommon/jsinspector'
-  pod 'yoga', :path => '../ReactCommon/yoga'
-
   pod 'React-turbomodule-core', :path => '../ReactCommon/turbomodule/core'
   pod 'React-turbomodule-samples', :path => '../ReactCommon/turbomodule/samples'
-
-  # Third party deps podspec link
-  pod 'DoubleConversion', :podspec => '../third-party-podspecs/DoubleConversion.podspec'
-  pod 'glog', :podspec => '../third-party-podspecs/glog.podspec'
-  pod 'Folly', :podspec => '../third-party-podspecs/Folly.podspec'
-
 end
