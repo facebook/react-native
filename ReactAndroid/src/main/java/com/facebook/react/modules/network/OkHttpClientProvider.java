@@ -58,7 +58,7 @@ public class OkHttpClientProvider {
 
   public static OkHttpClient createClient(Context context) {
     if (sFactory != null) {
-      return sFactory.createNewNetworkModuleClient();
+      return sFactory.createNewNetworkModuleClient(context);
     }
     return createClientBuilder(context).build();
   }
