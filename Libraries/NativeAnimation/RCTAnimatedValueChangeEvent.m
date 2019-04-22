@@ -19,7 +19,7 @@
 - (instancetype)initWithNodeTag:(NSNumber *)nodeTag
                           value:(CGFloat)value
 {
-  if ((self = [super init])) {
+  if (self = [super init]) {
     _eventName = @"onAnimatedValueUpdate";
     _viewTag = nodeTag;
     _coalescingKey = 0;
