@@ -32,10 +32,6 @@ public:
       size_t count);
 
   virtual facebook::jsi::Value get(facebook::jsi::Runtime& runtime, const facebook::jsi::PropNameID& propName) override;
-
-protected:
-  // TODO (axe) Specify class name as kJavaDescriptor instead of a class variable
-  std::string jClassName_;
 private:
   jni::global_ref<JTurboModule> instance_;
   jclass findClass(JNIEnv *env) const;
