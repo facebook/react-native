@@ -38,7 +38,7 @@ import com.facebook.react.views.text.TextAttributes;
 import com.facebook.react.views.text.TextInlineImageSpan;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.util.ArrayList;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * A wrapper around the EditText that lets us better control what happens when an EditText gets

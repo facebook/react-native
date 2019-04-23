@@ -4,7 +4,6 @@ rn_android_library(
     name = "common",
     srcs = glob(["*.java"]),
     provided_deps = [
-        react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_dep("third-party/android/androidx:annotation"),
         react_native_dep("third-party/android/androidx:core"),
         react_native_dep("third-party/android/androidx:fragment"),

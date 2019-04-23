@@ -10,7 +10,7 @@ package com.facebook.react.uimanager;
 import android.os.Bundle;
 import android.view.ViewGroup;
 import com.facebook.react.uimanager.common.UIManagerType;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 
 /**

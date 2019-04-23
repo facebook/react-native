@@ -19,7 +19,7 @@ import com.facebook.react.devsupport.DoubleTapReloadRecognizer;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.PermissionListener;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Delegate class for {@link ReactActivity} and {@link ReactFragmentActivity}. You can subclass this

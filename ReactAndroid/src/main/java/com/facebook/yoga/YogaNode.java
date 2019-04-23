@@ -6,7 +6,7 @@
  */
 package com.facebook.yoga;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public abstract class YogaNode {
   public static YogaNode create() {

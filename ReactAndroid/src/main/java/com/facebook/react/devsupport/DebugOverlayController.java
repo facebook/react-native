@@ -24,7 +24,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Helper class for controlling overlay view with FPS and JS FPS info

@@ -8,7 +8,7 @@
 package com.facebook.react.devsupport;
 
 import com.facebook.react.devsupport.interfaces.ErrorCustomizer;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import java.io.File;
 

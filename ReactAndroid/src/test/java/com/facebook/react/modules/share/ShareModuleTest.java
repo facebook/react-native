@@ -33,8 +33,8 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.internal.ShadowExtractor;
 import org.robolectric.shadows.ShadowApplication;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -191,7 +191,7 @@ public class ShareModuleTest {
     }
 
     @Override
-    public void reject(String code, @Nonnull WritableMap userInfo) {
+    public void reject(String code, @NonNull WritableMap userInfo) {
       reject(code, /*Message*/null, /*Throwable*/null, userInfo);
     }
 
@@ -201,7 +201,7 @@ public class ShareModuleTest {
     }
 
     @Override
-    public void reject(String code, String message, @Nonnull WritableMap userInfo) {
+    public void reject(String code, String message, @NonNull WritableMap userInfo) {
       reject(code, message, /*Throwable*/null, userInfo);
     }
 

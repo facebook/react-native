@@ -9,7 +9,7 @@ package com.facebook.react.bridge;
 
 import com.facebook.proguard.annotations.DoNotStrip;
 
-import javax.annotation.Nonnull;
+import androidx.annotation.NonNull;
 
 
 /**
@@ -30,7 +30,7 @@ public interface NativeModule {
    * @return the name of this module. This will be the name used to {@code require()} this module
    * from javascript.
    */
-  @Nonnull String getName();
+  @NonNull String getName();
 
   /**
    * This is called at the end of {@link CatalystApplicationFragment#createCatalystInstance()}

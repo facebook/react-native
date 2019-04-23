@@ -18,7 +18,7 @@ import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.systrace.SystraceMessage;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 import javax.inject.Provider;
 

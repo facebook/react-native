@@ -24,7 +24,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.module.annotations.ReactModule;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Intent module. Launch other activities or open URLs.

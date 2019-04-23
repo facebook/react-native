@@ -35,7 +35,7 @@ import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
 /**

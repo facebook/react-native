@@ -61,7 +61,7 @@ import com.facebook.yoga.YogaConstants;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Wrapper class around Fresco's GenericDraweeView, enabling persisting props across multiple view

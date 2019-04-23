@@ -8,7 +8,7 @@
 package com.facebook.react.testing;
 
 import com.facebook.react.modules.core.ReactChoreographer;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;

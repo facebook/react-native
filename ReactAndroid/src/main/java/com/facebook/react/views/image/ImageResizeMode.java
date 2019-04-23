@@ -7,7 +7,7 @@
 
 package com.facebook.react.views.image;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import android.graphics.Shader;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;

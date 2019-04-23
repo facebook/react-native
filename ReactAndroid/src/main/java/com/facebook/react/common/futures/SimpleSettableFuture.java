@@ -7,7 +7,7 @@
 
 package com.facebook.react.common.futures;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;

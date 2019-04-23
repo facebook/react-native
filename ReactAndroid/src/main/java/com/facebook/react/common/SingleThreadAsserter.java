@@ -7,7 +7,7 @@
 
 package com.facebook.react.common;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.facebook.infer.annotation.Assertions;
 

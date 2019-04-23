@@ -24,7 +24,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.yoga.YogaConstants;
 import java.util.Map;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 @ReactModule(name = ReactImageManager.REACT_CLASS)
 public class ReactImageManager extends SimpleViewManager<ReactImageView> {

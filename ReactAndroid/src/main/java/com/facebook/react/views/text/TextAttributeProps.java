@@ -17,7 +17,7 @@ import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactStylesDiffMap;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.yoga.YogaDirection;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public class TextAttributeProps {
 

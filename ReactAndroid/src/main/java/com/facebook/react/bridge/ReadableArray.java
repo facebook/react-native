@@ -9,8 +9,8 @@ package com.facebook.react.bridge;
 
 import java.util.ArrayList;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Interface for an array that allows typed access to its members. Used to pass parameters from JS
@@ -26,8 +26,8 @@ public interface ReadableArray {
   @Nullable String getString(int index);
   @Nullable ReadableArray getArray(int index);
   @Nullable ReadableMap getMap(int index);
-  @Nonnull Dynamic getDynamic(int index);
-  @Nonnull ReadableType getType(int index);
-  @Nonnull ArrayList<Object> toArrayList();
+  @NonNull Dynamic getDynamic(int index);
+  @NonNull ReadableType getType(int index);
+  @NonNull ArrayList<Object> toArrayList();
 
 }

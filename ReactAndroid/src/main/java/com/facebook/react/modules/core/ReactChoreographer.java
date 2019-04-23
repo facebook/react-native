@@ -9,7 +9,7 @@ package com.facebook.react.modules.core;
 
 import com.facebook.react.bridge.UiThreadUtil;
 import java.util.ArrayDeque;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;

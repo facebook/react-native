@@ -9,7 +9,7 @@ package com.facebook.react.animated;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Animated node that corresponds to {@code AnimatedInterpolation} from AnimatedImplementation.js.

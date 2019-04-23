@@ -22,7 +22,7 @@ import com.facebook.react.module.annotations.ReactModule;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import static android.content.Context.UI_MODE_SERVICE;
 

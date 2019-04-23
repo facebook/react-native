@@ -5,7 +5,7 @@
 
 package com.facebook.react.uimanager.layoutanimation;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import android.view.View;
 import android.view.animation.Animation;

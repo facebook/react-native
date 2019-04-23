@@ -29,7 +29,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.PixelUtil;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Custom implementation of the {@link Toolbar} widget that adds support for remote images in logo

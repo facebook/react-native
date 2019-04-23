@@ -20,7 +20,7 @@ import android.text.format.DateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 @SuppressWarnings("ValidFragment")
 public class TimePickerDialogFragment extends DialogFragment {

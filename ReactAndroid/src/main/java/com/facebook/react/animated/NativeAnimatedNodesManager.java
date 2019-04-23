@@ -32,7 +32,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Queue;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * This is the main class that coordinates how native animated JS implementation drives UI changes.

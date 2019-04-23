@@ -7,7 +7,7 @@
 
 package com.facebook.react.modules.dialog;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;

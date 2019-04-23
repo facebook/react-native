@@ -10,7 +10,7 @@ package com.facebook.react.views.text.frescosupport;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import com.facebook.react.uimanager.PixelUtil;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import android.content.res.Resources;
 import android.graphics.Canvas;

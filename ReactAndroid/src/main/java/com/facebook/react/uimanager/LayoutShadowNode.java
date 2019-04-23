@@ -20,7 +20,7 @@ import com.facebook.yoga.YogaOverflow;
 import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaUnit;
 import com.facebook.yoga.YogaWrap;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Supply setters for base view layout properties such as width, height, flex properties, borders,

@@ -24,7 +24,7 @@ import com.facebook.react.common.ReactConstants;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Controller to display loading messages on top of the screen. All methods are thread safe.

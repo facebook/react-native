@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Headers;

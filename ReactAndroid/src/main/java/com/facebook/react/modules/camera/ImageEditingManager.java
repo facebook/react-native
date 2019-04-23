@@ -7,7 +7,7 @@
 
 package com.facebook.react.modules.camera;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.io.FileOutputStream;

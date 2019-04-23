@@ -27,7 +27,7 @@ import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * {@link NativeModule} that allows JS to show a native time picker dialog and get called back when

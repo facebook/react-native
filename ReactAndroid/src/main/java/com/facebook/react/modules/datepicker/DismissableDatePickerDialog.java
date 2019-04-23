@@ -8,7 +8,7 @@
 package com.facebook.react.modules.datepicker;
 
 import android.app.DatePickerDialog;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import android.app.DatePickerDialog;
 import android.content.Context;

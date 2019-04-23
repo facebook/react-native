@@ -48,7 +48,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Native module to allow JS to create and update native Views.

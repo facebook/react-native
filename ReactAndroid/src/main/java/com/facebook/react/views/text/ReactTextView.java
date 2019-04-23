@@ -34,7 +34,7 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewDefaults;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.views.view.ReactViewBackgroundManager;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;

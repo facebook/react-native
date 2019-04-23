@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import java.util.List;
 import java.util.WeakHashMap;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Class providing children management API for view managers of classes extending ViewGroup.

@@ -21,7 +21,7 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /** View manager for {@link ReactCheckBox} components. */
 public class ReactCheckBoxManager extends SimpleViewManager<ReactCheckBox> {

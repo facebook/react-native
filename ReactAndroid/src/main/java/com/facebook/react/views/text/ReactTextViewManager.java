@@ -20,7 +20,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.yoga.YogaMeasureMode;
 import java.util.Map;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Concrete class for {@link ReactTextAnchorViewManager} which represents view managers of anchor

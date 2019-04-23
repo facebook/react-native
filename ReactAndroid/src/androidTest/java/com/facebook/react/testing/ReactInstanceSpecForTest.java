@@ -15,7 +15,7 @@ import com.facebook.react.uimanager.ViewManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * A spec that allows a test to add additional NativeModules/JS modules to the ReactInstance. This

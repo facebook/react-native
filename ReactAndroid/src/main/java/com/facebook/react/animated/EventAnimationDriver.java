@@ -14,7 +14,7 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 import java.util.List;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Handles updating a {@link ValueAnimatedNode} when an event gets dispatched.

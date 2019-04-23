@@ -15,7 +15,7 @@ import com.facebook.react.devsupport.interfaces.StackFrame;
 import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

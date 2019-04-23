@@ -22,7 +22,7 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import java.util.Map;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * ViewManager for {@link ReactSwipeRefreshLayout} which allows the user to "pull to refresh" a

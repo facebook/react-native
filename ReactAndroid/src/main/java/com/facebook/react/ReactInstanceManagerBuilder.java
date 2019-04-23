@@ -26,7 +26,7 @@ import com.facebook.react.uimanager.UIImplementationProvider;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Builder class for {@link ReactInstanceManager}

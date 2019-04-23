@@ -7,7 +7,7 @@
 
 package com.facebook.react.testing;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;

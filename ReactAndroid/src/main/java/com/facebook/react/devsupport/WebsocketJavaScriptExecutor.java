@@ -14,7 +14,7 @@ import com.facebook.react.bridge.JavaJSExecutor;
 import java.util.HashMap;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Executes JS remotely via the react nodejs server as a proxy to a browser on the host machine.

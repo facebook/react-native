@@ -29,7 +29,7 @@ import com.facebook.react.views.drawer.events.DrawerSlideEvent;
 import com.facebook.react.views.drawer.events.DrawerStateChangedEvent;
 import java.lang.reflect.Method;
 import java.util.Map;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * View Manager for {@link ReactDrawerLayout} components.

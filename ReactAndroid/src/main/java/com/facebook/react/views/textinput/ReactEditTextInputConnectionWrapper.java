@@ -14,7 +14,7 @@ import android.view.inputmethod.InputConnectionWrapper;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.events.EventDispatcher;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * A class to implement the TextInput 'onKeyPress' API on android for soft keyboards.

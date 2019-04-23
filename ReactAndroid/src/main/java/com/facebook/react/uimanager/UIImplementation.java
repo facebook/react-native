@@ -31,7 +31,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * A class that is used to receive React commands from JS and translate them into a

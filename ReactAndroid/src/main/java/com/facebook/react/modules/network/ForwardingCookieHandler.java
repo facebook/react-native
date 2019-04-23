@@ -5,7 +5,7 @@
 
 package com.facebook.react.modules.network;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import java.io.IOException;
 import java.net.CookieHandler;

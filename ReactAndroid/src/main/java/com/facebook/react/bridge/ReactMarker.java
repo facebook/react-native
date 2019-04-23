@@ -8,7 +8,7 @@ package com.facebook.react.bridge;
 import java.util.List;
 import java.util.ArrayList;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.facebook.proguard.annotations.DoNotStrip;
 

@@ -7,7 +7,7 @@
 
 package com.facebook.react.modules.image;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import android.net.Uri;
 import android.util.SparseArray;

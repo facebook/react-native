@@ -22,7 +22,6 @@ rn_android_library(
         react_native_dep("third-party/android/androidx:legacy-support-core-utils"),
         react_native_dep("third-party/java/buck-android-support:buck-android-support"),
         react_native_dep("third-party/java/infer-annotations:infer-annotations"),
-        react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_dep("third-party/java/junit:junit"),
         react_native_dep("third-party/java/mockito:mockito"),
         react_native_dep("third-party/java/testing-support-lib:runner"),

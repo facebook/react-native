@@ -15,7 +15,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.module.annotations.ReactModule;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 @ReactModule(name = JSDevSupport.MODULE_NAME)
 public class JSDevSupport extends ReactContextBaseJavaModule {

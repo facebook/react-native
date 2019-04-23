@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.widget.ScrollView;
 
 import com.facebook.react.bridge.JavaScriptModule;

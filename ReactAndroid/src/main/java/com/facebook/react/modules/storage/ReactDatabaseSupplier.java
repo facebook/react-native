@@ -7,7 +7,7 @@
 
 package com.facebook.react.modules.storage;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

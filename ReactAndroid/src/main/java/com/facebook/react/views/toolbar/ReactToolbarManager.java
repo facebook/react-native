@@ -26,7 +26,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.toolbar.events.ToolbarClickEvent;
 import java.util.Map;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Manages instances of ReactToolbar.

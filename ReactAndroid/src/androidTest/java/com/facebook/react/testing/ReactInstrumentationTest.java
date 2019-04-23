@@ -14,7 +14,7 @@ import com.facebook.react.bridge.JavaScriptExecutorFactory;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.testing.idledetection.IdleWaiter;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Base class for instrumentation tests that runs React based application.

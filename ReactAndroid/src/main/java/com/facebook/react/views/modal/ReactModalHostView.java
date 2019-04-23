@@ -33,7 +33,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.common.ContextUtils;
 import com.facebook.react.views.view.ReactViewGroup;
 import java.util.ArrayList;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * ReactModalHostView is a view that sits in the view hierarchy representing a Modal view.

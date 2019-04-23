@@ -5,7 +5,7 @@
 
 package com.facebook.react.uimanager.layoutanimation;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
 import android.os.Handler;

@@ -36,7 +36,7 @@ import com.facebook.react.views.view.ReactViewBackgroundManager;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Locale;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Similar to {@link ReactScrollView} but only supports horizontal scrolling.
