@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import androidx.annotation.Nullable;
-import javax.annotation.concurrent.GuardedBy;
+import androidx.annotation.GuardedBy;
 
 /**
  * This class acts as a buffer for command executed on {@link NativeViewHierarchyManager}.
