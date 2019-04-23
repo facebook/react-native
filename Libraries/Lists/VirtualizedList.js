@@ -1426,7 +1426,11 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // starving the renderer from actually laying out the objects and computing _averageCellLength.
     // If this is triggered in an `componentDidUpdate` followed by a hiPri cellToRenderUpdate
     // We shouldn't do another hipri cellToRenderUpdate
-    if (hiPri && this._averageCellLength && !this._hiPriInProgress) {
+    if (
+      hiPri &&
+      (this._averageCellLength || this.props.getItemLayout) &&
+      !this._hiPriInProgress
+    ) {
       this._hiPriInProgress = true;
       // Don't worry about interactions when scrolling quickly; focus on filling content as fast
       // as possible.
