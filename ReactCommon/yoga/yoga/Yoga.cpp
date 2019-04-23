@@ -473,7 +473,7 @@ static void YGNodeSetChildrenInternal(
 }
 
 void YGNodeSetChildren(
-    YGNodeRef const owner,
+    const YGNodeRef owner,
     const YGNodeRef c[],
     const uint32_t count) {
   const YGVector children = {c, c + count};
