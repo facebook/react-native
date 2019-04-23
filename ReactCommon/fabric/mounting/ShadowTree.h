@@ -5,7 +5,7 @@
 
 #pragma once
 
-#ifdef DEBUG
+#ifndef NDEBUG
 #define RN_SHADOW_TREE_INTROSPECTION
 #endif
 
