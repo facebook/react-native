@@ -107,7 +107,7 @@ inline LayoutMetrics layoutMetricsFromYogaNode(YGNode &yogaNode) {
       layoutMetrics.borderWidth.bottom +
           floatFromYogaFloat(YGNodeLayoutGetPadding(&yogaNode, YGEdgeBottom))};
 
-  layoutMetrics.displayType = yogaNode.getStyle().display == YGDisplayNone
+  layoutMetrics.displayType = yogaNode.getStyle().display() == YGDisplayNone
       ? DisplayType::None
       : DisplayType::Flex;
 
@@ -304,7 +304,7 @@ inline void fromRawValue(const RawValue &value, YGDisplay &result) {
 
 inline void fromRawValue(
     const RawValue &value,
-    decltype(YGStyle{}.margin[0]) /* type is subject to change */ &result) {
+    decltype(YGStyle{}.margin()[0]) /* type is subject to change */ &result) {
   if (value.hasType<Float>()) {
     result = yogaStyleValueFromFloat((Float)value);
     return;
