@@ -136,11 +136,16 @@ task prepareGlog(dependsOn: dependenciesPath ? [] : [downloadGlog], type: Copy) 
 // Create Android.mk library module based on jsc from npm
 task prepareJSC {
     doLast {
-        def jscPackageRoot = fileTree("$projectDir/../node_modules/jsc-android/dist")
-        def jscAAR = jscPackageRoot.matching({ it.include "**/android-jsc/**/*.aar" }).singleFile
+        def jscPackageRoot = file("$projectDir/../node_modules/jsc-android/dist")
+        if (!jscPackageRoot.exists()) {
+            // For an app to build from RN source, the jsc-android is located at /path/to/app/node_modules
+            // and $projectDir may located at /path/to/app/node_modules/react-native/ReactAndroid
+            jscPackageRoot = file("$projectDir/../../jsc-android/dist")
+        }
+        def jscAAR = fileTree(jscPackageRoot).matching({ it.include "**/android-jsc/**/*.aar" }).singleFile
         def soFiles = zipTree(jscAAR).matching({ it.include "**/*.so" })
 
-        def headerFiles = jscPackageRoot.matching({ it.include "**/include/*.h" })
+        def headerFiles = fileTree(jscPackageRoot).matching({ it.include "**/include/*.h" })
 
         copy {
             from(soFiles)
