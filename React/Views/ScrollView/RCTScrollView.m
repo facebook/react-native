@@ -476,7 +476,7 @@ static inline void RCTApplyTransformationAccordingLayoutDirection(UIView *view, 
   } else
 #endif
   {
-    RCTAssert(_contentView == nil, @"RCTScrollView may only contain a single subview");
+    RCTAssert(_contentView == nil, @"RCTScrollView may only contain a single subview, the already set subview looks like: %@", [_contentView react_recursiveDescription]);
     _contentView = view;
     RCTApplyTransformationAccordingLayoutDirection(_contentView, self.reactLayoutDirection);
     [_scrollView addSubview:view];
