@@ -139,7 +139,8 @@ task prepareJSC {
         def jscPackageRoot = file("$projectDir/../node_modules/jsc-android/dist")
         if (!jscPackageRoot.exists()) {
             // For an app to build from RN source, the jsc-android is located at /path/to/app/node_modules
-            jscPackageRoot = file("$rootDir/../node_modules/jsc-android/dist")
+            // and $projectDir may located at /path/to/app/node_modules/react-native/ReactAndroid
+            jscPackageRoot = file("$projectDir/../../jsc-android/dist")
         }
         def jscAAR = fileTree(jscPackageRoot).matching({ it.include "**/android-jsc/**/*.aar" }).singleFile
         def soFiles = zipTree(jscAAR).matching({ it.include "**/*.so" })
