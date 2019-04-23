@@ -167,7 +167,6 @@ RCT_EXPORT_METHOD(close : (double)code reason : (NSString *)reason socketID : (d
 {
   NSNumber *socketID = [webSocket reactTag];
   _contentHandlers[socketID] = nil;
-  _sockets[socketID] = nil;
   NSDictionary *body =
       @{@"message" : error.localizedDescription ?: @"Undefined, error is nil", @"id" : socketID ?: @(-1)};
   [self sendEventWithName:@"websocketFailed" body:body];
@@ -180,7 +179,6 @@ RCT_EXPORT_METHOD(close : (double)code reason : (NSString *)reason socketID : (d
 {
   NSNumber *socketID = [webSocket reactTag];
   _contentHandlers[socketID] = nil;
-  _sockets[socketID] = nil;
   [self sendEventWithName:@"websocketClosed"
                      body:@{
                        @"code" : @(code),
