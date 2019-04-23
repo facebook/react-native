@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * {@code CompositeReactPackage} allows to create a single package composed of views and modules

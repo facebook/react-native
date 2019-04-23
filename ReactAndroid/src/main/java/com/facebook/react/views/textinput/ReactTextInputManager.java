@@ -58,7 +58,7 @@ import com.facebook.yoga.YogaConstants;
 import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.Map;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Manages instances of TextInput.

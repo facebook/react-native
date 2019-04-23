@@ -7,7 +7,7 @@
 
 package com.facebook.react.bridge;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

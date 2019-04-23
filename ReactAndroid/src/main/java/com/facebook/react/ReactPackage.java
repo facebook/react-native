@@ -13,7 +13,7 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 import java.util.List;
 
-import javax.annotation.Nonnull;
+import androidx.annotation.NonNull;
 
 /**
  * Main interface for providing additional capabilities to the catalyst framework by couple of
@@ -34,12 +34,12 @@ public interface ReactPackage {
    * @param reactContext react application context that can be used to create modules
    * @return list of native modules to register with the newly created catalyst instance
    */
-  @Nonnull
-  List<NativeModule> createNativeModules(@Nonnull ReactApplicationContext reactContext);
+  @NonNull
+  List<NativeModule> createNativeModules(@NonNull ReactApplicationContext reactContext);
 
   /**
    * @return a list of view managers that should be registered with {@link UIManagerModule}
    */
-  @Nonnull
-  List<ViewManager> createViewManagers(@Nonnull ReactApplicationContext reactContext);
+  @NonNull
+  List<ViewManager> createViewManagers(@NonNull ReactApplicationContext reactContext);
 }

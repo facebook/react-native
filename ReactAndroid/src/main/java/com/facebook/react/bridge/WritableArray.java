@@ -7,8 +7,8 @@
 
 package com.facebook.react.bridge;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Interface for a mutable array. Used to pass arguments from Java to JS.

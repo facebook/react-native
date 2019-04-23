@@ -20,8 +20,8 @@ import com.facebook.react.bridge.*;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.module.annotations.ReactModule;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * {@link NativeModule} that allows JS to show a native date picker dialog and get called back when
@@ -48,7 +48,7 @@ public class DatePickerDialogModule extends ReactContextBaseJavaModule {
   }
 
   @Override
-  public @Nonnull String getName() {
+  public @NonNull String getName() {
     return DatePickerDialogModule.FRAGMENT_TAG;
   }
 

@@ -7,7 +7,7 @@
 
 package com.facebook.react.uimanager;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import android.graphics.Matrix;
 import android.graphics.PointF;

@@ -20,7 +20,7 @@ import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Instance of {@link ViewManager} that provides native {@link ViewPager} view.

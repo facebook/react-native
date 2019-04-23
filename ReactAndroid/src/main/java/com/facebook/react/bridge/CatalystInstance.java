@@ -12,7 +12,7 @@ import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import java.util.Collection;
 import java.util.List;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * A higher level API on top of the asynchronous JSC bridge. This provides an

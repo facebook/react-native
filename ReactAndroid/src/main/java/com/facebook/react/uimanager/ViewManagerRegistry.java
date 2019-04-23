@@ -10,7 +10,7 @@ package com.facebook.react.uimanager;
 import com.facebook.react.common.MapBuilder;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Class that stores the mapping between native view name used in JS and the corresponding instance

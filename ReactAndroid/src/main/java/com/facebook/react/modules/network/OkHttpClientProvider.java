@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import okhttp3.Cache;
 import okhttp3.ConnectionSpec;

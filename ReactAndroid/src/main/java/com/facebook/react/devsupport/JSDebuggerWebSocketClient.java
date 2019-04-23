@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;

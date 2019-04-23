@@ -18,9 +18,9 @@ rn_java_library(
     source = "8",
     target = "8",
     deps = [
+        react_native_dep("third-party/android/androidx:annotation"),
         react_native_dep("third-party/java/infer-annotations:infer-annotations"),
         react_native_dep("third-party/java/javapoet:javapoet"),
-        react_native_dep("third-party/java/jsr-305:jsr-305"),
         react_native_target("java/com/facebook/react/module/annotations:annotations"),
         react_native_target("java/com/facebook/react/module/model:model"),
         react_native_target("java/com/facebook/react/turbomodule/core/interfaces:interfaces"),

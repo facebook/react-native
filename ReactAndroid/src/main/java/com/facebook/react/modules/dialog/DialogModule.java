@@ -26,7 +26,7 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import java.util.Map;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 @ReactModule(name = DialogModule.NAME)
 public class DialogModule extends ReactContextBaseJavaModule implements LifecycleEventListener {

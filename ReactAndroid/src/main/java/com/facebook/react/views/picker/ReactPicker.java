@@ -16,7 +16,7 @@ import android.widget.Spinner;
 
 import com.facebook.react.common.annotations.VisibleForTesting;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public class ReactPicker extends AppCompatSpinner {
 

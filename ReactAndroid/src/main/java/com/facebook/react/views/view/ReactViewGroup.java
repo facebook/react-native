@@ -44,7 +44,7 @@ import com.facebook.react.uimanager.RootViewUtil;
 import com.facebook.react.uimanager.ViewGroupDrawingOrderHelper;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.yoga.YogaConstants;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import static com.facebook.react.common.ReactConstants.TAG;
 

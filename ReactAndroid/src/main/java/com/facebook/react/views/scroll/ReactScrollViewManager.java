@@ -28,7 +28,7 @@ import com.facebook.yoga.YogaConstants;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * View manager for {@link ReactScrollView} components.

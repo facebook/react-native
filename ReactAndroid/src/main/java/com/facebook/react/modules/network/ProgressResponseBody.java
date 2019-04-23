@@ -6,7 +6,7 @@
 package com.facebook.react.modules.network;
 
 import java.io.IOException;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;

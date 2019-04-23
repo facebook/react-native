@@ -101,7 +101,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * This class is managing instances of {@link CatalystInstance}. It exposes a way to configure

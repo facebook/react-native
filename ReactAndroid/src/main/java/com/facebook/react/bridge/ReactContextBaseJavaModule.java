@@ -7,8 +7,8 @@
 
 package com.facebook.react.bridge;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import android.app.Activity;
 
@@ -20,7 +20,7 @@ public abstract class ReactContextBaseJavaModule extends BaseJavaModule {
 
   private final ReactApplicationContext mReactApplicationContext;
 
-  public ReactContextBaseJavaModule(@Nonnull ReactApplicationContext reactContext) {
+  public ReactContextBaseJavaModule(@NonNull ReactApplicationContext reactContext) {
     mReactApplicationContext = reactContext;
   }
 

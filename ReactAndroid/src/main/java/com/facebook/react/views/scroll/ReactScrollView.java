@@ -32,7 +32,7 @@ import com.facebook.react.views.view.ReactViewBackgroundManager;
 
 import java.lang.reflect.Field;
 import java.util.List;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * A simple subclass of ScrollView that doesn't dispatch measure and layout to its children and has

@@ -7,7 +7,7 @@
 
 package com.facebook.react.views.imagehelper;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import android.content.Context;
 import android.net.Uri;

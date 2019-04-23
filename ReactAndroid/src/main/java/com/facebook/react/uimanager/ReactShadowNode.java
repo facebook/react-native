@@ -19,7 +19,7 @@ import com.facebook.yoga.YogaPositionType;
 import com.facebook.yoga.YogaValue;
 import com.facebook.yoga.YogaWrap;
 import java.util.List;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Base node class for representing virtual tree of React nodes. Shadow nodes are used primarily for

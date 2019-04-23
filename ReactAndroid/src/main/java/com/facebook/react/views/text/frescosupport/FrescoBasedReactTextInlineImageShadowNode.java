@@ -8,7 +8,7 @@
 package com.facebook.react.views.text.frescosupport;
 
 import com.facebook.react.uimanager.LayoutShadowNode;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import java.util.Locale;
 

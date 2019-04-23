@@ -9,7 +9,7 @@ package com.facebook.react.bridge;
 
 import com.facebook.common.logging.FLog;
 import com.facebook.react.common.ReactConstants;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Implementation of Dynamic wrapping a ReadableArray.

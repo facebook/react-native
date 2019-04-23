@@ -16,7 +16,7 @@ import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.common.ViewUtil;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public class ReactEventEmitter implements RCTEventEmitter {
 

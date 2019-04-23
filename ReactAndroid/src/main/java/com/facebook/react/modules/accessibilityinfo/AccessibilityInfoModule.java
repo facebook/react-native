@@ -5,7 +5,7 @@
 
 package com.facebook.react.modules.accessibilityinfo;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import android.annotation.TargetApi;
 import android.content.Context;

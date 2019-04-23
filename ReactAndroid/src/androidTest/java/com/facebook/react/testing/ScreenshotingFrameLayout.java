@@ -7,7 +7,7 @@
 
 package com.facebook.react.testing;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import android.content.Context;
 import android.graphics.Bitmap;

@@ -16,7 +16,7 @@ import com.facebook.react.packagerconnection.RequestHandler;
 import java.lang.reflect.Constructor;
 import java.util.Map;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * A simple factory that creates instances of {@link DevSupportManager} implementations. Uses

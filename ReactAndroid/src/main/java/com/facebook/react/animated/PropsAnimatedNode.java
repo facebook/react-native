@@ -16,7 +16,7 @@ import com.facebook.react.bridge.UIManager;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Animated node that represents view properties. There is a special handling logic implemented for

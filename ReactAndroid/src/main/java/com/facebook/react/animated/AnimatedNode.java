@@ -12,7 +12,7 @@ import com.facebook.infer.annotation.Assertions;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Base class for all Animated.js library node types that can be created on the "native" side.

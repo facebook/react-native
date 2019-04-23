@@ -8,7 +8,7 @@ package com.facebook.react.views.common;
 
 import android.content.Context;
 import android.content.ContextWrapper;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Class containing static methods involving manipulations of Contexts and their related subclasses.

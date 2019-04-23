@@ -19,7 +19,7 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.CollectionIt
 import android.view.View;
 import com.facebook.react.R;
 import java.util.Locale;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Utility class that handles the addition of a "role" for accessibility to either a View or

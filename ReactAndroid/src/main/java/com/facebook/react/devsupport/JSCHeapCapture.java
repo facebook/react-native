@@ -7,7 +7,7 @@
 
 package com.facebook.react.devsupport;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import java.io.File;
 

@@ -8,7 +8,7 @@
 package com.facebook.react.modules.debug;
 
 import com.facebook.react.bridge.UiThreadUtil;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import java.util.Map;
 import java.util.TreeMap;

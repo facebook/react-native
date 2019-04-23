@@ -6,7 +6,7 @@
  */
 package com.facebook.yoga;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.facebook.proguard.annotations.DoNotStrip;
 

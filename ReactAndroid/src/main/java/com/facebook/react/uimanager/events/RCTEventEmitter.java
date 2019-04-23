@@ -7,7 +7,7 @@
 
 package com.facebook.react.uimanager.events;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.WritableArray;

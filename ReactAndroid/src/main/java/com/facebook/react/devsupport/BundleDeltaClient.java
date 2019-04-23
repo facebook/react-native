@@ -12,7 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.LinkedHashMap;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import android.util.JsonReader;
 import android.util.JsonToken;

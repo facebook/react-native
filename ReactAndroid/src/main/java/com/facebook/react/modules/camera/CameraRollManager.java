@@ -49,7 +49,7 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 import java.net.URLConnection;
 import java.net.URL;
 

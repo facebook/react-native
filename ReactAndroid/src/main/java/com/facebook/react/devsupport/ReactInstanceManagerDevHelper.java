@@ -11,7 +11,7 @@ import android.app.Activity;
 import com.facebook.react.bridge.JavaJSExecutor;
 
 import com.facebook.react.bridge.NativeDeltaClient;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Interface used by {@link DevSupportManager} for accessing some fields and methods of

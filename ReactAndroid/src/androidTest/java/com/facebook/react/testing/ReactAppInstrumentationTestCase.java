@@ -17,7 +17,7 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.testing.idledetection.IdleWaiter;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Base class for instrumentation tests that runs React based react application in UI mode

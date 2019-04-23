@@ -8,7 +8,7 @@
 package com.facebook.react.views.art;
 
 import com.facebook.react.uimanager.ReactShadowNodeImpl;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;

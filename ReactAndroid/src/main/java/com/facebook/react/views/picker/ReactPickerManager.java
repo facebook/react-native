@@ -24,7 +24,7 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.picker.events.PickerItemSelectEvent;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * {@link ViewManager} for the {@link ReactPicker} view. This is abstract because the

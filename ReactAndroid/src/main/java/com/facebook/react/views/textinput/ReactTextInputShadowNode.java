@@ -34,7 +34,7 @@ import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.yoga.YogaNode;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 @VisibleForTesting
 @TargetApi(Build.VERSION_CODES.M)

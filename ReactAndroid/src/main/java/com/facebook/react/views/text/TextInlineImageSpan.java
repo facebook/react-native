@@ -7,7 +7,7 @@
 
  package com.facebook.react.views.text;
 
- import javax.annotation.Nullable;
+ import androidx.annotation.Nullable;
 
  import android.graphics.drawable.Drawable;
  import android.text.Spannable;

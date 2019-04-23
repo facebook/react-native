@@ -14,7 +14,7 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Native counterpart of style animated node (see AnimatedStyle class in AnimatedImplementation.js)

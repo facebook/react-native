@@ -33,7 +33,7 @@ import com.facebook.react.uimanager.ViewManager;
 import com.facebook.systrace.Systrace;
 
 import java.util.Collections;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

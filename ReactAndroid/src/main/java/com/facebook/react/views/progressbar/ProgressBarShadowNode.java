@@ -19,7 +19,7 @@ import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.yoga.YogaNode;
 import java.util.HashSet;
 import java.util.Set;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Node responsible for holding the style of the ProgressBar, see under

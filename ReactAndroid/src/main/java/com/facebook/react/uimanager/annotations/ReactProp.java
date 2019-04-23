@@ -5,7 +5,7 @@
 
 package com.facebook.react.uimanager.annotations;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

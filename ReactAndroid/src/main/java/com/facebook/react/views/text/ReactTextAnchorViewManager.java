@@ -21,7 +21,7 @@ import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.annotations.ReactPropGroup;
 import com.facebook.yoga.YogaConstants;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Abstract class for anchor {@code <Text>}-ish spannable views, such as {@link TextView} or {@link

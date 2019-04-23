@@ -7,7 +7,7 @@
 
 package com.facebook.react.modules.datepicker;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import java.util.Calendar;
 import java.util.Locale;

@@ -7,7 +7,7 @@
 
 package com.facebook.react.uimanager.events;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import androidx.core.util.Pools;
 import android.view.MotionEvent;

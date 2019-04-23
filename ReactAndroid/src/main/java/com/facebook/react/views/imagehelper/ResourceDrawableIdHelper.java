@@ -7,7 +7,7 @@
 
 package com.facebook.react.views.imagehelper;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 
 import java.util.HashMap;

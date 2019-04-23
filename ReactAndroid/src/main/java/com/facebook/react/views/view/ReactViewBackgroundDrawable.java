@@ -30,7 +30,7 @@ import com.facebook.react.uimanager.Spacing;
 import com.facebook.yoga.YogaConstants;
 import java.util.Arrays;
 import java.util.Locale;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * A subclass of {@link Drawable} used for background of {@link ReactViewGroup}. It supports drawing

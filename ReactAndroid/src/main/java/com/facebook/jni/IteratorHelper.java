@@ -9,7 +9,7 @@ package com.facebook.jni;
 
 import com.facebook.proguard.annotations.DoNotStrip;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import java.util.Iterator;
 

@@ -7,7 +7,7 @@
 
 package com.facebook.react.touch;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import android.view.MotionEvent;
 import android.view.ViewGroup;

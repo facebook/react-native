@@ -7,7 +7,7 @@
 
 package com.facebook.react;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;

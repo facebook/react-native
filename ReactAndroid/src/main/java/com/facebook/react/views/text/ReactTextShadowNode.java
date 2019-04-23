@@ -35,7 +35,7 @@ import com.facebook.yoga.YogaNode;
 
 import java.util.ArrayList;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * {@link ReactBaseTextShadowNode} concrete class for anchor {@code Text} node.

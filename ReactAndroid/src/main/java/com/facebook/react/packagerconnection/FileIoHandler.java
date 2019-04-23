@@ -7,7 +7,7 @@
 
 package com.facebook.react.packagerconnection;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

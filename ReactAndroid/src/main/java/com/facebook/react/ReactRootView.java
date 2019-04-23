@@ -53,7 +53,7 @@ import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.common.UIManagerType;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Default root view for catalyst apps. Provides the ability to listen for size changes so that a UI

@@ -19,7 +19,7 @@ import com.facebook.react.bridge.queue.ReactQueueConfiguration;
 import com.facebook.react.common.LifecycleState;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.CopyOnWriteArraySet;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Abstract ContextWrapper for Android application or activity {@link Context} and

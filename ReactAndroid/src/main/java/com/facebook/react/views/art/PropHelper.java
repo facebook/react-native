@@ -7,7 +7,7 @@
 
 package com.facebook.react.views.art;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.ReactStylesDiffMap;

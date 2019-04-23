@@ -7,7 +7,7 @@
 
 package com.facebook.react.modules.core;
 
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.facebook.react.bridge.JavaScriptModule;
 

@@ -8,7 +8,7 @@
 package com.facebook.react.packagerconnection;
 
 import java.util.Map;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import android.net.Uri;
 

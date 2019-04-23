@@ -31,7 +31,7 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.yoga.YogaConstants;
 import java.util.Locale;
 import java.util.Map;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * View manager for AndroidViews (plain React Views).

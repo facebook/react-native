@@ -15,7 +15,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
 import com.facebook.react.uimanager.ReactShadowNodeImpl;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Base class for ARTView virtual nodes: {@link ARTGroupShadowNode}, {@link ARTShapeShadowNode} and

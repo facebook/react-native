@@ -13,7 +13,7 @@ import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.annotations.ReactProp;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * ViewManager for {@link ReactUnimplementedView} to represent a component that is not

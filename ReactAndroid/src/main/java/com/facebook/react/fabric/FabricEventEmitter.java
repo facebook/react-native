@@ -23,7 +23,7 @@ import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.systrace.Systrace;
 import java.util.HashSet;
 import java.util.Set;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public class FabricEventEmitter implements RCTEventEmitter {
 

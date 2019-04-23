@@ -16,7 +16,7 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.systrace.SystraceMessage;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import javax.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public class JavaMethodWrapper implements NativeModule.NativeMethod {
 
