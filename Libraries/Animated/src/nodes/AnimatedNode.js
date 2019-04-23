@@ -112,7 +112,11 @@ class AnimatedNode {
       return;
     }
 
-    this.__shouldUpdateListenersForNewNativeTag = false;
+    if (this.__shouldUpdateListenersForNewNativeTag) {
+      this.__shouldUpdateListenersForNewNativeTag = false;
+      this._stopListeningForNativeValueUpdates();
+    }
+
     NativeAnimatedAPI.startListeningToAnimatedNodeValue(this.__getNativeTag());
     this.__nativeAnimatedValueListener = NativeAnimatedHelper.nativeEventEmitter.addListener(
       'onAnimatedValueUpdate',
