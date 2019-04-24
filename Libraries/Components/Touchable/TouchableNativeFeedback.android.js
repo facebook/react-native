@@ -225,6 +225,14 @@ const TouchableNativeFeedback = createReactClass({
     this._dispatchPressedStateChange(false);
   },
 
+  touchableHandleAccessibilityBlur: function(e: PressEvent) {
+    this.props.onAccessibilityBlur && this.props.onAccessibilityBlur(e);
+  },
+
+  touchableHandleAccessibilityFocus: function(e: PressEvent) {
+    this.props.onAccessibilityFocus && this.props.onAccessibilityFocus(e);
+  },
+
   touchableHandlePress: function(e: PressEvent) {
     this.props.onPress && this.props.onPress(e);
   },
@@ -329,7 +337,8 @@ const TouchableNativeFeedback = createReactClass({
         this.props.clickable !== false &&
         this.props.onPress !== undefined &&
         !this.props.disabled,
-      onClick: this.touchableHandlePress,
+      onAccessibilityBlur: this.touchableHandleAccessibilityBlur,
+      onAccessibilityFocus: this.touchableHandleAccessibilityFocus,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
       onResponderTerminationRequest: this
         .touchableHandleResponderTerminationRequest,

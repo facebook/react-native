@@ -425,6 +425,8 @@ const TouchableHighlight = ((createReactClass({
         clickable={
           this.props.clickable !== false && this.props.onPress !== undefined
         }
+        onAccessibilityBlur={this.props.onAccessibilityBlur}
+        onAccessibilityFocus={this.props.onAccessibilityFocus}
         onClick={this.touchableHandlePress}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={

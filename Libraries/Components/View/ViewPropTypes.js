@@ -10,7 +10,12 @@
 
 'use strict';
 
-import type {PressEvent, Layout, LayoutEvent} from 'CoreEventTypes';
+import type {
+  SyntheticEvent,
+  PressEvent,
+  Layout,
+  LayoutEvent,
+} from 'CoreEventTypes';
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type React from 'React';
 import type {ViewStyleProp} from 'StyleSheet';
@@ -20,6 +25,15 @@ import type {AccessibilityRole, AccessibilityStates} from 'ViewAccessibility';
 export type ViewLayout = Layout;
 export type ViewLayoutEvent = LayoutEvent;
 
+type TargetEvent = SyntheticEvent<
+  $ReadOnly<{|
+    target: number,
+  |}>,
+>;
+
+export type AccessibilityBlurEvent = TargetEvent;
+export type AccessibilityFocusEvent = TargetEvent;
+
 type DirectEventProps = $ReadOnly<{|
   /**
    * When `accessible` is true, the system will try to invoke this function
@@ -28,6 +42,25 @@ type DirectEventProps = $ReadOnly<{|
    * @platform ios
    */
   onAccessibilityAction?: ?(string) => void,
+
+  /**
+   * When `accessible` is true and VoiceOver (iOS) or TalkBack (Android) is
+   * enabled, this event is fired immediately once the element loses the screen
+   * reader focus.
+   *
+   * See http://facebook.github.io/react-native/docs/view.html#onaccessibilityblur
+   */
+
+  onAccessibilityBlur?: ?(AccessibilityBlurEvent) => void,
+
+  /**
+   * When `accessible` is true and VoiceOver (iOS) or TalkBack (Android) is
+   * enabled, this event is fired immediately once the element gains the screen
+   * reader focus.
+   *
+   * See http://facebook.github.io/react-native/docs/view.html#onaccessibilityfocus
+   */
+  onAccessibilityFocus?: ?(AccessibilityFocusEvent) => void,
 
   /**
    * When `accessible` is true, the system will try to invoke this function

@@ -20,7 +20,16 @@ const View = require('View');
 
 const invariant = require('invariant');
 
-import type {PressEvent} from 'CoreEventTypes';
+import type {SyntheticEvent, PressEvent} from 'CoreEventTypes';
+
+type TargetEvent = SyntheticEvent<
+  $ReadOnly<{|
+    target: number,
+  |}>,
+>;
+
+type AccessibilityBlurEvent = TargetEvent;
+type AccessibilityFocusEvent = TargetEvent;
 
 type ButtonProps = $ReadOnly<{|
   /**
@@ -92,6 +101,17 @@ type ButtonProps = $ReadOnly<{|
    * Used to locate this view in end-to-end tests.
    */
   testID?: ?string,
+
+  onAccessibilityBlur?: ?(AccessibilityBlurEvent) => void,
+
+  /**
+   * When `accessible` is true and VoiceOver (iOS) or TalkBack (Android) is
+   * enabled, this event is fired immediately once the element gains the screen
+   * reader focus.
+   *
+   * See http://facebook.github.io/react-native/docs/view.html#onaccessibilityfocus
+   */
+  onAccessibilityFocus?: ?(AccessibilityFocusEvent) => void,
 |}>;
 
 /**
@@ -127,6 +147,8 @@ class Button extends React.Component<ButtonProps> {
     const {
       accessibilityLabel,
       color,
+      onAccessibilityFocus,
+      onAccessibilityBlur,
       onPress,
       title,
       hasTVPreferredFocus,
@@ -165,6 +187,8 @@ class Button extends React.Component<ButtonProps> {
       <Touchable
         accessibilityLabel={accessibilityLabel}
         accessibilityRole="button"
+        onAccessibilityBlur={onAccessibilityBlur}
+        onAccessibilityFocus={onAccessibilityFocus}
         accessibilityStates={accessibilityStates}
         hasTVPreferredFocus={hasTVPreferredFocus}
         nextFocusDown={nextFocusDown}

@@ -308,6 +308,8 @@ const TouchableOpacity = ((createReactClass({
       <Animated.View
         accessible={this.props.accessible !== false}
         accessibilityLabel={this.props.accessibilityLabel}
+        onAccessibilityFocus={this.props.onAccessibilityFocus}
+        onAccessibilityBlur={this.props.onAccessibilityBlur}
         accessibilityHint={this.props.accessibilityHint}
         accessibilityRole={this.props.accessibilityRole}
         accessibilityStates={this.props.accessibilityStates}
@@ -327,7 +329,6 @@ const TouchableOpacity = ((createReactClass({
         clickable={
           this.props.clickable !== false && this.props.onPress !== undefined
         }
-        onClick={this.touchableHandlePress}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={
           this.touchableHandleResponderTerminationRequest

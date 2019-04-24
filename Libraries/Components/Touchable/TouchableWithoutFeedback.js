@@ -36,6 +36,8 @@ type TargetEvent = SyntheticEvent<
 
 type BlurEvent = TargetEvent;
 type FocusEvent = TargetEvent;
+type AccessibilityBlurEvent = TargetEvent;
+type AccessibilityFocusEvent = TargetEvent;
 
 const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
@@ -67,6 +69,8 @@ export type Props = $ReadOnly<{|
   disabled?: ?boolean,
   hitSlop?: ?EdgeInsetsProp,
   nativeID?: ?string,
+  onAccessibilityBlur?: ?(AccessibilityBlurEvent) => void,
+  onAccessibilityFocus?: ?(AccessibilityFocusEvent) => void,
   onBlur?: ?(e: BlurEvent) => void,
   onFocus?: ?(e: FocusEvent) => void,
   onLayout?: ?(event: LayoutEvent) => mixed,
