@@ -8,6 +8,7 @@
 package com.facebook.react.views.textinput;
 
 import static android.view.View.FOCUS_FORWARD;
+
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
