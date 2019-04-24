@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
 #include <exception>
 
 #include <folly/experimental/exception_tracer/ExceptionAbi.h>
-#include <folly/experimental/exception_tracer/StackTrace.h>
 #include <folly/experimental/exception_tracer/ExceptionTracer.h>
 #include <folly/experimental/exception_tracer/ExceptionTracerLib.h>
+#include <folly/experimental/exception_tracer/StackTrace.h>
 #include <folly/experimental/symbolizer/Symbolizer.h>
 
 using namespace folly::exception_tracer;
@@ -67,15 +67,19 @@ void moveTopException(StackTraceStack& from, StackTraceStack& to) {
 struct Initializer {
   Initializer() {
     registerCxaThrowCallback(
-        [](void*, std::type_info*, void (*)(void*)) { addActiveException(); });
+        [](void*, std::type_info*, void (*)(void*)) noexcept {
+          addActiveException();
+        });
 
-    registerCxaBeginCatchCallback(
-        [](void*) { moveTopException(activeExceptions, caughtExceptions); });
+    registerCxaBeginCatchCallback([](void*) noexcept {
+      moveTopException(activeExceptions, caughtExceptions);
+    });
 
-    registerCxaRethrowCallback(
-        []() { moveTopException(caughtExceptions, activeExceptions); });
+    registerCxaRethrowCallback([]() noexcept {
+      moveTopException(caughtExceptions, activeExceptions);
+    });
 
-    registerCxaEndCatchCallback([]() {
+    registerCxaEndCatchCallback([]() noexcept {
       if (invalid) {
         return;
       }
@@ -88,7 +92,8 @@ struct Initializer {
       // exceptions.
       // In the rethrow case, we've already popped the exception off the
       // caught stack, so we don't do anything here.
-      if (top->handlerCount == 1) {
+      // For Lua interop, we see the handlerCount = 0
+      if ((top->handlerCount == 1) || (top->handlerCount == 0)) {
         if (!caughtExceptions.pop()) {
           activeExceptions.clear();
           invalid = true;
@@ -97,7 +102,7 @@ struct Initializer {
     });
 
     registerRethrowExceptionCallback(
-        [](std::exception_ptr) { addActiveException(); });
+        [](std::exception_ptr) noexcept { addActiveException(); });
 
     try {
       ::folly::exception_tracer::installHandlers();

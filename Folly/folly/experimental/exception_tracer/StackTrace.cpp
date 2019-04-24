@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,11 @@
 #include <cassert>
 #include <cstdlib>
 #include <new>
+
 #include <folly/experimental/symbolizer/StackTrace.h>
 
-namespace folly { namespace exception_tracer {
+namespace folly {
+namespace exception_tracer {
 
 class StackTraceStack::Node : public StackTrace {
  public:
@@ -31,8 +33,8 @@ class StackTraceStack::Node : public StackTrace {
   Node* next;
 
  private:
-  Node() : next(nullptr) { }
-  ~Node() { }
+  Node() : next(nullptr) {}
+  ~Node() {}
 };
 
 auto StackTraceStack::Node::allocate() -> Node* {
@@ -106,5 +108,5 @@ StackTrace* StackTraceStack::next(StackTrace* p) {
   assert(p);
   return static_cast<Node*>(p)->next;
 }
-
-}}  // namespaces
+} // namespace exception_tracer
+} // namespace folly

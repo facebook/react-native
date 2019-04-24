@@ -42,3 +42,25 @@ such case. You may also choose to override the constraint
 #define FOLLY_SDT_ARG_CONSTRAINT "g"
 ```
 which means the arguments can be any memory or register operands.
+
+You could also use
+```
+FOLLY_SDT_WITH_SEMAPHORE(provider, name, arg1, arg2, ...)
+```
+to create Tracepoints that could be gated on-demand. Before using this, add
+```
+FOLLY_SDT_DEFINE_SEMAPHORE(provider, name)
+```
+anywhere outside a local function scope. Then, you could use
+```
+FOLLY_SDT_IS_ENABLED(provider, name)
+```
+to check if probing on this Tracepoint is enabled. Tools like BCC and SystemTap
+would increase the Semaphore when attaching to the Tracepoint and have the
+check return true. This allows the Tracepoint to use more expensive arguments
+which would only be calculated when needed. You can also check the enabled
+status of the Tracepoint in another module. Add
+```
+FOLLY_SDT_DECLARE_SEMAPHORE(provider, name)
+```
+anywhere outside a local function scope first, then call the check Macro.

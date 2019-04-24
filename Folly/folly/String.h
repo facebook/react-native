@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2011-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,22 +17,12 @@
 #pragma once
 #define FOLLY_STRING_H_
 
+#include <cstdarg>
 #include <exception>
-#include <stdarg.h>
 #include <string>
-#include <vector>
-#include <boost/type_traits.hpp>
-#include <boost/regex/pending/unicode_iterator.hpp>
-
-#ifdef FOLLY_HAVE_DEPRECATED_ASSOC
-#ifdef _GLIBCXX_SYMVER
-#include <ext/hash_set>
-#include <ext/hash_map>
-#endif
-#endif
-
-#include <unordered_set>
 #include <unordered_map>
+#include <unordered_set>
+#include <vector>
 
 #include <folly/Conv.h>
 #include <folly/ExceptionString.h>
@@ -41,26 +31,24 @@
 #include <folly/Portability.h>
 #include <folly/Range.h>
 #include <folly/ScopeGuard.h>
+#include <folly/Traits.h>
 
 // Compatibility function, to make sure toStdString(s) can be called
 // to convert a std::string or fbstring variable s into type std::string
 // with very little overhead if s was already std::string
 namespace folly {
 
-inline
-std::string toStdString(const folly::fbstring& s) {
+inline std::string toStdString(const folly::fbstring& s) {
   return std::string(s.data(), s.size());
 }
 
-inline
-const std::string& toStdString(const std::string& s) {
+inline const std::string& toStdString(const std::string& s) {
   return s;
 }
 
 // If called with a temporary, the compiler will select this overload instead
 // of the above, so we don't return a (lvalue) reference to a temporary.
-inline
-std::string&& toStdString(std::string&& s) {
+inline std::string&& toStdString(std::string&& s) {
   return std::move(s);
 }
 
@@ -137,9 +125,10 @@ enum class UriEscapeMode : unsigned char {
   PATH = 2
 };
 template <class String>
-void uriEscape(StringPiece str,
-               String& out,
-               UriEscapeMode mode = UriEscapeMode::ALL);
+void uriEscape(
+    StringPiece str,
+    String& out,
+    UriEscapeMode mode = UriEscapeMode::ALL);
 
 /**
  * Similar to uriEscape above, but returns the escaped string.
@@ -158,9 +147,10 @@ String uriEscape(StringPiece str, UriEscapeMode mode = UriEscapeMode::ALL) {
  * XX is a valid hex sequence, otherwise we throw invalid_argument.
  */
 template <class String>
-void uriUnescape(StringPiece str,
-                 String& out,
-                 UriEscapeMode mode = UriEscapeMode::ALL);
+void uriUnescape(
+    StringPiece str,
+    String& out,
+    UriEscapeMode mode = UriEscapeMode::ALL);
 
 /**
  * Similar to uriUnescape above, but returns the unescaped string.
@@ -179,15 +169,16 @@ String uriUnescape(StringPiece str, UriEscapeMode mode = UriEscapeMode::ALL) {
  * the specified string and returns a reference to it.
  */
 std::string stringPrintf(FOLLY_PRINTF_FORMAT const char* format, ...)
-  FOLLY_PRINTF_FORMAT_ATTR(1, 2);
+    FOLLY_PRINTF_FORMAT_ATTR(1, 2);
 
 /* Similar to stringPrintf, with different signature. */
 void stringPrintf(std::string* out, FOLLY_PRINTF_FORMAT const char* fmt, ...)
-  FOLLY_PRINTF_FORMAT_ATTR(2, 3);
+    FOLLY_PRINTF_FORMAT_ATTR(2, 3);
 
-std::string& stringAppendf(std::string* output,
-                          FOLLY_PRINTF_FORMAT const char* format, ...)
-  FOLLY_PRINTF_FORMAT_ATTR(2, 3);
+std::string& stringAppendf(
+    std::string* output,
+    FOLLY_PRINTF_FORMAT const char* format,
+    ...) FOLLY_PRINTF_FORMAT_ATTR(2, 3);
 
 /**
  * Similar to stringPrintf, but accepts a va_list argument.
@@ -218,12 +209,15 @@ std::string& stringVAppendf(std::string* out, const char* format, va_list ap);
  * C++, use cEscape instead.  This function is for display purposes
  * only.
  */
-template <class String1, class String2>
-void backslashify(const String1& input, String2& output, bool hex_style=false);
+template <class OutputString>
+void backslashify(
+    folly::StringPiece input,
+    OutputString& output,
+    bool hex_style = false);
 
-template <class String>
-String backslashify(const String& input, bool hex_style=false) {
-  String output;
+template <class OutputString = std::string>
+OutputString backslashify(StringPiece input, bool hex_style = false) {
+  OutputString output;
   backslashify(input, output, hex_style);
   return output;
 }
@@ -256,9 +250,11 @@ String humanify(const String& input) {
  * If append_output is true, append data to the output rather than
  * replace it.
  */
-template<class InputString, class OutputString>
-bool hexlify(const InputString& input, OutputString& output,
-             bool append=false);
+template <class InputString, class OutputString>
+bool hexlify(
+    const InputString& input,
+    OutputString& output,
+    bool append = false);
 
 template <class OutputString = std::string>
 OutputString hexlify(ByteRange input) {
@@ -279,7 +275,7 @@ OutputString hexlify(StringPiece input) {
  * Same functionality as Python's binascii.unhexlify.  Returns true
  * on successful conversion.
  */
-template<class InputString, class OutputString>
+template <class InputString, class OutputString>
 bool unhexlify(const InputString& input, OutputString& output);
 
 template <class OutputString = std::string>
@@ -293,7 +289,7 @@ OutputString unhexlify(StringPiece input) {
   return output;
 }
 
-/*
+/**
  * A pretty-printer for numbers that appends suffixes of units of the
  * given type.  It prints 4 sig-figs of value with the most
  * appropriate unit.
@@ -303,6 +299,7 @@ OutputString unhexlify(StringPiece input) {
  *
  * Current types are:
  *   PRETTY_TIME         - s, ms, us, ns, etc.
+ *   PRETTY_TIME_HMS     - h, m, s, ms, us, ns, etc.
  *   PRETTY_BYTES_METRIC - kB, MB, GB, etc (goes up by 10^3 = 1000 each time)
  *   PRETTY_BYTES        - kB, MB, GB, etc (goes up by 2^10 = 1024 each time)
  *   PRETTY_BYTES_IEC    - KiB, MiB, GiB, etc
@@ -311,10 +308,12 @@ OutputString unhexlify(StringPiece input) {
  *   PRETTY_UNITS_BINARY_IEC - Ki, Mi, Gi, etc
  *   PRETTY_SI           - full SI metric prefixes from yocto to Yotta
  *                         http://en.wikipedia.org/wiki/Metric_prefix
+ *
  * @author Mark Rabkin <mrabkin@fb.com>
  */
 enum PrettyType {
   PRETTY_TIME,
+  PRETTY_TIME_HMS,
 
   PRETTY_BYTES_METRIC,
   PRETTY_BYTES_BINARY,
@@ -348,10 +347,11 @@ std::string prettyPrint(double val, PrettyType, bool addSpace = true);
  * '10 Mx' => 10 000 000, prettyString == "x"
  * 'abc' => throws std::range_error
  */
-double prettyToDouble(folly::StringPiece *const prettyString,
-                      const PrettyType type);
+double prettyToDouble(
+    folly::StringPiece* const prettyString,
+    const PrettyType type);
 
-/*
+/**
  * Same as prettyToDouble(folly::StringPiece*, PrettyType), but
  * expects whole string to be correctly parseable. Throws std::range_error
  * otherwise
@@ -416,24 +416,30 @@ fbstring errnoStr(int err);
  * or not (generating empty tokens).
  */
 
-template<class Delim, class String, class OutputType>
-void split(const Delim& delimiter,
-           const String& input,
-           std::vector<OutputType>& out,
-           const bool ignoreEmpty = false);
+template <class Delim, class String, class OutputType>
+void split(
+    const Delim& delimiter,
+    const String& input,
+    std::vector<OutputType>& out,
+    const bool ignoreEmpty = false);
 
-template<class Delim, class String, class OutputType>
-void split(const Delim& delimiter,
-           const String& input,
-           folly::fbvector<OutputType>& out,
-           const bool ignoreEmpty = false);
+template <class Delim, class String, class OutputType>
+void split(
+    const Delim& delimiter,
+    const String& input,
+    folly::fbvector<OutputType>& out,
+    const bool ignoreEmpty = false);
 
-template<class OutputValueType, class Delim, class String,
-         class OutputIterator>
-void splitTo(const Delim& delimiter,
-             const String& input,
-             OutputIterator out,
-             const bool ignoreEmpty = false);
+template <
+    class OutputValueType,
+    class Delim,
+    class String,
+    class OutputIterator>
+void splitTo(
+    const Delim& delimiter,
+    const String& input,
+    OutputIterator out,
+    const bool ignoreEmpty = false);
 
 /*
  * Split a string into a fixed number of string pieces and/or numeric types
@@ -469,56 +475,25 @@ void splitTo(const Delim& delimiter,
  * Note that this will likely not work if the last field's target is of numeric
  * type, in which case folly::to<> will throw an exception.
  */
-template <class T, class Enable = void>
-struct IsSomeVector {
-  enum { value = false };
-};
-
-template <class T>
-struct IsSomeVector<std::vector<T>, void> {
-  enum { value = true };
-};
-
-template <class T>
-struct IsSomeVector<fbvector<T>, void> {
-  enum { value = true };
-};
-
-template <class T, class Enable = void>
-struct IsConvertible {
-  enum { value = false };
-};
-
-template <class T>
-struct IsConvertible<
-    T,
-    decltype(static_cast<void>(
-        parseTo(std::declval<folly::StringPiece>(), std::declval<T&>())))> {
-  enum { value = true };
-};
-
-template <class... Types>
-struct AllConvertible;
-
-template <class Head, class... Tail>
-struct AllConvertible<Head, Tail...> {
-  enum { value = IsConvertible<Head>::value && AllConvertible<Tail...>::value };
-};
+namespace detail {
+template <typename Void, typename OutputType>
+struct IsConvertible : std::false_type {};
 
 template <>
-struct AllConvertible<> {
-  enum { value = true };
-};
+struct IsConvertible<void, decltype(std::ignore)> : std::true_type {};
 
-static_assert(AllConvertible<float>::value, "");
-static_assert(AllConvertible<int>::value, "");
-static_assert(AllConvertible<bool>::value, "");
-static_assert(AllConvertible<int>::value, "");
-static_assert(!AllConvertible<std::vector<int>>::value, "");
+template <typename OutputType>
+struct IsConvertible<
+    void_t<decltype(parseTo(StringPiece{}, std::declval<OutputType&>()))>,
+    OutputType> : std::true_type {};
+} // namespace detail
+template <typename OutputType>
+struct IsConvertible : detail::IsConvertible<void, OutputType> {};
 
 template <bool exact = true, class Delim, class... OutputTypes>
 typename std::enable_if<
-    AllConvertible<OutputTypes...>::value && sizeof...(OutputTypes) >= 1,
+    StrictConjunction<IsConvertible<OutputTypes>...>::value &&
+        sizeof...(OutputTypes) >= 1,
     bool>::type
 split(const Delim& delimiter, StringPiece input, OutputTypes&... outputs);
 
@@ -530,46 +505,44 @@ split(const Delim& delimiter, StringPiece input, OutputTypes&... outputs);
  */
 
 template <class Delim, class Iterator, class String>
-void join(const Delim& delimiter,
-          Iterator begin,
-          Iterator end,
-          String& output);
+void join(const Delim& delimiter, Iterator begin, Iterator end, String& output);
 
 template <class Delim, class Container, class String>
-void join(const Delim& delimiter,
-          const Container& container,
-          String& output) {
+void join(const Delim& delimiter, const Container& container, String& output) {
   join(delimiter, container.begin(), container.end(), output);
 }
 
 template <class Delim, class Value, class String>
-void join(const Delim& delimiter,
-          const std::initializer_list<Value>& values,
-          String& output) {
+void join(
+    const Delim& delimiter,
+    const std::initializer_list<Value>& values,
+    String& output) {
   join(delimiter, values.begin(), values.end(), output);
 }
 
 template <class Delim, class Container>
-std::string join(const Delim& delimiter,
-                 const Container& container) {
+std::string join(const Delim& delimiter, const Container& container) {
   std::string output;
   join(delimiter, container.begin(), container.end(), output);
   return output;
 }
 
 template <class Delim, class Value>
-std::string join(const Delim& delimiter,
-                 const std::initializer_list<Value>& values) {
+std::string join(
+    const Delim& delimiter,
+    const std::initializer_list<Value>& values) {
   std::string output;
   join(delimiter, values.begin(), values.end(), output);
   return output;
 }
 
-template <class Delim,
-          class Iterator,
-          typename std::enable_if<std::is_same<
-              typename std::iterator_traits<Iterator>::iterator_category,
-              std::random_access_iterator_tag>::value>::type* = nullptr>
+template <
+    class Delim,
+    class Iterator,
+    typename std::enable_if<std::is_base_of<
+        std::forward_iterator_tag,
+        typename std::iterator_traits<Iterator>::iterator_category>::value>::
+        type* = nullptr>
 std::string join(const Delim& delimiter, Iterator begin, Iterator end) {
   std::string output;
   join(delimiter, begin, end, output);
@@ -589,8 +562,8 @@ StringPiece ltrimWhitespace(StringPiece sp);
 StringPiece rtrimWhitespace(StringPiece sp);
 
 /**
- * Returns a subpiece with all whitespace removed from the back and front of @sp.
- * Whitespace means any of [' ', '\n', '\r', '\t'].
+ * Returns a subpiece with all whitespace removed from the back and front of
+ * @sp. Whitespace means any of [' ', '\n', '\r', '\t'].
  */
 inline StringPiece trimWhitespace(StringPiece sp) {
   return ltrimWhitespace(rtrimWhitespace(sp));
@@ -621,7 +594,7 @@ std::string stripLeftMargin(std::string s);
  * Leaves all other characters unchanged, including those with the 0x80
  * bit set.
  * @param str String to convert
- * @param len Length of str, in bytes
+ * @param length Length of str, in bytes
  */
 void toLowerAscii(char* str, size_t length);
 
@@ -629,20 +602,10 @@ inline void toLowerAscii(MutableStringPiece str) {
   toLowerAscii(str.begin(), str.size());
 }
 
-template <class Iterator = const char*,
-          class Base = folly::Range<boost::u8_to_u32_iterator<Iterator>>>
-class UTF8Range : public Base {
- public:
-  /* implicit */ UTF8Range(const folly::Range<Iterator> baseRange)
-      : Base(boost::u8_to_u32_iterator<Iterator>(
-                 baseRange.begin(), baseRange.begin(), baseRange.end()),
-             boost::u8_to_u32_iterator<Iterator>(
-                 baseRange.end(), baseRange.begin(), baseRange.end())) {}
-  /* implicit */ UTF8Range(const std::string& baseString)
-      : Base(folly::Range<Iterator>(baseString)) {}
-};
-
-using UTF8StringPiece = UTF8Range<const char*>;
+inline void toLowerAscii(std::string& str) {
+  // str[0] is legal also if the string is empty.
+  toLowerAscii(&str[0], str.size());
+}
 
 } // namespace folly
 

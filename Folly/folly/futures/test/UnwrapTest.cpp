@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,13 +24,13 @@ using namespace folly;
 TEST(Unwrap, simpleScenario) {
   Future<int> encapsulated_future = makeFuture(5484);
   Future<Future<int>> future = makeFuture(std::move(encapsulated_future));
-  EXPECT_EQ(5484, future.unwrap().value());
+  EXPECT_EQ(5484, std::move(future).unwrap().value());
 }
 
 // Makes sure that unwrap() works when chaning Future's commands.
 TEST(Unwrap, chainCommands) {
   Future<Future<int>> future = makeFuture(makeFuture(5484));
-  auto unwrapped = future.unwrap().then([](int i){ return i; });
+  auto unwrapped = std::move(future).unwrap().then([](int i) { return i; });
   EXPECT_EQ(5484, unwrapped.value());
 }
 
@@ -40,7 +40,7 @@ TEST(Unwrap, chainCommands) {
 TEST(Unwrap, futureNotReady) {
   Promise<Future<int>> p;
   Future<Future<int>> future = p.getFuture();
-  Future<int> unwrapped = future.unwrap();
+  Future<int> unwrapped = std::move(future).unwrap();
   // Sanity - should not be ready before the promise is fulfilled.
   ASSERT_FALSE(unwrapped.isReady());
   // Fulfill the promise and make sure the unwrapped future is now ready.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2012-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ void __cxa_throw(
     void* thrownException,
     std::type_info* type,
     void (*destructor)(void*)) __attribute__((__noreturn__));
-void* __cxa_begin_catch(void* excObj) noexcept;
+void* __cxa_begin_catch(void* excObj) throw();
 void __cxa_rethrow(void) __attribute__((__noreturn__));
 void __cxa_end_catch(void);
 }
@@ -47,16 +47,15 @@ template <typename Function>
 class CallbackHolder {
  public:
   void registerCallback(Function f) {
-    SYNCHRONIZED(callbacks_) { callbacks_.push_back(std::move(f)); }
+    callbacks_.wlock()->push_back(std::move(f));
   }
 
   // always inline to enforce kInternalFramesNumber
   template <typename... Args>
   FOLLY_ALWAYS_INLINE void invoke(Args... args) {
-    SYNCHRONIZED_CONST(callbacks_) {
-      for (auto& cb : callbacks_) {
-        cb(args...);
-      }
+    auto callbacksLock = callbacks_.rlock();
+    for (auto& cb : *callbacksLock) {
+      cb(args...);
     }
   }
 
@@ -78,14 +77,14 @@ namespace exception_tracer {
     get##NAME##Callbacks().registerCallback(callback);           \
   }
 
-DECLARE_CALLBACK(CxaThrow);
-DECLARE_CALLBACK(CxaBeginCatch);
-DECLARE_CALLBACK(CxaRethrow);
-DECLARE_CALLBACK(CxaEndCatch);
-DECLARE_CALLBACK(RethrowException);
+DECLARE_CALLBACK(CxaThrow)
+DECLARE_CALLBACK(CxaBeginCatch)
+DECLARE_CALLBACK(CxaRethrow)
+DECLARE_CALLBACK(CxaEndCatch)
+DECLARE_CALLBACK(RethrowException)
 
-} // exception_tracer
-} // folly
+} // namespace exception_tracer
+} // namespace folly
 
 // Clang is smart enough to understand that the symbols we're loading
 // are [[noreturn]], but GCC is not. In order to be able to build with
@@ -93,14 +92,15 @@ DECLARE_CALLBACK(RethrowException);
 // calls need to go away. Everything else is messy though, so just
 // #define it to an empty macro under Clang and be done with it.
 #ifdef __clang__
-# define __builtin_unreachable()
+#define __builtin_unreachable()
 #endif
 
 namespace __cxxabiv1 {
 
-void __cxa_throw(void* thrownException,
-                 std::type_info* type,
-                 void (*destructor)(void*)) {
+void __cxa_throw(
+    void* thrownException,
+    std::type_info* type,
+    void (*destructor)(void*)) {
   static auto orig_cxa_throw =
       reinterpret_cast<decltype(&__cxa_throw)>(dlsym(RTLD_NEXT, "__cxa_throw"));
   getCxaThrowCallbacks().invoke(thrownException, type, destructor);
@@ -121,7 +121,7 @@ void __cxa_rethrow() {
   __builtin_unreachable(); // orig_cxa_rethrow never returns
 }
 
-void* __cxa_begin_catch(void* excObj) noexcept {
+void* __cxa_begin_catch(void* excObj) throw() {
   // excObj is a pointer to the unwindHeader in __cxa_exception
   static auto orig_cxa_begin_catch =
       reinterpret_cast<decltype(&__cxa_begin_catch)>(
@@ -146,9 +146,9 @@ void rethrow_exception(std::exception_ptr ep) {
   // TODO(tudorb): Dicey, as it relies on the fact that std::exception_ptr
   // is typedef'ed to a type in namespace __exception_ptr
   static auto orig_rethrow_exception =
-      reinterpret_cast<decltype(&rethrow_exception)>(
-          dlsym(RTLD_NEXT,
-                "_ZSt17rethrow_exceptionNSt15__exception_ptr13exception_ptrE"));
+      reinterpret_cast<decltype(&rethrow_exception)>(dlsym(
+          RTLD_NEXT,
+          "_ZSt17rethrow_exceptionNSt15__exception_ptr13exception_ptrE"));
   getRethrowExceptionCallbacks().invoke(ep);
   orig_rethrow_exception(ep);
   __builtin_unreachable(); // orig_rethrow_exception never returns

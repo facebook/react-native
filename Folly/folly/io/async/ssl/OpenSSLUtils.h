@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,9 @@
 #pragma once
 
 #include <folly/Range.h>
+#include <folly/portability/OpenSSL.h>
 #include <folly/portability/Sockets.h>
-
-#include <openssl/ssl.h>
-#include <openssl/x509v3.h>
+#include <folly/ssl/OpenSSLPtrTypes.h>
 
 namespace folly {
 namespace ssl {
@@ -63,9 +62,8 @@ class OpenSSLUtils {
    */
   // TODO(agartrell): Add support for things like common name when
   // necessary.
-  static bool validatePeerCertNames(X509* cert,
-                                    const sockaddr* addr,
-                                    socklen_t addrLen);
+  static bool
+  validatePeerCertNames(X509* cert, const sockaddr* addr, socklen_t addrLen);
 
   /**
    * Get the peer socket address from an X509_STORE_CTX*.  Unlike the
@@ -77,9 +75,10 @@ class OpenSSLUtils {
    * @param addrLen     out param for length of address
    * @return true on success, false on failure
    */
-  static bool getPeerAddressFromX509StoreCtx(X509_STORE_CTX* ctx,
-                                             sockaddr_storage* addrStorage,
-                                             socklen_t* addrLen);
+  static bool getPeerAddressFromX509StoreCtx(
+      X509_STORE_CTX* ctx,
+      sockaddr_storage* addrStorage,
+      socklen_t* addrLen);
 
   /**
    * Get a stringified cipher name (e.g., ECDHE-ECDSA-CHACHA20-POLY1305) given
@@ -92,9 +91,29 @@ class OpenSSLUtils {
   static const std::string& getCipherName(uint16_t cipherCode);
 
   /**
-  * Wrappers for BIO operations that may be different across different
-  * versions/flavors of OpenSSL (including forks like BoringSSL)
-  */
+   * Set the 'initial_ctx' SSL_CTX* inside an SSL. The initial_ctx is used to
+   * point to the SSL_CTX on which servername callback and session callbacks,
+   * as well as session caching stats are set. If we want to enforce SSL_CTX
+   * thread-based ownership (e.g., thread-local SSL_CTX) in the application, we
+   * need to also set/reset the initial_ctx when we call SSL_set_SSL_CTX.
+   *
+   * @param ssl      SSL pointer
+   * @param ctx      SSL_CTX pointer
+   * @return Cipher name, or empty if the code is not found
+   */
+  static void setSSLInitialCtx(SSL* ssl, SSL_CTX* ctx);
+  static SSL_CTX* getSSLInitialCtx(SSL* ssl);
+
+  /**
+   * Get the common name out of a cert.  Return empty if x509 is null.
+   */
+  static std::string getCommonName(X509* x509);
+
+  /**
+   * Wrappers for BIO operations that may be different across different
+   * versions/flavors of OpenSSL (including forks like BoringSSL)
+   */
+  static BioMethodUniquePtr newSocketBioMethod();
   static bool setCustomBioReadMethod(
       BIO_METHOD* bioMeth,
       int (*meth)(BIO*, char*, int));
@@ -104,10 +123,9 @@ class OpenSSLUtils {
   static int getBioShouldRetryWrite(int ret);
   static void setBioAppData(BIO* b, void* ptr);
   static void* getBioAppData(BIO* b);
-  static void setCustomBioMethod(BIO*, BIO_METHOD*);
   static int getBioFd(BIO* b, int* fd);
   static void setBioFd(BIO* b, int fd, int flags);
 };
 
-} // ssl
-} // folly
+} // namespace ssl
+} // namespace folly

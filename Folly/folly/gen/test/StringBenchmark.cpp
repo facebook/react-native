@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include <atomic>
+
 #include <glog/logging.h>
 
 #include <folly/Benchmark.h>
-#include <folly/Foreach.h>
 #include <folly/String.h>
+#include <folly/container/Foreach.h>
 #include <folly/gen/Base.h>
 #include <folly/gen/String.h>
 
@@ -26,16 +28,14 @@ using namespace folly;
 using namespace folly::gen;
 using std::pair;
 using std::set;
-using std::vector;
 using std::tuple;
+using std::vector;
 
 namespace {
 
 static std::atomic<int> testSize(1000);
-static vector<fbstring> testStrVector
-  = seq(1, testSize.load())
-  | eachTo<fbstring>()
-  | as<vector>();
+static vector<fbstring> testStrVector =
+    seq(1, testSize.load()) | eachTo<fbstring>() | as<vector>();
 static auto testFileContent = from(testStrVector) | unsplit('\n');
 
 const char* const kLine = "The quick brown fox jumped over the lazy dog.\n";
@@ -59,9 +59,11 @@ void initStringResplitterBenchmark() {
   }
 }
 
-size_t len(folly::StringPiece s) { return s.size(); }
+size_t len(folly::StringPiece s) {
+  return s.size();
+}
 
-}  // namespace
+} // namespace
 
 BENCHMARK(StringResplitter_Big, iters) {
   size_t s = 0;
@@ -79,7 +81,7 @@ BENCHMARK_RELATIVE(StringResplitter_Small, iters) {
   folly::doNotOptimizeAway(s);
 }
 
-BENCHMARK_DRAW_LINE()
+BENCHMARK_DRAW_LINE();
 
 BENCHMARK(StringSplit_Old, iters) {
   size_t s = 0;
@@ -92,7 +94,6 @@ BENCHMARK(StringSplit_Old, iters) {
   folly::doNotOptimizeAway(s);
 }
 
-
 BENCHMARK_RELATIVE(StringSplit_Gen_Vector, iters) {
   size_t s = 0;
   StringPiece line(kLine);
@@ -102,7 +103,7 @@ BENCHMARK_RELATIVE(StringSplit_Gen_Vector, iters) {
   folly::doNotOptimizeAway(s);
 }
 
-BENCHMARK_DRAW_LINE()
+BENCHMARK_DRAW_LINE();
 
 BENCHMARK(StringSplit_Old_ReuseVector, iters) {
   size_t s = 0;
@@ -146,7 +147,7 @@ BENCHMARK_RELATIVE(StringSplit_Gen_Take, iters) {
   folly::doNotOptimizeAway(s);
 }
 
-BENCHMARK_DRAW_LINE()
+BENCHMARK_DRAW_LINE();
 
 BENCHMARK(StringUnsplit_Old, iters) {
   size_t s = 0;
@@ -171,7 +172,6 @@ BENCHMARK_RELATIVE(StringUnsplit_Old_ReusedBuffer, iters) {
 
 BENCHMARK_RELATIVE(StringUnsplit_Gen, iters) {
   size_t s = 0;
-  StringPiece line(kLine);
   while (iters--) {
     fbstring joined = from(testStrVector) | unsplit(',');
     s += joined.size();
@@ -190,14 +190,12 @@ BENCHMARK_RELATIVE(StringUnsplit_Gen_ReusedBuffer, iters) {
   folly::doNotOptimizeAway(s);
 }
 
-BENCHMARK_DRAW_LINE()
+BENCHMARK_DRAW_LINE();
 
 void StringUnsplit_Gen(size_t iters, size_t joinSize) {
   std::vector<fbstring> v;
   BENCHMARK_SUSPEND {
-    FOR_EACH_RANGE(i, 0, joinSize) {
-      v.push_back(to<fbstring>(rand()));
-    }
+    FOR_EACH_RANGE (i, 0, joinSize) { v.push_back(to<fbstring>(rand())); }
   }
   size_t s = 0;
   fbstring buffer;
@@ -214,7 +212,7 @@ BENCHMARK_RELATIVE_PARAM(StringUnsplit_Gen, 2000)
 BENCHMARK_RELATIVE_PARAM(StringUnsplit_Gen, 4000)
 BENCHMARK_RELATIVE_PARAM(StringUnsplit_Gen, 8000)
 
-BENCHMARK_DRAW_LINE()
+BENCHMARK_DRAW_LINE();
 void Lines_Gen(size_t iters, int joinSize) {
   size_t s = 0;
   StringPiece content = testFileContent;
@@ -228,22 +226,25 @@ BENCHMARK_PARAM(Lines_Gen, 1e3)
 BENCHMARK_RELATIVE_PARAM(Lines_Gen, 2e3)
 BENCHMARK_RELATIVE_PARAM(Lines_Gen, 3e3)
 
-BENCHMARK_DRAW_LINE()
+BENCHMARK_DRAW_LINE();
 
-fbstring records
-= seq<size_t>(1, 1000)
-  | mapped([](size_t i) {
+// clang-format off
+fbstring records = seq<size_t>(1, 1000)
+    | mapped([](size_t i) {
       return folly::to<fbstring>(i, ' ', i * i, ' ', i * i * i);
     })
-  | unsplit('\n');
+    | unsplit('\n');
+// clang-format o
 
 BENCHMARK(Records_EachToTuple, iters) {
   size_t s = 0;
   for (size_t i = 0; i < iters; i += 1000) {
+    // clang-format off
     s += split(records, '\n')
-       | eachToTuple<int, size_t, StringPiece>(' ')
-       | get<1>()
-       | sum;
+        | eachToTuple<int, size_t, StringPiece>(' ')
+        | get<1>()
+        | sum;
+    // clang-format on
   }
   folly::doNotOptimizeAway(s);
 }
@@ -252,18 +253,20 @@ BENCHMARK_RELATIVE(Records_VectorStringPieceReused, iters) {
   size_t s = 0;
   std::vector<StringPiece> fields;
   for (size_t i = 0; i < iters; i += 1000) {
+    // clang-format off
     s += split(records, '\n')
-       | mapped([&](StringPiece line) {
-           fields.clear();
-           folly::split(' ', line, fields);
-           CHECK(fields.size() == 3);
-           return std::make_tuple(
-             folly::to<int>(fields[0]),
-             folly::to<size_t>(fields[1]),
-             StringPiece(fields[2]));
-         })
-       | get<1>()
-       | sum;
+        | mapped([&](StringPiece line) {
+          fields.clear();
+          folly::split(' ', line, fields);
+          CHECK(fields.size() == 3);
+          return std::make_tuple(
+              folly::to<int>(fields[0]),
+              folly::to<size_t>(fields[1]),
+              StringPiece(fields[2]));
+        })
+        | get<1>()
+        | sum;
+    // clang-format on
   }
   folly::doNotOptimizeAway(s);
 }
@@ -271,18 +274,20 @@ BENCHMARK_RELATIVE(Records_VectorStringPieceReused, iters) {
 BENCHMARK_RELATIVE(Records_VectorStringPiece, iters) {
   size_t s = 0;
   for (size_t i = 0; i < iters; i += 1000) {
+    // clang-format off
     s += split(records, '\n')
-       | mapped([](StringPiece line) {
-           std::vector<StringPiece> fields;
-           folly::split(' ', line, fields);
-           CHECK(fields.size() == 3);
-           return std::make_tuple(
-             folly::to<int>(fields[0]),
-             folly::to<size_t>(fields[1]),
-             StringPiece(fields[2]));
-         })
-       | get<1>()
-       | sum;
+        | mapped([](StringPiece line) {
+          std::vector<StringPiece> fields;
+          folly::split(' ', line, fields);
+          CHECK(fields.size() == 3);
+          return std::make_tuple(
+              folly::to<int>(fields[0]),
+              folly::to<size_t>(fields[1]),
+              StringPiece(fields[2]));
+        })
+        | get<1>()
+        | sum;
+    // clang-format on
   }
   folly::doNotOptimizeAway(s);
 }
@@ -290,18 +295,20 @@ BENCHMARK_RELATIVE(Records_VectorStringPiece, iters) {
 BENCHMARK_RELATIVE(Records_VectorString, iters) {
   size_t s = 0;
   for (size_t i = 0; i < iters; i += 1000) {
+    // clang-format off
     s += split(records, '\n')
-       | mapped([](StringPiece line) {
-           std::vector<std::string> fields;
-           folly::split(' ', line, fields);
-           CHECK(fields.size() == 3);
-           return std::make_tuple(
-             folly::to<int>(fields[0]),
-             folly::to<size_t>(fields[1]),
-             StringPiece(fields[2]));
-         })
-       | get<1>()
-       | sum;
+        | mapped([](StringPiece line) {
+          std::vector<std::string> fields;
+          folly::split(' ', line, fields);
+          CHECK(fields.size() == 3);
+          return std::make_tuple(
+              folly::to<int>(fields[0]),
+              folly::to<size_t>(fields[1]),
+              StringPiece(fields[2]));
+        })
+        | get<1>()
+        | sum;
+    // clang-format on
   }
   folly::doNotOptimizeAway(s);
 }
@@ -337,7 +344,7 @@ BENCHMARK_RELATIVE(Records_VectorString, iters) {
 // Records_VectorString                              16.70%   607.47us    1.65K
 // ============================================================================
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   initStringResplitterBenchmark();
   runBenchmarks();

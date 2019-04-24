@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ TEST(Uri, Simple) {
     EXPECT_EQ("/hello/world", u.path());
     EXPECT_EQ("query", u.query());
     EXPECT_EQ("fragment", u.fragment());
-    EXPECT_EQ(s, u.fbstr());  // canonical
+    EXPECT_EQ(s, u.fbstr()); // canonical
   }
 
   {
@@ -51,7 +51,7 @@ TEST(Uri, Simple) {
     EXPECT_EQ("/hello/world", u.path());
     EXPECT_EQ("query", u.query());
     EXPECT_EQ("fragment", u.fragment());
-    EXPECT_EQ(s, u.fbstr());  // canonical
+    EXPECT_EQ(s, u.fbstr()); // canonical
   }
 
   {
@@ -66,7 +66,7 @@ TEST(Uri, Simple) {
     EXPECT_EQ("/hello/world", u.path());
     EXPECT_EQ("query", u.query());
     EXPECT_EQ("fragment", u.fragment());
-    EXPECT_EQ(s, u.fbstr());  // canonical
+    EXPECT_EQ(s, u.fbstr()); // canonical
   }
 
   {
@@ -82,7 +82,7 @@ TEST(Uri, Simple) {
     EXPECT_EQ("/hello/world", u.path());
     EXPECT_EQ("query", u.query());
     EXPECT_EQ("fragment", u.fragment());
-    EXPECT_EQ(s, u.fbstr());  // canonical
+    EXPECT_EQ(s, u.fbstr()); // canonical
   }
 
   {
@@ -98,7 +98,7 @@ TEST(Uri, Simple) {
     EXPECT_EQ("/hello/world", u.path());
     EXPECT_EQ("query", u.query());
     EXPECT_EQ("", u.fragment());
-    EXPECT_EQ(s, u.fbstr());  // canonical
+    EXPECT_EQ(s, u.fbstr()); // canonical
   }
 
   {
@@ -114,7 +114,7 @@ TEST(Uri, Simple) {
     EXPECT_EQ("/hello/world", u.path());
     EXPECT_EQ("query", u.query());
     EXPECT_EQ("", u.fragment());
-    EXPECT_EQ(s, u.fbstr());  // canonical
+    EXPECT_EQ(s, u.fbstr()); // canonical
   }
 
   {

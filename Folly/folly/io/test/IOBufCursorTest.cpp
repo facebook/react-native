@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include <folly/io/IOBuf.h>
 
 #include <folly/Format.h>
 #include <folly/Range.h>
 #include <folly/io/Cursor.h>
 #include <folly/portability/GTest.h>
+#include <numeric>
+#include <vector>
 
 using folly::ByteRange;
 using folly::format;
@@ -140,7 +141,7 @@ TEST(IOBuf, Cursor) {
   c.write((uint8_t)40); // OK
   try {
     c.write((uint8_t)10); // Bad write, checked should except.
-    EXPECT_EQ(true, false);
+    ADD_FAILURE();
   } catch (...) {
   }
 }
@@ -188,7 +189,7 @@ std::string toString(const IOBuf& buf) {
   return str;
 }
 
-}  // namespace
+} // namespace
 
 TEST(IOBuf, PullAndPeek) {
   std::unique_ptr<IOBuf> iobuf1(IOBuf::create(10));
@@ -211,8 +212,7 @@ TEST(IOBuf, PullAndPeek) {
   EXPECT_EQ(11, Cursor(iobuf1.get()).pullAtMost(buf, 20));
   EXPECT_EQ("hello world", std::string(buf));
 
-  EXPECT_THROW({Cursor(iobuf1.get()).pull(buf, 20);},
-               std::out_of_range);
+  EXPECT_THROW({ Cursor(iobuf1.get()).pull(buf, 20); }, std::out_of_range);
 
   {
     RWPrivateCursor cursor(iobuf1.get());
@@ -251,7 +251,7 @@ TEST(IOBuf, pushCursorData) {
   iobuf1->prependChain(std::move(iobuf3));
   EXPECT_TRUE(iobuf1->isChained());
 
-  //write 20 bytes to the buffer chain
+  // write 20 bytes to the buffer chain
   RWPrivateCursor wcursor(iobuf1.get());
   EXPECT_FALSE(wcursor.isAtEnd());
   wcursor.writeBE<uint64_t>(1);
@@ -284,7 +284,6 @@ TEST(IOBuf, pushCursorData) {
   EXPECT_EQ(1, rcursor2.readBE<uint64_t>());
   EXPECT_EQ(10, rcursor2.readBE<uint64_t>());
   EXPECT_EQ(20, rcursor2.readBE<uint32_t>());
-
 }
 
 TEST(IOBuf, Gather) {
@@ -313,9 +312,10 @@ TEST(IOBuf, Gather) {
   EXPECT_EQ(8, cursor.length());
   EXPECT_EQ(8, cursor.totalLength());
   EXPECT_FALSE(cursor.isAtEnd());
-  EXPECT_EQ("lo world",
-            folly::StringPiece(reinterpret_cast<const char*>(cursor.data()),
-                               cursor.length()));
+  EXPECT_EQ(
+      "lo world",
+      folly::StringPiece(
+          reinterpret_cast<const char*>(cursor.data()), cursor.length()));
   EXPECT_EQ(2, iobuf1->countChainElements());
   EXPECT_EQ(11, iobuf1->computeChainDataLength());
 
@@ -348,14 +348,11 @@ TEST(IOBuf, cloneAndInsert) {
   EXPECT_EQ(2, cloned->countChainElements());
   EXPECT_EQ(3, cloned->computeChainDataLength());
 
-
   EXPECT_EQ(11, Cursor(iobuf1.get()).cloneAtMost(cloned, 20));
   EXPECT_EQ(3, cloned->countChainElements());
   EXPECT_EQ(11, cloned->computeChainDataLength());
 
-
-  EXPECT_THROW({Cursor(iobuf1.get()).clone(cloned, 20);},
-               std::out_of_range);
+  EXPECT_THROW({ Cursor(iobuf1.get()).clone(cloned, 20); }, std::out_of_range);
 
   {
     // Check that inserting in the middle of an iobuf splits
@@ -368,6 +365,7 @@ TEST(IOBuf, cloneAndInsert) {
 
     cursor.insert(std::move(cloned));
     cursor.insert(folly::IOBuf::create(0));
+    EXPECT_EQ(4, cursor.getCurrentPosition());
     EXPECT_EQ(7, iobuf1->countChainElements());
     EXPECT_EQ(14, iobuf1->computeChainDataLength());
     // Check that nextBuf got set correctly to the buffer with 1 byte left
@@ -385,28 +383,66 @@ TEST(IOBuf, cloneAndInsert) {
     cursor.skip(1);
 
     cursor.insert(std::move(cloned));
+    EXPECT_EQ(2, cursor.getCurrentPosition());
     EXPECT_EQ(8, iobuf1->countChainElements());
     EXPECT_EQ(15, iobuf1->computeChainDataLength());
     // Check that nextBuf got set correctly
     cursor.read<uint8_t>();
   }
   {
-    // Check that inserting at the beginning doesn't create empty buf
+    // Check that inserting at the beginning of a chunk (except first one)
+    // doesn't create empty buf
+    RWPrivateCursor cursor(iobuf1.get());
+    Cursor(iobuf1.get()).clone(cloned, 1);
+    EXPECT_EQ(1, cloned->countChainElements());
+    EXPECT_EQ(1, cloned->computeChainDataLength());
+
+    cursor.skip(1);
+
+    cursor.insert(std::move(cloned));
+    EXPECT_EQ(2, cursor.getCurrentPosition());
+    EXPECT_EQ(14, cursor.totalLength());
+    EXPECT_EQ(9, iobuf1->countChainElements());
+    EXPECT_EQ(16, iobuf1->computeChainDataLength());
+    // Check that nextBuf got set correctly
+    cursor.read<uint8_t>();
+  }
+  {
+    // Check that inserting at the beginning of a chain DOES keep an empty
+    // buffer.
     RWPrivateCursor cursor(iobuf1.get());
     Cursor(iobuf1.get()).clone(cloned, 1);
     EXPECT_EQ(1, cloned->countChainElements());
     EXPECT_EQ(1, cloned->computeChainDataLength());
 
     cursor.insert(std::move(cloned));
-    EXPECT_EQ(9, iobuf1->countChainElements());
-    EXPECT_EQ(16, iobuf1->computeChainDataLength());
+    EXPECT_EQ(1, cursor.getCurrentPosition());
+    EXPECT_EQ(16, cursor.totalLength());
+    EXPECT_EQ(11, iobuf1->countChainElements());
+    EXPECT_EQ(17, iobuf1->computeChainDataLength());
     // Check that nextBuf got set correctly
     cursor.read<uint8_t>();
+  }
+  {
+    // Check that inserting at the end of the buffer keeps it at the end.
+    RWPrivateCursor cursor(iobuf1.get());
+    Cursor(iobuf1.get()).clone(cloned, 1);
+    EXPECT_EQ(1, cloned->countChainElements());
+    EXPECT_EQ(1, cloned->computeChainDataLength());
+
+    cursor.advanceToEnd();
+    EXPECT_EQ(17, cursor.getCurrentPosition());
+    cursor.insert(std::move(cloned));
+    EXPECT_EQ(18, cursor.getCurrentPosition());
+    EXPECT_EQ(0, cursor.totalLength());
+    EXPECT_EQ(12, iobuf1->countChainElements());
+    EXPECT_EQ(18, iobuf1->computeChainDataLength());
+    EXPECT_TRUE(cursor.isAtEnd());
   }
 }
 
 TEST(IOBuf, cloneWithEmptyBufAtStart) {
-  folly::IOBufEqual eq;
+  folly::IOBufEqualTo eq;
   auto empty = IOBuf::create(0);
   auto hel = IOBuf::create(3);
   append(hel, "hel");
@@ -454,9 +490,9 @@ TEST(IOBuf, Appender) {
   auto cap = head->capacity();
   auto len1 = app.length();
   EXPECT_EQ(cap - 5, len1);
-  app.ensure(len1);  // won't grow
+  app.ensure(len1); // won't grow
   EXPECT_EQ(len1, app.length());
-  app.ensure(len1 + 1);  // will grow
+  app.ensure(len1 + 1); // will grow
   EXPECT_LE(len1 + 1, app.length());
 
   append(app, " world");
@@ -471,17 +507,22 @@ TEST(IOBuf, Printf) {
   EXPECT_EQ(head.length(), 4);
   EXPECT_EQ(0, memcmp(head.data(), "test\0", 5));
 
-  app.printf("%d%s %s%s %#x", 32, "this string is",
-             "longer than our original allocation size,",
-             "and will therefore require a new allocation", 0x12345678);
+  app.printf(
+      "%d%s %s%s %#x",
+      32,
+      "this string is",
+      "longer than our original allocation size,",
+      "and will therefore require a new allocation",
+      0x12345678);
   // The tailroom should start with a nul byte now.
   EXPECT_GE(head.prev()->tailroom(), 1u);
   EXPECT_EQ(0, *head.prev()->tail());
 
-  EXPECT_EQ("test32this string is longer than our original "
-            "allocation size,and will therefore require a "
-            "new allocation 0x12345678",
-            head.moveToFbString().toStdString());
+  EXPECT_EQ(
+      "test32this string is longer than our original "
+      "allocation size,and will therefore require a "
+      "new allocation 0x12345678",
+      head.moveToFbString().toStdString());
 }
 
 TEST(IOBuf, Format) {
@@ -492,16 +533,19 @@ TEST(IOBuf, Format) {
   EXPECT_EQ(head.length(), 4);
   EXPECT_EQ(0, memcmp(head.data(), "test", 4));
 
-  auto fmt = format("{}{} {}{} {:#x}",
-                    32, "this string is",
-                    "longer than our original allocation size,",
-                    "and will therefore require a new allocation",
-                    0x12345678);
+  auto fmt = format(
+      "{}{} {}{} {:#x}",
+      32,
+      "this string is",
+      "longer than our original allocation size,",
+      "and will therefore require a new allocation",
+      0x12345678);
   fmt(app);
-  EXPECT_EQ("test32this string is longer than our original "
-            "allocation size,and will therefore require a "
-            "new allocation 0x12345678",
-            head.moveToFbString().toStdString());
+  EXPECT_EQ(
+      "test32this string is longer than our original "
+      "allocation size,and will therefore require a "
+      "new allocation 0x12345678",
+      head.moveToFbString().toStdString());
 }
 
 TEST(IOBuf, QueueAppender) {
@@ -527,7 +571,60 @@ TEST(IOBuf, QueueAppender) {
     EXPECT_EQ(i, cursor.readBE<uint32_t>());
   }
 
-  EXPECT_THROW({cursor.readBE<uint32_t>();}, std::out_of_range);
+  EXPECT_THROW({ cursor.readBE<uint32_t>(); }, std::out_of_range);
+}
+
+TEST(IOBuf, QueueAppenderPushAtMostFillBuffer) {
+  folly::IOBufQueue queue;
+  // There should be a goodMallocSize between 125 and 1000
+  QueueAppender appender{&queue, 125};
+  std::vector<uint8_t> data;
+  data.resize(1000);
+  std::iota(data.begin(), data.end(), uint8_t(0));
+  // Add 100 byte
+  appender.pushAtMost(data.data(), 100);
+  // Add 900 bytes
+  appender.pushAtMost(data.data() + 100, data.size() - 100);
+  const auto buf = queue.front();
+  // Should fill the current buffer before adding another
+  EXPECT_LE(2, buf->countChainElements());
+  EXPECT_EQ(0, buf->tailroom());
+  EXPECT_LE(125, buf->length());
+  EXPECT_EQ(1000, buf->computeChainDataLength());
+  const StringPiece sp{(const char*)data.data(), data.size()};
+  EXPECT_EQ(sp, toString(*buf));
+}
+
+TEST(IOBuf, QueueAppenderInsertOwn) {
+  auto buf = IOBuf::create(10);
+  folly::IOBufQueue queue;
+  QueueAppender appender{&queue, 128};
+  appender.insert(std::move(buf));
+
+  std::vector<uint8_t> data;
+  data.resize(256);
+  std::iota(data.begin(), data.end(), 0);
+  appender.pushAtMost(folly::range(data));
+  // Buffer is owned, so we should write to it
+  EXPECT_LE(2, queue.front()->countChainElements());
+  EXPECT_EQ(0, queue.front()->tailroom());
+  const StringPiece sp{(const char*)data.data(), data.size()};
+  EXPECT_EQ(sp, toString(*queue.front()));
+}
+
+TEST(IOBuf, QueueAppenderInsertClone) {
+  IOBuf buf{IOBuf::CREATE, 100};
+  folly::IOBufQueue queue;
+  QueueAppender appender{&queue, 100};
+  // Buffer is shared, so we create a new buffer to write to
+  appender.insert(buf);
+  uint8_t x = 42;
+  appender.pushAtMost(&x, 1);
+  EXPECT_EQ(2, queue.front()->countChainElements());
+  EXPECT_EQ(0, queue.front()->length());
+  EXPECT_LT(0, queue.front()->tailroom());
+  EXPECT_EQ(1, queue.front()->next()->length());
+  EXPECT_EQ(x, queue.front()->next()->data()[0]);
 }
 
 TEST(IOBuf, CursorOperators) {
@@ -701,8 +798,7 @@ TEST(IOBuf, StringOperations) {
     chain->prependChain(std::move(buf));
 
     Cursor curs(chain.get());
-    EXPECT_THROW(curs.readTerminatedString(),
-                 std::out_of_range);
+    EXPECT_THROW(curs.readTerminatedString(), std::out_of_range);
   }
 
   // Test reading a null-terminated string past the maximum length
@@ -714,8 +810,7 @@ TEST(IOBuf, StringOperations) {
     chain->prependChain(std::move(buf));
 
     Cursor curs(chain.get());
-    EXPECT_THROW(curs.readTerminatedString('\0', 3),
-                 std::length_error);
+    EXPECT_THROW(curs.readTerminatedString('\0', 3), std::length_error);
   }
 
   // Test reading a two fixed-length strings from a single buffer with an extra
@@ -976,4 +1071,142 @@ TEST(IOBuf, TestRetreatOperators) {
   auto retreated = curs - 5;
   EXPECT_EQ(retreated.totalLength(), 5);
   EXPECT_EQ(curs.totalLength(), 0);
+}
+
+TEST(IOBuf, tryRead) {
+  unique_ptr<IOBuf> iobuf1(IOBuf::create(6));
+  iobuf1->append(6);
+  unique_ptr<IOBuf> iobuf2(IOBuf::create(24));
+  iobuf2->append(24);
+
+  iobuf1->prependChain(std::move(iobuf2));
+
+  EXPECT_TRUE(iobuf1->isChained());
+
+  RWPrivateCursor wcursor(iobuf1.get());
+  Cursor rcursor(iobuf1.get());
+  wcursor.writeLE((uint32_t)1);
+  wcursor.writeLE((uint64_t)1);
+  wcursor.writeLE((uint64_t)1);
+  wcursor.writeLE((uint64_t)1);
+  wcursor.writeLE((uint16_t)1);
+  EXPECT_EQ(0, wcursor.totalLength());
+
+  EXPECT_EQ(1u, rcursor.readLE<uint32_t>());
+
+  EXPECT_EQ(1u, rcursor.readLE<uint32_t>());
+  EXPECT_EQ(0u, rcursor.readLE<uint32_t>());
+
+  EXPECT_EQ(1u, rcursor.readLE<uint32_t>());
+  rcursor.skip(4);
+
+  uint32_t val;
+  EXPECT_TRUE(rcursor.tryRead(val));
+  EXPECT_EQ(1, val);
+  EXPECT_TRUE(rcursor.tryRead(val));
+
+  EXPECT_EQ(0, val);
+  EXPECT_FALSE(rcursor.tryRead(val));
+}
+
+TEST(IOBuf, tryReadLE) {
+  IOBuf buf{IOBuf::CREATE, 4};
+  buf.append(4);
+
+  RWPrivateCursor wcursor(&buf);
+  Cursor rcursor(&buf);
+
+  const uint32_t expected = 0x01020304;
+  wcursor.writeLE(expected);
+  uint32_t actual;
+  EXPECT_TRUE(rcursor.tryReadLE(actual));
+  EXPECT_EQ(expected, actual);
+}
+
+TEST(IOBuf, tryReadBE) {
+  IOBuf buf{IOBuf::CREATE, 4};
+  buf.append(4);
+
+  RWPrivateCursor wcursor(&buf);
+  Cursor rcursor(&buf);
+
+  const uint32_t expected = 0x01020304;
+  wcursor.writeBE(expected);
+  uint32_t actual;
+  EXPECT_TRUE(rcursor.tryReadBE(actual));
+  EXPECT_EQ(expected, actual);
+}
+
+TEST(IOBuf, tryReadConsumesAllInputOnFailure) {
+  IOBuf buf{IOBuf::CREATE, 2};
+  buf.append(2);
+
+  Cursor rcursor(&buf);
+  uint32_t val;
+  EXPECT_FALSE(rcursor.tryRead(val));
+  EXPECT_EQ(0, rcursor.totalLength());
+}
+
+TEST(IOBuf, readConsumesAllInputOnFailure) {
+  IOBuf buf{IOBuf::CREATE, 2};
+  buf.append(2);
+
+  Cursor rcursor(&buf);
+  EXPECT_THROW(rcursor.read<uint32_t>(), std::out_of_range);
+  EXPECT_EQ(0, rcursor.totalLength());
+}
+
+TEST(IOBuf, pushEmptyByteRange) {
+  // Test pushing an empty ByteRange.  This mainly tests that we do not
+  // trigger UBSAN warnings by calling memcpy() with an null source pointer,
+  // which is undefined behavior even if the length is 0.
+  IOBuf buf{IOBuf::CREATE, 2};
+  ByteRange emptyBytes;
+
+  // Test calling Cursor::push()
+  RWPrivateCursor wcursor(&buf);
+  wcursor.push(emptyBytes);
+  EXPECT_EQ(0, buf.computeChainDataLength());
+
+  // Test calling Appender::push()
+  Appender app(&buf, 16);
+  app.push(emptyBytes);
+  EXPECT_EQ(0, buf.computeChainDataLength());
+}
+
+TEST(IOBuf, positionTracking) {
+  unique_ptr<IOBuf> iobuf1(IOBuf::create(6));
+  iobuf1->append(6);
+  unique_ptr<IOBuf> iobuf2(IOBuf::create(24));
+  iobuf2->append(24);
+  iobuf1->prependChain(std::move(iobuf2));
+
+  Cursor cursor(iobuf1.get());
+
+  EXPECT_EQ(0, cursor.getCurrentPosition());
+  EXPECT_EQ(6, cursor.length());
+
+  cursor.skip(3);
+  EXPECT_EQ(3, cursor.getCurrentPosition());
+  EXPECT_EQ(3, cursor.length());
+
+  // Test that we properly handle advancing to the next chunk.
+  cursor.skip(4);
+  EXPECT_EQ(7, cursor.getCurrentPosition());
+  EXPECT_EQ(23, cursor.length());
+
+  // Test that we properly handle doing to the previous chunk.
+  cursor.retreat(2);
+  EXPECT_EQ(5, cursor.getCurrentPosition());
+  EXPECT_EQ(1, cursor.length());
+
+  // Test that we properly handle advanceToEnd
+  cursor.advanceToEnd();
+  EXPECT_EQ(30, cursor.getCurrentPosition());
+  EXPECT_EQ(0, cursor.totalLength());
+
+  // Reset to 0.
+  cursor.reset(iobuf1.get());
+  EXPECT_EQ(0, cursor.getCurrentPosition());
+  EXPECT_EQ(30, cursor.totalLength());
 }

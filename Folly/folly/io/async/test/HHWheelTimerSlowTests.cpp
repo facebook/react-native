@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -296,7 +296,7 @@ TEST_F(HHWheelTimerTest, Stress) {
           timeout - 256);
       timeouts[i].fn = [&, i, timeout]() {
         LOG(INFO) << "FAIL:timer " << i << " still fired in " << timeout;
-        EXPECT_FALSE(true);
+        ADD_FAILURE();
       };
     } else {
       t.scheduleTimeout(&timeouts[i], std::chrono::milliseconds(timeout));
@@ -307,7 +307,7 @@ TEST_F(HHWheelTimerTest, Stress) {
         runtimeouts++;
         /* sleep override */ usleep(1000);
         LOG(INFO) << "Ran " << runtimeouts << " timeouts of " << timeoutcount;
-        timeouts[i].fn = [&, i]() {
+        timeouts[i].fn = [&]() {
           runtimeouts++;
           LOG(INFO) << "Ran " << runtimeouts << " timeouts of " << timeoutcount;
         };

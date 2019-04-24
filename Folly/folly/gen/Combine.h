@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,22 +23,23 @@ namespace folly {
 namespace gen {
 namespace detail {
 
-template<class Container>
+template <class Container>
 class Interleave;
 
-template<class Container>
+template <class Container>
 class Zip;
 
-}  // namespace detail
+} // namespace detail
 
-template<class Source2,
-         class Source2Decayed = typename std::decay<Source2>::type,
-         class Interleave = detail::Interleave<Source2Decayed>>
+template <
+    class Source2,
+    class Source2Decayed = typename std::decay<Source2>::type,
+    class Interleave = detail::Interleave<Source2Decayed>>
 Interleave interleave(Source2&& source2) {
   return Interleave(std::forward<Source2>(source2));
 }
 
-}  // namespace gen
-}  // namespace folly
+} // namespace gen
+} // namespace folly
 
 #include <folly/gen/Combine-inl.h>

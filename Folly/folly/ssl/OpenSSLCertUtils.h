@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2017-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,10 @@
 #include <string>
 #include <vector>
 
-#include <openssl/x509.h>
-
 #include <folly/Optional.h>
+#include <folly/io/IOBuf.h>
+#include <folly/portability/OpenSSL.h>
+#include <folly/ssl/OpenSSLPtrTypes.h>
 
 namespace folly {
 namespace ssl {
@@ -61,8 +62,42 @@ class OpenSSLCertUtils {
    */
   static folly::Optional<std::string> toString(X509& x509);
 
+  /**
+   * Decodes the DER representation of an X509 certificate.
+   *
+   * Throws on error (if a valid certificate can't be decoded).
+   */
+  static X509UniquePtr derDecode(ByteRange);
+
+  /**
+   * DER encodes an X509 certificate.
+   *
+   * Throws on error.
+   */
+  static std::unique_ptr<IOBuf> derEncode(X509&);
+
+  /**
+   * Reads certificates from memory and returns them as a vector of X509
+   * pointers.
+   */
+  static std::vector<X509UniquePtr> readCertsFromBuffer(ByteRange);
+
+  /**
+   * Return the output of the X509_digest for chosen message-digest algo
+   * NOTE: The returned digest will be in binary, and may need to be
+   * hex-encoded
+   */
+  static std::array<uint8_t, SHA_DIGEST_LENGTH> getDigestSha1(X509& x509);
+  static std::array<uint8_t, SHA256_DIGEST_LENGTH> getDigestSha256(X509& x509);
+
+  /**
+   * Reads a store from a file (or buffer).  Throws on error.
+   */
+  static X509StoreUniquePtr readStoreFromFile(std::string caFile);
+  static X509StoreUniquePtr readStoreFromBuffer(ByteRange);
+
  private:
   static std::string getDateTimeStr(const ASN1_TIME* time);
 };
-}
-}
+} // namespace ssl
+} // namespace folly

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,6 +50,7 @@ TEST(FixedStringCtorTest, Default) {
 
 TEST(FixedStringCtorTest, FromLiterals) {
   constexpr folly::FixedString<42> s{"hello world"};
+  static_assert(s[0] == 'h', "");
   constexpr folly::FixedString<11> s2{"hello world"};
   static_assert(s2[0] == 'h', "");
   static_assert(s2[10] == 'd', "");
@@ -262,11 +263,11 @@ TEST(FixedStringIndexTest, Index) {
   static_assert(digits[2] == '2', "");
   static_assert(digits[9] == '9', "");
   static_assert(digits[10] == '\0', "");
-  #ifdef NDEBUG
+#ifdef NDEBUG
   // This should be allowed and work in constexpr mode since the internal array
   // is actually big enough and op[] does no parameter validation:
   static_assert(digits[11] == '\0', "");
-  #endif
+#endif
 
   static_assert(digits.at(0) == '0', "");
   static_assert(digits.at(1) == '1', "");
@@ -310,6 +311,26 @@ TEST(FixedStringCompareTest, Compare) {
   static_assert("aaa" == tmp3, "");
   static_assert(tmp3 != "aaaa", "");
   static_assert(tmp3 == "aaa", "");
+}
+
+TEST(FixedStringCompareTest, CompareStdString) {
+  constexpr folly::FixedString<10> tmp1{"aaaaaaaaaa"};
+  std::string const tmp2{"aaaaaaaaaba"};
+  EXPECT_EQ(-1, tmp1.compare(tmp2));
+  // These are specifically testing the operators, and so we can't rely
+  // on whever the implementation details of EXPECT_<OP> might be.
+  EXPECT_FALSE(tmp1 == tmp2);
+  EXPECT_FALSE(tmp2 == tmp1);
+  EXPECT_TRUE(tmp1 != tmp2);
+  EXPECT_TRUE(tmp2 != tmp1);
+  EXPECT_TRUE(tmp1 < tmp2);
+  EXPECT_FALSE(tmp2 < tmp1);
+  EXPECT_TRUE(tmp1 <= tmp2);
+  EXPECT_FALSE(tmp2 <= tmp1);
+  EXPECT_FALSE(tmp1 > tmp2);
+  EXPECT_TRUE(tmp2 > tmp1);
+  EXPECT_FALSE(tmp1 >= tmp2);
+  EXPECT_TRUE(tmp2 >= tmp1);
 }
 
 #if FOLLY_USE_CPP14_CONSTEXPR
@@ -620,9 +641,10 @@ TEST(FixedStringConversionTest, ConversionToStdString) {
 constexpr std::size_t countSpacesReverse(folly::FixedString<50> s) {
   std::size_t count = 0u;
   auto i = s.rbegin();
-  for( ; i != s.rend(); ++i, --i, i++, i--, i+=1, i-=1, i+=1 ) {
-    if (' ' == *i)
+  for (; i != s.rend(); ++i, --i, i++, i--, i += 1, i -= 1, i += 1) {
+    if (' ' == *i) {
       ++count;
+    }
   }
   return count;
 }
@@ -641,22 +663,22 @@ TEST(FixedStringReverseIteratorTest, ConstexprReverseIteration) {
 }
 
 namespace GCC61971 {
-  // FixedString runs afoul of GCC #61971 (spurious -Warray-bounds)
-  // in optimized builds. The following test case triggers it for gcc-4.x.
-  // Test that FixedString suppresses the warning correctly.
-  // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=61971
-  constexpr auto xyz = folly::makeFixedString("xyz");
-  constexpr auto dot = folly::makeFixedString(".");
+// FixedString runs afoul of GCC #61971 (spurious -Warray-bounds)
+// in optimized builds. The following test case triggers it for gcc-4.x.
+// Test that FixedString suppresses the warning correctly.
+// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=61971
+constexpr auto xyz = folly::makeFixedString("xyz");
+constexpr auto dot = folly::makeFixedString(".");
 
-  template <typename T1>
-  constexpr auto concatStuff(const T1& component) noexcept {
-    return xyz + dot + component;
-  }
-  constexpr auto co = folly::makeFixedString("co");
+template <typename T1>
+constexpr auto concatStuff(const T1& component) noexcept {
+  return xyz + dot + component;
+}
+constexpr auto co = folly::makeFixedString("co");
 
-  struct S {
-    std::string s{concatStuff(co)};
-  };
+struct S {
+  std::string s{concatStuff(co)};
+};
 } // namespace GCC61971
 
 TEST(FixedStringGCC61971, GCC61971) {

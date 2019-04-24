@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,18 @@
  */
 
 #include <random>
+
 #include <folly/Benchmark.h>
+#include <folly/Fingerprint.h>
 #include <folly/Format.h>
 #include <folly/detail/SlowFingerprint.h>
-#include <folly/Fingerprint.h>
 
 using namespace std;
 using namespace folly;
 using folly::detail::SlowFingerprint;
 
 namespace {
-constexpr int kMaxIds = 64 << 10;  // 64Ki
+constexpr int kMaxIds = 64 << 10; // 64Ki
 constexpr int kMaxTerms = 64 << 10;
 
 // Globals are generally bad, but this is a benchmark, so there.
@@ -85,39 +86,38 @@ void fingerprintTerms(int num_iterations, int num_terms) {
 }
 
 void fastFingerprintIds64(int num_iterations, int num_ids) {
-  fingerprintIds<Fingerprint<64> >(num_iterations, num_ids);
+  fingerprintIds<Fingerprint<64>>(num_iterations, num_ids);
 }
 
 void slowFingerprintIds64(int num_iterations, int num_ids) {
-  fingerprintIds<SlowFingerprint<64> >(num_iterations, num_ids);
+  fingerprintIds<SlowFingerprint<64>>(num_iterations, num_ids);
 }
 
 void fastFingerprintIds96(int num_iterations, int num_ids) {
-  fingerprintIds<Fingerprint<96> >(num_iterations, num_ids);
+  fingerprintIds<Fingerprint<96>>(num_iterations, num_ids);
 }
 
 void fastFingerprintIds128(int num_iterations, int num_ids) {
-  fingerprintIds<Fingerprint<128> >(num_iterations, num_ids);
+  fingerprintIds<Fingerprint<128>>(num_iterations, num_ids);
 }
 
 void fastFingerprintTerms64(int num_iterations, int num_ids) {
-  fingerprintTerms<Fingerprint<64> >(num_iterations, num_ids);
+  fingerprintTerms<Fingerprint<64>>(num_iterations, num_ids);
 }
 
 void slowFingerprintTerms64(int num_iterations, int num_ids) {
-  fingerprintTerms<SlowFingerprint<64> >(num_iterations, num_ids);
+  fingerprintTerms<SlowFingerprint<64>>(num_iterations, num_ids);
 }
 
 void fastFingerprintTerms96(int num_iterations, int num_ids) {
-  fingerprintTerms<Fingerprint<96> >(num_iterations, num_ids);
+  fingerprintTerms<Fingerprint<96>>(num_iterations, num_ids);
 }
 
 void fastFingerprintTerms128(int num_iterations, int num_ids) {
-  fingerprintTerms<Fingerprint<128> >(num_iterations, num_ids);
+  fingerprintTerms<Fingerprint<128>>(num_iterations, num_ids);
 }
 
-
-}  // namespace
+} // namespace
 
 // Only benchmark one size of slowFingerprint; it's significantly slower
 // than fastFingeprint (as you can see for 64 bits) and it just slows down
@@ -125,12 +125,13 @@ void fastFingerprintTerms128(int num_iterations, int num_ids) {
 
 int main(int argc, char** argv) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
-  # define BM(name, min, max) \
-  for (size_t i = min; i <= max; i *= 2) { \
-    addBenchmark( \
-        __FILE__, \
-        sformat("{}_{}", #name, i).c_str(), \
-        [=](int iters) { name(iters, i); return iters; }); \
+#define BM(name, min, max)                                             \
+  for (size_t i = min; i <= max; i *= 2) {                             \
+    addBenchmark(                                                      \
+        __FILE__, sformat("{}_{}", #name, i).c_str(), [=](int iters) { \
+          name(iters, i);                                              \
+          return iters;                                                \
+        });                                                            \
   }
   BM(fastFingerprintIds64, 1, kMaxIds)
   BM(slowFingerprintIds64, 1, kMaxIds)
@@ -140,7 +141,7 @@ int main(int argc, char** argv) {
   BM(slowFingerprintTerms64, 1, kMaxTerms)
   BM(fastFingerprintTerms96, 1, kMaxTerms)
   BM(fastFingerprintTerms128, 1, kMaxTerms)
-  # undef BM
+#undef BM
 
   initialize();
   runBenchmarks();

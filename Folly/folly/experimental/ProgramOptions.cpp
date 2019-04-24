@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,7 @@ template <class T>
 class GFlagInfo {
  public:
   explicit GFlagInfo(gflags::CommandLineFlagInfo info)
-    : info_(std::move(info)),
-      isSet_(false) { }
+      : info_(std::move(info)), isSet_(false) {}
 
   void set(const T& value) {
     if (isSet_) {
@@ -53,9 +52,8 @@ class GFlagInfo {
     }
 
     auto strValue = folly::to<std::string>(value);
-    auto msg = gflags::SetCommandLineOption(
-        info_.name.c_str(),
-        strValue.c_str());
+    auto msg =
+        gflags::SetCommandLineOption(info_.name.c_str(), strValue.c_str());
     if (msg.empty()) {
       throw po::invalid_option_value(strValue);
     }
@@ -68,7 +66,9 @@ class GFlagInfo {
     return folly::to<T>(str);
   }
 
-  const gflags::CommandLineFlagInfo& info() const { return info_; }
+  const gflags::CommandLineFlagInfo& info() const {
+    return info_;
+  }
 
  private:
   gflags::CommandLineFlagInfo info_;
@@ -79,16 +79,22 @@ template <class T>
 class GFlagValueSemanticBase : public po::value_semantic {
  public:
   explicit GFlagValueSemanticBase(std::shared_ptr<GFlagInfo<T>> info)
-    : info_(std::move(info)) { }
+      : info_(std::move(info)) {}
 
-  std::string name() const override { return "arg"; }
-#if BOOST_VERSION >= 105900
-  bool adjacent_tokens_only() const {
+  std::string name() const override {
+    return "arg";
+  }
+#if BOOST_VERSION >= 105900 && BOOST_VERSION <= 106400
+  bool adjacent_tokens_only() const override {
     return false;
   }
 #endif
-  bool is_composing() const override { return false; }
-  bool is_required() const override { return false; }
+  bool is_composing() const override {
+    return false;
+  }
+  bool is_required() const override {
+    return false;
+  }
   // We handle setting the GFlags from parse(), so notify() does nothing.
   void notify(const boost::any& /* valueStore */) const override {}
   bool apply_default(boost::any& valueStore) const override {
@@ -102,9 +108,10 @@ class GFlagValueSemanticBase : public po::value_semantic {
     return true;
   }
 
-  void parse(boost::any& valueStore,
-             const std::vector<std::string>& tokens,
-             bool /* utf8 */) const override;
+  void parse(
+      boost::any& valueStore,
+      const std::vector<std::string>& tokens,
+      bool /* utf8 */) const override;
 
  private:
   virtual T parseValue(const std::vector<std::string>& tokens) const = 0;
@@ -114,9 +121,10 @@ class GFlagValueSemanticBase : public po::value_semantic {
 };
 
 template <class T>
-void GFlagValueSemanticBase<T>::parse(boost::any& valueStore,
-                                      const std::vector<std::string>& tokens,
-                                      bool /* utf8 */) const {
+void GFlagValueSemanticBase<T>::parse(
+    boost::any& valueStore,
+    const std::vector<std::string>& tokens,
+    bool /* utf8 */) const {
   T val;
   try {
     val = this->parseValue(tokens);
@@ -133,10 +141,14 @@ template <class T>
 class GFlagValueSemantic : public GFlagValueSemanticBase<T> {
  public:
   explicit GFlagValueSemantic(std::shared_ptr<GFlagInfo<T>> info)
-    : GFlagValueSemanticBase<T>(std::move(info)) { }
+      : GFlagValueSemanticBase<T>(std::move(info)) {}
 
-  unsigned min_tokens() const override { return 1; }
-  unsigned max_tokens() const override { return 1; }
+  unsigned min_tokens() const override {
+    return 1;
+  }
+  unsigned max_tokens() const override {
+    return 1;
+  }
 
   T parseValue(const std::vector<std::string>& tokens) const override {
     DCHECK(tokens.size() == 1);
@@ -147,10 +159,14 @@ class GFlagValueSemantic : public GFlagValueSemanticBase<T> {
 class BoolGFlagValueSemantic : public GFlagValueSemanticBase<bool> {
  public:
   explicit BoolGFlagValueSemantic(std::shared_ptr<GFlagInfo<bool>> info)
-    : GFlagValueSemanticBase<bool>(std::move(info)) { }
+      : GFlagValueSemanticBase<bool>(std::move(info)) {}
 
-  unsigned min_tokens() const override { return 0; }
-  unsigned max_tokens() const override { return 0; }
+  unsigned min_tokens() const override {
+    return 0;
+  }
+  unsigned max_tokens() const override {
+    return 0;
+  }
 
   bool parseValue(const std::vector<std::string>& tokens) const override {
     DCHECK(tokens.empty());
@@ -161,7 +177,7 @@ class BoolGFlagValueSemantic : public GFlagValueSemanticBase<bool> {
 class NegativeBoolGFlagValueSemantic : public BoolGFlagValueSemantic {
  public:
   explicit NegativeBoolGFlagValueSemantic(std::shared_ptr<GFlagInfo<bool>> info)
-    : BoolGFlagValueSemantic(std::move(info)) { }
+      : BoolGFlagValueSemantic(std::move(info)) {}
 
  private:
   void transform(bool& val) const override {
@@ -179,45 +195,48 @@ const std::string& getName(const std::string& name) {
 }
 
 template <class T>
-void addGFlag(gflags::CommandLineFlagInfo&& flag,
-              po::options_description& desc,
-              ProgramOptionsStyle style) {
+void addGFlag(
+    gflags::CommandLineFlagInfo&& flag,
+    po::options_description& desc,
+    ProgramOptionsStyle style) {
   auto gflagInfo = std::make_shared<GFlagInfo<T>>(std::move(flag));
   auto& info = gflagInfo->info();
   auto name = getName(info.name);
 
   switch (style) {
-  case ProgramOptionsStyle::GFLAGS:
-    break;
-  case ProgramOptionsStyle::GNU:
-    std::replace(name.begin(), name.end(), '_', '-');
-    break;
+    case ProgramOptionsStyle::GFLAGS:
+      break;
+    case ProgramOptionsStyle::GNU:
+      std::replace(name.begin(), name.end(), '_', '-');
+      break;
   }
-  desc.add_options()
-    (name.c_str(),
-     new GFlagValueSemantic<T>(gflagInfo),
-     info.description.c_str());
+  desc.add_options()(
+      name.c_str(),
+      new GFlagValueSemantic<T>(gflagInfo),
+      info.description.c_str());
 }
 
 template <>
-void addGFlag<bool>(gflags::CommandLineFlagInfo&& flag,
-                    po::options_description& desc,
-                    ProgramOptionsStyle style) {
+void addGFlag<bool>(
+    gflags::CommandLineFlagInfo&& flag,
+    po::options_description& desc,
+    ProgramOptionsStyle style) {
   auto gflagInfo = std::make_shared<GFlagInfo<bool>>(std::move(flag));
   auto& info = gflagInfo->info();
   auto name = getName(info.name);
   std::string negationPrefix;
 
   switch (style) {
-  case ProgramOptionsStyle::GFLAGS:
-    negationPrefix = "no";
-    break;
-  case ProgramOptionsStyle::GNU:
-    std::replace(name.begin(), name.end(), '_', '-');
-    negationPrefix = "no-";
-    break;
+    case ProgramOptionsStyle::GFLAGS:
+      negationPrefix = "no";
+      break;
+    case ProgramOptionsStyle::GNU:
+      std::replace(name.begin(), name.end(), '_', '-');
+      negationPrefix = "no-";
+      break;
   }
 
+  // clang-format off
   desc.add_options()
     (name.c_str(),
      new BoolGFlagValueSemantic(gflagInfo),
@@ -225,25 +244,28 @@ void addGFlag<bool>(gflags::CommandLineFlagInfo&& flag,
     ((negationPrefix + name).c_str(),
      new NegativeBoolGFlagValueSemantic(gflagInfo),
      folly::to<std::string>("(no) ", info.description).c_str());
+  // clang-format on
 }
 
-typedef void(*FlagAdder)(gflags::CommandLineFlagInfo&&,
-                         po::options_description&,
-                         ProgramOptionsStyle);
+typedef void (*FlagAdder)(
+    gflags::CommandLineFlagInfo&&,
+    po::options_description&,
+    ProgramOptionsStyle);
 
 const std::unordered_map<std::string, FlagAdder> gFlagAdders = {
 #define X(NAME, TYPE) \
-  {NAME, addGFlag<TYPE>},
-  X("bool",   bool)
-  X("int32",  int32_t)
-  X("int64",  int64_t)
-  X("uint64", uint64_t)
-  X("double", double)
-  X("string", std::string)
+  { NAME, addGFlag<TYPE> }
+    X("bool", bool),
+    X("int32", int32_t),
+    X("int64", int64_t),
+    X("uint32", uint32_t),
+    X("uint64", uint64_t),
+    X("double", double),
+    X("string", std::string),
 #undef X
 };
 
-}  // namespace
+} // namespace
 
 po::options_description getGFlags(ProgramOptionsStyle style) {
   static const std::unordered_set<std::string> gSkipFlags{
@@ -315,10 +337,11 @@ NestedCommandLineParseResult doParseNestedCommandLine(
   return result;
 }
 
-}  // namespace
+} // namespace
 
 NestedCommandLineParseResult parseNestedCommandLine(
-    int argc, const char* const argv[],
+    int argc,
+    const char* const argv[],
     const po::options_description& desc) {
   return doParseNestedCommandLine(po::command_line_parser(argc, argv), desc);
 }
@@ -329,4 +352,4 @@ NestedCommandLineParseResult parseNestedCommandLine(
   return doParseNestedCommandLine(po::command_line_parser(cmdline), desc);
 }
 
-}  // namespaces
+} // namespace folly

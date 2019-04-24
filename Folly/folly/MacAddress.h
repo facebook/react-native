@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@
 
 #include <iosfwd>
 
-#include <folly/Bits.h>
 #include <folly/Range.h>
+#include <folly/lang/Bits.h>
 
 namespace folly {
 
@@ -222,11 +222,24 @@ class MacAddress {
 
 /* Define toAppend() so to<string> will work */
 template <class Tgt>
-typename std::enable_if<IsSomeString<Tgt>::value>::type
-toAppend(MacAddress address, Tgt* result) {
+typename std::enable_if<IsSomeString<Tgt>::value>::type toAppend(
+    MacAddress address,
+    Tgt* result) {
   toAppend(address.toString(), result);
 }
 
 std::ostream& operator<<(std::ostream& os, MacAddress address);
 
-}  // folly
+} // namespace folly
+
+namespace std {
+
+// Provide an implementation for std::hash<MacAddress>
+template <>
+struct hash<folly::MacAddress> {
+  size_t operator()(const folly::MacAddress& address) const {
+    return std::hash<uint64_t>()(address.u64HBO());
+  }
+};
+
+} // namespace std

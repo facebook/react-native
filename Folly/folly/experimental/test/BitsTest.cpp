@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2012-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -152,8 +152,8 @@ void runSignedMultiBitTest8() {
   T buf[] = {0x12, 0x34, 0x56, 0x78};
 
   EXPECT_EQ(0x02, load(Bits<T>::get(buf, 0, 4)));
-  EXPECT_EQ(0x1a-32, load(Bits<T>::get(buf, 9, 5)));
-  EXPECT_EQ(0xb1-256, load(Bits<T>::get(buf, 13, 8)));
+  EXPECT_EQ(0x1a - 32, load(Bits<T>::get(buf, 9, 5)));
+  EXPECT_EQ(0xb1 - 256, load(Bits<T>::get(buf, 13, 8)));
 
   Bits<T>::set(buf, 0, 4, 0x0b - 0x10);
   EXPECT_EQ(0x1b, load(buf[0]));
@@ -173,7 +173,6 @@ void runSignedMultiBitTest8() {
   EXPECT_EQ(0x55, load(buf[2]));
   EXPECT_EQ(0x78, load(buf[3]));
 }
-
 
 TEST(Bits, SignedMultiBit8) {
   runSignedMultiBitTest8<int8_t>();
@@ -203,7 +202,7 @@ TEST(Bits, MultiBit64) {
 }
 
 TEST(Bits, MultiBitSigned64) {
-  //runMultiBitTest64<int64_t>();
+  // runMultiBitTest64<int64_t>();
 }
 
 TEST(Bits, MultiBitUnaligned64) {
@@ -212,35 +211,29 @@ TEST(Bits, MultiBitUnaligned64) {
 
 namespace {
 template <bool aligned, class T>
-typename std::enable_if<!aligned>::type testSet(uint8_t *buf,
-                                                size_t start,
-                                                size_t bits,
-                                                T value) {
+typename std::enable_if<!aligned>::type
+testSet(uint8_t* buf, size_t start, size_t bits, T value) {
   Bits<Unaligned<T>>::set(
-      reinterpret_cast<Unaligned<T> *>(buf), start, bits, value);
+      reinterpret_cast<Unaligned<T>*>(buf), start, bits, value);
 }
 
 template <bool aligned, class T>
-typename std::enable_if<aligned>::type testSet(uint8_t *buf,
-                                               size_t start,
-                                               size_t bits,
-                                               T value) {
-  Bits<T>::set(reinterpret_cast<T *>(buf), start, bits, value);
+typename std::enable_if<aligned>::type
+testSet(uint8_t* buf, size_t start, size_t bits, T value) {
+  Bits<T>::set(reinterpret_cast<T*>(buf), start, bits, value);
 }
 
 template <bool aligned, class T>
-typename std::enable_if<!aligned, T>::type testGet(uint8_t *buf,
-                                                   size_t start,
-                                                   size_t bits) {
+typename std::enable_if<!aligned, T>::type
+testGet(uint8_t* buf, size_t start, size_t bits) {
   return Bits<Unaligned<T>>::get(
-      reinterpret_cast<Unaligned<T> *>(buf), start, bits);
+      reinterpret_cast<Unaligned<T>*>(buf), start, bits);
 }
 
 template <bool aligned, class T>
-typename std::enable_if<aligned, T>::type testGet(uint8_t *buf,
-                                                  size_t start,
-                                                  size_t bits) {
-  return Bits<T>::get(reinterpret_cast<T *>(buf), start, bits);
+typename std::enable_if<aligned, T>::type
+testGet(uint8_t* buf, size_t start, size_t bits) {
+  return Bits<T>::get(reinterpret_cast<T*>(buf), start, bits);
 }
 
 template <class T, bool negate = false>
@@ -253,7 +246,18 @@ T testValue(int bits) {
   CHECK_LE(value, std::numeric_limits<T>::max());
   return static_cast<T>(value);
 }
-} // anonymous namespace
+} // namespace
+
+TEST(Bits, Boundaries) {
+  uint8_t buf[20];
+  for (size_t offset = 0; offset <= 64; ++offset) {
+    for (size_t size = 0; size <= 32; ++size) {
+      int32_t value = testValue<int32_t>(size);
+      testSet<true>(buf, offset, size, value);
+      EXPECT_EQ(value, (testGet<true, int32_t>(buf, offset, size)));
+    }
+  }
+}
 
 template <size_t N>
 void accSize(size_t& w) {
@@ -315,7 +319,7 @@ void testConcatenation() {
   // round up to next multiple of 8
   bufSize = (bufSize + 7) / 8 * 8;
   std::vector<uint8_t> buffer(bufSize);
-  uint8_t *buf = buffer.data();
+  uint8_t* buf = buffer.data();
   {
     size_t w = 0;
     // Unsigned
@@ -359,11 +363,15 @@ void testConcatenation() {
   }
 }
 
-TEST(Bits, ConcatenationUnalignedUnsigned) { testConcatenation<false>(); }
+TEST(Bits, ConcatenationUnalignedUnsigned) {
+  testConcatenation<false>();
+}
 
-TEST(Bits, ConcatenationAligned) { testConcatenation<true>(); }
+TEST(Bits, ConcatenationAligned) {
+  testConcatenation<true>();
+}
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   testing::InitGoogleTest(&argc, argv);
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   return RUN_ALL_TESTS();

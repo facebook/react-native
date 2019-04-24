@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 #include <folly/detail/MemoryIdler.h>
 
-#include <folly/Baton.h>
 #include <folly/portability/GMock.h>
 #include <folly/portability/GTest.h>
+#include <folly/synchronization/Baton.h>
 
 #include <memory>
 #include <thread>
@@ -49,25 +49,15 @@ TEST(MemoryIdler, releaseMallocTLS) {
   delete[] p;
 }
 
-
-/// MockedAtom gives us a way to select a mocked Futex implementation
-/// inside Baton, even though the atom itself isn't exercised by the
-/// mocked futex
-template <typename T>
-struct MockAtom : public std::atomic<T> {
-  explicit MockAtom(T init = 0) : std::atomic<T>(init) {}
-};
-
-
 /// MockClock is a bit tricky because we are mocking a static function
 /// (now()), so we need to find the corresponding mock instance without
 /// extending its scope beyond that of the test.  I generally avoid
 /// shared_ptr, but a weak_ptr is just the ticket here
 struct MockClock {
-  typedef std::chrono::steady_clock::duration duration;
-  typedef std::chrono::steady_clock::time_point time_point;
+  using duration = std::chrono::steady_clock::duration;
+  using time_point = std::chrono::time_point<MockClock, duration>;
 
-  MOCK_METHOD0(nowImpl, time_point(void));
+  MOCK_METHOD0(nowImpl, time_point());
 
   /// Hold on to the returned shared_ptr until the end of the test
   static std::shared_ptr<StrictMock<MockClock>> setup() {
@@ -84,99 +74,120 @@ struct MockClock {
 };
 
 std::weak_ptr<StrictMock<MockClock>> MockClock::s_mockClockInstance;
+static auto const forever = MockClock::time_point::max();
 
+/// MockedAtom gives us a way to select a mocked Futex implementation
+/// inside Baton, even though the atom itself isn't exercised by the
+/// mocked futex
+///
+/// Futex<MockAtom> is our mocked futex implementation.  Note that the method
+/// signatures differ from the real Futex because we have elided unused default
+/// params and collapsed templated methods into the used type
+template <typename T>
+struct MockAtom : public std::atomic<T> {
+  explicit MockAtom(T init = 0) : std::atomic<T>(init) {}
 
-
-namespace folly { namespace detail {
-
-/// Futex<MockAtom> is our mocked futex implementation.  Note that the
-/// method signatures differ from the real Futex because we have elided
-/// unused default params and collapsed templated methods into the
-/// used type
-template<>
-struct Futex<MockAtom> {
-  MOCK_METHOD2(futexWait, bool(uint32_t, uint32_t));
-  MOCK_METHOD3(futexWaitUntil,
-               FutexResult(uint32_t, const MockClock::time_point&, uint32_t));
+  MOCK_CONST_METHOD2(futexWait, FutexResult(uint32_t, uint32_t));
+  MOCK_CONST_METHOD3(
+      futexWaitUntil,
+      FutexResult(uint32_t, const MockClock::time_point&, uint32_t));
 };
 
-}}
+FutexResult
+futexWait(const Futex<MockAtom>* futex, uint32_t expected, uint32_t waitMask) {
+  return futex->futexWait(expected, waitMask);
+}
+template <typename Clock, typename Duration>
+FutexResult futexWaitUntil(
+    const Futex<MockAtom>* futex,
+    std::uint32_t expected,
+    std::chrono::time_point<Clock, Duration> const& deadline,
+    uint32_t waitMask) {
+  return futex->futexWaitUntil(expected, deadline, waitMask);
+}
 
 TEST(MemoryIdler, futexWaitValueChangedEarly) {
-  StrictMock<Futex<MockAtom>> fut;
+  Futex<MockAtom> fut;
   auto clock = MockClock::setup();
   auto begin = MockClock::time_point(std::chrono::seconds(100));
   auto idleTimeout = MemoryIdler::defaultIdleTimeout.load();
 
-  EXPECT_CALL(*clock, nowImpl())
-      .WillOnce(Return(begin));
-  EXPECT_CALL(fut, futexWaitUntil(1, AllOf(Ge(begin + idleTimeout),
-                                           Lt(begin + 2 * idleTimeout)), -1))
+  EXPECT_CALL(*clock, nowImpl()).WillOnce(Return(begin));
+  EXPECT_CALL(
+      fut,
+      futexWaitUntil(
+          1, AllOf(Ge(begin + idleTimeout), Lt(begin + 2 * idleTimeout)), -1))
       .WillOnce(Return(FutexResult::VALUE_CHANGED));
-  EXPECT_FALSE((MemoryIdler::futexWait<MockAtom, MockClock>(fut, 1)));
+  EXPECT_EQ(
+      FutexResult::VALUE_CHANGED, MemoryIdler::futexWaitUntil(fut, 1, forever));
 }
 
 TEST(MemoryIdler, futexWaitValueChangedLate) {
-  StrictMock<Futex<MockAtom>> fut;
+  Futex<MockAtom> fut;
   auto clock = MockClock::setup();
   auto begin = MockClock::time_point(std::chrono::seconds(100));
   auto idleTimeout = MemoryIdler::defaultIdleTimeout.load();
 
-  EXPECT_CALL(*clock, nowImpl())
-      .WillOnce(Return(begin));
-  EXPECT_CALL(fut, futexWaitUntil(1, AllOf(Ge(begin + idleTimeout),
-                                           Lt(begin + 2 * idleTimeout)), -1))
+  EXPECT_CALL(*clock, nowImpl()).WillOnce(Return(begin));
+  EXPECT_CALL(
+      fut,
+      futexWaitUntil(
+          1, AllOf(Ge(begin + idleTimeout), Lt(begin + 2 * idleTimeout)), -1))
       .WillOnce(Return(FutexResult::TIMEDOUT));
-  EXPECT_CALL(fut, futexWait(1, -1))
-      .WillOnce(Return(false));
-  EXPECT_FALSE((MemoryIdler::futexWait<MockAtom, MockClock>(fut, 1)));
+  EXPECT_CALL(fut, futexWaitUntil(1, forever, -1))
+      .WillOnce(Return(FutexResult::VALUE_CHANGED));
+  EXPECT_EQ(
+      FutexResult::VALUE_CHANGED, MemoryIdler::futexWaitUntil(fut, 1, forever));
 }
 
 TEST(MemoryIdler, futexWaitAwokenEarly) {
-  StrictMock<Futex<MockAtom>> fut;
+  Futex<MockAtom> fut;
   auto clock = MockClock::setup();
   auto begin = MockClock::time_point(std::chrono::seconds(100));
   auto idleTimeout = MemoryIdler::defaultIdleTimeout.load();
 
-  EXPECT_CALL(*clock, nowImpl())
-      .WillOnce(Return(begin));
+  EXPECT_CALL(*clock, nowImpl()).WillOnce(Return(begin));
   EXPECT_CALL(fut, futexWaitUntil(1, Ge(begin + idleTimeout), -1))
       .WillOnce(Return(FutexResult::AWOKEN));
-  EXPECT_TRUE((MemoryIdler::futexWait<MockAtom, MockClock>(fut, 1)));
+  EXPECT_EQ(FutexResult::AWOKEN, MemoryIdler::futexWaitUntil(fut, 1, forever));
 }
 
 TEST(MemoryIdler, futexWaitAwokenLate) {
-  StrictMock<Futex<MockAtom>> fut;
+  Futex<MockAtom> fut;
   auto clock = MockClock::setup();
   auto begin = MockClock::time_point(std::chrono::seconds(100));
   auto idleTimeout = MemoryIdler::defaultIdleTimeout.load();
 
-  EXPECT_CALL(*clock, nowImpl())
-      .WillOnce(Return(begin));
+  EXPECT_CALL(*clock, nowImpl()).WillOnce(Return(begin));
   EXPECT_CALL(fut, futexWaitUntil(1, begin + idleTimeout, -1))
       .WillOnce(Return(FutexResult::TIMEDOUT));
-  EXPECT_CALL(fut, futexWait(1, -1))
-      .WillOnce(Return(true));
-  EXPECT_TRUE((MemoryIdler::futexWait<MockAtom, MockClock>(
-      fut, 1, -1, idleTimeout, 100, 0.0f)));
+  EXPECT_CALL(fut, futexWaitUntil(1, forever, -1))
+      .WillOnce(Return(FutexResult::AWOKEN));
+  EXPECT_EQ(
+      FutexResult::AWOKEN,
+      MemoryIdler::futexWaitUntil(fut, 1, forever, -1, idleTimeout, 100, 0.0f));
 }
 
 TEST(MemoryIdler, futexWaitImmediateFlush) {
-  StrictMock<Futex<MockAtom>> fut;
+  Futex<MockAtom> fut;
   auto clock = MockClock::setup();
 
-  EXPECT_CALL(fut, futexWait(2, 0xff))
-      .WillOnce(Return(true));
-  EXPECT_TRUE((MemoryIdler::futexWait<MockAtom, MockClock>(
-      fut, 2, 0xff, std::chrono::seconds(0))));
+  EXPECT_CALL(fut, futexWaitUntil(2, forever, 0xff))
+      .WillOnce(Return(FutexResult::AWOKEN));
+  EXPECT_EQ(
+      FutexResult::AWOKEN,
+      MemoryIdler::futexWaitUntil(
+          fut, 2, forever, 0xff, std::chrono::seconds(0)));
 }
 
 TEST(MemoryIdler, futexWaitNeverFlush) {
-  StrictMock<Futex<MockAtom>> fut;
+  Futex<MockAtom> fut;
   auto clock = MockClock::setup();
 
-  EXPECT_CALL(fut, futexWait(1, -1))
-      .WillOnce(Return(true));
-  EXPECT_TRUE((MemoryIdler::futexWait<MockAtom, MockClock>(
-      fut, 1, -1, MockClock::duration::max())));
+  EXPECT_CALL(fut, futexWaitUntil(1, forever, -1))
+      .WillOnce(Return(FutexResult::AWOKEN));
+  EXPECT_EQ(
+      FutexResult::AWOKEN,
+      MemoryIdler::futexWaitUntil(
+          fut, 1, forever, -1, std::chrono::seconds(-7)));
 }

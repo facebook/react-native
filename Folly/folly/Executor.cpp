@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,12 @@ void Executor::addWithPriority(Func, int8_t /* priority */) {
       "addWithPriority() is not implemented for this Executor");
 }
 
+bool Executor::keepAliveAcquire() {
+  return false;
+}
+
 void Executor::keepAliveRelease() {
-  LOG(FATAL) << "keepAliveRelease() should not be called for folly::Executors "
-             << "which do not implement getKeepAliveToken()";
+  LOG(FATAL) << __func__ << "() should not be called for folly::Executor types "
+             << "which do not override keepAliveAcquire()";
 }
-}
+} // namespace folly

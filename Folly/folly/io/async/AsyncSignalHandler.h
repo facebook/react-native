@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2011-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 #pragma once
 
 #include <folly/io/async/EventBase.h>
-#include <event.h>
+#include <folly/portability/Event.h>
 #include <map>
 
 namespace folly {
@@ -47,6 +47,30 @@ class AsyncSignalHandler {
    */
   explicit AsyncSignalHandler(EventBase* eventBase);
   virtual ~AsyncSignalHandler();
+
+  /**
+   * Attach this AsyncSignalHandler to an EventBase.
+   *
+   * This should only be called if the AsyncSignalHandler is not currently
+   * registered for any signals and is not currently attached to an existing
+   * EventBase.
+   */
+  void attachEventBase(EventBase* eventBase);
+
+  /**
+   * Detach this AsyncSignalHandler from its EventBase.
+   *
+   * This should only be called if the AsyncSignalHandler is not currently
+   * registered for any signals.
+   */
+  void detachEventBase();
+
+  /**
+   * Get the EventBase used by this AsyncSignalHandler.
+   */
+  EventBase* getEventBase() const {
+    return eventBase_;
+  }
 
   /**
    * Register to receive callbacks about the specified signal.
@@ -81,13 +105,13 @@ class AsyncSignalHandler {
   typedef std::map<int, struct event> SignalEventMap;
 
   // Forbidden copy constructor and assignment operator
-  AsyncSignalHandler(AsyncSignalHandler const &);
-  AsyncSignalHandler& operator=(AsyncSignalHandler const &);
+  AsyncSignalHandler(AsyncSignalHandler const&);
+  AsyncSignalHandler& operator=(AsyncSignalHandler const&);
 
   static void libeventCallback(libevent_fd_t signum, short events, void* arg);
 
-  EventBase* eventBase_;
+  EventBase* eventBase_{nullptr};
   SignalEventMap signalEvents_;
 };
 
-} // folly
+} // namespace folly

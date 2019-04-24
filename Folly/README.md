@@ -1,10 +1,12 @@
 Folly: Facebook Open-source Library
 -----------------------------------
 
+[![Build Status](https://travis-ci.org/facebook/folly.svg?branch=master)](https://travis-ci.org/facebook/folly)
+
 ### What is `folly`?
 
 Folly (acronymed loosely after Facebook Open Source Library) is a
-library of C++11 components designed with practicality and efficiency
+library of C++14 components designed with practicality and efficiency
 in mind. **Folly contains a variety of core library components used extensively
 at Facebook**. In particular, it's often a dependency of Facebook's other
 open source C++ efforts and place where those projects can share code.
@@ -70,26 +72,39 @@ Folly is published on Github at https://github.com/facebook/folly
 
 #### Dependencies
 
-folly requires gcc 4.8+ and a version of boost compiled with C++11 support.
+folly requires gcc 4.9+ and a version of boost compiled with C++14 support.
 
-Please download googletest from
-https://github.com/google/googletest/archive/release-1.8.0.tar.gz and unpack it into the
-folly/test subdirectory as `gtest`:
+googletest is required to build and run folly's tests.  You can download
+it from https://github.com/google/googletest/archive/release-1.8.0.tar.gz
+The following commands can be used to download and install it:
 
-    (cd folly/test && \
-     rm -rf gtest && \
-     wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz && \
-     tar zxf release-1.8.0.tar.gz && \
-     rm -f release-1.8.0.tar.gz && \
-     mv googletest-release-1.8.0 gtest)
+```
+wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz && \
+tar zxf release-1.8.0.tar.gz && \
+rm -f release-1.8.0.tar.gz && \
+cd googletest-release-1.8.0 && \
+cmake . && \
+make && \
+make install
+```
 
-#### Ubuntu 12.04
+#### Finding dependencies in non-default locations
 
-This release is old, requiring many upgrades. However, since Travis CI runs
-on 12.04, `folly/build/deps_ubuntu_12.04.sh` is provided, and upgrades all
-the required packages.
+If you have boost, gtest, or other dependencies installed in a non-default
+location, you can use the `CMAKE_INCLUDE_PATH` and `CMAKE_LIBRARY_PATH`
+variables to make CMAKE look also look for header files and libraries in
+non-standard locations.  For example, to also search the directories
+`/alt/include/path1` and `/alt/include/path2` for header files and the
+directories `/alt/lib/path1` and `/alt/lib/path2` for libraries, you can invoke
+`cmake` as follows:
 
-#### Ubuntu 13.10
+```
+cmake \
+  -DCMAKE_INCLUDE_PATH=/alt/include/path1:/alt/include/path2 \
+  -DCMAKE_LIBRARY_PATH=/alt/lib/path1:/alt/lib/path2 ...
+```
+
+#### Ubuntu 16.04 LTS
 
 The following packages are required (feel free to cut and paste the apt-get
 command below):
@@ -97,15 +112,13 @@ command below):
 ```
 sudo apt-get install \
     g++ \
-    automake \
-    autoconf \
-    autoconf-archive \
-    libtool \
+    cmake \
     libboost-all-dev \
     libevent-dev \
     libdouble-conversion-dev \
     libgoogle-glog-dev \
     libgflags-dev \
+    libiberty-dev \
     liblz4-dev \
     liblzma-dev \
     libsnappy-dev \
@@ -113,10 +126,11 @@ sudo apt-get install \
     zlib1g-dev \
     binutils-dev \
     libjemalloc-dev \
-    libssl-dev
+    libssl-dev \
+    pkg-config
 ```
 
-If advanced debugging functionality is required
+If advanced debugging functionality is required, use:
 
 ```
 sudo apt-get install \
@@ -125,24 +139,12 @@ sudo apt-get install \
     libdwarf-dev
 ```
 
-#### Ubuntu 14.04 LTS
-
-The packages listed above for Ubuntu 13.10 are required, as well as:
-
+In the folly directory, run:
 ```
-sudo apt-get install \
-    libiberty-dev
-```
-
-The above packages are sufficient for Ubuntu 13.10 and Ubuntu 14.04.
-
-In the folly directory, run
-```
-  autoreconf -ivf
-  ./configure
-  make
-  make check
-  sudo make install
+  mkdir _build && cd _build
+  cmake ..
+  make -j $(nproc)
+  make install
 ```
 
 #### OS X (Homebrew)
@@ -198,26 +200,32 @@ Download and install folly with the parameters listed below:
   sudo make install
 ```
 
+#### Windows (Vcpkg)
+
+folly is available in [Vcpkg](https://github.com/Microsoft/vcpkg#vcpkg) and releases may be built via `vcpkg install folly:x64-windows`.
+
+You may also use `vcpkg install folly:x64-windows --head` to build against `master`.
+
 #### Other Linux distributions
 
 - double-conversion (https://github.com/google/double-conversion)
 
   Download and build double-conversion.
-  You may need to tell configure where to find it.
+  You may need to tell cmake where to find it.
 
   [double-conversion/] `ln -s src double-conversion`
 
-  [folly/] `./configure LDFLAGS=-L$DOUBLE_CONVERSION_HOME/ CPPFLAGS=-I$DOUBLE_CONVERSION_HOME/`
+  [folly/] `mkdir build && cd build`
+  [folly/build/] `cmake "-DCMAKE_INCLUDE_PATH=$DOUBLE_CONVERSION_HOME/include" "-DCMAKE_LIBRARY_PATH=$DOUBLE_CONVERSION_HOME/lib" ..`
 
-  [folly/] `LD_LIBRARY_PATH=$DOUBLE_CONVERSION_HOME/ make`
+  [folly/build/] `make`
 
 - additional platform specific dependencies:
 
-  Fedora 21 64-bit
+  Fedora >= 21 64-bit (last tested on Fedora 28 64-bit)
     - gcc
     - gcc-c++
-    - autoconf
-    - autoconf-archive
+    - cmake
     - automake
     - boost-devel
     - libtool

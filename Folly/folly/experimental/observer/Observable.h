@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,11 @@
 
 namespace folly {
 namespace observer {
+
+namespace detail {
+template <typename Observable, typename Traits>
+class ObserverCreatorContext;
+}
 
 template <typename Observable>
 struct ObservableTraits {
@@ -50,11 +55,11 @@ class ObserverCreator {
   Observer<T> getObserver() &&;
 
  private:
-  class Context;
+  using Context = detail::ObserverCreatorContext<Observable, Traits>;
 
   std::shared_ptr<Context> context_;
 };
-}
-}
+} // namespace observer
+} // namespace folly
 
 #include <folly/experimental/observer/Observable-inl.h>

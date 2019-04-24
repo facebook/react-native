@@ -40,7 +40,7 @@ the queue filling  or staying empty for long is unlikely.
 A toy example that doesn't really do anything useful:
 
 ``` Cpp
-    folly::ProducerConsumerQueue<folly::fbstring> queue;
+    folly::ProducerConsumerQueue<folly::fbstring> queue{size};
 
     std::thread reader([&queue] {
       for (;;) {

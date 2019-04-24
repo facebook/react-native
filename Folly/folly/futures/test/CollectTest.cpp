@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,10 @@
 
 #include <boost/thread/barrier.hpp>
 
-#include <folly/futures/Future.h>
 #include <folly/Random.h>
-#include <folly/small_vector.h>
+#include <folly/futures/Future.h>
 #include <folly/portability/GTest.h>
+#include <folly/small_vector.h>
 
 using namespace folly;
 
@@ -36,8 +36,9 @@ TEST(Collect, collectAll) {
     std::vector<Promise<int>> promises(10);
     std::vector<Future<int>> futures;
 
-    for (auto& p : promises)
+    for (auto& p : promises) {
       futures.push_back(p.getFuture());
+    }
 
     auto allf = collectAll(futures);
 
@@ -59,11 +60,11 @@ TEST(Collect, collectAll) {
     std::vector<Promise<int>> promises(4);
     std::vector<Future<int>> futures;
 
-    for (auto& p : promises)
+    for (auto& p : promises) {
       futures.push_back(p.getFuture());
+    }
 
     auto allf = collectAll(futures);
-
 
     promises[0].setValue(42);
     promises[1].setException(eggs);
@@ -91,18 +92,21 @@ TEST(Collect, collectAll) {
     std::vector<Promise<Unit>> promises(10);
     std::vector<Future<Unit>> futures;
 
-    for (auto& p : promises)
+    for (auto& p : promises) {
       futures.push_back(p.getFuture());
+    }
 
-    auto allf = collectAll(futures)
-      .then([](Try<std::vector<Try<Unit>>>&& ts) {
-        for (auto& f : ts.value())
-          f.value();
-      });
+    auto allf = collectAllSemiFuture(futures).toUnsafeFuture().then(
+        [](Try<std::vector<Try<Unit>>>&& ts) {
+          for (auto& f : ts.value()) {
+            f.value();
+          }
+        });
 
     std::shuffle(promises.begin(), promises.end(), rng);
-    for (auto& p : promises)
+    for (auto& p : promises) {
       p.setValue();
+    }
     EXPECT_TRUE(allf.isReady());
   }
 }
@@ -113,8 +117,9 @@ TEST(Collect, collect) {
     std::vector<Promise<int>> promises(10);
     std::vector<Future<int>> futures;
 
-    for (auto& p : promises)
+    for (auto& p : promises) {
       futures.push_back(p.getFuture());
+    }
 
     auto allf = collect(futures);
 
@@ -135,8 +140,9 @@ TEST(Collect, collect) {
     std::vector<Promise<int>> promises(10);
     std::vector<Future<int>> futures;
 
-    for (auto& p : promises)
+    for (auto& p : promises) {
       futures.push_back(p.getFuture());
+    }
 
     auto allf = collect(futures);
 
@@ -170,8 +176,9 @@ TEST(Collect, collect) {
     std::vector<Promise<Unit>> promises(10);
     std::vector<Future<Unit>> futures;
 
-    for (auto& p : promises)
+    for (auto& p : promises) {
       futures.push_back(p.getFuture());
+    }
 
     auto allf = collect(futures);
 
@@ -189,8 +196,9 @@ TEST(Collect, collect) {
     std::vector<Promise<Unit>> promises(10);
     std::vector<Future<Unit>> futures;
 
-    for (auto& p : promises)
+    for (auto& p : promises) {
       futures.push_back(p.getFuture());
+    }
 
     auto allf = collect(futures);
 
@@ -224,12 +232,12 @@ TEST(Collect, collect) {
     std::vector<Promise<std::unique_ptr<int>>> promises(10);
     std::vector<Future<std::unique_ptr<int>>> futures;
 
-    for (auto& p : promises)
+    for (auto& p : promises) {
       futures.push_back(p.getFuture());
+    }
 
     collect(futures);
   }
-
 }
 
 struct NotDefaultConstructible {
@@ -247,8 +255,9 @@ TEST(Collect, collectNotDefaultConstructible) {
   std::iota(indices.begin(), indices.end(), 0);
   std::shuffle(indices.begin(), indices.end(), rng);
 
-  for (auto& p : promises)
+  for (auto& p : promises) {
     futures.push_back(p.getFuture());
+  }
 
   auto allf = collect(futures);
 
@@ -270,8 +279,9 @@ TEST(Collect, collectAny) {
     std::vector<Promise<int>> promises(10);
     std::vector<Future<int>> futures;
 
-    for (auto& p : promises)
+    for (auto& p : promises) {
       futures.push_back(p.getFuture());
+    }
 
     for (auto& f : futures) {
       EXPECT_FALSE(f.isReady());
@@ -298,8 +308,9 @@ TEST(Collect, collectAny) {
     std::vector<Promise<Unit>> promises(10);
     std::vector<Future<Unit>> futures;
 
-    for (auto& p : promises)
+    for (auto& p : promises) {
       futures.push_back(p.getFuture());
+    }
 
     for (auto& f : futures) {
       EXPECT_FALSE(f.isReady());
@@ -319,13 +330,12 @@ TEST(Collect, collectAny) {
     std::vector<Promise<int>> promises(10);
     std::vector<Future<int>> futures;
 
-    for (auto& p : promises)
+    for (auto& p : promises) {
       futures.push_back(p.getFuture());
+    }
 
-    auto anyf = collectAny(futures)
-      .then([](std::pair<size_t, Try<int>> p) {
-        EXPECT_EQ(42, p.second.value());
-      });
+    auto anyf = collectAny(futures).then(
+        [](std::pair<size_t, Try<int>> p) { EXPECT_EQ(42, p.second.value()); });
 
     promises[3].setValue(42);
     EXPECT_TRUE(anyf.isReady());
@@ -403,23 +413,22 @@ TEST(Collect, collectAnyWithoutException) {
 TEST(Collect, alreadyCompleted) {
   {
     std::vector<Future<Unit>> fs;
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 10; i++) {
       fs.push_back(makeFuture());
+    }
 
-    collectAll(fs)
-      .then([&](std::vector<Try<Unit>> ts) {
-        EXPECT_EQ(fs.size(), ts.size());
-      });
+    collectAllSemiFuture(fs).toUnsafeFuture().then(
+        [&](std::vector<Try<Unit>> ts) { EXPECT_EQ(fs.size(), ts.size()); });
   }
   {
     std::vector<Future<int>> fs;
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 10; i++) {
       fs.push_back(makeFuture(i));
+    }
 
-    collectAny(fs)
-      .then([&](std::pair<size_t, Try<int>> p) {
-        EXPECT_EQ(p.first, p.second.value());
-      });
+    collectAny(fs).then([&](std::pair<size_t, Try<int>> p) {
+      EXPECT_EQ(p.first, p.second.value());
+    });
   }
 }
 
@@ -465,7 +474,7 @@ TEST(Collect, parallelWithError) {
   for (size_t i = 0; i < ps.size(); i++) {
     ts.emplace_back([&ps, &barrier, i]() {
       barrier.wait();
-      if (i == (ps.size()/2)) {
+      if (i == (ps.size() / 2)) {
         ps[i].setException(eggs);
       } else {
         ps[i].setValue(i);
@@ -526,7 +535,7 @@ TEST(Collect, allParallelWithError) {
   for (size_t i = 0; i < ps.size(); i++) {
     ts.emplace_back([&ps, &barrier, i]() {
       barrier.wait();
-      if (i == (ps.size()/2)) {
+      if (i == (ps.size() / 2)) {
         ps[i].setException(eggs);
       } else {
         ps[i].setValue(i);
@@ -542,7 +551,7 @@ TEST(Collect, allParallelWithError) {
 
   EXPECT_TRUE(f.isReady());
   for (size_t i = 0; i < ps.size(); i++) {
-    if (i == (ps.size()/2)) {
+    if (i == (ps.size() / 2)) {
       EXPECT_THROW(f.value()[i].value(), eggs_t);
     } else {
       EXPECT_TRUE(f.value()[i].hasValue());
@@ -555,18 +564,21 @@ TEST(Collect, collectN) {
   std::vector<Promise<Unit>> promises(10);
   std::vector<Future<Unit>> futures;
 
-  for (auto& p : promises)
+  for (auto& p : promises) {
     futures.push_back(p.getFuture());
+  }
 
   bool flag = false;
   size_t n = 3;
   collectN(futures, n)
-    .then([&](std::vector<std::pair<size_t, Try<Unit>>> v) {
-      flag = true;
-      EXPECT_EQ(n, v.size());
-      for (auto& tt : v)
-        EXPECT_TRUE(tt.second.hasValue());
-    });
+      .via(&InlineExecutor::instance())
+      .then([&](std::vector<std::pair<size_t, Try<Unit>>> v) {
+        flag = true;
+        EXPECT_EQ(n, v.size());
+        for (auto& tt : v) {
+          EXPECT_TRUE(tt.second.hasValue());
+        }
+      });
 
   promises[0].setValue();
   EXPECT_FALSE(flag);
@@ -576,26 +588,68 @@ TEST(Collect, collectN) {
   EXPECT_TRUE(flag);
 }
 
+TEST(Collect, collectNParallel) {
+  std::vector<Promise<Unit>> ps(100);
+  std::vector<Future<Unit>> futures;
+
+  for (auto& p : ps) {
+    futures.push_back(p.getFuture());
+  }
+
+  bool flag = false;
+  size_t n = 90;
+  collectN(futures, n)
+      .via(&InlineExecutor::instance())
+      .then([&](std::vector<std::pair<size_t, Try<Unit>>> v) {
+        flag = true;
+        EXPECT_EQ(n, v.size());
+        for (auto& tt : v) {
+          EXPECT_TRUE(tt.second.hasValue());
+        }
+      });
+
+  std::vector<std::thread> ts;
+  boost::barrier barrier(ps.size() + 1);
+  for (size_t i = 0; i < ps.size(); i++) {
+    ts.emplace_back([&ps, &barrier, i]() {
+      barrier.wait();
+      ps[i].setValue();
+    });
+  }
+
+  barrier.wait();
+
+  for (size_t i = 0; i < ps.size(); i++) {
+    ts[i].join();
+  }
+
+  EXPECT_TRUE(flag);
+}
+
 /// Ensure that we can compile collectAll/Any with folly::small_vector
 TEST(Collect, smallVector) {
-  static_assert(!FOLLY_IS_TRIVIALLY_COPYABLE(Future<Unit>),
-                "Futures should not be trivially copyable");
-  static_assert(!FOLLY_IS_TRIVIALLY_COPYABLE(Future<int>),
-                "Futures should not be trivially copyable");
+  static_assert(
+      !folly::is_trivially_copyable<Future<Unit>>::value,
+      "Futures should not be trivially copyable");
+  static_assert(
+      !folly::is_trivially_copyable<Future<int>>::value,
+      "Futures should not be trivially copyable");
 
   {
     folly::small_vector<Future<Unit>> futures;
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 10; i++) {
       futures.push_back(makeFuture());
+    }
 
     auto anyf = collectAny(futures);
   }
   {
     folly::small_vector<Future<Unit>> futures;
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 10; i++) {
       futures.push_back(makeFuture());
+    }
 
     auto allf = collectAll(futures);
   }
@@ -607,14 +661,15 @@ TEST(Collect, collectAllVariadic) {
   Future<bool> fb = pb.getFuture();
   Future<int> fi = pi.getFuture();
   bool flag = false;
-  collectAll(std::move(fb), std::move(fi))
-    .then([&](std::tuple<Try<bool>, Try<int>> tup) {
-      flag = true;
-      EXPECT_TRUE(std::get<0>(tup).hasValue());
-      EXPECT_EQ(std::get<0>(tup).value(), true);
-      EXPECT_TRUE(std::get<1>(tup).hasValue());
-      EXPECT_EQ(std::get<1>(tup).value(), 42);
-    });
+  collectAllSemiFuture(std::move(fb), std::move(fi))
+      .toUnsafeFuture()
+      .then([&](std::tuple<Try<bool>, Try<int>> tup) {
+        flag = true;
+        EXPECT_TRUE(std::get<0>(tup).hasValue());
+        EXPECT_EQ(std::get<0>(tup).value(), true);
+        EXPECT_TRUE(std::get<1>(tup).hasValue());
+        EXPECT_EQ(std::get<1>(tup).value(), 42);
+      });
   pb.setValue(true);
   EXPECT_FALSE(flag);
   pi.setValue(42);
@@ -627,14 +682,14 @@ TEST(Collect, collectAllVariadicReferences) {
   Future<bool> fb = pb.getFuture();
   Future<int> fi = pi.getFuture();
   bool flag = false;
-  collectAll(fb, fi)
-    .then([&](std::tuple<Try<bool>, Try<int>> tup) {
-      flag = true;
-      EXPECT_TRUE(std::get<0>(tup).hasValue());
-      EXPECT_EQ(std::get<0>(tup).value(), true);
-      EXPECT_TRUE(std::get<1>(tup).hasValue());
-      EXPECT_EQ(std::get<1>(tup).value(), 42);
-    });
+  collectAllSemiFuture(fb, fi).toUnsafeFuture().then(
+      [&](std::tuple<Try<bool>, Try<int>> tup) {
+        flag = true;
+        EXPECT_TRUE(std::get<0>(tup).hasValue());
+        EXPECT_EQ(std::get<0>(tup).value(), true);
+        EXPECT_TRUE(std::get<1>(tup).hasValue());
+        EXPECT_EQ(std::get<1>(tup).value(), 42);
+      });
   pb.setValue(true);
   EXPECT_FALSE(flag);
   pi.setValue(42);
@@ -647,14 +702,15 @@ TEST(Collect, collectAllVariadicWithException) {
   Future<bool> fb = pb.getFuture();
   Future<int> fi = pi.getFuture();
   bool flag = false;
-  collectAll(std::move(fb), std::move(fi))
-    .then([&](std::tuple<Try<bool>, Try<int>> tup) {
-      flag = true;
-      EXPECT_TRUE(std::get<0>(tup).hasValue());
-      EXPECT_EQ(std::get<0>(tup).value(), true);
-      EXPECT_TRUE(std::get<1>(tup).hasException());
-      EXPECT_THROW(std::get<1>(tup).value(), eggs_t);
-    });
+  collectAllSemiFuture(std::move(fb), std::move(fi))
+      .toUnsafeFuture()
+      .then([&](std::tuple<Try<bool>, Try<int>> tup) {
+        flag = true;
+        EXPECT_TRUE(std::get<0>(tup).hasValue());
+        EXPECT_EQ(std::get<0>(tup).value(), true);
+        EXPECT_TRUE(std::get<1>(tup).hasException());
+        EXPECT_THROW(std::get<1>(tup).value(), eggs_t);
+      });
   pb.setValue(true);
   EXPECT_FALSE(flag);
   pi.setException(eggs);
@@ -667,12 +723,11 @@ TEST(Collect, collectVariadic) {
   Future<bool> fb = pb.getFuture();
   Future<int> fi = pi.getFuture();
   bool flag = false;
-  collect(std::move(fb), std::move(fi))
-    .then([&](std::tuple<bool, int> tup) {
-      flag = true;
-      EXPECT_EQ(std::get<0>(tup), true);
-      EXPECT_EQ(std::get<1>(tup), 42);
-    });
+  collect(std::move(fb), std::move(fi)).then([&](std::tuple<bool, int> tup) {
+    flag = true;
+    EXPECT_EQ(std::get<0>(tup), true);
+    EXPECT_EQ(std::get<1>(tup), 42);
+  });
   pb.setValue(true);
   EXPECT_FALSE(flag);
   pi.setValue(42);
@@ -690,7 +745,7 @@ TEST(Collect, collectVariadicWithException) {
   pi.setException(eggs);
   EXPECT_TRUE(f.isReady());
   EXPECT_TRUE(f.getTry().hasException());
-  EXPECT_THROW(f.get(), eggs_t);
+  EXPECT_THROW(std::move(f).get(), eggs_t);
 }
 
 TEST(Collect, collectAllNone) {

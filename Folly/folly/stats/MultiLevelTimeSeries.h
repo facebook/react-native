@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,7 +89,9 @@ class MultiLevelTimeSeries {
   /*
    * Return the number of levels tracked by MultiLevelTimeSeries.
    */
-  size_t numLevels() const { return levels_.size(); }
+  size_t numLevels() const {
+    return levels_.size();
+  }
 
   /*
    * Get the BucketedTimeSeries backing the specified level.
@@ -435,4 +437,4 @@ class MultiLevelTimeSeries {
   uint64_t cachedCount_;
 };
 
-} // folly
+} // namespace folly

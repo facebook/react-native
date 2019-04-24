@@ -205,16 +205,62 @@ routine that works faster than `to<double>` chances are it is
 incorrect and will fail in a variety of corner cases. Using
 `to<double>` is strongly recommended.
 
-Note that if an unparsable string is passed to `to<double>` `NaN`
-is returned, which can be tested for as follows:
+Note that if the string "NaN" (with any capitalization) is passed to
+`to<double>` then `NaN` is returned, which can be tested for as follows:
 
 ``` Cpp
-    fbstring str = "not a double";
+    fbstring str = "nan"; // "NaN", "NAN", etc.
     double d = to<double>(str);
     if (std::isnan(d)) {
+      // string was a valid representation of the double value NaN
+    }
+```
+
+Note that passing "-NaN" (with any capitalization) to `to<double>` also returns
+`NaN`.
+
+Note that if the strings "inf" or "infinity" (with any capitalization) are
+passed to `to<double>` then `infinity` is returned, which can be tested for
+as follows:
+
+``` Cpp
+    fbstring str = "inf"; // "Inf", "INF", "infinity", "Infinity", etc.
+    double d = to<double>(str);
+    if (std::isinf(d)) {
+      // string was a valid representation of one of the double values +Infinity
+      // or -Infinity
+    }
+```
+
+Note that passing "-inf" or "-infinity" (with any capitalization) to
+`to<double>` returns `-infinity` rather than `+infinity`. The sign of the
+`infinity` can be tested for as follows:
+
+``` Cpp
+    fbstring str = "-inf"; // or "inf", "-Infinity", "+Infinity", etc.
+    double d = to<double>(str);
+    if (d == std::numeric_limits<double>::infinity()) {
+      // string was a valid representation of the double value +Infinity
+    } else if (d == -std::numeric_limits<double>::infinity()) {
+      // string was a valid representation of the double value -Infinity
+    }
+```
+
+Note that if an unparseable string is passed to `to<double>` then an exception
+is thrown, rather than `NaN` being returned.  This can be tested for as follows:
+
+``` Cpp
+    fbstring str = "not-a-double"; // Or "1.1.1", "", "$500.00", etc.
+    double d;
+    try {
+      d = to<double>(str);
+    } catch (const std::range_error &) {
       // string could not be parsed
     }
 ```
+
+Note that the empty string (`""`) is an unparseable value, and will cause
+`to<double>` to throw an exception.
 
 #### Non-throwing interfaces
 

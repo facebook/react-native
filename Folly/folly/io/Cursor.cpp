@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include <folly/io/Cursor.h>
 
 #include <cstdio>
+
 #include <folly/ScopeGuard.h>
 
-namespace folly { namespace io {
+namespace folly {
+namespace io {
 
 void Appender::printf(const char* fmt, ...) {
   va_list ap;
@@ -38,8 +41,8 @@ void Appender::vprintf(const char* fmt, va_list ap) {
   };
 
   // First try writing into our available data space.
-  int ret = vsnprintf(reinterpret_cast<char*>(writableData()), length(),
-                      fmt, ap);
+  int ret =
+      vsnprintf(reinterpret_cast<char*>(writableData()), length(), fmt, ap);
   if (ret < 0) {
     throw std::runtime_error("error formatting printf() data");
   }
@@ -55,18 +58,19 @@ void Appender::vprintf(const char* fmt, va_list ap) {
   // There wasn't enough room for the data.
   // Allocate more room, and then retry.
   ensure(len + 1);
-  ret = vsnprintf(reinterpret_cast<char*>(writableData()), length(),
-                  fmt, apCopy);
+  ret =
+      vsnprintf(reinterpret_cast<char*>(writableData()), length(), fmt, apCopy);
   if (ret < 0) {
     throw std::runtime_error("error formatting printf() data");
   }
   len = size_t(ret);
   if (len >= length()) {
     // This shouldn't ever happen.
-    throw std::runtime_error("unexpectedly out of buffer space on second "
-                             "vsnprintf() attmept");
+    throw std::runtime_error(
+        "unexpectedly out of buffer space on second "
+        "vsnprintf() attmept");
   }
   append(len);
 }
-
-}}  // folly::io
+} // namespace io
+} // namespace folly

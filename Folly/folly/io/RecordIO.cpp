@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,10 +31,10 @@ namespace folly {
 using namespace recordio_helpers;
 
 RecordIOWriter::RecordIOWriter(File file, uint32_t fileId)
-  : file_(std::move(file)),
-    fileId_(fileId),
-    writeLock_(file_, std::defer_lock),
-    filePos_(0) {
+    : file_(std::move(file)),
+      fileId_(fileId),
+      writeLock_(file_, std::defer_lock),
+      filePos_(0) {
   if (!writeLock_.try_lock()) {
     throw std::runtime_error("RecordIOWriter: file locked by another process");
   }
@@ -48,7 +48,7 @@ RecordIOWriter::RecordIOWriter(File file, uint32_t fileId)
 void RecordIOWriter::write(std::unique_ptr<IOBuf> buf) {
   size_t totalLength = prependHeader(buf, fileId_);
   if (totalLength == 0) {
-    return;  // nothing to do
+    return; // nothing to do
   }
 
   DCHECK_EQ(buf->computeChainDataLength(), totalLength);
@@ -70,14 +70,10 @@ void RecordIOWriter::write(std::unique_ptr<IOBuf> buf) {
 }
 
 RecordIOReader::RecordIOReader(File file, uint32_t fileId)
-  : map_(std::move(file)),
-    fileId_(fileId) {
-}
+    : map_(std::move(file)), fileId_(fileId) {}
 
 RecordIOReader::Iterator::Iterator(ByteRange range, uint32_t fileId, off_t pos)
-  : range_(range),
-    fileId_(fileId),
-    recordAndPos_(ByteRange(), 0) {
+    : range_(range), fileId_(fileId), recordAndPos_(ByteRange(), 0) {
   if (size_t(pos) >= range_.size()) {
     // Note that this branch can execute if pos is negative as well.
     recordAndPos_.second = off_t(-1);
@@ -93,7 +89,7 @@ void RecordIOReader::Iterator::advanceToValid() {
   ByteRange record = findRecord(range_, fileId_).record;
   if (record.empty()) {
     recordAndPos_ = std::make_pair(ByteRange(), off_t(-1));
-    range_.clear();  // at end
+    range_.clear(); // at end
   } else {
     size_t skipped = size_t(record.begin() - range_.begin());
     DCHECK_GE(skipped, headerSize());
@@ -106,18 +102,18 @@ void RecordIOReader::Iterator::advanceToValid() {
 
 namespace recordio_helpers {
 
-using namespace detail;
+using recordio_detail::Header;
 
 namespace {
 
-constexpr uint32_t kHashSeed = 0xdeadbeef;  // for mcurtiss
+constexpr uint32_t kHashSeed = 0xdeadbeef; // for mcurtiss
 
 uint32_t headerHash(const Header& header) {
-  return hash::SpookyHashV2::Hash32(&header, offsetof(Header, headerHash),
-                                    kHashSeed);
+  return hash::SpookyHashV2::Hash32(
+      &header, offsetof(Header, headerHash), kHashSeed);
 }
 
-std::pair<size_t, uint64_t> dataLengthAndHash(const IOBuf* buf) {
+std::pair<size_t, std::size_t> dataLengthAndHash(const IOBuf* buf) {
   size_t len = 0;
   hash::SpookyHashV2 hasher;
   hasher.Init(kHashSeed, kHashSeed);
@@ -131,14 +127,14 @@ std::pair<size_t, uint64_t> dataLengthAndHash(const IOBuf* buf) {
   if (len + headerSize() >= std::numeric_limits<uint32_t>::max()) {
     throw std::invalid_argument("Record length must fit in 32 bits");
   }
-  return std::make_pair(len, hash1);
+  return std::make_pair(len, static_cast<std::size_t>(hash1));
 }
 
-uint64_t dataHash(ByteRange range) {
+std::size_t dataHash(ByteRange range) {
   return hash::SpookyHashV2::Hash64(range.data(), range.size(), kHashSeed);
 }
 
-}  // namespace
+} // namespace
 
 size_t prependHeader(std::unique_ptr<IOBuf>& buf, uint32_t fileId) {
   if (fileId == 0) {
@@ -146,7 +142,7 @@ size_t prependHeader(std::unique_ptr<IOBuf>& buf, uint32_t fileId) {
   }
   auto lengthAndHash = dataLengthAndHash(buf.get());
   if (lengthAndHash.first == 0) {
-    return 0;  // empty, nothing to do, no zero-length records
+    return 0; // empty, nothing to do, no zero-length records
   }
 
   // Prepend to the first buffer in the chain if we have room, otherwise
@@ -160,10 +156,9 @@ size_t prependHeader(std::unique_ptr<IOBuf>& buf, uint32_t fileId) {
     b->appendChain(std::move(buf));
     buf = std::move(b);
   }
-  detail::Header* header =
-    reinterpret_cast<detail::Header*>(buf->writableData());
+  Header* header = reinterpret_cast<Header*>(buf->writableData());
   memset(header, 0, sizeof(Header));
-  header->magic = detail::Header::kMagic;
+  header->magic = Header::kMagic;
   header->fileId = fileId;
   header->dataLength = uint32_t(lengthAndHash.first);
   header->dataHash = lengthAndHash.second;
@@ -173,15 +168,13 @@ size_t prependHeader(std::unique_ptr<IOBuf>& buf, uint32_t fileId) {
 }
 
 RecordInfo validateRecord(ByteRange range, uint32_t fileId) {
-  if (range.size() <= headerSize()) {  // records may not be empty
+  if (range.size() <= headerSize()) { // records may not be empty
     return {0, {}};
   }
   const Header* header = reinterpret_cast<const Header*>(range.begin());
   range.advance(sizeof(Header));
-  if (header->magic != Header::kMagic ||
-      header->version != 0 ||
-      header->hashFunction != 0 ||
-      header->flags != 0 ||
+  if (header->magic != Header::kMagic || header->version != 0 ||
+      header->hashFunction != 0 || header->flags != 0 ||
       (fileId != 0 && header->fileId != fileId) ||
       header->dataLength > range.size()) {
     return {0, {}};
@@ -196,19 +189,18 @@ RecordInfo validateRecord(ByteRange range, uint32_t fileId) {
   return {header->fileId, range};
 }
 
-RecordInfo findRecord(ByteRange searchRange,
-                      ByteRange wholeRange,
-                      uint32_t fileId) {
+RecordInfo
+findRecord(ByteRange searchRange, ByteRange wholeRange, uint32_t fileId) {
   static const uint32_t magic = Header::kMagic;
-  static const ByteRange magicRange(reinterpret_cast<const uint8_t*>(&magic),
-                                    sizeof(magic));
+  static const ByteRange magicRange(
+      reinterpret_cast<const uint8_t*>(&magic), sizeof(magic));
 
   DCHECK_GE(searchRange.begin(), wholeRange.begin());
   DCHECK_LE(searchRange.end(), wholeRange.end());
 
   const uint8_t* start = searchRange.begin();
-  const uint8_t* end = std::min(searchRange.end(),
-                                wholeRange.end() - sizeof(Header));
+  const uint8_t* end =
+      std::min(searchRange.end(), wholeRange.end() - sizeof(Header));
   // end-1: the last place where a Header could start
   while (start < end) {
     auto p = ByteRange(start, end + sizeof(magic)).find(magicRange);
@@ -229,6 +221,6 @@ RecordInfo findRecord(ByteRange searchRange,
   return {0, {}};
 }
 
-}  // namespace
+} // namespace recordio_helpers
 
-}  // namespaces
+} // namespace folly

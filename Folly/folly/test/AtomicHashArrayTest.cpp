@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2012-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,15 @@
 
 #include <cstddef>
 #include <map>
+#include <memory>
 #include <stdexcept>
 
 #include <folly/AtomicHashArray.h>
 #include <folly/Conv.h>
-#include <folly/Hash.h>
 #include <folly/Memory.h>
-#include <folly/portability/SysMman.h>
+#include <folly/hash/Hash.h>
 #include <folly/portability/GTest.h>
+#include <folly/portability/SysMman.h>
 
 using namespace std;
 using namespace folly;
@@ -52,7 +53,8 @@ class MmapAllocator {
     return std::numeric_limits<size_t>::max();
   }
 
-  template <class U> struct rebind {
+  template <class U>
+  struct rebind {
     typedef MmapAllocator<U> other;
   };
 
@@ -60,7 +62,9 @@ class MmapAllocator {
     return !(*this == other);
   }
 
-  bool operator==(const MmapAllocator<T>& /* other */) const { return true; }
+  bool operator==(const MmapAllocator<T>& /* other */) const {
+    return true;
+  }
 
   template <class... Args>
   void construct(T* p, Args&&... args) {
@@ -71,37 +75,51 @@ class MmapAllocator {
     p->~T();
   }
 
-  T *allocate(size_t n) {
-    void *p = mmap(nullptr, n * sizeof(T), PROT_READ | PROT_WRITE,
-        MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-    if (p == MAP_FAILED) throw std::bad_alloc();
-    return (T *)p;
+  T* allocate(size_t n) {
+    void* p = mmap(
+        nullptr,
+        n * sizeof(T),
+        PROT_READ | PROT_WRITE,
+        MAP_PRIVATE | MAP_ANONYMOUS,
+        -1,
+        0);
+    if (p == MAP_FAILED) {
+      throw std::bad_alloc();
+    }
+    return (T*)p;
   }
 
-  void deallocate(T *p, size_t n) {
+  void deallocate(T* p, size_t n) {
     munmap(p, n * sizeof(T));
   }
 };
 
-template<class KeyT, class ValueT>
-pair<KeyT,ValueT> createEntry(int i) {
-  return pair<KeyT,ValueT>(to<KeyT>(folly::hash::jenkins_rev_mix32(i) % 1000),
-                           to<ValueT>(i + 3));
+template <class KeyT, class ValueT>
+pair<KeyT, ValueT> createEntry(int i) {
+  return pair<KeyT, ValueT>(
+      to<KeyT>(folly::hash::jenkins_rev_mix32(i) % 1000), to<ValueT>(i + 3));
 }
 
-template <class KeyT,
-          class ValueT,
-          class Allocator = std::allocator<char>,
-          class ProbeFcn = AtomicHashArrayLinearProbeFcn>
+template <
+    class KeyT,
+    class ValueT,
+    class Allocator = std::allocator<char>,
+    class ProbeFcn = AtomicHashArrayLinearProbeFcn>
 void testMap() {
-  typedef AtomicHashArray<KeyT, ValueT, std::hash<KeyT>,
-                          std::equal_to<KeyT>, Allocator, ProbeFcn> MyArr;
+  typedef AtomicHashArray<
+      KeyT,
+      ValueT,
+      std::hash<KeyT>,
+      std::equal_to<KeyT>,
+      Allocator,
+      ProbeFcn>
+      MyArr;
   auto arr = MyArr::create(150);
   map<KeyT, ValueT> ref;
   for (int i = 0; i < 100; ++i) {
     auto e = createEntry<KeyT, ValueT>(i);
     auto ret = arr->insert(e);
-    EXPECT_EQ(!ref.count(e.first), ret.second);  // succeed iff not in ref
+    EXPECT_EQ(!ref.count(e.first), ret.second); // succeed iff not in ref
     ref.insert(e);
     EXPECT_EQ(ref.size(), arr->size());
     if (ret.first == arr->end()) {
@@ -140,22 +158,30 @@ void testMap() {
   }
 }
 
-template<class KeyT, class ValueT,
+template <
+    class KeyT,
+    class ValueT,
     class Allocator = std::allocator<char>,
     class ProbeFcn = AtomicHashArrayLinearProbeFcn>
 void testNoncopyableMap() {
-  typedef AtomicHashArray<KeyT, std::unique_ptr<ValueT>, std::hash<KeyT>,
-                          std::equal_to<KeyT>, Allocator, ProbeFcn> MyArr;
+  typedef AtomicHashArray<
+      KeyT,
+      std::unique_ptr<ValueT>,
+      std::hash<KeyT>,
+      std::equal_to<KeyT>,
+      Allocator,
+      ProbeFcn>
+      MyArr;
 
   auto arr = MyArr::create(250);
   for (int i = 0; i < 100; i++) {
-    arr->insert(make_pair(i,std::unique_ptr<ValueT>(new ValueT(i))));
+    arr->insert(make_pair(i, std::make_unique<ValueT>(i)));
   }
   for (int i = 100; i < 150; i++) {
-    arr->emplace(i,new ValueT(i));
+    arr->emplace(i, new ValueT(i));
   }
   for (int i = 150; i < 200; i++) {
-    arr->emplace(i,new ValueT(i),std::default_delete<ValueT>());
+    arr->emplace(i, new ValueT(i), std::default_delete<ValueT>());
   }
   for (int i = 0; i < 200; i++) {
     auto ret = arr->find(i);
@@ -163,78 +189,137 @@ void testNoncopyableMap() {
   }
 }
 
-
 TEST(Aha, InsertErase_i32_i32) {
   testMap<int32_t, int32_t>();
   testMap<int32_t, int32_t, MmapAllocator<char>>();
-  testMap<int32_t, int32_t,
-      std::allocator<char>, AtomicHashArrayQuadraticProbeFcn>();
-  testMap<int32_t, int32_t,
-      MmapAllocator<char>, AtomicHashArrayQuadraticProbeFcn>();
+  testMap<
+      int32_t,
+      int32_t,
+      std::allocator<char>,
+      AtomicHashArrayQuadraticProbeFcn>();
+  testMap<
+      int32_t,
+      int32_t,
+      MmapAllocator<char>,
+      AtomicHashArrayQuadraticProbeFcn>();
   testNoncopyableMap<int32_t, int32_t>();
   testNoncopyableMap<int32_t, int32_t, MmapAllocator<char>>();
-  testNoncopyableMap<int32_t, int32_t,
-      std::allocator<char>, AtomicHashArrayQuadraticProbeFcn>();
-  testNoncopyableMap<int32_t, int32_t,
-      MmapAllocator<char>, AtomicHashArrayQuadraticProbeFcn>();
+  testNoncopyableMap<
+      int32_t,
+      int32_t,
+      std::allocator<char>,
+      AtomicHashArrayQuadraticProbeFcn>();
+  testNoncopyableMap<
+      int32_t,
+      int32_t,
+      MmapAllocator<char>,
+      AtomicHashArrayQuadraticProbeFcn>();
 }
 TEST(Aha, InsertErase_i64_i32) {
   testMap<int64_t, int32_t>();
   testMap<int64_t, int32_t, MmapAllocator<char>>();
-  testMap<int64_t, int32_t,
-      std::allocator<char>, AtomicHashArrayQuadraticProbeFcn>();
-  testMap<int64_t, int32_t,
-      MmapAllocator<char>, AtomicHashArrayQuadraticProbeFcn>();
+  testMap<
+      int64_t,
+      int32_t,
+      std::allocator<char>,
+      AtomicHashArrayQuadraticProbeFcn>();
+  testMap<
+      int64_t,
+      int32_t,
+      MmapAllocator<char>,
+      AtomicHashArrayQuadraticProbeFcn>();
   testNoncopyableMap<int64_t, int32_t>();
   testNoncopyableMap<int64_t, int32_t, MmapAllocator<char>>();
-  testNoncopyableMap<int64_t, int32_t,
-      std::allocator<char>, AtomicHashArrayQuadraticProbeFcn>();
-  testNoncopyableMap<int64_t, int32_t,
-      MmapAllocator<char>, AtomicHashArrayQuadraticProbeFcn>();
+  testNoncopyableMap<
+      int64_t,
+      int32_t,
+      std::allocator<char>,
+      AtomicHashArrayQuadraticProbeFcn>();
+  testNoncopyableMap<
+      int64_t,
+      int32_t,
+      MmapAllocator<char>,
+      AtomicHashArrayQuadraticProbeFcn>();
 }
 TEST(Aha, InsertErase_i64_i64) {
   testMap<int64_t, int64_t>();
   testMap<int64_t, int64_t, MmapAllocator<char>>();
-  testMap<int64_t, int64_t,
-      std::allocator<char>, AtomicHashArrayQuadraticProbeFcn>();
-  testMap<int64_t, int64_t,
-      MmapAllocator<char>, AtomicHashArrayQuadraticProbeFcn>();
+  testMap<
+      int64_t,
+      int64_t,
+      std::allocator<char>,
+      AtomicHashArrayQuadraticProbeFcn>();
+  testMap<
+      int64_t,
+      int64_t,
+      MmapAllocator<char>,
+      AtomicHashArrayQuadraticProbeFcn>();
   testNoncopyableMap<int64_t, int64_t>();
   testNoncopyableMap<int64_t, int64_t, MmapAllocator<char>>();
-  testNoncopyableMap<int64_t, int64_t,
-      std::allocator<char>, AtomicHashArrayQuadraticProbeFcn>();
-  testNoncopyableMap<int64_t, int64_t,
-      MmapAllocator<char>, AtomicHashArrayQuadraticProbeFcn>();
+  testNoncopyableMap<
+      int64_t,
+      int64_t,
+      std::allocator<char>,
+      AtomicHashArrayQuadraticProbeFcn>();
+  testNoncopyableMap<
+      int64_t,
+      int64_t,
+      MmapAllocator<char>,
+      AtomicHashArrayQuadraticProbeFcn>();
 }
 TEST(Aha, InsertErase_i32_i64) {
   testMap<int32_t, int64_t>();
   testMap<int32_t, int64_t, MmapAllocator<char>>();
-  testMap<int32_t, int64_t,
-      std::allocator<char>, AtomicHashArrayQuadraticProbeFcn>();
-  testMap<int32_t, int64_t,
-      MmapAllocator<char>, AtomicHashArrayQuadraticProbeFcn>();
+  testMap<
+      int32_t,
+      int64_t,
+      std::allocator<char>,
+      AtomicHashArrayQuadraticProbeFcn>();
+  testMap<
+      int32_t,
+      int64_t,
+      MmapAllocator<char>,
+      AtomicHashArrayQuadraticProbeFcn>();
   testNoncopyableMap<int32_t, int64_t>();
   testNoncopyableMap<int32_t, int64_t, MmapAllocator<char>>();
-  testNoncopyableMap<int32_t, int64_t,
-      std::allocator<char>, AtomicHashArrayQuadraticProbeFcn>();
-  testNoncopyableMap<int32_t, int64_t,
-      MmapAllocator<char>, AtomicHashArrayQuadraticProbeFcn>();
+  testNoncopyableMap<
+      int32_t,
+      int64_t,
+      std::allocator<char>,
+      AtomicHashArrayQuadraticProbeFcn>();
+  testNoncopyableMap<
+      int32_t,
+      int64_t,
+      MmapAllocator<char>,
+      AtomicHashArrayQuadraticProbeFcn>();
 }
 TEST(Aha, InsertErase_i32_str) {
   testMap<int32_t, string>();
   testMap<int32_t, string, MmapAllocator<char>>();
-  testMap<int32_t, string,
-      std::allocator<char>, AtomicHashArrayQuadraticProbeFcn>();
-  testMap<int32_t, string,
-      MmapAllocator<char>, AtomicHashArrayQuadraticProbeFcn>();
+  testMap<
+      int32_t,
+      string,
+      std::allocator<char>,
+      AtomicHashArrayQuadraticProbeFcn>();
+  testMap<
+      int32_t,
+      string,
+      MmapAllocator<char>,
+      AtomicHashArrayQuadraticProbeFcn>();
 }
 TEST(Aha, InsertErase_i64_str) {
   testMap<int64_t, string>();
   testMap<int64_t, string, MmapAllocator<char>>();
-  testMap<int64_t, string,
-      std::allocator<char>, AtomicHashArrayQuadraticProbeFcn>();
-  testMap<int64_t, string,
-      MmapAllocator<char>, AtomicHashArrayQuadraticProbeFcn>();
+  testMap<
+      int64_t,
+      string,
+      std::allocator<char>,
+      AtomicHashArrayQuadraticProbeFcn>();
+  testMap<
+      int64_t,
+      string,
+      MmapAllocator<char>,
+      AtomicHashArrayQuadraticProbeFcn>();
 }
 
 TEST(Aha, Create_cstr_i64) {
@@ -253,15 +338,17 @@ struct EqTraits {
     return legalKey(a) && (a[0] != '\0') && (a[0] == b);
   }
   bool operator()(char* a, const StringPiece b) {
-    return legalKey(a) &&
-      (strlen(a) == b.size()) && (strncmp(a, b.begin(), b.size()) == 0);
+    return legalKey(a) && (strlen(a) == b.size()) &&
+        (strncmp(a, b.begin(), b.size()) == 0);
   }
 };
 
 struct HashTraits {
   size_t operator()(char* a) {
     size_t result = 0;
-    while (a[0] != 0) result += static_cast<size_t>(*(a++));
+    while (a[0] != 0) {
+      result += static_cast<size_t>(*(a++));
+    }
     return result;
   }
   size_t operator()(const char& a) {
@@ -269,7 +356,9 @@ struct HashTraits {
   }
   size_t operator()(const StringPiece a) {
     size_t result = 0;
-    for (const auto& ch : a) result += static_cast<size_t>(ch);
+    for (const auto& ch : a) {
+      result += static_cast<size_t>(ch);
+    }
     return result;
   }
 };
@@ -284,23 +373,29 @@ struct KeyConvertTraits {
   }
 };
 
-typedef AtomicHashArray<char*, int64_t, HashTraits, EqTraits,
-                        MmapAllocator<char>, AtomicHashArrayQuadraticProbeFcn,
-                        KeyConvertTraits>
-  AHACstrInt;
+typedef AtomicHashArray<
+    char*,
+    int64_t,
+    HashTraits,
+    EqTraits,
+    MmapAllocator<char>,
+    AtomicHashArrayQuadraticProbeFcn,
+    KeyConvertTraits>
+    AHACstrInt;
 AHACstrInt::Config cstrIntCfg;
 
 static bool legalKey(char* a) {
-  return a != cstrIntCfg.emptyKey &&
-    a != cstrIntCfg.lockedKey &&
-    a != cstrIntCfg.erasedKey;
+  return a != cstrIntCfg.emptyKey && a != cstrIntCfg.lockedKey &&
+      a != cstrIntCfg.erasedKey;
 }
 
 TEST(Aha, LookupAny) {
   auto arr = AHACstrInt::create(12);
 
   char* f_char = strdup("f");
-  SCOPE_EXIT { free(f_char); };
+  SCOPE_EXIT {
+    free(f_char);
+  };
   arr->insert(std::make_pair(f_char, 42));
 
   EXPECT_EQ(42, arr->find("f")->second);

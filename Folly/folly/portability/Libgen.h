@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@
 namespace folly {
 namespace portability {
 char* internal_dirname(char* path);
-}
-}
+} // namespace portability
+} // namespace folly
 
 #ifndef _WIN32
 #include <libgen.h>

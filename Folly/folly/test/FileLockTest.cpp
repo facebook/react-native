@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@
 
 #include <mutex>
 
-#include <glog/logging.h>
 #include <boost/thread/locks.hpp>
+#include <glog/logging.h>
 
 #include <folly/String.h>
 #include <folly/Subprocess.h>
@@ -62,7 +62,8 @@ TEST(File, Locks) {
   auto testLock = [&](LockMode mode, bool expectedSuccess) {
     auto ret = Subprocess({helper.string(),
                            mode == SHARED ? "-s" : "-x",
-                           tempFile.path().string()}).wait();
+                           tempFile.path().string()})
+                   .wait();
     EXPECT_TRUE(ret.exited());
     if (ret.exited()) {
       EXPECT_EQ(expectedSuccess ? 0 : 42, ret.exitStatus());

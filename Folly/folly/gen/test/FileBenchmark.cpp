@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include <thread>
+
 #include <glog/logging.h>
 
 #include <folly/Benchmark.h>
@@ -34,7 +36,7 @@ BENCHMARK(ByLine_Pipes, iters) {
     wfd = p[1];
     thread = std::thread([wfd, iters] {
       char x = 'x';
-      PCHECK(::write(wfd, &x, 1) == 1);  // signal startup
+      PCHECK(::write(wfd, &x, 1) == 1); // signal startup
       FILE* f = fdopen(wfd, "w");
       PCHECK(f);
       for (size_t i = 1; i <= iters; ++i) {
@@ -43,7 +45,7 @@ BENCHMARK(ByLine_Pipes, iters) {
       fclose(f);
     });
     char buf;
-    PCHECK(::read(rfd, &buf, 1) == 1);  // wait for startup
+    PCHECK(::read(rfd, &buf, 1) == 1); // wait for startup
   }
 
   CHECK_ERR(rfd);
@@ -64,7 +66,7 @@ BENCHMARK(ByLine_Pipes, iters) {
 // ByLine_Pipes                                               148.63ns    6.73M
 // ============================================================================
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   folly::runBenchmarks();
   return 0;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@
 #define DECLARE_double(_name) FOLLY_DECLARE_FLAG(double, D, _name)
 #define DECLARE_int32(_name) FOLLY_DECLARE_FLAG(int, I, _name)
 #define DECLARE_int64(_name) FOLLY_DECLARE_FLAG(long long, I64, _name)
+#define DECLARE_uint32(_name) FOLLY_DECLARE_FLAG(unsigned long, U32, _name)
 #define DECLARE_uint64(_name) FOLLY_DECLARE_FLAG(unsigned long long, U64, _name)
 #define DECLARE_string(_name) FOLLY_DECLARE_FLAG(std::string, S, _name)
 
@@ -54,6 +55,8 @@
   FOLLY_DEFINE_FLAG(int, I, _name, _default)
 #define DEFINE_int64(_name, _default, _description) \
   FOLLY_DEFINE_FLAG(long long, I64, _name, _default)
+#define DEFINE_uint32(_name, _default, _description) \
+  FOLLY_DEFINE_FLAG(unsigned long, U32, _name, _default)
 #define DEFINE_uint64(_name, _default, _description) \
   FOLLY_DEFINE_FLAG(unsigned long long, U64, _name, _default)
 #define DEFINE_string(_name, _default, _description) \
@@ -61,7 +64,7 @@
 
 namespace google {
 class FlagSaver {};
-}
+} // namespace google
 
 #else
 #include <gflags/gflags.h>

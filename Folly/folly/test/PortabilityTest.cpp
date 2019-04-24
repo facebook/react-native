@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2012-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,26 +14,40 @@
  * limitations under the License.
  */
 
+#include <folly/Portability.h>
+
+#if FOLLY_HAS_STRING_VIEW
+#include <string_view> // @manual
+#endif
+
 #include <memory>
 
 #include <folly/portability/GTest.h>
 
 class Base {
  public:
-  virtual ~Base() { }
-  virtual int foo() const { return 1; }
+  virtual ~Base() {}
+  virtual int foo() const {
+    return 1;
+  }
 };
 
 class Derived : public Base {
  public:
-  int foo() const final { return 2; }
+  int foo() const final {
+    return 2;
+  }
 };
 
 // A compiler that supports final will likely inline the call to p->foo()
 // in fooDerived (but not in fooBase) as it knows that Derived::foo() can
 // no longer be overridden.
-int fooBase(const Base* p) { return p->foo() + 1; }
-int fooDerived(const Derived* p) { return p->foo() + 1; }
+int fooBase(const Base* p) {
+  return p->foo() + 1;
+}
+int fooDerived(const Derived* p) {
+  return p->foo() + 1;
+}
 
 TEST(Portability, Final) {
   std::unique_ptr<Derived> p(new Derived);

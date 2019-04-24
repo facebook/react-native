@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include <folly/experimental/exception_tracer/ExceptionCounterLib.h>
 
 #include <iosfwd>
 #include <unordered_map>
 
 #include <folly/Range.h>
-#include <folly/RWSpinLock.h>
-#include <folly/SpookyHashV2.h>
 #include <folly/Synchronized.h>
 #include <folly/ThreadLocal.h>
+#include <folly/hash/SpookyHashV2.h>
+#include <folly/synchronization/RWSpinLock.h>
 
 #include <folly/experimental/exception_tracer/ExceptionTracerLib.h>
 #include <folly/experimental/exception_tracer/StackTrace.h>
@@ -77,11 +76,12 @@ std::vector<ExceptionStats> getExceptionStatistics() {
     result.push_back(std::move(item.second));
   }
 
-  std::sort(result.begin(),
-            result.end(),
-            [](const ExceptionStats& lhs, const ExceptionStats& rhs) {
-              return lhs.count > rhs.count;
-            });
+  std::sort(
+      result.begin(),
+      result.end(),
+      [](const ExceptionStats& lhs, const ExceptionStats& rhs) {
+        return lhs.count > rhs.count;
+      });
 
   return result;
 }
@@ -119,7 +119,7 @@ void throwHandler(void*, std::type_info* exType, void (*)(void*)) noexcept {
   auto exceptionId =
       folly::hash::SpookyHashV2::Hash64(frames, (n + 1) * sizeof(frames[0]), 0);
 
-  SYNCHRONIZED(holder, gExceptionStats->statsHolder) {
+  gExceptionStats->statsHolder.withWLock([&](auto& holder) {
     auto it = holder.find(exceptionId);
     if (it != holder.end()) {
       ++it->second.count;
@@ -129,11 +129,13 @@ void throwHandler(void*, std::type_info* exType, void (*)(void*)) noexcept {
       info.frames.assign(frames + 1, frames + 1 + n);
       holder.emplace(exceptionId, ExceptionStats{1, std::move(info)});
     }
-  }
+  });
 }
 
 struct Initializer {
-  Initializer() { registerCxaThrowCallback(throwHandler); }
+  Initializer() {
+    registerCxaThrowCallback(throwHandler);
+  }
 };
 
 Initializer initializer;

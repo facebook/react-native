@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,49 @@
 #include <folly/json.h>
 
 #include <folly/Benchmark.h>
+#include <folly/Conv.h>
 #include <folly/FileUtil.h>
+#include <folly/Range.h>
 #include <folly/portability/GFlags.h>
 #include <folly/portability/GTest.h>
 
 using folly::dynamic;
 using folly::parseJson;
 using folly::toJson;
+
+constexpr folly::StringPiece kLargeAsciiString =
+    "akjhfk jhkjlakjhfk jhkjlakjhfk jhkjl akjhfk"
+    "akjhfk jhkjlakjhfk jhkjlakjhfk jhkjl akjhfk"
+    "akjhfk jhkjlakjhfk jhkjlakjhfk jhkjl akjhfk"
+    "akjhfk jhkjlakjhfk jhkjlakjhfk jhkjl akjhfk"
+    "akjhfk jhkjlakjhfk jhkjlakjhfk jhkjl akjhfk"
+    "akjhfk jhkjlakjhfk jhkjlakjhfk jhkjl akjhfk"
+    "akjhfk jhkjlakjhfk jhkjlakjhfk jhkjl akjhfk"
+    "akjhfk jhkjlakjhfk jhkjlakjhfk jhkjl akjhfk"
+    "akjhfk jhkjlakjhfk jhkjlakjhfk jhkjl akjhfk"
+    "akjhfk jhkjlakjhfk jhkjlakjhfk jhkjl akjhfk"
+    "akjhfk jhkjlakjhfk jhkjlakjhfk jhkjl akjhfk";
+
+constexpr folly::StringPiece kLargeNonAsciiString =
+    "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
+    "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
+    "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
+    "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
+    "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
+    "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
+    "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
+    "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
+    "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
+    "qwerty \xc2\x80 \xef\xbf\xbf poiuy";
+
+constexpr folly::StringPiece kLargeAsciiStringWithSpecialChars =
+    "<script>foo%@bar.com</script>"
+    "<script>foo%@bar.com</script>"
+    "<script>foo%@bar.com</script>"
+    "<script>foo%@bar.com</script>"
+    "<script>foo%@bar.com</script>"
+    "<script>foo%@bar.com</script>"
+    "<script>foo%@bar.com</script>";
 
 TEST(Json, StripComments) {
   const std::string kTestDir = "folly/test/";
@@ -44,60 +80,56 @@ TEST(Json, StripComments) {
 }
 
 BENCHMARK(jsonSerialize, iters) {
+  const dynamic obj = kLargeNonAsciiString;
+
   folly::json::serialization_opts opts;
   for (size_t i = 0; i < iters; ++i) {
-    folly::json::serialize(
-      "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
-      "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
-      "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
-      "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
-      "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
-      "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
-      "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
-      "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
-      "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
-      "qwerty \xc2\x80 \xef\xbf\xbf poiuy",
-      opts);
+    folly::json::serialize(obj, opts);
   }
 }
 
 BENCHMARK(jsonSerializeWithNonAsciiEncoding, iters) {
+  const dynamic obj = kLargeNonAsciiString;
+
   folly::json::serialization_opts opts;
   opts.encode_non_ascii = true;
 
   for (size_t i = 0; i < iters; ++i) {
-    folly::json::serialize(
-      "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
-      "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
-      "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
-      "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
-      "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
-      "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
-      "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
-      "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
-      "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
-      "qwerty \xc2\x80 \xef\xbf\xbf poiuy",
-      opts);
+    folly::json::serialize(obj, opts);
   }
 }
 
 BENCHMARK(jsonSerializeWithUtf8Validation, iters) {
+  const dynamic obj = kLargeNonAsciiString;
+
   folly::json::serialization_opts opts;
   opts.validate_utf8 = true;
 
   for (size_t i = 0; i < iters; ++i) {
-    folly::json::serialize(
-      "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
-      "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
-      "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
-      "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
-      "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
-      "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
-      "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
-      "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
-      "qwerty \xc2\x80 \xef\xbf\xbf poiuy"
-      "qwerty \xc2\x80 \xef\xbf\xbf poiuy",
-      opts);
+    folly::json::serialize(obj, opts);
+  }
+}
+
+BENCHMARK(jsonSerializeAsciiWithUtf8Validation, iters) {
+  const dynamic obj = kLargeAsciiString;
+
+  folly::json::serialization_opts opts;
+  opts.validate_utf8 = true;
+
+  for (size_t i = 0; i < iters; ++i) {
+    folly::json::serialize(obj, opts);
+  }
+}
+
+BENCHMARK(jsonSerializeWithExtraUnicodeEscapes, iters) {
+  const dynamic obj = kLargeAsciiStringWithSpecialChars;
+
+  folly::json::serialization_opts opts;
+  opts.extra_ascii_to_escape_bitmap =
+      folly::json::buildExtraAsciiToEscapeBitmap("<%@");
+
+  for (size_t i = 0; i < iters; ++i) {
+    folly::json::serialize(obj, opts);
   }
 }
 
@@ -114,27 +146,16 @@ BENCHMARK(parseNormalString, iters) {
 }
 
 BENCHMARK(parseBigString, iters) {
+  const auto json = folly::to<std::string>('"', kLargeAsciiString, '"');
+
   for (size_t i = 0; i < iters; ++i) {
-    parseJson("\""
-      "akjhfk jhkjlakjhfk jhkjlakjhfk jhkjl akjhfk"
-      "akjhfk jhkjlakjhfk jhkjlakjhfk jhkjl akjhfk"
-      "akjhfk jhkjlakjhfk jhkjlakjhfk jhkjl akjhfk"
-      "akjhfk jhkjlakjhfk jhkjlakjhfk jhkjl akjhfk"
-      "akjhfk jhkjlakjhfk jhkjlakjhfk jhkjl akjhfk"
-      "akjhfk jhkjlakjhfk jhkjlakjhfk jhkjl akjhfk"
-      "akjhfk jhkjlakjhfk jhkjlakjhfk jhkjl akjhfk"
-      "akjhfk jhkjlakjhfk jhkjlakjhfk jhkjl akjhfk"
-      "akjhfk jhkjlakjhfk jhkjlakjhfk jhkjl akjhfk"
-      "akjhfk jhkjlakjhfk jhkjlakjhfk jhkjl akjhfk"
-      "akjhfk jhkjlakjhfk jhkjlakjhfk jhkjl akjhfk"
-      "\"");
+    parseJson(json);
   }
 }
 
 BENCHMARK(toJson, iters) {
   dynamic something = parseJson(
-    "{\"old_value\":40,\"changed\":true,\"opened\":false,\"foo\":[1,2,3,4,5,6]}"
-  );
+      "{\"old_value\":40,\"changed\":true,\"opened\":false,\"foo\":[1,2,3,4,5,6]}");
 
   for (size_t i = 0; i < iters; i++) {
     toJson(something);

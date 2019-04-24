@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 #pragma once
 
 #include <folly/ThreadLocal.h>
+#include <folly/experimental/observer/Observer-pre.h>
 #include <folly/experimental/observer/detail/Core.h>
-#include <folly/experimental/observer/detail/Observer-pre.h>
 
 namespace folly {
 namespace observer {
@@ -91,6 +91,10 @@ class Snapshot {
     return data_.get();
   }
 
+  std::shared_ptr<const T> getShared() const {
+    return data_;
+  }
+
   /**
    * Return the version of the observed object.
    */
@@ -114,6 +118,31 @@ class Snapshot {
   const observer_detail::Core* core_;
 };
 
+class CallbackHandle {
+ public:
+  CallbackHandle();
+  template <typename T>
+  CallbackHandle(
+      Observer<T> observer,
+      folly::Function<void(Snapshot<T>)> callback);
+  CallbackHandle(const CallbackHandle&) = delete;
+  CallbackHandle(CallbackHandle&&) = default;
+  CallbackHandle& operator=(const CallbackHandle&) = delete;
+  CallbackHandle& operator=(CallbackHandle&&) = default;
+  ~CallbackHandle();
+
+  // If callback is currently running, waits until it completes.
+  // Callback will never be called after cancel() returns.
+  void cancel();
+
+ private:
+  struct Context;
+  std::shared_ptr<Context> context_;
+};
+
+template <typename Observable, typename Traits>
+class ObserverCreator;
+
 template <typename T>
 class Observer {
  public:
@@ -133,7 +162,12 @@ class Observer {
     return snapshot.getVersion() < core_->getVersionLastChange();
   }
 
+  CallbackHandle addCallback(folly::Function<void(Snapshot<T>)> callback) const;
+
  private:
+  template <typename Observable, typename Traits>
+  friend class ObserverCreator;
+
   observer_detail::Core::Ptr core_;
 };
 
@@ -198,7 +232,7 @@ struct ObserverTraits<T, true> {
 
 template <typename T, bool CacheInThreadLocal>
 using ObserverT = typename ObserverTraits<T, CacheInThreadLocal>::type;
-}
-}
+} // namespace observer
+} // namespace folly
 
 #include <folly/experimental/observer/Observer-inl.h>

@@ -39,7 +39,6 @@ param_types = [
     "A const&",
     "A",
     "A&",
-    "",
   ]
 
 tests = (

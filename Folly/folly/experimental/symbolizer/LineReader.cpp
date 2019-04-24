@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,20 +20,20 @@
 
 #include <folly/FileUtil.h>
 
-namespace folly { namespace symbolizer {
+namespace folly {
+namespace symbolizer {
 
 LineReader::LineReader(int fd, char* buf, size_t bufSize)
-  : fd_(fd),
-    buf_(buf),
-    bufEnd_(buf_ + bufSize),
-    bol_(buf),
-    eol_(buf),
-    end_(buf),
-    state_(kReading) {
-}
+    : fd_(fd),
+      buf_(buf),
+      bufEnd_(buf_ + bufSize),
+      bol_(buf),
+      eol_(buf),
+      end_(buf),
+      state_(kReading) {}
 
 LineReader::State LineReader::readLine(StringPiece& line) {
-  bol_ = eol_;  // Start past what we already returned
+  bol_ = eol_; // Start past what we already returned
   for (;;) {
     // Search for newline
     char* newline = static_cast<char*>(memchr(eol_, '\n', end_ - eol_));
@@ -69,5 +69,5 @@ LineReader::State LineReader::readLine(StringPiece& line) {
   line.assign(bol_, eol_);
   return eol_ != bol_ ? kReading : state_;
 }
-
-}}  // namespaces
+} // namespace symbolizer
+} // namespace folly

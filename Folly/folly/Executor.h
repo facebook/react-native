@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,11 @@
 
 #pragma once
 
+#include <cassert>
 #include <climits>
 
 #include <folly/Function.h>
+#include <folly/Utility.h>
 
 namespace folly {
 
@@ -28,7 +30,8 @@ using Func = Function<void()>;
 /// threadsafe.
 class Executor {
  public:
-  virtual ~Executor() = default;
+  // Workaround for a linkage problem with explicitly defaulted dtor t22914621
+  virtual ~Executor() {}
 
   /// Enqueue a function to executed by this executor. This and all
   /// variants must be threadsafe.
@@ -42,60 +45,171 @@ class Executor {
     return 1;
   }
 
-  static const int8_t LO_PRI  = SCHAR_MIN;
+  static const int8_t LO_PRI = SCHAR_MIN;
   static const int8_t MID_PRI = 0;
-  static const int8_t HI_PRI  = SCHAR_MAX;
+  static const int8_t HI_PRI = SCHAR_MAX;
 
-  /// A convenience function for shared_ptr to legacy functors.
-  ///
-  /// Sometimes you have a functor that is move-only, and therefore can't be
-  /// converted to a std::function (e.g. std::packaged_task). In that case,
-  /// wrap it in a shared_ptr (or maybe folly::MoveWrapper) and use this.
-  template <class P>
-  void addPtr(P fn) {
-    this->add([fn]() mutable { (*fn)(); });
-  }
-
+  template <typename ExecutorT = Executor>
   class KeepAlive {
    public:
-    KeepAlive() {}
+    KeepAlive() = default;
+
+    ~KeepAlive() {
+      reset();
+    }
+
+    KeepAlive(KeepAlive&& other) noexcept
+        : executorAndDummyFlag_(exchange(other.executorAndDummyFlag_, 0)) {}
+
+    template <
+        typename OtherExecutor,
+        typename = typename std::enable_if<
+            std::is_convertible<OtherExecutor*, ExecutorT*>::value>::type>
+    /* implicit */ KeepAlive(KeepAlive<OtherExecutor>&& other) noexcept
+        : KeepAlive(other.get(), other.executorAndDummyFlag_ & kDummyFlag) {
+      other.executorAndDummyFlag_ = 0;
+    }
+
+    KeepAlive& operator=(KeepAlive&& other) {
+      reset();
+      executorAndDummyFlag_ = exchange(other.executorAndDummyFlag_, 0);
+      return *this;
+    }
+
+    template <
+        typename OtherExecutor,
+        typename = typename std::enable_if<
+            std::is_convertible<OtherExecutor*, ExecutorT*>::value>::type>
+    KeepAlive& operator=(KeepAlive<OtherExecutor>&& other) {
+      return *this = KeepAlive(std::move(other));
+    }
 
     void reset() {
-      executor_.reset();
+      if (Executor* executor = get()) {
+        if (exchange(executorAndDummyFlag_, 0) & kDummyFlag) {
+          return;
+        }
+        executor->keepAliveRelease();
+      }
     }
 
     explicit operator bool() const {
-      return executor_ != nullptr;
+      return executorAndDummyFlag_;
+    }
+
+    ExecutorT* get() const {
+      return reinterpret_cast<ExecutorT*>(
+          executorAndDummyFlag_ & kExecutorMask);
+    }
+
+    ExecutorT& operator*() const {
+      return *get();
+    }
+
+    ExecutorT* operator->() const {
+      return get();
+    }
+
+    KeepAlive copy() const {
+      return getKeepAliveToken(get());
     }
 
    private:
-    friend class Executor;
-    explicit KeepAlive(folly::Executor* executor) : executor_(executor) {}
+    static constexpr intptr_t kDummyFlag = 1;
+    static constexpr intptr_t kExecutorMask = ~kDummyFlag;
 
-    struct Deleter {
-      void operator()(folly::Executor* executor) {
-        executor->keepAliveRelease();
-      }
-    };
-    std::unique_ptr<folly::Executor, Deleter> executor_;
+    friend class Executor;
+    template <typename OtherExecutor>
+    friend class KeepAlive;
+
+    KeepAlive(ExecutorT* executor, bool dummy)
+        : executorAndDummyFlag_(
+              reinterpret_cast<intptr_t>(executor) | (dummy ? kDummyFlag : 0)) {
+      assert(executor);
+      assert(
+          (reinterpret_cast<intptr_t>(executor) & kExecutorMask) ==
+          reinterpret_cast<intptr_t>(executor));
+    }
+
+    intptr_t executorAndDummyFlag_{reinterpret_cast<intptr_t>(nullptr)};
   };
 
-  /// Returns a keep-alive token which guarantees that Executor will keep
-  /// processing tasks until the token is released. keep-alive token can only
-  /// be destroyed from within the task, scheduled to be run on an executor.
-  ///
-  /// If executor does not support keep-alive functionality - dummy token will
-  /// be returned.
-  virtual KeepAlive getKeepAliveToken() {
-    return {};
+  template <typename ExecutorT>
+  static KeepAlive<ExecutorT> getKeepAliveToken(ExecutorT* executor) {
+    static_assert(
+        std::is_base_of<Executor, ExecutorT>::value,
+        "getKeepAliveToken only works for folly::Executor implementations.");
+    if (!executor) {
+      return {};
+    }
+    folly::Executor* executorPtr = executor;
+    if (executorPtr->keepAliveAcquire()) {
+      return makeKeepAlive<ExecutorT>(executor);
+    }
+    return makeKeepAliveDummy<ExecutorT>(executor);
+  }
+
+  template <typename ExecutorT>
+  static KeepAlive<ExecutorT> getKeepAliveToken(ExecutorT& executor) {
+    static_assert(
+        std::is_base_of<Executor, ExecutorT>::value,
+        "getKeepAliveToken only works for folly::Executor implementations.");
+    return getKeepAliveToken(&executor);
   }
 
  protected:
+  /**
+   * Returns true if the KeepAlive is constructed from an executor that does
+   * not support the keep alive ref-counting functionality
+   */
+  template <typename ExecutorT>
+  static bool isKeepAliveDummy(const KeepAlive<ExecutorT>& keepAlive) {
+    return reinterpret_cast<intptr_t>(keepAlive.executorAndDummyFlag_) &
+        KeepAlive<ExecutorT>::kDummyFlag;
+  }
+
+  // Acquire a keep alive token. Should return false if keep-alive mechanism
+  // is not supported.
+  virtual bool keepAliveAcquire();
+  // Release a keep alive token previously acquired by keepAliveAcquire().
+  // Will never be called if keepAliveAcquire() returns false.
   virtual void keepAliveRelease();
 
-  KeepAlive makeKeepAlive() {
-    return KeepAlive{this};
+  template <typename ExecutorT>
+  static KeepAlive<ExecutorT> makeKeepAlive(ExecutorT* executor) {
+    static_assert(
+        std::is_base_of<Executor, ExecutorT>::value,
+        "makeKeepAlive only works for folly::Executor implementations.");
+    return KeepAlive<ExecutorT>{executor, false};
+  }
+
+ private:
+  template <typename ExecutorT>
+  static KeepAlive<ExecutorT> makeKeepAliveDummy(ExecutorT* executor) {
+    static_assert(
+        std::is_base_of<Executor, ExecutorT>::value,
+        "makeKeepAliveDummy only works for folly::Executor implementations.");
+    return KeepAlive<ExecutorT>{executor, true};
   }
 };
 
-} // folly
+/// Returns a keep-alive token which guarantees that Executor will keep
+/// processing tasks until the token is released (if supported by Executor).
+/// KeepAlive always contains a valid pointer to an Executor.
+template <typename ExecutorT>
+Executor::KeepAlive<ExecutorT> getKeepAliveToken(ExecutorT* executor) {
+  static_assert(
+      std::is_base_of<Executor, ExecutorT>::value,
+      "getKeepAliveToken only works for folly::Executor implementations.");
+  return Executor::getKeepAliveToken(executor);
+}
+
+template <typename ExecutorT>
+Executor::KeepAlive<ExecutorT> getKeepAliveToken(ExecutorT& executor) {
+  static_assert(
+      std::is_base_of<Executor, ExecutorT>::value,
+      "getKeepAliveToken only works for folly::Executor implementations.");
+  return getKeepAliveToken(&executor);
+}
+
+} // namespace folly

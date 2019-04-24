@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,25 +24,31 @@
  */
 #include <folly/experimental/DynamicParser.h>
 
+#include <sstream>
+
 #include <folly/Optional.h>
 
 namespace folly {
 
 namespace {
 folly::dynamic& insertAtKey(
-    folly::dynamic* d, bool allow_non_string_keys, const folly::dynamic& key) {
+    folly::dynamic* d,
+    bool allow_non_string_keys,
+    const folly::dynamic& key) {
   if (key.isString()) {
     return (*d)[key];
-  // folly::dynamic allows non-null scalars for keys.
   } else if (key.isNumber() || key.isBool()) {
+    // folly::dynamic allows non-null scalars for keys.
     return allow_non_string_keys ? (*d)[key] : (*d)[key.asString()];
   }
   // One cause might be oddness like p.optional(dynamic::array(...), ...);
   throw DynamicParserLogicError(
-    "Unsupported key type ", key.typeName(), " of ", detail::toPseudoJson(key)
-  );
+      "Unsupported key type ",
+      key.typeName(),
+      " of ",
+      detail::toPseudoJson(key));
 }
-}  // anonymous namespace
+} // namespace
 
 void DynamicParser::reportError(
     const folly::dynamic* lookup_k,
@@ -60,9 +66,12 @@ void DynamicParser::reportError(
     // multiple errors, but the value should remain the same.
     if (*e_val_ptr != value()) {
       throw DynamicParserLogicError(
-        "Overwriting value: ", detail::toPseudoJson(*e_val_ptr), " with ",
-        detail::toPseudoJson(value()), " for error ", ex.what()
-      );
+          "Overwriting value: ",
+          detail::toPseudoJson(*e_val_ptr),
+          " with ",
+          detail::toPseudoJson(value()),
+          " for error ",
+          ex.what());
     }
   } else {
     // The e["value"].isNull() trick cannot be used because value().type()
@@ -72,7 +81,7 @@ void DynamicParser::reportError(
 
   // Differentiate between "parsing value" and "looking up key" errors.
   auto& e_msg = [&]() -> folly::dynamic& {
-    if (lookup_k == nullptr) {  // {object,array}Items, or post-key-lookup
+    if (lookup_k == nullptr) { // {object,array}Items, or post-key-lookup
       return e["error"];
     }
     // Multiple key lookups can report errors on the same collection.
@@ -85,17 +94,18 @@ void DynamicParser::reportError(
   }();
   if (!e_msg.isNull()) {
     throw DynamicParserLogicError(
-      "Overwriting error: ", detail::toPseudoJson(e_msg), " with: ",
-      ex.what()
-    );
+        "Overwriting error: ",
+        detail::toPseudoJson(e_msg),
+        " with: ",
+        ex.what());
   }
   e_msg = ex.what();
 
   switch (onError_) {
     case OnError::RECORD:
-      break;  // Continue parsing
+      break; // Continue parsing
     case OnError::THROW:
-      stack_.throwErrors();  // Package releaseErrors() into an exception.
+      stack_.throwErrors(); // Package releaseErrors() into an exception.
     default:
       LOG(FATAL) << "Bad onError_: " << static_cast<int>(onError_);
   }
@@ -107,7 +117,7 @@ void DynamicParser::ParserStack::Pop::operator()() noexcept {
   if (stackPtr_->unmaterializedSubErrorKeys_.empty()) {
     // There should be the current error, and the root.
     CHECK_GE(stackPtr_->subErrors_.size(), 2u)
-      << "Internal bug: out of suberrors";
+        << "Internal bug: out of suberrors";
     stackPtr_->subErrors_.pop_back();
   } else {
     // Errors were never materialized for this subtree, so errors_ only has
@@ -117,14 +127,11 @@ void DynamicParser::ParserStack::Pop::operator()() noexcept {
   }
 }
 
-folly::ScopeGuardImpl<DynamicParser::ParserStack::Pop>
-DynamicParser::ParserStack::push(
+DynamicParser::ParserStack::PopGuard DynamicParser::ParserStack::push(
     const folly::dynamic& k,
     const folly::dynamic& v) noexcept {
   // Save the previous state of the parser.
-  folly::ScopeGuardImpl<DynamicParser::ParserStack::Pop> guard(
-    DynamicParser::ParserStack::Pop(this)
-  );
+  DynamicParser::ParserStack::PopGuard guard{this};
   key_ = &k;
   value_ = &v;
   // We create errors_ sub-objects lazily to keep the result small.
@@ -145,7 +152,7 @@ folly::dynamic& DynamicParser::ParserStack::errors(
     }
     // Find, or insert a dummy entry for the current key
     auto& my_errors =
-      insertAtKey(&nested, allow_non_string_keys, *suberror_key);
+        insertAtKey(&nested, allow_non_string_keys, *suberror_key);
     if (my_errors.isNull()) {
       my_errors = folly::dynamic::object();
     }
@@ -156,13 +163,15 @@ folly::dynamic& DynamicParser::ParserStack::errors(
 }
 
 folly::dynamic DynamicParser::ParserStack::releaseErrors() {
-  if (
-    key_ || unmaterializedSubErrorKeys_.size() != 0 || subErrors_.size() != 1
-  ) {
+  if (key_ || unmaterializedSubErrorKeys_.size() != 0 ||
+      subErrors_.size() != 1) {
     throw DynamicParserLogicError(
-      "Do not releaseErrors() while parsing: ", key_ != nullptr, " / ",
-      unmaterializedSubErrorKeys_.size(), " / ", subErrors_.size()
-    );
+        "Do not releaseErrors() while parsing: ",
+        key_ != nullptr,
+        " / ",
+        unmaterializedSubErrorKeys_.size(),
+        " / ",
+        subErrors_.size());
   }
   return releaseErrorsImpl();
 }
@@ -176,8 +185,8 @@ folly::dynamic DynamicParser::ParserStack::releaseErrorsImpl() {
     throw DynamicParserLogicError("Do not releaseErrors() twice");
   }
   auto errors = std::move(errors_);
-  errors_ = nullptr;  // Prevent a second release.
-  value_ = nullptr;  // Break attempts to parse again.
+  errors_ = nullptr; // Prevent a second release.
+  value_ = nullptr; // Break attempts to parse again.
   return errors;
 }
 
@@ -187,6 +196,6 @@ std::string toPseudoJson(const folly::dynamic& d) {
   ss << d;
   return ss.str();
 }
-}  // namespace detail
+} // namespace detail
 
-}  // namespace folly
+} // namespace folly

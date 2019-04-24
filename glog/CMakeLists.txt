@@ -9,10 +9,9 @@ set(SOURCES
 
 add_library(glog ${SOURCES})
 
-target_include_directories(glog PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src")
+target_include_directories(glog PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/src/exported")
 
 target_include_directories(glog PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src/glog")
-
 
 # Following is cmake from OSS.
 

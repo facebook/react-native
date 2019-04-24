@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-present Facebook, Inc.
+ * Copyright 2012-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,12 @@
 
 #include <type_traits>
 
-#if FOLLY_HAVE_LIBDWARF_DWARF_H
+// We can delete this #if check once we completely deprecate and remove
+// the autoconf build.
+#if __has_include(<libdwarf/dwarf.h>)
 #include <libdwarf/dwarf.h>
 #else
-#include <dwarf.h>
+#include <dwarf.h> // @manual
 #endif
 
 namespace folly {
@@ -31,8 +33,7 @@ Dwarf::Dwarf(const ElfFile* elf) : elf_(elf) {
   init();
 }
 
-Dwarf::Section::Section(folly::StringPiece d) : is64Bit_(false), data_(d) {
-}
+Dwarf::Section::Section(folly::StringPiece d) : is64Bit_(false), data_(d) {}
 
 namespace {
 
@@ -41,8 +42,8 @@ namespace {
 
 // Read (bitwise) one object of type T
 template <class T>
-typename std::enable_if<std::is_pod<T>::value, T>::type
-read(folly::StringPiece& sp) {
+typename std::enable_if<std::is_pod<T>::value, T>::type read(
+    folly::StringPiece& sp) {
   FOLLY_SAFE_CHECK(sp.size() >= sizeof(T), "underflow");
   T x;
   memcpy(&x, sp.data(), sizeof(T));
@@ -75,7 +76,7 @@ int64_t readSLEB(folly::StringPiece& sp) {
   uint64_t r = readULEB(sp, shift, val);
 
   if (shift < 64 && (val & 0x40)) {
-    r |= -(1ULL << shift);  // sign extend
+    r |= -(1ULL << shift); // sign extend
   }
 
   return r;
@@ -96,8 +97,7 @@ folly::StringPiece readBytes(folly::StringPiece& sp, uint64_t len) {
 
 // Read a null-terminated string
 folly::StringPiece readNullTerminated(folly::StringPiece& sp) {
-  const char* p = static_cast<const char*>(
-      memchr(sp.data(), 0, sp.size()));
+  const char* p = static_cast<const char*>(memchr(sp.data(), 0, sp.size()));
   FOLLY_SAFE_CHECK(p, "invalid null-terminated string");
   folly::StringPiece ret(sp.data(), p);
   sp.assign(p + 1, sp.end());
@@ -151,7 +151,8 @@ void simplifyPath(folly::StringPiece& sp) {
     }
 
     // Strip trailing slashes, except when this is the root path.
-    while (sp.size() > 1 && sp.removeSuffix('/')) { }
+    while (sp.size() > 1 && sp.removeSuffix('/')) {
+    }
 
     if (sp.removeSuffix("/.")) {
       continue;
@@ -161,13 +162,13 @@ void simplifyPath(folly::StringPiece& sp) {
   }
 }
 
-}  // namespace
+} // namespace
 
-Dwarf::Path::Path(folly::StringPiece baseDir, folly::StringPiece subDir,
-                  folly::StringPiece file)
-  : baseDir_(baseDir),
-    subDir_(subDir),
-    file_(file) {
+Dwarf::Path::Path(
+    folly::StringPiece baseDir,
+    folly::StringPiece subDir,
+    folly::StringPiece file)
+    : baseDir_(baseDir), subDir_(subDir), file_(file) {
   using std::swap;
 
   // Normalize
@@ -184,7 +185,7 @@ Dwarf::Path::Path(folly::StringPiece baseDir, folly::StringPiece subDir,
   }
 
   if (!subDir_.empty() && subDir_[0] == '/') {
-    baseDir_.clear();  // subDir_ is absolute
+    baseDir_.clear(); // subDir_ is absolute
   }
 
   simplifyPath(baseDir_);
@@ -224,7 +225,7 @@ size_t Dwarf::Path::toBuffer(char* buf, size_t bufSize) const {
   size_t totalSize = 0;
   bool needsSlash = false;
 
-  auto append = [&] (folly::StringPiece sp) {
+  auto append = [&](folly::StringPiece sp) {
     if (bufSize >= 2) {
       size_t toCopy = std::min(sp.size(), bufSize - 1);
       memcpy(buf, sp.data(), toCopy);
@@ -327,8 +328,9 @@ void Dwarf::init() {
   getSection(".debug_aranges", &aranges_);
 }
 
-bool Dwarf::readAbbreviation(folly::StringPiece& section,
-                             DIEAbbreviation& abbr) {
+bool Dwarf::readAbbreviation(
+    folly::StringPiece& section,
+    DIEAbbreviation& abbr) {
   // abbreviation code
   abbr.code = readULEB(section);
   if (abbr.code == 0) {
@@ -355,13 +357,12 @@ bool Dwarf::readAbbreviation(folly::StringPiece& section,
   return true;
 }
 
-Dwarf::DIEAbbreviation::Attribute Dwarf::readAttribute(
-    folly::StringPiece& sp) {
-  return { readULEB(sp), readULEB(sp) };
+Dwarf::DIEAbbreviation::Attribute Dwarf::readAttribute(folly::StringPiece& sp) {
+  return {readULEB(sp), readULEB(sp)};
 }
 
 Dwarf::DIEAbbreviation Dwarf::getAbbreviation(uint64_t code, uint64_t offset)
-  const {
+    const {
   // Linear search in the .debug_abbrev section, starting at offset
   folly::StringPiece section = abbrev_;
   section.advance(offset);
@@ -377,51 +378,53 @@ Dwarf::DIEAbbreviation Dwarf::getAbbreviation(uint64_t code, uint64_t offset)
 }
 
 Dwarf::AttributeValue Dwarf::readAttributeValue(
-    folly::StringPiece& sp, uint64_t form, bool is64Bit) const {
+    folly::StringPiece& sp,
+    uint64_t form,
+    bool is64Bit) const {
   switch (form) {
-  case DW_FORM_addr:
-    return read<uintptr_t>(sp);
-  case DW_FORM_block1:
-    return readBytes(sp, read<uint8_t>(sp));
-  case DW_FORM_block2:
-    return readBytes(sp, read<uint16_t>(sp));
-  case DW_FORM_block4:
-    return readBytes(sp, read<uint32_t>(sp));
-  case DW_FORM_block:  // fallthrough
-  case DW_FORM_exprloc:
-    return readBytes(sp, readULEB(sp));
-  case DW_FORM_data1:  // fallthrough
-  case DW_FORM_ref1:
-    return read<uint8_t>(sp);
-  case DW_FORM_data2:  // fallthrough
-  case DW_FORM_ref2:
-    return read<uint16_t>(sp);
-  case DW_FORM_data4:  // fallthrough
-  case DW_FORM_ref4:
-    return read<uint32_t>(sp);
-  case DW_FORM_data8:  // fallthrough
-  case DW_FORM_ref8:
-    return read<uint64_t>(sp);
-  case DW_FORM_sdata:
-    return readSLEB(sp);
-  case DW_FORM_udata:  // fallthrough
-  case DW_FORM_ref_udata:
-    return readULEB(sp);
-  case DW_FORM_flag:
-    return read<uint8_t>(sp);
-  case DW_FORM_flag_present:
-    return 1;
-  case DW_FORM_sec_offset:  // fallthrough
-  case DW_FORM_ref_addr:
-    return readOffset(sp, is64Bit);
-  case DW_FORM_string:
-    return readNullTerminated(sp);
-  case DW_FORM_strp:
-    return getStringFromStringSection(readOffset(sp, is64Bit));
-  case DW_FORM_indirect:  // form is explicitly specified
-    return readAttributeValue(sp, readULEB(sp), is64Bit);
-  default:
-    FOLLY_SAFE_CHECK(false, "invalid attribute form");
+    case DW_FORM_addr:
+      return read<uintptr_t>(sp);
+    case DW_FORM_block1:
+      return readBytes(sp, read<uint8_t>(sp));
+    case DW_FORM_block2:
+      return readBytes(sp, read<uint16_t>(sp));
+    case DW_FORM_block4:
+      return readBytes(sp, read<uint32_t>(sp));
+    case DW_FORM_block: // fallthrough
+    case DW_FORM_exprloc:
+      return readBytes(sp, readULEB(sp));
+    case DW_FORM_data1: // fallthrough
+    case DW_FORM_ref1:
+      return read<uint8_t>(sp);
+    case DW_FORM_data2: // fallthrough
+    case DW_FORM_ref2:
+      return read<uint16_t>(sp);
+    case DW_FORM_data4: // fallthrough
+    case DW_FORM_ref4:
+      return read<uint32_t>(sp);
+    case DW_FORM_data8: // fallthrough
+    case DW_FORM_ref8:
+      return read<uint64_t>(sp);
+    case DW_FORM_sdata:
+      return readSLEB(sp);
+    case DW_FORM_udata: // fallthrough
+    case DW_FORM_ref_udata:
+      return readULEB(sp);
+    case DW_FORM_flag:
+      return read<uint8_t>(sp);
+    case DW_FORM_flag_present:
+      return 1;
+    case DW_FORM_sec_offset: // fallthrough
+    case DW_FORM_ref_addr:
+      return readOffset(sp, is64Bit);
+    case DW_FORM_string:
+      return readNullTerminated(sp);
+    case DW_FORM_strp:
+      return getStringFromStringSection(readOffset(sp, is64Bit));
+    case DW_FORM_indirect: // form is explicitly specified
+      return readAttributeValue(sp, readULEB(sp), is64Bit);
+    default:
+      FOLLY_SAFE_CHECK(false, "invalid attribute form");
   }
 }
 
@@ -436,9 +439,10 @@ folly::StringPiece Dwarf::getStringFromStringSection(uint64_t offset) const {
  * Find @address in .debug_aranges and return the offset in
  * .debug_info for compilation unit to which this address belongs.
  */
-bool Dwarf::findDebugInfoOffset(uintptr_t address,
-                                StringPiece aranges,
-                                uint64_t& offset) {
+bool Dwarf::findDebugInfoOffset(
+    uintptr_t address,
+    StringPiece aranges,
+    uint64_t& offset) {
   Section arangesSection(aranges);
   folly::StringPiece chunk;
   while (arangesSection.next(chunk)) {
@@ -478,9 +482,10 @@ bool Dwarf::findDebugInfoOffset(uintptr_t address,
  * Returns whether the address was found.
  * Advances @sp to the next entry in .debug_info.
  */
-bool Dwarf::findLocation(uintptr_t address,
-                         StringPiece& infoEntry,
-                         LocationInfo& locationInfo) const {
+bool Dwarf::findLocation(
+    uintptr_t address,
+    StringPiece& infoEntry,
+    LocationInfo& locationInfo) const {
   // For each compilation unit compiled with a DWARF producer, a
   // contribution is made to the .debug_info section of the object
   // file. Each such contribution consists of a compilation unit
@@ -511,8 +516,8 @@ bool Dwarf::findLocation(uintptr_t address,
   auto code = readULEB(chunk);
   FOLLY_SAFE_CHECK(code != 0, "invalid code");
   auto abbr = getAbbreviation(code, abbrevOffset);
-  FOLLY_SAFE_CHECK(abbr.tag == DW_TAG_compile_unit,
-                   "expecting compile unit entry");
+  FOLLY_SAFE_CHECK(
+      abbr.tag == DW_TAG_compile_unit, "expecting compile unit entry");
   // Skip children entries, advance to the next compilation unit entry.
   infoEntry.advance(chunk.end() - infoEntry.begin());
 
@@ -529,23 +534,22 @@ bool Dwarf::findLocation(uintptr_t address,
     if (attr.name == 0 && attr.form == 0) {
       break;
     }
-    auto val = readAttributeValue(chunk, attr.form,
-                                  debugInfoSection.is64Bit());
+    auto val = readAttributeValue(chunk, attr.form, debugInfoSection.is64Bit());
     switch (attr.name) {
-    case DW_AT_stmt_list:
-      // Offset in .debug_line for the line number VM program for this
-      // compilation unit
-      lineOffset = boost::get<uint64_t>(val);
-      foundLineOffset = true;
-      break;
-    case DW_AT_comp_dir:
-      // Compilation directory
-      compilationDirectory = boost::get<folly::StringPiece>(val);
-      break;
-    case DW_AT_name:
-      // File name of main file being compiled
-      mainFileName = boost::get<folly::StringPiece>(val);
-      break;
+      case DW_AT_stmt_list:
+        // Offset in .debug_line for the line number VM program for this
+        // compilation unit
+        lineOffset = boost::get<uint64_t>(val);
+        foundLineOffset = true;
+        break;
+      case DW_AT_comp_dir:
+        // Compilation directory
+        compilationDirectory = boost::get<folly::StringPiece>(val);
+        break;
+      case DW_AT_name:
+        // File name of main file being compiled
+        mainFileName = boost::get<folly::StringPiece>(val);
+        break;
     }
   }
 
@@ -568,9 +572,10 @@ bool Dwarf::findLocation(uintptr_t address,
   return locationInfo.hasFileAndLine;
 }
 
-bool Dwarf::findAddress(uintptr_t address,
-                        LocationInfo& locationInfo,
-                        LocationInfoMode mode) const {
+bool Dwarf::findAddress(
+    uintptr_t address,
+    LocationInfo& locationInfo,
+    LocationInfoMode mode) const {
   locationInfo = LocationInfo();
 
   if (mode == LocationInfoMode::DISABLED) {
@@ -603,7 +608,6 @@ bool Dwarf::findAddress(uintptr_t address,
     }
   }
 
-
   // Slow path (linear scan): Iterate over all .debug_info entries
   // and look for the address in each compilation unit.
   folly::StringPiece infoEntry(info_);
@@ -613,9 +617,10 @@ bool Dwarf::findAddress(uintptr_t address,
   return locationInfo.hasFileAndLine;
 }
 
-Dwarf::LineNumberVM::LineNumberVM(folly::StringPiece data,
-                                  folly::StringPiece compilationDirectory)
-  : compilationDirectory_(compilationDirectory) {
+Dwarf::LineNumberVM::LineNumberVM(
+    folly::StringPiece data,
+    folly::StringPiece compilationDirectory)
+    : compilationDirectory_(compilationDirectory) {
   Section section(data);
   FOLLY_SAFE_CHECK(section.next(data_), "invalid line number VM");
   is64Bit_ = section.is64Bit();
@@ -639,21 +644,21 @@ void Dwarf::LineNumberVM::reset() {
 
 void Dwarf::LineNumberVM::init() {
   version_ = read<uint16_t>(data_);
-  FOLLY_SAFE_CHECK(version_ >= 2 && version_ <= 4,
-                   "invalid version in line number VM");
+  FOLLY_SAFE_CHECK(
+      version_ >= 2 && version_ <= 4, "invalid version in line number VM");
   uint64_t headerLength = readOffset(data_, is64Bit_);
-  FOLLY_SAFE_CHECK(headerLength <= data_.size(),
-                   "invalid line number VM header length");
+  FOLLY_SAFE_CHECK(
+      headerLength <= data_.size(), "invalid line number VM header length");
   folly::StringPiece header(data_.data(), headerLength);
   data_.assign(header.end(), data_.end());
 
   minLength_ = read<uint8_t>(header);
-  if (version_ == 4) {  // Version 2 and 3 records don't have this
+  if (version_ == 4) { // Version 2 and 3 records don't have this
     uint8_t maxOpsPerInstruction = read<uint8_t>(header);
     FOLLY_SAFE_CHECK(maxOpsPerInstruction == 1, "VLIW not supported");
   }
   defaultIsStmt_ = read<uint8_t>(header);
-  lineBase_ = read<int8_t>(header);  // yes, signed
+  lineBase_ = read<int8_t>(header); // yes, signed
   lineRange_ = read<uint8_t>(header);
   opcodeBase_ = read<uint8_t>(header);
   FOLLY_SAFE_CHECK(opcodeBase_ != 0, "invalid opcode base");
@@ -689,8 +694,8 @@ bool Dwarf::LineNumberVM::next(folly::StringPiece& program) {
   return (ret == COMMIT);
 }
 
-Dwarf::LineNumberVM::FileName Dwarf::LineNumberVM::getFileName(uint64_t index)
-  const {
+Dwarf::LineNumberVM::FileName Dwarf::LineNumberVM::getFileName(
+    uint64_t index) const {
   FOLLY_SAFE_CHECK(index != 0, "invalid file index 0");
 
   FileName fn;
@@ -714,29 +719,30 @@ Dwarf::LineNumberVM::FileName Dwarf::LineNumberVM::getFileName(uint64_t index)
   return fn;
 }
 
-folly::StringPiece Dwarf::LineNumberVM::getIncludeDirectory(uint64_t index)
-  const {
+folly::StringPiece Dwarf::LineNumberVM::getIncludeDirectory(
+    uint64_t index) const {
   if (index == 0) {
     return folly::StringPiece();
   }
 
-  FOLLY_SAFE_CHECK(index <= includeDirectoryCount_,
-                   "invalid include directory");
+  FOLLY_SAFE_CHECK(
+      index <= includeDirectoryCount_, "invalid include directory");
 
   folly::StringPiece includeDirectories = includeDirectories_;
   folly::StringPiece dir;
   for (; index; --index) {
     dir = readNullTerminated(includeDirectories);
     if (dir.empty()) {
-      abort();  // BUG
+      abort(); // BUG
     }
   }
 
   return dir;
 }
 
-bool Dwarf::LineNumberVM::readFileName(folly::StringPiece& program,
-                                       FileName& fn) {
+bool Dwarf::LineNumberVM::readFileName(
+    folly::StringPiece& program,
+    FileName& fn) {
   fn.relativeName = readNullTerminated(program);
   if (fn.relativeName.empty()) {
     return false;
@@ -748,16 +754,17 @@ bool Dwarf::LineNumberVM::readFileName(folly::StringPiece& program,
   return true;
 }
 
-bool Dwarf::LineNumberVM::nextDefineFile(folly::StringPiece& program,
-                                         FileName& fn) const {
+bool Dwarf::LineNumberVM::nextDefineFile(
+    folly::StringPiece& program,
+    FileName& fn) const {
   while (!program.empty()) {
     auto opcode = read<uint8_t>(program);
 
-    if (opcode >= opcodeBase_) {  // special opcode
+    if (opcode >= opcodeBase_) { // special opcode
       continue;
     }
 
-    if (opcode != 0) {  // standard opcode
+    if (opcode != 0) { // standard opcode
       // Skip, slurp the appropriate number of LEB arguments
       uint8_t argCount = standardOpcodeLengths_[opcode - 1];
       while (argCount--) {
@@ -774,8 +781,9 @@ bool Dwarf::LineNumberVM::nextDefineFile(folly::StringPiece& program,
     --length;
 
     if (opcode == DW_LNE_define_file) {
-      FOLLY_SAFE_CHECK(readFileName(program, fn),
-                       "invalid empty file in DW_LNE_define_file");
+      FOLLY_SAFE_CHECK(
+          readFileName(program, fn),
+          "invalid empty file in DW_LNE_define_file");
       return true;
     }
 
@@ -790,7 +798,7 @@ Dwarf::LineNumberVM::StepResult Dwarf::LineNumberVM::step(
     folly::StringPiece& program) {
   auto opcode = read<uint8_t>(program);
 
-  if (opcode >= opcodeBase_) {  // special opcode
+  if (opcode >= opcodeBase_) { // special opcode
     uint8_t adjustedOpcode = opcode - opcodeBase_;
     uint8_t opAdvance = adjustedOpcode / lineRange_;
 
@@ -804,52 +812,58 @@ Dwarf::LineNumberVM::StepResult Dwarf::LineNumberVM::step(
     return COMMIT;
   }
 
-  if (opcode != 0) {  // standard opcode
+  if (opcode != 0) { // standard opcode
     // Only interpret opcodes that are recognized by the version we're parsing;
     // the others are vendor extensions and we should ignore them.
     switch (opcode) {
-    case DW_LNS_copy:
-      basicBlock_ = false;
-      prologueEnd_ = false;
-      epilogueBegin_ = false;
-      discriminator_ = 0;
-      return COMMIT;
-    case DW_LNS_advance_pc:
-      address_ += minLength_ * readULEB(program);
-      return CONTINUE;
-    case DW_LNS_advance_line:
-      line_ += readSLEB(program);
-      return CONTINUE;
-    case DW_LNS_set_file:
-      file_ = readULEB(program);
-      return CONTINUE;
-    case DW_LNS_set_column:
-      column_ = readULEB(program);
-      return CONTINUE;
-    case DW_LNS_negate_stmt:
-      isStmt_ = !isStmt_;
-      return CONTINUE;
-    case DW_LNS_set_basic_block:
-      basicBlock_ = true;
-      return CONTINUE;
-    case DW_LNS_const_add_pc:
-      address_ += minLength_ * ((255 - opcodeBase_) / lineRange_);
-      return CONTINUE;
-    case DW_LNS_fixed_advance_pc:
-      address_ += read<uint16_t>(program);
-      return CONTINUE;
-    case DW_LNS_set_prologue_end:
-      if (version_ == 2) break;  // not supported in version 2
-      prologueEnd_ = true;
-      return CONTINUE;
-    case DW_LNS_set_epilogue_begin:
-      if (version_ == 2) break;  // not supported in version 2
-      epilogueBegin_ = true;
-      return CONTINUE;
-    case DW_LNS_set_isa:
-      if (version_ == 2) break;  // not supported in version 2
-      isa_ = readULEB(program);
-      return CONTINUE;
+      case DW_LNS_copy:
+        basicBlock_ = false;
+        prologueEnd_ = false;
+        epilogueBegin_ = false;
+        discriminator_ = 0;
+        return COMMIT;
+      case DW_LNS_advance_pc:
+        address_ += minLength_ * readULEB(program);
+        return CONTINUE;
+      case DW_LNS_advance_line:
+        line_ += readSLEB(program);
+        return CONTINUE;
+      case DW_LNS_set_file:
+        file_ = readULEB(program);
+        return CONTINUE;
+      case DW_LNS_set_column:
+        column_ = readULEB(program);
+        return CONTINUE;
+      case DW_LNS_negate_stmt:
+        isStmt_ = !isStmt_;
+        return CONTINUE;
+      case DW_LNS_set_basic_block:
+        basicBlock_ = true;
+        return CONTINUE;
+      case DW_LNS_const_add_pc:
+        address_ += minLength_ * ((255 - opcodeBase_) / lineRange_);
+        return CONTINUE;
+      case DW_LNS_fixed_advance_pc:
+        address_ += read<uint16_t>(program);
+        return CONTINUE;
+      case DW_LNS_set_prologue_end:
+        if (version_ == 2) {
+          break; // not supported in version 2
+        }
+        prologueEnd_ = true;
+        return CONTINUE;
+      case DW_LNS_set_epilogue_begin:
+        if (version_ == 2) {
+          break; // not supported in version 2
+        }
+        epilogueBegin_ = true;
+        return CONTINUE;
+      case DW_LNS_set_isa:
+        if (version_ == 2) {
+          break; // not supported in version 2
+        }
+        isa_ = readULEB(program);
+        return CONTINUE;
     }
 
     // Unrecognized standard opcode, slurp the appropriate number of LEB
@@ -869,19 +883,19 @@ Dwarf::LineNumberVM::StepResult Dwarf::LineNumberVM::step(
   --length;
 
   switch (extendedOpcode) {
-  case DW_LNE_end_sequence:
-    return END;
-  case DW_LNE_set_address:
-    address_ = read<uintptr_t>(program);
-    return CONTINUE;
-  case DW_LNE_define_file:
-    // We can't process DW_LNE_define_file here, as it would require us to
-    // use unbounded amounts of state (ie. use the heap).  We'll do a second
-    // pass (using nextDefineFile()) if necessary.
-    break;
-  case DW_LNE_set_discriminator:
-    discriminator_ = readULEB(program);
-    return CONTINUE;
+    case DW_LNE_end_sequence:
+      return END;
+    case DW_LNE_set_address:
+      address_ = read<uintptr_t>(program);
+      return CONTINUE;
+    case DW_LNE_define_file:
+      // We can't process DW_LNE_define_file here, as it would require us to
+      // use unbounded amounts of state (ie. use the heap).  We'll do a second
+      // pass (using nextDefineFile()) if necessary.
+      break;
+    case DW_LNE_set_discriminator:
+      discriminator_ = readULEB(program);
+      return CONTINUE;
   }
 
   // Unrecognized extended opcode
@@ -889,8 +903,10 @@ Dwarf::LineNumberVM::StepResult Dwarf::LineNumberVM::step(
   return CONTINUE;
 }
 
-bool Dwarf::LineNumberVM::findAddress(uintptr_t target, Path& file,
-                                      uint64_t& line) {
+bool Dwarf::LineNumberVM::findAddress(
+    uintptr_t target,
+    Path& file,
+    uint64_t& line) {
   folly::StringPiece program = data_;
 
   // Within each sequence of instructions, the address may only increase.
@@ -900,7 +916,7 @@ bool Dwarf::LineNumberVM::findAddress(uintptr_t target, Path& file,
   // a candidate crosses the target address.
   enum State {
     START,
-    LOW_SEQ,  // candidate
+    LOW_SEQ, // candidate
     HIGH_SEQ
   };
   State state = START;
@@ -926,9 +942,10 @@ bool Dwarf::LineNumberVM::findAddress(uintptr_t target, Path& file,
           return false;
         }
         auto fn = getFileName(prevFile);
-        file = Path(compilationDirectory_,
-                    getIncludeDirectory(fn.directoryIndex),
-                    fn.relativeName);
+        file = Path(
+            compilationDirectory_,
+            getIncludeDirectory(fn.directoryIndex),
+            fn.relativeName);
         line = prevLine;
         return true;
       }
@@ -945,5 +962,5 @@ bool Dwarf::LineNumberVM::findAddress(uintptr_t target, Path& file,
   return false;
 }
 
-}  // namespace symbolizer
-}  // namespace folly
+} // namespace symbolizer
+} // namespace folly

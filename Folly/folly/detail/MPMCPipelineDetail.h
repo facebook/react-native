@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,11 @@
 
 namespace folly {
 
-template <class T, class... Stages> class MPMCPipeline;
+template <class T, class... Stages>
+class MPMCPipeline;
 
-template <class T, size_t Amp> class MPMCPipelineStage {
+template <class T, size_t Amp>
+class MPMCPipelineStage {
  public:
   typedef T value_type;
   static constexpr size_t kAmplification = Amp;
@@ -34,7 +36,8 @@ namespace detail {
  * Helper template to determine value type and amplification whether or not
  * we use MPMCPipelineStage<>
  */
-template <class T> struct PipelineStageInfo {
+template <class T>
+struct PipelineStageInfo {
   static constexpr size_t kAmplification = 1;
   typedef T value_type;
 };
@@ -52,11 +55,12 @@ template <class T>
 class MPMCPipelineStageImpl {
  public:
   typedef T value_type;
-  template <class U, class... Stages> friend class MPMCPipeline;
+  template <class U, class... Stages>
+  friend class MPMCPipeline;
 
   // Implicit so that MPMCPipeline construction works
-  /* implicit */ MPMCPipelineStageImpl(size_t capacity) : queue_(capacity) { }
-  MPMCPipelineStageImpl() { }
+  /* implicit */ MPMCPipelineStageImpl(size_t capacity) : queue_(capacity) {}
+  MPMCPipelineStageImpl() {}
 
   // only use on first stage, uses queue_.pushTicket_ instead of existing
   // ticket
@@ -81,7 +85,7 @@ class MPMCPipelineStageImpl {
     return ticket;
   }
 
-  bool read(T& elem) noexcept {  // only use on last stage, won't track ticket
+  bool read(T& elem) noexcept { // only use on last stage, won't track ticket
     return queue_.read(elem);
   }
 
@@ -104,17 +108,19 @@ class MPMCPipelineStageImpl {
 };
 
 // Product of amplifications of a tuple of PipelineStageInfo<X>
-template <class Tuple> struct AmplificationProduct;
+template <class Tuple>
+struct AmplificationProduct;
 
-template <> struct AmplificationProduct<std::tuple<>> {
+template <>
+struct AmplificationProduct<std::tuple<>> {
   static constexpr size_t value = 1;
 };
 
 template <class T, class... Ts>
 struct AmplificationProduct<std::tuple<T, Ts...>> {
   static constexpr size_t value =
-    T::kAmplification *
-    AmplificationProduct<std::tuple<Ts...>>::value;
+      T::kAmplification * AmplificationProduct<std::tuple<Ts...>>::value;
 };
 
-}}  // namespaces
+} // namespace detail
+} // namespace folly

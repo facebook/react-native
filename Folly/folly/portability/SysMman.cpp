@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,11 @@
 #include <folly/portability/SysMman.h>
 
 #ifdef _WIN32
+
 #include <cassert>
+
 #include <folly/Portability.h>
 #include <folly/portability/Windows.h>
-
-#ifdef LIBLET_BUILD
-#include <oacr.h>
-#endif
 
 static bool mmap_to_page_protection(int prot, DWORD& ret, DWORD& acc) {
   if (prot == PROT_NONE) {
@@ -72,14 +70,10 @@ int mlock(const void* addr, size_t len) {
   // lock a nullptr as long as length is zero.
   // VirtualLock doesn't allow it, so handle
   // it specially.
-  if (addr == nullptr || len == 0) {
+  if (addr == nullptr && len == 0) {
     return 0;
   }
-#ifdef LIBLET_BUILD // This is silly and makes our lives more difficult while providing absolutely 0 value. But without it, we get "prod blocking" OACR bugs...
-  if (!OACR_REVIEWED_CALL(tudorm, VirtualLock((void*)addr, len))) {
-#else
   if (!VirtualLock((void*)addr, len)) {
-#endif
     return -1;
   }
   return 0;
@@ -91,7 +85,7 @@ struct MemMapDebugTrailer {
   size_t length;
   uint32_t magic;
 };
-}
+} // namespace
 
 void* mmap(void* addr, size_t length, int prot, int flags, int fd, off_t off) {
   // Make sure it's something we support first.
@@ -126,11 +120,7 @@ void* mmap(void* addr, size_t length, int prot, int flags, int fd, off_t off) {
         h,
         nullptr,
         newProt,
-#ifdef _WIN64
         (DWORD)((length >> 32) & 0xFFFFFFFF),
-#else
-        0,
-#endif
         (DWORD)(length & 0xFFFFFFFF),
         nullptr);
     if (fmh == nullptr) {
@@ -193,7 +183,7 @@ int mprotect(void* addr, size_t size, int prot) {
 
 int munlock(const void* addr, size_t length) {
   // See comment in mlock
-  if (addr == nullptr || length == 0) {
+  if (addr == nullptr && length == 0) {
     return 0;
   }
   if (!VirtualUnlock((void*)addr, length)) {
@@ -225,4 +215,5 @@ int munmap(void* addr, size_t length) {
   return 0;
 }
 }
+
 #endif

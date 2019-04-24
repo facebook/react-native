@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,8 @@
 
 DEFINE_int32(random_seed, folly::randomNumberSeed(), "random seed");
 
-namespace folly { namespace test {
+namespace folly {
+namespace test {
 
 void testVarint(uint64_t val, std::initializer_list<uint8_t> bytes) {
   size_t n = bytes.size();
@@ -39,6 +40,7 @@ void testVarint(uint64_t val, std::initializer_list<uint8_t> bytes) {
     uint8_t buf[kMaxVarintLength64];
     EXPECT_EQ(expected.size(), encodeVarint(val, buf));
     EXPECT_TRUE(ByteRange(buf, expected.size()) == expected);
+    EXPECT_EQ(expected.size(), encodeVarintSize(val));
   }
 
   {
@@ -92,10 +94,21 @@ TEST(Varint, Simple) {
   testVarint(16383, {0xff, 0x7f});
   testVarint(16384, {0x80, 0x80, 0x01});
 
-  testVarint(static_cast<uint32_t>(-1),
-             {0xff, 0xff, 0xff, 0xff, 0x0f});
-  testVarint(static_cast<uint64_t>(-1),
-             {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x01});
+  testVarint(static_cast<uint32_t>(-1), {0xff, 0xff, 0xff, 0xff, 0x0f});
+  testVarint(
+      static_cast<uint64_t>(-1),
+      {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x01});
+}
+
+void testVarintFail(std::initializer_list<uint8_t> bytes) {
+  size_t n = bytes.size();
+  ByteRange data(&*bytes.begin(), n);
+  auto ret = tryDecodeVarint(data);
+  EXPECT_FALSE(ret.hasValue());
+}
+
+TEST(Varint, Fail) {
+  testVarintFail({0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff});
 }
 
 TEST(ZigZag, Simple) {
@@ -105,11 +118,11 @@ TEST(ZigZag, Simple) {
   EXPECT_EQ(3, encodeZigZag(-2));
   EXPECT_EQ(4, encodeZigZag(2));
 
-  EXPECT_EQ(0,  decodeZigZag(0));
+  EXPECT_EQ(0, decodeZigZag(0));
   EXPECT_EQ(-1, decodeZigZag(1));
-  EXPECT_EQ(1,  decodeZigZag(2));
+  EXPECT_EQ(1, decodeZigZag(2));
   EXPECT_EQ(-2, decodeZigZag(3));
-  EXPECT_EQ(2,  decodeZigZag(4));
+  EXPECT_EQ(2, decodeZigZag(4));
 }
 
 namespace {
@@ -183,11 +196,11 @@ BENCHMARK(VarintDecoding, iters) {
   }
 }
 
-}  // namespace
+} // namespace
+} // namespace test
+} // namespace folly
 
-}}  // namespaces
-
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   testing::InitGoogleTest(&argc, argv);
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   google::InitGoogleLogging(argv[0]);

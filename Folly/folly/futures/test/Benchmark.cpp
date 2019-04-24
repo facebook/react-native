@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,13 @@
  */
 
 #include <folly/Benchmark.h>
-#include <folly/Baton.h>
+#include <folly/executors/InlineExecutor.h>
 #include <folly/futures/Future.h>
-#include <folly/futures/InlineExecutor.h>
 #include <folly/futures/Promise.h>
 #include <folly/portability/GFlags.h>
+#include <folly/portability/Semaphore.h>
+#include <folly/synchronization/Baton.h>
 
-#include <semaphore.h>
 #include <vector>
 
 using namespace folly;
@@ -36,11 +36,11 @@ T incr(Try<T>&& t) {
 void someThens(size_t n) {
   auto f = makeFuture<int>(42);
   for (size_t i = 0; i < n; i++) {
-    f = f.then(incr<int>);
+    f = std::move(f).then(incr<int>);
   }
 }
 
-} // anonymous namespace
+} // namespace
 
 BENCHMARK(constantFuture) {
   makeFuture(42);
@@ -61,7 +61,7 @@ BENCHMARK_RELATIVE(withThen) {
 }
 
 // thens
-BENCHMARK_DRAW_LINE()
+BENCHMARK_DRAW_LINE();
 
 BENCHMARK(oneThen) {
   someThens(1);
@@ -85,7 +85,7 @@ BENCHMARK_RELATIVE(hundredThens) {
 // Lock contention. Although in practice fulfills tend to be temporally
 // separate from then()s, still sometimes they will be concurrent. So the
 // higher this number is, the better.
-BENCHMARK_DRAW_LINE()
+BENCHMARK_DRAW_LINE();
 
 BENCHMARK(no_contention) {
   std::vector<Promise<int>> promises(10000);
@@ -94,18 +94,23 @@ BENCHMARK(no_contention) {
 
   BENCHMARK_SUSPEND {
     folly::Baton<> b1, b2;
-    for (auto& p : promises)
+    for (auto& p : promises) {
       futures.push_back(p.getFuture());
+    }
 
-    consumer = std::thread([&]{
+    consumer = std::thread([&] {
       b1.post();
-      for (auto& f : futures) f.then(incr<int>);
+      for (auto& f : futures) {
+        std::move(f).then(incr<int>);
+      }
     });
     consumer.join();
 
-    producer = std::thread([&]{
+    producer = std::thread([&] {
       b2.post();
-      for (auto& p : promises) p.setValue(42);
+      for (auto& p : promises) {
+        p.setValue(42);
+      }
     });
 
     b1.wait();
@@ -125,18 +130,19 @@ BENCHMARK_RELATIVE(contention) {
 
   BENCHMARK_SUSPEND {
     folly::Baton<> b1, b2;
-    for (auto& p : promises)
+    for (auto& p : promises) {
       futures.push_back(p.getFuture());
+    }
 
-    consumer = std::thread([&]{
+    consumer = std::thread([&] {
       b1.post();
       for (auto& f : futures) {
         sem_wait(&sem);
-        f.then(incr<int>);
+        std::move(f).then(incr<int>);
       }
     });
 
-    producer = std::thread([&]{
+    producer = std::thread([&] {
       b2.post();
       for (auto& p : promises) {
         sem_post(&sem);
@@ -169,11 +175,11 @@ BENCHMARK_DRAW_LINE();
 // The old way. Throw an exception, and rethrow to access it upstream.
 void throwAndCatchImpl() {
   makeFuture()
-      .then([](Try<Unit>&&){ throw std::runtime_error("oh no"); })
+      .then([](Try<Unit>&&) { throw std::runtime_error("oh no"); })
       .then([](Try<Unit>&& t) {
         try {
           t.value();
-        } catch(const std::runtime_error& e) {
+        } catch (const std::runtime_error& e) {
           // ...
           return;
         }
@@ -202,13 +208,13 @@ void throwAndCatchWrappedImpl() {
 // Better. Wrap an exception, and rethrow to access it upstream.
 void throwWrappedAndCatchImpl() {
   makeFuture()
-      .then([](Try<Unit>&&){
+      .then([](Try<Unit>&&) {
         return makeFuture<Unit>(std::runtime_error("oh no"));
       })
       .then([](Try<Unit>&& t) {
         try {
           t.value();
-        } catch(const std::runtime_error& e) {
+        } catch (const std::runtime_error& e) {
           // ...
           return;
         }
@@ -232,15 +238,15 @@ void throwWrappedAndCatchWrappedImpl() {
 }
 
 // Simulate heavy contention on func
-void contend(void(*func)()) {
+void contend(void (*func)()) {
   folly::BenchmarkSuspender s;
   const int N = 100;
   const int iters = 1000;
   pthread_barrier_t barrier;
-  pthread_barrier_init(&barrier, nullptr, N+1);
+  pthread_barrier_init(&barrier, nullptr, N + 1);
   std::vector<std::thread> threads;
   for (int i = 0; i < N; i++) {
-    threads.push_back(std::thread([&](){
+    threads.push_back(std::thread([&]() {
       pthread_barrier_wait(&barrier);
       for (int j = 0; j < iters; j++) {
         func();
@@ -290,25 +296,55 @@ BENCHMARK_RELATIVE(throwWrappedAndCatchWrappedContended) {
   contend(throwWrappedAndCatchWrappedImpl);
 }
 
+BENCHMARK_DRAW_LINE();
+
+namespace {
+struct Bulky {
+  explicit Bulky(std::string message) : message_(message) {}
+  std::string message() & {
+    return message_;
+  }
+  std::string&& message() && {
+    return std::move(message_);
+  }
+
+ private:
+  std::string message_;
+  std::array<int, 1024> ints_;
+};
+} // anonymous namespace
+
+BENCHMARK(lvalue_get) {
+  BenchmarkSuspender suspender;
+  Optional<Future<Bulky>> future;
+  future = makeFuture(Bulky("Hello"));
+  suspender.dismissing([&] {
+    std::string message = std::move(future.value()).get().message();
+    doNotOptimizeAway(message);
+  });
+}
+
+BENCHMARK_RELATIVE(rvalue_get) {
+  BenchmarkSuspender suspender;
+  Optional<Future<Bulky>> future;
+  future = makeFuture(Bulky("Hello"));
+  suspender.dismissing([&] {
+    std::string message = std::move(future.value()).get().message();
+    doNotOptimizeAway(message);
+  });
+}
+
 InlineExecutor exe;
 
 template <class T>
 Future<T> fGen() {
   Promise<T> p;
   auto f = p.getFuture()
-    .then([] (T&& t) {
-      return std::move(t);
-    })
-    .then([] (T&& t) {
-      return makeFuture(std::move(t));
-    })
-    .via(&exe)
-    .then([] (T&& t) {
-      return std::move(t);
-    })
-    .then([] (T&& t) {
-      return makeFuture(std::move(t));
-    });
+               .then([](T&& t) { return std::move(t); })
+               .then([](T&& t) { return makeFuture(std::move(t)); })
+               .via(&exe)
+               .then([](T&& t) { return std::move(t); })
+               .then([](T&& t) { return makeFuture(std::move(t)); });
   p.setValue(T());
   return f;
 }
@@ -327,12 +363,8 @@ void complexBenchmark() {
   collect(fsGen<T>());
   collectAll(fsGen<T>());
   collectAny(fsGen<T>());
-  futures::map(fsGen<T>(), [] (const T& t) {
-    return t;
-  });
-  futures::map(fsGen<T>(), [] (const T& t) {
-    return makeFuture(T(t));
-  });
+  futures::map(fsGen<T>(), [](const T& t) { return t; });
+  futures::map(fsGen<T>(), [](const T& t) { return makeFuture(T(t)); });
 }
 
 BENCHMARK_DRAW_LINE();

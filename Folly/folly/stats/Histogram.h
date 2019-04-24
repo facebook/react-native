@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,8 @@
 #include <vector>
 
 #include <folly/CPortability.h>
-#include <folly/detail/Stats.h>
+#include <folly/Traits.h>
+#include <folly/stats/detail/Bucket.h>
 
 namespace folly {
 
@@ -53,8 +54,11 @@ class HistogramBuckets {
    *
    * (max - min) must be larger than or equal to bucketSize.
    */
-  HistogramBuckets(ValueType bucketSize, ValueType min, ValueType max,
-                   const BucketType& defaultBucket);
+  HistogramBuckets(
+      ValueType bucketSize,
+      ValueType min,
+      ValueType max,
+      const BucketType& defaultBucket);
 
   /* Returns the bucket size of each bucket in the histogram. */
   ValueType getBucketSize() const {
@@ -191,9 +195,10 @@ class HistogramBuckets {
    *         percentage of the data points in the histogram are less than N.
    */
   template <typename CountFn, typename AvgFn>
-  ValueType getPercentileEstimate(double pct,
-                                  CountFn countFromBucket,
-                                  AvgFn avgFromBucket) const;
+  ValueType getPercentileEstimate(
+      double pct,
+      CountFn countFromBucket,
+      AvgFn avgFromBucket) const;
 
   /*
    * Iterator access to the buckets.
@@ -222,8 +227,7 @@ class HistogramBuckets {
   std::vector<BucketType> buckets_;
 };
 
-} // detail
-
+} // namespace detail
 
 /*
  * A basic histogram class.
@@ -242,29 +246,27 @@ class Histogram {
   typedef detail::Bucket<T> Bucket;
 
   Histogram(ValueType bucketSize, ValueType min, ValueType max)
-    : buckets_(bucketSize, min, max, Bucket()) {}
+      : buckets_(bucketSize, min, max, Bucket()) {}
 
   /* Add a data point to the histogram */
-  void addValue(ValueType value)
-      FOLLY_DISABLE_UNDEFINED_BEHAVIOR_SANITIZER("signed-integer-overflow")
-      FOLLY_DISABLE_UNDEFINED_BEHAVIOR_SANITIZER("unsigned-integer-overflow") {
+  void addValue(ValueType value) {
     Bucket& bucket = buckets_.getByValue(value);
     // NOTE: Overflow is handled elsewhere and tests check this
     // behavior (see HistogramTest.cpp TestOverflow* tests).
     // TODO: It would be nice to handle overflow here and redesign this class.
-    bucket.sum += value;
+    auto const addend = to_unsigned(value);
+    bucket.sum = static_cast<ValueType>(to_unsigned(bucket.sum) + addend);
     bucket.count += 1;
   }
 
   /* Add multiple same data points to the histogram */
-  void addRepeatedValue(ValueType value, uint64_t nSamples)
-      FOLLY_DISABLE_UNDEFINED_BEHAVIOR_SANITIZER("signed-integer-overflow")
-      FOLLY_DISABLE_UNDEFINED_BEHAVIOR_SANITIZER("unsigned-integer-overflow") {
+  void addRepeatedValue(ValueType value, uint64_t nSamples) {
     Bucket& bucket = buckets_.getByValue(value);
     // NOTE: Overflow is handled elsewhere and tests check this
     // behavior (see HistogramTest.cpp TestOverflow* tests).
     // TODO: It would be nice to handle overflow here and redesign this class.
-    bucket.sum += value * nSamples;
+    auto const addend = to_unsigned(value) * nSamples;
+    bucket.sum = static_cast<ValueType>(to_unsigned(bucket.sum) + addend);
     bucket.count += nSamples;
   }
 
@@ -275,15 +277,14 @@ class Histogram {
    * had previously been added to the histogram; it merely subtracts the
    * requested value from the appropriate bucket's sum.
    */
-  void removeValue(ValueType value) FOLLY_DISABLE_UNDEFINED_BEHAVIOR_SANITIZER(
-      "signed-integer-overflow")
-      FOLLY_DISABLE_UNDEFINED_BEHAVIOR_SANITIZER("unsigned-integer-overflow") {
+  void removeValue(ValueType value) {
     Bucket& bucket = buckets_.getByValue(value);
     // NOTE: Overflow is handled elsewhere and tests check this
     // behavior (see HistogramTest.cpp TestOverflow* tests).
     // TODO: It would be nice to handle overflow here and redesign this class.
     if (bucket.count > 0) {
-      bucket.sum -= value;
+      auto const subtrahend = to_unsigned(value);
+      bucket.sum = static_cast<ValueType>(to_unsigned(bucket.sum) - subtrahend);
       bucket.count -= 1;
     } else {
       bucket.sum = ValueType();
@@ -312,13 +313,11 @@ class Histogram {
   }
 
   /* Subtract another histogram data from the histogram */
-  void subtract(const Histogram &hist) {
+  void subtract(const Histogram& hist) {
     // the two histogram bucket definitions must match to support
     // subtract.
-    if (getBucketSize() != hist.getBucketSize() ||
-        getMin() != hist.getMin() ||
-        getMax() != hist.getMax() ||
-        getNumBuckets() != hist.getNumBuckets() ) {
+    if (getBucketSize() != hist.getBucketSize() || getMin() != hist.getMin() ||
+        getMax() != hist.getMax() || getNumBuckets() != hist.getNumBuckets()) {
       throw std::invalid_argument("Cannot subtract input histogram.");
     }
 
@@ -328,13 +327,11 @@ class Histogram {
   }
 
   /* Merge two histogram data together */
-  void merge(const Histogram &hist) {
+  void merge(const Histogram& hist) {
     // the two histogram bucket definitions must match to support
     // a merge.
-    if (getBucketSize() != hist.getBucketSize() ||
-        getMin() != hist.getMin() ||
-        getMax() != hist.getMax() ||
-        getNumBuckets() != hist.getNumBuckets() ) {
+    if (getBucketSize() != hist.getBucketSize() || getMin() != hist.getMin() ||
+        getMax() != hist.getMax() || getNumBuckets() != hist.getNumBuckets()) {
       throw std::invalid_argument("Cannot merge from input histogram.");
     }
 
@@ -344,12 +341,10 @@ class Histogram {
   }
 
   /* Copy bucket values from another histogram */
-  void copy(const Histogram &hist) {
+  void copy(const Histogram& hist) {
     // the two histogram bucket definition must match
-    if (getBucketSize() != hist.getBucketSize() ||
-        getMin() != hist.getMin() ||
-        getMax() != hist.getMax() ||
-        getNumBuckets() != hist.getNumBuckets() ) {
+    if (getBucketSize() != hist.getBucketSize() || getMin() != hist.getMin() ||
+        getMax() != hist.getMax() || getNumBuckets() != hist.getNumBuckets()) {
       throw std::invalid_argument("Cannot copy from input histogram.");
     }
 
@@ -416,7 +411,7 @@ class Histogram {
    * Get the bucket that the specified percentile falls into
    *
    * The lowest and highest percentile data points in returned bucket will be
-   * returned in the lowPct and highPct arguments, if they are non-NULL.
+   * returned in the lowPct and highPct arguments, if they are not nullptr.
    */
   size_t getPercentileBucketIdx(
       double pct,
@@ -477,7 +472,36 @@ class Histogram {
   };
 
  private:
+  template <
+      typename S,
+      typename = _t<std::enable_if<std::is_integral<S>::value>>>
+  static constexpr _t<std::make_unsigned<S>> to_unsigned(S s) {
+    return static_cast<_t<std::make_unsigned<S>>>(s);
+  }
+  template <
+      typename S,
+      typename = _t<std::enable_if<!std::is_integral<S>::value>>>
+  static constexpr S to_unsigned(S s) {
+    return s;
+  }
+
   detail::HistogramBuckets<ValueType, Bucket> buckets_;
 };
 
-} // folly
+} // namespace folly
+
+// MSVC 2017 Update 3/4 has an issue with explicitly instantiating templated
+// functions with default arguments inside templated classes when compiled
+// with /permissive- (the default for the CMake build), so we directly include
+// the -defs as if it were -inl, and don't provide the explicit instantiations.
+// https://developercommunity.visualstudio.com/content/problem/81223/incorrect-error-c5037-with-permissive.html
+#if defined(_MSC_VER) && _MSC_FULL_VER >= 191125506 && \
+    _MSC_FULL_VER <= 191125547
+#define FOLLY_MSVC_USE_WORKAROUND_FOR_C5037 1
+#else
+#define FOLLY_MSVC_USE_WORKAROUND_FOR_C5037 0
+#endif
+
+#if FOLLY_MSVC_USE_WORKAROUND_FOR_C5037
+#include <folly/stats/Histogram-defs.h>
+#endif

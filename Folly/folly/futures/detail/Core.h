@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,77 +19,193 @@
 #include <atomic>
 #include <mutex>
 #include <stdexcept>
+#include <utility>
 #include <vector>
 
 #include <folly/Executor.h>
 #include <folly/Function.h>
-#include <folly/MicroSpinLock.h>
 #include <folly/Optional.h>
 #include <folly/ScopeGuard.h>
 #include <folly/Try.h>
-#include <folly/futures/Future.h>
-#include <folly/futures/Promise.h>
-#include <folly/futures/detail/FSM.h>
+#include <folly/Utility.h>
+#include <folly/lang/Assume.h>
+#include <folly/lang/Exception.h>
+#include <folly/synchronization/MicroSpinLock.h>
+#include <glog/logging.h>
 
 #include <folly/io/async/Request.h>
 
-namespace folly { namespace detail {
+namespace folly {
+namespace futures {
+namespace detail {
 
-/*
-        OnlyCallback
-       /            \
-  Start              Armed - Done
-       \            /
-         OnlyResult
-
-This state machine is fairly self-explanatory. The most important bit is
-that the callback is only executed on the transition from Armed to Done,
-and that transition can happen immediately after transitioning from Only*
-to Armed, if it is active (the usual case).
-*/
+/// See `Core` for details
 enum class State : uint8_t {
-  Start,
-  OnlyResult,
-  OnlyCallback,
-  Armed,
-  Done,
+  Start = 1 << 0,
+  OnlyResult = 1 << 1,
+  OnlyCallback = 1 << 2,
+  Done = 1 << 3,
 };
+constexpr State operator&(State a, State b) {
+  return State(uint8_t(a) & uint8_t(b));
+}
+constexpr State operator|(State a, State b) {
+  return State(uint8_t(a) | uint8_t(b));
+}
+constexpr State operator^(State a, State b) {
+  return State(uint8_t(a) ^ uint8_t(b));
+}
+constexpr State operator~(State a) {
+  return State(~uint8_t(a));
+}
+
+/// SpinLock is and must stay a 1-byte object because of how Core is laid out.
+struct SpinLock : private MicroSpinLock {
+  SpinLock() : MicroSpinLock{0} {}
+
+  using MicroSpinLock::lock;
+  using MicroSpinLock::unlock;
+};
+static_assert(sizeof(SpinLock) == 1, "missized");
 
 /// The shared state object for Future and Promise.
-/// Some methods must only be called by either the Future thread or the
-/// Promise thread. The Future thread is the thread that currently "owns" the
-/// Future and its callback-related operations, and the Promise thread is
-/// likewise the thread that currently "owns" the Promise and its
-/// result-related operations. Also, Futures own interruption, Promises own
-/// interrupt handlers. Unfortunately, there are things that users can do to
-/// break this, and we can't detect that. However if they follow move
-/// semantics religiously wrt threading, they should be ok.
 ///
-/// It's worth pointing out that Futures and/or Promises can and usually will
-/// migrate between threads, though this usually happens within the API code.
-/// For example, an async operation will probably make a Promise, grab its
-/// Future, then move the Promise into another thread that will eventually
-/// fulfill it. With executors and via, this gets slightly more complicated at
-/// first blush, but it's the same principle. In general, as long as the user
-/// doesn't access a Future or Promise object from more than one thread at a
-/// time there won't be any problems.
-template<typename T>
+/// Nomenclature:
+///
+/// - "result": a `Try` object which, when set, contains a `T` or exception.
+/// - "move-out the result": used to mean the `Try` object and/or its contents
+///   are moved-out by a move-constructor or move-assignment. After the result
+///   is set, Core itself never modifies (including moving out) the result;
+///   however the docs refer to both since caller-code can move-out the result
+///   implicitly (see below for examples) whereas other types of modifications
+///   are more explicit in the caller code.
+/// - "callback": a function provided by the future which Core may invoke. The
+///   thread in which the callback is invoked depends on the executor; if there
+///   is no executor or an inline executor the thread-choice depends on timing.
+/// - "executor": an object which may in the future invoke a provided function
+///   (some executors may, as a matter of policy, simply destroy provided
+///   functions without executing them).
+/// - "consumer thread": the thread which currently owns the Future and which
+///   may provide the callback and/or the interrupt.
+/// - "producer thread": the thread which owns the Future and which may provide
+///   the result and which may provide the interrupt handler.
+/// - "interrupt": if provided, an object managed by (if non-empty)
+///   `exception_wrapper`.
+/// - "interrupt handler": if provided, a function-object passed to
+///   `promise.setInterruptHandler()`. Core invokes the interrupt handler with
+///   the interrupt when both are provided (and, best effort, if there is not
+///   yet any result).
+///
+/// Core holds three sets of data, each of which is concurrency-controlled:
+///
+/// - The primary producer-to-consumer info-flow: this info includes the result,
+///   callback, executor, and a priority for running the callback. Management of
+///   and concurrency control for this info is by an FSM based on `enum class
+///   State`. All state transitions are atomic; other producer-to-consumer data
+///   is sometimes modified within those transitions; see below for details.
+/// - The consumer-to-producer interrupt-request flow: this info includes an
+///   interrupt-handler and an interrupt. Concurrency of this info is controlled
+///   by a Spin Lock (`interruptLock_`).
+/// - Lifetime control info: this includes two reference counts, both which are
+///   internally synchronized (atomic).
+///
+/// The FSM to manage the primary producer-to-consumer info-flow has these
+///   allowed (atomic) transitions:
+///
+///   +----------------------------------------------------------------+
+///   |                       ---> OnlyResult -----                    |
+///   |                     /                       \                  |
+///   |                  (setResult())             (setCallback())     |
+///   |                   /                           \                |
+///   |   Start --------->                              ------> Done   |
+///   |      \            \                           /                |
+///   |       \          (setCallback())           (setResult())       |
+///   |        \            \                       /                  |
+///   |         \             ---> OnlyCallback ---                    |
+///   |          \                        /                            |
+///   |            <- (stealCallback()) -                              |
+///   +----------------------------------------------------------------+
+///
+/// States and the corresponding producer-to-consumer data status & ownership:
+///
+/// - Start: has neither result nor callback. While in this state, the producer
+///   thread may set the result (`setResult()`) or the consumer thread may set
+///   the callback (`setCallback()`).
+/// - OnlyResult: producer thread has set the result and must never access it.
+///   The result is logically owned by, and possibly modified or moved-out by,
+///   the consumer thread. Callers of the future object can do arbitrary
+///   modifications, including moving-out, via continuations or via non-const
+///   and/or rvalue-qualified `future.result()`, `future.value()`, etc.
+///   Future/SemiFuture proper also move-out the result in some cases, e.g.,
+///   in `wait()`, `get()`, when passing through values or results from core to
+///   core, as `then-value` and `then-error`, etc.
+/// - OnlyCallback: consumer thread has set a callback/continuation. From this
+///   point forward only the producer thread can safely access that callback
+///   (see `setResult()` and `doCallback()` where the producer thread can both
+///   read and modify the callback).
+///   Alternatively producer thread can also steal the callback (see
+///   `stealCallback()`).
+/// - Done: callback can be safely accessed only within `doCallback()`, which
+///   gets called on exactly one thread exactly once just after the transition
+///   to Done. The future object will have determined whether that callback
+///   has/will move-out the result, but either way the result remains logically
+///   owned exclusively by the consumer thread (the code of Future/SemiFuture,
+///   of the continuation, and/or of callers of `future.result()`, etc.).
+///
+/// Start state:
+///
+/// - Start: e.g., `Core<X>::make()`.
+/// - (See also `Core<X>::make(x)` which logically transitions Start =>
+///   OnlyResult within the underlying constructor.)
+///
+/// Terminal states:
+///
+/// - OnlyResult: a terminal state when a callback is never attached, and also
+///   sometimes when a callback is provided, e.g., sometimes when
+///   `future.wait()` and/or `future.get()` are used.
+/// - Done: a terminal state when `future.then()` is used, and sometimes also
+///   when `future.wait()` and/or `future.get()` are used.
+///
+/// Notes and caveats:
+///
+/// - Unfortunately, there are things that users can do to break concurrency and
+///   we can't detect that. However users should be ok if they follow move
+///   semantics religiously wrt threading.
+/// - Futures and/or Promises can and usually will migrate between threads,
+///   though this usually happens within the API code. For example, an async
+///   operation will probably make a promise-future pair (see overloads of
+///   `makePromiseContract()`), then move the Promise into another thread that
+///   will eventually fulfill it.
+/// - Things get slightly more complicated with executors and via, but the
+///   principle is the same.
+/// - In general, as long as the user doesn't access a future or promise object
+///   from more than one thread at a time there won't be any problems.
+template <typename T>
 class Core final {
-  static_assert(!std::is_void<T>::value,
-                "void futures are not supported. Use Unit instead.");
+  static_assert(
+      !std::is_void<T>::value,
+      "void futures are not supported. Use Unit instead.");
+
  public:
-  /// This must be heap-constructed. There's probably a way to enforce that in
-  /// code but since this is just internal detail code and I don't know how
-  /// off-hand, I'm punting.
-  Core() : result_(), fsm_(State::Start), attached_(2) {}
+  using Result = Try<T>;
+  using Callback = folly::Function<void(Result&&)>;
 
-  explicit Core(Try<T>&& t)
-    : result_(std::move(t)),
-      fsm_(State::OnlyResult),
-      attached_(1) {}
+  /// State will be Start
+  static Core* make() {
+    return new Core();
+  }
 
-  ~Core() {
-    DCHECK(attached_ == 0);
+  /// State will be OnlyResult
+  /// Result held will be move-constructed from `t`
+  static Core* make(Try<T>&& t) {
+    return new Core(std::move(t));
+  }
+
+  /// State will be OnlyResult
+  /// Result held will be the `T` constructed from forwarded `args`
+  template <typename... Args>
+  static Core<T>* make(in_place_t, Args&&... args) {
+    return new Core<T>(in_place, std::forward<Args>(args)...);
   }
 
   // not copyable
@@ -101,178 +217,242 @@ class Core final {
   Core& operator=(Core&&) = delete;
 
   /// May call from any thread
-  bool hasResult() const {
-    switch (fsm_.getState()) {
-      case State::OnlyResult:
-      case State::Armed:
-      case State::Done:
-        assert(!!result_);
-        return true;
-
-      default:
-        return false;
-    }
+  bool hasCallback() const noexcept {
+    constexpr auto allowed = State::OnlyCallback | State::Done;
+    auto const state = state_.load(std::memory_order_acquire);
+    return State() != (state & allowed);
   }
 
   /// May call from any thread
-  bool ready() const {
+  ///
+  /// True if state is OnlyResult or Done.
+  ///
+  /// Identical to `this->ready()`
+  bool hasResult() const noexcept {
+    constexpr auto allowed = State::OnlyResult | State::Done;
+    auto const state = state_.load(std::memory_order_acquire);
+    return State() != (state & allowed);
+  }
+
+  /// May call from any thread
+  ///
+  /// True if state is OnlyResult or Done.
+  ///
+  /// Identical to `this->hasResult()`
+  bool ready() const noexcept {
     return hasResult();
   }
 
-  /// May call from any thread
+  /// Call only from consumer thread (since the consumer thread can modify the
+  ///   referenced Try object; see non-const overloads of `future.result()`,
+  ///   etc., and certain Future-provided callbacks which move-out the result).
+  ///
+  /// Unconditionally returns a reference to the result.
+  ///
+  /// State dependent preconditions:
+  ///
+  /// - Start or OnlyCallback: Never safe - do not call. (Access in those states
+  ///   would be undefined behavior since the producer thread can, in those
+  ///   states, asynchronously set the referenced Try object.)
+  /// - OnlyResult: Always safe. (Though the consumer thread should not use the
+  ///   returned reference after it attaches a callback unless it knows that
+  ///   the callback does not move-out the referenced result.)
+  /// - Done: Safe but sometimes unusable. (Always returns a valid reference,
+  ///   but the referenced result may or may not have been modified, including
+  ///   possibly moved-out, depending on what the callback did; some but not
+  ///   all callbacks modify (possibly move-out) the result.)
   Try<T>& getTry() {
-    if (ready()) {
-      return *result_;
-    } else {
-      throw FutureNotReady();
-    }
+    DCHECK(hasResult());
+    return result_;
+  }
+  Try<T> const& getTry() const {
+    DCHECK(hasResult());
+    return result_;
   }
 
-  /// Call only from Future thread.
+  /// Call only from consumer thread.
+  /// Call only once - else undefined behavior.
+  ///
+  /// See FSM graph for allowed transitions.
+  ///
+  /// If it transitions to Done, synchronously initiates a call to the callback,
+  /// and might also synchronously execute that callback (e.g., if there is no
+  /// executor or if the executor is inline).
   template <typename F>
-  void setCallback(F&& func) {
-    bool transitionToArmed = false;
-    auto setCallback_ = [&]{
-      context_ = RequestContext::saveContext();
-      callback_ = std::forward<F>(func);
-    };
+  void setCallback(F&& func, std::shared_ptr<folly::RequestContext> context) {
+    DCHECK(!hasCallback());
 
-    FSM_START(fsm_)
-      case State::Start:
-        FSM_UPDATE(fsm_, State::OnlyCallback, setCallback_);
-        break;
+    // construct callback_ first; if that fails, context_ will not leak
+    ::new (&callback_) Callback(std::forward<F>(func));
+    ::new (&context_) Context(std::move(context));
 
-      case State::OnlyResult:
-        FSM_UPDATE(fsm_, State::Armed, setCallback_);
-        transitionToArmed = true;
-        break;
+    auto state = state_.load(std::memory_order_acquire);
+    while (true) {
+      switch (state) {
+        case State::Start:
+          if (state_.compare_exchange_strong(
+                  state, State::OnlyCallback, std::memory_order_release)) {
+            return;
+          }
+          assume(state == State::OnlyResult);
+          FOLLY_FALLTHROUGH;
 
-      case State::OnlyCallback:
-      case State::Armed:
-      case State::Done:
-        throw std::logic_error("setCallback called twice");
-    FSM_END
+        case State::OnlyResult:
+          if (state_.compare_exchange_strong(
+                  state, State::Done, std::memory_order_release)) {
+            doCallback();
+            return;
+          }
+          FOLLY_FALLTHROUGH;
 
-    // we could always call this, it is an optimization to only call it when
-    // it might be needed.
-    if (transitionToArmed) {
-      maybeCallback();
+        default:
+          terminate_with<std::logic_error>("setCallback unexpected state");
+      }
     }
   }
 
-  /// Call only from Promise thread
+  /// Call only from producer thread.
+  /// Call only once - else undefined behavior.
+  ///
+  /// See FSM graph for allowed transitions.
+  ///
+  /// Call only if hasCallback() == true && hasResult() == false
+  /// This can not be called concurrently with setResult().
+  ///
+  /// Extracts callback from the Core and transitions it back into Start state.
+  std::pair<Callback, std::shared_ptr<folly::RequestContext>> stealCallback() {
+    DCHECK(state_.load(std::memory_order_relaxed) == State::OnlyCallback);
+    auto ret = std::make_pair(std::move(callback_), std::move(context_));
+    context_.~Context();
+    callback_.~Callback();
+    state_.store(State::Start, std::memory_order_relaxed);
+    return ret;
+  }
+
+  /// Call only from producer thread.
+  /// Call only once - else undefined behavior.
+  ///
+  /// See FSM graph for allowed transitions.
+  ///
+  /// If it transitions to Done, synchronously initiates a call to the callback,
+  /// and might also synchronously execute that callback (e.g., if there is no
+  /// executor or if the executor is inline).
   void setResult(Try<T>&& t) {
-    bool transitionToArmed = false;
-    auto setResult_ = [&]{ result_ = std::move(t); };
-    FSM_START(fsm_)
-      case State::Start:
-        FSM_UPDATE(fsm_, State::OnlyResult, setResult_);
-        break;
+    DCHECK(!hasResult());
 
-      case State::OnlyCallback:
-        FSM_UPDATE(fsm_, State::Armed, setResult_);
-        transitionToArmed = true;
-        break;
+    ::new (&result_) Result(std::move(t));
 
-      case State::OnlyResult:
-      case State::Armed:
-      case State::Done:
-        throw std::logic_error("setResult called twice");
-    FSM_END
+    auto state = state_.load(std::memory_order_acquire);
+    while (true) {
+      switch (state) {
+        case State::Start:
+          if (state_.compare_exchange_strong(
+                  state, State::OnlyResult, std::memory_order_release)) {
+            return;
+          }
+          assume(state == State::OnlyCallback);
+          FOLLY_FALLTHROUGH;
 
-    if (transitionToArmed) {
-      maybeCallback();
+        case State::OnlyCallback:
+          if (state_.compare_exchange_strong(
+                  state, State::Done, std::memory_order_release)) {
+            doCallback();
+            return;
+          }
+          FOLLY_FALLTHROUGH;
+
+        default:
+          terminate_with<std::logic_error>("setResult unexpected state");
+      }
     }
   }
 
-  /// Called by a destructing Future (in the Future thread, by definition)
-  void detachFuture() {
-    activate();
+  /// Called by a destructing Future (in the consumer thread, by definition).
+  /// Calls `delete this` if there are no more references to `this`
+  /// (including if `detachPromise()` is called previously or concurrently).
+  void detachFuture() noexcept {
     detachOne();
   }
 
-  /// Called by a destructing Promise (in the Promise thread, by definition)
-  void detachPromise() {
-    // detachPromise() and setResult() should never be called in parallel
-    // so we don't need to protect this.
-    if (UNLIKELY(!result_)) {
-      setResult(Try<T>(exception_wrapper(BrokenPromise(typeid(T).name()))));
-    }
+  /// Called by a destructing Promise (in the producer thread, by definition).
+  /// Calls `delete this` if there are no more references to `this`
+  /// (including if `detachFuture()` is called previously or concurrently).
+  void detachPromise() noexcept {
+    DCHECK(hasResult());
     detachOne();
   }
 
-  /// May call from any thread
-  void deactivate() {
-    active_.store(false, std::memory_order_release);
+  /// Call only from consumer thread, either before attaching a callback or
+  /// after the callback has already been invoked, but not concurrently with
+  /// anything which might trigger invocation of the callback.
+  void setExecutor(
+      Executor::KeepAlive<> x,
+      int8_t priority = Executor::MID_PRI) {
+    DCHECK(state_ != State::OnlyCallback);
+    executor_ = std::move(x);
+    priority_ = priority;
   }
 
-  /// May call from any thread
-  void activate() {
-    active_.store(true, std::memory_order_release);
-    maybeCallback();
-  }
-
-  /// May call from any thread
-  bool isActive() { return active_.load(std::memory_order_acquire); }
-
-  /// Call only from Future thread
   void setExecutor(Executor* x, int8_t priority = Executor::MID_PRI) {
-    if (!executorLock_.try_lock()) {
-      executorLock_.lock();
-    }
-    executor_ = x;
-    priority_ = priority;
-    executorLock_.unlock();
+    setExecutor(getKeepAliveToken(x), priority);
   }
 
-  void setExecutorNoLock(Executor* x, int8_t priority = Executor::MID_PRI) {
-    executor_ = x;
-    priority_ = priority;
+  Executor* getExecutor() const {
+    return executor_.get();
   }
 
-  Executor* getExecutor() {
-    return executor_;
+  int8_t getPriority() const {
+    return priority_;
   }
 
-  /// Call only from Future thread
+  /// Call only from consumer thread
+  ///
+  /// Eventual effect is to pass `e` to the Promise's interrupt handler, either
+  /// synchronously within this call or asynchronously within
+  /// `setInterruptHandler()`, depending on which happens first (a coin-toss if
+  /// the two calls are racing).
+  ///
+  /// Has no effect if it was called previously.
+  /// Has no effect if State is OnlyResult or Done.
   void raise(exception_wrapper e) {
-    if (!interruptLock_.try_lock()) {
-      interruptLock_.lock();
-    }
+    std::lock_guard<SpinLock> lock(interruptLock_);
     if (!interrupt_ && !hasResult()) {
-      interrupt_ = folly::make_unique<exception_wrapper>(std::move(e));
+      interrupt_ = std::make_unique<exception_wrapper>(std::move(e));
       if (interruptHandler_) {
         interruptHandler_(*interrupt_);
       }
     }
-    interruptLock_.unlock();
   }
 
   std::function<void(exception_wrapper const&)> getInterruptHandler() {
     if (!interruptHandlerSet_.load(std::memory_order_acquire)) {
       return nullptr;
     }
-    if (!interruptLock_.try_lock()) {
-      interruptLock_.lock();
-    }
-    auto handler = interruptHandler_;
-    interruptLock_.unlock();
-    return handler;
+    std::lock_guard<SpinLock> lock(interruptLock_);
+    return interruptHandler_;
   }
 
-  /// Call only from Promise thread
-  void setInterruptHandler(std::function<void(exception_wrapper const&)> fn) {
-    if (!interruptLock_.try_lock()) {
-      interruptLock_.lock();
-    }
+  /// Call only from producer thread
+  ///
+  /// May invoke `fn()` (passing the interrupt) synchronously within this call
+  /// (if `raise()` preceded or perhaps if `raise()` is called concurrently).
+  ///
+  /// Has no effect if State is OnlyResult or Done.
+  ///
+  /// Note: `fn()` must not touch resources that are destroyed immediately after
+  ///   `setResult()` is called. Reason: it is possible for `fn()` to get called
+  ///   asynchronously (in the consumer thread) after the producer thread calls
+  ///   `setResult()`.
+  template <typename F>
+  void setInterruptHandler(F&& fn) {
+    std::lock_guard<SpinLock> lock(interruptLock_);
     if (!hasResult()) {
       if (interrupt_) {
-        fn(*interrupt_);
+        fn(as_const(*interrupt_));
       } else {
-        setInterruptHandlerNoLock(std::move(fn));
+        setInterruptHandlerNoLock(std::forward<F>(fn));
       }
     }
-    interruptLock_.unlock();
   }
 
   void setInterruptHandlerNoLock(
@@ -282,98 +462,98 @@ class Core final {
   }
 
  private:
-  class CountedReference {
+  Core() : state_(State::Start), attached_(2) {}
+
+  explicit Core(Try<T>&& t)
+      : result_(std::move(t)), state_(State::OnlyResult), attached_(1) {}
+
+  template <typename... Args>
+  explicit Core(in_place_t, Args&&... args) noexcept(
+      std::is_nothrow_constructible<T, Args&&...>::value)
+      : result_(in_place, std::forward<Args>(args)...),
+        state_(State::OnlyResult),
+        attached_(1) {}
+
+  ~Core() {
+    DCHECK(attached_ == 0);
+    DCHECK(hasResult());
+    result_.~Result();
+  }
+
+  // Helper class that stores a pointer to the `Core` object and calls
+  // `derefCallback` and `detachOne` in the destructor.
+  class CoreAndCallbackReference {
    public:
-    ~CountedReference() {
-      if (core_) {
-        core_->detachOne();
-        core_ = nullptr;
-      }
+    explicit CoreAndCallbackReference(Core* core) noexcept : core_(core) {}
+
+    ~CoreAndCallbackReference() noexcept {
+      detach();
     }
 
-    explicit CountedReference(Core* core) noexcept : core_(core) {
-      // do not construct a CountedReference from nullptr!
-      DCHECK(core);
+    CoreAndCallbackReference(CoreAndCallbackReference const& o) = delete;
+    CoreAndCallbackReference& operator=(CoreAndCallbackReference const& o) =
+        delete;
+    CoreAndCallbackReference& operator=(CoreAndCallbackReference&&) = delete;
 
-      ++core_->attached_;
-    }
-
-    // CountedReference must be copy-constructable as long as
-    // folly::Executor::add takes a std::function
-    CountedReference(CountedReference const& o) noexcept : core_(o.core_) {
-      if (core_) {
-        ++core_->attached_;
-      }
-    }
-
-    CountedReference& operator=(CountedReference const& o) noexcept {
-      ~CountedReference();
-      new (this) CountedReference(o);
-      return *this;
-    }
-
-    CountedReference(CountedReference&& o) noexcept {
-      std::swap(core_, o.core_);
-    }
-
-    CountedReference& operator=(CountedReference&& o) noexcept {
-      ~CountedReference();
-      new (this) CountedReference(std::move(o));
-      return *this;
-    }
+    CoreAndCallbackReference(CoreAndCallbackReference&& o) noexcept
+        : core_(exchange(o.core_, nullptr)) {}
 
     Core* getCore() const noexcept {
       return core_;
     }
 
    private:
+    void detach() noexcept {
+      if (core_) {
+        core_->derefCallback();
+        core_->detachOne();
+      }
+    }
+
     Core* core_{nullptr};
   };
 
-  void maybeCallback() {
-    FSM_START(fsm_)
-      case State::Armed:
-        if (active_.load(std::memory_order_acquire)) {
-          FSM_UPDATE2(fsm_, State::Done, []{}, [this]{ this->doCallback(); });
-        }
-        FSM_BREAK
-
-      default:
-        FSM_BREAK
-    FSM_END
-  }
-
+  // May be called at most once.
   void doCallback() {
-    Executor* x = executor_;
-    int8_t priority;
-    if (x) {
-      if (!executorLock_.try_lock()) {
-        executorLock_.lock();
-      }
-      x = executor_;
-      priority = priority_;
-      executorLock_.unlock();
-    }
+    DCHECK(state_ == State::Done);
+    auto x = exchange(executor_, Executor::KeepAlive<>());
+    int8_t priority = priority_;
 
     if (x) {
       exception_wrapper ew;
+      // We need to reset `callback_` after it was executed (which can happen
+      // through the executor or, if `Executor::add` throws, below). The
+      // executor might discard the function without executing it (now or
+      // later), in which case `callback_` also needs to be reset.
+      // The `Core` has to be kept alive throughout that time, too. Hence we
+      // increment `attached_` and `callbackReferences_` by two, and construct
+      // exactly two `CoreAndCallbackReference` objects, which call
+      // `derefCallback` and `detachOne` in their destructor. One will guard
+      // this scope, the other one will guard the lambda passed to the executor.
+      attached_.fetch_add(2, std::memory_order_relaxed);
+      callbackReferences_.fetch_add(2, std::memory_order_relaxed);
+      CoreAndCallbackReference guard_local_scope(this);
+      CoreAndCallbackReference guard_lambda(this);
       try {
+        auto xPtr = x.get();
         if (LIKELY(x->getNumPriorities() == 1)) {
-          x->add([core_ref = CountedReference(this)]() mutable {
+          xPtr->add([core_ref = std::move(guard_lambda),
+                     keepAlive = std::move(x)]() mutable {
             auto cr = std::move(core_ref);
             Core* const core = cr.getCore();
             RequestContextScopeGuard rctx(core->context_);
-            SCOPE_EXIT { core->callback_ = {}; };
-            core->callback_(std::move(*core->result_));
+            core->callback_(std::move(core->result_));
           });
         } else {
-          x->addWithPriority([core_ref = CountedReference(this)]() mutable {
-            auto cr = std::move(core_ref);
-            Core* const core = cr.getCore();
-            RequestContextScopeGuard rctx(core->context_);
-            SCOPE_EXIT { core->callback_ = {}; };
-            core->callback_(std::move(*core->result_));
-          }, priority);
+          xPtr->addWithPriority(
+              [core_ref = std::move(guard_lambda),
+               keepAlive = std::move(x)]() mutable {
+                auto cr = std::move(core_ref);
+                Core* const core = cr.getCore();
+                RequestContextScopeGuard rctx(core->context_);
+                core->callback_(std::move(core->result_));
+              },
+              priority);
         }
       } catch (const std::exception& e) {
         ew = exception_wrapper(std::current_exception(), e);
@@ -381,100 +561,63 @@ class Core final {
         ew = exception_wrapper(std::current_exception());
       }
       if (ew) {
-        CountedReference core_ref(this);
         RequestContextScopeGuard rctx(context_);
         result_ = Try<T>(std::move(ew));
-        SCOPE_EXIT { callback_ = {}; };
-        callback_(std::move(*result_));
+        callback_(std::move(result_));
       }
     } else {
-      CountedReference core_ref(this);
+      attached_.fetch_add(1, std::memory_order_relaxed);
+      SCOPE_EXIT {
+        context_.~Context();
+        callback_.~Callback();
+        detachOne();
+      };
       RequestContextScopeGuard rctx(context_);
-      SCOPE_EXIT { callback_ = {}; };
-      callback_(std::move(*result_));
+      callback_(std::move(result_));
     }
   }
 
-  void detachOne() {
-    auto a = attached_--;
+  void detachOne() noexcept {
+    auto a = attached_.fetch_sub(1, std::memory_order_acq_rel);
     assert(a >= 1);
     if (a == 1) {
       delete this;
     }
   }
 
-
-  folly::Function<void(Try<T>&&)> callback_;
-  // place result_ next to increase the likelihood that the value will be
-  // contained entirely in one cache line
-  folly::Optional<Try<T>> result_;
-  FSM<State> fsm_;
-  std::atomic<unsigned char> attached_;
-  std::atomic<bool> active_ {true};
-  std::atomic<bool> interruptHandlerSet_ {false};
-  folly::MicroSpinLock interruptLock_ {0};
-  folly::MicroSpinLock executorLock_ {0};
-  int8_t priority_ {-1};
-  Executor* executor_ {nullptr};
-  std::shared_ptr<RequestContext> context_ {nullptr};
-  std::unique_ptr<exception_wrapper> interrupt_ {};
-  std::function<void(exception_wrapper const&)> interruptHandler_ {nullptr};
-};
-
-template <typename... Ts>
-struct CollectAllVariadicContext {
-  CollectAllVariadicContext() {}
-  template <typename T, size_t I>
-  inline void setPartialResult(Try<T>& t) {
-    std::get<I>(results) = std::move(t);
-  }
-  ~CollectAllVariadicContext() {
-    p.setValue(std::move(results));
-  }
-  Promise<std::tuple<Try<Ts>...>> p;
-  std::tuple<Try<Ts>...> results;
-  typedef Future<std::tuple<Try<Ts>...>> type;
-};
-
-template <typename... Ts>
-struct CollectVariadicContext {
-  CollectVariadicContext() {}
-  template <typename T, size_t I>
-  inline void setPartialResult(Try<T>& t) {
-    if (t.hasException()) {
-       if (!threw.exchange(true)) {
-         p.setException(std::move(t.exception()));
-       }
-     } else if (!threw) {
-       std::get<I>(results) = std::move(t);
-     }
-  }
-  ~CollectVariadicContext() noexcept {
-    if (!threw.exchange(true)) {
-      p.setValue(unwrapTryTuple(std::move(results)));
+  void derefCallback() noexcept {
+    auto c = callbackReferences_.fetch_sub(1, std::memory_order_acq_rel);
+    assert(c >= 1);
+    if (c == 1) {
+      context_.~Context();
+      callback_.~Callback();
     }
   }
-  Promise<std::tuple<Ts...>> p;
-  std::tuple<folly::Try<Ts>...> results;
-  std::atomic<bool> threw {false};
-  typedef Future<std::tuple<Ts...>> type;
+
+  using Context = std::shared_ptr<RequestContext>;
+
+  union {
+    Callback callback_;
+  };
+  // place result_ next to increase the likelihood that the value will be
+  // contained entirely in one cache line
+  union {
+    Result result_;
+  };
+  std::atomic<State> state_;
+  std::atomic<unsigned char> attached_;
+  std::atomic<unsigned char> callbackReferences_{0};
+  std::atomic<bool> interruptHandlerSet_{false};
+  SpinLock interruptLock_;
+  int8_t priority_{-1};
+  Executor::KeepAlive<> executor_;
+  union {
+    Context context_;
+  };
+  std::unique_ptr<exception_wrapper> interrupt_{};
+  std::function<void(exception_wrapper const&)> interruptHandler_{nullptr};
 };
 
-template <template <typename...> class T, typename... Ts>
-void collectVariadicHelper(const std::shared_ptr<T<Ts...>>& /* ctx */) {
-  // base case
-}
-
-template <template <typename ...> class T, typename... Ts,
-          typename THead, typename... TTail>
-void collectVariadicHelper(const std::shared_ptr<T<Ts...>>& ctx,
-                           THead&& head, TTail&&... tail) {
-  head.setCallback_([ctx](Try<typename THead::value_type>&& t) {
-    ctx->template setPartialResult<typename THead::value_type,
-                                   sizeof...(Ts) - sizeof...(TTail) - 1>(t);
-  });
-  // template tail-recursion
-  collectVariadicHelper(ctx, std::forward<TTail>(tail)...);
-}
-
-}} // folly::detail
+} // namespace detail
+} // namespace futures
+} // namespace folly

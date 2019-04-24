@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,15 +25,15 @@
 
 #include <glog/logging.h>
 
-#include <folly/Hash.h>
 #include <folly/Range.h>
+#include <folly/hash/Hash.h>
 #include <folly/portability/GFlags.h>
 #include <folly/portability/GTest.h>
 
+using folly::BasicStringKeyedUnorderedSet;
 using folly::StringKeyedMap;
 using folly::StringKeyedSetBase;
 using folly::StringKeyedUnorderedMap;
-using folly::BasicStringKeyedUnorderedSet;
 using folly::StringPiece;
 using std::string;
 
@@ -43,25 +43,21 @@ static unsigned long long freed = 0;
 template <typename Alloc>
 struct MemoryLeakCheckerAllocator {
   typedef typename Alloc::value_type value_type;
-  typedef value_type *pointer;
-  typedef value_type const *const_pointer;
-  typedef value_type &reference;
-  typedef value_type const *const_reference;
+  typedef value_type* pointer;
+  typedef value_type const* const_pointer;
+  typedef value_type& reference;
+  typedef value_type const* const_reference;
 
   typedef std::ptrdiff_t difference_type;
   typedef std::size_t size_type;
 
-  explicit MemoryLeakCheckerAllocator() {
-  }
+  explicit MemoryLeakCheckerAllocator() {}
 
-  explicit MemoryLeakCheckerAllocator(Alloc alloc)
-      : alloc_(alloc) {
-  }
+  explicit MemoryLeakCheckerAllocator(Alloc alloc) : alloc_(alloc) {}
 
   template <class UAlloc>
   MemoryLeakCheckerAllocator(const MemoryLeakCheckerAllocator<UAlloc>& other)
-      : alloc_(other.allocator()) {
-  }
+      : alloc_(other.allocator()) {}
 
   value_type* allocate(size_t n, const void* hint = nullptr) {
     auto p = alloc_.allocate(n, hint);
@@ -90,8 +86,8 @@ struct MemoryLeakCheckerAllocator {
   template <class U>
   struct rebind {
     typedef MemoryLeakCheckerAllocator<
-      typename std::allocator_traits<Alloc>::template rebind_alloc<U>
-    > other;
+        typename std::allocator_traits<Alloc>::template rebind_alloc<U>>
+        other;
   };
 
   const Alloc& allocator() const {
@@ -106,31 +102,32 @@ struct MemoryLeakCheckerAllocator {
     return alloc_ == other.alloc_;
   }
 
-private:
+ private:
   Alloc alloc_;
 };
 
-typedef MemoryLeakCheckerAllocator<std::allocator<char>> KeyLeakChecker;
-typedef MemoryLeakCheckerAllocator<
-  std::allocator<std::pair<const StringPiece, int>>> ValueLeakChecker;
+using KeyValuePairLeakChecker = MemoryLeakCheckerAllocator<
+    std::allocator<std::pair<const StringPiece, int>>>;
+using ValueLeakChecker =
+    MemoryLeakCheckerAllocator<std::allocator<StringPiece>>;
 
-typedef StringKeyedUnorderedMap<
+using LeakCheckedUnorderedMap = StringKeyedUnorderedMap<
     int,
-    folly::Hash,
+    folly::hasher<StringPiece>,
     std::equal_to<StringPiece>,
-    ValueLeakChecker>
-    LeakCheckedUnorderedMap;
+    MemoryLeakCheckerAllocator<
+        std::allocator<std::pair<const std::string, int>>>>;
 
 typedef StringKeyedSetBase<std::less<StringPiece>, ValueLeakChecker>
     LeakCheckedSet;
 
-typedef StringKeyedMap<int, std::less<StringPiece>, ValueLeakChecker>
+typedef StringKeyedMap<int, std::less<StringPiece>, KeyValuePairLeakChecker>
     LeakCheckedMap;
 
 using LeakCheckedUnorderedSet = BasicStringKeyedUnorderedSet<
-    folly::Hash,
+    folly::hasher<StringPiece>,
     std::equal_to<folly::StringPiece>,
-    ValueLeakChecker>;
+    MemoryLeakCheckerAllocator<std::allocator<std::string>>>;
 
 TEST(StringKeyedUnorderedMapTest, sanity) {
   LeakCheckedUnorderedMap map;
@@ -147,7 +144,7 @@ TEST(StringKeyedUnorderedMapTest, sanity) {
 
   EXPECT_EQ(map.size(), 2);
 
-  map = map;
+  map = static_cast<decltype(map)&>(map); // suppress self-assign warning
 
   EXPECT_EQ(map.find("hello")->second, 1);
   EXPECT_EQ(map.find("lo")->second, 3);
@@ -162,9 +159,9 @@ TEST(StringKeyedUnorderedMapTest, sanity) {
 }
 
 TEST(StringKeyedUnorderedMapTest, constructors) {
-  LeakCheckedUnorderedMap map {
-    {"hello", 1},
-    {"lo", 3}
+  LeakCheckedUnorderedMap map{
+      {"hello", 1},
+      {"lo", 3},
   };
 
   LeakCheckedUnorderedMap map2(map);
@@ -194,9 +191,9 @@ TEST(StringKeyedUnorderedMapTest, constructors) {
 
   EXPECT_EQ(map3.size(), 2);
 
-  LeakCheckedUnorderedMap map4 {
-    {"key0", 0},
-    {"key1", 1}
+  LeakCheckedUnorderedMap map4{
+      {"key0", 0},
+      {"key1", 1},
   };
 
   EXPECT_EQ(map4.erase("key0"), 1);
@@ -230,7 +227,7 @@ TEST(StringKeyedSetTest, sanity) {
 
   EXPECT_EQ(set.size(), 2);
 
-  set = set;
+  set = static_cast<decltype(set)&>(set); // suppress self-assign warning
 
   EXPECT_NE(set.find(StringPiece("hello")), set.end());
   EXPECT_NE(set.find("lo"), set.end());
@@ -250,9 +247,9 @@ TEST(StringKeyedSetTest, sanity) {
 }
 
 TEST(StringKeyedSetTest, constructors) {
-  LeakCheckedSet set {
-    "hello",
-    "lo"
+  LeakCheckedSet set{
+      "hello",
+      "lo",
   };
   LeakCheckedSet set2(set);
 
@@ -279,9 +276,9 @@ TEST(StringKeyedSetTest, constructors) {
 
   EXPECT_EQ(set3.size(), 2);
 
-  LeakCheckedSet set4 {
-    "key0",
-    "key1"
+  LeakCheckedSet set4{
+      "key0",
+      "key1",
   };
 
   EXPECT_EQ(set4.erase("key0"), 1);
@@ -315,7 +312,7 @@ TEST(StringKeyedUnorderedSetTest, sanity) {
 
   EXPECT_EQ(set.size(), 2);
 
-  set = set;
+  set = static_cast<decltype(set)&>(set); // suppress self-assign warning
 
   EXPECT_NE(set.find("hello"), set.end());
   EXPECT_NE(set.find("lo"), set.end());
@@ -337,7 +334,7 @@ TEST(StringKeyedUnorderedSetTest, constructors) {
   EXPECT_TRUE(s2.empty());
   EXPECT_GE(s2.bucket_count(), 10);
 
-  std::list<StringPiece> lst { "abc", "def" };
+  std::list<StringPiece> lst{"abc", "def"};
   LeakCheckedUnorderedSet s3(lst.begin(), lst.end());
   EXPECT_EQ(s3.size(), 2);
   EXPECT_NE(s3.find("abc"), s3.end());
@@ -347,30 +344,33 @@ TEST(StringKeyedUnorderedSetTest, constructors) {
   LeakCheckedUnorderedSet s4(const_cast<LeakCheckedUnorderedSet&>(s3));
   EXPECT_TRUE(s4 == s3);
 
-  LeakCheckedUnorderedSet s5(const_cast<LeakCheckedUnorderedSet&>(s3),
-                             ValueLeakChecker());
+  LeakCheckedUnorderedSet s5(
+      const_cast<LeakCheckedUnorderedSet&>(s3), ValueLeakChecker());
   EXPECT_TRUE(s5 == s3);
 
   LeakCheckedUnorderedSet s6(std::move(s3));
   EXPECT_TRUE(s3.empty());
   EXPECT_TRUE(s6 == s5);
 
-  LeakCheckedUnorderedSet s7(std::move(s6), s6.get_allocator());
+  auto s6_allocator = s6.get_allocator();
+  LeakCheckedUnorderedSet s7(std::move(s6), s6_allocator);
   EXPECT_TRUE(s6.empty());
   EXPECT_TRUE(s7 == s5);
 
-  LeakCheckedUnorderedSet s8 {
-    "hello",
-    "lo"
+  LeakCheckedUnorderedSet s8{
+      "hello",
+      "lo",
   };
   EXPECT_EQ(s8.size(), 2);
   EXPECT_NE(s8.find("hello"), s8.end());
   EXPECT_NE(s8.find("lo"), s8.end());
 
-  LeakCheckedUnorderedSet s9({
-    "hello",
-    "lo"
-      }, 10);
+  LeakCheckedUnorderedSet s9(
+      {
+          "hello",
+          "lo",
+      },
+      10);
   EXPECT_EQ(s9.size(), 2);
   EXPECT_NE(s9.find("hello"), s9.end());
   EXPECT_NE(s9.find("lo"), s9.end());
@@ -401,9 +401,9 @@ TEST(StringKeyedUnorderedSetTest, constructors) {
 
   EXPECT_EQ(set3.size(), 2);
 
-  LeakCheckedUnorderedSet set4 {
-    "key0",
-    "key1"
+  LeakCheckedUnorderedSet set4{
+      "key0",
+      "key1",
   };
 
   EXPECT_EQ(set4.erase("key0"), 1);
@@ -437,7 +437,7 @@ TEST(StringKeyedMapTest, sanity) {
 
   EXPECT_EQ(map.size(), 2);
 
-  map = map;
+  map = static_cast<decltype(map)&>(map); // suppress self-assign warning
 
   EXPECT_EQ(map.find("hello")->second, 1);
   EXPECT_EQ(map.find("lo")->second, 3);
@@ -457,9 +457,9 @@ TEST(StringKeyedMapTest, sanity) {
 }
 
 TEST(StringKeyedMapTest, constructors) {
-  LeakCheckedMap map {
-    {"hello", 1},
-    {"lo", 3}
+  LeakCheckedMap map{
+      {"hello", 1},
+      {"lo", 3},
   };
   LeakCheckedMap map2(map);
 
@@ -484,9 +484,9 @@ TEST(StringKeyedMapTest, constructors) {
   EXPECT_EQ(map3["key0"], 0);
   EXPECT_EQ(map3.size(), 2);
 
-  LeakCheckedMap map4 {
-    {"key0", 0},
-    {"key1", 1}
+  LeakCheckedMap map4{
+      {"key0", 0},
+      {"key1", 1},
   };
 
   EXPECT_EQ(map4.erase("key0"), 1);
@@ -505,7 +505,7 @@ TEST(StringKeyedMapTest, constructors) {
   EXPECT_EQ(map4.at("key1"), 1);
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   FLAGS_logtostderr = true;
   google::InitGoogleLogging(argv[0]);
   testing::InitGoogleTest(&argc, argv);
@@ -516,19 +516,13 @@ int main(int argc, char **argv) {
 
 // This MUST be the LAST test.
 TEST(StringKeyed, memory_balance) {
-  auto balance = allocated < freed
-    ? freed - allocated
-    : allocated - freed;
+  auto balance = allocated < freed ? freed - allocated : allocated - freed;
 
-  LOG(INFO) << "allocated: " << allocated
-    << " freed: " << freed
-    << " balance: " << balance
-    << (
-      allocated < freed
-        ? " negative (huh?)"
-        : freed < allocated
-          ? " positive (leak)" : ""
-    );
+  LOG(INFO) << "allocated: " << allocated << " freed: " << freed
+            << " balance: " << balance
+            << (allocated < freed
+                    ? " negative (huh?)"
+                    : freed < allocated ? " positive (leak)" : "");
 
   EXPECT_EQ(allocated, freed);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 #pragma once
 
-#include <typeinfo>
 #include <exception>
+#include <typeinfo>
 
 namespace folly {
 namespace exception_tracer {
@@ -31,10 +31,10 @@ namespace detail {
  */
 void dummyCxaThrow(void*, std::type_info*, void (*)(void*)) noexcept;
 void dummyCxaBeginCatch(void*) noexcept;
-void dummyCxaRethrow(void) noexcept;
-void dummyCxaEndCatch(void) noexcept;
+void dummyCxaRethrow() noexcept;
+void dummyCxaEndCatch() noexcept;
 void dummyRethrowException(std::exception_ptr) noexcept;
-}
+} // namespace detail
 
 using CxaThrowType = decltype(&detail::dummyCxaThrow);
 using CxaBeginCatchType = decltype(&detail::dummyCxaBeginCatch);
@@ -47,5 +47,5 @@ void registerCxaBeginCatchCallback(CxaBeginCatchType callback);
 void registerCxaRethrowCallback(CxaRethrowType callback);
 void registerCxaEndCatchCallback(CxaEndCatchType callback);
 void registerRethrowExceptionCallback(RethrowExceptionType callback);
-}
-}
+} // namespace exception_tracer
+} // namespace folly

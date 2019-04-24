@@ -1,33 +1,29 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+
 #include <folly/io/async/HHWheelTimer.h>
-#include <folly/io/async/Request.h>
+
+#include <cassert>
 
 #include <folly/Memory.h>
 #include <folly/Optional.h>
 #include <folly/ScopeGuard.h>
-
-#include <folly/Bits.h>
-
-#include <cassert>
+#include <folly/container/BitIterator.h>
+#include <folly/io/async/Request.h>
+#include <folly/lang/Bits.h>
 
 using std::chrono::milliseconds;
 
@@ -53,8 +49,9 @@ HHWheelTimer::Callback::~Callback() {
   }
 }
 
-void HHWheelTimer::Callback::setScheduled(HHWheelTimer* wheel,
-                                          std::chrono::milliseconds timeout) {
+void HHWheelTimer::Callback::setScheduled(
+    HHWheelTimer* wheel,
+    std::chrono::milliseconds timeout) {
   assert(wheel_ == nullptr);
   assert(expiration_ == decltype(expiration_){});
 
@@ -91,7 +88,7 @@ HHWheelTimer::HHWheelTimer(
       count_(0),
       startTime_(getCurTime()),
       processingCallbacksGuard_(nullptr) {
-  bitmap_.resize((WHEEL_SIZE / sizeof(uint64_t)) / 8, 0);
+  bitmap_.resize((WHEEL_SIZE / sizeof(std::size_t)) / 8, 0);
 }
 
 HHWheelTimer::~HHWheelTimer() {
@@ -111,8 +108,9 @@ HHWheelTimer::~HHWheelTimer() {
   cancelAll();
 }
 
-void HHWheelTimer::scheduleTimeoutImpl(Callback* callback,
-                                       std::chrono::milliseconds timeout) {
+void HHWheelTimer::scheduleTimeoutImpl(
+    Callback* callback,
+    std::chrono::milliseconds timeout) {
   auto nextTick = calcNextTick();
   int64_t due = timeToWheelTicks(timeout) + nextTick;
   int64_t diff = due - nextTick;
@@ -143,12 +141,13 @@ void HHWheelTimer::scheduleTimeoutImpl(Callback* callback,
   list->push_back(*callback);
 }
 
-void HHWheelTimer::scheduleTimeout(Callback* callback,
-                                   std::chrono::milliseconds timeout) {
+void HHWheelTimer::scheduleTimeout(
+    Callback* callback,
+    std::chrono::milliseconds timeout) {
   // Cancel the callback if it happens to be scheduled already.
   callback->cancelTimeout();
 
-  callback->context_ = RequestContext::saveContext();
+  callback->requestContext_ = RequestContext::saveContext();
 
   count_++;
 
@@ -233,7 +232,7 @@ void HHWheelTimer::timeoutExpired() noexcept {
     count_--;
     cb->wheel_ = nullptr;
     cb->expiration_ = {};
-    RequestContextScopeGuard rctx(cb->context_);
+    RequestContextScopeGuard rctx(cb->requestContext_);
     cb->timeoutExpired();
     if (isDestroyed) {
       // The HHWheelTimer itself has been destroyed. The other callbacks
@@ -249,9 +248,9 @@ size_t HHWheelTimer::cancelAll() {
   size_t count = 0;
 
   if (count_ != 0) {
-    const uint64_t numElements = WHEEL_BUCKETS * WHEEL_SIZE;
+    const std::size_t numElements = WHEEL_BUCKETS * WHEEL_SIZE;
     auto maxBuckets = std::min(numElements, count_);
-    auto buckets = folly::make_unique<CallbackList[]>(maxBuckets);
+    auto buckets = std::make_unique<CallbackList[]>(maxBuckets);
     size_t countBuckets = 0;
     for (auto& tick : buckets_) {
       for (auto& bucket : tick) {
@@ -318,4 +317,4 @@ int64_t HHWheelTimer::calcNextTick() {
   }
 }
 
-} // folly
+} // namespace folly

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 #include <folly/experimental/JemallocNodumpAllocator.h>
 
-#include <folly/Malloc.h>
 #include <folly/io/IOBuf.h>
+#include <folly/memory/Malloc.h>
 #include <folly/portability/GTest.h>
 
 TEST(JemallocNodumpAllocatorTest, Basic) {
@@ -54,7 +54,7 @@ TEST(JemallocNodumpAllocatorTest, IOBuf) {
   for (auto i = 0u; i < ioBuf.capacity(); ++i) {
     data[i] = 'A';
   }
-  uint8_t* p = static_cast<uint8_t*> (ptr);
+  uint8_t* p = static_cast<uint8_t*>(ptr);
   for (auto i = 0u; i < size; ++i) {
     EXPECT_EQ('A', p[i]);
   }

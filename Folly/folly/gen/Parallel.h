@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,8 @@
 
 #include <folly/gen/Base.h>
 
-namespace folly { namespace gen {
+namespace folly {
+namespace gen {
 namespace detail {
 
 template <class Ops>
@@ -33,7 +34,7 @@ class Sub;
 template <class Iterator>
 class ChunkedRangeSource;
 
-}
+} // namespace detail
 
 /**
  * chunked() - For producing values from a container in slices.
@@ -41,20 +42,21 @@ class ChunkedRangeSource;
  * Especially for use with 'parallel()', chunked can be used to process values
  * from a persistent container in chunks larger than one value at a time. The
  * values produced are generators for slices of the input container. */
-template <class Container,
-          class Iterator = typename Container::const_iterator,
-          class Chunked = detail::ChunkedRangeSource<Iterator>>
+template <
+    class Container,
+    class Iterator = typename Container::const_iterator,
+    class Chunked = detail::ChunkedRangeSource<Iterator>>
 Chunked chunked(const Container& container, int chunkSize = 256) {
   return Chunked(chunkSize, folly::range(container.begin(), container.end()));
 }
 
-template <class Container,
-          class Iterator = typename Container::iterator,
-          class Chunked = detail::ChunkedRangeSource<Iterator>>
+template <
+    class Container,
+    class Iterator = typename Container::iterator,
+    class Chunked = detail::ChunkedRangeSource<Iterator>>
 Chunked chunked(Container& container, int chunkSize = 256) {
   return Chunked(chunkSize, folly::range(container.begin(), container.end()));
 }
-
 
 /**
  * parallel - A parallelization operator.
@@ -102,7 +104,7 @@ template <class Sink, class Sub = detail::Sub<Sink>>
 Sub sub(Sink sink) {
   return Sub(std::move(sink));
 }
-
-}} // !namespace folly::gen
+} // namespace gen
+} // namespace folly
 
 #include <folly/gen/Parallel-inl.h>

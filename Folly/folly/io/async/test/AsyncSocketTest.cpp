@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,23 +15,26 @@
  */
 #include <iostream>
 
-#include <folly/io/async/AsyncSocket.h>
 #include <folly/io/async/AsyncServerSocket.h>
+#include <folly/io/async/AsyncSocket.h>
 #include <folly/io/async/EventBase.h>
 #include <folly/portability/GTest.h>
 
 namespace folly {
 
+#ifndef TCP_SAVE_SYN
+#define TCP_SAVE_SYN 27
+#endif
+
 TEST(AsyncSocketTest, getSockOpt) {
   EventBase evb;
-  std::shared_ptr<AsyncSocket> socket =
-    AsyncSocket::newSocket(&evb, 0);
+  std::shared_ptr<AsyncSocket> socket = AsyncSocket::newSocket(&evb, 0);
 
   int val;
   socklen_t len;
 
-  int expectedRc = getsockopt(socket->getFd(), SOL_SOCKET,
-                              SO_REUSEADDR, &val, &len);
+  int expectedRc =
+      getsockopt(socket->getFd(), SOL_SOCKET, SO_REUSEADDR, &val, &len);
   int actualRc = socket->getSockOpt(SOL_SOCKET, SO_REUSEADDR, &val, &len);
 
   EXPECT_EQ(expectedRc, actualRc);
@@ -46,7 +49,7 @@ TEST(AsyncSocketTest, REUSEPORT) {
 
   try {
     serverSocket->setReusePortEnabled(true);
-  } catch(...) {
+  } catch (...) {
     LOG(INFO) << "Reuse port probably not supported";
     return;
   }
@@ -60,7 +63,6 @@ TEST(AsyncSocketTest, REUSEPORT) {
   serverSocket2->bind(port);
   serverSocket2->listen(0);
   serverSocket2->startAccepting();
-
 }
 
 TEST(AsyncSocketTest, v4v6samePort) {
@@ -88,4 +90,31 @@ TEST(AsyncSocketTest, duplicateBind) {
   EXPECT_THROW(server2->bind(address.getPort()), std::exception);
 }
 
-} // namespace
+TEST(AsyncSocketTest, tosReflect) {
+  EventBase base;
+  auto server1 = AsyncServerSocket::newSocket(&base);
+  server1->bind(0);
+  server1->listen(10);
+  int fd = server1->getSocket();
+
+  // Verify if tos reflect is disabled by default
+  // and the TCP_SAVE_SYN setting is not enabled
+  EXPECT_FALSE(server1->getTosReflect());
+  int value;
+  socklen_t valueLength = sizeof(value);
+  int rc = getsockopt(fd, IPPROTO_TCP, TCP_SAVE_SYN, &value, &valueLength);
+  ASSERT_EQ(rc, 0);
+  ASSERT_EQ(value, 0);
+
+  // Enable TOS reflect on the server socket
+  server1->setTosReflect(true);
+
+  // Verify if tos reflect is enabled now
+  // and the TCP_SAVE_SYN setting is also enabled
+  EXPECT_TRUE(server1->getTosReflect());
+  rc = getsockopt(fd, IPPROTO_TCP, TCP_SAVE_SYN, &value, &valueLength);
+  ASSERT_EQ(rc, 0);
+  ASSERT_EQ(value, 1);
+}
+
+} // namespace folly

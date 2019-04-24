@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include <folly/CPortability.h>
+
 /*
  * Calls common init functions in the necessary order
  * Among other things, this ensures that folly::Singletons are initialized
@@ -30,4 +32,23 @@ namespace folly {
 
 void init(int* argc, char*** argv, bool removeFlags = true);
 
-} // folly
+/*
+ * An RAII object to be constructed at the beginning of main() and destructed
+ * implicitly at the end of main().
+ *
+ * The constructor performs the same setup as folly::init(), including
+ * initializing singletons managed by folly::Singleton.
+ *
+ * The destructor destroys all singletons managed by folly::Singleton, yielding
+ * better shutdown behavior when performed at the end of main(). In particular,
+ * this guarantees that all singletons managed by folly::Singleton are destroyed
+ * before all Meyers singletons are destroyed.
+ */
+class Init {
+ public:
+  // Force ctor & dtor out of line for better stack traces even with LTO.
+  FOLLY_NOINLINE Init(int* argc, char*** argv, bool removeFlags = true);
+  FOLLY_NOINLINE ~Init();
+};
+
+} // namespace folly

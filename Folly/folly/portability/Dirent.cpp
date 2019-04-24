@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,10 +37,18 @@ struct DIR {
     wchar_t patternBuf[MAX_PATH + 3];
     size_t len;
 
+    if (pattern.empty()) {
+      return nullptr;
+    }
+
     if (mbstowcs_s(&len, patternBuf, MAX_PATH, pattern.c_str(), MAX_PATH - 2)) {
       return nullptr;
     }
 
+    // `len` includes the trailing NUL
+    if (len) {
+      len--;
+    }
     if (len && patternBuf[len - 1] != '/' && patternBuf[len - 1] != '\\') {
       patternBuf[len++] = '\\';
     }

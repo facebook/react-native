@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2012-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@
 
 #include <glog/logging.h>
 
-#include <folly/detail/SlowFingerprint.h>
 #include <folly/Benchmark.h>
+#include <folly/detail/SlowFingerprint.h>
 #include <folly/portability/GTest.h>
 
 using namespace folly;
@@ -57,18 +57,18 @@ TEST(Fingerprint, MultiByteUpdate) {
   uint64_t val_b = 0x1234567890abcdefUL;
   uint8_t bytes[16];
   for (int i = 0; i < 8; i++) {
-    bytes[i] = (val_a >> (8*(7-i))) & 0xff;
+    bytes[i] = (val_a >> (8 * (7 - i))) & 0xff;
   }
   for (int i = 0; i < 8; i++) {
-    bytes[i+8] = (val_b >> (8*(7-i))) & 0xff;
+    bytes[i + 8] = (val_b >> (8 * (7 - i))) & 0xff;
   }
   StringPiece sp((const char*)bytes, 16);
 
-  uint64_t u8[2];      // updating 8 bits at a time
-  uint64_t u32[2];     // updating 32 bits at a time
-  uint64_t u64[2];     // updating 64 bits at a time
-  uint64_t usp[2];     // update(StringPiece)
-  uint64_t uconv[2];   // convenience function (fingerprint*(StringPiece))
+  uint64_t u8[2]; // updating 8 bits at a time
+  uint64_t u32[2]; // updating 32 bits at a time
+  uint64_t u64[2]; // updating 64 bits at a time
+  uint64_t usp[2]; // update(StringPiece)
+  uint64_t uconv[2]; // convenience function (fingerprint*(StringPiece))
 
   {
     Fingerprint<64> fp;
@@ -77,8 +77,12 @@ TEST(Fingerprint, MultiByteUpdate) {
     }
     fp.write(u8);
   }
-  Fingerprint<64>().update32(val_a >> 32).update32(val_a & 0xffffffff).
-    update32(val_b >> 32).update32(val_b & 0xffffffff).write(u32);
+  Fingerprint<64>()
+      .update32(val_a >> 32)
+      .update32(val_a & 0xffffffff)
+      .update32(val_b >> 32)
+      .update32(val_b & 0xffffffff)
+      .write(u32);
   Fingerprint<64>().update64(val_a).update64(val_b).write(u64);
   Fingerprint<64>().update(sp).write(usp);
   uconv[0] = fingerprint64(sp);
@@ -95,8 +99,12 @@ TEST(Fingerprint, MultiByteUpdate) {
     }
     fp.write(u8);
   }
-  Fingerprint<96>().update32(val_a >> 32).update32(val_a & 0xffffffff).
-    update32(val_b >> 32).update32(val_b & 0xffffffff).write(u32);
+  Fingerprint<96>()
+      .update32(val_a >> 32)
+      .update32(val_a & 0xffffffff)
+      .update32(val_b >> 32)
+      .update32(val_b & 0xffffffff)
+      .write(u32);
   Fingerprint<96>().update64(val_a).update64(val_b).write(u64);
   Fingerprint<96>().update(sp).write(usp);
   uint32_t uconv_lsb;
@@ -119,8 +127,12 @@ TEST(Fingerprint, MultiByteUpdate) {
     }
     fp.write(u8);
   }
-  Fingerprint<128>().update32(val_a >> 32).update32(val_a & 0xffffffff).
-    update32(val_b >> 32).update32(val_b & 0xffffffff).write(u32);
+  Fingerprint<128>()
+      .update32(val_a >> 32)
+      .update32(val_a & 0xffffffff)
+      .update32(val_b >> 32)
+      .update32(val_b & 0xffffffff)
+      .write(u32);
   Fingerprint<128>().update64(val_a).update64(val_b).write(u64);
   Fingerprint<128>().update(sp).write(usp);
   fingerprint128(sp, &(uconv[0]), &(uconv[1]));
@@ -138,8 +150,8 @@ TEST(Fingerprint, MultiByteUpdate) {
 TEST(Fingerprint, Alignment) {
   // Test that update() gives the same result regardless of string alignment
   const char test_str[] = "hello world 12345";
-  int len = sizeof(test_str)-1;
-  std::unique_ptr<char[]> str(new char[len+8]);
+  int len = sizeof(test_str) - 1;
+  std::unique_ptr<char[]> str(new char[len + 8]);
   uint64_t ref_fp;
   SlowFingerprint<64>().update(StringPiece(test_str, len)).write(&ref_fp);
   for (int i = 0; i < 8; i++) {
@@ -163,7 +175,7 @@ TEST(Fingerprint, Alignment) {
   }
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   testing::InitGoogleTest(&argc, argv);
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   auto ret = RUN_ALL_TESTS();

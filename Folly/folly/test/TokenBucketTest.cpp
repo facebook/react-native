@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,16 +62,17 @@ TEST_P(TokenBucketTest, sanity) {
   }
 }
 
-static std::vector<std::pair<double, double> > rateToConsumeSize = {
-  {100, 1},
-  {1000, 1},
-  {10000, 1},
-  {10000, 5},
+static std::vector<std::pair<double, double>> rateToConsumeSize = {
+    {100, 1},
+    {1000, 1},
+    {10000, 1},
+    {10000, 5},
 };
 
-INSTANTIATE_TEST_CASE_P(TokenBucket,
-                        TokenBucketTest,
-                        ::testing::ValuesIn(rateToConsumeSize));
+INSTANTIATE_TEST_CASE_P(
+    TokenBucket,
+    TokenBucketTest,
+    ::testing::ValuesIn(rateToConsumeSize));
 
 void doTokenBucketTest(double maxQps, double consumeSize) {
   const double tenMillisecondBurst = maxQps * 0.010;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include <folly/experimental/symbolizer/StackTrace.h>
 
 // Must be first to ensure that UNW_LOCAL_ONLY is defined
 #define UNW_LOCAL_ONLY 1
 #include <libunwind.h>
 
-namespace folly { namespace symbolizer {
+namespace folly {
+namespace symbolizer {
 
 ssize_t getStackTrace(uintptr_t* addresses, size_t maxAddresses) {
-  static_assert(sizeof(uintptr_t) == sizeof(void*),
-                "uinptr_t / pointer size mismatch");
+  static_assert(
+      sizeof(uintptr_t) == sizeof(void*), "uintptr_t / pointer size mismatch");
   // The libunwind documentation says that unw_backtrace is async-signal-safe
   // but, as of libunwind 1.0.1, it isn't (tdep_trace allocates memory on
   // x86_64)
@@ -48,7 +48,7 @@ inline bool getFrameInfo(unw_cursor_t* cursor, uintptr_t& ip) {
   ip = uip - (r == 0);
   return true;
 }
-}  // namespace
+} // namespace
 
 ssize_t getStackTraceSafe(uintptr_t* addresses, size_t maxAddresses) {
   if (maxAddresses == 0) {
@@ -81,5 +81,5 @@ ssize_t getStackTraceSafe(uintptr_t* addresses, size_t maxAddresses) {
   }
   return count;
 }
-
-}}  // namespaces
+} // namespace symbolizer
+} // namespace folly

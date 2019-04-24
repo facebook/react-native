@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -136,7 +136,7 @@ struct AtomicBatchDispatcher<InputT, ResultT>::DispatchBaton {
       return *this;
     }
 
-    explicit Entry(InputT&& input) : input(std::move(input)) {}
+    explicit Entry(InputT&& input_) : input(std::move(input_)) {}
   };
 
   size_t expectedCount_;
@@ -222,4 +222,4 @@ AtomicBatchDispatcher<InputT, ResultT> createAtomicBatchDispatcher(
 }
 
 } // namespace fibers
-} // manespace folly
+} // namespace folly

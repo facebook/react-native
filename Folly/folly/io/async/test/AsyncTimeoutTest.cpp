@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,10 +25,8 @@ TEST(AsyncTimeout, make) {
   int const expected = 10;
   EventBase manager;
 
-  auto observer = AsyncTimeout::make(
-    manager,
-    [&]() noexcept { value = expected; }
-  );
+  auto observer =
+      AsyncTimeout::make(manager, [&]() noexcept { value = expected; });
 
   observer->scheduleTimeout(std::chrono::milliseconds(100));
 
@@ -43,13 +41,26 @@ TEST(AsyncTimeout, schedule) {
   EventBase manager;
 
   auto observer = AsyncTimeout::schedule(
-    std::chrono::milliseconds(100),
-    manager,
-    [&]() noexcept { value = expected; }
-  );
+      std::chrono::milliseconds(100), manager, [&]() noexcept {
+        value = expected;
+      });
 
   manager.loop();
 
+  EXPECT_EQ(expected, value);
+}
+
+TEST(AsyncTimeout, schedule_immediate) {
+  int value = 0;
+  int const expected = 10;
+  EventBase manager;
+
+  auto observer = AsyncTimeout::schedule(
+      std::chrono::milliseconds(0), manager, [&]() noexcept {
+        value = expected;
+      });
+
+  manager.loop();
   EXPECT_EQ(expected, value);
 }
 
@@ -58,13 +69,21 @@ TEST(AsyncTimeout, cancel_make) {
   int const expected = 10;
   EventBase manager;
 
-  auto observer = AsyncTimeout::make(
-    manager,
-    [&]() noexcept { value = expected; }
-  );
+  auto observer =
+      AsyncTimeout::make(manager, [&]() noexcept { value = expected; });
 
-  observer->scheduleTimeout(std::chrono::milliseconds(100));
-  observer->cancelTimeout();
+  std::weak_ptr<RequestContext> rctx_weak_ptr;
+
+  {
+    RequestContextScopeGuard rctx_guard;
+    rctx_weak_ptr = RequestContext::saveContext();
+    observer->scheduleTimeout(std::chrono::milliseconds(100));
+    observer->cancelTimeout();
+  }
+
+  // Ensure that RequestContext created for the scope has been released and
+  // deleted.
+  EXPECT_EQ(rctx_weak_ptr.expired(), true);
 
   manager.loop();
 
@@ -75,18 +94,28 @@ TEST(AsyncTimeout, cancel_schedule) {
   int value = 0;
   int const expected = 10;
   EventBase manager;
+  std::unique_ptr<AsyncTimeout> observer;
+  std::weak_ptr<RequestContext> rctx_weak_ptr;
 
-  auto observer = AsyncTimeout::schedule(
-    std::chrono::milliseconds(100),
-    manager,
-    [&]() noexcept { value = expected; }
-  );
+  {
+    RequestContextScopeGuard rctx_guard;
+    rctx_weak_ptr = RequestContext::saveContext();
 
-  observer->cancelTimeout();
+    observer = AsyncTimeout::schedule(
+        std::chrono::milliseconds(100), manager, [&]() noexcept {
+          value = expected;
+        });
+
+    observer->cancelTimeout();
+  }
+
+  // Ensure that RequestContext created for the scope has been released and
+  // deleted.
+  EXPECT_EQ(rctx_weak_ptr.expired(), true);
 
   manager.loop();
 
   EXPECT_NE(expected, value);
 }
 
-} // namespace folly {
+} // namespace folly

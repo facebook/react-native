@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <folly/Range.h>
 #include <memory>
 
 namespace folly {
@@ -27,7 +28,10 @@ class ScopedEventBaseThread;
 class EventBaseThread {
  public:
   EventBaseThread();
-  explicit EventBaseThread(bool autostart, EventBaseManager* ebm = nullptr);
+  explicit EventBaseThread(
+      bool autostart,
+      EventBaseManager* ebm = nullptr,
+      folly::StringPiece threadName = folly::StringPiece());
   explicit EventBaseThread(EventBaseManager* ebm);
   ~EventBaseThread();
 
@@ -37,7 +41,7 @@ class EventBaseThread {
   EventBase* getEventBase() const;
 
   bool running() const;
-  void start();
+  void start(folly::StringPiece threadName = folly::StringPiece());
   void stop();
 
  private:
@@ -47,4 +51,4 @@ class EventBaseThread {
   EventBaseManager* ebm_;
   std::unique_ptr<ScopedEventBaseThread> th_;
 };
-}
+} // namespace folly

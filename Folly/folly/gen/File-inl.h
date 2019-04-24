@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,7 @@ namespace detail {
 class FileReader : public GenImpl<ByteRange, FileReader> {
  public:
   FileReader(File file, std::unique_ptr<IOBuf> buffer)
-    : file_(std::move(file)),
-      buffer_(std::move(buffer)) {
+      : file_(std::move(file)), buffer_(std::move(buffer)) {
     buffer_->clear();
   }
 
@@ -65,8 +64,7 @@ class FileReader : public GenImpl<ByteRange, FileReader> {
 class FileWriter : public Operator<FileWriter> {
  public:
   FileWriter(File file, std::unique_ptr<IOBuf> buffer)
-    : file_(std::move(file)),
-      buffer_(std::move(buffer)) {
+      : file_(std::move(file)), buffer_(std::move(buffer)) {
     if (buffer_) {
       buffer_->clear();
     }
@@ -102,8 +100,8 @@ class FileWriter : public Operator<FileWriter> {
         n = ::write(file_.fd(), v.data(), v.size());
       } while (n == -1 && errno == EINTR);
       if (n == -1) {
-        throw std::system_error(errno, std::system_category(),
-                                "write() failed");
+        throw std::system_error(
+            errno, std::system_category(), "write() failed");
       }
       v.advance(size_t(n));
     }
@@ -120,26 +118,44 @@ class FileWriter : public Operator<FileWriter> {
   std::unique_ptr<IOBuf> buffer_;
 };
 
-}  // !detail
+inline auto byLineImpl(File file, char delim, bool keepDelimiter) {
+  // clang-format off
+  return fromFile(std::move(file))
+      | eachAs<StringPiece>()
+      | resplit(delim, keepDelimiter);
+  // clang-format on
+}
+
+} // namespace detail
 
 /**
  * Generator which reads lines from a file.
  * Note: This produces StringPieces which reference temporary strings which are
  * only valid during iteration.
  */
-inline auto byLine(File file, char delim = '\n')
-    -> decltype(fromFile(std::move(file))
-                | eachAs<StringPiece>()
-                | resplit(delim)) {
-  return fromFile(std::move(file))
-       | eachAs<StringPiece>()
-       | resplit(delim);
+inline auto byLineFull(File file, char delim = '\n') {
+  return detail::byLineImpl(std::move(file), delim, true);
 }
 
-inline auto byLine(int fd, char delim = '\n')
-  -> decltype(byLine(File(fd), delim)) { return byLine(File(fd), delim); }
+inline auto byLineFull(int fd, char delim = '\n') {
+  return byLineFull(File(fd), delim);
+}
 
-inline auto byLine(const char* f, char delim = '\n')
-  -> decltype(byLine(File(f), delim)) { return byLine(File(f), delim); }
+inline auto byLineFull(const char* f, char delim = '\n') {
+  return byLineFull(File(f), delim);
+}
 
-}}  // !folly::gen
+inline auto byLine(File file, char delim = '\n') {
+  return detail::byLineImpl(std::move(file), delim, false);
+}
+
+inline auto byLine(int fd, char delim = '\n') {
+  return byLine(File(fd), delim);
+}
+
+inline auto byLine(const char* f, char delim = '\n') {
+  return byLine(File(f), delim);
+}
+
+} // namespace gen
+} // namespace folly

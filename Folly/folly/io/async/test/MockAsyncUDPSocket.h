@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,27 +18,41 @@
 #include <folly/io/async/AsyncUDPSocket.h>
 #include <folly/portability/GMock.h>
 
-namespace folly { namespace test {
+namespace folly {
+namespace test {
 
 struct MockAsyncUDPSocket : public AsyncUDPSocket {
   explicit MockAsyncUDPSocket(EventBase* evb) : AsyncUDPSocket(evb) {}
-  virtual ~MockAsyncUDPSocket() {}
+  ~MockAsyncUDPSocket() override {}
 
   MOCK_CONST_METHOD0(address, const SocketAddress&());
   MOCK_METHOD1(bind, void(const SocketAddress&));
   MOCK_METHOD2(setFD, void(int, AsyncUDPSocket::FDOwnership));
   MOCK_METHOD2(
-   write,
-   ssize_t(const SocketAddress&, const std::unique_ptr<IOBuf>&));
+      write,
+      ssize_t(const SocketAddress&, const std::unique_ptr<IOBuf>&));
   MOCK_METHOD3(
-   writev,
-   ssize_t(const SocketAddress&, const struct iovec*, size_t));
+      writeGSO,
+      ssize_t(
+          const folly::SocketAddress&,
+          const std::unique_ptr<folly::IOBuf>&,
+          int));
+  MOCK_METHOD3(
+      writev,
+      ssize_t(const SocketAddress&, const struct iovec*, size_t));
   MOCK_METHOD1(resumeRead, void(ReadCallback*));
   MOCK_METHOD0(pauseRead, void());
   MOCK_METHOD0(close, void());
   MOCK_CONST_METHOD0(getFD, int());
   MOCK_METHOD1(setReusePort, void(bool));
   MOCK_METHOD1(setReuseAddr, void(bool));
+  MOCK_METHOD1(dontFragment, void(bool));
+  MOCK_METHOD1(setErrMessageCallback, void(ErrMessageCallback*));
+  MOCK_METHOD1(connect, int(const SocketAddress&));
+  MOCK_CONST_METHOD0(isBound, bool());
+  MOCK_METHOD0(getGSO, int());
+  MOCK_METHOD1(setGSO, bool(int));
 };
 
-}}
+} // namespace test
+} // namespace folly

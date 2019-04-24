@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,15 +67,16 @@ class AtomicBitSet : private boost::noncopyable {
    * Yes, this is an overload of set(), to keep as close to std::bitset's
    * interface as possible.
    */
-  bool set(size_t idx,
-           bool value,
-           std::memory_order order = std::memory_order_seq_cst);
+  bool set(
+      size_t idx,
+      bool value,
+      std::memory_order order = std::memory_order_seq_cst);
 
   /**
    * Read bit idx.
    */
-  bool test(size_t idx,
-            std::memory_order order = std::memory_order_seq_cst) const;
+  bool test(size_t idx, std::memory_order order = std::memory_order_seq_cst)
+      const;
 
   /**
    * Same as test() with the default memory order.
@@ -102,7 +103,7 @@ class AtomicBitSet : private boost::noncopyable {
   typedef std::atomic<BlockType> AtomicBlockType;
 
   static constexpr size_t kBitsPerBlock =
-    std::numeric_limits<BlockType>::digits;
+      std::numeric_limits<BlockType>::digits;
 
   static constexpr size_t blockIndex(size_t bit) {
     return bit / kBitsPerBlock;
@@ -120,8 +121,7 @@ class AtomicBitSet : private boost::noncopyable {
 
 // value-initialize to zero
 template <size_t N>
-inline AtomicBitSet<N>::AtomicBitSet() : data_() {
-}
+inline AtomicBitSet<N>::AtomicBitSet() : data_() {}
 
 template <size_t N>
 inline bool AtomicBitSet<N>::set(size_t idx, std::memory_order order) {
@@ -138,9 +138,8 @@ inline bool AtomicBitSet<N>::reset(size_t idx, std::memory_order order) {
 }
 
 template <size_t N>
-inline bool AtomicBitSet<N>::set(size_t idx,
-                                 bool value,
-                                 std::memory_order order) {
+inline bool
+AtomicBitSet<N>::set(size_t idx, bool value, std::memory_order order) {
   return value ? set(idx, order) : reset(idx, order);
 }
 
@@ -156,4 +155,4 @@ inline bool AtomicBitSet<N>::operator[](size_t idx) const {
   return test(idx);
 }
 
-}  // namespaces
+} // namespace folly

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ namespace gen {
 namespace detail {
 class FileReader;
 class FileWriter;
-}  // namespace detail
+} // namespace detail
 
 /**
  * Generator that reads from a file with a buffer of the given size.
@@ -35,7 +35,7 @@ class FileWriter;
  * to hold each value).
  */
 template <class S = detail::FileReader>
-S fromFile(File file, size_t bufferSize=4096) {
+S fromFile(File file, size_t bufferSize = 4096) {
   return S(std::move(file), IOBuf::create(bufferSize));
 }
 
@@ -52,7 +52,7 @@ S fromFile(File file, std::unique_ptr<IOBuf> buffer) {
  * If bufferSize is 0, writes will be unbuffered.
  */
 template <class S = detail::FileWriter>
-S toFile(File file, size_t bufferSize=4096) {
+S toFile(File file, size_t bufferSize = 4096) {
   return S(std::move(file), bufferSize ? nullptr : IOBuf::create(bufferSize));
 }
 
@@ -64,7 +64,7 @@ template <class S = detail::FileWriter>
 S toFile(File file, std::unique_ptr<IOBuf> buffer) {
   return S(std::move(file), std::move(buffer));
 }
-
-}}  // !folly::gen
+} // namespace gen
+} // namespace folly
 
 #include <folly/gen/File-inl.h>

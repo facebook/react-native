@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,27 +23,27 @@ namespace folly {
  * Convenience class so that AsyncTransportWrapper can be decorated without
  * having to redefine every single method.
  */
-template<class T>
+template <class T>
 class DecoratedAsyncTransportWrapper : public folly::AsyncTransportWrapper {
  public:
-  explicit DecoratedAsyncTransportWrapper(typename T::UniquePtr transport):
-    transport_(std::move(transport)) {}
+  explicit DecoratedAsyncTransportWrapper(typename T::UniquePtr transport)
+      : transport_(std::move(transport)) {}
 
   const AsyncTransportWrapper* getWrappedTransport() const override {
     return transport_.get();
   }
 
   // folly::AsyncTransportWrapper
-  virtual ReadCallback* getReadCallback() const override {
+  ReadCallback* getReadCallback() const override {
     return transport_->getReadCallback();
   }
 
-  virtual void setReadCB(
+  void setReadCB(
       folly::AsyncTransportWrapper::ReadCallback* callback) override {
     transport_->setReadCB(callback);
   }
 
-  virtual void write(
+  void write(
       folly::AsyncTransportWrapper::WriteCallback* callback,
       const void* buf,
       size_t bytes,
@@ -51,14 +51,14 @@ class DecoratedAsyncTransportWrapper : public folly::AsyncTransportWrapper {
     transport_->write(callback, buf, bytes, flags);
   }
 
-  virtual void writeChain(
+  void writeChain(
       folly::AsyncTransportWrapper::WriteCallback* callback,
       std::unique_ptr<folly::IOBuf>&& buf,
       folly::WriteFlags flags = folly::WriteFlags::NONE) override {
     transport_->writeChain(callback, std::move(buf), flags);
   }
 
-  virtual void writev(
+  void writev(
       folly::AsyncTransportWrapper::WriteCallback* callback,
       const iovec* vec,
       size_t bytes,
@@ -67,24 +67,24 @@ class DecoratedAsyncTransportWrapper : public folly::AsyncTransportWrapper {
   }
 
   // folly::AsyncSocketBase
-  virtual folly::EventBase* getEventBase() const override {
+  folly::EventBase* getEventBase() const override {
     return transport_->getEventBase();
   }
 
   // folly::AsyncTransport
-  virtual void attachEventBase(folly::EventBase* eventBase) override {
+  void attachEventBase(folly::EventBase* eventBase) override {
     transport_->attachEventBase(eventBase);
   }
 
-  virtual void close() override {
+  void close() override {
     transport_->close();
   }
 
-  virtual void closeNow() override {
+  void closeNow() override {
     transport_->closeNow();
   }
 
-  virtual void closeWithReset() override {
+  void closeWithReset() override {
     transport_->closeWithReset();
 
     // This will likely result in 2 closeNow() calls on the decorated transport,
@@ -92,103 +92,115 @@ class DecoratedAsyncTransportWrapper : public folly::AsyncTransportWrapper {
     closeNow();
   }
 
-  virtual bool connecting() const override {
+  bool connecting() const override {
     return transport_->connecting();
   }
 
-  virtual void detachEventBase() override {
+  void detachEventBase() override {
     transport_->detachEventBase();
   }
 
-  virtual bool error() const override {
+  bool error() const override {
     return transport_->error();
   }
 
-  virtual size_t getAppBytesReceived() const override {
+  size_t getAppBytesReceived() const override {
     return transport_->getAppBytesReceived();
   }
 
-  virtual size_t getAppBytesWritten() const override {
+  size_t getAppBytesWritten() const override {
     return transport_->getAppBytesWritten();
   }
 
-  virtual void getLocalAddress(folly::SocketAddress* address) const override {
+  void getLocalAddress(folly::SocketAddress* address) const override {
     return transport_->getLocalAddress(address);
   }
 
-  virtual void getPeerAddress(folly::SocketAddress* address) const override {
+  void getPeerAddress(folly::SocketAddress* address) const override {
     return transport_->getPeerAddress(address);
   }
 
-  virtual folly::ssl::X509UniquePtr getPeerCert() const override {
+  folly::ssl::X509UniquePtr getPeerCert() const override {
     return transport_->getPeerCert();
   }
 
-  virtual size_t getRawBytesReceived() const override {
+  size_t getRawBytesReceived() const override {
     return transport_->getRawBytesReceived();
   }
 
-  virtual size_t getRawBytesWritten() const override {
+  size_t getRawBytesWritten() const override {
     return transport_->getRawBytesWritten();
   }
 
-  virtual uint32_t getSendTimeout() const override {
+  uint32_t getSendTimeout() const override {
     return transport_->getSendTimeout();
   }
 
-  virtual bool good() const override {
+  bool good() const override {
     return transport_->good();
   }
 
-  virtual bool isDetachable() const override {
+  bool isDetachable() const override {
     return transport_->isDetachable();
   }
 
-  virtual bool isEorTrackingEnabled() const override {
+  bool isEorTrackingEnabled() const override {
     return transport_->isEorTrackingEnabled();
   }
 
-  virtual bool readable() const override {
+  bool readable() const override {
     return transport_->readable();
   }
 
-  virtual void setEorTracking(bool track) override {
+  bool writable() const override {
+    return transport_->writable();
+  }
+
+  void setEorTracking(bool track) override {
     return transport_->setEorTracking(track);
   }
 
-  virtual void setSendTimeout(uint32_t timeoutInMs) override {
+  void setSendTimeout(uint32_t timeoutInMs) override {
     transport_->setSendTimeout(timeoutInMs);
   }
 
-  virtual void shutdownWrite() override {
+  void shutdownWrite() override {
     transport_->shutdownWrite();
   }
 
-  virtual void shutdownWriteNow() override {
+  void shutdownWriteNow() override {
     transport_->shutdownWriteNow();
   }
 
-  virtual std::string getApplicationProtocol() noexcept override {
+  std::string getApplicationProtocol() const noexcept override {
     return transport_->getApplicationProtocol();
   }
 
-  virtual std::string getSecurityProtocol() const override {
+  std::string getSecurityProtocol() const override {
     return transport_->getSecurityProtocol();
   }
 
-  virtual bool isReplaySafe() const override {
+  bool isReplaySafe() const override {
     return transport_->isReplaySafe();
   }
 
-  virtual void setReplaySafetyCallback(
+  void setReplaySafetyCallback(
       folly::AsyncTransport::ReplaySafetyCallback* callback) override {
     transport_->setReplaySafetyCallback(callback);
   }
 
+  const AsyncTransportCertificate* getPeerCertificate() const override {
+    return transport_->getPeerCertificate();
+  }
+
+  const AsyncTransportCertificate* getSelfCertificate() const override {
+    return transport_->getSelfCertificate();
+  }
+
  protected:
-  virtual ~DecoratedAsyncTransportWrapper() {}
+  ~DecoratedAsyncTransportWrapper() override {}
 
   typename T::UniquePtr transport_;
 };
 
-}
+} // namespace folly

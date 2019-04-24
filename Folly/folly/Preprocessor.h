@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2012-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@
  * FB_ONE_OR_NONE(hello) expands to nothing. This macro is used to
  * insert or eliminate text based on the presence of another argument.
  */
-#define FB_ONE_OR_NONE(a, ...) FB_VA_GLUE(FB_THIRD, (a, ## __VA_ARGS__, a))
+#define FB_ONE_OR_NONE(a, ...) FB_VA_GLUE(FB_THIRD, (a, ##__VA_ARGS__, a))
 #define FB_THIRD(a, b, ...) __VA_ARGS__
 
 /**
@@ -67,6 +67,8 @@
  */
 #define FB_SINGLE_ARG(...) __VA_ARGS__
 
+#define FOLLY_PP_DETAIL_APPEND_VA_ARG(...) , ##__VA_ARGS__
+
 /**
  * Helper macro that just ignores its parameters.
  */
@@ -96,3 +98,52 @@
  * another macro expansion.
  */
 #define FB_STRINGIZE(x) #x
+
+#define FOLLY_PP_DETAIL_NARGS_1(dummy, _7, _6, _5, _4, _3, _2, _1, _0, ...) _0
+#define FOLLY_PP_DETAIL_NARGS(...) \
+  FOLLY_PP_DETAIL_NARGS_1(dummy, ##__VA_ARGS__, 7, 6, 5, 4, 3, 2, 1, 0)
+
+#define FOLLY_PP_DETAIL_FOR_EACH_REC_0(fn, ...)
+#define FOLLY_PP_DETAIL_FOR_EACH_REC_1(fn, a, ...) \
+  fn(a) FOLLY_PP_DETAIL_FOR_EACH_REC_0(fn, __VA_ARGS__)
+#define FOLLY_PP_DETAIL_FOR_EACH_REC_2(fn, a, ...) \
+  fn(a) FOLLY_PP_DETAIL_FOR_EACH_REC_1(fn, __VA_ARGS__)
+#define FOLLY_PP_DETAIL_FOR_EACH_REC_3(fn, a, ...) \
+  fn(a) FOLLY_PP_DETAIL_FOR_EACH_REC_2(fn, __VA_ARGS__)
+#define FOLLY_PP_DETAIL_FOR_EACH_REC_4(fn, a, ...) \
+  fn(a) FOLLY_PP_DETAIL_FOR_EACH_REC_3(fn, __VA_ARGS__)
+#define FOLLY_PP_DETAIL_FOR_EACH_REC_5(fn, a, ...) \
+  fn(a) FOLLY_PP_DETAIL_FOR_EACH_REC_4(fn, __VA_ARGS__)
+#define FOLLY_PP_DETAIL_FOR_EACH_REC_6(fn, a, ...) \
+  fn(a) FOLLY_PP_DETAIL_FOR_EACH_REC_5(fn, __VA_ARGS__)
+#define FOLLY_PP_DETAIL_FOR_EACH_REC_7(fn, a, ...) \
+  fn(a) FOLLY_PP_DETAIL_FOR_EACH_REC_6(fn, __VA_ARGS__)
+
+#define FOLLY_PP_DETAIL_FOR_EACH_2(fn, n, ...) \
+  FOLLY_PP_DETAIL_FOR_EACH_REC_##n(fn, __VA_ARGS__)
+#define FOLLY_PP_DETAIL_FOR_EACH_1(fn, n, ...) \
+  FOLLY_PP_DETAIL_FOR_EACH_2(fn, n, __VA_ARGS__)
+
+/**
+ *  FOLLY_PP_FOR_EACH
+ *
+ *  Used to invoke a preprocessor macro, the name of which is passed as the
+ *  first argument, once for each subsequent variadic argument.
+ *
+ *  At present, supports [0, 8) arguments.
+ *
+ *  This input:
+ *
+ *    #define DOIT(a) go_do_it(a);
+ *    FOLLY_PP_FOR_EACH(DOIT, 3, 5, 7)
+ *    #undef DOIT
+ *
+ *  Expands to this output (with whitespace adjusted for clarity):
+ *
+ *    go_do_it(3);
+ *    go_do_it(5);
+ *    go_do_it(7);
+ */
+#define FOLLY_PP_FOR_EACH(fn, ...) \
+  FOLLY_PP_DETAIL_FOR_EACH_1(      \
+      fn, FOLLY_PP_DETAIL_NARGS(__VA_ARGS__), __VA_ARGS__)

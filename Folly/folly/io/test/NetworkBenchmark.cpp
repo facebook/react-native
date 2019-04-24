@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ BENCHMARK(reserveBenchmark, iters) {
   while (iters--) {
     unique_ptr<IOBuf> iobuf1(IOBuf::create(buf_size));
     iobuf1->append(buf_size);
-    for (size_t bufs = num_bufs; bufs > 1; bufs --) {
+    for (size_t bufs = num_bufs; bufs > 1; bufs--) {
       iobuf1->reserve(0, buf_size);
       iobuf1->append(buf_size);
     }
@@ -44,7 +44,7 @@ BENCHMARK(chainBenchmark, iters) {
   while (iters--) {
     unique_ptr<IOBuf> iobuf1(IOBuf::create(buf_size));
     iobuf1->append(buf_size);
-    for (size_t bufs = num_bufs; bufs > 1; bufs --) {
+    for (size_t bufs = num_bufs; bufs > 1; bufs--) {
       unique_ptr<IOBuf> iobufNext(IOBuf::create(buf_size));
       iobuf1->prependChain(std::move(iobufNext));
     }
@@ -76,7 +76,7 @@ inline void poolPutIOBuf(unique_ptr<IOBuf>&& buf) {
 BENCHMARK(poolBenchmark, iters) {
   while (iters--) {
     unique_ptr<IOBuf> head = poolGetIOBuf();
-    for (size_t bufs = num_bufs; bufs > 1; bufs --) {
+    for (size_t bufs = num_bufs; bufs > 1; bufs--) {
       unique_ptr<IOBuf> iobufNext = poolGetIOBuf();
       head->prependChain(std::move(iobufNext));
     }

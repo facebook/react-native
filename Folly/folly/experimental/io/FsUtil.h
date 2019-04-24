@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2012-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,5 +65,5 @@ path canonical_parent(const path& p, const path& basePath = current_path());
  */
 path executable_path();
 
-}  // namespace fs
-}  // namespace folly
+} // namespace fs
+} // namespace folly

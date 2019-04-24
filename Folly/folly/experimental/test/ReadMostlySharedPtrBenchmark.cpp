@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,41 +22,38 @@
 
 #include <folly/Benchmark.h>
 #include <folly/Memory.h>
-#include <folly/experimental/RCURefCount.h>
 #include <folly/portability/GFlags.h>
 
-template <template<typename> class MainPtr,
-          template<typename> class WeakPtr,
-          size_t threadCount>
+template <
+    template <typename> class MainPtr,
+    template <typename> class WeakPtr,
+    size_t threadCount>
 void benchmark(size_t n) {
-  MainPtr<int> mainPtr(folly::make_unique<int>(42));
+  MainPtr<int> mainPtr(std::make_unique<int>(42));
 
   std::vector<std::thread> ts;
 
   for (size_t t = 0; t < threadCount; ++t) {
     ts.emplace_back([&]() {
-        WeakPtr<int> weakPtr(mainPtr);
+      WeakPtr<int> weakPtr(mainPtr);
+      // Prevent the compiler from hoisting code out of the loop.
+      auto op = [&]() FOLLY_NOINLINE { weakPtr.lock(); };
 
-        for (size_t i = 0; i < n; ++i) {
-          weakPtr.lock();
-        }
-      });
+      for (size_t i = 0; i < n; ++i) {
+        op();
+      }
+    });
   }
 
-  for (auto& t: ts) {
+  for (auto& t : ts) {
     t.join();
   }
 }
 
 template <typename T>
-using RCUMainPtr = folly::ReadMostlyMainPtr<T, folly::RCURefCount>;
-template <typename T>
-using RCUWeakPtr = folly::ReadMostlyWeakPtr<T, folly::RCURefCount>;
-template <typename T>
 using TLMainPtr = folly::ReadMostlyMainPtr<T, folly::TLRefCount>;
 template <typename T>
 using TLWeakPtr = folly::ReadMostlyWeakPtr<T, folly::TLRefCount>;
-
 
 BENCHMARK(WeakPtrOneThread, n) {
   benchmark<std::shared_ptr, std::weak_ptr, 1>(n);
@@ -64,14 +61,6 @@ BENCHMARK(WeakPtrOneThread, n) {
 
 BENCHMARK(WeakPtrFourThreads, n) {
   benchmark<std::shared_ptr, std::weak_ptr, 4>(n);
-}
-
-BENCHMARK(RCUReadMostlyWeakPtrOneThread, n) {
-  benchmark<RCUMainPtr, RCUWeakPtr, 1>(n);
-}
-
-BENCHMARK(RCUReadMostlyWeakPtrFourThreads, n) {
-  benchmark<RCUMainPtr, RCUWeakPtr, 4>(n);
 }
 
 BENCHMARK(TLReadMostlyWeakPtrOneThread, n) {
@@ -85,8 +74,7 @@ BENCHMARK(TLReadMostlyWeakPtrFourThreads, n) {
 int main(int argc, char** argv) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   gflags::SetCommandLineOptionWithMode(
-    "bm_min_usec", "100000", gflags::SET_FLAG_IF_DEFAULT
-  );
+      "bm_min_usec", "100000", gflags::SET_FLAG_IF_DEFAULT);
 
   folly::runBenchmarks();
 

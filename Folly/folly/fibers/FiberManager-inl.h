@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,40 +15,39 @@
  */
 #pragma once
 
+#include <folly/functional/Invoke.h>
 #include <folly/futures/Promise.h>
 
 namespace folly {
 namespace fibers {
 
 template <typename F>
-auto FiberManager::addTaskFuture(F&& func) -> folly::Future<
-    typename folly::Unit::Lift<typename std::result_of<F()>::type>::type> {
-  using T = typename std::result_of<F()>::type;
-  using FutureT = typename folly::Unit::Lift<T>::type;
+auto FiberManager::addTaskFuture(F&& func)
+    -> folly::Future<typename folly::lift_unit<invoke_result_t<F>>::type> {
+  using T = invoke_result_t<F>;
+  using FutureT = typename folly::lift_unit<T>::type;
 
   folly::Promise<FutureT> p;
   auto f = p.getFuture();
   addTaskFinally(
       [func = std::forward<F>(func)]() mutable { return func(); },
-      [p = std::move(p)](folly::Try<T> && t) mutable {
+      [p = std::move(p)](folly::Try<T>&& t) mutable {
         p.setTry(std::move(t));
       });
   return f;
 }
 
 template <typename F>
-auto FiberManager::addTaskRemoteFuture(F&& func) -> folly::Future<
-    typename folly::Unit::Lift<typename std::result_of<F()>::type>::type> {
-  folly::Promise<
-      typename folly::Unit::Lift<typename std::result_of<F()>::type>::type>
-      p;
+auto FiberManager::addTaskRemoteFuture(F&& func)
+    -> folly::Future<typename folly::lift_unit<invoke_result_t<F>>::type> {
+  folly::Promise<typename folly::lift_unit<invoke_result_t<F>>::type> p;
   auto f = p.getFuture();
   addTaskRemote(
-      [ p = std::move(p), func = std::forward<F>(func), this ]() mutable {
+      [p = std::move(p), func = std::forward<F>(func), this]() mutable {
         auto t = folly::makeTryWith(std::forward<F>(func));
         runInMainContext([&]() { p.setTry(std::move(t)); });
       });
   return f;
 }
-}
-}
+} // namespace fibers
+} // namespace folly

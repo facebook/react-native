@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 #pragma once
 
-#include <stdlib.h>
+#include <folly/Memory.h> // @shim
 
 namespace folly {
 namespace detail {
-void* aligned_malloc(size_t size, size_t align);
-void aligned_free(void* aligned_ptr);
-}
-}
+using folly::aligned_free;
+using folly::aligned_malloc;
+} // namespace detail
+} // namespace folly

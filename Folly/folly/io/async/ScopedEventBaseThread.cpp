@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,35 +19,56 @@
 #include <thread>
 
 #include <folly/Function.h>
+#include <folly/Range.h>
 #include <folly/io/async/EventBaseManager.h>
+#include <folly/system/ThreadName.h>
 
 using namespace std;
 
 namespace folly {
 
-static void run(EventBaseManager* ebm, EventBase* eb) {
+static void run(
+    EventBaseManager* ebm,
+    EventBase* eb,
+    folly::Baton<>* stop,
+    const StringPiece& name) {
+  if (name.size()) {
+    folly::setThreadName(name);
+  }
+
   ebm->setEventBase(eb, false);
   eb->loopForever();
 
   // must destruct in io thread for on-destruction callbacks
   EventBase::StackFunctionLoopCallback cb([=] { ebm->clearEventBase(); });
   eb->runOnDestruction(&cb);
+  // wait until terminateLoopSoon() is complete
+  stop->wait();
   eb->~EventBase();
 }
 
 ScopedEventBaseThread::ScopedEventBaseThread()
-    : ScopedEventBaseThread(nullptr) {}
+    : ScopedEventBaseThread(nullptr, "") {}
+
+ScopedEventBaseThread::ScopedEventBaseThread(const StringPiece& name)
+    : ScopedEventBaseThread(nullptr, name) {}
 
 ScopedEventBaseThread::ScopedEventBaseThread(EventBaseManager* ebm)
+    : ScopedEventBaseThread(ebm, "") {}
+
+ScopedEventBaseThread::ScopedEventBaseThread(
+    EventBaseManager* ebm,
+    const StringPiece& name)
     : ebm_(ebm ? ebm : EventBaseManager::get()) {
   new (&eb_) EventBase();
-  th_ = thread(run, ebm_, &eb_);
+  th_ = thread(run, ebm_, &eb_, &stop_, name);
   eb_.waitUntilRunning();
 }
 
 ScopedEventBaseThread::~ScopedEventBaseThread() {
   eb_.terminateLoopSoon();
+  stop_.post();
   th_.join();
 }
 
-}
+} // namespace folly

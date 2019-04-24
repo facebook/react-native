@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,13 +27,12 @@ class SSLSession {
  public:
   // Holds and takes ownership of an SSL_SESSION object by incrementing refcount
   explicit SSLSession(SSL_SESSION* session, bool takeOwnership = true)
-      : impl_(folly::make_unique<detail::SSLSessionImpl>(
-            session,
-            takeOwnership)) {}
+      : impl_(
+            std::make_unique<detail::SSLSessionImpl>(session, takeOwnership)) {}
 
   // Deserialize from a string
   explicit SSLSession(const std::string& serializedSession)
-      : impl_(folly::make_unique<detail::SSLSessionImpl>(serializedSession)) {}
+      : impl_(std::make_unique<detail::SSLSessionImpl>(serializedSession)) {}
 
   // Serialize to a string that is suitable to store in a persistent cache
   std::string serialize() const {

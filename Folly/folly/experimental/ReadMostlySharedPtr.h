@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,10 +83,8 @@ class ReadMostlySharedPtrCore {
   friend class ReadMostlyMainPtr<T, RefCount>;
   friend class ReadMostlyMainPtrDeleter<RefCount>;
 
-  explicit ReadMostlySharedPtrCore(std::shared_ptr<T> ptr) :
-      ptrRaw_(ptr.get()),
-      ptr_(std::move(ptr)) {
-  }
+  explicit ReadMostlySharedPtrCore(std::shared_ptr<T> ptr)
+      : ptrRaw_(ptr.get()), ptr_(std::move(ptr)) {}
 
   T* ptrRaw_;
   RefCount count_;
@@ -94,13 +92,12 @@ class ReadMostlySharedPtrCore {
   std::shared_ptr<T> ptr_;
 };
 
-}
+} // namespace detail
 
 template <typename T, typename RefCount = DefaultRefCount>
 class ReadMostlyMainPtr {
  public:
-  ReadMostlyMainPtr() {
-  }
+  ReadMostlyMainPtr() {}
 
   explicit ReadMostlyMainPtr(std::shared_ptr<T> ptr) {
     reset(std::move(ptr));
@@ -451,4 +448,4 @@ inline bool operator!=(
     const ReadMostlySharedPtr<T, RefCount>& ptr) {
   return !(ptr == nullptr);
 }
-}
+} // namespace folly

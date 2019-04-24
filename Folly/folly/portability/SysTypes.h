@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,14 @@
 #include <sys/types.h>
 
 #ifdef _WIN32
-#include <basetsd.h>
+#include <basetsd.h> // @manual
 
 #define HAVE_MODE_T 1
 
-// This is actually defined in our pthread implementation on
-// Windows, but we don't want to include all of that just for this.
-using pid_t = void*;
+// This is a massive pain to have be an `int` due to the pthread implementation
+// we support, but it's far more compatible with the rest of the windows world
+// as an `int` than it would be as a `void*`
+using pid_t = int;
 // This isn't actually supposed to be defined here, but it's the most
 // appropriate place without defining a portability header for stdint.h
 // with just this single typedef.

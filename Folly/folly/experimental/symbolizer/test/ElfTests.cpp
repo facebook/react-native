@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+#include <folly/FileUtil.h>
+#include <folly/experimental/TestUtil.h>
 #include <folly/experimental/symbolizer/Elf.h>
 #include <folly/portability/GTest.h>
 
@@ -25,39 +27,52 @@ uint64_t kIntegerValue = 1234567890UL;
 const char* kStringValue = "coconuts";
 
 class ElfTest : public ::testing::Test {
- public:
-  // Path to the test binary itself; set by main()
-  static std::string binaryPath;
-
-  ElfTest() : elfFile_(binaryPath.c_str()) {
-  }
-  ~ElfTest() override {}
-
  protected:
-  ElfFile elfFile_;
+  ElfFile elfFile_{"/proc/self/exe"};
 };
-
-std::string ElfTest::binaryPath;
 
 TEST_F(ElfTest, IntegerValue) {
   auto sym = elfFile_.getSymbolByName("kIntegerValue");
-  EXPECT_NE(nullptr, sym.first) <<
-    "Failed to look up symbol kIntegerValue";
+  EXPECT_NE(nullptr, sym.first) << "Failed to look up symbol kIntegerValue";
   EXPECT_EQ(kIntegerValue, elfFile_.getSymbolValue<uint64_t>(sym.second));
 }
 
 TEST_F(ElfTest, PointerValue) {
   auto sym = elfFile_.getSymbolByName("kStringValue");
-  EXPECT_NE(nullptr, sym.first) <<
-    "Failed to look up symbol kStringValue";
+  EXPECT_NE(nullptr, sym.first) << "Failed to look up symbol kStringValue";
   ElfW(Addr) addr = elfFile_.getSymbolValue<ElfW(Addr)>(sym.second);
-  const char *str = &elfFile_.getAddressValue<const char>(addr);
+  const char* str = &elfFile_.getAddressValue<const char>(addr);
   EXPECT_STREQ(kStringValue, str);
 }
 
-int main(int argc, char** argv) {
-  testing::InitGoogleTest(&argc, argv);
-  gflags::ParseCommandLineFlags(&argc, &argv, true);
-  ElfTest::binaryPath = argv[0];
-  return RUN_ALL_TESTS();
+TEST_F(ElfTest, iterateProgramHeaders) {
+  auto phdr = elfFile_.iterateProgramHeaders(
+      [](auto& h) { return h.p_type == PT_LOAD; });
+  EXPECT_NE(nullptr, phdr);
+  EXPECT_GE(phdr->p_filesz, 0);
+}
+
+TEST_F(ElfTest, TinyNonElfFile) {
+  folly::test::TemporaryFile tmpFile;
+  const static folly::StringPiece contents = "!";
+  folly::writeFull(tmpFile.fd(), contents.data(), contents.size());
+
+  ElfFile elfFile;
+  const char* msg = nullptr;
+  auto res = elfFile.openNoThrow(tmpFile.path().c_str(), true, &msg);
+  EXPECT_EQ(ElfFile::kInvalidElfFile, res);
+  EXPECT_STREQ("not an ELF file (too short)", msg);
+}
+
+TEST_F(ElfTest, NonElfScript) {
+  folly::test::TemporaryFile tmpFile;
+  const static folly::StringPiece contents =
+      "#!/bin/sh\necho I'm small non-ELF executable\n";
+  folly::writeFull(tmpFile.fd(), contents.data(), contents.size());
+
+  ElfFile elfFile;
+  const char* msg = nullptr;
+  auto res = elfFile.openNoThrow(tmpFile.path().c_str(), true, &msg);
+  EXPECT_EQ(ElfFile::kInvalidElfFile, res);
+  EXPECT_STREQ("invalid ELF magic", msg);
 }

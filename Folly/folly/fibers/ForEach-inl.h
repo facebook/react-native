@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include <folly/fibers/FiberManagerInternal.h>
+#include <folly/functional/Invoke.h>
 
 namespace folly {
 namespace fibers {
@@ -21,21 +23,19 @@ namespace fibers {
 namespace {
 
 template <class F, class G>
-typename std::enable_if<
-    !std::is_same<typename std::result_of<F()>::type, void>::value,
-    void>::type inline callFuncs(F&& f, G&& g, size_t id) {
+typename std::enable_if<!std::is_same<invoke_result_t<F>, void>::value, void>::
+    type inline callFuncs(F&& f, G&& g, size_t id) {
   g(id, f());
 }
 
 template <class F, class G>
-typename std::enable_if<
-    std::is_same<typename std::result_of<F()>::type, void>::value,
-    void>::type inline callFuncs(F&& f, G&& g, size_t id) {
+typename std::enable_if<std::is_same<invoke_result_t<F>, void>::value, void>::
+    type inline callFuncs(F&& f, G&& g, size_t id) {
   f();
   g(id);
 }
 
-} // anonymous namespace
+} // namespace
 
 template <class InputIterator, class F>
 inline void forEach(InputIterator first, InputIterator last, F&& f) {
@@ -49,19 +49,13 @@ inline void forEach(InputIterator first, InputIterator last, F&& f) {
   std::exception_ptr e;
   Baton baton;
 
-#ifdef __clang__
-#pragma clang diagnostic push // ignore generalized lambda capture warning
-#pragma clang diagnostic ignored "-Wc++1y-extensions"
-#endif
   auto taskFunc = [&tasksTodo, &e, &f, &baton](size_t id, FuncType&& func) {
-    return [
-      id,
-      &tasksTodo,
-      &e,
-      &f,
-      &baton,
-      func_ = std::forward<FuncType>(func)
-    ]() mutable {
+    return [id,
+            &tasksTodo,
+            &e,
+            &f,
+            &baton,
+            func_ = std::forward<FuncType>(func)]() mutable {
       try {
         callFuncs(std::forward<FuncType>(func_), f, id);
       } catch (...) {
@@ -72,9 +66,6 @@ inline void forEach(InputIterator first, InputIterator last, F&& f) {
       }
     };
   };
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
 
   auto firstTask = first;
   ++first;
@@ -90,5 +81,5 @@ inline void forEach(InputIterator first, InputIterator last, F&& f) {
     std::rethrow_exception(e);
   }
 }
-}
-} // folly::fibers
+} // namespace fibers
+} // namespace folly

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2011-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,14 @@
 #include <iterator>
 #include <list>
 #include <memory>
+#include <string>
 
+#include <folly/Range.h>
 #include <folly/portability/GMock.h>
 #include <folly/portability/GTest.h>
 
-using folly::sorted_vector_set;
 using folly::sorted_vector_map;
+using folly::sorted_vector_set;
 
 namespace {
 
@@ -35,12 +37,13 @@ struct less_invert {
   }
 };
 
-template<class Container>
+template <class Container>
 void check_invariant(Container& c) {
   auto it = c.begin();
   auto end = c.end();
-  if (it == end)
+  if (it == end) {
     return;
+  }
   auto prev = it;
   ++it;
   for (; it != end; ++it, ++prev) {
@@ -49,7 +52,7 @@ void check_invariant(Container& c) {
 }
 
 struct OneAtATimePolicy {
-  template<class Container>
+  template <class Container>
   void increase_capacity(Container& c) {
     if (c.size() == c.capacity()) {
       c.reserve(c.size() + 1);
@@ -62,10 +65,7 @@ struct CountCopyCtor {
 
   explicit CountCopyCtor(int val) : val_(val), count_(0) {}
 
-  CountCopyCtor(const CountCopyCtor& c)
-    : val_(c.val_)
-    , count_(c.count_ + 1)
-  {}
+  CountCopyCtor(const CountCopyCtor& c) : val_(c.val_), count_(c.count_ + 1) {}
 
   bool operator<(const CountCopyCtor& o) const {
     return val_ < o.val_;
@@ -75,6 +75,47 @@ struct CountCopyCtor {
   int count_;
 };
 
+struct Opaque {
+  int value;
+  friend bool operator==(Opaque a, Opaque b) {
+    return a.value == b.value;
+  }
+  friend bool operator<(Opaque a, Opaque b) {
+    return a.value < b.value;
+  }
+  struct Compare : std::less<int>, std::less<Opaque> {
+    using is_transparent = void;
+    using std::less<int>::operator();
+    using std::less<Opaque>::operator();
+    bool operator()(int a, Opaque b) const {
+      return std::less<int>::operator()(a, b.value);
+    }
+    bool operator()(Opaque a, int b) const {
+      return std::less<int>::operator()(a.value, b);
+    }
+  };
+};
+
+} // namespace
+
+TEST(SortedVectorTypes, SetAssignmentInitListTest) {
+  sorted_vector_set<int> s{3, 4, 5};
+  EXPECT_THAT(s, testing::ElementsAreArray({3, 4, 5}));
+  s = {}; // empty ilist assignment
+  EXPECT_THAT(s, testing::IsEmpty());
+  s = {7, 8, 9}; // non-empty ilist assignment
+  EXPECT_THAT(s, testing::ElementsAreArray({7, 8, 9}));
+}
+
+TEST(SortedVectorTypes, MapAssignmentInitListTest) {
+  using v = std::pair<int, const char*>;
+  v p = {3, "a"}, q = {4, "b"}, r = {5, "c"};
+  sorted_vector_map<int, const char*> m{p, q, r};
+  EXPECT_THAT(m, testing::ElementsAreArray({p, q, r}));
+  m = {}; // empty ilist assignment
+  EXPECT_THAT(m, testing::IsEmpty());
+  m = {p, q, r}; // non-empty ilist assignment
+  EXPECT_THAT(m, testing::ElementsAreArray({p, q, r}));
 }
 
 TEST(SortedVectorTypes, SimpleSetTest) {
@@ -144,8 +185,72 @@ TEST(SortedVectorTypes, SimpleSetTest) {
   EXPECT_TRUE(cpy2 == cpy);
 }
 
+TEST(SortedVectorTypes, TransparentSetTest) {
+  using namespace folly::string_piece_literals;
+  using Compare = folly::transparent<std::less<folly::StringPiece>>;
+
+  constexpr auto buddy = "buddy"_sp;
+  constexpr auto hello = "hello"_sp;
+  constexpr auto stake = "stake"_sp;
+  constexpr auto world = "world"_sp;
+  constexpr auto zebra = "zebra"_sp;
+
+  sorted_vector_set<std::string, Compare> const s({hello.str(), world.str()});
+
+  // find
+  EXPECT_TRUE(s.end() == s.find(buddy));
+  EXPECT_EQ(hello, *s.find(hello));
+  EXPECT_TRUE(s.end() == s.find(stake));
+  EXPECT_EQ(world, *s.find(world));
+  EXPECT_TRUE(s.end() == s.find(zebra));
+
+  // count
+  EXPECT_EQ(0, s.count(buddy));
+  EXPECT_EQ(1, s.count(hello));
+  EXPECT_EQ(0, s.count(stake));
+  EXPECT_EQ(1, s.count(world));
+  EXPECT_EQ(0, s.count(zebra));
+
+  // lower_bound
+  EXPECT_TRUE(s.find(hello) == s.lower_bound(buddy));
+  EXPECT_TRUE(s.find(hello) == s.lower_bound(hello));
+  EXPECT_TRUE(s.find(world) == s.lower_bound(stake));
+  EXPECT_TRUE(s.find(world) == s.lower_bound(world));
+  EXPECT_TRUE(s.end() == s.lower_bound(zebra));
+
+  // upper_bound
+  EXPECT_TRUE(s.find(hello) == s.upper_bound(buddy));
+  EXPECT_TRUE(s.find(world) == s.upper_bound(hello));
+  EXPECT_TRUE(s.find(world) == s.upper_bound(stake));
+  EXPECT_TRUE(s.end() == s.upper_bound(world));
+  EXPECT_TRUE(s.end() == s.upper_bound(zebra));
+
+  // equal_range
+  for (auto value : {buddy, hello, stake, world, zebra}) {
+    EXPECT_TRUE(
+        std::make_pair(s.lower_bound(value), s.upper_bound(value)) ==
+        s.equal_range(value))
+        << value;
+  }
+}
+
+TEST(SortedVectorTypes, BadHints) {
+  for (int toInsert = -1; toInsert <= 7; ++toInsert) {
+    for (int hintPos = 0; hintPos <= 4; ++hintPos) {
+      sorted_vector_set<int> s;
+      for (int i = 0; i <= 3; ++i) {
+        s.insert(i * 2);
+      }
+      s.insert(s.begin() + hintPos, toInsert);
+      size_t expectedSize = (toInsert % 2) == 0 ? 4 : 5;
+      EXPECT_EQ(s.size(), expectedSize);
+      check_invariant(s);
+    }
+  }
+}
+
 TEST(SortedVectorTypes, SimpleMapTest) {
-  sorted_vector_map<int,float> m;
+  sorted_vector_map<int, float> m;
   for (int i = 0; i < 1000; ++i) {
     m[i] = i / 1000.0;
   }
@@ -161,7 +266,7 @@ TEST(SortedVectorTypes, SimpleMapTest) {
   check_invariant(m);
   EXPECT_THROW(m.at(32), std::out_of_range);
 
-  sorted_vector_map<int,float> m2 = m;
+  sorted_vector_map<int, float> m2 = m;
   EXPECT_TRUE(m2 == m);
   EXPECT_FALSE(m2 != m);
   auto it = m2.lower_bound(1 << 20);
@@ -172,7 +277,7 @@ TEST(SortedVectorTypes, SimpleMapTest) {
   EXPECT_TRUE(m < m2);
   EXPECT_TRUE(m <= m2);
 
-  const sorted_vector_map<int,float>& cm = m;
+  const sorted_vector_map<int, float>& cm = m;
   auto range = cm.equal_range(42);
   auto lbound = cm.lower_bound(42);
   auto ubound = cm.upper_bound(42);
@@ -183,7 +288,7 @@ TEST(SortedVectorTypes, SimpleMapTest) {
   m.erase(m.lower_bound(42));
   check_invariant(m);
 
-  sorted_vector_map<int,float> m3;
+  sorted_vector_map<int, float> m3;
   m3.insert(m2.begin(), m2.end());
   check_invariant(m3);
   EXPECT_TRUE(m3 == m2);
@@ -205,19 +310,78 @@ TEST(SortedVectorTypes, SimpleMapTest) {
   check_invariant(m);
 }
 
-TEST(SortedVectorTypes, Sizes) {
-  EXPECT_EQ(sizeof(sorted_vector_set<int>),
-            sizeof(std::vector<int>));
-  EXPECT_EQ(sizeof(sorted_vector_map<int,int>),
-            sizeof(std::vector<std::pair<int,int> >));
+TEST(SortedVectorTypes, TransparentMapTest) {
+  using namespace folly::string_piece_literals;
+  using Compare = folly::transparent<std::less<folly::StringPiece>>;
 
-  typedef sorted_vector_set<int,std::less<int>,
-    std::allocator<int>,OneAtATimePolicy> SetT;
-  typedef sorted_vector_map<int,int,std::less<int>,
-    std::allocator<std::pair<int,int>>,OneAtATimePolicy> MapT;
+  constexpr auto buddy = "buddy"_sp;
+  constexpr auto hello = "hello"_sp;
+  constexpr auto stake = "stake"_sp;
+  constexpr auto world = "world"_sp;
+  constexpr auto zebra = "zebra"_sp;
+
+  sorted_vector_map<std::string, float, Compare> const m(
+      {{hello.str(), -1.}, {world.str(), +1.}});
+
+  // find
+  EXPECT_TRUE(m.end() == m.find(buddy));
+  EXPECT_EQ(hello, m.find(hello)->first);
+  EXPECT_TRUE(m.end() == m.find(stake));
+  EXPECT_EQ(world, m.find(world)->first);
+  EXPECT_TRUE(m.end() == m.find(zebra));
+
+  // count
+  EXPECT_EQ(0, m.count(buddy));
+  EXPECT_EQ(1, m.count(hello));
+  EXPECT_EQ(0, m.count(stake));
+  EXPECT_EQ(1, m.count(world));
+  EXPECT_EQ(0, m.count(zebra));
+
+  // lower_bound
+  EXPECT_TRUE(m.find(hello) == m.lower_bound(buddy));
+  EXPECT_TRUE(m.find(hello) == m.lower_bound(hello));
+  EXPECT_TRUE(m.find(world) == m.lower_bound(stake));
+  EXPECT_TRUE(m.find(world) == m.lower_bound(world));
+  EXPECT_TRUE(m.end() == m.lower_bound(zebra));
+
+  // upper_bound
+  EXPECT_TRUE(m.find(hello) == m.upper_bound(buddy));
+  EXPECT_TRUE(m.find(world) == m.upper_bound(hello));
+  EXPECT_TRUE(m.find(world) == m.upper_bound(stake));
+  EXPECT_TRUE(m.end() == m.upper_bound(world));
+  EXPECT_TRUE(m.end() == m.upper_bound(zebra));
+
+  // equal_range
+  for (auto value : {buddy, hello, stake, world, zebra}) {
+    EXPECT_TRUE(
+        std::make_pair(m.lower_bound(value), m.upper_bound(value)) ==
+        m.equal_range(value))
+        << value;
+  }
+}
+
+TEST(SortedVectorTypes, Sizes) {
+  EXPECT_EQ(sizeof(sorted_vector_set<int>), sizeof(std::vector<int>));
+  EXPECT_EQ(
+      sizeof(sorted_vector_map<int, int>),
+      sizeof(std::vector<std::pair<int, int>>));
+
+  typedef sorted_vector_set<
+      int,
+      std::less<int>,
+      std::allocator<int>,
+      OneAtATimePolicy>
+      SetT;
+  typedef sorted_vector_map<
+      int,
+      int,
+      std::less<int>,
+      std::allocator<std::pair<int, int>>,
+      OneAtATimePolicy>
+      MapT;
 
   EXPECT_EQ(sizeof(SetT), sizeof(std::vector<int>));
-  EXPECT_EQ(sizeof(MapT), sizeof(std::vector<std::pair<int,int> >));
+  EXPECT_EQ(sizeof(MapT), sizeof(std::vector<std::pair<int, int>>));
 }
 
 TEST(SortedVectorTypes, InitializerLists) {
@@ -235,15 +399,15 @@ TEST(SortedVectorTypes, InitializerLists) {
   EXPECT_EQ(2, *forward_initialized_set.rbegin());
   EXPECT_TRUE(forward_initialized_set == backward_initialized_set);
 
-  sorted_vector_map<int,int> empty_initialized_map{};
+  sorted_vector_map<int, int> empty_initialized_map{};
   EXPECT_TRUE(empty_initialized_map.empty());
 
-  sorted_vector_map<int,int> singleton_initialized_map{{1,10}};
+  sorted_vector_map<int, int> singleton_initialized_map{{1, 10}};
   EXPECT_EQ(1, singleton_initialized_map.size());
   EXPECT_EQ(10, singleton_initialized_map[1]);
 
-  sorted_vector_map<int,int> forward_initialized_map{{1,10}, {2,20}};
-  sorted_vector_map<int,int> backward_initialized_map{{2,20}, {1,10}};
+  sorted_vector_map<int, int> forward_initialized_map{{1, 10}, {2, 20}};
+  sorted_vector_map<int, int> backward_initialized_map{{2, 20}, {1, 10}};
   EXPECT_EQ(2, forward_initialized_map.size());
   EXPECT_EQ(10, forward_initialized_map[1]);
   EXPECT_EQ(20, forward_initialized_map[2]);
@@ -251,23 +415,26 @@ TEST(SortedVectorTypes, InitializerLists) {
 }
 
 TEST(SortedVectorTypes, CustomCompare) {
-  sorted_vector_set<int,less_invert<int> > s;
-  for (int i = 0; i < 200; ++i)
+  sorted_vector_set<int, less_invert<int>> s;
+  for (int i = 0; i < 200; ++i) {
     s.insert(i);
+  }
   check_invariant(s);
 
-  sorted_vector_map<int,float,less_invert<int> > m;
-  for (int i = 0; i < 200; ++i)
+  sorted_vector_map<int, float, less_invert<int>> m;
+  for (int i = 0; i < 200; ++i) {
     m[i] = 12.0;
+  }
   check_invariant(m);
 }
 
 TEST(SortedVectorTypes, GrowthPolicy) {
-  typedef sorted_vector_set<CountCopyCtor,
-                            std::less<CountCopyCtor>,
-                            std::allocator<CountCopyCtor>,
-                            OneAtATimePolicy>
-    SetT;
+  typedef sorted_vector_set<
+      CountCopyCtor,
+      std::less<CountCopyCtor>,
+      std::allocator<CountCopyCtor>,
+      OneAtATimePolicy>
+      SetT;
 
   SetT a;
   for (int i = 0; i < 20; ++i) {
@@ -304,7 +471,7 @@ TEST(SortedVectorTest, EmptyTest) {
   EXPECT_TRUE(emptySet.lower_bound(10) == emptySet.end());
   EXPECT_TRUE(emptySet.find(10) == emptySet.end());
 
-  sorted_vector_map<int,int> emptyMap;
+  sorted_vector_map<int, int> emptyMap;
   EXPECT_TRUE(emptyMap.lower_bound(10) == emptyMap.end());
   EXPECT_TRUE(emptyMap.find(10) == emptyMap.end());
   EXPECT_THROW(emptyMap.at(10), std::out_of_range);
@@ -312,8 +479,8 @@ TEST(SortedVectorTest, EmptyTest) {
 
 TEST(SortedVectorTest, MoveTest) {
   sorted_vector_set<std::unique_ptr<int>> s;
-  s.insert(std::unique_ptr<int>(new int(5)));
-  s.insert(s.end(), std::unique_ptr<int>(new int(10)));
+  s.insert(std::make_unique<int>(5));
+  s.insert(s.end(), std::make_unique<int>(10));
   EXPECT_EQ(s.size(), 2);
 
   for (const auto& p : s) {
@@ -321,8 +488,8 @@ TEST(SortedVectorTest, MoveTest) {
   }
 
   sorted_vector_map<int, std::unique_ptr<int>> m;
-  m.insert(std::make_pair(5, std::unique_ptr<int>(new int(5))));
-  m.insert(m.end(), std::make_pair(10, std::unique_ptr<int>(new int(10))));
+  m.insert(std::make_pair(5, std::make_unique<int>(5)));
+  m.insert(m.end(), std::make_pair(10, std::make_unique<int>(10)));
 
   EXPECT_EQ(*m[5], 5);
   EXPECT_EQ(*m[10], 10);
@@ -348,6 +515,56 @@ TEST(SortedVectorTypes, EraseTest) {
   sorted_vector_set<int> s2(s1);
   EXPECT_EQ(0, s1.erase(0));
   EXPECT_EQ(s2, s1);
+}
+
+TEST(SortedVectorTypes, EraseTest2) {
+  sorted_vector_set<int> s;
+  for (int i = 0; i < 1000; ++i) {
+    s.insert(i);
+  }
+
+  auto it = s.lower_bound(32);
+  EXPECT_EQ(*it, 32);
+  it = s.erase(it);
+  EXPECT_NE(s.end(), it);
+  EXPECT_EQ(*it, 33);
+  it = s.erase(it, it + 5);
+  EXPECT_EQ(*it, 38);
+
+  it = s.begin();
+  while (it != s.end()) {
+    if (*it >= 5) {
+      it = s.erase(it);
+    } else {
+      it++;
+    }
+  }
+  EXPECT_EQ(it, s.end());
+  EXPECT_EQ(s.size(), 5);
+
+  sorted_vector_map<int, int> m;
+  for (int i = 0; i < 1000; ++i) {
+    m.insert(std::make_pair(i, i));
+  }
+
+  auto it2 = m.lower_bound(32);
+  EXPECT_EQ(it2->first, 32);
+  it2 = m.erase(it2);
+  EXPECT_NE(m.end(), it2);
+  EXPECT_EQ(it2->first, 33);
+  it2 = m.erase(it2, it2 + 5);
+  EXPECT_EQ(it2->first, 38);
+
+  it2 = m.begin();
+  while (it2 != m.end()) {
+    if (it2->first >= 5) {
+      it2 = m.erase(it2);
+    } else {
+      it2++;
+    }
+  }
+  EXPECT_EQ(it2, m.end());
+  EXPECT_EQ(m.size(), 5);
 }
 
 std::vector<int> extractValues(sorted_vector_set<CountCopyCtor> const& in) {
@@ -386,6 +603,22 @@ TEST(SortedVectorTypes, TestSetBulkInsertionSortMerge) {
   EXPECT_THAT(
       extractValues(vset),
       testing::ElementsAreArray({1, 2, 4, 5, 6, 7, 8, 10}));
+}
+
+TEST(SortedVectorTypes, TestSetBulkInsertionMiddleValuesEqualDuplication) {
+  auto s = makeVectorOfWrappers<CountCopyCtor, int>({4, 6, 8});
+
+  sorted_vector_set<CountCopyCtor> vset(s.begin(), s.end());
+  check_invariant(vset);
+
+  s = makeVectorOfWrappers<CountCopyCtor, int>({8, 10, 12});
+
+  vset.insert(s.begin(), s.end());
+  check_invariant(vset);
+  EXPECT_EQ(vset.rbegin()->count_, 1);
+
+  EXPECT_THAT(
+      extractValues(vset), testing::ElementsAreArray({4, 6, 8, 10, 12}));
 }
 
 TEST(SortedVectorTypes, TestSetBulkInsertionSortMergeDups) {
@@ -553,7 +786,35 @@ TEST(SortedVectorTypes, TestMapCreationFromVector) {
   check_invariant(vmap);
   auto contents = std::vector<std::pair<int, int>>(vmap.begin(), vmap.end());
   auto expected_contents = std::vector<std::pair<int, int>>({
-      {-1, 2}, {0, 3}, {1, 5}, {3, 1}, {5, 3},
+      {-1, 2},
+      {0, 3},
+      {1, 5},
+      {3, 1},
+      {5, 3},
   });
   EXPECT_EQ(contents, expected_contents);
+}
+
+TEST(SortedVectorTypes, TestBulkInsertionWithDuplicatesIntoEmptySet) {
+  sorted_vector_set<int> set;
+  {
+    std::vector<int> const vec = {0, 1, 0, 1};
+    set.insert(vec.begin(), vec.end());
+  }
+  EXPECT_THAT(set, testing::ElementsAreArray({0, 1}));
+}
+
+TEST(SortedVectorTypes, TestDataPointsToFirstElement) {
+  sorted_vector_set<int> set;
+  sorted_vector_map<int, int> map;
+
+  set.insert(0);
+  map[0] = 0;
+  EXPECT_EQ(set.data(), &*set.begin());
+  EXPECT_EQ(map.data(), &*map.begin());
+
+  set.insert(1);
+  map[1] = 1;
+  EXPECT_EQ(set.data(), &*set.begin());
+  EXPECT_EQ(map.data(), &*map.begin());
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 
 #include <unordered_map>
 #include <unordered_set>
+
+#include <glog/logging.h>
 
 namespace folly {
 namespace observer_detail {
@@ -76,5 +78,5 @@ class GraphCycleDetector {
 
   std::unordered_map<NodeId, NodeSet> edges_;
 };
-}
-}
+} // namespace observer_detail
+} // namespace folly

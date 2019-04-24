@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2011-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ namespace folly {
  * An auto-unlink intrusive list hook.
  */
 using IntrusiveListHook = boost::intrusive::list_member_hook<
-      boost::intrusive::link_mode<boost::intrusive::auto_unlink>>;
+    boost::intrusive::link_mode<boost::intrusive::auto_unlink>>;
 
 /**
  * An intrusive list.
@@ -61,7 +61,7 @@ using IntrusiveListHook = boost::intrusive::list_member_hook<
  * The elements stored in the list must contain an IntrusiveListHook member
  * variable.
  */
-template<typename T, IntrusiveListHook T::* PtrToMember>
+template <typename T, IntrusiveListHook T::*PtrToMember>
 using IntrusiveList = boost::intrusive::list<
     T,
     boost::intrusive::member_hook<T, IntrusiveListHook, PtrToMember>,
@@ -71,7 +71,7 @@ using IntrusiveList = boost::intrusive::list<
  * A safe-link intrusive list hook.
  */
 using SafeIntrusiveListHook = boost::intrusive::list_member_hook<
-      boost::intrusive::link_mode<boost::intrusive::safe_link>>;
+    boost::intrusive::link_mode<boost::intrusive::safe_link>>;
 
 /**
  * An intrusive list with const-time size() method.
@@ -109,10 +109,10 @@ using SafeIntrusiveListHook = boost::intrusive::list_member_hook<
  * The elements stored in the list must contain an SafeIntrusiveListHook member
  * variable.
  */
-template<typename T, SafeIntrusiveListHook T::* PtrToMember>
+template <typename T, SafeIntrusiveListHook T::*PtrToMember>
 using CountedIntrusiveList = boost::intrusive::list<
     T,
     boost::intrusive::member_hook<T, SafeIntrusiveListHook, PtrToMember>,
     boost::intrusive::constant_time_size<true>>;
 
-} // folly
+} // namespace folly

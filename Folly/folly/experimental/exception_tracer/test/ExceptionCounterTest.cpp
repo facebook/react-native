@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
+#include <condition_variable>
+#include <mutex>
+#include <sstream>
 #include <stdexcept>
 #include <thread>
-#include <mutex>
-#include <condition_variable>
-#include <sstream>
 
 #include <folly/experimental/exception_tracer/ExceptionCounterLib.h>
 #include <folly/portability/GTest.h>
 
 struct MyException {};
 
+// clang-format off
 [[noreturn]] void bar() {
   throw std::runtime_error("hello");
 }
@@ -36,6 +37,7 @@ struct MyException {};
 [[noreturn]] void baz() {
   foo();
 }
+// clang-format on
 
 using namespace folly::exception_tracer;
 
@@ -111,8 +113,8 @@ TEST(ExceptionCounter, multyThreads) {
 
   {
     std::unique_lock<std::mutex> lock(preparedMutex);
-    preparedBarrier.wait(lock,
-                         [&]() { return preparedThreads == kNumThreads; });
+    preparedBarrier.wait(
+        lock, [&]() { return preparedThreads == kNumThreads; });
   }
 
   auto stats = getExceptionStatistics();

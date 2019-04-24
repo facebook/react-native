@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,9 @@
 
 #include <glog/logging.h>
 
-namespace folly { namespace futures { namespace test {
+namespace folly {
+namespace futures {
+namespace test {
 
 TEST(BarrierTest, Simple) {
   constexpr uint32_t numThreads = 10;
@@ -43,26 +45,24 @@ TEST(BarrierTest, Simple) {
   std::vector<std::thread> threads;
   threads.reserve(numThreads);
   for (uint32_t i = 0; i < numThreads; ++i) {
-    threads.emplace_back([&] () {
+    threads.emplace_back([&]() {
       barrier.wait()
-        .then(
-            [&] (bool v) {
-              std::unique_lock<std::mutex> lock(mutex);
-              b1TrueSeen += uint32_t(v);
-              if (++b1Passed == numThreads) {
-                b1DoneCond.notify_one();
-              }
-              return barrier.wait();
-            })
-        .then(
-            [&] (bool v) {
-              std::unique_lock<std::mutex> lock(mutex);
-              b2TrueSeen += uint32_t(v);
-              if (++b2Passed == numThreads) {
-                b2DoneCond.notify_one();
-              }
-            })
-        .get();
+          .then([&](bool v) {
+            std::unique_lock<std::mutex> lock(mutex);
+            b1TrueSeen += uint32_t(v);
+            if (++b1Passed == numThreads) {
+              b1DoneCond.notify_one();
+            }
+            return barrier.wait();
+          })
+          .then([&](bool v) {
+            std::unique_lock<std::mutex> lock(mutex);
+            b2TrueSeen += uint32_t(v);
+            if (++b2Passed == numThreads) {
+              b2DoneCond.notify_one();
+            }
+          })
+          .get();
     });
   }
 
@@ -112,11 +112,11 @@ TEST(BarrierTest, Random) {
   //
   // At the end, we verify that exactly one future returning true was seen
   // for each iteration.
-  constexpr uint32_t numIterations = 1;
+  static constexpr uint32_t numIterations = 1;
   auto numThreads = folly::Random::rand32(30, 91);
 
   struct ThreadInfo {
-    ThreadInfo() { }
+    ThreadInfo() {}
     std::thread thread;
     uint32_t iteration = 0;
     uint32_t numFutures;
@@ -137,23 +137,21 @@ TEST(BarrierTest, Random) {
 
   for (auto& tinfo : threads) {
     auto pinfo = &tinfo;
-    tinfo.thread = std::thread(
-        [numIterations, pinfo, &barrier] () {
-          std::vector<folly::Future<bool>> futures;
-          futures.reserve(pinfo->numFutures);
-          for (uint32_t i = 0; i < numIterations; ++i, ++pinfo->iteration) {
-            futures.clear();
-            for (uint32_t j = 0; j < pinfo->numFutures; ++j) {
-              futures.push_back(barrier.wait());
-              auto nanos = folly::Random::rand32(10 * 1000 * 1000);
-              /* sleep override */
-              std::this_thread::sleep_for(std::chrono::nanoseconds(nanos));
-            }
-            auto results = folly::collect(futures).get();
-            pinfo->trueSeen[i] =
-              std::count(results.begin(), results.end(), true);
-          }
-        });
+    tinfo.thread = std::thread([pinfo, &barrier] {
+      std::vector<folly::Future<bool>> futures;
+      futures.reserve(pinfo->numFutures);
+      for (uint32_t i = 0; i < numIterations; ++i, ++pinfo->iteration) {
+        futures.clear();
+        for (uint32_t j = 0; j < pinfo->numFutures; ++j) {
+          futures.push_back(barrier.wait());
+          auto nanos = folly::Random::rand32(10 * 1000 * 1000);
+          /* sleep override */
+          std::this_thread::sleep_for(std::chrono::nanoseconds(nanos));
+        }
+        auto results = folly::collect(futures).get();
+        pinfo->trueSeen[i] = std::count(results.begin(), results.end(), true);
+      }
+    });
   }
 
   for (auto& tinfo : threads) {
@@ -170,4 +168,6 @@ TEST(BarrierTest, Random) {
   }
 }
 
-}}}  // namespaces
+} // namespace test
+} // namespace futures
+} // namespace folly

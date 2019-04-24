@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#pragma once
 
-#include <folly/io/async/AsyncTransport.h>
-#include <folly/io/async/EventHandler.h>
-#include <folly/io/async/DelayedDestruction.h>
-#include <folly/io/IOBufQueue.h>
+#pragma once
 
 #include <list>
 #include <system_error>
+
+#include <folly/io/IOBufQueue.h>
+#include <folly/io/async/AsyncTransport.h>
+#include <folly/io/async/DelayedDestruction.h>
+#include <folly/io/async/EventHandler.h>
 
 namespace folly {
 
@@ -34,8 +35,9 @@ class AsyncPipeReader : public EventHandler,
                         public AsyncReader,
                         public DelayedDestruction {
  public:
-  typedef std::unique_ptr<AsyncPipeReader,
-                          folly::DelayedDestruction::Destructor> UniquePtr;
+  typedef std::
+      unique_ptr<AsyncPipeReader, folly::DelayedDestruction::Destructor>
+          UniquePtr;
 
   template <typename... Args>
   static UniquePtr newReader(Args&&... args) {
@@ -43,8 +45,7 @@ class AsyncPipeReader : public EventHandler,
   }
 
   AsyncPipeReader(folly::EventBase* eventBase, int pipeFd)
-    : EventHandler(eventBase, pipeFd),
-    fd_(pipeFd) {}
+      : EventHandler(eventBase, pipeFd), fd_(pipeFd) {}
 
   /**
    * Set the read callback and automatically install/uninstall the handler
@@ -77,7 +78,7 @@ class AsyncPipeReader : public EventHandler,
   }
 
  private:
-  ~AsyncPipeReader();
+  ~AsyncPipeReader() override;
 
   void handlerReady(uint16_t events) noexcept override;
   void failRead(const AsyncSocketException& ex);
@@ -95,8 +96,9 @@ class AsyncPipeWriter : public EventHandler,
                         public AsyncWriter,
                         public DelayedDestruction {
  public:
-  typedef std::unique_ptr<AsyncPipeWriter,
-                          folly::DelayedDestruction::Destructor> UniquePtr;
+  typedef std::
+      unique_ptr<AsyncPipeWriter, folly::DelayedDestruction::Destructor>
+          UniquePtr;
 
   template <typename... Args>
   static UniquePtr newWriter(Args&&... args) {
@@ -104,15 +106,15 @@ class AsyncPipeWriter : public EventHandler,
   }
 
   AsyncPipeWriter(folly::EventBase* eventBase, int pipeFd)
-    : EventHandler(eventBase, pipeFd),
-    fd_(pipeFd) {}
+      : EventHandler(eventBase, pipeFd), fd_(pipeFd) {}
 
   /**
    * Asynchronously write the given iobuf to this pipe, and invoke the callback
    * on success/error.
    */
-  void write(std::unique_ptr<folly::IOBuf> iob,
-             AsyncWriter::WriteCallback* wcb = nullptr);
+  void write(
+      std::unique_ptr<folly::IOBuf> iob,
+      AsyncWriter::WriteCallback* wcb = nullptr);
 
   /**
    * Set a special hook to close the socket (otherwise, will call close())
@@ -147,21 +149,24 @@ class AsyncPipeWriter : public EventHandler,
   }
 
   // AsyncWriter methods
-  void write(folly::AsyncWriter::WriteCallback* callback,
-             const void* buf,
-             size_t bytes,
-             WriteFlags flags = WriteFlags::NONE) override {
+  void write(
+      folly::AsyncWriter::WriteCallback* callback,
+      const void* buf,
+      size_t bytes,
+      WriteFlags flags = WriteFlags::NONE) override {
     writeChain(callback, IOBuf::wrapBuffer(buf, bytes), flags);
   }
-  void writev(folly::AsyncWriter::WriteCallback*,
-              const iovec*,
-              size_t,
-              WriteFlags = WriteFlags::NONE) override {
+  void writev(
+      folly::AsyncWriter::WriteCallback*,
+      const iovec*,
+      size_t,
+      WriteFlags = WriteFlags::NONE) override {
     throw std::runtime_error("writev is not supported. Please use writeChain.");
   }
-  void writeChain(folly::AsyncWriter::WriteCallback* callback,
-                  std::unique_ptr<folly::IOBuf>&& buf,
-                  WriteFlags flags = WriteFlags::NONE) override;
+  void writeChain(
+      folly::AsyncWriter::WriteCallback* callback,
+      std::unique_ptr<folly::IOBuf>&& buf,
+      WriteFlags flags = WriteFlags::NONE) override;
 
  private:
   void handlerReady(uint16_t events) noexcept override;
@@ -173,9 +178,9 @@ class AsyncPipeWriter : public EventHandler,
   bool closeOnEmpty_{false};
   std::function<void(int)> closeCb_;
 
-  ~AsyncPipeWriter() {
+  ~AsyncPipeWriter() override {
     closeNow();
   }
 };
 
-} // folly
+} // namespace folly

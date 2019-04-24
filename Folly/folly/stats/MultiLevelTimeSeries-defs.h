@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,7 +113,7 @@ void MultiLevelTimeSeries<VT, CT>::flush() {
 
 template <typename VT, typename CT>
 void MultiLevelTimeSeries<VT, CT>::clear() {
-  for (auto & level : levels_) {
+  for (auto& level : levels_) {
     level.clear();
   }
 
@@ -122,4 +122,4 @@ void MultiLevelTimeSeries<VT, CT>::clear() {
   cachedCount_ = 0;
 }
 
-}  // folly
+} // namespace folly

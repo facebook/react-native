@@ -128,7 +128,7 @@ critical sections:
     void RequestHandler::processRequest(const Request& request) {
       stop_watch<> watch;
       checkRequestValidity(request);
-      requestQueue_.withWLock([](auto& queue) {
+      requestQueue_.withWLock([&](auto& queue) {
         // withWLock() automatically holds the lock for the
         // duration of this lambda function
         queue.push_back(request);
@@ -198,27 +198,26 @@ takes an object of type `T` and copies it. For example:
 
 #### Assignment, swap, and copying
 
-The canonical assignment operator locks both objects involved and
-then copies the underlying data objects. The mutexes are not
-copied. The locks are acquired in increasing address order, so
-deadlock is avoided. For example, there is no problem if one
-thread assigns `a = b` and the other assigns `b = a` (other than
-that design probably deserving a Razzie award). Similarly, the
-`swap` method takes a reference to another `Synchronized<T>`
-object and swaps the data. Again, locks are acquired in a well-
-defined order. The mutexes are not swapped.
+The copy assignment operator copies the underlying source data
+into a temporary with the source mutex locked, and then move the
+temporary into the destination data with the destination mutex
+locked. This technique avoids the need to lock both mutexes at
+the same time. Mutexes are not copied or moved.
 
-An additional assignment operator accepts a `const T&` on the
-right-hand side. The operator copies the datum inside a
-critical section.
+The move assignment operator assumes the source object is a true
+rvalue and does lock lock the source mutex. It moves the source
+data into the destination data with the destination mutex locked.
 
-In addition to assignment operators, `Synchronized<T>` has move
-assignment operators.
+`swap` acquires locks on both mutexes in increasing order of
+object address, and then swaps the underlying data. This avoids
+potential deadlock, which may otherwise happen should one thread
+do `a = b` while another thread does `b = a`.
 
-An additional `swap` method accepts a `T&` and swaps the data
-inside a critical section. This is by far the preferred method of
-changing the guarded datum wholesale because it keeps the lock
-only for a short time, thus lowering the pressure on the mutex.
+The data copy assignment operator copies the parameter into the
+destination data while the destination mutex is locked.
+
+The data move assignment operator moves the parameter into the
+destination data while the destination mutex is locked.
 
 To get a copy of the guarded data, there are two methods
 available: `void copy(T*)` and `T copy()`. The first copies data
