@@ -9,7 +9,7 @@ package com.facebook.yoga;
 import com.facebook.proguard.annotations.DoNotStrip;
 import java.util.ArrayList;
 import java.util.List;
-import androidx.annotation.Nullable;
+import javax.annotation.Nullable;
 
 @DoNotStrip
 public abstract class YogaNodeJNIBase extends YogaNode implements Cloneable {
