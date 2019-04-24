@@ -141,7 +141,6 @@
     "mkdirp": "^0.5.1",
     "prettier": "1.16.4",
     "react": "16.8.3",
-    "react-native-dummy": "0.2.0",
     "react-test-renderer": "16.8.3",
     "shelljs": "^0.7.8",
     "yargs": "^9.0.0",
