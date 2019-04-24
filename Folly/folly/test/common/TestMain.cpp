@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 #include <folly/init/Init.h>
 
+#include <folly/Portability.h>
+#include <folly/portability/GFlags.h>
 #include <folly/portability/GTest.h>
 
 /*
@@ -23,13 +25,17 @@
  * The Makefile links it into all of the test programs so that tests do not need
  * to - and indeed should typically not - define their own main() functions
  */
-#if !defined(_MSC_VER)
-int main(int argc, char** argv) __attribute__((__weak__));
-#endif
+FOLLY_ATTR_WEAK int main(int argc, char** argv);
 
 int main(int argc, char** argv) {
+#if FOLLY_HAVE_LIBGFLAGS
+  // Enable glog logging to stderr by default.
+  gflags::SetCommandLineOptionWithMode(
+      "logtostderr", "1", gflags::SET_FLAGS_DEFAULT);
+#endif
+
   ::testing::InitGoogleTest(&argc, argv);
-  // TODO Hx: folly::init is required for parts of folly we aren't currently using (and don't compile yet).
-  //folly::init(&argc, &argv);
+  folly::Init init(&argc, &argv);
+
   return RUN_ALL_TESTS();
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "Bser.h"
-#include <folly/io/Cursor.h>
+
+#include <folly/experimental/bser/Bser.h>
+
 #include <folly/String.h>
+#include <folly/io/Cursor.h>
 
 using namespace folly;
 using folly::io::Cursor;
@@ -26,10 +28,11 @@ static dynamic parseBser(Cursor& curs);
 
 template <typename... ARGS>
 [[noreturn]] static void throwDecodeError(Cursor& curs, ARGS&&... args) {
-  throw BserDecodeError(folly::to<std::string>(std::forward<ARGS>(args)...,
-                                               " with ",
-                                               curs.length(),
-                                               " bytes remaining in cursor"));
+  throw BserDecodeError(folly::to<std::string>(
+      std::forward<ARGS>(args)...,
+      " with ",
+      curs.length(),
+      " bytes remaining in cursor"));
 }
 
 static int64_t decodeInt(Cursor& curs) {
@@ -56,25 +59,24 @@ static std::string decodeString(Cursor& curs) {
   if (len < 0) {
     throw std::range_error("string length must not be negative");
   }
-  str.reserve(size_t(len));
 
-  size_t available = curs.length();
-  while (available < (size_t)len) {
-    if (available == 0) {
-      // Saw this case when we decodeHeader was returning the incorrect length
-      // and we were splitting off too few bytes from the IOBufQueue
-      throwDecodeError(curs,
-                       "no data available while decoding a string, header was "
-                       "not decoded properly");
-    }
-    str.append(reinterpret_cast<const char*>(curs.data()), available);
-    curs.skipAtMost(available);
-    len -= available;
-    available = curs.length();
+  // We could use Cursor::readFixedString() here, but we'd like
+  // to throw our own exception with some increased diagnostics.
+  str.resize(len);
+
+  // The start of the string data, mutable.
+  auto* dest = &str[0];
+
+  auto pulled = curs.pullAtMost(dest, len);
+  if (pulled != size_t(len)) {
+    // Saw this case when decodeHeader was returning the incorrect length
+    // and we were splitting off too few bytes from the IOBufQueue
+    throwDecodeError(
+        curs,
+        "no data available while decoding a string, header was "
+        "not decoded properly");
   }
 
-  str.append(reinterpret_cast<const char*>(curs.data()), size_t(len));
-  curs.skipAtMost(size_t(len));
   return str;
 }
 
@@ -217,8 +219,8 @@ folly::dynamic parseBser(ByteRange str) {
 folly::dynamic parseBser(StringPiece str) {
   return parseBser(ByteRange((uint8_t*)str.data(), str.size()));
 }
-}
-}
+} // namespace bser
+} // namespace folly
 
 /* vim:ts=2:sw=2:et:
  */

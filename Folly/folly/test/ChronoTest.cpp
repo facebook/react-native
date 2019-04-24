@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2017-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,7 @@
  */
 
 #include <folly/Chrono.h>
-
-#include <gtest/gtest.h>
+#include <folly/portability/GTest.h>
 
 using namespace std::chrono;
 using namespace folly::chrono;
@@ -24,7 +23,7 @@ using namespace folly::chrono;
 namespace {
 
 class ChronoTest : public testing::Test {};
-}
+} // namespace
 
 TEST_F(ChronoTest, ceil_duration) {
   EXPECT_EQ(seconds(7), ceil<seconds>(seconds(7)));

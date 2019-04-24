@@ -17,7 +17,7 @@ Using `folly/Benchmark.h` is very simple. Here's an example:
 
 ``` Cpp
     #include <folly/Benchmark.h>
-    #include <folly/Foreach.h>
+    #include <folly/container/Foreach.h>
     #include <vector>
     using namespace std;
     using namespace folly;
@@ -71,7 +71,7 @@ implicitly `unsigned`. Consider a slightly reworked example:
 
 ``` Cpp
     #include <folly/Benchmark.h>
-    #include <folly/Foreach.h>
+    #include <folly/container/Foreach.h>
     #include <vector>
     using namespace std;
     using namespace folly;
@@ -127,7 +127,7 @@ compares with it:
 
 ``` Cpp
     #include <folly/Benchmark.h>
-    #include <folly/Foreach.h>
+    #include <folly/container/Foreach.h>
     #include <vector>
     using namespace std;
     using namespace folly;

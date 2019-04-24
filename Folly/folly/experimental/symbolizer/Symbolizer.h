@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2012-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +22,16 @@
 #include <string>
 
 #include <folly/FBString.h>
+#include <folly/Optional.h>
 #include <folly/Range.h>
 #include <folly/String.h>
-#include <folly/io/IOBuf.h>
+#include <folly/Synchronized.h>
+#include <folly/container/EvictingCacheMap.h>
+#include <folly/experimental/symbolizer/Dwarf.h>
 #include <folly/experimental/symbolizer/Elf.h>
 #include <folly/experimental/symbolizer/ElfCache.h>
-#include <folly/experimental/symbolizer/Dwarf.h>
 #include <folly/experimental/symbolizer/StackTrace.h>
+#include <folly/io/IOBuf.h>
 
 namespace folly {
 namespace symbolizer {
@@ -39,13 +42,16 @@ class Symbolizer;
  * Frame information: symbol name and location.
  */
 struct SymbolizedFrame {
-  SymbolizedFrame() { }
+  SymbolizedFrame() {}
 
-  void set(const std::shared_ptr<ElfFile>& file,
-           uintptr_t address,
-           Dwarf::LocationInfoMode mode);
+  void set(
+      const std::shared_ptr<ElfFile>& file,
+      uintptr_t address,
+      Dwarf::LocationInfoMode mode);
 
-  void clear() { *this = SymbolizedFrame(); }
+  void clear() {
+    *this = SymbolizedFrame();
+  }
 
   bool found = false;
   const char* name = nullptr;
@@ -64,7 +70,7 @@ struct SymbolizedFrame {
 
 template <size_t N>
 struct FrameArray {
-  FrameArray() { }
+  FrameArray() {}
 
   size_t frameCount = 0;
   uintptr_t addresses[N];
@@ -90,7 +96,7 @@ bool fixFrameArray(FrameArray<N>& fa, ssize_t n) {
     return false;
   }
 }
-}  // namespace detail
+} // namespace detail
 
 // Always inline these functions; they don't do much, and unittests rely
 // on them never showing up in a stack trace.
@@ -115,17 +121,19 @@ class Symbolizer {
       Dwarf::LocationInfoMode::FAST;
 
   explicit Symbolizer(Dwarf::LocationInfoMode mode = kDefaultLocationInfoMode)
-    : Symbolizer(nullptr, mode) {}
+      : Symbolizer(nullptr, mode) {}
 
-  explicit Symbolizer(ElfCacheBase* cache,
-                      Dwarf::LocationInfoMode mode = kDefaultLocationInfoMode);
-
+  explicit Symbolizer(
+      ElfCacheBase* cache,
+      Dwarf::LocationInfoMode mode = kDefaultLocationInfoMode,
+      size_t symbolCacheSize = 0);
   /**
    * Symbolize given addresses.
    */
-  void symbolize(const uintptr_t* addresses,
-                 SymbolizedFrame* frames,
-                 size_t frameCount);
+  void symbolize(
+      const uintptr_t* addresses,
+      SymbolizedFrame* frames,
+      size_t frameCount);
 
   template <size_t N>
   void symbolize(FrameArray<N>& fa) {
@@ -143,6 +151,9 @@ class Symbolizer {
  private:
   ElfCacheBase* const cache_;
   const Dwarf::LocationInfoMode mode_;
+
+  using SymbolCache = EvictingCacheMap<uintptr_t, SymbolizedFrame>;
+  folly::Optional<Synchronized<SymbolCache>> symbolCache_;
 };
 
 /**
@@ -181,27 +192,36 @@ class SymbolizePrinter {
   /**
    * Print multiple addresses on separate lines.
    */
-  void println(const uintptr_t* addresses,
-               const SymbolizedFrame* frames,
-               size_t frameCount);
+  void println(
+      const uintptr_t* addresses,
+      const SymbolizedFrame* frames,
+      size_t frameCount);
 
   /**
    * Print a string, no endling newline.
    */
-  void print(StringPiece sp) { doPrint(sp); }
+  void print(StringPiece sp) {
+    doPrint(sp);
+  }
 
   /**
    * Print multiple addresses on separate lines, skipping the first
    * skip addresses.
    */
   template <size_t N>
-  void println(const FrameArray<N>& fa, size_t skip=0) {
+  void println(const FrameArray<N>& fa, size_t skip = 0) {
     if (skip < fa.frameCount) {
       println(fa.addresses + skip, fa.frames + skip, fa.frameCount - skip);
     }
   }
 
-  virtual ~SymbolizePrinter() { }
+  /**
+   * If output buffered inside this class, send it to the output stream, so that
+   * any output done in other ways appears after this.
+   */
+  virtual void flush() {}
+
+  virtual ~SymbolizePrinter() {}
 
   enum Options {
     // Skip file and line information
@@ -226,9 +246,7 @@ class SymbolizePrinter {
 
  protected:
   explicit SymbolizePrinter(int options, bool isTty = false)
-    : options_(options),
-      isTty_(isTty) {
-  }
+      : options_(options), isTty_(isTty) {}
 
   const int options_;
   const bool isTty_;
@@ -255,7 +273,8 @@ class SymbolizePrinter {
  */
 class OStreamSymbolizePrinter : public SymbolizePrinter {
  public:
-  explicit OStreamSymbolizePrinter(std::ostream& out, int options=0);
+  explicit OStreamSymbolizePrinter(std::ostream& out, int options = 0);
+
  private:
   void doPrint(StringPiece sp) override;
   std::ostream& out_;
@@ -267,10 +286,10 @@ class OStreamSymbolizePrinter : public SymbolizePrinter {
  */
 class FDSymbolizePrinter : public SymbolizePrinter {
  public:
-  explicit FDSymbolizePrinter(int fd, int options=0,
-                              size_t bufferSize=0);
-  ~FDSymbolizePrinter();
-  void flush();
+  explicit FDSymbolizePrinter(int fd, int options = 0, size_t bufferSize = 0);
+  ~FDSymbolizePrinter() override;
+  virtual void flush() override;
+
  private:
   void doPrint(StringPiece sp) override;
 
@@ -284,7 +303,8 @@ class FDSymbolizePrinter : public SymbolizePrinter {
  */
 class FILESymbolizePrinter : public SymbolizePrinter {
  public:
-  explicit FILESymbolizePrinter(FILE* file, int options=0);
+  explicit FILESymbolizePrinter(FILE* file, int options = 0);
+
  private:
   void doPrint(StringPiece sp) override;
   FILE* const file_ = nullptr;
@@ -296,11 +316,18 @@ class FILESymbolizePrinter : public SymbolizePrinter {
  */
 class StringSymbolizePrinter : public SymbolizePrinter {
  public:
-  explicit StringSymbolizePrinter(int options=0) : SymbolizePrinter(options) { }
+  explicit StringSymbolizePrinter(int options = 0)
+      : SymbolizePrinter(options) {}
 
-  std::string str() const { return buf_.toStdString(); }
-  const fbstring& fbstr() const { return buf_; }
-  fbstring moveFbString() { return std::move(buf_); }
+  std::string str() const {
+    return buf_.toStdString();
+  }
+  const fbstring& fbstr() const {
+    return buf_;
+  }
+  fbstring moveFbString() {
+    return std::move(buf_);
+  }
 
  private:
   void doPrint(StringPiece sp) override;
@@ -313,7 +340,7 @@ class StringSymbolizePrinter : public SymbolizePrinter {
  * descriptor is more important than performance.
  *
  * Make sure to create one of these on startup, not in the signal handler, as
- * the constructo allocates on the heap, whereas the other methods don't.  Best
+ * the constructor allocates on the heap, whereas the other methods don't.  Best
  * practice is to just leak this object, rather than worry about destruction
  * order.
  *
@@ -321,18 +348,23 @@ class StringSymbolizePrinter : public SymbolizePrinter {
  * threads at the same time, you need to do your own locking to ensure you don't
  * call these methods from multiple threads.  They are signal safe, however.
  */
-class StackTracePrinter {
+class SafeStackTracePrinter {
  public:
   static constexpr size_t kDefaultMinSignalSafeElfCacheSize = 500;
 
-  explicit StackTracePrinter(
+  explicit SafeStackTracePrinter(
       size_t minSignalSafeElfCacheSize = kDefaultMinSignalSafeElfCacheSize,
       int fd = STDERR_FILENO);
+
+  virtual ~SafeStackTracePrinter() {}
 
   /**
    * Only allocates on the stack and is signal-safe but not thread-safe.  Don't
    * call printStackTrace() on the same StackTracePrinter object from multiple
    * threads at the same time.
+   *
+   * This is NOINLINE to make sure it shows up in the stack we grab, which makes
+   * it easy to skip printing it.
    */
   FOLLY_NOINLINE void printStackTrace(bool symbolize);
 
@@ -343,6 +375,9 @@ class StackTracePrinter {
   // Flush printer_, also fsync, in case we're about to crash again...
   void flush();
 
+ protected:
+  virtual void printSymbolizedStackTrace();
+
  private:
   static constexpr size_t kMaxStackTraceDepth = 100;
 
@@ -352,5 +387,55 @@ class StackTracePrinter {
   std::unique_ptr<FrameArray<kMaxStackTraceDepth>> addresses_;
 };
 
-}  // namespace symbolizer
-}  // namespace folly
+/**
+ * Use this class to print a stack trace from normal code.  It will malloc and
+ * won't flush or sync.
+ *
+ * These methods are thread safe, through locking.  However, they are not signal
+ * safe.
+ */
+class FastStackTracePrinter {
+ public:
+  static constexpr size_t kDefaultSymbolCacheSize = 10000;
+
+  explicit FastStackTracePrinter(
+      std::unique_ptr<SymbolizePrinter> printer,
+      size_t elfCacheSize = 0, // 0 means "use the default elf cache instance."
+      size_t symbolCacheSize = kDefaultSymbolCacheSize);
+
+  ~FastStackTracePrinter();
+
+  /**
+   * This is NOINLINE to make sure it shows up in the stack we grab, which makes
+   * it easy to skip printing it.
+   */
+  FOLLY_NOINLINE void printStackTrace(bool symbolize);
+
+  void flush();
+
+ private:
+  static constexpr size_t kMaxStackTraceDepth = 100;
+
+  const std::unique_ptr<ElfCache> elfCache_;
+  const std::unique_ptr<SymbolizePrinter> printer_;
+  Symbolizer symbolizer_;
+};
+
+/**
+ * Use this class in rare situations where signal handlers are running in a
+ * tiny stack specified by sigaltstack.
+ *
+ * This is neither thread-safe nor signal-safe. However, it can usually print
+ * something useful while SafeStackTracePrinter would stack overflow.
+ *
+ * Signal handlers would need to block other signals to make this safer.
+ * Note it's still unsafe even with that.
+ */
+class UnsafeSelfAllocateStackTracePrinter : public SafeStackTracePrinter {
+ protected:
+  void printSymbolizedStackTrace() override;
+  const long pageSizeUnchecked_ = sysconf(_SC_PAGESIZE);
+};
+
+} // namespace symbolizer
+} // namespace folly

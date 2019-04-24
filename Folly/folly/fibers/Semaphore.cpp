@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,30 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "Semaphore.h"
+#include <folly/fibers/Semaphore.h>
 
 namespace folly {
 namespace fibers {
 
 bool Semaphore::signalSlow() {
   // If we signalled a release, notify the waitlist
-  SYNCHRONIZED(waitList_) {
-    auto testVal = tokens_.load(std::memory_order_acquire);
-    if (testVal != 0) {
-      return false;
-    }
+  auto waitListLock = waitList_.wlock();
+  auto& waitList = *waitListLock;
 
-    if (waitList_.empty()) {
-      // If the waitlist is now empty, ensure the token count increments
-      // No need for CAS here as we will always be under the mutex
-      CHECK(tokens_.compare_exchange_strong(
-          testVal, testVal + 1, std::memory_order_relaxed));
-    } else {
-      // trigger waiter if there is one
-      waitList_.front()->post();
-      waitList_.pop();
-    }
-  } // SYNCHRONIZED(waitList_)
+  auto testVal = tokens_.load(std::memory_order_acquire);
+  if (testVal != 0) {
+    return false;
+  }
+
+  if (waitList.empty()) {
+    // If the waitlist is now empty, ensure the token count increments
+    // No need for CAS here as we will always be under the mutex
+    CHECK(tokens_.compare_exchange_strong(
+        testVal, testVal + 1, std::memory_order_relaxed));
+  } else {
+    // trigger waiter if there is one
+    waitList.front()->post();
+    waitList.pop();
+  }
   return true;
 }
 
@@ -59,13 +60,16 @@ bool Semaphore::waitSlow() {
   // Slow path, create a baton and acquire a mutex to update the wait list
   folly::fibers::Baton waitBaton;
 
-  SYNCHRONIZED(waitList_) {
+  {
+    auto waitListLock = waitList_.wlock();
+    auto& waitList = *waitListLock;
+
     auto testVal = tokens_.load(std::memory_order_acquire);
     if (testVal != 0) {
       return false;
     }
     // prepare baton and add to queue
-    waitList_.push(&waitBaton);
+    waitList.push(&waitBaton);
   }
   // If we managed to create a baton, wait on it
   // This has to be done here so the mutex has been released

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,11 +68,10 @@ namespace detail {
 /// cutoffs for different operations (read versus write, for example).
 /// To avoid contention, the spin cutoff is only updated when requested
 /// by the caller.
-template <template<typename> class Atom>
+template <template <typename> class Atom>
 struct TurnSequencer {
   explicit TurnSequencer(const uint32_t firstTurn = 0) noexcept
-      : state_(encode(firstTurn << kTurnShift, 0))
-  {}
+      : state_(encode(firstTurn << kTurnShift, 0)) {}
 
   /// Returns true iff a call to waitForTurn(turn, ...) won't block
   bool isTurn(const uint32_t turn) const noexcept {
@@ -84,9 +83,10 @@ struct TurnSequencer {
 
   /// See tryWaitForTurn
   /// Requires that `turn` is not a turn in the past.
-  void waitForTurn(const uint32_t turn,
-                   Atom<uint32_t>& spinCutoff,
-                   const bool updateSpinCutoff) noexcept {
+  void waitForTurn(
+      const uint32_t turn,
+      Atom<uint32_t>& spinCutoff,
+      const bool updateSpinCutoff) noexcept {
     const auto ret = tryWaitForTurn(turn, spinCutoff, updateSpinCutoff);
     DCHECK(ret == TryWaitResult::SUCCESS);
   }
@@ -118,7 +118,7 @@ struct TurnSequencer {
 
     uint32_t tries;
     const uint32_t sturn = turn << kTurnShift;
-    for (tries = 0; ; ++tries) {
+    for (tries = 0;; ++tries) {
       uint32_t state = state_.load(std::memory_order_acquire);
       uint32_t current_sturn = decodeCurrentSturn(state);
       if (current_sturn == sturn) {
@@ -126,7 +126,7 @@ struct TurnSequencer {
       }
 
       // wrap-safe version of (current_sturn >= sturn)
-      if(sturn - current_sturn >= std::numeric_limits<uint32_t>::max() / 2) {
+      if (sturn - current_sturn >= std::numeric_limits<uint32_t>::max() / 2) {
         // turn is in the past
         return TryWaitResult::PAST;
       }
@@ -153,13 +153,13 @@ struct TurnSequencer {
         }
       }
       if (absTime) {
-        auto futexResult =
-            state_.futexWaitUntil(new_state, *absTime, futexChannel(turn));
+        auto futexResult = detail::futexWaitUntil(
+            &state_, new_state, *absTime, futexChannel(turn));
         if (futexResult == FutexResult::TIMEDOUT) {
           return TryWaitResult::TIMEDOUT;
         }
       } else {
-        state_.futexWait(new_state, futexChannel(turn));
+        detail::futexWait(&state_, new_state, futexChannel(turn));
       }
     }
 
@@ -172,8 +172,8 @@ struct TurnSequencer {
       } else {
         // to account for variations, we allow ourself to spin 2*N when
         // we think that N is actually required in order to succeed
-        target = std::min<uint32_t>(kMaxSpins,
-                                    std::max<uint32_t>(kMinSpins, tries * 2));
+        target = std::min<uint32_t>(
+            kMaxSpins, std::max<uint32_t>(kMinSpins, tries * 2));
       }
 
       if (prevThresh == 0) {
@@ -197,13 +197,13 @@ struct TurnSequencer {
     while (true) {
       DCHECK(state == encode(turn << kTurnShift, decodeMaxWaitersDelta(state)));
       uint32_t max_waiter_delta = decodeMaxWaitersDelta(state);
-      uint32_t new_state =
-          encode((turn + 1) << kTurnShift,
-                 max_waiter_delta == 0 ? 0 : max_waiter_delta - 1);
+      uint32_t new_state = encode(
+          (turn + 1) << kTurnShift,
+          max_waiter_delta == 0 ? 0 : max_waiter_delta - 1);
       if (state_.compare_exchange_strong(state, new_state)) {
         if (max_waiter_delta != 0) {
-          state_.futexWake(std::numeric_limits<int>::max(),
-                           futexChannel(turn + 1));
+          detail::futexWake(
+              &state_, std::numeric_limits<int>::max(), futexChannel(turn + 1));
         }
         break;
       }

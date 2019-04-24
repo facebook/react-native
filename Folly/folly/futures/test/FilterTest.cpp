@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,17 +20,19 @@
 using namespace folly;
 
 TEST(Filter, alwaysTrye) {
-  EXPECT_EQ(42, makeFuture(42).filter([](int){ return true; }).get());
+  EXPECT_EQ(42, makeFuture(42).filter([](int) { return true; }).get());
 }
 
 TEST(Filter, alwaysFalse) {
-  EXPECT_THROW(makeFuture(42).filter([](int){ return false; }).get(),
-               folly::PredicateDoesNotObtain);
+  EXPECT_THROW(
+      makeFuture(42).filter([](int) { return false; }).get(),
+      folly::FuturePredicateDoesNotObtain);
 }
 
 TEST(Filter, moveOnlyValue) {
-  EXPECT_EQ(42,
-    *makeFuture(folly::make_unique<int>(42))
-     .filter([](std::unique_ptr<int> const&) { return true; })
-     .get());
+  EXPECT_EQ(
+      42,
+      *makeFuture(std::make_unique<int>(42))
+           .filter([](std::unique_ptr<int> const&) { return true; })
+           .get());
 }

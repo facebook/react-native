@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,28 +18,27 @@
 #include <folly/Conv.h>
 #include <folly/portability/OpenSSL.h>
 
-#include <openssl/crypto.h>
-#include <openssl/opensslv.h>
-
 // This is used to find the OpenSSL version at runtime. Just returning
 // OPENSSL_VERSION_NUMBER is insufficient as runtime version may be different
 // from the compile-time version
-struct OpenSSLVersionFinder {
-  static std::string getOpenSSLLongVersion(void) {
+namespace folly {
+namespace ssl {
+inline std::string getOpenSSLLongVersion() {
 #ifdef OPENSSL_VERSION_TEXT
-    return SSLeay_version(SSLEAY_VERSION);
+  return SSLeay_version(SSLEAY_VERSION);
 #elif defined(OPENSSL_VERSION_NUMBER)
-    return folly::format("0x{:x}", OPENSSL_VERSION_NUMBER).str();
+  return folly::format("0x{:x}", OPENSSL_VERSION_NUMBER).str();
 #else
-    return "";
+  return "";
 #endif
-  }
+}
 
-  uint64_t getOpenSSLNumericVersion(void) {
+inline uint64_t getOpenSSLNumericVersion() {
 #ifdef OPENSSL_VERSION_NUMBER
-    return SSLeay();
+  return SSLeay();
 #else
-    return 0;
+  return 0;
 #endif
-  }
-};
+}
+} // namespace ssl
+} // namespace folly

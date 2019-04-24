@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2012-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,11 @@
 
 #include <glog/logging.h>
 
-#include <folly/Bits.h>
 #include <folly/Likely.h>
 #include <folly/detail/Futex.h>
+#include <folly/lang/Bits.h>
 #include <folly/portability/SysTime.h>
 #include <folly/portability/Unistd.h>
-
 
 namespace folly {
 
@@ -84,11 +83,11 @@ namespace folly {
  */
 class EventCount {
  public:
-  EventCount() noexcept : val_(0) { }
+  EventCount() noexcept : val_(0) {}
 
   class Key {
     friend class EventCount;
-    explicit Key(uint32_t e) noexcept : epoch_(e) { }
+    explicit Key(uint32_t e) noexcept : epoch_(e) {}
     uint32_t epoch_;
   };
 
@@ -127,7 +126,7 @@ class EventCount {
 
   static constexpr uint64_t kAddWaiter = uint64_t(1);
   static constexpr uint64_t kSubWaiter = uint64_t(-1);
-  static constexpr size_t  kEpochShift = 32;
+  static constexpr size_t kEpochShift = 32;
   static constexpr uint64_t kAddEpoch = uint64_t(1) << kEpochShift;
   static constexpr uint64_t kWaiterMask = kAddEpoch - 1;
 };
@@ -143,8 +142,8 @@ inline void EventCount::notifyAll() noexcept {
 inline void EventCount::doNotify(int n) noexcept {
   uint64_t prev = val_.fetch_add(kAddEpoch, std::memory_order_acq_rel);
   if (UNLIKELY(prev & kWaiterMask)) {
-    (reinterpret_cast<detail::Futex<std::atomic>*>(&val_) + kEpochOffset)
-        ->futexWake(n);
+    detail::futexWake(
+        reinterpret_cast<detail::Futex<std::atomic>*>(&val_) + kEpochOffset, n);
   }
 }
 
@@ -163,8 +162,9 @@ inline void EventCount::cancelWait() noexcept {
 
 inline void EventCount::wait(Key key) noexcept {
   while ((val_.load(std::memory_order_acquire) >> kEpochShift) == key.epoch_) {
-    (reinterpret_cast<detail::Futex<std::atomic>*>(&val_) + kEpochOffset)
-        ->futexWait(key.epoch_);
+    detail::futexWait(
+        reinterpret_cast<detail::Futex<std::atomic>*>(&val_) + kEpochOffset,
+        key.epoch_);
   }
   // memory_order_relaxed would suffice for correctness, but the faster
   // #waiters gets to 0, the less likely it is that we'll do spurious wakeups
@@ -175,7 +175,9 @@ inline void EventCount::wait(Key key) noexcept {
 
 template <class Condition>
 void EventCount::await(Condition condition) {
-  if (condition()) return;  // fast path
+  if (condition()) {
+    return; // fast path
+  }
 
   // condition() is the only thing that may throw, everything else is
   // noexcept, so we can hoist the try/catch block outside of the loop
@@ -195,4 +197,4 @@ void EventCount::await(Condition condition) {
   }
 }
 
-}  // namespace folly
+} // namespace folly

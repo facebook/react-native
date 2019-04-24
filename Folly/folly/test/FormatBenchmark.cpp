@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2012-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
 
 #include <folly/Benchmark.h>
 #include <folly/FBVector.h>
+#include <folly/Utility.h>
 #include <folly/dynamic.h>
 #include <folly/init/Init.h>
 #include <folly/json.h>
@@ -56,7 +57,7 @@ BENCHMARK_RELATIVE(octal_uintToOctal, iters) {
   }
 }
 
-BENCHMARK_DRAW_LINE()
+BENCHMARK_DRAW_LINE();
 
 BENCHMARK(hex_snprintf, iters) {
   while (iters--) {
@@ -72,7 +73,7 @@ BENCHMARK_RELATIVE(hex_uintToHex, iters) {
   }
 }
 
-BENCHMARK_DRAW_LINE()
+BENCHMARK_DRAW_LINE();
 
 BENCHMARK(intAppend_snprintf) {
   fbstring out;
@@ -96,10 +97,10 @@ BENCHMARK_RELATIVE(intAppend_format) {
   }
 }
 
-BENCHMARK_DRAW_LINE()
+BENCHMARK_DRAW_LINE();
 
 template <size_t... Indexes>
-int snprintf20Numbers(int i, std::index_sequence<Indexes...>) {
+int snprintf20Numbers(int i, index_sequence<Indexes...>) {
   static_assert(20 == sizeof...(Indexes), "Must have exactly 20 indexes");
   return snprintf(
       bigBuf.data(),
@@ -114,13 +115,13 @@ int snprintf20Numbers(int i, std::index_sequence<Indexes...>) {
 BENCHMARK(bigFormat_snprintf, iters) {
   while (iters--) {
     for (int i = -100; i < 100; i++) {
-      snprintf20Numbers(i, std::make_index_sequence<20>());
+      snprintf20Numbers(i, make_index_sequence<20>());
     }
   }
 }
 
 template <size_t... Indexes>
-decltype(auto) format20Numbers(int i, std::index_sequence<Indexes...>) {
+decltype(auto) format20Numbers(int i, index_sequence<Indexes...>) {
   static_assert(20 == sizeof...(Indexes), "Must have exactly 20 indexes");
   return format(
       "{} {} {} {} {}"
@@ -141,14 +142,13 @@ BENCHMARK_RELATIVE(bigFormat_format, iters) {
   while (iters--) {
     for (int i = -100; i < 100; i++) {
       p = bigBuf.data();
-      suspender.dismissing([&] {
-        format20Numbers(i, std::make_index_sequence<20>())(writeToBuf);
-      });
+      suspender.dismissing(
+          [&] { format20Numbers(i, make_index_sequence<20>())(writeToBuf); });
     }
   }
 }
 
-BENCHMARK_DRAW_LINE()
+BENCHMARK_DRAW_LINE();
 
 BENCHMARK(format_nested_strings, iters) {
   BenchmarkSuspender suspender;
@@ -198,7 +198,7 @@ BENCHMARK_RELATIVE(format_nested_direct, iters) {
   }
 }
 
-BENCHMARK_DRAW_LINE()
+BENCHMARK_DRAW_LINE();
 
 BENCHMARK(copy_short_string, iters) {
   BenchmarkSuspender suspender;
@@ -245,7 +245,7 @@ BENCHMARK_RELATIVE(sformat_short_string_safe, iters) {
   }
 }
 
-BENCHMARK_DRAW_LINE()
+BENCHMARK_DRAW_LINE();
 
 BENCHMARK(copy_long_string, iters) {
   BenchmarkSuspender suspender;

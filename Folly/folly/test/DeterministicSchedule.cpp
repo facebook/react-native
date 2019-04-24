@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,10 @@ thread_local AuxAct DeterministicSchedule::tls_aux_act;
 AuxChk DeterministicSchedule::aux_chk;
 
 // access is protected by futexLock
-static std::unordered_map<detail::Futex<DeterministicAtomic>*,
-                          std::list<std::pair<uint32_t, bool*>>> futexQueues;
+static std::unordered_map<
+    const detail::Futex<DeterministicAtomic>*,
+    std::list<std::pair<uint32_t, bool*>>>
+    futexQueues;
 
 static std::mutex futexLock;
 
@@ -98,10 +100,12 @@ struct UniformSubset {
 
   void adjustPermSize(size_t numActive) {
     if (perm_.size() > numActive) {
-      perm_.erase(std::remove_if(perm_.begin(),
-                                 perm_.end(),
-                                 [=](size_t x) { return x >= numActive; }),
-                  perm_.end());
+      perm_.erase(
+          std::remove_if(
+              perm_.begin(),
+              perm_.end(),
+              [=](size_t x) { return x >= numActive; }),
+          perm_.end());
     } else {
       while (perm_.size() < numActive) {
         perm_.push_back(perm_.size());
@@ -154,9 +158,10 @@ size_t DeterministicSchedule::getRandNumber(size_t n) {
   return Random::rand32() % n;
 }
 
-int DeterministicSchedule::getcpu(unsigned* cpu,
-                                  unsigned* node,
-                                  void* /* unused */) {
+int DeterministicSchedule::getcpu(
+    unsigned* cpu,
+    unsigned* node,
+    void* /* unused */) {
   if (!tls_threadId && tls_sched) {
     beforeSharedAccess();
     tls_threadId = tls_sched->nextThreadId_++;
@@ -181,6 +186,22 @@ void DeterministicSchedule::setAuxChk(AuxChk& aux) {
 
 void DeterministicSchedule::clearAuxChk() {
   aux_chk = nullptr;
+}
+
+void DeterministicSchedule::reschedule(sem_t* sem) {
+  auto sched = tls_sched;
+  if (sched) {
+    sched->sems_.push_back(sem);
+  }
+}
+
+sem_t* DeterministicSchedule::descheduleCurrentThread() {
+  auto sched = tls_sched;
+  if (sched) {
+    sched->sems_.erase(
+        std::find(sched->sems_.begin(), sched->sems_.end(), tls_sem));
+  }
+  return tls_sem;
 }
 
 sem_t* DeterministicSchedule::beforeThreadCreate() {
@@ -210,6 +231,11 @@ void DeterministicSchedule::afterThreadCreate(sem_t* sem) {
 void DeterministicSchedule::beforeThreadExit() {
   assert(tls_sched == this);
   beforeSharedAccess();
+  auto parent = joins_.find(std::this_thread::get_id());
+  if (parent != joins_.end()) {
+    reschedule(parent->second);
+    joins_.erase(parent);
+  }
   sems_.erase(std::find(sems_.begin(), sems_.end(), tls_sem));
   active_.erase(std::this_thread::get_id());
   if (sems_.size() > 0) {
@@ -226,16 +252,19 @@ void DeterministicSchedule::beforeThreadExit() {
 void DeterministicSchedule::join(std::thread& child) {
   auto sched = tls_sched;
   if (sched) {
-    bool done = false;
-    while (!done) {
-      beforeSharedAccess();
-      done = !sched->active_.count(child.get_id());
-      if (done) {
-        FOLLY_TEST_DSCHED_VLOG("joined " << std::hex << child.get_id());
-      }
+    beforeSharedAccess();
+    assert(sched->joins_.count(child.get_id()) == 0);
+    if (sched->active_.count(child.get_id())) {
+      sem_t* sem = descheduleCurrentThread();
+      sched->joins_.insert({child.get_id(), sem});
       afterSharedAccess();
+      // Wait to be scheduled by exiting child thread
+      beforeSharedAccess();
+      assert(!sched->active_.count(child.get_id()));
     }
+    afterSharedAccess();
   }
+  FOLLY_TEST_DSCHED_VLOG("joined " << std::hex << child.get_id());
   child.join();
 }
 
@@ -261,8 +290,8 @@ bool DeterministicSchedule::tryWait(sem_t* sem) {
   beforeSharedAccess();
   int rv = sem_trywait(sem);
   int e = rv == 0 ? 0 : errno;
-  FOLLY_TEST_DSCHED_VLOG("sem_trywait(" << sem << ") = " << rv
-                                        << " errno=" << e);
+  FOLLY_TEST_DSCHED_VLOG(
+      "sem_trywait(" << sem << ") = " << rv << " errno=" << e);
   afterSharedAccess();
   if (rv == 0) {
     return true;
@@ -277,32 +306,28 @@ void DeterministicSchedule::wait(sem_t* sem) {
     // we're not busy waiting because this is a deterministic schedule
   }
 }
-}
-}
 
-namespace folly {
-namespace detail {
-
-using namespace test;
-using namespace std::chrono;
-
-template <>
-FutexResult Futex<DeterministicAtomic>::futexWaitImpl(
+detail::FutexResult futexWaitImpl(
+    const detail::Futex<DeterministicAtomic>* futex,
     uint32_t expected,
-    time_point<system_clock>* absSystemTimeout,
-    time_point<steady_clock>* absSteadyTimeout,
+    std::chrono::system_clock::time_point const* absSystemTimeout,
+    std::chrono::steady_clock::time_point const* absSteadyTimeout,
     uint32_t waitMask) {
+  using namespace test;
+  using namespace std::chrono;
+  using namespace folly::detail;
+
   bool hasTimeout = absSystemTimeout != nullptr || absSteadyTimeout != nullptr;
   bool awoken = false;
   FutexResult result = FutexResult::AWOKEN;
 
   DeterministicSchedule::beforeSharedAccess();
-  FOLLY_TEST_DSCHED_VLOG(this << ".futexWait(" << std::hex << expected
-                              << ", .., " << std::hex << waitMask
-                              << ") beginning..");
+  FOLLY_TEST_DSCHED_VLOG(
+      "futexWait(" << futex << ", " << std::hex << expected << ", .., "
+                   << std::hex << waitMask << ") beginning..");
   futexLock.lock();
-  if (this->data == expected) {
-    auto& queue = futexQueues[this];
+  if (futex->load_direct() == expected) {
+    auto& queue = futexQueues[futex];
     queue.emplace_back(waitMask, &awoken);
     auto ours = queue.end();
     ours--;
@@ -316,16 +341,16 @@ FutexResult Futex<DeterministicAtomic>::futexWaitImpl(
       // a 10% probability if we haven't been woken up already
       if (!awoken && hasTimeout &&
           DeterministicSchedule::getRandNumber(100) < 10) {
-        assert(futexQueues.count(this) != 0 && &futexQueues[this] == &queue);
+        assert(futexQueues.count(futex) != 0 && &futexQueues[futex] == &queue);
         queue.erase(ours);
         if (queue.empty()) {
-          futexQueues.erase(this);
+          futexQueues.erase(futex);
         }
         // Simulate ETIMEDOUT 90% of the time and other failures
         // remaining time
         result = DeterministicSchedule::getRandNumber(100) >= 10
-                     ? FutexResult::TIMEDOUT
-                     : FutexResult::INTERRUPTED;
+            ? FutexResult::TIMEDOUT
+            : FutexResult::INTERRUPTED;
         break;
       }
     }
@@ -349,20 +374,25 @@ FutexResult Futex<DeterministicAtomic>::futexWaitImpl(
       resultStr = "VALUE_CHANGED";
       break;
   }
-  FOLLY_TEST_DSCHED_VLOG(this << ".futexWait(" << std::hex << expected
-                              << ", .., " << std::hex << waitMask << ") -> "
-                              << resultStr);
+  FOLLY_TEST_DSCHED_VLOG(
+      "futexWait(" << futex << ", " << std::hex << expected << ", .., "
+                   << std::hex << waitMask << ") -> " << resultStr);
   DeterministicSchedule::afterSharedAccess();
   return result;
 }
 
-template <>
-int Futex<DeterministicAtomic>::futexWake(int count, uint32_t wakeMask) {
+int futexWakeImpl(
+    const detail::Futex<test::DeterministicAtomic>* futex,
+    int count,
+    uint32_t wakeMask) {
+  using namespace test;
+  using namespace std::chrono;
+
   int rv = 0;
   DeterministicSchedule::beforeSharedAccess();
   futexLock.lock();
-  if (futexQueues.count(this) > 0) {
-    auto& queue = futexQueues[this];
+  if (futexQueues.count(futex) > 0) {
+    auto& queue = futexQueues[futex];
     auto iter = queue.begin();
     while (iter != queue.end() && rv < count) {
       auto cur = iter++;
@@ -373,15 +403,21 @@ int Futex<DeterministicAtomic>::futexWake(int count, uint32_t wakeMask) {
       }
     }
     if (queue.empty()) {
-      futexQueues.erase(this);
+      futexQueues.erase(futex);
     }
   }
   futexLock.unlock();
-  FOLLY_TEST_DSCHED_VLOG(this << ".futexWake(" << count << ", " << std::hex
-                              << wakeMask << ") -> " << rv);
+  FOLLY_TEST_DSCHED_VLOG(
+      "futexWake(" << futex << ", " << count << ", " << std::hex << wakeMask
+                   << ") -> " << rv);
   DeterministicSchedule::afterSharedAccess();
   return rv;
 }
+
+} // namespace test
+} // namespace folly
+
+namespace folly {
 
 template <>
 CacheLocality const& CacheLocality::system<test::DeterministicAtomic>() {
@@ -391,7 +427,6 @@ CacheLocality const& CacheLocality::system<test::DeterministicAtomic>() {
 
 template <>
 Getcpu::Func AccessSpreader<test::DeterministicAtomic>::pickGetcpuFunc() {
-  return &DeterministicSchedule::getcpu;
+  return &test::DeterministicSchedule::getcpu;
 }
-}
-}
+} // namespace folly

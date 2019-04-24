@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2011-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,6 @@
 #include <ostream>
 #include <string>
 #include <type_traits>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -65,6 +64,8 @@
 
 #include <folly/Range.h>
 #include <folly/Traits.h>
+#include <folly/container/F14Map.h>
+#include <folly/json_pointer.h>
 
 namespace folly {
 
@@ -85,7 +86,8 @@ struct dynamic : private boost::operators<dynamic> {
     OBJECT,
     STRING,
   };
-  template<class T, class Enable = void> struct NumericTypeHelper;
+  template <class T, class Enable = void>
+  struct NumericTypeHelper;
 
   /*
    * We support direct iteration of arrays, and indirect iteration of objects.
@@ -96,9 +98,23 @@ struct dynamic : private boost::operators<dynamic> {
    * Object value iterators dereference as the values in the object.
    * Object item iterators dereference as pairs of (key, value).
    */
-private:
+ private:
   typedef std::vector<dynamic> Array;
-public:
+
+  /*
+   * Violating spec, std::vector<bool>::const_reference is not bool in libcpp:
+   * http://howardhinnant.github.io/onvectorbool.html
+   *
+   * This is used to add a public ctor which is only enabled under libcpp taking
+   * std::vector<bool>::const_reference without using the preprocessor.
+   */
+  struct VectorBoolConstRefFake : std::false_type {};
+  using VectorBoolConstRefCtorType = std::conditional_t<
+      std::is_same<std::vector<bool>::const_reference, bool>::value,
+      VectorBoolConstRefFake,
+      std::vector<bool>::const_reference>;
+
+ public:
   typedef Array::iterator iterator;
   typedef Array::const_iterator const_iterator;
   typedef dynamic value_type;
@@ -129,14 +145,14 @@ public:
    *   d["key"] = 12;
    *   d["something_else"] = dynamic::array(1, 2, 3, nullptr);
    */
-private:
+ private:
   struct EmptyArrayTag {};
   struct ObjectMaker;
 
-public:
+ public:
   static void array(EmptyArrayTag);
   template <class... Args>
-  static dynamic array(Args&& ...args);
+  static dynamic array(Args&&... args);
 
   static ObjectMaker object();
   static ObjectMaker object(dynamic, dynamic);
@@ -167,14 +183,23 @@ public:
    * Constructors for integral and float types.
    * Other types are SFINAEd out with NumericTypeHelper.
    */
-  template<class T, class NumericType = typename NumericTypeHelper<T>::type>
+  template <class T, class NumericType = typename NumericTypeHelper<T>::type>
   /* implicit */ dynamic(T t);
+
+  /*
+   * If v is vector<bool>, v[idx] is a proxy object implicitly convertible to
+   * bool. Calling a function f(dynamic) with f(v[idx]) would require a double
+   * implicit conversion (reference -> bool -> dynamic) which is not allowed,
+   * hence we explicitly accept the reference proxy.
+   */
+  /* implicit */ dynamic(std::vector<bool>::reference val);
+  /* implicit */ dynamic(VectorBoolConstRefCtorType val);
 
   /*
    * Create a dynamic that is an array of the values from the supplied
    * iterator range.
    */
-  template<class Iterator>
+  template <class Iterator>
   explicit dynamic(Iterator first, Iterator last);
 
   dynamic(dynamic const&);
@@ -272,9 +297,9 @@ public:
    * dynamic.
    */
   std::string asString() const;
-  double   asDouble() const;
-  int64_t  asInt() const;
-  bool     asBool() const;
+  double asDouble() const;
+  int64_t asInt() const;
+  bool asBool() const;
 
   /*
    * Extract the value stored in this dynamic without type conversion.
@@ -282,17 +307,17 @@ public:
    * These will throw a TypeError if the dynamic has a different type.
    */
   const std::string& getString() const&;
-  double          getDouble() const&;
-  int64_t         getInt() const&;
-  bool            getBool() const&;
+  double getDouble() const&;
+  int64_t getInt() const&;
+  bool getBool() const&;
   std::string& getString() &;
-  double&   getDouble() &;
-  int64_t&  getInt() &;
-  bool&     getBool() &;
+  double& getDouble() &;
+  int64_t& getInt() &;
+  bool& getBool() &;
   std::string&& getString() &&;
-  double   getDouble() &&;
-  int64_t  getInt() &&;
-  bool     getBool() &&;
+  double getDouble() &&;
+  int64_t getInt() &&;
+  bool getBool() &&;
 
   /*
    * It is occasionally useful to access a string's internal pointer
@@ -300,8 +325,8 @@ public:
    *
    * These will throw a TypeError if the dynamic is not a string.
    */
-  const char* data()  const&;
-  const char* data()  && = delete;
+  const char* data() const&;
+  const char* data() && = delete;
   const char* c_str() const&;
   const char* c_str() && = delete;
   StringPiece stringPiece() const;
@@ -323,18 +348,29 @@ public:
    * You can iterate over the values of the array.  Calling these on
    * non-arrays will throw a TypeError.
    */
-  const_iterator begin()  const;
-  const_iterator end()    const;
+  const_iterator begin() const;
+  const_iterator end() const;
   iterator begin();
   iterator end();
 
-private:
+ private:
   /*
    * Helper object returned by keys(), values(), and items().
    */
-  template <class T> struct IterableProxy;
+  template <class T>
+  struct IterableProxy;
 
-public:
+  /*
+   * Helper for heterogeneous lookup and mutation on objects: at(), find(),
+   * count(), erase(), operator[]
+   */
+  template <typename K, typename T>
+  using IfIsNonStringDynamicConvertible = std::enable_if_t<
+      !std::is_convertible<K, StringPiece>::value &&
+          std::is_convertible<K, dynamic>::value,
+      T>;
+
+ public:
   /*
    * You can iterate over the keys, values, or items (std::pair of key and
    * value) in an object.  Calling these on non-objects will throw a TypeError.
@@ -352,14 +388,22 @@ public:
    * Returns: items().end() if the key is not present, or a
    * const_item_iterator pointing to the item.
    */
-  const_item_iterator find(dynamic const&) const;
-  item_iterator find(dynamic const&);
+  template <typename K>
+  IfIsNonStringDynamicConvertible<K, const_item_iterator> find(K&&) const;
+  template <typename K>
+  IfIsNonStringDynamicConvertible<K, item_iterator> find(K&&);
+
+  const_item_iterator find(StringPiece) const;
+  item_iterator find(StringPiece);
 
   /*
    * If this is an object, returns whether it contains a field with
    * the given name.  Otherwise throws TypeError.
    */
-  std::size_t count(dynamic const&) const;
+  template <typename K>
+  IfIsNonStringDynamicConvertible<K, std::size_t> count(K&&) const;
+
+  std::size_t count(StringPiece) const;
 
   /*
    * For objects or arrays, provides access to sub-fields by index or
@@ -369,9 +413,30 @@ public:
    * will throw a TypeError.  Using an index that is out of range or
    * object-element that's not present throws std::out_of_range.
    */
-  dynamic const& at(dynamic const&) const&;
-  dynamic&       at(dynamic const&) &;
-  dynamic&&      at(dynamic const&) &&;
+ private:
+  dynamic const& atImpl(dynamic const&) const&;
+
+ public:
+  template <typename K>
+  IfIsNonStringDynamicConvertible<K, dynamic const&> at(K&&) const&;
+  template <typename K>
+  IfIsNonStringDynamicConvertible<K, dynamic&> at(K&&) &;
+  template <typename K>
+  IfIsNonStringDynamicConvertible<K, dynamic&&> at(K&&) &&;
+
+  dynamic const& at(StringPiece) const&;
+  dynamic& at(StringPiece) &;
+  dynamic&& at(StringPiece) &&;
+
+  /*
+   * Locate element using JSON pointer, per RFC 6901. Returns nullptr if
+   * element could not be located. Throws if pointer does not match the
+   * shape of the document, e.g. uses string to index in array.
+   */
+  const dynamic* get_ptr(json_pointer const&) const&;
+  dynamic* get_ptr(json_pointer const&) &;
+  const dynamic* get_ptr(json_pointer const&) const&& = delete;
+  dynamic* get_ptr(json_pointer const&) && = delete;
 
   /*
    * Like 'at', above, except it returns either a pointer to the contained
@@ -384,25 +449,45 @@ public:
    * Using these with dynamic objects that are not arrays or objects
    * will throw a TypeError.
    */
-  const dynamic* get_ptr(dynamic const&) const&;
-  dynamic* get_ptr(dynamic const&) &;
-  dynamic* get_ptr(dynamic const&) && = delete;
+ private:
+  const dynamic* get_ptrImpl(dynamic const&) const&;
+
+ public:
+  template <typename K>
+  IfIsNonStringDynamicConvertible<K, const dynamic*> get_ptr(K&&) const&;
+  template <typename K>
+  IfIsNonStringDynamicConvertible<K, dynamic*> get_ptr(K&&) &;
+  template <typename K>
+  IfIsNonStringDynamicConvertible<K, dynamic*> get_ptr(K&&) && = delete;
+
+  const dynamic* get_ptr(StringPiece) const&;
+  dynamic* get_ptr(StringPiece) &;
+  dynamic* get_ptr(StringPiece) && = delete;
 
   /*
    * This works for access to both objects and arrays.
    *
-   * In the case of an array, the index must be an integer, and this will throw
-   * std::out_of_range if it is less than zero or greater than size().
+   * In the case of an array, the index must be an integer, and this
+   * will throw std::out_of_range if it is less than zero or greater
+   * than size().
    *
    * In the case of an object, the non-const overload inserts a null
    * value if the key isn't present.  The const overload will throw
    * std::out_of_range if the key is not present.
    *
-   * These functions do not invalidate iterators.
+   * These functions do not invalidate iterators except when a null value
+   * is inserted into an object as described above.
    */
-  dynamic&       operator[](dynamic const&) &;
-  dynamic const& operator[](dynamic const&) const&;
-  dynamic&&      operator[](dynamic const&) &&;
+  template <typename K>
+  IfIsNonStringDynamicConvertible<K, dynamic&> operator[](K&&) &;
+  template <typename K>
+  IfIsNonStringDynamicConvertible<K, dynamic const&> operator[](K&&) const&;
+  template <typename K>
+  IfIsNonStringDynamicConvertible<K, dynamic&&> operator[](K&&) &&;
+
+  dynamic& operator[](StringPiece) &;
+  dynamic const& operator[](StringPiece) const&;
+  dynamic&& operator[](StringPiece) &&;
 
   /*
    * Only defined for objects, throws TypeError otherwise.
@@ -412,21 +497,42 @@ public:
    * default if it is not yet set, otherwise leaving it. setDefault returns
    * a reference to the existing value if present, the new value otherwise.
    */
-  dynamic
-  getDefault(const dynamic& k, const dynamic& v = dynamic::object) const&;
-  dynamic getDefault(const dynamic& k, dynamic&& v) const&;
-  dynamic getDefault(const dynamic& k, const dynamic& v = dynamic::object) &&;
-  dynamic getDefault(const dynamic& k, dynamic&& v) &&;
-  template<class K, class V>
-  dynamic& setDefault(K&& k, V&& v);
+  template <typename K>
+  IfIsNonStringDynamicConvertible<K, dynamic> getDefault(
+      K&& k,
+      const dynamic& v = dynamic::object) const&;
+  template <typename K>
+  IfIsNonStringDynamicConvertible<K, dynamic> getDefault(K&& k, dynamic&& v)
+      const&;
+  template <typename K>
+  IfIsNonStringDynamicConvertible<K, dynamic> getDefault(
+      K&& k,
+      const dynamic& v = dynamic::object) &&;
+  template <typename K>
+  IfIsNonStringDynamicConvertible<K, dynamic> getDefault(K&& k, dynamic&& v) &&;
+
+  dynamic getDefault(StringPiece k, const dynamic& v = dynamic::object) const&;
+  dynamic getDefault(StringPiece k, dynamic&& v) const&;
+  dynamic getDefault(StringPiece k, const dynamic& v = dynamic::object) &&;
+  dynamic getDefault(StringPiece k, dynamic&& v) &&;
+
+  template <typename K, typename V>
+  IfIsNonStringDynamicConvertible<K, dynamic&> setDefault(K&& k, V&& v);
+  template <typename V>
+  dynamic& setDefault(StringPiece k, V&& v);
   // MSVC 2015 Update 3 needs these extra overloads because if V were a
   // defaulted template parameter, it causes MSVC to consider v an rvalue
   // reference rather than a universal reference, resulting in it not being
   // able to find the correct overload to construct a dynamic with.
-  template<class K>
-  dynamic& setDefault(K&& k, dynamic&& v);
-  template<class K>
-  dynamic& setDefault(K&& k, const dynamic& v = dynamic::object);
+  template <typename K>
+  IfIsNonStringDynamicConvertible<K, dynamic&> setDefault(K&& k, dynamic&& v);
+  template <typename K>
+  IfIsNonStringDynamicConvertible<K, dynamic&> setDefault(
+      K&& k,
+      const dynamic& v = dynamic::object);
+
+  dynamic& setDefault(StringPiece k, dynamic&& v);
+  dynamic& setDefault(StringPiece k, const dynamic& v = dynamic::object);
 
   /*
    * Resizes an array so it has at n elements, using the supplied
@@ -441,11 +547,13 @@ public:
 
   /*
    * Inserts the supplied key-value pair to an object, or throws if
-   * it's not an object.
+   * it's not an object. If the key already exists, insert will overwrite the
+   * value, i.e., similar to insert_or_assign.
    *
    * Invalidates iterators.
    */
-  template<class K, class V> void insert(K&&, V&& val);
+  template <class K, class V>
+  void insert(K&&, V&& val);
 
   /*
    * These functions merge two folly dynamic objects.
@@ -465,13 +573,27 @@ public:
   static dynamic merge(const dynamic& mergeObj1, const dynamic& mergeObj2);
 
   /*
+   * Implement recursive version of RFC7386: JSON merge patch. This modifies
+   * the current object.
+   */
+  void merge_patch(const dynamic& patch);
+
+  /*
+   * Computes JSON merge patch (RFC7386) needed to mutate from source to target
+   */
+  static dynamic merge_diff(const dynamic& source, const dynamic& target);
+
+  /*
    * Erase an element from a dynamic object, by key.
    *
    * Invalidates iterators to the element being erased.
    *
    * Returns the number of elements erased (i.e. 1 or 0).
    */
-  std::size_t erase(dynamic const& key);
+  template <typename K>
+  IfIsNonStringDynamicConvertible<K, std::size_t> erase(K&&);
+
+  std::size_t erase(StringPiece);
 
   /*
    * Erase an element from a dynamic object or array, using an
@@ -521,40 +643,54 @@ public:
    */
   std::size_t hash() const;
 
-private:
+ private:
   friend struct TypeError;
   struct ObjectImpl;
-  template<class T> struct TypeInfo;
-  template<class T> struct CompareOp;
-  template<class T> struct GetAddrImpl;
-  template<class T> struct PrintImpl;
+  template <class T>
+  struct TypeInfo;
+  template <class T>
+  struct CompareOp;
+  template <class T>
+  struct GetAddrImpl;
+  template <class T>
+  struct PrintImpl;
 
   explicit dynamic(Array&& array);
 
-  template<class T> T const& get() const;
-  template<class T> T&       get();
-  template<class T> T*       get_nothrow() & noexcept;
-  template<class T> T const* get_nothrow() const& noexcept;
-  template<class T> T*       get_nothrow() && noexcept = delete;
-  template<class T> T*       getAddress() noexcept;
-  template<class T> T const* getAddress() const noexcept;
+  template <class T>
+  T const& get() const;
+  template <class T>
+  T& get();
+  // clang-format off
+  template <class T>
+  T* get_nothrow() & noexcept;
+  // clang-format on
+  template <class T>
+  T const* get_nothrow() const& noexcept;
+  // clang-format off
+  template <class T>
+  T* get_nothrow() && noexcept = delete;
+  // clang-format on
+  template <class T>
+  T* getAddress() noexcept;
+  template <class T>
+  T const* getAddress() const noexcept;
 
-  template<class T> T asImpl() const;
+  template <class T>
+  T asImpl() const;
 
   static char const* typeName(Type);
   void destroy() noexcept;
   void print(std::ostream&) const;
   void print_as_pseudo_json(std::ostream&) const; // see json.cpp
 
-private:
+ private:
   Type type_;
   union Data {
     explicit Data() : nul(nullptr) {}
     ~Data() {}
 
-    // XXX: gcc does an ICE if we use std::nullptr_t instead of void*
-    // here.  See http://gcc.gnu.org/bugzilla/show_bug.cgi?id=50361
-    void* nul;
+    std::nullptr_t nul;
     Array array;
     bool boolean;
     double doubl;
@@ -563,20 +699,19 @@ private:
 
     /*
      * Objects are placement new'd here.  We have to use a char buffer
-     * because we don't know the type here (std::unordered_map<> with
+     * because we don't know the type here (F14NodeMap<> with
      * dynamic would be parameterizing a std:: template with an
      * incomplete type right now).  (Note that in contrast we know it
      * is ok to do this with fbvector because we own it.)
      */
     std::aligned_storage<
-      sizeof(std::unordered_map<int,int>),
-      alignof(std::unordered_map<int,int>)
-    >::type objectBuffer;
+        sizeof(F14NodeMap<int, int>),
+        alignof(F14NodeMap<int, int>)>::type objectBuffer;
   } u_;
 };
 
 //////////////////////////////////////////////////////////////////////
 
-}
+} // namespace folly
 
 #include <folly/dynamic-inl.h>

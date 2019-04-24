@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,21 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include <algorithm>
 #include <atomic>
 #include <cassert>
 #include <random>
 
+#include <boost/thread.hpp>
+
 #include <folly/Random.h>
 #include <folly/experimental/FunctionScheduler.h>
 #include <folly/portability/GTest.h>
+#include <folly/synchronization/Baton.h>
 
 #if defined(__linux__)
 #include <dlfcn.h>
 #endif
 
 using namespace folly;
+using std::atomic;
+using std::chrono::duration_cast;
+using std::chrono::microseconds;
 using std::chrono::milliseconds;
+using std::chrono::steady_clock;
 
 namespace {
 
@@ -38,20 +46,23 @@ namespace {
  * heavily loaded systems.  However, this will also make the tests take longer
  * to run.
  */
-static const auto timeFactor = std::chrono::milliseconds(100);
-std::chrono::milliseconds testInterval(int n) { return n * timeFactor; }
+static const auto timeFactor = std::chrono::milliseconds(400);
+std::chrono::milliseconds testInterval(int n) {
+  return n * timeFactor;
+}
 int getTicksWithinRange(int n, int min, int max) {
   assert(min <= max);
   n = std::max(min, n);
   n = std::min(max, n);
   return n;
 }
-void delay(int n) {
-  std::chrono::microseconds usec(n * timeFactor);
+void delay(float n) {
+  microseconds usec(static_cast<microseconds::rep>(
+      duration_cast<microseconds>(timeFactor).count() * n));
   usleep(usec.count());
 }
 
-} // unnamed namespace
+} // namespace
 
 TEST(FunctionScheduler, StartAndShutdown) {
   FunctionScheduler fs;
@@ -67,7 +78,7 @@ TEST(FunctionScheduler, StartAndShutdown) {
 }
 
 TEST(FunctionScheduler, SimpleAdd) {
-  int total = 0;
+  atomic<int> total{0};
   FunctionScheduler fs;
   fs.addFunction([&] { total += 2; }, testInterval(2), "add2");
   fs.start();
@@ -79,7 +90,7 @@ TEST(FunctionScheduler, SimpleAdd) {
 }
 
 TEST(FunctionScheduler, AddCancel) {
-  int total = 0;
+  atomic<int> total{0};
   FunctionScheduler fs;
   fs.addFunction([&] { total += 2; }, testInterval(2), "add2");
   fs.start();
@@ -100,7 +111,7 @@ TEST(FunctionScheduler, AddCancel) {
 }
 
 TEST(FunctionScheduler, AddCancel2) {
-  int total = 0;
+  atomic<int> total{0};
   FunctionScheduler fs;
 
   // Test adds and cancels while the scheduler is stopped
@@ -126,7 +137,7 @@ TEST(FunctionScheduler, AddCancel2) {
   EXPECT_TRUE(fs.cancelFunction("add3"));
 
   // Test a function that cancels itself
-  int selfCancelCount = 0;
+  atomic<int> selfCancelCount{0};
   fs.addFunction(
       [&] {
         ++selfCancelCount;
@@ -134,13 +145,15 @@ TEST(FunctionScheduler, AddCancel2) {
           fs.cancelFunction("selfCancel");
         }
       },
-      testInterval(1), "selfCancel", testInterval(1));
+      testInterval(1),
+      "selfCancel",
+      testInterval(1));
   delay(4);
   EXPECT_EQ(3, selfCancelCount);
   EXPECT_FALSE(fs.cancelFunction("selfCancel"));
 
   // Test a function that schedules another function
-  int adderCount = 0;
+  atomic<int> adderCount{0};
   int fn2Count = 0;
   auto fn2 = [&] { ++fn2Count; };
   auto fnAdder = [&] {
@@ -178,12 +191,13 @@ TEST(FunctionScheduler, AddCancel2) {
 }
 
 TEST(FunctionScheduler, AddMultiple) {
-  int total = 0;
+  atomic<int> total{0};
   FunctionScheduler fs;
   fs.addFunction([&] { total += 2; }, testInterval(2), "add2");
   fs.addFunction([&] { total += 3; }, testInterval(3), "add3");
-  EXPECT_THROW(fs.addFunction([&] { total += 2; }, testInterval(2), "add2"),
-               std::invalid_argument); // function name already exists
+  EXPECT_THROW(
+      fs.addFunction([&] { total += 2; }, testInterval(2), "add2"),
+      std::invalid_argument); // function name already exists
 
   fs.start();
   delay(1);
@@ -200,7 +214,7 @@ TEST(FunctionScheduler, AddMultiple) {
 }
 
 TEST(FunctionScheduler, AddAfterStart) {
-  int total = 0;
+  atomic<int> total{0};
   FunctionScheduler fs;
   fs.addFunction([&] { total += 2; }, testInterval(2), "add2");
   fs.addFunction([&] { total += 3; }, testInterval(2), "add3");
@@ -213,7 +227,7 @@ TEST(FunctionScheduler, AddAfterStart) {
 }
 
 TEST(FunctionScheduler, ShutdownStart) {
-  int total = 0;
+  atomic<int> total{0};
   FunctionScheduler fs;
   fs.addFunction([&] { total += 2; }, testInterval(2), "add2");
   fs.start();
@@ -228,7 +242,7 @@ TEST(FunctionScheduler, ShutdownStart) {
 }
 
 TEST(FunctionScheduler, ResetFunc) {
-  int total = 0;
+  atomic<int> total{0};
   FunctionScheduler fs;
   fs.addFunction([&] { total += 2; }, testInterval(3), "add2");
   fs.addFunction([&] { total += 3; }, testInterval(3), "add3");
@@ -240,7 +254,7 @@ TEST(FunctionScheduler, ResetFunc) {
   delay(1);
   // t2: after the reset, add2 should have been invoked immediately
   EXPECT_EQ(7, total);
-  usleep(150000);
+  delay(1.5);
   // t3.5: add3 should have been invoked. add2 should not
   EXPECT_EQ(10, total);
   delay(1);
@@ -248,12 +262,76 @@ TEST(FunctionScheduler, ResetFunc) {
   EXPECT_EQ(12, total);
 }
 
+TEST(FunctionScheduler, ResetFunc2) {
+  atomic<int> total{0};
+  FunctionScheduler fs;
+  fs.addFunctionOnce([&] { total += 2; }, "add2", testInterval(1));
+  fs.addFunctionOnce([&] { total += 3; }, "add3", testInterval(1));
+  fs.start();
+  delay(2);
+  fs.addFunctionOnce([&] { total += 3; }, "add4", testInterval(2));
+  EXPECT_TRUE(fs.resetFunctionTimer("add4"));
+  fs.addFunctionOnce([&] { total += 3; }, "add6", testInterval(2));
+  delay(1);
+  EXPECT_TRUE(fs.resetFunctionTimer("add4"));
+  delay(3);
+  EXPECT_FALSE(fs.resetFunctionTimer("add3"));
+  fs.addFunctionOnce([&] { total += 3; }, "add4", testInterval(1));
+}
+
+TEST(FunctionScheduler, ResetFuncWhileRunning) {
+  struct State {
+    boost::barrier barrier_a{2};
+    boost::barrier barrier_b{2};
+    boost::barrier barrier_c{2};
+    boost::barrier barrier_d{2};
+    bool set = false;
+    size_t count = 0;
+  };
+
+  State state; // held by ref
+  auto mv = std::make_shared<size_t>(); // gets moved
+
+  FunctionScheduler fs;
+  fs.addFunction(
+      [&, mv /* ref + shared_ptr fit in in-situ storage */] {
+        if (!state.set) { // first invocation
+          state.barrier_a.wait();
+          // ensure that resetFunctionTimer is called in this critical section
+          state.barrier_b.wait();
+          ++state.count;
+          EXPECT_TRUE(bool(mv)) << "bug repro: mv was moved-out";
+          state.barrier_c.wait();
+          // main thread checks count here
+          state.barrier_d.wait();
+        } else { // subsequent invocations
+          ++state.count;
+        }
+      },
+      testInterval(3),
+      "nada");
+  fs.start();
+
+  state.barrier_a.wait();
+  state.set = true;
+  fs.resetFunctionTimer("nada");
+  EXPECT_EQ(0, state.count) << "sanity check";
+  state.barrier_b.wait();
+  // fn thread increments count and checks mv here
+  state.barrier_c.wait();
+  EXPECT_EQ(1, state.count) << "sanity check";
+  state.barrier_d.wait();
+  delay(1);
+  EXPECT_EQ(2, state.count) << "sanity check";
+}
+
 TEST(FunctionScheduler, AddInvalid) {
-  int total = 0;
+  atomic<int> total{0};
   FunctionScheduler fs;
   // interval may not be negative
-  EXPECT_THROW(fs.addFunction([&] { total += 2; }, testInterval(-1), "add2"),
-               std::invalid_argument);
+  EXPECT_THROW(
+      fs.addFunction([&] { total += 2; }, testInterval(-1), "add2"),
+      std::invalid_argument);
 
   EXPECT_FALSE(fs.cancelFunction("addNoFunc"));
 }
@@ -267,26 +345,28 @@ TEST(FunctionScheduler, NoFunctions) {
 }
 
 TEST(FunctionScheduler, AddWhileRunning) {
-  int total = 0;
+  atomic<int> total{0};
   FunctionScheduler fs;
   fs.start();
   delay(1);
   fs.addFunction([&] { total += 2; }, testInterval(2), "add2");
   // The function should be invoked nearly immediately when we add it
   // and the FunctionScheduler is already running
-  usleep(50000);
-  EXPECT_EQ(2, total);
+  delay(0.5);
+  auto t = total.load();
+  EXPECT_EQ(2, t);
   delay(2);
-  EXPECT_EQ(4, total);
+  t = total.load();
+  EXPECT_EQ(4, t);
 }
 
 TEST(FunctionScheduler, NoShutdown) {
-  int total = 0;
+  atomic<int> total{0};
   {
     FunctionScheduler fs;
     fs.addFunction([&] { total += 2; }, testInterval(1), "add2");
     fs.start();
-    usleep(50000);
+    delay(0.5);
     EXPECT_EQ(2, total);
   }
   // Destroyed the FunctionScheduler without calling shutdown.
@@ -297,15 +377,14 @@ TEST(FunctionScheduler, NoShutdown) {
 }
 
 TEST(FunctionScheduler, StartDelay) {
-  int total = 0;
+  atomic<int> total{0};
   FunctionScheduler fs;
-  fs.addFunction([&] { total += 2; }, testInterval(2), "add2",
-                 testInterval(2));
-  fs.addFunction([&] { total += 3; }, testInterval(3), "add3",
-                 testInterval(2));
-  EXPECT_THROW(fs.addFunction([&] { total += 2; }, testInterval(3),
-                              "addX", testInterval(-1)),
-               std::invalid_argument);
+  fs.addFunction([&] { total += 2; }, testInterval(2), "add2", testInterval(2));
+  fs.addFunction([&] { total += 3; }, testInterval(3), "add3", testInterval(2));
+  EXPECT_THROW(
+      fs.addFunction(
+          [&] { total += 2; }, testInterval(3), "addX", testInterval(-1)),
+      std::invalid_argument);
   fs.start();
   delay(1); // t1
   EXPECT_EQ(0, total);
@@ -332,13 +411,13 @@ TEST(FunctionScheduler, NoSteadyCatchup) {
   std::atomic<int> ticks(0);
   FunctionScheduler fs;
   // fs.setSteady(false); is the default
-  fs.addFunction([&ticks] {
-                   if (++ticks == 2) {
-                     std::this_thread::sleep_for(
-                         std::chrono::milliseconds(200));
-                   }
-                 },
-                 milliseconds(5));
+  fs.addFunction(
+      [&ticks] {
+        if (++ticks == 2) {
+          std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        }
+      },
+      milliseconds(5));
   fs.start();
   std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
@@ -351,13 +430,13 @@ TEST(FunctionScheduler, SteadyCatchup) {
   std::atomic<int> ticks(0);
   FunctionScheduler fs;
   fs.setSteady(true);
-  fs.addFunction([&ticks] {
-                   if (++ticks == 2) {
-                     std::this_thread::sleep_for(
-                         std::chrono::milliseconds(200));
-                   }
-                 },
-                 milliseconds(5));
+  fs.addFunction(
+      [&ticks] {
+        if (++ticks == 2) {
+          std::this_thread::sleep_for(std::chrono::milliseconds(200));
+        }
+      },
+      milliseconds(5));
   fs.start();
 
   std::this_thread::sleep_for(std::chrono::milliseconds(500));
@@ -368,18 +447,19 @@ TEST(FunctionScheduler, SteadyCatchup) {
 }
 
 TEST(FunctionScheduler, UniformDistribution) {
-  int total = 0;
+  atomic<int> total{0};
   const int kTicks = 2;
   std::chrono::milliseconds minInterval =
       testInterval(kTicks) - (timeFactor / 5);
   std::chrono::milliseconds maxInterval =
       testInterval(kTicks) + (timeFactor / 5);
   FunctionScheduler fs;
-  fs.addFunctionUniformDistribution([&] { total += 2; },
-                                    minInterval,
-                                    maxInterval,
-                                    "UniformDistribution",
-                                    std::chrono::milliseconds(0));
+  fs.addFunctionUniformDistribution(
+      [&] { total += 2; },
+      minInterval,
+      maxInterval,
+      "UniformDistribution",
+      std::chrono::milliseconds(0));
   fs.start();
   delay(1);
   EXPECT_EQ(2, total);
@@ -392,17 +472,53 @@ TEST(FunctionScheduler, UniformDistribution) {
   EXPECT_EQ(6, total);
 }
 
+TEST(FunctionScheduler, ConsistentDelay) {
+  std::atomic<int> ticks(0);
+  FunctionScheduler fs;
+
+  std::atomic<long long> epoch(0);
+  epoch = duration_cast<milliseconds>(steady_clock::now().time_since_epoch())
+              .count();
+
+  // We should have runs at t = 0, 600, 800, 1200, or 4 total.
+  // If at const interval, it would be t = 0, 600, 1000, or 3 total.
+  fs.addFunctionConsistentDelay(
+      [&ticks, &epoch] {
+        auto now =
+            duration_cast<milliseconds>(steady_clock::now().time_since_epoch())
+                .count();
+        int t = ++ticks;
+        if (t != 2) {
+          // Sensitive to delays above 100ms.
+          EXPECT_NEAR((now - epoch) - (t - 1) * 400, 0, 100);
+        }
+        if (t == 1) {
+          /* sleep override */
+          std::this_thread::sleep_for(std::chrono::milliseconds(600));
+        }
+      },
+      milliseconds(400),
+      "ConsistentDelay");
+
+  fs.start();
+
+  /* sleep override */
+  std::this_thread::sleep_for(std::chrono::milliseconds(1300));
+  EXPECT_EQ(ticks.load(), 4);
+}
+
 TEST(FunctionScheduler, ExponentialBackoff) {
-  int total = 0;
-  int expectedInterval = 0;
-  int nextInterval = 2;
+  atomic<int> total{0};
+  atomic<int> expectedInterval{0};
+  atomic<int> nextInterval{2};
   FunctionScheduler fs;
   fs.addFunctionGenericDistribution(
       [&] { total += 2; },
-      [&expectedInterval, nextInterval]() mutable {
-        expectedInterval = nextInterval;
-        nextInterval *= nextInterval;
-        return testInterval(expectedInterval);
+      [&expectedInterval, &nextInterval]() mutable {
+        auto interval = nextInterval.load();
+        expectedInterval = interval;
+        nextInterval = interval * interval;
+        return testInterval(interval);
       },
       "ExponentialBackoff",
       "2^n * 100ms",
@@ -420,8 +536,8 @@ TEST(FunctionScheduler, ExponentialBackoff) {
 }
 
 TEST(FunctionScheduler, GammaIntervalDistribution) {
-  int total = 0;
-  int expectedInterval = 0;
+  atomic<int> total{0};
+  atomic<int> expectedInterval{0};
   FunctionScheduler fs;
   std::default_random_engine generator(folly::Random::rand32());
   // The alpha and beta arguments are selected, somewhat randomly, to be 2.0.
@@ -451,7 +567,7 @@ TEST(FunctionScheduler, GammaIntervalDistribution) {
 }
 
 TEST(FunctionScheduler, AddWithRunOnce) {
-  int total = 0;
+  atomic<int> total{0};
   FunctionScheduler fs;
   fs.addFunctionOnce([&] { total += 2; }, "add2");
   fs.start();
@@ -470,7 +586,7 @@ TEST(FunctionScheduler, AddWithRunOnce) {
 }
 
 TEST(FunctionScheduler, cancelFunctionAndWait) {
-  int total = 0;
+  atomic<int> total{0};
   FunctionScheduler fs;
   fs.addFunction(
       [&] {
@@ -515,7 +631,7 @@ class PThreadCreateFailure {
 };
 
 std::atomic<int> PThreadCreateFailure::forceFailure_{0};
-} // unnamed namespce
+} // namespace
 
 // Replace the system pthread_create() function with our own stub, so we can
 // trigger failures in the StartThrows() test.
@@ -546,7 +662,7 @@ TEST(FunctionScheduler, StartThrows) {
 #endif
 
 TEST(FunctionScheduler, cancelAllFunctionsAndWait) {
-  int total = 0;
+  atomic<int> total{0};
   FunctionScheduler fs;
 
   fs.addFunction(
@@ -566,4 +682,78 @@ TEST(FunctionScheduler, cancelAllFunctionsAndWait) {
 
   EXPECT_FALSE(fs.cancelFunction("add2")); // add2 has been canceled
   fs.shutdown();
+}
+
+TEST(FunctionScheduler, CancelAndWaitOnRunningFunc) {
+  folly::Baton<> baton;
+  std::thread th([&baton]() {
+    FunctionScheduler fs;
+    fs.addFunction([] { delay(10); }, testInterval(2), "func");
+    fs.start();
+    delay(1);
+    EXPECT_TRUE(fs.cancelFunctionAndWait("func"));
+    baton.post();
+  });
+
+  ASSERT_TRUE(baton.try_wait_for(testInterval(15)));
+  th.join();
+}
+
+TEST(FunctionScheduler, CancelAllAndWaitWithRunningFunc) {
+  folly::Baton<> baton;
+  std::thread th([&baton]() {
+    FunctionScheduler fs;
+    fs.addFunction([] { delay(10); }, testInterval(2), "func");
+    fs.start();
+    delay(1);
+    fs.cancelAllFunctionsAndWait();
+    baton.post();
+  });
+
+  ASSERT_TRUE(baton.try_wait_for(testInterval(15)));
+  th.join();
+}
+
+TEST(FunctionScheduler, CancelAllAndWaitWithOneRunningAndOneWaiting) {
+  folly::Baton<> baton;
+  std::thread th([&baton]() {
+    std::atomic<int> nExecuted(0);
+    FunctionScheduler fs;
+    fs.addFunction(
+        [&nExecuted] {
+          nExecuted++;
+          delay(10);
+        },
+        testInterval(2),
+        "func0");
+    fs.addFunction(
+        [&nExecuted] {
+          nExecuted++;
+          delay(10);
+        },
+        testInterval(2),
+        "func1",
+        testInterval(5));
+    fs.start();
+    delay(1);
+    fs.cancelAllFunctionsAndWait();
+    EXPECT_EQ(nExecuted, 1);
+    baton.post();
+  });
+
+  ASSERT_TRUE(baton.try_wait_for(testInterval(15)));
+  th.join();
+}
+
+TEST(FunctionScheduler, ConcurrentCancelFunctionAndWait) {
+  FunctionScheduler fs;
+  fs.addFunction([] { delay(10); }, testInterval(2), "func");
+
+  fs.start();
+  delay(1);
+  std::thread th1([&fs] { EXPECT_TRUE(fs.cancelFunctionAndWait("func")); });
+  delay(1);
+  std::thread th2([&fs] { EXPECT_FALSE(fs.cancelFunctionAndWait("func")); });
+  th1.join();
+  th2.join();
 }

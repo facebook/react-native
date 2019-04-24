@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,18 @@
  */
 
 #include <folly/IndexedMemPool.h>
-#include <folly/test/DeterministicSchedule.h>
+#include <folly/portability/GMock.h>
 #include <folly/portability/GTest.h>
+#include <folly/portability/Semaphore.h>
 #include <folly/portability/Unistd.h>
+#include <folly/test/DeterministicSchedule.h>
 
 #include <string>
 #include <thread>
-#include <semaphore.h>
 
 using namespace folly;
 using namespace folly::test;
+using namespace testing;
 
 TEST(IndexedMemPool, unique_ptr) {
   typedef IndexedMemPool<size_t> Pool;
@@ -55,7 +57,7 @@ TEST(IndexedMemPool, no_starvation) {
   typedef DeterministicSchedule Sched;
   Sched sched(Sched::uniform(0));
 
-  typedef IndexedMemPool<int,8,8,DeterministicAtomic> Pool;
+  typedef IndexedMemPool<int, 8, 8, DeterministicAtomic> Pool;
   Pool pool(poolSize);
 
   for (auto pass = 0; pass < 10; ++pass) {
@@ -76,8 +78,8 @@ TEST(IndexedMemPool, no_starvation) {
         Sched::wait(&allocSem);
         uint32_t idx = pool.allocIndex();
         EXPECT_NE(idx, 0u);
-        EXPECT_LE(idx,
-            poolSize + (pool.NumLocalLists - 1) * pool.LocalListLimit);
+        EXPECT_LE(
+            idx, poolSize + (pool.NumLocalLists - 1) * pool.LocalListLimit);
         pool[idx] = i;
         EXPECT_EQ(write(fd[1], &idx, sizeof(idx)), sizeof(idx));
         Sched::post(&readSem);
@@ -91,8 +93,8 @@ TEST(IndexedMemPool, no_starvation) {
         EXPECT_EQ(read(fd[0], &idx, sizeof(idx)), sizeof(idx));
         EXPECT_NE(idx, 0);
         EXPECT_GE(idx, 1u);
-        EXPECT_LE(idx,
-            poolSize + (Pool::NumLocalLists - 1) * Pool::LocalListLimit);
+        EXPECT_LE(
+            idx, poolSize + (Pool::NumLocalLists - 1) * Pool::LocalListLimit);
         EXPECT_EQ(pool[idx], i);
         pool.recycleIndex(idx);
         Sched::post(&allocSem);
@@ -108,7 +110,7 @@ TEST(IndexedMemPool, no_starvation) {
 
 TEST(IndexedMemPool, st_capacity) {
   // only one local list => capacity is exact
-  typedef IndexedMemPool<int,1,32> Pool;
+  typedef IndexedMemPool<int, 1, 32> Pool;
   Pool pool(10);
 
   EXPECT_EQ(pool.capacity(), 10u);
@@ -120,7 +122,7 @@ TEST(IndexedMemPool, st_capacity) {
 }
 
 TEST(IndexedMemPool, mt_capacity) {
-  typedef IndexedMemPool<int,16,32> Pool;
+  typedef IndexedMemPool<int, 16, 32> Pool;
   Pool pool(1000);
 
   std::thread threads[10];
@@ -186,7 +188,7 @@ TEST(IndexedMemPool, eager_recycle) {
 
   for (size_t i = 0; i < 10; ++i) {
     {
-      std::unique_ptr<std::string> arg{ new std::string{ "abc" } };
+      std::unique_ptr<std::string> arg{new std::string{"abc"}};
       auto ptr = pool.allocElem(std::move(arg), 100);
       EXPECT_EQ(NonTrivialStruct::count, 1);
       EXPECT_EQ(ptr->elem_, 103);
@@ -198,8 +200,12 @@ TEST(IndexedMemPool, eager_recycle) {
 
 TEST(IndexedMemPool, late_recycle) {
   {
-    typedef IndexedMemPool<NonTrivialStruct, 8, 8, std::atomic, false, false>
-        Pool;
+    using Pool = IndexedMemPool<
+        NonTrivialStruct,
+        8,
+        8,
+        std::atomic,
+        IndexedMemPoolTraitsLazyRecycle<NonTrivialStruct>>;
     Pool pool(100);
 
     EXPECT_EQ(NonTrivialStruct::count, 0);
@@ -242,3 +248,153 @@ TEST(IndexedMemPool, no_data_races) {
     t.join();
   }
 }
+
+std::atomic<int> cnum{0};
+std::atomic<int> dnum{0};
+
+TEST(IndexedMemPool, construction_destruction) {
+  struct Foo {
+    Foo() {
+      cnum.fetch_add(1);
+    }
+    ~Foo() {
+      dnum.fetch_add(1);
+    }
+  };
+
+  std::atomic<bool> start{false};
+  std::atomic<int> started{0};
+
+  using Pool = IndexedMemPool<
+      Foo,
+      1,
+      1,
+      std::atomic,
+      IndexedMemPoolTraitsLazyRecycle<Foo>>;
+  int nthreads = 20;
+  int count = 1000;
+
+  {
+    Pool pool(2);
+    std::vector<std::thread> thr(nthreads);
+    for (auto i = 0; i < nthreads; ++i) {
+      thr[i] = std::thread([&]() {
+        started.fetch_add(1);
+        while (!start.load()) {
+          ;
+        }
+        for (auto j = 0; j < count; ++j) {
+          uint32_t idx = pool.allocIndex();
+          if (idx != 0) {
+            pool.recycleIndex(idx);
+          }
+        }
+      });
+    }
+
+    while (started.load() < nthreads) {
+      ;
+    }
+    start.store(true);
+
+    for (auto& t : thr) {
+      t.join();
+    }
+  }
+
+  CHECK_EQ(cnum.load(), dnum.load());
+}
+
+/// Global Traits mock. It can't be a regular (non-global) mock because we
+/// don't have access to the instance.
+struct MockTraits {
+  static MockTraits* instance;
+
+  MockTraits() {
+    instance = this;
+  }
+
+  ~MockTraits() {
+    instance = nullptr;
+  }
+
+  MOCK_METHOD2(onAllocate, void(std::string*, std::string));
+  MOCK_METHOD1(onRecycle, void(std::string*));
+
+  struct Forwarder {
+    static void initialize(std::string* ptr) {
+      new (ptr) std::string();
+    }
+
+    static void cleanup(std::string* ptr) {
+      using std::string;
+      ptr->~string();
+    }
+
+    static void onAllocate(std::string* ptr, std::string s) {
+      instance->onAllocate(ptr, s);
+    }
+
+    static void onRecycle(std::string* ptr) {
+      instance->onRecycle(ptr);
+    }
+  };
+};
+
+MockTraits* MockTraits::instance;
+
+using TraitsTestPool =
+    IndexedMemPool<std::string, 1, 1, std::atomic, MockTraits::Forwarder>;
+
+void testTraits(TraitsTestPool& pool) {
+  MockTraits traits;
+  const std::string* elem = nullptr;
+  EXPECT_CALL(traits, onAllocate(_, _))
+      .WillOnce(Invoke([&](std::string* s, auto) {
+        EXPECT_FALSE(pool.isAllocated(pool.locateElem(s)));
+        elem = s;
+      }));
+  std::string* ptr = pool.allocElem("foo").release();
+  EXPECT_EQ(ptr, elem);
+
+  elem = nullptr;
+  EXPECT_CALL(traits, onRecycle(_)).WillOnce(Invoke([&](std::string* s) {
+    EXPECT_FALSE(pool.isAllocated(pool.locateElem(s)));
+    elem = s;
+  }));
+  pool.recycleIndex(pool.locateElem(ptr));
+  EXPECT_EQ(ptr, elem);
+}
+
+// Test that Traits is used when both local and global lists are empty.
+TEST(IndexedMemPool, use_traits_empty) {
+  TraitsTestPool pool(10);
+  testTraits(pool);
+}
+
+// Test that Traits is used when allocating from a local list.
+TEST(IndexedMemPool, use_traits_local_list) {
+  TraitsTestPool pool(10);
+  MockTraits traits;
+  EXPECT_CALL(traits, onAllocate(_, _));
+  // Allocate and immediately recycle an element to populate the local list.
+  pool.allocElem("");
+  testTraits(pool);
+}
+
+// Test that Traits is used when allocating from a global list.
+TEST(IndexedMemPool, use_traits_global_list) {
+  TraitsTestPool pool(10);
+  MockTraits traits;
+  EXPECT_CALL(traits, onAllocate(_, _)).Times(2);
+  auto global = pool.allocElem("");
+  // Allocate and immediately recycle an element to fill the local list.
+  pool.allocElem("");
+  // Recycle an element to populate the global list.
+  global.reset();
+  testTraits(pool);
+}
+
+// Test that IndexedMemPool works with incomplete element types.
+struct IncompleteTestElement;
+using IncompleteTestPool = IndexedMemPool<IncompleteTestElement>;

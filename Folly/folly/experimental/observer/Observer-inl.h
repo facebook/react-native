@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,12 +36,12 @@ Observer<T>::Observer(observer_detail::Core::Ptr core)
 template <typename F>
 Observer<observer_detail::ResultOfUnwrapSharedPtr<F>> makeObserver(
     F&& creator) {
-  auto core = observer_detail::Core::
-      create([creator = std::forward<F>(creator)]() mutable {
-        return std::static_pointer_cast<void>(creator());
+  auto core = observer_detail::Core::create(
+      [creator = std::forward<F>(creator)]() mutable {
+        return std::static_pointer_cast<const void>(creator());
       });
 
-  observer_detail::ObserverManager::scheduleRefreshNewVersion(core);
+  observer_detail::ObserverManager::initCore(core);
 
   return Observer<observer_detail::ResultOfUnwrapSharedPtr<F>>(core);
 }
@@ -72,5 +72,48 @@ const Snapshot<T>& TLObserver<T>::getSnapshotRef() const {
 
   return snapshot;
 }
+
+struct CallbackHandle::Context {
+  Optional<Observer<folly::Unit>> observer;
+  Synchronized<bool> canceled{false};
+};
+
+inline CallbackHandle::CallbackHandle() {}
+
+template <typename T>
+CallbackHandle::CallbackHandle(
+    Observer<T> observer,
+    folly::Function<void(Snapshot<T>)> callback) {
+  context_ = std::make_shared<Context>();
+  context_->observer = makeObserver([observer = std::move(observer),
+                                     callback = std::move(callback),
+                                     context = context_]() mutable {
+    auto rCanceled = context->canceled.rlock();
+    if (*rCanceled) {
+      return folly::unit;
+    }
+    callback(*observer);
+    return folly::unit;
+  });
 }
+
+inline CallbackHandle::~CallbackHandle() {
+  cancel();
 }
+
+inline void CallbackHandle::cancel() {
+  if (!context_) {
+    return;
+  }
+  context_->observer.reset();
+  context_->canceled = true;
+  context_.reset();
+}
+
+template <typename T>
+CallbackHandle Observer<T>::addCallback(
+    folly::Function<void(Snapshot<T>)> callback) const {
+  return CallbackHandle(*this, std::move(callback));
+}
+} // namespace observer
+} // namespace folly

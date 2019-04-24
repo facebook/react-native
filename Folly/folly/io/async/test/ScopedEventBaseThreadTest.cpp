@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,13 @@
 #include <folly/io/async/ScopedEventBaseThread.h>
 
 #include <chrono>
+#include <string>
 
-#include <folly/Baton.h>
 #include <folly/Optional.h>
 #include <folly/io/async/EventBaseManager.h>
 #include <folly/portability/GTest.h>
+#include <folly/synchronization/Baton.h>
+#include <folly/system/ThreadName.h>
 
 using namespace std;
 using namespace std::chrono;
@@ -34,7 +36,25 @@ TEST_F(ScopedEventBaseThreadTest, example) {
 
   Baton<> done;
   sebt.getEventBase()->runInEventBaseThread([&] { done.post(); });
-  ASSERT_TRUE(done.timed_wait(seconds(1)));
+  ASSERT_TRUE(done.try_wait_for(seconds(1)));
+}
+
+TEST_F(ScopedEventBaseThreadTest, named_example) {
+  static constexpr StringPiece kThreadName{"named_example"};
+
+  Optional<std::string> createdThreadName;
+  Baton<> done;
+
+  ScopedEventBaseThread sebt{kThreadName};
+  sebt.getEventBase()->runInEventBaseThread([&] {
+    createdThreadName = folly::getCurrentThreadName();
+    done.post();
+  });
+
+  ASSERT_TRUE(done.try_wait_for(seconds(1)));
+  if (createdThreadName) {
+    ASSERT_EQ(kThreadName.toString(), createdThreadName.value());
+  }
 }
 
 TEST_F(ScopedEventBaseThreadTest, default_manager) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 #pragma once
 
-#include <string>
 #include <folly/stats/Histogram.h>
 #include <folly/stats/MultiLevelTimeSeries.h>
+#include <string>
 
 namespace folly {
 
@@ -53,8 +53,8 @@ template <
     class C = folly::MultiLevelTimeSeries<T, CT>>
 class TimeseriesHistogram {
  private:
-   // NOTE: T must be equivalent to _signed_ numeric type for our math.
-   static_assert(std::numeric_limits<T>::is_signed, "");
+  // NOTE: T must be equivalent to _signed_ numeric type for our math.
+  static_assert(std::numeric_limits<T>::is_signed, "");
 
  public:
   // Values to be inserted into container
@@ -80,17 +80,26 @@ class TimeseriesHistogram {
    * @param defaultContainer a pre-initialized timeseries with the desired
    *                         number of levels and their durations.
    */
-  TimeseriesHistogram(ValueType bucketSize, ValueType min, ValueType max,
-                      const ContainerType& defaultContainer);
+  TimeseriesHistogram(
+      ValueType bucketSize,
+      ValueType min,
+      ValueType max,
+      const ContainerType& defaultContainer);
 
   /* Return the bucket size of each bucket in the histogram. */
-  ValueType getBucketSize() const { return buckets_.getBucketSize(); }
+  ValueType getBucketSize() const {
+    return buckets_.getBucketSize();
+  }
 
   /* Return the min value at which bucketing begins. */
-  ValueType getMin() const { return buckets_.getMin(); }
+  ValueType getMin() const {
+    return buckets_.getMin();
+  }
 
   /* Return the max value at which bucketing ends. */
-  ValueType getMax() const { return buckets_.getMax(); }
+  ValueType getMax() const {
+    return buckets_.getMax();
+  }
 
   /* Return the number of levels of the Timeseries object in each bucket */
   size_t getNumLevels() const {
@@ -386,4 +395,4 @@ class TimeseriesHistogram {
   bool singleUniqueValue_;
   ValueType firstValue_;
 };
-}  // folly
+} // namespace folly

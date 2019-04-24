@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,48 +16,37 @@
 
 #pragma once
 
-#include <folly/detail/CachelinePaddedImpl.h>
+#include <cstddef>
+#include <utility>
+
+#include <folly/lang/Align.h>
 
 namespace folly {
 
 /**
- * Holds a type T, in addition to enough padding to round the size up to the
- * next multiple of the false sharing range used by folly.
+ * Holds a type T, in addition to enough padding to ensure that it isn't subject
+ * to false sharing within the range used by folly.
  *
- * If T is standard-layout, then casting a T* you get from this class to a
- * CachelinePadded<T>* is safe.
- *
- * This class handles padding, but imperfectly handles alignment. (Note that
- * alignment matters for false-sharing: imagine a cacheline size of 64, and two
- * adjacent 64-byte objects, with the first starting at an offset of 32. The
- * last 32 bytes of the first object share a cacheline with the first 32 bytes
- * of the second.). We alignas this class to be at least cacheline-sized, but
- * it's implementation-defined what that means (since a cacheline is almost
- * certainly larger than the maximum natural alignment). The following should be
- * true for recent compilers on common architectures:
- *
- * For heap objects, alignment needs to be handled at the allocator level, such
- * as with posix_memalign (this isn't necessary with jemalloc, which aligns
- * objects that are a multiple of cacheline size to a cacheline).
- *
- * For static and stack objects, the alignment should be obeyed, and no specific
- * intervention is necessary.
+ * If `sizeof(T) <= alignof(T)` then the inner `T` will be entirely within one
+ * false sharing range (AKA cache line).
  */
 template <typename T>
 class CachelinePadded {
+  static_assert(
+      alignof(T) <= max_align_v,
+      "CachelinePadded does not support over-aligned types.");
+
  public:
   template <typename... Args>
   explicit CachelinePadded(Args&&... args)
-      : impl_(std::forward<Args>(args)...) {}
-
-  CachelinePadded() {}
+      : inner_(std::forward<Args>(args)...) {}
 
   T* get() {
-    return &impl_.item;
+    return &inner_;
   }
 
   const T* get() const {
-    return &impl_.item;
+    return &inner_;
   }
 
   T* operator->() {
@@ -77,6 +66,12 @@ class CachelinePadded {
   }
 
  private:
-  detail::CachelinePaddedImpl<T> impl_;
+  static constexpr size_t paddingSize() noexcept {
+    return hardware_destructive_interference_size -
+        (alignof(T) % hardware_destructive_interference_size);
+  }
+  char paddingPre_[paddingSize()];
+  T inner_;
+  char paddingPost_[paddingSize()];
 };
-}
+} // namespace folly

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,23 +85,83 @@ BENCHMARK(cloneBenchmark, iters) {
   }
 }
 
-// fbmake opt
-// _bin/folly/experimental/io/test/iobuf_cursor_test -benchmark
-//
-// Benchmark                               Iters   Total t    t/iter iter/sec
-// ---------------------------------------------------------------------------
-// rwPrivateCursorBenchmark               100000  142.9 ms  1.429 us  683.5 k
-// rwUnshareCursorBenchmark               100000  309.3 ms  3.093 us  315.7 k
-// cursorBenchmark                        100000  741.4 ms  7.414 us  131.7 k
-// skipBenchmark                          100000  738.9 ms  7.389 us  132.2 k
-//
-// uname -a:
-//
-// Linux dev2159.snc6.facebook.com 2.6.33-7_fbk15_104e4d0 #1 SMP
-// Tue Oct 19 22:40:30 PDT 2010 x86_64 x86_64 x86_64 GNU/Linux
-//
-// 72GB RAM, 2 CPUs (Intel(R) Xeon(R) CPU L5630  @ 2.13GHz)
-// hyperthreading disabled
+BENCHMARK(read, iters) {
+  while (iters--) {
+    Cursor c(iobuf_read_benchmark.get());
+    for (int i = 0; i < benchmark_size; ++i) {
+      const auto val = c.read<uint8_t>();
+      folly::doNotOptimizeAway(val);
+    }
+  }
+}
+
+BENCHMARK(readSlow, iters) {
+  while (iters--) {
+    Cursor c(iobuf_read_benchmark.get());
+    const int size = benchmark_size / 2;
+    for (int i = 0; i < size; ++i) {
+      const auto val = c.read<uint16_t>();
+      folly::doNotOptimizeAway(val);
+    }
+  }
+}
+
+bool prefixBaseline(Cursor& c, const std::array<uint8_t, 4>& expected) {
+  std::array<uint8_t, 4> actual;
+  if (c.pullAtMost(actual.data(), actual.size()) != actual.size()) {
+    return false;
+  }
+  return memcmp(actual.data(), expected.data(), actual.size()) == 0;
+}
+
+bool prefix(Cursor& c, uint32_t expected) {
+  uint32_t actual;
+  if (!c.tryReadLE(actual)) {
+    return false;
+  }
+  return actual == expected;
+}
+
+BENCHMARK(prefixBaseline, iters) {
+  IOBuf buf{IOBuf::CREATE, 10};
+  buf.append(10);
+  constexpr std::array<uint8_t, 4> prefix = {{0x01, 0x02, 0x03, 0x04}};
+  while (iters--) {
+    for (int i = 0; i < benchmark_size; ++i) {
+      Cursor c(&buf);
+      bool result = prefixBaseline(c, prefix);
+      folly::doNotOptimizeAway(result);
+    }
+  }
+}
+
+BENCHMARK_RELATIVE(prefix, iters) {
+  IOBuf buf{IOBuf::CREATE, 10};
+  buf.append(10);
+  while (iters--) {
+    for (int i = 0; i < benchmark_size; ++i) {
+      Cursor c(&buf);
+      bool result = prefix(c, 0x01020304);
+      folly::doNotOptimizeAway(result);
+    }
+  }
+}
+
+/**
+ * ============================================================================
+ * folly/io/test/IOBufCursorBenchmark.cpp          relative  time/iter  iters/s
+ * ============================================================================
+ * rwPrivateCursorBenchmark                                     1.01us  985.85K
+ * rwUnshareCursorBenchmark                                     1.01us  986.70K
+ * cursorBenchmark                                              4.77us  209.61K
+ * skipBenchmark                                                4.78us  209.42K
+ * cloneBenchmark                                              26.65us   37.52K
+ * read                                                         4.35us  230.07K
+ * readSlow                                                     5.45us  183.48K
+ * prefixBaseline                                               6.44us  155.24K
+ * prefix                                           589.31%     1.09us  914.87K
+ * ============================================================================
+ */
 
 int main(int argc, char** argv) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);

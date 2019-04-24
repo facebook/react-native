@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,30 +17,25 @@
 
 #include <folly/fibers/FiberManagerInternal.h>
 #include <folly/fibers/LoopController.h>
-#include <folly/io/async/EventBase.h>
 #include <folly/io/async/VirtualEventBase.h>
 #include <atomic>
 #include <memory>
 
 namespace folly {
-class EventBase;
-}
-
-namespace folly {
 namespace fibers {
 
-template <typename EventBaseT>
-class EventBaseLoopControllerT : public LoopController {
+class EventBaseLoopController : public LoopController {
  public:
-  explicit EventBaseLoopControllerT();
-  ~EventBaseLoopControllerT();
+  explicit EventBaseLoopController();
+  ~EventBaseLoopController() override;
 
   /**
    * Attach EventBase after LoopController was created.
    */
-  void attachEventBase(EventBaseT& eventBase);
+  void attachEventBase(EventBase& eventBase);
+  void attachEventBase(VirtualEventBase& eventBase);
 
-  EventBaseT* getEventBase() {
+  VirtualEventBase* getEventBase() {
     return eventBase_;
   }
 
@@ -51,7 +46,7 @@ class EventBaseLoopControllerT : public LoopController {
  private:
   class ControllerCallback : public folly::EventBase::LoopCallback {
    public:
-    explicit ControllerCallback(EventBaseLoopControllerT& controller)
+    explicit ControllerCallback(EventBaseLoopController& controller)
         : controller_(controller) {}
 
     void runLoopCallback() noexcept override {
@@ -59,64 +54,28 @@ class EventBaseLoopControllerT : public LoopController {
     }
 
    private:
-    EventBaseLoopControllerT& controller_;
-  };
-
-  class DestructionCallback : public folly::EventBase::LoopCallback {
-   public:
-    DestructionCallback() : alive_(new int(42)) {}
-    ~DestructionCallback() {
-      reset();
-    }
-
-    void runLoopCallback() noexcept override {
-      reset();
-    }
-
-    std::weak_ptr<void> getWeak() {
-      return {alive_};
-    }
-
-   private:
-    void reset() {
-      std::weak_ptr<void> aliveWeak(alive_);
-      alive_.reset();
-
-      while (!aliveWeak.expired()) {
-        // Spin until all operations requiring EventBaseLoopController to be
-        // alive are complete.
-      }
-    }
-
-    std::shared_ptr<void> alive_;
+    EventBaseLoopController& controller_;
   };
 
   bool awaitingScheduling_{false};
-  EventBaseT* eventBase_{nullptr};
-  Executor::KeepAlive eventBaseKeepAlive_;
+  VirtualEventBase* eventBase_{nullptr};
+  Executor::KeepAlive<VirtualEventBase> eventBaseKeepAlive_;
   ControllerCallback callback_;
-  DestructionCallback destructionCallback_;
   FiberManager* fm_{nullptr};
   std::atomic<bool> eventBaseAttached_{false};
-  std::weak_ptr<void> aliveWeak_;
   InlineFunctionRunner* loopRunner_{nullptr};
 
   /* LoopController interface */
 
   void setFiberManager(FiberManager* fm) override;
   void schedule() override;
-  void cancel() override;
   void runLoop() override;
-  void scheduleThreadSafe(std::function<bool()> func) override;
+  void scheduleThreadSafe() override;
   void timedSchedule(std::function<void()> func, TimePoint time) override;
 
   friend class FiberManager;
 };
+} // namespace fibers
+} // namespace folly
 
-using EventBaseLoopController = EventBaseLoopControllerT<folly::EventBase>;
-using VirtualEventBaseLoopController =
-    EventBaseLoopControllerT<folly::VirtualEventBase>;
-}
-} // folly::fibers
-
-#include "EventBaseLoopController-inl.h"
+#include <folly/fibers/EventBaseLoopController-inl.h>

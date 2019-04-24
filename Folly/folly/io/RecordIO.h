@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,8 @@
 
 #include <folly/File.h>
 #include <folly/Range.h>
-#include <folly/MemoryMapping.h>
 #include <folly/io/IOBuf.h>
+#include <folly/system/MemoryMapping.h>
 
 namespace folly {
 
@@ -69,7 +69,9 @@ class RecordIOWriter {
    * Return the position in the file where the next byte will be written.
    * Conservative, as stuff can be written at any time from another thread.
    */
-  off_t filePos() const { return filePos_; }
+  off_t filePos() const {
+    return filePos_;
+  }
 
  private:
   File file_;
@@ -129,7 +131,7 @@ namespace recordio_helpers {
 /**
  * Header size.
  */
-constexpr size_t headerSize();  // defined in RecordIO-inl.h
+constexpr size_t headerSize(); // defined in RecordIO-inl.h
 
 /**
  * Write a header in the buffer.  We will prepend the header to the front
@@ -157,9 +159,8 @@ struct RecordInfo {
   uint32_t fileId;
   ByteRange record;
 };
-RecordInfo findRecord(ByteRange searchRange,
-                      ByteRange wholeRange,
-                      uint32_t fileId);
+RecordInfo
+findRecord(ByteRange searchRange, ByteRange wholeRange, uint32_t fileId);
 
 /**
  * Search for the first valid record in range.
@@ -172,8 +173,8 @@ RecordInfo findRecord(ByteRange range, uint32_t fileId);
  */
 RecordInfo validateRecord(ByteRange range, uint32_t fileId);
 
-}  // namespace recordio_helpers
+} // namespace recordio_helpers
 
-}  // namespaces
+} // namespace folly
 
 #include <folly/io/RecordIO-inl.h>

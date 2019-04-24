@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,12 @@
  */
 #pragma once
 
+#include <glog/logging.h>
+
 #include <folly/experimental/observer/detail/Core.h>
 #include <folly/experimental/observer/detail/GraphCycleDetector.h>
 #include <folly/futures/Future.h>
+#include <folly/synchronization/SanitizeThread.h>
 
 namespace folly {
 namespace observer_detail {
@@ -62,50 +65,73 @@ class ObserverManager {
     return inManagerThread_;
   }
 
-  static Future<Unit>
+  static void
   scheduleRefresh(Core::Ptr core, size_t minVersion, bool force = false) {
     if (core->getVersion() >= minVersion) {
-      return makeFuture<Unit>(Unit());
+      return;
     }
 
     auto instance = getInstance();
 
     if (!instance) {
-      return makeFuture<Unit>(
-          std::logic_error("ObserverManager requested during shutdown"));
+      return;
     }
-
-    Promise<Unit> promise;
-    auto future = promise.getFuture();
 
     SharedMutexReadPriority::ReadHolder rh(instance->versionMutex_);
 
-    instance->scheduleCurrent([
-      core = std::move(core),
-      promise = std::move(promise),
-      instancePtr = instance.get(),
-      rh = std::move(rh),
-      force
-    ]() mutable {
-      promise.setWith([&]() { core->refresh(instancePtr->version_, force); });
-    });
+    // TSAN assumes that the thread that locks the mutex must
+    // be the one that unlocks it. However, we are passing ownership of
+    // the read lock into the lambda, and the thread that performs the async
+    // work will be the one that unlocks it. To avoid noise with TSAN,
+    // annotate that the thread has released the mutex, and then annotate
+    // the async thread as acquiring the mutex.
+    annotate_rwlock_released(
+        &instance->versionMutex_,
+        annotate_rwlock_level::rdlock,
+        __FILE__,
+        __LINE__);
 
-    return future;
+    instance->scheduleCurrent([core = std::move(core),
+                               instancePtr = instance.get(),
+                               rh = std::move(rh),
+                               force]() {
+      // Make TSAN know that the current thread owns the read lock now.
+      annotate_rwlock_acquired(
+          &instancePtr->versionMutex_,
+          annotate_rwlock_level::rdlock,
+          __FILE__,
+          __LINE__);
+
+      core->refresh(instancePtr->version_, force);
+    });
   }
 
-  static void scheduleRefreshNewVersion(Core::Ptr core) {
-    if (core->getVersion() == 0) {
-      scheduleRefresh(std::move(core), 1).get();
-      return;
-    }
-
+  static void scheduleRefreshNewVersion(Core::WeakPtr coreWeak) {
     auto instance = getInstance();
 
     if (!instance) {
       return;
     }
 
-    instance->scheduleNext(std::move(core));
+    instance->scheduleNext(std::move(coreWeak));
+  }
+
+  static void initCore(Core::Ptr core) {
+    DCHECK(core->getVersion() == 0);
+
+    auto instance = getInstance();
+    if (!instance) {
+      throw std::logic_error("ObserverManager requested during shutdown");
+    }
+
+    auto inManagerThread = std::exchange(inManagerThread_, true);
+    SCOPE_EXIT {
+      inManagerThread_ = inManagerThread;
+    };
+
+    SharedMutexReadPriority::ReadHolder rh(instance->versionMutex_);
+
+    core->refresh(instance->version_, false);
   }
 
   class DependencyRecorder {
@@ -189,7 +215,7 @@ class ObserverManager {
   struct Singleton;
 
   void scheduleCurrent(Function<void()>);
-  void scheduleNext(Core::Ptr);
+  void scheduleNext(Core::WeakPtr);
 
   class CurrentQueue;
   class NextQueue;
@@ -215,5 +241,5 @@ class ObserverManager {
   using CycleDetector = GraphCycleDetector<const Core*>;
   folly::Synchronized<CycleDetector, std::mutex> cycleDetector_;
 };
-}
-}
+} // namespace observer_detail
+} // namespace folly

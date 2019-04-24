@@ -1,7 +1,5 @@
 ### `folly/`
 
-For a high level overview see the [README](../../README.md)
-
 ### Components
 
 Below is a list of (some) Folly components in alphabetical order, along with
@@ -71,11 +69,11 @@ the scheme is known (e.g. json -> `map<int,int>`).
 
 A simple LRU hash map.
 
-####[`FBString.h`](FBString.md)
+#### [`FBString.h`](FBString.md)
 
 A drop-in implementation of `std::string` with a variety of optimizations.
 
-####[`FBVector.h`](FBVector.md)
+#### [`FBVector.h`](FBVector.md)
 
 A mostly drop-in implementation of `std::vector` with a variety of
 optimizations.
@@ -92,11 +90,11 @@ Rabin fingerprinting.
 
 A polymorphic wrapper for callables similar to `std::function` but not copyable and therefore able to wrap non-copyable callables, such as lambdas that capture move-only types like `std::unique_ptr` or `folly::Promise`.
 
-### [`futures/`](../futures/README.md)
+### [`futures/`](Futures.md)
 
 Futures is a framework for expressing asynchronous code in C++ using the Promise/Future pattern.
 
-####[`Format.h`](Format.md)
+#### [`Format.h`](Format.md)
 
 Python-style formatting utilities.
 
@@ -105,13 +103,13 @@ Python-style formatting utilities.
 This library makes it possible to write declarative comprehensions for
 processing sequences of values efficiently in C++ akin to C#'s LINQ.
 
-####[`GroupVarint.h`](GroupVarint.md)
+#### [`GroupVarint.h`](GroupVarint.md)
 
 [Group Varint
 encoding](http://www.ir.uwaterloo.ca/book/addenda-06-index-compression.html)
 for 32-bit values.
 
-####`IpAddress.h`
+#### `IpAddress.h`
 
 A collection of utilities to deal with IPAddresses, including ipv4 and ipv6.
 
@@ -120,35 +118,35 @@ A collection of utilities to deal with IPAddresses, including ipv4 and ipv6.
 A collection of useful of abstractions for high-performance io. This is heavily relied upon
 in Facebook's internally networking code.
 
-####`Hash.h`
+#### `Hash.h`
 
 Various popular hash function implementations.
 
-####[`Histogram.h`](Histogram.md)
+#### [`Histogram.h`](Histogram.md)
 
 A simple class for collecting histogram data.
 
-####`IntrusiveList.h`
+#### `IntrusiveList.h`
 
 Convenience type definitions for using `boost::intrusive_list`.
 
-####`json.h`
+#### `json.h`
 
 JSON serializer and deserializer. Uses `dynamic.h`.
 
-####`Likely.h`
+#### `Likely.h`
 
 Wrappers around [`__builtin_expect`](http://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html).
 
-####`Malloc.h`, `Memory.h`
+#### `Malloc.h`, `Memory.h`
 
 Memory allocation helpers, particularly when using jemalloc.
 
-####`MicroSpinLock.h`
+#### `MicroSpinLock.h`
 
 A really, *really* small spinlock for fine-grained locking of lots of teeny-tiny data.
 
-####`MPMCQueue.h`
+#### `MPMCQueue.h`
 
 MPMCQueue<typename> is a high-performance bounded concurrent queue that
 supports multiple producers, multiple consumers, and optional blocking.
@@ -158,36 +156,41 @@ The queue has a fixed capacity, for which all memory will be allocated
 The additional utility `MPMCPipeline.h` is an extension that lets you
 chain several queues together with processing steps in between.
 
-####[`PackedSyncPtr.h`](PackedSyncPtr.md)
+#### [`PackedSyncPtr.h`](PackedSyncPtr.md)
 
 A highly specialized data structure consisting of a pointer, a 1-bit
 spin lock, and a 15-bit integral, all inside one 64-bit word.
 
-####`Preprocessor.h`
+#### [`Poly.h`](Poly.md)
+
+A class template that makes it relatively easy to define a type-erasing
+polymorphic object wrapper.
+
+#### `Preprocessor.h`
 
 Necessarily evil stuff.
 
-####[`ProducerConsumerQueue.h`](ProducerConsumerQueue.md)
+#### [`ProducerConsumerQueue.h`](ProducerConsumerQueue.md)
 
 Lock free single-reader, single-writer queue.
 
-####`Random.h`
+#### `Random.h`
 
 Defines only one function---`randomNumberSeed()`.
 
-####`Range.h`
+#### `Range.h`
 
 Boost-style range facility and the `StringPiece` specialization.
 
-####`RWSpinLock.h`
+#### `RWSpinLock.h`
 
 Fast and compact reader-writer spin lock.
 
-####`ScopeGuard.h`
+#### `ScopeGuard.h`
 
 C++11 incarnation of the old [ScopeGuard](http://drdobbs.com/184403758) idiom.
 
-####`Singleton.h`
+#### `Singleton.h`
 
 A singleton to rule the singletons. This is an attempt to insert a layer between
 C++ statics and the fiasco that ensues, so that things can be created, and destroyed,
@@ -195,16 +198,16 @@ correctly upon program creation, program end and sometimes `dlopen` and `fork`.
 
 Singletons are bad for you, but this may help.
 
-####[`SmallLocks.h`](SmallLocks.md)
+#### [`SmallLocks.h`](SmallLocks.md)
 
 Very small spin locks (1 byte and 1 bit).
 
-####`small_vector.h`
+#### `small_vector.h`
 
 Vector with the small buffer optimization and an optional embedded
 `PicoSpinLock`.
 
-####`sorted_vector_types.h`
+#### `sorted_vector_types.h`
 
 Collections similar to `std::map` but implemented as sorted vectors.
 
@@ -213,47 +216,47 @@ Collections similar to `std::map` but implemented as sorted vectors.
 A collection of efficient utilities for collecting statistics (often of
 time series data).
 
-####`StlAllocator.h`
+#### `StlAllocator.h`
 
 STL allocator wrapping a simple allocate/deallocate interface.
 
-####`String.h`
+#### `String.h`
 
 String utilities that connect `folly::fbstring` with `std::string`.
 
-####`Subprocess.h`
+#### `Subprocess.h`
 
 Subprocess library, modeled after Python's subprocess module.
 
-####[`Synchronized.h`](Synchronized.md)
+#### [`Synchronized.h`](Synchronized.md)
 
 High-level synchronization library.
 
-####`System.h`
+#### `System.h`
 
 Demangling and errno utilities.
 
-####[`ThreadCachedInt.h`](ThreadCachedInt.md)
+#### [`ThreadCachedInt.h`](ThreadCachedInt.md)
 
 High-performance atomic increment using thread caching.
 
-####[`ThreadLocal.h`](ThreadLocal.md)
+#### [`ThreadLocal.h`](ThreadLocal.md)
 
 Improved thread local storage for non-trivial types.
 
-####`TimeoutQueue.h`
+#### `TimeoutQueue.h`
 
 Queue with per-item timeout.
 
-####`Traits.h`
+#### `Traits.h`
 
 Type traits that complement those defined in the standard C++11 header
 `<traits>`.
 
-####`Unicode.h`
+#### `Unicode.h`
 
 Defines the `codePointToUtf8` function.
 
-####`Uri.h`
+#### `Uri.h`
 
 A collection of utilities to deal with URIs.

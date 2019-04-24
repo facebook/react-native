@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,11 @@
 
 #include <folly/MPMCPipeline.h>
 #include <folly/experimental/EventCount.h>
+#include <folly/functional/Invoke.h>
 
-namespace folly { namespace gen { namespace detail {
+namespace folly {
+namespace gen {
+namespace detail {
 
 /**
  * PMap - Map in parallel (using threads). For producing a sequence of
@@ -40,25 +43,25 @@ namespace folly { namespace gen { namespace detail {
  *
  *   auto squares = seq(1, 10) | pmap(fibonacci, 4) | sum;
  */
-template<class Predicate>
+template <class Predicate>
 class PMap : public Operator<PMap<Predicate>> {
   Predicate pred_;
   size_t nThreads_;
+
  public:
   PMap() = default;
 
   PMap(Predicate pred, size_t nThreads)
-    : pred_(std::move(pred)),
-      nThreads_(nThreads) { }
+      : pred_(std::move(pred)), nThreads_(nThreads) {}
 
-  template<class Value,
-           class Source,
-           class Input = typename std::decay<Value>::type,
-           class Output = typename std::decay<
-             typename std::result_of<Predicate(Value)>::type
-             >::type>
-  class Generator :
-    public GenImpl<Output, Generator<Value, Source, Input, Output>> {
+  template <
+      class Value,
+      class Source,
+      class Input = typename std::decay<Value>::type,
+      class Output =
+          typename std::decay<invoke_result_t<Predicate, Value>>::type>
+  class Generator
+      : public GenImpl<Output, Generator<Value, Source, Input, Output>> {
     Source source_;
     Predicate pred_;
     const size_t nThreads_;
@@ -72,8 +75,7 @@ class PMap : public Operator<PMap<Predicate>> {
 
      public:
       ExecutionPipeline(const Predicate& pred, size_t nThreads)
-        : pred_(pred),
-          pipeline_(nThreads, nThreads) {
+          : pred_(pred), pipeline_(nThreads, nThreads) {
         workers_.reserve(nThreads);
         for (size_t i = 0; i < nThreads; i++) {
           workers_.push_back(std::thread([this] { this->predApplier(); }));
@@ -83,7 +85,9 @@ class PMap : public Operator<PMap<Predicate>> {
       ~ExecutionPipeline() {
         assert(pipeline_.sizeGuess() == 0);
         assert(done_.load());
-        for (auto& w : workers_) { w.join(); }
+        for (auto& w : workers_) {
+          w.join();
+        }
       }
 
       void stop() {
@@ -128,8 +132,7 @@ class PMap : public Operator<PMap<Predicate>> {
           if (pipeline_.template readStage<0>(ticket, in)) {
             wake_.cancelWait();
             Output out = pred_(std::move(in));
-            pipeline_.template blockingWriteStage<0>(ticket,
-                                                     std::move(out));
+            pipeline_.template blockingWriteStage<0>(ticket, std::move(out));
             continue;
           }
 
@@ -144,14 +147,13 @@ class PMap : public Operator<PMap<Predicate>> {
       }
     };
 
-  public:
+   public:
     Generator(Source source, const Predicate& pred, size_t nThreads)
-      : source_(std::move(source)),
-        pred_(pred),
-        nThreads_(nThreads ? nThreads : sysconf(_SC_NPROCESSORS_ONLN)) {
-    }
+        : source_(std::move(source)),
+          pred_(pred),
+          nThreads_(nThreads ? nThreads : sysconf(_SC_NPROCESSORS_ONLN)) {}
 
-    template<class Body>
+    template <class Body>
     void foreach(Body&& body) const {
       ExecutionPipeline pipeline(pred_, nThreads_);
 
@@ -188,7 +190,7 @@ class PMap : public Operator<PMap<Predicate>> {
       }
     }
 
-    template<class Handler>
+    template <class Handler>
     bool apply(Handler&& handler) const {
       ExecutionPipeline pipeline(pred_, nThreads_);
 
@@ -236,19 +238,16 @@ class PMap : public Operator<PMap<Predicate>> {
     static constexpr bool infinite = Source::infinite;
   };
 
-  template<class Source,
-           class Value,
-           class Gen = Generator<Value, Source>>
+  template <class Source, class Value, class Gen = Generator<Value, Source>>
   Gen compose(GenImpl<Value, Source>&& source) const {
     return Gen(std::move(source.self()), pred_, nThreads_);
   }
 
-  template<class Source,
-           class Value,
-           class Gen = Generator<Value, Source>>
+  template <class Source, class Value, class Gen = Generator<Value, Source>>
   Gen compose(const GenImpl<Value, Source>& source) const {
     return Gen(source.self(), pred_, nThreads_);
   }
 };
-
-}}}  // namespaces
+} // namespace detail
+} // namespace gen
+} // namespace folly

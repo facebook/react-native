@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,38 +18,47 @@
 #include <folly/io/async/AsyncSSLSocket.h>
 #include <folly/portability/GMock.h>
 
-namespace folly { namespace test {
+namespace folly {
+namespace test {
 
 class MockAsyncSSLSocket : public AsyncSSLSocket {
  public:
   MockAsyncSSLSocket(
-   const std::shared_ptr<SSLContext>& ctx,
-   EventBase* base,
-   bool deferSecurityNegotiation = false) :
-    AsyncSSLSocket(ctx, base, deferSecurityNegotiation) {
+      const std::shared_ptr<SSLContext>& ctx,
+      EventBase* base,
+      bool deferSecurityNegotiation = false)
+      : AsyncSocket(base),
+        AsyncSSLSocket(ctx, base, deferSecurityNegotiation) {}
+
+  MOCK_METHOD5(
+      connect_,
+      void(
+          AsyncSocket::ConnectCallback*,
+          const folly::SocketAddress&,
+          int,
+          const OptionMap&,
+          const folly::SocketAddress&));
+  void connect(
+      AsyncSocket::ConnectCallback* callback,
+      const folly::SocketAddress& address,
+      int timeout,
+      const OptionMap& options,
+      const folly::SocketAddress& bindAddr) noexcept override {
+    connect_(callback, address, timeout, options, bindAddr);
   }
 
-  GMOCK_METHOD5_(, noexcept, ,
-   connect,
-   void(AsyncSocket::ConnectCallback*,
-    const folly::SocketAddress&,
-    int,
-    const OptionMap&,
-    const folly::SocketAddress&));
   MOCK_CONST_METHOD1(getLocalAddress, void(folly::SocketAddress*));
   MOCK_CONST_METHOD1(getPeerAddress, void(folly::SocketAddress*));
   MOCK_METHOD0(closeNow, void());
   MOCK_CONST_METHOD0(good, bool());
   MOCK_CONST_METHOD0(readable, bool());
   MOCK_CONST_METHOD0(hangup, bool());
-  MOCK_CONST_METHOD3(getSelectedNextProtocol,
-                     void(const unsigned char**,
-                          unsigned*,
-                          SSLContext::NextProtocolType*));
-  MOCK_CONST_METHOD3(getSelectedNextProtocolNoThrow,
-                     bool(const unsigned char**,
-                          unsigned*,
-                          SSLContext::NextProtocolType*));
+  MOCK_CONST_METHOD2(
+      getSelectedNextProtocol,
+      void(const unsigned char**, unsigned*));
+  MOCK_CONST_METHOD2(
+      getSelectedNextProtocolNoThrow,
+      bool(const unsigned char**, unsigned*));
   MOCK_METHOD1(setReadCB, void(ReadCallback*));
 
   void sslConn(
@@ -97,4 +106,5 @@ class MockAsyncSSLSocket : public AsyncSSLSocket {
           const SSLContext::SSLVerifyPeerEnum&));
 };
 
-}}
+} // namespace test
+} // namespace folly

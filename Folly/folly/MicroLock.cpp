@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,16 @@
 
 namespace folly {
 
-void MicroLockCore::lockSlowPath(uint32_t oldWord,
-                                 detail::Futex<>* wordPtr,
-                                 uint32_t slotHeldBit,
-                                 unsigned maxSpins,
-                                 unsigned maxYields) {
+void MicroLockCore::lockSlowPath(
+    uint32_t oldWord,
+    detail::Futex<>* wordPtr,
+    uint32_t slotHeldBit,
+    unsigned maxSpins,
+    unsigned maxYields) {
   uint32_t newWord;
   unsigned spins = 0;
   uint32_t slotWaitBit = slotHeldBit << 1;
+  uint32_t needWaitBit = 0;
 
 retry:
   if ((oldWord & slotHeldBit) != 0) {
@@ -39,30 +41,33 @@ retry:
       // lock holder knows to FUTEX_WAKE us.
       newWord = oldWord | slotWaitBit;
       if (newWord != oldWord) {
-        if (!wordPtr->compare_exchange_weak(oldWord,
-                                            newWord,
-                                            std::memory_order_relaxed,
-                                            std::memory_order_relaxed)) {
+        if (!wordPtr->compare_exchange_weak(
+                oldWord,
+                newWord,
+                std::memory_order_relaxed,
+                std::memory_order_relaxed)) {
           goto retry;
         }
       }
-      (void)wordPtr->futexWait(newWord, slotHeldBit);
+      detail::futexWait(wordPtr, newWord, slotHeldBit);
+      needWaitBit = slotWaitBit;
     } else if (spins > maxSpins) {
       // sched_yield(), but more portable
       std::this_thread::yield();
     } else {
-      folly::asm_pause();
+      folly::asm_volatile_pause();
     }
     oldWord = wordPtr->load(std::memory_order_relaxed);
     goto retry;
   }
 
-  newWord = oldWord | slotHeldBit;
-  if (!wordPtr->compare_exchange_weak(oldWord,
-                                      newWord,
-                                      std::memory_order_acquire,
-                                      std::memory_order_relaxed)) {
+  newWord = oldWord | slotHeldBit | needWaitBit;
+  if (!wordPtr->compare_exchange_weak(
+          oldWord,
+          newWord,
+          std::memory_order_acquire,
+          std::memory_order_relaxed)) {
     goto retry;
   }
 }
-}
+} // namespace folly

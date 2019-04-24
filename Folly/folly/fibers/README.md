@@ -51,7 +51,7 @@
 
 <ul>
 <li>Individual fibers scheduling can&#039;t be directly controlled by application</li>
-<li>FiberManager is not thread-safe (we recommend to keep one FiberManager per thread). Application is responsible for managing it&#039;s own threads and distributing load between them</li>
+<li>FiberManager is not thread-safe (we recommend to keep one FiberManager per thread). Application is responsible for managing its own threads and distributing load between them</li>
 <li>We don&#039;t support automatic stack size adjustments. Each fiber has a stack of fixed size.</li>
 </ul>
 

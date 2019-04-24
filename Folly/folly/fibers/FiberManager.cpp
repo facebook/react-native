@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "FiberManagerInternal.h"
+#include <folly/fibers/FiberManagerInternal.h>
 
 #include <signal.h>
 
@@ -25,6 +25,7 @@
 #include <folly/fibers/Fiber.h>
 #include <folly/fibers/LoopController.h>
 
+#include <folly/ConstexprMath.h>
 #include <folly/SingletonThreadLocal.h>
 #include <folly/portability/SysSyscall.h>
 #include <folly/portability/Unistd.h>
@@ -59,8 +60,8 @@ namespace fibers {
 static AsanStartSwitchStackFuncPtr getStartSwitchStackFunc();
 static AsanFinishSwitchStackFuncPtr getFinishSwitchStackFunc();
 static AsanUnpoisonMemoryRegionFuncPtr getUnpoisonMemoryRegionFunc();
-}
-}
+} // namespace fibers
+} // namespace folly
 
 #endif
 
@@ -78,9 +79,7 @@ FiberManager::FiberManager(
           std::move(options)) {}
 
 FiberManager::~FiberManager() {
-  if (isLoopScheduled_) {
-    loopController_->cancel();
-  }
+  loopController_.reset();
 
   while (!fibersPool_.empty()) {
     fibersPool_.pop_front_and_dispose([](Fiber* fiber) { delete fiber; });
@@ -99,7 +98,7 @@ const LoopController& FiberManager::loopController() const {
 
 bool FiberManager::hasTasks() const {
   return fibersActive_ > 0 || !remoteReadyQueue_.empty() ||
-      !remoteTaskQueue_.empty();
+      !remoteTaskQueue_.empty() || remoteCount_ > 0;
 }
 
 Fiber* FiberManager::getFiber() {
@@ -151,8 +150,9 @@ void FiberManager::remoteReadyInsert(Fiber* fiber) {
   if (observer_) {
     observer_->runnable(reinterpret_cast<uintptr_t>(fiber));
   }
-  auto insertHead = [&]() { return remoteReadyQueue_.insertHead(fiber); };
-  loopController_->scheduleThreadSafe(std::ref(insertHead));
+  if (remoteReadyQueue_.insertHead(fiber)) {
+    loopController_->scheduleThreadSafe();
+  }
 }
 
 void FiberManager::setObserver(ExecutionObserver* observer) {
@@ -254,8 +254,9 @@ static AsanStartSwitchStackFuncPtr getStartSwitchStackFunc() {
   }
 
   // Check whether we can find a dynamically linked enter function
-  if (nullptr != (fn = (AsanStartSwitchStackFuncPtr)dlsym(
-                      RTLD_DEFAULT, "__sanitizer_start_switch_fiber"))) {
+  if (nullptr !=
+      (fn = (AsanStartSwitchStackFuncPtr)dlsym(
+           RTLD_DEFAULT, "__sanitizer_start_switch_fiber"))) {
     return fn;
   }
 
@@ -272,8 +273,9 @@ static AsanFinishSwitchStackFuncPtr getFinishSwitchStackFunc() {
   }
 
   // Check whether we can find a dynamically linked exit function
-  if (nullptr != (fn = (AsanFinishSwitchStackFuncPtr)dlsym(
-                      RTLD_DEFAULT, "__sanitizer_finish_switch_fiber"))) {
+  if (nullptr !=
+      (fn = (AsanFinishSwitchStackFuncPtr)dlsym(
+           RTLD_DEFAULT, "__sanitizer_finish_switch_fiber"))) {
     return fn;
   }
 
@@ -290,8 +292,9 @@ static AsanUnpoisonMemoryRegionFuncPtr getUnpoisonMemoryRegionFunc() {
   }
 
   // Check whether we can find a dynamically linked unpoison function
-  if (nullptr != (fn = (AsanUnpoisonMemoryRegionFuncPtr)dlsym(
-                      RTLD_DEFAULT, "__asan_unpoison_memory_region"))) {
+  if (nullptr !=
+      (fn = (AsanUnpoisonMemoryRegionFuncPtr)dlsym(
+           RTLD_DEFAULT, "__asan_unpoison_memory_region"))) {
     return fn;
   }
 
@@ -335,10 +338,13 @@ class ScopedAlternateSignalStack {
       return;
     }
 
-    stack_ = folly::make_unique<AltStackBuffer>();
+    stack_ = std::make_unique<AltStackBuffer>();
 
     setAlternateStack(stack_->data(), stack_->size());
   }
+
+  ScopedAlternateSignalStack(ScopedAlternateSignalStack&&) = default;
+  ScopedAlternateSignalStack& operator=(ScopedAlternateSignalStack&&) = default;
 
   ~ScopedAlternateSignalStack() {
     if (stack_) {
@@ -350,14 +356,13 @@ class ScopedAlternateSignalStack {
   using AltStackBuffer = std::array<char, kAltStackSize>;
   std::unique_ptr<AltStackBuffer> stack_;
 };
-}
+} // namespace
 
 void FiberManager::registerAlternateSignalStack() {
-  static folly::SingletonThreadLocal<ScopedAlternateSignalStack> singleton;
-  singleton.get();
+  SingletonThreadLocal<ScopedAlternateSignalStack>::get();
 
   alternateSignalStackRegistered_ = true;
 }
 #endif
-}
-}
+} // namespace fibers
+} // namespace folly

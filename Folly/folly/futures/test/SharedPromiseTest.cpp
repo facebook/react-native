@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,24 @@
 #include <folly/portability/GTest.h>
 
 using namespace folly;
+
+TEST(SharedPromise, setGetSemiFuture) {
+  SharedPromise<int> p;
+  p.setValue(1);
+  auto f1 = p.getSemiFuture();
+  auto f2 = p.getSemiFuture();
+  EXPECT_EQ(1, f1.value());
+  EXPECT_EQ(1, f2.value());
+}
+
+TEST(SharedPromise, setGetMixed) {
+  SharedPromise<int> p;
+  p.setValue(1);
+  auto f1 = p.getSemiFuture();
+  auto f2 = p.getFuture();
+  EXPECT_EQ(1, f1.value());
+  EXPECT_EQ(1, f2.value());
+}
 
 TEST(SharedPromise, setGet) {
   SharedPromise<int> p;
@@ -102,7 +120,7 @@ TEST(SharedPromise, moveMove) {
 
 TEST(SharedPromise, setWith) {
   SharedPromise<int> p;
-  p.setWith([]{ return 1; });
+  p.setWith([] { return 1; });
   EXPECT_EQ(1, p.getFuture().value());
 }
 

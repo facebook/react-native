@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,15 @@
 #pragma once
 
 #include <cstddef>
+
 #include <folly/detail/RangeCommon.h>
 
 namespace folly {
 
 namespace detail {
 
-size_t qfind_first_byte_of_sse42(const StringPieceLite haystack,
-                                 const StringPieceLite needles);
-
-}
-
-}
+size_t qfind_first_byte_of_sse42(
+    const StringPieceLite haystack,
+    const StringPieceLite needles);
+} // namespace detail
+} // namespace folly

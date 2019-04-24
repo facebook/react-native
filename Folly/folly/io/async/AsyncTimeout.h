@@ -1,23 +1,19 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+
 #pragma once
 
 #include <folly/io/async/TimeoutManager.h>
@@ -25,7 +21,6 @@
 #include <folly/portability/Event.h>
 
 #include <boost/noncopyable.hpp>
-#include <event.h>
 #include <memory>
 #include <utility>
 
@@ -126,10 +121,12 @@ class AsyncTimeout : private boost::noncopyable {
    * internal event.  TimeoutManager::loop() will return when there are no more
    * non-internal events remaining.
    */
-  void attachTimeoutManager(TimeoutManager* timeoutManager,
-                            InternalEnum internal = InternalEnum::NORMAL);
-  void attachEventBase(EventBase* eventBase,
-                       InternalEnum internal = InternalEnum::NORMAL);
+  void attachTimeoutManager(
+      TimeoutManager* timeoutManager,
+      InternalEnum internal = InternalEnum::NORMAL);
+  void attachEventBase(
+      EventBase* eventBase,
+      InternalEnum internal = InternalEnum::NORMAL);
 
   /**
    * Detach the timeout from its TimeoutManager.
@@ -180,9 +177,8 @@ class AsyncTimeout : private boost::noncopyable {
    */
   template <typename TCallback>
   static std::unique_ptr<AsyncTimeout> make(
-    TimeoutManager &manager,
-    TCallback &&callback
-  );
+      TimeoutManager& manager,
+      TCallback&& callback);
 
   /**
    * Convenience function that wraps a function object as
@@ -215,10 +211,9 @@ class AsyncTimeout : private boost::noncopyable {
    */
   template <typename TCallback>
   static std::unique_ptr<AsyncTimeout> schedule(
-    TimeoutManager::timeout_type timeout,
-    TimeoutManager &manager,
-    TCallback &&callback
-  );
+      TimeoutManager::timeout_type timeout,
+      TimeoutManager& manager,
+      TCallback&& callback);
 
  private:
   static void libeventCallback(libevent_fd_t fd, short events, void* arg);
@@ -244,51 +239,41 @@ namespace detail {
  * @author: Marcelo Juchem <marcelo@fb.com>
  */
 template <typename TCallback>
-struct async_timeout_wrapper:
-  public AsyncTimeout
-{
+struct async_timeout_wrapper : public AsyncTimeout {
   template <typename UCallback>
-  async_timeout_wrapper(TimeoutManager *manager, UCallback &&callback):
-    AsyncTimeout(manager),
-    callback_(std::forward<UCallback>(callback))
-  {}
+  async_timeout_wrapper(TimeoutManager* manager, UCallback&& callback)
+      : AsyncTimeout(manager), callback_(std::forward<UCallback>(callback)) {}
 
-  void timeoutExpired() noexcept {
+  void timeoutExpired() noexcept override {
     static_assert(
-      noexcept(std::declval<TCallback>()()),
-      "callback must be declared noexcept, e.g.: `[]() noexcept {}`"
-    );
+        noexcept(std::declval<TCallback>()()),
+        "callback must be declared noexcept, e.g.: `[]() noexcept {}`");
     callback_();
   }
 
-private:
+ private:
   TCallback callback_;
 };
 
-} // namespace detail {
+} // namespace detail
 
 template <typename TCallback>
 std::unique_ptr<AsyncTimeout> AsyncTimeout::make(
-  TimeoutManager &manager,
-  TCallback &&callback
-) {
+    TimeoutManager& manager,
+    TCallback&& callback) {
   return std::unique_ptr<AsyncTimeout>(
-    new detail::async_timeout_wrapper<typename std::decay<TCallback>::type>(
-      std::addressof(manager),
-      std::forward<TCallback>(callback)
-    )
-  );
+      new detail::async_timeout_wrapper<typename std::decay<TCallback>::type>(
+          std::addressof(manager), std::forward<TCallback>(callback)));
 }
 
 template <typename TCallback>
 std::unique_ptr<AsyncTimeout> AsyncTimeout::schedule(
-  TimeoutManager::timeout_type timeout,
-  TimeoutManager &manager,
-  TCallback &&callback
-) {
+    TimeoutManager::timeout_type timeout,
+    TimeoutManager& manager,
+    TCallback&& callback) {
   auto wrapper = AsyncTimeout::make(manager, std::forward<TCallback>(callback));
   wrapper->scheduleTimeout(timeout);
   return wrapper;
 }
 
-} // folly
+} // namespace folly

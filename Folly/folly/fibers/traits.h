@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 #pragma once
 
-#include <boost/type_traits.hpp>
+#include <type_traits>
 
 namespace folly {
 namespace fibers {
@@ -35,37 +35,41 @@ namespace fibers {
 
 namespace detail {
 
-/**
- * If F is a pointer-to-member, will contain a typedef type
- * with the type of F's first parameter
- */
-template <typename>
-struct ExtractFirstMemfn;
+template <typename F>
+struct ExtractFirstArg;
 
 template <typename Ret, typename T, typename First, typename... Args>
-struct ExtractFirstMemfn<Ret (T::*)(First, Args...)> {
+struct ExtractFirstArg<Ret (T::*)(First, Args...)> {
   typedef First type;
 };
 
 template <typename Ret, typename T, typename First, typename... Args>
-struct ExtractFirstMemfn<Ret (T::*)(First, Args...) const> {
+struct ExtractFirstArg<Ret (T::*)(First, Args...) const> {
   typedef First type;
 };
 
-} // detail
+template <typename Ret, typename First, typename... Args>
+struct ExtractFirstArg<Ret(First, Args...)> {
+  typedef First type;
+};
 
-/** Default - use boost */
+} // namespace detail
+
 template <typename F, typename Enable = void>
-struct FirstArgOf {
-  typedef typename boost::function_traits<
-      typename std::remove_pointer<F>::type>::arg1_type type;
+struct FirstArgOf;
+
+/** Specialization for non-function-object callables */
+template <typename F>
+struct FirstArgOf<F, typename std::enable_if<!std::is_class<F>::value>::type> {
+  typedef typename detail::ExtractFirstArg<
+      typename std::remove_pointer<F>::type>::type type;
 };
 
 /** Specialization for function objects */
 template <typename F>
 struct FirstArgOf<F, typename std::enable_if<std::is_class<F>::value>::type> {
-  typedef
-      typename detail::ExtractFirstMemfn<decltype(&F::operator())>::type type;
+  typedef typename FirstArgOf<decltype(&F::operator())>::type type;
 };
-}
-} // folly::fibers
+
+} // namespace fibers
+} // namespace folly

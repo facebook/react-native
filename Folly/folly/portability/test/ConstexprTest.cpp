@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,56 +18,37 @@
 
 #include <folly/portability/GTest.h>
 
-namespace {
+using folly::constexpr_strcmp;
 
-class ConstexprTest : public testing::Test {};
+TEST(ConstexprTest, constexpr_strlen_cstr) {
+  constexpr auto v = "hello";
+  constexpr auto a = folly::constexpr_strlen(v);
+  EXPECT_EQ(5, a);
+  EXPECT_TRUE((std::is_same<const size_t, decltype(a)>::value));
 }
 
-TEST_F(ConstexprTest, constexpr_abs_unsigned) {
-  constexpr auto v = uint32_t(17);
-  constexpr auto a = folly::constexpr_abs(v);
-  EXPECT_EQ(17, a);
-  EXPECT_TRUE((std::is_same<const uint32_t, decltype(a)>::value));
+// gcc-4.9 cannot compile the following constexpr code correctly
+#if !(defined(__GNUC__) && !defined(__clang__) && __GNUC__ < 5)
+TEST(ConstexprTest, constexpr_strlen_ints) {
+  constexpr int v[] = {5, 3, 4, 0, 7};
+  constexpr auto a = folly::constexpr_strlen(v);
+  EXPECT_EQ(3, a);
+  EXPECT_TRUE((std::is_same<const size_t, decltype(a)>::value));
 }
 
-TEST_F(ConstexprTest, constexpr_abs_signed_positive) {
-  constexpr auto v = int32_t(17);
-  constexpr auto a = folly::constexpr_abs(v);
-  EXPECT_EQ(17, a);
-  EXPECT_TRUE((std::is_same<const uint32_t, decltype(a)>::value));
+TEST(ConstexprTest, constexpr_strcmp_ints) {
+  constexpr int v[] = {5, 3, 4, 0, 7};
+  constexpr int v1[] = {6, 4};
+  static_assert(constexpr_strcmp(v1, v) > 0, "constexpr_strcmp is broken");
+  static_assert(constexpr_strcmp(v, v) == 0, "constexpr_strcmp is broken");
 }
+#endif
 
-TEST_F(ConstexprTest, constexpr_abs_signed_negative) {
-  constexpr auto v = int32_t(-17);
-  constexpr auto a = folly::constexpr_abs(v);
-  EXPECT_EQ(17, a);
-  EXPECT_TRUE((std::is_same<const uint32_t, decltype(a)>::value));
-}
-
-TEST_F(ConstexprTest, constexpr_abs_float_positive) {
-  constexpr auto v = 17.5f;
-  constexpr auto a = folly::constexpr_abs(v);
-  EXPECT_EQ(17.5, a);
-  EXPECT_TRUE((std::is_same<const float, decltype(a)>::value));
-}
-
-TEST_F(ConstexprTest, constexpr_abs_float_negative) {
-  constexpr auto v = -17.5f;
-  constexpr auto a = folly::constexpr_abs(v);
-  EXPECT_EQ(17.5, a);
-  EXPECT_TRUE((std::is_same<const float, decltype(a)>::value));
-}
-
-TEST_F(ConstexprTest, constexpr_abs_double_positive) {
-  constexpr auto v = 17.5;
-  constexpr auto a = folly::constexpr_abs(v);
-  EXPECT_EQ(17.5, a);
-  EXPECT_TRUE((std::is_same<const double, decltype(a)>::value));
-}
-
-TEST_F(ConstexprTest, constexpr_abs_double_negative) {
-  constexpr auto v = -17.5;
-  constexpr auto a = folly::constexpr_abs(v);
-  EXPECT_EQ(17.5, a);
-  EXPECT_TRUE((std::is_same<const double, decltype(a)>::value));
-}
+static_assert(
+    constexpr_strcmp("abc", "abc") == 0,
+    "constexpr_strcmp is broken");
+static_assert(constexpr_strcmp("", "") == 0, "constexpr_strcmp is broken");
+static_assert(constexpr_strcmp("abc", "def") < 0, "constexpr_strcmp is broken");
+static_assert(constexpr_strcmp("xyz", "abc") > 0, "constexpr_strcmp is broken");
+static_assert(constexpr_strcmp("a", "abc") < 0, "constexpr_strcmp is broken");
+static_assert(constexpr_strcmp("abc", "a") > 0, "constexpr_strcmp is broken");

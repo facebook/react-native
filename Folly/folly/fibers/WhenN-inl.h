@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,16 +24,17 @@ namespace fibers {
 template <class InputIterator>
 typename std::vector<typename std::enable_if<
     !std::is_same<
-        typename std::result_of<
-            typename std::iterator_traits<InputIterator>::value_type()>::type,
+        invoke_result_t<
+            typename std::iterator_traits<InputIterator>::value_type>,
         void>::value,
     typename std::pair<
         size_t,
-        typename std::result_of<typename std::iterator_traits<
-            InputIterator>::value_type()>::type>>::type>
+        invoke_result_t<
+            typename std::iterator_traits<InputIterator>::value_type>>>::type>
 collectN(InputIterator first, InputIterator last, size_t n) {
-  typedef typename std::result_of<
-      typename std::iterator_traits<InputIterator>::value_type()>::type Result;
+  typedef invoke_result_t<
+      typename std::iterator_traits<InputIterator>::value_type>
+      Result;
   assert(n > 0);
   assert(std::distance(first, last) >= 0);
   assert(n <= static_cast<size_t>(std::distance(first, last)));
@@ -53,11 +54,7 @@ collectN(InputIterator first, InputIterator last, size_t n) {
   await([first, last, context](Promise<void> promise) mutable {
     context->promise = std::move(promise);
     for (size_t i = 0; first != last; ++i, ++first) {
-#ifdef __clang__
-#pragma clang diagnostic push // ignore generalized lambda capture warning
-#pragma clang diagnostic ignored "-Wc++1y-extensions"
-#endif
-      addTask([ i, context, f = std::move(*first) ]() {
+      addTask([i, context, f = std::move(*first)]() {
         try {
           auto result = f();
           if (context->tasksTodo == 0) {
@@ -74,9 +71,6 @@ collectN(InputIterator first, InputIterator last, size_t n) {
           context->promise->setValue();
         }
       });
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
     }
   });
 
@@ -90,8 +84,8 @@ collectN(InputIterator first, InputIterator last, size_t n) {
 template <class InputIterator>
 typename std::enable_if<
     std::is_same<
-        typename std::result_of<
-            typename std::iterator_traits<InputIterator>::value_type()>::type,
+        invoke_result_t<
+            typename std::iterator_traits<InputIterator>::value_type>,
         void>::value,
     std::vector<size_t>>::type
 collectN(InputIterator first, InputIterator last, size_t n) {
@@ -114,11 +108,7 @@ collectN(InputIterator first, InputIterator last, size_t n) {
   await([first, last, context](Promise<void> promise) mutable {
     context->promise = std::move(promise);
     for (size_t i = 0; first != last; ++i, ++first) {
-#ifdef __clang__
-#pragma clang diagnostic push // ignore generalized lambda capture warning
-#pragma clang diagnostic ignored "-Wc++1y-extensions"
-#endif
-      addTask([ i, context, f = std::move(*first) ]() {
+      addTask([i, context, f = std::move(*first)]() {
         try {
           f();
           if (context->tasksTodo == 0) {
@@ -135,9 +125,6 @@ collectN(InputIterator first, InputIterator last, size_t n) {
           context->promise->setValue();
         }
       });
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
     }
   });
 
@@ -152,14 +139,15 @@ template <class InputIterator>
 typename std::vector<
     typename std::enable_if<
         !std::is_same<
-            typename std::result_of<typename std::iterator_traits<
-                InputIterator>::value_type()>::type,
+            invoke_result_t<
+                typename std::iterator_traits<InputIterator>::value_type>,
             void>::value,
-        typename std::result_of<
-            typename std::iterator_traits<InputIterator>::value_type()>::type>::
+        invoke_result_t<
+            typename std::iterator_traits<InputIterator>::value_type>>::
         type> inline collectAll(InputIterator first, InputIterator last) {
-  typedef typename std::result_of<
-      typename std::iterator_traits<InputIterator>::value_type()>::type Result;
+  typedef invoke_result_t<
+      typename std::iterator_traits<InputIterator>::value_type>
+      Result;
   size_t n = size_t(std::distance(first, last));
   std::vector<Result> results;
   std::vector<size_t> order(n);
@@ -184,8 +172,8 @@ typename std::vector<
 template <class InputIterator>
 typename std::enable_if<
     std::is_same<
-        typename std::result_of<
-            typename std::iterator_traits<InputIterator>::value_type()>::type,
+        invoke_result_t<
+            typename std::iterator_traits<InputIterator>::value_type>,
         void>::value,
     void>::type inline collectAll(InputIterator first, InputIterator last) {
   forEach(first, last, [](size_t /* id */) {});
@@ -194,13 +182,13 @@ typename std::enable_if<
 template <class InputIterator>
 typename std::enable_if<
     !std::is_same<
-        typename std::result_of<
-            typename std::iterator_traits<InputIterator>::value_type()>::type,
+        invoke_result_t<
+            typename std::iterator_traits<InputIterator>::value_type>,
         void>::value,
     typename std::pair<
         size_t,
-        typename std::result_of<typename std::iterator_traits<
-            InputIterator>::value_type()>::type>>::
+        invoke_result_t<
+            typename std::iterator_traits<InputIterator>::value_type>>>::
     type inline collectAny(InputIterator first, InputIterator last) {
   auto result = collectN(first, last, 1);
   assert(result.size() == 1);
@@ -210,13 +198,13 @@ typename std::enable_if<
 template <class InputIterator>
 typename std::enable_if<
     std::is_same<
-        typename std::result_of<
-            typename std::iterator_traits<InputIterator>::value_type()>::type,
+        invoke_result_t<
+            typename std::iterator_traits<InputIterator>::value_type>,
         void>::value,
     size_t>::type inline collectAny(InputIterator first, InputIterator last) {
   auto result = collectN(first, last, 1);
   assert(result.size() == 1);
   return std::move(result[0]);
 }
-}
-}
+} // namespace fibers
+} // namespace folly

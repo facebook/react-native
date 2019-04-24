@@ -1,4 +1,4 @@
-`folly/Histogram.h`
+`folly/stats/Histogram.h`
 -------------------
 
 ### Classes
@@ -75,7 +75,7 @@ specified histogram minimum, and the last bucket tracks the data points that
 were above the maximum.
 
 ``` Cpp
-    unsigned int numBuckets = latencies.getNumBuckets();
+    auto numBuckets = latencies.getNumBuckets();
     cout << "Below min: " << latencies.getBucketByIndex(0).count << "\n";
     for (unsigned int n = 1; n < numBuckets - 1; ++n) {
       cout << latencies.getBucketMin(n) << "-" << latencies.getBucketMax(n)

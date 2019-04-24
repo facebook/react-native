@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,53 @@
 
 using folly::Function;
 using folly::FunctionRef;
+
+TEST(FunctionRef, Traits) {
+  static_assert(std::is_literal_type<FunctionRef<int(int)>>::value, "");
+// Some earlier versions of libstdc++ lack these traits. Frustrating that
+// the value of __GLIBCXX__ doesn't increase with version, but rather reflects
+// release date, so some larger values of __GLIBCXX__ lack the traits while
+// some smaller values have them. Can't figure out how to reliably test for the
+// presence or absence of the traits. :-(
+#if !defined(__GLIBCXX__) || __GNUC__ >= 5
+  static_assert(
+      std::is_trivially_copy_constructible<FunctionRef<int(int)>>::value, "");
+  static_assert(
+      std::is_trivially_move_constructible<FunctionRef<int(int)>>::value, "");
+  static_assert(
+      std::is_trivially_constructible<
+          FunctionRef<int(int)>,
+          FunctionRef<int(int)>&>::value,
+      "");
+  static_assert(
+      std::is_trivially_copy_assignable<FunctionRef<int(int)>>::value, "");
+  static_assert(
+      std::is_trivially_move_assignable<FunctionRef<int(int)>>::value, "");
+  static_assert(
+      std::is_trivially_assignable<
+          FunctionRef<int(int)>,
+          FunctionRef<int(int)>&>::value,
+      "");
+#endif
+  static_assert(
+      std::is_nothrow_copy_constructible<FunctionRef<int(int)>>::value, "");
+  static_assert(
+      std::is_nothrow_move_constructible<FunctionRef<int(int)>>::value, "");
+  static_assert(
+      std::is_nothrow_constructible<
+          FunctionRef<int(int)>,
+          FunctionRef<int(int)>&>::value,
+      "");
+  static_assert(
+      std::is_nothrow_copy_assignable<FunctionRef<int(int)>>::value, "");
+  static_assert(
+      std::is_nothrow_move_assignable<FunctionRef<int(int)>>::value, "");
+  static_assert(
+      std::is_nothrow_assignable<
+          FunctionRef<int(int)>,
+          FunctionRef<int(int)>&>::value,
+      "");
+}
 
 TEST(FunctionRef, Simple) {
   int x = 1000;

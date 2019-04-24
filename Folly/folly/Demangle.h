@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,13 +36,6 @@ inline fbstring demangle(const std::type_info& type) {
   return demangle(type.name());
 }
 
-// Office hack BEGIN
-#ifndef _Out_cap_
-#define OACR_CLEAN_UP
-#define _Out_cap_(x)
-#endif
-// Office hack END
-
 /**
  * Return the demangled (prettyfied) version of a C++ type in a user-provided
  * buffer.
@@ -62,17 +55,11 @@ inline fbstring demangle(const std::type_info& type) {
  * version returns the original, mangled name.
  */
 size_t demangle(const char* name, char* buf, size_t bufSize);
-inline size_t demangle(const std::type_info& type, _Out_cap_(bufSize) char* buf, size_t bufSize) {
+inline size_t demangle(const std::type_info& type, char* buf, size_t bufSize) {
   return demangle(type.name(), buf, bufSize);
 }
 
 // glibc doesn't have strlcpy
-size_t strlcpy(_Out_cap_(size) char* dest, const char* const src, size_t size);
+size_t strlcpy(char* dest, const char* const src, size_t size);
 
-// Office hack BEGIN
-#ifdef OACR_CLEAN_UP
-#undef _Out_cap_
-#endif
-// Office hack END
-
-}
+} // namespace folly

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,8 @@
 
 #include <functional>
 
-namespace folly { namespace symbolizer {
+namespace folly {
+namespace symbolizer {
 
 /**
  * Install handler for fatal signals. The list of signals being handled is in
@@ -39,7 +40,7 @@ void installFatalSignalHandler();
  * All these fatal callback must be added before calling
  * installFatalSignalCallbacks(), below.
  */
-typedef void (*SignalCallback)(void);
+typedef void (*SignalCallback)();
 void addFatalSignalCallback(SignalCallback callback);
 
 /**
@@ -47,5 +48,5 @@ void addFatalSignalCallback(SignalCallback callback);
  * callbacks in the order in which they were added.
  */
 void installFatalSignalCallbacks();
-
-}}  // namespaces
+} // namespace symbolizer
+} // namespace folly

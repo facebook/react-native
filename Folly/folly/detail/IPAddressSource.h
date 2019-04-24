@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@
 #include <string>
 #include <type_traits>
 
-#include <folly/Conv.h>
+#include <folly/Format.h>
 #include <folly/detail/IPAddress.h>
 
 // BSDish platforms don't provide standard access to s6_addr16
@@ -74,11 +74,9 @@ struct Bytes {
         0xff // /8
     }};
     if (oneMask > kBitCount || twoMask > kBitCount) {
-      throw std::invalid_argument(folly::to<std::string>(
-          "Invalid mask "
-          "length: ",
-          oneMask > twoMask ? oneMask : twoMask,
-          ". Mask length must be <= ",
+      throw std::invalid_argument(sformat(
+          "Invalid mask length: {}. Mask length must be <= {}",
+          std::max(oneMask, twoMask),
           kBitCount));
     }
 
@@ -218,9 +216,8 @@ inline void writeIntegerString(IntegralType val, char** buffer) {
   *buffer = buf;
 }
 
-inline std::string fastIpv4ToString(const in_addr& inAddr) {
+inline size_t fastIpV4ToBufferUnsafe(const in_addr& inAddr, char* str) {
   const uint8_t* octets = reinterpret_cast<const uint8_t*>(&inAddr.s_addr);
-  char str[sizeof("255.255.255.255")];
   char* buf = str;
 
   writeIntegerString<uint8_t, 3>(octets[0], &buf);
@@ -231,16 +228,25 @@ inline std::string fastIpv4ToString(const in_addr& inAddr) {
   *(buf++) = '.';
   writeIntegerString<uint8_t, 3>(octets[3], &buf);
 
-  return std::string(str, size_t(buf - str));
+  return buf - str;
 }
 
-inline std::string fastIpv6ToString(const in6_addr& in6Addr) {
+inline std::string fastIpv4ToString(const in_addr& inAddr) {
+  char str[sizeof("255.255.255.255")];
+  return std::string(str, fastIpV4ToBufferUnsafe(inAddr, str));
+}
+
+inline void fastIpv4AppendToString(const in_addr& inAddr, std::string& out) {
+  char str[sizeof("255.255.255.255")];
+  out.append(str, fastIpV4ToBufferUnsafe(inAddr, str));
+}
+
+inline size_t fastIpv6ToBufferUnsafe(const in6_addr& in6Addr, char* str) {
 #ifdef _MSC_VER
   const uint16_t* bytes = reinterpret_cast<const uint16_t*>(&in6Addr.u.Word);
 #else
   const uint16_t* bytes = reinterpret_cast<const uint16_t*>(&in6Addr.s6_addr16);
 #endif
-  char str[sizeof("2001:0db8:0000:0000:0000:ff00:0042:8329")];
   char* buf = str;
 
   for (int i = 0; i < 8; ++i) {
@@ -255,7 +261,17 @@ inline std::string fastIpv6ToString(const in6_addr& in6Addr) {
     }
   }
 
-  return std::string(str, size_t(buf - str));
+  return buf - str;
 }
+
+inline std::string fastIpv6ToString(const in6_addr& in6Addr) {
+  char str[sizeof("2001:0db8:0000:0000:0000:ff00:0042:8329")];
+  return std::string(str, fastIpv6ToBufferUnsafe(in6Addr, str));
 }
+
+inline void fastIpv6AppendToString(const in6_addr& in6Addr, std::string& out) {
+  char str[sizeof("2001:0db8:0000:0000:0000:ff00:0042:8329")];
+  out.append(str, fastIpv6ToBufferUnsafe(in6Addr, str));
 }
+} // namespace detail
+} // namespace folly

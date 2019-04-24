@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,30 +28,28 @@ using namespace testing;
 
 namespace folly {
 
-class MockAsyncSSLSocket : public AsyncSSLSocket{
+class MockAsyncSSLSocket : public AsyncSSLSocket {
  public:
   static std::shared_ptr<MockAsyncSSLSocket> newSocket(
-    const std::shared_ptr<SSLContext>& ctx,
-    EventBase* evb) {
+      const std::shared_ptr<SSLContext>& ctx,
+      EventBase* evb) {
     auto sock = std::shared_ptr<MockAsyncSSLSocket>(
-      new MockAsyncSSLSocket(ctx, evb),
-      Destructor());
-    sock->ssl_ = SSL_new(ctx->getSSLCtx());
-    SSL_set_fd(sock->ssl_, -1);
+        new MockAsyncSSLSocket(ctx, evb), Destructor());
+    sock->ssl_.reset(SSL_new(ctx->getSSLCtx()));
+    SSL_set_fd(sock->ssl_.get(), -1);
     return sock;
   }
 
   // Fake constructor sets the state to established without call to connect
   // or accept
-  MockAsyncSSLSocket(const std::shared_ptr<SSLContext>& ctx,
-                      EventBase* evb)
+  MockAsyncSSLSocket(const std::shared_ptr<SSLContext>& ctx, EventBase* evb)
       : AsyncSocket(evb), AsyncSSLSocket(ctx, evb) {
     state_ = AsyncSocket::StateEnum::ESTABLISHED;
     sslState_ = AsyncSSLSocket::SSLStateEnum::STATE_ESTABLISHED;
   }
 
   // mock the calls to SSL_write to see the buffer length and contents
-  MOCK_METHOD3(sslWriteImpl, int(SSL *ssl, const void *buf, int n));
+  MOCK_METHOD3(sslWriteImpl, int(SSL* ssl, const void* buf, int n));
 
   // mock the calls to getRawBytesWritten()
   MOCK_CONST_METHOD0(getRawBytesWritten, size_t());
@@ -78,9 +76,9 @@ class MockAsyncSSLSocket : public AsyncSSLSocket{
 
 class AsyncSSLSocketWriteTest : public testing::Test {
  public:
-  AsyncSSLSocketWriteTest() :
-      sslContext_(new SSLContext()),
-      sock_(MockAsyncSSLSocket::newSocket(sslContext_, &eventBase_)) {
+  AsyncSSLSocketWriteTest()
+      : sslContext_(new SSLContext()),
+        sock_(MockAsyncSSLSocket::newSocket(sslContext_, &eventBase_)) {
     for (int i = 0; i < 500; i++) {
       memcpy(source_ + i * 26, "abcdefghijklmnopqrstuvwxyz", 26);
     }
@@ -92,8 +90,8 @@ class AsyncSSLSocketWriteTest : public testing::Test {
     std::unique_ptr<iovec[]> vec(new iovec[sizes.size()]);
     int i = 0;
     int pos = 0;
-    for (auto size: sizes) {
-      vec[i].iov_base = (void *)(source_ + pos);
+    for (auto size : sizes) {
+      vec[i].iov_base = (void*)(source_ + pos);
       vec[i++].iov_len = size;
       pos += size;
     }
@@ -101,14 +99,14 @@ class AsyncSSLSocketWriteTest : public testing::Test {
   }
 
   // Verify that the given buf/pos matches the reference text
-  void verifyVec(const void *buf, int n, int pos) {
+  void verifyVec(const void* buf, int n, int pos) {
     ASSERT_EQ(memcmp(source_ + pos, buf, n), 0);
   }
 
   // Update a vec on partial write
-  void consumeVec(iovec *vec, uint32_t countWritten, uint32_t partialWritten) {
+  void consumeVec(iovec* vec, uint32_t countWritten, uint32_t partialWritten) {
     vec[countWritten].iov_base =
-      ((char *)vec[countWritten].iov_base) + partialWritten;
+        ((char*)vec[countWritten].iov_base) + partialWritten;
     vec[countWritten].iov_len -= partialWritten;
   }
 
@@ -118,19 +116,19 @@ class AsyncSSLSocketWriteTest : public testing::Test {
   char source_[26 * 500];
 };
 
-
 // The entire vec fits in one packet
 TEST_F(AsyncSSLSocketWriteTest, write_coalescing1) {
   int n = 3;
   auto vec = makeVec({3, 3, 3});
   EXPECT_CALL(*(sock_.get()), sslWriteImpl(_, _, 9))
-    .WillOnce(Invoke([this] (SSL *, const void *buf, int m) {
-          verifyVec(buf, m, 0);
-          return 9; }));
+      .WillOnce(Invoke([this](SSL*, const void* buf, int m) {
+        verifyVec(buf, m, 0);
+        return 9;
+      }));
   uint32_t countWritten = 0;
   uint32_t partialWritten = 0;
-  sock_->testPerformWrite(vec.get(), n, WriteFlags::NONE, &countWritten,
-                          &partialWritten);
+  sock_->testPerformWrite(
+      vec.get(), n, WriteFlags::NONE, &countWritten, &partialWritten);
   EXPECT_EQ(countWritten, n);
   EXPECT_EQ(partialWritten, 0);
 }
@@ -141,19 +139,21 @@ TEST_F(AsyncSSLSocketWriteTest, write_coalescing2) {
   auto vec = makeVec({1500, 3, 3});
   int pos = 0;
   EXPECT_CALL(*(sock_.get()), sslWriteImpl(_, _, 1500))
-    .WillOnce(Invoke([this, &pos] (SSL *, const void *buf, int m) {
-          verifyVec(buf, m, pos);
-          pos += m;
-          return m; }));
+      .WillOnce(Invoke([this, &pos](SSL*, const void* buf, int m) {
+        verifyVec(buf, m, pos);
+        pos += m;
+        return m;
+      }));
   EXPECT_CALL(*(sock_.get()), sslWriteImpl(_, _, 6))
-    .WillOnce(Invoke([this, &pos] (SSL *, const void *buf, int m) {
-          verifyVec(buf, m, pos);
-          pos += m;
-          return m; }));
+      .WillOnce(Invoke([this, &pos](SSL*, const void* buf, int m) {
+        verifyVec(buf, m, pos);
+        pos += m;
+        return m;
+      }));
   uint32_t countWritten = 0;
   uint32_t partialWritten = 0;
-  sock_->testPerformWrite(vec.get(), n, WriteFlags::NONE, &countWritten,
-                          &partialWritten);
+  sock_->testPerformWrite(
+      vec.get(), n, WriteFlags::NONE, &countWritten, &partialWritten);
   EXPECT_EQ(countWritten, n);
   EXPECT_EQ(partialWritten, 0);
 }
@@ -164,15 +164,16 @@ TEST_F(AsyncSSLSocketWriteTest, write_coalescing3) {
   auto vec = makeVec({1000, 1000, 1000});
   int pos = 0;
   EXPECT_CALL(*(sock_.get()), sslWriteImpl(_, _, 1500))
-    .Times(2)
-    .WillRepeatedly(Invoke([this, &pos] (SSL *, const void *buf, int m) {
-          verifyVec(buf, m, pos);
-          pos += m;
-          return m; }));
+      .Times(2)
+      .WillRepeatedly(Invoke([this, &pos](SSL*, const void* buf, int m) {
+        verifyVec(buf, m, pos);
+        pos += m;
+        return m;
+      }));
   uint32_t countWritten = 0;
   uint32_t partialWritten = 0;
-  sock_->testPerformWrite(vec.get(), n, WriteFlags::NONE, &countWritten,
-                          &partialWritten);
+  sock_->testPerformWrite(
+      vec.get(), n, WriteFlags::NONE, &countWritten, &partialWritten);
   EXPECT_EQ(countWritten, n);
   EXPECT_EQ(partialWritten, 0);
 }
@@ -183,25 +184,30 @@ TEST_F(AsyncSSLSocketWriteTest, write_coalescing4) {
   auto vec = makeVec({300, 300, 300, 300, 300});
   int pos = 0;
   EXPECT_CALL(*(sock_.get()), sslWriteImpl(_, _, 1500))
-    .WillOnce(Invoke([this, &pos] (SSL *, const void *buf, int m) {
-          verifyVec(buf, m, pos);
-          pos += 1000;
-          return 1000; /* 500 bytes "pending" */ }));
+      .WillOnce(Invoke([this, &pos](SSL*, const void* buf, int m) {
+        verifyVec(buf, m, pos);
+        pos += 1000;
+        return 1000; /* 500 bytes "pending" */
+      }));
   uint32_t countWritten = 0;
   uint32_t partialWritten = 0;
-  sock_->testPerformWrite(vec.get(), n, WriteFlags::NONE, &countWritten,
-                          &partialWritten);
+  sock_->testPerformWrite(
+      vec.get(), n, WriteFlags::NONE, &countWritten, &partialWritten);
   EXPECT_EQ(countWritten, 3);
   EXPECT_EQ(partialWritten, 100);
   consumeVec(vec.get(), countWritten, partialWritten);
   EXPECT_CALL(*(sock_.get()), sslWriteImpl(_, _, 500))
-    .WillOnce(Invoke([this, &pos] (SSL *, const void *buf, int m) {
-          verifyVec(buf, m, pos);
-          pos += m;
-          return 500; }));
-  sock_->testPerformWrite(vec.get() + countWritten, n - countWritten,
-                          WriteFlags::NONE,
-                          &countWritten, &partialWritten);
+      .WillOnce(Invoke([this, &pos](SSL*, const void* buf, int m) {
+        verifyVec(buf, m, pos);
+        pos += m;
+        return 500;
+      }));
+  sock_->testPerformWrite(
+      vec.get() + countWritten,
+      n - countWritten,
+      WriteFlags::NONE,
+      &countWritten,
+      &partialWritten);
   EXPECT_EQ(countWritten, 2);
   EXPECT_EQ(partialWritten, 0);
 }
@@ -212,19 +218,21 @@ TEST_F(AsyncSSLSocketWriteTest, write_coalescing5) {
   auto vec = makeVec({1000, 500, 500});
   int pos = 0;
   EXPECT_CALL(*(sock_.get()), sslWriteImpl(_, _, 1500))
-    .WillOnce(Invoke([this, &pos] (SSL *, const void *buf, int m) {
-          verifyVec(buf, m, pos);
-          pos += m;
-          return m; }));
+      .WillOnce(Invoke([this, &pos](SSL*, const void* buf, int m) {
+        verifyVec(buf, m, pos);
+        pos += m;
+        return m;
+      }));
   EXPECT_CALL(*(sock_.get()), sslWriteImpl(_, _, 500))
-    .WillOnce(Invoke([this, &pos] (SSL *, const void *buf, int m) {
-          verifyVec(buf, m, pos);
-          pos += m;
-          return m; }));
+      .WillOnce(Invoke([this, &pos](SSL*, const void* buf, int m) {
+        verifyVec(buf, m, pos);
+        pos += m;
+        return m;
+      }));
   uint32_t countWritten = 0;
   uint32_t partialWritten = 0;
-  sock_->testPerformWrite(vec.get(), n, WriteFlags::NONE, &countWritten,
-                          &partialWritten);
+  sock_->testPerformWrite(
+      vec.get(), n, WriteFlags::NONE, &countWritten, &partialWritten);
   EXPECT_EQ(countWritten, 3);
   EXPECT_EQ(partialWritten, 0);
 }
@@ -235,25 +243,30 @@ TEST_F(AsyncSSLSocketWriteTest, write_coalescing6) {
   auto vec = makeVec({1000, 500});
   int pos = 0;
   EXPECT_CALL(*(sock_.get()), sslWriteImpl(_, _, 1500))
-    .WillOnce(Invoke([this, &pos] (SSL *, const void *buf, int m) {
-          verifyVec(buf, m, pos);
-          pos += 700;
-          return 700; }));
+      .WillOnce(Invoke([this, &pos](SSL*, const void* buf, int m) {
+        verifyVec(buf, m, pos);
+        pos += 700;
+        return 700;
+      }));
   uint32_t countWritten = 0;
   uint32_t partialWritten = 0;
-  sock_->testPerformWrite(vec.get(), n, WriteFlags::NONE, &countWritten,
-                          &partialWritten);
+  sock_->testPerformWrite(
+      vec.get(), n, WriteFlags::NONE, &countWritten, &partialWritten);
   EXPECT_EQ(countWritten, 0);
   EXPECT_EQ(partialWritten, 700);
   consumeVec(vec.get(), countWritten, partialWritten);
   EXPECT_CALL(*(sock_.get()), sslWriteImpl(_, _, 800))
-    .WillOnce(Invoke([this, &pos] (SSL *, const void *buf, int m) {
-          verifyVec(buf, m, pos);
-          pos += m;
-          return m; }));
-  sock_->testPerformWrite(vec.get() + countWritten, n - countWritten,
-                          WriteFlags::NONE,
-                          &countWritten, &partialWritten);
+      .WillOnce(Invoke([this, &pos](SSL*, const void* buf, int m) {
+        verifyVec(buf, m, pos);
+        pos += m;
+        return m;
+      }));
+  sock_->testPerformWrite(
+      vec.get() + countWritten,
+      n - countWritten,
+      WriteFlags::NONE,
+      &countWritten,
+      &partialWritten);
   EXPECT_EQ(countWritten, 2);
   EXPECT_EQ(partialWritten, 0);
 }
@@ -279,23 +292,25 @@ TEST_F(AsyncSSLSocketWriteTest, write_with_eor1) {
       // + some random SSL overhead
       .WillOnce(Return(3728u));
   EXPECT_CALL(*(sock_.get()), sslWriteImpl(_, _, 1500))
-    .WillOnce(Invoke([=, &pos] (SSL *, const void *buf, int m) {
-          // the first 1500 does not have the EOR byte
-          sock_->checkEor(0, 0);
-          verifyVec(buf, m, pos);
-          pos += m;
-          return m; }));
+      .WillOnce(Invoke([=, &pos](SSL*, const void* buf, int m) {
+        // the first 1500 does not have the EOR byte
+        sock_->checkEor(0, 0);
+        verifyVec(buf, m, pos);
+        pos += m;
+        return m;
+      }));
   EXPECT_CALL(*(sock_.get()), sslWriteImpl(_, _, 6))
-    .WillOnce(Invoke([=, &pos] (SSL *, const void *buf, int m) {
-          sock_->checkEor(appEor, 3600 + m);
-          verifyVec(buf, m, pos);
-          pos += m;
-          return m; }));
+      .WillOnce(Invoke([=, &pos](SSL*, const void* buf, int m) {
+        sock_->checkEor(appEor, 3600 + m);
+        verifyVec(buf, m, pos);
+        pos += m;
+        return m;
+      }));
 
   uint32_t countWritten = 0;
   uint32_t partialWritten = 0;
-  sock_->testPerformWrite(vec.get(), n , WriteFlags::EOR,
-                          &countWritten, &partialWritten);
+  sock_->testPerformWrite(
+      vec.get(), n, WriteFlags::EOR, &countWritten, &partialWritten);
   EXPECT_EQ(countWritten, n);
   EXPECT_EQ(partialWritten, 0);
   sock_->checkEor(0, 0);
@@ -314,30 +329,32 @@ TEST_F(AsyncSSLSocketWriteTest, write_with_eor2) {
   sock_->setEorTracking(true);
 
   EXPECT_CALL(*(sock_.get()), getRawBytesWritten())
-    // rawBytesWritten after writting initAppBytesWritten +  1500 bytes
-    // + some random SSL overhead
-    .WillOnce(Return(3600))
-    // rawBytesWritten after writting last 300 bytes
-    // + some random SSL overhead
-    .WillOnce(Return(4100));
+      // rawBytesWritten after writting initAppBytesWritten +  1500 bytes
+      // + some random SSL overhead
+      .WillOnce(Return(3600))
+      // rawBytesWritten after writting last 300 bytes
+      // + some random SSL overhead
+      .WillOnce(Return(4100));
   EXPECT_CALL(*(sock_.get()), sslWriteImpl(_, _, 1500))
-    .WillOnce(Invoke([=, &pos] (SSL *, const void *buf, int m) {
-          // the first 1500 does not have the EOR byte
-          sock_->checkEor(0, 0);
-          verifyVec(buf, m, pos);
-          pos += m;
-          return m; }));
+      .WillOnce(Invoke([=, &pos](SSL*, const void* buf, int m) {
+        // the first 1500 does not have the EOR byte
+        sock_->checkEor(0, 0);
+        verifyVec(buf, m, pos);
+        pos += m;
+        return m;
+      }));
   EXPECT_CALL(*(sock_.get()), sslWriteImpl(_, _, 300))
-    .WillOnce(Invoke([=, &pos] (SSL *, const void *buf, int m) {
-          sock_->checkEor(appEor, 3600 + m);
-          verifyVec(buf, m, pos);
-          pos += m;
-          return m; }));
+      .WillOnce(Invoke([=, &pos](SSL*, const void* buf, int m) {
+        sock_->checkEor(appEor, 3600 + m);
+        verifyVec(buf, m, pos);
+        pos += m;
+        return m;
+      }));
 
   uint32_t countWritten = 0;
   uint32_t partialWritten = 0;
-  sock_->testPerformWrite(vec.get(), n, WriteFlags::EOR,
-                          &countWritten, &partialWritten);
+  sock_->testPerformWrite(
+      vec.get(), n, WriteFlags::EOR, &countWritten, &partialWritten);
   EXPECT_EQ(countWritten, n);
   EXPECT_EQ(partialWritten, 0);
   sock_->checkEor(0, 0);
@@ -357,43 +374,49 @@ TEST_F(AsyncSSLSocketWriteTest, write_with_eor3) {
   sock_->setEorTracking(true);
 
   EXPECT_CALL(*(sock_.get()), getRawBytesWritten())
-    // rawBytesWritten after the initAppBytesWritten
-    // + some random SSL overhead
-    .WillOnce(Return(2000))
-    // rawBytesWritten after the initAppBytesWritten + 1000 (with 100 overhead)
-    // + some random SSL overhead
-    .WillOnce(Return(3100));
+      // rawBytesWritten after the initAppBytesWritten
+      // + some random SSL overhead
+      .WillOnce(Return(2000))
+      // rawBytesWritten after the initAppBytesWritten + 1000 (with 100
+      // overhead)
+      // + some random SSL overhead
+      .WillOnce(Return(3100));
   EXPECT_CALL(*(sock_.get()), sslWriteImpl(_, _, 1600))
-    .WillOnce(Invoke([this, &pos] (SSL *, const void *buf, int m) {
-          sock_->checkEor(appEor, 2000 + m);
-          verifyVec(buf, m, pos);
-          pos += 1000;
-          return 1000; }));
+      .WillOnce(Invoke([this, &pos](SSL*, const void* buf, int m) {
+        sock_->checkEor(appEor, 2000 + m);
+        verifyVec(buf, m, pos);
+        pos += 1000;
+        return 1000;
+      }));
 
   uint32_t countWritten = 0;
   uint32_t partialWritten = 0;
-  sock_->testPerformWrite(vec.get(), n, WriteFlags::EOR,
-                          &countWritten, &partialWritten);
+  sock_->testPerformWrite(
+      vec.get(), n, WriteFlags::EOR, &countWritten, &partialWritten);
   EXPECT_EQ(countWritten, 0);
   EXPECT_EQ(partialWritten, 1000);
   sock_->checkEor(appEor, 2000 + 1600);
   consumeVec(vec.get(), countWritten, partialWritten);
 
   EXPECT_CALL(*(sock_.get()), getRawBytesWritten())
-    .WillOnce(Return(3100))
-    .WillOnce(Return(3800));
+      .WillOnce(Return(3100))
+      .WillOnce(Return(3800));
   EXPECT_CALL(*(sock_.get()), sslWriteImpl(_, _, 600))
-    .WillOnce(Invoke([this, &pos] (SSL *, const void *buf, int m) {
-          sock_->checkEor(appEor, 3100 + m);
-          verifyVec(buf, m, pos);
-          pos += m;
-          return m; }));
-  sock_->testPerformWrite(vec.get() + countWritten, n - countWritten,
-                          WriteFlags::EOR,
-                          &countWritten, &partialWritten);
+      .WillOnce(Invoke([this, &pos](SSL*, const void* buf, int m) {
+        sock_->checkEor(appEor, 3100 + m);
+        verifyVec(buf, m, pos);
+        pos += m;
+        return m;
+      }));
+  sock_->testPerformWrite(
+      vec.get() + countWritten,
+      n - countWritten,
+      WriteFlags::EOR,
+      &countWritten,
+      &partialWritten);
   EXPECT_EQ(countWritten, n);
   EXPECT_EQ(partialWritten, 0);
   sock_->checkEor(0, 0);
 }
 
-}
+} // namespace folly

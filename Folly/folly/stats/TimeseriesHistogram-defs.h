@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ void TimeseriesHistogram<T, CT, C>::addValues(
 
   for (size_t n = 0; n < hist.getNumBuckets(); ++n) {
     const typename folly::Histogram<ValueType>::Bucket& histBucket =
-      hist.getBucketByIndex(n);
+        hist.getBucketByIndex(n);
     Bucket& myBucket = buckets_.getByIndex(n);
     myBucket.addValueAggregated(now, histBucket.sum, histBucket.count);
   }
@@ -93,8 +93,8 @@ T TimeseriesHistogram<T, CT, C>::getPercentileEstimate(double pct, size_t level)
     return firstValue_;
   }
 
-  return buckets_.getPercentileEstimate(pct / 100.0, CountFromLevel(level),
-                                        AvgFromLevel(level));
+  return buckets_.getPercentileEstimate(
+      pct / 100.0, CountFromLevel(level), AvgFromLevel(level));
 }
 
 template <typename T, typename CT, typename C>
@@ -106,9 +106,10 @@ T TimeseriesHistogram<T, CT, C>::getPercentileEstimate(
     return firstValue_;
   }
 
-  return buckets_.getPercentileEstimate(pct / 100.0,
-                                        CountFromInterval(start, end),
-                                        AvgFromInterval<T>(start, end));
+  return buckets_.getPercentileEstimate(
+      pct / 100.0,
+      CountFromInterval(start, end),
+      AvgFromInterval<T>(start, end));
 }
 
 template <typename T, typename CT, typename C>
@@ -123,8 +124,8 @@ size_t TimeseriesHistogram<T, CT, C>::getPercentileBucketIdx(
     double pct,
     TimePoint start,
     TimePoint end) const {
-  return buckets_.getPercentileBucketIdx(pct / 100.0,
-                                         CountFromInterval(start, end));
+  return buckets_.getPercentileBucketIdx(
+      pct / 100.0, CountFromInterval(start, end));
 }
 
 template <typename T, typename CT, typename C>
@@ -150,9 +151,13 @@ std::string TimeseriesHistogram<T, CT, C>::getString(size_t level) const {
       toAppend(",", &result);
     }
     const ContainerType& cont = buckets_.getByIndex(i);
-    toAppend(buckets_.getBucketMin(i),
-             ":", cont.count(level),
-             ":", cont.template avg<ValueType>(level), &result);
+    toAppend(
+        buckets_.getBucketMin(i),
+        ":",
+        cont.count(level),
+        ":",
+        cont.template avg<ValueType>(level),
+        &result);
   }
 
   return result;
@@ -169,9 +174,13 @@ std::string TimeseriesHistogram<T, CT, C>::getString(
       toAppend(",", &result);
     }
     const ContainerType& cont = buckets_.getByIndex(i);
-    toAppend(buckets_.getBucketMin(i),
-             ":", cont.count(start, end),
-             ":", cont.avg(start, end), &result);
+    toAppend(
+        buckets_.getBucketMin(i),
+        ":",
+        cont.count(start, end),
+        ":",
+        cont.avg(start, end),
+        &result);
   }
 
   return result;
@@ -227,4 +236,4 @@ void TimeseriesHistogram<T, CT, C>::computeRateData(
   }
 }
 
-}  // namespace folly
+} // namespace folly

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,18 +23,15 @@
 #include <folly/experimental/BitVectorCoding.h>
 #include <folly/experimental/Select64.h>
 #include <folly/experimental/test/CodingTestUtils.h>
+#include <folly/init/Init.h>
 
 using namespace folly::compression;
-
-#ifndef BV_TEST_ARCH
-#define BV_TEST_ARCH Default
-#endif // BV_TEST_ARCH
 
 class BitVectorCodingTest : public ::testing::Test {
  public:
   void doTestEmpty() {
     typedef BitVectorEncoder<uint32_t, size_t> Encoder;
-    typedef BitVectorReader<Encoder, instructions::BV_TEST_ARCH> Reader;
+    typedef BitVectorReader<Encoder, instructions::Default> Reader;
     testEmpty<Reader, Encoder>();
   }
 
@@ -71,7 +68,6 @@ TEST_F(BitVectorCodingTest, SkipForwardPointers) {
 namespace bm {
 
 typedef BitVectorEncoder<uint32_t, uint32_t, 128, 128> Encoder;
-typedef BitVectorReader<Encoder> Reader;
 
 std::vector<uint32_t> data;
 std::vector<size_t> order;
@@ -95,14 +91,24 @@ void init() {
   encodeLargeData = generateRandomList(1000 * 1000, 100 * 1000 * 1000, gen);
 }
 
-void free() { list.free(); }
+void free() {
+  list.free();
+}
 
 } // namespace bm
 
-BENCHMARK(Next, iters) { bmNext<bm::Reader>(bm::list, bm::data, iters); }
+BENCHMARK(Next, iters) {
+  dispatchInstructions([&](auto instructions) {
+    bmNext<BitVectorReader<bm::Encoder, decltype(instructions)>>(
+        bm::list, bm::data, iters);
+  });
+}
 
 size_t Skip_ForwardQ128(size_t iters, size_t logAvgSkip) {
-  bmSkip<bm::Reader>(bm::list, bm::data, logAvgSkip, iters);
+  dispatchInstructions([&](auto instructions) {
+    bmSkip<BitVectorReader<bm::Encoder, decltype(instructions)>>(
+        bm::list, bm::data, logAvgSkip, iters);
+  });
   return iters;
 }
 
@@ -115,13 +121,19 @@ BENCHMARK_NAMED_PARAM_MULTI(Skip_ForwardQ128, 256_pm_64, 8)
 BENCHMARK_NAMED_PARAM_MULTI(Skip_ForwardQ128, 1024_pm_256, 10)
 
 BENCHMARK(Jump_ForwardQ128, iters) {
-  bmJump<bm::Reader>(bm::list, bm::data, bm::order, iters);
+  dispatchInstructions([&](auto instructions) {
+    bmJump<BitVectorReader<bm::Encoder, decltype(instructions)>>(
+        bm::list, bm::data, bm::order, iters);
+  });
 }
 
 BENCHMARK_DRAW_LINE();
 
 size_t SkipTo_SkipQ128(size_t iters, size_t logAvgSkip) {
-  bmSkipTo<bm::Reader>(bm::list, bm::data, logAvgSkip, iters);
+  dispatchInstructions([&](auto instructions) {
+    bmSkipTo<BitVectorReader<bm::Encoder, decltype(instructions)>>(
+        bm::list, bm::data, logAvgSkip, iters);
+  });
   return iters;
 }
 
@@ -134,55 +146,60 @@ BENCHMARK_NAMED_PARAM_MULTI(SkipTo_SkipQ128, 256_pm_64, 8)
 BENCHMARK_NAMED_PARAM_MULTI(SkipTo_SkipQ128, 1024_pm_256, 10)
 
 BENCHMARK(JumpTo_SkipQ128, iters) {
-  bmJumpTo<bm::Reader>(bm::list, bm::data, bm::order, iters);
+  dispatchInstructions([&](auto instructions) {
+    bmJumpTo<BitVectorReader<bm::Encoder, decltype(instructions)>>(
+        bm::list, bm::data, bm::order, iters);
+  });
 }
 
 BENCHMARK_DRAW_LINE();
 
 BENCHMARK(Encode_10) {
-  auto list = bm::Encoder::encode(bm::encodeSmallData.begin(),
-                                  bm::encodeSmallData.end());
+  auto list = bm::Encoder::encode(
+      bm::encodeSmallData.begin(), bm::encodeSmallData.end());
   list.free();
 }
 
 BENCHMARK(Encode) {
-  auto list = bm::Encoder::encode(bm::encodeLargeData.begin(),
-                                  bm::encodeLargeData.end());
+  auto list = bm::Encoder::encode(
+      bm::encodeLargeData.begin(), bm::encodeLargeData.end());
   list.free();
 }
 
 #if 0
-Intel(R) Xeon(R) CPU E5-2673 v3 @ 2.40GHz (turbo off),
-using instructions::Default and GCC 4.8 with --bm_min_usec 100000.
+// Intel(R) Xeon(R) CPU E5-2678 v3 @ 2.50GHz (turbo on),
+// Using GCC 5 with --bm_min_usec 100000.
+V1008 12:32:25.863286 101188 Instructions.h:161] Will use folly::compression::instructions::Haswell
 ============================================================================
 folly/experimental/test/BitVectorCodingTest.cpp relative  time/iter  iters/s
 ============================================================================
-Next                                                         9.59ns  104.25M
-Skip_ForwardQ128(1)                                         11.56ns   86.53M
-Skip_ForwardQ128(2)                                         23.30ns   42.93M
-Skip_ForwardQ128(4_pm_1)                                    52.99ns   18.87M
-Skip_ForwardQ128(16_pm_4)                                  200.85ns    4.98M
-Skip_ForwardQ128(64_pm_16)                                 733.20ns    1.36M
-Skip_ForwardQ128(256_pm_64)                                748.35ns    1.34M
-Skip_ForwardQ128(1024_pm_256)                              742.77ns    1.35M
-Jump_ForwardQ128                                           752.98ns    1.33M
+Next                                                         9.52ns  104.99M
+Skip_ForwardQ128(1)                                         13.90ns   71.96M
+Skip_ForwardQ128(2)                                         25.02ns   39.97M
+Skip_ForwardQ128(4_pm_1)                                    28.25ns   35.40M
+Skip_ForwardQ128(16_pm_4)                                   39.64ns   25.23M
+Skip_ForwardQ128(64_pm_16)                                 112.19ns    8.91M
+Skip_ForwardQ128(256_pm_64)                                137.75ns    7.26M
+Skip_ForwardQ128(1024_pm_256)                              131.56ns    7.60M
+Jump_ForwardQ128                                           133.30ns    7.50M
 ----------------------------------------------------------------------------
-SkipTo_SkipQ128(1)                                          23.47ns   42.62M
-SkipTo_SkipQ128(2)                                          24.48ns   40.85M
-SkipTo_SkipQ128(4_pm_1)                                     22.16ns   45.13M
-SkipTo_SkipQ128(16_pm_4)                                    28.43ns   35.17M
-SkipTo_SkipQ128(64_pm_16)                                   45.51ns   21.97M
-SkipTo_SkipQ128(256_pm_64)                                  44.03ns   22.71M
-SkipTo_SkipQ128(1024_pm_256)                                45.84ns   21.81M
-JumpTo_SkipQ128                                             15.33ns   65.25M
+SkipTo_SkipQ128(1)                                          13.30ns   75.16M
+SkipTo_SkipQ128(2)                                          13.81ns   72.40M
+SkipTo_SkipQ128(4_pm_1)                                     12.23ns   81.80M
+SkipTo_SkipQ128(16_pm_4)                                    13.72ns   72.89M
+SkipTo_SkipQ128(64_pm_16)                                   21.18ns   47.22M
+SkipTo_SkipQ128(256_pm_64)                                  20.15ns   49.63M
+SkipTo_SkipQ128(1024_pm_256)                                21.86ns   45.74M
+JumpTo_SkipQ128                                             23.10ns   43.30M
 ----------------------------------------------------------------------------
-Encode_10                                                    1.60us  624.33K
-Encode                                                      16.98ms    58.89
+Encode_10                                                  344.50ns    2.90M
+Encode                                                      10.88ms    91.90
 ============================================================================
 #endif
 
 int main(int argc, char** argv) {
   testing::InitGoogleTest(&argc, argv);
+  folly::init(&argc, &argv);
   gflags::ParseCommandLineFlags(&argc, &argv, true);
 
   auto ret = RUN_ALL_TESTS();

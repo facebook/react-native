@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2017-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,10 @@ namespace folly {
 /// not implement a blocking interface. For the purposes of this
 /// class, lower number is higher priority
 
-template <class T>
+template <
+    typename T,
+    template <typename> class Atom = std::atomic,
+    bool Dynamic = false>
 class PriorityMPMCQueue {
  public:
   PriorityMPMCQueue(size_t numPriorities, size_t capacity) {
@@ -54,6 +57,16 @@ class PriorityMPMCQueue {
     return queues_.at(queue).write(std::move(item));
   }
 
+  bool writeWithPriority(
+      T&& item,
+      size_t priority,
+      std::chrono::milliseconds timeout) {
+    size_t queue = std::min(getNumPriorities() - 1, priority);
+    CHECK_LT(queue, queues_.size());
+    return queues_.at(queue).tryWriteUntil(
+        std::chrono::steady_clock::now() + timeout, std::move(item));
+  }
+
   bool read(T& item) {
     for (auto& q : queues_) {
       if (q.readIfNotEmpty(item)) {
@@ -61,6 +74,10 @@ class PriorityMPMCQueue {
       }
     }
     return false;
+  }
+
+  bool readWithPriority(T& item, size_t priority) {
+    return queues_[priority].readIfNotEmpty(item);
   }
 
   size_t size() const {
@@ -91,7 +108,7 @@ class PriorityMPMCQueue {
   }
 
  private:
-  std::vector<folly::MPMCQueue<T>> queues_;
+  std::vector<folly::MPMCQueue<T, Atom, Dynamic>> queues_;
 };
 
 } // namespace folly

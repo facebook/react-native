@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -123,7 +123,7 @@ class FutureDAG : public std::enable_shared_from_this<FutureDAG> {
 
       collect(dependencies)
           .via(nodes[handle].executor)
-          .then([this, handle] {
+          .thenValue([this, handle](std::vector<Unit>&&) {
             nodes[handle].func().then([this, handle](Try<Unit>&& t) {
               nodes[handle].promise.setTry(std::move(t));
             });
@@ -134,10 +134,9 @@ class FutureDAG : public std::enable_shared_from_this<FutureDAG> {
     }
 
     nodes[sourceHandle].promise.setValue();
-    auto that = shared_from_this();
-    return nodes[sinkHandle].promise.getFuture().ensure([that] {}).then(
-        [this, sourceHandle, sinkHandle]() {
-          clean_state(sourceHandle, sinkHandle);
+    return nodes[sinkHandle].promise.getFuture().thenValue(
+        [that = shared_from_this(), sourceHandle, sinkHandle](Unit) {
+          that->clean_state(sourceHandle, sinkHandle);
         });
   }
 
@@ -219,10 +218,10 @@ class FutureDAGFunctor {
   void exec() {
     this->dag->go().get();
   }
-  virtual void operator()(){}
+  virtual void operator()() {}
   explicit FutureDAGFunctor(T init_val) : state(init_val) {}
   FutureDAGFunctor() : state() {}
-  virtual ~FutureDAGFunctor(){}
+  virtual ~FutureDAGFunctor() {}
 };
 
-} // folly
+} // namespace folly

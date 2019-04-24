@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,7 @@ class MoveWrapper {
   MoveWrapper() = default;
 
   /// Move a value in.
-  explicit
-  MoveWrapper(T&& t) : value(std::move(t)) {}
+  explicit MoveWrapper(T&& t) : value(std::move(t)) {}
 
   /// copy is move
   MoveWrapper(const MoveWrapper& other) : value(std::move(other.value)) {}
@@ -48,14 +47,24 @@ class MoveWrapper {
   /// move is also move
   MoveWrapper(MoveWrapper&& other) : value(std::move(other.value)) {}
 
-  const T& operator*() const { return value; }
-        T& operator*()       { return value; }
+  const T& operator*() const {
+    return value;
+  }
+  T& operator*() {
+    return value;
+  }
 
-  const T* operator->() const { return &value; }
-        T* operator->()       { return &value; }
+  const T* operator->() const {
+    return &value;
+  }
+  T* operator->() {
+    return &value;
+  }
 
   /// move the value out (sugar for std::move(*moveWrapper))
-  T&& move() { return std::move(value); }
+  T&& move() {
+    return std::move(value);
+  }
 
   // If you want these you're probably doing it wrong, though they'd be
   // easy enough to implement
@@ -74,4 +83,4 @@ MoveWrapper<T0> makeMoveWrapper(T&& t) {
   return MoveWrapper<T0>(std::forward<T0>(t));
 }
 
-} // namespace
+} // namespace folly

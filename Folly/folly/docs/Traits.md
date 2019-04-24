@@ -127,9 +127,9 @@ is relocatable and has nothrow constructor.
     ```Cpp
     // at global level, i.e no namespace
     // macro for regular type
-    FOLLY_ASSUME_FBVECTOR_COMPATIBLE(MySimpleType);
+    FOLLY_ASSUME_FBVECTOR_COMPATIBLE(MySimpleType)
     // macro for types having 2 template parameters (MyParameterizedType)
-    FOLLY_ASSUME_FBVECTOR_COMPATIBLE_2(MyParameterizedType);
+    FOLLY_ASSUME_FBVECTOR_COMPATIBLE_2(MyParameterizedType)
     ```
 
 Similarly, 

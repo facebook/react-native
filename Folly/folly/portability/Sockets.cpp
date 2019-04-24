@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,9 @@
 #include <errno.h>
 #include <fcntl.h>
 
-#include <event2/util.h>
+#include <event2/util.h> // @manual
 
-#include <MSWSock.h>
+#include <MSWSock.h> // @manual
 
 #include <folly/ScopeGuard.h>
 
@@ -37,7 +37,9 @@ static struct FSPInit {
     WSADATA dat;
     WSAStartup(MAKEWORD(2, 2), &dat);
   }
-  ~FSPInit() { WSACleanup(); }
+  ~FSPInit() {
+    WSACleanup();
+  }
 } fspInit;
 
 bool is_fh_socket(int fh) {
@@ -271,7 +273,9 @@ ssize_t recvmsg(int s, struct msghdr* message, int /* flags */) {
   msg.dwFlags = 0;
   msg.dwBufferCount = (DWORD)message->msg_iovlen;
   msg.lpBuffers = new WSABUF[message->msg_iovlen];
-  SCOPE_EXIT { delete[] msg.lpBuffers; };
+  SCOPE_EXIT {
+    delete[] msg.lpBuffers;
+  };
   for (size_t i = 0; i < message->msg_iovlen; i++) {
     msg.lpBuffers[i].buf = (CHAR*)message->msg_iov[i].iov_base;
     msg.lpBuffers[i].len = (ULONG)message->msg_iov[i].iov_len;
@@ -429,7 +433,7 @@ int socketpair(int domain, int type, int protocol, int sv[2]) {
   sv[1] = _open_osfhandle(pair[1], O_RDWR | O_BINARY);
   return 0;
 }
-}
-}
-}
+} // namespace sockets
+} // namespace portability
+} // namespace folly
 #endif

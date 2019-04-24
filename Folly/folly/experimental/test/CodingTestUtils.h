@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +21,19 @@
 #include <limits>
 #include <random>
 #include <string>
-#include <vector>
 #include <unordered_set>
+#include <vector>
+
 #include <glog/logging.h>
 
+#include <folly/Benchmark.h>
+#include <folly/Likely.h>
+#include <folly/Optional.h>
+#include <folly/experimental/Instructions.h>
 #include <folly/portability/GTest.h>
 
-namespace folly { namespace compression {
+namespace folly {
+namespace compression {
 
 template <class URNG>
 std::vector<uint32_t> generateRandomList(size_t n, uint32_t maxId, URNG&& g) {
@@ -51,8 +57,8 @@ inline std::vector<uint32_t> generateRandomList(size_t n, uint32_t maxId) {
   return generateRandomList(n, maxId, gen);
 }
 
-inline std::vector<uint32_t> generateSeqList(uint32_t minId, uint32_t maxId,
-                                             uint32_t step = 1) {
+inline std::vector<uint32_t>
+generateSeqList(uint32_t minId, uint32_t maxId, uint32_t step = 1) {
   CHECK_LE(minId, maxId);
   CHECK_GT(step, 0);
   std::vector<uint32_t> ids;
@@ -75,17 +81,38 @@ inline std::vector<uint32_t> loadList(const std::string& filename) {
 
 // Test previousValue only if Reader has it.
 template <class... Args>
-void maybeTestPreviousValue(Args&&...) { }
+void maybeTestPreviousValue(Args&&...) {}
 
 // Make all the arguments template because if the types are not exact,
 // the above overload will be picked (for example i could be size_t or
 // ssize_t).
 template <class Vector, class Reader, class Index>
 auto maybeTestPreviousValue(const Vector& data, Reader& reader, Index i)
-  -> decltype(reader.previousValue(), void()) {
+    -> decltype(reader.previousValue(), void()) {
   if (i != 0) {
     EXPECT_EQ(reader.previousValue(), data[i - 1]);
   }
+}
+
+// Test previous only if Reader has it.
+template <class... Args>
+void maybeTestPrevious(Args&&...) {}
+
+// Make all the arguments template because if the types are not exact,
+// the above overload will be picked (for example i could be size_t or
+// ssize_t).
+template <class Vector, class Reader, class Index>
+auto maybeTestPrevious(const Vector& data, Reader& reader, Index i)
+    -> decltype(reader.previous(), void()) {
+  auto r = reader.previous();
+  if (i != 0) {
+    EXPECT_TRUE(r);
+    EXPECT_EQ(reader.value(), data[i - 1]);
+  } else {
+    EXPECT_FALSE(r);
+  }
+  reader.next();
+  EXPECT_EQ(reader.value(), data[i]);
 }
 
 template <class Reader, class List>
@@ -99,6 +126,7 @@ void testNext(const std::vector<uint32_t>& data, const List& list) {
     EXPECT_EQ(reader.value(), data[i]);
     EXPECT_EQ(reader.position(), i);
     maybeTestPreviousValue(data, reader, i);
+    maybeTestPrevious(data, reader, i);
   }
   EXPECT_FALSE(reader.next());
   EXPECT_FALSE(reader.valid());
@@ -106,8 +134,10 @@ void testNext(const std::vector<uint32_t>& data, const List& list) {
 }
 
 template <class Reader, class List>
-void testSkip(const std::vector<uint32_t>& data, const List& list,
-              size_t skipStep) {
+void testSkip(
+    const std::vector<uint32_t>& data,
+    const List& list,
+    size_t skipStep) {
   CHECK_GT(skipStep, 0);
   Reader reader(list);
 
@@ -117,6 +147,7 @@ void testSkip(const std::vector<uint32_t>& data, const List& list,
     EXPECT_EQ(reader.value(), data[i]);
     EXPECT_EQ(reader.position(), i);
     maybeTestPreviousValue(data, reader, i);
+    maybeTestPrevious(data, reader, i);
   }
   EXPECT_FALSE(reader.skip(skipStep));
   EXPECT_FALSE(reader.valid());
@@ -135,8 +166,10 @@ void testSkip(const std::vector<uint32_t>& data, const List& list) {
 }
 
 template <class Reader, class List>
-void testSkipTo(const std::vector<uint32_t>& data, const List& list,
-                size_t skipToStep) {
+void testSkipTo(
+    const std::vector<uint32_t>& data,
+    const List& list,
+    size_t skipToStep) {
   CHECK_GT(skipToStep, 0);
   Reader reader(list);
 
@@ -155,6 +188,7 @@ void testSkipTo(const std::vector<uint32_t>& data, const List& list,
     EXPECT_EQ(reader.position(), std::distance(data.begin(), it));
     value = reader.value() + delta;
     maybeTestPreviousValue(data, reader, std::distance(data.begin(), it));
+    maybeTestPrevious(data, reader, std::distance(data.begin(), it));
   }
   EXPECT_FALSE(reader.valid());
   EXPECT_EQ(reader.position(), reader.size());
@@ -214,6 +248,7 @@ void testJump(const std::vector<uint32_t>& data, const List& list) {
     EXPECT_EQ(reader.value(), data[i]);
     EXPECT_EQ(reader.position(), i);
     maybeTestPreviousValue(data, reader, i);
+    maybeTestPrevious(data, reader, i);
   }
   EXPECT_FALSE(reader.jump(data.size()));
   EXPECT_FALSE(reader.valid());
@@ -302,10 +337,11 @@ void bmNext(const List& list, const std::vector<uint32_t>& data, size_t iters) {
 }
 
 template <class Reader, class List>
-void bmSkip(const List& list,
-            const std::vector<uint32_t>& /* data */,
-            size_t logAvgSkip,
-            size_t iters) {
+void bmSkip(
+    const List& list,
+    const std::vector<uint32_t>& /* data */,
+    size_t logAvgSkip,
+    size_t iters) {
   size_t avg = (size_t(1) << logAvgSkip);
   size_t base = avg - (avg >> 2);
   size_t mask = (avg > 1) ? (avg >> 1) - 1 : 0;
@@ -322,8 +358,11 @@ void bmSkip(const List& list,
 }
 
 template <class Reader, class List>
-void bmSkipTo(const List& list, const std::vector<uint32_t>& data,
-              size_t logAvgSkip, size_t iters) {
+void bmSkipTo(
+    const List& list,
+    const std::vector<uint32_t>& data,
+    size_t logAvgSkip,
+    size_t iters) {
   size_t avg = (size_t(1) << logAvgSkip);
   size_t base = avg - (avg >> 2);
   size_t mask = (avg > 1) ? (avg >> 1) - 1 : 0;
@@ -343,31 +382,54 @@ void bmSkipTo(const List& list, const std::vector<uint32_t>& data,
 }
 
 template <class Reader, class List>
-void bmJump(const List& list, const std::vector<uint32_t>& data,
-            const std::vector<size_t>& order, size_t iters) {
+void bmJump(
+    const List& list,
+    const std::vector<uint32_t>& data,
+    const std::vector<size_t>& order,
+    size_t iters) {
   CHECK(!data.empty());
   CHECK_EQ(data.size(), order.size());
 
   Reader reader(list);
   for (size_t i = 0, j = 0; i < iters; ++i, ++j) {
-    if (j == order.size()) j = 0;
+    if (j == order.size()) {
+      j = 0;
+    }
     reader.jump(order[j]);
     folly::doNotOptimizeAway(reader.value());
   }
 }
 
 template <class Reader, class List>
-void bmJumpTo(const List& list, const std::vector<uint32_t>& data,
-              const std::vector<size_t>& order, size_t iters) {
+void bmJumpTo(
+    const List& list,
+    const std::vector<uint32_t>& data,
+    const std::vector<size_t>& order,
+    size_t iters) {
   CHECK(!data.empty());
   CHECK_EQ(data.size(), order.size());
 
   Reader reader(list);
   for (size_t i = 0, j = 0; i < iters; ++i, ++j) {
-    if (j == order.size()) j = 0;
+    if (j == order.size()) {
+      j = 0;
+    }
     reader.jumpTo(data[order[j]]);
     folly::doNotOptimizeAway(reader.value());
   }
 }
 
-}}  // namespaces
+folly::Optional<instructions::Type> instructionsOverride();
+
+template <class F>
+auto dispatchInstructions(F&& f)
+    -> decltype(f(std::declval<instructions::Default>())) {
+  if (auto type = instructionsOverride()) {
+    return instructions::dispatch(*type, std::forward<F>(f));
+  } else {
+    return instructions::dispatch(std::forward<F>(f));
+  }
+}
+
+} // namespace compression
+} // namespace folly

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ size_t SharedPromise<T>::size() {
 }
 
 template <class T>
-Future<T> SharedPromise<T>::getFuture() {
+SemiFuture<T> SharedPromise<T>::getSemiFuture() {
   std::lock_guard<std::mutex> g(mutex_);
   size_++;
   if (hasValue_) {
@@ -64,8 +64,13 @@ Future<T> SharedPromise<T>::getFuture() {
     if (interruptHandler_) {
       promises_.back().setInterruptHandler(interruptHandler_);
     }
-    return promises_.back().getFuture();
+    return promises_.back().getSemiFuture();
   }
+}
+
+template <class T>
+Future<T> SharedPromise<T>::getFuture() {
+  return getSemiFuture().via(&InlineExecutor::instance());
 }
 
 template <class T>
@@ -73,11 +78,6 @@ template <class E>
 typename std::enable_if<std::is_base_of<std::exception, E>::value>::type
 SharedPromise<T>::setException(E const& e) {
   setTry(Try<T>(e));
-}
-
-template <class T>
-void SharedPromise<T>::setException(std::exception_ptr const& ep) {
-  setTry(Try<T>(ep));
 }
 
 template <class T>
@@ -117,7 +117,7 @@ void SharedPromise<T>::setTry(Try<T>&& t) {
   {
     std::lock_guard<std::mutex> g(mutex_);
     if (hasValue_) {
-      throw PromiseAlreadySatisfied();
+      throw_exception<PromiseAlreadySatisfied>();
     }
     hasValue_ = true;
     try_ = std::move(t);
@@ -131,7 +131,8 @@ void SharedPromise<T>::setTry(Try<T>&& t) {
 
 template <class T>
 bool SharedPromise<T>::isFulfilled() {
+  std::lock_guard<std::mutex> g(mutex_);
   return hasValue_;
 }
 
-}
+} // namespace folly

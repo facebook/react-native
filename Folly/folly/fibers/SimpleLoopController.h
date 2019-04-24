@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,12 @@
  */
 #pragma once
 
+#include <atomic>
+
+#include <folly/Function.h>
 #include <folly/Likely.h>
 
+#include <folly/fibers/FiberManager.h>
 #include <folly/fibers/LoopController.h>
 
 namespace folly {
@@ -27,6 +31,14 @@ class FiberManager;
 class SimpleLoopController : public LoopController {
  public:
   SimpleLoopController() : fm_(nullptr), stopRequested_(false) {}
+
+  ~SimpleLoopController() {
+    scheduled_ = false;
+  }
+
+  void setTimeFunc(Function<TimePoint()> timeFunc) {
+    timeFunc_ = std::move(timeFunc);
+  }
 
   /**
    * Run FiberManager loop; if no ready task are present,
@@ -41,7 +53,7 @@ class SimpleLoopController : public LoopController {
     while (LIKELY(waiting || !stopRequested_)) {
       func();
 
-      auto time = Clock::now();
+      auto time = timeFunc_();
 
       for (size_t i = 0; i < scheduledFuncs_.size(); ++i) {
         if (scheduledFuncs_[i].first <= time) {
@@ -72,7 +84,17 @@ class SimpleLoopController : public LoopController {
   }
 
   void runLoop() override {
-    fm_->loopUntilNoReadyImpl();
+    do {
+      if (remoteLoopRun_ < remoteScheduleCalled_) {
+        for (; remoteLoopRun_ < remoteScheduleCalled_; ++remoteLoopRun_) {
+          if (fm_->shouldRunLoopRemote()) {
+            fm_->loopUntilNoReadyImpl();
+          }
+        }
+      } else {
+        fm_->loopUntilNoReadyImpl();
+      }
+    } while (remoteLoopRun_ < remoteScheduleCalled_);
   }
 
   void schedule() override {
@@ -88,7 +110,9 @@ class SimpleLoopController : public LoopController {
   std::atomic<bool> scheduled_{false};
   bool stopRequested_;
   std::atomic<int> remoteScheduleCalled_{0};
+  int remoteLoopRun_{0};
   std::vector<std::pair<TimePoint, std::function<void()>>> scheduledFuncs_;
+  Function<TimePoint()> timeFunc_{[] { return Clock::now(); }};
 
   /* LoopController interface */
 
@@ -96,18 +120,12 @@ class SimpleLoopController : public LoopController {
     fm_ = fm;
   }
 
-  void cancel() override {
-    scheduled_ = false;
-  }
-
-  void scheduleThreadSafe(std::function<bool()> func) override {
-    if (func()) {
-      ++remoteScheduleCalled_;
-      scheduled_ = true;
-    }
+  void scheduleThreadSafe() override {
+    ++remoteScheduleCalled_;
+    scheduled_ = true;
   }
 
   friend class FiberManager;
 };
-}
-} // folly::fibers
+} // namespace fibers
+} // namespace folly

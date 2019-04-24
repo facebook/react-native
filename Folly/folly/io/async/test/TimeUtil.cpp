@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#ifndef _MSC_VER
+#ifdef __linux__
 #include <sys/utsname.h>
 #endif
 
@@ -32,9 +32,10 @@
 #include <stdexcept>
 
 #include <folly/Conv.h>
-#include <folly/portability/SysSyscall.h>
+#include <folly/ScopeGuard.h>
+#include <folly/String.h>
 #include <folly/portability/Unistd.h>
-#include <folly/portability/Windows.h>
+#include <folly/system/ThreadId.h>
 
 #include <glog/logging.h>
 
@@ -43,58 +44,90 @@ using namespace std::chrono;
 
 namespace folly {
 
-#ifdef _MSC_VER
-static pid_t gettid() {
-  return pid_t(GetCurrentThreadId());
-}
-#else
-/**
- * glibc doesn't provide gettid(), so define it ourselves.
- */
-static pid_t gettid() {
-  return syscall(FOLLY_SYS_gettid);
+static int getLinuxVersion(StringPiece release) {
+  auto dot1 = release.find('.');
+  if (dot1 == StringPiece::npos) {
+    throw std::invalid_argument("could not find first dot");
+  }
+  auto v1 = folly::to<int>(release.subpiece(0, dot1));
+
+  auto dot2 = release.find('.', dot1 + 1);
+  if (dot2 == StringPiece::npos) {
+    throw std::invalid_argument("could not find second dot");
+  }
+  auto v2 = folly::to<int>(release.subpiece(dot1 + 1, dot2 - (dot1 + 1)));
+
+  int dash = release.find('-', dot2 + 1);
+  auto v3 = folly::to<int>(release.subpiece(dot2 + 1, dash - (dot2 + 1)));
+
+  return ((v1 * 1000 + v2) * 1000) + v3;
 }
 
+#ifdef __linux__
 /**
- * The /proc/<pid>/schedstat file reports time values in jiffies.
+ * Determine the time units used in /proc/<pid>/schedstat
  *
- * Determine how many jiffies are in a second.
- * Returns -1 if the number of jiffies/second cannot be determined.
+ * Returns the number of nanoseconds per time unit,
+ * or -1 if we cannot determine the units.
  */
-static int64_t determineJiffiesHZ() {
+static int64_t determineSchedstatUnits() {
+  struct utsname unameInfo;
+  if (uname(&unameInfo) != 0) {
+    LOG(ERROR) << "unable to determine jiffies/second: uname failed: %s"
+               << errnoStr(errno);
+    return -1;
+  }
+
+  // In Linux version 2.6.23 and later, time time values are always
+  // reported in nanoseconds.
+  //
+  // This change appears to have been made in commit 425e0968a25f, which
+  // moved some of the sched stats code to a new file.  Despite the commit
+  // message claiming "no code changes are caused by this patch", it changed
+  // the task.sched_info.cpu_time and task.sched_info.run_delay counters to be
+  // computed using sched_clock() rather than jiffies.
+  int linuxVersion;
+  try {
+    linuxVersion = getLinuxVersion(unameInfo.release);
+  } catch (const std::exception&) {
+    LOG(ERROR) << "unable to determine jiffies/second: failed to parse "
+               << "kernel release string \"" << unameInfo.release << "\"";
+    return -1;
+  }
+  if (linuxVersion >= 2006023) {
+    // The units are nanoseconds
+    return 1;
+  }
+
+  // In Linux versions prior to 2.6.23, the time values are reported in
+  // jiffies.  This is somewhat unfortunate, as the number of jiffies per
+  // second is configurable.  We have to determine the units being used.
+  //
   // It seems like the only real way to figure out the CONFIG_HZ value used by
   // this kernel is to look it up in the config file.
   //
   // Look in /boot/config-<kernel_release>
-  struct utsname unameInfo;
-  if (uname(&unameInfo) != 0) {
-    LOG(ERROR) << "unable to determine jiffies/second: uname failed: %s"
-               << strerror(errno);
-    return -1;
-  }
-
   char configPath[256];
-  snprintf(configPath, sizeof(configPath), "/boot/config-%s",
-           unameInfo.release);
+  snprintf(
+      configPath, sizeof(configPath), "/boot/config-%s", unameInfo.release);
 
   FILE* f = fopen(configPath, "r");
   if (f == nullptr) {
     LOG(ERROR) << "unable to determine jiffies/second: "
-      "cannot open kernel config file %s" << configPath;
+                  "cannot open kernel config file %s"
+               << configPath;
     return -1;
   }
+  SCOPE_EXIT {
+    fclose(f);
+  };
 
   int64_t hz = -1;
   char buf[1024];
   while (fgets(buf, sizeof(buf), f) != nullptr) {
     if (strcmp(buf, "CONFIG_NO_HZ=y\n") == 0) {
-      // schedstat info seems to be reported in nanoseconds on tickless
-      // kernels.
-      //
-      // The CONFIG_HZ value doesn't matter for our purposes,
-      // so return as soon as we see CONFIG_NO_HZ.
-      fclose(f);
-      return 1000000000;
+      LOG(ERROR) << "unable to determine jiffies/second: tickless kernel";
+      return -1;
     } else if (strcmp(buf, "CONFIG_HZ=1000\n") == 0) {
       hz = 1000;
     } else if (strcmp(buf, "CONFIG_HZ=300\n") == 0) {
@@ -105,11 +138,11 @@ static int64_t determineJiffiesHZ() {
       hz = 100;
     }
   }
-  fclose(f);
 
   if (hz == -1) {
     LOG(ERROR) << "unable to determine jiffies/second: no CONFIG_HZ setting "
-      "found in %s" << configPath;
+                  "found in %s"
+               << configPath;
     return -1;
   }
 
@@ -121,40 +154,36 @@ static int64_t determineJiffiesHZ() {
  * Determine how long this process has spent waiting to get scheduled on the
  * CPU.
  *
- * Returns the number of milliseconds spent waiting, or -1 if the amount of
+ * Returns the number of nanoseconds spent waiting, or -1 if the amount of
  * time cannot be determined.
  */
-static milliseconds getTimeWaitingMS(pid_t tid) {
-#ifdef _MSC_VER
-  return milliseconds(0);
+static nanoseconds getSchedTimeWaiting(pid_t tid) {
+#ifndef __linux__
+  (void)tid;
+  return nanoseconds(0);
 #else
-  static int64_t jiffiesHZ = 0;
-  if (jiffiesHZ == 0) {
-    jiffiesHZ = determineJiffiesHZ();
-  }
-
-  if (jiffiesHZ < 0) {
+  static int64_t timeUnits = determineSchedstatUnits();
+  if (timeUnits < 0) {
     // We couldn't figure out how many jiffies there are in a second.
     // Don't bother reading the schedstat info if we can't interpret it.
-    return milliseconds(0);
+    return nanoseconds(0);
   }
 
   int fd = -1;
   try {
     char schedstatFile[256];
-    snprintf(schedstatFile, sizeof(schedstatFile),
-             "/proc/%d/schedstat", tid);
+    snprintf(schedstatFile, sizeof(schedstatFile), "/proc/%d/schedstat", tid);
     fd = open(schedstatFile, O_RDONLY);
     if (fd < 0) {
       throw std::runtime_error(
-        folly::to<string>("failed to open process schedstat file", errno));
+          folly::to<string>("failed to open process schedstat file", errno));
     }
 
     char buf[512];
     ssize_t bytesReadRet = read(fd, buf, sizeof(buf) - 1);
     if (bytesReadRet <= 0) {
       throw std::runtime_error(
-        folly::to<string>("failed to read process schedstat file", errno));
+          folly::to<string>("failed to read process schedstat file", errno));
     }
     size_t bytesRead = size_t(bytesReadRet);
 
@@ -167,35 +196,39 @@ static milliseconds getTimeWaitingMS(pid_t tid) {
     uint64_t activeJiffies = 0;
     uint64_t waitingJiffies = 0;
     uint64_t numTasks = 0;
-    int rc = sscanf(buf, "%" PRIu64 " %" PRIu64 " %" PRIu64 "\n",
-                    &activeJiffies, &waitingJiffies, &numTasks);
+    int rc = sscanf(
+        buf,
+        "%" PRIu64 " %" PRIu64 " %" PRIu64 "\n",
+        &activeJiffies,
+        &waitingJiffies,
+        &numTasks);
     if (rc != 3) {
       throw std::runtime_error("failed to parse schedstat data");
     }
 
     close(fd);
-    return milliseconds((waitingJiffies * 1000) / jiffiesHZ);
+    return nanoseconds(waitingJiffies * timeUnits);
   } catch (const std::runtime_error& e) {
     if (fd >= 0) {
       close(fd);
     }
     LOG(ERROR) << "error determining process wait time: %s" << e.what();
-    return milliseconds(0);
+    return nanoseconds(0);
   }
 #endif
 }
 
 void TimePoint::reset() {
   // Remember the current time
-  timeStart_ = system_clock::now();
+  timeStart_ = steady_clock::now();
 
   // Remember how long this process has spent waiting to be scheduled
-  tid_ = gettid();
-  timeWaiting_ = getTimeWaitingMS(tid_);
+  tid_ = getOSThreadID();
+  timeWaiting_ = getSchedTimeWaiting(tid_);
 
   // In case it took a while to read the schedstat info,
   // also record the time after the schedstat check
-  timeEnd_ = system_clock::now();
+  timeEnd_ = steady_clock::now();
 }
 
 std::ostream& operator<<(std::ostream& os, const TimePoint& timePoint) {
@@ -205,16 +238,18 @@ std::ostream& operator<<(std::ostream& os, const TimePoint& timePoint) {
   return os;
 }
 
-bool
-checkTimeout(const TimePoint& start, const TimePoint& end,
-             milliseconds expectedMS, bool allowSmaller,
-             milliseconds tolerance) {
-  auto elapsedMS = end.getTimeStart() - start.getTimeEnd();
+bool checkTimeout(
+    const TimePoint& start,
+    const TimePoint& end,
+    nanoseconds expected,
+    bool allowSmaller,
+    nanoseconds tolerance) {
+  auto elapsedTime = end.getTimeStart() - start.getTimeEnd();
 
   if (!allowSmaller) {
     // Timeouts should never fire before the time was up.
     // Allow 1ms of wiggle room for rounding errors.
-    if (elapsedMS < expectedMS - milliseconds(1)) {
+    if (elapsedTime < (expected - milliseconds(1))) {
       return false;
     }
   }
@@ -224,26 +259,26 @@ checkTimeout(const TimePoint& start, const TimePoint& end,
   // If the system is under heavy load, our process may have had to wait for a
   // while to be run.  The time spent waiting for the processor shouldn't
   // count against us, so exclude this time from the check.
-  milliseconds excludedMS;
+  nanoseconds timeExcluded;
   if (end.getTid() != start.getTid()) {
     // We can only correctly compute the amount of time waiting to be scheduled
     // if both TimePoints were set in the same thread.
-    excludedMS = milliseconds(0);
+    timeExcluded = nanoseconds(0);
   } else {
-    excludedMS = end.getTimeWaiting() - start.getTimeWaiting();
+    timeExcluded = end.getTimeWaiting() - start.getTimeWaiting();
     assert(end.getTimeWaiting() >= start.getTimeWaiting());
     // Add a tolerance here due to precision issues on linux, see below note.
-    assert( (elapsedMS + tolerance) >= excludedMS);
+    assert((elapsedTime + tolerance) >= timeExcluded);
   }
 
-  milliseconds effectiveElapsedMS = milliseconds(0);
-  if (elapsedMS > excludedMS) {
-    effectiveElapsedMS =  duration_cast<milliseconds>(elapsedMS) - excludedMS;
+  nanoseconds effectiveElapsedTime(0);
+  if (elapsedTime > timeExcluded) {
+    effectiveElapsedTime = elapsedTime - timeExcluded;
   }
 
   // On x86 Linux, sleep calls generally have precision only to the nearest
   // millisecond.  The tolerance parameter lets users allow a few ms of slop.
-  milliseconds overrun = effectiveElapsedMS - expectedMS;
+  auto overrun = effectiveElapsedTime - expected;
   if (overrun > tolerance) {
     return false;
   }
@@ -251,4 +286,4 @@ checkTimeout(const TimePoint& start, const TimePoint& end,
   return true;
 }
 
-}
+} // namespace folly

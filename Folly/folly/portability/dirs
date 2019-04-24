@@ -1,4 +1,0 @@
-DIRS = \
-	win32{!arm} \
-    winrt{x86,x64,arm} \
-

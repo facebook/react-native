@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,9 @@ BENCHMARK(folly_toLowerAscii, iters) {
 // input; the goal is to measure the output buffer resize code cost.
 void stringPrintfOutputSize(int iters, int param) {
   string buffer;
-  BENCHMARK_SUSPEND { buffer.resize(param, 'x'); }
+  BENCHMARK_SUSPEND {
+    buffer.resize(param, 'x');
+  }
 
   for (int64_t i = 0; i < iters; ++i) {
     string s = stringPrintf("msg: %d, %d, %s", 10, 20, buffer.c_str());
@@ -80,7 +82,9 @@ BENCHMARK_PARAM(stringPrintfOutputSize, 1024)
 BENCHMARK(stringPrintfAppendfBenchmark, iters) {
   for (unsigned int i = 0; i < iters; ++i) {
     string s;
-    BENCHMARK_SUSPEND { s.reserve(300000); }
+    BENCHMARK_SUSPEND {
+      s.reserve(300000);
+    }
     for (int j = 0; j < 300000; ++j) {
       stringAppendf(&s, "%d", 1);
     }

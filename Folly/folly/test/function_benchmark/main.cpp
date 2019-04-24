@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2011-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@
 #include <folly/ScopeGuard.h>
 #include <folly/portability/GFlags.h>
 
-using folly::ScopeGuard;
 using folly::makeGuard;
 
 // Declare the bm_max_iters flag from folly/Benchmark.cpp
@@ -158,7 +157,8 @@ BENCHMARK(std_bind_direct_invoke, iters) {
 BENCHMARK(scope_guard_std_function, iters) {
   std::function<void()> fn(doNothing);
   for (size_t n = 0; n < iters; ++n) {
-    ScopeGuard g = makeGuard(fn);
+    auto g = makeGuard(fn);
+    (void)g;
   }
 }
 
@@ -166,7 +166,8 @@ BENCHMARK(scope_guard_std_function, iters) {
 // but create the ScopeGuard with an rvalue to a std::function
 BENCHMARK(scope_guard_std_function_rvalue, iters) {
   for (size_t n = 0; n < iters; ++n) {
-    ScopeGuard g = makeGuard(std::function<void()>(doNothing));
+    auto g = makeGuard(std::function<void()>(doNothing));
+    (void)g;
   }
 }
 
@@ -174,28 +175,32 @@ BENCHMARK(scope_guard_std_function_rvalue, iters) {
 // but create the ScopeGuard with an rvalue to a folly::Function
 BENCHMARK(scope_guard_Function_rvalue, iters) {
   for (size_t n = 0; n < iters; ++n) {
-    ScopeGuard g = makeGuard(folly::Function<void()>(doNothing));
+    auto g = makeGuard(folly::Function<void()>(doNothing));
+    (void)g;
   }
 }
 
 // Using ScopeGuard to invoke a function pointer
 BENCHMARK(scope_guard_fn_ptr, iters) {
   for (size_t n = 0; n < iters; ++n) {
-    ScopeGuard g = makeGuard(doNothing);
+    auto g = makeGuard(doNothing);
+    (void)g;
   }
 }
 
 // Using ScopeGuard to invoke a lambda that does nothing
 BENCHMARK(scope_guard_lambda_noop, iters) {
   for (size_t n = 0; n < iters; ++n) {
-    ScopeGuard g = makeGuard([] {});
+    auto g = makeGuard([] {});
+    (void)g;
   }
 }
 
 // Using ScopeGuard to invoke a lambda that invokes a function
 BENCHMARK(scope_guard_lambda_function, iters) {
   for (size_t n = 0; n < iters; ++n) {
-    ScopeGuard g = makeGuard([] { doNothing(); });
+    auto g = makeGuard([] { doNothing(); });
+    (void)g;
   }
 }
 
@@ -203,7 +208,7 @@ BENCHMARK(scope_guard_lambda_function, iters) {
 BENCHMARK(scope_guard_lambda_local_var, iters) {
   uint32_t count = 0;
   for (size_t n = 0; n < iters; ++n) {
-    ScopeGuard g = makeGuard([&] {
+    auto g = makeGuard([&] {
       // Increment count if n is odd.  Without this conditional check
       // (i.e., if we just increment count each time through the loop),
       // gcc is smart enough to optimize the entire loop away, and just set
@@ -212,6 +217,7 @@ BENCHMARK(scope_guard_lambda_local_var, iters) {
         ++count;
       }
     });
+    (void)g;
   }
 
   // Check that the value of count is what we expect.
@@ -220,12 +226,12 @@ BENCHMARK(scope_guard_lambda_local_var, iters) {
   CHECK_EQ(iters / 2, count);
 }
 
-BENCHMARK_DRAW_LINE()
+BENCHMARK_DRAW_LINE();
 
 BENCHMARK(throw_exception, iters) {
   for (size_t n = 0; n < iters; ++n) {
     try {
-      throwException();
+      folly::throw_exception<Exception>("this is a test");
     } catch (const std::exception& ex) {
     }
   }
@@ -283,7 +289,7 @@ BENCHMARK(return_code_noexcept, iters) {
   }
 }
 
-BENCHMARK_DRAW_LINE()
+BENCHMARK_DRAW_LINE();
 
 BENCHMARK(std_function_create_move_invoke, iters) {
   LargeClass a;
@@ -297,6 +303,20 @@ BENCHMARK(Function_create_move_invoke, iters) {
   LargeClass a;
   for (size_t i = 0; i < iters; ++i) {
     folly::Function<void()> f(a);
+    invoke(std::move(f));
+  }
+}
+
+BENCHMARK(std_function_create_move_invoke_small, iters) {
+  for (size_t i = 0; i < iters; ++i) {
+    std::function<void()> f(doNothing);
+    invoke(std::move(f));
+  }
+}
+
+BENCHMARK(Function_create_move_invoke_small, iters) {
+  for (size_t i = 0; i < iters; ++i) {
+    folly::Function<void()> f(doNothing);
     invoke(std::move(f));
   }
 }
@@ -317,9 +337,134 @@ BENCHMARK(Function_create_move_invoke_ref, iters) {
   }
 }
 
+BENCHMARK_DRAW_LINE();
+
+BENCHMARK(function_ptr_move, iters) {
+  auto f = &doNothing;
+  for (size_t i = 0; i < iters; ++i) {
+    auto f2 = std::move(f);
+    folly::doNotOptimizeAway(f2);
+    f = std::move(f2);
+  }
+}
+
+BENCHMARK(std_function_move_small, iters) {
+  std::shared_ptr<int> a(new int);
+  std::function<void()> f([a]() { doNothing(); });
+  for (size_t i = 0; i < iters; ++i) {
+    auto f2 = std::move(f);
+    folly::doNotOptimizeAway(f2);
+    f = std::move(f2);
+  }
+}
+
+BENCHMARK(Function_move_small, iters) {
+  std::shared_ptr<int> a(new int);
+  folly::Function<void()> f([a]() { doNothing(); });
+  for (size_t i = 0; i < iters; ++i) {
+    auto f2 = std::move(f);
+    folly::doNotOptimizeAway(f2);
+    f = std::move(f2);
+  }
+}
+
+BENCHMARK(std_function_move_small_trivial, iters) {
+  std::function<void()> f(doNothing);
+  for (size_t i = 0; i < iters; ++i) {
+    auto f2 = std::move(f);
+    folly::doNotOptimizeAway(f2);
+    f = std::move(f2);
+  }
+}
+
+BENCHMARK(Function_move_small_trivial, iters) {
+  folly::Function<void()> f(doNothing);
+  for (size_t i = 0; i < iters; ++i) {
+    auto f2 = std::move(f);
+    folly::doNotOptimizeAway(f2);
+    f = std::move(f2);
+  }
+}
+
+BENCHMARK(std_function_move_large, iters) {
+  LargeClass a;
+  std::function<void()> f(a);
+  for (size_t i = 0; i < iters; ++i) {
+    auto f2 = std::move(f);
+    folly::doNotOptimizeAway(f2);
+    f = std::move(f2);
+  }
+}
+
+BENCHMARK(Function_move_large, iters) {
+  LargeClass a;
+  folly::Function<void()> f(a);
+  for (size_t i = 0; i < iters; ++i) {
+    auto f2 = std::move(f);
+    folly::doNotOptimizeAway(f2);
+    f = std::move(f2);
+  }
+}
+
 // main()
 
 int main(int argc, char** argv) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   folly::runBenchmarks();
 }
+
+/*
+============================================================================
+folly/test/function_benchmark/main.cpp          relative  time/iter  iters/s
+============================================================================
+fn_invoke                                                    1.22ns  822.88M
+fn_ptr_invoke                                                1.22ns  822.99M
+std_function_invoke                                          2.73ns  365.78M
+Function_invoke                                              2.73ns  365.79M
+mem_fn_invoke                                                1.37ns  731.38M
+fn_ptr_invoke_through_inline                                 1.22ns  822.95M
+lambda_invoke_fn                                             1.22ns  822.88M
+lambda_noop                                                  0.00fs  Infinity
+lambda_local_var                                           182.49ps    5.48G
+fn_ptr_invoke_through_template                               1.22ns  822.95M
+virtual_fn_invoke                                            1.22ns  822.98M
+fn_ptr_create_invoke                                         1.22ns  822.94M
+std_function_create_invoke                                   3.88ns  257.83M
+Function_create_invoke                                       2.73ns  365.73M
+mem_fn_create_invoke                                         1.22ns  822.98M
+std_bind_create_invoke                                      18.91ns   52.89M
+std_bind_direct_invoke                                       1.22ns  822.98M
+scope_guard_std_function                                     7.24ns  138.14M
+scope_guard_std_function_rvalue                              6.44ns  155.23M
+scope_guard_Function_rvalue                                  5.53ns  180.87M
+scope_guard_fn_ptr                                         928.25ps    1.08G
+scope_guard_lambda_noop                                      0.00fs  Infinity
+scope_guard_lambda_function                                  1.22ns  822.97M
+scope_guard_lambda_local_var                               101.27ps    9.87G
+----------------------------------------------------------------------------
+throw_exception                                              1.90us  524.98K
+catch_no_exception                                           1.22ns  822.98M
+return_exc_ptr                                               1.39us  719.84K
+exc_ptr_param_return                                         1.41us  711.08K
+exc_ptr_param_return_null                                    1.82ns  548.61M
+return_string                                                2.43ns  411.48M
+return_string_noexcept                                       2.43ns  411.48M
+return_code                                                  1.22ns  822.98M
+return_code_noexcept                                       943.51ps    1.06G
+----------------------------------------------------------------------------
+std_function_create_move_invoke                             48.74ns   20.52M
+Function_create_move_invoke                                 50.21ns   19.92M
+std_function_create_move_invoke_small                        6.78ns  147.58M
+Function_create_move_invoke_small                            7.01ns  142.67M
+std_function_create_move_invoke_ref                          6.67ns  150.03M
+Function_create_move_invoke_ref                              6.88ns  145.35M
+----------------------------------------------------------------------------
+function_ptr_move                                            1.21ns  823.05M
+std_function_move_small                                      5.77ns  173.20M
+Function_move_small                                          7.60ns  131.58M
+std_function_move_small_trivial                              5.77ns  173.27M
+Function_move_small_trivial                                  5.47ns  182.86M
+std_function_move_large                                      5.77ns  173.22M
+Function_move_large                                          6.38ns  156.63M
+============================================================================
+ */

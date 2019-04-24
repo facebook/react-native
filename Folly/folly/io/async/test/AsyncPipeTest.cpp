@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
  */
 
 #include <folly/io/async/AsyncPipe.h>
-#include <folly/io/async/EventBase.h>
 #include <folly/Memory.h>
+#include <folly/io/async/EventBase.h>
 #include <folly/portability/GTest.h>
 
 #include <fcntl.h>
@@ -58,7 +58,7 @@ class TestReadCallback : public folly::AsyncReader::ReadCallback {
   std::string getData() {
     auto buf = readBuffer_.move();
     buf->coalesce();
-    return std::string((char *)buf->data(), buf->length());
+    return std::string((char*)buf->data(), buf->length());
   }
 
   void reset() {
@@ -74,7 +74,9 @@ class TestReadCallback : public folly::AsyncReader::ReadCallback {
 
 class TestWriteCallback : public folly::AsyncWriter::WriteCallback {
  public:
-  void writeSuccess() noexcept override { writes_++; }
+  void writeSuccess() noexcept override {
+    writes_++;
+  }
 
   void writeErr(size_t, const folly::AsyncSocketException&) noexcept override {
     error_ = true;
@@ -89,7 +91,7 @@ class TestWriteCallback : public folly::AsyncWriter::WriteCallback {
   bool error_{false};
 };
 
-class AsyncPipeTest: public Test {
+class AsyncPipeTest : public Test {
  public:
   void reset(bool movable) {
     reader_.reset();
@@ -102,10 +104,8 @@ class AsyncPipeTest: public Test {
 
     EXPECT_EQ(::fcntl(pipeFds_[0], F_SETFL, O_NONBLOCK), 0);
     EXPECT_EQ(::fcntl(pipeFds_[1], F_SETFL, O_NONBLOCK), 0);
-    reader_ = folly::AsyncPipeReader::newReader(
-      &eventBase_, pipeFds_[0]);
-    writer_ = folly::AsyncPipeWriter::newWriter(
-      &eventBase_, pipeFds_[1]);
+    reader_ = folly::AsyncPipeReader::newReader(&eventBase_, pipeFds_[0]);
+    writer_ = folly::AsyncPipeWriter::newWriter(&eventBase_, pipeFds_[1]);
 
     readCallback_.setMovable(movable);
   }
@@ -124,8 +124,7 @@ std::unique_ptr<folly::IOBuf> getBuf(const std::string& data) {
   return buf;
 }
 
-} // anonymous namespace
-
+} // namespace
 
 TEST_F(AsyncPipeTest, simple) {
   for (int pass = 0; pass < 2; ++pass) {

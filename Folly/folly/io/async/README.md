@@ -17,7 +17,6 @@ EventBase base;
 auto thread = std::thread([&](){
   base.loopForever();
 });
-
 ```
 
 EventBase has built-in support for message passing between threads.
@@ -216,7 +215,7 @@ multiple timeouts using a single fd.
 
 #### HHWheelTimer
 
-Implementation of a [hashed hierarcical wheel
+Implementation of a [hashed hierarchical wheel
 timer](http://www.cs.columbia.edu/~nahum/w6998/papers/sosp87-timing-wheels.pdf).
 Any timeout time can be used, with O(1) insertion, deletion, and
 callback time.  The wheel itself takes up some amount of space, and
@@ -293,6 +292,30 @@ type.  It's also pretty easy to forget to add a DestructorGuard in
 code that calls callbacks.  But it is well worth it to avoid queuing
 callbacks, and the improved P99 times as a result.
 
+### DestructorCheck
+
+Often for an object requesting callbacks from other components (timer,
+socket connect, etc.) there is a chance that the requestor will be
+deallocated before it'll receive the callback.  One of the ways to avoid
+dereferencing the deallocated object from callbacks is to derive the
+object from DelayedDestruction, and add a delayed destruction guard
+to the callback context.  In case if keeping the object around until
+all the requested callbacks fire is too expensive, or if the callback
+requestor can't have private destructor (it's allocated on the stack,
+or as a member of a larger object), DestructorCheck can be used.
+DestructorCheck is not affecting object life time. It helps other
+component to detect safely that the tracked object was deallocated.
+
+The object requesting the callback must be derived from DestructorCheck.
+The callback context should contain an instance of
+DestructorCheck::Safety object initialized with a reference to the
+object requesting the callback.  Safety object can be captured by value
+in the callback lambda, or explicitly added to a predefined callback
+context class. Multiple instances of Safety object can be instantiated
+for the same tracked object.  Once the callback is invoked, before
+dereferencing the requester object, callback code should make sure that
+`destroyed()` method for the corresponding Safety object returns false.
+
 ### EventBaseManager
 
 DANGEROUS.
@@ -317,7 +340,7 @@ an explicit pool of EventBases.
 ### SSLContext
 
 SSL helper routines to load / verify certs.  Used with
-AsyncSSL[Server]Socket.
+AsyncSSLSocket.
 
 ## Generic Multithreading Advice
 

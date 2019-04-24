@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,9 @@
 #include <folly/io/async/test/BlockingSocket.h>
 #include <folly/portability/Sockets.h>
 
-#include <boost/scoped_array.hpp>
+#include <memory>
 
-enum StateEnum {
-  STATE_WAITING,
-  STATE_SUCCEEDED,
-  STATE_FAILED
-};
+enum StateEnum { STATE_WAITING, STATE_SUCCEEDED, STATE_FAILED };
 
 typedef std::function<void()> VoidCallback;
 
@@ -70,8 +66,9 @@ class WriteCallback : public folly::AsyncTransportWrapper::WriteCallback {
     }
   }
 
-  void writeErr(size_t nBytesWritten,
-                const folly::AsyncSocketException& ex) noexcept override {
+  void writeErr(
+      size_t nBytesWritten,
+      const folly::AsyncSocketException& ex) noexcept override {
     LOG(ERROR) << ex.what();
     state = STATE_FAILED;
     this->bytesWritten = nBytesWritten;
@@ -82,7 +79,7 @@ class WriteCallback : public folly::AsyncTransportWrapper::WriteCallback {
   }
 
   StateEnum state;
-  size_t bytesWritten;
+  std::atomic<size_t> bytesWritten;
   folly::AsyncSocketException exception;
   VoidCallback successCallback;
   VoidCallback errorCallback;
@@ -96,7 +93,7 @@ class ReadCallback : public folly::AsyncTransportWrapper::ReadCallback {
         buffers(),
         maxBufferSz(_maxBufferSz) {}
 
-  ~ReadCallback() {
+  ~ReadCallback() override {
     for (std::vector<Buffer>::iterator it = buffers.begin();
          it != buffers.end();
          ++it) {
@@ -186,60 +183,39 @@ class BufferCallback : public folly::AsyncTransport::BufferCallback {
  public:
   BufferCallback() : buffered_(false), bufferCleared_(false) {}
 
-  void onEgressBuffered() override { buffered_ = true; }
+  void onEgressBuffered() override {
+    buffered_ = true;
+  }
 
-  void onEgressBufferCleared() override { bufferCleared_ = true; }
+  void onEgressBufferCleared() override {
+    bufferCleared_ = true;
+  }
 
-  bool hasBuffered() const { return buffered_; }
+  bool hasBuffered() const {
+    return buffered_;
+  }
 
-  bool hasBufferCleared() const { return bufferCleared_; }
+  bool hasBufferCleared() const {
+    return bufferCleared_;
+  }
 
  private:
   bool buffered_{false};
   bool bufferCleared_{false};
 };
 
-class ReadVerifier {
-};
+class ReadVerifier {};
 
-class TestErrMessageCallback : public folly::AsyncSocket::ErrMessageCallback {
- public:
-  TestErrMessageCallback()
-    : exception_(folly::AsyncSocketException::UNKNOWN, "none")
-  {}
-
-  void errMessage(const cmsghdr& cmsg) noexcept override {
-    if (cmsg.cmsg_level == SOL_SOCKET &&
-      cmsg.cmsg_type == SCM_TIMESTAMPING) {
-      gotTimestamp_ = true;
-    } else if (
-      (cmsg.cmsg_level == SOL_IP && cmsg.cmsg_type == IP_RECVERR) ||
-      (cmsg.cmsg_level == SOL_IPV6 && cmsg.cmsg_type == IPV6_RECVERR)) {
-      gotByteSeq_ = true;
-    }
-  }
-
-  void errMessageError(
-      const folly::AsyncSocketException& ex) noexcept override {
-    exception_ = ex;
-  }
-
-  folly::AsyncSocketException exception_;
-  bool gotTimestamp_{false};
-  bool gotByteSeq_{false};
-};
-
-class TestSendMsgParamsCallback :
-    public folly::AsyncSocket::SendMsgParamsCallback {
+class TestSendMsgParamsCallback
+    : public folly::AsyncSocket::SendMsgParamsCallback {
  public:
   TestSendMsgParamsCallback(int flags, uint32_t dataSize, void* data)
-  : flags_(flags),
-    writeFlags_(folly::WriteFlags::NONE),
-    dataSize_(dataSize),
-    data_(data),
-    queriedFlags_(false),
-    queriedData_(false)
-  {}
+      : flags_(flags),
+        writeFlags_(folly::WriteFlags::NONE),
+        dataSize_(dataSize),
+        data_(data),
+        queriedFlags_(false),
+        queriedData_(false) {}
 
   void reset(int flags) {
     flags_ = flags;
@@ -248,8 +224,9 @@ class TestSendMsgParamsCallback :
     queriedData_ = false;
   }
 
-  int getFlagsImpl(folly::WriteFlags flags, int /*defaultFlags*/) noexcept
-                                                                  override {
+  int getFlagsImpl(
+      folly::WriteFlags flags,
+      int /*defaultFlags*/) noexcept override {
     queriedFlags_ = true;
     if (writeFlags_ == folly::WriteFlags::NONE) {
       writeFlags_ = flags;
@@ -367,7 +344,7 @@ class TestServer {
     return address_;
   }
 
-  int acceptFD(int timeout=50) {
+  int acceptFD(int timeout = 50) {
     namespace fsp = folly::portability::sockets;
     struct pollfd pfd;
     pfd.fd = fd_;
@@ -395,13 +372,14 @@ class TestServer {
     return acceptedFd;
   }
 
-  std::shared_ptr<BlockingSocket> accept(int timeout=50) {
+  std::shared_ptr<BlockingSocket> accept(int timeout = 50) {
     int fd = acceptFD(timeout);
-    return std::shared_ptr<BlockingSocket>(new BlockingSocket(fd));
+    return std::make_shared<BlockingSocket>(fd);
   }
 
-  std::shared_ptr<folly::AsyncSocket> acceptAsync(folly::EventBase* evb,
-                                                  int timeout = 50) {
+  std::shared_ptr<folly::AsyncSocket> acceptAsync(
+      folly::EventBase* evb,
+      int timeout = 50) {
     int fd = acceptFD(timeout);
     return folly::AsyncSocket::newSocket(evb, fd);
   }
@@ -414,7 +392,7 @@ class TestServer {
     // accept a connection
     std::shared_ptr<BlockingSocket> acceptedSocket = accept();
     // read the data and compare it to the specified buffer
-    boost::scoped_array<uint8_t> readbuf(new uint8_t[len]);
+    std::unique_ptr<uint8_t[]> readbuf(new uint8_t[len]);
     acceptedSocket->readAll(readbuf.get(), len);
     CHECK_EQ(memcmp(buf, readbuf.get(), len), 0);
     // make sure we get EOF next

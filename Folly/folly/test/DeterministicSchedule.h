@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,27 +16,23 @@
 
 #pragma once
 
-// This needs to be above semaphore.h due to the windows
-// libevent implementation needing mode_t to be defined,
-// but defining it differently than our portability
-// headers do.
-#include <folly/portability/SysTypes.h>
-
 #include <assert.h>
 #include <boost/noncopyable.hpp>
 #include <errno.h>
 #include <glog/logging.h>
-#include <semaphore.h>
 #include <atomic>
 #include <functional>
 #include <mutex>
+#include <queue>
 #include <thread>
 #include <unordered_set>
 #include <vector>
 
 #include <folly/ScopeGuard.h>
-#include <folly/detail/CacheLocality.h>
+#include <folly/concurrency/CacheLocality.h>
 #include <folly/detail/Futex.h>
+#include <folly/portability/Semaphore.h>
+#include <folly/synchronization/detail/AtomicUtils.h>
 
 namespace folly {
 namespace test {
@@ -128,20 +124,22 @@ class DeterministicSchedule : boost::noncopyable {
     // TODO: maybe future versions of gcc will allow forwarding to thread
     auto sched = tls_sched;
     auto sem = sched ? sched->beforeThreadCreate() : nullptr;
-    auto child = std::thread([=](Args... a) {
-      if (sched) {
-        sched->afterThreadCreate(sem);
-        beforeSharedAccess();
-        FOLLY_TEST_DSCHED_VLOG("running");
-        afterSharedAccess();
-      }
-      SCOPE_EXIT {
-        if (sched) {
-          sched->beforeThreadExit();
-        }
-      };
-      func(a...);
-    }, args...);
+    auto child = std::thread(
+        [=](Args... a) {
+          if (sched) {
+            sched->afterThreadCreate(sem);
+            beforeSharedAccess();
+            FOLLY_TEST_DSCHED_VLOG("running");
+            afterSharedAccess();
+          }
+          SCOPE_EXIT {
+            if (sched) {
+              sched->beforeThreadExit();
+            }
+          };
+          func(a...);
+        },
+        args...);
     if (sched) {
       beforeSharedAccess();
       sched->active_.insert(child.get_id());
@@ -187,6 +185,12 @@ class DeterministicSchedule : boost::noncopyable {
   /** Clears the function set by setAuxChk */
   static void clearAuxChk();
 
+  /** Remove the current thread's semaphore from sems_ */
+  static sem_t* descheduleCurrentThread();
+
+  /** Add sem back into sems_ */
+  static void reschedule(sem_t* sem);
+
  private:
   static FOLLY_TLS sem_t* tls_sem;
   static FOLLY_TLS DeterministicSchedule* tls_sched;
@@ -197,6 +201,7 @@ class DeterministicSchedule : boost::noncopyable {
   std::function<size_t(size_t)> scheduler_;
   std::vector<sem_t*> sems_;
   std::unordered_set<std::thread::id> active_;
+  std::unordered_map<std::thread::id, sem_t*> joins_;
   unsigned nextThreadId_;
   /* step_ keeps count of shared accesses that correspond to user
    * synchronization steps (atomic accesses for now).
@@ -217,220 +222,272 @@ class DeterministicSchedule : boost::noncopyable {
  * DeterministicAtomic<T> is a drop-in replacement std::atomic<T> that
  * cooperates with DeterministicSchedule.
  */
-template <typename T>
-struct DeterministicAtomic {
-  std::atomic<T> data;
+template <
+    typename T,
+    typename Schedule = DeterministicSchedule,
+    template <typename> class Atom = std::atomic>
+struct DeterministicAtomicImpl {
+  DeterministicAtomicImpl() = default;
+  ~DeterministicAtomicImpl() = default;
+  DeterministicAtomicImpl(DeterministicAtomicImpl<T> const&) = delete;
+  DeterministicAtomicImpl<T>& operator=(DeterministicAtomicImpl<T> const&) =
+      delete;
 
-  DeterministicAtomic() = default;
-  ~DeterministicAtomic() = default;
-  DeterministicAtomic(DeterministicAtomic<T> const&) = delete;
-  DeterministicAtomic<T>& operator=(DeterministicAtomic<T> const&) = delete;
+  constexpr /* implicit */ DeterministicAtomicImpl(T v) noexcept : data_(v) {}
 
-  constexpr /* implicit */ DeterministicAtomic(T v) noexcept : data(v) {}
-
-  bool is_lock_free() const noexcept { return data.is_lock_free(); }
+  bool is_lock_free() const noexcept {
+    return data_.is_lock_free();
+  }
 
   bool compare_exchange_strong(
-      T& v0, T v1, std::memory_order mo = std::memory_order_seq_cst) noexcept {
-    DeterministicSchedule::beforeSharedAccess();
+      T& v0,
+      T v1,
+      std::memory_order mo = std::memory_order_seq_cst) noexcept {
+    return compare_exchange_strong(
+        v0, v1, mo, ::folly::detail::default_failure_memory_order(mo));
+  }
+  bool compare_exchange_strong(
+      T& v0,
+      T v1,
+      std::memory_order success,
+      std::memory_order failure) noexcept {
+    Schedule::beforeSharedAccess();
     auto orig = v0;
-    bool rv = data.compare_exchange_strong(v0, v1, mo);
-    FOLLY_TEST_DSCHED_VLOG(this << ".compare_exchange_strong(" << std::hex
-                                << orig << ", " << std::hex << v1 << ") -> "
-                                << rv << "," << std::hex << v0);
-    DeterministicSchedule::afterSharedAccess(rv);
+    bool rv = data_.compare_exchange_strong(v0, v1, success, failure);
+    FOLLY_TEST_DSCHED_VLOG(
+        this << ".compare_exchange_strong(" << std::hex << orig << ", "
+             << std::hex << v1 << ") -> " << rv << "," << std::hex << v0);
+    Schedule::afterSharedAccess(rv);
     return rv;
   }
 
   bool compare_exchange_weak(
-      T& v0, T v1, std::memory_order mo = std::memory_order_seq_cst) noexcept {
-    DeterministicSchedule::beforeSharedAccess();
+      T& v0,
+      T v1,
+      std::memory_order mo = std::memory_order_seq_cst) noexcept {
+    return compare_exchange_weak(
+        v0, v1, mo, ::folly::detail::default_failure_memory_order(mo));
+  }
+  bool compare_exchange_weak(
+      T& v0,
+      T v1,
+      std::memory_order success,
+      std::memory_order failure) noexcept {
+    Schedule::beforeSharedAccess();
     auto orig = v0;
-    bool rv = data.compare_exchange_weak(v0, v1, mo);
-    FOLLY_TEST_DSCHED_VLOG(this << ".compare_exchange_weak(" << std::hex << orig
-                                << ", " << std::hex << v1 << ") -> " << rv
-                                << "," << std::hex << v0);
-    DeterministicSchedule::afterSharedAccess(rv);
+    bool rv = data_.compare_exchange_weak(v0, v1, success, failure);
+    FOLLY_TEST_DSCHED_VLOG(
+        this << ".compare_exchange_weak(" << std::hex << orig << ", "
+             << std::hex << v1 << ") -> " << rv << "," << std::hex << v0);
+    Schedule::afterSharedAccess(rv);
     return rv;
   }
 
   T exchange(T v, std::memory_order mo = std::memory_order_seq_cst) noexcept {
-    DeterministicSchedule::beforeSharedAccess();
-    T rv = data.exchange(v, mo);
-    FOLLY_TEST_DSCHED_VLOG(this << ".exchange(" << std::hex << v << ") -> "
-                                << std::hex << rv);
-    DeterministicSchedule::afterSharedAccess(true);
+    Schedule::beforeSharedAccess();
+    T rv = data_.exchange(v, mo);
+    FOLLY_TEST_DSCHED_VLOG(
+        this << ".exchange(" << std::hex << v << ") -> " << std::hex << rv);
+    Schedule::afterSharedAccess(true);
     return rv;
   }
 
   /* implicit */ operator T() const noexcept {
-    DeterministicSchedule::beforeSharedAccess();
-    T rv = data;
+    Schedule::beforeSharedAccess();
+    T rv = data_.operator T();
     FOLLY_TEST_DSCHED_VLOG(this << "() -> " << std::hex << rv);
-    DeterministicSchedule::afterSharedAccess(true);
+    Schedule::afterSharedAccess(true);
     return rv;
   }
 
   T load(std::memory_order mo = std::memory_order_seq_cst) const noexcept {
-    DeterministicSchedule::beforeSharedAccess();
-    T rv = data.load(mo);
+    Schedule::beforeSharedAccess();
+    T rv = data_.load(mo);
     FOLLY_TEST_DSCHED_VLOG(this << ".load() -> " << std::hex << rv);
-    DeterministicSchedule::afterSharedAccess(true);
+    Schedule::afterSharedAccess(true);
     return rv;
   }
 
   T operator=(T v) noexcept {
-    DeterministicSchedule::beforeSharedAccess();
-    T rv = (data = v);
+    Schedule::beforeSharedAccess();
+    T rv = (data_ = v);
     FOLLY_TEST_DSCHED_VLOG(this << " = " << std::hex << v);
-    DeterministicSchedule::afterSharedAccess(true);
+    Schedule::afterSharedAccess(true);
     return rv;
   }
 
   void store(T v, std::memory_order mo = std::memory_order_seq_cst) noexcept {
-    DeterministicSchedule::beforeSharedAccess();
-    data.store(v, mo);
+    Schedule::beforeSharedAccess();
+    data_.store(v, mo);
     FOLLY_TEST_DSCHED_VLOG(this << ".store(" << std::hex << v << ")");
-    DeterministicSchedule::afterSharedAccess(true);
+    Schedule::afterSharedAccess(true);
   }
 
   T operator++() noexcept {
-    DeterministicSchedule::beforeSharedAccess();
-    T rv = ++data;
+    Schedule::beforeSharedAccess();
+    T rv = ++data_;
     FOLLY_TEST_DSCHED_VLOG(this << " pre++ -> " << std::hex << rv);
-    DeterministicSchedule::afterSharedAccess(true);
+    Schedule::afterSharedAccess(true);
     return rv;
   }
 
   T operator++(int /* postDummy */) noexcept {
-    DeterministicSchedule::beforeSharedAccess();
-    T rv = data++;
+    Schedule::beforeSharedAccess();
+    T rv = data_++;
     FOLLY_TEST_DSCHED_VLOG(this << " post++ -> " << std::hex << rv);
-    DeterministicSchedule::afterSharedAccess(true);
+    Schedule::afterSharedAccess(true);
     return rv;
   }
 
   T operator--() noexcept {
-    DeterministicSchedule::beforeSharedAccess();
-    T rv = --data;
+    Schedule::beforeSharedAccess();
+    T rv = --data_;
     FOLLY_TEST_DSCHED_VLOG(this << " pre-- -> " << std::hex << rv);
-    DeterministicSchedule::afterSharedAccess(true);
+    Schedule::afterSharedAccess(true);
     return rv;
   }
 
   T operator--(int /* postDummy */) noexcept {
-    DeterministicSchedule::beforeSharedAccess();
-    T rv = data--;
+    Schedule::beforeSharedAccess();
+    T rv = data_--;
     FOLLY_TEST_DSCHED_VLOG(this << " post-- -> " << std::hex << rv);
-    DeterministicSchedule::afterSharedAccess(true);
+    Schedule::afterSharedAccess(true);
     return rv;
   }
 
   T operator+=(T v) noexcept {
-    DeterministicSchedule::beforeSharedAccess();
-    T rv = (data += v);
-    FOLLY_TEST_DSCHED_VLOG(this << " += " << std::hex << v << " -> " << std::hex
-                                << rv);
-    DeterministicSchedule::afterSharedAccess(true);
+    Schedule::beforeSharedAccess();
+    T rv = (data_ += v);
+    FOLLY_TEST_DSCHED_VLOG(
+        this << " += " << std::hex << v << " -> " << std::hex << rv);
+    Schedule::afterSharedAccess(true);
     return rv;
   }
 
-  T fetch_add(T v,
-              std::memory_order /* mo */ = std::memory_order_seq_cst) noexcept {
-    DeterministicSchedule::beforeSharedAccess();
-    T rv = data;
-    data += v;
-    FOLLY_TEST_DSCHED_VLOG(this << ".fetch_add(" << std::hex << v << ") -> "
-                                << std::hex << rv);
-    DeterministicSchedule::afterSharedAccess(true);
+  T fetch_add(T v, std::memory_order mo = std::memory_order_seq_cst) noexcept {
+    Schedule::beforeSharedAccess();
+    T rv = data_.fetch_add(v, mo);
+    FOLLY_TEST_DSCHED_VLOG(
+        this << ".fetch_add(" << std::hex << v << ") -> " << std::hex << rv);
+    Schedule::afterSharedAccess(true);
     return rv;
   }
 
   T operator-=(T v) noexcept {
-    DeterministicSchedule::beforeSharedAccess();
-    T rv = (data -= v);
-    FOLLY_TEST_DSCHED_VLOG(this << " -= " << std::hex << v << " -> " << std::hex
-                                << rv);
-    DeterministicSchedule::afterSharedAccess(true);
+    Schedule::beforeSharedAccess();
+    T rv = (data_ -= v);
+    FOLLY_TEST_DSCHED_VLOG(
+        this << " -= " << std::hex << v << " -> " << std::hex << rv);
+    Schedule::afterSharedAccess(true);
     return rv;
   }
 
-  T fetch_sub(T v,
-              std::memory_order /* mo */ = std::memory_order_seq_cst) noexcept {
-    DeterministicSchedule::beforeSharedAccess();
-    T rv = data;
-    data -= v;
-    FOLLY_TEST_DSCHED_VLOG(this << ".fetch_sub(" << std::hex << v << ") -> "
-                                << std::hex << rv);
-    DeterministicSchedule::afterSharedAccess(true);
+  T fetch_sub(T v, std::memory_order mo = std::memory_order_seq_cst) noexcept {
+    Schedule::beforeSharedAccess();
+    T rv = data_.fetch_sub(v, mo);
+    FOLLY_TEST_DSCHED_VLOG(
+        this << ".fetch_sub(" << std::hex << v << ") -> " << std::hex << rv);
+    Schedule::afterSharedAccess(true);
     return rv;
   }
 
   T operator&=(T v) noexcept {
-    DeterministicSchedule::beforeSharedAccess();
-    T rv = (data &= v);
-    FOLLY_TEST_DSCHED_VLOG(this << " &= " << std::hex << v << " -> " << std::hex
-                                << rv);
-    DeterministicSchedule::afterSharedAccess(true);
+    Schedule::beforeSharedAccess();
+    T rv = (data_ &= v);
+    FOLLY_TEST_DSCHED_VLOG(
+        this << " &= " << std::hex << v << " -> " << std::hex << rv);
+    Schedule::afterSharedAccess(true);
     return rv;
   }
 
-  T fetch_and(T v,
-              std::memory_order /* mo */ = std::memory_order_seq_cst) noexcept {
-    DeterministicSchedule::beforeSharedAccess();
-    T rv = data;
-    data &= v;
-    FOLLY_TEST_DSCHED_VLOG(this << ".fetch_and(" << std::hex << v << ") -> "
-                                << std::hex << rv);
-    DeterministicSchedule::afterSharedAccess(true);
+  T fetch_and(T v, std::memory_order mo = std::memory_order_seq_cst) noexcept {
+    Schedule::beforeSharedAccess();
+    T rv = data_.fetch_and(v, mo);
+    FOLLY_TEST_DSCHED_VLOG(
+        this << ".fetch_and(" << std::hex << v << ") -> " << std::hex << rv);
+    Schedule::afterSharedAccess(true);
     return rv;
   }
 
   T operator|=(T v) noexcept {
-    DeterministicSchedule::beforeSharedAccess();
-    T rv = (data |= v);
-    FOLLY_TEST_DSCHED_VLOG(this << " |= " << std::hex << v << " -> " << std::hex
-                                << rv);
-    DeterministicSchedule::afterSharedAccess(true);
+    Schedule::beforeSharedAccess();
+    T rv = (data_ |= v);
+    FOLLY_TEST_DSCHED_VLOG(
+        this << " |= " << std::hex << v << " -> " << std::hex << rv);
+    Schedule::afterSharedAccess(true);
     return rv;
   }
 
-  T fetch_or(T v,
-             std::memory_order /* mo */ = std::memory_order_seq_cst) noexcept {
-    DeterministicSchedule::beforeSharedAccess();
-    T rv = data;
-    data |= v;
-    FOLLY_TEST_DSCHED_VLOG(this << ".fetch_or(" << std::hex << v << ") -> "
-                                << std::hex << rv);
-    DeterministicSchedule::afterSharedAccess(true);
+  T fetch_or(T v, std::memory_order mo = std::memory_order_seq_cst) noexcept {
+    Schedule::beforeSharedAccess();
+    T rv = data_.fetch_or(v, mo);
+    FOLLY_TEST_DSCHED_VLOG(
+        this << ".fetch_or(" << std::hex << v << ") -> " << std::hex << rv);
+    Schedule::afterSharedAccess(true);
     return rv;
   }
 
   T operator^=(T v) noexcept {
-    DeterministicSchedule::beforeSharedAccess();
-    T rv = (data ^= v);
-    FOLLY_TEST_DSCHED_VLOG(this << " ^= " << std::hex << v << " -> " << std::hex
-                                << rv);
-    DeterministicSchedule::afterSharedAccess(true);
+    Schedule::beforeSharedAccess();
+    T rv = (data_ ^= v);
+    FOLLY_TEST_DSCHED_VLOG(
+        this << " ^= " << std::hex << v << " -> " << std::hex << rv);
+    Schedule::afterSharedAccess(true);
     return rv;
   }
 
-  T fetch_xor(T v,
-              std::memory_order /* mo */ = std::memory_order_seq_cst) noexcept {
-    DeterministicSchedule::beforeSharedAccess();
-    T rv = data;
-    data ^= v;
-    FOLLY_TEST_DSCHED_VLOG(this << ".fetch_xor(" << std::hex << v << ") -> "
-                                << std::hex << rv);
-    DeterministicSchedule::afterSharedAccess(true);
+  T fetch_xor(T v, std::memory_order mo = std::memory_order_seq_cst) noexcept {
+    Schedule::beforeSharedAccess();
+    T rv = data_.fetch_xor(v, mo);
+    FOLLY_TEST_DSCHED_VLOG(
+        this << ".fetch_xor(" << std::hex << v << ") -> " << std::hex << rv);
+    Schedule::afterSharedAccess(true);
     return rv;
   }
 
   /** Read the value of the atomic variable without context switching */
   T load_direct() const noexcept {
-    return data.load(std::memory_order_relaxed);
+    return data_.load(std::memory_order_relaxed);
   }
+
+ private:
+  Atom<T> data_;
 };
+
+template <typename T>
+using DeterministicAtomic = DeterministicAtomicImpl<T, DeterministicSchedule>;
+
+/* Futex extensions for DeterministicSchedule based Futexes */
+int futexWakeImpl(
+    const detail::Futex<test::DeterministicAtomic>* futex,
+    int count,
+    uint32_t wakeMask);
+detail::FutexResult futexWaitImpl(
+    const detail::Futex<test::DeterministicAtomic>* futex,
+    uint32_t expected,
+    std::chrono::system_clock::time_point const* absSystemTime,
+    std::chrono::steady_clock::time_point const* absSteadyTime,
+    uint32_t waitMask);
+
+/**
+ * Implementations of the atomic_wait API for DeterministicAtomic, these are
+ * no-ops here.  Which for a correct implementation should not make a
+ * difference because threads are required to have atomic operations around
+ * waits and wakes
+ */
+template <typename Integer>
+void atomic_wait(const DeterministicAtomic<Integer>*, Integer) {}
+template <typename Integer, typename Clock, typename Duration>
+std::cv_status atomic_wait_until(
+    const DeterministicAtomic<Integer>*,
+    Integer,
+    const std::chrono::time_point<Clock, Duration>&) {
+  return std::cv_status::no_timeout;
+}
+template <typename Integer>
+void atomic_notify_one(const DeterministicAtomic<Integer>*) {}
+template <typename Integer>
+void atomic_notify_all(const DeterministicAtomic<Integer>*) {}
 
 /**
  * DeterministicMutex is a drop-in replacement of std::mutex that
@@ -438,6 +495,7 @@ struct DeterministicAtomic {
  */
 struct DeterministicMutex {
   std::mutex m;
+  std::queue<sem_t*> waiters_;
 
   DeterministicMutex() = default;
   ~DeterministicMutex() = default;
@@ -446,12 +504,17 @@ struct DeterministicMutex {
 
   void lock() {
     FOLLY_TEST_DSCHED_VLOG(this << ".lock()");
-    while (!try_lock()) {
-      // Not calling m.lock() in order to avoid deadlock when the
-      // mutex m is held by another thread. The deadlock would be
-      // between the call to m.lock() and the lock holder's wait on
-      // its own tls_sem scheduling semaphore.
+    DeterministicSchedule::beforeSharedAccess();
+    while (!m.try_lock()) {
+      sem_t* sem = DeterministicSchedule::descheduleCurrentThread();
+      if (sem) {
+        waiters_.push(sem);
+      }
+      DeterministicSchedule::afterSharedAccess();
+      // Wait to be scheduled by unlock
+      DeterministicSchedule::beforeSharedAccess();
     }
+    DeterministicSchedule::afterSharedAccess();
   }
 
   bool try_lock() {
@@ -465,27 +528,18 @@ struct DeterministicMutex {
   void unlock() {
     FOLLY_TEST_DSCHED_VLOG(this << ".unlock()");
     m.unlock();
+    DeterministicSchedule::beforeSharedAccess();
+    if (!waiters_.empty()) {
+      sem_t* sem = waiters_.front();
+      DeterministicSchedule::reschedule(sem);
+      waiters_.pop();
+    }
+    DeterministicSchedule::afterSharedAccess();
   }
 };
-}
-} // namespace folly::test
-
-/* Specialization declarations */
-
-namespace folly {
-namespace detail {
-
-template <>
-int Futex<test::DeterministicAtomic>::futexWake(int count, uint32_t wakeMask);
-
-template <>
-FutexResult Futex<test::DeterministicAtomic>::futexWaitImpl(
-    uint32_t expected,
-    std::chrono::time_point<std::chrono::system_clock>* absSystemTime,
-    std::chrono::time_point<std::chrono::steady_clock>* absSteadyTime,
-    uint32_t waitMask);
+} // namespace test
 
 template <>
 Getcpu::Func AccessSpreader<test::DeterministicAtomic>::pickGetcpuFunc();
-}
-} // namespace folly::detail
+
+} // namespace folly

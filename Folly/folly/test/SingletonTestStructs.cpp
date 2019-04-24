@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ namespace {
 // subclasses are created, and the ordering.  Also tracks a global
 // unique counter for each object.
 std::atomic<size_t> global_counter(19770326);
-}
+} // namespace
 
 std::vector<Watchdog*>& Watchdog::creation_order() {
   static std::vector<Watchdog*> ret;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,9 @@
 
 #pragma once
 
-#include <cassert>
-#include <mutex>
-#include <typeindex>
-#include <unordered_map>
+#include <typeinfo>
+
+#include <folly/CPortability.h>
 
 namespace folly {
 namespace detail {
@@ -30,59 +29,52 @@ namespace detail {
 // dynamically.
 class StaticSingletonManager {
  public:
-  static StaticSingletonManager& instance();
-
   template <typename T, typename Tag, typename F>
-  inline T* create(F&& creator) {
-    auto& entry = [&]() mutable -> Entry<T>& {
-      std::lock_guard<std::mutex> lg(mutex_);
-
-      auto& id = typeid(TypePair<T, Tag>);
-      auto& entryPtr = map_[id];
-      if (!entryPtr) {
-        entryPtr = new Entry<T>();
-      }
-      assert(dynamic_cast<Entry<T>*>(entryPtr) != nullptr);
-      return *static_cast<Entry<T>*>(entryPtr);
-    }();
-
-    std::lock_guard<std::mutex> lg(entry.mutex);
-
-    if (!entry.ptr) {
-      entry.ptr = creator();
-    }
-    return entry.ptr;
+  FOLLY_ALWAYS_INLINE FOLLY_ATTR_VISIBILITY_HIDDEN static T* create(
+      F&& creator) {
+    return static_cast<T*>(create_<T, Tag>(creator));
   }
 
  private:
   template <typename A, typename B>
-  class TypePair {};
+  struct TypePair {};
 
-  StaticSingletonManager() {}
+  using Key = std::type_info;
+  using Make = void*(void*);
 
-  struct EntryIf {
-    virtual ~EntryIf() {}
+  template <typename F>
+  struct Creator {
+    static void* create(void* f) {
+      return static_cast<void*>((*static_cast<F*>(f))());
+    }
   };
 
-  template <typename T>
-  struct Entry : public EntryIf {
-    T* ptr{nullptr};
-    std::mutex mutex;
-  };
+  template <typename T, typename Tag, typename F>
+  FOLLY_ALWAYS_INLINE FOLLY_ATTR_VISIBILITY_HIDDEN static void* create_(
+      F& creator) {
+    auto const& key = typeid(TypePair<T, Tag>);
+    return create_(key, &Creator<F>::create, &creator);
+  }
 
-  std::unordered_map<std::type_index, EntryIf*> map_;
-  std::mutex mutex_;
+  template <typename T, typename Tag, typename F>
+  FOLLY_ALWAYS_INLINE FOLLY_ATTR_VISIBILITY_HIDDEN static void* create_(
+      F const& creator) {
+    auto const& key = typeid(TypePair<T, Tag>);
+    return create_(key, &Creator<F const>::create, const_cast<F*>(&creator));
+  }
+
+  FOLLY_NOINLINE static void* create_(Key const& key, Make* make, void* ctx);
 };
 
 template <typename T, typename Tag, typename F>
-inline T* createGlobal(F&& creator) {
-  return StaticSingletonManager::instance().create<T, Tag>(
-      std::forward<F>(creator));
+FOLLY_ALWAYS_INLINE FOLLY_ATTR_VISIBILITY_HIDDEN T* createGlobal(F&& creator) {
+  return StaticSingletonManager::create<T, Tag>(static_cast<F&&>(creator));
 }
 
 template <typename T, typename Tag>
-inline T* createGlobal() {
-  return createGlobal<T, Tag>([]() { return new T(); });
+FOLLY_ALWAYS_INLINE FOLLY_ATTR_VISIBILITY_HIDDEN T* createGlobal() {
+  return StaticSingletonManager::create<T, Tag>([]() { return new T(); });
 }
-}
-}
+
+} // namespace detail
+} // namespace folly

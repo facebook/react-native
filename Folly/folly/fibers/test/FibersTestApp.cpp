@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ using namespace folly::fibers;
 struct Application {
  public:
   Application()
-      : fiberManager(folly::make_unique<SimpleLoopController>()),
+      : fiberManager(std::make_unique<SimpleLoopController>()),
         toSend(20),
         maxOutstanding(5) {}
 

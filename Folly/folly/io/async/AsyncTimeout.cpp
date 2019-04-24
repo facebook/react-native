@@ -1,23 +1,19 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements. See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership. The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
  *   http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+
 #include <folly/io/async/AsyncTimeout.h>
 #include <folly/io/async/EventBase.h>
 #include <folly/io/async/EventUtil.h>
@@ -30,56 +26,45 @@ namespace folly {
 
 AsyncTimeout::AsyncTimeout(TimeoutManager* timeoutManager)
     : timeoutManager_(timeoutManager) {
-
   folly_event_set(
       &event_, -1, EV_TIMEOUT, &AsyncTimeout::libeventCallback, this);
   event_.ev_base = nullptr;
   timeoutManager_->attachTimeoutManager(
-      this,
-      TimeoutManager::InternalEnum::NORMAL);
-  RequestContext::saveContext();
+      this, TimeoutManager::InternalEnum::NORMAL);
 }
 
-AsyncTimeout::AsyncTimeout(EventBase* eventBase)
-    : timeoutManager_(eventBase) {
-
+AsyncTimeout::AsyncTimeout(EventBase* eventBase) : timeoutManager_(eventBase) {
   folly_event_set(
       &event_, -1, EV_TIMEOUT, &AsyncTimeout::libeventCallback, this);
   event_.ev_base = nullptr;
   if (eventBase) {
     timeoutManager_->attachTimeoutManager(
-      this,
-      TimeoutManager::InternalEnum::NORMAL);
+        this, TimeoutManager::InternalEnum::NORMAL);
   }
-  RequestContext::saveContext();
 }
 
-AsyncTimeout::AsyncTimeout(TimeoutManager* timeoutManager,
-                             InternalEnum internal)
+AsyncTimeout::AsyncTimeout(
+    TimeoutManager* timeoutManager,
+    InternalEnum internal)
     : timeoutManager_(timeoutManager) {
-
   folly_event_set(
       &event_, -1, EV_TIMEOUT, &AsyncTimeout::libeventCallback, this);
   event_.ev_base = nullptr;
   timeoutManager_->attachTimeoutManager(this, internal);
-  RequestContext::saveContext();
 }
 
 AsyncTimeout::AsyncTimeout(EventBase* eventBase, InternalEnum internal)
     : timeoutManager_(eventBase) {
-
   folly_event_set(
       &event_, -1, EV_TIMEOUT, &AsyncTimeout::libeventCallback, this);
   event_.ev_base = nullptr;
   timeoutManager_->attachTimeoutManager(this, internal);
-  RequestContext::saveContext();
 }
 
-AsyncTimeout::AsyncTimeout(): timeoutManager_(nullptr) {
+AsyncTimeout::AsyncTimeout() : timeoutManager_(nullptr) {
   folly_event_set(
       &event_, -1, EV_TIMEOUT, &AsyncTimeout::libeventCallback, this);
   event_.ev_base = nullptr;
-  RequestContext::saveContext();
 }
 
 AsyncTimeout::~AsyncTimeout() {
@@ -99,6 +84,7 @@ bool AsyncTimeout::scheduleTimeout(uint32_t milliseconds) {
 void AsyncTimeout::cancelTimeout() {
   if (isScheduled()) {
     timeoutManager_->cancelTimeout(this);
+    context_.reset();
   }
 }
 
@@ -160,4 +146,4 @@ void AsyncTimeout::libeventCallback(libevent_fd_t fd, short events, void* arg) {
   timeout->timeoutExpired();
 }
 
-} // folly
+} // namespace folly

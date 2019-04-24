@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,13 +70,29 @@ class ShutdownSocketSet : private boost::noncopyable {
    * read() and write() operations to the socket will fail. During normal
    * operation, just call ::shutdown() on the socket.
    */
-  void shutdown(int fd, bool abortive=false);
+  void shutdown(int fd, bool abortive = false);
 
   /**
-   * Shut down all sockets managed by ShutdownSocketSet. This is
-   * async-signal-safe and ignores errors.
+   * Immediate shutdown of all connections. This is a hard-hitting hammer;
+   * all reads and writes will return errors and no new connections will
+   * be accepted.
+   *
+   * To be used only in dire situations. We're using it from the failure
+   * signal handler to close all connections quickly, even though the server
+   * might take multiple seconds to finish crashing.
+   *
+   * The optional bool parameter indicates whether to set the active
+   * connections in to not linger.  The effect of that includes RST packets
+   * being immediately sent to clients which will result
+   * in errors (and not normal EOF) on the client side.  This also causes
+   * the local (ip, tcp port number) tuple to be reusable immediately, instead
+   * of having to wait the standard amount of time.  For full details see
+   * the `shutdown` method of `ShutdownSocketSet` (incl. notes about the
+   * `abortive` parameter).
+   *
+   * This is async-signal-safe and ignores errors.
    */
-  void shutdownAll(bool abortive=false);
+  void shutdownAll(bool abortive = false);
 
  private:
   void doShutdown(int fd, bool abortive);
@@ -97,12 +113,20 @@ class ShutdownSocketSet : private boost::noncopyable {
   //   (::shutdown())
   //   IN_SHUTDOWN -> SHUT_DOWN
   //   MUST_CLOSE -> (::close()) -> FREE
+  //
+  // State atomic operation memory orders:
+  // All atomic operations on per-socket states use std::memory_order_relaxed
+  // because there is no associated per-socket data guarded by the state and
+  // the states for different sockets are unrelated. If there were associated
+  // per-socket data, acquire and release orders would be desired; and if the
+  // states for different sockets were related, it could be that sequential
+  // consistent orders would be desired.
   enum State : uint8_t {
     FREE = 0,
     IN_USE,
     IN_SHUTDOWN,
     SHUT_DOWN,
-    MUST_CLOSE
+    MUST_CLOSE,
   };
 
   struct Free {
@@ -117,4 +141,4 @@ class ShutdownSocketSet : private boost::noncopyable {
   folly::File nullFile_;
 };
 
-}  // namespaces
+} // namespace folly

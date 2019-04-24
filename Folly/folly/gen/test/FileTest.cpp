@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
 
 #include <folly/File.h>
 #include <folly/Range.h>
+#include <folly/container/Array.h>
 #include <folly/experimental/TestUtil.h>
 #include <folly/gen/Base.h>
 #include <folly/gen/File.h>
@@ -56,7 +57,35 @@ TEST(FileGen, ByLine) {
   }
 }
 
-class FileGenBufferedTest : public ::testing::TestWithParam<int> { };
+TEST(FileGen, ByLineFull) {
+  auto cases = std::vector<std::string>{
+      stripLeftMargin(R"(
+         Hello world
+         This is the second line
+
+
+         a few empty lines above
+         incomplete last line)"),
+
+      "complete last line\n",
+
+      "\n",
+
+      "",
+  };
+
+  for (auto& lines : cases) {
+    test::TemporaryFile file("ByLineFull");
+    EXPECT_EQ(lines.size(), write(file.fd(), lines.data(), lines.size()));
+
+    auto found =
+        byLineFull(file.path().string().c_str()) | unsplit<std::string>("");
+
+    EXPECT_EQ(lines, found);
+  }
+}
+
+class FileGenBufferedTest : public ::testing::TestWithParam<int> {};
 
 TEST_P(FileGenBufferedTest, FileWriter) {
   size_t bufferSize = GetParam();
@@ -85,8 +114,9 @@ TEST(FileGenBufferedTest, FileWriterSimple) {
 
   auto squares = seq(1, 100) | map([](int x) { return x * x; });
   squares | map(toLine) | eachAs<StringPiece>() | toFile(File(file.fd()));
-  EXPECT_EQ(squares | sum,
-            byLine(File(file.path().string().c_str())) | eachTo<int>() | sum);
+  EXPECT_EQ(
+      squares | sum,
+      byLine(File(file.path().string().c_str())) | eachTo<int>() | sum);
 }
 
 INSTANTIATE_TEST_CASE_P(

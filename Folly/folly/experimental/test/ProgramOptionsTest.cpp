@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,8 @@
 #include <folly/portability/GTest.h>
 #include <glog/logging.h>
 
-namespace folly { namespace test {
+namespace folly {
+namespace test {
 
 namespace {
 
@@ -36,8 +37,9 @@ std::string getHelperPath() {
   return path.string();
 }
 
-std::string callHelper(ProgramOptionsStyle style,
-                       std::initializer_list<std::string> args) {
+std::string callHelper(
+    ProgramOptionsStyle style,
+    std::initializer_list<std::string> args) {
   static std::string helperPath = getHelperPath();
 
   std::vector<std::string> allArgs;
@@ -47,22 +49,22 @@ std::string callHelper(ProgramOptionsStyle style,
 
   std::vector<std::string> env;
   switch (style) {
-  case ProgramOptionsStyle::GNU:
-    env.push_back("PROGRAM_OPTIONS_TEST_STYLE=GNU");
-    break;
-  case ProgramOptionsStyle::GFLAGS:
-    env.push_back("PROGRAM_OPTIONS_TEST_STYLE=GFLAGS");
-    break;
+    case ProgramOptionsStyle::GNU:
+      env.push_back("PROGRAM_OPTIONS_TEST_STYLE=GNU");
+      break;
+    case ProgramOptionsStyle::GFLAGS:
+      env.push_back("PROGRAM_OPTIONS_TEST_STYLE=GFLAGS");
+      break;
   }
 
-  Subprocess proc(allArgs, Subprocess::pipeStdout(), nullptr, &env);
+  Subprocess proc(allArgs, Subprocess::Options().pipeStdout(), nullptr, &env);
   auto p = proc.communicate();
   EXPECT_EQ(0, proc.wait().exitStatus());
 
   return p.first;
 }
 
-}  // namespace
+} // namespace
 
 // name value
 
@@ -81,11 +83,16 @@ TEST(ProgramOptionsTest, GFlagsStyleFlagsSet) {
       "flag_bool_false 1\n"
       "flag_int 43\n"
       "flag_string bar\n",
-      callHelper(ProgramOptionsStyle::GFLAGS, {
-          "--flag_bool_true",
-          "--flag_bool_false",
-          "--flag_int", "43",
-          "--flag_string", "bar"}));
+      callHelper(
+          ProgramOptionsStyle::GFLAGS,
+          {
+              "--flag_bool_true",
+              "--flag_bool_false",
+              "--flag_int",
+              "43",
+              "--flag_string",
+              "bar",
+          }));
 }
 
 TEST(ProgramOptionsTest, GFlagsStyleBoolFlagsNegation) {
@@ -94,9 +101,12 @@ TEST(ProgramOptionsTest, GFlagsStyleBoolFlagsNegation) {
       "flag_bool_false 0\n"
       "flag_int 42\n"
       "flag_string foo\n",
-      callHelper(ProgramOptionsStyle::GFLAGS, {
-          "--noflag_bool_true",
-          "--noflag_bool_false"}));
+      callHelper(
+          ProgramOptionsStyle::GFLAGS,
+          {
+              "--noflag_bool_true",
+              "--noflag_bool_false",
+          }));
 }
 
 TEST(ProgramOptionsTest, GNUStyleDefaultValues) {
@@ -114,11 +124,16 @@ TEST(ProgramOptionsTest, GNUStyleFlagsSet) {
       "flag-bool-false 1\n"
       "flag-int 43\n"
       "flag-string bar\n",
-      callHelper(ProgramOptionsStyle::GNU, {
-          "--flag-bool-true",
-          "--flag-bool-false",
-          "--flag-int", "43",
-          "--flag-string", "bar"}));
+      callHelper(
+          ProgramOptionsStyle::GNU,
+          {
+              "--flag-bool-true",
+              "--flag-bool-false",
+              "--flag-int",
+              "43",
+              "--flag-string",
+              "bar",
+          }));
 }
 
 TEST(ProgramOptionsTest, GNUStyleBoolFlagsNegation) {
@@ -127,9 +142,12 @@ TEST(ProgramOptionsTest, GNUStyleBoolFlagsNegation) {
       "flag-bool-false 0\n"
       "flag-int 42\n"
       "flag-string foo\n",
-      callHelper(ProgramOptionsStyle::GNU, {
-          "--no-flag-bool-true",
-          "--no-flag-bool-false"}));
+      callHelper(
+          ProgramOptionsStyle::GNU,
+          {
+              "--no-flag-bool-true",
+              "--no-flag-bool-false",
+          }));
 }
 
 TEST(ProgramOptionsTest, GNUStyleSubCommand) {
@@ -143,14 +161,18 @@ TEST(ProgramOptionsTest, GNUStyleSubCommand) {
       "arg 100\n"
       "arg -x\n"
       "arg -xy\n",
-      callHelper(ProgramOptionsStyle::GNU, {
-          "--flag-bool-false",
-          "hello",
-          "--wtf",
-          "--flag-int", "43",
-          "100",
-          "-x",
-          "-xy"}));
+      callHelper(
+          ProgramOptionsStyle::GNU,
+          {
+              "--flag-bool-false",
+              "hello",
+              "--wtf",
+              "--flag-int",
+              "43",
+              "100",
+              "-x",
+              "-xy",
+          }));
 }
 
 TEST(ProgramOptionsTest, GNUStyleSubCommandUnrecognizedOptionFirst) {
@@ -164,14 +186,19 @@ TEST(ProgramOptionsTest, GNUStyleSubCommandUnrecognizedOptionFirst) {
       "arg 100\n"
       "arg -x\n"
       "arg -xy\n",
-      callHelper(ProgramOptionsStyle::GNU, {
-          "--flag-bool-false",
-          "--wtf",
-          "hello",
-          "--flag-int", "43",
-          "100",
-          "-x",
-          "-xy"}));
+      callHelper(
+          ProgramOptionsStyle::GNU,
+          {
+              "--flag-bool-false",
+              "--wtf",
+              "hello",
+              "--flag-int",
+              "43",
+              "100",
+              "-x",
+              "-xy",
+          }));
 }
 
-}}  // namespaces
+} // namespace test
+} // namespace folly

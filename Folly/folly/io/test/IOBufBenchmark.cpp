@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,6 +70,23 @@ BENCHMARK(copyBenchmark, iters) {
   }
 }
 
+BENCHMARK(cloneCoalescedBaseline, iters) {
+  std::unique_ptr<IOBuf> buf = IOBuf::createChain(100, 10);
+  while (iters--) {
+    auto clone = buf->cloneAsValue();
+    clone.coalesce();
+    folly::doNotOptimizeAway(clone.capacity());
+  }
+}
+
+BENCHMARK_RELATIVE(cloneCoalescedBenchmark, iters) {
+  std::unique_ptr<IOBuf> buf = IOBuf::createChain(100, 10);
+  while (iters--) {
+    auto copy = buf->cloneCoalescedAsValue();
+    folly::doNotOptimizeAway(copy.capacity());
+  }
+}
+
 /**
  * ============================================================================
  * folly/io/test/IOBufBenchmark.cpp                relative  time/iter  iters/s
@@ -80,8 +97,10 @@ BENCHMARK(copyBenchmark, iters) {
  * cloneIntoBenchmark                                          30.03ns   33.30M
  * moveBenchmark                                               15.35ns   65.14M
  * copyBenchmark                                               33.63ns   29.73M
+ * cloneCoalescedBaseline                                     344.33ns    2.90M
+ * cloneCoalescedBenchmark                          605.62%    56.86ns   17.59M
  * ============================================================================
-*/
+ */
 
 int main(int argc, char** argv) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,8 @@
 
 #include <folly/Range.h>
 
-namespace folly { namespace symbolizer {
+namespace folly {
+namespace symbolizer {
 
 /**
  * Async-signal-safe line reader.
@@ -38,7 +39,7 @@ class LineReader : private boost::noncopyable {
   enum State {
     kReading,
     kEof,
-    kError
+    kError,
   };
   /**
    * Read the next line from the file.
@@ -83,5 +84,5 @@ class LineReader : private boost::noncopyable {
   char* end_;
   State state_;
 };
-
-}}  // namespaces
+} // namespace symbolizer
+} // namespace folly

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,19 @@
 /* -*- Mode: C++; tab-width: 2; c-basic-offset: 2; indent-tabs-mode: nil -*- */
 
 #include <atomic>
-#include <thread>
-#include <mutex>
-#include <folly/Memory.h>
 #include <condition_variable>
+#include <mutex>
+#include <thread>
 
-#include <folly/Baton.h>
-#include <folly/experimental/RCURefCount.h>
+#include <folly/Memory.h>
 #include <folly/experimental/ReadMostlySharedPtr.h>
 #include <folly/portability/GTest.h>
+#include <folly/synchronization/Baton.h>
 
 using folly::ReadMostlyMainPtr;
-using folly::ReadMostlyWeakPtr;
-using folly::ReadMostlySharedPtr;
 using folly::ReadMostlyMainPtrDeleter;
+using folly::ReadMostlySharedPtr;
+using folly::ReadMostlyWeakPtr;
 
 // send SIGALRM to test process after this many seconds
 const unsigned int TEST_TIMEOUT = 10;
@@ -45,8 +44,8 @@ struct TestObject {
   int value;
   std::atomic<int>& counter;
 
-  TestObject(int value, std::atomic<int>& counter)
-      : value(value), counter(counter) {
+  TestObject(int value_, std::atomic<int>& counter_)
+      : value(value_), counter(counter_) {
     ++counter;
   }
 
@@ -66,7 +65,6 @@ class Coordinator {
   }
 
   void waitForRequest() {
-    folly::RCURegisterThread();
     requestBaton_.wait();
   }
 
@@ -84,12 +82,12 @@ TEST_F(ReadMostlySharedPtrTest, BasicStores) {
 
   // Store 1.
   std::atomic<int> cnt1{0};
-  ptr.reset(folly::make_unique<TestObject>(1, cnt1));
+  ptr.reset(std::make_unique<TestObject>(1, cnt1));
   EXPECT_EQ(1, cnt1.load());
 
   // Store 2, check that 1 is destroyed.
   std::atomic<int> cnt2{0};
-  ptr.reset(folly::make_unique<TestObject>(2, cnt2));
+  ptr.reset(std::make_unique<TestObject>(2, cnt2));
   EXPECT_EQ(1, cnt2.load());
   EXPECT_EQ(0, cnt1.load());
 
@@ -109,13 +107,13 @@ TEST_F(ReadMostlySharedPtrTest, BasicLoads) {
     EXPECT_EQ(ptr.get(), nullptr);
 
     std::atomic<int> cnt1{0};
-    ptr.reset(folly::make_unique<TestObject>(1, cnt1));
+    ptr.reset(std::make_unique<TestObject>(1, cnt1));
     EXPECT_EQ(1, cnt1.load());
 
     x = ptr;
     EXPECT_EQ(1, x->value);
 
-    ptr.reset(folly::make_unique<TestObject>(2, cnt2));
+    ptr.reset(std::make_unique<TestObject>(2, cnt2));
     EXPECT_EQ(1, cnt2.load());
     EXPECT_EQ(1, cnt1.load());
 
@@ -174,18 +172,18 @@ TEST_F(ReadMostlySharedPtrTest, LoadsFromThreads) {
 
     loads[0].requestAndWait();
 
-    ptr.reset(folly::make_unique<TestObject>(1, cnt));
+    ptr.reset(std::make_unique<TestObject>(1, cnt));
     loads[1].requestAndWait();
 
-    ptr.reset(folly::make_unique<TestObject>(2, cnt));
+    ptr.reset(std::make_unique<TestObject>(2, cnt));
     loads[2].requestAndWait();
     loads[3].requestAndWait();
 
-    ptr.reset(folly::make_unique<TestObject>(3, cnt));
-    ptr.reset(folly::make_unique<TestObject>(4, cnt));
+    ptr.reset(std::make_unique<TestObject>(3, cnt));
+    ptr.reset(std::make_unique<TestObject>(4, cnt));
     loads[4].requestAndWait();
 
-    ptr.reset(folly::make_unique<TestObject>(5, cnt));
+    ptr.reset(std::make_unique<TestObject>(5, cnt));
     loads[5].requestAndWait();
     loads[6].requestAndWait();
 
@@ -201,8 +199,7 @@ TEST_F(ReadMostlySharedPtrTest, LoadsFromThreads) {
 TEST_F(ReadMostlySharedPtrTest, Ctor) {
   std::atomic<int> cnt1{0};
   {
-    ReadMostlyMainPtr<TestObject> ptr(
-      folly::make_unique<TestObject>(1, cnt1));
+    ReadMostlyMainPtr<TestObject> ptr(std::make_unique<TestObject>(1, cnt1));
 
     EXPECT_EQ(1, ptr.getShared()->value);
   }
@@ -211,11 +208,13 @@ TEST_F(ReadMostlySharedPtrTest, Ctor) {
 }
 
 TEST_F(ReadMostlySharedPtrTest, ClearingCache) {
+  std::atomic<int> cnt1{0};
+  std::atomic<int> cnt2{0};
+
   ReadMostlyMainPtr<TestObject> ptr;
 
   // Store 1.
-  std::atomic<int> cnt1{0};
-  ptr.reset(folly::make_unique<TestObject>(1, cnt1));
+  ptr.reset(std::make_unique<TestObject>(1, cnt1));
 
   Coordinator c;
 
@@ -230,8 +229,7 @@ TEST_F(ReadMostlySharedPtrTest, ClearingCache) {
   EXPECT_EQ(1, cnt1.load());
 
   // Store 2 and check that 1 is destroyed.
-  std::atomic<int> cnt2{0};
-  ptr.reset(folly::make_unique<TestObject>(2, cnt2));
+  ptr.reset(std::make_unique<TestObject>(2, cnt2));
   EXPECT_EQ(0, cnt1.load());
 
   // Unblock thread.

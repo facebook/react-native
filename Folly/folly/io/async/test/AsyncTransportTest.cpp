@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <folly/io/async/AsyncTransport.h>
-#include <folly/io/async/AsyncSocket.h>
 
+#include <folly/io/async/AsyncTransport.h>
+
+#include <folly/io/async/AsyncSocket.h>
 #include <folly/io/async/test/MockAsyncTransport.h>
 #include <folly/portability/GTest.h>
 
@@ -36,13 +37,11 @@ TEST(AsyncTransportTest, getSocketFromWrappedTransport) {
   test::MockAsyncTransport wrapped1;
   test::MockAsyncTransport wrapped2;
 
-  EXPECT_CALL(wrapped2, getWrappedTransport())
-    .WillOnce(Return(&wrapped1));
-  EXPECT_CALL(wrapped1, getWrappedTransport())
-    .WillOnce(Return(transportAddr));
+  EXPECT_CALL(wrapped2, getWrappedTransport()).WillOnce(Return(&wrapped1));
+  EXPECT_CALL(wrapped1, getWrappedTransport()).WillOnce(Return(transportAddr));
 
   auto sock = wrapped2.getUnderlyingTransport<AsyncSocket>();
   ASSERT_EQ(transportAddr, sock);
 }
 
-} // namespace
+} // namespace folly

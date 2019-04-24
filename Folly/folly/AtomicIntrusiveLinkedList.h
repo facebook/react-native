@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,11 +89,25 @@ class AtomicIntrusiveLinkedList {
          compiler bugs (GCC prior to 4.8.3 (bug 60272), clang (bug 18899),
          MSVC (bug 819819); source:
          http://en.cppreference.com/w/cpp/atomic/atomic/compare_exchange */
-    } while (!head_.compare_exchange_weak(oldHead, t,
-                                          std::memory_order_release,
-                                          std::memory_order_relaxed));
+    } while (!head_.compare_exchange_weak(
+        oldHead, t, std::memory_order_release, std::memory_order_relaxed));
 
     return oldHead == nullptr;
+  }
+
+  /**
+   * Replaces the head with nullptr,
+   * and calls func() on the removed elements in the order from tail to head.
+   * Returns false if the list was empty.
+   */
+  template <typename F>
+  bool sweepOnce(F&& func) {
+    if (auto head = head_.exchange(nullptr)) {
+      auto rhead = reverse(head);
+      unlinkAll(rhead, std::forward<F>(func));
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -103,9 +117,7 @@ class AtomicIntrusiveLinkedList {
    */
   template <typename F>
   void sweep(F&& func) {
-    while (auto head = head_.exchange(nullptr)) {
-      auto rhead = reverse(head);
-      unlinkAll(rhead, std::forward<F>(func));
+    while (sweepOnce(func)) {
     }
   }
 

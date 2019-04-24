@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ class SimpleObservable {
   std::once_flag observerInit_;
   folly::Optional<Observer<T>> observer_;
 };
-}
-}
+} // namespace observer
+} // namespace folly
 
 #include <folly/experimental/observer/SimpleObservable-inl.h>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,10 @@
 #include <folly/FileUtil.h>
 
 #include <cerrno>
+#include <string>
+#include <system_error>
+#include <vector>
 
-#include <folly/Exception.h>
 #include <folly/detail/FileUtilDetail.h>
 #include <folly/portability/Fcntl.h>
 #include <folly/portability/Sockets.h>
@@ -217,15 +219,17 @@ void writeFileAtomic(
     int count,
     mode_t permissions) {
   auto rc = writeFileAtomicNoThrow(filename, iov, count, permissions);
-  checkPosixError(rc, "writeFileAtomic() failed to update ", filename);
+  if (rc != 0) {
+    auto msg = std::string(__func__) + "() failed to update " + filename.str();
+    throw std::system_error(rc, std::generic_category(), msg);
+  }
 }
 
 void writeFileAtomic(StringPiece filename, ByteRange data, mode_t permissions) {
   iovec iov;
   iov.iov_base = const_cast<unsigned char*>(data.data());
   iov.iov_len = data.size();
-  auto rc = writeFileAtomicNoThrow(filename, &iov, 1, permissions);
-  checkPosixError(rc, "writeFileAtomic() failed to update ", filename);
+  writeFileAtomic(filename, &iov, 1, permissions);
 }
 
 void writeFileAtomic(
@@ -235,4 +239,4 @@ void writeFileAtomic(
   writeFileAtomic(filename, ByteRange(data), permissions);
 }
 
-}  // namespaces
+} // namespace folly

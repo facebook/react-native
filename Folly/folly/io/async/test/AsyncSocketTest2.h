@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2017-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 #include <functional>
 #include <string>
 
-#include <folly/RWSpinLock.h>
+#include <folly/synchronization/RWSpinLock.h>
 
 #include <folly/io/async/AsyncServerSocket.h>
 
@@ -34,50 +34,50 @@ namespace test {
 class TestConnectionEventCallback
     : public AsyncServerSocket::ConnectionEventCallback {
  public:
-  virtual void onConnectionAccepted(
+  void onConnectionAccepted(
       const int /* socket */,
       const SocketAddress& /* addr */) noexcept override {
     folly::RWSpinLock::WriteHolder holder(spinLock_);
     connectionAccepted_++;
   }
 
-  virtual void onConnectionAcceptError(const int /* err */) noexcept override {
+  void onConnectionAcceptError(const int /* err */) noexcept override {
     folly::RWSpinLock::WriteHolder holder(spinLock_);
     connectionAcceptedError_++;
   }
 
-  virtual void onConnectionDropped(
+  void onConnectionDropped(
       const int /* socket */,
       const SocketAddress& /* addr */) noexcept override {
     folly::RWSpinLock::WriteHolder holder(spinLock_);
     connectionDropped_++;
   }
 
-  virtual void onConnectionEnqueuedForAcceptorCallback(
+  void onConnectionEnqueuedForAcceptorCallback(
       const int /* socket */,
       const SocketAddress& /* addr */) noexcept override {
     folly::RWSpinLock::WriteHolder holder(spinLock_);
     connectionEnqueuedForAcceptCallback_++;
   }
 
-  virtual void onConnectionDequeuedByAcceptorCallback(
+  void onConnectionDequeuedByAcceptorCallback(
       const int /* socket */,
       const SocketAddress& /* addr */) noexcept override {
     folly::RWSpinLock::WriteHolder holder(spinLock_);
     connectionDequeuedByAcceptCallback_++;
   }
 
-  virtual void onBackoffStarted() noexcept override {
+  void onBackoffStarted() noexcept override {
     folly::RWSpinLock::WriteHolder holder(spinLock_);
     backoffStarted_++;
   }
 
-  virtual void onBackoffEnded() noexcept override {
+  void onBackoffEnded() noexcept override {
     folly::RWSpinLock::WriteHolder holder(spinLock_);
     backoffEnded_++;
   }
 
-  virtual void onBackoffError() noexcept override {
+  void onBackoffError() noexcept override {
     folly::RWSpinLock::WriteHolder holder(spinLock_);
     backoffError_++;
   }
@@ -143,8 +143,8 @@ class TestAcceptCallback : public AsyncServerSocket::AcceptCallback {
  public:
   enum EventType { TYPE_START, TYPE_ACCEPT, TYPE_ERROR, TYPE_STOP };
   struct EventInfo {
-    EventInfo(int fd, const folly::SocketAddress& addr)
-        : type(TYPE_ACCEPT), fd(fd), address(addr), errorMsg() {}
+    EventInfo(int fd_, const folly::SocketAddress& addr)
+        : type(TYPE_ACCEPT), fd(fd_), address(addr), errorMsg() {}
     explicit EventInfo(const std::string& msg)
         : type(TYPE_ERROR), fd(-1), address(), errorMsg(msg) {}
     explicit EventInfo(EventType et)
@@ -220,5 +220,5 @@ class TestAcceptCallback : public AsyncServerSocket::AcceptCallback {
 
   std::deque<EventInfo> events_;
 };
-}
-}
+} // namespace test
+} // namespace folly

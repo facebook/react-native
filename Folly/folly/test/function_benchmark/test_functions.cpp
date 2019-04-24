@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2011-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,30 +16,14 @@
 
 #include <folly/test/function_benchmark/test_functions.h>
 
+#include <folly/lang/Exception.h>
+
 /*
  * These functions are defined in a separate file so that
  * gcc won't be able to inline them.
  */
 
-
-class Exception : public std::exception {
- public:
-  explicit Exception(const std::string& value) : value_(value) {}
-  ~Exception(void) noexcept override {}
-
-  const char* what(void) const noexcept override { return value_.c_str(); }
-
- private:
-  std::string value_;
-};
-
-void doNothing() {
-}
-
-[[noreturn]]
-void throwException() {
-  throw Exception("this is a test");
-}
+void doNothing() {}
 
 std::exception_ptr returnExceptionPtr() {
   Exception ex("this is a test");
@@ -69,14 +53,11 @@ int returnCodeNoExcept(int value) noexcept {
   return value;
 }
 
-void TestClass::doNothing() {
-}
+void TestClass::doNothing() {}
 
-VirtualClass::~VirtualClass() {
-}
+VirtualClass::~VirtualClass() {}
 
-void VirtualClass::doNothing() {
-};
+void VirtualClass::doNothing() {}
 
 LargeClass::LargeClass() {
   // Suppress unused field warning

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ TEST(WillEqual, basic) {
     auto f3 = f1.willEqual(f2);
     p1.setValue(27);
     p2.setValue(27);
-    EXPECT_TRUE(f3.get());
+    EXPECT_TRUE(std::move(f3).get());
   }
   {
     Promise<int> p1;
@@ -58,7 +58,7 @@ TEST(WillEqual, basic) {
     auto f3 = f1.willEqual(f2);
     p1.setValue(27);
     p2.setValue(36);
-    EXPECT_FALSE(f3.get());
+    EXPECT_FALSE(std::move(f3).get());
   }
   // p1 already fulfilled, p2 not yet fulfilled
   {
@@ -69,7 +69,7 @@ TEST(WillEqual, basic) {
     auto f2 = p2.getFuture();
     auto f3 = f1.willEqual(f2);
     p2.setValue(27);
-    EXPECT_TRUE(f3.get());
+    EXPECT_TRUE(std::move(f3).get());
   }
   {
     Promise<int> p1;
@@ -79,7 +79,7 @@ TEST(WillEqual, basic) {
     auto f2 = p2.getFuture();
     auto f3 = f1.willEqual(f2);
     p2.setValue(36);
-    EXPECT_FALSE(f3.get());
+    EXPECT_FALSE(std::move(f3).get());
   }
   // p2 already fulfilled, p1 not yet fulfilled
   {
@@ -90,7 +90,7 @@ TEST(WillEqual, basic) {
     auto f2 = p2.getFuture();
     auto f3 = f1.willEqual(f2);
     p1.setValue(27);
-    EXPECT_TRUE(f3.get());
+    EXPECT_TRUE(std::move(f3).get());
   }
   {
     Promise<int> p1;
@@ -100,6 +100,6 @@ TEST(WillEqual, basic) {
     auto f2 = p2.getFuture();
     auto f3 = f1.willEqual(f2);
     p1.setValue(27);
-    EXPECT_FALSE(f3.get());
+    EXPECT_FALSE(std::move(f3).get());
   }
 }

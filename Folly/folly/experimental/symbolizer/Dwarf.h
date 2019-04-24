@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2012-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@
 
 #include <boost/variant.hpp>
 
-#include <folly/experimental/symbolizer/Elf.h>
 #include <folly/Range.h>
+#include <folly/experimental/symbolizer/Elf.h>
 
 namespace folly {
 namespace symbolizer {
@@ -63,14 +63,22 @@ class Dwarf {
    */
   class Path {
    public:
-    Path() { }
+    Path() {}
 
-    Path(folly::StringPiece baseDir, folly::StringPiece subDir,
-         folly::StringPiece file);
+    Path(
+        folly::StringPiece baseDir,
+        folly::StringPiece subDir,
+        folly::StringPiece file);
 
-    folly::StringPiece baseDir() const { return baseDir_; }
-    folly::StringPiece subDir() const { return subDir_; }
-    folly::StringPiece file() const { return file_; }
+    folly::StringPiece baseDir() const {
+      return baseDir_;
+    }
+    folly::StringPiece subDir() const {
+      return subDir_;
+    }
+    folly::StringPiece file() const {
+      return file_;
+    }
 
     size_t size() const;
 
@@ -121,19 +129,18 @@ class Dwarf {
   /**
    * Find the file and line number information corresponding to address.
    */
-  bool findAddress(uintptr_t address,
-                   LocationInfo& info,
-                   LocationInfoMode mode) const;
+  bool findAddress(uintptr_t address, LocationInfo& info, LocationInfoMode mode)
+      const;
 
  private:
-  static bool findDebugInfoOffset(uintptr_t address,
-                                  StringPiece aranges,
-                                  uint64_t& offset);
+  static bool
+  findDebugInfoOffset(uintptr_t address, StringPiece aranges, uint64_t& offset);
 
   void init();
-  bool findLocation(uintptr_t address,
-                    StringPiece& infoEntry,
-                    LocationInfo& info) const;
+  bool findLocation(
+      uintptr_t address,
+      StringPiece& infoEntry,
+      LocationInfo& info) const;
 
   const ElfFile* elf_;
 
@@ -143,7 +150,7 @@ class Dwarf {
   // (yes, DWARF-32 and DWARF-64 sections may coexist in the same file)
   class Section {
    public:
-    Section() : is64Bit_(false) { }
+    Section() : is64Bit_(false) {}
 
     explicit Section(folly::StringPiece d);
 
@@ -152,7 +159,9 @@ class Dwarf {
     bool next(folly::StringPiece& chunk);
 
     // Is the current chunk 64 bit?
-    bool is64Bit() const { return is64Bit_; }
+    bool is64Bit() const {
+      return is64Bit_;
+    }
 
    private:
     // Yes, 32- and 64- bit sections may coexist.  Yikes!
@@ -177,8 +186,9 @@ class Dwarf {
   // Interpreter for the line number bytecode VM
   class LineNumberVM {
    public:
-    LineNumberVM(folly::StringPiece data,
-                 folly::StringPiece compilationDirectory);
+    LineNumberVM(
+        folly::StringPiece data,
+        folly::StringPiece compilationDirectory);
 
     bool findAddress(uintptr_t address, Path& file, uint64_t& line);
 
@@ -189,9 +199,9 @@ class Dwarf {
     // Execute until we commit one new row to the line number matrix
     bool next(folly::StringPiece& program);
     enum StepResult {
-      CONTINUE,  // Continue feeding opcodes
-      COMMIT,    // Commit new <address, file, line> tuple
-      END,       // End of sequence
+      CONTINUE, // Continue feeding opcodes
+      COMMIT, // Commit new <address, file, line> tuple
+      END, // End of sequence
     };
     // Execute one opcode
     StepResult step(folly::StringPiece& program);
@@ -263,10 +273,8 @@ class Dwarf {
 
   // Read one attribute value, advance sp
   typedef boost::variant<uint64_t, folly::StringPiece> AttributeValue;
-  AttributeValue readAttributeValue(
-      folly::StringPiece& sp,
-      uint64_t form,
-      bool is64Bit) const;
+  AttributeValue
+  readAttributeValue(folly::StringPiece& sp, uint64_t form, bool is64Bit) const;
 
   // Get an ELF section by name, return true if found
   bool getSection(const char* name, folly::StringPiece* section) const;
@@ -274,16 +282,16 @@ class Dwarf {
   // Get a string from the .debug_str section
   folly::StringPiece getStringFromStringSection(uint64_t offset) const;
 
-  folly::StringPiece info_;       // .debug_info
-  folly::StringPiece abbrev_;     // .debug_abbrev
-  folly::StringPiece aranges_;    // .debug_aranges
-  folly::StringPiece line_;       // .debug_line
-  folly::StringPiece strings_;    // .debug_str
+  folly::StringPiece info_; // .debug_info
+  folly::StringPiece abbrev_; // .debug_abbrev
+  folly::StringPiece aranges_; // .debug_aranges
+  folly::StringPiece line_; // .debug_line
+  folly::StringPiece strings_; // .debug_str
 };
 
 inline std::ostream& operator<<(std::ostream& out, const Dwarf::Path& path) {
   return out << path.toString();
 }
 
-}  // namespace symbolizer
-}  // namespace folly
+} // namespace symbolizer
+} // namespace folly

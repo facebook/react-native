@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2012-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,23 +53,64 @@ TEST(TemporaryFile, Simple) {
   });
 }
 
+TEST(TemporaryFile, EarlyClose) {
+  fs::path p;
+  {
+    TemporaryFile f;
+    p = f.path();
+    EXPECT_TRUE(fs::exists(p));
+    f.close();
+    EXPECT_EQ(-1, f.fd());
+    EXPECT_TRUE(fs::exists(p));
+  }
+  EXPECT_FALSE(fs::exists(p));
+}
+
 TEST(TemporaryFile, Prefix) {
   TemporaryFile f("Foo");
   EXPECT_TRUE(f.path().is_absolute());
-  EXPECT_TRUE(boost::algorithm::starts_with(f.path().filename().native(),
-                                            "Foo"));
+  EXPECT_TRUE(
+      boost::algorithm::starts_with(f.path().filename().native(), "Foo"));
 }
 
 TEST(TemporaryFile, PathPrefix) {
   TemporaryFile f("Foo", ".");
   EXPECT_EQ(fs::path("."), f.path().parent_path());
-  EXPECT_TRUE(boost::algorithm::starts_with(f.path().filename().native(),
-                                            "Foo"));
+  EXPECT_TRUE(
+      boost::algorithm::starts_with(f.path().filename().native(), "Foo"));
 }
 
 TEST(TemporaryFile, NoSuchPath) {
-  EXPECT_THROW({TemporaryFile f("", "/no/such/path");},
-               std::system_error);
+  EXPECT_THROW({ TemporaryFile f("", "/no/such/path"); }, std::system_error);
+}
+
+TEST(TemporaryFile, moveAssignment) {
+  TemporaryFile f;
+  int fd;
+
+  EXPECT_TRUE(f.path().is_absolute());
+  {
+    TemporaryFile g("Foo", ".");
+    EXPECT_NE(g.fd(), -1);
+    fd = g.fd();
+    f = std::move(g);
+  }
+  EXPECT_EQ(fs::path("."), f.path().parent_path());
+  EXPECT_EQ(f.fd(), fd);
+
+  TemporaryFile h = TemporaryFile("FooBar", ".");
+  EXPECT_NE(h.fd(), -1);
+}
+
+TEST(TemporaryFile, moveCtor) {
+  struct FooBar {
+    TemporaryFile f_;
+    explicit FooBar(TemporaryFile&& f) : f_(std::move(f)) {}
+  };
+  TemporaryFile g("Foo");
+  FooBar fb(std::move(g));
+  EXPECT_EQ(g.fd(), -1);
+  EXPECT_NE(fb.f_.fd(), -1);
 }
 
 void testTemporaryDirectory(TemporaryDirectory::Scope scope) {
@@ -118,7 +159,7 @@ TEST(TemporaryDirectory, SafelyMove) {
     expectTempdirExists(d);
     expectTempdirExists(d2);
 
-    dir = folly::make_unique<TemporaryDirectory>(std::move(d));
+    dir = std::make_unique<TemporaryDirectory>(std::move(d));
     dir2 = std::move(d2);
   }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #pragma once
 
 #include <functional>
+#include <set>
 #include <stdexcept>
 
+#include <folly/CPortability.h>
+#include <folly/String.h>
 #include <folly/experimental/ProgramOptions.h>
 
 namespace folly {
@@ -30,10 +32,13 @@ namespace folly {
  * empty; the message is only allowed when exiting with a non-zero status), and
  * return the exit code. (Other exceptions will propagate out of run())
  */
-class ProgramExit : public std::runtime_error {
+class FOLLY_EXPORT ProgramExit : public std::runtime_error {
  public:
   explicit ProgramExit(int status, const std::string& msg = std::string());
-  int status() const { return status_; }
+  int status() const {
+    return status_;
+  }
+
  private:
   int status_;
 };
@@ -48,12 +53,16 @@ class NestedCommandLineApp {
   typedef std::function<void(
       const std::string& command,
       const boost::program_options::variables_map& options,
-      const std::vector<std::string>& args)> InitFunction;
+      const std::vector<std::string>& args)>
+      InitFunction;
 
   typedef std::function<void(
       const boost::program_options::variables_map& options,
-      const std::vector<std::string>&)> Command;
+      const std::vector<std::string>&)>
+      Command;
 
+  static constexpr StringPiece const kHelpCommand = "help";
+  static constexpr StringPiece const kVersionCommand = "version";
   /**
    * Initialize the app.
    *
@@ -67,6 +76,8 @@ class NestedCommandLineApp {
   explicit NestedCommandLineApp(
       std::string programName = std::string(),
       std::string version = std::string(),
+      std::string programHeading = std::string(),
+      std::string programHelpFooter = std::string(),
       InitFunction initFunction = InitFunction());
 
   /**
@@ -122,6 +133,11 @@ class NestedCommandLineApp {
   int run(int argc, const char* const argv[]);
   int run(const std::vector<std::string>& args);
 
+  /**
+   * Return true if name represent known built-in command (help, version)
+   */
+  bool isBuiltinCommand(const std::string& name) const;
+
  private:
   void doRun(const std::vector<std::string>& args);
   const std::string& resolveAlias(const std::string& name) const;
@@ -134,19 +150,24 @@ class NestedCommandLineApp {
     boost::program_options::options_description options;
   };
 
-  const std::pair<const std::string, CommandInfo>&
-  findCommand(const std::string& name) const;
+  const std::pair<const std::string, CommandInfo>& findCommand(
+      const std::string& name) const;
 
   void displayHelp(
       const boost::program_options::variables_map& options,
-      const std::vector<std::string>& args);
+      const std::vector<std::string>& args) const;
+
+  void displayVersion() const;
 
   std::string programName_;
+  std::string programHeading_;
+  std::string programHelpFooter_;
   std::string version_;
   InitFunction initFunction_;
   boost::program_options::options_description globalOptions_;
   std::map<std::string, CommandInfo> commands_;
   std::map<std::string, std::string> aliases_;
+  std::set<folly::StringPiece> builtinCommands_;
 };
 
-}  // namespaces
+} // namespace folly
