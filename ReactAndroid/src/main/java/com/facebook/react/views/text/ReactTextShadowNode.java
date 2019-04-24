@@ -76,10 +76,10 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
 
           Layout.Alignment alignment = Layout.Alignment.ALIGN_NORMAL;
           switch (getTextAlign()) {
-            case Gravity.START:
+            case Gravity.LEFT:
               alignment = Layout.Alignment.ALIGN_NORMAL;
               break;
-            case Gravity.END:
+            case Gravity.RIGHT:
               alignment = Layout.Alignment.ALIGN_OPPOSITE;
               break;
             case Gravity.CENTER_HORIZONTAL:
@@ -179,10 +179,10 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
   private int getTextAlign() {
     int textAlign = mTextAlign;
     if (getLayoutDirection() == YogaDirection.RTL) {
-      if (textAlign == Gravity.END) {
-        textAlign = Gravity.START;
-      } else if (textAlign == Gravity.START) {
-        textAlign = Gravity.END;
+      if (textAlign == Gravity.RIGHT) {
+        textAlign = Gravity.LEFT;
+      } else if (textAlign == Gravity.LEFT) {
+        textAlign = Gravity.RIGHT;
       }
     }
     return textAlign;

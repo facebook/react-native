@@ -164,10 +164,10 @@ public class TextAttributeProps {
   public int getTextAlign() {
     int textAlign = mTextAlign;
     if (getLayoutDirection() == YogaDirection.RTL) {
-      if (textAlign == Gravity.END) {
-        textAlign = Gravity.START;
-      } else if (textAlign == Gravity.START) {
-        textAlign = Gravity.END;
+      if (textAlign == Gravity.RIGHT) {
+        textAlign = Gravity.LEFT;
+      } else if (textAlign == Gravity.LEFT) {
+        textAlign = Gravity.RIGHT;
       }
     }
     return textAlign;
@@ -210,7 +210,7 @@ public class TextAttributeProps {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         mJustificationMode = Layout.JUSTIFICATION_MODE_INTER_WORD;
       }
-      mTextAlign = Gravity.START;
+      mTextAlign = Gravity.LEFT;
     } else {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         mJustificationMode = Layout.JUSTIFICATION_MODE_NONE;
@@ -219,9 +219,9 @@ public class TextAttributeProps {
       if (textAlign == null || "auto".equals(textAlign)) {
         mTextAlign = Gravity.NO_GRAVITY;
       } else if ("left".equals(textAlign)) {
-        mTextAlign = Gravity.START;
+        mTextAlign = Gravity.LEFT;
       } else if ("right".equals(textAlign)) {
-        mTextAlign = Gravity.END;
+        mTextAlign = Gravity.RIGHT;
       } else if ("center".equals(textAlign)) {
         mTextAlign = Gravity.CENTER_HORIZONTAL;
       } else {
