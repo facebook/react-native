@@ -64,9 +64,6 @@ static NSURL *ipBundleURL()
   [super tearDown];
 }
 
-/**
- * TODO: t43430850: Temporarily disable testBundleURL test.
- * To be re-enabled when the packager can be reliably used on Sandcastle.
 - (void)testBundleURL
 {
   RCTBundleURLProvider *settings = [RCTBundleURLProvider sharedSettings];
@@ -78,7 +75,6 @@ static NSURL *ipBundleURL()
     XCTAssertEqualObjects(URL, localhostBundleURL());
   }
 }
- */
 
 - (void)testLocalhostURL
 {
