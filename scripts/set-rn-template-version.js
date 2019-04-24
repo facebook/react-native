@@ -1,5 +1,16 @@
+/**
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ * @format
+ */
+
+'use strict';
+
 const fs = require('fs');
-const {cat} = require('shelljs');
+const path = require('path');
 
 const version = process.argv[2];
 
@@ -8,6 +19,12 @@ if (!version) {
   process.exit(1);
 }
 
-let templatePackageJson = JSON.parse(cat('template/package.json'));
+const jsonPath = path.join(__dirname, '../template/package.json');
+
+let templatePackageJson = require(jsonPath);
 templatePackageJson.dependencies['react-native'] = version;
-fs.writeFileSync('./template/package.json', JSON.stringify(templatePackageJson, null, 2) + '\n', 'utf-8');
+fs.writeFileSync(
+  jsonPath,
+  JSON.stringify(templatePackageJson, null, 2) + '\n',
+  'utf-8',
+);

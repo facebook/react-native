@@ -76,14 +76,14 @@ npm pack
 PACKAGE=$(pwd)/react-native-$PACKAGE_VERSION.tgz
 success "Package bundled ($PACKAGE)"
 
-node set-rn-template-version.js "file://$PACKAGE"
+node scripts/set-rn-template-version.js "file:$PACKAGE"
 success "React Native version changed in the template"
 
 project_name="RNTestProject"
 
 cd /tmp/
 rm -rf "$project_name"
-node "$repo_root/cli.js" "$project_name" --template "$repo_root"
+node "$repo_root/cli.js" init "$project_name" --template "$repo_root"
 
 info "Double checking the versions in package.json are correct:"
 grep "\"react-native\": \".*react-native-$PACKAGE_VERSION.tgz\"" "/tmp/${project_name}/package.json" || error "Incorrect version number in /tmp/${project_name}/package.json"
