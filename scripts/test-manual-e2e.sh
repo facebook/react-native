@@ -83,7 +83,7 @@ project_name="RNTestProject"
 
 cd /tmp/
 rm -rf "$project_name"
-npx @react-native-community/cli init $project_name --template $repo_root
+npx @react-native-community/cli init "$project_name" --template "$repo_root"
 
 info "Double checking the versions in package.json are correct:"
 grep "\"react-native\": \".*react-native-$PACKAGE_VERSION.tgz\"" "/tmp/${project_name}/package.json" || error "Incorrect version number in /tmp/${project_name}/package.json"
