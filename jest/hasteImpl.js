@@ -17,7 +17,7 @@ const cli = require('@react-native-community/cli');
 const {haste} = (cli.loadConfig && cli.loadConfig()) || {
   haste: {
     providesModuleNodeModules: [],
-    platforms: [],
+    platforms: ['ios', 'android'],
   },
 };
 
