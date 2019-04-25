@@ -10,7 +10,6 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
 const {
   AccessibilityInfo,
   Button,
@@ -21,7 +20,7 @@ const {
   UIManager,
   findNodeHandle,
   Platform,
-} = ReactNative;
+} = require('react-native');
 
 const RNTesterBlock = require('./RNTesterBlock');
 
