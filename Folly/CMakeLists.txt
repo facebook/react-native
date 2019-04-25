@@ -11,7 +11,6 @@ set(SOURCES
 	folly/lang/ColdClass.cpp
 	folly/lang/SafeAssert.cpp
 	folly/memory/detail/MallocImpl.cpp
-	folly/portability/fcntl.cpp
 	folly/ScopeGuard.cpp
 	folly/String.cpp
 	folly/Unicode.cpp
@@ -25,6 +24,7 @@ endif(WIN32 AND NOT WINRT)
 add_library(folly ${SOURCES})
 
 if(WIN32)
+	set(SOURCES ${SOURCES} folly/portability/string.cpp)
 	target_include_directories(folly PUBLIC ${REACT_DEP_STUBS})
 endif(WIN32)
 
@@ -45,6 +45,9 @@ endif(IOS OR APPLE OR ANDROID)
 if(ANDROID)
 	target_compile_definitions(folly PUBLIC FOLLY_HAVE_XSI_STRERROR_R=1 FOLLY_HAVE_MEMRCHR=1)
 endif(ANDROID)
+if(WIN32)
+	target_compile_definitions(folly PUBLIC FOLLY_HAVE_MEMRCHR=0)
+endif(WIN32)
 
 find_package(Boost REQUIRED)
 target_link_libraries(folly PUBLIC Boost::boost)

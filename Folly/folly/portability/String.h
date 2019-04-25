@@ -26,7 +26,7 @@
 #endif
 
 #if !FOLLY_HAVE_MEMRCHR
-//extern "C" void* memrchr(const void* s, int c, size_t n);
+extern "C" void* memrchr(const void* s, int c, size_t n);
 #endif
 
 #if defined(_WIN32) || defined(__FreeBSD__)

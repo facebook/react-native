@@ -50,6 +50,18 @@ extern int (
 #ifdef _MSC_VER
 // We emulate weak linkage for MSVC. The symbols we're
 // aliasing to are hiding in MallocImpl.cpp
+#if defined(_M_IX86)
+#pragma comment(linker, "/alternatename:_mallocx=_mallocxWeak")
+#pragma comment(linker, "/alternatename:_rallocx=_rallocxWeak")
+#pragma comment(linker, "/alternatename:_xallocx=_xallocxWeak")
+#pragma comment(linker, "/alternatename:_sallocx=_sallocxWeak")
+#pragma comment(linker, "/alternatename:_dallocx=_dallocxWeak")
+#pragma comment(linker, "/alternatename:_sdallocx=_sdallocxWeak")
+#pragma comment(linker, "/alternatename:_nallocx=_nallocxWeak")
+#pragma comment(linker, "/alternatename:_mallctl=_mallctlWeak")
+#pragma comment(linker, "/alternatename:_mallctlnametomib=_mallctlnametomibWeak")
+#pragma comment(linker, "/alternatename:_mallctlbymib=_mallctlbymibWeak")
+#else
 #pragma comment(linker, "/alternatename:mallocx=mallocxWeak")
 #pragma comment(linker, "/alternatename:rallocx=rallocxWeak")
 #pragma comment(linker, "/alternatename:xallocx=xallocxWeak")
@@ -60,6 +72,7 @@ extern int (
 #pragma comment(linker, "/alternatename:mallctl=mallctlWeak")
 #pragma comment(linker, "/alternatename:mallctlnametomib=mallctlnametomibWeak")
 #pragma comment(linker, "/alternatename:mallctlbymib=mallctlbymibWeak")
+#endif
 #endif
 #endif
 }

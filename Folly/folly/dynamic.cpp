@@ -307,7 +307,7 @@ std::size_t dynamic::hash() const {
           [&](auto acc, auto item) { return acc + h(item); });
     }
     case ARRAY:
-      return folly::hash::hash_range(begin(), end());
+      return static_cast<size_t>(folly::hash::hash_range(begin(), end()));
     case INT64:
       return std::hash<int64_t>()(getInt());
     case DOUBLE:

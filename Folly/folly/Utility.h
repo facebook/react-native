@@ -391,7 +391,7 @@ constexpr auto to_signed(T const& t) -> typename std::make_signed<T>::type {
   // note: static_cast<S>(t) would be more straightforward, but it would also be
   // implementation-defined behavior and that is typically to be avoided; the
   // following code optimized into the same thing, though
-  return std::numeric_limits<S>::max() < t ? -static_cast<S>(~t) + S{-1}
+  return static_cast<T>(std::numeric_limits<S>::max()) < t ? -static_cast<S>(~t) + S{-1}
                                            : static_cast<S>(t);
 }
 

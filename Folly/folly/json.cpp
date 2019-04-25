@@ -666,7 +666,7 @@ size_t firstEscapableInWord(T s, const serialization_opts& opts) {
           (i == 0 ? uint64_t(-1) << 32 : ~0UL);
       while (bitmap) {
         auto bit = folly::findFirstSet(bitmap);
-        needsEscape |= isChar(offset + bit - 1);
+        needsEscape |= isChar(static_cast<uint8_t>(offset + bit - 1));
         bitmap &= bitmap - 1;
       }
     }
