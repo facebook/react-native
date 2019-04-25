@@ -4,4 +4,11 @@
 <!-- FB Locale: mr_IN -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">दुवा</string>
+    <string name="search_description" gender="unknown">फील्ड शोधा</string>
+    <string name="image_description" gender="unknown">प्रतिमा</string>
+    <string name="imagebutton_description" gender="unknown">बटण, प्रतिमा</string>
+    <string name="alert_description" gender="unknown">सतर्कता संदेश</string>
+    <string name="menu_description" gender="unknown">मेनू</string>
+    <string name="summary_description" gender="unknown">सारांश</string>
 </resources>

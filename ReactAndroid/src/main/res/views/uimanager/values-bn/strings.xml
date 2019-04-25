@@ -4,4 +4,13 @@
 <!-- FB Locale: bn_IN -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">লিঙ্ক</string>
+    <string name="search_description" gender="unknown">ক্ষেত্র সন্ধান করুন</string>
+    <string name="image_description" gender="unknown">চিত্র</string>
+    <string name="imagebutton_description" gender="unknown">বোতাম, চিত্র</string>
+    <string name="alert_description" gender="unknown">সতর্কতা</string>
+    <string name="menu_description" gender="unknown">মেনু</string>
+    <string name="summary_description" gender="unknown">সারসংক্ষেপ</string>
+    <string name="state_on_description" gender="unknown">অন</string>
+    <string name="state_off_description" gender="unknown">অফ</string>
 </resources>

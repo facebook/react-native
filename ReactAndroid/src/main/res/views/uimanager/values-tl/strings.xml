@@ -4,4 +4,9 @@
 <!-- FB Locale: tl_PH -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="search_description" gender="unknown">Field ng Paghahanap</string>
+    <string name="image_description" gender="unknown">Larawan</string>
+    <string name="imagebutton_description" gender="unknown">Button, Larawan</string>
+    <string name="alert_description" gender="unknown">Alerto</string>
+    <string name="summary_description" gender="unknown">Buod</string>
 </resources>

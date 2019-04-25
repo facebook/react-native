@@ -4,4 +4,10 @@
 <!-- FB Locale: ms_MY -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">Pautan</string>
+    <string name="search_description" gender="unknown">Medan Carian</string>
+    <string name="image_description" gender="unknown">Imej</string>
+    <string name="imagebutton_description" gender="unknown">Butang, Imej</string>
+    <string name="alert_description" gender="unknown">Isyarat</string>
+    <string name="summary_description" gender="unknown">Ringkasan</string>
 </resources>
