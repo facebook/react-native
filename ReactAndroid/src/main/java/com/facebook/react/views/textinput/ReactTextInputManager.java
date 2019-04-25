@@ -220,7 +220,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     Typeface newTypeface = ReactFontManager.getInstance().getTypeface(
         fontFamily,
         style,
-        view.getContext());
+        view.getContext().getAssets());
     view.setTypeface(newTypeface);
   }
 
