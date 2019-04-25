@@ -4,4 +4,8 @@
 <!-- FB Locale: sr_RS -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">Веза</string>
+    <string name="alert_description" gender="unknown">Упозорење</string>
+    <string name="menu_description" gender="unknown">понуда</string>
+    <string name="summary_description" gender="unknown">Резиме</string>
 </resources>

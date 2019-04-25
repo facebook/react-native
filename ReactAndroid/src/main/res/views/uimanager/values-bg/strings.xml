@@ -4,4 +4,11 @@
 <!-- FB Locale: bg_BG -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">Връзка</string>
+    <string name="search_description" gender="unknown">Поле за търсене</string>
+    <string name="image_description" gender="unknown">Изображение</string>
+    <string name="imagebutton_description" gender="unknown">Бутон, изображение</string>
+    <string name="menu_description" gender="unknown">Меню</string>
+    <string name="rn_tab_description" gender="unknown">Раздел</string>
+    <string name="summary_description" gender="unknown">Резюме</string>
 </resources>

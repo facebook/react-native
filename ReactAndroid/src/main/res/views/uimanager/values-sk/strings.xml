@@ -4,4 +4,12 @@
 <!-- FB Locale: sk_SK -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">Odkaz</string>
+    <string name="image_description" gender="unknown">Obrázok</string>
+    <string name="alert_description" gender="unknown">Upozornenie</string>
+    <string name="menu_description" gender="unknown">Ponuka</string>
+    <string name="rn_tab_description" gender="unknown">Karta</string>
+    <string name="summary_description" gender="unknown">Súhrn</string>
+    <string name="state_on_description" gender="unknown">zapnúť</string>
+    <string name="state_off_description" gender="unknown">vypnúť</string>
 </resources>

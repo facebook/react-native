@@ -4,4 +4,6 @@
 <!-- FB Locale: bs_BA -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="menu_description" gender="unknown">Izbornik</string>
+    <string name="summary_description" gender="unknown">Sadržaj</string>
 </resources>

@@ -4,4 +4,8 @@
 <!-- FB Locale: lv_LV -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">Saite</string>
+    <string name="image_description" gender="unknown">Attēls</string>
+    <string name="menu_description" gender="unknown">Izvēlne</string>
+    <string name="summary_description" gender="unknown">Kopsavilkums</string>
 </resources>

@@ -4,4 +4,9 @@
 <!-- FB Locale: my_MM -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">လင့်ခ်</string>
+    <string name="image_description" gender="unknown">ဓာတ်ပုံ</string>
+    <string name="imagebutton_description" gender="unknown">ခလုတ်၊ ဓာတ်ပုံ</string>
+    <string name="menu_description" gender="unknown">စာရင်း</string>
+    <string name="summary_description" gender="unknown">အနှစ်ချုပ်</string>
 </resources>

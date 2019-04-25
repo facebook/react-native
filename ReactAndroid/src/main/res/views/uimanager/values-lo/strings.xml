@@ -4,4 +4,5 @@
 <!-- FB Locale: lo_LA -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="menu_description" gender="unknown">ເມນູ</string>
 </resources>

@@ -4,4 +4,8 @@
 <!-- FB Locale: mk_MK -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">Врска</string>
+    <string name="image_description" gender="unknown">Слика</string>
+    <string name="menu_description" gender="unknown">Мени</string>
+    <string name="summary_description" gender="unknown">Краток преглед</string>
 </resources>

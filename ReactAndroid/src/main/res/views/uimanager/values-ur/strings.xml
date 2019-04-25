@@ -4,4 +4,10 @@
 <!-- FB Locale: ur_PK -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">لنک</string>
+    <string name="search_description" gender="unknown">تلاش فیلڈ</string>
+    <string name="image_description" gender="unknown">تصویر</string>
+    <string name="imagebutton_description" gender="unknown">بٹن، تصویر</string>
+    <string name="menu_description" gender="unknown">مینو</string>
+    <string name="summary_description" gender="unknown">خلاصہ</string>
 </resources>

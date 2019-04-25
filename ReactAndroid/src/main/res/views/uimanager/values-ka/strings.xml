@@ -4,4 +4,8 @@
 <!-- FB Locale: ka_GE -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">ბმული</string>
+    <string name="image_description" gender="unknown">სურათი</string>
+    <string name="menu_description" gender="unknown">მენიუ</string>
+    <string name="summary_description" gender="unknown">მოკლედ</string>
 </resources>

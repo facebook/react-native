@@ -4,4 +4,6 @@
 <!-- FB Locale: sn_ZW -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="menu_description" gender="unknown">Zvekusarudza</string>
+    <string name="summary_description" gender="unknown">Pfupiso</string>
 </resources>

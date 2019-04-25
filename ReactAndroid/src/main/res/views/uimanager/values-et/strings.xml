@@ -4,4 +4,8 @@
 <!-- FB Locale: et_EE -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">Viide</string>
+    <string name="image_description" gender="unknown">Pilt</string>
+    <string name="menu_description" gender="unknown">Menüü</string>
+    <string name="summary_description" gender="unknown">Kokkuvõte</string>
 </resources>

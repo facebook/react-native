@@ -4,4 +4,8 @@
 <!-- FB Locale: lt_LT -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">Nuoroda</string>
+    <string name="image_description" gender="unknown">Paveikslėlis</string>
+    <string name="menu_description" gender="unknown">Meniu</string>
+    <string name="summary_description" gender="unknown">Santrauka</string>
 </resources>
