@@ -16,6 +16,10 @@ namespace react {
 class JSCExecutorFactory : public JSExecutorFactory {
 public:
   explicit JSCExecutorFactory(
+      JSIExecutor::RuntimeInstaller runtimeInstaller)
+      : runtimeInstaller_(std::move(runtimeInstaller)),
+      logTaggedMarker_(nullptr) {}
+  explicit JSCExecutorFactory(
       JSIExecutor::RuntimeInstaller runtimeInstaller,
       ReactMarker::LogTaggedMarker logTaggedMarker)
       : runtimeInstaller_(std::move(runtimeInstaller)),
