@@ -14,6 +14,8 @@ import java.util.Map;
 
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.util.SparseArray;
 
@@ -42,6 +44,7 @@ public class ReactFontManager {
 
   private Map<String, FontFamily> mFontCache;
   private Map<String, Typeface> mTypeCache;
+  private boolean mTypeCacheLoaded = false;
 
   private ReactFontManager() {
     mFontCache = new HashMap<>();
@@ -80,6 +83,27 @@ public class ReactFontManager {
     String fontFamilyName,
     int style,
     Context context) {
+
+    if (!mTypeCacheLoaded) {
+      Resources resources = context.getResources();
+      int fontsId = resources.getIdentifier("fonts", "array", context.getPackageName());
+      if (fontsId != 0) {
+        TypedArray fonts = resources.obtainTypedArray(fontsId);
+        for (int i = 0; i < fonts.length(); i++) {
+          int fontId = fonts.getResourceId(i, 0);
+          if (fontId != 0) {
+            Typeface font = ResourcesCompat.getFont(context, fontId);
+            if (font != null) {
+              String fontFamily = resources.getResourceEntryName(fontId);
+              mTypeCache.put(fontFamily, font);
+            }
+          }
+        }
+        fonts.recycle();
+      }
+      mTypeCacheLoaded = true;
+    }
+
     Typeface font = mTypeCache.get(fontFamilyName);
 
     if (font != null) {
@@ -89,17 +113,6 @@ public class ReactFontManager {
       );
     }
 
-    int fontId = context.getResources().getIdentifier(fontFamilyName, "font", context.getPackageName());
-    if (fontId != 0) {
-      font = ResourcesCompat.getFont(context, fontId);
-      if (font != null) {
-        mTypeCache.put(fontFamilyName, font);
-        return Typeface.create(
-          font,
-          style
-        );
-      }
-    }
     return getTypeface(fontFamilyName, style, context.getAssets());
   }
 
