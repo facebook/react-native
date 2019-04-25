@@ -4,4 +4,13 @@
 <!-- FB Locale: el_GR -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">Σύνδεσμος</string>
+    <string name="search_description" gender="unknown">Πεδίο αναζήτησης</string>
+    <string name="image_description" gender="unknown">Εικόνα</string>
+    <string name="imagebutton_description" gender="unknown">Κουμπί, εικόνα</string>
+    <string name="alert_description" gender="unknown">Προειδοποίηση</string>
+    <string name="menu_description" gender="unknown">Μενού</string>
+    <string name="summary_description" gender="unknown">Σύνοψη</string>
+    <string name="state_on_description" gender="unknown">εντός</string>
+    <string name="state_off_description" gender="unknown">εκτός</string>
 </resources>

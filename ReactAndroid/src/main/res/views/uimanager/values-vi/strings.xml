@@ -4,4 +4,9 @@
 <!-- FB Locale: vi_VN -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">Liên kết</string>
+    <string name="search_description" gender="unknown">Trường tìm kiếm</string>
+    <string name="image_description" gender="unknown">Hình ảnh</string>
+    <string name="imagebutton_description" gender="unknown">Nút, hình ảnh</string>
+    <string name="summary_description" gender="unknown">Tóm tắt</string>
 </resources>

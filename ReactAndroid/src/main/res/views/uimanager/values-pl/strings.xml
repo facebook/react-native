@@ -4,4 +4,12 @@
 <!-- FB Locale: pl_PL -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="search_description" gender="unknown">Pole wyszukiwania</string>
+    <string name="image_description" gender="unknown">Obraz</string>
+    <string name="imagebutton_description" gender="unknown">Przycisk, obraz</string>
+    <string name="alert_description" gender="unknown">Powiadomienie</string>
+    <string name="rn_tab_description" gender="unknown">Zakładka</string>
+    <string name="summary_description" gender="unknown">Podsumowanie</string>
+    <string name="state_on_description" gender="unknown">na</string>
+    <string name="state_off_description" gender="unknown">wyłącz</string>
 </resources>

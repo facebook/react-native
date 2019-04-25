@@ -4,4 +4,11 @@
 <!-- FB Locale: th_TH -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">ลิงก์</string>
+    <string name="search_description" gender="unknown">ช่องค้นหา</string>
+    <string name="image_description" gender="unknown">ภาพ</string>
+    <string name="imagebutton_description" gender="unknown">ปุ่ม, รูปภาพ</string>
+    <string name="alert_description" gender="unknown">การเตือน</string>
+    <string name="menu_description" gender="unknown">เมนู</string>
+    <string name="summary_description" gender="unknown">สรุป</string>
 </resources>

@@ -4,4 +4,11 @@
 <!-- FB Locale: ar_AR -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">رابط</string>
+    <string name="search_description" gender="unknown">حقل البحث</string>
+    <string name="image_description" gender="unknown">الصورة</string>
+    <string name="imagebutton_description" gender="unknown">زر، صورة</string>
+    <string name="alert_description" gender="unknown">تنبيه</string>
+    <string name="menu_description" gender="unknown">القائمة</string>
+    <string name="summary_description" gender="unknown">ملخص</string>
 </resources>

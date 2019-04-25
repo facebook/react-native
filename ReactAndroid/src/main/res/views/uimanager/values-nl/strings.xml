@@ -4,4 +4,11 @@
 <!-- FB Locale: nl_NL -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="search_description" gender="unknown">Zoekveld</string>
+    <string name="image_description" gender="unknown">Afbeelding</string>
+    <string name="imagebutton_description" gender="unknown">Knop, afbeelding</string>
+    <string name="alert_description" gender="unknown">Let op</string>
+    <string name="summary_description" gender="unknown">Samenvatting</string>
+    <string name="state_on_description" gender="unknown">aan</string>
+    <string name="state_off_description" gender="unknown">uit</string>
 </resources>

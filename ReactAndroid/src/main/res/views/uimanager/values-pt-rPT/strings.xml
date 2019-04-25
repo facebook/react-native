@@ -4,4 +4,12 @@
 <!-- FB Locale: pt_PT -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">Ligação</string>
+    <string name="search_description" gender="unknown">Campo de pesquisa</string>
+    <string name="image_description" gender="unknown">Imagem</string>
+    <string name="imagebutton_description" gender="unknown">Botão, Imagem</string>
+    <string name="alert_description" gender="unknown">Alerta</string>
+    <string name="summary_description" gender="unknown">Resumo</string>
+    <string name="state_on_description" gender="unknown">ligar</string>
+    <string name="state_off_description" gender="unknown">desligar</string>
 </resources>

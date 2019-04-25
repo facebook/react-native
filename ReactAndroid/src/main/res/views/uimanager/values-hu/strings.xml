@@ -4,4 +4,11 @@
 <!-- FB Locale: hu_HU -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">Hivatkozás</string>
+    <string name="search_description" gender="unknown">Keresés mező</string>
+    <string name="image_description" gender="unknown">Kép</string>
+    <string name="imagebutton_description" gender="unknown">Gomb, kép</string>
+    <string name="menu_description" gender="unknown">Menü</string>
+    <string name="summary_description" gender="unknown">Összegzés</string>
+    <string name="state_on_description" gender="unknown">ekkor:</string>
 </resources>

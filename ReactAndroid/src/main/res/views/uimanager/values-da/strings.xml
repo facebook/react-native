@@ -4,4 +4,11 @@
 <!-- FB Locale: da_DK -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">Link:</string>
+    <string name="search_description" gender="unknown">Søgefelt</string>
+    <string name="image_description" gender="unknown">Billede</string>
+    <string name="imagebutton_description" gender="unknown">Knap, billede</string>
+    <string name="alert_description" gender="unknown">Underretning</string>
+    <string name="rn_tab_description" gender="unknown">Fane</string>
+    <string name="summary_description" gender="unknown">Oversigt</string>
 </resources>

@@ -4,4 +4,9 @@
 <!-- FB Locale: pt_BR -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="search_description" gender="unknown">Campo de pesquisa</string>
+    <string name="image_description" gender="unknown">Imagem</string>
+    <string name="imagebutton_description" gender="unknown">Botão, imagem</string>
+    <string name="alert_description" gender="unknown">Alerta</string>
+    <string name="summary_description" gender="unknown">Resumo</string>
 </resources>

@@ -4,4 +4,10 @@
 <!-- FB Locale: it_IT -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="search_description" gender="unknown">Cerca campo</string>
+    <string name="image_description" gender="unknown">Immagine</string>
+    <string name="imagebutton_description" gender="unknown">Pulsante, Immagine</string>
+    <string name="alert_description" gender="unknown">Avviso</string>
+    <string name="rn_tab_description" gender="unknown">Scheda</string>
+    <string name="summary_description" gender="unknown">Quadro riassuntivo</string>
 </resources>

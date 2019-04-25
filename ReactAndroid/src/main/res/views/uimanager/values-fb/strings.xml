@@ -4,4 +4,14 @@
 <!-- FB Locale: fb_HA -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">[Link#845c8481cf570a4ce5015932ad87505f:1]</string>
+    <string name="search_description" gender="unknown">[Search Field#fb585af9d94a0c6c59baf2ec07c9d348:1]</string>
+    <string name="image_description" gender="unknown">[Image#afe6960520a4a5ead0600e50378e09ce:1]</string>
+    <string name="imagebutton_description" gender="unknown">[Button, Image#28d22a0af54ed9b40cc59bf211bc43c3:1]</string>
+    <string name="alert_description" gender="unknown">[Alert#3cfd521c17fd98b683ac96939af4db5a:1]</string>
+    <string name="menu_description" gender="unknown">[Menu#2b964cb1b3f45cb650b8a21d06a6f764:1]</string>
+    <string name="rn_tab_description" gender="unknown">[Tab#955113fd943d09bf8904035dcdc5b137:1]</string>
+    <string name="summary_description" gender="unknown">[Summary#dd0b4924e9b476850854db94398c5044:1]</string>
+    <string name="state_on_description" gender="unknown">[on#21b29a68677c8d3c64e6d3e2e0e8f15d:1]</string>
+    <string name="state_off_description" gender="unknown">[off#ba02a0c1e982d992f202f0dfc0882895:1]</string>
 </resources>

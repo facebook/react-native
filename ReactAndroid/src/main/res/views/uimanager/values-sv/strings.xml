@@ -4,4 +4,14 @@
 <!-- FB Locale: sv_SE -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">Länk</string>
+    <string name="search_description" gender="unknown">Sökfält</string>
+    <string name="image_description" gender="unknown">Bild</string>
+    <string name="imagebutton_description" gender="unknown">Knapp, bild</string>
+    <string name="alert_description" gender="unknown">Påminnelse</string>
+    <string name="menu_description" gender="unknown">Meny</string>
+    <string name="rn_tab_description" gender="unknown">Flik</string>
+    <string name="summary_description" gender="unknown">Sammanfattning</string>
+    <string name="state_on_description" gender="unknown">den</string>
+    <string name="state_off_description" gender="unknown">av</string>
 </resources>
