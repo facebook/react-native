@@ -15,7 +15,7 @@ const path = require('path');
 const version = process.argv[2];
 
 if (!version) {
-  console.error('You need to provide react-native version');
+  console.error('Please provide a react-native version.');
   process.exit(1);
 }
 
