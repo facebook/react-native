@@ -22,7 +22,32 @@ export type AccessibilityRole =
   | 'adjustable'
   | 'imagebutton'
   | 'header'
-  | 'summary';
+  | 'summary'
+  | 'alert'
+  | 'checkbox'
+  | 'combobox'
+  | 'menu'
+  | 'menubar'
+  | 'menuitem'
+  | 'progressbar'
+  | 'radio'
+  | 'radiogroup'
+  | 'scrollbar'
+  | 'spinbutton'
+  | 'switch'
+  | 'tab'
+  | 'tablist'
+  | 'timer'
+  | 'toolbar';
 
 // This must be kept in sync with the AccessibilityStatesMask in RCTViewManager.m
-export type AccessibilityStates = $ReadOnlyArray<'disabled' | 'selected'>;
+export type AccessibilityStates = $ReadOnlyArray<
+  | 'disabled'
+  | 'selected'
+  | 'checked'
+  | 'unchecked'
+  | 'busy'
+  | 'expanded'
+  | 'collapsed'
+  | 'hasPopup',
+>;
