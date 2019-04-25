@@ -14,4 +14,6 @@ const ScrollView = require('ScrollView');
 
 const createAnimatedComponent = require('createAnimatedComponent');
 
-module.exports = createAnimatedComponent(ScrollView);
+module.exports = createAnimatedComponent(ScrollView, {
+  scrollEventThrottle: 0.0001,
+});
