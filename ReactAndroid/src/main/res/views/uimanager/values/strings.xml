@@ -2,19 +2,19 @@
 <resources>
   <string
     name="link_description"
-    translatable="true"
+    translatable="false"
     >Link</string>
   <string
     name="search_description"
-    translatable="true"
+    translatable="false"
     >Search Field</string>
   <string
     name="image_description"
-    translatable="true"
+    translatable="false"
     >Image</string>
   <string
     name="imagebutton_description"
-    translatable="true"
+    translatable="false"
     >Button, Image</string>
   <string
     name="header_description"
@@ -22,78 +22,78 @@
     >Heading</string>
   <string
     name="alert_description"
-    translatable="true"
+    translatable="false"
     >Alert</string>
   <string
     name="combobox_description"
-    translatable="true"
+    translatable="false"
     >Combo Box</string>
   <string
     name="menu_description"
-    translatable="true"
+    translatable="false"
     >Menu</string>
   <string
     name="menubar_description"
-    translatable="true"
+    translatable="false"
     >Menu Bar</string>
   <string
     name="menuitem_description"
-    translatable="true"
+    translatable="false"
     >Menu Item</string>
   <string
     name="progressbar_description"
-    translatable="true"
+    translatable="false"
     >Progress Bar</string>
   <string
     name="radiogroup_description"
-    translatable="true"
+    translatable="false"
     >Radio Group</string>
   <string
     name="scrollbar_description"
-    translatable="true"
+    translatable="false"
     >Scroll Bar</string>
   <string
     name="spinbutton_description"
-    translatable="true"
+    translatable="false"
     >Spin Button</string>
   <string
     name="rn_tab_description"
-    translatable="true"
+    translatable="false"
     >Tab</string>
   <string
     name="tablist_description"
-    translatable="true"
+    translatable="false"
     >Tab List</string>
   <string
     name="timer_description"
-    translatable="true"
+    translatable="false"
     >Timer</string>
   <string
     name="toolbar_description"
-    translatable="true"
+    translatable="false"
     >Tool Bar</string>
   <string
     name="summary_description"
-    translatable="true"
+    translatable="false"
     >Summary</string>
   <string
     name="state_busy_description"
-    translatable="true"
+    translatable="false"
     >busy</string>
   <string
     name="state_expanded_description"
-    translatable="true"
+    translatable="false"
     >expanded</string>
   <string
     name="state_collapsed_description"
-    translatable="true"
+    translatable="false"
     >collapsed</string>
   <string
     name="state_on_description"
-    translatable="true"
+    translatable="false"
     >on</string>
   <string
     name="state_off_description"
-    translatable="true"
+    translatable="false"
     >off</string>
 </resources>
