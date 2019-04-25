@@ -161,7 +161,7 @@ local_ref<JString> getPlatformComponentName(const ShadowView& shadowView) {
       std::dynamic_pointer_cast<const ScrollViewProps>(shadowView.props);
 
   if (newViewProps &&
-      newViewProps->yogaStyle.flexDirection == YGFlexDirectionRow) {
+      newViewProps->yogaStyle.flexDirection() == YGFlexDirectionRow) {
     componentName = make_jstring("AndroidHorizontalScrollView");
   } else {
     componentName = make_jstring(shadowView.componentName);
@@ -329,11 +329,12 @@ local_ref<JMountItem::javaobject> createDeleteMountItem(
 }
 
 void Binding::schedulerDidFinishTransaction(
-    const Tag rootTag,
-    const ShadowViewMutationList& mutations,
-    const long commitStartTime,
-    const long layoutTime) {
+    MountingTransaction &&mountingTransaction) {
   SystraceSection s("FabricUIManager::schedulerDidFinishTransaction");
+
+  auto telemetry = mountingTransaction.getTelemetry();
+  auto mutations = mountingTransaction.getMutations();
+
   std::vector<local_ref<jobject>> queue;
   // Upper bound estimation of mount items to be delivered to Java side.
   int size = mutations.size() * 3 + 42;
@@ -466,8 +467,8 @@ void Binding::schedulerDidFinishTransaction(
   scheduleMountItems(
       javaUIManager_,
       batch.get(),
-      commitStartTime,
-      layoutTime,
+      telemetry.commitStartTime,
+      telemetry.layoutTime,
       finishTransactionStartTime,
       finishTransactionEndTime);
 }

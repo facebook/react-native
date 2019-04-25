@@ -132,85 +132,92 @@ void YGNodeToString(
 
   if (options & YGPrintOptionsStyle) {
     appendFormatedString(str, "style=\"");
-    if (node->getStyle().flexDirection != YGNode().getStyle().flexDirection) {
+    if (node->getStyle().flexDirection() !=
+        YGNode().getStyle().flexDirection()) {
       appendFormatedString(
           str,
           "flex-direction: %s; ",
-          YGFlexDirectionToString(node->getStyle().flexDirection));
+          YGFlexDirectionToString(node->getStyle().flexDirection()));
     }
-    if (node->getStyle().justifyContent != YGNode().getStyle().justifyContent) {
+    if (node->getStyle().justifyContent() !=
+        YGNode().getStyle().justifyContent()) {
       appendFormatedString(
           str,
           "justify-content: %s; ",
-          YGJustifyToString(node->getStyle().justifyContent));
+          YGJustifyToString(node->getStyle().justifyContent()));
     }
-    if (node->getStyle().alignItems != YGNode().getStyle().alignItems) {
+    if (node->getStyle().alignItems() != YGNode().getStyle().alignItems()) {
       appendFormatedString(
           str,
           "align-items: %s; ",
-          YGAlignToString(node->getStyle().alignItems));
+          YGAlignToString(node->getStyle().alignItems()));
     }
-    if (node->getStyle().alignContent != YGNode().getStyle().alignContent) {
+    if (node->getStyle().alignContent() != YGNode().getStyle().alignContent()) {
       appendFormatedString(
           str,
           "align-content: %s; ",
-          YGAlignToString(node->getStyle().alignContent));
+          YGAlignToString(node->getStyle().alignContent()));
     }
-    if (node->getStyle().alignSelf != YGNode().getStyle().alignSelf) {
+    if (node->getStyle().alignSelf() != YGNode().getStyle().alignSelf()) {
       appendFormatedString(
-          str, "align-self: %s; ", YGAlignToString(node->getStyle().alignSelf));
+          str,
+          "align-self: %s; ",
+          YGAlignToString(node->getStyle().alignSelf()));
     }
-    appendFloatOptionalIfDefined(str, "flex-grow", node->getStyle().flexGrow);
+    appendFloatOptionalIfDefined(str, "flex-grow", node->getStyle().flexGrow());
     appendFloatOptionalIfDefined(
-        str, "flex-shrink", node->getStyle().flexShrink);
-    appendNumberIfNotAuto(str, "flex-basis", node->getStyle().flexBasis);
-    appendFloatOptionalIfDefined(str, "flex", node->getStyle().flex);
+        str, "flex-shrink", node->getStyle().flexShrink());
+    appendNumberIfNotAuto(str, "flex-basis", node->getStyle().flexBasis());
+    appendFloatOptionalIfDefined(str, "flex", node->getStyle().flex());
 
-    if (node->getStyle().flexWrap != YGNode().getStyle().flexWrap) {
+    if (node->getStyle().flexWrap() != YGNode().getStyle().flexWrap()) {
       appendFormatedString(
-          str, "flex-wrap: %s; ", YGWrapToString(node->getStyle().flexWrap));
+          str, "flex-wrap: %s; ", YGWrapToString(node->getStyle().flexWrap()));
     }
 
-    if (node->getStyle().overflow != YGNode().getStyle().overflow) {
+    if (node->getStyle().overflow() != YGNode().getStyle().overflow()) {
       appendFormatedString(
-          str, "overflow: %s; ", YGOverflowToString(node->getStyle().overflow));
+          str,
+          "overflow: %s; ",
+          YGOverflowToString(node->getStyle().overflow()));
     }
 
-    if (node->getStyle().display != YGNode().getStyle().display) {
+    if (node->getStyle().display() != YGNode().getStyle().display()) {
       appendFormatedString(
-          str, "display: %s; ", YGDisplayToString(node->getStyle().display));
+          str, "display: %s; ", YGDisplayToString(node->getStyle().display()));
     }
-    appendEdges(str, "margin", node->getStyle().margin);
-    appendEdges(str, "padding", node->getStyle().padding);
-    appendEdges(str, "border", node->getStyle().border);
+    appendEdges(str, "margin", node->getStyle().margin());
+    appendEdges(str, "padding", node->getStyle().padding());
+    appendEdges(str, "border", node->getStyle().border());
 
     appendNumberIfNotAuto(
-        str, "width", node->getStyle().dimensions[YGDimensionWidth]);
+        str, "width", node->getStyle().dimensions()[YGDimensionWidth]);
     appendNumberIfNotAuto(
-        str, "height", node->getStyle().dimensions[YGDimensionHeight]);
+        str, "height", node->getStyle().dimensions()[YGDimensionHeight]);
     appendNumberIfNotAuto(
-        str, "max-width", node->getStyle().maxDimensions[YGDimensionWidth]);
+        str, "max-width", node->getStyle().maxDimensions()[YGDimensionWidth]);
     appendNumberIfNotAuto(
-        str, "max-height", node->getStyle().maxDimensions[YGDimensionHeight]);
+        str, "max-height", node->getStyle().maxDimensions()[YGDimensionHeight]);
     appendNumberIfNotAuto(
-        str, "min-width", node->getStyle().minDimensions[YGDimensionWidth]);
+        str, "min-width", node->getStyle().minDimensions()[YGDimensionWidth]);
     appendNumberIfNotAuto(
-        str, "min-height", node->getStyle().minDimensions[YGDimensionHeight]);
+        str, "min-height", node->getStyle().minDimensions()[YGDimensionHeight]);
 
-    if (node->getStyle().positionType != YGNode().getStyle().positionType) {
+    if (node->getStyle().positionType() != YGNode().getStyle().positionType()) {
       appendFormatedString(
           str,
           "position: %s; ",
-          YGPositionTypeToString(node->getStyle().positionType));
+          YGPositionTypeToString(node->getStyle().positionType()));
     }
 
     appendEdgeIfNotUndefined(
-        str, "left", node->getStyle().position, YGEdgeLeft);
+        str, "left", node->getStyle().position(), YGEdgeLeft);
     appendEdgeIfNotUndefined(
-        str, "right", node->getStyle().position, YGEdgeRight);
-    appendEdgeIfNotUndefined(str, "top", node->getStyle().position, YGEdgeTop);
+        str, "right", node->getStyle().position(), YGEdgeRight);
     appendEdgeIfNotUndefined(
-        str, "bottom", node->getStyle().position, YGEdgeBottom);
+        str, "top", node->getStyle().position(), YGEdgeTop);
+    appendEdgeIfNotUndefined(
+        str, "bottom", node->getStyle().position(), YGEdgeBottom);
     appendFormatedString(str, "\" ");
 
     if (node->hasMeasureFunc()) {

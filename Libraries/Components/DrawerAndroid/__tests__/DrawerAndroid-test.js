@@ -12,26 +12,31 @@
 'use strict';
 
 const React = require('React');
+// $FlowFixMe
 const DrawerLayoutAndroid = require('../DrawerLayoutAndroid.android');
 const View = require('View');
 
 const render = require('../../../../jest/renderer');
 
-jest.mock('UIManager', () => ({
-  getViewManagerConfig: jest.fn(() => ({Constants: {}})),
-}));
-
 describe('<DrawerLayoutAndroid />', () => {
   it('should render as <DrawerLayoutAndroid> when mocked', () => {
     const instance = render.create(
-      <DrawerLayoutAndroid renderNavigationView={() => <View />} />,
+      <DrawerLayoutAndroid
+        drawerWidth={300}
+        drawerPosition={DrawerLayoutAndroid.positions.Left}
+        renderNavigationView={() => <View />}
+      />,
     );
     expect(instance).toMatchSnapshot();
   });
 
   it('should shallow render as <DrawerLayoutAndroid> when mocked', () => {
     const output = render.shallow(
-      <DrawerLayoutAndroid renderNavigationView={() => <View />} />,
+      <DrawerLayoutAndroid
+        drawerWidth={300}
+        drawerPosition={DrawerLayoutAndroid.positions.Left}
+        renderNavigationView={() => <View />}
+      />,
     );
     expect(output).toMatchSnapshot();
   });
@@ -40,7 +45,11 @@ describe('<DrawerLayoutAndroid />', () => {
     jest.dontMock('DrawerLayoutAndroid');
 
     const output = render.shallow(
-      <DrawerLayoutAndroid renderNavigationView={() => <View />} />,
+      <DrawerLayoutAndroid
+        drawerWidth={300}
+        drawerPosition={DrawerLayoutAndroid.positions.Left}
+        renderNavigationView={() => <View />}
+      />,
     );
     expect(output).toMatchSnapshot();
   });
@@ -49,7 +58,11 @@ describe('<DrawerLayoutAndroid />', () => {
     jest.dontMock('DrawerLayoutAndroid');
 
     const instance = render.create(
-      <DrawerLayoutAndroid renderNavigationView={() => <View />} />,
+      <DrawerLayoutAndroid
+        drawerWidth={300}
+        drawerPosition={DrawerLayoutAndroid.positions.Left}
+        renderNavigationView={() => <View />}
+      />,
     );
     expect(instance).toMatchSnapshot();
   });
