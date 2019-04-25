@@ -4,4 +4,11 @@
 <!-- FB Locale: fr_CA -->
 
 <resources exclude-from-buck-resource-map="true">
+    <string name="link_description" gender="unknown">Lien</string>
+    <string name="search_description" gender="unknown">Champ de recherche</string>
+    <string name="imagebutton_description" gender="unknown">Bouton, image</string>
+    <string name="alert_description" gender="unknown">Alerte</string>
+    <string name="rn_tab_description" gender="unknown">Onglet</string>
+    <string name="summary_description" gender="unknown">Résumé</string>
+    <string name="state_on_description" gender="unknown">activés</string>
 </resources>
