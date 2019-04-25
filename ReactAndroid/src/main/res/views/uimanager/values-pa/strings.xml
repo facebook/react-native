@@ -8,6 +8,19 @@
     <string name="search_description" gender="unknown">ਖੇਤਰ ਲਈ ਖੋਜ ਕਰੋ</string>
     <string name="image_description" gender="unknown">ਤਸਵੀਰ</string>
     <string name="imagebutton_description" gender="unknown">ਬਟਨ, ਚਿੱਤਰ</string>
+    <string name="combobox_description" gender="unknown">Combo Box</string>
     <string name="menu_description" gender="unknown">ਮੀਨੂ</string>
+    <string name="menubar_description" gender="unknown">Menu Bar</string>
+    <string name="menuitem_description" gender="unknown">Menu Item</string>
+    <string name="progressbar_description" gender="unknown">Progress Bar</string>
+    <string name="radiogroup_description" gender="unknown">Radio Group</string>
+    <string name="scrollbar_description" gender="unknown">Scroll Bar</string>
+    <string name="spinbutton_description" gender="unknown">Spin Button</string>
+    <string name="tablist_description" gender="unknown">Tab List</string>
+    <string name="timer_description" gender="unknown">Timer</string>
+    <string name="toolbar_description" gender="unknown">Tool Bar</string>
     <string name="summary_description" gender="unknown">ਸਾਰ</string>
+    <string name="state_busy_description" gender="unknown">busy</string>
+    <string name="state_expanded_description" gender="unknown">expanded</string>
+    <string name="state_collapsed_description" gender="unknown">collapsed</string>
 </resources>
