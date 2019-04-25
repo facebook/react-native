@@ -32,10 +32,19 @@
 // If FOLLY_F14_VECTOR_INTRINSICS_AVAILABLE differs across compilation
 // units the program will fail to link due to a missing definition of
 // folly::container::detail::F14LinkCheck<X>::check() for some X.
+#if WINAPI_FAMILY == WINAPI_FAMILY_APP || defined(_WIN32)
+#define FOLLY_F14_VECTOR_INTRINSICS_AVAILABLE 0
+#else
+#if (WINAPI_FAMILY == WINAPI_FAMILY_APP)
+#error WINAPI_FAMILY is WINAPI_FAMILY_APP
+#else
+#error FOLLY_F14_VECTOR_INTRINSICS_AVAILABLE should be false ##WINAPI_FAMILY
+#endif
 #if (FOLLY_SSE >= 2 || (FOLLY_NEON && FOLLY_AARCH64)) && !FOLLY_MOBILE
 #define FOLLY_F14_VECTOR_INTRINSICS_AVAILABLE 1
 #else
 #define FOLLY_F14_VECTOR_INTRINSICS_AVAILABLE 0
+#endif
 #endif
 
 #if FOLLY_SSE_PREREQ(4, 2) || __ARM_FEATURE_CRC32

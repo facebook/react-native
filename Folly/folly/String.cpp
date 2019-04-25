@@ -81,11 +81,11 @@ struct string_table_c_unescape_make_item {
 struct string_table_hex_make_item {
   constexpr unsigned char operator()(std::size_t index) const {
     // clang-format off
-    return
+    return (char) (
         index >= '0' && index <= '9' ? index - '0' :
         index >= 'a' && index <= 'f' ? index - 'a' + 10 :
         index >= 'A' && index <= 'F' ? index - 'A' + 10 :
-        16;
+        16);
     // clang-format on
   }
 };
@@ -98,7 +98,7 @@ struct string_table_uri_escape_make_item {
   //  4 = always percent-encode
   constexpr unsigned char operator()(std::size_t index) const {
     // clang-format off
-    return
+    return (char) (
         index >= '0' && index <= '9' ? 0 :
         index >= 'A' && index <= 'Z' ? 0 :
         index >= 'a' && index <= 'z' ? 0 :
@@ -108,7 +108,7 @@ struct string_table_uri_escape_make_item {
         index == '~' ? 0 :
         index == '/' ? 2 :
         index == ' ' ? 3 :
-        4;
+        4);
     // clang-format on
   }
 };
