@@ -27,7 +27,7 @@ const pluginRoots /*: Array<string> */ = haste.providesModuleNodeModules.map(
 );
 
 const pluginNameReducers /*: Array<[RegExp, string]> */ = haste.platforms.map(
-  name => [new RegExp(`^(.*)\.(${name})$`), '$1'],
+  name => [new RegExp(`^(.*)\\.(${name})$`), '$1'],
 );
 
 const ROOTS = [path.resolve(__dirname, '..') + path.sep, ...pluginRoots];
