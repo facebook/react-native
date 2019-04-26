@@ -12,11 +12,15 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.content.Context;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.util.SparseArray;
+
+import androidx.core.content.res.ResourcesCompat;
+
 
 /**
  * Class responsible to load and cache Typeface objects. It will first try to load typefaces inside
@@ -44,6 +48,7 @@ public class ReactFontManager {
 
   private ReactFontManager() {
     mFontCache = new HashMap<>();
+    mTypeCache = new HashMap<>();
   }
 
   public static ReactFontManager getInstance() {
@@ -53,8 +58,7 @@ public class ReactFontManager {
     return sReactFontManagerInstance;
   }
 
-  public
-  @Nullable Typeface getTypeface(
+  private @Nullable Typeface getTypeface(
       String fontFamilyName,
       int style,
       AssetManager assetManager) {
