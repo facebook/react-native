@@ -21,7 +21,6 @@ const nullthrows = require('nullthrows');
 
 const DrawerConsts = UIManager.getViewManagerConfig('AndroidDrawerLayout')
   .Constants;
-
 const dismissKeyboard = require('dismissKeyboard');
 const AndroidDrawerLayoutNativeComponent = require('AndroidDrawerLayoutNativeComponent');
 

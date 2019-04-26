@@ -129,7 +129,8 @@ jsi::Value JavaTurboModule::get(jsi::Runtime& runtime, const jsi::PropNameID& pr
       0,
       [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) {
         JNIEnv *env = jni::Environment::current();
-        jclass cls = env->FindClass(jClassName_.c_str());
+        auto instance = instance_.get();
+        jclass cls = env->GetObjectClass(instance);
         static jmethodID methodID = env->GetMethodID(cls, "getConstants", "()Ljava/util/Map;");
         auto constantsMap = (jobject) env->CallObjectMethod(instance_.get(), methodID);
         if (constantsMap == nullptr) {
@@ -170,15 +171,15 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
   // We are using JNI directly instead of fbjni since we don't want template functiosn
   // when finding methods.
   JNIEnv *env = jni::Environment::current();
-  // TODO (axe) Memoize this class, so that we don't have to find it for every calls
-  jclass cls = env->FindClass(jClassName_.c_str());
+  auto instance = instance_.get();
+
+  jclass cls = env->GetObjectClass(instance);
 
   // TODO (axe) Memoize method call, so we don't look it up each time the method is called
   jmethodID methodID = env->GetMethodID(cls, methodName.c_str(), methodSignature.c_str());
 
   std::vector<jvalue> jargs =
       convertJSIArgsToJNIArgs(env, runtime, args, count, jsInvoker_, valueKind);
-  auto instance = instance_.get();
 
   switch (valueKind) {
     case VoidKind: {
@@ -290,7 +291,9 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
       return promise;
     }
     default:
-      throw std::runtime_error("Unable to find method module: " + methodName + "(" + methodSignature + ")" + "in module " + jClassName_);
+      throw std::runtime_error(
+          "Unable to find method module: " + methodName + "(" +
+          methodSignature + ")");
   }
 }
 

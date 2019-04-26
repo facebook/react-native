@@ -9,6 +9,7 @@
 
 #include <react/core/ReactPrimitives.h>
 #include <react/core/ShadowNode.h>
+#include <react/mounting/MountingTransaction.h>
 #include <react/mounting/ShadowViewMutation.h>
 
 namespace facebook {
@@ -25,10 +26,7 @@ class SchedulerDelegate {
    * to construct a new one.
    */
   virtual void schedulerDidFinishTransaction(
-      Tag rootTag,
-      ShadowViewMutationList const &mutations,
-      const long commitStartTime,
-      const long layoutTime) = 0;
+      MountingTransaction &&mountingTransaction) = 0;
 
   /*
    * Called right after a new ShadowNode was created.

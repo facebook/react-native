@@ -23,6 +23,7 @@ namespace react {
 struct ShadowView final {
   ShadowView() = default;
   ShadowView(const ShadowView &shadowView) = default;
+  ShadowView(ShadowView &&shadowView) noexcept = default;
 
   ~ShadowView(){};
 
@@ -32,6 +33,7 @@ struct ShadowView final {
   explicit ShadowView(const ShadowNode &shadowNode);
 
   ShadowView &operator=(const ShadowView &other) = default;
+  ShadowView &operator=(ShadowView &&other) = default;
 
   bool operator==(const ShadowView &rhs) const;
   bool operator!=(const ShadowView &rhs) const;

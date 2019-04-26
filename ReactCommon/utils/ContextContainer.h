@@ -22,7 +22,7 @@ namespace react {
  */
 class ContextContainer final {
  public:
-  using Shared = std::shared_ptr<const ContextContainer>;
+  using Shared = std::shared_ptr<ContextContainer const>;
 
   /*
    * Registers an instance of the particular type `T` in the container
@@ -42,6 +42,10 @@ class ContextContainer final {
         instances_.find(key) == instances_.end() &&
         "ContextContainer already had instance for given key.");
     instances_.insert({key, std::make_shared<T>(instance)});
+
+#ifndef NDEBUG
+    typeHashes_.insert({key, typeid(T).hash_code()});
+#endif
   }
 
   /*
@@ -55,6 +59,9 @@ class ContextContainer final {
     assert(
         instances_.find(key) != instances_.end() &&
         "ContextContainer doesn't have an instance for given key.");
+    assert(
+        typeHashes_.at(key) == typeid(T).hash_code() &&
+        "ContextContainer stores an instance of different type for given key.");
     return *std::static_pointer_cast<T>(instances_.at(key));
   }
 
@@ -62,6 +69,9 @@ class ContextContainer final {
   mutable better::shared_mutex mutex_;
   // Protected by mutex_`.
   mutable better::map<std::string, std::shared_ptr<void>> instances_;
+#ifndef NDEBUG
+  mutable better::map<std::string, size_t> typeHashes_;
+#endif
 };
 
 } // namespace react

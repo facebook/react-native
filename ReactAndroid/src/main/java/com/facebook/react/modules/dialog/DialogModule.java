@@ -13,6 +13,8 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -26,6 +28,8 @@ import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.module.annotations.ReactModule;
 import java.util.Map;
+
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @ReactModule(name = DialogModule.NAME)
@@ -60,35 +64,17 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
   }
 
   @Override
-  public String getName() {
+  public @Nonnull String getName() {
     return NAME;
   }
 
-  /**
-   * Helper to allow this module to work with both the standard FragmentManager
-   * and the Support FragmentManager (for apps that need to use it for legacy reasons).
-   * Since the two APIs don't share a common interface there's unfortunately some
-   * code duplication.
-   */
   private class FragmentManagerHelper {
-
-    // Exactly one of the two is null
-    private final @Nullable android.app.FragmentManager mFragmentManager;
-    private final @Nullable androidx.fragment.app.FragmentManager mSupportFragmentManager;
+    private final @Nonnull FragmentManager mFragmentManager;
 
     private @Nullable Object mFragmentToShow;
 
-    private boolean isUsingSupportLibrary() {
-      return mSupportFragmentManager != null;
-    }
-
-    public FragmentManagerHelper(androidx.fragment.app.FragmentManager supportFragmentManager) {
-      mFragmentManager = null;
-      mSupportFragmentManager = supportFragmentManager;
-    }
-    public FragmentManagerHelper(android.app.FragmentManager fragmentManager) {
+    public FragmentManagerHelper(@Nonnull FragmentManager fragmentManager) {
       mFragmentManager = fragmentManager;
-      mSupportFragmentManager = null;
     }
 
     public void showPendingAlert() {
@@ -99,11 +85,7 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
       }
 
       dismissExisting();
-      if (isUsingSupportLibrary()) {
-        ((SupportAlertFragment) mFragmentToShow).show(mSupportFragmentManager, FRAGMENT_TAG);
-      } else {
-        ((AlertFragment) mFragmentToShow).show(mFragmentManager, FRAGMENT_TAG);
-      }
+      ((AlertFragment) mFragmentToShow).show(mFragmentManager, FRAGMENT_TAG);
       mFragmentToShow = null;
     }
 
@@ -111,18 +93,10 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
       if (!mIsInForeground) {
         return;
       }
-      if (isUsingSupportLibrary()) {
-        SupportAlertFragment oldFragment =
-            (SupportAlertFragment) mSupportFragmentManager.findFragmentByTag(FRAGMENT_TAG);
-        if (oldFragment != null && oldFragment.isResumed()) {
-          oldFragment.dismiss();
-        }
-      } else {
-        AlertFragment oldFragment =
-            (AlertFragment) mFragmentManager.findFragmentByTag(FRAGMENT_TAG);
-        if (oldFragment != null && oldFragment.isResumed()) {
-          oldFragment.dismiss();
-        }
+      AlertFragment oldFragment =
+        (AlertFragment) mFragmentManager.findFragmentByTag(FRAGMENT_TAG);
+      if (oldFragment != null && oldFragment.isResumed()) {
+        oldFragment.dismiss();
       }
     }
 
@@ -134,26 +108,14 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
       AlertFragmentListener actionListener =
           actionCallback != null ? new AlertFragmentListener(actionCallback) : null;
 
-      if (isUsingSupportLibrary()) {
-        SupportAlertFragment alertFragment = new SupportAlertFragment(actionListener, arguments);
-        if (mIsInForeground && !mSupportFragmentManager.isStateSaved()) {
-          if (arguments.containsKey(KEY_CANCELABLE)) {
-            alertFragment.setCancelable(arguments.getBoolean(KEY_CANCELABLE));
-          }
-          alertFragment.show(mSupportFragmentManager, FRAGMENT_TAG);
-        } else {
-          mFragmentToShow = alertFragment;
+      AlertFragment alertFragment = new AlertFragment(actionListener, arguments);
+      if (mIsInForeground && !mFragmentManager.isStateSaved()) {
+        if (arguments.containsKey(KEY_CANCELABLE)) {
+          alertFragment.setCancelable(arguments.getBoolean(KEY_CANCELABLE));
         }
+        alertFragment.show(mFragmentManager, FRAGMENT_TAG);
       } else {
-        AlertFragment alertFragment = new AlertFragment(actionListener, arguments);
-        if (mIsInForeground) {
-          if (arguments.containsKey(KEY_CANCELABLE)) {
-            alertFragment.setCancelable(arguments.getBoolean(KEY_CANCELABLE));
-          }
-          alertFragment.show(mFragmentManager, FRAGMENT_TAG);
-        } else {
-          mFragmentToShow = alertFragment;
-        }
+        mFragmentToShow = alertFragment;
       }
     }
   }
@@ -269,8 +231,8 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
   }
 
   /**
-   * Creates a new helper to work with either the FragmentManager or the legacy support
-   * FragmentManager transparently. Returns null if we're not attached to an Activity.
+   * Creates a new helper to work with FragmentManager.
+   * Returns null if we're not attached to an Activity.
    *
    * DO NOT HOLD LONG-LIVED REFERENCES TO THE OBJECT RETURNED BY THIS METHOD, AS THIS WILL CAUSE
    * MEMORY LEAKS.
@@ -280,10 +242,6 @@ public class DialogModule extends ReactContextBaseJavaModule implements Lifecycl
     if (activity == null) {
       return null;
     }
-    if (activity instanceof FragmentActivity) {
-      return new FragmentManagerHelper(((FragmentActivity) activity).getSupportFragmentManager());
-    } else {
-      return new FragmentManagerHelper(activity.getFragmentManager());
-    }
+    return new FragmentManagerHelper(((FragmentActivity) activity).getSupportFragmentManager());
   }
 }

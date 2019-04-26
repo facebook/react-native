@@ -46,6 +46,22 @@ RCT_MULTI_ENUM_CONVERTER(UIAccessibilityTraits, (@{
   @"adjustable": @(UIAccessibilityTraitAdjustable),
   @"allowsDirectInteraction": @(UIAccessibilityTraitAllowsDirectInteraction),
   @"pageTurn": @(UIAccessibilityTraitCausesPageTurn),
+  @"alert": @(UIAccessibilityTraitNone),
+  @"checkbox": @(UIAccessibilityTraitNone),
+  @"combobox": @(UIAccessibilityTraitNone),
+  @"menu": @(UIAccessibilityTraitNone),
+  @"menubar": @(UIAccessibilityTraitNone),
+  @"menuitem": @(UIAccessibilityTraitNone),
+  @"progressbar": @(UIAccessibilityTraitNone),
+  @"radio": @(UIAccessibilityTraitNone),
+  @"radiogroup": @(UIAccessibilityTraitNone),
+  @"scrollbar": @(UIAccessibilityTraitNone),
+  @"spinbutton": @(UIAccessibilityTraitNone),
+  @"switch": @(SwitchAccessibilityTrait),
+  @"tab": @(UIAccessibilityTraitNone),
+  @"tablist": @(UIAccessibilityTraitNone),
+  @"timer": @(UIAccessibilityTraitNone),
+  @"toolbar": @(UIAccessibilityTraitNone),
 }), UIAccessibilityTraitNone, unsignedLongLongValue)
 
 @end
@@ -150,12 +166,44 @@ RCT_CUSTOM_VIEW_PROPERTY(transform, CATransform3D, RCTView)
 
 RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
 {
-  // This mask must be kept in sync with the AccessibilityRoles enum defined in ViewAccessibility.js and DeprecatedViewAccessibility.js
-  const UIAccessibilityTraits AccessibilityRolesMask = UIAccessibilityTraitNone | UIAccessibilityTraitButton | UIAccessibilityTraitLink | UIAccessibilityTraitSearchField | UIAccessibilityTraitImage | UIAccessibilityTraitKeyboardKey | UIAccessibilityTraitStaticText | UIAccessibilityTraitAdjustable | UIAccessibilityTraitHeader | UIAccessibilityTraitSummaryElement;
-
+  const UIAccessibilityTraits AccessibilityRolesMask = UIAccessibilityTraitNone | UIAccessibilityTraitButton | UIAccessibilityTraitLink | UIAccessibilityTraitSearchField | UIAccessibilityTraitImage | UIAccessibilityTraitKeyboardKey | UIAccessibilityTraitStaticText | UIAccessibilityTraitAdjustable | UIAccessibilityTraitHeader | UIAccessibilityTraitSummaryElement | SwitchAccessibilityTrait;
+  view.reactAccessibilityElement.accessibilityTraits = view.reactAccessibilityElement.accessibilityTraits & ~AccessibilityRolesMask;
   UIAccessibilityTraits newTraits = json ? [RCTConvert UIAccessibilityTraits:json] : defaultView.accessibilityTraits;
-  UIAccessibilityTraits maskedTraits = newTraits & AccessibilityRolesMask;
-  view.reactAccessibilityElement.accessibilityTraits = (view.reactAccessibilityElement.accessibilityTraits & ~AccessibilityRolesMask) | maskedTraits;
+  if (newTraits != UIAccessibilityTraitNone) {
+    UIAccessibilityTraits maskedTraits = newTraits & AccessibilityRolesMask;
+    view.reactAccessibilityElement.accessibilityTraits |= maskedTraits;
+  } else {
+    NSString *role = json ? [RCTConvert NSString:json] : @"";
+    ((RCTView *)view.reactAccessibilityElement).accessibilityRole = role;
+  }
+}
+
+RCT_CUSTOM_VIEW_PROPERTY(accessibilityStates, NSArray<NSString *>, RCTView)
+{
+  NSArray<NSString *> *states = json ? [RCTConvert NSStringArray:json] : nil;
+  NSMutableArray *newStates = [NSMutableArray new];
+
+  if (!states) {
+    return;
+  }
+
+  const UIAccessibilityTraits AccessibilityStatesMask = UIAccessibilityTraitNotEnabled | UIAccessibilityTraitSelected;
+  view.reactAccessibilityElement.accessibilityTraits = view.reactAccessibilityElement.accessibilityTraits & ~AccessibilityStatesMask;
+
+  for (NSString *state in states) {
+    if ([state isEqualToString:@"selected"]) {
+      view.reactAccessibilityElement.accessibilityTraits |= UIAccessibilityTraitSelected;
+    } else if ([state isEqualToString:@"disabled"]) {
+      view.reactAccessibilityElement.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
+    } else {
+      [newStates addObject:state];
+    }
+  }
+  if (newStates.count > 0) {
+    ((RCTView *)view.reactAccessibilityElement).accessibilityStates = newStates;
+  } else {
+      ((RCTView *)view.reactAccessibilityElement).accessibilityStates = nil;
+  }
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(nativeID, NSString *, RCTView)

@@ -1,4 +1,5 @@
 platform :ios, '9.0'
+require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 target 'HelloWorld' do
   # Pods for HelloWorld
@@ -31,6 +32,8 @@ target 'HelloWorld' do
     inherit! :search_paths
     # Pods for testing
   end
+
+  use_native_modules!
 end
 
 target 'HelloWorld-tvOS' do
