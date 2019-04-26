@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<ProgressViewIOS /> should render as <RCTProgressView> when mocked 1`] = `
+<RCTProgressView
+  progress={90}
+  style={
+    Array [
+      Object {
+        "height": 2,
+      },
+      undefined,
+    ]
+  }
+/>
+`;
+
+exports[`<ProgressViewIOS /> should render as <RCTProgressView> when not mocked 1`] = `
+<RCTProgressView
+  progress={90}
+  style={
+    Array [
+      Object {
+        "height": 2,
+      },
+      undefined,
+    ]
+  }
+/>
+`;
+
+exports[`<ProgressViewIOS /> should shallow render as <ForwardRef(ProgressViewIOS)> when mocked 1`] = `
+<ForwardRef(ProgressViewIOS)
+  progress={90}
+/>
+`;
+
+exports[`<ProgressViewIOS /> should shallow render as <ForwardRef(ProgressViewIOS)> when not mocked 1`] = `
+<ForwardRef(ProgressViewIOS)
+  progress={90}
+/>
+`;
