@@ -32,12 +32,12 @@ function fetch_and_unpack () {
 
     while true; do
         if [ -f "$cachedir/$file" ]; then
-           if shasum -p "$cachedir/$file" |
+           if shasum "$cachedir/$file" |
                awk -v hash="$hash" '{exit $1 != hash}'; then
                break
            else
                echo "Incorrect hash:" 2>&1
-               shasum -p "$cachedir/$file" 2>&1
+               shasum "$cachedir/$file" 2>&1
                echo "Retrying..." 2>&1
            fi
         fi

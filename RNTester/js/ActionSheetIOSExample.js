@@ -11,7 +11,6 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
 const {
   ActionSheetIOS,
   StyleSheet,
@@ -19,7 +18,8 @@ const {
   View,
   Alert,
   NativeModules,
-} = ReactNative;
+  findNodeHandle,
+} = require('react-native');
 const ScreenshotManager = NativeModules.ScreenshotManager;
 
 const BUTTONS = ['Option 0', 'Option 1', 'Option 2', 'Delete', 'Cancel'];
@@ -128,7 +128,7 @@ class ActionSheetAnchorExample extends React.Component<
         cancelButtonIndex: CANCEL_INDEX,
         destructiveButtonIndex: DESTRUCTIVE_INDEX,
         anchor: this.anchorRef.current
-          ? ReactNative.findNodeHandle(this.anchorRef.current)
+          ? findNodeHandle(this.anchorRef.current)
           : undefined,
       },
       buttonIndex => {
@@ -263,7 +263,7 @@ class ShareScreenshotAnchorExample extends React.Component<
             url: uri,
             excludedActivityTypes: ['com.apple.UIKit.activity.PostToTwitter'],
             anchor: this.anchorRef.current
-              ? ReactNative.findNodeHandle(this.anchorRef.current)
+              ? findNodeHandle(this.anchorRef.current)
               : undefined,
           },
           error => Alert.alert('Error', error),

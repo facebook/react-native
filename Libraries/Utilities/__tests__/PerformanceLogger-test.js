@@ -70,6 +70,16 @@ describe('PerformanceLogger', () => {
     });
   });
 
+  it('removes an extra', () => {
+    let perfLogger = createPerformanceLogger();
+    perfLogger.setExtra(EXTRA_KEY, EXTRA_VALUE);
+    expect(perfLogger.getExtras()).toEqual({
+      [EXTRA_KEY]: EXTRA_VALUE,
+    });
+    expect(perfLogger.removeExtra(EXTRA_KEY)).toEqual(EXTRA_VALUE);
+    expect(perfLogger.getExtras()).toEqual({});
+  });
+
   it('logs a point', () => {
     let perfLogger = createPerformanceLogger();
     perfLogger.markPoint(POINT, POINT_TIMESTAMP);

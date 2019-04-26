@@ -11,16 +11,16 @@
 #include <react/core/LayoutContext.h>
 #include <react/debug/SystraceSection.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
-#include <react/uimanager/TimeUtils.h>
 #include <react/uimanager/UIManager.h>
 #include <react/uimanager/UIManagerBinding.h>
 #include <react/uimanager/UITemplateProcessor.h>
+#include <react/utils/TimeUtils.h>
 
 namespace facebook {
 namespace react {
 
 Scheduler::Scheduler(
-    const SharedContextContainer &contextContainer,
+    ContextContainer::Shared const &contextContainer,
     ComponentRegistryFactory buildRegistryFunction) {
   const auto asynchronousEventBeatFactory =
       contextContainer->getInstance<EventBeatFactory>("asynchronous");
@@ -72,6 +72,11 @@ Scheduler::Scheduler(
   runtimeExecutor_([=](jsi::Runtime &runtime) {
     UIManagerBinding::install(runtime, uiManagerBinding_);
   });
+
+  contextContainer->registerInstance(
+      std::weak_ptr<ComponentDescriptorRegistry const>(
+          componentDescriptorRegistry_),
+      "ComponentDescriptorRegistry_DO_NOT_USE_PRETTY_PLEASE");
 }
 
 Scheduler::~Scheduler() {
@@ -237,14 +242,11 @@ SchedulerDelegate *Scheduler::getDelegate() const {
 
 void Scheduler::shadowTreeDidCommit(
     const ShadowTree &shadowTree,
-    const ShadowViewMutationList &mutations,
-    long commitStartTime,
-    long layoutTime) const {
+    MountingTransaction &&transaction) const {
   SystraceSection s("Scheduler::shadowTreeDidCommit");
 
   if (delegate_) {
-    delegate_->schedulerDidFinishTransaction(
-        shadowTree.getSurfaceId(), mutations, commitStartTime, layoutTime);
+    delegate_->schedulerDidFinishTransaction(std::move(transaction));
   }
 }
 
@@ -281,7 +283,7 @@ void Scheduler::uiManagerDidCreateShadowNode(
   if (delegate_) {
     auto shadowView = ShadowView(*shadowNode);
     delegate_->schedulerDidRequestPreliminaryViewAllocation(
-        shadowNode->getRootTag(), shadowView);
+        shadowNode->getSurfaceId(), shadowView);
   }
 }
 

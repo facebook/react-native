@@ -35,6 +35,8 @@ class EventEmitter {
   using Tag = int32_t;
 
  public:
+  using Shared = std::shared_ptr<EventEmitter const>;
+
   static std::mutex &DispatchMutex();
 
   static ValueFactory defaultPayloadFactory();

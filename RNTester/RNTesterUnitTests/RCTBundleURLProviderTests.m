@@ -71,8 +71,10 @@ static NSURL *ipBundleURL()
   NSURL *URL = [settings jsBundleURLForBundleRoot:testFile fallbackResource:nil];
   if (!getenv("CI_USE_PACKAGER")) {
     XCTAssertEqualObjects(URL, mainBundleURL());
-  } else {
-    XCTAssertEqualObjects(URL, localhostBundleURL());
+    // TODO: t43430850: Temporarily disable testBundleURL test.
+    // To be re-enabled when the packager can be reliably used on Sandcastle.
+    // } else {
+    //   XCTAssertEqualObjects(URL, localhostBundleURL());
   }
 }
 

@@ -11,7 +11,6 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
 const {
   CameraRoll,
   Image,
@@ -22,7 +21,7 @@ const {
   TextInput,
   TouchableHighlight,
   View,
-} = ReactNative;
+} = require('react-native');
 
 const XHRExampleBinaryUpload = require('./XHRExampleBinaryUpload');
 

@@ -44,6 +44,10 @@ emoji=true
 esproposal.optional_chaining=enable
 esproposal.nullish_coalescing=enable
 
+module.file_ext=.js
+module.file_ext=.json
+module.file_ext=.ios.js
+
 module.system=haste
 module.system.haste.use_name_reducers=true
 # keep the following in sync with server/haste/hasteImpl.js
@@ -74,7 +78,6 @@ suppress_type=$FlowFixMeState
 
 suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(<VERSION>\\)? *\\(site=[a-z,_]*react_native\\(_ios\\)?_\\(oss\\|fb\\)[a-z,_]*\\)?)\\)
 suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(<VERSION>\\)? *\\(site=[a-z,_]*react_native\\(_ios\\)?_\\(oss\\|fb\\)[a-z,_]*\\)?)\\)?:? #[0-9]+
-suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
 suppress_comment=\\(.\\|\n\\)*\\$FlowExpectedError
 
 [lints]
@@ -87,7 +90,6 @@ deprecated-type=warn
 unsafe-getters-setters=warn
 inexact-spread=warn
 unnecessary-invariant=warn
-deprecated-call-syntax=warn
 signature-verification-failure=warn
 deprecated-utility=error
 
@@ -101,4 +103,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.95.0
+^0.97.0

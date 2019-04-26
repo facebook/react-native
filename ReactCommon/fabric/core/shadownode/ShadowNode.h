@@ -17,6 +17,7 @@
 #include <react/core/Props.h>
 #include <react/core/ReactPrimitives.h>
 #include <react/core/Sealable.h>
+#include <react/core/ShadowNodeFamily.h>
 #include <react/core/State.h>
 #include <react/debug/DebugStringConvertible.h>
 
@@ -42,10 +43,27 @@ class ShadowNode : public virtual Sealable,
                    public virtual DebugStringConvertible,
                    public std::enable_shared_from_this<ShadowNode> {
  public:
-  using Shared = std::shared_ptr<const ShadowNode>;
-  using Weak = std::weak_ptr<const ShadowNode>;
+  using Shared = std::shared_ptr<ShadowNode const>;
+  using Weak = std::weak_ptr<ShadowNode const>;
+  using Unshared = std::shared_ptr<ShadowNode>;
+  using ListOfShared =
+      better::small_vector<Shared, kShadowNodeChildrenSmallVectorSize>;
+  using SharedListOfShared = std::shared_ptr<ListOfShared const>;
+  using UnsharedListOfShared = std::shared_ptr<ListOfShared>;
+
+  using AncestorList = better::small_vector<
+      std::pair<
+          std::reference_wrapper<ShadowNode const> /* parentNode */,
+          int /* childIndex */>,
+      64>;
 
   static SharedShadowNodeSharedList emptySharedShadowNodeSharedList();
+
+  /*
+   * Returns `true` if nodes belong to the same family (they were cloned one
+   * from each other or from the same source node).
+   */
+  static bool sameFamily(const ShadowNode &first, const ShadowNode &second);
 
 #pragma mark - Constructors
 
@@ -59,6 +77,7 @@ class ShadowNode : public virtual Sealable,
   /*
    * Creates a Shadow Node via cloning given `sourceShadowNode` and
    * applying fields from given `fragment`.
+   * Note: `tag`, `surfaceId`, and `eventEmitter` cannot be changed.
    */
   ShadowNode(
       const ShadowNode &sourceShadowNode,
@@ -76,11 +95,11 @@ class ShadowNode : public virtual Sealable,
   virtual ComponentHandle getComponentHandle() const = 0;
   virtual ComponentName getComponentName() const = 0;
 
-  const SharedShadowNodeList &getChildren() const;
-  SharedProps getProps() const;
-  SharedEventEmitter getEventEmitter() const;
+  SharedProps const &getProps() const;
+  SharedShadowNodeList const &getChildren() const;
+  SharedEventEmitter const &getEventEmitter() const;
   Tag getTag() const;
-  Tag getRootTag() const;
+  SurfaceId getSurfaceId() const;
 
   /*
    * Returns a concrete `ComponentDescriptor` that manages nodes of this type.
@@ -115,7 +134,6 @@ class ShadowNode : public virtual Sealable,
       const SharedShadowNode &oldChild,
       const SharedShadowNode &newChild,
       int suggestedIndex = -1);
-  void clearSourceNode();
 
   /*
    * Sets local data assosiated with the node.
@@ -131,19 +149,15 @@ class ShadowNode : public virtual Sealable,
   void setMounted(bool mounted) const;
 
   /*
-   * Forms a list of all ancestors of the node relative to the given ancestor.
-   * The list starts from the parent node and ends with the given ancestor node.
-   * Returns `true` if successful, `false` otherwise.
-   * Thread-safe if the subtree is immutable.
-   * The theoretical complexity of this algorithm is `O(n)`. Use it wisely.
-   * The particular implementation can use some tricks to mitigate the
-   * complexity problem up to `0(ln(n))` but this is not guaranteed.
-   * Particular consumers should use appropriate cache techniques based on
-   * `childIndex` and `nodeId` tracking.
+   * Returns a list of all ancestors of the node relative to the given ancestor.
+   * The list starts from the given ancestor node and ends with the parent node
+   * of `this` node. The elements of the list have a reference to some parent
+   * node and an index of the child of the parent node.
+   * Returns an empty array if there is no ancestor-descendant relationship.
+   * Can be called from any thread.
+   * The theoretical complexity of the algorithm is `O(ln(n))`. Use it wisely.
    */
-  bool constructAncestorPath(
-      const ShadowNode &rootShadowNode,
-      std::vector<std::reference_wrapper<const ShadowNode>> &ancestors) const;
+  AncestorList getAncestors(ShadowNode const &ancestorShadowNode) const;
 
 #pragma mark - DebugStringConvertible
 
@@ -155,10 +169,7 @@ class ShadowNode : public virtual Sealable,
 #endif
 
  protected:
-  Tag tag_;
-  Tag rootTag_;
   SharedProps props_;
-  SharedEventEmitter eventEmitter_;
   SharedShadowNodeSharedList children_;
   SharedLocalData localData_;
   State::Shared state_;
@@ -171,10 +182,9 @@ class ShadowNode : public virtual Sealable,
   void cloneChildrenIfShared();
 
   /*
-   * A reference to a concrete `ComponentDescriptor` that manages nodes of this
-   * type.
+   * Pointer to a family object that this shadow node belongs to.
    */
-  const ComponentDescriptor &componentDescriptor_;
+  ShadowNodeFamily::Shared family_;
 
   /*
    * Indicates that `children` list is shared between nodes and need

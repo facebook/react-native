@@ -38,6 +38,7 @@ export type IPerformanceLogger = {
   addTimespans(Array<number>, Array<string>): void,
   setExtra(string, any): void,
   getExtras(): {[key: string]: any},
+  removeExtra(string): ?any,
   logExtras(): void,
   markPoint(string, number | void): void,
   getPoints(): {[key: string]: number},
@@ -215,6 +216,12 @@ function createPerformanceLogger(): IPerformanceLogger {
 
     getExtras() {
       return this._extras;
+    },
+
+    removeExtra(key: string): ?any {
+      const value = this._extras[key];
+      delete this._extras[key];
+      return value;
     },
 
     logExtras() {

@@ -113,4 +113,10 @@
  */
 @property (nonatomic, readonly) UIView *reactAccessibilityElement;
 
+/**
+ * Used in debugging to get a description of the view hierarchy rooted at
+ * the current view.
+ */
+- (NSString *)react_recursiveDescription;
+
 @end

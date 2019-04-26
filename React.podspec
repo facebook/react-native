@@ -47,7 +47,6 @@ Pod::Spec.new do |s|
   s.dependency "React-RCTActionSheet", version
   s.dependency "React-RCTAnimation", version
   s.dependency "React-RCTBlob", version
-  s.dependency "React-RCTGeolocation", version
   s.dependency "React-RCTImage", version
   s.dependency "React-RCTLinking", version
   s.dependency "React-RCTNetwork", version

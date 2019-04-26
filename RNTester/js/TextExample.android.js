@@ -13,8 +13,7 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {Image, StyleSheet, Text, View} = ReactNative;
+const {Image, StyleSheet, Text, View} = require('react-native');
 const RNTesterBlock = require('./RNTesterBlock');
 const RNTesterPage = require('./RNTesterPage');
 const TextLegend = require('./Shared/TextLegend');
@@ -622,6 +621,19 @@ class TextExample extends React.Component<{}> {
         </RNTesterBlock>
         <RNTesterBlock title="Substring Emoji (should only see 'test')">
           <Text>{'test🙃'.substring(0, 5)}</Text>
+        </RNTesterBlock>
+        <RNTesterBlock title="Text linkify">
+          <Text dataDetectorType="phoneNumber">Phone number: 123-123-1234</Text>
+          <Text dataDetectorType="link">Link: https://www.facebook.com</Text>
+          <Text dataDetectorType="email">Email: employee@facebook.com</Text>
+          <Text dataDetectorType="none">
+            Phone number: 123-123-1234 Link: https://www.facebook.com Email:
+            employee@facebook.com
+          </Text>
+          <Text dataDetectorType="all">
+            Phone number: 123-123-1234 Link: https://www.facebook.com Email:
+            employee@facebook.com
+          </Text>
         </RNTesterBlock>
       </RNTesterPage>
     );

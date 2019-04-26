@@ -51,7 +51,7 @@ function generatePropsString(component: ComponentShape) {
         prop.name
       }", sourceProps.${prop.name}, ${prop.name}))`;
     })
-    .join(',\n');
+    .join(',\n' + '    ');
 }
 
 function getClassExtendString(component): string {
@@ -81,22 +81,34 @@ function getClassExtendString(component): string {
 
 function getImports(component): Set<string> {
   const imports: Set<string> = new Set();
+
+  function addImportsForNativeName(name) {
+    switch (name) {
+      case 'ColorPrimitive':
+        return;
+      case 'PointPrimitive':
+        return;
+      case 'ImageSourcePrimitive':
+        imports.add('#include <react/components/image/conversions.h>');
+        return;
+      default:
+        (name: empty);
+        throw new Error(`Invalid name, got ${name}`);
+    }
+  }
+
   component.props.forEach(prop => {
     const typeAnnotation = prop.typeAnnotation;
 
     if (typeAnnotation.type === 'NativePrimitiveTypeAnnotation') {
-      switch (typeAnnotation.name) {
-        case 'ColorPrimitive':
-          return;
-        case 'ImageSourcePrimitive':
-          imports.add('#include <react/components/image/conversions.h>');
-          return;
-        default:
-          (typeAnnotation.name: empty);
-          throw new Error(
-            `Invalid NativePrimitiveTypeAnnotation name, got ${prop.name}`,
-          );
-      }
+      addImportsForNativeName(typeAnnotation.name);
+    }
+
+    if (
+      typeAnnotation.type === 'ArrayTypeAnnotation' &&
+      typeAnnotation.elementType.type === 'NativePrimitiveTypeAnnotation'
+    ) {
+      addImportsForNativeName(typeAnnotation.elementType.name);
     }
   });
 

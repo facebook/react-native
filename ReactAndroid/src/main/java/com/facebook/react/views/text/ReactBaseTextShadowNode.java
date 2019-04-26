@@ -14,18 +14,26 @@ import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.view.Gravity;
+
+import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.IllegalViewOperationException;
 import com.facebook.react.uimanager.LayoutShadowNode;
+import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
 import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.ViewProps;
 import com.facebook.react.uimanager.annotations.ReactProp;
+import com.facebook.yoga.YogaConstants;
 import com.facebook.yoga.YogaDirection;
+import com.facebook.yoga.YogaUnit;
+import com.facebook.yoga.YogaValue;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
 
 /**
@@ -41,7 +49,10 @@ import javax.annotation.Nullable;
 @TargetApi(Build.VERSION_CODES.M)
 public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
-  private static final String INLINE_IMAGE_PLACEHOLDER = "I";
+  // Use a direction weak character so the placeholder doesn't change the direction of the previous
+  // character.
+  // https://en.wikipedia.org/wiki/Bi-directional_text#weak_characters
+  private static final String INLINE_VIEW_PLACEHOLDER = "0";
   public static final int UNSET = -1;
 
   public static final String PROP_SHADOW_OFFSET = "textShadowOffset";
@@ -84,6 +95,8 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       SpannableStringBuilder sb,
       List<SetSpanOperation> ops,
       TextAttributes parentTextAttributes,
+      boolean supportsInlineViews,
+      Map<Integer, ReactShadowNode> inlineViews,
       int start) {
 
     TextAttributes textAttributes;
@@ -102,19 +115,39 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
                 ((ReactRawTextShadowNode) child).getText(),
                 textAttributes.getTextTransform()));
       } else if (child instanceof ReactBaseTextShadowNode) {
-        buildSpannedFromShadowNode((ReactBaseTextShadowNode) child, sb, ops, textAttributes, sb.length());
+        buildSpannedFromShadowNode((ReactBaseTextShadowNode) child, sb, ops, textAttributes, supportsInlineViews, inlineViews, sb.length());
       } else if (child instanceof ReactTextInlineImageShadowNode) {
         // We make the image take up 1 character in the span and put a corresponding character into
         // the text so that the image doesn't run over any following text.
-        sb.append(INLINE_IMAGE_PLACEHOLDER);
+        sb.append(INLINE_VIEW_PLACEHOLDER);
         ops.add(
             new SetSpanOperation(
-                sb.length() - INLINE_IMAGE_PLACEHOLDER.length(),
+                sb.length() - INLINE_VIEW_PLACEHOLDER.length(),
                 sb.length(),
                 ((ReactTextInlineImageShadowNode) child).buildInlineImageSpan()));
+      } else if (supportsInlineViews) {
+        int reactTag = child.getReactTag();
+        YogaValue widthValue = child.getStyleWidth();
+        YogaValue heightValue = child.getStyleHeight();
+
+        if (widthValue.unit != YogaUnit.POINT || heightValue.unit != YogaUnit.POINT) {
+          throw new IllegalViewOperationException("Views nested within a <Text> must have a width and height");
+        }
+        float width = widthValue.value;
+        float height = heightValue.value;
+
+        // We make the inline view take up 1 character in the span and put a corresponding character into
+        // the text so that the inline view doesn't run over any following text.
+        sb.append(INLINE_VIEW_PLACEHOLDER);
+        ops.add(
+            new SetSpanOperation(
+                sb.length() - INLINE_VIEW_PLACEHOLDER.length(),
+                sb.length(),
+                new TextInlineViewPlaceholderSpan(reactTag, (int) width, (int) height)));
+        inlineViews.put(reactTag, child);
       } else {
         throw new IllegalViewOperationException(
-            "Unexpected view type nested under text node: " + child.getClass());
+            "Unexpected view type nested under a <Text> or <TextInput> node: " + child.getClass());
       }
       child.markUpdateSeen();
     }
@@ -192,8 +225,15 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     }
   }
 
+  // `nativeViewHierarchyOptimizer` can be `null` as long as `supportsInlineViews` is `false`.
   protected static Spannable spannedFromShadowNode(
-      ReactBaseTextShadowNode textShadowNode, String text) {
+      ReactBaseTextShadowNode textShadowNode,
+      String text,
+      boolean supportsInlineViews,
+      NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer) {
+    Assertions.assertCondition(
+        !supportsInlineViews || nativeViewHierarchyOptimizer != null,
+        "nativeViewHierarchyOptimizer is required when inline views are supported");
     SpannableStringBuilder sb = new SpannableStringBuilder();
 
     // TODO(5837930): Investigate whether it's worth optimizing this part and do it if so
@@ -202,6 +242,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
     // up-to-bottom, otherwise all the spannables that are withing the region for which one may set
     // a new spannable will be wiped out
     List<SetSpanOperation> ops = new ArrayList<>();
+    Map<Integer, ReactShadowNode> inlineViews = supportsInlineViews ? new HashMap<Integer, ReactShadowNode>() : null;
 
     if (text != null) {
       // Handle text that is provided via a prop (e.g. the `value` and `defaultValue` props on
@@ -209,20 +250,37 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       sb.append(TextTransform.apply(text, textShadowNode.mTextAttributes.getTextTransform()));
     }
 
-    buildSpannedFromShadowNode(textShadowNode, sb, ops, null, 0);
+    buildSpannedFromShadowNode(textShadowNode, sb, ops, null, supportsInlineViews, inlineViews, 0);
 
     textShadowNode.mContainsImages = false;
-    float heightOfTallestInlineImage = Float.NaN;
+    textShadowNode.mInlineViews = inlineViews;
+    float heightOfTallestInlineViewOrImage = Float.NaN;
 
-    // While setting the Spans on the final text, we also check whether any of them are images.
+    // While setting the Spans on the final text, we also check whether any of them are inline views
+    // or images.
     int priority = 0;
     for (SetSpanOperation op : ops) {
-      if (op.what instanceof TextInlineImageSpan) {
-        int height = ((TextInlineImageSpan) op.what).getHeight();
-        textShadowNode.mContainsImages = true;
-        if (Float.isNaN(heightOfTallestInlineImage)
-            || height > heightOfTallestInlineImage) {
-          heightOfTallestInlineImage = height;
+      boolean isInlineImage = op.what instanceof TextInlineImageSpan;
+      if (isInlineImage || op.what instanceof TextInlineViewPlaceholderSpan) {
+        int height;
+        if (isInlineImage) {
+          height = ((TextInlineImageSpan)op.what).getHeight();
+          textShadowNode.mContainsImages = true;
+        } else {
+          TextInlineViewPlaceholderSpan placeholder = (TextInlineViewPlaceholderSpan) op.what;
+          height = placeholder.getHeight();
+
+          // Inline views cannot be layout-only because the ReactTextView needs to be able to grab
+          // ahold of them on the UI thread to size and position them.
+          ReactShadowNode childNode = inlineViews.get(placeholder.getReactTag());
+          nativeViewHierarchyOptimizer.handleForceViewToBeNonLayoutOnly(childNode);
+
+          // The ReactTextView is responsible for laying out the inline views.
+          childNode.setLayoutParent(textShadowNode);
+        }
+
+        if (Float.isNaN(heightOfTallestInlineViewOrImage) || height > heightOfTallestInlineViewOrImage) {
+          heightOfTallestInlineViewOrImage = height;
         }
       }
 
@@ -232,7 +290,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
       priority++;
     }
 
-    textShadowNode.mTextAttributes.setHeightOfTallestInlineImage(heightOfTallestInlineImage);
+    textShadowNode.mTextAttributes.setHeightOfTallestInlineViewOrImage(heightOfTallestInlineViewOrImage);
 
     return sb;
   }
@@ -305,7 +363,7 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
   protected @Nullable String mFontFamily = null;
 
   protected boolean mContainsImages = false;
-  protected float mHeightOfTallestInlineImage = Float.NaN;
+  protected Map<Integer, ReactShadowNode> mInlineViews;
 
   public ReactBaseTextShadowNode() {
     mTextAttributes = new TextAttributes();
@@ -403,8 +461,11 @@ public abstract class ReactBaseTextShadowNode extends LayoutShadowNode {
 
   @ReactProp(name = ViewProps.BACKGROUND_COLOR)
   public void setBackgroundColor(Integer color) {
-    // Don't apply background color to anchor TextView since it will be applied on the View directly
-    if (!isVirtualAnchor()) {
+    // Background color needs to be handled here for virtual nodes so it can be incorporated into
+    // the span. However, it doesn't need to be applied to non-virtual nodes because non-virtual
+    // nodes get mapped to native views and native views get their background colors get set via
+    // {@link BaseViewManager}.
+    if (isVirtual()) {
       mIsBackgroundColorSet = (color != null);
       if (mIsBackgroundColorSet) {
         mBackgroundColor = color;

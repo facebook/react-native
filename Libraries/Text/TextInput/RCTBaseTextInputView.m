@@ -373,9 +373,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   }
 
   if (_maxLength) {
-    NSInteger allowedLength = _maxLength.integerValue - backedTextInputView.attributedText.string.length + range.length;
+    NSInteger allowedLength = MAX(_maxLength.integerValue - (NSInteger)backedTextInputView.attributedText.string.length + (NSInteger)range.length, 0);
 
-    if (allowedLength < 0 || text.length > allowedLength) {
+    if (text.length > allowedLength) {
       // If we typed/pasted more than one character, limit the text inputted.
       if (text.length > 1) {
         // Truncate the input string so the result is exactly maxLength

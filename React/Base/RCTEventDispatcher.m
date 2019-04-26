@@ -10,8 +10,9 @@
 #import "RCTAssert.h"
 #import "RCTBridge.h"
 #import "RCTBridge+Private.h"
-#import "RCTUtils.h"
+#import "RCTComponentEvent.h"
 #import "RCTProfile.h"
+#import "RCTUtils.h"
 
 const NSInteger RCTTextUpdateLagWarningThreshold = 3;
 
@@ -29,7 +30,7 @@ NSString *RCTNormalizeInputEventName(NSString *eventName)
 static NSNumber *RCTGetEventID(id<RCTEvent> event)
 {
   return @(
-    event.viewTag.intValue |
+    ([event respondsToSelector:@selector(viewTag)] ? event.viewTag.intValue : 0) |
     (((uint64_t)event.eventName.hash & 0xFFFF) << 32) |
     (((uint64_t)event.coalescingKey) << 48)
   );
@@ -79,24 +80,6 @@ RCT_EXPORT_MODULE()
               completion:NULL];
 }
 
-- (void)sendInputEventWithName:(NSString *)name body:(NSDictionary *)body
-{
-  if (RCT_DEBUG) {
-    RCTAssert([body[@"target"] isKindOfClass:[NSNumber class]],
-      @"Event body dictionary must include a 'target' property containing a React tag");
-  }
-  
-  if (!body[@"target"]) {
-    return;
-  }
-
-  name = RCTNormalizeInputEventName(name);
-  [_bridge enqueueJSCall:@"RCTEventEmitter"
-                  method:@"receiveEvent"
-                    args:@[body[@"target"], name, body]
-              completion:NULL];
-}
-
 - (void)sendTextEventWithType:(RCTTextEventType)type
                      reactTag:(NSNumber *)reactTag
                          text:(NSString *)text
@@ -114,7 +97,6 @@ RCT_EXPORT_MODULE()
 
   NSMutableDictionary *body = [[NSMutableDictionary alloc] initWithDictionary:@{
     @"eventCount": @(eventCount),
-    @"target": reactTag
   }];
 
   if (text) {
@@ -138,10 +120,10 @@ RCT_EXPORT_MODULE()
     body[@"key"] = key;
   }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  [self sendInputEventWithName:events[type] body:body];
-#pragma clang diagnostic pop
+  RCTComponentEvent *event = [[RCTComponentEvent alloc] initWithName:events[type]
+                                                             viewTag:reactTag
+                                                                body:body];
+  [self sendEvent:event];
 }
 
 - (void)sendEvent:(id<RCTEvent>)event
@@ -154,33 +136,38 @@ RCT_EXPORT_MODULE()
 
   [_observersLock unlock];
 
-  [_eventQueueLock lock];
+  if (event.canCoalesce) {
+    [_eventQueueLock lock];
 
-  NSNumber *eventID = RCTGetEventID(event);
+    NSNumber *eventID = RCTGetEventID(event);
 
-  id<RCTEvent> previousEvent = _events[eventID];
-  if (previousEvent) {
-    RCTAssert([event canCoalesce], @"Got event %@ which cannot be coalesced, but has the same eventID %@ as the previous event %@", event, eventID, previousEvent);
-    event = [previousEvent coalesceWithEvent:event];
+    id<RCTEvent> previousEvent = _events[eventID];
+    if (previousEvent) {
+      event = [previousEvent coalesceWithEvent:event];
+    } else {
+      [_eventQueue addObject:eventID];
+    }
+    _events[eventID] = event;
+
+    BOOL scheduleEventsDispatch = NO;
+    if (!_eventsDispatchScheduled) {
+      _eventsDispatchScheduled = YES;
+      scheduleEventsDispatch = YES;
+    }
+
+    // We have to release the lock before dispatching block with events,
+    // since dispatchBlock: can be executed synchronously on the same queue.
+    // (This is happening when chrome debugging is turned on.)
+    [_eventQueueLock unlock];
+
+    if (scheduleEventsDispatch) {
+      [_bridge dispatchBlock:^{
+        [self flushEventsQueue];
+      } queue:RCTJSThread];
+    }
   } else {
-    [_eventQueue addObject:eventID];
-  }
-  _events[eventID] = event;
-
-  BOOL scheduleEventsDispatch = NO;
-  if (!_eventsDispatchScheduled) {
-    _eventsDispatchScheduled = YES;
-    scheduleEventsDispatch = YES;
-  }
-
-  // We have to release the lock before dispatching block with events,
-  // since dispatchBlock: can be executed synchronously on the same queue.
-  // (This is happening when chrome debugging is turned on.)
-  [_eventQueueLock unlock];
-
-  if (scheduleEventsDispatch) {
     [_bridge dispatchBlock:^{
-      [self flushEventsQueue];
+      [self dispatchEvent:event];
     } queue:RCTJSThread];
   }
 }

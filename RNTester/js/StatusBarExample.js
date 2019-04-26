@@ -11,7 +11,6 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
 const {
   StatusBar,
   StyleSheet,
@@ -19,7 +18,7 @@ const {
   TouchableHighlight,
   View,
   Modal,
-} = ReactNative;
+} = require('react-native');
 
 const colors = ['#ff0000', '#00ff00', '#0000ff', 'rgba(0, 0, 0, 0.4)'];
 

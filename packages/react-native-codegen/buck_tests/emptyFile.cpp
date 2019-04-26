@@ -1,3 +1,4 @@
+#import <react/components/ARRAY_PROPS/ComponentDescriptors.h>
 #import <react/components/INTERFACE_ONLY/ComponentDescriptors.h>
 #import <react/components/BOOLEAN_PROP/ComponentDescriptors.h>
 #import <react/components/STRING_PROP/ComponentDescriptors.h>
@@ -5,6 +6,7 @@
 #import <react/components/FLOAT_PROPS/ComponentDescriptors.h>
 #import <react/components/COLOR_PROP/ComponentDescriptors.h>
 #import <react/components/IMAGE_PROP/ComponentDescriptors.h>
+#import <react/components/POINT_PROP/ComponentDescriptors.h>
 #import <react/components/MULTI_NATIVE_PROP/ComponentDescriptors.h>
 #import <react/components/ENUM_PROP/ComponentDescriptors.h>
 #import <react/components/EVENT_NESTED_OBJECT_PROPS/ComponentDescriptors.h>

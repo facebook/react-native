@@ -165,7 +165,27 @@ class MessageQueue {
     return getValue ? getValue() : null;
   }
 
-  enqueueNativeCall(
+  callNativeSyncHook(
+    moduleID: number,
+    methodID: number,
+    params: any[],
+    onFail: ?Function,
+    onSucc: ?Function,
+  ) {
+    if (__DEV__) {
+      invariant(
+        global.nativeCallSyncHook,
+        'Calling synchronous methods on native ' +
+          'modules is not supported in Chrome.\n\n Consider providing alternative ' +
+          'methods to expose this method in debug mode, e.g. by exposing constants ' +
+          'ahead-of-time.',
+      );
+    }
+    this.processCallbacks(moduleID, methodID, params, onFail, onSucc);
+    return global.nativeCallSyncHook(moduleID, methodID, params);
+  }
+
+  processCallbacks(
     moduleID: number,
     methodID: number,
     params: any[],
@@ -188,7 +208,6 @@ class MessageQueue {
       this._successCallbacks[this._callID] = onSucc;
       this._failureCallbacks[this._callID] = onFail;
     }
-
     if (__DEV__) {
       global.nativeTraceBeginAsyncFlow &&
         global.nativeTraceBeginAsyncFlow(
@@ -198,6 +217,16 @@ class MessageQueue {
         );
     }
     this._callID++;
+  }
+
+  enqueueNativeCall(
+    moduleID: number,
+    methodID: number,
+    params: any[],
+    onFail: ?Function,
+    onSucc: ?Function,
+  ) {
+    this.processCallbacks(moduleID, methodID, params, onFail, onSucc);
 
     this._queue[MODULE_IDS].push(moduleID);
     this._queue[METHOD_IDS].push(methodID);
@@ -385,15 +414,14 @@ class MessageQueue {
       const debug = this._debugInfo[callID];
       const module = debug && this._remoteModuleTable[debug[0]];
       const method = debug && this._remoteMethodTable[debug[0]][debug[1]];
-      if (!callback) {
-        let errorMessage = `Callback with id ${cbID}: ${module}.${method}() not found`;
-        if (method) {
-          errorMessage =
-            `The callback ${method}() exists in module ${module}, ` +
-            'but only one callback may be registered to a function in a native module.';
-        }
-        invariant(callback, errorMessage);
-      }
+      invariant(
+        callback,
+        `No callback found with cbID ${cbID} and callID ${callID} for ` +
+          (method
+            ? ` ${module}.${method} - most likely the callback was already invoked`
+            : `module ${module || '<unknown>'}`) +
+          `. Args: '${stringifySafe(args)}'`,
+      );
       const profileName = debug
         ? '<callback for ' + module + '.' + method + '>'
         : cbID;

@@ -64,7 +64,11 @@ type PropTypeTypeAnnotation =
     |}>
   | $ReadOnly<{|
       type: 'NativePrimitiveTypeAnnotation',
-      name: 'ColorPrimitive' | 'ImageSourcePrimitive',
+      name: 'ColorPrimitive' | 'ImageSourcePrimitive' | 'PointPrimitive',
+    |}>
+  | $ReadOnly<{|
+      type: 'ArrayTypeAnnotation',
+      elementType: $ReadOnly<PropTypeTypeAnnotation>,
     |}>;
 
 export type PropTypeShape = $ReadOnly<{|

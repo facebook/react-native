@@ -19,23 +19,15 @@ public:
   constexpr YGFloatOptional() = default;
 
   // returns the wrapped value, or a value x with YGIsUndefined(x) == true
-  constexpr float unwrap() const {
-    return value_;
-  }
+  constexpr float unwrap() const { return value_; }
 
-  bool isUndefined() const {
-    return std::isnan(value_);
-  }
+  bool isUndefined() const { return std::isnan(value_); }
 
   YGFloatOptional operator+(YGFloatOptional op) const {
     return YGFloatOptional{value_ + op.value_};
   }
-  bool operator>(YGFloatOptional op) const {
-    return value_ > op.value_;
-  }
-  bool operator<(YGFloatOptional op) const {
-    return value_ < op.value_;
-  }
+  bool operator>(YGFloatOptional op) const { return value_ > op.value_; }
+  bool operator<(YGFloatOptional op) const { return value_ < op.value_; }
   bool operator>=(YGFloatOptional op) const {
     return *this > op || *this == op;
   }
@@ -45,14 +37,10 @@ public:
   bool operator==(YGFloatOptional op) const {
     return value_ == op.value_ || (isUndefined() && op.isUndefined());
   }
-  bool operator!=(YGFloatOptional op) const {
-    return !(*this == op);
-  }
+  bool operator!=(YGFloatOptional op) const { return !(*this == op); }
 
   bool operator==(float val) const {
     return value_ == val || (isUndefined() && yoga::isUndefined(val));
   }
-  bool operator!=(float val) const {
-    return !(*this == val);
-  }
+  bool operator!=(float val) const { return !(*this == val); }
 };

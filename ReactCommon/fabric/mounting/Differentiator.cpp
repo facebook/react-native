@@ -152,7 +152,7 @@ static void calculateShadowViewMutations(
       // We have to call the algorithm recursively if the inserted view
       // is *not* the same as removed one.
       const auto &newChildPair = it->second;
-      if (newChildPair.shadowView != oldChildPair.shadowView) {
+      if (newChildPair != oldChildPair) {
         const auto oldGrandChildPairs =
             sliceChildShadowNodeViewPairs(*oldChildPair.shadowNode);
         const auto newGrandChildPairs =
@@ -208,9 +208,9 @@ static void calculateShadowViewMutations(
   mutations.insert(
       mutations.end(), createMutations.begin(), createMutations.end());
   mutations.insert(
-      mutations.end(), insertMutations.begin(), insertMutations.end());
-  mutations.insert(
       mutations.end(), downwardMutations.begin(), downwardMutations.end());
+  mutations.insert(
+      mutations.end(), insertMutations.begin(), insertMutations.end());
 }
 
 ShadowViewMutationList calculateShadowViewMutations(
@@ -218,8 +218,8 @@ ShadowViewMutationList calculateShadowViewMutations(
     const ShadowNode &newRootShadowNode) {
   SystraceSection s("calculateShadowViewMutations");
 
-  // Root shadow nodes must have same tag.
-  assert(oldRootShadowNode.getTag() == newRootShadowNode.getTag());
+  // Root shadow nodes must be belong the same family.
+  assert(ShadowNode::sameFamily(oldRootShadowNode, newRootShadowNode));
 
   ShadowViewMutationList mutations;
 

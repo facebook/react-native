@@ -5,14 +5,14 @@ load("//tools/build_defs/oss:rn_defs.bzl", "react_native_xplat_dep", "rn_xplat_c
 rn_xplat_cxx_library(
     name = "jsi",
     srcs = [
-        "jsi.cpp",
+        "jsi/jsi.cpp",
     ],
-    header_namespace = "jsi",
+    header_namespace = "",
     exported_headers = [
-        "instrumentation.h",
-        "jsi.h",
-        "jsi-inl.h",
-        "jsilib.h",
+        "jsi/instrumentation.h",
+        "jsi/jsi.h",
+        "jsi/jsi-inl.h",
+        "jsi/jsilib.h",
     ],
     compiler_flags = [
         "-O3",
@@ -40,11 +40,11 @@ rn_xplat_cxx_library(
 rn_xplat_cxx_library(
     name = "JSIDynamic",
     srcs = [
-        "JSIDynamic.cpp",
+        "jsi/JSIDynamic.cpp",
     ],
-    header_namespace = "jsi",
+    header_namespace = "",
     exported_headers = [
-        "JSIDynamic.h",
+        "jsi/JSIDynamic.h",
     ],
     compiler_flags = [
         "-fexceptions",

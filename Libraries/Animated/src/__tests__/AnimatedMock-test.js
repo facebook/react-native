@@ -19,11 +19,34 @@ describe('Animated Mock', () => {
       Object.keys(AnimatedImplementation),
     );
   });
-  it('matches implementation params', () => {
-    Object.keys(AnimatedImplementation).forEach(key =>
-      expect(AnimatedImplementation[key].length).toEqual(
-        AnimatedMock[key].length,
-      ),
-    );
+  it('matches implementation params', done => {
+    Object.keys(AnimatedImplementation).forEach(key => {
+      if (AnimatedImplementation[key].length !== AnimatedMock[key].length) {
+        done(
+          new Error(
+            'key ' +
+              key +
+              ' had different lengths: ' +
+              JSON.stringify(
+                {
+                  impl: {
+                    len: AnimatedImplementation[key].length,
+                    type: typeof AnimatedImplementation[key],
+                    val: AnimatedImplementation[key].toString(),
+                  },
+                  mock: {
+                    len: AnimatedMock[key].length,
+                    type: typeof AnimatedMock[key],
+                    val: AnimatedMock[key].toString(),
+                  },
+                },
+                null,
+                2,
+              ),
+          ),
+        );
+      }
+    });
+    done();
   });
 });

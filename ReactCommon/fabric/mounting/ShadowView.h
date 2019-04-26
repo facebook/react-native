@@ -23,6 +23,7 @@ namespace react {
 struct ShadowView final {
   ShadowView() = default;
   ShadowView(const ShadowView &shadowView) = default;
+  ShadowView(ShadowView &&shadowView) noexcept = default;
 
   ~ShadowView(){};
 
@@ -32,6 +33,7 @@ struct ShadowView final {
   explicit ShadowView(const ShadowNode &shadowNode);
 
   ShadowView &operator=(const ShadowView &other) = default;
+  ShadowView &operator=(ShadowView &&other) = default;
 
   bool operator==(const ShadowView &rhs) const;
   bool operator!=(const ShadowView &rhs) const;
@@ -45,6 +47,15 @@ struct ShadowView final {
   SharedLocalData localData = {};
   State::Shared state = {};
 };
+
+#if RN_DEBUG_STRING_CONVERTIBLE
+
+std::string getDebugName(ShadowView const &object);
+std::vector<DebugStringConvertibleObject> getDebugProps(
+    ShadowView const &object,
+    DebugStringConvertibleOptions options = {});
+
+#endif
 
 /*
  * Describes pair of a `ShadowView` and a `ShadowNode`.
@@ -77,7 +88,8 @@ struct hash<facebook::react::ShadowView> {
         shadowView.tag,
         shadowView.props,
         shadowView.eventEmitter,
-        shadowView.localData);
+        shadowView.localData,
+        shadowView.state);
   }
 };
 

@@ -80,7 +80,7 @@ if (test_opts.COUNT != null && test_opts.OFFSET != null) {
     }
 }
 
-return async.mapSeries(testClasses, (clazz, callback) => {
+async.mapSeries(testClasses, (clazz, callback) => {
     if (clazz.length > max_test_class_length) {
         max_test_class_length = clazz.length;
     }
