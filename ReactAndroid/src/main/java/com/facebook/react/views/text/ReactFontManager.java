@@ -7,18 +7,20 @@
 
 package com.facebook.react.views.text;
 
-import javax.annotation.Nullable;
-
 import java.util.HashMap;
 import java.util.Map;
 
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Typeface;
+import android.os.Bundle;
 import android.util.SparseArray;
 
+import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 
 
@@ -85,21 +87,27 @@ public class ReactFontManager {
     Context context) {
 
     if (!mTypeCacheLoaded) {
-      Resources resources = context.getResources();
-      int fontsId = resources.getIdentifier("fonts", "array", context.getPackageName());
-      if (fontsId != 0) {
-        TypedArray fonts = resources.obtainTypedArray(fontsId);
-        for (int i = 0; i < fonts.length(); i++) {
-          int fontId = fonts.getResourceId(i, 0);
-          if (fontId != 0) {
-            Typeface font = ResourcesCompat.getFont(context, fontId);
-            if (font != null) {
-              String fontFamily = resources.getResourceEntryName(fontId);
-              mTypeCache.put(fontFamily, font);
+      try {
+        ApplicationInfo app = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+        Bundle bundle = app.metaData;
+        int fontsId = bundle.getInt("rn_fonts", 0);
+        if (fontsId != 0) {
+          Resources resources = context.getResources();
+          TypedArray fonts = resources.obtainTypedArray(fontsId);
+          for (int i = 0; i < fonts.length(); i++) {
+            int fontId = fonts.getResourceId(i, 0);
+            if (fontId != 0) {
+              Typeface font = ResourcesCompat.getFont(context, fontId);
+              if (font != null) {
+                String fontFamily = resources.getResourceEntryName(fontId);
+                mTypeCache.put(fontFamily, font);
+              }
             }
           }
+          fonts.recycle();
         }
-        fonts.recycle();
+      } catch (NullPointerException | PackageManager.NameNotFoundException | Resources.NotFoundException e) {
+        // do nothing
       }
       mTypeCacheLoaded = true;
     }
