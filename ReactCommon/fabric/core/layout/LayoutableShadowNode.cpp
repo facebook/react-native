@@ -22,11 +22,11 @@ LayoutMetrics LayoutableShadowNode::getLayoutMetrics() const {
 }
 
 bool LayoutableShadowNode::setLayoutMetrics(LayoutMetrics layoutMetrics) {
+  ensureUnsealed();
+
   if (layoutMetrics_ == layoutMetrics) {
     return false;
   }
-
-  ensureUnsealed();
 
   layoutMetrics_ = layoutMetrics;
   return true;
@@ -38,21 +38,23 @@ bool LayoutableShadowNode::LayoutableShadowNode::isLayoutOnly() const {
 
 LayoutMetrics LayoutableShadowNode::getRelativeLayoutMetrics(
     const LayoutableShadowNode &ancestorLayoutableShadowNode) const {
-  std::vector<std::reference_wrapper<const ShadowNode>> ancestors;
-
   auto &ancestorShadowNode =
       dynamic_cast<const ShadowNode &>(ancestorLayoutableShadowNode);
   auto &shadowNode = dynamic_cast<const ShadowNode &>(*this);
 
-  if (!shadowNode.constructAncestorPath(ancestorShadowNode, ancestors)) {
+  auto ancestors = shadowNode.getAncestors(ancestorShadowNode);
+
+  if (ancestors.size() == 0) {
     return EmptyLayoutMetrics;
   }
 
   auto layoutMetrics = getLayoutMetrics();
 
-  for (const auto &currentShadowNode : ancestors) {
+  for (auto it = ancestors.rbegin(); it != ancestors.rend(); ++it) {
+    auto &currentShadowNode = it->first.get();
+
     auto layoutableCurrentShadowNode =
-        dynamic_cast<const LayoutableShadowNode *>(&currentShadowNode.get());
+        dynamic_cast<const LayoutableShadowNode *>(&currentShadowNode);
 
     if (!layoutableCurrentShadowNode) {
       return EmptyLayoutMetrics;
@@ -63,26 +65,6 @@ LayoutMetrics LayoutableShadowNode::getRelativeLayoutMetrics(
   }
 
   return layoutMetrics;
-}
-
-void LayoutableShadowNode::cleanLayout() {
-  isLayoutClean_ = true;
-}
-
-void LayoutableShadowNode::dirtyLayout() {
-  isLayoutClean_ = false;
-}
-
-bool LayoutableShadowNode::getIsLayoutClean() const {
-  return isLayoutClean_;
-}
-
-bool LayoutableShadowNode::getHasNewLayout() const {
-  return hasNewLayout_;
-};
-
-void LayoutableShadowNode::setHasNewLayout(bool hasNewLayout) {
-  hasNewLayout_ = hasNewLayout;
 }
 
 Size LayoutableShadowNode::measure(LayoutConstraints layoutConstraints) const {

@@ -70,9 +70,14 @@ public class ReactActivityDelegate {
     return getReactNativeHost().getReactInstanceManager();
   }
 
+  public String getMainComponentName() {
+    return mMainComponentName;
+  }
+
   protected void onCreate(Bundle savedInstanceState) {
-    if (mMainComponentName != null) {
-      loadApp(mMainComponentName);
+    String mainComponentName = getMainComponentName();
+    if (mainComponentName != null) {
+      loadApp(mainComponentName);
     }
     mDoubleTapReloadRecognizer = new DoubleTapReloadRecognizer();
   }

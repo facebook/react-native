@@ -94,6 +94,31 @@ const TouchableNativeFeedback = createReactClass({
     hasTVPreferredFocus: PropTypes.bool,
 
     /**
+     * TV next focus down (see documentation for the View component).
+     */
+    nextFocusDown: PropTypes.number,
+
+    /**
+     * TV next focus forward (see documentation for the View component).
+     */
+    nextFocusForward: PropTypes.number,
+
+    /**
+     * TV next focus left (see documentation for the View component).
+     */
+    nextFocusLeft: PropTypes.number,
+
+    /**
+     * TV next focus right (see documentation for the View component).
+     */
+    nextFocusRight: PropTypes.number,
+
+    /**
+     * TV next focus up (see documentation for the View component).
+     */
+    nextFocusUp: PropTypes.number,
+
+    /**
      * Set to true to add the ripple effect to the foreground of the view, instead of the
      * background. This is useful if one of your child views has a background of its own, or you're
      * e.g. displaying images, and you don't want the ripple to be covered by them.
@@ -187,18 +212,9 @@ const TouchableNativeFeedback = createReactClass({
   touchableHandleActivePressIn: function(e: PressEvent) {
     this.props.onPressIn && this.props.onPressIn(e);
     this._dispatchPressedStateChange(true);
-    /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment
-     * suppresses an error found when Flow v0.89 was deployed. To see the
-     * error, delete this comment and run Flow. */
     if (this.pressInLocation) {
       this._dispatchHotspotUpdate(
-        /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment
-         * suppresses an error found when Flow v0.89 was deployed. To see the
-         * error, delete this comment and run Flow. */
         this.pressInLocation.locationX,
-        /* $FlowFixMe(>=0.89.0 site=react_native_android_fb) This comment
-         * suppresses an error found when Flow v0.89 was deployed. To see the
-         * error, delete this comment and run Flow. */
         this.pressInLocation.locationY,
       );
     }
@@ -303,7 +319,17 @@ const TouchableNativeFeedback = createReactClass({
       onLayout: this.props.onLayout,
       hitSlop: this.props.hitSlop,
       isTVSelectable: true,
+      nextFocusDown: this.props.nextFocusDown,
+      nextFocusForward: this.props.nextFocusForward,
+      nextFocusLeft: this.props.nextFocusLeft,
+      nextFocusRight: this.props.nextFocusRight,
+      nextFocusUp: this.props.nextFocusUp,
       hasTVPreferredFocus: this.props.hasTVPreferredFocus,
+      clickable:
+        this.props.clickable !== false &&
+        this.props.onPress !== undefined &&
+        !this.props.disabled,
+      onClick: this.touchableHandlePress,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
       onResponderTerminationRequest: this
         .touchableHandleResponderTerminationRequest,

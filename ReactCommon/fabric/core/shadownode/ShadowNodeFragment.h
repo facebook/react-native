@@ -7,11 +7,12 @@
 
 #pragma once
 
+#include <react/core/EventEmitter.h>
 #include <react/core/LocalData.h>
 #include <react/core/Props.h>
 #include <react/core/ReactPrimitives.h>
 #include <react/core/ShadowNode.h>
-#include <react/events/EventEmitter.h>
+#include <react/core/State.h>
 
 namespace facebook {
 namespace react {
@@ -20,21 +21,30 @@ namespace react {
  * An object which supposed to be used as a parameter specifying a shape
  * of created or cloned ShadowNode.
  * Note: Most of the fields are `const &` references (essentially just raw
- * pointers) which means that the Fragment does not copy/store them or
+ * pointers) which means that the Fragment does not copy/store them nor
  * retain ownership of them.
  */
 struct ShadowNodeFragment {
-  Tag tag = 0;
-  Tag rootTag = 0;
-  const SharedProps &props = nullSharedProps();
-  const SharedEventEmitter &eventEmitter = nullSharedEventEmitter();
-  const SharedShadowNodeSharedList &children = nullSharedChildren();
-  const SharedLocalData &localData = nullLocalData();
+  Tag const tag = tagPlaceholder();
+  SurfaceId const rootTag = surfaceIdPlaceholder();
+  Props::Shared const &props = propsPlaceholder();
+  EventEmitter::Shared const &eventEmitter = eventEmitterPlaceholder();
+  ShadowNode::SharedListOfShared const &children = childrenPlaceholder();
+  LocalData::Shared const &localData = localDataPlaceholder();
+  State::Shared const &state = statePlaceholder();
 
-  static SharedProps &nullSharedProps();
-  static SharedEventEmitter &nullSharedEventEmitter();
-  static SharedShadowNodeSharedList &nullSharedChildren();
-  static SharedLocalData &nullLocalData();
+  /*
+   * Placeholders.
+   * Use as default arguments as an indication that the field does not need to
+   * be changed.
+   */
+  static Tag const tagPlaceholder();
+  static SurfaceId const surfaceIdPlaceholder();
+  static Props::Shared const &propsPlaceholder();
+  static EventEmitter::Shared const &eventEmitterPlaceholder();
+  static ShadowNode::SharedListOfShared const &childrenPlaceholder();
+  static LocalData::Shared const &localDataPlaceholder();
+  static State::Shared const &statePlaceholder();
 };
 
 } // namespace react

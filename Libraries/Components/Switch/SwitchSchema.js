@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {SchemaType} from '../../../codegen/src/CodegenSchema.js';
+import type {SchemaType} from '../../../packages/react-native-codegen/src/CodegenSchema.js';
 
 const SwitchSchema: SchemaType = {
   modules: {

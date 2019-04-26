@@ -18,9 +18,6 @@ const NativeModules = require('NativeModules');
 const Platform = require('Platform');
 const WebSocketEvent = require('WebSocketEvent');
 
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
 const base64 = require('base64-js');
 const binaryToBase64 = require('binaryToBase64');
 const invariant = require('invariant');
@@ -87,10 +84,6 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
   readyState: number = CONNECTING;
   url: ?string;
 
-  // This module depends on the native `WebSocketModule` module. If you don't include it,
-  // `WebSocket.isAvailable` will return `false`, and WebSocket constructor will throw an error
-  static isAvailable: boolean = !!WebSocketModule;
-
   constructor(
     url: string,
     protocols: ?string | ?Array<string>,
@@ -135,22 +128,10 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
       protocols = null;
     }
 
-    if (!WebSocket.isAvailable) {
-      throw new Error(
-        'Cannot initialize WebSocket module. ' +
-          'Native module WebSocketModule is missing.',
-      );
-    }
-
     this._eventEmitter = new NativeEventEmitter(WebSocketModule);
     this._socketId = nextWebSocketId++;
     this._registerEvents();
-    WebSocketModule.connect(
-      url,
-      protocols,
-      {headers},
-      this._socketId,
-    );
+    WebSocketModule.connect(url, protocols, {headers}, this._socketId);
   }
 
   get binaryType(): ?BinaryType {

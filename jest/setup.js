@@ -12,7 +12,6 @@
 const MockNativeMethods = jest.requireActual('./MockNativeMethods');
 const mockComponent = jest.requireActual('./mockComponent');
 
-jest.requireActual('../Libraries/polyfills/babelHelpers.js');
 jest.requireActual('../Libraries/polyfills/Object.es7.js');
 jest.requireActual('../Libraries/polyfills/error-guard');
 
@@ -28,7 +27,7 @@ global.cancelAnimationFrame = function(id) {
   clearTimeout(id);
 };
 
-jest.mock('setupDevtools').mock('npmlog');
+jest.mock('setupDevtools');
 
 // there's a __mock__ for it.
 jest.setMock('ErrorUtils', require('ErrorUtils'));
@@ -43,33 +42,14 @@ jest
   .mock('RefreshControl', () => jest.requireMock('RefreshControlMock'))
   .mock('ScrollView', () => jest.requireMock('ScrollViewMock'))
   .mock('ActivityIndicator', () => mockComponent('ActivityIndicator'))
-  .mock('ListView', () => jest.requireMock('ListViewMock'))
-  .mock('ListViewDataSource', () => {
-    const DataSource = jest.requireActual('ListViewDataSource');
-    DataSource.prototype.toJSON = function() {
-      function ListViewDataSource(dataBlob) {
-        this.items = 0;
-        // Ensure this doesn't throw.
-        try {
-          Object.keys(dataBlob).forEach(key => {
-            this.items +=
-              dataBlob[key] &&
-              (dataBlob[key].length || dataBlob[key].size || 0);
-          });
-        } catch (e) {
-          this.items = 'unknown';
-        }
-      }
-
-      return new ListViewDataSource(this._dataBlob);
-    };
-    return DataSource;
-  })
   .mock('AnimatedImplementation', () => {
     const AnimatedImplementation = jest.requireActual('AnimatedImplementation');
     const oldCreate = AnimatedImplementation.createAnimatedComponent;
-    AnimatedImplementation.createAnimatedComponent = function(Component) {
-      const Wrapped = oldCreate(Component);
+    AnimatedImplementation.createAnimatedComponent = function(
+      Component,
+      defaultProps,
+    ) {
+      const Wrapped = oldCreate(Component, defaultProps);
       Wrapped.__skipSetNativeProps_FOR_TESTS_ONLY = true;
       return Wrapped;
     };
@@ -89,6 +69,19 @@ jest
   .mock('ensureComponentIsNative', () => () => true);
 
 const mockNativeModules = {
+  AccessibilityInfo: {
+    addEventListener: jest.fn(),
+    announceForAccessibility: jest.fn(),
+    fetch: jest.fn(),
+    isBoldTextEnabled: jest.fn(),
+    isGrayscaleEnabled: jest.fn(),
+    isInvertColorsEnabled: jest.fn(),
+    isReduceMotionEnabled: jest.fn(),
+    isReduceTransparencyEnabled: jest.fn(),
+    isScreenReaderEnabled: jest.fn(),
+    removeEventListener: jest.fn(),
+    setAccessibilityFocus: jest.fn(),
+  },
   AlertManager: {
     alertWithArgs: jest.fn(),
   },
@@ -174,13 +167,18 @@ const mockNativeModules = {
   Linking: {
     openURL: jest.fn(),
     canOpenURL: jest.fn(() => Promise.resolve(true)),
+    openSettings: jest.fn(),
     addEventListener: jest.fn(),
     getInitialURL: jest.fn(() => Promise.resolve()),
     removeEventListener: jest.fn(),
     sendIntent: jest.fn(),
   },
   LocationObserver: {
+    addListener: jest.fn(),
     getCurrentPosition: jest.fn(),
+    removeListeners: jest.fn(),
+    requestAuthorization: jest.fn(),
+    setConfiguration: jest.fn(),
     startObserving: jest.fn(),
     stopObserving: jest.fn(),
   },
@@ -256,7 +254,17 @@ const mockNativeModules = {
     createView: jest.fn(),
     dispatchViewManagerCommand: jest.fn(),
     focus: jest.fn(),
-    getViewManagerConfig: jest.fn(),
+    getViewManagerConfig: jest.fn(name => {
+      if (name === 'AndroidDrawerLayout') {
+        return {
+          Constants: {
+            DrawerPosition: {
+              Left: 10,
+            },
+          },
+        };
+      }
+    }),
     setChildren: jest.fn(),
     manageChildren: jest.fn(),
     updateView: jest.fn(),

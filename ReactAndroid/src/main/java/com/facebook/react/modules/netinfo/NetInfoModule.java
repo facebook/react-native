@@ -7,13 +7,14 @@
 
 package com.facebook.react.modules.netinfo;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.v4.net.ConnectivityManagerCompat;
+import androidx.core.net.ConnectivityManagerCompat;
 import android.telephony.TelephonyManager;
 
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -30,6 +31,7 @@ import static com.facebook.react.modules.core.DeviceEventManagerModule.RCTDevice
 /**
  * Module that monitors and provides information about the connectivity state of the device.
  */
+@SuppressLint("MissingPermission")
 @ReactModule(name = NetInfoModule.NAME)
 public class NetInfoModule extends ReactContextBaseJavaModule
     implements LifecycleEventListener {

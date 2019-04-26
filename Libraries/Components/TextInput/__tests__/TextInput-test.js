@@ -50,12 +50,14 @@ describe('TextInput tests', () => {
   it('has expected instance functions', () => {
     expect(input.instance.isFocused).toBeInstanceOf(Function); // Would have prevented S168585
     expect(input.instance.clear).toBeInstanceOf(Function);
-    expect(input.instance.focus).toBeInstanceOf(Function);
-    expect(input.instance.blur).toBeInstanceOf(Function);
-    expect(input.instance.setNativeProps).toBeInstanceOf(Function);
-    expect(input.instance.measure).toBeInstanceOf(Function);
-    expect(input.instance.measureInWindow).toBeInstanceOf(Function);
-    expect(input.instance.measureLayout).toBeInstanceOf(Function);
+    expect(input.instance.focus).toBeInstanceOf(jest.fn().constructor);
+    expect(input.instance.blur).toBeInstanceOf(jest.fn().constructor);
+    expect(input.instance.setNativeProps).toBeInstanceOf(jest.fn().constructor);
+    expect(input.instance.measure).toBeInstanceOf(jest.fn().constructor);
+    expect(input.instance.measureInWindow).toBeInstanceOf(
+      jest.fn().constructor,
+    );
+    expect(input.instance.measureLayout).toBeInstanceOf(jest.fn().constructor);
   });
   it('calls onChange callbacks', () => {
     expect(input.props.value).toBe(initialValue);

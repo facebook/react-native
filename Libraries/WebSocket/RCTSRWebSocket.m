@@ -451,7 +451,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   CFHTTPMessageSetHeaderFieldValue(request, CFSTR("Host"), (__bridge CFStringRef)(_url.port ? [NSString stringWithFormat:@"%@:%@", _url.host, _url.port] : _url.host));
 
   NSMutableData *keyBytes = [[NSMutableData alloc] initWithLength:16];
-  int result = SecRandomCopyBytes(kSecRandomDefault, keyBytes.length, keyBytes.mutableBytes);
+  int result __unused = SecRandomCopyBytes(kSecRandomDefault, keyBytes.length, keyBytes.mutableBytes);
   assert(result == 0);
   _secKey = [keyBytes base64EncodedStringWithOptions:0];
   assert([_secKey length] == 24);
@@ -585,7 +585,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
       NSUInteger usedLength = 0;
 
-      BOOL success = [reason getBytes:(char *)mutablePayload.mutableBytes + sizeof(uint16_t) maxLength:payload.length - sizeof(uint16_t) usedLength:&usedLength encoding:NSUTF8StringEncoding options:NSStringEncodingConversionExternalRepresentation range:NSMakeRange(0, reason.length) remainingRange:&remainingRange];
+      BOOL success __unused = [reason getBytes:(char *)mutablePayload.mutableBytes + sizeof(uint16_t) maxLength:payload.length - sizeof(uint16_t) usedLength:&usedLength encoding:NSUTF8StringEncoding options:NSStringEncodingConversionExternalRepresentation range:NSMakeRange(0, reason.length) remainingRange:&remainingRange];
 
       assert(success);
       assert(remainingRange.length == 0);
@@ -645,6 +645,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (void)send:(id)data;
 {
   RCTAssert(self.readyState != RCTSR_CONNECTING, @"Invalid State: Cannot call send: until connection is open");
+  if (nil == data) {
+    return;
+  }
   // TODO: maybe not copy this for performance
   data = [data copy];
   dispatch_async(_workQueue, ^{
@@ -652,8 +655,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
       [self _sendFrameWithOpcode:RCTSROpCodeTextFrame data:[(NSString *)data dataUsingEncoding:NSUTF8StringEncoding]];
     } else if ([data isKindOfClass:[NSData class]]) {
       [self _sendFrameWithOpcode:RCTSROpCodeBinaryFrame data:data];
-    } else if (data == nil) {
-      [self _sendFrameWithOpcode:RCTSROpCodeTextFrame data:data];
     } else {
       assert(NO);
     }
@@ -963,7 +964,7 @@ static const uint8_t RCTSRPayloadLenMask   = 0x7F;
       [socket _handleFrameHeader:header curData:socket->_currentFrameData];
     } else {
       [socket _addConsumerWithDataLength:extra_bytes_needed callback:^(RCTSRWebSocket *_socket, NSData *_data) {
-        size_t mapped_size = _data.length;
+        size_t mapped_size __unused = _data.length;
         const void *mapped_buffer = _data.bytes;
         size_t offset = 0;
 
@@ -1223,7 +1224,7 @@ static const char CRLFCRLFBytes[] = {'\r', '\n', '\r', '\n'};
 
 static const size_t RCTSRFrameHeaderOverhead = 32;
 
-- (void)_sendFrameWithOpcode:(RCTSROpCode)opcode data:(id)data;
+- (void)_sendFrameWithOpcode:(RCTSROpCode)opcode data:(NSData *)data;
 {
   [self assertOnWorkQueue];
 
@@ -1231,9 +1232,7 @@ static const size_t RCTSRFrameHeaderOverhead = 32;
     return;
   }
 
-  RCTAssert([data isKindOfClass:[NSData class]] || [data isKindOfClass:[NSString class]], @"NSString or NSData");
-
-  size_t payloadLength = [data isKindOfClass:[NSString class]] ? [(NSString *)data lengthOfBytesUsingEncoding:NSUTF8StringEncoding] : [data length];
+  size_t payloadLength = [data length];
 
   NSMutableData *frame = [[NSMutableData alloc] initWithLength:payloadLength + RCTSRFrameHeaderOverhead];
   if (!frame) {
@@ -1257,14 +1256,7 @@ static const size_t RCTSRFrameHeaderOverhead = 32;
 
   size_t frame_buffer_size = 2;
 
-  const uint8_t *unmasked_payload = NULL;
-  if ([data isKindOfClass:[NSData class]]) {
-    unmasked_payload = (uint8_t *)[data bytes];
-  } else if ([data isKindOfClass:[NSString class]]) {
-    unmasked_payload =  (const uint8_t *)[data UTF8String];
-  } else {
-    return;
-  }
+  const uint8_t *unmasked_payload = (uint8_t *)[data bytes];
 
   if (payloadLength < 126) {
     frame_buffer[1] |= payloadLength;
@@ -1285,7 +1277,7 @@ static const size_t RCTSRFrameHeaderOverhead = 32;
     }
   } else {
     uint8_t *mask_key = frame_buffer + frame_buffer_size;
-    int result = SecRandomCopyBytes(kSecRandomDefault, sizeof(uint32_t), (uint8_t *)mask_key);
+    int result __unused = SecRandomCopyBytes(kSecRandomDefault, sizeof(uint32_t), (uint8_t *)mask_key);
     assert(result == 0);
     frame_buffer_size += sizeof(uint32_t);
 

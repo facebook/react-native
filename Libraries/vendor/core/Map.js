@@ -26,9 +26,6 @@ module.exports = (function(global, undefined) {
     return global.Map;
   }
 
-  // In case this module has not already been evaluated, import it now.
-  require('./_wrapObjectFreezeAndFriends');
-
   const hasOwn = Object.prototype.hasOwnProperty;
 
   /**
@@ -546,8 +543,10 @@ module.exports = (function(global, undefined) {
       }
 
       if (!isES5) {
-        if (hasOwn.call(o, "propertyIsEnumerable") &&
-            hasOwn.call(o.propertyIsEnumerable, hashProperty)) {
+        if (
+          hasOwn.call(o, 'propertyIsEnumerable') &&
+          hasOwn.call(o.propertyIsEnumerable, hashProperty)
+        ) {
           return o.propertyIsEnumerable[hashProperty];
         }
       }
@@ -571,7 +570,7 @@ module.exports = (function(global, undefined) {
           o.propertyIsEnumerable = function() {
             return propIsEnumerable.apply(this, arguments);
           };
-          return o.propertyIsEnumerable[hashProperty] = ++hashCounter;
+          return (o.propertyIsEnumerable[hashProperty] = ++hashCounter);
         }
       }
 

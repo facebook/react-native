@@ -12,8 +12,6 @@ import static com.facebook.react.uimanager.events.TouchesHelper.TOP_TOUCH_CANCEL
 import static com.facebook.react.uimanager.events.TouchesHelper.TOP_TOUCH_END_KEY;
 import static com.facebook.react.uimanager.events.TouchesHelper.TOUCHES_KEY;
 
-import android.annotation.TargetApi;
-import android.os.Build;
 import android.util.Pair;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.ReadableMap;
@@ -27,7 +25,6 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.Nullable;
 
-@TargetApi(Build.VERSION_CODES.ECLAIR)
 public class FabricEventEmitter implements RCTEventEmitter {
 
   private static final String TAG = FabricEventEmitter.class.getSimpleName();

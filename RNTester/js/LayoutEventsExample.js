@@ -11,10 +11,18 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {Image, LayoutAnimation, StyleSheet, Text, View} = ReactNative;
+const {
+  Image,
+  LayoutAnimation,
+  StyleSheet,
+  Text,
+  View,
+} = require('react-native');
 
-import type {ViewLayout, ViewLayoutEvent} from 'ViewPropTypes';
+import type {
+  ViewLayout,
+  ViewLayoutEvent,
+} from '../../Libraries/Components/View/ViewPropTypes';
 
 type Props = $ReadOnly<{||}>;
 type State = {
@@ -98,7 +106,10 @@ class LayoutEventExample extends React.Component<Props, State> {
           />
           <Text>
             ViewLayout:{' '}
-            {JSON.stringify(this.state.viewLayout, null, '  ') + '\n\n'}
+            {/* $FlowFixMe(>=0.95.0 site=react_native_fb) This comment
+             * suppresses an error found when Flow v0.95 was deployed. To see
+             * the error, delete this comment and run Flow. */
+            JSON.stringify(this.state.viewLayout, null, '  ') + '\n\n'}
           </Text>
           <Text ref="txt" onLayout={this.onTextLayout} style={styles.text}>
             A simple piece of text.{this.state.extraText}

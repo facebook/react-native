@@ -7,7 +7,7 @@ package com.facebook.react.testing.rule;
 
 import android.app.Activity;
 import android.os.Build;
-import android.support.test.rule.ActivityTestRule;
+import androidx.test.rule.ActivityTestRule;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactPackage;
@@ -114,11 +114,7 @@ public class ReactNativeTestRule implements TestRule {
                       @Override
                       public void onGlobalLayout() {
                         if (isLayoutUpdated.get()) {
-                          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                            mView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                          } else {
-                            mView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                          }
+                          mView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                           mLatch.countDown();
                         }
                       }
@@ -176,5 +172,9 @@ public class ReactNativeTestRule implements TestRule {
   /** Returns the react view */
   public ReactRootView getView() {
     return mView;
+  }
+
+  public ReactContext getContext() {
+    return mReactInstanceManager.getCurrentReactContext();
   }
 }

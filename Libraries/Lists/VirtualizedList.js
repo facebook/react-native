@@ -24,9 +24,6 @@ const ViewabilityHelper = require('ViewabilityHelper');
 const flattenStyle = require('flattenStyle');
 const infoLog = require('infoLog');
 const invariant = require('invariant');
-/* $FlowFixMe(>=0.54.0 site=react_native_oss) This comment suppresses an error
- * found when Flow v0.54 was deployed. To see the error delete this comment and
- * run Flow. */
 const warning = require('fbjs/lib/warning');
 
 const {computeWindowedRenderLimits} = require('VirtualizeUtils');
@@ -79,7 +76,7 @@ type OptionalProps = {
    * unmounts react instances that are outside of the render window. You should only need to disable
    * this for debugging purposes.
    */
-  disableVirtualization: boolean,
+  disableVirtualization?: ?boolean,
   /**
    * A marker property for telling the list to re-render (since it implements `PureComponent`). If
    * any of your `renderItem`, Header, Footer, etc. functions depend on anything outside of the
@@ -290,9 +287,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
      * suppresses an error when upgrading Flow's support for React. To see the
      * error delete this comment and run Flow. */
     this._scrollRef.scrollTo(
-      /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
-       * comment suppresses an error when upgrading Flow's support for React.
-       * To see the error delete this comment and run Flow. */
       this.props.horizontal ? {x: offset, animated} : {y: offset, animated},
     );
   }
@@ -341,9 +335,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
      * suppresses an error when upgrading Flow's support for React. To see the
      * error delete this comment and run Flow. */
     this._scrollRef.scrollTo(
-      /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
-       * comment suppresses an error when upgrading Flow's support for React.
-       * To see the error delete this comment and run Flow. */
       horizontal ? {x: offset, animated} : {y: offset, animated},
     );
   }
@@ -382,9 +373,6 @@ class VirtualizedList extends React.PureComponent<Props, State> {
      * suppresses an error when upgrading Flow's support for React. To see the
      * error delete this comment and run Flow. */
     this._scrollRef.scrollTo(
-      /* $FlowFixMe(>=0.53.0 site=react_native_fb,react_native_oss) This
-       * comment suppresses an error when upgrading Flow's support for React.
-       * To see the error delete this comment and run Flow. */
       this.props.horizontal ? {x: offset, animated} : {y: offset, animated},
     );
   }
@@ -724,7 +712,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   };
 
   _isVirtualizationDisabled(): boolean {
-    return this.props.disableVirtualization;
+    return this.props.disableVirtualization || false;
   }
 
   _isNestedWithSameOrientation(): boolean {
@@ -813,7 +801,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
             if (stickyIndicesFromProps.has(ii + stickyOffset)) {
               const initBlock = this._getFrameMetricsApprox(lastInitialIndex);
               const stickyBlock = this._getFrameMetricsApprox(ii);
-              const leadSpace = stickyBlock.offset - initBlock.offset;
+              const leadSpace =
+                stickyBlock.offset -
+                initBlock.offset -
+                (this.props.initialScrollIndex ? 0 : initBlock.length);
               cells.push(
                 <View key="$sticky_lead" style={{[spacerKey]: leadSpace}} />,
               );
@@ -897,7 +888,10 @@ class VirtualizedList extends React.PureComponent<Props, State> {
               element.props.onLayout(event);
             }
           },
-          style: [element.props.style, inversionStyle],
+          style: StyleSheet.compose(
+            inversionStyle,
+            element.props.style,
+          ),
         }),
       );
     }
@@ -941,7 +935,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           : this.props.inverted,
       stickyHeaderIndices,
     };
-    if (inversionStyle && itemCount !== 0) {
+    if (inversionStyle) {
       /* $FlowFixMe(>=0.70.0 site=react_native_fb) This comment suppresses an
        * error found when Flow v0.70 was deployed. To see the error delete
        * this comment and run Flow. */
@@ -983,7 +977,19 @@ class VirtualizedList extends React.PureComponent<Props, State> {
         tuple.viewabilityHelper.resetViewableIndices();
       });
     }
+    // The `this._hiPriInProgress` is guaranteeing a hiPri cell update will only happen
+    // once per fiber update. The `_scheduleCellsToRenderUpdate` will set it to true
+    // if a hiPri update needs to perform. If `componentDidUpdate` is triggered with
+    // `this._hiPriInProgress=true`, means it's triggered by the hiPri update. The
+    // `_scheduleCellsToRenderUpdate` will check this condition and not perform
+    // another hiPri update.
+    const hiPriInProgress = this._hiPriInProgress;
     this._scheduleCellsToRenderUpdate();
+    // Make sure setting `this._hiPriInProgress` back to false after `componentDidUpdate`
+    // is triggered with `this._hiPriInProgress = true`
+    if (hiPriInProgress) {
+      this._hiPriInProgress = false;
+    }
   }
 
   _averageCellLength = 0;
@@ -994,13 +1000,14 @@ class VirtualizedList extends React.PureComponent<Props, State> {
   _frames = {};
   _footerLength = 0;
   _hasDataChangedSinceEndReached = true;
+  _hasDoneInitialScroll = false;
   _hasInteracted = false;
   _hasMore = false;
   _hasWarned = {};
-  _highestMeasuredFrameIndex = 0;
   _headerLength = 0;
+  _hiPriInProgress: boolean = false; // flag to prevent infinite hiPri cell limit update
+  _highestMeasuredFrameIndex = 0;
   _indicesToKeys: Map<number, string> = new Map();
-  _hasDoneInitialScroll = false;
   _nestedChildLists: Map<
     string,
     {ref: ?VirtualizedList, state: ?ChildListState},
@@ -1110,6 +1117,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
 
     this._computeBlankness();
+    this._updateViewableItems(this.props.data);
   };
 
   _onCellUnmount = (cellKey: string) => {
@@ -1185,7 +1193,8 @@ class VirtualizedList extends React.PureComponent<Props, State> {
 
   _renderDebugOverlay() {
     const normalize =
-      this._scrollMetrics.visibleLength / this._scrollMetrics.contentLength;
+      this._scrollMetrics.visibleLength /
+      (this._scrollMetrics.contentLength || 1);
     const framesInLayout = [];
     const itemCount = this.props.getItemCount(this.props.data);
     for (let ii = 0; ii < itemCount; ii++) {
@@ -1422,7 +1431,14 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // Otherwise, it would just render as many cells as it can (of zero dimension),
     // each time through attempting to render more (limited by maxToRenderPerBatch),
     // starving the renderer from actually laying out the objects and computing _averageCellLength.
-    if (hiPri && this._averageCellLength) {
+    // If this is triggered in an `componentDidUpdate` followed by a hiPri cellToRenderUpdate
+    // We shouldn't do another hipri cellToRenderUpdate
+    if (
+      hiPri &&
+      (this._averageCellLength || this.props.getItemLayout) &&
+      !this._hiPriInProgress
+    ) {
+      this._hiPriInProgress = true;
       // Don't worry about interactions when scrolling quickly; focus on filling content as fast
       // as possible.
       this._updateCellsToRenderBatcher.dispose({abort: true});
@@ -1739,8 +1755,8 @@ class CellRenderer extends React.PureComponent<
         ? [{flexDirection: 'row-reverse'}, inversionStyle]
         : [{flexDirection: 'column-reverse'}, inversionStyle]
       : horizontal
-        ? [{flexDirection: 'row'}, inversionStyle]
-        : inversionStyle;
+      ? [{flexDirection: 'row'}, inversionStyle]
+      : inversionStyle;
     if (!CellRendererComponent) {
       return (
         /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an

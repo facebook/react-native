@@ -34,10 +34,10 @@ type ResponseHandlers = $ReadOnly<{|
   onResponderTerminationRequest: () => boolean,
 |}>;
 
-type Props = $ReadOnly<{
+type Props = $ReadOnly<{|
   ...TextProps,
   forwardedRef: ?React.Ref<'RCTText' | 'RCTVirtualText'>,
-}>;
+|}>;
 
 type State = {|
   touchable: {|
@@ -66,10 +66,15 @@ const viewConfig = {
     minimumFontScale: true,
     textBreakStrategy: true,
     onTextLayout: true,
+    onInlineViewLayout: true,
+    dataDetectorType: true,
   },
   directEventTypes: {
     topTextLayout: {
       registrationName: 'onTextLayout',
+    },
+    topInlineViewLayout: {
+      registrationName: 'onInlineViewLayout',
     },
   },
   uiViewClassName: 'RCTText',
@@ -286,7 +291,6 @@ TextToExport.displayName = 'Text';
  * and run Flow. */
 TextToExport.propTypes = DeprecatedTextPropTypes;
 
-/* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an error
- * found when Flow v0.89 was deployed. To see the error, delete this comment
- * and run Flow. */
-module.exports = (TextToExport: Class<NativeComponent<TextProps>>);
+module.exports = ((TextToExport: $FlowFixMe): Class<
+  NativeComponent<TextProps>,
+>);

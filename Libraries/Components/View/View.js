@@ -11,10 +11,7 @@
 'use strict';
 
 const React = require('React');
-const TextAncestor = require('TextAncestor');
 const ViewNativeComponent = require('ViewNativeComponent');
-
-const invariant = require('invariant');
 
 import type {ViewProps} from 'ViewPropTypes';
 
@@ -35,17 +32,7 @@ if (__DEV__) {
       props: Props,
       forwardedRef: React.Ref<typeof ViewNativeComponent>,
     ) => {
-      return (
-        <TextAncestor.Consumer>
-          {hasTextAncestor => {
-            invariant(
-              !hasTextAncestor,
-              'Nesting of <View> within <Text> is not currently supported.',
-            );
-            return <ViewNativeComponent {...props} ref={forwardedRef} />;
-          }}
-        </TextAncestor.Consumer>
-      );
+      return <ViewNativeComponent {...props} ref={forwardedRef} />;
     };
     ViewToExport = React.forwardRef(View);
     ViewToExport.displayName = 'View';

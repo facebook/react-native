@@ -21,7 +21,6 @@ const nullthrows = require('nullthrows');
 
 const DrawerConsts = UIManager.getViewManagerConfig('AndroidDrawerLayout')
   .Constants;
-
 const dismissKeyboard = require('dismissKeyboard');
 const AndroidDrawerLayoutNativeComponent = require('AndroidDrawerLayoutNativeComponent');
 
@@ -288,7 +287,10 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
 
   /**
    * Closing and opening example
-   * Note: To access the drawer you have to give it a ref. Refs do not work on stateless components
+   * Note: To access the drawer you have to give it a ref
+   *
+   * Class component:
+   *
    * render () {
    *   this.openDrawer = () => {
    *     this.refs.DRAWER.openDrawer()
@@ -298,9 +300,25 @@ class DrawerLayoutAndroid extends React.Component<Props, State> {
    *   }
    *   return (
    *     <DrawerLayoutAndroid ref={'DRAWER'}>
+   *      {children}
    *     </DrawerLayoutAndroid>
    *   )
    * }
+   *
+   * Function component:
+   *
+   * const drawerRef = useRef()
+   * const openDrawer = () => {
+   *   drawerRef.current.openDrawer()
+   * }
+   * const closeDrawer = () => {
+   *   drawerRef.current.closeDrawer()
+   * }
+   * return (
+   *   <DrawerLayoutAndroid ref={drawerRef}>
+   *     {children}
+   *   </DrawerLayoutAndroid>
+   * )
    */
   _getDrawerLayoutHandle() {
     return ReactNative.findNodeHandle(this._nativeRef.current);

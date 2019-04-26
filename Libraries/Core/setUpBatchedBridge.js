@@ -30,8 +30,8 @@ BatchedBridge.registerLazyCallableModule('RCTDeviceEventEmitter', () =>
 BatchedBridge.registerLazyCallableModule('RCTNativeAppEventEmitter', () =>
   require('RCTNativeAppEventEmitter'),
 );
-BatchedBridge.registerLazyCallableModule('PerformanceLogger', () =>
-  require('PerformanceLogger'),
+BatchedBridge.registerLazyCallableModule('GlobalPerformanceLogger', () =>
+  require('GlobalPerformanceLogger'),
 );
 BatchedBridge.registerLazyCallableModule('JSDevSupportModule', () =>
   require('JSDevSupportModule'),

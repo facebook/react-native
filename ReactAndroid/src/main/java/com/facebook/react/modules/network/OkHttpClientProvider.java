@@ -13,6 +13,8 @@ import android.os.Build;
 import com.facebook.common.logging.FLog;
 
 import java.io.File;
+import java.security.Provider;
+import java.security.Security;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -69,7 +71,14 @@ public class OkHttpClientProvider {
       .writeTimeout(0, TimeUnit.MILLISECONDS)
       .cookieJar(new ReactCookieJarContainer());
 
-    return enableTls12OnPreLollipop(client);
+    try {
+      Class ConscryptProvider = Class.forName("org.conscrypt.OpenSSLProvider");
+      Security.insertProviderAt(
+        (Provider) ConscryptProvider.newInstance(), 1);
+      return client;
+    } catch (Exception e) {
+      return enableTls12OnPreLollipop(client);
+    }
   }
 
   public static OkHttpClient.Builder createClientBuilder(Context context) {
@@ -96,7 +105,7 @@ public class OkHttpClientProvider {
     enables it.
    */
   public static OkHttpClient.Builder enableTls12OnPreLollipop(OkHttpClient.Builder client) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
       try {
         client.sslSocketFactory(new TLSSocketFactory());
 

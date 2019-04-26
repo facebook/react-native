@@ -8,9 +8,8 @@
 package com.facebook.react.uimanager;
 
 import android.os.SystemClock;
+import android.view.View;
 import com.facebook.common.logging.FLog;
-import com.facebook.react.animation.Animation;
-import com.facebook.react.animation.AnimationRegistry;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedRunnable;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -21,7 +20,6 @@ import com.facebook.react.bridge.SoftAssertions;
 import com.facebook.react.bridge.UiThreadUtil;
 import com.facebook.react.common.ReactConstants;
 import com.facebook.react.modules.core.ReactChoreographer;
-import com.facebook.react.uimanager.common.SizeMonitoringFrameLayout;
 import com.facebook.react.uimanager.debug.NotThreadSafeViewHierarchyUpdateDebugListener;
 import com.facebook.systrace.Systrace;
 import com.facebook.systrace.SystraceMessage;
@@ -33,9 +31,9 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.GuardedBy;
 
 /**
- * This class acts as a buffer for command executed on {@link NativeViewHierarchyManager} or on
- * {@link AnimationRegistry}. It expose similar methods as mentioned classes but instead of
- * executing commands immediately it enqueues those operations in a queue that is then flushed from
+ * This class acts as a buffer for command executed on {@link NativeViewHierarchyManager}.
+ * It expose similar methods as mentioned classes but instead of executing commands
+ * immediately it enqueues those operations in a queue that is then flushed from
  * {@link UIManagerModule} once JS batch of ui operations is finished. This is to make sure that we
  * execute all the JS operation coming from a single batch a single loop of the main (UI) android
  * looper.
@@ -210,16 +208,19 @@ public class UIViewOperationQueue {
     private final @Nullable int[] mIndicesToRemove;
     private final @Nullable ViewAtIndex[] mViewsToAdd;
     private final @Nullable int[] mTagsToDelete;
+    private final @Nullable int[] mIndicesToDelete;
 
     public ManageChildrenOperation(
         int tag,
         @Nullable int[] indicesToRemove,
         @Nullable ViewAtIndex[] viewsToAdd,
-        @Nullable int[] tagsToDelete) {
+        @Nullable int[] tagsToDelete,
+        @Nullable int[] indicesToDelete) {
       super(tag);
       mIndicesToRemove = indicesToRemove;
       mViewsToAdd = viewsToAdd;
       mTagsToDelete = tagsToDelete;
+      mIndicesToDelete = indicesToDelete;
     }
 
     @Override
@@ -228,7 +229,8 @@ public class UIViewOperationQueue {
           mTag,
           mIndicesToRemove,
           mViewsToAdd,
-          mTagsToDelete);
+          mTagsToDelete,
+          mIndicesToDelete);
     }
   }
 
@@ -352,63 +354,6 @@ public class UIViewOperationQueue {
     }
   }
 
-  private class RegisterAnimationOperation extends AnimationOperation {
-
-    private final Animation mAnimation;
-
-    private RegisterAnimationOperation(Animation animation) {
-      super(animation.getAnimationID());
-      mAnimation = animation;
-    }
-
-    @Override
-    public void execute() {
-      mAnimationRegistry.registerAnimation(mAnimation);
-    }
-  }
-
-  private class AddAnimationOperation extends AnimationOperation {
-    private final int mReactTag;
-    private final Callback mSuccessCallback;
-
-    private AddAnimationOperation(int reactTag, int animationID, Callback successCallback) {
-      super(animationID);
-      mReactTag = reactTag;
-      mSuccessCallback = successCallback;
-    }
-
-    @Override
-    public void execute() {
-      Animation animation = mAnimationRegistry.getAnimation(mAnimationID);
-      if (animation != null) {
-        mNativeViewHierarchyManager.startAnimationForNativeView(
-            mReactTag,
-            animation,
-            mSuccessCallback);
-      } else {
-        // node or animation not found
-        // TODO(5712813): cleanup callback in JS callbacks table in case of an error
-        throw new IllegalViewOperationException("Animation with id " + mAnimationID
-            + " was not found");
-      }
-    }
-  }
-
-  private final class RemoveAnimationOperation extends AnimationOperation {
-
-    private RemoveAnimationOperation(int animationID) {
-      super(animationID);
-    }
-
-    @Override
-    public void execute() {
-      Animation animation = mAnimationRegistry.getAnimation(mAnimationID);
-      if (animation != null) {
-        animation.cancel();
-      }
-    }
-  }
-
   private class SetLayoutAnimationEnabledOperation implements UIOperation {
     private final boolean mEnabled;
 
@@ -424,14 +369,16 @@ public class UIViewOperationQueue {
 
   private class ConfigureLayoutAnimationOperation implements UIOperation {
     private final ReadableMap mConfig;
+    private final Callback mAnimationComplete;
 
-    private ConfigureLayoutAnimationOperation(final ReadableMap config) {
+    private ConfigureLayoutAnimationOperation(final ReadableMap config, final Callback animationComplete) {
       mConfig = config;
+      mAnimationComplete = animationComplete;
     }
 
     @Override
     public void execute() {
-      mNativeViewHierarchyManager.configureLayoutAnimation(mConfig);
+      mNativeViewHierarchyManager.configureLayoutAnimation(mConfig, mAnimationComplete);
     }
   }
 
@@ -600,7 +547,6 @@ public class UIViewOperationQueue {
   }
 
   private final NativeViewHierarchyManager mNativeViewHierarchyManager;
-  private final AnimationRegistry mAnimationRegistry;
   private final Object mDispatchRunnablesLock = new Object();
   private final Object mNonBatchedOperationsLock = new Object();
   private final DispatchUIFrameCallback mDispatchUIFrameCallback;
@@ -633,7 +579,6 @@ public class UIViewOperationQueue {
       NativeViewHierarchyManager nativeViewHierarchyManager,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
     mNativeViewHierarchyManager = nativeViewHierarchyManager;
-    mAnimationRegistry = nativeViewHierarchyManager.getAnimationRegistry();
     mDispatchUIFrameCallback =
         new DispatchUIFrameCallback(
             reactContext,
@@ -673,11 +618,8 @@ public class UIViewOperationQueue {
     return mOperations.isEmpty();
   }
 
-  public void addRootView(
-    final int tag,
-    final SizeMonitoringFrameLayout rootView,
-    final ThemedReactContext themedRootContext) {
-    mNativeViewHierarchyManager.addRootView(tag, rootView, themedRootContext);
+  public void addRootView(final int tag, final View rootView) {
+    mNativeViewHierarchyManager.addRootView(tag, rootView);
   }
 
   /**
@@ -781,9 +723,10 @@ public class UIViewOperationQueue {
       int reactTag,
       @Nullable int[] indicesToRemove,
       @Nullable ViewAtIndex[] viewsToAdd,
-      @Nullable int[] tagsToDelete) {
+      @Nullable int[] tagsToDelete,
+      @Nullable int[] indicesToDelete) {
     mOperations.add(
-        new ManageChildrenOperation(reactTag, indicesToRemove, viewsToAdd, tagsToDelete));
+        new ManageChildrenOperation(reactTag, indicesToRemove, viewsToAdd, tagsToDelete, indicesToDelete));
   }
 
   public void enqueueSetChildren(
@@ -793,21 +736,6 @@ public class UIViewOperationQueue {
       new SetChildrenOperation(reactTag, childrenTags));
   }
 
-  public void enqueueRegisterAnimation(Animation animation) {
-    mOperations.add(new RegisterAnimationOperation(animation));
-  }
-
-  public void enqueueAddAnimation(
-      final int reactTag,
-      final int animationID,
-      final Callback onSuccess) {
-    mOperations.add(new AddAnimationOperation(reactTag, animationID, onSuccess));
-  }
-
-  public void enqueueRemoveAnimation(int animationID) {
-    mOperations.add(new RemoveAnimationOperation(animationID));
-  }
-
   public void enqueueSetLayoutAnimationEnabled(
       final boolean enabled) {
     mOperations.add(new SetLayoutAnimationEnabledOperation(enabled));
@@ -815,9 +743,8 @@ public class UIViewOperationQueue {
 
   public void enqueueConfigureLayoutAnimation(
       final ReadableMap config,
-      final Callback onSuccess,
-      final Callback onError) {
-    mOperations.add(new ConfigureLayoutAnimationOperation(config));
+      final Callback onAnimationComplete) {
+    mOperations.add(new ConfigureLayoutAnimationOperation(config, onAnimationComplete));
   }
 
   public void enqueueMeasure(

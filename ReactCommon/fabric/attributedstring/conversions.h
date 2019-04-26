@@ -36,8 +36,8 @@ inline std::string toString(const EllipsizeMode &ellipsisMode) {
   }
 }
 
-inline void fromDynamic(const folly::dynamic &value, EllipsizeMode &result) {
-  auto string = value.getString();
+inline void fromRawValue(const RawValue &value, EllipsizeMode &result) {
+  auto string = (std::string)value;
   if (string == "clip") {
     result = EllipsizeMode::Clip;
     return;
@@ -57,8 +57,8 @@ inline void fromDynamic(const folly::dynamic &value, EllipsizeMode &result) {
   abort();
 }
 
-inline void fromDynamic(const folly::dynamic &value, FontWeight &result) {
-  auto string = value.asString();
+inline void fromRawValue(const RawValue &value, FontWeight &result) {
+  auto string = (std::string)value;
   if (string == "normal") {
     result = FontWeight::Regular;
     return;
@@ -114,8 +114,8 @@ inline std::string toString(const FontWeight &fontWeight) {
   return folly::to<std::string>((int)fontWeight);
 }
 
-inline void fromDynamic(const folly::dynamic &value, FontStyle &result) {
-  auto string = value.asString();
+inline void fromRawValue(const RawValue &value, FontStyle &result) {
+  auto string = (std::string)value;
   if (string == "normal") {
     result = FontStyle::Normal;
     return;
@@ -142,28 +142,28 @@ inline std::string toString(const FontStyle &fontStyle) {
   }
 }
 
-inline void fromDynamic(const folly::dynamic &value, FontVariant &result) {
-  assert(value.isArray());
+inline void fromRawValue(const RawValue &value, FontVariant &result) {
+  assert(value.hasType<std::vector<std::string>>());
   result = FontVariant::Default;
-  for (auto &&item : value) {
-    auto string = item.asString();
-    if (string == "small-caps") {
+  auto items = std::vector<std::string>{value};
+  for (const auto &item : items) {
+    if (item == "small-caps") {
       result = (FontVariant)((int)result | (int)FontVariant::SmallCaps);
       continue;
     }
-    if (string == "oldstyle-nums") {
+    if (item == "oldstyle-nums") {
       result = (FontVariant)((int)result | (int)FontVariant::OldstyleNums);
       continue;
     }
-    if (string == "lining-nums") {
+    if (item == "lining-nums") {
       result = (FontVariant)((int)result | (int)FontVariant::LiningNums);
       continue;
     }
-    if (string == "tabular-nums") {
+    if (item == "tabular-nums") {
       result = (FontVariant)((int)result | (int)FontVariant::TabularNums);
       continue;
     }
-    if (string == "proportional-nums") {
+    if (item == "proportional-nums") {
       result = (FontVariant)((int)result | (int)FontVariant::ProportionalNums);
       continue;
     }
@@ -196,8 +196,8 @@ inline std::string toString(const FontVariant &fontVariant) {
   return result;
 }
 
-inline void fromDynamic(const folly::dynamic &value, TextAlignment &result) {
-  auto string = value.asString();
+inline void fromRawValue(const RawValue &value, TextAlignment &result) {
+  auto string = (std::string)value;
   if (string == "natural") {
     result = TextAlignment::Natural;
     return;
@@ -236,8 +236,8 @@ inline std::string toString(const TextAlignment &textAlignment) {
   }
 }
 
-inline void fromDynamic(const folly::dynamic &value, WritingDirection &result) {
-  auto string = value.asString();
+inline void fromRawValue(const RawValue &value, WritingDirection &result) {
+  auto string = (std::string)value;
   if (string == "natural") {
     result = WritingDirection::Natural;
     return;
@@ -264,10 +264,10 @@ inline std::string toString(const WritingDirection &writingDirection) {
   }
 }
 
-inline void fromDynamic(
-    const folly::dynamic &value,
+inline void fromRawValue(
+    const RawValue &value,
     TextDecorationLineType &result) {
-  auto string = value.asString();
+  auto string = (std::string)value;
   if (string == "none") {
     result = TextDecorationLineType::None;
     return;
@@ -276,11 +276,15 @@ inline void fromDynamic(
     result = TextDecorationLineType::Underline;
     return;
   }
-  if (string == "strikethrough") {
+    
+  // TODO: remove "line-through" after deprecation
+  if (string == "strikethrough" || string == "line-through") {
     result = TextDecorationLineType::Strikethrough;
     return;
   }
-  if (string == "underline-strikethrough") {
+    
+  // TODO: remove "underline line-through" after "line-through" deprecation
+  if (string == "underline-strikethrough" || string == "underline line-through") {
     result = TextDecorationLineType::UnderlineStrikethrough;
     return;
   }
@@ -301,10 +305,10 @@ inline std::string toString(
   }
 }
 
-inline void fromDynamic(
-    const folly::dynamic &value,
+inline void fromRawValue(
+    const RawValue &value,
     TextDecorationLineStyle &result) {
-  auto string = value.asString();
+  auto string = (std::string)value;
   if (string == "single") {
     result = TextDecorationLineStyle::Single;
     return;
@@ -332,10 +336,10 @@ inline std::string toString(
   }
 }
 
-inline void fromDynamic(
-    const folly::dynamic &value,
+inline void fromRawValue(
+    const RawValue &value,
     TextDecorationLinePattern &result) {
-  auto string = value.asString();
+  auto string = (std::string)value;
   if (string == "solid") {
     result = TextDecorationLinePattern::Solid;
     return;
@@ -374,6 +378,8 @@ inline std::string toString(
       return "dash-dot-dot";
   }
 }
+
+#ifdef ANDROID
 
 inline folly::dynamic toDynamic(
     const ParagraphAttributes &paragraphAttributes) {
@@ -489,6 +495,8 @@ inline folly::dynamic toDynamic(const AttributedString &attributedString) {
   value("string", attributedString.getString());
   return value;
 }
+
+#endif
 
 } // namespace react
 } // namespace facebook

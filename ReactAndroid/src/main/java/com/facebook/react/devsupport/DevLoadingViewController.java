@@ -10,11 +10,9 @@ package com.facebook.react.devsupport;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
-import android.os.Build;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.widget.PopupWindow;
@@ -31,7 +29,6 @@ import javax.annotation.Nullable;
 /**
  * Controller to display loading messages on top of the screen. All methods are thread safe.
  */
-@TargetApi(Build.VERSION_CODES.CUPCAKE)
 public class DevLoadingViewController {
   private static boolean sEnabled = true;
   private final ReactInstanceManagerDevHelper mReactInstanceManagerHelper;

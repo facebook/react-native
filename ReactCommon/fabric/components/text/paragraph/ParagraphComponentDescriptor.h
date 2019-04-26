@@ -11,9 +11,10 @@
 #include "ParagraphShadowNode.h"
 
 #include <folly/container/EvictingCacheMap.h>
+#include <react/config/ReactNativeConfig.h>
 #include <react/core/ConcreteComponentDescriptor.h>
 #include <react/textlayoutmanager/TextLayoutManager.h>
-#include <react/uimanager/ContextContainer.h>
+#include <react/utils/ContextContainer.h>
 
 namespace facebook {
 namespace react {
@@ -25,8 +26,8 @@ class ParagraphComponentDescriptor final
     : public ConcreteComponentDescriptor<ParagraphShadowNode> {
  public:
   ParagraphComponentDescriptor(
-      SharedEventDispatcher eventDispatcher,
-      const SharedContextContainer &contextContainer)
+      EventDispatcher::Shared eventDispatcher,
+      ContextContainer::Shared const &contextContainer)
       : ConcreteComponentDescriptor<ParagraphShadowNode>(eventDispatcher) {
     // Every single `ParagraphShadowNode` will have a reference to
     // a shared `TextLayoutManager`.
@@ -54,6 +55,7 @@ class ParagraphComponentDescriptor final
     }
   }
 
+ protected:
   void adopt(UnsharedShadowNode shadowNode) const override {
     ConcreteComponentDescriptor::adopt(shadowNode);
 
@@ -69,6 +71,8 @@ class ParagraphComponentDescriptor final
     // measurements.
     paragraphShadowNode->setMeasureCache(
         measureCache_ ? measureCache_.get() : nullptr);
+
+    paragraphShadowNode->dirtyLayout();
 
     // All `ParagraphShadowNode`s must have leaf Yoga nodes with properly
     // setup measure function.

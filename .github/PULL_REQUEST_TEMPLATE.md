@@ -12,4 +12,4 @@
 
 ## Test Plan
 
-<!-- Write your test plan here (**REQUIRED**). Demonstrate the code is solid. Example: The exact commands you ran and their output, screenshots / videos if the pull request changes UI. -->
+<!-- Demonstrate the code is solid. Example: The exact commands you ran and their output, screenshots / videos if the pull request changes UI. -->

@@ -9,6 +9,7 @@
 
 #import <cassert>
 
+#import <React/RCTBridge+Private.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTCxxModule.h>
 #import <React/RCTLog.h>
@@ -50,7 +51,7 @@ static Class getFallbackClassFromName(const char *name) {
 {
   if (self = [super init]) {
     _runtime = runtime;
-    _jsInvoker = std::make_shared<react::JSCallInvoker>(bridge.jsMessageThread);
+    _jsInvoker = std::make_shared<react::JSCallInvoker>(bridge.reactInstance);
     _delegate = delegate;
     _bridge = bridge;
 
@@ -114,8 +115,9 @@ static Class getFallbackClassFromName(const char *name) {
 
   // If we request that a TurboModule be created, its respective ObjC class must exist
   // If the class doesn't exist, then provideRCTTurboModule returns nil
-  // Therefore, module cannot be nil.
-  assert(module);
+  if (!module) {
+    return nullptr;
+  }
 
   Class moduleClass = [module class];
 
@@ -123,6 +125,7 @@ static Class getFallbackClassFromName(const char *name) {
   // allow it to do so.
   if ([module respondsToSelector:@selector(getTurboModuleWithJsInvoker:)]) {
     auto turboModule = [module getTurboModuleWithJsInvoker:_jsInvoker];
+    assert(turboModule != nullptr);
     _turboModuleCache.insert({moduleName, turboModule});
     return turboModule;
   }
@@ -143,7 +146,9 @@ static Class getFallbackClassFromName(const char *name) {
    * Step 2d: Return an exact sub-class of ObjC TurboModule
    */
   auto turboModule = [_delegate getTurboModule:moduleName instance:module jsInvoker:_jsInvoker];
-  _turboModuleCache.insert({moduleName, turboModule});
+  if (turboModule != nullptr) {
+    _turboModuleCache.insert({moduleName, turboModule});
+  }
   return turboModule;
 }
 
@@ -168,11 +173,13 @@ static Class getFallbackClassFromName(const char *name) {
   Class moduleClass;
   if ([_delegate respondsToSelector:@selector(getModuleClassFromName:)]) {
     moduleClass = [_delegate getModuleClassFromName:moduleName];
-  } else {
-    moduleClass = getFallbackClassFromName(moduleName);
   }
 
   if (!moduleClass) {
+    moduleClass = getFallbackClassFromName(moduleName);
+  }
+
+  if (![moduleClass conformsToProtocol:@protocol(RCTTurboModule)]) {
     return nil;
   }
 
@@ -226,6 +233,16 @@ static Class getFallbackClassFromName(const char *name) {
   }
 
   _rctTurboModuleCache.insert({moduleName, module});
+
+  /**
+   * Broadcast that this TurboModule was created.
+   *
+   * TODO(T41180176): Investigate whether we can get rid of this after all
+   * TurboModules are rolled out
+   */
+  [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidInitializeModuleNotification
+                                                      object:_bridge.parentBridge
+                                                    userInfo:@{@"module": module, @"bridge": RCTNullIfNil(_bridge.parentBridge)}];
   return module;
 }
 

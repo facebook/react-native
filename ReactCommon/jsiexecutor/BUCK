@@ -16,9 +16,9 @@ cxx_library(
         "-frtti",
     ],
     fbandroid_deps = [
-        "xplat//folly:molly",
-        "xplat//third-party/glog:glog",
-        "xplat//third-party/linker_lib:atomic",
+        "fbsource//xplat/folly:molly",
+        "fbsource//xplat/third-party/glog:glog",
+        "fbsource//xplat/third-party/linker_lib:atomic",
     ],
     fbobjc_force_static = True,
     fbobjc_header_path_prefix = "",
@@ -32,7 +32,7 @@ cxx_library(
     ],
     xcode_public_headers_symlinks = True,
     deps = [
-        "xplat//fbsystrace:fbsystrace",
+        "fbsource//xplat/fbsystrace:fbsystrace",
         react_native_xplat_dep("jsi:jsi"),
         react_native_xplat_dep("jsi:JSIDynamic"),
         react_native_xplat_target("cxxreact:bridge"),

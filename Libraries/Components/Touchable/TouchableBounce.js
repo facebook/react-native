@@ -89,9 +89,6 @@ const TouchableBounce = ((createReactClass({
 
   getInitialState: function(): State {
     return {
-      /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-       * error found when Flow v0.89 was deployed. To see the error, delete
-       * this comment and run Flow. */
       ...this.touchableGetInitialState(),
       scale: new Animated.Value(1),
     };
@@ -187,31 +184,19 @@ const TouchableBounce = ((createReactClass({
         nativeID={this.props.nativeID}
         testID={this.props.testID}
         hitSlop={this.props.hitSlop}
-        /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-         * error found when Flow v0.89 was deployed. To see the error, delete
-         * this comment and run Flow. */
+        clickable={
+          this.props.clickable !== false &&
+          this.props.onPress !== undefined &&
+          !this.props.disabled
+        }
+        onClick={this.touchableHandlePress}
         onStartShouldSetResponder={this.touchableHandleStartShouldSetResponder}
         onResponderTerminationRequest={
-          /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses
-           * an error found when Flow v0.89 was deployed. To see the error,
-           * delete this comment and run Flow. */
           this.touchableHandleResponderTerminationRequest
         }
-        /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-         * error found when Flow v0.89 was deployed. To see the error, delete
-         * this comment and run Flow. */
         onResponderGrant={this.touchableHandleResponderGrant}
-        /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-         * error found when Flow v0.89 was deployed. To see the error, delete
-         * this comment and run Flow. */
         onResponderMove={this.touchableHandleResponderMove}
-        /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-         * error found when Flow v0.89 was deployed. To see the error, delete
-         * this comment and run Flow. */
         onResponderRelease={this.touchableHandleResponderRelease}
-        /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
-         * error found when Flow v0.89 was deployed. To see the error, delete
-         * this comment and run Flow. */
         onResponderTerminate={this.touchableHandleResponderTerminate}>
         {this.props.children}
         {Touchable.renderDebugView({

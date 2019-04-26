@@ -16,7 +16,7 @@ const DeprecatedViewStylePropTypes = require('DeprecatedViewStylePropTypes');
 
 const invariant = require('invariant');
 
-function createAnimatedComponent(Component: any): any {
+function createAnimatedComponent(Component: any, defaultProps: any): any {
   invariant(
     typeof Component !== 'function' ||
       (Component.prototype && Component.prototype.isReactComponent),
@@ -149,6 +149,7 @@ function createAnimatedComponent(Component: any): any {
       const props = this._propsAnimated.__getValue();
       return (
         <Component
+          {...defaultProps}
           {...props}
           ref={this._setComponentRef}
           // The native driver updates views directly through the UI thread so we

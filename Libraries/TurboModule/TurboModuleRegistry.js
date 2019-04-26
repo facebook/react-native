@@ -15,7 +15,8 @@ const NativeModules = require('NativeModules');
 import type {TurboModule} from 'RCTExport';
 import invariant from 'invariant';
 
-// TODO
+const turboModuleProxy = global.__turboModuleProxy;
+
 function get<T: TurboModule>(name: string): ?T {
   // Backward compatibility layer during migration.
   const legacyModule = NativeModules[name];
@@ -23,8 +24,12 @@ function get<T: TurboModule>(name: string): ?T {
     return ((legacyModule: any): T);
   }
 
-  const module: ?T = global.__turboModuleProxy(name);
-  return module;
+  if (turboModuleProxy != null) {
+    const module: ?T = turboModuleProxy(name);
+    return module;
+  }
+
+  return null;
 }
 
 function getEnforcing<T: TurboModule>(name: string): T {

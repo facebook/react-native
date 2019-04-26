@@ -32,7 +32,7 @@ import org.robolectric.RuntimeEnvironment;
  * Verifies that prop constants are generated properly based on {@code ReactProp} annotation.
  */
 @RunWith(RobolectricTestRunner.class)
-@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "android.*"})
+@PowerMockIgnore({"org.mockito.*", "org.robolectric.*", "androidx.*", "android.*"})
 public class ReactPropConstantsTest {
 
   @Rule

@@ -12,6 +12,8 @@
 #import "RCTKeyCommands.h"
 #import "RCTLog.h"
 #import "RCTUtils.h"
+#import "RCTDefines.h"
+#import <React/RCTBundleURLProvider.h>
 
 #if RCT_DEV
 
@@ -189,6 +191,12 @@ RCT_EXPORT_MODULE()
   [_extraMenuItems addObject:item];
 }
 
+- (void)setDefaultJSBundle {
+  [[RCTBundleURLProvider sharedSettings] resetToDefaults];
+  self->_bridge.bundleURL = [[RCTBundleURLProvider sharedSettings] jsBundleURLForFallbackResource:nil fallbackExtension:nil];
+  [self->_bridge reload];
+}
+
 - (NSArray<RCTDevMenuItem *> *)_menuItemsToPresent
 {
   NSMutableArray<RCTDevMenuItem *> *items = [NSMutableArray new];
@@ -196,6 +204,7 @@ RCT_EXPORT_MODULE()
   // Add built-in items
   __weak RCTBridge *bridge = _bridge;
   __weak RCTDevSettings *devSettings = _bridge.devSettings;
+  __weak RCTDevMenu *weakSelf = self;
 
   [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Reload" handler:^{
     [bridge reload];
@@ -211,13 +220,16 @@ RCT_EXPORT_MODULE()
 
   if (!devSettings.isRemoteDebuggingAvailable) {
     [items addObject:[RCTDevMenuItem buttonItemWithTitle:@"Remote JS Debugger Unavailable" handler:^{
+      NSString *message = RCTTurboModuleEnabled() ?
+          @"You cannot use remote JS debugging when TurboModule system is enabled" :
+      @"You need to include the RCTWebSocket library to enable remote JS debugging";
       UIAlertController *alertController = [UIAlertController
         alertControllerWithTitle:@"Remote JS Debugger Unavailable"
-        message:@"You need to include the RCTWebSocket library to enable remote JS debugging"
+        message:message
         preferredStyle:UIAlertControllerStyleAlert];
       __weak typeof(alertController) weakAlertController = alertController;
       [alertController addAction:
-       [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
+       [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(__unused UIAlertAction *action){
         [weakAlertController dismissViewControllerAnimated:YES completion:nil];
       }]];
       [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
@@ -251,7 +263,7 @@ RCT_EXPORT_MODULE()
           preferredStyle:UIAlertControllerStyleAlert];
         __weak typeof(alertController) weakAlertController = alertController;
         [alertController addAction:
-         [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action){
+         [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(__unused UIAlertAction *action){
           [weakAlertController dismissViewControllerAnimated:YES completion:nil];
         }]];
         [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
@@ -268,6 +280,57 @@ RCT_EXPORT_MODULE()
       devSettings.isHotLoadingEnabled = !devSettings.isHotLoadingEnabled;
     }]];
   }
+
+  [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
+    return @"Change packager location";
+  } handler:^{
+    UIAlertController * alertController = [UIAlertController alertControllerWithTitle: @"Change packager location"
+                                                                              message: @"Input packager IP, port and entrypoint"
+                                                                       preferredStyle:UIAlertControllerStyleAlert];
+    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+      textField.placeholder = @"0.0.0.0";
+    }];
+    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+      textField.placeholder = @"8081";
+    }];
+    [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+      textField.placeholder = @"index";
+    }];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Use bundled JS" style:UIAlertActionStyleDefault handler:^(__unused UIAlertAction *action) {
+      [weakSelf setDefaultJSBundle];
+    }]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Use packager location" style:UIAlertActionStyleDefault handler:^(__unused UIAlertAction *action) {
+      NSArray * textfields = alertController.textFields;
+      UITextField * ipTextField = textfields[0];
+      UITextField * portTextField = textfields[1];
+      UITextField * bundleRootTextField = textfields[2];
+      NSString * bundleRoot = bundleRootTextField.text;
+      if(bundleRoot.length==0){
+        bundleRoot = @"index";
+      }
+      if(ipTextField.text.length == 0 && portTextField.text.length == 0) {
+        [weakSelf setDefaultJSBundle];
+        return;
+      }
+      NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+      formatter.numberStyle = NSNumberFormatterDecimalStyle;
+      NSNumber *portNumber = [formatter numberFromString:portTextField.text];
+      if (portNumber == nil) {
+        portNumber = [NSNumber numberWithInt: RCT_METRO_PORT];
+      }
+      [RCTBundleURLProvider sharedSettings].jsLocation = [NSString stringWithFormat:@"%@:%d",
+                                                          ipTextField.text, portNumber.intValue];
+      __strong RCTBridge *strongBridge = bridge;
+      if (strongBridge) {
+        strongBridge.bundleURL = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:bundleRoot fallbackResource:nil];
+        [strongBridge reload];
+      }
+    }]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(__unused UIAlertAction *action) {
+      return;
+    }]];
+    [RCTPresentedViewController() presentViewController:alertController animated:YES completion:NULL];
+  }]];
 
   [items addObject:[RCTDevMenuItem buttonItemWithTitleBlock:^NSString *{
     return @"Toggle Inspector";

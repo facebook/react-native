@@ -13,11 +13,7 @@
 import type {LayoutEvent, PressEvent, TextLayoutEvent} from 'CoreEventTypes';
 import type React from 'React';
 import type {TextStyleProp} from 'StyleSheet';
-import type {
-  AccessibilityRole,
-  AccessibilityStates,
-  AccessibilityTrait,
-} from 'ViewAccessibility';
+import type {AccessibilityRole, AccessibilityStates} from 'ViewAccessibility';
 
 export type PressRetentionOffset = $ReadOnly<{|
   top: number,
@@ -29,16 +25,17 @@ export type PressRetentionOffset = $ReadOnly<{|
 /**
  * @see https://facebook.github.io/react-native/docs/text.html#reference
  */
-export type TextProps = $ReadOnly<{
+export type TextProps = $ReadOnly<{|
   /**
    * Indicates whether the view is an accessibility element.
    *
    * See https://facebook.github.io/react-native/docs/text.html#accessible
    */
   accessible?: ?boolean,
+  accessibilityHint?: ?Stringish,
+  accessibilityLabel?: ?Stringish,
   accessibilityRole?: ?AccessibilityRole,
   accessibilityStates?: ?AccessibilityStates,
-  accessibilityTraits?: ?(AccessibilityTrait | Array<AccessibilityTrait>),
 
   /**
    * Whether font should be scaled down automatically.
@@ -112,6 +109,7 @@ export type TextProps = $ReadOnly<{
   onResponderTerminate?: ?(event: PressEvent) => void,
   onResponderTerminationRequest?: ?() => boolean,
   onStartShouldSetResponder?: ?() => boolean,
+  onMoveShouldSetResponder?: ?() => boolean,
   onTextLayout?: ?(event: TextLayoutEvent) => mixed,
 
   /**
@@ -155,6 +153,8 @@ export type TextProps = $ReadOnly<{
    */
   selectionColor?: ?string,
 
+  dataDetectorType?: ?('phoneNumber' | 'link' | 'email' | 'none' | 'all'),
+
   /**
    * Set text break strategy on Android.
    *
@@ -180,4 +180,4 @@ export type TextProps = $ReadOnly<{
    * See https://facebook.github.io/react-native/docs/text.html#supperhighlighting
    */
   suppressHighlighting?: ?boolean,
-}>;
+|}>;

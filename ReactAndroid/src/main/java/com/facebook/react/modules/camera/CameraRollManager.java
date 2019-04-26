@@ -43,11 +43,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 import java.net.URLConnection;
+import java.net.URL;
 
 // TODO #6015104: rename to something less iOSish
 /**
@@ -68,36 +72,17 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
   private static final String ASSET_TYPE_VIDEOS = "Videos";
   private static final String ASSET_TYPE_ALL = "All";
 
-
-  public static final boolean IS_JELLY_BEAN_OR_LATER =
-      Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
-
-  private static final String[] PROJECTION;
-  static {
-    if (IS_JELLY_BEAN_OR_LATER) {
-      PROJECTION = new String[] {
-          Images.Media._ID,
-          Images.Media.MIME_TYPE,
-          Images.Media.BUCKET_DISPLAY_NAME,
-          Images.Media.DATE_TAKEN,
-          MediaStore.MediaColumns.WIDTH,
-          MediaStore.MediaColumns.HEIGHT,
-          Images.Media.LONGITUDE,
-          Images.Media.LATITUDE,
-          MediaStore.MediaColumns.DATA
-      };
-    } else {
-      PROJECTION = new String[] {
-          Images.Media._ID,
-          Images.Media.MIME_TYPE,
-          Images.Media.BUCKET_DISPLAY_NAME,
-          Images.Media.DATE_TAKEN,
-          Images.Media.LONGITUDE,
-          Images.Media.LATITUDE,
-          MediaStore.MediaColumns.DATA
-      };
-    }
-  }
+  private static final String[] PROJECTION = {
+    Images.Media._ID,
+    Images.Media.MIME_TYPE,
+    Images.Media.BUCKET_DISPLAY_NAME,
+    Images.Media.DATE_TAKEN,
+    MediaStore.MediaColumns.WIDTH,
+    MediaStore.MediaColumns.HEIGHT,
+    Images.Media.LONGITUDE,
+    Images.Media.LATITUDE,
+    MediaStore.MediaColumns.DATA
+  };
 
   private static final String SELECTION_BUCKET = Images.Media.BUCKET_DISPLAY_NAME + " = ?";
   private static final String SELECTION_DATE_TAKEN = Images.Media.DATE_TAKEN + " < ?";
@@ -116,7 +101,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
    * from wherever it may be to the external storage pictures directory, so that it can be scanned
    * by the MediaScanner.
    *
-   * @param uri the file:// URI of the image to save
+   * @param uri the file://, http:// or https:// URI of the image to save
    * @param promise to be resolved or rejected
    */
   @ReactMethod
@@ -127,6 +112,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
 
   private static class SaveToCameraRoll extends GuardedAsyncTask<Void, Void> {
 
+    private static final int SAVE_BUFFER_SIZE = 1048576; // 1MB
     private final Context mContext;
     private final Uri mUri;
     private final Promise mPromise;
@@ -140,9 +126,16 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
 
     @Override
     protected void doInBackgroundGuarded(Void... params) {
+      ReadableByteChannel input = null;
+      FileChannel output = null;
       File source = new File(mUri.getPath());
-      FileChannel input = null, output = null;
       try {
+        String scheme = mUri.getScheme();
+        if (scheme.equals("http") || scheme.equals("https")){
+          input = Channels.newChannel(new URL(mUri.toString()).openStream());
+        } else {
+          input = new FileInputStream(source).getChannel();
+        }
         File exportDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
         exportDir.mkdirs();
         if (!exportDir.isDirectory()) {
@@ -163,9 +156,19 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
         while (!dest.createNewFile()) {
           dest = new File(exportDir, sourceName + "_" + (n++) + sourceExt);
         }
-        input = new FileInputStream(source).getChannel();
         output = new FileOutputStream(dest).getChannel();
-        output.transferFrom(input, 0, input.size());
+        // Performs a buffered copy
+        final ByteBuffer buffer = ByteBuffer.allocate(SAVE_BUFFER_SIZE);
+        while (input.read(buffer) > 0) {
+          buffer.flip();
+          output.write(buffer);
+          buffer.compact();
+        }
+        // Drains the buffer
+        buffer.flip();
+        while (buffer.hasRemaining()){
+          output.write(buffer);
+        }
         input.close();
         output.close();
 
@@ -375,8 +378,8 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
     int mimeTypeIndex = media.getColumnIndex(Images.Media.MIME_TYPE);
     int groupNameIndex = media.getColumnIndex(Images.Media.BUCKET_DISPLAY_NAME);
     int dateTakenIndex = media.getColumnIndex(Images.Media.DATE_TAKEN);
-    int widthIndex = IS_JELLY_BEAN_OR_LATER ? media.getColumnIndex(MediaStore.MediaColumns.WIDTH) : -1;
-    int heightIndex = IS_JELLY_BEAN_OR_LATER ? media.getColumnIndex(MediaStore.MediaColumns.HEIGHT) : -1;
+    int widthIndex = media.getColumnIndex(MediaStore.MediaColumns.WIDTH);
+    int heightIndex = media.getColumnIndex(MediaStore.MediaColumns.HEIGHT);
     int longitudeIndex = media.getColumnIndex(Images.Media.LONGITUDE);
     int latitudeIndex = media.getColumnIndex(Images.Media.LATITUDE);
     int dataIndex = media.getColumnIndex(MediaStore.MediaColumns.DATA);
@@ -424,18 +427,19 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
     WritableMap image = new WritableNativeMap();
     Uri photoUri = Uri.parse("file://" + media.getString(dataIndex));
     image.putString("uri", photoUri.toString());
-    float width = -1;
-    float height = -1;
-    if (IS_JELLY_BEAN_OR_LATER) {
-      width = media.getInt(widthIndex);
-      height = media.getInt(heightIndex);
+    float width = media.getInt(widthIndex);
+    float height = media.getInt(heightIndex);
+
+    String mimeType;
+    try {
+      mimeType = URLConnection.guessContentTypeFromName(photoUri.toString());
+    } catch (StringIndexOutOfBoundsException e) {
+      FLog.e(ReactConstants.TAG, "Unable to guess content type from " + photoUri.toString(), e);
+      throw e;
     }
 
-    String mimeType = URLConnection.guessContentTypeFromName(photoUri.toString());
-
     if (mimeType != null
-        && mimeType.startsWith("video")
-        && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.GINGERBREAD_MR1) {
+        && mimeType.startsWith("video")) {
       try {
         AssetFileDescriptor photoDescriptor = resolver.openAssetFileDescriptor(photoUri, "r");
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();

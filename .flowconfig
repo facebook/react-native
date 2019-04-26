@@ -26,6 +26,9 @@
 ; require from fbjs/lib instead: require('fbjs/lib/warning')
 .*/node_modules/warning/.*
 
+; Flow doesn't support platforms
+.*/Libraries/Utilities/HMRLoadingView.js
+
 [untyped]
 .*/node_modules/@react-native-community/cli/.*/.*
 
@@ -40,6 +43,10 @@ emoji=true
 
 esproposal.optional_chaining=enable
 esproposal.nullish_coalescing=enable
+
+module.file_ext=.js
+module.file_ext=.json
+module.file_ext=.ios.js
 
 module.system=haste
 module.system.haste.use_name_reducers=true
@@ -71,23 +78,19 @@ suppress_type=$FlowFixMeState
 
 suppress_comment=\\(.\\|\n\\)*\\$FlowFixMe\\($\\|[^(]\\|(\\(<VERSION>\\)? *\\(site=[a-z,_]*react_native\\(_ios\\)?_\\(oss\\|fb\\)[a-z,_]*\\)?)\\)
 suppress_comment=\\(.\\|\n\\)*\\$FlowIssue\\((\\(<VERSION>\\)? *\\(site=[a-z,_]*react_native\\(_ios\\)?_\\(oss\\|fb\\)[a-z,_]*\\)?)\\)?:? #[0-9]+
-suppress_comment=\\(.\\|\n\\)*\\$FlowFixedInNextDeploy
 suppress_comment=\\(.\\|\n\\)*\\$FlowExpectedError
 
 [lints]
-all=warn
-unnecessary-optional-chain=off
-
-# There is an ESLint rule for this
-unclear-type=off
-
-sketchy-null=off
 sketchy-null-number=warn
 sketchy-null-mixed=warn
-
-# This is noisy for now. We *do* still want to warn on importing types
-# from untyped files, which is covered by untyped-type-import
-untyped-import=off
+sketchy-number=warn
+untyped-type-import=warn
+nonstrict-import=warn
+deprecated-type=warn
+unsafe-getters-setters=warn
+inexact-spread=warn
+unnecessary-invariant=warn
+signature-verification-failure=warn
 deprecated-utility=error
 
 [strict]
@@ -100,4 +103,4 @@ untyped-import
 untyped-type-import
 
 [version]
-^0.92.0
+^0.97.0

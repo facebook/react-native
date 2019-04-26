@@ -6,17 +6,19 @@ daysUntilClose: 7
 # Issues with these labels will never be considered stale
 exemptLabels:
   - Good first issue
-  - For Discussion
+  - "Type: Discussion"
+  - Partner
   - Core Team
   - "Help Wanted :octocat:"
-  - ":warning:Regression"
-  - ":clock1:PR Pending"
+  - "Impact: Regression"
+  - "Resolution: PR Submitted"
+  - "Resolution: Backlog"
 # Label to use when marking an issue as stale
-staleLabel: Stale 
+staleLabel: Stale
 # Comment to post when marking an issue as stale. Set to `false` to disable
 markComment: >
   Hey there, it looks like there has been no activity on this issue recently. Has the issue been fixed, or does it still require the community's attention? This issue may be closed if no further activity occurs.
-  You may also label this issue as "For Discussion" or "Good first issue" and I will leave it open.
+  You may also label this issue as a "Discussion" or add it to the "Backlog" and I will leave it open.
   Thank you for your contributions.
 # Comment to post when closing a stale issue. Set to `false` to disable
 closeComment: >

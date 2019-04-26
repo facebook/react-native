@@ -7,9 +7,8 @@
 
 package com.facebook.react.views.scroll;
 
-import android.annotation.TargetApi;
 import android.graphics.Color;
-import android.support.v4.view.ViewCompat;
+import androidx.core.view.ViewCompat;
 import android.util.DisplayMetrics;
 
 import com.facebook.react.bridge.ReadableArray;
@@ -37,7 +36,6 @@ import javax.annotation.Nullable;
  * <p>Note that {@link ReactScrollView} and {@link ReactScrollView} are exposed to JS
  * as a single ScrollView component, configured via the {@code horizontal} boolean property.
  */
-@TargetApi(11)
 @ReactModule(name = ReactScrollViewManager.REACT_CLASS)
 public class ReactScrollViewManager
     extends ViewGroupManager<ReactScrollView>

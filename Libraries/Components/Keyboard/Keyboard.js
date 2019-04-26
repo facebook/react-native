@@ -17,13 +17,20 @@ const KeyboardObserver = require('NativeModules').KeyboardObserver;
 const dismissKeyboard = require('dismissKeyboard');
 const KeyboardEventEmitter = new NativeEventEmitter(KeyboardObserver);
 
-type KeyboardEventName =
+export type KeyboardEventName =
   | 'keyboardWillShow'
   | 'keyboardDidShow'
   | 'keyboardWillHide'
   | 'keyboardDidHide'
   | 'keyboardWillChangeFrame'
   | 'keyboardDidChangeFrame';
+
+export type KeyboardEventEasing =
+  | 'easeIn'
+  | 'easeInEaseOut'
+  | 'easeOut'
+  | 'linear'
+  | 'keyboard';
 
 type ScreenRect = $ReadOnly<{|
   screenX: number,
@@ -33,11 +40,11 @@ type ScreenRect = $ReadOnly<{|
 |}>;
 
 export type KeyboardEvent = $ReadOnly<{|
-  duration?: number,
-  easing?: string,
+  duration: number,
+  easing: KeyboardEventEasing,
   endCoordinates: ScreenRect,
-  startCoordinates?: ScreenRect,
-  isEventFromThisApp?: boolean,
+  startCoordinates: ScreenRect,
+  isEventFromThisApp: boolean,
 |}>;
 
 type KeyboardEventListener = (e: KeyboardEvent) => void;
