@@ -70,6 +70,13 @@ public class ReactFontManager {
       mFontCache.put(fontFamilyName, fontFamily);
     }
 
+    if(mTypeCacheLoaded && mTypeCache.containsKey(fontFamilyName)) {
+      return Typeface.create(
+        mTypeCache.get(fontFamilyName),
+        style
+      );
+    }
+
     Typeface typeface = fontFamily.getTypeface(style);
     if (typeface == null) {
       typeface = createTypeface(fontFamilyName, style, assetManager);
@@ -81,47 +88,21 @@ public class ReactFontManager {
     return typeface;
   }
 
-  public @Nullable Typeface getTypeface(
-    String fontFamilyName,
-    int style,
-    Context context) {
-
-    if (!mTypeCacheLoaded) {
-      try {
-        ApplicationInfo app = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
-        Bundle bundle = app.metaData;
-        int fontsId = bundle.getInt("rn_fonts", 0);
-        if (fontsId != 0) {
-          Resources resources = context.getResources();
-          TypedArray fonts = resources.obtainTypedArray(fontsId);
-          for (int i = 0; i < fonts.length(); i++) {
-            int fontId = fonts.getResourceId(i, 0);
-            if (fontId != 0) {
-              Typeface font = ResourcesCompat.getFont(context, fontId);
-              if (font != null) {
-                String fontFamily = resources.getResourceEntryName(fontId);
-                mTypeCache.put(fontFamily, font);
-              }
-            }
-          }
-          fonts.recycle();
+  public void loadFonts(Context context, int fontsId) {
+    Resources resources = context.getResources();
+    TypedArray fonts = resources.obtainTypedArray(fontsId);
+    for (int i = 0; i < fonts.length(); i++) {
+      int fontId = fonts.getResourceId(i, 0);
+      if (fontId != 0) {
+        Typeface font = ResourcesCompat.getFont(context, fontId);
+        if (font != null) {
+          String fontFamily = resources.getResourceEntryName(fontId);
+          mTypeCache.put(fontFamily, font);
         }
-      } catch (NullPointerException | PackageManager.NameNotFoundException | Resources.NotFoundException e) {
-        // do nothing
       }
-      mTypeCacheLoaded = true;
     }
-
-    Typeface font = mTypeCache.get(fontFamilyName);
-
-    if (font != null) {
-      return Typeface.create(
-        font,
-        style
-      );
-    }
-
-    return getTypeface(fontFamilyName, style, context.getAssets());
+    fonts.recycle();
+    mTypeCacheLoaded = true;
   }
 
   /**

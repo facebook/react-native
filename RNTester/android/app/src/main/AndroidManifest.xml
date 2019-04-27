@@ -44,7 +44,6 @@
       </intent-filter>
     </activity>
     <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
-    <meta-data android:name="rn_fonts" android:resource="@array/fonts" />
   </application>
 
 </manifest>

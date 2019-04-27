@@ -15,6 +15,7 @@ import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
+import com.facebook.react.views.text.ReactFontManager;
 
 import java.util.Arrays;
 import java.util.List;
@@ -45,6 +46,12 @@ public class RNTesterApplication extends Application implements ReactApplication
       );
     }
   };
+
+  @Override
+  public void onCreate() {
+    ReactFontManager.getInstance().loadFonts(this, R.array.fonts);
+    super.onCreate();
+  }
 
   @Override
   public ReactNativeHost getReactNativeHost() {
