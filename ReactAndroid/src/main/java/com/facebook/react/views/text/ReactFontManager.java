@@ -60,7 +60,7 @@ public class ReactFontManager {
     return sReactFontManagerInstance;
   }
 
-  private @Nullable Typeface getTypeface(
+  public @Nullable Typeface getTypeface(
       String fontFamilyName,
       int style,
       AssetManager assetManager) {

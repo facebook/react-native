@@ -96,7 +96,7 @@ public class TextLayoutManager {
                 textAttributes.mFontStyle,
                 textAttributes.mFontWeight,
                 textAttributes.mFontFamily,
-                context)));
+                context.getAssets())));
         }
         if (textAttributes.mIsUnderlineTextDecorationSet) {
           ops.add(new SetSpanOperation(start, end, new ReactUnderlineSpan()));
