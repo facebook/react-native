@@ -88,20 +88,12 @@ public class ReactFontManager {
     return typeface;
   }
 
-  public void loadFonts(Context context, int fontsId) {
-    Resources resources = context.getResources();
-    TypedArray fonts = resources.obtainTypedArray(fontsId);
-    for (int i = 0; i < fonts.length(); i++) {
-      int fontId = fonts.getResourceId(i, 0);
-      if (fontId != 0) {
-        Typeface font = ResourcesCompat.getFont(context, fontId);
-        if (font != null) {
-          String fontFamily = resources.getResourceEntryName(fontId);
-          mTypeCache.put(fontFamily, font);
-        }
-      }
+  public void loadFont(Context context, int fontId) {
+    Typeface font = ResourcesCompat.getFont(context, fontId);
+    if (font != null) {
+      String fontFamily = context.getResources().getResourceEntryName(fontId);
+      mTypeCache.put(fontFamily, font);
     }
-    fonts.recycle();
     mTypeCacheLoaded = true;
   }
 

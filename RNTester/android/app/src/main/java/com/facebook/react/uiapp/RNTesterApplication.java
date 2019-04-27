@@ -49,7 +49,7 @@ public class RNTesterApplication extends Application implements ReactApplication
 
   @Override
   public void onCreate() {
-    ReactFontManager.getInstance().loadFonts(this, R.array.fonts);
+    ReactFontManager.getInstance().loadFont(this, R.font.srisakdi);
     super.onCreate();
   }
 
