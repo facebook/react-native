@@ -20,7 +20,7 @@ buildscript {
 allprojects {
     repositories {
         maven {
-            url("$rootDir/node_modules/jsc-android/dist")
+            url = uri("$rootDir/node_modules/jsc-android/dist")
         }
         mavenLocal()
         google()
