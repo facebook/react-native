@@ -72,6 +72,7 @@ lsof -i :8081 | grep LISTEN
 lsof -i :8081 | grep LISTEN | /usr/bin/awk '{print $2}' | xargs kill
 
 ./scripts/prepare-template.sh $PACKAGE_VERSION
+node scripts/set-rn-template-version.js "file:$(pwd)/react-native-${PACKAGE_VERSION}.tgz"
 success "Sucessfully prepared a template"
 
 project_name="RNTestProject"

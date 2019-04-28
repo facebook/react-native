@@ -22,5 +22,5 @@ npm install
 # Dependencies are installed on the client-side
 rm -rf node_modules
 
-# Set the React Native version to point to the version fron the registry
-node scripts/set-rn-template-version.js "$1"
+# Do not ship a package.json that points to a `tgz`
+git checkout template/package.json
