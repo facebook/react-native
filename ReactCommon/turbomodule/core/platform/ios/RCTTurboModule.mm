@@ -444,7 +444,7 @@ NSString* ObjCTurboModule::getArgumentTypeName(NSString* methodName, int argInde
           [argumentTypes addObject:arguments[j].type];
         }
 
-        NSString *normalizedOtherMethodName = [otherMethodName stringByReplacingOccurrencesOfString:@":" withString:@""];
+        NSString *normalizedOtherMethodName = [otherMethodName componentsSeparatedByString:@":"][0];
         methodArgumentTypeNames[normalizedOtherMethodName] = argumentTypes;
       }
 

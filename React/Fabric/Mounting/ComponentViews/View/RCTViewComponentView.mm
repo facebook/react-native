@@ -185,8 +185,8 @@ using namespace facebook::react;
   }
 
   // `overflow`
-  if (oldViewProps.yogaStyle.overflow != newViewProps.yogaStyle.overflow) {
-    self.clipsToBounds = newViewProps.yogaStyle.overflow != YGOverflowVisible;
+  if (oldViewProps.yogaStyle.overflow() != newViewProps.yogaStyle.overflow()) {
+    self.clipsToBounds = newViewProps.yogaStyle.overflow() != YGOverflowVisible;
     needsInvalidateLayer = YES;
   }
 

@@ -10,7 +10,6 @@ package com.facebook.react.views.text;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Paint;
 import android.graphics.Typeface;
@@ -31,30 +30,31 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
    * Fonts are retrieved and cached using the {@link ReactFontManager}
    */
 
+  private final AssetManager mAssetManager;
+
   private final int mStyle;
   private final int mWeight;
   private final @Nullable String mFontFamily;
-  private final Context mContext;
 
   public CustomStyleSpan(
       int fontStyle,
       int fontWeight,
       @Nullable String fontFamily,
-      @NonNull Context context) {
+      AssetManager assetManager) {
     mStyle = fontStyle;
     mWeight = fontWeight;
     mFontFamily = fontFamily;
-    mContext = context;
+    mAssetManager = assetManager;
   }
 
   @Override
   public void updateDrawState(TextPaint ds) {
-    apply(ds, mStyle, mWeight, mFontFamily, mContext);
+    apply(ds, mStyle, mWeight, mFontFamily, mAssetManager);
   }
 
   @Override
-  public void updateMeasureState(@NonNull TextPaint paint) {
-    apply(paint, mStyle, mWeight, mFontFamily, mContext);
+  public void updateMeasureState(TextPaint paint) {
+    apply(paint, mStyle, mWeight, mFontFamily, mAssetManager);
   }
 
   /**
@@ -83,7 +83,7 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
       int style,
       int weight,
       @Nullable String family,
-      Context context) {
+      AssetManager assetManager) {
     int oldStyle;
     Typeface typeface = paint.getTypeface();
     if (typeface == null) {
@@ -104,7 +104,7 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
     }
 
     if (family != null) {
-      typeface = ReactFontManager.getInstance().getTypeface(family, want, context);
+      typeface = ReactFontManager.getInstance().getTypeface(family, want, assetManager);
     } else if (typeface != null) {
       // TODO(t9055065): Fix custom fonts getting applied to text children with different style
       typeface = Typeface.create(typeface, want);
@@ -117,4 +117,5 @@ public class CustomStyleSpan extends MetricAffectingSpan implements ReactSpan {
     }
     paint.setSubpixelText(true);
   }
+
 }

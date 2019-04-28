@@ -220,7 +220,7 @@ try {
     if (
       tryExecNTimes(
         () => {
-          let destination = 'platform=iOS Simulator,name=iPhone 6s,OS=12.1';
+          let destination = 'platform=iOS Simulator,name=iPhone 6s,OS=12.2';
           let sdk = 'iphonesimulator';
           let scheme = 'EndToEndTest';
 

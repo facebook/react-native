@@ -6,6 +6,7 @@
  */
 #pragma once
 #include <stdio.h>
+#include "CompactValue.h"
 #include "YGConfig.h"
 #include "YGLayout.h"
 #include "YGStyle.h"
@@ -61,6 +62,8 @@ private:
   // use this after checking that there are no children.
   // DO NOT CHANGE THE VISIBILITY OF THIS METHOD!
   YGNode& operator=(YGNode&&) = default;
+
+  using CompactValue = facebook::yoga::detail::CompactValue;
 
 public:
   YGNode()
@@ -210,14 +213,6 @@ public:
 
   void setNodeType(YGNodeType nodeType) { nodeType_ = nodeType; }
 
-  void setStyleFlexDirection(YGFlexDirection direction) {
-    style_.flexDirection = direction;
-  }
-
-  void setStyleAlignContent(YGAlign alignContent) {
-    style_.alignContent = alignContent;
-  }
-
   void setMeasureFunc(YGMeasureFunc measureFunc);
   void setMeasureFunc(MeasureWithContextFn);
   void setMeasureFunc(std::nullptr_t) {
@@ -296,8 +291,8 @@ public:
 
   void cloneChildrenIfNeeded(void*);
   void markDirtyAndPropogate();
-  float resolveFlexGrow();
-  float resolveFlexShrink();
+  float resolveFlexGrow() const;
+  float resolveFlexShrink() const;
   bool isNodeFlexible();
   bool didUseLegacyFlag();
   bool isLayoutTreeEqualToNode(const YGNode& node) const;
