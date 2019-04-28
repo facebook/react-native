@@ -113,7 +113,7 @@ android {
             enable enableSeparateBuildPerCPUArchitecture
             universalApk false
             reset()
-            include "armeabi-v7a", "x86"
+            include "armeabi-v7a", "x86", "x86_64", "arm64-v8a"
         }
     }
     buildTypes {
@@ -125,6 +125,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
+    }
+    packagingOptions {
+        pickFirst '**/armeabi-v7a/libc++_shared.so'
+        pickFirst '**/x86/libc++_shared.so'
+        pickFirst '**/x86_64/libc++_shared.so'
+        pickFirst '**/arm64-v8a/libc++_shared.so'
     }
 }
 
