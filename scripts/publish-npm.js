@@ -129,6 +129,9 @@ artifacts.forEach(name => {
   }
 });
 
+// Generate template for this version
+exec(`scripts/prepare-template.sh ${releaseVersion}`);
+
 // if version contains -rc, tag as prerelease
 const tagFlag = releaseVersion.indexOf('-rc') === -1 ? '' : '--tag next';
 

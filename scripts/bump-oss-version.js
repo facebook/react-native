@@ -113,9 +113,6 @@ if (
   exit(1);
 }
 
-// Generate template for this version
-exec(`scripts/prepare-template.sh ${version}`);
-
 // Change React Native version in the template's package.json
 exec(`node scripts/set-rn-template-version.js ${version}`);
 
