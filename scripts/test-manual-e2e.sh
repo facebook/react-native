@@ -35,10 +35,10 @@ success "Preparing version $PACKAGE_VERSION"
 
 repo_root=$(pwd)
 
-rm -rf android
-./gradlew :ReactAndroid:installArchives || error "Couldn't generate artifacts"
+# rm -rf android
+# ./gradlew :ReactAndroid:installArchives || error "Couldn't generate artifacts"
 
-success "Generated artifacts for Maven"
+# success "Generated artifacts for Maven"
 
 npm install
 
@@ -71,13 +71,8 @@ success "Killing packager"
 lsof -i :8081 | grep LISTEN
 lsof -i :8081 | grep LISTEN | /usr/bin/awk '{print $2}' | xargs kill
 
-npm pack
-
-PACKAGE=$(pwd)/react-native-$PACKAGE_VERSION.tgz
-success "Package bundled ($PACKAGE)"
-
-node scripts/set-rn-template-version.js "file:$PACKAGE"
-success "React Native version changed in the template"
+./scripts/prepare-template.sh $PACKAGE_VERSION
+success "Sucessfully prepared a template"
 
 project_name="RNTestProject"
 
