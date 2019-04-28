@@ -23,4 +23,4 @@ npm install
 rm -rf node_modules
 
 # Do not ship a package.json that points to a `tgz`
-git checkout template/package.json
+git checkout package.json
