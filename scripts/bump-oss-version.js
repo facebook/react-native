@@ -113,7 +113,7 @@ if (
   exit(1);
 }
 
-// Change React Native version in the template's package.json
+// Change react-native version in the template's package.json
 exec(`node scripts/set-rn-template-version.js ${version}`);
 
 // Verify that files changed, we just do a git diff and check how many times version is added across files
