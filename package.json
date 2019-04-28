@@ -11,14 +11,6 @@
   "engines": {
     "node": ">=8.3"
   },
-  "prettier": {
-    "requirePragma": true,
-    "singleQuote": true,
-    "trailingComma": "all",
-    "bracketSpacing": false,
-    "jsxBracketSameLine": true,
-    "parser": "flow"
-  },
   "jest-junit": {
     "outputDirectory": "reports/junit",
     "outputName": "js-test-results.xml"
