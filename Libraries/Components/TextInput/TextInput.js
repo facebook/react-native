@@ -1098,6 +1098,8 @@ const TextInput = createReactClass({
       <TouchableWithoutFeedback
         onLayout={props.onLayout}
         onPress={this._onPress}
+        onAccessibilityBlur={this._onAccessibilityBlur}
+        onAccessibilityFocus={this._onAccessibilityFocus}
         rejectResponderTermination={true}
         accessible={props.accessible}
         accessibilityLabel={props.accessibilityLabel}
@@ -1150,6 +1152,8 @@ const TextInput = createReactClass({
       <TouchableWithoutFeedback
         onLayout={props.onLayout}
         onPress={this._onPress}
+        onAccessibilityBlur={this._onAccessibilityBlur}
+        onAccessibilityFocus={this._onAccessibilityFocus}
         rejectResponderTermination={props.rejectResponderTermination}
         accessible={props.accessible}
         accessibilityLabel={props.accessibilityLabel}
@@ -1208,6 +1212,8 @@ const TextInput = createReactClass({
       <TouchableWithoutFeedback
         onLayout={props.onLayout}
         onPress={this._onPress}
+        onAccessibilityBlur={this._onAccessibilityBlur}
+        onAccessibilityFocus={this._onAccessibilityFocus}
         accessible={this.props.accessible}
         accessibilityLabel={this.props.accessibilityLabel}
         accessibilityRole={this.props.accessibilityRole}
@@ -1323,6 +1329,14 @@ const TextInput = createReactClass({
     if (this.props.selectionState) {
       this.props.selectionState.blur();
     }
+  },
+
+  _onAccessibilityBlur: function(event: BlurEvent) {
+    this.props.oncAccessibilityBlur && this.props.oncAccessibilityBlur(event);
+  },
+
+  _onAccessibilityFocus: function(event: BlurEvent) {
+    this.props.oncAccessibilityFocus && this.props.oncAccessibilityFocus(event);
   },
 
   _onTextInput: function(event: TextInputEvent) {
