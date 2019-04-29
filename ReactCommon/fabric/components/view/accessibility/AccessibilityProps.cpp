@@ -20,10 +20,6 @@ AccessibilityProps::AccessibilityProps(
     const RawProps &rawProps)
     : accessible(
           convertRawProp(rawProps, "accessible", sourceProps.accessible)),
-      accessibilityTraits(convertRawProp(
-          rawProps,
-          "accessibilityTraits",
-          sourceProps.accessibilityTraits)),
       accessibilityLabel(convertRawProp(
           rawProps,
           "accessibilityLabel",

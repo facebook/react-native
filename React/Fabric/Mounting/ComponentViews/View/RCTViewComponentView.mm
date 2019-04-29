@@ -221,12 +221,6 @@ using namespace facebook::react;
     self.accessibilityElement.accessibilityHint = RCTNSStringFromStringNilIfEmpty(newViewProps.accessibilityHint);
   }
 
-  // `accessibilityTraits`
-  if (oldViewProps.accessibilityTraits != newViewProps.accessibilityTraits) {
-    self.accessibilityElement.accessibilityTraits =
-        RCTUIAccessibilityTraitsFromAccessibilityTraits(newViewProps.accessibilityTraits);
-  }
-
   // `accessibilityViewIsModal`
   if (oldViewProps.accessibilityViewIsModal != newViewProps.accessibilityViewIsModal) {
     self.accessibilityElement.accessibilityViewIsModal = newViewProps.accessibilityViewIsModal;
