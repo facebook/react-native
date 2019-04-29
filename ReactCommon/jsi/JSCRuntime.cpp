@@ -214,11 +214,11 @@ class JSCRuntime : public jsi::Runtime {
   static JSStringRef stringRef(const jsi::String& str);
   static JSStringRef stringRef(const jsi::PropNameID& sym);
   static JSObjectRef objectRef(const jsi::Object& obj);
-    
+
 #ifdef RN_FABRIC_ENABLED
   static JSObjectRef objectRef(const jsi::WeakObject& obj);
 #endif
-    
+
   // Factory methods for creating String/Object
   jsi::Symbol createSymbol(JSValueRef symbolRef) const;
   jsi::String createString(JSStringRef stringRef) const;
@@ -688,7 +688,7 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
         auto excValue =
             rt.global()
                 .getPropertyAsFunction(rt, "Error")
-                .call(rt, "Exception in HostObject::get: <unknown>");
+                .call(rt, std::string("Exception in HostObject::get: ") + JSStringToSTLString(propertyName));
         *exception = rt.valueRef(excValue);
         return JSValueMakeUndefined(ctx);
       }
@@ -1359,14 +1359,14 @@ JSStringRef JSCRuntime::stringRef(const jsi::PropNameID& sym) {
 JSObjectRef JSCRuntime::objectRef(const jsi::Object& obj) {
   return static_cast<const JSCObjectValue*>(getPointerValue(obj))->obj_;
 }
-      
+
 #ifdef RN_FABRIC_ENABLED
 JSObjectRef JSCRuntime::objectRef(const jsi::WeakObject& obj) {
   // TODO: revisit this implementation
   return static_cast<const JSCObjectValue*>(getPointerValue(obj))->obj_;
 }
 #endif
-      
+
 void JSCRuntime::checkException(JSValueRef exc) {
   if (JSC_UNLIKELY(exc)) {
     throw jsi::JSError(*this, createValue(exc));
