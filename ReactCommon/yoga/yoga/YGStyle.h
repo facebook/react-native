@@ -7,7 +7,7 @@
 #pragma once
 #include <algorithm>
 #include <array>
-#include <initializer_list>
+#include <type_traits>
 #include "CompactValue.h"
 #include "YGEnums.h"
 #include "YGFloatOptional.h"
@@ -171,6 +171,10 @@ private:
   BITFIELD_ACCESSORS(flexWrap);
   BITFIELD_ACCESSORS(overflow);
   BITFIELD_ACCESSORS(display);
+
+public:
+  // for library users needing a type
+  using ValueRepr = std::remove_reference<decltype(margin_[0])>::type;
 };
 
 bool operator==(const YGStyle& lhs, const YGStyle& rhs);
