@@ -119,7 +119,7 @@ class PickerAndroid extends React.Component<
         const value = children[position].props.value;
         /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was
          * found when making Flow check .android.js files. */
-        if (this.props.selectedValue !== value){
+        if (this.props.selectedValue !== value) {
           this.props.onValueChange(value, position);
         }
       } else {
