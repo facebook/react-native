@@ -62,10 +62,10 @@ RCT_CUSTOM_CONVERTER(NSData *, NSData, [json dataUsingEncoding:NSUTF8StringEncod
 {
   if ([json isKindOfClass:NSString.class]) {
     return json;
-  } else if (json) {
+  } else if (json && json != (id)kCFNull) {
     return [NSString stringWithFormat:@"%@",json];
   }
-  return json;
+  return nil;
 }
 
 + (NSIndexSet *)NSIndexSet:(id)json
