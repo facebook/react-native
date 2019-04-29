@@ -972,7 +972,7 @@ static const std::array<YGDimension, 4> dim = {
     {YGDimensionHeight, YGDimensionHeight, YGDimensionWidth, YGDimensionWidth}};
 
 static inline float YGNodePaddingAndBorderForAxis(
-    const YGNodeRef node,
+    const YGNodeConstRef node,
     const YGFlexDirection axis,
     const float widthSize) {
   return (node->getLeadingPaddingAndBorder(axis, widthSize) +
@@ -1089,7 +1089,7 @@ static inline bool YGNodeIsLayoutDimDefined(
 }
 
 static YGFloatOptional YGNodeBoundAxisWithinMinAndMax(
-    const YGNodeRef node,
+    const YGNodeConstRef node,
     const YGFlexDirection axis,
     const YGFloatOptional value,
     const float axisSize) {
@@ -1146,7 +1146,7 @@ static void YGNodeSetChildTrailingPosition(
 }
 
 static void YGConstrainMaxSizeForMode(
-    const YGNodeRef node,
+    const YGNodeConstRef node,
     const enum YGFlexDirection axis,
     const float ownerAxisSize,
     const float ownerWidth,
@@ -1758,7 +1758,7 @@ static void YGZeroOutLayoutRecursivly(
 }
 
 static float YGNodeCalculateAvailableInnerDim(
-    const YGNodeRef node,
+    const YGNodeConstRef node,
     YGFlexDirection axis,
     float availableDim,
     float ownerDim) {
@@ -2747,25 +2747,19 @@ static void YGNodelayoutImpl(
   const float marginAxisColumn =
       node->getMarginForAxis(YGFlexDirectionColumn, ownerWidth).unwrap();
 
+  const auto& minDimensions = node->getStyle().minDimensions();
+  const auto& maxDimensions = node->getStyle().maxDimensions();
   const float minInnerWidth =
-      YGResolveValue(
-          node->getStyle().minDimensions()[YGDimensionWidth], ownerWidth)
-          .unwrap() -
+      YGResolveValue(minDimensions[YGDimensionWidth], ownerWidth).unwrap() -
       paddingAndBorderAxisRow;
   const float maxInnerWidth =
-      YGResolveValue(
-          node->getStyle().maxDimensions()[YGDimensionWidth], ownerWidth)
-          .unwrap() -
+      YGResolveValue(maxDimensions[YGDimensionWidth], ownerWidth).unwrap() -
       paddingAndBorderAxisRow;
   const float minInnerHeight =
-      YGResolveValue(
-          node->getStyle().minDimensions()[YGDimensionHeight], ownerHeight)
-          .unwrap() -
+      YGResolveValue(minDimensions[YGDimensionHeight], ownerHeight).unwrap() -
       paddingAndBorderAxisColumn;
   const float maxInnerHeight =
-      YGResolveValue(
-          node->getStyle().maxDimensions()[YGDimensionHeight], ownerHeight)
-          .unwrap() -
+      YGResolveValue(maxDimensions[YGDimensionHeight], ownerHeight).unwrap() -
       paddingAndBorderAxisColumn;
 
   const float minInnerMainDim = isMainAxisRow ? minInnerWidth : minInnerHeight;
@@ -4002,6 +3996,7 @@ void YGNodeCalculateLayoutWithContext(
   node->resolveDimension();
   float width = YGUndefined;
   YGMeasureMode widthMeasureMode = YGMeasureModeUndefined;
+  const auto& maxDimensions = node->getStyle().maxDimensions();
   if (YGNodeIsStyleDimDefined(node, YGFlexDirectionRow, ownerWidth)) {
     width =
         (YGResolveValue(
@@ -4009,13 +4004,10 @@ void YGNodeCalculateLayoutWithContext(
          node->getMarginForAxis(YGFlexDirectionRow, ownerWidth))
             .unwrap();
     widthMeasureMode = YGMeasureModeExactly;
-  } else if (!YGResolveValue(
-                  node->getStyle().maxDimensions()[YGDimensionWidth],
-                  ownerWidth)
+  } else if (!YGResolveValue(maxDimensions[YGDimensionWidth], ownerWidth)
                   .isUndefined()) {
-    width = YGResolveValue(
-                node->getStyle().maxDimensions()[YGDimensionWidth], ownerWidth)
-                .unwrap();
+    width =
+        YGResolveValue(maxDimensions[YGDimensionWidth], ownerWidth).unwrap();
     widthMeasureMode = YGMeasureModeAtMost;
   } else {
     width = ownerWidth;
@@ -4032,14 +4024,10 @@ void YGNodeCalculateLayoutWithContext(
               node->getMarginForAxis(YGFlexDirectionColumn, ownerWidth))
                  .unwrap();
     heightMeasureMode = YGMeasureModeExactly;
-  } else if (!YGResolveValue(
-                  node->getStyle().maxDimensions()[YGDimensionHeight],
-                  ownerHeight)
+  } else if (!YGResolveValue(maxDimensions[YGDimensionHeight], ownerHeight)
                   .isUndefined()) {
     height =
-        YGResolveValue(
-            node->getStyle().maxDimensions()[YGDimensionHeight], ownerHeight)
-            .unwrap();
+        YGResolveValue(maxDimensions[YGDimensionHeight], ownerHeight).unwrap();
     heightMeasureMode = YGMeasureModeAtMost;
   } else {
     height = ownerHeight;
