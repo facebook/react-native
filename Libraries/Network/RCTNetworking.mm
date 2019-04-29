@@ -20,6 +20,8 @@
 
 typedef RCTURLRequestCancellationBlock (^RCTHTTPQueryResult)(NSError *error, NSDictionary<NSString *, id> *result);
 
+NSString *const RCTNetworkingPHUploadHackScheme = @"ph-upload";
+
 @interface RCTNetworking ()
 
 - (RCTURLRequestCancellationBlock)processDataForHTTPQuery:(NSDictionary<NSString *, id> *)data
@@ -75,6 +77,16 @@ static NSString *RCTGenerateFormBoundary()
   _callback = callback;
   _multipartBody = [NSMutableData new];
   _boundary = RCTGenerateFormBoundary();
+
+  for (NSUInteger i = 0; i < _parts.count; i++) {
+    NSString *uri = _parts[i][@"uri"];
+    if (uri && [[uri substringToIndex:@"ph:".length] caseInsensitiveCompare:@"ph:"] == NSOrderedSame) {
+      uri = [RCTNetworkingPHUploadHackScheme stringByAppendingString:[uri substringFromIndex:@"ph".length]];
+      NSMutableDictionary *mutableDict = [_parts[i] mutableCopy];
+      mutableDict[@"uri"] = uri;
+      _parts[i] = mutableDict;
+    }
+  }
 
   return [_networker processDataForHTTPQuery:_parts[0] callback:^(NSError *error, NSDictionary<NSString *, id> *result) {
     return [self handleResult:result error:error];
