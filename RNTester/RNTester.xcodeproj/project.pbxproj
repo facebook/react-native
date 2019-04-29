@@ -1911,7 +1911,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				BUNDLE_CONFIG = "$(SRCROOT)/../rn-cli.config.js";
+				BUNDLE_CONFIG = "$(SRCROOT)/../metro.config.js";
 				DEVELOPMENT_TEAM = VYK7DLU38Z;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../third-party/boost_1_63_0",
@@ -1932,7 +1932,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				BUNDLE_CONFIG = "$(SRCROOT)/../rn-cli.config.js";
+				BUNDLE_CONFIG = "$(SRCROOT)/../metro.config.js";
 				DEVELOPMENT_TEAM = VYK7DLU38Z;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../third-party/boost_1_63_0",

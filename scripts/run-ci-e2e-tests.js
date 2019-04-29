@@ -64,6 +64,23 @@ try {
     }
   }
 
+  if (argv.js) {
+    if (
+      tryExecNTimes(
+        () => {
+          return exec('npm install --save-dev flow-bin').code;
+        },
+        numberOfRetries,
+        () => exec('sleep 10s'),
+      )
+    ) {
+      echo('Failed to install Flow');
+      echo('Most common reason is npm registry connectivity, try again');
+      exitCode = 1;
+      throw Error(exitCode);
+    }
+  }
+
   if (exec('yarn pack').code) {
     echo('Failed to pack react-native');
     exitCode = 1;
@@ -92,23 +109,10 @@ try {
     exitCode = 1;
     throw Error(exitCode);
   }
+  cp('metro.config.js', 'EndToEndTest/.');
   cd('EndToEndTest');
   echo('Installing React Native package');
   exec(`npm install ${PACKAGE}`);
-  if (
-    tryExecNTimes(
-      () => {
-        return exec('npm install --save-dev flow-bin').code;
-      },
-      numberOfRetries,
-      () => exec('sleep 10s'),
-    )
-  ) {
-    echo('Failed to install Flow');
-    echo('Most common reason is npm registry connectivity, try again');
-    exitCode = 1;
-    throw Error(exitCode);
-  }
   echo('Installing node_modules');
   if (
     tryExecNTimes(
@@ -291,7 +295,7 @@ try {
       throw Error(exitCode);
     }
     describe('Test: Flow check');
-    if (exec('./node_modules/.bin/flow check').code) {
+    if (exec(path.join(ROOT, '/node_modules/.bin/flow') + ' check').code) {
       echo('Flow check failed.');
       exitCode = 1;
       throw Error(exitCode);
