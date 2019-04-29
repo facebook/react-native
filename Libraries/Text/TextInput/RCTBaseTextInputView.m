@@ -289,16 +289,16 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
 - (void)setSecureTextEntry:(BOOL)secureTextEntry {
   UIView<RCTBackedTextInputViewProtocol> *textInputView = self.backedTextInputView;
-    
+
   if (textInputView.secureTextEntry != secureTextEntry) {
     textInputView.secureTextEntry = secureTextEntry;
-      
+
     // Fix #5859, see https://stackoverflow.com/questions/14220187/uitextfield-has-trailing-whitespace-after-securetextentry-toggle/22537788#22537788
     NSAttributedString *originalText = [textInputView.attributedText copy];
     self.backedTextInputView.attributedText = [NSAttributedString new];
     self.backedTextInputView.attributedText = originalText;
   }
-    
+
 }
 
 #pragma mark - RCTBackedTextInputDelegate
@@ -405,7 +405,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   }
 
   NSString *previousText = backedTextInputView.attributedText.string ?: @"";
-  
+
   if (range.location + range.length > backedTextInputView.attributedText.string.length) {
     _predictedText = backedTextInputView.attributedText.string;
   } else {
@@ -509,13 +509,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 
   // Returning value DOES include border and padding insets.
   return fittingSize;
-}
-
-#pragma mark - Accessibility
-
-- (UIView *)reactAccessibilityElement
-{
-  return self.backedTextInputView;
 }
 
 #pragma mark - Focus Control
