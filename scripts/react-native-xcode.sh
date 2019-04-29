@@ -94,8 +94,8 @@ if [[ ! -x node && -d ${HOME}/.anyenv/bin ]]; then
 fi
 
 # check and assign NODE_BINARY env
-# shellcheck disable=SC1091
-source './node-binary.sh'
+# shellcheck source=/dev/null
+source "$REACT_NATIVE_DIR/scripts/node-binary.sh"
 
 [ -z "$NODE_ARGS" ] && export NODE_ARGS=""
 
