@@ -11,7 +11,6 @@ buildscript {
     }
     dependencies {
         classpath("com.android.tools.build:gradle:3.4.0")
-        classpath("de.undercouch:gradle-download-task:3.4.3")
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -20,17 +19,11 @@ buildscript {
 
 allprojects {
     repositories {
-        mavenLocal()
         maven {
-            url("$rootDir/node_modules/jsc-android/dist")
+            url = uri("$rootDir/node_modules/jsc-android/dist")
         }
-
+        mavenLocal()
         google()
         jcenter()
-
-        def androidSdk = System.getenv("ANDROID_SDK")
-        maven {
-            url("$androidSdk/extras/m2repository/")
-        }
     }
 }
