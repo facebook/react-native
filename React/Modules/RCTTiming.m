@@ -97,6 +97,7 @@ static const NSTimeInterval kIdleCallbackFrameDeadline = 0.001;
   NSTimer *_sleepTimer;
   BOOL _sendIdleEvents;
   BOOL _inBackground;
+  UIBackgroundTaskIdentifier _backgroundTaskIdentifier;
 }
 
 @synthesize bridge = _bridge;
@@ -112,6 +113,7 @@ RCT_EXPORT_MODULE()
   _paused = YES;
   _timers = [NSMutableDictionary new];
   _inBackground = NO;
+  _backgroundTaskIdentifier = UIBackgroundTaskInvalid;
 
   for (NSString *name in @[UIApplicationWillResignActiveNotification,
                            UIApplicationDidEnterBackgroundNotification,
@@ -135,8 +137,17 @@ RCT_EXPORT_MODULE()
 
 - (void)dealloc
 {
+  [self markEndOfBackgroundTaskIfNeeded];
   [_sleepTimer invalidate];
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)markEndOfBackgroundTaskIfNeeded
+{
+  if (_backgroundTaskIdentifier != UIBackgroundTaskInvalid) {
+    [[UIApplication sharedApplication] endBackgroundTask:_backgroundTaskIdentifier];
+    _backgroundTaskIdentifier = UIBackgroundTaskInvalid;
+  }
 }
 
 - (dispatch_queue_t)methodQueue
@@ -152,6 +163,17 @@ RCT_EXPORT_MODULE()
 
 - (void)appDidMoveToBackground
 {
+  [self markEndOfBackgroundTaskIfNeeded];
+  __weak typeof(self) weakSelf = self;
+  // Marks the beginning of a new long-running background task. We can run the timer in the background.
+  _backgroundTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+    typeof(self) strongSelf = weakSelf;
+    if (!strongSelf) {
+      return ;
+    }
+    // Mark the end of background task
+    [strongSelf markEndOfBackgroundTaskIfNeeded];
+  }];
   // Deactivate the CADisplayLink while in the background.
   [self stopTimers];
   _inBackground = YES;
@@ -163,6 +185,10 @@ RCT_EXPORT_MODULE()
 
 - (void)appDidMoveToForeground
 {
+  if (self->_backgroundTaskIdentifier != UIBackgroundTaskInvalid) {
+    [[UIApplication sharedApplication] endBackgroundTask:self->_backgroundTaskIdentifier];
+    _backgroundTaskIdentifier = UIBackgroundTaskInvalid;
+  }
   _inBackground = NO;
   [self startTimers];
 }
