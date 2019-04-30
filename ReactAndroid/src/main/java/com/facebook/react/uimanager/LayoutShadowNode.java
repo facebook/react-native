@@ -60,7 +60,8 @@ public class LayoutShadowNode extends ReactShadowNodeImpl {
           unit = YogaUnit.PERCENT;
           value = Float.parseFloat(s.substring(0, s.length() - 1));
         } else {
-          throw new IllegalArgumentException("Unknown value: " + s);
+          unit = YogaUnit.UNDEFINED;
+          value = YogaConstants.UNDEFINED;
         }
       } else {
         unit = YogaUnit.POINT;
