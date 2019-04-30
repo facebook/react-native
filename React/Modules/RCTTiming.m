@@ -185,10 +185,7 @@ RCT_EXPORT_MODULE()
 
 - (void)appDidMoveToForeground
 {
-  if (self->_backgroundTaskIdentifier != UIBackgroundTaskInvalid) {
-    [[UIApplication sharedApplication] endBackgroundTask:self->_backgroundTaskIdentifier];
-    _backgroundTaskIdentifier = UIBackgroundTaskInvalid;
-  }
+  [self markEndOfBackgroundTaskIfNeeded];
   _inBackground = NO;
   [self startTimers];
 }
