@@ -36,7 +36,7 @@ type ButtonProps = $ReadOnly<{|
   /**
    * If true, doesn't play system sound on touch (Android Only)
    **/
-  touchSoundDisabled: React.PropTypes.bool,
+  touchSoundDisabled?: ?boolean,
 
   /**
    * Color of the text (iOS), or background color of the button (Android)
