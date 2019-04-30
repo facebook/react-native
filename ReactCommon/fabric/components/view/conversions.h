@@ -24,44 +24,75 @@
 namespace facebook {
 namespace react {
 
+/*
+ * Yoga's `float` <-> React Native's `Float` (can be `double` or `float`)
+ *
+ * Regular Yoga `float` values represent some onscreen-position-related values.
+ * They can be real numbers or special value `YGUndefined` (which actually is
+ * `NaN`). Conceptually, layout computation process inside Yoga should never
+ * produce `NaN` values from non-`NaN` values. At the same time, ` YGUndefined`
+ * values have special "no limit" meaning in Yoga, therefore ` YGUndefined`
+ * usually corresponds to `Infinity` value.
+ */
 inline Float floatFromYogaFloat(float value) {
-  if (value == YGUndefined) {
-    return kFloatUndefined;
+  static_assert(
+      YGUndefined != YGUndefined,
+      "The code of this function assumes that YGUndefined is NaN.");
+  if (std::isnan(value) /* means: `value == YGUndefined` */) {
+    return std::numeric_limits<Float>::infinity();
   }
 
   return (Float)value;
 }
 
 inline float yogaFloatFromFloat(Float value) {
-  if (value == kFloatUndefined) {
+  if (std::isinf(value)) {
     return YGUndefined;
   }
 
   return (float)value;
 }
 
+/*
+ * `YGFloatOptional` <-> React Native's `Float`
+ *
+ * `YGFloatOptional` represents optional dimensionless float values in Yoga
+ * Style object (e.g. `flex`). The most suitable analogy to empty
+ * `YGFloatOptional` is `NaN` value.
+ * `YGFloatOptional` values are usually parsed from some outside data source
+ * which usually has some special corresponding representation for an empty
+ * value.
+ */
 inline Float floatFromYogaOptionalFloat(YGFloatOptional value) {
   if (value.isUndefined()) {
-    return kFloatUndefined;
+    return std::numeric_limits<Float>::quiet_NaN();
   }
 
   return floatFromYogaFloat(value.unwrap());
 }
 
 inline YGFloatOptional yogaOptionalFloatFromFloat(Float value) {
-  if (value == kFloatUndefined) {
+  if (std::isnan(value)) {
     return YGFloatOptional();
   }
 
-  return YGFloatOptional(yogaFloatFromFloat(value));
+  return YGFloatOptional((float)value);
 }
 
-inline YGValue yogaStyleValueFromFloat(const Float &value) {
-  if (std::isnan(value) || value == kFloatUndefined) {
+/*
+ * `YGValue` <-> `React Native's `Float`
+ *
+ * `YGValue` represents optional dimensionful (a real number and some unit, e.g.
+ * pixels).
+ */
+inline YGValue yogaStyleValueFromFloat(
+    const Float &value,
+    YGUnit unit = YGUnitPoint) {
+  if (std::isnan(value)) {
     return YGValueUndefined;
   }
 
-  return {(float)value, YGUnitPoint};
+  return {(float)value, unit};
 }
 
 inline folly::Optional<Float> optionalFloatFromYogaValue(
