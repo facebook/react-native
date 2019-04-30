@@ -20,8 +20,6 @@ import com.facebook.react.views.text.ReactFontManager;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 public class RNTesterApplication extends Application implements ReactApplication {
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
     @Override
@@ -30,7 +28,7 @@ public class RNTesterApplication extends Application implements ReactApplication
     }
 
     @Override
-    public @Nullable String getBundleAssetName() {
+    public String getBundleAssetName() {
       return "RNTesterApp.android.bundle";
     }
 
@@ -49,7 +47,7 @@ public class RNTesterApplication extends Application implements ReactApplication
 
   @Override
   public void onCreate() {
-    ReactFontManager.getInstance().loadFont(this, R.font.srisakdi);
+    ReactFontManager.getInstance().addCustomFont(this, "Srisakdi", R.font.srisakdi);
     super.onCreate();
   }
 

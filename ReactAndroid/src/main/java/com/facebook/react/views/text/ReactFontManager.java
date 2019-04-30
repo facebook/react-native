@@ -15,9 +15,9 @@ import android.content.res.AssetManager;
 import android.graphics.Typeface;
 import android.util.SparseArray;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
-
 
 /**
  * Class responsible to load and cache Typeface objects. It will first try to load typefaces inside
@@ -40,12 +40,12 @@ public class ReactFontManager {
   private static ReactFontManager sReactFontManagerInstance;
 
   private Map<String, FontFamily> mFontCache;
-  private Map<String, Typeface> mTypeCache;
-  private boolean mTypeCacheLoaded = false;
+  private Map<String, Typeface> mCustomTypefaceCache;
+  private boolean mHasCustomTypeface = false;
 
   private ReactFontManager() {
     mFontCache = new HashMap<>();
-    mTypeCache = new HashMap<>();
+    mCustomTypefaceCache = new HashMap<>();
   }
 
   public static ReactFontManager getInstance() {
@@ -65,9 +65,9 @@ public class ReactFontManager {
       mFontCache.put(fontFamilyName, fontFamily);
     }
 
-    if(mTypeCacheLoaded && mTypeCache.containsKey(fontFamilyName)) {
+    if(mHasCustomTypeface && mCustomTypefaceCache.containsKey(fontFamilyName)) {
       return Typeface.create(
-        mTypeCache.get(fontFamilyName),
+        mCustomTypefaceCache.get(fontFamilyName),
         style
       );
     }
@@ -83,13 +83,19 @@ public class ReactFontManager {
     return typeface;
   }
 
-  public void loadFont(Context context, int fontId) {
+  /*
+   * This method allows you to load custom fonts from res/font folder as provided font family name.
+   * Fonts may be one of .ttf, .otf or XML (https://developer.android.com/guide/topics/ui/look-and-feel/fonts-in-xml).
+   * To support multiple font styles or weights, you must provide a font in XML format.
+   *
+   * ReactFontManager.getInstance().addCustomFont(this, "Srisakdi", R.font.srisakdi);
+   */
+  public void addCustomFont(Context context, @NonNull String fontFamily, int fontId) {
     Typeface font = ResourcesCompat.getFont(context, fontId);
     if (font != null) {
-      String fontFamily = context.getResources().getResourceEntryName(fontId);
-      mTypeCache.put(fontFamily, font);
+      mCustomTypefaceCache.put(fontFamily, font);
     }
-    mTypeCacheLoaded = true;
+    mHasCustomTypeface = true;
   }
 
   /**
