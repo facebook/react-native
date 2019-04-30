@@ -51,6 +51,7 @@ class ContextContainer final {
   /*
    * Returns a previously registered instance of the particular type `T`
    * for `key`.
+   * Throws an exception if the instance could not be found.
    */
   template <typename T>
   T getInstance(std::string const &key) const {
@@ -63,6 +64,27 @@ class ContextContainer final {
         typeHashes_.at(key) == typeid(T).hash_code() &&
         "ContextContainer stores an instance of different type for given key.");
     return *std::static_pointer_cast<T>(instances_.at(key));
+  }
+
+  /*
+   * Returns a (wrapped in an optional) previously registered instance of
+   * the particular type `T` for given `key`.
+   * Returns an empty optional if the instance could not be found.
+   */
+  template <typename T>
+  better::optional<T> findInstance(std::string const &key) const {
+    std::shared_lock<better::shared_mutex> lock(mutex_);
+
+    auto iterator = instances_.find(key);
+    if (iterator == instances_.end()) {
+      return {};
+    }
+
+    assert(
+        typeHashes_.at(key) == typeid(T).hash_code() &&
+        "ContextContainer stores an instance of different type for given key.");
+
+    return *std::static_pointer_cast<T>(iterator->second);
   }
 
  private:
