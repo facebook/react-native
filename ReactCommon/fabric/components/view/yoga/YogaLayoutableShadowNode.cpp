@@ -8,6 +8,7 @@
 #include "YogaLayoutableShadowNode.h"
 
 #include <algorithm>
+#include <limits>
 #include <memory>
 
 #include <react/components/view/conversions.h>
@@ -248,7 +249,8 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
       static_cast<YogaLayoutableShadowNode *>(yogaNode->getContext());
 
   auto minimumSize = Size{0, 0};
-  auto maximumSize = Size{kFloatMax, kFloatMax};
+  auto maximumSize = Size{std::numeric_limits<Float>::infinity(),
+                          std::numeric_limits<Float>::infinity()};
 
   switch (widthMode) {
     case YGMeasureModeUndefined:
