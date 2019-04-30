@@ -12,7 +12,12 @@
 
 import type {ExtendedError} from 'parseErrorStack';
 
-const INTERNAL_CALLSITES_REGEX = /ReactNativeRenderer-dev\.js|MessageQueue\.js/;
+const INTERNAL_CALLSITES_REGEX = new RegExp(
+  [
+    '/Libraries/Renderer/oss/ReactNativeRenderer-dev\\.js$',
+    '/Libraries/BatchedBridge/MessageQueue\\.js$',
+  ].join('|'),
+);
 
 /**
  * Handles the developer-visible aspect of errors and exceptions
