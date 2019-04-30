@@ -38,7 +38,6 @@ import com.facebook.react.fabric.jsi.Binding;
 import com.facebook.react.fabric.jsi.EventBeatManager;
 import com.facebook.react.fabric.jsi.EventEmitterWrapper;
 import com.facebook.react.fabric.jsi.FabricSoLoader;
-import com.facebook.react.fabric.jsi.StateWrapperImpl;
 import com.facebook.react.fabric.mounting.mountitems.CreateMountItem;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.mountitems.BatchMountItem;
@@ -191,27 +190,29 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       ReadableMap props,
       boolean isLayoutable) {
     ThemedReactContext context = mReactContextForRootTag.get(rootTag);
-    String component = sComponentNames.get(componentName);
+    String component = getComponent(componentName);
     synchronized (mPreMountItemsLock) {
       mPreMountItems.add(
           new PreAllocateViewMountItem(
               context,
               rootTag,
               reactTag,
-              component != null ? component : componentName,
+              component,
               props,
               isLayoutable));
     }
+  }
+
+  private String getComponent(String componentName) {
+    String component = sComponentNames.get(componentName);
+    return component != null ? component : componentName;
   }
 
   @DoNotStrip
   @SuppressWarnings("unused")
   private MountItem createMountItem(
     String componentName, int reactRootTag, int reactTag, boolean isLayoutable) {
-    String component = sComponentNames.get(componentName);
-    if (component == null) {
-      throw new IllegalArgumentException("Unable to find component with name " + componentName);
-    }
+    String component = getComponent(componentName);
     ThemedReactContext reactContext = mReactContextForRootTag.get(reactRootTag);
     if (reactContext == null) {
       throw new IllegalArgumentException("Unable to find ReactContext for root: " + reactRootTag);
