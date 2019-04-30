@@ -596,6 +596,17 @@ jsi::Value ObjCTurboModule::invokeMethod(
     const jsi::Value *args,
     size_t count) {
   SEL selector = resolveMethodSelector(valueKind, instance_, name_, methodName, count);
+  return invokeObjCMethod(runtime, valueKind, methodName, selector, args, count);
+}
+
+jsi::Value ObjCTurboModule::invokeObjCMethod(
+    jsi::Runtime &runtime,
+    TurboModuleMethodValueKind valueKind,
+    const std::string &methodName,
+    SEL selector,
+    const jsi::Value *args,
+    size_t count)
+{
   NSMutableArray *retainedObjectsForInvocation = [NSMutableArray new];
   NSInvocation *inv = getMethodInvocation(runtime, valueKind, instance_, jsInvoker_, methodName, selector, args, count, retainedObjectsForInvocation);
 
