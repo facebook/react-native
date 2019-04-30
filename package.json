@@ -135,8 +135,8 @@
     "react": "16.8.3",
     "react-test-renderer": "16.8.3",
     "shelljs": "^0.7.8",
-    "yargs": "^9.0.0",
-    "ws": "^6.1.4"
+    "ws": "^6.1.4",
+    "yargs": "^9.0.0"
   },
   "detox": {
     "test-runner": "jest",
