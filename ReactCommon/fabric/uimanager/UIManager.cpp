@@ -21,8 +21,11 @@ SharedShadowNode UIManager::createNode(
   auto fallbackDescriptor =
       componentDescriptorRegistry_->getFallbackComponentDescriptor();
 
-  const auto &props = componentDescriptor.cloneProps(nullptr, rawProps);
-  const auto &state = componentDescriptor.createInitialState(props);
+  auto const eventEmitter =
+      componentDescriptor.createEventEmitter(std::move(eventTarget), tag);
+  auto const props = componentDescriptor.cloneProps(nullptr, rawProps);
+  auto const state = componentDescriptor.createInitialState(
+      ShadowNodeFragment{surfaceId, tag, props, eventEmitter});
 
   auto shadowNode = componentDescriptor.createShadowNode({
       /* .tag = */ tag,
@@ -34,8 +37,7 @@ SharedShadowNode UIManager::createNode(
           ? componentDescriptor.cloneProps(
                 props, RawProps(folly::dynamic::object("name", name)))
           : props,
-      /* .eventEmitter = */
-      componentDescriptor.createEventEmitter(std::move(eventTarget), tag),
+      /* .eventEmitter = */ eventEmitter,
       /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
       /* .localData = */ ShadowNodeFragment::localDataPlaceholder(),
       /* .state = */ state,
