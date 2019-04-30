@@ -169,7 +169,8 @@ import org.json.JSONObject;
             ? (TextView) convertView
             : (TextView) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.redbox_item_title, parent, false);
-        title.setText(mTitle);
+        // Remove ANSI color codes from the title
+        title.setText(mTitle.replaceAll("\\x1b\\[[0-9;]*m", ""));
         return title;
       } else {
         if (convertView == null) {
