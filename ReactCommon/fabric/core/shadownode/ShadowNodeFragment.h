@@ -26,7 +26,7 @@ namespace react {
  */
 struct ShadowNodeFragment {
   Tag const tag = tagPlaceholder();
-  SurfaceId const rootTag = surfaceIdPlaceholder();
+  SurfaceId const surfaceId = surfaceIdPlaceholder();
   Props::Shared const &props = propsPlaceholder();
   EventEmitter::Shared const &eventEmitter = eventEmitterPlaceholder();
   ShadowNode::SharedListOfShared const &children = childrenPlaceholder();

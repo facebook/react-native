@@ -131,7 +131,8 @@ void Scheduler::renderTemplateToSurface(
                 *oldRootShadowNode,
                 ShadowNodeFragment{
                     /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-                    /* .rootTag = */ ShadowNodeFragment::surfaceIdPlaceholder(),
+                    /* .surfaceId = */
+                    ShadowNodeFragment::surfaceIdPlaceholder(),
                     /* .props = */ ShadowNodeFragment::propsPlaceholder(),
                     /* .eventEmitter = */
                     ShadowNodeFragment::eventEmitterPlaceholder(),
@@ -161,7 +162,7 @@ void Scheduler::stopSurface(SurfaceId surfaceId) const {
                   *oldRootShadowNode,
                   ShadowNodeFragment{
                       /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-                      /* .rootTag = */
+                      /* .surfaceId = */
                       ShadowNodeFragment::surfaceIdPlaceholder(),
                       /* .props = */ ShadowNodeFragment::propsPlaceholder(),
                       /* .eventEmitter = */
@@ -265,7 +266,7 @@ void Scheduler::uiManagerDidFinishTransaction(
               *oldRootShadowNode,
               ShadowNodeFragment{
                   /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-                  /* .rootTag = */ ShadowNodeFragment::surfaceIdPlaceholder(),
+                  /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
                   /* .props = */ ShadowNodeFragment::propsPlaceholder(),
                   /* .eventEmitter = */
                   ShadowNodeFragment::eventEmitterPlaceholder(),

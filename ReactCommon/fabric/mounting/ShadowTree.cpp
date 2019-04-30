@@ -94,7 +94,7 @@ ShadowTree::ShadowTree(
   rootShadowNode_ = std::static_pointer_cast<const RootShadowNode>(
       rootComponentDescriptor.createShadowNode(ShadowNodeFragment{
           /* .tag = */ surfaceId,
-          /* .rootTag = */ surfaceId,
+          /* .surfaceId = */ surfaceId,
           /* .props = */ props,
           /* .eventEmitter = */ noopEventEmitter,
       }));
@@ -111,7 +111,7 @@ ShadowTree::~ShadowTree() {
             *oldRootShadowNode,
             ShadowNodeFragment{
                 /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-                /* .rootTag = */ ShadowNodeFragment::surfaceIdPlaceholder(),
+                /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
                 /* .props = */ ShadowNodeFragment::propsPlaceholder(),
                 /* .eventEmitter = */
                 ShadowNodeFragment::eventEmitterPlaceholder(),

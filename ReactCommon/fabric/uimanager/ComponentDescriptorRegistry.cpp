@@ -142,14 +142,14 @@ ComponentDescriptor const &ComponentDescriptorRegistry::at(
 SharedShadowNode ComponentDescriptorRegistry::createNode(
     Tag tag,
     ComponentName const &viewName,
-    Tag rootTag,
+    SurfaceId surfaceId,
     folly::dynamic const &props,
     SharedEventTarget const &eventTarget) const {
   auto unifiedComponentName = componentNameByReactViewName(viewName);
   auto const &componentDescriptor = this->at(unifiedComponentName);
   return componentDescriptor.createShadowNode({
       /* .tag = */ tag,
-      /* .rootTag = */ rootTag,
+      /* .surfaceId = */ surfaceId,
       /* .props = */ componentDescriptor.cloneProps(nullptr, RawProps(props)),
       /* .eventEmitter = */
       componentDescriptor.createEventEmitter(std::move(eventTarget), tag),

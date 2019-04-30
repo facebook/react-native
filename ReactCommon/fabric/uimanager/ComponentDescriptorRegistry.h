@@ -51,7 +51,7 @@ class ComponentDescriptorRegistry {
   SharedShadowNode createNode(
       Tag tag,
       ComponentName const &viewName,
-      Tag rootTag,
+      SurfaceId surfaceId,
       folly::dynamic const &props,
       SharedEventTarget const &eventTarget) const;
 
