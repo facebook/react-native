@@ -370,7 +370,7 @@ void Binding::schedulerDidFinishTransaction(
       JArrayClass<JMountItem::javaobject>::newArray(size);
 
   auto mountItems = *(mountItemsArray);
-  std::unordered_set<Tag> deletedViews;
+  std::unordered_set<Tag> deletedViewTags;
 
   int position = 0;
   for (const auto& mutation : mutations) {
@@ -383,7 +383,7 @@ void Binding::schedulerDidFinishTransaction(
     switch (mutation.type) {
       case ShadowViewMutation::Create: {
         if (mutation.newChildShadowView.props->revision > 1
-            || deletedViews.find(mutation.newChildShadowView.tag) != deletedViews.end()) {
+            || deletedViewTags.find(mutation.newChildShadowView.tag) != deletedViewTags.end()) {
           mountItems[position++] =
               createCreateMountItem(javaUIManager_, mutation, surfaceId);
         }
@@ -400,7 +400,7 @@ void Binding::schedulerDidFinishTransaction(
         mountItems[position++] =
             createDeleteMountItem(javaUIManager_, mutation);
 
-        deletedViews.insert(mutation.oldChildShadowView.tag);
+        deletedViewTags.insert(mutation.oldChildShadowView.tag);
         break;
       }
       case ShadowViewMutation::Update: {
@@ -444,7 +444,7 @@ void Binding::schedulerDidFinishTransaction(
           mountItems[position++] = createInsertMountItem(javaUIManager_, mutation);
 
           if (mutation.newChildShadowView.props->revision > 1 ||
-              deletedViews.find(mutation.newChildShadowView.tag) != deletedViews.end()) {
+              deletedViewTags.find(mutation.newChildShadowView.tag) != deletedViewTags.end()) {
             mountItems[position++] =
                 createUpdatePropsMountItem(javaUIManager_, mutation);
           }
