@@ -413,6 +413,14 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     }
   }
 
+  getScrollRef() {
+    if (this._scrollRef && this._scrollRef.getScrollRef) {
+      return this._scrollRef.getScrollRef();
+    } else {
+      return this._scrollRef;
+    }
+  }
+
   setNativeProps(props: Object) {
     if (this._scrollRef) {
       this._scrollRef.setNativeProps(props);
@@ -1124,17 +1132,18 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     // TODO (T35574538): findNodeHandle sometimes crashes with "Unable to find
     // node on an unmounted component" during scrolling
     try {
-      UIManager.measureLayout(
-        ReactNative.findNodeHandle(this),
+      if (!this._scrollRef) {
+        return;
+      }
+      // We are asuming that getOutermostParentListRef().getScrollRef()
+      // is a non-null reference to a ScrollView
+      this._scrollRef.measureLayout(
         ReactNative.findNodeHandle(
-          this.context.virtualizedList.getOutermostParentListRef(),
+          this.context.virtualizedList
+            .getOutermostParentListRef()
+            .getScrollRef()
+            .getNativeScrollRef(),
         ),
-        error => {
-          console.warn(
-            "VirtualizedList: Encountered an error while measuring a list's" +
-              ' offset from its containing VirtualizedList.',
-          );
-        },
         (x, y, width, height) => {
           this._offsetFromParentVirtualizedList = this._selectOffset({x, y});
           this._scrollMetrics.contentLength = this._selectLength({
@@ -1147,6 +1156,12 @@ class VirtualizedList extends React.PureComponent<Props, State> {
           );
           this._scrollMetrics.visibleLength = scrollMetrics.visibleLength;
           this._scrollMetrics.offset = scrollMetrics.offset;
+        },
+        error => {
+          console.warn(
+            "VirtualizedList: Encountered an error while measuring a list's" +
+              ' offset from its containing VirtualizedList.',
+          );
         },
       );
     } catch (error) {

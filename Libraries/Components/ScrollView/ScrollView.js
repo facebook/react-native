@@ -730,6 +730,10 @@ class ScrollView extends React.Component<Props, State> {
     return ReactNative.findNodeHandle(this._innerViewRef);
   }
 
+  getNativeScrollRef(): ?ScrollView {
+    return this._scrollViewRef;
+  }
+
   /**
    * Scrolls to a given x, y offset, either immediately or with a smooth animation.
    *
