@@ -3,7 +3,7 @@ LIBLET_NO_PRECOMP = 1
 
 !include $(WAREHOUSEIMPORTDIR)\libletmake\x-none\nmake\make.inc
 
-!IF ("$(PLATFORM)" != "droidarm") && ("$(PLATFORM)" != "droidx86")
+!IF "$(IS_DROID)" != "1"
 C_DEFINES = $(C_DEFINES) /D _WINDLL
 !ENDIF
 
