@@ -186,7 +186,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
 - (void)showErrorMessage:(NSString *)message withStack:(NSArray<RCTJSStackFrame *> *)stack isUpdate:(BOOL)isUpdate
 {
     // Remove ANSI color codes from the message
-    NSString * messageWithoutAnsi = [self stripAnsi:message];
+    NSString *messageWithoutAnsi = [self stripAnsi:message];
 
     // Show if this is a new message, or if we're updating the previous message
     if ((self.hidden && !isUpdate) || (!self.hidden && isUpdate && [_lastErrorMessage isEqualToString:messageWithoutAnsi])) {
