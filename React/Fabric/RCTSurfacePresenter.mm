@@ -26,12 +26,14 @@
 #import <React/RCTSurfaceView+Internal.h>
 #import <React/RCTSurfaceView.h>
 #import <React/RCTUtils.h>
+
 #import <react/components/root/RootShadowNode.h>
 #import <react/core/LayoutConstraints.h>
 #import <react/core/LayoutContext.h>
 #import <react/imagemanager/ImageManager.h>
 #import <react/uimanager/ComponentDescriptorFactory.h>
 #import <react/utils/ContextContainer.h>
+#import <react/utils/ManagedObjectWrapper.h>
 
 #import "MainRunLoopEventBeat.h"
 #import "RuntimeEventBeat.h"
@@ -195,10 +197,10 @@ using namespace facebook::react;
     return _scheduler;
   }
 
-  auto componentRegistryFactory = [factory = RNWrapManagedObject(self.componentViewFactory)](
+  auto componentRegistryFactory = [factory = wrapManagedObject(self.componentViewFactory)](
                                       EventDispatcher::Shared const &eventDispatcher,
                                       ContextContainer::Shared const &contextContainer) {
-    return [(RCTComponentViewFactory *)RNUnwrapManagedObject(factory)
+    return [(RCTComponentViewFactory *)unwrapManagedObject(factory)
         createComponentDescriptorRegistryWithParameters:{eventDispatcher, contextContainer}];
   };
 
