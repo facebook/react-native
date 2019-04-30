@@ -35,24 +35,7 @@ class ParagraphComponentDescriptor final
     // Every single `ParagraphShadowNode` will have a reference to
     // a shared `EvictingCacheMap`, a simple LRU cache for Paragraph
     // measurements.
-#ifdef ANDROID
-    auto paramName = "react_fabric:enabled_paragraph_measure_cache_android";
-#else
-    auto paramName = "react_fabric:enabled_paragraph_measure_cache_ios";
-#endif
-    // TODO: T39927960 - get rid of this if statement
-    bool enableCache =
-        (contextContainer != nullptr
-             ? contextContainer
-                   ->getInstance<std::shared_ptr<const ReactNativeConfig>>(
-                       "ReactNativeConfig")
-                   ->getBool(paramName)
-             : false);
-    if (enableCache) {
-      measureCache_ = std::make_unique<ParagraphMeasurementCache>();
-    } else {
-      measureCache_ = nullptr;
-    }
+    measureCache_ = std::make_unique<ParagraphMeasurementCache>();
   }
 
  protected:

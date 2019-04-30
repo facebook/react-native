@@ -6033,11 +6033,6 @@ react-is@^16.8.3:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.8.3.tgz#4ad8b029c2a718fc0cfc746c8d4e1b7221e5387d"
   integrity sha512-Y4rC1ZJmsxxkkPuMLwvKvlL1Zfpbcu+Bf4ZigkHup3v9EfdYhAlWAaVyA19olXq2o2mGn0w+dFKvk3pVVlYcIA==
 
-react-native-dummy@0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/react-native-dummy/-/react-native-dummy-0.2.0.tgz#fbf0ff7607506882648f1b07f76e57951b7b8f8a"
-  integrity sha512-8efApfdopDKGdxbG8aMmYDXt33aZUoFIU+kRxrsdvVAtV2m121tVFrgV8pHr7M+Y7iuOl80wuxt6Xx8zclCIpQ==
-
 react-proxy@^1.1.7:
   version "1.1.8"
   resolved "https://registry.yarnpkg.com/react-proxy/-/react-proxy-1.1.8.tgz#9dbfd9d927528c3aa9f444e4558c37830ab8c26a"

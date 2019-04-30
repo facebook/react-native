@@ -302,9 +302,7 @@ inline void fromRawValue(const RawValue &value, YGDisplay &result) {
   LOG(FATAL) << "Could not parse YGDisplay:" << stringValue;
 }
 
-inline void fromRawValue(
-    const RawValue &value,
-    decltype(YGStyle{}.margin()[0]) /* type is subject to change */ &result) {
+inline void fromRawValue(const RawValue &value, YGStyle::ValueRepr &result) {
   if (value.hasType<Float>()) {
     result = yogaStyleValueFromFloat((Float)value);
     return;
