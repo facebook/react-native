@@ -328,12 +328,37 @@ local_ref<JMountItem::javaobject> createDeleteMountItem(
   return deleteInstruction(javaUIManager, mutation.oldChildShadowView.tag);
 }
 
+local_ref<JMountItem::javaobject> createCreateMountItem(
+    const jni::global_ref<jobject>& javaUIManager,
+    const ShadowViewMutation& mutation,
+    const Tag rootTag) {
+  static auto createJavaInstruction =
+      jni::findClassStatic(UIManagerJavaDescriptor)
+          ->getMethod<alias_ref<JMountItem>(jstring, jint, jint, jboolean)>(
+              "createMountItem");
+
+  auto newChildShadowView = mutation.newChildShadowView;
+
+  local_ref<JString> componentName =
+      getPlatformComponentName(newChildShadowView);
+
+  jboolean isLayoutable = newChildShadowView.layoutMetrics != EmptyLayoutMetrics;
+
+  return createJavaInstruction(
+      javaUIManager,
+      componentName.get(),
+      rootTag,
+      newChildShadowView.tag,
+      isLayoutable);
+}
+
 void Binding::schedulerDidFinishTransaction(
     MountingTransaction &&mountingTransaction) {
   SystraceSection s("FabricUIManager::schedulerDidFinishTransaction");
 
   auto telemetry = mountingTransaction.getTelemetry();
   auto mutations = mountingTransaction.getMutations();
+  auto surfaceId = mountingTransaction.getSurfaceId();
 
   std::vector<local_ref<jobject>> queue;
   // Upper bound estimation of mount items to be delivered to Java side.
@@ -345,6 +370,7 @@ void Binding::schedulerDidFinishTransaction(
       JArrayClass<JMountItem::javaobject>::newArray(size);
 
   auto mountItems = *(mountItemsArray);
+  std::unordered_set<Tag> deletedViews;
 
   int position = 0;
   for (const auto& mutation : mutations) {
@@ -355,6 +381,14 @@ void Binding::schedulerDidFinishTransaction(
         oldChildShadowView.layoutMetrics == EmptyLayoutMetrics;
 
     switch (mutation.type) {
+      case ShadowViewMutation::Create: {
+        if (mutation.newChildShadowView.props->revision > 1
+            || deletedViews.find(mutation.newChildShadowView.tag) != deletedViews.end()) {
+          mountItems[position++] =
+              createCreateMountItem(javaUIManager_, mutation, surfaceId);
+        }
+      break;
+      }
       case ShadowViewMutation::Remove: {
         if (!isVirtual) {
           mountItems[position++] =
@@ -365,6 +399,8 @@ void Binding::schedulerDidFinishTransaction(
       case ShadowViewMutation::Delete: {
         mountItems[position++] =
             createDeleteMountItem(javaUIManager_, mutation);
+
+        deletedViews.insert(mutation.oldChildShadowView.tag);
         break;
       }
       case ShadowViewMutation::Update: {
@@ -407,8 +443,8 @@ void Binding::schedulerDidFinishTransaction(
           // Insert item
           mountItems[position++] = createInsertMountItem(javaUIManager_, mutation);
 
-          // Props
-          if (mutation.newChildShadowView.props->revision > 1) {
+          if (mutation.newChildShadowView.props->revision > 1 ||
+              deletedViews.find(mutation.newChildShadowView.tag) != deletedViews.end()) {
             mountItems[position++] =
                 createUpdatePropsMountItem(javaUIManager_, mutation);
           }
