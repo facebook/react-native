@@ -7,14 +7,13 @@
 package com.facebook.react.fabric.mounting;
 
 import android.content.Context;
-import androidx.annotation.AnyThread;
-import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import androidx.annotation.AnyThread;
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import com.facebook.infer.annotation.Assertions;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableNativeMap;
@@ -33,7 +32,6 @@ import com.facebook.react.uimanager.ViewGroupManager;
 import com.facebook.react.uimanager.ViewManager;
 import com.facebook.react.uimanager.ViewManagerRegistry;
 import com.facebook.yoga.YogaMeasureMode;
-import android.util.Log;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -95,7 +93,8 @@ public class MountingManager {
     mTagToViewState.remove(reactTag);
     Context context = view.getContext();
     if (context instanceof ThemedReactContext) {
-      // We only recycle views that were created by RN (its context is instance of ThemedReactContext)
+      // We only recycle views that were created by RN (its context is instance of
+      // ThemedReactContext)
       mViewFactory.recycle(
           (ThemedReactContext) context, Assertions.assertNotNull(viewManager).getName(), view);
     }
@@ -123,7 +122,7 @@ public class MountingManager {
     ViewState viewState = getViewState(tag);
     final View view = viewState.mView;
     if (view == null) {
-      throw new IllegalStateException("Unable to find view for view " + viewState);
+      throw new IllegalStateException("Unable to find view for viewState " + viewState);
     }
     getViewGroupManager(parentViewState).addView(parentView, view, index);
   }
@@ -305,21 +304,20 @@ public class MountingManager {
     if (viewManager == null) {
       throw new IllegalStateException("Unable to find ViewManager for tag: " + reactTag);
     }
-    viewManager.updateState(
-      viewState.mView,
-      stateWrapper);
+    viewManager.updateState(viewState.mView, stateWrapper);
   }
 
   @UiThread
   public void preallocateView(
-    ThemedReactContext reactContext,
-    String componentName,
-    int reactTag,
-    ReadableMap props,
-    boolean isLayoutable) {
+      ThemedReactContext reactContext,
+      String componentName,
+      int reactTag,
+      ReadableMap props,
+      boolean isLayoutable) {
 
     if (mTagToViewState.get(reactTag) != null) {
-      throw new IllegalStateException("View for component " + componentName + " with tag " + reactTag + " already exists.");
+      throw new IllegalStateException(
+          "View for component " + componentName + " with tag " + reactTag + " already exists.");
     }
 
     createViewWithProps(reactContext, componentName, reactTag, props, isLayoutable);
@@ -381,7 +379,19 @@ public class MountingManager {
 
     @Override
     public String toString() {
-      return "ViewState [" + mReactTag + "] - isRoot: " + mIsRoot + " - props: " + mCurrentProps + " - localData: " + mCurrentLocalData + " - viewManager: " + mViewManager;
+      boolean isLayoutOnly = mViewManager == null;
+      return "ViewState ["
+          + mReactTag
+          + "] - isRoot: "
+          + mIsRoot
+          + " - props: "
+          + mCurrentProps
+          + " - localData: "
+          + mCurrentLocalData
+          + " - viewManager: "
+          + mViewManager
+          + " - isLayoutOnly: "
+          + isLayoutOnly;
     }
   }
 }
