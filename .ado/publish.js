@@ -32,6 +32,8 @@ function doPublish() {
   console.log(`Using ${`(.*-microsoft)(-${publishBranchName})?\\.([0-9]*)`} to match version`);
   const branchVersionSuffix = (publishBranchName.match(/fb.*merge/) ? `-${publishBranchName}` : '');
 
+  const onlyTagSource = !!branchVersionSuffix;
+
   versionStringRegEx = new RegExp(`(.*-microsoft)(-${publishBranchName})?\\.([0-9]*)`);
   const versionGroups = versionStringRegEx.exec(releaseVersion);
   if (versionGroups) {
@@ -57,11 +59,13 @@ function doPublish() {
   exec(`git push origin HEAD:${tempPublishBranch} --follow-tags --verbose`);
   exec(`git push origin tag v${releaseVersion}`);
 
-  // -------- Generating Android Artifacts with JavaDoc
-  exec("gradlew installArchives");
+  if (!onlyTagSource) {
+    // -------- Generating Android Artifacts with JavaDoc
+    exec("gradlew installArchives");
 
-  // undo uncommenting javadoc setting
-  exec("git checkout ReactAndroid/gradle.properties");
+    // undo uncommenting javadoc setting
+    exec("git checkout ReactAndroid/gradle.properties");
+  }
 
   // Configure npm to publish to internal feed
   const npmrcPath = path.resolve(__dirname, "../.npmrc");
