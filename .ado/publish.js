@@ -76,7 +76,7 @@ function doPublish() {
   console.log(npmrcContents);
   fs.writeFileSync(npmrcPath, npmrcContents);
 
-  exec(`npm publish`);
+  exec(`npm publish${publishBranchName !== 'master' ? ` --tag ${publishBranchName}` : ''}`);
   exec(`del ${npmrcPath}`);
 
   // Push tar to GitHub releases
