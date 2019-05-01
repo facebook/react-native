@@ -29,13 +29,16 @@ function doPublish() {
 
   let releaseVersion = pkgJson.version;
 
+  console.log(`Using ${`(.*-microsoft)(-${publishBranchName})?\\.([0-9]*)`} to match version`);
+  const branchVersionSuffix = (publishBranchName.match(/fb.*merge/) ? `-${publishBranchName}` : '');
+
   versionStringRegEx = new RegExp(`(.*-microsoft)(-${publishBranchName})?\\.([0-9]*)`);
   const versionGroups = versionStringRegEx.exec(releaseVersion);
   if (versionGroups) {
-    releaseVersion = versionGroups[1] + (publishBranchName.match(/fb.*merge/) ? `-${publishBranchName}` : '') + '.' + (parseInt(versionGroups[2]) + 1);
+    releaseVersion = versionGroups[1] + branchVersionSuffix + '.' + (parseInt(versionGroups[3]) + 1);
   } else {
     if (releaseVersion.indexOf("-") === -1) {
-      releaseVersion = releaseVersion + "-microsoft.0";
+      releaseVersion = releaseVersion + `-microsoft${branchVersionSuffix}.0`;
     } else {
       console.log("Invalid version to publish");
       exit(1);
