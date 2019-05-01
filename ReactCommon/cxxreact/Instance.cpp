@@ -49,7 +49,6 @@ void Instance::initializeBridge(
     std::shared_ptr<ModuleRegistry> moduleRegistry) {
   callback_ = std::move(callback);
   moduleRegistry_ = std::move(moduleRegistry);
-<<<<<<< HEAD
 
   std::shared_ptr<ExecutorDelegate> delegate;
   if (edf) {
@@ -57,9 +56,6 @@ void Instance::initializeBridge(
   }
 
   jsQueue->runOnQueueSync([this, delegate, &jsef, jsQueue]() mutable {
-=======
-  jsQueue->runOnQueueSync([this, &jsef, jsQueue]() mutable {
->>>>>>> v0.59.0
     nativeToJsBridge_ = folly::make_unique<NativeToJsBridge>(
       jsef.get(), delegate, moduleRegistry_, jsQueue, callback_, jseConfigParams_);
 

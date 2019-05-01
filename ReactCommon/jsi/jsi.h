@@ -305,12 +305,7 @@ class PropNameID : public Pointer {
  public:
   using Pointer::Pointer;
 
-<<<<<<< HEAD
-  // TODO :: Temporary hack/divergence from Github copy due to a bug in MSVC compiler which is fixed in VS2019.
-  PropNameID(Runtime& runtime, const PropNameID& other)
-=======
   PropNameID(Runtime &runtime, const PropNameID &other)
->>>>>>> v0.59.0
       : Pointer(runtime.clonePropNameID(other.ptr_)) {}
 
   PropNameID(PropNameID&& other) = default;

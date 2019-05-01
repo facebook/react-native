@@ -1693,8 +1693,6 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
             ownerWidth),
         YGDimensionHeight);
   } else {
-<<<<<<< HEAD
-=======
     // Measure the text under the current constraints.
     const YGSize measuredSize = marker::MarkerSection<YGMarkerMeasure>::wrap(
         node,
@@ -1705,7 +1703,6 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
         innerHeight,
         heightMeasureMode);
 
->>>>>>> v0.59.0
     node->setLayoutMeasuredDimension(
         YGNodeBoundAxis(
             node,
@@ -3532,23 +3529,12 @@ static const char* YGSpacer(const unsigned long level) {
 static const char* YGMeasureModeName(
     const YGMeasureMode mode,
     const bool performLayout) {
-<<<<<<< HEAD
-  const char* kMeasureModeNames[YGMeasureModeCount] = {
-      "UNDEFINED", "EXACTLY", "AT_MOST"};
-  const char* kLayoutModeNames[YGMeasureModeCount] = {"LAY_UNDEFINED",
-                                                      "LAY_EXACTLY",
-                                                      "LAY_AT_"
-                                                      "MOST"};
-
-  if (mode < YGMeasureModeUndefined || mode >= YGMeasureModeCount) {
-=======
   constexpr auto N = enums::count<YGMeasureMode>();
   const char* kMeasureModeNames[N] = {"UNDEFINED", "EXACTLY", "AT_MOST"};
   const char* kLayoutModeNames[N] = {
       "LAY_UNDEFINED", "LAY_EXACTLY", "LAY_AT_MOST"};
 
   if (mode >= N) {
->>>>>>> v0.59.0
     return "";
   }
 

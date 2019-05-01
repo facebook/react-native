@@ -49,6 +49,8 @@ class ExecutorDelegate {
     JSExecutor& executor, folly::dynamic&& calls, bool isEndOfBatch) = 0;
   virtual MethodCallResult callSerializableNativeHook(
     JSExecutor& executor, unsigned int moduleId, unsigned int methodId, folly::dynamic&& args) = 0;
+
+  virtual bool isBatchActive() = 0;
 };
 
 using NativeExtensionsProvider = std::function<folly::dynamic(const std::string&)>;

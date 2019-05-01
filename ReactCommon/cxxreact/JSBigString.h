@@ -6,7 +6,6 @@
 #pragma once
 
 #include <fcntl.h>
-#include <unistd.h>
 #include <sys/mman.h>
 
 #include <folly/Exception.h>
@@ -119,24 +118,12 @@ public:
   JSBigFileString(int fd, size_t size, off_t offset = 0);
   ~JSBigFileString();
 
-<<<<<<< HEAD
-  bool isAscii() const override
-  {
-    return true;
-  }
-
-  const char* c_str() const override;
-=======
-  JSBigFileString(int fd, size_t size, off_t offset = 0);
-  ~JSBigFileString();
-
   bool isAscii() const override {
     return true;
   }
 
   const char *c_str() const override;
 
->>>>>>> v0.59.0
   size_t size() const override;
   int fd() const;
 

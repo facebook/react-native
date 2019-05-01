@@ -104,14 +104,10 @@ NativeToJsBridge::~NativeToJsBridge() {
 void NativeToJsBridge::loadApplication(
     std::unique_ptr<RAMBundleRegistry> bundleRegistry,
     std::unique_ptr<const JSBigString> startupScript,
-<<<<<<< HEAD
     uint64_t bundleVersion,
     std::string startupScriptSourceURL,
     std::string&& bytecodeFileName) {
-=======
-    std::string startupScriptSourceURL) {
 
->>>>>>> v0.59.0
   runOnExecutorQueue(
       [this,
        bundleRegistryWrap=folly::makeMoveWrapper(std::move(bundleRegistry)),

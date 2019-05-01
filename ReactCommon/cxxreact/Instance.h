@@ -75,16 +75,10 @@ public:
   bool supportsProfiling();
   virtual void setGlobalVariable(std::string propName,
                          std::unique_ptr<const JSBigString> jsonValue);
-<<<<<<< HEAD
   virtual void *getJavaScriptContext();
   virtual bool isInspectable();
-  virtual void callJSFunction(std::string &&module, std::string &&method,
-=======
-  void *getJavaScriptContext();
-  bool isInspectable();
   bool isBatchActive();
-  void callJSFunction(std::string &&module, std::string &&method,
->>>>>>> v0.59.0
+  virtual void callJSFunction(std::string &&module, std::string &&method,
                       folly::dynamic &&params);
   virtual void callJSCallback(uint64_t callbackId, folly::dynamic &&params);
   virtual void registerModules(std::vector<std::unique_ptr<NativeModule>>&& modules);
