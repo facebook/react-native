@@ -526,12 +526,13 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     this._cellKeysToChildListKeys.set(childList.cellKey, childListsInCell);
 
     const existingChildData = this._nestedChildLists.get(childList.key);
-    invariant(
-      !(existingChildData && existingChildData.ref !== null),
-      'A VirtualizedList contains a cell which itself contains ' +
-        'more than one VirtualizedList of the same orientation as the parent ' +
-        'list. You must pass a unique listKey prop to each sibling list.',
-    );
+    if (existingChildData && existingChildData.ref !== null) {
+      console.error(
+        'A VirtualizedList contains a cell which itself contains ' +
+          'more than one VirtualizedList of the same orientation as the parent ' +
+          'list. You must pass a unique listKey prop to each sibling list.',
+      );
+    }
     this._nestedChildLists.set(childList.key, {
       ref: childList.ref,
       state: null,
