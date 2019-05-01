@@ -199,10 +199,13 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityStates, NSArray<NSString *>, RCTView)
       [newStates addObject:state];
     }
   }
-  if (newStates.count > 0) {
-    ((RCTView *)view.reactAccessibilityElement).accessibilityStates = newStates;
-  } else {
+  
+  if ([view.reactAccessibilityElement isKindOfClass:[RCTView class]]) {
+    if (newStates.count > 0) {
+      ((RCTView *)view.reactAccessibilityElement).accessibilityStates = newStates;
+    } else {
       ((RCTView *)view.reactAccessibilityElement).accessibilityStates = nil;
+    }
   }
 }
 
