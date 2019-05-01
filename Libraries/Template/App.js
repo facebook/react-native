@@ -8,7 +8,7 @@ import {
   SafeAreaView,
 } from 'react-native'
 
-import { Header, Section, LinkList } from './Components'
+import { Header, Section, LinkList } from './components'
 
 const reloadInstructions = Platform.select({
   ios: 'Press Cmd+R to reload. Cmd+D or shake for dev menu.',
@@ -22,7 +22,7 @@ export default function App() {
       <SafeAreaView style={styles.topSafeArea} />
 
       <SafeAreaView style={styles.bottomSafeArea}>
-        <StatusBar barStyle="light-content" />
+        <StatusBar barStyle="dark-content" />
         <ScrollView bounces={false}>
           <Header />
           <View style={styles.body}>
@@ -50,13 +50,13 @@ export default function App() {
 const styles = StyleSheet.create({
   topSafeArea: {
     flex: 0,
-    backgroundColor: '#333',
+    backgroundColor: '#F3F3F3',
   },
   bottomSafeArea: {
     flex: 1,
     backgroundColor: '#FFF',
   },
   body: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#FFF',
   },
 })

@@ -24,12 +24,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#333',
+    color: '#000',
   },
   description: {
     marginTop: 8,
     fontSize: 18,
     fontWeight: '400',
-    color: '#555',
+    color: '#333',
   },
 })
