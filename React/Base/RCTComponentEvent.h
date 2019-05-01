@@ -7,6 +7,8 @@
 
 #import <React/RCTEventDispatcher.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /**
  * Generic untyped event for Components. Used internally by RCTDirectEventBlock and
  * RCTBubblingEventBlock, for other use cases prefer using a class that implements
@@ -15,5 +17,7 @@
 @interface RCTComponentEvent : NSObject<RCTEvent>
 
 - (instancetype)initWithName:(NSString *)name viewTag:(NSNumber *)viewTag body:(NSDictionary *)body;
+
+NS_ASSUME_NONNULL_END
 
 @end

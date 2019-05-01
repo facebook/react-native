@@ -37,7 +37,7 @@ UnsharedRootShadowNode RootShadowNode::clone(
       *this,
       ShadowNodeFragment{
           /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-          /* .rootTag = */ ShadowNodeFragment::surfaceIdPlaceholder(),
+          /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
           /* .props = */ props,
       });
   return newRootShadowNode;

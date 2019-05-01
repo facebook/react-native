@@ -12,6 +12,13 @@
 
 import type {ExtendedError} from 'parseErrorStack';
 
+const INTERNAL_CALLSITES_REGEX = new RegExp(
+  [
+    '/Libraries/Renderer/oss/ReactNativeRenderer-dev\\.js$',
+    '/Libraries/BatchedBridge/MessageQueue\\.js$',
+  ].join('|'),
+);
+
 /**
  * Handles the developer-visible aspect of errors and exceptions
  */
@@ -38,9 +45,12 @@ function reportException(e: ExtendedError, isFatal: boolean) {
       symbolicateStackTrace(stack)
         .then(prettyStack => {
           if (prettyStack) {
+            const stackWithoutInternalCallsites = prettyStack.filter(
+              frame => frame.file.match(INTERNAL_CALLSITES_REGEX) === null,
+            );
             ExceptionsManager.updateExceptionMessage(
               e.message,
-              prettyStack,
+              stackWithoutInternalCallsites,
               currentExceptionID,
             );
           } else {

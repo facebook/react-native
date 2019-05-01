@@ -11,8 +11,7 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {NetInfo, Text, View, TouchableWithoutFeedback} = ReactNative;
+const {NetInfo, Text, View, TouchableWithoutFeedback} = require('react-native');
 
 class ConnectionInfoSubscription extends React.Component<{}, $FlowFixMeState> {
   state = {

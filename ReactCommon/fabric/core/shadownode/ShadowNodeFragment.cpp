@@ -44,5 +44,21 @@ State::Shared const &ShadowNodeFragment::statePlaceholder() {
   return instance;
 }
 
+using Value = ShadowNodeFragment::Value;
+
+Value::Value(ShadowNodeFragment const &fragment)
+    : tag_(fragment.tag),
+      surfaceId_(fragment.surfaceId),
+      props_(fragment.props),
+      eventEmitter_(fragment.eventEmitter),
+      children_(fragment.children),
+      localData_(fragment.localData),
+      state_(fragment.state) {}
+
+Value::operator ShadowNodeFragment() const {
+  return ShadowNodeFragment{
+      tag_, surfaceId_, props_, eventEmitter_, children_, localData_, state_};
+}
+
 } // namespace react
 } // namespace facebook

@@ -114,9 +114,7 @@ if (
 }
 
 // Change react-native version in the template's package.json
-let templatePackageJson = JSON.parse(cat('template/package.json'));
-templatePackageJson.dependencies['react-native'] = version;
-fs.writeFileSync('./template/package.json', JSON.stringify(templatePackageJson, null, 2) + '\n', 'utf-8');
+exec(`node scripts/set-rn-template-version.js ${version}`);
 
 // Verify that files changed, we just do a git diff and check how many times version is added across files
 let numberOfChangedLinesWithNewVersion = exec(

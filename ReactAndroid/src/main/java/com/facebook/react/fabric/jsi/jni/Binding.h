@@ -57,10 +57,7 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
   void stopSurface(jint surfaceId);
 
   void schedulerDidFinishTransaction(
-      const Tag rootTag,
-      const ShadowViewMutationList& mutations,
-      const long commitStartTime,
-      const long layoutTime);
+      MountingTransaction &&mountingTransaction);
 
   void schedulerDidRequestPreliminaryViewAllocation(
       const SurfaceId surfaceId,

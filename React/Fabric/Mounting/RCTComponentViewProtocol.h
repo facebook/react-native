@@ -13,10 +13,26 @@
 #import <react/core/LocalData.h>
 #import <react/core/Props.h>
 #import <react/core/State.h>
+#import <react/uimanager/ComponentDescriptorProvider.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-/**
+/*
+ * Bitmask for all types of possible updates performing during mounting.
+ */
+typedef NS_OPTIONS(NSInteger, RNComponentViewUpdateMask) {
+  RNComponentViewUpdateMaskNone = 0,
+  RNComponentViewUpdateMaskProps = 1 << 0,
+  RNComponentViewUpdateMaskEventEmitter = 1 << 1,
+  RNComponentViewUpdateMaskLocalData = 1 << 2,
+  RNComponentViewUpdateMaskState = 1 << 3,
+  RNComponentViewUpdateMaskLayoutMetrics = 1 << 4,
+
+  RNComponentViewUpdateMaskAll = RNComponentViewUpdateMaskProps | RNComponentViewUpdateMaskEventEmitter |
+      RNComponentViewUpdateMaskLocalData | RNComponentViewUpdateMaskState | RNComponentViewUpdateMaskLayoutMetrics
+};
+
+/*
  * Represents a `UIView` instance managed by React.
  * All methods are non-@optional.
  * `UIView+ComponentViewProtocol` category provides default implementation
@@ -25,10 +41,16 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol RCTComponentViewProtocol <NSObject>
 
 /*
- * Returns ComponentHandle of ComponentDescriptor which this ComponentView
+ * Returns a `ComponentDescriptorProvider` of a particular `ComponentDescriptor` which this component view
  * represents.
  */
-+ (facebook::react::ComponentHandle)componentHandle;
++ (facebook::react::ComponentDescriptorProvider)componentDescriptorProvider;
+
+/*
+ * Returns a list of supplemental  `ComponentDescriptorProvider`s (with do not have `ComponentView` counterparts) that
+ * require for this component view.
+ */
++ (std::vector<facebook::react::ComponentDescriptorProvider>)supplementalComponentDescriptorProviders;
 
 /*
  * Called for mounting (attaching) a child component view inside `self`
@@ -77,6 +99,13 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)updateLayoutMetrics:(facebook::react::LayoutMetrics)layoutMetrics
            oldLayoutMetrics:(facebook::react::LayoutMetrics)oldLayoutMetrics;
+
+/*
+ * Called right after all update methods were called for a particular component view.
+ * Useful for performing updates that require knowledge of several independent aspects of the compound mounting change
+ * (e.g. props *and* layout constraints).
+ */
+- (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask;
 
 /*
  * Called right after the component view is moved to a recycle pool.

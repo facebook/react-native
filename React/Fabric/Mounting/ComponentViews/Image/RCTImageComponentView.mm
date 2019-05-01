@@ -8,10 +8,10 @@
 #import "RCTImageComponentView.h"
 
 #import <React/RCTImageResponseObserverProxy.h>
+#import <react/components/image/ImageComponentDescriptor.h>
 #import <react/components/image/ImageEventEmitter.h>
 #import <react/components/image/ImageLocalData.h>
 #import <react/components/image/ImageProps.h>
-#import <react/components/image/ImageShadowNode.h>
 #import <react/imagemanager/ImageRequest.h>
 #import <react/imagemanager/RCTImagePrimitivesConversions.h>
 
@@ -46,9 +46,9 @@
 
 #pragma mark - RCTComponentViewProtocol
 
-+ (ComponentHandle)componentHandle
++ (ComponentDescriptorProvider)componentDescriptorProvider
 {
-  return ImageShadowNode::Handle();
+  return concreteComponentDescriptorProvider<ImageComponentDescriptor>();
 }
 
 - (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps

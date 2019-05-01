@@ -314,6 +314,42 @@ jsi::Value UIManagerBinding::get(
         });
   }
 
+  // Legacy API
+  if (methodName == "measureLayout") {
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        name,
+        4,
+        [&uiManager](
+            jsi::Runtime &runtime,
+            const jsi::Value &thisValue,
+            const jsi::Value *arguments,
+            size_t count) -> jsi::Value {
+          auto layoutMetrics = uiManager.getRelativeLayoutMetrics(
+              *shadowNodeFromValue(runtime, arguments[0]),
+              shadowNodeFromValue(runtime, arguments[1]).get());
+
+          if (layoutMetrics == EmptyLayoutMetrics) {
+            auto onFailFunction =
+                arguments[2].getObject(runtime).getFunction(runtime);
+            onFailFunction.call(runtime);
+            return jsi::Value::undefined();
+          }
+
+          auto onSuccessFunction =
+              arguments[3].getObject(runtime).getFunction(runtime);
+          auto frame = layoutMetrics.frame;
+
+          onSuccessFunction.call(
+              runtime,
+              {jsi::Value{runtime, (double)frame.origin.x},
+               jsi::Value{runtime, (double)frame.origin.y},
+               jsi::Value{runtime, (double)frame.size.width},
+               jsi::Value{runtime, (double)frame.size.height}});
+          return jsi::Value::undefined();
+        });
+  }
+
   if (methodName == "setNativeProps") {
     return jsi::Function::createFromHostFunction(
         runtime,

@@ -8,6 +8,7 @@
 #include "YogaLayoutableShadowNode.h"
 
 #include <algorithm>
+#include <limits>
 #include <memory>
 
 #include <react/components/view/conversions.h>
@@ -135,8 +136,8 @@ void YogaLayoutableShadowNode::setSize(Size size) const {
   ensureUnsealed();
 
   auto style = yogaNode_.getStyle();
-  style.dimensions[YGDimensionWidth] = yogaStyleValueFromFloat(size.width);
-  style.dimensions[YGDimensionHeight] = yogaStyleValueFromFloat(size.height);
+  style.dimensions()[YGDimensionWidth] = yogaStyleValueFromFloat(size.width);
+  style.dimensions()[YGDimensionHeight] = yogaStyleValueFromFloat(size.height);
   yogaNode_.setStyle(style);
   yogaNode_.setDirty(true);
 }
@@ -146,7 +147,7 @@ void YogaLayoutableShadowNode::setPositionType(
   ensureUnsealed();
 
   auto style = yogaNode_.getStyle();
-  style.positionType = positionType;
+  style.positionType() = positionType;
   yogaNode_.setStyle(style);
   yogaNode_.setDirty(true);
 }
@@ -248,7 +249,8 @@ YGSize YogaLayoutableShadowNode::yogaNodeMeasureCallbackConnector(
       static_cast<YogaLayoutableShadowNode *>(yogaNode->getContext());
 
   auto minimumSize = Size{0, 0};
-  auto maximumSize = Size{kFloatMax, kFloatMax};
+  auto maximumSize = Size{std::numeric_limits<Float>::infinity(),
+                          std::numeric_limits<Float>::infinity()};
 
   switch (widthMode) {
     case YGMeasureModeUndefined:

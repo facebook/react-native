@@ -79,6 +79,31 @@ public class DisabledDevSupportManager implements DevSupportManager {
   }
 
   @Override
+  public void setHotModuleReplacementEnabled(boolean isHotModuleReplacementEnabled) {
+
+  }
+
+  @Override
+  public void setRemoteJSDebugEnabled(boolean isRemoteJSDebugEnabled) {
+
+  }
+
+  @Override
+  public void setReloadOnJSChangeEnabled(boolean isReloadOnJSChangeEnabled) {
+
+  }
+
+  @Override
+  public void setFpsDebugEnabled(boolean isFpsDebugEnabled) {
+
+  }
+
+  @Override
+  public void toggleElementInspector() {
+
+  }
+
+  @Override
   public boolean getDevSupportEnabled() {
     return false;
   }
@@ -162,7 +187,7 @@ public class DisabledDevSupportManager implements DevSupportManager {
 
   @Override
   public void registerErrorCustomizer(ErrorCustomizer errorCustomizer) {
-    
+
   }
 
   @Override

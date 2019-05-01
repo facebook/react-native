@@ -38,7 +38,7 @@ import com.facebook.react.fabric.jsi.Binding;
 import com.facebook.react.fabric.jsi.EventBeatManager;
 import com.facebook.react.fabric.jsi.EventEmitterWrapper;
 import com.facebook.react.fabric.jsi.FabricSoLoader;
-import com.facebook.react.fabric.jsi.StateWrapperImpl;
+import com.facebook.react.fabric.mounting.mountitems.CreateMountItem;
 import com.facebook.react.fabric.mounting.MountingManager;
 import com.facebook.react.fabric.mounting.mountitems.BatchMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DeleteMountItem;
@@ -73,7 +73,6 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   public static final String TAG = FabricUIManager.class.getSimpleName();
   public static final boolean DEBUG =
       PrinterHolder.getPrinter().shouldDisplayLogMessage(ReactDebugOverlayTags.FABRIC_UI_MANAGER);
-
   private static final Map<String, String> sComponentNames = new HashMap<>();
   private static final int FRAME_TIME_MS = 16;
   private static final int MAX_TIME_IN_FRAME_FOR_NON_BATCHED_OPERATIONS_MS = 8;
@@ -87,6 +86,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
     sComponentNames.put("Image", "RCTImageView");
     sComponentNames.put("ScrollView", "RCTScrollView");
     sComponentNames.put("Slider", "RCTSlider");
+    sComponentNames.put("ModalHostView", "RCTModalHostView");
     sComponentNames.put("Paragraph", "RCTText");
     sComponentNames.put("Text", "RCText");
     sComponentNames.put("RawText", "RCTRawText");
@@ -190,17 +190,34 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       ReadableMap props,
       boolean isLayoutable) {
     ThemedReactContext context = mReactContextForRootTag.get(rootTag);
-    String component = sComponentNames.get(componentName);
+    String component = getComponent(componentName);
     synchronized (mPreMountItemsLock) {
       mPreMountItems.add(
           new PreAllocateViewMountItem(
               context,
               rootTag,
               reactTag,
-              component != null ? component : componentName,
+              component,
               props,
               isLayoutable));
     }
+  }
+
+  private String getComponent(String componentName) {
+    String component = sComponentNames.get(componentName);
+    return component != null ? component : componentName;
+  }
+
+  @DoNotStrip
+  @SuppressWarnings("unused")
+  private MountItem createMountItem(
+    String componentName, int reactRootTag, int reactTag, boolean isLayoutable) {
+    String component = getComponent(componentName);
+    ThemedReactContext reactContext = mReactContextForRootTag.get(reactRootTag);
+    if (reactContext == null) {
+      throw new IllegalArgumentException("Unable to find ReactContext for root: " + reactRootTag);
+    }
+    return new CreateMountItem(reactContext, reactRootTag, reactTag, component, isLayoutable);
   }
 
   @DoNotStrip
@@ -282,7 +299,12 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   @Override
   public void synchronouslyUpdateViewOnUIThread(int reactTag, ReadableMap props) {
     long time = SystemClock.uptimeMillis();
-    scheduleMountItems(updatePropsMountItem(reactTag, props), time, 0, time, time);
+    try {
+      scheduleMountItems(updatePropsMountItem(reactTag, props), time, 0, time, time);
+    } catch (Exception ex) {
+      // ignore exceptions for now
+      // TODO T42943890: Fix animations in Fabric and remove this try/catch
+    }
   }
 
   /**

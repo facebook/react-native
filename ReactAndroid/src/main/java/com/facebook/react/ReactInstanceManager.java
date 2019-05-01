@@ -84,7 +84,9 @@ import com.facebook.react.modules.core.ReactChoreographer;
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings;
 import com.facebook.react.modules.fabric.ReactFabric;
 import com.facebook.react.packagerconnection.RequestHandler;
+import com.facebook.react.surface.ReactStage;
 import com.facebook.react.uimanager.DisplayMetricsHolder;
+import com.facebook.react.uimanager.ReactRoot;
 import com.facebook.react.uimanager.UIImplementationProvider;
 import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.ViewManager;
@@ -99,7 +101,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nullable;
 
 /**
@@ -135,8 +136,8 @@ public class ReactInstanceManager {
     void onReactContextInitialized(ReactContext context);
   }
 
-  private final Set<ReactRootView> mAttachedRootViews = Collections.synchronizedSet(
-    new HashSet<ReactRootView>());
+  private final Set<ReactRoot> mAttachedReactRoots = Collections.synchronizedSet(
+    new HashSet<ReactRoot>());
 
   private volatile LifecycleState mLifecycleState;
 
@@ -710,45 +711,49 @@ public class ReactInstanceManager {
     mDevSupportManager.showDevOptionsDialog();
   }
 
+  private void clearReactRoot(ReactRoot reactRoot) {
+    reactRoot.getRootViewGroup().removeAllViews();
+    reactRoot.getRootViewGroup().setId(View.NO_ID);
+  }
+
   /**
-   * Attach given {@param rootView} to a catalyst instance manager and start JS application using
+   * Attach given {@param reactRoot} to a catalyst instance manager and start JS application using
    * JS module provided by {@link ReactRootView#getJSModuleName}. If the react context is currently
    * being (re)-created, or if react context has not been created yet, the JS application associated
-   * with the provided root view will be started asynchronously, i.e this method won't block.
-   * This view will then be tracked by this manager and in case of catalyst instance restart it will
+   * with the provided reactRoot reactRoot will be started asynchronously, i.e this method won't block.
+   * This reactRoot will then be tracked by this manager and in case of catalyst instance restart it will
    * be re-attached.
    */
   @ThreadConfined(UI)
-  public void attachRootView(ReactRootView rootView) {
+  public void attachRootView(ReactRoot reactRoot) {
     UiThreadUtil.assertOnUiThread();
-    mAttachedRootViews.add(rootView);
+    mAttachedReactRoots.add(reactRoot);
 
-    // Reset view content as it's going to be populated by the application content from JS.
-    rootView.removeAllViews();
-    rootView.setId(View.NO_ID);
+    // Reset reactRoot content as it's going to be populated by the application content from JS.
+    clearReactRoot(reactRoot);
 
     // If react context is being created in the background, JS application will be started
-    // automatically when creation completes, as root view is part of the attached root view list.
+    // automatically when creation completes, as reactRoot reactRoot is part of the attached reactRoot reactRoot list.
     ReactContext currentContext = getCurrentReactContext();
     if (mCreateReactContextThread == null && currentContext != null) {
-      attachRootViewToInstance(rootView);
+      attachRootViewToInstance(reactRoot);
     }
   }
 
   /**
-   * Detach given {@param rootView} from current catalyst instance. It's safe to call this method
-   * multiple times on the same {@param rootView} - in that case view will be detached with the
+   * Detach given {@param reactRoot} from current catalyst instance. It's safe to call this method
+   * multiple times on the same {@param reactRoot} - in that case view will be detached with the
    * first call.
    */
   @ThreadConfined(UI)
-  public void detachRootView(ReactRootView rootView) {
+  public void detachRootView(ReactRoot reactRoot) {
     UiThreadUtil.assertOnUiThread();
-    synchronized (mAttachedRootViews) {
-      if (mAttachedRootViews.contains(rootView)) {
+    synchronized (mAttachedReactRoots) {
+      if (mAttachedReactRoots.contains(reactRoot)) {
         ReactContext currentContext = getCurrentReactContext();
-        mAttachedRootViews.remove(rootView);
+        mAttachedReactRoots.remove(reactRoot);
         if (currentContext != null && currentContext.hasActiveCatalystInstance()) {
-          detachViewFromInstance(rootView, currentContext.getCatalystInstance());
+          detachViewFromInstance(reactRoot, currentContext.getCatalystInstance());
         }
       }
     }
@@ -908,7 +913,7 @@ public class ReactInstanceManager {
   private void runCreateReactContextOnNewThread(final ReactContextInitParams initParams) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.runCreateReactContextOnNewThread()");
     UiThreadUtil.assertOnUiThread();
-    synchronized (mAttachedRootViews) {
+    synchronized (mAttachedReactRoots) {
       synchronized (mReactContextLock) {
         if (mCurrentReactContext != null) {
           tearDownReactContext(mCurrentReactContext);
@@ -985,7 +990,7 @@ public class ReactInstanceManager {
     ReactMarker.logMarker(PRE_SETUP_REACT_CONTEXT_END);
     ReactMarker.logMarker(SETUP_REACT_CONTEXT_START);
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "setupReactContext");
-    synchronized (mAttachedRootViews) {
+    synchronized (mAttachedReactRoots) {
       synchronized (mReactContextLock) {
         mCurrentReactContext = Assertions.assertNotNull(reactContext);
       }
@@ -999,8 +1004,8 @@ public class ReactInstanceManager {
       moveReactContextToCurrentLifecycleState();
 
       ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_START);
-      for (ReactRootView rootView : mAttachedRootViews) {
-        attachRootViewToInstance(rootView);
+      for (ReactRoot reactRoot : mAttachedReactRoots) {
+        attachRootViewToInstance(reactRoot);
       }
       ReactMarker.logMarker(ATTACH_MEASURED_ROOT_VIEWS_END);
     }
@@ -1038,47 +1043,46 @@ public class ReactInstanceManager {
         });
   }
 
-  private void attachRootViewToInstance(final ReactRootView rootView) {
+  private void attachRootViewToInstance(final ReactRoot reactRoot) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.attachRootViewToInstance()");
     Systrace.beginSection(TRACE_TAG_REACT_JAVA_BRIDGE, "attachRootViewToInstance");
-    UIManager uiManagerModule = UIManagerHelper.getUIManager(mCurrentReactContext, rootView.getUIManagerType());
+    UIManager uiManagerModule = UIManagerHelper.getUIManager(mCurrentReactContext, reactRoot.getUIManagerType());
 
-    @Nullable Bundle initialProperties = rootView.getAppProperties();
+    @Nullable Bundle initialProperties = reactRoot.getAppProperties();
     final int rootTag = uiManagerModule.addRootView(
-      rootView.getView(),
+      reactRoot.getRootViewGroup(),
       initialProperties == null ?
             new WritableNativeMap() : Arguments.fromBundle(initialProperties),
-        rootView.getInitialUITemplate());
-    rootView.setRootViewTag(rootTag);
-    rootView.runApplication();
+        reactRoot.getInitialUITemplate());
+    reactRoot.setRootViewTag(rootTag);
+    reactRoot.runApplication();
     Systrace.beginAsyncSection(
       TRACE_TAG_REACT_JAVA_BRIDGE,
       "pre_rootView.onAttachedToReactInstance",
       rootTag);
-    UiThreadUtil.runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        Systrace.endAsyncSection(
-          TRACE_TAG_REACT_JAVA_BRIDGE,
-          "pre_rootView.onAttachedToReactInstance",
-          rootTag);
-        rootView.onAttachedToReactInstance();
-      }
-    });
+    UiThreadUtil.runOnUiThread(
+        new Runnable() {
+          @Override
+          public void run() {
+            Systrace.endAsyncSection(
+                TRACE_TAG_REACT_JAVA_BRIDGE, "pre_rootView.onAttachedToReactInstance", rootTag);
+            reactRoot.onStage(ReactStage.ON_ATTACH_TO_INSTANCE);
+          }
+        });
     Systrace.endSection(TRACE_TAG_REACT_JAVA_BRIDGE);
   }
 
   private void detachViewFromInstance(
-      ReactRootView rootView,
+      ReactRoot reactRoot,
       CatalystInstance catalystInstance) {
     Log.d(ReactConstants.TAG, "ReactInstanceManager.detachViewFromInstance()");
     UiThreadUtil.assertOnUiThread();
-    if (rootView.getUIManagerType() == FABRIC) {
+    if (reactRoot.getUIManagerType() == FABRIC) {
       catalystInstance.getJSModule(ReactFabric.class)
-        .unmountComponentAtNode(rootView.getRootViewTag());
+        .unmountComponentAtNode(reactRoot.getRootViewTag());
     } else {
       catalystInstance.getJSModule(AppRegistry.class)
-        .unmountApplicationComponentAtRootTag(rootView.getRootViewTag());
+        .unmountApplicationComponentAtRootTag(reactRoot.getRootViewTag());
     }
 
   }
@@ -1090,10 +1094,9 @@ public class ReactInstanceManager {
       reactContext.onHostPause();
     }
 
-    synchronized (mAttachedRootViews) {
-      for (ReactRootView rootView : mAttachedRootViews) {
-        rootView.removeAllViews();
-        rootView.setId(View.NO_ID);
+    synchronized (mAttachedReactRoots) {
+      for (ReactRoot reactRoot : mAttachedReactRoots) {
+        clearReactRoot(reactRoot);
       }
     }
 

@@ -14,6 +14,7 @@
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Private.h>
+#import <React/RCTComponentViewFactory.h>
 #import <React/RCTComponentViewRegistry.h>
 #import <React/RCTFabricSurface.h>
 #import <React/RCTFollyConvert.h>
@@ -25,11 +26,14 @@
 #import <React/RCTSurfaceView+Internal.h>
 #import <React/RCTSurfaceView.h>
 #import <React/RCTUtils.h>
+
 #import <react/components/root/RootShadowNode.h>
 #import <react/core/LayoutConstraints.h>
 #import <react/core/LayoutContext.h>
 #import <react/imagemanager/ImageManager.h>
-#import <react/uimanager/ContextContainer.h>
+#import <react/uimanager/ComponentDescriptorFactory.h>
+#import <react/utils/ContextContainer.h>
+#import <react/utils/ManagedObjectWrapper.h>
 
 #import "MainRunLoopEventBeat.h"
 #import "RuntimeEventBeat.h"
@@ -39,6 +43,7 @@ using namespace facebook::react;
 
 @interface RCTBridge ()
 - (std::shared_ptr<facebook::react::MessageQueueThread>)jsMessageThread;
+- (void)invokeAsync:(std::function<void()> &&)func;
 @end
 
 @interface RCTSurfacePresenter () <RCTSchedulerDelegate, RCTMountingManagerDelegate>
@@ -177,7 +182,7 @@ using namespace facebook::react;
   if (componentView == nil) {
     return NO; // This view probably isn't managed by Fabric
   }
-  ComponentHandle handle = [[componentView class] componentHandle];
+  ComponentHandle handle = [[componentView class] componentDescriptorProvider].handle;
   const facebook::react::ComponentDescriptor &componentDescriptor = [self._scheduler getComponentDescriptor:handle];
   [self->_mountingManager synchronouslyUpdateViewOnUIThread:tag
                                                changedProps:props
@@ -195,7 +200,15 @@ using namespace facebook::react;
     return _scheduler;
   }
 
-  _scheduler = [[RCTScheduler alloc] initWithContextContainer:self.contextContainer];
+  auto componentRegistryFactory = [factory = wrapManagedObject(self.componentViewFactory)](
+                                      EventDispatcher::Shared const &eventDispatcher,
+                                      ContextContainer::Shared const &contextContainer) {
+    return [(RCTComponentViewFactory *)unwrapManagedObject(factory)
+        createComponentDescriptorRegistryWithParameters:{eventDispatcher, contextContainer}];
+  };
+
+  _scheduler = [[RCTScheduler alloc] initWithContextContainer:self.contextContainer
+                                     componentRegistryFactory:componentRegistryFactory];
   _scheduler.delegate = self;
 
   return _scheduler;
@@ -203,7 +216,7 @@ using namespace facebook::react;
 
 @synthesize contextContainer = _contextContainer;
 
-- (SharedContextContainer)contextContainer
+- (ContextContainer::Shared)contextContainer
 {
   std::lock_guard<std::mutex> lock(_contextContainerMutex);
 
@@ -223,12 +236,12 @@ using namespace facebook::react;
 
   auto runtime = (facebook::jsi::Runtime *)((RCTCxxBridge *)_batchedBridge).runtime;
 
-  RuntimeExecutor runtimeExecutor =
-    [runtime, messageQueueThread](std::function<void(facebook::jsi::Runtime &runtime)> &&callback) {
-      messageQueueThread->runOnQueue([runtime, callback = std::move(callback)]() {
-        callback(*runtime);
-      });
-    };
+  RuntimeExecutor runtimeExecutor = [self, runtime](std::function<void(facebook::jsi::Runtime & runtime)> &&callback) {
+    // For now, ask the bridge to queue the callback asynchronously to ensure that
+    // it's not invoked too early, e.g. before the bridge is fully ready.
+    // Revisit this after Fabric/TurboModule is fully rolled out.
+    [((RCTCxxBridge *)_batchedBridge) invokeAsync:[runtime, callback = std::move(callback)]() { callback(*runtime); }];
+  };
 
   EventBeatFactory synchronousBeatFactory = [runtimeExecutor]() {
     return std::make_unique<MainRunLoopEventBeat>(runtimeExecutor);
@@ -301,15 +314,13 @@ using namespace facebook::react;
 
 #pragma mark - RCTSchedulerDelegate
 
-- (void)schedulerDidFinishTransaction:(facebook::react::ShadowViewMutationList)mutations
-                                        rootTag:(ReactTag)rootTag
+- (void)schedulerDidFinishTransaction:(facebook::react::MountingTransaction &&)mountingTransaction
 {
-  RCTFabricSurface *surface = [_surfaceRegistry surfaceForRootTag:rootTag];
+  RCTFabricSurface *surface = [_surfaceRegistry surfaceForRootTag:mountingTransaction.getSurfaceId()];
 
   [surface _setStage:RCTSurfaceStagePrepared];
 
-  [_mountingManager performTransactionWithMutations:mutations
-                                            rootTag:rootTag];
+  [_mountingManager scheduleTransaction:std::move(mountingTransaction)];
 }
 
 - (void)schedulerOptimisticallyCreateComponentViewWithComponentHandle:(ComponentHandle)componentHandle

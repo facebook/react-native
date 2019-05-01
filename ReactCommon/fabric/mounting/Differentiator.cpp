@@ -208,9 +208,9 @@ static void calculateShadowViewMutations(
   mutations.insert(
       mutations.end(), createMutations.begin(), createMutations.end());
   mutations.insert(
-      mutations.end(), insertMutations.begin(), insertMutations.end());
-  mutations.insert(
       mutations.end(), downwardMutations.begin(), downwardMutations.end());
+  mutations.insert(
+      mutations.end(), insertMutations.begin(), insertMutations.end());
 }
 
 ShadowViewMutationList calculateShadowViewMutations(

@@ -17,11 +17,11 @@
 #include <react/mounting/ShadowTreeRegistry.h>
 #include <react/uimanager/ComponentDescriptorFactory.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
-#include <react/uimanager/ContextContainer.h>
 #include <react/uimanager/SchedulerDelegate.h>
 #include <react/uimanager/UIManagerBinding.h>
 #include <react/uimanager/UIManagerDelegate.h>
 #include <react/uimanager/primitives.h>
+#include <react/utils/ContextContainer.h>
 
 namespace facebook {
 namespace react {
@@ -32,7 +32,7 @@ namespace react {
 class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
  public:
   Scheduler(
-      const SharedContextContainer &contextContainer,
+      ContextContainer::Shared const &contextContainer,
       ComponentRegistryFactory buildRegistryFunction);
   ~Scheduler();
 
@@ -93,9 +93,7 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
 
   void shadowTreeDidCommit(
       const ShadowTree &shadowTree,
-      const ShadowViewMutationList &mutations,
-      long commitStartTime,
-      long layoutTime) const override;
+      MountingTransaction &&transaction) const override;
 
  private:
   SchedulerDelegate *delegate_;

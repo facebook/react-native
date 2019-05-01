@@ -21,8 +21,5 @@ using Float = float;
  */
 const Float kFloatUndefined = std::numeric_limits<Float>::max();
 
-const Float kFloatMax = std::numeric_limits<Float>::max();
-const Float kFloatMin = std::numeric_limits<Float>::min();
-
 } // namespace react
 } // namespace facebook

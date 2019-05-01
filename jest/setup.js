@@ -254,7 +254,17 @@ const mockNativeModules = {
     createView: jest.fn(),
     dispatchViewManagerCommand: jest.fn(),
     focus: jest.fn(),
-    getViewManagerConfig: jest.fn(),
+    getViewManagerConfig: jest.fn(name => {
+      if (name === 'AndroidDrawerLayout') {
+        return {
+          Constants: {
+            DrawerPosition: {
+              Left: 10,
+            },
+          },
+        };
+      }
+    }),
     setChildren: jest.fn(),
     manageChildren: jest.fn(),
     updateView: jest.fn(),

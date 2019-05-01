@@ -11,8 +11,13 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {LayoutAnimation, StyleSheet, Text, View, TouchableOpacity} = ReactNative;
+const {
+  LayoutAnimation,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+} = require('react-native');
 
 class AddRemoveExample extends React.Component<{}, $FlowFixMeState> {
   state = {

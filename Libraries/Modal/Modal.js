@@ -278,9 +278,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   container: {
-    position: 'absolute',
     [side]: 0,
     top: 0,
+    flex: 1,
   },
 });
 

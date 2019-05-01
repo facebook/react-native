@@ -40,6 +40,14 @@ public:
       const jsi::Value *args,
       size_t count) override;
 
+  jsi::Value invokeObjCMethod(
+      jsi::Runtime &runtime,
+      TurboModuleMethodValueKind valueKind,
+      const std::string &methodName,
+      SEL selector,
+      const jsi::Value *args,
+      size_t count);
+
   id<RCTTurboModule> instance_;
 protected:
   void setMethodArgConversionSelector(NSString *methodName, int argIndex, NSString *fnName);

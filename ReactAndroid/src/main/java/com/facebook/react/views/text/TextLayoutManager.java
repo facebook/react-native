@@ -19,7 +19,6 @@ import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.LruCache;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.uimanager.PixelUtil;
@@ -176,7 +175,7 @@ public class TextLayoutManager {
   }
 
   public static long measureText(
-      ReactContext context,
+      Context context,
       ReadableMap attributedString,
       ReadableMap paragraphAttributes,
       float width,

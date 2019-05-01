@@ -20,6 +20,8 @@
 
 typedef RCTURLRequestCancellationBlock (^RCTHTTPQueryResult)(NSError *error, NSDictionary<NSString *, id> *result);
 
+NSString *const RCTNetworkingPHUploadHackScheme = @"ph-upload";
+
 @interface RCTNetworking ()
 
 - (RCTURLRequestCancellationBlock)processDataForHTTPQuery:(NSDictionary<NSString *, id> *)data
@@ -75,6 +77,16 @@ static NSString *RCTGenerateFormBoundary()
   _callback = callback;
   _multipartBody = [NSMutableData new];
   _boundary = RCTGenerateFormBoundary();
+
+  for (NSUInteger i = 0; i < _parts.count; i++) {
+    NSString *uri = _parts[i][@"uri"];
+    if (uri && [[uri substringToIndex:@"ph:".length] caseInsensitiveCompare:@"ph:"] == NSOrderedSame) {
+      uri = [RCTNetworkingPHUploadHackScheme stringByAppendingString:[uri substringFromIndex:@"ph".length]];
+      NSMutableDictionary *mutableDict = [_parts[i] mutableCopy];
+      mutableDict[@"uri"] = uri;
+      _parts[i] = mutableDict;
+    }
+  }
 
   return [_networker processDataForHTTPQuery:_parts[0] callback:^(NSError *error, NSDictionary<NSString *, id> *result) {
     return [self handleResult:result error:error];
@@ -259,10 +271,13 @@ RCT_EXPORT_MODULE()
   NSURL *URL = [RCTConvert NSURL:query[@"url"]]; // this is marked as nullable in JS, but should not be null
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
   request.HTTPMethod = [RCTConvert NSString:RCTNilIfNull(query[@"method"])].uppercaseString ?: @"GET";
+  request.HTTPShouldHandleCookies = [RCTConvert BOOL:query[@"withCredentials"]];
 
-  // Load and set the cookie header.
-  NSArray<NSHTTPCookie *> *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:URL];
-  request.allHTTPHeaderFields = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
+  if (request.HTTPShouldHandleCookies == YES) {
+    // Load and set the cookie header.
+    NSArray<NSHTTPCookie *> *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookiesForURL:URL];
+    request.allHTTPHeaderFields = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
+  }
 
   // Set supplied headers.
   NSDictionary *headers = [RCTConvert NSDictionary:query[@"headers"]];
@@ -273,7 +288,6 @@ RCT_EXPORT_MODULE()
   }];
 
   request.timeoutInterval = [RCTConvert NSTimeInterval:query[@"timeout"]];
-  request.HTTPShouldHandleCookies = [RCTConvert BOOL:query[@"withCredentials"]];
   NSDictionary<NSString *, id> *data = [RCTConvert NSDictionary:RCTNilIfNull(query[@"data"])];
   NSString *trackingName = data[@"trackingName"];
   if (trackingName) {

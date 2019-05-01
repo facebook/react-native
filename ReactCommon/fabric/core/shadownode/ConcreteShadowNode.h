@@ -65,7 +65,9 @@ class ConcreteShadowNode : public ShadowNode {
     return defaultSharedProps;
   }
 
-  static ConcreteStateData initialStateData(const SharedConcreteProps &props) {
+  static ConcreteStateData initialStateData(
+      ShadowNodeFragment const &fragment,
+      ComponentDescriptor const &componentDescriptor) {
     return {};
   }
 

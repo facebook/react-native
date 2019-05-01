@@ -60,3 +60,14 @@
 @property (nonatomic, readonly) RCTNetworking *networking;
 
 @end
+
+// HACK: When uploading images/video from PHAssetLibrary, we change the URL scheme to be
+// ph-upload://. This is to ensure that we upload a full video when given a ph-upload:// URL,
+// instead of just the thumbnail. Consider the following problem:
+// The user has a video in their camera roll with URL ph://1B3E2DDB-0AD3-4E33-A7A1-9F4AA9A762AA/L0/001
+// 1. We want to display that video in an <Image> and show the thumbnail
+// 2. We later want to upload that video.
+// At this point, if we use the same URL for both uses, there is no way to distinguish the intent
+// and we will either upload the thumbnail (bad!) or try to show the video in an <Image> (bad!).
+// Our solution is to change the URL scheme in the uploader.
+extern NSString *const RCTNetworkingPHUploadHackScheme;

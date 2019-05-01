@@ -43,6 +43,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
@@ -111,6 +112,7 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
 
   private static class SaveToCameraRoll extends GuardedAsyncTask<Void, Void> {
 
+    private static final int SAVE_BUFFER_SIZE = 1048576; // 1MB
     private final Context mContext;
     private final Uri mUri;
     private final Promise mPromise;
@@ -155,7 +157,18 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
           dest = new File(exportDir, sourceName + "_" + (n++) + sourceExt);
         }
         output = new FileOutputStream(dest).getChannel();
-        output.transferFrom(input, 0, Long.MAX_VALUE);
+        // Performs a buffered copy
+        final ByteBuffer buffer = ByteBuffer.allocate(SAVE_BUFFER_SIZE);
+        while (input.read(buffer) > 0) {
+          buffer.flip();
+          output.write(buffer);
+          buffer.compact();
+        }
+        // Drains the buffer
+        buffer.flip();
+        while (buffer.hasRemaining()){
+          output.write(buffer);
+        }
         input.close();
         output.close();
 

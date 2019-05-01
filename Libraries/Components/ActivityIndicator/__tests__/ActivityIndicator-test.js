@@ -15,7 +15,7 @@ const React = require('React');
 const ActivityIndicator = require('ActivityIndicator');
 const render = require('../../../../jest/renderer');
 
-describe('ActivityIndicator', () => {
+describe('<ActivityIndicator />', () => {
   it('should set displayName to prevent <Component /> regressions', () => {
     expect(ActivityIndicator.displayName).toBe('ActivityIndicator');
   });

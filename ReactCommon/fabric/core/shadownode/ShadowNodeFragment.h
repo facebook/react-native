@@ -23,10 +23,12 @@ namespace react {
  * Note: Most of the fields are `const &` references (essentially just raw
  * pointers) which means that the Fragment does not copy/store them nor
  * retain ownership of them.
+ * Use `ShadowNodeFragment::Value` (see below) to create an owning copy of the
+ * fragment content to store or pass the data asynchronously.
  */
 struct ShadowNodeFragment {
   Tag const tag = tagPlaceholder();
-  SurfaceId const rootTag = surfaceIdPlaceholder();
+  SurfaceId const surfaceId = surfaceIdPlaceholder();
   Props::Shared const &props = propsPlaceholder();
   EventEmitter::Shared const &eventEmitter = eventEmitterPlaceholder();
   ShadowNode::SharedListOfShared const &children = childrenPlaceholder();
@@ -45,6 +47,33 @@ struct ShadowNodeFragment {
   static ShadowNode::SharedListOfShared const &childrenPlaceholder();
   static LocalData::Shared const &localDataPlaceholder();
   static State::Shared const &statePlaceholder();
+
+  /*
+   * `ShadowNodeFragment` is not owning data-structure, it only stores raw
+   * pointers to the data. `ShadowNodeFragment::Value` is a convenient owning
+   * counterpart of that.
+   */
+  class Value final {
+   public:
+    /*
+     * Creates an object with given `ShadowNodeFragment`.
+     */
+    Value(ShadowNodeFragment const &fragment);
+
+    /*
+     * Creates a `ShadowNodeFragment` from the object.
+     */
+    explicit operator ShadowNodeFragment() const;
+
+   private:
+    Tag const tag_;
+    SurfaceId const surfaceId_;
+    Props::Shared const props_;
+    EventEmitter::Shared const eventEmitter_;
+    ShadowNode::SharedListOfShared const children_;
+    LocalData::Shared const localData_;
+    State::Shared const state_;
+  };
 };
 
 } // namespace react
