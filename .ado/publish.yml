@@ -7,6 +7,9 @@ trigger:
     include:
       - master
       - fb59merge
+  paths:
+    exclude:
+      - package.json
 
 pr: none
 
