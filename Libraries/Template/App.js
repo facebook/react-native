@@ -28,7 +28,7 @@ export default function App() {
           <View style={styles.body}>
             <Section
               title="Step One"
-              description="Edit App.js to chnage this screen and then come back to see your edits."
+              description="Edit App.js to change this screen and then come back to see your edits."
             />
             <Section
               title="See Your Changes"
