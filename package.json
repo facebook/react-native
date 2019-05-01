@@ -1,12 +1,7 @@
 {
   "name": "react-native",
-<<<<<<< HEAD
-  "version": "0.58.6-microsoft.27",
-  "description": "[Microsoft Fork] A framework for building native apps using React",
-=======
   "version": "0.59.0",
-  "description": "A framework for building native apps using React",
->>>>>>> v0.59.0
+  "description": "[Microsoft Fork] A framework for building native apps using React",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -116,15 +111,10 @@
     "android",
     "cli.js",
     "flow",
-<<<<<<< HEAD
-    "flow-github",
     "folly",
     "init.sh",
-    "IntegrationTests",
-=======
-    "init.sh",
     "local-cli",
->>>>>>> v0.59.0
+    "IntegrationTests",
     "scripts/ios-configure-glog.sh",
     "scripts/ios-install-third-party.sh",
     "scripts/launchPackager.bat",
@@ -144,21 +134,14 @@
     "ReactAndroid",
     "ReactCommon",
     "README.md",
-<<<<<<< HEAD
     "RNTester/js",
     "stubs/glog",
-    "third-party-podspecs"
-  ],
-  "scripts": {
-    "build": "node -v",
-    "start": "node ./local-cli/cli.js start",
-=======
     "third-party-podspecs",
     "template"
   ],
   "scripts": {
+    "build": "node -v",
     "start": "node cli.js start --reactNativePath .",
->>>>>>> v0.59.0
     "test": "jest",
     "test-ci": "jest --maxWorkers=2 --ci --reporters=\"default\" --reporters=\"jest-junit\"",
     "flow": "flow",
@@ -180,8 +163,7 @@
     "test-ios-e2e": "detox test -c ios.sim.release"
   },
   "peerDependencies": {
-<<<<<<< HEAD
-    "react": "16.6.3"
+    "react": "16.8.3"
   },
   "dependencies": {
     "@babel/core": "^7.4.0",
@@ -211,13 +193,7 @@
     "@babel/plugin-transform-template-literals": "^7.2.0",
     "@babel/plugin-transform-unicode-regex": "^7.2.0",
     "@babel/runtime": "^7.4.0",
-=======
-    "react": "16.8.3"
-  },
-  "dependencies": {
-    "@babel/runtime": "^7.0.0",
     "@react-native-community/cli": "^1.2.1",
->>>>>>> v0.59.0
     "absolute-path": "^0.0.0",
     "art": "^0.10.0",
     "base64-js": "^1.1.2",
@@ -237,19 +213,13 @@
     "glob": "^7.1.1",
     "graceful-fs": "^4.1.3",
     "inquirer": "^3.0.6",
-<<<<<<< HEAD
-    "lodash": "^4.17.5",
-    "metro": "^0.49.1",
-    "metro-babel-register": "^0.49.1",
-    "metro-config": "^0.49.1",
-    "metro-core": "^0.49.1",
-    "metro-memory-fs": "^0.49.1",
-=======
     "invariant": "^2.2.4",
     "lodash": "^4.17.5",
+    "metro": "0.51.0",
     "metro-babel-register": "0.51.0",
-    "metro-react-native-babel-transformer": "0.51.0",
->>>>>>> v0.59.0
+    "metro-config": "0.51.0",
+    "metro-core": "0.51.0",
+    "metro-memory-fs": "0.51.0",
     "mime": "^1.3.4",
     "minimist": "^1.2.0",
     "mkdirp": "^0.5.1",
@@ -275,20 +245,12 @@
     "shell-quote": "1.6.1",
     "stacktrace-parser": "^0.1.3",
     "ws": "^1.1.5",
-<<<<<<< HEAD
-    "xcode": "^1.0.0",
-=======
->>>>>>> v0.59.0
     "xmldoc": "^0.4.0",
     "yargs": "^9.0.0"
   },
   "devDependencies": {
-<<<<<<< HEAD
     "@babel/core": "^7.4.0",
-=======
-    "@babel/core": "^7.0.0",
-    "@babel/generator": "^7.0.0",
->>>>>>> v0.59.0
+    "@babel/generator": "^7.4.0",
     "@reactions/component": "^2.0.2",
     "async": "^2.4.0",
     "babel-eslint": "9.0.0",
@@ -309,15 +271,9 @@
     "jest-junit": "5.2.0",
     "jscodeshift": "^0.6.2",
     "prettier": "1.13.6",
-<<<<<<< HEAD
-    "react": "16.6.3",
-    "react-native-dummy": "0.1.0",
-    "react-test-renderer": "16.6.3",
-=======
     "react": "16.8.3",
     "react-native-dummy": "0.2.0",
     "react-test-renderer": "16.8.3",
->>>>>>> v0.59.0
     "shelljs": "^0.7.8"
   },
   "detox": {
