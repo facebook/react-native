@@ -549,15 +549,6 @@ void updateStyle(
   }
 }
 
-template <typename T, YGStyle::BitfieldRef<T> (YGStyle::*Prop)()>
-void updateStyle(YGNode* node, T value) {
-  updateStyle(
-      node,
-      value,
-      [](YGStyle& s, T x) { return (s.*Prop)() != x; },
-      [](YGStyle& s, T x) { (s.*Prop)() = x; });
-}
-
 template <typename Ref, typename T>
 void updateStyle(YGNode* node, Ref (YGStyle::*prop)(), T value) {
   updateStyle(
@@ -583,8 +574,15 @@ void updateIndexedStyleProp(
 
 } // namespace
 
+// MSVC has trouble inferring the return type of pointer to member functions
+// with const and non-const overloads, instead of preferring the non-const
+// overload like clang and GCC. For the purposes of updateStyle(), we can help
+// MSVC by specifying that return type explicitely. In combination with
+// decltype, MSVC will prefer the non-const version.
+#define MSVC_HINT(PROP) decltype(YGStyle{}.PROP())
+
 void YGNodeStyleSetDirection(const YGNodeRef node, const YGDirection value) {
-  updateStyle<YGDirection, &YGStyle::direction>(node, value);
+  updateStyle<MSVC_HINT(direction)>(node, &YGStyle::direction, value);
 }
 YGDirection YGNodeStyleGetDirection(const YGNodeConstRef node) {
   return node->getStyle().direction();
@@ -593,7 +591,8 @@ YGDirection YGNodeStyleGetDirection(const YGNodeConstRef node) {
 void YGNodeStyleSetFlexDirection(
     const YGNodeRef node,
     const YGFlexDirection flexDirection) {
-  updateStyle<YGFlexDirection, &YGStyle::flexDirection>(node, flexDirection);
+  updateStyle<MSVC_HINT(flexDirection)>(
+      node, &YGStyle::flexDirection, flexDirection);
 }
 YGFlexDirection YGNodeStyleGetFlexDirection(const YGNodeConstRef node) {
   return node->getStyle().flexDirection();
@@ -602,7 +601,8 @@ YGFlexDirection YGNodeStyleGetFlexDirection(const YGNodeConstRef node) {
 void YGNodeStyleSetJustifyContent(
     const YGNodeRef node,
     const YGJustify justifyContent) {
-  updateStyle<YGJustify, &YGStyle::justifyContent>(node, justifyContent);
+  updateStyle<MSVC_HINT(justifyContent)>(
+      node, &YGStyle::justifyContent, justifyContent);
 }
 YGJustify YGNodeStyleGetJustifyContent(const YGNodeConstRef node) {
   return node->getStyle().justifyContent();
@@ -611,21 +611,22 @@ YGJustify YGNodeStyleGetJustifyContent(const YGNodeConstRef node) {
 void YGNodeStyleSetAlignContent(
     const YGNodeRef node,
     const YGAlign alignContent) {
-  updateStyle<YGAlign, &YGStyle::alignContent>(node, alignContent);
+  updateStyle<MSVC_HINT(alignContent)>(
+      node, &YGStyle::alignContent, alignContent);
 }
 YGAlign YGNodeStyleGetAlignContent(const YGNodeConstRef node) {
   return node->getStyle().alignContent();
 }
 
 void YGNodeStyleSetAlignItems(const YGNodeRef node, const YGAlign alignItems) {
-  updateStyle<YGAlign, &YGStyle::alignItems>(node, alignItems);
+  updateStyle<MSVC_HINT(alignItems)>(node, &YGStyle::alignItems, alignItems);
 }
 YGAlign YGNodeStyleGetAlignItems(const YGNodeConstRef node) {
   return node->getStyle().alignItems();
 }
 
 void YGNodeStyleSetAlignSelf(const YGNodeRef node, const YGAlign alignSelf) {
-  updateStyle<YGAlign, &YGStyle::alignSelf>(node, alignSelf);
+  updateStyle<MSVC_HINT(alignSelf)>(node, &YGStyle::alignSelf, alignSelf);
 }
 YGAlign YGNodeStyleGetAlignSelf(const YGNodeConstRef node) {
   return node->getStyle().alignSelf();
@@ -634,39 +635,33 @@ YGAlign YGNodeStyleGetAlignSelf(const YGNodeConstRef node) {
 void YGNodeStyleSetPositionType(
     const YGNodeRef node,
     const YGPositionType positionType) {
-  updateStyle<YGPositionType, &YGStyle::positionType>(node, positionType);
+  updateStyle<MSVC_HINT(positionType)>(
+      node, &YGStyle::positionType, positionType);
 }
 YGPositionType YGNodeStyleGetPositionType(const YGNodeConstRef node) {
   return node->getStyle().positionType();
 }
 
 void YGNodeStyleSetFlexWrap(const YGNodeRef node, const YGWrap flexWrap) {
-  updateStyle<YGWrap, &YGStyle::flexWrap>(node, flexWrap);
+  updateStyle<MSVC_HINT(flexWrap)>(node, &YGStyle::flexWrap, flexWrap);
 }
 YGWrap YGNodeStyleGetFlexWrap(const YGNodeConstRef node) {
   return node->getStyle().flexWrap();
 }
 
 void YGNodeStyleSetOverflow(const YGNodeRef node, const YGOverflow overflow) {
-  updateStyle<YGOverflow, &YGStyle::overflow>(node, overflow);
+  updateStyle<MSVC_HINT(overflow)>(node, &YGStyle::overflow, overflow);
 }
 YGOverflow YGNodeStyleGetOverflow(const YGNodeConstRef node) {
   return node->getStyle().overflow();
 }
 
 void YGNodeStyleSetDisplay(const YGNodeRef node, const YGDisplay display) {
-  updateStyle<YGDisplay, &YGStyle::display>(node, display);
+  updateStyle<MSVC_HINT(display)>(node, &YGStyle::display, display);
 }
 YGDisplay YGNodeStyleGetDisplay(const YGNodeConstRef node) {
   return node->getStyle().display();
 }
-
-// MSVC has trouble inferring the return type of pointer to member functions
-// with const and non-const overloads, instead of preferring the non-const
-// overload like clang and GCC. For the purposes of updateStyle(), we can help
-// MSVC by specifying that return type explicitely. In combination with
-// decltype, MSVC will prefer the non-const version.
-#define MSVC_HINT(PROP) decltype(YGStyle{}.PROP())
 
 // TODO(T26792433): Change the API to accept YGFloatOptional.
 void YGNodeStyleSetFlex(const YGNodeRef node, const float flex) {
