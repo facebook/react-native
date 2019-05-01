@@ -11,9 +11,15 @@ import {
 import { Header, Section, LinkList } from './components'
 
 const reloadInstructions = Platform.select({
-  ios: 'Press Cmd+R to reload. Cmd+D or shake for dev menu.',
+  ios: `Press Cmd+R in the simulator to reload your app's code`,
+  android: `Double tap R on your keyboard to reload your app's code`,
+})
+
+const debugInstructions = Platform.select({
+  ios:
+    'Press Cmd+D in the simulator or Shake your device to open the React Native debug menu.',
   android:
-    'Double tap R on your keyboard to reload. Shake or press menu button for dev menu.',
+    'Press menu button or Shake your device to open the React Native debug menu.',
 })
 
 export default function App() {
@@ -34,7 +40,7 @@ export default function App() {
               title="See Your Changes"
               description={reloadInstructions}
             />
-            <Section title="Debug" description={reloadInstructions} />
+            <Section title="Debug" description={debugInstructions} />
             <Section
               title="Learn More"
               description="Read the docs on what to do once you've seen how to work in React Native."
