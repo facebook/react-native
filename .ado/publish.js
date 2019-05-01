@@ -19,8 +19,8 @@ function exec(command) {
 }
 
 function doPublish() {
-  const publishBranchName = process.env.BUILD_SOURCEBRANCH;
-  console.log(`Target branch to publish to: ${process.env.BUILD_SOURCEBRANCH}`);
+  const publishBranchName = process.env.BUILD_SOURCEBRANCH.match(/refs\/heads\/(.*)/)[1];
+  console.log(`Target branch to publish to: ${publishBranchName}`);
 
   const tempPublishBranch = `publish-temp-${Date.now()}`;
 
@@ -29,7 +29,8 @@ function doPublish() {
 
   let releaseVersion = pkgJson.version;
 
-  const versionGroups = /(.*-microsoft\.)([0-9]*)/.exec(releaseVersion);
+  versionStringRegEx = new RegExp(`(.*-microsoft\\.)(-${publishBranchName}-)?([0-9]*)`);
+  const versionGroups = versionStringRegEx.exec(releaseVersion);
   if (versionGroups) {
     releaseVersion = versionGroups[1] + (publishBranchName.match(/fb.*merge/) ? `-${publishBranchName}-` : '') + (parseInt(versionGroups[2]) + 1);
   } else {
