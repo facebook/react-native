@@ -8,6 +8,7 @@
 #include <glog/logging.h>
 
 #include <react/components/root/RootComponentDescriptor.h>
+#include <react/components/view/ViewShadowNode.h>
 #include <react/core/LayoutContext.h>
 #include <react/core/LayoutPrimitives.h>
 #include <react/debug/SystraceSection.h>
@@ -163,8 +164,11 @@ bool ShadowTree::tryCommit(
     return false;
   }
 
+  std::vector<LayoutableShadowNode const *> affectedLayoutableNodes{};
+  affectedLayoutableNodes.reserve(1024);
+
   long layoutTime = getTime();
-  newRootShadowNode->layout();
+  newRootShadowNode->layout(&affectedLayoutableNodes);
   layoutTime = getTime() - layoutTime;
   newRootShadowNode->sealRecursive();
 
@@ -210,7 +214,7 @@ bool ShadowTree::tryCommit(
 #endif
   }
 
-  emitLayoutEvents(mutations);
+  emitLayoutEvents(affectedLayoutableNodes);
 
   if (delegate_) {
     delegate_->shadowTreeDidCommit(
@@ -225,43 +229,25 @@ bool ShadowTree::tryCommit(
 }
 
 void ShadowTree::emitLayoutEvents(
-    const ShadowViewMutationList &mutations) const {
+    std::vector<LayoutableShadowNode const *> &affectedLayoutableNodes) const {
   SystraceSection s("ShadowTree::emitLayoutEvents");
 
-  for (const auto &mutation : mutations) {
-    // Only `Insert` and `Update` mutations can affect layout metrics.
-    if (mutation.type != ShadowViewMutation::Insert &&
-        mutation.type != ShadowViewMutation::Update) {
-      continue;
-    }
-
-    const auto viewEventEmitter =
-        std::dynamic_pointer_cast<const ViewEventEmitter>(
-            mutation.newChildShadowView.eventEmitter);
-
-    // Checking if particular shadow node supports `onLayout` event (part of
-    // `ViewEventEmitter`).
-    if (!viewEventEmitter) {
-      continue;
-    }
+  for (auto const *layoutableNode : affectedLayoutableNodes) {
+    // Only instances of `ViewShadowNode` (and subclasses) are supported.
+    auto const &viewShadowNode =
+        static_cast<ViewShadowNode const &>(*layoutableNode);
+    auto const &viewEventEmitter = static_cast<ViewEventEmitter const &>(
+        *viewShadowNode.getEventEmitter());
 
     // Checking if the `onLayout` event was requested for the particular Shadow
     // Node.
-    const auto viewProps = std::dynamic_pointer_cast<const ViewProps>(
-        mutation.newChildShadowView.props);
-    if (viewProps && !viewProps->onLayout) {
+    auto const &viewProps =
+        static_cast<ViewProps const &>(*viewShadowNode.getProps());
+    if (!viewProps.onLayout) {
       continue;
     }
 
-    // In case if we have `oldChildShadowView`, checking that layout metrics
-    // have changed.
-    if (mutation.type != ShadowViewMutation::Update &&
-        mutation.oldChildShadowView.layoutMetrics ==
-            mutation.newChildShadowView.layoutMetrics) {
-      continue;
-    }
-
-    viewEventEmitter->onLayout(mutation.newChildShadowView.layoutMetrics);
+    viewEventEmitter.onLayout(layoutableNode->getLayoutMetrics());
   }
 }
 

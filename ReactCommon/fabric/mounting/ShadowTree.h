@@ -82,7 +82,8 @@ class ShadowTree final {
       const LayoutConstraints &layoutConstraints,
       const LayoutContext &layoutContext) const;
 
-  void emitLayoutEvents(const ShadowViewMutationList &mutations) const;
+  void emitLayoutEvents(
+      std::vector<LayoutableShadowNode const *> &affectedLayoutableNodes) const;
 
   const SurfaceId surfaceId_;
   mutable better::shared_mutex commitMutex_;

@@ -199,7 +199,11 @@ void YogaLayoutableShadowNode::layoutChildren(LayoutContext layoutContext) {
     assert(childYogaNode->getOwner() == &yogaNode_);
 
     childNode->ensureUnsealed();
-    childNode->setLayoutMetrics(childLayoutMetrics);
+    auto affected = childNode->setLayoutMetrics(childLayoutMetrics);
+
+    if (affected && layoutContext.affectedNodes) {
+      layoutContext.affectedNodes->push_back(childNode);
+    }
   }
 }
 
