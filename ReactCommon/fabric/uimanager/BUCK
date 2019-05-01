@@ -76,7 +76,6 @@ fb_xplat_cxx_test(
         "-Wall",
     ],
     contacts = ["oncall+react_native@xmail.facebook.com"],
-    fbandroid_use_instrumentation_test = True,
     platforms = (ANDROID, APPLE),
     deps = [
         "fbsource//xplat/folly:molly",
@@ -87,7 +86,6 @@ fb_xplat_cxx_test(
         react_native_xplat_target("fabric/components/image:image"),
         react_native_xplat_target("fabric/components/root:root"),
         react_native_xplat_target("fabric/components/scrollview:scrollview"),
-        react_native_xplat_target("fabric/components/text:text"),
         react_native_xplat_target("fabric/components/view:view"),
         "fbsource//xplat/js/react-native-github:generated_components-rncore",
     ],

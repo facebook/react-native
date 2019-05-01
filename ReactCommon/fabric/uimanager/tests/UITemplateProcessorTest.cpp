@@ -17,9 +17,6 @@ using namespace facebook::react;
 #include <react/components/image/ImageComponentDescriptor.h>
 #include <react/components/rncore/ComponentDescriptors.h>
 #include <react/components/scrollview/ScrollViewComponentDescriptor.h>
-#include <react/components/text/ParagraphComponentDescriptor.h>
-#include <react/components/text/RawTextComponentDescriptor.h>
-#include <react/components/text/TextComponentDescriptor.h>
 #include <react/components/view/ViewComponentDescriptor.h>
 #include <react/config/ReactNativeConfig.h>
 #include <react/uimanager/ComponentDescriptorFactory.h>
@@ -41,13 +38,6 @@ ComponentRegistryFactory getDefaultComponentRegistryFactory() {
             eventDispatcher, contextContainer));
     registry->registerComponentDescriptor(
         std::make_shared<ScrollViewComponentDescriptor>(eventDispatcher));
-    registry->registerComponentDescriptor(
-        std::make_shared<ParagraphComponentDescriptor>(
-            eventDispatcher, contextContainer));
-    registry->registerComponentDescriptor(
-        std::make_shared<TextComponentDescriptor>(eventDispatcher));
-    registry->registerComponentDescriptor(
-        std::make_shared<RawTextComponentDescriptor>(eventDispatcher));
     registry->registerComponentDescriptor(
         std::make_shared<ActivityIndicatorViewComponentDescriptor>(
             eventDispatcher));
