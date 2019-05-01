@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   link: {
     width: '40%',
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: '400',
     color: '#1292B4',
   },
   description: {
