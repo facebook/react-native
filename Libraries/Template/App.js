@@ -1,5 +1,12 @@
-import React from 'react'
-import { StyleSheet, ScrollView, View, Platform, StatusBar } from 'react-native'
+import React, { Fragment } from 'react'
+import {
+  StyleSheet,
+  ScrollView,
+  View,
+  Platform,
+  StatusBar,
+  SafeAreaView,
+} from 'react-native'
 
 import { Header, Section, LinkList } from './Components'
 
@@ -11,31 +18,45 @@ const reloadInstructions = Platform.select({
 
 export default function App() {
   return (
-    <View>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFF" />
-      <ScrollView bounces={true}>
-        <Header />
-        <View style={styles.body}>
-          <Section
-            title="Step One"
-            description="Edit App.js to chnage this screen and then come back to see your edits."
-          />
-          <Section title="See Your Changes" description={reloadInstructions} />
-          <Section title="Debug" description={reloadInstructions} />
-          <Section
-            title="Learn More"
-            description="Read the docs on what to do once you've seen how to work in React Native."
-          />
-          <LinkList />
-        </View>
-      </ScrollView>
-    </View>
+    <Fragment>
+      <SafeAreaView style={styles.topSafeArea} />
+
+      <SafeAreaView style={styles.bottomSafeArea}>
+        <StatusBar barStyle="light-content" />
+        <ScrollView bounces={false}>
+          <Header />
+          <View style={styles.body}>
+            <Section
+              title="Step One"
+              description="Edit App.js to chnage this screen and then come back to see your edits."
+            />
+            <Section
+              title="See Your Changes"
+              description={reloadInstructions}
+            />
+            <Section title="Debug" description={reloadInstructions} />
+            <Section
+              title="Learn More"
+              description="Read the docs on what to do once you've seen how to work in React Native."
+            />
+            <LinkList />
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </Fragment>
   )
 }
 
 const styles = StyleSheet.create({
+  topSafeArea: {
+    flex: 0,
+    backgroundColor: '#333',
+  },
+  bottomSafeArea: {
+    flex: 1,
+    backgroundColor: '#FFF',
+  },
   body: {
     backgroundColor: '#FFFFFF',
-    paddingBottom: 24,
   },
 })

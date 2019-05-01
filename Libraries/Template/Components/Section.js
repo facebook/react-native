@@ -27,9 +27,9 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   description: {
+    marginTop: 8,
     fontSize: 18,
     fontWeight: '400',
-    marginTop: 8,
     color: '#555',
   },
 })

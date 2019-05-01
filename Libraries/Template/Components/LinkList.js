@@ -77,10 +77,10 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   link: {
+    width: '40%',
     fontSize: 18,
     fontWeight: '700',
     color: '#1292B4',
-    width: '40%',
   },
   description: {
     width: '60%',
