@@ -11,28 +11,29 @@ export default function Header() {
         autoPlay
         loop
       />
-      <Text style={styles.text}>Welcome to React Native</Text>
+      <Text style={styles.text}>Welcome to</Text>
+      <Text style={styles.text}>React Native</Text>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 45,
-    backgroundColor: '#F7F7F7',
     alignItems: 'center',
     justifyContent: 'center',
+    paddingVertical: 24,
+    backgroundColor: '#333',
   },
   animatedLogo: {
-    width: 200,
-    height: 200,
+    width: 180,
+    height: 180,
   },
   text: {
-    paddingHorizontal: 25,
     maxWidth: 350,
-    fontSize: 40,
+    paddingHorizontal: 24,
+    fontSize: 32,
     fontWeight: '700',
     textAlign: 'center',
-    color: '#333',
+    color: '#CCC',
   },
 })
