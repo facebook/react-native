@@ -19,9 +19,10 @@ function exec(command) {
 }
 
 function doPublish() {
-  const publishBranchName = process.env.publishBranchName;
+  const publishBranchName = process.env.BUILD_SOURCEBRANCH;
+  console.log(`Target branch to publish to: ${process.env.BUILD_SOURCEBRANCH}`);
 
-  const tempPublishBranch = `publish-${Date.now()}`;
+  const tempPublishBranch = `publish-temp-${Date.now()}`;
 
   const pkgJsonPath = path.resolve(__dirname, "../package.json");
   let pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, "utf8"));
@@ -30,7 +31,7 @@ function doPublish() {
 
   const versionGroups = /(.*-microsoft\.)([0-9]*)/.exec(releaseVersion);
   if (versionGroups) {
-    releaseVersion = versionGroups[1] + (parseInt(versionGroups[2]) + 1);
+    releaseVersion = versionGroups[1] + (publishBranchName.match(/fb.*merge/) ? `-${publishBranchName}-` : '') + (parseInt(versionGroups[2]) + 1);
   } else {
     if (releaseVersion.indexOf("-") === -1) {
       releaseVersion = releaseVersion + "-microsoft.0";
