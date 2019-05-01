@@ -15,7 +15,12 @@ import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
 import type React from 'React';
 import type {ViewStyleProp} from 'StyleSheet';
 import type {TVViewProps} from 'TVViewPropTypes';
-import type {AccessibilityRole, AccessibilityStates} from 'ViewAccessibility';
+import type {
+  AccessibilityRole,
+  AccessibilityStates,
+  AccessibilityActionEvent,
+  AccessibilityActionInfo,
+} from 'ViewAccessibility';
 
 export type ViewLayout = Layout;
 export type ViewLayoutEvent = LayoutEvent;

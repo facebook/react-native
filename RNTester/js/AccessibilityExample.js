@@ -472,7 +472,7 @@ class AccessibilityActionsExample extends React.Component {
             <Text>Slider</Text>
           </View>
         </RNTesterBlock>
-        </View>
+      </View>
     );
   }
 }
