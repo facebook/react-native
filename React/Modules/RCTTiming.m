@@ -142,6 +142,22 @@ RCT_EXPORT_MODULE()
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (void)markStartOfBackgroundTaskIfNeeded
+{
+  if (_backgroundTaskIdentifier == UIBackgroundTaskInvalid) {
+    __weak typeof(self) weakSelf = self;
+    // Marks the beginning of a new long-running background task. We can run the timer in the background.
+    _backgroundTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+      typeof(self) strongSelf = weakSelf;
+      if (!strongSelf) {
+        return ;
+      }
+      // Mark the end of background task
+      [strongSelf markEndOfBackgroundTaskIfNeeded];
+    }];
+  }
+}
+
 - (void)markEndOfBackgroundTaskIfNeeded
 {
   if (_backgroundTaskIdentifier != UIBackgroundTaskInvalid) {
@@ -163,17 +179,6 @@ RCT_EXPORT_MODULE()
 
 - (void)appDidMoveToBackground
 {
-  [self markEndOfBackgroundTaskIfNeeded];
-  __weak typeof(self) weakSelf = self;
-  // Marks the beginning of a new long-running background task. We can run the timer in the background.
-  _backgroundTaskIdentifier = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-    typeof(self) strongSelf = weakSelf;
-    if (!strongSelf) {
-      return ;
-    }
-    // Mark the end of background task
-    [strongSelf markEndOfBackgroundTaskIfNeeded];
-  }];
   // Deactivate the CADisplayLink while in the background.
   [self stopTimers];
   _inBackground = YES;
@@ -283,6 +288,7 @@ RCT_EXPORT_MODULE()
   }
   if (_inBackground) {
     if (timerCount) {
+      [self markStartOfBackgroundTaskIfNeeded];
       [self scheduleSleepTimer:nextScheduledTarget];
     }
   } else if (!_sendIdleEvents && timersToCall.count == 0) {
@@ -361,6 +367,7 @@ RCT_EXPORT_METHOD(createTimer:(nonnull NSNumber *)callbackID
   }
   
   if (_inBackground) {
+    [self markStartOfBackgroundTaskIfNeeded];
     [self scheduleSleepTimer:timer.target];
   } else if (_paused) {
     if ([timer.target timeIntervalSinceNow] > kMinimumSleepInterval) {
