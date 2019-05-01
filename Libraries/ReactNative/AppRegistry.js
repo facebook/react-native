@@ -260,9 +260,7 @@ const AppRegistry = {
   startHeadlessTask(taskId: number, taskKey: string, data: any): void {
     const taskProvider = taskProviders.get(taskKey);
     if (!taskProvider) {
-      console.warn(
-        `No task registered for key ${taskKey}`,
-      );
+      console.warn(`No task registered for key ${taskKey}`);
       NativeModules.HeadlessJsTaskSupport.notifyTaskFinished(taskId);
       return;
     }
