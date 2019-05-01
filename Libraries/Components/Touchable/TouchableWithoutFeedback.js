@@ -67,6 +67,7 @@ export type Props = $ReadOnly<{|
   disabled?: ?boolean,
   hitSlop?: ?EdgeInsetsProp,
   nativeID?: ?string,
+  touchSoundDisabled?: ?boolean,
   onBlur?: ?(e: BlurEvent) => void,
   onFocus?: ?(e: FocusEvent) => void,
   onLayout?: ?(event: LayoutEvent) => mixed,
@@ -135,6 +136,10 @@ const TouchableWithoutFeedback = ((createReactClass({
      *   `{nativeEvent: {layout: {x, y, width, height}}}`
      */
     onLayout: PropTypes.func,
+    /**
+     * If true, doesn't play system sound on touch (Android Only)
+     **/
+    touchSoundDisabled: PropTypes.bool,
 
     onLongPress: PropTypes.func,
 
