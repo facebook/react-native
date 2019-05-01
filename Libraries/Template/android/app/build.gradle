@@ -138,6 +138,7 @@ android {
 }
 
 dependencies {
+    implementation project(':lottie-react-native')
     implementation project(':react-native-svg')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"

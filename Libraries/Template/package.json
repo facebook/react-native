@@ -7,6 +7,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "lottie-react-native": "^2.6.1",
     "react": "16.8.3",
     "react-native": "0.59.5",
     "react-native-svg": "^9.4.0"
@@ -18,6 +19,7 @@
     "flow": "^0.2.3",
     "jest": "^24.7.1",
     "metro-react-native-babel-preset": "^0.53.1",
+    "prettier": "^1.17.0",
     "prop-type": "^0.0.1",
     "react-test-renderer": "16.8.3"
   },
