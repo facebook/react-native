@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@
 // Implements two commands: "cat" and "echo", which behave similarly to their
 // Unix homonyms.
 
-#include <folly/String.h>
 #include <folly/ScopeGuard.h>
+#include <folly/String.h>
 #include <folly/experimental/NestedCommandLineApp.h>
 #include <folly/experimental/ProgramOptions.h>
 
@@ -30,31 +30,32 @@ namespace {
 
 class InputError : public std::runtime_error {
  public:
-  explicit InputError(const std::string& msg)
-    : std::runtime_error(msg) { }
+  explicit InputError(const std::string& msg) : std::runtime_error(msg) {}
 };
 
 class OutputError : public std::runtime_error {
  public:
-  explicit OutputError(const std::string& msg)
-    : std::runtime_error(msg) { }
+  explicit OutputError(const std::string& msg) : std::runtime_error(msg) {}
 };
 
 class Concatenator {
  public:
   explicit Concatenator(const po::variables_map& options)
-    : printLineNumbers_(options["number"].as<bool>()) { }
+      : printLineNumbers_(options["number"].as<bool>()) {}
 
   void cat(const std::string& name);
   void cat(FILE* file);
 
-  bool printLineNumbers() const { return printLineNumbers_; }
+  bool printLineNumbers() const {
+    return printLineNumbers_;
+  }
 
  private:
   bool printLineNumbers_;
   size_t lineNumber_ = 0;
 };
 
+// clang-format off
 [[noreturn]] void throwOutputError() {
   throw OutputError(folly::errnoStr(errno).toStdString());
 }
@@ -62,6 +63,7 @@ class Concatenator {
 [[noreturn]] void throwInputError() {
   throw InputError(folly::errnoStr(errno).toStdString());
 }
+// clang-format on
 
 void Concatenator::cat(FILE* file) {
   char* lineBuf = nullptr;
@@ -102,11 +104,12 @@ void Concatenator::cat(const std::string& name) {
   }
 }
 
-void runCat(const po::variables_map& options,
-            const std::vector<std::string>& args) {
+void runCat(
+    const po::variables_map& options,
+    const std::vector<std::string>& args) {
   Concatenator concatenator(options);
   bool ok = true;
-  auto catFile = [&concatenator, &ok] (const std::string& name) {
+  auto catFile = [&concatenator, &ok](const std::string& name) {
     try {
       if (name == "-") {
         concatenator.cat(stdin);
@@ -136,8 +139,9 @@ void runCat(const po::variables_map& options,
   }
 }
 
-void runEcho(const po::variables_map& options,
-             const std::vector<std::string>& args) {
+void runEcho(
+    const po::variables_map& options,
+    const std::vector<std::string>& args) {
   try {
     const char* sep = "";
     for (auto& arg : args) {
@@ -157,9 +161,9 @@ void runEcho(const po::variables_map& options,
   }
 }
 
-}  // namespace
+} // namespace
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   // Initialize a NestedCommandLineApp object.
   //
   // The first argument is the program name -- an empty string will cause the
@@ -178,6 +182,7 @@ int main(int argc, char *argv[]) {
   // of "cat" and "echo". Note that addCommand() returns a reference to a
   // boost::program_options object that you may use to add command-specific
   // options.
+  // clang-format off
   app.addCommand(
       // command name
       "cat",
@@ -195,7 +200,9 @@ int main(int argc, char *argv[]) {
       runCat)
     .add_options()
       ("number,n", po::bool_switch(), "number all output lines");
+  // clang-format on
 
+  // clang-format off
   app.addCommand(
       "echo",
       "[string...]",
@@ -204,6 +211,7 @@ int main(int argc, char *argv[]) {
       runEcho)
     .add_options()
       (",n", po::bool_switch(), "do not output the trailing newline");
+  // clang-format on
 
   // You may also add command aliases -- that is, multiple command names
   // that do the same thing; see addAlias().

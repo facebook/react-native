@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2017-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,10 @@ extern const char* kTestCert;
 extern const char* kTestKey;
 extern const char* kTestCA;
 
+extern const char* kClientTestCert;
+extern const char* kClientTestKey;
+extern const char* kClientTestCA;
+
 enum StateEnum { STATE_WAITING, STATE_SUCCEEDED, STATE_FAILED };
 
 class HandshakeCallback;
@@ -47,7 +51,7 @@ class SSLServerAcceptCallbackBase : public AsyncServerSocket::AcceptCallback {
   explicit SSLServerAcceptCallbackBase(HandshakeCallback* hcb)
       : state(STATE_WAITING), hcb_(hcb) {}
 
-  ~SSLServerAcceptCallbackBase() {
+  ~SSLServerAcceptCallbackBase() override {
     EXPECT_EQ(STATE_SUCCEEDED, state);
   }
 
@@ -82,7 +86,9 @@ class SSLServerAcceptCallbackBase : public AsyncServerSocket::AcceptCallback {
   virtual void connAccepted(const std::shared_ptr<AsyncSSLSocket>& s) = 0;
 
   void detach() {
-    socket_->detachEventBase();
+    if (socket_) {
+      socket_->detachEventBase();
+    }
   }
 
   StateEnum state;
@@ -111,6 +117,8 @@ class TestSSLServer {
     return evb_;
   }
 
+  void loadTestCerts();
+
   const SocketAddress& getAddress() const {
     return address_;
   }
@@ -126,4 +134,4 @@ class TestSSLServer {
  private:
   void init(bool);
 };
-}
+} // namespace folly

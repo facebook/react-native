@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+#include <cstring>
+
+#include <folly/experimental/TestUtil.h>
 #include <folly/experimental/symbolizer/StackTrace.h>
 #include <folly/experimental/symbolizer/Symbolizer.h>
 
@@ -89,9 +92,74 @@ TEST(StackTraceTest, Signal) {
   EXPECT_TRUE(handled);
 }
 
-int main(int argc, char *argv[]) {
-  testing::InitGoogleTest(&argc, argv);
-  gflags::ParseCommandLineFlags(&argc, &argv, true);
-  google::InitGoogleLogging(argv[0]);
-  return RUN_ALL_TESTS();
+ssize_t read_all(int fd, uint8_t* buffer, size_t size) {
+  uint8_t* pos = buffer;
+  ssize_t bytes_read;
+  do {
+    bytes_read = read(fd, pos, size);
+    if (bytes_read < 0) {
+      if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR) {
+        continue;
+      }
+      return bytes_read;
+    }
+
+    pos += bytes_read;
+    size -= bytes_read;
+  } while (bytes_read > 0 && size > 0);
+
+  return pos - buffer;
+}
+
+// Returns the position in the file after done reading.
+off_t get_stack_trace(int fd, size_t file_pos, uint8_t* buffer, size_t count) {
+  off_t rv = lseek(fd, file_pos, SEEK_SET);
+  CHECK_EQ(rv, (off_t)file_pos);
+
+  // Subtract 1 from size of buffer to hold nullptr.
+  ssize_t bytes_read = read_all(fd, buffer, count - 1);
+  CHECK_GT(bytes_read, 0);
+  buffer[bytes_read] = '\0';
+  return lseek(fd, 0, SEEK_CUR);
+}
+
+template <class StackTracePrinter>
+void testStackTracePrinter(StackTracePrinter& printer, int fd) {
+  ASSERT_GT(fd, 0);
+
+  printer.printStackTrace(true);
+  printer.flush();
+
+  std::array<uint8_t, 4000> first;
+  off_t pos = get_stack_trace(fd, 0, first.data(), first.size());
+  ASSERT_GT(pos, 0);
+
+  printer.printStackTrace(true);
+  printer.flush();
+
+  std::array<uint8_t, 4000> second;
+  get_stack_trace(fd, pos, second.data(), second.size());
+
+  // The first two lines refer to this stack frame, which is different in the
+  // two cases, so strip those off.  The rest should be equal.
+  ASSERT_STREQ(
+      strchr(strchr((const char*)first.data(), '\n') + 1, '\n') + 1,
+      strchr(strchr((const char*)second.data(), '\n') + 1, '\n') + 1);
+}
+
+TEST(StackTraceTest, SafeStackTracePrinter) {
+  test::TemporaryFile file;
+
+  SafeStackTracePrinter printer{10, file.fd()};
+
+  testStackTracePrinter<SafeStackTracePrinter>(printer, file.fd());
+}
+
+TEST(StackTraceTest, FastStackTracePrinter) {
+  test::TemporaryFile file;
+
+  FastStackTracePrinter printer{
+      std::make_unique<FDSymbolizePrinter>(file.fd())};
+
+  testStackTracePrinter<FastStackTracePrinter>(printer, file.fd());
 }

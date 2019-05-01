@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "GuardPageAllocator.h"
+#include <folly/fibers/GuardPageAllocator.h>
 
 #ifndef _WIN32
 #include <dlfcn.h>
@@ -90,9 +90,7 @@ class StackCache {
     auto p = freeList_.back().first;
     if (!freeList_.back().second) {
       PCHECK(0 == ::mprotect(p, pagesize(), PROT_NONE));
-      SYNCHRONIZED(pages, protectedPages()) {
-        pages.insert(reinterpret_cast<intptr_t>(p));
-      }
+      protectedPages().wlock()->insert(reinterpret_cast<intptr_t>(p));
     }
     freeList_.pop_back();
 
@@ -118,12 +116,13 @@ class StackCache {
     assert(storage_);
 
     auto as = allocSize(size);
-    auto p = limit + size - as;
-    if (p < storage_ || p >= storage_ + allocSize_ * kNumGuarded) {
+    if (std::less_equal<void*>{}(limit, storage_) ||
+        std::less_equal<void*>{}(storage_ + allocSize_ * kNumGuarded, limit)) {
       /* not mine */
       return false;
     }
 
+    auto p = limit + size - as;
     assert(as == allocSize_);
     assert((p - storage_) % allocSize_ == 0);
     freeList_.emplace_back(p, /* protected= */ true);
@@ -132,25 +131,25 @@ class StackCache {
 
   ~StackCache() {
     assert(storage_);
-    SYNCHRONIZED(pages, protectedPages()) {
+    protectedPages().withWLock([&](auto& pages) {
       for (const auto& item : freeList_) {
         pages.erase(reinterpret_cast<intptr_t>(item.first));
       }
-    }
+    });
     PCHECK(0 == ::munmap(storage_, allocSize_ * kNumGuarded));
   }
 
   static bool isProtected(intptr_t addr) {
     // Use a read lock for reading.
-    SYNCHRONIZED_CONST(pages, protectedPages()) {
+    return protectedPages().withRLock([&](auto const& pages) {
       for (const auto& page : pages) {
         intptr_t pageEnd = intptr_t(page + pagesize());
         if (page <= addr && addr < pageEnd) {
           return true;
         }
       }
-    }
-    return false;
+      return false;
+    });
   }
 
  private:
@@ -230,7 +229,7 @@ void installSignalHandler() {
     sigaction(SIGSEGV, &sa, &oldSigsegvAction);
   });
 }
-}
+} // namespace
 
 #endif
 
@@ -245,7 +244,7 @@ class CacheManager {
     std::lock_guard<folly::SpinLock> lg(lock_);
     if (inUse_ < kMaxInUse) {
       ++inUse_;
-      return folly::make_unique<StackCacheEntry>(stackSize);
+      return std::make_unique<StackCacheEntry>(stackSize);
     }
 
     return nullptr;
@@ -277,7 +276,7 @@ class CacheManager {
 class StackCacheEntry {
  public:
   explicit StackCacheEntry(size_t stackSize)
-      : stackCache_(folly::make_unique<StackCache>(stackSize)) {}
+      : stackCache_(std::make_unique<StackCache>(stackSize)) {}
 
   StackCache& cache() const noexcept {
     return *stackCache_;
@@ -319,5 +318,5 @@ void GuardPageAllocator::deallocate(unsigned char* limit, size_t size) {
     fallbackAllocator_.deallocate(limit, size);
   }
 }
-}
-} // folly::fibers
+} // namespace fibers
+} // namespace folly

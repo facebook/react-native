@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,11 +31,11 @@ void checkPath(
   Dwarf::Path path(rawBaseDir, rawSubDir, rawFile);
 
   CHECK_EQ(expectedBaseDir, path.baseDir())
-    << "Path(" << rawBaseDir << ", " << rawSubDir << ", " << rawFile << ")";
+      << "Path(" << rawBaseDir << ", " << rawSubDir << ", " << rawFile << ")";
   CHECK_EQ(expectedSubDir, path.subDir())
-    << "Path(" << rawBaseDir << ", " << rawSubDir << ", " << rawFile << ")";
+      << "Path(" << rawBaseDir << ", " << rawSubDir << ", " << rawFile << ")";
   CHECK_EQ(expectedFile, path.file())
-    << "Path(" << rawBaseDir << ", " << rawSubDir << ", " << rawFile << ")";
+      << "Path(" << rawBaseDir << ", " << rawSubDir << ", " << rawFile << ")";
 
   CHECK_EQ(expectedPath, path.toString());
 
@@ -47,52 +47,11 @@ void checkPath(
 }
 
 TEST(Dwarf, Path) {
+  checkPath("hello.cpp", "", "", "hello.cpp", "", "", "hello.cpp");
+  checkPath("foo/hello.cpp", "foo", "", "hello.cpp", "foo", "", "hello.cpp");
+  checkPath("foo/hello.cpp", "foo", "", "hello.cpp", "", "foo", "hello.cpp");
+  checkPath("hello.cpp", "", "", "hello.cpp", "./////", "./////", "hello.cpp");
+  checkPath("/hello.cpp", "/", "", "hello.cpp", "/////", "./////", "hello.cpp");
   checkPath(
-    "hello.cpp",
-    "",
-    "",
-    "hello.cpp",
-    "",
-    "",
-    "hello.cpp");
-  checkPath(
-    "foo/hello.cpp",
-    "foo",
-    "",
-    "hello.cpp",
-    "foo",
-    "",
-    "hello.cpp");
-  checkPath(
-    "foo/hello.cpp",
-    "foo",
-    "",
-    "hello.cpp",
-    "",
-    "foo",
-    "hello.cpp");
-  checkPath(
-    "hello.cpp",
-    "",
-    "",
-    "hello.cpp",
-    "./////",
-    "./////",
-    "hello.cpp");
-  checkPath(
-    "/hello.cpp",
-    "/",
-    "",
-    "hello.cpp",
-    "/////",
-    "./////",
-    "hello.cpp");
-  checkPath(
-    "/hello.cpp",
-    "/",
-    "",
-    "hello.cpp",
-    "/./././././././",
-    "",
-    "hello.cpp");
+      "/hello.cpp", "/", "", "hello.cpp", "/./././././././", "", "hello.cpp");
 }

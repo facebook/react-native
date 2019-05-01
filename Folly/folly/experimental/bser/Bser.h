@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 #pragma once
+#include <folly/CPortability.h>
 #include <folly/Optional.h>
 #include <folly/dynamic.h>
 #include <folly/io/IOBuf.h>
@@ -32,7 +33,7 @@
 namespace folly {
 namespace bser {
 
-class BserDecodeError : public std::runtime_error {
+class FOLLY_EXPORT BserDecodeError : public std::runtime_error {
  public:
   using std::runtime_error::runtime_error;
 };
@@ -94,10 +95,11 @@ folly::dynamic parseBser(const folly::IOBuf*);
 size_t decodePduLength(const folly::IOBuf*);
 
 folly::fbstring toBser(folly::dynamic const&, const serialization_opts&);
-std::unique_ptr<folly::IOBuf> toBserIOBuf(folly::dynamic const&,
-                                          const serialization_opts&);
-}
-}
+std::unique_ptr<folly::IOBuf> toBserIOBuf(
+    folly::dynamic const&,
+    const serialization_opts&);
+} // namespace bser
+} // namespace folly
 
 /* vim:ts=2:sw=2:et:
  */

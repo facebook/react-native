@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@
  *  of patent rights can be found in the PATENTS file in the same directory.
  *
  */
-#include <folly/Optional.h>
 #include <folly/experimental/DynamicParser.h>
+#include <folly/Optional.h>
 #include <folly/experimental/TestUtil.h>
 #include <folly/portability/GTest.h>
 
@@ -55,11 +55,13 @@ void checkMaybeCoercedKeys(bool coerce, dynamic good_k, dynamic missing_k) {
   auto key_error = errors.at("key_errors").at(coerce_fn(missing_k));
   EXPECT_PCRE_MATCH(".*Couldn't find key .* in .*", key_error.getString());
 
+  // clang-format off
   EXPECT_EQ(dynamic(dynamic::object
     ("nested", dynamic::object(coerce_fn(good_k), parse_error))
     ("key_errors", dynamic::object(coerce_fn(missing_k), key_error))
     ("value", d)
   ), errors);
+  // clang-format on
 }
 
 void checkCoercedAndUncoercedKeys(dynamic good_k, dynamic missing_k) {
@@ -95,19 +97,20 @@ TEST(TestDynamicParser, OnErrorThrowError) {
   } catch (const DynamicParserParseError& ex) {
     auto error = ex.error();
     const auto& message =
-      error.at("nested").at("0").at("nested").at("int").at("error");
+        error.at("nested").at("0").at("nested").at("int").at("error");
     EXPECT_PCRE_MATCH(".*Invalid leading.*", message.getString());
     EXPECT_PCRE_MATCH(
-      "DynamicParserParseError: .*Invalid leading.*", ex.what()
-    );
+        "DynamicParserParseError: .*Invalid leading.*", ex.what());
+    // clang-format off
     EXPECT_EQ(dynamic(dynamic::object
       ("nested", dynamic::object
         ("0", dynamic::object
           ("nested", dynamic::object
             ("int", dynamic::object
               ("error", message)("value", "fail")))))), error);
+    // clang-format on
     EXPECT_THROW(p.releaseErrors(), DynamicParserLogicError)
-      << "THROW releases the first error eagerly, and throws";
+        << "THROW releases the first error eagerly, and throws";
   }
 }
 
@@ -116,12 +119,11 @@ TEST(TestDynamicParser, OnErrorThrowError) {
 TEST(TestDynamicParser, AllParserFeaturesSuccess) {
   // Input
   auto d = dynamic::array(
-    dynamic::object("a", 7)("b", 9)("c", 13.3),
-    5,
-    dynamic::array("x", "y", 1, "z"),
-    dynamic::object("int", 7)("false", 0)("true", true)("str", "s"),
-    dynamic::object("bools", dynamic::array(false, true, 0, 1))
-  );
+      dynamic::object("a", 7)("b", 9)("c", 13.3),
+      5,
+      dynamic::array("x", "y", 1, "z"),
+      dynamic::object("int", 7)("false", 0)("true", true)("str", "s"),
+      dynamic::object("bools", dynamic::array(false, true, 0, 1)));
   // Outputs, in the same order as the inputs.
   std::map<std::string, double> doubles;
   folly::Optional<int64_t> outer_int;
@@ -137,10 +139,10 @@ TEST(TestDynamicParser, AllParserFeaturesSuccess) {
   p.required(0, [&](const dynamic& v) {
     EXPECT_EQ(0, p.key().getInt());
     EXPECT_EQ(v, p.value());
-    p.objectItems([&](const std::string& k, double v) {
+    p.objectItems([&](const std::string& k, double v2) {
       EXPECT_EQ(k, p.key().getString());
-      EXPECT_EQ(v, p.value().asDouble());
-      doubles.emplace(k, v);
+      EXPECT_EQ(v2, p.value().asDouble());
+      doubles.emplace(k, v2);
     });
   });
   p.required(1, [&](int64_t k, int64_t v) {
@@ -152,39 +154,39 @@ TEST(TestDynamicParser, AllParserFeaturesSuccess) {
   p.optional(2, [&](const dynamic& v) {
     EXPECT_EQ(2, p.key().getInt());
     EXPECT_EQ(v, p.value());
-    p.arrayItems([&](int64_t k, const std::string& v) {
+    p.arrayItems([&](int64_t k, const std::string& v2) {
       EXPECT_EQ(strings.size(), k);
       EXPECT_EQ(k, p.key().getInt());
-      EXPECT_EQ(v, p.value().asString());
-      strings.emplace_back(v);
+      EXPECT_EQ(v2, p.value().asString());
+      strings.emplace_back(v2);
     });
   });
   p.required(3, [&](const dynamic& v) {
     EXPECT_EQ(3, p.key().getInt());
     EXPECT_EQ(v, p.value());
-    p.optional("int", [&](const std::string& k, int64_t v) {
+    p.optional("int", [&](const std::string& k, int64_t v2) {
       EXPECT_EQ("int", p.key().getString());
       EXPECT_EQ(k, p.key().getString());
-      EXPECT_EQ(v, p.value().getInt());
-      inner_int = v;
+      EXPECT_EQ(v2, p.value().getInt());
+      inner_int = v2;
     });
-    p.required("false", [&](const std::string& k, bool v) {
+    p.required("false", [&](const std::string& k, bool v2) {
       EXPECT_EQ("false", p.key().getString());
       EXPECT_EQ(k, p.key().getString());
-      EXPECT_EQ(v, p.value().asBool());
-      inner_false = v;
+      EXPECT_EQ(v2, p.value().asBool());
+      inner_false = v2;
     });
-    p.required("true", [&](const std::string& k, bool v) {
+    p.required("true", [&](const std::string& k, bool v2) {
       EXPECT_EQ("true", p.key().getString());
       EXPECT_EQ(k, p.key().getString());
-      EXPECT_EQ(v, p.value().getBool());
-      inner_true = v;
+      EXPECT_EQ(v2, p.value().getBool());
+      inner_true = v2;
     });
-    p.required("str", [&](const std::string& k, const std::string& v) {
+    p.required("str", [&](const std::string& k, const std::string& v2) {
       EXPECT_EQ("str", p.key().getString());
       EXPECT_EQ(k, p.key().getString());
-      EXPECT_EQ(v, p.value().getString());
-      inner_str = v;
+      EXPECT_EQ(v2, p.value().getString());
+      inner_str = v2;
     });
     p.optional("not set", [&](bool) { FAIL() << "No key 'not set'"; });
   });
@@ -195,9 +197,9 @@ TEST(TestDynamicParser, AllParserFeaturesSuccess) {
       EXPECT_EQ(std::string("bools"), k);
       EXPECT_EQ(k, p.key().getString());
       EXPECT_EQ(v2, p.value());
-      p.arrayItems([&](int64_t k, bool v3) {
-        EXPECT_EQ(bools.size(), k);
-        EXPECT_EQ(k, p.key().getInt());
+      p.arrayItems([&](int64_t k2, bool v3) {
+        EXPECT_EQ(bools.size(), k2);
+        EXPECT_EQ(k2, p.key().getInt());
         EXPECT_EQ(v3, p.value().asBool());
         bools.push_back(v3);
       });
@@ -233,35 +235,35 @@ void checkXYKeyErrorsAndParseError(
   EXPECT_PCRE_MATCH(key_re, y_key_msg.getString());
   auto parse_msg = errors.at("error");
   EXPECT_PCRE_MATCH(parse_re, parse_msg.getString());
+  // clang-format off
   EXPECT_EQ(dynamic(dynamic::object
     ("key_errors", dynamic::object("x", x_key_msg)("y", y_key_msg))
     ("error", parse_msg)
     ("value", d)), errors);
+  // clang-format on
 }
 
 // Exercise key errors for optional / required, and outer parse errors for
 // arrayItems / objectItems.
 TEST(TestDynamicParser, TestKeyAndParseErrors) {
   checkXYKeyErrorsAndParseError(
-    dynamic::object(),
-    [&](DynamicParser& p) {
-      p.required("x", [&]() {});  // key
-      p.required("y", [&]() {});  // key
-      p.arrayItems([&]() {});  // parse
-    },
-    "Couldn't find key (x|y) .*",
-    "^TypeError: .*"
-  );
+      dynamic::object(),
+      [&](DynamicParser& p) {
+        p.required("x", [&]() {}); // key
+        p.required("y", [&]() {}); // key
+        p.arrayItems([&]() {}); // parse
+      },
+      "Couldn't find key (x|y) .*",
+      "^TypeError: .*");
   checkXYKeyErrorsAndParseError(
-    dynamic::array(),
-    [&](DynamicParser& p) {
-      p.optional("x", [&]() {});  // key
-      p.optional("y", [&]() {});  // key
-      p.objectItems([&]() {});  // parse
-    },
-    "^TypeError: .*",
-    "^TypeError: .*"
-  );
+      dynamic::array(),
+      [&](DynamicParser& p) {
+        p.optional("x", [&]() {}); // key
+        p.optional("y", [&]() {}); // key
+        p.objectItems([&]() {}); // parse
+      },
+      "^TypeError: .*",
+      "^TypeError: .*");
 }
 
 // TestKeyAndParseErrors covered required/optional key errors, so only parse
@@ -279,25 +281,33 @@ TEST(TestDynamicParser, TestRequiredOptionalParseErrors) {
     EXPECT_PCRE_MATCH(pcre, error.at("error").getString());
     return dynamic::object("value", d.at(k))("error", error.at("error"));
   };
+  // clang-format off
   EXPECT_EQ(dynamic(dynamic::object("nested", dynamic::object
     ("x", get_expected_error_fn("x", "TypeError: .* but had type `array'"))
     ("y", get_expected_error_fn("y", ".*Invalid leading character.*"))
     ("z", get_expected_error_fn("z", "CUSTOM")))), errors);
+  // clang-format on
 }
 
 template <typename Fn>
 void checkItemParseError(
     // real_k can differ from err_k, which is typically coerced to string
-    dynamic d, Fn fn, dynamic real_k, dynamic err_k, std::string re) {
+    dynamic d,
+    Fn fn,
+    dynamic real_k,
+    dynamic err_k,
+    std::string re) {
   DynamicParser p(DynamicParser::OnError::RECORD, &d);
   fn(p);
   auto errors = p.releaseErrors();
   auto error = errors.at("nested").at(err_k);
   EXPECT_EQ(d.at(real_k), error.at("value"));
   EXPECT_PCRE_MATCH(re, error.at("error").getString());
+  // clang-format off
   EXPECT_EQ(dynamic(dynamic::object("nested", dynamic::object(
     err_k, dynamic::object("value", d.at(real_k))("error", error.at("error"))
   ))), errors);
+  // clang-format on
 }
 
 // TestKeyAndParseErrors covered outer parse errors for {object,array}Items,
@@ -305,28 +315,30 @@ void checkItemParseError(
 // TestKeyAndParseErrors and TestRequiredOptionalParseErrors.
 TEST(TestDynamicParser, TestItemParseErrors) {
   checkItemParseError(
-    dynamic::object("string", dynamic::array("not", "actually")),
-    [&](DynamicParser& p) {
-      p.objectItems([&](const std::string&, const std::string&) {});
-    },
-    "string", "string",
-    "TypeError: .* but had type `array'"
-  );
+      dynamic::object("string", dynamic::array("not", "actually")),
+      [&](DynamicParser& p) {
+        p.objectItems([&](const std::string&, const std::string&) {});
+      },
+      "string",
+      "string",
+      "TypeError: .* but had type `array'");
   checkItemParseError(
-    dynamic::array("this is not a bool"),
-    [&](DynamicParser& p) { p.arrayItems([&](int64_t, bool) {}); },
-    0, "0",
-    ".*Non-whitespace.*"
-  );
+      dynamic::array("this is not a bool"),
+      [&](DynamicParser& p) { p.arrayItems([&](int64_t, bool) {}); },
+      0,
+      "0",
+      ".*Non-whitespace.*");
 }
 
 // The goal is to exercise the sub-error materialization logic pretty well
 TEST(TestDynamicParser, TestErrorNesting) {
+  // clang-format off
   dynamic d = dynamic::object
     ("x", dynamic::array(
       dynamic::object("y", dynamic::object("z", "non-object"))
     ))
     ("k", false);
+  // clang-format on
   DynamicParser p(DynamicParser::OnError::RECORD, &d);
   // Start with a couple of successful nests, building up unmaterialized
   // error objects.
@@ -344,19 +356,24 @@ TEST(TestDynamicParser, TestErrorNesting) {
       throw std::runtime_error("another parse error");
     });
   });
-  p.required("non-key", []() {});  // Top-level key error
-  p.optional("k", [&](int64_t, bool) {});  // Non-int key for good measure
+  p.required("non-key", []() {}); // Top-level key error
+  p.optional("k", [&](int64_t, bool) {}); // Non-int key for good measure
   auto errors = p.releaseErrors();
 
   auto& base = errors.at("nested").at("x").at("nested").at("0");
   auto inner_key_err =
-    base.at("nested").at("y").at("key_errors").at("not a key");
-  auto innermost_key_err =
-    base.at("nested").at("y").at("nested").at("z").at("key_errors").at("akey");
+      base.at("nested").at("y").at("key_errors").at("not a key");
+  auto innermost_key_err = base.at("nested")
+                               .at("y")
+                               .at("nested")
+                               .at("z")
+                               .at("key_errors")
+                               .at("akey");
   auto outer_key_err = base.at("key_errors").at("also not a key");
   auto root_key_err = errors.at("key_errors").at("non-key");
   auto k_parse_err = errors.at("nested").at("k").at("error");
 
+  // clang-format off
   EXPECT_EQ(dynamic(dynamic::object
     ("nested", dynamic::object
         ("x", dynamic::object("nested", dynamic::object("0", dynamic::object
@@ -377,6 +394,7 @@ TEST(TestDynamicParser, TestErrorNesting) {
     ("key_errors", dynamic::object("non-key", root_key_err))
     ("value", d)
   ), errors);
+  // clang-format on
 }
 
 TEST(TestDynamicParser, TestRecordThrowOnDoubleParseErrors) {
@@ -394,17 +412,16 @@ TEST(TestDynamicParser, TestRecordThrowOnDoubleParseErrors) {
 TEST(TestDynamicParser, TestRecordThrowOnChangingValue) {
   dynamic d = nullptr;
   DynamicParser p(DynamicParser::OnError::RECORD, &d);
-  p.required("x", [&]() {});  // Key error sets "value"
+  p.required("x", [&]() {}); // Key error sets "value"
   d = 5;
   try {
-    p.objectItems([&]() {});  // Will detect the changed value
+    p.objectItems([&]() {}); // Will detect the changed value
     FAIL() << "Should throw on second error with a changing value";
   } catch (const DynamicParserLogicError& ex) {
     EXPECT_PCRE_MATCH(
-      // Accept 0 or null since folly used to mis-print null as 0.
-      ".*Overwriting value: (0|null) with 5 for error TypeError: .*",
-      ex.what()
-    );
+        // Accept 0 or null since folly used to mis-print null as 0.
+        ".*Overwriting value: (0|null) with 5 for error TypeError: .*",
+        ex.what());
   }
 }
 
@@ -412,9 +429,7 @@ TEST(TestDynamicParser, TestThrowOnReleaseWhileParsing) {
   auto d = dynamic::array(1);
   DynamicParser p(DynamicParser::OnError::RECORD, &d);
   EXPECT_THROW(
-    p.arrayItems([&]() { p.releaseErrors(); }),
-    DynamicParserLogicError
-  );
+      p.arrayItems([&]() { p.releaseErrors(); }), DynamicParserLogicError);
 }
 
 TEST(TestDynamicParser, TestThrowOnReleaseTwice) {

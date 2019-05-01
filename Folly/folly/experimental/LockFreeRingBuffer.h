@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,22 +17,22 @@
 #pragma once
 
 #include <atomic>
-#include <boost/noncopyable.hpp>
 #include <cmath>
+#include <cstring>
 #include <memory>
-#include <string.h>
 #include <type_traits>
 
+#include <boost/noncopyable.hpp>
+
 #include <folly/Portability.h>
+#include <folly/Traits.h>
 #include <folly/detail/TurnSequencer.h>
-#include <folly/portability/TypeTraits.h>
 #include <folly/portability/Unistd.h>
 
 namespace folly {
 namespace detail {
 
-template<typename T,
-         template<typename> class Atom>
+template <typename T, template <typename> class Atom>
 class RingBufferSlot;
 } // namespace detail
 
@@ -55,16 +55,17 @@ class RingBufferSlot;
 /// "future" can optionally block but reads from the "past" will always fail.
 ///
 
-template<typename T, template<typename> class Atom = std::atomic>
-class LockFreeRingBuffer: boost::noncopyable {
+template <typename T, template <typename> class Atom = std::atomic>
+class LockFreeRingBuffer : boost::noncopyable {
+  static_assert(
+      std::is_nothrow_default_constructible<T>::value,
+      "Element type must be nothrow default constructible");
 
-   static_assert(std::is_nothrow_default_constructible<T>::value,
-       "Element type must be nothrow default constructible");
+  static_assert(
+      folly::is_trivially_copyable<T>::value,
+      "Element type must be trivially copyable");
 
-   static_assert(FOLLY_IS_TRIVIALLY_COPYABLE(T),
-       "Element type must be trivially copyable");
-
-public:
+ public:
   /// Opaque pointer to a past or future write.
   /// Can be moved relative to its current location but not in absolute terms.
   struct Cursor {
@@ -90,16 +91,15 @@ public:
       return prevTicket != ticket;
     }
 
-  protected: // for test visibility reasons
+   protected: // for test visibility reasons
     uint64_t ticket;
     friend class LockFreeRingBuffer;
   };
 
   explicit LockFreeRingBuffer(uint32_t capacity) noexcept
-    : capacity_(capacity)
-    , slots_(new detail::RingBufferSlot<T,Atom>[capacity])
-    , ticket_(0)
-  {}
+      : capacity_(capacity),
+        slots_(new detail::RingBufferSlot<T, Atom>[capacity]),
+        ticket_(0) {}
 
   /// Perform a single write of an object of type T.
   /// Writes can block iff a previous writer has not yet completed a write
@@ -159,13 +159,12 @@ public:
     return Cursor(ticket - backStep);
   }
 
-  ~LockFreeRingBuffer() {
-  }
+  ~LockFreeRingBuffer() {}
 
-private:
+ private:
   const uint32_t capacity_;
 
-  const std::unique_ptr<detail::RingBufferSlot<T,Atom>[]> slots_;
+  const std::unique_ptr<detail::RingBufferSlot<T, Atom>[]> slots_;
 
   Atom<uint64_t> ticket_;
 
@@ -179,14 +178,10 @@ private:
 }; // LockFreeRingBuffer
 
 namespace detail {
-template<typename T, template<typename> class Atom>
+template <typename T, template <typename> class Atom>
 class RingBufferSlot {
-public:
-  explicit RingBufferSlot() noexcept
-    : sequencer_()
-    , data()
-  {
-  }
+ public:
+  explicit RingBufferSlot() noexcept : sequencer_(), data() {}
 
   void write(const uint32_t turn, T& value) noexcept {
     Atom<uint32_t> cutoff(0);
@@ -224,8 +219,7 @@ public:
     return sequencer_.isTurn((turn + 1) * 2);
   }
 
-
-private:
+ private:
   TurnSequencer<Atom> sequencer_;
   T data;
 }; // RingBufferSlot

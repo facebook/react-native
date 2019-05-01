@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2012-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 #pragma once
 
 #include <cstdint>
+
 #include <folly/Portability.h>
 
 #ifdef _MSC_VER
@@ -28,18 +29,19 @@ namespace folly {
 /**
  * Identification of an Intel CPU.
  * Supports CPUID feature flags (EAX=1) and extended features (EAX=7, ECX=0).
- * Values from http://www.intel.com/content/www/us/en/processors/processor-identification-cpuid-instruction-note.html
+ * Values from
+ * http://www.intel.com/content/www/us/en/processors/processor-identification-cpuid-instruction-note.html
  */
 class CpuId {
  public:
   // Always inline in order for this to be usable from a __ifunc__.
-  // In shared library mde, a __ifunc__ runs at relocation time, while the
+  // In shared library mode, a __ifunc__ runs at relocation time, while the
   // PLT hasn't been fully populated yet; thus, ifuncs cannot use symbols
   // with potentially external linkage. (This issue is less likely in opt
   // mode since inlining happens more likely, and it doesn't happen for
   // statically linked binaries which don't depend on the PLT)
   FOLLY_ALWAYS_INLINE CpuId() {
-#if defined(_MSC_VER) && (defined(_M_IX86) || defined(_M_X64))
+#if defined(_MSC_VER) && (FOLLY_X64 || defined(_M_IX86))
     int reg[4];
     __cpuid(static_cast<int*>(reg), 0);
     const int n = reg[0];
@@ -56,7 +58,7 @@ class CpuId {
 #elif defined(__i386__) && defined(__PIC__) && !defined(__clang__) && \
     defined(__GNUC__)
     // The following block like the normal cpuid branch below, but gcc
-    // reserves ebx for use of it's pic register so we must specially
+    // reserves ebx for use of its pic register so we must specially
     // handle the save and restore to avoid clobbering the register
     uint32_t n;
     __asm__(
@@ -65,13 +67,14 @@ class CpuId {
         "popl %%ebx\n\t"
         : "=a"(n)
         : "a"(0)
-        : "edx", "ecx");
+        : "ecx", "edx");
     if (n >= 1) {
+      uint32_t f1a;
       __asm__(
           "pushl %%ebx\n\t"
           "cpuid\n\t"
           "popl %%ebx\n\t"
-          : "=c"(f1c_), "=d"(f1d_)
+          : "=a"(f1a), "=c"(f1c_), "=d"(f1d_)
           : "a"(1)
           :);
     }
@@ -87,12 +90,17 @@ class CpuId {
     }
 #elif FOLLY_X64 || defined(__i386__)
     uint32_t n;
-    __asm__("cpuid" : "=a"(n) : "a"(0) : "ebx", "edx", "ecx");
+    __asm__("cpuid" : "=a"(n) : "a"(0) : "ebx", "ecx", "edx");
     if (n >= 1) {
-      __asm__("cpuid" : "=c"(f1c_), "=d"(f1d_) : "a"(1) : "ebx");
+      uint32_t f1a;
+      __asm__("cpuid" : "=a"(f1a), "=c"(f1c_), "=d"(f1d_) : "a"(1) : "ebx");
     }
     if (n >= 7) {
-      __asm__("cpuid" : "=b"(f7b_), "=c"(f7c_) : "a"(7), "c"(0) : "edx");
+      uint32_t f7a;
+      __asm__("cpuid"
+              : "=a"(f7a), "=b"(f7b_), "=c"(f7c_)
+              : "a"(7), "c"(0)
+              : "edx");
     }
 #endif
   }
@@ -207,4 +215,4 @@ class CpuId {
   uint32_t f7c_ = 0;
 };
 
-}  // namespace folly
+} // namespace folly

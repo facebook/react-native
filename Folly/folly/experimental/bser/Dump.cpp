@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,27 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "Bser.h"
+
+#include <folly/experimental/bser/Bser.h>
+
 #include <folly/io/Cursor.h>
 
 using namespace folly;
-using folly::io::QueueAppender;
 using folly::bser::serialization_opts;
+using folly::io::QueueAppender;
 
 namespace folly {
 namespace bser {
 
 const uint8_t kMagic[2] = {0, 1};
 
-static void bserEncode(dynamic const& dyn,
-                       QueueAppender& appender,
-                       const serialization_opts& opts);
+static void bserEncode(
+    dynamic const& dyn,
+    QueueAppender& appender,
+    const serialization_opts& opts);
 
 serialization_opts::serialization_opts()
     : sort_keys(false), growth_increment(8192) {}
 
-static const dynamic* getTemplate(const serialization_opts& opts,
-                                  dynamic const& dynArray) {
+static const dynamic* getTemplate(
+    const serialization_opts& opts,
+    dynamic const& dynArray) {
   if (!opts.templates.hasValue()) {
     return nullptr;
   }
@@ -48,9 +52,9 @@ static const dynamic* getTemplate(const serialization_opts& opts,
 static void bserEncodeInt(int64_t ival, QueueAppender& appender) {
   /* Return the smallest size int that can store the value */
   auto size =
-      ((ival == ((int8_t)ival)) ? 1 : (ival == ((int16_t)ival))
-                                          ? 2
-                                          : (ival == ((int32_t)ival)) ? 4 : 8);
+      ((ival == ((int8_t)ival))
+           ? 1
+           : (ival == ((int16_t)ival)) ? 2 : (ival == ((int32_t)ival)) ? 4 : 8);
 
   switch (size) {
     case 1:
@@ -80,9 +84,10 @@ static void bserEncodeString(folly::StringPiece str, QueueAppender& appender) {
   appender.push((uint8_t*)str.data(), str.size());
 }
 
-static void bserEncodeArraySimple(dynamic const& dyn,
-                                  QueueAppender& appender,
-                                  const serialization_opts& opts) {
+static void bserEncodeArraySimple(
+    dynamic const& dyn,
+    QueueAppender& appender,
+    const serialization_opts& opts) {
   appender.write((int8_t)BserType::Array);
   bserEncodeInt(int64_t(dyn.size()), appender);
   for (const auto& ele : dyn) {
@@ -90,10 +95,10 @@ static void bserEncodeArraySimple(dynamic const& dyn,
   }
 }
 
-static void bserEncodeArray(dynamic const& dyn,
-                            QueueAppender& appender,
-                            const serialization_opts& opts) {
-
+static void bserEncodeArray(
+    dynamic const& dyn,
+    QueueAppender& appender,
+    const serialization_opts& opts) {
   auto templ = getTemplate(opts, dyn);
   if (UNLIKELY(templ != nullptr)) {
     appender.write((int8_t)BserType::Template);
@@ -127,15 +132,16 @@ static void bserEncodeArray(dynamic const& dyn,
   bserEncodeArraySimple(dyn, appender, opts);
 }
 
-static void bserEncodeObject(dynamic const& dyn,
-                             QueueAppender& appender,
-                             const serialization_opts& opts) {
+static void bserEncodeObject(
+    dynamic const& dyn,
+    QueueAppender& appender,
+    const serialization_opts& opts) {
   appender.write((int8_t)BserType::Object);
   bserEncodeInt(int64_t(dyn.size()), appender);
 
   if (opts.sort_keys) {
-    std::vector<std::pair<dynamic, dynamic>> sorted(dyn.items().begin(),
-                                                    dyn.items().end());
+    std::vector<std::pair<dynamic, dynamic>> sorted(
+        dyn.items().begin(), dyn.items().end());
     std::sort(sorted.begin(), sorted.end());
     for (const auto& item : sorted) {
       bserEncode(item.first, appender, opts);
@@ -149,9 +155,10 @@ static void bserEncodeObject(dynamic const& dyn,
   }
 }
 
-static void bserEncode(dynamic const& dyn,
-                       QueueAppender& appender,
-                       const serialization_opts& opts) {
+static void bserEncode(
+    dynamic const& dyn,
+    QueueAppender& appender,
+    const serialization_opts& opts) {
   switch (dyn.type()) {
     case dynamic::Type::NULLT:
       appender.write((int8_t)BserType::Null);
@@ -181,8 +188,9 @@ static void bserEncode(dynamic const& dyn,
   }
 }
 
-std::unique_ptr<folly::IOBuf> toBserIOBuf(folly::dynamic const& dyn,
-                                          const serialization_opts& opts) {
+std::unique_ptr<folly::IOBuf> toBserIOBuf(
+    folly::dynamic const& dyn,
+    const serialization_opts& opts) {
   IOBufQueue q(IOBufQueue::cacheChainLength());
   uint8_t hdrbuf[sizeof(kMagic) + 1 + sizeof(int64_t)];
 
@@ -239,8 +247,8 @@ fbstring toBser(dynamic const& dyn, const serialization_opts& opts) {
   auto buf = toBserIOBuf(dyn, opts);
   return buf->moveToFbString();
 }
-}
-}
+} // namespace bser
+} // namespace folly
 
 /* vim:ts=2:sw=2:et:
  */

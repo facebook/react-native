@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,10 @@ TEST(FormatOther, file) {
     {
       FILE* fp = fdopen(fds[1], "wb");
       PCHECK(fp);
-      SCOPE_EXIT { fclose(fp); };
-      writeTo(fp, format("{} {}", 42, 23));  // <= 512 bytes (PIPE_BUF)
+      SCOPE_EXIT {
+        fclose(fp);
+      };
+      writeTo(fp, format("{} {}", 42, 23)); // <= 512 bytes (PIPE_BUF)
     }
 
     char buf[512];
@@ -96,7 +98,7 @@ void testFormatSeq() {
   EXPECT_EQ("10 20 0030", svformat("{} {} {:04}", v));
 }
 
-}  // namespace
+} // namespace
 
 TEST(FormatOther, fbvector) {
   testFormatSeq<fbvector<int>>();
@@ -106,7 +108,7 @@ TEST(FormatOther, small_vector) {
   testFormatSeq<small_vector<int, 2>>();
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   testing::InitGoogleTest(&argc, argv);
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   return RUN_ALL_TESTS();

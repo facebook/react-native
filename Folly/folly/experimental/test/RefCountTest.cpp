@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,9 @@
  */
 #include <thread>
 
-#include <folly/Baton.h>
-#include <folly/experimental/RCURefCount.h>
 #include <folly/experimental/TLRefCount.h>
 #include <folly/portability/GTest.h>
+#include <folly/synchronization/Baton.h>
 
 namespace folly {
 
@@ -36,29 +35,29 @@ void basicTest() {
   std::vector<std::thread> ts;
   folly::Baton<> threadBatons[numThreads];
   for (size_t t = 0; t < numThreads; ++t) {
-    ts.emplace_back([&count, &b, &got0, numIters, t, &threadBatons]() {
-        for (size_t i = 0; i < numIters; ++i) {
-          auto ret = ++count;
+    ts.emplace_back([&count, &b, &got0, t, &threadBatons] {
+      for (size_t i = 0; i < numIters; ++i) {
+        auto ret = ++count;
 
-          EXPECT_TRUE(ret > 1);
-          if (i == 0) {
-            threadBatons[t].post();
-          }
+        EXPECT_TRUE(ret > 1);
+        if (i == 0) {
+          threadBatons[t].post();
         }
+      }
 
-        if (t == 0) {
-          b.post();
+      if (t == 0) {
+        b.post();
+      }
+
+      for (size_t i = 0; i < numIters; ++i) {
+        auto ret = --count;
+
+        if (ret == 0) {
+          ++got0;
+          EXPECT_EQ(numIters - 1, i);
         }
-
-        for (size_t i = 0; i < numIters; ++i) {
-          auto ret = --count;
-
-          if (ret == 0) {
-            ++got0;
-            EXPECT_EQ(numIters - 1, i);
-          }
-        }
-      });
+      }
+    });
   }
 
   for (size_t t = 0; t < numThreads; ++t) {
@@ -72,7 +71,7 @@ void basicTest() {
     ++got0;
   }
 
-  for (auto& t: ts) {
+  for (auto& t : ts) {
     t.join();
   }
 
@@ -114,16 +113,8 @@ void stressTest(size_t itersCount) {
   }
 }
 
-TEST(RCURefCount, Basic) {
-  basicTest<RCURefCount>();
-}
-
 TEST(TLRefCount, Basic) {
   basicTest<TLRefCount>();
-}
-
-TEST(RCURefCount, Stress) {
-  stressTest<RCURefCount>(100000);
 }
 
 TEST(TLRefCount, Stress) {
@@ -131,4 +122,4 @@ TEST(TLRefCount, Stress) {
   // do it that many times.
   stressTest<TLRefCount>(500);
 }
-}
+} // namespace folly

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2011-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,16 +21,16 @@
 #include <atomic>
 #include <memory>
 #include <set>
-#include <vector>
-#include <thread>
 #include <system_error>
+#include <thread>
+#include <vector>
 
 #include <glog/logging.h>
 
-#include <folly/Arena.h>
-#include <folly/Foreach.h>
 #include <folly/Memory.h>
 #include <folly/String.h>
+#include <folly/container/Foreach.h>
+#include <folly/memory/Arena.h>
 #include <folly/portability/GFlags.h>
 #include <folly/portability/GTest.h>
 
@@ -40,30 +40,37 @@ namespace {
 
 template <typename ParentAlloc>
 struct ParanoidArenaAlloc {
-  explicit ParanoidArenaAlloc(ParentAlloc* arena) : arena_(arena) {}
+  explicit ParanoidArenaAlloc(ParentAlloc& arena) : arena_(arena) {}
+  ParanoidArenaAlloc(ParanoidArenaAlloc const&) = delete;
+  ParanoidArenaAlloc(ParanoidArenaAlloc&&) = delete;
+  ParanoidArenaAlloc& operator=(ParanoidArenaAlloc const&) = delete;
+  ParanoidArenaAlloc& operator=(ParanoidArenaAlloc&&) = delete;
 
   void* allocate(size_t size) {
-    void* result = arena_->allocate(size);
+    void* result = arena_.get().allocate(size);
     allocated_.insert(result);
     return result;
   }
 
-  void deallocate(void* ptr) {
+  void deallocate(void* ptr, size_t n) {
     EXPECT_EQ(1, allocated_.erase(ptr));
-    arena_->deallocate(ptr);
+    arena_.get().deallocate(ptr, n);
   }
 
-  bool isEmpty() const { return allocated_.empty(); }
+  bool isEmpty() const {
+    return allocated_.empty();
+  }
 
-  ParentAlloc* arena_;
+  std::reference_wrapper<ParentAlloc> arena_;
   std::set<void*> allocated_;
 };
-}
+} // namespace
 
 namespace folly {
-template <>
-struct IsArenaAllocator<ParanoidArenaAlloc<SysArena>> : std::true_type {};
-}
+template <typename ParentAlloc>
+struct AllocatorHasTrivialDeallocate<ParanoidArenaAlloc<ParentAlloc>>
+    : AllocatorHasTrivialDeallocate<ParentAlloc> {};
+} // namespace folly
 
 namespace {
 
@@ -80,9 +87,10 @@ typedef std::set<ValueType> SetType;
 static const int kHeadHeight = 2;
 static const int kMaxValue = 5000;
 
-static void randomAdding(int size,
+static void randomAdding(
+    int size,
     SkipListAccessor skipList,
-    SetType *verifier,
+    SetType* verifier,
     int maxValue = kMaxValue) {
   for (int i = 0; i < size; ++i) {
     int32_t r = rand() % maxValue;
@@ -91,10 +99,11 @@ static void randomAdding(int size,
   }
 }
 
-static void randomRemoval(int size,
+static void randomRemoval(
+    int size,
     SkipListAccessor skipList,
-    SetType *verifier,
-    int maxValue=kMaxValue) {
+    SetType* verifier,
+    int maxValue = kMaxValue) {
   for (int i = 0; i < size; ++i) {
     int32_t r = rand() % maxValue;
     verifier->insert(r);
@@ -102,28 +111,28 @@ static void randomRemoval(int size,
   }
 }
 
-static void sumAllValues(SkipListAccessor skipList, int64_t *sum) {
+static void sumAllValues(SkipListAccessor skipList, int64_t* sum) {
   *sum = 0;
-  FOR_EACH(it, skipList) {
-    *sum += *it;
-  }
+  FOR_EACH (it, skipList) { *sum += *it; }
   VLOG(20) << "sum = " << sum;
 }
 
-static void concurrentSkip(const vector<ValueType> *values,
+static void concurrentSkip(
+    const vector<ValueType>* values,
     SkipListAccessor skipList) {
   int64_t sum = 0;
   SkipListAccessor::Skipper skipper(skipList);
-  FOR_EACH(it, *values) {
-    if (skipper.to(*it)) sum += *it;
+  FOR_EACH (it, *values) {
+    if (skipper.to(*it)) {
+      sum += *it;
+    }
   }
   VLOG(20) << "sum = " << sum;
 }
 
-bool verifyEqual(SkipListAccessor skipList,
-    const SetType &verifier) {
+bool verifyEqual(SkipListAccessor skipList, const SetType& verifier) {
   EXPECT_EQ(verifier.size(), skipList.size());
-  FOR_EACH(it, verifier) {
+  FOR_EACH (it, verifier) {
     CHECK(skipList.contains(*it)) << *it;
     SkipListType::const_iterator iter = skipList.find(*it);
     CHECK(iter != skipList.end());
@@ -239,7 +248,6 @@ TEST(ConcurrentSkipList, SequentialAccess) {
       EXPECT_EQ(found, (verifier.find(n) != verifier.end()));
     }
   }
-
 }
 
 static std::string makeRandomeString(int len) {
@@ -264,31 +272,35 @@ TEST(ConcurrentSkipList, TestStringType) {
 }
 
 struct UniquePtrComp {
-  bool operator ()(
-      const std::unique_ptr<int> &x, const std::unique_ptr<int> &y) const {
-    if (!x) return false;
-    if (!y) return true;
+  bool operator()(const std::unique_ptr<int>& x, const std::unique_ptr<int>& y)
+      const {
+    if (!x) {
+      return false;
+    }
+    if (!y) {
+      return true;
+    }
     return *x < *y;
   }
 };
 
 TEST(ConcurrentSkipList, TestMovableData) {
   typedef folly::ConcurrentSkipList<std::unique_ptr<int>, UniquePtrComp>
-    SkipListT;
-  auto sl = SkipListT::createInstance() ;
+      SkipListT;
+  auto sl = SkipListT::createInstance();
   SkipListT::Accessor accessor(sl);
 
   static const int N = 10;
   for (int i = 0; i < N; ++i) {
-    accessor.insert(std::unique_ptr<int>(new int(i)));
+    accessor.insert(std::make_unique<int>(i));
   }
 
   for (int i = 0; i < N; ++i) {
-    EXPECT_TRUE(accessor.find(std::unique_ptr<int>(new int(i))) !=
-        accessor.end());
+    EXPECT_TRUE(
+        accessor.find(std::unique_ptr<int>(new int(i))) != accessor.end());
   }
-  EXPECT_TRUE(accessor.find(std::unique_ptr<int>(new int(N))) ==
-      accessor.end());
+  EXPECT_TRUE(
+      accessor.find(std::unique_ptr<int>(new int(N))) == accessor.end());
 }
 
 void testConcurrentAdd(int numThreads) {
@@ -298,23 +310,19 @@ void testConcurrentAdd(int numThreads) {
   vector<SetType> verifiers(numThreads);
   try {
     for (int i = 0; i < numThreads; ++i) {
-      threads.push_back(std::thread(
-            &randomAdding, 100, skipList, &verifiers[i], kMaxValue));
+      threads.push_back(
+          std::thread(&randomAdding, 100, skipList, &verifiers[i], kMaxValue));
     }
   } catch (const std::system_error& e) {
-    LOG(WARNING)
-      << "Caught " << exceptionStr(e)
-      << ": could only create " << threads.size() << " threads out of "
-      << numThreads;
+    LOG(WARNING) << "Caught " << exceptionStr(e) << ": could only create "
+                 << threads.size() << " threads out of " << numThreads;
   }
   for (size_t i = 0; i < threads.size(); ++i) {
     threads[i].join();
   }
 
   SetType all;
-  FOR_EACH(s, verifiers) {
-    all.insert(s->begin(), s->end());
-  }
+  FOR_EACH (s, verifiers) { all.insert(s->begin(), s->end()); }
   verifyEqual(skipList, all);
 }
 
@@ -332,26 +340,20 @@ void testConcurrentRemoval(int numThreads, int maxValue) {
   }
 
   vector<std::thread> threads;
-  vector<SetType > verifiers(numThreads);
+  vector<SetType> verifiers(numThreads);
   try {
     for (int i = 0; i < numThreads; ++i) {
-      threads.push_back(std::thread(
-            &randomRemoval, 100, skipList, &verifiers[i], maxValue));
+      threads.push_back(
+          std::thread(&randomRemoval, 100, skipList, &verifiers[i], maxValue));
     }
   } catch (const std::system_error& e) {
-    LOG(WARNING)
-      << "Caught " << exceptionStr(e)
-      << ": could only create " << threads.size() << " threads out of "
-      << numThreads;
+    LOG(WARNING) << "Caught " << exceptionStr(e) << ": could only create "
+                 << threads.size() << " threads out of " << numThreads;
   }
-  FOR_EACH(t, threads) {
-    (*t).join();
-  }
+  FOR_EACH (t, threads) { (*t).join(); }
 
   SetType all;
-  FOR_EACH(s, verifiers) {
-    all.insert(s->begin(), s->end());
-  }
+  FOR_EACH (s, verifiers) { all.insert(s->begin(), s->end()); }
 
   CHECK_EQ(maxValue, all.size() + skipList.size());
   for (int i = 0; i < maxValue; ++i) {
@@ -369,13 +371,13 @@ TEST(ConcurrentSkipList, ConcurrentRemove) {
   }
 }
 
-static void testConcurrentAccess(
-    int numInsertions, int numDeletions, int maxValue) {
+static void
+testConcurrentAccess(int numInsertions, int numDeletions, int maxValue) {
   auto skipList = SkipListType::create(kHeadHeight);
 
   vector<SetType> verifiers(FLAGS_num_threads);
   vector<int64_t> sums(FLAGS_num_threads);
-  vector<vector<ValueType> > skipValues(FLAGS_num_threads);
+  vector<vector<ValueType>> skipValues(FLAGS_num_threads);
 
   for (int i = 0; i < FLAGS_num_threads; ++i) {
     for (int j = 0; j < numInsertions; ++j) {
@@ -390,15 +392,15 @@ static void testConcurrentAccess(
       case 0:
       case 1:
         threads.push_back(std::thread(
-              randomAdding, numInsertions, skipList, &verifiers[i], maxValue));
+            randomAdding, numInsertions, skipList, &verifiers[i], maxValue));
         break;
       case 2:
         threads.push_back(std::thread(
-              randomRemoval, numDeletions, skipList, &verifiers[i], maxValue));
+            randomRemoval, numDeletions, skipList, &verifiers[i], maxValue));
         break;
       case 3:
-        threads.push_back(std::thread(
-              concurrentSkip, &skipValues[i], skipList));
+        threads.push_back(
+            std::thread(concurrentSkip, &skipValues[i], skipList));
         break;
       default:
         threads.push_back(std::thread(sumAllValues, skipList, &sums[i]));
@@ -406,9 +408,7 @@ static void testConcurrentAccess(
     }
   }
 
-  FOR_EACH(t, threads) {
-    (*t).join();
-  }
+  FOR_EACH (t, threads) { (*t).join(); }
   // just run through it, no need to verify the correctness.
 }
 
@@ -422,7 +422,9 @@ struct NonTrivialValue {
   static std::atomic<int> InstanceCounter;
   static const int kBadPayLoad;
 
-  NonTrivialValue() : payload_(kBadPayLoad) { ++InstanceCounter; }
+  NonTrivialValue() : payload_(kBadPayLoad) {
+    ++InstanceCounter;
+  }
 
   explicit NonTrivialValue(int payload) : payload_(payload) {
     ++InstanceCounter;
@@ -437,7 +439,9 @@ struct NonTrivialValue {
     return *this;
   }
 
-  ~NonTrivialValue() { --InstanceCounter; }
+  ~NonTrivialValue() {
+    --InstanceCounter;
+  }
 
   bool operator<(const NonTrivialValue& rhs) const {
     EXPECT_NE(kBadPayLoad, payload_);
@@ -466,33 +470,41 @@ void TestNonTrivialDeallocation(SkipListPtrType& list) {
 }
 
 template <typename ParentAlloc>
-void NonTrivialDeallocationWithParanoid() {
-  using Alloc = ParanoidArenaAlloc<ParentAlloc>;
+void NonTrivialDeallocationWithParanoid(ParentAlloc& parentAlloc) {
+  using ParanoidAlloc = ParanoidArenaAlloc<ParentAlloc>;
+  using Alloc = CxxAllocatorAdaptor<void, ParanoidAlloc>;
   using ParanoidSkipListType =
       ConcurrentSkipList<NonTrivialValue, std::less<NonTrivialValue>, Alloc>;
-  ParentAlloc parentAlloc;
-  Alloc paranoidAlloc(&parentAlloc);
-  auto list = ParanoidSkipListType::createInstance(10, paranoidAlloc);
+  ParanoidAlloc paranoidAlloc(parentAlloc);
+  Alloc alloc(paranoidAlloc);
+  auto list = ParanoidSkipListType::createInstance(10, alloc);
   TestNonTrivialDeallocation(list);
   EXPECT_TRUE(paranoidAlloc.isEmpty());
 }
 
 TEST(ConcurrentSkipList, NonTrivialDeallocationWithParanoidSysAlloc) {
-  NonTrivialDeallocationWithParanoid<SysAlloc>();
+  SysAllocator<void> alloc;
+  NonTrivialDeallocationWithParanoid(alloc);
 }
 
 TEST(ConcurrentSkipList, NonTrivialDeallocationWithParanoidSysArena) {
-  NonTrivialDeallocationWithParanoid<SysArena>();
+  SysArena arena;
+  SysArenaAllocator<void> alloc(arena);
+  NonTrivialDeallocationWithParanoid(alloc);
 }
 
 TEST(ConcurrentSkipList, NonTrivialDeallocationWithSysArena) {
-  using SysArenaSkipListType =
-      ConcurrentSkipList<NonTrivialValue, std::less<NonTrivialValue>, SysArena>;
-  auto list = SysArenaSkipListType::createInstance(10);
+  using SysArenaSkipListType = ConcurrentSkipList<
+      NonTrivialValue,
+      std::less<NonTrivialValue>,
+      SysArenaAllocator<void>>;
+  SysArena arena;
+  SysArenaAllocator<void> alloc(arena);
+  auto list = SysArenaSkipListType::createInstance(10, alloc);
   TestNonTrivialDeallocation(list);
 }
 
-}  // namespace
+} // namespace
 
 int main(int argc, char* argv[]) {
   testing::InitGoogleTest(&argc, argv);

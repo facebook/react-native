@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@
 
 #include <folly/CpuId.h>
 #include <folly/Portability.h>
+#include <folly/lang/Assume.h>
 #include <folly/portability/Builtins.h>
 
 namespace folly {
@@ -34,7 +35,7 @@ namespace instructions {
 // with Nehalem, Intel CPUs support POPCNT instruction and gcc will emit
 // it for __builtin_popcountll intrinsic.
 // But we provide an alternative way for the client code: it can switch to
-// the appropriate version of EliasFanoReader<> in realtime (client should
+// the appropriate version of EliasFanoReader<> at runtime (client should
 // implement this switching logic itself) by specifying instruction set to
 // use explicitly.
 
@@ -72,6 +73,14 @@ struct Default {
     return (value >> start) &
         ((length == 64) ? (~0ULL) : ((1ULL << length) - 1ULL));
   }
+
+  // Clear high bits starting at position index.
+  static FOLLY_ALWAYS_INLINE uint64_t bzhi(uint64_t value, uint32_t index) {
+    if (index > 63) {
+      return 0;
+    }
+    return value & ((uint64_t(1) << index) - 1);
+  }
 };
 
 struct Nehalem : public Default {
@@ -94,12 +103,12 @@ struct Nehalem : public Default {
 
 struct Haswell : public Nehalem {
   static bool supported(const folly::CpuId& cpuId = {}) {
-    return Nehalem::supported(cpuId) && cpuId.bmi1();
+    return Nehalem::supported(cpuId) && cpuId.bmi1() && cpuId.bmi2();
   }
 
   static FOLLY_ALWAYS_INLINE uint64_t blsr(uint64_t value) {
 // BMI1 is supported starting with Intel Haswell, AMD Piledriver.
-// BLSR combines two instuctions into one and reduces register pressure.
+// BLSR combines two instructions into one and reduces register pressure.
 #if defined(__GNUC__) || defined(__clang__)
     // GCC and Clang won't inline the intrinsics.
     uint64_t result;
@@ -126,7 +135,61 @@ struct Haswell : public Nehalem {
     return _bextr_u64(value, start, length);
 #endif
   }
+
+  static FOLLY_ALWAYS_INLINE uint64_t bzhi(uint64_t value, uint32_t index) {
+#if defined(__GNUC__) || defined(__clang__)
+    // GCC and Clang won't inline the intrinsics.
+    const uint64_t index64 = index;
+    uint64_t result;
+    asm("bzhiq %2, %1, %0" : "=r"(result) : "r"(value), "r"(index64));
+    return result;
+#else
+    return _bzhi_u64(value, index);
+#endif
+  }
 };
+
+enum class Type {
+  DEFAULT,
+  NEHALEM,
+  HASWELL,
+};
+
+inline Type detect() {
+  const static Type type = [] {
+    if (instructions::Haswell::supported()) {
+      VLOG(2) << "Will use folly::compression::instructions::Haswell";
+      return Type::HASWELL;
+    } else if (instructions::Nehalem::supported()) {
+      VLOG(2) << "Will use folly::compression::instructions::Nehalem";
+      return Type::NEHALEM;
+    } else {
+      VLOG(2) << "Will use folly::compression::instructions::Default";
+      return Type::DEFAULT;
+    }
+  }();
+  return type;
 }
+
+template <class F>
+auto dispatch(Type type, F&& f) -> decltype(f(std::declval<Default>())) {
+  switch (type) {
+    case Type::HASWELL:
+      return f(Haswell());
+    case Type::NEHALEM:
+      return f(Nehalem());
+    case Type::DEFAULT:
+      return f(Default());
+  }
+
+  assume_unreachable();
 }
-} // namespaces
+
+template <class F>
+auto dispatch(F&& f) -> decltype(f(std::declval<Default>())) {
+  return dispatch(detect(), std::forward<F>(f));
+}
+
+} // namespace instructions
+} // namespace compression
+} // namespace folly

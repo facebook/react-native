@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@
 #include <utility>
 #include <vector>
 
+#include <folly/functional/Invoke.h>
+
 namespace folly {
 namespace fibers {
 
@@ -40,13 +42,13 @@ template <class InputIterator>
 typename std::vector<
     typename std::enable_if<
         !std::is_same<
-            typename std::result_of<typename std::iterator_traits<
-                InputIterator>::value_type()>::type,
+            invoke_result_t<
+                typename std::iterator_traits<InputIterator>::value_type>,
             void>::value,
         typename std::pair<
             size_t,
-            typename std::result_of<typename std::iterator_traits<
-                InputIterator>::value_type()>::type>>::
+            invoke_result_t<
+                typename std::iterator_traits<InputIterator>::value_type>>>::
         type> inline collectN(InputIterator first, InputIterator last, size_t n);
 
 /**
@@ -61,8 +63,8 @@ typename std::vector<
 template <class InputIterator>
 typename std::enable_if<
     std::is_same<
-        typename std::result_of<
-            typename std::iterator_traits<InputIterator>::value_type()>::type,
+        invoke_result_t<
+            typename std::iterator_traits<InputIterator>::value_type>,
         void>::value,
     std::vector<size_t>>::
     type inline collectN(InputIterator first, InputIterator last, size_t n);
@@ -79,14 +81,15 @@ typename std::enable_if<
  * @return vector of values returned by tasks
  */
 template <class InputIterator>
-typename std::vector<typename std::enable_if<
-    !std::is_same<
-        typename std::result_of<
-            typename std::iterator_traits<InputIterator>::value_type()>::type,
-        void>::value,
-    typename std::result_of<
-        typename std::iterator_traits<InputIterator>::value_type()>::
-        type>::type> inline collectAll(InputIterator first, InputIterator last);
+typename std::vector<
+    typename std::enable_if<
+        !std::is_same<
+            invoke_result_t<
+                typename std::iterator_traits<InputIterator>::value_type>,
+            void>::value,
+        invoke_result_t<
+            typename std::iterator_traits<InputIterator>::value_type>>::
+        type> inline collectAll(InputIterator first, InputIterator last);
 
 /**
  * collectAll specialization for functions returning void
@@ -97,8 +100,8 @@ typename std::vector<typename std::enable_if<
 template <class InputIterator>
 typename std::enable_if<
     std::is_same<
-        typename std::result_of<
-            typename std::iterator_traits<InputIterator>::value_type()>::type,
+        invoke_result_t<
+            typename std::iterator_traits<InputIterator>::value_type>,
         void>::value,
     void>::type inline collectAll(InputIterator first, InputIterator last);
 
@@ -115,13 +118,13 @@ typename std::enable_if<
 template <class InputIterator>
 typename std::enable_if<
     !std::is_same<
-        typename std::result_of<
-            typename std::iterator_traits<InputIterator>::value_type()>::type,
+        invoke_result_t<
+            typename std::iterator_traits<InputIterator>::value_type>,
         void>::value,
     typename std::pair<
         size_t,
-        typename std::result_of<typename std::iterator_traits<
-            InputIterator>::value_type()>::type>>::
+        invoke_result_t<
+            typename std::iterator_traits<InputIterator>::value_type>>>::
     type inline collectAny(InputIterator first, InputIterator last);
 
 /**
@@ -135,11 +138,11 @@ typename std::enable_if<
 template <class InputIterator>
 typename std::enable_if<
     std::is_same<
-        typename std::result_of<
-            typename std::iterator_traits<InputIterator>::value_type()>::type,
+        invoke_result_t<
+            typename std::iterator_traits<InputIterator>::value_type>,
         void>::value,
     size_t>::type inline collectAny(InputIterator first, InputIterator last);
-}
-}
+} // namespace fibers
+} // namespace folly
 
 #include <folly/fibers/WhenN-inl.h>

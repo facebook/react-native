@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,15 @@
 
 #include <glog/logging.h>
 
-#define DO_DEBUG true
+#ifdef HAZPTR_DEBUG
+#define HAZPTR_DEBUG_ HAZPTR_DEBUG
+#else
+#define HAZPTR_DEBUG_ false
+#endif
 
-#define DEBUG_PRINT(...)                             \
+#define HAZPTR_DEBUG_PRINT(...)                      \
   do {                                               \
-    if (DO_DEBUG) {                                  \
+    if (HAZPTR_DEBUG_) {                             \
       VLOG(2) << __func__ << " --- " << __VA_ARGS__; \
     }                                                \
   } while (false)

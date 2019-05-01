@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,18 +18,26 @@
 
 #pragma once
 
+#include <folly/CPortability.h>
 #include <folly/portability/Config.h>
 
-#ifdef FOLLY_HAVE_LIBJEMALLOC
+#if defined(FOLLY_USE_JEMALLOC) && !FOLLY_SANITIZE
 
 #include <folly/portability/SysMman.h>
 #include <jemalloc/jemalloc.h>
 
 #if (JEMALLOC_VERSION_MAJOR > 3) && defined(MADV_DONTDUMP)
 #define FOLLY_JEMALLOC_NODUMP_ALLOCATOR_SUPPORTED 1
+#if (JEMALLOC_VERSION_MAJOR == 4)
+#define FOLLY_JEMALLOC_NODUMP_ALLOCATOR_CHUNK
+#define JEMALLOC_CHUNK_OR_EXTENT chunk
+#else
+#define FOLLY_JEMALLOC_NODUMP_ALLOCATOR_EXTENT
+#define JEMALLOC_CHUNK_OR_EXTENT extent
+#endif
 #endif
 
-#endif // FOLLY_HAVE_LIBJEMALLOC
+#endif // FOLLY_USE_JEMALLOC
 
 #include <cstddef>
 
@@ -41,13 +49,13 @@ namespace folly {
  * the memory is not dump-able.
  *
  * This is done by setting MADV_DONTDUMP using the `madvise` system call. A
- * custom hook installed which is called when allocating a new chunk of memory.
- * All it does is call the original jemalloc hook to allocate the memory and
- * then set the advise on it before returning the pointer to the allocated
- * memory. Jemalloc does not use allocated chunks across different arenas,
- * without `munmap`-ing them first, and the advises are not sticky i.e. they are
- * unset if `munmap` is done. Also this arena can't be used by any other part of
- * the code by just calling `malloc`.
+ * custom hook installed which is called when allocating a new chunk / extent of
+ * memory.  All it does is call the original jemalloc hook to allocate the
+ * memory and then set the advise on it before returning the pointer to the
+ * allocated memory. Jemalloc does not use allocated chunks / extents across
+ * different arenas, without `munmap`-ing them first, and the advises are not
+ * sticky i.e. they are unset if `munmap` is done. Also this arena can't be used
+ * by any other part of the code by just calling `malloc`.
  *
  * If target system doesn't support MADV_DONTDUMP or jemalloc doesn't support
  * custom arena hook, JemallocNodumpAllocator would fall back to using malloc /
@@ -72,20 +80,33 @@ class JemallocNodumpAllocator {
 
   void* allocate(size_t size);
   void* reallocate(void* p, size_t size);
-  void deallocate(void* p);
+  void deallocate(void* p, size_t = 0);
 
-  unsigned getArenaIndex() const { return arena_index_; }
-  int getFlags() const { return flags_; }
+  unsigned getArenaIndex() const {
+    return arena_index_;
+  }
+  int getFlags() const {
+    return flags_;
+  }
 
  private:
 #ifdef FOLLY_JEMALLOC_NODUMP_ALLOCATOR_SUPPORTED
-  static chunk_alloc_t* original_chunk_alloc_;
-  static void* chunk_alloc(void* chunk,
-                           size_t size,
-                           size_t alignment,
-                           bool* zero,
-                           bool* commit,
-                           unsigned arena_ind);
+#ifdef FOLLY_JEMALLOC_NODUMP_ALLOCATOR_CHUNK
+  static chunk_alloc_t* original_alloc_;
+  static void* alloc(
+      void* chunk,
+#else
+  static extent_hooks_t extent_hooks_;
+  static extent_alloc_t* original_alloc_;
+  static void* alloc(
+      extent_hooks_t* extent,
+      void* new_addr,
+#endif
+      size_t size,
+      size_t alignment,
+      bool* zero,
+      bool* commit,
+      unsigned arena_ind);
 #endif // FOLLY_JEMALLOC_NODUMP_ALLOCATOR_SUPPORTED
 
   bool extend_and_setup_arena();
@@ -99,4 +120,4 @@ class JemallocNodumpAllocator {
  */
 JemallocNodumpAllocator& globalJemallocNodumpAllocator();
 
-} // folly
+} // namespace folly

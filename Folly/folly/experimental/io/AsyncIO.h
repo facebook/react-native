@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 #pragma once
 
 #include <sys/types.h>
-#include <libaio.h>
 
 #include <atomic>
 #include <cstdint>
@@ -29,6 +28,7 @@
 #include <vector>
 
 #include <boost/noncopyable.hpp>
+#include <libaio.h>
 
 #include <folly/Portability.h>
 #include <folly/Range.h>
@@ -40,25 +40,24 @@ namespace folly {
  * An AsyncIOOp represents a pending operation.  You may set a notification
  * callback or you may use this class's methods directly.
  *
- * The op must remain allocated until completion.
+ * The op must remain allocated until it is completed or canceled.
  */
 class AsyncIOOp : private boost::noncopyable {
   friend class AsyncIO;
   friend std::ostream& operator<<(std::ostream& stream, const AsyncIOOp& o);
+
  public:
   typedef std::function<void(AsyncIOOp*)> NotificationCallback;
 
   explicit AsyncIOOp(NotificationCallback cb = NotificationCallback());
   ~AsyncIOOp();
 
-  // There would be a cancel() method here if Linux AIO actually implemented
-  // it.  But let's not get your hopes up.
-
   enum class State {
     UNINITIALIZED,
     INITIALIZED,
     PENDING,
-    COMPLETED
+    COMPLETED,
+    CANCELED,
   };
 
   /**
@@ -78,7 +77,9 @@ class AsyncIOOp : private boost::noncopyable {
   /**
    * Return the current operation state.
    */
-  State state() const { return state_; }
+  State state() const {
+    return state_;
+  }
 
   /**
    * Reset the operation for reuse.  It is an error to call reset() on
@@ -86,8 +87,12 @@ class AsyncIOOp : private boost::noncopyable {
    */
   void reset(NotificationCallback cb = NotificationCallback());
 
-  void setNotificationCallback(NotificationCallback cb) { cb_ = std::move(cb); }
-  const NotificationCallback& notificationCallback() const { return cb_; }
+  void setNotificationCallback(NotificationCallback cb) {
+    cb_ = std::move(cb);
+  }
+  const NotificationCallback& notificationCallback() const {
+    return cb_;
+  }
 
   /**
    * Retrieve the result of this operation.  Returns >=0 on success,
@@ -95,8 +100,7 @@ class AsyncIOOp : private boost::noncopyable {
    * conventions).  Use checkKernelError (folly/Exception.h) on the result to
    * throw a std::system_error in case of error instead.
    *
-   * It is an error to call this if the Op hasn't yet started or is still
-   * pending.
+   * It is an error to call this if the Op hasn't completed.
    */
   ssize_t result() const;
 
@@ -104,6 +108,7 @@ class AsyncIOOp : private boost::noncopyable {
   void init();
   void start();
   void complete(ssize_t result);
+  void cancel();
 
   NotificationCallback cb_;
   iocb iocb_;
@@ -123,7 +128,7 @@ class AsyncIO : private boost::noncopyable {
 
   enum PollMode {
     NOT_POLLABLE,
-    POLLABLE
+    POLLABLE,
   };
 
   /**
@@ -141,12 +146,12 @@ class AsyncIO : private boost::noncopyable {
    * file descriptor directly.
    *
    * You may use the same AsyncIO object from multiple threads, as long as
-   * there is only one concurrent caller of wait() / pollCompleted() (perhaps
-   * by always calling it from the same thread, or by providing appropriate
-   * mutual exclusion)  In this case, pending() returns a snapshot
+   * there is only one concurrent caller of wait() / pollCompleted() / cancel()
+   * (perhaps by always calling it from the same thread, or by providing
+   * appropriate mutual exclusion).  In this case, pending() returns a snapshot
    * of the current number of pending requests.
    */
-  explicit AsyncIO(size_t capacity, PollMode pollMode=NOT_POLLABLE);
+  explicit AsyncIO(size_t capacity, PollMode pollMode = NOT_POLLABLE);
   ~AsyncIO();
 
   /**
@@ -157,28 +162,42 @@ class AsyncIO : private boost::noncopyable {
   Range<Op**> wait(size_t minRequests);
 
   /**
+   * Cancel all pending requests and return them; the returned range is
+   * valid until the next call to cancel().
+   */
+  Range<Op**> cancel();
+
+  /**
    * Return the number of pending requests.
    */
-  size_t pending() const { return pending_; }
+  size_t pending() const {
+    return pending_;
+  }
 
   /**
    * Return the maximum number of requests that can be kept outstanding
    * at any one time.
    */
-  size_t capacity() const { return capacity_; }
+  size_t capacity() const {
+    return capacity_;
+  }
 
   /**
    * Return the accumulative number of submitted I/O, since this object
    * has been created.
    */
-  size_t totalSubmits() const { return submitted_; }
+  size_t totalSubmits() const {
+    return submitted_;
+  }
 
   /**
    * If POLLABLE, return a file descriptor that can be passed to poll / epoll
    * and will become readable when any async IO operations have completed.
    * If NOT_POLLABLE, return -1.
    */
-  int pollFd() const { return pollFd_; }
+  int pollFd() const {
+    return pollFd_;
+  }
 
   /**
    * If POLLABLE, call instead of wait after the file descriptor returned
@@ -196,17 +215,23 @@ class AsyncIO : private boost::noncopyable {
   void decrementPending();
   void initializeContext();
 
-  Range<Op**> doWait(size_t minRequests, size_t maxRequests);
+  enum class WaitType { COMPLETE, CANCEL };
+  Range<AsyncIO::Op**> doWait(
+      WaitType type,
+      size_t minRequests,
+      size_t maxRequests,
+      std::vector<Op*>& result);
 
-  io_context_t ctx_;
-  std::atomic<bool> ctxSet_;
+  io_context_t ctx_{nullptr};
+  std::atomic<bool> ctxSet_{false};
   std::mutex initMutex_;
 
-  std::atomic<size_t> pending_;
-  std::atomic<size_t> submitted_;
+  std::atomic<size_t> pending_{0};
+  std::atomic<size_t> submitted_{0};
   const size_t capacity_;
-  int pollFd_;
+  int pollFd_{-1};
   std::vector<Op*> completed_;
+  std::vector<Op*> canceled_;
 };
 
 /**
@@ -224,7 +249,9 @@ class AsyncIOQueue {
   explicit AsyncIOQueue(AsyncIO* asyncIO);
   ~AsyncIOQueue();
 
-  size_t queued() const { return queue_.size(); }
+  size_t queued() const {
+    return queue_.size();
+  }
 
   /**
    * Submit an op to the AsyncIO queue.  The op will be queued until
@@ -249,4 +276,4 @@ class AsyncIOQueue {
   std::deque<OpFactory> queue_;
 };
 
-}  // namespace folly
+} // namespace folly

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,7 @@
 
 class A {
  public:
-  void use() const {
-  }
+  void use() const {}
 };
 
 folly::ThreadLocal<A> a;
@@ -29,5 +28,4 @@ extern "C" {
 void useA() {
   a->use();
 }
-
 }

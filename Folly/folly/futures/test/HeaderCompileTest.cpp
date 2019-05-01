@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,10 @@
 // amazing what things can go wrong if you include things in an unexpected
 // order.
 #include <folly/Try.h>
-#include <folly/futures/Promise.h>
 #include <folly/futures/Future.h>
+#include <folly/futures/Promise.h>
 #include <folly/portability/GTest.h>
 
 TEST(Basic, compiles) {
-  EXPECT_TRUE(true);
+  SUCCEED();
 }

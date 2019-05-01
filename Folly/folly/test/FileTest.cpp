@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ void expectOK(ssize_t r) {
   int savedErrno = errno;
   EXPECT_LE(0, r) << ": errno=" << errnoStr(savedErrno);
 }
-}  // namespace
+} // namespace
 
 TEST(File, Simple) {
   // Open a file, ensure it's indeed open for reading
@@ -80,12 +80,12 @@ TEST(File, OwnsFd) {
     EXPECT_EQ(-1, f.fd());
     EXPECT_EQ(p[1], f1.fd());
   }
-  expectWouldBlock(::read(p[0], &buf, 1));  // not closed
+  expectWouldBlock(::read(p[0], &buf, 1)); // not closed
   {
     File f(p[1], true);
     EXPECT_EQ(p[1], f.fd());
   }
-  ssize_t r = ::read(p[0], &buf, 1);  // eof
+  ssize_t r = ::read(p[0], &buf, 1); // eof
   expectOK(r);
   EXPECT_EQ(0, r);
   ::close(p[0]);
@@ -97,9 +97,9 @@ TEST(File, Release) {
   CHECK_EQ(-1, in.release());
 }
 
-#define EXPECT_CONTAINS(haystack, needle) \
+#define EXPECT_CONTAINS(haystack, needle)                                     \
   EXPECT_NE(::std::string::npos, ::folly::StringPiece(haystack).find(needle)) \
-    << "Haystack: '" << haystack << "'\nNeedle: '" << needle << "'";
+      << "Haystack: '" << haystack << "'\nNeedle: '" << needle << "'";
 
 TEST(File, UsefulError) {
   try {
@@ -118,20 +118,30 @@ TEST(File, Truthy) {
   if (temp) {
     ;
   } else {
-    EXPECT_FALSE(true);
+    ADD_FAILURE();
   }
 
   if (File file = File::temporary()) {
     ;
   } else {
-    EXPECT_FALSE(true);
+    ADD_FAILURE();
   }
 
   EXPECT_FALSE(bool(File()));
   if (File()) {
-    EXPECT_TRUE(false);
+    ADD_FAILURE();
   }
   if (File notOpened = File()) {
-    EXPECT_TRUE(false);
+    ADD_FAILURE();
   }
+}
+
+TEST(File, HelperCtor) {
+  File::makeFile(StringPiece("/etc/hosts")).then([](File&& f) {
+    char buf = 'x';
+    EXPECT_NE(-1, f.fd());
+    EXPECT_EQ(1, ::read(f.fd(), &buf, 1));
+    f.close();
+    EXPECT_EQ(-1, f.fd());
+  });
 }

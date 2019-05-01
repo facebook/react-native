@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,21 +19,24 @@
 #include <folly/io/async/AsyncTransport.h>
 #include <folly/portability/GMock.h>
 
-namespace folly { namespace test {
+namespace folly {
+namespace test {
 
-class MockAsyncTransport: public AsyncTransportWrapper {
+class MockAsyncTransport : public AsyncTransportWrapper {
  public:
   MOCK_METHOD1(setReadCB, void(ReadCallback*));
   MOCK_CONST_METHOD0(getReadCallback, ReadCallback*());
   MOCK_CONST_METHOD0(getReadCB, ReadCallback*());
   MOCK_METHOD4(write, void(WriteCallback*, const void*, size_t, WriteFlags));
   MOCK_METHOD4(writev, void(WriteCallback*, const iovec*, size_t, WriteFlags));
-  MOCK_METHOD3(writeChain,
-               void(WriteCallback*, std::shared_ptr<folly::IOBuf>, WriteFlags));
+  MOCK_METHOD3(
+      writeChain,
+      void(WriteCallback*, std::shared_ptr<folly::IOBuf>, WriteFlags));
 
-  void writeChain(WriteCallback* callback,
-                  std::unique_ptr<folly::IOBuf>&& iob,
-                  WriteFlags flags = WriteFlags::NONE) override {
+  void writeChain(
+      WriteCallback* callback,
+      std::unique_ptr<folly::IOBuf>&& iob,
+      WriteFlags flags = WriteFlags::NONE) override {
     writeChain(callback, std::shared_ptr<folly::IOBuf>(iob.release()), flags);
   }
 
@@ -62,38 +65,63 @@ class MockAsyncTransport: public AsyncTransportWrapper {
   MOCK_METHOD1(setEorTracking, void(bool));
   MOCK_CONST_METHOD0(getWrappedTransport, AsyncTransportWrapper*());
   MOCK_CONST_METHOD0(isReplaySafe, bool());
-  MOCK_METHOD1(setReplaySafetyCallback,
-               void(AsyncTransport::ReplaySafetyCallback*));
+  MOCK_METHOD1(
+      setReplaySafetyCallback,
+      void(AsyncTransport::ReplaySafetyCallback*));
+  MOCK_CONST_METHOD0(getSecurityProtocol, std::string());
 };
 
 class MockReplaySafetyCallback : public AsyncTransport::ReplaySafetyCallback {
  public:
-  GMOCK_METHOD0_(, noexcept, , onReplaySafe, void());
-};
-
-class MockReadCallback: public AsyncTransportWrapper::ReadCallback {
- public:
-  MOCK_METHOD2(getReadBuffer, void(void**, size_t*));
-  GMOCK_METHOD1_(, noexcept, , readDataAvailable, void(size_t));
-  GMOCK_METHOD0_(, noexcept, , isBufferMovable, bool());
-  GMOCK_METHOD1_(, noexcept, ,
-      readBufferAvailableInternal, void(std::shared_ptr<folly::IOBuf>));
-  GMOCK_METHOD0_(, noexcept, , readEOF, void());
-  GMOCK_METHOD1_(, noexcept, , readErr,
-                 void(const AsyncSocketException&));
-
-  void readBufferAvailable(std::unique_ptr<folly::IOBuf> readBuf)
-    noexcept override {
-    readBufferAvailableInternal(
-        folly::to_shared_ptr(std::move(readBuf)));
+  MOCK_METHOD0(onReplaySafe_, void());
+  void onReplaySafe() noexcept override {
+    onReplaySafe_();
   }
 };
 
-class MockWriteCallback: public AsyncTransportWrapper::WriteCallback {
+class MockReadCallback : public AsyncTransportWrapper::ReadCallback {
  public:
-  GMOCK_METHOD0_(, noexcept, , writeSuccess, void());
-  GMOCK_METHOD2_(, noexcept, , writeErr,
-                 void(size_t, const AsyncSocketException&));
+  MOCK_METHOD2(getReadBuffer, void(void**, size_t*));
+
+  MOCK_METHOD1(readDataAvailable_, void(size_t));
+  void readDataAvailable(size_t size) noexcept override {
+    readDataAvailable_(size);
+  }
+
+  MOCK_METHOD0(isBufferMovable_, bool());
+  bool isBufferMovable() noexcept override {
+    return isBufferMovable_();
+  }
+
+  MOCK_METHOD1(readBufferAvailable_, void(std::unique_ptr<folly::IOBuf>&));
+  void readBufferAvailable(
+      std::unique_ptr<folly::IOBuf> readBuf) noexcept override {
+    readBufferAvailable_(readBuf);
+  }
+
+  MOCK_METHOD0(readEOF_, void());
+  void readEOF() noexcept override {
+    readEOF_();
+  }
+
+  MOCK_METHOD1(readErr_, void(const AsyncSocketException&));
+  void readErr(const AsyncSocketException& ex) noexcept override {
+    readErr_(ex);
+  }
 };
 
-}}
+class MockWriteCallback : public AsyncTransportWrapper::WriteCallback {
+ public:
+  MOCK_METHOD0(writeSuccess_, void());
+  void writeSuccess() noexcept override {
+    writeSuccess_();
+  }
+
+  MOCK_METHOD2(writeErr_, void(size_t, const AsyncSocketException&));
+  void writeErr(size_t size, const AsyncSocketException& ex) noexcept override {
+    writeErr_(size, ex);
+  }
+};
+
+} // namespace test
+} // namespace folly

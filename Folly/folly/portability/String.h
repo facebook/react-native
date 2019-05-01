@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,17 @@
 
 #pragma once
 
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <folly/portability/Config.h>
 
-#if !FOLLY_HAVE_MEMRCHR
-
-#if NDKVER_IS_LESS_THAN16
-extern "C" void* memrchr(const void* s, int c, size_t n);
-#else
-extern "C++" const void* memrchr(const void* s, int c, size_t n);
+#if !defined(_WIN32)
+#include <strings.h>
 #endif
+
+#if !FOLLY_HAVE_MEMRCHR
+extern "C" void* memrchr(const void* s, int c, size_t n);
 #endif
 
 #if defined(_WIN32) || defined(__FreeBSD__)

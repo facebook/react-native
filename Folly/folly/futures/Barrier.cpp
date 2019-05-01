@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,13 @@
  */
 
 #include <folly/futures/Barrier.h>
+#include <folly/lang/Exception.h>
 
-namespace folly { namespace futures {
+namespace folly {
+namespace futures {
 
 Barrier::Barrier(uint32_t n)
-  : size_(n),
-    controlBlock_(allocateControlBlock()) { }
+    : size_(n), controlBlock_(allocateControlBlock()) {}
 
 Barrier::~Barrier() {
   auto block = controlBlock_.load(std::memory_order_relaxed);
@@ -38,11 +39,11 @@ Barrier::~Barrier() {
 }
 
 auto Barrier::allocateControlBlock() -> ControlBlock* {
-  auto block = static_cast<ControlBlock*>(malloc(controlBlockSize(size_)));
-  if (!block) {
-    throw std::bad_alloc();
+  auto storage = malloc(controlBlockSize(size_));
+  if (!storage) {
+    throw_exception<std::bad_alloc>();
   }
-  block->valueAndReaderCount = 0;
+  auto block = ::new (storage) ControlBlock();
 
   auto p = promises(block);
   uint32_t i = 0;
@@ -77,8 +78,8 @@ folly::Future<bool> Barrier::wait() {
 
   // Bump the value and record ourselves as reader.
   // This ensures that block stays allocated, as the reader count is > 0.
-  auto prev = block->valueAndReaderCount.fetch_add(kReader + 1,
-                                                   std::memory_order_acquire);
+  auto prev = block->valueAndReaderCount.fetch_add(
+      kReader + 1, std::memory_order_acquire);
 
   auto prevValue = static_cast<uint32_t>(prev & kValueMask);
   DCHECK_LT(prevValue, size_);
@@ -96,8 +97,8 @@ folly::Future<bool> Barrier::wait() {
   }
 
   // Free the control block if we're the last reader at max value.
-  prev = block->valueAndReaderCount.fetch_sub(kReader,
-                                              std::memory_order_acq_rel);
+  prev =
+      block->valueAndReaderCount.fetch_sub(kReader, std::memory_order_acq_rel);
   if (prev == (kReader | uint64_t(size_))) {
     freeControlBlock(block);
   }
@@ -105,4 +106,5 @@ folly::Future<bool> Barrier::wait() {
   return future;
 }
 
-}}  // namespaces
+} // namespace futures
+} // namespace folly

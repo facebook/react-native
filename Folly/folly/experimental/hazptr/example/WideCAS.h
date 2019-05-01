@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,10 +30,17 @@ class WideCAS {
   class Node : public hazptr_obj_base<Node> {
     friend WideCAS;
     T val_;
-    Node() : val_(T()) { DEBUG_PRINT(this << " " << val_); }
-    explicit Node(T v) : val_(v) { DEBUG_PRINT(this << " " << v); }
+    Node() : val_(T()) {
+      HAZPTR_DEBUG_PRINT(this << " " << val_);
+    }
+    explicit Node(T v) : val_(v) {
+      HAZPTR_DEBUG_PRINT(this << " " << v);
+    }
+
    public:
-    ~Node() { DEBUG_PRINT(this); }
+    ~Node() {
+      HAZPTR_DEBUG_PRINT(this);
+    }
   };
 
   std::atomic<Node*> p_ = {new Node()};
@@ -41,26 +48,31 @@ class WideCAS {
  public:
   WideCAS() = default;
   ~WideCAS() {
-    DEBUG_PRINT(this << " " << p_.load());
+    HAZPTR_DEBUG_PRINT(this << " " << p_.load());
     delete p_.load();
   }
 
   bool cas(T& u, T& v) {
-    DEBUG_PRINT(this << " " << u << " " << v);
+    HAZPTR_DEBUG_PRINT(this << " " << u << " " << v);
     Node* n = new Node(v);
-    hazptr_owner<Node> hptr;
+    hazptr_holder hptr;
     Node* p;
     do {
       p = hptr.get_protected(p_);
-      if (p->val_ != u) { delete n; return false; }
-      if (p_.compare_exchange_weak(p, n)) break;
+      if (p->val_ != u) {
+        delete n;
+        return false;
+      }
+      if (p_.compare_exchange_weak(p, n)) {
+        break;
+      }
     } while (true);
-    hptr.clear();
+    hptr.reset();
     p->retire();
-    DEBUG_PRINT(this << " " << p << " " << u << " " << n << " " << v);
+    HAZPTR_DEBUG_PRINT(this << " " << p << " " << u << " " << n << " " << v);
     return true;
   }
 };
 
-} // namespace folly {
-} // namespace hazptr {
+} // namespace hazptr
+} // namespace folly

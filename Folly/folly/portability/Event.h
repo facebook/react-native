@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,16 @@
 
 #pragma once
 
+#ifdef _MSC_VER
+// This needs to be before the libevent include.
+#include <folly/portability/Windows.h>
+#endif
+
 #include <event.h>
 
 #ifdef _MSC_VER
-# include <event2/event_compat.h>
-# include <folly/portability/Fcntl.h>
-# include <folly/portability/Windows.h>
+#include <event2/event_compat.h> // @manual
+#include <folly/portability/Fcntl.h>
 #endif
 
 namespace folly {
@@ -59,4 +63,4 @@ folly_event_set(event* e, int fd, short s, EventSetCallback f, void* arg) {
   auto lfd = getLibeventFd(fd);
   event_set(e, lfd, s, f, arg);
 }
-}
+} // namespace folly

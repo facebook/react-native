@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <boost/thread/barrier.hpp>
 #include <folly/experimental/FutureDAG.h>
+#include <boost/thread/barrier.hpp>
 #include <folly/portability/GTest.h>
 
 using namespace folly;
@@ -23,7 +23,7 @@ struct FutureDAGTest : public testing::Test {
   typedef FutureDAG::Handle Handle;
 
   Handle add() {
-    auto node = folly::make_unique<TestNode>(this);
+    auto node = std::make_unique<TestNode>(this);
     auto handle = node->handle;
     nodes.emplace(handle, std::move(node));
     return handle;
@@ -107,6 +107,7 @@ TEST_F(FutureDAGTest, SingleNode) {
 TEST_F(FutureDAGTest, RemoveSingleNode) {
   auto h1 = add();
   auto h2 = add();
+  (void)h1;
   remove(h2);
   ASSERT_NO_THROW(dag->go().get());
   checkOrder();
@@ -270,5 +271,5 @@ TEST_F(FutureDAGTest, DestroyBeforeComplete) {
     f = localDag->go();
   }
   barrier->wait();
-  ASSERT_NO_THROW(f.get());
+  ASSERT_NO_THROW(std::move(f).get());
 }

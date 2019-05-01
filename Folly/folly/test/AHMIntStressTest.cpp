@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,32 +14,31 @@
  * limitations under the License.
  */
 
-#include <thread>
 #include <memory>
 #include <mutex>
+#include <thread>
 
 #include <folly/AtomicHashMap.h>
-#include <folly/ScopeGuard.h>
 #include <folly/Memory.h>
+#include <folly/ScopeGuard.h>
 #include <folly/portability/GTest.h>
 
 namespace {
 
 struct MyObject {
-  explicit MyObject(int i) : i(i) {}
+  explicit MyObject(int i_) : i(i_) {}
   int i;
 };
 
-typedef folly::AtomicHashMap<int,std::shared_ptr<MyObject>> MyMap;
+typedef folly::AtomicHashMap<int, std::shared_ptr<MyObject>> MyMap;
 typedef std::lock_guard<std::mutex> Guard;
 
-std::unique_ptr<MyMap> newMap() { return folly::make_unique<MyMap>(100); }
+std::unique_ptr<MyMap> newMap() {
+  return std::make_unique<MyMap>(100);
+}
 
 struct MyObjectDirectory {
-  MyObjectDirectory()
-    : cur_(newMap())
-    , prev_(newMap())
-  {}
+  MyObjectDirectory() : cur_(newMap()), prev_(newMap()) {}
 
   std::shared_ptr<MyObject> get(int key) {
     auto val = tryGet(key);
@@ -93,7 +92,7 @@ struct MyObjectDirectory {
   std::shared_ptr<MyMap> prev_;
 };
 
-}
+} // namespace
 
 //////////////////////////////////////////////////////////////////////
 
@@ -104,22 +103,24 @@ struct MyObjectDirectory {
  */
 TEST(AHMIntStressTest, Test) {
   auto const objs = new MyObjectDirectory();
-  SCOPE_EXIT { delete objs; };
+  SCOPE_EXIT {
+    delete objs;
+  };
 
   std::vector<std::thread> threads;
   for (int threadId = 0; threadId < 64; ++threadId) {
-    threads.emplace_back(
-      [objs,threadId] {
-        for (int recycles = 0; recycles < 500; ++recycles) {
-          for (int i = 0; i < 10; i++) {
-            auto val = objs->get(i);
-          }
-
-          objs->archive();
+    threads.emplace_back([objs] {
+      for (int recycles = 0; recycles < 500; ++recycles) {
+        for (int i = 0; i < 10; i++) {
+          auto val = objs->get(i);
         }
+
+        objs->archive();
       }
-    );
+    });
   }
 
-  for (auto& t : threads) t.join();
+  for (auto& t : threads) {
+    t.join();
+  }
 }

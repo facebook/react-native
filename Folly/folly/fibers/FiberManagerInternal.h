@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@
 #include <folly/IntrusiveList.h>
 #include <folly/Likely.h>
 #include <folly/Try.h>
+#include <folly/functional/Invoke.h>
 #include <folly/io/async/Request.h>
 
 #include <folly/experimental/ExecutionObserver.h>
@@ -83,6 +84,14 @@ class FiberManager : public ::folly::Executor {
      * tasks.
      */
     size_t stackSize{kDefaultStackSize};
+
+    /**
+     * Sanitizers need a lot of extra stack space. 16x is a conservative
+     * estimate, but 8x also worked with tests where it mattered. Note that
+     * over-allocating here does not necessarily increase RSS, since unused
+     * memory is pretty much free.
+     */
+    size_t stackSizeMultiplier{kIsSanitize ? 16 : 1};
 
     /**
      * Record exact amount of stack used.
@@ -146,7 +155,7 @@ class FiberManager : public ::folly::Executor {
       std::unique_ptr<LoopController> loopController,
       Options options = Options());
 
-  ~FiberManager();
+  ~FiberManager() override;
 
   /**
    * Controller access.
@@ -165,9 +174,19 @@ class FiberManager : public ::folly::Executor {
   void loopUntilNoReadyImpl();
 
   /**
+   * This should only be called by a LoopController.
+   */
+  bool shouldRunLoopRemote();
+
+  /**
    * @return true if there are outstanding tasks.
    */
   bool hasTasks() const;
+
+  /**
+   * @return true if there are tasks ready to run.
+   */
+  bool hasReadyTasks() const;
 
   /**
    * Sets exception callback which will be called if any of the tasks throws an
@@ -194,8 +213,8 @@ class FiberManager : public ::folly::Executor {
    *             The object will be destroyed once task execution is complete.
    */
   template <typename F>
-  auto addTaskFuture(F&& func) -> folly::Future<
-      typename folly::Unit::Lift<typename std::result_of<F()>::type>::type>;
+  auto addTaskFuture(F&& func)
+      -> folly::Future<typename folly::lift_unit<invoke_result_t<F>>::type>;
   /**
    * Add a new task to be executed. Safe to call from other threads.
    *
@@ -213,8 +232,8 @@ class FiberManager : public ::folly::Executor {
    *             The object will be destroyed once task execution is complete.
    */
   template <typename F>
-  auto addTaskRemoteFuture(F&& func) -> folly::Future<
-      typename folly::Unit::Lift<typename std::result_of<F()>::type>::type>;
+  auto addTaskRemoteFuture(F&& func)
+      -> folly::Future<typename folly::lift_unit<invoke_result_t<F>>::type>;
 
   // Executor interface calls addTaskRemote
   void add(folly::Func f) override {
@@ -241,7 +260,7 @@ class FiberManager : public ::folly::Executor {
    * @return value returned by func().
    */
   template <typename F>
-  typename std::result_of<F()>::type runInMainContext(F&& func);
+  invoke_result_t<F> runInMainContext(F&& func);
 
   /**
    * Returns a refference to a fiber-local context for given Fiber. Should be
@@ -337,7 +356,7 @@ class FiberManager : public ::folly::Executor {
     template <typename F>
     RemoteTask(F&& f, const Fiber::LocalData& localData_)
         : func(std::forward<F>(f)),
-          localData(folly::make_unique<Fiber::LocalData>(localData_)),
+          localData(std::make_unique<Fiber::LocalData>(localData_)),
           rcontext(RequestContext::saveContext()) {}
     folly::Function<void()> func;
     std::unique_ptr<Fiber::LocalData> localData;
@@ -442,6 +461,8 @@ class FiberManager : public ::folly::Executor {
   folly::AtomicIntrusiveLinkedList<RemoteTask, &RemoteTask::nextRemoteTask>
       remoteTaskQueue_;
 
+  ssize_t remoteCount_{0};
+
   std::shared_ptr<TimeoutController> timeoutManager_;
 
   struct FibersPoolResizer {
@@ -544,7 +565,7 @@ typename FirstArgOf<F>::type::value_type inline await(F&& func);
  * @return value returned by func().
  */
 template <typename F>
-typename std::result_of<F()>::type inline runInMainContext(F&& func) {
+invoke_result_t<F> inline runInMainContext(F&& func) {
   auto fm = FiberManager::getFiberManagerUnsafe();
   if (UNLIKELY(fm == nullptr)) {
     return func();
@@ -576,7 +597,7 @@ inline void yield() {
     std::this_thread::yield();
   }
 }
-}
-}
+} // namespace fibers
+} // namespace folly
 
 #include <folly/fibers/FiberManagerInternal-inl.h>

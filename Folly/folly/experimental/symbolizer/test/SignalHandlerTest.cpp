@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,20 @@
 #include <folly/experimental/symbolizer/test/SignalHandlerTest.h>
 #include <folly/experimental/symbolizer/SignalHandler.h>
 
+#include <folly/CPortability.h>
 #include <folly/FileUtil.h>
 #include <folly/Range.h>
-#include <folly/CPortability.h>
 #include <folly/portability/GTest.h>
 
-namespace folly { namespace symbolizer { namespace test {
+namespace folly {
+namespace symbolizer {
+namespace test {
 
 namespace {
 
 void print(StringPiece sp) {
   writeFull(STDERR_FILENO, sp.data(), sp.size());
 }
-
 
 void callback1() {
   print("Callback1\n");
@@ -39,7 +40,7 @@ void callback2() {
   print("Callback2\n");
 }
 
-}  // namespace
+} // namespace
 
 TEST(SignalHandler, Simple) {
   addFatalSignalCallback(callback1);
@@ -47,13 +48,6 @@ TEST(SignalHandler, Simple) {
   installFatalSignalHandler();
   installFatalSignalCallbacks();
 
-#ifdef FOLLY_SANITIZE_ADDRESS
-  EXPECT_DEATH(
-      failHard(),
-      // Testing an ASAN-enabled binary evokes a different diagnostic.
-      // Use a regexp that requires only the first line of that output:
-      "^ASAN:SIGSEGV\n.*");
-#else
   EXPECT_DEATH(
       failHard(),
       "^\\*\\*\\* Aborted at [0-9]+ \\(Unix time, try 'date -d @[0-9]+'\\) "
@@ -70,12 +64,12 @@ TEST(SignalHandler, Simple) {
       ".*    @ [0-9a-f]+.* main.*\n"
       ".*\n"
       "Callback1\n"
-      "Callback2\n");
-#endif
+      "Callback2\n"
+      ".*");
 }
-
-
-}}}  // namespaces
+} // namespace test
+} // namespace symbolizer
+} // namespace folly
 
 // Can't use initFacebookLight since that would install its own signal handlers
 // Can't use initFacebookNoSignals since we cannot depend on common

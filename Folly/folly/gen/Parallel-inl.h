@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,12 @@ class ClosableMPMCQueue {
     CHECK(!consumers());
   }
 
-  void openProducer() { ++producers_; }
-  void openConsumer() { ++consumers_; }
+  void openProducer() {
+    ++producers_;
+  }
+  void openConsumer() {
+    ++consumers_;
+  }
 
   void closeInputProducer() {
     size_t producers = producers_--;
@@ -132,11 +136,12 @@ class Sub : public Operator<Sub<Sink>> {
  public:
   explicit Sub(Sink sink) : sink_(sink) {}
 
-  template <class Value,
-            class Source,
-            class Result =
-                decltype(std::declval<Sink>().compose(std::declval<Source>())),
-            class Just = SingleCopy<typename std::decay<Result>::type>>
+  template <
+      class Value,
+      class Source,
+      class Result =
+          decltype(std::declval<Sink>().compose(std::declval<Source>())),
+      class Just = SingleCopy<typename std::decay<Result>::type>>
   Just compose(const GenImpl<Value, Source>& source) const {
     return Just(source | sink_);
   }
@@ -150,25 +155,29 @@ class Parallel : public Operator<Parallel<Ops>> {
  public:
   Parallel(Ops ops, size_t threads) : ops_(std::move(ops)), threads_(threads) {}
 
-  template <class Input,
-            class Source,
-            class InputDecayed = typename std::decay<Input>::type,
-            class Composed =
-                decltype(std::declval<Ops>().compose(Empty<InputDecayed&&>())),
-            class Output = typename Composed::ValueType,
-            class OutputDecayed = typename std::decay<Output>::type>
-  class Generator : public GenImpl<OutputDecayed&&,
-                                   Generator<Input,
-                                             Source,
-                                             InputDecayed,
-                                             Composed,
-                                             Output,
-                                             OutputDecayed>> {
-    const Source source_;
-    const Ops ops_;
-    const size_t threads_;
-    typedef ClosableMPMCQueue<InputDecayed> InQueue;
-    typedef ClosableMPMCQueue<OutputDecayed> OutQueue;
+  template <
+      class Input,
+      class Source,
+      class InputDecayed = typename std::decay<Input>::type,
+      class Composed =
+          decltype(std::declval<Ops>().compose(Empty<InputDecayed&&>())),
+      class Output = typename Composed::ValueType,
+      class OutputDecayed = typename std::decay<Output>::type>
+  class Generator : public GenImpl<
+                        OutputDecayed&&,
+                        Generator<
+                            Input,
+                            Source,
+                            InputDecayed,
+                            Composed,
+                            Output,
+                            OutputDecayed>> {
+    Source source_;
+    Ops ops_;
+    size_t threads_;
+
+    using InQueue = ClosableMPMCQueue<InputDecayed>;
+    using OutQueue = ClosableMPMCQueue<OutputDecayed>;
 
     class Puller : public GenImpl<InputDecayed&&, Puller> {
       InQueue* queue_;
@@ -267,9 +276,13 @@ class Parallel : public Operator<Parallel<Ops>> {
         CHECK(!outQueue_.producers());
       }
 
-      void closeInputProducer() { inQueue_.closeInputProducer(); }
+      void closeInputProducer() {
+        inQueue_.closeInputProducer();
+      }
 
-      void closeOutputConsumer() { outQueue_.closeOutputConsumer(); }
+      void closeOutputConsumer() {
+        outQueue_.closeOutputConsumer();
+      }
 
       bool writeUnlessClosed(Input&& input) {
         return inQueue_.writeUnlessClosed(std::forward<Input>(input));

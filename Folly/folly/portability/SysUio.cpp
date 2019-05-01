@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
 #include <stdio.h>
 
 #include <folly/ScopeGuard.h>
+#include <folly/portability/Sockets.h>
 #include <folly/portability/SysFile.h>
 #include <folly/portability/Unistd.h>
 
@@ -70,10 +71,19 @@ static ssize_t doVecOperation(int fd, const iovec* iov, int count) {
     return -1;
   }
 
-  if (lockf(fd, F_LOCK, 0) == -1) {
+  // We only need to worry about locking if the file descriptor is
+  // not a socket. We have no way of locking sockets :(
+  // The correct way to do this for sockets is via sendmsg/recvmsg,
+  // but this is good enough for now.
+  bool shouldLock = !folly::portability::sockets::is_fh_socket(fd);
+  if (shouldLock && lockf(fd, F_LOCK, 0) == -1) {
     return -1;
   }
-  SCOPE_EXIT { lockf(fd, F_ULOCK, 0); };
+  SCOPE_EXIT {
+    if (shouldLock) {
+      lockf(fd, F_ULOCK, 0);
+    }
+  };
 
   ssize_t bytesProcessed = 0;
   int curIov = 0;

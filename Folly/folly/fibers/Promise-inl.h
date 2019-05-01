@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -110,7 +110,7 @@ typename Promise<T, BatonT>::value_type Promise<T, BatonT>::await(F&& func) {
     std::rethrow_exception(funcException);
   }
 
-  return folly::moveFromTry(result);
+  return std::move(result).value();
 }
-}
-}
+} // namespace fibers
+} // namespace folly

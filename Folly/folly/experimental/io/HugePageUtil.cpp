@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2012-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,10 @@
 #include <stdexcept>
 
 #include <folly/Format.h>
-#include <folly/MemoryMapping.h>
 #include <folly/Range.h>
 #include <folly/experimental/io/HugePages.h>
 #include <folly/portability/GFlags.h>
+#include <folly/system/MemoryMapping.h>
 
 DEFINE_bool(cp, false, "Copy file");
 
@@ -56,16 +56,19 @@ void list() {
   }
 }
 
-}  // namespace
+} // namespace
 
-
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   gflags::ParseCommandLineFlags(&argc, &argv, true);
   if (FLAGS_cp) {
-    if (argc != 3) usage(argv[0]);
+    if (argc != 3) {
+      usage(argv[0]);
+    }
     copy(argv[1], argv[2]);
   } else {
-    if (argc != 1) usage(argv[0]);
+    if (argc != 1) {
+      usage(argv[0]);
+    }
     list();
   }
   return 0;

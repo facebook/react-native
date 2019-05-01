@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2017-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,10 @@ const char* kTestCert = "folly/io/async/test/certs/tests-cert.pem";
 const char* kTestKey = "folly/io/async/test/certs/tests-key.pem";
 const char* kTestCA = "folly/io/async/test/certs/ca-cert.pem";
 
+const char* kClientTestCert = "folly/io/async/test/certs/client_cert.pem";
+const char* kClientTestKey = "folly/io/async/test/certs/client_key.pem";
+const char* kClientTestCA = "folly/io/async/test/certs/client_ca_cert.pem";
+
 TestSSLServer::~TestSSLServer() {
   if (thread_.joinable()) {
     evb_.runInEventBaseThread([&]() { socket_->stopAccepting(); });
@@ -38,6 +42,11 @@ TestSSLServer::TestSSLServer(SSLServerAcceptCallbackBase* acb, bool enableTFO)
   ctx_->ciphers("ALL:!ADH:!LOW:!EXP:!MD5:@STRENGTH");
 
   init(enableTFO);
+}
+
+void TestSSLServer::loadTestCerts() {
+  ctx_->loadCertificate(kTestCert);
+  ctx_->loadPrivateKey(kTestKey);
 }
 
 TestSSLServer::TestSSLServer(
@@ -74,4 +83,4 @@ void TestSSLServer::init(bool enableTFO) {
   });
   LOG(INFO) << "Accepting connections on " << address_;
 }
-}
+} // namespace folly

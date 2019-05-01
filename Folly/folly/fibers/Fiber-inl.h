@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,5 +72,5 @@ void Fiber::LocalData::dataHeapDestructor(void* ptr) {
   reinterpret_cast<T*>(ptr)->~T();
   freeHeapBuffer(ptr);
 }
-}
-} // folly::fibers
+} // namespace fibers
+} // namespace folly

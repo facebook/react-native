@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,20 +43,18 @@ struct TemplateSeq {
 
 // TemplateRange<T, start, n>::type is
 // TemplateSeq<T, start+1, start+2, ..., start+n-1>
-template <class T, T start, T n, class Enable=void> struct TemplateRange;
+template <class T, T start, T n, class Enable = void>
+struct TemplateRange;
 
 template <class T, T start, T n>
-struct TemplateRange<
-  T, start, n,
-  typename std::enable_if<(n > 0)>::type> {
+struct TemplateRange<T, start, n, typename std::enable_if<(n > 0)>::type> {
   using type =
-    typename TemplateRange<T, start+1, n-1>::type::template Prepend<start>;
+      typename TemplateRange<T, start + 1, n - 1>::type::template Prepend<
+          start>;
 };
 
 template <class T, T start, T n>
-struct TemplateRange<
-  T, start, n,
-  typename std::enable_if<(n <= 0)>::type> {
+struct TemplateRange<T, start, n, typename std::enable_if<(n <= 0)>::type> {
   using type = TemplateSeq<T>;
 };
 
@@ -66,12 +64,13 @@ struct TemplateRange<
 // where k = min(tuple_size<T>::value - start, n)
 // (that is, it's a TemplateSeq of at most n elements, but won't extend
 // past the end of the given tuple)
-template <class T,
-          std::size_t start = 0,
-          std::size_t n = std::numeric_limits<std::size_t>::max(),
-          std::size_t size =
-            std::tuple_size<typename std::remove_reference<T>::type>::value,
-          class Enable = typename std::enable_if<(start <= size)>::type>
+template <
+    class T,
+    std::size_t start = 0,
+    std::size_t n = std::numeric_limits<std::size_t>::max(),
+    std::size_t size =
+        std::tuple_size<typename std::remove_reference<T>::type>::value,
+    class Enable = typename std::enable_if<(start <= size)>::type>
 struct TemplateTupleRange {
   using type = typename TemplateRange<
       std::size_t,
@@ -82,17 +81,18 @@ struct TemplateTupleRange {
 namespace detail {
 
 // Helper class to select a subset of a tuple
-template <class S> struct TupleSelect;
+template <class S>
+struct TupleSelect;
 template <std::size_t... Ns>
 struct TupleSelect<TemplateSeq<std::size_t, Ns...>> {
   template <class T>
   static auto select(T&& v)
-  -> decltype(std::make_tuple(std::get<Ns>(std::forward<T>(v))...)) {
+      -> decltype(std::make_tuple(std::get<Ns>(std::forward<T>(v))...)) {
     return std::make_tuple(std::get<Ns>(std::forward<T>(v))...);
   }
 };
 
-}  // namespace detail
+} // namespace detail
 
 // Return a tuple consisting of the elements at a range of indices.
 //
@@ -103,22 +103,22 @@ struct TupleSelect<TemplateSeq<std::size_t, Ns...>> {
 // Won't compile if start > size of t.
 // Will return fewer elements (size - start) if start + n > size of t.
 template <
-  std::size_t start = 0,
-  std::size_t n = std::numeric_limits<std::size_t>::max(),
-  class T,
-  class Seq = typename TemplateTupleRange<T, start, n>::type>
+    std::size_t start = 0,
+    std::size_t n = std::numeric_limits<std::size_t>::max(),
+    class T,
+    class Seq = typename TemplateTupleRange<T, start, n>::type>
 auto tupleRange(T&& v)
--> decltype(detail::TupleSelect<Seq>::select(std::forward<T>(v))) {
+    -> decltype(detail::TupleSelect<Seq>::select(std::forward<T>(v))) {
   return detail::TupleSelect<Seq>::select(std::forward<T>(v));
 }
 
 // Return a tuple obtained by prepending car to the tuple cdr.
 template <class T, class U>
-auto tuplePrepend(T&& car, U&& cdr)
--> decltype(std::tuple_cat(std::make_tuple(std::forward<T>(car)),
-                           std::forward<U>(cdr))) {
-  return std::tuple_cat(std::make_tuple(std::forward<T>(car)),
-                        std::forward<U>(cdr));
+auto tuplePrepend(T&& car, U&& cdr) -> decltype(std::tuple_cat(
+    std::make_tuple(std::forward<T>(car)),
+    std::forward<U>(cdr))) {
+  return std::tuple_cat(
+      std::make_tuple(std::forward<T>(car)), std::forward<U>(cdr));
 }
 
-}  // namespaces
+} // namespace folly

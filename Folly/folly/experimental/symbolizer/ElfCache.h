@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,25 @@
 
 #pragma once
 
+#include <climits> // for PATH_MAX
 #include <cstring>
-#include <limits.h>  // for PATH_MAX
 #include <memory>
 #include <mutex>
 #include <string>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
-#include <boost/operators.hpp>
 #include <boost/container/flat_map.hpp>
 #include <boost/intrusive/list.hpp>
+#include <boost/operators.hpp>
 #include <glog/logging.h>
 
-#include <folly/Hash.h>
 #include <folly/Range.h>
 #include <folly/experimental/symbolizer/Elf.h>
+#include <folly/hash/Hash.h>
 
-namespace folly { namespace symbolizer {
+namespace folly {
+namespace symbolizer {
 
 /**
  * Number of ELF files loaded by the dynamic loader.
@@ -43,7 +44,7 @@ size_t countLoadedElfFiles();
 class ElfCacheBase {
  public:
   virtual std::shared_ptr<ElfFile> getFile(StringPiece path) = 0;
-  virtual ~ElfCacheBase() { }
+  virtual ~ElfCacheBase() {}
 };
 
 /**
@@ -139,8 +140,9 @@ class ElfCache : public ElfCacheBase {
   typedef boost::intrusive::list<
       Entry,
       boost::intrusive::member_hook<Entry, LruLink, &Entry::lruLink>,
-      boost::intrusive::constant_time_size<false>> LruList;
+      boost::intrusive::constant_time_size<false>>
+      LruList;
   LruList lruList_;
 };
-
-}}  // namespaces
+} // namespace symbolizer
+} // namespace folly

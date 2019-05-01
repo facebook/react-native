@@ -2,7 +2,14 @@
 name: $(Date:yyyyMMdd).$(Rev:.r)
 
 trigger: 
- - master
+  batch: true
+  branches:
+    include:
+      - master
+      - fb59merge
+  paths:
+    exclude:
+      - package.json
 
 pr: none
 

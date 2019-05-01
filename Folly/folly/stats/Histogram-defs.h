@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,13 +26,12 @@ namespace folly {
 namespace detail {
 
 template <typename T, typename BucketT>
-HistogramBuckets<T, BucketT>::HistogramBuckets(ValueType bucketSize,
-                                               ValueType min,
-                                               ValueType max,
-                                               const BucketType& defaultBucket)
-  : bucketSize_(bucketSize),
-    min_(min),
-    max_(max) {
+HistogramBuckets<T, BucketT>::HistogramBuckets(
+    ValueType bucketSize,
+    ValueType min,
+    ValueType max,
+    const BucketType& defaultBucket)
+    : bucketSize_(bucketSize), min_(min), max_(max) {
   CHECK_GT(bucketSize_, ValueType(0));
   CHECK_LT(min_, max_);
 
@@ -88,7 +87,7 @@ size_t HistogramBuckets<T, BucketType>::getPercentileBucketIdx(
   uint64_t totalCount = 0;
   for (size_t n = 0; n < numBuckets; ++n) {
     uint64_t bucketCount =
-      countFromBucket(const_cast<const BucketType&>(buckets_[n]));
+        countFromBucket(const_cast<const BucketType&>(buckets_[n]));
     counts[n] = bucketCount;
     totalCount += bucketCount;
   }
@@ -146,7 +145,6 @@ T HistogramBuckets<T, BucketType>::getPercentileEstimate(
     double pct,
     CountFn countFromBucket,
     AvgFn avgFromBucket) const {
-
   // Find the bucket where this percentile falls
   double lowPct;
   double highPct;
@@ -183,8 +181,8 @@ T HistogramBuckets<T, BucketType>::getPercentileEstimate(
       // (Note that if the counter keeps being decremented, eventually it will
       // wrap and become small enough that we won't detect this any more, and
       // we will return bogus information.)
-      LOG(ERROR) << "invalid average value in histogram minimum bucket: " <<
-        avg << " > " << min_ << ": possible integer overflow?";
+      LOG(ERROR) << "invalid average value in histogram minimum bucket: " << avg
+                 << " > " << min_ << ": possible integer overflow?";
       return getBucketMin(bucketIdx);
     }
     // For the below-min bucket, just assume the lowest value ever seen is
@@ -199,8 +197,8 @@ T HistogramBuckets<T, BucketType>::getPercentileEstimate(
     if (avg < max_) {
       // Most likely this means integer overflow occurred.  See the comments
       // above in the minimum case.
-      LOG(ERROR) << "invalid average value in histogram maximum bucket: " <<
-        avg << " < " << max_ << ": possible integer overflow?";
+      LOG(ERROR) << "invalid average value in histogram maximum bucket: " << avg
+                 << " < " << max_ << ": possible integer overflow?";
       return getBucketMax(bucketIdx);
     }
     // Similarly for the above-max bucket, assume the highest value ever seen
@@ -218,9 +216,9 @@ T HistogramBuckets<T, BucketType>::getPercentileEstimate(
       // Most likely this means an integer overflow occurred.
       // See the comments above.  Return the midpoint between low and high
       // as a best guess, since avg is meaningless.
-      LOG(ERROR) << "invalid average value in histogram bucket: " <<
-        avg << " not in range [" << low << ", " << high <<
-        "]: possible integer overflow?";
+      LOG(ERROR) << "invalid average value in histogram bucket: " << avg
+                 << " not in range [" << low << ", " << high
+                 << "]: possible integer overflow?";
       return (low + high) / 2;
     }
   }
@@ -245,20 +243,29 @@ T HistogramBuckets<T, BucketType>::getPercentileEstimate(
   }
 }
 
-} // detail
-
+} // namespace detail
 
 template <typename T>
 std::string Histogram<T>::debugString() const {
   std::string ret = folly::to<std::string>(
-      "num buckets: ", buckets_.getNumBuckets(),
-      ", bucketSize: ", buckets_.getBucketSize(),
-      ", min: ", buckets_.getMin(), ", max: ", buckets_.getMax(), "\n");
+      "num buckets: ",
+      buckets_.getNumBuckets(),
+      ", bucketSize: ",
+      buckets_.getBucketSize(),
+      ", min: ",
+      buckets_.getMin(),
+      ", max: ",
+      buckets_.getMax(),
+      "\n");
 
   for (size_t i = 0; i < buckets_.getNumBuckets(); ++i) {
-    folly::toAppend("  ", buckets_.getBucketMin(i), ": ",
-                    buckets_.getByIndex(i).count, "\n",
-                    &ret);
+    folly::toAppend(
+        "  ",
+        buckets_.getBucketMin(i),
+        ": ",
+        buckets_.getByIndex(i).count,
+        "\n",
+        &ret);
   }
 
   return ret;
@@ -272,9 +279,9 @@ void Histogram<T>::toTSV(std::ostream& out, bool skipEmptyBuckets) const {
       continue;
     }
     const auto& bucket = getBucketByIndex(i);
-    out << getBucketMin(i) << '\t' << getBucketMax(i) << '\t'
-        << bucket.count << '\t' << bucket.sum << '\n';
+    out << getBucketMin(i) << '\t' << getBucketMax(i) << '\t' << bucket.count
+        << '\t' << bucket.sum << '\n';
   }
 }
 
-} // folly
+} // namespace folly

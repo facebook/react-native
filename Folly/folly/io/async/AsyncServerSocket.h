@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 #pragma once
 
 #include <folly/SocketAddress.h>
+#include <folly/String.h>
 #include <folly/io/ShutdownSocketSet.h>
 #include <folly/io/async/AsyncSocketBase.h>
 #include <folly/io/async/AsyncTimeout.h>
@@ -61,8 +62,7 @@ namespace folly {
  * modify the AsyncServerSocket state may only be performed from the primary
  * EventBase thread.
  */
-class AsyncServerSocket : public DelayedDestruction
-                        , public AsyncSocketBase {
+class AsyncServerSocket : public DelayedDestruction, public AsyncSocketBase {
  public:
   typedef std::unique_ptr<AsyncServerSocket, Destructor> UniquePtr;
   // Disallow copy, move, and default construction.
@@ -82,8 +82,9 @@ class AsyncServerSocket : public DelayedDestruction
      * onConnectionAccepted() is called right after a client connection
      * is accepted using the system accept()/accept4() APIs.
      */
-    virtual void onConnectionAccepted(const int socket,
-                                      const SocketAddress& addr) noexcept = 0;
+    virtual void onConnectionAccepted(
+        const int socket,
+        const SocketAddress& addr) noexcept = 0;
 
     /**
      * onConnectionAcceptError() is called when an error occurred accepting
@@ -95,8 +96,9 @@ class AsyncServerSocket : public DelayedDestruction
      * onConnectionDropped() is called when a connection is dropped,
      * probably because of some error encountered.
      */
-    virtual void onConnectionDropped(const int socket,
-                                     const SocketAddress& addr) noexcept = 0;
+    virtual void onConnectionDropped(
+        const int socket,
+        const SocketAddress& addr) noexcept = 0;
 
     /**
      * onConnectionEnqueuedForAcceptorCallback() is called when the
@@ -153,9 +155,9 @@ class AsyncServerSocket : public DelayedDestruction
      *                    client's address.  This struct is only guaranteed to
      *                    remain valid until connectionAccepted() returns.
      */
-    virtual void connectionAccepted(int fd,
-                                    const SocketAddress& clientAddr)
-      noexcept = 0;
+    virtual void connectionAccepted(
+        int fd,
+        const SocketAddress& clientAddr) noexcept = 0;
 
     /**
      * acceptError() is called if an error occurs while accepting.
@@ -221,13 +223,13 @@ class AsyncServerSocket : public DelayedDestruction
    * This passes in the correct destructor object, since AsyncServerSocket's
    * destructor is protected and cannot be invoked directly.
    */
-  static std::shared_ptr<AsyncServerSocket>
-  newSocket(EventBase* evb = nullptr) {
-    return std::shared_ptr<AsyncServerSocket>(new AsyncServerSocket(evb),
-                                                 Destructor());
+  static std::shared_ptr<AsyncServerSocket> newSocket(
+      EventBase* evb = nullptr) {
+    return std::shared_ptr<AsyncServerSocket>(
+        new AsyncServerSocket(evb), Destructor());
   }
 
-  void setShutdownSocketSet(ShutdownSocketSet* newSS);
+  void setShutdownSocketSet(const std::weak_ptr<ShutdownSocketSet>& wNewSS);
 
   /**
    * Destroy the socket.
@@ -246,7 +248,7 @@ class AsyncServerSocket : public DelayedDestruction
    * time after destroy() returns.  They will not receive any more callback
    * invocations once acceptStopped() is invoked.
    */
-  virtual void destroy();
+  void destroy() override;
 
   /**
    * Attach this AsyncServerSocket to its primary EventBase.
@@ -255,7 +257,7 @@ class AsyncServerSocket : public DelayedDestruction
    * to a EventBase.  The AsyncServerSocket must be attached to a EventBase
    * before it can begin accepting connections.
    */
-  void attachEventBase(EventBase *eventBase);
+  void attachEventBase(EventBase* eventBase);
 
   /**
    * Detach the AsyncServerSocket from its primary EventBase.
@@ -268,7 +270,7 @@ class AsyncServerSocket : public DelayedDestruction
   /**
    * Get the EventBase used by this socket.
    */
-  EventBase* getEventBase() const {
+  EventBase* getEventBase() const override {
     return eventBase_;
   }
 
@@ -309,8 +311,8 @@ class AsyncServerSocket : public DelayedDestruction
    */
   int getSocket() const {
     if (sockets_.size() > 1) {
-      VLOG(2) << "Warning: getSocket can return multiple fds, " <<
-        "but getSockets was not called, so only returning the first";
+      VLOG(2) << "Warning: getSocket can return multiple fds, "
+              << "but getSockets was not called, so only returning the first";
     }
     if (sockets_.size() == 0) {
       return -1;
@@ -318,6 +320,11 @@ class AsyncServerSocket : public DelayedDestruction
       return sockets_[0].socket_;
     }
   }
+
+  /* enable zerocopy support for the server sockets - the s = accept sockets
+   * inherit it
+   */
+  bool setZeroCopy(bool enable);
 
   /**
    * Bind to the specified address.
@@ -335,9 +342,7 @@ class AsyncServerSocket : public DelayedDestruction
    *
    * Throws TTransportException on error.
    */
-  virtual void bind(
-      const std::vector<IPAddress>& ipAddresses,
-      uint16_t port);
+  virtual void bind(const std::vector<IPAddress>& ipAddresses, uint16_t port);
 
   /**
    * Bind to the specified port.
@@ -353,7 +358,7 @@ class AsyncServerSocket : public DelayedDestruction
    *
    * Throws TTransportException on error.
    */
-  void getAddress(SocketAddress* addressReturn) const;
+  void getAddress(SocketAddress* addressReturn) const override;
 
   /**
    * Get the local address to which the socket is bound.
@@ -429,9 +434,9 @@ class AsyncServerSocket : public DelayedDestruction
    *                   connections the main event base will accept at once.
    */
   virtual void addAcceptCallback(
-    AcceptCallback *callback,
-    EventBase *eventBase,
-    uint32_t maxAtOnce = kDefaultCallbackAcceptAtOnce);
+      AcceptCallback* callback,
+      EventBase* eventBase,
+      uint32_t maxAtOnce = kDefaultCallbackAcceptAtOnce);
 
   /**
    * Remove an AcceptCallback.
@@ -461,7 +466,7 @@ class AsyncServerSocket : public DelayedDestruction
    *     be the same EventBase that was used when the callback was installed
    *     with addAcceptCallback().
    */
-  void removeAcceptCallback(AcceptCallback *callback, EventBase *eventBase);
+  void removeAcceptCallback(AcceptCallback* callback, EventBase* eventBase);
 
   /**
    * Begin accepting connctions on this socket.
@@ -573,9 +578,18 @@ class AsyncServerSocket : public DelayedDestruction
   }
 
   /**
+   * Enable/Disable TOS reflection for the server socket
+   */
+  void setTosReflect(bool enable);
+
+  bool getTosReflect() {
+    return tosReflect_;
+  }
+
+  /**
    * Get the number of connections dropped by the AsyncServerSocket
    */
-  uint64_t getNumDroppedConnections() const {
+  std::size_t getNumDroppedConnections() const {
     return numDroppedConnections_;
   }
 
@@ -588,10 +602,14 @@ class AsyncServerSocket : public DelayedDestruction
    * socket's primary EventBase.
    */
   int64_t getNumPendingMessagesInQueue() const {
-    assert(eventBase_ == nullptr || eventBase_->isInEventBaseThread());
+    if (eventBase_) {
+      eventBase_->dcheckIsInEventBaseThread();
+    }
     int64_t numMsgs = 0;
     for (const auto& callback : callbacks_) {
-      numMsgs += callback.consumer->getQueue()->size();
+      if (callback.consumer) {
+        numMsgs += callback.consumer->getQueue()->size();
+      }
     }
     return numMsgs;
   }
@@ -614,10 +632,11 @@ class AsyncServerSocket : public DelayedDestruction
       }
 
       int val = (enabled) ? 1 : 0;
-      if (setsockopt(handler.socket_, SOL_SOCKET,
-                     SO_KEEPALIVE, &val, sizeof(val)) != 0) {
-        LOG(ERROR) << "failed to set SO_KEEPALIVE on async server socket: %s" <<
-                strerror(errno);
+      if (setsockopt(
+              handler.socket_, SOL_SOCKET, SO_KEEPALIVE, &val, sizeof(val)) !=
+          0) {
+        LOG(ERROR) << "failed to set SO_KEEPALIVE on async server socket: %s"
+                   << errnoStr(errno);
       }
     }
   }
@@ -642,12 +661,12 @@ class AsyncServerSocket : public DelayedDestruction
       }
 
       int val = (enabled) ? 1 : 0;
-      if (setsockopt(handler.socket_, SOL_SOCKET,
-                     SO_REUSEPORT, &val, sizeof(val)) != 0) {
-        LOG(ERROR) <<
-          "failed to set SO_REUSEPORT on async server socket " << errno;
-        folly::throwSystemError(errno,
-                                "failed to bind to async server socket");
+      if (setsockopt(
+              handler.socket_, SOL_SOCKET, SO_REUSEPORT, &val, sizeof(val)) !=
+          0) {
+        LOG(ERROR) << "failed to set SO_REUSEPORT on async server socket "
+                   << errno;
+        folly::throwSystemError(errno, "failed to bind to async server socket");
       }
     }
   }
@@ -717,13 +736,10 @@ class AsyncServerSocket : public DelayedDestruction
    *
    * Invoke destroy() instead to destroy the AsyncServerSocket.
    */
-  virtual ~AsyncServerSocket();
+  ~AsyncServerSocket() override;
 
  private:
-  enum class MessageType {
-    MSG_NEW_CONN = 0,
-    MSG_ERROR = 1
-  };
+  enum class MessageType { MSG_NEW_CONN = 0, MSG_ERROR = 1 };
 
   struct QueueMessage {
     MessageType type;
@@ -742,27 +758,27 @@ class AsyncServerSocket : public DelayedDestruction
    * receives notification of new sockets via a NotificationQueue,
    * and then invokes the AcceptCallback.
    */
-  class RemoteAcceptor
-      : private NotificationQueue<QueueMessage>::Consumer {
-  public:
-    explicit RemoteAcceptor(AcceptCallback *callback,
-                            ConnectionEventCallback *connectionEventCallback)
-      : callback_(callback),
-        connectionEventCallback_(connectionEventCallback) {}
+  class RemoteAcceptor : private NotificationQueue<QueueMessage>::Consumer {
+   public:
+    explicit RemoteAcceptor(
+        AcceptCallback* callback,
+        ConnectionEventCallback* connectionEventCallback)
+        : callback_(callback),
+          connectionEventCallback_(connectionEventCallback) {}
 
-    ~RemoteAcceptor() = default;
+    ~RemoteAcceptor() override = default;
 
-    void start(EventBase *eventBase, uint32_t maxAtOnce, uint32_t maxInQueue);
+    void start(EventBase* eventBase, uint32_t maxAtOnce, uint32_t maxInQueue);
     void stop(EventBase* eventBase, AcceptCallback* callback);
 
-    virtual void messageAvailable(QueueMessage&& message);
+    void messageAvailable(QueueMessage&& message) noexcept override;
 
     NotificationQueue<QueueMessage>* getQueue() {
       return &queue_;
     }
 
-  private:
-    AcceptCallback *callback_;
+   private:
+    AcceptCallback* callback_;
     ConnectionEventCallback* connectionEventCallback_;
 
     NotificationQueue<QueueMessage> queue_;
@@ -773,27 +789,25 @@ class AsyncServerSocket : public DelayedDestruction
    * socket.
    */
   struct CallbackInfo {
-    CallbackInfo(AcceptCallback *cb, EventBase *evb)
-      : callback(cb),
-        eventBase(evb),
-        consumer(nullptr) {}
+    CallbackInfo(AcceptCallback* cb, EventBase* evb)
+        : callback(cb), eventBase(evb), consumer(nullptr) {}
 
-    AcceptCallback *callback;
-    EventBase *eventBase;
+    AcceptCallback* callback;
+    EventBase* eventBase;
 
     RemoteAcceptor* consumer;
   };
 
   class BackoffTimeout;
 
-  virtual void handlerReady(
-    uint16_t events, int socket, sa_family_t family) noexcept;
+  virtual void
+  handlerReady(uint16_t events, int socket, sa_family_t family) noexcept;
 
   int createSocket(int family);
   void setupSocket(int fd, int family);
   void bindSocket(int fd, const SocketAddress& address, bool isExistingSocket);
   void dispatchSocket(int socket, SocketAddress&& address);
-  void dispatchError(const char *msg, int errnoValue);
+  void dispatchError(const char* msg, int errnoValue);
   void enterBackoff();
   void backoffTimeoutExpired();
 
@@ -809,24 +823,25 @@ class AsyncServerSocket : public DelayedDestruction
   }
 
   struct ServerEventHandler : public EventHandler {
-    ServerEventHandler(EventBase* eventBase, int socket,
-                       AsyncServerSocket* parent,
-                      sa_family_t addressFamily)
-        : EventHandler(eventBase, socket)
-        , eventBase_(eventBase)
-        , socket_(socket)
-        , parent_(parent)
-        , addressFamily_(addressFamily) {}
+    ServerEventHandler(
+        EventBase* eventBase,
+        int socket,
+        AsyncServerSocket* parent,
+        sa_family_t addressFamily)
+        : EventHandler(eventBase, socket),
+          eventBase_(eventBase),
+          socket_(socket),
+          parent_(parent),
+          addressFamily_(addressFamily) {}
 
     ServerEventHandler(const ServerEventHandler& other)
-    : EventHandler(other.eventBase_, other.socket_)
-    , eventBase_(other.eventBase_)
-    , socket_(other.socket_)
-    , parent_(other.parent_)
-    , addressFamily_(other.addressFamily_) {}
+        : EventHandler(other.eventBase_, other.socket_),
+          eventBase_(other.eventBase_),
+          socket_(other.socket_),
+          parent_(other.parent_),
+          addressFamily_(other.addressFamily_) {}
 
-    ServerEventHandler& operator=(
-        const ServerEventHandler& other) {
+    ServerEventHandler& operator=(const ServerEventHandler& other) {
       if (this != &other) {
         eventBase_ = other.eventBase_;
         socket_ = other.socket_;
@@ -841,7 +856,7 @@ class AsyncServerSocket : public DelayedDestruction
     }
 
     // Inherited from EventHandler
-    virtual void handlerReady(uint16_t events) noexcept {
+    void handlerReady(uint16_t events) noexcept override {
       parent_->handlerReady(events, socket_, addressFamily_);
     }
 
@@ -851,18 +866,18 @@ class AsyncServerSocket : public DelayedDestruction
     sa_family_t addressFamily_;
   };
 
-  EventBase *eventBase_;
+  EventBase* eventBase_;
   std::vector<ServerEventHandler> sockets_;
   std::vector<int> pendingCloseSockets_;
   bool accepting_;
   uint32_t maxAcceptAtOnce_;
   uint32_t maxNumMsgsInQueue_;
-  double acceptRateAdjustSpeed_;  //0 to disable auto adjust
+  double acceptRateAdjustSpeed_; // 0 to disable auto adjust
   double acceptRate_;
   std::chrono::time_point<std::chrono::steady_clock> lastAccepTimestamp_;
-  uint64_t numDroppedConnections_;
+  std::size_t numDroppedConnections_;
   uint32_t callbackIndex_;
-  BackoffTimeout *backoffTimeout_;
+  BackoffTimeout* backoffTimeout_;
   std::vector<CallbackInfo> callbacks_;
   bool keepAliveEnabled_;
   bool reusePortEnabled_{false};
@@ -870,8 +885,9 @@ class AsyncServerSocket : public DelayedDestruction
   bool tfo_{false};
   bool noTransparentTls_{false};
   uint32_t tfoMaxQueueSize_{0};
-  ShutdownSocketSet* shutdownSocketSet_;
+  std::weak_ptr<ShutdownSocketSet> wShutdownSocketSet_;
   ConnectionEventCallback* connectionEventCallback_{nullptr};
+  bool tosReflect_{false};
 };
 
-} // folly
+} // namespace folly

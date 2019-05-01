@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2012-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,38 +22,61 @@
 #include <glog/logging.h>
 
 #include <folly/Exception.h>
-#include <folly/Format.h>
 #include <folly/FileUtil.h>
+#include <folly/Format.h>
 #include <folly/String.h>
+#include <folly/experimental/TestUtil.h>
+#include <folly/experimental/io/FsUtil.h>
 #include <folly/gen/Base.h>
 #include <folly/gen/File.h>
 #include <folly/gen/String.h>
-#include <folly/experimental/TestUtil.h>
-#include <folly/experimental/io/FsUtil.h>
 #include <folly/portability/GTest.h>
 #include <folly/portability/Unistd.h>
 
-FOLLY_GCC_DISABLE_WARNING(deprecated-declarations)
+FOLLY_GNU_DISABLE_WARNING("-Wdeprecated-declarations")
 
 using namespace folly;
 
 TEST(SimpleSubprocessTest, ExitsSuccessfully) {
-  Subprocess proc(std::vector<std::string>{ "/bin/true" });
+  Subprocess proc(std::vector<std::string>{"/bin/true"});
   EXPECT_EQ(0, proc.wait().exitStatus());
 }
 
 TEST(SimpleSubprocessTest, ExitsSuccessfullyChecked) {
-  Subprocess proc(std::vector<std::string>{ "/bin/true" });
+  Subprocess proc(std::vector<std::string>{"/bin/true"});
   proc.waitChecked();
 }
 
+TEST(SimpleSubprocessTest, CloneFlagsWithVfork) {
+  Subprocess proc(
+      std::vector<std::string>{"/bin/true"},
+      Subprocess::Options().useCloneWithFlags(SIGCHLD | CLONE_VFORK));
+  EXPECT_EQ(0, proc.wait().exitStatus());
+}
+
+TEST(SimpleSubprocessTest, CloneFlagsWithFork) {
+  Subprocess proc(
+      std::vector<std::string>{"/bin/true"},
+      Subprocess::Options().useCloneWithFlags(SIGCHLD));
+  EXPECT_EQ(0, proc.wait().exitStatus());
+}
+
+TEST(SimpleSubprocessTest, CloneFlagsSubprocessCtorExitsAfterExec) {
+  Subprocess proc(
+      std::vector<std::string>{"/bin/sleep", "3600"},
+      Subprocess::Options().useCloneWithFlags(SIGCHLD));
+  checkUnixError(::kill(proc.pid(), SIGKILL), "kill");
+  auto retCode = proc.wait();
+  EXPECT_TRUE(retCode.killed());
+}
+
 TEST(SimpleSubprocessTest, ExitsWithError) {
-  Subprocess proc(std::vector<std::string>{ "/bin/false" });
+  Subprocess proc(std::vector<std::string>{"/bin/false"});
   EXPECT_EQ(1, proc.wait().exitStatus());
 }
 
 TEST(SimpleSubprocessTest, ExitsWithErrorChecked) {
-  Subprocess proc(std::vector<std::string>{ "/bin/false" });
+  Subprocess proc(std::vector<std::string>{"/bin/false"});
   EXPECT_THROW(proc.waitChecked(), CalledProcessError);
 }
 
@@ -63,7 +86,7 @@ TEST(SimpleSubprocessTest, DefaultConstructibleProcessReturnCode) {
 }
 
 TEST(SimpleSubprocessTest, MoveSubprocess) {
-  Subprocess old_proc(std::vector<std::string>{ "/bin/true" });
+  Subprocess old_proc(std::vector<std::string>{"/bin/true"});
   EXPECT_TRUE(old_proc.returnCode().running());
   auto new_proc = std::move(old_proc);
   EXPECT_TRUE(old_proc.returnCode().notStarted());
@@ -85,27 +108,28 @@ TEST(SimpleSubprocessTest, DefaultConstructor) {
   EXPECT_EQ(0, proc.wait().exitStatus());
 }
 
-#define EXPECT_SPAWN_ERROR(err, errMsg, cmd, ...) \
-  do { \
-    try { \
-      Subprocess proc(std::vector<std::string>{ (cmd), ## __VA_ARGS__ }); \
-      ADD_FAILURE() << "expected an error when running " << (cmd); \
-    } catch (const SubprocessSpawnError& ex) { \
-      EXPECT_EQ((err), ex.errnoValue()); \
-      if (StringPiece(ex.what()).find(errMsg) == StringPiece::npos) { \
-        ADD_FAILURE() << "failed to find \"" << (errMsg) << \
-          "\" in exception: \"" << ex.what() << "\""; \
-      } \
-    } \
+#define EXPECT_SPAWN_ERROR(err, errMsg, cmd, ...)                      \
+  do {                                                                 \
+    try {                                                              \
+      Subprocess proc(std::vector<std::string>{(cmd), ##__VA_ARGS__}); \
+      ADD_FAILURE() << "expected an error when running " << (cmd);     \
+    } catch (const SubprocessSpawnError& ex) {                         \
+      EXPECT_EQ((err), ex.errnoValue());                               \
+      if (StringPiece(ex.what()).find(errMsg) == StringPiece::npos) {  \
+        ADD_FAILURE() << "failed to find \"" << (errMsg)               \
+                      << "\" in exception: \"" << ex.what() << "\"";   \
+      }                                                                \
+    }                                                                  \
   } while (0)
 
 TEST(SimpleSubprocessTest, ExecFails) {
-  EXPECT_SPAWN_ERROR(ENOENT, "failed to execute /no/such/file:",
-                     "/no/such/file");
-  EXPECT_SPAWN_ERROR(EACCES, "failed to execute /etc/passwd:",
-                     "/etc/passwd");
-  EXPECT_SPAWN_ERROR(ENOTDIR, "failed to execute /etc/passwd/not/a/file:",
-                     "/etc/passwd/not/a/file");
+  EXPECT_SPAWN_ERROR(
+      ENOENT, "failed to execute /no/such/file:", "/no/such/file");
+  EXPECT_SPAWN_ERROR(EACCES, "failed to execute /etc/passwd:", "/etc/passwd");
+  EXPECT_SPAWN_ERROR(
+      ENOTDIR,
+      "failed to execute /etc/passwd/not/a/file:",
+      "/etc/passwd/not/a/file");
 }
 
 TEST(SimpleSubprocessTest, ShellExitsSuccesssfully) {
@@ -130,17 +154,16 @@ TEST(SimpleSubprocessTest, ChangeChildDirectorySuccessfully) {
 TEST(SimpleSubprocessTest, ChangeChildDirectoryWithError) {
   try {
     Subprocess proc(
-      std::vector<std::string>{"/bin/true"},
-      Subprocess::Options().chdir("/usually/this/is/not/a/valid/directory/")
-    );
+        std::vector<std::string>{"/bin/true"},
+        Subprocess::Options().chdir("/usually/this/is/not/a/valid/directory/"));
     ADD_FAILURE() << "expected to fail when changing the child's directory";
   } catch (const SubprocessSpawnError& ex) {
     EXPECT_EQ(ENOENT, ex.errnoValue());
     const std::string expectedError =
-      "error preparing to execute /bin/true: No such file or directory";
+        "error preparing to execute /bin/true: No such file or directory";
     if (StringPiece(ex.what()).find(expectedError) == StringPiece::npos) {
-      ADD_FAILURE() << "failed to find \"" << expectedError <<
-        "\" in exception: \"" << ex.what() << "\"";
+      ADD_FAILURE() << "failed to find \"" << expectedError
+                    << "\" in exception: \"" << ex.what() << "\"";
     }
   }
 }
@@ -151,8 +174,7 @@ boost::container::flat_set<int> getOpenFds() {
   auto dirname = to<std::string>("/proc/", pid, "/fd");
 
   boost::container::flat_set<int> fds;
-  for (fs::directory_iterator it(dirname);
-       it != fs::directory_iterator();
+  for (fs::directory_iterator it(dirname); it != fs::directory_iterator();
        ++it) {
     int fd = to<int>(it->path().filename().native());
     fds.insert(fd);
@@ -160,7 +182,7 @@ boost::container::flat_set<int> getOpenFds() {
   return fds;
 }
 
-template<class Runnable>
+template <class Runnable>
 void checkFdLeak(const Runnable& r) {
   // Get the currently open fds.  Check that they are the same both before and
   // after calling the specified function.  We read the open fds from /proc.
@@ -172,7 +194,7 @@ void checkFdLeak(const Runnable& r) {
   auto fdsAfter = getOpenFds();
   EXPECT_EQ(fdsAfter.size(), fdsBefore.size());
 }
-}
+} // namespace
 
 // Make sure Subprocess doesn't leak any file descriptors
 TEST(SimpleSubprocessTest, FdLeakTest) {
@@ -183,8 +205,9 @@ TEST(SimpleSubprocessTest, FdLeakTest) {
   });
   // Normal execution with pipes
   checkFdLeak([] {
-    Subprocess proc("echo foo; echo bar >&2",
-                    Subprocess::pipeStdout() | Subprocess::pipeStderr());
+    Subprocess proc(
+        "echo foo; echo bar >&2",
+        Subprocess::Options().pipeStdout().pipeStderr());
     auto p = proc.communicate();
     EXPECT_EQ("foo\n", p.first);
     EXPECT_EQ("bar\n", p.second);
@@ -192,14 +215,14 @@ TEST(SimpleSubprocessTest, FdLeakTest) {
   });
 
   // Test where the exec call fails()
-  checkFdLeak([] {
-    EXPECT_SPAWN_ERROR(ENOENT, "failed to execute", "/no/such/file");
-  });
+  checkFdLeak(
+      [] { EXPECT_SPAWN_ERROR(ENOENT, "failed to execute", "/no/such/file"); });
   // Test where the exec call fails() with pipes
   checkFdLeak([] {
     try {
-      Subprocess proc(std::vector<std::string>({"/no/such/file"}),
-                      Subprocess::pipeStdout().stderrFd(Subprocess::PIPE));
+      Subprocess proc(
+          std::vector<std::string>({"/no/such/file"}),
+          Subprocess::Options().pipeStdout().stderrFd(Subprocess::PIPE));
       ADD_FAILURE() << "expected an error when running /no/such/file";
     } catch (const SubprocessSpawnError& ex) {
       EXPECT_EQ(ENOENT, ex.errnoValue());
@@ -218,7 +241,7 @@ TEST(ParentDeathSubprocessTest, ParentDeathSignal) {
 
   fs::path tempFile(fs::temp_directory_path() / fs::unique_path());
 
-  std::vector<std::string> args {helper.string(), tempFile.string()};
+  std::vector<std::string> args{helper.string(), tempFile.string()};
   Subprocess proc(args);
   // The helper gets killed by its child, see details in
   // SubprocessTestParentDeathHelper.cpp
@@ -227,21 +250,20 @@ TEST(ParentDeathSubprocessTest, ParentDeathSignal) {
   // Now wait for the file to be created, see details in
   // SubprocessTestParentDeathHelper.cpp
   while (!fs::exists(tempFile)) {
-    usleep(20000);  // 20ms
+    usleep(20000); // 20ms
   }
 
   fs::remove(tempFile);
 }
 
 TEST(PopenSubprocessTest, PopenRead) {
-  Subprocess proc("ls /", Subprocess::pipeStdout());
+  Subprocess proc("ls /", Subprocess::Options().pipeStdout());
   int found = 0;
-  gen::byLine(File(proc.stdoutFd())) |
-    [&] (StringPiece line) {
-      if (line == "etc" || line == "bin" || line == "usr") {
-        ++found;
-      }
-    };
+  gen::byLine(File(proc.stdoutFd())) | [&](StringPiece line) {
+    if (line == "etc" || line == "bin" || line == "usr") {
+      ++found;
+    }
+  };
   EXPECT_EQ(3, found);
   proc.waitChecked();
 }
@@ -255,8 +277,8 @@ TEST(PopenSubprocessTest, PopenRead) {
 struct WriteFileAfterFork
     : public Subprocess::DangerousPostForkPreExecCallback {
   explicit WriteFileAfterFork(std::string filename)
-    : filename_(std::move(filename)) {}
-  virtual ~WriteFileAfterFork() {}
+      : filename_(std::move(filename)) {}
+  ~WriteFileAfterFork() override {}
   int operator()() override {
     return writeFile(std::string("ok"), filename_.c_str()) ? 0 : errno;
   }
@@ -268,9 +290,8 @@ TEST(AfterForkCallbackSubprocessTest, TestAfterForkCallbackSuccess) {
   // Trigger a file write from the child.
   WriteFileAfterFork write_cob("good_file");
   Subprocess proc(
-    std::vector<std::string>{"/bin/echo"},
-    Subprocess::Options().dangerousPostForkPreExecCallback(&write_cob)
-  );
+      std::vector<std::string>{"/bin/echo"},
+      Subprocess::Options().dangerousPostForkPreExecCallback(&write_cob));
   // The file gets written immediately.
   std::string s;
   EXPECT_TRUE(readFile(write_cob.filename_.c_str(), s));
@@ -283,18 +304,17 @@ TEST(AfterForkCallbackSubprocessTest, TestAfterForkCallbackError) {
   // The child will try to write to a file, whose directory does not exist.
   WriteFileAfterFork write_cob("bad/file");
   EXPECT_THROW(
-    Subprocess proc(
-      std::vector<std::string>{"/bin/echo"},
-      Subprocess::Options().dangerousPostForkPreExecCallback(&write_cob)
-    ),
-    SubprocessSpawnError
-  );
+      Subprocess proc(
+          std::vector<std::string>{"/bin/echo"},
+          Subprocess::Options().dangerousPostForkPreExecCallback(&write_cob)),
+      SubprocessSpawnError);
   EXPECT_FALSE(fs::exists(write_cob.filename_));
 }
 
 TEST(CommunicateSubprocessTest, SimpleRead) {
-  Subprocess proc(std::vector<std::string>{ "/bin/echo", "-n", "foo", "bar"},
-                  Subprocess::pipeStdout());
+  Subprocess proc(
+      std::vector<std::string>{"/bin/echo", "-n", "foo", "bar"},
+      Subprocess::Options().pipeStdout());
   auto p = proc.communicate();
   EXPECT_EQ("foo bar", p.first);
   proc.waitChecked();
@@ -309,7 +329,7 @@ TEST(CommunicateSubprocessTest, BigWrite) {
     data.append(line);
   }
 
-  Subprocess proc("wc -l", Subprocess::pipeStdin() | Subprocess::pipeStdout());
+  Subprocess proc("wc -l", Subprocess::Options().pipeStdin().pipeStdout());
   auto p = proc.communicate(data);
   EXPECT_EQ(folly::format("{}\n", numLines).str(), p.first);
   proc.waitChecked();
@@ -321,8 +341,7 @@ TEST(CommunicateSubprocessTest, Duplex) {
   const int bytes = 10 << 20;
   std::string line(bytes, 'x');
 
-  Subprocess proc("tr a-z A-Z",
-                  Subprocess::pipeStdin() | Subprocess::pipeStdout());
+  Subprocess proc("tr a-z A-Z", Subprocess::Options().pipeStdin().pipeStdout());
   auto p = proc.communicate(line);
   EXPECT_EQ(bytes, p.first.size());
   EXPECT_EQ(std::string::npos, p.first.find_first_not_of('X'));
@@ -348,11 +367,15 @@ TEST(CommunicateSubprocessTest, Duplex2) {
     }
 
     std::vector<std::string> cmd({
-      "sed", "-u",
-      "-e", "s/a test/a successful test/",
-      "-e", "/^another line/w/dev/stderr",
+        "sed",
+        "-u",
+        "-e",
+        "s/a test/a successful test/",
+        "-e",
+        "/^another line/w/dev/stderr",
     });
-    auto options = Subprocess::pipeStdin().pipeStdout().pipeStderr().usePath();
+    auto options =
+        Subprocess::Options().pipeStdin().pipeStdout().pipeStderr().usePath();
     Subprocess proc(cmd, options);
     auto out = proc.communicateIOBuf(std::move(input));
     proc.waitChecked();
@@ -431,7 +454,7 @@ bool readToString(int fd, std::string& buf, size_t maxSize) {
   return (n == 0);
 }
 
-}  // namespace
+} // namespace
 
 TEST(CommunicateSubprocessTest, Chatty) {
   checkFdLeak([] {
@@ -440,19 +463,20 @@ TEST(CommunicateSubprocessTest, Chatty) {
     int wcount = 0;
     int rcount = 0;
 
-    auto options = Subprocess::pipeStdin().pipeStdout().pipeStderr().usePath();
-    std::vector<std::string> cmd {
-      "sed",
-      "-u",
-      "-e",
-      "s/a test/a successful test/",
+    auto options =
+        Subprocess::Options().pipeStdin().pipeStdout().pipeStderr().usePath();
+    std::vector<std::string> cmd{
+        "sed",
+        "-u",
+        "-e",
+        "s/a test/a successful test/",
     };
 
     Subprocess proc(cmd, options);
 
-    auto writeCallback = [&] (int pfd, int cfd) -> bool {
-      EXPECT_EQ(0, cfd);  // child stdin
-      EXPECT_EQ(rcount, wcount);  // chatty, one read for every write
+    auto writeCallback = [&](int pfd, int cfd) -> bool {
+      EXPECT_EQ(0, cfd); // child stdin
+      EXPECT_EQ(rcount, wcount); // chatty, one read for every write
 
       auto msg = folly::to<std::string>("a test ", wcount, "\n");
 
@@ -468,7 +492,7 @@ TEST(CommunicateSubprocessTest, Chatty) {
 
     bool eofSeen = false;
 
-    auto readCallback = [&] (int pfd, int cfd) -> bool {
+    auto readCallback = [&](int pfd, int cfd) -> bool {
       std::string lineBuf;
 
       if (cfd != 1) {
@@ -499,7 +523,7 @@ TEST(CommunicateSubprocessTest, Chatty) {
 
       EXPECT_EQ(expected, lineBuf);
 
-      if (wcount != lineCount) {  // still more to write...
+      if (wcount != lineCount) { // still more to write...
         proc.enableNotifications(0, true);
       }
 
@@ -520,8 +544,7 @@ TEST(CommunicateSubprocessTest, TakeOwnershipOfPipes) {
   std::vector<Subprocess::ChildPipe> pipes;
   {
     Subprocess proc(
-      "echo $'oh\\nmy\\ncat' | wc -l &", Subprocess::pipeStdout()
-    );
+        "echo $'oh\\nmy\\ncat' | wc -l &", Subprocess::Options().pipeStdout());
     pipes = proc.takeOwnershipOfPipes();
     proc.waitChecked();
   }

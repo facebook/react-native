@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,34 +16,14 @@
 
 #pragma once
 
-#include <folly/portability/Time.h>
 #include <chrono>
 #include <stdexcept>
 #include <utility>
 
+#include <folly/Chrono.h>
+#include <folly/portability/Time.h>
+
 namespace folly {
-
-#ifdef CLOCK_MONOTONIC_COARSE
-struct monotonic_coarse_clock {
-  typedef std::chrono::milliseconds::rep rep;
-  typedef std::chrono::milliseconds::period period;
-  typedef std::chrono::milliseconds duration;
-  typedef std::chrono::time_point<monotonic_coarse_clock> time_point;
-  constexpr static bool is_steady = true;
-
-  static time_point now() {
-    timespec ts;
-    auto ret = clock_gettime(CLOCK_MONOTONIC_COARSE, &ts);
-    if (ret != 0) {
-      throw std::runtime_error("Error using CLOCK_MONOTONIC_COARSE.");
-    }
-    return time_point(
-        duration((ts.tv_sec * 1000) + ((ts.tv_nsec / 1000) / 1000)));
-  }
-};
-#else
-using monotonic_coarse_clock = std::chrono::steady_clock;
-#endif
 
 using monotonic_clock = std::chrono::steady_clock;
 
@@ -62,9 +42,9 @@ using monotonic_clock = std::chrono::steady_clock;
  *
  * Example 1:
  *
- *  coarse_stop_watch<std::seconds> watch;
+ *  coarse_stop_watch<std::chrono::seconds> watch;
  *  do_something();
- *  std::cout << "time elapsed: " << watch.elapsed() << std::endl;
+ *  std::cout << "time elapsed: " << watch.elapsed().count() << std::endl;
  *
  *  auto const ttl = 60_s;
  *  if (watch.elapsed(ttl)) {
@@ -293,14 +273,15 @@ struct custom_stop_watch {
  *
  * Example:
  *
- *  coarse_stop_watch<std::seconds> watch;
+ *  coarse_stop_watch<std::chrono::seconds> watch;
  *  do_something();
- *  std::cout << "time elapsed: " << watch.elapsed() << std::endl;
+ *  std::cout << "time elapsed: " << watch.elapsed().count() << std::endl;
  *
  * @author: Marcelo Juchem <marcelo@fb.com>
  */
-template <typename Duration = monotonic_coarse_clock::duration>
-using coarse_stop_watch = custom_stop_watch<monotonic_coarse_clock, Duration>;
+template <typename Duration = folly::chrono::coarse_steady_clock::duration>
+using coarse_stop_watch =
+    custom_stop_watch<folly::chrono::coarse_steady_clock, Duration>;
 
 /**
  * A type alias for `custom_stop_watch` that uses a monotonic clock as the time
@@ -313,12 +294,12 @@ using coarse_stop_watch = custom_stop_watch<monotonic_coarse_clock, Duration>;
  *
  * Example:
  *
- *  stop_watch<std::seconds> watch;
+ *  stop_watch<std::chrono::seconds> watch;
  *  do_something();
- *  std::cout << "time elapsed: " << watch.elapsed() << std::endl;
+ *  std::cout << "time elapsed: " << watch.elapsed().count() << std::endl;
  *
  * @author: Marcelo Juchem <marcelo@fb.com>
  */
-template <typename Duration = monotonic_clock::duration>
-using stop_watch = custom_stop_watch<monotonic_clock, Duration>;
-}
+template <typename Duration = std::chrono::steady_clock::duration>
+using stop_watch = custom_stop_watch<std::chrono::steady_clock, Duration>;
+} // namespace folly

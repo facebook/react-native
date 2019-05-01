@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ std::string CursorBase<Derived, BufType>::readTerminatedString(
   auto result = readWhile(keepReading);
   // skip over the terminator character
   if (isAtEnd()) {
-    std::__throw_out_of_range("terminator not found");
+    throw_exception<std::out_of_range>("terminator not found");
   }
   skip(1);
 
@@ -105,6 +105,6 @@ void CursorBase<Derived, BufType>::skipWhile(const Predicate& predicate) {
   CursorNoopAppender appender;
   readWhile(predicate, appender);
 }
-}
-}
-} // folly::io::detail
+} // namespace detail
+} // namespace io
+} // namespace folly

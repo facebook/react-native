@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,8 @@
 #include <folly/portability/GTest.h>
 #include <glog/logging.h>
 
-namespace folly { namespace test {
+namespace folly {
+namespace test {
 
 namespace {
 
@@ -35,9 +36,10 @@ std::string getHelperPath() {
   return path.string();
 }
 
-std::string callHelper(std::initializer_list<std::string> args,
-                       int expectedExitCode = 0,
-                       int stdoutFd = -1) {
+std::string callHelper(
+    std::initializer_list<std::string> args,
+    int expectedExitCode = 0,
+    int stdoutFd = -1) {
   static std::string helperPath = getHelperPath();
 
   std::vector<std::string> allArgs;
@@ -60,7 +62,7 @@ std::string callHelper(std::initializer_list<std::string> args,
   return p.first;
 }
 
-}  // namespace
+} // namespace
 
 TEST(ProgramOptionsTest, Errors) {
   callHelper({}, 1);
@@ -75,6 +77,7 @@ TEST(ProgramOptionsTest, Help) {
   callHelper({"--help"});
   callHelper({"--help", "foo"});
   callHelper({"--help", "bar"});
+  callHelper({"--help", "--", "bar"});
   callHelper({"help"});
   callHelper({"help", "foo"});
   callHelper({"help", "bar"});
@@ -82,11 +85,28 @@ TEST(ProgramOptionsTest, Help) {
   // wrong command name
   callHelper({"--help", "qux"}, 1);
   callHelper({"help", "qux"}, 1);
+
+  // anything after -- is parsed as arguments
+  callHelper({"--", "help", "bar"}, 1);
 }
 
 TEST(ProgramOptionsTest, DevFull) {
   folly::File full("/dev/full", O_RDWR);
   callHelper({"--help"}, 1, full.fd());
+}
+
+TEST(ProgramOptionsTest, CutArguments) {
+  // anything after -- is parsed as arguments
+  EXPECT_EQ(
+      "running foo\n"
+      "foo global-foo 43\n"
+      "foo local-foo 42\n"
+      "foo arg b\n"
+      "foo arg --local-foo\n"
+      "foo arg 44\n"
+      "foo arg a\n",
+      callHelper(
+          {"foo", "--global-foo", "43", "--", "b", "--local-foo", "44", "a"}));
 }
 
 TEST(ProgramOptionsTest, Success) {
@@ -102,8 +122,7 @@ TEST(ProgramOptionsTest, Success) {
       "foo local-foo 44\n"
       "foo arg a\n"
       "foo arg b\n",
-      callHelper({"--global-foo", "43", "foo", "--local-foo", "44",
-                  "a", "b"}));
+      callHelper({"--global-foo", "43", "foo", "--local-foo", "44", "a", "b"}));
 
   // Check that global flags can still be given after the command
   EXPECT_EQ(
@@ -112,8 +131,7 @@ TEST(ProgramOptionsTest, Success) {
       "foo local-foo 44\n"
       "foo arg a\n"
       "foo arg b\n",
-      callHelper({"foo", "--global-foo", "43", "--local-foo", "44",
-                 "a", "b"}));
+      callHelper({"foo", "--global-foo", "43", "--local-foo", "44", "a", "b"}));
 }
 
 TEST(ProgramOptionsTest, Aliases) {
@@ -123,8 +141,17 @@ TEST(ProgramOptionsTest, Aliases) {
       "foo local-foo 44\n"
       "foo arg a\n"
       "foo arg b\n",
-      callHelper({"--global-foo", "43", "bar", "--local-foo", "44",
-                  "a", "b"}));
+      callHelper({"--global-foo", "43", "bar", "--local-foo", "44", "a", "b"}));
 }
 
-}}  // namespaces
+TEST(ProgramOptionsTest, BuiltinCommand) {
+  NestedCommandLineApp app;
+  ASSERT_TRUE(app.isBuiltinCommand(NestedCommandLineApp::kHelpCommand.str()));
+  ASSERT_TRUE(
+      app.isBuiltinCommand(NestedCommandLineApp::kVersionCommand.str()));
+  ASSERT_FALSE(app.isBuiltinCommand(
+      NestedCommandLineApp::kHelpCommand.str() + "nonsense"));
+}
+
+} // namespace test
+} // namespace folly

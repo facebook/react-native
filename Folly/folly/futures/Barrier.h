@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,8 @@
 #include <folly/futures/Future.h>
 #include <folly/futures/Promise.h>
 
-namespace folly { namespace futures {
+namespace folly {
+namespace futures {
 
 // A folly::Future-istic Barrier synchronization primitive
 //
@@ -70,7 +71,7 @@ class Barrier {
   struct ControlBlock {
     // Reader count in most significant 32 bits
     // Value in least significant 32 bits
-    std::atomic<uint64_t> valueAndReaderCount;
+    std::atomic<uint64_t> valueAndReaderCount{0};
   };
 
   struct ControlBlockAndPromise {
@@ -93,4 +94,5 @@ class Barrier {
   std::atomic<ControlBlock*> controlBlock_;
 };
 
-}}  // namespaces
+} // namespace futures
+} // namespace folly

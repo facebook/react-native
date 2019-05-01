@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ namespace test {
 
 class MockTimeoutManager : public folly::TimeoutManager {
  public:
-
   MOCK_METHOD2(
       attachTimeoutManager,
       void(folly::AsyncTimeout*, folly::TimeoutManager::InternalEnum));
@@ -41,5 +40,5 @@ class MockTimeoutManager : public folly::TimeoutManager {
   MOCK_METHOD0(bumpHandlingTime, void());
   MOCK_METHOD0(isInTimeoutManagerThread, bool());
 };
-}
-}
+} // namespace test
+} // namespace folly

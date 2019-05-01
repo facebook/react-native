@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,9 @@
 #include <folly/experimental/TestUtil.h>
 #include <folly/portability/GTest.h>
 
-namespace folly { namespace symbolizer { namespace test {
+namespace folly {
+namespace symbolizer {
+namespace test {
 
 using folly::test::TemporaryFile;
 
@@ -34,8 +36,9 @@ void writeAll(int fd, const char* str) {
 void expect(LineReader& lr, const char* expected) {
   StringPiece line;
   size_t expectedLen = strlen(expected);
-  EXPECT_EQ(expectedLen != 0 ? LineReader::kReading : LineReader::kEof,
-            lr.readLine(line));
+  EXPECT_EQ(
+      expectedLen != 0 ? LineReader::kReading : LineReader::kEof,
+      lr.readLine(line));
   EXPECT_EQ(expectedLen, line.size());
   EXPECT_EQ(std::string(expected, expectedLen), line.str());
 }
@@ -43,12 +46,13 @@ void expect(LineReader& lr, const char* expected) {
 TEST(LineReader, Simple) {
   TemporaryFile file;
   int fd = file.fd();
-  writeAll(fd,
-           "Meow\n"
-           "Hello world\n"
-           "This is a long line. It is longer than the other lines.\n"
-           "\n"
-           "Incomplete last line");
+  writeAll(
+      fd,
+      "Meow\n"
+      "Hello world\n"
+      "This is a long line. It is longer than the other lines.\n"
+      "\n"
+      "Incomplete last line");
 
   {
     CHECK_ERR(lseek(fd, 0, SEEK_SET));
@@ -81,5 +85,6 @@ TEST(LineReader, Simple) {
     expect(lr, "");
   }
 }
-
-}}}  // namespaces
+} // namespace test
+} // namespace symbolizer
+} // namespace folly

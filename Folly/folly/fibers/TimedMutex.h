@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 #pragma once
 
-#include <pthread.h>
-
 #include <folly/IntrusiveList.h>
 #include <folly/SpinLock.h>
 #include <folly/fibers/GenericBaton.h>
@@ -31,7 +29,7 @@ namespace fibers {
  **/
 class TimedMutex {
  public:
-  TimedMutex() {}
+  TimedMutex() noexcept {}
 
   ~TimedMutex() {
     DCHECK(threadWaiters_.empty());
@@ -93,13 +91,8 @@ class TimedMutex {
 template <typename BatonType>
 class TimedRWMutex {
  public:
-  TimedRWMutex() {
-    pthread_spin_init(&lock_, PTHREAD_PROCESS_PRIVATE);
-  }
-
-  ~TimedRWMutex() {
-    pthread_spin_destroy(&lock_);
-  }
+  TimedRWMutex() = default;
+  ~TimedRWMutex() = default;
 
   TimedRWMutex(const TimedRWMutex& rhs) = delete;
   TimedRWMutex& operator=(const TimedRWMutex& rhs) = delete;
@@ -223,7 +216,7 @@ class TimedRWMutex {
       boost::intrusive::constant_time_size<true>>
       MutexWaiterList;
 
-  pthread_spinlock_t lock_; //< lock protecting the internal state
+  folly::SpinLock lock_; //< lock protecting the internal state
   // (state_, read_waiters_, etc.)
   State state_ = State::UNLOCKED;
 
@@ -235,7 +228,7 @@ class TimedRWMutex {
   MutexWaiterList read_waiters_; //< List of thread / fibers waiting for
   //  shared access
 };
-}
-}
+} // namespace fibers
+} // namespace folly
 
-#include "TimedMutex-inl.h"
+#include <folly/fibers/TimedMutex-inl.h>

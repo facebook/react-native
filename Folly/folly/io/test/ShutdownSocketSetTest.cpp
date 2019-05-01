@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,8 @@ using folly::ShutdownSocketSet;
 
 namespace fsp = folly::portability::sockets;
 
-namespace folly { namespace test {
+namespace folly {
+namespace test {
 
 ShutdownSocketSet shutdownSocketSet;
 
@@ -38,26 +39,21 @@ class Server {
 
   void stop(bool abortive);
   void join();
-  int port() const { return port_; }
+  int port() const {
+    return port_;
+  }
   int closeClients(bool abortive);
 
  private:
   int acceptSocket_;
   int port_;
-  enum StopMode {
-    NO_STOP,
-    ORDERLY,
-    ABORTIVE
-  };
+  enum StopMode { NO_STOP, ORDERLY, ABORTIVE };
   std::atomic<StopMode> stop_;
   std::thread serverThread_;
   std::vector<int> fds_;
 };
 
-Server::Server()
-  : acceptSocket_(-1),
-    port_(0),
-    stop_(NO_STOP) {
+Server::Server() : acceptSocket_(-1), port_(0), stop_(NO_STOP) {
   acceptSocket_ = fsp::socket(PF_INET, SOCK_STREAM, 0);
   CHECK_ERR(acceptSocket_);
   shutdownSocketSet.add(acceptSocket_);
@@ -66,16 +62,14 @@ Server::Server()
   addr.sin_family = AF_INET;
   addr.sin_port = 0;
   addr.sin_addr.s_addr = INADDR_ANY;
-  CHECK_ERR(bind(acceptSocket_,
-                 reinterpret_cast<const sockaddr*>(&addr),
-                 sizeof(addr)));
+  CHECK_ERR(bind(
+      acceptSocket_, reinterpret_cast<const sockaddr*>(&addr), sizeof(addr)));
 
   CHECK_ERR(listen(acceptSocket_, 10));
 
   socklen_t addrLen = sizeof(addr);
-  CHECK_ERR(getsockname(acceptSocket_,
-                        reinterpret_cast<sockaddr*>(&addr),
-                        &addrLen));
+  CHECK_ERR(
+      getsockname(acceptSocket_, reinterpret_cast<sockaddr*>(&addr), &addrLen));
 
   port_ = ntohs(addr.sin_port);
 
@@ -83,14 +77,13 @@ Server::Server()
     while (stop_ == NO_STOP) {
       sockaddr_in peer;
       socklen_t peerLen = sizeof(peer);
-      int fd = accept(acceptSocket_,
-                      reinterpret_cast<sockaddr*>(&peer),
-                      &peerLen);
+      int fd =
+          accept(acceptSocket_, reinterpret_cast<sockaddr*>(&peer), &peerLen);
       if (fd == -1) {
         if (errno == EINTR) {
           continue;
         }
-        if (errno == EINVAL || errno == ENOTSOCK) {  // socket broken
+        if (errno == EINVAL || errno == ENOTSOCK) { // socket broken
           break;
         }
       }
@@ -137,10 +130,9 @@ int createConnectedSocket(int port) {
   sockaddr_in addr;
   addr.sin_family = AF_INET;
   addr.sin_port = htons(port);
-  addr.sin_addr.s_addr = htonl((127 << 24) | 1);  // XXX
-  CHECK_ERR(connect(sock,
-                    reinterpret_cast<const sockaddr*>(&addr),
-                    sizeof(addr)));
+  addr.sin_addr.s_addr = htonl((127 << 24) | 1); // XXX
+  CHECK_ERR(
+      connect(sock, reinterpret_cast<const sockaddr*>(&addr), sizeof(addr)));
   return sock;
 }
 
@@ -169,7 +161,7 @@ void runCloseTest(bool abortive) {
 
   stopper.join();
 
-  EXPECT_EQ(0, server.closeClients(false));  // closed by server when it exited
+  EXPECT_EQ(0, server.closeClients(false)); // closed by server when it exited
 }
 
 TEST(ShutdownSocketSetTest, OrderlyClose) {
@@ -221,5 +213,5 @@ TEST(ShutdownSocketSetTest, OrderlyKill) {
 TEST(ShutdownSocketSetTest, AbortiveKill) {
   runKillTest(true);
 }
-
-}}  // namespaces
+} // namespace test
+} // namespace folly

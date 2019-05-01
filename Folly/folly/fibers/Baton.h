@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,13 @@
 
 #include <atomic>
 
+#include <folly/Portability.h>
 #include <folly/detail/Futex.h>
 #include <folly/fibers/TimeoutController.h>
+
+#if FOLLY_HAS_COROUTINES
+#include <experimental/coroutine>
+#endif
 
 namespace folly {
 namespace fibers {
@@ -36,9 +41,27 @@ class Baton {
  public:
   class TimeoutHandler;
 
-  Baton();
+  class Waiter {
+   public:
+    virtual void post() = 0;
 
-  ~Baton() {}
+    virtual ~Waiter() {}
+  };
+
+  Baton() noexcept;
+
+  ~Baton() noexcept = default;
+
+  bool ready() const {
+    auto state = waiter_.load();
+    return state == POSTED;
+  }
+
+  /**
+   * Registers a waiter for the baton. The waiter will be notified when
+   * the baton is posted.
+   */
+  void setWaiter(Waiter& waiter);
 
   /**
    * Puts active fiber to sleep. Returns when post is called.
@@ -64,38 +87,111 @@ class Baton {
   void wait(F&& mainContextFunc);
 
   /**
-   * This is here only not break tao/locks. Please don't use it, because it is
-   * inefficient when used on Fibers.
+   * Checks if the baton has been posted without blocking.
+   *
+   * @return    true iff the baton has been posted.
    */
-  template <typename C, typename D = typename C::duration>
-  bool timed_wait(const std::chrono::time_point<C, D>& timeout);
+  bool try_wait();
 
   /**
-   * Puts active fiber to sleep. Returns when post is called.
+   * Puts active fiber to sleep. Returns when post is called or the timeout
+   * expires.
    *
-   * @param timeout Baton will be automatically awaken if timeout is hit
+   * @param timeout Baton will be automatically awaken if timeout expires
    *
    * @return true if was posted, false if timeout expired
    */
-  bool timed_wait(TimeoutController::Duration timeout);
+  template <typename Rep, typename Period>
+  bool try_wait_for(const std::chrono::duration<Rep, Period>& timeout) {
+    return try_wait_for(timeout, [] {});
+  }
 
   /**
-   * Puts active fiber to sleep. Returns when post is called.
+   * Puts active fiber to sleep. Returns when post is called or the timeout
+   * expires.
    *
-   * @param timeout Baton will be automatically awaken if timeout is hit
+   * @param timeout Baton will be automatically awaken if timeout expires
    * @param mainContextFunc this function is immediately executed on the main
    *        context.
    *
    * @return true if was posted, false if timeout expired
    */
-  template <typename F>
-  bool timed_wait(TimeoutController::Duration timeout, F&& mainContextFunc);
+  template <typename Rep, typename Period, typename F>
+  bool try_wait_for(
+      const std::chrono::duration<Rep, Period>& timeout,
+      F&& mainContextFunc);
 
   /**
-   * Checks if the baton has been posted without blocking.
-   * @return    true iff the baton has been posted.
+   * Puts active fiber to sleep. Returns when post is called or the deadline
+   * expires.
+   *
+   * @param timeout Baton will be automatically awaken if deadline expires
+   *
+   * @return true if was posted, false if timeout expired
    */
-  bool try_wait();
+  template <typename Clock, typename Duration>
+  bool try_wait_until(
+      const std::chrono::time_point<Clock, Duration>& deadline) {
+    return try_wait_until(deadline, [] {});
+  }
+
+  /**
+   * Puts active fiber to sleep. Returns when post is called or the deadline
+   * expires.
+   *
+   * @param timeout Baton will be automatically awaken if deadline expires
+   * @param mainContextFunc this function is immediately executed on the main
+   *        context.
+   *
+   * @return true if was posted, false if timeout expired
+   */
+  template <typename Clock, typename Duration, typename F>
+  bool try_wait_until(
+      const std::chrono::time_point<Clock, Duration>& deadline,
+      F&& mainContextFunc);
+
+  /**
+   * Puts active fiber to sleep. Returns when post is called or the deadline
+   * expires.
+   *
+   * @param timeout Baton will be automatically awaken if deadline expires
+   * @param mainContextFunc this function is immediately executed on the main
+   *        context.
+   *
+   * @return true if was posted, false if timeout expired
+   */
+  template <typename Clock, typename Duration, typename F>
+  bool try_wait_for(
+      const std::chrono::time_point<Clock, Duration>& deadline,
+      F&& mainContextFunc);
+
+  /// Alias to try_wait_for. Deprecated.
+  template <typename Rep, typename Period>
+  bool timed_wait(const std::chrono::duration<Rep, Period>& timeout) {
+    return try_wait_for(timeout);
+  }
+
+  /// Alias to try_wait_for. Deprecated.
+  template <typename Rep, typename Period, typename F>
+  bool timed_wait(
+      const std::chrono::duration<Rep, Period>& timeout,
+      F&& mainContextFunc) {
+    return try_wait_for(timeout, static_cast<F&&>(mainContextFunc));
+  }
+
+  /// Alias to try_wait_until. Deprecated.
+  template <typename Clock, typename Duration>
+  bool timed_wait(const std::chrono::time_point<Clock, Duration>& deadline) {
+    return try_wait_until(deadline);
+  }
+
+  /// Alias to try_wait_until. Deprecated.
+  template <typename Clock, typename Duration, typename F>
+  bool timed_wait(
+      const std::chrono::time_point<Clock, Duration>& deadline,
+      F&& mainContextFunc) {
+    return try_wait_until(deadline, static_cast<F&&>(mainContextFunc));
+  }
 
   /**
    * Wakes up Fiber which was waiting on this Baton (or if no Fiber is waiting,
@@ -135,6 +231,8 @@ class Baton {
   };
 
  private:
+  class FiberWaiter;
+
   enum {
     /**
      * Must be positive.  If multiple threads are actively using a
@@ -154,7 +252,7 @@ class Baton {
     PreBlockAttempts = 300,
   };
 
-  explicit Baton(intptr_t state) : waitingFiber_(state){}
+  explicit Baton(intptr_t state) : waiter_(state) {}
 
   void postHelper(intptr_t new_value);
   void postThread();
@@ -178,14 +276,49 @@ class Baton {
   static constexpr intptr_t THREAD_WAITING = -3;
 
   union {
-    std::atomic<intptr_t> waitingFiber_;
+    std::atomic<intptr_t> waiter_;
     struct {
-      folly::detail::Futex<> futex;
+      folly::detail::Futex<> futex{};
       int32_t _unused_packing;
     } futex_;
   };
 };
+
+#if FOLLY_HAS_COROUTINES
+namespace detail {
+class BatonAwaitableWaiter : public Baton::Waiter {
+ public:
+  explicit BatonAwaitableWaiter(Baton& baton) : baton_(baton) {}
+
+  void post() override {
+    assert(h_);
+    h_();
+  }
+
+  bool await_ready() const {
+    return baton_.ready();
+  }
+
+  void await_resume() {}
+
+  void await_suspend(std::experimental::coroutine_handle<> h) {
+    assert(!h_);
+    h_ = std::move(h);
+    baton_.setWaiter(*this);
+  }
+
+ private:
+  std::experimental::coroutine_handle<> h_;
+  Baton& baton_;
+};
+} // namespace detail
+
+inline detail::BatonAwaitableWaiter /* implicit */ operator co_await(
+    Baton& baton) {
+  return detail::BatonAwaitableWaiter(baton);
 }
-}
+#endif
+} // namespace fibers
+} // namespace folly
 
 #include <folly/fibers/Baton-inl.h>

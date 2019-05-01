@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,12 @@
  */
 
 #pragma once
+
+#ifndef __has_attribute
+#define FOLLY_HAS_ATTRIBUTE(x) 0
+#else
+#define FOLLY_HAS_ATTRIBUTE(x) __has_attribute(x)
+#endif
 
 #ifndef __has_cpp_attribute
 #define FOLLY_HAS_CPP_ATTRIBUTE(x) 0
@@ -47,10 +53,34 @@
  *     FOLLY_FALLTHROUGH; // no warning: annotated fall-through
  * }
  */
-#if FOLLY_HAS_CPP_ATTRIBUTE(clang::fallthrough)
+#if FOLLY_HAS_CPP_ATTRIBUTE(fallthrough)
+#define FOLLY_FALLTHROUGH [[fallthrough]]
+#elif FOLLY_HAS_CPP_ATTRIBUTE(clang::fallthrough)
 #define FOLLY_FALLTHROUGH [[clang::fallthrough]]
+#elif FOLLY_HAS_CPP_ATTRIBUTE(gnu::fallthrough)
+#define FOLLY_FALLTHROUGH [[gnu::fallthrough]]
 #else
 #define FOLLY_FALLTHROUGH
+#endif
+
+/**
+ *  Maybe_unused indicates that a function, variable or parameter might or
+ *  might not be used, e.g.
+ *
+ *  int foo(FOLLY_MAYBE_UNUSED int x) {
+ *    #ifdef USE_X
+ *      return x;
+ *    #else
+ *      return 0;
+ *    #endif
+ *  }
+ */
+#if FOLLY_HAS_CPP_ATTRIBUTE(maybe_unused)
+#define FOLLY_MAYBE_UNUSED [[maybe_unused]]
+#elif FOLLY_HAS_ATTRIBUTE(__unused__) || __GNUC__
+#define FOLLY_MAYBE_UNUSED __attribute__((__unused__))
+#else
+#define FOLLY_MAYBE_UNUSED
 #endif
 
 /**
@@ -72,6 +102,20 @@
  */
 #if FOLLY_HAS_EXTENSION(nullability)
 #define FOLLY_NULLABLE _Nullable
+#define FOLLY_NONNULL _Nonnull
 #else
 #define FOLLY_NULLABLE
+#define FOLLY_NONNULL
+#endif
+
+/**
+ * "Cold" indicates to the compiler that a function is only expected to be
+ * called from unlikely code paths. It can affect decisions made by the
+ * optimizer both when processing the function body and when analyzing
+ * call-sites.
+ */
+#if __GNUC__
+#define FOLLY_COLD __attribute__((__cold__))
+#else
+#define FOLLY_COLD
 #endif

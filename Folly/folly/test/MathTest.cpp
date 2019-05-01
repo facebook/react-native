@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -133,8 +133,8 @@ void runDivTests() {
         continue;
       }
       EXPECT_EQ(divCeil(n, d), (referenceDivCeil<T, C>(n, d))) << n << "/" << d;
-      EXPECT_EQ(divFloor(n, d), (referenceDivFloor<T, C>(n, d))) << n << "/"
-                                                                 << d;
+      EXPECT_EQ(divFloor(n, d), (referenceDivFloor<T, C>(n, d)))
+          << n << "/" << d;
       EXPECT_EQ(divTrunc(n, d), n / d) << n << "/" << d;
       EXPECT_EQ(divRoundAway(n, d), (referenceDivRoundAway<T, C>(n, d)))
           << n << "/" << d;
@@ -146,7 +146,7 @@ void runDivTests() {
     }
   }
 }
-}
+} // namespace
 
 TEST(Bits, divTestInt8) {
   runDivTests<int8_t, int8_t, int64_t>();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "SysMembarrier.h"
+#include <folly/portability/SysMembarrier.h>
 
 #include <mutex>
 
@@ -26,10 +26,12 @@
 #define FOLLY_USE_SYS_MEMBARRIER 1
 #if !defined(__NR_membarrier)
 #define __NR_membarrier 324
+#endif
+#if __has_include(<linux/membarrier.h>)
+#include <linux/membarrier.h> // @manual
+#else
 #define MEMBARRIER_CMD_QUERY 0
 #define MEMBARRIER_CMD_SHARED 1
-#elif FOLLY_HAVE_LINUX_MEMBARRIER_H
-#include <linux/membarrier.h>
 #endif
 #endif
 
@@ -60,5 +62,5 @@ int sysMembarrier() {
   return -1;
 #endif
 }
-}
-}
+} // namespace detail
+} // namespace folly

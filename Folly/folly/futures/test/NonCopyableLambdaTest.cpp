@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,10 @@ TEST(NonCopyableLambda, basic) {
   Promise<int> promise;
   Future<int> future = promise.getFuture();
 
-  Future<Unit>().then(std::bind(
-      [](Promise<int>& p2) mutable { p2.setValue(123); },
-      std::move(promise)));
+  Future<Unit>().thenValue(std::bind(
+      [](Promise<int>& p2, folly::Unit) mutable { p2.setValue(123); },
+      std::move(promise),
+      std::placeholders::_1));
 
   // The previous statement can be simplified in C++14:
   //  Future<Unit>().then([promise = std::move(promise)]() mutable {
@@ -33,21 +34,22 @@ TEST(NonCopyableLambda, basic) {
   //  });
 
   EXPECT_TRUE(future.isReady());
-  EXPECT_EQ(future.get(), 123);
+  EXPECT_EQ(std::move(future).get(), 123);
 }
 
 TEST(NonCopyableLambda, unique_ptr) {
   Promise<Unit> promise;
-  auto int_ptr = folly::make_unique<int>(1);
+  auto int_ptr = std::make_unique<int>(1);
 
   EXPECT_EQ(*int_ptr, 1);
 
-  auto future = promise.getFuture().then(std::bind(
-      [](std::unique_ptr<int>& p) mutable {
+  auto future = promise.getFuture().thenValue(std::bind(
+      [](std::unique_ptr<int>& p, folly::Unit) mutable {
         ++*p;
         return std::move(p);
       },
-      std::move(int_ptr)));
+      std::move(int_ptr),
+      std::placeholders::_1));
 
   // The previous statement can be simplified in C++14:
   //  auto future =
@@ -59,7 +61,7 @@ TEST(NonCopyableLambda, unique_ptr) {
   EXPECT_FALSE(future.isReady());
   promise.setValue();
   EXPECT_TRUE(future.isReady());
-  EXPECT_EQ(*future.get(), 2);
+  EXPECT_EQ(*std::move(future).get(), 2);
 }
 
 TEST(NonCopyableLambda, Function) {
@@ -73,7 +75,7 @@ TEST(NonCopyableLambda, Function) {
   EXPECT_FALSE(future.isReady());
   promise.setValue(100);
   EXPECT_TRUE(future.isReady());
-  EXPECT_EQ(future.get(), 101);
+  EXPECT_EQ(std::move(future).get(), 101);
 }
 
 TEST(NonCopyableLambda, FunctionConst) {
@@ -87,5 +89,5 @@ TEST(NonCopyableLambda, FunctionConst) {
   EXPECT_FALSE(future.isReady());
   promise.setValue(100);
   EXPECT_TRUE(future.isReady());
-  EXPECT_EQ(future.get(), 101);
+  EXPECT_EQ(std::move(future).get(), 101);
 }

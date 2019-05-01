@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,13 @@ namespace folly {
 
 EventBaseThread::EventBaseThread() : EventBaseThread(true) {}
 
-EventBaseThread::EventBaseThread(bool autostart, EventBaseManager* ebm)
+EventBaseThread::EventBaseThread(
+    bool autostart,
+    EventBaseManager* ebm,
+    folly::StringPiece threadName)
     : ebm_(ebm) {
   if (autostart) {
-    start();
+    start(threadName);
   }
 }
 
@@ -47,14 +50,14 @@ bool EventBaseThread::running() const {
   return !!th_;
 }
 
-void EventBaseThread::start() {
+void EventBaseThread::start(folly::StringPiece threadName) {
   if (th_) {
     return;
   }
-  th_ = make_unique<ScopedEventBaseThread>(ebm_);
+  th_ = std::make_unique<ScopedEventBaseThread>(ebm_, threadName);
 }
 
 void EventBaseThread::stop() {
   th_ = nullptr;
 }
-}
+} // namespace folly

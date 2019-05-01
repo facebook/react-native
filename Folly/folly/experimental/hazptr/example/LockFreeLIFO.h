@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,13 +25,15 @@ template <typename T>
 class LockFreeLIFO {
   class Node : public hazptr_obj_base<Node> {
     friend LockFreeLIFO;
+
    public:
     ~Node() {
-      DEBUG_PRINT(this);
+      HAZPTR_DEBUG_PRINT(this);
     }
+
    private:
     Node(T v, Node* n) : value_(v), next_(n) {
-      DEBUG_PRINT(this);
+      HAZPTR_DEBUG_PRINT(this);
     }
     T value_;
     Node* next_;
@@ -39,32 +41,38 @@ class LockFreeLIFO {
 
  public:
   LockFreeLIFO() {
-    DEBUG_PRINT(this);
+    HAZPTR_DEBUG_PRINT(this);
   }
 
   ~LockFreeLIFO() {
-    DEBUG_PRINT(this);
+    HAZPTR_DEBUG_PRINT(this);
   }
 
   void push(T val) {
-    DEBUG_PRINT(this);
+    HAZPTR_DEBUG_PRINT(this);
     auto pnode = new Node(val, head_.load());
-    while (!head_.compare_exchange_weak(pnode->next_, pnode));
+    while (!head_.compare_exchange_weak(pnode->next_, pnode)) {
+      ;
+    }
   }
 
   bool pop(T& val) {
-    DEBUG_PRINT(this);
-    hazptr_owner<Node> hptr;
+    HAZPTR_DEBUG_PRINT(this);
+    hazptr_holder hptr;
     Node* pnode = head_.load();
     do {
-      if (pnode == nullptr)
+      if (pnode == nullptr) {
         return false;
-      if (!hptr.try_protect(pnode, head_))
+      }
+      if (!hptr.try_protect(pnode, head_)) {
         continue;
+      }
       auto next = pnode->next_;
-      if (head_.compare_exchange_weak(pnode, next)) break;
+      if (head_.compare_exchange_weak(pnode, next)) {
+        break;
+      }
     } while (true);
-    hptr.clear();
+    hptr.reset();
     val = pnode->value_;
     pnode->retire();
     return true;
@@ -74,5 +82,5 @@ class LockFreeLIFO {
   std::atomic<Node*> head_ = {nullptr};
 };
 
-} // namespace folly {
-} // namespace hazptr {
+} // namespace hazptr
+} // namespace folly

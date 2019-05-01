@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,15 @@
 #pragma once
 
 #ifndef _WIN32
+
 #include <unistd.h>
+
 #else
+
 #include <cstdint>
-#include <sys/locking.h>
+
+#include <sys/locking.h> // @manual
+
 #include <folly/portability/SysTypes.h>
 
 // This is different from the normal headers because there are a few cases,
@@ -81,9 +86,10 @@ long sysconf(int tp);
 int truncate(const char* path, off_t len);
 int usleep(unsigned int ms);
 ssize_t write(int fh, void const* buf, size_t count);
-}
-}
-}
+} // namespace unistd
+} // namespace portability
+} // namespace folly
 
 /* using override */ using namespace folly::portability::unistd;
+
 #endif

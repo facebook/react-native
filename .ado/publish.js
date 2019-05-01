@@ -19,21 +19,26 @@ function exec(command) {
 }
 
 function doPublish() {
-  const publishBranchName = process.env.publishBranchName;
+  const publishBranchName = process.env.BUILD_SOURCEBRANCH.match(/refs\/heads\/(.*)/)[1];
+  console.log(`Target branch to publish to: ${publishBranchName}`);
 
-  const tempPublishBranch = `publish-${Date.now()}`;
+  const tempPublishBranch = `publish-temp-${Date.now()}`;
 
   const pkgJsonPath = path.resolve(__dirname, "../package.json");
   let pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, "utf8"));
 
   let releaseVersion = pkgJson.version;
 
-  const versionGroups = /(.*-microsoft\.)([0-9]*)/.exec(releaseVersion);
+  console.log(`Using ${`(.*-microsoft)(-${publishBranchName})?\\.([0-9]*)`} to match version`);
+  const branchVersionSuffix = (publishBranchName.match(/fb.*merge/) ? `-${publishBranchName}` : '');
+
+  versionStringRegEx = new RegExp(`(.*-microsoft)(-${publishBranchName})?\\.([0-9]*)`);
+  const versionGroups = versionStringRegEx.exec(releaseVersion);
   if (versionGroups) {
-    releaseVersion = versionGroups[1] + (parseInt(versionGroups[2]) + 1);
+    releaseVersion = versionGroups[1] + branchVersionSuffix + '.' + (parseInt(versionGroups[3]) + 1);
   } else {
     if (releaseVersion.indexOf("-") === -1) {
-      releaseVersion = releaseVersion + "-microsoft.0";
+      releaseVersion = releaseVersion + `-microsoft${branchVersionSuffix}.0`;
     } else {
       console.log("Invalid version to publish");
       exit(1);

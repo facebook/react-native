@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,22 @@
 namespace folly {
 namespace fibers {
 
-inline Baton::Baton() : Baton(NO_WAITER) {
+class Baton::FiberWaiter : public Baton::Waiter {
+ public:
+  void setFiber(Fiber& fiber) {
+    DCHECK(!fiber_);
+    fiber_ = &fiber;
+  }
+
+  void post() override {
+    fiber_->resume();
+  }
+
+ private:
+  Fiber* fiber_{nullptr};
+};
+
+inline Baton::Baton() noexcept : Baton(NO_WAITER) {
   assert(Baton(NO_WAITER).futex_.futex == static_cast<uint32_t>(NO_WAITER));
   assert(Baton(POSTED).futex_.futex == static_cast<uint32_t>(POSTED));
   assert(Baton(TIMEOUT).futex_.futex == static_cast<uint32_t>(TIMEOUT));
@@ -28,7 +43,7 @@ inline Baton::Baton() : Baton(NO_WAITER) {
       static_cast<uint32_t>(THREAD_WAITING));
 
   assert(futex_.futex.is_lock_free());
-  assert(waitingFiber_.is_lock_free());
+  assert(waiter_.is_lock_free());
 }
 
 template <typename F>
@@ -44,20 +59,10 @@ void Baton::wait(F&& mainContextFunc) {
 
 template <typename F>
 void Baton::waitFiber(FiberManager& fm, F&& mainContextFunc) {
-  auto& waitingFiber = waitingFiber_;
-  auto f = [&mainContextFunc, &waitingFiber](Fiber& fiber) mutable {
-    auto baton_fiber = waitingFiber.load();
-    do {
-      if (LIKELY(baton_fiber == NO_WAITER)) {
-        continue;
-      } else if (baton_fiber == POSTED || baton_fiber == TIMEOUT) {
-        fiber.resume();
-        break;
-      } else {
-        throw std::logic_error("Some Fiber is already waiting on this Baton.");
-      }
-    } while (!waitingFiber.compare_exchange_weak(
-        baton_fiber, reinterpret_cast<intptr_t>(&fiber)));
+  FiberWaiter waiter;
+  auto f = [this, &mainContextFunc, &waiter](Fiber& fiber) mutable {
+    waiter.setFiber(fiber);
+    setWaiter(waiter);
 
     mainContextFunc();
   };
@@ -66,9 +71,9 @@ void Baton::waitFiber(FiberManager& fm, F&& mainContextFunc) {
   fm.activeFiber_->preempt(Fiber::AWAITING);
 }
 
-template <typename F>
-bool Baton::timed_wait(
-    TimeoutController::Duration timeout,
+template <typename Rep, typename Period, typename F>
+bool Baton::try_wait_for(
+    const std::chrono::duration<Rep, Period>& timeout,
     F&& mainContextFunc) {
   auto fm = FiberManager::getFiberManagerUnsafe();
 
@@ -87,9 +92,9 @@ bool Baton::timed_wait(
   auto id =
       fm->timeoutManager_->registerTimeout(std::ref(timeoutFunc), timeout);
 
-  waitFiber(*fm, std::move(mainContextFunc));
+  waitFiber(*fm, static_cast<F&&>(mainContextFunc));
 
-  auto posted = waitingFiber_ == POSTED;
+  auto posted = waiter_ == POSTED;
 
   if (!canceled) {
     fm->timeoutManager_->cancel(id);
@@ -98,16 +103,17 @@ bool Baton::timed_wait(
   return posted;
 }
 
-template <typename C, typename D>
-bool Baton::timed_wait(const std::chrono::time_point<C, D>& timeout) {
-  auto now = C::now();
+template <typename Clock, typename Duration, typename F>
+bool Baton::try_wait_until(
+    const std::chrono::time_point<Clock, Duration>& deadline,
+    F&& mainContextFunc) {
+  auto now = Clock::now();
 
-  if (LIKELY(now <= timeout)) {
-    return timed_wait(
-        std::chrono::duration_cast<std::chrono::milliseconds>(timeout - now));
+  if (LIKELY(now <= deadline)) {
+    return try_wait_for(deadline - now, static_cast<F&&>(mainContextFunc));
   } else {
-    return timed_wait(TimeoutController::Duration(0));
+    return try_wait_for(Duration{}, static_cast<F&&>(mainContextFunc));
   }
 }
-}
-}
+} // namespace fibers
+} // namespace folly

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,55 +18,57 @@
 #include <folly/test/DeterministicSchedule.h>
 
 #include <chrono>
+#include <condition_variable>
 #include <functional>
 #include <ratio>
 #include <thread>
 
 #include <glog/logging.h>
 
-#include <folly/portability/Time.h>
+#include <folly/Chrono.h>
 #include <folly/portability/GTest.h>
+#include <folly/portability/Time.h>
 
 using namespace folly::detail;
 using namespace folly::test;
 using namespace std;
 using namespace std::chrono;
+using folly::chrono::coarse_steady_clock;
 
 typedef DeterministicSchedule DSched;
 
-template <template<typename> class Atom>
-void run_basic_thread(
-    Futex<Atom>& f) {
-  EXPECT_TRUE(f.futexWait(0));
+template <template <typename> class Atom>
+void run_basic_thread(Futex<Atom>& f) {
+  EXPECT_EQ(FutexResult::AWOKEN, futexWait(&f, 0));
 }
 
-template <template<typename> class Atom>
+template <template <typename> class Atom>
 void run_basic_tests() {
   Futex<Atom> f(0);
 
-  EXPECT_FALSE(f.futexWait(1));
-  EXPECT_EQ(f.futexWake(), 0);
+  EXPECT_EQ(FutexResult::VALUE_CHANGED, futexWait(&f, 1));
+  EXPECT_EQ(futexWake(&f), 0);
 
   auto thr = DSched::thread(std::bind(run_basic_thread<Atom>, std::ref(f)));
 
-  while (f.futexWake() != 1) {
+  while (futexWake(&f) != 1) {
     std::this_thread::yield();
   }
 
   DSched::join(thr);
 }
 
-template <template<typename> class Atom, typename Clock, typename Duration>
+template <template <typename> class Atom, typename Clock, typename Duration>
 void liveClockWaitUntilTests() {
   Futex<Atom> f(0);
 
   for (int stress = 0; stress < 1000; ++stress) {
     auto fp = &f; // workaround for t5336595
-    auto thrA = DSched::thread([fp,stress]{
+    auto thrA = DSched::thread([fp, stress] {
       while (true) {
         const auto deadline = time_point_cast<Duration>(
             Clock::now() + microseconds(1 << (stress % 20)));
-        const auto res = fp->futexWaitUntil(0, deadline);
+        const auto res = futexWaitUntil(fp, 0, deadline);
         EXPECT_TRUE(res == FutexResult::TIMEDOUT || res == FutexResult::AWOKEN);
         if (res == FutexResult::AWOKEN) {
           break;
@@ -74,7 +76,7 @@ void liveClockWaitUntilTests() {
       }
     });
 
-    while (f.futexWake() != 1) {
+    while (futexWake(&f) != 1) {
       std::this_thread::yield();
     }
 
@@ -84,7 +86,7 @@ void liveClockWaitUntilTests() {
   {
     const auto start = Clock::now();
     const auto deadline = time_point_cast<Duration>(start + milliseconds(100));
-    EXPECT_EQ(f.futexWaitUntil(0, deadline), FutexResult::TIMEDOUT);
+    EXPECT_EQ(futexWaitUntil(&f, 0, deadline), FutexResult::TIMEDOUT);
     LOG(INFO) << "Futex wait timed out after waiting for "
               << duration_cast<milliseconds>(Clock::now() - start).count()
               << "ms using clock with " << Duration::period::den
@@ -93,9 +95,9 @@ void liveClockWaitUntilTests() {
 
   {
     const auto start = Clock::now();
-    const auto deadline = time_point_cast<Duration>(
-        start - 2 * start.time_since_epoch());
-    EXPECT_EQ(f.futexWaitUntil(0, deadline), FutexResult::TIMEDOUT);
+    const auto deadline =
+        time_point_cast<Duration>(start - 2 * start.time_since_epoch());
+    EXPECT_EQ(futexWaitUntil(&f, 0, deadline), FutexResult::TIMEDOUT);
     LOG(INFO) << "Futex wait with invalid deadline timed out after waiting for "
               << duration_cast<milliseconds>(Clock::now() - start).count()
               << "ms using clock with " << Duration::period::den
@@ -109,14 +111,15 @@ void deterministicAtomicWaitUntilTests() {
 
   // Futex wait must eventually fail with either FutexResult::TIMEDOUT or
   // FutexResult::INTERRUPTED
-  const auto res = f.futexWaitUntil(0, Clock::now() + milliseconds(100));
+  const auto res = futexWaitUntil(&f, 0, Clock::now() + milliseconds(100));
   EXPECT_TRUE(res == FutexResult::TIMEDOUT || res == FutexResult::INTERRUPTED);
 }
 
-template<template<typename> class Atom>
+template <template <typename> class Atom>
 void run_wait_until_tests() {
   liveClockWaitUntilTests<Atom, system_clock, system_clock::duration>();
   liveClockWaitUntilTests<Atom, steady_clock, steady_clock::duration>();
+  liveClockWaitUntilTests<Atom, steady_clock, coarse_steady_clock::duration>();
 
   typedef duration<int64_t, std::ratio<1, 10000000>> decimicroseconds;
   liveClockWaitUntilTests<Atom, system_clock, decimicroseconds>();
@@ -126,6 +129,7 @@ template <>
 void run_wait_until_tests<DeterministicAtomic>() {
   deterministicAtomicWaitUntilTests<system_clock>();
   deterministicAtomicWaitUntilTests<steady_clock>();
+  deterministicAtomicWaitUntilTests<coarse_steady_clock>();
 }
 
 uint64_t diff(uint64_t a, uint64_t b) {
@@ -145,18 +149,18 @@ void run_system_clock_test() {
    * expect with very high probability that there will be atleast one iteration
    * of the test during which clock adjustments > delta have not occurred. */
   while (iter < maxIters) {
-    uint64_t a = duration_cast<nanoseconds>(system_clock::now()
-                                            .time_since_epoch()).count();
+    uint64_t a =
+        duration_cast<nanoseconds>(system_clock::now().time_since_epoch())
+            .count();
 
     clock_gettime(CLOCK_REALTIME, &ts);
     uint64_t b = ts.tv_sec * 1000000000ULL + ts.tv_nsec;
 
-    uint64_t c = duration_cast<nanoseconds>(system_clock::now()
-                                            .time_since_epoch()).count();
+    uint64_t c =
+        duration_cast<nanoseconds>(system_clock::now().time_since_epoch())
+            .count();
 
-    if (diff(a, b) <= delta &&
-        diff(b, c) <= delta &&
-        diff(a, c) <= 2 * delta) {
+    if (diff(a, b) <= delta && diff(b, c) <= delta && diff(a, c) <= 2 * delta) {
       /* Success! system_clock uses CLOCK_REALTIME for time_points */
       break;
     }
@@ -170,31 +174,36 @@ void run_steady_clock_test() {
    * for the time_points */
   EXPECT_TRUE(steady_clock::is_steady);
 
-  const uint64_t A = duration_cast<nanoseconds>(steady_clock::now()
-                                                .time_since_epoch()).count();
+  const uint64_t A =
+      duration_cast<nanoseconds>(steady_clock::now().time_since_epoch())
+          .count();
 
   struct timespec ts;
   clock_gettime(CLOCK_MONOTONIC, &ts);
   const uint64_t B = ts.tv_sec * 1000000000ULL + ts.tv_nsec;
 
-  const uint64_t C = duration_cast<nanoseconds>(steady_clock::now()
-                                                .time_since_epoch()).count();
+  const uint64_t C =
+      duration_cast<nanoseconds>(steady_clock::now().time_since_epoch())
+          .count();
   EXPECT_TRUE(A <= B && B <= C);
 }
 
 template <template <typename> class Atom>
 void run_wake_blocked_test() {
-  Futex<Atom> f(0);
-
-  auto thr = DSched::thread([&] { EXPECT_TRUE(f.futexWait(0)); });
-
-  // A sleep here guarantees to a large extent that 'thr' will execute
-  // futexWait before we wake it up, thus testing late futexWake.
-  std::this_thread::sleep_for(std::chrono::milliseconds(2));
-
-  f.store(1);
-  f.futexWake(1);
-  DSched::join(thr);
+  for (auto delay = std::chrono::milliseconds(1);; delay *= 2) {
+    bool success = false;
+    Futex<Atom> f(0);
+    auto thr = DSched::thread(
+        [&] { success = FutexResult::AWOKEN == futexWait(&f, 0); });
+    /* sleep override */ std::this_thread::sleep_for(delay);
+    f.store(1);
+    futexWake(&f, 1);
+    DSched::join(thr);
+    LOG(INFO) << "delay=" << delay.count() << "_ms, success=" << success;
+    if (success) {
+      break;
+    }
+  }
 }
 
 TEST(Futex, clock_source) {
@@ -202,7 +211,7 @@ TEST(Futex, clock_source) {
 
   /* On some systems steady_clock is just an alias for system_clock. So,
    * we must skip run_steady_clock_test if the two clocks are the same. */
-  if (!std::is_same<system_clock,steady_clock>::value) {
+  if (!std::is_same<system_clock, steady_clock>::value) {
     run_steady_clock_test();
   }
 }

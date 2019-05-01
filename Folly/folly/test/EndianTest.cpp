@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2011-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include <folly/Bits.h>
+#include <folly/lang/Bits.h>
 
 #include <folly/portability/GTest.h>
 
@@ -32,26 +32,26 @@ TEST(Endian, Basic) {
 
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 
-#define GEN1(sz) \
-  EXPECT_EQ(v##sz, Endian::little(v##sz)); \
+#define GEN1(sz)                               \
+  EXPECT_EQ(v##sz, Endian::little(v##sz));     \
   EXPECT_EQ(v##sz, Endian::little##sz(v##sz)); \
-  EXPECT_EQ(v##sz##s, Endian::big(v##sz)); \
+  EXPECT_EQ(v##sz##s, Endian::big(v##sz));     \
   EXPECT_EQ(v##sz##s, Endian::big##sz(v##sz));
 
 #elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
 
-#define GEN1(sz) \
-  EXPECT_EQ(v##sz##s, Endian::little(v##sz)); \
+#define GEN1(sz)                                  \
+  EXPECT_EQ(v##sz##s, Endian::little(v##sz));     \
   EXPECT_EQ(v##sz##s, Endian::little##sz(v##sz)); \
-  EXPECT_EQ(v##sz, Endian::big(v##sz)); \
+  EXPECT_EQ(v##sz, Endian::big(v##sz));           \
   EXPECT_EQ(v##sz, Endian::big##sz(v##sz));
 
 #else
-# error Your machine uses a weird endianness!
-#endif  /* __BYTE_ORDER__ */
+#error Your machine uses a weird endianness!
+#endif /* __BYTE_ORDER__ */
 
-#define GEN(sz) \
-  EXPECT_EQ(v##sz##s, Endian::swap(v##sz)); \
+#define GEN(sz)                                 \
+  EXPECT_EQ(v##sz##s, Endian::swap(v##sz));     \
   EXPECT_EQ(v##sz##s, Endian::swap##sz(v##sz)); \
   GEN1(sz);
 

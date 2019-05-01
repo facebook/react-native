@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 #include <folly/ssl/OpenSSLCertUtils.h>
-#include <folly/String.h>
-#include <folly/io/async/ssl/OpenSSLPtrTypes.h>
 
-#include <openssl/x509.h>
-#include <openssl/x509v3.h>
-
+#include <folly/FileUtil.h>
 #include <folly/ScopeGuard.h>
+#include <folly/String.h>
+#include <folly/ssl/OpenSSLPtrTypes.h>
 
 namespace folly {
 namespace ssl {
@@ -46,7 +44,7 @@ Optional<std::string> OpenSSLCertUtils::getCommonName(X509& x509) {
     return none;
   }
 
-  auto cnData = reinterpret_cast<const char*>(ASN1_STRING_data(cnAsn));
+  auto cnData = reinterpret_cast<const char*>(ASN1_STRING_get0_data(cnAsn));
   auto cnLen = ASN1_STRING_length(cnAsn);
   if (!cnData || cnLen <= 0) {
     return none;
@@ -72,8 +70,8 @@ std::vector<std::string> OpenSSLCertUtils::getSubjectAltNames(X509& x509) {
     if (!genName || genName->type != GEN_DNS) {
       continue;
     }
-    auto nameData =
-        reinterpret_cast<const char*>(ASN1_STRING_data(genName->d.dNSName));
+    auto nameData = reinterpret_cast<const char*>(
+        ASN1_STRING_get0_data(genName->d.dNSName));
     auto nameLen = ASN1_STRING_length(genName->d.dNSName);
     if (!nameData || nameLen <= 0) {
       continue;
@@ -162,8 +160,6 @@ std::string OpenSSLCertUtils::getDateTimeStr(const ASN1_TIME* time) {
     return "";
   }
 
-  std::array<char, 32> buf;
-
   auto bio = BioUniquePtr(BIO_new(BIO_s_mem()));
   if (bio == nullptr) {
     throw std::runtime_error("Cannot allocate bio");
@@ -178,5 +174,102 @@ std::string OpenSSLCertUtils::getDateTimeStr(const ASN1_TIME* time) {
   return std::string(bioData, bioLen);
 }
 
-} // ssl
-} // folly
+X509UniquePtr OpenSSLCertUtils::derDecode(ByteRange range) {
+  auto begin = range.data();
+  X509UniquePtr cert(d2i_X509(nullptr, &begin, range.size()));
+  if (!cert) {
+    throw std::runtime_error("could not read cert");
+  }
+  return cert;
+}
+
+std::unique_ptr<IOBuf> OpenSSLCertUtils::derEncode(X509& x509) {
+  auto len = i2d_X509(&x509, nullptr);
+  if (len < 0) {
+    throw std::runtime_error("Error computing length");
+  }
+  auto buf = IOBuf::create(len);
+  auto dataPtr = buf->writableData();
+  len = i2d_X509(&x509, &dataPtr);
+  if (len < 0) {
+    throw std::runtime_error("Error converting cert to DER");
+  }
+  buf->append(len);
+  return buf;
+}
+
+std::vector<X509UniquePtr> OpenSSLCertUtils::readCertsFromBuffer(
+    ByteRange range) {
+  BioUniquePtr b(
+      BIO_new_mem_buf(const_cast<unsigned char*>(range.data()), range.size()));
+  if (!b) {
+    throw std::runtime_error("failed to create BIO");
+  }
+  std::vector<X509UniquePtr> certs;
+  while (true) {
+    X509UniquePtr x509(PEM_read_bio_X509(b.get(), nullptr, nullptr, nullptr));
+    if (!x509) {
+      ERR_clear_error();
+      break;
+    }
+    certs.push_back(std::move(x509));
+  }
+
+  return certs;
+}
+
+std::array<uint8_t, SHA_DIGEST_LENGTH> OpenSSLCertUtils::getDigestSha1(
+    X509& x509) {
+  unsigned int len;
+  std::array<uint8_t, SHA_DIGEST_LENGTH> md;
+  int rc = X509_digest(&x509, EVP_sha1(), md.data(), &len);
+
+  if (rc <= 0) {
+    throw std::runtime_error("Could not calculate SHA1 digest for cert");
+  }
+  return md;
+}
+
+std::array<uint8_t, SHA256_DIGEST_LENGTH> OpenSSLCertUtils::getDigestSha256(
+    X509& x509) {
+  unsigned int len;
+  std::array<uint8_t, SHA256_DIGEST_LENGTH> md;
+  int rc = X509_digest(&x509, EVP_sha256(), md.data(), &len);
+
+  if (rc <= 0) {
+    throw std::runtime_error("Could not calculate SHA256 digest for cert");
+  }
+  return md;
+}
+
+X509StoreUniquePtr OpenSSLCertUtils::readStoreFromFile(std::string caFile) {
+  std::string certData;
+  if (!folly::readFile(caFile.c_str(), certData)) {
+    throw std::runtime_error(
+        folly::to<std::string>("Could not read store file: ", caFile));
+  }
+  auto certRange = folly::ByteRange(folly::StringPiece(certData));
+  return readStoreFromBuffer(std::move(certRange));
+}
+
+X509StoreUniquePtr OpenSSLCertUtils::readStoreFromBuffer(ByteRange certRange) {
+  auto certs = readCertsFromBuffer(certRange);
+  ERR_clear_error();
+  folly::ssl::X509StoreUniquePtr store(X509_STORE_new());
+  for (auto& caCert : certs) {
+    if (X509_STORE_add_cert(store.get(), caCert.get()) != 1) {
+      auto err = ERR_get_error();
+      if (ERR_GET_LIB(err) != ERR_LIB_X509 ||
+          ERR_GET_REASON(err) != X509_R_CERT_ALREADY_IN_HASH_TABLE) {
+        std::array<char, 256> errBuff;
+        ERR_error_string_n(err, errBuff.data(), errBuff.size());
+        throw std::runtime_error(folly::to<std::string>(
+            "Could not insert CA certificate into store: ",
+            std::string(errBuff.data())));
+      }
+    }
+  }
+  return store;
+}
+} // namespace ssl
+} // namespace folly

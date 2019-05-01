@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,14 @@
 #include <thread>
 
 #include <folly/io/async/EventBase.h>
+#include <folly/synchronization/Baton.h>
 
 namespace folly {
 
 class EventBaseManager;
+template <class Iter>
+class Range;
+typedef Range<const char*> StringPiece;
 
 /**
  * A helper class to start a new thread running a EventBase loop.
@@ -32,18 +36,30 @@ class EventBaseManager;
  * When the ScopedEventBaseThread object is destroyed, the thread will be
  * stopped.
  */
-class ScopedEventBaseThread {
+class ScopedEventBaseThread : public IOExecutor, public SequencedExecutor {
  public:
   ScopedEventBaseThread();
+  explicit ScopedEventBaseThread(const StringPiece& name);
   explicit ScopedEventBaseThread(EventBaseManager* ebm);
+  explicit ScopedEventBaseThread(
+      EventBaseManager* ebm,
+      const StringPiece& name);
   ~ScopedEventBaseThread();
 
   EventBase* getEventBase() const {
     return &eb_;
   }
 
+  EventBase* getEventBase() override {
+    return &eb_;
+  }
+
   std::thread::id getThreadId() const {
     return th_.get_id();
+  }
+
+  void add(Func func) override {
+    getEventBase()->add(std::move(func));
   }
 
  private:
@@ -58,6 +74,7 @@ class ScopedEventBaseThread {
     mutable EventBase eb_;
   };
   std::thread th_;
+  folly::Baton<> stop_;
 };
 
-}
+} // namespace folly

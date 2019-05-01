@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,5 +52,5 @@ class GuardPageAllocator {
   std::allocator<unsigned char> fallbackAllocator_;
   bool useGuardPages_{true};
 };
-}
-} // folly::fibers
+} // namespace fibers
+} // namespace folly

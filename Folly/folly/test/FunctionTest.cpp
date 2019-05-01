@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,145 @@ struct Functor {
 template <typename Ret, typename... Args>
 void deduceArgs(Function<Ret(Args...)>) {}
 
+struct CallableButNotCopyable {
+  CallableButNotCopyable() {}
+  CallableButNotCopyable(CallableButNotCopyable const&) = delete;
+  CallableButNotCopyable(CallableButNotCopyable&&) = delete;
+  CallableButNotCopyable& operator=(CallableButNotCopyable const&) = delete;
+  CallableButNotCopyable& operator=(CallableButNotCopyable&&) = delete;
+  template <class... Args>
+  void operator()(Args&&...) const {}
+};
+
 } // namespace
+
+// TEST =====================================================================
+// Test constructibility and non-constructibility for some tricky conversions
+static_assert(
+    !std::is_assignable<Function<void()>, CallableButNotCopyable>::value,
+    "");
+static_assert(
+    !std::is_constructible<Function<void()>, CallableButNotCopyable&>::value,
+    "");
+static_assert(
+    !std::is_constructible<Function<void() const>, CallableButNotCopyable>::
+        value,
+    "");
+static_assert(
+    !std::is_constructible<Function<void() const>, CallableButNotCopyable&>::
+        value,
+    "");
+
+static_assert(
+    !std::is_assignable<Function<void()>, CallableButNotCopyable>::value,
+    "");
+static_assert(
+    !std::is_assignable<Function<void()>, CallableButNotCopyable&>::value,
+    "");
+static_assert(
+    !std::is_assignable<Function<void() const>, CallableButNotCopyable>::value,
+    "");
+static_assert(
+    !std::is_assignable<Function<void() const>, CallableButNotCopyable&>::value,
+    "");
+
+static_assert(
+    std::is_constructible<Function<int(int)>, Function<int(int) const>>::value,
+    "");
+static_assert(
+    !std::is_constructible<Function<int(int) const>, Function<int(int)>>::value,
+    "");
+static_assert(
+    std::is_constructible<Function<int(short)>, Function<short(int) const>>::
+        value,
+    "");
+static_assert(
+    !std::is_constructible<Function<int(short) const>, Function<short(int)>>::
+        value,
+    "");
+static_assert(
+    !std::is_constructible<Function<int(int)>, Function<int(int) const>&>::
+        value,
+    "");
+static_assert(
+    !std::is_constructible<Function<int(int) const>, Function<int(int)>&>::
+        value,
+    "");
+static_assert(
+    !std::is_constructible<Function<int(short)>, Function<short(int) const>&>::
+        value,
+    "");
+static_assert(
+    !std::is_constructible<Function<int(short) const>, Function<short(int)>&>::
+        value,
+    "");
+
+static_assert(
+    std::is_assignable<Function<int(int)>, Function<int(int) const>>::value,
+    "");
+static_assert(
+    !std::is_assignable<Function<int(int) const>, Function<int(int)>>::value,
+    "");
+static_assert(
+    std::is_assignable<Function<int(short)>, Function<short(int) const>>::value,
+    "");
+static_assert(
+    !std::is_assignable<Function<int(short) const>, Function<short(int)>>::
+        value,
+    "");
+static_assert(
+    !std::is_assignable<Function<int(int)>, Function<int(int) const>&>::value,
+    "");
+static_assert(
+    !std::is_assignable<Function<int(int) const>, Function<int(int)>&>::value,
+    "");
+static_assert(
+    !std::is_assignable<Function<int(short)>, Function<short(int) const>&>::
+        value,
+    "");
+static_assert(
+    !std::is_assignable<Function<int(short) const>, Function<short(int)>&>::
+        value,
+    "");
+
+static_assert(
+    std::is_nothrow_constructible<
+        Function<int(int)>,
+        Function<int(int) const>>::value,
+    "");
+static_assert(
+    !std::is_nothrow_constructible<
+        Function<int(short)>,
+        Function<short(int) const>>::value,
+    "");
+static_assert(
+    std::is_nothrow_assignable<Function<int(int)>, Function<int(int) const>>::
+        value,
+    "");
+static_assert(
+    !std::is_nothrow_assignable<
+        Function<int(short)>,
+        Function<short(int) const>>::value,
+    "");
+
+static_assert(
+    !std::is_constructible<Function<int const&()>, int (*)()>::value,
+    "");
+
+static_assert(
+    !std::is_constructible<Function<int const&() const>, int (*)()>::value,
+    "");
+
+#if FOLLY_HAVE_NOEXCEPT_FUNCTION_TYPE
+static_assert(
+    !std::is_constructible<Function<int const&() noexcept>, int (*)()>::value,
+    "");
+
+static_assert(
+    !std::is_constructible<Function<int const&() const noexcept>, int (*)()>::
+        value,
+    "");
+#endif
 
 // TEST =====================================================================
 // InvokeFunctor & InvokeReference
@@ -117,6 +255,12 @@ TEST(Function, Emptiness_T) {
   EXPECT_EQ(nullptr, h);
   EXPECT_FALSE(h);
   EXPECT_THROW(h(101), std::bad_function_call);
+
+  Function<int(int)> i{Function<int(int)>{}};
+  EXPECT_EQ(i, nullptr);
+  EXPECT_EQ(nullptr, i);
+  EXPECT_FALSE(i);
+  EXPECT_THROW(i(107), std::bad_function_call);
 }
 
 // TEST =====================================================================
@@ -194,7 +338,7 @@ TEST(Function, Bind) {
 // NonCopyableLambda
 
 TEST(Function, NonCopyableLambda) {
-  auto unique_ptr_int = folly::make_unique<int>(900);
+  auto unique_ptr_int = std::make_unique<int>(900);
   EXPECT_EQ(900, *unique_ptr_int);
 
   struct {
@@ -203,7 +347,10 @@ TEST(Function, NonCopyableLambda) {
   (void)fooData; // suppress gcc warning about fooData not being used
 
   auto functor = std::bind(
-      [fooData](std::unique_ptr<int>& up) mutable { return ++*up; },
+      [fooData](std::unique_ptr<int>& up) mutable {
+        (void)fooData;
+        return ++*up;
+      },
       std::move(unique_ptr_int));
 
   EXPECT_EQ(901, functor());
@@ -456,25 +603,21 @@ TEST(Function, CaptureCopyMoveCount) {
   EXPECT_EQ(1, cmt.refCount());
 
   // Move into lambda, move lambda into Function
-  auto lambda1 = [cmt = std::move(cmt)]() {
-    return cmt.moveCount();
-  };
+  auto lambda1 = [cmt = std::move(cmt)]() { return cmt.moveCount(); };
   Function<size_t(void)> uf1 = std::move(lambda1);
 
   // Max copies: 0. Max copy+moves: 2.
-  EXPECT_LE(cmt.moveCount() + cmt.copyCount(), 2);
+  EXPECT_LE(cmt.moveCount() + cmt.copyCount(), 3);
   EXPECT_LE(cmt.copyCount(), 0);
 
   cmt.resetCounters();
 
   // Move into lambda, copy lambda into Function
-  auto lambda2 = [cmt = std::move(cmt)]() {
-    return cmt.moveCount();
-  };
+  auto lambda2 = [cmt = std::move(cmt)]() { return cmt.moveCount(); };
   Function<size_t(void)> uf2 = lambda2;
 
   // Max copies: 1. Max copy+moves: 2.
-  EXPECT_LE(cmt.moveCount() + cmt.copyCount(), 2);
+  EXPECT_LE(cmt.moveCount() + cmt.copyCount(), 3);
   EXPECT_LE(cmt.copyCount(), 1);
 
   // Invoking Function must not make copies/moves of the callable
@@ -754,7 +897,8 @@ TEST(Function, asStdFunction_void) {
   int i = 0;
   folly::Function<void()> f = [&] { ++i; };
   auto sf = std::move(f).asStdFunction();
-  static_assert(std::is_same<decltype(sf), std::function<void()>>::value,
+  static_assert(
+      std::is_same<decltype(sf), std::function<void()>>::value,
       "std::function has wrong type");
   sf();
   EXPECT_EQ(1, i);
@@ -764,7 +908,8 @@ TEST(Function, asStdFunction_void_const) {
   int i = 0;
   folly::Function<void() const> f = [&] { ++i; };
   auto sf = std::move(f).asStdFunction();
-  static_assert(std::is_same<decltype(sf), std::function<void()>>::value,
+  static_assert(
+      std::is_same<decltype(sf), std::function<void()>>::value,
       "std::function has wrong type");
   sf();
   EXPECT_EQ(1, i);
@@ -777,7 +922,8 @@ TEST(Function, asStdFunction_return) {
     return 42;
   };
   auto sf = std::move(f).asStdFunction();
-  static_assert(std::is_same<decltype(sf), std::function<int()>>::value,
+  static_assert(
+      std::is_same<decltype(sf), std::function<int()>>::value,
       "std::function has wrong type");
   EXPECT_EQ(42, sf());
   EXPECT_EQ(1, i);
@@ -790,7 +936,8 @@ TEST(Function, asStdFunction_return_const) {
     return 42;
   };
   auto sf = std::move(f).asStdFunction();
-  static_assert(std::is_same<decltype(sf), std::function<int()>>::value,
+  static_assert(
+      std::is_same<decltype(sf), std::function<int()>>::value,
       "std::function has wrong type");
   EXPECT_EQ(42, sf());
   EXPECT_EQ(1, i);
@@ -803,7 +950,8 @@ TEST(Function, asStdFunction_args) {
     return x + y;
   };
   auto sf = std::move(f).asStdFunction();
-  static_assert(std::is_same<decltype(sf), std::function<void(int, int)>>::value,
+  static_assert(
+      std::is_same<decltype(sf), std::function<void(int, int)>>::value,
       "std::function has wrong type");
   sf(42, 42);
   EXPECT_EQ(1, i);
@@ -816,7 +964,8 @@ TEST(Function, asStdFunction_args_const) {
     return x + y;
   };
   auto sf = std::move(f).asStdFunction();
-  static_assert(std::is_same<decltype(sf), std::function<void(int, int)>>::value,
+  static_assert(
+      std::is_same<decltype(sf), std::function<void(int, int)>>::value,
       "std::function has wrong type");
   sf(42, 42);
   EXPECT_EQ(1, i);
@@ -926,15 +1075,82 @@ TEST(Function, EmptyAfterConstCast) {
   EXPECT_FALSE(func2);
 }
 
-TEST(Function, SelfMoveAssign) {
-  Function<int()> f = [] { return 0; };
+TEST(Function, SelfStdSwap) {
+  Function<int()> f = [] { return 42; };
+  f.swap(f);
+  EXPECT_TRUE(bool(f));
+  EXPECT_EQ(42, f());
+  std::swap(f, f);
+  EXPECT_TRUE(bool(f));
+  EXPECT_EQ(42, f());
+  folly::swap(f, f);
+  EXPECT_TRUE(bool(f));
+  EXPECT_EQ(42, f());
+}
+
+TEST(Function, SelfMove) {
+  Function<int()> f = [] { return 42; };
+  Function<int()>& g = f;
+  f = std::move(g); // shouldn't crash!
+  (void)bool(f); // valid but unspecified state
+  f = [] { return 43; };
+  EXPECT_TRUE(bool(f));
+  EXPECT_EQ(43, f());
+}
+
+TEST(Function, SelfMove2) {
+  int alive{0};
+  struct arg {
+    int* ptr_;
+    explicit arg(int* ptr) noexcept : ptr_(ptr) {
+      ++*ptr_;
+    }
+    arg(arg&& o) noexcept : ptr_(o.ptr_) {
+      ++*ptr_;
+    }
+    arg& operator=(arg&&) = delete;
+    ~arg() {
+      --*ptr_;
+    }
+  };
+  EXPECT_EQ(0, alive);
+  Function<int()> f = [myarg = arg{&alive}] { return 42; };
+  EXPECT_EQ(1, alive);
   Function<int()>& g = f;
   f = std::move(g);
+  EXPECT_FALSE(bool(f)) << "self-assign is self-destruct";
+  EXPECT_EQ(0, alive) << "self-asign is self-destruct";
+  f = [] { return 43; };
+  EXPECT_EQ(0, alive) << "sanity check against double-destruction";
   EXPECT_TRUE(bool(f));
+  EXPECT_EQ(43, f());
 }
 
 TEST(Function, DeducableArguments) {
   deduceArgs(Function<void()>{[] {}});
   deduceArgs(Function<void(int, float)>{[](int, float) {}});
   deduceArgs(Function<int(int, float)>{[](int i, float) { return i; }});
+}
+
+TEST(Function, CtorWithCopy) {
+  struct X {
+    X() {}
+    X(X const&) noexcept(true) {}
+    X& operator=(X const&) = default;
+  };
+  struct Y {
+    Y() {}
+    Y(Y const&) noexcept(false) {}
+    Y(Y&&) noexcept(true) {}
+    Y& operator=(Y&&) = default;
+    Y& operator=(Y const&) = default;
+  };
+  auto lx = [x = X()] {};
+  auto ly = [y = Y()] {};
+  EXPECT_TRUE(noexcept(Function<void()>(lx)));
+  EXPECT_FALSE(noexcept(Function<void()>(ly)));
+}
+
+TEST(Function, Bug_T23346238) {
+  const Function<void()> nullfun;
 }

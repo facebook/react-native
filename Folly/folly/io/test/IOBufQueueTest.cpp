@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 #include <folly/io/IOBufQueue.h>
 
+#include <cstring>
 #include <iostream>
 #include <stdexcept>
-#include <string.h>
 
 #include <folly/Range.h>
 #include <folly/portability/GTest.h>
@@ -57,7 +57,7 @@ void checkConsistency(const IOBufQueue& queue) {
   }
 }
 
-}
+} // namespace
 
 TEST(IOBufQueue, Simple) {
   IOBufQueue queue(clOptions);
@@ -154,7 +154,7 @@ TEST(IOBufQueue, Split) {
   queue.append(stringToIOBuf(SCL("Hello,")));
   queue.append(stringToIOBuf(SCL(" World")));
   checkConsistency(queue);
-  EXPECT_THROW({prefix = queue.split(13);}, std::underflow_error);
+  EXPECT_THROW({ prefix = queue.split(13); }, std::underflow_error);
   checkConsistency(queue);
 }
 
@@ -167,10 +167,17 @@ TEST(IOBufQueue, SplitAtMost) {
   EXPECT_TRUE(queue.empty());
 }
 
+TEST(IOBufQueue, SplitZero) {
+  IOBufQueue queue(clOptions);
+  queue.append(stringToIOBuf(SCL("Hello world")));
+  auto buf = queue.split(0);
+  EXPECT_EQ(buf->computeChainDataLength(), 0);
+}
+
 TEST(IOBufQueue, Preallocate) {
   IOBufQueue queue(clOptions);
   queue.append(string("Hello"));
-  pair<void*,uint32_t> writable = queue.preallocate(2, 64, 64);
+  pair<void*, std::size_t> writable = queue.preallocate(2, 64, 64);
   checkConsistency(queue);
   EXPECT_NE((void*)nullptr, writable.first);
   EXPECT_LE(2, writable.second);
@@ -205,9 +212,9 @@ TEST(IOBufQueue, Wrap) {
   EXPECT_EQ((len - 1) / 6 + 1, iob->countChainElements());
   iob->unshare();
   iob->coalesce();
-  EXPECT_EQ(StringPiece(buf),
-            StringPiece(reinterpret_cast<const char*>(iob->data()),
-                        iob->length()));
+  EXPECT_EQ(
+      StringPiece(buf),
+      StringPiece(reinterpret_cast<const char*>(iob->data()), iob->length()));
 }
 
 TEST(IOBufQueue, Trim) {
@@ -266,6 +273,76 @@ TEST(IOBufQueue, Trim) {
 
   EXPECT_THROW(queue.trimEnd(30), std::underflow_error);
   checkConsistency(queue);
+}
+
+TEST(IOBufQueue, TrimStartAtMost) {
+  IOBufQueue queue(clOptions);
+  unique_ptr<IOBuf> a = IOBuf::create(4);
+  a->append(4);
+  queue.append(std::move(a));
+  checkConsistency(queue);
+  a = IOBuf::create(6);
+  a->append(6);
+  queue.append(std::move(a));
+  checkConsistency(queue);
+  a = IOBuf::create(8);
+  a->append(8);
+  queue.append(std::move(a));
+  checkConsistency(queue);
+  a = IOBuf::create(10);
+  a->append(10);
+  queue.append(std::move(a));
+  checkConsistency(queue);
+
+  EXPECT_EQ(4, queue.front()->countChainElements());
+  EXPECT_EQ(28, queue.front()->computeChainDataLength());
+  EXPECT_EQ(4, queue.front()->length());
+
+  queue.trimStartAtMost(1);
+  checkConsistency(queue);
+  EXPECT_EQ(4, queue.front()->countChainElements());
+  EXPECT_EQ(27, queue.front()->computeChainDataLength());
+  EXPECT_EQ(3, queue.front()->length());
+
+  queue.trimStartAtMost(50);
+  checkConsistency(queue);
+  EXPECT_EQ(nullptr, queue.front());
+  EXPECT_EQ(0, queue.chainLength());
+}
+
+TEST(IOBufQueue, TrimEndAtMost) {
+  IOBufQueue queue(clOptions);
+  unique_ptr<IOBuf> a = IOBuf::create(4);
+  a->append(4);
+  queue.append(std::move(a));
+  checkConsistency(queue);
+  a = IOBuf::create(6);
+  a->append(6);
+  queue.append(std::move(a));
+  checkConsistency(queue);
+  a = IOBuf::create(8);
+  a->append(8);
+  queue.append(std::move(a));
+  checkConsistency(queue);
+  a = IOBuf::create(10);
+  a->append(10);
+  queue.append(std::move(a));
+  checkConsistency(queue);
+
+  EXPECT_EQ(4, queue.front()->countChainElements());
+  EXPECT_EQ(28, queue.front()->computeChainDataLength());
+  EXPECT_EQ(4, queue.front()->length());
+
+  queue.trimEndAtMost(1);
+  checkConsistency(queue);
+  EXPECT_EQ(4, queue.front()->countChainElements());
+  EXPECT_EQ(27, queue.front()->computeChainDataLength());
+  EXPECT_EQ(4, queue.front()->length());
+
+  queue.trimEndAtMost(50);
+  checkConsistency(queue);
+  EXPECT_EQ(nullptr, queue.front());
+  EXPECT_EQ(0, queue.chainLength());
 }
 
 TEST(IOBufQueue, TrimPack) {
@@ -340,36 +417,30 @@ TEST(IOBufQueue, Prepend) {
 
   auto out = queue.move();
   out->coalesce();
-  EXPECT_EQ("Hello World",
-            StringPiece(reinterpret_cast<const char*>(out->data()),
-                        out->length()));
+  EXPECT_EQ(
+      "Hello World",
+      StringPiece(reinterpret_cast<const char*>(out->data()), out->length()));
 }
 
 TEST(IOBufQueue, PopFirst) {
   IOBufQueue queue(IOBufQueue::cacheChainLength());
-  const char * strings[] = {
-    "Hello",
-    ",",
-    " ",
-    "",
-    "World"
-  };
+  const char* strings[] = {"Hello", ",", " ", "", "World"};
 
-  const size_t numStrings=sizeof(strings)/sizeof(*strings);
+  const size_t numStrings = sizeof(strings) / sizeof(*strings);
   size_t chainLength = 0;
-  for(size_t i = 0; i < numStrings; ++i) {
+  for (size_t i = 0; i < numStrings; ++i) {
     queue.append(stringToIOBuf(strings[i], strlen(strings[i])));
     checkConsistency(queue);
     chainLength += strlen(strings[i]);
   }
 
   unique_ptr<IOBuf> first;
-  for(size_t i = 0; i < numStrings; ++i) {
+  for (size_t i = 0; i < numStrings; ++i) {
     checkConsistency(queue);
     EXPECT_EQ(chainLength, queue.front()->computeChainDataLength());
     EXPECT_EQ(chainLength, queue.chainLength());
     first = queue.pop_front();
-    chainLength-=strlen(strings[i]);
+    chainLength -= strlen(strings[i]);
     EXPECT_EQ(strlen(strings[i]), first->computeChainDataLength());
   }
   checkConsistency(queue);

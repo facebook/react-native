@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,16 +21,17 @@
 
 #include <boost/random.hpp>
 
-#include <folly/Malloc.h>
 #include <folly/Range.h>
+#include <folly/memory/Malloc.h>
 #include <folly/portability/GTest.h>
 
+using folly::ByteRange;
 using folly::fbstring;
 using folly::fbvector;
 using folly::IOBuf;
-using folly::TypedIOBuf;
+using folly::ordering;
 using folly::StringPiece;
-using folly::ByteRange;
+using folly::TypedIOBuf;
 using std::unique_ptr;
 
 void append(std::unique_ptr<IOBuf>& buf, StringPiece str) {
@@ -73,7 +74,6 @@ TEST(IOBuf, Simple) {
   EXPECT_EQ(cap, buf->tailroom());
 }
 
-
 void testAllocSize(uint32_t requestedCapacity) {
   unique_ptr<IOBuf> iobuf(IOBuf::create(requestedCapacity));
   EXPECT_GE(iobuf->capacity(), requestedCapacity);
@@ -95,7 +95,7 @@ TEST(IOBuf, AllocSizes) {
   testAllocSize(221);
 }
 
-void deleteArrayBuffer(void *buf, void* arg) {
+void deleteArrayBuffer(void* buf, void* arg) {
   uint32_t* deleteCount = static_cast<uint32_t*>(arg);
   ++(*deleteCount);
   uint8_t* bufPtr = static_cast<uint8_t*>(buf);
@@ -104,7 +104,7 @@ void deleteArrayBuffer(void *buf, void* arg) {
 
 TEST(IOBuf, TakeOwnership) {
   uint32_t size1 = 99;
-  uint8_t *buf1 = static_cast<uint8_t*>(malloc(size1));
+  uint8_t* buf1 = static_cast<uint8_t*>(malloc(size1));
   unique_ptr<IOBuf> iobuf1(IOBuf::takeOwnership(buf1, size1));
   EXPECT_EQ(buf1, iobuf1->data());
   EXPECT_EQ(size1, iobuf1->length());
@@ -113,10 +113,9 @@ TEST(IOBuf, TakeOwnership) {
 
   uint32_t deleteCount = 0;
   uint32_t size2 = 4321;
-  uint8_t *buf2 = new uint8_t[size2];
-  unique_ptr<IOBuf> iobuf2(IOBuf::takeOwnership(buf2, size2,
-                                                deleteArrayBuffer,
-                                                &deleteCount));
+  uint8_t* buf2 = new uint8_t[size2];
+  unique_ptr<IOBuf> iobuf2(
+      IOBuf::takeOwnership(buf2, size2, deleteArrayBuffer, &deleteCount));
   EXPECT_EQ(buf2, iobuf2->data());
   EXPECT_EQ(size2, iobuf2->length());
   EXPECT_EQ(buf2, iobuf2->buffer());
@@ -127,11 +126,10 @@ TEST(IOBuf, TakeOwnership) {
 
   deleteCount = 0;
   uint32_t size3 = 3456;
-  uint8_t *buf3 = new uint8_t[size3];
+  uint8_t* buf3 = new uint8_t[size3];
   uint32_t length3 = 48;
-  unique_ptr<IOBuf> iobuf3(IOBuf::takeOwnership(buf3, size3, length3,
-                                                deleteArrayBuffer,
-                                                &deleteCount));
+  unique_ptr<IOBuf> iobuf3(IOBuf::takeOwnership(
+      buf3, size3, length3, deleteArrayBuffer, &deleteCount));
   EXPECT_EQ(buf3, iobuf3->data());
   EXPECT_EQ(length3, iobuf3->length());
   EXPECT_EQ(buf3, iobuf3->buffer());
@@ -143,10 +141,15 @@ TEST(IOBuf, TakeOwnership) {
   deleteCount = 0;
   {
     uint32_t size4 = 1234;
-    uint8_t *buf4 = new uint8_t[size4];
+    uint8_t* buf4 = new uint8_t[size4];
     uint32_t length4 = 48;
-    IOBuf iobuf4(IOBuf::TAKE_OWNERSHIP, buf4, size4, length4,
-                 deleteArrayBuffer, &deleteCount);
+    IOBuf iobuf4(
+        IOBuf::TAKE_OWNERSHIP,
+        buf4,
+        size4,
+        length4,
+        deleteArrayBuffer,
+        &deleteCount);
     EXPECT_EQ(buf4, iobuf4.data());
     EXPECT_EQ(length4, iobuf4.length());
     EXPECT_EQ(buf4, iobuf4.buffer());
@@ -287,8 +290,9 @@ void checkBuf(const uint8_t* buf, uint32_t length, boost::mt19937& gen) {
   if (numDifferences > 0) {
     // Cast to int so it will be printed numerically
     // rather than as a char if the check fails
-    EXPECT_EQ(static_cast<int>(buf[firstDiffIndex]),
-              static_cast<int>(firstDiffExpected));
+    EXPECT_EQ(
+        static_cast<int>(buf[firstDiffIndex]),
+        static_cast<int>(firstDiffExpected));
   }
 }
 
@@ -301,7 +305,7 @@ void checkBuf(ByteRange buf, boost::mt19937& gen) {
 }
 
 void checkChain(IOBuf* buf, boost::mt19937& gen) {
-  IOBuf *current = buf;
+  IOBuf* current = buf;
   do {
     checkBuf(current->data(), current->length(), gen);
     current = current->next();
@@ -341,9 +345,8 @@ TEST(IOBuf, Chaining) {
   uint8_t* arrayBuf = new uint8_t[arrayBufSize];
   fillBuf(arrayBuf, arrayBufSize, gen);
   uint32_t arrayBufFreeCount = 0;
-  unique_ptr<IOBuf> iob5(IOBuf::takeOwnership(arrayBuf, arrayBufSize,
-                                              deleteArrayBuffer,
-                                              &arrayBufFreeCount));
+  unique_ptr<IOBuf> iob5(IOBuf::takeOwnership(
+      arrayBuf, arrayBufSize, deleteArrayBuffer, &arrayBufFreeCount));
 
   EXPECT_FALSE(iob1->isChained());
   EXPECT_FALSE(iob2->isChained());
@@ -388,9 +391,9 @@ TEST(IOBuf, Chaining) {
   EXPECT_TRUE(iob4ptr->isChained());
   EXPECT_TRUE(iob5ptr->isChained());
 
-  uint64_t fullLength = (iob1->length() + iob2ptr->length() +
-                         iob3ptr->length() + iob4ptr->length() +
-                        iob5ptr->length());
+  std::size_t fullLength =
+      (iob1->length() + iob2ptr->length() + iob3ptr->length() +
+       iob4ptr->length() + iob5ptr->length());
   EXPECT_EQ(5, iob1->countChainElements());
   EXPECT_EQ(fullLength, iob1->computeChainDataLength());
 
@@ -445,7 +448,6 @@ TEST(IOBuf, Chaining) {
   EXPECT_FALSE(iob1->isShared());
   iob4clone.reset();
 
-
   // Create a clone of a different IOBuf
   EXPECT_FALSE(iob1->isShared());
   EXPECT_FALSE(iob3ptr->isSharedOne());
@@ -466,7 +468,6 @@ TEST(IOBuf, Chaining) {
   iob3clone.reset();
   EXPECT_FALSE(iob1->isShared());
   EXPECT_FALSE(iob3ptr->isSharedOne());
-
 
   // Clone the entire chain
   unique_ptr<IOBuf> chainClone = iob1->clone();
@@ -497,7 +498,6 @@ TEST(IOBuf, Chaining) {
 
   // Destroy this chain
   chainClone.reset();
-
 
   // Clone a new chain
   EXPECT_FALSE(iob1->isShared());
@@ -531,6 +531,15 @@ TEST(IOBuf, Chaining) {
   gen.seed(fillSeed);
   checkChain(chainClone.get(), gen);
 
+  // cloneCoalesced
+  {
+    auto chainCloneCoalesced = chainClone->cloneCoalesced();
+    EXPECT_EQ(1, chainCloneCoalesced->countChainElements());
+    EXPECT_EQ(fullLength, chainCloneCoalesced->computeChainDataLength());
+    gen.seed(fillSeed);
+    checkChain(chainCloneCoalesced.get(), gen);
+  }
+
   // Coalesce the entire chain
   chainClone->coalesce();
   EXPECT_EQ(1, chainClone->countChainElements());
@@ -544,7 +553,7 @@ TEST(IOBuf, Chaining) {
   // Make a new chain to test the unlink and pop operations
   iob1 = IOBuf::create(1);
   iob1->append(1);
-  IOBuf *iob1ptr = iob1.get();
+  IOBuf* iob1ptr = iob1.get();
   iob2 = IOBuf::create(3);
   iob2->append(3);
   iob2ptr = iob2.get();
@@ -584,12 +593,13 @@ TEST(IOBuf, Chaining) {
 }
 
 void testFreeFn(void* buffer, void* ptr) {
-  uint32_t* freeCount = static_cast<uint32_t*>(ptr);;
+  uint32_t* freeCount = static_cast<uint32_t*>(ptr);
+  ;
   delete[] static_cast<uint8_t*>(buffer);
   if (freeCount) {
     ++(*freeCount);
   }
-};
+}
 
 TEST(IOBuf, Reserve) {
   uint32_t fillSeed = 0x23456789;
@@ -635,7 +645,7 @@ TEST(IOBuf, Reserve) {
     EXPECT_EQ(0, iob->headroom());
     EXPECT_EQ(100, iob->length());
     const void* p1 = iob->buffer();
-    iob->reserve(100, 2512);  // allocation sizes are multiples of 256
+    iob->reserve(100, 2512); // allocation sizes are multiples of 256
     EXPECT_LE(100, iob->headroom());
     if (folly::usingJEMalloc()) {
       EXPECT_NE(p1, iob->buffer());
@@ -677,14 +687,16 @@ TEST(IOBuf, copyBuffer) {
   std::string s("hello");
   auto buf = IOBuf::copyBuffer(s.data(), s.size(), 1, 2);
   EXPECT_EQ(1, buf->headroom());
-  EXPECT_EQ(s, std::string(reinterpret_cast<const char*>(buf->data()),
-                           buf->length()));
+  EXPECT_EQ(
+      s,
+      std::string(reinterpret_cast<const char*>(buf->data()), buf->length()));
   EXPECT_LE(2, buf->tailroom());
 
   buf = IOBuf::copyBuffer(s, 5, 7);
   EXPECT_EQ(5, buf->headroom());
-  EXPECT_EQ(s, std::string(reinterpret_cast<const char*>(buf->data()),
-                           buf->length()));
+  EXPECT_EQ(
+      s,
+      std::string(reinterpret_cast<const char*>(buf->data()), buf->length()));
   EXPECT_LE(7, buf->tailroom());
 
   std::string empty;
@@ -696,8 +708,10 @@ TEST(IOBuf, copyBuffer) {
   // A stack-allocated version
   IOBuf stackBuf(IOBuf::COPY_BUFFER, s, 1, 2);
   EXPECT_EQ(1, stackBuf.headroom());
-  EXPECT_EQ(s, std::string(reinterpret_cast<const char*>(stackBuf.data()),
-                           stackBuf.length()));
+  EXPECT_EQ(
+      s,
+      std::string(
+          reinterpret_cast<const char*>(stackBuf.data()), stackBuf.length()));
   EXPECT_LE(2, stackBuf.tailroom());
 }
 
@@ -705,8 +719,9 @@ TEST(IOBuf, maybeCopyBuffer) {
   std::string s("this is a test");
   auto buf = IOBuf::maybeCopyBuffer(s, 1, 2);
   EXPECT_EQ(1, buf->headroom());
-  EXPECT_EQ(s, std::string(reinterpret_cast<const char*>(buf->data()),
-                           buf->length()));
+  EXPECT_EQ(
+      s,
+      std::string(reinterpret_cast<const char*>(buf->data()), buf->length()));
   EXPECT_LE(2, buf->tailroom());
 
   std::string empty;
@@ -727,7 +742,7 @@ namespace {
 int customDeleterCount = 0;
 int destructorCount = 0;
 struct OwnershipTestClass {
-  explicit OwnershipTestClass(int v = 0) : val(v) { }
+  explicit OwnershipTestClass(int v = 0) : val(v) {}
   ~OwnershipTestClass() {
     ++destructorCount;
   }
@@ -746,19 +761,15 @@ void customDeleteArray(OwnershipTestClass* p) {
   delete[] p;
 }
 
-}  // namespace
+} // namespace
 
 TEST(IOBuf, takeOwnershipUniquePtr) {
   destructorCount = 0;
-  {
-    std::unique_ptr<OwnershipTestClass> p(new OwnershipTestClass());
-  }
+  { std::unique_ptr<OwnershipTestClass> p(new OwnershipTestClass()); }
   EXPECT_EQ(1, destructorCount);
 
   destructorCount = 0;
-  {
-    std::unique_ptr<OwnershipTestClass[]> p(new OwnershipTestClass[2]);
-  }
+  { std::unique_ptr<OwnershipTestClass[]> p(new OwnershipTestClass[2]); }
   EXPECT_EQ(2, destructorCount);
 
   destructorCount = 0;
@@ -782,8 +793,8 @@ TEST(IOBuf, takeOwnershipUniquePtr) {
   customDeleterCount = 0;
   destructorCount = 0;
   {
-    std::unique_ptr<OwnershipTestClass, CustomDeleter>
-      p(new OwnershipTestClass(), customDelete);
+    std::unique_ptr<OwnershipTestClass, CustomDeleter> p(
+        new OwnershipTestClass(), customDelete);
     std::unique_ptr<IOBuf> buf(IOBuf::takeOwnership(std::move(p)));
     EXPECT_EQ(sizeof(OwnershipTestClass), buf->length());
     EXPECT_EQ(0, destructorCount);
@@ -794,8 +805,8 @@ TEST(IOBuf, takeOwnershipUniquePtr) {
   customDeleterCount = 0;
   destructorCount = 0;
   {
-    std::unique_ptr<OwnershipTestClass[], CustomDeleter>
-      p(new OwnershipTestClass[2], CustomDeleter(customDeleteArray));
+    std::unique_ptr<OwnershipTestClass[], CustomDeleter> p(
+        new OwnershipTestClass[2], CustomDeleter(customDeleteArray));
     std::unique_ptr<IOBuf> buf(IOBuf::takeOwnership(std::move(p), 2));
     EXPECT_EQ(2 * sizeof(OwnershipTestClass), buf->length());
     EXPECT_EQ(0, destructorCount);
@@ -807,7 +818,7 @@ TEST(IOBuf, takeOwnershipUniquePtr) {
 TEST(IOBuf, Alignment) {
   size_t alignment = alignof(std::max_align_t);
 
-  std::vector<size_t> sizes {0, 1, 64, 256, 1024, 1 << 10};
+  std::vector<size_t> sizes{0, 1, 64, 256, 1024, 1 << 10};
   for (size_t size : sizes) {
     auto buf = IOBuf::create(size);
     uintptr_t p = reinterpret_cast<uintptr_t>(buf->data());
@@ -817,16 +828,16 @@ TEST(IOBuf, Alignment) {
 
 TEST(TypedIOBuf, Simple) {
   auto buf = IOBuf::create(0);
-  TypedIOBuf<uint64_t> typed(buf.get());
-  const uint64_t n = 10000;
+  TypedIOBuf<std::size_t> typed(buf.get());
+  const std::size_t n = 10000;
   typed.reserve(0, n);
   EXPECT_LE(n, typed.capacity());
-  for (uint64_t i = 0; i < n; i++) {
+  for (std::size_t i = 0; i < n; i++) {
     *typed.writableTail() = i;
     typed.append(1);
   }
   EXPECT_EQ(n, typed.length());
-  for (uint64_t i = 0; i < n; i++) {
+  for (std::size_t i = 0; i < n; i++) {
     EXPECT_EQ(i, typed.data()[i]);
   }
 }
@@ -839,13 +850,13 @@ enum BufType {
 
 // chain element size, number of elements in chain, shared
 class MoveToFbStringTest
-  : public ::testing::TestWithParam<std::tr1::tuple<int, int, bool, BufType>> {
+    : public ::testing::TestWithParam<std::tuple<int, int, bool, BufType>> {
  protected:
   void SetUp() override {
-    elementSize_ = std::tr1::get<0>(GetParam());
-    elementCount_ = std::tr1::get<1>(GetParam());
-    shared_ = std::tr1::get<2>(GetParam());
-    type_ = std::tr1::get<3>(GetParam());
+    elementSize_ = std::get<0>(GetParam());
+    elementCount_ = std::get<1>(GetParam());
+    shared_ = std::get<2>(GetParam());
+    type_ = std::get<3>(GetParam());
 
     buf_ = makeBuf();
     for (int i = 0; i < elementCount_ - 1; ++i) {
@@ -923,11 +934,14 @@ INSTANTIATE_TEST_CASE_P(
     MoveToFbString,
     MoveToFbStringTest,
     ::testing::Combine(
-        ::testing::Values(0, 1, 24, 256, 1 << 10, 1 << 20),  // element size
-        ::testing::Values(1, 2, 10),                         // element count
-        ::testing::Bool(),                                   // shared
-        ::testing::Values(CREATE, TAKE_OWNERSHIP_MALLOC,
-                          TAKE_OWNERSHIP_CUSTOM, USER_OWNED)));
+        ::testing::Values(0, 1, 24, 256, 1 << 10, 1 << 20), // element size
+        ::testing::Values(1, 2, 10), // element count
+        ::testing::Bool(), // shared
+        ::testing::Values(
+            CREATE,
+            TAKE_OWNERSHIP_MALLOC,
+            TAKE_OWNERSHIP_CUSTOM,
+            USER_OWNED)));
 
 TEST(IOBuf, getIov) {
   uint32_t fillSeed = 0xdeadbeef;
@@ -987,6 +1001,59 @@ TEST(IOBuf, getIov) {
   EXPECT_EQ(buf->next()->next()->data(), iov[2].iov_base);
 }
 
+TEST(IOBuf, wrapIov) {
+  // Test wrapping IOVs
+  constexpr folly::StringPiece hello = "hello";
+  constexpr folly::StringPiece world = "world!";
+  folly::fbvector<struct iovec> iov;
+  iov.push_back({nullptr, 0});
+  iov.push_back({(void*)hello.data(), hello.size()});
+  iov.push_back({(void*)world.data(), world.size()});
+  auto wrapped = IOBuf::wrapIov(iov.data(), iov.size());
+  EXPECT_EQ(iov.size() - 1, wrapped->countChainElements());
+  IOBuf const* w = wrapped.get();
+  // skip the first iovec, which is empty/null, as it is ignored by
+  // IOBuf::wrapIov
+  for (size_t i = 0; i < wrapped->countChainElements(); ++i, w = w->next()) {
+    EXPECT_EQ(w->data(), iov[i + 1].iov_base);
+    EXPECT_EQ(w->length(), iov[i + 1].iov_len);
+  }
+}
+
+TEST(IOBuf, takeOwnershipIov) {
+  // Test taking IOVs ownership
+  folly::fbvector<folly::StringPiece> words{"hello", "world!"};
+  folly::fbvector<struct iovec> iov;
+  iov.push_back({nullptr, 0});
+  for (size_t i = 0; i < words.size(); i++) {
+    iov.push_back({(void*)strdup(words[i].data()), words[i].size() + 1});
+  }
+  auto buf = IOBuf::takeOwnershipIov(iov.data(), iov.size());
+  EXPECT_EQ(iov.size() - 1, buf->countChainElements());
+
+  IOBuf const* b = buf.get();
+  // skip the first iovec, which is empty/null, as it is ignored by
+  // IOBuf::takeIovOwnership
+  for (size_t i = 0; i < buf->countChainElements(); ++i, b = b->next()) {
+    EXPECT_EQ(words[i], static_cast<const char*>(iov[i + 1].iov_base));
+  }
+}
+
+TEST(IOBuf, wrapZeroLenIov) {
+  folly::fbvector<struct iovec> iov;
+  iov.push_back({nullptr, 0});
+  iov.push_back({nullptr, 0});
+  auto wrapped = IOBuf::wrapIov(iov.data(), iov.size());
+  EXPECT_NE(nullptr, wrapped);
+  EXPECT_EQ(wrapped->countChainElements(), 1);
+  EXPECT_EQ(wrapped->length(), 0);
+
+  wrapped = IOBuf::wrapIov(nullptr, 0);
+  EXPECT_NE(nullptr, wrapped);
+  EXPECT_EQ(wrapped->countChainElements(), 1);
+  EXPECT_EQ(wrapped->length(), 0);
+}
+
 TEST(IOBuf, move) {
   // Default allocate an IOBuf on the stack
   IOBuf outerBuf;
@@ -1032,10 +1099,18 @@ namespace {
 std::unique_ptr<IOBuf> fromStr(StringPiece sp) {
   return IOBuf::copyBuffer(ByteRange(sp));
 }
-}  // namespace
+
+std::unique_ptr<IOBuf> seq(std::initializer_list<StringPiece> sps) {
+  auto ret = IOBuf::create(0);
+  for (auto sp : sps) {
+    ret->prependChain(IOBuf::copyBuffer(ByteRange(sp)));
+  }
+  return ret;
+}
+} // namespace
 
 TEST(IOBuf, HashAndEqual) {
-  folly::IOBufEqual eq;
+  folly::IOBufEqualTo eq;
   folly::IOBufHash hash;
 
   EXPECT_TRUE(eq(nullptr, nullptr));
@@ -1089,6 +1164,30 @@ TEST(IOBuf, HashAndEqual) {
   EXPECT_EQ(hash(e), hash(f));
 }
 
+TEST(IOBuf, IOBufCompare) {
+  folly::IOBufCompare op;
+  auto n = std::unique_ptr<IOBuf>{};
+  auto e = IOBuf::create(0);
+  auto hello1 = seq({"hello"});
+  auto hello2 = seq({"hel", "lo"});
+  auto hello3 = seq({"he", "ll", "o"});
+  auto hellow = seq({"hellow"});
+  auto hellox = seq({"hellox"});
+
+  EXPECT_EQ(ordering::eq, op(n, n));
+  EXPECT_EQ(ordering::lt, op(n, e));
+  EXPECT_EQ(ordering::gt, op(e, n));
+  EXPECT_EQ(ordering::lt, op(e, hello1));
+  EXPECT_EQ(ordering::gt, op(hello1, e));
+  EXPECT_EQ(ordering::eq, op(hello1, hello1));
+  EXPECT_EQ(ordering::eq, op(hello1, hello2));
+  EXPECT_EQ(ordering::eq, op(hello1, hello3));
+  EXPECT_EQ(ordering::lt, op(hello1, hellow));
+  EXPECT_EQ(ordering::gt, op(hellow, hello1));
+  EXPECT_EQ(ordering::lt, op(hellow, hellox));
+  EXPECT_EQ(ordering::gt, op(hellox, hellow));
+}
+
 // reserveSlow() had a bug when reallocating the buffer in place. It would
 // preserve old headroom if it's not too much (heuristically) but wouldn't
 // adjust the requested amount of memory to account for that; the end result
@@ -1099,7 +1198,7 @@ TEST(IOBuf, ReserveWithHeadroom) {
   // 4096-byte buffer can be expanded in place to 8192 (in practice, this
   // usually happens).
   const char data[] = "Lorem ipsum dolor sit amet, consectetur adipiscing elit";
-  constexpr size_t reservedSize = 24;  // sizeof(SharedInfo)
+  constexpr size_t reservedSize = 24; // sizeof(SharedInfo)
   // chosen carefully so that the buffer is exactly 4096 bytes
   IOBuf buf(IOBuf::CREATE, 4096 - reservedSize);
   buf.advance(10);
@@ -1129,7 +1228,7 @@ TEST(IOBuf, CopyConstructorAndAssignmentOperator) {
     EXPECT_TRUE(buf->isShared());
     EXPECT_TRUE(copy.isShared());
     EXPECT_EQ((void*)buf->data(), (void*)copy.data());
-    EXPECT_NE(buf->next(), copy.next());  // actually different buffers
+    EXPECT_NE(buf->next(), copy.next()); // actually different buffers
 
     auto copy2 = *buf;
     copy2.coalesce();
@@ -1231,7 +1330,7 @@ char* writableStr(folly::IOBuf& buf) {
   return reinterpret_cast<char*>(buf.writableData());
 }
 
-}  // namespace
+} // namespace
 
 TEST(IOBuf, ExternallyShared) {
   struct Item {
@@ -1249,8 +1348,8 @@ TEST(IOBuf, ExternallyShared) {
 
   {
     auto freeFn = [](void* /* unused */, void* userData) {
-      auto it = static_cast<struct Item*>(userData);
-      it->refcount--;
+      auto it2 = static_cast<struct Item*>(userData);
+      it2->refcount--;
     };
     it.refcount++;
     auto buf1 = IOBuf::takeOwnership(it.buffer, it.size, freeFn, &it);
@@ -1342,4 +1441,46 @@ TEST(IOBuf, CoalesceEmptyBuffers) {
   auto br = b1->coalesce();
 
   EXPECT_TRUE(ByteRange(StringPiece("hello")) == br);
+}
+
+TEST(IOBuf, CloneCoalescedChain) {
+  auto b = IOBuf::createChain(1000, 100);
+  b->advance(10);
+  const uint32_t fillSeed = 0x12345678;
+  boost::mt19937 gen(fillSeed);
+  {
+    auto c = b.get();
+    std::size_t length = c->tailroom();
+    do {
+      length = std::min(length, c->tailroom());
+      c->append(length--);
+      fillBuf(c, gen);
+      c = c->next();
+    } while (c != b.get());
+  }
+  auto c = b->cloneCoalescedAsValue();
+  EXPECT_FALSE(c.isChained()); // Not chained
+  EXPECT_FALSE(c.isSharedOne()); // Not shared
+  EXPECT_EQ(b->headroom(), c.headroom()); // Preserves headroom
+  EXPECT_LE(b->prev()->tailroom(), c.tailroom()); // Preserves minimum tailroom
+  EXPECT_EQ(b->computeChainDataLength(), c.length()); // Same length
+  gen.seed(fillSeed);
+  checkBuf(&c, gen); // Same contents
+}
+
+TEST(IOBuf, CloneCoalescedSingle) {
+  auto b = IOBuf::create(1000);
+  b->advance(10);
+  b->append(900);
+  const uint32_t fillSeed = 0x12345678;
+  boost::mt19937 gen(fillSeed);
+  fillBuf(b.get(), gen);
+
+  auto c = b->cloneCoalesced();
+  EXPECT_FALSE(c->isChained()); // Not chained
+  EXPECT_TRUE(c->isSharedOne()); // Shared
+  EXPECT_EQ(b->buffer(), c->buffer());
+  EXPECT_EQ(b->capacity(), c->capacity());
+  EXPECT_EQ(b->data(), c->data());
+  EXPECT_EQ(b->length(), c->length());
 }

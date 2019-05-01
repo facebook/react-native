@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2012-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,11 @@
 #define FOLLY_FORMAT_H_
 
 #include <cstdio>
+#include <stdexcept>
 #include <tuple>
 #include <type_traits>
 
+#include <folly/CPortability.h>
 #include <folly/Conv.h>
 #include <folly/FormatArg.h>
 #include <folly/Range.h>
@@ -28,8 +30,8 @@
 #include <folly/Traits.h>
 
 // Ignore shadowing warnings within this file, so includers can use -Wshadow.
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wshadow"
+FOLLY_PUSH_WARNING
+FOLLY_GNU_DISABLE_WARNING("-Wshadow")
 
 namespace folly {
 
@@ -46,14 +48,15 @@ class FormatValue;
 // meta-attribute to identify formatters in this sea of template weirdness
 namespace detail {
 class FormatterTag {};
-};
+} // namespace detail
 
 /**
  * Formatter class.
  *
- * Note that this class is tricky, as it keeps *references* to its arguments
- * (and doesn't copy the passed-in format string).  Thankfully, you can't use
- * this directly, you have to use format(...) below.
+ * Note that this class is tricky, as it keeps *references* to its lvalue
+ * arguments (while it takes ownership of the temporaries), and it doesn't
+ * copy the passed-in format string. Thankfully, you can't use this
+ * directly, you have to use format(...) below.
  */
 
 /* BaseFormatter class.
@@ -103,14 +106,13 @@ class BaseFormatter {
   }
 
   /**
-   * metadata to identify generated children of BaseFormatter
+   * Metadata to identify generated children of BaseFormatter
    */
   typedef detail::FormatterTag IsFormatter;
   typedef BaseFormatter BaseType;
 
  private:
-  typedef std::tuple<FormatValue<typename std::decay<Args>::type>...>
-      ValueTuple;
+  typedef std::tuple<Args...> ValueTuple;
   static constexpr size_t valueCount = std::tuple_size<ValueTuple>::value;
 
   Derived const& asDerived() const {
@@ -166,7 +168,7 @@ class BaseFormatter {
       K<valueCount, int>::type getSizeArgFrom(size_t i, const FormatArg& arg)
           const {
     if (i == K) {
-      return getValue(std::get<K>(values_), arg);
+      return getValue(getFormatValue<K>(), arg);
     }
     return getSizeArgFrom<K + 1>(i, arg);
   }
@@ -188,9 +190,18 @@ class BaseFormatter {
   // for the exclusive use of format() (below).  This way, you can't create
   // a Formatter object, but can handle references to it (for streaming,
   // conversion to string, etc) -- which is good, as Formatter objects are
-  // dangerous (they hold references, possibly to temporaries)
+  // dangerous (they may hold references).
   BaseFormatter(BaseFormatter&&) = default;
   BaseFormatter& operator=(BaseFormatter&&) = default;
+
+  template <size_t K>
+  using ArgType = typename std::tuple_element<K, ValueTuple>::type;
+
+  template <size_t K>
+  FormatValue<typename std::decay<ArgType<K>>::type> getFormatValue() const {
+    return FormatValue<typename std::decay<ArgType<K>>::type>(
+        std::get<K>(values_));
+  }
 
   ValueTuple values_;
 };
@@ -213,7 +224,7 @@ class Formatter : public BaseFormatter<
 
   template <size_t K, class Callback>
   void doFormatArg(FormatArg& arg, Callback& cb) const {
-    std::get<K>(this->values_).format(arg, cb);
+    this->template getFormatValue<K>().format(arg, cb);
   }
 
   friend class BaseFormatter<
@@ -298,6 +309,29 @@ inline std::string svformat(StringPiece fmt, Container&& container) {
 }
 
 /**
+ * Exception class thrown when a format key is not found in the given
+ * associative container keyed by strings. We inherit std::out_of_range for
+ * compatibility with callers that expect exception to be thrown directly
+ * by std::map or std::unordered_map.
+ *
+ * Having the key be at the end of the message string, we can access it by
+ * simply adding its offset to what(). Not storing separate std::string key
+ * makes the exception type small and noexcept-copyable like std::out_of_range,
+ * and therefore able to fit in-situ in exception_wrapper.
+ */
+class FOLLY_EXPORT FormatKeyNotFoundException : public std::out_of_range {
+ public:
+  explicit FormatKeyNotFoundException(StringPiece key);
+
+  char const* key() const noexcept {
+    return what() + kMessagePrefix.size();
+  }
+
+ private:
+  static constexpr StringPiece const kMessagePrefix = "format key not found: ";
+};
+
+/**
  * Wrap a sequence or associative container so that out-of-range lookups
  * return a default value rather than throwing an exception.
  *
@@ -313,7 +347,7 @@ struct DefaultValueWrapper {
   const Container& container;
   const Value& defaultValue;
 };
-} // namespace
+} // namespace detail
 
 template <class Container, class Value>
 detail::DefaultValueWrapper<Container, Value> defaulted(
@@ -423,7 +457,7 @@ struct IsFormatter<
     typename std::enable_if<
         std::is_same<typename T::IsFormatter, detail::FormatterTag>::value>::
         type> : public std::true_type {};
-} // folly::detail
+} // namespace detail
 
 // Deprecated API. formatChecked() et. al. now behave identically to their
 // non-Checked counterparts.
@@ -460,4 +494,4 @@ vformatChecked(Str* out, StringPiece fmt, Container&& container) {
 
 #include <folly/Format-inl.h>
 
-#pragma GCC diagnostic pop
+FOLLY_POP_WARNING

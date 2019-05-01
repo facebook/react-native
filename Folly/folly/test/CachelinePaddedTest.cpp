@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
 
 #include <type_traits>
 
+#include <folly/lang/Align.h>
 #include <folly/portability/GTest.h>
 
 using folly::CachelinePadded;
@@ -26,85 +27,109 @@ static_assert(
     std::is_standard_layout<CachelinePadded<int>>::value,
     "CachelinePadded<T> must be standard-layout if T is.");
 
-const int kCachelineSize = folly::detail::CacheLocality::kFalseSharingRange;
+static constexpr int kCachelineSize =
+    folly::hardware_destructive_interference_size;
 
-template <int dataSize>
-struct SizedData {
+template <size_t dataSize, size_t alignment = alignof(void*)>
+struct alignas(alignment) SizedData {
   SizedData() {
-    for (unsigned i = 0; i < dataSize; ++i) {
-      data[i] = i;
+    size_t i = 0;
+    for (auto& datum : data) {
+      datum = i++;
     }
   }
 
   void doModifications() {
-    for (unsigned i = 0; i < dataSize; ++i) {
-      EXPECT_EQ(static_cast<unsigned char>(i), data[i]);
-      ++data[i];
+    size_t i = 0;
+    for (auto& datum : data) {
+      EXPECT_EQ(static_cast<unsigned char>(i), datum);
+      ++i;
+      ++datum;
     }
   }
 
   ~SizedData() {
-    for (unsigned i = 0; i < dataSize; ++i) {
-      EXPECT_EQ(static_cast<unsigned char>(i + 1), data[i]);
+    size_t i = 1;
+    for (auto& datum : data) {
+      EXPECT_EQ(static_cast<unsigned char>(i), datum);
+      ++i;
     }
   }
 
   unsigned char data[dataSize];
 };
 
-using ExactlyCachelineSized = SizedData<kCachelineSize>;
-using DoubleCachelineSized = SizedData<2 * kCachelineSize>;
-using BelowCachelineSized = SizedData<kCachelineSize / 2>;
-using AboveCachelineSized = SizedData<kCachelineSize + kCachelineSize / 2>;
+template <typename T, size_t N = 1>
+using SizedDataMimic = SizedData<N * sizeof(T), alignof(T)>;
 
-TEST(CachelinePadded, Exact) {
-  EXPECT_EQ(kCachelineSize, sizeof(CachelinePadded<ExactlyCachelineSized>));
-  CachelinePadded<ExactlyCachelineSized> item;
-  item.get()->doModifications();
-  EXPECT_TRUE(
-      reinterpret_cast<CachelinePadded<ExactlyCachelineSized>*>(item.get()) ==
-      &item);
+template <typename T>
+struct CachelinePaddedTests : ::testing::Test {};
+
+using CachelinePaddedTypes = ::testing::Types<
+    SizedData<kCachelineSize>,
+    SizedData<2 * kCachelineSize>,
+    SizedData<kCachelineSize / 2>,
+    SizedData<kCachelineSize + kCachelineSize / 2>,
+    // Mimic single basic types:
+    SizedDataMimic<folly::max_align_t>,
+    SizedDataMimic<void*>,
+    SizedDataMimic<long double>,
+    SizedDataMimic<double>,
+    SizedDataMimic<float>,
+    SizedDataMimic<long long>,
+    SizedDataMimic<long>,
+    SizedDataMimic<int>,
+    SizedDataMimic<short>,
+    SizedDataMimic<char>,
+    // Mimic small arrays of basic types:
+    SizedDataMimic<folly::max_align_t, 3>,
+    SizedDataMimic<void*, 3>,
+    SizedDataMimic<long double, 3>,
+    SizedDataMimic<double, 3>,
+    SizedDataMimic<float, 3>,
+    SizedDataMimic<long long, 3>,
+    SizedDataMimic<long, 3>,
+    SizedDataMimic<int, 3>,
+    SizedDataMimic<short, 3>,
+    SizedDataMimic<char, 3>,
+    // Mimic large arrays of basic types:
+    SizedDataMimic<folly::max_align_t, kCachelineSize + 3>,
+    SizedDataMimic<void*, kCachelineSize + 3>,
+    SizedDataMimic<long double, kCachelineSize + 3>,
+    SizedDataMimic<double, kCachelineSize + 3>,
+    SizedDataMimic<float, kCachelineSize + 3>,
+    SizedDataMimic<long long, kCachelineSize + 3>,
+    SizedDataMimic<long, kCachelineSize + 3>,
+    SizedDataMimic<int, kCachelineSize + 3>,
+    SizedDataMimic<short, kCachelineSize + 3>,
+    SizedDataMimic<char, kCachelineSize + 3>>;
+TYPED_TEST_CASE(CachelinePaddedTests, CachelinePaddedTypes);
+
+TYPED_TEST(CachelinePaddedTests, alignment) {
+  EXPECT_EQ(alignof(TypeParam), alignof(CachelinePadded<TypeParam>));
 }
 
-TEST(CachelinePadded, Double) {
-  EXPECT_EQ(2 * kCachelineSize, sizeof(CachelinePadded<DoubleCachelineSized>));
-  CachelinePadded<DoubleCachelineSized> item;
+TYPED_TEST(CachelinePaddedTests, integrity) {
+  CachelinePadded<TypeParam> item;
   item.get()->doModifications();
-  EXPECT_TRUE(
-      reinterpret_cast<CachelinePadded<DoubleCachelineSized>*>(item.get()) ==
-      &item);
 }
 
-TEST(CachelinePadded, Below) {
-  EXPECT_EQ(kCachelineSize, sizeof(CachelinePadded<BelowCachelineSized>));
-  CachelinePadded<BelowCachelineSized> item;
-  item.get()->doModifications();
-  EXPECT_TRUE(
-      reinterpret_cast<CachelinePadded<BelowCachelineSized>*>(item.get()) ==
-      &item);
-}
-
-TEST(CachelinePadded, Above) {
-  EXPECT_EQ(2 * kCachelineSize, sizeof(CachelinePadded<AboveCachelineSized>));
-  CachelinePadded<AboveCachelineSized> item;
-  item.get()->doModifications();
-  EXPECT_TRUE(
-      reinterpret_cast<CachelinePadded<AboveCachelineSized>*>(item.get()) ==
-      &item);
-}
-
-TEST(CachelinePadded, CanBeCastedBack) {
-  CachelinePadded<int> padded;
-  CachelinePadded<int>* ptr =
-      reinterpret_cast<CachelinePadded<int>*>(padded.get());
-  EXPECT_EQ(&padded, ptr);
+TYPED_TEST(CachelinePaddedTests, size) {
+  EXPECT_GT(
+      sizeof(TypeParam) + 2 * kCachelineSize,
+      sizeof(CachelinePadded<TypeParam>));
+  size_t const rawSize = sizeof(TypeParam);
+  size_t const rawAlign = alignof(TypeParam);
+  size_t const expectedPadding = kCachelineSize - (rawAlign % kCachelineSize);
+  size_t const expectedPaddedSize = rawSize + 2 * expectedPadding;
+  EXPECT_EQ(expectedPaddedSize, sizeof(CachelinePadded<TypeParam>));
 }
 
 TEST(CachelinePadded, PtrOperator) {
   CachelinePadded<int> padded;
   EXPECT_TRUE(padded.get() == padded.operator->());
   EXPECT_TRUE(&*padded == padded.get());
-  const CachelinePadded<int> constPadded;
+  const auto constPadded = CachelinePadded<int>{};
   EXPECT_TRUE(constPadded.get() == constPadded.operator->());
   EXPECT_TRUE(constPadded.get() == &*constPadded.get());
 }
@@ -125,7 +150,7 @@ TEST(CachelinePadded, PropagatesConstness) {
   padded->assign(&i);
   EXPECT_EQ(31415, i);
 
-  const CachelinePadded<OverloadedOnConst> constPadded;
+  const auto constPadded = CachelinePadded<OverloadedOnConst>{};
   constPadded->assign(&i);
   EXPECT_EQ(271828, i);
 }

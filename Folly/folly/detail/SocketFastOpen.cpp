@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2016-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,15 @@
 
 #include <folly/detail/SocketFastOpen.h>
 
+#include <folly/portability/Sockets.h>
+
 #include <cerrno>
+#include <cstdio>
 
 namespace folly {
 namespace detail {
 
 #if FOLLY_ALLOW_TFO && defined(__linux__)
-
-#include <netinet/tcp.h>
-#include <stdio.h>
 
 // Sometimes these flags are not present in the headers,
 // so define them if not present.
@@ -64,9 +64,6 @@ bool tfo_succeeded(int sockfd) {
 
 #elif FOLLY_ALLOW_TFO && defined(__APPLE__)
 
-#include <netinet/tcp.h>
-#include <sys/socket.h>
-
 ssize_t tfo_sendmsg(int sockfd, const struct msghdr* msg, int flags) {
   sa_endpoints_t endpoints;
   endpoints.sae_srcif = 0;
@@ -100,7 +97,7 @@ int tfo_enable(int sockfd, size_t max_queue_size) {
       sizeof(max_queue_size));
 }
 
-bool tfo_succeeded(int sockfd) {
+bool tfo_succeeded(int /* sockfd */) {
   errno = EOPNOTSUPP;
   return false;
 }
@@ -124,5 +121,5 @@ bool tfo_succeeded(int /* sockfd */) {
 }
 
 #endif
-}
-}
+} // namespace detail
+} // namespace folly

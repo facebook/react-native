@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2015-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,16 @@
 
 #include <folly/Demangle.h>
 
+#include <folly/detail/Demangle.h>
 #include <folly/portability/GTest.h>
 
 using folly::demangle;
 
 namespace folly_test {
-struct ThisIsAVeryLongStructureName {
-};
-}  // namespace folly_test
+struct ThisIsAVeryLongStructureName {};
+} // namespace folly_test
 
-#if FOLLY_HAVE_CPLUS_DEMANGLE_V3_CALLBACK
+#if FOLLY_DETAIL_HAVE_DEMANGLE_H
 TEST(Demangle, demangle) {
   char expected[] = "folly_test::ThisIsAVeryLongStructureName";
   EXPECT_STREQ(
@@ -34,14 +34,17 @@ TEST(Demangle, demangle) {
 
   {
     char buf[sizeof(expected)];
-    EXPECT_EQ(sizeof(expected) - 1,
-              demangle(typeid(folly_test::ThisIsAVeryLongStructureName),
-                       buf, sizeof(buf)));
+    EXPECT_EQ(
+        sizeof(expected) - 1,
+        demangle(
+            typeid(folly_test::ThisIsAVeryLongStructureName),
+            buf,
+            sizeof(buf)));
     EXPECT_STREQ(expected, buf);
 
-    EXPECT_EQ(sizeof(expected) - 1,
-              demangle(typeid(folly_test::ThisIsAVeryLongStructureName),
-                       buf, 11));
+    EXPECT_EQ(
+        sizeof(expected) - 1,
+        demangle(typeid(folly_test::ThisIsAVeryLongStructureName), buf, 11));
     EXPECT_STREQ("folly_test", buf);
   }
 }
@@ -81,7 +84,7 @@ TEST(Demangle, LongSymbolFallback) {
 }
 #endif // defined(FOLLY_DEMANGLE_MAX_SYMBOL_SIZE)
 
-#endif // FOLLY_HAVE_CPLUS_DEMANGLE_V3_CALLBACK
+#endif // FOLLY_DETAIL_HAVE_DEMANGLE_H
 
 TEST(Demangle, strlcpy) {
   char buf[6];
@@ -102,5 +105,5 @@ TEST(Demangle, strlcpy) {
 
   buf[0] = 'z';
   EXPECT_EQ(strlen(big_string), folly::strlcpy(buf, big_string, 0));
-  EXPECT_EQ('z', buf[0]);  // unchanged, size = 0
+  EXPECT_EQ('z', buf[0]); // unchanged, size = 0
 }

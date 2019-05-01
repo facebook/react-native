@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2013-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,22 +17,22 @@
 #pragma once
 
 #include <atomic>
+#include <cstdint>
 #include <functional>
+#include <limits>
 #include <stdexcept>
 #include <system_error>
 #include <type_traits>
-#include <stdint.h>
 
-#include <folly/Bits.h>
+#include <boost/type_traits/has_trivial_destructor.hpp>
+
 #include <folly/Conv.h>
 #include <folly/Likely.h>
 #include <folly/Random.h>
 #include <folly/detail/AtomicUnorderedMapUtils.h>
+#include <folly/lang/Bits.h>
 #include <folly/portability/SysMman.h>
 #include <folly/portability/Unistd.h>
-
-#include <boost/type_traits/has_trivial_destructor.hpp>
-#include <limits>
 
 namespace folly {
 
@@ -129,22 +129,22 @@ namespace folly {
 /// which is much faster than destructing all of the keys and values.
 /// Feel free to override if std::is_trivial_destructor isn't recognizing
 /// the triviality of your destructors.
-template <typename Key,
-          typename Value,
-          typename Hash = std::hash<Key>,
-          typename KeyEqual = std::equal_to<Key>,
-          bool SkipKeyValueDeletion =
-              (boost::has_trivial_destructor<Key>::value &&
-               boost::has_trivial_destructor<Value>::value),
-          template<typename> class Atom = std::atomic,
-          typename IndexType = uint32_t,
-          typename Allocator = folly::detail::MMapAlloc>
+template <
+    typename Key,
+    typename Value,
+    typename Hash = std::hash<Key>,
+    typename KeyEqual = std::equal_to<Key>,
+    bool SkipKeyValueDeletion =
+        (boost::has_trivial_destructor<Key>::value &&
+         boost::has_trivial_destructor<Value>::value),
+    template <typename> class Atom = std::atomic,
+    typename IndexType = uint32_t,
+    typename Allocator = folly::detail::MMapAlloc>
 
 struct AtomicUnorderedInsertMap {
-
   typedef Key key_type;
   typedef Value mapped_type;
-  typedef std::pair<Key,Value> value_type;
+  typedef std::pair<Key, Value> value_type;
   typedef std::size_t size_type;
   typedef std::ptrdiff_t difference_type;
   typedef Hash hasher;
@@ -153,23 +153,21 @@ struct AtomicUnorderedInsertMap {
 
   typedef struct ConstIterator {
     ConstIterator(const AtomicUnorderedInsertMap& owner, IndexType slot)
-      : owner_(owner)
-      , slot_(slot)
-    {}
+        : owner_(owner), slot_(slot) {}
 
     ConstIterator(const ConstIterator&) = default;
-    ConstIterator& operator= (const ConstIterator&) = default;
+    ConstIterator& operator=(const ConstIterator&) = default;
 
-    const value_type& operator* () const {
+    const value_type& operator*() const {
       return owner_.slots_[slot_].keyValue();
     }
 
-    const value_type* operator-> () const {
+    const value_type* operator->() const {
       return &owner_.slots_[slot_].keyValue();
     }
 
     // pre-increment
-    const ConstIterator& operator++ () {
+    const ConstIterator& operator++() {
       while (slot_ > 0) {
         --slot_;
         if (owner_.slots_[slot_].state() == LINKED) {
@@ -186,10 +184,10 @@ struct AtomicUnorderedInsertMap {
       return prev;
     }
 
-    bool operator== (const ConstIterator& rhs) const {
+    bool operator==(const ConstIterator& rhs) const {
       return slot_ == rhs.slot_;
     }
-    bool operator!= (const ConstIterator& rhs) const {
+    bool operator!=(const ConstIterator& rhs) const {
       return !(*this == rhs);
     }
 
@@ -210,8 +208,7 @@ struct AtomicUnorderedInsertMap {
       size_t maxSize,
       float maxLoadFactor = 0.8f,
       const Allocator& alloc = Allocator())
-    : allocator_(alloc)
-  {
+      : allocator_(alloc) {
     size_t capacity = size_t(maxSize / std::min(1.0f, maxLoadFactor) + 128);
     size_t avail = size_t{1} << (8 * sizeof(IndexType) - 2);
     if (capacity > avail && maxSize < avail) {
@@ -262,8 +259,8 @@ struct AtomicUnorderedInsertMap {
   ///  auto value = memo.findOrConstruct(key, [=](void* raw) {
   ///    new (raw) std::string(computation(key));
   ///  })->first;
-  template<typename Func>
-  std::pair<const_iterator,bool> findOrConstruct(const Key& key, Func&& func) {
+  template <typename Func>
+  std::pair<const_iterator, bool> findOrConstruct(const Key& key, Func&& func) {
     auto const slot = keyToSlotIdx(key);
     auto prev = slots_[slot].headAndState_.load(std::memory_order_acquire);
 
@@ -314,11 +311,10 @@ struct AtomicUnorderedInsertMap {
   /// Eventually we can duplicate all of the std::pair constructor
   /// forms, including a recursive tuple forwarding template
   /// http://functionalcpp.wordpress.com/2013/08/28/tuple-forwarding/).
-  template<class K, class V>
-  std::pair<const_iterator,bool> emplace(const K& key, V&& value) {
-    return findOrConstruct(key, [&](void* raw) {
-      new (raw) Value(std::forward<V>(value));
-    });
+  template <class K, class V>
+  std::pair<const_iterator, bool> emplace(const K& key, V&& value) {
+    return findOrConstruct(
+        key, [&](void* raw) { new (raw) Value(std::forward<V>(value)); });
   }
 
   const_iterator find(const Key& key) const {
@@ -366,9 +362,8 @@ struct AtomicUnorderedInsertMap {
     IndexType next_;
 
     /// Key and Value
-    typename std::aligned_storage<sizeof(value_type),
-                                  alignof(value_type)>::type raw_;
-
+    typename std::aligned_storage<sizeof(value_type), alignof(value_type)>::type
+        raw_;
 
     ~Slot() {
       auto s = state();
@@ -397,7 +392,6 @@ struct AtomicUnorderedInsertMap {
       assert(state() != EMPTY);
       return *static_cast<const value_type*>(static_cast<const void*>(&raw_));
     }
-
   };
 
   // We manually manage the slot memory so we can bypass initialization
@@ -478,31 +472,31 @@ struct AtomicUnorderedInsertMap {
 /// to select a 64 bit slot index type.  Use this if you need a capacity
 /// bigger than 2^30 (about a billion).  This increases memory overheads,
 /// obviously.
-template <typename Key,
-          typename Value,
-          typename Hash = std::hash<Key>,
-          typename KeyEqual = std::equal_to<Key>,
-          bool SkipKeyValueDeletion =
-              (boost::has_trivial_destructor<Key>::value &&
-               boost::has_trivial_destructor<Value>::value),
-          template <typename> class Atom = std::atomic,
-          typename Allocator = folly::detail::MMapAlloc>
-using AtomicUnorderedInsertMap64 =
-    AtomicUnorderedInsertMap<Key,
-                             Value,
-                             Hash,
-                             KeyEqual,
-                             SkipKeyValueDeletion,
-                             Atom,
-                             uint64_t,
-                             Allocator>;
+template <
+    typename Key,
+    typename Value,
+    typename Hash = std::hash<Key>,
+    typename KeyEqual = std::equal_to<Key>,
+    bool SkipKeyValueDeletion =
+        (boost::has_trivial_destructor<Key>::value &&
+         boost::has_trivial_destructor<Value>::value),
+    template <typename> class Atom = std::atomic,
+    typename Allocator = folly::detail::MMapAlloc>
+using AtomicUnorderedInsertMap64 = AtomicUnorderedInsertMap<
+    Key,
+    Value,
+    Hash,
+    KeyEqual,
+    SkipKeyValueDeletion,
+    Atom,
+    uint64_t,
+    Allocator>;
 
 /// MutableAtom is a tiny wrapper than gives you the option of atomically
 /// updating values inserted into an AtomicUnorderedInsertMap<K,
 /// MutableAtom<V>>.  This relies on AtomicUnorderedInsertMap's guarantee
 /// that it doesn't move values.
-template <typename T,
-          template<typename> class Atom = std::atomic>
+template <typename T, template <typename> class Atom = std::atomic>
 struct MutableAtom {
   mutable Atom<T> data;
 
@@ -518,5 +512,4 @@ struct MutableData {
   explicit MutableData(const T& init) : data(init) {}
 };
 
-
-}
+} // namespace folly

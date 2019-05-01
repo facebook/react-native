@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2012-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,11 @@
 
 #include <folly/experimental/TestUtil.h>
 
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 
 #include <boost/regex.hpp>
+
 #include <folly/Exception.h>
 #include <folly/File.h>
 #include <folly/FileUtil.h>
@@ -28,7 +29,7 @@
 #include <folly/portability/Fcntl.h>
 
 #ifdef _WIN32
-#include <crtdbg.h>
+#include <crtdbg.h> // @manual
 #endif
 
 namespace folly {
@@ -43,22 +44,23 @@ fs::path generateUniquePath(fs::path path, StringPiece namePrefix) {
   if (namePrefix.empty()) {
     path /= fs::unique_path();
   } else {
-    path /= fs::unique_path(
-        to<std::string>(namePrefix, ".%%%%-%%%%-%%%%-%%%%"));
+    path /=
+        fs::unique_path(to<std::string>(namePrefix, ".%%%%-%%%%-%%%%-%%%%"));
   }
   return path;
 }
 
-}  // namespace
+} // namespace
 
-TemporaryFile::TemporaryFile(StringPiece namePrefix,
-                             fs::path dir,
-                             Scope scope,
-                             bool closeOnDestruction)
-  : scope_(scope),
-    closeOnDestruction_(closeOnDestruction),
-    fd_(-1),
-    path_(generateUniquePath(std::move(dir), namePrefix)) {
+TemporaryFile::TemporaryFile(
+    StringPiece namePrefix,
+    fs::path dir,
+    Scope scope,
+    bool closeOnDestruction)
+    : scope_(scope),
+      closeOnDestruction_(closeOnDestruction),
+      fd_(-1),
+      path_(generateUniquePath(std::move(dir), namePrefix)) {
   fd_ = open(path_.string().c_str(), O_RDWR | O_CREAT | O_EXCL, 0666);
   checkUnixError(fd_, "open failed");
 
@@ -73,16 +75,23 @@ TemporaryFile::TemporaryFile(StringPiece namePrefix,
   }
 }
 
+void TemporaryFile::close() {
+  if (::close(fd_) == -1) {
+    PLOG(ERROR) << "close failed";
+  }
+  fd_ = -1;
+}
+
 const fs::path& TemporaryFile::path() const {
   CHECK(scope_ != Scope::UNLINK_IMMEDIATELY);
   DCHECK(!path_.empty());
   return path_;
 }
 
-TemporaryFile::~TemporaryFile() {
+void TemporaryFile::reset() {
   if (fd_ != -1 && closeOnDestruction_) {
-    if (close(fd_) == -1) {
-      PLOG(ERROR) << "close failed";
+    if (::close(fd_) == -1) {
+      PLOG(ERROR) << "close failed (fd = " << fd_ << "): ";
     }
   }
 
@@ -97,12 +106,16 @@ TemporaryFile::~TemporaryFile() {
   }
 }
 
+TemporaryFile::~TemporaryFile() {
+  reset();
+}
+
 TemporaryDirectory::TemporaryDirectory(
     StringPiece namePrefix,
     fs::path dir,
     Scope scope)
     : scope_(scope),
-      path_(folly::make_unique<fs::path>(
+      path_(std::make_unique<fs::path>(
           generateUniquePath(std::move(dir), namePrefix))) {
   fs::create_directory(path());
 }
@@ -117,14 +130,15 @@ TemporaryDirectory::~TemporaryDirectory() {
   }
 }
 
-ChangeToTempDir::ChangeToTempDir() : initialPath_(fs::current_path()) {
-  std::string p = dir_.path().string();
-  ::chdir(p.c_str());
+ChangeToTempDir::ChangeToTempDir() {
+  orig_ = fs::current_path();
+  fs::current_path(path());
 }
 
 ChangeToTempDir::~ChangeToTempDir() {
-  std::string p = initialPath_.string();
-  ::chdir(p.c_str());
+  if (!orig_.empty()) {
+    fs::current_path(orig_);
+  }
 }
 
 namespace detail {
@@ -132,12 +146,12 @@ namespace detail {
 SavedState disableInvalidParameters() {
 #ifdef _WIN32
   SavedState ret;
-  ret.previousThreadLocalHandler = _set_thread_local_invalid_parameter_handler(
-      [](const wchar_t*,
-         const wchar_t*,
-         const wchar_t*,
-         unsigned int,
-         uintptr_t) {});
+  ret.previousThreadLocalHandler =
+      _set_thread_local_invalid_parameter_handler([](const wchar_t*,
+                                                     const wchar_t*,
+                                                     const wchar_t*,
+                                                     unsigned int,
+                                                     uintptr_t) {});
   ret.previousCrtReportMode = _CrtSetReportMode(_CRT_ASSERT, 0);
   return ret;
 #else
@@ -157,36 +171,35 @@ void enableInvalidParameters(SavedState) {}
 
 bool hasPCREPatternMatch(StringPiece pattern, StringPiece target) {
   return boost::regex_match(
-    target.begin(),
-    target.end(),
-    boost::regex(pattern.begin(), pattern.end())
-  );
+      target.begin(),
+      target.end(),
+      boost::regex(pattern.begin(), pattern.end()));
 }
 
 bool hasNoPCREPatternMatch(StringPiece pattern, StringPiece target) {
   return !hasPCREPatternMatch(pattern, target);
 }
 
-}  // namespace detail
+} // namespace detail
 
 CaptureFD::CaptureFD(int fd, ChunkCob chunk_cob)
     : chunkCob_(std::move(chunk_cob)), fd_(fd), readOffset_(0) {
   oldFDCopy_ = dup(fd_);
   PCHECK(oldFDCopy_ != -1) << "Could not copy FD " << fd_;
 
-  int file_fd = open(file_.path().string().c_str(), O_WRONLY|O_CREAT, 0600);
-  PCHECK(dup2(file_fd, fd_) != -1) << "Could not replace FD " << fd_
-    << " with " << file_fd;
+  int file_fd = open(file_.path().string().c_str(), O_WRONLY | O_CREAT, 0600);
+  PCHECK(dup2(file_fd, fd_) != -1)
+      << "Could not replace FD " << fd_ << " with " << file_fd;
   PCHECK(close(file_fd) != -1) << "Could not close " << file_fd;
 }
 
 void CaptureFD::release() {
   if (oldFDCopy_ != fd_) {
-    readIncremental();  // Feed chunkCob_
-    PCHECK(dup2(oldFDCopy_, fd_) != -1) << "Could not restore old FD "
-      << oldFDCopy_ << " into " << fd_;
+    readIncremental(); // Feed chunkCob_
+    PCHECK(dup2(oldFDCopy_, fd_) != -1)
+        << "Could not restore old FD " << oldFDCopy_ << " into " << fd_;
     PCHECK(close(oldFDCopy_) != -1) << "Could not close " << oldFDCopy_;
-    oldFDCopy_ = fd_;  // Make this call idempotent
+    oldFDCopy_ = fd_; // Make this call idempotent
   }
 }
 
@@ -214,5 +227,5 @@ std::string CaptureFD::readIncremental() {
   return std::string(buf.get(), size);
 }
 
-}  // namespace test
-}  // namespace folly
+} // namespace test
+} // namespace folly

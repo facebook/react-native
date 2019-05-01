@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Facebook, Inc.
+ * Copyright 2014-present Facebook, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@
 #include <vector>
 
 #include <folly/Optional.h>
+#include <folly/Try.h>
 #include <folly/fibers/FiberManagerInternal.h>
 #include <folly/fibers/Promise.h>
-#include <folly/Try.h>
 
 namespace folly {
 namespace fibers {
@@ -41,9 +41,9 @@ class TaskIterator;
  * @return movable, non-copyable iterator
  */
 template <class InputIterator>
-TaskIterator<typename std::result_of<
-    typename std::iterator_traits<InputIterator>::value_type()>::
-                 type> inline addTasks(InputIterator first, InputIterator last);
+TaskIterator<invoke_result_t<
+    typename std::iterator_traits<InputIterator>::
+        value_type>> inline addTasks(InputIterator first, InputIterator last);
 
 template <typename T>
 class TaskIterator {
@@ -110,8 +110,8 @@ class TaskIterator {
 
  private:
   template <class InputIterator>
-  friend TaskIterator<typename std::result_of<
-      typename std::iterator_traits<InputIterator>::value_type()>::type>
+  friend TaskIterator<
+      invoke_result_t<typename std::iterator_traits<InputIterator>::value_type>>
   addTasks(InputIterator first, InputIterator last);
 
   struct Context {
@@ -128,7 +128,7 @@ class TaskIterator {
 
   folly::Try<T> awaitNextResult();
 };
-}
-}
+} // namespace fibers
+} // namespace folly
 
 #include <folly/fibers/AddTasks-inl.h>
