@@ -28,12 +28,47 @@
   { *this, &YGStyle::get_##FIELD, &YGStyle::set_##FIELD }
 
 class YGStyle {
+  template <typename Enum>
+  using Values =
+      facebook::yoga::detail::Values<facebook::yoga::enums::count<Enum>()>;
   using CompactValue = facebook::yoga::detail::CompactValue;
 
 public:
-  using Dimensions = facebook::yoga::detail::Values<2>;
-  using Edges =
-      facebook::yoga::detail::Values<facebook::yoga::enums::count<YGEdge>()>;
+  using Dimensions = Values<YGDimension>;
+  using Edges = Values<YGEdge>;
+
+  template <typename T, T YGStyle::*Prop>
+  struct Ref {
+    YGStyle& style;
+    operator T() const { return style.*Prop; }
+    Ref<T, Prop>& operator=(T value) {
+      style.*Prop = value;
+      return *this;
+    }
+  };
+
+  template <typename Idx, Values<Idx> YGStyle::*Prop>
+  struct IdxRef {
+    struct Ref {
+      YGStyle& style;
+      Idx idx;
+      operator CompactValue() const { return (style.*Prop)[idx]; }
+      operator YGValue() const { return (style.*Prop)[idx]; }
+      Ref& operator=(CompactValue value) {
+        (style.*Prop)[idx] = value;
+        return *this;
+      }
+    };
+
+    YGStyle& style;
+    IdxRef<Idx, Prop>& operator=(const Values<Idx>& values) {
+      style.*Prop = values;
+      return *this;
+    }
+    operator const Values<Idx>&() const { return style.*Prop; }
+    Ref operator[](Idx idx) { return {style, idx}; }
+    CompactValue operator[](Idx idx) const { return (style.*Prop)[idx]; }
+  };
 
   template <typename T>
   struct BitfieldRef {
@@ -60,6 +95,37 @@ public:
         overflow_(YGOverflowVisible),
         display_(YGDisplayFlex) {}
   ~YGStyle() = default;
+
+private:
+  /* Some platforms don't support enum bitfields,
+     so please use BITFIELD_ENUM_SIZED(BITS_COUNT) */
+  YGDirection direction_ BITFIELD_ENUM_SIZED(2);
+  YGFlexDirection flexDirection_ BITFIELD_ENUM_SIZED(2);
+  YGJustify justifyContent_ BITFIELD_ENUM_SIZED(3);
+  YGAlign alignContent_ BITFIELD_ENUM_SIZED(3);
+  YGAlign alignItems_ BITFIELD_ENUM_SIZED(3);
+  YGAlign alignSelf_ BITFIELD_ENUM_SIZED(3);
+  YGPositionType positionType_ BITFIELD_ENUM_SIZED(1);
+  YGWrap flexWrap_ BITFIELD_ENUM_SIZED(2);
+  YGOverflow overflow_ BITFIELD_ENUM_SIZED(2);
+  YGDisplay display_ BITFIELD_ENUM_SIZED(1);
+  YGFloatOptional flex_ = {};
+  YGFloatOptional flexGrow_ = {};
+  YGFloatOptional flexShrink_ = {};
+  CompactValue flexBasis_ = CompactValue::ofAuto();
+  Edges margin_ = {};
+  Edges position_ = {};
+  Edges padding_ = {};
+  Edges border_ = {};
+  Dimensions dimensions_{CompactValue::ofAuto()};
+  Dimensions minDimensions_ = {};
+  Dimensions maxDimensions_ = {};
+  // Yoga specific properties, not compatible with flexbox specification
+  YGFloatOptional aspectRatio_ = {};
+
+public:
+  // for library users needing a type
+  using ValueRepr = std::remove_reference<decltype(margin_[0])>::type;
 
   YGDirection direction() const { return direction_; }
   BitfieldRef<YGDirection> direction() { return BITFIELD_REF(direction); }
@@ -98,69 +164,47 @@ public:
   BitfieldRef<YGDisplay> display() { return BITFIELD_REF(display); }
 
   YGFloatOptional flex() const { return flex_; }
-  YGFloatOptional& flex() { return flex_; }
+  Ref<YGFloatOptional, &YGStyle::flex_> flex() { return {*this}; }
 
   YGFloatOptional flexGrow() const { return flexGrow_; }
-  YGFloatOptional& flexGrow() { return flexGrow_; }
+  Ref<YGFloatOptional, &YGStyle::flexGrow_> flexGrow() { return {*this}; }
 
   YGFloatOptional flexShrink() const { return flexShrink_; }
-  YGFloatOptional& flexShrink() { return flexShrink_; }
+  Ref<YGFloatOptional, &YGStyle::flexShrink_> flexShrink() { return {*this}; }
 
   CompactValue flexBasis() const { return flexBasis_; }
-  CompactValue& flexBasis() { return flexBasis_; }
+  Ref<CompactValue, &YGStyle::flexBasis_> flexBasis() { return {*this}; }
 
   const Edges& margin() const { return margin_; }
-  Edges& margin() { return margin_; }
+  IdxRef<YGEdge, &YGStyle::margin_> margin() { return {*this}; }
 
   const Edges& position() const { return position_; }
-  Edges& position() { return position_; }
+  IdxRef<YGEdge, &YGStyle::position_> position() { return {*this}; }
 
   const Edges& padding() const { return padding_; }
-  Edges& padding() { return padding_; }
+  IdxRef<YGEdge, &YGStyle::padding_> padding() { return {*this}; }
 
   const Edges& border() const { return border_; }
-  Edges& border() { return border_; }
+  IdxRef<YGEdge, &YGStyle::border_> border() { return {*this}; }
 
   const Dimensions& dimensions() const { return dimensions_; }
-  Dimensions& dimensions() { return dimensions_; }
+  IdxRef<YGDimension, &YGStyle::dimensions_> dimensions() { return {*this}; }
 
   const Dimensions& minDimensions() const { return minDimensions_; }
-  Dimensions& minDimensions() { return minDimensions_; }
+  IdxRef<YGDimension, &YGStyle::minDimensions_> minDimensions() {
+    return {*this};
+  }
 
   const Dimensions& maxDimensions() const { return maxDimensions_; }
-  Dimensions& maxDimensions() { return maxDimensions_; }
+  IdxRef<YGDimension, &YGStyle::maxDimensions_> maxDimensions() {
+    return {*this};
+  }
 
   // Yoga specific properties, not compatible with flexbox specification
   YGFloatOptional aspectRatio() const { return aspectRatio_; }
-  YGFloatOptional& aspectRatio() { return aspectRatio_; }
+  Ref<YGFloatOptional, &YGStyle::aspectRatio_> aspectRatio() { return {*this}; }
 
 private:
-  /* Some platforms don't support enum bitfields,
-     so please use BITFIELD_ENUM_SIZED(BITS_COUNT) */
-  YGDirection direction_ BITFIELD_ENUM_SIZED(2);
-  YGFlexDirection flexDirection_ BITFIELD_ENUM_SIZED(2);
-  YGJustify justifyContent_ BITFIELD_ENUM_SIZED(3);
-  YGAlign alignContent_ BITFIELD_ENUM_SIZED(3);
-  YGAlign alignItems_ BITFIELD_ENUM_SIZED(3);
-  YGAlign alignSelf_ BITFIELD_ENUM_SIZED(3);
-  YGPositionType positionType_ BITFIELD_ENUM_SIZED(1);
-  YGWrap flexWrap_ BITFIELD_ENUM_SIZED(2);
-  YGOverflow overflow_ BITFIELD_ENUM_SIZED(2);
-  YGDisplay display_ BITFIELD_ENUM_SIZED(1);
-  YGFloatOptional flex_ = {};
-  YGFloatOptional flexGrow_ = {};
-  YGFloatOptional flexShrink_ = {};
-  CompactValue flexBasis_ = CompactValue::ofAuto();
-  Edges margin_ = {};
-  Edges position_ = {};
-  Edges padding_ = {};
-  Edges border_ = {};
-  Dimensions dimensions_{CompactValue::ofAuto()};
-  Dimensions minDimensions_ = {};
-  Dimensions maxDimensions_ = {};
-  // Yoga specific properties, not compatible with flexbox specification
-  YGFloatOptional aspectRatio_ = {};
-
   BITFIELD_ACCESSORS(direction)
   BITFIELD_ACCESSORS(flexDirection)
   BITFIELD_ACCESSORS(justifyContent)
@@ -171,10 +215,6 @@ private:
   BITFIELD_ACCESSORS(flexWrap);
   BITFIELD_ACCESSORS(overflow);
   BITFIELD_ACCESSORS(display);
-
-public:
-  // for library users needing a type
-  using ValueRepr = std::remove_reference<decltype(margin_[0])>::type;
 };
 
 bool operator==(const YGStyle& lhs, const YGStyle& rhs);
