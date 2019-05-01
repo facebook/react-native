@@ -60,7 +60,6 @@ using namespace facebook::react;
   std::shared_ptr<const ReactNativeConfig> _reactNativeConfig;
   better::shared_mutex _observerListMutex;
   NSMutableArray<id<RCTSurfacePresenterObserver>> *_observers;
-  BOOL _isFirstJavaScriptLoaded;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge config:(std::shared_ptr<const ReactNativeConfig>)config
@@ -82,8 +81,6 @@ using namespace facebook::react;
     }
 
     _observers = [NSMutableArray array];
-    
-    _isFirstJavaScriptLoaded = YES;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleBridgeWillReloadNotification:)
@@ -262,6 +259,9 @@ using namespace facebook::react;
 
 - (void)_startSurface:(RCTFabricSurface *)surface
 {
+  if (surface.stage & RCTSurfaceStageSurfaceDidRun) {
+    return;
+  }
   [_mountingManager.componentViewRegistry dequeueComponentViewWithComponentHandle:RootShadowNode::Handle()
                                                                               tag:surface.rootTag];
 
@@ -400,12 +400,8 @@ using namespace facebook::react;
 - (void)handleJavaScriptDidLoadNotification:(NSNotification *)notification
 {
   RCTBridge *bridge = notification.userInfo[@"bridge"];
-  if (bridge != _batchedBridge || _isFirstJavaScriptLoaded) {
-    _batchedBridge = bridge;
-    _isFirstJavaScriptLoaded = NO;
-
-    [self _startAllSurfaces];
-  }
+  _batchedBridge = bridge;
+  [self _startAllSurfaces];
 }
 
 @end
