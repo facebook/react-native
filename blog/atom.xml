@@ -2,11 +2,23 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://facebook.github.io/react-native/blog</id>
     <title>React Native Blog</title>
-    <updated>2019-03-12T06:00:00Z</updated>
+    <updated>2019-05-01T06:00:00Z</updated>
     <generator>Feed for Node.js</generator>
     <link rel="alternate" href="https://facebook.github.io/react-native/blog"/>
     <subtitle>The best place to stay up-to-date with the latest React Native news and events.</subtitle>
     <logo>https://facebook.github.io/react-native/img/header_logo.png</logo>
+    <entry>
+        <title type="html"><![CDATA[React Native at F8 and Open Source Podcast]]></title>
+        <id>https://facebook.github.io/react-native/blog/2019/05/01/react-native-at-f8-and-podcast.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2019/05/01/react-native-at-f8-and-podcast.html">
+        </link>
+        <updated>2019-05-01T06:00:00Z</updated>
+        <summary type="html"><![CDATA[<p>This week, <a href="https://twitter.com/Eli_White">Eli White</a> gave a talk at <a href="https://developers.facebook.com/videos/2019/mobile-innovation-with-react-native-componentkit-and-litho/">F8 2019</a> about React Native in Facebook's Android and iOS applications. We are excited to share what we've been up to for the past two years and what we're doing next.</p> <p>Check out the video on <a href="https://developers.facebook.com/videos/2019/mobile-innovation-with-react-native-componentkit-and-litho/">Facebook's developer web...</a></p>]]></summary>
+        <author>
+            <name>Christoph Nakazawa</name>
+            <uri>https://twitter.com/cpojer</uri>
+        </author>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Releasing React Native 0.59]]></title>
         <id>https://facebook.github.io/react-native/blog/2019/03/12/releasing-react-native-059.html</id>
@@ -248,15 +260,15 @@
         </author>
     </entry>
     <entry>
-        <title type="html"><![CDATA[Introducing Create React Native App]]></title>
-        <id>https://facebook.github.io/react-native/blog/2017/03/13/introducing-create-react-native-app.html</id>
-        <link href="https://facebook.github.io/react-native/blog/2017/03/13/introducing-create-react-native-app.html">
+        <title type="html"><![CDATA[idx: The Existential Function]]></title>
+        <id>https://facebook.github.io/react-native/blog/2017/03/13/idx-the-existential-function.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2017/03/13/idx-the-existential-function.html">
         </link>
         <updated>2017-03-13T06:00:00Z</updated>
-        <summary type="html"><![CDATA[<p>Today we’re announcing <a href="https://github.com/react-community/create-react-native-app">Create React Native App</a>: a new tool that makes it significantly easier to get started with a React Native project! It’s heavily inspired by the design of <a href="https://github.com/facebookincubator/create-react-app">Create React App</a> and is the product of a collaboration between <a href="https://code.facebook.com">Facebook</a> a...</p>]]></summary>
+        <summary type="html"><![CDATA[<p>At Facebook, we often need to access deeply nested values in data structures fetched with GraphQL. On the way to accessing these deeply nested values, it is common for one or more intermediate fields to be nullable. These intermediate fields may be n...</p>]]></summary>
         <author>
-            <name>Adam Perry</name>
-            <uri>https://github.com/dikaiosune</uri>
+            <name>Timothy Yung</name>
+            <uri>https://github.com/yungsters</uri>
         </author>
     </entry>
     <entry>
@@ -272,15 +284,15 @@
         </author>
     </entry>
     <entry>
-        <title type="html"><![CDATA[idx: The Existential Function]]></title>
-        <id>https://facebook.github.io/react-native/blog/2017/03/13/idx-the-existential-function.html</id>
-        <link href="https://facebook.github.io/react-native/blog/2017/03/13/idx-the-existential-function.html">
+        <title type="html"><![CDATA[Introducing Create React Native App]]></title>
+        <id>https://facebook.github.io/react-native/blog/2017/03/13/introducing-create-react-native-app.html</id>
+        <link href="https://facebook.github.io/react-native/blog/2017/03/13/introducing-create-react-native-app.html">
         </link>
         <updated>2017-03-13T06:00:00Z</updated>
-        <summary type="html"><![CDATA[<p>At Facebook, we often need to access deeply nested values in data structures fetched with GraphQL. On the way to accessing these deeply nested values, it is common for one or more intermediate fields to be nullable. These intermediate fields may be n...</p>]]></summary>
+        <summary type="html"><![CDATA[<p>Today we’re announcing <a href="https://github.com/react-community/create-react-native-app">Create React Native App</a>: a new tool that makes it significantly easier to get started with a React Native project! It’s heavily inspired by the design of <a href="https://github.com/facebookincubator/create-react-app">Create React App</a> and is the product of a collaboration between <a href="https://code.facebook.com">Facebook</a> a...</p>]]></summary>
         <author>
-            <name>Timothy Yung</name>
-            <uri>https://github.com/yungsters</uri>
+            <name>Adam Perry</name>
+            <uri>https://github.com/dikaiosune</uri>
         </author>
     </entry>
     <entry>
