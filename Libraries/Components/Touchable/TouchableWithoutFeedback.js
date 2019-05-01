@@ -137,7 +137,7 @@ const TouchableWithoutFeedback = ((createReactClass({
      */
     onLayout: PropTypes.func,
     /**
-     * If true, plays system sound on touch (Android Only)
+     * If true, doesn't play system sound on touch (Android Only)
      **/
     touchSoundDisabled: PropTypes.bool,
 
