@@ -29,10 +29,10 @@ function doPublish() {
 
   let releaseVersion = pkgJson.version;
 
-  versionStringRegEx = new RegExp(`(.*-microsoft\\.)(-${publishBranchName}-)?([0-9]*)`);
+  versionStringRegEx = new RegExp(`(.*-microsoft)(-${publishBranchName})?\\.([0-9]*)`);
   const versionGroups = versionStringRegEx.exec(releaseVersion);
   if (versionGroups) {
-    releaseVersion = versionGroups[1] + (publishBranchName.match(/fb.*merge/) ? `-${publishBranchName}-` : '') + (parseInt(versionGroups[2]) + 1);
+    releaseVersion = versionGroups[1] + (publishBranchName.match(/fb.*merge/) ? `-${publishBranchName}` : '') + '.' + (parseInt(versionGroups[2]) + 1);
   } else {
     if (releaseVersion.indexOf("-") === -1) {
       releaseVersion = releaseVersion + "-microsoft.0";
