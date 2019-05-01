@@ -368,7 +368,7 @@ jobs:
 
       - run:
           name: Start Metro packager
-          command: yarn start --nonPersistent --max-workers=1 || echo "Can't start packager automatically"
+          command: yarn start --max-workers=1 || echo "Can't start packager automatically"
           background: true
 
       - run:
@@ -572,7 +572,7 @@ jobs:
       - run:
           name: Build JavaScript Bundle
           command: node cli.js bundle --max-workers 2 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
-      
+
       # Wait for AVD to finish booting before running tests
       - run:
           name: Wait for Android Virtual Device
