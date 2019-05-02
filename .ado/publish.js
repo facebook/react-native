@@ -30,7 +30,9 @@ function doPublish() {
   let releaseVersion = pkgJson.version;
 
   console.log(`Using ${`(.*-microsoft)(-${publishBranchName})?\\.([0-9]*)`} to match version`);
-  const branchVersionSuffix = (publishBranchName.match(/fb.*merge/) ? `-${publishBranchName}` : '');
+  const branchVersionSuffix = (publishBranchName.match(/(fb.*merge)|(fabric)/) ? `-${publishBranchName}` : '');
+
+  const onlyTagSource = !!branchVersionSuffix;
 
   versionStringRegEx = new RegExp(`(.*-microsoft)(-${publishBranchName})?\\.([0-9]*)`);
   const versionGroups = versionStringRegEx.exec(releaseVersion);
@@ -57,11 +59,13 @@ function doPublish() {
   exec(`git push origin HEAD:${tempPublishBranch} --follow-tags --verbose`);
   exec(`git push origin tag v${releaseVersion}`);
 
-  // -------- Generating Android Artifacts with JavaDoc
-  exec("gradlew installArchives");
+  if (!onlyTagSource) {
+    // -------- Generating Android Artifacts with JavaDoc
+    exec("gradlew installArchives");
 
-  // undo uncommenting javadoc setting
-  exec("git checkout ReactAndroid/gradle.properties");
+    // undo uncommenting javadoc setting
+    exec("git checkout ReactAndroid/gradle.properties");
+  }
 
   // Configure npm to publish to internal feed
   const npmrcPath = path.resolve(__dirname, "../.npmrc");
@@ -72,7 +76,7 @@ function doPublish() {
   console.log(npmrcContents);
   fs.writeFileSync(npmrcPath, npmrcContents);
 
-  exec(`npm publish`);
+  exec(`npm publish${publishBranchName !== 'master' ? ` --tag ${publishBranchName}` : ''}`);
   exec(`del ${npmrcPath}`);
 
   // Push tar to GitHub releases

@@ -7,6 +7,7 @@ trigger:
     include:
       - master
       - fb59merge
+      - fabric
   paths:
     exclude:
       - package.json
