@@ -1,28 +1,28 @@
-import React, { Fragment } from 'react'
+import React, { Fragment } from 'react';
 import {
   StyleSheet,
   ScrollView,
   View,
   Platform,
   StatusBar,
-  SafeAreaView,
-} from 'react-native'
+  SafeAreaView
+} from 'react-native';
 
-import { Header, Section, LinkList } from './components'
+import { Header, Section, LinkList } from './components';
 
 const reloadInstructions = Platform.select({
   ios: `Press Cmd+R in the simulator to reload your app's code`,
   android: `Double tap R on your keyboard to reload your app's code`,
-})
+});
 
 const debugInstructions = Platform.select({
   ios:
     'Press Cmd+D in the simulator or Shake your device to open the React Native debug menu.',
   android:
     'Press menu button or Shake your device to open the React Native debug menu.',
-})
+});
 
-export default function App() {
+export default App = () => {
   return (
     <Fragment>
       <SafeAreaView style={styles.topSafeArea} />
@@ -50,8 +50,8 @@ export default function App() {
         </ScrollView>
       </SafeAreaView>
     </Fragment>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   topSafeArea: {
@@ -64,5 +64,5 @@ const styles = StyleSheet.create({
   },
   body: {
     backgroundColor: '#FFF',
-  },
-})
+  }
+});
