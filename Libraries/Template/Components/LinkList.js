@@ -43,7 +43,7 @@ const links = [
   },
 ]
 
-export default (LinkList = () => (
+const LinkList = () => (
   <View style={styles.container}>
     {links.map((item, index) => {
       return (
@@ -60,7 +60,7 @@ export default (LinkList = () => (
       )
     })}
   </View>
-))
+)
 
 const styles = StyleSheet.create({
   container: {
@@ -92,3 +92,5 @@ const styles = StyleSheet.create({
     height: 1,
   },
 })
+
+export default LinkList
