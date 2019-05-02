@@ -161,14 +161,10 @@ void CatalystInstanceImpl::initializeBridge(
   // stack.
 
   instance_->initializeBridge(
-<<<<<<< HEAD
-    folly::make_unique<JInstanceCallback>(callback, moduleMessageQueue_),
-    nullptr, // Use default executor delegate.
-=======
     std::make_unique<JInstanceCallback>(
     callback,
     moduleMessageQueue_),
->>>>>>> v0.59.0
+    nullptr, // Use default executor delegate
     jseh->getExecutorFactory(),
     folly::make_unique<JMessageQueueThread>(jsQueue),
     moduleRegistry_);

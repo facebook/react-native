@@ -38,7 +38,7 @@ public:
     return m_registry;
   }
   
-  bool isBatchActive() {
+  bool isBatchActive() override {
     return m_batchHadNativeModuleCalls;
   }
 

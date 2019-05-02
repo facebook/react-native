@@ -105,9 +105,6 @@ afterEvaluate {
         // pre bundle build task for Android plugin 3.2+
         def buildPreBundleTask = tasks.findByName("build${targetName}PreBundle")
 
-        // pre bundle build task for Android plugin 3.2+
-        def buildPreBundleTask = tasks.findByName("build${targetName}PreBundle")
-
         def resourcesDirConfigValue = config."resourcesDir${targetName}"
         if (resourcesDirConfigValue) {
             def currentCopyResTask = tasks.create(

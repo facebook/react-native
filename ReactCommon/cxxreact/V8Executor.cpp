@@ -421,7 +421,6 @@ Local<String> V8Executor::ConvertToV8String(Isolate* isolate, const string& s) {
 Local<String> V8Executor::WrapModuleContent(const string& path) {
   LOGV("V8Executor::WrapModuleContent entry");
   string content = File::ReadText(path);
-  auto separatorIndex = path.find_last_of("/");
   // TODO: Use statically allocated buffer for better performance
   string result(MODULE_PROLOGUE);
   result.reserve(content.length() + 1024);
