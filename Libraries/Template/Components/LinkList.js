@@ -1,4 +1,4 @@
-import React from 'react'
+import React from './node_modules/react'
 import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native'
 
 const links = [
@@ -40,29 +40,27 @@ const links = [
     link: 'https://facebook.github.io/react-native/help',
     description:
       'Need more help? There are many other React Native developers who may have the answer.',
-  },
-]
+  }
+];
 
-export default function LinkList() {
-  return (
-    <View style={styles.container}>
-      {links.map((item, index) => {
-        return (
-          <View key={index}>
-            <View style={styles.separator} />
-            <TouchableOpacity
-              onPress={() => Linking.openURL(item.link)}
-              style={styles.linkContainer}
-            >
-              <Text style={styles.link}>{item.title}</Text>
-              <Text style={styles.description}>{item.description}</Text>
-            </TouchableOpacity>
-          </View>
-        )
-      })}
-    </View>
-  )
-}
+export default LinkList = () => (
+  <View style={styles.container}>
+    {links.map((item, index) => {
+      return (
+        <View key={index}>
+          <View style={styles.separator} />
+          <TouchableOpacity
+            onPress={() => Linking.openURL(item.link)}
+            style={styles.linkContainer}
+          >
+            <Text style={styles.link}>{item.title}</Text>
+            <Text style={styles.description}>{item.description}</Text>
+          </TouchableOpacity>
+        </View>
+      )
+    })}
+  </View>
+);
 
 const styles = StyleSheet.create({
   container: {
@@ -92,5 +90,5 @@ const styles = StyleSheet.create({
   separator: {
     backgroundColor: '#DAE1E7',
     height: 1,
-  },
-})
+  }
+});

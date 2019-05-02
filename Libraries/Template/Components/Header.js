@@ -1,37 +1,40 @@
-import React from 'react'
-import { View, Text, StyleSheet } from 'react-native'
-import LottieView from 'lottie-react-native'
+import React from './node_modules/react'
+import { View, Text, StyleSheet, ImageBackground } from 'react-native'
 
-export default function Header() {
-  return (
-    <View style={styles.container}>
-      <LottieView
-        style={styles.animatedLogo}
-        source={require('../logo-animation.json')}
-        autoPlay
-        loop
-      />
-      <Text style={styles.text}>Welcome to React Native</Text>
-    </View>
-  )
-}
+export default Header = () => (
+  <View style={styles.container}>
+
+    <ImageBackground
+      source={require('../logo.png')}
+      style={styles.backgroundLogo} />
+
+    <Text style={styles.text}>Welcome to React Native</Text>
+
+  </View>
+);
 
 const styles = StyleSheet.create({
   container: {
+    height: 270,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 24,
     backgroundColor: '#F3F3F3',
   },
-  animatedLogo: {
-    width: 180,
-    height: 180,
+  backgroundLogo: {
+    position: 'absolute',
+    top: -20,
+    left: -200,
+    opacity: 0.30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 540,
+    width: 540
   },
   text: {
     maxWidth: 250,
     fontSize: 40,
-    fontWeight: '700',
+    fontWeight: '600',
     textAlign: 'center',
     color: '#000',
-  },
-})
+  }
+});
