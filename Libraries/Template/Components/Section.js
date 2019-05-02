@@ -1,18 +1,18 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import PropTypes from 'prop-types';
+import React from 'react'
+import { View, Text, StyleSheet } from 'react-native'
+import PropTypes from 'prop-types'
 
-export default Section = ({ title, description }) => (
-    <View style={styles.container}>
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.description}>{description}</Text>
-    </View>
-  );
+export default (Section = ({ title, description }) => (
+  <View style={styles.container}>
+    <Text style={styles.title}>{title}</Text>
+    <Text style={styles.description}>{description}</Text>
+  </View>
+))
 
 Section.propTypes = {
   title: PropTypes.string,
   description: PropTypes.string,
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -29,5 +29,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '400',
     color: '#444',
-  }
-});
+  },
+})

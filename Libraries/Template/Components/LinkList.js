@@ -40,10 +40,10 @@ const links = [
     link: 'https://facebook.github.io/react-native/help',
     description:
       'Need more help? There are many other React Native developers who may have the answer.',
-  }
-];
+  },
+]
 
-export default LinkList = () => (
+export default (LinkList = () => (
   <View style={styles.container}>
     {links.map((item, index) => {
       return (
@@ -60,7 +60,7 @@ export default LinkList = () => (
       )
     })}
   </View>
-);
+))
 
 const styles = StyleSheet.create({
   container: {
@@ -90,5 +90,5 @@ const styles = StyleSheet.create({
   separator: {
     backgroundColor: '#DAE1E7',
     height: 1,
-  }
-});
+  },
+})

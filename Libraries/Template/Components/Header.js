@@ -1,17 +1,16 @@
 import React from 'react'
 import { View, Text, StyleSheet, ImageBackground } from 'react-native'
 
-export default Header = () => (
+export default (Header = () => (
   <View style={styles.container}>
-
     <ImageBackground
       source={require('../logo.png')}
-      style={styles.backgroundLogo} />
+      style={styles.backgroundLogo}
+    />
 
     <Text style={styles.text}>Welcome to React Native</Text>
-
   </View>
-);
+))
 
 const styles = StyleSheet.create({
   container: {
@@ -24,11 +23,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -20,
     left: -200,
-    opacity: 0.30,
+    opacity: 0.3,
     alignItems: 'center',
     justifyContent: 'center',
     height: 540,
-    width: 540
+    width: 540,
   },
   text: {
     maxWidth: 250,
@@ -36,5 +35,5 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
     color: '#000',
-  }
-});
+  },
+})
