@@ -8,7 +8,9 @@ import {
   SafeAreaView,
 } from 'react-native'
 
-import { Header, Section, LinkList } from './components'
+import Header from './components/Header'
+import Section from './components/Section'
+import LinkList from './components/LinkList'
 
 const reloadInstructions = Platform.select({
   ios: `Press Cmd+R in the simulator to reload your app's code`,
