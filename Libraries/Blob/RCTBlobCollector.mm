@@ -25,11 +25,11 @@ RCTBlobCollector::~RCTBlobCollector() {
 }
 
 void RCTBlobCollector::install(RCTBlobManager *blobManager) {
-  RCTCxxBridge *cxxBridge = (RCTCxxBridge *)blobManager.bridge;
-  if (cxxBridge.runtime == nullptr) {
-    return;
-  }
+  __weak RCTCxxBridge *cxxBridge = (RCTCxxBridge *)blobManager.bridge;
   [cxxBridge dispatchBlock:^{
+    if (!cxxBridge || cxxBridge.runtime == nullptr) {
+      return;
+    }
     jsi::Runtime &runtime = *(jsi::Runtime *)cxxBridge.runtime;
     runtime.global().setProperty(
       runtime,
