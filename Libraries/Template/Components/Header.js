@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Text, StyleSheet, ImageBackground } from 'react-native'
 
-export default (Header = () => (
+const Header = () => (
   <View style={styles.container}>
     <ImageBackground
       source={require('../logo.png')}
@@ -10,7 +10,7 @@ export default (Header = () => (
 
     <Text style={styles.text}>Welcome to React Native</Text>
   </View>
-))
+)
 
 const styles = StyleSheet.create({
   container: {
@@ -37,3 +37,5 @@ const styles = StyleSheet.create({
     color: '#000',
   },
 })
+
+export default Header
