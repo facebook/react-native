@@ -2,12 +2,12 @@ import React from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import PropTypes from 'prop-types'
 
-export default (Section = ({ title, description }) => (
+const Section = ({ title, description }) => (
   <View style={styles.container}>
     <Text style={styles.title}>{title}</Text>
     <Text style={styles.description}>{description}</Text>
   </View>
-))
+)
 
 Section.propTypes = {
   title: PropTypes.string,
@@ -31,3 +31,5 @@ const styles = StyleSheet.create({
     color: '#444',
   },
 })
+
+export default Section

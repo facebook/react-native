@@ -24,7 +24,7 @@ const debugInstructions = Platform.select({
     'Press menu button or Shake your device to open the React Native debug menu.',
 })
 
-export default (App = () => {
+const App = () => {
   return (
     <Fragment>
       <SafeAreaView style={styles.topSafeArea} />
@@ -53,7 +53,7 @@ export default (App = () => {
       </SafeAreaView>
     </Fragment>
   )
-})
+}
 
 const styles = StyleSheet.create({
   topSafeArea: {
@@ -68,3 +68,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
   },
 })
+
+export default App
