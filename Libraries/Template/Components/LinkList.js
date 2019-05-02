@@ -1,4 +1,4 @@
-import React from './node_modules/react'
+import React from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native'
 
 const links = [

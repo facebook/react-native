@@ -9,7 +9,6 @@
     "android": "react-native run-ios"
   },
   "dependencies": {
-    "lottie-react-native": "^2.6.1",
     "react": "16.8.3",
     "react-native": "0.59.5"
   },

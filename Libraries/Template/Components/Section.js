@@ -1,6 +1,6 @@
-import React from './node_modules/react';
+import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import PropTypes from './node_modules/prop-types';
+import PropTypes from 'prop-types';
 
 export default Section = ({ title, description }) => (
     <View style={styles.container}>
