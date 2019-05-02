@@ -31,10 +31,6 @@ APP_CFLAGS := -Wall -Werror
 APP_CPPFLAGS := -std=c++1y
 APP_LDFLAGS := -Wl,--build-id
 
-<<<<<<< HEAD
-NDK_TOOLCHAIN_VERSION := 4.9
-
-APP_CPPFLAGS+=-std=c++1y
-=======
 NDK_TOOLCHAIN_VERSION := clang
->>>>>>> v0.59.0
+
+APP_ALLOW_MISSING_DEPS := true

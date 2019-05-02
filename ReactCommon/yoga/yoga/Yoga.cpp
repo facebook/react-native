@@ -1669,10 +1669,6 @@ static void YGNodeWithMeasureFuncSetMeasuredDimensions(
       : YGFloatMax(
             0, availableHeight - marginAxisColumn - paddingAndBorderAxisColumn);
 
-  // Measure the text under the current constraints.
-  const YGSize measuredSize = node->getMeasure()(
-      node, innerWidth, widthMeasureMode, innerHeight, heightMeasureMode);
-
   if (widthMeasureMode == YGMeasureModeExactly &&
       heightMeasureMode == YGMeasureModeExactly) {
     // Don't bother sizing the text if both dimensions are already defined.
