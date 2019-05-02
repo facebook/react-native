@@ -10,11 +10,7 @@
 
 'use strict';
 
-<<<<<<< HEAD
-const AlertIOS = require('AlertIOS');
 const AlertMacOS = require('AlertMacOS'); // TODO(macOS ISS#2323203)
-=======
->>>>>>> v0.59.0
 const NativeModules = require('NativeModules');
 const RCTAlertManager = NativeModules.AlertManager;
 const Platform = require('Platform');

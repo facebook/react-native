@@ -327,7 +327,6 @@ const TouchableOpacity = ((createReactClass({
          * error found when Flow v0.89 was deployed. To see the error, delete
          * this comment and run Flow. */
         onResponderRelease={this.touchableHandleResponderRelease}
-<<<<<<< HEAD
         onResponderTerminate={this.touchableHandleResponderTerminate}
         tooltip={this.props.tooltip} // TODO(macOS/win ISS#2323203)
         clickable={
@@ -340,13 +339,10 @@ const TouchableOpacity = ((createReactClass({
         onDragLeave={this.props.onDragLeave}
         onDrop={this.props.onDrop}
         draggedTypes={this.props.draggedTypes} // ]TODO(macOS ISS#2323203)
-      >
-=======
         /* $FlowFixMe(>=0.89.0 site=react_native_fb) This comment suppresses an
          * error found when Flow v0.89 was deployed. To see the error, delete
          * this comment and run Flow. */
         onResponderTerminate={this.touchableHandleResponderTerminate}>
->>>>>>> v0.59.0
         {this.props.children}
         {Touchable.renderDebugView({
           color: 'cyan',

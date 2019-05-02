@@ -9,11 +9,7 @@
  */
 'use strict';
 
-<<<<<<< HEAD
-const Platform = require('Platform'); // TODO(macOS ISS#2323203)
-=======
 const Platform = require('Platform');
->>>>>>> v0.59.0
 const React = require('React');
 const View = require('View');
 const VirtualizedList = require('VirtualizedList');

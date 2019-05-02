@@ -152,23 +152,10 @@ export type ImageStyle = ____ImageStyle_Internal;
  */
 export type DangerouslyImpreciseStyle = ____DangerouslyImpreciseStyle_Internal;
 
-<<<<<<< HEAD
-/**
- * These types are simlilar to the style types above. They are objects of the
- * possible style keys in that group. For example, ShadowStyle contains
- * keys like `shadowColor` and `shadowRadius`.
- */
-export type LayoutStyle = ____LayoutStyle_Internal;
-export type ShadowStyle = ____ShadowStyle_Internal;
-export type TransformStyle = ____TransformStyle_Internal;
-
 let hairlineWidth =
   Platform.OS === 'win32' || Platform.OS === 'windesktop'
     ? 0.5
     : PixelRatio.roundToNearestPixel(0.4); // TODO(windows ISS)
-=======
-let hairlineWidth = PixelRatio.roundToNearestPixel(0.4);
->>>>>>> v0.59.0
 if (hairlineWidth === 0) {
   hairlineWidth = 1 / PixelRatio.get();
 }

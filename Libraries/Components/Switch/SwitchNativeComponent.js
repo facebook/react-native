@@ -35,33 +35,17 @@ export type NativeAndroidProps = $ReadOnly<{|
 
   enabled?: ?boolean,
   on?: ?boolean,
-<<<<<<< HEAD
-  onChange?: ?(event: SwitchChangeEvent) => mixed,
   thumbTintColor?: ?(string | SemanticOrDynamicColorType),
   trackTintColor?: ?(string | SemanticOrDynamicColorType),
-=======
-  thumbTintColor?: ?string,
-  trackTintColor?: ?string,
->>>>>>> v0.59.0
 |}>;
 
 // @see RCTSwitchManager.m
 export type NativeIOSProps = $ReadOnly<{|
-<<<<<<< HEAD
-  ...ViewProps,
-  disabled?: ?boolean,
-  onChange?: ?(event: SwitchChangeEvent) => mixed,
+  ...SwitchProps,
+
   onTintColor?: ?(string | SemanticOrDynamicColorType),
   thumbTintColor?: ?(string | SemanticOrDynamicColorType),
   tintColor?: ?(string | SemanticOrDynamicColorType),
-  value?: ?boolean,
-=======
-  ...SwitchProps,
-
-  onTintColor?: ?string,
-  thumbTintColor?: ?string,
-  tintColor?: ?string,
->>>>>>> v0.59.0
 |}>;
 
 type SwitchNativeComponentType = Class<

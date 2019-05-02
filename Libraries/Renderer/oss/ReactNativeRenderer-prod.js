@@ -4142,11 +4142,7 @@ function updateSuspenseComponent(
         nextDidTimeout
           ? ((nextDidTimeout = nextProps.fallback),
             (nextProps = createFiberFromFragment(null, mode, 0, null)),
-<<<<<<< HEAD
-            (nextProps.child = current$$1),
-=======
             (nextProps.child = nextFallbackChildren),
->>>>>>> v0.59.0
             0 === (workInProgress.mode & 1) &&
               (nextProps.child =
                 null !== workInProgress.memoizedState
@@ -5547,67 +5543,6 @@ function commitWork(current$$1, finishedWork) {
         ? (newProps = !1)
         : ((newProps = !0),
           (current$$1 = finishedWork.child),
-<<<<<<< HEAD
-          0 === newProps.timedOutAt &&
-            (newProps.timedOutAt = requestCurrentTime()));
-      if (null !== current$$1)
-        a: for (newProps = finishedWork = current$$1; ; ) {
-          if (5 === newProps.tag)
-            if (((current$$1 = newProps.stateNode), instance)) {
-              updatePayload = current$$1.viewConfig;
-              var updatePayload$jscomp$0 = diffProperties(
-                null,
-                emptyObject,
-                { style: { display: "none" } },
-                updatePayload.validAttributes
-              );
-              UIManager.updateView(
-                current$$1._nativeTag,
-                updatePayload.uiViewClassName,
-                updatePayload$jscomp$0
-              );
-            } else {
-              current$$1 = newProps.stateNode;
-              updatePayload$jscomp$0 = newProps.memoizedProps;
-              updatePayload = current$$1.viewConfig;
-              var prevProps = Object.assign({}, updatePayload$jscomp$0, {
-                style: [updatePayload$jscomp$0.style, { display: "none" }]
-              });
-              updatePayload$jscomp$0 = diffProperties(
-                null,
-                prevProps,
-                updatePayload$jscomp$0,
-                updatePayload.validAttributes
-              );
-              UIManager.updateView(
-                current$$1._nativeTag,
-                updatePayload.uiViewClassName,
-                updatePayload$jscomp$0
-              );
-            }
-          else {
-            if (6 === newProps.tag) throw Error("Not yet implemented.");
-            if (13 === newProps.tag && null !== newProps.memoizedState) {
-              current$$1 = newProps.child.sibling;
-              current$$1.return = newProps;
-              newProps = current$$1;
-              continue;
-            } else if (null !== newProps.child) {
-              newProps.child.return = newProps;
-              newProps = newProps.child;
-              continue;
-            }
-          }
-          if (newProps === finishedWork) break a;
-          for (; null === newProps.sibling; ) {
-            if (null === newProps.return || newProps.return === finishedWork)
-              break a;
-            newProps = newProps.return;
-          }
-          newProps.sibling.return = newProps.return;
-          newProps = newProps.sibling;
-        }
-=======
           0 === instance.timedOutAt &&
             (instance.timedOutAt = requestCurrentTime()));
       null !== current$$1 && hideOrUnhideAllChildren(current$$1, newProps);
@@ -5623,7 +5558,6 @@ function commitWork(current$$1, finishedWork) {
             (retryCache.add(thenable), thenable.then(retry, retry));
         });
       }
->>>>>>> v0.59.0
       break;
     case 17:
       break;
@@ -6217,15 +6151,7 @@ function completeUnitOfWork(workInProgress) {
                   : ((current$$1.firstEffect = current$$1.lastEffect = type),
                     (type.nextEffect = null)),
                 (type.effectTag = 8)));
-<<<<<<< HEAD
-            if (
-              newProps !== renderExpirationTime ||
-              (0 === (current$$1.effectTag & 1) && newProps)
-            )
-              current$$1.effectTag |= 4;
-=======
             if (newProps || renderExpirationTime) current$$1.effectTag |= 4;
->>>>>>> v0.59.0
             break;
           case 7:
             break;
@@ -7010,275 +6936,10 @@ function completeRoot(root, finishedWork, expirationTime) {
   root === lastCommittedRootDuringThisBatch
     ? nestedUpdateCount++
     : ((lastCommittedRootDuringThisBatch = root), (nestedUpdateCount = 0));
-<<<<<<< HEAD
-  isCommitting$1 = isWorking = !0;
-  invariant(
-    root.current !== finishedWork$jscomp$0,
-    "Cannot commit the same tree as before. This is probably a bug related to the return field. This error is likely caused by a bug in React. Please file an issue."
-  );
-  expirationTime = root.pendingCommitExpirationTime;
-  invariant(
-    0 !== expirationTime,
-    "Cannot commit an incomplete root. This error is likely caused by a bug in React. Please file an issue."
-  );
-  root.pendingCommitExpirationTime = 0;
-  firstBatch = finishedWork$jscomp$0.expirationTime;
-  var childExpirationTimeBeforeCommit =
-    finishedWork$jscomp$0.childExpirationTime;
-  firstBatch =
-    childExpirationTimeBeforeCommit > firstBatch
-      ? childExpirationTimeBeforeCommit
-      : firstBatch;
-  root.didError = !1;
-  0 === firstBatch
-    ? ((root.earliestPendingTime = 0),
-      (root.latestPendingTime = 0),
-      (root.earliestSuspendedTime = 0),
-      (root.latestSuspendedTime = 0),
-      (root.latestPingedTime = 0))
-    : ((childExpirationTimeBeforeCommit = root.latestPendingTime),
-      0 !== childExpirationTimeBeforeCommit &&
-        (childExpirationTimeBeforeCommit > firstBatch
-          ? (root.earliestPendingTime = root.latestPendingTime = 0)
-          : root.earliestPendingTime > firstBatch &&
-            (root.earliestPendingTime = root.latestPendingTime)),
-      (childExpirationTimeBeforeCommit = root.earliestSuspendedTime),
-      0 === childExpirationTimeBeforeCommit
-        ? markPendingPriorityLevel(root, firstBatch)
-        : firstBatch < root.latestSuspendedTime
-          ? ((root.earliestSuspendedTime = 0),
-            (root.latestSuspendedTime = 0),
-            (root.latestPingedTime = 0),
-            markPendingPriorityLevel(root, firstBatch))
-          : firstBatch > childExpirationTimeBeforeCommit &&
-            markPendingPriorityLevel(root, firstBatch));
-  findNextExpirationTimeToWorkOn(0, root);
-  ReactCurrentOwner$2.current = null;
-  1 < finishedWork$jscomp$0.effectTag
-    ? null !== finishedWork$jscomp$0.lastEffect
-      ? ((finishedWork$jscomp$0.lastEffect.nextEffect = finishedWork$jscomp$0),
-        (firstBatch = finishedWork$jscomp$0.firstEffect))
-      : (firstBatch = finishedWork$jscomp$0)
-    : (firstBatch = finishedWork$jscomp$0.firstEffect);
-  for (nextEffect = firstBatch; null !== nextEffect; ) {
-    childExpirationTimeBeforeCommit = !1;
-    var error = void 0;
-    try {
-      for (; null !== nextEffect; ) {
-        if (nextEffect.effectTag & 256)
-          a: {
-            var current$$1 = nextEffect.alternate,
-              finishedWork = nextEffect;
-            switch (finishedWork.tag) {
-              case 0:
-              case 11:
-              case 15:
-                break a;
-              case 1:
-                if (finishedWork.effectTag & 256 && null !== current$$1) {
-                  var prevProps = current$$1.memoizedProps,
-                    prevState = current$$1.memoizedState,
-                    instance = finishedWork.stateNode,
-                    snapshot = instance.getSnapshotBeforeUpdate(
-                      finishedWork.elementType === finishedWork.type
-                        ? prevProps
-                        : resolveDefaultProps(finishedWork.type, prevProps),
-                      prevState
-                    );
-                  instance.__reactInternalSnapshotBeforeUpdate = snapshot;
-                }
-                break a;
-              case 3:
-              case 5:
-              case 6:
-              case 4:
-              case 17:
-                break a;
-              default:
-                invariant(
-                  !1,
-                  "This unit of work tag should not have side-effects. This error is likely caused by a bug in React. Please file an issue."
-                );
-            }
-          }
-        nextEffect = nextEffect.nextEffect;
-      }
-    } catch (e) {
-      (childExpirationTimeBeforeCommit = !0), (error = e);
-    }
-    childExpirationTimeBeforeCommit &&
-      (invariant(
-        null !== nextEffect,
-        "Should have next effect. This error is likely caused by a bug in React. Please file an issue."
-      ),
-      captureCommitPhaseError(nextEffect, error),
-      null !== nextEffect && (nextEffect = nextEffect.nextEffect));
-  }
-  for (nextEffect = firstBatch; null !== nextEffect; ) {
-    current$$1 = !1;
-    prevProps = void 0;
-    try {
-      for (; null !== nextEffect; ) {
-        var effectTag = nextEffect.effectTag;
-        if (effectTag & 128) {
-          var current$$1$jscomp$0 = nextEffect.alternate;
-          if (null !== current$$1$jscomp$0) {
-            var currentRef = current$$1$jscomp$0.ref;
-            null !== currentRef &&
-              ("function" === typeof currentRef
-                ? currentRef(null)
-                : (currentRef.current = null));
-          }
-        }
-        switch (effectTag & 14) {
-          case 2:
-            commitPlacement(nextEffect);
-            nextEffect.effectTag &= -3;
-            break;
-          case 6:
-            commitPlacement(nextEffect);
-            nextEffect.effectTag &= -3;
-            commitWork(nextEffect.alternate, nextEffect);
-            break;
-          case 4:
-            commitWork(nextEffect.alternate, nextEffect);
-            break;
-          case 8:
-            prevState = nextEffect;
-            unmountHostComponents(prevState);
-            prevState.return = null;
-            prevState.child = null;
-            prevState.memoizedState = null;
-            prevState.updateQueue = null;
-            var alternate = prevState.alternate;
-            null !== alternate &&
-              ((alternate.return = null),
-              (alternate.child = null),
-              (alternate.memoizedState = null),
-              (alternate.updateQueue = null));
-        }
-        nextEffect = nextEffect.nextEffect;
-      }
-    } catch (e) {
-      (current$$1 = !0), (prevProps = e);
-    }
-    current$$1 &&
-      (invariant(
-        null !== nextEffect,
-        "Should have next effect. This error is likely caused by a bug in React. Please file an issue."
-      ),
-      captureCommitPhaseError(nextEffect, prevProps),
-      null !== nextEffect && (nextEffect = nextEffect.nextEffect));
-  }
-  root.current = finishedWork$jscomp$0;
-  for (nextEffect = firstBatch; null !== nextEffect; ) {
-    effectTag = !1;
-    current$$1$jscomp$0 = void 0;
-    try {
-      for (currentRef = expirationTime; null !== nextEffect; ) {
-        var effectTag$jscomp$0 = nextEffect.effectTag;
-        if (effectTag$jscomp$0 & 36) {
-          var current$$1$jscomp$1 = nextEffect.alternate;
-          alternate = nextEffect;
-          current$$1 = currentRef;
-          switch (alternate.tag) {
-            case 0:
-            case 11:
-            case 15:
-              break;
-            case 1:
-              var instance$jscomp$0 = alternate.stateNode;
-              if (alternate.effectTag & 4)
-                if (null === current$$1$jscomp$1)
-                  instance$jscomp$0.componentDidMount();
-                else {
-                  var prevProps$jscomp$0 =
-                    alternate.elementType === alternate.type
-                      ? current$$1$jscomp$1.memoizedProps
-                      : resolveDefaultProps(
-                          alternate.type,
-                          current$$1$jscomp$1.memoizedProps
-                        );
-                  instance$jscomp$0.componentDidUpdate(
-                    prevProps$jscomp$0,
-                    current$$1$jscomp$1.memoizedState,
-                    instance$jscomp$0.__reactInternalSnapshotBeforeUpdate
-                  );
-                }
-              var updateQueue = alternate.updateQueue;
-              null !== updateQueue &&
-                commitUpdateQueue(
-                  alternate,
-                  updateQueue,
-                  instance$jscomp$0,
-                  current$$1
-                );
-              break;
-            case 3:
-              var _updateQueue = alternate.updateQueue;
-              if (null !== _updateQueue) {
-                prevProps = null;
-                if (null !== alternate.child)
-                  switch (alternate.child.tag) {
-                    case 5:
-                      prevProps = alternate.child.stateNode;
-                      break;
-                    case 1:
-                      prevProps = alternate.child.stateNode;
-                  }
-                commitUpdateQueue(
-                  alternate,
-                  _updateQueue,
-                  prevProps,
-                  current$$1
-                );
-              }
-              break;
-            case 5:
-              break;
-            case 6:
-              break;
-            case 4:
-              break;
-            case 12:
-              break;
-            case 13:
-              break;
-            case 17:
-              break;
-            default:
-              invariant(
-                !1,
-                "This unit of work tag should not have side-effects. This error is likely caused by a bug in React. Please file an issue."
-              );
-          }
-        }
-        if (effectTag$jscomp$0 & 128) {
-          var ref = nextEffect.ref;
-          if (null !== ref) {
-            var instance$jscomp$1 = nextEffect.stateNode;
-            switch (nextEffect.tag) {
-              case 5:
-                var instanceToUse = instance$jscomp$1;
-                break;
-              default:
-                instanceToUse = instance$jscomp$1;
-            }
-            "function" === typeof ref
-              ? ref(instanceToUse)
-              : (ref.current = instanceToUse);
-          }
-        }
-        nextEffect = nextEffect.nextEffect;
-      }
-    } catch (e) {
-      (effectTag = !0), (current$$1$jscomp$0 = e);
-=======
   scheduler.unstable_runWithPriority(
     scheduler.unstable_ImmediatePriority,
     function() {
       commitRoot(root, finishedWork);
->>>>>>> v0.59.0
     }
   );
 }

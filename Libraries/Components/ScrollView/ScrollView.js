@@ -827,9 +827,8 @@ class ScrollView extends React.Component<Props, State> {
     }
   }
 
-<<<<<<< HEAD
   // [TODO(macOS ISS#2323203)
-  _handleKeyDown: function(e: Object) {
+  _handleKeyDown = (e: Object) => {
     if (this.props.onKeyDown) {
       this.props.onKeyDown(e);
     } else {
@@ -879,21 +878,18 @@ class ScrollView extends React.Component<Props, State> {
         }
       }
     }
-  },
+  };
 
-  _handleScrollByKeyDown: function(e: Object, newOffset) {
+  _handleScrollByKeyDown = (e: Object, newOffset) => {
     const maxX = e.contentSize.width - e.layoutMeasurement.width;
     const maxY = e.contentSize.height - e.layoutMeasurement.height;
     this.scrollTo({
       x: Math.max(0, Math.min(maxX, newOffset.x)),
       y: Math.max(0, Math.min(maxY, newOffset.y)),
     });
-  }, // ]TODO(macOS ISS#2323203)
+  }; // ]TODO(macOS ISS#2323203)
 
-  _handleScroll: function(e: Object) {
-=======
   _handleScroll = (e: Object) => {
->>>>>>> v0.59.0
     if (__DEV__) {
       if (
         this.props.onScroll &&

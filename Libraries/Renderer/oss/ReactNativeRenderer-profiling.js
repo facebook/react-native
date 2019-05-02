@@ -4120,47 +4120,9 @@ function updateSuspenseComponent(
       (nextDidTimeout = !0),
       (workInProgress.effectTag &= -65);
   if (null === current$$1)
-<<<<<<< HEAD
-    nextDidTimeout
-      ? ((nextDidTimeout = nextProps.fallback),
-        (nextProps = createFiberFromFragment(null, mode, 0, null)),
-        0 === (workInProgress.mode & 1) &&
-          (nextProps.child =
-            null !== workInProgress.memoizedState
-              ? workInProgress.child.child
-              : workInProgress.child),
-        (renderExpirationTime = createFiberFromFragment(
-          nextDidTimeout,
-          mode,
-          renderExpirationTime,
-          null
-        )),
-        (nextProps.sibling = renderExpirationTime),
-        (mode = nextProps),
-        (mode.return = renderExpirationTime.return = workInProgress))
-      : (mode = renderExpirationTime = mountChildFibers(
-          workInProgress,
-          null,
-          nextProps.children,
-          renderExpirationTime
-        ));
-  else if (null !== current$$1.memoizedState)
-    if (
-      ((current$$1 = current$$1.child),
-      (mode = current$$1.sibling),
-      nextDidTimeout)
-    ) {
-      nextProps = nextProps.fallback;
-      renderExpirationTime = createWorkInProgress(
-        current$$1,
-        current$$1.pendingProps,
-        0
-      );
-=======
     if (nextDidTimeout) {
       var nextFallbackChildren = nextProps.fallback;
       current$$1 = createFiberFromFragment(null, mode, 0, null);
->>>>>>> v0.59.0
       0 === (workInProgress.mode & 1) &&
         (current$$1.child =
           null !== workInProgress.memoizedState
@@ -4172,14 +4134,8 @@ function updateSuspenseComponent(
         renderExpirationTime,
         null
       );
-<<<<<<< HEAD
-      mode = renderExpirationTime;
-      renderExpirationTime.childExpirationTime = 0;
-      renderExpirationTime = nextProps;
-=======
       current$$1.sibling = renderExpirationTime;
       mode = current$$1;
->>>>>>> v0.59.0
       mode.return = renderExpirationTime.return = workInProgress;
     } else
       mode = renderExpirationTime = mountChildFibers(
@@ -4188,41 +4144,6 @@ function updateSuspenseComponent(
         nextProps.children,
         renderExpirationTime
       );
-<<<<<<< HEAD
-  else if (((current$$1 = current$$1.child), nextDidTimeout)) {
-    nextDidTimeout = nextProps.fallback;
-    nextProps = createFiberFromFragment(null, mode, 0, null);
-    nextProps.child = current$$1;
-    0 === (workInProgress.mode & 1) &&
-      (nextProps.child =
-        null !== workInProgress.memoizedState
-          ? workInProgress.child.child
-          : workInProgress.child);
-    if (workInProgress.mode & 4) {
-      current$$1 = 0;
-      for (var _hiddenChild = nextProps.child; null !== _hiddenChild; )
-        (current$$1 += _hiddenChild.treeBaseDuration),
-          (_hiddenChild = _hiddenChild.sibling);
-      nextProps.treeBaseDuration = current$$1;
-    }
-    renderExpirationTime = nextProps.sibling = createFiberFromFragment(
-      nextDidTimeout,
-      mode,
-      renderExpirationTime,
-      null
-    );
-    renderExpirationTime.effectTag |= 2;
-    mode = nextProps;
-    nextProps.childExpirationTime = 0;
-    mode.return = renderExpirationTime.return = workInProgress;
-  } else
-    renderExpirationTime = mode = reconcileChildFibers(
-      workInProgress,
-      current$$1,
-      nextProps.children,
-      renderExpirationTime
-    );
-=======
   else {
     if (null !== current$$1.memoizedState)
       if (
@@ -4312,7 +4233,6 @@ function updateSuspenseComponent(
     }
     workInProgress.stateNode = current$$1.stateNode;
   }
->>>>>>> v0.59.0
   workInProgress.memoizedState = nextState;
   workInProgress.child = mode;
   return renderExpirationTime;
@@ -5696,67 +5616,6 @@ function commitWork(current$$1, finishedWork) {
         ? (newProps = !1)
         : ((newProps = !0),
           (current$$1 = finishedWork.child),
-<<<<<<< HEAD
-          0 === newProps.timedOutAt &&
-            (newProps.timedOutAt = requestCurrentTime()));
-      if (null !== current$$1)
-        a: for (newProps = finishedWork = current$$1; ; ) {
-          if (5 === newProps.tag)
-            if (((current$$1 = newProps.stateNode), instance)) {
-              updatePayload = current$$1.viewConfig;
-              var updatePayload$jscomp$0 = diffProperties(
-                null,
-                emptyObject,
-                { style: { display: "none" } },
-                updatePayload.validAttributes
-              );
-              UIManager.updateView(
-                current$$1._nativeTag,
-                updatePayload.uiViewClassName,
-                updatePayload$jscomp$0
-              );
-            } else {
-              current$$1 = newProps.stateNode;
-              updatePayload$jscomp$0 = newProps.memoizedProps;
-              updatePayload = current$$1.viewConfig;
-              var prevProps = Object.assign({}, updatePayload$jscomp$0, {
-                style: [updatePayload$jscomp$0.style, { display: "none" }]
-              });
-              updatePayload$jscomp$0 = diffProperties(
-                null,
-                prevProps,
-                updatePayload$jscomp$0,
-                updatePayload.validAttributes
-              );
-              UIManager.updateView(
-                current$$1._nativeTag,
-                updatePayload.uiViewClassName,
-                updatePayload$jscomp$0
-              );
-            }
-          else {
-            if (6 === newProps.tag) throw Error("Not yet implemented.");
-            if (13 === newProps.tag && null !== newProps.memoizedState) {
-              current$$1 = newProps.child.sibling;
-              current$$1.return = newProps;
-              newProps = current$$1;
-              continue;
-            } else if (null !== newProps.child) {
-              newProps.child.return = newProps;
-              newProps = newProps.child;
-              continue;
-            }
-          }
-          if (newProps === finishedWork) break a;
-          for (; null === newProps.sibling; ) {
-            if (null === newProps.return || newProps.return === finishedWork)
-              break a;
-            newProps = newProps.return;
-          }
-          newProps.sibling.return = newProps.return;
-          newProps = newProps.sibling;
-        }
-=======
           0 === instance.timedOutAt &&
             (instance.timedOutAt = requestCurrentTime()));
       null !== current$$1 && hideOrUnhideAllChildren(current$$1, newProps);
@@ -5773,7 +5632,6 @@ function commitWork(current$$1, finishedWork) {
             (retryCache.add(thenable), thenable.then(retry, retry));
         });
       }
->>>>>>> v0.59.0
       break;
     case 17:
       break;
@@ -6580,15 +6438,7 @@ function completeUnitOfWork(workInProgress) {
                   : ((current$$1.firstEffect = current$$1.lastEffect = type),
                     (type.nextEffect = null)),
                 (type.effectTag = 8)));
-<<<<<<< HEAD
-            if (
-              fiber !== renderExpirationTime ||
-              (0 === (current$$1.effectTag & 1) && fiber)
-            )
-              current$$1.effectTag |= 4;
-=======
             if (fiber || renderExpirationTime) current$$1.effectTag |= 4;
->>>>>>> v0.59.0
             break;
           case 7:
             break;
