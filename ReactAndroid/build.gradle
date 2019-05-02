@@ -126,7 +126,7 @@ task prepareGlog(dependsOn: dependenciesPath ? [] : [downloadGlog], type: Copy) 
 
     doLast {
         copy {
-            from(fileTree(dir: "$thirdPartyNdkDir/glog", includes: ["stl_logging.h", "logging.h", "raw_logging.h", "vlog_is_on.h", "**/glog/log_severity.h"]).files)
+            from(fileTree(dir: "$thirdPartyNdkDir/glog", includes: ["stl_logging.h", "logging.h", "raw_logging.h", "vlog_is_on.h", "**/src/glog/log_severity.h"]).files)
             includeEmptyDirs = false
             into("$thirdPartyNdkDir/glog/exported/glog")
         }
