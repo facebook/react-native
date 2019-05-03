@@ -3,6 +3,7 @@ import {
   StyleSheet,
   ScrollView,
   View,
+  Text,
   Platform,
   StatusBar,
   SafeAreaView,
@@ -10,19 +11,38 @@ import {
 
 import Header from './components/Header'
 import Section from './components/Section'
-import LinkList from './components/LinkList'
+import LearnMoreLinks from './components/LearnMoreLinks'
+import Colors from './components/Colors';
 
-const reloadInstructions = Platform.select({
-  ios: `Press Cmd+R in the simulator to reload your app's code`,
-  android: `Double tap R on your keyboard to reload your app's code`,
-})
+const ReloadInstructions = () => {
+  return Platform.OS === 'ios' ? (
+    <Text style={styles.sectionDescription}>
+      Press <Text style={styles.highlight}>Cmd+R</Text> in the simulator to
+      reload your app's code
+    </Text>
+  ) : (
+    <Text style={styles.sectionDescription}>
+      Double tap <Text style={styles.highlight}>R</Text> on your keyboard to
+      reload your app's code
+    </Text>
+  )
+}
 
-const debugInstructions = Platform.select({
-  ios:
-    'Press Cmd+D in the simulator or Shake your device to open the React Native debug menu.',
-  android:
-    'Press menu button or Shake your device to open the React Native debug menu.',
-})
+const DebugInstructions = () => {
+  return Platform.OS === 'ios' ? (
+    <Text style={styles.sectionDescription}>
+      Press <Text style={styles.highlight}>Cmd+D</Text> in the simulator or{' '}
+      <Text style={styles.highlight}>Shake</Text> your device to open the React
+      Native debug menu.
+    </Text>
+  ) : (
+    <Text>
+      Press <Text style={styles.highlight}>menu button</Text> or
+      <Text style={styles.highlight}>Shake</Text> your device to open the React
+      Native debug menu.
+    </Text>
+  )
+}
 
 const App = () => {
   return (
@@ -34,20 +54,34 @@ const App = () => {
         <ScrollView bounces={false}>
           <Header />
           <View style={styles.body}>
-            <Section
-              title="Step One"
-              description="Edit App.js to change this screen and then come back to see your edits."
-            />
-            <Section
-              title="See Your Changes"
-              description={reloadInstructions}
-            />
-            <Section title="Debug" description={debugInstructions} />
-            <Section
-              title="Learn More"
-              description="Read the docs on what to do once you've seen how to work in React Native."
-            />
-            <LinkList />
+            <Section>
+              <Text style={styles.sectionTitle}>Step One</Text>
+              <Text style={styles.sectionDescription}>
+                Edit <Text style={styles.highlight}>App.js</Text> to change this
+                screen and then come back to see your edits.
+              </Text>
+            </Section>
+
+            <Section>
+              <Text style={styles.sectionTitle}>See Your Changes</Text>
+              <Text style={styles.sectionDescription}>
+                <ReloadInstructions />
+              </Text>
+            </Section>
+
+            <Section>
+              <Text style={styles.sectionTitle}>Debug</Text>
+              <DebugInstructions />
+            </Section>
+
+            <Section>
+              <Text style={styles.sectionTitle}>Learn More</Text>
+              <Text style={styles.sectionDescription}>
+                Read the docs on what to do once seen how to work in React
+                Native.
+              </Text>
+            </Section>
+            <LearnMoreLinks />
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -58,14 +92,28 @@ const App = () => {
 const styles = StyleSheet.create({
   topSafeArea: {
     flex: 0,
-    backgroundColor: '#F3F3F3',
+    backgroundColor: Colors.lighter,
   },
   bottomSafeArea: {
     flex: 1,
-    backgroundColor: '#FFF',
+    backgroundColor: Colors.white,
   },
   body: {
-    backgroundColor: '#FFF',
+    backgroundColor: Colors.white,
+  },
+  sectionTitle: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#000',
+  },
+  sectionDescription: {
+    marginTop: 8,
+    fontSize: 18,
+    fontWeight: '400',
+    color: Colors.dark,
+  },
+  highlight: {
+    fontWeight: '700',
   },
 })
 
