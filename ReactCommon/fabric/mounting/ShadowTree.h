@@ -57,14 +57,12 @@ class ShadowTree final {
    * The `transaction` function can abort commit returning `nullptr`.
    * Returns `true` if the operation finished successfully.
    */
-  bool tryCommit(ShadowTreeCommitTransaction transaction, long commitStartTime)
-      const;
+  bool tryCommit(ShadowTreeCommitTransaction transaction) const;
 
   /*
    * Calls `tryCommit` in a loop until it finishes successfully.
    */
-  void commit(ShadowTreeCommitTransaction transaction, long commitStartTime)
-      const;
+  void commit(ShadowTreeCommitTransaction transaction) const;
 
 #pragma mark - Delegate
 

@@ -84,8 +84,7 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
 
   void uiManagerDidFinishTransaction(
       SurfaceId surfaceId,
-      const SharedShadowNodeUnsharedList &rootChildNodes,
-      long startCommitTime) override;
+      const SharedShadowNodeUnsharedList &rootChildNodes) override;
   void uiManagerDidCreateShadowNode(
       const SharedShadowNode &shadowNode) override;
 

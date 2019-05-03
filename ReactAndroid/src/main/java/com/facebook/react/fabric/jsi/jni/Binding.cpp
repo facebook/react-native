@@ -503,8 +503,8 @@ void Binding::schedulerDidFinishTransaction(
   scheduleMountItems(
       javaUIManager_,
       batch.get(),
-      telemetry.commitStartTime,
-      telemetry.layoutTime,
+      telemetry.getCommitStartTime(),
+      telemetry.getLayoutTime(),
       finishTransactionStartTime,
       finishTransactionEndTime);
 }

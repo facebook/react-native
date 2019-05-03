@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <react/mounting/MountingTelemetry.h>
 #include <react/mounting/ShadowViewMutation.h>
 
 namespace facebook {
@@ -28,15 +29,6 @@ class MountingTransaction final {
   using Revision = int64_t;
 
   /*
-   * Represent arbitrary telementry data that can be associated with the
-   * particular transaction.
-   */
-  struct Telemetry final {
-    long commitStartTime{};
-    long layoutTime{};
-  };
-
-  /*
    * Copying a list of `ShadowViewMutation` is expensive, so the constructor
    * accepts it as rvalue reference to discourage copying.
    */
@@ -44,7 +36,7 @@ class MountingTransaction final {
       SurfaceId surfaceId,
       Revision revision,
       ShadowViewMutationList &&mutations,
-      Telemetry telemetry);
+      MountingTelemetry telemetry);
 
   /*
    * Copy semantic.
@@ -72,7 +64,7 @@ class MountingTransaction final {
   /*
    * Returns telemetry associated with this transaction.
    */
-  Telemetry const &getTelemetry() const;
+  MountingTelemetry const &getTelemetry() const;
 
   /*
    * Returns the id of the surface that the transaction belongs to.
@@ -88,7 +80,7 @@ class MountingTransaction final {
   SurfaceId surfaceId_;
   Revision revision_;
   ShadowViewMutationList mutations_;
-  Telemetry telemetry_;
+  MountingTelemetry telemetry_;
 };
 
 } // namespace react

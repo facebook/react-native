@@ -13,8 +13,8 @@
 #include <react/core/LayoutPrimitives.h>
 #include <react/debug/SystraceSection.h>
 #include <react/mounting/Differentiator.h>
+#include <react/mounting/MountingTelemetry.h>
 #include <react/mounting/ShadowViewMutation.h>
-#include <react/utils/TimeUtils.h>
 
 #include "ShadowTreeDelegate.h"
 
@@ -118,24 +118,21 @@ ShadowTree::~ShadowTree() {
                 ShadowNodeFragment::eventEmitterPlaceholder(),
                 /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
             });
-      },
-      getTime());
+      });
 }
 
 Tag ShadowTree::getSurfaceId() const {
   return surfaceId_;
 }
 
-void ShadowTree::commit(
-    ShadowTreeCommitTransaction transaction,
-    long commitStartTime) const {
+void ShadowTree::commit(ShadowTreeCommitTransaction transaction) const {
   SystraceSection s("ShadowTree::commit");
 
   int attempts = 0;
 
   while (true) {
     attempts++;
-    if (tryCommit(transaction, commitStartTime)) {
+    if (tryCommit(transaction)) {
       return;
     }
 
@@ -145,10 +142,11 @@ void ShadowTree::commit(
   }
 }
 
-bool ShadowTree::tryCommit(
-    ShadowTreeCommitTransaction transaction,
-    long commitStartTime) const {
+bool ShadowTree::tryCommit(ShadowTreeCommitTransaction transaction) const {
   SystraceSection s("ShadowTree::tryCommit");
+
+  auto telemetry = MountingTelemetry{};
+  telemetry.willCommit();
 
   SharedRootShadowNode oldRootShadowNode;
 
@@ -167,9 +165,10 @@ bool ShadowTree::tryCommit(
   std::vector<LayoutableShadowNode const *> affectedLayoutableNodes{};
   affectedLayoutableNodes.reserve(1024);
 
-  long layoutTime = getTime();
+  telemetry.willLayout();
   newRootShadowNode->layout(&affectedLayoutableNodes);
-  layoutTime = getTime() - layoutTime;
+  telemetry.didLayout();
+
   newRootShadowNode->sealRecursive();
 
   int revision;
@@ -216,13 +215,11 @@ bool ShadowTree::tryCommit(
 
   emitLayoutEvents(affectedLayoutableNodes);
 
+  telemetry.didCommit();
+
   if (delegate_) {
     delegate_->shadowTreeDidCommit(
-        *this,
-        {surfaceId_,
-         revision,
-         std::move(mutations),
-         {commitStartTime, layoutTime}});
+        *this, {surfaceId_, revision, std::move(mutations), telemetry});
   }
 
   return true;

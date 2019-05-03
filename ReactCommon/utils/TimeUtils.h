@@ -2,10 +2,12 @@
 
 #pragma once
 
+#include <time.h>
+
 namespace facebook {
 namespace react {
 
-inline static long getTime() {
+inline static int64_t getTime() {
 #ifdef ANDROID
   static const int64_t NANOSECONDS_IN_SECOND = 1000000000LL;
   static const int64_t NANOSECONDS_IN_MILLISECOND = 1000000LL;
@@ -20,7 +22,7 @@ inline static long getTime() {
   struct timespec now;
   clock_gettime(CLOCK_MONOTONIC, &now);
   int64_t nano = now.tv_sec * NANOSECONDS_IN_SECOND + now.tv_nsec;
-  return nano / (double)NANOSECONDS_IN_MILLISECOND;
+  return nano / NANOSECONDS_IN_MILLISECOND;
 #else
   return 0l;
 #endif
