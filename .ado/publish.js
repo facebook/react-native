@@ -30,7 +30,7 @@ function doPublish() {
   let releaseVersion = pkgJson.version;
 
   console.log(`Using ${`(.*-microsoft)(-${publishBranchName})?\\.([0-9]*)`} to match version`);
-  const branchVersionSuffix = (publishBranchName.match(/fb.*merge/) ? `-${publishBranchName}` : '');
+  const branchVersionSuffix = (publishBranchName.match(/(fb.*merge)|(fabric)/) ? `-${publishBranchName}` : '');
 
   const onlyTagSource = !!branchVersionSuffix;
 
