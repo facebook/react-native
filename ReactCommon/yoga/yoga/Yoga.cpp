@@ -28,15 +28,6 @@ __forceinline const float fmaxf(const float a, const float b) {
 using namespace facebook::yoga;
 using detail::Log;
 
-namespace {
-size_t usedMeasureCacheEntries = YG_MAX_CACHED_RESULT_COUNT;
-}
-
-void YGSetUsedCachedEntries(size_t n) {
-  usedMeasureCacheEntries =
-      n == 0 || n > YG_MAX_CACHED_RESULT_COUNT ? YG_MAX_CACHED_RESULT_COUNT : n;
-}
-
 #ifdef ANDROID
 static int YGAndroidLog(
     const YGConfigRef config,
@@ -3864,7 +3855,7 @@ bool YGLayoutNodeInternal(
         layoutMarkerData.maxMeasureCache =
             layout->nextCachedMeasurementsIndex + 1;
       }
-      if (layout->nextCachedMeasurementsIndex == usedMeasureCacheEntries) {
+      if (layout->nextCachedMeasurementsIndex == YG_MAX_CACHED_RESULT_COUNT) {
         if (gPrintChanges) {
           Log::log(node, YGLogLevelVerbose, nullptr, "Out of cache entries!\n");
         }
