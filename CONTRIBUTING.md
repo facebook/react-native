@@ -71,7 +71,7 @@ Facebook has a [bounty program](https://www.facebook.com/whitehat/) for the safe
 
 - [Step-by-step Guide](#step-by-step-guide)
 - [Style Guide](#style-guide)
-- [Running](#running-tests) and [Writing Tests](#writing-tests)
+- [Testing your Changes](#tests)
 
 Code-level contributions to React Native generally come in the form of [pull requests][pr]. The process of proposing a change to React Native can be summarized as follows:
 
@@ -86,7 +86,6 @@ Code-level contributions to React Native generally come in the form of [pull req
 9. Review and address comments on your pull request.
 
 If all goes well, your pull request will be merged. If it is not merged, maintainers will do their best to explain the reason why.
-
 
 ## Style Guide
 
@@ -108,6 +107,9 @@ However, there are still some styles that the linter cannot pick up, notably in 
 * If a method header doesn't fit on one line each argument goes on a separate line.
 * 100 character line length
 
+## Tests
+
+Tests help us prevent regressions from being introduced to the codebase. The GitHub repository is continuously tested using Circle and Appveyor, the results of which are available through the Checks functionality on [commits](https://github.com/facebook/react-native/commits/master) and pull requests. You can learn more about running and writing tests in the [Tests wiki](http://github.com/facebook/react-native/wiki/Tests).
 
 <!-- END: Code Contributions -->
 
