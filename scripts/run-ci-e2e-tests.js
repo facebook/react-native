@@ -109,7 +109,12 @@ try {
     exitCode = 1;
     throw Error(exitCode);
   }
-  cp('metro.config.js', 'EndToEndTest/.');
+
+  const METRO_CONFIG = path.join(ROOT, 'metro.config.js');
+  const RN_POLYFILLS = path.join(ROOT, 'rn-get-polyfills.js');
+  cp(METRO_CONFIG, 'EndToEndTest/.');
+  cp(RN_POLYFILLS, 'EndToEndTest/.');
+
   cd('EndToEndTest');
   echo('Installing React Native package');
   exec(`npm install ${PACKAGE}`);
@@ -207,7 +212,7 @@ try {
     // shelljs exec('', {async: true}) does not emit stdout events, so we rely on good old spawn
     const packagerEnv = Object.create(process.env);
     packagerEnv.REACT_NATIVE_MAX_WORKERS = 1;
-    const packagerProcess = spawn('yarn', ['start', '--nonPersistent'], {
+    const packagerProcess = spawn('yarn', ['start'], {
       stdio: 'inherit',
       env: packagerEnv,
     });

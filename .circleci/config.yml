@@ -309,10 +309,6 @@ jobs:
           name: JavaScript Test Suite
           command: node ./scripts/run-ci-javascript-tests.js --maxWorkers 2
 
-      - run:
-          name: JavaScript End-to-End Test Suite
-          command: node ./scripts/run-ci-e2e-tests.js --js --retries 3
-
       - store_test_results:
           path: ~/react-native/reports/junit
 
@@ -368,7 +364,7 @@ jobs:
 
       - run:
           name: Start Metro packager
-          command: yarn start --nonPersistent --max-workers=1 || echo "Can't start packager automatically"
+          command: yarn start --max-workers=1 || echo "Can't start packager automatically"
           background: true
 
       - run:
@@ -453,15 +449,11 @@ jobs:
             # kill whatever is occupying port 5555 (web socket server)
             lsof -i tcp:5555 | awk 'NR!=1 {print $2}' | xargs kill
 
-      - run:
-          name: iOS End-to-End Test Suite
-          command: node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
-
       - store_test_results:
           path: ~/react-native/reports/junit
 
-  # Runs end to end tests (Detox)
-  test_detox_end_to_end:
+  # Runs end-to-end tests
+  test_end_to_end:
     <<: *macos_defaults
     steps:
       - attach_workspace:
@@ -496,13 +488,25 @@ jobs:
 
       # Xcode build
       - run:
-          name: Build iOS app for simulator
+          name: Build app for Detox iOS End-to-End Tests
           command: yarn run build-ios-e2e
 
       # Test
       - run:
-          name: Run Detox Tests
+          name: Run Detox iOS End-to-End Tests
           command: yarn run test-ios-e2e
+          when: always
+
+      - run:
+          name: Run JavaScript End-to-End Tests
+          command: node ./scripts/run-ci-e2e-tests.js --js --retries 3
+          when: always
+
+      - run:
+          name: Run iOS End-to-End Tests
+          command: node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
+          when: always
+
 
   # -------------------------
   #    JOBS: Test Android
@@ -572,7 +576,7 @@ jobs:
       - run:
           name: Build JavaScript Bundle
           command: node cli.js bundle --max-workers 2 --platform android --dev true --entry-file ReactAndroid/src/androidTest/js/TestBundle.js --bundle-output ReactAndroid/src/androidTest/assets/AndroidTestBundle.js
-      
+
       # Wait for AVD to finish booting before running tests
       - run:
           name: Wait for Android Virtual Device
@@ -707,7 +711,7 @@ workflows:
       - test_javascript: *run-after-checkout
       - test_android: *run-after-checkout
       - test_ios: *run-after-checkout
-      - test_detox_end_to_end: *run-after-checkout
+      - test_end_to_end: *run-after-checkout
       - test_docker_build:
           filters: *filter-ignore-gh-pages
 
