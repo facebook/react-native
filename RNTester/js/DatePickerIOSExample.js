@@ -41,50 +41,6 @@ class WithDatePickerData extends React.Component<Props, State> {
           backgroundColor: 'gray',
         }}>
         <WithLabel label="Value:">
-<<<<<<< HEAD
-          <Text testID="date-and-time-indicator">
-            {this.state.date.toLocaleDateString() +
-              ' ' +
-              this.state.date.toLocaleTimeString([], {
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
-          </Text>
-        </WithLabel>
-        <WithLabel label="Timezone:">
-          <TextInput
-            onChange={this.onTimezoneChange}
-            style={styles.textinput}
-            value={this.state.timeZoneOffsetInHours.toString()}
-          />
-          <Text> hours from UTC</Text>
-        </WithLabel>
-        <Heading label="Date + time picker" />
-        <DatePickerIOS
-          testID="date-and-time"
-          date={this.state.date}
-          mode="datetime"
-          timeZoneOffsetInMinutes={this.state.timeZoneOffsetInHours * 60}
-          onDateChange={this.onDateChange}
-        />
-        <Heading label="Date picker" />
-        <DatePickerIOS
-          testID="date-only"
-          date={this.state.date}
-          mode="date"
-          timeZoneOffsetInMinutes={this.state.timeZoneOffsetInHours * 60}
-          onDateChange={this.onDateChange}
-        />
-        <Heading label="Time picker, 10-minute interval" />
-        <DatePickerIOS
-          testID="time-only"
-          date={this.state.date}
-          mode="time"
-          timeZoneOffsetInMinutes={this.state.timeZoneOffsetInHours * 60}
-          onDateChange={this.onDateChange}
-          minuteInterval={10}
-        />
-=======
           <Text testID="date-indicator">
             {this.state.date.toLocaleDateString()}
           </Text>
@@ -96,7 +52,6 @@ class WithDatePickerData extends React.Component<Props, State> {
           </Text>
         </WithLabel>
         {this.props.children(this.state, this.onDateChange)}
->>>>>>> v0.59.0
       </View>
     );
   }

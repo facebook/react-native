@@ -8,24 +8,6 @@
  * @format
  */
 
-<<<<<<< HEAD
-/* global element, by, expect */
-
-describe('Touchable', () => {
-  beforeAll(async () => {
-    await element(by.id('explorer_search')).replaceText('<Touchable*');
-    await element(
-      by.label('<Touchable*> and onPress Touchable and onPress examples.'),
-    ).tap();
-  });
-
-  afterAll(async () => {
-    //TODO - remove app state persistency, till then, we must go back to main screen,
-    await element(by.label('Back')).tap();
-  });
-
-  it('Touchable Highlight should be tappable', async () => {
-=======
 /* global device, element, by, expect */
 const {
   openComponentWithLabel,
@@ -43,7 +25,6 @@ describe('Touchable', () => {
 
   it('Touchable Highlight should be tappable', async () => {
     await openExampleWithTitle('<TouchableHighlight>');
->>>>>>> v0.59.0
     const buttonID = 'touchable_highlight_image_button';
     const button2ID = 'touchable_highlight_text_button';
     const consoleID = 'touchable_highlight_console';
@@ -65,11 +46,8 @@ describe('Touchable', () => {
   });
 
   it('Touchable Without Feedback should be tappable', async () => {
-<<<<<<< HEAD
-=======
     await openExampleWithTitle('<TouchableWithoutFeedback>');
 
->>>>>>> v0.59.0
     const buttonID = 'touchable_without_feedback_button';
     const consoleID = 'touchable_without_feedback_console';
 
@@ -85,11 +63,8 @@ describe('Touchable', () => {
   });
 
   it('Text should be tappable', async () => {
-<<<<<<< HEAD
-=======
     await openExampleWithTitle('<Text onPress={fn}> with highlight');
 
->>>>>>> v0.59.0
     const buttonID = 'tappable_text';
     const consoleID = 'tappable_text_console';
 

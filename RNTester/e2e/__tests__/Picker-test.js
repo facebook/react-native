@@ -8,25 +8,6 @@
  * @format
  */
 
-<<<<<<< HEAD
-/* global element, by, expect */
-
-describe('Picker', () => {
-  beforeAll(async () => {
-    await element(by.id('explorer_search')).replaceText('<Picker>');
-    await element(
-      by.label(
-        '<Picker> Provides multiple options to choose from, using either a dropdown menu or a dialog.',
-      ),
-    ).tap();
-  });
-
-  afterAll(async () => {
-    await element(by.label('Back')).tap();
-  });
-
-  it('should be selectable by ID', async () => {
-=======
 /* global device, element, by, expect */
 const {
   openComponentWithLabel,
@@ -44,7 +25,6 @@ describe('Picker', () => {
 
   it('should be selectable by ID', async () => {
     await openExampleWithTitle('Basic picker');
->>>>>>> v0.59.0
     await expect(element(by.id('basic-picker'))).toBeVisible();
   });
 });

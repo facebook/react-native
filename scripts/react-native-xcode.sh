@@ -129,7 +129,6 @@ fi
 
 BUNDLE_FILE="$DEST/main.jsbundle"
 
-<<<<<<< HEAD
 case "$PLATFORM_NAME" in
   "macosx")
     BUNDLE_PLATFORM="macos"
@@ -139,10 +138,7 @@ case "$PLATFORM_NAME" in
     ;;
 esac
 
-"$NODE_BINARY" "$CLI_PATH" $BUNDLE_COMMAND \
-=======
 "$NODE_BINARY" $NODE_ARGS "$CLI_PATH" $BUNDLE_COMMAND \
->>>>>>> v0.59.0
   $CONFIG_ARG \
   --entry-file "$ENTRY_FILE" \
   --platform "$BUNDLE_PLATFORM" \

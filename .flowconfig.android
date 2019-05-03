@@ -22,7 +22,6 @@
 ; Ignore polyfills
 .*/Libraries/polyfills/.*
 
-<<<<<<< HEAD
 ; Ignore files that have a base platform file and an android file
 <PROJECT_ROOT>/Libraries/Image/Image.js
 <PROJECT_ROOT>/Libraries/Network/RCTNetworking.js
@@ -32,8 +31,6 @@
 ; Ignore rn-cli.config.js
 <PROJECT_ROOT>/rn-cli.config.js
 
-=======
->>>>>>> v0.59.0
 ; These should not be required directly
 ; require from fbjs/lib instead: require('fbjs/lib/warning')
 .*/node_modules/warning/.*
@@ -110,11 +107,4 @@ untyped-import
 untyped-type-import
 
 [version]
-<<<<<<< HEAD
-^0.86.0
-
-[untyped]
-.*/node_modules/metro/.*
-=======
 ^0.92.0
->>>>>>> v0.59.0

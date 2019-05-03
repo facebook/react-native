@@ -22,7 +22,6 @@
 ; Ignore polyfills
 .*/Libraries/polyfills/.*
 
-<<<<<<< HEAD
 ; Ignore metro
 .*/node_modules/metro/.*
 .*/node_modules/metro-config/src/configTypes.flow.js.flow
@@ -30,8 +29,6 @@
 ; Ignore rn-cli.config.js
 <PROJECT_ROOT>/rn-cli.config.js
 
-=======
->>>>>>> v0.59.0
 ; These should not be required directly
 ; require from fbjs/lib instead: require('fbjs/lib/warning')
 .*/node_modules/warning/.*
@@ -109,11 +106,4 @@ untyped-import
 untyped-type-import
 
 [version]
-<<<<<<< HEAD
-^0.86.0
-
-[untyped]
-.*/node_modules/metro/.*
-=======
 ^0.92.0
->>>>>>> v0.59.0
