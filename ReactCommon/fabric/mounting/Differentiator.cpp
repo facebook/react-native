@@ -67,8 +67,10 @@ static void calculateShadowViewMutations(
     return;
   }
 
-  better::map<Tag, ShadowViewNodePair> insertedPairs;
-  int index = 0;
+  auto index = int{0};
+
+  // Maps inserted node tags to pointers to them in `newChildPairs`.
+  auto insertedPairs = better::map<Tag, ShadowViewNodePair const *>{};
 
   ShadowViewMutationList createMutations = {};
   ShadowViewMutationList deleteMutations = {};
@@ -118,20 +120,20 @@ static void calculateShadowViewMutations(
     insertMutations.push_back(ShadowViewMutation::InsertMutation(
           parentShadowView, newChildPair.shadowView, index));
 
-    insertedPairs.insert({newChildPair.shadowView.tag, newChildPair});
+    insertedPairs.insert({newChildPair.shadowView.tag, &newChildPair});
   }
 
   // Stage 3: Collecting `Delete` and `Remove` mutations
   for (index = lastIndexAfterFirstStage; index < oldChildPairs.size();
        index++) {
-    const auto &oldChildPair = oldChildPairs[index];
+    auto const &oldChildPair = oldChildPairs[index];
 
     // Even if the old view was (re)inserted, we have to generate `remove`
     // mutation.
     removeMutations.push_back(ShadowViewMutation::RemoveMutation(
         parentShadowView, oldChildPair.shadowView, index));
 
-    const auto &it = insertedPairs.find(oldChildPair.shadowView.tag);
+    auto const it = insertedPairs.find(oldChildPair.shadowView.tag);
 
     if (it == insertedPairs.end()) {
       // The old view was *not* (re)inserted.
@@ -151,7 +153,8 @@ static void calculateShadowViewMutations(
       // The old view *was* (re)inserted.
       // We have to call the algorithm recursively if the inserted view
       // is *not* the same as removed one.
-      const auto &newChildPair = it->second;
+      auto const &newChildPair = *it->second;
+
       if (newChildPair != oldChildPair) {
         const auto oldGrandChildPairs =
             sliceChildShadowNodeViewPairs(*oldChildPair.shadowNode);
