@@ -10,15 +10,15 @@
 namespace facebook {
 namespace react {
 
-using Revision = MountingTransaction::Revision;
+using Number = MountingTransaction::Number;
 
 MountingTransaction::MountingTransaction(
     SurfaceId surfaceId,
-    Revision revision,
+    Number number,
     ShadowViewMutationList &&mutations,
     MountingTelemetry telemetry)
     : surfaceId_(surfaceId),
-      revision_(revision),
+      number_(number),
       mutations_(std::move(mutations)),
       telemetry_(std::move(telemetry)) {}
 
@@ -38,8 +38,8 @@ SurfaceId MountingTransaction::getSurfaceId() const {
   return surfaceId_;
 }
 
-Revision MountingTransaction::getRevision() const {
-  return revision_;
+Number MountingTransaction::getNumber() const {
+  return number_;
 }
 
 } // namespace react

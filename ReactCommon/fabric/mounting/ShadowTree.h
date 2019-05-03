@@ -5,9 +5,6 @@
 
 #pragma once
 
-#ifndef NDEBUG
-#define RN_SHADOW_TREE_INTROSPECTION
-#endif
 
 #include <better/mutex.h>
 #include <memory>
@@ -17,12 +14,9 @@
 #include <react/core/LayoutConstraints.h>
 #include <react/core/ReactPrimitives.h>
 #include <react/core/ShadowNode.h>
+#include <react/mounting/MountingCoordinator.h>
 #include <react/mounting/ShadowTreeDelegate.h>
-#include <react/mounting/ShadowViewMutation.h>
-
-#ifdef RN_SHADOW_TREE_INTROSPECTION
-#include <react/mounting/stubs.h>
-#endif
+#include <react/mounting/ShadowTreeRevision.h>
 
 namespace facebook {
 namespace react {
@@ -83,15 +77,13 @@ class ShadowTree final {
   void emitLayoutEvents(
       std::vector<LayoutableShadowNode const *> &affectedLayoutableNodes) const;
 
-  const SurfaceId surfaceId_;
+  SurfaceId const surfaceId_;
   mutable better::shared_mutex commitMutex_;
   mutable SharedRootShadowNode rootShadowNode_; // Protected by `commitMutex_`.
-  mutable int revision_{1}; // Protected by `commitMutex_`.
+  mutable ShadowTreeRevision::Number revisionNumber_{
+      0}; // Protected by `commitMutex_`.
   ShadowTreeDelegate const *delegate_;
-
-#ifdef RN_SHADOW_TREE_INTROSPECTION
-  mutable StubViewTree stubViewTree_; // Protected by `commitMutex_`.
-#endif
+  MountingCoordinator::Shared mountingCoordinator_;
 };
 
 } // namespace react

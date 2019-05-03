@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <react/mounting/MountingTransaction.h>
+#include <react/mounting/MountingCoordinator.h>
 
 namespace facebook {
 namespace react {
@@ -21,8 +21,8 @@ class ShadowTreeDelegate {
    * Called right after Shadow Tree commit a new state of the the tree.
    */
   virtual void shadowTreeDidCommit(
-      const ShadowTree &shadowTree,
-      MountingTransaction &&transaction) const = 0;
+      ShadowTree const &shadowTree,
+      MountingCoordinator::Shared const &mountingCoordinator) const = 0;
 
   virtual ~ShadowTreeDelegate() noexcept = default;
 };

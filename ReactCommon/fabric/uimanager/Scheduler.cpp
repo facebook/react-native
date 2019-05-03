@@ -228,12 +228,12 @@ SchedulerDelegate *Scheduler::getDelegate() const {
 #pragma mark - ShadowTreeDelegate
 
 void Scheduler::shadowTreeDidCommit(
-    const ShadowTree &shadowTree,
-    MountingTransaction &&transaction) const {
+    ShadowTree const &shadowTree,
+    MountingCoordinator::Shared const &mountingCoordinator) const {
   SystraceSection s("Scheduler::shadowTreeDidCommit");
 
   if (delegate_) {
-    delegate_->schedulerDidFinishTransaction(std::move(transaction));
+    delegate_->schedulerDidFinishTransaction(mountingCoordinator);
   }
 }
 

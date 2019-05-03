@@ -12,8 +12,7 @@
 #import <react/core/ComponentDescriptor.h>
 #import <react/core/LayoutConstraints.h>
 #import <react/core/LayoutContext.h>
-#import <react/mounting/MountingTransaction.h>
-#import <react/mounting/ShadowViewMutation.h>
+#import <react/mounting/MountingCoordinator.h>
 #import <react/uimanager/ComponentDescriptorFactory.h>
 #import <react/utils/ContextContainer.h>
 
@@ -26,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @protocol RCTSchedulerDelegate
 
-- (void)schedulerDidFinishTransaction:(facebook::react::MountingTransaction &&)mountingTransaction;
+- (void)schedulerDidFinishTransaction:(facebook::react::MountingCoordinator::Shared const &)mountingCoordinator;
 
 - (void)schedulerOptimisticallyCreateComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle;
 

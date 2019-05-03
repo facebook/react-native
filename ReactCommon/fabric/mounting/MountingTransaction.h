@@ -14,19 +14,19 @@ namespace facebook {
 namespace react {
 
 /*
- * Encapsulates all artifacts of `ShadowTree` commit, particularly list of
- * mutations and meta-data.
- * Movable and copyable, but moving is strongly preferred.
- * A moved-from object of this type has unspecified value and accessing that is
- * UB.
+ * Encapsulates all artifacts of `ShadowTree` commit (or a series of them),
+ * particularly list of mutations and meta-data associated with the commit.
+ * Movable and copyable, but moving is strongly encouraged.
+ * Beware: A moved-from object of this type has unspecified value and accessing
+ * that is UB.
  */
 class MountingTransaction final {
  public:
   /*
-   * Revision grows continuously starting from `1`. Value `0` represents the
-   * state before the very first transaction happens.
+   * A Number (or revision) grows continuously starting from `1`. Value `0`
+   * represents the state before the very first transaction happens.
    */
-  using Revision = int64_t;
+  using Number = int64_t;
 
   /*
    * Copying a list of `ShadowViewMutation` is expensive, so the constructor
@@ -34,7 +34,7 @@ class MountingTransaction final {
    */
   MountingTransaction(
       SurfaceId surfaceId,
-      Revision revision,
+      Number number,
       ShadowViewMutationList &&mutations,
       MountingTelemetry telemetry);
 
@@ -72,13 +72,13 @@ class MountingTransaction final {
   SurfaceId getSurfaceId() const;
 
   /*
-   * Returns the revision of the ShadowTree that this transaction represents.
+   * Returns a sequential number of the particular transaction.
    */
-  Revision getRevision() const;
+  Number getNumber() const;
 
  private:
   SurfaceId surfaceId_;
-  Revision revision_;
+  Number number_;
   ShadowViewMutationList mutations_;
   MountingTelemetry telemetry_;
 };

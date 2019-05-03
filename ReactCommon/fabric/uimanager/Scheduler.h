@@ -91,8 +91,8 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
 #pragma mark - ShadowTreeDelegate
 
   void shadowTreeDidCommit(
-      const ShadowTree &shadowTree,
-      MountingTransaction &&transaction) const override;
+      ShadowTree const &shadowTree,
+      MountingCoordinator::Shared const &mountingCoordinator) const override;
 
  private:
   SchedulerDelegate *delegate_;
