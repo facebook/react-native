@@ -1,9 +1,11 @@
 import React from 'react'
 import { View, Text, StyleSheet, ImageBackground } from 'react-native'
+import Colors from './Colors';
 
 const Header = () => (
   <View style={styles.container}>
     <ImageBackground
+      accessibilityRole={'image'}
       source={require('../logo.png')}
       style={styles.backgroundLogo}
     />
@@ -14,10 +16,12 @@ const Header = () => (
 
 const styles = StyleSheet.create({
   container: {
-    height: 270,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#F3F3F3',
+    paddingTop: 96,
+    paddingBottom: 24,
+    paddingHorizontal: 32,
+    backgroundColor: Colors.lighter
   },
   backgroundLogo: {
     position: 'absolute',
@@ -30,11 +34,10 @@ const styles = StyleSheet.create({
     width: 540,
   },
   text: {
-    maxWidth: 250,
     fontSize: 40,
     fontWeight: '600',
     textAlign: 'center',
-    color: '#000',
+    color: Colors.black
   },
 })
 

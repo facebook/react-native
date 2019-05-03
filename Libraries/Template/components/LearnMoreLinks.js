@@ -1,12 +1,13 @@
 import React from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native'
+import Colors from './Colors';
 
 const links = [
   {
     title: 'The Basics',
     link: 'https://facebook.github.io/react-native/docs/tutorial',
     description:
-      'Read the docs on what do do once seeing how to work in React Native.',
+      'Read the docs on what to do once seen how to work in React Native.',
   },
   {
     title: 'Style',
@@ -47,16 +48,17 @@ const LinkList = () => (
   <View style={styles.container}>
     {links.map((item, index) => {
       return (
-        <View key={index}>
+        <React.Fragment key={index}>
           <View style={styles.separator} />
           <TouchableOpacity
+            accessibilityRole={'button'}
             onPress={() => Linking.openURL(item.link)}
             style={styles.linkContainer}
           >
             <Text style={styles.link}>{item.title}</Text>
             <Text style={styles.description}>{item.description}</Text>
           </TouchableOpacity>
-        </View>
+        </React.Fragment>
       )
     })}
   </View>
@@ -75,20 +77,20 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   link: {
-    width: '40%',
+    flex: 2,
     fontSize: 18,
     fontWeight: '400',
-    color: '#1292B4',
+    color: Colors.primary,
   },
   description: {
-    width: '60%',
+    flex: 3,
     paddingVertical: 16,
     fontWeight: '400',
     fontSize: 18,
-    color: '#333',
+    color: Colors.dark,
   },
   separator: {
-    backgroundColor: '#DAE1E7',
+    backgroundColor: Colors.light,
     height: 1,
   },
 })
