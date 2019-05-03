@@ -10,8 +10,6 @@
 'use strict';
 
 const React = require('react');
-const Platform = require('Platform');
-
 const {
   Linking,
   Platform,
@@ -73,35 +71,25 @@ class SendIntentButton extends React.Component<Props> {
 class IntentAndroidExample extends React.Component {
   render() {
     return (
-<<<<<<< HEAD
-      <RNTesterBlock title="Open external URLs">
-        <OpenURLButton url={'https://www.facebook.com'} />
-        <OpenURLButton url={'http://www.facebook.com'} />
-        <OpenURLButton url={'http://facebook.com'} />
-        <OpenURLButton
-          url={
-            Platform.OS === 'macos'
-              ? 'mailto:mark@facebook.com'
-              : 'fb://notifications'
-          }
-        />
-        <OpenURLButton
-          url={
-            Platform.OS === 'macos'
-              ? 'maps:ll=45.5200,-122.681'
-              : 'geo:37.484847,-122.148386'
-          }
-        />
-        <OpenURLButton url={'tel:9876543210'} />
-      </RNTesterBlock>
-=======
       <View>
         <RNTesterBlock title="Open external URLs">
           <OpenURLButton url={'https://www.facebook.com'} />
           <OpenURLButton url={'http://www.facebook.com'} />
           <OpenURLButton url={'http://facebook.com'} />
-          <OpenURLButton url={'fb://notifications'} />
-          <OpenURLButton url={'geo:37.484847,-122.148386'} />
+          <OpenURLButton
+          url={
+            Platform.OS === 'macos'
+              ? 'mailto:mark@facebook.com'
+              : 'fb://notifications'
+          }
+          />
+          <OpenURLButton
+            url={
+              Platform.OS === 'macos'
+                ? 'maps:ll=45.5200,-122.681'
+                : 'geo:37.484847,-122.148386'
+            }
+          />
           <OpenURLButton url={'tel:9876543210'} />
         </RNTesterBlock>
         {Platform.OS === 'android' && (
@@ -119,7 +107,6 @@ class IntentAndroidExample extends React.Component {
           </RNTesterBlock>
         )}
       </View>
->>>>>>> v0.59.0
     );
   }
 }

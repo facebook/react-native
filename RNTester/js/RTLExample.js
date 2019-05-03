@@ -519,201 +519,8 @@ const BorderExample = withRTLState(({isRTL, setRTL}) => {
   );
 });
 
-<<<<<<< HEAD
-class RTLExample extends React.Component<any, State> {
-  static title = 'RTLExample';
-  static description =
-    'Examples to show how to apply components to RTL layout.';
-
-  _panResponder: Object;
-
-  constructor(props: Object) {
-    super(props);
-    const pan = new Animated.ValueXY();
-
-    this._panResponder = PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onPanResponderGrant: this._onPanResponderGrant,
-      onPanResponderMove: Animated.event([null, {dx: pan.x, dy: pan.y}]),
-      onPanResponderRelease: this._onPanResponderEnd,
-      onPanResponderTerminate: this._onPanResponderEnd,
-    });
-
-    this.state = {
-      toggleStatus: {},
-      pan,
-      linear: new Animated.Value(0),
-      isRTL: IS_RTL,
-      windowWidth: 0,
-    };
-  }
-
-  render() {
-    return (
-      <ScrollView
-        style={[
-          styles.container,
-          // `direction` property is supported only on iOS&macOS now.
-          Platform.OS === 'ios' || Platform.OS === 'macos'
-            ? {direction: this.state.isRTL ? 'rtl' : 'ltr'}
-            : null,
-        ]}
-        onLayout={this._onLayout}>
-        <RNTesterPage title={'Right-to-Left (RTL) UI Layout'}>
-          <RNTesterBlock title={'Current Layout Direction'}>
-            <View style={styles.directionBox}>
-              <Text style={styles.directionText}>
-                {this.state.isRTL ? 'Right-to-Left' : 'Left-to-Right'}
-              </Text>
-            </View>
-          </RNTesterBlock>
-          <RNTesterBlock title={'Quickly Test RTL Layout'}>
-            <View style={styles.flexDirectionRow}>
-              <Text style={styles.switchRowTextView}>forceRTL</Text>
-              <View style={styles.switchRowSwitchView}>
-                <Switch
-                  onValueChange={this._onDirectionChange}
-                  style={styles.rightAlignStyle}
-                  value={this.state.isRTL}
-                />
-              </View>
-            </View>
-          </RNTesterBlock>
-          <RNTesterBlock title={'A Simple List Item Layout'}>
-            <View style={styles.list}>
-              <ListItem imageSource={require('./Thumbnails/like.png')} />
-              <ListItem imageSource={require('./Thumbnails/poke.png')} />
-            </View>
-          </RNTesterBlock>
-          <TextAlignmentExample
-            title={'Default Text Alignment'}
-            description={
-              'In iOS/macOS, it depends on active language. ' +
-              'In Android, it depends on the text content.'
-            }
-            style={styles.fontSizeSmall}
-          />
-          <TextAlignmentExample
-            title={"Using textAlign: 'left'"}
-            description={
-              'In iOS/macOS/Android, text alignment flips regardless of ' +
-              'languages or text content.'
-            }
-            style={[styles.fontSizeSmall, styles.textAlignLeft]}
-          />
-          <TextAlignmentExample
-            title={"Using textAlign: 'right'"}
-            description={
-              'In iOS/macOS/Android, text alignment flips regardless of ' +
-              'languages or text content.'
-            }
-            style={[styles.fontSizeSmall, styles.textAlignRight]}
-          />
-          <RNTesterBlock title={'Working With Icons'}>
-            <View style={styles.flexDirectionRow}>
-              <View>
-                <Image
-                  source={require('./Thumbnails/like.png')}
-                  style={styles.image}
-                />
-                <Text style={styles.fontSizeExtraSmall}>
-                  Without directional meaning
-                </Text>
-              </View>
-              <View style={styles.rightAlignStyle}>
-                <Image
-                  source={require('./Thumbnails/poke.png')}
-                  style={[styles.image, styles.withRTLStyle]}
-                />
-                <Text style={styles.fontSizeExtraSmall}>
-                  With directional meaning
-                </Text>
-              </View>
-            </View>
-          </RNTesterBlock>
-          <RNTesterBlock
-            title={'Controlling Animation'}
-            description={'Animation direction according to layout'}>
-            <View style={styles.view}>
-              <AnimationBlock
-                onPress={this._linearTap}
-                imgStyle={{
-                  transform: [
-                    {translateX: this.state.linear},
-                    {scaleX: IS_RTL ? -1 : 1},
-                  ],
-                }}
-              />
-            </View>
-          </RNTesterBlock>
-          <PaddingExample />
-          <MarginExample />
-          <PositionExample />
-          <BorderWidthExample />
-          <BorderColorExample />
-          <BorderRadiiExample />
-          <BorderExample />
-        </RNTesterPage>
-      </ScrollView>
-    );
-  }
-
-  _onLayout = (e: Object) => {
-    this.setState({
-      windowWidth: e.nativeEvent.layout.width,
-    });
-  };
-
-  _onDirectionChange = () => {
-    console.log('_onDirectionChange');
-    I18nManager.forceRTL(!this.state.isRTL);
-    this.setState({isRTL: !this.state.isRTL});
-    Alert.alert(
-      'Reload this page',
-      'Please reload this page to change the UI direction! ' +
-        'All examples in this app will be affected. ' +
-        'Check them out to see what they look like in RTL layout.',
-    );
-  };
-
-  _linearTap = (refName: string, e: Object) => {
-    this.setState({
-      toggleStatus: {
-        ...this.state.toggleStatus,
-        [refName]: !this.state.toggleStatus[refName],
-      },
-    });
-    const offset = IMAGE_SIZE[0] / SCALE / 2 + 10;
-    const toMaxDistance =
-      (IS_RTL ? -1 : 1) * (this.state.windowWidth / 2 - offset);
-    Animated.timing(this.state.linear, {
-      toValue: this.state.toggleStatus[refName] ? toMaxDistance : 0,
-      duration: 2000,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  _onPanResponderGrant = (e: Object, gestureState: Object) => {
-    this.state.pan.stopAnimation(value => {
-      this.state.pan.setOffset(value);
-    });
-  };
-
-  _onPanResponderEnd = (e: Object, gestureState: Object) => {
-    this.state.pan.flattenOffset();
-    Animated.sequence([
-      Animated.decay(this.state.pan, {
-        velocity: {x: gestureState.vx, y: gestureState.vy},
-        deceleration: 0.995,
-      }),
-      Animated.spring(this.state.pan, {toValue: {x: 0, y: 0}}),
-    ]).start();
-  };
-}
-=======
 const directionStyle = isRTL =>
-  Platform.OS === 'ios' ? {direction: isRTL ? 'rtl' : 'ltr'} : null;
->>>>>>> v0.59.0
+  (Platform.OS === 'ios' || Platform.OS === 'macos') ? {direction: isRTL ? 'rtl' : 'ltr'} : null;
 
 const styles = StyleSheet.create({
   container: {
@@ -852,7 +659,7 @@ exports.examples = [
   {
     title: 'Default Text Alignment',
     description:
-      'In iOS, it depends on active language. ' +
+      'In iOS/macOS, it depends on active language. ' +
       'In Android, it depends on the text content.',
     render: function(): React.Element<any> {
       return <TextAlignmentExample style={styles.fontSizeSmall} />;
@@ -861,7 +668,7 @@ exports.examples = [
   {
     title: "Using textAlign: 'left'",
     description:
-      'In iOS/Android, text alignment flips regardless of ' +
+      'In iOS/macOS/Android, text alignment flips regardless of ' +
       'languages or text content.',
     render: function(): React.Element<any> {
       return (
@@ -874,7 +681,7 @@ exports.examples = [
   {
     title: "Using textAlign: 'right'",
     description:
-      'In iOS/Android, text alignment flips regardless of ' +
+      'In iOS/macOS/Android, text alignment flips regardless of ' +
       'languages or text content.',
     render: function(): React.Element<any> {
       return (

@@ -29,79 +29,6 @@ class BasicPickerExample extends React.Component<{}, State> {
 
   render() {
     return (
-<<<<<<< HEAD
-      <RNTesterPage title="<Picker>">
-        <RNTesterBlock title="Basic Picker">
-          <Picker
-            testID="basic-picker"
-            style={styles.picker}
-            selectedValue={this.state.selected1}
-            onValueChange={this.onValueChange.bind(this, 'selected1')}>
-            <Item label="hello" value="key0" />
-            <Item label="world" value="key1" />
-          </Picker>
-        </RNTesterBlock>
-        <RNTesterBlock title="Disabled picker">
-          <Picker
-            style={styles.picker}
-            enabled={false}
-            selectedValue={this.state.selected1}>
-            <Item label="hello" value="key0" />
-            <Item label="world" value="key1" />
-          </Picker>
-        </RNTesterBlock>
-        <RNTesterBlock title="Dropdown Picker">
-          <Picker
-            style={styles.picker}
-            selectedValue={this.state.selected2}
-            onValueChange={this.onValueChange.bind(this, 'selected2')}
-            mode="dropdown">
-            <Item label="hello" value="key0" />
-            <Item label="world" value="key1" />
-          </Picker>
-        </RNTesterBlock>
-        <RNTesterBlock title="Picker with prompt message">
-          <Picker
-            style={styles.picker}
-            selectedValue={this.state.selected3}
-            onValueChange={this.onValueChange.bind(this, 'selected3')}
-            prompt="Pick one, just one">
-            <Item label="hello" value="key0" />
-            <Item label="world" value="key1" />
-          </Picker>
-        </RNTesterBlock>
-        <RNTesterBlock title="Picker with no listener">
-          <Picker style={styles.picker}>
-            <Item label="hello" value="key0" />
-            <Item label="world" value="key1" />
-          </Picker>
-          <Text>
-            Cannot change the value of this picker because it doesn't update
-            selectedValue.
-          </Text>
-        </RNTesterBlock>
-        <RNTesterBlock title="Colorful pickers">
-          <Picker
-            style={[styles.picker, {color: 'white', backgroundColor: '#333'}]}
-            selectedValue={this.state.color}
-            onValueChange={this.onValueChange.bind(this, 'color')}
-            mode="dropdown">
-            <Item label="red" color="red" value="red" />
-            <Item label="green" color="green" value="green" />
-            <Item label="blue" color="blue" value="blue" />
-          </Picker>
-          <Picker
-            style={styles.picker}
-            selectedValue={this.state.color}
-            onValueChange={this.onValueChange.bind(this, 'color')}
-            mode="dialog">
-            <Item label="red" color="red" value="red" />
-            <Item label="green" color="green" value="green" />
-            <Item label="blue" color="blue" value="blue" />
-          </Picker>
-        </RNTesterBlock>
-      </RNTesterPage>
-=======
       <Picker
         testID="basic-picker"
         style={styles.picker}
@@ -110,7 +37,6 @@ class BasicPickerExample extends React.Component<{}, State> {
         <Item label="hello" value="key0" />
         <Item label="world" value="key1" />
       </Picker>
->>>>>>> v0.59.0
     );
   }
 }

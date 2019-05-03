@@ -14,7 +14,7 @@ const dir = __dirname;
 module.exports = {
   haste: {
     defaultPlatform: 'ios',
-    platforms: ['android', 'ios', 'native'],
+    platforms: ['android', 'ios', 'macos', 'native'],
     hasteImplModulePath: require.resolve('./jest/hasteImpl.js'),
     providesModuleNodeModules: ['react-native'],
   },

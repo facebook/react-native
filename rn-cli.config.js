@@ -61,8 +61,5 @@ if (
     transformer: {
       assetRegistryPath: require.resolve('./Libraries/Image/AssetRegistry'),
     },
-
-    resolver: {
-    },
   };
 }

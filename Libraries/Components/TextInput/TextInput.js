@@ -1393,8 +1393,10 @@ const TextInput = createReactClass({
     }
   },
 
-<<<<<<< HEAD
-  _onBlur: function(event: Event) {
+  _onBlur: function(event: BlurEvent) {
+    // This is a hack to fix https://fburl.com/toehyir8
+    // @todo(rsnara) Figure out why this is necessary.
+    // this.blur();
     // [TODO(android ISS) removed: this.blur();
     // Set the focused TextInput field info in TextInputState.
     // Delaying this to onBlur native event ensures that -
@@ -1405,12 +1407,6 @@ const TextInput = createReactClass({
       ReactNative.findNodeHandle(this._inputRef),
     ); // ]TODO(android ISS)
 
-=======
-  _onBlur: function(event: BlurEvent) {
->>>>>>> v0.59.0
-    // This is a hack to fix https://fburl.com/toehyir8
-    // @todo(rsnara) Figure out why this is necessary.
-    this.blur();
     if (this.props.onBlur) {
       this.props.onBlur(event);
     }

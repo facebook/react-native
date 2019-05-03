@@ -67,6 +67,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     padding: 8,
+    ...Platform.select({
+      macos: {
+        backgroundColor: {semantic: 'windowBackgroundColor'},
+      },
+      default: {
+        backgroundColor: undefined,
+      },
+    }),
   },
 });
 
@@ -184,30 +192,3 @@ exports.examples = [
     },
   },
 ];
-<<<<<<< HEAD
-
-const styles = StyleSheet.create({
-  centering: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 8,
-  },
-  gray: {
-    backgroundColor: '#cccccc',
-  },
-  horizontal: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    padding: 8,
-    ...Platform.select({
-      macos: {
-        backgroundColor: {semantic: 'windowBackgroundColor'},
-      },
-      default: {
-        backgroundColor: undefined,
-      },
-    }),
-  },
-});
-=======
->>>>>>> v0.59.0

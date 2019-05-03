@@ -12,11 +12,7 @@
 
 const React = require('react');
 const ReactNative = require('react-native');
-<<<<<<< HEAD
-const {AlertIOS, AlertMacOS, Platform, ToastAndroid, Text, View} = ReactNative;
-=======
 const {Alert, Platform, ToastAndroid, Text, View} = ReactNative;
->>>>>>> v0.59.0
 const RNTesterButton = require('./RNTesterButton');
 const performanceNow = require('fbjs/lib/performanceNow');
 
@@ -234,13 +230,7 @@ class TimerTester extends React.Component<TimerTesterProps> {
         ' ms / iter';
       console.log(msg);
       if (Platform.OS === 'ios') {
-<<<<<<< HEAD
-        AlertIOS.alert(msg);
-      } else if (Platform.OS === 'macos') {
-        AlertMacOS.alert(msg);
-=======
         Alert.alert(msg);
->>>>>>> v0.59.0
       } else if (Platform.OS === 'android') {
         ToastAndroid.show(msg, ToastAndroid.SHORT);
       }
