@@ -69,10 +69,6 @@ Facebook has a [bounty program](https://www.facebook.com/whitehat/) for the safe
 <!-- START: Code Contributions -->
 # Code Contributions
 
-- [Step-by-step Guide](#step-by-step-guide)
-- [Style Guide](#style-guide)
-- [Testing your Changes](#tests)
-
 Code-level contributions to React Native generally come in the form of [pull requests][pr]. The process of proposing a change to React Native can be summarized as follows:
 
 1. Fork the React Native repository and create your branch from `master`.
@@ -86,6 +82,10 @@ Code-level contributions to React Native generally come in the form of [pull req
 9. Review and address comments on your pull request.
 
 If all goes well, your pull request will be merged. If it is not merged, maintainers will do their best to explain the reason why.
+
+## Step-by-step Guide
+
+Whenever you are ready to contribute, check out our [step-by-step guide to sending your first pull request](https://github.com/facebook/react-native/wiki/FirstPullRequest).
 
 ## Style Guide
 
