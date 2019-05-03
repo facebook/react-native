@@ -66,10 +66,26 @@ We use GitHub issues to track public bugs. Please ensure your description is cle
 Facebook has a [bounty program](https://www.facebook.com/whitehat/) for the safe disclosure of security bugs. In those cases, please go through the process outlined on that page and do not file a public issue.
 <!-- END: GitHub Issues -->
 
+# Helping with Documentation
+
+The React Native documentation is hosted as part of the React Native website repository at https://github.com/facebook/react-native-website. The website itself is located at https://facebook.github.io/react-native and it is built using [Docusaurus](https://docusaurus.io/). If there's anything you'd like to change in the docs, you can get started by clicking on the "Edit" button located on the upper right of most pages in the website.
+
+If you are adding new functionality or introducing a change in behavior, we will ask you to update the documentation to reflect your changes.
+
+## Contributing to the Blog
+
+The React Native blog is generated [from the Markdown sources for the blog](https://github.com/facebook/react-native-website/tree/master/website/blog).
+
+Please open an issue in the `react-native-website` repository or tag us on @ReactNative on Twitter and get the go-ahead from a maintainer before writing an article intended for the React Native blog. In most cases, you might want to share your article on your own blog or writing medium instead. It's worth asking, though, in case we find your article is a good fit for the blog.
+
+We recommend referring to the [CONTRIBUTING](https://github.com/facebook/react-native-website/blob/master/CONTRIBUTING.md) document for the `react-native-website` repository to learn more about contributing to the website in general.
+<!-- END: Docs Contributions -->
+
+
 <!-- START: Code Contributions -->
 # Code Contributions
 
-Code-level contributions to React Native generally come in the form of [pull requests][pr]. The process of proposing a change to React Native can be summarized as follows:
+Code-level contributions to React Native generally come in the form of [pull requests](https://help.github.com/en/articles/about-pull-requests). The process of proposing a change to React Native can be summarized as follows:
 
 1. Fork the React Native repository and create your branch from `master`.
 2. If you've added code that should be tested, add tests.
@@ -85,7 +101,9 @@ If all goes well, your pull request will be merged. If it is not merged, maintai
 
 ## Step-by-step Guide
 
-Whenever you are ready to contribute, check out our [step-by-step guide to sending your first pull request](https://github.com/facebook/react-native/wiki/FirstPullRequest).
+Whenever you are ready to contribute, check out our [step-by-step guide to sending your first pull request][first-pr].
+
+[first-pr]: https://github.com/facebook/react-native/wiki/FirstPullRequest
 
 ## Style Guide
 
