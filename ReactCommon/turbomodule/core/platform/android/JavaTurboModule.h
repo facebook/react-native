@@ -30,8 +30,6 @@ public:
       const std::string &methodSignature,
       const jsi::Value *args,
       size_t count);
-
-  virtual facebook::jsi::Value get(facebook::jsi::Runtime& runtime, const facebook::jsi::PropNameID& propName) override;
 private:
   jni::global_ref<JTurboModule> instance_;
   jclass findClass(JNIEnv *env) const;

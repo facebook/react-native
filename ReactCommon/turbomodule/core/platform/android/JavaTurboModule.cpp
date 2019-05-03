@@ -117,33 +117,6 @@ jsi::Value convertFromJMapToValue(JNIEnv *env, jsi::Runtime &rt, jobject arg) {
     return jsi::valueFromDynamic(rt, result->cthis()->consume());
 }
 
-jsi::Value JavaTurboModule::get(jsi::Runtime& runtime, const jsi::PropNameID& propName) {
-  std::string propNameUtf8 = propName.utf8(runtime);
-  if (propNameUtf8 == "getConstants") {
-    // This is the special method to get the constants from the module.
-    // Since `getConstants` in Java only returns a Map, this function takes the map
-    // and converts it to a WritableMap.
-    return jsi::Function::createFromHostFunction(
-      runtime,
-      propName,
-      0,
-      [this](jsi::Runtime &rt, const jsi::Value &thisVal, const jsi::Value *args, size_t count) {
-        JNIEnv *env = jni::Environment::current();
-        auto instance = instance_.get();
-        jclass cls = env->GetObjectClass(instance);
-        static jmethodID methodID = env->GetMethodID(cls, "getConstants", "()Ljava/util/Map;");
-        auto constantsMap = (jobject) env->CallObjectMethod(instance_.get(), methodID);
-        if (constantsMap == nullptr) {
-          return jsi::Value::undefined();
-        }
-        return convertFromJMapToValue(env, rt, constantsMap);
-      }
-    );
-  } else {
-    return TurboModule::get(runtime, propName);
-  }
-}
-
 static void throwIfJNIReportsPendingException() {
   JNIEnv *env = jni::Environment::current();
   if (env->ExceptionCheck()) {
@@ -168,15 +141,24 @@ jsi::Value JavaTurboModule::invokeJavaMethod(
     const std::string &methodSignature,
     const jsi::Value *args,
     size_t count) {
-  // We are using JNI directly instead of fbjni since we don't want template functiosn
-  // when finding methods.
   JNIEnv *env = jni::Environment::current();
   auto instance = instance_.get();
 
   jclass cls = env->GetObjectClass(instance);
+  jmethodID methodID =
+      env->GetMethodID(cls, methodName.c_str(), methodSignature.c_str());
 
-  // TODO (axe) Memoize method call, so we don't look it up each time the method is called
-  jmethodID methodID = env->GetMethodID(cls, methodName.c_str(), methodSignature.c_str());
+  // TODO(T43933641): Refactor to remove this special-casing
+  if (methodName == "getConstants") {
+    auto constantsMap = (jobject)env->CallObjectMethod(instance, methodID);
+    throwIfJNIReportsPendingException();
+
+    if (constantsMap == nullptr) {
+      return jsi::Value::undefined();
+    }
+
+    return convertFromJMapToValue(env, runtime, constantsMap);
+  }
 
   std::vector<jvalue> jargs =
       convertJSIArgsToJNIArgs(env, runtime, args, count, jsInvoker_, valueKind);
