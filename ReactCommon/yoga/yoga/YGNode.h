@@ -45,7 +45,7 @@ private:
   uint32_t lineIndex_ = 0;
   YGNodeRef owner_ = nullptr;
   YGVector children_ = {};
-  YGConfigRef config_ = nullptr;
+  YGConfigRef config_;
   std::array<YGValue, 2> resolvedDimensions_ = {
       {YGValueUndefined, YGValueUndefined}};
 
@@ -66,16 +66,17 @@ private:
   using CompactValue = facebook::yoga::detail::CompactValue;
 
 public:
-  YGNode()
+  YGNode() : YGNode{nullptr} {}
+  explicit YGNode(const YGConfigRef newConfig)
       : hasNewLayout_{true},
         isReferenceBaseline_{false},
         isDirty_{false},
         nodeType_{YGNodeTypeDefault},
         measureUsesContext_{false},
         baselineUsesContext_{false},
-        printUsesContext_{false} {}
+        printUsesContext_{false},
+        config_{newConfig} {};
   ~YGNode() = default; // cleanup of owner/children relationships in YGNodeFree
-  explicit YGNode(const YGConfigRef newConfig) : config_(newConfig){};
 
   YGNode(YGNode&&);
 
