@@ -26,20 +26,21 @@ static JTurboModuleProviderFunctionType moduleProvider_ = nullptr;
 TurboModuleManager::TurboModuleManager(
   jni::alias_ref<TurboModuleManager::javaobject> jThis,
   jsi::Runtime* rt,
-  std::shared_ptr<JMessageQueueThread> jsMessageQueueThread
+  std::shared_ptr<JSCallInvoker> jsCallInvoker
 ):
-  javaPart_(make_global(jThis)),
+  javaPart_(jni::make_global(jThis)),
   runtime_(rt),
-  jsMessageQueueThread_(jsMessageQueueThread)
+  jsCallInvoker_(jsCallInvoker)
   {}
 
 jni::local_ref<TurboModuleManager::jhybriddata> TurboModuleManager::initHybrid(
   jni::alias_ref<jhybridobject> jThis,
   jlong jsContext,
-  jni::alias_ref<JavaMessageQueueThread::javaobject> jsQueue
+  jni::alias_ref<JSCallInvokerHolder::javaobject> jsCallInvokerHolder
 ) {
-  auto sharedJSMessageQueueThread = std::make_shared<JMessageQueueThread> (jsQueue);
-  return makeCxxInstance(jThis, (jsi::Runtime *) jsContext, sharedJSMessageQueueThread);
+  auto jsCallInvoker = jsCallInvokerHolder->cthis()->getJSCallInvoker();
+
+  return makeCxxInstance(jThis, (jsi::Runtime *) jsContext, jsCallInvoker);
 }
 
 void TurboModuleManager::registerNatives() {
@@ -56,11 +57,7 @@ void TurboModuleManager::installJSIBindings() {
   TurboModuleBinding::install(*runtime_, std::make_shared<TurboModuleBinding>(
       [this](const std::string &name) {
         const auto moduleInstance = getJavaModule(name);
-        // TODO: Pass in react Instance to JSCallInvoker instead.
-        std::shared_ptr<Instance> instance = nullptr;
-        std::weak_ptr<Instance> weakInstance = instance;
-        const auto jsInvoker = std::make_shared<react::JSCallInvoker>(weakInstance);
-        return moduleProvider_(name, moduleInstance, jsInvoker);
+        return moduleProvider_(name, moduleInstance, jsCallInvoker_);
       })
   );
 }

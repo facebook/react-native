@@ -13,6 +13,7 @@
 #include <jsireact/TurboModule.h>
 #include <jsireact/JavaTurboModule.h>
 #include <react/jni/JMessageQueueThread.h>
+#include <jsireact/JSCallInvokerHolder.h>
 
 namespace facebook {
 namespace react {
@@ -26,7 +27,7 @@ public:
   static jni::local_ref<jhybriddata> initHybrid(
     jni::alias_ref<jhybridobject> jThis,
     jlong jsContext,
-    jni::alias_ref<JavaMessageQueueThread::javaobject> jsQueue
+    jni::alias_ref<JSCallInvokerHolder::javaobject> jsCallInvokerHolder
   );
   static void registerNatives();
   static void setModuleProvider(JTurboModuleProviderFunctionType moduleProvider);
@@ -34,14 +35,14 @@ private:
   friend HybridBase;
   jni::global_ref<TurboModuleManager::javaobject> javaPart_;
   jsi::Runtime* runtime_;
-  std::shared_ptr<JMessageQueueThread> jsMessageQueueThread_;
+  std::shared_ptr<JSCallInvoker> jsCallInvoker_;
 
   jni::global_ref<JTurboModule> getJavaModule(std::string name);
   void installJSIBindings();
   explicit TurboModuleManager(
     jni::alias_ref<TurboModuleManager::jhybridobject> jThis,
-    jsi::Runtime* rt,
-    std::shared_ptr<JMessageQueueThread> jsMessageQueueThread
+    jsi::Runtime *rt,
+    std::shared_ptr<JSCallInvoker> jsCallInvoker
   );
 };
 

@@ -1,0 +1,36 @@
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "FBJNI_TARGET", "react_native_xplat_target", "rn_xplat_cxx_library", "subdir_glob")
+
+rn_xplat_cxx_library(
+    name = "jscallinvoker",
+    srcs = glob(
+        ["*.cpp"],
+    ),
+    header_namespace = "",
+    exported_headers = subdir_glob(
+        [
+            ("", "*.h"),
+        ],
+        prefix = "jsireact",
+    ),
+    compiler_flags = [
+        "-fexceptions",
+        "-frtti",
+        "-std=c++14",
+        "-Wall",
+    ],
+    fbandroid_deps = [
+        FBJNI_TARGET,
+    ],
+    platforms = (ANDROID, APPLE),
+    preferred_linkage = "static",
+    preprocessor_flags = [
+        "-DLOG_TAG=\"ReactNative\"",
+        "-DWITH_FBSYSTRACE=1",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        react_native_xplat_target("cxxreact:bridge"),
+    ],
+)

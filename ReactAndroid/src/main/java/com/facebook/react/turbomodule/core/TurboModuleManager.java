@@ -36,12 +36,11 @@ public class TurboModuleManager implements JSIModule {
   public TurboModuleManager(
       ReactApplicationContext reactApplicationContext, JavaScriptContextHolder jsContext, ModuleProvider moduleProvider) {
     mReactApplicationContext = reactApplicationContext;
-    MessageQueueThread jsMessageQueueThread =
-        mReactApplicationContext
+    JSCallInvokerHolderImpl instanceHolder =
+        (JSCallInvokerHolderImpl) mReactApplicationContext
             .getCatalystInstance()
-            .getReactQueueConfiguration()
-            .getJSQueueThread();
-    mHybridData = initHybrid(jsContext.get(), jsMessageQueueThread);
+            .getJSCallInvokerHolder();
+    mHybridData = initHybrid(jsContext.get(), instanceHolder);
     mModuleProvider = moduleProvider;
   }
 
@@ -51,7 +50,7 @@ public class TurboModuleManager implements JSIModule {
     return mModuleProvider.getModule(name, mReactApplicationContext);
   }
 
-  protected native HybridData initHybrid(long jsContext, MessageQueueThread jsQueue);
+  protected native HybridData initHybrid(long jsContext, JSCallInvokerHolderImpl jsQueue);
 
   protected native void installJSIBindings();
 

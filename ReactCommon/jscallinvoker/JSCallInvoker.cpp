@@ -5,17 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "JSCallInvoker.h"
-
+#include <jsireact/JSCallInvoker.h>
 #include <cxxreact/Instance.h>
 
 namespace facebook {
 namespace react {
 
 JSCallInvoker::JSCallInvoker(std::weak_ptr<Instance> reactInstance)
-  : reactInstance_(reactInstance) {}
+    : reactInstance_(reactInstance) {}
 
-void JSCallInvoker::invokeAsync(std::function<void()>&& func) {
+void JSCallInvoker::invokeAsync(std::function<void()> &&func) {
   auto instance = reactInstance_.lock();
   if (instance == nullptr) {
     return;

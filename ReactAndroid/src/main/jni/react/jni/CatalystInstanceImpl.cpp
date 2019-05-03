@@ -26,6 +26,7 @@
 #include <folly/Memory.h>
 #include <jni/Countable.h>
 #include <jni/LocalReference.h>
+#include <jsireact/JSCallInvokerHolder.h>
 
 #include "CxxModuleWrapper.h"
 #include "JavaScriptExecutorHolder.h"
@@ -111,6 +112,7 @@ void CatalystInstanceImpl::registerNatives() {
     makeNativeMethod("jniCallJSCallback", CatalystInstanceImpl::jniCallJSCallback),
     makeNativeMethod("setGlobalVariable", CatalystInstanceImpl::setGlobalVariable),
     makeNativeMethod("getJavaScriptContext", CatalystInstanceImpl::getJavaScriptContext),
+    makeNativeMethod("getJSCallInvokerHolder", CatalystInstanceImpl::getJSCallInvokerHolder),
     makeNativeMethod("jniHandleMemoryPressure", CatalystInstanceImpl::handleMemoryPressure),
   });
 
@@ -262,6 +264,15 @@ jlong CatalystInstanceImpl::getJavaScriptContext() {
 
 void CatalystInstanceImpl::handleMemoryPressure(int pressureLevel) {
   instance_->handleMemoryPressure(pressureLevel);
+}
+
+jni::alias_ref<JSCallInvokerHolder::javaobject> CatalystInstanceImpl::getJSCallInvokerHolder() {
+  if (javaInstanceHolder_ == nullptr) {
+    jsCallInvoker_ = std::make_shared<JSCallInvoker>(instance_);
+    javaInstanceHolder_ = jni::make_global(JSCallInvokerHolder::newObjectCxxArgs(jsCallInvoker_));
+  }
+
+  return javaInstanceHolder_;
 }
 
 }}
