@@ -49,7 +49,7 @@ function reportException(e: ExtendedError, isFatal: boolean) {
               frame => frame.file.match(INTERNAL_CALLSITES_REGEX) === null,
             );
             ExceptionsManager.updateExceptionMessage(
-              e.message,
+              message,
               stackWithoutInternalCallsites,
               currentExceptionID,
             );
