@@ -42,7 +42,7 @@ ShadowNode::ShadowNode(
       state_(fragment.state),
       family_(std::make_shared<ShadowNodeFamily const>(
           fragment.tag,
-          fragment.rootTag,
+          fragment.surfaceId,
           fragment.eventEmitter,
           componentDescriptor)),
       childrenAreShared_(true),
@@ -72,7 +72,7 @@ ShadowNode::ShadowNode(
       revision_(sourceShadowNode.revision_ + 1) {
   // `tag`, `surfaceId`, and `eventEmitter` cannot be changed with cloning.
   assert(fragment.tag == ShadowNodeFragment::tagPlaceholder());
-  assert(fragment.rootTag == ShadowNodeFragment::surfaceIdPlaceholder());
+  assert(fragment.surfaceId == ShadowNodeFragment::surfaceIdPlaceholder());
   assert(
       fragment.eventEmitter == ShadowNodeFragment::eventEmitterPlaceholder());
 

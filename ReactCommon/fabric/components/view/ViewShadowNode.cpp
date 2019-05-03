@@ -23,7 +23,7 @@ bool ViewShadowNode::isLayoutOnly() const {
       // Accessibility Props
       !viewProps.accessible &&
       // Style Props
-      viewProps.yogaStyle.overflow == YGOverflowVisible &&
+      viewProps.yogaStyle.overflow() == YGOverflowVisible &&
       viewProps.opacity == 1.0 && !viewProps.backgroundColor &&
       !viewProps.foregroundColor && !viewProps.shadowColor &&
       viewProps.transform == Transform{} && viewProps.zIndex == 0 &&

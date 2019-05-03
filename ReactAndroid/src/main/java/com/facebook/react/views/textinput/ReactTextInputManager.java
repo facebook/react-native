@@ -9,7 +9,6 @@ package com.facebook.react.views.textinput;
 
 import static android.view.View.FOCUS_FORWARD;
 
-import android.annotation.TargetApi;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -202,6 +201,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         TextInlineImageSpan.possiblyUpdateInlineImageSpans(spannable, view);
       }
       view.maybeSetText(update);
+      if (update.getSelectionStart() != UNSET && update.getSelectionEnd() != UNSET)
+        view.setSelection(update.getSelectionStart(), update.getSelectionEnd());
     }
   }
 
@@ -271,17 +272,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
     if (fontStyle != currentTypeface.getStyle()) {
       view.setTypeface(currentTypeface, fontStyle);
-    }
-  }
-
-  @ReactProp(name = "selection")
-  public void setSelection(ReactEditText view, @Nullable ReadableMap selection) {
-    if (selection == null) {
-      return;
-    }
-
-    if (selection.hasKey("start") && selection.hasKey("end")) {
-      view.setSelection(selection.getInt("start"), selection.getInt("end"));
     }
   }
 
@@ -487,7 +477,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         view.setJustificationMode(Layout.JUSTIFICATION_MODE_INTER_WORD);
       }
-      view.setGravityHorizontal(Gravity.START);
+      view.setGravityHorizontal(Gravity.LEFT);
     } else {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         view.setJustificationMode(Layout.JUSTIFICATION_MODE_NONE);
@@ -496,9 +486,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       if (textAlign == null || "auto".equals(textAlign)) {
         view.setGravityHorizontal(Gravity.NO_GRAVITY);
       } else if ("left".equals(textAlign)) {
-        view.setGravityHorizontal(Gravity.START);
+        view.setGravityHorizontal(Gravity.LEFT);
       } else if ("right".equals(textAlign)) {
-        view.setGravityHorizontal(Gravity.END);
+        view.setGravityHorizontal(Gravity.RIGHT);
       } else if ("center".equals(textAlign)) {
         view.setGravityHorizontal(Gravity.CENTER_HORIZONTAL);
       } else {

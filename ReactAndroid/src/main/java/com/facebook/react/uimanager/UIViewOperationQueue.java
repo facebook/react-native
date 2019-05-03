@@ -354,6 +354,19 @@ public class UIViewOperationQueue {
     }
   }
 
+  private class SetLayoutAnimationEnabledOperation implements UIOperation {
+    private final boolean mEnabled;
+
+    private SetLayoutAnimationEnabledOperation(final boolean enabled) {
+      mEnabled = enabled;
+    }
+
+    @Override
+    public void execute() {
+      mNativeViewHierarchyManager.setLayoutAnimationEnabled(mEnabled);
+    }
+  }
+
   private class ConfigureLayoutAnimationOperation implements UIOperation {
     private final ReadableMap mConfig;
     private final Callback mAnimationComplete;
@@ -721,6 +734,11 @@ public class UIViewOperationQueue {
     ReadableArray childrenTags) {
     mOperations.add(
       new SetChildrenOperation(reactTag, childrenTags));
+  }
+
+  public void enqueueSetLayoutAnimationEnabled(
+      final boolean enabled) {
+    mOperations.add(new SetLayoutAnimationEnabledOperation(enabled));
   }
 
   public void enqueueConfigureLayoutAnimation(

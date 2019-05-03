@@ -129,7 +129,7 @@ public class TimingModuleTest {
     mTiming.onHostResume();
     mTiming.createTimer(1, 1, 0, false);
     stepChoreographerFrame();
-    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(1));
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(1.0));
     reset(mJSTimersMock);
     stepChoreographerFrame();
     verifyNoMoreInteractions(mJSTimersMock);
@@ -140,11 +140,11 @@ public class TimingModuleTest {
     mTiming.createTimer(100, 1, 0, true);
     mTiming.onHostResume();
     stepChoreographerFrame();
-    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(100));
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(100.0));
 
     reset(mJSTimersMock);
     stepChoreographerFrame();
-    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(100));
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(100.0));
   }
 
   @Test
@@ -153,7 +153,7 @@ public class TimingModuleTest {
     mTiming.createTimer(105, 1, 0, true);
 
     stepChoreographerFrame();
-    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(105));
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(105.0));
 
     reset(mJSTimersMock);
     mTiming.deleteTimer(105);
@@ -167,7 +167,7 @@ public class TimingModuleTest {
     mTiming.createTimer(41, 1, 0, true);
 
     stepChoreographerFrame();
-    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41));
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41.0));
 
     reset(mJSTimersMock);
     mTiming.onHostPause();
@@ -177,7 +177,7 @@ public class TimingModuleTest {
     reset(mJSTimersMock);
     mTiming.onHostResume();
     stepChoreographerFrame();
-    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41));
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41.0));
   }
 
   @Test
@@ -187,7 +187,7 @@ public class TimingModuleTest {
     mTiming.createTimer(41, 1, 0, true);
 
     stepChoreographerFrame();
-    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41));
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41.0));
 
     reset(mJSTimersMock);
     mTiming.onHeadlessJsTaskFinish(42);
@@ -202,12 +202,12 @@ public class TimingModuleTest {
     mTiming.createTimer(41, 1, 0, true);
 
     stepChoreographerFrame();
-    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41));
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41.0));
 
     reset(mJSTimersMock);
     mTiming.onHeadlessJsTaskFinish(42);
     stepChoreographerFrame();
-    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41));
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41.0));
 
     reset(mJSTimersMock);
     mTiming.onHostPause();
@@ -222,13 +222,13 @@ public class TimingModuleTest {
     mTiming.onHostPause();
 
     stepChoreographerFrame();
-    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41));
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41.0));
 
     reset(mJSTimersMock);
     mTiming.onHostResume();
     mTiming.onHeadlessJsTaskFinish(42);
     stepChoreographerFrame();
-    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41));
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(41.0));
 
     reset(mJSTimersMock);
     mTiming.onHostPause();
@@ -239,7 +239,7 @@ public class TimingModuleTest {
   @Test
   public void testSetTimeoutZero() {
     mTiming.createTimer(100, 0, 0, false);
-    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(100));
+    verify(mJSTimersMock).callTimers(JavaOnlyArray.of(100.0));
   }
 
   @Test

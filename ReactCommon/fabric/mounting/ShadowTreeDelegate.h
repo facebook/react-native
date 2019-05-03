@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include <react/mounting/ShadowViewMutation.h>
+#include <react/mounting/MountingTransaction.h>
 
 namespace facebook {
 namespace react {
@@ -22,9 +22,7 @@ class ShadowTreeDelegate {
    */
   virtual void shadowTreeDidCommit(
       const ShadowTree &shadowTree,
-      const ShadowViewMutationList &mutations,
-      long commitStartTime,
-      long layoutTime) const = 0;
+      MountingTransaction &&transaction) const = 0;
 
   virtual ~ShadowTreeDelegate() noexcept = default;
 };

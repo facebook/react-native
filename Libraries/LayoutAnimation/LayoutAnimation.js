@@ -90,6 +90,10 @@ const Presets = {
  * next layout happens.
  *
  * A common way to use this API is to call it before calling `setState`.
+ *
+ * Note that in order to get this to work on **Android** you need to set the following flags via `UIManager`:
+ *
+ *     UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
  */
 const LayoutAnimation = {
   /**

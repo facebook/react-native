@@ -70,5 +70,54 @@ ShadowViewMutation ShadowViewMutation::UpdateMutation(
   };
 }
 
+#if RN_DEBUG_STRING_CONVERTIBLE
+
+std::string getDebugName(ShadowViewMutation const &mutation) {
+  switch (mutation.type) {
+    case ShadowViewMutation::Create:
+      return "Create";
+    case ShadowViewMutation::Delete:
+      return "Delete";
+    case ShadowViewMutation::Insert:
+      return "Insert";
+    case ShadowViewMutation::Remove:
+      return "Remove";
+    case ShadowViewMutation::Update:
+      return "Update";
+  }
+}
+
+std::vector<DebugStringConvertibleObject> getDebugProps(
+    ShadowViewMutation const &mutation,
+    DebugStringConvertibleOptions options) {
+  return {
+      mutation.oldChildShadowView.componentHandle
+          ? DebugStringConvertibleObject{"oldChild",
+                                         getDebugDescription(
+                                             mutation.oldChildShadowView,
+                                             options)}
+          : DebugStringConvertibleObject{},
+      mutation.newChildShadowView.componentHandle
+          ? DebugStringConvertibleObject{"newChild",
+                                         getDebugDescription(
+                                             mutation.newChildShadowView,
+                                             options)}
+          : DebugStringConvertibleObject{},
+      mutation.parentShadowView.componentHandle
+          ? DebugStringConvertibleObject{"parent",
+                                         getDebugDescription(
+                                             mutation.parentShadowView,
+                                             options)}
+          : DebugStringConvertibleObject{},
+      mutation.index != -1
+          ? DebugStringConvertibleObject{"index",
+                                         getDebugDescription(
+                                             mutation.index, options)}
+          : DebugStringConvertibleObject{},
+  };
+}
+
+#endif
+
 } // namespace react
 } // namespace facebook

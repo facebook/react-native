@@ -872,7 +872,7 @@ const TouchableMixin = {
           this._startHighlight(e);
           this._endHighlight(e);
         }
-        if (Platform.OS === 'android') {
+        if (Platform.OS === 'android' && !this.props.touchSoundDisabled) {
           this._playTouchSound();
         }
         this.touchableHandlePress(e);

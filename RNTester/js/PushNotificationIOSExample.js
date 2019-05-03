@@ -11,15 +11,15 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
 const {
   Alert,
+  DeviceEventEmitter,
   PushNotificationIOS,
   StyleSheet,
   Text,
   TouchableHighlight,
   View,
-} = ReactNative;
+} = require('react-native');
 
 class Button extends React.Component<$FlowFixMeProps> {
   render() {
@@ -86,7 +86,7 @@ class NotificationExample extends React.Component<{}> {
   }
 
   _sendNotification() {
-    require('RCTDeviceEventEmitter').emit('remoteNotificationReceived', {
+    DeviceEventEmitter.emit('remoteNotificationReceived', {
       remote: true,
       aps: {
         alert: 'Sample notification',
@@ -99,7 +99,7 @@ class NotificationExample extends React.Component<{}> {
   }
 
   _sendLocalNotification() {
-    require('RCTDeviceEventEmitter').emit('localNotificationReceived', {
+    DeviceEventEmitter.emit('localNotificationReceived', {
       aps: {
         alert: 'Sample local notification',
         badge: '+1',

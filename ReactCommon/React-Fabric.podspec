@@ -97,7 +97,7 @@ Pod::Spec.new do |s|
       sss.dependency             folly_dep_name, folly_version
       sss.compiler_flags       = folly_compiler_flags
       sss.source_files         = "fabric/components/rncore/*.{m,mm,cpp,h}"
-      sss.exclude_files        = "**/tests/*"
+      sss.exclude_files        = "**/tests/*", "fabric/components/rncore/*Tests.{h,cpp}"
       sss.header_dir           = "react/components/rncore"
       sss.pod_target_xcconfig  = { "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_ROOT)/Folly\"" }
     end

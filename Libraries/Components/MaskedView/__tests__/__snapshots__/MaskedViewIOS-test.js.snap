@@ -1,0 +1,77 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<MaskedViewIOS /> should render as <RCTMaskedView> when mocked 1`] = `
+<RCTMaskedView>
+  <View
+    pointerEvents="none"
+    style={
+      Object {
+        "bottom": 0,
+        "left": 0,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+      }
+    }
+  >
+    <View>
+      <Text>
+        Basic Mask
+      </Text>
+    </View>
+  </View>
+  <View />
+</RCTMaskedView>
+`;
+
+exports[`<MaskedViewIOS /> should render as <RCTMaskedView> when not mocked 1`] = `
+<RCTMaskedView>
+  <View
+    pointerEvents="none"
+    style={
+      Object {
+        "bottom": 0,
+        "left": 0,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+      }
+    }
+  >
+    <View>
+      <Text>
+        Basic Mask
+      </Text>
+    </View>
+  </View>
+  <View />
+</RCTMaskedView>
+`;
+
+exports[`<MaskedViewIOS /> should shallow render as <MaskedViewIOS> when mocked 1`] = `
+<MaskedViewIOS
+  maskElement={
+    <View>
+      <Text>
+        Basic Mask
+      </Text>
+    </View>
+  }
+>
+  <View />
+</MaskedViewIOS>
+`;
+
+exports[`<MaskedViewIOS /> should shallow render as <MaskedViewIOS> when not mocked 1`] = `
+<MaskedViewIOS
+  maskElement={
+    <View>
+      <Text>
+        Basic Mask
+      </Text>
+    </View>
+  }
+>
+  <View />
+</MaskedViewIOS>
+`;

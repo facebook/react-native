@@ -20,7 +20,7 @@ namespace facebook {
 namespace react {
 
 Scheduler::Scheduler(
-    const SharedContextContainer &contextContainer,
+    ContextContainer::Shared const &contextContainer,
     ComponentRegistryFactory buildRegistryFunction) {
   const auto asynchronousEventBeatFactory =
       contextContainer->getInstance<EventBeatFactory>("asynchronous");
@@ -72,6 +72,11 @@ Scheduler::Scheduler(
   runtimeExecutor_([=](jsi::Runtime &runtime) {
     UIManagerBinding::install(runtime, uiManagerBinding_);
   });
+
+  contextContainer->registerInstance(
+      std::weak_ptr<ComponentDescriptorRegistry const>(
+          componentDescriptorRegistry_),
+      "ComponentDescriptorRegistry_DO_NOT_USE_PRETTY_PLEASE");
 }
 
 Scheduler::~Scheduler() {
@@ -126,7 +131,8 @@ void Scheduler::renderTemplateToSurface(
                 *oldRootShadowNode,
                 ShadowNodeFragment{
                     /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-                    /* .rootTag = */ ShadowNodeFragment::surfaceIdPlaceholder(),
+                    /* .surfaceId = */
+                    ShadowNodeFragment::surfaceIdPlaceholder(),
                     /* .props = */ ShadowNodeFragment::propsPlaceholder(),
                     /* .eventEmitter = */
                     ShadowNodeFragment::eventEmitterPlaceholder(),
@@ -156,7 +162,7 @@ void Scheduler::stopSurface(SurfaceId surfaceId) const {
                   *oldRootShadowNode,
                   ShadowNodeFragment{
                       /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-                      /* .rootTag = */
+                      /* .surfaceId = */
                       ShadowNodeFragment::surfaceIdPlaceholder(),
                       /* .props = */ ShadowNodeFragment::propsPlaceholder(),
                       /* .eventEmitter = */
@@ -237,14 +243,11 @@ SchedulerDelegate *Scheduler::getDelegate() const {
 
 void Scheduler::shadowTreeDidCommit(
     const ShadowTree &shadowTree,
-    const ShadowViewMutationList &mutations,
-    long commitStartTime,
-    long layoutTime) const {
+    MountingTransaction &&transaction) const {
   SystraceSection s("Scheduler::shadowTreeDidCommit");
 
   if (delegate_) {
-    delegate_->schedulerDidFinishTransaction(
-        shadowTree.getSurfaceId(), mutations, commitStartTime, layoutTime);
+    delegate_->schedulerDidFinishTransaction(std::move(transaction));
   }
 }
 
@@ -263,7 +266,7 @@ void Scheduler::uiManagerDidFinishTransaction(
               *oldRootShadowNode,
               ShadowNodeFragment{
                   /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-                  /* .rootTag = */ ShadowNodeFragment::surfaceIdPlaceholder(),
+                  /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
                   /* .props = */ ShadowNodeFragment::propsPlaceholder(),
                   /* .eventEmitter = */
                   ShadowNodeFragment::eventEmitterPlaceholder(),

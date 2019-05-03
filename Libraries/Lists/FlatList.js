@@ -63,7 +63,7 @@ type RequiredProps<ItemT> = {
     item: ItemT,
     index: number,
     separators: SeparatorsObj,
-  }) => ?React.Element<any>,
+  }) => ?React.Node,
   /**
    * For simplicity, data is just a plain array. If you want to use something else, like an
    * immutable list, use the underlying `VirtualizedList` directly.
@@ -598,7 +598,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     };
   }
 
-  _renderItem = (info: Object) => {
+  _renderItem = (info: Object): ?React.Node => {
     const {renderItem, numColumns, columnWrapperStyle} = this.props;
     if (numColumns > 1) {
       const {item, index} = info;
@@ -618,7 +618,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
               index: index * numColumns + kk,
               separators: info.separators,
             });
-            return element && React.cloneElement(element, {key: kk});
+            return element != null ? (
+              <React.Fragment key={kk}>{element}</React.Fragment>
+            ) : null;
           })}
         </View>
       );

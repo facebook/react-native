@@ -20,20 +20,13 @@ const createReactClass = require('create-react-class');
 const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
 
 const {
-  DeprecatedAccessibilityComponentTypes,
   DeprecatedAccessibilityRoles,
   DeprecatedAccessibilityStates,
-  DeprecatedAccessibilityTraits,
 } = require('DeprecatedViewAccessibility');
 
 import type {SyntheticEvent, LayoutEvent, PressEvent} from 'CoreEventTypes';
 import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
-import type {
-  AccessibilityComponentType,
-  AccessibilityRole,
-  AccessibilityStates,
-  AccessibilityTraits,
-} from 'ViewAccessibility';
+import type {AccessibilityRole, AccessibilityStates} from 'ViewAccessibility';
 
 type TargetEvent = SyntheticEvent<
   $ReadOnly<{|
@@ -47,13 +40,11 @@ type FocusEvent = TargetEvent;
 const PRESS_RETENTION_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
 const OVERRIDE_PROPS = [
-  'accessibilityComponentType',
   'accessibilityLabel',
   'accessibilityHint',
   'accessibilityIgnoresInvertColors',
   'accessibilityRole',
   'accessibilityStates',
-  'accessibilityTraits',
   'hitSlop',
   'nativeID',
   'onBlur',
@@ -64,13 +55,11 @@ const OVERRIDE_PROPS = [
 
 export type Props = $ReadOnly<{|
   accessible?: ?boolean,
-  accessibilityComponentType?: ?AccessibilityComponentType,
   accessibilityLabel?: ?Stringish,
   accessibilityHint?: ?Stringish,
   accessibilityIgnoresInvertColors?: ?boolean,
   accessibilityRole?: ?AccessibilityRole,
   accessibilityStates?: ?AccessibilityStates,
-  accessibilityTraits?: ?AccessibilityTraits,
   children?: ?React.Node,
   delayLongPress?: ?number,
   delayPressIn?: ?number,
@@ -78,6 +67,7 @@ export type Props = $ReadOnly<{|
   disabled?: ?boolean,
   hitSlop?: ?EdgeInsetsProp,
   nativeID?: ?string,
+  touchSoundDisabled?: ?boolean,
   onBlur?: ?(e: BlurEvent) => void,
   onFocus?: ?(e: FocusEvent) => void,
   onLayout?: ?(event: LayoutEvent) => mixed,
@@ -105,18 +95,11 @@ const TouchableWithoutFeedback = ((createReactClass({
     accessible: PropTypes.bool,
     accessibilityLabel: PropTypes.node,
     accessibilityHint: PropTypes.string,
-    accessibilityComponentType: PropTypes.oneOf(
-      DeprecatedAccessibilityComponentTypes,
-    ),
     accessibilityIgnoresInvertColors: PropTypes.bool,
     accessibilityRole: PropTypes.oneOf(DeprecatedAccessibilityRoles),
     accessibilityStates: PropTypes.arrayOf(
       PropTypes.oneOf(DeprecatedAccessibilityStates),
     ),
-    accessibilityTraits: PropTypes.oneOfType([
-      PropTypes.oneOf(DeprecatedAccessibilityTraits),
-      PropTypes.arrayOf(PropTypes.oneOf(DeprecatedAccessibilityTraits)),
-    ]),
     /**
      * When `accessible` is true (which is the default) this may be called when
      * the OS-specific concept of "focus" occurs. Some platforms may not have
@@ -153,6 +136,10 @@ const TouchableWithoutFeedback = ((createReactClass({
      *   `{nativeEvent: {layout: {x, y, width, height}}}`
      */
     onLayout: PropTypes.func,
+    /**
+     * If true, doesn't play system sound on touch (Android Only)
+     **/
+    touchSoundDisabled: PropTypes.bool,
 
     onLongPress: PropTypes.func,
 
@@ -267,6 +254,9 @@ const TouchableWithoutFeedback = ((createReactClass({
     return (React: any).cloneElement(child, {
       ...overrides,
       accessible: this.props.accessible !== false,
+      clickable:
+        this.props.clickable !== false && this.props.onPress !== undefined,
+      onClick: this.touchableHandlePress,
       onStartShouldSetResponder: this.touchableHandleStartShouldSetResponder,
       onResponderTerminationRequest: this
         .touchableHandleResponderTerminationRequest,

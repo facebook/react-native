@@ -18,15 +18,26 @@ SharedShadowNode UIManager::createNode(
   SystraceSection s("UIManager::createNode");
 
   auto &componentDescriptor = componentDescriptorRegistry_->at(name);
-  const auto &props = componentDescriptor.cloneProps(nullptr, rawProps);
-  const auto &state = componentDescriptor.createInitialState(props);
+  auto fallbackDescriptor =
+      componentDescriptorRegistry_->getFallbackComponentDescriptor();
+
+  auto const eventEmitter =
+      componentDescriptor.createEventEmitter(std::move(eventTarget), tag);
+  auto const props = componentDescriptor.cloneProps(nullptr, rawProps);
+  auto const state = componentDescriptor.createInitialState(
+      ShadowNodeFragment{surfaceId, tag, props, eventEmitter});
 
   auto shadowNode = componentDescriptor.createShadowNode({
       /* .tag = */ tag,
-      /* .rootTag = */ surfaceId,
-      /* .props = */ props,
-      /* .eventEmitter = */
-      componentDescriptor.createEventEmitter(std::move(eventTarget), tag),
+      /* .surfaceId = */ surfaceId,
+      /* .props = */
+      fallbackDescriptor != nullptr &&
+              fallbackDescriptor->getComponentHandle() ==
+                  componentDescriptor.getComponentHandle()
+          ? componentDescriptor.cloneProps(
+                props, RawProps(folly::dynamic::object("name", name)))
+          : props,
+      /* .eventEmitter = */ eventEmitter,
       /* .children = */ ShadowNodeFragment::childrenPlaceholder(),
       /* .localData = */ ShadowNodeFragment::localDataPlaceholder(),
       /* .state = */ state,
@@ -50,7 +61,7 @@ SharedShadowNode UIManager::cloneNode(
       *shadowNode,
       {
           /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-          /* .rootTag = */ ShadowNodeFragment::surfaceIdPlaceholder(),
+          /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
           /* .props = */
           rawProps ? componentDescriptor.cloneProps(
                          shadowNode->getProps(), *rawProps)
@@ -93,7 +104,7 @@ void UIManager::setNativeProps(
   auto props = componentDescriptor.cloneProps(shadowNode->getProps(), rawProps);
   auto newShadowNode = shadowNode->clone({
       /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-      /* .rootTag = */ ShadowNodeFragment::surfaceIdPlaceholder(),
+      /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
       /* .props = */ props,
   });
 
@@ -149,7 +160,7 @@ void UIManager::updateState(
       componentDescriptor.createState(shadowNode->getState(), rawStateData);
   auto newShadowNode = shadowNode->clone({
       /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-      /* .rootTag = */ ShadowNodeFragment::surfaceIdPlaceholder(),
+      /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
       /* .props = */ ShadowNodeFragment::propsPlaceholder(),
       /* .eventEmitter = */ ShadowNodeFragment::eventEmitterPlaceholder(),
       /* .children = */ ShadowNodeFragment::childrenPlaceholder(),

@@ -7,6 +7,7 @@
 
 #include <exception>
 
+#include <glog/logging.h>
 #include <gtest/gtest.h>
 #include <react/uimanager/ComponentDescriptorFactory.h>
 #include <react/uimanager/UITemplateProcessor.h>
@@ -16,14 +17,11 @@ using namespace facebook::react;
 #include <react/components/image/ImageComponentDescriptor.h>
 #include <react/components/rncore/ComponentDescriptors.h>
 #include <react/components/scrollview/ScrollViewComponentDescriptor.h>
-#include <react/components/text/ParagraphComponentDescriptor.h>
-#include <react/components/text/RawTextComponentDescriptor.h>
-#include <react/components/text/TextComponentDescriptor.h>
 #include <react/components/view/ViewComponentDescriptor.h>
 #include <react/config/ReactNativeConfig.h>
 #include <react/uimanager/ComponentDescriptorFactory.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
-#include <react/uimanager/ContextContainer.h>
+#include <react/utils/ContextContainer.h>
 
 namespace facebook {
 namespace react {
@@ -31,7 +29,7 @@ namespace react {
 // TODO (T29441913): Codegen this app-specific implementation.
 ComponentRegistryFactory getDefaultComponentRegistryFactory() {
   return [](const EventDispatcher::Shared &eventDispatcher,
-            const SharedContextContainer &contextContainer) {
+            const ContextContainer::Shared &contextContainer) {
     auto registry = std::make_shared<ComponentDescriptorRegistry>();
     registry->registerComponentDescriptor(
         std::make_shared<ViewComponentDescriptor>(eventDispatcher));
@@ -40,13 +38,6 @@ ComponentRegistryFactory getDefaultComponentRegistryFactory() {
             eventDispatcher, contextContainer));
     registry->registerComponentDescriptor(
         std::make_shared<ScrollViewComponentDescriptor>(eventDispatcher));
-    registry->registerComponentDescriptor(
-        std::make_shared<ParagraphComponentDescriptor>(
-            eventDispatcher, contextContainer));
-    registry->registerComponentDescriptor(
-        std::make_shared<TextComponentDescriptor>(eventDispatcher));
-    registry->registerComponentDescriptor(
-        std::make_shared<RawTextComponentDescriptor>(eventDispatcher));
     registry->registerComponentDescriptor(
         std::make_shared<ActivityIndicatorViewComponentDescriptor>(
             eventDispatcher));

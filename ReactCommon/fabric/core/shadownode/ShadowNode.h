@@ -43,8 +43,14 @@ class ShadowNode : public virtual Sealable,
                    public virtual DebugStringConvertible,
                    public std::enable_shared_from_this<ShadowNode> {
  public:
-  using Shared = std::shared_ptr<const ShadowNode>;
-  using Weak = std::weak_ptr<const ShadowNode>;
+  using Shared = std::shared_ptr<ShadowNode const>;
+  using Weak = std::weak_ptr<ShadowNode const>;
+  using Unshared = std::shared_ptr<ShadowNode>;
+  using ListOfShared =
+      better::small_vector<Shared, kShadowNodeChildrenSmallVectorSize>;
+  using SharedListOfShared = std::shared_ptr<ListOfShared const>;
+  using UnsharedListOfShared = std::shared_ptr<ListOfShared>;
+
   using AncestorList = better::small_vector<
       std::pair<
           std::reference_wrapper<ShadowNode const> /* parentNode */,

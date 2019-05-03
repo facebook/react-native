@@ -7,9 +7,11 @@
 
 #import "RCTParagraphComponentView.h"
 
+#import <react/components/text/ParagraphComponentDescriptor.h>
 #import <react/components/text/ParagraphLocalData.h>
 #import <react/components/text/ParagraphProps.h>
-#import <react/components/text/ParagraphShadowNode.h>
+#import <react/components/text/RawTextComponentDescriptor.h>
+#import <react/components/text/TextComponentDescriptor.h>
 #import <react/core/LocalData.h>
 #import <react/graphics/Geometry.h>
 #import <react/textlayoutmanager/RCTTextLayoutManager.h>
@@ -40,9 +42,15 @@ using namespace facebook::react;
 
 #pragma mark - RCTComponentViewProtocol
 
-+ (ComponentHandle)componentHandle
++ (ComponentDescriptorProvider)componentDescriptorProvider
 {
-  return ParagraphShadowNode::Handle();
+  return concreteComponentDescriptorProvider<ParagraphComponentDescriptor>();
+}
+
++ (std::vector<facebook::react::ComponentDescriptorProvider>)supplementalComponentDescriptorProviders
+{
+  return {concreteComponentDescriptorProvider<RawTextComponentDescriptor>(),
+          concreteComponentDescriptorProvider<TextComponentDescriptor>()};
 }
 
 - (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps

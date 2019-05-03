@@ -17,8 +17,6 @@ const DeprecatedStyleSheetPropType = require('DeprecatedStyleSheetPropType');
 const DeprecatedViewStylePropTypes = require('DeprecatedViewStylePropTypes');
 
 const {
-  DeprecatedAccessibilityComponentTypes,
-  DeprecatedAccessibilityTraits,
   DeprecatedAccessibilityRoles,
   DeprecatedAccessibilityStates,
 } = require('DeprecatedViewAccessibility');
@@ -70,18 +68,6 @@ module.exports = {
   accessibilityIgnoresInvertColors: PropTypes.bool,
 
   /**
-   * Indicates to accessibility services to treat UI component like a
-   * native one. Works for Android only.
-   *
-   * @platform android
-   *
-   * See http://facebook.github.io/react-native/docs/view.html#accessibilitycomponenttype
-   */
-  accessibilityComponentType: PropTypes.oneOf(
-    DeprecatedAccessibilityComponentTypes,
-  ),
-
-  /**
    * Indicates to accessibility services to treat UI component like a specific role.
    */
   accessibilityRole: PropTypes.oneOf(DeprecatedAccessibilityRoles),
@@ -116,21 +102,6 @@ module.exports = {
     'yes',
     'no',
     'no-hide-descendants',
-  ]),
-
-  /**
-   * Provides additional traits to screen reader. By default no traits are
-   * provided unless specified otherwise in element.
-   *
-   * You can provide one trait or an array of many traits.
-   *
-   * @platform ios
-   *
-   * See http://facebook.github.io/react-native/docs/view.html#accessibilitytraits
-   */
-  accessibilityTraits: PropTypes.oneOfType([
-    PropTypes.oneOf(DeprecatedAccessibilityTraits),
-    PropTypes.arrayOf(PropTypes.oneOf(DeprecatedAccessibilityTraits)),
   ]),
 
   /**

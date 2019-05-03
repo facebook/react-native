@@ -10,12 +10,19 @@
 
 'use strict';
 
-require('InitializeCore');
-const AsyncStorage = require('AsyncStorage');
-const BackHandler = require('BackHandler');
-const Linking = require('Linking');
 const React = require('react');
-const ReactNative = require('react-native');
+const {
+  AppRegistry,
+  AsyncStorage,
+  BackHandler,
+  Button,
+  Linking,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+  YellowBox,
+} = require('react-native');
 const RNTesterActions = require('./RNTesterActions');
 const RNTesterExampleContainer = require('./RNTesterExampleContainer');
 const RNTesterExampleList = require('./RNTesterExampleList');
@@ -24,17 +31,7 @@ const RNTesterNavigationReducer = require('./RNTesterNavigationReducer');
 const SnapshotViewIOS = require('./SnapshotViewIOS.ios');
 const URIActionMap = require('./URIActionMap');
 
-const {
-  Button,
-  AppRegistry,
-  StyleSheet,
-  Text,
-  View,
-  SafeAreaView,
-  YellowBox,
-} = ReactNative;
-
-import type {RNTesterExample} from 'RNTesterTypes';
+import type {RNTesterExample} from './Shared/RNTesterTypes';
 import type {RNTesterAction} from './RNTesterActions';
 import type {RNTesterNavigationState} from './RNTesterNavigationReducer';
 

@@ -23,6 +23,7 @@ namespace react {
 struct ShadowView final {
   ShadowView() = default;
   ShadowView(const ShadowView &shadowView) = default;
+  ShadowView(ShadowView &&shadowView) noexcept = default;
 
   ~ShadowView(){};
 
@@ -32,6 +33,7 @@ struct ShadowView final {
   explicit ShadowView(const ShadowNode &shadowNode);
 
   ShadowView &operator=(const ShadowView &other) = default;
+  ShadowView &operator=(ShadowView &&other) = default;
 
   bool operator==(const ShadowView &rhs) const;
   bool operator!=(const ShadowView &rhs) const;
@@ -46,10 +48,22 @@ struct ShadowView final {
   State::Shared state = {};
 };
 
+#if RN_DEBUG_STRING_CONVERTIBLE
+
+std::string getDebugName(ShadowView const &object);
+std::vector<DebugStringConvertibleObject> getDebugProps(
+    ShadowView const &object,
+    DebugStringConvertibleOptions options = {});
+
+#endif
+
 /*
  * Describes pair of a `ShadowView` and a `ShadowNode`.
  */
 struct ShadowViewNodePair final {
+  using List = better::
+      small_vector<ShadowViewNodePair, kShadowNodeChildrenSmallVectorSize>;
+
   ShadowView shadowView;
   ShadowNode const *shadowNode;
 
@@ -59,9 +73,6 @@ struct ShadowViewNodePair final {
   bool operator==(const ShadowViewNodePair &rhs) const;
   bool operator!=(const ShadowViewNodePair &rhs) const;
 };
-
-using ShadowViewNodePairList = better::
-    small_vector<ShadowViewNodePair, kShadowNodeChildrenSmallVectorSize>;
 
 } // namespace react
 } // namespace facebook

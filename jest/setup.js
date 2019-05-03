@@ -12,7 +12,6 @@
 const MockNativeMethods = jest.requireActual('./MockNativeMethods');
 const mockComponent = jest.requireActual('./mockComponent');
 
-jest.requireActual('../Libraries/polyfills/babelHelpers.js');
 jest.requireActual('../Libraries/polyfills/Object.es7.js');
 jest.requireActual('../Libraries/polyfills/error-guard');
 
@@ -46,8 +45,11 @@ jest
   .mock('AnimatedImplementation', () => {
     const AnimatedImplementation = jest.requireActual('AnimatedImplementation');
     const oldCreate = AnimatedImplementation.createAnimatedComponent;
-    AnimatedImplementation.createAnimatedComponent = function(Component) {
-      const Wrapped = oldCreate(Component);
+    AnimatedImplementation.createAnimatedComponent = function(
+      Component,
+      defaultProps,
+    ) {
+      const Wrapped = oldCreate(Component, defaultProps);
       Wrapped.__skipSetNativeProps_FOR_TESTS_ONLY = true;
       return Wrapped;
     };
@@ -252,7 +254,17 @@ const mockNativeModules = {
     createView: jest.fn(),
     dispatchViewManagerCommand: jest.fn(),
     focus: jest.fn(),
-    getViewManagerConfig: jest.fn(),
+    getViewManagerConfig: jest.fn(name => {
+      if (name === 'AndroidDrawerLayout') {
+        return {
+          Constants: {
+            DrawerPosition: {
+              Left: 10,
+            },
+          },
+        };
+      }
+    }),
     setChildren: jest.fn(),
     manageChildren: jest.fn(),
     updateView: jest.fn(),

@@ -15,10 +15,15 @@ namespace react {
 
 const char RootComponentName[] = "RootView";
 
-void RootShadowNode::layout() {
+void RootShadowNode::layout(
+    std::vector<LayoutableShadowNode const *> *affectedNodes) {
   SystraceSection s("RootShadowNode::layout");
   ensureUnsealed();
-  layout(getProps()->layoutContext);
+
+  auto layoutContext = getProps()->layoutContext;
+  layoutContext.affectedNodes = affectedNodes;
+
+  layout(layoutContext);
 
   // This is the rare place where shadow node must layout (set `layoutMetrics`)
   // itself because there is no a parent node which usually should do it.
@@ -37,7 +42,7 @@ UnsharedRootShadowNode RootShadowNode::clone(
       *this,
       ShadowNodeFragment{
           /* .tag = */ ShadowNodeFragment::tagPlaceholder(),
-          /* .rootTag = */ ShadowNodeFragment::surfaceIdPlaceholder(),
+          /* .surfaceId = */ ShadowNodeFragment::surfaceIdPlaceholder(),
           /* .props = */ props,
       });
   return newRootShadowNode;

@@ -135,18 +135,14 @@ public:
     node->setContext(context.asVoidPtr);
   }
 
-  bool has(Edge edge) {
-    return (edges_ & edge) == edge;
-  }
+  bool has(Edge edge) { return (edges_ & edge) == edge; }
 
   YGNodeEdges& add(Edge edge) {
     edges_ |= edge;
     return *this;
   }
 
-  int get() {
-    return edges_;
-  }
+  int get() { return edges_; }
 };
 
 struct YogaValue {
@@ -370,6 +366,14 @@ static inline YGNodeRef _jlong2YGNodeRef(jlong addr) {
 
 static inline YGConfigRef _jlong2YGConfigRef(jlong addr) {
   return reinterpret_cast<YGConfigRef>(static_cast<intptr_t>(addr));
+}
+
+jlong jni_YGNodeClone(alias_ref<jobject> thiz, jlong nativePointer) {
+  auto node = _jlong2YGNodeRef(nativePointer);
+  const YGNodeRef clonedYogaNode = YGNodeClone(node);
+  clonedYogaNode->setContext(node->getContext());
+
+  return reinterpret_cast<jlong>(clonedYogaNode);
 }
 
 static YGSize YGJNIMeasureFunc(
@@ -1103,6 +1107,7 @@ jint JNI_OnLoad(JavaVM* vm, void*) {
             YGMakeCriticalNativeMethod(jni_YGNodeStyleSetAspectRatio),
             YGMakeCriticalNativeMethod(jni_YGNodeGetInstanceCount),
             YGMakeCriticalNativeMethod(jni_YGNodePrint),
+            YGMakeNativeMethod(jni_YGNodeClone),
             YGMakeNativeMethod(jni_YGNodeSetStyleInputs),
             YGMakeNativeMethod(jni_YGConfigNew),
             YGMakeNativeMethod(jni_YGConfigFree),

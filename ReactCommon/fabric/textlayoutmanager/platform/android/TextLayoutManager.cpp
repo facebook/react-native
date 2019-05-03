@@ -36,17 +36,13 @@ Size TextLayoutManager::measure(
               jstring,
               ReadableMap::javaobject,
               ReadableMap::javaobject,
-              jint,
-              jint,
-              jint,
-              jint)>("measure");
+              jfloat,
+              jfloat,
+              jfloat,
+              jfloat)>("measure");
 
   auto minimumSize = layoutConstraints.minimumSize;
   auto maximumSize = layoutConstraints.maximumSize;
-  int minWidth = (int)minimumSize.width;
-  int minHeight = (int)minimumSize.height;
-  int maxWidth = (int)maximumSize.width;
-  int maxHeight = (int)maximumSize.height;
 
   local_ref<JString> componentName = make_jstring("RCTText");
   local_ref<ReadableNativeMap::javaobject> attributedStringRNM =
@@ -63,10 +59,10 @@ Size TextLayoutManager::measure(
       componentName.get(),
       attributedStringRM.get(),
       paragraphAttributesRM.get(),
-      minWidth,
-      maxWidth,
-      minHeight,
-      maxHeight));
+      minimumSize.width,
+      maximumSize.width,
+      minimumSize.height,
+      maximumSize.height));
 }
 
 } // namespace react

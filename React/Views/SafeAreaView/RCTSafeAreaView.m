@@ -118,6 +118,10 @@ static BOOL UIEdgeInsetsEqualToEdgeInsetsWithThreshold(UIEdgeInsets insets1, UIE
   }
 
   _emulateUnlessSupported = emulateUnlessSupported;
+  
+  if ([self isSupportedByOS]) {
+    return;
+  }
 
   [self invalidateSafeAreaInsets];
 }

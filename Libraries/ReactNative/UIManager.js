@@ -100,15 +100,6 @@ function lazifyViewManagerConfig(viewName) {
   }
 }
 
-if (Platform.OS === 'android') {
-  UIManager.setLayoutAnimationEnabledExperimental = () => {
-    console.warn(
-      'setLayoutAnimationEnabledExperimental is deprecated. ' +
-        'Layout animations are enabled by default',
-    );
-  };
-}
-
 /**
  * Copies the ViewManager constants and commands into UIManager. This is
  * only needed for iOS, which puts the constants in the ViewManager

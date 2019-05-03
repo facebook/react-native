@@ -45,8 +45,7 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   using ConcreteState = typename ShadowNodeT::ConcreteState;
   using ConcreteStateData = typename ShadowNodeT::ConcreteState::Data;
 
-  ConcreteComponentDescriptor(EventDispatcher::Shared eventDispatcher)
-      : eventDispatcher_(eventDispatcher) {}
+  using ComponentDescriptor::ComponentDescriptor;
 
   ComponentHandle getComponentHandle() const override {
     return ShadowNodeT::Handle();
@@ -102,15 +101,14 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
   }
 
   virtual State::Shared createInitialState(
-      const SharedProps &props) const override {
+      ShadowNodeFragment const &fragment) const override {
     if (std::is_same<ConcreteStateData, StateData>::value) {
       // Default case: Returning `null` for nodes that don't use `State`.
       return nullptr;
     }
 
     return std::make_shared<ConcreteState>(
-        ConcreteShadowNode::initialStateData(
-            std::static_pointer_cast<const ConcreteProps>(props)),
+        ConcreteShadowNode::initialStateData(fragment, *this),
         std::make_shared<StateCoordinator>(eventDispatcher_));
   }
 
@@ -132,9 +130,6 @@ class ConcreteComponentDescriptor : public ComponentDescriptor {
     // Default implementation does nothing.
     assert(shadowNode->getComponentHandle() == getComponentHandle());
   }
-
- private:
-  mutable EventDispatcher::Shared eventDispatcher_{nullptr};
 };
 
 } // namespace react

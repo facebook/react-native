@@ -45,7 +45,7 @@ public class BatchMountItem implements MountItem {
   @Override
   public void execute(MountingManager mountingManager) {
     Systrace.beginSection(
-        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManager::mountViews (" + mSize + " items)");
+        Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "FabricUIManager::mountViews - " + mSize + " items");
 
     for (int mountItemIndex = 0; mountItemIndex < mSize; mountItemIndex++) {
       MountItem mountItem = mMountItems[mountItemIndex];

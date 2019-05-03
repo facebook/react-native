@@ -23,6 +23,7 @@ import com.facebook.react.modules.core.ExceptionsManagerModule;
 import com.facebook.react.modules.core.Timing;
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler;
 import com.facebook.react.modules.core.HeadlessJsTaskSupportModule;
+import com.facebook.react.modules.debug.DevSettingsModule;
 import com.facebook.react.modules.debug.SourceCodeModule;
 import com.facebook.react.modules.deviceinfo.DeviceInfoModule;
 import com.facebook.react.modules.systeminfo.AndroidInfoModule;
@@ -49,6 +50,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.*;
       AndroidInfoModule.class,
       DeviceEventManagerModule.class,
       DeviceInfoModule.class,
+      DevSettingsModule.class,
       ExceptionsManagerModule.class,
       HeadlessJsTaskSupportModule.class,
       SourceCodeModule.class,
@@ -93,6 +95,7 @@ import static com.facebook.react.bridge.ReactMarkerConstants.*;
             AndroidInfoModule.class,
             DeviceEventManagerModule.class,
             DeviceInfoModule.class,
+            DevSettingsModule.class,
             ExceptionsManagerModule.class,
             HeadlessJsTaskSupportModule.class,
             SourceCodeModule.class,
@@ -138,6 +141,8 @@ import static com.facebook.react.bridge.ReactMarkerConstants.*;
         return new AndroidInfoModule(reactContext);
       case DeviceEventManagerModule.NAME:
         return new DeviceEventManagerModule(reactContext, mHardwareBackBtnHandler);
+      case DevSettingsModule.NAME:
+        return new DevSettingsModule(mReactInstanceManager.getDevSupportManager());
       case ExceptionsManagerModule.NAME:
         return new ExceptionsManagerModule(mReactInstanceManager.getDevSupportManager());
       case HeadlessJsTaskSupportModule.NAME:

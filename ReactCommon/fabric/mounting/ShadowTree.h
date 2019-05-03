@@ -5,7 +5,7 @@
 
 #pragma once
 
-#ifdef DEBUG
+#ifndef NDEBUG
 #define RN_SHADOW_TREE_INTROSPECTION
 #endif
 
@@ -55,22 +55,16 @@ class ShadowTree final {
    * Performs commit calling `transaction` function with a `oldRootShadowNode`
    * and expecting a `newRootShadowNode` as a return value.
    * The `transaction` function can abort commit returning `nullptr`.
-   * If a `revision` pointer is not null, the method will store there a
-   * contiguous revision number of the successfully performed transaction.
    * Returns `true` if the operation finished successfully.
    */
-  bool tryCommit(
-      ShadowTreeCommitTransaction transaction,
-      long commitStartTime,
-      int *revision = nullptr) const;
+  bool tryCommit(ShadowTreeCommitTransaction transaction, long commitStartTime)
+      const;
 
   /*
    * Calls `tryCommit` in a loop until it finishes successfully.
    */
-  void commit(
-      ShadowTreeCommitTransaction transaction,
-      long commitStartTime,
-      int *revision = nullptr) const;
+  void commit(ShadowTreeCommitTransaction transaction, long commitStartTime)
+      const;
 
 #pragma mark - Delegate
 
@@ -88,7 +82,8 @@ class ShadowTree final {
       const LayoutConstraints &layoutConstraints,
       const LayoutContext &layoutContext) const;
 
-  void emitLayoutEvents(const ShadowViewMutationList &mutations) const;
+  void emitLayoutEvents(
+      std::vector<LayoutableShadowNode const *> &affectedLayoutableNodes) const;
 
   const SurfaceId surfaceId_;
   mutable better::shared_mutex commitMutex_;

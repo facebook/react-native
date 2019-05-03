@@ -13,7 +13,7 @@
 const React = require('react');
 const ReactNative = require('react-native');
 
-const nativeImageSource = require('nativeImageSource');
+const nativeImageSource = require('../../Libraries/Image/nativeImageSource');
 const {Image, StyleSheet, Text, View} = ReactNative;
 
 type Props = $ReadOnly<{||}>;

@@ -10,8 +10,8 @@
 
 'use strict';
 
-import type {TurboModule} from 'RCTExport';
-import * as TurboModuleRegistry from 'TurboModuleRegistry';
+import type {TurboModule} from '../../Libraries/TurboModule/RCTExport';
+import * as TurboModuleRegistry from '../../Libraries/TurboModule/TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
   +getConstants: () => {||};

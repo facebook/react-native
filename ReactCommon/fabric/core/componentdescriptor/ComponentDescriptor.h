@@ -7,17 +7,19 @@
 
 #pragma once
 
+#include <react/core/EventDispatcher.h>
 #include <react/core/Props.h>
 #include <react/core/ShadowNode.h>
 #include <react/core/State.h>
 #include <react/core/StateData.h>
+#include <react/utils/ContextContainer.h>
 
 namespace facebook {
 namespace react {
 
 class ComponentDescriptor;
 
-using SharedComponentDescriptor = std::shared_ptr<ComponentDescriptor>;
+using SharedComponentDescriptor = std::shared_ptr<ComponentDescriptor const>;
 
 /*
  * Abstract class defining an interface of `ComponentDescriptor`.
@@ -27,7 +29,19 @@ using SharedComponentDescriptor = std::shared_ptr<ComponentDescriptor>;
  */
 class ComponentDescriptor {
  public:
+  using Shared = std::shared_ptr<ComponentDescriptor const>;
+  using Unique = std::unique_ptr<ComponentDescriptor const>;
+
+  ComponentDescriptor(
+      EventDispatcher::Shared const &eventDispatcher,
+      ContextContainer::Shared const &contextContainer = {});
+
   virtual ~ComponentDescriptor() = default;
+
+  /*
+   * Returns stored instance of `ContextContainer`.
+   */
+  ContextContainer::Shared const &getContextContainer() const;
 
   /*
    * Returns `componentHandle` associated with particular kind of components.
@@ -84,7 +98,8 @@ class ComponentDescriptor {
    * Create an initial State object that represents (and contains) an initial
    * State's data which can be constructed based on initial Props.
    */
-  virtual State::Shared createInitialState(const SharedProps &props) const = 0;
+  virtual State::Shared createInitialState(
+      ShadowNodeFragment const &fragment) const = 0;
 
   /*
    * Creates a new State object that represents (and contains) a new version of
@@ -93,6 +108,10 @@ class ComponentDescriptor {
   virtual State::Shared createState(
       const State::Shared &previousState,
       const StateData::Shared &data) const = 0;
+
+ protected:
+  EventDispatcher::Shared eventDispatcher_;
+  ContextContainer::Shared contextContainer_;
 };
 
 } // namespace react

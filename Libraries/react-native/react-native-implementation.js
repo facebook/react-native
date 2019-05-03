@@ -176,6 +176,9 @@ module.exports = {
   get VirtualizedList() {
     return require('VirtualizedList');
   },
+  get VirtualizedSectionList() {
+    return require('VirtualizedSectionList');
+  },
 
   // APIs
   get ActionSheetIOS() {
@@ -300,6 +303,9 @@ module.exports = {
   },
   get ToastAndroid() {
     return require('ToastAndroid');
+  },
+  get TurboModuleRegistry() {
+    return require('TurboModuleRegistry');
   },
   get TVEventHandler() {
     return require('TVEventHandler');

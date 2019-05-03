@@ -60,6 +60,7 @@ let componentProviderInstrumentationHook: ComponentProviderInstrumentationHook =
 ) => component();
 
 let wrapperComponentProvider: ?WrapperComponentProvider;
+let showFabricIndicator = false;
 
 /**
  * `AppRegistry` is the JavaScript entry point to running all React Native apps.
@@ -69,6 +70,10 @@ let wrapperComponentProvider: ?WrapperComponentProvider;
 const AppRegistry = {
   setWrapperComponentProvider(provider: WrapperComponentProvider) {
     wrapperComponentProvider = provider;
+  },
+
+  enableFabricIndicator(enabled: boolean): void {
+    showFabricIndicator = enabled;
   },
 
   registerConfig(config: Array<AppConfig>): void {
@@ -114,7 +119,7 @@ const AppRegistry = {
           appParameters.rootTag,
           wrapperComponentProvider && wrapperComponentProvider(appParameters),
           appParameters.fabric,
-          false,
+          showFabricIndicator,
           scopedPerformanceLogger,
         );
       },
@@ -255,7 +260,9 @@ const AppRegistry = {
   startHeadlessTask(taskId: number, taskKey: string, data: any): void {
     const taskProvider = taskProviders.get(taskKey);
     if (!taskProvider) {
-      throw new Error(`No task registered for key ${taskKey}`);
+      console.warn(`No task registered for key ${taskKey}`);
+      NativeModules.HeadlessJsTaskSupport.notifyTaskFinished(taskId);
+      return;
     }
     taskProvider()(data)
       .then(() =>

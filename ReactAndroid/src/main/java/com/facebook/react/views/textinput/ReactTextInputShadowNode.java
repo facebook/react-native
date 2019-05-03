@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.common.annotations.VisibleForTesting;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
@@ -46,10 +47,13 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
 
   @VisibleForTesting public static final String PROP_TEXT = "text";
   @VisibleForTesting public static final String PROP_PLACEHOLDER = "placeholder";
+  @VisibleForTesting public static final String PROP_SELECTION = "selection";
 
   // Represents the {@code text} property only, not possible nested content.
   private @Nullable String mText = null;
   private @Nullable String mPlaceholder = null;
+  private int mSelectionStart = UNSET;
+  private int mSelectionEnd = UNSET;
 
   public ReactTextInputShadowNode() {
     mTextBreakStrategy = (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) ?
@@ -173,6 +177,19 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
     return mPlaceholder;
   }
 
+  @ReactProp(name = PROP_SELECTION)
+  public void setSelection(@Nullable ReadableMap selection) {
+    mSelectionStart = mSelectionEnd = UNSET;
+    if (selection == null)
+      return;
+
+    if (selection.hasKey("start") && selection.hasKey("end")) {
+      mSelectionStart = selection.getInt("start");
+      mSelectionEnd = selection.getInt("end");
+      markUpdated();
+    }
+  }
+
   @Override
   public void setTextBreakStrategy(@Nullable String textBreakStrategy) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
@@ -211,7 +228,9 @@ public class ReactTextInputShadowNode extends ReactBaseTextShadowNode
               getPadding(Spacing.BOTTOM),
               mTextAlign,
               mTextBreakStrategy,
-              mJustificationMode);
+              mJustificationMode,
+              mSelectionStart,
+              mSelectionEnd);
       uiViewOperationQueue.enqueueUpdateExtraData(getReactTag(), reactTextUpdate);
     }
   }

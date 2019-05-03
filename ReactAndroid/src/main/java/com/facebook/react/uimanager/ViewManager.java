@@ -7,12 +7,14 @@
 
 package com.facebook.react.uimanager;
 
+import android.content.Context;
 import android.view.View;
 import com.facebook.react.bridge.BaseJavaModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.touch.JSResponderHandler;
 import com.facebook.react.touch.ReactInterceptingViewGroup;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -41,16 +43,27 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
   /**
    * Creates a view and installs event emitters on it.
    */
-  public final @Nonnull T createView(
+  private final @Nonnull T createView(
       @Nonnull ThemedReactContext reactContext,
       JSResponderHandler jsResponderHandler) {
-    T view = createViewInstance(reactContext);
+    return this.createViewWithProps(reactContext, null, jsResponderHandler);
+  }
+
+  /**
+   * Creates a view with knowledge of props.
+   */
+  public @Nonnull T createViewWithProps(
+    @Nonnull ThemedReactContext reactContext,
+    ReactStylesDiffMap props,
+    JSResponderHandler jsResponderHandler) {
+    T view = createViewInstanceWithProps(reactContext, props);
     addEventEmitters(reactContext, view);
     if (view instanceof ReactInterceptingViewGroup) {
       ((ReactInterceptingViewGroup) view).setOnInterceptTouchEventListener(jsResponderHandler);
     }
     return view;
   }
+
 
   /**
    * @return the name of this view manager. This will be the name used to reference this view
@@ -88,6 +101,20 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
    * @param reactContext
    */
   protected abstract @Nonnull T createViewInstance(@Nonnull ThemedReactContext reactContext);
+
+  /**
+   * Subclasses should return a new View instance of the proper type.
+   * This is an optional method that will call createViewInstance for you.
+   * Override it if you need props upon creation of the view.
+   * @param reactContext
+   */
+  protected @Nonnull T createViewInstanceWithProps(@Nonnull ThemedReactContext reactContext, ReactStylesDiffMap initialProps) {
+    T view = createViewInstance(reactContext);
+    if (initialProps != null) {
+      updateProperties(view, initialProps);
+    }
+    return view;
+  }
 
   /**
    * Called when view is detached from view hierarchy and allows for some additional cleanup by
@@ -196,15 +223,19 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
     return ViewManagerPropertyUpdater.getNativeProps(getClass(), getShadowNodeClass());
   }
 
-  /**
-   *
-   */
-  public @Nullable Object updateLocalData(@Nonnull T view, ReactStylesDiffMap props, ReactStylesDiffMap localData) {
+  public @Nullable Object updateLocalData( @Nonnull T view, ReactStylesDiffMap props, ReactStylesDiffMap localData) {
     return null;
   }
 
+  /**
+   * Subclasses can implement this method to receive state updates shared between all instances
+   * of this component type.
+   */
+  public void updateState(@Nonnull T view, StateWrapper stateWrapper) {
+  }
+
   public long measure(
-      ReactContext context,
+      Context context,
       ReadableMap localData,
       ReadableMap props,
       float width,

@@ -206,11 +206,16 @@ type IOSProps = $ReadOnly<{|
    * (as a time interval in ms). A lower number yields better accuracy for code
    * that is tracking the scroll position, but can lead to scroll performance
    * problems due to the volume of information being send over the bridge.
-   * You will not notice a difference between values set between 1-16 as the
-   * JS run loop is synced to the screen refresh rate. If you do not need precise
-   * scroll position tracking, set this value higher to limit the information
-   * being sent across the bridge. The default value is zero, which results in
-   * the scroll event being sent only once each time the view is scrolled.
+   *
+   * Values between 0 and 17ms indicate 60fps updates are needed and throttling
+   * will be disabled.
+   *
+   * If you do not need precise scroll position tracking, set this value higher
+   * to limit the information being sent across the bridge.
+   *
+   * The default value is zero, which results in the scroll event being sent only
+   * once each time the view is scrolled.
+   *
    * @platform ios
    */
   scrollEventThrottle?: ?number,
@@ -221,6 +226,12 @@ type IOSProps = $ReadOnly<{|
    * @platform ios
    */
   scrollIndicatorInsets?: ?EdgeInsetsProp,
+  /**
+   * When true, the scroll view can be programmatically scrolled beyond its
+   * content size. The default value is false.
+   * @platform ios
+   */
+  scrollToOverflowEnabled?: ?boolean,
   /**
    * When true, the scroll view scrolls to top when the status bar is tapped.
    * The default value is true.
@@ -362,6 +373,13 @@ export type Props = $ReadOnly<{|
    * ```
    */
   contentContainerStyle?: ?ViewStyleProp,
+  /**
+   * When true, the scroll view stops on the next index (in relation to scroll
+   * position at release) regardless of how fast the gesture is. This can be
+   * used for horizontal pagination when the page is less than the width of
+   * the ScrollView. The default value is false.
+   */
+  disableIntervalMomentum?: ?boolean,
   /**
    * A floating-point number that determines how quickly the scroll view
    * decelerates after the user lifts their finger. You may also use string
@@ -656,6 +674,9 @@ class ScrollView extends React.Component<Props, State> {
       this.props.contentOffset ? this.props.contentOffset.y : 0,
     );
     this._scrollAnimatedValue.setOffset(
+      /* $FlowFixMe(>=0.98.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.98 was deployed. To see the error delete this
+       * comment and run Flow. */
       this.props.contentInset ? this.props.contentInset.top : 0,
     );
     this._stickyHeaderRefs = new Map();
@@ -710,6 +731,10 @@ class ScrollView extends React.Component<Props, State> {
 
   getInnerViewNode(): ?number {
     return ReactNative.findNodeHandle(this._innerViewRef);
+  }
+
+  getNativeScrollRef(): ?ScrollView {
+    return this._scrollViewRef;
   }
 
   /**

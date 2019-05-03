@@ -34,6 +34,11 @@ type ButtonProps = $ReadOnly<{|
   onPress: (event?: PressEvent) => mixed,
 
   /**
+   * If true, doesn't play system sound on touch (Android Only)
+   **/
+  touchSoundDisabled?: ?boolean,
+
+  /**
    * Color of the text (iOS), or background color of the button (Android)
    */
   color?: ?string,
@@ -128,6 +133,7 @@ class Button extends React.Component<ButtonProps> {
       accessibilityLabel,
       color,
       onPress,
+      touchSoundDisabled,
       title,
       hasTVPreferredFocus,
       nextFocusDown,
@@ -174,7 +180,8 @@ class Button extends React.Component<ButtonProps> {
         nextFocusUp={nextFocusUp}
         testID={testID}
         disabled={disabled}
-        onPress={onPress}>
+        onPress={onPress}
+        touchSoundDisabled={touchSoundDisabled}>
         <View style={buttonStyles}>
           <Text style={textStyles} disabled={disabled}>
             {formattedTitle}

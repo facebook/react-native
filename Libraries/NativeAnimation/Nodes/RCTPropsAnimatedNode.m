@@ -36,6 +36,11 @@
   return self;
 }
 
+- (BOOL)isManagedByFabric
+{
+  return _managedByFabric;
+}
+
 - (void)connectToView:(NSNumber *)viewTag
              viewName:(NSString *)viewName
                bridge:(RCTBridge *)bridge
