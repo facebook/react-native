@@ -6,7 +6,7 @@
 
 require "json"
 
-package = JSON.parse(File.read(File.join(__dir__, "..", "..", "..", "package.json")))
+package = JSON.parse(File.read(File.join(__dir__, "..", "..", "package.json")))
 version = package['version']
 
 source = { :git => 'https://github.com/facebook/react-native.git' }
@@ -22,7 +22,7 @@ folly_version = '2018.10.22.00'
 boost_compiler_flags = '-Wno-documentation'
 
 Pod::Spec.new do |s|
-  s.name                   = "React-turbomodule-core"
+  s.name                   = "React-jscallinvoker"
   s.version                = version
   s.summary                = "-"  # TODO
   s.homepage               = "http://facebook.github.io/react-native/"
@@ -30,20 +30,12 @@ Pod::Spec.new do |s|
   s.author                 = "Facebook, Inc. and its affiliates"
   s.platforms              = { :ios => "9.0", :tvos => "9.2" }
   s.source                 = source
-  s.source_files           = "*.{cpp,h}"
+  s.source_files         = "jsireact/*.{cpp,h}"
   s.compiler_flags         = folly_compiler_flags + ' ' + boost_compiler_flags
-  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Folly\"" }
   s.header_dir             = "jsireact"
-  s.xcconfig               = { "OTHER_CFLAGS" => "$(inherited) -DRN_TURBO_MODULE_ENABLED" }
+  s.pod_target_xcconfig    = { "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Folly\"" }
 
-  s.dependency "React-Core", version
   s.dependency "React-cxxreact", version
-  s.dependency "React-jsi", version
   s.dependency "Folly", folly_version
-  s.dependency "React-jscallinvoker", version
 
-  s.subspec "core-ios" do |ss|
-    ss.source_files   = "platform/ios/*.{mm,cpp,h}"
-    ss.header_dir     = "jsireact"
-  end
 end
