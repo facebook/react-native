@@ -11,7 +11,6 @@
 #include <fb/fbjni.h>
 #include <jsi/jsi.h>
 
-#include <cxxreact/Instance.h>
 #include <jsireact/TurboModuleBinding.h>
 
 #include <react/jni/JMessageQueueThread.h>
@@ -21,26 +20,27 @@
 namespace facebook {
 namespace react {
 
-static JTurboModuleProviderFunctionType moduleProvider_ = nullptr;
-
 TurboModuleManager::TurboModuleManager(
   jni::alias_ref<TurboModuleManager::javaobject> jThis,
   jsi::Runtime* rt,
-  std::shared_ptr<JSCallInvoker> jsCallInvoker
+  std::shared_ptr<JSCallInvoker> jsCallInvoker,
+  jni::alias_ref<TurboModuleManagerDelegate::javaobject> tmmDelegate
 ):
   javaPart_(jni::make_global(jThis)),
   runtime_(rt),
-  jsCallInvoker_(jsCallInvoker)
+  jsCallInvoker_(jsCallInvoker),
+  turboModuleManagerDelegate_(jni::make_global(tmmDelegate))
   {}
 
 jni::local_ref<TurboModuleManager::jhybriddata> TurboModuleManager::initHybrid(
   jni::alias_ref<jhybridobject> jThis,
   jlong jsContext,
-  jni::alias_ref<JSCallInvokerHolder::javaobject> jsCallInvokerHolder
+  jni::alias_ref<JSCallInvokerHolder::javaobject> jsCallInvokerHolder,
+  jni::alias_ref<TurboModuleManagerDelegate::javaobject> tmmDelegate
 ) {
   auto jsCallInvoker = jsCallInvokerHolder->cthis()->getJSCallInvoker();
 
-  return makeCxxInstance(jThis, (jsi::Runtime *) jsContext, jsCallInvoker);
+  return makeCxxInstance(jThis, (jsi::Runtime *) jsContext, jsCallInvoker, tmmDelegate);
 }
 
 void TurboModuleManager::registerNatives() {
@@ -57,18 +57,17 @@ void TurboModuleManager::installJSIBindings() {
   TurboModuleBinding::install(*runtime_, std::make_shared<TurboModuleBinding>(
       [this](const std::string &name) {
         const auto moduleInstance = getJavaModule(name);
-        return moduleProvider_(name, moduleInstance, jsCallInvoker_);
+        return turboModuleManagerDelegate_->cthis()->getTurboModule(name, moduleInstance, jsCallInvoker_);
       })
   );
 }
 
 jni::global_ref<JTurboModule> TurboModuleManager::getJavaModule(std::string name) {
   static auto method = javaClassStatic()->getMethod<jni::alias_ref<JTurboModule>(const std::string&)>("getJavaModule");
-  return make_global(method(javaPart_.get(), name));
-}
 
-void TurboModuleManager::setModuleProvider(JTurboModuleProviderFunctionType fn) {
-  moduleProvider_ = fn;
+  auto module = jni::make_global(method(javaPart_.get(), name));
+
+  return module;
 }
 
 } // namespace react

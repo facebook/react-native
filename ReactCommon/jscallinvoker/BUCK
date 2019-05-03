@@ -1,4 +1,4 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "FBJNI_TARGET", "react_native_xplat_target", "rn_xplat_cxx_library", "subdir_glob")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "react_native_xplat_target", "rn_xplat_cxx_library", "subdir_glob")
 
 rn_xplat_cxx_library(
     name = "jscallinvoker",
@@ -17,9 +17,6 @@ rn_xplat_cxx_library(
         "-frtti",
         "-std=c++14",
         "-Wall",
-    ],
-    fbandroid_deps = [
-        FBJNI_TARGET,
     ],
     platforms = (ANDROID, APPLE),
     preferred_linkage = "static",

@@ -14,12 +14,10 @@
 #include <jsireact/JavaTurboModule.h>
 #include <react/jni/JMessageQueueThread.h>
 #include <jsireact/JSCallInvokerHolder.h>
+#include <jsireact/TurboModuleManagerDelegate.h>
 
 namespace facebook {
 namespace react {
-
-using JTurboModuleProviderFunctionType = std::function<std::shared_ptr<TurboModule>(
-    const std::string &name, jni::global_ref<JTurboModule> moduleInstance, std::shared_ptr<JSCallInvoker> jsInvoker)>;
 
 class TurboModuleManager : public jni::HybridClass<TurboModuleManager> {
 public:
@@ -27,22 +25,24 @@ public:
   static jni::local_ref<jhybriddata> initHybrid(
     jni::alias_ref<jhybridobject> jThis,
     jlong jsContext,
-    jni::alias_ref<JSCallInvokerHolder::javaobject> jsCallInvokerHolder
+    jni::alias_ref<JSCallInvokerHolder::javaobject> jsCallInvokerHolder,
+    jni::alias_ref<TurboModuleManagerDelegate::javaobject> tmmDelegate
   );
   static void registerNatives();
-  static void setModuleProvider(JTurboModuleProviderFunctionType moduleProvider);
 private:
   friend HybridBase;
   jni::global_ref<TurboModuleManager::javaobject> javaPart_;
   jsi::Runtime* runtime_;
   std::shared_ptr<JSCallInvoker> jsCallInvoker_;
+  jni::global_ref<TurboModuleManagerDelegate::javaobject> turboModuleManagerDelegate_;
 
   jni::global_ref<JTurboModule> getJavaModule(std::string name);
   void installJSIBindings();
   explicit TurboModuleManager(
     jni::alias_ref<TurboModuleManager::jhybridobject> jThis,
     jsi::Runtime *rt,
-    std::shared_ptr<JSCallInvoker> jsCallInvoker
+    std::shared_ptr<JSCallInvoker> jsCallInvoker,
+    jni::alias_ref<TurboModuleManagerDelegate::javaobject> tmmDelegate
   );
 };
 

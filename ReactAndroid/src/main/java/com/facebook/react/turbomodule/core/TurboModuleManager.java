@@ -27,39 +27,35 @@ public class TurboModuleManager implements JSIModule {
   }
 
   private final ReactApplicationContext mReactApplicationContext;
+  private final TurboModuleManagerDelegate mTurbomoduleManagerDelegate;
 
   @DoNotStrip
   @SuppressWarnings("unused")
   private final HybridData mHybridData;
-  private final ModuleProvider mModuleProvider;
 
   public TurboModuleManager(
-      ReactApplicationContext reactApplicationContext, JavaScriptContextHolder jsContext, ModuleProvider moduleProvider) {
+      ReactApplicationContext reactApplicationContext, JavaScriptContextHolder jsContext, TurboModuleManagerDelegate tmmDelegate) {
     mReactApplicationContext = reactApplicationContext;
     JSCallInvokerHolderImpl instanceHolder =
         (JSCallInvokerHolderImpl) mReactApplicationContext
             .getCatalystInstance()
             .getJSCallInvokerHolder();
-    mHybridData = initHybrid(jsContext.get(), instanceHolder);
-    mModuleProvider = moduleProvider;
+    mHybridData = initHybrid(jsContext.get(), instanceHolder, tmmDelegate);
+    mTurbomoduleManagerDelegate = tmmDelegate;
   }
 
   @DoNotStrip
   @SuppressWarnings("unused")
-    protected TurboModule getJavaModule(String name) {
-    return mModuleProvider.getModule(name, mReactApplicationContext);
+  private TurboModule getJavaModule(String name) {
+    return mTurbomoduleManagerDelegate.getModule(name);
   }
 
-  protected native HybridData initHybrid(long jsContext, JSCallInvokerHolderImpl jsQueue);
+  private native HybridData initHybrid(long jsContext, JSCallInvokerHolderImpl jsQueue, TurboModuleManagerDelegate tmmDelegate);
 
-  protected native void installJSIBindings();
+  private native void installJSIBindings();
 
   public void installBindings() {
     installJSIBindings();
-  }
-
-  protected ReactApplicationContext getReactApplicationContext() {
-    return mReactApplicationContext;
   }
 
   @Override
