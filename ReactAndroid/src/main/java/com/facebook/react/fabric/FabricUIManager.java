@@ -280,10 +280,10 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       String componentName,
       ReadableMap localData,
       ReadableMap props,
-      int minWidth,
-      int maxWidth,
-      int minHeight,
-      int maxHeight) {
+      float minWidth,
+      float maxWidth,
+      float minHeight,
+      float maxHeight) {
 
     return mMountingManager.measure(
         mReactApplicationContext,

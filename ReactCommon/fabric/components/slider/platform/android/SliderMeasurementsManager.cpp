@@ -35,17 +35,13 @@ Size SliderMeasurementsManager::measure(
               jstring,
               ReadableMap::javaobject,
               ReadableMap::javaobject,
-              jint,
-              jint,
-              jint,
-              jint)>("measure");
+              jfloat,
+              jfloat,
+              jfloat,
+              jfloat)>("measure");
 
   auto minimumSize = layoutConstraints.minimumSize;
   auto maximumSize = layoutConstraints.maximumSize;
-  int minWidth = (int)minimumSize.width;
-  int minHeight = (int)minimumSize.height;
-  int maxWidth = (int)maximumSize.width;
-  int maxHeight = (int)maximumSize.height;
 
   local_ref<JString> componentName = make_jstring("RCTSlider");
 
@@ -54,10 +50,10 @@ Size SliderMeasurementsManager::measure(
       componentName.get(),
       nullptr,
       nullptr,
-      minWidth,
-      maxWidth,
-      minHeight,
-      maxHeight));
+      minimumSize.width,
+      maximumSize.width,
+      minimumSize.height,
+      maximumSize.height));
 
   std::lock_guard<std::mutex> lock(mutex_);
   cachedMeasurement_ = measurement;
