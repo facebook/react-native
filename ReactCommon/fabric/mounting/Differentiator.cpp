@@ -6,12 +6,76 @@
 #include "Differentiator.h"
 
 #include <better/map.h>
+#include <better/small_vector.h>
 #include <react/core/LayoutableShadowNode.h>
 #include <react/debug/SystraceSection.h>
 #include "ShadowView.h"
 
 namespace facebook {
 namespace react {
+
+/*
+ * Extremely simple and naive implementation of a map.
+ * The map is simple but it's optimized for particular constraints that we have
+ * here.
+ *
+ * A regular map implementation (e.g. `std::unordered_map`) has some basic
+ * performance guarantees like constant average insertion and lookup complexity.
+ * This is nice, but it's *average* complexity measured on a non-trivial amount
+ * of data. The regular map is a very complex data structure that using hashing,
+ * buckets, multiple comprising operations, multiple allocations and so on.
+ *
+ * In our particular case, we need a map for `int` to `void *` with a dozen
+ * values. In these conditions, nothing can beat a naive implementation using a
+ * stack-allocated vector. And this implementation is exactly this: no
+ * allocation, no hashing, no complex branching, no buckets, no iterators, no
+ * rehashing, no other guarantees. It's crazy limited, unsafe, and performant on
+ * a trivial amount of data.
+ *
+ * Besides that, we also need to optimize for insertion performance (the case
+ * where a bunch of views appears on the screen first time); in this
+ * implementation, this is as performant as vector `push_back`.
+ */
+template <typename KeyT, typename ValueT, int DefaultSize = 16>
+class TinyMap final {
+ public:
+  using Pair = std::pair<KeyT, ValueT>;
+  using Iterator = Pair *;
+
+  inline Iterator begin() {
+    return (Pair *)vector_;
+  }
+
+  inline Iterator end() {
+    return nullptr;
+  }
+
+  inline Iterator find(KeyT key) {
+    for (auto &item : vector_) {
+      if (item.first == key) {
+        return &item;
+      }
+    }
+
+    return end();
+  }
+
+  inline void insert(Pair pair) {
+    assert(pair.first != 0);
+    vector_.push_back(pair);
+  }
+
+  inline void erase(Iterator iterator) {
+    static_assert(
+        std::is_same<KeyT, Tag>::value,
+        "The collection is designed to store only `Tag`s as keys.");
+    // Zero is a invalid tag.
+    iterator->first = 0;
+  }
+
+ private:
+  better::small_vector<Pair, DefaultSize> vector_;
+};
 
 static void sliceChildShadowNodeViewPairsRecursively(
     ShadowViewNodePair::List &pairList,
@@ -70,7 +134,7 @@ static void calculateShadowViewMutations(
   auto index = int{0};
 
   // Maps inserted node tags to pointers to them in `newChildPairs`.
-  auto insertedPairs = better::map<Tag, ShadowViewNodePair const *>{};
+  auto insertedPairs = TinyMap<Tag, ShadowViewNodePair const *>{};
 
   // Lists of mutations
   auto createMutations = ShadowViewMutation::List{};
