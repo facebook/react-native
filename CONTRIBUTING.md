@@ -113,6 +113,12 @@ Tests help us prevent regressions from being introduced to the codebase. The Git
 
 <!-- END: Code Contributions -->
 
+# Community Contributions
+
+Contributions to React Native are not limited to GitHub. You can help others by sharing your experience using React Native, whether that is through blog posts, presenting talks at conferences, or simply sharing your thoughts on Twitter and tagging @ReactNative.
+
+<!-- END: Community Contributions -->
+
 <!-- START: Where to Get Help -->
 # Where to Get Help
 
