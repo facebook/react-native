@@ -267,7 +267,7 @@ void CatalystInstanceImpl::handleMemoryPressure(int pressureLevel) {
 }
 
 jni::alias_ref<JSCallInvokerHolder::javaobject> CatalystInstanceImpl::getJSCallInvokerHolder() {
-  if (javaInstanceHolder_ == nullptr) {
+  if (!javaInstanceHolder_) {
     jsCallInvoker_ = std::make_shared<JSCallInvoker>(instance_);
     javaInstanceHolder_ = jni::make_global(JSCallInvokerHolder::newObjectCxxArgs(jsCallInvoker_));
   }

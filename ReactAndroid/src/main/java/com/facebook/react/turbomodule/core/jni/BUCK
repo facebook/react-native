@@ -3,13 +3,13 @@ load("@fbsource//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "FBJNI_TARGET", "
 rn_xplat_cxx_library(
     name = "jni",
     srcs = [
-        "OnLoad.cpp",
-        "TurboModuleManager.cpp",
+        "jsireact/OnLoad.cpp",
+        "jsireact/TurboModuleManager.cpp",
     ],
     header_namespace = "",
     exported_headers = {
-        "jsireact/TurboModuleManager.h": "TurboModuleManager.h",
-        "jsireact/TurboModuleManagerDelegate.h": "TurboModuleManagerDelegate.h",
+        "jsireact/TurboModuleManager.h": "jsireact/TurboModuleManager.h",
+        "jsireact/TurboModuleManagerDelegate.h": "jsireact/TurboModuleManagerDelegate.h",
     },
     compiler_flags = [
         "-fexceptions",
@@ -39,11 +39,11 @@ rn_xplat_cxx_library(
 rn_xplat_cxx_library(
     name = "jscallinvokerholder",
     srcs = [
-        "JSCallInvokerHolder.cpp",
+        "jsireact/JSCallInvokerHolder.cpp",
     ],
     header_namespace = "",
     exported_headers = {
-        "jsireact/JSCallInvokerHolder.h": "JSCallInvokerHolder.h",
+        "jsireact/JSCallInvokerHolder.h": "jsireact/JSCallInvokerHolder.h",
     },
     compiler_flags = [
         "-fexceptions",

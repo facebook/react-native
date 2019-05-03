@@ -1,17 +1,14 @@
-load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "react_native_xplat_target", "rn_xplat_cxx_library", "subdir_glob")
+load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "react_native_xplat_target", "rn_xplat_cxx_library")
 
 rn_xplat_cxx_library(
     name = "jscallinvoker",
-    srcs = glob(
-        ["*.cpp"],
-    ),
+    srcs = [
+        "jsireact/JSCallInvoker.cpp",
+    ],
     header_namespace = "",
-    exported_headers = subdir_glob(
-        [
-            ("", "*.h"),
-        ],
-        prefix = "jsireact",
-    ),
+    exported_headers = {
+        "jsireact/JSCallInvoker.h": "jsireact/JSCallInvoker.h",
+    },
     compiler_flags = [
         "-fexceptions",
         "-frtti",
