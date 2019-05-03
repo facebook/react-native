@@ -14,14 +14,14 @@ namespace facebook {
 namespace react {
 
 static void sliceChildShadowNodeViewPairsRecursively(
-    ShadowViewNodePairList &pairList,
+    ShadowViewNodePair::List &pairList,
     Point layoutOffset,
-    const ShadowNode &shadowNode) {
-  for (const auto &childShadowNode : shadowNode.getChildren()) {
+    ShadowNode const &shadowNode) {
+  for (auto const &childShadowNode : shadowNode.getChildren()) {
     auto shadowView = ShadowView(*childShadowNode);
 
-    const auto layoutableShadowNode =
-        dynamic_cast<const LayoutableShadowNode *>(childShadowNode.get());
+    auto const layoutableShadowNode =
+        dynamic_cast<LayoutableShadowNode const *>(childShadowNode.get());
 #ifndef ANDROID
     // New approach (iOS):
     // Non-view components are treated as layout-only views (they aren't
@@ -44,18 +44,18 @@ static void sliceChildShadowNodeViewPairsRecursively(
   }
 }
 
-static ShadowViewNodePairList sliceChildShadowNodeViewPairs(
-    const ShadowNode &shadowNode) {
-  auto pairList = ShadowViewNodePairList{};
+static ShadowViewNodePair::List sliceChildShadowNodeViewPairs(
+    ShadowNode const &shadowNode) {
+  auto pairList = ShadowViewNodePair::List{};
   sliceChildShadowNodeViewPairsRecursively(pairList, {0, 0}, shadowNode);
   return pairList;
 }
 
 static void calculateShadowViewMutations(
-    ShadowViewMutationList &mutations,
-    const ShadowView &parentShadowView,
-    const ShadowViewNodePairList &oldChildPairs,
-    const ShadowViewNodePairList &newChildPairs) {
+    ShadowViewMutation::List &mutations,
+    ShadowView const &parentShadowView,
+    ShadowViewNodePair::List const &oldChildPairs,
+    ShadowViewNodePair::List const &newChildPairs) {
   // The current version of the algorithm is otimized for simplicity,
   // not for performance or optimal result.
 
@@ -72,19 +72,20 @@ static void calculateShadowViewMutations(
   // Maps inserted node tags to pointers to them in `newChildPairs`.
   auto insertedPairs = better::map<Tag, ShadowViewNodePair const *>{};
 
-  ShadowViewMutationList createMutations = {};
-  ShadowViewMutationList deleteMutations = {};
-  ShadowViewMutationList insertMutations = {};
-  ShadowViewMutationList removeMutations = {};
-  ShadowViewMutationList updateMutations = {};
-  ShadowViewMutationList downwardMutations = {};
-  ShadowViewMutationList destructiveDownwardMutations = {};
+  // Lists of mutations
+  auto createMutations = ShadowViewMutation::List{};
+  auto deleteMutations = ShadowViewMutation::List{};
+  auto insertMutations = ShadowViewMutation::List{};
+  auto removeMutations = ShadowViewMutation::List{};
+  auto updateMutations = ShadowViewMutation::List{};
+  auto downwardMutations = ShadowViewMutation::List{};
+  auto destructiveDownwardMutations = ShadowViewMutation::List{};
 
   // Stage 1: Collecting `Update` mutations
   for (index = 0; index < oldChildPairs.size() && index < newChildPairs.size();
        index++) {
-    const auto &oldChildPair = oldChildPairs[index];
-    const auto &newChildPair = newChildPairs[index];
+    auto const &oldChildPair = oldChildPairs[index];
+    auto const &newChildPair = newChildPairs[index];
 
     if (oldChildPair.shadowView.tag != newChildPair.shadowView.tag) {
       // Totally different nodes, updating is impossible.
@@ -99,9 +100,9 @@ static void calculateShadowViewMutations(
           index));
     }
 
-    const auto oldGrandChildPairs =
+    auto const oldGrandChildPairs =
         sliceChildShadowNodeViewPairs(*oldChildPair.shadowNode);
-    const auto newGrandChildPairs =
+    auto const newGrandChildPairs =
         sliceChildShadowNodeViewPairs(*newChildPair.shadowNode);
     calculateShadowViewMutations(
         *(newGrandChildPairs.size() ? &downwardMutations
@@ -115,7 +116,7 @@ static void calculateShadowViewMutations(
 
   // Stage 2: Collecting `Insert` mutations
   for (; index < newChildPairs.size(); index++) {
-    const auto &newChildPair = newChildPairs[index];
+    auto const &newChildPair = newChildPairs[index];
 
     insertMutations.push_back(ShadowViewMutation::InsertMutation(
           parentShadowView, newChildPair.shadowView, index));
@@ -156,9 +157,9 @@ static void calculateShadowViewMutations(
       auto const &newChildPair = *it->second;
 
       if (newChildPair != oldChildPair) {
-        const auto oldGrandChildPairs =
+        auto const oldGrandChildPairs =
             sliceChildShadowNodeViewPairs(*oldChildPair.shadowNode);
-        const auto newGrandChildPairs =
+        auto const newGrandChildPairs =
             sliceChildShadowNodeViewPairs(*newChildPair.shadowNode);
         calculateShadowViewMutations(
             *(newGrandChildPairs.size() ? &downwardMutations
@@ -179,7 +180,7 @@ static void calculateShadowViewMutations(
   // Stage 4: Collecting `Create` mutations
   for (index = lastIndexAfterFirstStage; index < newChildPairs.size();
        index++) {
-    const auto &newChildPair = newChildPairs[index];
+    auto const &newChildPair = newChildPairs[index];
 
     if (insertedPairs.find(newChildPair.shadowView.tag) ==
         insertedPairs.end()) {
@@ -228,15 +229,15 @@ static void calculateShadowViewMutations(
       std::back_inserter(mutations));
 }
 
-ShadowViewMutationList calculateShadowViewMutations(
-    const ShadowNode &oldRootShadowNode,
-    const ShadowNode &newRootShadowNode) {
+ShadowViewMutation::List calculateShadowViewMutations(
+    ShadowNode const &oldRootShadowNode,
+    ShadowNode const &newRootShadowNode) {
   SystraceSection s("calculateShadowViewMutations");
 
   // Root shadow nodes must be belong the same family.
   assert(ShadowNode::sameFamily(oldRootShadowNode, newRootShadowNode));
 
-  auto mutations = ShadowViewMutationList{};
+  auto mutations = ShadowViewMutation::List{};
   mutations.reserve(256);
 
   auto oldRootShadowView = ShadowView(oldRootShadowNode);
