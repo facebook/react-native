@@ -287,14 +287,12 @@ local_ref<JMountItem::javaobject> createUpdateStateMountItem(
 
   auto state = mutation.newChildShadowView.state;
 
-  // We use state.get() to pass a raw pointer through the JNI
-  // We don't need to access the state ptr in Java, but we need to be able to
-  // pass a state object back through the JNI for state updates
-
   // Do not hold onto Java object from C
+  // We DO want to hold onto C object from Java, since we don't know the
+  // lifetime of the Java object
   auto javaStateWrapper = StateWrapperImpl::newObjectJavaArgs();
   StateWrapperImpl* cStateWrapper = cthis(javaStateWrapper);
-  cStateWrapper->state_ = state.get();
+  cStateWrapper->state_ = state;
 
   return updateStateInstruction(
       javaUIManager,
