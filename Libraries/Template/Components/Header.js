@@ -18,8 +18,8 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 96,
-    paddingBottom: 24,
+    paddingTop: 100,
+    paddingBottom: 40,
     paddingHorizontal: 32,
     backgroundColor: Colors.lighter
   },
@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -20,
     left: -200,
-    opacity: 0.3,
+    opacity: 0.20,
     alignItems: 'center',
     justifyContent: 'center',
     height: 540,
