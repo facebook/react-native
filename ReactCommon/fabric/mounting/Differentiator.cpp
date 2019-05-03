@@ -46,7 +46,7 @@ static void sliceChildShadowNodeViewPairsRecursively(
 
 static ShadowViewNodePairList sliceChildShadowNodeViewPairs(
     const ShadowNode &shadowNode) {
-  ShadowViewNodePairList pairList;
+  auto pairList = ShadowViewNodePairList{};
   sliceChildShadowNodeViewPairsRecursively(pairList, {0, 0}, shadowNode);
   return pairList;
 }
@@ -195,22 +195,34 @@ static void calculateShadowViewMutations(
   }
 
   // All mutations in an optimal order:
-  mutations.insert(
-      mutations.end(),
+  std::move(
       destructiveDownwardMutations.begin(),
-      destructiveDownwardMutations.end());
-  mutations.insert(
-      mutations.end(), updateMutations.begin(), updateMutations.end());
-  mutations.insert(
-      mutations.end(), removeMutations.rbegin(), removeMutations.rend());
-  mutations.insert(
-      mutations.end(), deleteMutations.begin(), deleteMutations.end());
-  mutations.insert(
-      mutations.end(), createMutations.begin(), createMutations.end());
-  mutations.insert(
-      mutations.end(), downwardMutations.begin(), downwardMutations.end());
-  mutations.insert(
-      mutations.end(), insertMutations.begin(), insertMutations.end());
+      destructiveDownwardMutations.end(),
+      std::back_inserter(mutations));
+  std::move(
+      updateMutations.begin(),
+      updateMutations.end(),
+      std::back_inserter(mutations));
+  std::move(
+      removeMutations.rbegin(),
+      removeMutations.rend(),
+      std::back_inserter(mutations));
+  std::move(
+      deleteMutations.begin(),
+      deleteMutations.end(),
+      std::back_inserter(mutations));
+  std::move(
+      createMutations.begin(),
+      createMutations.end(),
+      std::back_inserter(mutations));
+  std::move(
+      downwardMutations.begin(),
+      downwardMutations.end(),
+      std::back_inserter(mutations));
+  std::move(
+      insertMutations.begin(),
+      insertMutations.end(),
+      std::back_inserter(mutations));
 }
 
 ShadowViewMutationList calculateShadowViewMutations(
@@ -221,7 +233,8 @@ ShadowViewMutationList calculateShadowViewMutations(
   // Root shadow nodes must be belong the same family.
   assert(ShadowNode::sameFamily(oldRootShadowNode, newRootShadowNode));
 
-  ShadowViewMutationList mutations;
+  auto mutations = ShadowViewMutationList{};
+  mutations.reserve(256);
 
   auto oldRootShadowView = ShadowView(oldRootShadowNode);
   auto newRootShadowView = ShadowView(newRootShadowNode);
