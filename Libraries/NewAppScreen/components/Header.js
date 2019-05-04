@@ -11,7 +11,7 @@
 'use strict';
 
 import React from 'react';
-import { View, Text, StyleSheet, ImageBackground } from 'react-native';
+import {View, Text, StyleSheet, ImageBackground} from 'react-native';
 import Colors from './Colors';
 
 const Header = () => (
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -20,
     left: -200,
-    opacity: 0.20,
+    opacity: 0.2,
     alignItems: 'center',
     justifyContent: 'center',
     height: 540,

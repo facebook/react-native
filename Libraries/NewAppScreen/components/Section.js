@@ -11,9 +11,9 @@
 'use strict';
 
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import {View, StyleSheet} from 'react-native';
 
-const Section = ({ children }) => (
+const Section = ({children}) => (
   <View style={styles.container}>{children}</View>
 );
 
