@@ -59,7 +59,7 @@ const LinkList = () => (
             <Text style={styles.description}>{item.description}</Text>
           </TouchableOpacity>
         </React.Fragment>
-      );
+      )
     })}
   </View>
 );
