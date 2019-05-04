@@ -7,11 +7,11 @@ import {
   Platform,
   StatusBar,
   SafeAreaView,
-} from 'react-native'
+} from 'react-native';
 
-import Header from './components/Header'
-import Section from './components/Section'
-import LearnMoreLinks from './components/LearnMoreLinks'
+import Header from './components/Header';
+import Section from './components/Section';
+import LearnMoreLinks from './components/LearnMoreLinks';
 import Colors from './components/Colors';
 
 const ReloadInstructions = () => {
@@ -25,8 +25,8 @@ const ReloadInstructions = () => {
       Double tap <Text style={styles.highlight}>R</Text> on your keyboard to
       reload your app's code
     </Text>
-  )
-}
+  );
+};
 
 const DebugInstructions = () => {
   return Platform.OS === 'ios' ? (
@@ -41,8 +41,8 @@ const DebugInstructions = () => {
       <Text style={styles.highlight}>Shake</Text> your device to open the React
       Native debug menu.
     </Text>
-  )
-}
+  );
+};
 
 const App = () => {
   return (
@@ -86,8 +86,8 @@ const App = () => {
         </ScrollView>
       </SafeAreaView>
     </Fragment>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   topSafeArea: {
@@ -115,6 +115,6 @@ const styles = StyleSheet.create({
   highlight: {
     fontWeight: '700',
   },
-})
+});
 
-export default App
+export default App;
