@@ -10,7 +10,7 @@
 
 'use strict';
 
-import React, { Fragment } from 'react';
+import React, {Fragment} from 'react';
 import {
   StyleSheet,
   ScrollView,
