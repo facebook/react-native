@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
     paddingTop: 100,
     paddingBottom: 40,
     paddingHorizontal: 32,
-    backgroundColor: Colors.lighter,
+    backgroundColor: Colors.lighter
   },
   backgroundLogo: {
     position: 'absolute',
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     fontSize: 40,
     fontWeight: '600',
     textAlign: 'center',
-    color: Colors.black,
+    color: Colors.black
   },
 });
 
