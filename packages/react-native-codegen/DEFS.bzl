@@ -162,5 +162,6 @@ def rn_codegen(
         platforms = (ANDROID, APPLE),
         deps = [
             "fbsource//xplat/third-party/gmock:gtest",
+            ":generated_components-{}".format(name),
         ],
     )

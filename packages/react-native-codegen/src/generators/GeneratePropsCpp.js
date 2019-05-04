@@ -11,6 +11,7 @@
 'use strict';
 
 import type {ComponentShape, SchemaType} from '../CodegenSchema';
+const {getImports} = require('./CppHelpers');
 
 // File path -> contents
 type FilesOutput = Map<string, string>;
@@ -77,42 +78,6 @@ function getClassExtendString(component): string {
     ',';
 
   return extendString;
-}
-
-function getImports(component): Set<string> {
-  const imports: Set<string> = new Set();
-
-  function addImportsForNativeName(name) {
-    switch (name) {
-      case 'ColorPrimitive':
-        return;
-      case 'PointPrimitive':
-        return;
-      case 'ImageSourcePrimitive':
-        imports.add('#include <react/components/image/conversions.h>');
-        return;
-      default:
-        (name: empty);
-        throw new Error(`Invalid name, got ${name}`);
-    }
-  }
-
-  component.props.forEach(prop => {
-    const typeAnnotation = prop.typeAnnotation;
-
-    if (typeAnnotation.type === 'NativePrimitiveTypeAnnotation') {
-      addImportsForNativeName(typeAnnotation.name);
-    }
-
-    if (
-      typeAnnotation.type === 'ArrayTypeAnnotation' &&
-      typeAnnotation.elementType.type === 'NativePrimitiveTypeAnnotation'
-    ) {
-      addImportsForNativeName(typeAnnotation.elementType.name);
-    }
-  });
-
-  return imports;
 }
 
 module.exports = {
