@@ -1,5 +1,5 @@
-import React from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native'
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
 import Colors from './Colors';
 
 const links = [
@@ -42,7 +42,7 @@ const links = [
     description:
       'Need more help? There are many other React Native developers who may have the answer.',
   },
-]
+];
 
 const LinkList = () => (
   <View style={styles.container}>
@@ -62,7 +62,7 @@ const LinkList = () => (
       )
     })}
   </View>
-)
+);
 
 const styles = StyleSheet.create({
   container: {
@@ -93,6 +93,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light,
     height: 1,
   },
-})
+});
 
-export default LinkList
+export default LinkList;

@@ -1,5 +1,5 @@
-import React from 'react'
-import { View, Text, StyleSheet, ImageBackground } from 'react-native'
+import React from 'react';
+import { View, Text, StyleSheet, ImageBackground } from 'react-native';
 import Colors from './Colors';
 
 const Header = () => (
@@ -12,7 +12,7 @@ const Header = () => (
 
     <Text style={styles.text}>Welcome to React Native</Text>
   </View>
-)
+);
 
 const styles = StyleSheet.create({
   container: {
@@ -39,6 +39,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: Colors.black
   },
-})
+});
 
-export default Header
+export default Header;
