@@ -16,12 +16,11 @@ import android.media.MediaMetadataRetriever;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
-import android.provider.MediaStore.MediaColumns;
 import android.text.TextUtils;
+import android.webkit.MimeTypeMap;
 import com.facebook.common.logging.FLog;
 import com.facebook.react.bridge.GuardedAsyncTask;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -50,7 +49,6 @@ import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
-import java.net.URLConnection;
 import java.net.URL;
 
 // TODO #6015104: rename to something less iOSish
@@ -355,6 +353,13 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
     }
   }
 
+  private static String getExtension(String path) {
+    if (path.contains(".")) {
+      return path.substring(path.lastIndexOf(".") + 1);
+    }
+    return "";
+  }
+
   private static void putPageInfo(Cursor media, WritableMap response, int limit) {
     WritableMap pageInfo = new WritableNativeMap();
     pageInfo.putBoolean("has_next_page", limit < media.getCount());
@@ -430,13 +435,8 @@ public class CameraRollManager extends ReactContextBaseJavaModule {
     float width = media.getInt(widthIndex);
     float height = media.getInt(heightIndex);
 
-    String mimeType;
-    try {
-      mimeType = URLConnection.guessContentTypeFromName(photoUri.toString());
-    } catch (StringIndexOutOfBoundsException e) {
-      FLog.e(ReactConstants.TAG, "Unable to guess content type from " + photoUri.toString(), e);
-      throw e;
-    }
+    String extension = getExtension(photoUri.toString());
+    String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
 
     if (mimeType != null
         && mimeType.startsWith("video")) {
