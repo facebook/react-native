@@ -210,8 +210,6 @@ const AccessibilityInfo = {
   /**
    * Post a string to be announced by the screen reader.
    *
-   * @platform ios
-   *
    * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#announceforaccessibility
    */
   announceForAccessibility: function(announcement: string): void {

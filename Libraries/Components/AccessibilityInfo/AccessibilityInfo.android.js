@@ -135,6 +135,15 @@ const AccessibilityInfo = {
       UIManager.AccessibilityEventTypes.typeViewFocused,
     );
   },
+
+  /**
+   * Post a string to be announced by the screen reader.
+   *
+   * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#announceforaccessibility
+   */
+  announceForAccessibility: function(announcement: string): void {
+    RCTAccessibilityInfo.announceForAccessibility(announcement);
+  },
 };
 
 module.exports = AccessibilityInfo;
