@@ -51,7 +51,7 @@ const pluginRoots /*: Array<
 const pluginNameReducers /*: Array<
   [RegExp, string],
 > */ = plugins.haste.platforms.map(name => [
-  new RegExp(`^(.*)\.(${name})$`),
+  new RegExp(`^(.*)\\.(${name})$`),
   '$1',
 ]);
 
