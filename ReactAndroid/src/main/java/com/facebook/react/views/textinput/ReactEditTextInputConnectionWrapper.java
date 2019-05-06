@@ -113,9 +113,13 @@ class ReactEditTextInputConnectionWrapper extends InputConnectionWrapper {
       if (key.equals("")) {
         key = BACKSPACE_KEY_VALUE;
       }
+
       dispatchKeyEventOrEnqueue(key);
     }
-
+    // Detect, if text is unicode
+    if (key.length() == 2) {
+        dispatchKeyEventOrEnqueue(key);
+    }
     return super.commitText(text, newCursorPosition);
   }
 
