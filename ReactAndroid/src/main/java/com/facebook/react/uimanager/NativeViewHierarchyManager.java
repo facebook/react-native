@@ -446,6 +446,45 @@ public class NativeViewHierarchyManager {
       }
     }
 
+    if (tagsToDelete != null) {
+      for (int i = 0; i < tagsToDelete.length; i++) {
+        int tagToDelete = tagsToDelete[i];
+        final int indexToDelete = indicesToDelete[i];
+        final View viewToDestroy = mTagsToViews.get(tagToDelete);
+        if (viewToDestroy == null) {
+          throw new IllegalViewOperationException(
+            "Trying to destroy unknown view tag: "
+              + tagToDelete + "\n detail: " +
+              constructManageChildrenErrorMessage(
+                viewToManage,
+                viewManager,
+                indicesToRemove,
+                viewsToAdd,
+                tagsToDelete));
+        }
+
+        if (mLayoutAnimationEnabled &&
+          mLayoutAnimator.shouldAnimateLayout(viewToDestroy)) {
+          int updatedCount = pendingIndicesToDelete.get(indexToDelete, 0) + 1;
+          pendingIndicesToDelete.put(indexToDelete, updatedCount);
+          mLayoutAnimator.deleteView(
+            viewToDestroy,
+            new LayoutAnimationListener() {
+              @Override
+              public void onAnimationEnd() {
+                viewManager.removeView(viewToManage, viewToDestroy);
+                dropView(viewToDestroy);
+
+                int count = pendingIndicesToDelete.get(indexToDelete, 0);
+                pendingIndicesToDelete.put(indexToDelete, Math.max(0, count - 1));
+              }
+            });
+        } else {
+          dropView(viewToDestroy);
+        }
+      }
+    }
+
     if (viewsToAdd != null) {
       for (int i = 0; i < viewsToAdd.length; i++) {
         ViewAtIndex viewAtIndex = viewsToAdd[i];
@@ -463,45 +502,6 @@ public class NativeViewHierarchyManager {
         }
         int normalizedIndexToAdd = normalizeIndex(viewAtIndex.mIndex, pendingIndicesToDelete);
         viewManager.addView(viewToManage, viewToAdd, normalizedIndexToAdd);
-      }
-    }
-
-    if (tagsToDelete != null) {
-      for (int i = 0; i < tagsToDelete.length; i++) {
-        int tagToDelete = tagsToDelete[i];
-        final int indexToDelete = indicesToDelete[i];
-        final View viewToDestroy = mTagsToViews.get(tagToDelete);
-        if (viewToDestroy == null) {
-          throw new IllegalViewOperationException(
-              "Trying to destroy unknown view tag: "
-                  + tagToDelete + "\n detail: " +
-                  constructManageChildrenErrorMessage(
-                      viewToManage,
-                      viewManager,
-                      indicesToRemove,
-                      viewsToAdd,
-                      tagsToDelete));
-        }
-
-        if (mLayoutAnimationEnabled &&
-            mLayoutAnimator.shouldAnimateLayout(viewToDestroy)) {
-          int updatedCount = pendingIndicesToDelete.get(indexToDelete, 0) + 1;
-          pendingIndicesToDelete.put(indexToDelete, updatedCount);
-          mLayoutAnimator.deleteView(
-              viewToDestroy,
-              new LayoutAnimationListener() {
-                @Override
-                public void onAnimationEnd() {
-                  viewManager.removeView(viewToManage, viewToDestroy);
-                  dropView(viewToDestroy);
-
-                  int count = pendingIndicesToDelete.get(indexToDelete, 0);
-                  pendingIndicesToDelete.put(indexToDelete, Math.max(0, count - 1));
-                }
-              });
-        } else {
-          dropView(viewToDestroy);
-        }
       }
     }
   }
