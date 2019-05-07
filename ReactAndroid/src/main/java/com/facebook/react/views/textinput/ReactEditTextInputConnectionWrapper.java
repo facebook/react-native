@@ -108,17 +108,13 @@ class ReactEditTextInputConnectionWrapper extends InputConnectionWrapper {
   @Override
   public boolean commitText(CharSequence text, int newCursorPosition) {
     String key = text.toString();
-    // Assume not a keyPress if length > 1
-    if (key.length() <= 1) {
+    // Assume not a keyPress if length > 1 (or 2 if unicode)
+    if (key.length() <= 2) {
       if (key.equals("")) {
         key = BACKSPACE_KEY_VALUE;
       }
 
       dispatchKeyEventOrEnqueue(key);
-    }
-    // Detect, if text is unicode
-    if (key.length() == 2) {
-        dispatchKeyEventOrEnqueue(key);
     }
     return super.commitText(text, newCursorPosition);
   }
