@@ -149,19 +149,18 @@ const ModalSchema: SchemaType = {
                   {
                     name: 'portrait',
                   },
-                  // TODO T43735085: uncomment when hyphen symobls are proplerly supoported in code gen.
-                  // {
-                  //   name: 'portrait-upside-down',
-                  // },
+                  {
+                    name: 'portrait-upside-down',
+                  },
                   {
                     name: 'landscape',
                   },
-                  // {
-                  //   name: 'landscape_left',
-                  // },
-                  // {
-                  //   name: 'landscape_right',
-                  // },
+                  {
+                    name: 'landscape-left',
+                  },
+                  {
+                    name: 'landscape-right',
+                  },
                 ],
               },
             },
