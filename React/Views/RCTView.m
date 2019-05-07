@@ -158,12 +158,12 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
 - (NSArray <UIAccessibilityCustomAction *> *)accessibilityCustomActions
 {
-  if (!_accessibilityActions.count) {
+  if (!self.accessibilityActions.count) {
     return nil;
   }
 
   NSMutableArray *actions = [NSMutableArray array];
-  for (NSString *action in _accessibilityActions) {
+  for (NSString *action in self.accessibilityActions) {
     [actions addObject:[[UIAccessibilityCustomAction alloc] initWithName:action
                                                                   target:self
                                                                 selector:@selector(didActivateAccessibilityCustomAction:)]];
@@ -189,7 +189,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 - (NSString *)accessibilityValue
 {
   if ((self.accessibilityTraits & SwitchAccessibilityTrait) == SwitchAccessibilityTrait) {
-    for (NSString *state in _accessibilityStates) {
+    for (NSString *state in self.accessibilityStates) {
       if ([state isEqualToString:@"checked"]) {
         return @"1";
       } else if ([state isEqualToString:@"unchecked"]) {
@@ -231,11 +231,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
                           @"collapsed" : @"collapsed",
                           };
   });
-  NSString *roleDescription = _accessibilityRole ? roleDescriptions[_accessibilityRole]: nil;
+  NSString *roleDescription = self.accessibilityRole ? roleDescriptions[self.accessibilityRole]: nil;
   if (roleDescription) {
     [valueComponents addObject:roleDescription];
   }
-  for (NSString *state in _accessibilityStates) {
+  for (NSString *state in self.accessibilityStates) {
     NSString *stateDescription = state ? stateDescriptions[state] : nil;
     if (stateDescription) {
       [valueComponents addObject:stateDescription];
