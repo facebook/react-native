@@ -36,6 +36,10 @@ bool LayoutableShadowNode::LayoutableShadowNode::isLayoutOnly() const {
   return false;
 }
 
+Transform LayoutableShadowNode::getTransform() const {
+  return Transform::Identity();
+}
+
 LayoutMetrics LayoutableShadowNode::getRelativeLayoutMetrics(
     const LayoutableShadowNode &ancestorLayoutableShadowNode) const {
   auto &ancestorShadowNode =

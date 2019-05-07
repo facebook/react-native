@@ -17,6 +17,7 @@
 #include <react/core/Sealable.h>
 #include <react/core/ShadowNode.h>
 #include <react/debug/DebugStringConvertible.h>
+#include <react/graphics/Transform.h>
 
 namespace facebook {
 namespace react {
@@ -63,6 +64,14 @@ class LayoutableShadowNode : public virtual Sealable {
    * Default implementation returns `false`.
    */
   virtual bool isLayoutOnly() const;
+
+  /*
+   * Returns a transform object that represents transformations that will/should
+   * be applied on top of regular layout metrics by mounting layer.
+   * The `transform` value modifies a coordinate space of a layout system.
+   * Default implementation returns `Identity` transform.
+   */
+  virtual Transform getTransform() const;
 
   /*
    * Returns layout metrics relatively to the given ancestor node.
