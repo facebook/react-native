@@ -64,8 +64,10 @@ LayoutMetrics LayoutableShadowNode::getRelativeLayoutMetrics(
       return EmptyLayoutMetrics;
     }
 
-    layoutMetrics.frame.origin +=
-        layoutableCurrentShadowNode->getLayoutMetrics().frame.origin;
+    auto origin = layoutableCurrentShadowNode->getLayoutMetrics().frame.origin;
+    auto transform = layoutableCurrentShadowNode->getTransform();
+
+    layoutMetrics.frame.origin += origin * transform;
   }
 
   return layoutMetrics;
