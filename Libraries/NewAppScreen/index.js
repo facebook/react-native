@@ -22,9 +22,12 @@ import {
 } from 'react-native';
 
 import Header from './components/Header';
-import Section from './components/Section';
 import LearnMoreLinks from './components/LearnMoreLinks';
 import Colors from './components/Colors';
+
+const Section = ({children}) => (
+  <View style={styles.sectionContainer}>{children}</View>
+);
 
 const ReloadInstructions = () => {
   return Platform.OS === 'ios' ? (
@@ -63,7 +66,7 @@ const App = () => {
 
       <SafeAreaView style={styles.bottomSafeArea}>
         <StatusBar barStyle="dark-content" />
-        <ScrollView bounces={false}>
+        <ScrollView>
           <Header />
           <View style={styles.body}>
             <Section>
@@ -102,6 +105,10 @@ const App = () => {
 };
 
 const styles = StyleSheet.create({
+  sectionContainer: {
+    marginTop: 32,
+    paddingHorizontal: 24,
+  },
   topSafeArea: {
     flex: 0,
     backgroundColor: Colors.lighter,
@@ -116,7 +123,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 24,
     fontWeight: '600',
-    color: '#000',
+    color: Colors.black,
   },
   sectionDescription: {
     marginTop: 8,
