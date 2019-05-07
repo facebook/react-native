@@ -152,16 +152,16 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     for (int i = 0; i < accessibilityStates.size(); i++) {
       String state = accessibilityStates.getString(i);
       if (sStateDescription.containsKey(state)) {
-	  shouldUpdateContentDescription = true;
+        shouldUpdateContentDescription = true;
       }
       if (state.equals("selected")) {
-	  view.setSelected(true);
+        view.setSelected(true);
       } else if (state.equals("disabled")) {
-	  view.setEnabled(false);
+        view.setEnabled(false);
       }
     }
     if (shouldUpdateContentDescription) {
-	updateViewContentDescription(view);
+      updateViewContentDescription(view);
     }
   }
 
