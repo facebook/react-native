@@ -149,7 +149,15 @@ class VirtualizedSectionList<
     for (let i = 0; i < params.sectionIndex; i++) {
       index += this.props.getItemCount(this.props.sections[i].data) + 2;
     }
+    let viewOffset = 0;
+    if (params.itemIndex > 0 && this.props.stickySectionHeadersEnabled) {
+      const frame = this._listRef._getFrameMetricsApprox(
+        index - params.itemIndex,
+      );
+      viewOffset = frame.length;
+    }
     const toIndexParams = {
+      viewOffset,
       ...params,
       index,
     };
