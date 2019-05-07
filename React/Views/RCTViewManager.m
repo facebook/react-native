@@ -174,7 +174,7 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
     view.reactAccessibilityElement.accessibilityTraits |= maskedTraits;
   } else {
     NSString *role = json ? [RCTConvert NSString:json] : @"";
-    ((RCTView *)view.reactAccessibilityElement).accessibilityRole = role;
+    view.reactAccessibilityElement.accessibilityRole = role;
   }
 }
 
