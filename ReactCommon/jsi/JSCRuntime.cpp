@@ -664,11 +664,11 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
     static JSValueRef getProperty(
         JSContextRef ctx,
         JSObjectRef object,
-        JSStringRef propertyName,
+        JSStringRef propName,
         JSValueRef* exception) {
       auto proxy = static_cast<HostObjectProxy*>(JSObjectGetPrivate(object));
       auto& rt = proxy->runtime;
-      jsi::PropNameID sym = rt.createPropNameID(propertyName);
+      jsi::PropNameID sym = rt.createPropNameID(propName);
       jsi::Value ret;
       try {
         ret = proxy->hostObject->get(rt, sym);
@@ -681,14 +681,20 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
                 .getPropertyAsFunction(rt, "Error")
                 .call(
                     rt,
-                    std::string("Exception in HostObject::get: ") + ex.what());
+                    std::string("Exception in HostObject::get(propName:")
+                      + JSStringToSTLString(propName)
+                      + std::string("): ") + ex.what());
         *exception = rt.valueRef(excValue);
         return JSValueMakeUndefined(ctx);
       } catch (...) {
         auto excValue =
             rt.global()
                 .getPropertyAsFunction(rt, "Error")
-                .call(rt, std::string("Exception in HostObject::get: ") + JSStringToSTLString(propertyName));
+                .call(
+                    rt,
+                    std::string("Exception in HostObject::get(propName:")
+                      + JSStringToSTLString(propName)
+                      + std::string("): <unknown>"));
         *exception = rt.valueRef(excValue);
         return JSValueMakeUndefined(ctx);
       }
@@ -718,14 +724,20 @@ jsi::Object JSCRuntime::createObject(std::shared_ptr<jsi::HostObject> ho) {
                 .getPropertyAsFunction(rt, "Error")
                 .call(
                     rt,
-                    std::string("Exception in HostObject::set: ") + ex.what());
+                    std::string("Exception in HostObject::set(propName:")
+                      + JSStringToSTLString(propName)
+                      + std::string("): ") + ex.what());
         *exception = rt.valueRef(excValue);
         return false;
       } catch (...) {
         auto excValue =
             rt.global()
                 .getPropertyAsFunction(rt, "Error")
-                .call(rt, "Exception in HostObject::set: <unknown>");
+                .call(
+                    rt,
+                      std::string("Exception in HostObject::set(propName:")
+                      + JSStringToSTLString(propName)
+                      + std::string("): <unknown>"));
         *exception = rt.valueRef(excValue);
         return false;
       }
