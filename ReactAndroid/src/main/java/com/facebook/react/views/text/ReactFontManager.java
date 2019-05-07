@@ -39,9 +39,8 @@ public class ReactFontManager {
 
   private static ReactFontManager sReactFontManagerInstance;
 
-  private Map<String, FontFamily> mFontCache;
-  private Map<String, Typeface> mCustomTypefaceCache;
-  private boolean mHasCustomTypeface = false;
+  final private Map<String, FontFamily> mFontCache;
+  final private Map<String, Typeface> mCustomTypefaceCache;
 
   private ReactFontManager() {
     mFontCache = new HashMap<>();
@@ -65,7 +64,7 @@ public class ReactFontManager {
       mFontCache.put(fontFamilyName, fontFamily);
     }
 
-    if(mHasCustomTypeface && mCustomTypefaceCache.containsKey(fontFamilyName)) {
+    if(mCustomTypefaceCache.containsKey(fontFamilyName)) {
       return Typeface.create(
         mCustomTypefaceCache.get(fontFamilyName),
         style
@@ -90,12 +89,11 @@ public class ReactFontManager {
    *
    * ReactFontManager.getInstance().addCustomFont(this, "Srisakdi", R.font.srisakdi);
    */
-  public void addCustomFont(Context context, @NonNull String fontFamily, int fontId) {
+  public void addCustomFont(@NonNull Context context, @NonNull String fontFamily, int fontId) {
     Typeface font = ResourcesCompat.getFont(context, fontId);
     if (font != null) {
       mCustomTypefaceCache.put(fontFamily, font);
     }
-    mHasCustomTypeface = true;
   }
 
   /**
