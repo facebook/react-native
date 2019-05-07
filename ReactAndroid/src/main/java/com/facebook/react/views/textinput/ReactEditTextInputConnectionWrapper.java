@@ -113,9 +113,9 @@ class ReactEditTextInputConnectionWrapper extends InputConnectionWrapper {
       if (key.equals("")) {
         key = BACKSPACE_KEY_VALUE;
       }
-
       dispatchKeyEventOrEnqueue(key);
     }
+
     return super.commitText(text, newCursorPosition);
   }
 
