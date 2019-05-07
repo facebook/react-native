@@ -9,6 +9,7 @@
 
 #include <folly/Hash.h>
 #include <react/graphics/Float.h>
+#include <react/graphics/Geometry.h>
 
 namespace facebook {
 namespace react {
@@ -60,10 +61,21 @@ struct Transform {
   bool operator!=(Transform const &rhs) const;
 
   /*
+   * Matrix subscript.
+   */
+  Float &at(int x, int y);
+  Float const &at(int x, int y) const;
+
+  /*
    * Concatenates (multiplies) transform matrices.
    */
   Transform operator*(Transform const &rhs) const;
 };
+
+/*
+ * Applies tranformation to the given point.
+ */
+Point operator*(Point const &point, Transform const &transform);
 
 } // namespace react
 } // namespace facebook
