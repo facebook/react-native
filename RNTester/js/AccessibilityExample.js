@@ -452,9 +452,9 @@ class ScreenReaderStatusExample extends React.Component<{}> {
   }
 }
 
-
 class AnnounceForAccessibility extends React.Component<{}> {
-  _handleOnPress = () => AccessibilityInfo.announceForAccessibility('Announcement Test')
+  _handleOnPress = () =>
+    AccessibilityInfo.announceForAccessibility('Announcement Test');
 
   render() {
     return (
@@ -464,7 +464,7 @@ class AnnounceForAccessibility extends React.Component<{}> {
           title="Announce for Accessibility"
         />
       </View>
-    )
+    );
   }
 }
 
