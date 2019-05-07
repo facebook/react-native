@@ -35,7 +35,7 @@ extern "C"
 #else
 extern
 #endif
-NSString *const RCTContentDidAppearNotification;
+NSString *const _Nonnull RCTContentDidAppearNotification;
 
 /**
  * Native view used to host React-managed views within the app. Can be used just
@@ -47,9 +47,9 @@ NSString *const RCTContentDidAppearNotification;
 /**
  * - Designated initializer -
  */
-- (instancetype)initWithBridge:(RCTBridge *)bridge
-                    moduleName:(NSString *)moduleName
-             initialProperties:(NSDictionary *)initialProperties NS_DESIGNATED_INITIALIZER;
+- (nonnull instancetype)initWithBridge:(nonnull RCTBridge *)bridge
+                    moduleName:(nonnull NSString *)moduleName
+             initialProperties:(nullable NSDictionary *)initialProperties NS_DESIGNATED_INITIALIZER;
 
 /**
  * - Convenience initializer -
@@ -58,10 +58,10 @@ NSString *const RCTContentDidAppearNotification;
  * otherwise create an `RCTBridge` and pass it in via `initWithBridge:moduleName:`
  * to all the instances.
  */
-- (instancetype)initWithBundleURL:(NSURL *)bundleURL
-                       moduleName:(NSString *)moduleName
-                initialProperties:(NSDictionary *)initialProperties
-                    launchOptions:(NSDictionary *)launchOptions;
+- (nonnull instancetype)initWithBundleURL:(nonnull NSURL *)bundleURL
+                       moduleName:(nonnull NSString *)moduleName
+                initialProperties:(nullable NSDictionary *)initialProperties
+                    launchOptions:(nullable NSDictionary *)launchOptions;
 
 
 /**
@@ -70,13 +70,13 @@ NSString *const RCTContentDidAppearNotification;
  * any immediate effect, but it must be done prior to loading
  * the script.
  */
-@property (nonatomic, copy, readonly) NSString *moduleName;
+@property (nonatomic, copy, readonly, nonnull) NSString *moduleName;
 
 /**
  * The bridge used by the root view. Bridges can be shared between multiple
  * root views, so you can use this property to initialize another RCTRootView.
  */
-@property (nonatomic, strong, readonly) RCTBridge *bridge;
+@property (nonatomic, strong, readonly, nonnull) RCTBridge *bridge;
 
 /**
  * The properties to apply to the view. Use this property to update
@@ -85,7 +85,7 @@ NSString *const RCTContentDidAppearNotification;
  *
  * Set this property only on the main thread.
  */
-@property (nonatomic, copy, readwrite) NSDictionary *appProperties;
+@property (nonatomic, copy, readwrite, nullable) NSDictionary *appProperties;
 
 /**
  * The size flexibility mode of the root view.
@@ -95,24 +95,24 @@ NSString *const RCTContentDidAppearNotification;
 /**
  * The delegate that handles intrinsic size updates.
  */
-@property (nonatomic, weak) id<RCTRootViewDelegate> delegate;
+@property (nonatomic, weak, nullable) id<RCTRootViewDelegate> delegate;
 
 /**
  * The backing view controller of the root view.
  */
-@property (nonatomic, weak) UIViewController *reactViewController;
+@property (nonatomic, weak, nullable) UIViewController *reactViewController;
 
 /**
  * The React-managed contents view of the root view.
  */
-@property (nonatomic, strong, readonly) UIView *contentView;
+@property (nonatomic, strong, readonly, nullable) UIView *contentView;
 
 /**
  * A view to display while the JavaScript is loading, so users aren't presented
  * with a blank screen. By default this is nil, but you can override it with
  * (for example) a UIActivityIndicatorView or a placeholder image.
  */
-@property (nonatomic, strong) UIView *loadingView;
+@property (nonatomic, strong, nullable) UIView *loadingView;
 
 /**
  * Calling this will result in emitting a "touches cancelled" event to js,
