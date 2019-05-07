@@ -384,7 +384,7 @@
       this.url = String(input);
     }
 
-    this.credentials = options.credentials || this.credentials || 'omit';
+    this.credentials = options.credentials || this.credentials || 'same-origin';
     if (options.headers || !this.headers) {
       this.headers = new Headers(options.headers);
     }
@@ -510,10 +510,10 @@
 
       xhr.open(request.method, request.url, true);
 
-      if (request.credentials === 'include') {
-        xhr.withCredentials = true;
-      } else if (request.credentials === 'omit') {
+      if (request.credentials === 'omit') {
         xhr.withCredentials = false;
+      } else {
+        xhr.withCredentials = true;
       }
 
       if ('responseType' in xhr && support.blob) {
