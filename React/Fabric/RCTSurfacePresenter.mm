@@ -406,15 +406,6 @@ using namespace facebook::react;
 
 @end
 
-@implementation RCTSurfacePresenter (Deprecated)
-
-- (RCTBridge *)bridge_DO_NOT_USE
-{
-  return _bridge;
-}
-
-@end
-
 @implementation RCTBridge (Deprecated)
 
 - (void)setSurfacePresenter:(RCTSurfacePresenter *)surfacePresenter
