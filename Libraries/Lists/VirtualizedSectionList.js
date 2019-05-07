@@ -157,8 +157,8 @@ class VirtualizedSectionList<
       viewOffset = frame.length;
     }
     const toIndexParams = {
-      viewOffset,
       ...params,
+      viewOffset,
       index,
     };
     this._listRef.scrollToIndex(toIndexParams);
