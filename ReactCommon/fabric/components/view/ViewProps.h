@@ -51,7 +51,7 @@ class ViewProps : public Props,
 
   // Transform
   Transform transform{};
-  bool const backfaceVisibility{};
+  BackfaceVisibility const backfaceVisibility{};
   bool const shouldRasterize{};
   int const zIndex{};
 

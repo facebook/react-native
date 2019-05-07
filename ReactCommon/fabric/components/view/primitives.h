@@ -18,6 +18,8 @@ namespace react {
 
 enum class PointerEventsMode { Auto, None, BoxNone, BoxOnly };
 
+enum class BackfaceVisibility { Auto, Visible, Hidden };
+
 enum class BorderStyle { Solid, Dotted, Dashed };
 
 template <typename T>

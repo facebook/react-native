@@ -475,6 +475,24 @@ inline void fromRawValue(const RawValue &value, PointerEventsMode &result) {
   LOG(FATAL) << "Could not parse PointerEventsMode:" << stringValue;
 }
 
+inline void fromRawValue(const RawValue &value, BackfaceVisibility &result) {
+  assert(value.hasType<std::string>());
+  auto stringValue = (std::string)value;
+  if (stringValue == "auto") {
+    result = BackfaceVisibility::Auto;
+    return;
+  }
+  if (stringValue == "visible") {
+    result = BackfaceVisibility::Visible;
+    return;
+  }
+  if (stringValue == "hidden") {
+    result = BackfaceVisibility::Hidden;
+    return;
+  }
+  LOG(FATAL) << "Could not parse BackfaceVisibility:" << stringValue;
+}
+
 inline void fromRawValue(const RawValue &value, BorderStyle &result) {
   assert(value.hasType<std::string>());
   auto stringValue = (std::string)value;
