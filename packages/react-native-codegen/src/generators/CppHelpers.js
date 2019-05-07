@@ -11,6 +11,17 @@
 'use strict';
 import type {ComponentShape} from '../CodegenSchema';
 
+function upperCaseFirst(inString: string): string {
+  return inString[0].toUpperCase() + inString.slice(1);
+}
+
+function toSafeCppString(input: string): string {
+  return input
+    .split('-')
+    .map(upperCaseFirst)
+    .join('');
+}
+
 function getCppTypeForAnnotation(
   type:
     | 'BooleanTypeAnnotation'
@@ -72,4 +83,5 @@ function getImports(component: ComponentShape): Set<string> {
 module.exports = {
   getCppTypeForAnnotation,
   getImports,
+  toSafeCppString,
 };

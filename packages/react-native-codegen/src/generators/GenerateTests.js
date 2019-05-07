@@ -11,7 +11,7 @@
 'use strict';
 
 import type {SchemaType} from '../CodegenSchema';
-const {getImports} = require('./CppHelpers');
+const {getImports, toSafeCppString} = require('./CppHelpers');
 
 type FilesOutput = Map<string, string>;
 type TestCase = $ReadOnly<{|
@@ -52,7 +52,7 @@ function getTestCasesForProp(propName, typeAnnotation) {
     typeAnnotation.options.forEach(option =>
       cases.push({
         propName,
-        testName: `${propName}_${option.name}`,
+        testName: `${propName}_${toSafeCppString(option.name)}`,
         propValue: option.name,
       }),
     );

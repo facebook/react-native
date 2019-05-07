@@ -10,8 +10,7 @@
 
 'use strict';
 
-const {getCppTypeForAnnotation} = require('./CppHelpers.js');
-const {upperCaseFirst} = require('../Helpers.js');
+const {getCppTypeForAnnotation, toSafeCppString} = require('./CppHelpers.js');
 
 import type {PropTypeShape, SchemaType} from '../CodegenSchema';
 
@@ -165,7 +164,7 @@ function convertDefaultTypeToString(componentName: string, prop): string {
       return '';
     }
     case 'StringEnumTypeAnnotation':
-      return `${getEnumName(componentName, prop.name)}::${upperCaseFirst(
+      return `${getEnumName(componentName, prop.name)}::${toSafeCppString(
         typeAnnotation.default,
       )}`;
     default:
@@ -175,12 +174,12 @@ function convertDefaultTypeToString(componentName: string, prop): string {
 }
 
 function getEnumName(componentName, propName): string {
-  const uppercasedPropName = upperCaseFirst(propName);
+  const uppercasedPropName = toSafeCppString(propName);
   return `${componentName}${uppercasedPropName}`;
 }
 
 function convertValueToEnumOption(value: string): string {
-  return upperCaseFirst(value);
+  return toSafeCppString(value);
 }
 
 function generateEnumString(componentName: string, component): string {
@@ -213,7 +212,7 @@ function generateEnumString(componentName: string, component): string {
 
       return enumTemplate
         .replace(/::_ENUM_NAME_::/g, enumName)
-        .replace('::_VALUES_::', values.map(upperCaseFirst).join(', '))
+        .replace('::_VALUES_::', values.map(toSafeCppString).join(', '))
         .replace('::_FROM_CASES_::', fromCases)
         .replace('::_TO_CASES_::', toCases);
     })

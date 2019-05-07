@@ -109,23 +109,23 @@ TEST(EnumPropsNativeComponentProps_DoesNotDie, etc) {
   EnumPropsNativeComponentProps(sourceProps, rawProps);
 }
 
-TEST(EnumPropsNativeComponentProps_alignment_top, etc) {
+TEST(EnumPropsNativeComponentProps_alignment_Top, etc) {
   auto const &sourceProps = EnumPropsNativeComponentProps();
   auto const &rawProps = RawProps(folly::dynamic::object(\\"alignment\\", \\"top\\"));
 
   EnumPropsNativeComponentProps(sourceProps, rawProps);
 }
 
-TEST(EnumPropsNativeComponentProps_alignment_center, etc) {
+TEST(EnumPropsNativeComponentProps_alignment_Center, etc) {
   auto const &sourceProps = EnumPropsNativeComponentProps();
   auto const &rawProps = RawProps(folly::dynamic::object(\\"alignment\\", \\"center\\"));
 
   EnumPropsNativeComponentProps(sourceProps, rawProps);
 }
 
-TEST(EnumPropsNativeComponentProps_alignment_bottom, etc) {
+TEST(EnumPropsNativeComponentProps_alignment_BottomRight, etc) {
   auto const &sourceProps = EnumPropsNativeComponentProps();
-  auto const &rawProps = RawProps(folly::dynamic::object(\\"alignment\\", \\"bottom\\"));
+  auto const &rawProps = RawProps(folly::dynamic::object(\\"alignment\\", \\"bottom-right\\"));
 
   EnumPropsNativeComponentProps(sourceProps, rawProps);
 }",
