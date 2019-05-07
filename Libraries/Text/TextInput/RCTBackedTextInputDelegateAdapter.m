@@ -36,7 +36,7 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-  // UITextField don't have delegate like UITextView to get notification when user do selection, here we use KVO to observe changes.
+  // UITextField doesn't have a delegate like UITextView to get notified on selection. Use KVO to observe changes.
   if ([keyPath isEqualToString:@"selectedTextRange"]) {
     [self textFieldProbablyDidChangeSelection];
   } else {
