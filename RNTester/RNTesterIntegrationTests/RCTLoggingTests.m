@@ -31,7 +31,8 @@
   NSURL *scriptURL;
   if (getenv("CI_USE_PACKAGER")) {
     NSString *bundlePrefix = @"";
-    if (getenv("CI_USE_BUNDLE_PREFIX")) {
+    NSString *usePrefix = @(getenv("CI_USE_BUNDLE_PREFIX"));
+    if (usePrefix && ![usePrefix isEqualToString:@"0"]) {
       bundlePrefix = @"react-native-github/";
     }
     NSString *app = @"IntegrationTests/IntegrationTestsApp";

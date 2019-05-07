@@ -110,7 +110,8 @@
 - (NSURL *)sourceURLForBridge:(__unused RCTBridge *)bridge
 {
   NSString *bundlePrefix = @"";
-  if (getenv("CI_USE_BUNDLE_PREFIX")) {
+  NSString *usePrefix = @(getenv("CI_USE_BUNDLE_PREFIX"));
+  if (usePrefix && ![usePrefix isEqualToString:@"0"]) {
     bundlePrefix = @"react-native-github/";
   }
   NSString *bundleRoot = [NSString stringWithFormat:@"%@RNTester/js/RNTesterApp.ios", bundlePrefix];
