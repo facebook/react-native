@@ -35,7 +35,10 @@ extern "C"
 #else
 extern
 #endif
-NSString *const _Nonnull RCTContentDidAppearNotification;
+
+NS_ASSUME_NONNULL_BEGIN
+
+NSString *const RCTContentDidAppearNotification;
 
 /**
  * Native view used to host React-managed views within the app. Can be used just
@@ -47,8 +50,8 @@ NSString *const _Nonnull RCTContentDidAppearNotification;
 /**
  * - Designated initializer -
  */
-- (nonnull instancetype)initWithBridge:(nonnull RCTBridge *)bridge
-                    moduleName:(nonnull NSString *)moduleName
+- (instancetype)initWithBridge:(RCTBridge *)bridge
+                    moduleName:(NSString *)moduleName
              initialProperties:(nullable NSDictionary *)initialProperties NS_DESIGNATED_INITIALIZER;
 
 /**
@@ -58,8 +61,8 @@ NSString *const _Nonnull RCTContentDidAppearNotification;
  * otherwise create an `RCTBridge` and pass it in via `initWithBridge:moduleName:`
  * to all the instances.
  */
-- (nonnull instancetype)initWithBundleURL:(nonnull NSURL *)bundleURL
-                       moduleName:(nonnull NSString *)moduleName
+- (instancetype)initWithBundleURL:(NSURL *)bundleURL
+                       moduleName:(NSString *)moduleName
                 initialProperties:(nullable NSDictionary *)initialProperties
                     launchOptions:(nullable NSDictionary *)launchOptions;
 
@@ -70,13 +73,13 @@ NSString *const _Nonnull RCTContentDidAppearNotification;
  * any immediate effect, but it must be done prior to loading
  * the script.
  */
-@property (nonatomic, copy, readonly, nonnull) NSString *moduleName;
+@property (nonatomic, copy, readonly) NSString *moduleName;
 
 /**
  * The bridge used by the root view. Bridges can be shared between multiple
  * root views, so you can use this property to initialize another RCTRootView.
  */
-@property (nonatomic, strong, readonly, nonnull) RCTBridge *bridge;
+@property (nonatomic, strong, readonly) RCTBridge *bridge;
 
 /**
  * The properties to apply to the view. Use this property to update
@@ -105,7 +108,7 @@ NSString *const _Nonnull RCTContentDidAppearNotification;
 /**
  * The React-managed contents view of the root view.
  */
-@property (nonatomic, strong, readonly, nullable) UIView *contentView;
+@property (nonatomic, strong, readonly) UIView *contentView;
 
 /**
  * A view to display while the JavaScript is loading, so users aren't presented
@@ -166,3 +169,5 @@ NSString *const _Nonnull RCTContentDidAppearNotification;
 __deprecated_msg("Use `intrinsicContentSize` instead.");
 
 @end
+
+NS_ASSUME_NONNULL_END
