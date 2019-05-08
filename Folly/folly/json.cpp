@@ -712,7 +712,10 @@ void escapeStringImpl(
         word = folly::partialLoadUnaligned<uint64_t>(firstEsc, avail);
       }
       auto prefix = firstEscapableInWord<EnableExtraAsciiEscapes>(word, opts);
+FOLLY_PUSH_WARNING
+FOLLY_MSVC_DISABLE_WARNING(4018) // signed/unsigned mismatch
       DCHECK_LE(prefix, avail);
+FOLLY_POP_WARNING
       firstEsc += prefix;
       if (prefix < 8) {
         break;

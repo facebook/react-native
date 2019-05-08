@@ -642,11 +642,14 @@ size_t hash_combine_generic(
     const Ts&... ts) noexcept(noexcept(detail::c_array_size_t{h(t),
                                                               h(ts)...})) {
   size_t seed = h(t);
+FOLLY_PUSH_WARNING
+FOLLY_MSVC_DISABLE_WARNING(4127) // conditional expression is constant
   if (sizeof...(ts) == 0) {
     return seed;
   }
   size_t remainder = hash_combine_generic(h, ts...);
   if /* constexpr */ (sizeof(size_t) == sizeof(uint32_t)) {
+FOLLY_POP_WARNING
     return twang_32from64((uint64_t(seed) << 32) | remainder);
   } else {
     return static_cast<size_t>(hash_128_to_64(seed, remainder));

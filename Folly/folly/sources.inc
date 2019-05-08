@@ -3,18 +3,17 @@ LIBLETNAME = Folly
 !include $(OPENSOURCE_REACTNATIVE)\OfficeISS\ReactCommon\make.inc
 
 SOURCES_SHARED = \
-	..\Assume.cpp \
 	..\Conv.cpp \
 	..\Demangle.cpp \
 	..\dynamic.cpp \
+	..\Format.cpp \
 	..\json.cpp \
-	..\StringBase.cpp \
+	..\json_pointer.cpp \
 	..\ScopeGuard.cpp \
+	..\String.cpp \
 	..\Unicode.cpp \
 
-SOURCES_WIN32 = \
-    $(SOURCES_SHARED) \
-	..\SpookyHashV2.cpp \
+SOURCES_WIN32 = $(SOURCES_SHARED) \
 
 SOURCES_ANDROID = $(SOURCES_SHARED) \
 
