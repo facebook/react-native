@@ -13,6 +13,7 @@
 const NativeEventEmitter = require('NativeEventEmitter');
 const NativeModules = require('NativeModules');
 const Platform = require('Platform');
+const InteractionManager = require('InteractionManager');
 
 const invariant = require('invariant');
 
@@ -87,7 +88,11 @@ class Linking extends NativeEventEmitter {
    * See https://facebook.github.io/react-native/docs/linking.html#getinitialurl
    */
   getInitialURL(): Promise<?string> {
-    return LinkingManager.getInitialURL();
+    return Platform.OS === 'android'
+      ? InteractionManager.runAfterInteractions().then(() =>
+          LinkingManager.getInitialURL(),
+        )
+      : LinkingManager.getInitialURL();
   }
 
   /*
