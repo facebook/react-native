@@ -87,7 +87,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 - (NSURL *)defaultScriptURL
 {
   if (getenv("CI_USE_PACKAGER") || _useBundler) {
-    NSString *bundlePrefix = [[[NSBundle mainBundle] infoDictionary] valueForKey:@"RN_BUNDLE_PREFIX"];
+    NSString *bundlePrefix = @"";
+    if (getenv("CI_USE_BUNDLE_PREFIX")) {
+      bundlePrefix = @"react-native-github/";
+    }
     return [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@%@.bundle?platform=ios&dev=true", bundlePrefix, _appPath]];
   } else {
     return [[NSBundle bundleForClass:[RCTBridge class]] URLForResource:@"main" withExtension:@"jsbundle"];

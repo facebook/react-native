@@ -1913,11 +1913,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				BUNDLE_CONFIG = "$(SRCROOT)/../metro.config.js";
 				DEVELOPMENT_TEAM = VYK7DLU38Z;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-								"RN_BUNDLE_PREFIX=$(RN_BUNDLE_PREFIX)",
-                "DEBUG=1",
-                "$(inherited)",
-        );
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../third-party/boost_1_63_0",
 					"$(SRCROOT)/../third-party/folly-2018.10.22.00",
@@ -1929,7 +1924,6 @@
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.facebook.react.uiapp;
 				PRODUCT_NAME = RNTester;
-				RN_BUNDLE_PREFIX = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -1940,7 +1934,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				BUNDLE_CONFIG = "$(SRCROOT)/../metro.config.js";
 				DEVELOPMENT_TEAM = VYK7DLU38Z;
-				GCC_PREPROCESSOR_DEFINITIONS = "RN_BUNDLE_PREFIX=$(RN_BUNDLE_PREFIX)";
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../third-party/boost_1_63_0",
 					"$(SRCROOT)/../third-party/folly-2018.10.22.00",
