@@ -88,7 +88,9 @@ We use [Appveyor][config-appveyor] and [Circle CI][config-circleci] to automatic
 [config-appveyor]: https://github.com/facebook/react-native/blob/master/.appveyor/config.yml
 [config-circleci]: https://github.com/facebook/react-native/blob/master/.circleci/config.yml
 
-There's another set of tests that run within Facebook's internal test infrastructure. Some of these tests are integration tests defined by internal consumers of React Native (e.g. unit tests for a React Native surface in the Facebook app). These tests run on every commit to the copy of React Native hosted on Facebook's source control. They also run when a pull request is imported to Facebook's source control. As it happens, should one of these tests fail, you'll need someone at Facebook to take a look. Since pull requests can only be imported by Facebook employees, whoever imported the pull request should be able to facilitate any details.
+There's another set of tests that run within Facebook's internal test infrastructure. Some of these tests are integration tests defined by internal consumers of React Native (e.g. unit tests for a React Native surface in the Facebook app). These tests run on every commit to the copy of React Native hosted on Facebook's source control. They also run when a pull request is imported to Facebook's source control.
+
+If one of these tests fail, you'll need someone at Facebook to take a look. Since pull requests can only be imported by Facebook employees, whoever imported the pull request should be able to facilitate any details.
 
 > **Running CI tests locally**
 >

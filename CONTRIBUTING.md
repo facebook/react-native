@@ -49,7 +49,7 @@ The main repository, <https://github.com/facebook/react-native>, contains the co
 
 There's a few other repositories you might want to familiarize yourself with:
 
-- The source code for the **React Native website**, including the documentation, is located at <https://github.com/facebook/react-native-website>
+- **React Native website** contains the source code for the website, including the documentation, is located at <https://github.com/facebook/react-native-website>
 - **Releases** are coordinated through the <https://github.com/react-native-community/react-native-releases> repository. This includes important documents such as the Changelog.
 - **Discussions** about the future of React Native take place in the <https://github.com/react-native-community/discussions-and-proposals> repository.
 
@@ -59,7 +59,7 @@ Browsing through these repositories should provide some insight into how the Rea
 <!-- START: GitHub Issues -->
 # GitHub Issues
 
-We use GitHub issues to track public bugs. Please ensure your description is clear and has sufficient instructions to be able to reproduce the issue.
+We use GitHub issues to track bugs. Please ensure your description is clear and has sufficient instructions to be able to reproduce the issue.
 
 ## Security Bugs
 
@@ -145,7 +145,7 @@ As you work on React Native, it is natural that sooner or later you may require 
 
 * **Twitter**. The React Native team at Facebook has its own account at [**@reactnative**][at-reactnative], and the React Native Community uses [**@reactnativecomm**][at-reactnativecomm]. If you are stuck, or need help contributing, please do not hesitate to reach out.
 
-* **Proposals Repository**. If you are considering working on a feature large in scope, consider [creating a proposal first][meta]. The community is highly willing to help you figure out the right approach, and we'd be happy to help.
+* **Proposals Repository**. If you are considering working on a feature large in scope, consider [creating a proposal first][meta]. The community can help you figure out the right approach, and we'd be happy to help.
 
 * **React Native Community Discord**. While we try to hold most discussions in public, sometimes it can be beneficial to have conversations in real time with other contributors. People who have demonstrated a commitment to moving React Native forward through sustained contributions to the project may eventually be invited to join the React Native Community Discord.
 
