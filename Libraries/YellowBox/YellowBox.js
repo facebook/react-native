@@ -10,10 +10,14 @@
 
 'use strict';
 
-const React = require('React');
+const React = require('react');
 
-import type {Category} from 'YellowBoxCategory';
-import type {Registry, Subscription, IgnorePattern} from 'YellowBoxRegistry';
+import type {Category} from './Data/YellowBoxCategory';
+import type {
+  Registry,
+  Subscription,
+  IgnorePattern,
+} from './Data/YellowBoxRegistry';
 
 type Props = $ReadOnly<{||}>;
 type State = {|
@@ -41,10 +45,10 @@ let YellowBox;
  * the ignored warning messages.
  */
 if (__DEV__) {
-  const Platform = require('Platform');
-  const RCTLog = require('RCTLog');
-  const YellowBoxList = require('YellowBoxList');
-  const YellowBoxRegistry = require('YellowBoxRegistry');
+  const Platform = require('../Utilities/Platform');
+  const RCTLog = require('../Utilities/RCTLog');
+  const YellowBoxList = require('./UI/YellowBoxList');
+  const YellowBoxRegistry = require('./Data/YellowBoxRegistry');
 
   const {error, warn} = console;
 

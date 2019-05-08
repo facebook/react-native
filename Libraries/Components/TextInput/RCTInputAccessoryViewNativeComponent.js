@@ -9,12 +9,12 @@
  */
 'use strict';
 
-import type {NativeComponent} from 'ReactNative';
-import type {ColorValue} from 'StyleSheetTypes';
-import type {ViewStyleProp} from 'StyleSheet';
+import type {NativeComponent} from '../../Renderer/shims/ReactNative';
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
 
-const React = require('React');
-const requireNativeComponent = require('requireNativeComponent');
+const React = require('react');
+const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 
 type NativeProps = $ReadOnly<{|
   +children: React.Node,

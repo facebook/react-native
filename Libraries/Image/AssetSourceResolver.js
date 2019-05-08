@@ -17,10 +17,10 @@ export type ResolvedAssetSource = {|
   +scale: number,
 |};
 
-import type {PackagerAsset} from 'AssetRegistry';
+import type {PackagerAsset} from './AssetRegistry';
 
-const PixelRatio = require('PixelRatio');
-const Platform = require('Platform');
+const PixelRatio = require('../Utilities/PixelRatio');
+const Platform = require('../Utilities/Platform');
 
 const assetPathUtils = require('./assetPathUtils');
 const invariant = require('invariant');

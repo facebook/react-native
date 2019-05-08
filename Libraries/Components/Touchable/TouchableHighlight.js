@@ -9,26 +9,26 @@
  */
 'use strict';
 
-const DeprecatedColorPropType = require('DeprecatedColorPropType');
-const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
-const NativeMethodsMixin = require('NativeMethodsMixin');
-const Platform = require('Platform');
+const DeprecatedColorPropType = require('../../DeprecatedPropTypes/DeprecatedColorPropType');
+const DeprecatedViewPropTypes = require('../../DeprecatedPropTypes/DeprecatedViewPropTypes');
+const NativeMethodsMixin = require('../../Renderer/shims/NativeMethodsMixin');
+const Platform = require('../../Utilities/Platform');
 const PropTypes = require('prop-types');
-const React = require('React');
-const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
-const StyleSheet = require('StyleSheet');
-const Touchable = require('Touchable');
-const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-const View = require('View');
+const React = require('react');
+const ReactNativeViewAttributes = require('../View/ReactNativeViewAttributes');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
+const Touchable = require('./Touchable');
+const TouchableWithoutFeedback = require('./TouchableWithoutFeedback');
+const View = require('../View/View');
 
 const createReactClass = require('create-react-class');
-const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
+const ensurePositiveDelayProps = require('./ensurePositiveDelayProps');
 
-import type {PressEvent} from 'CoreEventTypes';
-import type {ViewStyleProp} from 'StyleSheet';
-import type {ColorValue} from 'StyleSheetTypes';
-import type {Props as TouchableWithoutFeedbackProps} from 'TouchableWithoutFeedback';
-import type {TVParallaxPropertiesType} from 'TVViewPropTypes';
+import type {PressEvent} from '../../Types/CoreEventTypes';
+import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {Props as TouchableWithoutFeedbackProps} from './TouchableWithoutFeedback';
+import type {TVParallaxPropertiesType} from '../AppleTV/TVViewPropTypes';
 
 const DEFAULT_PROPS = {
   activeOpacity: 0.85,

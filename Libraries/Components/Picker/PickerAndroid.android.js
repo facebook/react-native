@@ -10,18 +10,18 @@
 
 'use strict';
 
-const AndroidDropdownPickerNativeComponent = require('AndroidDropdownPickerNativeComponent');
-const AndroidDialogPickerNativeComponent = require('AndroidDialogPickerNativeComponent');
-const React = require('React');
-const StyleSheet = require('StyleSheet');
+const AndroidDropdownPickerNativeComponent = require('./AndroidDropdownPickerNativeComponent');
+const AndroidDialogPickerNativeComponent = require('./AndroidDialogPickerNativeComponent');
+const React = require('react');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
 
-const processColor = require('processColor');
+const processColor = require('../../StyleSheet/processColor');
 
 const REF_PICKER = 'picker';
 const MODE_DROPDOWN = 'dropdown';
 
-import type {SyntheticEvent} from 'CoreEventTypes';
-import type {TextStyleProp} from 'StyleSheet';
+import type {SyntheticEvent} from '../../Types/CoreEventTypes';
+import type {TextStyleProp} from '../../StyleSheet/StyleSheet';
 
 type PickerAndroidChangeEvent = SyntheticEvent<
   $ReadOnly<{|

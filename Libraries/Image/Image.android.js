@@ -10,26 +10,26 @@
 
 'use strict';
 
-const DeprecatedImageStylePropTypes = require('DeprecatedImageStylePropTypes');
-const DeprecatedStyleSheetPropType = require('DeprecatedStyleSheetPropType');
-const DeprecatedViewPropTypes = require('DeprecatedViewPropTypes');
-const ImageViewNativeComponent = require('ImageViewNativeComponent');
-const NativeModules = require('NativeModules');
+const DeprecatedImageStylePropTypes = require('../DeprecatedPropTypes/DeprecatedImageStylePropTypes');
+const DeprecatedStyleSheetPropType = require('../DeprecatedPropTypes/DeprecatedStyleSheetPropType');
+const DeprecatedViewPropTypes = require('../DeprecatedPropTypes/DeprecatedViewPropTypes');
+const ImageViewNativeComponent = require('./ImageViewNativeComponent');
+const NativeModules = require('../BatchedBridge/NativeModules');
 const PropTypes = require('prop-types');
-const React = require('React');
-const ReactNative = require('ReactNative'); // eslint-disable-line no-unused-vars
-const StyleSheet = require('StyleSheet');
-const TextAncestor = require('TextAncestor');
+const React = require('react');
+const ReactNative = require('../Renderer/shims/ReactNative'); // eslint-disable-line no-unused-vars
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const TextAncestor = require('../Text/TextAncestor');
 
-const flattenStyle = require('flattenStyle');
-const merge = require('merge');
-const resolveAssetSource = require('resolveAssetSource');
+const flattenStyle = require('../StyleSheet/flattenStyle');
+const merge = require('../vendor/core/merge');
+const resolveAssetSource = require('./resolveAssetSource');
 
 const {ImageLoader} = NativeModules;
 
-const TextInlineImageNativeComponent = require('TextInlineImageNativeComponent');
+const TextInlineImageNativeComponent = require('./TextInlineImageNativeComponent');
 
-import type {ImageProps as ImagePropsType} from 'ImageProps';
+import type {ImageProps as ImagePropsType} from './ImageProps';
 
 let _requestId = 1;
 function generateRequestId() {

@@ -11,15 +11,15 @@
 
 'use strict';
 
-const React = require('React');
+const React = require('react');
 const ReactTestRenderer = require('react-test-renderer');
-const TextInput = require('TextInput');
+const TextInput = require('../TextInput');
 
 import Component from '@reactions/component';
 
-const {enter} = require('ReactNativeTestTools');
+const {enter} = require('../../../Utilities/ReactNativeTestTools');
 
-jest.unmock('TextInput');
+jest.unmock('../TextInput');
 
 describe('TextInput tests', () => {
   let input;

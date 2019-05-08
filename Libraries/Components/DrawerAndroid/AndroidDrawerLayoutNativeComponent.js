@@ -10,12 +10,12 @@
 
 'use strict';
 
-const requireNativeComponent = require('requireNativeComponent');
+const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 
-import type {NativeComponent} from 'ReactNative';
-import type {SyntheticEvent} from 'CoreEventTypes';
-import type {ViewStyleProp} from 'StyleSheet';
-import type React from 'React';
+import type {NativeComponent} from '../../Renderer/shims/ReactNative';
+import type {SyntheticEvent} from '../../Types/CoreEventTypes';
+import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
+import type {Element, Node} from 'react';
 
 type ColorValue = null | string;
 
@@ -101,7 +101,7 @@ type NativeProps = $ReadOnly<{|
   /**
    * The navigation view that will be rendered to the side of the screen and can be pulled in.
    */
-  renderNavigationView: () => React.Element<any>,
+  renderNavigationView: () => Element<any>,
 
   /**
    * Make the drawer take the entire screen and draw the background of the
@@ -110,7 +110,7 @@ type NativeProps = $ReadOnly<{|
    */
   statusBarBackgroundColor?: ?ColorValue,
 
-  children?: React.Node,
+  children?: Node,
   style?: ?ViewStyleProp,
 |}>;
 

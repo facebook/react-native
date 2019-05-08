@@ -9,11 +9,11 @@
  */
 'use strict';
 
-const PixelRatio = require('PixelRatio');
-const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');
-const StyleSheetValidation = require('StyleSheetValidation');
+const PixelRatio = require('../Utilities/PixelRatio');
+const ReactNativeStyleAttributes = require('../Components/View/ReactNativeStyleAttributes');
+const StyleSheetValidation = require('./StyleSheetValidation');
 
-const flatten = require('flattenStyle');
+const flatten = require('./flattenStyle');
 
 import type {
   ____Styles_Internal,
@@ -25,7 +25,7 @@ import type {
   ____TextStyleProp_Internal,
   ____ImageStyle_Internal,
   ____ImageStyleProp_Internal,
-} from 'StyleSheetTypes';
+} from './StyleSheetTypes';
 
 /**
  * This type should be used as the type for a prop that is passed through

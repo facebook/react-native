@@ -10,10 +10,10 @@
 
 'use strict';
 
-const NativeEventEmitter = require('NativeEventEmitter');
-const NativeModules = require('NativeModules');
-const Platform = require('Platform');
-const InteractionManager = require('InteractionManager');
+const InteractionManager = require('../Interaction/InteractionManager');
+const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
+const NativeModules = require('../BatchedBridge/NativeModules');
+const Platform = require('../Utilities/Platform');
 
 const invariant = require('invariant');
 

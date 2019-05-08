@@ -11,7 +11,7 @@
 
 'use strict';
 
-const React = require('React');
+const React = require('react');
 const ProgressViewIOS = require('../ProgressViewIOS');
 
 const render = require('../../../../jest/renderer');
@@ -28,14 +28,14 @@ describe('<ProgressViewIOS />', () => {
   });
 
   it('should shallow render as <ForwardRef(ProgressViewIOS)> when not mocked', () => {
-    jest.dontMock('ProgressViewIOS');
+    jest.dontMock('../ProgressViewIOS');
 
     const output = render.shallow(<ProgressViewIOS progress={90} />);
     expect(output).toMatchSnapshot();
   });
 
   it('should render as <RCTProgressView> when not mocked', () => {
-    jest.dontMock('ProgressViewIOS');
+    jest.dontMock('../ProgressViewIOS');
 
     const instance = render.create(<ProgressViewIOS progress={90} />);
     expect(instance).toMatchSnapshot();

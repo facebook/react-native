@@ -10,9 +10,9 @@
 
 'use strict';
 
-const ScrollView = require('ScrollView');
+const ScrollView = require('../../../Components/ScrollView/ScrollView');
 
-const createAnimatedComponent = require('createAnimatedComponent');
+const createAnimatedComponent = require('../createAnimatedComponent');
 
 module.exports = createAnimatedComponent(ScrollView, {
   scrollEventThrottle: 0.0001,

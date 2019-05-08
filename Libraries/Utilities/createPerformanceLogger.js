@@ -9,9 +9,9 @@
  */
 'use strict';
 
-const Systrace = require('Systrace');
+const Systrace = require('../Performance/Systrace');
 
-const infoLog = require('infoLog');
+const infoLog = require('./infoLog');
 const performanceNow =
   global.nativeQPLTimestamp ||
   global.nativePerformanceNow ||

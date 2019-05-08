@@ -10,9 +10,9 @@
 
 'use strict';
 
-const NativeModules = require('NativeModules');
-const Promise = require('Promise');
-const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
+const NativeModules = require('../../BatchedBridge/NativeModules');
+const Promise = require('../../Promise');
+const RCTDeviceEventEmitter = require('../../EventEmitter/RCTDeviceEventEmitter');
 
 const AccessibilityManager = NativeModules.AccessibilityManager;
 

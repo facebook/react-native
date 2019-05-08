@@ -9,11 +9,11 @@
  */
 'use strict';
 
-const NativeModules = require('NativeModules');
-const Platform = require('Platform');
-const UIManagerProperties = require('UIManagerProperties');
+const NativeModules = require('../BatchedBridge/NativeModules');
+const Platform = require('../Utilities/Platform');
+const UIManagerProperties = require('./UIManagerProperties');
 
-const defineLazyObjectProperty = require('defineLazyObjectProperty');
+const defineLazyObjectProperty = require('../Utilities/defineLazyObjectProperty');
 const invariant = require('invariant');
 
 const {UIManager} = NativeModules;

@@ -9,22 +9,22 @@
  */
 'use strict';
 
-const Platform = require('Platform');
-const deepDiffer = require('deepDiffer');
-const React = require('React');
-const View = require('View');
-const VirtualizedList = require('VirtualizedList');
-const StyleSheet = require('StyleSheet');
+const Platform = require('../Utilities/Platform');
+const deepDiffer = require('../Utilities/differ/deepDiffer');
+const React = require('react');
+const View = require('../Components/View/View');
+const VirtualizedList = require('./VirtualizedList');
+const StyleSheet = require('../StyleSheet/StyleSheet');
 
 const invariant = require('invariant');
 
-import type {ViewStyleProp} from 'StyleSheet';
+import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {
   ViewabilityConfig,
   ViewToken,
   ViewabilityConfigCallbackPair,
-} from 'ViewabilityHelper';
-import type {Props as VirtualizedListProps} from 'VirtualizedList';
+} from './ViewabilityHelper';
+import type {Props as VirtualizedListProps} from './VirtualizedList';
 
 export type SeparatorsObj = {
   highlight: () => void,

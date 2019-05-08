@@ -10,23 +10,30 @@
 
 'use strict';
 
-const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
-const React = require('React');
+const DeprecatedEdgeInsetsPropType = require('../../DeprecatedPropTypes/DeprecatedEdgeInsetsPropType');
+const React = require('react');
 const PropTypes = require('prop-types');
-const Touchable = require('Touchable');
-const View = require('View');
+const Touchable = require('./Touchable');
+const View = require('../View/View');
 
 const createReactClass = require('create-react-class');
-const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
+const ensurePositiveDelayProps = require('./ensurePositiveDelayProps');
 
 const {
   DeprecatedAccessibilityRoles,
   DeprecatedAccessibilityStates,
-} = require('DeprecatedViewAccessibility');
+} = require('../../DeprecatedPropTypes/DeprecatedViewAccessibility');
 
-import type {SyntheticEvent, LayoutEvent, PressEvent} from 'CoreEventTypes';
-import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
-import type {AccessibilityRole, AccessibilityStates} from 'ViewAccessibility';
+import type {
+  SyntheticEvent,
+  LayoutEvent,
+  PressEvent,
+} from '../../Types/CoreEventTypes';
+import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
+import type {
+  AccessibilityRole,
+  AccessibilityStates,
+} from '../View/ViewAccessibility';
 
 type TargetEvent = SyntheticEvent<
   $ReadOnly<{|
