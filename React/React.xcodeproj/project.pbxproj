@@ -832,6 +832,9 @@
 		2D74EAFA1DAE9590003B751B /* RCTMultipartDataTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 006FC4131D9B20820057AAAD /* RCTMultipartDataTask.m */; };
 		2D8C2E331DA40441000EE098 /* RCTMultipartStreamReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 001BFCCF1D8381DE008E587E /* RCTMultipartStreamReader.m */; };
 		352DCFF01D19F4C20056D623 /* RCTI18nUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 352DCFEF1D19F4C20056D623 /* RCTI18nUtil.m */; };
+		385362712283364F00B0989C /* RCTSRWebSocket.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D7BFD2C1EA8E3FA008DFB7A /* RCTSRWebSocket.h */; };
+		385362722283369800B0989C /* RCTSRWebSocket.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D7BFD2C1EA8E3FA008DFB7A /* RCTSRWebSocket.h */; };
+		38536273228336AC00B0989C /* RCTSRWebSocket.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 3D7BFD2C1EA8E3FA008DFB7A /* RCTSRWebSocket.h */; };
 		391E86A41C623EC800009732 /* RCTTouchEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 391E86A21C623EC800009732 /* RCTTouchEvent.m */; };
 		39C50FF92046EACF00CEE534 /* RCTVersion.h in Copy Headers */ = {isa = PBXBuildFile; fileRef = 199B8A6E1F44DB16005DEF67 /* RCTVersion.h */; };
 		39C50FFB2046EE3500CEE534 /* RCTVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = 39C50FFA2046EE3500CEE534 /* RCTVersion.m */; };
@@ -2062,6 +2065,7 @@
 			dstPath = include/React;
 			dstSubfolderSpec = 16;
 			files = (
+				385362722283369800B0989C /* RCTSRWebSocket.h in Copy Headers */,
 				181B13D021652D7400D3B7D2 /* RCTLinkingManager.h in Copy Headers */,
 				1879ECFA21E85F0D00D98372 /* RCTDynamicColor.h in Copy Headers */,
 				18B8F9CA214335C800CE911A /* RCTLayout.h in Copy Headers */,
@@ -2208,6 +2212,7 @@
 			dstPath = include/React;
 			dstSubfolderSpec = 16;
 			files = (
+				38536273228336AC00B0989C /* RCTSRWebSocket.h in Copy Headers */,
 				18C2C6762141C9B4004314E0 /* RCTPlatformDisplayLink.h in Copy Headers */,
 				591F78DF202ADB97004A668C /* RCTLayout.h in Copy Headers */,
 				59EDBCC31FDF4E55003573DE /* RCTScrollableProtocol.h in Copy Headers */,
@@ -2413,6 +2418,7 @@
 			dstPath = include/React;
 			dstSubfolderSpec = 16;
 			files = (
+				385362712283364F00B0989C /* RCTSRWebSocket.h in Copy Headers */,
 				18C2C6742141C99B004314E0 /* RCTPlatformDisplayLink.h in Copy Headers */,
 				39C50FF92046EACF00CEE534 /* RCTVersion.h in Copy Headers */,
 				591F78DE202ADB8F004A668C /* RCTLayout.h in Copy Headers */,
