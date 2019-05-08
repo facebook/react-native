@@ -10,7 +10,7 @@
 
 'use strict';
 
-import NativeSampleTurboModule from 'NativeSampleTurboModule';
+import NativeSampleTurboModule from 'react-native/Libraries/TurboModule/samples/NativeSampleTurboModule';
 import {
   StyleSheet,
   Text,
