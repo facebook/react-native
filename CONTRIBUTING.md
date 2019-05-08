@@ -145,7 +145,7 @@ As you work on React Native, it is natural that sooner or later you may require 
 
 * **Twitter**. The React Native team at Facebook has its own account at [**@reactnative**][at-reactnative], and the React Native Community uses [**@reactnativecomm**][at-reactnativecomm]. If you are stuck, or need help contributing, please do not hesitate to reach out.
 
-* **Proposals Repository**. If you are considering working on a feature large in scope, consider [creating a proposal first][meta]. The community is highly willing to help you figure out the right approach, and we'd be happy to help.
+* **Proposals Repository**. If you are considering working on a feature large in scope, consider [creating a proposal first][meta]. The community can help you figure out the right approach, and we'd be happy to help.
 
 * **React Native Community Discord**. While we try to hold most discussions in public, sometimes it can be beneficial to have conversations in real time with other contributors. People who have demonstrated a commitment to moving React Native forward through sustained contributions to the project may eventually be invited to join the React Native Community Discord.
 
