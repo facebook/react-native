@@ -10,15 +10,15 @@
 
 'use strict';
 
-const FlatList = require('FlatList');
-const React = require('React');
-const ScrollView = require('ScrollView');
-const StyleSheet = require('StyleSheet');
-const Text = require('Text');
-const TouchableHighlight = require('TouchableHighlight');
-const View = require('View');
-const WebSocketInterceptor = require('WebSocketInterceptor');
-const XHRInterceptor = require('XHRInterceptor');
+const FlatList = require('../Lists/FlatList');
+const React = require('react');
+const ScrollView = require('../Components/ScrollView/ScrollView');
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const Text = require('../Text/Text');
+const TouchableHighlight = require('../Components/Touchable/TouchableHighlight');
+const View = require('../Components/View/View');
+const WebSocketInterceptor = require('../WebSocket/WebSocketInterceptor');
+const XHRInterceptor = require('../Network/XHRInterceptor');
 
 const LISTVIEW_CELL_HEIGHT = 15;
 

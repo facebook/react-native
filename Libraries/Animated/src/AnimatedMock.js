@@ -10,7 +10,7 @@
 'use strict';
 
 const {AnimatedEvent, attachNativeEvent} = require('./AnimatedEvent');
-const AnimatedImplementation = require('AnimatedImplementation');
+const AnimatedImplementation = require('./AnimatedImplementation');
 const AnimatedInterpolation = require('./nodes/AnimatedInterpolation');
 const AnimatedNode = require('./nodes/AnimatedNode');
 const AnimatedProps = require('./nodes/AnimatedProps');

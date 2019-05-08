@@ -9,16 +9,16 @@
  */
 'use strict';
 
-const Platform = require('Platform');
-const React = require('React');
-const ScrollView = require('ScrollView');
-const VirtualizedSectionList = require('VirtualizedSectionList');
+const Platform = require('../Utilities/Platform');
+const React = require('react');
+const ScrollView = require('../Components/ScrollView/ScrollView');
+const VirtualizedSectionList = require('./VirtualizedSectionList');
 
-import type {ViewToken} from 'ViewabilityHelper';
+import type {ViewToken} from './ViewabilityHelper';
 import type {
   SectionBase as _SectionBase,
   Props as VirtualizedSectionListProps,
-} from 'VirtualizedSectionList';
+} from './VirtualizedSectionList';
 
 type Item = any;
 

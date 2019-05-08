@@ -11,8 +11,8 @@
 
 'use strict';
 
-const React = require('React');
-const View = require('View');
+const React = require('react');
+const View = require('../../Components/View/View');
 const Modal = require('../Modal');
 
 const render = require('../../../jest/renderer');
@@ -37,7 +37,7 @@ describe('<Modal />', () => {
   });
 
   it('should shallow render as <Modal> when not mocked', () => {
-    jest.dontMock('Modal');
+    jest.dontMock('../Modal');
 
     const output = render.shallow(
       <Modal>
@@ -48,7 +48,7 @@ describe('<Modal />', () => {
   });
 
   it('should render as <RCTModalHostView> when not mocked', () => {
-    jest.dontMock('Modal');
+    jest.dontMock('../Modal');
 
     const instance = render.create(
       <Modal>

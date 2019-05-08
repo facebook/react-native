@@ -10,12 +10,13 @@
 
 'use strict';
 
-const React = require('React');
-const Platform = require('Platform');
+const React = require('react');
+const Platform = require('../../Utilities/Platform');
 
-const processColor = require('processColor');
+const processColor = require('../../StyleSheet/processColor');
 
-const StatusBarManager = require('NativeModules').StatusBarManager;
+const StatusBarManager = require('../../BatchedBridge/NativeModules')
+  .StatusBarManager;
 
 /**
  * Status bar style

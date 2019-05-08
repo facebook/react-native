@@ -32,7 +32,7 @@ const assertQueue = (flushedQueue, index, moduleID, methodID, params) => {
 describe('MessageQueue', function() {
   beforeEach(function() {
     jest.resetModules();
-    MessageQueue = require('MessageQueue');
+    MessageQueue = require('../MessageQueue');
     MessageQueueTestModule = require('MessageQueueTestModule');
     queue = new MessageQueue();
     queue.registerCallableModule(

@@ -10,12 +10,12 @@
 
 'use strict';
 
-const EventEmitter = require('EventEmitter');
-const NativeEventEmitter = require('NativeEventEmitter');
-const NativeModules = require('NativeModules');
+const EventEmitter = require('../vendor/emitter/EventEmitter');
+const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
+const NativeModules = require('../BatchedBridge/NativeModules');
 const RCTAppState = NativeModules.AppState;
 
-const logError = require('logError');
+const logError = require('../Utilities/logError');
 const invariant = require('invariant');
 
 /**

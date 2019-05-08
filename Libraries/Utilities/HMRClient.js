@@ -9,7 +9,7 @@
  */
 'use strict';
 
-const Platform = require('Platform');
+const Platform = require('./Platform');
 const invariant = require('invariant');
 
 const MetroHMRClient = require('metro/src/lib/bundle-modules/HMRClient');
@@ -25,7 +25,7 @@ const HMRClient = {
     invariant(host, 'Missing required paramenter `host`');
 
     // Moving to top gives errors due to NativeModules not being initialized
-    const HMRLoadingView = require('HMRLoadingView');
+    const HMRLoadingView = require('./HMRLoadingView');
 
     /* $FlowFixMe(>=0.84.0 site=react_native_fb) This comment suppresses an
      * error found when Flow v0.84 was deployed. To see the error, delete this
@@ -73,10 +73,11 @@ Error: ${e.message}`;
 
     hmrClient.on('update', () => {
       if (Platform.OS === 'ios') {
-        const RCTRedBox = require('NativeModules').RedBox;
+        const RCTRedBox = require('../BatchedBridge/NativeModules').RedBox;
         RCTRedBox && RCTRedBox.dismiss && RCTRedBox.dismiss();
       } else {
-        const RCTExceptionsManager = require('NativeModules').ExceptionsManager;
+        const RCTExceptionsManager = require('../BatchedBridge/NativeModules')
+          .ExceptionsManager;
         RCTExceptionsManager &&
           RCTExceptionsManager.dismissRedbox &&
           RCTExceptionsManager.dismissRedbox();

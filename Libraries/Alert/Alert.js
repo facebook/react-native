@@ -10,9 +10,9 @@
 
 'use strict';
 
-const NativeModules = require('NativeModules');
+const NativeModules = require('../BatchedBridge/NativeModules');
 const RCTAlertManager = NativeModules.AlertManager;
-const Platform = require('Platform');
+const Platform = require('../Utilities/Platform');
 
 export type Buttons = Array<{
   text?: string,

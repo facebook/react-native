@@ -10,11 +10,11 @@
 
 'use strict';
 
-const Blob = require('Blob');
-const BlobRegistry = require('BlobRegistry');
-const {BlobModule} = require('NativeModules');
+const Blob = require('./Blob');
+const BlobRegistry = require('./BlobRegistry');
+const {BlobModule} = require('../BatchedBridge/NativeModules');
 
-import type {BlobData, BlobOptions} from 'BlobTypes';
+import type {BlobData, BlobOptions} from './BlobTypes';
 
 /*eslint-disable no-bitwise */
 /*eslint-disable eqeqeq */

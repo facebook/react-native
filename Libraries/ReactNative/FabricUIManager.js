@@ -13,7 +13,7 @@ import type {
   MeasureOnSuccessCallback,
   MeasureInWindowOnSuccessCallback,
   MeasureLayoutOnSuccessCallback,
-} from 'ReactNativeTypes';
+} from '../Renderer/shims/ReactNativeTypes';
 
 // TODO: type these properly.
 type Node = {};

@@ -9,7 +9,7 @@
  */
 'use strict';
 
-const createPerformanceLogger = require('createPerformanceLogger');
+const createPerformanceLogger = require('./createPerformanceLogger');
 
 /**
  * This is a global shared instance of IPerformanceLogger that is created with

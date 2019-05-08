@@ -9,17 +9,19 @@
  */
 'use strict';
 
-const {polyfillGlobal} = require('PolyfillFunctions');
+const {polyfillGlobal} = require('../Utilities/PolyfillFunctions');
 
 /**
  * Polyfill ES6 collections (Map and Set).
  * If you don't need these polyfills, don't use InitializeCore; just directly
  * require the modules you need from InitializeCore for setup.
  */
-const _shouldPolyfillCollection = require('_shouldPolyfillES6Collection');
+const _shouldPolyfillCollection = require('../vendor/core/_shouldPolyfillES6Collection');
 if (_shouldPolyfillCollection('Map')) {
-  polyfillGlobal('Map', () => require('Map'));
+  // $FlowFixMe: even in strict-local mode Flow expects Map to be Flow-typed
+  polyfillGlobal('Map', () => require('../vendor/core/Map'));
 }
 if (_shouldPolyfillCollection('Set')) {
-  polyfillGlobal('Set', () => require('Set'));
+  // $FlowFixMe: even in strict-local mode Flow expects Set to be Flow-typed
+  polyfillGlobal('Set', () => require('../vendor/core/Set'));
 }

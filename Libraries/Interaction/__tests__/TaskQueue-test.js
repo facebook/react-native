@@ -36,7 +36,7 @@ describe('TaskQueue', () => {
   beforeEach(() => {
     jest.resetModules();
     onMoreTasks = jest.fn();
-    const TaskQueue = require('TaskQueue');
+    const TaskQueue = require('../TaskQueue');
     taskQueue = new TaskQueue({onMoreTasks});
     sequenceId = 0;
   });

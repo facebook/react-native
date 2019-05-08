@@ -10,16 +10,16 @@
 
 'use strict';
 
-const DeprecatedEdgeInsetsPropType = require('DeprecatedEdgeInsetsPropType');
-const PlatformViewPropTypes = require('PlatformViewPropTypes');
+const DeprecatedEdgeInsetsPropType = require('./DeprecatedEdgeInsetsPropType');
+const PlatformViewPropTypes = require('../Components/View/PlatformViewPropTypes');
 const PropTypes = require('prop-types');
-const DeprecatedStyleSheetPropType = require('DeprecatedStyleSheetPropType');
-const DeprecatedViewStylePropTypes = require('DeprecatedViewStylePropTypes');
+const DeprecatedStyleSheetPropType = require('./DeprecatedStyleSheetPropType');
+const DeprecatedViewStylePropTypes = require('./DeprecatedViewStylePropTypes');
 
 const {
   DeprecatedAccessibilityRoles,
   DeprecatedAccessibilityStates,
-} = require('DeprecatedViewAccessibility');
+} = require('./DeprecatedViewAccessibility');
 
 const stylePropType = DeprecatedStyleSheetPropType(
   DeprecatedViewStylePropTypes,

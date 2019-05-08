@@ -11,8 +11,8 @@
 
 'use strict';
 
-const RCTVibration = require('NativeModules').Vibration;
-const Platform = require('Platform');
+const RCTVibration = require('../BatchedBridge/NativeModules').Vibration;
+const Platform = require('../Utilities/Platform');
 
 /**
  * Vibration API

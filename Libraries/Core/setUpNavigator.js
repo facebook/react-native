@@ -9,7 +9,7 @@
  */
 'use strict';
 
-const {polyfillObjectProperty} = require('PolyfillFunctions');
+const {polyfillObjectProperty} = require('../Utilities/PolyfillFunctions');
 
 let navigator = global.navigator;
 if (navigator === undefined) {
