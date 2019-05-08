@@ -16,6 +16,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
+import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 
 import com.facebook.react.bridge.Callback;
@@ -169,5 +170,19 @@ public class AccessibilityInfoModule extends ReactContextBaseJavaModule
 
     @Override
     public void onHostDestroy() {
+    }
+
+    @ReactMethod
+    public void announceForAccessibility(String message) {
+        if (mAccessibilityManager == null || !mAccessibilityManager.isEnabled()) {
+            return;
+        }
+
+        AccessibilityEvent event = AccessibilityEvent.obtain(AccessibilityEvent.TYPE_ANNOUNCEMENT);
+        event.getText().add(message);
+        event.setClassName(AccessibilityInfoModule.class.getName());
+        event.setPackageName(getReactApplicationContext().getPackageName());
+
+        mAccessibilityManager.sendAccessibilityEvent(event);
     }
 }
