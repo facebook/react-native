@@ -66,7 +66,7 @@ class ConcreteState : public State {
    * of conflict.
    */
   void updateState(
-      std::function<Data && (const Data &oldData)> callback,
+      std::function<Data(const Data &oldData)> callback,
       EventPriority priority = EventPriority::AsynchronousBatched) const {
     stateCoordinator_->dispatchRawState(
         {[stateCoordinator = stateCoordinator_,
