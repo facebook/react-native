@@ -101,9 +101,10 @@ If all goes well, your pull request will be merged. If it is not merged, maintai
 
 ## Step-by-step Guide
 
-Whenever you are ready to contribute, check out our [step-by-step guide to sending your first pull request][first-pr].
+Whenever you are ready to contribute code, check out our [step-by-step guide to sending your first pull request][first-pr], or read the [How to Contribute Code](wiki-contribution) guide on the wiki for more details.
 
-[first-pr]: https://github.com/facebook/react-native/wiki/FirstPullRequest
+[first-pr]: https://github.com/facebook/react-native/wiki/Your-First-Pull-Request
+[wiki-contribution]: https://github.com/facebook/react-native/wiki/How-to-Contribute
 
 ## Style Guide
 

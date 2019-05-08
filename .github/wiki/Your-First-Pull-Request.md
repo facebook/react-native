@@ -1,3 +1,8 @@
+<!--
+  About this guide:
+  This is a step-by-step guide aimed at folks who may not be familiar with the GitHub contribution workflow.
+-->
+
 # Your First Pull Request, a Step-by-Step Guide
 
 These instructions provide the step-by-step process to set up your machine to make contributions to the core React Native repository, and create your first pull request.
@@ -6,9 +11,7 @@ These instructions provide the step-by-step process to set up your machine to ma
 
 You will need a few tools and dependencies in order to build and develop for React Native. These are covered as part of the [Getting Started](https://facebook.github.io/react-native/docs/getting-started) guide under the "Building Projects with Native Code" section.
 
-In order to accept your pull request, we need you to submit a CLA. You only need to do this once to work on any of Facebook's open source projects.
-
-Complete your CLA here: <https://code.facebook.com/cla>
+In order to accept your pull request, we need you to submit a [Contributor's License Agreement (CLA)](./Contributor-License-Agreement.md). You only need to do this once to work on any of Facebook's open source projects. While it should only take a minute, you don't need to do this right away.
 
 ## Chapter I: Welcome to Open Source
 

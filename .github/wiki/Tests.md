@@ -1,4 +1,7 @@
-# Tests
+<!--
+  About this guide:
+  The goals of this document are two-fold: it documents what sort of tests run against code-level open source contributions, and it documents best-practices for writing your own tests.
+-->
 
 ## Running Tests
 This section is about testing your changes to React Native as a contributor. If you haven't yet, go through the steps to set up your development environment for [building projects with native code][env-setup]. If you are intested in [writing tests](#writing-tests) for a React Native app, proceed to the next section.
