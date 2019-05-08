@@ -10,7 +10,7 @@
 
 'use strict';
 
-require('InitializeCore');
+require('react-native/Libraries/Core/InitializeCore');
 const React = require('react');
 const ReactNative = require('react-native');
 const {
@@ -46,7 +46,7 @@ TESTS.forEach(
 );
 
 // Modules required for integration tests
-require('LoggingTestModule');
+require('./LoggingTestModule');
 
 type Test = any;
 
