@@ -74,6 +74,8 @@ The React Native GitHub repository is actually a mirror of a subdirectory from o
 
 Facebook employees can import a pull request in one of two ways: the pull request can be “landed to master”, meaning it will be imported and the resulting diff will be approved automatically, and barring any failures, the changes will eventually sync back to master. A pull request may also be “imported to fbsource”, meaning the changes will be copied to an internal diff that will require further review and approval before it can land.
 
+![](./Importing-Pull-Requests.png)
+
 <!-- END: Pull Requests -->
 
 ## Tests
