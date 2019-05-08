@@ -11,7 +11,7 @@
 
 'use strict';
 
-const React = require('React');
+const React = require('react');
 
 const TestRenderer = require('react-test-renderer');
 const ShallowRenderer = require('react-test-renderer/shallow');
