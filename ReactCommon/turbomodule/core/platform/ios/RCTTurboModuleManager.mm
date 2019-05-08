@@ -45,12 +45,9 @@ static Class getFallbackClassFromName(const char *name) {
   std::unordered_map<std::string, std::shared_ptr<react::TurboModule>> _turboModuleCache;
 }
 
-- (instancetype)initWithRuntime:(jsi::Runtime *)runtime
-                         bridge:(RCTBridge *)bridge
-                       delegate:(id<RCTTurboModuleManagerDelegate>)delegate
+- (instancetype)initWithBridge:(RCTBridge *)bridge delegate:(id<RCTTurboModuleManagerDelegate>)delegate
 {
   if (self = [super init]) {
-    _runtime = runtime;
     _jsInvoker = std::make_shared<react::JSCallInvoker>(bridge.reactInstance);
     _delegate = delegate;
     _bridge = bridge;
@@ -246,8 +243,10 @@ static Class getFallbackClassFromName(const char *name) {
   return module;
 }
 
-- (void)installJSBinding
+- (void)installJSBindingWithRuntime:(jsi::Runtime *)runtime
 {
+  _runtime = runtime;
+
   if (!_runtime) {
     // jsi::Runtime doesn't exist when attached to Chrome debugger.
     return;
