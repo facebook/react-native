@@ -16,10 +16,5 @@ namespace react {
  */
 using Float = float;
 
-/*
- * Large positive number signifies that the `Float` values is `undefined`.
- */
-const Float kFloatUndefined = std::numeric_limits<Float>::max();
-
 } // namespace react
 } // namespace facebook

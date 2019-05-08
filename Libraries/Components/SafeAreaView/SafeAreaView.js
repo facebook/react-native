@@ -8,12 +8,12 @@
  * @format
  */
 
-const Platform = require('Platform');
-const React = require('React');
-const View = require('View');
+const Platform = require('../../Utilities/Platform');
+const React = require('react');
+const View = require('../View/View');
 
-import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'ReactNative';
+import type {ViewProps} from '../View/ViewPropTypes';
+import type {NativeComponent} from '../../Renderer/shims/ReactNative';
 
 type Props = $ReadOnly<{|
   ...ViewProps,
@@ -44,7 +44,7 @@ if (Platform.OS === 'android') {
   SafeAreaViewRef.displayName = 'SafeAreaView';
   exported = ((SafeAreaViewRef: any): Class<React.Component<Props>>);
 } else {
-  const RCTSafeAreaViewNativeComponent = require('RCTSafeAreaViewNativeComponent');
+  const RCTSafeAreaViewNativeComponent = require('./RCTSafeAreaViewNativeComponent');
 
   const SafeAreaView = (
     props: Props,

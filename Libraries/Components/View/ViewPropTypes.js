@@ -10,12 +10,12 @@
 
 'use strict';
 
-import type {PressEvent, Layout, LayoutEvent} from 'CoreEventTypes';
-import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
-import type React from 'React';
-import type {ViewStyleProp} from 'StyleSheet';
-import type {TVViewProps} from 'TVViewPropTypes';
-import type {AccessibilityRole, AccessibilityStates} from 'ViewAccessibility';
+import type {PressEvent, Layout, LayoutEvent} from '../../Types/CoreEventTypes';
+import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
+import type {Node} from 'react';
+import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
+import type {TVViewProps} from '../AppleTV/TVViewPropTypes';
+import type {AccessibilityRole, AccessibilityStates} from './ViewAccessibility';
 
 export type ViewLayout = Layout;
 export type ViewLayoutEvent = LayoutEvent;
@@ -377,7 +377,7 @@ export type ViewProps = $ReadOnly<{|
   // so we must include TVViewProps
   ...TVViewProps,
 
-  children?: React.Node,
+  children?: Node,
   style?: ?ViewStyleProp,
 
   /**

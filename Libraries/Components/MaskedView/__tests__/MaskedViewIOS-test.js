@@ -11,10 +11,10 @@
 
 'use strict';
 
-const React = require('React');
-const Text = require('Text');
-const View = require('View');
-const MaskedViewIOS = require('MaskedViewIOS');
+const React = require('react');
+const Text = require('../../../Text/Text');
+const View = require('../../View/View');
+const MaskedViewIOS = require('../MaskedViewIOS');
 
 const render = require('../../../../jest/renderer');
 
@@ -48,7 +48,7 @@ describe('<MaskedViewIOS />', () => {
   });
 
   it('should shallow render as <MaskedViewIOS> when not mocked', () => {
-    jest.dontMock('MaskedViewIOS');
+    jest.dontMock('../MaskedViewIOS');
 
     const output = render.shallow(
       <MaskedViewIOS
@@ -64,7 +64,7 @@ describe('<MaskedViewIOS />', () => {
   });
 
   it('should render as <RCTMaskedView> when not mocked', () => {
-    jest.dontMock('MaskedViewIOS');
+    jest.dontMock('../MaskedViewIOS');
 
     const instance = render.create(
       <MaskedViewIOS

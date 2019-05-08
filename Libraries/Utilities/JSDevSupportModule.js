@@ -10,8 +10,8 @@
 
 'use strict';
 
-const JSDevSupport = require('NativeModules').JSDevSupport;
-const ReactNative = require('ReactNative');
+const JSDevSupport = require('../BatchedBridge/NativeModules').JSDevSupport;
+const ReactNative = require('../Renderer/shims/ReactNative');
 
 const JSDevSupportModule = {
   getJSHierarchy: function(tag: number) {

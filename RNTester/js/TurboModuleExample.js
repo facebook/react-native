@@ -11,7 +11,7 @@
 'use strict';
 
 const React = require('react');
-const SampleTurboModuleExample = require('SampleTurboModuleExample');
+const SampleTurboModuleExample = require('./SampleTurboModuleExample');
 
 exports.displayName = (undefined: ?string);
 exports.title = 'TurboModule';

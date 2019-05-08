@@ -57,7 +57,7 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
   void stopSurface(jint surfaceId);
 
   void schedulerDidFinishTransaction(
-      MountingTransaction &&mountingTransaction);
+    MountingCoordinator::Shared const &mountingCoordinator);
 
   void schedulerDidRequestPreliminaryViewAllocation(
       const SurfaceId surfaceId,

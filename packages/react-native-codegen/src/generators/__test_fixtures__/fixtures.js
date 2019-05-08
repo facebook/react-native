@@ -484,7 +484,7 @@ const ENUM_PROP: SchemaType = {
                     name: 'center',
                   },
                   {
-                    name: 'bottom',
+                    name: 'bottom-right',
                   },
                 ],
               },

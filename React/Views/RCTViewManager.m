@@ -174,7 +174,7 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityRole, UIAccessibilityTraits, RCTView)
     view.reactAccessibilityElement.accessibilityTraits |= maskedTraits;
   } else {
     NSString *role = json ? [RCTConvert NSString:json] : @"";
-    ((RCTView *)view.reactAccessibilityElement).accessibilityRole = role;
+    view.reactAccessibilityElement.accessibilityRole = role;
   }
 }
 
@@ -200,9 +200,9 @@ RCT_CUSTOM_VIEW_PROPERTY(accessibilityStates, NSArray<NSString *>, RCTView)
     }
   }
   if (newStates.count > 0) {
-    ((RCTView *)view.reactAccessibilityElement).accessibilityStates = newStates;
+    view.reactAccessibilityElement.accessibilityStates = newStates;
   } else {
-      ((RCTView *)view.reactAccessibilityElement).accessibilityStates = nil;
+    view.reactAccessibilityElement.accessibilityStates = nil;
   }
 }
 

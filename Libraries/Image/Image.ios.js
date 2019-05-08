@@ -9,23 +9,23 @@
  */
 'use strict';
 
-const DeprecatedImagePropType = require('DeprecatedImagePropType');
-const NativeModules = require('NativeModules');
-const React = require('React');
-const ReactNative = require('ReactNative'); // eslint-disable-line no-unused-vars
-const StyleSheet = require('StyleSheet');
+const DeprecatedImagePropType = require('../DeprecatedPropTypes/DeprecatedImagePropType');
+const NativeModules = require('../BatchedBridge/NativeModules');
+const React = require('react');
+const ReactNative = require('../Renderer/shims/ReactNative'); // eslint-disable-line no-unused-vars
+const StyleSheet = require('../StyleSheet/StyleSheet');
 
-const flattenStyle = require('flattenStyle');
-const requireNativeComponent = require('requireNativeComponent');
-const resolveAssetSource = require('resolveAssetSource');
+const flattenStyle = require('../StyleSheet/flattenStyle');
+const requireNativeComponent = require('../ReactNative/requireNativeComponent');
+const resolveAssetSource = require('./resolveAssetSource');
 
 const ImageViewManager = NativeModules.ImageViewManager;
 
 const RCTImageView = requireNativeComponent('RCTImageView');
 
-import type {ImageProps as ImagePropsType} from 'ImageProps';
+import type {ImageProps as ImagePropsType} from './ImageProps';
 
-import type {ImageStyleProp} from 'StyleSheet';
+import type {ImageStyleProp} from '../StyleSheet/StyleSheet';
 
 function getSize(
   uri: string,

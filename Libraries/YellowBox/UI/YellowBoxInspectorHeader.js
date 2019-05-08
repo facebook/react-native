@@ -10,18 +10,18 @@
 
 'use strict';
 
-const Image = require('Image');
-const Platform = require('Platform');
-const React = require('React');
-const SafeAreaView = require('SafeAreaView');
-const StyleSheet = require('StyleSheet');
-const Text = require('Text');
-const View = require('View');
-const YellowBoxImageSource = require('YellowBoxImageSource');
-const YellowBoxPressable = require('YellowBoxPressable');
-const YellowBoxStyle = require('YellowBoxStyle');
+const Image = require('../../Image/Image');
+const Platform = require('../../Utilities/Platform');
+const React = require('react');
+const SafeAreaView = require('../../Components/SafeAreaView/SafeAreaView');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
+const Text = require('../../Text/Text');
+const View = require('../../Components/View/View');
+const YellowBoxImageSource = require('./YellowBoxImageSource');
+const YellowBoxPressable = require('./YellowBoxPressable');
+const YellowBoxStyle = require('./YellowBoxStyle');
 
-import type YellowBoxWarning from 'YellowBoxWarning';
+import type YellowBoxWarning from '../Data/YellowBoxWarning';
 
 type Props = $ReadOnly<{|
   onSelectIndex: (selectedIndex: number) => void,

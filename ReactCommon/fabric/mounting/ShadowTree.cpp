@@ -5,16 +5,14 @@
 
 #include "ShadowTree.h"
 
-#include <glog/logging.h>
-
 #include <react/components/root/RootComponentDescriptor.h>
 #include <react/components/view/ViewShadowNode.h>
 #include <react/core/LayoutContext.h>
 #include <react/core/LayoutPrimitives.h>
 #include <react/debug/SystraceSection.h>
-#include <react/mounting/Differentiator.h>
+#include <react/mounting/MountingTelemetry.h>
+#include <react/mounting/ShadowTreeRevision.h>
 #include <react/mounting/ShadowViewMutation.h>
-#include <react/utils/TimeUtils.h>
 
 #include "ShadowTreeDelegate.h"
 
@@ -100,9 +98,8 @@ ShadowTree::ShadowTree(
           /* .eventEmitter = */ noopEventEmitter,
       }));
 
-#ifdef RN_SHADOW_TREE_INTROSPECTION
-  stubViewTree_ = stubViewTreeFromShadowNode(*rootShadowNode_);
-#endif
+  mountingCoordinator_ = std::make_shared<MountingCoordinator const>(
+      ShadowTreeRevision{rootShadowNode_, 0, {}});
 }
 
 ShadowTree::~ShadowTree() {
@@ -118,24 +115,21 @@ ShadowTree::~ShadowTree() {
                 ShadowNodeFragment::eventEmitterPlaceholder(),
                 /* .children = */ ShadowNode::emptySharedShadowNodeSharedList(),
             });
-      },
-      getTime());
+      });
 }
 
 Tag ShadowTree::getSurfaceId() const {
   return surfaceId_;
 }
 
-void ShadowTree::commit(
-    ShadowTreeCommitTransaction transaction,
-    long commitStartTime) const {
+void ShadowTree::commit(ShadowTreeCommitTransaction transaction) const {
   SystraceSection s("ShadowTree::commit");
 
   int attempts = 0;
 
   while (true) {
     attempts++;
-    if (tryCommit(transaction, commitStartTime)) {
+    if (tryCommit(transaction)) {
       return;
     }
 
@@ -145,10 +139,11 @@ void ShadowTree::commit(
   }
 }
 
-bool ShadowTree::tryCommit(
-    ShadowTreeCommitTransaction transaction,
-    long commitStartTime) const {
+bool ShadowTree::tryCommit(ShadowTreeCommitTransaction transaction) const {
   SystraceSection s("ShadowTree::tryCommit");
+
+  auto telemetry = MountingTelemetry{};
+  telemetry.willCommit();
 
   SharedRootShadowNode oldRootShadowNode;
 
@@ -167,14 +162,13 @@ bool ShadowTree::tryCommit(
   std::vector<LayoutableShadowNode const *> affectedLayoutableNodes{};
   affectedLayoutableNodes.reserve(1024);
 
-  long layoutTime = getTime();
+  telemetry.willLayout();
   newRootShadowNode->layout(&affectedLayoutableNodes);
-  layoutTime = getTime() - layoutTime;
+  telemetry.didLayout();
+
   newRootShadowNode->sealRecursive();
 
-  int revision;
-  auto mutations =
-      calculateShadowViewMutations(*oldRootShadowNode, *newRootShadowNode);
+  auto revisionNumber = ShadowTreeRevision::Number{};
 
   {
     // Updating `rootShadowNode_` in unique manner if it hasn't changed.
@@ -193,36 +187,19 @@ bool ShadowTree::tryCommit(
           oldRootShadowNode->getChildren(), newRootShadowNode->getChildren());
     }
 
-    revision = revision_;
-    revision_++;
-
-#ifdef RN_SHADOW_TREE_INTROSPECTION
-    stubViewTree_.mutate(mutations);
-    auto stubViewTree = stubViewTreeFromShadowNode(*rootShadowNode_);
-    if (stubViewTree_ != stubViewTree) {
-      LOG(ERROR) << "Old tree:"
-                 << "\n"
-                 << oldRootShadowNode->getDebugDescription() << "\n";
-      LOG(ERROR) << "New tree:"
-                 << "\n"
-                 << newRootShadowNode->getDebugDescription() << "\n";
-      LOG(ERROR) << "Mutations:"
-                 << "\n"
-                 << getDebugDescription(mutations);
-      assert(false);
-    }
-#endif
+    revisionNumber_++;
+    revisionNumber = revisionNumber_;
   }
 
   emitLayoutEvents(affectedLayoutableNodes);
 
+  telemetry.didCommit();
+
+  mountingCoordinator_->push(
+      ShadowTreeRevision{newRootShadowNode, revisionNumber, telemetry});
+
   if (delegate_) {
-    delegate_->shadowTreeDidCommit(
-        *this,
-        {surfaceId_,
-         revision,
-         std::move(mutations),
-         {commitStartTime, layoutTime}});
+    delegate_->shadowTreeDidCommit(*this, mountingCoordinator_);
   }
 
   return true;

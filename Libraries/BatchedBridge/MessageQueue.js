@@ -10,12 +10,12 @@
 
 'use strict';
 
-const ErrorUtils = require('ErrorUtils');
-const Systrace = require('Systrace');
+const ErrorUtils = require('../vendor/core/ErrorUtils');
+const Systrace = require('../Performance/Systrace');
 
-const deepFreezeAndThrowOnMutationInDev = require('deepFreezeAndThrowOnMutationInDev');
+const deepFreezeAndThrowOnMutationInDev = require('../Utilities/deepFreezeAndThrowOnMutationInDev');
 const invariant = require('invariant');
-const stringifySafe = require('stringifySafe');
+const stringifySafe = require('../Utilities/stringifySafe');
 
 export type SpyData = {
   type: number,

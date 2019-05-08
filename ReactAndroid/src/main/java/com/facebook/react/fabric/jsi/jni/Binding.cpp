@@ -287,14 +287,12 @@ local_ref<JMountItem::javaobject> createUpdateStateMountItem(
 
   auto state = mutation.newChildShadowView.state;
 
-  // We use state.get() to pass a raw pointer through the JNI
-  // We don't need to access the state ptr in Java, but we need to be able to
-  // pass a state object back through the JNI for state updates
-
   // Do not hold onto Java object from C
+  // We DO want to hold onto C object from Java, since we don't know the
+  // lifetime of the Java object
   auto javaStateWrapper = StateWrapperImpl::newObjectJavaArgs();
   StateWrapperImpl* cStateWrapper = cthis(javaStateWrapper);
-  cStateWrapper->state_ = state.get();
+  cStateWrapper->state_ = state;
 
   return updateStateInstruction(
       javaUIManager,
@@ -353,12 +351,18 @@ local_ref<JMountItem::javaobject> createCreateMountItem(
 }
 
 void Binding::schedulerDidFinishTransaction(
-    MountingTransaction &&mountingTransaction) {
+    MountingCoordinator::Shared const &mountingCoordinator) {
   SystraceSection s("FabricUIManager::schedulerDidFinishTransaction");
 
-  auto telemetry = mountingTransaction.getTelemetry();
-  auto mutations = mountingTransaction.getMutations();
-  auto surfaceId = mountingTransaction.getSurfaceId();
+  auto mountingTransaction = mountingCoordinator->pullTransaction();
+
+  if (!mountingTransaction.has_value()) {
+    return;
+  }
+
+  auto telemetry = mountingTransaction->getTelemetry();
+  auto surfaceId = mountingTransaction->getSurfaceId();
+  auto &mutations = mountingTransaction->getMutations();
 
   std::vector<local_ref<jobject>> queue;
   // Upper bound estimation of mount items to be delivered to Java side.
@@ -503,8 +507,8 @@ void Binding::schedulerDidFinishTransaction(
   scheduleMountItems(
       javaUIManager_,
       batch.get(),
-      telemetry.commitStartTime,
-      telemetry.layoutTime,
+      telemetry.getCommitStartTime(),
+      telemetry.getLayoutTime(),
       finishTransactionStartTime,
       finishTransactionEndTime);
 }

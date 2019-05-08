@@ -2,7 +2,7 @@
 name: "🐛 Bug Report"
 about: You want to report a reproducible bug or regression in React Native.
 title: ''
-labels: 'Type: Bug Report'
+labels: 'Bug'
 
 ---
 

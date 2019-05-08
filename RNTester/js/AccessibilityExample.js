@@ -452,6 +452,22 @@ class ScreenReaderStatusExample extends React.Component<{}> {
   }
 }
 
+class AnnounceForAccessibility extends React.Component<{}> {
+  _handleOnPress = () =>
+    AccessibilityInfo.announceForAccessibility('Announcement Test');
+
+  render() {
+    return (
+      <View>
+        <Button
+          onPress={this._handleOnPress}
+          title="Announce for Accessibility"
+        />
+      </View>
+    );
+  }
+}
+
 exports.title = 'Accessibility';
 exports.description = 'Examples of using Accessibility APIs.';
 exports.examples = [
@@ -471,6 +487,12 @@ exports.examples = [
     title: 'Check if the screen reader is enabled',
     render(): React.Element<typeof ScreenReaderStatusExample> {
       return <ScreenReaderStatusExample />;
+    },
+  },
+  {
+    title: 'Check if the screen reader announces',
+    render(): React.Element<typeof AnnounceForAccessibility> {
+      return <AnnounceForAccessibility />;
     },
   },
 ];

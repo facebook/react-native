@@ -10,20 +10,20 @@
 
 'use strict';
 
-const Platform = require('Platform');
-const React = require('React');
+const Platform = require('../../Utilities/Platform');
+const React = require('react');
 const PropTypes = require('prop-types');
-const ReactNative = require('ReactNative');
-const Touchable = require('Touchable');
-const TouchableWithoutFeedback = require('TouchableWithoutFeedback');
-const UIManager = require('UIManager');
-const View = require('View');
+const ReactNative = require('../../Renderer/shims/ReactNative');
+const Touchable = require('./Touchable');
+const TouchableWithoutFeedback = require('./TouchableWithoutFeedback');
+const UIManager = require('../../ReactNative/UIManager');
+const View = require('../View/View');
 
 const createReactClass = require('create-react-class');
-const ensurePositiveDelayProps = require('ensurePositiveDelayProps');
-const processColor = require('processColor');
+const ensurePositiveDelayProps = require('./ensurePositiveDelayProps');
+const processColor = require('../../StyleSheet/processColor');
 
-import type {PressEvent} from 'CoreEventTypes';
+import type {PressEvent} from '../../Types/CoreEventTypes';
 
 const rippleBackgroundPropType = PropTypes.shape({
   type: PropTypes.oneOf(['RippleAndroid']),

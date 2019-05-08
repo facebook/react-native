@@ -13,16 +13,16 @@
 
 'use strict';
 
-const React = require('React');
-const StyleSheet = require('StyleSheet');
-const View = require('View');
+const React = require('react');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
+const View = require('../View/View');
 
 const invariant = require('invariant');
 
-import type {ViewProps} from 'ViewPropTypes';
-import type {SyntheticEvent} from 'CoreEventTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
+import type {SyntheticEvent} from '../../Types/CoreEventTypes';
 
-const RCTDatePickerNativeComponent = require('RCTDatePickerNativeComponent');
+const RCTDatePickerNativeComponent = require('./RCTDatePickerNativeComponent');
 
 type Event = SyntheticEvent<
   $ReadOnly<{|

@@ -10,13 +10,13 @@
 
 'use strict';
 
-const React = require('React');
-const SafeAreaView = require('SafeAreaView');
-const StyleSheet = require('StyleSheet');
-const Text = require('Text');
-const View = require('View');
-const YellowBoxPressable = require('YellowBoxPressable');
-const YellowBoxStyle = require('YellowBoxStyle');
+const React = require('react');
+const SafeAreaView = require('../../Components/SafeAreaView/SafeAreaView');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
+const Text = require('../../Text/Text');
+const View = require('../../Components/View/View');
+const YellowBoxPressable = require('./YellowBoxPressable');
+const YellowBoxStyle = require('./YellowBoxStyle');
 
 type Props = $ReadOnly<{|
   onDismiss: () => void,

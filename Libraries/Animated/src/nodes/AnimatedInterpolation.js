@@ -15,7 +15,7 @@ const AnimatedWithChildren = require('./AnimatedWithChildren');
 const NativeAnimatedHelper = require('../NativeAnimatedHelper');
 
 const invariant = require('invariant');
-const normalizeColor = require('normalizeColor');
+const normalizeColor = require('../../../Color/normalizeColor');
 
 type ExtrapolateType = 'extend' | 'identity' | 'clamp';
 

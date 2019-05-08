@@ -159,7 +159,7 @@ using namespace facebook::react;
 
   // `backfaceVisibility`
   if (oldViewProps.backfaceVisibility != newViewProps.backfaceVisibility) {
-    self.layer.doubleSided = newViewProps.backfaceVisibility;
+    self.layer.doubleSided = newViewProps.backfaceVisibility == BackfaceVisibility::Visible;
   }
 
   // `shouldRasterize`

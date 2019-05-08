@@ -11,10 +11,10 @@
 
 'use strict';
 
-const React = require('React');
+const React = require('react');
 // $FlowFixMe
 const DrawerLayoutAndroid = require('../DrawerLayoutAndroid.android');
-const View = require('View');
+const View = require('../../View/View');
 
 const render = require('../../../../jest/renderer');
 
@@ -42,7 +42,7 @@ describe('<DrawerLayoutAndroid />', () => {
   });
 
   it('should shallow render as <DrawerLayoutAndroid> when not mocked', () => {
-    jest.dontMock('DrawerLayoutAndroid');
+    jest.dontMock('../DrawerLayoutAndroid');
 
     const output = render.shallow(
       <DrawerLayoutAndroid
@@ -55,7 +55,7 @@ describe('<DrawerLayoutAndroid />', () => {
   });
 
   it('should render as <DrawerLayoutAndroid> when not mocked', () => {
-    jest.dontMock('DrawerLayoutAndroid');
+    jest.dontMock('../DrawerLayoutAndroid');
 
     const instance = render.create(
       <DrawerLayoutAndroid

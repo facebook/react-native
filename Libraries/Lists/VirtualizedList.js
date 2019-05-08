@@ -9,31 +9,31 @@
  */
 'use strict';
 
-const Batchinator = require('Batchinator');
-const FillRateHelper = require('FillRateHelper');
+const Batchinator = require('../Interaction/Batchinator');
+const FillRateHelper = require('./FillRateHelper');
 const PropTypes = require('prop-types');
-const React = require('React');
-const ReactNative = require('ReactNative');
-const RefreshControl = require('RefreshControl');
-const ScrollView = require('ScrollView');
-const StyleSheet = require('StyleSheet');
-const UIManager = require('UIManager');
-const View = require('View');
-const ViewabilityHelper = require('ViewabilityHelper');
+const React = require('react');
+const ReactNative = require('../Renderer/shims/ReactNative');
+const RefreshControl = require('../Components/RefreshControl/RefreshControl');
+const ScrollView = require('../Components/ScrollView/ScrollView');
+const StyleSheet = require('../StyleSheet/StyleSheet');
+const UIManager = require('../ReactNative/UIManager');
+const View = require('../Components/View/View');
+const ViewabilityHelper = require('./ViewabilityHelper');
 
-const flattenStyle = require('flattenStyle');
-const infoLog = require('infoLog');
+const flattenStyle = require('../StyleSheet/flattenStyle');
+const infoLog = require('../Utilities/infoLog');
 const invariant = require('invariant');
 const warning = require('fbjs/lib/warning');
 
-const {computeWindowedRenderLimits} = require('VirtualizeUtils');
+const {computeWindowedRenderLimits} = require('./VirtualizeUtils');
 
-import type {ViewStyleProp} from 'StyleSheet';
+import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {
   ViewabilityConfig,
   ViewToken,
   ViewabilityConfigCallbackPair,
-} from 'ViewabilityHelper';
+} from './ViewabilityHelper';
 
 type Item = any;
 

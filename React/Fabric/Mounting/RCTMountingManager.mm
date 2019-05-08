@@ -15,7 +15,6 @@
 #import <react/core/LayoutableShadowNode.h>
 #import <react/core/RawProps.h>
 #import <react/debug/SystraceSection.h>
-#import <react/mounting/MountingTransactionSynchronizer.h>
 
 #import "RCTComponentViewProtocol.h"
 #import "RCTComponentViewRegistry.h"
@@ -204,9 +203,7 @@ static void RNPerformMountInstructions(ShadowViewMutationList const &mutations, 
   }
 }
 
-@implementation RCTMountingManager {
-  better::map<SurfaceId, MountingTransactionSynchronizer> syncronizers_;
-}
+@implementation RCTMountingManager
 
 - (instancetype)init
 {
@@ -217,49 +214,39 @@ static void RNPerformMountInstructions(ShadowViewMutationList const &mutations, 
   return self;
 }
 
-- (void)scheduleTransaction:(MountingTransaction &&)mountingTransaction;
+- (void)scheduleTransaction:(MountingCoordinator::Shared const &)mountingCoordinator
 {
   if (RCTIsMainQueue()) {
     // Already on the proper thread, so:
     // * No need to do a thread jump;
     // * No need to do expensive copy of all mutations;
     // * No need to allocate a block.
-    [self mountMutations:std::move(mountingTransaction)];
+    [self mountMutations:mountingCoordinator];
     return;
   }
 
-  // We need a non-reference for `mountingTransaction` to allow copy semantic.
-  auto sharedMountingTransaction = std::make_shared<MountingTransaction>(std::move(mountingTransaction));
-
+  auto mountingCoordinatorCopy = mountingCoordinator;
   RCTExecuteOnMainQueue(^{
     RCTAssertMainQueue();
-    [self mountMutations:std::move(*sharedMountingTransaction)];
+    [self mountMutations:mountingCoordinatorCopy];
   });
 }
 
-- (void)mountMutations:(MountingTransaction &&)mountingTransaction
+- (void)mountMutations:(MountingCoordinator::Shared const &)mountingCoordinator
 {
   SystraceSection s("-[RCTMountingManager mountMutations:]");
 
-  RCTAssertMainQueue();
-
-  auto &syncronizer = syncronizers_[mountingTransaction.getSurfaceId()];
-
-  syncronizer.push(std::move(mountingTransaction));
-
-  while (true) {
-    auto mountingTransactionOptional = syncronizer.pull();
-    if (!mountingTransactionOptional.has_value()) {
-      break;
-    }
-
-    auto transaction = std::move(*mountingTransactionOptional);
-    auto surfaceId = transaction.getSurfaceId();
-
-    [self.delegate mountingManager:self willMountComponentsWithRootTag:surfaceId];
-    RNPerformMountInstructions(transaction.getMutations(), self.componentViewRegistry);
-    [self.delegate mountingManager:self didMountComponentsWithRootTag:surfaceId];
+  auto transaction = mountingCoordinator->pullTransaction();
+  if (!transaction.has_value()) {
+    return;
   }
+
+  auto surfaceId = transaction->getSurfaceId();
+
+  RCTAssertMainQueue();
+  [self.delegate mountingManager:self willMountComponentsWithRootTag:surfaceId];
+  RNPerformMountInstructions(transaction->getMutations(), self.componentViewRegistry);
+  [self.delegate mountingManager:self didMountComponentsWithRootTag:surfaceId];
 }
 
 - (void)synchronouslyUpdateViewOnUIThread:(ReactTag)reactTag
