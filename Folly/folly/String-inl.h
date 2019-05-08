@@ -298,7 +298,10 @@ void internalSplit(
     }
     return;
   }
+FOLLY_PUSH_WARNING
+FOLLY_MSVC_DISABLE_WARNING(4127) // conditional expression is constant
   if (std::is_same<DelimT, StringPiece>::value && dSize == 1) {
+FOLLY_POP_WARNING
     // Call the char version because it is significantly faster.
     return internalSplit<OutStringT>(delimFront(delim), sp, out, ignoreEmpty);
   }
@@ -454,7 +457,10 @@ void internalJoinAppend(
     Iterator end,
     String& output) {
   assert(begin != end);
+FOLLY_PUSH_WARNING
+FOLLY_MSVC_DISABLE_WARNING(4127) // conditional expression is constant
   if (std::is_same<Delim, StringPiece>::value && delimSize(delimiter) == 1) {
+FOLLY_POP_WARNING
     internalJoinAppend(delimFront(delimiter), begin, end, output);
     return;
   }
