@@ -18,7 +18,6 @@ import {
   Text,
   Platform,
   StatusBar,
-  SafeAreaView,
 } from 'react-native';
 
 import Header from './components/Header';
@@ -51,7 +50,7 @@ const DebugInstructions = () => {
       Native debug menu.
     </Text>
   ) : (
-    <Text>
+    <Text style={styles.sectionDescription}>
       Press <Text style={styles.highlight}>menu button</Text> or
       <Text style={styles.highlight}>Shake</Text> your device to open the React
       Native debug menu.
@@ -62,63 +61,53 @@ const DebugInstructions = () => {
 const App = () => {
   return (
     <Fragment>
-      <SafeAreaView style={styles.topSafeArea} />
+      <StatusBar barStyle="dark-content" />
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={styles.scrollView}>
+        <Header />
+        <View style={styles.body}>
+          <Section>
+            <Text style={styles.sectionTitle}>Step One</Text>
+            <Text style={styles.sectionDescription}>
+              Edit <Text style={styles.highlight}>App.js</Text> to change this
+              screen and then come back to see your edits.
+            </Text>
+          </Section>
 
-      <SafeAreaView style={styles.bottomSafeArea}>
-        <StatusBar barStyle="dark-content" />
-        <ScrollView>
-          <Header />
-          <View style={styles.body}>
-            <Section>
-              <Text style={styles.sectionTitle}>Step One</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.js</Text> to change this
-                screen and then come back to see your edits.
-              </Text>
-            </Section>
+          <Section>
+            <Text style={styles.sectionTitle}>See Your Changes</Text>
+            <ReloadInstructions />
+          </Section>
 
-            <Section>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
-            </Section>
+          <Section>
+            <Text style={styles.sectionTitle}>Debug</Text>
+            <DebugInstructions />
+          </Section>
 
-            <Section>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <DebugInstructions />
-            </Section>
-
-            <Section>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs on what to do once seen how to work in React
-                Native.
-              </Text>
-            </Section>
-            <LearnMoreLinks />
-          </View>
-        </ScrollView>
-      </SafeAreaView>
+          <Section>
+            <Text style={styles.sectionTitle}>Learn More</Text>
+            <Text style={styles.sectionDescription}>
+              Read the docs on what to do once seen how to work in React Native.
+            </Text>
+          </Section>
+          <LearnMoreLinks />
+        </View>
+      </ScrollView>
     </Fragment>
   );
 };
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  topSafeArea: {
-    flex: 0,
+  scrollView: {
     backgroundColor: Colors.lighter,
-  },
-  bottomSafeArea: {
-    flex: 1,
-    backgroundColor: Colors.white,
   },
   body: {
     backgroundColor: Colors.white,
+  },
+  sectionContainer: {
+    marginTop: 32,
+    paddingHorizontal: 24,
   },
   sectionTitle: {
     fontSize: 24,

@@ -11,39 +11,38 @@
 'use strict';
 
 import React from 'react';
-import {View, Text, StyleSheet, ImageBackground} from 'react-native';
+import {Text, StyleSheet, ImageBackground} from 'react-native';
 import Colors from './Colors';
 
 const Header = () => (
-  <View style={styles.container}>
-    <ImageBackground
-      accessibilityRole={'image'}
-      source={require('./logo.png')}
-      style={styles.backgroundLogo}
-    />
-
+  <ImageBackground
+    accessibilityRole={'image'}
+    source={require('./logo.png')}
+    style={styles.background}
+    imageStyle={styles.logo}>
     <Text style={styles.text}>Welcome to React Native</Text>
-  </View>
+  </ImageBackground>
 );
 
 const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 100,
+  background: {
     paddingBottom: 40,
+    paddingTop: 96,
     paddingHorizontal: 32,
     backgroundColor: Colors.lighter,
   },
-  backgroundLogo: {
-    position: 'absolute',
-    top: -20,
-    left: -200,
+  logo: {
     opacity: 0.2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 540,
-    width: 540,
+    overflow: 'visible',
+    resizeMode: 'cover',
+    /*
+     * These negative margins allow the image to be offset similarly across screen sizes and component sizes.
+     *
+     * The source logo.png image is 512x512px, so as such, these margins attempt to be relative to the
+     * source image's size.
+     */
+    marginLeft: -128,
+    marginBottom: -192,
   },
   text: {
     fontSize: 40,
