@@ -62,7 +62,9 @@ const App = () => {
   return (
     <Fragment>
       <StatusBar barStyle="dark-content" />
-      <ScrollView contentInsetAdjustmentBehavior="automatic">
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={styles.scrollView}>
         <Header />
         <View style={styles.body}>
           <Section>
@@ -97,20 +99,15 @@ const App = () => {
 };
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  topSafeArea: {
-    flex: 0,
+  scrollView: {
     backgroundColor: Colors.lighter,
-  },
-  bottomSafeArea: {
-    flex: 1,
-    backgroundColor: Colors.white,
   },
   body: {
     backgroundColor: Colors.white,
+  },
+  sectionContainer: {
+    marginTop: 32,
+    paddingHorizontal: 24,
   },
   sectionTitle: {
     fontSize: 24,
