@@ -206,14 +206,12 @@ void YGNodeMarkDirtyAndPropogateToDescendants(const YGNodeRef node) {
   return node->markDirtyAndPropogateDownwards();
 }
 
-int32_t gNodeInstanceCount = 0;
 int32_t gConfigInstanceCount = 0;
 
 WIN_EXPORT YGNodeRef YGNodeNewWithConfig(const YGConfigRef config) {
   const YGNodeRef node = new YGNode();
   YGAssertWithConfig(
       config, node != nullptr, "Could not allocate memory for node");
-  gNodeInstanceCount++;
 #ifdef YG_ENABLE_EVENTS
   Event::publish<Event::NodeAllocation>(node, {config});
 #endif
@@ -241,7 +239,6 @@ YGNodeRef YGNodeClone(YGNodeRef oldNode) {
       oldNode->getConfig(),
       node != nullptr,
       "Could not allocate memory for node");
-  gNodeInstanceCount++;
 #ifdef YG_ENABLE_EVENTS
   Event::publish<Event::NodeAllocation>(node, {node->getConfig()});
 #endif
@@ -295,7 +292,6 @@ void YGNodeFree(const YGNodeRef node) {
   Event::publish<Event::NodeDeallocation>(node, {node->getConfig()});
 #endif
   delete node;
-  gNodeInstanceCount--;
 }
 
 static void YGConfigFreeRecursive(const YGNodeRef root) {
@@ -335,10 +331,6 @@ void YGNodeFreeRecursive(const YGNodeRef root) {
 
 void YGNodeReset(YGNodeRef node) {
   node->reset();
-}
-
-int32_t YGNodeGetInstanceCount(void) {
-  return gNodeInstanceCount;
 }
 
 int32_t YGConfigGetInstanceCount(void) {
