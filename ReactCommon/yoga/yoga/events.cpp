@@ -8,6 +8,8 @@
 #include <memory>
 #include <stdexcept>
 
+#include <iostream>
+
 namespace facebook {
 namespace yoga {
 

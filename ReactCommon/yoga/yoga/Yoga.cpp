@@ -13,6 +13,7 @@
 #include "YGNode.h"
 #include "YGNodePrint.h"
 #include "Yoga-internal.h"
+#include "events.h"
 #include "instrumentation.h"
 #ifdef _MSC_VER
 #include <float.h>
@@ -213,6 +214,9 @@ WIN_EXPORT YGNodeRef YGNodeNewWithConfig(const YGConfigRef config) {
   YGAssertWithConfig(
       config, node != nullptr, "Could not allocate memory for node");
   gNodeInstanceCount++;
+#ifdef YG_ENABLE_EVENTS
+  Event::publish<Event::NodeAllocation>(node, {config});
+#endif
 
   if (config->useWebDefaults) {
     node->getStyle().flexDirection() = YGFlexDirectionRow;
@@ -238,6 +242,9 @@ YGNodeRef YGNodeClone(YGNodeRef oldNode) {
       node != nullptr,
       "Could not allocate memory for node");
   gNodeInstanceCount++;
+#ifdef YG_ENABLE_EVENTS
+  Event::publish<Event::NodeAllocation>(node, {node->getConfig()});
+#endif
   node->setOwner(nullptr);
   return node;
 }
@@ -284,6 +291,9 @@ void YGNodeFree(const YGNodeRef node) {
   }
 
   node->clearChildren();
+#ifdef YG_ENABLE_EVENTS
+  Event::publish<Event::NodeDeallocation>(node, {node->getConfig()});
+#endif
   delete node;
   gNodeInstanceCount--;
 }
