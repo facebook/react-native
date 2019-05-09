@@ -29,7 +29,6 @@
 #import <react/components/root/RootShadowNode.h>
 #import <react/core/LayoutConstraints.h>
 #import <react/core/LayoutContext.h>
-#import <react/imagemanager/ImageManager.h>
 #import <react/uimanager/ComponentDescriptorFactory.h>
 #import <react/utils/ContextContainer.h>
 #import <react/utils/ManagedObjectWrapper.h>
@@ -245,7 +244,7 @@ using namespace facebook::react;
 
   _contextContainer->registerInstance(runtimeExecutor, "runtime-executor");
 
-  _contextContainer->registerInstance(std::make_shared<ImageManager>((__bridge void *)[_bridge imageLoader]), "ImageManager");
+  _contextContainer->registerInstance(wrapManagedObject([_bridge imageLoader]), "RCTImageLoader");
   return _contextContainer;
 }
 
