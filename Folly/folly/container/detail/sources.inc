@@ -1,0 +1,13 @@
+LIBLETNAME = FollyContainerDetail
+
+!include $(OPENSOURCE_REACTNATIVE)\OfficeISS\ReactCommon\make.inc
+
+SOURCES_SHARED = \
+	..\F14Table.cpp \
+
+SOURCES_WIN32 = $(SOURCES_SHARED) \
+
+SOURCES_ANDROID = $(SOURCES_SHARED) \
+
+SOURCES_WINRT = $(SOURCES_SHARED) \
+
