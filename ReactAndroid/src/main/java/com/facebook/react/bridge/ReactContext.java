@@ -65,6 +65,17 @@ public class ReactContext extends ContextWrapper {
     mCatalystInstance = catalystInstance;
 
     ReactQueueConfiguration queueConfig = catalystInstance.getReactQueueConfiguration();
+    initializeMessageQueueThreads(queueConfig);
+  }
+
+  /**
+   * Initialize message queue threads using a ReactQueueConfiguration.
+   * TODO (janzer) T43898341 Make this package instead of public
+   */
+  public void initializeMessageQueueThreads(ReactQueueConfiguration queueConfig) {
+    if (mUiMessageQueueThread != null || mNativeModulesMessageQueueThread != null || mJSMessageQueueThread != null) {
+      throw new IllegalStateException("Message queue threads already initialized");
+    }
     mUiMessageQueueThread = queueConfig.getUIQueueThread();
     mNativeModulesMessageQueueThread = queueConfig.getNativeModulesQueueThread();
     mJSMessageQueueThread = queueConfig.getJSQueueThread();
