@@ -30,10 +30,7 @@
 {
   NSURL *scriptURL;
   if (getenv("CI_USE_PACKAGER")) {
-    NSString *bundlePrefix = @"";
-    if (getenv("CI_USE_BUNDLE_PREFIX")) {
-      bundlePrefix = @"react-native-github/";
-    }
+    NSString *bundlePrefix = [[[NSBundle mainBundle] infoDictionary] valueForKey:@"RN_BUNDLE_PREFIX"];
     NSString *app = @"IntegrationTests/IntegrationTestsApp";
     scriptURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://localhost:8081/%@%@.bundle?platform=ios&dev=true", bundlePrefix, app]];
   } else {
