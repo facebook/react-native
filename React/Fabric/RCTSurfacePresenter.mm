@@ -410,7 +410,7 @@ using namespace facebook::react;
 
 - (void)setSurfacePresenter:(RCTSurfacePresenter *)surfacePresenter
 {
-  objc_setAssociatedObject(self, @selector(surfacePresenter), surfacePresenter, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+  objc_setAssociatedObject(self, @selector(surfacePresenter), surfacePresenter, OBJC_ASSOCIATION_ASSIGN);
 }
 
 - (RCTSurfacePresenter *)surfacePresenter
