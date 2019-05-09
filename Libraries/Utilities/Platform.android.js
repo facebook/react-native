@@ -16,6 +16,7 @@ export type PlatformSelectSpec<A, D> = {
   android?: A,
   default?: D,
 };
+export type NightMode = "yes" | "no" | "auto" | "unknown" | false;
 
 const Platform = {
   OS: 'android',
@@ -33,6 +34,10 @@ const Platform = {
   get isTV(): boolean {
     const constants = NativeModules.PlatformConstants;
     return constants && constants.uiMode === 'tv';
+  },
+  get nightMode(): NightMode {
+    const constants = NativeModules.PlatformConstants;
+    return constants && constants.nightMode;
   },
   select: <A, D>(spec: PlatformSelectSpec<A, D>): A | D =>
     'android' in spec ? spec.android : spec.default,

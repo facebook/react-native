@@ -60,6 +60,20 @@ public class AndroidInfoModule extends ReactContextBaseJavaModule {
     }
   }
 
+  private String nightMode() {
+    UiModeManager uiModeManager = (UiModeManager) getReactApplicationContext().getSystemService(UI_MODE_SERVICE);
+    switch (uiModeManager.getNightMode()) {
+      case UiModeManager.MODE_NIGHT_NO:
+        return "no";
+      case UiModeManager.MODE_NIGHT_YES:
+        return "yes";
+      case UiModeManager.MODE_NIGHT_AUTO:
+        return "auto";
+      default:
+        return "unknown";
+    }
+  }
+
   @Override
   public String getName() {
     return "PlatformConstants";
@@ -80,6 +94,7 @@ public class AndroidInfoModule extends ReactContextBaseJavaModule {
     || isRunningScreenshotTest());
     constants.put("reactNativeVersion", ReactNativeVersion.VERSION);
     constants.put("uiMode", uiMode());
+    constants.put("nightMode", nightMode());
     return constants;
   }
 
