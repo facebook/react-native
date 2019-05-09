@@ -50,7 +50,7 @@ const DebugInstructions = () => {
       Native debug menu.
     </Text>
   ) : (
-    <Text>
+    <Text style={styles.sectionDescription}>
       Press <Text style={styles.highlight}>menu button</Text> or
       <Text style={styles.highlight}>Shake</Text> your device to open the React
       Native debug menu.
@@ -75,9 +75,7 @@ const App = () => {
 
           <Section>
             <Text style={styles.sectionTitle}>See Your Changes</Text>
-            <Text style={styles.sectionDescription}>
-              <ReloadInstructions />
-            </Text>
+            <ReloadInstructions />
           </Section>
 
           <Section>
