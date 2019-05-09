@@ -3667,6 +3667,9 @@ bool YGLayoutNodeInternal(
     const YGConfigRef config,
     YGMarkerLayoutData& layoutMarkerData,
     void* const layoutContext) {
+#ifdef YG_ENABLE_EVENTS
+  Event::publish<Event::NodeLayout>(node);
+#endif
   YGLayout* layout = &node->getLayout();
 
   gDepth++;

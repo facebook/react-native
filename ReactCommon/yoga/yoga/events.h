@@ -15,7 +15,7 @@ namespace facebook {
 namespace yoga {
 
 struct Event {
-  enum Type { NodeAllocation, NodeDeallocation };
+  enum Type { NodeAllocation, NodeDeallocation, NodeLayout };
   class Data;
   using Subscriber = void(const YGNode&, Type, Data);
 
