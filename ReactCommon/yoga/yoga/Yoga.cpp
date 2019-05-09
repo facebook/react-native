@@ -13,7 +13,7 @@
 #include "YGNode.h"
 #include "YGNodePrint.h"
 #include "Yoga-internal.h"
-#include "events.h"
+#include "event/event.h"
 #include "instrumentation.h"
 #ifdef _MSC_VER
 #include <float.h>
