@@ -74,7 +74,7 @@ RCT_EXPORT_MODULE()
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     // set allowsCellularAccess to NO ONLY if key ReactNetworkConfigChoice exists AND value is "OnlyUseWifi"
     NSString *compareKeyToForceWifiOnly = @"OnlyUseWifi";
-    if(customOverrideKey) {
+    if (customOverrideKey) {
       configuration.allowsCellularAccess = ![compareKeyToForceWifiOnly isEqualToString:customOverrideKey];
     }
     [configuration setHTTPShouldSetCookies:YES];
