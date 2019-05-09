@@ -19,31 +19,23 @@ const Header = () => (
     <ImageBackground
       accessibilityRole={'image'}
       source={require('./logo.png')}
-      style={styles.backgroundLogo}
-    />
-
-    <Text style={styles.text}>Welcome to React Native</Text>
+      style={styles.background}
+      imageStyle={styles.logo}>
+      <Text style={styles.text}>Welcome to React Native</Text>
+    </ImageBackground>
   </View>
 );
 
 const styles = StyleSheet.create({
   container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 100,
-    paddingBottom: 40,
-    paddingHorizontal: 32,
     backgroundColor: Colors.lighter,
   },
-  backgroundLogo: {
-    position: 'absolute',
-    top: -20,
-    left: -200,
+  background: {
+    paddingVertical: 40,
+    paddingHorizontal: 32,
+  },
+  logo: {
     opacity: 0.2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 540,
-    width: 540,
   },
   text: {
     fontSize: 40,
