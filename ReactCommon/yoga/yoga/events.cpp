@@ -24,6 +24,10 @@ std::function<Event::Subscriber>& globalEventSubscriber() {
 
 } // namespace
 
+void Event::reset() {
+  globalEventSubscriber() = nullptr;
+}
+
 void Event::subscribe(std::function<Subscriber>&& subscriber) {
   if (globalEventSubscriber() != nullptr) {
     throw std::logic_error(

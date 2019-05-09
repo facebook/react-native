@@ -35,6 +35,8 @@ struct Event {
     };
   };
 
+  static void reset();
+
   static void subscribe(std::function<Subscriber>&& subscriber);
 
   template <Type E>
