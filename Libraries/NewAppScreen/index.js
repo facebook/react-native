@@ -18,7 +18,6 @@ import {
   Text,
   Platform,
   StatusBar,
-  SafeAreaView,
 } from 'react-native';
 
 import Header from './components/Header';
@@ -62,44 +61,39 @@ const DebugInstructions = () => {
 const App = () => {
   return (
     <Fragment>
-      <SafeAreaView style={styles.topSafeArea} />
+      <StatusBar barStyle="dark-content" />
+      <ScrollView contentInsetAdjustmentBehavior="automatic">
+        <Header />
+        <View style={styles.body}>
+          <Section>
+            <Text style={styles.sectionTitle}>Step One</Text>
+            <Text style={styles.sectionDescription}>
+              Edit <Text style={styles.highlight}>App.js</Text> to change this
+              screen and then come back to see your edits.
+            </Text>
+          </Section>
 
-      <SafeAreaView style={styles.bottomSafeArea}>
-        <StatusBar barStyle="dark-content" />
-        <ScrollView>
-          <Header />
-          <View style={styles.body}>
-            <Section>
-              <Text style={styles.sectionTitle}>Step One</Text>
-              <Text style={styles.sectionDescription}>
-                Edit <Text style={styles.highlight}>App.js</Text> to change this
-                screen and then come back to see your edits.
-              </Text>
-            </Section>
+          <Section>
+            <Text style={styles.sectionTitle}>See Your Changes</Text>
+            <Text style={styles.sectionDescription}>
+              <ReloadInstructions />
+            </Text>
+          </Section>
 
-            <Section>
-              <Text style={styles.sectionTitle}>See Your Changes</Text>
-              <Text style={styles.sectionDescription}>
-                <ReloadInstructions />
-              </Text>
-            </Section>
+          <Section>
+            <Text style={styles.sectionTitle}>Debug</Text>
+            <DebugInstructions />
+          </Section>
 
-            <Section>
-              <Text style={styles.sectionTitle}>Debug</Text>
-              <DebugInstructions />
-            </Section>
-
-            <Section>
-              <Text style={styles.sectionTitle}>Learn More</Text>
-              <Text style={styles.sectionDescription}>
-                Read the docs on what to do once seen how to work in React
-                Native.
-              </Text>
-            </Section>
-            <LearnMoreLinks />
-          </View>
-        </ScrollView>
-      </SafeAreaView>
+          <Section>
+            <Text style={styles.sectionTitle}>Learn More</Text>
+            <Text style={styles.sectionDescription}>
+              Read the docs on what to do once seen how to work in React Native.
+            </Text>
+          </Section>
+          <LearnMoreLinks />
+        </View>
+      </ScrollView>
     </Fragment>
   );
 };
