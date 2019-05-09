@@ -15,7 +15,7 @@ namespace facebook {
 namespace yoga {
 
 struct Event {
-  enum Type {};
+  enum Type { NodeAllocation, NodeDeallocation, NodeLayout };
   class Data;
   using Subscriber = void(const YGNode&, Type, Data);
 
@@ -35,6 +35,8 @@ struct Event {
     };
   };
 
+  static void reset();
+
   static void subscribe(std::function<Subscriber>&& subscriber);
 
   template <Type E>
@@ -49,6 +51,16 @@ struct Event {
 
 private:
   static void publish(const YGNode&, Type, const Data&);
+};
+
+template <>
+struct Event::TypedData<Event::NodeAllocation> {
+  YGConfig* config;
+};
+
+template <>
+struct Event::TypedData<Event::NodeDeallocation> {
+  YGConfig* config;
 };
 
 } // namespace yoga

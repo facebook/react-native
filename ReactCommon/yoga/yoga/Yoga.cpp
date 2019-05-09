@@ -13,6 +13,7 @@
 #include "YGNode.h"
 #include "YGNodePrint.h"
 #include "Yoga-internal.h"
+#include "event/event.h"
 #include "instrumentation.h"
 #ifdef _MSC_VER
 #include <float.h>
@@ -205,14 +206,15 @@ void YGNodeMarkDirtyAndPropogateToDescendants(const YGNodeRef node) {
   return node->markDirtyAndPropogateDownwards();
 }
 
-int32_t gNodeInstanceCount = 0;
 int32_t gConfigInstanceCount = 0;
 
 WIN_EXPORT YGNodeRef YGNodeNewWithConfig(const YGConfigRef config) {
   const YGNodeRef node = new YGNode();
   YGAssertWithConfig(
       config, node != nullptr, "Could not allocate memory for node");
-  gNodeInstanceCount++;
+#ifdef YG_ENABLE_EVENTS
+  Event::publish<Event::NodeAllocation>(node, {config});
+#endif
 
   if (config->useWebDefaults) {
     node->getStyle().flexDirection() = YGFlexDirectionRow;
@@ -237,7 +239,9 @@ YGNodeRef YGNodeClone(YGNodeRef oldNode) {
       oldNode->getConfig(),
       node != nullptr,
       "Could not allocate memory for node");
-  gNodeInstanceCount++;
+#ifdef YG_ENABLE_EVENTS
+  Event::publish<Event::NodeAllocation>(node, {node->getConfig()});
+#endif
   node->setOwner(nullptr);
   return node;
 }
@@ -284,8 +288,10 @@ void YGNodeFree(const YGNodeRef node) {
   }
 
   node->clearChildren();
+#ifdef YG_ENABLE_EVENTS
+  Event::publish<Event::NodeDeallocation>(node, {node->getConfig()});
+#endif
   delete node;
-  gNodeInstanceCount--;
 }
 
 static void YGConfigFreeRecursive(const YGNodeRef root) {
@@ -325,10 +331,6 @@ void YGNodeFreeRecursive(const YGNodeRef root) {
 
 void YGNodeReset(YGNodeRef node) {
   node->reset();
-}
-
-int32_t YGNodeGetInstanceCount(void) {
-  return gNodeInstanceCount;
 }
 
 int32_t YGConfigGetInstanceCount(void) {
@@ -3665,6 +3667,9 @@ bool YGLayoutNodeInternal(
     const YGConfigRef config,
     YGMarkerLayoutData& layoutMarkerData,
     void* const layoutContext) {
+#ifdef YG_ENABLE_EVENTS
+  Event::publish<Event::NodeLayout>(node);
+#endif
   YGLayout* layout = &node->getLayout();
 
   gDepth++;

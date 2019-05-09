@@ -505,6 +505,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
   return fittingSize;
 }
 
+#pragma mark - Accessibility
+
+- (UIView *)reactAccessibilityElement
+{
+  return self.backedTextInputView;
+}
+
 #pragma mark - Focus Control
 
 - (void)reactFocus

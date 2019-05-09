@@ -74,6 +74,11 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
+    key: 'NewAppScreenExample',
+    module: require('./NewAppScreenExample'),
+    supportsTVOS: false,
+  },
+  {
     key: 'PickerExample',
     module: require('./PickerExample'),
     supportsTVOS: false,

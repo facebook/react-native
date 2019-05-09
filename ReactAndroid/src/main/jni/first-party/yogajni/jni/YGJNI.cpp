@@ -938,10 +938,6 @@ void jni_YGNodeSetStyleInputs(
   YGNodeSetStyleInputs(_jlong2YGNodeRef(nativePointer), result, size);
 }
 
-jint jni_YGNodeGetInstanceCount() {
-  return YGNodeGetInstanceCount();
-}
-
 jlong jni_YGNodeStyleGetMargin(jlong nativePointer, jint edge) {
   YGNodeRef yogaNodeRef = _jlong2YGNodeRef(nativePointer);
   if (!YGNodeEdges{yogaNodeRef}.has(YGNodeEdges::MARGIN)) {
@@ -1105,7 +1101,6 @@ jint JNI_OnLoad(JavaVM* vm, void*) {
             YGMakeCriticalNativeMethod(jni_YGNodeStyleSetMaxHeightPercent),
             YGMakeCriticalNativeMethod(jni_YGNodeStyleGetAspectRatio),
             YGMakeCriticalNativeMethod(jni_YGNodeStyleSetAspectRatio),
-            YGMakeCriticalNativeMethod(jni_YGNodeGetInstanceCount),
             YGMakeCriticalNativeMethod(jni_YGNodePrint),
             YGMakeNativeMethod(jni_YGNodeClone),
             YGMakeNativeMethod(jni_YGNodeSetStyleInputs),

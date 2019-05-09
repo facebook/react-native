@@ -4,9 +4,11 @@
  * This source code is licensed under the MIT license found in the LICENSE
  * file in the root directory of this source tree.
  */
-#include "events.h"
+#include "event.h"
 #include <memory>
 #include <stdexcept>
+
+#include <iostream>
 
 namespace facebook {
 namespace yoga {
@@ -21,6 +23,10 @@ std::function<Event::Subscriber>& globalEventSubscriber() {
 }
 
 } // namespace
+
+void Event::reset() {
+  globalEventSubscriber() = nullptr;
+}
 
 void Event::subscribe(std::function<Subscriber>&& subscriber) {
   if (globalEventSubscriber() != nullptr) {

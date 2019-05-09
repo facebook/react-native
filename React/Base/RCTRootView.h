@@ -35,6 +35,9 @@ extern "C"
 #else
 extern
 #endif
+
+NS_ASSUME_NONNULL_BEGIN
+
 NSString *const RCTContentDidAppearNotification;
 
 /**
@@ -49,7 +52,7 @@ NSString *const RCTContentDidAppearNotification;
  */
 - (instancetype)initWithBridge:(RCTBridge *)bridge
                     moduleName:(NSString *)moduleName
-             initialProperties:(NSDictionary *)initialProperties NS_DESIGNATED_INITIALIZER;
+             initialProperties:(nullable NSDictionary *)initialProperties NS_DESIGNATED_INITIALIZER;
 
 /**
  * - Convenience initializer -
@@ -60,8 +63,8 @@ NSString *const RCTContentDidAppearNotification;
  */
 - (instancetype)initWithBundleURL:(NSURL *)bundleURL
                        moduleName:(NSString *)moduleName
-                initialProperties:(NSDictionary *)initialProperties
-                    launchOptions:(NSDictionary *)launchOptions;
+                initialProperties:(nullable NSDictionary *)initialProperties
+                    launchOptions:(nullable NSDictionary *)launchOptions;
 
 
 /**
@@ -85,7 +88,7 @@ NSString *const RCTContentDidAppearNotification;
  *
  * Set this property only on the main thread.
  */
-@property (nonatomic, copy, readwrite) NSDictionary *appProperties;
+@property (nonatomic, copy, readwrite, nullable) NSDictionary *appProperties;
 
 /**
  * The size flexibility mode of the root view.
@@ -95,12 +98,12 @@ NSString *const RCTContentDidAppearNotification;
 /**
  * The delegate that handles intrinsic size updates.
  */
-@property (nonatomic, weak) id<RCTRootViewDelegate> delegate;
+@property (nonatomic, weak, nullable) id<RCTRootViewDelegate> delegate;
 
 /**
  * The backing view controller of the root view.
  */
-@property (nonatomic, weak) UIViewController *reactViewController;
+@property (nonatomic, weak, nullable) UIViewController *reactViewController;
 
 /**
  * The React-managed contents view of the root view.
@@ -112,7 +115,7 @@ NSString *const RCTContentDidAppearNotification;
  * with a blank screen. By default this is nil, but you can override it with
  * (for example) a UIActivityIndicatorView or a placeholder image.
  */
-@property (nonatomic, strong) UIView *loadingView;
+@property (nonatomic, strong, nullable) UIView *loadingView;
 
 /**
  * Calling this will result in emitting a "touches cancelled" event to js,
@@ -166,3 +169,5 @@ NSString *const RCTContentDidAppearNotification;
 __deprecated_msg("Use `intrinsicContentSize` instead.");
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -42,6 +42,10 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('./MultiColumnExample'),
   },
   {
+    key: 'NewAppScreenExample',
+    module: require('./NewAppScreenExample'),
+  },
+  {
     key: 'PickerExample',
     module: require('./PickerExample'),
   },

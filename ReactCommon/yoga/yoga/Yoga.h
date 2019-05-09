@@ -62,7 +62,6 @@ WIN_EXPORT void YGNodeFreeRecursiveWithCleanupFunc(
     YGNodeCleanupFunc cleanup);
 WIN_EXPORT void YGNodeFreeRecursive(YGNodeRef node);
 WIN_EXPORT void YGNodeReset(YGNodeRef node);
-WIN_EXPORT int32_t YGNodeGetInstanceCount(void);
 
 WIN_EXPORT void YGNodeInsertChild(
     YGNodeRef node,

@@ -35,7 +35,14 @@ import javax.annotation.Nullable;
 public abstract class ViewManager<T extends View, C extends ReactShadowNode>
   extends BaseJavaModule {
 
-  public final void updateProperties(@Nonnull T viewToUpdate, ReactStylesDiffMap props) {
+  /**
+   * For the vast majority of ViewManagers, you will not need to override this. Only
+   * override this if you really know what you're doing and have a very unique use-case.
+   *
+   * @param viewToUpdate
+   * @param props
+   */
+  public void updateProperties(@Nonnull T viewToUpdate, ReactStylesDiffMap props) {
     ViewManagerPropertyUpdater.updateProps(this, viewToUpdate, props);
     onAfterUpdateTransaction(viewToUpdate);
   }

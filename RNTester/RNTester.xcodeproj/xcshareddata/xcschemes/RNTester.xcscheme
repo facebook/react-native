@@ -144,8 +144,8 @@
             isEnabled = "YES">
          </EnvironmentVariable>
          <EnvironmentVariable
-            key = "CI_USE_BUNDLE_PREFIX"
-            value = "0"
+            key = "RN_BUNDLE_PREFIX"
+            value = ""
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>
