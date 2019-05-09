@@ -38,9 +38,8 @@ const styles = StyleSheet.create({
     /*
      * These negative margins allow the image to be offset similarly across screen sizes and component sizes.
      *
-     * The source logo.png image is 512x512px. `marginLeft` of `-128` offsets the image offscreen to the left
-     * by a quarter of the image, while marginBottom of `-192` offsets the image such that the center of the logo
-     * intersects with the bottom of the view.
+     * The source logo.png image is 512x512px, so as such, these margins attempt to be relative to the
+     * source image's size.
      */
     marginLeft: -128,
     marginBottom: -192,
