@@ -13,6 +13,7 @@ import com.facebook.react.bridge.JSIModule;
 import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.queue.MessageQueueThread;
+import com.facebook.react.turbomodule.core.interfaces.JSCallInvokerHolder;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.soloader.SoLoader;
 
@@ -34,16 +35,11 @@ public class TurboModuleManager implements JSIModule {
   private final HybridData mHybridData;
 
   public TurboModuleManager(
-      ReactApplicationContext reactApplicationContext, JavaScriptContextHolder jsContext, TurboModuleManagerDelegate tmmDelegate) {
+      ReactApplicationContext reactApplicationContext, JavaScriptContextHolder jsContext, TurboModuleManagerDelegate tmmDelegate, JSCallInvokerHolder instanceHolder) {
     mReactApplicationContext = reactApplicationContext;
-    JSCallInvokerHolderImpl instanceHolder =
-        (JSCallInvokerHolderImpl) mReactApplicationContext
-            .getCatalystInstance()
-            .getJSCallInvokerHolder();
-    mHybridData = initHybrid(jsContext.get(), instanceHolder, tmmDelegate);
+    mHybridData = initHybrid(jsContext.get(), (JSCallInvokerHolderImpl) instanceHolder, tmmDelegate);
     mTurbomoduleManagerDelegate = tmmDelegate;
   }
-
   @DoNotStrip
   @SuppressWarnings("unused")
   private TurboModule getJavaModule(String name) {
