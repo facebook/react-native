@@ -20,7 +20,7 @@ const Header = () => (
     source={require('./logo.png')}
     style={styles.background}
     imageStyle={styles.logo}>
-    <Text style={styles.text}>Welcome to React Native</Text>
+    <Text style={styles.text}>Welcome to React</Text>
   </ImageBackground>
 );
 
