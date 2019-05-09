@@ -520,6 +520,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 }
 
 #if TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+- (BOOL)canBecomeKeyView
+{
+  return [self acceptsKeyboardFocus];
+}
+
 - (CGRect)focusRingMaskBounds
 {
   return [self bounds];

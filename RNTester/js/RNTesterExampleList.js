@@ -112,6 +112,8 @@ class RNTesterExampleList extends React.Component<Props, $FlowFixMeState> {
               enableEmptySections={true}
               itemShouldUpdate={this._itemShouldUpdate}
               keyboardShouldPersistTaps="handled"
+              acceptsKeyboardFocus={true} // TODO(macOS ISS#2323203)
+              enableSelectionOnKeyPress={true} // TODO(macOS ISS#2323203)
               automaticallyAdjustContentInsets={false}
               keyboardDismissMode="on-drag"
               renderSectionHeader={renderSectionHeader}
