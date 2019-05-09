@@ -1,0 +1,4 @@
+DIRS = \
+    android{droidarm,droidarm64,droidx64,droidx86} \
+    win32{apple,chpe,x64,x86} \
+    winrt{x86,x64,arm} \

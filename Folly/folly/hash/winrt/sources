@@ -1,0 +1,5 @@
+LIBLET_WINRT = 1
+LIBLET_LOB = 1
+!include ..\sources.inc
+
+SOURCES = $(SOURCES_WINRT)
