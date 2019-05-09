@@ -499,12 +499,22 @@ jobs:
 
       - run:
           name: Run JavaScript End-to-End Tests
-          command: node ./scripts/run-ci-e2e-tests.js --js --retries 3
+          command: |
+            # free up port 8081 for the packager before running tests
+            set +eo pipefail
+            lsof -i tcp:8081 | awk 'NR!=1 {print $2}' | xargs kill
+            set -eo pipefail
+            node ./scripts/run-ci-e2e-tests.js --js --retries 3
           when: always
 
       - run:
           name: Run iOS End-to-End Tests
-          command: node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
+          command: |
+            # free up port 8081 for the packager before running tests
+            set +eo pipefail
+            lsof -i tcp:8081 | awk 'NR!=1 {print $2}' | xargs kill
+            set -eo pipefail
+            node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
           when: always
 
 
