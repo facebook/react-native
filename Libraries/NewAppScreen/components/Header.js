@@ -11,28 +11,24 @@
 'use strict';
 
 import React from 'react';
-import {View, Text, StyleSheet, ImageBackground} from 'react-native';
+import {Text, StyleSheet, ImageBackground} from 'react-native';
 import Colors from './Colors';
 
 const Header = () => (
-  <View style={styles.container}>
-    <ImageBackground
-      accessibilityRole={'image'}
-      source={require('./logo.png')}
-      style={styles.background}
-      imageStyle={styles.logo}>
-      <Text style={styles.text}>Welcome to React Native</Text>
-    </ImageBackground>
-  </View>
+  <ImageBackground
+    accessibilityRole={'image'}
+    source={require('./logo.png')}
+    style={styles.background}
+    imageStyle={styles.logo}>
+    <Text style={styles.text}>Welcome to React Native</Text>
+  </ImageBackground>
 );
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: Colors.lighter,
-  },
   background: {
     paddingVertical: 40,
     paddingHorizontal: 32,
+    backgroundColor: Colors.lighter,
   },
   logo: {
     opacity: 0.2,
