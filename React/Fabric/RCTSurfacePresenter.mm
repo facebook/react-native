@@ -311,11 +311,6 @@ using namespace facebook::react;
   [_mountingManager scheduleTransaction:mountingCoordinator];
 }
 
-- (void)schedulerOptimisticallyCreateComponentViewWithComponentHandle:(ComponentHandle)componentHandle
-{
-  [_mountingManager optimisticallyCreateComponentViewWithComponentHandle:componentHandle];
-}
-
 - (void)addObserver:(id<RCTSurfacePresenterObserver>)observer
 {
   std::unique_lock<better::shared_mutex> lock(_observerListMutex);

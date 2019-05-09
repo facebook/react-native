@@ -260,16 +260,4 @@ static void RNPerformMountInstructions(ShadowViewMutationList const &mutations, 
   [componentView updateProps:newProps oldProps:oldProps];
 }
 
-- (void)optimisticallyCreateComponentViewWithComponentHandle:(ComponentHandle)componentHandle
-{
-  if (RCTIsMainQueue()) {
-    // There is no reason to allocate views ahead of time on the main thread.
-    return;
-  }
-
-  RCTExecuteOnMainQueue(^{
-    [self->_componentViewRegistry optimisticallyCreateComponentViewWithComponentHandle:componentHandle];
-  });
-}
-
 @end

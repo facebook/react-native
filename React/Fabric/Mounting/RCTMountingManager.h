@@ -32,13 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)scheduleTransaction:(facebook::react::MountingCoordinator::Shared const &)mountingCoordinator;
 
-/**
- * Suggests preliminary creation of a component view of given type.
- * The receiver is free to ignore the request.
- * Can be called from any thread.
- */
-- (void)optimisticallyCreateComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle;
-
 - (void)synchronouslyUpdateViewOnUIThread:(ReactTag)reactTag
                              changedProps:(NSDictionary *)props
                       componentDescriptor:(const facebook::react::ComponentDescriptor &)componentDescriptor;
