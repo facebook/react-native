@@ -10,7 +10,6 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
 const {
   CameraRoll,
   Image,
@@ -21,7 +20,7 @@ const {
   Text,
   TouchableHighlight,
   View,
-} = ReactNative;
+} = require('react-native');
 
 const PAGE_SIZE = 20;
 

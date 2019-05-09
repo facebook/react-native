@@ -73,7 +73,13 @@ inline std::string toString(const SharedColor &value) {
 inline void fromRawValue(const RawValue &value, Point &result) {
   if (value.hasType<better::map<std::string, Float>>()) {
     auto map = (better::map<std::string, Float>)value;
-    result = {map.at("x"), map.at("y")};
+    for (const auto &pair : map) {
+      if (pair.first == "x") {
+        result.x = pair.second;
+      } else if (pair.first == "y") {
+        result.y = pair.second;
+      }
+    }
     return;
   }
 
@@ -90,7 +96,13 @@ inline void fromRawValue(const RawValue &value, Point &result) {
 inline void fromRawValue(const RawValue &value, Size &result) {
   if (value.hasType<better::map<std::string, Float>>()) {
     auto map = (better::map<std::string, Float>)value;
-    result = {map.at("width"), map.at("height")};
+    for (const auto &pair : map) {
+      if (pair.first == "width") {
+        result.width = pair.second;
+      } else if (pair.first == "height") {
+        result.height = pair.second;
+      }
+    }
     return;
   }
 
@@ -112,7 +124,17 @@ inline void fromRawValue(const RawValue &value, EdgeInsets &result) {
 
   if (value.hasType<better::map<std::string, Float>>()) {
     auto map = (better::map<std::string, Float>)value;
-    result = {map.at("top"), map.at("left"), map.at("bottom"), map.at("right")};
+    for (const auto &pair : map) {
+      if (pair.first == "top") {
+        result.top = pair.second;
+      } else if (pair.first == "left") {
+        result.left = pair.second;
+      } else if (pair.first == "bottom") {
+        result.bottom = pair.second;
+      } else if (pair.first == "right") {
+        result.right = pair.second;
+      }
+    }
     return;
   }
 
@@ -134,10 +156,17 @@ inline void fromRawValue(const RawValue &value, CornerInsets &result) {
 
   if (value.hasType<better::map<std::string, Float>>()) {
     auto map = (better::map<std::string, Float>)value;
-    result = {map.at("topLeft"),
-              map.at("topRight"),
-              map.at("bottomLeft"),
-              map.at("bottomRight")};
+    for (const auto &pair : map) {
+      if (pair.first == "topLeft") {
+        result.topLeft = pair.second;
+      } else if (pair.first == "topRight") {
+        result.topRight = pair.second;
+      } else if (pair.first == "bottomLeft") {
+        result.bottomLeft = pair.second;
+      } else if (pair.first == "bottomRight") {
+        result.bottomRight = pair.second;
+      }
+    }
     return;
   }
 

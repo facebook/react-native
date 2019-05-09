@@ -10,31 +10,35 @@
 
 'use strict';
 
-const AnimatedImplementation = require('AnimatedImplementation');
-const Platform = require('Platform');
-const React = require('React');
-const ReactNative = require('ReactNative');
-const ScrollResponder = require('ScrollResponder');
-const ScrollViewStickyHeader = require('ScrollViewStickyHeader');
-const StyleSheet = require('StyleSheet');
-const View = require('View');
+const AnimatedImplementation = require('../../Animated/src/AnimatedImplementation');
+const Platform = require('../../Utilities/Platform');
+const React = require('react');
+const ReactNative = require('../../Renderer/shims/ReactNative');
+const ScrollResponder = require('../ScrollResponder');
+const ScrollViewStickyHeader = require('./ScrollViewStickyHeader');
+const StyleSheet = require('../../StyleSheet/StyleSheet');
+const View = require('../View/View');
 
-const dismissKeyboard = require('dismissKeyboard');
-const flattenStyle = require('flattenStyle');
+const dismissKeyboard = require('../../Utilities/dismissKeyboard');
+const flattenStyle = require('../../StyleSheet/flattenStyle');
 const invariant = require('invariant');
-const processDecelerationRate = require('processDecelerationRate');
-const requireNativeComponent = require('requireNativeComponent');
-const resolveAssetSource = require('resolveAssetSource');
+const processDecelerationRate = require('./processDecelerationRate');
+const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
+const resolveAssetSource = require('../../Image/resolveAssetSource');
 
-import type {PressEvent, ScrollEvent, LayoutEvent} from 'CoreEventTypes';
-import type {EdgeInsetsProp} from 'EdgeInsetsPropType';
-import type {NativeMethodsMixinType} from 'ReactNativeTypes';
-import type {ViewStyleProp} from 'StyleSheet';
-import type {ViewProps} from 'ViewPropTypes';
-import type {PointProp} from 'PointPropType';
+import type {
+  PressEvent,
+  ScrollEvent,
+  LayoutEvent,
+} from '../../Types/CoreEventTypes';
+import type {EdgeInsetsProp} from '../../StyleSheet/EdgeInsetsPropType';
+import type {NativeMethodsMixinType} from '../../Renderer/shims/ReactNativeTypes';
+import type {ViewStyleProp} from '../../StyleSheet/StyleSheet';
+import type {ViewProps} from '../View/ViewPropTypes';
+import type {PointProp} from '../../StyleSheet/PointPropType';
 
-import type {ColorValue} from 'StyleSheetTypes';
-import type {State as ScrollResponderState} from 'ScrollResponder';
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {State as ScrollResponderState} from '../ScrollResponder';
 
 let AndroidScrollView;
 let AndroidHorizontalScrollContentView;
@@ -206,11 +210,16 @@ type IOSProps = $ReadOnly<{|
    * (as a time interval in ms). A lower number yields better accuracy for code
    * that is tracking the scroll position, but can lead to scroll performance
    * problems due to the volume of information being send over the bridge.
-   * You will not notice a difference between values set between 1-16 as the
-   * JS run loop is synced to the screen refresh rate. If you do not need precise
-   * scroll position tracking, set this value higher to limit the information
-   * being sent across the bridge. The default value is zero, which results in
-   * the scroll event being sent only once each time the view is scrolled.
+   *
+   * Values between 0 and 17ms indicate 60fps updates are needed and throttling
+   * will be disabled.
+   *
+   * If you do not need precise scroll position tracking, set this value higher
+   * to limit the information being sent across the bridge.
+   *
+   * The default value is zero, which results in the scroll event being sent only
+   * once each time the view is scrolled.
+   *
    * @platform ios
    */
   scrollEventThrottle?: ?number,
@@ -221,6 +230,12 @@ type IOSProps = $ReadOnly<{|
    * @platform ios
    */
   scrollIndicatorInsets?: ?EdgeInsetsProp,
+  /**
+   * When true, the scroll view can be programmatically scrolled beyond its
+   * content size. The default value is false.
+   * @platform ios
+   */
+  scrollToOverflowEnabled?: ?boolean,
   /**
    * When true, the scroll view scrolls to top when the status bar is tapped.
    * The default value is true.
@@ -362,6 +377,13 @@ export type Props = $ReadOnly<{|
    * ```
    */
   contentContainerStyle?: ?ViewStyleProp,
+  /**
+   * When true, the scroll view stops on the next index (in relation to scroll
+   * position at release) regardless of how fast the gesture is. This can be
+   * used for horizontal pagination when the page is less than the width of
+   * the ScrollView. The default value is false.
+   */
+  disableIntervalMomentum?: ?boolean,
   /**
    * A floating-point number that determines how quickly the scroll view
    * decelerates after the user lifts their finger. You may also use string
@@ -656,6 +678,9 @@ class ScrollView extends React.Component<Props, State> {
       this.props.contentOffset ? this.props.contentOffset.y : 0,
     );
     this._scrollAnimatedValue.setOffset(
+      /* $FlowFixMe(>=0.98.0 site=react_native_fb) This comment suppresses an
+       * error found when Flow v0.98 was deployed. To see the error delete this
+       * comment and run Flow. */
       this.props.contentInset ? this.props.contentInset.top : 0,
     );
     this._stickyHeaderRefs = new Map();
@@ -710,6 +735,10 @@ class ScrollView extends React.Component<Props, State> {
 
   getInnerViewNode(): ?number {
     return ReactNative.findNodeHandle(this._innerViewRef);
+  }
+
+  getNativeScrollRef(): ?ScrollView {
+    return this._scrollViewRef;
   }
 
   /**

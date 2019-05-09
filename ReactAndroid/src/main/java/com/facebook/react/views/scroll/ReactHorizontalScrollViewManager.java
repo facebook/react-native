@@ -80,6 +80,11 @@ public class ReactHorizontalScrollViewManager
     view.setDecelerationRate(decelerationRate);
   }
 
+  @ReactProp(name = "disableIntervalMomentum")
+  public void setDisableIntervalMomentum(ReactHorizontalScrollView view, boolean disbaleIntervalMomentum) {
+    view.setDisableIntervalMomentum(disbaleIntervalMomentum);
+  }
+
   @ReactProp(name = "snapToInterval")
   public void setSnapToInterval(ReactHorizontalScrollView view, float snapToInterval) {
     // snapToInterval needs to be exposed as a float because of the Javascript interface.

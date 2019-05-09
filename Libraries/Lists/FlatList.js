@@ -9,22 +9,22 @@
  */
 'use strict';
 
-const Platform = require('Platform');
-const deepDiffer = require('deepDiffer');
-const React = require('React');
-const View = require('View');
-const VirtualizedList = require('VirtualizedList');
-const StyleSheet = require('StyleSheet');
+const Platform = require('../Utilities/Platform');
+const deepDiffer = require('../Utilities/differ/deepDiffer');
+const React = require('react');
+const View = require('../Components/View/View');
+const VirtualizedList = require('./VirtualizedList');
+const StyleSheet = require('../StyleSheet/StyleSheet');
 
 const invariant = require('invariant');
 
-import type {ViewStyleProp} from 'StyleSheet';
+import type {ViewStyleProp} from '../StyleSheet/StyleSheet';
 import type {
   ViewabilityConfig,
   ViewToken,
   ViewabilityConfigCallbackPair,
-} from 'ViewabilityHelper';
-import type {Props as VirtualizedListProps} from 'VirtualizedList';
+} from './ViewabilityHelper';
+import type {Props as VirtualizedListProps} from './VirtualizedList';
 
 export type SeparatorsObj = {
   highlight: () => void,
@@ -63,7 +63,7 @@ type RequiredProps<ItemT> = {
     item: ItemT,
     index: number,
     separators: SeparatorsObj,
-  }) => ?React.Element<any>,
+  }) => ?React.Node,
   /**
    * For simplicity, data is just a plain array. If you want to use something else, like an
    * immutable list, use the underlying `VirtualizedList` directly.
@@ -598,7 +598,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     };
   }
 
-  _renderItem = (info: Object) => {
+  _renderItem = (info: Object): ?React.Node => {
     const {renderItem, numColumns, columnWrapperStyle} = this.props;
     if (numColumns > 1) {
       const {item, index} = info;
@@ -618,7 +618,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
               index: index * numColumns + kk,
               separators: info.separators,
             });
-            return element && React.cloneElement(element, {key: kk});
+            return element != null ? (
+              <React.Fragment key={kk}>{element}</React.Fragment>
+            ) : null;
           })}
         </View>
       );

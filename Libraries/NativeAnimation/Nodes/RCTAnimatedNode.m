@@ -115,4 +115,14 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
   // during the current update loop
 }
 
+- (BOOL)isManagedByFabric
+{
+  for (RCTAnimatedNode *child in _childNodes.objectEnumerator) {
+    if ([child isManagedByFabric]) {
+      return YES;
+    }
+  }
+  return NO;
+}
+
 @end

@@ -19,6 +19,8 @@
 
 - (void)stepAnimations:(nonnull CADisplayLink *)displaylink;
 
+- (BOOL)isNodeManagedByFabric:(nonnull NSNumber *)tag;
+
 // graph
 
 - (void)createAnimatedNode:(nonnull NSNumber *)tag

@@ -6,7 +6,7 @@
 plugins {
     id("com.android.library")
     id("maven")
-    id("de.undercouch.download")
+    id("de.undercouch.download") version "3.4.3"
 }
 
 import de.undercouch.gradle.tasks.download.Download
@@ -126,28 +126,26 @@ task prepareGlog(dependsOn: dependenciesPath ? [] : [downloadGlog], type: Copy) 
 
     doLast {
         copy {
-            from(fileTree(dir: "$thirdPartyNdkDir/glog", includes: ["stl_logging.h", "logging.h", "raw_logging.h", "vlog_is_on.h", "**/glog/log_severity.h"]).files)
+            from(fileTree(dir: "$thirdPartyNdkDir/glog", includes: ["stl_logging.h", "logging.h", "raw_logging.h", "vlog_is_on.h", "**/src/glog/log_severity.h"]).files)
             includeEmptyDirs = false
             into("$thirdPartyNdkDir/glog/exported/glog")
         }
     }
 }
 
-task downloadJSC(dependsOn: createNativeDepsDirectories, type: Download) {
-    src("https://registry.npmjs.org/jsc-android/-/jsc-android-${JSC_VERSION}.tgz")
-    onlyIfNewer(true)
-    overwrite(false)
-    dest(new File(downloadsDir, "jsc-${JSC_VERSION}.tar.gz"))
-}
-
 // Create Android.mk library module based on jsc from npm
-task prepareJSC(dependsOn: downloadJSC) {
+task prepareJSC {
     doLast {
-        def jscTar = tarTree(downloadJSC.dest)
-        def jscAAR = jscTar.matching({ it.include "**/android-jsc/**/*.aar" }).singleFile
+        def jscPackageRoot = file("$projectDir/../node_modules/jsc-android/dist")
+        if (!jscPackageRoot.exists()) {
+            // For an app to build from RN source, the jsc-android is located at /path/to/app/node_modules
+            // and $projectDir may located at /path/to/app/node_modules/react-native/ReactAndroid
+            jscPackageRoot = file("$projectDir/../../jsc-android/dist")
+        }
+        def jscAAR = fileTree(jscPackageRoot).matching({ it.include "**/android-jsc/**/*.aar" }).singleFile
         def soFiles = zipTree(jscAAR).matching({ it.include "**/*.so" })
 
-        def headerFiles = jscTar.matching({ it.include "**/include/*.h" })
+        def headerFiles = fileTree(jscPackageRoot).matching({ it.include "**/include/*.h" })
 
         copy {
             from(soFiles)
@@ -168,7 +166,6 @@ task downloadNdkBuildDependencies {
     dependsOn(downloadDoubleConversion)
     dependsOn(downloadFolly)
     dependsOn(downloadGlog)
-    dependsOn(downloadJSC)
 }
 
 def getNdkBuildName() {
@@ -223,7 +220,8 @@ def getNdkBuildFullPath() {
 }
 
 task buildReactNdkLib(dependsOn: [prepareJSC, prepareBoost, prepareDoubleConversion, prepareFolly, prepareGlog], type: Exec) {
-    inputs.dir("src/main/jni/react")
+    inputs.dir("$projectDir/../ReactCommon")
+    inputs.dir("src/main/jni")
     outputs.dir("$buildDir/react-ndk/all")
     commandLine(getNdkBuildFullPath(),
             "NDK_PROJECT_PATH=null",
@@ -255,8 +253,8 @@ task cleanReactNdkLib(type: Exec) {
 
 task packageReactNdkLibs(dependsOn: buildReactNdkLib, type: Copy) {
     from("$buildDir/react-ndk/all")
-    from("$thirdPartyNdkDir/jsc/jni")
     into("$buildDir/react-ndk/exported")
+    exclude("**/libjsc.so")
 }
 
 task packageReactNdkLibsForBuck(dependsOn: packageReactNdkLibs, type: Copy) {

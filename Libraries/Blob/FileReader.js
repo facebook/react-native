@@ -11,8 +11,8 @@
 'use strict';
 
 const EventTarget = require('event-target-shim');
-const Blob = require('Blob');
-const {FileReaderModule} = require('NativeModules');
+const Blob = require('./Blob');
+const {FileReaderModule} = require('../BatchedBridge/NativeModules');
 
 type ReadyState =
   | 0 // EMPTY

@@ -11,7 +11,6 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
 const {
   Animated,
   Image,
@@ -19,13 +18,12 @@ const {
   Text,
   TouchableHighlight,
   TouchableOpacity,
+  NativeModules,
   Platform,
   TouchableNativeFeedback,
   TouchableWithoutFeedback,
   View,
-} = ReactNative;
-
-const NativeModules = require('NativeModules');
+} = require('react-native');
 
 const forceTouchAvailable =
   (NativeModules.PlatformConstants &&

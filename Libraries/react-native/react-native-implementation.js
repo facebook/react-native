@@ -137,9 +137,6 @@ module.exports = {
     );
     return require('StatusBar');
   },
-  get SwipeableFlatList() {
-    return require('SwipeableFlatList');
-  },
   get Text() {
     return require('Text');
   },
@@ -179,14 +176,8 @@ module.exports = {
   get VirtualizedList() {
     return require('VirtualizedList');
   },
-  get WebView() {
-    warnOnce(
-      'webview-moved',
-      'WebView has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from 'react-native-webview' instead of 'react-native'. " +
-        'See https://github.com/react-native-community/react-native-webview',
-    );
-    return require('WebView');
+  get VirtualizedSectionList() {
+    return require('VirtualizedSectionList');
   },
 
   // APIs
@@ -313,6 +304,9 @@ module.exports = {
   get ToastAndroid() {
     return require('ToastAndroid');
   },
+  get TurboModuleRegistry() {
+    return require('TurboModuleRegistry');
+  },
   get TVEventHandler() {
     return require('TVEventHandler');
   },
@@ -390,6 +384,19 @@ if (__DEV__) {
         'SwipeableListView has been removed from React Native. ' +
           'See https://fb.me/nolistview for more information or use ' +
           '`deprecated-react-native-swipeable-listview`.',
+      );
+    },
+  });
+
+  // $FlowFixMe This is intentional: Flow will error when attempting to access WebView.
+  Object.defineProperty(module.exports, 'WebView', {
+    configurable: true,
+    get() {
+      invariant(
+        false,
+        'WebView has been removed from React Native. ' +
+          "It can now be installed and imported from 'react-native-webview' instead of 'react-native'. " +
+          'See https://github.com/react-native-community/react-native-webview',
       );
     },
   });

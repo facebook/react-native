@@ -10,9 +10,9 @@
 
 'use strict';
 
-const NativeModules = require('NativeModules');
-const RCTDeviceEventEmitter = require('RCTDeviceEventEmitter');
-const UIManager = require('UIManager');
+const NativeModules = require('../../BatchedBridge/NativeModules');
+const RCTDeviceEventEmitter = require('../../EventEmitter/RCTDeviceEventEmitter');
+const UIManager = require('../../ReactNative/UIManager');
 
 const RCTAccessibilityInfo = NativeModules.AccessibilityInfo;
 
@@ -134,6 +134,15 @@ const AccessibilityInfo = {
       reactTag,
       UIManager.AccessibilityEventTypes.typeViewFocused,
     );
+  },
+
+  /**
+   * Post a string to be announced by the screen reader.
+   *
+   * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#announceforaccessibility
+   */
+  announceForAccessibility: function(announcement: string): void {
+    RCTAccessibilityInfo.announceForAccessibility(announcement);
   },
 };
 

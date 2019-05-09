@@ -7,7 +7,8 @@
 
 package com.facebook.react.views.textinput;
 
-import android.annotation.TargetApi;
+import static android.view.View.FOCUS_FORWARD;
+
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -25,6 +26,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
+import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
 import com.facebook.react.bridge.ReactContext;
@@ -62,7 +64,7 @@ import javax.annotation.Nullable;
  */
 @ReactModule(name = ReactTextInputManager.REACT_CLASS)
 public class ReactTextInputManager extends BaseViewManager<ReactEditText, LayoutShadowNode> {
-
+  public static final String TAG = ReactTextInputManager.class.getSimpleName();
   protected static final String REACT_CLASS = "AndroidTextInput";
 
   private static final int[] SPACING_TYPES = {
@@ -199,6 +201,8 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
         TextInlineImageSpan.possiblyUpdateInlineImageSpans(spannable, view);
       }
       view.maybeSetText(update);
+      if (update.getSelectionStart() != UNSET && update.getSelectionEnd() != UNSET)
+        view.setSelection(update.getSelectionStart(), update.getSelectionEnd());
     }
   }
 
@@ -268,17 +272,6 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     }
     if (fontStyle != currentTypeface.getStyle()) {
       view.setTypeface(currentTypeface, fontStyle);
-    }
-  }
-
-  @ReactProp(name = "selection")
-  public void setSelection(ReactEditText view, @Nullable ReadableMap selection) {
-    if (selection == null) {
-      return;
-    }
-
-    if (selection.hasKey("start") && selection.hasKey("end")) {
-      view.setSelection(selection.getInt("start"), selection.getInt("end"));
     }
   }
 
@@ -462,9 +455,14 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
     // Drawable.mutate() can sometimes crash due to an AOSP bug:
     // See https://code.google.com/p/android/issues/detail?id=191754 for more info
     Drawable background = view.getBackground();
-    Drawable drawableToMutate = background.getConstantState() != null ?
-      background.mutate() :
-      background;
+    Drawable drawableToMutate = background;
+    if (background.getConstantState() != null) {
+      try {
+        drawableToMutate = background.mutate();
+      } catch (NullPointerException e) {
+        FLog.e(TAG, "NullPointerException when setting underlineColorAndroid for TextInput", e);
+      }
+    }
 
     if (underlineColor == null) {
       drawableToMutate.clearColorFilter();
@@ -479,7 +477,7 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         view.setJustificationMode(Layout.JUSTIFICATION_MODE_INTER_WORD);
       }
-      view.setGravityHorizontal(Gravity.START);
+      view.setGravityHorizontal(Gravity.LEFT);
     } else {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         view.setJustificationMode(Layout.JUSTIFICATION_MODE_NONE);
@@ -488,9 +486,9 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
       if (textAlign == null || "auto".equals(textAlign)) {
         view.setGravityHorizontal(Gravity.NO_GRAVITY);
       } else if ("left".equals(textAlign)) {
-        view.setGravityHorizontal(Gravity.START);
+        view.setGravityHorizontal(Gravity.LEFT);
       } else if ("right".equals(textAlign)) {
-        view.setGravityHorizontal(Gravity.END);
+        view.setGravityHorizontal(Gravity.RIGHT);
       } else if ("center".equals(textAlign)) {
         view.setGravityHorizontal(Gravity.CENTER_HORIZONTAL);
       } else {
@@ -896,6 +894,12 @@ public class ReactTextInputManager extends BaseViewManager<ReactEditText, Layout
 
               // Prevent default behavior except when we want it to insert a newline.
               return blurOnSubmit || !isMultiline;
+            } else if (actionId == EditorInfo.IME_ACTION_NEXT) {
+              View v1 = v.focusSearch(FOCUS_FORWARD);
+              if (v1 != null && !v.requestFocus(FOCUS_FORWARD)) {
+                return true;
+              }
+              return false;
             }
 
             return true;

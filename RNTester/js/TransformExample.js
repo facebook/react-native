@@ -11,8 +11,7 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
-const {Animated, StyleSheet, Text, View} = ReactNative;
+const {Animated, StyleSheet, Text, View} = require('react-native');
 
 class Flip extends React.Component<{}, $FlowFixMeState> {
   state = {

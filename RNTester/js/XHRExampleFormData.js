@@ -11,7 +11,6 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
 const {
   CameraRoll,
   Image,
@@ -22,7 +21,7 @@ const {
   TextInput,
   TouchableHighlight,
   View,
-} = ReactNative;
+} = require('react-native');
 
 const XHRExampleBinaryUpload = require('./XHRExampleBinaryUpload');
 
@@ -50,7 +49,7 @@ class XHRExampleFormData extends React.Component<Object, Object> {
   _fetchRandomPhoto = () => {
     CameraRoll.getPhotos({
       first: PAGE_SIZE,
-      groupTypes: 'All',
+      groupTypes: Platform.OS === 'ios' ? 'All' : undefined,
       assetType: 'All',
     }).then(
       data => {

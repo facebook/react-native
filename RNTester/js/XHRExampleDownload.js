@@ -11,7 +11,6 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
 const {
   Alert,
   Platform,
@@ -22,7 +21,7 @@ const {
   Text,
   TouchableHighlight,
   View,
-} = ReactNative;
+} = require('react-native');
 
 /**
  * Convert number of bytes to MB and round to the nearest 0.1 MB.

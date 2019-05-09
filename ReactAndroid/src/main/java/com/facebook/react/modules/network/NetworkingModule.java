@@ -116,6 +116,8 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
   private static final int CHUNK_TIMEOUT_NS = 100 * 1000000; // 100ms
   private static final int MAX_CHUNK_SIZE_BETWEEN_FLUSHES = 8 * 1024; // 8K
 
+  private static @Nullable CustomClientBuilder customClientBuilder = null;
+
   private final OkHttpClient mClient;
   private final ForwardingCookieHandler mCookieHandler;
   private final @Nullable String mDefaultUserAgent;
@@ -186,6 +188,20 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
    */
   public NetworkingModule(ReactApplicationContext context, String defaultUserAgent) {
     this(context, defaultUserAgent, OkHttpClientProvider.createClient(context), null);
+  }
+
+  public static void setCustomClientBuilder(CustomClientBuilder ccb) {
+    customClientBuilder = ccb;
+  }
+
+  public static interface CustomClientBuilder {
+    public void apply(OkHttpClient.Builder builder);
+  }
+
+  private static void applyCustomBuilder(OkHttpClient.Builder builder) {
+    if (customClientBuilder != null) {
+      customClientBuilder.apply(builder);
+    }
   }
 
   @Override
@@ -300,6 +316,8 @@ public final class NetworkingModule extends ReactContextBaseJavaModule {
     }
 
     OkHttpClient.Builder clientBuilder = mClient.newBuilder();
+
+    applyCustomBuilder(clientBuilder);
 
     if (!withCredentials) {
       clientBuilder.cookieJar(CookieJar.NO_COOKIES);

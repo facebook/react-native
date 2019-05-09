@@ -30,16 +30,15 @@ install:
   - appveyor DownloadFile "%NDK_TOOLS_URL%" -FileName "%TMP%/ndk.zip"
   - 7z x "%TMP%/ndk.zip" -o"%ANDROID_HOME%" > nul
 
-  - ps: Install-Product node $env:nodejs_version
-  - node --version
-  - yarn --version
+  - ps: Install-Product node $env:nodejs_version x64
+  - npx envinfo@latest
   - appveyor-retry yarn install
 
 build_script:
+  - yarn run flow-check-android
+  - yarn run flow-check-ios
+  - yarn run test
   - gradlew.bat RNTester:android:app:assembleRelease
-
-test_script:
-  - npm test
 
 cache:
   - node_modules

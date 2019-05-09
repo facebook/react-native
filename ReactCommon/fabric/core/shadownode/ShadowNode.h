@@ -43,8 +43,14 @@ class ShadowNode : public virtual Sealable,
                    public virtual DebugStringConvertible,
                    public std::enable_shared_from_this<ShadowNode> {
  public:
-  using Shared = std::shared_ptr<const ShadowNode>;
-  using Weak = std::weak_ptr<const ShadowNode>;
+  using Shared = std::shared_ptr<ShadowNode const>;
+  using Weak = std::weak_ptr<ShadowNode const>;
+  using Unshared = std::shared_ptr<ShadowNode>;
+  using ListOfShared =
+      better::small_vector<Shared, kShadowNodeChildrenSmallVectorSize>;
+  using SharedListOfShared = std::shared_ptr<ListOfShared const>;
+  using UnsharedListOfShared = std::shared_ptr<ListOfShared>;
+
   using AncestorList = better::small_vector<
       std::pair<
           std::reference_wrapper<ShadowNode const> /* parentNode */,
@@ -143,26 +149,11 @@ class ShadowNode : public virtual Sealable,
   void setMounted(bool mounted) const;
 
   /*
-   * Deprecated. Use `getAncestors` instead.
-   * Forms a list of all ancestors of the node relative to the given ancestor.
-   * The list starts from the parent node and ends with the given ancestor node.
-   * Returns `true` if successful, `false` otherwise.
-   * Thread-safe if the subtree is immutable.
-   * The theoretical complexity of this algorithm is `O(n)`. Use it wisely.
-   * The particular implementation can use some tricks to mitigate the
-   * complexity problem up to `0(ln(n))` but this is not guaranteed.
-   * Particular consumers should use appropriate cache techniques based on
-   * `childIndex` and `nodeId` tracking.
-   */
-  bool constructAncestorPath(
-      const ShadowNode &ancestorShadowNode,
-      std::vector<std::reference_wrapper<const ShadowNode>> &ancestors) const;
-
-  /*
    * Returns a list of all ancestors of the node relative to the given ancestor.
    * The list starts from the given ancestor node and ends with the parent node
    * of `this` node. The elements of the list have a reference to some parent
    * node and an index of the child of the parent node.
+   * Returns an empty array if there is no ancestor-descendant relationship.
    * Can be called from any thread.
    * The theoretical complexity of the algorithm is `O(ln(n))`. Use it wisely.
    */

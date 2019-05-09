@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {RNTesterExample} from 'RNTesterTypes';
+import type {RNTesterExample} from './Shared/RNTesterTypes';
 
 const ComponentExamples: Array<RNTesterExample> = [
   {
@@ -74,6 +74,11 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
+    key: 'NewAppScreenExample',
+    module: require('./NewAppScreenExample'),
+    supportsTVOS: false,
+  },
+  {
     key: 'PickerExample',
     module: require('./PickerExample'),
     supportsTVOS: false,
@@ -129,11 +134,6 @@ const ComponentExamples: Array<RNTesterExample> = [
     supportsTVOS: false,
   },
   {
-    key: 'SwipeableFlatListExample',
-    module: require('./SwipeableFlatListExample'),
-    supportsTVOS: false,
-  },
-  {
     key: 'SwitchExample',
     module: require('./SwitchExample'),
     supportsTVOS: false,
@@ -162,11 +162,6 @@ const ComponentExamples: Array<RNTesterExample> = [
     key: 'ViewExample',
     module: require('./ViewExample'),
     supportsTVOS: true,
-  },
-  {
-    key: 'WebViewExample',
-    module: require('./WebViewExample'),
-    supportsTVOS: false,
   },
 ];
 
@@ -240,11 +235,6 @@ const APIExamples: Array<RNTesterExample> = [
     key: 'Dimensions',
     module: require('./DimensionsExample'),
     supportsTVOS: true,
-  },
-  {
-    key: 'GeolocationExample',
-    module: require('./GeolocationExample'),
-    supportsTVOS: false,
   },
   {
     key: 'ImageEditingExample',
@@ -325,6 +315,11 @@ const APIExamples: Array<RNTesterExample> = [
     key: 'TransformExample',
     module: require('./TransformExample'),
     supportsTVOS: true,
+  },
+  {
+    key: 'TurboModuleExample',
+    module: require('./TurboModuleExample'),
+    supportsTVOS: false,
   },
   {
     key: 'TVEventHandlerExample',

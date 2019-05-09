@@ -10,10 +10,10 @@
 
 'use strict';
 
-const EventEmitter = require('EventEmitter');
-const EventSubscriptionVendor = require('EventSubscriptionVendor');
+const EventEmitter = require('../vendor/emitter/EventEmitter');
+const EventSubscriptionVendor = require('../vendor/emitter/EventSubscriptionVendor');
 
-import type EmitterSubscription from 'EmitterSubscription';
+import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
 
 function checkNativeEventModule(eventType: ?string) {
   if (eventType) {

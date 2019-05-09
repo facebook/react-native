@@ -8,15 +8,16 @@
  */
 
 module.exports = {
-  parser: 'babel-eslint',
-
   env: {
     es6: true,
   },
 
+  parserOptions: {
+    sourceType: 'module',
+  },
+
   plugins: [
     'eslint-comments',
-    'flowtype',
     'prettier',
     'react',
     'react-hooks',
@@ -30,13 +31,39 @@ module.exports = {
     },
   },
 
-  overrides: {
-    files: ['**/__tests__/**/*.js', '**/*.spec.js', '**/*.test.js'],
-    env: {
-      jest: true,
-      'jest/globals': true,
+  overrides: [
+    {
+      files: ['*.js'],
+      parser: 'babel-eslint',
+      plugins: ['flowtype'],
+      rules: {
+        // Flow Plugin
+        // The following rules are made available via `eslint-plugin-flowtype`
+
+        'flowtype/define-flow-type': 1,
+        'flowtype/use-flow-type': 1,
+      },
     },
-  },
+    {
+      files: ['*.ts', '*.tsx'],
+      parser: '@typescript-eslint/parser',
+      plugins: ['@typescript-eslint/eslint-plugin'],
+      rules: {
+        '@typescript-eslint/no-unused-vars': [
+          'error',
+          {argsIgnorePattern: '^_'},
+        ],
+        'no-unused-vars': 'off',
+      },
+    },
+    {
+      files: ['*.{spec,test}.{js,ts,tsx}', '**/__tests__/**/*.{js,ts,tsx}'],
+      env: {
+        jest: true,
+        'jest/globals': true,
+      },
+    },
+  ],
 
   // Map from global var to bool specifying if it can be redefined
   globals: {
@@ -187,14 +214,9 @@ module.exports = {
     'eslint-comments/no-unused-disable': 1, // disallow disables that don't cover any errors
     'eslint-comments/no-unused-enable': 1, // // disallow enables that don't enable anything or enable rules that weren't disabled
 
-    // Flow Plugin
-    // The following rules are made available via `eslint-plugin-flowtype`
-    'flowtype/define-flow-type': 1,
-    'flowtype/use-flow-type': 1,
-
     // Prettier Plugin
     // https://github.com/prettier/eslint-plugin-prettier
-    'prettier/prettier': [2, 'fb', '@format'],
+    'prettier/prettier': 2,
 
     // Stylistic Issues
     // These rules are purely matters of style and are quite subjective.
@@ -268,6 +290,7 @@ module.exports = {
     // React-Hooks Plugin
     // The following rules are made available via `eslint-plugin-react-hooks`
     'react-hooks/rules-of-hooks': 'error',
+    'react-hooks/exhaustive-deps': 'error',
 
     // React-Native Plugin
     // The following rules are made available via `eslint-plugin-react-native`

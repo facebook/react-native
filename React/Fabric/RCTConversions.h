@@ -8,10 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
-#import <react/components/view/primitives.h>
 #import <react/components/view/AccessibilityPrimitives.h>
+#import <react/components/view/primitives.h>
 #import <react/graphics/Color.h>
 #import <react/graphics/Geometry.h>
+#import <react/graphics/Transform.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

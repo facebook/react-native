@@ -12,7 +12,9 @@
 #import <react/core/ComponentDescriptor.h>
 #import <react/core/LayoutConstraints.h>
 #import <react/core/LayoutContext.h>
-#import <react/mounting/ShadowViewMutation.h>
+#import <react/mounting/MountingCoordinator.h>
+#import <react/uimanager/ComponentDescriptorFactory.h>
+#import <react/utils/ContextContainer.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -23,8 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @protocol RCTSchedulerDelegate
 
-- (void)schedulerDidFinishTransaction:(facebook::react::ShadowViewMutationList)mutations
-                              rootTag:(ReactTag)rootTag;
+- (void)schedulerDidFinishTransaction:(facebook::react::MountingCoordinator::Shared const &)mountingCoordinator;
 
 - (void)schedulerOptimisticallyCreateComponentViewWithComponentHandle:(facebook::react::ComponentHandle)componentHandle;
 
@@ -37,7 +38,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (atomic, weak, nullable) id<RCTSchedulerDelegate> delegate;
 
-- (instancetype)initWithContextContainer:(std::shared_ptr<void>)contextContatiner;
+- (instancetype)initWithContextContainer:(facebook::react::ContextContainer::Shared)contextContatiner
+                componentRegistryFactory:(facebook::react::ComponentRegistryFactory)componentRegistryFactory;
 
 - (void)startSurfaceWithSurfaceId:(facebook::react::SurfaceId)surfaceId
                        moduleName:(NSString *)moduleName

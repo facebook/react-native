@@ -12,16 +12,16 @@
 #include <react/config/ReactNativeConfig.h>
 #include <react/core/ComponentDescriptor.h>
 #include <react/core/LayoutConstraints.h>
+#include <react/mounting/ShadowTree.h>
+#include <react/mounting/ShadowTreeDelegate.h>
+#include <react/mounting/ShadowTreeRegistry.h>
 #include <react/uimanager/ComponentDescriptorFactory.h>
 #include <react/uimanager/ComponentDescriptorRegistry.h>
-#include <react/uimanager/ContextContainer.h>
 #include <react/uimanager/SchedulerDelegate.h>
-#include <react/uimanager/ShadowTree.h>
-#include <react/uimanager/ShadowTreeDelegate.h>
-#include <react/uimanager/ShadowTreeRegistry.h>
 #include <react/uimanager/UIManagerBinding.h>
 #include <react/uimanager/UIManagerDelegate.h>
 #include <react/uimanager/primitives.h>
+#include <react/utils/ContextContainer.h>
 
 namespace facebook {
 namespace react {
@@ -32,7 +32,7 @@ namespace react {
 class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
  public:
   Scheduler(
-      const SharedContextContainer &contextContainer,
+      ContextContainer::Shared const &contextContainer,
       ComponentRegistryFactory buildRegistryFunction);
   ~Scheduler();
 
@@ -84,18 +84,15 @@ class Scheduler final : public UIManagerDelegate, public ShadowTreeDelegate {
 
   void uiManagerDidFinishTransaction(
       SurfaceId surfaceId,
-      const SharedShadowNodeUnsharedList &rootChildNodes,
-      long startCommitTime) override;
+      const SharedShadowNodeUnsharedList &rootChildNodes) override;
   void uiManagerDidCreateShadowNode(
       const SharedShadowNode &shadowNode) override;
 
 #pragma mark - ShadowTreeDelegate
 
   void shadowTreeDidCommit(
-      const ShadowTree &shadowTree,
-      const ShadowViewMutationList &mutations,
-      long commitStartTime,
-      long layoutTime) const override;
+      ShadowTree const &shadowTree,
+      MountingCoordinator::Shared const &mountingCoordinator) const override;
 
  private:
   SchedulerDelegate *delegate_;

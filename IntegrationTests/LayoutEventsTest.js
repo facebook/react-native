@@ -15,15 +15,18 @@ const ReactNative = require('react-native');
 const {Image, LayoutAnimation, StyleSheet, Text, View} = ReactNative;
 const {TestModule} = ReactNative.NativeModules;
 
-import type {ViewStyleProp} from 'StyleSheet';
+import type {ViewStyleProp} from 'react-native/Libraries/StyleSheet/StyleSheet';
 
-const deepDiffer = require('deepDiffer');
+const deepDiffer = require('react-native/Libraries/Utilities/differ/deepDiffer');
 
 function debug(...args) {
   // console.log.apply(null, arguments);
 }
 
-import type {Layout, LayoutEvent} from 'CoreEventTypes';
+import type {
+  Layout,
+  LayoutEvent,
+} from 'react-native/Libraries/Types/CoreEventTypes';
 
 type Props = $ReadOnly<{||}>;
 

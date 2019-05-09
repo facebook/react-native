@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <limits>
+
 #include <folly/Hash.h>
 #include <react/core/LayoutPrimitives.h>
 #include <react/graphics/Geometry.h>
@@ -19,7 +21,8 @@ namespace react {
  */
 struct LayoutConstraints {
   Size minimumSize{0, 0};
-  Size maximumSize{kFloatUndefined, kFloatUndefined};
+  Size maximumSize{std::numeric_limits<Float>::infinity(),
+                   std::numeric_limits<Float>::infinity()};
   LayoutDirection layoutDirection{LayoutDirection::Undefined};
 
   /*

@@ -12,9 +12,12 @@ import com.facebook.react.fabric.jsi.ComponentRegistry;
 import com.facebook.react.fabric.jsi.EventBeatManager;
 import com.facebook.react.fabric.jsi.EventEmitterWrapper;
 import com.facebook.react.fabric.jsi.FabricSoLoader;
+import com.facebook.react.fabric.jsi.StateWrapperImpl;
 import com.facebook.react.fabric.mounting.ContextBasedViewPool;
 import com.facebook.react.fabric.mounting.LayoutMetricsConversions;
 import com.facebook.react.fabric.mounting.MountingManager;
+import com.facebook.react.fabric.mounting.ViewFactory;
+import com.facebook.react.fabric.mounting.ViewManagerFactory;
 import com.facebook.react.fabric.mounting.ViewPool;
 import com.facebook.react.fabric.mounting.mountitems.BatchMountItem;
 import com.facebook.react.fabric.mounting.mountitems.DeleteMountItem;
@@ -27,7 +30,9 @@ import com.facebook.react.fabric.mounting.mountitems.UpdateEventEmitterMountItem
 import com.facebook.react.fabric.mounting.mountitems.UpdateLayoutMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdateLocalDataMountItem;
 import com.facebook.react.fabric.mounting.mountitems.UpdatePropsMountItem;
+import com.facebook.react.uimanager.StateWrapper;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.events.BatchEventDispatchedListener;
 import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.systrace.Systrace;
 
@@ -89,6 +94,11 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
   // TODO T31905686: eager load Fabric classes, this is temporary and it will be removed
   // in the near future
   private static void loadClasses() {
+    BatchEventDispatchedListener.class.getClass();
+    ReactNativeConfig.class.getClass();
+    ViewManagerFactory.class.getClass();
+    StateWrapper.class.getClass();
+    ViewFactory.class.getClass();
     FabricEventEmitter.class.getClass();
     FabricUIManager.class.getClass();
     GuardedFrameCallback.class.getClass();
@@ -111,6 +121,7 @@ public class FabricJSIModuleProvider implements JSIModuleProvider<UIManager> {
     ComponentRegistry.class.getClass();
     EventBeatManager.class.getClass();
     EventEmitterWrapper.class.getClass();
+    StateWrapperImpl.class.getClass();
     FabricSoLoader.class.getClass();
     PreAllocateViewMountItem.class.getClass();
   }

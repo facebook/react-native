@@ -27,6 +27,8 @@ class ConcreteState : public State {
   using Shared = std::shared_ptr<const ConcreteState>;
   using Data = DataT;
 
+  virtual ~ConcreteState() = default;
+
   ConcreteState(Data &&data, StateCoordinator::Shared stateCoordinator)
       : State(std::move(stateCoordinator)), data_(std::move(data)) {}
 
@@ -64,7 +66,7 @@ class ConcreteState : public State {
    * of conflict.
    */
   void updateState(
-      std::function<Data && (const Data &oldData)> callback,
+      std::function<Data(const Data &oldData)> callback,
       EventPriority priority = EventPriority::AsynchronousBatched) const {
     stateCoordinator_->dispatchRawState(
         {[stateCoordinator = stateCoordinator_,
@@ -79,6 +81,15 @@ class ConcreteState : public State {
         }},
         priority);
   }
+
+#ifdef ANDROID
+  const folly::dynamic getDynamic() const override {
+    return data_.getDynamic();
+  }
+  void updateState(folly::dynamic data) const override {
+    updateState(std::move(Data(data)));
+  }
+#endif
 
  private:
   DataT data_;

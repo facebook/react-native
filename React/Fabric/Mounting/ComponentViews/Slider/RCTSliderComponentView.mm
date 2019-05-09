@@ -10,8 +10,8 @@
 #import <React/RCTImageResponseObserverProxy.h>
 #import <react/components/rncore/EventEmitters.h>
 #import <react/components/rncore/Props.h>
+#import <react/components/slider/SliderComponentDescriptor.h>
 #import <react/components/slider/SliderLocalData.h>
-#import <react/components/slider/SliderShadowNode.h>
 
 #import "MainQueueExecutor.h"
 
@@ -104,9 +104,9 @@ using namespace facebook::react;
 
 #pragma mark - RCTComponentViewProtocol
 
-+ (ComponentHandle)componentHandle
++ (ComponentDescriptorProvider)componentDescriptorProvider
 {
-  return SliderShadowNode::Handle();
+  return concreteComponentDescriptorProvider<SliderComponentDescriptor>();
 }
 
 - (void)updateProps:(SharedProps)props oldProps:(SharedProps)oldProps

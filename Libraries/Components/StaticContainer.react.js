@@ -10,7 +10,7 @@
 
 'use strict';
 
-const React = require('React');
+const React = require('react');
 
 /**
  * Renders static content efficiently by allowing React to short-circuit the

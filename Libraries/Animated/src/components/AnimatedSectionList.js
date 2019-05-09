@@ -10,8 +10,8 @@
 
 'use strict';
 
-const SectionList = require('SectionList');
+const SectionList = require('../../../Lists/SectionList');
 
-const createAnimatedComponent = require('createAnimatedComponent');
+const createAnimatedComponent = require('../createAnimatedComponent');
 
 module.exports = createAnimatedComponent(SectionList);

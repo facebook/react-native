@@ -11,8 +11,8 @@
 
 'use strict';
 
-const YellowBoxCategory = require('YellowBoxCategory');
-const YellowBoxRegistry = require('YellowBoxRegistry');
+const YellowBoxCategory = require('../YellowBoxCategory');
+const YellowBoxRegistry = require('../YellowBoxRegistry');
 
 const registry = () => {
   const observer = jest.fn();

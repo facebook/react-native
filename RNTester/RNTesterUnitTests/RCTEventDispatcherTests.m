@@ -220,6 +220,35 @@
   [_bridge verify];
 }
 
+- (void)testDifferentViewTagsDontCoalesce
+{
+  RCTTestEvent *firstEvent = [[RCTTestEvent alloc] initWithViewTag:@(1)
+                                                         eventName:_eventName
+                                                              body:_body
+                                                     coalescingKey:0];
+  RCTTestEvent *secondEvent = [[RCTTestEvent alloc] initWithViewTag:@(2)
+                                                          eventName:_eventName
+                                                               body:_body
+                                                      coalescingKey:0];
+
+  __block dispatch_block_t eventsEmittingBlock;
+  [[_bridge expect] dispatchBlock:[OCMArg checkWithBlock:^(dispatch_block_t block) {
+    eventsEmittingBlock = block;
+    return YES;
+  }] queue:RCTJSThread];
+  [[_bridge expect] enqueueJSCall:[[firstEvent class] moduleDotMethod]
+                             args:[firstEvent arguments]];
+  [[_bridge expect] enqueueJSCall:[[secondEvent class] moduleDotMethod]
+                             args:[secondEvent arguments]];
+
+
+  [_eventDispatcher sendEvent:firstEvent];
+  [_eventDispatcher sendEvent:secondEvent];
+  eventsEmittingBlock();
+
+  [_bridge verify];
+}
+
 - (void)testSameEventTypesWithDifferentCoalesceKeysDontCoalesce
 {
   NSString *eventName = RCTNormalizeInputEventName(@"firstEvent");

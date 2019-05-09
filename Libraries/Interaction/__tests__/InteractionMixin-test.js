@@ -10,7 +10,7 @@
 
 'use strict';
 
-jest.mock('InteractionManager');
+jest.mock('../InteractionManager');
 
 describe('InteractionMixin', () => {
   let InteractionManager;
@@ -19,8 +19,8 @@ describe('InteractionMixin', () => {
 
   beforeEach(() => {
     jest.resetModules();
-    InteractionManager = require('InteractionManager');
-    InteractionMixin = require('InteractionMixin');
+    InteractionManager = require('../InteractionManager');
+    InteractionMixin = require('../InteractionMixin');
 
     component = Object.create(InteractionMixin);
   });

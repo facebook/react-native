@@ -10,12 +10,12 @@
 
 'use strict';
 
-const requireNativeComponent = require('requireNativeComponent');
+const requireNativeComponent = require('../../ReactNative/requireNativeComponent');
 
-import type {SyntheticEvent} from 'CoreEventTypes';
-import type {ImageSource} from 'ImageSource';
-import type {ViewProps} from 'ViewPropTypes';
-import type {NativeComponent} from 'ReactNative';
+import type {SyntheticEvent} from '../../Types/CoreEventTypes';
+import type {ImageSource} from '../../Image/ImageSource';
+import type {ViewProps} from '../View/ViewPropTypes';
+import type {NativeComponent} from '../../Renderer/shims/ReactNative';
 
 type Action = $ReadOnly<{|
   title: string,

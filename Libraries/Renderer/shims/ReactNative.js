@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {ReactNativeType} from 'ReactNativeTypes';
+import type {ReactNativeType} from './ReactNativeTypes';
 
 let ReactNative;
 

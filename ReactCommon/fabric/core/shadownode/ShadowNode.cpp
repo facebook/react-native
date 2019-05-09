@@ -42,7 +42,7 @@ ShadowNode::ShadowNode(
       state_(fragment.state),
       family_(std::make_shared<ShadowNodeFamily const>(
           fragment.tag,
-          fragment.rootTag,
+          fragment.surfaceId,
           fragment.eventEmitter,
           componentDescriptor)),
       childrenAreShared_(true),
@@ -72,7 +72,7 @@ ShadowNode::ShadowNode(
       revision_(sourceShadowNode.revision_ + 1) {
   // `tag`, `surfaceId`, and `eventEmitter` cannot be changed with cloning.
   assert(fragment.tag == ShadowNodeFragment::tagPlaceholder());
-  assert(fragment.rootTag == ShadowNodeFragment::surfaceIdPlaceholder());
+  assert(fragment.surfaceId == ShadowNodeFragment::surfaceIdPlaceholder());
   assert(
       fragment.eventEmitter == ShadowNodeFragment::eventEmitterPlaceholder());
 
@@ -240,25 +240,6 @@ AncestorList ShadowNode::getAncestors(
   }
 
   return ancestors;
-}
-
-bool ShadowNode::constructAncestorPath(
-    const ShadowNode &ancestorShadowNode,
-    std::vector<std::reference_wrapper<const ShadowNode>> &ancestors) const {
-  // Note: We have a decent idea of how to make it reasonable performant.
-  // This is not implemented yet though. See T36620537 for more details.
-  if (this == &ancestorShadowNode) {
-    return true;
-  }
-
-  for (const auto &childShadowNode : *ancestorShadowNode.children_) {
-    if (constructAncestorPath(*childShadowNode, ancestors)) {
-      ancestors.push_back(std::ref(ancestorShadowNode));
-      return true;
-    }
-  }
-
-  return false;
 }
 
 #pragma mark - DebugStringConvertible

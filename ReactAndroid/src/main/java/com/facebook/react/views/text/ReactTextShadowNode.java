@@ -20,6 +20,8 @@ import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.uimanager.NativeViewHierarchyOptimizer;
+import com.facebook.react.uimanager.ReactShadowNode;
 import com.facebook.react.uimanager.Spacing;
 import com.facebook.react.uimanager.UIViewOperationQueue;
 import com.facebook.react.uimanager.annotations.ReactProp;
@@ -30,6 +32,9 @@ import com.facebook.yoga.YogaMeasureFunction;
 import com.facebook.yoga.YogaMeasureMode;
 import com.facebook.yoga.YogaMeasureOutput;
 import com.facebook.yoga.YogaNode;
+
+import java.util.ArrayList;
+
 import javax.annotation.Nullable;
 
 /**
@@ -76,10 +81,10 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
 
           Layout.Alignment alignment = Layout.Alignment.ALIGN_NORMAL;
           switch (getTextAlign()) {
-            case Gravity.START:
+            case Gravity.LEFT:
               alignment = Layout.Alignment.ALIGN_NORMAL;
               break;
-            case Gravity.END:
+            case Gravity.RIGHT:
               alignment = Layout.Alignment.ALIGN_OPPOSITE;
               break;
             case Gravity.CENTER_HORIZONTAL:
@@ -179,23 +184,35 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
   private int getTextAlign() {
     int textAlign = mTextAlign;
     if (getLayoutDirection() == YogaDirection.RTL) {
-      if (textAlign == Gravity.END) {
-        textAlign = Gravity.START;
-      } else if (textAlign == Gravity.START) {
-        textAlign = Gravity.END;
+      if (textAlign == Gravity.RIGHT) {
+        textAlign = Gravity.LEFT;
+      } else if (textAlign == Gravity.LEFT) {
+        textAlign = Gravity.RIGHT;
       }
     }
     return textAlign;
   }
 
   @Override
-  public void onBeforeLayout() {
-    mPreparedSpannableText = spannedFromShadowNode(this, null);
+  public void onBeforeLayout(NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer) {
+    mPreparedSpannableText = spannedFromShadowNode(
+        this,
+        /* text (e.g. from `value` prop): */ null,
+        /* supportsInlineViews: */ true,
+        nativeViewHierarchyOptimizer);
     markUpdated();
   }
 
   @Override
   public boolean isVirtualAnchor() {
+    // Text's descendants aren't necessarily all virtual nodes. Text can contain a combination of
+    // virtual and non-virtual (e.g. inline views) nodes. Therefore it's not a virtual anchor
+    // by the doc comment on {@link ReactShadowNode#isVirtualAnchor}.
+    return false;
+  }
+
+  @Override
+  public boolean hoistNativeChildren() {
     return true;
   }
 
@@ -230,5 +247,28 @@ public class ReactTextShadowNode extends ReactBaseTextShadowNode {
   @ReactProp(name = "onTextLayout")
   public void setShouldNotifyOnTextLayout(boolean shouldNotifyOnTextLayout) {
     mShouldNotifyOnTextLayout = shouldNotifyOnTextLayout;
+  }
+
+  @Override
+  public Iterable<? extends ReactShadowNode> calculateLayoutOnChildren() {
+    // Run flexbox on and return the descendants which are inline views.
+
+    if (mInlineViews == null || mInlineViews.isEmpty()) {
+      return null;
+    }
+
+    Spanned text = Assertions.assertNotNull(
+        this.mPreparedSpannableText,
+        "Spannable element has not been prepared in onBeforeLayout");
+    TextInlineViewPlaceholderSpan[] placeholders = text.getSpans(0, text.length(), TextInlineViewPlaceholderSpan.class);
+    ArrayList<ReactShadowNode> shadowNodes = new ArrayList<ReactShadowNode>(placeholders.length);
+
+    for (TextInlineViewPlaceholderSpan placeholder : placeholders) {
+      ReactShadowNode child = mInlineViews.get(placeholder.getReactTag());
+      child.calculateLayout();
+      shadowNodes.add(child);
+    }
+
+    return shadowNodes;
   }
 }

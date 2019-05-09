@@ -10,15 +10,12 @@
 'use strict';
 
 const React = require('react');
-const ReactNative = require('react-native');
 const {
-  AccessibilityInfo,
   StyleSheet,
   Text,
   View,
-  ToastAndroid,
   TouchableWithoutFeedback,
-} = ReactNative;
+} = require('react-native');
 
 const RNTesterBlock = require('./RNTesterBlock');
 const RNTesterPage = require('./RNTesterPage');

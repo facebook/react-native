@@ -10,7 +10,7 @@
 
 'use strict';
 
-import type {RNTesterExample} from 'RNTesterTypes';
+import type {RNTesterExample} from './Shared/RNTesterTypes';
 
 const ComponentExamples: Array<RNTesterExample> = [
   {
@@ -42,6 +42,10 @@ const ComponentExamples: Array<RNTesterExample> = [
     module: require('./MultiColumnExample'),
   },
   {
+    key: 'NewAppScreenExample',
+    module: require('./NewAppScreenExample'),
+  },
+  {
     key: 'PickerExample',
     module: require('./PickerExample'),
   },
@@ -70,10 +74,6 @@ const ComponentExamples: Array<RNTesterExample> = [
   {
     key: 'StatusBarExample',
     module: require('./StatusBarExample'),
-  },
-  {
-    key: 'SwipeableFlatListExample',
-    module: require('./SwipeableFlatListExample'),
   },
   {
     key: 'SwitchExample',
@@ -110,10 +110,6 @@ const ComponentExamples: Array<RNTesterExample> = [
     /* $FlowFixMe(>=0.78.0 site=react_native_android_fb) This issue was found
      * when making Flow check .android.js files. */
     module: require('./ViewPagerAndroidExample'),
-  },
-  {
-    key: 'WebViewExample',
-    module: require('./WebViewExample'),
   },
 ];
 
@@ -163,10 +159,6 @@ const APIExamples: Array<RNTesterExample> = [
   {
     key: 'Dimensions',
     module: require('./DimensionsExample'),
-  },
-  {
-    key: 'GeolocationExample',
-    module: require('./GeolocationExample'),
   },
   {
     key: 'ImageEditingExample',

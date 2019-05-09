@@ -10,20 +10,20 @@
 
 'use strict';
 
-const Platform = require('Platform');
-const React = require('React');
-const {NativeComponent} = require('ReactNative');
+const Platform = require('../../Utilities/Platform');
+const React = require('react');
+const {NativeComponent} = require('../../Renderer/shims/ReactNative');
 
-const AndroidSwipeRefreshLayoutNativeComponent = require('AndroidSwipeRefreshLayoutNativeComponent');
-const RCTRefreshControlNativeComponent = require('RCTRefreshControlNativeComponent');
+const AndroidSwipeRefreshLayoutNativeComponent = require('./AndroidSwipeRefreshLayoutNativeComponent');
+const RCTRefreshControlNativeComponent = require('./RCTRefreshControlNativeComponent');
 const nullthrows = require('nullthrows');
 
-import type {ColorValue} from 'StyleSheetTypes';
-import type {ViewProps} from 'ViewPropTypes';
+import type {ColorValue} from '../../StyleSheet/StyleSheetTypes';
+import type {ViewProps} from '../View/ViewPropTypes';
 
 let RefreshLayoutConsts;
 if (Platform.OS === 'android') {
-  const AndroidSwipeRefreshLayout = require('UIManager').getViewManagerConfig(
+  const AndroidSwipeRefreshLayout = require('../../ReactNative/UIManager').getViewManagerConfig(
     'AndroidSwipeRefreshLayout',
   );
   RefreshLayoutConsts = AndroidSwipeRefreshLayout
