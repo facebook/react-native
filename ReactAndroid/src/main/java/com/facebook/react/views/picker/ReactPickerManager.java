@@ -44,9 +44,9 @@ public abstract class ReactPickerManager extends SimpleViewManager<ReactPicker> 
       }
       ReactPickerAdapter adapter = new ReactPickerAdapter(view.getContext(), data);
       adapter.setPrimaryTextColor(view.getPrimaryColor());
-      view.setAdapter(adapter);
+      view.setStagedAdapter(adapter);
     } else {
-      view.setAdapter(null);
+      view.setStagedAdapter(null);
     }
   }
 
@@ -77,7 +77,7 @@ public abstract class ReactPickerManager extends SimpleViewManager<ReactPicker> 
   @Override
   protected void onAfterUpdateTransaction(ReactPicker view) {
     super.onAfterUpdateTransaction(view);
-    view.updateStagedSelection();
+    view.commitStagedData();
   }
 
   @Override
