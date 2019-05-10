@@ -250,8 +250,11 @@ using namespace facebook::react;
 
 - (void)_startSurface:(RCTFabricSurface *)surface
 {
-  [_mountingManager.componentViewRegistry dequeueComponentViewWithComponentHandle:RootShadowNode::Handle()
-                                                                              tag:surface.rootTag];
+  RCTMountingManager *mountingManager = _mountingManager;
+  RCTExecuteOnMainQueue(^{
+    [mountingManager.componentViewRegistry dequeueComponentViewWithComponentHandle:RootShadowNode::Handle()
+                                                                               tag:surface.rootTag];
+  });
 
   LayoutContext layoutContext = {
     .pointScaleFactor = RCTScreenScale()
@@ -273,11 +276,14 @@ using namespace facebook::react;
 {
   [self._scheduler stopSurfaceWithSurfaceId:surface.rootTag];
 
-  UIView<RCTComponentViewProtocol> *rootView =
-    [_mountingManager.componentViewRegistry componentViewByTag:surface.rootTag];
-  [_mountingManager.componentViewRegistry enqueueComponentViewWithComponentHandle:RootShadowNode::Handle()
-                                                                              tag:surface.rootTag
-                                                                    componentView:rootView];
+  RCTMountingManager *mountingManager = _mountingManager;
+  RCTExecuteOnMainQueue(^{
+    UIView<RCTComponentViewProtocol> *rootView =
+        [mountingManager.componentViewRegistry componentViewByTag:surface.rootTag];
+    [mountingManager.componentViewRegistry enqueueComponentViewWithComponentHandle:RootShadowNode::Handle()
+                                                                               tag:surface.rootTag
+                                                                     componentView:rootView];
+  });
 
   [surface _unsetStage:(RCTSurfaceStagePrepared | RCTSurfaceStageMounted)];
 }
