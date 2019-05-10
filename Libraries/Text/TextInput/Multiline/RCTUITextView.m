@@ -190,12 +190,8 @@ static UIColor *defaultPlaceholderColor()
 
 - (void)setAttributedText:(NSAttributedString *)attributedText
 {
-<<<<<<< HEAD
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
- // Using `setAttributedString:` while user is typing breaks some internal mechanics
-=======
   // Using `setAttributedString:` while user is typing breaks some internal mechanics
->>>>>>> v0.59.0
   // when entering complex input languages such as Chinese, Korean or Japanese.
   // see: https://github.com/facebook/react-native/issues/19339
 
@@ -449,22 +445,6 @@ static UIColor *defaultPlaceholderColor()
   }
 }
 #endif // ]TODO(OSS Candidate ISS#2710739)
-
-#pragma mark - Utility Methods
-
-- (void)copyTextAttributesFrom:(NSAttributedString *)sourceString
-{
-  [self.textStorage beginEditing];
-
-  NSTextStorage *textStorage = self.textStorage;
-  [sourceString enumerateAttributesInRange:NSMakeRange(0, sourceString.length)
-                                   options:NSAttributedStringEnumerationReverse
-                                usingBlock:^(NSDictionary<NSAttributedStringKey,id> * _Nonnull attrs, NSRange range, BOOL * _Nonnull stop) {
-                                  [textStorage setAttributes:attrs range:range];
-                                }];
-
-  [self.textStorage endEditing];
-}
 
 #pragma mark - Utility Methods
 

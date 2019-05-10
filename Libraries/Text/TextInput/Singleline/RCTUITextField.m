@@ -267,9 +267,8 @@ static UIColor *defaultPlaceholderTextColor()
   self.enabled = editable;
 }
 
-<<<<<<< HEAD
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-=======
+
 - (void)setScrollEnabled:(BOOL)enabled
 {
   // Do noting, compatible with multiline textinput
@@ -279,7 +278,6 @@ static UIColor *defaultPlaceholderTextColor()
 {
   return NO;
 }
->>>>>>> v0.59.0
 
 #pragma mark - Context Menu
 
@@ -361,6 +359,16 @@ static UIColor *defaultPlaceholderTextColor()
 #else // [TODO(macOS ISS#2323203)
   
 #pragma mark - NSTextViewDelegate methods
+
+- (void)setScrollEnabled:(BOOL)enabled
+{
+  // Do noting, compatible with multiline textinput
+}
+
+- (BOOL)scrollEnabled
+{
+  return NO;
+}
 
 - (void)textDidChange:(NSNotification *)notification
 {

@@ -35,13 +35,8 @@ type PickerIOSChangeEvent = SyntheticEvent<
 
 type RCTPickerIOSItemType = $ReadOnly<{|
   label: ?Label,
-<<<<<<< HEAD
-  value: ?any,
-  textColor: ?(number | SemanticOrDynamicColorType), // ]TODO(macOS ISS#2323203)
-=======
   value: ?(number | string),
-  textColor: ?number,
->>>>>>> v0.59.0
+  textColor: ?(number | SemanticOrDynamicColorType), // ]TODO(macOS ISS#2323203)
 |}>;
 
 type RCTPickerIOSType = Class<

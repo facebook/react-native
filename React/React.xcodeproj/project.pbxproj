@@ -4367,11 +4367,7 @@
 				3D302F2E1DF828F800D6DDAE /* RCTBridgeDelegate.h in Headers */,
 				3D302F2F1DF828F800D6DDAE /* RCTBridgeMethod.h in Headers */,
 				130E3D8A1E6A083600ACE484 /* RCTDevSettings.h in Headers */,
-<<<<<<< HEAD
-				18C2C6692141C86E004314E0 /* JSException.h in Headers */,
-=======
 				8507BBC121EDACC200AEAFCA /* JSCExecutorFactory.h in Headers */,
->>>>>>> v0.59.0
 				3D0E378E1F1CC59100DCAC9F /* RCTWebSocketModule.h in Headers */,
 				3D302F301DF828F800D6DDAE /* RCTBridgeModule.h in Headers */,
 				3D302F311DF828F800D6DDAE /* RCTBundleURLProvider.h in Headers */,
@@ -5671,10 +5667,7 @@
 				18B8F97D21431D5F00CE911A /* RCTPlatformDisplayLink.m in Sources */,
 				2D3B5E991D9B089A00451313 /* RCTDisplayLink.m in Sources */,
 				2D3B5EA11D9B08B600451313 /* RCTModuleData.mm in Sources */,
-<<<<<<< HEAD
-=======
 				3DCE52F41FEAB10D00613583 /* RCTRedBoxExtraDataViewController.m in Sources */,
->>>>>>> v0.59.0
 				590D7C001EBD458B00D8A370 /* RCTShadowView+Layout.m in Sources */,
 				2D3B5EAE1D9B08F800451313 /* RCTEventEmitter.m in Sources */,
 				2D3B5ECA1D9B095F00451313 /* RCTComponentData.m in Sources */,
@@ -5715,28 +5708,19 @@
 				2D3B5EE01D9B09AD00451313 /* RCTRootShadowView.m in Sources */,
 				2D3B5EBA1D9B092100451313 /* RCTI18nUtil.m in Sources */,
 				2D3B5EB41D9B090A00451313 /* RCTDevLoadingView.m in Sources */,
-<<<<<<< HEAD
-=======
 				3D0B842C1EC0B4EA00B2BD8E /* RCTTVView.m in Sources */,
->>>>>>> v0.59.0
 				2D3B5EEF1D9B09DC00451313 /* RCTViewManager.m in Sources */,
 				13134C971E296B2A00B9F3CB /* RCTObjcExecutor.mm in Sources */,
 				130E3D8B1E6A083900ACE484 /* RCTDevSettings.mm in Sources */,
 				2D3B5E951D9B087C00451313 /* RCTAssert.m in Sources */,
 				2D3B5EB61D9B091400451313 /* RCTExceptionsManager.m in Sources */,
-<<<<<<< HEAD
-=======
 				2D3B5ED41D9B097D00451313 /* RCTModalHostView.m in Sources */,
 				599FAA391FB274980058CCF6 /* RCTSurface.mm in Sources */,
->>>>>>> v0.59.0
 				C606692F1F3CC60500E67165 /* RCTModuleMethod.mm in Sources */,
 				2D3B5EA51D9B08C700451313 /* RCTRootView.m in Sources */,
 				13134C871E296B2A00B9F3CB /* RCTCxxBridge.mm in Sources */,
 				CF2731C31E7B8DF30044CA4F /* RCTDeviceInfo.m in Sources */,
-<<<<<<< HEAD
-=======
 				599FAA3F1FB274980058CCF6 /* RCTSurfaceRootShadowView.m in Sources */,
->>>>>>> v0.59.0
 				597633371F4E021D005BE8A4 /* RCTShadowView+Internal.m in Sources */,
 				189727B12141CE0F002A4E2A /* RCTDatePickerManager.m in Sources */,
 				2D3B5EB11D9B090100451313 /* RCTAppState.m in Sources */,
@@ -5751,12 +5735,9 @@
 				3D7BFD181EA8E351008DFB7A /* RCTPackagerClient.m in Sources */,
 				18F3BA0F2142F4DB00AD247D /* RCTWebView.m in Sources */,
 				2D3B5EA71D9B08CE00451313 /* RCTTouchHandler.m in Sources */,
-<<<<<<< HEAD
-=======
 				8507BBBF21EDACC200AEAFCA /* JSCExecutorFactory.mm in Sources */,
 				59D031F01F8353D3008361F0 /* RCTSafeAreaShadowView.m in Sources */,
 				5925356B20084D0600DD584B /* RCTSurfaceSizeMeasureMode.mm in Sources */,
->>>>>>> v0.59.0
 				3D05745A1DE5FFF500184BB4 /* RCTJavaScriptLoader.mm in Sources */,
 				2D3B5EA41D9B08C200451313 /* RCTPerformanceLogger.m in Sources */,
 				3DCE53251FEAB1E000613583 /* RCTShadowView.m in Sources */,
@@ -5777,11 +5758,7 @@
 				2D8C2E331DA40441000EE098 /* RCTMultipartStreamReader.m in Sources */,
 				59EDBCBC1FDF4E0C003573DE /* RCTScrollViewManager.m in Sources */,
 				59EDBCB01FDF4E0C003573DE /* RCTScrollContentView.m in Sources */,
-<<<<<<< HEAD
-				189727BF2141CE3F002A4E2A /* RCTPicker.m in Sources */,
-=======
 				2D3B5EF01D9B09E300451313 /* RCTWrapperViewController.m in Sources */,
->>>>>>> v0.59.0
 				2D3B5EB01D9B08FE00451313 /* RCTAlertManager.m in Sources */,
 				13134C9B1E296B2A00B9F3CB /* RCTCxxMethod.mm in Sources */,
 				2D3B5E9C1D9B08A300451313 /* RCTImageSource.m in Sources */,

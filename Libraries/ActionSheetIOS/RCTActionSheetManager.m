@@ -43,20 +43,10 @@ RCT_EXPORT_MODULE()
   return dispatch_get_main_queue();
 }
 
-<<<<<<< HEAD
 #if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-/*
- * The `anchor` option takes a view to set as the anchor for the share
- * popup to point to, on iPads running iOS 8. If it is not passed, it
- * defaults to centering the share popup on screen without any arrows.
- */
-- (CGRect)sourceRectInView:(UIView *)sourceView
-             anchorViewTag:(NSNumber *)anchorViewTag
-=======
 - (void)presentViewController:(UIViewController *)alertController
        onParentViewController:(UIViewController *)parentViewController
                 anchorViewTag:(NSNumber *)anchorViewTag
->>>>>>> v0.59.0
 {
   alertController.modalPresentationStyle = UIModalPresentationPopover;
   UIView *sourceView = parentViewController.view;
@@ -91,23 +81,17 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
   NSString *message = [RCTConvert NSString:options[@"message"]];
 #endif // TODO(macOS ISS#2323203)
   NSArray<NSString *> *buttons = [RCTConvert NSStringArray:options[@"options"]];
-<<<<<<< HEAD
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  NSInteger destructiveButtonIndex = options[@"destructiveButtonIndex"] ? [RCTConvert NSInteger:options[@"destructiveButtonIndex"]] : -1;
-#endif // TODO(macOS ISS#2323203)
-  NSInteger cancelButtonIndex = options[@"cancelButtonIndex"] ? [RCTConvert NSInteger:options[@"cancelButtonIndex"]] : -1;
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-=======
   NSInteger cancelButtonIndex = options[@"cancelButtonIndex"] ? [RCTConvert NSInteger:options[@"cancelButtonIndex"]] : -1;
   NSArray<NSNumber *> *destructiveButtonIndices;
   if ([options[@"destructiveButtonIndex"] isKindOfClass:[NSArray class]]) {
     destructiveButtonIndices = [RCTConvert NSArray:options[@"destructiveButtonIndex"]];
   } else {
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
     NSNumber *destructiveButtonIndex = options[@"destructiveButtonIndex"] ? [RCTConvert NSNumber:options[@"destructiveButtonIndex"]] : @-1;
     destructiveButtonIndices = @[destructiveButtonIndex];
+#endif // TODO(macOS ISS#2323203)
   }
-
->>>>>>> v0.59.0
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   UIViewController *controller = RCTPresentedViewController();
 
   if (controller == nil) {
@@ -121,14 +105,8 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
    * defaults to centering the share popup on screen without any arrows.
    */
   NSNumber *anchorViewTag = [RCTConvert NSNumber:options[@"anchor"]];
-<<<<<<< HEAD
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  UIView *sourceView = controller.view;
-  CGRect sourceRect = [self sourceRectInView:sourceView anchorViewTag:anchorViewTag];
 
-=======
-  
->>>>>>> v0.59.0
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   UIAlertController *alertController =
   [UIAlertController alertControllerWithTitle:title
                                       message:message
@@ -154,7 +132,8 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
   }
 
   alertController.view.tintColor = [RCTConvert UIColor:options[@"tintColor"]];
-<<<<<<< HEAD
+  [self presentViewController:alertController onParentViewController:controller anchorViewTag:anchorViewTag];
+
 #else // [TODO(macOS ISS#2323203)
   NSMenu *menu = [[NSMenu alloc] initWithTitle:title ?: @""];
   [_callbacks setObject:callback forKey:menu];
@@ -188,9 +167,6 @@ RCT_EXPORT_METHOD(showActionSheetWithOptions:(NSDictionary *)options
   
   [menu popUpMenuPositioningItem:menu.itemArray.firstObject atLocation:origin inView:view.superview];
 #endif // ]TODO(macOS ISS#2323203)
-=======
-  [self presentViewController:alertController onParentViewController:controller anchorViewTag:anchorViewTag];
->>>>>>> v0.59.0
 }
 
 RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
@@ -254,7 +230,7 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
 
   NSNumber *anchorViewTag = [RCTConvert NSNumber:options[@"anchor"]];
   shareController.view.tintColor = [RCTConvert UIColor:options[@"tintColor"]];
-<<<<<<< HEAD
+  [self presentViewController:shareController onParentViewController:controller anchorViewTag:anchorViewTag];
 #else // [TODO(macOS ISS#2323203)
   NSMutableArray<NSSharingService*> *excludedTypes = [NSMutableArray array];
   for (NSString *excludeActivityType in [RCTConvert NSStringArray:options[@"excludedActivityTypes"]]) {
@@ -306,10 +282,6 @@ RCT_EXPORT_METHOD(showShareActionSheetWithOptions:(NSDictionary *)options
 - (void)sharingService:(NSSharingService *)sharingService didFailToShareItems:(NSArray *)items error:(NSError *)error
 {
   _failureCallback(error);
-=======
-  
-  [self presentViewController:shareController onParentViewController:controller anchorViewTag:anchorViewTag];
->>>>>>> v0.59.0
 }
 
 - (void)sharingService:(NSSharingService *)sharingService didShareItems:(NSArray *)items

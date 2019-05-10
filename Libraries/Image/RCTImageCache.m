@@ -36,24 +36,9 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
 
 - (instancetype)init
 {
-<<<<<<< HEAD
-  _decodedImageCache = [NSCache new];
-#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
-  _decodedImageCache.totalCostLimit = 20 * 1024 * 1024; // 20 MB
-  _cacheStaleTimes = [[NSMutableDictionary alloc] init];
-
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(clearCache)
-                                               name:UIApplicationDidReceiveMemoryWarningNotification
-                                             object:nil];
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(clearCache)
-                                               name:UIApplicationWillResignActiveNotification
-                                             object:nil];
-#endif // TODO(macOS ISS#2323203)
-=======
   if (self = [super init]) {
     _decodedImageCache = [NSCache new];
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
     _decodedImageCache.totalCostLimit = 20 * 1024 * 1024; // 20 MB
     _cacheStaleTimes = [[NSMutableDictionary alloc] init];
 
@@ -65,8 +50,8 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
                                              selector:@selector(clearCache)
                                                  name:UIApplicationWillResignActiveNotification
                                                object:nil];
+#endif // TODO(macOS ISS#2323203)
   }
->>>>>>> v0.59.0
 
   return self;
 }
@@ -92,12 +77,7 @@ static NSString *RCTCacheKeyForImage(NSString *imageTag, CGSize size, CGFloat sc
   if (!image) {
     return;
   }
-<<<<<<< HEAD
-  CGFloat imageScale = UIImageGetScale(image); // TODO(macOS ISS#2323203)
-  CGFloat bytes = image.size.width * image.size.height * imageScale * imageScale * 4; // TODO(macOS ISS#2323203)
-=======
-  NSInteger bytes = image.reactDecodedImageBytes;
->>>>>>> v0.59.0
+  NSInteger bytes = image.reactDecodedImageBytes; // TODO(macOS ISS#2323203)
   if (bytes <= RCTMaxCachableDecodedImageSizeInBytes) {
     [self->_decodedImageCache setObject:image
                                  forKey:cacheKey
