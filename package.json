@@ -134,6 +134,7 @@
     "prettier": "1.17.0",
     "react": "16.8.6",
     "react-test-renderer": "16.8.6",
+    "scheduler": "0.14.0",
     "shelljs": "^0.7.8",
     "ws": "^6.1.4",
     "yargs": "^9.0.0"
