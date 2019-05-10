@@ -36,10 +36,7 @@ static void RNDeleteMountInstruction(ShadowViewMutation const &mutation, RCTComp
   auto const &oldChildShadowView = mutation.oldChildShadowView;
   UIView<RCTComponentViewProtocol> *componentView = [registry componentViewByTag:oldChildShadowView.tag];
 
-  // TODO(shergin): Make sure that we don't need this check anymore and delete it.
-  if (componentView == nil) {
-    return;
-  }
+  assert(componentView != nil && "Attempt to delete unregistered component.");
 
   [registry enqueueComponentViewWithComponentHandle:oldChildShadowView.componentHandle
                                                 tag:oldChildShadowView.tag
@@ -55,10 +52,8 @@ static void RNInsertMountInstruction(ShadowViewMutation const &mutation, RCTComp
   UIView<RCTComponentViewProtocol> *childComponentView = [registry componentViewByTag:newShadowView.tag];
   UIView<RCTComponentViewProtocol> *parentComponentView = [registry componentViewByTag:parentShadowView.tag];
 
-  // TODO(shergin): Make sure that we don't need this check anymore and delete it.
-  if (childComponentView == nil || parentComponentView == nil) {
-    return;
-  }
+  assert(childComponentView != nil && "Attempt to mount unregistered component.");
+  assert(parentComponentView != nil && "Attempt to mount into unregistered component.");
 
   [parentComponentView mountChildComponentView:childComponentView index:mutation.index];
 }
@@ -72,10 +67,8 @@ static void RNRemoveMountInstruction(ShadowViewMutation const &mutation, RCTComp
   UIView<RCTComponentViewProtocol> *childComponentView = [registry componentViewByTag:oldShadowView.tag];
   UIView<RCTComponentViewProtocol> *parentComponentView = [registry componentViewByTag:parentShadowView.tag];
 
-  // TODO(shergin): Make sure that we don't need this check anymore and delete it.
-  if (childComponentView == nil || parentComponentView == nil) {
-    return;
-  }
+  assert(childComponentView != nil && "Attempt to unmount unregistered component.");
+  assert(parentComponentView != nil && "Attempt to unmount from unregistered component.");
 
   [parentComponentView unmountChildComponentView:childComponentView index:mutation.index];
 }
