@@ -507,7 +507,10 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
           // TODO call surface's runApplication
         } else {
 
-          if (mWasMeasured) {
+          boolean isFabric = getUIManagerType() == FABRIC;
+          // Fabric requires to call updateRootLayoutSpecs before starting JS Application,
+          // this ensures the root will hace the correct pointScaleFactor.
+          if (mWasMeasured || isFabric) {
             updateRootLayoutSpecs(mWidthMeasureSpec, mHeightMeasureSpec);
           }
 
@@ -517,7 +520,7 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
           if (appProperties != null) {
             appParams.putMap("initialProps", Arguments.fromBundle(appProperties));
           }
-          if (getUIManagerType() == FABRIC) {
+          if (isFabric) {
             appParams.putBoolean("fabric", true);
           }
 
