@@ -24,8 +24,17 @@ public class JSStackTrace {
       stringBuilder
         .append(frame.getString("methodName"))
         .append("@")
-        .append(stackFrameToModuleId(frame))
+        .append(parseFileId(frame))
         .append(frame.getInt("lineNumber"));
+      if (frame.hasKey("lineNumber") &&
+        !frame.isNull("lineNumber") &&
+        frame.getType("lineNumber") == ReadableType.Number) {
+        stringBuilder
+          .append(frame.getInt("lineNumber"));
+      } else {
+        stringBuilder
+          .append(-1);
+      }
       if (frame.hasKey("column") &&
         !frame.isNull("column") &&
         frame.getType("column") == ReadableType.Number) {
@@ -43,11 +52,11 @@ public class JSStackTrace {
   // that we can symbolicate stack traces for multiple injected files with a single source map.
   // We have to include the module id in the stack for that, though. The ".js" suffix is kept to
   // avoid ambiguities between "module-id:line" and "line:column".
-  private static String stackFrameToModuleId(ReadableMap frame) {
+  private static String parseFileId(ReadableMap frame) {
     if (frame.hasKey("file") &&
         !frame.isNull("file") &&
         frame.getType("file") == ReadableType.String) {
-      final Matcher matcher = mJsModuleIdPattern.matcher(frame.getString("file"));
+      final Matcher matcher = FILE_ID_PATTERN.matcher(frame.getString("file"));
       if (matcher.find()) {
         return matcher.group(1) + ":";
       }
