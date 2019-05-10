@@ -54,6 +54,12 @@ const links = [
     description:
       'Need more help? There are many other React Native developers who may have the answer.',
   },
+  {
+    title: 'Follow us on Twitter',
+    link: 'https://twitter.com/reactnative',
+    description:
+      'Stay in touch with the community, join in on Q&As and more by following React Native on Twitter.',
+  },
 ];
 
 const LinkList = () => (
