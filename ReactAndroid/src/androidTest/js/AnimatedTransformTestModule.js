@@ -9,13 +9,17 @@
 
 'use strict';
 
-var BatchedBridge = require('BatchedBridge');
-var React = require('React');
-var StyleSheet = require('StyleSheet');
-var View = require('View');
-var TouchableOpacity = require('TouchableOpacity');
-var Text = require('Text');
-var RecordingModule = require('NativeModules').Recording;
+const React = require('react');
+const {
+  NativeModules,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} = require('react-native');
+const BatchedBridge = require('react-native/Libraries/BatchedBridge/BatchedBridge');
+
+const {Recording: RecordingModule} = NativeModules;
 
 const styles = StyleSheet.create({
   base: {

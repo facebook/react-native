@@ -9,7 +9,9 @@
 
 'use strict';
 
-const Assert = require('NativeModules').Assert;
+const {NativeModules} = require('react-native');
+
+const {Assert} = NativeModules;
 
 const Asserts = {
   assertEquals: function(expected, actual, msg) {
