@@ -516,51 +516,53 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
   NSUInteger count = affectedShadowViews.count;
   NSMutableArray *reactTags = [[NSMutableArray alloc] initWithCapacity:count];
   NSMutableData *framesData = [[NSMutableData alloc] initWithLength:sizeof(RCTFrameData) * count];
-  NSUInteger index = 0;
-  RCTFrameData *frameDataMutableArray = (RCTFrameData *)framesData.mutableBytes;
-  for (RCTShadowView *shadowView in affectedShadowViews) {
-    reactTags[index] = shadowView.reactTag;
-    RCTLayoutMetrics layoutMetrics = shadowView.layoutMetrics;
-    frameDataMutableArray[index++] = (RCTFrameData){
-      layoutMetrics.frame,
-      layoutMetrics.layoutDirection,
-      shadowView.isNewView,
-      shadowView.superview.isNewView,
-      layoutMetrics.displayType
-    };
-    
-    // After this layout pass, it's not new anymore.
-    shadowView.newView = NO;
-    
-    NSNumber *reactTag = shadowView.reactTag;
-    
-    if (shadowView.onLayout) {
-      CGRect frame = shadowView.layoutMetrics.frame;
-      shadowView.onLayout(@{
-                            @"layout": @{
-                                @"x": @(frame.origin.x),
-                                @"y": @(frame.origin.y),
-                                @"width": @(frame.size.width),
-                                @"height": @(frame.size.height),
-                                },
-                            });
-    }
-    
-    if (
-        RCTIsReactRootView(reactTag) &&
-        [shadowView isKindOfClass:[RCTRootShadowView class]]
-        ) {
-      CGSize contentSize = shadowView.layoutMetrics.frame.size;
+  {
+    NSUInteger index = 0;
+    RCTFrameData *frameDataArray = (RCTFrameData *)framesData.mutableBytes;
+    for (RCTShadowView *shadowView in affectedShadowViews) {
+      reactTags[index] = shadowView.reactTag;
+      RCTLayoutMetrics layoutMetrics = shadowView.layoutMetrics;
+      frameDataArray[index++] = (RCTFrameData){
+        layoutMetrics.frame,
+        layoutMetrics.layoutDirection,
+        shadowView.isNewView,
+        shadowView.superview.isNewView,
+        layoutMetrics.displayType
+      };
       
-      RCTExecuteOnMainQueue(^{
-        UIView *view = self->_viewRegistry[reactTag];
-        RCTAssert(view != nil, @"view (for ID %@) not found", reactTag);
+      // After this layout pass, it's not new anymore.
+      shadowView.newView = NO;
+      
+      NSNumber *reactTag = shadowView.reactTag;
+      
+      if (shadowView.onLayout) {
+        CGRect frame = shadowView.layoutMetrics.frame;
+        shadowView.onLayout(@{
+                              @"layout": @{
+                                  @"x": @(frame.origin.x),
+                                  @"y": @(frame.origin.y),
+                                  @"width": @(frame.size.width),
+                                  @"height": @(frame.size.height),
+                                  },
+                              });
+      }
+      
+      if (
+          RCTIsReactRootView(reactTag) &&
+          [shadowView isKindOfClass:[RCTRootShadowView class]]
+          ) {
+        CGSize contentSize = shadowView.layoutMetrics.frame.size;
         
-        RCTRootView *rootView = (RCTRootView *)[view superview];
-        if ([rootView isKindOfClass:[RCTRootView class]]) {
-          rootView.intrinsicContentSize = contentSize;
-        }
-      });
+        RCTExecuteOnMainQueue(^{
+          UIView *view = self->_viewRegistry[reactTag];
+          RCTAssert(view != nil, @"view (for ID %@) not found", reactTag);
+          
+          RCTRootView *rootView = (RCTRootView *)[view superview];
+          if ([rootView isKindOfClass:[RCTRootView class]]) {
+            rootView.intrinsicContentSize = contentSize;
+          }
+        });
+      }
     }
   }
 
@@ -572,9 +574,9 @@ static NSDictionary *deviceOrientationEventBody(UIDeviceOrientation orientation)
 
     __block NSUInteger completionsCalled = 0;
 
-    NSInteger idx = 0;
+    NSInteger index = 0;
     for (NSNumber *reactTag in reactTags) {
-      RCTFrameData frameData = frameDataArray[idx++];
+      RCTFrameData frameData = frameDataArray[index++];
 
       UIView *view = viewRegistry[reactTag];
       CGRect frame = frameData.frame;
