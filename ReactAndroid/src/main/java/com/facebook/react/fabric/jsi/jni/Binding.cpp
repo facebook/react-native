@@ -161,7 +161,7 @@ local_ref<JString> getPlatformComponentName(const ShadowView& shadowView) {
       std::dynamic_pointer_cast<const ScrollViewProps>(shadowView.props);
 
   if (newViewProps &&
-      newViewProps->yogaStyle.flexDirection() == YGFlexDirectionRow) {
+      newViewProps->getProbablyMoreHorizontalThanVertical_DEPRECATED()) {
     componentName = make_jstring("AndroidHorizontalScrollView");
   } else {
     componentName = make_jstring(shadowView.componentName);

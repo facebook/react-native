@@ -65,6 +65,11 @@ class ViewProps : public Props,
 #pragma mark - Convenience Methods
 
   BorderMetrics resolveBorderMetrics(LayoutMetrics const &layoutMetrics) const;
+  bool getClipsContentToBounds() const;
+
+#ifdef ANDROID
+  bool getProbablyMoreHorizontalThanVertical_DEPRECATED() const;
+#endif
 
 #pragma mark - DebugStringConvertible
 
