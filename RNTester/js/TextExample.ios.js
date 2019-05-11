@@ -288,8 +288,8 @@ class TextBaseLineLayoutExample extends React.Component<*, *> {
         </View>
 
         {/* iOS-only because it relies on inline views being able to size to content.
-          * Android's implementation requires that a width and height be specified
-          * on the inline view. */}
+         * Android's implementation requires that a width and height be specified
+         * on the inline view. */}
         <Text style={subtitleStyle}>{'Interleaving <View> and <Text>:'}</Text>
         <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
           {marker}
@@ -959,15 +959,15 @@ exports.examples = [
   },
   {
     title: 'Relayout inline image',
-    render: () => <TextInlineView.ChangeImageSize />
+    render: () => <TextInlineView.ChangeImageSize />,
   },
   {
     title: 'Relayout inline view',
-    render: () => <TextInlineView.ChangeViewSize />
+    render: () => <TextInlineView.ChangeViewSize />,
   },
   {
     title: 'Relayout nested inline view',
-    render: () => <TextInlineView.ChangeInnerViewSize />
+    render: () => <TextInlineView.ChangeInnerViewSize />,
   },
   {
     title: 'Text shadow',
@@ -1068,7 +1068,7 @@ exports.examples = [
           Because we need to go deeper.
         </Text>
       );
-    }
+    },
   },
   {
     title: 'Dynamic Font Size Adjustment',
