@@ -10,7 +10,7 @@
 
 'use strict';
 
-const React = require('React');
+const React = require('react');
 const {Image, Text, TouchableHighlight, View} = require('react-native');
 
 function Basic() {
