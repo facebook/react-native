@@ -9,6 +9,7 @@
 #include <float.h>
 #include <string.h>
 #include <algorithm>
+#include <memory>
 #include "Utils.h"
 #include "YGNode.h"
 #include "YGNodePrint.h"
@@ -4002,7 +4003,13 @@ void YGNodeCalculateLayoutWithContext(
     const float ownerHeight,
     const YGDirection ownerDirection,
     void* layoutContext) {
-  marker::MarkerSection<YGMarkerLayout> marker{node};
+
+#ifdef YG_ENABLE_EVENTS
+  Event::publish<Event::LayoutPassStart>(node);
+#endif
+  // unique pointer to allow ending the marker early
+  std::unique_ptr<marker::MarkerSection<YGMarkerLayout>> marker{
+      new marker::MarkerSection<YGMarkerLayout>{node}};
 
   // Increment the generation count. This will force the recursive routine to
   // visit all dirty nodes at least once. Subsequent visits will be skipped if
@@ -4061,7 +4068,7 @@ void YGNodeCalculateLayoutWithContext(
           true,
           "initial",
           node->getConfig(),
-          marker.data,
+          marker->data,
           layoutContext)) {
     node->setPosition(
         node->getLayout().direction, ownerWidth, ownerHeight, ownerWidth);
@@ -4077,6 +4084,13 @@ void YGNodeCalculateLayoutWithContext(
     }
 #endif
   }
+
+  // end marker here
+  marker = nullptr;
+
+#ifdef YG_ENABLE_EVENTS
+  Event::publish<Event::LayoutPassEnd>(node);
+#endif
 
   // We want to get rid off `useLegacyStretchBehaviour` from YGConfig. But we
   // aren't sure whether client's of yoga have gotten rid off this flag or not.
