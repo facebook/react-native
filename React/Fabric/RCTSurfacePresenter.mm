@@ -10,6 +10,7 @@
 #import <objc/runtime.h>
 #import <mutex>
 #import <jsi/jsi.h>
+#import <cxxreact/MessageQueueThread.h>
 
 #import <React/RCTAssert.h>
 #import <React/RCTBridge+Private.h>
@@ -40,6 +41,7 @@
 using namespace facebook::react;
 
 @interface RCTBridge ()
+- (std::shared_ptr<facebook::react::MessageQueueThread>)jsMessageThread;
 - (void)invokeAsync:(std::function<void()> &&)func;
 @end
 
@@ -221,6 +223,12 @@ using namespace facebook::react;
   _contextContainer = std::make_shared<ContextContainer>();
 
   _contextContainer->registerInstance(_reactNativeConfig, "ReactNativeConfig");
+
+  auto messageQueueThread = _batchedBridge.jsMessageThread;
+  if (messageQueueThread) {
+    // Make sure initializeBridge completed
+    messageQueueThread->runOnQueueSync([] {});
+  }
 
   auto runtime = (facebook::jsi::Runtime *)((RCTCxxBridge *)_batchedBridge).runtime;
 
