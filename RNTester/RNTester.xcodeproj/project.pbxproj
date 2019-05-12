@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		001BFCE41D838343008E587E /* RCTMultipartStreamReaderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 001BFCE31D838343008E587E /* RCTMultipartStreamReaderTests.m */; };
+		04F27E112288190500F536C3 /* RCTPerformanceLoggerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 04F27E102288190500F536C3 /* RCTPerformanceLoggerTests.m */; };
 		1300627F1B59179B0043FE5A /* RCTGzipTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1300627E1B59179B0043FE5A /* RCTGzipTests.m */; };
 		13129DD41C85F87C007D611C /* RCTModuleInitNotificationRaceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 13129DD31C85F87C007D611C /* RCTModuleInitNotificationRaceTests.m */; };
 		13417FE91AA91432003F314A /* libRCTImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 13417FE81AA91428003F314A /* libRCTImage.a */; };
@@ -479,6 +480,7 @@
 /* Begin PBXFileReference section */
 		001BFCE31D838343008E587E /* RCTMultipartStreamReaderTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTMultipartStreamReaderTests.m; sourceTree = "<group>"; };
 		004D289E1AAF61C70097A701 /* RNTesterUnitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RNTesterUnitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		04F27E102288190500F536C3 /* RCTPerformanceLoggerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTPerformanceLoggerTests.m; sourceTree = "<group>"; };
 		1300627E1B59179B0043FE5A /* RCTGzipTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTGzipTests.m; sourceTree = "<group>"; };
 		13129DD31C85F87C007D611C /* RCTModuleInitNotificationRaceTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RCTModuleInitNotificationRaceTests.m; sourceTree = "<group>"; };
 		13417FE31AA91428003F314A /* RCTImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTImage.xcodeproj; path = ../Libraries/Image/RCTImage.xcodeproj; sourceTree = "<group>"; };
@@ -813,6 +815,7 @@
 				BC9C033F1DC9F1D600B1C635 /* RCTDevMenuTests.m */,
 				13BCE84E1C9C209600DD7AAD /* RCTComponentPropsTests.m */,
 				39AA31A31DC1DFDC000F7EBB /* RCTUnicodeDecodeTests.m */,
+				04F27E102288190500F536C3 /* RCTPerformanceLoggerTests.m */,
 				143BC57E1B21E18100462512 /* Info.plist */,
 				3DD981D51D33C6FB007DC7BE /* RNTesterUnitTestsBundle.js */,
 				14D6D7101B220EB3001FB087 /* libOCMock.a */,
@@ -1740,6 +1743,7 @@
 				1497CFB31B21F5E400C1F8F2 /* RCTUIManagerTests.m in Sources */,
 				13DB03481B5D2ED500C27245 /* RCTJSONTests.m in Sources */,
 				1497CFAC1B21F5E400C1F8F2 /* RCTAllocationTests.m in Sources */,
+				04F27E112288190500F536C3 /* RCTPerformanceLoggerTests.m in Sources */,
 				001BFCE41D838343008E587E /* RCTMultipartStreamReaderTests.m in Sources */,
 				13DF61B61B67A45000EDB188 /* RCTMethodArgumentTests.m in Sources */,
 				138D6A181B53CD440074A87E /* RCTShadowViewTests.m in Sources */,
@@ -1914,10 +1918,10 @@
 				BUNDLE_CONFIG = "$(SRCROOT)/../metro.config.js";
 				DEVELOPMENT_TEAM = VYK7DLU38Z;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-								"RN_BUNDLE_PREFIX=$(RN_BUNDLE_PREFIX)",
-                "DEBUG=1",
-                "$(inherited)",
-        );
+					"RN_BUNDLE_PREFIX=$(RN_BUNDLE_PREFIX)",
+					"DEBUG=1",
+					"$(inherited)",
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../third-party/boost_1_63_0",
 					"$(SRCROOT)/../third-party/folly-2018.10.22.00",

@@ -49,7 +49,6 @@
       @"RootViewTTI",
       @"BundleSize",
     ];
-    RCTAssert(_labelsForTags.count == RCTPLSize, @"_labelsForTags should be in sync with RCTPLTag");
   }
   return self;
 }
