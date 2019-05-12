@@ -27,6 +27,7 @@
 - (instancetype)init
 {
   if (self = [super init]) {
+    // Keep this in sync with RCTPLTag
     _labelsForTags = @[
       @"ScriptDownload",
       @"ScriptExecution",
