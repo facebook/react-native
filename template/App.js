@@ -9,11 +9,13 @@
 import React, {Fragment} from 'react';
 import {StyleSheet, ScrollView, View, Text, StatusBar} from 'react-native';
 
-import Header from 'react-native/Libraries/NewAppScreen/components/Header';
-import LearnMoreLinks from 'react-native/Libraries/NewAppScreen/components/LearnMoreLinks';
-import Colors from 'react-native/Libraries/NewAppScreen/components/Colors';
-import DebugInstructions from 'react-native/Libraries/NewAppScreen/components/DebugInstructions';
-import ReloadInstructions from 'react-native/Libraries/NewAppScreen/components/ReloadInstructions';
+import {
+  Header,
+  LearnMoreLinks,
+  Colors,
+  DebugInstructions,
+  ReloadInstructions,
+} from 'react-native/Libraries/NewAppScreen';
 
 const App = () => {
   return (
