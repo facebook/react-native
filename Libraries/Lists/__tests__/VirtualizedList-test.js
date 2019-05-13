@@ -28,6 +28,24 @@ describe('VirtualizedList', () => {
     expect(component).toMatchSnapshot();
   });
 
+  it('renders simple list with hooks renderItem', () => {
+    function RenderItem({item}) {
+      const key = React.useMemo(() => item.key, [item]);
+
+      return <item value={key} />;
+    }
+
+    const component = ReactTestRenderer.create(
+      <VirtualizedList
+        data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
+        renderItem={RenderItem}
+        getItem={(data, index) => data[index]}
+        getItemCount={data => data.length}
+      />,
+    );
+    expect(component).toMatchSnapshot();
+  });
+
   it('renders empty list', () => {
     const component = ReactTestRenderer.create(
       <VirtualizedList
