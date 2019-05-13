@@ -143,8 +143,8 @@
     __typeof(self) strongSelf = weakSelf;
     if (strongSelf) {
 #ifdef RN_TURBO_MODULE_ENABLED
-      strongSelf->_turboModuleManager = [[RCTTurboModuleManager alloc] initWithRuntime:&runtime bridge:bridge delegate:strongSelf];
-      [strongSelf->_turboModuleManager installJSBinding];
+      strongSelf->_turboModuleManager = [[RCTTurboModuleManager alloc] initWithBridge:bridge delegate:strongSelf];
+      [strongSelf->_turboModuleManager installJSBindingWithRuntime:&runtime];
 #endif
     }
   });
