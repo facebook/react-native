@@ -7,52 +7,17 @@
  */
 
 import React, {Fragment} from 'react';
-import {
-  StyleSheet,
-  ScrollView,
-  View,
-  Text,
-  Platform,
-  StatusBar,
-} from 'react-native';
+import {StyleSheet, ScrollView, View, Text, StatusBar} from 'react-native';
 
 import Header from 'react-native/Libraries/NewAppScreen/components/Header';
 import LearnMoreLinks from 'react-native/Libraries/NewAppScreen/components/LearnMoreLinks';
 import Colors from 'react-native/Libraries/NewAppScreen/components/Colors';
+import DebugInstructions from 'react-native/Libraries/NewAppScreen/components/DebugInstructions';
+import ReloadInstructions from 'react-native/Libraries/NewAppScreen/components/ReloadInstructions';
 
 const Section = ({children}) => (
   <View style={styles.sectionContainer}>{children}</View>
 );
-
-const ReloadInstructions = () => {
-  return Platform.OS === 'ios' ? (
-    <Text style={styles.sectionDescription}>
-      Press <Text style={styles.highlight}>Cmd+R</Text> in the simulator to
-      reload your app's code
-    </Text>
-  ) : (
-    <Text style={styles.sectionDescription}>
-      Double tap <Text style={styles.highlight}>R</Text> on your keyboard to
-      reload your app's code
-    </Text>
-  );
-};
-
-const DebugInstructions = () => {
-  return Platform.OS === 'ios' ? (
-    <Text style={styles.sectionDescription}>
-      Press <Text style={styles.highlight}>Cmd+D</Text> in the simulator or{' '}
-      <Text style={styles.highlight}>Shake</Text> your device to open the React
-      Native debug menu.
-    </Text>
-  ) : (
-    <Text style={styles.sectionDescription}>
-      Press <Text style={styles.highlight}>menu button</Text> or
-      <Text style={styles.highlight}>Shake</Text> your device to open the React
-      Native debug menu.
-    </Text>
-  );
-};
 
 const App = () => {
   return (
@@ -72,11 +37,15 @@ const App = () => {
           </Section>
           <Section>
             <Text style={styles.sectionTitle}>See Your Changes</Text>
-            <ReloadInstructions />
+            <Text style={styles.sectionDescription}>
+              <ReloadInstructions />
+            </Text>
           </Section>
           <Section>
             <Text style={styles.sectionTitle}>Debug</Text>
-            <DebugInstructions />
+            <Text style={styles.sectionDescription}>
+              <DebugInstructions />
+            </Text>
           </Section>
           <Section>
             <Text style={styles.sectionTitle}>Learn More</Text>
