@@ -280,7 +280,9 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
       }
     }
 
-    // Ensure onLayout is called so the inline views can be repositioned.
+    // Ensure `onLayout` is called so the inline views can be repositioned. Without this, when React
+    // Native calls `layout` on this view, it could be a no-op if Android doesn't consider this
+    // view's layout to be dirty.
     requestLayout();
   }
 

@@ -128,6 +128,7 @@ public interface ReactShadowNode<T extends ReactShadowNode> {
   /* package */ boolean dispatchUpdates(
       float absoluteX,
       float absoluteY,
+      ViewManager viewManager,
       UIViewOperationQueue uiViewOperationQueue,
       NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer);
 

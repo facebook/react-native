@@ -340,6 +340,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
   public boolean dispatchUpdates(
       float absoluteX,
       float absoluteY,
+      ViewManager viewManager,
       UIViewOperationQueue uiViewOperationQueue,
       @Nullable NativeViewHierarchyOptimizer nativeViewHierarchyOptimizer) {
     if (mNodeUpdated) {
@@ -370,7 +371,17 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
       mScreenWidth = newScreenWidth;
       mScreenHeight = newScreenHeight;
 
-      if (layoutHasChanged) {
+      boolean needsCustomLayout = false;
+      if (!layoutHasChanged && (viewManager instanceof IViewManagerWithChildren)) {
+        // If the node handles layout for its children, we have to call its onLayout() even when
+        // the screen position and size didn't change. One example of where this matters is
+        // TextView, which would otherwise not recompute the layout of its inline child spans
+        // and they might not be rendered at the correct position and size.
+        IViewManagerWithChildren viewManagerWithChildren = (IViewManagerWithChildren)viewManager;
+        needsCustomLayout = viewManagerWithChildren.needsCustomLayoutForChildren();
+      }
+
+      if (layoutHasChanged || needsCustomLayout) {
         //TODO: T26400974 ReactShadowNode should not depend on nativeViewHierarchyOptimizer
         if (nativeViewHierarchyOptimizer != null) {
           nativeViewHierarchyOptimizer.handleUpdateLayout(this);
@@ -385,7 +396,7 @@ public class ReactShadowNodeImpl implements ReactShadowNode<ReactShadowNodeImpl>
         }
       }
 
-      return layoutHasChanged;
+      return layoutHasChanged || needsCustomLayout;
     } else {
       return false;
     }
