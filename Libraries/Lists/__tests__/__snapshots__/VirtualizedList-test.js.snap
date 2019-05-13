@@ -811,18 +811,27 @@ exports[`VirtualizedList renders simple list 1`] = `
 </RCTScrollView>
 `;
 
-exports[`VirtualizedList renders simple list with hooks renderItem 1`] = `
+exports[`VirtualizedList renders simple list renderItem component using hooks 1`] = `
 <RCTScrollView
   data={
     Array [
       Object {
-        "key": "i1",
+        "onPress": [MockFunction],
+        "value": Object {
+          "key": "i1",
+        },
       },
       Object {
-        "key": "i2",
+        "onPress": [MockFunction],
+        "value": Object {
+          "key": "i2",
+        },
       },
       Object {
-        "key": "i3",
+        "onPress": [MockFunction],
+        "value": Object {
+          "key": "i3",
+        },
       },
     ]
   }
@@ -852,6 +861,7 @@ exports[`VirtualizedList renders simple list with hooks renderItem 1`] = `
       style={null}
     >
       <item
+        onPress={[Function]}
         value="i1"
       />
     </View>
@@ -860,6 +870,7 @@ exports[`VirtualizedList renders simple list with hooks renderItem 1`] = `
       style={null}
     >
       <item
+        onPress={[Function]}
         value="i2"
       />
     </View>
@@ -868,6 +879,7 @@ exports[`VirtualizedList renders simple list with hooks renderItem 1`] = `
       style={null}
     >
       <item
+        onPress={[Function]}
         value="i3"
       />
     </View>

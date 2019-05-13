@@ -28,22 +28,53 @@ describe('VirtualizedList', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('renders simple list with hooks renderItem', () => {
+  it('renders simple list renderItem component using hooks', () => {
     function RenderItem({item}) {
-      const key = React.useMemo(() => item.key, [item]);
+      const {value, onPress} = item;
+      const key = React.useMemo(() => value.key, [value]);
+      const handleOnPress = React.useCallback(() => onPress(value.key), [
+        value,
+        onPress,
+      ]);
 
-      return <item value={key} />;
+      return <item value={key} onPress={handleOnPress} />;
     }
+
+    const items = [
+      {
+        value: {key: 'i1'},
+        onPress: jest.fn(),
+      },
+      {
+        value: {key: 'i2'},
+        onPress: jest.fn(),
+      },
+      {
+        value: {key: 'i3'},
+        onPress: jest.fn(),
+      },
+    ];
 
     const component = ReactTestRenderer.create(
       <VirtualizedList
-        data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
+        data={items}
         renderItem={RenderItem}
         getItem={(data, index) => data[index]}
         getItemCount={data => data.length}
       />,
     );
     expect(component).toMatchSnapshot();
+
+    const instance = component.root;
+
+    instance.findByProps({value: 'i1'}).props.onPress();
+    expect(items[0].onPress.mock.calls).toEqual([['i1']]);
+
+    instance.findByProps({value: 'i2'}).props.onPress();
+    expect(items[1].onPress.mock.calls).toEqual([['i2']]);
+
+    instance.findByProps({value: 'i3'}).props.onPress();
+    expect(items[2].onPress.mock.calls).toEqual([['i3']]);
   });
 
   it('renders empty list', () => {
