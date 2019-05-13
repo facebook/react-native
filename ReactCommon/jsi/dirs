@@ -1,5 +1,6 @@
 DIRS = \
     android{droidarm,droidarm64,droidx64,droidx86} \
     jsicore{apple,chpe,x64,x86} \
+    jsiv8{apple,chpe,x64,x86} \
     win32{apple,chpe,x64,x86} \
     winrt{arm,x64,x86} \
