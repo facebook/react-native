@@ -19,7 +19,20 @@ const {
   TextInput,
   View,
 } = require('react-native');
+const TextAncestor = require('TextAncestor');
+const TextInlineView = require('./Shared/TextInlineView');
 const TextLegend = require('./Shared/TextLegend');
+
+// TODO: Is there a cleaner way to flip the TextAncestor value to false? I
+//   suspect apps won't even be able to leverage this workaround because
+//   TextAncestor is not public.
+function InlineView(props) {
+  return (
+    <TextAncestor.Provider value={false}>
+      <View {...props} />
+    </TextAncestor.Provider>
+  );
+}
 
 type TextAlignExampleRTLState = {|
   isRTL: boolean,
@@ -271,6 +284,28 @@ class TextBaseLineLayoutExample extends React.Component<*, *> {
         <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
           {marker}
           {texts}
+          {marker}
+        </View>
+
+        {/* iOS-only because it relies on inline views being able to size to content.
+         * Android's implementation requires that a width and height be specified
+         * on the inline view. */}
+        <Text style={subtitleStyle}>{'Interleaving <View> and <Text>:'}</Text>
+        <View style={{flexDirection: 'row', alignItems: 'baseline'}}>
+          {marker}
+          <Text selectable={true}>
+            Some text.
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'baseline',
+                backgroundColor: '#eee',
+              }}>
+              {marker}
+              <Text>Text inside View.</Text>
+              {marker}
+            </View>
+          </Text>
           {marker}
         </View>
 
@@ -915,6 +950,26 @@ exports.examples = [
     },
   },
   {
+    title: 'Inline views',
+    render: () => <TextInlineView.Basic />,
+  },
+  {
+    title: 'Inline image/view clipped by <Text>',
+    render: () => <TextInlineView.ClippedByText />,
+  },
+  {
+    title: 'Relayout inline image',
+    render: () => <TextInlineView.ChangeImageSize />,
+  },
+  {
+    title: 'Relayout inline view',
+    render: () => <TextInlineView.ChangeViewSize />,
+  },
+  {
+    title: 'Relayout nested inline view',
+    render: () => <TextInlineView.ChangeInnerViewSize />,
+  },
+  {
     title: 'Text shadow',
     render: function() {
       return (
@@ -984,6 +1039,34 @@ exports.examples = [
             2222{'\n'}
           </Text>
         </View>
+      );
+    },
+  },
+  {
+    title: 'Nested content',
+    render: function() {
+      // iOS-only because it relies on inline views being able to size to content.
+      // Android's implementation requires that a width and height be specified
+      // on the inline view.
+      return (
+        <Text>
+          This text has a view
+          <InlineView style={{borderColor: 'red', borderWidth: 1}}>
+            <Text style={{borderColor: 'blue', borderWidth: 1}}>which has</Text>
+            <Text style={{borderColor: 'green', borderWidth: 1}}>
+              another text inside.
+            </Text>
+            <Text style={{borderColor: 'yellow', borderWidth: 1}}>
+              And moreover, it has another view
+              <InlineView style={{borderColor: 'red', borderWidth: 1}}>
+                <Text style={{borderColor: 'blue', borderWidth: 1}}>
+                  with another text inside!
+                </Text>
+              </InlineView>
+            </Text>
+          </InlineView>
+          Because we need to go deeper.
+        </Text>
       );
     },
   },
