@@ -37,7 +37,7 @@ import type {
 
 type Item = any;
 
-export type renderItemType = (info: any) => ?React.Element<any>;
+export type renderItemType = (info: any) => React.Element<any>;
 
 type ViewabilityHelperCallbackTuple = {
   viewabilityHelper: ViewabilityHelper,
@@ -1738,7 +1738,7 @@ class CellRenderer extends React.Component<
     } = this.props;
     const {renderItem, getItemLayout} = parentProps;
     invariant(renderItem, 'no renderItem!');
-    const element = renderItem({
+    const element = React.createElement(renderItem, {
       item,
       index,
       separators: this._separators,
