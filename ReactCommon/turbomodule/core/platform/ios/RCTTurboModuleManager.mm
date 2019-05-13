@@ -13,6 +13,7 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTCxxModule.h>
 #import <React/RCTLog.h>
+#import <jsireact/BridgeJSCallInvoker.h>
 #import <jsireact/TurboCxxModule.h>
 #import <jsireact/TurboModuleBinding.h>
 
@@ -48,7 +49,7 @@ static Class getFallbackClassFromName(const char *name) {
 - (instancetype)initWithBridge:(RCTBridge *)bridge delegate:(id<RCTTurboModuleManagerDelegate>)delegate
 {
   if (self = [super init]) {
-    _jsInvoker = std::make_shared<react::JSCallInvoker>(bridge.reactInstance);
+    _jsInvoker = std::make_shared<react::BridgeJSCallInvoker>(bridge.reactInstance);
     _delegate = delegate;
     _bridge = bridge;
 
