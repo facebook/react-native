@@ -7,7 +7,7 @@
 
 "use strict";
 
-var mergeHelpers = require('mergeHelpers');
+var mergeHelpers = require('./mergeHelpers');
 
 var checkMergeObjectArg = mergeHelpers.checkMergeObjectArg;
 var checkMergeIntoObjectArg = mergeHelpers.checkMergeIntoObjectArg;

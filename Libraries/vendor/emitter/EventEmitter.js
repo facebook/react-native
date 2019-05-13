@@ -11,8 +11,8 @@
 
 'use strict';
 
-const EmitterSubscription = require('EmitterSubscription');
-const EventSubscriptionVendor = require('EventSubscriptionVendor');
+const EmitterSubscription = require('./EmitterSubscription');
+const EventSubscriptionVendor = require('./EventSubscriptionVendor');
 
 const invariant = require('invariant');
 
