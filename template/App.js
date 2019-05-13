@@ -15,10 +15,6 @@ import Colors from 'react-native/Libraries/NewAppScreen/components/Colors';
 import DebugInstructions from 'react-native/Libraries/NewAppScreen/components/DebugInstructions';
 import ReloadInstructions from 'react-native/Libraries/NewAppScreen/components/ReloadInstructions';
 
-const Section = ({children}) => (
-  <View style={styles.sectionContainer}>{children}</View>
-);
-
 const App = () => {
   return (
     <Fragment>
@@ -28,31 +24,31 @@ const App = () => {
         style={styles.scrollView}>
         <Header />
         <View style={styles.body}>
-          <Section>
+          <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>Step One</Text>
             <Text style={styles.sectionDescription}>
               Edit <Text style={styles.highlight}>App.js</Text> to change this
               screen and then come back to see your edits.
             </Text>
-          </Section>
-          <Section>
+          </View>
+          <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>See Your Changes</Text>
             <Text style={styles.sectionDescription}>
               <ReloadInstructions />
             </Text>
-          </Section>
-          <Section>
+          </View>
+          <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>Debug</Text>
             <Text style={styles.sectionDescription}>
               <DebugInstructions />
             </Text>
-          </Section>
-          <Section>
+          </View>
+          <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>Learn More</Text>
             <Text style={styles.sectionDescription}>
               Read the docs on what to do once seen how to work in React Native.
             </Text>
-          </Section>
+          </View>
           <LearnMoreLinks />
         </View>
       </ScrollView>
