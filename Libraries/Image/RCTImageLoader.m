@@ -24,11 +24,19 @@
 static NSInteger RCTImageBytesForImage(UIImage *image)
 {
   CAKeyframeAnimation *keyFrameAnimation = [image reactKeyframeAnimation];
-  NSInteger singleImageBytes = image.size.width * image.size.height * image.scale * image.scale * 4;
+  CGFloat imageScale = 1.0;
+#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
+  imageScale = image.scale; // [TODO(macOS ISS#2323203) // no .scale prop on NSImage
+#endif // [TODO(macOS ISS#2323203)
+  NSInteger singleImageBytes = image.size.width * image.size.height * imageScale * imageScale * 4;
   if (keyFrameAnimation) {
     return keyFrameAnimation.values.count * singleImageBytes;
   } else {
+#if !TARGET_OS_OSX // [TODO(macOS ISS#2323203)
     return image.images ? image.images.count * singleImageBytes : singleImageBytes;
+#else // [TODO(macOS ISS#2323203)
+    return singleImageBytes; // [TODO(macOS ISS#2323203)
+#endif // [TODO(macOS ISS#2323203)
   }
 }
 

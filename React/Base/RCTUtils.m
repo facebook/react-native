@@ -769,7 +769,11 @@ UIImage *__nullable RCTImageFromLocalAssetURL(NSURL *imageURL)
     if (filePath.pathExtension.length == 0) {
       filePath = [filePath stringByAppendingPathExtension:@"png"];
     }
-    image = [UIImage imageWithContentsOfFile:filePath]; // TODO(macOS ISS#2323203)
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
+    image = [UIImage imageWithContentsOfFile:filePath];
+#else // TODO(macOS ISS#2323203)
+    image = [[NSImage alloc] initWithContentsOfFile:filePath]; // TODO(macOS ISS#2323203)
+#endif // TODO(macOS ISS#2323203)
   }
 
   if (!image && !bundle) {

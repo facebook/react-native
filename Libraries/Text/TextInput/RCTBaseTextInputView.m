@@ -325,10 +325,15 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
 #endif // TODO(macOS ISS#2323203)
 
 - (BOOL)secureTextEntry {
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203) // On Mac, this can be achieved by using an NSSecureTextField instead of an NSTextField
   return self.backedTextInputView.secureTextEntry;
+#else // TODO(macOS ISS#2323203)
+  return NO; // TODO(macOS ISS#2323203)
+#endif // TODO(macOS ISS#2323203)
 }
 
 - (void)setSecureTextEntry:(BOOL)secureTextEntry {
+#if !TARGET_OS_OSX // TODO(macOS ISS#2323203)
   UIView<RCTBackedTextInputViewProtocol> *textInputView = self.backedTextInputView;
     
   if (textInputView.secureTextEntry != secureTextEntry) {
@@ -339,7 +344,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithFrame:(CGRect)frame)
     self.backedTextInputView.attributedText = [NSAttributedString new];
     self.backedTextInputView.attributedText = originalText;
   }
-    
+#endif // TODO(macOS ISS#2323203)
 }
 
 #pragma mark - RCTBackedTextInputDelegate
