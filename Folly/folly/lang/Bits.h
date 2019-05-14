@@ -324,7 +324,10 @@ inline T partialLoadUnaligned(const void* p, size_t l) {
 
   auto cp = static_cast<const char*>(p);
   T value = 0;
+FOLLY_PUSH_WARNING
+FOLLY_MSVC_DISABLE_WARNING(4127) // conditional expression is constant
   if (!kHasUnalignedAccess || !kIsLittleEndian) {
+FOLLY_POP_WARNING
     // Unsupported, use memcpy.
     memcpy(&value, cp, l);
     return value;

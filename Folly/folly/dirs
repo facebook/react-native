@@ -1,5 +1,9 @@
 DIRS = \
+    container \
     detail \
+    hash \
+    lang \
+    memory \
     portability{!droidarm,!droidarm64,!droidx64,!droidx86} \
     android{droidarm,droidarm64,droidx64,droidx86} \
     win32{apple,chpe,x64,x86} \

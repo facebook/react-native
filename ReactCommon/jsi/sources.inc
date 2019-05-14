@@ -28,6 +28,7 @@ SOURCES_ANDROID = \
 SOURCES_ANDROID = \
   $(SOURCES_SHARED);\
   $(SOURCES_JSC_FILES); \
+
 !endif
 
 SOURCES_WIN32 = \
@@ -41,6 +42,8 @@ SOURCES_WINRT = \
 
 SOURCES_JSICORE = \
   ..\jsi.cpp \
+  
+SOURCES_JSIV8 = \
   ..\V8Platform.cpp \
   ..\V8Runtime_basic.cpp \
   ..\V8Runtime_shared.cpp \

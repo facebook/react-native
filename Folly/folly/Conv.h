@@ -1276,7 +1276,10 @@ checkConversion(const Src& value) {
         std::numeric_limits<Tgt>::max() - static_cast<Tgt>(mmax)) {
       return false;
     }
+FOLLY_PUSH_WARNING
+FOLLY_MSVC_DISABLE_WARNING(4127) // conditional expression is constant
   } else if (std::is_signed<Tgt>::value && value <= tgtMinAsSrc) {
+FOLLY_POP_WARNING
     if (value < tgtMinAsSrc) {
       return false;
     }

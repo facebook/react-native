@@ -132,6 +132,7 @@ class FlatListExample extends React.PureComponent<Props, State> {
             data={this.state.empty ? [] : filteredData}
             debug={this.state.debug}
             disableVirtualization={!this.state.virtualized}
+            acceptsKeyboardFocus={true} // TODO(macOS ISS#2323203)
             enableSelectionOnKeyPress={true}
             onSelectionEntered={this._handleSelectionEntered}
             getItemLayout={

@@ -88,7 +88,10 @@ using max_align_v_ = max_align_t_<
 //
 // Apple's allocation reference: http://bit.ly/malloc-small
 constexpr std::size_t max_align_v = detail::max_align_v_::value;
+FOLLY_PUSH_WARNING
+FOLLY_MSVC_DISABLE_WARNING(4324) // structure was padded due to alignment specifier
 struct alignas(max_align_v) max_align_t {};
+FOLLY_POP_WARNING
 
 //  Memory locations within the same cache line are subject to destructive
 //  interference, also known as false sharing, which is when concurrent

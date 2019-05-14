@@ -74,6 +74,7 @@ class ItemComponent extends React.PureComponent<{
         tvParallaxProperties={{
           pressMagnification: 1.1,
         }}
+        acceptsKeyboardFocus={false} // TODO(macOS ISS#2323203)
         style={horizontal ? styles.horizItem : styles.item}>
         <View
           style={[

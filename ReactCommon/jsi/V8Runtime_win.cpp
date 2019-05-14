@@ -23,4 +23,7 @@ namespace facebook { namespace v8runtime {
     std::abort();
   }
 
+  std::unique_ptr<jsi::Runtime> makeV8Runtime(const folly::dynamic& v8Config) {
+    return std::make_unique<V8Runtime>(v8Config);
+  }
 }} // namespace facebook::v8runtime

@@ -488,7 +488,10 @@ class SignedValueHandler<T, true> {
   Expected<T, ConversionCode> finalize(U value) {
     T rv;
     if (negative_) {
+FOLLY_PUSH_WARNING
+FOLLY_MSVC_DISABLE_WARNING(4146) // unary minus operator applied to unsigned type, result still unsigned
       rv = T(-value);
+FOLLY_POP_WARNING
       if (UNLIKELY(rv > 0)) {
         return makeUnexpected(ConversionCode::NEGATIVE_OVERFLOW);
       }
@@ -574,7 +577,10 @@ inline Expected<Tgt, ConversionCode> digits_to(
   UT result = 0;
 
   for (; e - b >= 4; b += 4) {
+FOLLY_PUSH_WARNING
+FOLLY_MSVC_DISABLE_WARNING(4309) // truncation of constant value
     result *= static_cast<UT>(10000);
+FOLLY_POP_WARNING
     const int32_t r0 = shift1000[static_cast<size_t>(b[0])];
     const int32_t r1 = shift100[static_cast<size_t>(b[1])];
     const int32_t r2 = shift10[static_cast<size_t>(b[2])];
@@ -700,7 +706,10 @@ Expected<Tgt, ConversionCode> str_to_integral(StringPiece* src) noexcept {
   if (UNLIKELY(err != ConversionCode::SUCCESS)) {
     return makeUnexpected(err);
   }
+FOLLY_PUSH_WARNING
+FOLLY_MSVC_DISABLE_WARNING(4127) // conditional expression is constant
   if (std::is_signed<Tgt>::value && UNLIKELY(b >= past)) {
+FOLLY_POP_WARNING
     return makeUnexpected(ConversionCode::NO_DIGITS);
   }
   if (UNLIKELY(!isdigit(*b))) {
