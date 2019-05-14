@@ -811,27 +811,19 @@ exports[`VirtualizedList renders simple list 1`] = `
 </RCTScrollView>
 `;
 
-exports[`VirtualizedList renders simple list renderItem component using hooks 1`] = `
+exports[`VirtualizedList renders simple list using ListItemComponent 1`] = `
 <RCTScrollView
+  ListItemComponent={[Function]}
   data={
     Array [
       Object {
-        "onPress": [MockFunction],
-        "value": Object {
-          "key": "i1",
-        },
+        "key": "i1",
       },
       Object {
-        "onPress": [MockFunction],
-        "value": Object {
-          "key": "i2",
-        },
+        "key": "i2",
       },
       Object {
-        "onPress": [MockFunction],
-        "value": Object {
-          "key": "i3",
-        },
+        "key": "i3",
       },
     ]
   }
@@ -849,7 +841,6 @@ exports[`VirtualizedList renders simple list renderItem component using hooks 1`
   onScroll={[Function]}
   onScrollBeginDrag={[Function]}
   onScrollEndDrag={[Function]}
-  renderItem={[Function]}
   scrollEventThrottle={50}
   stickyHeaderIndices={Array []}
   updateCellsBatchingPeriod={50}
@@ -861,7 +852,6 @@ exports[`VirtualizedList renders simple list renderItem component using hooks 1`
       style={null}
     >
       <item
-        onPress={[Function]}
         value="i1"
       />
     </View>
@@ -870,7 +860,6 @@ exports[`VirtualizedList renders simple list renderItem component using hooks 1`
       style={null}
     >
       <item
-        onPress={[Function]}
         value="i2"
       />
     </View>
@@ -879,7 +868,6 @@ exports[`VirtualizedList renders simple list renderItem component using hooks 1`
       style={null}
     >
       <item
-        onPress={[Function]}
         value="i3"
       />
     </View>
@@ -923,6 +911,50 @@ exports[`VirtualizedList test getItem functionality where data is not an Array 1
     >
       <item
         value="item_0"
+      />
+    </View>
+  </View>
+</RCTScrollView>
+`;
+
+exports[`VirtualizedList warns if both renderItem or ListItemComponent are specified. Uses ListItemComponent 1`] = `
+<RCTScrollView
+  ListItemComponent={[Function]}
+  data={
+    Array [
+      Object {
+        "key": "i1",
+      },
+    ]
+  }
+  disableVirtualization={false}
+  getItem={[Function]}
+  getItemCount={[Function]}
+  horizontal={false}
+  initialNumToRender={10}
+  keyExtractor={[Function]}
+  maxToRenderPerBatch={10}
+  onContentSizeChange={[Function]}
+  onEndReachedThreshold={2}
+  onLayout={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={Array []}
+  updateCellsBatchingPeriod={50}
+  windowSize={21}
+>
+  <View>
+    <View
+      onLayout={[Function]}
+      style={null}
+    >
+      <item
+        testID="i1-ListItemComponent"
+        value="i1"
       />
     </View>
   </View>

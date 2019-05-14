@@ -1670,6 +1670,7 @@ class CellRenderer extends React.Component<
     parentProps: {
       getItemLayout?: ?Function,
       renderItem: renderItemType,
+      ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
     },
     prevCellKey: ?string,
   },
@@ -1731,13 +1732,15 @@ class CellRenderer extends React.Component<
   }
 
   _renderElement(renderItem, ListItemComponent, item, index) {
-    console.warn(
-      'VirtualizedList: Both ListItemComponent and renderItem props are present. ListItemComponent will take' +
-        ' precedence over renderItem.',
-    );
+    if (renderItem && ListItemComponent) {
+      console.warn(
+        'VirtualizedList: Both ListItemComponent and renderItem props are present. ListItemComponent will take' +
+          ' precedence over renderItem.',
+      );
+    }
 
     if (ListItemComponent) {
-      return React.createElement(renderItem, {
+      return React.createElement(ListItemComponent, {
         item,
         index,
         separators: this._separators,
@@ -1752,7 +1755,8 @@ class CellRenderer extends React.Component<
       });
     }
 
-    console.error(
+    invariant(
+      false,
       'VirtualizedList: Either ListItemComponent or renderItem props are required but none were found.',
     );
   }
@@ -1775,6 +1779,7 @@ class CellRenderer extends React.Component<
       item,
       index,
     );
+
     const onLayout =
       /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
        * error found when Flow v0.68 was deployed. To see the error delete this

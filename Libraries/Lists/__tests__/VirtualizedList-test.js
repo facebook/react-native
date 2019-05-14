@@ -28,53 +28,60 @@ describe('VirtualizedList', () => {
     expect(component).toMatchSnapshot();
   });
 
-  it('renders simple list renderItem component using hooks', () => {
-    function RenderItem({item}) {
-      const {value, onPress} = item;
-      const key = React.useMemo(() => value.key, [value]);
-      const handleOnPress = React.useCallback(() => onPress(value.key), [
-        value,
-        onPress,
-      ]);
-
-      return <item value={key} onPress={handleOnPress} />;
+  it('renders simple list using ListItemComponent', () => {
+    function ListItemComponent({item}) {
+      return <item value={item.key} />;
     }
-
-    const items = [
-      {
-        value: {key: 'i1'},
-        onPress: jest.fn(),
-      },
-      {
-        value: {key: 'i2'},
-        onPress: jest.fn(),
-      },
-      {
-        value: {key: 'i3'},
-        onPress: jest.fn(),
-      },
-    ];
-
     const component = ReactTestRenderer.create(
       <VirtualizedList
-        data={items}
-        renderItem={RenderItem}
+        data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
+        ListItemComponent={ListItemComponent}
         getItem={(data, index) => data[index]}
         getItemCount={data => data.length}
       />,
     );
     expect(component).toMatchSnapshot();
+  });
 
-    const instance = component.root;
+  it('warns if both renderItem or ListItemComponent are specified. Uses ListItemComponent', () => {
+    jest.spyOn(global.console, 'warn');
+    function ListItemComponent({item}) {
+      return <item value={item.key} testID={`${item.key}-ListItemComponent`} />;
+    }
+    const component = ReactTestRenderer.create(
+      <VirtualizedList
+        data={[{key: 'i1'}]}
+        ListItemComponent={ListItemComponent}
+        renderItem={({item}) => (
+          <item value={item.key} testID={`${item.key}-renderItem`} />
+        )}
+        getItem={(data, index) => data[index]}
+        getItemCount={data => data.length}
+      />,
+    );
 
-    instance.findByProps({value: 'i1'}).props.onPress();
-    expect(items[0].onPress.mock.calls).toEqual([['i1']]);
+    expect(console.warn.mock.calls).toEqual([
+      [
+        'VirtualizedList: Both ListItemComponent and renderItem props are present. ListItemComponent will take precedence over renderItem.',
+      ],
+    ]);
+    expect(component).toMatchSnapshot();
+    console.warn.mockRestore();
+    console.log(console.warn);
+  });
 
-    instance.findByProps({value: 'i2'}).props.onPress();
-    expect(items[1].onPress.mock.calls).toEqual([['i2']]);
-
-    instance.findByProps({value: 'i3'}).props.onPress();
-    expect(items[2].onPress.mock.calls).toEqual([['i3']]);
+  it('throws if no renderItem or ListItemComponent', () => {
+    const componentFactory = () =>
+      ReactTestRenderer.create(
+        <VirtualizedList
+          data={[{key: 'i1'}, {key: 'i2'}, {key: 'i3'}]}
+          getItem={(data, index) => data[index]}
+          getItemCount={data => data.length}
+        />,
+      );
+    expect(componentFactory).toThrow(
+      'VirtualizedList: Either ListItemComponent or renderItem props are required but none were found.',
+    );
   });
 
   it('renders empty list', () => {
