@@ -67,7 +67,6 @@ describe('VirtualizedList', () => {
     ]);
     expect(component).toMatchSnapshot();
     console.warn.mockRestore();
-    console.log(console.warn);
   });
 
   it('throws if no renderItem or ListItemComponent', () => {
