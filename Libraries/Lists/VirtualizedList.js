@@ -42,12 +42,15 @@ export type SeparatorsObj = {
   updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
 };
 
-export type RenderItemType = (
-  info: {
-    item: Item,
-    index: number,
-    separators: SeparatorsObj
-  }) => React.Element<any>;
+export type RenderItemProps<ItemT> = {
+  item: ItemT,
+  index: number,
+  separators: SeparatorsObj,
+};
+
+export type RenderItemType<ItemT> = (
+  info: RenderItemProps<ItemT>,
+) => React.Element<any>;
 
 type ViewabilityHelperCallbackTuple = {
   viewabilityHelper: ViewabilityHelper,
@@ -75,7 +78,7 @@ type RequiredProps = {
 type OptionalProps = {
   // TODO: Conflicts with the optional `renderItem` in
   // `VirtualizedSectionList`'s props.
-  renderItem: $FlowFixMe<RenderItemType>,
+  renderItem?: $FlowFixMe<?RenderItemType<Item>>,
   /**
    * `debug` will turn on extra logging and visual overlays to aid with debugging both usage and
    * implementation, but with a significant perf hit.
@@ -125,7 +128,7 @@ type OptionalProps = {
    * Each data item is rendered using this element. Can be a React Component Class,
    * or a render function.
    */
-  ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
+  ListItemComponent?: ?React.ComponentType<any>,
   /**
    * Rendered when the list is empty. Can be a React Component Class, a render function, or
    * a rendered element.
@@ -1679,7 +1682,7 @@ class CellRenderer extends React.Component<
     onUpdateSeparators: (cellKeys: Array<?string>, props: Object) => void,
     parentProps: {
       getItemLayout?: ?Function,
-      renderItem: RenderItemType,
+      renderItem?: ?RenderItemType<Item>,
       ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
     },
     prevCellKey: ?string,

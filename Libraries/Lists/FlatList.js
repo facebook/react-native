@@ -24,14 +24,11 @@ import type {
   ViewToken,
   ViewabilityConfigCallbackPair,
 } from './ViewabilityHelper';
-import type {Props as VirtualizedListProps, SeparatorsObj} from './VirtualizedList';
-
-export type RenderItemType<ItemT> = (
-  info: {
-    item: ItemT,
-    index: number,
-    separators: SeparatorsObj
-  }) => React.Element<any>;
+import type {
+  Props as VirtualizedListProps,
+  RenderItemType,
+  RenderItemProps,
+} from './VirtualizedList';
 
 type RequiredProps<ItemT> = {
   /**
@@ -67,7 +64,7 @@ type OptionalProps<ItemT> = {
    * `highlight` and `unhighlight` (which set the `highlighted: boolean` prop) are insufficient for
    * your use-case.
    */
-  renderItem: RenderItemType<ItemT>,
+  renderItem?: ?RenderItemType<ItemT>,
   /**
    * Rendered in between each item, but not at the top or bottom. By default, `highlighted` and
    * `leadingItem` props are provided. `renderItem` provides `separators.highlight`/`unhighlight`
@@ -101,7 +98,7 @@ type OptionalProps<ItemT> = {
    * `highlight` and `unhighlight` (which set the `highlighted: boolean` prop) are insufficient for
    * your use-case.
    */
-  ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
+  ListItemComponent?: ?React.ComponentType<any>,
   /**
    * Rendered when the list is empty. Can be a React Component Class, a render function, or
    * a rendered element.
@@ -622,7 +619,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     };
   }
 
-  _rendererProps = () => {
+  _renderItem = () => {
     const {
       renderItem,
       ListItemComponent,
@@ -630,45 +627,41 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
       columnWrapperStyle,
     } = this.props;
 
-    const virtualizedListPropKey = this.props.ListItemComponent
-      ? 'ListItemComponent'
-      : 'renderItem';
-
-    const renderer = (props = {}) =>
+    const renderer = (props: RenderItemProps<ItemT>) =>
       ListItemComponent
         ? React.createElement(ListItemComponent, props)
-        : renderItem(props);
+        : renderItem
+        ? renderItem(props)
+        : () => undefined;
 
-    return {
-      [virtualizedListPropKey]: (info: Object): ?React.Node => {
-        if (numColumns > 1) {
-          const {item, index} = info;
-          invariant(
-            Array.isArray(item),
-            'Expected array of items with numColumns > 1',
-          );
-          return (
-            <View
-              style={StyleSheet.compose(
-                styles.row,
-                columnWrapperStyle,
-              )}>
-              {item.map((it, kk) => {
-                const element = renderer({
-                  item: it,
-                  index: index * numColumns + kk,
-                  separators: info.separators,
-                });
-                return element != null ? (
-                  <React.Fragment key={kk}>{element}</React.Fragment>
-                ) : null;
-              })}
-            </View>
-          );
-        } else {
-          return renderer(info);
-        }
-      },
+    return (info: RenderItemProps<ItemT>) => {
+      if (numColumns > 1) {
+        const {item, index} = info;
+        invariant(
+          Array.isArray(item),
+          'Expected array of items with numColumns > 1',
+        );
+        return (
+          <View
+            style={StyleSheet.compose(
+              styles.row,
+              columnWrapperStyle,
+            )}>
+            {item.map((it, kk) => {
+              const element = renderer({
+                item: it,
+                index: index * numColumns + kk,
+                separators: info.separators,
+              });
+              return element != null ? (
+                <React.Fragment key={kk}>{element}</React.Fragment>
+              ) : null;
+            })}
+          </View>
+        );
+      } else {
+        return renderer(info);
+      }
     };
   };
 
@@ -681,7 +674,8 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
         keyExtractor={this._keyExtractor}
         ref={this._captureRef}
         viewabilityConfigCallbackPairs={this._virtualizedListPairs}
-        {...this._rendererProps()}
+        renderItem={this._renderItem()}
+        ListItemComponent={undefined}
       />
     );
   }
