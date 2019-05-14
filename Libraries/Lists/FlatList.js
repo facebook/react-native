@@ -625,47 +625,66 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     };
   }
 
-  _renderItem = (info: Object): ?React.Node => {
-    const {renderItem, numColumns, columnWrapperStyle} = this.props;
-    if (numColumns > 1) {
-      const {item, index} = info;
-      invariant(
-        Array.isArray(item),
-        'Expected array of items with numColumns > 1',
-      );
-      return (
-        <View
-          style={StyleSheet.compose(
-            styles.row,
-            columnWrapperStyle,
-          )}>
-          {item.map((it, kk) => {
-            const element = renderItem({
-              item: it,
-              index: index * numColumns + kk,
-              separators: info.separators,
-            });
-            return element != null ? (
-              <React.Fragment key={kk}>{element}</React.Fragment>
-            ) : null;
-          })}
-        </View>
-      );
-    } else {
-      return renderItem(info);
-    }
+  _rendererProps = () => {
+    const {
+      renderItem,
+      ListItemComponent,
+      numColumns,
+      columnWrapperStyle,
+    } = this.props;
+
+    const virtualizedListPropKey = this.props.ListItemComponent
+      ? 'ListItemComponent'
+      : 'renderItem';
+
+    const renderer = (props = {}) =>
+      ListItemComponent
+        ? React.createElement(ListItemComponent, props)
+        : renderItem(props);
+
+    return {
+      [virtualizedListPropKey]: (info: Object): ?React.Node => {
+        if (numColumns > 1) {
+          const {item, index} = info;
+          invariant(
+            Array.isArray(item),
+            'Expected array of items with numColumns > 1',
+          );
+          return (
+            <View
+              style={StyleSheet.compose(
+                styles.row,
+                columnWrapperStyle,
+              )}>
+              {item.map((it, kk) => {
+                const element = renderer({
+                  item: it,
+                  index: index * numColumns + kk,
+                  separators: info.separators,
+                });
+                return element != null ? (
+                  <React.Fragment key={kk}>{element}</React.Fragment>
+                ) : null;
+              })}
+            </View>
+          );
+        } else {
+          return renderer(info);
+        }
+      },
+    };
   };
 
   render() {
     return (
       <VirtualizedList
         {...this.props}
-        renderItem={this._renderItem}
         getItem={this._getItem}
         getItemCount={this._getItemCount}
         keyExtractor={this._keyExtractor}
         ref={this._captureRef}
         viewabilityConfigCallbackPairs={this._virtualizedListPairs}
+        {...this._rendererProps()}
       />
     );
   }

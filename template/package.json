@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "react": "16.8.1",
-    "react-native": "1000.0.0"
+    "react-native": "file:/Users/akenyon/repos/react-native/react-native-1000.0.0.tgz"
   },
   "devDependencies": {
     "@babel/core": "^7.3.3",
