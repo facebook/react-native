@@ -24,13 +24,14 @@ import type {
   ViewToken,
   ViewabilityConfigCallbackPair,
 } from './ViewabilityHelper';
-import type {Props as VirtualizedListProps} from './VirtualizedList';
+import type {Props as VirtualizedListProps, SeparatorsObj} from './VirtualizedList';
 
-export type SeparatorsObj = {
-  highlight: () => void,
-  unhighlight: () => void,
-  updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
-};
+export type RenderItemType<ItemT> = (
+  info: {
+    item: ItemT,
+    index: number,
+    separators: SeparatorsObj
+  }) => React.Element<any>;
 
 type RequiredProps<ItemT> = {
   /**
@@ -66,11 +67,7 @@ type OptionalProps<ItemT> = {
    * `highlight` and `unhighlight` (which set the `highlighted: boolean` prop) are insufficient for
    * your use-case.
    */
-  renderItem: (info: {
-    item: ItemT,
-    index: number,
-    separators: SeparatorsObj,
-  }) => ?React.Node,
+  renderItem: RenderItemType<ItemT>,
   /**
    * Rendered in between each item, but not at the top or bottom. By default, `highlighted` and
    * `leadingItem` props are provided. `renderItem` provides `separators.highlight`/`unhighlight`

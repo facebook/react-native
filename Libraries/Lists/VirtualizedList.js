@@ -17,7 +17,6 @@ const ReactNative = require('../Renderer/shims/ReactNative');
 const RefreshControl = require('../Components/RefreshControl/RefreshControl');
 const ScrollView = require('../Components/ScrollView/ScrollView');
 const StyleSheet = require('../StyleSheet/StyleSheet');
-const UIManager = require('../ReactNative/UIManager');
 const View = require('../Components/View/View');
 const ViewabilityHelper = require('./ViewabilityHelper');
 
@@ -37,7 +36,18 @@ import type {
 
 type Item = any;
 
-export type renderItemType = (info: any) => React.Element<any>;
+export type SeparatorsObj = {
+  highlight: () => void,
+  unhighlight: () => void,
+  updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
+};
+
+export type RenderItemType = (
+  info: {
+    item: Item,
+    index: number,
+    separators: SeparatorsObj
+  }) => React.Element<any>;
 
 type ViewabilityHelperCallbackTuple = {
   viewabilityHelper: ViewabilityHelper,
@@ -65,7 +75,7 @@ type RequiredProps = {
 type OptionalProps = {
   // TODO: Conflicts with the optional `renderItem` in
   // `VirtualizedSectionList`'s props.
-  renderItem: $FlowFixMe<renderItemType>,
+  renderItem: $FlowFixMe<RenderItemType>,
   /**
    * `debug` will turn on extra logging and visual overlays to aid with debugging both usage and
    * implementation, but with a significant perf hit.
@@ -1669,7 +1679,7 @@ class CellRenderer extends React.Component<
     onUpdateSeparators: (cellKeys: Array<?string>, props: Object) => void,
     parentProps: {
       getItemLayout?: ?Function,
-      renderItem: renderItemType,
+      renderItem: RenderItemType,
       ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
     },
     prevCellKey: ?string,
