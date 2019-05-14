@@ -622,7 +622,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   _renderItem = (info: RenderItemProps<ItemT>) => {
     const {renderItem, numColumns, columnWrapperStyle} = this.props;
 
-    if (!renderItem) return null;
+    if (!renderItem) {
+      return null;
+    }
 
     if (numColumns > 1) {
       const {item, index} = info;
@@ -656,7 +658,9 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
   _listItemComponent = (info: RenderItemProps<ItemT>) => {
     const {ListItemComponent, numColumns, columnWrapperStyle} = this.props;
 
-    if (!ListItemComponent) return null;
+    if (!ListItemComponent) {
+      return null;
+    }
 
     if (numColumns > 1) {
       const {item, index} = info;
