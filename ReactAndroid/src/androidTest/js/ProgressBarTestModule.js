@@ -9,14 +9,14 @@
 
 'use strict';
 
-const BatchedBridge = require('BatchedBridge');
-const React = require('React');
-const ReactNative = require('react-native');
-const {StyleSheet} = ReactNative;
-const ProgressBar = require('ProgressBarAndroid');
-const View = require('View');
-
-const renderApplication = require('renderApplication');
+const React = require('react');
+const {
+  ProgressBarAndroid: ProgressBar,
+  StyleSheet,
+  View,
+} = require('react-native');
+const BatchedBridge = require('react-native/Libraries/BatchedBridge/BatchedBridge');
+const renderApplication = require('react-native/Libraries/ReactNative/renderApplication');
 
 class ProgressBarSampleApp extends React.Component {
   state = {};
