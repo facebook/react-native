@@ -31,7 +31,7 @@ class BridgeJSCallInvoker : public JSCallInvoker {
  public:
   BridgeJSCallInvoker(std::weak_ptr<Instance> reactInstance);
 
-  void invokeAsync(std::function<void()> &&func);
+  void invokeAsync(std::function<void()> &&func) override;
   // TODO: add sync support
 
  private:
