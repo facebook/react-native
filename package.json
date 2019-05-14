@@ -79,9 +79,9 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0",
-    "@react-native-community/cli": "2.0.0-alpha.16",
-    "@react-native-community/cli-platform-ios": "2.0.0-alpha.15",
+    "@react-native-community/cli": "2.0.0-alpha.19",
     "@react-native-community/cli-platform-android": "2.0.0-alpha.15",
+    "@react-native-community/cli-platform-ios": "2.0.0-alpha.15",
     "abort-controller": "^3.0.0",
     "art": "^0.10.0",
     "base64-js": "^1.1.2",
