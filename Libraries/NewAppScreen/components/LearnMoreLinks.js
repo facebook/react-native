@@ -11,7 +11,8 @@
 'use strict';
 
 import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Linking} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import openURLInBrowser from 'react-native/Libraries/Core/Devtools/openURLInBrowser';
 import Colors from './Colors';
 
 const links = [
@@ -70,7 +71,7 @@ const LinkList = () => (
           <View style={styles.separator} />
           <TouchableOpacity
             accessibilityRole={'button'}
-            onPress={() => Linking.openURL(item.link)}
+            onPress={() => openURLInBrowser(item.link)}
             style={styles.linkContainer}>
             <Text style={styles.link}>{item.title}</Text>
             <Text style={styles.description}>{item.description}</Text>
