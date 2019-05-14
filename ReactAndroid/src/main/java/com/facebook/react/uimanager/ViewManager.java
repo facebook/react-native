@@ -245,6 +245,7 @@ public abstract class ViewManager<T extends View, C extends ReactShadowNode>
       Context context,
       ReadableMap localData,
       ReadableMap props,
+      ReadableMap state,
       float width,
       YogaMeasureMode widthMode,
       float height,
