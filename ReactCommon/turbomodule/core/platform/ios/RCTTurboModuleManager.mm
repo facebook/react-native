@@ -10,6 +10,7 @@
 #import <cassert>
 
 #import <React/RCTBridge+Private.h>
+#import <React/RCTPerformanceLogger.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTCxxModule.h>
 #import <React/RCTLog.h>
@@ -65,17 +66,43 @@ static Class getFallbackClassFromName(const char *name) {
 
       __strong __typeof(self) strongSelf = weakSelf;
 
+      auto moduleName = name.c_str();
+      auto moduleWasNotInitialized = ![strongSelf moduleIsInitialized:moduleName];
+      if (moduleWasNotInitialized) {
+        [strongSelf->_bridge.performanceLogger markStartForTag:RCTPLTurboModuleSetup];
+      }
+
       /**
        * By default, all TurboModules are long-lived.
        * Additionally, if a TurboModule with the name `name` isn't found, then we
        * trigger an assertion failure.
        */
-      return [strongSelf provideTurboModule: name.c_str()];
+      auto turboModule = [strongSelf provideTurboModule:moduleName];
+
+      if (moduleWasNotInitialized && [strongSelf moduleIsInitialized:moduleName]) {
+        [strongSelf->_bridge.performanceLogger markStopForTag:RCTPLTurboModuleSetup];
+        [strongSelf notifyAboutTurboModuleSetup:moduleName];
+      }
+
+      return turboModule;
     };
 
     _binding = std::make_shared<react::TurboModuleBinding>(moduleProvider);
   }
   return self;
+}
+
+- (void)notifyAboutTurboModuleSetup:(const char*)name {
+    NSString *moduleName = [[NSString alloc] initWithUTF8String:name];
+    if (moduleName) {
+      int64_t setupTime = [self->_bridge.performanceLogger durationForTag:RCTPLTurboModuleSetup];
+      [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidSetupModuleNotification
+                                                          object:nil
+                                                        userInfo:@{
+                                                                  RCTDidSetupModuleNotificationModuleNameKey: moduleName,
+                                                                  RCTDidSetupModuleNotificationSetupTimeKey: @(setupTime)
+                                                                  }];
+    }
 }
 
 /**
