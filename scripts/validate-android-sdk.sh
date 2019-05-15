@@ -25,9 +25,9 @@ if [ ! -d "$ANDROID_HOME" ]; then
   exit 1
 fi
 
-if [ ! -e "$ANDROID_HOME/tools/emulator" ]; then
-  echo "Error: could not find an emulator at \$ANDROID_HOME/tools/emulator."
-  echo "Specifically, $ANDROID_HOME/tools/emulator does not exist."
+if [ ! -e "$ANDROID_HOME/emulator/emulator-headless" ]; then
+  echo "Error: could not find an emulator-headless at \$ANDROID_HOME/emulator/emulator-headless."
+  echo "Specifically, $ANDROID_HOME/emulator/emulator-headless does not exist."
   echo "This indicates something is borked with your Android SDK install."
   echo "One possibility is that you have \$ANDROID_HOME set to the wrong value."
   echo "If that seems correct, you might want to try reinstalling the Android SDK."
@@ -35,10 +35,10 @@ if [ ! -e "$ANDROID_HOME/tools/emulator" ]; then
   exit 1
 fi
 
-if [ -z `which emulator` ]; then
-  echo "Error: could not find 'emulator'. Specifically, 'which emulator' was empty."
-  echo "However, the emulator seems to be installed at \$ANDROID_HOME/tools/emulator already."
-  echo "This means that the problem is that you are not adding \$ANDROID_HOME/tools to your \$PATH."
+if [ -z `which emulator-headless` ]; then
+  echo "Error: could not find 'emulator-headless'. Specifically, 'which emulator-headless' was empty."
+  echo "However, the emulator-headless seems to be installed at \$ANDROID_HOME/emulator/emulator-headless already."
+  echo "This means that the problem is that you are not adding \$ANDROID_HOME/emulator/emulator-headless to your \$PATH."
   echo "You should do that, and then rerun this command."
   echo "Sorry for not fixing this automatically - we just didn't want to mess with your \$PATH automatically because that can break things."
   exit 1
