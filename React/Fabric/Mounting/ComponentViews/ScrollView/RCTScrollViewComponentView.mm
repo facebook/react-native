@@ -8,6 +8,8 @@
 #import "RCTScrollViewComponentView.h"
 
 #import <React/RCTAssert.h>
+#import <React/RNGenericDelegateSplitter.h>
+
 #import <react/components/scrollview/ScrollViewComponentDescriptor.h>
 #import <react/components/scrollview/ScrollViewEventEmitter.h>
 #import <react/components/scrollview/ScrollViewProps.h>
@@ -30,6 +32,7 @@ using namespace facebook::react;
   UIView *_Nonnull _contentView;
   ScrollViewShadowNode::ConcreteState::Shared _state;
   CGSize _contentSize;
+  RNGenericDelegateSplitter<id<UIScrollViewDelegate>> *_scrollViewDelegateSplitter;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -40,11 +43,16 @@ using namespace facebook::react;
 
     _scrollView = [[RCTEnhancedScrollView alloc] initWithFrame:self.bounds];
     _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    _scrollView.delegate = self;
     _scrollView.delaysContentTouches = NO;
     _contentView = [[UIView alloc] initWithFrame:_scrollView.bounds];
     [_scrollView addSubview:_contentView];
     [self addSubview:_scrollView];
+
+    _scrollViewDelegateSplitter = [[RNGenericDelegateSplitter alloc] initWithDelegateUpdateBlock:^(id delegate) {
+      self->_scrollView.delegate = delegate;
+    }];
+
+    [_scrollViewDelegateSplitter addDelegate:self];
   }
 
   return self;
