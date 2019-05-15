@@ -9,6 +9,7 @@
 
 #include <react/components/scrollview/ScrollViewEventEmitter.h>
 #include <react/components/scrollview/ScrollViewProps.h>
+#include <react/components/scrollview/ScrollViewState.h>
 #include <react/components/view/ConcreteViewShadowNode.h>
 #include <react/core/LayoutContext.h>
 
@@ -23,7 +24,8 @@ extern const char ScrollViewComponentName[];
 class ScrollViewShadowNode final : public ConcreteViewShadowNode<
                                        ScrollViewComponentName,
                                        ScrollViewProps,
-                                       ScrollViewEventEmitter> {
+                                       ScrollViewEventEmitter,
+                                       ScrollViewState> {
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
 
@@ -32,7 +34,7 @@ class ScrollViewShadowNode final : public ConcreteViewShadowNode<
   void layout(LayoutContext layoutContext) override;
 
  private:
-  void updateLocalData();
+  void updateStateIfNeeded();
 };
 
 } // namespace react
