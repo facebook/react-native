@@ -67,7 +67,7 @@ class ParagraphShadowNode : public ConcreteViewShadowNode<
 
  private:
   /*
-   * Creates a `LocalData` object (with `AttributedText` and
+   * Creates a `State` object (with `AttributedText` and
    * `TextLayoutManager`) if needed.
    */
   void updateStateIfNeeded();
