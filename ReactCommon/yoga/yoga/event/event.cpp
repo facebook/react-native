@@ -7,6 +7,7 @@
 #include "event.h"
 #include <memory>
 #include <stdexcept>
+#include <mutex>
 
 #include <iostream>
 
@@ -15,23 +16,29 @@ namespace yoga {
 
 namespace {
 
-Event::Subscribers& eventSubscribers() {
-  static Event::Subscribers subscribers = {};
+std::mutex& eventSubscribersMutex() {
+  static std::mutex subscribersMutex;
+  return subscribersMutex;
+}
+
+std::shared_ptr<Event::Subscribers>& eventSubscribers() {
+  static auto subscribers = std::make_shared<Event::Subscribers>();
   return subscribers;
 }
 
 } // namespace
 
 void Event::reset() {
-  eventSubscribers() = {};
+  eventSubscribers() = std::make_shared<Event::Subscribers>();
 }
 
 void Event::subscribe(std::function<Subscriber>&& subscriber) {
-  eventSubscribers().push_back(subscriber);
+  std::lock_guard<std::mutex> guard(eventSubscribersMutex());
+  eventSubscribers()->push_back(subscriber);
 }
 
 void Event::publish(const YGNode& node, Type eventType, const Data& eventData) {
-  for (auto& subscriber : eventSubscribers()) {
+  for (auto& subscriber : *eventSubscribers()) {
     if (subscriber) {
       subscriber(node, eventType, eventData);
     }
