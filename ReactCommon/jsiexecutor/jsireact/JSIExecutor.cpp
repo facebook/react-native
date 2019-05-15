@@ -97,15 +97,11 @@ void JSIExecutor::loadApplicationScript(
 
   // TODO: check for and use precompiled HBC
 
-// ChakraCore implementation of JSI don't yet support HostObjects.
-// https://office.visualstudio.com/OC/_workitems/edit/2801906
-#if !defined(CHAKRA_JSI)
   runtime_->global().setProperty(
       *runtime_,
       "nativeModuleProxy",
       Object::createFromHostObject(
           *runtime_, std::make_shared<NativeModuleProxy>(*this)));
-#endif
 
   runtime_->global().setProperty(
       *runtime_,
