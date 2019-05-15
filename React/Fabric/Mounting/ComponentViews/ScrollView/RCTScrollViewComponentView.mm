@@ -140,6 +140,17 @@ using namespace facebook::react;
   return metrics;
 }
 
+- (void)_updateStateWithContentOffset
+{
+  auto contentOffset = RCTPointFromCGPoint(_scrollView.contentOffset);
+
+  _state->updateState([contentOffset](ScrollViewShadowNode::ConcreteState::Data const &data) {
+    auto newData = data;
+    newData.contentOffset = contentOffset;
+    return newData;
+  });
+}
+
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
@@ -173,11 +184,13 @@ using namespace facebook::react;
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
   std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onMomentumScrollEnd([self _scrollViewMetrics]);
+  [self _updateStateWithContentOffset];
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
 {
   std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onMomentumScrollEnd([self _scrollViewMetrics]);
+  [self _updateStateWithContentOffset];
 }
 
 - (void)scrollViewWillBeginZooming:(UIScrollView *)scrollView withView:(nullable UIView *)view
@@ -188,6 +201,7 @@ using namespace facebook::react;
 - (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(nullable UIView *)view atScale:(CGFloat)scale
 {
   std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScrollEndDrag([self _scrollViewMetrics]);
+  [self _updateStateWithContentOffset];
 }
 
 @end

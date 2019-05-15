@@ -32,6 +32,7 @@ class ScrollViewShadowNode final : public ConcreteViewShadowNode<
 #pragma mark - LayoutableShadowNode
 
   void layout(LayoutContext layoutContext) override;
+  Transform getTransform() const override;
 
  private:
   void updateStateIfNeeded();

@@ -37,5 +37,12 @@ void ScrollViewShadowNode::layout(LayoutContext layoutContext) {
   updateStateIfNeeded();
 }
 
+Transform ScrollViewShadowNode::getTransform() const {
+  auto transform = ConcreteViewShadowNode::getTransform();
+  auto contentOffset = getStateData().contentOffset;
+  return transform *
+      Transform::Translate(-contentOffset.x, -contentOffset.y, 0);
+}
+
 } // namespace react
 } // namespace facebook
