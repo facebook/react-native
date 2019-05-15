@@ -8,27 +8,22 @@
 #pragma once
 
 #include <react/attributedstring/AttributedString.h>
-#include <react/core/LocalData.h>
 #include <react/textlayoutmanager/TextLayoutManager.h>
 
 namespace facebook {
 namespace react {
-
-class ParagraphLocalData;
-
-using SharedParagraphLocalData = std::shared_ptr<const ParagraphLocalData>;
-
+  
 /*
- * LocalData for <Paragraph> component.
+ * State for <Paragraph> component.
  * Represents what to render and how to render.
  */
-class ParagraphLocalData : public LocalData {
+class ParagraphState final {
  public:
   /*
    * All content of <Paragraph> component represented as an `AttributedString`.
    */
   AttributedString getAttributedString() const;
-  void setAttributedString(AttributedString attributedString);
+  void setAttributedString(AttributedString const &attributedString) const;
 
   /*
    * `TextLayoutManager` provides a connection to platform-specific
@@ -36,22 +31,16 @@ class ParagraphLocalData : public LocalData {
    * `AttributedString`.
    */
   SharedTextLayoutManager getTextLayoutManager() const;
-  void setTextLayoutManager(SharedTextLayoutManager textLayoutManager);
+  void setTextLayoutManager(SharedTextLayoutManager const &textLayoutManager) const;
 
 #ifdef ANDROID
-  folly::dynamic getDynamic() const override;
-#endif
-
-#pragma mark - DebugStringConvertible
-
-#if RN_DEBUG_STRING_CONVERTIBLE
-  std::string getDebugName() const override;
-  SharedDebugStringConvertibleList getDebugProps() const override;
+  folly::dynamic getDynamic() const;
 #endif
 
  private:
-  AttributedString attributedString_;
-  SharedTextLayoutManager textLayoutManager_;
+  mutable AttributedString attributedString_;
+  mutable SharedTextLayoutManager textLayoutManager_;
+  mutable bool attributedStringIsInitialized_;
 };
 
 } // namespace react

@@ -10,6 +10,7 @@
 #include <folly/Optional.h>
 #include <react/components/text/ParagraphMeasurementCache.h>
 #include <react/components/text/ParagraphProps.h>
+#include <react/components/text/ParagraphState.h>
 #include <react/components/text/TextShadowNode.h>
 #include <react/components/view/ConcreteViewShadowNode.h>
 #include <react/core/ConcreteShadowNode.h>
@@ -32,7 +33,8 @@ using ParagraphEventEmitter = ViewEventEmitter;
 class ParagraphShadowNode : public ConcreteViewShadowNode<
                                 ParagraphComponentName,
                                 ParagraphProps,
-                                ParagraphEventEmitter>,
+                                ParagraphEventEmitter,
+                                ParagraphState>,
                             public BaseTextShadowNode {
  public:
   using ConcreteViewShadowNode::ConcreteViewShadowNode;
@@ -45,7 +47,7 @@ class ParagraphShadowNode : public ConcreteViewShadowNode<
   /*
    * Associates a shared TextLayoutManager with the node.
    * `ParagraphShadowNode` uses the manager to measure text content
-   * and construct `ParagraphLocalData` objects.
+   * and construct `ParagraphState` objects.
    */
   void setTextLayoutManager(SharedTextLayoutManager textLayoutManager);
 
@@ -68,7 +70,7 @@ class ParagraphShadowNode : public ConcreteViewShadowNode<
    * Creates a `LocalData` object (with `AttributedText` and
    * `TextLayoutManager`) if needed.
    */
-  void updateLocalDataIfNeeded();
+  void updateStateIfNeeded();
 
   SharedTextLayoutManager textLayoutManager_;
   const ParagraphMeasurementCache *measureCache_;

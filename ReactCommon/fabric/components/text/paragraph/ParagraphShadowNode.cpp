@@ -6,7 +6,7 @@
  */
 
 #include "ParagraphShadowNode.h"
-#include "ParagraphLocalData.h"
+#include "ParagraphState.h"
 #include "ParagraphMeasurementCache.h"
 
 namespace facebook {
@@ -38,21 +38,18 @@ void ParagraphShadowNode::setMeasureCache(
   measureCache_ = cache;
 }
 
-void ParagraphShadowNode::updateLocalDataIfNeeded() {
+void ParagraphShadowNode::updateStateIfNeeded() {
   ensureUnsealed();
 
   auto attributedString = getAttributedString();
-  auto currentLocalData =
-      std::static_pointer_cast<const ParagraphLocalData>(getLocalData());
-  if (currentLocalData &&
-      currentLocalData->getAttributedString() == attributedString) {
+  auto state = getStateData();
+  if (state.getAttributedString() == attributedString) {
     return;
   }
 
-  auto localData = std::make_shared<ParagraphLocalData>();
-  localData->setAttributedString(std::move(attributedString));
-  localData->setTextLayoutManager(textLayoutManager_);
-  setLocalData(localData);
+  state.setAttributedString(std::move(attributedString));
+  state.setTextLayoutManager(textLayoutManager_);
+  setStateData(std::move(state));
 }
 
 #pragma mark - LayoutableShadowNode
@@ -83,7 +80,7 @@ Size ParagraphShadowNode::measure(LayoutConstraints layoutConstraints) const {
 }
 
 void ParagraphShadowNode::layout(LayoutContext layoutContext) {
-  updateLocalDataIfNeeded();
+  updateStateIfNeeded();
   ConcreteViewShadowNode::layout(layoutContext);
 }
 
