@@ -7,6 +7,7 @@
 #pragma once
 
 #include <functional>
+#include <vector>
 
 struct YGConfig;
 struct YGNode;
@@ -24,6 +25,7 @@ struct Event {
   };
   class Data;
   using Subscriber = void(const YGNode&, Type, Data);
+  using Subscribers = std::vector<std::function<Subscriber>>;
 
   template <Type E>
   struct TypedData {};

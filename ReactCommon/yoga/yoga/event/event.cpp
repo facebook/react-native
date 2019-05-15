@@ -15,31 +15,26 @@ namespace yoga {
 
 namespace {
 
-// For now, a single subscriber is enough.
-// This can be changed as soon as the need for more than one subscriber arises.
-std::function<Event::Subscriber>& globalEventSubscriber() {
-  static std::function<Event::Subscriber> subscriber = nullptr;
-  return subscriber;
+Event::Subscribers& eventSubscribers() {
+  static Event::Subscribers subscribers = {};
+  return subscribers;
 }
 
 } // namespace
 
 void Event::reset() {
-  globalEventSubscriber() = nullptr;
+  eventSubscribers() = {};
 }
 
 void Event::subscribe(std::function<Subscriber>&& subscriber) {
-  if (globalEventSubscriber() != nullptr) {
-    throw std::logic_error(
-        "Yoga currently supports only one global event subscriber");
-  }
-  globalEventSubscriber() = std::move(subscriber);
+  eventSubscribers().push_back(subscriber);
 }
 
 void Event::publish(const YGNode& node, Type eventType, const Data& eventData) {
-  auto& subscriber = globalEventSubscriber();
-  if (subscriber) {
-    subscriber(node, eventType, eventData);
+  for (auto& subscriber : eventSubscribers()) {
+    if (subscriber) {
+      subscriber(node, eventType, eventData);
+    }
   }
 }
 
