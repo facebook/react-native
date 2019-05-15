@@ -15,7 +15,7 @@ AVD_UUID=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1)
 echo no | android create avd -n "$AVD_UUID" -f -t android-19 --abi default/armeabi-v7a
 
 # emulator setup
-emulator64-arm -avd $AVD_UUID -no-skin -no-audio -no-window -no-boot-anim &
+emulator-headless -avd $AVD_UUID -read-only &
 bootanim=""
 until [[ "$bootanim" =~ "stopped" ]]; do
     sleep 5

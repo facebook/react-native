@@ -129,7 +129,7 @@ function e2e_suite() {
         fi
 
         # emulator setup
-        emulator64-arm -avd "$AVD_UUID" -no-skin -no-audio -no-window -no-boot-anim &
+        emulator-headless -avd "$AVD_UUID" -read-only &
 
         bootanim=""
         # shellcheck disable=SC2076
