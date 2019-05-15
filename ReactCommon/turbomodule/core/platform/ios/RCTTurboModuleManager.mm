@@ -239,7 +239,7 @@ static Class getFallbackClassFromName(const char *name) {
    * TurboModules are rolled out
    */
   [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidInitializeModuleNotification
-                                                      object:_bridge.parentBridge
+                                                      object:_bridge
                                                     userInfo:@{@"module": module, @"bridge": RCTNullIfNil(_bridge.parentBridge)}];
   return module;
 }
