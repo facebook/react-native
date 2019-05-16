@@ -10,6 +10,6 @@
 
 'use strict';
 
-const DeviceInfo = require('./NativeDeviceInfo').default;
+import NativeDeviceInfo from './NativeDeviceInfo';
 
-module.exports = DeviceInfo;
+module.exports = NativeDeviceInfo;
