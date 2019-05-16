@@ -13,15 +13,11 @@
 import type {TurboModule} from 'RCTExport';
 import * as TurboModuleRegistry from 'TurboModuleRegistry';
 
-type Value = string | boolean | number | Object | Array<Value> | null;
-
 export interface Spec extends TurboModule {
   +getConstants: () => {|
-    settings: {
-      [key: string]: Value,
-    },
+    settings: Object,
   |};
-  +setValues: (values: {+[key: string]: Value}) => void;
+  +setValues: (values: Object) => void;
   +deleteValues: (values: Array<string>) => void;
 }
 
