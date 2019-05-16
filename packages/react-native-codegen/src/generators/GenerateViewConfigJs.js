@@ -72,12 +72,23 @@ ReactNativeViewConfigRegistry.register(
   '::_COMPONENT_NAME_::',
   () => ::_COMPONENT_NAME_::ViewConfig,
 );
+
+module.exports = '::_COMPONENT_NAME_::';
 `.trim();
 
+function normalizeInputEventName(name) {
+  if (name.startsWith('on')) {
+    return name.replace(/^on/, 'top');
+  } else if (!name.startsWith('top')) {
+    return `top${name[0].toUpperCase()}${name.slice(1)}`;
+  }
+
+  return name;
+}
 function generateBubblingEventInfo(event) {
   return j.property(
     'init',
-    j.identifier(event.name),
+    j.identifier(normalizeInputEventName(event.name)),
     j.objectExpression([
       j.property(
         'init',
@@ -116,8 +127,11 @@ function buildViewConfig(
   imports,
 ) {
   const componentProps = component.props;
+  const componentEvents = component.events;
 
-  let styleAttribute = null;
+  let viewAttributes = null;
+  let viewEvents = null;
+  let viewDirectEvents = null;
 
   component.extendsProps.forEach(extendProps => {
     switch (extendProps.type) {
@@ -125,13 +139,30 @@ function buildViewConfig(
         switch (extendProps.knownTypeName) {
           case 'ReactNativeCoreViewProps':
             imports.add(
-              "const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');",
+              "const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');",
             );
-            styleAttribute = j.property(
-              'init',
-              j.identifier('style'),
-              j.identifier('ReactNativeStyleAttributes'),
+
+            viewAttributes = j.spreadProperty(
+              j.memberExpression(
+                j.identifier('ReactNativeViewViewConfig'),
+                j.identifier('validAttributes'),
+              ),
             );
+
+            viewEvents = j.spreadProperty(
+              j.memberExpression(
+                j.identifier('ReactNativeViewViewConfig'),
+                j.identifier('bubblingEventTypes'),
+              ),
+            );
+
+            viewDirectEvents = j.spreadProperty(
+              j.memberExpression(
+                j.identifier('ReactNativeViewViewConfig'),
+                j.identifier('directEventTypes'),
+              ),
+            );
+
             return;
           default:
             (extendProps.knownTypeName: empty);
@@ -144,6 +175,7 @@ function buildViewConfig(
   });
 
   const validAttributes = j.objectExpression([
+    viewAttributes,
     ...componentProps.map(schemaProp => {
       return j.property(
         'init',
@@ -151,12 +183,16 @@ function buildViewConfig(
         getReactDiffProcessValue(schemaProp),
       );
     }),
-    styleAttribute,
+    ...componentEvents.map(eventType => {
+      return j.property('init', j.identifier(eventType.name), j.literal(true));
+    }),
   ]);
 
   const bubblingEventNames = component.events
     .filter(event => event.bubblingType === 'bubble')
     .map(generateBubblingEventInfo);
+
+  bubblingEventNames.unshift(viewEvents);
 
   const bubblingEvents =
     bubblingEventNames.length > 0
@@ -170,6 +206,8 @@ function buildViewConfig(
   const directEventNames = component.events
     .filter(event => event.bubblingType === 'direct')
     .map(generateDirectEventInfo);
+
+  directEventNames.unshift(viewDirectEvents);
 
   const directEvents =
     directEventNames.length > 0
@@ -186,12 +224,6 @@ function buildViewConfig(
     j.objectExpression([]),
   );
 
-  const constants = j.property(
-    'init',
-    j.identifier('Constants'),
-    j.objectExpression([]),
-  );
-
   const properties = [
     j.property(
       'init',
@@ -199,7 +231,6 @@ function buildViewConfig(
       j.literal(componentName),
     ),
     commands,
-    constants,
     bubblingEvents,
     directEvents,
     j.property('init', j.identifier('validAttributes'), validAttributes),
