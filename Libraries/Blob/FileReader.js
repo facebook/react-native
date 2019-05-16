@@ -12,7 +12,7 @@
 
 const EventTarget = require('event-target-shim');
 const Blob = require('./Blob');
-import NativeFileReaderModule from '../BatchedBridge/NativeModules';
+import NativeFileReaderModule from './NativeFileReaderModule';
 
 type ReadyState =
   | 0 // EMPTY
