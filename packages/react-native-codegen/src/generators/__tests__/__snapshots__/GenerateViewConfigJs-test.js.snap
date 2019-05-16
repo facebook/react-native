@@ -20,6 +20,8 @@ const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 
 const ArrayPropsNativeComponentViewConfig = {
   uiViewClassName: 'ArrayPropsNativeComponent',
+  Commands: {},
+  Constants: {},
 
   validAttributes: {
     names: true,
@@ -61,6 +63,8 @@ const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 
 const BooleanPropNativeComponentViewConfig = {
   uiViewClassName: 'BooleanPropNativeComponent',
+  Commands: {},
+  Constants: {},
 
   validAttributes: {
     disabled: true,
@@ -96,9 +100,11 @@ const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 
 const ColorPropNativeComponentViewConfig = {
   uiViewClassName: 'ColorPropNativeComponent',
+  Commands: {},
+  Constants: {},
 
   validAttributes: {
-    tintColor: require('react-native').__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.NativePrimitives.ColorPrimitive,
+    tintColor: { process: require('processColor') },
     style: ReactNativeStyleAttributes
   }
 };
@@ -131,6 +137,8 @@ const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 
 const EnumPropsNativeComponentViewConfig = {
   uiViewClassName: 'EnumPropsNativeComponent',
+  Commands: {},
+  Constants: {},
 
   validAttributes: {
     alignment: true,
@@ -166,6 +174,8 @@ const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 
 const EventsNestedObjectNativeComponentViewConfig = {
   uiViewClassName: 'EventsNestedObjectNativeComponent',
+  Commands: {},
+  Constants: {},
 
   bubblingEventTypes: {
     onChange: {
@@ -210,6 +220,8 @@ const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 
 const EventsNativeComponentViewConfig = {
   uiViewClassName: 'EventsNativeComponent',
+  Commands: {},
+  Constants: {},
 
   bubblingEventTypes: {
     onChange: {
@@ -260,6 +272,8 @@ const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 
 const FloatPropNativeComponentViewConfig = {
   uiViewClassName: 'FloatPropNativeComponent',
+  Commands: {},
+  Constants: {},
 
   validAttributes: {
     blurRadius: true,
@@ -300,9 +314,11 @@ const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 
 const ImagePropNativeComponentViewConfig = {
   uiViewClassName: 'ImagePropNativeComponent',
+  Commands: {},
+  Constants: {},
 
   validAttributes: {
-    thumbImage: require('react-native').__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.NativePrimitives.ImageSourcePrimitive,
+    thumbImage: { process: require('resolveAssetSource') },
     style: ReactNativeStyleAttributes
   }
 };
@@ -335,6 +351,8 @@ const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 
 const IntegerPropNativeComponentViewConfig = {
   uiViewClassName: 'IntegerPropNativeComponent',
+  Commands: {},
+  Constants: {},
 
   validAttributes: {
     progress1: true,
@@ -372,6 +390,8 @@ const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 
 const InterfaceOnlyComponentViewConfig = {
   uiViewClassName: 'InterfaceOnlyComponent',
+  Commands: {},
+  Constants: {},
 
   bubblingEventTypes: {
     onChange: {
@@ -416,12 +436,14 @@ const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 
 const ImageColorPropNativeComponentViewConfig = {
   uiViewClassName: 'ImageColorPropNativeComponent',
+  Commands: {},
+  Constants: {},
 
   validAttributes: {
-    thumbImage: require('react-native').__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.NativePrimitives.ImageSourcePrimitive,
-    color: require('react-native').__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.NativePrimitives.ColorPrimitive,
-    thumbTintColor: require('react-native').__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.NativePrimitives.ColorPrimitive,
-    point: require('react-native').__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.NativePrimitives.PointPrimitive,
+    thumbImage: { process: require('resolveAssetSource') },
+    color: { process: require('processColor') },
+    thumbTintColor: { process: require('processColor') },
+    point: { diff: require('pointsDiffer') },
     style: ReactNativeStyleAttributes
   }
 };
@@ -454,9 +476,11 @@ const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 
 const PointPropNativeComponentViewConfig = {
   uiViewClassName: 'PointPropNativeComponent',
+  Commands: {},
+  Constants: {},
 
   validAttributes: {
-    startPoint: require('react-native').__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.NativePrimitives.PointPrimitive,
+    startPoint: { diff: require('pointsDiffer') },
     style: ReactNativeStyleAttributes
   }
 };
@@ -489,6 +513,8 @@ const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 
 const StringPropComponentViewConfig = {
   uiViewClassName: 'StringPropComponent',
+  Commands: {},
+  Constants: {},
 
   validAttributes: {
     accessibilityHint: true,
@@ -524,6 +550,8 @@ const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 
 const MultiFile1NativeComponentViewConfig = {
   uiViewClassName: 'MultiFile1NativeComponent',
+  Commands: {},
+  Constants: {},
 
   validAttributes: {
     disabled: true,
@@ -538,6 +566,8 @@ ReactNativeViewConfigRegistry.register(
 
 const MultiFile2NativeComponentViewConfig = {
   uiViewClassName: 'MultiFile2NativeComponent',
+  Commands: {},
+  Constants: {},
 
   validAttributes: {
     disabled: true,
@@ -573,6 +603,8 @@ const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 
 const MultiComponent1NativeComponentViewConfig = {
   uiViewClassName: 'MultiComponent1NativeComponent',
+  Commands: {},
+  Constants: {},
 
   validAttributes: {
     disabled: true,
@@ -587,6 +619,8 @@ ReactNativeViewConfigRegistry.register(
 
 const MultiComponent2NativeComponentViewConfig = {
   uiViewClassName: 'MultiComponent2NativeComponent',
+  Commands: {},
+  Constants: {},
 
   validAttributes: {
     disabled: true,

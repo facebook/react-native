@@ -47,16 +47,14 @@ function getReactDiffProcessValue(prop) {
     case 'StringEnumTypeAnnotation':
       return j.literal(true);
     case 'NativePrimitiveTypeAnnotation':
-      const nativeTypesString =
-        "require('react-native').__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.NativePrimitives";
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':
-          return j.template.expression`${nativeTypesString}.ColorPrimitive`;
+          return j.template.expression`{ process: require('processColor') }`;
         case 'ImageSourcePrimitive':
           return j.template
-            .expression`${nativeTypesString}.ImageSourcePrimitive`;
+            .expression`{ process: require('resolveAssetSource') }`;
         case 'PointPrimitive':
-          return j.template.expression`${nativeTypesString}.PointPrimitive`;
+          return j.template.expression`{ diff: require('pointsDiffer') }`;
         default:
           (typeAnnotation.name: empty);
           throw new Error('Receieved unknown NativePrimitiveTypeAnnotation');
@@ -182,12 +180,26 @@ function buildViewConfig(
         )
       : null;
 
+  const commands = j.property(
+    'init',
+    j.identifier('Commands'),
+    j.objectExpression([]),
+  );
+
+  const constants = j.property(
+    'init',
+    j.identifier('Constants'),
+    j.objectExpression([]),
+  );
+
   const properties = [
     j.property(
       'init',
       j.identifier('uiViewClassName'),
       j.literal(componentName),
     ),
+    commands,
+    constants,
     bubblingEvents,
     directEvents,
     j.property('init', j.identifier('validAttributes'), validAttributes),
