@@ -4,29 +4,26 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow
+ * @flow strict-local
  * @format
  */
 'use strict';
 
-const NativeAnimatedModule = require('../../BatchedBridge/NativeModules')
-  .NativeAnimatedModule;
-const NativeEventEmitter = require('../../EventEmitter/NativeEventEmitter');
+import NativeEventEmitter from '../../EventEmitter/NativeEventEmitter';
+import type {
+  EventMapping,
+  AnimatedNodeConfig,
+  AnimatinigNodeConfig,
+} from './NativeAnimatedModule';
+import NativeAnimatedModule from './NativeAnimatedModule';
+import invariant from 'invariant';
 
-const invariant = require('invariant');
-
-import type {AnimationConfig} from './animations/Animation';
+import type {AnimationConfig, EndCallback} from './animations/Animation';
+import type {InterpolationConfigType} from './nodes/AnimatedInterpolation';
 import type {EventConfig} from './AnimatedEvent';
 
 let __nativeAnimatedNodeTagCount = 1; /* used for animated nodes */
 let __nativeAnimationIdCount = 1; /* used for started animations */
-
-type EndResult = {finished: boolean};
-type EndCallback = (result: EndResult) => void;
-type EventMapping = {
-  nativeEventPath: Array<string>,
-  animatedValueTag: ?number,
-};
 
 let nativeEventEmitter;
 
@@ -35,7 +32,7 @@ let nativeEventEmitter;
  * the native module methods
  */
 const API = {
-  createAnimatedNode: function(tag: ?number, config: Object): void {
+  createAnimatedNode: function(tag: ?number, config: AnimatedNodeConfig): void {
     assertNativeAnimatedModule();
     NativeAnimatedModule.createAnimatedNode(tag, config);
   },
@@ -61,7 +58,7 @@ const API = {
   startAnimatingNode: function(
     animationId: ?number,
     nodeTag: ?number,
-    config: Object,
+    config: AnimatinigNodeConfig,
     endCallback: EndCallback,
   ): void {
     assertNativeAnimatedModule();
@@ -197,7 +194,12 @@ function addWhitelistedInterpolationParam(param: string): void {
   SUPPORTED_INTERPOLATION_PARAMS[param] = true;
 }
 
-function validateTransform(configs: Array<Object>): void {
+function validateTransform(
+  configs: Array<
+    | {type: 'animated', property: string, nodeTag: ?number}
+    | {type: 'static', property: string, value: number},
+  >,
+): void {
   configs.forEach(config => {
     if (!TRANSFORM_WHITELIST.hasOwnProperty(config.property)) {
       throw new Error(
@@ -209,7 +211,7 @@ function validateTransform(configs: Array<Object>): void {
   });
 }
 
-function validateStyles(styles: Object): void {
+function validateStyles(styles: {[key: string]: ?number}): void {
   for (const key in styles) {
     if (!STYLES_WHITELIST.hasOwnProperty(key)) {
       throw new Error(
@@ -219,7 +221,7 @@ function validateStyles(styles: Object): void {
   }
 }
 
-function validateInterpolation(config: Object): void {
+function validateInterpolation(config: InterpolationConfigType): void {
   for (const key in config) {
     if (!SUPPORTED_INTERPOLATION_PARAMS.hasOwnProperty(key)) {
       throw new Error(
@@ -244,7 +246,7 @@ function assertNativeAnimatedModule(): void {
 let _warnedMissingNativeAnimated = false;
 
 function shouldUseNativeDriver(config: AnimationConfig | EventConfig): boolean {
-  if (config.useNativeDriver && !NativeAnimatedModule) {
+  if (config.useNativeDriver === true && !NativeAnimatedModule) {
     if (!_warnedMissingNativeAnimated) {
       console.warn(
         'Animated: `useNativeDriver` is not supported because the native ' +
@@ -261,7 +263,7 @@ function shouldUseNativeDriver(config: AnimationConfig | EventConfig): boolean {
   return config.useNativeDriver || false;
 }
 
-function transformDataType(value: any): number {
+function transformDataType(value: number | string): number {
   // Change the string type to number type so we can reuse the same logic in
   // iOS and Android platform
   if (typeof value !== 'string') {
@@ -290,6 +292,7 @@ module.exports = {
   assertNativeAnimatedModule,
   shouldUseNativeDriver,
   transformDataType,
+  // $FlowExpectedError - unsafe getter lint suppresion
   get nativeEventEmitter() {
     if (!nativeEventEmitter) {
       nativeEventEmitter = new NativeEventEmitter(NativeAnimatedModule);
