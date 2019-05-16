@@ -13,8 +13,9 @@ const Platform = require('../../Utilities/Platform');
 const Systrace = require('../../Performance/Systrace');
 
 const invariant = require('invariant');
-const {Timing} = require('../../BatchedBridge/NativeModules');
 const BatchedBridge = require('../../BatchedBridge/BatchedBridge');
+
+import NativeTiming from './NativeTiming';
 
 import type {ExtendedError} from '../Devtools/parseErrorStack';
 
@@ -221,7 +222,7 @@ function _freeCallback(timerID: number) {
     _clearIndex(index);
     const type = types[index];
     if (type !== 'setImmediate' && type !== 'requestIdleCallback') {
-      Timing.deleteTimer(timerID);
+      NativeTiming.deleteTimer(timerID);
     }
   }
 }
@@ -250,7 +251,12 @@ const JSTimers = {
       () => func.apply(undefined, args),
       'setTimeout',
     );
-    Timing.createTimer(id, duration || 0, Date.now(), /* recurring */ false);
+    NativeTiming.createTimer(
+      id,
+      duration || 0,
+      Date.now(),
+      /* recurring */ false,
+    );
     return id;
   },
 
@@ -276,7 +282,12 @@ const JSTimers = {
       () => func.apply(undefined, args),
       'setInterval',
     );
-    Timing.createTimer(id, duration || 0, Date.now(), /* recurring */ true);
+    NativeTiming.createTimer(
+      id,
+      duration || 0,
+      Date.now(),
+      /* recurring */ true,
+    );
     return id;
   },
 
@@ -298,7 +309,7 @@ const JSTimers = {
    */
   requestAnimationFrame: function(func: Function) {
     const id = _allocateCallback(func, 'requestAnimationFrame');
-    Timing.createTimer(id, 1, Date.now(), /* recurring */ false);
+    NativeTiming.createTimer(id, 1, Date.now(), /* recurring */ false);
     return id;
   },
 
@@ -309,7 +320,7 @@ const JSTimers = {
    */
   requestIdleCallback: function(func: Function, options: ?Object) {
     if (requestIdleCallbacks.length === 0) {
-      Timing.setSendIdleEvents(true);
+      NativeTiming.setSendIdleEvents(true);
     }
 
     const timeout = options && options.timeout;
@@ -337,7 +348,7 @@ const JSTimers = {
         }
         delete requestIdleCallbackTimeouts[id];
         if (requestIdleCallbacks.length === 0) {
-          Timing.setSendIdleEvents(false);
+          NativeTiming.setSendIdleEvents(false);
         }
       }, timeout);
       requestIdleCallbackTimeouts[id] = timeoutId;
@@ -359,7 +370,7 @@ const JSTimers = {
     }
 
     if (requestIdleCallbacks.length === 0) {
-      Timing.setSendIdleEvents(false);
+      NativeTiming.setSendIdleEvents(false);
     }
   },
 
@@ -437,7 +448,7 @@ const JSTimers = {
     }
 
     if (requestIdleCallbacks.length === 0) {
-      Timing.setSendIdleEvents(false);
+      NativeTiming.setSendIdleEvents(false);
     }
 
     if (errors) {
@@ -478,7 +489,7 @@ const JSTimers = {
 };
 
 let ExportedJSTimers;
-if (!Timing) {
+if (!NativeTiming) {
   console.warn("Timing native module is not available, can't set timers.");
   // $FlowFixMe: we can assume timers are generally available
   ExportedJSTimers = ({
