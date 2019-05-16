@@ -174,9 +174,8 @@ if (__DEV__) {
             `Accessing view manager configs directly off UIManager via UIManager['${viewManagerName}'] ` +
               `is no longer supported. Use UIManager.getViewManagerConfig('${viewManagerName}') instead.`,
           );
-          if (UIManager.getViewManagerConfig) {
-            return UIManager.getViewManagerConfig(viewManagerName);
-          }
+
+          return UIManager.getViewManagerConfig(viewManagerName);
         },
       });
     }
