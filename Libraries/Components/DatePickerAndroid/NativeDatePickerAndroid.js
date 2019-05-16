@@ -9,9 +9,13 @@
 
 import type {TurboModule} from 'RCTExport';
 import * as TurboModuleRegistry from 'TurboModuleRegistry';
+import type {Options, DatePickerOpenAction} from './DatePickerAndroidTypes';
+import Platform from 'Platform';
 
 export interface Spec extends TurboModule {
-  +open: () => Promise<void>;
+  +open: (options: ?Options) => Promise<DatePickerOpenAction>;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('DatePickerAndroid');
+export default (Platform.OS === 'android'
+  ? TurboModuleRegistry.getEnforcing<Spec>('DatePickerAndroid')
+  : TurboModuleRegistry.getEnforcing<Spec>('DatePickerIOS'));
