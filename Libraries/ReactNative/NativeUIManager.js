@@ -23,13 +23,10 @@ interface Constants extends Object {
 }
 
 export interface Spec extends TurboModule {
-  // get constants, seems to be droid only i think
-  // droid only:
   +getConstants: () => Constants;
   +getConstantsForViewManager: (viewManagerName: string) => Object;
   +getDefaultEventTypes: () => Array<string>;
   +playTouchSound: () => void;
-  // common
   +lazilyLoadView: (name: string) => Object; // revisit return
   getViewManagerConfig: (viewManagerName: string) => Object; // probably should move this out, it's overwritten
   createView: (
@@ -39,7 +36,6 @@ export interface Spec extends TurboModule {
     props: Object,
   ) => void;
   updateView: (reactTag: number, viewName: string, props: Object) => void;
-  // maybe ios only?
   +focus: (reactTag: ?number) => void;
   +blur: (reactTag: ?number) => void;
   +findSubviewIn: (
