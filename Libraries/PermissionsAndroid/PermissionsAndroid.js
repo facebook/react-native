@@ -11,9 +11,15 @@
 'use strict';
 
 const NativeModules = require('../BatchedBridge/NativeModules');
-import NativePermissionsAndroid from './NativePermissionsAndroid';
+import NativePermissionsAndroid, {
+  PERMISSION_REQUEST_RESULT,
+  PERMISSIONS,
+} from './NativePermissionsAndroid';
 
-import type {PermissionStatus} from './NativePermissionsAndroid'
+import type {
+  PermissionStatus,
+  PermissionType,
+} from './NativePermissionsAndroid';
 
 export type Rationale = {
   title: string,
@@ -30,46 +36,8 @@ export type Rationale = {
  */
 
 class PermissionsAndroid {
-  PERMISSIONS: Object;
-  RESULTS: Object;
-
-  constructor() {
-    /**
-     * A list of specified "dangerous" permissions that require prompting the user
-     */
-    this.PERMISSIONS = {
-      READ_CALENDAR: 'android.permission.READ_CALENDAR',
-      WRITE_CALENDAR: 'android.permission.WRITE_CALENDAR',
-      CAMERA: 'android.permission.CAMERA',
-      READ_CONTACTS: 'android.permission.READ_CONTACTS',
-      WRITE_CONTACTS: 'android.permission.WRITE_CONTACTS',
-      GET_ACCOUNTS: 'android.permission.GET_ACCOUNTS',
-      ACCESS_FINE_LOCATION: 'android.permission.ACCESS_FINE_LOCATION',
-      ACCESS_COARSE_LOCATION: 'android.permission.ACCESS_COARSE_LOCATION',
-      RECORD_AUDIO: 'android.permission.RECORD_AUDIO',
-      READ_PHONE_STATE: 'android.permission.READ_PHONE_STATE',
-      CALL_PHONE: 'android.permission.CALL_PHONE',
-      READ_CALL_LOG: 'android.permission.READ_CALL_LOG',
-      WRITE_CALL_LOG: 'android.permission.WRITE_CALL_LOG',
-      ADD_VOICEMAIL: 'com.android.voicemail.permission.ADD_VOICEMAIL',
-      USE_SIP: 'android.permission.USE_SIP',
-      PROCESS_OUTGOING_CALLS: 'android.permission.PROCESS_OUTGOING_CALLS',
-      BODY_SENSORS: 'android.permission.BODY_SENSORS',
-      SEND_SMS: 'android.permission.SEND_SMS',
-      RECEIVE_SMS: 'android.permission.RECEIVE_SMS',
-      READ_SMS: 'android.permission.READ_SMS',
-      RECEIVE_WAP_PUSH: 'android.permission.RECEIVE_WAP_PUSH',
-      RECEIVE_MMS: 'android.permission.RECEIVE_MMS',
-      READ_EXTERNAL_STORAGE: 'android.permission.READ_EXTERNAL_STORAGE',
-      WRITE_EXTERNAL_STORAGE: 'android.permission.WRITE_EXTERNAL_STORAGE',
-    };
-
-    this.RESULTS = {
-      GRANTED: 'granted',
-      DENIED: 'denied',
-      NEVER_ASK_AGAIN: 'never_ask_again',
-    };
-  }
+  PERMISSIONS = PERMISSIONS;
+  RESULTS = PERMISSION_REQUEST_RESULT;
 
   /**
    * DEPRECATED - use check
@@ -79,7 +47,7 @@ class PermissionsAndroid {
    *
    * @deprecated
    */
-  checkPermission(permission: string): Promise<boolean> {
+  checkPermission(permission: PermissionType): Promise<boolean> {
     console.warn(
       '"PermissionsAndroid.checkPermission" is deprecated. Use "PermissionsAndroid.check" instead',
     );
@@ -92,7 +60,7 @@ class PermissionsAndroid {
    *
    * See https://facebook.github.io/react-native/docs/permissionsandroid.html#check
    */
-  check(permission: string): Promise<boolean> {
+  check(permission: PermissionType): Promise<boolean> {
     return NativePermissionsAndroid.checkPermission(permission);
   }
 
@@ -111,7 +79,7 @@ class PermissionsAndroid {
    * @deprecated
    */
   async requestPermission(
-    permission: string,
+    permission: PermissionType,
     rationale?: Rationale,
   ): Promise<boolean> {
     console.warn(
@@ -128,7 +96,7 @@ class PermissionsAndroid {
    * See https://facebook.github.io/react-native/docs/permissionsandroid.html#request
    */
   async request(
-    permission: string,
+    permission: PermissionType,
     rationale?: Rationale,
   ): Promise<PermissionStatus> {
     if (rationale) {
@@ -158,8 +126,8 @@ class PermissionsAndroid {
    * See https://facebook.github.io/react-native/docs/permissionsandroid.html#requestmultiple
    */
   requestMultiple(
-    permissions: Array<string>,
-  ): Promise<{[permission: string]: PermissionStatus}> {
+    permissions: Array<PermissionType>,
+  ): Promise<{[permission: PermissionType]: PermissionStatus}> {
     return NativePermissionsAndroid.requestMultiplePermissions(permissions);
   }
 }
