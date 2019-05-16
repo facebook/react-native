@@ -13,8 +13,7 @@
 // Do not require the native RCTNetworking module directly! Use this wrapper module instead.
 // It will add the necessary requestId, so that you don't have to generate it yourself.
 const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
-const RCTNetworkingNative = require('../BatchedBridge/NativeModules')
-  .Networking;
+import NativeNetworking from './NativeNetworkingAndroid';
 const convertRequestBody = require('./convertRequestBody');
 
 import type {RequestBody} from './convertRequestBody';
@@ -42,7 +41,7 @@ function generateRequestId(): number {
  */
 class RCTNetworking extends NativeEventEmitter {
   constructor() {
-    super(RCTNetworkingNative);
+    super(NativeNetworking);
   }
 
   sendRequest(
@@ -65,7 +64,7 @@ class RCTNetworking extends NativeEventEmitter {
       }));
     }
     const requestId = generateRequestId();
-    RCTNetworkingNative.sendRequest(
+    NativeNetworking.sendRequest(
       method,
       url,
       requestId,
@@ -80,11 +79,11 @@ class RCTNetworking extends NativeEventEmitter {
   }
 
   abortRequest(requestId: number) {
-    RCTNetworkingNative.abortRequest(requestId);
+    NativeNetworking.abortRequest(requestId);
   }
 
   clearCookies(callback: (result: boolean) => any) {
-    RCTNetworkingNative.clearCookies(callback);
+    NativeNetworking.clearCookies(callback);
   }
 }
 
