@@ -27,9 +27,7 @@ export interface Spec extends TurboModule {
     stack: Array<StackFrame>,
     exceptionId: number,
   ) => void;
-  /**
-   * Available only on Android
-   */
+  // Android only
   +dismissRedbox: () => void;
 }
 
