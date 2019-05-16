@@ -9,7 +9,6 @@
 
 import type {TurboModule} from 'RCTExport';
 import * as TurboModuleRegistry from 'TurboModuleRegistry';
-import Platform from 'Platform';
 
 export interface Spec extends TurboModule {
   +open: () => Promise<void>;
