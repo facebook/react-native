@@ -12,7 +12,7 @@
 
 const Blob = require('./Blob');
 const BlobRegistry = require('./BlobRegistry');
-const {BlobModule} = require('../BatchedBridge/NativeModules');
+import NativeBlobModule from './NativeBlobModule';
 
 import type {BlobData, BlobOptions, BlobCollector} from './BlobTypes';
 
@@ -53,7 +53,7 @@ class BlobManager {
   /**
    * If the native blob module is available.
    */
-  static isAvailable = !!BlobModule;
+  static isAvailable = !!NativeBlobModule;
 
   /**
    * Create blob from existing array of blobs.
@@ -92,7 +92,7 @@ class BlobManager {
       }
     }, 0);
 
-    BlobModule.createFromParts(items, blobId);
+    NativeBlobModule.createFromParts(items, blobId);
 
     return BlobManager.createFromOptions({
       blobId,
@@ -131,7 +131,7 @@ class BlobManager {
     if (BlobRegistry.has(blobId)) {
       return;
     }
-    BlobModule.release(blobId);
+    NativeBlobModule.release(blobId);
   }
 
   /**
@@ -139,7 +139,7 @@ class BlobManager {
    * requests and responses.
    */
   static addNetworkingHandler(): void {
-    BlobModule.addNetworkingHandler();
+    NativeBlobModule.addNetworkingHandler();
   }
 
   /**
@@ -147,7 +147,7 @@ class BlobManager {
    * messages.
    */
   static addWebSocketHandler(socketId: number): void {
-    BlobModule.addWebSocketHandler(socketId);
+    NativeBlobModule.addWebSocketHandler(socketId);
   }
 
   /**
@@ -155,14 +155,14 @@ class BlobManager {
    * binary messages.
    */
   static removeWebSocketHandler(socketId: number): void {
-    BlobModule.removeWebSocketHandler(socketId);
+    NativeBlobModule.removeWebSocketHandler(socketId);
   }
 
   /**
    * Send a blob message to a websocket.
    */
   static sendOverSocket(blob: Blob, socketId: number): void {
-    BlobModule.sendOverSocket(blob.data, socketId);
+    NativeBlobModule.sendOverSocket(blob.data, socketId);
   }
 }
 
