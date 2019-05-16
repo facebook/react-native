@@ -12,6 +12,7 @@
 
 import type {TurboModule} from 'RCTExport';
 import * as TurboModuleRegistry from 'TurboModuleRegistry';
+import {Platform} from 'react-native';
 
 export interface Spec extends TurboModule {
   +getConstants: () => {|
@@ -22,4 +23,6 @@ export interface Spec extends TurboModule {
   +onFailure: (errorCode: number, error: string) => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('JSDevSupport');
+export default (Platform.OS === 'android'
+  ? TurboModuleRegistry.getEnforcing<Spec>('JSDevSupport')
+  : null);
