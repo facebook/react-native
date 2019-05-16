@@ -4,8 +4,6 @@
 // LICENSE file in the root directory of this source tree.
 
 #include "JSIndexedRAMBundle.h"
-
-#include <glog/logging.h>
 #include <fstream>
 #include <sstream>
 #include <folly/Memory.h>
@@ -20,7 +18,8 @@ std::function<std::unique_ptr<JSModulesUnbundle>(std::string)> JSIndexedRAMBundl
 }
 
 JSIndexedRAMBundle::JSIndexedRAMBundle(const char *sourcePath) {
-  m_bundle = std::make_unique<std::ifstream>(sourcePath, std::ifstream::binary);
+  m_bundle = std::make_unique<std::ifstream>(
+    std::ifstream(sourcePath, std::ifstream::binary));
   if (!m_bundle) {
     throw std::ios_base::failure(
       folly::to<std::string>("Bundle ", sourcePath,
@@ -32,7 +31,8 @@ JSIndexedRAMBundle::JSIndexedRAMBundle(const char *sourcePath) {
 JSIndexedRAMBundle::JSIndexedRAMBundle(std::unique_ptr<const JSBigString> script) {
   // tmpStream is needed because m_bundle is std::istream type
   // which has no member 'write'
-  std::unique_ptr<std::stringstream> tmpStream = std::make_unique<std::stringstream>();
+  std::unique_ptr<std::stringstream> tmpStream = std::make_unique<std::stringstream>(
+    std::stringstream());
   tmpStream->write(script->c_str(), script->size());
   m_bundle = std::move(tmpStream);
   if (!m_bundle) {

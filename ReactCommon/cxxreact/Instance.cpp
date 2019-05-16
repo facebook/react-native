@@ -119,11 +119,11 @@ void Instance::loadRAMBundleFromString(std::unique_ptr<const JSBigString> script
   auto bundle = folly::make_unique<JSIndexedRAMBundle>(std::move(script));
   auto startupScript = bundle->getStartupCode();
   auto registry = RAMBundleRegistry::singleBundleRegistry(std::move(bundle));
-  loadRAMBundle(
-    std::move(registry),
-    std::move(startupScript),
-    sourceURL,
-    true);
+    loadRAMBundle(
+      std::move(registry),
+      std::move(startupScript),
+      sourceURL,
+      true);
 }
 
 void Instance::loadRAMBundleFromFile(const std::string& sourcePath,
