@@ -15,7 +15,7 @@ import * as TurboModuleRegistry from 'TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
   +getConstants: () => {|
-    settings: {+[key: string]: string | boolean | number},
+    settings: {[key: string]: string | boolean | number},
   |};
   +setValues: (values: {+[key: string]: string | boolean | number}) => void;
   +deleteValues: (values: Array<string>) => void;
