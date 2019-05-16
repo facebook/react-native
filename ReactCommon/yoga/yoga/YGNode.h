@@ -5,6 +5,7 @@
  * file in the root directory of this source tree.
  */
 #pragma once
+#include <cstdint>
 #include <stdio.h>
 #include "CompactValue.h"
 #include "YGConfig.h"
@@ -27,6 +28,7 @@ private:
   bool measureUsesContext_ : 1;
   bool baselineUsesContext_ : 1;
   bool printUsesContext_ : 1;
+  uint8_t reserved_ = 0;
   union {
     YGMeasureFunc noContext;
     MeasureWithContextFn withContext;
@@ -90,6 +92,9 @@ public:
 
   // Getters
   void* getContext() const { return context_; }
+
+  uint8_t& reserved() { return reserved_; }
+  uint8_t reserved() const { return reserved_; }
 
   void print(void*);
 
