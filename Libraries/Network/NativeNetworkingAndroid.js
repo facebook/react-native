@@ -26,7 +26,7 @@ export interface Spec extends TurboModule {
     withCredentials: boolean,
   ) => void;
   +abortRequest: (requestId: number) => void;
-  +clearCookies: (callback: (result: boolean) => void) => void;
+  +clearCookies: (callback: (result: boolean) => mixed) => void;
 
   // RCTEventEmitter
   +addListener: (eventName: string) => void;

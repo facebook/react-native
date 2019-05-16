@@ -53,7 +53,7 @@ class RCTNetworking extends NativeEventEmitter {
     responseType: 'text' | 'base64',
     incrementalUpdates: boolean,
     timeout: number,
-    callback: (requestId: number) => any,
+    callback: (requestId: number) => mixed,
     withCredentials: boolean,
   ) {
     const body = convertRequestBody(data);

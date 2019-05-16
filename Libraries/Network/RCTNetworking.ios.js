@@ -32,7 +32,7 @@ class RCTNetworking extends NativeEventEmitter {
     responseType: NativeResponseType,
     incrementalUpdates: boolean,
     timeout: number,
-    callback: (requestId: number) => any,
+    callback: (requestId: number) => mixed,
     withCredentials: boolean,
   ) {
     const body = convertRequestBody(data);
@@ -55,7 +55,7 @@ class RCTNetworking extends NativeEventEmitter {
     NativeNetworking.abortRequest(requestId);
   }
 
-  clearCookies(callback: (result: boolean) => any) {
+  clearCookies(callback: (result: boolean) => mixed) {
     NativeNetworking.clearCookies(callback);
   }
 }

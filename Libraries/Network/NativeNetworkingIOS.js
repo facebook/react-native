@@ -23,10 +23,10 @@ export interface Spec extends TurboModule {
       timeout: number,
       withCredentials: boolean,
     |},
-    callback: (requestId: number) => void,
+    callback: (requestId: number) => mixed,
   ) => void;
   +abortRequest: (requestId: number) => void;
-  +clearCookies: (callback: (result: boolean) => void) => void;
+  +clearCookies: (callback: (result: boolean) => mixed) => void;
 
   // RCTEventEmitter
   +addListener: (eventName: string) => void;
