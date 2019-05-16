@@ -12,9 +12,12 @@
 
 import type {TurboModule} from 'RCTExport';
 import * as TurboModuleRegistry from 'TurboModuleRegistry';
+import {Platform} from 'react-native';
 
 export interface Spec extends TurboModule {
   +notifyTaskFinished: (taskId: number) => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('JSDevSupport');
+export default (Platform.OS === 'android'
+  ? TurboModuleRegistry.getEnforcing<Spec>('HeadlessJsTaskSupport')
+  : null);

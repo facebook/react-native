@@ -262,14 +262,22 @@ const AppRegistry = {
     const taskProvider = taskProviders.get(taskKey);
     if (!taskProvider) {
       console.warn(`No task registered for key ${taskKey}`);
-      NativeHeadlessJsTaskSupport.notifyTaskFinished(taskId);
+      if (NativeHeadlessJsTaskSupport) {
+        NativeHeadlessJsTaskSupport.notifyTaskFinished(taskId);
+      }
       return;
     }
     taskProvider()(data)
-      .then(() => NativeHeadlessJsTaskSupport.notifyTaskFinished(taskId))
+      .then(() => {
+        if (NativeHeadlessJsTaskSupport) {
+          NativeHeadlessJsTaskSupport.notifyTaskFinished(taskId);
+        }
+      })
       .catch(reason => {
         console.error(reason);
-        NativeHeadlessJsTaskSupport.notifyTaskFinished(taskId);
+        if (NativeHeadlessJsTaskSupport) {
+          NativeHeadlessJsTaskSupport.notifyTaskFinished(taskId);
+        }
       });
   },
 
