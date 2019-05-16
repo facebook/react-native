@@ -21,7 +21,7 @@ import type {Spec} from './NativeUIManager';
 const viewManagerConfigs = {};
 
 interface UIManagerJSInterface extends Spec {
-  getViewManagerConfig: (viewManagerName: string) => Object; // probably should move this out, it's overwritten
+  +getViewManagerConfig: (viewManagerName: string) => Object;
   createView: (
     reactTag: number,
     viewName: string,

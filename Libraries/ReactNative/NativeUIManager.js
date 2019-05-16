@@ -104,7 +104,7 @@ export interface Spec extends TurboModule {
   ) => void;
 
   // android only
-  +setLayoutAnimationEnabledExperimental?: (enabled: boolean) => void;
+  +setLayoutAnimationEnabledExperimental: (enabled: boolean) => void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('UIManager');
