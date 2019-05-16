@@ -26,8 +26,11 @@ export interface Spec extends TurboModule {
     action: string,
     extras: ?Array<{key: string, value: string | number | boolean}>,
   ) => Promise<void>;
+
+  // RCTEventEmitter
+  +addListener: (eventName: string) => void;
+  +removeListeners: (count: number) => void;
 }
 
-const moduleName =
-  Platform.OS === 'ios' ? 'NativeLinkingManager' : 'NativeIntentAndroid';
+const moduleName = Platform.OS === 'ios' ? 'LinkingManager' : 'IntentAndroid';
 export default TurboModuleRegistry.getEnforcing<Spec>(moduleName);
