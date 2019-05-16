@@ -15,7 +15,7 @@ namespace react {
 inline folly::dynamic toDynamic(const ParagraphState &paragraphState) {
   folly::dynamic newState = folly::dynamic::object();
   newState["attributedString"] =
-      toDynamic(paragraphState->getData().getAttributedString());
+      toDynamic(paragraphState->getData().attributedString);
   newState["hash"] = newState["attributedString"]["hash"];
   return newState;
 }
