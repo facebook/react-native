@@ -102,6 +102,9 @@ export interface Spec extends TurboModule {
     addAtIndices: Array<number>,
     removeAtIndices: Array<number>,
   ) => void;
+
+  // android only
+  +setLayoutAnimationEnabledExperimental?: (enabled: boolean) => void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('UIManager');
