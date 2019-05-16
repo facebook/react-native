@@ -8,8 +8,8 @@
 #import "RCTParagraphComponentView.h"
 
 #import <react/components/text/ParagraphComponentDescriptor.h>
-#import <react/components/text/ParagraphState.h>
 #import <react/components/text/ParagraphProps.h>
+#import <react/components/text/ParagraphState.h>
 #import <react/components/text/RawTextComponentDescriptor.h>
 #import <react/components/text/TextComponentDescriptor.h>
 #import <react/core/LocalData.h>
