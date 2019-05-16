@@ -16,13 +16,35 @@ import * as TurboModuleRegistry from 'TurboModuleRegistry';
 export interface Spec extends TurboModule {
   +getConstants: () => {|
     Dimensions: {|
-      width: number,
-      height: number,
-      scale: number,
-      fontScale: number,
+      // iOS specific
+      window?: {|
+        width: number,
+        height: number,
+        scale: number,
+        fontScale: number,
+      |},
+      screen?: {|
+        width: number,
+        height: number,
+        scale: number,
+        fontScale: number,
+      |},
 
       // Android specific
-      densityDpi?: number,
+      windowPhysicalPixels?: {|
+        width: number,
+        height: number,
+        scale: number,
+        fontScale: number,
+        densityDpi: number,
+      |},
+      screenPhysicalPixels?: {|
+        width: number,
+        height: number,
+        scale: number,
+        fontScale: number,
+        densityDpi: number,
+      |},
     |},
 
     // iOS specific

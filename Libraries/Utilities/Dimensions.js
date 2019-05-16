@@ -133,10 +133,6 @@ if (!dims) {
   nativeExtensionsEnabled = false;
 }
 
-invariant(
-  dims,
-  'Either DeviceInfo native extension or DeviceInfo Native Module must be registered',
-);
 Dimensions.set(dims);
 if (!nativeExtensionsEnabled) {
   RCTDeviceEventEmitter.addListener('didUpdateDimensions', function(update) {
