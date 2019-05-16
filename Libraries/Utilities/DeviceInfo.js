@@ -10,10 +10,6 @@
 
 'use strict';
 
-const DeviceInfo = require('../BatchedBridge/NativeModules').DeviceInfo;
-
-const invariant = require('invariant');
-
-invariant(DeviceInfo, 'DeviceInfo native module is not installed correctly');
+const DeviceInfo = require('./NativeDeviceInfo').default;
 
 module.exports = DeviceInfo;
