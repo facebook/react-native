@@ -86,6 +86,12 @@ RCT_EXTERN NSString *const RCTBridgeWillDownloadScriptNotification;
 RCT_EXTERN NSString *const RCTBridgeDidDownloadScriptNotification;
 
 /**
+ * This notification fires right after the bridge finishes invalidating NativeModule
+ * instances during teardown. Handle this notification to perform additional invalidation.
+ */
+RCT_EXTERN NSString *const RCTBridgeDidInvalidateModulesNotification;
+
+/**
  * Key for the RCTSource object in the RCTBridgeDidDownloadScriptNotification
  * userInfo dictionary.
  */

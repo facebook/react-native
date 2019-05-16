@@ -10,10 +10,10 @@
 #import <cassert>
 
 #import <React/RCTBridge+Private.h>
-#import <React/RCTPerformanceLogger.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTCxxModule.h>
 #import <React/RCTLog.h>
+#import <React/RCTPerformanceLogger.h>
 #import <jsireact/BridgeJSCallInvoker.h>
 #import <jsireact/TurboCxxModule.h>
 #import <jsireact/TurboModuleBinding.h>
@@ -22,7 +22,8 @@ using namespace facebook;
 
 // Fallback lookup since RCT class prefix is sometimes stripped in the existing NativeModule system.
 // This will be removed in the future.
-static Class getFallbackClassFromName(const char *name) {
+static Class getFallbackClassFromName(const char *name)
+{
   Class moduleClass = NSClassFromString([NSString stringWithUTF8String:name]);
   if (!moduleClass) {
     moduleClass = NSClassFromString([NSString stringWithFormat:@"RCT%s", name]);
@@ -30,8 +31,7 @@ static Class getFallbackClassFromName(const char *name) {
   return moduleClass;
 }
 
-@implementation RCTTurboModuleManager
-{
+@implementation RCTTurboModuleManager {
   jsi::Runtime *_runtime;
   std::shared_ptr<facebook::react::JSCallInvoker> _jsInvoker;
   std::shared_ptr<react::TurboModuleBinding> _binding;
@@ -56,6 +56,11 @@ static Class getFallbackClassFromName(const char *name) {
 
     // Necessary to allow NativeModules to lookup TurboModules
     [bridge setRCTTurboModuleLookupDelegate:self];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(bridgeDidInvalidateModules:)
+                                                 name:RCTBridgeDidInvalidateModulesNotification
+                                               object:_bridge.parentBridge];
 
     __weak __typeof(self) weakSelf = self;
 
@@ -92,17 +97,23 @@ static Class getFallbackClassFromName(const char *name) {
   return self;
 }
 
-- (void)notifyAboutTurboModuleSetup:(const char*)name {
-    NSString *moduleName = [[NSString alloc] initWithUTF8String:name];
-    if (moduleName) {
-      int64_t setupTime = [self->_bridge.performanceLogger durationForTag:RCTPLTurboModuleSetup];
-      [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidSetupModuleNotification
-                                                          object:nil
-                                                        userInfo:@{
-                                                                  RCTDidSetupModuleNotificationModuleNameKey: moduleName,
-                                                                  RCTDidSetupModuleNotificationSetupTimeKey: @(setupTime)
-                                                                  }];
-    }
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)notifyAboutTurboModuleSetup:(const char *)name
+{
+  NSString *moduleName = [[NSString alloc] initWithUTF8String:name];
+  if (moduleName) {
+    int64_t setupTime = [self->_bridge.performanceLogger durationForTag:RCTPLTurboModuleSetup];
+    [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidSetupModuleNotification
+                                                        object:nil
+                                                      userInfo:@{
+                                                        RCTDidSetupModuleNotificationModuleNameKey : moduleName,
+                                                        RCTDidSetupModuleNotificationSetupTimeKey : @(setupTime)
+                                                      }];
+  }
 }
 
 /**
@@ -114,7 +125,7 @@ static Class getFallbackClassFromName(const char *name) {
  * (for now).
  */
 
-- (std::shared_ptr<react::TurboModule>)provideTurboModule:(const char*)moduleName
+- (std::shared_ptr<react::TurboModule>)provideTurboModule:(const char *)moduleName
 {
   auto turboModuleLookup = _turboModuleCache.find(moduleName);
   if (turboModuleLookup != _turboModuleCache.end()) {
@@ -185,7 +196,7 @@ static Class getFallbackClassFromName(const char *name) {
  * Note: All TurboModule instances are cached, which means they're all long-lived
  * (for now).
  */
-- (id<RCTTurboModule>)provideRCTTurboModule:(const char*)moduleName
+- (id<RCTTurboModule>)provideRCTTurboModule:(const char *)moduleName
 {
   auto rctTurboModuleCacheLookup = _rctTurboModuleCache.find(moduleName);
   if (rctTurboModuleCacheLookup != _rctTurboModuleCache.end()) {
@@ -245,11 +256,12 @@ static Class getFallbackClassFromName(const char *name) {
        * the bridge property of these NativeModules.
        */
       [(id)module setValue:_bridge forKey:@"bridge"];
-    }
-    @catch (NSException *exception) {
-      RCTLogError(@"%@ has no setter or ivar for its bridge, which is not "
-                  "permitted. You must either @synthesize the bridge property, "
-                  "or provide your own setter method.", RCTBridgeModuleNameForClass(module));
+    } @catch (NSException *exception) {
+      RCTLogError(
+          @"%@ has no setter or ivar for its bridge, which is not "
+           "permitted. You must either @synthesize the bridge property, "
+           "or provide your own setter method.",
+          RCTBridgeModuleNameForClass(module));
     }
   }
 
@@ -265,9 +277,10 @@ static Class getFallbackClassFromName(const char *name) {
    * TODO(T41180176): Investigate whether we can get rid of this after all
    * TurboModules are rolled out
    */
-  [[NSNotificationCenter defaultCenter] postNotificationName:RCTDidInitializeModuleNotification
-                                                      object:_bridge
-                                                    userInfo:@{@"module": module, @"bridge": RCTNullIfNil(_bridge.parentBridge)}];
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:RCTDidInitializeModuleNotification
+                    object:_bridge
+                  userInfo:@{@"module" : module, @"bridge" : RCTNullIfNil(_bridge.parentBridge)}];
   return module;
 }
 
@@ -309,6 +322,30 @@ static Class getFallbackClassFromName(const char *name) {
 - (BOOL)moduleIsInitialized:(const char *)moduleName
 {
   return _rctTurboModuleCache.find(std::string(moduleName)) != _rctTurboModuleCache.end();
+}
+
+#pragma mark Invalidation logic
+
+- (void)bridgeDidInvalidateModules:(NSNotification *)notification
+{
+  // Rely on this notification to invalidate all known TurboModule ObjC instances, synchronously.
+  RCTBridge *bridge = notification.userInfo[@"bridge"];
+  if (bridge != _bridge) {
+    return;
+  }
+
+  // Backward-compatibility: RCTInvalidating handling.
+  for (const auto &p : _rctTurboModuleCache) {
+    id<RCTTurboModule> module = p.second;
+    if ([module respondsToSelector:@selector(invalidate)]) {
+      [((id<RCTInvalidating>)module) invalidate];
+    }
+  }
+
+  _rctTurboModuleCache.clear();
+  _turboModuleCache.clear();
+
+  _binding->invalidate();
 }
 
 @end
