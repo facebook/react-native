@@ -13,17 +13,8 @@
 import type {TurboModule} from 'RCTExport';
 import * as TurboModuleRegistry from 'TurboModuleRegistry';
 
-interface Constants extends Object {
-  [key: string]: Object;
-  ViewManagerNames: Array<string>;
-  LazyViewManagersEnabled: boolean;
-  bubblingEventTypes: Array<string>;
-  genericBubblingEventTypes: Array<string>;
-  genericDirectEventTypes: Array<string>;
-}
-
 export interface Spec extends TurboModule {
-  +getConstants: () => Constants;
+  +getConstants: () => Object;
   +getConstantsForViewManager: (viewManagerName: string) => Object;
   +getDefaultEventTypes: () => Array<string>;
   +playTouchSound: () => void;
