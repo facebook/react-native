@@ -619,75 +619,59 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
     };
   }
 
-  _renderItem = (info: RenderItemProps<ItemT>) => {
-    const {renderItem, numColumns, columnWrapperStyle} = this.props;
+  _renderer = () => {
+    const {
+      ListItemComponent,
+      renderItem,
+      numColumns,
+      columnWrapperStyle,
+    } = this.props;
 
-    if (!renderItem) {
-      return null;
-    }
+    let virtualizedListRenderKey = ListItemComponent
+      ? 'ListItemComponent'
+      : 'renderItem';
 
-    if (numColumns > 1) {
-      const {item, index} = info;
-      invariant(
-        Array.isArray(item),
-        'Expected array of items with numColumns > 1',
-      );
-      return (
-        <View
-          style={StyleSheet.compose(
-            styles.row,
-            columnWrapperStyle,
-          )}>
-          {item.map((it, kk) => {
-            const element = renderItem({
-              item: it,
-              index: index * numColumns + kk,
-              separators: info.separators,
-            });
-            return element != null ? (
-              <React.Fragment key={kk}>{element}</React.Fragment>
-            ) : null;
-          })}
-        </View>
-      );
-    } else {
-      return renderItem(info);
-    }
-  };
+    const renderer = props => {
+      if (ListItemComponent) {
+        return <ListItemComponent {...props} />;
+      } else if (renderItem) {
+        return renderItem(props);
+      } else {
+        return null;
+      }
+    };
 
-  _listItemComponent = (info: RenderItemProps<ItemT>) => {
-    const {ListItemComponent, numColumns, columnWrapperStyle} = this.props;
-
-    if (!ListItemComponent) {
-      return null;
-    }
-
-    if (numColumns > 1) {
-      const {item, index} = info;
-      invariant(
-        Array.isArray(item),
-        'Expected array of items with numColumns > 1',
-      );
-      return (
-        <View
-          style={StyleSheet.compose(
-            styles.row,
-            columnWrapperStyle,
-          )}>
-          {item.map((it, kk) => (
-            <React.Fragment key={kk}>
-              <ListItemComponent
-                item={it}
-                index={index * numColumns + kk}
-                separators={info.separators}
-              />
-            </React.Fragment>
-          ))}
-        </View>
-      );
-    } else {
-      return <ListItemComponent {...info} />;
-    }
+    return {
+      [virtualizedListRenderKey]: (info: RenderItemProps<ItemT>) => {
+        if (numColumns > 1) {
+          const {item, index} = info;
+          invariant(
+            Array.isArray(item),
+            'Expected array of items with numColumns > 1',
+          );
+          return (
+            <View
+              style={StyleSheet.compose(
+                styles.row,
+                columnWrapperStyle,
+              )}>
+              {item.map((it, kk) => {
+                const element = renderer({
+                  item: it,
+                  index: index * numColumns + kk,
+                  separators: info.separators,
+                });
+                return element != null ? (
+                  <React.Fragment key={kk}>{element}</React.Fragment>
+                ) : null;
+              })}
+            </View>
+          );
+        } else {
+          return renderer(info);
+        }
+      },
+    };
   };
 
   render() {
@@ -699,10 +683,7 @@ class FlatList<ItemT> extends React.PureComponent<Props<ItemT>, void> {
         keyExtractor={this._keyExtractor}
         ref={this._captureRef}
         viewabilityConfigCallbackPairs={this._virtualizedListPairs}
-        renderItem={this.props.renderItem ? this._renderItem : undefined}
-        ListItemComponent={
-          this.props.ListItemComponent ? this._listItemComponent : undefined
-        }
+        {...this._renderer()}
       />
     );
   }
