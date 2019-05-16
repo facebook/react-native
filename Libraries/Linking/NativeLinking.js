@@ -27,7 +27,7 @@ export interface Spec extends TurboModule {
     extras: ?Array<{key: string, value: string | number | boolean}>,
   ) => Promise<void>;
 
-  // RCTEventEmitter
+  // Events
   +addListener: (eventName: string) => void;
   +removeListeners: (count: number) => void;
 }
