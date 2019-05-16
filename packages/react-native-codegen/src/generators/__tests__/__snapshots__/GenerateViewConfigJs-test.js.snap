@@ -17,6 +17,7 @@ Map {
 
 const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
+const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
 
 const ArrayPropsNativeComponentViewConfig = {
   uiViewClassName: 'ArrayPropsNativeComponent',
@@ -41,6 +42,8 @@ const ArrayPropsNativeComponentViewConfig = {
     points: true
   }
 };
+
+verifyComponentAttributeEquivalence('ArrayPropsNativeComponent', ArrayPropsNativeComponentViewConfig);
 
 ReactNativeViewConfigRegistry.register(
   'ArrayPropsNativeComponent',
@@ -69,6 +72,7 @@ Map {
 
 const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
+const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
 
 const BooleanPropNativeComponentViewConfig = {
   uiViewClassName: 'BooleanPropNativeComponent',
@@ -87,6 +91,8 @@ const BooleanPropNativeComponentViewConfig = {
     disabled: true
   }
 };
+
+verifyComponentAttributeEquivalence('BooleanPropNativeComponent', BooleanPropNativeComponentViewConfig);
 
 ReactNativeViewConfigRegistry.register(
   'BooleanPropNativeComponent',
@@ -115,6 +121,7 @@ Map {
 
 const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
+const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
 
 const ColorPropNativeComponentViewConfig = {
   uiViewClassName: 'ColorPropNativeComponent',
@@ -133,6 +140,8 @@ const ColorPropNativeComponentViewConfig = {
     tintColor: { process: require('processColor') }
   }
 };
+
+verifyComponentAttributeEquivalence('ColorPropNativeComponent', ColorPropNativeComponentViewConfig);
 
 ReactNativeViewConfigRegistry.register(
   'ColorPropNativeComponent',
@@ -161,6 +170,7 @@ Map {
 
 const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
+const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
 
 const EnumPropsNativeComponentViewConfig = {
   uiViewClassName: 'EnumPropsNativeComponent',
@@ -179,6 +189,8 @@ const EnumPropsNativeComponentViewConfig = {
     alignment: true
   }
 };
+
+verifyComponentAttributeEquivalence('EnumPropsNativeComponent', EnumPropsNativeComponentViewConfig);
 
 ReactNativeViewConfigRegistry.register(
   'EnumPropsNativeComponent',
@@ -207,6 +219,7 @@ Map {
 
 const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
+const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
 
 const EventsNestedObjectNativeComponentViewConfig = {
   uiViewClassName: 'EventsNestedObjectNativeComponent',
@@ -233,6 +246,8 @@ const EventsNestedObjectNativeComponentViewConfig = {
     onChange: true
   }
 };
+
+verifyComponentAttributeEquivalence('EventsNestedObjectNativeComponent', EventsNestedObjectNativeComponentViewConfig);
 
 ReactNativeViewConfigRegistry.register(
   'EventsNestedObjectNativeComponent',
@@ -261,6 +276,7 @@ Map {
 
 const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
+const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
 
 const EventsNativeComponentViewConfig = {
   uiViewClassName: 'EventsNativeComponent',
@@ -293,6 +309,8 @@ const EventsNativeComponentViewConfig = {
   }
 };
 
+verifyComponentAttributeEquivalence('EventsNativeComponent', EventsNativeComponentViewConfig);
+
 ReactNativeViewConfigRegistry.register(
   'EventsNativeComponent',
   () => EventsNativeComponentViewConfig,
@@ -320,6 +338,7 @@ Map {
 
 const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
+const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
 
 const FloatPropNativeComponentViewConfig = {
   uiViewClassName: 'FloatPropNativeComponent',
@@ -343,6 +362,8 @@ const FloatPropNativeComponentViewConfig = {
     blurRadius6: true
   }
 };
+
+verifyComponentAttributeEquivalence('FloatPropNativeComponent', FloatPropNativeComponentViewConfig);
 
 ReactNativeViewConfigRegistry.register(
   'FloatPropNativeComponent',
@@ -371,6 +392,7 @@ Map {
 
 const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
+const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
 
 const ImagePropNativeComponentViewConfig = {
   uiViewClassName: 'ImagePropNativeComponent',
@@ -389,6 +411,8 @@ const ImagePropNativeComponentViewConfig = {
     thumbImage: { process: require('resolveAssetSource') }
   }
 };
+
+verifyComponentAttributeEquivalence('ImagePropNativeComponent', ImagePropNativeComponentViewConfig);
 
 ReactNativeViewConfigRegistry.register(
   'ImagePropNativeComponent',
@@ -417,6 +441,7 @@ Map {
 
 const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
+const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
 
 const IntegerPropNativeComponentViewConfig = {
   uiViewClassName: 'IntegerPropNativeComponent',
@@ -437,6 +462,8 @@ const IntegerPropNativeComponentViewConfig = {
     progress3: true
   }
 };
+
+verifyComponentAttributeEquivalence('IntegerPropNativeComponent', IntegerPropNativeComponentViewConfig);
 
 ReactNativeViewConfigRegistry.register(
   'IntegerPropNativeComponent',
@@ -465,6 +492,7 @@ Map {
 
 const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
+const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
 
 const InterfaceOnlyComponentViewConfig = {
   uiViewClassName: 'InterfaceOnlyComponent',
@@ -491,6 +519,8 @@ const InterfaceOnlyComponentViewConfig = {
     onChange: true
   }
 };
+
+verifyComponentAttributeEquivalence('InterfaceOnlyComponent', InterfaceOnlyComponentViewConfig);
 
 ReactNativeViewConfigRegistry.register(
   'InterfaceOnlyComponent',
@@ -519,6 +549,7 @@ Map {
 
 const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
+const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
 
 const ImageColorPropNativeComponentViewConfig = {
   uiViewClassName: 'ImageColorPropNativeComponent',
@@ -540,6 +571,8 @@ const ImageColorPropNativeComponentViewConfig = {
     point: { diff: require('pointsDiffer') }
   }
 };
+
+verifyComponentAttributeEquivalence('ImageColorPropNativeComponent', ImageColorPropNativeComponentViewConfig);
 
 ReactNativeViewConfigRegistry.register(
   'ImageColorPropNativeComponent',
@@ -568,6 +601,7 @@ Map {
 
 const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
+const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
 
 const PointPropNativeComponentViewConfig = {
   uiViewClassName: 'PointPropNativeComponent',
@@ -586,6 +620,8 @@ const PointPropNativeComponentViewConfig = {
     startPoint: { diff: require('pointsDiffer') }
   }
 };
+
+verifyComponentAttributeEquivalence('PointPropNativeComponent', PointPropNativeComponentViewConfig);
 
 ReactNativeViewConfigRegistry.register(
   'PointPropNativeComponent',
@@ -614,6 +650,7 @@ Map {
 
 const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
+const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
 
 const StringPropComponentViewConfig = {
   uiViewClassName: 'StringPropComponent',
@@ -632,6 +669,8 @@ const StringPropComponentViewConfig = {
     accessibilityHint: true
   }
 };
+
+verifyComponentAttributeEquivalence('StringPropComponent', StringPropComponentViewConfig);
 
 ReactNativeViewConfigRegistry.register(
   'StringPropComponent',
@@ -660,6 +699,7 @@ Map {
 
 const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
+const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
 
 const MultiFile1NativeComponentViewConfig = {
   uiViewClassName: 'MultiFile1NativeComponent',
@@ -678,6 +718,8 @@ const MultiFile1NativeComponentViewConfig = {
     disabled: true
   }
 };
+
+verifyComponentAttributeEquivalence('MultiFile1NativeComponent', MultiFile1NativeComponentViewConfig);
 
 ReactNativeViewConfigRegistry.register(
   'MultiFile1NativeComponent',
@@ -703,6 +745,8 @@ const MultiFile2NativeComponentViewConfig = {
     disabled: true
   }
 };
+
+verifyComponentAttributeEquivalence('MultiFile2NativeComponent', MultiFile2NativeComponentViewConfig);
 
 ReactNativeViewConfigRegistry.register(
   'MultiFile2NativeComponent',
@@ -731,6 +775,7 @@ Map {
 
 const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');
 const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
+const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
 
 const MultiComponent1NativeComponentViewConfig = {
   uiViewClassName: 'MultiComponent1NativeComponent',
@@ -749,6 +794,8 @@ const MultiComponent1NativeComponentViewConfig = {
     disabled: true
   }
 };
+
+verifyComponentAttributeEquivalence('MultiComponent1NativeComponent', MultiComponent1NativeComponentViewConfig);
 
 ReactNativeViewConfigRegistry.register(
   'MultiComponent1NativeComponent',
@@ -774,6 +821,8 @@ const MultiComponent2NativeComponentViewConfig = {
     disabled: true
   }
 };
+
+verifyComponentAttributeEquivalence('MultiComponent2NativeComponent', MultiComponent2NativeComponentViewConfig);
 
 ReactNativeViewConfigRegistry.register(
   'MultiComponent2NativeComponent',

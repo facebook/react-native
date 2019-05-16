@@ -68,6 +68,8 @@ function getReactDiffProcessValue(prop) {
 const componentTemplate = `
 const ::_COMPONENT_NAME_::ViewConfig = VIEW_CONFIG;
 
+verifyComponentAttributeEquivalence('::_COMPONENT_NAME_::', ::_COMPONENT_NAME_::ViewConfig);
+
 ReactNativeViewConfigRegistry.register(
   '::_COMPONENT_NAME_::',
   () => ::_COMPONENT_NAME_::ViewConfig,
@@ -246,6 +248,9 @@ module.exports = {
 
     imports.add(
       "const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');",
+    );
+    imports.add(
+      "const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');",
     );
 
     const moduleResults = Object.keys(schema.modules)
