@@ -47,11 +47,7 @@ void ParagraphShadowNode::updateStateIfNeeded() {
     return;
   }
 
-  auto newStateData = ParagraphState();
-  newStateData.attributedString = attributedString;
-  newStateData.layoutManager = textLayoutManager_;
-  
-  setStateData(std::move(newStateData));
+  setStateData({attributedString, textLayoutManager_});
 }
 
 #pragma mark - LayoutableShadowNode

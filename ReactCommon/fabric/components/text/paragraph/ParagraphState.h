@@ -12,7 +12,7 @@
 
 namespace facebook {
 namespace react {
-  
+
 /*
  * State for <Paragraph> component.
  * Represents what to render and how to render.
@@ -34,7 +34,6 @@ class ParagraphState final {
 #ifdef ANDROID
   folly::dynamic getDynamic() const;
 #endif
-  
 };
 
 } // namespace react
