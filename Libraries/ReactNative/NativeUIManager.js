@@ -28,14 +28,13 @@ export interface Spec extends TurboModule {
   +getDefaultEventTypes: () => Array<string>;
   +playTouchSound: () => void;
   +lazilyLoadView: (name: string) => Object; // revisit return
-  getViewManagerConfig: (viewManagerName: string) => Object; // probably should move this out, it's overwritten
-  createView: (
+  +createView: (
     reactTag: number,
     viewName: string,
     rootTag: number,
     props: Object,
   ) => void;
-  updateView: (reactTag: number, viewName: string, props: Object) => void;
+  +updateView: (reactTag: number, viewName: string, props: Object) => void;
   +focus: (reactTag: ?number) => void;
   +blur: (reactTag: ?number) => void;
   +findSubviewIn: (
@@ -95,7 +94,7 @@ export interface Spec extends TurboModule {
   +removeSubviewsFromContainerWithID: (containerID: number) => void;
   +replaceExistingNonRootView: (reactTag: number, newReactTag: number) => void;
   +setChildren: (containerTag: number, reactTags: Array<number>) => void;
-  manageChildren: (
+  +manageChildren: (
     containerTag: number,
     moveFromIndices: Array<number>,
     moveToIndices: Array<number>,
