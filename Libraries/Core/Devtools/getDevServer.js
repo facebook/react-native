@@ -10,7 +10,7 @@
 
 'use strict';
 
-const {SourceCode} = require('../../BatchedBridge/NativeModules');
+import NativeSourceCode from '../../NativeModules/specs/NativeSourceCode';
 
 let _cachedDevServerURL: ?string;
 const FALLBACK = 'http://localhost:8081/';
@@ -27,9 +27,8 @@ type DevServerInfo = {
 function getDevServer(): DevServerInfo {
   if (_cachedDevServerURL === undefined) {
     const match =
-      SourceCode &&
-      SourceCode.scriptURL &&
-      SourceCode.scriptURL.match(/^https?:\/\/.*?\//);
+      NativeSourceCode &&
+      NativeSourceCode.getConstants().scriptURL.match(/^https?:\/\/.*?\//);
     _cachedDevServerURL = match ? match[0] : null;
   }
 
