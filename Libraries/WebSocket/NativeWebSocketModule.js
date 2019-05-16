@@ -30,7 +30,7 @@ export interface Spec extends TurboModule {
   +ping: (socketID: number) => void;
   +close: typeof close;
 
-  // RCTEventEmitter
+  // Events
   +addListener: (eventName: string) => void;
   +removeListeners: (count: number) => void;
 }
