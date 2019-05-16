@@ -19,5 +19,5 @@ You'll need a GitHub token. You can re-use this one: `78a72af35445ca3f8180` `b1a
 So, for example:
 
 ```
-GITHUB_TOKEN=[ENV_ABOVE] GITHUB_PR_NUMBER=1234 yarn analyze-pr
+GITHUB_TOKEN=[ENV_ABOVE] GITHUB_PR_NUMBER=1234 yarn lint-ci
 ```
