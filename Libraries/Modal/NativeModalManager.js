@@ -19,4 +19,4 @@ export interface Spec extends TurboModule {
   +removeListeners: (eventName: string, handler: Function) => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('ModalManager');
+export default TurboModuleRegistry.get<Spec>('ModalManager');
