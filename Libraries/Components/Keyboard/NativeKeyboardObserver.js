@@ -12,10 +12,13 @@
 
 import type {TurboModule} from 'RCTExport';
 import * as TurboModuleRegistry from 'TurboModuleRegistry';
+import {Platform} from 'react-native';
 
 export interface Spec extends TurboModule {
   +addListener: (eventName: string) => void;
   +removeListeners: (count: number) => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('KeyboardObserver');
+export default (Platform.OS === 'ios'
+  ? TurboModuleRegistry.getEnforcing<Spec>('KeyboardObserver')
+  : null);
