@@ -15,4 +15,14 @@ const generate = require('./generate-view-configs');
 
 const [fileList] = process.argv.slice(2);
 
-generate(fileList.split('\n'));
+const CURRENT_VIEW_CONFIG_SCHEMAS = ['SliderSchema.js'];
+
+generate(
+  fileList
+    .split('\n')
+    .filter(fileName =>
+      CURRENT_VIEW_CONFIG_SCHEMAS.find(supportedFileName =>
+        fileName.endsWith(supportedFileName),
+      ),
+    ),
+);
