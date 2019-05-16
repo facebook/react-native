@@ -22,7 +22,7 @@ export interface Spec extends TurboModule {
     failure: (error: Object) => void,
   ) => void;
 
-  // RCTEventEmitter
+  // Events
   +addListener: (eventName: string) => void;
   +removeListeners: (count: number) => void;
 }
