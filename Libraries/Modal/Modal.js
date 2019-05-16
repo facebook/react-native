@@ -12,8 +12,6 @@
 
 const AppContainer = require('../ReactNative/AppContainer');
 const I18nManager = require('../ReactNative/I18nManager');
-const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
-const NativeModules = require('../BatchedBridge/NativeModules');
 const Platform = require('../Utilities/Platform');
 const React = require('react');
 const PropTypes = require('prop-types');
@@ -23,9 +21,7 @@ const View = require('../Components/View/View');
 const RCTModalHostView = require('./RCTModalHostViewNativeComponent');
 
 const ModalEventEmitter =
-  Platform.OS === 'ios' && NativeModules.ModalManager
-    ? new NativeEventEmitter(NativeModules.ModalManager)
-    : null;
+  Platform.OS === 'ios' ? require('./NativeModalManager').default : null;
 
 import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
 import type {ViewProps} from '../Components/View/ViewPropTypes';
