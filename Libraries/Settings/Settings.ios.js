@@ -11,8 +11,7 @@
 'use strict';
 
 const RCTDeviceEventEmitter = require('../EventEmitter/RCTDeviceEventEmitter');
-const RCTSettingsManager = require('../BatchedBridge/NativeModules')
-  .SettingsManager;
+const RCTSettingsManager = require('./NativeSettingsManager').default;
 
 const invariant = require('invariant');
 
