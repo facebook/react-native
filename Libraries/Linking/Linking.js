@@ -12,15 +12,11 @@
 
 const InteractionManager = require('../Interaction/InteractionManager');
 const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
-const NativeModules = require('../BatchedBridge/NativeModules');
 const Platform = require('../Utilities/Platform');
 
 const invariant = require('invariant');
 
-const LinkingManager =
-  Platform.OS === 'android'
-    ? NativeModules.IntentAndroid
-    : NativeModules.LinkingManager;
+const LinkingManager = require('./NativeLinking').default;
 
 /**
  * `Linking` gives you a general interface to interact with both incoming
@@ -103,10 +99,12 @@ class Linking extends NativeEventEmitter {
    * See https://facebook.github.io/react-native/docs/linking.html#sendintent
    */
   sendIntent(
-    action: String,
-    extras?: [{key: string, value: string | number | boolean}],
+    action: string,
+    extras?: Array<{key: string, value: string | number | boolean}>,
   ) {
-    return LinkingManager.sendIntent(action, extras);
+    if (Platform.OS === 'android') {
+      return LinkingManager.sendIntent(action, extras);
+    }
   }
 
   _validateURL(url: string) {
