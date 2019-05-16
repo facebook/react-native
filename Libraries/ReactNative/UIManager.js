@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @flow strict-local
+ * @flow
  * @format
  */
 'use strict';
@@ -16,50 +16,73 @@ const UIManagerProperties = require('./UIManagerProperties');
 const defineLazyObjectProperty = require('../Utilities/defineLazyObjectProperty');
 
 import NativeUIManager from './NativeUIManager';
+import type {Spec} from './NativeUIManager';
 
 const viewManagerConfigs = {};
 
+interface UIManagerJS extends Spec {
+  getViewManagerConfig: (viewManagerName: string) => Object; // probably should move this out, it's overwritten
+  createView: (
+    reactTag: number,
+    viewName: string,
+    rootTag: number,
+    props: Object,
+  ) => void;
+  updateView: (reactTag: number, viewName: string, props: Object) => void;
+  manageChildren: (
+    containerTag: number,
+    moveFromIndices: Array<number>,
+    moveToIndices: Array<number>,
+    addChildReactTags: Array<number>,
+    addAtIndices: Array<number>,
+    removeAtIndices: Array<number>,
+  ) => void;
+}
+
 const triedLoadingConfig = new Set();
-NativeUIManager.getViewManagerConfig = function(viewManagerName: string) {
-  if (
-    viewManagerConfigs[viewManagerName] === undefined &&
-    NativeUIManager.getConstantsForViewManager
-  ) {
-    try {
-      viewManagerConfigs[
-        viewManagerName
-      ] = NativeUIManager.getConstantsForViewManager(viewManagerName);
-    } catch (e) {
-      viewManagerConfigs[viewManagerName] = null;
+const UIManager: UIManagerJS = {
+  ...NativeUIManager,
+  getViewManagerConfig: function(viewManagerName: string) {
+    if (
+      viewManagerConfigs[viewManagerName] === undefined &&
+      NativeUIManager.getConstantsForViewManager
+    ) {
+      try {
+        viewManagerConfigs[
+          viewManagerName
+        ] = NativeUIManager.getConstantsForViewManager(viewManagerName);
+      } catch (e) {
+        viewManagerConfigs[viewManagerName] = null;
+      }
     }
-  }
 
-  const config = viewManagerConfigs[viewManagerName];
-  if (config) {
-    return config;
-  }
-
-  // If we're in the Chrome Debugger, let's not even try calling the sync
-  // method.
-  if (__DEV__) {
-    if (!global.nativeCallSyncHook) {
+    const config = viewManagerConfigs[viewManagerName];
+    if (config) {
       return config;
     }
-  }
 
-  if (
-    NativeUIManager.lazilyLoadView &&
-    !triedLoadingConfig.has(viewManagerName)
-  ) {
-    const result = NativeUIManager.lazilyLoadView(viewManagerName);
-    triedLoadingConfig.add(viewManagerName);
-    if (result.viewConfig) {
-      NativeUIManager.getConstants()[viewManagerName] = result.viewConfig;
-      lazifyViewManagerConfig(viewManagerName);
+    // If we're in the Chrome Debugger, let's not even try calling the sync
+    // method.
+    if (__DEV__) {
+      if (!global.nativeCallSyncHook) {
+        return config;
+      }
     }
-  }
 
-  return viewManagerConfigs[viewManagerName];
+    if (
+      NativeUIManager.lazilyLoadView &&
+      !triedLoadingConfig.has(viewManagerName)
+    ) {
+      const result = NativeUIManager.lazilyLoadView(viewManagerName);
+      triedLoadingConfig.add(viewManagerName);
+      if (result.viewConfig) {
+        NativeUIManager.getConstants()[viewManagerName] = result.viewConfig;
+        lazifyViewManagerConfig(viewManagerName);
+      }
+    }
+
+    return viewManagerConfigs[viewManagerName];
+  },
 };
 
 function lazifyViewManagerConfig(viewName) {
@@ -151,11 +174,13 @@ if (__DEV__) {
             `Accessing view manager configs directly off UIManager via UIManager['${viewManagerName}'] ` +
               `is no longer supported. Use UIManager.getViewManagerConfig('${viewManagerName}') instead.`,
           );
-          return NativeUIManager.getViewManagerConfig(viewManagerName);
+          if (UIManager.getViewManagerConfig) {
+            return UIManager.getViewManagerConfig(viewManagerName);
+          }
         },
       });
     }
   });
 }
 
-module.exports = NativeUIManager;
+module.exports = UIManager;
