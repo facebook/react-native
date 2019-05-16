@@ -16,7 +16,7 @@ const Platform = require('../Utilities/Platform');
 
 const invariant = require('invariant');
 
-const LinkingManager = require('./NativeLinking').default;
+import NativeLinking from './NativeLinking';
 
 /**
  * `Linking` gives you a general interface to interact with both incoming
@@ -26,7 +26,7 @@ const LinkingManager = require('./NativeLinking').default;
  */
 class Linking extends NativeEventEmitter {
   constructor() {
-    super(LinkingManager);
+    super(NativeLinking);
   }
 
   /**
@@ -55,7 +55,7 @@ class Linking extends NativeEventEmitter {
    */
   openURL(url: string): Promise<any> {
     this._validateURL(url);
-    return LinkingManager.openURL(url);
+    return NativeLinking.openURL(url);
   }
 
   /**
@@ -65,7 +65,7 @@ class Linking extends NativeEventEmitter {
    */
   canOpenURL(url: string): Promise<boolean> {
     this._validateURL(url);
-    return LinkingManager.canOpenURL(url);
+    return NativeLinking.canOpenURL(url);
   }
 
   /**
@@ -74,7 +74,7 @@ class Linking extends NativeEventEmitter {
    * See https://facebook.github.io/react-native/docs/linking.html#opensettings
    */
   openSettings(): Promise<any> {
-    return LinkingManager.openSettings();
+    return NativeLinking.openSettings();
   }
 
   /**
@@ -86,9 +86,9 @@ class Linking extends NativeEventEmitter {
   getInitialURL(): Promise<?string> {
     return Platform.OS === 'android'
       ? InteractionManager.runAfterInteractions().then(() =>
-          LinkingManager.getInitialURL(),
+          NativeLinking.getInitialURL(),
         )
-      : LinkingManager.getInitialURL();
+      : NativeLinking.getInitialURL();
   }
 
   /*
@@ -103,7 +103,7 @@ class Linking extends NativeEventEmitter {
     extras?: Array<{key: string, value: string | number | boolean}>,
   ) {
     if (Platform.OS === 'android') {
-      return LinkingManager.sendIntent(action, extras);
+      return NativeLinking.sendIntent(action, extras);
     }
   }
 
