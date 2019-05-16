@@ -13,6 +13,8 @@
 const NativeModules = require('../BatchedBridge/NativeModules');
 import NativePermissionsAndroid from './NativePermissionsAndroid';
 
+import type {PermissionStatus} from './NativePermissionsAndroid'
+
 export type Rationale = {
   title: string,
   message: string,
@@ -21,7 +23,6 @@ export type Rationale = {
   buttonNeutral?: string,
 };
 
-type PermissionStatus = 'granted' | 'denied' | 'never_ask_again' | string;
 /**
  * `PermissionsAndroid` provides access to Android M's new permissions model.
  *

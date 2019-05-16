@@ -13,10 +13,12 @@
 import type {TurboModule} from 'RCTExport';
 import * as TurboModuleRegistry from 'TurboModuleRegistry';
 
+export type PermissionStatus = 'granted' | 'denied' | 'never_ask_again';
+
 export interface Spec extends TurboModule {
   +checkPermission: (permission: string) => Promise<boolean>;
 
-  +requestPermission: (permission: string) => Promise<string>;
+  +requestPermission: (permission: string) => Promise<PermissionStatus>;
 
   +shouldShowRequestPermissionRationale: (
     permission: string,
