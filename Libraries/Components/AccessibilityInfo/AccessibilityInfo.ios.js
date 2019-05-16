@@ -10,11 +10,9 @@
 
 'use strict';
 
-const NativeModules = require('../../BatchedBridge/NativeModules');
 const Promise = require('../../Promise');
 const RCTDeviceEventEmitter = require('../../EventEmitter/RCTDeviceEventEmitter');
-
-const AccessibilityManager = NativeModules.AccessibilityManager;
+const NativeAccessibilityManager = require('./NativeAccessibilityManager');
 
 const CHANGE_EVENT_NAME = {
   announcementFinished: 'announcementFinished',
@@ -59,7 +57,7 @@ const AccessibilityInfo = {
    */
   isBoldTextEnabled: function(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      AccessibilityManager.getCurrentBoldTextState(resolve, reject);
+      NativeAccessibilityManager.getCurrentBoldTextState(resolve, reject);
     });
   },
 
@@ -73,7 +71,7 @@ const AccessibilityInfo = {
    */
   isGrayscaleEnabled: function(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      AccessibilityManager.getCurrentGrayscaleState(resolve, reject);
+      NativeAccessibilityManager.getCurrentGrayscaleState(resolve, reject);
     });
   },
 
@@ -87,7 +85,7 @@ const AccessibilityInfo = {
    */
   isInvertColorsEnabled: function(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      AccessibilityManager.getCurrentInvertColorsState(resolve, reject);
+      NativeAccessibilityManager.getCurrentInvertColorsState(resolve, reject);
     });
   },
 
@@ -101,7 +99,7 @@ const AccessibilityInfo = {
    */
   isReduceMotionEnabled: function(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      AccessibilityManager.getCurrentReduceMotionState(resolve, reject);
+      NativeAccessibilityManager.getCurrentReduceMotionState(resolve, reject);
     });
   },
 
@@ -115,7 +113,10 @@ const AccessibilityInfo = {
    */
   isReduceTransparencyEnabled: function(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      AccessibilityManager.getCurrentReduceTransparencyState(resolve, reject);
+      NativeAccessibilityManager.getCurrentReduceTransparencyState(
+        resolve,
+        reject,
+      );
     });
   },
 
@@ -129,7 +130,7 @@ const AccessibilityInfo = {
    */
   isScreenReaderEnabled: function(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      AccessibilityManager.getCurrentVoiceOverState(resolve, reject);
+      NativeAccessibilityManager.getCurrentVoiceOverState(resolve, reject);
     });
   },
 
@@ -204,7 +205,7 @@ const AccessibilityInfo = {
    * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#setaccessibilityfocus
    */
   setAccessibilityFocus: function(reactTag: number): void {
-    AccessibilityManager.setAccessibilityFocus(reactTag);
+    NativeAccessibilityManager.setAccessibilityFocus(reactTag);
   },
 
   /**
@@ -213,7 +214,7 @@ const AccessibilityInfo = {
    * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#announceforaccessibility
    */
   announceForAccessibility: function(announcement: string): void {
-    AccessibilityManager.announceForAccessibility(announcement);
+    NativeAccessibilityManager.announceForAccessibility(announcement);
   },
 
   /**
