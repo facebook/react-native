@@ -105,6 +105,7 @@ export interface Spec extends TurboModule {
 
   // android only
   +setLayoutAnimationEnabledExperimental: (enabled: boolean) => void;
+  +sendAccessibilityEvent: (tag: number, eventType: number) => void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('UIManager');
