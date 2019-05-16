@@ -15,7 +15,7 @@ import * as TurboModuleRegistry from 'TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
   +getConstants: () => {|
-    Dimensions: {
+    Dimensions: {|
       width: number,
       height: number,
       scale: number,
@@ -23,7 +23,7 @@ export interface Spec extends TurboModule {
 
       // Android specific
       densityDpi?: number,
-    },
+    |},
 
     // iOS specific
     isIPhoneX_deprecated?: boolean,
