@@ -51,7 +51,7 @@ function getAndroidNDK {
 function createAVD {
   AVD_PACKAGES="system-images;android-$ANDROID_SDK_TARGET_API_LEVEL;default;$AVD_ABI"
   echo "Creating AVD with packages $AVD_PACKAGES"
-  echo no | avdmanager create avd --name "$AVD_NAME" --force --package "$AVD_PACKAGES" --tag google_apis --abi "$AVD_ABI"
+  echo no | avdmanager create avd --name "$AVD_NAME" --force --package "$AVD_PACKAGES" --tag default --abi "$AVD_ABI"
 }
 
 function launchAVD {
