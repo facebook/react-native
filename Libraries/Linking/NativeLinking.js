@@ -32,5 +32,6 @@ export interface Spec extends TurboModule {
   +removeListeners: (count: number) => void;
 }
 
-const moduleName = Platform.OS === 'ios' ? 'LinkingManager' : 'IntentAndroid';
-export default TurboModuleRegistry.getEnforcing<Spec>(moduleName);
+export default (Platform.OS === 'ios'
+  ? TurboModuleRegistry.getEnforcing<Spec>('LinkingManager')
+  : TurboModuleRegistry.getEnforcing<Spec>('IntentAndroid'));
