@@ -13,24 +13,6 @@
 namespace facebook {
 namespace react {
 
-AttributedString ParagraphState::getAttributedString() const {
-  return attributedString_;
-}
-
-void ParagraphState::setAttributedString(const AttributedString &attributedString) const {
-  assert(!attributedStringIsInitialized_);
-  attributedString_ = attributedString;
-  attributedStringIsInitialized_ = true;
-}
-
-SharedTextLayoutManager ParagraphState::getTextLayoutManager() const {
-  return textLayoutManager_;
-}
-
-void ParagraphState::setTextLayoutManager(const SharedTextLayoutManager &textLayoutManager) const {
-  textLayoutManager_ = textLayoutManager;
-}
-
 #ifdef ANDROID
 
 folly::dynamic ParagraphState::getDynamic() const {

@@ -82,13 +82,13 @@ using namespace facebook::react;
     return;
   }
 
-  SharedTextLayoutManager textLayoutManager = _state->getData().getTextLayoutManager();
+  SharedTextLayoutManager textLayoutManager = _state->getData().layoutManager;
   RCTTextLayoutManager *nativeTextLayoutManager =
       (__bridge RCTTextLayoutManager *)textLayoutManager->getNativeTextLayoutManager();
 
   CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
 
-  [nativeTextLayoutManager drawAttributedString:_state->getData().getAttributedString()
+  [nativeTextLayoutManager drawAttributedString:_state->getData().attributedString
                             paragraphAttributes:_paragraphAttributes
                                           frame:frame];
 }
@@ -106,7 +106,7 @@ using namespace facebook::react;
     return nil;
   }
 
-  return RCTNSStringFromString(_state->getData().getAttributedString().getString());
+  return RCTNSStringFromString(_state->getData().attributedString.getString());
 }
 
 - (SharedTouchEventEmitter)touchEventEmitterAtPoint:(CGPoint)point
@@ -115,13 +115,13 @@ using namespace facebook::react;
     return _eventEmitter;
   }
 
-  SharedTextLayoutManager textLayoutManager = _state->getData().getTextLayoutManager();
+  SharedTextLayoutManager textLayoutManager = _state->getData().layoutManager;
   RCTTextLayoutManager *nativeTextLayoutManager =
       (__bridge RCTTextLayoutManager *)textLayoutManager->getNativeTextLayoutManager();
   CGRect frame = RCTCGRectFromRect(_layoutMetrics.getContentFrame());
 
   SharedEventEmitter eventEmitter =
-      [nativeTextLayoutManager getEventEmitterWithAttributeString:_state->getData().getAttributedString()
+      [nativeTextLayoutManager getEventEmitterWithAttributeString:_state->getData().attributedString
                                               paragraphAttributes:_paragraphAttributes
                                                             frame:frame
                                                           atPoint:point];

@@ -22,25 +22,19 @@ class ParagraphState final {
   /*
    * All content of <Paragraph> component represented as an `AttributedString`.
    */
-  AttributedString getAttributedString() const;
-  void setAttributedString(AttributedString const &attributedString) const;
+  AttributedString attributedString;
 
   /*
    * `TextLayoutManager` provides a connection to platform-specific
    * text rendering infrastructure which is capable to render the
    * `AttributedString`.
    */
-  SharedTextLayoutManager getTextLayoutManager() const;
-  void setTextLayoutManager(SharedTextLayoutManager const &textLayoutManager) const;
+  SharedTextLayoutManager layoutManager;
 
 #ifdef ANDROID
   folly::dynamic getDynamic() const;
 #endif
-
- private:
-  mutable AttributedString attributedString_;
-  mutable SharedTextLayoutManager textLayoutManager_;
-  mutable bool attributedStringIsInitialized_;
+  
 };
 
 } // namespace react

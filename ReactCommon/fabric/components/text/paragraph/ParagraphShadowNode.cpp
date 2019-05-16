@@ -42,14 +42,16 @@ void ParagraphShadowNode::updateStateIfNeeded() {
   ensureUnsealed();
 
   auto attributedString = getAttributedString();
-  auto state = getStateData();
-  if (state.getAttributedString() == attributedString) {
+  auto const &state = getStateData();
+  if (state.attributedString == attributedString) {
     return;
   }
 
-  state.setAttributedString(std::move(attributedString));
-  state.setTextLayoutManager(textLayoutManager_);
-  setStateData(std::move(state));
+  auto newStateData = ParagraphState();
+  newStateData.attributedString = attributedString;
+  newStateData.layoutManager = textLayoutManager_;
+  
+  setStateData(std::move(newStateData));
 }
 
 #pragma mark - LayoutableShadowNode
