@@ -12,9 +12,12 @@
 
 import type {TurboModule} from 'RCTExport';
 import * as TurboModuleRegistry from 'TurboModuleRegistry';
+import {Platform} from 'react-native';
 
 export interface Spec extends TurboModule {
   +operationComplete: (token: number, result: ?string, error: ?string) => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('JSCSamplingProfiler');
+export default (Platform.OS === 'android'
+  ? TurboModuleRegistry.getEnforcing<Spec>('JSCSamplingProfiler')
+  : null);

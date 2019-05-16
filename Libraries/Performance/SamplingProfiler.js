@@ -30,7 +30,9 @@ const SamplingProfiler = {
       error = e.toString();
     }
 
-    NativeJSCSamplingProfiler.operationComplete(token, result, error);
+    if (NativeJSCSamplingProfiler) {
+      NativeJSCSamplingProfiler.operationComplete(token, result, error);
+    }
   },
 };
 
