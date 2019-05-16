@@ -17,7 +17,7 @@ function getAndroidPackages {
   # Package names can be obtained using `sdkmanager --list`
   if [ ! -e "$DEPS" ] || [ ! "$CI" ]; then
     echo "Installing Android API level $ANDROID_SDK_TARGET_API_LEVEL, Google APIs, $AVD_ABI system image..."
-    sdkmanager "system-images;android-$ANDROID_SDK_TARGET_API_LEVEL;google_apis;$AVD_ABI"
+    sdkmanager "system-images;android-$ANDROID_SDK_TARGET_API_LEVEL;default;$AVD_ABI"
     echo "Installing build SDK for Android API level $ANDROID_SDK_BUILD_API_LEVEL..."
     sdkmanager "platforms;android-$ANDROID_SDK_BUILD_API_LEVEL"
     echo "Installing target SDK for Android API level $ANDROID_SDK_TARGET_API_LEVEL..."
@@ -49,7 +49,7 @@ function getAndroidNDK {
 }
 
 function createAVD {
-  AVD_PACKAGES="system-images;android-$ANDROID_SDK_TARGET_API_LEVEL;google_apis;$AVD_ABI"
+  AVD_PACKAGES="system-images;android-$ANDROID_SDK_TARGET_API_LEVEL;default;$AVD_ABI"
   echo "Creating AVD with packages $AVD_PACKAGES"
   echo no | avdmanager create avd --name "$AVD_NAME" --force --package "$AVD_PACKAGES" --tag google_apis --abi "$AVD_ABI"
 }
