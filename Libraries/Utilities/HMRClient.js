@@ -76,11 +76,11 @@ Error: ${e.message}`;
         const RCTRedBox = require('../BatchedBridge/NativeModules').RedBox;
         RCTRedBox && RCTRedBox.dismiss && RCTRedBox.dismiss();
       } else {
-        const RCTExceptionsManager = require('../BatchedBridge/NativeModules')
-          .ExceptionsManager;
-        RCTExceptionsManager &&
-          RCTExceptionsManager.dismissRedbox &&
-          RCTExceptionsManager.dismissRedbox();
+        const NativeExceptionsManager = require('../Core/NativeExceptionsManager')
+          .default;
+        NativeExceptionsManager &&
+          NativeExceptionsManager.dismissRedbox &&
+          NativeExceptionsManager.dismissRedbox();
       }
     });
 

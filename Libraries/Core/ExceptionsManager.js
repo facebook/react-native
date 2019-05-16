@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  *
  * @format
- * @flow
+ * @flow strict-local
  */
 
 'use strict';
@@ -24,21 +24,25 @@ const INTERNAL_CALLSITES_REGEX = new RegExp(
  */
 let exceptionID = 0;
 function reportException(e: ExtendedError, isFatal: boolean) {
-  const {ExceptionsManager} = require('../BatchedBridge/NativeModules');
-  if (ExceptionsManager) {
+  const NativeExceptionsManager = require('./NativeExceptionsManager').default;
+  if (NativeExceptionsManager) {
     const parseErrorStack = require('./Devtools/parseErrorStack');
     const stack = parseErrorStack(e);
     const currentExceptionID = ++exceptionID;
     const message =
       e.jsEngine == null ? e.message : `${e.message}, js engine: ${e.jsEngine}`;
     if (isFatal) {
-      ExceptionsManager.reportFatalException(
+      NativeExceptionsManager.reportFatalException(
         message,
         stack,
         currentExceptionID,
       );
     } else {
-      ExceptionsManager.reportSoftException(message, stack, currentExceptionID);
+      NativeExceptionsManager.reportSoftException(
+        message,
+        stack,
+        currentExceptionID,
+      );
     }
     if (__DEV__) {
       const symbolicateStackTrace = require('./Devtools/symbolicateStackTrace');
@@ -50,7 +54,7 @@ function reportException(e: ExtendedError, isFatal: boolean) {
                 frame.file &&
                 frame.file.match(INTERNAL_CALLSITES_REGEX) === null,
             );
-            ExceptionsManager.updateExceptionMessage(
+            NativeExceptionsManager.updateExceptionMessage(
               message,
               stackWithoutInternalCallsites,
               currentExceptionID,
@@ -67,7 +71,7 @@ function reportException(e: ExtendedError, isFatal: boolean) {
 }
 
 declare var console: typeof console & {
-  _errorOriginal: Function,
+  _errorOriginal: typeof console.error,
   reportErrorsAsExceptions: boolean,
 };
 
@@ -80,6 +84,7 @@ function handleException(e: Error, isFatal: boolean) {
   // case, so if you ended up here trying to trace an error, look for
   // `throw '<error message>'` somewhere in your codebase.
   if (!e.message) {
+    // $FlowFixMe - cannot reassign constant, explanation above
     e = new Error(e);
   }
   if (console._errorOriginal) {
