@@ -20,7 +20,7 @@ import type {Spec} from './NativeUIManager';
 
 const viewManagerConfigs = {};
 
-interface UIManagerJS extends Spec {
+interface UIManagerJSInterface extends Spec {
   getViewManagerConfig: (viewManagerName: string) => Object; // probably should move this out, it's overwritten
   createView: (
     reactTag: number,
@@ -40,7 +40,7 @@ interface UIManagerJS extends Spec {
 }
 
 const triedLoadingConfig = new Set();
-const UIManager: UIManagerJS = {
+const UIManagerJS: UIManagerJSInterface = {
   ...NativeUIManager,
   getViewManagerConfig: function(viewManagerName: string) {
     if (
@@ -175,11 +175,11 @@ if (__DEV__) {
               `is no longer supported. Use UIManager.getViewManagerConfig('${viewManagerName}') instead.`,
           );
 
-          return UIManager.getViewManagerConfig(viewManagerName);
+          return UIManagerJS.getViewManagerConfig(viewManagerName);
         },
       });
     }
   });
 }
 
-module.exports = UIManager;
+module.exports = UIManagerJS;
