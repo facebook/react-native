@@ -12,7 +12,7 @@
 
 const Promise = require('../../Promise');
 const RCTDeviceEventEmitter = require('../../EventEmitter/RCTDeviceEventEmitter');
-const NativeAccessibilityManager = require('./NativeAccessibilityManager');
+const NativeAccessibilityManager = require('./NativeAccessibilityManager').default;
 
 const CHANGE_EVENT_NAME = {
   announcementFinished: 'announcementFinished',
