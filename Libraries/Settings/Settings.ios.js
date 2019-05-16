@@ -18,7 +18,8 @@ const invariant = require('invariant');
 const subscriptions: Array<{keys: Array<string>, callback: ?Function}> = [];
 
 const Settings = {
-  _settings: NativeSettingsManager && NativeSettingsManager.settings,
+  _settings:
+    NativeSettingsManager && NativeSettingsManager.getConstants().settings,
 
   get(key: string): mixed {
     return this._settings[key];
