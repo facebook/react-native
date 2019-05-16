@@ -44,6 +44,13 @@ RCT_EXPORT_MODULE()
 
 #endif
 
+// Backward compatible invalidation
+- (void)invalidate
+{
+  // Actually do nothing here.
+  NSLog(@"Invalidating RCTSampleTurboModule...");
+}
+
 - (NSDictionary *)getConstants
 {
   UIScreen *mainScreen = UIScreen.mainScreen;

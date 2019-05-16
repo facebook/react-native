@@ -49,7 +49,7 @@ RCT_EXTERN NSString *const RCTJavaScriptDidFailToLoadNotification;
 RCT_EXTERN NSString *const RCTDidInitializeModuleNotification;
 
 /**
- * This notification fires each time a native module is setup after it is initialized. The
+ * This notification fires each time a module is setup after it is initialized. The
  * `RCTDidSetupModuleNotificationModuleNameKey` key will contain a reference to the module name and
  * `RCTDidSetupModuleNotificationSetupTimeKey` will contain the setup time in ms.
  */
@@ -84,6 +84,12 @@ RCT_EXTERN NSString *const RCTBridgeWillDownloadScriptNotification;
  * from the packager.
  */
 RCT_EXTERN NSString *const RCTBridgeDidDownloadScriptNotification;
+
+/**
+ * This notification fires right after the bridge finishes invalidating NativeModule
+ * instances during teardown. Handle this notification to perform additional invalidation.
+ */
+RCT_EXTERN NSString *const RCTBridgeDidInvalidateModulesNotification;
 
 /**
  * Key for the RCTSource object in the RCTBridgeDidDownloadScriptNotification

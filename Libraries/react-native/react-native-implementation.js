@@ -129,12 +129,6 @@ module.exports = {
     return require('RefreshControl');
   },
   get StatusBar() {
-    warnOnce(
-      'statusbar-moved',
-      'StatusBar has been extracted from react-native core and will be removed in a future release. ' +
-        "It can now be installed and imported from '@react-native-community/status-bar' instead of 'react-native'. " +
-        'https://github.com/react-native-community/react-native-statusbar',
-    );
     return require('StatusBar');
   },
   get Text() {

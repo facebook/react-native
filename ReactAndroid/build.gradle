@@ -6,7 +6,7 @@
 plugins {
     id("com.android.library")
     id("maven")
-    id("de.undercouch.download") version "3.4.3"
+    id("de.undercouch.download")
 }
 
 import de.undercouch.gradle.tasks.download.Download

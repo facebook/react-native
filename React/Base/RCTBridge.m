@@ -33,6 +33,7 @@ NSString *const RCTDidSetupModuleNotificationSetupTimeKey = @"setupTime";
 NSString *const RCTBridgeWillReloadNotification = @"RCTBridgeWillReloadNotification";
 NSString *const RCTBridgeWillDownloadScriptNotification = @"RCTBridgeWillDownloadScriptNotification";
 NSString *const RCTBridgeDidDownloadScriptNotification = @"RCTBridgeDidDownloadScriptNotification";
+NSString *const RCTBridgeDidInvalidateModulesNotification = @"RCTBridgeDidInvalidateModulesNotification";
 NSString *const RCTBridgeDidDownloadScriptNotificationSourceKey = @"source";
 NSString *const RCTBridgeDidDownloadScriptNotificationBridgeDescriptionKey = @"bridgeDescription";
 
