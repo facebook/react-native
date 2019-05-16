@@ -259,7 +259,11 @@ const mockNativeModules = {
     removeListeners: jest.fn(),
   },
   SourceCode: {
-    scriptURL: null,
+    getConstants() {
+      return {
+        scriptURL: null,
+      };
+    },
   },
   StatusBarManager: {
     HEIGHT: 42,
