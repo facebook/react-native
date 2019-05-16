@@ -8,9 +8,7 @@
  * @format
  */
 'use strict';
-
-const RCTImageEditingManager = require('../BatchedBridge/NativeModules')
-  .ImageEditingManager;
+import NativeImageEditor from './NativeImageEditor';
 
 type ImageCropData = {
   /**
@@ -66,7 +64,7 @@ class ImageEditor {
     success: (uri: string) => void,
     failure: (error: Object) => void,
   ) {
-    RCTImageEditingManager.cropImage(uri, cropData, success, failure);
+    NativeImageEditor.cropImage(uri, cropData, success, failure);
   }
 }
 
