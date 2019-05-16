@@ -10,11 +10,10 @@
 
 'use strict';
 
-const NativeModules = require('../../BatchedBridge/NativeModules');
 const RCTDeviceEventEmitter = require('../../EventEmitter/RCTDeviceEventEmitter');
 const UIManager = require('../../ReactNative/UIManager');
 
-const RCTAccessibilityInfo = NativeModules.AccessibilityInfo;
+const NativeAccessibilityInfo = require('./NativeAccessibilityInfo').default;
 
 const REDUCE_MOTION_EVENT = 'reduceMotionDidChange';
 const TOUCH_EXPLORATION_EVENT = 'touchExplorationDidChange';
@@ -61,7 +60,7 @@ const AccessibilityInfo = {
 
   isReduceMotionEnabled: function(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      RCTAccessibilityInfo.isReduceMotionEnabled(resolve);
+      NativeAccessibilityInfo.isReduceMotionEnabled(resolve);
     });
   },
 
@@ -74,7 +73,7 @@ const AccessibilityInfo = {
 
   isScreenReaderEnabled: function(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      RCTAccessibilityInfo.isTouchExplorationEnabled(resolve);
+      NativeAccessibilityInfo.isTouchExplorationEnabled(resolve);
     });
   },
 
@@ -142,7 +141,7 @@ const AccessibilityInfo = {
    * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#announceforaccessibility
    */
   announceForAccessibility: function(announcement: string): void {
-    RCTAccessibilityInfo.announceForAccessibility(announcement);
+    NativeAccessibilityInfo.announceForAccessibility(announcement);
   },
 };
 
