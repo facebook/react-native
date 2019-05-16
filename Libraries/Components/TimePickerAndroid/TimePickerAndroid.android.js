@@ -10,8 +10,7 @@
 
 'use strict';
 
-const TimePickerModule = require('../../BatchedBridge/NativeModules')
-  .TimePickerAndroid;
+import NativeTimePickerAndroid from './NativeTimePickerAndroid';
 
 import type {
   TimePickerOptions,
@@ -59,7 +58,7 @@ class TimePickerAndroid {
    * being undefined. **Always** check whether the `action` before reading the values.
    */
   static async open(options: TimePickerOptions): Promise<TimePickerResult> {
-    return TimePickerModule.open(options);
+    return NativeTimePickerAndroid.open(options);
   }
 
   /**
