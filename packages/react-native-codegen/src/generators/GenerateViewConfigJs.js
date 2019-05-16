@@ -198,7 +198,7 @@ function buildViewConfig(
 
 module.exports = {
   generate(libraryName: string, schema: SchemaType): FilesOutput {
-    const fileName = 'ViewConfigs.js';
+    const fileName = `${libraryName}NativeViewConfig.js`;
     const imports: Set<string> = new Set();
 
     imports.add(

@@ -2,7 +2,7 @@
 
 exports[`GenerateViewConfigJs can generate fixture ARRAY_PROPS 1`] = `
 Map {
-  "ViewConfigs.js" => "
+  "ARRAY_PROPSNativeViewConfig.js" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -43,7 +43,7 @@ ReactNativeViewConfigRegistry.register(
 
 exports[`GenerateViewConfigJs can generate fixture BOOLEAN_PROP 1`] = `
 Map {
-  "ViewConfigs.js" => "
+  "BOOLEAN_PROPNativeViewConfig.js" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -78,7 +78,7 @@ ReactNativeViewConfigRegistry.register(
 
 exports[`GenerateViewConfigJs can generate fixture COLOR_PROP 1`] = `
 Map {
-  "ViewConfigs.js" => "
+  "COLOR_PROPNativeViewConfig.js" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -113,7 +113,7 @@ ReactNativeViewConfigRegistry.register(
 
 exports[`GenerateViewConfigJs can generate fixture ENUM_PROP 1`] = `
 Map {
-  "ViewConfigs.js" => "
+  "ENUM_PROPNativeViewConfig.js" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -148,7 +148,7 @@ ReactNativeViewConfigRegistry.register(
 
 exports[`GenerateViewConfigJs can generate fixture EVENT_NESTED_OBJECT_PROPS 1`] = `
 Map {
-  "ViewConfigs.js" => "
+  "EVENT_NESTED_OBJECT_PROPSNativeViewConfig.js" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -192,7 +192,7 @@ ReactNativeViewConfigRegistry.register(
 
 exports[`GenerateViewConfigJs can generate fixture EVENT_PROPS 1`] = `
 Map {
-  "ViewConfigs.js" => "
+  "EVENT_PROPSNativeViewConfig.js" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -242,7 +242,7 @@ ReactNativeViewConfigRegistry.register(
 
 exports[`GenerateViewConfigJs can generate fixture FLOAT_PROPS 1`] = `
 Map {
-  "ViewConfigs.js" => "
+  "FLOAT_PROPSNativeViewConfig.js" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -282,7 +282,7 @@ ReactNativeViewConfigRegistry.register(
 
 exports[`GenerateViewConfigJs can generate fixture IMAGE_PROP 1`] = `
 Map {
-  "ViewConfigs.js" => "
+  "IMAGE_PROPNativeViewConfig.js" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -317,7 +317,7 @@ ReactNativeViewConfigRegistry.register(
 
 exports[`GenerateViewConfigJs can generate fixture INTEGER_PROPS 1`] = `
 Map {
-  "ViewConfigs.js" => "
+  "INTEGER_PROPSNativeViewConfig.js" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -354,7 +354,7 @@ ReactNativeViewConfigRegistry.register(
 
 exports[`GenerateViewConfigJs can generate fixture INTERFACE_ONLY 1`] = `
 Map {
-  "ViewConfigs.js" => "
+  "INTERFACE_ONLYNativeViewConfig.js" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -398,7 +398,7 @@ ReactNativeViewConfigRegistry.register(
 
 exports[`GenerateViewConfigJs can generate fixture MULTI_NATIVE_PROP 1`] = `
 Map {
-  "ViewConfigs.js" => "
+  "MULTI_NATIVE_PROPNativeViewConfig.js" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -436,7 +436,7 @@ ReactNativeViewConfigRegistry.register(
 
 exports[`GenerateViewConfigJs can generate fixture POINT_PROP 1`] = `
 Map {
-  "ViewConfigs.js" => "
+  "POINT_PROPNativeViewConfig.js" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -471,7 +471,7 @@ ReactNativeViewConfigRegistry.register(
 
 exports[`GenerateViewConfigJs can generate fixture STRING_PROP 1`] = `
 Map {
-  "ViewConfigs.js" => "
+  "STRING_PROPNativeViewConfig.js" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -506,7 +506,7 @@ ReactNativeViewConfigRegistry.register(
 
 exports[`GenerateViewConfigJs can generate fixture TWO_COMPONENTS_DIFFERENT_FILES 1`] = `
 Map {
-  "ViewConfigs.js" => "
+  "TWO_COMPONENTS_DIFFERENT_FILESNativeViewConfig.js" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
@@ -555,7 +555,7 @@ ReactNativeViewConfigRegistry.register(
 
 exports[`GenerateViewConfigJs can generate fixture TWO_COMPONENTS_SAME_FILE 1`] = `
 Map {
-  "ViewConfigs.js" => "
+  "TWO_COMPONENTS_SAME_FILENativeViewConfig.js" => "
 /**
  * Copyright (c) Facebook, Inc. and its affiliates.
  *
