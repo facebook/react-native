@@ -129,7 +129,7 @@ let dims: ?{[key: string]: any} =
 let nativeExtensionsEnabled = true;
 if (!dims) {
   const DeviceInfo = require('./DeviceInfo');
-  dims = DeviceInfo.Dimensions;
+  dims = DeviceInfo.getConstants().Dimensions;
   nativeExtensionsEnabled = false;
 }
 
