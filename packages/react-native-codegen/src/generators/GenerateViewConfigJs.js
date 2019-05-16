@@ -71,7 +71,7 @@ const ::_COMPONENT_NAME_::ViewConfig = VIEW_CONFIG;
 verifyComponentAttributeEquivalence('::_COMPONENT_NAME_::', ::_COMPONENT_NAME_::ViewConfig);
 
 ReactNativeViewConfigRegistry.register(
-  '::_COMPONENT_NAME_::',
+  '::_COMPONENT_NAME_WITH_COMPAT_SUPPORT_::',::_COMPAT_COMMENT_::
   () => ::_COMPONENT_NAME_::ViewConfig,
 );
 
@@ -265,10 +265,22 @@ module.exports = {
           .map(componentName => {
             const component = components[componentName];
 
-            const replacedTemplate = componentTemplate.replace(
-              /::_COMPONENT_NAME_::/g,
-              componentName,
-            );
+            const compatabilityComponentName = `${
+              component.isDeprecatedPaperComponentNameRCT ? 'RCT' : ''
+            }${componentName}`;
+
+            const replacedTemplate = componentTemplate
+              .replace(/::_COMPONENT_NAME_::/g, componentName)
+              .replace(
+                /::_COMPONENT_NAME_WITH_COMPAT_SUPPORT_::/g,
+                compatabilityComponentName,
+              )
+              .replace(
+                /::_COMPAT_COMMENT_::/g,
+                component.isDeprecatedPaperComponentNameRCT
+                  ? ' // RCT prefix present for paper support'
+                  : '',
+              );
 
             const replacedSource: string = j
               .withParser('flow')(replacedTemplate)

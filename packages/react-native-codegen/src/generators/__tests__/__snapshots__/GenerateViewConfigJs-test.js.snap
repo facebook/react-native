@@ -523,7 +523,7 @@ const InterfaceOnlyComponentViewConfig = {
 verifyComponentAttributeEquivalence('InterfaceOnlyComponent', InterfaceOnlyComponentViewConfig);
 
 ReactNativeViewConfigRegistry.register(
-  'InterfaceOnlyComponent',
+  'RCTInterfaceOnlyComponent', // RCT prefix present for paper support
   () => InterfaceOnlyComponentViewConfig,
 );
 
