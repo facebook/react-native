@@ -10,6 +10,8 @@
 
 'use strict';
 
+import NativeJSCSamplingProfiler from './NativeJSCSamplingProfiler';
+
 const SamplingProfiler = {
   poke: function(token: number): void {
     let error = null;
@@ -28,8 +30,7 @@ const SamplingProfiler = {
       error = e.toString();
     }
 
-    const {JSCSamplingProfiler} = require('../BatchedBridge/NativeModules');
-    JSCSamplingProfiler.operationComplete(token, result, error);
+    NativeJSCSamplingProfiler.operationComplete(token, result, error);
   },
 };
 
