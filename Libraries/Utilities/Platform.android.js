@@ -10,7 +10,8 @@
 
 'use strict';
 
-import NativePlatformConstants from '../Utilities/NativePlatformConstants';
+import NativePlatformConstants from './NativePlatformConstants';
+
 export type PlatformSelectSpec<A, D> = {
   android?: A,
   default?: D,
@@ -19,8 +20,7 @@ export type PlatformSelectSpec<A, D> = {
 const Platform = {
   OS: 'android',
   get Version() {
-    const {Version} = NativePlatformConstants.getConstants();
-    return Version || 0;
+    return NativePlatformConstants.getConstants().Version || 0;
   },
   get isTesting(): boolean {
     if (__DEV__) {

@@ -32,10 +32,16 @@ export interface Spec extends TurboModule {
     Model?: string,
     ServerHost?: string,
     uiMode?: 'tv' | 'car' | 'desk' | 'watch' | 'normal' | 'unknown',
+
+    // iOS only
+    forceTouchAvailable?: boolean,
+    osVersion?: number,
+    systemName?: string,
+    interfaceIdiom?: 'phone' | 'pad' | 'tv' | 'carplay' | 'unknown',
   |};
 
   // Android only
   +getAndroidID?: () => string;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('PlatformConstants');
+export default TurboModuleRegistry.getEnforcing<Spec>('Platform');

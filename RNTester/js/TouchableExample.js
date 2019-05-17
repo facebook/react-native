@@ -19,6 +19,7 @@ const {
   TouchableHighlight,
   TouchableOpacity,
   NativeModules,
+  NativePlatformConstants,
   Platform,
   TouchableNativeFeedback,
   TouchableWithoutFeedback,
@@ -26,9 +27,7 @@ const {
 } = require('react-native');
 
 const forceTouchAvailable =
-  (NativeModules.PlatformConstants &&
-    NativeModules.PlatformConstants.forceTouchAvailable) ||
-  false;
+  NativePlatformConstants.getConstants().forceTouchAvailable || false;
 
 class TouchableHighlightBox extends React.Component<{}, $FlowFixMeState> {
   state = {
