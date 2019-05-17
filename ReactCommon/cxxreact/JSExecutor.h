@@ -10,6 +10,8 @@
 
 #include <cxxreact/NativeModule.h>
 #include <folly/dynamic.h>
+#include <folly/Optional.h>
+#include "JSModulesUnbundle.h"
 
 #ifndef RN_EXPORT
 #define RN_EXPORT __attribute__((visibility("default")))
@@ -52,20 +54,18 @@ public:
 class RN_EXPORT JSExecutor {
 public:
   /**
+   * Setup JS environemnt with global variables for JS-Native communication.
+   * Should be called only once per JSContext.
+   * Sets: nativeRequire (if bundle is RAM), bundleRegistryLoad
+   */
+  virtual void setupEnvironment(std::function<void(std::string, bool)> loadBundle,
+                                folly::Optional<std::function<JSModulesUnbundle::Module(uint32_t)>> getModule) = 0;
+
+  /**
    * Execute an application script bundle in the JS context.
    */
-  virtual void loadApplicationScript(std::unique_ptr<const JSBigString> script,
-                                     std::string sourceURL) = 0;
-
-  /**
-   * Add an application "RAM" bundle registry
-   */
-  virtual void setBundleRegistry(std::unique_ptr<RAMBundleRegistry> bundleRegistry) = 0;
-
-  /**
-   * Register a file path for an additional "RAM" bundle
-   */
-  virtual void registerBundle(uint32_t bundleId, const std::string& bundlePath) = 0;
+  virtual void loadScript(std::unique_ptr<const JSBigString> script,
+                          std::string sourceURL) = 0;
 
   /**
    * Executes BatchedBridge.callFunctionReturnFlushedQueue with the module ID,

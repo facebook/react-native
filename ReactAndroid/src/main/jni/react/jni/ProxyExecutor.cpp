@@ -49,7 +49,12 @@ ProxyExecutor::~ProxyExecutor() {
   m_executor.reset();
 }
 
-void ProxyExecutor::loadApplicationScript(
+void ProxyExecutor::setupEnvironment(std::function<void(std::string, bool)> loadBundle,
+                                     folly::Optional<std::function<JSModulesUnbundle::Module(uint32_t)>> getModule) {
+  // TODO: what is this ProxyExecutor?
+}
+
+void ProxyExecutor::loadScript(
     std::unique_ptr<const JSBigString>,
     std::string sourceURL) {
 
@@ -85,18 +90,6 @@ void ProxyExecutor::loadApplicationScript(
     jni::make_jstring(sourceURL).get());
   // We can get pending calls here to native but the queue will be drained when
   // we launch the application.
-}
-
-void ProxyExecutor::setBundleRegistry(std::unique_ptr<RAMBundleRegistry>) {
-  jni::throwNewJavaException(
-    "java/lang/UnsupportedOperationException",
-    "Loading application RAM bundles is not supported for proxy executors");
-}
-
-void ProxyExecutor::registerBundle(uint32_t bundleId, const std::string& bundlePath) {
-  jni::throwNewJavaException(
-    "java/lang/UnsupportedOperationException",
-    "Loading application RAM bundles is not supported for proxy executors");
 }
 
 void ProxyExecutor::callFunction(const std::string& moduleId, const std::string& methodId, const folly::dynamic& arguments) {

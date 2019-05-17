@@ -10,7 +10,8 @@
 #include <map>
 #include <vector>
 
-#include <cxxreact/JSExecutor.h>
+#include "JSExecutor.h"
+#include "JSBigString.h"
 
 namespace folly {
 struct dynamic;
@@ -58,20 +59,25 @@ public:
   void invokeCallback(double callbackId, folly::dynamic&& args);
 
   /**
+   * Prepare JSExecutor environment for evaluating JS.
+   * Should be called only once per JSExecutor.
+   */
+  void setupEnvironment(std::function<void(std::string, bool)> loadBundle,
+                        folly::Optional<std::function<JSModulesUnbundle::Module(uint32_t)>> getModule);
+  
+  void setupEnvironmentSync(std::function<void(std::string, bool)> loadBundle,
+                            folly::Optional<std::function<JSModulesUnbundle::Module(uint32_t)>> getModule);
+
+  /**
    * Starts the JS application.  If bundleRegistry is non-null, then it is
    * used to fetch JavaScript modules as individual scripts.
    * Otherwise, the script is assumed to include all the modules.
    */
-  void loadApplication(
-    std::unique_ptr<RAMBundleRegistry> bundleRegistry,
-    std::unique_ptr<const JSBigString> startupCode,
-    std::string sourceURL);
-  void loadApplicationSync(
-    std::unique_ptr<RAMBundleRegistry> bundleRegistry,
-    std::unique_ptr<const JSBigString> startupCode,
-    std::string sourceURL);
+  void loadScript(std::unique_ptr<const JSBigString> script,
+                  std::string sourceURL);
+  void loadScriptSync(std::unique_ptr<const JSBigString> script,
+                      std::string sourceURL);
 
-  void registerBundle(uint32_t bundleId, const std::string& bundlePath);
   void setGlobalVariable(std::string propName, std::unique_ptr<const JSBigString> jsonValue);
   void* getJavaScriptContext();
   bool isInspectable();

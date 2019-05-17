@@ -75,12 +75,11 @@ class JSIExecutor : public JSExecutor {
       std::shared_ptr<ExecutorDelegate> delegate,
       const JSIScopedTimeoutInvoker &timeoutInvoker,
       RuntimeInstaller runtimeInstaller);
-  void loadApplicationScript(
+  void setupEnvironment(std::function<void(std::string, bool)> loadBundle,
+                        folly::Optional<std::function<JSModulesUnbundle::Module(uint32_t)>> getModule) override;
+  void loadScript(
       std::unique_ptr<const JSBigString> script,
       std::string sourceURL) override;
-  void setBundleRegistry(std::unique_ptr<RAMBundleRegistry>) override;
-  void registerBundle(uint32_t bundleId, const std::string &bundlePath)
-      override;
   void callFunction(
       const std::string &moduleId,
       const std::string &methodId,
@@ -117,7 +116,7 @@ class JSIExecutor : public JSExecutor {
   std::shared_ptr<ExecutorDelegate> delegate_;
   JSINativeModules nativeModules_;
   std::once_flag bindFlag_;
-  std::unique_ptr<RAMBundleRegistry> bundleRegistry_;
+  Logger logger_;
   JSIScopedTimeoutInvoker scopedTimeoutInvoker_;
   RuntimeInstaller runtimeInstaller_;
 

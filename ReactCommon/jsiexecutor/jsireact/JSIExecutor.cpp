@@ -67,12 +67,9 @@ JSIExecutor::JSIExecutor(
       *runtime, "__jsiExecutorDescription", runtime->description());
 }
 
-void JSIExecutor::loadApplicationScript(
-    std::unique_ptr<const JSBigString> script,
-    std::string sourceURL) {
-  SystraceSection s("JSIExecutor::loadApplicationScript");
-
-  // TODO: check for and use precompiled HBC
+void JSIExecutor::setupEnvironment(std::function<void(std::string, bool)> loadBundle,
+                                   folly::Optional<std::function<JSModulesUnbundle::Module(uint32_t)>> getModule) {
+  SystraceSection s("JSIExecutor::setupEnvironment");
 
   runtime_->global().setProperty(
       *runtime_,
@@ -112,10 +109,65 @@ void JSIExecutor::loadApplicationScript(
               const jsi::Value &,
               const jsi::Value *args,
               size_t count) { return nativeCallSyncHook(args, count); }));
+  runtime_->global().setProperty(
+    *runtime_,
+    "bundleRegistryLoad",
+    Function::createFromHostFunction(
+      *runtime_,
+      PropNameID::forAscii(*runtime_, "bundleRegistryLoad"),
+      2,
+      [this, loadBundle](jsi::Runtime&,
+             const jsi::Value&,
+             const jsi::Value* args,
+             size_t count) {
+        if (count != 2) {
+          throw std::invalid_argument("Got wrong number of args");
+        }
+
+        std::string bundlePath = args[0].getString(*runtime_).utf8(*runtime_);
+        bool inCurrentEnvironment = args[1].getBool();
+        loadBundle(bundlePath, inCurrentEnvironment);
+
+        return facebook::jsi::Value();
+      }));
+  
+  if (getModule) {
+    // Setup nativeRequire since it's running a RAM bundle.
+    runtime_->global().setProperty(
+      *runtime_,
+      "nativeRequire",
+      Function::createFromHostFunction(
+        *runtime_,
+        PropNameID::forAscii(*runtime_, "nativeRequire"),
+        1,
+        [this, getModule](Runtime& rt,
+               const facebook::jsi::Value&,
+               const facebook::jsi::Value* args,
+               size_t count) {
+          if (count != 1) {
+            throw std::invalid_argument("Got wrong number of args");
+          }
+
+          uint32_t moduleId = folly::to<uint32_t>(args[0].getNumber());
+          auto module = (*getModule)(moduleId);
+
+          runtime_->evaluateJavaScript(
+              std::make_unique<StringBuffer>(module.code), module.name);
+          return facebook::jsi::Value();
+        }));
+  }
 
   if (runtimeInstaller_) {
     runtimeInstaller_(*runtime_);
   }
+}
+
+void JSIExecutor::loadScript(
+    std::unique_ptr<const JSBigString> script,
+    std::string sourceURL) {
+  SystraceSection s("JSIExecutor::loadScript");
+
+  // TODO: check for and use precompiled HBC
 
   bool hasLogger(ReactMarker::logTaggedMarker);
   std::string scriptName = simpleBasename(sourceURL);
@@ -131,42 +183,6 @@ void JSIExecutor::loadApplicationScript(
     ReactMarker::logTaggedMarker(
         ReactMarker::RUN_JS_BUNDLE_STOP, scriptName.c_str());
   }
-}
-
-void JSIExecutor::setBundleRegistry(std::unique_ptr<RAMBundleRegistry> r) {
-  if (!bundleRegistry_) {
-    runtime_->global().setProperty(
-        *runtime_,
-        "nativeRequire",
-        Function::createFromHostFunction(
-            *runtime_,
-            PropNameID::forAscii(*runtime_, "nativeRequire"),
-            2,
-            [this](
-                __unused Runtime &rt,
-                const facebook::jsi::Value &,
-                const facebook::jsi::Value *args,
-                size_t count) { return nativeRequire(args, count); }));
-  }
-  bundleRegistry_ = std::move(r);
-}
-
-void JSIExecutor::registerBundle(
-    uint32_t bundleId,
-    const std::string &bundlePath) {
-  const auto tag = folly::to<std::string>(bundleId);
-  ReactMarker::logTaggedMarker(
-      ReactMarker::REGISTER_JS_SEGMENT_START, tag.c_str());
-  if (bundleRegistry_) {
-    bundleRegistry_->registerBundle(bundleId, bundlePath);
-  } else {
-    auto script = JSBigFileString::fromPath(bundlePath);
-    runtime_->evaluateJavaScript(
-        std::make_unique<BigStringBuffer>(std::move(script)),
-        JSExecutor::getSyntheticBundlePath(bundleId, bundlePath));
-  }
-  ReactMarker::logTaggedMarker(
-      ReactMarker::REGISTER_JS_SEGMENT_STOP, tag.c_str());
 }
 
 void JSIExecutor::callFunction(
@@ -318,21 +334,7 @@ void JSIExecutor::flush() {
   }
 }
 
-Value JSIExecutor::nativeRequire(const Value *args, size_t count) {
-  if (count > 2 || count == 0) {
-    throw std::invalid_argument("Got wrong number of args");
-  }
-
-  uint32_t moduleId = folly::to<uint32_t>(args[0].getNumber());
-  uint32_t bundleId = count == 2 ? folly::to<uint32_t>(args[1].getNumber()) : 0;
-  auto module = bundleRegistry_->getModule(bundleId, moduleId);
-
-  runtime_->evaluateJavaScript(
-      std::make_unique<StringBuffer>(module.code), module.name);
-  return facebook::jsi::Value();
-}
-
-Value JSIExecutor::nativeCallSyncHook(const Value *args, size_t count) {
+Value JSIExecutor::nativeCallSyncHook(const Value* args, size_t count) {
   if (count != 3) {
     throw std::invalid_argument("nativeCallSyncHook arg count must be 3");
   }
