@@ -19,7 +19,7 @@ export type PlatformSelectSpec<A, D> = {
 const Platform = {
   OS: 'android',
   get Version() {
-    const { Version } = NativePlatformConstants.getConstants();
+    const {Version} = NativePlatformConstants.getConstants();
     return Version || 0;
   },
   get isTesting(): boolean {
