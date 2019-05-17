@@ -13,7 +13,7 @@ import * as TurboModuleRegistry from 'TurboModuleRegistry';
 type Button = {|
   text: string,
   onPress: () => void,
-  style: 'default' | 'cancel' | 'destructive'
+  style: 'default' | 'cancel' | 'destructive',
 |};
 
 type AlertType = $Enum<{
@@ -29,15 +29,13 @@ type Args = {|
   buttons: Array<Button>,
   type?: AlertType,
   defaultValue?: string,
-  cancelButtonKey?: string, 
+  cancelButtonKey?: string,
   destructiveButtonKey?: string,
   keyboardType?: string,
-|}
+|};
 
 export interface Spec extends TurboModule {
   +alertWithArgs: (args: Args, callback: () => void) => void;
-};
+}
 
-export default TurboModuleRegistry.getEnforcing<Spec>(
-  'AlertManager'
-);
+export default TurboModuleRegistry.getEnforcing<Spec>('AlertManager');
