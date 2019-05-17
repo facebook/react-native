@@ -18,7 +18,6 @@ const {
   Text,
   TouchableHighlight,
   TouchableOpacity,
-  NativeModules,
   NativePlatformConstants,
   Platform,
   TouchableNativeFeedback,
