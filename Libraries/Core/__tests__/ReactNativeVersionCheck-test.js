@@ -127,9 +127,9 @@ function _mockNativeVersion(
   patch = 0,
   prerelease = null,
 ) {
-  jest.doMock('../../BatchedBridge/NativeModules', () => ({
-    PlatformConstants: {
+  jest.doMock('../../Utilities/NativePlatformConstants', () => ({
+    getConstants: () => ({
       reactNativeVersion: {major, minor, patch, prerelease},
-    },
+    }),
   }));
 }

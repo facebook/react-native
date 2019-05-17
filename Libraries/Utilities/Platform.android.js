@@ -10,7 +10,7 @@
 
 'use strict';
 
-const NativeModules = require('../BatchedBridge/NativeModules');
+const NativePlatformConstants = require('../Utilities/NativePlatformConstants');
 
 export type PlatformSelectSpec<A, D> = {
   android?: A,
@@ -20,19 +20,16 @@ export type PlatformSelectSpec<A, D> = {
 const Platform = {
   OS: 'android',
   get Version() {
-    const constants = NativeModules.PlatformConstants;
-    return constants && constants.Version;
+    return NativePlatformConstants.getConstants().Version;
   },
   get isTesting(): boolean {
     if (__DEV__) {
-      const constants = NativeModules.PlatformConstants;
-      return constants && constants.isTesting;
+      return NativePlatformConstants.getConstants().isTesting;
     }
     return false;
   },
   get isTV(): boolean {
-    const constants = NativeModules.PlatformConstants;
-    return constants && constants.uiMode === 'tv';
+    return NativePlatformConstants.getConstants().uiMode === 'tv';
   },
   select: <A, D>(spec: PlatformSelectSpec<A, D>): A | D =>
     'android' in spec ? spec.android : spec.default,

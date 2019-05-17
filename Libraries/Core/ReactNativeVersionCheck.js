@@ -9,7 +9,7 @@
  */
 'use strict';
 
-const {PlatformConstants} = require('../BatchedBridge/NativeModules');
+import NativePlatformConstants from '../Utilities/NativePlatformConstants';
 const ReactNativeVersion = require('./ReactNativeVersion');
 
 /**
@@ -22,11 +22,12 @@ const ReactNativeVersion = require('./ReactNativeVersion');
  * and rely on its existence as a separate module.
  */
 exports.checkVersions = function checkVersions(): void {
-  if (!PlatformConstants) {
+  if (!NativePlatformConstants) {
     return;
   }
 
-  const nativeVersion = PlatformConstants.reactNativeVersion;
+  const nativeVersion = NativePlatformConstants.getConstants()
+    .reactNativeVersion;
   if (
     ReactNativeVersion.version.major !== nativeVersion.major ||
     ReactNativeVersion.version.minor !== nativeVersion.minor
@@ -46,6 +47,8 @@ exports.checkVersions = function checkVersions(): void {
 function _formatVersion(version): string {
   return (
     `${version.major}.${version.minor}.${version.patch}` +
-    (version.prerelease !== null ? `-${version.prerelease}` : '')
+    (version.prerelease !== null && version.prerelease !== undefined
+      ? `-${version.prerelease}`
+      : '')
   );
 }
