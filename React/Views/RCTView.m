@@ -204,10 +204,10 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 
   NSDictionary *actionObject = accessibilityActionsLabelMap[action.name];
   if (actionObject) {
-   _onAccessibilityAction(@{
-    @"actionName": actionObject[@"name"],
-    @"actionTarget": self.reactTag
-  });
+    _onAccessibilityAction(@{
+      @"actionName": actionObject[@"name"],
+      @"actionTarget": self.reactTag
+    });
   }
   return YES;
 }
@@ -369,14 +369,13 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:unused)
 {
   if ([self performAccessibilityAction:@"activate"]) {
     return YES;
-    
   }
   else if (_onAccessibilityTap) {
     _onAccessibilityTap(nil);
     return YES;
   } else {
     return NO;
-       }
+  }
 }
 
 - (BOOL)accessibilityPerformMagicTap
