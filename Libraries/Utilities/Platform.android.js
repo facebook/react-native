@@ -10,8 +10,7 @@
 
 'use strict';
 
-const NativePlatformConstants = require('../Utilities/NativePlatformConstants');
-
+import NativePlatformConstants from '../Utilities/NativePlatformConstants';
 export type PlatformSelectSpec<A, D> = {
   android?: A,
   default?: D,
