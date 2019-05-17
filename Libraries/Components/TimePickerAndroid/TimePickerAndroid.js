@@ -58,7 +58,13 @@ class TimePickerAndroid {
    * being undefined. **Always** check whether the `action` before reading the values.
    */
   static async open(options: TimePickerOptions): Promise<TimePickerResult> {
-    return NativeTimePickerAndroid.open(options);
+    if (NativeTimePickerAndroid) {
+      return NativeTimePickerAndroid.open(options);
+    } else {
+      return Promise.reject({
+        message: 'TimePickerAndroid is not supported on this platform.',
+      });
+    }
   }
 
   /**

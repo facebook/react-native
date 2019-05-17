@@ -12,6 +12,7 @@
 
 import type {TurboModule} from 'RCTExport';
 import * as TurboModuleRegistry from 'TurboModuleRegistry';
+import Platform from '../../Utilities/Platform';
 
 import type {
   TimePickerOptions,
@@ -22,4 +23,6 @@ export interface Spec extends TurboModule {
   +open: (options: TimePickerOptions) => Promise<TimePickerResult>;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('TimePickerAndroid');
+export default (Platform.OS === 'android'
+  ? TurboModuleRegistry.getEnforcing<Spec>('TimePickerAndroid')
+  : undefined);
