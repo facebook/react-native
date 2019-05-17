@@ -11,7 +11,7 @@
 'use strict';
 
 const NativeEventEmitter = require('../EventEmitter/NativeEventEmitter');
-import NativeNetworking from './NativeNetworkingIOS';
+import NativeNetworking from './NativeNetworking';
 const convertRequestBody = require('./convertRequestBody');
 
 import type {RequestBody} from './convertRequestBody';
