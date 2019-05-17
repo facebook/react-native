@@ -22,7 +22,9 @@ const HeapCapture = {
       console.log('HeapCapture.captureHeap error: ' + e.toString());
       error = e.toString();
     }
-    NativeHeapCapture.captureComplete(path, error);
+    if (NativeHeapCapture) {
+      NativeHeapCapture.captureComplete(path, error);
+    }
   },
 };
 

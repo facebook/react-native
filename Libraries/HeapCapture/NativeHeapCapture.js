@@ -12,6 +12,7 @@
 
 import type {TurboModule} from 'RCTExport';
 import * as TurboModuleRegistry from 'TurboModuleRegistry';
+import {Platform} from 'react-native';
 
 export interface Spec extends TurboModule {
   // Common interface
@@ -19,10 +20,8 @@ export interface Spec extends TurboModule {
 
   // Android only
   +captureComplete: (path: string, error: ?string) => void;
-
-  // Events
-  +addListener: (eventName: string, handler: Function) => Object;
-  +removeListeners: (eventName: string, handler: Function) => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('HeapCapture');
+export default (Platform.OS === 'android'
+  ? TurboModuleRegistry.getEnforcing<Spec>('HeapCapture')
+  : null);
