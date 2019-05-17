@@ -32,6 +32,7 @@ const tryExecNTimes = require('./try-n-times');
 
 const TEMP = exec('mktemp -d /tmp/react-native-XXXXXXXX').stdout.trim();
 const numberOfRetries = argv.retries || 1;
+let PACKAGE;
 let SERVER_PID;
 let APPIUM_PID;
 let exitCode;
@@ -68,7 +69,7 @@ try {
     if (
       tryExecNTimes(
         () => {
-          return exec('npm install --save-dev flow-bin').code;
+          return exec('yarn add --dev flow-bin').code;
         },
         numberOfRetries,
         () => exec('sleep 10s'),
@@ -87,7 +88,7 @@ try {
     throw Error(exitCode);
   }
 
-  const PACKAGE = path.join(ROOT, 'react-native-*.tgz');
+  PACKAGE = path.join(ROOT, 'react-native-*.tgz');
   cd(TEMP);
 
   echo('Creating EndToEndTest React Native app');
@@ -122,13 +123,13 @@ try {
   if (
     tryExecNTimes(
       () => {
-        return exec('npm install').code;
+        return exec('yarn').code;
       },
       numberOfRetries,
       () => exec('sleep 10s'),
     )
   ) {
-    echo('Failed to execute npm install');
+    echo('Failed to execute yarn');
     echo('Most common reason is npm registry connectivity, try again');
     exitCode = 1;
     throw Error(exitCode);
@@ -319,6 +320,8 @@ try {
     echo(`Killing appium ${APPIUM_PID}`);
     exec(`kill -9 ${APPIUM_PID}`);
   }
+  echo('Cleaning up react-native package');
+  exec(`rm ${PACKAGE}`);
 }
 exit(exitCode);
 
