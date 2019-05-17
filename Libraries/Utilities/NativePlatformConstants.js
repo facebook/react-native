@@ -25,7 +25,7 @@ export interface Spec extends TurboModule {
     },
 
     // Android only
-    Version?: string,
+    Version?: number,
     Release?: string,
     Serial?: string,
     Fingerprint?: string,
