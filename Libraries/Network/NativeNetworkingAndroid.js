@@ -1,7 +1,7 @@
 /**
  * Copyright 2004-present Facebook. All Rights Reserved.
  *
- * @flow strict-local
+ * @flow
  * @format
  */
 
@@ -19,7 +19,7 @@ export interface Spec extends TurboModule {
     url: string,
     requestId: number,
     headers: Array<Header>,
-    data: {[key: string]: mixed},
+    data: Object,
     responseType: NativeResponseType,
     useIncrementalUpdates: boolean,
     timeout: number,
@@ -28,7 +28,7 @@ export interface Spec extends TurboModule {
   +abortRequest: (requestId: number) => void;
   +clearCookies: (callback: (result: boolean) => mixed) => void;
 
-  // RCTEventEmitter
+  // Events
   +addListener: (eventName: string) => void;
   +removeListeners: (count: number) => void;
 }
