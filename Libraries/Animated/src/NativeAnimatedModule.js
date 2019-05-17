@@ -32,7 +32,7 @@ export type AnimatedNodeConfig = {|
     | 'tracking',
 |};
 
-export type AnimatinigNodeConfig = {|
+export type AnimatingNodeConfig = {|
   type?: 'frames' | 'spring' | 'decay',
 |};
 
@@ -45,7 +45,7 @@ export interface Spec extends TurboModule {
   +startAnimatingNode: (
     animationId: ?number,
     nodeTag: ?number,
-    config: AnimatinigNodeConfig,
+    config: AnimatingNodeConfig,
     endCallback: EndCallback,
   ) => void;
   +stopAnimation: (animationId: ?number) => void;

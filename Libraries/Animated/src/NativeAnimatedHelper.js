@@ -13,7 +13,7 @@ import NativeEventEmitter from '../../EventEmitter/NativeEventEmitter';
 import type {
   EventMapping,
   AnimatedNodeConfig,
-  AnimatinigNodeConfig,
+  AnimatingNodeConfig,
 } from './NativeAnimatedModule';
 import NativeAnimatedModule from './NativeAnimatedModule';
 import invariant from 'invariant';
@@ -58,7 +58,7 @@ const API = {
   startAnimatingNode: function(
     animationId: ?number,
     nodeTag: ?number,
-    config: AnimatinigNodeConfig,
+    config: AnimatingNodeConfig,
     endCallback: EndCallback,
   ): void {
     assertNativeAnimatedModule();
