@@ -10,10 +10,10 @@
 
 'use strict';
 
+import NativeAccessibilityInfo from './NativeAccessibilityInfo';
+
 const RCTDeviceEventEmitter = require('../../EventEmitter/RCTDeviceEventEmitter');
 const UIManager = require('../../ReactNative/UIManager');
-
-const NativeAccessibilityInfo = require('./NativeAccessibilityInfo').default;
 
 const REDUCE_MOTION_EVENT = 'reduceMotionDidChange';
 const TOUCH_EXPLORATION_EVENT = 'touchExplorationDidChange';
@@ -60,7 +60,11 @@ const AccessibilityInfo = {
 
   isReduceMotionEnabled: function(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      NativeAccessibilityInfo.isReduceMotionEnabled(resolve);
+      if (NativeAccessibilityInfo) {
+        NativeAccessibilityInfo.isReduceMotionEnabled(resolve);
+      } else {
+        reject(false);
+      }
     });
   },
 
@@ -73,7 +77,11 @@ const AccessibilityInfo = {
 
   isScreenReaderEnabled: function(): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      NativeAccessibilityInfo.isTouchExplorationEnabled(resolve);
+      if (NativeAccessibilityInfo) {
+        NativeAccessibilityInfo.isTouchExplorationEnabled(resolve);
+      } else {
+        reject(false);
+      }
     });
   },
 
@@ -141,7 +149,9 @@ const AccessibilityInfo = {
    * See http://facebook.github.io/react-native/docs/accessibilityinfo.html#announceforaccessibility
    */
   announceForAccessibility: function(announcement: string): void {
-    NativeAccessibilityInfo.announceForAccessibility(announcement);
+    if (NativeAccessibilityInfo) {
+      NativeAccessibilityInfo.announceForAccessibility(announcement);
+    }
   },
 };
 
