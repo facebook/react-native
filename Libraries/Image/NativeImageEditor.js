@@ -23,12 +23,12 @@ type cropOptions = {
     width: number,
     height: number,
   |},
-
+  // IOS ONLY
   displaySize?: ?{|
     width: number,
     height: number,
   |},
-
+  // IOS ONLY
   resizeMode?: ?$Enum<{
     contain: string,
     cover: string,
@@ -45,4 +45,4 @@ export interface Spec extends TurboModule {
   ) => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('NativeImageEditor');
+export default TurboModuleRegistry.getEnforcing<Spec>('ImageEditingManager');
