@@ -10,40 +10,39 @@
 
 'use strict';
 
+import {Platform} from 'react-native';
 import type {TurboModule} from 'RCTExport';
 import * as TurboModuleRegistry from 'TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
   +getCurrentBoldTextState: (
-    resolve: (isBoldTextEnabled: boolean) => void,
-    reject: (error: Object) => void,
+    onSuccess: (isBoldTextEnabled: boolean) => void,
+    onError: (error: Object) => void,
   ) => void;
   +getCurrentGrayscaleState: (
-    resolve: (isGrayscaleEnabled: boolean) => void,
-    reject: (error: Object) => void,
+    onSuccess: (isGrayscaleEnabled: boolean) => void,
+    onError: (error: Object) => void,
   ) => void;
   +getCurrentInvertColorsState: (
-    resolve: (isInvertColorsEnabled: boolean) => void,
-    reject: (error: Object) => void,
+    onSuccess: (isInvertColorsEnabled: boolean) => void,
+    onError: (error: Object) => void,
   ) => void;
   +getCurrentReduceMotionState: (
-    resolve: (isReduceMotionEnabled: boolean) => void,
-    reject: (error: Object) => void,
+    onSuccess: (isReduceMotionEnabled: boolean) => void,
+    onError: (error: Object) => void,
   ) => void;
   +getCurrentReduceTransparencyState: (
-    resolve: (isReduceTransparencyEnabled: boolean) => void,
-    reject: (error: Object) => void,
+    onSuccess: (isReduceTransparencyEnabled: boolean) => void,
+    onError: (error: Object) => void,
   ) => void;
   +getCurrentVoiceOverState: (
-    resolve: (isScreenReaderEnabled: boolean) => void,
-    reject: (error: Object) => void,
+    onSuccess: (isScreenReaderEnabled: boolean) => void,
+    onError: (error: Object) => void,
   ) => void;
   +setAccessibilityFocus: (reactTag: number) => void;
   +announceForAccessibility: (announcement: string) => void;
-
-  // RCTDeviceEventEmitter
-  +addListener: (eventName: string, handler: Function) => Object;
-  +removeListeners: (eventName: string, handler: Function) => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('AccessibilityManager');
+export default (Platform.OS === 'ios'
+  ? TurboModuleRegistry.getEnforcing<Spec>('AccessibilityManager')
+  : null);
