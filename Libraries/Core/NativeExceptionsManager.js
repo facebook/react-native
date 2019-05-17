@@ -9,7 +9,13 @@
 
 import type {TurboModule} from 'RCTExport';
 import * as TurboModuleRegistry from 'TurboModuleRegistry';
-import type {StackFrame} from './Devtools/parseErrorStack';
+
+export type StackFrame = {|
+  column: ?number,
+  file: string,
+  lineNumber: number,
+  methodName: string,
+|};
 
 export interface Spec extends TurboModule {
   +reportFatalException: (
@@ -28,7 +34,7 @@ export interface Spec extends TurboModule {
     exceptionId: number,
   ) => void;
   // Android only
-  +dismissRedbox: () => void;
+  +dismissRedbox?: () => void;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('ExceptionsManager');
