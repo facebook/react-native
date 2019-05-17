@@ -12,6 +12,7 @@
 
 import type {TurboModule} from 'RCTExport';
 import * as TurboModuleRegistry from 'TurboModuleRegistry';
+import {Platform} from 'react-native';
 
 export interface Spec extends TurboModule {
   +getConstants: () => {|
@@ -35,10 +36,8 @@ export interface Spec extends TurboModule {
     xOffset: number,
     yOffset: number,
   ) => void;
-
-  // RCTEventEmitter
-  +addListener: (eventName: string) => void;
-  +removeListeners: (count: number) => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('ToastAndroid');
+export default (Platform.OS === 'android'
+  ? TurboModuleRegistry.getEnforcing<Spec>('ToastAndroid')
+  : null);
