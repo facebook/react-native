@@ -487,15 +487,15 @@ jobs:
       - save-cache: *save-yarn-cache
 
       # Xcode build
-      - run:
-          name: Build app for Detox iOS End-to-End Tests
-          command: yarn run build-ios-e2e
+      # - run:
+      #     name: Build app for Detox iOS End-to-End Tests
+      #     command: yarn run build-ios-e2e
 
       # Test
-      - run:
-          name: Run Detox iOS End-to-End Tests
-          command: yarn run test-ios-e2e
-          when: always
+      # - run:
+      #     name: Run Detox iOS End-to-End Tests
+      #     command: yarn run test-ios-e2e
+      #     when: always
 
       - run:
           name: Run JavaScript End-to-End Tests
