@@ -18,7 +18,6 @@
 		3D56F9F11D6F6E9B00F53A06 /* RNTesterBundle.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 3D13F83E1D6F6AE000E69E0E /* RNTesterBundle.bundle */; };
 		5C60EB1C226440DB0018C04F /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5C60EB1B226440DB0018C04F /* AppDelegate.mm */; };
 		5CB07C9B226467E60039471C /* RNTesterTurboModuleProvider.mm in Sources */ = {isa = PBXBuildFile; fileRef = 5CB07C99226467E60039471C /* RNTesterTurboModuleProvider.mm */; };
-		68D134442238528800D0B233 /* Swizzle_RCTFabricSurface.m in Sources */ = {isa = PBXBuildFile; fileRef = 68D134432238528800D0B233 /* Swizzle_RCTFabricSurface.m */; };
 		68E1E4BC2230DF2F00570185 /* ComponentRegistry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 68E1E4BB2230DF2F00570185 /* ComponentRegistry.cpp */; };
 		B9C5BB1881F54450DBCA70F5 /* libPods-RNTester.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8508AD3C1DC3509924E63948 /* libPods-RNTester.a */; };
 /* End PBXBuildFile section */
@@ -53,7 +52,6 @@
 		5C60EB1B226440DB0018C04F /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = RNTester/AppDelegate.mm; sourceTree = "<group>"; };
 		5CB07C99226467E60039471C /* RNTesterTurboModuleProvider.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = RNTesterTurboModuleProvider.mm; path = RNTester/RNTesterTurboModuleProvider.mm; sourceTree = "<group>"; };
 		5CB07C9A226467E60039471C /* RNTesterTurboModuleProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNTesterTurboModuleProvider.h; path = RNTester/RNTesterTurboModuleProvider.h; sourceTree = "<group>"; };
-		68D134432238528800D0B233 /* Swizzle_RCTFabricSurface.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Swizzle_RCTFabricSurface.m; sourceTree = "<group>"; };
 		68E1E4BB2230DF2F00570185 /* ComponentRegistry.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ComponentRegistry.cpp; sourceTree = "<group>"; };
 		8508AD3C1DC3509924E63948 /* libPods-RNTester.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RNTester.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		98233960D1D6A1977D1C7EAF /* Pods-RNTester.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RNTester.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RNTester/Pods-RNTester.debug.xcconfig"; sourceTree = "<group>"; };
@@ -147,7 +145,6 @@
 			isa = PBXGroup;
 			children = (
 				68E1E4BB2230DF2F00570185 /* ComponentRegistry.cpp */,
-				68D134432238528800D0B233 /* Swizzle_RCTFabricSurface.m */,
 			);
 			name = Fabric;
 			sourceTree = "<group>";
@@ -333,7 +330,6 @@
 			files = (
 				68E1E4BC2230DF2F00570185 /* ComponentRegistry.cpp in Sources */,
 				272E6B3F1BEA849E001FCF37 /* UpdatePropertiesExampleView.m in Sources */,
-				68D134442238528800D0B233 /* Swizzle_RCTFabricSurface.m in Sources */,
 				5CB07C9B226467E60039471C /* RNTesterTurboModuleProvider.mm in Sources */,
 				27F441EC1BEBE5030039B79C /* FlexibleSizeExampleView.m in Sources */,
 				5C60EB1C226440DB0018C04F /* AppDelegate.mm in Sources */,
