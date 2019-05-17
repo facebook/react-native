@@ -287,35 +287,6 @@ export <span class="hljs-keyword">default</span> <span class="hljs-class"><span 
 </code></pre>
 <h3><a class="anchor" aria-hidden="true" id="configure-preloading-and-inline-requires"></a><a href="#configure-preloading-and-inline-requires" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Configure Preloading and Inline Requires</h3>
 <p>Now that we have a RAM bundle, there is overhead for calling <code>require</code>. <code>require</code> now needs to send a message over the bridge when it encounters a module it has not loaded yet. This will impact startup the most, because that is where the largest number of require calls are likely to take place while the app loads the initial module. Luckily we can configure a portion of the modules to be preloaded. In order to do this, you will need to implement some form of inline require.</p>
-<h3><a class="anchor" aria-hidden="true" id="adding-a-packager-config-file"></a><a href="#adding-a-packager-config-file" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Adding a packager config file</h3>
-<p>Create a folder in your project called packager, and create a single file named config.js. Add the following:</p>
-<pre><code class="hljs">const<span class="hljs-built_in"> config </span>= {
-  transformer: {
-    getTransformOptions: () =&gt; {
-      return {
-        transform: { inlineRequires: <span class="hljs-literal">true</span> },
-      };
-    },
-  },
-};
-
-module.exports =<span class="hljs-built_in"> config;
-</span></code></pre>
-<p>In Xcode, in the build phase, include <code>export BUNDLE_CONFIG=&quot;packager/config.js&quot;</code>.</p>
-<pre><code class="hljs"><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">BUNDLE_COMMAND</span>=<span class="hljs-string">"ram-bundle"</span>
-<span class="hljs-builtin-name">export</span> <span class="hljs-attribute">BUNDLE_CONFIG</span>=<span class="hljs-string">"packager/config.js"</span>
-<span class="hljs-builtin-name">export</span> <span class="hljs-attribute">NODE_BINARY</span>=node
-<span class="hljs-built_in">..</span>/node_modules/react-native/scripts/react-native-xcode.sh
-</code></pre>
-<p>Edit your android/app/build.gradle file to include <code>bundleConfig: &quot;packager/config.js&quot;,</code>.</p>
-<pre><code class="hljs">project<span class="hljs-selector-class">.ext</span><span class="hljs-selector-class">.react</span> = [
-  bundleCommand: <span class="hljs-string">"ram-bundle"</span>,
-  bundleConfig: <span class="hljs-string">"packager/config.js"</span>
-]
-</code></pre>
-<p>Finally, you can update &quot;start&quot; under &quot;scripts&quot; on your package.json to use the config:</p>
-<p><code>&quot;start&quot;: &quot;yarn react-native start --config packager/config.js&quot;,</code></p>
-<p>Start your package server with <code>npm start</code>. Note that when the dev packager is automatically launched via xcode and <code>react-native run-android</code>, etc, it does not use <code>npm start</code>, so it won't use the config.</p>
 <h3><a class="anchor" aria-hidden="true" id="investigating-the-loaded-modules"></a><a href="#investigating-the-loaded-modules" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Investigating the Loaded Modules</h3>
 <p>In your root file (index.(ios|android).js) you can add the following after the initial imports:</p>
 <pre><code class="hljs"><span class="hljs-keyword">const</span> modules = <span class="hljs-built_in">require</span>.getModules();
@@ -346,9 +317,9 @@ module.exports =<span class="hljs-built_in"> config;
 }
 </code></pre>
 <p>Every app is different, but it may make sense to only load the modules you need for the very first screen. When you are satisified, put the output of the loadedModuleNames into a file named <code>packager/modulePaths.js</code>.</p>
-<h3><a class="anchor" aria-hidden="true" id="updating-the-configjs"></a><a href="#updating-the-configjs" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Updating the config.js</h3>
-<p>Returning to packager/config.js we should update it to use our newly generated modulePaths.js file.</p>
-<pre><code class="hljs"><span class="hljs-keyword">const</span> modulePaths = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./modulePaths'</span>);
+<h3><a class="anchor" aria-hidden="true" id="updating-the-metroconfigjs"></a><a href="#updating-the-metroconfigjs" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Updating the metro.config.js</h3>
+<p>We now need to update <code>metro.config.js</code> in the root of the project to use our newly generated <code>modulePaths.js</code> file:</p>
+<pre><code class="hljs"><span class="hljs-keyword">const</span> modulePaths = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./packager/modulePaths'</span>);
 <span class="hljs-keyword">const</span> resolve = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>).resolve;
 <span class="hljs-keyword">const</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>);
 
