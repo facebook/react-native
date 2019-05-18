@@ -48,4 +48,4 @@ export interface Spec extends TurboModule {
 
 export default (Platform.OS === 'ios'
   ? TurboModuleRegistry.getEnforcing<Spec>('Platform')
-  : TurboModuleRegistry.getEnforcing<Spec>('AndroidInfoModule'));
+  : TurboModuleRegistry.getEnforcing<Spec>('PlatformConstants'));
