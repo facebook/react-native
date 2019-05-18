@@ -8,7 +8,6 @@
 #import "RCTScrollViewComponentView.h"
 
 #import <React/RCTAssert.h>
-#import <React/RNGenericDelegateSplitter.h>
 
 #import <react/components/scrollview/ScrollViewComponentDescriptor.h>
 #import <react/components/scrollview/ScrollViewEventEmitter.h>
@@ -28,11 +27,8 @@ using namespace facebook::react;
 @end
 
 @implementation RCTScrollViewComponentView {
-  RCTEnhancedScrollView *_Nonnull _scrollView;
-  UIView *_Nonnull _contentView;
   ScrollViewShadowNode::ConcreteState::Shared _state;
   CGSize _contentSize;
-  RNGenericDelegateSplitter<id<UIScrollViewDelegate>> *_scrollViewDelegateSplitter;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -42,11 +38,11 @@ using namespace facebook::react;
     _props = defaultProps;
 
     _scrollView = [[RCTEnhancedScrollView alloc] initWithFrame:self.bounds];
-    _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     _scrollView.delaysContentTouches = NO;
-    _contentView = [[UIView alloc] initWithFrame:_scrollView.bounds];
-    [_scrollView addSubview:_contentView];
-    [self addSubview:_scrollView];
+    self.contentView = _scrollView;
+
+    _containerView = [[UIView alloc] initWithFrame:CGRectZero];
+    [_scrollView addSubview:_containerView];
 
     _scrollViewDelegateSplitter = [[RNGenericDelegateSplitter alloc] initWithDelegateUpdateBlock:^(id delegate) {
       self->_scrollView.delegate = delegate;
@@ -79,7 +75,8 @@ using namespace facebook::react;
 
 #define REMAP_VIEW_PROP(reactName, localName) REMAP_PROP(reactName, localName, self)
 #define MAP_VIEW_PROP(name) REMAP_VIEW_PROP(name, name)
-#define REMAP_SCROLL_VIEW_PROP(reactName, localName) REMAP_PROP(reactName, localName, _scrollView)
+#define REMAP_SCROLL_VIEW_PROP(reactName, localName) \
+  REMAP_PROP(reactName, localName, ((RCTEnhancedScrollView *)_scrollView))
 #define MAP_SCROLL_VIEW_PROP(name) REMAP_SCROLL_VIEW_PROP(name, name)
 
   // FIXME: Commented props are not supported yet.
@@ -122,18 +119,18 @@ using namespace facebook::react;
   }
 
   _contentSize = contentSize;
-  _contentView.frame = CGRect{CGPointZero, contentSize};
+  _containerView.frame = CGRect{CGPointZero, contentSize};
   _scrollView.contentSize = contentSize;
 }
 
 - (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
-  [_contentView insertSubview:childComponentView atIndex:index];
+  [_containerView insertSubview:childComponentView atIndex:index];
 }
 
 - (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
 {
-  RCTAssert(childComponentView.superview == _contentView, @"Attempt to unmount improperly mounted component view.");
+  RCTAssert(childComponentView.superview == _containerView, @"Attempt to unmount improperly mounted component view.");
   [childComponentView removeFromSuperview];
 }
 
