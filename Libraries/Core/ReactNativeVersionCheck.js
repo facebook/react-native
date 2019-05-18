@@ -47,8 +47,7 @@ exports.checkVersions = function checkVersions(): void {
 function _formatVersion(version): string {
   return (
     `${version.major}.${version.minor}.${version.patch}` +
-    (version.prerelease !== null && version.prerelease !== undefined
-      ? `-${version.prerelease}`
-      : '')
+    // eslint-disable-next-line eqeqeq
+    (version.prerelease != undefined ? `-${version.prerelease}` : '')
   );
 }
