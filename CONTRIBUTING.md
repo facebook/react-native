@@ -34,6 +34,10 @@ You can learn more about the contribution process in the following documents:
 
 We also have a thriving community of contributors who would be happy to help you get set up. You can reach out to us through [@ReactNative](http://twitter.com/reactnative) (the React Native team) and [@ReactNativeComm](http://twitter.com/reactnativecomm) (the React Native Community organization).
 
+### Step-by-step Guide
+
+Whenever you are ready to contribute code, check out our [step-by-step guide to sending your first pull request](https://github.com/facebook/react-native/wiki/Pull-Requests#getting-ready-to-submit-your-first-pull-request), or read the [How to Contribute Code](https://github.com/facebook/react-native/wiki/How-to-Contribute) wiki for more details.
+
 ### Repositories
 
 The main repository, <https://github.com/facebook/react-native>, contains the React Native framework itself and it is here where we keep track of bug reports and manage pull requests.
@@ -85,10 +89,6 @@ Code-level contributions to React Native generally come in the form of [pull req
 9. If you haven't already, complete the Contributor License Agreement ("CLA").
 
 If all goes well, your pull request will be merged. If it is not merged, maintainers will do their best to explain the reason why.
-
-### Step-by-step Guide
-
-Whenever you are ready to contribute code, check out our [step-by-step guide to sending your first pull request](https://github.com/facebook/react-native/wiki/Pull-Requests#getting-ready-to-submit-your-first-pull-request), or read the [How to Contribute Code](https://github.com/facebook/react-native/wiki/How-to-Contribute) wiki for more details.
 
 ### Tests
 
