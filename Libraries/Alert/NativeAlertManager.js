@@ -13,21 +13,14 @@ import * as TurboModuleRegistry from 'TurboModuleRegistry';
 type Button = {|
   text: string,
   onPress: () => void,
-  style: 'default' | 'cancel' | 'destructive',
+  style: string,
 |};
-
-type AlertType = $Enum<{
-  default: string,
-  'plain-text': string,
-  'secure-text': string,
-  'login-password': string,
-}>;
 
 type Args = {|
   title: string,
   message?: string,
   buttons: Array<Button>,
-  type?: AlertType,
+  type?: string,
   defaultValue?: string,
   cancelButtonKey?: string,
   destructiveButtonKey?: string,
