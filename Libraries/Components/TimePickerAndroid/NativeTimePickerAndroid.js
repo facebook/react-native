@@ -14,10 +14,18 @@ import type {TurboModule} from 'RCTExport';
 import * as TurboModuleRegistry from 'TurboModuleRegistry';
 import Platform from '../../Utilities/Platform';
 
-import type {
-  TimePickerOptions,
-  TimePickerResult,
-} from './TimePickerAndroidTypes';
+export type TimePickerOptions = {|
+  hour?: number,
+  minute?: number,
+  is24Hour?: boolean,
+  mode?: 'clock' | 'spinner' | 'default',
+|};
+
+export type TimePickerResult = $ReadOnly<{|
+  action: string,
+  hour: number,
+  minute: number,
+|}>;
 
 export interface Spec extends TurboModule {
   +open: (options: TimePickerOptions) => Promise<TimePickerResult>;

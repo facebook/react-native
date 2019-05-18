@@ -10,12 +10,10 @@
 
 'use strict';
 
-import NativeTimePickerAndroid from './NativeTimePickerAndroid';
-
-import type {
-  TimePickerOptions,
-  TimePickerResult,
-} from './TimePickerAndroidTypes';
+import NativeTimePickerAndroid, {
+  type TimePickerOptions,
+  type TimePickerResult,
+} from './NativeTimePickerAndroid';
 
 /**
  * Opens the standard Android time picker dialog.
