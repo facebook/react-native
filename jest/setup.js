@@ -28,6 +28,9 @@ global.cancelAnimationFrame = function(id) {
 };
 
 jest.mock('../Libraries/Core/Devtools/setupDevtools');
+jest.mock('../Libraries/Utilities/NativePlatformConstants', () => ({
+  getConstants: () => ({}),
+}));
 
 // there's a __mock__ for it.
 jest.setMock(
