@@ -33,19 +33,26 @@ export type KeyboardEventEasing =
   | 'linear'
   | 'keyboard';
 
-type ScreenRect = $ReadOnly<{|
+type KeyboardEventCoordinates = $ReadOnly<{|
   screenX: number,
   screenY: number,
   width: number,
   height: number,
 |}>;
 
-export type KeyboardEvent = $ReadOnly<{|
-  duration: number,
+export type KeyboardEvent = AndroidKeyboardEvent | IOSKeyboardEvent;
+
+export type AndroidKeyboardEvent = $ReadOnly<{|
+  easing: 'keyboard',
+  endCoordinates: KeyboardEventCoordinates,
+|}>;
+
+export type IOSKeyboardEvent = $ReadOnly<{|
   easing: KeyboardEventEasing,
-  endCoordinates: ScreenRect,
-  startCoordinates: ScreenRect,
+  duration: number,
   isEventFromThisApp: boolean,
+  startCoordinates: KeyboardEventCoordinates,
+  endCoordinates: KeyboardEventCoordinates,
 |}>;
 
 type KeyboardEventListener = (e: KeyboardEvent) => void;
@@ -157,7 +164,7 @@ let Keyboard = {
    * Useful for syncing TextInput (or other keyboard accessory view) size of
    * position changes with keyboard movements.
    */
-  scheduleLayoutAnimation(event: KeyboardEvent) {
+  scheduleLayoutAnimation(event: $Shape<IOSKeyboardEvent>) {
     invariant(false, 'Dummy method used for documentation');
   },
 };
@@ -165,7 +172,7 @@ let Keyboard = {
 // Throw away the dummy object and reassign it to original module
 Keyboard = KeyboardEventEmitter;
 Keyboard.dismiss = dismissKeyboard;
-Keyboard.scheduleLayoutAnimation = function(event: KeyboardEvent) {
+Keyboard.scheduleLayoutAnimation = function(event: $Shape<IOSKeyboardEvent>) {
   const {duration, easing} = event;
   if (duration != null && duration !== 0) {
     LayoutAnimation.configureNext({
