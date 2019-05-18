@@ -32,11 +32,11 @@ const Platform = {
     return Platform.isTV;
   },
   get isTV() {
-    return NativePlatformConstants.getContants().interfaceIdiom === 'tv';
+    return NativePlatformConstants.getConstants().interfaceIdiom === 'tv';
   },
   get isTesting(): boolean {
     if (__DEV__) {
-      return NativePlatformConstants.getContants().isTesting;
+      return NativePlatformConstants.getConstants().isTesting;
     }
     return false;
   },
