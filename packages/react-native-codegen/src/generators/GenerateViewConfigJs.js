@@ -47,16 +47,14 @@ function getReactDiffProcessValue(prop) {
     case 'StringEnumTypeAnnotation':
       return j.literal(true);
     case 'NativePrimitiveTypeAnnotation':
-      const nativeTypesString =
-        "require('react-native').__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.NativePrimitives";
       switch (typeAnnotation.name) {
         case 'ColorPrimitive':
-          return j.template.expression`${nativeTypesString}.ColorPrimitive`;
+          return j.template.expression`{ process: require('processColor') }`;
         case 'ImageSourcePrimitive':
           return j.template
-            .expression`${nativeTypesString}.ImageSourcePrimitive`;
+            .expression`{ process: require('resolveAssetSource') }`;
         case 'PointPrimitive':
-          return j.template.expression`${nativeTypesString}.PointPrimitive`;
+          return j.template.expression`{ diff: require('pointsDiffer') }`;
         default:
           (typeAnnotation.name: empty);
           throw new Error('Receieved unknown NativePrimitiveTypeAnnotation');
@@ -70,16 +68,29 @@ function getReactDiffProcessValue(prop) {
 const componentTemplate = `
 const ::_COMPONENT_NAME_::ViewConfig = VIEW_CONFIG;
 
+verifyComponentAttributeEquivalence('::_COMPONENT_NAME_::', ::_COMPONENT_NAME_::ViewConfig);
+
 ReactNativeViewConfigRegistry.register(
-  '::_COMPONENT_NAME_::',
+  '::_COMPONENT_NAME_WITH_COMPAT_SUPPORT_::',::_COMPAT_COMMENT_::
   () => ::_COMPONENT_NAME_::ViewConfig,
 );
+
+module.exports = '::_COMPONENT_NAME_::';
 `.trim();
 
+function normalizeInputEventName(name) {
+  if (name.startsWith('on')) {
+    return name.replace(/^on/, 'top');
+  } else if (!name.startsWith('top')) {
+    return `top${name[0].toUpperCase()}${name.slice(1)}`;
+  }
+
+  return name;
+}
 function generateBubblingEventInfo(event) {
   return j.property(
     'init',
-    j.identifier(event.name),
+    j.identifier(normalizeInputEventName(event.name)),
     j.objectExpression([
       j.property(
         'init',
@@ -118,8 +129,11 @@ function buildViewConfig(
   imports,
 ) {
   const componentProps = component.props;
+  const componentEvents = component.events;
 
-  let styleAttribute = null;
+  let viewAttributes = null;
+  let viewEvents = null;
+  let viewDirectEvents = null;
 
   component.extendsProps.forEach(extendProps => {
     switch (extendProps.type) {
@@ -127,13 +141,30 @@ function buildViewConfig(
         switch (extendProps.knownTypeName) {
           case 'ReactNativeCoreViewProps':
             imports.add(
-              "const ReactNativeStyleAttributes = require('ReactNativeStyleAttributes');",
+              "const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');",
             );
-            styleAttribute = j.property(
-              'init',
-              j.identifier('style'),
-              j.identifier('ReactNativeStyleAttributes'),
+
+            viewAttributes = j.spreadProperty(
+              j.memberExpression(
+                j.identifier('ReactNativeViewViewConfig'),
+                j.identifier('validAttributes'),
+              ),
             );
+
+            viewEvents = j.spreadProperty(
+              j.memberExpression(
+                j.identifier('ReactNativeViewViewConfig'),
+                j.identifier('bubblingEventTypes'),
+              ),
+            );
+
+            viewDirectEvents = j.spreadProperty(
+              j.memberExpression(
+                j.identifier('ReactNativeViewViewConfig'),
+                j.identifier('directEventTypes'),
+              ),
+            );
+
             return;
           default:
             (extendProps.knownTypeName: empty);
@@ -146,6 +177,7 @@ function buildViewConfig(
   });
 
   const validAttributes = j.objectExpression([
+    viewAttributes,
     ...componentProps.map(schemaProp => {
       return j.property(
         'init',
@@ -153,12 +185,16 @@ function buildViewConfig(
         getReactDiffProcessValue(schemaProp),
       );
     }),
-    styleAttribute,
+    ...componentEvents.map(eventType => {
+      return j.property('init', j.identifier(eventType.name), j.literal(true));
+    }),
   ]);
 
   const bubblingEventNames = component.events
     .filter(event => event.bubblingType === 'bubble')
     .map(generateBubblingEventInfo);
+
+  bubblingEventNames.unshift(viewEvents);
 
   const bubblingEvents =
     bubblingEventNames.length > 0
@@ -173,6 +209,8 @@ function buildViewConfig(
     .filter(event => event.bubblingType === 'direct')
     .map(generateDirectEventInfo);
 
+  directEventNames.unshift(viewDirectEvents);
+
   const directEvents =
     directEventNames.length > 0
       ? j.property(
@@ -182,12 +220,19 @@ function buildViewConfig(
         )
       : null;
 
+  const commands = j.property(
+    'init',
+    j.identifier('Commands'),
+    j.objectExpression([]),
+  );
+
   const properties = [
     j.property(
       'init',
       j.identifier('uiViewClassName'),
       j.literal(componentName),
     ),
+    commands,
     bubblingEvents,
     directEvents,
     j.property('init', j.identifier('validAttributes'), validAttributes),
@@ -198,11 +243,14 @@ function buildViewConfig(
 
 module.exports = {
   generate(libraryName: string, schema: SchemaType): FilesOutput {
-    const fileName = 'ViewConfigs.js';
+    const fileName = `${libraryName}NativeViewConfig.js`;
     const imports: Set<string> = new Set();
 
     imports.add(
       "const ReactNativeViewConfigRegistry = require('ReactNativeViewConfigRegistry');",
+    );
+    imports.add(
+      "const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');",
     );
 
     const moduleResults = Object.keys(schema.modules)
@@ -217,10 +265,22 @@ module.exports = {
           .map(componentName => {
             const component = components[componentName];
 
-            const replacedTemplate = componentTemplate.replace(
-              /::_COMPONENT_NAME_::/g,
-              componentName,
-            );
+            const compatabilityComponentName = `${
+              component.isDeprecatedPaperComponentNameRCT ? 'RCT' : ''
+            }${componentName}`;
+
+            const replacedTemplate = componentTemplate
+              .replace(/::_COMPONENT_NAME_::/g, componentName)
+              .replace(
+                /::_COMPONENT_NAME_WITH_COMPAT_SUPPORT_::/g,
+                compatabilityComponentName,
+              )
+              .replace(
+                /::_COMPAT_COMMENT_::/g,
+                component.isDeprecatedPaperComponentNameRCT
+                  ? ' // RCT prefix present for paper support'
+                  : '',
+              );
 
             const replacedSource: string = j
               .withParser('flow')(replacedTemplate)

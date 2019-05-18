@@ -13,8 +13,6 @@
 #import <react/components/slider/SliderComponentDescriptor.h>
 #import <react/components/slider/SliderLocalData.h>
 
-#import "MainQueueExecutor.h"
-
 using namespace facebook::react;
 
 @implementation RCTSliderComponentView {

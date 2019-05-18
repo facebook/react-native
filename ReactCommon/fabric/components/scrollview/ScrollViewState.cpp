@@ -5,17 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include <folly/Executor.h>
+#include "ScrollViewState.h"
 
 namespace facebook {
 namespace react {
 
-class MainQueueExecutor : public folly::Executor {
- public:
-  static MainQueueExecutor &instance();
-
-  void add(folly::Func function) override;
-};
+Size ScrollViewState::getContentSize() const {
+  return Size{contentBoundingRect.getMaxX(), contentBoundingRect.getMaxY()};
+}
 
 } // namespace react
 } // namespace facebook

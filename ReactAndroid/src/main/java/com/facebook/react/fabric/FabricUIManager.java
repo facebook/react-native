@@ -187,7 +187,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       int rootTag,
       int reactTag,
       final String componentName,
-      ReadableMap props,
+      @Nullable ReadableMap props,
       boolean isLayoutable) {
     ThemedReactContext context = mReactContextForRootTag.get(rootTag);
     String component = getComponent(componentName);
@@ -280,6 +280,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       String componentName,
       ReadableMap localData,
       ReadableMap props,
+      ReadableMap state,
       float minWidth,
       float maxWidth,
       float minHeight,
@@ -290,6 +291,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
         componentName,
         localData,
         props,
+        state,
         getYogaSize(minWidth, maxWidth),
         getYogaMeasureMode(minWidth, maxWidth),
         getYogaSize(minHeight, maxHeight),
@@ -451,7 +453,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   @Override
   public void dispatchCommand(
-      final int reactTag, final int commandId, final ReadableArray commandArgs) {
+      final int reactTag, final int commandId, @Nullable final ReadableArray commandArgs) {
     synchronized (mMountItemsLock) {
       mMountItems.add(new DispatchCommandMountItem(reactTag, commandId, commandArgs));
     }

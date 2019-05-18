@@ -24,7 +24,8 @@ class State {
  public:
   using Shared = std::shared_ptr<const State>;
 
-  State(StateCoordinator::Shared stateCoordinator);
+  explicit State(State const &state);
+  explicit State(StateCoordinator::Shared const &stateCoordinator);
   virtual ~State() = default;
 
 #ifdef ANDROID

@@ -46,7 +46,9 @@ function reportException(e: ExtendedError, isFatal: boolean) {
         .then(prettyStack => {
           if (prettyStack) {
             const stackWithoutInternalCallsites = prettyStack.filter(
-              frame => frame.file.match(INTERNAL_CALLSITES_REGEX) === null,
+              frame =>
+                frame.file &&
+                frame.file.match(INTERNAL_CALLSITES_REGEX) === null,
             );
             ExceptionsManager.updateExceptionMessage(
               message,

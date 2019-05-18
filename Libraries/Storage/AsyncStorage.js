@@ -14,11 +14,9 @@
 
 const NativeModules = require('../BatchedBridge/NativeModules');
 
-// Use RocksDB if available, then SQLite, then file storage.
+// Use SQLite if available, otherwise file storage.
 const RCTAsyncStorage =
-  NativeModules.AsyncRocksDBStorage ||
-  NativeModules.AsyncSQLiteDBStorage ||
-  NativeModules.AsyncLocalStorage;
+  NativeModules.AsyncSQLiteDBStorage || NativeModules.AsyncLocalStorage;
 
 /**
  * `AsyncStorage` is a simple, unencrypted, asynchronous, persistent, key-value

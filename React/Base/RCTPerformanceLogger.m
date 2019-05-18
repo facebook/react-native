@@ -42,6 +42,8 @@
       @"NativeModulePrepareConfig",
       @"NativeModuleMainThreadUsesCount",
       @"NativeModuleSetup",
+      @"TurboModuleSetup",
+      @"JSCWrapperOpenLibrary",
       @"BridgeStartup",
       @"RootViewTTI",
       @"BundleSize",

@@ -174,7 +174,7 @@ public class MountingManager {
       ThemedReactContext themedReactContext,
       String componentName,
       int reactTag,
-      ReadableMap props,
+      @Nullable ReadableMap props,
       boolean isLayoutable) {
     if (mTagToViewState.get(reactTag) != null) {
       return;
@@ -312,7 +312,7 @@ public class MountingManager {
       ThemedReactContext reactContext,
       String componentName,
       int reactTag,
-      ReadableMap props,
+      @Nullable ReadableMap props,
       boolean isLayoutable) {
 
     if (mTagToViewState.get(reactTag) != null) {
@@ -336,6 +336,7 @@ public class MountingManager {
       String componentName,
       ReadableMap localData,
       ReadableMap props,
+      ReadableMap state,
       float width,
       YogaMeasureMode widthMode,
       float height,
@@ -343,7 +344,7 @@ public class MountingManager {
 
     return mViewManagerRegistry
         .get(componentName)
-        .measure(context, localData, props, width, widthMode, height, heightMode);
+        .measure(context, localData, props, state, width, widthMode, height, heightMode);
   }
 
   @AnyThread

@@ -8,10 +8,12 @@
 #import "RCTScrollViewComponentView.h"
 
 #import <React/RCTAssert.h>
+#import <React/RNGenericDelegateSplitter.h>
+
 #import <react/components/scrollview/ScrollViewComponentDescriptor.h>
 #import <react/components/scrollview/ScrollViewEventEmitter.h>
-#import <react/components/scrollview/ScrollViewLocalData.h>
 #import <react/components/scrollview/ScrollViewProps.h>
+#import <react/components/scrollview/ScrollViewState.h>
 #import <react/graphics/Geometry.h>
 
 #import "RCTConversions.h"
@@ -28,7 +30,9 @@ using namespace facebook::react;
 @implementation RCTScrollViewComponentView {
   RCTEnhancedScrollView *_Nonnull _scrollView;
   UIView *_Nonnull _contentView;
-  SharedScrollViewLocalData _scrollViewLocalData;
+  ScrollViewShadowNode::ConcreteState::Shared _state;
+  CGSize _contentSize;
+  RNGenericDelegateSplitter<id<UIScrollViewDelegate>> *_scrollViewDelegateSplitter;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -39,11 +43,16 @@ using namespace facebook::react;
 
     _scrollView = [[RCTEnhancedScrollView alloc] initWithFrame:self.bounds];
     _scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    _scrollView.delegate = self;
     _scrollView.delaysContentTouches = NO;
     _contentView = [[UIView alloc] initWithFrame:_scrollView.bounds];
     [_scrollView addSubview:_contentView];
     [self addSubview:_scrollView];
+
+    _scrollViewDelegateSplitter = [[RNGenericDelegateSplitter alloc] initWithDelegateUpdateBlock:^(id delegate) {
+      self->_scrollView.delegate = delegate;
+    }];
+
+    [_scrollViewDelegateSplitter addDelegate:self];
   }
 
   return self;
@@ -101,11 +110,18 @@ using namespace facebook::react;
   // MAP_SCROLL_VIEW_PROP(snapToAlignment);
 }
 
-- (void)updateLocalData:(SharedLocalData)localData oldLocalData:(SharedLocalData)oldLocalData
+- (void)updateState:(State::Shared)state oldState:(State::Shared)oldState
 {
-  assert(std::dynamic_pointer_cast<const ScrollViewLocalData>(localData));
-  _scrollViewLocalData = std::static_pointer_cast<const ScrollViewLocalData>(localData);
-  CGSize contentSize = RCTCGSizeFromSize(_scrollViewLocalData->getContentSize());
+  assert(std::dynamic_pointer_cast<ScrollViewShadowNode::ConcreteState const>(state));
+  _state = std::static_pointer_cast<ScrollViewShadowNode::ConcreteState const>(state);
+
+  CGSize contentSize = RCTCGSizeFromSize(_state->getData().getContentSize());
+
+  if (CGSizeEqualToSize(_contentSize, contentSize)) {
+    return;
+  }
+
+  _contentSize = contentSize;
   _contentView.frame = CGRect{CGPointZero, contentSize};
   _scrollView.contentSize = contentSize;
 }
@@ -130,6 +146,17 @@ using namespace facebook::react;
   metrics.containerSize = RCTSizeFromCGSize(_scrollView.bounds.size);
   metrics.zoomScale = _scrollView.zoomScale;
   return metrics;
+}
+
+- (void)_updateStateWithContentOffset
+{
+  auto contentOffset = RCTPointFromCGPoint(_scrollView.contentOffset);
+
+  _state->updateState([contentOffset](ScrollViewShadowNode::ConcreteState::Data const &data) {
+    auto newData = data;
+    newData.contentOffset = contentOffset;
+    return newData;
+  });
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -165,11 +192,13 @@ using namespace facebook::react;
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
   std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onMomentumScrollEnd([self _scrollViewMetrics]);
+  [self _updateStateWithContentOffset];
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
 {
   std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onMomentumScrollEnd([self _scrollViewMetrics]);
+  [self _updateStateWithContentOffset];
 }
 
 - (void)scrollViewWillBeginZooming:(UIScrollView *)scrollView withView:(nullable UIView *)view
@@ -180,6 +209,7 @@ using namespace facebook::react;
 - (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(nullable UIView *)view atScale:(CGFloat)scale
 {
   std::static_pointer_cast<const ScrollViewEventEmitter>(_eventEmitter)->onScrollEndDrag([self _scrollViewMetrics]);
+  [self _updateStateWithContentOffset];
 }
 
 @end

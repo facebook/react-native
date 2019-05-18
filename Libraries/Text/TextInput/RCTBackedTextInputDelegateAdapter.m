@@ -28,27 +28,15 @@ static void *TextFieldSelectionObservingContext = &TextFieldSelectionObservingCo
 
     [_backedTextInputView addTarget:self action:@selector(textFieldDidChange) forControlEvents:UIControlEventEditingChanged];
     [_backedTextInputView addTarget:self action:@selector(textFieldDidEndEditingOnExit) forControlEvents:UIControlEventEditingDidEndOnExit];
-    [_backedTextInputView addObserver:self forKeyPath:@"selectedTextRange" options:NSKeyValueObservingOptionNew context:NULL];
   }
 
   return self;
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-  // UITextField doesn't have a delegate like UITextView to get notified on selection. Use KVO to observe changes.
-  if ([keyPath isEqualToString:@"selectedTextRange"]) {
-    [self textFieldProbablyDidChangeSelection];
-  } else {
-    [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-  }
 }
 
 - (void)dealloc
 {
   [_backedTextInputView removeTarget:self action:nil forControlEvents:UIControlEventEditingChanged];
   [_backedTextInputView removeTarget:self action:nil forControlEvents:UIControlEventEditingDidEndOnExit];
-  [_backedTextInputView removeObserver:self forKeyPath:@"selectedTextRange"];
 }
 
 #pragma mark - UITextFieldDelegate

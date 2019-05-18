@@ -52,7 +52,7 @@ type RequiredProps = {
   // `VirtualizedSectionList`'s props.
   renderItem: $FlowFixMe<renderItemType>,
   /**
-   * The default accessor functions assume this is an Array<{key: string}> but you can override
+   * The default accessor functions assume this is an Array<{key: string} | {id: string}> but you can override
    * getItem, getItemCount, and keyExtractor to handle any type of index-based data.
    */
   data?: any,
@@ -264,7 +264,7 @@ type State = {first: number, last: number};
  *   offscreen. This means it's possible to scroll faster than the fill rate ands momentarily see
  *   blank content. This is a tradeoff that can be adjusted to suit the needs of each application,
  *   and we are working on improving it behind the scenes.
- * - By default, the list looks for a `key` prop on each item and uses that for the React key.
+ * - By default, the list looks for a `key` or `id` prop on each item and uses that for the React key.
  *   Alternatively, you can provide a custom `keyExtractor` prop.
  *
  */
@@ -434,6 +434,9 @@ class VirtualizedList extends React.PureComponent<Props, State> {
     keyExtractor: (item: Item, index: number) => {
       if (item.key != null) {
         return item.key;
+      }
+      if (item.id != null) {
+        return item.id;
       }
       _usedIndexForKey = true;
       if (item.type && item.type.displayName) {
@@ -849,7 +852,7 @@ class VirtualizedList extends React.PureComponent<Props, State> {
       );
       if (!this._hasWarned.keys && _usedIndexForKey) {
         console.warn(
-          'VirtualizedList: missing keys for items, make sure to specify a key property on each ' +
+          'VirtualizedList: missing keys for items, make sure to specify a key or id property on each ' +
             'item or provide a custom keyExtractor.',
           _keylessItemComponentName,
         );

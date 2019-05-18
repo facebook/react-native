@@ -11,26 +11,26 @@
 'use strict';
 
 import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Linking} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import openURLInBrowser from 'react-native/Libraries/Core/Devtools/openURLInBrowser';
 import Colors from './Colors';
 
 const links = [
   {
     title: 'The Basics',
     link: 'https://facebook.github.io/react-native/docs/tutorial',
-    description:
-      'Read the docs on what to do once seen how to work in React Native.',
+    description: 'Explains a Hello World for React Native.',
   },
   {
     title: 'Style',
     link: 'https://facebook.github.io/react-native/docs/style',
-    description: 'All of the core components accept a prop named style.',
+    description:
+      'Covers how to use the prop named style which controls the visuals.',
   },
   {
     title: 'Layout',
     link: 'https://facebook.github.io/react-native/docs/flexbox',
-    description:
-      'A component can specify the layout of its children using the flexbox specification.',
+    description: 'React Native uses flexbox for layout, learn how it works.',
   },
   {
     title: 'Components',
@@ -54,6 +54,12 @@ const links = [
     description:
       'Need more help? There are many other React Native developers who may have the answer.',
   },
+  {
+    title: 'Follow us on Twitter',
+    link: 'https://twitter.com/reactnative',
+    description:
+      'Stay in touch with the community, join in on Q&As and more by following React Native on Twitter.',
+  },
 ];
 
 const LinkList = () => (
@@ -64,7 +70,7 @@ const LinkList = () => (
           <View style={styles.separator} />
           <TouchableOpacity
             accessibilityRole={'button'}
-            onPress={() => Linking.openURL(item.link)}
+            onPress={() => openURLInBrowser(item.link)}
             style={styles.linkContainer}>
             <Text style={styles.link}>{item.title}</Text>
             <Text style={styles.description}>{item.description}</Text>

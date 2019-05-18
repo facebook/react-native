@@ -3,10 +3,11 @@ load("//tools/build_defs/oss:rn_defs.bzl", "ANDROID", "APPLE", "react_native_xpl
 rn_xplat_cxx_library(
     name = "jscallinvoker",
     srcs = [
-        "jsireact/JSCallInvoker.cpp",
+        "jsireact/BridgeJSCallInvoker.cpp",
     ],
     header_namespace = "",
     exported_headers = {
+        "jsireact/BridgeJSCallInvoker.h": "jsireact/BridgeJSCallInvoker.h",
         "jsireact/JSCallInvoker.h": "jsireact/JSCallInvoker.h",
     },
     compiler_flags = [
