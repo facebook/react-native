@@ -12,8 +12,10 @@
 
 import type {TurboModule} from 'RCTExport';
 import * as TurboModuleRegistry from 'TurboModuleRegistry';
+import Platform from 'Platform';
 
 export interface Spec extends TurboModule {
+  // Exported methods.
   +getConstants: () => {|
     // Common interface
     isTesting: boolean,
@@ -44,4 +46,6 @@ export interface Spec extends TurboModule {
   +getAndroidID?: () => string;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('Platform');
+export default (Platform.OS === 'ios'
+  ? TurboModuleRegistry.getEnforcing<Spec>('Platform')
+  : TurboModuleRegistry.getEnforcing<Spec>('AndroidInfoModule'));
