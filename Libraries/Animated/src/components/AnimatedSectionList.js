@@ -14,4 +14,6 @@ const SectionList = require('../../../Lists/SectionList');
 
 const createAnimatedComponent = require('../createAnimatedComponent');
 
-module.exports = createAnimatedComponent(SectionList);
+module.exports = createAnimatedComponent(SectionList, {
+  scrollEventThrottle: 0.0001,
+});
