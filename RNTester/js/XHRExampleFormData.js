@@ -12,9 +12,6 @@
 
 const React = require('react');
 const {
-  CameraRoll,
-  Image,
-  ImageEditor,
   Platform,
   StyleSheet,
   Text,
@@ -24,8 +21,6 @@ const {
 } = require('react-native');
 
 const XHRExampleBinaryUpload = require('./XHRExampleBinaryUpload');
-
-const PAGE_SIZE = 20;
 
 class XHRExampleFormData extends React.Component<Object, Object> {
   state: Object = {
@@ -39,41 +34,11 @@ class XHRExampleFormData extends React.Component<Object, Object> {
 
   constructor(props: Object) {
     super(props);
-    this._fetchRandomPhoto();
   }
 
   componentWillUnmount() {
     this._isMounted = false;
   }
-
-  _fetchRandomPhoto = () => {
-    CameraRoll.getPhotos({
-      first: PAGE_SIZE,
-      groupTypes: Platform.OS === 'ios' ? 'All' : undefined,
-      assetType: 'All',
-    }).then(
-      data => {
-        if (!this._isMounted) {
-          return;
-        }
-        const edges = data.edges;
-        const edge = edges[Math.floor(Math.random() * edges.length)];
-        const randomPhoto = edge && edge.node && edge.node.image;
-        if (randomPhoto) {
-          let {width, height} = randomPhoto;
-          width *= 0.25;
-          height *= 0.25;
-          ImageEditor.cropImage(
-            randomPhoto.uri,
-            {offset: {x: 0, y: 0}, size: {width, height}},
-            uri => this.setState({randomPhoto: {uri}}),
-            error => undefined,
-          );
-        }
-      },
-      error => undefined,
-    );
-  };
 
   _addTextParam = () => {
     const textParams = this.state.textParams;
@@ -101,13 +66,6 @@ class XHRExampleFormData extends React.Component<Object, Object> {
       XHRExampleBinaryUpload.handlePostTestServerUpload(xhr);
     };
     const formdata = new FormData();
-    if (this.state.randomPhoto) {
-      formdata.append('image', {
-        ...this.state.randomPhoto,
-        type: 'image/jpg',
-        name: 'image.jpg',
-      });
-    }
     this.state.textParams.forEach(param =>
       formdata.append(param.name, param.value),
     );
@@ -122,12 +80,6 @@ class XHRExampleFormData extends React.Component<Object, Object> {
   };
 
   render() {
-    let image = null;
-    if (this.state.randomPhoto) {
-      image = (
-        <Image source={this.state.randomPhoto} style={styles.randomPhoto} />
-      );
-    }
     const textItems = this.state.textParams.map((item, index) => (
       <View style={styles.paramRow}>
         <TextInput
@@ -166,16 +118,6 @@ class XHRExampleFormData extends React.Component<Object, Object> {
     }
     return (
       <View>
-        <View style={styles.paramRow}>
-          <Text style={styles.photoLabel}>
-            Random photo from your library (
-            <Text style={styles.textButton} onPress={this._fetchRandomPhoto}>
-              update
-            </Text>
-            )
-          </Text>
-          {image}
-        </View>
         {textItems}
         <View>
           <Text

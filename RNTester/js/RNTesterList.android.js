@@ -141,10 +141,6 @@ const APIExamples: Array<RNTesterExample> = [
     module: require('./BorderExample'),
   },
   {
-    key: 'CameraRollExample',
-    module: require('./CameraRollExample'),
-  },
-  {
     key: 'ClipboardExample',
     module: require('./ClipboardExample'),
   },
