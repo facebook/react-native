@@ -13,11 +13,6 @@
 import type {TurboModule} from 'RCTExport';
 import * as TurboModuleRegistry from 'TurboModuleRegistry';
 
-// Native close method definition on Android
-declare function close(code: number, reason: string, socketID: number): void;
-// Native close method definition on iOS
-declare function close(socketID: number): void;
-
 export interface Spec extends TurboModule {
   +connect: (
     url: string,
@@ -28,7 +23,7 @@ export interface Spec extends TurboModule {
   +send: (message: string, socketID: number) => void;
   +sendBinary: (base64String: string, socketID: number) => void;
   +ping: (socketID: number) => void;
-  +close: typeof close;
+  +close: (socketID: number) => void;
 
   // Events
   +addListener: (eventName: string) => void;
