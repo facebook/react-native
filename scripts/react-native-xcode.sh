@@ -57,6 +57,11 @@ REACT_NATIVE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # in node_modules.
 PROJECT_ROOT=${PROJECT_ROOT:-"$REACT_NATIVE_DIR/../.."}
 
+PROJECT_ROOT_OVERRIDE=$2
+if [ "$PROJECT_ROOT_OVERRIDE" != "" ]; then
+  PROJECT_ROOT=$PROJECT_ROOT_OVERRIDE
+fi
+
 cd "$PROJECT_ROOT" || exit
 
 # Define NVM_DIR and source the nvm.sh setup script
