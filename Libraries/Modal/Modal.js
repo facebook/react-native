@@ -220,7 +220,7 @@ class Modal extends React.Component<Props> {
     }
 
     const containerStyles = {
-      backgroundColor: this.props.transparent ? 'transparent' : 'white',
+      backgroundColor: this.props.transparent ? 'transparent' : 'rgba(0, 0, 0, 0.5)',
     };
 
     let animationType = this.props.animationType;
