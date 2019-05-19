@@ -11,6 +11,7 @@
 'use strict';
 
 const NativeModules = require('../BatchedBridge/NativeModules');
+const Platform = require('../Utilities/Platform');
 import NativePermissionsAndroid, {
   PERMISSION_REQUEST_RESULT,
   PERMISSIONS,
@@ -51,6 +52,10 @@ class PermissionsAndroid {
     console.warn(
       '"PermissionsAndroid.checkPermission" is deprecated. Use "PermissionsAndroid.check" instead',
     );
+    if (Platform.OS !== 'android') {
+      return Promise.resolve(false);
+    }
+
     return NativePermissionsAndroid.checkPermission(permission);
   }
 
@@ -61,6 +66,9 @@ class PermissionsAndroid {
    * See https://facebook.github.io/react-native/docs/permissionsandroid.html#check
    */
   check(permission: PermissionType): Promise<boolean> {
+    if (Platform.OS !== 'android') {
+      return Promise.resolve(false);
+    }
     return NativePermissionsAndroid.checkPermission(permission);
   }
 
@@ -85,6 +93,10 @@ class PermissionsAndroid {
     console.warn(
       '"PermissionsAndroid.requestPermission" is deprecated. Use "PermissionsAndroid.request" instead',
     );
+    if (Platform.OS !== 'android') {
+      return Promise.resolve(false);
+    }
+
     const response = await this.request(permission, rationale);
     return response === this.RESULTS.GRANTED;
   }
@@ -99,6 +111,10 @@ class PermissionsAndroid {
     permission: PermissionType,
     rationale?: Rationale,
   ): Promise<PermissionStatus> {
+    if (Platform.OS !== 'android') {
+      return Promise.resolve(this.RESULTS.DENIED);
+    }
+
     if (rationale) {
       const shouldShowRationale = await NativePermissionsAndroid.shouldShowRequestPermissionRationale(
         permission,
@@ -128,6 +144,10 @@ class PermissionsAndroid {
   requestMultiple(
     permissions: Array<PermissionType>,
   ): Promise<{[permission: PermissionType]: PermissionStatus}> {
+    if (Platform.OS !== 'android') {
+      return Promise.resolve({});
+    }
+
     return NativePermissionsAndroid.requestMultiplePermissions(permissions);
   }
 }
