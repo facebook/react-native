@@ -309,6 +309,16 @@ jobs:
           name: JavaScript Test Suite
           command: node ./scripts/run-ci-javascript-tests.js --maxWorkers 2
 
+      - run:
+          name: JavaScript End-to-End Tests
+          command: |
+            # free up port 8081 for the packager before running tests
+            set +eo pipefail
+            lsof -i tcp:8081 | awk 'NR!=1 {print $2}' | xargs kill
+            set -eo pipefail
+            node ./scripts/run-ci-e2e-tests.js --js --retries 3
+          when: always
+
       - store_test_results:
           path: ~/react-native/reports/junit
 
@@ -449,11 +459,21 @@ jobs:
             # kill whatever is occupying port 5555 (web socket server)
             lsof -i tcp:5555 | awk 'NR!=1 {print $2}' | xargs kill
 
+      # - run:
+      #     name: Run iOS End-to-End Tests
+      #     command: |
+      #       # free up port 8081 for the packager before running tests
+      #       set +eo pipefail
+      #       lsof -i tcp:8081 | awk 'NR!=1 {print $2}' | xargs kill
+      #       set -eo pipefail
+      #       node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
+      #     when: always
+
       - store_test_results:
           path: ~/react-native/reports/junit
 
-  # Runs end-to-end tests
-  test_end_to_end:
+  # Runs Detox iOS tests
+  test_detox_ios:
     <<: *macos_defaults
     steps:
       - attach_workspace:
@@ -487,34 +507,14 @@ jobs:
       - save-cache: *save-yarn-cache
 
       # Xcode build
-      # - run:
-      #     name: Build app for Detox iOS End-to-End Tests
-      #     command: yarn run build-ios-e2e
+      - run:
+          name: Build app for Detox iOS End-to-End Tests
+          command: yarn run build-ios-e2e
 
       # Test
-      # - run:
-      #     name: Run Detox iOS End-to-End Tests
-      #     command: yarn run test-ios-e2e
-      #     when: always
-
       - run:
-          name: Run JavaScript End-to-End Tests
-          command: |
-            # free up port 8081 for the packager before running tests
-            set +eo pipefail
-            lsof -i tcp:8081 | awk 'NR!=1 {print $2}' | xargs kill
-            set -eo pipefail
-            node ./scripts/run-ci-e2e-tests.js --js --retries 3
-          when: always
-
-      - run:
-          name: Run iOS End-to-End Tests
-          command: |
-            # free up port 8081 for the packager before running tests
-            set +eo pipefail
-            lsof -i tcp:8081 | awk 'NR!=1 {print $2}' | xargs kill
-            set -eo pipefail
-            node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
+          name: Run Detox iOS End-to-End Tests
+          command: yarn run test-ios-e2e
           when: always
 
 
@@ -721,7 +721,7 @@ workflows:
       - test_javascript: *run-after-checkout
       - test_android: *run-after-checkout
       - test_ios: *run-after-checkout
-      - test_end_to_end: *run-after-checkout
+      # - test_detox_ios: *run-after-checkout
       - test_docker_build:
           filters: *filter-ignore-gh-pages
 
