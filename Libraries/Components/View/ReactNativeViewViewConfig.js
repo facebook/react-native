@@ -110,6 +110,7 @@ const ReactNativeViewConfig = {
     accessibilityLiveRegion: true,
     accessibilityRole: true,
     accessibilityStates: true,
+    accessibilityState: true,
     accessibilityViewIsModal: true,
     accessible: true,
     alignContent: true,

@@ -18,6 +18,7 @@ import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.CollectionItemInfoCompat;
+import android.util.Log;
 import android.view.View;
 
 import com.facebook.react.bridge.Arguments;
@@ -42,6 +43,7 @@ import javax.annotation.Nullable;
 
 public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
 
+  private static final String TAG = "ReactAccessibilityDelegate";
   private static int sCounter = 0x3f000000;
 
   public static final HashMap<String, Integer> sActionIdMap= new HashMap<>();
@@ -217,6 +219,7 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
   }
   
   private static void setState(AccessibilityNodeInfoCompat info, ReadableMap accessibilityState, Context context) {
+    Log.d(TAG, "setState " + accessibilityState);
     final ReadableMapKeySetIterator i = accessibilityState.keySetIterator();
     while (i.hasNextKey()) {
       final String state = i.nextKey();
