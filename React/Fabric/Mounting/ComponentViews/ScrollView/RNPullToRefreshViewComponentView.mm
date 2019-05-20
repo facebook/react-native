@@ -7,13 +7,12 @@
 
 #import "RNPullToRefreshViewComponentView.h"
 
-#import <react/components/scrollview/PullToRefreshViewComponentDescriptor.h>
-#import <react/components/scrollview/PullToRefreshViewEventEmitter.h>
-#import <react/components/scrollview/PullToRefreshViewProps.h>
+#import <react/components/rncore/ComponentDescriptors.h>
+#import <react/components/rncore/EventEmitters.h>
+#import <react/components/rncore/Props.h>
 
 #import <React/RCTScrollViewComponentView.h>
 #import <React/RCTConversions.h>
-
 
 using namespace facebook::react;
 
@@ -81,7 +80,7 @@ using namespace facebook::react;
 
 - (void)handleUIControlEventValueChanged
 {
-  std::static_pointer_cast<PullToRefreshViewEventEmitter const>(_eventEmitter)->onRefresh();
+  std::static_pointer_cast<PullToRefreshViewEventEmitter const>(_eventEmitter)->onRefresh({});
 }
 
 - (void)_updateTitle
