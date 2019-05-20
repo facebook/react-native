@@ -185,10 +185,6 @@ const APIExamples: Array<RNTesterExample> = [
     module: require('./NativeAnimationsExample'),
   },
   {
-    key: 'NetInfoExample',
-    module: require('./NetInfoExample'),
-  },
-  {
     key: 'OrientationChangeExample',
     module: require('./OrientationChangeExample'),
   },
