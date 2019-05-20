@@ -34,7 +34,7 @@ class Binding : public jni::HybridClass<Binding>, public SchedulerDelegate {
 
  private:
   void setConstraints(
-      jint rootTag,
+      jint surfaceId,
       jfloat minWidth,
       jfloat maxWidth,
       jfloat minHeight,

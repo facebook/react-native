@@ -67,7 +67,7 @@ void Binding::stopSurface(jint surfaceId) {
 }
 
 void Binding::setConstraints(
-    jint rootTag,
+    jint surfaceId,
     jfloat minWidth,
     jfloat maxWidth,
     jfloat minHeight,
@@ -84,7 +84,7 @@ void Binding::setConstraints(
     constraints.minimumSize = minimumSize;
     constraints.maximumSize = maximumSize;
 
-    scheduler_->constraintSurfaceLayout(rootTag, constraints, context);
+    scheduler_->constraintSurfaceLayout(surfaceId, constraints, context);
   }
 }
 
@@ -329,7 +329,7 @@ local_ref<JMountItem::javaobject> createDeleteMountItem(
 local_ref<JMountItem::javaobject> createCreateMountItem(
     const jni::global_ref<jobject>& javaUIManager,
     const ShadowViewMutation& mutation,
-    const Tag rootTag) {
+    const Tag surfaceId) {
   static auto createJavaInstruction =
       jni::findClassStatic(UIManagerJavaDescriptor)
           ->getMethod<alias_ref<JMountItem>(jstring, jint, jint, jboolean)>(
@@ -345,7 +345,7 @@ local_ref<JMountItem::javaobject> createCreateMountItem(
   return createJavaInstruction(
       javaUIManager,
       componentName.get(),
-      rootTag,
+      surfaceId,
       newChildShadowView.tag,
       isLayoutable);
 }
