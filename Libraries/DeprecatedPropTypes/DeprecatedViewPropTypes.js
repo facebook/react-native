@@ -78,6 +78,7 @@ module.exports = {
   accessibilityStates: PropTypes.arrayOf(
     PropTypes.oneOf(DeprecatedAccessibilityStates),
   ),
+  accessibilityState: PropTypes.object,
   /**
    * Indicates to accessibility services whether the user should be notified
    * when this view changes. Works for Android API >= 19 only.
