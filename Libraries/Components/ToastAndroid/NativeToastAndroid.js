@@ -12,7 +12,6 @@
 
 import type {TurboModule} from 'RCTExport';
 import * as TurboModuleRegistry from 'TurboModuleRegistry';
-import {Platform} from 'react-native';
 
 export interface Spec extends TurboModule {
   +getConstants: () => {|
@@ -38,6 +37,4 @@ export interface Spec extends TurboModule {
   ) => void;
 }
 
-export default (Platform.OS === 'android'
-  ? TurboModuleRegistry.getEnforcing<Spec>('ToastAndroid')
-  : null);
+export default TurboModuleRegistry.getEnforcing<Spec>('ToastAndroid');

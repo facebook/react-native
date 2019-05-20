@@ -36,7 +36,6 @@ const ToastAndroid = {
   // Toast duration constants
   SHORT: NativeToastAndroid.getConstants().SHORT,
   LONG: NativeToastAndroid.getConstants().LONG,
-
   // Toast gravity constants
   TOP: NativeToastAndroid.getConstants().TOP,
   BOTTOM: NativeToastAndroid.getConstants().BOTTOM,
