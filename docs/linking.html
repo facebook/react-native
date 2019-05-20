@@ -115,8 +115,8 @@
 }
 </code></pre>
 <p>If your app is using <a href="https://developer.apple.com/library/prerelease/ios/documentation/General/Conceptual/AppSearch/UniversalLinks.html">Universal Links</a>, you'll need to add the following code as well:</p>
-<pre><code class="hljs css language-objectivec">- (<span class="hljs-built_in">BOOL</span>)application:(<span class="hljs-built_in">UIApplication</span> *)application continueUserActivity:(<span class="hljs-built_in">NSUserActivity</span> *)userActivity
- restorationHandler:(<span class="hljs-keyword">void</span> (^)(<span class="hljs-built_in">NSArray</span> * _Nullable))restorationHandler
+<pre><code class="hljs css language-objectivec">- (<span class="hljs-built_in">BOOL</span>)application:(<span class="hljs-built_in">UIApplication</span> *)application continueUserActivity:(<span class="hljs-keyword">nonnull</span> <span class="hljs-built_in">NSUserActivity</span> *)userActivity
+ restorationHandler:(<span class="hljs-keyword">nonnull</span> <span class="hljs-keyword">void</span> (^)(<span class="hljs-built_in">NSArray</span>&lt;<span class="hljs-keyword">id</span>&lt;<span class="hljs-built_in">UIUserActivityRestoring</span>&gt;&gt; * _Nullable))restorationHandler
 {
  <span class="hljs-keyword">return</span> [RCTLinkingManager application:application
                   continueUserActivity:userActivity
@@ -156,6 +156,7 @@
 <li><a href="/react-native/docs/linking#removeeventlistener"><code>removeEventListener</code></a></li>
 <li><a href="/react-native/docs/linking#openurl"><code>openURL</code></a></li>
 <li><a href="/react-native/docs/linking#canopenurl"><code>canOpenURL</code></a></li>
+<li><a href="/react-native/docs/linking#opensettings"><code>openSettings</code></a></li>
 <li><a href="/react-native/docs/linking#getinitialurl"><code>getInitialURL</code></a></li>
 </ul>
 <hr>
@@ -202,6 +203,7 @@
 </code></pre>
 <p>Determine whether or not an installed app can handle a given URL.</p>
 <p>The method returns a <code>Promise</code> object. When it is determined whether or not the given URL can be handled, the promise is resolved and the first parameter is whether or not it can be opened.</p>
+<p>The <code>Promise</code> will reject on Android if it was impossible to check if the URL can be opened, and on iOS if you didn't add the specific scheme in the <code>LSApplicationQueriesSchemes</code> key inside <code>Info.plist</code> (see bellow).</p>
 <p><strong>Parameters:</strong></p>
 <table>
 <thead>
@@ -217,6 +219,17 @@
 <blockquote>
 <p>As of iOS 9, your app needs to provide the <code>LSApplicationQueriesSchemes</code> key inside <code>Info.plist</code> or canOpenURL will always return false.</p>
 </blockquote>
+<blockquote>
+<p>This method has limitations on iOS 9+. From <a href="https://developer.apple.com/documentation/uikit/uiapplication/1622952-canopenurl">the official Apple documentation</a>:</p>
+</blockquote>
+<blockquote>
+<p>If your app is linked against an earlier version of iOS but is running in iOS 9.0 or later, you can call this method up to 50 times. After reaching that limit, subsequent calls always return false. If the user reinstalls or upgrades the app, iOS resets the limit.</p>
+</blockquote>
+<hr>
+<h3><a class="anchor" aria-hidden="true" id="opensettings"></a><a href="#opensettings" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>openSettings()</code></h3>
+<pre><code class="hljs css language-javascript"><span class="token function">openSettings</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>Open the Settings app and displays the app’s custom settings, if it has any.</p>
 <hr>
 <h3><a class="anchor" aria-hidden="true" id="getinitialurl"></a><a href="#getinitialurl" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a><code>getInitialURL()</code></h3>
 <pre><code class="hljs css language-javascript"><span class="token function">getInitialURL</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
