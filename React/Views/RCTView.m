@@ -95,7 +95,7 @@ static NSString *RCTRecursiveAccessibilityLabel(UIView *view)
       [str appendString:label];
     }
   }
-  return str;
+  return str.length == 0 ? nil : str;
 }
 
 @implementation RCTView
