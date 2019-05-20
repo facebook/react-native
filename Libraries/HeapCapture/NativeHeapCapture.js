@@ -15,10 +15,7 @@ import * as TurboModuleRegistry from 'TurboModuleRegistry';
 import {Platform} from 'react-native';
 
 export interface Spec extends TurboModule {
-  // Common interface
   +captureHeap: (path: string) => void;
-
-  // Android only
   +captureComplete: (path: string, error: ?string) => void;
 }
 
