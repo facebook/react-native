@@ -1,3 +1,38 @@
+version: 2.1
+
+executors:
+  executor_defaults: &executor_defaults
+    working_directory: ~/react-native
+    environment:
+      - GIT_COMMIT_DESC: git log --format=oneline -n 1 $CIRCLE_SHA1
+
+  reactnativeandroid:
+    <<: *executor_defaults
+    docker:
+      - image: reactnativecommunity/react-native-android:2019-5-7
+    resource_class: "large"
+    environment:
+      - TERM: "dumb"
+      - ADB_INSTALL_TIMEOUT: 10
+      - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
+      - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
+      - BUILD_THREADS: 2
+
+  reactnativenode:
+    <<: *executor_defaults
+    docker:
+      - image: node:8
+
+  reactnativenodelts:
+    <<: *executor_defaults
+    docker:
+      - image: node:lts
+
+  reactnativeios:
+    <<: *executor_defaults
+    macos:
+      xcode: "10.2.0"
+
 # -------------------------
 #        ALIASES
 # -------------------------
@@ -134,63 +169,34 @@ aliases:
   # -------------------------
   #     ALIASES: Workflows
   # -------------------------
-  - &run-after-checkout
+  - &ignore-gh-pages
     filters: *filter-ignore-gh-pages
-    requires:
-      - checkout_code
 
-# -------------------------
-#        DEFAULTS
-# -------------------------
-defaults: &defaults
-  working_directory: ~/react-native
-  environment:
-    - GIT_COMMIT_DESC: git log --format=oneline -n 1 $CIRCLE_SHA1
-
-# JavaScript
-js_defaults: &js_defaults
-  <<: *defaults
-  docker:
-    - image: node:8
-
-# Android
-android_defaults: &android_defaults
-  <<: *defaults
-  docker:
-    - image: reactnativecommunity/react-native-android:2019-5-7
-  resource_class: "large"
-  environment:
-    - TERM: "dumb"
-    - ADB_INSTALL_TIMEOUT: 10
-    - _JAVA_OPTIONS: "-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
-    - GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs="-XX:+HeapDumpOnOutOfMemoryError"'
-    - BUILD_THREADS: 2
-
-# iOS
-macos_defaults: &macos_defaults
-  <<: *defaults
-  macos:
-    xcode: "10.2.0"
 
 # -------------------------
 #          JOBS
 # -------------------------
-version: 2
 jobs:
-  # Set up a Node environment for downstream jobs
-  checkout_code:
-    <<: *js_defaults
+  # -------------------------
+  #     JOBS: Setup and Teardown
+  # -------------------------
+  setup:
+    executor: reactnativenode
     steps:
       - checkout
       - run: *setup-artifacts
 
-      - restore-cache: *restore-yarn-cache
+      - restore_cache: *restore-yarn-cache
       - run: *yarn
-      - save-cache: *save-yarn-cache
+      - save_cache: *save-yarn-cache
 
       - persist_to_workspace:
           root: .
           paths: .
+  finish:
+    executor: reactnativenode
+    steps:
+      - run: echo "Done."
 
   # -------------------------
   #     JOBS: Analyze PR
@@ -199,9 +205,7 @@ jobs:
   # Issues will be posted to the PR itself via GitHub bots.
   # This workflow should only fail if the bots fail to run.
   analyze_pr:
-    <<: *defaults
-    docker:
-      - image: node:lts
+    executor: reactnativenodelts
     # The public github tokens are publicly visible by design
     environment:
       - PUBLIC_PULLBOT_GITHUB_TOKEN_A: "a6edf8e8d40ce4e8b11a"
@@ -213,8 +217,10 @@ jobs:
       - checkout
       - run: *setup-artifacts
 
-      - restore-cache: *restore-yarn-cache
+      - restore_cache: *restore-yarn-cache
       - run: *yarn
+      - save_cache: *save-yarn-cache
+
       - run:
           name: Install dependencies
           command: |
@@ -222,7 +228,6 @@ jobs:
             apt install -y shellcheck jq
             cd bots
             yarn install --non-interactive --cache-folder ~/.cache/yarn
-      - save-cache: *save-yarn-cache
 
       - run:
           name: Run linters against modified files (analysis-bot)
@@ -241,10 +246,14 @@ jobs:
   #    JOBS: Analyze Code
   # -------------------------
   analyze:
-    <<: *js_defaults
+    executor: reactnativenode
     steps:
-      - attach_workspace:
-          at: ~/react-native
+      - checkout
+      - run: *setup-artifacts
+
+      - restore_cache: *restore-yarn-cache
+      - run: *yarn
+      - save_cache: *save-yarn-cache
 
       - run:
           name: Lint code
@@ -282,11 +291,15 @@ jobs:
   #   JOBS: Test JavaScript
   # -------------------------
   # Runs JavaScript tests on Node 8
-  test_javascript:
-    <<: *js_defaults
+  test_js:
+    executor: reactnativenode
     steps:
-      - attach_workspace:
-          at: ~/react-native
+      - checkout
+      - run: *setup-artifacts
+
+      - restore_cache: *restore-yarn-cache
+      - run: *yarn
+      - save_cache: *save-yarn-cache
 
       - run:
           name: JavaScript Test Suite
@@ -297,9 +310,7 @@ jobs:
 
   # Run JavaScript tests on Node LTS
   test_node_lts:
-    <<: *defaults
-    docker:
-      - image: node:lts
+    executor: reactnativenodelts
     steps:
       - checkout
       - run: *setup-artifacts
@@ -318,12 +329,16 @@ jobs:
   # -------------------------
   # Runs unit tests on iOS devices
   test_ios:
-    <<: *macos_defaults
+    executor: reactnativeios
     environment:
       - REPORTS_DIR: "./reports"
     steps:
-      - attach_workspace:
-          at: ~/react-native
+      - checkout
+      - run: *setup-artifacts
+
+      - restore_cache: *restore-yarn-cache
+      - run: *yarn
+      - save_cache: *save-yarn-cache
 
       - run:
           name: Print Xcode environment
@@ -337,13 +352,13 @@ jobs:
           name: Boot iOS Simulator
           command: source scripts/.tests.env && xcrun simctl boot "$IOS_DEVICE" || true
 
-      - restore-cache: *restore-brew-cache
+      - restore_cache: *restore-brew-cache
       - run:
           name: Install Watchman
           command: |
             HOMEBREW_NO_AUTO_UPDATE=1 brew install watchman >/dev/null
             touch .watchmanconfig
-      - save-cache: *save-brew-cache
+      - save_cache: *save-brew-cache
 
       - run:
           name: Start Metro packager
@@ -435,59 +450,37 @@ jobs:
       - store_test_results:
           path: ~/react-native/reports/junit
 
-  # Runs end-to-end tests
-  test_end_to_end:
-    <<: *macos_defaults
+  # Runs iOS end-to-end tests
+  test_ios_e2e:
+    executor: reactnativeios
     steps:
-      - attach_workspace:
-          at: ~/react-native
+      - checkout
+      - run: *setup-artifacts
+
+      - restore_cache: *restore-yarn-cache
+      - run: *yarn
+      - save_cache: *save-yarn-cache
 
       - run:
           name: Boot iPhone Simulator
           command: source scripts/.tests.env && xcrun simctl boot "$IOS_DEVICE" || true
 
-      - run:
-          name: Configure Environment Variables
-          command: |
-            echo 'export PATH=/usr/local/opt/node@8/bin:$PATH' >> $BASH_ENV
-            source $BASH_ENV
-
-      # Brew
-      - restore-cache: *restore-brew-cache
+      - restore_cache: *restore-brew-cache
       - run:
           name: Configure Detox Environment
           command: |
+            echo 'export PATH=/usr/local/opt/node@8/bin:$PATH' >> $BASH_ENV
+            source $BASH_ENV
             HOMEBREW_NO_AUTO_UPDATE=1 brew install node@8 >/dev/null
             HOMEBREW_NO_AUTO_UPDATE=1 brew tap wix/brew >/dev/null
             HOMEBREW_NO_AUTO_UPDATE=1 brew install applesimutils >/dev/null
             touch .watchmanconfig
             node -v
-      - save-cache: *save-brew-cache
+      - save_cache: *save-brew-cache
 
-      # Yarn install
-      - restore-cache: *restore-yarn-cache
-      - run: *yarn
-      - save-cache: *save-yarn-cache
-
-      # Xcode build
-      - run:
-          name: Build app for Detox iOS End-to-End Tests
-          command: yarn run build-ios-e2e
-
-      # Test
       - run:
           name: Run Detox iOS End-to-End Tests
-          command: yarn run test-ios-e2e
-          when: always
-
-      - run:
-          name: Run JavaScript End-to-End Tests
-          command: |
-            # free up port 8081 for the packager before running tests
-            set +eo pipefail
-            lsof -i tcp:8081 | awk 'NR!=1 {print $2}' | xargs kill
-            set -eo pipefail
-            node ./scripts/run-ci-e2e-tests.js --js --retries 3
+          command: yarn run build-ios-e2e && yarn run test-ios-e2e
           when: always
 
       - run:
@@ -500,15 +493,36 @@ jobs:
             node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
           when: always
 
+  test_js_e2e:
+    executor: reactnativenode
+    steps:
+      - checkout
+      - run: *setup-artifacts
+
+      - restore_cache: *restore-yarn-cache
+      - run: *yarn
+      - save_cache: *save-yarn-cache
+
+      - run:
+          name: Run JavaScript End-to-End Tests
+          command: node ./scripts/run-ci-e2e-tests.js --js --retries 3
+
+      - store_test_results:
+          path: ~/react-native/reports/junit
+
   # -------------------------
   #    JOBS: Test Android
   # -------------------------
   # Run Android tests
   test_android:
-    <<: *android_defaults
+    executor: reactnativeandroid
     steps:
-      - attach_workspace:
-          at: ~/react-native
+      - checkout
+      - run: *setup-artifacts
+
+      - restore_cache: *restore-yarn-cache
+      - run: *yarn
+      - save_cache: *save-yarn-cache
 
       # Validate Android SDK installation and packages
       - run:
@@ -527,7 +541,7 @@ jobs:
       # Keep configuring Android dependencies while AVD boots up
 
       # Install Buck
-      - restore-cache: *restore-buck-downloads-cache
+      - restore_cache: *restore-buck-downloads-cache
       - run:
           name: Install BUCK
           command: |
@@ -538,7 +552,7 @@ jobs:
             fi
             mkdir -p ~/react-native/tooling/junit
             cp -R ~/okbuck/tooling/junit/* ~/react-native/tooling/junit/.
-      - save-cache: *save-buck-downloads-cache
+      - save_cache: *save-buck-downloads-cache
 
       # Validate Android test environment (including Buck)
       - run:
@@ -549,9 +563,9 @@ jobs:
       - run: *download-dependencies-buck
 
       # Download dependencies using Gradle
-      - restore-cache: *restore-gradle-downloads-cache
+      - restore_cache: *restore-gradle-downloads-cache
       - run: *download-dependencies-gradle
-      - save-cache: *save-gradle-downloads-cache
+      - save_cache: *save-gradle-downloads-cache
 
       # Build and compile
       - run:
@@ -605,9 +619,10 @@ jobs:
           path: ~/react-native/reports/junit
 
   # -------------------------
-  #    JOBS: Test Docker Build
+  #    JOBS: Test Docker
   # -------------------------
-  test_docker_build:
+  # Verifies the test container can be built.
+  test_docker:
     machine: true
     steps:
       - checkout
@@ -626,7 +641,7 @@ jobs:
   # -------------------------
   # Collect JavaScript test coverage
   js_coverage:
-    <<: *js_defaults
+    executor: reactnativenode
     environment:
       - CI_BRANCH: $CIRCLE_BRANCH
       - CI_PULL_REQUEST: $CIRCLE_PULL_REQUEST
@@ -634,7 +649,7 @@ jobs:
       - CI_BUILD_URL: $CIRCLE_BUILD_URL
     steps:
       - checkout
-      - restore-cache: *restore-yarn-cache
+      - restore_cache: *restore-yarn-cache
       - run: *yarn
       - run:
           name: Test coverage
@@ -651,22 +666,22 @@ jobs:
   # Publishes new version onto npm
   # Only works on stable branches when a properly tagged commit is pushed
   publish_npm_package:
-    <<: *android_defaults
+    executor: reactnativeandroid
     steps:
       - checkout
 
-      - restore-cache: *restore-yarn-cache
+      - restore_cache: *restore-yarn-cache
       - run: *yarn
 
       # Fetch dependencies using Buck
-      - restore-cache: *restore-buck-downloads-cache
+      - restore_cache: *restore-buck-downloads-cache
       - run: *download-dependencies-buck
 
       # Fetch dependencies using Gradle
-      - restore-cache: *restore-gradle-downloads-cache
+      - restore_cache: *restore-gradle-downloads-cache
       - run: *download-dependencies-gradle
 
-      - restore-cache: *restore-yarn-cache
+      - restore_cache: *restore-yarn-cache
       - run: *yarn
 
       - run:
@@ -689,23 +704,38 @@ jobs:
 #        WORK FLOWS
 # -------------------------
 workflows:
-  version: 2
-
   tests:
     jobs:
-      - test_node_lts:
-          filters: *filter-ignore-gh-pages
-
-      - checkout_code:
-          filters: *filter-ignore-gh-pages
-
-      - analyze: *run-after-checkout
-      - test_javascript: *run-after-checkout
-      - test_android: *run-after-checkout
-      - test_ios: *run-after-checkout
-      - test_end_to_end: *run-after-checkout
-      - test_docker_build:
-          filters: *filter-ignore-gh-pages
+      - setup:  *ignore-gh-pages
+      - analyze:
+          requires:
+            - setup
+      - test_node_lts: *ignore-gh-pages
+      - test_js:
+          requires:
+            - setup
+      - test_android:
+          requires:
+            - setup
+      - test_ios:
+          requires:
+            - setup
+      - test_js_e2e:
+          requires:
+            - test_js
+      - test_ios_e2e:
+          requires:
+            - test_js
+      - test_docker: *ignore-gh-pages
+      - finish:
+          requires:
+            - test_js
+            - test_js_e2e
+            - test_android
+            - test_ios
+            - test_ios_e2e
+            - test_docker
+            - test_node_lts
 
   releases:
     jobs:
