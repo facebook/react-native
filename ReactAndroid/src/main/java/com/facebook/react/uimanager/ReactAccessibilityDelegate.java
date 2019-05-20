@@ -21,9 +21,12 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.CollectionIt
 import android.view.View;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.facebook.react.R;
@@ -121,6 +124,12 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
 
   private final HashMap<Integer, String> mAccessibilityActionsMap;
 
+  // State constants for states which have analogs in AccessibilityNodeInfo
+
+  private static final String STATE_DISABLED = "disabled";
+  private static final String STATE_SELECTED = "selected";
+  private static final String STATE_CHECKED = "checked";
+
   public ReactAccessibilityDelegate() {
     super();
     mAccessibilityActionsMap = new HashMap<Integer, String>();
@@ -136,8 +145,12 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
 
     // states are changable.
     final ReadableArray accessibilityStates = (ReadableArray) host.getTag(R.id.accessibility_states);
+    final ReadableMap accessibilityState = (ReadableMap) host.getTag(R.id.accessibility_state);
     if (accessibilityStates != null) {
-      setState(info, accessibilityStates, host.getContext());
+      setStates(info, accessibilityStates, host.getContext());
+    }
+    if (accessibilityState != null) {
+      setState(info, accessibilityState, host.getContext());
     }
     final ReadableArray accessibilityActions = (ReadableArray) host.getTag(R.id.accessibility_actions);
     if (accessibilityActions != null) {
@@ -175,7 +188,7 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     return super.performAccessibilityAction(host, action, args);
   }
 
-  public static void setState(AccessibilityNodeInfoCompat info, ReadableArray accessibilityStates, Context context) {
+  private static void setStates(AccessibilityNodeInfoCompat info, ReadableArray accessibilityStates, Context context) {
     for (int i = 0; i < accessibilityStates.size(); i++) {
       String state = accessibilityStates.getString(i);
       switch (state) {
@@ -188,20 +201,37 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
         case "checked":
           info.setCheckable(true);
           info.setChecked(true);
-          if (info.getClassName().equals("android.widget.Switch")) {
+          if (info.getClassName().equals(AccessibilityRole.getValue(AccessibilityRole.SWITCH))) {
             info.setText(context.getString(R.string.state_on_description));
           }
           break;
         case "unchecked":
           info.setCheckable(true);
           info.setChecked(false);
-          if (info.getClassName().equals("android.widget.Switch")) {
+          if (info.getClassName().equals(AccessibilityRole.getValue(AccessibilityRole.SWITCH))) {
             info.setText(context.getString(R.string.state_off_description));
           }
           break;
-        case "hasPopup":
-          info.setCanOpenPopup(true);
-          break;
+      }
+    }
+  }
+  
+  private static void setState(AccessibilityNodeInfoCompat info, ReadableMap accessibilityState, Context context) {
+    final ReadableMapKeySetIterator i = accessibilityState.keySetIterator();
+    while (i.hasNextKey()) {
+      final String state = i.nextKey();
+      final Dynamic value = accessibilityState.getDynamic(state);
+      if (state.equals(STATE_SELECTED) && value.getType() == ReadableType.Boolean) {
+        info.setSelected(value.asBoolean());
+      } else if (state.equals(STATE_DISABLED) && value.getType() == ReadableType.Boolean) {
+        info.setEnabled(!value.asBoolean());
+      } else if (state.equals(STATE_CHECKED) && value.getType() == ReadableType.Boolean) {
+        final boolean boolValue = value.asBoolean();
+        info.setCheckable(true);
+        info.setChecked(boolValue);
+        if (info.getClassName().equals(AccessibilityRole.getValue(AccessibilityRole.SWITCH))) {
+          info.setText(context.getString(boolValue ? R.string.state_on_description : R.string.state_off_description));
+        }
       }
     }
   }
@@ -281,6 +311,7 @@ public class ReactAccessibilityDelegate extends AccessibilityDelegateCompat {
     if (!ViewCompat.hasAccessibilityDelegate(view)
         && (view.getTag(R.id.accessibility_role) != null ||
           view.getTag(R.id.accessibility_states) != null ||
+          view.getTag(R.id.accessibility_state) != null ||
           view.getTag(R.id.accessibility_actions) != null)) {
       ViewCompat.setAccessibilityDelegate(view, new ReactAccessibilityDelegate());
     }

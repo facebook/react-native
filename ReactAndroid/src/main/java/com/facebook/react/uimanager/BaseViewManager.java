@@ -6,14 +6,21 @@
 package com.facebook.react.uimanager;
 
 import android.graphics.Color;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewParent;
+
 import androidx.core.view.ViewCompat;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.facebook.react.R;
+import com.facebook.react.bridge.Dynamic;
 import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.ReactAccessibilityDelegate.AccessibilityRole;
@@ -21,6 +28,7 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.util.ReactFindViewUtil;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Map;
 import javax.annotation.Nullable;
 
@@ -41,6 +49,7 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   private static final String PROP_ACCESSIBILITY_LIVE_REGION = "accessibilityLiveRegion";
   private static final String PROP_ACCESSIBILITY_ROLE = "accessibilityRole";
   private static final String PROP_ACCESSIBILITY_STATES = "accessibilityStates";
+  private static final String PROP_ACCESSIBILITY_STATE = "accessibilityState";
   private static final String PROP_ACCESSIBILITY_ACTIONS = "accessibilityActions";
   private static final String PROP_IMPORTANT_FOR_ACCESSIBILITY = "importantForAccessibility";
 
@@ -64,13 +73,22 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
       new MatrixMathHelper.MatrixDecompositionContext();
   private static double[] sTransformDecompositionArray = new double[16];
 
-  public static final HashMap<String, Integer> sStateDescription= new HashMap<String, Integer>();
+  public static final HashMap<String, Integer> sStateDescription = new HashMap<String, Integer>();
   static {
       sStateDescription.put("busy", R.string.state_busy_description);
       sStateDescription.put("expanded", R.string.state_expanded_description);
       sStateDescription.put("collapsed", R.string.state_collapsed_description);
   }
 
+  // State definition constants -- must match the definition in
+  // ViewAccessibility.js. These only include states for which there
+  // is no native support in android.
+
+  private static final String STATE_CHECKED = "checked"; // Special case for mixed state checkboxes
+  private static final String STATE_BUSY = "busy";
+  private static final String STATE_EXPANDED = "expanded";
+  private static final String STATE_MIXED = "mixed";
+ 
   @ReactProp(name = PROP_BACKGROUND_COLOR, defaultInt = Color.TRANSPARENT, customType = "Color")
   public void setBackgroundColor(@Nonnull T view, int backgroundColor) {
     view.setBackgroundColor(backgroundColor);
@@ -169,27 +187,66 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     }
   }
 
+  @ReactProp(name = PROP_ACCESSIBILITY_STATE)
+  public void setViewState(@Nonnull T view, @Nullable ReadableMap accessibilityState) {
+    if (accessibilityState == null) {
+      return;
+    }
+    view.setTag(R.id.accessibility_state, accessibilityState);
+    view.setSelected(false);
+    view.setEnabled(true);
+
+    // For states which don't have corresponding methods in
+    // AccessibilityNodeInfo, update the view's content description
+    // here
+
+    final ReadableMapKeySetIterator i = accessibilityState.keySetIterator();
+    while (i.hasNextKey()) {
+      final String state = i.nextKey();
+      if (state.equals(STATE_BUSY) || state.equals(STATE_EXPANDED) ||
+          (state.equals(STATE_CHECKED) && accessibilityState.getType(STATE_CHECKED) == ReadableType.String)) {
+        updateViewContentDescription(view);
+        break;
+      }
+    }
+  }
+
   private void updateViewContentDescription(@Nonnull T view) {
     final String accessibilityLabel = (String) view.getTag(R.id.accessibility_label);
     final ReadableArray accessibilityStates = (ReadableArray) view.getTag(R.id.accessibility_states);
+    final ReadableMap accessibilityState = (ReadableMap) view.getTag(R.id.accessibility_state);
     final String accessibilityHint = (String) view.getTag(R.id.accessibility_hint);
-    StringBuilder contentDescription = new StringBuilder();
+    final ArrayList<String> contentDescription = new ArrayList<String>();
     if (accessibilityLabel != null) {
-      contentDescription.append(accessibilityLabel + ", ");
+      contentDescription.add(accessibilityLabel);
     }
     if (accessibilityStates != null) {
       for (int i = 0; i < accessibilityStates.size(); i++) {
-        String state = accessibilityStates.getString(i);
+        final String state = accessibilityStates.getString(i);
         if (sStateDescription.containsKey(state)) {
-          contentDescription.append(view.getContext().getString(sStateDescription.get(state)) + ", ");
+          contentDescription.add(view.getContext().getString(sStateDescription.get(state)));
+        }
+      }
+    }
+    if (accessibilityState != null) {
+      final ReadableMapKeySetIterator i = accessibilityState.keySetIterator();
+      while (i.hasNextKey()) {
+        final String state = i.nextKey();
+        final Dynamic value = accessibilityState.getDynamic(state);
+        if (state.equals(STATE_CHECKED) && value.getType() == ReadableType.String && value.asString().equals(STATE_MIXED)) {
+          contentDescription.add(view.getContext().getString(R.string.state_mixed_description));
+        } else if (state.equals(STATE_BUSY) && value.getType() == ReadableType.Boolean && value.asBoolean()) {
+          contentDescription.add(view.getContext().getString(R.string.state_busy_description));
+        } else if (state.equals(STATE_EXPANDED) && value.getType() == ReadableType.Boolean) {
+          contentDescription.add(view.getContext().getString(value.asBoolean() ? R.string.state_expanded_description : R.string.state_collapsed_description));
         }
       }
     }
     if (accessibilityHint != null) {
-      contentDescription.append(accessibilityHint + ", ");
+      contentDescription.add(accessibilityHint);
     }
-    if (contentDescription.length() > 0) {
-      view.setContentDescription(contentDescription.toString());
+    if (contentDescription.size() > 0) {
+      view.setContentDescription(TextUtils.join(", ", contentDescription));
     }
   }
 
