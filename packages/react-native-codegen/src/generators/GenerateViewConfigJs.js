@@ -24,7 +24,6 @@ const template = `
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
  */
 
@@ -302,7 +301,7 @@ module.exports = {
                   imports,
                 ),
               )
-              .toSource({quote: 'single'});
+              .toSource({quote: 'single', trailingComma: true});
 
             return replacedSource;
           })

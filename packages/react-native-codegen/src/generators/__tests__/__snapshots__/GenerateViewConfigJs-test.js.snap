@@ -9,7 +9,6 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
  */
 
@@ -24,11 +23,11 @@ const ArrayPropsNativeComponentViewConfig = {
   Commands: {},
 
   bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes
+    ...ReactNativeViewViewConfig.bubblingEventTypes,
   },
 
   directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes
+    ...ReactNativeViewViewConfig.directEventTypes,
   },
 
   validAttributes: {
@@ -39,8 +38,8 @@ const ArrayPropsNativeComponentViewConfig = {
     radii: true,
     colors: true,
     srcs: true,
-    points: true
-  }
+    points: true,
+  },
 };
 
 verifyComponentAttributeEquivalence('ArrayPropsNativeComponent', ArrayPropsNativeComponentViewConfig);
@@ -64,7 +63,6 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
  */
 
@@ -79,17 +77,17 @@ const BooleanPropNativeComponentViewConfig = {
   Commands: {},
 
   bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes
+    ...ReactNativeViewViewConfig.bubblingEventTypes,
   },
 
   directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes
+    ...ReactNativeViewViewConfig.directEventTypes,
   },
 
   validAttributes: {
     ...ReactNativeViewViewConfig.validAttributes,
-    disabled: true
-  }
+    disabled: true,
+  },
 };
 
 verifyComponentAttributeEquivalence('BooleanPropNativeComponent', BooleanPropNativeComponentViewConfig);
@@ -113,7 +111,6 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
  */
 
@@ -128,17 +125,17 @@ const ColorPropNativeComponentViewConfig = {
   Commands: {},
 
   bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes
+    ...ReactNativeViewViewConfig.bubblingEventTypes,
   },
 
   directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes
+    ...ReactNativeViewViewConfig.directEventTypes,
   },
 
   validAttributes: {
     ...ReactNativeViewViewConfig.validAttributes,
-    tintColor: { process: require('processColor') }
-  }
+    tintColor: { process: require('processColor') },
+  },
 };
 
 verifyComponentAttributeEquivalence('ColorPropNativeComponent', ColorPropNativeComponentViewConfig);
@@ -162,7 +159,6 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
  */
 
@@ -177,17 +173,17 @@ const EnumPropsNativeComponentViewConfig = {
   Commands: {},
 
   bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes
+    ...ReactNativeViewViewConfig.bubblingEventTypes,
   },
 
   directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes
+    ...ReactNativeViewViewConfig.directEventTypes,
   },
 
   validAttributes: {
     ...ReactNativeViewViewConfig.validAttributes,
-    alignment: true
-  }
+    alignment: true,
+  },
 };
 
 verifyComponentAttributeEquivalence('EnumPropsNativeComponent', EnumPropsNativeComponentViewConfig);
@@ -211,7 +207,6 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
  */
 
@@ -231,20 +226,20 @@ const EventsNestedObjectNativeComponentViewConfig = {
     topChange: {
       phasedRegistrationNames: {
         captured: 'onChangeCapture',
-        bubbled: 'onChange'
-      }
-    }
+        bubbled: 'onChange',
+      },
+    },
   },
 
   directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes
+    ...ReactNativeViewViewConfig.directEventTypes,
   },
 
   validAttributes: {
     ...ReactNativeViewViewConfig.validAttributes,
     disabled: true,
-    onChange: true
-  }
+    onChange: true,
+  },
 };
 
 verifyComponentAttributeEquivalence('EventsNestedObjectNativeComponent', EventsNestedObjectNativeComponentViewConfig);
@@ -268,7 +263,6 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
  */
 
@@ -288,25 +282,25 @@ const EventsNativeComponentViewConfig = {
     topChange: {
       phasedRegistrationNames: {
         captured: 'onChangeCapture',
-        bubbled: 'onChange'
-      }
-    }
+        bubbled: 'onChange',
+      },
+    },
   },
 
   directEventTypes: {
     ...ReactNativeViewViewConfig.directEventTypes,
 
     topEventDirect: {
-      registrationName: 'onEventDirect'
-    }
+      registrationName: 'onEventDirect',
+    },
   },
 
   validAttributes: {
     ...ReactNativeViewViewConfig.validAttributes,
     disabled: true,
     onChange: true,
-    onEventDirect: true
-  }
+    onEventDirect: true,
+  },
 };
 
 verifyComponentAttributeEquivalence('EventsNativeComponent', EventsNativeComponentViewConfig);
@@ -330,7 +324,6 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
  */
 
@@ -345,11 +338,11 @@ const FloatPropNativeComponentViewConfig = {
   Commands: {},
 
   bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes
+    ...ReactNativeViewViewConfig.bubblingEventTypes,
   },
 
   directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes
+    ...ReactNativeViewViewConfig.directEventTypes,
   },
 
   validAttributes: {
@@ -359,8 +352,8 @@ const FloatPropNativeComponentViewConfig = {
     blurRadius3: true,
     blurRadius4: true,
     blurRadius5: true,
-    blurRadius6: true
-  }
+    blurRadius6: true,
+  },
 };
 
 verifyComponentAttributeEquivalence('FloatPropNativeComponent', FloatPropNativeComponentViewConfig);
@@ -384,7 +377,6 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
  */
 
@@ -399,17 +391,17 @@ const ImagePropNativeComponentViewConfig = {
   Commands: {},
 
   bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes
+    ...ReactNativeViewViewConfig.bubblingEventTypes,
   },
 
   directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes
+    ...ReactNativeViewViewConfig.directEventTypes,
   },
 
   validAttributes: {
     ...ReactNativeViewViewConfig.validAttributes,
-    thumbImage: { process: require('resolveAssetSource') }
-  }
+    thumbImage: { process: require('resolveAssetSource') },
+  },
 };
 
 verifyComponentAttributeEquivalence('ImagePropNativeComponent', ImagePropNativeComponentViewConfig);
@@ -433,7 +425,6 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
  */
 
@@ -448,19 +439,19 @@ const IntegerPropNativeComponentViewConfig = {
   Commands: {},
 
   bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes
+    ...ReactNativeViewViewConfig.bubblingEventTypes,
   },
 
   directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes
+    ...ReactNativeViewViewConfig.directEventTypes,
   },
 
   validAttributes: {
     ...ReactNativeViewViewConfig.validAttributes,
     progress1: true,
     progress2: true,
-    progress3: true
-  }
+    progress3: true,
+  },
 };
 
 verifyComponentAttributeEquivalence('IntegerPropNativeComponent', IntegerPropNativeComponentViewConfig);
@@ -484,7 +475,6 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
  */
 
@@ -504,20 +494,20 @@ const InterfaceOnlyComponentViewConfig = {
     topChange: {
       phasedRegistrationNames: {
         captured: 'onChangeCapture',
-        bubbled: 'onChange'
-      }
-    }
+        bubbled: 'onChange',
+      },
+    },
   },
 
   directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes
+    ...ReactNativeViewViewConfig.directEventTypes,
   },
 
   validAttributes: {
     ...ReactNativeViewViewConfig.validAttributes,
     accessibilityHint: true,
-    onChange: true
-  }
+    onChange: true,
+  },
 };
 
 verifyComponentAttributeEquivalence('RCTInterfaceOnlyComponent', InterfaceOnlyComponentViewConfig);
@@ -541,7 +531,6 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
  */
 
@@ -556,11 +545,11 @@ const ImageColorPropNativeComponentViewConfig = {
   Commands: {},
 
   bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes
+    ...ReactNativeViewViewConfig.bubblingEventTypes,
   },
 
   directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes
+    ...ReactNativeViewViewConfig.directEventTypes,
   },
 
   validAttributes: {
@@ -568,8 +557,8 @@ const ImageColorPropNativeComponentViewConfig = {
     thumbImage: { process: require('resolveAssetSource') },
     color: { process: require('processColor') },
     thumbTintColor: { process: require('processColor') },
-    point: { diff: require('pointsDiffer') }
-  }
+    point: { diff: require('pointsDiffer') },
+  },
 };
 
 verifyComponentAttributeEquivalence('ImageColorPropNativeComponent', ImageColorPropNativeComponentViewConfig);
@@ -593,7 +582,6 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
  */
 
@@ -608,17 +596,17 @@ const PointPropNativeComponentViewConfig = {
   Commands: {},
 
   bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes
+    ...ReactNativeViewViewConfig.bubblingEventTypes,
   },
 
   directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes
+    ...ReactNativeViewViewConfig.directEventTypes,
   },
 
   validAttributes: {
     ...ReactNativeViewViewConfig.validAttributes,
-    startPoint: { diff: require('pointsDiffer') }
-  }
+    startPoint: { diff: require('pointsDiffer') },
+  },
 };
 
 verifyComponentAttributeEquivalence('PointPropNativeComponent', PointPropNativeComponentViewConfig);
@@ -642,7 +630,6 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
  */
 
@@ -657,17 +644,17 @@ const StringPropComponentViewConfig = {
   Commands: {},
 
   bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes
+    ...ReactNativeViewViewConfig.bubblingEventTypes,
   },
 
   directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes
+    ...ReactNativeViewViewConfig.directEventTypes,
   },
 
   validAttributes: {
     ...ReactNativeViewViewConfig.validAttributes,
-    accessibilityHint: true
-  }
+    accessibilityHint: true,
+  },
 };
 
 verifyComponentAttributeEquivalence('StringPropComponent', StringPropComponentViewConfig);
@@ -691,7 +678,6 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
  */
 
@@ -706,17 +692,17 @@ const MultiFile1NativeComponentViewConfig = {
   Commands: {},
 
   bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes
+    ...ReactNativeViewViewConfig.bubblingEventTypes,
   },
 
   directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes
+    ...ReactNativeViewViewConfig.directEventTypes,
   },
 
   validAttributes: {
     ...ReactNativeViewViewConfig.validAttributes,
-    disabled: true
-  }
+    disabled: true,
+  },
 };
 
 verifyComponentAttributeEquivalence('MultiFile1NativeComponent', MultiFile1NativeComponentViewConfig);
@@ -733,17 +719,17 @@ const MultiFile2NativeComponentViewConfig = {
   Commands: {},
 
   bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes
+    ...ReactNativeViewViewConfig.bubblingEventTypes,
   },
 
   directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes
+    ...ReactNativeViewViewConfig.directEventTypes,
   },
 
   validAttributes: {
     ...ReactNativeViewViewConfig.validAttributes,
-    disabled: true
-  }
+    disabled: true,
+  },
 };
 
 verifyComponentAttributeEquivalence('MultiFile2NativeComponent', MultiFile2NativeComponentViewConfig);
@@ -767,7 +753,6 @@ Map {
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * @format
  * @flow
  */
 
@@ -782,17 +767,17 @@ const MultiComponent1NativeComponentViewConfig = {
   Commands: {},
 
   bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes
+    ...ReactNativeViewViewConfig.bubblingEventTypes,
   },
 
   directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes
+    ...ReactNativeViewViewConfig.directEventTypes,
   },
 
   validAttributes: {
     ...ReactNativeViewViewConfig.validAttributes,
-    disabled: true
-  }
+    disabled: true,
+  },
 };
 
 verifyComponentAttributeEquivalence('MultiComponent1NativeComponent', MultiComponent1NativeComponentViewConfig);
@@ -809,17 +794,17 @@ const MultiComponent2NativeComponentViewConfig = {
   Commands: {},
 
   bubblingEventTypes: {
-    ...ReactNativeViewViewConfig.bubblingEventTypes
+    ...ReactNativeViewViewConfig.bubblingEventTypes,
   },
 
   directEventTypes: {
-    ...ReactNativeViewViewConfig.directEventTypes
+    ...ReactNativeViewViewConfig.directEventTypes,
   },
 
   validAttributes: {
     ...ReactNativeViewViewConfig.validAttributes,
-    disabled: true
-  }
+    disabled: true,
+  },
 };
 
 verifyComponentAttributeEquivalence('MultiComponent2NativeComponent', MultiComponent2NativeComponentViewConfig);

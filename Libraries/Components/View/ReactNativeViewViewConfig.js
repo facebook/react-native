@@ -156,7 +156,7 @@ const ReactNativeViewConfig = {
     flexShrink: true,
     flexWrap: true,
     height: true,
-    hitSlop: {diff: require('insetsDiffer')},
+    hitSlop: {diff: (require('insetsDiffer'): any)},
     importantForAccessibility: true,
     justifyContent: true,
     left: true,
