@@ -157,6 +157,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
 
   /** Method called when an event has been dispatched on the C++ side. */
   @DoNotStrip
+  @SuppressWarnings("unused")
   public void onRequestEventBeat() {
     mEventDispatcher.dispatchAllEvents();
   }
@@ -183,6 +184,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
   }
 
   @DoNotStrip
+  @SuppressWarnings("unused")
   private void preallocateView(
       int rootTag,
       int reactTag,
