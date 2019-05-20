@@ -15,8 +15,8 @@ namespace facebook {
 namespace react {
 
 static ParagraphAttributes convertRawProp(
-    const RawProps &rawProps,
-    const ParagraphAttributes &defaultParagraphAttributes) {
+    RawProps const &rawProps,
+    ParagraphAttributes const &defaultParagraphAttributes) {
   auto paragraphAttributes = ParagraphAttributes{};
 
   paragraphAttributes.maximumNumberOfLines = convertRawProp(
@@ -44,8 +44,8 @@ static ParagraphAttributes convertRawProp(
 }
 
 ParagraphProps::ParagraphProps(
-    const ParagraphProps &sourceProps,
-    const RawProps &rawProps)
+    ParagraphProps const &sourceProps,
+    RawProps const &rawProps)
     : ViewProps(sourceProps, rawProps),
       BaseTextProps(sourceProps, rawProps),
       paragraphAttributes(
