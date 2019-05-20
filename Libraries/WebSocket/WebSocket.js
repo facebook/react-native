@@ -200,20 +200,10 @@ class WebSocket extends EventTarget(...WEBSOCKET_EVENTS) {
   }
 
   _close(code?: number, reason?: string): void {
-    if (Platform.OS === 'android') {
-      // See https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
-      const statusCode = typeof code === 'number' ? code : CLOSE_NORMAL;
-      const closeReason = typeof reason === 'string' ? reason : '';
-      // Native Android implementation is currently different than the iOS implementation
-      // so suppress this for now
-      // $FlowExpectedError - no more than 1 argument is expected by function type
-      NativeWebSocketModule.close(statusCode, closeReason, this._socketId);
-    } else {
-      // Native Android implementation is currently different than the iOS implementation
-      // so suppress this for now
-      // $FlowExpectedError - function requires another argument
-      NativeWebSocketModule.close(this._socketId);
-    }
+    // See https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent
+    const statusCode = typeof code === 'number' ? code : CLOSE_NORMAL;
+    const closeReason = typeof reason === 'string' ? reason : '';
+    NativeWebSocketModule.close(statusCode, closeReason, this._socketId);
 
     if (BlobManager.isAvailable && this._binaryType === 'blob') {
       BlobManager.removeWebSocketHandler(this._socketId);

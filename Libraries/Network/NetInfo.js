@@ -19,19 +19,19 @@ const NetInfoEventEmitter = new NativeEventEmitter(RCTNetInfo);
 
 const DEVICE_CONNECTIVITY_EVENT = 'networkStatusDidChange';
 
-type ChangeEventName = $Enum<{
+type ChangeEventName = $Keys<{
   connectionChange: string,
   change: string,
 }>;
 
-type ReachabilityStateIOS = $Enum<{
+type ReachabilityStateIOS = $Keys<{
   cell: string,
   none: string,
   unknown: string,
   wifi: string,
 }>;
 
-type ConnectivityStateAndroid = $Enum<{
+type ConnectivityStateAndroid = $Keys<{
   NONE: string,
   MOBILE: string,
   WIFI: string,

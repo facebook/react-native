@@ -14,20 +14,17 @@ import type {TurboModule} from 'RCTExport';
 import * as TurboModuleRegistry from 'TurboModuleRegistry';
 
 export interface Spec extends TurboModule {
-  +connect: (
-    url: string,
-    protocols: ?Array<string>,
-    options: ?{headers?: {origin?: string}},
-    socketID: number,
+  +getConstants: () => {|
+    initialAppState: string,
+  |};
+  +getCurrentAppState: (
+    success: (appState: {|app_state: string|}) => void,
+    failure: (error: Object) => void,
   ) => void;
-  +send: (message: string, socketID: number) => void;
-  +sendBinary: (base64String: string, socketID: number) => void;
-  +ping: (socketID: number) => void;
-  +close: (socketID: number) => void;
 
   // Events
   +addListener: (eventName: string) => void;
   +removeListeners: (count: number) => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('WebSocketModule');
+export default TurboModuleRegistry.getEnforcing<Spec>('AppState');

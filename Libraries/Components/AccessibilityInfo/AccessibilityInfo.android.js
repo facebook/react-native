@@ -19,7 +19,7 @@ const RCTAccessibilityInfo = NativeModules.AccessibilityInfo;
 const REDUCE_MOTION_EVENT = 'reduceMotionDidChange';
 const TOUCH_EXPLORATION_EVENT = 'touchExplorationDidChange';
 
-type ChangeEventName = $Enum<{
+type ChangeEventName = $Keys<{
   change: string,
   reduceMotionChanged: string,
   screenReaderChanged: string,

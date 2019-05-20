@@ -37,6 +37,30 @@ type Options = $ReadOnly<{|
   outputDirectory: string,
 |}>;
 
+type Generators =
+  | 'descriptors'
+  | 'events'
+  | 'props'
+  | 'tests'
+  | 'shadow-nodes'
+  | 'view-configs';
+
+type Config = $ReadOnly<{|
+  generators: Array<Generators>,
+|}>;
+
+const GENERATORS = {
+  descriptors: [generateComponentDescriptorH.generate],
+  events: [generateEventEmitterCpp.generate, generateEventEmitterH.generate],
+  props: [generatePropsCpp.generate, generatePropsH.generate],
+  tests: [generateTests.generate],
+  'shadow-nodes': [
+    generateShadowNodeCpp.generate,
+    generateShadowNodeH.generate,
+  ],
+  'view-configs': [generateViewConfigJs.generate],
+};
+
 function writeMapToFiles(map: Map<string, string>, outputDirectory: string) {
   map.forEach((contents: string, fileName: string) => {
     const location = path.join(outputDirectory, fileName);
@@ -45,20 +69,19 @@ function writeMapToFiles(map: Map<string, string>, outputDirectory: string) {
 }
 
 module.exports = {
-  generate({libraryName, schema, outputDirectory}: Options) {
+  generate(
+    {libraryName, schema, outputDirectory}: Options,
+    {generators}: Config,
+  ) {
     schemaValidator.validate(schema);
 
-    const generatedFiles: Map<string, string> = new Map([
-      ...generateComponentDescriptorH.generate(libraryName, schema),
-      ...generateEventEmitterCpp.generate(libraryName, schema),
-      ...generateEventEmitterH.generate(libraryName, schema),
-      ...generatePropsCpp.generate(libraryName, schema),
-      ...generatePropsH.generate(libraryName, schema),
-      ...generateTests.generate(libraryName, schema),
-      ...generateShadowNodeCpp.generate(libraryName, schema),
-      ...generateShadowNodeH.generate(libraryName, schema),
-      ...generateViewConfigJs.generate(libraryName, schema),
-    ]);
-    writeMapToFiles(generatedFiles, outputDirectory);
+    const generatedFiles = [];
+    for (const name of generators) {
+      for (const generator of GENERATORS[name]) {
+        generatedFiles.push(...generator(libraryName, schema));
+      }
+    }
+
+    writeMapToFiles(new Map([...generatedFiles]), outputDirectory);
   },
 };

@@ -92,6 +92,7 @@ export type EventTypeShape = $ReadOnly<{|
 
 export type ComponentShape = $ReadOnly<{|
   interfaceOnly?: boolean,
+  isDeprecatedPaperComponentNameRCT?: boolean,
   extendsProps: $ReadOnlyArray<{|
     type: 'ReactNativeBuiltInType',
     knownTypeName: 'ReactNativeCoreViewProps',

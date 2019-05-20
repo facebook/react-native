@@ -50,13 +50,6 @@
 }
 @end
 
-#ifdef RN_FABRIC_ENABLED
-// FIXME: remove when resolved https://github.com/facebook/react-native/issues/23910
-@interface RCTSurfacePresenter ()
--(void)_startAllSurfaces;
-@end
-#endif
-
 @implementation AppDelegate
 
 - (BOOL)application:(__unused UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -76,12 +69,6 @@
   }
 
 #ifdef RN_FABRIC_ENABLED
-  // FIXME: remove when resolved https://github.com/facebook/react-native/issues/23910
-  [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(handleJavaScriptDidLoadNotification:)
-                                               name:RCTJavaScriptDidLoadNotification
-                                             object:_bridge];
-
   _surfacePresenter = [[RCTSurfacePresenter alloc] initWithBridge:_bridge config:nil];
   _bridge.surfacePresenter = _surfacePresenter;
 
@@ -97,15 +84,6 @@
   [self.window makeKeyAndVisible];
   return YES;
 }
-
-#ifdef RN_FABRIC_ENABLED
-// FIXME: remove when resolved https://github.com/facebook/react-native/issues/23910
-- (void)handleJavaScriptDidLoadNotification:(__unused NSNotification*)notification {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [self->_surfacePresenter _startAllSurfaces];
-  });
-}
-#endif
 
 - (NSURL *)sourceURLForBridge:(__unused RCTBridge *)bridge
 {
