@@ -8,8 +8,4 @@
  * @flow strict-local
  */
 
-'use strict';
-
-// This is a forwarding module to allow React to require React Native internals
-// as node dependency
-module.exports = require('UIManagerStatTracker');
+import '../Core/InitializeCore';
