@@ -1719,7 +1719,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\n$SRCROOT/../scripts/react-native-xcode.sh RNTester/js/RNTesterApp.ios.js $SRCROOT/..\n";
+			shellScript = "export NODE_BINARY=node\nPROJECT_ROOT_OVERRIDE=$SRCROOT/.. $SRCROOT/../scripts/react-native-xcode.sh RNTester/js/RNTesterApp.ios.js\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
