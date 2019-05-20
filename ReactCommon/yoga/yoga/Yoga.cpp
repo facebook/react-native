@@ -210,18 +210,13 @@ void YGNodeMarkDirtyAndPropogateToDescendants(const YGNodeRef node) {
 int32_t gConfigInstanceCount = 0;
 
 WIN_EXPORT YGNodeRef YGNodeNewWithConfig(const YGConfigRef config) {
-  const YGNodeRef node = new YGNode();
+  const YGNodeRef node = new YGNode{config};
   YGAssertWithConfig(
       config, node != nullptr, "Could not allocate memory for node");
 #ifdef YG_ENABLE_EVENTS
   Event::publish<Event::NodeAllocation>(node, {config});
 #endif
 
-  if (config->useWebDefaults) {
-    node->getStyle().flexDirection() = YGFlexDirectionRow;
-    node->getStyle().alignContent() = YGAlignStretch;
-  }
-  node->setConfig(config);
   return node;
 }
 

@@ -22,6 +22,7 @@ YGNode::YGNode(YGNode&& node) {
   measureUsesContext_ = node.measureUsesContext_;
   baselineUsesContext_ = node.baselineUsesContext_;
   printUsesContext_ = node.printUsesContext_;
+  useWebDefaults_ = node.useWebDefaults_;
   measure_ = node.measure_;
   baseline_ = node.baseline_;
   print_ = node.print_;
@@ -35,6 +36,13 @@ YGNode::YGNode(YGNode&& node) {
   resolvedDimensions_ = node.resolvedDimensions_;
   for (auto c : children_) {
     c->setOwner(c);
+  }
+}
+
+YGNode::YGNode(const YGNode& node, YGConfigRef config) : YGNode{node} {
+  config_ = config;
+  if (config->useWebDefaults) {
+    useWebDefaults();
   }
 }
 
@@ -349,7 +357,7 @@ YGValue YGNode::resolveFlexBasisPtr() const {
     return flexBasis;
   }
   if (!style_.flex().isUndefined() && style_.flex().unwrap() > 0.0f) {
-    return config_->useWebDefaults ? YGValueAuto : YGValueZero;
+    return useWebDefaults_ ? YGValueAuto : YGValueZero;
   }
   return YGValueAuto;
 }
@@ -425,11 +433,11 @@ float YGNode::resolveFlexShrink() const {
   if (!style_.flexShrink().isUndefined()) {
     return style_.flexShrink().unwrap();
   }
-  if (!config_->useWebDefaults && !style_.flex().isUndefined() &&
+  if (!useWebDefaults_ && !style_.flex().isUndefined() &&
       style_.flex().unwrap() < 0.0f) {
     return -style_.flex().unwrap();
   }
-  return config_->useWebDefaults ? kWebDefaultFlexShrink : kDefaultFlexShrink;
+  return useWebDefaults_ ? kWebDefaultFlexShrink : kDefaultFlexShrink;
 }
 
 bool YGNode::isNodeFlexible() {
@@ -581,11 +589,9 @@ void YGNode::reset() {
 
   clearChildren();
 
-  auto config = getConfig();
-  *this = YGNode{};
-  if (config->useWebDefaults) {
-    style_.flexDirection() = YGFlexDirectionRow;
-    style_.alignContent() = YGAlignStretch;
+  auto webDefaults = useWebDefaults_;
+  *this = YGNode{getConfig()};
+  if (webDefaults) {
+    useWebDefaults();
   }
-  setConfig(config);
 }

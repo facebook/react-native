@@ -13,6 +13,8 @@
 #include "YGStyle.h"
 #include "Yoga-internal.h"
 
+YGConfigRef YGConfigGetDefault();
+
 struct YGNode {
   using MeasureWithContextFn =
       YGSize (*)(YGNode*, float, YGMeasureMode, float, YGMeasureMode, void*);
@@ -28,6 +30,7 @@ private:
   bool measureUsesContext_ : 1;
   bool baselineUsesContext_ : 1;
   bool printUsesContext_ : 1;
+  bool useWebDefaults_ : 1;
   uint8_t reserved_ = 0;
   union {
     YGMeasureFunc noContext;
@@ -58,6 +61,12 @@ private:
   void setMeasureFunc(decltype(measure_));
   void setBaselineFunc(decltype(baseline_));
 
+  void useWebDefaults() {
+    useWebDefaults_ = true;
+    style_.flexDirection() = YGFlexDirectionRow;
+    style_.alignContent() = YGAlignStretch;
+  }
+
   // DANGER DANGER DANGER!
   // If the the node assigned to has children, we'd either have to deallocate
   // them (potentially incorrect) or ignore them (danger of leaks). Only ever
@@ -68,8 +77,8 @@ private:
   using CompactValue = facebook::yoga::detail::CompactValue;
 
 public:
-  YGNode() : YGNode{nullptr} {}
-  explicit YGNode(const YGConfigRef newConfig)
+  YGNode() : YGNode{YGConfigGetDefault()} {}
+  explicit YGNode(const YGConfigRef config)
       : hasNewLayout_{true},
         isReferenceBaseline_{false},
         isDirty_{false},
@@ -77,7 +86,12 @@ public:
         measureUsesContext_{false},
         baselineUsesContext_{false},
         printUsesContext_{false},
-        config_{newConfig} {};
+        useWebDefaults_{config->useWebDefaults},
+        config_{config} {
+    if (useWebDefaults_) {
+      useWebDefaults();
+    }
+  };
   ~YGNode() = default; // cleanup of owner/children relationships in YGNodeFree
 
   YGNode(YGNode&&);
@@ -85,6 +99,9 @@ public:
   // Does not expose true value semantics, as children are not cloned eagerly.
   // Should we remove this?
   YGNode(const YGNode& node) = default;
+
+  // for RB fabric
+  YGNode(const YGNode& node, YGConfigRef config);
 
   // assignment means potential leaks of existing children, or alternatively
   // freeing unowned memory, double free, or freeing stack memory.
