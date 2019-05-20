@@ -721,7 +721,7 @@ workflows:
       - test_javascript: *run-after-checkout
       - test_android: *run-after-checkout
       - test_ios: *run-after-checkout
-      # - test_detox_ios: *run-after-checkout
+      - test_detox_ios: *run-after-checkout
       - test_docker_build:
           filters: *filter-ignore-gh-pages
 
