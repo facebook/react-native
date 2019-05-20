@@ -1107,7 +1107,7 @@
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
-				68CD48B71D2BCB2C007E06A9 /* Run Script */,
+				68CD48B71D2BCB2C007E06A9 /* Bundle React Native code and images */,
 				EDEBC7DE214C68E400DD5AC8 /* Embed Frameworks */,
 			);
 			buildRules = (
@@ -1707,19 +1707,19 @@
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\n$SRCROOT/../scripts/react-native-xcode.sh RNTester/js/RNTesterApp.ios.js";
 		};
-		68CD48B71D2BCB2C007E06A9 /* Run Script */ = {
+		68CD48B71D2BCB2C007E06A9 /* Bundle React Native code and images */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Run Script";
+			name = "Bundle React Native code and images";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\n$SRCROOT/../scripts/react-native-xcode.sh RNTester/js/RNTesterApp.ios.js\n";
+			shellScript = "export NODE_BINARY=node\nPROJECT_ROOT=$SRCROOT/.. $SRCROOT/../scripts/react-native-xcode.sh RNTester/js/RNTesterApp.ios.js\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
