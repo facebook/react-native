@@ -296,7 +296,7 @@ const EventsNativeComponentViewConfig = {
   directEventTypes: {
     ...ReactNativeViewViewConfig.directEventTypes,
 
-    onEventDirect: {
+    topEventDirect: {
       registrationName: 'onEventDirect'
     }
   },
@@ -495,7 +495,7 @@ const ReactNativeViewViewConfig = require('ReactNativeViewViewConfig');
 const verifyComponentAttributeEquivalence = require('verifyComponentAttributeEquivalence');
 
 const InterfaceOnlyComponentViewConfig = {
-  uiViewClassName: 'InterfaceOnlyComponent',
+  uiViewClassName: 'RCTInterfaceOnlyComponent',
   Commands: {},
 
   bubblingEventTypes: {
@@ -520,14 +520,14 @@ const InterfaceOnlyComponentViewConfig = {
   }
 };
 
-verifyComponentAttributeEquivalence('InterfaceOnlyComponent', InterfaceOnlyComponentViewConfig);
+verifyComponentAttributeEquivalence('RCTInterfaceOnlyComponent', InterfaceOnlyComponentViewConfig);
 
 ReactNativeViewConfigRegistry.register(
-  'RCTInterfaceOnlyComponent', // RCT prefix present for paper support
+  'RCTInterfaceOnlyComponent',
   () => InterfaceOnlyComponentViewConfig,
 );
 
-module.exports = 'InterfaceOnlyComponent';
+module.exports = 'RCTInterfaceOnlyComponent'; // RCT prefix present for paper support
 ",
 }
 `;

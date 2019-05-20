@@ -68,16 +68,17 @@ function getReactDiffProcessValue(prop) {
 const componentTemplate = `
 const ::_COMPONENT_NAME_::ViewConfig = VIEW_CONFIG;
 
-verifyComponentAttributeEquivalence('::_COMPONENT_NAME_::', ::_COMPONENT_NAME_::ViewConfig);
+verifyComponentAttributeEquivalence('::_COMPONENT_NAME_WITH_COMPAT_SUPPORT_::', ::_COMPONENT_NAME_::ViewConfig);
 
 ReactNativeViewConfigRegistry.register(
-  '::_COMPONENT_NAME_WITH_COMPAT_SUPPORT_::',::_COMPAT_COMMENT_::
+  '::_COMPONENT_NAME_WITH_COMPAT_SUPPORT_::',
   () => ::_COMPONENT_NAME_::ViewConfig,
 );
 
-module.exports = '::_COMPONENT_NAME_::';
+module.exports = '::_COMPONENT_NAME_WITH_COMPAT_SUPPORT_::';::_COMPAT_COMMENT_::
 `.trim();
 
+// Replicates the behavior of RCTNormalizeInputEventName in RCTEventDispatcher.m
 function normalizeInputEventName(name) {
   if (name.startsWith('on')) {
     return name.replace(/^on/, 'top');
@@ -87,6 +88,14 @@ function normalizeInputEventName(name) {
 
   return name;
 }
+
+// Replicates the behavior of viewConfig in RCTComponentData.m
+function getValidAttributesForEvents(events) {
+  return events.map(eventType => {
+    return j.property('init', j.identifier(eventType.name), j.literal(true));
+  });
+}
+
 function generateBubblingEventInfo(event) {
   return j.property(
     'init',
@@ -111,7 +120,7 @@ function generateBubblingEventInfo(event) {
 function generateDirectEventInfo(event) {
   return j.property(
     'init',
-    j.identifier(event.name),
+    j.identifier(normalizeInputEventName(event.name)),
     j.objectExpression([
       j.property(
         'init',
@@ -185,9 +194,7 @@ function buildViewConfig(
         getReactDiffProcessValue(schemaProp),
       );
     }),
-    ...componentEvents.map(eventType => {
-      return j.property('init', j.identifier(eventType.name), j.literal(true));
-    }),
+    ...getValidAttributesForEvents(componentEvents),
   ]);
 
   const bubblingEventNames = component.events
@@ -288,7 +295,12 @@ module.exports = {
                 name: 'VIEW_CONFIG',
               })
               .replaceWith(
-                buildViewConfig(schema, componentName, component, imports),
+                buildViewConfig(
+                  schema,
+                  compatabilityComponentName,
+                  component,
+                  imports,
+                ),
               )
               .toSource({quote: 'single'});
 
