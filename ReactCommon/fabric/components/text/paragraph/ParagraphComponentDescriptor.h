@@ -64,7 +64,7 @@ class ParagraphComponentDescriptor final
 
  private:
   SharedTextLayoutManager textLayoutManager_;
-  std::unique_ptr<ParagraphMeasurementCache const> measureCache_;
+  std::unique_ptr<const ParagraphMeasurementCache> measureCache_;
 };
 
 } // namespace react

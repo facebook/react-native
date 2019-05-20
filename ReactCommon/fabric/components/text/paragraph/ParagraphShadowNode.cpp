@@ -6,13 +6,13 @@
  */
 
 #include "ParagraphShadowNode.h"
+#include "ParagraphLocalData.h"
 #include "ParagraphMeasurementCache.h"
-#include "ParagraphState.h"
 
 namespace facebook {
 namespace react {
 
-char const ParagraphComponentName[] = "Paragraph";
+const char ParagraphComponentName[] = "Paragraph";
 
 AttributedString ParagraphShadowNode::getAttributedString() const {
   if (!cachedAttributedString_.has_value()) {
@@ -33,21 +33,26 @@ void ParagraphShadowNode::setTextLayoutManager(
 }
 
 void ParagraphShadowNode::setMeasureCache(
-    ParagraphMeasurementCache const *cache) {
+    const ParagraphMeasurementCache *cache) {
   ensureUnsealed();
   measureCache_ = cache;
 }
 
-void ParagraphShadowNode::updateStateIfNeeded() {
+void ParagraphShadowNode::updateLocalDataIfNeeded() {
   ensureUnsealed();
 
   auto attributedString = getAttributedString();
-  auto const &state = getStateData();
-  if (state.attributedString == attributedString) {
+  auto currentLocalData =
+      std::static_pointer_cast<const ParagraphLocalData>(getLocalData());
+  if (currentLocalData &&
+      currentLocalData->getAttributedString() == attributedString) {
     return;
   }
 
-  setStateData(ParagraphState{attributedString, textLayoutManager_});
+  auto localData = std::make_shared<ParagraphLocalData>();
+  localData->setAttributedString(std::move(attributedString));
+  localData->setTextLayoutManager(textLayoutManager_);
+  setLocalData(localData);
 }
 
 #pragma mark - LayoutableShadowNode
@@ -59,16 +64,15 @@ Size ParagraphShadowNode::measure(LayoutConstraints layoutConstraints) const {
     return {0, 0};
   }
 
-  ParagraphAttributes const paragraphAttributes =
+  const ParagraphAttributes paragraphAttributes =
       getProps()->paragraphAttributes;
 
   // Cache results of this function so we don't need to call measure()
   // repeatedly.
   if (measureCache_) {
     return measureCache_->get(
-        ParagraphMeasurementCacheKey{
-            attributedString, paragraphAttributes, layoutConstraints},
-        [&](ParagraphMeasurementCacheKey const &key) {
+        ParagraphMeasurementCacheKey{attributedString, paragraphAttributes, layoutConstraints},
+        [&](const ParagraphMeasurementCacheKey &key) {
           return textLayoutManager_->measure(
               attributedString, paragraphAttributes, layoutConstraints);
         });
@@ -79,7 +83,7 @@ Size ParagraphShadowNode::measure(LayoutConstraints layoutConstraints) const {
 }
 
 void ParagraphShadowNode::layout(LayoutContext layoutContext) {
-  updateStateIfNeeded();
+  updateLocalDataIfNeeded();
   ConcreteViewShadowNode::layout(layoutContext);
 }
 

@@ -26,7 +26,7 @@ namespace react {
 class ParagraphProps : public ViewProps, public BaseTextProps {
  public:
   ParagraphProps() = default;
-  ParagraphProps(ParagraphProps const &sourceProps, RawProps const &rawProps);
+  ParagraphProps(const ParagraphProps &sourceProps, const RawProps &rawProps);
 
 #pragma mark - Props
 
@@ -34,12 +34,12 @@ class ParagraphProps : public ViewProps, public BaseTextProps {
    * Contains all prop values that affect visual representation of the
    * paragraph.
    */
-  ParagraphAttributes const paragraphAttributes{};
+  const ParagraphAttributes paragraphAttributes{};
 
   /*
    * Defines can the text be selected (and copied) or not.
    */
-  bool const isSelectable{};
+  const bool isSelectable{};
 
 #pragma mark - DebugStringConvertible
 
