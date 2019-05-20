@@ -47,6 +47,7 @@ type Generators =
 
 type Config = $ReadOnly<{|
   generators: Array<Generators>,
+  test?: boolean,
 |}>;
 
 const GENERATORS = {
@@ -61,18 +62,45 @@ const GENERATORS = {
   'view-configs': [generateViewConfigJs.generate],
 };
 
-function writeMapToFiles(map: Map<string, string>, outputDirectory: string) {
+function writeMapToFiles(map: Map<string, string>, outputDir: string) {
+  let success = true;
   map.forEach((contents: string, fileName: string) => {
-    const location = path.join(outputDirectory, fileName);
-    fs.writeFileSync(location, contents);
+    try {
+      const location = path.join(outputDir, fileName);
+      fs.writeFileSync(location, contents);
+    } catch (error) {
+      success = false;
+      console.error(`Failed to write ${fileName} to ${outputDir}`, error);
+    }
   });
+
+  return success;
+}
+
+function checkFilesForChanges(
+  map: Map<string, string>,
+  outputDir: string,
+): boolean {
+  let hasChanged = false;
+
+  map.forEach((contents: string, fileName: string) => {
+    const location = path.join(outputDir, fileName);
+    const currentContents = fs.readFileSync(location, 'utf8');
+    if (currentContents !== contents) {
+      console.error(`- ${fileName} has changed`);
+
+      hasChanged = true;
+    }
+  });
+
+  return !hasChanged;
 }
 
 module.exports = {
   generate(
     {libraryName, schema, outputDirectory}: Options,
-    {generators}: Config,
-  ) {
+    {generators, test}: Config,
+  ): boolean {
     schemaValidator.validate(schema);
 
     const generatedFiles = [];
@@ -82,6 +110,12 @@ module.exports = {
       }
     }
 
-    writeMapToFiles(new Map([...generatedFiles]), outputDirectory);
+    const filesToUpdate = new Map([...generatedFiles]);
+
+    if (test === true) {
+      return checkFilesForChanges(filesToUpdate, outputDirectory);
+    }
+
+    return writeMapToFiles(filesToUpdate, outputDirectory);
   },
 };

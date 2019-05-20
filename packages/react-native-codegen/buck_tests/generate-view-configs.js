@@ -15,20 +15,54 @@ const RNParser = require('../src/generators/RNParser.js');
 
 const path = require('path');
 
-function generate(files: Array<string>): void {
-  files.forEach(filename => {
+type Result = $ReadOnly<{|
+  libraryName: string,
+  success: boolean,
+|}>;
+
+function generateFilesWithResults(
+  files: Array<string>,
+  test: boolean,
+): Array<Result> {
+  return files.reduce((aggregated, filename) => {
     const schema = RNParser.parse(filename);
     if (schema && schema.modules) {
-      RNCodegen.generate(
+      const libraryName = path.basename(filename).replace('Schema.js', '');
+      const success = RNCodegen.generate(
         {
           schema,
+          libraryName,
           outputDirectory: path.dirname(filename),
-          libraryName: path.basename(filename).replace('Schema.js', ''),
         },
-        {generators: ['view-configs']},
+        {generators: ['view-configs'], test},
       );
+
+      aggregated.push({
+        libraryName,
+        success,
+      });
     }
-  });
+    return aggregated;
+  }, []);
+}
+
+function generate(files: Array<string>, test: boolean): void {
+  console.log(`${test ? 'Testing' : 'Generating'} view configs`);
+
+  const results = generateFilesWithResults(files, test);
+
+  const failed = results.filter(result => !result.success);
+  const totalCount = results.length;
+
+  console.log(`\n${test ? 'Tested' : 'Generated'} ${totalCount} view configs`);
+
+  if (failed.length) {
+    if (test === true) {
+      console.error(`${failed.length} configs changed`);
+      console.error("Please re-run 'js1 build viewconfigs'");
+    }
+    process.exit(1);
+  }
 }
 
 module.exports = generate;
