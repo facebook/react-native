@@ -9,7 +9,9 @@
 
 import type {TurboModule} from 'RCTExport';
 import * as TurboModuleRegistry from 'TurboModuleRegistry';
-import type {EndCallback} from './animations/Animation';
+
+type EndResult = {finished: boolean};
+type EndCallback = (result: EndResult) => void;
 
 export type EventMapping = {|
   nativeEventPath: Array<string>,
@@ -17,7 +19,7 @@ export type EventMapping = {|
 |};
 
 export type AnimatedNodeConfig = {|
-  type?:
+  type:
     | 'style'
     | 'value'
     | 'props'
@@ -33,7 +35,7 @@ export type AnimatedNodeConfig = {|
 |};
 
 export type AnimatingNodeConfig = {|
-  type?: 'frames' | 'spring' | 'decay',
+  type: 'frames' | 'spring' | 'decay',
 |};
 
 export interface Spec extends TurboModule {
