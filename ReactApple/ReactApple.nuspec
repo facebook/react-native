@@ -5,7 +5,7 @@
     <version>__BuildBuildNumber__</version>
     <description>Contains Mac and iOS Implementations of React-Native</description>
     <authors>Microsoft</authors>
-    <projectUrl>https://office.visualstudio.com/ISS/_git/react-native</projectUrl>
+    <projectUrl>https://github.com/microsoft/react-native</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
   </metadata>
   <files>

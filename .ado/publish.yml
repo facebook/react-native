@@ -90,3 +90,25 @@ jobs:
           filename: npm
           arguments: 'config set $(publishnpmfeed)/registry/:_authToken XXXXX'
 
+      - task: PowerShell@2
+        displayName: Extract version from package.json, and put it in nuspec
+        inputs:
+          targetType: inline # filePath | inline
+          script: |
+            $lines = Get-Content package.json | Where {$_ -match '^\s*"version":.*'} 
+            $npmVersion = $lines.Trim().Split()[1].Trim('",');
+            (Get-Content ReactAndroid/ReactAndroid.nuspec).replace('__BuildBuildNumber__', $npmVersion) | Set-Content ReactAndroid/ReactAndroid.nuspec
+
+      - task: NuGetCommand@2
+        displayName: 'NuGet pack'
+        inputs:
+          command: pack
+          packagesToPack: 'ReactAndroid/ReactAndroid.nuspec'
+          packDestination: '$(System.DefaultWorkingDirectory)'
+
+      - task: NuGetCommand@2
+        displayName: 'NuGet push'
+        inputs:
+          command: push
+          packagesToPush: '$(System.DefaultWorkingDirectory)/ReactAndroid*.nupkg'
+          publishVstsFeed: '86ec7889-a365-4cd1-90df-6e18cc2ea59f'
