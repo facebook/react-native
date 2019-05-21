@@ -23,4 +23,4 @@ export interface Spec extends TurboModule {
   +release: (blobId: string) => void;
 }
 
-export default TurboModuleRegistry.getEnforcing<Spec>('BlobModule');
+export default TurboModuleRegistry.get<Spec>('BlobModule');
