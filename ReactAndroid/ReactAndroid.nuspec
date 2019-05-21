@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>OfficeReact.Android</id>
+    <version>__BuildBuildNumber__</version>
+    <description>Contains Android Implementation of React-Native</description>
+    <authors>Microsoft</authors>
+    <projectUrl>https://github.com/microsoft/react-native</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+  </metadata>
+  <files>
+
+    <!-- This is largely a placeholder right now, to get the publishing pipeline to be complete.. we obviously need the built binaries too.. -->
+
+
+    <!-- Ideally we'd only exported the needed headers, not the complete list -->
+    <file src="..\ReactCommon\cxxreact\**\*.h" target="inc\cxxreact"/>
+    <file src="..\ReactCommon\jsi\**\*.h" target="inc\jsi"/>
+    <file src="..\ReactCommon\yoga\yoga\**\*.h" target="inc\Yoga"/>
+    <file src="..\folly\**\*.*" target="inc" />
+    <file src="..\stubs\**\*.*" target="inc" />
+
+  </files>
+</package>
+

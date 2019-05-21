@@ -17,7 +17,7 @@ const SRC_DIR = path.join('react-native-project', 'ios');
 
 describe('ios::getHeaderSearchPath', () => {
   /**
-   * See https://github.com/Microsoft/react-native-code-push
+   * See https://github.com/microsoft/react-native-code-push
    */
   it('should return correct path when all headers are in root folder', () => {
     const files = [
