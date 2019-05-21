@@ -137,8 +137,9 @@ UIFont *RCTFontWithFontProperties(RCTFontProperties fontProperties) {
   RCTFontProperties defaultFontProperties = RCTDefaultFontProperties();
   fontProperties = RCTResolveFontProperties(fontProperties);
 
-  CGFloat sizeMultiplier = !isnan(fontProperties.sizeMultiplier) ? fontProperties.sizeMultiplier : 1.0;
-  CGFloat effectiveFontSize = sizeMultiplier * fontProperties.size;
+  assert(!isnan(fontProperties.sizeMultiplier));
+  CGFloat effectiveFontSize =
+      fontProperties.sizeMultiplier * fontProperties.size;
   UIFont *font;
   if ([fontProperties.family isEqualToString:defaultFontProperties.family]) {
     // Handle system font as special case. This ensures that we preserve
