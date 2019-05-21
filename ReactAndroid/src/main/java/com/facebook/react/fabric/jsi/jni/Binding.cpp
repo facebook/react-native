@@ -290,14 +290,17 @@ local_ref<JMountItem::javaobject> createUpdateStateMountItem(
   // Do not hold onto Java object from C
   // We DO want to hold onto C object from Java, since we don't know the
   // lifetime of the Java object
-  auto javaStateWrapper = StateWrapperImpl::newObjectJavaArgs();
-  StateWrapperImpl* cStateWrapper = cthis(javaStateWrapper);
-  cStateWrapper->state_ = state;
+  local_ref<StateWrapperImpl::JavaPart> javaStateWrapper = nullptr;
+  if (state != nullptr) {
+    javaStateWrapper = StateWrapperImpl::newObjectJavaArgs();
+    StateWrapperImpl* cStateWrapper = cthis(javaStateWrapper);
+    cStateWrapper->state_ = state;
+  }
 
   return updateStateInstruction(
       javaUIManager,
       mutation.newChildShadowView.tag,
-      javaStateWrapper.get());
+      (javaStateWrapper != nullptr ? javaStateWrapper.get() : nullptr));
 }
 
 
@@ -525,13 +528,23 @@ void Binding::schedulerDidRequestPreliminaryViewAllocation(
 
   static auto preallocateView =
       jni::findClassStatic(UIManagerJavaDescriptor)
-          ->getMethod<void(jint, jint, jstring, ReadableMap::javaobject, jboolean)>("preallocateView");
+          ->getMethod<void(jint, jint, jstring, ReadableMap::javaobject, jobject, jboolean)>("preallocateView");
 
-  local_ref<ReadableMap::javaobject> readableMap =
+  // Do not hold onto Java object from C
+  // We DO want to hold onto C object from Java, since we don't know the
+  // lifetime of the Java object
+  local_ref<StateWrapperImpl::JavaPart> javaStateWrapper = nullptr;
+  if (shadowView.state != nullptr) {
+    javaStateWrapper = StateWrapperImpl::newObjectJavaArgs();
+    StateWrapperImpl* cStateWrapper = cthis(javaStateWrapper);
+    cStateWrapper->state_ = shadowView.state;
+  }
+
+  local_ref<ReadableMap::javaobject> props =
       castReadableMap(ReadableNativeMap::newObjectCxxArgs(shadowView.props->rawProps));
   auto component = getPlatformComponentName(shadowView);
   preallocateView(
-      javaUIManager_, surfaceId, shadowView.tag, component.get(), readableMap.get(), isLayoutableShadowNode);
+      javaUIManager_, surfaceId, shadowView.tag, component.get(), props.get(), (javaStateWrapper != nullptr ? javaStateWrapper.get() : nullptr), isLayoutableShadowNode);
 }
 
 void Binding::registerNatives() {

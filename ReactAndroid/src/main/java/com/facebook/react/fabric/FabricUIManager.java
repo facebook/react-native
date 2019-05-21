@@ -176,6 +176,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
       int reactTag,
       final String componentName,
       @Nullable ReadableMap props,
+      Object stateWrapper,
       boolean isLayoutable) {
     ThemedReactContext context = mReactContextForRootTag.get(rootTag);
     String component = getFabricComponentName(componentName);
@@ -187,6 +188,7 @@ public class FabricUIManager implements UIManager, LifecycleEventListener {
               reactTag,
               component,
               props,
+              (StateWrapper) stateWrapper,
               isLayoutable));
     }
   }

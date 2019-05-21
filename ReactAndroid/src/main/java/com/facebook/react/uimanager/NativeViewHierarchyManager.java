@@ -8,7 +8,6 @@
 package com.facebook.react.uimanager;
 
 import android.content.res.Resources;
-import android.os.Build;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
@@ -19,7 +18,6 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.PopupMenu;
 import com.facebook.common.logging.FLog;
-import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.R;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException;
@@ -256,7 +254,7 @@ public class NativeViewHierarchyManager {
     try {
       ViewManager viewManager = mViewManagers.get(className);
 
-      View view = viewManager.createViewWithProps(themedContext, null, mJSResponderHandler);
+      View view = viewManager.createView(themedContext, null, null, mJSResponderHandler);
       mTagsToViews.put(tag, view);
       mTagsToViewManagers.put(tag, viewManager);
 

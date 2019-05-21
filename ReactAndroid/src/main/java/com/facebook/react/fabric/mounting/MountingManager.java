@@ -170,11 +170,12 @@ public class MountingManager {
   }
 
   @UiThread
-  public void createViewWithProps(
+  public void createView(
       ThemedReactContext themedReactContext,
       String componentName,
       int reactTag,
       @Nullable ReadableMap props,
+      @Nullable StateWrapper stateWrapper,
       boolean isLayoutable) {
     if (mTagToViewState.get(reactTag) != null) {
       return;
@@ -183,19 +184,20 @@ public class MountingManager {
     View view = null;
     ViewManager viewManager = null;
 
-    ReactStylesDiffMap diffMap = null;
+    ReactStylesDiffMap propsDiffMap = null;
     if (props != null) {
-      diffMap = new ReactStylesDiffMap(props);
+      propsDiffMap = new ReactStylesDiffMap(props);
     }
 
     if (isLayoutable) {
       viewManager = mViewManagerRegistry.get(componentName);
-      view = mViewFactory.getOrCreateView(componentName, diffMap, themedReactContext);
+      view = mViewFactory.getOrCreateView(componentName, propsDiffMap, stateWrapper, themedReactContext);
       view.setId(reactTag);
     }
 
     ViewState viewState = new ViewState(reactTag, view, viewManager);
-    viewState.mCurrentProps = diffMap;
+    viewState.mCurrentProps = propsDiffMap;
+    viewState.mCurrentState = (stateWrapper != null ? stateWrapper.getState() : null);
 
     mTagToViewState.put(reactTag, viewState);
   }
@@ -313,6 +315,7 @@ public class MountingManager {
       String componentName,
       int reactTag,
       @Nullable ReadableMap props,
+      @Nullable StateWrapper stateWrapper,
       boolean isLayoutable) {
 
     if (mTagToViewState.get(reactTag) != null) {
@@ -320,7 +323,7 @@ public class MountingManager {
           "View for component " + componentName + " with tag " + reactTag + " already exists.");
     }
 
-    createViewWithProps(reactContext, componentName, reactTag, props, isLayoutable);
+    createView(reactContext, componentName, reactTag, props, stateWrapper, isLayoutable);
   }
 
   @UiThread
@@ -362,10 +365,10 @@ public class MountingManager {
     final int mReactTag;
     final boolean mIsRoot;
     @Nullable final ViewManager mViewManager;
-    public ReactStylesDiffMap mCurrentProps;
-    public ReadableMap mCurrentLocalData;
-    public ReadableMap mCurrentState;
-    public EventEmitterWrapper mEventEmitter;
+    public ReactStylesDiffMap mCurrentProps = null;
+    public ReadableMap mCurrentLocalData = null;
+    public ReadableMap mCurrentState = null;
+    public EventEmitterWrapper mEventEmitter = null;
 
     private ViewState(int reactTag, @Nullable View view, @Nullable ViewManager viewManager) {
       this(reactTag, view, viewManager, false);
