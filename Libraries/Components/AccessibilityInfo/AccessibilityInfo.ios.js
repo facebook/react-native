@@ -26,7 +26,7 @@ const CHANGE_EVENT_NAME = {
   screenReaderChanged: 'screenReaderChanged',
 };
 
-type ChangeEventName = $Enum<{
+type ChangeEventName = $Keys<{
   announcementFinished: string,
   boldTextChanged: string,
   change: string,

@@ -25,14 +25,14 @@ type Options = {
   onDismiss?: ?Function,
 };
 
-type AlertType = $Enum<{
+type AlertType = $Keys<{
   default: string,
   'plain-text': string,
   'secure-text': string,
   'login-password': string,
 }>;
 
-export type AlertButtonStyle = $Enum<{
+export type AlertButtonStyle = $Keys<{
   default: string,
   cancel: string,
   destructive: string,

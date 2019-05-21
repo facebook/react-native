@@ -44,7 +44,7 @@ type PageSelectedEvent = SyntheticEvent<
   |}>,
 >;
 
-export type ViewPagerScrollState = $Enum<{
+export type ViewPagerScrollState = $Keys<{
   idle: string,
   dragging: string,
   settling: string,

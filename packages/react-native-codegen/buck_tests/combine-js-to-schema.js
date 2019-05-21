@@ -11,19 +11,12 @@
 'use strict';
 import type {SchemaType} from '../src/CodegenSchema.js';
 
-function parse(filename: string): ?SchemaType {
-  try {
-    // $FlowFixMe Can't require dynamic variables
-    return require(filename);
-  } catch (err) {
-    // ignore
-  }
-}
+const RNParser = require('../src/generators/RNParser.js');
 
 function combineSchemas(files: Array<string>): SchemaType {
   return files.reduce(
     (merged, filename) => {
-      const schema = parse(filename);
+      const schema = RNParser.parse(filename);
       if (schema && schema.modules) {
         merged.modules = {...merged.modules, ...schema.modules};
       }

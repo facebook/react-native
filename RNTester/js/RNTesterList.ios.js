@@ -262,11 +262,6 @@ const APIExamples: Array<RNTesterExample> = [
     supportsTVOS: true,
   },
   {
-    key: 'NetInfoExample',
-    module: require('./NetInfoExample'),
-    supportsTVOS: true,
-  },
-  {
     key: 'OrientationChangeExample',
     module: require('./OrientationChangeExample'),
     supportsTVOS: false,

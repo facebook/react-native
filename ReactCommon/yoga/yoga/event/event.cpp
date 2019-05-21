@@ -34,11 +34,19 @@ void Event::reset() {
 
 void Event::subscribe(std::function<Subscriber>&& subscriber) {
   std::lock_guard<std::mutex> guard(eventSubscribersMutex());
+  eventSubscribers() =
+      std::make_shared<Event::Subscribers>(*eventSubscribers());
   eventSubscribers()->push_back(subscriber);
 }
 
 void Event::publish(const YGNode& node, Type eventType, const Data& eventData) {
-  for (auto& subscriber : *eventSubscribers()) {
+  std::shared_ptr<Event::Subscribers> subscribers;
+  {
+    std::lock_guard<std::mutex> guard(eventSubscribersMutex());
+    subscribers = eventSubscribers();
+  }
+
+  for (auto& subscriber : *subscribers) {
     if (subscriber) {
       subscriber(node, eventType, eventData);
     }

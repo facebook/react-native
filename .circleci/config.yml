@@ -517,7 +517,6 @@ jobs:
             node ./scripts/run-ci-e2e-tests.js --ios --retries 3;
           when: always
 
-
   # -------------------------
   #    JOBS: Test Android
   # -------------------------

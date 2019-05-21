@@ -14,6 +14,7 @@ const RCTDeviceEventEmitter = require('../EventEmitter/RCTDeviceEventEmitter');
 const infoLog = require('../Utilities/infoLog');
 
 import type EmitterSubscription from '../vendor/emitter/EmitterSubscription';
+import NativeRedBox from '../NativeModules/specs/NativeRedBox';
 
 type ExtraData = {[key: string]: string};
 type SourceCallback = () => string;
@@ -127,10 +128,9 @@ class BugReporting {
       BugReportingNativeModule.setExtraData &&
       BugReportingNativeModule.setExtraData(extraData, fileData);
 
-    const RedBoxNativeModule = require('../BatchedBridge/NativeModules').RedBox;
-    RedBoxNativeModule &&
-      RedBoxNativeModule.setExtraData &&
-      RedBoxNativeModule.setExtraData(extraData, 'From BugReporting.js');
+    if (NativeRedBox != null && NativeRedBox.setExtraData != null) {
+      NativeRedBox.setExtraData(extraData, 'From BugReporting.js');
+    }
 
     return {extras: extraData, files: fileData};
   }

@@ -51,7 +51,7 @@ const SliderSchema: SchemaType = {
             {
               name: 'onSlidingComplete',
               optional: true,
-              bubblingType: 'bubble',
+              bubblingType: 'direct',
               typeAnnotation: {
                 type: 'EventTypeAnnotation',
                 argument: {

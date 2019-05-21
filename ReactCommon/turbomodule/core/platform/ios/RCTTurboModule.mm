@@ -295,7 +295,7 @@ jsi::Value performMethodInvocation(
     std::shared_ptr<JSCallInvoker> jsInvoker,
     NSMutableArray *retainedObjectsForInvocation) {
 
-  __block void *rawResult = NULL;
+  __block id result;
   jsi::Runtime *rt = &runtime;
   void (^block)() = ^{
     [inv invokeWithTarget:module];
@@ -304,8 +304,9 @@ jsi::Value performMethodInvocation(
     if (valueKind == VoidKind) {
       return;
     }
-
-    [inv getReturnValue:(void *)&rawResult];
+    void *rawResult;
+    [inv getReturnValue:&rawResult];
+    result = (__bridge id)rawResult;
   };
 
   // Backward-compatibility layer for calling module methods on specific queue.
@@ -340,15 +341,15 @@ jsi::Value performMethodInvocation(
     case VoidKind:
       return jsi::Value::undefined();
     case BooleanKind:
-      return convertNSNumberToJSIBoolean(*rt, (__bridge NSNumber *)rawResult);
+      return convertNSNumberToJSIBoolean(*rt, (NSNumber *)result);
     case NumberKind:
-      return convertNSNumberToJSINumber(*rt, (__bridge NSNumber *)rawResult);
+      return convertNSNumberToJSINumber(*rt, (NSNumber *)result);
     case StringKind:
-      return convertNSStringToJSIString(*rt, (__bridge NSString *)rawResult);
+      return convertNSStringToJSIString(*rt, (NSString *)result);
     case ObjectKind:
-      return convertNSDictionaryToJSIObject(*rt, (__bridge NSDictionary *)rawResult);
+      return convertNSDictionaryToJSIObject(*rt, (NSDictionary *)result);
     case ArrayKind:
-      return convertNSArrayToJSIArray(*rt, (__bridge NSArray *)rawResult);
+      return convertNSArrayToJSIArray(*rt, (NSArray *)result);
     case FunctionKind:
       throw std::runtime_error("convertInvocationResultToJSIValue: FunctionKind is not supported yet.");
     case PromiseKind:
@@ -525,13 +526,6 @@ NSInvocation *ObjCTurboModule::getMethodInvocation(
     }
   }
 
-  /**
-   * TODO(rsnara):
-   * If you remove this call, then synchronous calls that return NSDictionary's break.
-   * Investigate why.
-   */
-  [inv retainArguments];
-
   return inv;
 }
 
@@ -550,7 +544,7 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
     const jsi::Value *args,
     size_t count)
 {
-  NSMutableArray *retainedObjectsForInvocation = [NSMutableArray new];
+  NSMutableArray *retainedObjectsForInvocation = [NSMutableArray arrayWithCapacity:count + 2];
   NSInvocation *inv = getMethodInvocation(runtime, valueKind, instance_, jsInvoker_, methodName, selector, args, count, retainedObjectsForInvocation);
 
   if (valueKind == PromiseKind) {
@@ -564,6 +558,8 @@ jsi::Value ObjCTurboModule::invokeObjCMethod(
           RCTPromiseRejectBlock rejectBlock = wrapper->rejectBlock();
           [inv setArgument:(void *)&resolveBlock atIndex:count + 2];
           [inv setArgument:(void *)&rejectBlock atIndex:count + 3];
+          [retainedObjectsForInvocation addObject:resolveBlock];
+          [retainedObjectsForInvocation addObject:rejectBlock];
           // The return type becomes void in the ObjC side.
           performMethodInvocation(rt, inv, VoidKind, instance_, jsInvoker_, retainedObjectsForInvocation);
         });

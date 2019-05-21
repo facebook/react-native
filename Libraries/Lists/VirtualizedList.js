@@ -17,7 +17,6 @@ const ReactNative = require('../Renderer/shims/ReactNative');
 const RefreshControl = require('../Components/RefreshControl/RefreshControl');
 const ScrollView = require('../Components/ScrollView/ScrollView');
 const StyleSheet = require('../StyleSheet/StyleSheet');
-const UIManager = require('../ReactNative/UIManager');
 const View = require('../Components/View/View');
 const ViewabilityHelper = require('./ViewabilityHelper');
 
@@ -37,7 +36,21 @@ import type {
 
 type Item = any;
 
-export type renderItemType = (info: any) => ?React.Element<any>;
+export type Separators = {
+  highlight: () => void,
+  unhighlight: () => void,
+  updateProps: (select: 'leading' | 'trailing', newProps: Object) => void,
+};
+
+export type RenderItemProps<ItemT> = {
+  item: ItemT,
+  index: number,
+  separators: Separators,
+};
+
+export type RenderItemType<ItemT> = (
+  info: RenderItemProps<ItemT>,
+) => React.Node;
 
 type ViewabilityHelperCallbackTuple = {
   viewabilityHelper: ViewabilityHelper,
@@ -48,9 +61,6 @@ type ViewabilityHelperCallbackTuple = {
 };
 
 type RequiredProps = {
-  // TODO: Conflicts with the optional `renderItem` in
-  // `VirtualizedSectionList`'s props.
-  renderItem: $FlowFixMe<renderItemType>,
   /**
    * The default accessor functions assume this is an Array<{key: string} | {id: string}> but you can override
    * getItem, getItemCount, and keyExtractor to handle any type of index-based data.
@@ -66,6 +76,9 @@ type RequiredProps = {
   getItemCount: (data: any) => number,
 };
 type OptionalProps = {
+  // TODO: Conflicts with the optional `renderItem` in
+  // `VirtualizedSectionList`'s props.
+  renderItem?: $FlowFixMe<?RenderItemType<Item>>,
   /**
    * `debug` will turn on extra logging and visual overlays to aid with debugging both usage and
    * implementation, but with a significant perf hit.
@@ -111,6 +124,11 @@ type OptionalProps = {
    * or a render function. Defaults to using View.
    */
   CellRendererComponent?: ?React.ComponentType<any>,
+  /**
+   * Each data item is rendered using this element. Can be a React Component Class,
+   * or a render function.
+   */
+  ListItemComponent?: ?React.ComponentType<any>,
   /**
    * Rendered when the list is empty. Can be a React Component Class, a render function, or
    * a rendered element.
@@ -1664,7 +1682,8 @@ class CellRenderer extends React.Component<
     onUpdateSeparators: (cellKeys: Array<?string>, props: Object) => void,
     parentProps: {
       getItemLayout?: ?Function,
-      renderItem: renderItemType,
+      renderItem?: ?RenderItemType<Item>,
+      ListItemComponent?: ?(React.ComponentType<any> | React.Element<any>),
     },
     prevCellKey: ?string,
   },
@@ -1725,6 +1744,36 @@ class CellRenderer extends React.Component<
     this.props.onUnmount(this.props.cellKey);
   }
 
+  _renderElement(renderItem, ListItemComponent, item, index) {
+    if (renderItem && ListItemComponent) {
+      console.warn(
+        'VirtualizedList: Both ListItemComponent and renderItem props are present. ListItemComponent will take' +
+          ' precedence over renderItem.',
+      );
+    }
+
+    if (ListItemComponent) {
+      return React.createElement(ListItemComponent, {
+        item,
+        index,
+        separators: this._separators,
+      });
+    }
+
+    if (renderItem) {
+      return renderItem({
+        item,
+        index,
+        separators: this._separators,
+      });
+    }
+
+    invariant(
+      false,
+      'VirtualizedList: Either ListItemComponent or renderItem props are required but none were found.',
+    );
+  }
+
   render() {
     const {
       CellRendererComponent,
@@ -1736,13 +1785,14 @@ class CellRenderer extends React.Component<
       inversionStyle,
       parentProps,
     } = this.props;
-    const {renderItem, getItemLayout} = parentProps;
-    invariant(renderItem, 'no renderItem!');
-    const element = renderItem({
+    const {renderItem, getItemLayout, ListItemComponent} = parentProps;
+    const element = this._renderElement(
+      renderItem,
+      ListItemComponent,
       item,
       index,
-      separators: this._separators,
-    });
+    );
+
     const onLayout =
       /* $FlowFixMe(>=0.68.0 site=react_native_fb) This comment suppresses an
        * error found when Flow v0.68 was deployed. To see the error delete this
